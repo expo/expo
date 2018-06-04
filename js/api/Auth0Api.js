@@ -4,16 +4,11 @@ import ApiV2HttpClient from 'ApiV2HttpClient';
 const SignUpEndpoint = 'https://exp.host/--/api/v2/auth/createOrUpdateUser';
 const SignOutEndpoint = 'https://exp.host/--/api/v2/auth/logoutAsync';
 
-type SignInOptions = {
-  testSession?: boolean,
-};
-async function signInAsync(username: string, password: string, options: SignInOptions = {}) {
-  let testSession = options.testSession || false;
+async function signInAsync(username: string, password: string) {
   let api = new ApiV2HttpClient();
   return api.postAsync('auth/loginAsync', {
     username,
     password,
-    ...(testSession ? { testSession } : {}),
   });
 }
 

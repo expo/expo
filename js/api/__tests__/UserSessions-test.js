@@ -71,9 +71,7 @@ describe('User Authentication Flow', () => {
 
   it('login and stores auth tokens and sessions correctly', async () => {
     // sign in
-    const signinResult = await Auth0Api.signInAsync(testUsername, testPassword, {
-      testSession: true,
-    });
+    const signinResult = await Auth0Api.signInAsync(testUsername, testPassword);
     const { sessionSecret } = signinResult;
 
     // store auth and session tokens
