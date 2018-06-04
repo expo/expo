@@ -3,6 +3,6 @@
 package host.exp.exponent.experience;
 
 // Implement for each version.
-public class MultipleVersionReactNativeActivity extends ReactNativeActivity implements abi27_0_0.com.facebook.react.modules.core.DefaultHardwareBackBtnHandler, abi26_0_0.com.facebook.react.modules.core.DefaultHardwareBackBtnHandler, abi25_0_0.com.facebook.react.modules.core.DefaultHardwareBackBtnHandler, abi24_0_0.com.facebook.react.modules.core.DefaultHardwareBackBtnHandler, abi23_0_0.com.facebook.react.modules.core.DefaultHardwareBackBtnHandler, abi22_0_0.com.facebook.react.modules.core.DefaultHardwareBackBtnHandler {
+public class MultipleVersionReactNativeActivity extends ReactNativeActivity implements abi28_0_0.com.facebook.react.modules.core.DefaultHardwareBackBtnHandler, abi27_0_0.com.facebook.react.modules.core.DefaultHardwareBackBtnHandler, abi26_0_0.com.facebook.react.modules.core.DefaultHardwareBackBtnHandler, abi25_0_0.com.facebook.react.modules.core.DefaultHardwareBackBtnHandler, abi24_0_0.com.facebook.react.modules.core.DefaultHardwareBackBtnHandler, abi23_0_0.com.facebook.react.modules.core.DefaultHardwareBackBtnHandler, abi22_0_0.com.facebook.react.modules.core.DefaultHardwareBackBtnHandler {
 
 }
