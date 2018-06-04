@@ -195,6 +195,7 @@ dependencies {
 
   // Versioned react native
   // THIS COMMENT IS USED BY android-build-aar.sh DO NOT MODIFY
+  compile 'host.exp:reactandroid-abi28_0_0:1.0.0'
   compile 'host.exp:reactandroid-abi27_0_0:1.0.0'
   compile 'host.exp:reactandroid-abi26_0_0:1.0.0'
   compile 'host.exp:reactandroid-abi25_0_0:1.0.0'
