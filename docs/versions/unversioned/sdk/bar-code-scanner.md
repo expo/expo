@@ -2,7 +2,7 @@
 title: BarCodeScanner
 ---
 
-A React component that renders a viewfinder for the device's either front or back camera viewfinder and will detect bar codes that show up in the frame. BarCodeScanner uses [Camera](./camera.html) underneath so any Camera prop or method can be used when using BarCodeScanner.
+A React component that renders a viewfinder for the device's either front or back camera viewfinder and will detect bar codes that show up in the frame.
 
 Requires `Permissions.CAMERA`.
 
