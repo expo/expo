@@ -41,7 +41,7 @@ import static android.provider.ContactsContract.*;
 public class ContactsModule extends ExpoKernelServiceConsumerBaseModule {
   private static final String TAG = ContactsModule.class.getSimpleName();
 
-  private static List<String> PROJECTION = new ArrayList<String>() {{
+  private static final List<String> DEFAULT_PROJECTION = new ArrayList<String>() {{
     add(ContactsContract.Data.CONTACT_ID);
     add(ContactsContract.Data.LOOKUP_KEY);
     add(ContactsContract.Contacts.Data.MIMETYPE);
@@ -89,6 +89,7 @@ public class ContactsModule extends ExpoKernelServiceConsumerBaseModule {
         ContentResolver cr = getReactApplicationContext().getContentResolver();
         Cursor cursor;
 
+        List<String> projection = new ArrayList<>(DEFAULT_PROJECTION);
 
         ArrayList<String> selectionArgs = new ArrayList<>(
             Arrays.asList(
@@ -98,112 +99,113 @@ public class ContactsModule extends ExpoKernelServiceConsumerBaseModule {
         );
 
         // selection ORs need to match arg count from above selectionArgs
-        String selection = ContactsContract.Data.MIMETYPE + "=? OR " +
-            ContactsContract.Data.MIMETYPE + "=?";
+        String selection = Data.MIMETYPE + "=? OR " +
+            Data.MIMETYPE + "=?";
 
         // handle "add on" fields from query request
         if (fieldsSet.contains("phoneNumbers")) {
-          PROJECTION.add(CommonDataKinds.Phone.NUMBER);
-          PROJECTION.add(CommonDataKinds.Phone.TYPE);
-          PROJECTION.add(CommonDataKinds.Phone.LABEL);
-          PROJECTION.add(CommonDataKinds.Phone.IS_PRIMARY);
-          PROJECTION.add(CommonDataKinds.Phone._ID);
-          selection += " OR " + ContactsContract.Data.MIMETYPE + "=?";
+          projection.add(CommonDataKinds.Phone.NUMBER);
+          projection.add(CommonDataKinds.Phone.TYPE);
+          projection.add(CommonDataKinds.Phone.LABEL);
+          projection.add(CommonDataKinds.Phone.IS_PRIMARY);
+          projection.add(CommonDataKinds.Phone._ID);
+          selection += " OR " + Data.MIMETYPE + "=?";
           selectionArgs.add(CommonDataKinds.Phone.CONTENT_ITEM_TYPE);
         }
 
         if (fieldsSet.contains("emails")) {
-          PROJECTION.add(CommonDataKinds.Email.DATA);
-          PROJECTION.add(CommonDataKinds.Email.ADDRESS);
-          PROJECTION.add(CommonDataKinds.Email.TYPE);
-          PROJECTION.add(CommonDataKinds.Email.LABEL);
-          PROJECTION.add(CommonDataKinds.Email.IS_PRIMARY);
-          PROJECTION.add(CommonDataKinds.Email._ID);
-          selection += " OR " + ContactsContract.Data.MIMETYPE + "=?";
+          projection.add(CommonDataKinds.Email.DATA);
+          projection.add(CommonDataKinds.Email.ADDRESS);
+          projection.add(CommonDataKinds.Email.TYPE);
+          projection.add(CommonDataKinds.Email.LABEL);
+          projection.add(CommonDataKinds.Email.IS_PRIMARY);
+          projection.add(CommonDataKinds.Email._ID);
+          selection += " OR " + Data.MIMETYPE + "=?";
           selectionArgs.add(CommonDataKinds.Email.CONTENT_ITEM_TYPE);
         }
 
         if (fieldsSet.contains("addresses")) {
-          PROJECTION.add(CommonDataKinds.StructuredPostal.FORMATTED_ADDRESS);
-          PROJECTION.add(CommonDataKinds.StructuredPostal.TYPE);
-          PROJECTION.add(CommonDataKinds.StructuredPostal.LABEL);
-          PROJECTION.add(CommonDataKinds.StructuredPostal.STREET);
-          PROJECTION.add(CommonDataKinds.StructuredPostal.POBOX);
-          PROJECTION.add(CommonDataKinds.StructuredPostal.NEIGHBORHOOD);
-          PROJECTION.add(CommonDataKinds.StructuredPostal.CITY);
-          PROJECTION.add(CommonDataKinds.StructuredPostal.REGION);
-          PROJECTION.add(CommonDataKinds.StructuredPostal.POSTCODE);
-          PROJECTION.add(CommonDataKinds.StructuredPostal.COUNTRY);
-          selection += " OR " + ContactsContract.Data.MIMETYPE + "=?";
+          projection.add(CommonDataKinds.StructuredPostal.FORMATTED_ADDRESS);
+          projection.add(CommonDataKinds.StructuredPostal.TYPE);
+          projection.add(CommonDataKinds.StructuredPostal.LABEL);
+          projection.add(CommonDataKinds.StructuredPostal.STREET);
+          projection.add(CommonDataKinds.StructuredPostal.POBOX);
+          projection.add(CommonDataKinds.StructuredPostal.NEIGHBORHOOD);
+          projection.add(CommonDataKinds.StructuredPostal.CITY);
+          projection.add(CommonDataKinds.StructuredPostal.REGION);
+          projection.add(CommonDataKinds.StructuredPostal.POSTCODE);
+          projection.add(CommonDataKinds.StructuredPostal.COUNTRY);
+          selection += " OR " + Data.MIMETYPE + "=?";
           selectionArgs.add(CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE);
         }
 
         if (fieldsSet.contains("note")) {
-          selection += " OR " + ContactsContract.Data.MIMETYPE + "=?";
-          selectionArgs.add(ContactsContract.CommonDataKinds.Note.CONTENT_ITEM_TYPE);
+          selection += " OR " + Data.MIMETYPE + "=?";
+          selectionArgs.add(CommonDataKinds.Note.CONTENT_ITEM_TYPE);
         }
 
         if (fieldsSet.contains("birthday") || fieldsSet.contains("dates")) {
-          selection += " OR " + ContactsContract.Data.MIMETYPE + "=?";
-          selectionArgs.add(ContactsContract.CommonDataKinds.Event.CONTENT_ITEM_TYPE);
+          selection += " OR " + Data.MIMETYPE + "=?";
+          selectionArgs.add(CommonDataKinds.Event.CONTENT_ITEM_TYPE);
         }
 
         if (fieldsSet.contains("instantMessageAddresses")) {
-          PROJECTION.add(CommonDataKinds.Im.DATA);
-          PROJECTION.add(CommonDataKinds.Im.TYPE);
-          PROJECTION.add(CommonDataKinds.Im.PROTOCOL);
-          PROJECTION.add(CommonDataKinds.Im._ID);
-          selection += " OR " + ContactsContract.Data.MIMETYPE + "=?";
+          projection.add(CommonDataKinds.Im.DATA);
+          projection.add(CommonDataKinds.Im.TYPE);
+          projection.add(CommonDataKinds.Im.PROTOCOL);
+          projection.add(CommonDataKinds.Im._ID);
+          selection += " OR " + Data.MIMETYPE + "=?";
           selectionArgs.add(CommonDataKinds.Im.CONTENT_ITEM_TYPE);
         }
 
         if (fieldsSet.contains("urlAddresses")) {
-          PROJECTION.add(CommonDataKinds.Website.URL);
-          PROJECTION.add(CommonDataKinds.Website.TYPE);
-          PROJECTION.add(CommonDataKinds.Website._ID);
-          selection += " OR " + ContactsContract.Data.MIMETYPE + "=?";
+          projection.add(CommonDataKinds.Website.URL);
+          projection.add(CommonDataKinds.Website.TYPE);
+          projection.add(CommonDataKinds.Website._ID);
+          selection += " OR " + Data.MIMETYPE + "=?";
           selectionArgs.add(CommonDataKinds.Website.CONTENT_ITEM_TYPE);
         }
 
         if (fieldsSet.contains("relationships")) {
-          PROJECTION.add(CommonDataKinds.Relation.NAME);
-          PROJECTION.add(CommonDataKinds.Relation.TYPE);
-          PROJECTION.add(CommonDataKinds.Relation._ID);
-          selection += " OR " + ContactsContract.Data.MIMETYPE + "=?";
+          projection.add(CommonDataKinds.Relation.NAME);
+          projection.add(CommonDataKinds.Relation.TYPE);
+          projection.add(CommonDataKinds.Relation._ID);
+          selection += " OR " + Data.MIMETYPE + "=?";
           selectionArgs.add(CommonDataKinds.Relation.CONTENT_ITEM_TYPE);
         }
 
         if (fieldsSet.contains("phoneticFirstName")) {
-          PROJECTION.add(CommonDataKinds.StructuredName.PHONETIC_GIVEN_NAME);
+          projection.add(CommonDataKinds.StructuredName.PHONETIC_GIVEN_NAME);
         }
 
         if (fieldsSet.contains("phoneticLastName")) {
-          PROJECTION.add(CommonDataKinds.StructuredName.PHONETIC_FAMILY_NAME);
+          projection.add(CommonDataKinds.StructuredName.PHONETIC_FAMILY_NAME);
         }
 
         if (fieldsSet.contains("phoneticMiddleName")) {
-          PROJECTION.add(CommonDataKinds.StructuredName.PHONETIC_MIDDLE_NAME);
+          projection.add(CommonDataKinds.StructuredName.PHONETIC_MIDDLE_NAME);
         }
 
         if (fieldsSet.contains("namePrefix")) {
-          PROJECTION.add(CommonDataKinds.StructuredName.PREFIX);
+          projection.add(CommonDataKinds.StructuredName.PREFIX);
         }
 
         if (fieldsSet.contains("nameSuffix")) {
-          PROJECTION.add(CommonDataKinds.StructuredName.SUFFIX);
+          projection.add(CommonDataKinds.StructuredName.SUFFIX);
         }
 
         if (fetchSingleContact) {
+          selectionArgs.add(options.getString("id"));
           cursor = cr.query(
-              ContactsContract.Data.CONTENT_URI,
-              PROJECTION.toArray(new String[PROJECTION.size()]),
-              ContactsContract.Data.CONTACT_ID + " = ?",
-              new String[]{options.getString("id")},
+              Data.CONTENT_URI,
+              projection.toArray(new String[projection.size()]),
+              "(" + selection + ") AND " + Data.CONTACT_ID + " = ?",
+              selectionArgs.toArray(new String[selectionArgs.size()]),
               null);
         } else {
           cursor = cr.query(
-              ContactsContract.Data.CONTENT_URI,
-              PROJECTION.toArray(new String[PROJECTION.size()]),
+              Data.CONTENT_URI,
+              projection.toArray(new String[projection.size()]),
               selection,
               selectionArgs.toArray(new String[selectionArgs.size()]),
               null);
