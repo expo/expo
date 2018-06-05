@@ -76,7 +76,7 @@ NSString * const EXBranchLinkOpenedNotification = @"RNBranchLinkOpenedNotificati
 
 - (void)branchModuleDidInit:(id)versionedBranchModule
 {
-  if (_isInitialized) {
+  if (_isInitialized || ![[self class] isBranchEnabled]) {
     return;
   }
   RNBranch *branchModule = (RNBranch *)versionedBranchModule;
