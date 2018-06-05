@@ -269,6 +269,7 @@ class Camera1 extends CameraViewImpl implements MediaRecorder.OnInfoListener,
                 throw new UnsupportedOperationException(ratio + " is not supported");
             } else {
                 mAspectRatio = ratio;
+                mPictureSize = mPictureSizes.sizes(mAspectRatio).last();
                 adjustCameraParameters();
                 return true;
             }
