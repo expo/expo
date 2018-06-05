@@ -55,8 +55,18 @@ public class ExponentHttpClient {
     mExponentSharedPreferences = exponentSharedPreferences;
   }
 
-  public void call(final Request request, final Callback callback) {
-    mOkHttpClientFactory.getNewClient().newCall(request).enqueue(callback);
+  public void call(final Request request, final ExpoHttpCallback callback) {
+    mOkHttpClientFactory.getNewClient().newCall(request).enqueue(new Callback() {
+      @Override
+      public void onFailure(Call call, IOException e) {
+        callback.onFailure(e);
+      }
+
+      @Override
+      public void onResponse(Call call, Response response) throws IOException {
+        callback.onResponse(new OkHttpV1ExpoResponse(response));
+      }
+    });
   }
 
   public void callSafe(final Request request, final SafeCallback callback) {
@@ -86,15 +96,15 @@ public class ExponentHttpClient {
 
       @Override
       public void onFailure(IOException e) {
-        call(request, new Callback() {
+        call(request, new ExpoHttpCallback() {
           @Override
-          public void onFailure(Call call, IOException e) {
+          public void onFailure(IOException e) {
             callback.onFailure(e);
           }
 
           @Override
-          public void onResponse(Call call, Response response) throws IOException {
-            callback.onResponse(new OkHttpV1ExpoResponse(response));
+          public void onResponse(ExpoResponse response) throws IOException {
+            callback.onResponse(response);
           }
         });
       }

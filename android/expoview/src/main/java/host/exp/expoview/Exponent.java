@@ -69,6 +69,7 @@ import host.exp.exponent.generated.ExponentKeys;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.kernel.ExponentUrls;
 import host.exp.exponent.kernel.KernelConstants;
+import host.exp.exponent.network.ExpoHttpCallback;
 import host.exp.exponent.network.ExpoResponse;
 import host.exp.exponent.network.ExponentHttpClient;
 import host.exp.exponent.network.ExponentNetwork;
@@ -134,14 +135,14 @@ public class Exponent {
     // Verifying SSL certs is slow on Android, so send an HTTPS request to our server as early as possible.
     // This speeds up the manifest request in a shell app from ~500ms to ~250ms.
     try {
-      mExponentNetwork.getClient().call(new Request.Builder().url(Constants.API_HOST + "/status").build(), new Callback() {
+      mExponentNetwork.getClient().call(new Request.Builder().url(Constants.API_HOST + "/status").build(), new ExpoHttpCallback() {
         @Override
-        public void onFailure(Call call, IOException e) {
+        public void onFailure(IOException e) {
           EXL.d(TAG, e.toString());
         }
 
         @Override
-        public void onResponse(Call call, Response response) throws IOException {
+        public void onResponse(ExpoResponse response) throws IOException {
           ExponentNetwork.flushResponse(response);
           EXL.d(TAG, "Loaded exp.host status page.");
         }
@@ -161,12 +162,25 @@ public class Exponent {
     } catch (NoSuchMethodException e) {
       e.printStackTrace();
     }
-    Fresco.initialize(context);
+
+    try {
+      Fresco.initialize(context);
+    } catch (RuntimeException e) {
+      // For tests
+      e.printStackTrace();
+    }
 
 
     // Amplitude
     Analytics.resetAmplitudeDatabaseHelper();
-    Amplitude.getInstance().initialize(context, ExpoViewBuildConfig.DEBUG ? ExponentKeys.AMPLITUDE_DEV_KEY : ExponentKeys.AMPLITUDE_KEY);
+
+    try {
+      Amplitude.getInstance().initialize(context, ExpoViewBuildConfig.DEBUG ? ExponentKeys.AMPLITUDE_DEV_KEY : ExponentKeys.AMPLITUDE_KEY);
+    } catch (RuntimeException e) {
+      // For tests
+      e.printStackTrace();
+    }
+
     if (application != null) {
       Amplitude.getInstance().enableForegroundTracking(application);
     }
@@ -189,7 +203,12 @@ public class Exponent {
       Stetho.initializeWithDefaults(context);
     }
 
-    ImageLoader.getInstance().init(new ImageLoaderConfiguration.Builder(context).build());
+    try {
+      ImageLoader.getInstance().init(new ImageLoaderConfiguration.Builder(context).build());
+    } catch (RuntimeException e) {
+      // For tests
+      e.printStackTrace();
+    }
 
     if (!ExpoViewBuildConfig.DEBUG) {
       // There are a few places in RN code that throw NetworkOnMainThreadException.
