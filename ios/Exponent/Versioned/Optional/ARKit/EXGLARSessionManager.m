@@ -4,27 +4,43 @@
 #include <OpenGLES/ES2/glext.h>
 #import <UEXGL.h>
 
+
 @implementation RCTConvert (ARPlaneDetection)
 
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 110300
 RCT_ENUM_CONVERTER(ARPlaneDetection, (@{
                                         @"none": @(ARPlaneDetectionNone),
                                         @"horizontal": @(ARPlaneDetectionHorizontal),
                                         @"vertical": @(ARPlaneDetectionVertical),
                                         }), ARPlaneDetectionNone, integerValue);
+#else
+RCT_ENUM_CONVERTER(ARPlaneDetection, (@{
+                                        @"none": @(ARPlaneDetectionNone),
+                                        @"horizontal": @(ARPlaneDetectionHorizontal),
+                                        }), ARPlaneDetectionNone, integerValue);
+#endif
 
 @end
 
 @implementation RCTConvert (ARHitTestResultType)
 
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 110300
 RCT_ENUM_CONVERTER(ARHitTestResultType, (@{
                                            @"featurePoint": @(ARHitTestResultTypeFeaturePoint),
                                            @"horizontalPlane": @(ARHitTestResultTypeEstimatedHorizontalPlane),
-                                           @"verticalPlane": @(ARHitTestResultTypeEstimatedVerticalPlane),
                                            @"existingPlane": @(ARHitTestResultTypeExistingPlane),
                                            @"existingPlaneUsingExtent": @(ARHitTestResultTypeExistingPlaneUsingExtent),
+                                           @"verticalPlane": @(ARHitTestResultTypeEstimatedVerticalPlane),
                                            @"existingPlaneUsingGeometry": @(ARHitTestResultTypeExistingPlaneUsingGeometry),
                                            }), ARHitTestResultTypeFeaturePoint, integerValue);
-
+#else
+RCT_ENUM_CONVERTER(ARHitTestResultType, (@{
+                                           @"featurePoint": @(ARHitTestResultTypeFeaturePoint),
+                                           @"horizontalPlane": @(ARHitTestResultTypeEstimatedHorizontalPlane),
+                                           @"existingPlane": @(ARHitTestResultTypeExistingPlane),
+                                           @"existingPlaneUsingExtent": @(ARHitTestResultTypeExistingPlaneUsingExtent),
+                                           }), ARHitTestResultTypeFeaturePoint, integerValue);
+#endif
 @end
 
 @implementation RCTConvert (ARWorldAlignment)
@@ -156,21 +172,24 @@ static GLfloat imagePlaneVerts[6] = { -2.0f, 0.0f, 0.0f, -2.0f, 2.0f, 2.0f };
         ARPlaneAnchor *planeAnchor = (ARPlaneAnchor *)anchor;
         NSDictionary *planeData = [EXGLARSessionManager nsDictionaryForPlaneAnchor:planeAnchor];
         [output addEntriesFromDictionary:planeData];
-      } else if ([anchor isKindOfClass:[ARFaceAnchor class]]) {
-        
-        ARFaceAnchor *faceAnchor = (ARFaceAnchor *)anchor;
-        NSDictionary *faceData = [EXGLARSessionManager
-                                  nsDictionaryForFaceAnchor:faceAnchor
-                                  props: anchorProps];
-        [output addEntriesFromDictionary:faceData];
       } else if (@available(iOS 11.3, *)) {
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 110300
         if ([anchor isKindOfClass:[ARImageAnchor class]]) {
           ARImageAnchor *imageAnchor = (ARImageAnchor *)anchor;
           NSDictionary *imageData = [EXGLARSessionManager nsDictionaryForImageAnchor:imageAnchor];
           [output addEntriesFromDictionary:imageData];
+        } else {
+          NSDictionary *data = [EXGLARSessionManager
+                                nsDictionaryForUnknownAnchor:anchor
+                                props: anchorProps];
+          [output addEntriesFromDictionary:data];
         }
 #endif
+      } else {
+        NSDictionary *data = [EXGLARSessionManager
+                              nsDictionaryForUnknownAnchor:anchor
+                              props: anchorProps];
+        [output addEntriesFromDictionary:data];
       }
       return output;
     }
@@ -202,42 +221,42 @@ static GLfloat imagePlaneVerts[6] = { -2.0f, 0.0f, 0.0f, -2.0f, 2.0f, 2.0f };
            };
 }
 
-+ (NSDictionary *)nsDictionaryForFaceAnchor:(ARFaceAnchor *)faceAnchor props:(NSDictionary *) props
++ (NSDictionary *)nsDictionaryForUnknownAnchor:(id)anchor props:(NSDictionary *) props
 {
   
-  NSMutableDictionary *face = [NSMutableDictionary new];
+  NSMutableDictionary *output = [NSMutableDictionary new];
   
   if (@available(iOS 11.0, *)) {
     
-    face[@"isTracked"] = [NSNumber numberWithBool:faceAnchor.isTracked];
+    output[@"isTracked"] = @([anchor isTracked]);
     
     if (props == nil) {
-      return face;
+      return output;
     }
     
     BOOL hasGeometry = [[props valueForKey:@"geometry"] boolValue];
     if (hasGeometry) {
       NSMutableArray *vertices = [NSMutableArray new];
-      
-      for (int i = 0; i < faceAnchor.geometry.vertexCount; i++) {
-        [vertices addObject:[EXGLARSessionManager nsDictionaryForVecFloat3:faceAnchor.geometry.vertices[i]]];
+      id geometry = [anchor geometry];
+      for (int i = 0; i < [geometry vertexCount]; i++) {
+        [vertices addObject:[EXGLARSessionManager nsDictionaryForVecFloat3:[geometry vertices][i]]];
       }
       
       NSMutableArray *textureCoordinates = [NSMutableArray new];
-      for (int i = 0; i < faceAnchor.geometry.triangleCount; i++) {
-        [textureCoordinates addObject:[EXGLARSessionManager nsDictionaryForVecFloat2:faceAnchor.geometry.textureCoordinates[i]]];
+      for (int i = 0; i < [geometry triangleCount]; i++) {
+        [textureCoordinates addObject:[EXGLARSessionManager nsDictionaryForVecFloat2:[geometry textureCoordinates][i]]];
       }
       
       NSMutableArray *triangleIndices = [NSMutableArray new];
-      for (int i = 0; i < faceAnchor.geometry.triangleCount * 3; i++) {
-        int16_t triangle = faceAnchor.geometry.triangleIndices[i];
+      for (int i = 0; i < [geometry triangleCount] * 3; i++) {
+        int16_t triangle = [geometry triangleIndices][i];
         [triangleIndices addObject: [NSNumber numberWithInt:triangle]];
       }
       
-      [face setObject:@{
-                        @"vertexCount": [NSNumber numberWithInteger:faceAnchor.geometry.vertexCount],
-                        @"textureCoordinateCount": [NSNumber numberWithInteger:faceAnchor.geometry.textureCoordinateCount],
-                        @"triangleCount": [NSNumber numberWithInteger:faceAnchor.geometry.triangleCount],
+      [output setObject:@{
+                        @"vertexCount": [NSNumber numberWithInteger:[geometry vertexCount]],
+                        @"textureCoordinateCount": [NSNumber numberWithInteger:[geometry textureCoordinateCount]],
+                        @"triangleCount": [NSNumber numberWithInteger:[geometry triangleCount]],
                         @"vertices": vertices,
                         @"textureCoordinates": textureCoordinates,
                         @"triangleIndices": triangleIndices,
@@ -252,21 +271,20 @@ static GLfloat imagePlaneVerts[6] = { -2.0f, 0.0f, 0.0f, -2.0f, 2.0f, 2.0f };
         if (attributes.count > 0) {
           NSMutableDictionary *selectiveBlendShapeValues = [NSMutableDictionary new];
           for (NSString *blendShapeLocation in attributes) {
-            [selectiveBlendShapeValues setObject:faceAnchor.blendShapes[blendShapeLocation] forKey:blendShapeLocation];
+            [selectiveBlendShapeValues setObject:[anchor blendShapes][blendShapeLocation] forKey:blendShapeLocation];
           }
           blendShapeValues = [NSDictionary dictionaryWithDictionary:selectiveBlendShapeValues];
         } else {
-          blendShapeValues = faceAnchor.blendShapes;
+          blendShapeValues = [anchor blendShapes];
         }
       } else {
-        blendShapeValues = faceAnchor.blendShapes;
+        blendShapeValues = [anchor blendShapes];
       }
-      [face setObject:blendShapeValues forKey:@"blendShapes"];
+      [output setObject:blendShapeValues forKey:@"blendShapes"];
     }
-    
   }
   
-  return face;
+  return output;
 }
 
 + (NSArray *)nsArrayForAnchors:(NSArray *)anchors props:(NSDictionary *)props
@@ -333,15 +351,17 @@ static GLfloat imagePlaneVerts[6] = { -2.0f, 0.0f, 0.0f, -2.0f, 2.0f, 2.0f };
         } else if ([configurationClassName isEqualToString:@"AROrientationTrackingConfiguration"]) {
           ARVideoFormat *videoFormat = AROrientationTrackingConfiguration.supportedVideoFormats[0];
           return videoFormat.imageResolution;
-        } else if ([configurationClassName isEqualToString:@"ARFaceTrackingConfiguration"]) {
-          ARVideoFormat *videoFormat = ARFaceTrackingConfiguration.supportedVideoFormats[0];
-          return videoFormat.imageResolution;
         }
+//        else if ([configurationClassName isEqualToString:@"ARFaceTrackingConfiguration"]) {
+//          ARVideoFormat *videoFormat = ARFaceTrackingConfiguration.supportedVideoFormats[0];
+//          return videoFormat.imageResolution;
+//        }
       } else {
         //TODO: Evan: Test if this is correct somehow
         if([[UIDevice currentDevice]userInterfaceIdiom]==UIUserInterfaceIdiomPhone) {
           int screenHeight = [[UIScreen mainScreen] nativeBounds].size.height;
-          if (screenHeight >= 2436 && ![self.configuration isKindOfClass:ARFaceTrackingConfiguration.class] ) {
+//          if (screenHeight >= 2436 && ![self.configuration isKindOfClass:ARFaceTrackingConfiguration.class] ) {
+          if (screenHeight >= 2436) {
             resolution = CGSizeMake(1920, 1080);
           }
         }
@@ -686,7 +706,7 @@ static GLfloat imagePlaneVerts[6] = { -2.0f, 0.0f, 0.0f, -2.0f, 2.0f, 2.0f };
     NSDictionary *userInfo = @{
                                NSLocalizedDescriptionKey: NSLocalizedString(@"Couldn't set ARConfiguration to: %@", configuration),
                                NSLocalizedFailureReasonErrorKey: NSLocalizedString(@"The supplied configuration is not a valid ARConfiguration class: %@", configuration),
-                               NSLocalizedRecoverySuggestionErrorKey: NSLocalizedString(@"Please supply one of the following: ARWorldTrackingConfiguration, AROrientationTrackingConfiguration, ARFaceTrackingConfiguration", nil)
+                               NSLocalizedRecoverySuggestionErrorKey: NSLocalizedString(@"Please supply one of the following: ARWorldTrackingConfiguration, AROrientationTrackingConfiguration", nil)
                                };
     
     return [NSError errorWithDomain:@"EXGLARConfiguration" code:0 userInfo: userInfo];
@@ -752,18 +772,18 @@ static GLfloat imagePlaneVerts[6] = { -2.0f, 0.0f, 0.0f, -2.0f, 2.0f, 2.0f };
     
     NSMutableDictionary *output = [NSMutableDictionary dictionaryWithDictionary:lightOutput];
     
-    if ([arLightEstimation isKindOfClass:[ARDirectionalLightEstimate class]]) {
-      ARDirectionalLightEstimate *arDirectionalLightEstimate = (ARDirectionalLightEstimate *)arLightEstimation;
-      NSDictionary *directionalOutput = @{
-                                          @"primaryLightDirection": @{
-                                              @"x": @(arDirectionalLightEstimate.primaryLightDirection[0]),
-                                              @"y": @(arDirectionalLightEstimate.primaryLightDirection[1]),
-                                              @"z": @(arDirectionalLightEstimate.primaryLightDirection[2]),
-                                              },
-                                          @"primaryLightIntensity": [NSNumber numberWithFloat:arDirectionalLightEstimate.primaryLightIntensity],
-                                          };
-      [output addEntriesFromDictionary:directionalOutput];
-    }
+//    if ([arLightEstimation isKindOfClass:[ARDirectionalLightEstimate class]]) {
+//      ARDirectionalLightEstimate *arDirectionalLightEstimate = (ARDirectionalLightEstimate *)arLightEstimation;
+//      NSDictionary *directionalOutput = @{
+//                                          @"primaryLightDirection": @{
+//                                              @"x": @(arDirectionalLightEstimate.primaryLightDirection[0]),
+//                                              @"y": @(arDirectionalLightEstimate.primaryLightDirection[1]),
+//                                              @"z": @(arDirectionalLightEstimate.primaryLightDirection[2]),
+//                                              },
+//                                          @"primaryLightIntensity": [NSNumber numberWithFloat:arDirectionalLightEstimate.primaryLightIntensity],
+//                                          };
+//      [output addEntriesFromDictionary:directionalOutput];
+//    }
     return output;
   } else {
     return nil;
@@ -797,63 +817,63 @@ static GLfloat imagePlaneVerts[6] = { -2.0f, 0.0f, 0.0f, -2.0f, 2.0f, 2.0f };
   }
 }
 
-- (NSString *)_depthDataQuality
-{
-  switch (self.session.currentFrame.capturedDepthData.depthDataQuality) {
-    case AVDepthDataQualityLow:
-      return @"AVDepthDataQualityLow";
-    case AVDepthDataQualityHigh:
-      return @"AVDepthDataQualityHigh";
-    default:
-      return @"";
-  }
-}
+//- (NSString *)_depthDataQuality
+//{
+//  switch (self.session.currentFrame.capturedDepthData.depthDataQuality) {
+//    case AVDepthDataQualityLow:
+//      return @"AVDepthDataQualityLow";
+//    case AVDepthDataQualityHigh:
+//      return @"AVDepthDataQualityHigh";
+//    default:
+//      return @"";
+//  }
+//}
 
-- (NSString *)_depthDataAccuracy
-{
-  switch (self.session.currentFrame.capturedDepthData.depthDataAccuracy) {
-    case AVDepthDataAccuracyAbsolute:
-      return @"AVDepthDataAccuracyAbsolute";
-    case AVDepthDataAccuracyRelative:
-      return @"AVDepthDataAccuracyRelative";
-    default:
-      return @"";
-  }
-}
+//- (NSString *)_depthDataAccuracy
+//{
+//  switch (self.session.currentFrame.capturedDepthData.depthDataAccuracy) {
+//    case AVDepthDataAccuracyAbsolute:
+//      return @"AVDepthDataAccuracyAbsolute";
+//    case AVDepthDataAccuracyRelative:
+//      return @"AVDepthDataAccuracyRelative";
+//    default:
+//      return @"";
+//  }
+//}
 
-- (NSDictionary *)_cameraCalibrationData
-{
-  if (@available(iOS 11.0, *)) {
-    AVCameraCalibrationData *cameraCalibrationData = self.session.currentFrame.capturedDepthData.cameraCalibrationData;
-    
-    if (cameraCalibrationData) {
-      return @{
-               @"intrinsicMatrix": [EXGLARSessionManager nsArrayForMatrix3x3:cameraCalibrationData.intrinsicMatrix],
-               @"intrinsicMatrixReferenceDimensions": [EXGLARSessionManager nsDictionaryForSize:cameraCalibrationData.intrinsicMatrixReferenceDimensions],
-               @"extrinsicMatrix": [EXGLARSessionManager nsArrayForMatrix4x3:cameraCalibrationData.extrinsicMatrix],
-               @"pixelSize": [NSNumber numberWithFloat:cameraCalibrationData.pixelSize],
-               @"lensDistortionLookupTable": cameraCalibrationData.lensDistortionLookupTable,
-               @"inverseLensDistortionLookupTable": cameraCalibrationData.inverseLensDistortionLookupTable,
-               @"lensDistortionCenter": [EXGLARSessionManager nsDictionaryForPoint:cameraCalibrationData.lensDistortionCenter]
-               };
-    }
-  }
-  
-  return @{};
-}
+//- (NSDictionary *)_cameraCalibrationData
+//{
+//  if (@available(iOS 11.0, *)) {
+//    AVCameraCalibrationData *cameraCalibrationData = self.session.currentFrame.capturedDepthData.cameraCalibrationData;
+//
+//    if (cameraCalibrationData) {
+//      return @{
+//               @"intrinsicMatrix": [EXGLARSessionManager nsArrayForMatrix3x3:cameraCalibrationData.intrinsicMatrix],
+//               @"intrinsicMatrixReferenceDimensions": [EXGLARSessionManager nsDictionaryForSize:cameraCalibrationData.intrinsicMatrixReferenceDimensions],
+//               @"extrinsicMatrix": [EXGLARSessionManager nsArrayForMatrix4x3:cameraCalibrationData.extrinsicMatrix],
+//               @"pixelSize": [NSNumber numberWithFloat:cameraCalibrationData.pixelSize],
+//               @"lensDistortionLookupTable": cameraCalibrationData.lensDistortionLookupTable,
+//               @"inverseLensDistortionLookupTable": cameraCalibrationData.inverseLensDistortionLookupTable,
+//               @"lensDistortionCenter": [EXGLARSessionManager nsDictionaryForPoint:cameraCalibrationData.lensDistortionCenter]
+//               };
+//    }
+//  }
+//
+//  return @{};
+//}
 
 - (NSDictionary *)_capturedDepthData
 {
   if (@available(iOS 11.0, *)) {
-    
-    AVDepthData *capturedDepthData = self.session.currentFrame.capturedDepthData;
-    return @{
-             @"timestamp": [NSNumber numberWithDouble: self.session.currentFrame.capturedDepthDataTimestamp],
-             @"depthDataQuality": [self _depthDataQuality],
-             @"depthDataAccuracy": [self _depthDataAccuracy],
-             @"depthDataFiltered": [NSNumber numberWithBool:capturedDepthData.depthDataFiltered],
-             @"cameraCalibrationData": [self _cameraCalibrationData]
-             };
+    return @{};
+//    AVDepthData *capturedDepthData = self.session.currentFrame.capturedDepthData;
+//    return @{
+//             @"timestamp": [NSNumber numberWithDouble: self.session.currentFrame.capturedDepthDataTimestamp],
+//             @"depthDataQuality": [self _depthDataQuality],
+//             @"depthDataAccuracy": [self _depthDataAccuracy],
+//             @"depthDataFiltered": @(capturedDepthData.depthDataFiltered),
+//             @"cameraCalibrationData": [self _cameraCalibrationData]
+//             };
   } else {
     return @{};
   }
