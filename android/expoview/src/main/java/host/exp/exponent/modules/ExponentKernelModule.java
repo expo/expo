@@ -30,6 +30,8 @@ import host.exp.exponent.kernel.ExponentKernelModuleInterface;
 import host.exp.exponent.kernel.ExponentKernelModuleProvider;
 import host.exp.exponent.kernel.ExponentUrls;
 import host.exp.exponent.kernel.Kernel;
+import host.exp.exponent.network.ExpoHttpCallback;
+import host.exp.exponent.network.ExpoResponse;
 import host.exp.exponent.network.ExponentNetwork;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import expolib_v1.okhttp3.Call;
@@ -181,14 +183,14 @@ public class ExponentKernelModule extends ReactContextBaseJavaModule implements 
   }
 
   private void preloadRequestAsync(final Request request, final Promise promise) {
-    mExponentNetwork.getClient().call(request, new Callback() {
+    mExponentNetwork.getClient().call(request, new ExpoHttpCallback() {
       @Override
-      public void onFailure(Call call, IOException e) {
+      public void onFailure(IOException e) {
         promise.reject(e);
       }
 
       @Override
-      public void onResponse(Call call, Response response) throws IOException {
+      public void onResponse(ExpoResponse response) throws IOException {
         ExponentNetwork.flushResponse(response);
         promise.resolve(true);
       }

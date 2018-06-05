@@ -25,6 +25,8 @@ import expolib_v1.okhttp3.Response;
 import host.exp.exponent.Constants;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.kernel.ExponentUrls;
+import host.exp.exponent.network.ExpoHttpCallback;
+import host.exp.exponent.network.ExpoResponse;
 import host.exp.exponent.network.ExponentNetwork;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponent.utils.AsyncCondition;
@@ -145,14 +147,14 @@ public class NotificationHelper {
             .post(body)
             .build();
 
-        exponentNetwork.getClient().call(request, new Callback() {
+        exponentNetwork.getClient().call(request, new ExpoHttpCallback() {
           @Override
-          public void onFailure(Call call, IOException e) {
+          public void onFailure(IOException e) {
             listener.onFailure(e);
           }
 
           @Override
-          public void onResponse(Call call, Response response) throws IOException {
+          public void onResponse(ExpoResponse response) throws IOException {
             if (!response.isSuccessful()) {
               listener.onFailure(new Exception("Couldn't get android push token for device"));
               return;

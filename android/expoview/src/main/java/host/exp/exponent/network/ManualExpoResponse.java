@@ -31,6 +31,11 @@ public class ManualExpoResponse implements ExpoResponse {
       // TODO
       return null;
     }
+
+    @Override
+    public byte[] bytes() throws IOException {
+      return new byte[0];
+    }
   }
 
   class ManualExpoHeaders implements ExpoHeaders {

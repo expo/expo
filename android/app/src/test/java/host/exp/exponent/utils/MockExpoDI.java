@@ -18,6 +18,7 @@ public class MockExpoDI {
 
   static final String ENHANCER = "$$EnhancerByMockitoWithCGLIB$$";
 
+  // Use this instead of .getClass because mockito wraps our classes
   static Class<? extends Object> typeOf(Object instance) {
     Class<? extends Object> type = instance.getClass();
     while(type.getSimpleName().contains(ENHANCER)) {
@@ -35,7 +36,6 @@ public class MockExpoDI {
 
   public static void addMock(Object... objects) {
     for (Object object : objects) {
-      // getSuperclass so that we don't get the mockito class
       sClassesToInjectedObjects.put(typeOf(object), object);
     }
   }
@@ -78,5 +78,4 @@ public class MockExpoDI {
       }
     }
   }
-
 }

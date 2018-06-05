@@ -73,14 +73,18 @@ public class NativeModuleDepsProvider {
   }
 
   private static NativeModuleDepsProvider sInstance = null;
+  private static boolean sUseTestInstance = false;
 
   public static void initialize(Application application) {
-    sInstance = new NativeModuleDepsProvider(application);
+    if (!sUseTestInstance) {
+      sInstance = new NativeModuleDepsProvider(application);
+    }
   }
 
   // Only for testing!
   public static void setTestInstance(NativeModuleDepsProvider instance) {
     sInstance = instance;
+    sUseTestInstance = true;
   }
 
   public static NativeModuleDepsProvider getInstance() {

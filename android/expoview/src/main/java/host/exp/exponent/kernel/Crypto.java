@@ -20,6 +20,8 @@ import javax.crypto.NoSuchPaddingException;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import host.exp.exponent.network.ExpoHttpCallback;
+import host.exp.exponent.network.ExpoResponse;
 import host.exp.exponent.network.ExponentNetwork;
 import host.exp.expoview.Exponent;
 import expolib_v1.okhttp3.CacheControl;
@@ -58,14 +60,14 @@ public class Crypto {
         .cacheControl(cacheControl)
         .build();
 
-    mExponentNetwork.getClient().call(request, new Callback() {
+    mExponentNetwork.getClient().call(request, new ExpoHttpCallback() {
       @Override
-      public void onFailure(Call call, IOException e) {
+      public void onFailure(IOException e) {
         listener.onError(e.toString(), true);
       }
 
       @Override
-      public void onResponse(Call call, Response response) throws IOException {
+      public void onResponse(ExpoResponse response) throws IOException {
         String errorMessage;
 
         try {

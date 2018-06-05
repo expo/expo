@@ -27,6 +27,11 @@ public class OkHttpV1ExpoResponse implements ExpoResponse {
     public InputStream byteStream() {
       return mResponseBody.byteStream();
     }
+
+    @Override
+    public byte[] bytes() throws IOException {
+      return mResponseBody.bytes();
+    }
   }
 
   public class OkHttpV1ExpoHeaders implements ExpoHeaders {

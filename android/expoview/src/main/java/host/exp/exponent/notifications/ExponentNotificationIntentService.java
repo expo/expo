@@ -22,6 +22,8 @@ import expolib_v1.okhttp3.Response;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.kernel.ExponentUrls;
+import host.exp.exponent.network.ExpoHttpCallback;
+import host.exp.exponent.network.ExpoResponse;
 import host.exp.exponent.network.ExponentNetwork;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponent.utils.AsyncCondition;
@@ -103,14 +105,14 @@ public abstract class ExponentNotificationIntentService extends IntentService {
             .post(body)
             .build();
 
-        mExponentNetwork.getClient().call(request, new Callback() {
+        mExponentNetwork.getClient().call(request, new ExpoHttpCallback() {
           @Override
-          public void onFailure(Call call, IOException e) {
+          public void onFailure(IOException e) {
             // Don't do anything here. We'll retry next time.
           }
 
           @Override
-          public void onResponse(Call call, Response response) throws IOException {
+          public void onResponse(ExpoResponse response) throws IOException {
             if (response.isSuccessful()) {
               mExponentSharedPreferences.setString(getSharedPrefsKey(), token);
             }
