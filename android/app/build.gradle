@@ -163,6 +163,9 @@ dependencies {
   androidTestCompile 'com.android.support.test.uiautomator:uiautomator-v18:2.1.1'
   androidTestCompile 'com.azimolabs.conditionwatcher:conditionwatcher:0.2'
 
+  testCompile 'junit:junit:4.12'
+  testCompile 'org.mockito:mockito-core:1.10.19'
+  testCompile 'org.robolectric:robolectric:3.8'
 
   /* UNCOMMENT WHEN DISTRIBUTING
   compile('host.exp.exponent:expoview:28.0.0@aar') {
