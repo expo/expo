@@ -183,3 +183,11 @@ This is the easiest way to set up deep links into your app because it requires a
 The main problem is that if the user does not have your app installed and follows a link to your app with its custom scheme, their operating system will indicate that the page couldn't be opened but not give much more information. This is not a great experience. There is no way to work around this in the browser.
 
 Additionally, many messaging apps do not autolink URLs with custom schemes -- for example, `exp://exp.host/@community/native-component-list` might just show up as plain text in your browser rather than as a link ([exp://exp.host/@community/native-component-list](exp://exp.host/@community/native-component-list)).
+
+An example of this is Gmail which strips the href property from links of most apps, a trick to use is to link to a regular https url instead of your app's custom scheme, this will open the user's web browser. Browsers do not usually strip the href property so you can host a file online that redirects the user to your app's custom schemes.
+
+So instead of linking to example://path/into/app, you could link to https://example.com/redirect-to-app.html and redirect-to-app.html would contain the following code:
+
+```javascript
+<script>window.location.replace("example://path/into/app");</script>
+```
