@@ -324,6 +324,12 @@ target 'Exponent' do
         config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '9.0'
       end
     end
+    if target.pod_name == "#{EXPO_CPP_HEADER_DIR}"
+      target.native_target.build_configurations.each do |config|
+        config.build_settings['CLANG_WARN_COMMA'] = false
+        config.build_settings['CLANG_WARN_UNGUARDED_AVAILABILITY'] = false
+      end
+    end
     # Can't specify this in the React podspec because we need
     # to use those podspecs for detached projects which don't reference ExponentCPP.
     if target.pod_name.start_with?('React')
