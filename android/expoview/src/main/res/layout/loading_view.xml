@@ -33,7 +33,7 @@
     android:maxHeight="200dp"
     android:maxWidth="200dp"
     android:scaleType="fitCenter"
-    android:src="@drawable/big_logo_dark_filled"
+    android:src="@drawable/big_logo_new_filled"
     android:visibility="gone"/>
 
   <LinearLayout
