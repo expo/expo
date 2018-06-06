@@ -31,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL isAnimatingMenu;
 @property (nonatomic, assign) BOOL isAnimatingAppTransition;
 @property (nonatomic, strong) EXButtonView *btnMenu;
-@property (nonatomic, strong) EXMenuWindow *menuWindow;
+@property (nonatomic, strong, nullable) EXMenuWindow *menuWindow;
 
 @end
 
@@ -281,8 +281,8 @@ NS_ASSUME_NONNULL_BEGIN
     _menuViewController.view.alpha = 0.0f;
     _menuViewController.view.transform = CGAffineTransformMakeScale(1.1f, 1.1f);
     [UIView animateWithDuration:0.1f animations:^{
-      _menuViewController.view.alpha = 1.0f;
-      _menuViewController.view.transform = CGAffineTransformIdentity;
+      self.menuViewController.view.alpha = 1.0f;
+      self.menuViewController.view.transform = CGAffineTransformIdentity;
     } completion:^(BOOL finished) {
       __strong typeof(weakSelf) strongSelf = weakSelf;
       if (strongSelf) {
@@ -296,7 +296,7 @@ NS_ASSUME_NONNULL_BEGIN
   } else {
     _menuViewController.view.alpha = 1.0f;
     [UIView animateWithDuration:0.1f animations:^{
-      _menuViewController.view.alpha = 0.0f;
+      self.menuViewController.view.alpha = 0.0f;
     } completion:^(BOOL finished) {
       __strong typeof(weakSelf) strongSelf = weakSelf;
       if (strongSelf) {
@@ -304,7 +304,7 @@ NS_ASSUME_NONNULL_BEGIN
         [strongSelf.menuViewController willMoveToParentViewController:nil];
         [strongSelf.menuViewController.view removeFromSuperview];
         [strongSelf.menuViewController didMoveToParentViewController:nil];
-        _menuWindow = nil;
+        strongSelf.menuWindow = nil;
         if (completion) {
           completion();
         }
@@ -332,7 +332,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
   BOOL shouldShowButton = [[EXKernelDevKeyCommands sharedInstance] isLegacyMenuButtonAvailable];
   dispatch_async(dispatch_get_main_queue(), ^{
-    _btnMenu.hidden = !shouldShowButton;
+    self.btnMenu.hidden = !shouldShowButton;
   });
 }
 

@@ -83,6 +83,9 @@ NSString * const EXBranchLinkOpenedNotification = @"RNBranchLinkOpenedNotificati
   EXKernelAppRecord *appForModule = [[EXKernel sharedInstance].appRegistry newestRecordWithExperienceId:branchModule.experienceId];
   if (appForModule && appForModule == [EXKernel sharedInstance].appRegistry.standaloneAppRecord) {
     _isInitialized = YES;
+    
+    // branch is going to retain the init callback
+    __block typeof(self) blockSelf = self;
 
     [[Branch getInstance] initSessionWithLaunchOptions:_launchOptions
                                           isReferrable:YES
@@ -94,8 +97,8 @@ NSString * const EXBranchLinkOpenedNotification = @"RNBranchLinkOpenedNotificati
       if (params) {
         result[EXBranchLinkOpenedNotificationParamsKey] = params;
       }
-      if (_url) {
-        result[EXBranchLinkOpenedNotificationUriKey] = _url;
+      if (blockSelf->_url) {
+        result[EXBranchLinkOpenedNotificationUriKey] = blockSelf->_url;
       }
 
       // We can't use RNBranch static methods directly because it uses event dispatch

@@ -43,14 +43,14 @@
 - (void)_onTouchBegin
 {
   [UIView animateWithDuration:0.08f delay:0.0f options:UIViewAnimationOptionBeginFromCurrentState animations:^{
-    _button.transform = CGAffineTransformMakeScale(0.95f, 0.95f);
+    self->_button.transform = CGAffineTransformMakeScale(0.95f, 0.95f);
   } completion:nil];
 }
 
 - (void)_onTouchEnd
 {
   [UIView animateWithDuration:0.08f delay:0.0f options:UIViewAnimationOptionBeginFromCurrentState animations:^{
-    _button.transform = CGAffineTransformIdentity;
+    self->_button.transform = CGAffineTransformIdentity;
   } completion:nil];
 }
 

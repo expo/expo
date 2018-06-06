@@ -141,7 +141,7 @@ RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
   self.picker.delegate = self;
 
   dispatch_async(dispatch_get_main_queue(), ^{
-    [_bridge.scopedModules.util.currentViewController presentViewController:self.picker animated:YES completion:nil];
+    [self.bridge.scopedModules.util.currentViewController presentViewController:self.picker animated:YES completion:nil];
   });
 }
 

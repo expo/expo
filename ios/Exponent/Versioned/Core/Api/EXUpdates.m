@@ -59,7 +59,7 @@ RCT_EXPORT_METHOD(checkForUpdateAsync:(RCTPromiseResolveBlock)resolve
     return;
   }
   [_kernelUpdatesServiceDelegate updatesModule:self didRequestManifestWithCacheBehavior:EXCachedResourceNoCache success:^(NSDictionary * _Nonnull manifest) {
-    NSString *currentRevisionId = _manifest[@"revisionId"];
+    NSString *currentRevisionId = self->_manifest[@"revisionId"];
     NSString *newRevisionId = manifest[@"revisionId"];
     if (!currentRevisionId || !newRevisionId) {
       reject(@"E_CHECK_UPDATE_FAILED", @"Revision ID not found in manifest", nil);
@@ -87,7 +87,7 @@ RCT_EXPORT_METHOD(fetchUpdateAsync:(RCTPromiseResolveBlock)resolve
     return;
   }
   [_kernelUpdatesServiceDelegate updatesModule:self didRequestManifestWithCacheBehavior:EXCachedResourceWriteToCache success:^(NSDictionary * _Nonnull manifest) {
-    NSString *currentRevisionId = _manifest[@"revisionId"];
+    NSString *currentRevisionId = self->_manifest[@"revisionId"];
     NSString *newRevisionId = manifest[@"revisionId"];
     if (currentRevisionId && newRevisionId && [currentRevisionId isEqualToString:newRevisionId]) {
       [self sendEventWithBody:@{ @"type": EXUpdatesNotAvailableEventType }];
@@ -95,7 +95,7 @@ RCT_EXPORT_METHOD(fetchUpdateAsync:(RCTPromiseResolveBlock)resolve
       return;
     }
     
-    if ([_manifest[@"bundleUrl"] isEqualToString:manifest[@"bundleUrl"]]) {
+    if ([self->_manifest[@"bundleUrl"] isEqualToString:manifest[@"bundleUrl"]]) {
       [self sendEventWithBody:@{ @"type": EXUpdatesNotAvailableEventType }];
       resolve(nil);
       return;
@@ -122,11 +122,11 @@ RCT_EXPORT_METHOD(fetchUpdateAsync:(RCTPromiseResolveBlock)resolve
     };
 
     [self sendEventWithBody:@{ @"type": EXUpdatesDownloadStartEventType }];
-    [_kernelUpdatesServiceDelegate updatesModule:self
-                    didRequestBundleWithManifest:manifest
-                                        progress:progressBlock
-                                         success:successBlock
-                                         failure:errorBlock];
+    [self->_kernelUpdatesServiceDelegate updatesModule:self
+                          didRequestBundleWithManifest:manifest
+                                              progress:progressBlock
+                                               success:successBlock
+                                               failure:errorBlock];
   } failure:^(NSError * _Nonnull error) {
     [self sendEventWithBody:@{
                                @"type": EXUpdatesErrorEventType,

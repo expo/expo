@@ -87,9 +87,9 @@
   NSDictionary *menuProps = @{ @"task": task, @"uuid": [[NSUUID UUID] UUIDString] };
   [EXUtil performSynchronouslyOnMainThread:^{
     [self _forceRootViewToRenderHack];
-    _reactRootView.frame = self.view.bounds;
-    _reactRootView.sizeFlexibility = RCTRootViewSizeFlexibilityWidthAndHeight;
-    _reactRootView.appProperties = menuProps;
+    self->_reactRootView.frame = self.view.bounds;
+    self->_reactRootView.sizeFlexibility = RCTRootViewSizeFlexibilityWidthAndHeight;
+    self->_reactRootView.appProperties = menuProps;
   }];
 }
 
