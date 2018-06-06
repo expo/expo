@@ -94,7 +94,7 @@ The following is a list of properties that are available for you under the `"exp
 
 - `loading`
 
-   DEPREACTED: Use `splash` instead. Configuration for the loading screen that users see when opening your app, while fetching & caching bundle and assets.
+   DEPRECATED: Use `splash` instead. Configuration for the loading screen that users see when opening your app, while fetching & caching bundle and assets.
 
    - `icon`
 

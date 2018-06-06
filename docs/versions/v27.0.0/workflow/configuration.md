@@ -71,7 +71,7 @@ Local path or remote url to an image to use for your app's icon. We recommend th
 
 ## "loading"
 
-DEPREACTED: Use `splash` instead.
+DEPRECATED: Use `splash` instead.
 
 ## "appKey"
 
