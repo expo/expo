@@ -166,7 +166,7 @@ public class LoadingView extends RelativeLayout {
       String exponentLogoColor = loadingInfo.optString(ExponentManifest.MANIFEST_LOADING_EXPONENT_ICON_COLOR, null);
       if (exponentLogoColor != null) {
         if (exponentLogoColor.equals("white")) {
-          mImageView.setImageResource(R.drawable.big_logo_filled);
+          mImageView.setImageResource(R.drawable.big_logo_new_filled);
         } else if (exponentLogoColor.equals("navy") || exponentLogoColor.equals("blue")) {
           mImageView.setImageResource(R.drawable.big_logo_dark_filled);
         }
