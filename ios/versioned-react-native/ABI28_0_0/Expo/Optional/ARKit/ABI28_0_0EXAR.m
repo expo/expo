@@ -67,7 +67,7 @@ ABI28_0_0RCT_EXPORT_MODULE(ExponentAR);
 - (NSDictionary<NSString *, NSString *> *)constantsToExport
 {
   NSDictionary *constants = @{
-                              @"isSupported": [ARSession class] ? @(YES) : @(NO),
+                              @"isSupported": @(NO),
                               @"frameDidUpdate": @"FRAME_DID_UPDATE",
                               @"anchorsDidUpdate": @"ANCHORS_DID_UPDATE",
                               @"cameraDidChangeTrackingState": @"CAMERA_DID_CHANGE_TRACKING_STATE",
@@ -80,8 +80,10 @@ ABI28_0_0RCT_EXPORT_MODULE(ExponentAR);
   
   if (@available(iOS 11.0, *)) {
     [output addEntriesFromDictionary:@{
+                                       @"isSupported": [ARSession class] ? @(YES) : @(NO),
                                        @"ARKitVersion": @"1.0",
-                                       @"ARFaceTrackingConfiguration": [ARFaceTrackingConfiguration isSupported] ? @(YES) : @(NO),
+                                       @"ARFaceTrackingConfiguration": @(NO),
+                                       //[ARFaceTrackingConfiguration isSupported] ? @(YES) : @(NO),
                                        @"AROrientationTrackingConfiguration": [AROrientationTrackingConfiguration isSupported] ? @(YES) : @(NO),
                                        @"ARWorldTrackingConfiguration": [ARWorldTrackingConfiguration isSupported] ? @(YES) : @(NO),
                                        }];
@@ -90,7 +92,7 @@ ABI28_0_0RCT_EXPORT_MODULE(ExponentAR);
   if (@available(iOS 11.3, *)) {
     [output addEntriesFromDictionary:@{
                                        @"ARKitVersion": @"1.5",
-                                       @"FaceTrackingVideoFormats": [ABI28_0_0EXAR serializeARVideoFormats:[ARFaceTrackingConfiguration supportedVideoFormats]],
+//                                       @"FaceTrackingVideoFormats": [ABI28_0_0EXAR serializeARVideoFormats:[ARFaceTrackingConfiguration supportedVideoFormats]],
                                        @"WorldTrackingVideoFormats": [ABI28_0_0EXAR serializeARVideoFormats:[ARWorldTrackingConfiguration supportedVideoFormats]],
                                        @"OrientationTrackingVideoFormats": [ABI28_0_0EXAR serializeARVideoFormats:[AROrientationTrackingConfiguration supportedVideoFormats]],
                                        }];
@@ -211,16 +213,18 @@ ABI28_0_0RCT_REMAP_BLOCKING_SYNCHRONOUS_METHOD(getAutoFocusEnabled, NSNumber *, 
   return @([_arSessionManager autoFocusEnabled]);
 }
 
-ABI28_0_0RCT_REMAP_METHOD(setPlaneDetection,
-                 planeDetection:(ARPlaneDetection)planeDetection)
-{
-  [_arSessionManager setPlaneDetection:planeDetection];
-}
-
 ABI28_0_0RCT_REMAP_BLOCKING_SYNCHRONOUS_METHOD(getPlaneDetection, NSString *, getPlaneDetection)
 {
   NSArray *items = @[@"none", @"horizontal", @"vertical"];
   return [items objectAtIndex:[_arSessionManager planeDetection]];
+}
+
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000
+
+ABI28_0_0RCT_REMAP_METHOD(setPlaneDetection,
+                 planeDetection:(ARPlaneDetection)planeDetection)
+{
+  [_arSessionManager setPlaneDetection:planeDetection];
 }
 
 ABI28_0_0RCT_REMAP_METHOD(setWorldAlignment,
@@ -232,7 +236,38 @@ ABI28_0_0RCT_REMAP_METHOD(setWorldAlignment,
   [_arSessionManager setWorldAlignment:worldAlignment];
 }
 
-#define kWorldAlignmentArray @"gravity", @"gravityAndHeading", @"alignmentCamera", nil
+ABI28_0_0RCT_REMAP_BLOCKING_SYNCHRONOUS_METHOD(performHitTest,
+                                      nullable NSDictionary *,
+                                      performHitTestWithPoint:(CGPoint)point
+                                      types:(ARHitTestResultType)types)
+{
+  if (!_arSessionManager) {
+    return nil;
+  }
+  return [_arSessionManager performHitTest:point types:types];
+}
+
+#else
+
+ABI28_0_0RCT_REMAP_BLOCKING_SYNCHRONOUS_METHOD(performHitTest,
+                                      nullable NSDictionary *,
+                                      performHitTestWithPoint:(CGPoint)point
+                                      types:(NSString *)types)
+{
+  return nil;
+}
+
+ABI28_0_0RCT_REMAP_METHOD(setPlaneDetection,
+                 planeDetection:(NSString *)planeDetection)
+{
+}
+
+ABI28_0_0RCT_REMAP_METHOD(setWorldAlignment,
+                 worldAlignment:(NSString *)worldAlignment)
+{
+}
+#endif
+
 ABI28_0_0RCT_REMAP_BLOCKING_SYNCHRONOUS_METHOD(getWorldAlignment, NSString *, getWorldAlignment)
 {
   NSArray *items = @[@"gravity", @"gravityAndHeading", @"alignmentCamera"];
@@ -347,19 +382,6 @@ ABI28_0_0RCT_REMAP_METHOD(setDetectionImagesAsync,
     reject(@"E_INVALID_VERSION", @"Detection images are only available on iOS 11.3+ devices", nil);
   }
 }
-
-ABI28_0_0RCT_REMAP_BLOCKING_SYNCHRONOUS_METHOD(performHitTest,
-                                      nullable NSDictionary *,
-                                      performHitTestWithPoint:(CGPoint)point
-                                      types:(ARHitTestResultType)types)
-{
-  if (!_arSessionManager) {
-    return nil;
-  }
-  return [_arSessionManager performHitTest:point types:types];
-}
-
-
 
 
 @end
