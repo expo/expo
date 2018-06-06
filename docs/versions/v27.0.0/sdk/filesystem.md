@@ -310,7 +310,7 @@ try {
 
 //To resume a download across app restarts, assuming the the DownloadResumable.savable() object was stored:
 const downloadSnapshotJson = await AsyncStorage.getItem('pausedDownload');
-const downloadSnapshot = JSON.parse(downloadJson);
+const downloadSnapshot = JSON.parse(downloadSnapshotJson);
 const downloadResumable = new FileSystem.DownloadResumable(
   downloadSnapshot.url,
   downloadSnapshot.fileUri,
