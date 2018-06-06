@@ -333,7 +333,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
     // Apply seek if necessary.
     if (mustSeek) {
       [_player seekToTime:newPosition toleranceBefore:toleranceBefore toleranceAfter:toleranceAfter completionHandler:^(BOOL seekSucceeded) {
-        dispatch_async(_exAV.methodQueue, ^{
+        dispatch_async(self->_exAV.methodQueue, ^{
           applyPostSeekParameters(seekSucceeded);
         });
       }];

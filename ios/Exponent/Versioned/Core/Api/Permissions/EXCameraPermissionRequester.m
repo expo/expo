@@ -48,8 +48,8 @@
   [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo completionHandler:^(BOOL granted) {
     NSDictionary *result = [[self class] permissions];
     resolve(result);
-    if (_delegate) {
-      [_delegate permissionsRequester:self didFinishWithResult:result];
+    if (self.delegate) {
+      [self.delegate permissionsRequester:self didFinishWithResult:result];
     }
   }];
 }

@@ -70,12 +70,12 @@
 {
   if (_glQueue) {
     dispatch_async(_glQueue, ^{
-      [self runInEAGLContext:_eaglCtx callback:callback];
+      [self runInEAGLContext:self->_eaglCtx callback:callback];
     });
   }
 }
 
-- (void)initialize:(void(^)(BOOL))callback
+- (void)initialize:(void(^ _Nullable)(BOOL))callback
 {
   RCTBridge *bridge = _manager.bridge;
 
@@ -100,10 +100,10 @@
         return;
       }
 
-      _contextId = UEXGLContextCreate(jsContextRef);
-      [_manager saveContext:self];
+      self->_contextId = UEXGLContextCreate(jsContextRef);
+      [self->_manager saveContext:self];
 
-      UEXGLContextSetFlushMethodObjc(_contextId, ^{
+      UEXGLContextSetFlushMethodObjc(self->_contextId, ^{
         [self flush];
       });
 
@@ -121,7 +121,7 @@
 - (void)flush
 {
   [self runAsync:^{
-    UEXGLContextFlush(_contextId);
+    UEXGLContextFlush(self->_contextId);
 
     if ([self.delegate respondsToSelector:@selector(glContextFlushed:)]) {
       [self.delegate glContextFlushed:self];
@@ -137,13 +137,13 @@
     }
 
     // Flush all the stuff
-    UEXGLContextFlush(_contextId);
+    UEXGLContextFlush(self->_contextId);
 
     // Destroy JS binding
-    UEXGLContextDestroy(_contextId);
+    UEXGLContextDestroy(self->_contextId);
 
     // Remove from dictionary of contexts
-    [_manager deleteContextWithId:@(_contextId)];
+    [self->_manager deleteContextWithId:@(self->_contextId)];
   }];
 }
 

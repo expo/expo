@@ -66,7 +66,7 @@ RCT_REMAP_METHOD(logInWithReadPermissionsAsync,
     }
     
     if (loginMgr.loginBehavior != FBSDKLoginBehaviorWeb) {
-      if ([_bridge.scopedModules.constants.appOwnership isEqualToString:@"expo"]) {
+      if ([self.bridge.scopedModules.constants.appOwnership isEqualToString:@"expo"]) {
         // expo client: only web
         NSString *message = @"Only `web` behavior is supported in Expo Client.";
         reject(@"E_BEHAVIOR_NOT_PERMITTED", message, RCTErrorWithMessage(message));

@@ -71,7 +71,7 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
     _faceDetecting = newFaceDetecting;
     [self _runBlockIfQueueIsPresent:^{
       if ([self isDetectingFaces]) {
-        if (_dataOutput) {
+        if (self->_dataOutput) {
           [self _setConnectionsEnabled:true];
         } else {
           [self tryEnablingFaceDetection];

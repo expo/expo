@@ -473,7 +473,7 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
       self.stillImageOutput = stillImageOutput;
     }
     
-    [_faceDetectorManager maybeStartFaceDetectionOnSession:_session withPreviewLayer:_previewLayer];
+    [self->_faceDetectorManager maybeStartFaceDetectionOnSession:_session withPreviewLayer:_previewLayer];
     [self setupOrDisableBarcodeScanner];
     
     __weak EXCamera *weakSelf = self;
@@ -499,7 +499,7 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
   return;
 #endif
   dispatch_async(self.sessionQueue, ^{
-    [_faceDetectorManager stopFaceDetection];
+    [self->_faceDetectorManager stopFaceDetection];
     [self.previewLayer removeFromSuperlayer];
     [self.session commitConfiguration];
     [self.session stopRunning];

@@ -192,11 +192,11 @@
     return;
   }
   dispatch_async(dispatch_get_main_queue(), ^{
-    if (_loadingIndicatorFromNib) {
-      [_loadingIndicatorFromNib stopAnimating];
+    if (self->_loadingIndicatorFromNib) {
+      [self->_loadingIndicatorFromNib stopAnimating];
     }
-    if (_vCancel) {
-      _vCancel.hidden = YES;
+    if (self->_vCancel) {
+      self->_vCancel.hidden = YES;
     }
   });
 }

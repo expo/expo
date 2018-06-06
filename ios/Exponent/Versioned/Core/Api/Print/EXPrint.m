@@ -106,7 +106,7 @@ RCT_EXPORT_METHOD(print:(NSDictionary *)options
       // I guess it's also safe to fall back to this not working solution since it might be fixed in the future.
       
       printerURL = [RCTConvert NSString:options[@"printerUrl"]];
-      printer = [_printers objectForKey:printerURL];
+      printer = [self.printers objectForKey:printerURL];
       
       if (printer == nil) {
         printer = [UIPrinter printerWithURL:[NSURL URLWithString:printerURL]];

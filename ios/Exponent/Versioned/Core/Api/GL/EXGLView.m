@@ -135,7 +135,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
 - (void)runOnUIThread:(void(^)(void))callback
 {
   dispatch_sync(dispatch_get_main_queue(), ^{
-    [_glContext runInEAGLContext:_uiEaglCtx callback:callback];
+    [self->_glContext runInEAGLContext:self->_uiEaglCtx callback:callback];
   });
 }
 
@@ -182,7 +182,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
     GLint prevRenderbuffer;
     glGetIntegerv(GL_FRAMEBUFFER_BINDING, &prevFramebuffer);
     glGetIntegerv(GL_RENDERBUFFER_BINDING, &prevRenderbuffer);
-    if (prevFramebuffer == _viewFramebuffer) {
+    if (prevFramebuffer == self->_viewFramebuffer) {
       prevFramebuffer = 0;
     }
     
@@ -190,46 +190,46 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
     [self deleteViewBuffers];
     
     // Set up view framebuffer
-    glGenFramebuffers(1, &_viewFramebuffer);
-    glBindFramebuffer(GL_FRAMEBUFFER, _viewFramebuffer);
+    glGenFramebuffers(1, &(self->_viewFramebuffer));
+    glBindFramebuffer(GL_FRAMEBUFFER, self->_viewFramebuffer);
     
     // Set up new color renderbuffer
-    glGenRenderbuffers(1, &_viewColorbuffer);
-    glBindRenderbuffer(GL_RENDERBUFFER, _viewColorbuffer);
+    glGenRenderbuffers(1, &(self->_viewColorbuffer));
+    glBindRenderbuffer(GL_RENDERBUFFER, self->_viewColorbuffer);
     
     [self runOnUIThread:^{
-      glBindRenderbuffer(GL_RENDERBUFFER, _viewColorbuffer);
-      [_uiEaglCtx renderbufferStorage:GL_RENDERBUFFER fromDrawable:(CAEAGLLayer *)self.layer];
+      glBindRenderbuffer(GL_RENDERBUFFER, self->_viewColorbuffer);
+      [self->_uiEaglCtx renderbufferStorage:GL_RENDERBUFFER fromDrawable:(CAEAGLLayer *)self.layer];
     }];
     
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                              GL_RENDERBUFFER, _viewColorbuffer);
-    glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_WIDTH, &_layerWidth);
-    glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_HEIGHT, &_layerHeight);
+                              GL_RENDERBUFFER, self->_viewColorbuffer);
+    glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_WIDTH, &(self->_layerWidth));
+    glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_HEIGHT, &(self->_layerHeight));
     
     // Set up MSAA framebuffer/renderbuffer
-    glGenFramebuffers(1, &_msaaFramebuffer);
-    glGenRenderbuffers(1, &_msaaRenderbuffer);
-    glBindFramebuffer(GL_FRAMEBUFFER, _msaaFramebuffer);
-    glBindRenderbuffer(GL_RENDERBUFFER, _msaaRenderbuffer);
+    glGenFramebuffers(1, &(self->_msaaFramebuffer));
+    glGenRenderbuffers(1, &(self->_msaaRenderbuffer));
+    glBindFramebuffer(GL_FRAMEBUFFER, self->_msaaFramebuffer);
+    glBindRenderbuffer(GL_RENDERBUFFER, self->_msaaRenderbuffer);
     glRenderbufferStorageMultisample(GL_RENDERBUFFER, self.msaaSamples.intValue, GL_RGBA8,
-                                     _layerWidth, _layerHeight);
+                                     self->_layerWidth, self->_layerHeight);
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                              GL_RENDERBUFFER, _msaaRenderbuffer);
+                              GL_RENDERBUFFER, self->_msaaRenderbuffer);
 
-    if (_glContext.isInitialized) {
-      UEXGLContextSetDefaultFramebuffer(_glContext.contextId, _msaaFramebuffer);
+    if (self->_glContext.isInitialized) {
+      UEXGLContextSetDefaultFramebuffer(self->_glContext.contextId, self->_msaaFramebuffer);
     }
     
     // Set up new depth+stencil renderbuffer
-    glGenRenderbuffers(1, &_viewDepthStencilbuffer);
-    glBindRenderbuffer(GL_RENDERBUFFER, _viewDepthStencilbuffer);
+    glGenRenderbuffers(1, &(self->_viewDepthStencilbuffer));
+    glBindRenderbuffer(GL_RENDERBUFFER, self->_viewDepthStencilbuffer);
     glRenderbufferStorageMultisample(GL_RENDERBUFFER, self.msaaSamples.intValue, GL_DEPTH24_STENCIL8,
-                                     _layerWidth, _layerHeight);
+                                     self->_layerWidth, self->_layerHeight);
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
-                              GL_RENDERBUFFER, _viewDepthStencilbuffer);
+                              GL_RENDERBUFFER, self->_viewDepthStencilbuffer);
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT,
-                              GL_RENDERBUFFER, _viewDepthStencilbuffer);
+                              GL_RENDERBUFFER, self->_viewDepthStencilbuffer);
     
     // Resize viewport
     glViewport(0, 0, width, height);
@@ -273,8 +273,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
     if (_viewColorbuffer != 0 && !_renderbufferPresented) {
       // bind renderbuffer and present it on the layer
       [_glContext runInEAGLContext:_uiEaglCtx callback:^{
-        glBindRenderbuffer(GL_RENDERBUFFER, _viewColorbuffer);
-        [_uiEaglCtx presentRenderbuffer:GL_RENDERBUFFER];
+        glBindRenderbuffer(GL_RENDERBUFFER, self->_viewColorbuffer);
+        [self->_uiEaglCtx presentRenderbuffer:GL_RENDERBUFFER];
       }];
       
       // mark renderbuffer as presented

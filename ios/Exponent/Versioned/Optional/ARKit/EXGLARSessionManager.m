@@ -941,15 +941,15 @@ static GLfloat imagePlaneVerts[6] = { -2.0f, 0.0f, 0.0f, -2.0f, 2.0f, 2.0f };
     glGetIntegerv(GL_CURRENT_PROGRAM, &prevProgram);
     glGetIntegerv(GL_VIEWPORT, prevViewport);
     
-    glBindFramebuffer(GL_FRAMEBUFFER, _arCamOutputFramebuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, self->_arCamOutputFramebuffer);
     
     
     glViewport(0, 0, width, height);
     
-    glUseProgram(_arCamProgram);
-    glEnableVertexAttribArray(_arCamPositionAttrib);
-    glBindBuffer(GL_ARRAY_BUFFER, _arCamBuffer);
-    glVertexAttribPointer(_arCamPositionAttrib, 2, GL_FLOAT, GL_FALSE, 0, 0);
+    glUseProgram(self->_arCamProgram);
+    glEnableVertexAttribArray(self->_arCamPositionAttrib);
+    glBindBuffer(GL_ARRAY_BUFFER, self->_arCamBuffer);
+    glVertexAttribPointer(self->_arCamPositionAttrib, 2, GL_FLOAT, GL_FALSE, 0, 0);
     
     if (CVPixelBufferGetPlaneCount(camPixelBuffer) >= 2 && CVPixelBufferGetPixelFormatType(camPixelBuffer) == kCVPixelFormatType_420YpCbCr8BiPlanarFullRange) {
       [self _renderCameraImage:camPixelBuffer width:width height:height];
@@ -958,7 +958,7 @@ static GLfloat imagePlaneVerts[6] = { -2.0f, 0.0f, 0.0f, -2.0f, 2.0f, 2.0f };
     glDrawArrays(GL_TRIANGLES, 0, 3);
     
     // Flush texture cache on frame end
-    CVOpenGLESTextureCacheFlush(_arCamCache, 0);
+    CVOpenGLESTextureCacheFlush(self->_arCamCache, 0);
     
     // Restore previous GL state
     glBindBuffer(GL_ARRAY_BUFFER, prevBuffer);
