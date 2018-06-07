@@ -149,4 +149,14 @@ public class Constants {
   public static boolean isDetached() {
     return IS_DETACHED;
   }
+
+  private static boolean sIsTest = false;
+
+  public static void setInTest() {
+    sIsTest = true;
+  }
+
+  public static boolean isTest() {
+    return sIsTest;
+  }
 }

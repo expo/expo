@@ -60,6 +60,7 @@ import expolib_v1.okhttp3.Response;
 import host.exp.exponent.ABIVersion;
 import host.exp.exponent.ActivityResultListener;
 import host.exp.exponent.Constants;
+import host.exp.exponent.ExpoHandler;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.RNObject;
 import host.exp.exponent.analytics.Analytics;
@@ -109,6 +110,9 @@ public class Exponent {
   @Inject
   ExponentSharedPreferences mExponentSharedPreferences;
 
+  @Inject
+  ExpoHandler mExpoHandler;
+
   public static void initialize(Context context, Application application) {
     if (sInstance == null) {
       new Exponent(context, application);
@@ -155,19 +159,14 @@ public class Exponent {
     // Fixes Android memory leak
     try {
       UserManager.class.getMethod("get", Context.class).invoke(null, context);
-    } catch (IllegalAccessException e) {
-      e.printStackTrace();
-    } catch (InvocationTargetException e) {
-      e.printStackTrace();
-    } catch (NoSuchMethodException e) {
-      e.printStackTrace();
+    } catch (Throwable e) {
+      EXL.testError(e);
     }
 
     try {
       Fresco.initialize(context);
     } catch (RuntimeException e) {
-      // For tests
-      e.printStackTrace();
+      EXL.testError(e);
     }
 
 
@@ -177,8 +176,7 @@ public class Exponent {
     try {
       Amplitude.getInstance().initialize(context, ExpoViewBuildConfig.DEBUG ? ExponentKeys.AMPLITUDE_DEV_KEY : ExponentKeys.AMPLITUDE_KEY);
     } catch (RuntimeException e) {
-      // For tests
-      e.printStackTrace();
+      EXL.testError(e);
     }
 
     if (application != null) {
@@ -206,8 +204,7 @@ public class Exponent {
     try {
       ImageLoader.getInstance().init(new ImageLoaderConfiguration.Builder(context).build());
     } catch (RuntimeException e) {
-      // For tests
-      e.printStackTrace();
+      EXL.testError(e);
     }
 
     if (!ExpoViewBuildConfig.DEBUG) {
@@ -471,7 +468,7 @@ public class Exponent {
               printSourceFile(sourceFile.getAbsolutePath());
             }
 
-            new Handler(mContext.getMainLooper()).post(new Runnable() {
+            mExpoHandler.post(new Runnable() {
               @Override
               public void run() {
                 bundleListener.onBundleLoaded(sourceFile.getAbsolutePath());

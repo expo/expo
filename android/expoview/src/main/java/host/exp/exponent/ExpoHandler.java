@@ -10,6 +10,10 @@ public class ExpoHandler {
     mHandler = handler;
   }
 
+  public boolean post(Runnable r) {
+    return mHandler.post(r);
+  }
+
   public boolean postDelayed(Runnable r, long delayMillis) {
     return mHandler.postDelayed(r, delayMillis);
   }

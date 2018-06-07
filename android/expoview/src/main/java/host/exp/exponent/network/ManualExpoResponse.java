@@ -1,7 +1,9 @@
 package host.exp.exponent.network;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,13 +30,12 @@ public class ManualExpoResponse implements ExpoResponse {
 
     @Override
     public InputStream byteStream() {
-      // TODO
-      return null;
+      return new ByteArrayInputStream(mString.getBytes());
     }
 
     @Override
     public byte[] bytes() throws IOException {
-      return new byte[0];
+      return mString.getBytes();
     }
   }
 
