@@ -206,107 +206,107 @@ task generateDynamicMacros(type: Exec) {
 preBuild.dependsOn generateDynamicMacros
 
 dependencies {
-  compile fileTree(dir: 'libs', include: ['*.jar'])
-  compile 'com.android.support:multidex:1.0.1'
+  api fileTree(dir: 'libs', include: ['*.jar'])
+  api 'com.android.support:multidex:1.0.1'
 
   // Current react native
-  compile project(':ReactAndroid')
+  api project(':ReactAndroid')
   /* UNCOMMENT WHEN DISTRIBUTING
-  compile 'com.facebook.react:react-native:28.0.0'
+  api 'com.facebook.react:react-native:28.0.0'
   END UNCOMMENT WHEN DISTRIBUTING */
 
   // Versioned react native
   // THIS COMMENT IS USED BY android-build-aar.sh DO NOT MODIFY
-  compile 'host.exp:reactandroid-abi28_0_0:1.0.0'
-  compile 'host.exp:reactandroid-abi27_0_0:1.0.0'
-  compile 'host.exp:reactandroid-abi26_0_0:1.0.0'
-  compile 'host.exp:reactandroid-abi25_0_0:1.0.0'
-  compile 'host.exp:reactandroid-abi24_0_0:1.0.0'
-  compile 'host.exp:reactandroid-abi23:1.0.0'
-  compile 'host.exp:reactandroid-abi22:1.0.0'
+  api 'host.exp:reactandroid-abi28_0_0:1.0.0'
+  api 'host.exp:reactandroid-abi27_0_0:1.0.0'
+  api 'host.exp:reactandroid-abi26_0_0:1.0.0'
+  api 'host.exp:reactandroid-abi25_0_0:1.0.0'
+  api 'host.exp:reactandroid-abi24_0_0:1.0.0'
+  api 'host.exp:reactandroid-abi23:1.0.0'
+  api 'host.exp:reactandroid-abi22:1.0.0'
 
   // React native dependencies
   // We use a different version of appcompat
-  compile 'com.android.support:recyclerview-v7:27.1.1'
-  compile 'com.facebook.fbui.textlayoutbuilder:textlayoutbuilder:1.0.0'
-  compile 'com.facebook.fresco:fresco:1.0.1'
-  compile 'com.facebook.fresco:animated-gif:1.0.1'
-  compile 'com.facebook.fresco:animated-webp:1.0.1'
-  compile 'com.facebook.fresco:webpsupport:1.0.1'
-  compile 'com.facebook.fresco:webpsupport:1.0.1'
-  compile 'expolib_v1.com.facebook.fresco:expolib_v1-imagepipeline-okhttp3:1.0.1'
-  compile 'com.facebook.stetho:stetho:1.3.1'
-  compile 'com.facebook.stetho:stetho-okhttp3:1.3.1'
-  compile 'com.facebook.soloader:soloader:0.1.0'
-  compile 'com.fasterxml.jackson.core:jackson-core:2.2.3'
-  compile 'com.google.code.findbugs:jsr305:3.0.0'
-  compile 'expolib_v1.com.squareup.okhttp3:okhttp:3.6.0'
-  compile 'expolib_v1.com.squareup.okhttp3:okhttp-urlconnection:3.6.0'
-  compile 'expolib_v1.com.squareup.okio:okio:1.13.0'
-  compile 'org.webkit:android-jsc:r174650'
+  api 'com.android.support:recyclerview-v7:27.1.1'
+  api 'com.facebook.fbui.textlayoutbuilder:textlayoutbuilder:1.0.0'
+  api 'com.facebook.fresco:fresco:1.0.1'
+  api 'com.facebook.fresco:animated-gif:1.0.1'
+  api 'com.facebook.fresco:animated-webp:1.0.1'
+  api 'com.facebook.fresco:webpsupport:1.0.1'
+  api 'com.facebook.fresco:webpsupport:1.0.1'
+  api 'expolib_v1.com.facebook.fresco:expolib_v1-imagepipeline-okhttp3:1.0.1'
+  api 'com.facebook.stetho:stetho:1.3.1'
+  api 'com.facebook.stetho:stetho-okhttp3:1.3.1'
+  api 'com.facebook.soloader:soloader:0.1.0'
+  api 'com.fasterxml.jackson.core:jackson-core:2.2.3'
+  api 'com.google.code.findbugs:jsr305:3.0.0'
+  api 'expolib_v1.com.squareup.okhttp3:okhttp:3.6.0'
+  api 'expolib_v1.com.squareup.okhttp3:okhttp-urlconnection:3.6.0'
+  api 'expolib_v1.com.squareup.okio:okio:1.13.0'
+  api 'org.webkit:android-jsc:r174650'
 
   // Our dependencies
-  compile 'com.android.support:appcompat-v7:27.1.1'
-  compile 'com.android.support:customtabs:27.1.1'
-  compile 'com.android.support:cardview-v7:27.1.1'
-  compile('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') {
+  api 'com.android.support:appcompat-v7:27.1.1'
+  api 'com.android.support:customtabs:27.1.1'
+  api 'com.android.support:cardview-v7:27.1.1'
+  api('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') {
     transitive = true;
   }
-  compile 'com.facebook.android:facebook-android-sdk:4.28.0'
-  compile('com.facebook.android:audience-network-sdk:4.26.1') {
+  api 'com.facebook.android:facebook-android-sdk:4.28.0'
+  api('com.facebook.android:audience-network-sdk:4.26.1') {
     exclude module: 'play-services-ads'
   }
-  provided 'org.glassfish:javax.annotation:3.1.1'
-  compile 'de.greenrobot:eventbus:2.4.0'
-  compile 'com.amplitude:android-sdk:2.9.2' // Be careful when upgrading! Upgrading might break experience scoping. Check with Jesse. See Analytics.resetAmplitudeDatabaseHelper
-  compile 'com.squareup.picasso:picasso:2.5.2'
-  compile 'com.google.android.gms:play-services-gcm:12.0.1'
-  compile 'com.google.android.gms:play-services-analytics:12.0.1'
-  compile 'com.google.android.gms:play-services-maps:12.0.1'
-  compile 'com.google.android.gms:play-services-auth:12.0.1'
-  compile 'com.google.android.gms:play-services-location:12.0.1'
-  compile 'com.google.android.gms:play-services-ads:12.0.1'
-  compile 'com.google.android.gms:play-services-fitness:12.0.1'
-  compile 'com.google.android.gms:play-services-vision:12.0.1'
-  compile 'com.google.android.gms:play-services-wallet:12.0.1' //may need 10.+
-  compile 'com.stripe:stripe-android:2.1.+'
-  compile 'com.github.thefuntasty:CreditCardEntry:1.4.8.4'
+  compileOnly 'org.glassfish:javax.annotation:3.1.1'
+  api 'de.greenrobot:eventbus:2.4.0'
+  api 'com.amplitude:android-sdk:2.9.2' // Be careful when upgrading! Upgrading might break experience scoping. Check with Jesse. See Analytics.resetAmplitudeDatabaseHelper
+  api 'com.squareup.picasso:picasso:2.5.2'
+  api 'com.google.android.gms:play-services-gcm:12.0.1'
+  api 'com.google.android.gms:play-services-analytics:12.0.1'
+  api 'com.google.android.gms:play-services-maps:12.0.1'
+  api 'com.google.android.gms:play-services-auth:12.0.1'
+  api 'com.google.android.gms:play-services-location:12.0.1'
+  api 'com.google.android.gms:play-services-ads:12.0.1'
+  api 'com.google.android.gms:play-services-fitness:12.0.1'
+  api 'com.google.android.gms:play-services-vision:12.0.1'
+  api 'com.google.android.gms:play-services-wallet:12.0.1' //may need 10.+
+  api 'com.stripe:stripe-android:2.1.+'
+  api 'com.github.thefuntasty:CreditCardEntry:1.4.8.4'
   annotationProcessor 'com.raizlabs.android:DBFlow-Compiler:2.2.1'
-  compile "com.raizlabs.android:DBFlow-Core:2.2.1"
-  compile "com.raizlabs.android:DBFlow:2.2.1"
-  compile "com.madgag.spongycastle:core:1.53.0.0"
-  compile "com.madgag.spongycastle:prov:1.53.0.0"
-  debugCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta1'
-  // debugCompile 'com.squareup.leakcanary:leakcanary-android:1.4-beta1'
-  releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta1'
-  compile 'com.facebook.device.yearclass:yearclass:1.0.1'
-  compile 'commons-io:commons-io:1.3.2'
+  api "com.raizlabs.android:DBFlow-Core:2.2.1"
+  api "com.raizlabs.android:DBFlow:2.2.1"
+  api "com.madgag.spongycastle:core:1.53.0.0"
+  api "com.madgag.spongycastle:prov:1.53.0.0"
+  debugApi 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta1'
+  // debugApi 'com.squareup.leakcanary:leakcanary-android:1.4-beta1'
+  releaseApi 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta1'
+  api 'com.facebook.device.yearclass:yearclass:1.0.1'
+  api 'commons-io:commons-io:1.3.2'
   // Newer version introduces dependency versions conflict
   // on 'com.android.support:support-annotations'
-  compile 'com.google.android.exoplayer:exoplayer:r2.5.4'
-  compile 'me.leolin:ShortcutBadger:1.1.4@aar'
-  compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
-  compile 'com.theartofdev.edmodo:android-image-cropper:2.4.7'
-  compile 'com.yqritc:android-scalablevideoview:1.0.1'
-  compile 'commons-codec:commons-codec:1.10'
-  compile 'com.segment.analytics.android:analytics:4.3.0'
-  compile 'com.google.zxing:core:3.3.2'
-  compile 'net.openid:appauth:0.4.1'
-  compile('com.airbnb.android:lottie:2.5.+') {
+  api 'com.google.android.exoplayer:exoplayer:r2.5.4'
+  api 'me.leolin:ShortcutBadger:1.1.4@aar'
+  api 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
+  api 'com.theartofdev.edmodo:android-image-cropper:2.4.7'
+  api 'com.yqritc:android-scalablevideoview:1.0.1'
+  api 'commons-codec:commons-codec:1.10'
+  api 'com.segment.analytics.android:analytics:4.3.0'
+  api 'com.google.zxing:core:3.3.2'
+  api 'net.openid:appauth:0.4.1'
+  api('com.airbnb.android:lottie:2.5.+') {
     exclude group: 'com.android.support', module: 'appcompat-v7'
   }
-  compile 'io.branch.sdk.android:library:2.17.1'
-  compile('io.nlopez.smartlocation:library:3.2.11') {
+  api 'io.branch.sdk.android:library:2.17.1'
+  api('io.nlopez.smartlocation:library:3.2.11') {
     transitive = false
   }
-  compile 'com.android.support:exifinterface:27.1.1'
-  compile 'com.google.android:cameraview:1.0.0'
-  compile 'com.google.firebase:firebase-core:12.0.1'
-  compile 'com.google.firebase:firebase-messaging:12.0.1'
-  compile 'com.google.maps.android:android-maps-utils:0.5+'
-  compile 'com.jakewharton:butterknife:8.4.0'
+  api 'com.android.support:exifinterface:27.1.1'
+  api 'com.google.android:cameraview:1.0.0'
+  api 'com.google.firebase:firebase-core:12.0.1'
+  api 'com.google.firebase:firebase-messaging:12.0.1'
+  api 'com.google.maps.android:android-maps-utils:0.5+'
+  api 'com.jakewharton:butterknife:8.4.0'
   annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
-  /*compile('com.gettipsi:stripeview:1.0.0') {
+  /*api('com.gettipsi:stripeview:1.0.0') {
       transitive = false
       exclude group: 'com.facebook.react', module: 'react-native'
   }*/

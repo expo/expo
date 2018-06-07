@@ -99,81 +99,81 @@ apply from: 'expo.gradle'
 END UNCOMMENT WHEN DISTRIBUTING */
 
 dependencies {
-  compile fileTree(dir: 'libs', include: ['*.jar'])
+  implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-  compile 'com.android.support:multidex:1.0.1'
+  implementation 'com.android.support:multidex:1.0.1'
 
   // Our dependencies
-  compile 'com.android.support:appcompat-v7:27.1.1'
+  implementation 'com.android.support:appcompat-v7:27.1.1'
 
   // Our dependencies from ExpoView
   // DON'T ADD ANYTHING HERE THAT ISN'T IN EXPOVIEW. ONLY COPY THINGS FROM EXPOVIEW TO HERE.
-  compile 'com.android.support:appcompat-v7:27.1.1'
-  compile 'com.facebook.android:facebook-android-sdk:4.7.0'
-  compile('com.facebook.android:audience-network-sdk:4.22.1') {
+  implementation 'com.android.support:appcompat-v7:27.1.1'
+  implementation 'com.facebook.android:facebook-android-sdk:4.28.0'
+  implementation('com.facebook.android:audience-network-sdk:4.26.1') {
     exclude module: 'play-services-ads'
   }
-  provided 'org.glassfish:javax.annotation:3.1.1'
-  compile 'com.jakewharton:butterknife:8.4.0'
-  compile 'de.greenrobot:eventbus:2.4.0'
-  compile 'com.amplitude:android-sdk:2.9.2' // Be careful when upgrading! Upgrading might break experience scoping. Check with Jesse. See Analytics.resetAmplitudeDatabaseHelper
-  compile 'com.squareup.picasso:picasso:2.5.2'
-  compile 'com.google.android.gms:play-services-gcm:12.0.1'
-  compile 'com.google.android.gms:play-services-analytics:12.0.1'
-  compile 'com.google.android.gms:play-services-maps:12.0.1'
-  compile 'com.google.android.gms:play-services-auth:12.0.1'
-  compile 'com.google.android.gms:play-services-location:12.0.1'
-  compile 'com.google.android.gms:play-services-ads:12.0.1'
+  compileOnly 'org.glassfish:javax.annotation:3.1.1'
+  implementation 'com.jakewharton:butterknife:8.4.0'
+  implementation 'de.greenrobot:eventbus:2.4.0'
+  implementation 'com.amplitude:android-sdk:2.9.2' // Be careful when upgrading! Upgrading might break experience scoping. Check with Jesse. See Analytics.resetAmplitudeDatabaseHelper
+  implementation 'com.squareup.picasso:picasso:2.5.2'
+  implementation 'com.google.android.gms:play-services-gcm:12.0.1'
+  implementation 'com.google.android.gms:play-services-analytics:12.0.1'
+  implementation 'com.google.android.gms:play-services-maps:12.0.1'
+  implementation 'com.google.android.gms:play-services-auth:12.0.1'
+  implementation 'com.google.android.gms:play-services-location:12.0.1'
+  implementation 'com.google.android.gms:play-services-ads:12.0.1'
   annotationProcessor 'com.raizlabs.android:DBFlow-Compiler:2.2.1'
-  compile "com.raizlabs.android:DBFlow-Core:2.2.1"
-  compile "com.raizlabs.android:DBFlow:2.2.1"
-  compile "com.madgag.spongycastle:core:1.53.0.0"
-  compile "com.madgag.spongycastle:prov:1.53.0.0"
-  debugCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta1'
-  // debugCompile 'com.squareup.leakcanary:leakcanary-android:1.4-beta1'
-  releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta1'
-  compile 'com.facebook.device.yearclass:yearclass:1.0.1'
-  compile 'commons-io:commons-io:1.3.2'
-  compile 'me.leolin:ShortcutBadger:1.1.4@aar'
-  compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
-  compile 'com.theartofdev.edmodo:android-image-cropper:2.4.7'
-  compile 'com.yqritc:android-scalablevideoview:1.0.1'
-  compile 'commons-codec:commons-codec:1.10'
-  compile 'com.segment.analytics.android:analytics:4.3.0'
-  compile 'com.google.zxing:core:3.2.1'
-  compile 'net.openid:appauth:0.4.1'
-  compile('com.airbnb.android:lottie:2.5.+')  {
+  implementation "com.raizlabs.android:DBFlow-Core:2.2.1"
+  implementation "com.raizlabs.android:DBFlow:2.2.1"
+  implementation "com.madgag.spongycastle:core:1.53.0.0"
+  implementation "com.madgag.spongycastle:prov:1.53.0.0"
+  debugImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta1'
+  // debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.4-beta1'
+  releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta1'
+  implementation 'com.facebook.device.yearclass:yearclass:1.0.1'
+  implementation 'commons-io:commons-io:1.3.2'
+  implementation 'me.leolin:ShortcutBadger:1.1.4@aar'
+  implementation 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
+  implementation 'com.theartofdev.edmodo:android-image-cropper:2.4.7'
+  implementation 'com.yqritc:android-scalablevideoview:1.0.1'
+  implementation 'commons-codec:commons-codec:1.10'
+  implementation 'com.segment.analytics.android:analytics:4.3.0'
+  implementation 'com.google.zxing:core:3.2.1'
+  implementation 'net.openid:appauth:0.4.1'
+  implementation('com.airbnb.android:lottie:2.5.+')  {
       exclude group: 'com.android.support', module: 'appcompat-v7'
   }
-  compile 'io.branch.sdk.android:library:2.17.1'
-  compile('io.nlopez.smartlocation:library:3.2.11') {
+  implementation 'io.branch.sdk.android:library:2.17.1'
+  implementation('io.nlopez.smartlocation:library:3.2.11') {
     transitive = false
   }
-  compile 'com.android.support:exifinterface:27.1.1'
-  compile 'com.squareup.okhttp3:okhttp:3.4.1'
-  compile 'com.squareup.okhttp3:okhttp-urlconnection:3.4.1'
-  compile 'com.squareup.okhttp3:okhttp-ws:3.4.1'
-  compile 'com.squareup.okio:okio:1.9.0'
+  implementation 'com.android.support:exifinterface:27.1.1'
+  implementation 'com.squareup.okhttp3:okhttp:3.4.1'
+  implementation 'com.squareup.okhttp3:okhttp-urlconnection:3.4.1'
+  implementation 'com.squareup.okhttp3:okhttp-ws:3.4.1'
+  implementation 'com.squareup.okio:okio:1.9.0'
 
   // Testing
-  androidTestCompile 'com.android.support.test.espresso:espresso-core:3.0.1'
+  androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
   // We use a modified build of com.android.support.test:runner:1.0.1. Explanation in maven-test/README
-  androidTestCompile 'com.android.support.test:runner:1.0.1'
-  androidTestCompile 'com.android.support:support-annotations:27.1.1'
-  androidTestCompile 'com.google.code.findbugs:jsr305:3.0.0'
-  androidTestCompile 'com.android.support.test.uiautomator:uiautomator-v18:2.1.1'
-  androidTestCompile 'com.azimolabs.conditionwatcher:conditionwatcher:0.2'
+  androidTestImplementation 'com.android.support.test:runner:1.0.1'
+  androidTestImplementation 'com.android.support:support-annotations:27.1.1'
+  androidTestImplementation 'com.google.code.findbugs:jsr305:3.0.0'
+  androidTestImplementation 'com.android.support.test.uiautomator:uiautomator-v18:2.1.1'
+  androidTestImplementation 'com.azimolabs.conditionwatcher:conditionwatcher:0.2'
 
-  testCompile 'junit:junit:4.12'
-  testCompile 'org.mockito:mockito-core:1.10.19'
-  testCompile 'org.robolectric:robolectric:3.8'
+  testImplementation 'junit:junit:4.12'
+  testImplementation 'org.mockito:mockito-core:1.10.19'
+  testImplementation 'org.robolectric:robolectric:3.8'
 
   /* UNCOMMENT WHEN DISTRIBUTING
-  compile('host.exp.exponent:expoview:28.0.0@aar') {
+  implementation('host.exp.exponent:expoview:28.0.0@aar') {
     transitive = true
   }
   END UNCOMMENT WHEN DISTRIBUTING */
-  compile project(path: ':expoview')
+  implementation project(path: ':expoview')
 }
 
 // This has to be down here for some reason
