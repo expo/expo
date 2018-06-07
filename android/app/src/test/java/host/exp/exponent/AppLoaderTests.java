@@ -37,7 +37,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class, manifest = Config.NONE)
+@Config(manifest = Config.NONE)
 public class AppLoaderTests {
 
   @Rule
@@ -52,7 +52,7 @@ public class AppLoaderTests {
   @Mock
   ExpoHandler mExpoHandler;
 
-  ExponentNetwork mExponentNetwork = mock(ExponentNetwork.class);//, withSettings().verboseLogging());
+  ExponentNetwork mExponentNetwork = mock(ExponentNetwork.class);
 
   @Mock
   Crypto mCrypto;
@@ -78,6 +78,16 @@ public class AppLoaderTests {
 
   @Test
   public void defaultUpdates() {
+    Constants.setInTest();
+    doAnswer(new Answer<Void>() {
+       @Override
+       public Void answer(InvocationOnMock invocation) throws Throwable {
+         Runnable runnable = invocation.getArgumentAt(0, Runnable.class);
+         runnable.run();
+         return null;
+       }
+     }).when(mExpoHandler).post(Matchers.any(Runnable.class));
+
     MockExpoDI.initialize();
     MockExpoDI.addMock(mContext, mApplication, mExpoHandler, mExponentNetwork, mCrypto, mExponentSharedPreferences, mExponentManifest);
     setExpoHttpClient(new MockExpoHttpClient()
