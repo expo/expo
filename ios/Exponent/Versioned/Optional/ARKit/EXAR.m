@@ -125,9 +125,9 @@ RCT_REMAP_METHOD(startAsync,
       reject(@"E_GLVIEW_MANAGER_BAD_VIEW_TAG", nil, RCTErrorWithMessage(@"EXAR.startARSessionAsync: Expected an EXGLView"));
       return;
     }
-    if (_arSessionManager) {
-      [_arSessionManager stop];
-      _arSessionManager = nil;
+    if (self->_arSessionManager) {
+      [self->_arSessionManager stop];
+      self->_arSessionManager = nil;
     }
     
     EXGLView *exglView = (EXGLView *)view;
@@ -135,11 +135,11 @@ RCT_REMAP_METHOD(startAsync,
     Class sessionManagerClass = NSClassFromString(@"EXGLARSessionManager");
     if (sessionManagerClass) {
       
-      _arSessionManager = [[sessionManagerClass alloc] init];
-      [_arSessionManager setDelegate:self];
-      [exglView setArSessionManager:_arSessionManager];
+      self->_arSessionManager = [[sessionManagerClass alloc] init];
+      [self->_arSessionManager setDelegate:self];
+      [exglView setArSessionManager:self->_arSessionManager];
       
-      NSDictionary *response = [_arSessionManager startWithGLView:exglView trackingConfiguration: trackingConfiguration];
+      NSDictionary *response = [self->_arSessionManager startWithGLView:exglView trackingConfiguration: trackingConfiguration];
       if (response[@"error"]) {
         reject(@"ERR_ARKIT_FAILED_TO_INIT", response[@"error"], RCTErrorWithMessage(response[@"error"]));
       } else {
@@ -157,9 +157,9 @@ RCT_REMAP_METHOD(stopAsync,
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
   [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-    if (_arSessionManager) {
-      [_arSessionManager stop];
-      _arSessionManager = nil;
+    if (self->_arSessionManager) {
+      [self->_arSessionManager stop];
+      self->_arSessionManager = nil;
     }
     resolve(nil);
   }];

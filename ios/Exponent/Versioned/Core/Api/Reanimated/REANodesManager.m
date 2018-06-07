@@ -238,7 +238,7 @@
 - (void)processEvent:(id<RCTEvent>)event
 {
   NSString *key = [NSString stringWithFormat:@"%@%@", event.viewTag, event.eventName];
-  REAEventNode *eventNode = [_eventMapping objectForKey:key];
+  REAEventNode *eventNode = (REAEventNode *)[_eventMapping objectForKey:key];
   [eventNode processEvent:event];
 }
 

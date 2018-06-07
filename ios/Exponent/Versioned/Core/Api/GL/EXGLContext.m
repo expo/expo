@@ -36,7 +36,7 @@
 
 @implementation EXGLContext
 
-- (instancetype)initWithDelegate:(id<EXGLContextDelegate>)delegate andManager:(nonnull EXGLObjectManager *)manager
+- (instancetype)initWithDelegate:(nullable id<EXGLContextDelegate>)delegate andManager:(nonnull EXGLObjectManager *)manager
 {
   if (self = [super init]) {
     self.delegate = delegate;

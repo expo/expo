@@ -111,25 +111,29 @@ RCT_REMAP_METHOD(logInAsync,
                                               responseType:OIDResponseTypeCode
                                       additionalParameters:nil];
 
+  __block typeof(self) blockSelf = self;
   OIDAuthStateAuthorizationCallback callback = ^(OIDAuthState *_Nullable authState, NSError *_Nullable error) {
-    if (authState) {
-      if (authState.isAuthorized) {
-        _logInResolve(@{
-          @"type": @"success",
-          @"accessToken": RCTNullIfNil(authState.lastTokenResponse.accessToken),
-          @"idToken": RCTNullIfNil(authState.lastTokenResponse.idToken),
-          @"refreshToken": RCTNullIfNil(authState.lastTokenResponse.refreshToken),
-          @"serverAuthCode": RCTNullIfNil(authState.lastAuthorizationResponse.authorizationCode),
-        });
+    __strong typeof(blockSelf) strongSelf = blockSelf;
+    if (strongSelf) {
+      if (authState) {
+        if (authState.isAuthorized) {
+          strongSelf->_logInResolve(@{
+            @"type": @"success",
+            @"accessToken": RCTNullIfNil(authState.lastTokenResponse.accessToken),
+            @"idToken": RCTNullIfNil(authState.lastTokenResponse.idToken),
+            @"refreshToken": RCTNullIfNil(authState.lastTokenResponse.refreshToken),
+            @"serverAuthCode": RCTNullIfNil(authState.lastAuthorizationResponse.authorizationCode),
+          });
+        } else {
+          strongSelf->_logInResolve(@{@"type": @"cancel"});
+        }
       } else {
-        _logInResolve(@{@"type": @"cancel"});
+        strongSelf->_logInReject(EXGoogleErrorCode, @"Google sign in error", error);
       }
-    } else {
-      _logInReject(EXGoogleErrorCode, @"Google sign in error", error);
-    }
 
-    _logInResolve = nil;
-    _logInReject = nil;
+      strongSelf->_logInResolve = nil;
+      strongSelf->_logInReject = nil;
+    }
   };
 
   id<OIDAuthorizationFlowSession> currentAuthorizationFlow =

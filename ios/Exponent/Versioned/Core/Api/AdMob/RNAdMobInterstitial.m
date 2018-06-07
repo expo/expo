@@ -103,7 +103,7 @@ RCT_EXPORT_METHOD(dismissAd:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromise
   if (presentedViewController != nil && [NSStringFromClass([presentedViewController class]) isEqualToString:@"GADInterstitialViewController"]) {
     [[UIApplication sharedApplication].delegate.window.rootViewController dismissViewControllerAnimated:true completion:^{
       resolve(nil);
-      _interstitial = nil;
+      self->_interstitial = nil;
     }];
   } else {
     reject(@"E_AD_NOT_SHOWN", @"Ad is not being shown.", nil);

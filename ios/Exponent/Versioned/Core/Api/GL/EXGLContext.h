@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface EXGLContext : NSObject
 
-- (instancetype)initWithDelegate:(id<EXGLContextDelegate>)delegate andManager:(nonnull EXGLObjectManager *)manager;
+- (instancetype)initWithDelegate:(nullable id<EXGLContextDelegate>)delegate andManager:(nonnull EXGLObjectManager *)manager;
 - (void)initialize:(void(^ _Nullable)(BOOL))callback;
 - (BOOL)isInitialized;
 - (EAGLContext *)createSharedEAGLContext;
