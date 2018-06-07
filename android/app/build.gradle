@@ -1,6 +1,7 @@
 buildscript {
   repositories {
     maven { url 'https://maven.fabric.io/public' }
+    google()
   }
 
   dependencies {
@@ -9,7 +10,6 @@ buildscript {
 }
 apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
-apply plugin: 'com.neenbedankt.android-apt'
 
 repositories {
   maven { url 'https://maven.fabric.io/public' }
@@ -40,30 +40,31 @@ android {
   dexOptions {
     javaMaxHeapSize System.getenv("DISABLE_DEX_MAX_HEAP") ? null : "8g"
   }
+
+  flavorDimensions 'minSdk', 'remoteKernel'
   productFlavors {
-    // Define separate dev and prod product flavors.
-    dev {
+    devKernel {
+      dimension 'remoteKernel'
+    }
+    prodKernel {
+      dimension 'remoteKernel'
+    }
+    devMinSdk {
+      dimension 'minSdk'
       // dev utilizes minSDKVersion = 21 to allow the Android gradle plugin
       // to pre-dex each module and produce an APK that can be tested on
       // Android Lollipop without time consuming dex merging processes.
       minSdkVersion 21
     }
-    devRemoteKernel {
-      minSdkVersion 21
-    }
-    dev19 {
-      // For debugging / development on older SDK versions. Increases build
-      // time so use 'dev' if not running on older SDKs.
-      minSdkVersion 19
-    }
-    prod {
-      // The actual minSdkVersion for the application.
+    prodMinSdk {
+      dimension 'minSdk'
       minSdkVersion 19
     }
   }
   buildTypes {
     debug {
       debuggable true
+      ext.enableCrashlytics = false
     }
     release {
       minifyEnabled true
@@ -113,7 +114,7 @@ dependencies {
     exclude module: 'play-services-ads'
   }
   provided 'org.glassfish:javax.annotation:3.1.1'
-  compile 'com.jakewharton:butterknife:7.0.1'
+  compile 'com.jakewharton:butterknife:8.4.0'
   compile 'de.greenrobot:eventbus:2.4.0'
   compile 'com.amplitude:android-sdk:2.9.2' // Be careful when upgrading! Upgrading might break experience scoping. Check with Jesse. See Analytics.resetAmplitudeDatabaseHelper
   compile 'com.squareup.picasso:picasso:2.5.2'
@@ -123,7 +124,7 @@ dependencies {
   compile 'com.google.android.gms:play-services-auth:12.0.1'
   compile 'com.google.android.gms:play-services-location:12.0.1'
   compile 'com.google.android.gms:play-services-ads:12.0.1'
-  apt 'com.raizlabs.android:DBFlow-Compiler:2.2.1'
+  annotationProcessor 'com.raizlabs.android:DBFlow-Compiler:2.2.1'
   compile "com.raizlabs.android:DBFlow-Core:2.2.1"
   compile "com.raizlabs.android:DBFlow:2.2.1"
   compile "com.madgag.spongycastle:core:1.53.0.0"

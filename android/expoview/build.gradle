@@ -41,11 +41,10 @@ buildscript {
     jcenter()
   }
   dependencies {
-    classpath 'com.jakewharton:butterknife-gradle-plugin:8.8.1'
+    classpath 'com.jakewharton:butterknife-gradle-plugin:8.4.0'
   }
 }
 
-apply plugin: 'com.neenbedankt.android-apt'
 apply plugin: 'com.jakewharton.butterknife'
 
 import org.apache.tools.ant.taskdefs.condition.Os
@@ -162,7 +161,30 @@ android {
   }
   clean.dependsOn cleanExponentNdkLib
 
+  flavorDimensions 'minSdk', 'remoteKernel'
+  productFlavors {
+    devKernel {
+      dimension 'remoteKernel'
+    }
+    prodKernel {
+      dimension 'remoteKernel'
+    }
+    devMinSdk {
+      dimension 'minSdk'
+      // dev utilizes minSDKVersion = 21 to allow the Android gradle plugin
+      // to pre-dex each module and produce an APK that can be tested on
+      // Android Lollipop without time consuming dex merging processes.
+      minSdkVersion 21
+    }
+    prodMinSdk {
+      dimension 'minSdk'
+      minSdkVersion 19
+    }
+  }
   buildTypes {
+    debug {
+      ext.enableCrashlytics = false
+    }
     release {
       minifyEnabled false
       proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
@@ -249,7 +271,7 @@ dependencies {
   compile 'com.google.android.gms:play-services-wallet:12.0.1' //may need 10.+
   compile 'com.stripe:stripe-android:2.1.+'
   compile 'com.github.thefuntasty:CreditCardEntry:1.4.8.4'
-  apt 'com.raizlabs.android:DBFlow-Compiler:2.2.1'
+  annotationProcessor 'com.raizlabs.android:DBFlow-Compiler:2.2.1'
   compile "com.raizlabs.android:DBFlow-Core:2.2.1"
   compile "com.raizlabs.android:DBFlow:2.2.1"
   compile "com.madgag.spongycastle:core:1.53.0.0"
@@ -282,8 +304,8 @@ dependencies {
   compile 'com.google.firebase:firebase-core:12.0.1'
   compile 'com.google.firebase:firebase-messaging:12.0.1'
   compile 'com.google.maps.android:android-maps-utils:0.5+'
-  compile 'com.jakewharton:butterknife:8.8.1'
-  apt 'com.jakewharton:butterknife-compiler:8.8.1'
+  compile 'com.jakewharton:butterknife:8.4.0'
+  annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
   /*compile('com.gettipsi:stripeview:1.0.0') {
       transitive = false
       exclude group: 'com.facebook.react', module: 'react-native'

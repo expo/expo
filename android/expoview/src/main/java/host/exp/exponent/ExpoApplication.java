@@ -2,18 +2,14 @@
 
 package host.exp.exponent;
 
-import android.os.Bundle;
 import android.os.Debug;
 import android.support.multidex.MultiDexApplication;
 
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.core.CrashlyticsCore;
 import com.crashlytics.android.core.CrashlyticsListener;
-import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.soloader.SoLoader;
-
-import java.util.List;
 
 import javax.inject.Inject;
 

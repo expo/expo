@@ -13,7 +13,6 @@ import java.net.URLEncoder;
 
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.utils.ScopedContext;
-import versioned.host.exp.exponent.modules.api.FileSystemModule;
 import versioned.host.exp.exponent.modules.internal.ExponentAsyncStorageModule;
 
 public class ClearExperienceData {
