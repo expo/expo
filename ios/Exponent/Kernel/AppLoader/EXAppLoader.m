@@ -188,7 +188,7 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 - (void)_fetchCachedManifest
 {
   [self fetchManifestWithCacheBehavior:EXCachedResourceOnlyCache success:^(NSDictionary * cachedManifest) {
-    _cachedManifest = cachedManifest;
+    self.cachedManifest = cachedManifest;
     [self _fetchBundleWithManifest:cachedManifest];
   } failure:^(NSError * error) {
     [self _startAppFetcher:[[EXAppFetcherWithTimeout alloc] initWithAppLoader:self timeout:kEXAppLoaderDefaultTimeout]];

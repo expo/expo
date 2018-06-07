@@ -153,7 +153,7 @@ RCT_EXPORT_METHOD(selectPrinter:(RCTPromiseResolveBlock)resolve
       [UIPrinterPickerController printerPickerControllerWithInitiallySelectedPrinter:printerPicker.selectedPrinter];
       if (userDidSelect) {
         UIPrinter *pickedPrinter = printerPicker.selectedPrinter;
-        [_printers setObject:pickedPrinter forKey:pickedPrinter.URL.absoluteString];
+        [self->_printers setObject:pickedPrinter forKey:pickedPrinter.URL.absoluteString];
         
         resolve(@{
                   @"name" : pickedPrinter.displayName,
