@@ -84,8 +84,9 @@ const ExploreStack = createStackNavigator(
 ExploreStack.navigationOptions = {
   tabBarIcon: ({ focused }) => renderIcon(Ionicons, 'ios-search', 24, 'Explore', focused),
   tabBarLabel: 'Explore',
-  tabBarOnPress: ({ navigation }) => {
+  tabBarOnPress: ({ navigation, defaultHandler }) => {
     if (!navigation.isFocused()) {
+      defaultHandler();
       return;
     }
 
