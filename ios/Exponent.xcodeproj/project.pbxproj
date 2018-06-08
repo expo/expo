@@ -2307,13 +2307,11 @@
 			buildConfigurationList = 78CEE2E31ACD07D70095B124 /* Build configuration list for PBXNativeTarget "Exponent" */;
 			buildPhases = (
 				107DFDB877CD94D08F7447E0 /* [CP] Check Pods Manifest.lock */,
-				78CEE2E91ACD1CBD0095B124 /* Set Bundle Version */,
 				78CEE2F21ACDF25E0095B124 /* Generate Dynamic Macros */,
 				78CEE2BC1ACD07D70095B124 /* Sources */,
 				78CEE2BD1ACD07D70095B124 /* Frameworks */,
 				78CEE2BE1ACD07D70095B124 /* Resources */,
 				B575EEC61D5AA56100DCABBC /* Clean Up Dynamic Macros */,
-				78CEE2EA1ACD22AF0095B124 /* Clear Bundle Version */,
 				78F81D401B70746F000E5595 /* Fabric */,
 				FE413F13B15B6DEB599EF7CD /* [CP] Copy Pods Resources */,
 			);
@@ -2520,36 +2518,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		78CEE2E91ACD1CBD0095B124 /* Set Bundle Version */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Set Bundle Version";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "TOOLS_DIR=\"${SRCROOT}/../tools-public\"\n\"${TOOLS_DIR}/set-bundle-version.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		78CEE2EA1ACD22AF0095B124 /* Clear Bundle Version */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Clear Bundle Version";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "TOOLS_DIR=\"${SRCROOT}/../tools-public\"\n\"${TOOLS_DIR}/set-bundle-version.sh\" -c";
 			showEnvVarsInLog = 0;
 		};
 		78CEE2F21ACDF25E0095B124 /* Generate Dynamic Macros */ = {
