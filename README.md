@@ -107,7 +107,10 @@ The native Android Studio and XCode projects have a build hook which will find t
 
 ### iOS
 
-For native XCTest unit tests, press Command+U in XCode to build and test the `Tests` unit test target.
+For native XCTest unit tests:
+
+- Press Command+U in XCode to build and test the `Tests` unit test target.
+- Alternatively, run `fastlane ios test` from the parent directory of `ios`.
 
 For JS integration tests, test the `ExponentIntegrationTests` target (not included in the default test scheme). This target requires you to configure `EXTestEnvironment.plist` with a key `testSuiteUrl` whose value is the url to load some version of Expo's [test-suite](https://github.com/expo/test-suite) app. This will run a bunch of Jasmine tests against the Expo SDK.
 

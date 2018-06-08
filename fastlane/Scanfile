@@ -1,5 +1,0 @@
-scheme "Exponent"
-devices ["iPhone 5 (9.3)"]
-
-clean true
-output_types "html"
