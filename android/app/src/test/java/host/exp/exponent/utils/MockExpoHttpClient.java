@@ -18,6 +18,9 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.withSettings;
 
+/*
+ * Generates an ExponentHttpClient that returns mocks
+ */
 public class MockExpoHttpClient {
 
   private ExponentHttpClient mClient;

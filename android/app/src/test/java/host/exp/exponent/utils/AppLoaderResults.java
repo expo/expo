@@ -8,9 +8,12 @@ import java.util.List;
 
 import host.exp.exponent.AppLoader;
 
+/*
+ * Records which callbacks have been triggered from an AppLoader instance
+ */
 public class AppLoaderResults extends AppLoader {
 
-  private List<AppLoaderMethodCall> mCalls = new ArrayList<>();
+  private List<AppLoaderCallbackRecord> mCalls = new ArrayList<>();
 
   public AppLoaderResults(final String manifestUrl) {
     super(manifestUrl);
@@ -18,39 +21,39 @@ public class AppLoaderResults extends AppLoader {
 
   @Override
   public void onOptimisticManifest(JSONObject optimisticManifest) {
-    mCalls.add(new AppLoaderMethodCall("onOptimisticManifest", optimisticManifest));
+    mCalls.add(new AppLoaderCallbackRecord("onOptimisticManifest", optimisticManifest));
   }
 
   @Override
   public void onManifestCompleted(JSONObject manifest) {
-    mCalls.add(new AppLoaderMethodCall("onManifestCompleted", manifest));
+    mCalls.add(new AppLoaderCallbackRecord("onManifestCompleted", manifest));
   }
 
   @Override
   public void onBundleCompleted(String localBundlePath) {
-    mCalls.add(new AppLoaderMethodCall("onBundleCompleted", localBundlePath));
+    mCalls.add(new AppLoaderCallbackRecord("onBundleCompleted", localBundlePath));
   }
 
   @Override
   public void emitEvent(JSONObject params) {
-    mCalls.add(new AppLoaderMethodCall("emitEvent", params));
+    mCalls.add(new AppLoaderCallbackRecord("emitEvent", params));
   }
 
   @Override
   public void onError(Exception e) {
-    mCalls.add(new AppLoaderMethodCall("onError", e));
+    mCalls.add(new AppLoaderCallbackRecord("onError", e));
   }
 
   @Override
   public void onError(String e) {
-    mCalls.add(new AppLoaderMethodCall("onError", e));
+    mCalls.add(new AppLoaderCallbackRecord("onError", e));
   }
 
-  public static void assertEquals(List<AppLoaderMethodCall> expected, AppLoaderResults actual) {
+  public static void assertEquals(List<AppLoaderCallbackRecord> expected, AppLoaderResults actual) {
     Assert.assertEquals(expected.size(), actual.mCalls.size());
 
     for (int i = 0; i < expected.size(); i++) {
-      AppLoaderMethodCall.assertEqual(expected.get(i), actual.mCalls.get(i));
+      AppLoaderCallbackRecord.assertEqual(expected.get(i), actual.mCalls.get(i));
     }
   }
 }

@@ -16,7 +16,8 @@ public class EXL {
 
   private static final String TAG = EXL.class.getSimpleName();
 
-  // Use this for errors that will show up in tests
+  // Use this for errors that we expect to happen in tests. They will only log it
+  // they occur outside of a test environment.
   public static void testError(final Throwable e) {
     if (!Constants.isTest()) {
       e.printStackTrace();
