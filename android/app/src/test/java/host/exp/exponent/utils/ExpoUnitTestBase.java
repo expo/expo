@@ -11,6 +11,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
 
+import java.io.File;
+
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExpoHandler;
 import host.exp.exponent.ExponentManifest;
@@ -20,6 +22,7 @@ import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.expoview.Exponent;
 
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
 public class ExpoUnitTestBase {
@@ -54,6 +57,10 @@ public class ExpoUnitTestBase {
         return null;
       }
     }).when(mExpoHandler).post(Matchers.any(Runnable.class));
+
+    final File mockFsDirectory = new File("mockFsDirectory");
+    mockFsDirectory.mkdir();
+    doReturn(mockFsDirectory).when(mContext).getFilesDir();
 
     MockExpoDI.initialize();
     MockExpoDI.addMock(mContext, mApplication, mExpoHandler, mExponentNetwork, mCrypto, mExponentSharedPreferences, mExponentManifest);
