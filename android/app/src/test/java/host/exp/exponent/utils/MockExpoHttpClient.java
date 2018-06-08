@@ -11,6 +11,7 @@ import expolib_v1.okhttp3.Request;
 import expolib_v1.okhttp3.Response;
 import host.exp.exponent.network.ExpoHttpCallback;
 import host.exp.exponent.network.ExponentHttpClient;
+import host.exp.exponent.network.ExponentNetwork;
 import host.exp.exponent.network.ManualExpoResponse;
 
 import static org.mockito.Mockito.doAnswer;
@@ -25,8 +26,20 @@ public class MockExpoHttpClient {
     this(false);
   }
 
-  public ExponentHttpClient build() {
-    return mClient;
+  public void use(final ExponentNetwork exponentNetwork) {
+    doAnswer(new Answer<ExponentHttpClient>() {
+      @Override
+      public ExponentHttpClient answer(InvocationOnMock invocation) throws Throwable {
+        return mClient;
+      }
+    }).when(exponentNetwork).getClient();
+
+    doAnswer(new Answer<ExponentHttpClient>() {
+      @Override
+      public ExponentHttpClient answer(InvocationOnMock invocation) throws Throwable {
+        return mClient;
+      }
+    }).when(exponentNetwork).getLongTimeoutClient();
   }
 
   public MockExpoHttpClient(final boolean verbose) {
