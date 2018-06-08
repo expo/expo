@@ -26,11 +26,6 @@ fastlane ios test
 fastlane ios release
 ```
 
-### ios enterprise
-```
-fastlane ios enterprise
-```
-
 
 ----
 

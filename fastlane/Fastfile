@@ -17,6 +17,9 @@ platform :ios do
   lane :test do
     scan(
       workspace: "ios/Exponent.xcworkspace",
+      scheme: "Exponent",
+      devices: ["iPhone SE", "iPhone X"],
+      clean: false,
     )
   end
 
