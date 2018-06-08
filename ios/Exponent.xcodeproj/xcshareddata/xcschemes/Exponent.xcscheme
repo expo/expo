@@ -29,12 +29,22 @@
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
          <TestableReference
-            skipped = "NO">
+            skipped = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "B513333F1CE649FE00E9FC9E"
                BuildableName = "ExponentIntegrationTests.xctest"
                BlueprintName = "ExponentIntegrationTests"
+               ReferencedContainer = "container:Exponent.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "B505BA0D20CAF77A0046ACFB"
+               BuildableName = "Tests.xctest"
+               BlueprintName = "Tests"
                ReferencedContainer = "container:Exponent.xcodeproj">
             </BuildableReference>
          </TestableReference>
