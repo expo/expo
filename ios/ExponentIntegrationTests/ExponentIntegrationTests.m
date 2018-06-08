@@ -45,7 +45,7 @@
   // cursory pass through the code, I didn't see the correct event to wait for. Perhaps after we
   // implement a pure-native kernel, we'll be able to remove this shoddy delay.
   dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-    [[EXKernel sharedInstance].serviceRegistry.linkingManager openUrl:_testSuiteUrl isUniversalLink:NO];
+    [[EXKernel sharedInstance].serviceRegistry.linkingManager openUrl:self->_testSuiteUrl isUniversalLink:NO];
   });
   
 }
