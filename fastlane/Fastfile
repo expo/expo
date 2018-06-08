@@ -47,6 +47,16 @@ platform :ios do
     )
   end
 
+  lane :create_simulator_build do
+    directory = prompt(text: "Please enter the path where we should output the sim build, relative to ./ios (i.e. ../my-simulator-build):")
+    puts "Build will be written to: " + File.expand_path(directory)
+    commands = [
+      "cd ../ios",
+      "xcodebuild -workspace Exponent.xcworkspace -scheme Exponent -sdk iphonesimulator -configuration Release -derivedDataPath #{directory} ARCHS=\"i386 x86_64\" ONLY_ACTIVE_ARCH=NO | xcpretty"
+    ]
+    sh(commands.join(' && '))
+  end
+
   lane :release do
     cert(
       team_id: "C8D8QTF339",
