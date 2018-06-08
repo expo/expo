@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 
 import org.json.JSONObject;
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,24 +17,18 @@ import org.mockito.stubbing.Answer;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
-import expolib_v1.okhttp3.Callback;
-import expolib_v1.okhttp3.Request;
-import expolib_v1.okhttp3.Response;
 import host.exp.exponent.kernel.Crypto;
-import host.exp.exponent.network.ExpoHttpCallback;
 import host.exp.exponent.network.ExponentHttpClient;
 import host.exp.exponent.network.ExponentNetwork;
-import host.exp.exponent.network.ManualExpoResponse;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponent.utils.MockExpoDI;
 import host.exp.exponent.utils.MockExpoHttpClient;
 import host.exp.exponent.utils.MockManifest;
 import host.exp.expoview.Exponent;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 @RunWith(RobolectricTestRunner.class)
@@ -76,6 +71,69 @@ public class AppLoaderTests {
     }).when(mExponentNetwork).getLongTimeoutClient();
   }
 
+  private static class AppLoaderMethodCall {
+
+    private String mMethod;
+    private Object mValue;
+
+    AppLoaderMethodCall(final String method, final Object value) {
+      mMethod = method;
+      mValue = value;
+    }
+
+    public static void assertEqual(AppLoaderMethodCall expected, AppLoaderMethodCall actual) {
+      Assert.assertEquals(expected.mMethod, actual.mMethod);
+      Assert.assertEquals(expected.mValue.toString(), actual.mValue.toString());
+    }
+  }
+
+  private static class AppLoaderResults extends AppLoader {
+
+    private List<AppLoaderMethodCall> mCalls = new ArrayList<>();
+
+    AppLoaderResults(final String manifestUrl) {
+      super(manifestUrl);
+    }
+
+    @Override
+    public void onOptimisticManifest(JSONObject optimisticManifest) {
+      mCalls.add(new AppLoaderMethodCall("onOptimisticManifest", optimisticManifest));
+    }
+
+    @Override
+    public void onManifestCompleted(JSONObject manifest) {
+      mCalls.add(new AppLoaderMethodCall("onManifestCompleted", manifest));
+    }
+
+    @Override
+    public void onBundleCompleted(String localBundlePath) {
+      mCalls.add(new AppLoaderMethodCall("onBundleCompleted", localBundlePath));
+    }
+
+    @Override
+    public void emitEvent(JSONObject params) {
+      mCalls.add(new AppLoaderMethodCall("emitEvent", params));
+    }
+
+    @Override
+    public void onError(Exception e) {
+      mCalls.add(new AppLoaderMethodCall("onError", e));
+    }
+
+    @Override
+    public void onError(String e) {
+      mCalls.add(new AppLoaderMethodCall("onError", e));
+    }
+
+    public static void assertEquals(List<AppLoaderMethodCall> expected, AppLoaderResults actual) {
+      Assert.assertEquals(expected.size(), actual.mCalls.size());
+
+      for (int i = 0; i < expected.size(); i++) {
+        AppLoaderMethodCall.assertEqual(expected.get(i), actual.mCalls.get(i));
+      }
+    }
+  }
+
   @Test
   public void defaultUpdates() {
     Constants.setInTest();
@@ -91,47 +149,21 @@ public class AppLoaderTests {
     MockExpoDI.initialize();
     MockExpoDI.addMock(mContext, mApplication, mExpoHandler, mExponentNetwork, mCrypto, mExponentSharedPreferences, mExponentManifest);
     setExpoHttpClient(new MockExpoHttpClient()
-        .callDefaultCache(new MockManifest())
-        .callSafe(new MockManifest())
-        .getHardCodedResponse(new MockManifest())
-        .tryForcedCachedResponse(new MockManifest())
+        .callDefaultCache(MockExpoHttpClient.ResponseType.NORMAL, new MockManifest().toString())
+        .callSafe(MockExpoHttpClient.ResponseType.NORMAL, new MockManifest().toString())
+        .getHardCodedResponse(null)
+        .tryForcedCachedResponse(MockExpoHttpClient.ResponseType.FAILURE, "Not in cache")
         .build());
 
     Exponent.initialize(mContext, mApplication);
 
-    new AppLoader("exp://exp.host/@esamelson/test-fetch-update") {
+    AppLoaderResults appLoaderResults = new AppLoaderResults("exp://exp.host/@esamelson/test-fetch-update");
+    appLoaderResults.start();
 
-      @Override
-      public void onOptimisticManifest(JSONObject optimisticManifest) {
-        System.out.print("onOptimisticManifest");
-      }
-
-      @Override
-      public void onManifestCompleted(JSONObject manifest) {
-        System.out.print("onManifestCompleted");
-      }
-
-      @Override
-      public void onBundleCompleted(String localBundlePath) {
-        System.out.print("onBundleCompleted");
-      }
-
-      @Override
-      public void emitEvent(JSONObject params) {
-        System.out.print("emitEvent");
-      }
-
-      @Override
-      public void onError(Exception e) {
-        System.out.print("onError");
-      }
-
-      @Override
-      public void onError(String e) {
-        System.out.print("onError");
-      }
-    }.start();
+    List<AppLoaderMethodCall> expectedCalls = new ArrayList<>();
+    expectedCalls.add(new AppLoaderMethodCall("onOptimisticManifest", new MockManifest().isVerified(false).loadedFromCache(false).toString()));
+    expectedCalls.add(new AppLoaderMethodCall("onManifestCompleted", new MockManifest().isVerified(false).loadedFromCache(false).toString()));
+    expectedCalls.add(new AppLoaderMethodCall("onBundleCompleted", new Object()));
+    AppLoaderResults.assertEquals(expectedCalls, appLoaderResults);
   }
-
-
 }

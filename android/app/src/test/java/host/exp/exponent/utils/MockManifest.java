@@ -3,6 +3,8 @@ package host.exp.exponent.utils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import host.exp.exponent.ExponentManifest;
+
 public class MockManifest {
 
   private static final String MANIFEST_TEMPLATE = "{\n" +
@@ -51,9 +53,9 @@ public class MockManifest {
 
   public MockManifest updatesCheckAutomatically(final String value) {
     try {
-      JSONObject updates = mManifest.getJSONObject("updates");
-      updates.put("checkAutomatically", value);
-      mManifest.put("updates", updates);
+      JSONObject updates = mManifest.getJSONObject(ExponentManifest.MANIFEST_UPDATES_INFO_KEY);
+      updates.put(ExponentManifest.MANIFEST_UPDATES_CHECK_AUTOMATICALLY_KEY, value);
+      mManifest.put(ExponentManifest.MANIFEST_UPDATES_INFO_KEY, updates);
     } catch (JSONException e) {
       e.printStackTrace();
     }
@@ -63,9 +65,9 @@ public class MockManifest {
 
   public MockManifest updatesFallbackToCacheTimeout(final long value) {
     try {
-      JSONObject updates = mManifest.getJSONObject("updates");
-      updates.put("fallbackToCacheTimeout", value);
-      mManifest.put("updates", updates);
+      JSONObject updates = mManifest.getJSONObject(ExponentManifest.MANIFEST_UPDATES_INFO_KEY);
+      updates.put(ExponentManifest.MANIFEST_UPDATES_TIMEOUT_KEY, value);
+      mManifest.put(ExponentManifest.MANIFEST_UPDATES_INFO_KEY, updates);
     } catch (JSONException e) {
       e.printStackTrace();
     }
@@ -85,7 +87,7 @@ public class MockManifest {
 
   public MockManifest revisionId(final String value) {
     try {
-      mManifest.put("revisionId", value);
+      mManifest.put(ExponentManifest.MANIFEST_REVISION_ID_KEY, value);
     } catch (JSONException e) {
       e.printStackTrace();
     }
@@ -95,7 +97,7 @@ public class MockManifest {
 
   public MockManifest publishedTime(final String value) {
     try {
-      mManifest.put("publishedTime", value);
+      mManifest.put(ExponentManifest.MANIFEST_PUBLISHED_TIME_KEY, value);
     } catch (JSONException e) {
       e.printStackTrace();
     }
@@ -105,7 +107,27 @@ public class MockManifest {
 
   public MockManifest bundleUrl(final String value) {
     try {
-      mManifest.put("bundleUrl", value);
+      mManifest.put(ExponentManifest.MANIFEST_BUNDLE_URL_KEY, value);
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+
+    return this;
+  }
+
+  public MockManifest isVerified(final boolean value) {
+    try {
+      mManifest.put(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, value);
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+
+    return this;
+  }
+
+  public MockManifest loadedFromCache(final boolean value) {
+    try {
+      mManifest.put(ExponentManifest.MANIFEST_LOADED_FROM_CACHE_KEY, value);
     } catch (JSONException e) {
       e.printStackTrace();
     }

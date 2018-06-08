@@ -45,15 +45,39 @@ public class MockExpoHttpClient {
     }).when(mClient).call(Matchers.any(Request.class), Matchers.any(ExpoHttpCallback.class));
   }
 
-  public MockExpoHttpClient tryForcedCachedResponse(final MockManifest manifest) {
+  public enum ResponseType {
+    NORMAL,
+    CACHED,
+    EMBEDDED,
+    FAILURE
+  }
+
+  private void handleSafeCallback(final ExponentHttpClient.SafeCallback safeCallback, final ResponseType type, final String body) {
+    if (type != ResponseType.FAILURE) {
+      ManualExpoResponse response = new ManualExpoResponse();
+      response.setBody(body);
+
+      if (type == ResponseType.NORMAL) {
+        // If we're not loaded from cache we should have a network response
+        response.setNetworkResponse(response);
+        safeCallback.onResponse(response);
+      } else if (type == ResponseType.CACHED) {
+        safeCallback.onCachedResponse(response, false);
+      } else {
+        safeCallback.onCachedResponse(response, true);
+      }
+    } else {
+      safeCallback.onFailure(new IOException(body));
+    }
+  }
+
+  public MockExpoHttpClient tryForcedCachedResponse(final ResponseType type, final String body) {
     doAnswer(new Answer<Void>() {
       @Override
       public Void answer(InvocationOnMock invocation) throws Throwable {
         ExponentHttpClient.SafeCallback safeCallback = invocation.getArgumentAt(2, ExponentHttpClient.SafeCallback.class);
 
-        ManualExpoResponse response = new ManualExpoResponse();
-        response.setBody(manifest.toString());
-        safeCallback.onCachedResponse(response, true);
+        handleSafeCallback(safeCallback, type, body);
 
         return null;
       }
@@ -62,15 +86,13 @@ public class MockExpoHttpClient {
     return this;
   }
 
-  public MockExpoHttpClient callDefaultCache(final MockManifest manifest) {
+  public MockExpoHttpClient callDefaultCache(final ResponseType type, final String body) {
     doAnswer(new Answer<Void>() {
       @Override
       public Void answer(InvocationOnMock invocation) throws Throwable {
         ExponentHttpClient.SafeCallback safeCallback = invocation.getArgumentAt(2, ExponentHttpClient.SafeCallback.class);
 
-        ManualExpoResponse response = new ManualExpoResponse();
-        response.setBody(manifest.toString());
-        safeCallback.onCachedResponse(response, true);
+        handleSafeCallback(safeCallback, type, body);
 
         return null;
       }
@@ -79,15 +101,13 @@ public class MockExpoHttpClient {
     return this;
   }
 
-  public MockExpoHttpClient callSafe(final MockManifest manifest) {
+  public MockExpoHttpClient callSafe(final ResponseType type, final String body) {
     doAnswer(new Answer<Void>() {
       @Override
       public Void answer(InvocationOnMock invocation) throws Throwable {
         ExponentHttpClient.SafeCallback safeCallback = invocation.getArgumentAt(1, ExponentHttpClient.SafeCallback.class);
 
-        ManualExpoResponse response = new ManualExpoResponse();
-        response.setBody(manifest.toString());
-        safeCallback.onCachedResponse(response, true);
+        handleSafeCallback(safeCallback, type, body);
 
         return null;
       }
@@ -97,11 +117,11 @@ public class MockExpoHttpClient {
     return this;
   }
 
-  public MockExpoHttpClient getHardCodedResponse(final MockManifest manifest) {
+  public MockExpoHttpClient getHardCodedResponse(final String body) {
     doAnswer(new Answer<String>() {
       @Override
       public String answer(InvocationOnMock invocation) throws Throwable {
-        return manifest.toString();
+        return body;
       }
     }).when(mClient).getHardCodedResponse(Matchers.anyString());
 
