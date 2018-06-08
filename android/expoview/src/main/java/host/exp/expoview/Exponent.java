@@ -388,7 +388,6 @@ public class Exponent {
       }
       Request request = requestBuilder.build();
       // Use OkHttpClient with long read timeout for dev bundles
-      final boolean finalShouldForceNetwork = shouldForceNetwork;
       ExponentHttpClient.SafeCallback callback = new ExponentHttpClient.SafeCallback() {
         @Override
         public void onFailure(IOException e) {
