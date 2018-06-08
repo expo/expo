@@ -38,6 +38,8 @@ buildscript {
     maven { url 'https://maven.fabric.io/public' }
     maven { url "https://jitpack.io" }
     mavenCentral()
+    maven { url "https://maven.google.com" }
+    google()
     jcenter()
   }
   dependencies {
