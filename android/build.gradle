@@ -21,6 +21,9 @@ allprojects {
       // We use a modified build of com.android.support.test:runner:1.0.1. Explanation in maven-test/README
       url "$rootDir/maven-test"
     }
+    maven {
+      url 'https://maven.google.com'
+    }
     jcenter()
     maven {
       // Local Maven repo containing AARs with JSC built for Android
@@ -31,9 +34,6 @@ allprojects {
       // dirs project(':expoview').file('libs')
     }
     maven { url "https://jitpack.io" }
-    maven {
-      url 'https://maven.google.com'
-    }
 
     // Want this last so that we never end up with a stale cache
     mavenLocal()
