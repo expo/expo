@@ -8,10 +8,34 @@ default_platform :ios
 
 output_directory = File.expand_path('./fastlane/Deployment')
 
+def set_bundle_version_from_commit_count
+  bundle_version = Actions.lane_context[SharedValues::VERSION_NUMBER] + ".10" + number_of_commits.to_s
+  puts "Setting build number (CFBundleVersion) to '" + bundle_version + "'..."
+  set_info_plist_value(
+    path: "./ios/Exponent/Supporting/Info.plist",
+    key: "CFBundleVersion",
+    value: bundle_version
+  )
+end
+
+def clear_bundle_version
+  puts "removing CFBundleVersion..."
+  update_plist(
+    plist_path: "./ios/Exponent/Supporting/Info.plist",
+    block: proc do |plist|
+      plist.delete("CFBundleVersion")
+    end
+  )
+end
+
 platform :ios do
 
   before_all do
     FileUtils.mkdir_p(output_directory)
+    Actions.lane_context[SharedValues::VERSION_NUMBER] = get_version_number(
+      xcodeproj: "./ios/Exponent.xcodeproj"
+    )
+    set_bundle_version_from_commit_count
   end
 
   lane :test do
@@ -57,6 +81,7 @@ platform :ios do
 
   after_all do |lane|
     # FileUtils.rm_rf(output_directory)
+    clear_bundle_version
   end
 
   error do |lane, exception|
