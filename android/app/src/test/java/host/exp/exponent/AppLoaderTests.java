@@ -6,10 +6,11 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import host.exp.exponent.utils.AppLoaderMethodCall;
+import host.exp.exponent.utils.AppLoaderCallbackRecord;
 import host.exp.exponent.utils.AppLoaderResults;
 import host.exp.exponent.utils.ExpoUnitTestBase;
 import host.exp.exponent.utils.MockExpoHttpClient;
@@ -36,10 +37,10 @@ public class AppLoaderTests extends ExpoUnitTestBase {
     AppLoaderResults appLoaderResults = new AppLoaderResults("exp://exp.host/@esamelson/test-fetch-update");
     appLoaderResults.start();
 
-    List<AppLoaderMethodCall> expectedCalls = new ArrayList<>();
-    expectedCalls.add(new AppLoaderMethodCall("onOptimisticManifest", new MockManifest().isVerified(false).loadedFromCache(false).toString()));
-    expectedCalls.add(new AppLoaderMethodCall("onManifestCompleted", new MockManifest().isVerified(false).loadedFromCache(false).toString()));
-    expectedCalls.add(new AppLoaderMethodCall("onBundleCompleted", new Object()));
+    List<AppLoaderCallbackRecord> expectedCalls = new ArrayList<>();
+    expectedCalls.add(new AppLoaderCallbackRecord("onOptimisticManifest", new MockManifest().isVerified(false).loadedFromCache(false).toString()));
+    expectedCalls.add(new AppLoaderCallbackRecord("onManifestCompleted", new MockManifest().isVerified(false).loadedFromCache(false).toString()));
+    expectedCalls.add(new AppLoaderCallbackRecord("onBundleCompleted", new File("mockFsDirectory/27.0.0/cached-bundle-experience-%40esamelson%2Ftest-fetch-update478682697-27.0.0").getAbsolutePath()));
     AppLoaderResults.assertEquals(expectedCalls, appLoaderResults);
   }
 }

@@ -14,6 +14,9 @@ import host.exp.exponent.di.NativeModuleDepsProvider;
 
 import static org.mockito.Mockito.*;
 
+/*
+ * Modified NativeModuleDepsProvider to inject mocks
+ */
 public class MockExpoDI {
 
   static final String ENHANCER = "$$EnhancerByMockitoWithCGLIB$$";

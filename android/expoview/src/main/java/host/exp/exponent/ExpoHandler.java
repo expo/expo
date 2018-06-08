@@ -2,6 +2,10 @@ package host.exp.exponent;
 
 import android.os.Handler;
 
+/*
+ * Use this instead of directly doing `new Handler(Looper.getMainLooper())` so that we can
+ * easily mock it out in tests.
+ */
 public class ExpoHandler {
 
   private Handler mHandler;
