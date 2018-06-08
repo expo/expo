@@ -94,7 +94,10 @@ const macrosFuncs = {
       try {
         let lanAddress = ip.address();
         let localServerUrl = `http://${lanAddress}:3013`
-        let result = await request.get(`${localServerUrl}/expo-test-server-status`);
+        let result = await request.get({
+          url: `${localServerUrl}/expo-test-server-status`,
+          timeout: 500, // ms
+        });
         if (result.body === 'running!') {
           url = localServerUrl;
         }
