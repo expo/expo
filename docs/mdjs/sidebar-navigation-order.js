@@ -36,6 +36,7 @@ const GUIDES = [
   'Configuring OTA Updates',
   'Push Notifications',
   'Using FCM for Push Notifications',
+  'Notification Channels',
   'Using Modern JavaScript',
   'Using ClojureScript',
   'Using Firebase',
