@@ -111,6 +111,7 @@ NS_ASSUME_NONNULL_BEGIN
     // we don't have a bundle but need to finish,
     // try to grab a cache, using self.appLoader.manifest, which at this point is the cachedManifest
     [self fetchJSBundleWithManifest:self.appLoader.manifest cacheBehavior:EXCachedResourceFallBackToNetwork timeoutInterval:kEXJSBundleTimeout progress:nil success:^(NSData * _Nonnull data) {
+      self.manifest = self.appLoader.manifest;
       self.bundle = data;
       [self.delegate appFetcher:self didFinishLoadingManifest:self.appLoader.manifest bundle:self.bundle];
     } error:^(NSError * _Nonnull error) {
