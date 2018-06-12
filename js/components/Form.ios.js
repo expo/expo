@@ -1,4 +1,4 @@
-/j/* @flow */
+/* @flow */
 
 import React from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
