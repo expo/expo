@@ -127,7 +127,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
       UiThreadUtil.runOnUiThread(new Runnable() {
         @Override
         public void run() {
-          checkForReactViews();
+          stopLoading();
         }
       });
     }
