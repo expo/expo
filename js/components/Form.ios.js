@@ -1,4 +1,4 @@
-/* @flow */
+/j/* @flow */
 
 import React from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
@@ -22,17 +22,17 @@ export class FormInput extends React.Component {
   componentDidMount() {
     if (this.props.autoFocus) {
       requestAnimationFrame(() => {
-        this._input.focus();
+        this._input && this._input.focus();
       });
     }
   }
 
   focus() {
-    this._input.focus();
+    this._input && this._input.focus();
   }
 
   blur() {
-    this._input.blur();
+    this._input && this._input.blur();
   }
 
   _handleLayoutLabel = (e: any) => {

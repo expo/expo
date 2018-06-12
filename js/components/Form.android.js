@@ -28,7 +28,7 @@ export class FormInput extends React.Component {
 
     if (this.props.autoFocus) {
       requestAnimationFrame(() => {
-        this._input.focus();
+        this._input && this._input.focus();
       });
     }
   }
@@ -58,11 +58,11 @@ export class FormInput extends React.Component {
   }
 
   focus() {
-    this._input.focus();
+    this._input && this._input.focus();
   }
 
   blur() {
-    this._input.blur();
+    this._input && this._input.blur();
   }
 
   _handleFocus = () => {
