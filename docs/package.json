@@ -1,6 +1,6 @@
 {
   "name": "expo-docs",
-  "version": "27.0.0",
+  "version": "28.0.0",
   "private": true,
   "scripts": {
     "dev": "concurrently -k 'yarn run mdjs' 'node server.js'",
