@@ -8,9 +8,9 @@ It notifies you of exceptions that your users run into while using your app and 
 
 ## Why Sentry?
 
-- Sentry treats React Native is a first-class citizen and we have collaborated with Sentry to make sure Expo is too.
+- Sentry treats React Native as a first-class citizen and we have collaborated with Sentry to make sure Expo is too.
 - It's easy to set up and use.
-- It scales to meet the demands of the even the largest projects.
+- It scales to meet the demands of even the largest projects.
 - It works on most platforms, so you can use the same service for reporting your server, CLI, or desktop app errors as you use for your Expo app.
 - We trust it for our projects at Expo.
 - It is free for up to 10,000 events per month.
