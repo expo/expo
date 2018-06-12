@@ -405,14 +405,6 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
             .construct(progressListener);
         builder.callRecursive("setDevBundleDownloadListener", devBundleDownloadListener.get());
       }
-
-      // checkForReactViews() is normally called in dev mode by devBundleDownloadListener.onSuccess()
-      // so that AppLoading will continue to show the splash screen correctly. However, the
-      // onSuccess() method is not called by RN for SDK 25 and below, so we need to check for react views here
-      // TODO: remove once SDK 25 is phased out
-      if (ABIVersion.toNumber(mSDKVersion) < ABIVersion.toNumber("26.0.0")) {
-        checkForReactViews();
-      }
     } else {
       checkForReactViews();
     }
