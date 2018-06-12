@@ -1,22 +1,10 @@
-
 #import <XCTest/XCTest.h>
 
-#import "EXAppLoader.h"
-#import "EXAppFetcherCacheOnly.h"
+#import "EXAppLoader+Tests.h"
 #import "EXAppFetcherWithTimeout.h"
+#import "EXClientTestCase.h"
 #import "EXEnvironment.h"
 #import "EXFileDownloader.h"
-#import "EXEnvironmentMocks.h"
-
-#pragma mark - private/internal methods in App Loader & App Fetchers
-
-@interface EXAppLoader (EXAppLoaderTests)
-
-@property (nonatomic, readonly) EXAppFetcher * _Nullable appFetcher;
-
-- (BOOL)_fetchBundleWithManifest:(NSDictionary *)manifest;
-
-@end
 
 @interface EXAppFetcherWithTimeout (EXAppLoaderTests)
 
@@ -24,7 +12,7 @@
 
 @end
 
-@interface EXAppLoaderTests : XCTestCase
+@interface EXAppLoaderTests : EXClientTestCase
 
 @end
 
@@ -100,7 +88,6 @@
 
 - (void)testIsOnErrorRecoveryIgnoredInExpoClient
 {
-  [EXEnvironmentMocks loadExpoClientConfig];
   NSDictionary *manifest = @{
     @"updates": @{
       @"checkAutomatically": @"ON_ERROR_RECOVERY"
@@ -109,20 +96,6 @@
   EXAppLoader *appLoader = [[EXAppLoader alloc] initWithManifestUrl:[NSURL URLWithString:@"exp://exp.host/@esamelson/test-fetch-update"]];
   [appLoader _fetchBundleWithManifest:manifest];
   XCTAssert([appLoader.appFetcher isKindOfClass:[EXAppFetcherWithTimeout class]], @"AppLoader should ignore ON_ERROR_RECOVERY in the Expo client");
-}
-
-- (void)testIsOnErrorRecoveryRespectedInShellApp
-{
-  [EXEnvironmentMocks loadProdServiceConfig];
-  NSDictionary *manifest = @{
-    @"updates": @{
-      @"checkAutomatically": @"ON_ERROR_RECOVERY"
-    },
-    @"bundleUrl": @"https://d1wp6m56sqw74a.cloudfront.net/%40esamelson%2Ftest-fetch-update%2F1.0.0%2Fddf3e9977eedb14313d242302df6cf70-27.0.0-ios.js", // value doesn't matter
-  };
-  EXAppLoader *appLoader = [[EXAppLoader alloc] initWithManifestUrl:[NSURL URLWithString:@"exp://exp.host/@esamelson/test-fetch-update"]];
-  [appLoader _fetchBundleWithManifest:manifest];
-  XCTAssert([appLoader.appFetcher isKindOfClass:[EXAppFetcherCacheOnly class]], @"AppLoader should choose to use AppFetcherCacheOnly in a shell app with ON_ERROR_RECOVERY");
 }
 
 #pragma mark - internal
