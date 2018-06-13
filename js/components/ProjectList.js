@@ -1,7 +1,7 @@
 /* @flow */
 
 import React from 'react';
-import { ActivityIndicator, FlatList, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, FlatList, ScrollView, StyleSheet, View } from 'react-native';
 import InfiniteScrollView from 'react-native-infinite-scroll-view';
 import { withNavigation } from 'react-navigation';
 
@@ -10,7 +10,7 @@ import ProjectCard from './ProjectCard';
 import SmallProjectCard from './SmallProjectCard';
 
 @withNavigation
-export default class ProjectList extends React.Component {
+export default class ProjectList extends React.PureComponent {
   state = {
     isReady: false,
     isRefetching: false,
@@ -59,7 +59,21 @@ export default class ProjectList extends React.Component {
         keyExtractor={this._extractKey}
         renderItem={this._renderItem}
         style={[{ flex: 1 }, !this.props.belongsToCurrentUser && styles.largeProjectCardList]}
-        renderScrollComponent={props => <InfiniteScrollView {...props} />}
+        renderScrollComponent={props => {
+          // note(brent): renderScrollComponent is passed on to
+          // InfiniteScrollView so it renders itself again and the result is two
+          // loading indicators. So we need to detect if we're in
+          // InfiniteScrollView by checking for a prop that is passed in to it,
+          // in this case we'll just check for props.renderLoadingIndicator.
+          // This should be fixed upstream in InfiniteScrollView, so if InfiniteScrollView
+          // is itself the scroll component being rendered it doesn't once again render
+          // the scroll component.
+          if (props.renderLoadingIndicator) {
+            return <ScrollView {...props} />;
+          } else {
+            return <InfiniteScrollView {...props} />
+          }
+        }}
         canLoadMore={this._canLoadMore()}
         onLoadMoreAsync={this._handleLoadMoreAsync}
       />
