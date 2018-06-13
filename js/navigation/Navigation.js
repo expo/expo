@@ -150,7 +150,7 @@ TabNavigator.navigationOptions = {
   header: null,
 };
 
-const RootStack = createStackNavigator(
+export default createStackNavigator(
   {
     Tabs: TabNavigator,
     SignIn: SignInScreen,
@@ -163,8 +163,6 @@ const RootStack = createStackNavigator(
     navigationOptions: defaultNavigationOptions,
   }
 );
-
-export default createSwitchNavigator({ RootStack });
 
 function renderIcon(IconComponent: any, iconName: string, iconSize: number, isSelected: boolean) {
   let color = isSelected ? Colors.tabIconSelected : Colors.tabIconDefault;
