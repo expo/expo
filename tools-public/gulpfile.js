@@ -203,7 +203,6 @@ gulp.task('android:create-keystore', createAndroidKeystoreWithArguments);
 
 // iOS
 gulp.task('ios-shell-app', createIOSShellAppWithArguments);
-gulp.task('ios:configure-client-bundle', configureIOSClientBundleWithArguments);
 gulp.task('ios:create-keychain', createIOSKeychainWithArguments);
 gulp.task('ios:import-cert-into-keychain', importCertIntoIOSKeychainWithArguments);
 gulp.task('ios:delete-keychain', deleteIOSKeychainWithArguments);
