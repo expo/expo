@@ -87,8 +87,11 @@ ExpoKit's release cycle follows the Expo SDK release cycle. When a new version o
 
 ### Android
 
-- Go to https://expo.io/--/api/v2/versions and find the `androidExpoViewUrl` and `expokitNpmPackage` keys under `sdkVersions.[NEW SDK VERSION]`.
-- Download that `.tar.gz` file from `androidExpoViewUrl` and extract it.
-- Update your version of "expokit" in `package.json` to the version in `expokitNpmPackage`.
+- Go to https://expo.io/--/api/v2/versions and find the `expokitNpmPackage` key under `sdkVersions.[NEW SDK VERSION]`.
+- Update your version of expokit in `package.json` to the version in `expokitNpmPackage` and yarn/npm install.
 - Go to `MainActivity.java` and replace `Arrays.asList("[OLD SDK VERSION]")` with `Arrays.asList("[NEW SDK VERSION]")`.
-- Go to `app/build.gradle` and replace `compile('host.exp.exponent:expoview:[OLD SDK VERSION]@aar') {` with `compile('host.exp.exponent:expoview:[NEW SDK VERSION]@aar') {`. Depending on what Expo SDK features you are using you might also need to copy other new dependencies from the downloaded `app/build.gradle` file into yours.
+- Go to `android/app/build.gradle` and replace `compile('host.exp.exponent:expoview:[OLD SDK VERSION]@aar') {` with `compile('host.exp.exponent:expoview:[NEW SDK VERSION]@aar') {`.
+
+If upgrading from SDK 28 or below, you'll also need to follow these instructions:
+- Change all instances of `android\\detach-scripts` and `android/detach-scripts` to `node_modules\\expokit\\detach-scripts` and `node_modules/expokit/detach-scripts` respectively in `android/app/expo.gradle`.
+- Add `maven { url "$rootDir/../node_modules/expokit/maven" }` under `allprojects.repositories` in `android/build.gradle`.
