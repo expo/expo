@@ -14,9 +14,11 @@ buildscript {
 
 allprojects {
   repositories {
+    // For non-detach
     maven {
       url "$rootDir/maven"
     }
+    // For detach
     maven {
       url "$rootDir/../node_modules/expokit/maven"
     }
