@@ -40,7 +40,7 @@ const ProjectsStack = createStackNavigator(
 );
 
 ProjectsStack.navigationOptions = {
-  tabBarIcon: ({ focused }) => renderIcon(Entypo, 'grid', 24, 'Projects', focused),
+  tabBarIcon: ({ focused }) => renderIcon(Entypo, 'grid', 24, focused),
   tabBarLabel: 'Projects',
 };
 
@@ -82,7 +82,7 @@ const ExploreStack = createStackNavigator(
 );
 
 ExploreStack.navigationOptions = {
-  tabBarIcon: ({ focused }) => renderIcon(Ionicons, 'ios-search', 24, 'Explore', focused),
+  tabBarIcon: ({ focused }) => renderIcon(Ionicons, 'ios-search', 24, focused),
   tabBarLabel: 'Explore',
   tabBarOnPress: ({ navigation, defaultHandler }) => {
     if (!navigation.isFocused()) {
@@ -114,7 +114,7 @@ const ProfileStack = createStackNavigator(
 );
 
 ProfileStack.navigationOptions = {
-  tabBarIcon: ({ focused }) => renderIcon(Ionicons, 'ios-person', 26, 'Profile', focused),
+  tabBarIcon: ({ focused }) => renderIcon(Ionicons, 'ios-person', 26, focused),
   tabBarLabel: 'Profile',
 };
 
@@ -135,7 +135,6 @@ const TabNavigator =
     ? createBottomTabNavigator(TabRoutes, {
         initialRouteName: 'ProfileStack',
         tabBarOptions: {
-          showLabel: false,
           style: {
             backgroundColor: Colors.tabBar,
             borderTopColor: '#f2f2f2',
@@ -167,43 +166,21 @@ const RootStack = createStackNavigator(
 
 export default createSwitchNavigator({ RootStack });
 
-function renderIcon(
-  IconComponent: any,
-  iconName: string,
-  iconSize: number,
-  title: string,
-  isSelected: boolean
-) {
+function renderIcon(IconComponent: any, iconName: string, iconSize: number, isSelected: boolean) {
   let color = isSelected ? Colors.tabIconSelected : Colors.tabIconDefault;
 
-  if (Platform.OS === 'ios') {
-    return (
-      <View style={styles.tabItemContainer}>
-        <IconComponent name={iconName} size={iconSize} color={color} style={styles.icon} />
-
-        <Text style={[styles.tabTitleText, { color }]} numberOfLines={1}>
-          {title}
-        </Text>
-      </View>
-    );
-  } else {
-    return (
-      <View style={styles.tabItemContainer}>
-        <IconComponent name={iconName} size={iconSize + 4} color={color} style={styles.icon} />
-      </View>
-    );
-  }
+  return (
+    <IconComponent
+      name={iconName}
+      size={Platform.OS === 'ios' ? iconSize : iconSize + 4}
+      color={color}
+      style={styles.icon}
+    />
+  );
 }
 
 const styles = StyleSheet.create({
   icon: {
     marginBottom: Platform.OS === 'ios' ? -2 : 0,
-  },
-  tabItemContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  tabTitleText: {
-    fontSize: 11,
   },
 });
