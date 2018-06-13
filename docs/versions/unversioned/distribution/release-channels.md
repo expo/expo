@@ -46,7 +46,7 @@ You can continue updating v1 of your app with `exp publish --release-channel pro
 
 ## Using Release Channels with ExpoKit
 
-Since `exp build` does not apply to ExpoKit projects, you can edit the native project's release channel manually by modifying the `releaseChannel` key in `EXShell.plist` (iOS) or `Constants.java` (Android).
+Since `exp build` does not apply to ExpoKit projects, you can edit the native project's release channel manually by modifying the `releaseChannel` key in [EXShell.plist](https://github.com/expo/expo/blob/master/ios/Exponent/Supporting/EXShell.plist) (iOS) or [Constants.java](https://github.com/expo/expo/blob/master/android/expoview/src/main/java/host/exp/exponent/Constants.java) (Android).
 
 ## Using Release Channels for Environment Variable Configuration
 
