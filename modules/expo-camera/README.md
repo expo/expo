@@ -116,7 +116,7 @@ Camera facing. Use one of `Camera.Constants.Type`. When `Type.front`, use the fr
 
 * **flashMode**
 
-Camera flash mode. Use one of `Camera.Constants.FlashMode`. When `on`, the flash on your device will turn on when taking a picture, when `off`, it wont't. Setting to `Type.auto` will fire flash if required, `Type.torch` turns on flash during the preview. Default: `off`.
+Camera flash mode. Use one of `Camera.Constants.FlashMode`. When `on`, the flash on your device will turn on when taking a picture, when `off`, it won't. Setting to `auto` will fire flash if required, `torch` turns on flash during the preview. Default: `off`.
 
 * **autoFocus**
 
