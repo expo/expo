@@ -144,6 +144,10 @@ const TabNavigator =
     : createMaterialBottomTabNavigator(TabRoutes, {
         initialRouteName: 'ProjectsStack',
         activeTintColor: Colors.tabIconSelected,
+        inactiveTintColor: Colors.tabIconDefault,
+        barStyle: {
+          backgroundColor: '#fff',
+        },
       });
 
 TabNavigator.navigationOptions = {
