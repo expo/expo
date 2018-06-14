@@ -161,7 +161,7 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
       innerCachedManifest = cachedManifest;
     } else {
       NSError *jsonError;
-      innerCachedManifest = [NSJSONSerialization JSONObjectWithData:[cachedManifestString dataUsingEncoding:kCFStringEncodingUTF8]
+      innerCachedManifest = [NSJSONSerialization JSONObjectWithData:[cachedManifestString dataUsingEncoding:NSUTF8StringEncoding]
                                                             options:kNilOptions
                                                               error:&jsonError];
       if (jsonError) {
