@@ -25,7 +25,7 @@ Creating a channel is easy -- before you create a local notification (or receive
 ```javascript
 if (Platform.OS === 'android') {
   Expo.Notifications.createChannelAndroidAsync('chat-messages', {
-    title: 'Chat messages',
+    name: 'Chat messages',
     sound: true,
   });
 }
@@ -84,7 +84,7 @@ componentDidMount() {
   // ...
   if (Platform.OS === 'android') {
     Expo.Notifications.createChannelAndroidAsync('reminders', {
-      title: 'Reminders',
+      name: 'Reminders',
       priority: 'max',
       vibrate: [0, 250, 250, 250],
     });
