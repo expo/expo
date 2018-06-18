@@ -9,6 +9,7 @@ const {
   GUIDES,
   DISTRIBUTION,
   EXPOKIT,
+  REACT_NATIVE,
 } = require('./sidebar-navigation-order');
 
 const DIR_MAPPING = {
@@ -16,6 +17,11 @@ const DIR_MAPPING = {
   guides: 'Guides',
   tutorials: 'Tutorials',
   sdk: 'SDK API Reference',
+  "react-native": "React Native",
+  // "react-native-apis": 'React Native APIs',
+  // 'react-native-components': 'React Native Components',
+  // 'react-native-guides': 'React Native Guides',
+  // 'react-native-basics': 'React Native Basics',
   workflow: 'Working with Expo',
   distribution: 'Distributing Your App',
   expokit: 'ExpoKit',
@@ -41,6 +47,11 @@ let sections = [
   { name: 'Distributing Your App', reference: DISTRIBUTION },
   { name: 'ExpoKit', reference: EXPOKIT },
   { name: 'Working with Expo', reference: WORKING_WITH_EXPO },
+  { name: "React Native", reference: REACT_NATIVE,}
+  // { name: 'React Native Basics', reference: REACT_NATIVE_BASICS, },
+  // { name: 'React Native Guides', reference: REACT_NATIVE_GUIDES, },
+  // { name: 'React Native Components', reference: REACT_NATIVE_COMPONENTS, },
+  // { name: 'React Native APIs', reference: REACT_NATIVE_APIS, },
 ];
 
 const sortNav = nav => {
@@ -48,6 +59,7 @@ const sortNav = nav => {
 
   sections.forEach(({ name, reference }) => {
     let section = _.find(nav, o => {
+      console.log(o);
       return o.name.toLowerCase() === name.toLowerCase();
     });
     if (section) {

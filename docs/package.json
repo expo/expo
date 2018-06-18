@@ -29,7 +29,7 @@
     "emotion-server": "^8.0.5",
     "express": "^4.16.3",
     "front-matter": "^2.3.0",
-    "fs-extra": "^4.0.2",
+    "fs-extra": "^6.0.1",
     "github-slugger": "^1.2.0",
     "glob-promise": "^3.1.0",
     "hotshot": "^1.0.5",
@@ -58,9 +58,14 @@
     "@babel/core": "^7.0.0-beta.32",
     "concurrently": "^3.3.0",
     "lint-staged": "4.0.0",
+    "minimist": "^1.2.0",
     "shelljs": "^0.7.8"
   },
   "lint-staged": {
-    "*.js": ["eslint", "prettier --write --no-semi --single-quote", "git add"]
+    "*.js": [
+      "eslint",
+      "prettier --write --no-semi --single-quote",
+      "git add"
+    ]
   }
 }
