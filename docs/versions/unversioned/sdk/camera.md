@@ -105,6 +105,10 @@ Distance to plane of sharpest focus. A value between 0 and 1: 0 - infinity focus
 
 Android only. A string representing aspect ratio of the preview, eg. `4:3`, `16:9`, `1:1`. To check if a ratio is supported by the device use `getSupportedRatiosAsync`. Default: `4:3`.
 
+- **pictureSize** (_string_)
+
+A string representing the size of pictures `takePictureAsync` will take. Available sizes can be fetched with `getAvailablePictureSizesAsync`.
+
 - **onCameraReady** (_function_)
 
 Callback invoked when camera preview has been set.
