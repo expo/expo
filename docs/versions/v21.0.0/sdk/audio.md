@@ -117,7 +117,7 @@ A static convenience method to construct and load a sound is also provided:
 
     ```javascript
     try {
-      const { soundObject, status } = await Expo.Audio.Sound.create(
+      const { sound: soundObject, status } = await Expo.Audio.Sound.create(
         require('./assets/sounds/hello.mp3'),
         { shouldPlay: true }
       );
