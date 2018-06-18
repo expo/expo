@@ -269,8 +269,10 @@ public class Exponent {
   }
 
   public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-    mPermissionsHelper.onRequestPermissionsResult(requestCode, permissions, grantResults);
-    mPermissionsHelper = null;
+    if (permissions.length > 0 && grantResults.length > 0 && mPermissionsHelper != null) {
+      mPermissionsHelper.onRequestPermissionsResult(requestCode, permissions, grantResults);
+      mPermissionsHelper = null;
+    }
   }
 
 
