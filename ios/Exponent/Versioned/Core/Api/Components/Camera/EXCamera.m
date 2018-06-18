@@ -427,7 +427,13 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
     [connection setVideoOrientation:[EXCameraUtils videoOrientationForInterfaceOrientation:[[UIApplication sharedApplication] statusBarOrientation]]];
     
     dispatch_async(self.sessionQueue, ^{
-      NSString *path = [EXFileSystem generatePathInDirectory:[self.bridge.scopedModules.fileSystem.cachesDirectory stringByAppendingPathComponent:@"Camera"] withExtension:@".mov"];
+      NSString *path = nil;
+      if (options[@"path"] != nil) {
+        path = options[@"path"];
+      }
+      else {
+        path = [EXFileSystem generatePathInDirectory:[self.bridge.scopedModules.fileSystem.cachesDirectory stringByAppendingPathComponent:@"Camera"] withExtension:@".mov"];
+      }
       NSURL *outputURL = [[NSURL alloc] initFileURLWithPath:path];
       [self.movieFileOutput startRecordingToOutputFileURL:outputURL recordingDelegate:self];
       self.videoRecordedResolve = resolve;
