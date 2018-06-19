@@ -1,15 +1,9 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "EXAccelerometer.h"
-#import "EXDeviceMotion.h"
-#import "EXGyroscope.h"
-#import "EXMagnetometer.h"
-#import "EXMagnetometerUncalibrated.h"
+#import "EXSensorsManagerBinding.h"
 
-@interface EXSensorManager : NSObject <EXAccelerometerScopedModuleDelegate,
-                                       EXDeviceMotionScopedModuleDelegate,
-                                       EXGyroscopeScopedModuleDelegate,
-                                       EXMagnetometerScopedModuleDelegate,
-                                       EXMagnetometerUncalibratedScopedModuleDelegate>
+static const float EXGravity = 9.81;
+
+@interface EXSensorManager : NSObject <EXSensorsManagerBindingDelegate>
 
 @end

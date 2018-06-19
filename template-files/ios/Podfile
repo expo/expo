@@ -8,8 +8,7 @@ ${EXPONENT_CLIENT_DEPS}
 
   # Local CocoaPods
   pod 'ExponentCPP', :path => '../cpp'
-  pod 'GoogleMobileVision/FaceDetector', '~> 1.1.0'
-  pod 'GoogleMobileVision/MVDataOutput', '~> 1.1.0'
+${PODFILE_UNVERSIONED_EXPO_MODULES_DEPENDENCIES}
 ${PODFILE_UNVERSIONED_RN_DEPENDENCY}
 ${PODFILE_VERSIONED_RN_DEPENDENCIES}
 

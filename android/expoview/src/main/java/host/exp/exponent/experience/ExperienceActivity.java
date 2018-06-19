@@ -32,12 +32,15 @@ import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
+import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
+import expo.core.interfaces.Package;
+import expo.modules.facedetector.FaceDetectorPackage;
 import host.exp.exponent.ABIVersion;
 import host.exp.exponent.AppLoader;
 import host.exp.exponent.Constants;
@@ -65,6 +68,7 @@ import host.exp.exponent.utils.AsyncCondition;
 import host.exp.exponent.utils.ExperienceActivityUtils;
 import host.exp.expoview.Exponent;
 import host.exp.expoview.R;
+import versioned.host.exp.exponent.ExponentPackageDelegate;
 import versioned.host.exp.exponent.ReactUnthemedRootView;
 
 import static host.exp.exponent.kernel.KernelConstants.IS_OPTIMISTIC_KEY;
@@ -74,6 +78,14 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
 
   // Override
   public List<ReactPackage> reactPackages() {
+    return null;
+  }
+  public List<Package> expoPackages() {
+    return Collections.emptyList();
+  }
+
+  @Override
+  public ExponentPackageDelegate getExponentPackageDelegate() {
     return null;
   }
 
@@ -624,7 +636,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     Exponent.getInstance().testPackagerStatus(isDebugModeEnabled(), mManifest, new Exponent.PackagerStatusCallback() {
       @Override
       public void onSuccess() {
-        mReactInstanceManager = startReactInstance(ExperienceActivity.this, mIntentUri, mLinkingPackage, mDetachSdkVersion, mNotification, mIsShellApp, reactPackages(), mDevBundleDownloadProgressListener);
+        mReactInstanceManager = startReactInstance(ExperienceActivity.this, mIntentUri, mLinkingPackage, mDetachSdkVersion, mNotification, mIsShellApp, reactPackages(), expoPackages(), mDevBundleDownloadProgressListener);
       }
 
       @Override

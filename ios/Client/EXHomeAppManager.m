@@ -75,6 +75,7 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
   
   // TODO: ben: common params impl?
   NSMutableDictionary *params = [@{
+                                   @"bridge": bridge,
                                    @"constants": @{
                                        @"deviceId": [EXKernel deviceInstallUUID],
                                        @"expoRuntimeVersion": [EXBuildConstants sharedInstance].expoRuntimeVersion,

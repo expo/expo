@@ -2,7 +2,11 @@
 
 #import "EXSQLite.h"
 
-#import "EXFileSystem.h"
+#import "EXFileSystemUtilities.h"
+#import "EXModuleRegistryBinding.h"
+#import <EXFileSystemInterface/EXFileSystemInterface.h>
+
+#import <React/RCTLog.h>
 
 #import <sqlite3.h>
 
@@ -33,8 +37,13 @@ RCT_EXPORT_MODULE(ExponentSQLite)
 
 - (NSString *)pathForDatabaseName:(NSString *)name
 {
-  NSString *directory = [self.bridge.scopedModules.fileSystem.documentDirectory stringByAppendingPathComponent:@"SQLite"];
-  [EXFileSystem ensureDirExistsWithPath:directory];
+  id<EXFileSystem> fileSystem = [self.bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystem)];
+  if (!fileSystem) {
+    RCTLogError(@"No FileSystem module.");
+    return nil;
+  }
+  NSString *directory = [fileSystem.documentDirectory stringByAppendingPathComponent:@"SQLite"];
+  [EXFileSystemUtilities ensureDirExistsWithPath:directory];
   return [directory stringByAppendingPathComponent:name];
 }
 
@@ -42,6 +51,9 @@ RCT_EXPORT_MODULE(ExponentSQLite)
 {
   NSValue *cachedDB = nil;
   NSString *path = [self pathForDatabaseName:dbName];
+  if (!path) {
+    return nil;
+  }
   if ([[NSFileManager defaultManager] fileExistsAtPath:path]) {
     cachedDB = [cachedDatabases objectForKey:dbName];
   }

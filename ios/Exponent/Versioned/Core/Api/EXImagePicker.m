@@ -4,7 +4,9 @@
 #import <React/RCTUtils.h>
 #import <AssetsLibrary/AssetsLibrary.h>
 
-#import "EXFileSystem.h"
+#import "EXFileSystemUtilities.h"
+#import "EXModuleRegistryBinding.h"
+#import <EXFileSystemInterface/EXFileSystemInterface.h>
 #import "EXCameraPermissionRequester.h"
 #import "EXCameraRollRequester.h"
 #import "EXPermissions.h"
@@ -151,7 +153,12 @@ RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
     NSString *mediaType = [info objectForKey:UIImagePickerControllerMediaType];
     NSMutableDictionary *response = [[NSMutableDictionary alloc] init];
     response[@"cancelled"] = @NO;
-    NSString *directory = [self.bridge.scopedModules.fileSystem.cachesDirectory stringByAppendingPathComponent:@"ImagePicker"];
+    id<EXFileSystem> fileSystem = [self.bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystem)];
+    if (!fileSystem) {
+      self.reject(@"E_MISSING_MODULE", @"No FileSystem module", nil);
+      return;
+    }
+    NSString *directory = [fileSystem.cachesDirectory stringByAppendingPathComponent:@"ImagePicker"];
     if ([mediaType isEqualToString:(NSString *)kUTTypeImage]) {
       [self handleImageWithInfo:info saveAt:directory updateResponse:response completionHandler:^{
         self.resolve(response);
@@ -194,7 +201,7 @@ RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
     RCTLogWarn(@"Unsupported format of the picked image. Using JPEG instead.");
   }
 
-  NSString *path = [EXFileSystem generatePathInDirectory:directory withExtension:extension];
+  NSString *path = [EXFileSystemUtilities generatePathInDirectory:directory withExtension:extension];
   [data writeToFile:path atomically:YES];
   NSURL *fileURL = [NSURL fileURLWithPath:path];
   NSString *filePath = [fileURL absoluteString];
@@ -251,7 +258,7 @@ RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
   
   response[@"type"] = @"video";
   NSError *error = nil;
-  NSString *path = [EXFileSystem generatePathInDirectory:directory withExtension:@".mov"];
+  NSString *path = [EXFileSystemUtilities generatePathInDirectory:directory withExtension:@".mov"];
   [[NSFileManager defaultManager] moveItemAtURL:videoURL
                                           toURL:[NSURL fileURLWithPath:path]
                                           error:&error];

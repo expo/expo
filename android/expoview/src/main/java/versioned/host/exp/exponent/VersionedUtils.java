@@ -19,7 +19,10 @@ public class VersionedUtils {
         .addPackage(new RNAdMobPackage())
         .addPackage(new ExponentPackage(
                 instanceManagerBuilderProperties.experienceProperties,
-                instanceManagerBuilderProperties.manifest))
+                instanceManagerBuilderProperties.manifest,
+                // When distributing change the following two arguments to nulls
+                instanceManagerBuilderProperties.expoPackages,
+                instanceManagerBuilderProperties.exponentPackageDelegate))
         .setInitialLifecycleState(LifecycleState.RESUMED);
 
     if (instanceManagerBuilderProperties.jsBundlePath != null && instanceManagerBuilderProperties.jsBundlePath.length() > 0) {

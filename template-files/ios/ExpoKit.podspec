@@ -21,6 +21,13 @@ Pod::Spec.new do |s|
 
 ${IOS_EXPOKIT_DEPS}
     ss.dependency 'React' # explicit dependency required for CocoaPods >= 1.5.0
+
+    # Universal modules required by ExpoKit so the code compiles
+    ss.dependency 'EXCore'
+    ss.dependency 'EXReactNativeAdapter'
+    ss.dependency 'EXSensorsInterface'
+    ss.dependency 'EXFileSystemInterface'
+    ss.dependency 'EXPermissionsInterface'
   end
 
   s.subspec "CPP" do |ss|
@@ -47,9 +54,6 @@ ${IOS_EXPOKIT_DEPS}
   end
 
   s.subspec "FaceDetector" do |ss|
-    ss.dependency "ExpoKit/Core"
-    ss.dependency "GoogleMobileVision/FaceDetector", '~> 1.1.0'
-    ss.dependency "GoogleMobileVision/MVDataOutput", '~> 1.1.0'
-    ss.source_files = 'ios/Exponent/Versioned/Optional/FaceDetector/**'
+    ss.dependency "EXFaceDetector"
   end
 end

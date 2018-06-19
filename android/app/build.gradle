@@ -175,7 +175,13 @@ dependencies {
     transitive = true
   }
   END UNCOMMENT WHEN DISTRIBUTING */
-  implementation project(path: ':expoview')
+  // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
+  implementation(project(path: ':expoview')) {
+    // Excluding okhttp3 included by expo-file-system
+    exclude group: 'com.squareup.okhttp3', module: 'okhttp'
+    exclude group: 'com.squareup.okhttp3', module: 'okhttp-urlconnection'
+  }
+  // WHEN_DISTRIBUTING_REMOVE_TO_HERE
 }
 
 // This has to be down here for some reason
