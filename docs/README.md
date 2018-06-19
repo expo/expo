@@ -104,7 +104,7 @@ Because the navbar is automatically generated from the directory structure, the 
 
 There is a script under scripts/ called import-react-native-docs.js
 
-`git clone https://github.com/facebook/react-native-website` into $EXPO_UNIVERSE_DIR/../projects/react-native-website
+Update the react-native-website submodule here
 `cd` into scripts/
 Then `./import-react-native-native-docs.js`
 This will write all the relevant RN doc stuff into the unversioned version directory.
