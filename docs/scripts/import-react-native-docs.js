@@ -7,20 +7,15 @@ let fsExtra = require('fs-extra');
 
 let args = minimist(process.argv.slice(2));
 
-let from = args._[0] || process.env.HOME + '/projects/react-native-website';
+let from = args._[0] || path.join(__dirname, '..', 'react-native-website');
 let to = args._[1] || '..';
 let version = args._[2] || 'unversioned';
 let toVersion = path.join(to, 'versions', version);
 
 let docsFrom = path.join(from, 'docs/');
-let websiteFrom = path.join(from, 'website/');
 let sidebarsJson = path.join(from, 'website', 'sidebars.json');
 
 let reactNative = path.join(toVersion, 'react-native');
-let guidesTo = reactNative + '-guides'; // path.join(reactNative, "guides");
-let componentsTo = reactNative + '-components'; // path.join(reactNative, "components");
-let apisTo = reactNative + '-apis'; // path.join(reactNative, "apis");
-let basicsTo = reactNative + '-basics'; // path.join(reactNative, "basics");
 
 let mainAsync = async () => {
   // Go through each file and fix them
@@ -149,7 +144,6 @@ let mainAsync = async () => {
             '\n';
           l +=
             '#### Android Alert Example\n\n![Android Alert Example](https://facebook.github.io/react-native/docs/assets/Alert/exampleandroid.gif)';
-
         }
         if (l === '<table>') {
           inAlertSpecialSection = true;
@@ -240,13 +234,12 @@ let mainAsync = async () => {
   };
 
   for (let [x, dest] of [
-    [guides, guidesTo],
-    [components, componentsTo],
-    [basics, basicsTo],
-    [apis, apisTo],
+    [guides, reactNative],
+    [components, reactNative],
+    [basics, reactNative],
+    [apis, reactNative],
   ]) {
-    // await copyFilesAsync(x, dest);
-    await copyFilesAsync(x, reactNative);
+    await copyFilesAsync(x, dest);
   }
 
   console.log(
