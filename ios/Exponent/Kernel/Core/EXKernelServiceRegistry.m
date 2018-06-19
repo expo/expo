@@ -142,7 +142,6 @@
   return _sensorManager;
 }
 
-
 - (EXAudioSessionManager *)audioSessionManager
 {
   if (!_audioSessionManager) {

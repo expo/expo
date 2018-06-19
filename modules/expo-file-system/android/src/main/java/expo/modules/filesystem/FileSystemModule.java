@@ -62,24 +62,23 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
   private static final String HEADER_KEY = "headers";
 
   private ModuleRegistry mModuleRegistry;
-  private expo.interfaces.filesystem.FileSystem mFileSystem;
 
   private final Map<String, DownloadResumable> mDownloadResumableMap = new HashMap<>();
 
   public FileSystemModule(Context context) {
     super(context);
+    try {
+      ensureDirExists(getContext().getFilesDir());
+      ensureDirExists(getContext().getCacheDir());
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
   }
 
   @Override
   public void setModuleRegistry(ModuleRegistry moduleRegistry) {
     mModuleRegistry = moduleRegistry;
-    mFileSystem = mModuleRegistry.getModule(expo.interfaces.filesystem.FileSystem.class);
-    try {
-      mFileSystem.ensureDirExists(getContext().getFilesDir());
-      mFileSystem.ensureDirExists(getContext().getCacheDir());
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
   }
 
   @Override
@@ -126,7 +125,7 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
     }
   }
 
-  private File uriToFile(Uri uri) throws IOException {
+  private File uriToFile(Uri uri) {
     return new File(uri.getPath());
   }
 
@@ -157,6 +156,9 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
     if ("content".equals(uri.getScheme())) {
       return EnumSet.of(Permission.READ);
     }
+    if ("asset".equals(uri.getScheme())) {
+      return EnumSet.of(Permission.READ);
+    }
     if ("file".equals(uri.getScheme())) {
       return permissionsForPath(uri.getPath());
     }
@@ -182,6 +184,12 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
     ensurePermission(uri, permission, "Location '" + uri + "' doesn't have permission '" + permission.name() + "'.");
   }
 
+  private InputStream openAssetInputStream(Uri uri) throws IOException {
+    // AssetManager expects no leading slash.
+    String asset = uri.getPath().substring(1);
+    return getContext().getAssets().open(asset);
+  }
+
   @ExpoMethod
   public void getInfoAsync(String uriStr, Map<String, Object> options, Promise promise) {
     try {
@@ -195,7 +203,7 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
           result.putBoolean("isDirectory", file.isDirectory());
           result.putString("uri", Uri.fromFile(file).toString());
           if (options.containsKey("md5") && (Boolean) options.get("md5")) {
-            result.putString("md5", mFileSystem.md5(file));
+            result.putString("md5", md5(file));
           }
           result.putDouble("size", file.length());
           result.putDouble("modificationTime", 0.001 * file.lastModified());
@@ -205,10 +213,12 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
           result.putBoolean("isDirectory", false);
           promise.resolve(result);
         }
-      } else if ("content".equals(uri.getScheme())) {
+      } else if ("content".equals(uri.getScheme()) || "asset".equals(uri.getScheme())) {
         Bundle result = new Bundle();
         try {
-          InputStream is = getContext().getContentResolver().openInputStream(uri);
+          InputStream is = "content".equals(uri.getScheme()) ?
+              getContext().getContentResolver().openInputStream(uri) :
+              openAssetInputStream(uri);
           if (is == null) {
             throw new FileNotFoundException();
           }
@@ -244,6 +254,8 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
       ensurePermission(uri, Permission.READ);
       if ("file".equals(uri.getScheme())) {
         promise.resolve(IOUtils.toString(new FileInputStream(uriToFile(uri))));
+      } else if("asset".equals(uri.getScheme())) {
+        promise.resolve(IOUtils.toString(openAssetInputStream(uri)));
       } else {
         throw new IOException("Unsupported scheme for location '" + uri +  "'.");
       }
@@ -367,6 +379,11 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
         OutputStream out = new FileOutputStream(uriToFile(toUri));
         IOUtils.copy(in, out);
         promise.resolve(null);
+      } else if ("asset".equals(fromUri.getScheme())) {
+        InputStream in = openAssetInputStream(fromUri);
+        OutputStream out = new FileOutputStream(uriToFile(toUri));
+        IOUtils.copy(in, out);
+        promise.resolve(null);
       } else {
         throw new IOException("Unsupported scheme for location '" + fromUri +  "'.");
       }
@@ -453,7 +470,7 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
             Bundle result = new Bundle();
             result.putString("uri", Uri.fromFile(file).toString());
             if (options != null && options.containsKey("md5") && (Boolean) options.get("md5")) {
-              result.putString("md5", mFileSystem.md5(file));
+              result.putString("md5", md5(file));
             }
             result.putInt("status", response.code());
             result.putBundle("headers", translateHeaders(response.headers()));
@@ -613,7 +630,7 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
         Bundle result = new Bundle();
         result.putString("uri", Uri.fromFile(file).toString());
         if (options != null && options.containsKey("md5") && (Boolean) options.get("md5")) {
-          result.putString("md5", mFileSystem.md5(file));
+          result.putString("md5", md5(file));
         }
         result.putInt("status", response.code());
         result.putBundle("headers", translateHeaders(response.headers()));
@@ -712,5 +729,21 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
       builder.cookieJar(new JavaNetCookieJar(cookieHandler));
     }
     return builder;
+  }
+
+  private String md5(File file) throws IOException {
+    InputStream is = new FileInputStream(file);
+    try {
+      byte[] md5bytes = DigestUtils.md5(is);
+      return String.valueOf(Hex.encodeHex(md5bytes));
+    } finally {
+      is.close();
+    }
+  }
+
+  private void ensureDirExists(File dir) throws IOException {
+    if (!(dir.isDirectory() || dir.mkdirs())) {
+      throw new IOException("Couldn't create directory '" + dir + "'");
+    }
   }
 }

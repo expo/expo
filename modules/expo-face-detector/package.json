@@ -1,15 +1,18 @@
 {
   "name": "expo-face-detector",
   "version": "1.0.0",
-  "description": "Expo Face Detector standalone module",
+  "description": "Expo Face Detector standalone universal module",
   "main": "index.js",
-  "keywords": ["react-native", "expo"],
+  "keywords": [
+    "react-native",
+    "expo"
+  ],
   "homepage": "https://docs.expo.io/",
   "author": "650 Industries, Inc.",
   "license": "BSD",
   "dependencies": {
-    "expo-core": "link:../expo-core",
-    "expo-face-detector-interface": "link:../expo-face-detector-interface-interface",
-    "expo-permissions-interface": "link:../expo-permissions-interface"
+    "expo-core": "^1.0.0",
+    "expo-face-detector-interface": "^1.0.0",
+    "expo-permissions-interface": "^1.0.0"
   }
 }

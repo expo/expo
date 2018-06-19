@@ -1,0 +1,50 @@
+
+buildscript {
+    repositories {
+        jcenter()
+        maven {
+            url 'https://maven.google.com/'
+            name 'Google'
+        }
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.0.1'
+    }
+}
+
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 26
+
+    defaultConfig {
+        minSdkVersion 19
+        targetSdkVersion 26
+        versionCode 1
+        versionName "1.0"
+    }
+    lintOptions {
+        abortOnError false
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+if (new File(rootProject.projectDir.parentFile, 'pubspec.yaml').exists()) {
+    apply from: project(":expo_core").file("../expo-core.gradle")
+} else if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
+    apply from: project(":expo-core").file("../expo-core.gradle")
+} else {
+    throw new GradleException(
+            "'expo-core.gradle' was not found in the usual Flutter or React Native dependency locations. " +
+                    "This package can only be used in such projects. Are you sure you've installed the dependencies properly?")
+}
+
+dependencies {
+    expendency "expo-core"
+    expendency "expo-permissions-interface"
+}
+  

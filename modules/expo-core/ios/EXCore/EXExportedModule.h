@@ -9,7 +9,7 @@
 // Check documentation of the adapter appropriate to your platform
 // to find out how to access constants and methods exported by the modules.
 
-@interface EXExportedModule : NSObject <EXInternalModule>
+@interface EXExportedModule : NSObject <EXInternalModule, NSCopying>
 
 - (NSDictionary *)constantsToExport;
 + (const NSString *)exportedModuleName;

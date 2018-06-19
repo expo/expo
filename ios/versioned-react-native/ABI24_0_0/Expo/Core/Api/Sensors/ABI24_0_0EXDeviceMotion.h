@@ -6,8 +6,8 @@ static const float ABI24_0_0EXGravity = 9.81;
 
 @protocol ABI24_0_0EXDeviceMotionScopedModuleDelegate
 
-- (void)sensorModuleDidSubscribeForDeviceMotionUpdates:(id)scopedSensorModule withHandler:(void (^)(NSDictionary *event))handlerBlock;
-- (void)sensorModuleDidUnsubscribeForDeviceMotionUpdates:(id)scopedSensorModule;
+- (void)sensorModuleDidSubscribeForDeviceMotionUpdatesOfExperience:(NSString *)experienceId withHandler:(void (^)(NSDictionary *event))handlerBlock;
+- (void)sensorModuleDidUnsubscribeForDeviceMotionUpdatesOfExperience:(NSString *)experienceId;
 - (void)setDeviceMotionUpdateInterval:(NSTimeInterval)intervalMs;
 
 @end

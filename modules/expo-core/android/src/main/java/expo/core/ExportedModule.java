@@ -95,6 +95,7 @@ public abstract class ExportedModule {
     try {
       return method.invoke(this, transformedArguments.toArray());
     } catch (IllegalAccessException | InvocationTargetException e) {
+      e.printStackTrace();
       throw new RuntimeException("Exception occurred while executing exported method " + methodName
               + " on module " + getName() + ": " + e.getMessage(), e);
     }

@@ -4,8 +4,8 @@
 
 @protocol ABI25_0_0EXGyroscopeScopedModuleDelegate
 
-- (void)sensorModuleDidSubscribeForGyroscopeUpdates:(id)scopedSensorModule withHandler:(void (^)(NSDictionary *event))handlerBlock;
-- (void)sensorModuleDidUnsubscribeForGyroscopeUpdates:(id)scopedSensorModule;
+- (void)sensorModuleDidSubscribeForGyroscopeUpdatesOfExperience:(NSString *)experienceId withHandler:(void (^)(NSDictionary *event))handlerBlock;
+- (void)sensorModuleDidUnsubscribeForGyroscopeUpdatesOfExperience:(NSString *)experienceId;
 - (void)setGyroscopeUpdateInterval:(NSTimeInterval)intervalMs;
 
 @end

@@ -10,6 +10,9 @@
 #import "EXFileSystem.h"
 #import "EXImageUtils.h"
 #import <React/RCTLog.h>
+#import "EXFileSystemUtilities.h"
+#import "EXModuleRegistryBinding.h"
+#import <EXFileSystemInterface/EXFileSystemInterface.h>
 
 @implementation EXImageManipulator
 
@@ -35,7 +38,12 @@ RCT_EXPORT_METHOD(manipulate:(NSString *)uri
 {
   NSURL *url = [NSURL URLWithString:uri];
   NSString *path = [url.path stringByStandardizingPath];
-  if (!([self.bridge.scopedModules.fileSystem permissionsForURI:url] & EXFileSystemPermissionRead)) {
+  id<EXFileSystem> fileSystem = [self.bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystem)];
+  if (!fileSystem) {
+    reject(@"E_MISSING_MODULE", @"No FileSystem module.", nil);
+    return;
+  }
+  if (!([fileSystem permissionsForURI:url] & EXFileSystemPermissionRead)) {
     reject(@"E_FILESYSTEM_PERMISSIONS", [NSString stringWithFormat:@"File '%@' isn't readable.", uri], nil);
     return;
   }
@@ -153,8 +161,8 @@ RCT_EXPORT_METHOD(manipulate:(NSString *)uri
     extension = @".jpg";
   }
 
-  NSString *directory = [self.bridge.scopedModules.fileSystem.cachesDirectory stringByAppendingPathComponent:@"ImageManipulator"];
-  [EXFileSystem ensureDirExistsWithPath:directory];
+  NSString *directory = [fileSystem.cachesDirectory stringByAppendingPathComponent:@"ImageManipulator"];
+  [EXFileSystemUtilities ensureDirExistsWithPath:directory];
   NSString *fileName = [[[NSUUID UUID] UUIDString] stringByAppendingString:extension];
   NSString *newPath = [directory stringByAppendingPathComponent:fileName];
   [imageData writeToFile:newPath atomically:YES];

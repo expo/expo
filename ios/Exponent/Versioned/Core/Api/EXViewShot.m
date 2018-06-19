@@ -7,7 +7,9 @@
 #import <React/RCTUIManager.h>
 #import <React/RCTBridge.h>
 
-#import "EXFileSystem.h"
+#import "EXFileSystemUtilities.h"
+#import "EXModuleRegistryBinding.h"
+#import <EXFileSystemInterface/EXFileSystemInterface.h>
 
 
 @implementation EXViewShot
@@ -77,9 +79,14 @@ RCT_EXPORT_METHOD(takeSnapshot:(nonnull NSNumber *)target
       if ([result isEqualToString:@"file"]) {
         // Save to a temp file
         NSString *extension = [@"." stringByAppendingString:format];
-        NSString *directory = [self.bridge.scopedModules.fileSystem.cachesDirectory stringByAppendingPathComponent:@"ViewShot"];
-        [EXFileSystem ensureDirExistsWithPath:directory];
-        NSString *path = [EXFileSystem generatePathInDirectory:directory withExtension:extension];
+        id<EXFileSystem> fileSystem = [self.bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystem)];
+        if (!fileSystem) {
+          reject(@"E_MISSING_MODULE", @"No FileSystem module.", nil);
+          return;
+        }
+        NSString *directory = [fileSystem.cachesDirectory stringByAppendingPathComponent:@"ViewShot"];
+        [EXFileSystemUtilities ensureDirExistsWithPath:directory];
+        NSString *path = [EXFileSystemUtilities generatePathInDirectory:directory withExtension:extension];
         if (path) {
           if ([data writeToFile:path options:(NSDataWritingOptions)0 error:&error]) {
             res = [NSURL fileURLWithPath:path].absoluteString;

@@ -1,5 +1,7 @@
 package expo.adapters.react;
 
+import android.util.SparseArray;
+
 import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -25,11 +27,13 @@ import expo.core.interfaces.ExpoMethod;
  * A wrapper/proxy for all {@link ExportedModule}s, gets exposed as {@link com.facebook.react.bridge.NativeModule},
  * so that JS code can call methods of the internal modules.
  */
-/* package */ class NativeModulesProxy extends ReactContextBaseJavaModule {
+public class NativeModulesProxy extends ReactContextBaseJavaModule {
   private final static String NAME = "ExpoNativeModuleProxy";
   private final static String MODULES_CONSTANTS_KEY = "modulesConstants";
   private final static String EXPORTED_METHODS_KEY = "exportedMethods";
 
+  private final static String METHOD_INFO_KEY = "key";
+  private final static String METHOD_INFO_NAME = "name";
   private final static String METHOD_INFO_ARGUMENTS_COUNT = "argumentsCount";
 
   private final static String UNEXPECTED_ERROR = "E_UNEXPECTED_ERROR";
@@ -37,10 +41,14 @@ import expo.core.interfaces.ExpoMethod;
   private final static String ARGS_TYPES_MISMATCH_ERROR = "E_ARGS_TYPES_MISMATCH";
 
   private ModuleRegistry mModuleRegistry;
+  private Map<String, Map<String, Integer>> mExportedMethodsKeys;
+  private Map<String, SparseArray<String>> mExportedMethodsReverseKeys;
 
-  /* package */ NativeModulesProxy(ReactApplicationContext context, ModuleRegistry moduleRegistry) {
+  public NativeModulesProxy(ReactApplicationContext context, ModuleRegistry moduleRegistry) {
     super(context);
     mModuleRegistry = moduleRegistry;
+    mExportedMethodsKeys = new HashMap<>();
+    mExportedMethodsReverseKeys = new HashMap<>();
   }
 
   @Override
@@ -58,7 +66,11 @@ import expo.core.interfaces.ExpoMethod;
     for (ExportedModule exportedModule : exportedModules) {
       String moduleName = exportedModule.getName();
       modulesConstants.put(moduleName, exportedModule.getConstants());
-      exportedMethodsMap.put(moduleName, transformExportedMethodsMap(exportedModule.getExportedMethods()));
+
+      List<Map<String, Object>> exportedMethods = transformExportedMethodsMap(exportedModule.getExportedMethods());
+      assignExportedMethodsKeys(moduleName, exportedMethods);
+
+      exportedMethodsMap.put(moduleName, exportedMethods);
     }
 
     Map<String, Object> constants = new HashMap<>(2);
@@ -71,10 +83,22 @@ import expo.core.interfaces.ExpoMethod;
    * The only exported {@link ReactMethod}.
    * JavaScript can call native modules' exported methods ({@link ExpoMethod}) using this method as a proxy.
    * For native {@link ExpoMethod} `void put(String key, int value)` in `NativeDictionary` module
-   * JavaScript could call `NativeModulesProxy.callMethod("NativeDictionary", "put", ["key", 42])`.
+   * JavaScript could call `NativeModulesProxy.callMethod("NativeDictionary", "put", ["key", 42])`
+   * or `NativeModulesProxy.callMethod("NativeDictionary", 2, ["key", 42])`, where the second argument
+   * is a method's constant key.
    */
   @ReactMethod
-  public void callMethod(String moduleName, String methodName, ReadableArray arguments, final Promise promise) {
+  public void callMethod(String moduleName, Dynamic methodKeyOrName, ReadableArray arguments, final Promise promise) {
+    String methodName;
+    if (methodKeyOrName.getType() == ReadableType.String) {
+      methodName = methodKeyOrName.asString();
+    } else if (methodKeyOrName.getType() == ReadableType.Number) {
+      methodName = mExportedMethodsReverseKeys.get(moduleName).get(methodKeyOrName.asInt());
+    } else {
+      promise.reject(UNEXPECTED_ERROR, "Method key is neither a String nor an Integer -- don't know how to map it to method name.");
+      return;
+    }
+
     try {
       List<Object> nativeArguments = getNativeArgumentsForMethod(arguments, mModuleRegistry.getExportedModule(moduleName).getExportedMethodInfos().get(methodName));
       nativeArguments.add(new PromiseWrapper(promise));
@@ -110,10 +134,10 @@ import expo.core.interfaces.ExpoMethod;
   /**
    * Transforms exportedMethodsMap to a map of methodInfos
    */
-  private Map<String, Object> transformExportedMethodsMap(Map<String, Method> exportedMethods) {
-    Map<String, Object> methods = new HashMap<>(exportedMethods.size());
+  private List<Map<String, Object>> transformExportedMethodsMap(Map<String, Method> exportedMethods) {
+    List<Map<String, Object>> methods = new ArrayList<>(exportedMethods.size());
     for (Map.Entry<String, Method> entry : exportedMethods.entrySet()) {
-      methods.put(entry.getKey(), getMethodInfo(entry.getValue()));
+      methods.add(getMethodInfo(entry.getKey(), entry.getValue()));
     }
     return methods;
   }
@@ -121,9 +145,44 @@ import expo.core.interfaces.ExpoMethod;
   /**
    * Returns methodInfo Map (a Map containing a value for key argumentsCount).
    */
-  private Map<String, Object> getMethodInfo(Method method) {
+  private Map<String, Object> getMethodInfo(String name, Method method) {
     Map<String, Object> info = new HashMap<>(1);
+    info.put(METHOD_INFO_NAME, name);
     info.put(METHOD_INFO_ARGUMENTS_COUNT, method.getParameterTypes().length - 1); // - 1 is for the Promise
     return info;
+  }
+
+  /**
+   * Assigns keys to exported method infos and updates {@link #mExportedMethodsKeys} and {@link #mExportedMethodsReverseKeys}.
+   * Mutates maps in provided list.
+   */
+  private void assignExportedMethodsKeys(String moduleName, List<Map<String, Object>> exportedMethodsInfos) {
+    if (mExportedMethodsKeys.get(moduleName) == null) {
+      mExportedMethodsKeys.put(moduleName, new HashMap<String, Integer>());
+    }
+
+    if (mExportedMethodsReverseKeys.get(moduleName) == null) {
+      mExportedMethodsReverseKeys.put(moduleName, new SparseArray<String>());
+    }
+
+    for (int i = 0; i < exportedMethodsInfos.size(); i++) {
+      Map<String, Object> methodInfo = exportedMethodsInfos.get(i);
+
+      if (methodInfo.get(METHOD_INFO_NAME) == null || !(methodInfo.get(METHOD_INFO_NAME) instanceof String)) {
+        throw new RuntimeException("No method name in MethodInfo - " + methodInfo.toString());
+      }
+
+      String methodName = (String) methodInfo.get(METHOD_INFO_NAME);
+      Integer maybePreviousIndex = mExportedMethodsKeys.get(moduleName).get(methodName);
+      if (maybePreviousIndex == null) {
+        int key = mExportedMethodsKeys.get(moduleName).values().size();
+        methodInfo.put(METHOD_INFO_KEY, key);
+        mExportedMethodsKeys.get(moduleName).put(methodName, key);
+        mExportedMethodsReverseKeys.get(moduleName).put(key, methodName);
+      } else {
+        int key = maybePreviousIndex;
+        methodInfo.put(METHOD_INFO_KEY, key);
+      }
+    }
   }
 }

@@ -45,14 +45,14 @@ ABI27_0_0EX_EXPORT_SCOPED_MODULE(ExponentGyroscope, SensorManager);
 - (void)startObserving {
   [self setWatching:YES];
   __weak typeof(self) weakSelf = self;
-  [_kernelSensorServiceDelegate sensorModuleDidSubscribeForGyroscopeUpdates:self withHandler:^(NSDictionary *event) {
+  [_kernelSensorServiceDelegate sensorModuleDidSubscribeForGyroscopeUpdatesOfExperience:self.experienceId withHandler:^(NSDictionary *event) {
     [weakSelf sendEventWithName:@"gyroscopeDidUpdate" body:event];
   }];
 }
 
 - (void)stopObserving {
   [self setWatching:NO];
-  [_kernelSensorServiceDelegate sensorModuleDidUnsubscribeForGyroscopeUpdates:self];
+  [_kernelSensorServiceDelegate sensorModuleDidUnsubscribeForGyroscopeUpdatesOfExperience:self.experienceId];
 }
 
 ABI27_0_0RCT_EXPORT_METHOD(setUpdateInterval:(nonnull NSNumber *)intervalMs) {
@@ -69,7 +69,7 @@ ABI27_0_0RCT_EXPORT_METHOD(setUpdateInterval:(nonnull NSNumber *)intervalMs) {
 - (void)bridgeDidBackground:(NSNotification *)notification
 {
   if ([self isWatching]) {
-    [_kernelSensorServiceDelegate sensorModuleDidUnsubscribeForGyroscopeUpdates:self];
+    [_kernelSensorServiceDelegate sensorModuleDidUnsubscribeForGyroscopeUpdatesOfExperience:self.experienceId];
   }
 }
 

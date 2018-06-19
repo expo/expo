@@ -22,9 +22,9 @@ EX_REGISTER_MODULE();
   return nil;
 }
 
-+ (const NSArray<NSString *> *)internalModuleNames
++ (const NSArray<Protocol *> *)exportedInterfaces
 {
-  return @[@"LifecycleManager", @"UIManager"];
+  return @[@protocol(EXAppLifecycleService), @protocol(EXUIManager)];
 }
 
 # pragma mark - Lifecycle methods

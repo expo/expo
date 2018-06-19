@@ -72,21 +72,21 @@ and run `pod install`.
 1. Open the `MainApplication.java` of your application.
 2. Add to the imports:
     ```java
-    import expo.adapters.react.ModuleRegistryWrapper;
+    import expo.adapters.react.ModuleRegistryAdapter;
     import expo.adapters.react.ReactAdapterPackage;
-    import expo.core.ModuleRegistryBuilder;
-    import expo.core.Package;
+    import expo.core.ModuleRegistryProvider;
+    import expo.core.interfaces.Package;
     ```
 3. Create an instance variable on the `Application`:
     ```java
-    private final ModuleRegistryBuilder mModuleRegistryBuilder = new ModuleRegistryBuilder(Arrays.<Package>asList(
-      new ReactAdapterPackage(),
-      // more packages, like
-      // new CameraPackage(), if you use expo-camera
-      // etc.
+    private final ModuleRegistryProvider mModuleRegistryProvider = new ModuleRegistryProvider(Arrays.<Package>asList(
+        new ReactAdapterPackage(),
+        // more packages, like
+        // new CameraPackage(), if you use expo-camera
+        // etc.
     ));
     ```
-4. Add `new ModuleRegistryWrapper(mModuleRegistryBuilder)` to the list returned by `protected List<ReactPackage> getPackages()`.
+4. Add `new ModuleRegistryAdapter(mModuleRegistryProvider)` to the list returned by `protected List<ReactPackage> getPackages()`.
 5. You're good to go!
 
 ## Usage

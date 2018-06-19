@@ -17,6 +17,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import expo.adapters.react.ReactModuleRegistryProvider;
+import expo.core.interfaces.Package;
+import expo.modules.camera.CameraPackage;
+import expo.modules.facedetector.FaceDetectorPackage;
+import expo.modules.filesystem.FileSystemPackage;
+import expo.modules.sensors.SensorsPackage;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.kernel.ExperienceId;
@@ -26,13 +32,12 @@ import versioned.host.exp.exponent.modules.api.BrightnessModule;
 import versioned.host.exp.exponent.modules.api.ImageManipulatorModule;
 import versioned.host.exp.exponent.modules.api.MailComposerModule;
 import versioned.host.exp.exponent.modules.api.MediaLibraryModule;
-import versioned.host.exp.exponent.modules.api.print.PrintModule;
+import versioned.host.exp.exponent.modules.api.PedometerModule;
 import versioned.host.exp.exponent.modules.api.UpdatesModule;
 import versioned.host.exp.exponent.modules.api.av.video.VideoManager;
+import versioned.host.exp.exponent.modules.api.print.PrintModule;
 import versioned.host.exp.exponent.modules.api.components.barcodescanner.BarCodeScannerModule;
 import versioned.host.exp.exponent.modules.api.components.barcodescanner.BarCodeScannerViewManager;
-import versioned.host.exp.exponent.modules.api.components.facedetector.FaceDetectorModule;
-import versioned.host.exp.exponent.modules.api.sensors.AccelerometerModule;
 import versioned.host.exp.exponent.modules.api.AmplitudeModule;
 import versioned.host.exp.exponent.modules.api.CalendarModule;
 import versioned.host.exp.exponent.modules.api.ConstantsModule;
@@ -42,12 +47,9 @@ import versioned.host.exp.exponent.modules.api.DocumentPickerModule;
 import versioned.host.exp.exponent.modules.api.ErrorRecoveryModule;
 import versioned.host.exp.exponent.modules.api.FabricModule;
 import versioned.host.exp.exponent.modules.api.FacebookModule;
-import versioned.host.exp.exponent.modules.api.FileSystemModule;
 import versioned.host.exp.exponent.modules.api.FingerprintModule;
 import versioned.host.exp.exponent.modules.api.FontLoaderModule;
 import versioned.host.exp.exponent.modules.api.GoogleModule;
-import versioned.host.exp.exponent.modules.api.sensors.DeviceMotionModule;
-import versioned.host.exp.exponent.modules.api.sensors.GyroscopeModule;
 import versioned.host.exp.exponent.modules.api.ImageCropperModule;
 import versioned.host.exp.exponent.modules.api.ImagePickerModule;
 import versioned.host.exp.exponent.modules.api.KeepAwakeModule;
@@ -55,7 +57,6 @@ import versioned.host.exp.exponent.modules.api.KeyboardModule;
 import versioned.host.exp.exponent.modules.api.LocationModule;
 import versioned.host.exp.exponent.modules.api.LocalizationModule;
 import versioned.host.exp.exponent.modules.api.NotificationsModule;
-import versioned.host.exp.exponent.modules.api.PedometerModule;
 import versioned.host.exp.exponent.modules.api.PermissionsModule;
 import versioned.host.exp.exponent.modules.api.RNViewShotModule;
 import versioned.host.exp.exponent.modules.api.SQLiteModule;
@@ -69,8 +70,6 @@ import versioned.host.exp.exponent.modules.api.av.AVModule;
 import versioned.host.exp.exponent.modules.api.av.video.VideoViewManager;
 import versioned.host.exp.exponent.modules.api.cognito.RNAWSCognitoModule;
 import versioned.host.exp.exponent.modules.api.components.LinearGradientManager;
-import versioned.host.exp.exponent.modules.api.components.camera.CameraModule;
-import versioned.host.exp.exponent.modules.api.components.camera.CameraViewManager;
 import versioned.host.exp.exponent.modules.api.components.lottie.LottiePackage;
 import versioned.host.exp.exponent.modules.api.components.gesturehandler.react.RNGestureHandlerPackage;
 import versioned.host.exp.exponent.modules.api.components.gesturehandler.react.RNGestureHandlerModule;
@@ -86,18 +85,24 @@ import versioned.host.exp.exponent.modules.api.gl.GLViewManager;
 import versioned.host.exp.exponent.modules.api.IntentLauncherModule;
 import versioned.host.exp.exponent.modules.api.reanimated.ReanimatedModule;
 import versioned.host.exp.exponent.modules.api.SecureStoreModule;
-import versioned.host.exp.exponent.modules.api.sensors.MagnetometerModule;
-import versioned.host.exp.exponent.modules.api.sensors.MagnetometerUncalibratedModule;
 import versioned.host.exp.exponent.modules.api.standalone.branch.RNBranchModule;
 import versioned.host.exp.exponent.modules.internal.ExponentAsyncStorageModule;
 import versioned.host.exp.exponent.modules.internal.ExponentIntentModule;
 import versioned.host.exp.exponent.modules.internal.ExponentUnsignedAsyncStorageModule;
 import versioned.host.exp.exponent.modules.api.components.payments.StripeModule;
 import versioned.host.exp.exponent.modules.test.ExponentTestNativeModule;
+import versioned.host.exp.exponent.modules.universal.ExpoModuleRegistryAdapter;
+import versioned.host.exp.exponent.modules.universal.ScopedModuleRegistryAdapter;
 
 import static host.exp.exponent.kernel.KernelConstants.LINKING_URI_KEY;
 
 public class ExponentPackage implements ReactPackage {
+  private static final List<Package> EXPO_MODULES_PACKAGES = Arrays.<Package>asList(
+      new CameraPackage(),
+      new SensorsPackage(),
+      new FileSystemPackage(),
+      new FaceDetectorPackage()
+  );
 
   private static final String TAG = ExponentPackage.class.getSimpleName();
 
@@ -105,16 +110,30 @@ public class ExponentPackage implements ReactPackage {
   private final Map<String, Object> mExperienceProperties;
   private final JSONObject mManifest;
 
+  private final ScopedModuleRegistryAdapter mModuleRegistryAdapter;
+
   private ExponentPackage(boolean isKernel, Map<String, Object> experienceProperties, JSONObject manifest) {
     mIsKernel = isKernel;
     mExperienceProperties = experienceProperties;
     mManifest = manifest;
+    mModuleRegistryAdapter = createDefaultModuleRegistryAdapterForPackages(EXPO_MODULES_PACKAGES);
   }
 
-  public ExponentPackage(Map<String, Object> experienceProperties, JSONObject manifest) {
+  public ExponentPackage(Map<String, Object> experienceProperties, JSONObject manifest, List<Package> expoPackages, ExponentPackageDelegate delegate) {
     mIsKernel = false;
     mExperienceProperties = experienceProperties;
     mManifest = manifest;
+
+    List<Package> packages = new ArrayList<>(EXPO_MODULES_PACKAGES);
+    if (expoPackages != null) {
+      packages.addAll(expoPackages);
+    }
+    // Delegate may not be null only when the app is detached
+    if (delegate != null) {
+      mModuleRegistryAdapter = delegate.getScopedModuleRegistryAdapterForPackages(packages);
+    } else {
+      mModuleRegistryAdapter = createDefaultModuleRegistryAdapterForPackages(packages);
+    }
   }
 
   public static ExponentPackage kernelExponentPackage(JSONObject manifest) {
@@ -146,20 +165,16 @@ public class ExponentPackage implements ReactPackage {
       nativeModules.add((NativeModule) ExponentKernelModuleProvider.newInstance(reactContext));
     }
 
+    nativeModules.add(new ImageCropperModule(reactContext));
+
     if (isVerified) {
       try {
         ExperienceId experienceId = ExperienceId.create(mManifest.getString(ExponentManifest.MANIFEST_ID_KEY));
         ScopedContext scopedContext = new ScopedContext(reactContext, experienceId.getUrlEncoded());
 
         nativeModules.add(new ExponentAsyncStorageModule(reactContext, mManifest));
-        nativeModules.add(new AccelerometerModule(reactContext, experienceId));
-        nativeModules.add(new GyroscopeModule(reactContext, experienceId));
-        nativeModules.add(new MagnetometerModule(reactContext, experienceId));
-        nativeModules.add(new DeviceMotionModule(reactContext, experienceId));
-        nativeModules.add(new MagnetometerUncalibratedModule(reactContext, experienceId));
         nativeModules.add(new NotificationsModule(reactContext, mManifest, mExperienceProperties));
         nativeModules.add(new ContactsModule(reactContext, experienceId));
-        nativeModules.add(new FileSystemModule(reactContext, scopedContext, mExperienceProperties));
         nativeModules.add(new LocationModule(reactContext, scopedContext, experienceId));
         nativeModules.add(new CryptoModule(reactContext));
         nativeModules.add(new ImagePickerModule(reactContext, scopedContext, experienceId));
@@ -171,8 +186,6 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new PermissionsModule(reactContext, experienceId, mManifest));
         nativeModules.add(new AmplitudeModule(reactContext, scopedContext));
         nativeModules.add(new SegmentModule(reactContext, scopedContext));
-        nativeModules.add(new CameraModule(reactContext, scopedContext, experienceId));
-        nativeModules.add(new FaceDetectorModule(reactContext, scopedContext));
         nativeModules.add(new RNViewShotModule(reactContext, scopedContext));
         nativeModules.add(new KeepAwakeModule(reactContext));
         nativeModules.add(new ExponentTestNativeModule(reactContext));
@@ -182,9 +195,9 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new NativeAdManager(reactContext));
         nativeModules.add(new AdSettingsManager(reactContext));
         nativeModules.add(new InterstitialAdManager(reactContext));
+        nativeModules.add(new PedometerModule(reactContext));
         nativeModules.add(new SQLiteModule(reactContext, scopedContext));
         nativeModules.add(new DocumentPickerModule(reactContext, scopedContext));
-        nativeModules.add(new PedometerModule(reactContext));
         nativeModules.add(new RNBranchModule(reactContext));
         nativeModules.add(new ErrorRecoveryModule(reactContext, experienceId));
         nativeModules.add(new IntentLauncherModule(reactContext));
@@ -203,13 +216,17 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new PrintModule(reactContext, scopedContext));
         nativeModules.add(new LocalizationModule(reactContext));
         nativeModules.add(new ReanimatedModule(reactContext));
+
+        // Call to create native modules has to be at the bottom --
+        // -- ExpoModuleRegistryAdapter uses the list of native modules
+        // to create Bindings for internal modules.
+        nativeModules.addAll(mModuleRegistryAdapter.createNativeModules(scopedContext, experienceId, mManifest, nativeModules));
       } catch (JSONException | UnsupportedEncodingException e) {
         EXL.e(TAG, e.toString());
       }
     } else {
       nativeModules.add(new ExponentUnsignedAsyncStorageModule(reactContext));
     }
-    nativeModules.add(new ImageCropperModule(reactContext));
 
     return nativeModules;
   }
@@ -219,7 +236,6 @@ public class ExponentPackage implements ReactPackage {
     List<ViewManager> viewManagers = new ArrayList<>(Arrays.<ViewManager>asList(
         new LinearGradientManager(),
         new VideoViewManager(),
-        new CameraViewManager(),
         new GLViewManager(),
         new NativeAdViewManager(),
         new BarCodeScannerViewManager(),
@@ -234,6 +250,8 @@ public class ExponentPackage implements ReactPackage {
       new RNGestureHandlerPackage()
     ));
 
+    viewManagers.addAll(mModuleRegistryAdapter.createViewManagers(reactContext));
+
     return viewManagers;
   }
 
@@ -243,5 +261,9 @@ public class ExponentPackage implements ReactPackage {
     for (ReactPackage pack : packages) {
       viewManagers.addAll(pack.createViewManagers(reactContext));
     }
+  }
+
+  private ExpoModuleRegistryAdapter createDefaultModuleRegistryAdapterForPackages(List<Package> packages) {
+    return new ExpoModuleRegistryAdapter(new ReactModuleRegistryProvider(packages));
   }
 }

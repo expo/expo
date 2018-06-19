@@ -24,7 +24,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
-import versioned.host.exp.exponent.modules.api.components.camera.ExpoCameraView;
+import expo.modules.camera.ExpoCameraView;
 import host.exp.exponent.utils.ScopedContext;
 
 import static host.exp.exponent.exgl.EXGL.*;

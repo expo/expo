@@ -26,6 +26,12 @@
 
 #import <objc/message.h>
 
+#import <EXCore/EXModuleRegistry.h>
+#import <EXCore/EXModuleRegistryDelegate.h>
+#import <EXReactNativeAdapter/EXNativeModulesProxy.h>
+#import "EXScopedModuleRegistryAdapter.h"
+#import "EXScopedModuleRegistryDelegate.h"
+
 static NSNumber *EXVersionManagerIsFirstLoad;
 
 // used for initializing scoped modules which don't tie in to any kernel service.
@@ -348,6 +354,23 @@ void EXRegisterScopedModule(Class moduleClass, ...)
     // additionally disable RCTRedBox
     [extraModules addObject:[[EXDisabledRedBox alloc] init]];
   }
+  
+  EXModuleRegistryProvider *moduleRegistryProvider = [[EXModuleRegistryProvider alloc] init];
+
+  Class resolverClass = [EXScopedModuleRegistryDelegate class];
+  if (params[@"moduleRegistryDelegateClass"] && params[@"moduleRegistryDelegateClass"] != [NSNull null]) {
+    resolverClass = params[@"moduleRegistryDelegateClass"];
+  }
+
+  id<EXModuleRegistryDelegate> moduleRegistryDelegate = [[resolverClass alloc] initWithParams:params];
+  [moduleRegistryProvider setModuleRegistryDelegate:moduleRegistryDelegate];
+
+  EXScopedModuleRegistryAdapter *moduleRegistryAdapter = [[EXScopedModuleRegistryAdapter alloc] initWithModuleRegistryProvider:moduleRegistryProvider];
+
+  NSArray<id<RCTBridgeModule>> *expoModules = [moduleRegistryAdapter extraModulesForBridge:params[@"bridge"] andExperience:experienceId withScopedModulesArray:extraModules withKernelServices:services];
+
+  [extraModules addObjectsFromArray:expoModules];
+
   return extraModules;
 }
 

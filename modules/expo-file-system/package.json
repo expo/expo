@@ -1,15 +1,18 @@
 {
   "name": "expo-file-system",
   "version": "1.0.0",
-  "description": "Expo File System standalone module",
+  "description": "Expo File System standalone universal module",
   "main": "index.js",
-  "keywords": ["react-native", "expo"],
+  "keywords": [
+    "react-native",
+    "expo"
+  ],
   "homepage": "https://docs.expo.io/",
   "author": "650 Industries, Inc.",
   "license": "BSD",
   "dependencies": {
-    "expo-core": "link:../expo-core",
-    "expo-file-system-interface": "link:../expo-file-system-interface",
+    "expo-core": "^1.0.0",
+    "expo-file-system-interface": "^1.0.0",
     "uuid-js": "^0.7.5"
   }
 }

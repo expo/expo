@@ -36,7 +36,7 @@
 #define EX_REGISTER_MODULE(_custom_load_code) \
   _EX_DEFINE_CUSTOM_LOAD(_custom_load_code)
 
-
+#import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
 
 typedef struct EXMethodInfo {

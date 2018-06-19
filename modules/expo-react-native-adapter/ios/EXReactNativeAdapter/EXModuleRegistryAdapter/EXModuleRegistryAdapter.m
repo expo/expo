@@ -25,8 +25,11 @@
 
 - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge andExperience:(NSString *)experienceId
 {
-  EXModuleRegistry *moduleRegistry = [_moduleRegistryProvider moduleRegistryForExperienceId:experienceId];
-  
+  return [self extraModulesForModuleRegistry:[_moduleRegistryProvider moduleRegistryForExperienceId:experienceId]];
+}
+
+- (NSArray<id<RCTBridgeModule>> *)extraModulesForModuleRegistry:(EXModuleRegistry *)moduleRegistry
+{
   NSMutableArray<id<RCTBridgeModule>> *extraModules = [NSMutableArray array];
   
   EXNativeModulesProxy *nativeModulesProxy = [[EXNativeModulesProxy alloc] initWithModuleRegistry:moduleRegistry];
@@ -59,7 +62,5 @@
   [moduleRegistry initialize];
   return extraModules;
 }
-
-
 
 @end

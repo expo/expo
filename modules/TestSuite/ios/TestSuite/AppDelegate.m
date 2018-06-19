@@ -14,8 +14,11 @@
 
 #import <EXCore/EXModuleRegistry.h>
 #import <EXReactNativeAdapter/EXNativeModulesProxy.h>
+#import <EXReactNativeAdapter/EXModuleRegistryAdapter.h>
 
 @interface AppDelegate () <RCTBridgeDelegate>
+
+@property (nonatomic, strong) EXModuleRegistryAdapter *moduleRegistryAdapter;
 
 @end
 
@@ -23,6 +26,7 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+  self.moduleRegistryAdapter = [[EXModuleRegistryAdapter alloc] initWithModuleRegistryProvider:[[EXModuleRegistryProvider alloc] init]];
   RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
   RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge moduleName:@"TestSuite" initialProperties:nil];
   rootView.backgroundColor = [[UIColor alloc] initWithRed:1.0f green:1.0f blue:1.0f alpha:1];
@@ -37,11 +41,8 @@
 
 - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
 {
-  EXModuleRegistry *moduleRegistry = [[EXModuleRegistry alloc] initWithExperienceId:nil];
-  EXNativeModulesProxy *proxy = [[EXNativeModulesProxy alloc] initWithModuleRegistry:moduleRegistry];
-  NSMutableArray<id<RCTBridgeModule>> *modules = [NSMutableArray arrayWithObject:proxy];
-  [modules addObjectsFromArray:[proxy getBridgeModules]];
-  return modules;
+  NSArray<id<RCTBridgeModule>> *extraModules = [_moduleRegistryAdapter extraModulesForBridge:bridge andExperience:nil];
+  return extraModules;
 }
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge {

@@ -9,7 +9,9 @@
 #import "EXPrint.h"
 #import "EXScopedModuleRegistry.h"
 #import "EXUtil.h"
-#import "EXFileSystem.h"
+#import <EXFileSystemInterface/EXFileSystemInterface.h>
+#import "EXModuleRegistryBinding.h"
+#import "EXFileSystemUtilities.h"
 #import "EXPrintPDFRenderTask.h"
 
 #import <React/RCTConvert.h>
@@ -314,9 +316,10 @@ RCT_REMAP_METHOD(printToFileAsync,
 
 - (NSString *)_generatePath
 {
-  NSString *directory = [_bridge.scopedModules.fileSystem.cachesDirectory stringByAppendingPathComponent:@"Print"];
+  id<EXFileSystem> fileSystem = [_bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystem)];
+  NSString *directory = [fileSystem.cachesDirectory stringByAppendingPathComponent:@"Print"];
   NSString *fileName = [[[NSUUID UUID] UUIDString] stringByAppendingString:@".pdf"];
-  [EXFileSystem ensureDirExistsWithPath:directory];
+  [EXFileSystemUtilities ensureDirExistsWithPath:directory];
   
   return [directory stringByAppendingPathComponent:fileName];
 }

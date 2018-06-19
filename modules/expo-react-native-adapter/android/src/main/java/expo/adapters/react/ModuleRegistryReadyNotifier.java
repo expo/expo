@@ -11,10 +11,10 @@ import expo.core.ModuleRegistry;
  * notifies {@link com.facebook.react.bridge.NativeModule} of being ready
  * ({@link NativeModule#initialize()}) it delegates the call to {@link ModuleRegistry}.
  */
-/* package */ class ModuleRegistryReadyNotifier extends BaseJavaModule {
+public class ModuleRegistryReadyNotifier extends BaseJavaModule {
   private ModuleRegistry mModuleRegistry;
 
-  /* package */ ModuleRegistryReadyNotifier(ModuleRegistry moduleRegistry) {
+  public ModuleRegistryReadyNotifier(ModuleRegistry moduleRegistry) {
     mModuleRegistry = moduleRegistry;
   }
 

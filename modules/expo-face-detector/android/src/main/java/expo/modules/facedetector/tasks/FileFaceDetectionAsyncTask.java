@@ -1,6 +1,5 @@
 package expo.modules.facedetector.tasks;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -12,7 +11,8 @@ import android.util.SparseArray;
 
 import com.google.android.gms.vision.face.Face;
 
-import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,25 +25,19 @@ import expo.modules.facedetector.FaceDetectorUtils;
 public class FileFaceDetectionAsyncTask extends AsyncTask<Void, Void, SparseArray<Face>> {
   private static final String ERROR_TAG = "E_FACE_DETECTION_FAILED";
 
-  private static final String MODE_OPTION_KEY = "mode";
-  private static final String DETECT_LANDMARKS_OPTION_KEY = "detectLandmarks";
-  private static final String RUN_CLASSIFICATIONS_OPTION_KEY = "runClassifications";
-
   private String mUri;
   private String mPath;
   private FileFaceDetectionCompletionListener mListener;
   private int mWidth = 0;
   private int mHeight = 0;
-  private Context mContext;
-  private HashMap<String, Object> mOptions;
   private int mOrientation = ExifInterface.ORIENTATION_UNDEFINED;
   private ExpoFaceDetector mExpoFaceDetector;
+  private FileInputStream mFileInputStream;
 
-  public FileFaceDetectionAsyncTask(Context context, HashMap<String, Object> options, FileFaceDetectionCompletionListener promise) {
+  public FileFaceDetectionAsyncTask(ExpoFaceDetector faceDetector, HashMap<String, Object> options, FileFaceDetectionCompletionListener promise) {
     mUri = (String) options.get("uri");
     mListener = promise;
-    mOptions = options;
-    mContext = context;
+    mExpoFaceDetector = faceDetector;
   }
 
   @Override
@@ -63,17 +57,9 @@ public class FileFaceDetectionAsyncTask extends AsyncTask<Void, Void, SparseArra
       return;
     }
 
-    // We have to check if the requested image is in a directory safely accessible by our app.
-    boolean fileIsInSafeDirectories =
-          mPath.startsWith(mContext.getCacheDir().getPath()) || mPath.startsWith(mContext.getFilesDir().getPath());
-
-    if (!fileIsInSafeDirectories) {
-      mListener.reject(ERROR_TAG, "The image has to be in the local app's directories.");
-      cancel(true);
-      return;
-    }
-
-    if(!new File(mPath).exists()) {
+    try {
+      mFileInputStream = new FileInputStream(uri.getPath());
+    } catch (FileNotFoundException e) {
       mListener.reject(ERROR_TAG, "The file does not exist. Given path: `" + mPath + "`.");
       cancel(true);
     }
@@ -85,8 +71,7 @@ public class FileFaceDetectionAsyncTask extends AsyncTask<Void, Void, SparseArra
       return null;
     }
 
-    mExpoFaceDetector = detectorForOptions(mOptions, mContext);
-    Bitmap bitmap = BitmapFactory.decodeFile(mPath);
+    Bitmap bitmap = BitmapFactory.decodeStream(mFileInputStream);
     mWidth = bitmap.getWidth();
     mHeight = bitmap.getHeight();
 
@@ -128,22 +113,5 @@ public class FileFaceDetectionAsyncTask extends AsyncTask<Void, Void, SparseArra
     mListener.resolve(result);
   }
 
-  private static ExpoFaceDetector detectorForOptions(HashMap<String, Object> options, Context context) {
-    ExpoFaceDetector detector = new ExpoFaceDetector(context);
-    detector.setTrackingEnabled(false);
 
-    if(options.get(MODE_OPTION_KEY) != null) {
-      detector.setMode(((Number) options.get(MODE_OPTION_KEY)).intValue());
-    }
-
-    if(options.get(RUN_CLASSIFICATIONS_OPTION_KEY) != null) {
-      detector.setClassificationType(((Number) options.get(RUN_CLASSIFICATIONS_OPTION_KEY)).intValue());
-    }
-
-    if(options.get(DETECT_LANDMARKS_OPTION_KEY) != null) {
-      detector.setLandmarkType(((Number) options.get(DETECT_LANDMARKS_OPTION_KEY)).intValue());
-    }
-
-    return detector;
-  }
 }

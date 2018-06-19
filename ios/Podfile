@@ -25,8 +25,36 @@ target 'Exponent' do
 
   # Local CocoaPods
   pod 'ExponentCPP', :path => '../cpp'
-  pod 'GoogleMobileVision/FaceDetector', '~> 1.1.0'
-  pod 'GoogleMobileVision/MVDataOutput', '~> 1.1.0'
+  pod 'EXCore',
+    :path => "../modules/expo-core/ios",
+    :inhibit_warnings => true
+  pod 'EXCamera',
+    :path => "../modules/expo-camera/ios",
+    :inhibit_warnings => true
+  pod 'EXSensors',
+    :path => "../modules/expo-sensors/ios",
+    :inhibit_warnings => true
+  pod 'EXFileSystem',
+    :path => "../modules/expo-file-system/ios",
+    :inhibit_warnings => true
+  pod 'EXFaceDetector',
+    :path => "../modules/expo-face-detector/ios",
+    :inhibit_warnings => true
+  pod 'EXSensorsInterface',
+    :path => "../modules/expo-sensors-interface/ios",
+    :inhibit_warnings => true
+  pod 'EXReactNativeAdapter',
+    :path => "../modules/expo-react-native-adapter/ios",
+    :inhibit_warnings => true
+  pod 'EXFileSystemInterface',
+    :path => "../modules/expo-file-system-interface/ios",
+    :inhibit_warnings => true
+  pod 'EXPermissionsInterface',
+    :path => "../modules/expo-permissions-interface/ios",
+    :inhibit_warnings => true
+  pod 'EXFaceDetectorInterface',
+    :path => "../modules/expo-face-detector-interface/ios",
+    :inhibit_warnings => true
 
   pod 'React',
     :path => "../js/node_modules/react-native",

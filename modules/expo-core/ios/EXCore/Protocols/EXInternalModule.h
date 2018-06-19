@@ -5,14 +5,14 @@
 
 // Register a class implementing this protocol in EXModuleClasses
 // of EXModuleRegistryProvider (macros defined in EXDefines.h should help you)
-// to make the module available under any of `internalModuleNames`
+// to make the module available under any of `exportedInterfaces`
 // via EXModuleRegistry. EXModuleRegistryProvider will initialize your class
 // `initWithExperienceId:` if you implement this method.
 
 @protocol EXInternalModule <NSObject>
 
 - (instancetype)init;
-+ (const NSArray<NSString *> *)internalModuleNames;
++ (const NSArray<Protocol *> *)exportedInterfaces;
 
 @optional
 

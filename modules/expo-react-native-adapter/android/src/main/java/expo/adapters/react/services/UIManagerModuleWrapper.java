@@ -28,14 +28,18 @@ public class UIManagerModuleWrapper implements InternalModule, UIManager, Permis
     mReactContext = reactContext;
   }
 
+  protected ReactContext getContext() {
+    return mReactContext;
+  }
+
   @Override
   public List<Class> getExportedInterfaces() {
-    return Arrays.asList((Class) PermissionsManager.class, UIManager.class, UIManagerModuleWrapper.class);
+    return Arrays.<Class>asList(PermissionsManager.class, UIManager.class);
   }
 
   @Override
   public <T extends View> void addUIBlock(final int tag, final UIBlock<T> block) {
-    mReactContext.getNativeModule(UIManagerModule.class).addUIBlock(new com.facebook.react.uimanager.UIBlock() {
+    getContext().getNativeModule(UIManagerModule.class).addUIBlock(new com.facebook.react.uimanager.UIBlock() {
       @Override
       public void execute(NativeViewHierarchyManager nativeViewHierarchyManager) {
         View view = nativeViewHierarchyManager.resolveView(tag);
@@ -56,6 +60,23 @@ public class UIManagerModuleWrapper implements InternalModule, UIManager, Permis
     });
   }
 
+  @Override
+  public void runOnUiQueueThread(Runnable runnable) {
+    if (getContext().isOnUiQueueThread()) {
+      runnable.run();
+    } else {
+      getContext().runOnUiQueueThread(runnable);
+    }
+  }
+
+  @Override
+  public void runOnClientCodeQueueThread(Runnable runnable) {
+    if (getContext().isOnJSQueueThread()) {
+      runnable.run();
+    } else {
+      getContext().runOnJSQueueThread(runnable);
+    }
+  }
 
 
   @Override
@@ -81,20 +102,13 @@ public class UIManagerModuleWrapper implements InternalModule, UIManager, Permis
 
   @Override
   public void unregisterLifecycleEventListener(LifecycleEventListener listener) {
-    mReactContext.removeLifecycleEventListener(mLifecycleListenersMap.get(listener));
+    getContext().removeLifecycleEventListener(mLifecycleListenersMap.get(listener));
     mLifecycleListenersMap.remove(listener);
-  }
-
-  public void unregisterEventListeners() {
-    for (com.facebook.react.bridge.LifecycleEventListener listener : mLifecycleListenersMap.values()) {
-      mReactContext.removeLifecycleEventListener(listener);
-    }
-    mLifecycleListenersMap.clear();
   }
 
   @Override
   public boolean requestPermissions(String[] permissions, final int requestCode, final PermissionsListener listener) {
-    Activity currentActivity = mReactContext.getCurrentActivity();
+    Activity currentActivity = getContext().getCurrentActivity();
     if (currentActivity instanceof PermissionAwareActivity) {
       PermissionAwareActivity activity = (PermissionAwareActivity) currentActivity;
       activity.requestPermissions(permissions, requestCode, new PermissionListener() {

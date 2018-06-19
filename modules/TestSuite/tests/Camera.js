@@ -33,12 +33,17 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
       });
 
     t.beforeAll(async () => {
-      await TestUtils.acceptPermissionsAndRunCommandAsync(() => {
-        return Permissions.askAsync(Permissions.CAMERA);
-      });
-      await TestUtils.acceptPermissionsAndRunCommandAsync(() => {
-        return Permissions.askAsync(Permissions.AUDIO_RECORDING);
-      });
+      try {
+        await TestUtils.acceptPermissionsAndRunCommandAsync(() => {
+          return Permissions.askAsync(Permissions.CAMERA);
+        });
+        await TestUtils.acceptPermissionsAndRunCommandAsync(() => {
+          return Permissions.askAsync(Permissions.AUDIO_RECORDING);
+        });
+      } catch (exception) {
+        await Permissions.askAsync(Permissions.CAMERA);
+        await Permissions.askAsync(Permissions.AUDIO_RECORDING);
+      }
     });
 
     t.beforeEach(async () => {

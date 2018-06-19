@@ -7,7 +7,8 @@
 //
 
 #import "EXMediaLibrary.h"
-#import "EXFileSystem.h"
+#import "EXModuleRegistryBinding.h"
+#import <EXFileSystemInterface/EXFileSystemInterface.h>
 #import "EXPermissions.h"
 #import "EXScopedModuleRegistry.h"
 #import "EXCameraRollRequester.h"
@@ -106,7 +107,8 @@ RCT_REMAP_METHOD(createAssetAsync,
     reject(@"E_INVALID_URI", @"Provided localUri is not a valid URI", nil);
     return;
   }
-  if (!([_bridge.scopedModules.fileSystem permissionsForURI:assetUrl] & EXFileSystemPermissionRead)) {
+  id<EXFileSystem> fileSystem = [_bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystem)];
+  if (!([fileSystem permissionsForURI:assetUrl] & EXFileSystemPermissionRead)) {
     reject(@"E_FILESYSTEM_PERMISSIONS", [NSString stringWithFormat:@"File '%@' isn't readable.", assetUrl], nil);
     return;
   }

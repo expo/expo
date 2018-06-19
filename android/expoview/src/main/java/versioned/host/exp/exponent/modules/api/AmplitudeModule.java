@@ -10,10 +10,8 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 
 import host.exp.exponent.analytics.Analytics;
-import host.exp.exponent.utils.JSONBundleConverter;
 import host.exp.exponent.utils.ScopedContext;
 import versioned.host.exp.exponent.ReadableObjectUtils;
-import versioned.host.exp.exponent.ScopedReactApplicationContext;
 
 public class AmplitudeModule extends ReactContextBaseJavaModule {
 

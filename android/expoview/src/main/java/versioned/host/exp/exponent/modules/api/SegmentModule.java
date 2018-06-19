@@ -17,10 +17,8 @@ import org.json.JSONObject;
 import java.util.Iterator;
 
 import host.exp.exponent.analytics.EXL;
-import host.exp.exponent.utils.JSONBundleConverter;
 import host.exp.exponent.utils.ScopedContext;
 import versioned.host.exp.exponent.ReadableObjectUtils;
-import versioned.host.exp.exponent.ScopedReactApplicationContext;
 
 public class SegmentModule extends ReactContextBaseJavaModule {
 

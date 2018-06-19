@@ -25,6 +25,8 @@ import expo.modules.camera.events.CameraMountErrorEvent;
 import expo.modules.camera.events.CameraReadyEvent;
 import expo.modules.camera.events.FaceDetectionErrorEvent;
 import expo.modules.camera.events.FacesDetectedEvent;
+import expo.modules.camera.events.PictureSavedEvent;
+import expo.modules.camera.utils.ExpoBarCodeDetector;
 
 public class CameraViewHelper {
   // Mount error event
@@ -43,7 +45,7 @@ public class CameraViewHelper {
 
   // Bar code read event
 
-  public static void emitBarCodeReadEvent(EventEmitter emitter, ViewGroup view, Barcode barCode) {
+  public static void emitBarCodeReadEvent(EventEmitter emitter, ViewGroup view, ExpoBarCodeDetector.Result barCode) {
     BarCodeReadEvent event = BarCodeReadEvent.obtain(view.getId(), barCode);
     emitter.emit(view.getId(), event);
   }
@@ -57,6 +59,13 @@ public class CameraViewHelper {
 
   public static void emitFaceDetectionErrorEvent(EventEmitter emitter, ViewGroup view, FaceDetector faceDetector) {
     FaceDetectionErrorEvent event = FaceDetectionErrorEvent.obtain(faceDetector);
+    emitter.emit(view.getId(), event);
+  }
+
+  // Picture saved
+
+  public static void emitPictureSavedEvent(EventEmitter emitter, ViewGroup view, Bundle info) {
+    PictureSavedEvent event = PictureSavedEvent.obtain(info);
     emitter.emit(view.getId(), event);
   }
 

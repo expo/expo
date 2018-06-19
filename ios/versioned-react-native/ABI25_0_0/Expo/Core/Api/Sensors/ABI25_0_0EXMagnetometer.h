@@ -3,8 +3,8 @@
 
 @protocol ABI25_0_0EXMagnetometerScopedModuleDelegate
 
-- (void)sensorModuleDidSubscribeForMagnetometerUpdates:(id)scopedSensorModule withHandler:(void (^)(NSDictionary *event))handlerBlock;
-- (void)sensorModuleDidUnsubscribeForMagnetometerUpdates:(id)scopedSensorModule;
+- (void)sensorModuleDidSubscribeForMagnetometerUpdatesOfExperience:(NSString *)experienceId withHandler:(void (^)(NSDictionary *event))handlerBlock;
+- (void)sensorModuleDidUnsubscribeForMagnetometerUpdatesOfExperience:(NSString *)experienceId;
 - (void)setMagnetometerUpdateInterval:(NSTimeInterval)intervalMs;
 
 @end

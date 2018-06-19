@@ -26,12 +26,12 @@ public class ArgumentsHelper {
 
       Class<?> actualArgumentClass = argument.getClass();
       if (expectedArgumentClass != actualArgumentClass) {
-        if (!Number.class.isAssignableFrom(actualArgumentClass)) {
+        if (!Number.class.isAssignableFrom(actualArgumentClass) && !Boolean.class.isAssignableFrom(actualArgumentClass)) {
           throw new IllegalArgumentException("Argument of an incompatible class: "
                   + actualArgumentClass + " cannot be passed as an argument to parameter expecting " + expectedArgumentClass + ".");
         }
 
-        // Otherwise the expected argument is of type int or long and actual argument class is a descendant of Number.
+        // Otherwise the expected argument is of type int or long or booealn and actual argument class is a descendant of Number or Boolean.
         // We believe that platform adapter has coerced the value correctly and when expected argument
         // is int, actual argument is Integer; when expected is float, actual is Float, etc.
         // If it's not, Java will throw a developer-readable exception.

@@ -4,14 +4,17 @@
 
 #import <EXFileSystem/EXDownloadDelegate.h>
 #import <EXFileSystem/EXFileSystem.h>
-#import <EXFileSystem/EXFileSystemManager.h>
+#import <EXFileSystem/EXFileSystemManagerService.h>
 
 #import <CommonCrypto/CommonDigest.h>
 
 #import <EXFileSystem/EXFileSystemLocalFileHandler.h>
 #import <EXFileSystem/EXFileSystemAssetLibraryHandler.h>
 
-#import <EXFileSystem/EXEventEmitterService.h>
+#import <EXFileSystemInterface/EXFileSystemInterface.h>
+#import <EXFileSystemInterface/EXFileSystemManagerInterface.h>
+
+#import <EXCore/EXEventEmitterService.h>
 
 NSString * const EXDownloadProgressEventName = @"Exponent.downloadProgress";
 
@@ -42,9 +45,9 @@ NSString * const EXDownloadProgressEventName = @"Exponent.downloadProgress";
 @interface EXFileSystem ()
 
 @property (nonatomic, strong) NSMutableDictionary<NSString *, EXDownloadResumable*> *downloadObjects;
-@property (nonatomic, strong) id<EXFileSystemScopedModuleDelegate> kernelFileSystemDelegate;
 @property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
 @property (nonatomic, weak) id<EXEventEmitterService> eventEmitter;
+@property (nonatomic, weak) id<EXFileSystemManager> fileSystemManager;
 
 @end
 
@@ -72,15 +75,14 @@ EX_REGISTER_MODULE();
   return @"ExponentFileSystem";
 }
 
-+ (const NSArray<NSString *> *)internalModuleNames
++ (const NSArray<Protocol *> *)exportedInterfaces
 {
-  return @[@"ExponentFileSystem"];
+  return @[@protocol(EXFileSystem)];
 }
 
 - (instancetype)initWithExperienceId:(NSString *)experienceId
 {
   if (self = [super init]) {
-    _kernelFileSystemDelegate = [[EXFileSystemManager alloc] init];
     _documentDirectory = [self documentDirectoryForExperienceId:experienceId];
     _cachesDirectory = [self cachesDirectoryForExperienceId:experienceId];
     _downloadObjects = [NSMutableDictionary dictionary];
@@ -93,7 +95,8 @@ EX_REGISTER_MODULE();
 - (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
-  _eventEmitter = [_moduleRegistry getModuleForName:@"EventEmitter" downcastedTo:@protocol(EXEventEmitterService) exception:nil];
+  _eventEmitter = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXEventEmitterService)];
+  _fileSystemManager = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemManager)];
 }
 
 + (BOOL)requiresMainQueueSetup
@@ -103,12 +106,12 @@ EX_REGISTER_MODULE();
 
 - (NSDictionary *)constantsToExport
 {
-  NSString *bundleDirectory = [_kernelFileSystemDelegate bundleDirectoryForExperienceId:_moduleRegistry.experienceId];
+  NSString *bundleDirectory = [_fileSystemManager bundleDirectoryForExperienceId:_moduleRegistry.experienceId];
   return @{
            @"documentDirectory": [NSURL fileURLWithPath:_documentDirectory].absoluteString,
            @"cacheDirectory": [NSURL fileURLWithPath:_cachesDirectory].absoluteString,
            @"bundleDirectory":  bundleDirectory != nil ? [NSURL fileURLWithPath:bundleDirectory].absoluteString : [NSNull null],
-           @"bundledAssets": [_kernelFileSystemDelegate bundledAssetsForExperienceId:_moduleRegistry.experienceId] ?: [NSNull null],
+           @"bundledAssets": [_fileSystemManager bundledAssetsForExperienceId:_moduleRegistry.experienceId] ?: [NSNull null],
            };
 }
 
@@ -634,7 +637,7 @@ EX_EXPORT_METHOD_AS(downloadResumablePauseAsync,
   if ([path isEqualToString:_cachesDirectory])  {
     return EXFileSystemPermissionRead | EXFileSystemPermissionWrite;
   }
-  NSString *bundleDirectory = [_kernelFileSystemDelegate bundleDirectoryForExperienceId:_moduleRegistry.experienceId];
+  NSString *bundleDirectory = [_fileSystemManager bundleDirectoryForExperienceId:_moduleRegistry.experienceId];
   if (bundleDirectory != nil && [path hasPrefix:[bundleDirectory stringByAppendingString:@"/"]]) {
     return EXFileSystemPermissionRead;
   }

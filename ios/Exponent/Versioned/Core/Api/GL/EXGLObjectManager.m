@@ -5,7 +5,7 @@
 #import "EXGLObjectManager.h"
 #import "EXGLObject.h"
 #import "EXGLView.h"
-#import "EXCamera.h"
+#import <EXCamera/EXCamera.h>
 #import "EXGLCameraObject.h"
 
 @interface EXGLObjectManager ()

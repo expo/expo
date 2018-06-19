@@ -2,13 +2,12 @@
 
 #import <EXCamera/EXCamera.h>
 #import <EXCamera/EXCameraUtils.h>
-#import <EXCamera/EXImageUtils.h>
 #import <EXCamera/EXCameraManager.h>
-#import <EXCamera/EXFileSystem.h>
-#import <EXCamera/EXFaceDetector.h>
-#import <EXCamera/EXPermissions.h>
-#import <EXCamera/EXLifecycleManager.h>
-#import <EXCore/EXUtil.h>
+#import <EXPermissionsInterface/EXPermissionsInterface.h>
+#import <EXFileSystemInterface/EXFileSystemInterface.h>
+#import <EXFaceDetectorInterface/EXFaceDetectorManager.h>
+#import <EXCore/EXAppLifecycleService.h>
+#import <EXCore/EXUtilities.h>
 
 @interface EXCamera ()
 
@@ -16,7 +15,7 @@
 @property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
 @property (nonatomic, strong) id<EXFaceDetectorManager> faceDetectorManager;
 @property (nonatomic, weak) id<EXPermissions> permissionsManager;
-@property (nonatomic, weak) id<EXLifecycleManager> lifecycleManager;
+@property (nonatomic, weak) id<EXAppLifecycleService> lifecycleManager;
 
 @property (nonatomic, assign, getter=isSessionPaused) BOOL paused;
 
@@ -27,6 +26,7 @@
 @property (nonatomic, copy) EXDirectEventBlock onMountError;
 @property (nonatomic, copy) EXDirectEventBlock onBarCodeRead;
 @property (nonatomic, copy) EXDirectEventBlock onFacesDetected;
+@property (nonatomic, copy) EXDirectEventBlock onPictureSaved;
 
 @end
 
@@ -41,15 +41,16 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
     _session = [AVCaptureSession new];
     _sessionQueue = dispatch_queue_create("cameraQueue", DISPATCH_QUEUE_SERIAL);
     _faceDetectorManager = [self createFaceDetectorManager];
-    _lifecycleManager = [moduleRegistry getModuleForName:@"LifecycleManager" downcastedTo:@protocol(EXLifecycleManager) exception:nil];
-    _fileSystem = [moduleRegistry getModuleForName:@"ExponentFileSystem" downcastedTo:@protocol(EXFileSystem) exception:nil];
-    _permissionsManager = [moduleRegistry getModuleForName:@"Permissions" downcastedTo:@protocol(EXPermissions) exception:nil];
+    _lifecycleManager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXAppLifecycleService)];
+    _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystem)];
+    _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXPermissions)];
 #if !(TARGET_IPHONE_SIMULATOR)
     _previewLayer = [AVCaptureVideoPreviewLayer layerWithSession:_session];
     _previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
     _previewLayer.needsDisplayOnBoundsChange = YES;
 #endif
     _paused = NO;
+    _pictureSize = AVCaptureSessionPresetHigh;
     [self changePreviewOrientation:[UIApplication sharedApplication].statusBarOrientation];
     [self initializeCaptureSessionInput];
     [self startSession];
@@ -80,6 +81,13 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
 {
   if (_onBarCodeRead) {
     _onBarCodeRead(event);
+  }
+}
+
+- (void)onPictureSaved:(NSDictionary *)event
+{
+  if (_onPictureSaved) {
+    _onPictureSaved(event);
   }
 }
 
@@ -202,7 +210,7 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
   AVCaptureDevice *device = [_videoCaptureDeviceInput device];
   NSError *error = nil;
 
-  if (device.focusMode != EXCameraAutoFocusOff) {
+  if (device == nil || device.focusMode != EXCameraAutoFocusOff) {
     return;
   }
 
@@ -285,7 +293,12 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
   [device unlockForConfiguration];
 }
 
-- (void)setFaceDetecting:(BOOL)faceDetecting
+- (void)updatePictureSize
+{
+  [self updateSessionPreset:_pictureSize];
+}
+
+- (void)setIsDetectingFaces:(BOOL)faceDetecting
 {
   if (_faceDetectorManager) {
     [_faceDetectorManager setIsEnabled:faceDetecting];
@@ -321,23 +334,35 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
       reject(@"E_IMAGE_CAPTURE_FAILED", @"No file system module", nil);
       return;
     }
+    
+    BOOL useFastMode = options[@"fastMode"] && [options[@"fastMode"] boolValue];
+    if (useFastMode) {
+      resolve(nil);
+    }
 
     NSData *imageData = [AVCaptureStillImageOutput jpegStillImageNSDataRepresentation:imageSampleBuffer];
     UIImage *takenImage = [UIImage imageWithData:imageData];
 
-    CGRect frame = [strongSelf.previewLayer metadataOutputRectOfInterestForRect:strongSelf.frame];
     CGImageRef takenCGImage = takenImage.CGImage;
-    size_t width = CGImageGetWidth(takenCGImage);
-    size_t height = CGImageGetHeight(takenCGImage);
-    CGRect cropRect = CGRectMake(frame.origin.x * width, frame.origin.y * height, frame.size.width * width, frame.size.height * height);
-    takenImage = [EXImageUtils cropImage:takenImage toRect:cropRect];
+
+    CGSize previewSize;
+    if (UIInterfaceOrientationIsPortrait([[UIApplication sharedApplication] statusBarOrientation])) {
+      previewSize = CGSizeMake(strongSelf.previewLayer.frame.size.height, strongSelf.previewLayer.frame.size.width);
+    } else {
+      previewSize = CGSizeMake(strongSelf.previewLayer.frame.size.width, strongSelf.previewLayer.frame.size.height);
+    }
+
+    CGRect cropRect = CGRectMake(0, 0, CGImageGetWidth(takenCGImage), CGImageGetHeight(takenCGImage));
+    CGRect croppedSize = AVMakeRectWithAspectRatioInsideRect(previewSize, cropRect);
+    takenImage = [EXCameraUtils cropImage:takenImage toRect:croppedSize];
+
     float quality = [options[@"quality"] floatValue];
     NSData *takenImageData = UIImageJPEGRepresentation(takenImage, quality);
 
     NSString *path = [strongSelf.fileSystem generatePathInDirectory:[strongSelf.fileSystem.cachesDirectory stringByAppendingPathComponent:@"Camera"] withExtension:@".jpg"];
 
     NSMutableDictionary *response = [[NSMutableDictionary alloc] init];
-    response[@"uri"] = [EXImageUtils writeImage:takenImageData toPath:path];
+    response[@"uri"] = [EXCameraUtils writeImage:takenImageData toPath:path];
     response[@"width"] = @(takenImage.size.width);
     response[@"height"] = @(takenImage.size.height);
 
@@ -360,10 +385,14 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
         default:
           imageRotation = 0;
       }
-      [EXImageUtils updatePhotoMetadata:imageSampleBuffer withAdditionalData:@{ @"Orientation": @(imageRotation) } inResponse:response]; // TODO
+      [EXCameraUtils updatePhotoMetadata:imageSampleBuffer withAdditionalData:@{ @"Orientation": @(imageRotation) } inResponse:response]; // TODO
     }
-
-    resolve(response);
+    
+    if (useFastMode) {
+      [strongSelf onPictureSaved:@{@"data": response, @"id": options[@"id"]}];
+    } else {
+      resolve(response);
+    }
   }];
 }
 
@@ -389,9 +418,16 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
       _movieFileOutput.maxRecordedFileSize = [options[@"maxFileSize"] integerValue];
     }
 
+    AVCaptureSessionPreset preset;
     if (options[@"quality"]) {
       EXCameraVideoResolution resolution = [options[@"quality"] integerValue];
-      [self updateSessionPreset:[EXCameraUtils captureSessionPresetForVideoResolution:resolution]];
+      preset = [EXCameraUtils captureSessionPresetForVideoResolution:resolution];
+    } else if ([_session.sessionPreset isEqual:AVCaptureSessionPresetPhoto]) {
+      preset = AVCaptureSessionPresetHigh;
+    }
+
+    if (preset != nil) {
+      [self updateSessionPreset:preset];
     }
 
     bool shouldBeMuted = options[@"mute"] && [options[@"mute"] boolValue];
@@ -424,6 +460,16 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
 - (void)stopRecording
 {
   [_movieFileOutput stopRecording];
+}
+
+- (void)resumePreview
+{
+  [[_previewLayer connection] setEnabled:YES];
+}
+
+- (void)pausePreview
+{
+  [[_previewLayer connection] setEnabled:NO];
 }
 
 - (void)startSession
@@ -516,7 +562,7 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
   }
 
   __block UIInterfaceOrientation interfaceOrientation;
-  [EXUtil performSynchronouslyOnMainThread:^{
+  [EXUtilities performSynchronouslyOnMainThread:^{
     interfaceOrientation = [[UIApplication sharedApplication] statusBarOrientation];
   }];
   AVCaptureVideoOrientation orientation = [EXCameraUtils videoOrientationForInterfaceOrientation:interfaceOrientation];
@@ -559,7 +605,7 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
 
 #pragma mark - internal
 
-- (void)updateSessionPreset:(NSString *)preset
+- (void)updateSessionPreset:(AVCaptureSessionPreset)preset
 {
 #if !(TARGET_IPHONE_SIMULATOR)
   if (preset) {
@@ -655,7 +701,7 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
 {
   __weak EXCamera *weakSelf = self;
   AVCaptureVideoOrientation videoOrientation = [EXCameraUtils videoOrientationForInterfaceOrientation:orientation];
-  [EXUtil performSynchronouslyOnMainThread:^{
+  [EXUtilities performSynchronouslyOnMainThread:^{
     __strong EXCamera *strongSelf = weakSelf;
     if (strongSelf && strongSelf.previewLayer.connection.isVideoOrientationSupported) {
       [strongSelf.previewLayer.connection setVideoOrientation:videoOrientation];
@@ -770,8 +816,8 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
     [_faceDetectorManager maybeStartFaceDetectionOnSession:_session withPreviewLayer:_previewLayer];
   }
 
-  if (_session.sessionPreset != AVCaptureSessionPresetHigh) {
-    [self updateSessionPreset:AVCaptureSessionPresetHigh];
+  if (_session.sessionPreset != _pictureSize) {
+    [self updateSessionPreset:_pictureSize];
   }
 }
 
@@ -779,7 +825,7 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
 
 - (id)createFaceDetectorManager
 {
-  id <EXFaceDetectorManager> faceDetector = [_moduleRegistry getModuleForName:@"FaceDetector" downcastedTo:@protocol(EXFaceDetectorManager) exception:nil];
+  id <EXFaceDetectorManager> faceDetector = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXFaceDetectorManager)];
   if (faceDetector) {
     __weak EXCamera *weakSelf = self;
     [faceDetector setOnFacesDetected:^(NSArray<NSDictionary *> *faces) {

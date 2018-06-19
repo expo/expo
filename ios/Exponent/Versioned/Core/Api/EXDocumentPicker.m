@@ -3,7 +3,9 @@
 #import "EXDocumentPicker.h"
 #import "EXScopedModuleRegistry.h"
 #import "EXUtil.h"
-#import "EXFileSystem.h"
+#import "EXFileSystemUtilities.h"
+#import "EXModuleRegistryBinding.h"
+#import <EXFileSystemInterface/EXFileSystemInterface.h>
 
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <UIKit/UIKit.h>
@@ -112,9 +114,14 @@ RCT_EXPORT_METHOD(getDocumentAsync:(NSDictionary *)options resolver:(RCTPromiseR
   
   NSURL *newUrl = url;
   if (_shouldCopyToCacheDirectory) {
-    NSString *directory = [_bridge.scopedModules.fileSystem.cachesDirectory stringByAppendingPathComponent:@"DocumentPicker"];
+    id<EXFileSystem> fileSystem = [_bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystem)];
+    if (!fileSystem) {
+      _reject(@"E_CANNOT_PICK_FILE", @"No FileSystem module.", nil);
+      return;
+    }
+    NSString *directory = [fileSystem.cachesDirectory stringByAppendingPathComponent:@"DocumentPicker"];
     NSString *extension = [url pathExtension];
-    NSString *path = [EXFileSystem generatePathInDirectory:directory withExtension:[extension isEqualToString:@""] ? extension : [@"." stringByAppendingString:extension]];
+    NSString *path = [EXFileSystemUtilities generatePathInDirectory:directory withExtension:[extension isEqualToString:@""] ? extension : [@"." stringByAppendingString:extension]];
     NSError *error = nil;
     newUrl = [NSURL fileURLWithPath:path];
     [[NSFileManager defaultManager] copyItemAtURL:url toURL:newUrl error:&error];

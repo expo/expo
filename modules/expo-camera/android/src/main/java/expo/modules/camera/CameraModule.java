@@ -8,6 +8,7 @@ import android.os.Build;
 
 import com.google.android.cameraview.AspectRatio;
 import com.google.android.cameraview.Constants;
+import com.google.android.cameraview.Size;
 import com.google.android.gms.vision.barcode.Barcode;
 
 import java.io.File;
@@ -17,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
 
 import expo.core.ExportedModule;
 import expo.core.interfaces.ExpoMethod;
@@ -24,7 +26,6 @@ import expo.core.ModuleRegistry;
 import expo.core.interfaces.ModuleRegistryConsumer;
 import expo.core.Promise;
 import expo.core.interfaces.services.UIManager;
-import expo.interfaces.filesystem.FileSystem;
 import expo.interfaces.permissions.Permissions;
 import expo.modules.camera.tasks.ResolveTakenPictureAsyncTask;
 
@@ -146,13 +147,50 @@ public class CameraModule extends ExportedModule implements ModuleRegistryConsum
   }
 
   @ExpoMethod
+  public void pausePreview(final int viewTag, final Promise promise) {
+    addUIBlock(viewTag, new UIManager.UIBlock<ExpoCameraView>() {
+      @Override
+      public void resolve(ExpoCameraView view) {
+        try {
+          if (view.isCameraOpened()) {
+            view.pausePreview();
+          }
+        } catch (Exception e) {
+          promise.reject(ERROR_TAG, "pausePreview -- exception occurred -- " + e.getMessage(), e);
+        }
+      }
+
+      @Override
+      public void reject(Throwable throwable) {
+        promise.reject(ERROR_TAG, throwable);
+      }
+    });
+  }
+
+  @ExpoMethod
+  public void resumePreview(final int viewTag, final Promise promise) {
+    addUIBlock(viewTag, new UIManager.UIBlock<ExpoCameraView>() {
+      @Override
+      public void resolve(ExpoCameraView view) {
+        try {
+          if (view.isCameraOpened()) {
+            view.resumePreview();
+          }
+        } catch (Exception e) {
+          promise.reject(ERROR_TAG, "resumePreview -- exception occurred -- " + e.getMessage(), e);
+        }
+      }
+
+      @Override
+      public void reject(Throwable throwable) {
+        promise.reject(ERROR_TAG, throwable);
+      }
+    });
+  }
+
+  @ExpoMethod
   public void takePicture(final Map<String, Object> options, final int viewTag, final Promise promise) {
     final File cacheDirectory = getContext().getCacheDir();
-    final FileSystem fileSystem = mModuleRegistry.getModule(FileSystem.class);
-    if (fileSystem == null) {
-      promise.reject("E_MODULE_REGISTRY", "No filesystem module available.");
-      return;
-    }
     addUIBlock(viewTag, new UIManager.UIBlock<ExpoCameraView>() {
       @Override
       public void resolve(ExpoCameraView view) {
@@ -164,7 +202,7 @@ public class CameraModule extends ExportedModule implements ModuleRegistryConsum
           }
         } else {
           Bitmap image = CameraViewHelper.generateSimulatorPhoto(view.getWidth(), view.getHeight());
-          new ResolveTakenPictureAsyncTask(image, promise, options, cacheDirectory, fileSystem).execute();
+          new ResolveTakenPictureAsyncTask(image, promise, options, cacheDirectory, view).execute();
         }
       }
 
@@ -237,6 +275,34 @@ public class CameraModule extends ExportedModule implements ModuleRegistryConsum
             supportedRatios.add(ratio.toString());
           }
           promise.resolve(supportedRatios);
+        } else {
+          promise.reject(ERROR_TAG, "Camera is not running");
+        }
+      }
+
+      @Override
+      public void reject(Throwable throwable) {
+        promise.reject(ERROR_TAG, throwable);
+      }
+    });
+  }
+
+  @ExpoMethod
+  public void getAvailablePictureSizes(final String ratio, final int viewTag, final Promise promise) {
+    addUIBlock(viewTag, new UIManager.UIBlock<ExpoCameraView>() {
+      @Override
+      public void resolve(ExpoCameraView view) {
+        if (view.isCameraOpened()) {
+          try {
+            SortedSet<Size> sizes = view.getAvailablePictureSizes(AspectRatio.parse(ratio));
+            List<String> result = new ArrayList<>(sizes.size());
+            for (Size size : sizes) {
+              result.add(size.toString());
+            }
+            promise.resolve(result);
+          } catch (Exception e) {
+            promise.reject(ERROR_TAG, "getAvailablePictureSizes -- unexpected error -- " + e.getMessage(), e);
+          }
         } else {
           promise.reject(ERROR_TAG, "Camera is not running");
         }

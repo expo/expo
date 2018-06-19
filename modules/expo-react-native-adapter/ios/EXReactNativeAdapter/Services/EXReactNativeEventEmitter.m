@@ -31,9 +31,9 @@ EX_REGISTER_MODULE();
   return @"EXReactNativeEventEmitter";
 }
 
-+ (const NSArray<NSString *> *)internalModuleNames
++ (const NSArray<Protocol *> *)exportedInterfaces
 {
-  return @[@"EventEmitter"];
+  return @[@protocol(EXEventEmitterService)];
 }
 
 - (NSArray<NSString *> *)supportedEvents
@@ -50,6 +50,7 @@ EX_REGISTER_MODULE();
 
 RCT_EXPORT_METHOD(addProxiedListener:(NSString *)moduleName eventName:(NSString *)eventName)
 {
+  [self addListener:eventName];
   // Validate module
   EXExportedModule *module = [_moduleRegistry getExportedModuleForName:moduleName];
   
@@ -85,6 +86,7 @@ RCT_EXPORT_METHOD(addProxiedListener:(NSString *)moduleName eventName:(NSString 
 
 RCT_EXPORT_METHOD(removeProxiedListeners:(NSString *)moduleName count:(double)count)
 {
+  [self removeListeners:count];
   // Validate module
   EXExportedModule *module = [_moduleRegistry getExportedModuleForName:moduleName];
   
@@ -111,8 +113,11 @@ RCT_EXPORT_METHOD(removeProxiedListeners:(NSString *)moduleName count:(double)co
   // Global observing state
   if (_listenersCount - 1 < 0) {
     EXLogError(@"Attemted to remove more proxied event emitter listeners than added");
+    _listenersCount = 0;
+  } else {
+    _listenersCount -= 1;
   }
-  _listenersCount = 0;
+
   if (_listenersCount == 0) {
     [self stopObserving];
   }

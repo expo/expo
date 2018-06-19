@@ -37,6 +37,8 @@ FOUNDATION_EXPORT NSString * const EXAppDidRegisterUserNotificationSettingsNotif
 
 @property (nonatomic, readonly) NSDictionary *launchOptions;
 
+@property (nonatomic, weak) Class moduleRegistryDelegateClass;
+
 #pragma mark - remote JS loading hooks
 
 /**

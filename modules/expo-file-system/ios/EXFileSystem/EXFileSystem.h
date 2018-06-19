@@ -4,21 +4,9 @@
 #import <EXCore/EXExportedModule.h>
 #import <EXCore/EXModuleRegistryConsumer.h>
 #import <EXCore/EXEventEmitter.h>
+#import <EXFileSystemInterface/EXFileSystemInterface.h>
 
-typedef NS_OPTIONS(unsigned int, EXFileSystemPermissionFlags) {
-  EXFileSystemPermissionNone = 0,
-  EXFileSystemPermissionRead = 1 << 1,
-  EXFileSystemPermissionWrite = 1 << 2,
-};
-
-@protocol EXFileSystemScopedModuleDelegate
-
-- (NSString *)bundleDirectoryForExperienceId:(NSString *)experienceId;
-- (NSArray<NSString *> *)bundledAssetsForExperienceId:(NSString *)experienceId;
-
-@end
-
-@interface EXFileSystem : EXExportedModule <EXEventEmitter, EXModuleRegistryConsumer>
+@interface EXFileSystem : EXExportedModule <EXEventEmitter, EXModuleRegistryConsumer, EXFileSystem>
 
 @property (nonatomic, readonly) NSString *documentDirectory;
 @property (nonatomic, readonly) NSString *cachesDirectory;

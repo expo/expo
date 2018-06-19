@@ -4,8 +4,8 @@
 
 @protocol ABI25_0_0EXAccelerometerScopedModuleDelegate
 
-- (void)sensorModuleDidSubscribeForAccelerometerUpdates:(id)scopedSensorModule withHandler:(void (^)(NSDictionary *event))handlerBlock;
-- (void)sensorModuleDidUnsubscribeForAccelerometerUpdates:(id)scopedSensorModule;
+- (void)sensorModuleDidSubscribeForAccelerometerUpdatesOfExperience:(NSString *)experienceId withHandler:(void (^)(NSDictionary *event))handlerBlock;
+- (void)sensorModuleDidUnsubscribeForAccelerometerUpdatesOfExperience:(NSString *)experienceId;
 - (void)setAccelerometerUpdateInterval:(NSTimeInterval)intervalMs;
 
 @end

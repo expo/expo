@@ -3,14 +3,26 @@ PODS:
   - DoubleConversion (1.1.5)
   - EXCamera (1.0.0):
     - EXCore
+    - EXFaceDetectorInterface
+    - EXFileSystemInterface
+    - EXPermissionsInterface
   - EXCore (1.0.0)
   - EXFaceDetector (1.0.0):
     - EXCore
+    - EXFaceDetectorInterface
     - GoogleMobileVision/FaceDetector (~> 1.1.0)
     - GoogleMobileVision/MVDataOutput (~> 1.1.0)
+  - EXFaceDetectorInterface (1.0.0):
+    - EXCore
   - EXFileSystem (1.0.0):
     - EXCore
+    - EXFileSystemInterface
+  - EXFileSystemInterface (1.0.0):
+    - EXCore
   - EXPermissions (1.0.0):
+    - EXCore
+    - EXPermissionsInterface
+  - EXPermissionsInterface (1.0.0):
     - EXCore
   - EXReactNativeAdapter (1.0.0):
     - EXCore
@@ -35,64 +47,67 @@ PODS:
   - GoogleSymbolUtilities (1.1.2)
   - GoogleUtilities (1.3.2):
     - GoogleSymbolUtilities (~> 1.1)
-  - React (0.55.3):
-    - React/Core (= 0.55.3)
-  - React/ART (0.55.3):
+  - React (0.55.4):
+    - React/Core (= 0.55.4)
+  - React/ART (0.55.4):
     - React/Core
-  - React/Core (0.55.3):
-    - yoga (= 0.55.3.React)
-  - React/CxxBridge (0.55.3):
+  - React/Core (0.55.4):
+    - yoga (= 0.55.4.React)
+  - React/CxxBridge (0.55.4):
     - Folly (= 2016.09.26.00)
     - React/Core
     - React/cxxreact
-  - React/cxxreact (0.55.3):
+  - React/cxxreact (0.55.4):
     - boost-for-react-native (= 1.63.0)
     - Folly (= 2016.09.26.00)
     - React/jschelpers
     - React/jsinspector
-  - React/DevSupport (0.55.3):
+  - React/DevSupport (0.55.4):
     - React/Core
     - React/RCTWebSocket
-  - React/fishhook (0.55.3)
-  - React/jschelpers (0.55.3):
+  - React/fishhook (0.55.4)
+  - React/jschelpers (0.55.4):
     - Folly (= 2016.09.26.00)
     - React/PrivateDatabase
-  - React/jsinspector (0.55.3)
-  - React/PrivateDatabase (0.55.3)
-  - React/RCTActionSheet (0.55.3):
+  - React/jsinspector (0.55.4)
+  - React/PrivateDatabase (0.55.4)
+  - React/RCTActionSheet (0.55.4):
     - React/Core
-  - React/RCTAnimation (0.55.3):
+  - React/RCTAnimation (0.55.4):
     - React/Core
-  - React/RCTBlob (0.55.3):
+  - React/RCTBlob (0.55.4):
     - React/Core
-  - React/RCTCameraRoll (0.55.3):
+  - React/RCTCameraRoll (0.55.4):
     - React/Core
     - React/RCTImage
-  - React/RCTGeolocation (0.55.3):
+  - React/RCTGeolocation (0.55.4):
     - React/Core
-  - React/RCTImage (0.55.3):
+  - React/RCTImage (0.55.4):
     - React/Core
     - React/RCTNetwork
-  - React/RCTNetwork (0.55.3):
+  - React/RCTNetwork (0.55.4):
     - React/Core
-  - React/RCTText (0.55.3):
+  - React/RCTText (0.55.4):
     - React/Core
-  - React/RCTVibration (0.55.3):
+  - React/RCTVibration (0.55.4):
     - React/Core
-  - React/RCTWebSocket (0.55.3):
+  - React/RCTWebSocket (0.55.4):
     - React/Core
     - React/fishhook
     - React/RCTBlob
-  - yoga (0.55.3.React)
+  - yoga (0.55.4.React)
 
 DEPENDENCIES:
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
-  - EXCamera (from `../node_modules/expo-camera`)
-  - EXCore (from `../node_modules/expo-core`)
-  - EXFaceDetector (from `../node_modules/expo-face-detector`)
-  - EXFileSystem (from `../node_modules/expo-file-system`)
-  - EXPermissions (from `../node_modules/expo-permissions`)
-  - EXReactNativeAdapter (from `../node_modules/expo-react-native-adapter`)
+  - EXCamera (from `../node_modules/expo-camera/ios`)
+  - EXCore (from `../node_modules/expo-core/ios`)
+  - EXFaceDetector (from `../node_modules/expo-face-detector/ios`)
+  - EXFaceDetectorInterface (from `../node_modules/expo-face-detector-interface/ios`)
+  - EXFileSystem (from `../node_modules/expo-file-system/ios`)
+  - EXFileSystemInterface (from `../node_modules/expo-file-system-interface/ios`)
+  - EXPermissions (from `../node_modules/expo-permissions/ios`)
+  - EXPermissionsInterface (from `../node_modules/expo-permissions-interface/ios`)
+  - EXReactNativeAdapter (from `../node_modules/expo-react-native-adapter/ios`)
   - Folly (from `../node_modules/react-native/third-party-podspecs/Folly.podspec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/GLog.podspec`)
   - React/ART (from `../node_modules/react-native`)
@@ -110,39 +125,57 @@ DEPENDENCIES:
   - React/RCTWebSocket (from `../node_modules/react-native`)
   - yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
+SPEC REPOS:
+  https://github.com/CocoaPods/Specs.git:
+    - boost-for-react-native
+    - GoogleInterchangeUtilities
+    - GoogleMobileVision
+    - GoogleNetworkingUtilities
+    - GoogleSymbolUtilities
+    - GoogleUtilities
+
 EXTERNAL SOURCES:
   DoubleConversion:
-    :podspec: ../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec
+    :podspec: "../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec"
   EXCamera:
-    :path: ../node_modules/expo-camera
+    :path: "../node_modules/expo-camera/ios"
   EXCore:
-    :path: ../node_modules/expo-core
+    :path: "../node_modules/expo-core/ios"
   EXFaceDetector:
-    :path: ../node_modules/expo-face-detector
+    :path: "../node_modules/expo-face-detector/ios"
+  EXFaceDetectorInterface:
+    :path: "../node_modules/expo-face-detector-interface/ios"
   EXFileSystem:
-    :path: ../node_modules/expo-file-system
+    :path: "../node_modules/expo-file-system/ios"
+  EXFileSystemInterface:
+    :path: "../node_modules/expo-file-system-interface/ios"
   EXPermissions:
-    :path: ../node_modules/expo-permissions
+    :path: "../node_modules/expo-permissions/ios"
+  EXPermissionsInterface:
+    :path: "../node_modules/expo-permissions-interface/ios"
   EXReactNativeAdapter:
-    :path: ../node_modules/expo-react-native-adapter
+    :path: "../node_modules/expo-react-native-adapter/ios"
   Folly:
-    :podspec: ../node_modules/react-native/third-party-podspecs/Folly.podspec
+    :podspec: "../node_modules/react-native/third-party-podspecs/Folly.podspec"
   glog:
-    :podspec: ../node_modules/react-native/third-party-podspecs/GLog.podspec
+    :podspec: "../node_modules/react-native/third-party-podspecs/GLog.podspec"
   React:
-    :path: ../node_modules/react-native
+    :path: "../node_modules/react-native"
   yoga:
-    :path: ../node_modules/react-native/ReactCommon/yoga
+    :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   DoubleConversion: e22e0762848812a87afd67ffda3998d9ef29170c
-  EXCamera: 85af87da322adf3129dcd145ed962221a63baf5a
-  EXCore: dd561a0f1de52937a72b975deb04dd3a3e8c0837
-  EXFaceDetector: ff7209044df5d9e00fc37030b724833c37ffab6e
-  EXFileSystem: fed5703552b023f4fdb8017fd247ade25e1d5749
-  EXPermissions: 43c4eb5132b303b5fc557350774f551a529137ed
-  EXReactNativeAdapter: 55fa891555b18f61abc5794fdee192e34b4589a4
+  EXCamera: a16bd0fb5db5eb71336401cd3d9444af03c1d9fb
+  EXCore: 70e5cb8627048c5373820d6372faa54cbefb3b12
+  EXFaceDetector: 61f61c8b5b6aff525ff39028fff17e4afcd966d6
+  EXFaceDetectorInterface: 9f895eb64ce5da86b6efc1980e293cf90c629df7
+  EXFileSystem: 02c505c7954258a3b239cdc3e3b6f956a73fd88d
+  EXFileSystemInterface: effe9ede025f8d487fbdfbc59b4e5d6fd1c6c2fd
+  EXPermissions: 1c524493270ba64f494f805b6e0e75d4b498ecb5
+  EXPermissionsInterface: 814a15d3259873c39646ed3cfe58bb49160445c1
+  EXReactNativeAdapter: 75eb0f3343ac335516c32fe4b93eb28bacac3f7b
   Folly: 211775e49d8da0ca658aebc8eab89d642935755c
   glog: 1de0bb937dccdc981596d3b5825ebfb765017ded
   GoogleInterchangeUtilities: d5bc4d88d5b661ab72f9d70c58d02ca8c27ad1f7
@@ -153,6 +186,6 @@ SPEC CHECKSUMS:
   React: aa2040dbb6f317b95314968021bd2888816e03d5
   yoga: a23273df0088bf7f2bb7e5d7b00044ea57a2a54a
 
-PODFILE CHECKSUM: 82f966335ae6b8a9a25c7c665e3ae46a0c169dff
+PODFILE CHECKSUM: 0ddac9e5ed3d2dbf9320ca6e1a1d7e2f144dd19c
 
-COCOAPODS: 1.4.0
+COCOAPODS: 1.5.0

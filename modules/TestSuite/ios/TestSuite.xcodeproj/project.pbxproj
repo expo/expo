@@ -106,7 +106,6 @@
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
-				05FDB3EEB005E16A798DFF3B /* [CP] Embed Pods Frameworks */,
 				FBBA36CAA626579B7D96B521 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
@@ -128,7 +127,7 @@
 				ORGANIZATIONNAME = Facebook;
 				TargetAttributes = {
 					13B07F861A680F5B00A75B9A = {
-						DevelopmentTeam = NF43LNW9Q6;
+						DevelopmentTeam = 72N4S986KH;
 					};
 				};
 			};
@@ -176,21 +175,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh";
-		};
-		05FDB3EEB005E16A798DFF3B /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-TestSuite/Pods-TestSuite-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
 		};
 		6E0041D4D75D32E6DDC8F7E1 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -272,7 +256,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = NF43LNW9Q6;
+				DEVELOPMENT_TEAM = 72N4S986KH;
 				INFOPLIST_FILE = TestSuite/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
@@ -280,6 +264,7 @@
 					"-ObjC",
 					"-lc++",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = host.exp.sjchmiela.TestSuite;
 				PRODUCT_NAME = TestSuite;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
@@ -291,7 +276,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = NF43LNW9Q6;
+				DEVELOPMENT_TEAM = 72N4S986KH;
 				INFOPLIST_FILE = TestSuite/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
@@ -299,6 +284,7 @@
 					"-ObjC",
 					"-lc++",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = host.exp.sjchmiela.TestSuite;
 				PRODUCT_NAME = TestSuite;
 				VERSIONING_SYSTEM = "apple-generic";
 			};

@@ -6,14 +6,14 @@
 static dispatch_once_t onceToken;
 static NSMutableSet<Class> *EXModuleClasses;
 
-void (^initializeGlobalModulesRegistry)(void) = ^{
+void (^EXinitializeGlobalModulesRegistry)(void) = ^{
   EXModuleClasses = [NSMutableSet set];
 };
 
 extern void EXRegisterModule(Class);
 extern void EXRegisterModule(Class moduleClass)
 {
-  dispatch_once(&onceToken, initializeGlobalModulesRegistry);
+  dispatch_once(&onceToken, EXinitializeGlobalModulesRegistry);
   [EXModuleClasses addObject:moduleClass];
 }
 
@@ -38,20 +38,22 @@ extern void EXRegisterModule(Class moduleClass)
 
     id<EXInternalModule> instance = [self createModuleInstance:klass forExperienceWithId:experienceId];
     
-    if ([[instance class] internalModuleNames] != nil && [[[instance class] internalModuleNames] count] > 0) {
+    if ([[instance class] exportedInterfaces] != nil && [[[instance class] exportedInterfaces] count] > 0) {
       [internalModules addObject:instance];
     }
     
     if ([instance isKindOfClass:[EXExportedModule class]]) {
-      [exportedModules addObject:instance];
+      [exportedModules addObject:(EXExportedModule *)instance];
     }
     
     if ([instance isKindOfClass:[EXViewManager class]]) {
-      [viewManagerModules addObject:instance];
+      [viewManagerModules addObject:(EXViewManager *)instance];
     }
   }
   
-  return [[EXModuleRegistry alloc] initWithInternalModules:internalModules exportedModules:exportedModules viewManagers:viewManagerModules];;
+  EXModuleRegistry *moduleRegistry = [[EXModuleRegistry alloc] initWithInternalModules:internalModules exportedModules:exportedModules viewManagers:viewManagerModules];;
+  [moduleRegistry setDelegate:_moduleRegistryDelegate];
+  return moduleRegistry;
 }
 
 # pragma mark - Utilities

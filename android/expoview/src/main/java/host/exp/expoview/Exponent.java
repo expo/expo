@@ -52,6 +52,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import expo.core.interfaces.Package;
 import expolib_v1.okhttp3.CacheControl;
 import expolib_v1.okhttp3.Call;
 import expolib_v1.okhttp3.Callback;
@@ -76,6 +77,7 @@ import host.exp.exponent.network.ExponentHttpClient;
 import host.exp.exponent.network.ExponentNetwork;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponent.utils.PermissionsHelper;
+import versioned.host.exp.exponent.ExponentPackageDelegate;
 
 public class Exponent {
 
@@ -281,6 +283,8 @@ public class Exponent {
     public String jsBundlePath;
     public RNObject linkingPackage;
     public Map<String, Object> experienceProperties;
+    public List<Package> expoPackages;
+    public ExponentPackageDelegate exponentPackageDelegate;
     public JSONObject manifest;
   }
 
@@ -674,6 +678,7 @@ public class Exponent {
   public interface StartReactInstanceDelegate {
     boolean isDebugModeEnabled();
     boolean isInForeground();
+    ExponentPackageDelegate getExponentPackageDelegate();
     void handleUnreadNotifications(JSONArray unreadNotifications);
   }
 

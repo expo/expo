@@ -10,6 +10,7 @@
 #import <EXFaceDetector/EXFaceDetectorUtils.h>
 #import <EXFaceDetector/EXFaceDetectorModule.h>
 #import <EXFaceDetector/EXFaceDetectorManager.h>
+#import <EXFaceDetectorInterface/EXFaceDetectorManager.h>
 
 static const NSString *modeKeyPath = @"mode";
 static const NSString *detectLandmarksKeyPath = @"detectLandmarks";
@@ -33,8 +34,8 @@ static const NSString *runClassificationsKeyPath = @"runClassifications";
 
 EX_REGISTER_MODULE();
 
-+ (const NSArray<NSString *> *)internalModuleNames {
-  return @[@"FaceDetector"];
++ (const NSArray<Protocol *> *)exportedInterfaces {
+  return @[@protocol(EXFaceDetectorManager)];
 }
 
 static NSDictionary *defaultFaceDetectorOptions = nil;

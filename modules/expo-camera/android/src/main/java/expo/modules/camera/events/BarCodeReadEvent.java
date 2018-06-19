@@ -7,17 +7,18 @@ import com.google.android.gms.vision.barcode.Barcode;
 
 import expo.core.interfaces.services.EventEmitter;
 import expo.modules.camera.CameraViewManager;
+import expo.modules.camera.utils.ExpoBarCodeDetector;
 
 public class BarCodeReadEvent extends EventEmitter.BaseEvent {
   private static final Pools.SynchronizedPool<BarCodeReadEvent> EVENTS_POOL =
       new Pools.SynchronizedPool<>(3);
 
-  private Barcode mBarCode;
+  private ExpoBarCodeDetector.Result mBarCode;
   private int mViewTag;
 
   private BarCodeReadEvent() {}
 
-  public static BarCodeReadEvent obtain(int viewTag, Barcode barCode) {
+  public static BarCodeReadEvent obtain(int viewTag, ExpoBarCodeDetector.Result barCode) {
     BarCodeReadEvent event = EVENTS_POOL.acquire();
     if (event == null) {
       event = new BarCodeReadEvent();
@@ -26,7 +27,7 @@ public class BarCodeReadEvent extends EventEmitter.BaseEvent {
     return event;
   }
 
-  private void init(int viewTag, Barcode barCode) {
+  private void init(int viewTag, ExpoBarCodeDetector.Result barCode) {
     mViewTag = viewTag;
     mBarCode = barCode;
   }
@@ -40,7 +41,7 @@ public class BarCodeReadEvent extends EventEmitter.BaseEvent {
    */
   @Override
   public short getCoalescingKey() {
-    int hashCode = mBarCode.rawValue.hashCode() % Short.MAX_VALUE;
+    int hashCode = mBarCode.getValue().hashCode() % Short.MAX_VALUE;
     return (short) hashCode;
   }
 
@@ -53,8 +54,8 @@ public class BarCodeReadEvent extends EventEmitter.BaseEvent {
   public Bundle getEventBody() {
     Bundle event = new Bundle();
     event.putInt("target", mViewTag);
-    event.putString("data", mBarCode.rawValue);
-    event.putInt("type", mBarCode.format);
+    event.putString("data", mBarCode.getValue());
+    event.putInt("type", mBarCode.getType());
     return event;
   }
 }

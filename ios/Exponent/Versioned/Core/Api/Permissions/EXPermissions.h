@@ -35,7 +35,7 @@ typedef enum EXPermissionStatus {
 @interface EXPermissions : EXScopedBridgeModule <EXPermissionRequesterDelegate>
 
 + (NSString *)permissionStringForStatus:(EXPermissionStatus)status;
-
+- (NSDictionary *)getSystemPermissionsWithType:(NSString *)type;
 + (EXPermissionStatus)statusForPermissions:(NSDictionary *)permissions;
 
 @end

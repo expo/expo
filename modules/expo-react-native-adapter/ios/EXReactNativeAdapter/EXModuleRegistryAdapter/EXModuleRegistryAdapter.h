@@ -11,7 +11,10 @@
 
 @interface EXModuleRegistryAdapter : NSObject
 
+@property (nonatomic, readonly) EXModuleRegistryProvider *moduleRegistryProvider;
+
 - (instancetype)initWithModuleRegistryProvider:(EXModuleRegistryProvider *)moduleRegistryProvider;
+- (NSArray<id<RCTBridgeModule>> *)extraModulesForModuleRegistry:(EXModuleRegistry *)moduleRegistry;
 - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge andExperience:(NSString *)experienceId;
 
 @end

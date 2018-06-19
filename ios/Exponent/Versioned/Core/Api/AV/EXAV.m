@@ -8,7 +8,9 @@
 
 #import "EXAV.h"
 #import "EXAVPlayerData.h"
-#import "EXFileSystem.h"
+#import <EXFileSystemInterface/EXFileSystemInterface.h>
+#import "EXFileSystemUtilities.h"
+#import "EXModuleRegistryBinding.h"
 #import "EXVideoView.h"
 #import "EXUnversioned.h"
 #import "EXAudioRecordingPermissionRequester.h"
@@ -479,8 +481,14 @@ withEXVideoViewForTag:(nonnull NSNumber *)reactTag
     return RCTErrorWithMessage(@"Recorder already exists.");
   }
   
-  NSString *directory = [self.bridge.scopedModules.fileSystem.cachesDirectory stringByAppendingPathComponent:@"AV"];
-  [EXFileSystem ensureDirExistsWithPath:directory];
+  id<EXFileSystem> fileSystem = [self.bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystem)];
+  
+  if (!fileSystem) {
+    return RCTErrorWithMessage(@"No FileSystem module.");
+  }
+  
+  NSString *directory = [fileSystem.cachesDirectory stringByAppendingPathComponent:@"AV"];
+  [EXFileSystemUtilities ensureDirExistsWithPath:directory];
   NSString *soundFilePath = [directory stringByAppendingPathComponent:_audioRecorderFilename];
   NSURL *soundFileURL = [NSURL fileURLWithPath:soundFilePath];
   

@@ -23,9 +23,9 @@ NSString * const EXPermissionExpiresNever = @"never";
 
 EX_EXPORT_MODULE(ExponentPermissions);
 
-+ (const NSArray<NSString *> *)internalModuleNames
++ (const NSArray<Protocol *> *)exportedInterfaces
 {
-  return @[@"Permissions"];
+  return @[@protocol(EXPermissions)];
 }
 
 - (NSDictionary *)constantsToExport {

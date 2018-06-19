@@ -8,13 +8,9 @@ import android.media.CamcorderProfile;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.view.View;
 
 import com.google.android.cameraview.CameraView;
-import com.google.android.gms.vision.barcode.Barcode;
-import com.google.android.gms.vision.barcode.BarcodeDetector;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,17 +28,23 @@ import expo.core.interfaces.services.EventEmitter;
 import expo.core.interfaces.services.UIManager;
 import expo.interfaces.facedetector.FaceDetector;
 import expo.interfaces.facedetector.FaceDetectorProvider;
-import expo.interfaces.filesystem.FileSystem;
+import expo.interfaces.permissions.Permissions;
 import expo.modules.camera.tasks.BarCodeScannerAsyncTask;
 import expo.modules.camera.tasks.BarCodeScannerAsyncTaskDelegate;
 import expo.modules.camera.tasks.FaceDetectorAsyncTask;
 import expo.modules.camera.tasks.FaceDetectorAsyncTaskDelegate;
+import expo.modules.camera.tasks.PictureSavedDelegate;
 import expo.modules.camera.tasks.ResolveTakenPictureAsyncTask;
+import expo.modules.camera.utils.ExpoBarCodeDetector;
+import expo.modules.camera.utils.FileSystemUtils;
+import expo.modules.camera.utils.GMVBarCodeDetector;
 import expo.modules.camera.utils.ImageDimensions;
+import expo.modules.camera.utils.ZxingBarCodeDetector;
 
-public class ExpoCameraView extends CameraView implements LifecycleEventListener, BarCodeScannerAsyncTaskDelegate, FaceDetectorAsyncTaskDelegate {
+public class ExpoCameraView extends CameraView implements LifecycleEventListener, BarCodeScannerAsyncTaskDelegate, FaceDetectorAsyncTaskDelegate, PictureSavedDelegate {
   private static final String MUTE_KEY = "mute";
   private static final String QUALITY_KEY = "quality";
+  private static final String FAST_MODE_KEY = "fastMode";
   private static final String MAX_DURATION_KEY = "maxDuration";
   private static final String MAX_FILE_SIZE_KEY = "maxFileSize";
   private Context mThemedReactContext;
@@ -61,7 +63,7 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
   public volatile boolean faceDetectorTaskLock = false;
 
   // Scanning-related properties
-  private BarcodeDetector mDetector;
+  private ExpoBarCodeDetector mDetector;
   private FaceDetector mFaceDetector;
   private boolean mShouldDetectFaces = false;
   private boolean mShouldScanBarCodes = false;
@@ -92,12 +94,12 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
         Promise promise = mPictureTakenPromises.poll();
         final File cacheDirectory = mPictureTakenDirectories.remove(promise);
         Map<String, Object> options = mPictureTakenOptions.remove(promise);
-        FileSystem fileSystem = mModuleRegistry.getModule(FileSystem.class);
-        if (fileSystem == null) {
-          promise.reject("E_MODULE_REGISTRY", "No filesystem module avialable.");
-        } else {
-          new ResolveTakenPictureAsyncTask(data, promise, options, cacheDirectory, fileSystem).execute();
+
+        if (options.containsKey(FAST_MODE_KEY) && (Boolean) options.get(FAST_MODE_KEY)) {
+          promise.resolve(null);
         }
+
+        new ResolveTakenPictureAsyncTask(data, promise, options, cacheDirectory, ExpoCameraView.this).execute();
       }
 
       @Override
@@ -121,7 +123,7 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
         if (mShouldScanBarCodes && !barCodeScannerTaskLock && cameraView instanceof BarCodeScannerAsyncTaskDelegate) {
           barCodeScannerTaskLock = true;
           BarCodeScannerAsyncTaskDelegate delegate = (BarCodeScannerAsyncTaskDelegate) cameraView;
-          new BarCodeScannerAsyncTask(delegate, mDetector, data, width, height).execute();
+          new BarCodeScannerAsyncTask(delegate, mDetector, data, width, height, rotation).execute();
         }
 
         if (mShouldDetectFaces && !faceDetectorTaskLock && cameraView instanceof FaceDetectorAsyncTaskDelegate) {
@@ -174,13 +176,24 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
     mPictureTakenPromises.add(promise);
     mPictureTakenOptions.put(promise, options);
     mPictureTakenDirectories.put(promise, cacheDirectory);
-    super.takePicture();
+    try {
+      super.takePicture();
+    } catch (Exception e) {
+      mPictureTakenPromises.remove(promise);
+      mPictureTakenOptions.remove(promise);
+      mPictureTakenDirectories.remove(promise);
+      throw e;
+    }
+  }
+
+  @Override
+  public void onPictureSaved(Bundle response) {
+    CameraViewHelper.emitPictureSavedEvent(mModuleRegistry.getModule(EventEmitter.class), this, response);
   }
 
   public void record(Map<String, Object> options, final Promise promise, File cacheDirectory) {
     try {
-      FileSystem fileSystem = mModuleRegistry.getModule(FileSystem.class);
-      String path = fileSystem.generateOutputPath(cacheDirectory, "Camera", ".mp4");
+      String path = FileSystemUtils.generateOutputPath(cacheDirectory, "Camera", ".mp4");
       int maxDuration = -1;
       if (options.get(MAX_DURATION_KEY) != null) {
         maxDuration = (Integer) options.get(MAX_DURATION_KEY);
@@ -222,11 +235,9 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
       }
     }
 
-    mDetector = new BarcodeDetector.Builder(mThemedReactContext)
-        .setBarcodeFormats(barcodeFormats)
-        .build();
-    if (!mDetector.isOperational()) {
-      Log.w("ExpoCameraView", "Could not start barcode scanner.");
+    mDetector = new GMVBarCodeDetector(mBarCodeTypes, mThemedReactContext);
+    if (!mDetector.isAvailable()) {
+      mDetector = new ZxingBarCodeDetector(mBarCodeTypes, mThemedReactContext);
     }
   }
 
@@ -235,8 +246,8 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
     setScanning(mShouldScanBarCodes || mShouldDetectFaces);
   }
 
-  public void onBarCodeRead(Barcode barCode) {
-    int barCodeType = barCode.format;
+  public void onBarCodeRead(ExpoBarCodeDetector.Result barCode) {
+    int barCodeType = barCode.getType();
     if (!mShouldScanBarCodes || !mBarCodeTypes.contains(barCodeType)) {
       return;
     }
@@ -288,12 +299,8 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
   }
 
   private boolean hasCameraPermissions() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      int result = ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA);
-      return result == PackageManager.PERMISSION_GRANTED;
-    } else {
-      return true;
-    }
+    int[] permissions = mModuleRegistry.getModule(Permissions.class).getPermissions(new String[]{ Manifest.permission.CAMERA });
+    return permissions.length == 1 && permissions[0] == PackageManager.PERMISSION_GRANTED;
   }
 
   public void setShouldDetectFaces(boolean shouldDetectFaces) {

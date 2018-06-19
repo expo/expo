@@ -13,9 +13,9 @@ import com.facebook.react.bridge.WritableMap;
 
 import java.util.List;
 
-import versioned.host.exp.exponent.modules.api.components.camera.utils.ExpoBarCodeDetector;
-import versioned.host.exp.exponent.modules.api.components.camera.utils.GMVBarCodeDetector;
-import versioned.host.exp.exponent.modules.api.components.camera.utils.ZxingBarCodeDetector;
+import expo.modules.camera.utils.ExpoBarCodeDetector;
+import expo.modules.camera.utils.GMVBarCodeDetector;
+import expo.modules.camera.utils.ZxingBarCodeDetector;
 
 class BarCodeScannerViewFinder extends TextureView implements TextureView.SurfaceTextureListener, Camera.PreviewCallback {
   private final Context mContext;

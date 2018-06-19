@@ -34,10 +34,13 @@ target 'TestSuite' do
     :podspec => "#{rn_path}/third-party-podspecs/GLog.podspec",
     :inhibit_warnings => true
   
-  pod 'EXCore', path: '../node_modules/expo-core'
-  pod 'EXCamera', path: '../node_modules/expo-camera'
-  pod 'EXFileSystem', path: '../node_modules/expo-file-system'
-  pod 'EXFaceDetector', path: '../node_modules/expo-face-detector'
-  pod 'EXPermissions', path: '../node_modules/expo-permissions'
-  pod 'EXReactNativeAdapter', path: '../node_modules/expo-react-native-adapter'
+  pod 'EXCore', path: '../node_modules/expo-core/ios'
+  pod 'EXCamera', path: '../node_modules/expo-camera/ios'
+  pod 'EXFileSystem', path: '../node_modules/expo-file-system/ios'
+  pod 'EXFileSystemInterface', path: '../node_modules/expo-file-system-interface/ios'
+  pod 'EXFaceDetector', path: '../node_modules/expo-face-detector/ios'
+  pod 'EXFaceDetectorInterface', path: '../node_modules/expo-face-detector-interface/ios'
+  pod 'EXPermissions', path: '../node_modules/expo-permissions/ios'
+  pod 'EXPermissionsInterface', path: '../node_modules/expo-permissions-interface/ios'
+  pod 'EXReactNativeAdapter', path: '../node_modules/expo-react-native-adapter/ios'
 end

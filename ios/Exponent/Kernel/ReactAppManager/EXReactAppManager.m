@@ -244,6 +244,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   _exceptionHandler = [[EXReactAppExceptionHandler alloc] initWithAppRecord:_appRecord];
 
   NSDictionary *params = @{
+                           @"bridge": bridge,
                            @"manifest": _appRecord.appLoader.manifest,
                            @"constants": @{
                                @"linkingUri": RCTNullIfNil([EXKernelLinkingManager linkingUriForExperienceUri:_appRecord.appLoader.manifestUrl useLegacy:[self _compareVersionTo:27] == NSOrderedAscending]),
@@ -258,6 +259,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
                            @"isStandardDevMenuAllowed": @(isStandardDevMenuAllowed),
                            @"testEnvironment": @([EXEnvironment sharedEnvironment].testEnvironment),
                            @"services": [EXKernel sharedInstance].serviceRegistry.allServices,
+                           @"moduleRegistryDelegateClass": RCTNullIfNil([self moduleRegistryDelegateClass]),
                            };
   return [self.versionManager extraModulesWithParams:params];
 }
@@ -503,6 +505,14 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
     return [ExpoKit sharedInstance].launchOptions;
   }
   return @{};
+}
+
+- (Class)moduleRegistryDelegateClass
+{
+  if ([EXEnvironment sharedEnvironment].isDetached) {
+    return [ExpoKit sharedInstance].moduleRegistryDelegateClass;
+  }
+  return nil;
 }
 
 - (NSString *)applicationKeyForRootView

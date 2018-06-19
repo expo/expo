@@ -8,7 +8,7 @@
 
 #import <EXFaceDetector/EXFaceDetectorModule.h>
 #import <EXFaceDetector/EXFaceEncoder.h>
-#import <EXFaceDetector/EXFileSystem.h>
+#import <EXFileSystemInterface/EXFileSystemInterface.h>
 #import <EXFaceDetector/EXFaceDetectorUtils.h>
 #import <EXCore/EXModuleRegistry.h>
 
@@ -60,7 +60,7 @@ EX_EXPORT_METHOD_AS(detectFaces, detectFaces:(nonnull NSDictionary *)options res
   NSString *path = [url.path stringByStandardizingPath];
   
   NSException *exception;
-  id<EXFileSystem> fileSystem = [_moduleRegistry getModuleForName:@"ExponentFileSystem" downcastedTo:@protocol(EXFileSystem) exception:&exception];
+  id<EXFileSystem> fileSystem = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystem)];
   if (!fileSystem || exception) {
     reject(@"E_MODULE_UNAVAILABLE", @"No file system module", nil);
     return;

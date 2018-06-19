@@ -26,7 +26,7 @@ import expo.interfaces.permissions.Permissions;
 import expo.interfaces.permissions.PermissionsListener;
 import expo.interfaces.permissions.PermissionsManager;
 
-public class PermissionsModule extends ExportedModule implements InternalModule, Permissions, ModuleRegistryConsumer {
+public class PermissionsModule extends ExportedModule implements ModuleRegistryConsumer {
   private static String PERMISSION_EXPIRES_NEVER = "never";
   private static final int PERMISSIONS_REQUEST = 13;
 
@@ -353,19 +353,5 @@ public class PermissionsModule extends ExportedModule implements InternalModule,
     } else {
       return false;
     }
-  }
-
-  @Override
-  public int[] getPermissions(String[] permissions) {
-    int[] results = new int[permissions.length];
-    for (int i = 0; i < permissions.length; i++) {
-      results[i] = ContextCompat.checkSelfPermission(getContext(), permissions[i]);
-    }
-    return results;
-  }
-
-  @Override
-  public List<Class> getExportedInterfaces() {
-    return Collections.singletonList((Class) Permissions.class);
   }
 }

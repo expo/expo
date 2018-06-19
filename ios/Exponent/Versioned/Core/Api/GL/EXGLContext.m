@@ -7,7 +7,10 @@
 //
 
 #import "EXGLContext.h"
-#import "EXFileSystem.h"
+
+#import "EXFileSystemUtilities.h"
+#import "EXModuleRegistryBinding.h"
+#import <EXFileSystemInterface/EXFileSystemInterface.h>
 
 #include <OpenGLES/ES3/gl.h>
 #include <OpenGLES/ES3/glext.h>
@@ -260,6 +263,10 @@
     }
     
     NSString *filePath = [self generateSnapshotPathWithExtension:extension];
+    if (!filePath) {
+      reject(@"E_FILESYSTEM_ERR", @"Could not generate snapshot path, is FileSystem module available?", nil);
+      return;
+    }
     [imageData writeToFile:filePath atomically:YES];
 
     // Restore surrounding framebuffer
@@ -296,9 +303,13 @@
 
 - (NSString *)generateSnapshotPathWithExtension:(NSString *)extension
 {
-  NSString *directory = [_manager.bridge.scopedModules.fileSystem.cachesDirectory stringByAppendingPathComponent:@"GLView"];
+  id<EXFileSystem> fileSystem = [_manager.bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystem)];
+  if (!fileSystem) {
+    RCTLogError(@"No FileSystem module.");
+  }
+  NSString *directory = [fileSystem.cachesDirectory stringByAppendingPathComponent:@"GLView"];
   NSString *fileName = [[[NSUUID UUID] UUIDString] stringByAppendingString:extension];
-  [EXFileSystem ensureDirExistsWithPath:directory];
+  [EXFileSystemUtilities ensureDirExistsWithPath:directory];
 
   return [directory stringByAppendingPathComponent:fileName];
 }

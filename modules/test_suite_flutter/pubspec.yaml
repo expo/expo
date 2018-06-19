@@ -1,0 +1,26 @@
+name: test_suite_flutter
+description: A Test Suite for Expo Modules on Flutter.
+
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^0.1.0
+
+  expo_permissions:
+    path: ../expo-permissions
+  expo_contacts:
+    path: ../expo-contacts
+  expo_sensors:
+    path: ../expo-sensors
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+
+flutter:
+  uses-material-design: true
+

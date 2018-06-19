@@ -45,14 +45,14 @@ ABI27_0_0EX_EXPORT_SCOPED_MODULE(ExponentMagnetometerUncalibrated, SensorManager
 - (void)startObserving {
   [self setWatching:YES];
   __weak typeof(self) weakSelf = self;
-  [_kernelSensorServiceDelegate sensorModuleDidSubscribeForMagnetometerUncalibratedUpdates:self withHandler:^(NSDictionary *event) {
+  [_kernelSensorServiceDelegate sensorModuleDidSubscribeForMagnetometerUncalibratedUpdatesOfExperience:self.experienceId withHandler:^(NSDictionary *event) {
     [weakSelf sendEventWithName:@"magnetometerUncalibratedDidUpdate" body:event];
   }];
 }
 
 - (void)stopObserving {
   [self setWatching:NO];
-  [_kernelSensorServiceDelegate sensorModuleDidUnsubscribeForMagnetometerUncalibratedUpdates:self];
+  [_kernelSensorServiceDelegate sensorModuleDidUnsubscribeForMagnetometerUncalibratedUpdatesOfExperience:self.experienceId];
 }
 
 ABI27_0_0RCT_EXPORT_METHOD(setUpdateInterval:(nonnull NSNumber *)intervalMs) {
@@ -69,7 +69,7 @@ ABI27_0_0RCT_EXPORT_METHOD(setUpdateInterval:(nonnull NSNumber *)intervalMs) {
 - (void)bridgeDidBackground:(NSNotification *)notification
 {
   if ([self isWatching]) {
-    [_kernelSensorServiceDelegate sensorModuleDidUnsubscribeForMagnetometerUncalibratedUpdates:self];
+    [_kernelSensorServiceDelegate sensorModuleDidUnsubscribeForMagnetometerUncalibratedUpdatesOfExperience:self.experienceId];
   }
 }
 

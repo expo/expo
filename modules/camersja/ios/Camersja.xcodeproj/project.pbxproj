@@ -555,7 +555,6 @@
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				5548011CAF8D6CD718E51980 /* [CP] Copy Pods Resources */,
-				05E439C35E719F24603430F8 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -936,21 +935,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh";
-		};
-		05E439C35E719F24603430F8 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Camersja/Pods-Camersja-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
 		};
 		5548011CAF8D6CD718E51980 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;

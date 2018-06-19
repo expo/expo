@@ -3,6 +3,7 @@ package expo.modules.camera;
 import android.content.Context;
 
 import com.google.android.cameraview.AspectRatio;
+import com.google.android.cameraview.Size;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +21,8 @@ public class CameraViewManager extends ViewManager<ExpoCameraView> implements Mo
     EVENT_ON_MOUNT_ERROR("onMountError"),
     EVENT_ON_BAR_CODE_READ("onBarCodeRead"),
     EVENT_ON_FACES_DETECTED("onFacesDetected"),
-    EVENT_ON_FACE_DETECTION_ERROR("onFaceDetectionError");
+    EVENT_ON_FACE_DETECTION_ERROR("onFaceDetectionError"),
+    EVENT_ON_PICTURE_SAVED("onPictureSaved");
 
     private final String mName;
 
@@ -100,6 +102,11 @@ public class CameraViewManager extends ViewManager<ExpoCameraView> implements Mo
   @ExpoProp(name = "whiteBalance")
   public void setWhiteBalance(ExpoCameraView view, int whiteBalance) {
     view.setWhiteBalance(whiteBalance);
+  }
+
+  @ExpoProp(name = "pictureSize")
+  public void setPictureSize(ExpoCameraView view, String size) {
+    view.setPictureSize(Size.parse(size));
   }
 
   @ExpoProp(name = "barCodeTypes")

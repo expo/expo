@@ -10,16 +10,21 @@ import com.facebook.react.ReactPackage;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Collections;
 import java.util.List;
 
+import expo.adapters.react.ReactModuleRegistryProvider;
+import expo.core.interfaces.Package;
 import host.exp.exponent.AppLoader;
 import host.exp.exponent.Constants;
 import host.exp.exponent.kernel.ExponentUrls;
 import host.exp.exponent.kernel.KernelConstants;
 import host.exp.expoview.ExpoViewBuildConfig;
 import host.exp.expoview.Exponent;
+import versioned.host.exp.exponent.ExponentPackageDelegate;
+import versioned.host.exp.exponent.modules.universal.ExpoModuleRegistryAdapter;
 
-public abstract class DetachActivity extends ExperienceActivity {
+public abstract class DetachActivity extends ExperienceActivity implements ExponentPackageDelegate {
 
   // Override me!
   public abstract String publishedUrl();
@@ -110,5 +115,21 @@ public abstract class DetachActivity extends ExperienceActivity {
   @Override
   public boolean forceUnversioned() {
     return true;
+  }
+
+  @Override
+  public List<Package> expoPackages() {
+    // Override to add your own packages.
+    return Collections.emptyList();
+  }
+
+  @Override
+  public ExponentPackageDelegate getExponentPackageDelegate() {
+    return this;
+  }
+
+  @Override
+  public ExpoModuleRegistryAdapter getScopedModuleRegistryAdapterForPackages(List<Package> packages) {
+    return new DetachedModuleRegistryAdapter(new ReactModuleRegistryProvider(packages));
   }
 }

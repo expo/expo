@@ -11,6 +11,14 @@ import com.facebook.soloader.SoLoader;
 import java.util.Arrays;
 import java.util.List;
 
+import expo.adapters.react.ModuleRegistryAdapter;
+import expo.adapters.react.ReactAdapterPackage;
+import expo.adapters.react.ReactModuleRegistryProvider;
+import expo.core.interfaces.Package;
+import expo.modules.camera.CameraPackage;
+import expo.modules.permissions.PermissionsPackage;
+import expo.modules.filesystem.FileSystemPackage;
+
 public class MainApplication extends Application implements ReactApplication {
 
   private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
@@ -22,7 +30,14 @@ public class MainApplication extends Application implements ReactApplication {
     @Override
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
-          new MainReactPackage()
+          new MainReactPackage(),
+          new ModuleRegistryAdapter(new ReactModuleRegistryProvider(Arrays.<Package>asList(
+                  new FileSystemPackage(),
+                  new CameraPackage(),
+                  new PermissionsPackage(),
+                  new ReactAdapterPackage()
+          )))
+
       );
     }
 

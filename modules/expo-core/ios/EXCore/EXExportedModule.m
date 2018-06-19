@@ -10,13 +10,15 @@
 [methodName hasPrefix:@EXPAND_AND_QUOTE(EX_EXPORTED_METHODS_PREFIX)]
 
 static const NSString *noNameExceptionName = @"No custom +(const NSString *)exportedModuleName implementation.";
-static const NSString *noNameExceptionReason = @"You've subclassed an EXExportedModule, but didn't override the +(const NSString *)exportedModuleName method. Override this method and return a name for your exported module.";
+static const NSString *noNameExceptionReasonFormat = @"You've subclassed an EXExportedModule in %@, but didn't override the +(const NSString *)exportedModuleName method. Override this method and return a name for your exported module.";
 
 static const NSRegularExpression *selectorRegularExpression = nil;
 static dispatch_once_t selectorRegularExpressionOnceToken = 0;
 
 @interface EXExportedModule ()
 
+@property (nonatomic, strong) dispatch_queue_t methodQueue;
+@property (nonatomic, assign) dispatch_once_t methodQueueSetupOnce;
 @property (nonatomic, strong) NSDictionary<NSString *, NSString *> *exportedMethods;
 
 @end
@@ -28,20 +30,26 @@ static dispatch_once_t selectorRegularExpressionOnceToken = 0;
   return self = [super init];
 }
 
+- (instancetype)copyWithZone:(NSZone *)zone
+{
+  return self;
+}
+
 - (instancetype)initWithExperienceId:(NSString *)experienceId
 {
   return self = [self init];
 }
 
-+ (const NSArray<NSString *> *)internalModuleNames {
++ (const NSArray<Protocol *> *)exportedInterfaces {
   return nil;
 }
 
 
 + (const NSString *)exportedModuleName
 {
+  NSString *reason = [NSString stringWithFormat:(NSString *)noNameExceptionReasonFormat, [self description]];
   @throw [NSException exceptionWithName:(NSString *)noNameExceptionName
-                                 reason:(NSString *)noNameExceptionReason
+                                 reason:reason
                                userInfo:nil];
 }
 
@@ -52,7 +60,15 @@ static dispatch_once_t selectorRegularExpressionOnceToken = 0;
 
 - (dispatch_queue_t)methodQueue
 {
-  return nil;
+  __weak EXExportedModule *weakSelf = self;
+  dispatch_once(&_methodQueueSetupOnce, ^{
+    __strong EXExportedModule *strongSelf = weakSelf;
+    if (strongSelf) {
+      NSString *queueName = [NSString stringWithFormat:@"expo.modules.%@Queue", [[strongSelf class] exportedModuleName]];
+      strongSelf.methodQueue = dispatch_queue_create(queueName.UTF8String, DISPATCH_QUEUE_SERIAL);
+    }
+  });
+  return _methodQueue;
 }
 
 # pragma mark - Exported methods
@@ -65,28 +81,34 @@ static dispatch_once_t selectorRegularExpressionOnceToken = 0;
 
   NSMutableDictionary<NSString *, NSString *> *exportedMethods = [NSMutableDictionary dictionary];
   
-  unsigned int methodsCount;
-  Method *methodsDescriptions = class_copyMethodList(object_getClass([self class]), &methodsCount);
+  Class klass = [self class];
   
-  @try {
-    for(int i = 0; i < methodsCount; i++) {
-      Method method = methodsDescriptions[i];
-      SEL methodSelector = method_getName(method);
-      NSString *methodName = NSStringFromSelector(methodSelector);
-      if (EX_IS_METHOD_EXPORTED(methodName)) {
-        IMP imp = method_getImplementation(method);
-        const EXMethodInfo *info = ((const EXMethodInfo *(*)(id, SEL))imp)([self class], methodSelector);
-        NSString *fullSelectorName = [NSString stringWithUTF8String:info->objcName];
-        // `objcName` constains a method declaration string
-        // (eg. `doSth:(NSString *)string options:(NSDictionary *)options`)
-        // We only need a selector string  (eg. `doSth:options:`)
-        NSString *simpleSelectorName = [self selectorNameFromName:fullSelectorName];
-        exportedMethods[[NSString stringWithUTF8String:info->jsName]] = simpleSelectorName;
+  while (klass) {
+    unsigned int methodsCount;
+    Method *methodsDescriptions = class_copyMethodList(object_getClass(klass), &methodsCount);
+
+    @try {
+      for(int i = 0; i < methodsCount; i++) {
+        Method method = methodsDescriptions[i];
+        SEL methodSelector = method_getName(method);
+        NSString *methodName = NSStringFromSelector(methodSelector);
+        if (EX_IS_METHOD_EXPORTED(methodName)) {
+          IMP imp = method_getImplementation(method);
+          const EXMethodInfo *info = ((const EXMethodInfo *(*)(id, SEL))imp)(klass, methodSelector);
+          NSString *fullSelectorName = [NSString stringWithUTF8String:info->objcName];
+          // `objcName` constains a method declaration string
+          // (eg. `doSth:(NSString *)string options:(NSDictionary *)options`)
+          // We only need a selector string  (eg. `doSth:options:`)
+          NSString *simpleSelectorName = [self selectorNameFromName:fullSelectorName];
+          exportedMethods[[NSString stringWithUTF8String:info->jsName]] = simpleSelectorName;
+        }
       }
     }
-  }
-  @finally {
-    free(methodsDescriptions);
+    @finally {
+      free(methodsDescriptions);
+    }
+
+    klass = [klass superclass];
   }
   
   _exportedMethods = exportedMethods;
@@ -133,14 +155,7 @@ static dispatch_once_t selectorRegularExpressionOnceToken = 0;
   [invocation setArgument:&resolve atIndex:(2 + [arguments count])];
   [invocation setArgument:&reject atIndex:([arguments count] + 2 + 1)];
   [invocation retainArguments];
-  
-  if ([self methodQueue] != nil) {
-    dispatch_async([self methodQueue], ^{
-      [invocation invoke];
-    });
-  } else {
-    [invocation invoke];
-  }
+  [invocation invoke];
 }
 
 @end

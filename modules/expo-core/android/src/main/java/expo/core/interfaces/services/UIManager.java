@@ -11,6 +11,8 @@ public interface UIManager {
   }
 
   <T extends View> void addUIBlock(int viewTag, UIBlock<T> block);
+  void runOnUiQueueThread(Runnable runnable);
+  void runOnClientCodeQueueThread(Runnable runnable);
   void registerLifecycleEventListener(LifecycleEventListener listener);
   void unregisterLifecycleEventListener(LifecycleEventListener listener);
 }
