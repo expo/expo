@@ -213,9 +213,11 @@ Assuming that `MyAppText` is a component that simply renders out its children in
 
 class MyAppHeaderText extends Component {
   render() {
-    <MyAppText>
-      <Text style={{fontSize: 20}}>{this.props.children}</Text>
-    </MyAppText>;
+    return (
+      <MyAppText>
+        <Text style={{fontSize: 20}}>{this.props.children}</Text>
+      </MyAppText>
+    );
   }
 }
 
