@@ -11,4 +11,6 @@
       isDebugXCodeScheme:(BOOL)isDebugScheme
             isUserDetach:(BOOL)isUserDetach;
 
+- (void)_loadDefaultConfig;
+
 @end

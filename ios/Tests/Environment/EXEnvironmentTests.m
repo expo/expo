@@ -89,5 +89,15 @@
   XCTAssert([_environment.standaloneManifestUrl isEqualToString:expectedShellConfig[@"manifestUrl"]], @"EXEnvironment should ignore the ExpoKit dev url when using a prod build scheme");
 }
 
+- (void)testDoesDefaultConfigRespectXcodeScheme
+{
+  [_environment _loadDefaultConfig];
+#if DEBUG
+  XCTAssert(_environment.isDebugXCodeScheme, @"Default EXEnvironment config should respect Debug Xcode scheme");
+#else
+  XCTAssert(!(_environment.isDebugXCodeScheme), @"Default EXEnvironment config should respect Release Xcode scheme");
+#endif
+}
+
 @end
 
