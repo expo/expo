@@ -110,10 +110,12 @@ EX_REGISTER_MODULE();
 }
 
 
-- (void)stopObserving {
-  CMPedometer *pedometer = [self getPedometerInstance];
-
-  [pedometer stopPedometerUpdates];
+- (void)stopObserving
+{
+  if (_isWatching) {
+    CMPedometer *pedometer = [self getPedometerInstance];
+    [pedometer stopPedometerUpdates];
+  }
   _watchStartDate = nil;
   _isWatching = NO;
 }

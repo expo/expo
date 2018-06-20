@@ -26,7 +26,6 @@ EX_REGISTER_MODULE();
 - (instancetype)init
 {
   if (self = [super init]) {
-    [self manager];
     _accelerometerHandlers = [[NSMutableDictionary alloc] init];
     _deviceMotionHandlers = [[NSMutableDictionary alloc] init];
     _gyroscopeHandlers = [[NSMutableDictionary alloc] init];
@@ -46,22 +45,22 @@ EX_REGISTER_MODULE();
 
 - (void)dealloc
 {
-  [_manager stopAccelerometerUpdates];
-  [_manager stopDeviceMotionUpdates];
-  [_manager stopGyroUpdates];
-  [_manager stopMagnetometerUpdates];
+  [[self manager] stopAccelerometerUpdates];
+  [[self manager] stopDeviceMotionUpdates];
+  [[self manager] stopGyroUpdates];
+  [[self manager] stopMagnetometerUpdates];
 }
 
 - (void)sensorModuleDidSubscribeForAccelerometerUpdates:(id)scopedSensorModule
                                             withHandler:(void (^)(NSDictionary *event))handlerBlock
 {
-  if ([_manager isAccelerometerAvailable]) {
+  if ([[self manager] isAccelerometerAvailable]) {
     _accelerometerHandlers[scopedSensorModule] = handlerBlock;
   }
-  if (![_manager isAccelerometerActive]) {
-    [_manager setAccelerometerUpdateInterval:0.1f];
+  if (![[self manager] isAccelerometerActive]) {
+    [[self manager] setAccelerometerUpdateInterval:0.1f];
     __weak EXSensorsManager *weakSelf = self;
-    [_manager startAccelerometerUpdatesToQueue:[NSOperationQueue mainQueue] withHandler:^(CMAccelerometerData *data, NSError *error) {
+    [[self manager] startAccelerometerUpdatesToQueue:[NSOperationQueue mainQueue] withHandler:^(CMAccelerometerData *data, NSError *error) {
       __strong EXSensorsManager *strongSelf = weakSelf;
       if (strongSelf) {
         for (void (^handler)(NSDictionary *) in strongSelf.accelerometerHandlers.allValues) {
@@ -80,22 +79,22 @@ EX_REGISTER_MODULE();
 {
   [_accelerometerHandlers removeObjectForKey:scopedSensorModule];
   if (_accelerometerHandlers.count == 0) {
-    [_manager stopAccelerometerUpdates];
+    [[self manager] stopAccelerometerUpdates];
   }
 }
 
 - (void)setAccelerometerUpdateInterval:(NSTimeInterval)intervalMs
 {
-  [_manager setAccelerometerUpdateInterval:intervalMs];
+  [[self manager] setAccelerometerUpdateInterval:intervalMs];
 }
 
 - (void)sensorModuleDidSubscribeForDeviceMotionUpdates:(id)scopedSensorModule
                                            withHandler:(void (^)(NSDictionary *event))handlerBlock
 {
-  if ([_manager isDeviceMotionAvailable]) {
+  if ([[self manager] isDeviceMotionAvailable]) {
     _deviceMotionHandlers[scopedSensorModule] = handlerBlock;
   }
-  if (![_manager isDeviceMotionActive]) {
+  if (![[self manager] isDeviceMotionActive]) {
     [self activateDeviceMotionUpdates];
   }
 }
@@ -104,25 +103,25 @@ EX_REGISTER_MODULE();
 {
   [_deviceMotionHandlers removeObjectForKey:scopedSensorModule];
   if (_deviceMotionHandlers.count == 0 && _magnetometerHandlers.count == 0) {
-    [_manager stopDeviceMotionUpdates];
+    [[self manager] stopDeviceMotionUpdates];
   }
 }
 
 - (void)setDeviceMotionUpdateInterval:(NSTimeInterval)intervalMs
 {
-  [_manager setDeviceMotionUpdateInterval:intervalMs];
+  [[self manager] setDeviceMotionUpdateInterval:intervalMs];
 }
 
 - (void)sensorModuleDidSubscribeForGyroscopeUpdates:(id)scopedSensorModule
                                         withHandler:(void (^)(NSDictionary *event))handlerBlock
 {
-  if ([_manager isGyroAvailable]) {
+  if ([[self manager] isGyroAvailable]) {
     _gyroscopeHandlers[scopedSensorModule] = handlerBlock;
   }
-  if (![_manager isGyroActive]) {
-    [_manager setGyroUpdateInterval:0.1f];
+  if (![[self manager] isGyroActive]) {
+    [[self manager] setGyroUpdateInterval:0.1f];
     __weak EXSensorsManager *weakSelf = self;
-    [_manager startGyroUpdatesToQueue:[NSOperationQueue mainQueue] withHandler:^(CMGyroData *data, NSError *error) {
+    [[self manager] startGyroUpdatesToQueue:[NSOperationQueue mainQueue] withHandler:^(CMGyroData *data, NSError *error) {
       __strong EXSensorsManager *strongSelf = weakSelf;
       if (strongSelf) {
         for (void (^handler)(NSDictionary *) in strongSelf.gyroscopeHandlers.allValues) {
@@ -141,22 +140,22 @@ EX_REGISTER_MODULE();
 {
   [_gyroscopeHandlers removeObjectForKey:scopedSensorModule];
   if (_gyroscopeHandlers.count == 0) {
-    [_manager stopGyroUpdates];
+    [[self manager] stopGyroUpdates];
   }
 }
 
 - (void)setGyroscopeUpdateInterval:(NSTimeInterval)intervalMs
 {
-  [_manager setGyroUpdateInterval:intervalMs];
+  [[self manager] setGyroUpdateInterval:intervalMs];
 }
 
 - (void)sensorModuleDidSubscribeForMagnetometerUpdates:(id)scopedSensorModule
                                            withHandler:(void (^)(NSDictionary *event))handlerBlock
 {
-  if ([_manager isDeviceMotionAvailable]) {
+  if ([[self manager] isDeviceMotionAvailable]) {
     _magnetometerHandlers[scopedSensorModule] = handlerBlock;
   }
-  if (![_manager isDeviceMotionActive]) {
+  if (![[self manager] isDeviceMotionActive]) {
     [self activateDeviceMotionUpdates];
   }
 }
@@ -165,25 +164,25 @@ EX_REGISTER_MODULE();
 {
   [_magnetometerHandlers removeObjectForKey:scopedSensorModule];
   if (_deviceMotionHandlers.count == 0 && _magnetometerHandlers.count == 0) {
-    [_manager stopDeviceMotionUpdates];
+    [[self manager] stopDeviceMotionUpdates];
   }
 }
 
 - (void)setMagnetometerUpdateInterval:(NSTimeInterval)intervalMs
 {
-  [_manager setDeviceMotionUpdateInterval:intervalMs];
+  [[self manager] setDeviceMotionUpdateInterval:intervalMs];
 }
 
 - (void)sensorModuleDidSubscribeForMagnetometerUncalibratedUpdates:(id)scopedSensorModule
                                                        withHandler:(void (^)(NSDictionary *event))handlerBlock
 {
-  if ([_manager isMagnetometerAvailable]) {
+  if ([[self manager] isMagnetometerAvailable]) {
     _magnetometerUncalibratedHandlers[scopedSensorModule] = handlerBlock;
   }
-  if (![_manager isMagnetometerActive]) {
-    [_manager setMagnetometerUpdateInterval:0.1f];
+  if (![[self manager] isMagnetometerActive]) {
+    [[self manager] setMagnetometerUpdateInterval:0.1f];
     __weak EXSensorsManager *weakSelf = self;
-    [_manager startMagnetometerUpdatesToQueue:[NSOperationQueue mainQueue] withHandler:^(CMMagnetometerData *data, NSError *error) {
+    [[self manager] startMagnetometerUpdatesToQueue:[NSOperationQueue mainQueue] withHandler:^(CMMagnetometerData *data, NSError *error) {
       __strong EXSensorsManager *strongSelf = weakSelf;
       if (strongSelf) {
         for (void (^handler)(NSDictionary *) in strongSelf.magnetometerUncalibratedHandlers.allValues) {
@@ -202,13 +201,13 @@ EX_REGISTER_MODULE();
 {
   [_magnetometerUncalibratedHandlers removeObjectForKey:scopedSensorModule];
   if (_magnetometerUncalibratedHandlers.count == 0) {
-    [_manager stopMagnetometerUpdates];
+    [[self manager] stopMagnetometerUpdates];
   }
 }
 
 - (void)setMagnetometerUncalibratedUpdateInterval:(NSTimeInterval)intervalMs
 {
-  [_manager setMagnetometerUpdateInterval:intervalMs];
+  [[self manager] setMagnetometerUpdateInterval:intervalMs];
 }
 
 - (float)getGravity
@@ -220,7 +219,7 @@ EX_REGISTER_MODULE();
 {
   [[self manager] setDeviceMotionUpdateInterval:0.1f];
   __weak EXSensorsManager *weakSelf = self;
-  [_manager startDeviceMotionUpdatesUsingReferenceFrame:CMAttitudeReferenceFrameXArbitraryCorrectedZVertical toQueue:[NSOperationQueue mainQueue] withHandler:^(CMDeviceMotion *data, NSError *error) {
+  [[self manager] startDeviceMotionUpdatesUsingReferenceFrame:CMAttitudeReferenceFrameXArbitraryCorrectedZVertical toQueue:[NSOperationQueue mainQueue] withHandler:^(CMDeviceMotion *data, NSError *error) {
     __strong EXSensorsManager *strongSelf = weakSelf;
     if (!strongSelf) {
       return;
