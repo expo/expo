@@ -11,7 +11,6 @@
 #import "EXUtil.h"
 #import <EXFileSystemInterface/EXFileSystemInterface.h>
 #import "EXModuleRegistryBinding.h"
-#import "EXFileSystemUtilities.h"
 #import "EXPrintPDFRenderTask.h"
 
 #import <React/RCTConvert.h>
@@ -192,6 +191,10 @@ RCT_REMAP_METHOD(printToFileAsync,
   [renderTask renderWithOptions:options completionHandler:^(NSData *pdfData) {
     if (pdfData != nil) {
       NSString *filePath = [self _generatePath];
+      if (!filePath) {
+        reject(@"E_PRINT_SAVING_ERROR", @"Error occurred while generating path for PDF: generated path empty, is FileSystem module present?", nil);
+        return;
+      }
       NSString *uri = [[NSURL fileURLWithPath:filePath] absoluteString];
       
       NSError *error;
@@ -317,9 +320,12 @@ RCT_REMAP_METHOD(printToFileAsync,
 - (NSString *)_generatePath
 {
   id<EXFileSystem> fileSystem = [_bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystem)];
+  if (!fileSystem) {
+    return nil;
+  }
   NSString *directory = [fileSystem.cachesDirectory stringByAppendingPathComponent:@"Print"];
   NSString *fileName = [[[NSUUID UUID] UUIDString] stringByAppendingString:@".pdf"];
-  [EXFileSystemUtilities ensureDirExistsWithPath:directory];
+  [fileSystem ensureDirExistsWithPath:directory];
   
   return [directory stringByAppendingPathComponent:fileName];
 }

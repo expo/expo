@@ -3,7 +3,6 @@
 #import "EXDocumentPicker.h"
 #import "EXScopedModuleRegistry.h"
 #import "EXUtil.h"
-#import "EXFileSystemUtilities.h"
 #import "EXModuleRegistryBinding.h"
 #import <EXFileSystemInterface/EXFileSystemInterface.h>
 
@@ -121,7 +120,7 @@ RCT_EXPORT_METHOD(getDocumentAsync:(NSDictionary *)options resolver:(RCTPromiseR
     }
     NSString *directory = [fileSystem.cachesDirectory stringByAppendingPathComponent:@"DocumentPicker"];
     NSString *extension = [url pathExtension];
-    NSString *path = [EXFileSystemUtilities generatePathInDirectory:directory withExtension:[extension isEqualToString:@""] ? extension : [@"." stringByAppendingString:extension]];
+    NSString *path = [fileSystem generatePathInDirectory:directory withExtension:[extension isEqualToString:@""] ? extension : [@"." stringByAppendingString:extension]];
     NSError *error = nil;
     newUrl = [NSURL fileURLWithPath:path];
     [[NSFileManager defaultManager] copyItemAtURL:url toURL:newUrl error:&error];
