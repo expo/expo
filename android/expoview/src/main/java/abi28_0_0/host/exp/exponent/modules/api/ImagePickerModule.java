@@ -148,7 +148,7 @@ public class ImagePickerModule extends ExpoKernelServiceConsumerBaseModule imple
       promise.reject(new IOException("Could not create image file."));
       return;
     }
-    mCameraCaptureURI = ExpFileUtils.contentUriFromFile(imageFile);
+    mCameraCaptureURI = ExpFileUtils.uriFromFile(imageFile);
 
     // fix for Permission Denial in Android < 21
     List<ResolveInfo> resolvedIntentActivities = Exponent.getInstance().getApplication()
@@ -163,7 +163,8 @@ public class ImagePickerModule extends ExpoKernelServiceConsumerBaseModule imple
       );
     }
 
-    cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, mCameraCaptureURI);
+    // camera intent needs a content URI but we need a file one
+    cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, ExpFileUtils.contentUriFromFile(imageFile));
     mPromise = promise;
     Exponent.getInstance().getCurrentActivity().startActivityForResult(cameraIntent, REQUEST_LAUNCH_CAMERA);
   }
