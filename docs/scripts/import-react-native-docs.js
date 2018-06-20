@@ -8,7 +8,7 @@ let fsExtra = require('fs-extra');
 let args = minimist(process.argv.slice(2));
 
 let from = args._[0] || path.join(__dirname, '..', 'react-native-website');
-let to = args._[1] || '..';
+let to = args._[1] || path.join(__dirname, '..');
 let version = args._[2] || 'unversioned';
 let toVersion = path.join(to, 'versions', version);
 
