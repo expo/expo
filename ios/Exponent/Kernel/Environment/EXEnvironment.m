@@ -118,6 +118,7 @@ NSString * const kEXEmbeddedManifestResourceName = @"shell-app-manifest";
   [self _reset];
   NSMutableArray *allManifestUrls = [NSMutableArray array];
   _isDetached = isDetached;
+  _isDebugXCodeScheme = isDebugScheme;
 
   if (shellConfig) {
     _testEnvironment = [EXTest testEnvironmentFromString:shellConfig[@"testEnvironment"]];
