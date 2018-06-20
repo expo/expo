@@ -102,10 +102,17 @@ Because the navbar is automatically generated from the directory structure, the 
 
 #### Importing from the React Native docs
 
-There is a script under scripts/ called import-react-native-docs.js
+You can import the React Native docs in an automated way into these docs.
 
-Update the react-native-website submodule here
-`cd` into scripts/
-Then `./import-react-native-native-docs.js`
+1. Update the react-native-website submodule here
+2. `yarn run import-react-native-docs`
+
 This will write all the relevant RN doc stuff into the unversioned version directory.
-You may need to tweak the script as the source docs change; the script hackily translates between the different forms of markdown that have different quirks
+You may need to tweak the script as the source docs change; the script hackily translates between the different forms of markdown that have different quirks.
+
+The React Native docs are actually versioned but we currently read off of master. 
+
+TODOs:
+    - Handle image sizing in imports better
+    - Read from the appropriate version (configurable) of the React Native docs, not just master
+    - Make Snack embeds work; these are marked in some of the React Native docs but they are just imported as plain JS code blocks
