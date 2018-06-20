@@ -15,7 +15,6 @@ const {
   AndroidKeystore,
   IosKeychain,
   IosIPABuilder: createIPABuilder,
-  ImageHelpers,
 } = require('xdl');
 
 const { startReactNativeServer } = require('./react-native-tasks');
@@ -108,12 +107,13 @@ function createAndroidKeystoreWithArguments() {
 }
 
 function createIOSShellAppWithArguments() {
+  const { resizeIconWithSharpAsync, getImageDimensionsWithSharpAsync } = require('./image-helpers');
   logger.info(
     { buildPhase: 'icons setup' },
     'IosIcons: setting image functions to alternative sharp implementations'
   );
-  IosIcons.setResizeImageFunction(ImageHelpers.resizeIconWithSharpAsync);
-  IosIcons.setGetImageDimensionsFunction(ImageHelpers.getImageDimensionsWithSharpAsync);
+  IosIcons.setResizeImageFunction(resizeIconWithSharpAsync);
+  IosIcons.setGetImageDimensionsFunction(getImageDimensionsWithSharpAsync);
 
   if (argv.action === 'build') {
     return IosShellApp.buildAndCopyArtifactAsync(argv);
