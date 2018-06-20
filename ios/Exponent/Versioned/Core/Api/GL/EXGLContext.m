@@ -8,7 +8,6 @@
 
 #import "EXGLContext.h"
 
-#import "EXFileSystemUtilities.h"
 #import "EXModuleRegistryBinding.h"
 #import <EXFileSystemInterface/EXFileSystemInterface.h>
 
@@ -309,7 +308,7 @@
   }
   NSString *directory = [fileSystem.cachesDirectory stringByAppendingPathComponent:@"GLView"];
   NSString *fileName = [[[NSUUID UUID] UUIDString] stringByAppendingString:extension];
-  [EXFileSystemUtilities ensureDirExistsWithPath:directory];
+  [fileSystem ensureDirExistsWithPath:directory];
 
   return [directory stringByAppendingPathComponent:fileName];
 }

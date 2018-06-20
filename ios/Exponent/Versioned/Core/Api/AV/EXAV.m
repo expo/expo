@@ -9,7 +9,6 @@
 #import "EXAV.h"
 #import "EXAVPlayerData.h"
 #import <EXFileSystemInterface/EXFileSystemInterface.h>
-#import "EXFileSystemUtilities.h"
 #import "EXModuleRegistryBinding.h"
 #import "EXVideoView.h"
 #import "EXUnversioned.h"
@@ -488,7 +487,7 @@ withEXVideoViewForTag:(nonnull NSNumber *)reactTag
   }
   
   NSString *directory = [fileSystem.cachesDirectory stringByAppendingPathComponent:@"AV"];
-  [EXFileSystemUtilities ensureDirExistsWithPath:directory];
+  [fileSystem ensureDirExistsWithPath:directory];
   NSString *soundFilePath = [directory stringByAppendingPathComponent:_audioRecorderFilename];
   NSURL *soundFileURL = [NSURL fileURLWithPath:soundFilePath];
   

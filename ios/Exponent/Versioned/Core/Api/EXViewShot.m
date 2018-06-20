@@ -7,7 +7,6 @@
 #import <React/RCTUIManager.h>
 #import <React/RCTBridge.h>
 
-#import "EXFileSystemUtilities.h"
 #import "EXModuleRegistryBinding.h"
 #import <EXFileSystemInterface/EXFileSystemInterface.h>
 
@@ -85,8 +84,8 @@ RCT_EXPORT_METHOD(takeSnapshot:(nonnull NSNumber *)target
           return;
         }
         NSString *directory = [fileSystem.cachesDirectory stringByAppendingPathComponent:@"ViewShot"];
-        [EXFileSystemUtilities ensureDirExistsWithPath:directory];
-        NSString *path = [EXFileSystemUtilities generatePathInDirectory:directory withExtension:extension];
+        [fileSystem ensureDirExistsWithPath:directory];
+        NSString *path = [fileSystem generatePathInDirectory:directory withExtension:extension];
         if (path) {
           if ([data writeToFile:path options:(NSDataWritingOptions)0 error:&error]) {
             res = [NSURL fileURLWithPath:path].absoluteString;

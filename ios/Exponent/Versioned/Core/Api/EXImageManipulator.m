@@ -10,7 +10,6 @@
 #import "EXFileSystem.h"
 #import "EXImageUtils.h"
 #import <React/RCTLog.h>
-#import "EXFileSystemUtilities.h"
 #import "EXModuleRegistryBinding.h"
 #import <EXFileSystemInterface/EXFileSystemInterface.h>
 
@@ -162,7 +161,7 @@ RCT_EXPORT_METHOD(manipulate:(NSString *)uri
   }
 
   NSString *directory = [fileSystem.cachesDirectory stringByAppendingPathComponent:@"ImageManipulator"];
-  [EXFileSystemUtilities ensureDirExistsWithPath:directory];
+  [fileSystem ensureDirExistsWithPath:directory];
   NSString *fileName = [[[NSUUID UUID] UUIDString] stringByAppendingString:extension];
   NSString *newPath = [directory stringByAppendingPathComponent:fileName];
   [imageData writeToFile:newPath atomically:YES];

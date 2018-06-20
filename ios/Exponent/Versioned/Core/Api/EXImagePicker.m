@@ -4,7 +4,6 @@
 #import <React/RCTUtils.h>
 #import <AssetsLibrary/AssetsLibrary.h>
 
-#import "EXFileSystemUtilities.h"
 #import "EXModuleRegistryBinding.h"
 #import <EXFileSystemInterface/EXFileSystemInterface.h>
 #import "EXCameraPermissionRequester.h"
@@ -201,7 +200,12 @@ RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
     RCTLogWarn(@"Unsupported format of the picked image. Using JPEG instead.");
   }
 
-  NSString *path = [EXFileSystemUtilities generatePathInDirectory:directory withExtension:extension];
+  id<EXFileSystem> fileSystem = [self.bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystem)];
+  if (!fileSystem) {
+    self.reject(@"E_NO_MODULE", @"No FileSystem module.", nil);
+    return;
+  }
+  NSString *path = [fileSystem generatePathInDirectory:directory withExtension:extension];
   [data writeToFile:path atomically:YES];
   NSURL *fileURL = [NSURL fileURLWithPath:path];
   NSString *filePath = [fileURL absoluteString];
@@ -258,7 +262,12 @@ RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
   
   response[@"type"] = @"video";
   NSError *error = nil;
-  NSString *path = [EXFileSystemUtilities generatePathInDirectory:directory withExtension:@".mov"];
+  id<EXFileSystem> fileSystem = [self.bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystem)];
+  if (!fileSystem) {
+    self.reject(@"E_NO_MODULE", @"No FileSystem module.", nil);
+    return;
+  }
+  NSString *path = [fileSystem generatePathInDirectory:directory withExtension:@".mov"];
   [[NSFileManager defaultManager] moveItemAtURL:videoURL
                                           toURL:[NSURL fileURLWithPath:path]
                                           error:&error];

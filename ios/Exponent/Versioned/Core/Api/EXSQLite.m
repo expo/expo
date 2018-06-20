@@ -2,7 +2,6 @@
 
 #import "EXSQLite.h"
 
-#import "EXFileSystemUtilities.h"
 #import "EXModuleRegistryBinding.h"
 #import <EXFileSystemInterface/EXFileSystemInterface.h>
 
@@ -43,7 +42,7 @@ RCT_EXPORT_MODULE(ExponentSQLite)
     return nil;
   }
   NSString *directory = [fileSystem.documentDirectory stringByAppendingPathComponent:@"SQLite"];
-  [EXFileSystemUtilities ensureDirExistsWithPath:directory];
+  [fileSystem ensureDirExistsWithPath:directory];
   return [directory stringByAppendingPathComponent:name];
 }
 

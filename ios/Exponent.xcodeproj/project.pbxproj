@@ -25,7 +25,6 @@
 		19A04FA6209119B300D6EFE9 /* RNBranchConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 19A04FA3209119B300D6EFE9 /* RNBranchConfig.m */; };
 		19B2EF751FB25A1A003F2E1B /* EXCachedResourceManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 19B2EF741FB25A1A003F2E1B /* EXCachedResourceManager.m */; };
 		313D418020C84E9000FC913D /* EXModuleRegistryBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = 313D417F20C84E9000FC913D /* EXModuleRegistryBinding.m */; };
-		313D418320C850A100FC913D /* EXFileSystemUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 313D418220C850A100FC913D /* EXFileSystemUtilities.m */; };
 		317123572003B2F600600AED /* EXLocalNotificationRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 317123562003B2F600600AED /* EXLocalNotificationRequester.m */; };
 		3179683620B5B96A00243B6B /* EXScopedModuleRegistryAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = 3179683520B5B96A00243B6B /* EXScopedModuleRegistryAdapter.m */; };
 		318102BA20C15E460061726F /* EXLinkingManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB74121FF6DADB001C764B /* EXLinkingManager.m */; };
@@ -391,8 +390,6 @@
 		2A2BC1BD3DC5DF51DC4CEA4A /* Pods-ExponentIntegrationTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ExponentIntegrationTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-ExponentIntegrationTests/Pods-ExponentIntegrationTests.release.xcconfig"; sourceTree = "<group>"; };
 		313D417E20C84E8200FC913D /* EXModuleRegistryBinding.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXModuleRegistryBinding.h; sourceTree = "<group>"; };
 		313D417F20C84E9000FC913D /* EXModuleRegistryBinding.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXModuleRegistryBinding.m; sourceTree = "<group>"; };
-		313D418120C8507500FC913D /* EXFileSystemUtilities.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXFileSystemUtilities.h; sourceTree = "<group>"; };
-		313D418220C850A100FC913D /* EXFileSystemUtilities.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXFileSystemUtilities.m; sourceTree = "<group>"; };
 		317123552003B2F600600AED /* EXLocalNotificationRequester.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXLocalNotificationRequester.h; sourceTree = "<group>"; };
 		317123562003B2F600600AED /* EXLocalNotificationRequester.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXLocalNotificationRequester.m; sourceTree = "<group>"; };
 		3179683420B5B95B00243B6B /* EXScopedModuleRegistryAdapter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedModuleRegistryAdapter.h; sourceTree = "<group>"; };
@@ -1067,15 +1064,6 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		313D417420C84CB000FC913D /* FileSystem */ = {
-			isa = PBXGroup;
-			children = (
-				313D418120C8507500FC913D /* EXFileSystemUtilities.h */,
-				313D418220C850A100FC913D /* EXFileSystemUtilities.m */,
-			);
-			path = FileSystem;
-			sourceTree = "<group>";
-		};
 		31DBC6AA20B5B4C60049A476 /* UniversalModules */ = {
 			isa = PBXGroup;
 			children = (
@@ -1695,7 +1683,6 @@
 				BB5BD2FA20AEFCB4007E02FC /* Reanimated */,
 				07E26F2B1FFFFB55004667A1 /* Calendar */,
 				B5FB728D1FF6DADB001C764B /* Components */,
-				313D417420C84CB000FC913D /* FileSystem */,
 				B5FB73741FF6DADB001C764B /* EXAmplitude.h */,
 				B5FB73751FF6DADB001C764B /* EXAmplitude.m */,
 				B5FB73761FF6DADB001C764B /* EXBrightness.h */,
@@ -2712,7 +2699,6 @@
 				78343618205B8C5F00DD28C3 /* AIRMapUrlTile.m in Sources */,
 				B5A72C2020A0D13E00974CCE /* EXManifestResource.m in Sources */,
 				F1A4595220187C2B00C9704B /* EXGLCameraObject.m in Sources */,
-				313D418320C850A100FC913D /* EXFileSystemUtilities.m in Sources */,
 				7846B1FB20355E9900638E43 /* RNSVGClipPath.m in Sources */,
 				B5FB74E31FF6DADC001C764B /* EXDisabledRedBox.m in Sources */,
 				B5576082204A41F90041D9C8 /* EXHomeModule.m in Sources */,
