@@ -20,12 +20,15 @@ import Alerts from '../constants/Alerts';
 import Colors from '../constants/Colors';
 import PrimaryButton from './PrimaryButton';
 import EmptyProfileProjectsNotice from './EmptyProfileProjectsNotice';
+import EmptyProfileSnacksNotice from './EmptyProfileSnacksNotice';
 import SeeAllProjectsButton from './SeeAllProjectsButton';
+import SeeAllSnacksButton from './SeeAllSnacksButton';
 import SharedStyles from '../constants/SharedStyles';
 import SmallProjectCard from './SmallProjectCard';
+import SnackCard from './SnackCard';
 
 const MAX_APPS_TO_DISPLAY = 3;
-// const MAX_LIKES_TO_DISPLAY = 3;
+const MAX_SNACKS_TO_DISPLAY = 3;
 
 const NETWORK_ERROR_TEXT = dedent`
   Your connection appears to be offline.
@@ -85,9 +88,11 @@ export default class Profile extends React.Component {
             onRefresh={this._handleRefreshAsync}
           />
         }
+        contentContainerStyle={{ paddingBottom: 20 }}
         style={styles.container}>
         {this._renderHeader()}
         {this._renderApps()}
+        {this._renderSnacks()}
       </ScrollView>
     );
   }
@@ -196,33 +201,78 @@ export default class Profile extends React.Component {
     }
 
     let { apps, appCount } = this.props.data.user;
+    let content;
 
     if (!apps || !apps.length) {
-      return <EmptyProfileProjectsNotice isOwnProfile={this.props.isOwnProfile} />;
+      content = <EmptyProfileProjectsNotice isOwnProfile={this.props.isOwnProfile} />;
     } else {
-      // let appsToDisplay = take(apps, MAX_APPS_TO_DISPLAY);
       let otherApps = takeRight(apps, Math.max(0, apps.length - MAX_APPS_TO_DISPLAY));
-
-      return (
-        <View>
-          <View style={[SharedStyles.sectionLabelContainer, { marginTop: 10 }]}>
-            <Text style={SharedStyles.sectionLabelText}>PUBLISHED PROJECTS</Text>
-          </View>
-
-          {take(apps, 3).map(this._renderApp)}
+      content = (
+        <React.Fragment>
+          {take(apps, MAX_APPS_TO_DISPLAY).map(this._renderApp)}
           <SeeAllProjectsButton
             apps={otherApps}
-            appCount={appCount - 3}
+            appCount={appCount - MAX_APPS_TO_DISPLAY}
             label="See all projects"
             onPress={this._handlePressProjectList}
           />
-        </View>
+        </React.Fragment>
       );
     }
+
+    return (
+      <View style={{marginBottom: 3}}>
+        <View style={[SharedStyles.sectionLabelContainer, { marginTop: 10,  }]}>
+          <Text style={SharedStyles.sectionLabelText}>PUBLISHED PROJECTS</Text>
+        </View>
+        {content}
+      </View>
+    );
+  };
+
+  _renderSnacks = () => {
+    if (!this.props.data.user) {
+      return;
+    }
+
+    let { snacks } = this.props.data.user;
+    let content;
+
+    if (!snacks || !snacks.length) {
+      content = <EmptyProfileSnacksNotice isOwnProfile={this.props.isOwnProfile} />;
+    } else {
+      let otherSnacks = takeRight(snacks, Math.max(0, snacks.length - MAX_SNACKS_TO_DISPLAY));
+      content = (
+        <React.Fragment>
+          {take(snacks, MAX_SNACKS_TO_DISPLAY).map(this._renderSnack)}
+          <SeeAllSnacksButton
+            snacks={otherSnacks}
+            label="See all Snacks"
+            onPress={this._handlePressSnackList}
+          />
+        </React.Fragment>
+      );
+    }
+
+    return (
+      <View style={{marginBottom: 3}}>
+        <View style={[SharedStyles.sectionLabelContainer, { marginTop: 10 }]}>
+          <Text style={SharedStyles.sectionLabelText}>SAVED SNACKS</Text>
+        </View>
+        {content}
+      </View>
+    );
   };
 
   _handlePressProjectList = () => {
     this.props.navigation.navigate('ProjectsForUser', {
+      username: this.props.username,
+      belongsToCurrentUser: this.props.isOwnProfile,
+    });
+  };
+
+  _handlePressSnackList = () => {
+    this.props.navigation.navigate('SnacksForUser', {
       username: this.props.username,
       belongsToCurrentUser: this.props.isOwnProfile,
     });
@@ -239,6 +289,18 @@ export default class Profile extends React.Component {
         slug={app.packageName}
         projectUrl={app.fullName}
         privacy={app.privacy}
+        fullWidthBorder
+      />
+    );
+  };
+
+  _renderSnack = (snack: any, i: number) => {
+    return (
+      <SnackCard
+        key={i}
+        projectName={snack.name}
+        description={snack.description}
+        projectUrl={snack.fullName}
         fullWidthBorder
       />
     );

@@ -29,6 +29,12 @@ const UserProfileQuery = gql`
           isLikedByMe
           likeCount
         }
+        snacks(limit: 15, offset: 0) {
+          name
+          description
+          fullName
+          slug
+        }
       }
     }
   }
@@ -37,7 +43,7 @@ const UserProfileQuery = gql`
 export default graphql(UserProfileQuery, {
   options: props => ({
     variables: {
-      username: (props.username) ? props.username.replace('@', '') : '',
+      username: props.username ? props.username.replace('@', '') : '',
     },
     fetchPolicy: 'network-only',
   }),

@@ -20,6 +20,7 @@ import SignUpScreen from '../screens/SignUpScreen';
 import QRCodeScreen from '../screens/QRCodeScreen';
 import UserSettingsScreen from '../screens/UserSettingsScreen';
 import ProjectsForUserScreen from '../screens/ProjectsForUserScreen';
+import SnacksForUserScreen from '../screens/SnacksForUserScreen';
 
 import Colors from '../constants/Colors';
 import SearchBar from '../components/SearchBar';
@@ -71,6 +72,7 @@ const ExploreStack = createStackNavigator(
     ExploreAndSearch: ExploreSearchSwitch,
     Profile: ProfileScreen,
     ProjectsForUser: ProjectsForUserScreen,
+    SnacksForUser: SnacksForUserScreen,
   },
   {
     initialRouteName: 'ExploreAndSearch',
@@ -103,6 +105,7 @@ const ProfileStack = createStackNavigator(
     Profile: ProfileScreen,
     UserSettings: UserSettingsScreen,
     ProjectsForUser: ProjectsForUserScreen,
+    SnacksForUser: SnacksForUserScreen,
   },
   {
     initialRouteName: 'Profile',

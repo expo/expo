@@ -3,10 +3,10 @@
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
-import ProjectList from '../components/ProjectList';
+import SnackList from '../components/SnackList';
 
-const MyAppsQuery = gql`
-  query Home_MyApps($limit: Int!, $offset: Int!) {
+const MySnacksQuery = gql`
+  query Home_MySnacks($limit: Int!, $offset: Int!) {
     me {
       id
       appCount
@@ -17,7 +17,7 @@ const MyAppsQuery = gql`
       lastName
       profilePhoto
       username
-      apps(limit: $limit, offset: $offset) {
+      apps(limit: 15, offset: 0) {
         id
         description
         fullName
@@ -28,11 +28,11 @@ const MyAppsQuery = gql`
         packageName
         privacy
       }
-      snacks(limit: 15, offset: 0) {
+      snacks(limit: $limit, offset: $offset) {
         name
-        description
         fullName
         slug
+        description
       }
       likes(limit: 15, offset: 0) {
         id
@@ -41,15 +41,15 @@ const MyAppsQuery = gql`
   }
 `;
 
-export default graphql(MyAppsQuery, {
+export default graphql(MySnacksQuery, {
   props: props => {
     let { data } = props;
 
-    let apps;
-    let appCount;
+    let apps, appCount, snacks;
     if (data.me) {
       apps = data.me.apps;
       appCount = data.me.appCount;
+      snacks = data.me.snacks;
     }
 
     return {
@@ -58,11 +58,12 @@ export default graphql(MyAppsQuery, {
         ...data,
         apps,
         appCount,
+        snacks,
       },
       loadMoreAsync() {
         return data.fetchMore({
           variables: {
-            offset: (apps && apps.length) || 0,
+            offset: (snacks && snacks.length) || 0,
           },
           updateQuery: (previousData, { fetchMoreResult }) => {
             if (!fetchMoreResult || !fetchMoreResult.me) {
@@ -73,7 +74,7 @@ export default graphql(MyAppsQuery, {
               me: {
                 ...previousData.me,
                 ...fetchMoreResult.me,
-                apps: [...previousData.me.apps, ...fetchMoreResult.me.apps],
+                snacks: [...previousData.me.snacks, ...fetchMoreResult.me.snacks],
               },
             };
 
@@ -81,6 +82,7 @@ export default graphql(MyAppsQuery, {
               ...combinedData,
               appCount: combinedData.me.appCount,
               apps: combinedData.me.apps,
+              snacks: combinedData.me.snacks,
             };
           },
         });
@@ -94,4 +96,4 @@ export default graphql(MyAppsQuery, {
     },
     fetchPolicy: 'cache-and-network',
   },
-})(ProjectList);
+})(SnackList);

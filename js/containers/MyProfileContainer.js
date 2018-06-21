@@ -27,6 +27,12 @@ const MyProfileQuery = gql`
         packageName
         privacy
       }
+      snacks(limit: 15, offset: 0) {
+        name
+        description
+        fullName
+        slug
+      }
       likes(limit: 15, offset: 0) {
         id
       }

@@ -8,14 +8,13 @@ import Colors from '../constants/Colors';
 import SharedStyles from '../constants/SharedStyles';
 import PrimaryButton from './PrimaryButton';
 
-export default class EmptyProfileProjectsNotice extends React.Component {
+export default class EmptyProfileSnacksNotice extends React.Component {
   render() {
     if (this.props.isOwnProfile) {
       return (
         <View style={styles.container}>
           <Text style={[SharedStyles.noticeDescriptionText, styles.descriptionText]}>
-            Projects that you publish will appear here! Go ahead and publish one, then refresh this
-            screen.
+            Snacks that you save to your profile will appear here!
           </Text>
 
           <PrimaryButton
@@ -23,7 +22,7 @@ export default class EmptyProfileProjectsNotice extends React.Component {
             onPress={this._handleLearnMorePress}
             fallback={TouchableOpacity}
             style={{ marginBottom: 5 }}>
-            Learn more about publishing
+            Learn more about Snack
           </PrimaryButton>
         </View>
       );
@@ -31,7 +30,7 @@ export default class EmptyProfileProjectsNotice extends React.Component {
       return (
         <View style={styles.container}>
           <Text style={[SharedStyles.noticeDescriptionText, styles.descriptionText]}>
-            No published projects
+            No saved Snacks
           </Text>
         </View>
       );
@@ -39,7 +38,7 @@ export default class EmptyProfileProjectsNotice extends React.Component {
   }
 
   _handleLearnMorePress = () => {
-    WebBrowser.openBrowserAsync('https://docs.expo.io/versions/latest/guides/publishing.html');
+    WebBrowser.openBrowserAsync('https://docs.expo.io/versions/latest/workflow/snack');
   };
 }
 
