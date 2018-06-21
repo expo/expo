@@ -53,7 +53,7 @@ commonly referred to as "Over the Air" (OTA) updates, the functionality
 is similar to [CodePush](https://microsoft.github.io/code-push/), but it
 is built into Expo so you don't need to install anything.
 
-To configure the way your app handles JS updates, see [Offline Support](./offline-support.html).
+To configure the way your app handles JS updates, see [Offline Support](../guides/offline-support.html).
 
 ## Limitations
 
