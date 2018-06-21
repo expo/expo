@@ -7,7 +7,7 @@ const path = require('path');
 const process = require('process');
 const { mkdir } = require('shelljs');
 const { IosPlist, IosPodsTools, ExponentTools, UrlUtils, Project } = require('xdl');
-const JsonFile = require('@exponent/json-file');
+const JsonFile = require('@expo/json-file').default;
 const spawnAsync = require('@exponent/spawn-async');
 const request = require('request-promise-native').defaults({
   resolveWithFullResponse: true,
@@ -19,7 +19,7 @@ const { renderExpoKitPodspecAsync, renderPodfileAsync } = IosPodsTools;
 
 const ProjectVersions = require('./project-versions');
 
-const EXPONENT_DIR = path.join(__dirname, '..');
+const EXPONENT_DIR = process.env.EXPONENT_DIR || path.join(__dirname, '..');
 
 const EXPO_CLIENT_UNIVERSAL_MODULES = [
   { podName: 'EXCore', libName: 'expo-core' },
@@ -42,7 +42,7 @@ const ANDROID_TEST_PERMISSIONS = `
 
 let isInUniverse = true;
 try {
-  let universePkgJson = require('../../package.json');
+  let universePkgJson = require(process.env.UNIVERSE_PKG_JSON || '../../package.json');
   if (universePkgJson.name !== 'universe') {
     isInUniverse = false;
   }
@@ -159,9 +159,9 @@ const macrosFuncs = {
 
     let projectRoot;
     if (isInUniverse && useLegacyWorkflow) {
-      projectRoot = path.join(__dirname, '..', 'js', '__internal__');
+      projectRoot = path.join(EXPONENT_DIR, 'js', '__internal__');
     } else {
-      projectRoot = path.join(__dirname, '..', 'js');
+      projectRoot = path.join(EXPONENT_DIR, 'js');
     }
 
     let manifest;
