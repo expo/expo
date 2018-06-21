@@ -69,6 +69,10 @@ public class OkHttpV1ExpoResponse implements ExpoResponse {
 
   @Override
   public ExpoResponse networkResponse() {
-    return new OkHttpV1ExpoResponse(mOkHttpResponse.networkResponse());
+    if (mOkHttpResponse.networkResponse() == null) {
+      return null;
+    } else {
+      return new OkHttpV1ExpoResponse(mOkHttpResponse.networkResponse());
+    }
   }
 }
