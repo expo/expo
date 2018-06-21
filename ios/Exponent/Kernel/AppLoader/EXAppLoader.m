@@ -317,8 +317,8 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 
 - (void)appFetcher:(EXAppFetcher *)appFetcher didFailWithError:(NSError *)error
 {
+  // don't nullify appFetcher - we need to use its state to record the circumstances of the error
   _error = error;
-  _appFetcher = nil;
   if (_delegate) {
     [_delegate appLoader:self didFailWithError:error];
   }
