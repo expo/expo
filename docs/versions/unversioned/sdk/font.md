@@ -19,7 +19,7 @@ Convenience form of [`Expo.Font.loadAsync()`](#expofontloadasync "Expo.Font.load
 ```javascript
 Expo.Font.loadAsync({
   Montserrat: require('./assets/fonts/Montserrat.ttf'),
-  'Montserrat-SemiBold': require('./assets/fontsMontserrat-SemiBold.ttf'),
+  'Montserrat-SemiBold': require('./assets/fonts/Montserrat-SemiBold.ttf'),
 });
 ```
 
