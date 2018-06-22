@@ -4,13 +4,14 @@
 #import "EXAppLoader+Tests.h"
 #import "EXProdServiceTestCase.h"
 
-@interface EXAppLoaderProdServiceTests : EXProdServiceTestCase
+@interface EXAppLoaderConfigurationTestsProdService : EXProdServiceTestCase
 
 @end
 
-@implementation EXAppLoaderProdServiceTests
+@implementation EXAppLoaderConfigurationTestsProdService
 
-- (void)setUp {
+- (void)setUp
+{
     [super setUp];
 }
 

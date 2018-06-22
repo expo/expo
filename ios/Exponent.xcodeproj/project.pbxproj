@@ -160,8 +160,6 @@
 		B5854ED720D078C6001D2F6E /* EXClientTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = B5854ED620D078C6001D2F6E /* EXClientTestCase.m */; };
 		B5854ED920D0790C001D2F6E /* EXDevDetachTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = B5854ED820D0790C001D2F6E /* EXDevDetachTestCase.m */; };
 		B5854EDB20D07944001D2F6E /* EXProdServiceTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = B5854EDA20D07944001D2F6E /* EXProdServiceTestCase.m */; };
-		B5854EE320D079D4001D2F6E /* EXAppLoaderProdServiceTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B5854EE220D079D4001D2F6E /* EXAppLoaderProdServiceTests.m */; };
-		B5854EE920D07CA9001D2F6E /* EXAppLoaderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B5854EE820D07CA9001D2F6E /* EXAppLoaderTests.m */; };
 		B5854EEB20D07D4D001D2F6E /* EXLinkingTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B5854EEA20D07D4D001D2F6E /* EXLinkingTests.m */; };
 		B58F125C20B73455003E13F1 /* EXEnvironment.m in Sources */ = {isa = PBXBuildFile; fileRef = B58F125B20B73455003E13F1 /* EXEnvironment.m */; };
 		B58FFAAC1F1016B700A51363 /* EXGoogleAuthManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B58FFAAB1F1016B700A51363 /* EXGoogleAuthManager.m */; };
@@ -206,8 +204,11 @@
 		B5E628FE1E32F05A00629A55 /* kernel-manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = B5E628FD1E32F05A00629A55 /* kernel-manifest.json */; };
 		B5EF826E1F55B8F100FC7424 /* launch_background_image.png in Resources */ = {isa = PBXBuildFile; fileRef = B5EF826C1F55B8F100FC7424 /* launch_background_image.png */; };
 		B5EF826F1F55B8F100FC7424 /* launch_icon.png in Resources */ = {isa = PBXBuildFile; fileRef = B5EF826D1F55B8F100FC7424 /* launch_icon.png */; };
-		B5FABDE720DC7C4E00642528 /* EXAppLoaderFailureTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FABDE620DC7C4D00642528 /* EXAppLoaderFailureTest.m */; };
-		B5FABDEA20DC7D4A00642528 /* EXAppLoaderFailureTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FABDE920DC7D4A00642528 /* EXAppLoaderFailureTests.m */; };
+		B5FABDF020DD8E6800642528 /* EXAppLoaderRequestExpectation.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FABDEF20DD8E6800642528 /* EXAppLoaderRequestExpectation.m */; };
+		B5FABDF220DD91D500642528 /* EXAppLoaderConfigurationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FABDF120DD91D500642528 /* EXAppLoaderConfigurationTests.m */; };
+		B5FABDF420DD920600642528 /* EXAppLoaderConfigurationTestsProdService.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FABDF320DD920600642528 /* EXAppLoaderConfigurationTestsProdService.m */; };
+		B5FABDF620DD926E00642528 /* EXFileDownloaderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FABDF520DD926E00642528 /* EXFileDownloaderTests.m */; };
+		B5FABDF820DD942A00642528 /* EXAppLoaderRequestTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FABDF720DD942A00642528 /* EXAppLoaderRequestTests.m */; };
 		B5FB74291FF6DADB001C764B /* RNAdMobDFPManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB72741FF6DADB001C764B /* RNAdMobDFPManager.m */; };
 		B5FB742A1FF6DADB001C764B /* RNAdMobInterstitial.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB72761FF6DADB001C764B /* RNAdMobInterstitial.m */; };
 		B5FB742B1FF6DADB001C764B /* RNAdMobManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB72781FF6DADB001C764B /* RNAdMobManager.m */; };
@@ -667,12 +668,10 @@
 		B5854ED620D078C6001D2F6E /* EXClientTestCase.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXClientTestCase.m; sourceTree = "<group>"; };
 		B5854ED820D0790C001D2F6E /* EXDevDetachTestCase.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXDevDetachTestCase.m; sourceTree = "<group>"; };
 		B5854EDA20D07944001D2F6E /* EXProdServiceTestCase.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXProdServiceTestCase.m; sourceTree = "<group>"; };
-		B5854EE220D079D4001D2F6E /* EXAppLoaderProdServiceTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXAppLoaderProdServiceTests.m; sourceTree = "<group>"; };
 		B5854EE420D07AE3001D2F6E /* EXClientTestCase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXClientTestCase.h; sourceTree = "<group>"; };
 		B5854EE520D07B3E001D2F6E /* EXDevDetachTestCase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXDevDetachTestCase.h; sourceTree = "<group>"; };
 		B5854EE620D07B5D001D2F6E /* EXProdServiceTestCase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXProdServiceTestCase.h; sourceTree = "<group>"; };
 		B5854EE720D07BCB001D2F6E /* EXAppLoader+Tests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "EXAppLoader+Tests.h"; sourceTree = "<group>"; };
-		B5854EE820D07CA9001D2F6E /* EXAppLoaderTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXAppLoaderTests.m; sourceTree = "<group>"; };
 		B5854EEA20D07D4D001D2F6E /* EXLinkingTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXLinkingTests.m; sourceTree = "<group>"; };
 		B58F125A20B73455003E13F1 /* EXEnvironment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXEnvironment.h; sourceTree = "<group>"; };
 		B58F125B20B73455003E13F1 /* EXEnvironment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXEnvironment.m; sourceTree = "<group>"; };
@@ -757,9 +756,12 @@
 		B5E628FD1E32F05A00629A55 /* kernel-manifest.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "kernel-manifest.json"; sourceTree = "<group>"; };
 		B5EF826C1F55B8F100FC7424 /* launch_background_image.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = launch_background_image.png; sourceTree = "<group>"; };
 		B5EF826D1F55B8F100FC7424 /* launch_icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = launch_icon.png; sourceTree = "<group>"; };
-		B5FABDE620DC7C4D00642528 /* EXAppLoaderFailureTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXAppLoaderFailureTest.m; sourceTree = "<group>"; };
-		B5FABDE820DC7CA600642528 /* EXAppLoaderFailureTest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXAppLoaderFailureTest.h; sourceTree = "<group>"; };
-		B5FABDE920DC7D4A00642528 /* EXAppLoaderFailureTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXAppLoaderFailureTests.m; sourceTree = "<group>"; };
+		B5FABDEE20DD8E6800642528 /* EXAppLoaderRequestExpectation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXAppLoaderRequestExpectation.h; sourceTree = "<group>"; };
+		B5FABDEF20DD8E6800642528 /* EXAppLoaderRequestExpectation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXAppLoaderRequestExpectation.m; sourceTree = "<group>"; };
+		B5FABDF120DD91D500642528 /* EXAppLoaderConfigurationTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXAppLoaderConfigurationTests.m; sourceTree = "<group>"; };
+		B5FABDF320DD920600642528 /* EXAppLoaderConfigurationTestsProdService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXAppLoaderConfigurationTestsProdService.m; sourceTree = "<group>"; };
+		B5FABDF520DD926E00642528 /* EXFileDownloaderTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXFileDownloaderTests.m; sourceTree = "<group>"; };
+		B5FABDF720DD942A00642528 /* EXAppLoaderRequestTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXAppLoaderRequestTests.m; sourceTree = "<group>"; };
 		B5FB72731FF6DADB001C764B /* RNAdMobDFPManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNAdMobDFPManager.h; sourceTree = "<group>"; };
 		B5FB72741FF6DADB001C764B /* RNAdMobDFPManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNAdMobDFPManager.m; sourceTree = "<group>"; };
 		B5FB72751FF6DADB001C764B /* RNAdMobInterstitial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNAdMobInterstitial.h; sourceTree = "<group>"; };
@@ -1439,11 +1441,12 @@
 			isa = PBXGroup;
 			children = (
 				B5854EE720D07BCB001D2F6E /* EXAppLoader+Tests.h */,
-				B5854EE820D07CA9001D2F6E /* EXAppLoaderTests.m */,
-				B5854EE220D079D4001D2F6E /* EXAppLoaderProdServiceTests.m */,
-				B5FABDE820DC7CA600642528 /* EXAppLoaderFailureTest.h */,
-				B5FABDE620DC7C4D00642528 /* EXAppLoaderFailureTest.m */,
-				B5FABDE920DC7D4A00642528 /* EXAppLoaderFailureTests.m */,
+				B5FABDF120DD91D500642528 /* EXAppLoaderConfigurationTests.m */,
+				B5FABDF320DD920600642528 /* EXAppLoaderConfigurationTestsProdService.m */,
+				B5FABDEE20DD8E6800642528 /* EXAppLoaderRequestExpectation.h */,
+				B5FABDEF20DD8E6800642528 /* EXAppLoaderRequestExpectation.m */,
+				B5FABDF720DD942A00642528 /* EXAppLoaderRequestTests.m */,
+				B5FABDF520DD926E00642528 /* EXFileDownloaderTests.m */,
 			);
 			path = AppLoader;
 			sourceTree = "<group>";
@@ -2883,16 +2886,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B5FABDF020DD8E6800642528 /* EXAppLoaderRequestExpectation.m in Sources */,
 				B505BA2020CAF80D0046ACFB /* EXEnvironmentMocks.m in Sources */,
 				B5854EDB20D07944001D2F6E /* EXProdServiceTestCase.m in Sources */,
+				B5FABDF820DD942A00642528 /* EXAppLoaderRequestTests.m in Sources */,
 				B5854ED720D078C6001D2F6E /* EXClientTestCase.m in Sources */,
 				B505BA2120CAF80D0046ACFB /* EXEnvironmentTests.m in Sources */,
-				B5FABDEA20DC7D4A00642528 /* EXAppLoaderFailureTests.m in Sources */,
-				B5854EE920D07CA9001D2F6E /* EXAppLoaderTests.m in Sources */,
-				B5FABDE720DC7C4E00642528 /* EXAppLoaderFailureTest.m in Sources */,
-				B5854EE320D079D4001D2F6E /* EXAppLoaderProdServiceTests.m in Sources */,
+				B5FABDF620DD926E00642528 /* EXFileDownloaderTests.m in Sources */,
+				B5FABDF220DD91D500642528 /* EXAppLoaderConfigurationTests.m in Sources */,
 				B5854ED920D0790C001D2F6E /* EXDevDetachTestCase.m in Sources */,
 				B5854EEB20D07D4D001D2F6E /* EXLinkingTests.m in Sources */,
+				B5FABDF420DD920600642528 /* EXAppLoaderConfigurationTestsProdService.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
