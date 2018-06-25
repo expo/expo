@@ -8,6 +8,7 @@
 #import "EXFileSystem.h"
 #import "EXHomeModule.h"
 #import "EXVersionManager.h"
+#import "EXScopedBridgeModule.h"
 #import "EXStatusBarManager.h"
 #import "EXUnversioned.h"
 #import "EXTest.h"
