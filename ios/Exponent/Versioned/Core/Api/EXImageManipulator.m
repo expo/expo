@@ -10,6 +10,7 @@
 #import "EXFileSystem.h"
 #import "EXImageUtils.h"
 #import <React/RCTLog.h>
+#import <Photos/Photos.h>
 #import "EXModuleRegistryBinding.h"
 #import <EXFileSystemInterface/EXFileSystemInterface.h>
 
@@ -46,18 +47,53 @@ RCT_EXPORT_METHOD(manipulate:(NSString *)uri
     reject(@"E_FILESYSTEM_PERMISSIONS", [NSString stringWithFormat:@"File '%@' isn't readable.", uri], nil);
     return;
   }
-  
-  if (![[NSFileManager defaultManager] fileExistsAtPath:path]) {
-    reject(@"E_IMAGE_MANIPULATION_FAILED", [NSString stringWithFormat:@"The file does not exist. Given path: `%@`.", path], nil);
+
+  if ([[url scheme] isEqualToString:@"assets-library"]) {
+    PHFetchResult<PHAsset *> *fetchResult = [PHAsset fetchAssetsWithALAssetURLs:@[url] options:nil];
+    if (fetchResult.count > 0) {
+      PHAsset *asset = fetchResult[0];
+      CGSize size = CGSizeMake([asset pixelWidth], [asset pixelHeight]);
+      PHImageRequestOptions *options = [PHImageRequestOptions new];
+      [options setResizeMode:PHImageRequestOptionsResizeModeExact];
+      [options setNetworkAccessAllowed:YES];
+      [options setSynchronous:NO];
+      [options setDeliveryMode:PHImageRequestOptionsDeliveryModeHighQualityFormat];
+
+      [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:size contentMode:PHImageContentModeAspectFit options:options resultHandler:^(UIImage * _Nullable image, NSDictionary * _Nullable info) {
+        if (!image) {
+          reject(@"E_IMAGE_MANIPULATION_FAILED", [NSString stringWithFormat:@"The file isn't convertable to image. Given path: `%@`.", path], nil);
+          return;
+        }
+        [self manipulateImage:image actions:actions saveOptions:saveOptions resolver:resolve rejecter:reject];
+      }];
+      return;
+    } else {
+      reject(@"E_IMAGE_MANIPULATION_FAILED", [NSString stringWithFormat:@"The file does not exist. Given path: `%@`.", path], nil);
+      return;
+    }
+  } else {
+    if (![[NSFileManager defaultManager] fileExistsAtPath:path]) {
+      reject(@"E_IMAGE_MANIPULATION_FAILED", [NSString stringWithFormat:@"The file does not exist. Given path: `%@`.", path], nil);
+      return;
+    }
+
+    UIImage *image = [[UIImage alloc] initWithContentsOfFile:path];
+    if (image == nil) {
+      reject(@"E_CANNOT_OPEN", @"Could not open provided image", nil);
+      return;
+    }
+
+    [self manipulateImage:image actions:actions saveOptions:saveOptions resolver:resolve rejecter:reject];
     return;
   }
-  
-  UIImage *image = [[UIImage alloc] initWithContentsOfFile:path];
-  if (image == nil) {
-    reject(@"E_CANNOT_OPEN", @"Could not open provided image", nil);
-    return;
-  }
-  
+}
+
+-(void)manipulateImage:(UIImage *)image
+               actions:(NSArray *)actions
+           saveOptions:(NSDictionary *)saveOptions
+              resolver:(RCTPromiseResolveBlock)resolve
+              rejecter:(RCTPromiseRejectBlock)reject
+{
   for (NSDictionary *options in actions) {
     if (options[@"resize"]) {
       float imageWidth = image.size.width;
