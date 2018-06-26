@@ -8,11 +8,11 @@ const generateNavLinks = require('./generate-navigation');
 const ORIGINAL_PATH_PREFIX = './versions';
 const DESTINATION_PATH_PREFIX = './pages/versions';
 
-const generateJsFromMd = path_ => {
-  let items = fs.readdirSync(path_);
+const generateJsFromMd = recursionPath => {
+  let items = fs.readdirSync(recursionPath);
 
   for (var i = 0; i < items.length; i++) {
-    const filePath = path.join(path_, items[i]);
+    const filePath = path.join(recursionPath, items[i]);
     if (fs.statSync(filePath).isDirectory()) {
       generateJsFromMd(filePath);
     } else {

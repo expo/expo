@@ -134,8 +134,7 @@ const generateJsPage = (filePath, filename) => {
   `;
 
   // Run prettier over the code
-  const options = prettier.resolveConfig.sync('../.prettierrc');
-  output = prettier.format(output, options);
+  output = prettier.format(output, { parser: 'babylon' });
 
   // Create directory if it doesn't exist
   fs.ensureDirSync(`${DESTINATION_PATH_PREFIX}/${filePath}`);
