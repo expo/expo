@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "concurrently -k 'yarn run mdjs' 'node server.js'",
-    "build": "yarn run mdjs-prod && cross-env NODE_ENV=production next build",
+    "build":
+      "yarn run mdjs-prod && cross-env NODE_ENV=production --max-old-space-size=2048 next build",
     "export": "cross-env NODE_ENV=production next export",
     "start": "cross-env NODE_ENV=production node server.js",
     "lint": "eslint .",
@@ -17,14 +18,13 @@
     "import-react-native-docs": "node ./scripts/import-react-native-docs.js"
   },
   "dependencies": {
-    "babel-plugin-emotion": "^9.2.4",
-    "babel-plugin-root-import": "^6.1.0",
+    "babel-plugin-root-import": "^5.1.0",
     "babel-plugin-transform-define": "1.3.0",
-    "babel-runtime": "6.26.0",
+    "babel-runtime": "6.23.0",
     "body-parser": "^1.18.3",
     "compression": "^1.7.2",
     "cors": "^2.8.4",
-    "cross-env": "5.2.0",
+    "cross-env": "5.0.1",
     "docsearch.js": "^2.5.2",
     "emotion": "^9.2.4",
     "emotion-server": "^9.2.4",
@@ -41,7 +41,7 @@
     "markdown-in-js": "1.1.4",
     "mitt": "1.1.3",
     "mkdirp": "^0.5.1",
-    "next": "^5.1.0",
+    "next": "^4.2.3",
     "nprogress": "0.2.0",
     "prettier": "^1.13.5",
     "prismjs": "^1.11.0",
