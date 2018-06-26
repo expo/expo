@@ -43,8 +43,7 @@
     "mkdirp": "^0.5.1",
     "next": "^5.1.0",
     "nprogress": "0.2.0",
-    "prettier": "^1.12.1",
-    "prettier-eslint": "^8.8.2",
+    "prettier": "^1.13.5",
     "prismjs": "^1.11.0",
     "prop-types": "15.6.2",
     "query-string": "6.1.0",
@@ -64,10 +63,6 @@
     "shelljs": "^0.8.2"
   },
   "lint-staged": {
-    "*.js": [
-      "eslint",
-      "prettier --write --no-semi --single-quote",
-      "git add"
-    ]
+    "*.js": ["eslint", "prettier --write --no-semi --single-quote", "git add"]
   }
 }
