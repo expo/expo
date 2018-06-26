@@ -1,6 +1,6 @@
 package io.expo.ncl;
 
-import android.app.Application;
+import android.support.multidex.MultiDexApplication;
 
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactNativeHost;
@@ -13,16 +13,25 @@ import java.util.List;
 
 import expo.adapters.react.ModuleRegistryAdapter;
 import expo.adapters.react.ReactAdapterPackage;
+import expo.adapters.react.ReactModuleRegistryProvider;
 import expo.core.ModuleRegistryProvider;
+import expo.modules.camera.CameraPackage;
+import expo.modules.constants.ConstantsPackage;
 import expo.modules.filesystem.FileSystemPackage;
+import expo.modules.gl.GLPackage;
+import expo.modules.permissions.PermissionsPackage;
 import expo.modules.sensors.SensorsPackage;
 import expo.core.interfaces.Package;
 
-public class MainApplication extends Application implements ReactApplication {
-  private final ModuleRegistryProvider mModuleRegistryProvider = new ModuleRegistryProvider(Arrays.<Package>asList(
+public class MainApplication extends MultiDexApplication implements ReactApplication {
+  private final ModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(Arrays.<Package>asList(
           new ReactAdapterPackage(),
           new SensorsPackage(),
-          new FileSystemPackage()
+          new FileSystemPackage(),
+          new PermissionsPackage(),
+          new CameraPackage(),
+          new GLPackage(),
+          new ConstantsPackage()
           // more packages, like
           // new CameraPackage(), if you use expo-camera
           // etc.

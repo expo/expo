@@ -6,6 +6,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import org.json.JSONObject;
 
 import java.util.List;
+import java.util.Map;
 
 import expo.core.ModuleRegistry;
 import expo.core.ModuleRegistryProvider;
@@ -19,7 +20,7 @@ public class DetachedModuleRegistryAdapter extends ExpoModuleRegistryAdapter {
   }
 
   @Override
-  public List<NativeModule> createNativeModules(ScopedContext scopedContext, ExperienceId experienceId, JSONObject manifest, List<NativeModule> otherModules) {
+  public List<NativeModule> createNativeModules(ScopedContext scopedContext, ExperienceId experienceId, Map<String, Object> experienceProperties, JSONObject manifest, List<NativeModule> otherModules) {
     ReactApplicationContext reactApplicationContext = (ReactApplicationContext) scopedContext.getContext();
 
     // We only use React application context, because we're detached -- no scopes

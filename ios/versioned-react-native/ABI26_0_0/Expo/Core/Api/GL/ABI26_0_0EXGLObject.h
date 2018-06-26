@@ -1,4 +1,4 @@
-#import <UEXGL.h>
+#import <EXGL-CPP/UEXGL.h>
 
 @interface ABI26_0_0EXGLObject : NSObject
 

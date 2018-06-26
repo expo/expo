@@ -83,6 +83,7 @@ Pod::Spec.new do |s|
     ss.dependency 'JKBigInteger2'
     ss.dependency 'Branch'
     ss.dependency 'Google-Mobile-Ads-SDK'
+    ss.dependency 'EXGL-CPP'
     ss.source_files     = "Expo/Core/**/*.{h,m}"
   end
 

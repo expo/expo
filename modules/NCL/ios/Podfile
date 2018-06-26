@@ -35,11 +35,26 @@ target 'NCL' do
   pod 'glog',
     :podspec => "#{rn_path}/third-party-podspecs/GLog.podspec",
     :inhibit_warnings => true
-  
+
   pod 'EXCore', path: '../node_modules/expo-core/ios'
-  pod 'EXSensors', path: '../node_modules/expo-sensors/ios'
-  pod 'EXFileSystem', path: '../node_modules/expo-file-system/ios'
-  pod 'EXSensorsInterface', path: '../node_modules/expo-sensors-interface/ios'
   pod 'EXReactNativeAdapter', path: '../node_modules/expo-react-native-adapter/ios'
+
+  pod 'EXConstantsInterface', path: '../node_modules/expo-constants-interface/ios'
+  pod 'EXConstants', path: '../node_modules/expo-constants/ios'
+
+  pod 'EXSensorsInterface', path: '../node_modules/expo-sensors-interface/ios'
+  pod 'EXSensors', path: '../node_modules/expo-sensors/ios'
+
   pod 'EXFileSystemInterface', path: '../node_modules/expo-file-system-interface/ios'
+  pod 'EXFileSystem', path: '../node_modules/expo-file-system/ios'
+
+  pod 'EXGL', path: '../node_modules/expo-gl/ios'
+  pod 'EXGL-CPP', path: '../node_modules/expo-gl-cpp/cpp'
+
+  pod 'EXCameraInterface', path: '../node_modules/expo-camera-interface/ios'
+  pod 'EXCamera', path: '../node_modules/expo-camera/ios'
+  pod 'EXFaceDetectorInterface', path: '../node_modules/expo-face-detector-interface/ios'
+
+  pod 'EXPermissionsInterface', path: '../node_modules/expo-permissions-interface/ios'
+  pod 'EXPermissions', path: '../node_modules/expo-permissions/ios'
 end

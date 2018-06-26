@@ -29,20 +29,13 @@ import javax.microedition.khronos.egl.EGLDisplay;
 import javax.microedition.khronos.egl.EGLSurface;
 
 import host.exp.exponent.analytics.EXL;
-import host.exp.exponent.exgl.VersionedGLView;
 import host.exp.exponent.utils.ExpFileUtils;
 import host.exp.exponent.utils.ScopedContext;
 
 import static android.opengl.GLES30.*;
-import static host.exp.exponent.exgl.EXGL.EXGLContextCreate;
-import static host.exp.exponent.exgl.EXGL.EXGLContextDestroy;
-import static host.exp.exponent.exgl.EXGL.EXGLContextDrawEnded;
-import static host.exp.exponent.exgl.EXGL.EXGLContextFlush;
-import static host.exp.exponent.exgl.EXGL.EXGLContextGetObject;
-import static host.exp.exponent.exgl.EXGL.EXGLContextNeedsRedraw;
-import static host.exp.exponent.exgl.EXGL.EXGLContextSetFlushMethod;
+import static expo.modules.gl.cpp.EXGL.*;
 
-public class GLContext implements VersionedGLView {
+public class GLContext {
   private int mEXGLCtxId = -1;
 
   private final GLObjectManagerModule mManager;

@@ -11,6 +11,7 @@
 @property NSMutableSet<id<EXInternalModule>> *internalModulesSet;
 @property NSMapTable<Protocol *, id<EXInternalModule>> *internalModules;
 @property NSMapTable<Protocol *, NSMutableArray<id<EXInternalModule>> *> *internalModulesPreResolution;
+@property NSMutableDictionary<Class, EXExportedModule *> *exportedModulesByClass;
 @property NSMutableDictionary<const NSString *, EXExportedModule *> *exportedModules;
 @property NSMutableDictionary<const NSString *, EXViewManager *> *viewManagerModules;
 
@@ -27,6 +28,7 @@
   if (self = [super init]) {
     _internalModulesSet = [NSMutableSet set];
     _internalModulesPreResolution = [NSMapTable weakToStrongObjectsMapTable];
+    _exportedModulesByClass = [NSMutableDictionary dictionary];
     _exportedModules = [NSMutableDictionary dictionary];
     _viewManagerModules = [NSMutableDictionary dictionary];
     _registryConsumers = [NSMutableSet set];
@@ -114,6 +116,7 @@
   }
 
   _exportedModules[exportedModuleName] = exportedModule;
+  [_exportedModulesByClass setObject:exportedModule forKey:(id<NSCopying>)[exportedModule class]];
   [self maybeAddRegistryConsumer:exportedModule];
 }
 
@@ -150,6 +153,11 @@
 - (EXExportedModule *)getExportedModuleForName:(NSString *)name
 {
   return _exportedModules[name];
+}
+
+- (EXExportedModule *)getExportedModuleOfClass:(Class)moduleClass
+{
+  return [_exportedModulesByClass objectForKey:moduleClass];
 }
 
 - (NSArray<id<EXInternalModule>> *)getAllInternalModules

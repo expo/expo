@@ -7,7 +7,7 @@
 
 @interface EXCameraManager ()
 
-@property (nonatomic, weak) id<EXFileSystem> fileSystem;
+@property (nonatomic, weak) id<EXFileSystemInterface> fileSystem;
 @property (nonatomic, weak) id<EXUIManager> uiManager;
 @property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
 
@@ -25,7 +25,7 @@ EX_EXPORT_MODULE(ExponentCameraManager);
 - (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
-  _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystem)];
+  _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
   _uiManager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXUIManager)];
 }
 

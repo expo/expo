@@ -6,7 +6,7 @@
 #import <EXCore/EXEventEmitter.h>
 #import <EXFileSystemInterface/EXFileSystemInterface.h>
 
-@interface EXFileSystem : EXExportedModule <EXEventEmitter, EXModuleRegistryConsumer, EXFileSystem>
+@interface EXFileSystem : EXExportedModule <EXEventEmitter, EXModuleRegistryConsumer, EXFileSystemInterface>
 
 @property (nonatomic, readonly) NSString *documentDirectory;
 @property (nonatomic, readonly) NSString *cachesDirectory;

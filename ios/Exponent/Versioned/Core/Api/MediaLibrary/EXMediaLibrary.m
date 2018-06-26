@@ -107,7 +107,7 @@ RCT_REMAP_METHOD(createAssetAsync,
     reject(@"E_INVALID_URI", @"Provided localUri is not a valid URI", nil);
     return;
   }
-  id<EXFileSystem> fileSystem = [_bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystem)];
+  id<EXFileSystemInterface> fileSystem = [_bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
   if (!([fileSystem permissionsForURI:assetUrl] & EXFileSystemPermissionRead)) {
     reject(@"E_FILESYSTEM_PERMISSIONS", [NSString stringWithFormat:@"File '%@' isn't readable.", assetUrl], nil);
     return;

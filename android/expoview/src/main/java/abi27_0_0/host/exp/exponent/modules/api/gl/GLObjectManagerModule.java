@@ -7,6 +7,7 @@ import android.util.SparseArray;
 
 import static android.opengl.GLES11Ext.GL_TEXTURE_EXTERNAL_OES;
 import static android.opengl.GLES30.*;
+import static expo.modules.gl.cpp.EXGL.*;
 
 import abi27_0_0.com.facebook.react.bridge.Arguments;
 import abi27_0_0.com.facebook.react.bridge.Promise;
@@ -26,8 +27,6 @@ import java.nio.FloatBuffer;
 
 import abi27_0_0.host.exp.exponent.modules.api.components.camera.ExpoCameraView;
 import host.exp.exponent.utils.ScopedContext;
-
-import static host.exp.exponent.exgl.EXGL.*;
 
 class GLObject {
   protected int exglCtxId;

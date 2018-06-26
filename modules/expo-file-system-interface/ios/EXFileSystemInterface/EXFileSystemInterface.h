@@ -9,7 +9,7 @@ typedef NS_OPTIONS(unsigned int, EXFileSystemPermissionFlags) {
 };
 
 // TODO: Maybe get rid of this interface in favor of EXFileSystemManager and private utilities classes
-@protocol EXFileSystem
+@protocol EXFileSystemInterface
 
 @property (nonatomic, readonly) NSString *documentDirectory;
 @property (nonatomic, readonly) NSString *cachesDirectory;

@@ -8,8 +8,10 @@
 #import "RNBranchAgingDictionary.h"
 #import "RNBranchConfig.h"
 #import "RNBranchEventEmitter.h"
+#import "EXScopedModuleRegistry.h"
+#import "EXModuleRegistryBinding.h"
 
-#import "EXConstants.h"
+#import <EXConstantsInterface/EXConstantsInterface.h>
 
 // EXPO CHANGES:
 // - Add #import "EXConstants.h"
@@ -218,8 +220,9 @@ EX_EXPORT_SCOPED_MODULE(RNBranch, BranchManager);
 - (void)setBridge:(RCTBridge *)bridge
 {
   _bridge = bridge;
+  id<EXConstantsInterface> constants = [_bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXConstantsInterface)];
 
-  if ([self.bridge.scopedModules.constants.appOwnership isEqualToString:@"standalone"]) {
+  if ([constants.appOwnership isEqualToString:@"standalone"]) {
     _universalObjectMap = [RNBranchAgingDictionary dictionaryWithTtl:3600.0];
 
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onInitSessionFinished:) name:RNBranchLinkOpenedNotification object:nil];

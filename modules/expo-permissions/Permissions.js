@@ -2,7 +2,7 @@
 
 import { NativeModulesProxy } from 'expo-core';
 
-let { ExponentPermissions: Permissions } = NativeModulesProxy;
+const { ExponentPermissions: Permissions } = NativeModulesProxy;
 
 type PermissionType =
   | 'audioRecording'

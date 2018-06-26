@@ -78,7 +78,7 @@ RCT_EXPORT_METHOD(takeSnapshot:(nonnull NSNumber *)target
       if ([result isEqualToString:@"file"]) {
         // Save to a temp file
         NSString *extension = [@"." stringByAppendingString:format];
-        id<EXFileSystem> fileSystem = [self.bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystem)];
+        id<EXFileSystemInterface> fileSystem = [self.bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
         if (!fileSystem) {
           reject(@"E_MISSING_MODULE", @"No FileSystem module.", nil);
           return;

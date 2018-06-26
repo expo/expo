@@ -1,4 +1,4 @@
-#import <UEXGL.h>
+#import <EXGL-CPP/UEXGL.h>
 
 // Obj-C wrapper around C `ABI25_0_0EXGLObject` (identified by `ABI25_0_0EXGLObjectId`) lifetimes that
 // dispatches to child classes (such as `ABI25_0_0EXGLGPUImageObject`) for the actual media

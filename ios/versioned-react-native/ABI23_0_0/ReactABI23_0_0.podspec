@@ -83,6 +83,7 @@ Pod::Spec.new do |s|
     ss.dependency 'lottie-ios'
     ss.dependency 'JKBigInteger2'
     ss.dependency 'Branch'
+    ss.dependency 'EXGL-CPP'
     ss.source_files     = "Expo/Core/**/*.{h,m}"
   end
 

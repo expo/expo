@@ -1,11 +1,38 @@
 PODS:
   - boost-for-react-native (1.63.0)
   - DoubleConversion (1.1.5)
+  - EXCamera (1.0.0):
+    - EXCore
+    - EXFaceDetectorInterface
+    - EXFileSystemInterface
+    - EXPermissionsInterface
+  - EXCameraInterface (1.0.0):
+    - EXCore
+  - EXConstants (1.0.0):
+    - EXConstantsInterface
+    - EXCore
+  - EXConstantsInterface (1.0.0):
+    - EXCore
   - EXCore (1.0.0)
+  - EXFaceDetectorInterface (1.0.0):
+    - EXCore
   - EXFileSystem (1.0.0):
     - EXCore
     - EXFileSystemInterface
   - EXFileSystemInterface (1.0.0):
+    - EXCore
+  - EXGL (1.0.0):
+    - EXCameraInterface
+    - EXCore
+    - EXFileSystemInterface
+    - EXGL-CPP
+  - EXGL-CPP (1.0.0):
+    - EXGL-CPP/UEXGL (= 1.0.0)
+  - EXGL-CPP/UEXGL (1.0.0)
+  - EXPermissions (1.0.0):
+    - EXCore
+    - EXPermissionsInterface
+  - EXPermissionsInterface (1.0.0):
     - EXCore
   - EXReactNativeAdapter (1.0.0):
     - EXCore
@@ -74,9 +101,18 @@ PODS:
 
 DEPENDENCIES:
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
+  - EXCamera (from `../node_modules/expo-camera/ios`)
+  - EXCameraInterface (from `../node_modules/expo-camera-interface/ios`)
+  - EXConstants (from `../node_modules/expo-constants/ios`)
+  - EXConstantsInterface (from `../node_modules/expo-constants-interface/ios`)
   - EXCore (from `../node_modules/expo-core/ios`)
+  - EXFaceDetectorInterface (from `../node_modules/expo-face-detector-interface/ios`)
   - EXFileSystem (from `../node_modules/expo-file-system/ios`)
   - EXFileSystemInterface (from `../node_modules/expo-file-system-interface/ios`)
+  - EXGL (from `../node_modules/expo-gl/ios`)
+  - EXGL-CPP (from `../node_modules/expo-gl-cpp/cpp`)
+  - EXPermissions (from `../node_modules/expo-permissions/ios`)
+  - EXPermissionsInterface (from `../node_modules/expo-permissions-interface/ios`)
   - EXReactNativeAdapter (from `../node_modules/expo-react-native-adapter/ios`)
   - EXSensors (from `../node_modules/expo-sensors/ios`)
   - EXSensorsInterface (from `../node_modules/expo-sensors-interface/ios`)
@@ -105,12 +141,30 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   DoubleConversion:
     :podspec: "../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec"
+  EXCamera:
+    :path: "../node_modules/expo-camera/ios"
+  EXCameraInterface:
+    :path: "../node_modules/expo-camera-interface/ios"
+  EXConstants:
+    :path: "../node_modules/expo-constants/ios"
+  EXConstantsInterface:
+    :path: "../node_modules/expo-constants-interface/ios"
   EXCore:
     :path: "../node_modules/expo-core/ios"
+  EXFaceDetectorInterface:
+    :path: "../node_modules/expo-face-detector-interface/ios"
   EXFileSystem:
     :path: "../node_modules/expo-file-system/ios"
   EXFileSystemInterface:
     :path: "../node_modules/expo-file-system-interface/ios"
+  EXGL:
+    :path: "../node_modules/expo-gl/ios"
+  EXGL-CPP:
+    :path: "../node_modules/expo-gl-cpp/cpp"
+  EXPermissions:
+    :path: "../node_modules/expo-permissions/ios"
+  EXPermissionsInterface:
+    :path: "../node_modules/expo-permissions-interface/ios"
   EXReactNativeAdapter:
     :path: "../node_modules/expo-react-native-adapter/ios"
   EXSensors:
@@ -129,9 +183,18 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   DoubleConversion: e22e0762848812a87afd67ffda3998d9ef29170c
+  EXCamera: a16bd0fb5db5eb71336401cd3d9444af03c1d9fb
+  EXCameraInterface: 58c53f9feaeabca7ddc71bf22690a0c9b49fdb6b
+  EXConstants: e239c6706d5968939d593d859d8144fe4884a103
+  EXConstantsInterface: 7c617b24b2cd075da04d8d3ea0b55f625f3f1dcf
   EXCore: 70e5cb8627048c5373820d6372faa54cbefb3b12
-  EXFileSystem: b1575104199dcd79a6ad673d06e4fe1ddc15c01b
+  EXFaceDetectorInterface: 9f895eb64ce5da86b6efc1980e293cf90c629df7
+  EXFileSystem: 02c505c7954258a3b239cdc3e3b6f956a73fd88d
   EXFileSystemInterface: effe9ede025f8d487fbdfbc59b4e5d6fd1c6c2fd
+  EXGL: ce6f87dc239b56a0c7c8e0bcb18c96c64a6db27f
+  EXGL-CPP: 2097dde1158fcc1469f772681ee4a4bd003dc45a
+  EXPermissions: 1c524493270ba64f494f805b6e0e75d4b498ecb5
+  EXPermissionsInterface: 814a15d3259873c39646ed3cfe58bb49160445c1
   EXReactNativeAdapter: 75eb0f3343ac335516c32fe4b93eb28bacac3f7b
   EXSensors: 06a11a8c6c08d62fa20ae64e61cd602be2bf36a2
   EXSensorsInterface: eca1381ec807ec2439e2f1607f3fa4297deaaf20
@@ -140,6 +203,6 @@ SPEC CHECKSUMS:
   React: aa2040dbb6f317b95314968021bd2888816e03d5
   yoga: a23273df0088bf7f2bb7e5d7b00044ea57a2a54a
 
-PODFILE CHECKSUM: add434df49b9533e1464dff837c2b114a4c1fdae
+PODFILE CHECKSUM: 1dbfccb6eb74f0f222f5e5743b5fc1045954c5d9
 
 COCOAPODS: 1.5.0

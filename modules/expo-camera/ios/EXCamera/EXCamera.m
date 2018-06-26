@@ -11,7 +11,7 @@
 
 @interface EXCamera ()
 
-@property (nonatomic, weak) id<EXFileSystem> fileSystem;
+@property (nonatomic, weak) id<EXFileSystemInterface> fileSystem;
 @property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
 @property (nonatomic, strong) id<EXFaceDetectorManager> faceDetectorManager;
 @property (nonatomic, weak) id<EXPermissions> permissionsManager;
@@ -42,7 +42,7 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
     _sessionQueue = dispatch_queue_create("cameraQueue", DISPATCH_QUEUE_SERIAL);
     _faceDetectorManager = [self createFaceDetectorManager];
     _lifecycleManager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXAppLifecycleService)];
-    _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystem)];
+    _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
     _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXPermissions)];
 #if !(TARGET_IPHONE_SIMULATOR)
     _previewLayer = [AVCaptureVideoPreviewLayer layerWithSession:_session];

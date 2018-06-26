@@ -1,6 +1,6 @@
 
 #import <ReactABI28_0_0/ABI28_0_0RCTBridge.h>
-#import <UEXGL.h>
+#import <EXGL-CPP/UEXGL.h>
 
 #import "ABI28_0_0EXGLContext.h"
 #import "ABI28_0_0EXGLViewManager.h"

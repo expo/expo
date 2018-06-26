@@ -34,16 +34,9 @@ import host.exp.exponent.utils.ExpFileUtils;
 import host.exp.exponent.utils.ScopedContext;
 
 import static android.opengl.GLES30.*;
-import static host.exp.exponent.exgl.EXGL.EXGLContextCreate;
-import static host.exp.exponent.exgl.EXGL.EXGLContextDestroy;
-import static host.exp.exponent.exgl.EXGL.EXGLContextDrawEnded;
-import static host.exp.exponent.exgl.EXGL.EXGLContextFlush;
-import static host.exp.exponent.exgl.EXGL.EXGLContextNeedsRedraw;
-import static host.exp.exponent.exgl.EXGL.EXGLContextSetFlushMethod;
-import static host.exp.exponent.exgl.EXGL.EXGLContextGetObject;
-import host.exp.exponent.exgl.VersionedGLView;
+import static expo.modules.gl.cpp.EXGL.*;
 
-public class GLView extends TextureView implements TextureView.SurfaceTextureListener, VersionedGLView  {
+public class GLView extends TextureView implements TextureView.SurfaceTextureListener  {
   private boolean mOnSurfaceCreateCalled = false;
   private int mEXGLCtxId = -1;
 

@@ -7,7 +7,7 @@
 //
 
 #import <ReactABI27_0_0/ABI27_0_0RCTBridgeModule.h>
-#import <UEXGL.h>
+#import <EXGL-CPP/UEXGL.h>
 #import <OpenGLES/EAGL.h>
 #import "ABI27_0_0EXGLObjectManager.h"
 

@@ -22,12 +22,17 @@ const ProjectVersions = require('./project-versions');
 const EXPONENT_DIR = process.env.EXPONENT_DIR || path.join(__dirname, '..');
 
 const EXPO_CLIENT_UNIVERSAL_MODULES = [
+  { podName: 'EXGL', libName: 'expo-gl' },
   { podName: 'EXCore', libName: 'expo-core' },
+  { podName: 'EXGL-CPP', libName: 'expo-gl-cpp', subdirectory: 'cpp' },
   { podName: 'EXCamera', libName: 'expo-camera' },
   { podName: 'EXSensors', libName: 'expo-sensors' },
+  { podName: 'EXConstants', libName: 'expo-constants' },
   { podName: 'EXFileSystem', libName: 'expo-file-system' },
   { podName: 'EXFaceDetector', libName: 'expo-face-detector' },
+  { podName: 'EXCameraInterface', libName: 'expo-camera-interface' },
   { podName: 'EXSensorsInterface', libName: 'expo-sensors-interface' },
+  { podName: 'EXConstantsInterface', libName: 'expo-constants-interface' },
   { podName: 'EXReactNativeAdapter', libName: 'expo-react-native-adapter' },
   { podName: 'EXFileSystemInterface', libName: 'expo-file-system-interface' },
   { podName: 'EXPermissionsInterface', libName: 'expo-permissions-interface' },
@@ -193,6 +198,8 @@ const macrosFuncs = {
 
 function generateUniversalModuleConfig(moduleInfo, modulesPath) {
   const requiredProperties = ['podName', 'libName'];
+  const subdirectory = moduleInfo.subdirectory != null ? moduleInfo.subdirectory : 'ios';
+
   requiredProperties.forEach(propName => {
     if (!moduleInfo[propName]) {
       throw new Error(
@@ -204,7 +211,7 @@ function generateUniversalModuleConfig(moduleInfo, modulesPath) {
   });
   return {
     ...moduleInfo,
-    path: path.join(modulesPath, moduleInfo.libName, 'ios'),
+    path: path.join(modulesPath, moduleInfo.libName, subdirectory),
   };
 }
 

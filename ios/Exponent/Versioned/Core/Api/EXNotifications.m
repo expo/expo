@@ -1,12 +1,14 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
 #import "EXNotifications.h"
-#import "EXConstants.h"
+#import "EXModuleRegistryBinding.h"
 #import "EXUnversioned.h"
 #import "EXUtil.h"
 
 #import <React/RCTUtils.h>
 #import <React/RCTConvert.h>
+
+#import <EXConstantsInterface/EXConstantsInterface.h>
 
 @implementation RCTConvert (NSCalendarUnit)
 
@@ -55,7 +57,9 @@ RCT_REMAP_METHOD(getDevicePushTokenAsync,
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
-  if (![_bridge.scopedModules.constants.appOwnership isEqualToString:@"standalone"]) {
+  id<EXConstantsInterface> constants = [_bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXConstantsInterface)];
+  
+  if (![constants.appOwnership isEqualToString:@"standalone"]) {
     return reject(0, @"getDevicePushTokenAsync is only accessible within standalone applications", nil);
   }
   

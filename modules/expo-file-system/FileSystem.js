@@ -12,6 +12,8 @@ FS.cacheDirectory = normalizeEndingSlash(FS.cacheDirectory);
 
 export const documentDirectory = FS.documentDirectory;
 export const cacheDirectory = FS.cacheDirectory;
+export const bundledAssets = FS.bundledAssets;
+export const bundleDirectory = FS.bundleDirectory;
 
 type FileInfo =
   | {

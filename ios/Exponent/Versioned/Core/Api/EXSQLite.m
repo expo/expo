@@ -36,7 +36,7 @@ RCT_EXPORT_MODULE(ExponentSQLite)
 
 - (NSString *)pathForDatabaseName:(NSString *)name
 {
-  id<EXFileSystem> fileSystem = [self.bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystem)];
+  id<EXFileSystemInterface> fileSystem = [self.bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
   if (!fileSystem) {
     RCTLogError(@"No FileSystem module.");
     return nil;

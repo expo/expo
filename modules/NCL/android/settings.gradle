@@ -1,5 +1,8 @@
 rootProject.name = 'NCL'
 
+include ':ReactAndroid'
+project(':ReactAndroid').projectDir = new File(rootProject.projectDir, '../node_modules/react-native/ReactAndroid')
+
 include ':expo-core'
 project(':expo-core').projectDir = new File(rootProject.projectDir, '../node_modules/expo-core/android')
 include ':expo-sensors'
@@ -8,11 +11,34 @@ include ':expo-file-system'
 project(':expo-file-system').projectDir = new File(rootProject.projectDir, '../node_modules/expo-file-system/android')
 include ':expo-file-system-interface'
 project(':expo-file-system-interface').projectDir = new File(rootProject.projectDir, '../node_modules/expo-file-system-interface/android')
+
+include ':expo-permissions'
+project(':expo-permissions').projectDir = new File(rootProject.projectDir, '../node_modules/expo-permissions/android')
 include ':expo-permissions-interface'
 project(':expo-permissions-interface').projectDir = new File(rootProject.projectDir, '../node_modules/expo-permissions-interface/android')
+
 include ':expo-sensors-interface'
 project(':expo-sensors-interface').projectDir = new File(rootProject.projectDir, '../node_modules/expo-sensors-interface/android')
+
 include ':expo-react-native-adapter'
 project(':expo-react-native-adapter').projectDir = new File(rootProject.projectDir, '../node_modules/expo-react-native-adapter/android')
+
+include ':expo-gl'
+project(':expo-gl').projectDir = new File(rootProject.projectDir, '../node_modules/expo-gl/android')
+include ':expo-gl-cpp'
+project(':expo-gl-cpp').projectDir = new File(rootProject.projectDir, '../node_modules/expo-gl-cpp/android')
+
+include ':expo-camera'
+project(':expo-camera').projectDir = new File(rootProject.projectDir, '../node_modules/expo-camera/android')
+include ':expo-camera-interface'
+project(':expo-camera-interface').projectDir = new File(rootProject.projectDir, '../node_modules/expo-camera-interface/android')
+
+include ':expo-face-detector-interface'
+project(':expo-face-detector-interface').projectDir = new File(rootProject.projectDir, '../node_modules/expo-face-detector-interface/android')
+
+include ':expo-constants'
+project(':expo-constants').projectDir = new File(rootProject.projectDir, '../node_modules/expo-constants/android')
+include ':expo-constants-interface'
+project(':expo-constants-interface').projectDir = new File(rootProject.projectDir, '../node_modules/expo-constants-interface/android')
 
 include ':app'

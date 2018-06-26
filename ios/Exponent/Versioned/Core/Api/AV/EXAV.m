@@ -480,7 +480,7 @@ withEXVideoViewForTag:(nonnull NSNumber *)reactTag
     return RCTErrorWithMessage(@"Recorder already exists.");
   }
   
-  id<EXFileSystem> fileSystem = [self.bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystem)];
+  id<EXFileSystemInterface> fileSystem = [self.bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
   
   if (!fileSystem) {
     return RCTErrorWithMessage(@"No FileSystem module.");

@@ -1,7 +1,6 @@
 #import "EXAppLoadingView.h"
 #import "EXAppLoadingCancelView.h"
 #import "EXAppLoadingProgressView.h"
-#import "EXConstants.h"
 #import "EXEnvironment.h"
 #import "EXKernel.h"
 #import "EXKernelUtil.h"
@@ -9,6 +8,7 @@
 #import "EXResourceLoader.h"
 #import "EXUtil.h"
 
+#import <EXConstants/EXConstantsService.h>
 #import <React/RCTComponent.h>
 #import <React/RCTImageSource.h>
 #import <React/RCTImageView.h>
@@ -204,7 +204,7 @@
 - (BOOL)_isIPhoneX
 {
   return (
-    [[EXConstants deviceModel] isEqualToString:@"iPhone X"] // doesn't work on sim
+    [[EXConstantsService deviceModel] isEqualToString:@"iPhone X"] // doesn't work on sim
     || [UIScreen mainScreen].nativeBounds.size.height == 2436.0f
   );
 }

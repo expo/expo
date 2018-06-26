@@ -5,5 +5,6 @@
 @interface EXUtilities : NSObject
 
 + (void)performSynchronouslyOnMainThread:(void (^)(void))block;
++ (CGFloat)screenScale;
 
 @end

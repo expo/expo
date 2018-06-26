@@ -6,13 +6,14 @@
 #import "EXPermissionsBinding.h"
 #import "EXFileSystemBinding.h"
 #import "EXSensorsManagerBinding.h"
+#import "EXConstantsBinding.h"
 #import "EXUnversioned.h"
 
 #import "EXModuleRegistryBinding.h"
 
 @implementation EXScopedModuleRegistryAdapter
 
-- (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge andExperience:(NSString *)experienceId withScopedModulesArray:(NSArray<id<RCTBridgeModule>> *)scopedModulesArray withKernelServices:(NSDictionary *)kernelServices
+- (NSArray<id<RCTBridgeModule>> *)extraModulesForParams:(NSDictionary *)params andExperience:(NSString *)experienceId withScopedModulesArray:(NSArray<id<RCTBridgeModule>> *)scopedModulesArray withKernelServices:(NSDictionary *)kernelServices
 {
   EXModuleRegistry *moduleRegistry = [self.moduleRegistryProvider moduleRegistryForExperienceId:experienceId];
   NSDictionary<Class, id> *scopedModulesDictionary = [self dictionaryFromScopedModulesArray:scopedModulesArray];
@@ -25,6 +26,9 @@
 
   EXSensorsManagerBinding *sensorsManagerBinding = [[EXSensorsManagerBinding alloc] initWithExperienceId:experienceId andKernelService:kernelServices[EX_UNVERSIONED(@"EXSensorManager")]];
   [moduleRegistry registerInternalModule:sensorsManagerBinding];
+  
+  EXConstantsBinding *constantsBinding = [[EXConstantsBinding alloc] initWithExperienceId:experienceId andParams:params];
+  [moduleRegistry registerInternalModule:constantsBinding];
 
   NSArray<id<RCTBridgeModule>> *bridgeModules = [self extraModulesForModuleRegistry:moduleRegistry];
   return [bridgeModules arrayByAddingObject:[[EXModuleRegistryBinding alloc] initWithModuleRegistry:moduleRegistry]];

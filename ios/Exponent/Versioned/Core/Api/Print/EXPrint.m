@@ -319,7 +319,7 @@ RCT_REMAP_METHOD(printToFileAsync,
 
 - (NSString *)_generatePath
 {
-  id<EXFileSystem> fileSystem = [_bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystem)];
+  id<EXFileSystemInterface> fileSystem = [_bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
   if (!fileSystem) {
     return nil;
   }

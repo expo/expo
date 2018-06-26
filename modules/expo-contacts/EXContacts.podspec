@@ -16,9 +16,5 @@ Pod::Spec.new do |s|
   s.preserve_paths = 'ios/**/*.{h,m}'
   s.requires_arc   = true
 
-  # s.dependency 'React'
   s.dependency 'EXCore'
-
 end
-
-  

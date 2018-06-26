@@ -4,14 +4,14 @@ import { createStackNavigator, createTabNavigator } from 'react-navigation';
 // import { MaterialIcons } from '@expo/vector-icons';
 import CustomTabBarBottom from './CustomTabBarBottom';
 
-import Constants from '../constants';
-const { Colors, Layout } = Constants;
+import { Colors, Layout } from '../constants';
+
 // import NavigationEvents from '../utilities/NavigationEvents';
 
 // import BarCodeScannerScreen from '../screens/BarCodeScannerScreen';
 // import BlurViewScreen from '../screens/BlurViewScreen';
 // import DocumentPickerScreen from '../screens/DocumentPickerScreen';
-// import ExpoComponentsScreen from '../screens/ExpoComponentsScreen';
+import ExpoComponentsScreen from '../screens/ExpoComponentsScreen';
 import ExpoApisScreen from '../screens/ExpoApisScreen';
 import FileSystemScreen from '../screens/FileSystemScreen';
 // import FontScreen from '../screens/FontScreen';
@@ -30,7 +30,7 @@ import FileSystemScreen from '../screens/FileSystemScreen';
 // import RemindersScreen from '../screens/RemindersScreen';
 import SensorsScreen from '../screens/SensorsScreen';
 // import GeocodingScreen from '../screens/GeocodingScreen';
-// import GLScreens from '../screens/GL/GLScreens';
+import GLScreens from '../screens/GL/GLScreens';
 // import ImageManipulatorScreen from '../screens/ImageManipulatorScreen';
 // import ImagePickerScreen from '../screens/ImagePickerScreen';
 // import IntentLauncherScreen from '../screens/IntentLauncherScreen';
@@ -94,26 +94,26 @@ const StackConfig = {
   }),
 };
 
-// const ExpoComponentsStackNavigator = createStackNavigator(
-//   {
-//     ExpoComponents: { screen: ExpoComponentsScreen },
-//     AdMob: { screen: AdMobScreen },
-//     BarCodeScanner: { screen: BarCodeScannerScreen },
-//     BlurView: { screen: BlurViewScreen },
-//     ...GLScreens,
-//     GestureHandlerPinch: { screen: GestureHandlerPinchScreen },
-//     GestureHandlerList: { screen: GestureHandlerListScreen },
-//     GestureHandlerSwipeable: { screen: GestureHandlerSwipeableScreen },
-//     Gif: { screen: GifScreen },
-//     FacebookAds: { screen: FacebookAdsScreen },
-//     SVG: { screen: SVGScreen },
-//     LinearGradient: { screen: LinearGradientScreen },
-//     Lottie: { screen: LottieScreen },
-//     Maps: { screen: MapsScreen },
-//     Video: { screen: VideoScreen },
-//   },
-//   StackConfig
-// );
+const ExpoComponentsStackNavigator = createStackNavigator(
+  {
+    ExpoComponents: { screen: ExpoComponentsScreen },
+    // AdMob: { screen: AdMobScreen },
+    // BarCodeScanner: { screen: BarCodeScannerScreen },
+    // BlurView: { screen: BlurViewScreen },
+    ...GLScreens,
+    // GestureHandlerPinch: { screen: GestureHandlerPinchScreen },
+    // GestureHandlerList: { screen: GestureHandlerListScreen },
+    // GestureHandlerSwipeable: { screen: GestureHandlerSwipeableScreen },
+    // Gif: { screen: GifScreen },
+    // FacebookAds: { screen: FacebookAdsScreen },
+    // SVG: { screen: SVGScreen },
+    // LinearGradient: { screen: LinearGradientScreen },
+    // Lottie: { screen: LottieScreen },
+    // Maps: { screen: MapsScreen },
+    // Video: { screen: VideoScreen },
+  },
+  StackConfig
+);
 
 const ExpoApisStackNavigator = createStackNavigator(
   {
@@ -178,7 +178,7 @@ class TabIcon extends React.Component {
 const MainTabNavigator = createTabNavigator(
   {
     ExpoApis: { screen: ExpoApisStackNavigator },
-    // ExpoComponents: { screen: ExpoComponentsStackNavigator },
+    ExpoComponents: { screen: ExpoComponentsStackNavigator },
     // ReactNativeCore: { screen: ReactNativeCoreStackNavigator },
   },
   {
@@ -227,4 +227,4 @@ const MainTabNavigator = createTabNavigator(
   }
 );
 
-export default ExpoApisStackNavigator;
+export default MainTabNavigator;

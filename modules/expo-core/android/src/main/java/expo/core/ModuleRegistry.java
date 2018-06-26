@@ -14,6 +14,7 @@ public class ModuleRegistry {
   private final Map<Class, InternalModule> mInternalModulesMap = new HashMap<>();
   private final Map<String, ViewManager> mViewManagersMap = new HashMap<>();
   private final Map<String, ExportedModule> mExportedModulesMap = new HashMap<>();
+  private final Map<Class, ExportedModule> mExportedModulesByClassMap = new HashMap<>();
 
   private List<WeakReference<ModuleRegistryConsumer>> mRegistryConsumers = new ArrayList<>();
 
@@ -49,6 +50,10 @@ public class ModuleRegistry {
     return mExportedModulesMap.get(name);
   }
 
+  public ExportedModule getExportedModuleOfClass(Class moduleClass) {
+    return mExportedModulesByClassMap.get(moduleClass);
+  }
+
   public Collection<ViewManager> getAllViewManagers() {
     return mViewManagersMap.values();
   }
@@ -78,6 +83,7 @@ public class ModuleRegistry {
     String moduleName = module.getName();
 
     mExportedModulesMap.put(moduleName, module);
+    mExportedModulesByClassMap.put(module.getClass(), module);
     maybeAddRegistryConsumer(module);
   }
 

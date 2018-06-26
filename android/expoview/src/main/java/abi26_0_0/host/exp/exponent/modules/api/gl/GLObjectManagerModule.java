@@ -27,7 +27,7 @@ import java.nio.FloatBuffer;
 import abi26_0_0.host.exp.exponent.modules.api.components.camera.ExpoCameraView;
 import host.exp.exponent.utils.ScopedContext;
 
-import static host.exp.exponent.exgl.EXGL.*;
+import static expo.modules.gl.cpp.EXGL.*;
 
 class GLObject {
   protected int exglCtxId;

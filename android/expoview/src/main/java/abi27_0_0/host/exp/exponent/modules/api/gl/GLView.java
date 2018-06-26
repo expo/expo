@@ -2,7 +2,6 @@ package abi27_0_0.host.exp.exponent.modules.api.gl;
 
 import android.content.Context;
 import android.graphics.SurfaceTexture;
-import android.util.SparseArray;
 import android.view.TextureView;
 
 import abi27_0_0.com.facebook.react.bridge.Arguments;
@@ -10,12 +9,7 @@ import abi27_0_0.com.facebook.react.bridge.ReactContext;
 import abi27_0_0.com.facebook.react.bridge.WritableMap;
 import abi27_0_0.com.facebook.react.uimanager.events.RCTEventEmitter;
 
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-
-import host.exp.exponent.exgl.VersionedGLView;
-
-public class GLView extends TextureView implements TextureView.SurfaceTextureListener, VersionedGLView  {
+public class GLView extends TextureView implements TextureView.SurfaceTextureListener {
   private boolean mOnSurfaceCreateCalled = false;
 
   private GLContext mGLContext;

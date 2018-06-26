@@ -53,5 +53,9 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>NSCameraUsageDescription</key>
+	<string>Allow access to your device&apos;s camera to see preview on the screen</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Allow access to your microphone</string>
 </dict>
 </plist>

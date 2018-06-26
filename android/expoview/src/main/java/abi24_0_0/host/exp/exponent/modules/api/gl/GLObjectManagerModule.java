@@ -7,8 +7,8 @@ import android.hardware.Camera;
 import android.util.SparseArray;
 
 import static android.opengl.GLES11Ext.GL_TEXTURE_EXTERNAL_OES;
-import static android.opengl.GLES11Ext.glMultiTexCoord4xOES;
 import static android.opengl.GLES20.*;
+import static expo.modules.gl.cpp.EXGL.*;
 
 import abi24_0_0.com.facebook.react.bridge.Arguments;
 import abi24_0_0.com.facebook.react.bridge.Promise;
@@ -21,8 +21,6 @@ import abi24_0_0.com.facebook.react.bridge.WritableMap;
 import java.io.IOException;
 
 import host.exp.exponent.analytics.EXL;
-
-import static host.exp.exponent.exgl.EXGL.*;
 
 class GLObject implements SurfaceTexture.OnFrameAvailableListener {
   private int exglCtxId;

@@ -16,11 +16,12 @@ import java.util.WeakHashMap;
 
 import expo.core.interfaces.InternalModule;
 import expo.core.interfaces.LifecycleEventListener;
+import expo.core.interfaces.JavaScriptContextProvider;
 import expo.core.interfaces.services.UIManager;
 import expo.interfaces.permissions.PermissionsManager;
 import expo.interfaces.permissions.PermissionsListener;
 
-public class UIManagerModuleWrapper implements InternalModule, UIManager, PermissionsManager {
+public class UIManagerModuleWrapper implements InternalModule, UIManager, PermissionsManager, JavaScriptContextProvider {
   private ReactContext mReactContext;
   private Map<LifecycleEventListener, com.facebook.react.bridge.LifecycleEventListener> mLifecycleListenersMap = new WeakHashMap<>();
 
@@ -34,11 +35,11 @@ public class UIManagerModuleWrapper implements InternalModule, UIManager, Permis
 
   @Override
   public List<Class> getExportedInterfaces() {
-    return Arrays.<Class>asList(PermissionsManager.class, UIManager.class);
+    return Arrays.<Class>asList(PermissionsManager.class, UIManager.class, JavaScriptContextProvider.class);
   }
 
   @Override
-  public <T extends View> void addUIBlock(final int tag, final UIBlock<T> block) {
+  public <T> void addUIBlock(final int tag, final UIBlock<T> block) {
     getContext().getNativeModule(UIManagerModule.class).addUIBlock(new com.facebook.react.uimanager.UIBlock() {
       @Override
       public void execute(NativeViewHierarchyManager nativeViewHierarchyManager) {
@@ -126,5 +127,9 @@ public class UIManagerModuleWrapper implements InternalModule, UIManager, Permis
     } else {
       return false;
     }
+  }
+
+  public long getJavaScriptContextRef() {
+    return mReactContext.getJavaScriptContextHolder().get();
   }
 }

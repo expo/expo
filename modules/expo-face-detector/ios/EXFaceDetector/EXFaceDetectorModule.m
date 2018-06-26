@@ -60,7 +60,7 @@ EX_EXPORT_METHOD_AS(detectFaces, detectFaces:(nonnull NSDictionary *)options res
   NSString *path = [url.path stringByStandardizingPath];
   
   NSException *exception;
-  id<EXFileSystem> fileSystem = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystem)];
+  id<EXFileSystemInterface> fileSystem = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
   if (!fileSystem || exception) {
     reject(@"E_MODULE_UNAVAILABLE", @"No file system module", nil);
     return;

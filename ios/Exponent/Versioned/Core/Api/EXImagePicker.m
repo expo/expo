@@ -152,7 +152,7 @@ RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
     NSString *mediaType = [info objectForKey:UIImagePickerControllerMediaType];
     NSMutableDictionary *response = [[NSMutableDictionary alloc] init];
     response[@"cancelled"] = @NO;
-    id<EXFileSystem> fileSystem = [self.bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystem)];
+    id<EXFileSystemInterface> fileSystem = [self.bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
     if (!fileSystem) {
       self.reject(@"E_MISSING_MODULE", @"No FileSystem module", nil);
       return;
@@ -200,7 +200,7 @@ RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
     RCTLogWarn(@"Unsupported format of the picked image. Using JPEG instead.");
   }
 
-  id<EXFileSystem> fileSystem = [self.bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystem)];
+  id<EXFileSystemInterface> fileSystem = [self.bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
   if (!fileSystem) {
     self.reject(@"E_NO_MODULE", @"No FileSystem module.", nil);
     return;
@@ -262,7 +262,7 @@ RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
   
   response[@"type"] = @"video";
   NSError *error = nil;
-  id<EXFileSystem> fileSystem = [self.bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystem)];
+  id<EXFileSystemInterface> fileSystem = [self.bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
   if (!fileSystem) {
     self.reject(@"E_NO_MODULE", @"No FileSystem module.", nil);
     return;

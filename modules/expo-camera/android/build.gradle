@@ -72,9 +72,9 @@ dependencies {
     expendency 'expo-face-detector-interface'
     expendency 'expo-permissions-interface'
     expendency 'expo-file-system-interface'
+    expendency 'expo-camera-interface'
     compile 'com.google.android.gms:play-services-vision:9.8.0'
-    compile 'com.android.support:exifinterface:26.0.1'
+    compile 'com.android.support:exifinterface:26.1.0'
     compile 'com.google.android:cameraview:1.0.0'
     compile 'com.google.zxing:core:3.3.2'
 }
-  

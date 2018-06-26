@@ -113,7 +113,7 @@ RCT_EXPORT_METHOD(getDocumentAsync:(NSDictionary *)options resolver:(RCTPromiseR
   
   NSURL *newUrl = url;
   if (_shouldCopyToCacheDirectory) {
-    id<EXFileSystem> fileSystem = [_bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystem)];
+    id<EXFileSystemInterface> fileSystem = [_bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
     if (!fileSystem) {
       _reject(@"E_CANNOT_PICK_FILE", @"No FileSystem module.", nil);
       return;

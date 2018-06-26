@@ -26,6 +26,7 @@
 - (void)initialize;
 
 - (EXExportedModule *)getExportedModuleForName:(NSString *)name;
+- (EXExportedModule *)getExportedModuleOfClass:(Class)moduleClass;
 - (id)getModuleImplementingProtocol:(Protocol *)protocol;
 
 - (NSArray<id<EXInternalModule>> *)getAllInternalModules;

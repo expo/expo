@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.google.android.cameraview.CameraView;
+import com.google.android.cameraview.Size;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,6 +27,7 @@ import expo.core.ModuleRegistry;
 import expo.core.Promise;
 import expo.core.interfaces.services.EventEmitter;
 import expo.core.interfaces.services.UIManager;
+import expo.interfaces.camera.ExpoCameraViewInterface;
 import expo.interfaces.facedetector.FaceDetector;
 import expo.interfaces.facedetector.FaceDetectorProvider;
 import expo.interfaces.permissions.Permissions;
@@ -41,7 +43,7 @@ import expo.modules.camera.utils.GMVBarCodeDetector;
 import expo.modules.camera.utils.ImageDimensions;
 import expo.modules.camera.utils.ZxingBarCodeDetector;
 
-public class ExpoCameraView extends CameraView implements LifecycleEventListener, BarCodeScannerAsyncTaskDelegate, FaceDetectorAsyncTaskDelegate, PictureSavedDelegate {
+public class ExpoCameraView extends CameraView implements LifecycleEventListener, BarCodeScannerAsyncTaskDelegate, FaceDetectorAsyncTaskDelegate, PictureSavedDelegate, ExpoCameraViewInterface {
   private static final String MUTE_KEY = "mute";
   private static final String QUALITY_KEY = "quality";
   private static final String FAST_MODE_KEY = "fastMode";
@@ -257,6 +259,11 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
 
   public void onBarCodeScanningTaskCompleted() {
     barCodeScannerTaskLock = false;
+  }
+
+  public int[] getPreviewSizeAsArray() {
+    Size previewSize = getPreviewSize();
+    return new int[]{previewSize.getWidth(), previewSize.getHeight()};
   }
 
   @Override

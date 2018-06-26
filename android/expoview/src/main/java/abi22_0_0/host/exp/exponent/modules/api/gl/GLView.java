@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import static host.exp.exponent.exgl.EXGL.*;
+import static expo.modules.gl.cpp.EXGL.*;
 
 public class GLView extends GLSurfaceView implements GLSurfaceView.Renderer {
   private boolean onSurfaceCreateCalled = false;

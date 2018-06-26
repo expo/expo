@@ -77,7 +77,7 @@ EX_REGISTER_MODULE();
 
 + (const NSArray<Protocol *> *)exportedInterfaces
 {
-  return @[@protocol(EXFileSystem)];
+  return @[@protocol(EXFileSystemInterface)];
 }
 
 - (instancetype)initWithExperienceId:(NSString *)experienceId
@@ -97,11 +97,6 @@ EX_REGISTER_MODULE();
   _moduleRegistry = moduleRegistry;
   _eventEmitter = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXEventEmitterService)];
   _fileSystemManager = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemManager)];
-}
-
-+ (BOOL)requiresMainQueueSetup
-{
-  return NO;
 }
 
 - (NSDictionary *)constantsToExport

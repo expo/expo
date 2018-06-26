@@ -75,6 +75,5 @@ if (new File(rootProject.projectDir.parentFile, 'pubspec.yaml').exists()) {
 dependencies {
     expendency 'expo-core'
     expendency 'expo-permissions-interface'
-    compile 'com.android.support:appcompat-v7:26.0.1'
+    implementation 'com.android.support:appcompat-v7:26.1.0'
 }
-  

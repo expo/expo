@@ -4,7 +4,7 @@
 #import <GPUImage.h>
 #include <OpenGLES/ES2/gl.h>
 #include <OpenGLES/ES2/glext.h>
-#import <UEXGL.h>
+#import <EXGL-CPP/UEXGL.h>
 
 @interface ABI24_0_0EXGLARSessionManager ()
 {

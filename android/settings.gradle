@@ -9,8 +9,23 @@ project(':ReactAndroid').projectDir = new File(rootDir, 'ReactAndroid')
 include ":expo-core"
 project(":expo-core").projectDir = new File(rootDir, "../modules/expo-core/android")
 
+include ":expo-camera-interface"
+project(":expo-camera-interface").projectDir = new File(rootDir, "../modules/expo-camera-interface/android");
+
 include ":expo-camera"
 project(":expo-camera").projectDir = new File(rootDir, "../modules/expo-camera/android")
+
+include ":expo-constants-interface"
+project(":expo-constants-interface").projectDir = new File(rootDir, "../modules/expo-constants-interface/android")
+
+include ":expo-constants"
+project(":expo-constants").projectDir = new File(rootDir, "../modules/expo-constants/android")
+
+include ":expo-gl"
+project(":expo-gl").projectDir = new File(rootDir, "../modules/expo-gl/android")
+
+include ":expo-gl-cpp"
+project(":expo-gl-cpp").projectDir = new File(rootDir, "../modules/expo-gl-cpp/android")
 
 include ":expo-permissions-interface"
 project(":expo-permissions-interface").projectDir = new File(rootDir, "../modules/expo-permissions-interface/android")

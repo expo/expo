@@ -3,10 +3,11 @@
 #import <EXCamera/EXCameraManager.h>
 #import <EXCore/EXModuleRegistry.h>
 #import <EXCore/EXAppLifecycleListener.h>
+#import <EXCameraInterface/EXCameraInterface.h>
 
 @class EXCameraManager;
 
-@interface EXCamera : UIView <AVCaptureMetadataOutputObjectsDelegate, AVCaptureFileOutputRecordingDelegate, EXAppLifecycleListener>
+@interface EXCamera : UIView <AVCaptureMetadataOutputObjectsDelegate, AVCaptureFileOutputRecordingDelegate, EXAppLifecycleListener, EXCameraInterface>
 
 @property (nonatomic, strong) dispatch_queue_t sessionQueue;
 @property (nonatomic, strong) AVCaptureSession *session;

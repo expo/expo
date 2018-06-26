@@ -16,8 +16,7 @@ import type {
 
 import type { TabScene } from 'react-navigation/src/views/TabView/TabView';
 
-import Constants from '../constants';
-const { Colors } = Constants;
+import { Colors } from '../constants';
 
 type DefaultProps = {
   activeTintColor: string,

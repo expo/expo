@@ -10,7 +10,7 @@ public interface UIManager {
     void reject(Throwable throwable);
   }
 
-  <T extends View> void addUIBlock(int viewTag, UIBlock<T> block);
+  <T> void addUIBlock(int viewTag, UIBlock<T> block);
   void runOnUiQueueThread(Runnable runnable);
   void runOnClientCodeQueueThread(Runnable runnable);
   void registerLifecycleEventListener(LifecycleEventListener listener);

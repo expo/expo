@@ -136,7 +136,7 @@
 		78D8252A204F826700CBD9D9 /* EXApiV2Result.m in Sources */ = {isa = PBXBuildFile; fileRef = 78D82529204F826700CBD9D9 /* EXApiV2Result.m */; };
 		78D8252E2051217F00CBD9D9 /* NSData+EXRemoteNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = 78D8252D2051217F00CBD9D9 /* NSData+EXRemoteNotifications.m */; };
 		78D825312051226200CBD9D9 /* EXApiV2Client+EXRemoteNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = 78D825302051226200CBD9D9 /* EXApiV2Client+EXRemoteNotifications.m */; };
-		A3E63982AB42DEE05D972DD6 /* libPods-Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1275A103188A883E5249B475 /* libPods-Tests.a */; };
+		8047E1D774FB856545D1108C /* libPods-Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1275A103188A883E5249B475 /* libPods-Tests.a */; };
 		B505BA2020CAF80D0046ACFB /* EXEnvironmentMocks.m in Sources */ = {isa = PBXBuildFile; fileRef = B505BA1A20CAF80D0046ACFB /* EXEnvironmentMocks.m */; };
 		B505BA2120CAF80D0046ACFB /* EXEnvironmentTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B505BA1D20CAF80D0046ACFB /* EXEnvironmentTests.m */; };
 		B51333431CE649FE00E9FC9E /* ExponentIntegrationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B51333421CE649FE00E9FC9E /* ExponentIntegrationTests.m */; };
@@ -228,7 +228,7 @@
 		B5FB745C1FF6DADB001C764B /* EXContainerView.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB72E51FF6DADB001C764B /* EXContainerView.m */; };
 		B5FB749F1FF6DADC001C764B /* EXAmplitude.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73751FF6DADB001C764B /* EXAmplitude.m */; };
 		B5FB74A01FF6DADC001C764B /* EXBrightness.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73771FF6DADB001C764B /* EXBrightness.m */; };
-		B5FB74A11FF6DADC001C764B /* EXConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73791FF6DADB001C764B /* EXConstants.m */; };
+		B5FB74A11FF6DADC001C764B /* EXConstantsBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73791FF6DADB001C764B /* EXConstantsBinding.m */; };
 		B5FB74A21FF6DADC001C764B /* EXContacts.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB737B1FF6DADB001C764B /* EXContacts.m */; };
 		B5FB74A31FF6DADC001C764B /* EXDocumentPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB737D1FF6DADB001C764B /* EXDocumentPicker.m */; };
 		B5FB74A51FF6DADC001C764B /* EXErrorRecovery.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73811FF6DADB001C764B /* EXErrorRecovery.m */; };
@@ -257,10 +257,6 @@
 		B5FB74BC1FF6DADC001C764B /* EXNativeAdEmitter.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73B01FF6DADB001C764B /* EXNativeAdEmitter.m */; };
 		B5FB74BD1FF6DADC001C764B /* EXNativeAdManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73B21FF6DADB001C764B /* EXNativeAdManager.m */; };
 		B5FB74BE1FF6DADC001C764B /* EXNativeAdView.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73B41FF6DADB001C764B /* EXNativeAdView.m */; };
-		B5FB74C41FF6DADC001C764B /* EXGLObject.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73C21FF6DADB001C764B /* EXGLObject.m */; };
-		B5FB74C51FF6DADC001C764B /* EXGLObjectManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73C41FF6DADB001C764B /* EXGLObjectManager.m */; };
-		B5FB74C61FF6DADC001C764B /* EXGLView.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73C61FF6DADB001C764B /* EXGLView.m */; };
-		B5FB74C71FF6DADC001C764B /* EXGLViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73C81FF6DADB001C764B /* EXGLViewManager.m */; };
 		B5FB74C81FF6DADC001C764B /* EXOAuthViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73CB1FF6DADB001C764B /* EXOAuthViewController.m */; };
 		B5FB74C91FF6DADC001C764B /* EXAudioRecordingPermissionRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73CE1FF6DADB001C764B /* EXAudioRecordingPermissionRequester.m */; };
 		B5FB74CA1FF6DADC001C764B /* EXCameraPermissionRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73D01FF6DADB001C764B /* EXCameraPermissionRequester.m */; };
@@ -324,15 +320,12 @@
 		BBD03196200011C9009F0434 /* RNAWSCognito.m in Sources */ = {isa = PBXBuildFile; fileRef = BBD03192200011C9009F0434 /* RNAWSCognito.m */; };
 		C467A515C39D7BC540174FC6 /* libPods-ExponentIntegrationTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 52EE209A2B46C07B4237CBD5 /* libPods-ExponentIntegrationTests.a */; };
 		CD4BAD342092A30A009A1287 /* EXAR.m in Sources */ = {isa = PBXBuildFile; fileRef = CD4BAD332092A30A009A1287 /* EXAR.m */; };
-		CD4BAD6A209CDAF1009A1287 /* EXGLARSessionManagerStub.m in Sources */ = {isa = PBXBuildFile; fileRef = CD4BAD68209CDAF0009A1287 /* EXGLARSessionManagerStub.m */; };
 		CD9939502040C1AA0087C883 /* EXHaptic.m in Sources */ = {isa = PBXBuildFile; fileRef = CD99394F2040C1AA0087C883 /* EXHaptic.m */; };
 		CDBF79FA20868287009B25D6 /* EXStoreReview.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBF79F920868287009B25D6 /* EXStoreReview.m */; };
 		F1374BC120B57B92008D888B /* EXPrintPDFRenderTask.m in Sources */ = {isa = PBXBuildFile; fileRef = F1374BC020B57B92008D888B /* EXPrintPDFRenderTask.m */; };
 		F1545BF920877E39002DAC67 /* EXMenuWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = F1545BF820877E39002DAC67 /* EXMenuWindow.m */; };
 		F167C43B209C7EE600F01382 /* EXUtilService.m in Sources */ = {isa = PBXBuildFile; fileRef = F167C43A209C7EE600F01382 /* EXUtilService.m */; };
 		F19BDA11206B877F00BE0843 /* EXMediaLibrary.m in Sources */ = {isa = PBXBuildFile; fileRef = F19BDA0F206B877F00BE0843 /* EXMediaLibrary.m */; };
-		F1A4595220187C2B00C9704B /* EXGLCameraObject.m in Sources */ = {isa = PBXBuildFile; fileRef = F1A4595120187C2A00C9704B /* EXGLCameraObject.m */; };
-		F1BF5862201B32BE001EA8FD /* EXGLContext.m in Sources */ = {isa = PBXBuildFile; fileRef = F1BF5860201B32BD001EA8FD /* EXGLContext.m */; };
 		F77DDB931E04AC1100624CA2 /* SafariServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F77DDB921E04AC1100624CA2 /* SafariServices.framework */; };
 /* End PBXBuildFile section */
 
@@ -416,10 +409,9 @@
 		3CEBDC3F1FFBC73C0025EF24 /* EXMailComposer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXMailComposer.h; sourceTree = "<group>"; };
 		3CEBDC401FFBC73D0025EF24 /* EXMailComposer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXMailComposer.m; sourceTree = "<group>"; };
 		52EE209A2B46C07B4237CBD5 /* libPods-ExponentIntegrationTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ExponentIntegrationTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		5695BFC9A5C04EAEADD6D772 /* Pods-Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Tests/Pods-Tests.debug.xcconfig"; sourceTree = "<group>"; };
+		6640112F045396751A65DB21 /* Pods-Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Tests/Pods-Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		6D3FF9012022B57D000D4015 /* EXLocalization.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXLocalization.m; sourceTree = "<group>"; };
 		6D3FF9022022B57D000D4015 /* EXLocalization.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXLocalization.h; sourceTree = "<group>"; };
-		70569E875C03AB815D86EAE0 /* Pods-Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tests.release.xcconfig"; path = "Pods/Target Support Files/Pods-Tests/Pods-Tests.release.xcconfig"; sourceTree = "<group>"; };
 		783435AD205B8BE800DD28C3 /* AIRGoogleMapCallout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AIRGoogleMapCallout.h; sourceTree = "<group>"; };
 		783435AE205B8BE900DD28C3 /* AIRGoogleMapPolylineManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AIRGoogleMapPolylineManager.m; sourceTree = "<group>"; };
 		783435AF205B8BE900DD28C3 /* AIRGoogleMapCircle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AIRGoogleMapCircle.m; sourceTree = "<group>"; };
@@ -802,8 +794,8 @@
 		B5FB73751FF6DADB001C764B /* EXAmplitude.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXAmplitude.m; sourceTree = "<group>"; };
 		B5FB73761FF6DADB001C764B /* EXBrightness.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXBrightness.h; sourceTree = "<group>"; };
 		B5FB73771FF6DADB001C764B /* EXBrightness.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXBrightness.m; sourceTree = "<group>"; };
-		B5FB73781FF6DADB001C764B /* EXConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXConstants.h; sourceTree = "<group>"; };
-		B5FB73791FF6DADB001C764B /* EXConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXConstants.m; sourceTree = "<group>"; };
+		B5FB73781FF6DADB001C764B /* EXConstantsBinding.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXConstantsBinding.h; sourceTree = "<group>"; };
+		B5FB73791FF6DADB001C764B /* EXConstantsBinding.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXConstantsBinding.m; sourceTree = "<group>"; };
 		B5FB737A1FF6DADB001C764B /* EXContacts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXContacts.h; sourceTree = "<group>"; };
 		B5FB737B1FF6DADB001C764B /* EXContacts.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXContacts.m; sourceTree = "<group>"; };
 		B5FB737C1FF6DADB001C764B /* EXDocumentPicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXDocumentPicker.h; sourceTree = "<group>"; };
@@ -860,14 +852,6 @@
 		B5FB73B21FF6DADB001C764B /* EXNativeAdManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXNativeAdManager.m; sourceTree = "<group>"; };
 		B5FB73B31FF6DADB001C764B /* EXNativeAdView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXNativeAdView.h; sourceTree = "<group>"; };
 		B5FB73B41FF6DADB001C764B /* EXNativeAdView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXNativeAdView.m; sourceTree = "<group>"; };
-		B5FB73C11FF6DADB001C764B /* EXGLObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXGLObject.h; sourceTree = "<group>"; };
-		B5FB73C21FF6DADB001C764B /* EXGLObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXGLObject.m; sourceTree = "<group>"; };
-		B5FB73C31FF6DADB001C764B /* EXGLObjectManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXGLObjectManager.h; sourceTree = "<group>"; };
-		B5FB73C41FF6DADB001C764B /* EXGLObjectManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXGLObjectManager.m; sourceTree = "<group>"; };
-		B5FB73C51FF6DADB001C764B /* EXGLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXGLView.h; sourceTree = "<group>"; };
-		B5FB73C61FF6DADB001C764B /* EXGLView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXGLView.m; sourceTree = "<group>"; };
-		B5FB73C71FF6DADB001C764B /* EXGLViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXGLViewManager.h; sourceTree = "<group>"; };
-		B5FB73C81FF6DADB001C764B /* EXGLViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXGLViewManager.m; sourceTree = "<group>"; };
 		B5FB73CA1FF6DADB001C764B /* EXOAuthViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXOAuthViewController.h; sourceTree = "<group>"; };
 		B5FB73CB1FF6DADB001C764B /* EXOAuthViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXOAuthViewController.m; sourceTree = "<group>"; };
 		B5FB73CD1FF6DADB001C764B /* EXAudioRecordingPermissionRequester.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXAudioRecordingPermissionRequester.h; sourceTree = "<group>"; };
@@ -996,10 +980,9 @@
 		BB5BD31B20AEFCB4007E02FC /* REANodesManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = REANodesManager.m; sourceTree = "<group>"; };
 		BBD0318B200011C9009F0434 /* RNAWSCognito.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNAWSCognito.h; sourceTree = "<group>"; };
 		BBD03192200011C9009F0434 /* RNAWSCognito.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNAWSCognito.m; sourceTree = "<group>"; };
+		CCEDB4A4435EE442FC997FE8 /* Pods-Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tests.release.xcconfig"; path = "Pods/Target Support Files/Pods-Tests/Pods-Tests.release.xcconfig"; sourceTree = "<group>"; };
 		CD4BAD322092A30A009A1287 /* EXAR.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXAR.h; sourceTree = "<group>"; };
 		CD4BAD332092A30A009A1287 /* EXAR.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXAR.m; sourceTree = "<group>"; };
-		CD4BAD68209CDAF0009A1287 /* EXGLARSessionManagerStub.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXGLARSessionManagerStub.m; sourceTree = "<group>"; };
-		CD4BAD69209CDAF0009A1287 /* EXGLARSessionManagerStub.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXGLARSessionManagerStub.h; sourceTree = "<group>"; };
 		CD99394E2040C1AA0087C883 /* EXHaptic.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXHaptic.h; sourceTree = "<group>"; };
 		CD99394F2040C1AA0087C883 /* EXHaptic.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXHaptic.m; sourceTree = "<group>"; };
 		CDBF79F820868287009B25D6 /* EXStoreReview.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXStoreReview.h; sourceTree = "<group>"; };
@@ -1012,10 +995,6 @@
 		F167C43A209C7EE600F01382 /* EXUtilService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXUtilService.m; sourceTree = "<group>"; };
 		F19BDA0F206B877F00BE0843 /* EXMediaLibrary.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXMediaLibrary.m; sourceTree = "<group>"; };
 		F19BDA10206B877F00BE0843 /* EXMediaLibrary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXMediaLibrary.h; sourceTree = "<group>"; };
-		F1A4595020187C2A00C9704B /* EXGLCameraObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXGLCameraObject.h; sourceTree = "<group>"; };
-		F1A4595120187C2A00C9704B /* EXGLCameraObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXGLCameraObject.m; sourceTree = "<group>"; };
-		F1BF5860201B32BD001EA8FD /* EXGLContext.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXGLContext.m; sourceTree = "<group>"; };
-		F1BF5861201B32BD001EA8FD /* EXGLContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXGLContext.h; sourceTree = "<group>"; };
 		F77DDB921E04AC1100624CA2 /* SafariServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SafariServices.framework; path = System/Library/Frameworks/SafariServices.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -1033,7 +1012,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A3E63982AB42DEE05D972DD6 /* libPods-Tests.a in Frameworks */,
+				8047E1D774FB856545D1108C /* libPods-Tests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1074,6 +1053,8 @@
 		31DBC6AA20B5B4C60049A476 /* UniversalModules */ = {
 			isa = PBXGroup;
 			children = (
+				B5FB73781FF6DADB001C764B /* EXConstantsBinding.h */,
+				B5FB73791FF6DADB001C764B /* EXConstantsBinding.m */,
 				31DBC6AD20B5B4F90049A476 /* EXFileSystemBinding.h */,
 				31DBC6AB20B5B4EC0049A476 /* EXFileSystemBinding.m */,
 				313D417E20C84E8200FC913D /* EXModuleRegistryBinding.h */,
@@ -1097,8 +1078,8 @@
 				9A59A905A65A980D66680695 /* Pods-Exponent.release.xcconfig */,
 				8EAB1964236EE6D0BAF3B51A /* Pods-ExponentIntegrationTests.debug.xcconfig */,
 				2A2BC1BD3DC5DF51DC4CEA4A /* Pods-ExponentIntegrationTests.release.xcconfig */,
-				5695BFC9A5C04EAEADD6D772 /* Pods-Tests.debug.xcconfig */,
-				70569E875C03AB815D86EAE0 /* Pods-Tests.release.xcconfig */,
+				6640112F045396751A65DB21 /* Pods-Tests.debug.xcconfig */,
+				CCEDB4A4435EE442FC997FE8 /* Pods-Tests.release.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -1698,8 +1679,6 @@
 				B5FB73751FF6DADB001C764B /* EXAmplitude.m */,
 				B5FB73761FF6DADB001C764B /* EXBrightness.h */,
 				B5FB73771FF6DADB001C764B /* EXBrightness.m */,
-				B5FB73781FF6DADB001C764B /* EXConstants.h */,
-				B5FB73791FF6DADB001C764B /* EXConstants.m */,
 				B5FB737A1FF6DADB001C764B /* EXContacts.h */,
 				B5FB737B1FF6DADB001C764B /* EXContacts.m */,
 				B5FB737C1FF6DADB001C764B /* EXDocumentPicker.h */,
@@ -1753,7 +1732,6 @@
 				B5FB73A41FF6DADB001C764B /* EXWebBrowser.h */,
 				B5FB73A51FF6DADB001C764B /* EXWebBrowser.m */,
 				B5FB73A61FF6DADB001C764B /* FBAds */,
-				B5FB73BC1FF6DADB001C764B /* GL */,
 				B5FB73C91FF6DADB001C764B /* OAuthViewController */,
 				B5FB73CC1FF6DADB001C764B /* Permissions */,
 				F1374BBE20B57B37008D888B /* Print */,
@@ -1981,27 +1959,6 @@
 				B5FB73B41FF6DADB001C764B /* EXNativeAdView.m */,
 			);
 			path = FBAds;
-			sourceTree = "<group>";
-		};
-		B5FB73BC1FF6DADB001C764B /* GL */ = {
-			isa = PBXGroup;
-			children = (
-				CD4BAD69209CDAF0009A1287 /* EXGLARSessionManagerStub.h */,
-				CD4BAD68209CDAF0009A1287 /* EXGLARSessionManagerStub.m */,
-				F1A4595020187C2A00C9704B /* EXGLCameraObject.h */,
-				F1A4595120187C2A00C9704B /* EXGLCameraObject.m */,
-				F1BF5861201B32BD001EA8FD /* EXGLContext.h */,
-				F1BF5860201B32BD001EA8FD /* EXGLContext.m */,
-				B5FB73C11FF6DADB001C764B /* EXGLObject.h */,
-				B5FB73C21FF6DADB001C764B /* EXGLObject.m */,
-				B5FB73C31FF6DADB001C764B /* EXGLObjectManager.h */,
-				B5FB73C41FF6DADB001C764B /* EXGLObjectManager.m */,
-				B5FB73C51FF6DADB001C764B /* EXGLView.h */,
-				B5FB73C61FF6DADB001C764B /* EXGLView.m */,
-				B5FB73C71FF6DADB001C764B /* EXGLViewManager.h */,
-				B5FB73C81FF6DADB001C764B /* EXGLViewManager.m */,
-			);
-			path = GL;
 			sourceTree = "<group>";
 		};
 		B5FB73C91FF6DADB001C764B /* OAuthViewController */ = {
@@ -2286,7 +2243,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = B505BA1720CAF77A0046ACFB /* Build configuration list for PBXNativeTarget "Tests" */;
 			buildPhases = (
-				75B32798C01898EA20C205B5 /* [CP] Check Pods Manifest.lock */,
+				6E756CD30590988E2CEFCE92 /* [CP] Check Pods Manifest.lock */,
 				B505BA0A20CAF77A0046ACFB /* Sources */,
 				B505BA0B20CAF77A0046ACFB /* Frameworks */,
 				B505BA0C20CAF77A0046ACFB /* Resources */,
@@ -2460,7 +2417,7 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		75B32798C01898EA20C205B5 /* [CP] Check Pods Manifest.lock */ = {
+		6E756CD30590988E2CEFCE92 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -2592,7 +2549,6 @@
 				7834361D205B8C5F00DD28C3 /* AIRMapManager.m in Sources */,
 				07E26F311FFFFB55004667A1 /* EXCalendar.m in Sources */,
 				7846B21B20355E9900638E43 /* RNSVGPattern.m in Sources */,
-				B5FB74C51FF6DADC001C764B /* EXGLObjectManager.m in Sources */,
 				7846B21220355E9900638E43 /* RNSVGTextManager.m in Sources */,
 				BBD03196200011C9009F0434 /* RNAWSCognito.m in Sources */,
 				BB5BD32020AEFCB4007E02FC /* REAClockNodes.m in Sources */,
@@ -2634,7 +2590,6 @@
 				7846B22520355E9900638E43 /* RNSVGTSpan.m in Sources */,
 				7846B21620355E9900638E43 /* RNSVGImageManager.m in Sources */,
 				6D3FF9032022B57E000D4015 /* EXLocalization.m in Sources */,
-				F1BF5862201B32BE001EA8FD /* EXGLContext.m in Sources */,
 				B5FB74CC1FF6DADC001C764B /* EXContactsRequester.m in Sources */,
 				7846B1F620355E9900638E43 /* RNSVGLine.m in Sources */,
 				B5FB74A61FF6DADC001C764B /* EXFacebook.m in Sources */,
@@ -2709,7 +2664,6 @@
 				B5FB743B1FF6DADB001C764B /* EXLinearGradientManager.m in Sources */,
 				78343618205B8C5F00DD28C3 /* AIRMapUrlTile.m in Sources */,
 				B5A72C2020A0D13E00974CCE /* EXManifestResource.m in Sources */,
-				F1A4595220187C2B00C9704B /* EXGLCameraObject.m in Sources */,
 				7846B1FB20355E9900638E43 /* RNSVGClipPath.m in Sources */,
 				B5FB74E31FF6DADC001C764B /* EXDisabledRedBox.m in Sources */,
 				B5576082204A41F90041D9C8 /* EXHomeModule.m in Sources */,
@@ -2721,7 +2675,7 @@
 				B5D0D677204F4C0400DDFC99 /* EXFileDownloader.m in Sources */,
 				783435D8205B8BEE00DD28C3 /* AIRGoogleMapPolygon.m in Sources */,
 				B5D52379205746E300F36C66 /* EXButtonView.m in Sources */,
-				B5FB74A11FF6DADC001C764B /* EXConstants.m in Sources */,
+				B5FB74A11FF6DADC001C764B /* EXConstantsBinding.m in Sources */,
 				B526B5081E6A543500606CAB /* ExpoKit.m in Sources */,
 				B5FB74AE1FF6DADC001C764B /* EXLocation.m in Sources */,
 				B5FB74C81FF6DADC001C764B /* EXOAuthViewController.m in Sources */,
@@ -2739,7 +2693,6 @@
 				07E26F361FFFFB68004667A1 /* EXCalendarRequester.m in Sources */,
 				F19BDA11206B877F00BE0843 /* EXMediaLibrary.m in Sources */,
 				7846B20720355E9900638E43 /* RNSVGViewBox.m in Sources */,
-				CD4BAD6A209CDAF1009A1287 /* EXGLARSessionManagerStub.m in Sources */,
 				BB50E89220B9C0D3003C752D /* RNTapHandler.m in Sources */,
 				BB5BD31D20AEFCB4007E02FC /* REAPropsNode.m in Sources */,
 				B5AC39B01E95A90B00540AA7 /* EXLocalNotificationManager.m in Sources */,
@@ -2753,7 +2706,6 @@
 				B56C65CC204769F9002B2424 /* EXMenuViewController.m in Sources */,
 				B5AC39A71E95A90B00540AA7 /* EXKernel.m in Sources */,
 				783435DC205B8BEE00DD28C3 /* AIRGoogleMapCalloutManager.m in Sources */,
-				B5FB74C71FF6DADC001C764B /* EXGLViewManager.m in Sources */,
 				B5FB74E91FF6DADC001C764B /* EXNativeModuleIntrospection.m in Sources */,
 				B5FB74EF1FF6DADC001C764B /* EXTest.m in Sources */,
 				78343615205B8C5F00DD28C3 /* AIRMapCircle.m in Sources */,
@@ -2774,7 +2726,6 @@
 				31E6D47E20B8451B0082B09F /* EXSensorManager.m in Sources */,
 				783435D7205B8BEE00DD28C3 /* AIRGoogleMapPolygonManager.m in Sources */,
 				B5FB74B51FF6DADC001C764B /* EXUtil.m in Sources */,
-				B5FB74C61FF6DADC001C764B /* EXGLView.m in Sources */,
 				783435D4205B8BEE00DD28C3 /* AIRGoogleMapCircle.m in Sources */,
 				B5576085204A423B0041D9C8 /* EXHomeModuleManager.m in Sources */,
 				BB5BD31F20AEFCB4007E02FC /* READebugNode.m in Sources */,
@@ -2804,7 +2755,6 @@
 				B5FB74BE1FF6DADC001C764B /* EXNativeAdView.m in Sources */,
 				B5A473DC204A66F70035C61C /* EXErrorView.m in Sources */,
 				B532EB672058431000569CF2 /* EXMenuGestureRecognizer.m in Sources */,
-				B5FB74C41FF6DADC001C764B /* EXGLObject.m in Sources */,
 				B5FB74A91FF6DADC001C764B /* EXGoogle.m in Sources */,
 				78343620205B8C5F00DD28C3 /* AIRMapMarker.m in Sources */,
 				0726F05C2007E446004992E7 /* EXKernelAppRegistry.m in Sources */,
@@ -3177,7 +3127,7 @@
 		};
 		B505BA1520CAF77A0046ACFB /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5695BFC9A5C04EAEADD6D772 /* Pods-Tests.debug.xcconfig */;
+			baseConfigurationReference = 6640112F045396751A65DB21 /* Pods-Tests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ANALYZER_NONNULL = YES;
@@ -3203,7 +3153,7 @@
 		};
 		B505BA1620CAF77A0046ACFB /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 70569E875C03AB815D86EAE0 /* Pods-Tests.release.xcconfig */;
+			baseConfigurationReference = CCEDB4A4435EE442FC997FE8 /* Pods-Tests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ANALYZER_NONNULL = YES;
