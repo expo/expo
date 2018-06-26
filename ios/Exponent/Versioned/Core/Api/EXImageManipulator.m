@@ -196,6 +196,7 @@ RCT_EXPORT_METHOD(manipulate:(NSString *)uri
     extension = @".jpg";
   }
 
+  id<EXFileSystemInterface> fileSystem = [self.bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
   NSString *directory = [fileSystem.cachesDirectory stringByAppendingPathComponent:@"ImageManipulator"];
   [fileSystem ensureDirExistsWithPath:directory];
   NSString *fileName = [[[NSUUID UUID] UUIDString] stringByAppendingString:extension];
