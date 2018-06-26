@@ -28,6 +28,7 @@ export const globalReset = `
     }
 
     img {
+      max-width: 768px;
       width: 100%;
     }
 
