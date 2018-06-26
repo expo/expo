@@ -368,7 +368,7 @@ void EXRegisterScopedModule(Class moduleClass, ...)
 
   EXScopedModuleRegistryAdapter *moduleRegistryAdapter = [[EXScopedModuleRegistryAdapter alloc] initWithModuleRegistryProvider:moduleRegistryProvider];
 
-  NSArray<id<RCTBridgeModule>> *expoModules = [moduleRegistryAdapter extraModulesForBridge:params[@"bridge"] andExperience:experienceId withScopedModulesArray:extraModules withKernelServices:services];
+  NSArray<id<RCTBridgeModule>> *expoModules = [moduleRegistryAdapter extraModulesForParams:params andExperience:experienceId withScopedModulesArray:extraModules withKernelServices:services];
 
   [extraModules addObjectsFromArray:expoModules];
 

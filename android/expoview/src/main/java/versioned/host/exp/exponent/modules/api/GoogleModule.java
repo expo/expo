@@ -41,16 +41,20 @@ import net.openid.appauth.ResponseTypeValues;
 import java.util.Map;
 
 import de.greenrobot.event.EventBus;
+import expo.core.ModuleRegistry;
+import expo.core.interfaces.ModuleRegistryConsumer;
+import expo.interfaces.constants.ConstantsInterface;
 import host.exp.exponent.ActivityResultListener;
 import host.exp.exponent.oauth.OAuthResultActivity;
 import host.exp.exponent.kernel.KernelConstants;
 import host.exp.expoview.Exponent;
 
-public class GoogleModule extends ReactContextBaseJavaModule implements ActivityResultListener {
+public class GoogleModule extends ReactContextBaseJavaModule implements ActivityResultListener, ModuleRegistryConsumer {
   private final static int RC_LOG_IN = 1737;
   private final static String GOOGLE_ERROR = "GOOGLE_ERROR";
   private static final String TAG = GoogleModule.class.getSimpleName();
 
+  private ModuleRegistry mModuleRegistry;
   private @Nullable Promise mLogInPromise;
   private boolean mIsLoggingIn = false;
   private final Map<String, Object> mExperienceProperties;
@@ -67,6 +71,11 @@ public class GoogleModule extends ReactContextBaseJavaModule implements Activity
   @Override
   public String getName() {
     return "ExponentGoogle";
+  }
+
+  @Override
+  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+    mModuleRegistry = moduleRegistry;
   }
 
   @ReactMethod
@@ -196,7 +205,7 @@ public class GoogleModule extends ReactContextBaseJavaModule implements Activity
 
     // The auth intent gets started in the root task because it uses `singleTask` launch mode so if
     // we are not a standalone app we need to redirect back to the proper task when done.
-    if (!ConstantsModule.getAppOwnership(mExperienceProperties).equals("standalone")) {
+    if (!getAppOwnership().equals("standalone")) {
       postAuthIntent.putExtra(
           OAuthResultActivity.EXTRA_REDIRECT_EXPERIENCE_URL,
           (String) mExperienceProperties.get(KernelConstants.MANIFEST_URL_KEY));
@@ -207,6 +216,11 @@ public class GoogleModule extends ReactContextBaseJavaModule implements Activity
         request,
         PendingIntent.getActivity(activity, request.hashCode(), postAuthIntent, 0),
         PendingIntent.getActivity(activity, request.hashCode(), postAuthIntent, 0));
+  }
+
+  private String getAppOwnership() {
+    ConstantsInterface constantsService = mModuleRegistry.getModule(ConstantsInterface.class);
+    return constantsService.getAppOwnership();
   }
 
   public void onEvent(OAuthResultActivity.OAuthResultEvent event) {

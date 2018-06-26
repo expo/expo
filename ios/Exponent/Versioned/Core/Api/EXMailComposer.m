@@ -78,7 +78,7 @@ RCT_EXPORT_METHOD(composeAsync:(NSDictionary *)options
     for (NSString *uri in options[@"attachments"]) {
       NSURL *url = [NSURL URLWithString:uri];
       NSString *path = [url.path stringByStandardizingPath];
-      id<EXFileSystem> fileSystem = [self.bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystem)];
+      id<EXFileSystemInterface> fileSystem = [self.bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
       if (!fileSystem) {
         reject(@"E_MISSING_MODULE", @"No FileSystem module.", nil);
         return;

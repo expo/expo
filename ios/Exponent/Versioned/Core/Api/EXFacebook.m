@@ -3,7 +3,9 @@
 #import "EXFacebook.h"
 
 #import <React/RCTUtils.h>
-#import "EXConstants.h"
+#import <EXConstantsInterface/EXConstantsInterface.h>
+
+#import "EXModuleRegistryBinding.h"
 #import "FBSDKCoreKit/FBSDKCoreKit.h"
 #import "FBSDKLoginKit/FBSDKLoginKit.h"
 #import "../Private/FBSDKCoreKit/FBSDKInternalUtility.h"
@@ -66,7 +68,9 @@ RCT_REMAP_METHOD(logInWithReadPermissionsAsync,
     }
     
     if (loginMgr.loginBehavior != FBSDKLoginBehaviorWeb) {
-      if ([self.bridge.scopedModules.constants.appOwnership isEqualToString:@"expo"]) {
+      id<EXConstantsInterface> constants = [self->_bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXConstantsInterface)];
+      
+      if ([constants.appOwnership isEqualToString:@"expo"]) {
         // expo client: only web
         NSString *message = @"Only `web` behavior is supported in Expo Client.";
         reject(@"E_BEHAVIOR_NOT_PERMITTED", message, RCTErrorWithMessage(message));

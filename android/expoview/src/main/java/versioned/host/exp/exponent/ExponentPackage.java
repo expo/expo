@@ -20,8 +20,10 @@ import java.util.Map;
 import expo.adapters.react.ReactModuleRegistryProvider;
 import expo.core.interfaces.Package;
 import expo.modules.camera.CameraPackage;
+import expo.modules.constants.ConstantsPackage;
 import expo.modules.facedetector.FaceDetectorPackage;
 import expo.modules.filesystem.FileSystemPackage;
+import expo.modules.gl.GLPackage;
 import expo.modules.sensors.SensorsPackage;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.analytics.EXL;
@@ -40,7 +42,6 @@ import versioned.host.exp.exponent.modules.api.components.barcodescanner.BarCode
 import versioned.host.exp.exponent.modules.api.components.barcodescanner.BarCodeScannerViewManager;
 import versioned.host.exp.exponent.modules.api.AmplitudeModule;
 import versioned.host.exp.exponent.modules.api.CalendarModule;
-import versioned.host.exp.exponent.modules.api.ConstantsModule;
 import versioned.host.exp.exponent.modules.api.ContactsModule;
 import versioned.host.exp.exponent.modules.api.CryptoModule;
 import versioned.host.exp.exponent.modules.api.DocumentPickerModule;
@@ -80,8 +81,6 @@ import versioned.host.exp.exponent.modules.api.fbads.BannerViewManager;
 import versioned.host.exp.exponent.modules.api.fbads.InterstitialAdManager;
 import versioned.host.exp.exponent.modules.api.fbads.NativeAdManager;
 import versioned.host.exp.exponent.modules.api.fbads.NativeAdViewManager;
-import versioned.host.exp.exponent.modules.api.gl.GLObjectManagerModule;
-import versioned.host.exp.exponent.modules.api.gl.GLViewManager;
 import versioned.host.exp.exponent.modules.api.IntentLauncherModule;
 import versioned.host.exp.exponent.modules.api.reanimated.ReanimatedModule;
 import versioned.host.exp.exponent.modules.api.SecureStoreModule;
@@ -101,7 +100,9 @@ public class ExponentPackage implements ReactPackage {
       new CameraPackage(),
       new SensorsPackage(),
       new FileSystemPackage(),
-      new FaceDetectorPackage()
+      new FaceDetectorPackage(),
+      new ConstantsPackage(),
+      new GLPackage()
   );
 
   private static final String TAG = ExponentPackage.class.getSimpleName();
@@ -152,7 +153,6 @@ public class ExponentPackage implements ReactPackage {
 
     List<NativeModule> nativeModules = new ArrayList<>(Arrays.<NativeModule>asList(
         new URLHandlerModule(reactContext),
-        new ConstantsModule(reactContext, mExperienceProperties, mManifest),
         new ShakeModule(reactContext),
         new FontLoaderModule(reactContext),
         new KeyboardModule(reactContext),
@@ -204,7 +204,6 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new ScreenOrientationModule(reactContext));
         nativeModules.add(new SpeechModule(reactContext));
         nativeModules.add(new SecureStoreModule(reactContext, scopedContext));
-        nativeModules.add(new GLObjectManagerModule(reactContext, scopedContext));
         nativeModules.add(new BrightnessModule(reactContext));
         nativeModules.add(new RNGestureHandlerModule(reactContext));
         nativeModules.add(new StripeModule(reactContext));
@@ -220,7 +219,7 @@ public class ExponentPackage implements ReactPackage {
         // Call to create native modules has to be at the bottom --
         // -- ExpoModuleRegistryAdapter uses the list of native modules
         // to create Bindings for internal modules.
-        nativeModules.addAll(mModuleRegistryAdapter.createNativeModules(scopedContext, experienceId, mManifest, nativeModules));
+        nativeModules.addAll(mModuleRegistryAdapter.createNativeModules(scopedContext, experienceId, mExperienceProperties, mManifest, nativeModules));
       } catch (JSONException | UnsupportedEncodingException e) {
         EXL.e(TAG, e.toString());
       }
@@ -236,7 +235,6 @@ public class ExponentPackage implements ReactPackage {
     List<ViewManager> viewManagers = new ArrayList<>(Arrays.<ViewManager>asList(
         new LinearGradientManager(),
         new VideoViewManager(),
-        new GLViewManager(),
         new NativeAdViewManager(),
         new BarCodeScannerViewManager(),
         new BannerViewManager()

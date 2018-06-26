@@ -28,18 +28,8 @@ ${IOS_EXPOKIT_DEPS}
     ss.dependency 'EXSensorsInterface'
     ss.dependency 'EXFileSystemInterface'
     ss.dependency 'EXPermissionsInterface'
-  end
-
-  s.subspec "CPP" do |ss|
-    ss.dependency "ExpoKit/Core"
-    ss.source_files = 'cpp/*.{h,c,cpp,m,mm}', 'cpp/**/*.{h,c,cpp,m,mm}'
-    ss.exclude_files = 'cpp/UEXGL.*'
-  end
-
-  s.subspec "GL" do |ss|
-    ss.dependency "ExpoKit/CPP"
-    ss.source_files = 'cpp/UEXGL.*'
-    ss.compiler_flags = '-x objective-c++'
+    ss.dependency 'EXCameraInterface'
+    ss.dependency 'EXConstantsInterface'
   end
 
   s.subspec "Payments" do |ss|

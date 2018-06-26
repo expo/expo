@@ -1,8 +1,6 @@
 source 'https://github.com/CocoaPods/Specs.git'
 platform :ios, '9.0'
 
-EXPO_CPP_HEADER_DIR = 'ExponentCPP'
-
 target 'Exponent' do
   pod 'Amplitude-iOS', '~> 3.8', :inhibit_warnings => true
   pod 'Analytics', '~> 3.5', :inhibit_warnings => true
@@ -24,9 +22,14 @@ target 'Exponent' do
   pod 'Google-Mobile-Ads-SDK', '~> 7.22.0', :inhibit_warnings => true
 
   # Local CocoaPods
-  pod 'ExponentCPP', :path => '../cpp'
+  pod 'EXGL',
+    :path => "../modules/expo-gl/ios",
+    :inhibit_warnings => true
   pod 'EXCore',
     :path => "../modules/expo-core/ios",
+    :inhibit_warnings => true
+  pod 'EXGL-CPP',
+    :path => "../modules/expo-gl-cpp/cpp",
     :inhibit_warnings => true
   pod 'EXCamera',
     :path => "../modules/expo-camera/ios",
@@ -34,14 +37,23 @@ target 'Exponent' do
   pod 'EXSensors',
     :path => "../modules/expo-sensors/ios",
     :inhibit_warnings => true
+  pod 'EXConstants',
+    :path => "../modules/expo-constants/ios",
+    :inhibit_warnings => true
   pod 'EXFileSystem',
     :path => "../modules/expo-file-system/ios",
     :inhibit_warnings => true
   pod 'EXFaceDetector',
     :path => "../modules/expo-face-detector/ios",
     :inhibit_warnings => true
+  pod 'EXCameraInterface',
+    :path => "../modules/expo-camera-interface/ios",
+    :inhibit_warnings => true
   pod 'EXSensorsInterface',
     :path => "../modules/expo-sensors-interface/ios",
+    :inhibit_warnings => true
+  pod 'EXConstantsInterface',
+    :path => "../modules/expo-constants-interface/ios",
     :inhibit_warnings => true
   pod 'EXReactNativeAdapter',
     :path => "../modules/expo-react-native-adapter/ios",
@@ -352,19 +364,12 @@ target 'Exponent' do
         config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '9.0'
       end
     end
-    if target.pod_name == "#{EXPO_CPP_HEADER_DIR}"
-      target.native_target.build_configurations.each do |config|
-        config.build_settings['CLANG_WARN_COMMA'] = false
-        config.build_settings['CLANG_WARN_UNGUARDED_AVAILABILITY'] = false
-      end
-    end
     # Can't specify this in the React podspec because we need
     # to use those podspecs for detached projects which don't reference ExponentCPP.
     if target.pod_name.start_with?('React')
       target.native_target.build_configurations.each do |config|
         config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '9.0'
         config.build_settings['HEADER_SEARCH_PATHS'] ||= ['$(inherited)']
-        config.build_settings['HEADER_SEARCH_PATHS'] << "${PODS_ROOT}/Headers/Public/#{EXPO_CPP_HEADER_DIR}"
       end
     end
     # Build React Native with RCT_DEV enabled

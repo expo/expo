@@ -8,6 +8,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import expo.adapters.react.ModuleRegistryAdapter;
 import expo.adapters.react.ModuleRegistryReadyNotifier;
@@ -17,6 +18,7 @@ import expo.adapters.react.ViewManagerAdapter;
 import expo.core.ModuleRegistry;
 import expo.core.ModuleRegistryProvider;
 import expo.core.interfaces.InternalModule;
+import expo.core.interfaces.ModuleRegistryConsumer;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.utils.ScopedContext;
@@ -35,7 +37,7 @@ public class ExpoModuleRegistryAdapter extends ModuleRegistryAdapter implements 
     super(moduleRegistryProvider);
   }
 
-  public List<NativeModule> createNativeModules(ScopedContext scopedContext, ExperienceId experienceId, JSONObject manifest, List<NativeModule> otherModules) {
+  public List<NativeModule> createNativeModules(ScopedContext scopedContext, ExperienceId experienceId, Map<String, Object> experienceProperties, JSONObject manifest, List<NativeModule> otherModules) {
     ModuleRegistry moduleRegistry = mModuleRegistryProvider.get(scopedContext);
 
     // Overriding sensor services from expo-sensors for scoped implementations using kernel services
@@ -50,6 +52,9 @@ public class ExpoModuleRegistryAdapter extends ModuleRegistryAdapter implements 
     // Overriding expo-permissions/PermissionsService -- binding checks with kernel services
     moduleRegistry.registerInternalModule(new PermissionsBinding(scopedContext, experienceId));
 
+    // Overriding expo-constants/ConstantsService -- binding provides manifest and other expo-related constants
+    moduleRegistry.registerInternalModule(new ConstantsBinding(scopedContext, experienceProperties, manifest));
+
     // ReactAdapterPackage requires ReactContext
     ReactApplicationContext reactContext = (ReactApplicationContext) scopedContext.getContext();
     for (InternalModule internalModule : mReactAdapterPackage.createInternalModules(reactContext)) {
@@ -58,6 +63,14 @@ public class ExpoModuleRegistryAdapter extends ModuleRegistryAdapter implements 
 
     // Overriding ScopedUIManagerModuleWrapper from ReactAdapterPackage
     moduleRegistry.registerInternalModule(new ScopedUIManagerModuleWrapper(reactContext, experienceId, manifest.optString(ExponentManifest.MANIFEST_NAME_KEY)));
+
+    // Adding other modules (not universal) to module registry as consumers.
+    // It allows these modules to refer to universal modules.
+    for (NativeModule otherModule : otherModules) {
+      if (otherModule instanceof ModuleRegistryConsumer) {
+        moduleRegistry.addRegistryConsumer((ModuleRegistryConsumer) otherModule);
+      }
+    }
 
     return getNativeModulesFromModuleRegistry(reactContext, moduleRegistry);
   }
