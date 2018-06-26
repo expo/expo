@@ -127,6 +127,8 @@ If you want to use Google Sign In for a standalone app, you can follow these ste
     6.  When you use `Expo.Google.logInAsync(..)`, pass in the **OAuth client ID** as the `androidStandaloneAppClientId` option.
     7.  Rebuild your standalone app.
 
+Note that if you've enabled Google Play's app signing service, you will need to grab their app signing certificate in production rather than the upload certificate returned by `exp fetch:android:hashes`. You can do this by grabbing the signature from Play Console -> Your App -> Release management -> App signing, and then going to the [API Dashboard](https://console.developers.google.com/apis/) -> Credentials and adding the signature to your existing credential.
+
 ## Deploying to a standalone app on iOS
 
 If you want to use native sign in for a standalone app, you can follow these steps. These steps assume that you already have it working on the Expo client app.
