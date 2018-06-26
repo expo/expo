@@ -29,6 +29,15 @@ const NSUInteger kEXErrorCodeAppForbidden = 424242;
 
 @end
 
+// Protocol that should be implemented by all versions of EXAppState class.
+@protocol EXAppStateProtocol
+
+@property (nonatomic, strong, readonly) NSString *lastKnownState;
+
+- (void)setState:(NSString *)state;
+
+@end
+
 @implementation EXKernel
 
 + (instancetype)sharedInstance
@@ -289,16 +298,16 @@ const NSUInteger kEXErrorCodeAppForbidden = 424242;
     if (appRecordPreviouslyVisible) {
       [appRecordPreviouslyVisible.viewController appStateDidBecomeInactive];
       [self _postNotificationName:kEXKernelBridgeDidBackgroundNotification onAbstractBridge:appRecordPreviouslyVisible.appManager.reactBridge];
-      id appStateModule = [self nativeModuleForAppManager:appRecordPreviouslyVisible.appManager named:@"AppState"];
-      if ([appStateModule respondsToSelector:@selector(setState:)]) {
+      id<EXAppStateProtocol> appStateModule = [self nativeModuleForAppManager:appRecordPreviouslyVisible.appManager named:@"AppState"];
+      if (appStateModule != nil) {
         [appStateModule setState:@"background"];
       }
     }
     if (appRecord) {
       [appRecord.viewController appStateDidBecomeActive];
       [self _postNotificationName:kEXKernelBridgeDidForegroundNotification onAbstractBridge:appRecord.appManager.reactBridge];
-      id appStateModule = [self nativeModuleForAppManager:appRecord.appManager named:@"AppState"];
-      if ([appStateModule respondsToSelector:@selector(setState:)]) {
+      id<EXAppStateProtocol> appStateModule = [self nativeModuleForAppManager:appRecord.appManager named:@"AppState"];
+      if (appStateModule != nil) {
         [appStateModule setState:@"active"];
       }
       _visibleApp = appRecord;
@@ -350,12 +359,10 @@ const NSUInteger kEXErrorCodeAppForbidden = 424242;
   
   if (_visibleApp) {
     EXReactAppManager *appManager = _visibleApp.appManager;
-    id appStateModule = [self nativeModuleForAppManager:appManager named:@"AppState"];
+    id<EXAppStateProtocol> appStateModule = [self nativeModuleForAppManager:appManager named:@"AppState"];
     NSString *lastKnownState;
-    if ([appStateModule respondsToSelector:@selector(lastKnownState)]) {
+    if (appStateModule != nil) {
       lastKnownState = [appStateModule lastKnownState];
-    }
-    if ([appStateModule respondsToSelector:@selector(setState:)]) {
       [appStateModule setState:newState];
     }
     if (!lastKnownState || ![newState isEqualToString:lastKnownState]) {
