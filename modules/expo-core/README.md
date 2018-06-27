@@ -14,9 +14,9 @@ $ npm install expo-core --save
 
 ### iOS (Cocoapods)
 
-If you're using Cocoapods, add the dependency to your `Podfile`:
+If you're using Cocoapods, add the following dependency to your `Podfile`:
 
-`pod 'EXCore'`
+`pod 'EXCore', path: '../node_modules/expo-core/ios'`
 
 and run `pod install`.
 
