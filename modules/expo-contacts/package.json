@@ -11,6 +11,6 @@
     "react-native": "^0.54.0"
   },
   "dependencies": {
-    "expo-core": "^27.0.0"
+    "expo-core": "^1.0.0"
   }
 }

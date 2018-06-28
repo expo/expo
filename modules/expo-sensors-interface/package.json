@@ -11,6 +11,6 @@
   "author": "650 Industries, Inc.",
   "license": "BSD",
   "dependencies": {
-    "expo-core": "^27.0.0"
+    "expo-core": "^1.0.0"
   }
 }
