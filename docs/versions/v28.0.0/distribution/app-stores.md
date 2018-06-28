@@ -16,7 +16,7 @@ Try your app on tablets in addition to handsets. Even if you have `ios.supportsT
 
 ## Make app loading seamless
 
-- Add a [splash screen](./splash-screens.html), the very first thing your users see after they select your app.
+- Add a [splash screen](../guides/splash-screens.html), the very first thing your users see after they select your app.
 - Use [AppLoading](../sdk/app-loading.html) to ensure your interface is ready before the user sees it.
 - [Preload and cache your assets](../guides/offline-support.html) so your app loads quickly, even with a poor internet connection.
 
