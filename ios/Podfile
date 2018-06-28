@@ -28,9 +28,6 @@ target 'Exponent' do
   pod 'EXCore',
     :path => "../modules/expo-core/ios",
     :inhibit_warnings => true
-  pod 'EXGL-CPP',
-    :path => "../modules/expo-gl-cpp/cpp",
-    :inhibit_warnings => true
   pod 'EXCamera',
     :path => "../modules/expo-camera/ios",
     :inhibit_warnings => true
@@ -42,9 +39,6 @@ target 'Exponent' do
     :inhibit_warnings => true
   pod 'EXFileSystem',
     :path => "../modules/expo-file-system/ios",
-    :inhibit_warnings => true
-  pod 'EXFaceDetector',
-    :path => "../modules/expo-face-detector/ios",
     :inhibit_warnings => true
   pod 'EXCameraInterface',
     :path => "../modules/expo-camera-interface/ios",
@@ -66,6 +60,12 @@ target 'Exponent' do
     :inhibit_warnings => true
   pod 'EXFaceDetectorInterface',
     :path => "../modules/expo-face-detector-interface/ios",
+    :inhibit_warnings => true
+  pod 'EXFaceDetector',
+    :path => "../modules/expo-face-detector/ios",
+    :inhibit_warnings => true
+  pod 'EXGL-CPP',
+    :path => "../modules/expo-gl-cpp/cpp",
     :inhibit_warnings => true
 
   pod 'React',
