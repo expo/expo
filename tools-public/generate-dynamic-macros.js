@@ -14,6 +14,7 @@ const request = require('request-promise-native').defaults({
 });
 const ip = require('ip');
 const uuidv4 = require('uuid/v4');
+const { Modules } = require('xdl');
 
 const { renderExpoKitPodspecAsync, renderPodfileAsync } = IosPodsTools;
 
@@ -21,23 +22,7 @@ const ProjectVersions = require('./project-versions');
 
 const EXPONENT_DIR = process.env.EXPONENT_DIR || path.join(__dirname, '..');
 
-const EXPO_CLIENT_UNIVERSAL_MODULES = [
-  { podName: 'EXGL', libName: 'expo-gl' },
-  { podName: 'EXCore', libName: 'expo-core' },
-  { podName: 'EXGL-CPP', libName: 'expo-gl-cpp', subdirectory: 'cpp' },
-  { podName: 'EXCamera', libName: 'expo-camera' },
-  { podName: 'EXSensors', libName: 'expo-sensors' },
-  { podName: 'EXConstants', libName: 'expo-constants' },
-  { podName: 'EXFileSystem', libName: 'expo-file-system' },
-  { podName: 'EXFaceDetector', libName: 'expo-face-detector' },
-  { podName: 'EXCameraInterface', libName: 'expo-camera-interface' },
-  { podName: 'EXSensorsInterface', libName: 'expo-sensors-interface' },
-  { podName: 'EXConstantsInterface', libName: 'expo-constants-interface' },
-  { podName: 'EXReactNativeAdapter', libName: 'expo-react-native-adapter' },
-  { podName: 'EXFileSystemInterface', libName: 'expo-file-system-interface' },
-  { podName: 'EXPermissionsInterface', libName: 'expo-permissions-interface' },
-  { podName: 'EXFaceDetectorInterface', libName: 'expo-face-detector-interface' },
-];
+const EXPO_CLIENT_UNIVERSAL_MODULES = Modules.getAllForPlatform('ios');
 
 // We need these permissions when testing but don't want them
 // ending up in our release.
@@ -197,8 +182,7 @@ const macrosFuncs = {
 };
 
 function generateUniversalModuleConfig(moduleInfo, modulesPath) {
-  const requiredProperties = ['podName', 'libName'];
-  const subdirectory = moduleInfo.subdirectory != null ? moduleInfo.subdirectory : 'ios';
+  const requiredProperties = ['podName', 'libName', 'subdirectory'];
 
   requiredProperties.forEach(propName => {
     if (!moduleInfo[propName]) {
@@ -211,7 +195,7 @@ function generateUniversalModuleConfig(moduleInfo, modulesPath) {
   });
   return {
     ...moduleInfo,
-    path: path.join(modulesPath, moduleInfo.libName, subdirectory),
+    path: path.join(modulesPath, moduleInfo.libName, moduleInfo.subdirectory),
   };
 }
 
