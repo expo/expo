@@ -142,7 +142,7 @@ EX_VIEW_PROPERTY(autoFocus, NSNumber *, EXCamera)
 EX_VIEW_PROPERTY(focusDepth, NSNumber *, EXCamera)
 {
   float floatValue = [value floatValue];
-  if (view.focusDepth - floatValue > FLT_EPSILON) {
+  if (fabsf(view.focusDepth - floatValue) > FLT_EPSILON) {
     [view setFocusDepth:floatValue];
     [view updateFocusDepth];
   }
@@ -151,7 +151,7 @@ EX_VIEW_PROPERTY(focusDepth, NSNumber *, EXCamera)
 EX_VIEW_PROPERTY(zoom, NSNumber *, EXCamera)
 {
   double doubleValue = [value doubleValue];
-  if (view.zoom - doubleValue > DBL_EPSILON) {
+  if (fabs(view.zoom - doubleValue) > DBL_EPSILON) {
     [view setZoom:doubleValue];
     [view updateZoom];
   }
