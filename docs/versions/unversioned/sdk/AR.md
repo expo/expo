@@ -1,65 +1,75 @@
 ---
 title: AR
 ---
+
 > ARCore is not yet supported. This lib is iOS only right now.
-Augmented Reality with ARKit for iOS 
-This library is generally used with [expo-three](https://github.com/expo/expo-three) to generate a camera, and manage a 3D scene.
+> Augmented Reality with ARKit for iOS
+> This library is generally used with [expo-three](https://github.com/expo/expo-three) to generate a camera, and manage a 3D scene.
 
 ## API
 
-> [Examples can be found here](https://github.com/expo/three-ar-test)
+> [Examples can be found here](https://github.com/expo/expo-three/tree/master/example/screens/AR)
+
+### Getting Started
+
+Here is an example of a 3D scene that is configured with `three.js` and `Expo.AR`
+
+<div data-snack-id="@bacon/basic-ar-scene" data-snack-platform="ios" data-snack-preview="false" data-snack-theme="light" style="overflow:hidden;background:#fafafa;border:1px solid rgba(0,0,0,.08);border-radius:4px;height:505px;width:100%"></div><script async src="https://snack.expo.io/embed.js"></script>
 
 ### Availability
 
 #### `isAvailable()`
 
 This will check the following condition:
+
 * Device year is greater than 2014
 * Device is not a simulator
 * Device is iOS, and not Android
 
-
 #### `getVersion()`
 
-Get the version of ARKit running on the device. 
+Get the version of ARKit running on the device.
 iOS 11 devices come with `1.0`, and the newly released iOS 11.3 comes with ARKit `1.5`;
 
-
 ### Listeners
+
 All listeners will return an object capable of removing itself as such:
+
 ```js
 const listener = AR.onFrameDidUpdate(() => {});
-listener.remove()
+listener.remove();
 ```
+
 Optionally you can also remove all listeners for a single event.
+
 #### `removeAllListeners(eventType)`
+
 ```js
-AR.removeAllListeners(AR.EventTypes.FrameDidUpdate)
+AR.removeAllListeners(AR.EventTypes.FrameDidUpdate);
 ```
 
 #### `onFrameDidUpdate( () => {} )`
 
 This will update everytime the ARSession has updated it's frame (has new data)
 
-
 #### `onDidFailWithError( ({ error }) => {} )`
 
 This will be called with the localized description of any Error thrown by ARKit
-
 
 #### `onAnchorsDidUpdate( ({ anchors: Array, eventType: AnchorEventTypes }) => {} )`
 
 Invoked when an anchor is found, updated, or removed. This is the primary way to get data from Detection Images, Planes, Faces, and general Anchors.
 
-**Example**
+##### Example
+
 ```js
-AR.onAnchorsDidUpdate(({anchors, eventType}) => {
+AR.onAnchorsDidUpdate(({ anchors, eventType }) => {
   for (let anchor of anchors) {
     if (anchor.type === AR.AnchorTypes.Anchor) {
       const { identifier, transform } = anchor;
 
       if (eventType === AR.AnchorEventTypes.Add) {
-        // Something added!  
+        // Something added!
       } else if (eventType === AR.AnchorEventTypes.Remove) {
         // Now it's changed
       } else if (eventType === AR.AnchorEventTypes.Update) {
@@ -67,7 +77,7 @@ AR.onAnchorsDidUpdate(({anchors, eventType}) => {
       }
     }
   }
-})
+});
 ```
 
 #### `onCameraDidChangeTrackingState( ({ trackingState: TrackingState, trackingStateReason: TrackingStateReason }) => {} )`
@@ -82,36 +92,27 @@ Simply this is called when the app backgerounds.
 
 This is called when the app returns to the foreground.
 
-
 ### [Hit Testing](https://developer.apple.com/documentation/arkit/arhittestresulttype)
+
 Maybe the most powerful function, hit testing allows you to get real world info on a particular position in the screen.
 
 #### `performHitTest(point, types: HitTestResultType)`
 
 The `point` is a normalized value, meaning it is **between 0-1** this can be achieved by dividing the dimension position by size.
-Ex: `{ x: x / width, y: y / height }` 
+Ex: `{ x: x / width, y: y / height }`
 
-**Example**
+##### Example
+
 ```js
 const normalizedPoint = { x, y };
-const hitTestResultTypes =  AR.HitTestResultTypes.HorizontalPlane;
+const hitTestResultTypes = AR.HitTestResultTypes.HorizontalPlane;
 const { hitTest } = AR.performHitTest(normalizedPoint, hitTestResultTypes);
 for (let hit of hitTest) {
-  const { 
-    worldTransform, 
-    type, 
-    localTransform, 
-    distance, 
-    anchor: { 
-      identifier, 
-      transform 
-      }
-    } = hit;
+  const { worldTransform, type, localTransform, distance, anchor: { identifier, transform } } = hit;
 }
-
 ```
 
-**Constants**
+##### Constants
 
 Possible `types` for specifying a hit-test search, or for the result of a hit-test search.
 
@@ -145,15 +146,16 @@ HitTestResultTypes = {
 ```
 
 ### Detection Images
+
 Given an image, ARKit will update you when it finds it in the real world.
 
 > Make sure that all reference images are greater than 100 pixels and have a positive physical size in meters.
 
 `setDetectionImagesAsync(images)`
 
-**Example**
-```js
+##### Example
 
+```js
 const asset = Expo.Asset.fromModule(require('./image.png'))
 await asset.downloadAsync();
 
@@ -168,9 +170,9 @@ await AR.setDetectionImagesAsync({
      */
     name: 'myDopeImage',
     /**
-     * Real-world size in meters. 
+     * Real-world size in meters.
      */
-    width: 0.1, 
+    width: 0.1,
   },
   ...
 });
@@ -193,51 +195,180 @@ AR.onAnchorsDidUpdate(({anchors, eventType}) => {
 ```
 
 ### Raw Data
+
 This synchronous function can return anchors, raw feature points, light estimation, and captured depth data.
 
-#### `getCurrentFrame(attributes)`
-You need to provide the attributes you want to recieve.
+#### `getCurrentFrame(attributes: ?ARFrameRequest): ?ARFrame`
 
-**Example**
+This method can be used to access frame data from the `ARSession`.
+Because not all frame data is needed for most tasks; you can request which props you wish to recieve, with an `ARFrameRequest`.
+
+```js
+type ARFrameRequest = {
+  anchors?: ARFrameAnchorRequest,
+  rawFeaturePoints?: boolean,
+  lightEstimation?: boolean,
+  capturedDepthData?: boolean,
+};
+
+const FrameAttributes = {
+  Anchors: 'anchors',
+  RawFeaturePoints: 'rawFeaturePoints',
+  LightEstimation: 'lightEstimation',
+  CapturedDepthData: 'capturedDepthData',
+};
+```
+
+An example of the input:
 ```js
 const {
-  anchors, 
-  rawFeaturePoints, 
-  lightEstimation, 
+  anchors,
+  // An array of raw feature points: { x: number, y: number, z: number, id: string }
+  rawFeaturePoints,
+  // The basic light estimation data, this will return
+  lightEstimation,
+  // Unfortunetly we had to remove this prop. You cannot access it at the moment
   capturedDepthData,
-  timestamp
-  } = AR.getCurrentFrame({
-  anchors: { 
+  // timestamp is included by default
+  timestamp,
+} = AR.getCurrentFrame({
+  // We want to get the anchor data, and include the Face Anchor
+  anchors: {
     [AR.AnchorTypes.Face]: {
-        blendShapes: true, 
-        geometry: true
-    }
-  }, 
-  rawFeaturePoints: true, 
-  lightEstimation: true, 
-  capturedDepthData: true
-})
-
+      blendShapes: true,
+      geometry: true,
+    },
+  },
+  rawFeaturePoints: true,
+  lightEstimation: true,
+  // Not available
+  capturedDepthData: true,
+});
 ```
 
-##### Getting face data
-In order to be efficent you can specify which `blendShapes` you would like to have returned. 
-You can do filter data like this:
+Depending on what you provided, you will receive an `ARFrame`.
+
 ```js
-AR.getCurrentFrame({
-    anchors: { 
-        [AR.AnchorTypes.Face]: {
-            blendShapes: [
-                AR.BlendShapes.BrowDownL, 
-                AR.BlendShapes.BrowDownR
-            ], 
-        }
-    } 
-})
+type ARFrame = {
+  // The timestamp of the frame will be passed back everytime
+  timestamp: number,
+  // Serialized array of anchors, by default each will have: type, transform, and id.
+  // You can filter these by `type` if you wish.
+  anchors?: ?Array<Anchor>,
+  // A RawFeaturePoint will have {x,y,z,id}. 
+  //This can be visualized with `ExpoTHREE.AR.Points`.
+  rawFeaturePoints?: ?Array<RawFeaturePoint>,
+  // The light estimation will return `ambientIntensity` (Lumens) and `ambientColorTemperature` (Kelvin) 
+  // An example of how to use these values can be found in `ExpoTHREE.AR.Light`
+  lightEstimation?: ?LightEstimation,
+};
 ```
-This will return just the amount your left and right eyebrows are down.
+
+##### FrameAtributes
+Here is a breakdown on the keys, and their return values.
+
+###### FrameAttributes.Anchors
+
+The input to this value can be used to capture complex face data. 
+Because there is a lot of face data, we don't want to get everything all the time.
+```js
+type ARFrameAnchorRequest = {
+  // You pass in the anchor's class name.
+  // Currently only `ARFaceAnchor` is supported.
+  ARFaceAnchor?: {
+    // When the value is `true` all `BlendShapes` will be returned. 
+    // Optionally you can pass in an object that will only include some of the `BlendShapes`.
+    // Ex: `{ [AR.BlendShapes.CheekPuff]: true }` will send back just the puffed cheek value.
+    blendShapes?: boolean | { [BlendShape]: boolean },
+    // [Experimental]: If included and true, this will return all the data required to create the face mesh.
+    // This will freeze the the thread, as there is a lot of data. 
+    // Currently looking into a better way to return this.
+    geometry?: boolean,
+  },
+};
+
+// This will return just the amount your left and right eyebrows are down.
+const { anchors } = AR.getCurrentFrame({
+  [AR.FrameAttributes.Anchors]: {
+    [AR.AnchorTypes.Face]: {
+      blendShapes: [AR.BlendShapes.BrowDownL, AR.BlendShapes.BrowDownR],
+    },
+  },
+});
+
+const { 
+  [AR.AnchorTypes.Face]: { 
+    blendShapes: {
+        [AR.BlendShapes.BrowDownL]: browDownLValue,
+        [AR.BlendShapes.BrowDownR]: browDownRValue
+      }
+    } 
+  } = anchors;
+
+console.log(browDownLValue, browDownRValue);
+```
+
+The output value will be an array of `Anchors`
+
+```js
+type Anchor = {
+  // Use this value to determine if the anchor is a plane/image/face
+  type: AnchorType,
+  transform: Matrix,
+  id: string,
+  
+  // ARPlaneAnchor only
+  // This is the origin offset from the center of the plane. 
+  // { x: number, z: number }
+  center?: Vector3, 
+  // The size of the plane
+  extent?: { width: number, length: number },
+  
+  // ARImageAnchor only
+  image?: {
+    name: ?string,
+    // Size in meters
+    size: Size,
+  },
+  
+  // ARFaceAnchor only
+  geometry?: FaceGeometry,
+  blendShapes?: { [BlendShape]: number },
+};
+```
+
+###### FrameAttributes.RawFeaturePoints
+When this key is provided an array of raw feature points will be returned. 
+Examples on usage can be found in `expo-three`
+
+```js
+type RawFeaturePoint = { 
+  x: number, 
+  y: number, 
+  z: number, 
+  id: string 
+};
+```
+
+###### FrameAttributes.LightEstimation
+ARKit will try and estimate what the room lighting is.
+With this data you can render your scene with similar lighting.
+Checkout the Lighting demo in `expo-three` for a better idea of how to use this data.
+
+```js
+export type LightEstimation = {
+  // Lumens - brightness
+  ambientIntensity: number,
+  // Kelvin - color
+  ambientColorTemperature: number,
+  // Not available yet - front facing props
+  primaryLightDirection?: Vector3,
+  primaryLightIntensity?: number,
+};
+```
 
 ##### Anchors
+
 This can return the following Anchor Types:
 
 * ARAnchor
@@ -259,10 +390,10 @@ identifier: anchor.identifier
 type: "ARPlaneAnchor", // AR.AnchorTypes.Plane
 transform: anchor.transform,
 identifier: anchor.identifier,
-center: { 
-    x: Float, 
-    y: Float, 
-    z: Float 
+center: {
+    x: Float,
+    y: Float,
+    z: Float
 },
 extent: {
     width: Float,
@@ -276,7 +407,7 @@ extent: {
 type: "ARImageAnchor", // AR.AnchorTypes.Image
 transform: anchor.transform,
 identifier: anchor.identifier,
-image: { 
+image: {
     name: anchor.referenceImage.name,
     size: { // Physical size in meters
         width: Float,
@@ -356,9 +487,12 @@ blendShapes: {
 ```
 
 ### Camera Data
-Matrix data can be used in three.js (with [expo-three](https://github.com/expo/expo-three#expothreecreatearcamera)) to generate a 3D camera.
+
+Matrix data can be used in three.js (with [expo-three](https://github.com/expo/expo-three)) to generate a 3D camera.
+
 #### `getARMatrices(near: number, far: number)`
->`getARMatrices(arsession, width, height, near, far)` is now `getARMatrices(near, far)`
+
+> `getARMatrices(arsession, width, height, near, far)` is now `getARMatrices(near, far)`
 
 ### Build up / Tear down
 
@@ -370,7 +504,7 @@ Given reference to a `GLView` and a `ARTrackingConfiguration`, this will create 
 When invoked, this method will tear-down the `ARSession`, and `WebGLTexture` used for the camera stream. This is an end-of-lifecycle method.
 `stopAsync()`
 
->`stopARSessionAsync()` is now `stopAsync` 
+> `stopARSessionAsync()` is now `stopAsync`
 
 ### Running State
 
@@ -383,16 +517,18 @@ Used to pause the `ARSession`.
 Used to resume the `ARSession` after pausing it.
 `resume()`
 
-
 ### [Configuration](https://developer.apple.com/documentation/arkit/arconfiguration)
 
 Check availability.
+
 `isConfigurationAvailable(configuration: TrackingConfiguration): Bool`
 
 A Configuration defines how ARKit constructs a scene based on real-world device motion.
+
 `setConfigurationAsync(configuration: TrackingConfiguration)`
 
 Alternatively you could also use:
+
 * `isFrontCameraAvailable()`
 * `isRearCameraAvailable()`
 
@@ -406,7 +542,7 @@ TrackingConfigurations = {
    * Provides basic AR experiences that use the rear-facing camera and track only a device's orientation.
    */
   orientation: 'AROrientationTrackingConfiguration',
-   /**
+  /**
    * Provides AR experiences that use the front-facing camera and track the movement and expressions of the user's face.
    */
   face: 'ARFaceTrackingConfiguration',
@@ -414,13 +550,16 @@ TrackingConfigurations = {
 ```
 
 ### [Plane Detection](https://developer.apple.com/documentation/arkit/arplanedetection?language)
-Used to enable or disable plane detection (`ARPlaneAnchor`s will be able to return in `onAnchorsDidUpdate`).
-> As of iOS 11.3 (ARKit 1.5) you can now enable vertical plane detection.
-**Default: AR.PlaneDetectionTypes.None**
-**GET:** `planeDetection(): PlaneDetection`
-**SET:** `setPlaneDetection(planeDetection: PlaneDetection)`
 
-**Constants**
+Used to enable or disable plane detection (`ARPlaneAnchor`s will be able to return in `onAnchorsDidUpdate`).
+
+> As of iOS 11.3 (ARKit 1.5) you can now enable vertical plane detection.
+
+* **Default: AR.PlaneDetectionTypes.None**
+* **GET:** `planeDetection(): PlaneDetection`
+* **SET:** `setPlaneDetection(planeDetection: PlaneDetection)`
+
+#### Constants
 
 Options for whether and how ARKit detects flat surfaces in captured images.
 
@@ -441,43 +580,53 @@ PlaneDetectionTypes = {
 };
 ```
 
-### [World Origin]()
+### [World Origin](https://developer.apple.com/documentation/arkit/arsession/2942278-setworldorigin?language=objc)
+
 The center of the 3D space used by ARKit
+
 `setWorldOriginAsync(matrix4x4)`
 
 > A Matrix 4x4 is an array of 16 doubles
 
 ```js
-`setWorldOriginAsync([1,1,1,1,0,0,0,0,0,0,0,0])`
+`setWorldOriginAsync([1,1,1,1,0,0,0,0,0,0,0,0])`;
 ```
 
 ### [Light Estimation](https://developer.apple.com/documentation/arkit/arlightestimate?language=objc)
+
 Estimated scene lighting information associated with a captured video frame in an AR session.
-**Default: true**
-**SET:** `setLightEstimationEnabled(value: Boolean)`
-**GET:** `getLightEstimationEnabled(): Boolean`
+
+* **Default: true**
+* **SET:** `setLightEstimationEnabled(value: Boolean)`
+* **GET:** `getLightEstimationEnabled(): Boolean`
 
 Light estimation can be retrieved through `getCurrentFrame` with the `lightEstimation` key added.
 
 ### [Provides Audio Data](https://developer.apple.com/documentation/arkit/arconfiguration/2923559-providesaudiodata?language=objc)
-A Boolean value that specifies whether to capture audio during the AR session. 
+
+A Boolean value that specifies whether to capture audio during the AR session.
 You cannot currently access the audio data as it is useless.
-**Default: false**
-**SET:** `setProvidesAudioData(value: Boolean)`
-**GET:** `getProvidesAudioData(): Boolean`
+
+* **Default: false**
+* **SET:** `setProvidesAudioData(value: Boolean)`
+* **GET:** `getProvidesAudioData(): Boolean`
 
 ### [Auto Focus](https://developer.apple.com/documentation/arkit/arorientationtrackingconfiguration/2942263-autofocusenabled?language=objc)
+
 > iOS 11.3+
-A Boolean value that determines whether the device camera uses fixed focus or autofocus behavior.
-**Default: true**
-**SET:** `setAutoFocusEnabled(value: Boolean)`
-**GET:** `getAutoFocusEnabled(): Boolean`
+> A Boolean value that determines whether the device camera uses fixed focus or autofocus behavior.
+
+* **Default: true**
+* **SET:** `setAutoFocusEnabled(value: Boolean)`
+* **GET:** `getAutoFocusEnabled(): Boolean`
 
 ### [World Alignment](https://developer.apple.com/documentation/arkit/arworldalignment?language=objc)
+
 Options for how ARKit constructs a scene coordinate system based on real-world device motion.
-**Default: AR.WorldAlignmentTypes.Gravity**
-**SET:** `setWorldAlignment(worldAlignment: WorldAlignment)`
-**GET:** `getWorldAlignment(): WorldAlignment`
+
+* **Default: AR.WorldAlignmentTypes.Gravity**
+* **SET:** `setWorldAlignment(worldAlignment: WorldAlignment)`
+* **GET:** `getWorldAlignment(): WorldAlignment`
 
 ```js
 const WorldAlignmentTypes = {
@@ -488,15 +637,18 @@ const WorldAlignmentTypes = {
 ```
 
 ### Camera Texture
-The internal ID used to render the camera texture.
-**GET:** `getCameraTexture(): Number`
 
+The internal ID used to render the camera texture.
+
+* **GET:** `getCameraTexture(): Number`
 
 ### [Supported Video Formats](https://developer.apple.com/documentation/arkit/arconfiguration/2942261-supportedvideoformats?language=objc)
+
 > iOS 11.3+
-The set of video capture formats available on the current device. The video format cannot be set yet. 
-**Default: The first element returned is the default value**
-**GET:** `AR.getSupportedVideoFormats(configuration: TrackingConfiguration): Array`
+> The set of video capture formats available on the current device. The video format cannot be set yet.
+
+* **Default: The first element returned is the default value**
+* **GET:** `AR.getSupportedVideoFormats(configuration: TrackingConfiguration): Array`
 
 ```js
 {
@@ -504,6 +656,6 @@ The set of video capture formats available on the current device. The video form
         width: 1920,
         height: 1080
     },
-    framesPerSecond: 60 
+    framesPerSecond: 60
 }
 ```
