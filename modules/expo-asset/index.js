@@ -1,5 +1,5 @@
 module.exports = {
   get Asset() {
-    return require('./src/Asset.js').default;
+    return require('./src/Asset').default;
   },
 };

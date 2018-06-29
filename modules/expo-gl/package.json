@@ -20,5 +20,8 @@
     "expo-file-system-interface": "^1.0.0",
     "expo-gl-cpp": "^1.0.0",
     "react": "^16.4.0"
+  },
+  "devDependencies": {
+    "babel-preset-expo": "^4.0.0"
   }
 }

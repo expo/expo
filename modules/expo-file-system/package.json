@@ -14,5 +14,8 @@
     "expo-core": "^1.0.0",
     "expo-file-system-interface": "^1.0.0",
     "uuid-js": "^0.7.5"
+  },
+  "devDependencies": {
+    "babel-preset-expo": "^4.0.0"
   }
 }

@@ -115,7 +115,7 @@ export class DownloadResumable {
   _resumeData: ?string;
   _callback: ?DownloadProgressCallback;
   _subscription: ?Function;
-  _emitter: NativeEventEmitter;
+  _emitter: EventEmitter;
 
   constructor(
     url: string,

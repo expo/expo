@@ -13,5 +13,8 @@
   "dependencies": {
     "expo-core": "^1.0.0",
     "expo-constants-interface": "^1.0.0"
+  },
+  "devDependencies": {
+    "babel-preset-expo": "^4.0.0"
   }
 }

@@ -22,6 +22,7 @@
     "prop-types": "^15.6.0"
   },
   "devDependencies": {
+    "babel-preset-expo": "^4.0.0",
     "eslint": "^4.18.1",
     "eslint-config-universe": "^1.0.7",
     "flow-bin": "^0.66.0",

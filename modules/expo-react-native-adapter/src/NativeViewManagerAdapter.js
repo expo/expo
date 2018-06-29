@@ -2,7 +2,7 @@ import React from 'react';
 import omit from 'lodash.omit';
 import pick from 'lodash.pick';
 import PropTypes from 'prop-types';
-import { requireNativeComponent, ViewPropTypes, UIManager } from 'react-native';
+import { requireNativeComponent, ViewPropTypes, UIManager, NativeModules } from 'react-native';
 
 // We'd like to make the transition from react-native's
 // requireNativeComponent to expo-core's requireNativeViewManager
@@ -42,6 +42,16 @@ const createNativeComponentClass = name => {
 };
 
 export const requireNativeViewManager = (name, component) => {
+  if (!NativeModules.ExpoNativeModuleProxy.viewManagersNames.includes(name)) {
+    console.warn(
+      "It seems the native view manager which you're trying to require by name" +
+        "from NativeViewManagerAdapter isn't exported by expo-react-native-adapter." +
+        ' Things may not work properly. Exported view managers: [' +
+        NativeModules.ExpoNativeModuleProxy.viewManagersNames.join(', ') +
+        `], and you required "${name}".`
+    );
+  }
+
   const NativeComponent = createNativeComponentClass(name);
   const PropTypesKeys = [
     'children',

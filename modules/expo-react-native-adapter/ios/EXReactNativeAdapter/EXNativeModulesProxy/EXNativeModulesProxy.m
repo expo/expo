@@ -10,6 +10,7 @@
 #import <EXReactNativeAdapter/EXViewManagerAdapterClassesRegistry.h>
 
 static const NSString *exportedMethodsNamesKeyPath = @"exportedMethods";
+static const NSString *viewManagersNamesKeyPath = @"viewManagersNames";
 static const NSString *exportedConstantsKeyPath = @"modulesConstants";
 
 static const NSString *methodInfoKeyKey = @"key";
@@ -72,11 +73,19 @@ static const NSString *methodInfoArgumentsCountKey = @"argumentsCount";
     }];
     [self assignExportedMethodsKeys:exportedMethodsNamesAccumulator[exportedModuleName] forModuleName:exportedModuleName];
   }
-  
+
+  // Also, add `viewManagersNames` for sanity check and testing purposes -- with names we know what managers to mock on UIManager
+  NSArray<EXViewManager *> *viewManagers = [_moduleRegistry getAllViewManagers];
+  NSMutableArray<NSString *> *viewManagersNames = [NSMutableArray arrayWithCapacity:[viewManagers count]];
+  for (EXViewManager *viewManager in viewManagers) {
+    [viewManagersNames addObject:[viewManager viewName]];
+  }
+
   NSMutableDictionary <NSString *, id> *constantsAccumulator = [NSMutableDictionary dictionary];
+  constantsAccumulator[viewManagersNamesKeyPath] = viewManagersNames;
   constantsAccumulator[exportedConstantsKeyPath] = exportedModulesConstants;
   constantsAccumulator[exportedMethodsNamesKeyPath] = exportedMethodsNamesAccumulator;
-  
+
   return constantsAccumulator;
 }
 

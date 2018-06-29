@@ -21,6 +21,7 @@ import javax.annotation.Nullable;
 
 import expo.core.ExportedModule;
 import expo.core.ModuleRegistry;
+import expo.core.ViewManager;
 import expo.core.interfaces.ExpoMethod;
 
 /**
@@ -29,6 +30,7 @@ import expo.core.interfaces.ExpoMethod;
  */
 public class NativeModulesProxy extends ReactContextBaseJavaModule {
   private final static String NAME = "ExpoNativeModuleProxy";
+  private final static String VIEW_MANAGERS_NAMES_KEY = "viewManagersNames";
   private final static String MODULES_CONSTANTS_KEY = "modulesConstants";
   private final static String EXPORTED_METHODS_KEY = "exportedMethods";
 
@@ -60,8 +62,11 @@ public class NativeModulesProxy extends ReactContextBaseJavaModule {
   @Override
   public Map<String, Object> getConstants() {
     Collection<ExportedModule> exportedModules = mModuleRegistry.getAllExportedModules();
+    Collection<ViewManager> viewManagers = mModuleRegistry.getAllViewManagers();
+
     Map<String, Object> modulesConstants = new HashMap<>(exportedModules.size());
     Map<String, Object> exportedMethodsMap = new HashMap<>(exportedModules.size());
+    List<String> viewManagersNames = new ArrayList<>(viewManagers.size());
 
     for (ExportedModule exportedModule : exportedModules) {
       String moduleName = exportedModule.getName();
@@ -73,9 +78,14 @@ public class NativeModulesProxy extends ReactContextBaseJavaModule {
       exportedMethodsMap.put(moduleName, exportedMethods);
     }
 
+    for (ViewManager viewManager : viewManagers) {
+      viewManagersNames.add(viewManager.getName());
+    }
+
     Map<String, Object> constants = new HashMap<>(2);
     constants.put(MODULES_CONSTANTS_KEY, modulesConstants);
     constants.put(EXPORTED_METHODS_KEY, exportedMethodsMap);
+    constants.put(VIEW_MANAGERS_NAMES_KEY, viewManagersNames);
     return constants;
   }
 
