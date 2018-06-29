@@ -34,4 +34,9 @@ public class SensorSubscription implements SensorServiceSubscription {
   public void stop() {
     mSensorKernelServiceSubscription.stop();
   }
+
+  @Override
+  public void release() {
+    mSensorKernelServiceSubscription.release();
+  }
 }

@@ -56,6 +56,10 @@ public abstract class SubscribableSensorService extends BaseSensorService implem
     updateObserving();
   }
 
+  void removeSubscription(SensorServiceSubscription sensorServiceSubscription) {
+    mSensorEventListenerLastUpdateMap.remove(sensorServiceSubscription);
+  }
+
   // android.hardware.SensorEventListener2
 
   @Override

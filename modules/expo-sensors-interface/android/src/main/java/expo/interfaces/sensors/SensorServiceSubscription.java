@@ -6,4 +6,5 @@ public interface SensorServiceSubscription {
   Long getUpdateInterval();
   void setUpdateInterval(long updateInterval);
   void stop();
+  void release();
 }

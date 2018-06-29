@@ -9,6 +9,7 @@ import com.facebook.react.modules.core.PermissionListener;
 import com.facebook.react.uimanager.NativeViewHierarchyManager;
 import com.facebook.react.uimanager.UIManagerModule;
 
+import java.lang.ref.WeakReference;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -82,20 +83,30 @@ public class UIManagerModuleWrapper implements InternalModule, UIManager, Permis
 
   @Override
   public void registerLifecycleEventListener(final LifecycleEventListener listener) {
+    final WeakReference<LifecycleEventListener> weakListener = new WeakReference<>(listener);
     mLifecycleListenersMap.put(listener, new com.facebook.react.bridge.LifecycleEventListener() {
       @Override
       public void onHostResume() {
-        listener.onHostResume();
+        LifecycleEventListener listener = weakListener.get();
+        if (listener != null) {
+          listener.onHostResume();
+        }
       }
 
       @Override
       public void onHostPause() {
-        listener.onHostPause();
+        LifecycleEventListener listener = weakListener.get();
+        if (listener != null) {
+          listener.onHostPause();
+        }
       }
 
       @Override
       public void onHostDestroy() {
-        listener.onHostDestroy();
+        LifecycleEventListener listener = weakListener.get();
+        if (listener != null) {
+          listener.onHostDestroy();
+        }
       }
     });
     mReactContext.addLifecycleEventListener(mLifecycleListenersMap.get(listener));
