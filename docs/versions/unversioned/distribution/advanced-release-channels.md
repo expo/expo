@@ -87,6 +87,8 @@ Now we can see that our release is no longer available in the production channel
   Options:
     -c, --release-channel <channel-name>  Filter by release channel. If this flag is not included, the most recent publications will be shown.
     -count, --count <number-of-logs>      Number of logs to view, maximum 100, default 5.
+    -r, --raw                             Produce some raw output.
+    -p, --platform <ios|android>          Filter by platform, android or ios.
 ```
 
 ### Publish details
@@ -96,6 +98,7 @@ Now we can see that our release is no longer available in the production channel
 
   Options:
     --publish-id <publish-id>  Publication id. (Required)
+    -r, --raw                             Produce some raw output.
 ```
 
 ### Publish rollback
