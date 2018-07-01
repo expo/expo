@@ -238,7 +238,7 @@ dependencies {
   api 'com.segment.analytics.android:analytics:4.3.0'
   api 'com.google.zxing:core:3.3.2'
   api 'net.openid:appauth:0.4.1'
-  api('com.airbnb.android:lottie:2.5.+') {
+  api('com.airbnb.android:lottie:2.5.5') {
     exclude group: 'com.android.support', module: 'appcompat-v7'
   }
   api 'io.branch.sdk.android:library:2.17.1'

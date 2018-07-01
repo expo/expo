@@ -142,7 +142,7 @@ dependencies {
   implementation 'com.segment.analytics.android:analytics:4.3.0'
   implementation 'com.google.zxing:core:3.2.1'
   implementation 'net.openid:appauth:0.4.1'
-  implementation('com.airbnb.android:lottie:2.5.+')  {
+  implementation('com.airbnb.android:lottie:2.5.5')  {
       exclude group: 'com.android.support', module: 'appcompat-v7'
   }
   implementation 'io.branch.sdk.android:library:2.17.1'
