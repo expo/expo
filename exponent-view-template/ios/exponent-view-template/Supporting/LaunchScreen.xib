@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="12121" systemVersion="16G29" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12089"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -27,16 +27,16 @@
                     </constraints>
                 </imageView>
             </subviews>
-            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
                 <constraint firstAttribute="trailing" secondItem="Bsh-cT-K4l" secondAttribute="trailing" id="4Bz-Vy-RfD"/>
                 <constraint firstItem="Bsh-cT-K4l" firstAttribute="top" secondItem="OfY-5Y-tS4" secondAttribute="top" id="5FF-OI-m4s"/>
-                <constraint firstItem="Q79-ka-fUb" firstAttribute="centerX" secondItem="g6l-cP-5Ll" secondAttribute="centerX" id="9G9-hV-oVV"/>
+                <constraint firstAttribute="centerX" secondItem="g6l-cP-5Ll" secondAttribute="centerX" id="9G9-hV-oVV"/>
                 <constraint firstItem="g6l-cP-5Ll" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="OfY-5Y-tS4" secondAttribute="leading" id="JQM-pd-zJi"/>
                 <constraint firstItem="g6l-cP-5Ll" firstAttribute="top" relation="greaterThanOrEqual" secondItem="OfY-5Y-tS4" secondAttribute="top" id="SxB-Cd-7Gy"/>
                 <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="g6l-cP-5Ll" secondAttribute="trailing" id="VDa-AF-XEa"/>
                 <constraint firstItem="Bsh-cT-K4l" firstAttribute="leading" secondItem="OfY-5Y-tS4" secondAttribute="leading" id="ZLr-Ag-Lsg"/>
-                <constraint firstItem="Q79-ka-fUb" firstAttribute="top" secondItem="g6l-cP-5Ll" secondAttribute="bottom" constant="10" id="cuH-ve-e1H"/>
+                <constraint firstAttribute="top" secondItem="g6l-cP-5Ll" secondAttribute="bottom" constant="10" id="cuH-ve-e1H"/>
                 <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="g6l-cP-5Ll" secondAttribute="bottom" id="fbb-we-kfv"/>
                 <constraint firstItem="g6l-cP-5Ll" firstAttribute="centerY" secondItem="OfY-5Y-tS4" secondAttribute="centerY" id="hI6-Px-LsN"/>
                 <constraint firstItem="g6l-cP-5Ll" firstAttribute="centerX" secondItem="OfY-5Y-tS4" secondAttribute="centerX" id="hV2-Y5-obV"/>
