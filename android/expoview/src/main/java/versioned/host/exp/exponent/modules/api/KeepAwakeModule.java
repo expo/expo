@@ -10,6 +10,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 
 public class KeepAwakeModule extends ReactContextBaseJavaModule {
+  private boolean mIsActivated = false;
 
   public KeepAwakeModule(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -29,6 +30,7 @@ public class KeepAwakeModule extends ReactContextBaseJavaModule {
         @Override
         public void run() {
           activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+          mIsActivated = true;
         }
       });
     }
@@ -42,9 +44,14 @@ public class KeepAwakeModule extends ReactContextBaseJavaModule {
       activity.runOnUiThread(new Runnable() {
         @Override
         public void run() {
+          mIsActivated = false;
           activity.getWindow().clearFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
       });
     }
+  }
+
+  public boolean isActivated() {
+    return mIsActivated;
   }
 }

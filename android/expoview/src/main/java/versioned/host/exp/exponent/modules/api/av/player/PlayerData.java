@@ -26,7 +26,7 @@ public abstract class PlayerData implements AudioEventHandler {
   static final String STATUS_POSITION_MILLIS_KEY_PATH = "positionMillis";
   static final String STATUS_PLAYABLE_DURATION_MILLIS_KEY_PATH = "playableDurationMillis";
   static final String STATUS_SHOULD_PLAY_KEY_PATH = "shouldPlay";
-  static final String STATUS_IS_PLAYING_KEY_PATH = "isPlaying";
+  public static final String STATUS_IS_PLAYING_KEY_PATH = "isPlaying";
   static final String STATUS_IS_BUFFERING_KEY_PATH = "isBuffering";
   static final String STATUS_RATE_KEY_PATH = "rate";
   static final String STATUS_SHOULD_CORRECT_PITCH_KEY_PATH = "shouldCorrectPitch";
