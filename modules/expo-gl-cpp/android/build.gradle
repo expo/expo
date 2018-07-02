@@ -10,6 +10,7 @@ buildscript {
 
     dependencies {
         classpath 'com.android.tools.build:gradle:3.1.3'
+        classpath 'de.undercouch:gradle-download-task:2.0.0'
     }
 }
 
@@ -19,9 +20,12 @@ apply plugin: 'maven'
 group = 'host.exp.exponent'
 version = '1.0.0'
 
+import de.undercouch.gradle.tasks.download.Download
 import org.apache.tools.ant.taskdefs.condition.Os
 
 // Custom task for NDK module
+
+def distDir = new File("$projectDir/dist")
 
 def getNdkBuildName() {
     if (Os.isFamily(Os.FAMILY_WINDOWS)) {
@@ -74,15 +78,34 @@ def getNdkBuildFullPath() {
     return ndkBuildFullPath
 }
 
-task buildEXGLNdkLib(dependsOn: ':ReactAndroid:prepareJSC', type: Exec) {
-    // This path should work for most apps as it works with modules installed via npm/yarn
-    def jscDir = new File(projectDir.parentFile.parentFile, 'react-native/ReactAndroid/build/third-party-ndk/jsc')
+task downloadJSCHeaders(type: Download) {
+  // in sync with webkit SVN revision 174650
+  def jscAPIBaseURL = 'https://raw.githubusercontent.com/WebKit/webkit/38b15a3ba3c1b0798f2036f7cea36ffdc096202e/Source/JavaScriptCore/API/'
+  def jscHeaderFiles = ['JavaScript.h', 'JSBase.h', 'JSContextRef.h', 'JSObjectRef.h', 'JSRetainPtr.h', 'JSStringRef.h', 'JSValueRef.h', 'WebKitAvailability.h']
+  def output = new File("$buildDir/downloads", 'jsc')
 
-    if (!jscDir.exists()) {
-      // Exception for Expo Client
-      jscDir = new File(projectDir.parentFile.parentFile.parentFile, 'android/ReactAndroid/build/third-party-ndk/jsc')
+  output.mkdirs()
+  src(jscHeaderFiles.collect { headerName -> "$jscAPIBaseURL$headerName" })
+  onlyIfNewer true
+  overwrite false
+  dest output
+}
+
+// Create Android.mk library module based on so files from mvn + include headers fetched from webkit.org
+task prepareJSC(dependsOn: downloadJSCHeaders) {
+  doLast {
+    copy {
+      from zipTree(configurations.compile.fileCollection { dep -> dep.name == 'android-jsc' }.singleFile)
+      from { downloadJSCHeaders.dest }
+      from 'src/main/jni/jsc/Android.mk'
+      include 'jni/**/*.so', '*.h', 'Android.mk'
+      filesMatching('*.h', { fname -> fname.path = "JavaScriptCore/${fname.path}" })
+      into "$buildDir/jsc"
     }
+  }
+}
 
+task buildNdkLib(dependsOn: prepareJSC, type: Exec) {
     inputs.dir('src/main/jni')
     inputs.dir('../cpp')
     outputs.dir("$buildDir/expo-gl-ndk/all")
@@ -92,22 +115,25 @@ task buildEXGLNdkLib(dependsOn: ':ReactAndroid:prepareJSC', type: Exec) {
             "NDK_APPLICATION_MK=$projectDir/src/main/jni/Application.mk",
             "NDK_OUT=$temporaryDir",
             "NDK_LIBS_OUT=$buildDir/expo-gl-ndk/all",
-            "JSC_DIR=$jscDir.absolutePath",
+            "JSC_DIR=$buildDir/jsc",
             '-C', file('src/main/jni').absolutePath,
             '--jobs', Runtime.runtime.availableProcessors()
 }
 
-task cleanEXGLNdkLib(type: Exec) {
+task cleanNdkLib(type: Exec) {
     commandLine getNdkBuildFullPath(),
+            "JSC_DIR=$buildDir/jsc",
             '-C', file('src/main/jni').absolutePath,
             'clean'
 }
 
-task packageEXGLNdkLibs(dependsOn: buildEXGLNdkLib, type: Copy) {
+task packageNdkLibs(dependsOn: buildNdkLib, type: Copy) {
+    distDir.mkdirs()
+
     from "$buildDir/expo-gl-ndk/all"
     exclude '**/libjsc.so'
     exclude '**/libgnustl_shared.so'
-    into "$buildDir/expo-gl-ndk/exported"
+    into distDir.path
 }
 
 //Upload android library to maven with javadoc and android sources
@@ -153,12 +179,6 @@ android {
             jni.srcDirs = []
             jniLibs.srcDir "$buildDir/expo-gl-ndk/exported"
         }
-
-        tasks.withType(JavaCompile) {
-            compileTask -> compileTask.dependsOn packageEXGLNdkLibs
-        }
-
-        clean.dependsOn cleanEXGLNdkLib
     }
     lintOptions {
         abortOnError false
@@ -183,4 +203,8 @@ dependencies {
     expendency 'expo-core'
 
     implementation 'com.facebook.soloader:soloader:0.1.0'
+
+    // it must be `compile` instead of `implementation` or `api`
+    // cause the later dependencies are not accessible by configurations.compile or similar :(
+    compile 'org.webkit:android-jsc:r174650'
 }

@@ -14,6 +14,11 @@ public class GLView extends TextureView implements TextureView.SurfaceTextureLis
   private GLContext mGLContext;
   private ModuleRegistry mModuleRegistry;
 
+  // Suppresses ViewConstructor warnings
+  public GLView(Context context) {
+    super(context);
+  }
+
   public GLView(Context context, ModuleRegistry moduleRegistry) {
     super(context);
     setSurfaceTextureListener(this);

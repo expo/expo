@@ -14,6 +14,7 @@ import android.util.Log;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.lang.ref.WeakReference;
 import java.nio.IntBuffer;
 import java.util.HashMap;
 import java.util.Map;
@@ -190,7 +191,7 @@ public class GLContext {
   }
 
   private static class TakeSnapshot extends AsyncTask<Void, Void, Void> {
-    private final Context mContext;
+    private final WeakReference<Context> mContext;
     private final int mWidth;
     private final int mHeight;
     private final boolean mFlip;
@@ -200,7 +201,7 @@ public class GLContext {
     private final Promise mPromise;
 
     TakeSnapshot(Context context, int width, int height, boolean flip, String format, int compress, int[] dataArray, Promise promise) {
-      mContext = context;
+      mContext = new WeakReference<>(context);
       mWidth = width;
       mHeight = height;
       mFlip = flip;
@@ -245,8 +246,15 @@ public class GLContext {
         extension = ".png";
       }
 
+      Context context = mContext.get();
+
+      if (context == null) {
+        mPromise.reject("E_GL_CONTEXT_DESTROYED", "Context has been garbage collected.");
+        return null;
+      }
+
       try {
-        path = FileSystemUtils.generateOutputPath(mContext.getCacheDir(), "GLView", extension);
+        path = FileSystemUtils.generateOutputPath(context.getCacheDir(), "GLView", extension);
         output = new FileOutputStream(path);
         bitmap.compress(compressFormat, mCompress, output);
         output.flush();

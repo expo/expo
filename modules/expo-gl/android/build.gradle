@@ -53,6 +53,12 @@ android {
         versionCode 1
         versionName "1.0"
     }
+
+    sourceSets.main {
+        jni.srcDirs = []
+        jniLibs.srcDir "${project(':expo-gl-cpp').projectDir}/dist"
+    }
+
     lintOptions {
         abortOnError false
     }

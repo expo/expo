@@ -5,7 +5,7 @@ APP_PLATFORM := android-18
 
 APP_MK_DIR := $(dir $(lastword $(MAKEFILE_LIST)))
 
-NDK_MODULE_PATH := .$(HOST_DIRSEP)$(THIRD_PARTY_NDK_DIR)
+NDK_MODULE_PATH := .$(HOST_DIRSEP)$(JSC_DIR)
 
 APP_STL := gnustl_shared
 APP_CPPFLAGS := -std=c++11 -fexceptions -pthread
