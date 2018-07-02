@@ -101,3 +101,16 @@ The permission type for reading or writing to the calendar.
 ### `Expo.Permissions.REMINDERS`
 
 The permission type for reading or writing reminders (iOS only).
+
+### Permissions equivalents inside `app.json`
+
+If you specified `android.permissions` inside your `app.json` ([read more about configuration](../workflow/configuration.html#android))  you have to use values corresponding to their `Expo.Permissions` equivalents. 
+
+| Expo            | Android                                       |
+| --------------- | --------------------------------------------- |
+| LOCATION        | ACCESS\_COARSE\_LOCATION, ACCESS\_FINE_LOCATION  |
+| CAMERA          | CAMERA                                        |
+| AUDIO_RECORDING | RECORD_AUDIO                                  |
+| CONTACTS        | READ_CONTACTS                                 |
+| CAMERA_ROLL     | READ\_EXTERNAL\_STORAGE, WRITE\_EXTERNAL\_STORAGE |
+| CALENDAR        | READ\_CALENDAR, WRITE\_CALENDAR                 |

@@ -490,7 +490,7 @@ Configuration for how and when the app should request OTA JavaScript updates
       List of additional permissions the standalone app will request upon installation.
       Along with the minimum necessary for an expo app to function.  
 
-      Don't use "permissions" to use the defualt list.
+      Don't use "permissions" to use the default list.
 
       Set "permissions" to [] to use ONLY the MINIMUM necessary permissions.
     */
@@ -503,7 +503,6 @@ Configuration for how and when the app should request OTA JavaScript updates
       "READ_CALENDAR",
       "WRITE_CALENDAR",
       "READ_EXTERNAL_STORAGE",
-      "READ_INTERNAL_STORAGE",
       "READ_PHONE_STATE",
       "RECORD_AUDIO",
       "USE_FINGERPRINT",
