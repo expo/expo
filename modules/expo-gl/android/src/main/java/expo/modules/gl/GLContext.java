@@ -44,6 +44,7 @@ public class GLContext {
   private EGLDisplay mEGLDisplay;
   private EGLSurface mEGLSurface;
   private EGLContext mEGLContext;
+  private EGLConfig mEGLConfig;
   private EGL10 mEGL;
 
   private BlockingQueue<Runnable> mEventQueue = new LinkedBlockingQueue<>();
@@ -107,7 +108,7 @@ public class GLContext {
           EXGLContextFlush(mEXGLCtxId);
 
           if (!isHeadless() && EXGLContextNeedsRedraw(mEXGLCtxId)) {
-            if (!mEGL.eglSwapBuffers(mEGLDisplay, mEGLSurface)) {
+            if (!swapBuffers(mEGLSurface)) {
               Log.e("EXGL", "Cannot swap buffers!");
             }
             EXGLContextDrawEnded(mEXGLCtxId);
@@ -115,6 +116,33 @@ public class GLContext {
         }
       }
     });
+  }
+
+  public boolean swapBuffers(EGLSurface eglSurface) {
+    return mEGL.eglSwapBuffers(mEGLDisplay, eglSurface);
+  }
+
+  public boolean makeCurrent(EGLSurface eglSurface) {
+    return mEGL.eglMakeCurrent(mEGLDisplay, eglSurface, eglSurface, mEGLContext);
+  }
+
+  // Creates Pbuffer surface for headless rendering if surfaceTexture == null
+  public EGLSurface createSurface(EGLConfig eglConfig, Object surfaceTexture) {
+    if (surfaceTexture == null) {
+      // Some devices are crashing when pbuffer surface doesn't have EGL_WIDTH and EGL_HEIGHT attributes set
+      int[] surfaceAttribs = {
+          EGL10.EGL_WIDTH, 1,
+          EGL10.EGL_HEIGHT, 1,
+          EGL10.EGL_NONE
+      };
+      return mEGL.eglCreatePbufferSurface(mEGLDisplay, eglConfig, surfaceAttribs);
+    } else {
+      return mEGL.eglCreateWindowSurface(mEGLDisplay, eglConfig, surfaceTexture, null);
+    }
+  }
+
+  public boolean destroySurface(EGLSurface eglSurface) {
+    return mEGL.eglDestroySurface(mEGLDisplay, eglSurface);
   }
 
   public void destroy() {
@@ -131,7 +159,7 @@ public class GLContext {
   }
 
   // must be called in GL thread
-  private Map<String, Object> getViewportRect() {
+  public Map<String, Object> getViewportRect() {
     int[] viewport = new int[4];
     glGetIntegerv(GL_VIEWPORT, viewport, 0);
 
@@ -142,6 +170,10 @@ public class GLContext {
     results.put("height", viewport[3]);
 
     return results;
+  }
+
+  public EGLConfig getEGLConfig() {
+    return mEGLConfig;
   }
 
   public void takeSnapshot(final Map<String, Object> options, final Context context, final Promise promise) {
@@ -320,21 +352,6 @@ public class GLContext {
       return mEGL.eglCreateContext(mEGLDisplay, eglConfig, EGL10.EGL_NO_CONTEXT, attribs);
     }
 
-    // Creates headless GL context if surfaceTexture == null
-    private EGLSurface createGLSurface(EGLConfig eglConfig, SurfaceTexture surfaceTexture) {
-      if (surfaceTexture == null) {
-        // Some devices are crashing when pbuffer surface doesn't have EGL_WIDTH and EGL_HEIGHT attributes set
-        int[] surfaceAttribs = {
-            EGL10.EGL_WIDTH, 1,
-            EGL10.EGL_HEIGHT, 1,
-            EGL10.EGL_NONE
-        };
-        return mEGL.eglCreatePbufferSurface(mEGLDisplay, eglConfig, surfaceAttribs);
-      } else {
-        return mEGL.eglCreateWindowSurface(mEGLDisplay, eglConfig, surfaceTexture, null);
-      }
-    }
-
     private void initEGL() {
       mEGL = (EGL10) EGLContext.getEGL();
 
@@ -357,23 +374,22 @@ public class GLContext {
           EGL10.EGL_ALPHA_SIZE, 8, EGL10.EGL_DEPTH_SIZE, 16, EGL10.EGL_STENCIL_SIZE, 0,
           EGL10.EGL_NONE,
       };
-      EGLConfig eglConfig = null;
       if (!mEGL.eglChooseConfig(mEGLDisplay, configSpec, configs, 1, configsCount)) {
         throw new IllegalArgumentException("eglChooseConfig failed " + GLUtils.getEGLErrorString(mEGL.eglGetError()));
       } else if (configsCount[0] > 0) {
-        eglConfig = configs[0];
+        mEGLConfig = configs[0];
       }
-      if (eglConfig == null) {
+      if (mEGLConfig == null) {
         throw new RuntimeException("eglConfig not initialized");
       }
 
       // Create EGLContext and EGLSurface
-      mEGLContext = createGLContext(3, eglConfig);
+      mEGLContext = createGLContext(3, mEGLConfig);
       if (mEGLContext == null || mEGLContext == EGL10.EGL_NO_CONTEXT) {
-        mEGLContext = createGLContext(2, eglConfig);
+        mEGLContext = createGLContext(2, mEGLConfig);
       }
       checkEGLError();
-      mEGLSurface = createGLSurface(eglConfig, mSurfaceTexture);
+      mEGLSurface = createSurface(mEGLConfig, mSurfaceTexture);
       checkEGLError();
       if (mEGLSurface == null || mEGLSurface == EGL10.EGL_NO_SURFACE) {
         int error = mEGL.eglGetError();
@@ -392,7 +408,7 @@ public class GLContext {
 
     private void deinitEGL() {
       makeEGLContextCurrent();
-      mEGL.eglDestroySurface(mEGLDisplay, mEGLSurface);
+      destroySurface(mEGLSurface);
       checkEGLError();
       mEGL.eglDestroyContext(mEGLDisplay, mEGLContext);
       checkEGLError();
@@ -404,7 +420,7 @@ public class GLContext {
       if (!mEGLContext.equals(mEGL.eglGetCurrentContext()) ||
           !mEGLSurface.equals(mEGL.eglGetCurrentSurface(EGL10.EGL_DRAW))) {
         checkEGLError();
-        if (!mEGL.eglMakeCurrent(mEGLDisplay, mEGLSurface, mEGLSurface, mEGLContext)) {
+        if (!makeCurrent(mEGLSurface)) {
           throw new RuntimeException("eglMakeCurrent failed " + GLUtils.getEGLErrorString(mEGL.eglGetError()));
         }
         checkEGLError();
