@@ -146,7 +146,7 @@ dependencies {
     implementation project(':expo-react-native-adapter')
     implementation project(':expo-camera')
     implementation fileTree(dir: "libs", include: ["*.jar"])
-    implementation "com.android.support:appcompat-v7:26.0.1"
+    implementation "com.android.support:appcompat-v7:26.1.0"
     implementation "com.facebook.react:react-native:+"  // From node_modules
 }
 

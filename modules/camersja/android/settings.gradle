@@ -11,6 +11,8 @@ include ':expo-core'
 project(':expo-core').projectDir = new File(rootProject.projectDir, '../node_modules/expo-core/android')
 include ':expo-camera'
 project(':expo-camera').projectDir = new File(rootProject.projectDir, '../node_modules/expo-camera/android')
+include ':expo-camera-interface'
+project(':expo-camera-interface').projectDir = new File(rootProject.projectDir, '../node_modules/expo-camera-interface/android')
 include ':expo-permissions'
 project(':expo-permissions').projectDir = new File(rootProject.projectDir, '../node_modules/expo-permissions/android')
 include ':expo-permissions-interface'
