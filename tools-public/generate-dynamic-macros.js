@@ -30,6 +30,9 @@ const ANDROID_TEST_PERMISSIONS = `
   <uses-permission android:name="android.permission.WRITE_CONTACTS" />
 `;
 
+// some files are absent on turtle builders and we don't want log errors there
+const isTurtle = process.env.TURTLE_WORKING_DIR_PATH ? true : false;
+
 let isInUniverse = true;
 try {
   let universePkgJson = require(process.env.UNIVERSE_PKG_JSON || '../../package.json');
@@ -135,7 +138,8 @@ const macrosFuncs = {
         'Exponent-SDK-Version': sdkVersion,
       });
     } catch (e) {
-      console.error(`Unable to download manifest from ${savedDevHomeUrl}: ${e.message}`);
+      const msg = `Unable to download manifest from ${savedDevHomeUrl}: ${e.message}`
+      console[isTurtle ? 'debug' : 'error'](msg);
       return '';
     }
 
