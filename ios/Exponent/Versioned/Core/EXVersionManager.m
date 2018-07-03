@@ -6,7 +6,6 @@
 #import "EXDisabledDevMenu.h"
 #import "EXDisabledRedBox.h"
 #import "EXFileSystem.h"
-#import "EXHomeModule.h"
 #import "EXVersionManager.h"
 #import "EXScopedBridgeModule.h"
 #import "EXStatusBarManager.h"
@@ -337,8 +336,9 @@ void EXRegisterScopedModule(Class moduleClass, ...)
     }
   }
   
-  if (params[@"kernel"]) {
-    EXHomeModule *homeModule = [[EXHomeModule alloc] initWithExperienceId:experienceId
+  if (params[@"browserModuleClass"]) {
+    Class browserModuleClass = params[@"browserModuleClass"];
+    id homeModule = [[browserModuleClass alloc] initWithExperienceId:experienceId
                                                     kernelServiceDelegate:services[EX_UNVERSIONED(@"EXHomeModuleManager")]
                                                                    params:params];
     [extraModules addObject:homeModule];
