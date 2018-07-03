@@ -337,7 +337,7 @@ void ABI22_0_0EXRegisterScopedModule(Class moduleClass, ...)
     }
   }
   
-  if (params[@"kernel"]) {
+  if (params[@"browserModuleClass"]) {
     ABI22_0_0EXKernelModule *kernel = [[ABI22_0_0EXKernelModule alloc] initWithExperienceId:experienceId
                                                     kernelServiceDelegate:services[@"EXKernelModuleManager"]
                                                                    params:params];

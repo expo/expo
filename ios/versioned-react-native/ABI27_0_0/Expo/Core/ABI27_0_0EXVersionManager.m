@@ -329,13 +329,13 @@ void ABI27_0_0EXRegisterScopedModule(Class moduleClass, ...)
     }
   }
   
-  /**  todo: ben
-   if (params[@"kernel"]) {
-    ABI27_0_0EXHomeModule *homeModule = [[ABI27_0_0EXHomeModule alloc] initWithExperienceId:experienceId
-                                                    kernelServiceDelegate:services[@"EXHomeModuleManager"]
-                                                                   params:params];
+  if (params[@"browserModuleClass"]) {
+    Class browserModuleClass = params[@"browserModuleClass"];
+    id homeModule = [[browserModuleClass alloc] initWithExperienceId:experienceId
+                                               kernelServiceDelegate:services[@"EXHomeModuleManager"]
+                                                              params:params];
     [extraModules addObject:homeModule];
-  } */
+  }
 
   if ([params[@"isStandardDevMenuAllowed"] boolValue] && isDeveloper) {
     [extraModules addObject:[[ABI27_0_0RCTDevMenu alloc] init]];
