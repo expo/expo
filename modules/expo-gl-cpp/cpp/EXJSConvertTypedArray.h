@@ -106,6 +106,14 @@ void *JSObjectGetTypedArrayDataMalloc(JSContextRef ctx, JSObjectRef object, size
 */
 void JSObjectSetTypedArrayData(JSContextRef ctx, JSObjectRef object, void *data, size_t length);
 
+/*!
+@function
+@abstract           Returns the byte offset of a JavaScript Typed Array object.
+@param ctx          The execution context to use.
+@param object       The Typed Array object whose byte offset to return.
+@result             The byte offset of the Typed Array object or 0 if the object is not a Typed Array object.
+*/
+size_t JSObjectGetTypedArrayByteOffsetHack(JSContextRef ctx, JSObjectRef object);
 
 #ifdef __cplusplus
 }

@@ -431,3 +431,14 @@ void JSObjectSetTypedArrayData(JSContextRef ctx, JSObjectRef object, void *data,
 		}
 	}
 }
+
+size_t JSObjectGetTypedArrayByteOffsetHack(JSContextRef ctx, JSObjectRef object) {
+  if (JSValueIsObject(ctx, object)) {
+    JSValueRef byteOffsetValue = GetPropertyNamed(ctx, object, "byteOffset");
+    
+    if (JSValueToBoolean(ctx, byteOffsetValue)) {
+      return GetInt32(ctx, byteOffsetValue);
+    }
+  }
+  return 0;
+}
