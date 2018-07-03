@@ -408,15 +408,18 @@ private:
     } else {
       void *data = nullptr;
       size_t byteLength = 0;
+      size_t byteOffset = 0;
 
       JSObjectRef jsObject = (JSObjectRef) jsVal;
       JSTypedArrayType type = JSValueGetTypedArrayType(jsCtx, jsVal, nullptr);
       if (type == kJSTypedArrayTypeArrayBuffer) {
         byteLength = JSObjectGetArrayBufferByteLength(jsCtx, jsObject, nullptr);
         data = JSObjectGetArrayBufferBytesPtr(jsCtx, jsObject, nullptr);
+        byteOffset = 0; // todo: no equivalent function for array buffer?
       } else if (type != kJSTypedArrayTypeNone) {
         byteLength = JSObjectGetTypedArrayByteLength(jsCtx, jsObject, nullptr);
         data = JSObjectGetTypedArrayBytesPtr(jsCtx, jsObject, nullptr);
+        byteOffset = JSObjectGetTypedArrayByteOffset(jsCtx, jsObject, nullptr);
       }
 
       if (pByteLength) {
@@ -429,7 +432,7 @@ private:
         return std::shared_ptr<void>(nullptr);
       }
       void *dataMalloc = malloc(byteLength);
-      memcpy(dataMalloc, data, byteLength);
+      memcpy(dataMalloc, ((char*) data) + byteOffset, byteLength);
       return std::shared_ptr<void>(dataMalloc, free);
     }
   }
