@@ -3,7 +3,6 @@
 #import <EXReactNativeAdapter/EXNativeModulesProxy.h>
 #import <objc/runtime.h>
 #import <React/RCTLog.h>
-#import <EXReactNativeAdapter/EXReactNativeAdapter.h>
 #import <EXCore/EXEventEmitter.h>
 #import <EXCore/EXViewManager.h>
 #import <EXReactNativeAdapter/EXViewManagerAdapter.h>

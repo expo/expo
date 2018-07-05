@@ -19,6 +19,14 @@
 #import <React/RCTBridge.h>
 #import <React/RCTRootView.h>
 
+@interface EXVersionManager (Legacy)
+// TODO: remove after non-unimodules SDK versions are dropped
+
+- (void)bridgeDidForeground;
+- (void)bridgeDidBackground;
+
+@end
+
 typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t sourceLength);
 
 @implementation RCTSource (EXReactAppManager)
@@ -179,12 +187,17 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 
 - (void)appStateDidBecomeActive
 {
-  [_versionManager bridgeDidForeground];
+  if ([_versionManager respondsToSelector:@selector(bridgeDidForeground)]) {
+    // supported before SDK 29 / unimodules
+    [_versionManager bridgeDidForeground];
+  }
 }
 
 - (void)appStateDidBecomeInactive
 {
-  [_versionManager bridgeDidBackground];
+  if ([_versionManager respondsToSelector:@selector(bridgeDidBackground)]) {
+    [_versionManager bridgeDidBackground];
+  }
 }
 
 #pragma mark - EXAppFetcherDataSource

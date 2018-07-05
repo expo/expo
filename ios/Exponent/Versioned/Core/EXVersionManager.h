@@ -9,8 +9,6 @@
                         logThreshold: (NSInteger)threshold;
 - (void)bridgeWillStartLoading: (id)bridge;
 - (void)bridgeFinishedLoading;
-- (void)bridgeDidForeground;
-- (void)bridgeDidBackground;
 - (void)invalidate;
 
 /**

@@ -1,7 +1,6 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 #import <EXReactNativeAdapter/EXViewManagerAdapter.h>
-#import <EXReactNativeAdapter/EXReactNativeAdapter.h>
 #import <EXReactNativeAdapter/EXModuleRegistryAdapter.h>
 #import <EXReactNativeAdapter/EXViewManagerAdapterClassesRegistry.h>
 

@@ -129,11 +129,25 @@ EX_REGISTER_MODULE();
        RCTSharedApplication().applicationState == UIApplicationStateBackground
       )
     ) {
+    [self setAppStateToBackground];
+  } else if (!_isForegrounded && RCTSharedApplication().applicationState == UIApplicationStateActive) {
+    [self setAppStateToForeground];
+  }
+}
+
+- (void)setAppStateToBackground
+{
+  if (_isForegrounded) {
     [_lifecycleListeners enumerateObjectsUsingBlock:^(id<EXAppLifecycleListener>  _Nonnull obj, BOOL * _Nonnull stop) {
       [obj onAppBackgrounded];
     }];
     _isForegrounded = false;
-  } else if (!_isForegrounded && RCTSharedApplication().applicationState == UIApplicationStateActive) {
+  }
+}
+
+- (void)setAppStateToForeground
+{
+  if (!_isForegrounded) {
     [_lifecycleListeners enumerateObjectsUsingBlock:^(id<EXAppLifecycleListener>  _Nonnull obj, BOOL * _Nonnull stop) {
       [obj onAppForegrounded];
     }];

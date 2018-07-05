@@ -7,5 +7,7 @@
 
 - (void)registerAppLifecycleListener:(id<EXAppLifecycleListener>)listener;
 - (void)unregisterAppLifecycleListener:(id<EXAppLifecycleListener>)listener;
+- (void)setAppStateToBackground;
+- (void)setAppStateToForeground;
 
 @end

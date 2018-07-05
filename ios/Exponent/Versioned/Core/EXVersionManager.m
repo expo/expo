@@ -32,8 +32,6 @@
 #import "EXScopedModuleRegistryAdapter.h"
 #import "EXScopedModuleRegistryDelegate.h"
 
-static NSNumber *EXVersionManagerIsFirstLoad;
-
 // used for initializing scoped modules which don't tie in to any kernel service.
 #define EX_KERNEL_SERVICE_NONE @"EXKernelServiceNone"
 
@@ -102,31 +100,6 @@ void EXRegisterScopedModule(Class moduleClass, ...)
 }
 
 - (void)bridgeFinishedLoading
-{
-
-}
-
-- (void)bridgeDidForeground
-{
-  if (_isFirstLoad) {
-    _isFirstLoad = NO; // in case the same VersionManager instance is used between multiple bridge loads
-  } else {
-    // some state is shared between bridges, for example status bar
-    [self resetSharedState];
-  }
-}
-
-- (void)bridgeDidBackground
-{
-  [self saveSharedState];
-}
-
-- (void)saveSharedState
-{
-
-}
-
-- (void)resetSharedState
 {
 
 }
@@ -275,11 +248,6 @@ void EXRegisterScopedModule(Class moduleClass, ...)
                          logFunction:(void (^)(NSInteger, NSInteger, NSString *, NSNumber *, NSString *))logFunction
                         logThreshold:(NSInteger)threshold
 {
-  if (EXVersionManagerIsFirstLoad == nil) {
-    // first time initializing this RN version at runtime
-    _isFirstLoad = YES;
-  }
-  EXVersionManagerIsFirstLoad = @(NO);
   RCTSetFatalHandler(fatalHandler);
   RCTSetLogThreshold(threshold);
   RCTSetLogFunction(logFunction);
