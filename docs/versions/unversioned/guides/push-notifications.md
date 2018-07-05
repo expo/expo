@@ -320,13 +320,15 @@ If there are errors that affect individual messages but not the entire request, 
 {
   "data": [{
     "status": "error",
-    "message": "\"ExponentPushToken[xxxxxxxxxxxxxxxxxxxxxx]\" is not a registered push notification recipient",
+    "message": "\\\"ExponentPushToken[xxxxxxxxxxxxxxxxxxxxxx]\\\" is not a registered push notification recipient",
     "details": {
       "error": "DeviceNotRegistered"
     }
   }]
 }
 ```
+
+> **Note:** You must check the receipt for each notification to determine if there was a problem delivering it to the Android or iOS push notification service. In particular, **do not assume a 200 HTTP status code means your notifications were sent successfully**; the granularity of push notification errors is finer than that of HTTP statuses.
 
 The HTTP status code will be 200 also if all of the messages were successfully delivered to the Android and iOS push notification services.
 
