@@ -11,6 +11,7 @@
 
 @property (nonatomic, strong) XCTestExpectation *expectToRegisterForRemoteNotifications;
 @property (nonatomic, strong) XCTestExpectation *expectToPostDeviceToken;
+@property (nonatomic, strong) XCTestExpectation *expectToFetchExpoPushToken;
 
 @end
 
@@ -40,7 +41,7 @@
   [self waitForExpectations:@[ expectToFetch ] timeout:30.0f];
 }
 
-- (void)testUpdateDeviceToken
+- (void)testDeviceToken
 {
   BOOL isDevice = YES;
 #if TARGET_IPHONE_SIMULATOR
@@ -51,9 +52,10 @@
   } else {
     _expectToRegisterForRemoteNotifications = [[XCTestExpectation alloc] initWithDescription:@"App should register for remote notifs"];
     _expectToPostDeviceToken = [[XCTestExpectation alloc] initWithDescription:@"EXApiV2Client should post the apns device token to the Expo server"];
+    _expectToFetchExpoPushToken = [[XCTestExpectation alloc] initWithDescription:@"EXApiV2Client should fetch the Expo Push token"];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_didRegisterForRemoteNotifications:) name:EXAppDidRegisterForRemoteNotificationsNotification object:nil];
     [[EXKernel sharedInstance].serviceRegistry.remoteNotificationManager registerForRemoteNotifications];
-    [self waitForExpectations:@[ _expectToRegisterForRemoteNotifications, _expectToPostDeviceToken ] timeout:30.0f];
+    [self waitForExpectations:@[ _expectToRegisterForRemoteNotifications, _expectToPostDeviceToken, _expectToFetchExpoPushToken ] timeout:30.0f];
   }
 }
 
@@ -70,6 +72,13 @@
       XCTAssertNil(postError, @"Unexpected error while posting device token: %@", postError.localizedDescription);
       [self->_expectToPostDeviceToken fulfill];
     }];
+    [[EXApiV2Client sharedClient] getExpoPushTokenForExperience:@"@exponent/home"
+                                                    deviceToken:token
+                                              completionHandler:^(NSString * _Nullable expoPushToken, NSError * _Nullable error) {
+                                                XCTAssertNil(error, @"Unexpected error while fetching Expo push token: %@", error.localizedDescription);
+                                                XCTAssert([expoPushToken isKindOfClass:[NSString class]], @"Expo Push token should be a string");
+                                                [self->_expectToFetchExpoPushToken fulfill];
+                                              }];
   }
 }
 
