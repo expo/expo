@@ -40,7 +40,7 @@ public class UIManagerModuleWrapper implements InternalModule, UIManager, Permis
   }
 
   @Override
-  public <T> void addUIBlock(final int tag, final UIBlock<T> block) {
+  public <T> void addUIBlock(final int tag, final UIBlock<T> block, final Class<T> tClass) {
     getContext().getNativeModule(UIManagerModule.class).addUIBlock(new com.facebook.react.uimanager.UIBlock() {
       @Override
       public void execute(NativeViewHierarchyManager nativeViewHierarchyManager) {
@@ -49,11 +49,12 @@ public class UIManagerModuleWrapper implements InternalModule, UIManager, Permis
           block.reject(new IllegalArgumentException("Expected view for this tag not to be null."));
         } else {
           try {
-            @SuppressWarnings("unchecked")
-            T typedView = (T) view;
-            block.resolve(typedView);
-          } catch (ClassCastException e) {
-            block.reject(new IllegalStateException("Expected view not to be of class " + view.getClass()));
+            if (tClass.isInstance(view)) {
+              block.resolve(tClass.cast(view));
+            } else {
+              block.reject(new IllegalStateException(
+                  "Expected view to be of " + tClass + "; found " + view.getClass() + " instead"));
+            }
           } catch (Exception e) {
             block.reject(e);
           }

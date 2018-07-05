@@ -320,7 +320,7 @@ public class CameraModule extends ExportedModule implements ModuleRegistryConsum
     if (manager == null) {
       block.reject(new IllegalStateException("Implementation of " + UIManager.class.getName() + " is null. Are you sure you've included a proper Expo adapter for your platform?"));
     } else {
-      manager.addUIBlock(viewTag, block);
+      manager.addUIBlock(viewTag, block, ExpoCameraView.class);
     }
   }
 }

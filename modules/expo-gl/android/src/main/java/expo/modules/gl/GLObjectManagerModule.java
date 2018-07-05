@@ -103,7 +103,7 @@ public class GLObjectManagerModule extends ExportedModule implements ModuleRegis
       public void reject(Throwable throwable) {
         promise.reject("E_GL_BAD_CAMERA_VIEW_TAG", "ExponentGLObjectManager.createCameraTextureAsync: Expected a CameraView", throwable);
       }
-    });
+    }, ExpoCameraViewInterface.class);
   }
 
   @ExpoMethod

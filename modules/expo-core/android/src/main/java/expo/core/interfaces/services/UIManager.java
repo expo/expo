@@ -1,7 +1,5 @@
 package expo.core.interfaces.services;
 
-import android.view.View;
-
 import expo.core.interfaces.LifecycleEventListener;
 
 public interface UIManager {
@@ -10,7 +8,7 @@ public interface UIManager {
     void reject(Throwable throwable);
   }
 
-  <T> void addUIBlock(int viewTag, UIBlock<T> block);
+  <T> void addUIBlock(int viewTag, UIBlock<T> block, Class<T> tClass);
   void runOnUiQueueThread(Runnable runnable);
   void runOnClientCodeQueueThread(Runnable runnable);
   void registerLifecycleEventListener(LifecycleEventListener listener);
