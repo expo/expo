@@ -66,6 +66,8 @@ Push notifications have to come from somewhere, and that somewhere is your serve
 -   [exponent-server-sdk-node](https://github.com/exponent/exponent-server-sdk-node) for Node.js. Maintained by the Expo team.
 -   [exponent-server-sdk-python](https://github.com/exponent/exponent-server-sdk-python) for Python. Maintained by community developers.
 -   [exponent-server-sdk-ruby](https://github.com/exponent/exponent-server-sdk-ruby) for Ruby. Maintained by community developers.
+- [exponent-server-sdk-rust]
+(https://github.com/expo/expo-server-sdk-rust) for Rust. Maintained by community developers.
 -   [ExpoNotificationsBundle](https://github.com/solvecrew/ExpoNotificationsBundle) for Symfony. Maintained by SolveCrew.
 -   [exponent-server-sdk-php](https://github.com/Alymosul/exponent-server-sdk-php) for PHP. Maintained by community developers.
 -   [exponent-server-sdk-golang](https://github.com/oliveroneill/exponent-server-sdk-golang) for Golang. Maintained by community developers.
