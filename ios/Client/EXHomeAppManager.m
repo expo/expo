@@ -77,7 +77,7 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
                                    @"bridge": bridge,
                                    @"browserModuleClass": [EXHomeModule class],
                                    @"constants": @{
-                                       @"deviceId": [EXKernel deviceInstallUUID],
+                                       @"installationId": [EXKernel deviceInstallUUID],
                                        @"expoRuntimeVersion": [EXBuildConstants sharedInstance].expoRuntimeVersion,
                                        @"linkingUri": @"exp://",
                                        @"manifest": self.appRecord.appLoader.manifest,
