@@ -12,7 +12,7 @@ Returns `expo`, `standalone`, or `guest`. If `expo`, the experience is running i
 
 The version string of the Expo client currently running.
 
-### `Expo.Constants.deviceId`
+### `Expo.Constants.installationId`
 
 An identifier that is unique to this particular device and installation of the Expo client.
 
