@@ -31,10 +31,11 @@
     ABI26_0_0EXPermissionStatusGranted :
     ABI26_0_0EXPermissionStatusUndetermined;
   NSMutableDictionary *permissions = [[ABI26_0_0EXLocalNotificationRequester permissions] mutableCopy];
-  [permissions setValuesForKeysWithDictionary:@{
-                                                @"status": [ABI26_0_0EXPermissions permissionStringForStatus:status],
-                                                @"expires": ABI26_0_0EXPermissionExpiresNever,
-                                                }];
+  // In order to receive a device token, we need to have permission for user-facing notifications
+  if (status != ABI26_0_0EXPermissionStatusGranted) {
+    permissions[@"status"] = [ABI26_0_0EXPermissions permissionStringForStatus:status];
+  }
+  permissions[@"expires"] = ABI26_0_0EXPermissionExpiresNever;
   return permissions;
 }
 
