@@ -139,6 +139,7 @@
 		8047E1D774FB856545D1108C /* libPods-Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1275A103188A883E5249B475 /* libPods-Tests.a */; };
 		B505BA2020CAF80D0046ACFB /* EXEnvironmentMocks.m in Sources */ = {isa = PBXBuildFile; fileRef = B505BA1A20CAF80D0046ACFB /* EXEnvironmentMocks.m */; };
 		B505BA2120CAF80D0046ACFB /* EXEnvironmentTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B505BA1D20CAF80D0046ACFB /* EXEnvironmentTests.m */; };
+		B50C4C0B20EEBCE20090E5F9 /* EXApiV2Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = B50C4C0A20EEBCE20090E5F9 /* EXApiV2Tests.m */; };
 		B51333431CE649FE00E9FC9E /* ExponentIntegrationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B51333421CE649FE00E9FC9E /* ExponentIntegrationTests.m */; };
 		B52217D61F146658002241BA /* EXKernelServiceRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = B52217D51F146658002241BA /* EXKernelServiceRegistry.m */; };
 		B526B5081E6A543500606CAB /* ExpoKit.m in Sources */ = {isa = PBXBuildFile; fileRef = B526B5051E6A543500606CAB /* ExpoKit.m */; };
@@ -621,6 +622,7 @@
 		B505BA1B20CAF80D0046ACFB /* EXEnvironment+Tests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "EXEnvironment+Tests.h"; sourceTree = "<group>"; };
 		B505BA1C20CAF80D0046ACFB /* EXEnvironmentMocks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXEnvironmentMocks.h; sourceTree = "<group>"; };
 		B505BA1D20CAF80D0046ACFB /* EXEnvironmentTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXEnvironmentTests.m; sourceTree = "<group>"; };
+		B50C4C0A20EEBCE20090E5F9 /* EXApiV2Tests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXApiV2Tests.m; sourceTree = "<group>"; };
 		B51333401CE649FE00E9FC9E /* ExponentIntegrationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ExponentIntegrationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B51333421CE649FE00E9FC9E /* ExponentIntegrationTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ExponentIntegrationTests.m; sourceTree = "<group>"; };
 		B51333441CE649FE00E9FC9E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -1315,8 +1317,9 @@
 		B505BA0F20CAF77A0046ACFB /* Tests */ = {
 			isa = PBXGroup;
 			children = (
-				B505BA1920CAF80D0046ACFB /* Environment */,
+				B50C4C0920EEBCBB0090E5F9 /* Api */,
 				B5854EDE20D07996001D2F6E /* AppLoader */,
+				B505BA1920CAF80D0046ACFB /* Environment */,
 				B5854EDC20D07996001D2F6E /* Linking */,
 				B505BA1220CAF77A0046ACFB /* Info.plist */,
 			);
@@ -1338,6 +1341,14 @@
 				B5854EDA20D07944001D2F6E /* EXProdServiceTestCase.m */,
 			);
 			path = Environment;
+			sourceTree = "<group>";
+		};
+		B50C4C0920EEBCBB0090E5F9 /* Api */ = {
+			isa = PBXGroup;
+			children = (
+				B50C4C0A20EEBCE20090E5F9 /* EXApiV2Tests.m */,
+			);
+			path = Api;
 			sourceTree = "<group>";
 		};
 		B51333411CE649FE00E9FC9E /* ExponentIntegrationTests */ = {
@@ -2839,6 +2850,7 @@
 				B5FABDF020DD8E6800642528 /* EXAppLoaderRequestExpectation.m in Sources */,
 				B505BA2020CAF80D0046ACFB /* EXEnvironmentMocks.m in Sources */,
 				B5854EDB20D07944001D2F6E /* EXProdServiceTestCase.m in Sources */,
+				B50C4C0B20EEBCE20090E5F9 /* EXApiV2Tests.m in Sources */,
 				B5FABDF820DD942A00642528 /* EXAppLoaderRequestTests.m in Sources */,
 				B5854ED720D078C6001D2F6E /* EXClientTestCase.m in Sources */,
 				B505BA2120CAF80D0046ACFB /* EXEnvironmentTests.m in Sources */,
