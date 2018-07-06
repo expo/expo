@@ -261,7 +261,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
                            @"manifest": _appRecord.appLoader.manifest,
                            @"constants": @{
                                @"linkingUri": RCTNullIfNil([EXKernelLinkingManager linkingUriForExperienceUri:_appRecord.appLoader.manifestUrl useLegacy:[self _compareVersionTo:27] == NSOrderedAscending]),
-                               @"deviceId": [EXKernel deviceInstallUUID],
+                               @"installationId": [EXKernel deviceInstallUUID],
                                @"expoRuntimeVersion": [EXBuildConstants sharedInstance].expoRuntimeVersion,
                                @"manifest": _appRecord.appLoader.manifest,
                                @"appOwnership": [self _appOwnership],
