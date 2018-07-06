@@ -31,10 +31,11 @@
     EXPermissionStatusGranted :
     EXPermissionStatusUndetermined;
   NSMutableDictionary *permissions = [[EXLocalNotificationRequester permissions] mutableCopy];
-  [permissions setValuesForKeysWithDictionary:@{
-                                                @"status": [EXPermissions permissionStringForStatus:status],
-                                                @"expires": EXPermissionExpiresNever,
-                                                }];
+  // In order to receive a device token, we need to have permission for user-facing notifications
+  if (status != EXPermissionStatusGranted) {
+    permissions[@"status"] = [EXPermissions permissionStringForStatus:status];
+  }
+  permissions[@"expires"] = EXPermissionExpiresNever;
   return permissions;
 }
 
