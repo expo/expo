@@ -7,6 +7,7 @@ title: FaceDetector
 ## Known issues
 
 - Android does not recognize faces that aren't aligned with the interface (top of the interface matches top of the head).
+- You cannot use this without detaching. More information [here](https://docs.expo.io/versions/latest/expokit/advanced-expokit-topics#enabling-optional-expo-modules-on-ios)
 
 ## Comprehensive Example
 
