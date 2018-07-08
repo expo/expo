@@ -31,7 +31,7 @@ A short description of what your app is and why it is great.
 
 ## "slug"
 
-**Required**. The friendly url name for publishing. eg: `expo.io/@your-username/slug`.
+**Required**. The friendly url name for publishing. eg: `my-app-name` will refer to the `expo.io/@your-username/my-app-name` project.
 
 ## "privacy"
 
