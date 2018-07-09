@@ -14,6 +14,7 @@ If you are running ExpoKit inside a native project, upgrading will require extra
 
 ## Past Release Notes
 
+- [28.0.0](https://blog.expo.io/expo-sdk-v28-0-0-is-now-available-f30e8253b530)
 - [27.0.0](https://blog.expo.io/expo-sdk-v27-0-0-is-now-available-898bf1e5b0e4)
 - [26.0.0](https://blog.expo.io/expo-sdk-v26-0-0-is-now-available-2be6d9805b31)
 - [25.0.0](https://blog.expo.io/expo-sdk-v25-0-0-is-now-available-714d10a8c3f7)
