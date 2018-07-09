@@ -62,8 +62,6 @@ Detaching requires the same keys as building a standalone app. [Follow these ins
 From your project directory, run `exp detach`. This will download the required dependencies and
 build native projects under the `ios` and `android` directories.
 
-> **NOTE:** for iOS build to work, you also have to run `pod repo update` and `pod install` under the `ios` directory.
-
 ### 4. Set up and Run your native project
 
 Congrats, you now have a native project with ExpoKit! Follow the directions under [Developing with ExpoKit](expokit.html) to get things set up and running.
