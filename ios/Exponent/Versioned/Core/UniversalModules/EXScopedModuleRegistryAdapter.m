@@ -3,7 +3,6 @@
 #import "EXScopedModuleRegistry.h"
 
 #import "EXScopedModuleRegistryAdapter.h"
-#import "EXPermissionsBinding.h"
 #import "EXFileSystemBinding.h"
 #import "EXSensorsManagerBinding.h"
 #import "EXConstantsBinding.h"
@@ -20,9 +19,6 @@
 
   EXFileSystemBinding *fileSystemBinding = [[EXFileSystemBinding alloc] initWithScopedModuleDelegate:kernelServices[EX_UNVERSIONED(@"EXFileSystemManager")]];
   [moduleRegistry registerInternalModule:fileSystemBinding];
-
-  EXPermissionsBinding *permissionsBinding = [[EXPermissionsBinding alloc] initWithPermissions:scopedModulesDictionary[[EXPermissions class]]];
-  [moduleRegistry registerInternalModule:permissionsBinding];
 
   EXSensorsManagerBinding *sensorsManagerBinding = [[EXSensorsManagerBinding alloc] initWithExperienceId:experienceId andKernelService:kernelServices[EX_UNVERSIONED(@"EXSensorManager")]];
   [moduleRegistry registerInternalModule:sensorsManagerBinding];

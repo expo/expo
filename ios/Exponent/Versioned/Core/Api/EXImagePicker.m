@@ -4,11 +4,12 @@
 #import <React/RCTUtils.h>
 #import <AssetsLibrary/AssetsLibrary.h>
 
-#import "EXModuleRegistryBinding.h"
 #import <EXFileSystemInterface/EXFileSystemInterface.h>
+#import <EXPermissions/EXPermissions.h>
+
+#import "EXModuleRegistryBinding.h"
 #import "EXCameraPermissionRequester.h"
 #import "EXCameraRollRequester.h"
-#import "EXPermissions.h"
 #import "EXScopedModuleRegistry.h"
 #import "EXUtil.h"
 

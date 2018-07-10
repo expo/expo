@@ -4,6 +4,8 @@
 #import "EXPermissionsManager.h"
 #import "EXUtil.h"
 
+#import <EXPermissions/EXPermissions.h>
+
 NSString * const kEXPermissionsKey = @"ExpoPermissions";
 
 @implementation EXPermissionsManager
