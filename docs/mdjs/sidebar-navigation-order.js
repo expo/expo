@@ -14,6 +14,7 @@ const ROOT = [
 
 const INTRODUCTION = [
   'Quick Start',
+  'Upgrading Expo SDK',
   'Installation',
   'XDE Tour',
   'Project Lifecycle',
@@ -183,7 +184,6 @@ const REACT_NATIVE = [
   'VibrationIOS',
   'View Style Props',
 ];
-
 
 module.exports = {
   ROOT,
