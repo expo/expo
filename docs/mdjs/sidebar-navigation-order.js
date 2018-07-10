@@ -14,7 +14,6 @@ const ROOT = [
 
 const INTRODUCTION = [
   'Quick Start',
-  'Upgrading Expo SDK',
   'Installation',
   'XDE Tour',
   'Project Lifecycle',
@@ -51,6 +50,8 @@ const GUIDES = [
 
 const WORKING_WITH_EXPO = [
   'Up and Running',
+  'Upgrading Expo',
+  'Upgrading Expo SDK Walkthrough',
   'Glossary of terms',
   'Configuration with app.json',
   'Development Mode',
@@ -67,7 +68,6 @@ const WORKING_WITH_EXPO = [
   'Advanced ExpoKit Topics',
   'Expo & "Create React Native App"',
   'How Expo Works',
-  'Upgrading Expo',
 ];
 
 const DISTRIBUTION = [

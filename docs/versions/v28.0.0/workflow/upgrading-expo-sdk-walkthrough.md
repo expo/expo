@@ -1,5 +1,5 @@
 ---
-title: Upgrading Expo SDK
+title: Upgrading Expo SDK Walkthrough
 ---
 
 If you are a couple of versions behind, upgrading your projects Expo SDK version can be difficult because of the amount of breaking changes and deprecations in each upgrade. Don't worry, here are all the breaking changes in each SDK version upgrade.
