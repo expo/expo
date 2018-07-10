@@ -24,7 +24,9 @@ import expo.modules.constants.ConstantsPackage;
 import expo.modules.facedetector.FaceDetectorPackage;
 import expo.modules.filesystem.FileSystemPackage;
 import expo.modules.gl.GLPackage;
+import expo.modules.permissions.PermissionsPackage;
 import expo.modules.sensors.SensorsPackage;
+import expo.modules.sms.SMSPackage;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.kernel.ExperienceId;
@@ -58,7 +60,6 @@ import versioned.host.exp.exponent.modules.api.KeyboardModule;
 import versioned.host.exp.exponent.modules.api.LocationModule;
 import versioned.host.exp.exponent.modules.api.LocalizationModule;
 import versioned.host.exp.exponent.modules.api.NotificationsModule;
-import versioned.host.exp.exponent.modules.api.PermissionsModule;
 import versioned.host.exp.exponent.modules.api.RNViewShotModule;
 import versioned.host.exp.exponent.modules.api.SQLiteModule;
 import versioned.host.exp.exponent.modules.api.ScreenOrientationModule;
@@ -102,7 +103,9 @@ public class ExponentPackage implements ReactPackage {
       new FileSystemPackage(),
       new FaceDetectorPackage(),
       new ConstantsPackage(),
-      new GLPackage()
+      new GLPackage(),
+      new PermissionsPackage(),
+      new SMSPackage()
   );
 
   private static final String TAG = ExponentPackage.class.getSimpleName();
@@ -183,7 +186,6 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new FabricModule(reactContext, mExperienceProperties));
         nativeModules.add(new FingerprintModule(reactContext));
         nativeModules.add(new GoogleModule(reactContext, mExperienceProperties));
-        nativeModules.add(new PermissionsModule(reactContext, experienceId, mManifest));
         nativeModules.add(new AmplitudeModule(reactContext, scopedContext));
         nativeModules.add(new SegmentModule(reactContext, scopedContext));
         nativeModules.add(new RNViewShotModule(reactContext, scopedContext));

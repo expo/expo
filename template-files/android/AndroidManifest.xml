@@ -36,6 +36,7 @@
   <uses-permission android:name="android.permission.RECORD_AUDIO" />
   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
   <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+  <uses-permission android:name="android.permission.READ_SMS" />
   <!-- END OPTIONAL PERMISSIONS -->
 
   <!-- ADD TEST PERMISSIONS HERE -->
