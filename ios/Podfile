@@ -40,6 +40,9 @@ target 'Exponent' do
   pod 'EXFileSystem',
     :path => "../modules/expo-file-system/ios",
     :inhibit_warnings => true
+  pod 'EXPermissions',
+    :path => "../modules/expo-permissions/ios",
+    :inhibit_warnings => true
   pod 'EXCameraInterface',
     :path => "../modules/expo-camera-interface/ios",
     :inhibit_warnings => true

@@ -2,8 +2,9 @@
 
 #import "EXContacts.h"
 #import "EXContactsRequester.h"
-#import "EXPermissions.h"
 #import "EXScopedModuleRegistry.h"
+
+#import <EXPermissions/EXPermissions.h>
 
 @import Contacts;
 

@@ -3,9 +3,10 @@
 #import "EXCalendar.h"
 #import "EXCalendarConverter.h"
 #import "EXScopedModuleRegistry.h"
-#import "EXPermissions.h"
 #import "EXCalendarRequester.h"
 #import "EXRemindersRequester.h"
+
+#import <EXPermissions/EXPermissions.h>
 #import <React/RCTConvert.h>
 #import <React/RCTUtils.h>
 #import <EventKit/EventKit.h>
@@ -15,7 +16,7 @@
 
 @property (nonatomic, strong) EKEventStore *eventStore;
 @property (nonatomic) BOOL isAccessToEventStoreGranted;
-@property (nonatomic, weak) id kernelPermissionsServiceDelegate;
+@property (nonatomic, weak) id<EXPermissionsScopedModuleDelegate> kernelPermissionsServiceDelegate;
 
 @end
 
@@ -25,7 +26,7 @@
 
 EX_EXPORT_SCOPED_MODULE(ExponentCalendar, PermissionsManager);
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId kernelServiceDelegate:(id)kernelServiceInstance params:(NSDictionary *)params
+- (instancetype)initWithExperienceId:(NSString *)experienceId kernelServiceDelegate:(id<EXPermissionsScopedModuleDelegate>)kernelServiceInstance params:(NSDictionary *)params
 {
   if (self = [super initWithExperienceId:experienceId kernelServiceDelegate:kernelServiceInstance params:params]) {
     _kernelPermissionsServiceDelegate = kernelServiceInstance;

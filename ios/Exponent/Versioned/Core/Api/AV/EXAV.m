@@ -6,14 +6,15 @@
 #import <React/RCTUIManagerUtils.h>
 #import <React/RCTUtils.h>
 
+#import <EXFileSystemInterface/EXFileSystemInterface.h>
+#import <EXPermissions/EXPermissions.h>
+
 #import "EXAV.h"
 #import "EXAVPlayerData.h"
-#import <EXFileSystemInterface/EXFileSystemInterface.h>
 #import "EXModuleRegistryBinding.h"
 #import "EXVideoView.h"
 #import "EXUnversioned.h"
 #import "EXAudioRecordingPermissionRequester.h"
-#import "EXPermissions.h"
 #import "EXScopedModuleRegistry.h"
 
 NSString *const EXAudioRecordingOptionsKey = @"ios";

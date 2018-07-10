@@ -1,6 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "EXPermissions.h"
+#import <EXPermissions/EXPermissions.h>
 
 @interface EXPermissionsManager : NSObject <EXPermissionsScopedModuleDelegate>
 

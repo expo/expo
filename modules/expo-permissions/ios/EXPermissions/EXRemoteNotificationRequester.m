@@ -3,7 +3,7 @@
 #import <EXPermissions/EXRemoteNotificationRequester.h>
 #import <EXPermissions/EXLocalNotificationRequester.h>
 
-NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDidRegisterForRemoteNotificationsNotification";
+NSString * const EXAppDidRegisterForRemoteNotificationsNotificationName = @"EXAppDidRegisterForRemoteNotificationsNotification";
 
 @interface EXRemoteNotificationRequester ()
 
@@ -53,7 +53,7 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDid
   } else {
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(_handleDidRegisterForRemoteNotifications:)
-                                                 name:EXAppDidRegisterForRemoteNotificationsNotification
+                                                 name:EXAppDidRegisterForRemoteNotificationsNotificationName
                                                object:nil];
     _localNotificationRequester = [[EXLocalNotificationRequester alloc] init];
     [_localNotificationRequester setDelegate:self];

@@ -2,7 +2,7 @@
 
 #import <EXPermissions/EXPermissions.h>
 
-FOUNDATION_EXPORT NSString * const EXAppDidRegisterForRemoteNotificationsNotification;
+FOUNDATION_EXPORT NSString * const EXAppDidRegisterForRemoteNotificationsNotificationName;
 
 @interface EXRemoteNotificationRequester : NSObject <EXPermissionRequester, EXPermissionRequesterDelegate>
 

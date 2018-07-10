@@ -25,6 +25,13 @@ typedef enum EXPermissionStatus {
 
 @end
 
+@protocol EXPermissionsScopedModuleDelegate
+
+- (BOOL)hasGrantedPermission:(NSString *)permission forExperience:(NSString *)experienceId;
+- (BOOL)savePermission:(NSDictionary *)permission ofType:(NSString *)type forExperience:(NSString *)experienceId;
+
+@end
+
 @interface EXPermissions : EXExportedModule <EXPermissionRequesterDelegate, EXPermissions>
 
 - (NSDictionary *)getPermissionsForResource:(NSString *)resource;

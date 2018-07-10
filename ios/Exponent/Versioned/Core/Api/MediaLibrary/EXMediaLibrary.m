@@ -8,11 +8,11 @@
 
 #import "EXMediaLibrary.h"
 #import "EXModuleRegistryBinding.h"
-#import <EXFileSystemInterface/EXFileSystemInterface.h>
-#import "EXPermissions.h"
 #import "EXScopedModuleRegistry.h"
 #import "EXCameraRollRequester.h"
 
+#import <EXFileSystemInterface/EXFileSystemInterface.h>
+#import <EXPermissions/EXPermissions.h>
 #import <Photos/Photos.h>
 #import <React/RCTUIManager.h>
 #import <MobileCoreServices/MobileCoreServices.h>

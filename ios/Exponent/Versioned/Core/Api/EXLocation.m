@@ -3,7 +3,6 @@
 #import "EXLocation.h"
 #import "EXUnversioned.h"
 #import "EXScopedModuleRegistry.h"
-#import "EXPermissions.h"
 
 #import <CoreLocation/CLLocationManager.h>
 #import <CoreLocation/CLLocationManagerDelegate.h>
@@ -15,6 +14,8 @@
 #import <React/RCTConvert.h>
 #import <React/RCTEventDispatcher.h>
 #import <React/RCTLog.h>
+
+#import <EXPermissions/EXPermissions.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
