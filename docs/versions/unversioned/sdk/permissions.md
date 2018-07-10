@@ -102,6 +102,10 @@ The permission type for reading or writing to the calendar.
 
 The permission type for reading or writing reminders (iOS only).
 
+### `Expo.Permissions.SMS`
+SDK API
+The permission for accesing SMS storage.
+
 ### Permissions equivalents inside `app.json`
 
 If you specified `android.permissions` inside your `app.json` ([read more about configuration](../workflow/configuration.html#android))  you have to use values corresponding to their `Expo.Permissions` equivalents. 
