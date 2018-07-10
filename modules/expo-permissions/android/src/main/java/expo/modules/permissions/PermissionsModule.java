@@ -101,6 +101,10 @@ public class PermissionsModule extends ExportedModule implements ModuleRegistryC
           askForCalendarPermissions(promise);
           break;
         }
+        case "SMS": {
+          askForSimplePermission(Manifest.permission.READ_SMS, promise);
+          break;
+        }
         default:
           promise.reject("E_PERMISSION_UNSUPPORTED", String.format("Cannot request permission: %s", type));
       }
@@ -135,6 +139,9 @@ public class PermissionsModule extends ExportedModule implements ModuleRegistryC
       }
       case "calendar": {
         return getCalendarPermissions();
+      }
+      case "SMS": {
+        return getSimplePermission(Manifest.permission.READ_SMS);
       }
       default:
         return null;
@@ -327,7 +334,7 @@ public class PermissionsModule extends ExportedModule implements ModuleRegistryC
   private Bundle getCalendarPermissions() {
     Bundle response = new Bundle();
 
-    if (Build.VERSION.SDK_INT >= 23) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       int readPermission = ContextCompat.checkSelfPermission(getContext(),
         Manifest.permission.READ_CALENDAR);
       int writePermission = ContextCompat.checkSelfPermission(getContext(),

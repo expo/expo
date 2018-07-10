@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+import expo.core.interfaces.ActivityProvider;
 import expo.core.interfaces.InternalModule;
 import expo.core.interfaces.LifecycleEventListener;
 import expo.core.interfaces.JavaScriptContextProvider;
@@ -22,7 +23,13 @@ import expo.core.interfaces.services.UIManager;
 import expo.interfaces.permissions.PermissionsManager;
 import expo.interfaces.permissions.PermissionsListener;
 
-public class UIManagerModuleWrapper implements InternalModule, UIManager, PermissionsManager, JavaScriptContextProvider {
+public class UIManagerModuleWrapper implements
+    ActivityProvider,
+    JavaScriptContextProvider,
+    InternalModule,
+    PermissionsManager,
+    UIManager
+{
   private ReactContext mReactContext;
   private Map<LifecycleEventListener, com.facebook.react.bridge.LifecycleEventListener> mLifecycleListenersMap = new WeakHashMap<>();
 
@@ -36,7 +43,12 @@ public class UIManagerModuleWrapper implements InternalModule, UIManager, Permis
 
   @Override
   public List<Class> getExportedInterfaces() {
-    return Arrays.<Class>asList(PermissionsManager.class, UIManager.class, JavaScriptContextProvider.class);
+    return Arrays.<Class>asList(
+      ActivityProvider.class,
+      JavaScriptContextProvider.class,
+      PermissionsManager.class,
+      UIManager.class
+    );
   }
 
   @Override
@@ -143,5 +155,10 @@ public class UIManagerModuleWrapper implements InternalModule, UIManager, Permis
 
   public long getJavaScriptContextRef() {
     return mReactContext.getJavaScriptContextHolder().get();
+  }
+
+  @Override
+  public Activity getCurrentActivity() {
+    return getContext().getCurrentActivity();
   }
 }

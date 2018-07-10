@@ -1,5 +1,5 @@
 // @flow
-
+import { Platform } from 'react-native';
 import { NativeModulesProxy } from 'expo-core';
 
 const { ExponentPermissions: Permissions } = NativeModulesProxy;
@@ -14,7 +14,8 @@ type PermissionType =
   | 'notifications'
   | 'reminders'
   | 'systemBrightness'
-  | 'userFacingNotifications';
+  | 'userFacingNotifications'
+  | 'SMS';
 type PermissionStatus = 'undetermined' | 'granted' | 'denied';
 type PermissionExpires = 'never';
 type PermissionDetailsLocationIOS = {
@@ -31,10 +32,18 @@ type PermissionResponse = {
 };
 
 export async function getAsync(type: PermissionType): Promise<PermissionResponse> {
+  // iOS doesn't have SMS_READ nor SMS_SEND permission therefore we always mock it to be granted
+  if (type === SMS && Platform.OS === 'ios') {
+    return { status: 'granted', expires: 'never', ios: { scope: 'fine' } };
+  }
   return Permissions.getAsync(type);
 }
 
 export async function askAsync(type: PermissionType): Promise<PermissionResponse> {
+  // iOS is not having SMS_READ nor SMS_SEND permission therefore we always mock it to be granted
+  if (type === SMS && Platform.OS === 'ios') {
+    return { status: 'granted', expires: 'never', ios: { scope: 'fine' } };
+  }
   return Permissions.askAsync(type);
 }
 
@@ -48,3 +57,4 @@ export const SYSTEM_BRIGHTNESS = 'systemBrightness';
 export const CAMERA_ROLL = 'cameraRoll';
 export const CALENDAR = 'calendar';
 export const REMINDERS = 'reminders';
+export const SMS = 'SMS';

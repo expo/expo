@@ -16,6 +16,7 @@ const dirs = [
   'expo-react-native-adapter',
   'expo-sensors',
   'expo-sensors-interface',
+  'expo-sms',
 ];
 
-dirs.forEach((dir) => proc.spawnSync('yarn', { cwd: dir, stdio: 'inherit' }));
+dirs.forEach(dir => proc.spawnSync('yarn', { cwd: dir, stdio: 'inherit' }));
