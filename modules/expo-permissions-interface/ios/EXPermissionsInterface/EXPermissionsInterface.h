@@ -2,9 +2,15 @@
 
 #import <Foundation/Foundation.h>
 
-@protocol EXPermissions
+@protocol EXPermissionsInterface
 
 - (NSDictionary *)getPermissionsForResource:(NSString *)resource;
 
 @end
 
+@protocol EXPermissionsServiceInterface
+
+- (BOOL)hasGrantedPermission:(NSString *)permission forExperience:(NSString *)experienceId;
+- (BOOL)savePermission:(NSDictionary *)permission ofType:(NSString *)type forExperience:(NSString *)experienceId;
+
+@end

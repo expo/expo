@@ -1,6 +1,7 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
 #import <EXCore/EXExportedModule.h>
+#import <EXCore/EXModuleRegistryConsumer.h>
 #import <EXPermissionsInterface/EXPermissionsInterface.h>
 
 FOUNDATION_EXPORT NSString * const EXPermissionExpiresNever;
@@ -32,7 +33,7 @@ typedef enum EXPermissionStatus {
 
 @end
 
-@interface EXPermissions : EXExportedModule <EXPermissionRequesterDelegate, EXPermissions>
+@interface EXPermissions : EXExportedModule <EXPermissionRequesterDelegate, EXPermissionsInterface, EXModuleRegistryConsumer>
 
 - (NSDictionary *)getPermissionsForResource:(NSString *)resource;
 

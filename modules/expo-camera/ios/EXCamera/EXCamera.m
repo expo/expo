@@ -14,7 +14,7 @@
 @property (nonatomic, weak) id<EXFileSystemInterface> fileSystem;
 @property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
 @property (nonatomic, strong) id<EXFaceDetectorManager> faceDetectorManager;
-@property (nonatomic, weak) id<EXPermissions> permissionsManager;
+@property (nonatomic, weak) id<EXPermissionsInterface> permissionsManager;
 @property (nonatomic, weak) id<EXAppLifecycleService> lifecycleManager;
 
 @property (nonatomic, assign, getter=isSessionPaused) BOOL paused;
@@ -43,7 +43,7 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
     _faceDetectorManager = [self createFaceDetectorManager];
     _lifecycleManager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXAppLifecycleService)];
     _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
-    _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXPermissions)];
+    _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXPermissionsInterface)];
 #if !(TARGET_IPHONE_SIMULATOR)
     _previewLayer = [AVCaptureVideoPreviewLayer layerWithSession:_session];
     _previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;

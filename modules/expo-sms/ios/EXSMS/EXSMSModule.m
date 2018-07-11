@@ -7,7 +7,7 @@
 
 @interface EXSMSModule () <MFMessageComposeViewControllerDelegate>
 
-@property (nonatomic, weak) id<EXPermissions> permissionsManager;
+@property (nonatomic, weak) id<EXPermissionsInterface> permissionsManager;
 @property (nonatomic, weak) id<EXUtilitiesInterface> utils;
 @property (nonatomic, strong) EXPromiseResolveBlock resolve;
 @property (nonatomic, strong) EXPromiseRejectBlock reject;
@@ -20,7 +20,7 @@ EX_EXPORT_MODULE(ExpoSMS);
 
 - (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
-  _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXPermissions)];
+  _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXPermissionsInterface)];
   _utils = [moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)];
 }
 
