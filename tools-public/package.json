@@ -31,7 +31,7 @@
     "sharp": "^0.20.4",
     "shelljs": "^0.7.0",
     "uuid": "^3.1.0",
-    "xdl": "^48.0.6"
+    "xdl": "^50.5.0"
   },
   "devDependencies": {
     "jest": "21.2.0"

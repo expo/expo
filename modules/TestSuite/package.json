@@ -18,7 +18,7 @@
     "jasmine-core": "^3.1.0",
     "lodash": "^4.17.5",
     "react": "^16.3.1",
-    "react-native#booyah-bootstrap": "0.55.4"
+    "react-native": "0.55.4"
   },
   "devDependencies": {
     "babel-jest": "22.4.3",
