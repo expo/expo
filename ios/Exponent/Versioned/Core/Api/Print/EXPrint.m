@@ -9,9 +9,11 @@
 #import "EXPrint.h"
 #import "EXScopedModuleRegistry.h"
 #import "EXUtil.h"
-#import <EXFileSystemInterface/EXFileSystemInterface.h>
 #import "EXModuleRegistryBinding.h"
 #import "EXPrintPDFRenderTask.h"
+
+#import <EXCore/EXUtilitiesInterface.h>
+#import <EXFileSystemInterface/EXFileSystemInterface.h>
 
 #import <React/RCTConvert.h>
 #import <React/RCTUtils.h>
@@ -222,14 +224,16 @@ RCT_REMAP_METHOD(printToFileAsync,
 
 - (UIViewController *)printInteractionControllerParentViewController:(UIPrintInteractionController *)printInteractionController
 {
-  return _bridge.scopedModules.util.currentViewController;
+  id<EXUtilitiesInterface> utils = [_bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)];
+  return utils.currentViewController;
 }
 
 #pragma mark - UIPrinterPickerControllerDelegate
 
 - (UIViewController *)printerPickerControllerParentViewController:(UIPrinterPickerController *)printerPickerController
 {
-  return _bridge.scopedModules.util.currentViewController;
+  id<EXUtilitiesInterface> utils = [_bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)];
+  return utils.currentViewController;
 }
 
 #pragma mark - internal

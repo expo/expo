@@ -4,6 +4,7 @@
 #import "EXScopedModuleRegistry.h"
 #import "EXUtil.h"
 #import "EXModuleRegistryBinding.h"
+#import <EXCore/EXUtilitiesInterface.h>
 #import <EXFileSystemInterface/EXFileSystemInterface.h>
 
 #import <MobileCoreServices/MobileCoreServices.h>
@@ -82,13 +83,15 @@ RCT_EXPORT_METHOD(getDocumentAsync:(NSDictionary *)options resolver:(RCTPromiseR
     documentMenuVC.modalPresentationStyle = UIModalPresentationPageSheet;
   }
 
-  [_bridge.scopedModules.util.currentViewController presentViewController:documentMenuVC animated:YES completion:nil];
+  id<EXUtilitiesInterface> utils = [_bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)];
+  [utils.currentViewController presentViewController:documentMenuVC animated:YES completion:nil];
 }
 
 - (void)documentMenu:(UIDocumentMenuViewController *)documentMenu didPickDocumentPicker:(UIDocumentPickerViewController *)documentPicker
 {
   documentPicker.delegate = self;
-  [_bridge.scopedModules.util.currentViewController presentViewController:documentPicker animated:YES completion:nil];
+  id<EXUtilitiesInterface> utils = [_bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)];
+  [utils.currentViewController presentViewController:documentPicker animated:YES completion:nil];
 }
 
 - (void)documentMenuWasCancelled:(UIDocumentMenuViewController *)documentMenu

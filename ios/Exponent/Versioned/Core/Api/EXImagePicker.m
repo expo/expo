@@ -6,12 +6,12 @@
 
 #import <EXFileSystemInterface/EXFileSystemInterface.h>
 #import <EXPermissions/EXPermissions.h>
+#import <EXCore/EXUtilitiesInterface.h>
 
 #import "EXModuleRegistryBinding.h"
 #import "EXCameraPermissionRequester.h"
 #import "EXCameraRollRequester.h"
 #import "EXScopedModuleRegistry.h"
-#import "EXUtil.h"
 
 @import MobileCoreServices;
 @import Photos;
@@ -143,7 +143,8 @@ RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
   self.picker.delegate = self;
 
   dispatch_async(dispatch_get_main_queue(), ^{
-    [self.bridge.scopedModules.util.currentViewController presentViewController:self.picker animated:YES completion:nil];
+    id<EXUtilitiesInterface> utils = [self->_bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)];
+    [utils.currentViewController presentViewController:self.picker animated:YES completion:nil];
   });
 }
 
