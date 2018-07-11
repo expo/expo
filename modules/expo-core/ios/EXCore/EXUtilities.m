@@ -1,8 +1,53 @@
 // Copyright © 2018 650 Industries. All rights reserved.
 
+#import <EXCore/EXDefines.h>
 #import <EXCore/EXUtilities.h>
 
+@interface EXUtilities ()
+
+@property (nonatomic, nullable, weak) EXModuleRegistry *moduleRegistry;
+
+@end
+
+@protocol EXUtilService
+
+- (UIViewController *)currentViewController;
+
+@end
+
 @implementation EXUtilities
+
+EX_REGISTER_MODULE();
+
++ (const NSArray<Protocol *> *)exportedInterfaces
+{
+  return @[@protocol(EXUtilitiesInterface)];
+}
+
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+{
+  _moduleRegistry = moduleRegistry;
+}
+
+- (UIViewController *)currentViewController
+{
+  id<EXUtilService> utilService = [_moduleRegistry getSingletonModuleForName:@"Util"];
+
+  if (utilService != nil) {
+    // Uses currentViewController from EXUtilService that is a part of ExpoKit
+    return [utilService currentViewController];
+  }
+  
+  // If the app doesn't have ExpoKit - then do the same as RCTPresentedViewController() does
+  UIViewController *controller = [[[UIApplication sharedApplication] keyWindow] rootViewController];
+  UIViewController *presentedController = controller.presentedViewController;
+  
+  while (presentedController && ![presentedController isBeingDismissed]) {
+    controller = presentedController;
+    presentedController = controller.presentedViewController;
+  }
+  return controller;
+}
 
 + (void)performSynchronouslyOnMainThread:(void (^)(void))block
 {

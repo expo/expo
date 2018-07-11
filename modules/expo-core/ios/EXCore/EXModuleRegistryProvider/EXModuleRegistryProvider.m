@@ -1,6 +1,7 @@
 // Copyright © 2018 650 Industries. All rights reserved.
 
 #import <Foundation/Foundation.h>
+#import <EXCore/EXSingletonModule.h>
 #import <EXCore/EXModuleRegistryProvider.h>
 
 static dispatch_once_t onceToken;
@@ -17,7 +18,24 @@ extern void EXRegisterModule(Class moduleClass)
   [EXModuleClasses addObject:moduleClass];
 }
 
+@interface EXModuleRegistryProvider ()
+
+@property (nonatomic, strong) NSMutableSet<Class> *singletonModuleClasses;
+
+@end
+
 @implementation EXModuleRegistryProvider
+
+- (instancetype)initWithSingletonModuleClasses:(NSSet *)moduleClasses
+{
+  if (self = [super init]) {
+    _singletonModuleClasses = [NSMutableSet set];
+    for (Class klass in moduleClasses) {
+      [_singletonModuleClasses addObject:klass];
+    }
+  }
+  return self;
+}
 
 - (NSSet<Class> *)getModulesClasses
 {
@@ -29,6 +47,14 @@ extern void EXRegisterModule(Class moduleClass)
   NSMutableSet<id<EXInternalModule>> *internalModules = [NSMutableSet set];
   NSMutableSet<EXExportedModule *> *exportedModules = [NSMutableSet set];
   NSMutableSet<EXViewManager *> *viewManagerModules = [NSMutableSet set];
+  NSMutableSet<EXSingletonModule *> *singletonModules = [NSMutableSet set];
+ 
+  // we can't wrap these in the EXRegisterModule macro because we want this hook to be robust to vendoring/versioning
+  for (Class klass in _singletonModuleClasses) {
+    EXSingletonModule *singletonModuleInstance = [[klass class] sharedInstance];
+    [singletonModules addObject:singletonModuleInstance];
+    continue;
+  }
   
   for (Class klass in [self getModulesClasses]) {
     if (![klass conformsToProtocol:@protocol(EXInternalModule)]) {
@@ -51,7 +77,10 @@ extern void EXRegisterModule(Class moduleClass)
     }
   }
   
-  EXModuleRegistry *moduleRegistry = [[EXModuleRegistry alloc] initWithInternalModules:internalModules exportedModules:exportedModules viewManagers:viewManagerModules];;
+  EXModuleRegistry *moduleRegistry = [[EXModuleRegistry alloc] initWithInternalModules:internalModules
+                                                                       exportedModules:exportedModules
+                                                                          viewManagers:viewManagerModules
+                                                                      singletonModules:singletonModules];
   [moduleRegistry setDelegate:_moduleRegistryDelegate];
   return moduleRegistry;
 }

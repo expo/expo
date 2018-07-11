@@ -4,7 +4,14 @@
 #import "EXViewController.h"
 #import "ExpoKit.h"
 
+#import <EXCore/EXDefines.h>
+
 @implementation EXUtilService
+
++ (NSString *)name
+{
+  return @"Util";
+}
 
 - (UIViewController *)currentViewController
 {

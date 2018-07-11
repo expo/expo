@@ -10,6 +10,11 @@ NSString * const kEXPermissionsKey = @"ExpoPermissions";
 
 @implementation EXPermissionsManager
 
++ (NSString *)name
+{
+  return @"Permissions";
+}
+
 - (BOOL)hasGrantedPermission:(NSString *)permission forExperience:(NSString *)experienceId
 {
   if ([EXEnvironment sharedEnvironment].isDetached) {

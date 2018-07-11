@@ -7,8 +7,8 @@
 
 @interface EXSMSModule () <MFMessageComposeViewControllerDelegate>
 
-@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
 @property (nonatomic, weak) id<EXPermissions> permissionsManager;
+@property (nonatomic, weak) id<EXUtilitiesInterface> utils;
 @property (nonatomic, strong) EXPromiseResolveBlock resolve;
 @property (nonatomic, strong) EXPromiseRejectBlock reject;
 
@@ -20,8 +20,8 @@ EX_EXPORT_MODULE(ExpoSMS);
 
 - (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
-  _moduleRegistry = moduleRegistry;
   _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXPermissions)];
+  _utils = [moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)];
 }
 
 EX_EXPORT_METHOD_AS(isAvailableAsync,
@@ -59,10 +59,8 @@ EX_EXPORT_METHOD_AS(sendSMSAsync,
   composeViewController.recipients = addresses;
   composeViewController.body = message;
 
-  // TODO: mount on current view controller; there's urgent need for internal module handling viewControllers hierarchy
   [EXUtilities performSynchronouslyOnMainThread:^{
-    UIViewController *rootViewController = [[[UIApplication sharedApplication] keyWindow] rootViewController];
-    [rootViewController presentViewController:composeViewController animated:YES completion:nil];
+    [_utils.currentViewController presentViewController:composeViewController animated:YES completion:nil];
   }];
 }
 

@@ -3,6 +3,7 @@
 #import <objc/runtime.h>
 #import <EXCore/EXModuleRegistry.h>
 #import <EXCore/EXModuleRegistryConsumer.h>
+#import <EXCore/EXSingletonModule.h>
 
 @interface EXModuleRegistry ()
 
@@ -14,6 +15,7 @@
 @property NSMutableDictionary<Class, EXExportedModule *> *exportedModulesByClass;
 @property NSMutableDictionary<const NSString *, EXExportedModule *> *exportedModules;
 @property NSMutableDictionary<const NSString *, EXViewManager *> *viewManagerModules;
+@property NSMutableDictionary<const NSString *, EXSingletonModule *> *singletonModules;
 
 @property NSMutableSet<id<EXModuleRegistryConsumer>> *registryConsumers;
 
@@ -31,6 +33,7 @@
     _exportedModulesByClass = [NSMutableDictionary dictionary];
     _exportedModules = [NSMutableDictionary dictionary];
     _viewManagerModules = [NSMutableDictionary dictionary];
+    _singletonModules = [NSMutableDictionary dictionary];
     _registryConsumers = [NSMutableSet set];
   }
   return self;
@@ -39,6 +42,7 @@
 - (instancetype)initWithInternalModules:(NSSet<id<EXInternalModule>> *)internalModules
                         exportedModules:(NSSet<EXExportedModule *> *)exportedModules
                            viewManagers:(NSSet<EXViewManager *> *)viewManagers
+                       singletonModules:(NSSet<EXSingletonModule *> *)singletonModules
 {
   if (self = [self init]) {
     for (id<EXInternalModule> internalModule in internalModules) {
@@ -48,9 +52,13 @@
     for (EXExportedModule *exportedModule in exportedModules) {
       [self registerExportedModule:exportedModule];
     }
-    
+
     for (EXViewManager *viewManager in viewManagers) {
       [self registerViewManager:viewManager];
+    }
+
+    for (EXSingletonModule *singletonModule in singletonModules) {
+      [self registerSingletonModule:singletonModule];
     }
   }
   return self;
@@ -131,6 +139,11 @@
   [self maybeAddRegistryConsumer:viewManager];
 }
 
+- (void)registerSingletonModule:(EXSingletonModule *)singletonModule
+{
+  [_singletonModules setObject:singletonModule forKey:[[singletonModule class] name]];
+}
+
 - (void)maybeAddRegistryConsumer:(id)maybeConsumer
 {
   if ([maybeConsumer conformsToProtocol:@protocol(EXModuleRegistryConsumer)]) {
@@ -160,6 +173,11 @@
   return [_exportedModulesByClass objectForKey:moduleClass];
 }
 
+- (EXSingletonModule *)getSingletonModuleForName:(NSString *)singletonModuleName
+{
+  return [_singletonModules objectForKey:singletonModuleName];
+}
+
 - (NSArray<id<EXInternalModule>> *)getAllInternalModules
 {
   return [_internalModulesSet allObjects];
@@ -173,6 +191,11 @@
 - (NSArray<EXViewManager *> *)getAllViewManagers
 {
   return [_viewManagerModules allValues];
+}
+
+- (NSArray<EXSingletonModule *> *)getAllSingletonModules
+{
+  return [_singletonModules allValues];
 }
 
 @end
