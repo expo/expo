@@ -270,7 +270,7 @@ public class ReactAndroidCodeTransformer {
 
   public static void main(final String[] args) throws IOException {
     String executionPath = ReactAndroidCodeTransformer.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-    String projectRoot = new File(executionPath + "../../../../../").getCanonicalPath() + '/';
+    String projectRoot = new File(executionPath + "../../../../../../").getCanonicalPath() + '/';
 
     // Get current SDK version
     File expoPackageJsonFile = new File(projectRoot + "package.json");
