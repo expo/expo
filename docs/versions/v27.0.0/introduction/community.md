@@ -6,6 +6,6 @@ Want to chat about Expo? The best way to get in touch with our team and other pe
 
 - [Join our forums](http://forums.expo.io/)
 - [Request an invitation](https://slack.expo.io/) to our [Slack](https://expo-developers.slack.com/).
-- [Follow us on Twitter @expo_io](https://twitter.com/expo_io)
+- [Follow us on Twitter @expo](https://twitter.com/expo)
 - [Become a contributor on Github](https://github.com/expo)
 - [Follow Expo Community on Hashnode](https://hashnode.com/n/expo)
