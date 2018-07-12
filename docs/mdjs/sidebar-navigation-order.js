@@ -59,6 +59,7 @@ const WORKING_WITH_EXPO = [
   'Viewing Logs',
   'Debugging',
   'Genymotion',
+  'Android Studio Emulator',
   'Release Channels',
   'Building Standalone Apps',
   'Publishing',
