@@ -752,13 +752,13 @@ public class MediaLibraryModule extends ExpoKernelServiceConsumerBaseModule {
   }
 
   @ReactMethod
-  public void createAlbumAsync(String albumName, String assetId, Promise promise) {
+  public void createAlbumAsync(String albumName, String assetId, boolean copyAsset, Promise promise) {
     if (isMissingPermissions()) {
       promise.reject(ERROR_NO_PERMISSIONS, ERROR_NO_PERMISSIONS_MESSAGE);
       return;
     }
 
-    new CreateAlbum(getReactApplicationContext(), albumName, assetId, promise)
+    new CreateAlbum(getReactApplicationContext(), albumName, assetId, copyAsset, promise)
         .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
@@ -767,13 +767,15 @@ public class MediaLibraryModule extends ExpoKernelServiceConsumerBaseModule {
     private final Promise mPromise;
     private final String mAlbumName;
     private final String mAssetId;
+    private final boolean mCopyAsset;
 
-    public CreateAlbum(ReactContext context, String albumName, String assetId, Promise promise) {
+    public CreateAlbum(ReactContext context, String albumName, String assetId, boolean copyAsset, Promise promise) {
       super(context);
       mContext = context;
       mAlbumName = albumName;
       mAssetId = assetId;
       mPromise = promise;
+      mCopyAsset = copyAsset;
     }
 
 
@@ -803,7 +805,7 @@ public class MediaLibraryModule extends ExpoKernelServiceConsumerBaseModule {
 
             if (assets.moveToNext()) {
               File fileToCopy = new File(assets.getString(pathColumnIndex));
-              File fileCopy = safeCopyFile(fileToCopy, albumDir);
+              File fileCopy = mCopyAsset ? safeCopyFile(fileToCopy, albumDir) : safeMoveFile(fileToCopy, albumDir);
 
               MediaScannerConnection.scanFile(
                   mContext,
