@@ -95,15 +95,18 @@ Queries for an album with a specific name.
 
 An object representing an [album](#album) if album with given name exists, otherwise returns `null`.
 
-### `Expo.MediaLibrary.createAlbumAsync(albumName, asset)`
+### `Expo.MediaLibrary.createAlbumAsync(albumName, asset, copyAsset)`
 
 Creates an album with given name and initial asset.
-The asset parameter is required on Android, since it's not possible to create empty album on this platform.
+The asset parameter is required on Android, since it's not possible to create empty album on this platform. 
+On Android, by default it copies given asset from the current album to the new one, however it's also possible to move it by passing `false` as `copyAsset` argument.
+In case it's copied you should keep in mind that `getAssetsAsync` will return duplicated asset.
 
 #### Arguments
 
 -   **albumName (_string_)** -- Name of the album to create.
 -   **asset (_string_ | _Asset_)** -- [Asset](#asset) or its ID. Required on Android.
+-   **copyAsset (_boolean_)** -- Whether to copy asset to the new album instead of move it. Defaults to `true`. (**Android only**)
 
 #### Returns
 
