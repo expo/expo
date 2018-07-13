@@ -241,7 +241,7 @@ public class SQLiteModule extends ReactContextBaseJavaModule {
   }
 
   private static boolean isSelect(String str) {
-    return startsWithCaseInsensitive(str, "select");
+    return startsWithCaseInsensitive(str, "select") || startsWithCaseInsensitive(str, "pragma");
   }
   private static boolean isInsert(String str) {
     return startsWithCaseInsensitive(str, "insert");
