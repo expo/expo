@@ -2,7 +2,7 @@
 title: AppLoading
 ---
 
-A React component that tells Expo to keep the app loading screen open if it is the first and only component rendered in your app. When it is removed, the loading screen will disappear and your app will be visible.
+A React component that tells Expo to keep the app loading screen open if it is the first and only component rendered in your app. Unless `autoHideSplash` prop is set to `false` the loading screen will disappear and your app will be visible when the component is removed,.
 
 This is incredibly useful to let you download and cache fonts, logo and icon images and other assets that you want to be sure the user has on their device for an optimal experience before rendering they start using the app.
 
@@ -63,3 +63,4 @@ The following props are recommended, but optional for the sake of backwards comp
 - **startAsync (_function_)** -- A `function` that returns a `Promise`, and the `Promise` should resolve when the app is done loading required data and assets.
 - **onError (_function_)** -- If `startAsync` throws an error, it is caught and passed into the function provided to `onError`.
 - **onFinish (_function_)** -- **(Required if you provide `startAsync`)**. Called when `startAsync` resolves or rejects. This should be used to set state and unmount the `AppLoading` component.
+- **autoHideSplash (_boolean_)** -- Whether to hide the native splash screen as soon as you unmount the AppLoading component. See [SplashScreen module](./splash-screen.md) for an example.
