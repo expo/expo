@@ -75,6 +75,7 @@ public class HomeActivity extends BaseExperienceActivity {
     mReactRootView.assign(mKernel.getReactRootView());
     mReactInstanceManager.onHostResume(this, this);
     setView((View) mReactRootView.get());
+    checkForReactViews();
 
     if (Constants.DEBUG_COLD_START_METHOD_TRACING) {
       Debug.stopMethodTracing();
