@@ -45,6 +45,9 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
   public static class ExperienceBackgroundedEvent extends ExperienceEvent {
     ExperienceBackgroundedEvent(ExperienceId experienceId) { super(experienceId); }
   }
+  public static class ExperienceContentLoaded extends ExperienceEvent {
+    public ExperienceContentLoaded(ExperienceId experienceId) { super(experienceId); }
+  }
 
   private static BaseExperienceActivity sVisibleActivity;
 

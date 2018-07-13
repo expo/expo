@@ -1,5 +1,4 @@
 #import "EXApiUtil.h"
-#import "EXAppLoadingManager.h"
 #import "EXBuildConstants.h"
 #import "EXEnvironment.h"
 #import "EXErrorRecoveryManager.h"
@@ -28,6 +27,13 @@
 @end
 
 typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t sourceLength);
+
+@protocol EXSplashScreenManagerProtocol
+
+@property (assign) BOOL started;
+@property (assign) BOOL finished;
+
+@end
 
 @implementation RCTSource (EXReactAppManager)
 
@@ -387,7 +393,12 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 
 - (id)_appLoadingManagerInstance
 {
-  Class loadingManagerClass = [self versionedClassFromString:@"EXAppLoadingManager"];
+  Class loadingManagerClass;
+  if ([self _compareVersionTo:29] == NSOrderedAscending) {
+    loadingManagerClass = [self versionedClassFromString:@"EXAppLoadingManager"];
+  } else {
+    loadingManagerClass = [self versionedClassFromString:@"EXSplashScreen"];
+  }
   for (Class class in [self.reactBridge moduleClasses]) {
     if ([class isSubclassOfClass:loadingManagerClass]) {
       return [self.reactBridge moduleForClass:loadingManagerClass];
@@ -404,8 +415,9 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   if ([_appRecord.appManager rootView] &&
       [_appRecord.appManager rootView].subviews.count > 0 &&
       [_appRecord.appManager rootView].subviews.firstObject.subviews.count > 0) {
-    EXAppLoadingManager *appLoading = [self _appLoadingManagerInstance];
-    if (!appLoading || !appLoading.started || appLoading.finished) {
+    id<EXSplashScreenManagerProtocol> splashManager = [self _appLoadingManagerInstance];
+    
+    if (!splashManager || !splashManager.started || splashManager.finished) {
       [self _appLoadingFinished];
     }
   }

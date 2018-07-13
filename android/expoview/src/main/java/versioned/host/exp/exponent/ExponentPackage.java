@@ -32,6 +32,7 @@ import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.kernel.ExponentKernelModuleProvider;
 import host.exp.exponent.utils.ScopedContext;
+import versioned.host.exp.exponent.modules.api.SplashScreenModule;
 import versioned.host.exp.exponent.modules.api.BrightnessModule;
 import versioned.host.exp.exponent.modules.api.ImageManipulatorModule;
 import versioned.host.exp.exponent.modules.api.MailComposerModule;
@@ -217,6 +218,7 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new PrintModule(reactContext, scopedContext));
         nativeModules.add(new LocalizationModule(reactContext));
         nativeModules.add(new ReanimatedModule(reactContext));
+        nativeModules.add(new SplashScreenModule(reactContext, experienceId));
 
         // Call to create native modules has to be at the bottom --
         // -- ExpoModuleRegistryAdapter uses the list of native modules

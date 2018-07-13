@@ -1,9 +1,9 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <React/RCTView.h>
-#import <React/RCTViewManager.h>
+#import <React/RCTBridgeModule.h>
 
-@interface EXAppLoadingManager : RCTViewManager
+@interface EXSplashScreen : NSObject <RCTBridgeModule>
 
 @property (assign) BOOL started;
 @property (assign) BOOL finished;
