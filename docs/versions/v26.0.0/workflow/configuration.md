@@ -337,7 +337,7 @@ Configuration for how and when the app should request OTA JavaScript updates
       A boolean indicating if the app uses iCloud Storage for DocumentPicker. 
       See DocumentPicker docs for details.
     */
-    "useIcloudStorage": BOOLEAN,
+    "usesIcloudStorage": BOOLEAN,
 
     "config": {
       /*
