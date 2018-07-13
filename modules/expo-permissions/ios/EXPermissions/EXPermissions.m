@@ -281,7 +281,7 @@ EX_EXPORT_METHOD_AS(askAsync,
 
 + (BOOL)isPermissionImplicitlyGranted:(NSString *)permissionType
 {
-  return [@[@"systemBrightness", @"sms"] containsObject:permissionType];
+  return [@[@"systemBrightness", @"SMS"] containsObject:permissionType];
 }
 
 + (BOOL)isExcludedScopedPermission:(NSString *)permissionType
