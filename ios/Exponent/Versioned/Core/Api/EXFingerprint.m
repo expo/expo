@@ -1,8 +1,28 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
 #import "EXFingerprint.h"
+#import "EXModuleRegistryBinding.h"
 
 #import <LocalAuthentication/LocalAuthentication.h>
+#import <React/RCTUtils.h>
+#import <EXConstantsInterface/EXConstantsInterface.h>
+#import <EXCore/EXUtilities.h>
+
+static BOOL EXIsFaceIDDevice() {
+  static BOOL isIPhoneX = NO;
+  static dispatch_once_t onceToken;
+  
+  dispatch_once(&onceToken, ^{
+    RCTAssertMainQueue();
+    
+    isIPhoneX = CGSizeEqualToSize(
+                                  [UIScreen mainScreen].nativeBounds.size,
+                                  CGSizeMake(1125, 2436)
+                                  );
+  });
+  
+  return isIPhoneX;
+}
 
 @implementation EXFingerprint
 
@@ -36,6 +56,24 @@ RCT_EXPORT_METHOD(authenticateAsync:(NSString *)reason
                   resolve:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 {
+  __block BOOL isFaceIdDevice;
+  [EXUtilities performSynchronouslyOnMainThread:^{
+    isFaceIdDevice = EXIsFaceIDDevice();
+  }];
+  if (isFaceIdDevice) {
+    NSString *usageDescription = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"NSFaceIDUsageDescription"];
+    if (!usageDescription) {
+      id<EXConstantsInterface> constants = [self.bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXConstantsInterface)];
+      NSString *errorMessage;
+      if ([constants.appOwnership isEqualToString:@"expo"]) {
+        errorMessage = @"FaceID is not available in Expo Client. You can use it in a standalone Expo app by providing `NSFaceIDUsageDescription`.";
+      } else {
+        errorMessage = @"FaceID is available but has not been configured. To enable FaceID, provide `NSFaceIDUsageDescription`.";
+      }
+      reject(@"E_FACEID_NOT_CONFIGURED", errorMessage, RCTErrorWithMessage(errorMessage));
+      return;
+    }
+  }
   LAContext *context = [LAContext new];
 
   [context evaluatePolicy:LAPolicyDeviceOwnerAuthentication
