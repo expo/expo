@@ -1,6 +1,8 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @class REANodesManager;
 
 typedef NSNumber* REANodeID;
@@ -36,3 +38,5 @@ typedef NSNumber* REANodeID;
 - (void)forceUpdateMemoizedValue:(id)value;
 
 @end
+
+NS_ASSUME_NONNULL_END

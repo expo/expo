@@ -4,6 +4,8 @@
 #import <React/RCTBridgeModule.h>
 #import <React/RCTUIManager.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @class REAModule;
 
 typedef void (^REAOnAnimationCallback)(CADisplayLink *displayLink);
@@ -65,3 +67,6 @@ typedef void (^REAOnAnimationCallback)(CADisplayLink *displayLink);
 - (void)dispatchEvent:(id<RCTEvent>)event;
 
 @end
+
+NS_ASSUME_NONNULL_END
+
