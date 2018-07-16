@@ -49,7 +49,16 @@ public class ModuleRegistryAdapter implements ReactPackage {
     List<ViewManager> viewManagerList = new ArrayList<>();
 
     for (expo.core.ViewManager viewManager : moduleRegistry.getAllViewManagers()) {
-      viewManagerList.add(new ViewManagerAdapter(viewManager));
+      // TODO: temporal solution! We need some better design logic to determine whether to use ViewGroup or SimpleView as an adapter
+      // proposal: convert those modules with no children into ViewGroup and ensure on JS level that these would not accept any children
+      switch (viewManager.getViewManagerType()) {
+        case GROUP:
+          viewManagerList.add(new ViewGroupManagerAdapter(viewManager));
+          break;
+        case SIMPLE:
+          viewManagerList.add(new SimpleViewManagerAdapter(viewManager));
+          break;
+      }
     }
     return viewManagerList;
   }

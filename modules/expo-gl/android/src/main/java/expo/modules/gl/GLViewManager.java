@@ -25,6 +25,11 @@ public class GLViewManager extends ViewManager<GLView> implements ModuleRegistry
   }
 
   @Override
+  public ViewManagerType getViewManagerType() {
+    return ViewManagerType.SIMPLE;
+  }
+
+  @Override
   public List<String> getExportedEventNames() {
     return Arrays.asList("onSurfaceCreate");
   }

@@ -2,12 +2,13 @@ package expo.adapters.react;
 
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.common.MapBuilder;
-import com.facebook.react.uimanager.SimpleViewManager;
+import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.annotations.ReactProp;
 
@@ -20,10 +21,10 @@ import expo.core.ModuleRegistry;
 import expo.core.interfaces.ModuleRegistryConsumer;
 import expo.core.ViewManager;
 
-public class ViewManagerAdapter<M extends ViewManager<V>, V extends View> extends SimpleViewManager<V> implements ModuleRegistryConsumer {
+public class ViewGroupManagerAdapter<M extends ViewManager<V>, V extends ViewGroup> extends ViewGroupManager<V> implements ModuleRegistryConsumer {
   private M mViewManager;
 
-  public ViewManagerAdapter(M viewManager) {
+  public ViewGroupManagerAdapter(M viewManager) {
     mViewManager = viewManager;
   }
 

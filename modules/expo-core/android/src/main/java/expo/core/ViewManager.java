@@ -28,11 +28,18 @@ public abstract class ViewManager<V extends View> {
     }
   }
 
+  public enum ViewManagerType {
+    SIMPLE,
+    GROUP
+  }
+
   private Map<String, PropSetterInfo> mPropSetterInfos;
   private Map<String, Method> mPropSetters;
 
+
   public abstract String getName();
   public abstract V createViewInstance(Context context);
+  public abstract ViewManagerType getViewManagerType();
 
   public List<String> getExportedEventNames() {
     return Collections.emptyList();

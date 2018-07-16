@@ -56,6 +56,11 @@ public class CameraViewManager extends ViewManager<ExpoCameraView> implements Mo
   }
 
   @Override
+  public ViewManagerType getViewManagerType() {
+    return ViewManagerType.GROUP;
+  }
+
+  @Override
   public ExpoCameraView createViewInstance(Context context) {
     return new ExpoCameraView(context, mModuleRegistry);
   }
