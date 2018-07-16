@@ -14,7 +14,8 @@ import expo.adapters.react.ModuleRegistryAdapter;
 import expo.adapters.react.ModuleRegistryReadyNotifier;
 import expo.adapters.react.NativeModulesProxy;
 import expo.adapters.react.ReactAdapterPackage;
-import expo.adapters.react.ViewManagerAdapter;
+import expo.adapters.react.SimpleViewManagerAdapter;
+import expo.adapters.react.ViewGroupManagerAdapter;
 import expo.core.ModuleRegistry;
 import expo.core.ModuleRegistryProvider;
 import expo.core.interfaces.InternalModule;
@@ -100,7 +101,14 @@ public class ExpoModuleRegistryAdapter extends ModuleRegistryAdapter implements 
 
     // Naming conflict -- add abiXX_X_X. prefix to expo.core.ViewManager manually 
     for (expo.core.ViewManager viewManager : moduleRegistry.getAllViewManagers()) {
-      viewManagerList.add(new ViewManagerAdapter(viewManager));
+      switch (viewManager.getViewManagerType()) {
+        case GROUP:
+          viewManagerList.add(new ViewGroupManagerAdapter(viewManager));
+          break;
+        case SIMPLE:
+          viewManagerList.add(new SimpleViewManagerAdapter(viewManager));
+          break;
+      }
     }
     return viewManagerList;
   }
