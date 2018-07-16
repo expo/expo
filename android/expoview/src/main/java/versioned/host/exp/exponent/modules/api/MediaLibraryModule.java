@@ -271,6 +271,7 @@ public class MediaLibraryModule extends ExpoKernelServiceConsumerBaseModule {
           album.moveToNext();
           File fileInAlbum = new File(album.getString(album.getColumnIndex(Media.DATA)));
 
+
           // Media store table can be corrupted. Extra check won't harm anyone.
           if (!fileInAlbum.isFile()) {
             mPromise.reject(ERROR_MEDIA_LIBRARY_CORRUPTED, "Media library is corrupted");
@@ -524,11 +525,12 @@ public class MediaLibraryModule extends ExpoKernelServiceConsumerBaseModule {
           asset.moveToFirst();
           WritableArray array = Arguments.createArray();
           putAssetsInfo(asset, array, 1, 0, fullInfo);
-
           // actually we want to return just the first item, but array.getMap returns ReadableMap
           // which is not compatible with promise.resolve and there is no simple solution to convert
           // ReadableMap to WritableMap so it's easier to return an array and pick the first item on JS side
           promise.resolve(array);
+        } else {
+          promise.resolve(null);
         }
       }
     } catch (SecurityException e) {
@@ -539,7 +541,7 @@ public class MediaLibraryModule extends ExpoKernelServiceConsumerBaseModule {
     }
   }
 
-  private static void putAssetsInfo(Cursor cursor, WritableArray response, int limit, int offset, boolean fullInfo) throws IOException{
+  private static void putAssetsInfo(Cursor cursor, WritableArray response, int limit, int offset, boolean fullInfo) throws IOException {
     final int idIndex = cursor.getColumnIndex(Media._ID);
     final int filenameIndex = cursor.getColumnIndex(Media.DISPLAY_NAME);
     final int mediaTypeIndex = cursor.getColumnIndex(Files.FileColumns.MEDIA_TYPE);
@@ -800,33 +802,42 @@ public class MediaLibraryModule extends ExpoKernelServiceConsumerBaseModule {
 
           if (assets == null) {
             mPromise.reject(ERROR_UNABLE_TO_LOAD, "Could not get asset. Query returns null.");
-          } else {
-            final int pathColumnIndex = assets.getColumnIndex(Media.DATA);
-
-            if (assets.moveToNext()) {
-              File fileToCopy = new File(assets.getString(pathColumnIndex));
-              File fileCopy = mCopyAsset ? safeCopyFile(fileToCopy, albumDir) : safeMoveFile(fileToCopy, albumDir);
-
-              MediaScannerConnection.scanFile(
-                  mContext,
-                  new String[]{fileCopy.getPath()},
-                  null,
-                  new MediaScannerConnection.OnScanCompletedListener() {
-                    @Override
-                    public void onScanCompleted(String path, Uri uri) {
-                      if (path != null) {
-                        final String selection = Media.DATA + "=?) /*";
-                        final String[] args = {path};
-                        queryAlbum(mContext, selection, args, mPromise);
-                      } else {
-                        mPromise.reject(ERROR_UNABLE_TO_SAVE, "Could not add image to album.");
-                      }
-                    }
-                  });
-            } else {
-              mPromise.reject(ERROR_NO_ASSET, "Could not find asset");
-            }
+            return;
+          } else if (!assets.moveToNext()) {
+            mPromise.reject(ERROR_NO_ASSET, "Could not find asset");
+            return;
           }
+          final int pathColumnIndex = assets.getColumnIndex(Media.DATA);
+          final String path = assets.getString(assets.getColumnIndex(Media.DATA));
+
+          File fileToCopy = new File(assets.getString(pathColumnIndex));
+          File fileCopy;
+          if (mCopyAsset) {
+            fileCopy = safeCopyFile(fileToCopy, albumDir);
+          } else {
+            fileCopy = safeMoveFile(fileToCopy, albumDir);
+            mContext.getContentResolver().delete(
+                EXTERNAL_CONTENT,
+                Media.DATA + "=?",
+                new String[]{path});
+          }
+
+          MediaScannerConnection.scanFile(
+              mContext,
+              new String[]{fileCopy.getPath()},
+              null,
+              new MediaScannerConnection.OnScanCompletedListener() {
+                @Override
+                public void onScanCompleted(String path, Uri uri) {
+                  if (path != null) {
+                    final String selection = Media.DATA + "=?) /*";
+                    final String[] args = {path};
+                    queryAlbum(mContext, selection, args, mPromise);
+                  } else {
+                    mPromise.reject(ERROR_UNABLE_TO_SAVE, "Could not add image to album.");
+                  }
+                }
+              });
         }
       } catch (SecurityException e) {
         mPromise.reject(ERROR_UNABLE_TO_LOAD_PERMISSION,
@@ -1034,7 +1045,7 @@ public class MediaLibraryModule extends ExpoKernelServiceConsumerBaseModule {
   private int getAssetsTotalCount(int mediaType) {
     Cursor countCursor = getReactApplicationContext().getContentResolver().query(
         EXTERNAL_CONTENT,
-        new String[] {"count(*) AS count"},
+        new String[]{"count(*) AS count"},
         Files.FileColumns.MEDIA_TYPE + " == " + mediaType,
         null,
         null
@@ -1078,9 +1089,9 @@ public class MediaLibraryModule extends ExpoKernelServiceConsumerBaseModule {
   private static int[] maybeRotateAssetSize(int width, int height, int orientation) {
     // given width and height might need to be swapped if the orientation is -90 or 90
     if (Math.abs(orientation) % 180 == 90) {
-      return new int[]{ height, width };
+      return new int[]{height, width};
     } else {
-      return new int[]{ width, height };
+      return new int[]{width, height};
     }
   }
 

@@ -305,7 +305,7 @@ RCT_REMAP_METHOD(getAssetInfoAsync,
       resolve(result);
     }];
   } else {
-    resolve(nil);
+    resolve([NSNull null]);
   }
 }
 
@@ -613,7 +613,7 @@ RCT_REMAP_METHOD(getAssetsAsync,
              @"locationNames": collection.localizedLocationNames,
              };
   }
-  return nil;
+  return [NSNull null];
 }
 
 + (NSArray *)_exportCollections:(PHFetchResult *)collections
