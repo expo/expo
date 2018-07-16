@@ -116,6 +116,13 @@ public class TapGestureHandler extends GestureHandler<TapGestureHandler> {
     int state = getState();
     int action = event.getActionMasked();
 
+    if (state == STATE_UNDETERMINED) {
+      mOffsetX = 0;
+      mOffsetY = 0;
+      mStartX = event.getRawX();
+      mStartY = event.getRawY();
+    }
+
     if (action == MotionEvent.ACTION_POINTER_UP || action == MotionEvent.ACTION_POINTER_DOWN) {
       mOffsetX += mLastX - mStartX;
       mOffsetY += mLastY - mStartY;
@@ -140,10 +147,6 @@ public class TapGestureHandler extends GestureHandler<TapGestureHandler> {
       fail();
     } else if (state == STATE_UNDETERMINED) {
       if (action == MotionEvent.ACTION_DOWN) {
-        mOffsetX = 0;
-        mOffsetY = 0;
-        mStartX = event.getRawX();
-        mStartY = event.getRawY();
         begin();
       }
       startTap();

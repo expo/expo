@@ -48,7 +48,7 @@ public class RNGestureHandlerButtonViewManager extends
     }
 
     public void setBorderRadius(float borderRadius) {
-      mBorderRadius = borderRadius;
+      mBorderRadius = borderRadius * (float)getResources().getDisplayMetrics().density;
       mNeedBackgroundUpdate = true;
     }
 
@@ -98,8 +98,8 @@ public class RNGestureHandlerButtonViewManager extends
           // 1. ReactViewManager is not a generic class with a possibility to handle another ViewGroup
           // 2. There's no way to force native behavior of ReactViewGroup's superclass's onTouchEvent
           colorDrawable.setCornerRadius(mBorderRadius);
-          if (selectable instanceof RippleDrawable
-                  && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+                  && selectable instanceof RippleDrawable) {
             PaintDrawable mask = new PaintDrawable(Color.WHITE);
             mask.setCornerRadius(mBorderRadius);
             ((RippleDrawable) selectable).setDrawableByLayerId(android.R.id.mask, mask);

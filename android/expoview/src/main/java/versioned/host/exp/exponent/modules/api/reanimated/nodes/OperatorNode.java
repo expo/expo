@@ -18,9 +18,9 @@ public class OperatorNode extends Node<Double> {
   private static abstract class ReduceOperator implements Operator {
     @Override
     public double evaluate(Node[] input) {
-      double acc = (Double) input[0].value();
+      double acc = input[0].doubleValue();
       for (int i = 1; i < input.length; i++) {
-        acc = reduce(acc, (Double) input[i].value());
+        acc = reduce(acc, input[i].doubleValue());
       }
       return acc;
     }
@@ -247,7 +247,7 @@ public class OperatorNode extends Node<Double> {
   @Override
   protected Double evaluate() {
     for (int i = 0; i < mInputIDs.length; i++) {
-      mInputNodes[i] = mNodesManager.findNodeById(mInputIDs[i]);
+      mInputNodes[i] = mNodesManager.findNodeById(mInputIDs[i], Node.class);
     }
     return mOperator.evaluate(mInputNodes);
   }

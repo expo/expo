@@ -18,7 +18,7 @@ public class DebugNode extends Node {
 
   @Override
   protected Object evaluate() {
-    Object value = mNodesManager.findNodeById(mValueID).value();
+    Object value = mNodesManager.findNodeById(mValueID, Node.class).value();
     Log.d("REANIMATED", String.format("%s %s", mMessage, value));
     return value;
   }

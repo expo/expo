@@ -9,8 +9,6 @@ import versioned.host.exp.exponent.modules.api.reanimated.Utils;
 
 public class JSCallNode extends Node<Double> {
 
-  private static final Double ZERO = new Double(0);
-
   private final int[] mInputIDs;
 
   public JSCallNode(int nodeID, ReadableMap config, NodesManager nodesManager) {
@@ -22,11 +20,11 @@ public class JSCallNode extends Node<Double> {
   protected Double evaluate() {
     WritableArray args = Arguments.createArray();
     for (int i = 0; i < mInputIDs.length; i++) {
-      Object val = mNodesManager.findNodeById(mInputIDs[i]).value();
-      if (val == null) {
+      Node node = mNodesManager.findNodeById(mInputIDs[i], Node.class);
+      if (node.value() == null) {
         args.pushNull();
       } else {
-        args.pushDouble((Double) val);
+        args.pushDouble(node.doubleValue());
       }
     }
     WritableMap eventData = Arguments.createMap();

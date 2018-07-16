@@ -12,8 +12,7 @@ import javax.annotation.Nullable;
 
 public class RNGestureHandlerEvent extends Event<RNGestureHandlerEvent> {
 
-  public static final String EVENT_NAME = "topGestureHandlerEvent";
-  public static final String REGISTRATION_NAME = "onGestureHandlerEvent";
+  public static final String EVENT_NAME = "onGestureHandlerEvent";
 
   private static final int TOUCH_EVENTS_POOL_SIZE = 7; // magic
 

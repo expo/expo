@@ -16,11 +16,7 @@ import versioned.host.exp.exponent.modules.api.reanimated.Utils;
 
 import java.util.Map;
 
-import javax.annotation.Nullable;
-
 public class PropsNode extends Node<Double> implements FinalNode {
-
-  private static final Double ZERO = Double.valueOf(0);
 
   private final Map<String, Integer> mMapping;
   private final UIImplementation mUIImplementation;
@@ -57,10 +53,8 @@ public class PropsNode extends Node<Double> implements FinalNode {
     WritableMap jsProps = Arguments.createMap();
 
     for (Map.Entry<String, Integer> entry : mMapping.entrySet()) {
-      @Nullable Node node = mNodesManager.findNodeById(entry.getValue());
-      if (node == null) {
-        throw new IllegalArgumentException("Mapped style node does not exists");
-      } else if (node instanceof StyleNode) {
+      Node node = mNodesManager.findNodeById(entry.getValue(), Node.class);
+      if (node instanceof StyleNode) {
         WritableMap style = ((StyleNode) node).value();
         ReadableMapKeySetIterator iter = style.keySetIterator();
         while (iter.hasNextKey()) {
@@ -89,10 +83,10 @@ public class PropsNode extends Node<Double> implements FinalNode {
         String key = entry.getKey();
         if (mNodesManager.nativeProps.contains(key)) {
           hasNativeProps = true;
-          mPropMap.putDouble(key, (Double) node.value());
+          mPropMap.putDouble(key, node.doubleValue());
         } else {
           hasJSProps = true;
-          jsProps.putDouble(key, (Double) node.value());
+          jsProps.putDouble(key, node.doubleValue());
         }
       }
     }

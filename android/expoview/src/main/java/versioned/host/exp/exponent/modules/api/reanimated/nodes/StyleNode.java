@@ -23,13 +23,11 @@ public class StyleNode extends Node<WritableMap> {
   protected WritableMap evaluate() {
     JavaOnlyMap propMap = new JavaOnlyMap();
     for (Map.Entry<String, Integer> entry : mMapping.entrySet()) {
-      @Nullable Node node = mNodesManager.findNodeById(entry.getValue());
-      if (node == null) {
-        throw new IllegalArgumentException("Mapped style node does not exists");
-      } else if (node instanceof TransformNode) {
+      Node node = mNodesManager.findNodeById(entry.getValue(), Node.class);
+      if (node instanceof TransformNode) {
         propMap.putArray(entry.getKey(), ((TransformNode) node).value());
       } else {
-        propMap.putDouble(entry.getKey(), (Double) node.value());
+        propMap.putDouble(entry.getKey(), node.doubleValue());
       }
     }
     return propMap;

@@ -5,8 +5,6 @@ import versioned.host.exp.exponent.modules.api.reanimated.NodesManager;
 
 public abstract class ClockOpNode extends Node<Double> {
 
-  private static final Double ZERO = new Double(0);
-
   public static class ClockStartNode extends ClockOpNode {
     public ClockStartNode(int nodeID, ReadableMap config, NodesManager nodesManager) {
       super(nodeID, config, nodesManager);
@@ -51,7 +49,7 @@ public abstract class ClockOpNode extends Node<Double> {
 
   @Override
   protected Double evaluate() {
-    ClockNode clock = (ClockNode) mNodesManager.findNodeById(clockID);
+    ClockNode clock = mNodesManager.findNodeById(clockID, ClockNode.class);
     return eval(clock);
   }
 
