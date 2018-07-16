@@ -17,7 +17,7 @@ public class BlockNode extends Node {
   protected Object evaluate() {
     Object res = null;
     for (int i = 0; i < mBlock.length; i++) {
-      res = mNodesManager.findNodeById(mBlock[i]).value();
+      res = mNodesManager.findNodeById(mBlock[i], Node.class).value();
     }
     return res;
   }

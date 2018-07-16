@@ -135,7 +135,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     [body setObject:_viewTag forKey:@"target"];
     [body setObject:_handlerTag forKey:@"handlerTag"];
     [body setObject:@(_state) forKey:@"state"];
-    return @[self.viewTag, @"topGestureHandlerEvent", body];
+    return @[self.viewTag, @"onGestureHandlerEvent", body];
 }
 
 @end
@@ -200,7 +200,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     [body setObject:_handlerTag forKey:@"handlerTag"];
     [body setObject:@(_state) forKey:@"state"];
     [body setObject:@(_prevState) forKey:@"oldState"];
-    return @[self.viewTag, @"topGestureHandlerStateChange", body];
+    return @[self.viewTag, @"onGestureHandlerStateChange", body];
 }
 
 @end

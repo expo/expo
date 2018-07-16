@@ -14,8 +14,6 @@ import javax.annotation.Nullable;
 
 public class EventNode extends Node<Double> implements RCTEventEmitter {
 
-  private static final Double ZERO = 0.;
-
   private static class EventMap {
     private final int nodeID;
     private final String[] path;
@@ -69,7 +67,7 @@ public class EventNode extends Node<Double> implements RCTEventEmitter {
       EventMap eventMap = mMapping.get(i);
       Double value = eventMap.lookupValue(event);
       if (value != null) {
-        ((ValueNode) mNodesManager.findNodeById(eventMap.nodeID)).setValue(value);
+        mNodesManager.findNodeById(eventMap.nodeID, ValueNode.class).setValue(value);
       }
     }
   }

@@ -16,13 +16,9 @@ public class SetNode extends Node<Double> {
 
   @Override
   protected Double evaluate() {
-    Double newValue = (Double) mNodesManager.findNodeById(mValueNodeID).value();
-    Node what = mNodesManager.findNodeById(mWhatNodeID);
-    if (what instanceof ValueNode) {
-      ((ValueNode) what).setValue(newValue);
-    } else {
-      throw new JSApplicationIllegalArgumentException("Destination node for set should be a value node");
-    }
+    Double newValue = mNodesManager.getNodeValue(mValueNodeID);
+    ValueNode what = mNodesManager.findNodeById(mWhatNodeID, ValueNode.class);
+    what.setValue(newValue);
     return newValue;
   }
 }

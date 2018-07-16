@@ -23,12 +23,7 @@ public class TransformNode extends Node<WritableArray> {
 
     @Override
     public double getValue(NodesManager nodesManager) {
-      Node node = nodesManager.findNodeById(nodeID);
-      if (node == null) {
-        throw new IllegalArgumentException("Mapped style node does not exists");
-      } else {
-        return (Double) node.value();
-      }
+      return nodesManager.getNodeValue(nodeID);
     }
   }
 
@@ -61,7 +56,7 @@ public class TransformNode extends Node<WritableArray> {
     return configs;
   }
 
-  private static List<TransformConfig> mTransforms;
+  private List<TransformConfig> mTransforms;
 
   public TransformNode(int nodeID, ReadableMap config, NodesManager nodesManager) {
     super(nodeID, config, nodesManager);

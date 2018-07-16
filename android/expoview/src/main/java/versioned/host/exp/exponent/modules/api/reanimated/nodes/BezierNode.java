@@ -83,7 +83,7 @@ public class BezierNode extends Node<Double> {
 
   @Override
   protected Double evaluate() {
-    Double in = (Double) mNodesManager.findNodeById(mInputID).value();
+    Double in = mNodesManager.getNodeValue(mInputID);
     return Double.valueOf(mInterpolator.getInterpolation(in.floatValue()));
   }
 }

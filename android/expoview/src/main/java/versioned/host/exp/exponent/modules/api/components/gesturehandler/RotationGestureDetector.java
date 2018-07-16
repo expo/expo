@@ -37,10 +37,10 @@ public class RotationGestureDetector {
     int firstPointerIndex = event.findPointerIndex(mPointerIds[0]);
     int secondPointerIndex = event.findPointerIndex(mPointerIds[1]);
 
-    float firstPtX = event.getX(mPointerIds[firstPointerIndex]);
-    float firstPtY = event.getY(mPointerIds[firstPointerIndex]);
-    float secondPtX = event.getX(mPointerIds[secondPointerIndex]);
-    float secondPtY = event.getY(mPointerIds[secondPointerIndex]);
+    float firstPtX = event.getX(firstPointerIndex);
+    float firstPtY = event.getY(firstPointerIndex);
+    float secondPtX = event.getX(secondPointerIndex);
+    float secondPtY = event.getY(secondPointerIndex);
 
     float vectorX = secondPtX - firstPtX;
     float vectorY = secondPtY - firstPtY;
