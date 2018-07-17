@@ -61,8 +61,8 @@ NSString * const EXAudioSessionManagerErrorDomain = @"EXAudioSessionManager";
 
 - (void)handleMediaServicesReset:(NSNotification *)notification
 {
-  for (id scopedModule in _allModules) {
-    [scopedModule handleMediaServicesReset:notification];
+  for (NSString *experienceId in _allModules.keyEnumerator) {
+    [[_allModules objectForKey:experienceId] handleMediaServicesReset:notification];
   }
 }
 
