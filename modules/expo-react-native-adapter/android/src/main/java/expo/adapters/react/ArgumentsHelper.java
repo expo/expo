@@ -3,7 +3,7 @@ package expo.adapters.react;
 import com.facebook.react.bridge.Dynamic;
 
 public class ArgumentsHelper {
-  static Object getNativeArgumentForExpectedClass(Dynamic argument, Class<?> expectedArgumentClass) {
+  public static Object getNativeArgumentForExpectedClass(Dynamic argument, Class<?> expectedArgumentClass) {
     switch (argument.getType()) {
       case String:
         return argument.asString();

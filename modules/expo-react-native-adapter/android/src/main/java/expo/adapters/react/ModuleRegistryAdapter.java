@@ -8,6 +8,8 @@ import com.facebook.react.uimanager.ViewManager;
 import java.util.ArrayList;
 import java.util.List;
 
+import expo.adapters.react.views.SimpleViewManagerAdapter;
+import expo.adapters.react.views.ViewGroupManagerAdapter;
 import expo.core.ModuleRegistry;
 import expo.core.ModuleRegistryProvider;
 
@@ -49,8 +51,6 @@ public class ModuleRegistryAdapter implements ReactPackage {
     List<ViewManager> viewManagerList = new ArrayList<>();
 
     for (expo.core.ViewManager viewManager : moduleRegistry.getAllViewManagers()) {
-      // TODO: temporal solution! We need some better design logic to determine whether to use ViewGroup or SimpleView as an adapter
-      // proposal: convert those modules with no children into ViewGroup and ensure on JS level that these would not accept any children
       switch (viewManager.getViewManagerType()) {
         case GROUP:
           viewManagerList.add(new ViewGroupManagerAdapter(viewManager));
