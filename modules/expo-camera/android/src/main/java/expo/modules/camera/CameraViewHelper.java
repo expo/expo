@@ -125,7 +125,7 @@ public class CameraViewHelper {
     }
 
     double[] latLong = exifInterface.getLatLong();
-    if (latLong.length >= 2) {
+    if (latLong != null) {
       exifMap.putDouble(ExifInterface.TAG_GPS_LATITUDE, latLong[0]);
       exifMap.putDouble(ExifInterface.TAG_GPS_LONGITUDE, latLong[1]);
       exifMap.putDouble(ExifInterface.TAG_GPS_ALTITUDE, exifInterface.getAltitude(0));

@@ -196,14 +196,14 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
   public void record(Map<String, Object> options, final Promise promise, File cacheDirectory) {
     try {
       String path = FileSystemUtils.generateOutputPath(cacheDirectory, "Camera", ".mp4");
-      int maxDuration = -1;
+      double maxDuration = -1;
       if (options.get(MAX_DURATION_KEY) != null) {
-        maxDuration = (Integer) options.get(MAX_DURATION_KEY);
+        maxDuration = (double) options.get(MAX_DURATION_KEY);
       }
 
-      int maxFileSize = -1;
+      double maxFileSize = -1;
       if (options.get(MAX_FILE_SIZE_KEY) != null) {
-        maxFileSize = (Integer) options.get(MAX_FILE_SIZE_KEY);
+        maxFileSize = (double) options.get(MAX_FILE_SIZE_KEY);
       }
 
       CamcorderProfile profile = CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH);
@@ -214,7 +214,7 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
       Boolean muteValue = (Boolean) options.get(MUTE_KEY);
       boolean recordAudio = muteValue == null || !muteValue;
 
-      if (super.record(path, maxDuration * 1000, maxFileSize, recordAudio, profile)) {
+      if (super.record(path, (int) maxDuration * 1000, (int) maxFileSize, recordAudio, profile)) {
         mVideoRecordedPromise = promise;
       } else {
         promise.reject("E_RECORDING_FAILED", "Starting video recording failed. Another recording might be in progress.");
