@@ -1,8 +1,13 @@
 package host.exp.exponent.fcm;
 
+import android.content.Context;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 
 import java.io.IOException;
 
@@ -17,11 +22,16 @@ public class FcmRegistrationIntentService extends ExponentNotificationIntentServ
     super(TAG);
   }
 
+  String mToken = null;
+
   @Override
   public String getToken() throws IOException {
-    String token = FirebaseInstanceId.getInstance().getToken();
-    Log.d("FCM Device Token", token == null ? "null" : token);
-    return token;
+    if (mToken == null) {
+      throw new IOException("No FCM token found");
+    }
+
+    Log.d("FCM Device Token", mToken);
+    return mToken;
   }
 
   @Override
@@ -32,5 +42,26 @@ public class FcmRegistrationIntentService extends ExponentNotificationIntentServ
   @Override
   public String getServerType() {
     return "fcm";
+  }
+
+  public static void getTokenAndRegister(final Context context) {
+    FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
+      @Override
+      public void onSuccess(InstanceIdResult instanceIdResult) {
+        registerForeground(context, instanceIdResult.getToken());
+      }
+    }).addOnFailureListener(new OnFailureListener() {
+      @Override
+      public void onFailure(@NonNull Exception e) {
+        Log.e("FCM Device Token", "Error calling getInstanceId " + e.getLocalizedMessage());
+      }
+    });
+  }
+
+  public static void registerForeground(final Context context, final String token) {
+    FcmRegistrationIntentService fcmRegistrationIntentService = new FcmRegistrationIntentService();
+    fcmRegistrationIntentService.attachBaseContext(context);
+    fcmRegistrationIntentService.mToken = token;
+    fcmRegistrationIntentService.onHandleIntent(null);
   }
 }
