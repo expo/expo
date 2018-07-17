@@ -1,6 +1,6 @@
 {
   "name": "expo-gl-cpp",
-  "version": "1.0.0",
+  "version": "1.0.0-rc.2",
   "description": "Expo Module Template standalone module",
   "main": "index.js",
   "keywords": [
@@ -11,6 +11,6 @@
   "author": "650 Industries, Inc.",
   "license": "BSD",
   "dependencies": {
-    "expo-core": "^1.0.0"
+    "expo-core": "^1.0.0-rc.2"
   }
 }

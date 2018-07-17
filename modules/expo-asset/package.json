@@ -1,6 +1,6 @@
 {
   "name": "expo-asset",
-  "version": "1.0.0",
+  "version": "1.0.0-rc.2",
   "description": "Expo Module Template standalone module",
   "main": "index.js",
   "keywords": [
@@ -11,11 +11,11 @@
   "author": "650 Industries, Inc.",
   "license": "BSD",
   "peerDependencies": {
-    "expo-file-system": "^1.0.0",
+    "expo-file-system": "^1.0.0-rc.2",
     "react-native": "^0.54.0"
   },
   "dependencies": {
-    "expo-core": "^1.0.0"
+    "expo-core": "^1.0.0-rc.2"
   },
   "devDependencies": {
     "babel-preset-expo": "^4.0.0"
