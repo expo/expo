@@ -170,6 +170,8 @@ public class PermissionsHelper {
         return R.string.perm_fine_location;
       case android.Manifest.permission.ACCESS_COARSE_LOCATION:
         return R.string.perm_coarse_location;
+      case android.Manifest.permission.READ_SMS:
+        return R.string.perm_read_sms;
       default:
         return -1;
     }

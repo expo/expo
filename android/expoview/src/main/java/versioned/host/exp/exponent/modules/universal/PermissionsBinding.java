@@ -43,7 +43,8 @@ import host.exp.exponent.kernel.services.ExpoKernelServiceRegistry;
     return permissionsResults;
   }
 
-  private int getPermission(String permission) {
+  @Override
+  public int getPermission(String permission) {
     int globalResult = PackageManager.PERMISSION_GRANTED;
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
