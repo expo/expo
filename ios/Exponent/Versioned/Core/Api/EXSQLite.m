@@ -92,6 +92,13 @@ RCT_EXPORT_METHOD(exec:(NSString *)dbName
   }
 }
 
+RCT_EXPORT_METHOD(close:(NSString *)dbName)
+{
+  @synchronized(self) {
+    [cachedDatabases removeObjectForKey:dbName]
+  }
+}
+
 - (id)getSqlValueForColumnType:(int)columnType withStatement:(sqlite3_stmt*)statement withIndex:(int)i
 {
   switch (columnType) {
