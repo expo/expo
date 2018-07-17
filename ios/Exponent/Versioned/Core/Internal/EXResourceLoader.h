@@ -41,6 +41,15 @@ typedef enum EXCachedResourceBehavior {
   EXCachedResourceOnlyCache,
 } EXCachedResourceBehavior;
 
+typedef enum EXManifestCacheBehavior {
+  // load the manifest without using any cache.
+  EXManifestNoCache,
+  // use a cache if it exists, otherwise fail. (don't download anything)
+  EXManifestOnlyCache,
+  // load the resource without reading from the cache, but still prepare to write the loaded resource to the cache.
+  EXManifestPrepareToCache,
+} EXManifestCacheBehavior;
+
 @protocol EXResourceLoader
 
 - (void)loadResourceWithBehavior:(EXCachedResourceBehavior)behavior

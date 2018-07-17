@@ -20,6 +20,7 @@ import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.kernel.KernelConstants;
 import host.exp.exponent.kernel.KernelProvider;
+import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.expoview.Exponent;
 
 public class UpdatesModule extends ReactContextBaseJavaModule {
@@ -30,6 +31,9 @@ public class UpdatesModule extends ReactContextBaseJavaModule {
 
   @Inject
   ExponentManifest mExponentManifest;
+
+  @Inject
+  ExponentSharedPreferences mExponentSharedPreferences;
 
   public UpdatesModule(ReactApplicationContext reactContext, Map<String, Object> experienceProperties, JSONObject manifest) {
     super(reactContext);
@@ -162,6 +166,8 @@ public class UpdatesModule extends ReactContextBaseJavaModule {
 
           sendEventToJS(AppLoader.UPDATE_DOWNLOAD_FINISHED_EVENT, params);
           promise.resolve(manifestString);
+
+          mExponentSharedPreferences.updateSafeManifest((String) mExperienceProperties.get(KernelConstants.MANIFEST_URL_KEY), manifest);
         }
       });
     } catch (Exception e) {

@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
   if (self.manifest) {
     [self startWithManifest];
   } else {
-    [self.appLoader fetchManifestWithCacheBehavior:EXCachedResourceOnlyCache success:^(NSDictionary * _Nonnull manifest) {
+    [self.appLoader fetchManifestWithCacheBehavior:EXManifestOnlyCache success:^(NSDictionary * _Nonnull manifest) {
       self.manifest = manifest;
       [self startWithManifest];
     } failure:^(NSError * _Nonnull error) {

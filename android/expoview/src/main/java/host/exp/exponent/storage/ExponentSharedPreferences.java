@@ -50,6 +50,7 @@ public class ExponentSharedPreferences {
   public static final String NUX_HAS_FINISHED_FIRST_RUN_KEY = "nux_has_finished_first_run";
   public static final String SHOULD_NOT_USE_KERNEL_CACHE = "should_not_use_kernel_cache";
   public static final String KERNEL_REVISION_ID = "kernel_revision_id";
+  public static final String SAFE_MANIFEST_KEY = "safe_manifest";
 
   // Metadata
   public static final String EXPERIENCE_METADATA_PREFIX = "experience_metadata_";
@@ -140,6 +141,7 @@ public class ExponentSharedPreferences {
       JSONObject parentObject = new JSONObject();
       parentObject.put(MANIFEST_KEY, manifest);
       parentObject.put(BUNDLE_URL_KEY, bundleUrl);
+      parentObject.put(SAFE_MANIFEST_KEY, manifest);
 
       mSharedPreferences.edit().putString(manifestUrl, parentObject.toString()).apply();
     } catch (JSONException e) {
@@ -159,6 +161,38 @@ public class ExponentSharedPreferences {
       String bundleUrl = json.getString(BUNDLE_URL_KEY);
 
       return new ManifestAndBundleUrl(manifest, bundleUrl);
+    } catch (JSONException e) {
+      EXL.e(TAG, e);
+      return null;
+    }
+  }
+
+  public void updateSafeManifest(String manifestUrl, JSONObject manifest) {
+    try {
+      JSONObject parentObject;
+      String jsonString = mSharedPreferences.getString(manifestUrl, null);
+      if (jsonString != null) {
+        parentObject = new JSONObject(jsonString);
+      } else {
+        parentObject = new JSONObject();
+      }
+      parentObject.put(SAFE_MANIFEST_KEY, manifest);
+
+      mSharedPreferences.edit().putString(manifestUrl, parentObject.toString()).apply();
+    } catch (JSONException e) {
+      EXL.e(TAG, e);
+    }
+  }
+
+  public JSONObject getSafeManifest(String manifestUrl) {
+    String jsonString = mSharedPreferences.getString(manifestUrl, null);
+    if (jsonString == null) {
+      return null;
+    }
+
+    try {
+      JSONObject json = new JSONObject(jsonString);
+      return json.getJSONObject(SAFE_MANIFEST_KEY);
     } catch (JSONException e) {
       EXL.e(TAG, e);
       return null;

@@ -1,10 +1,10 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <Foundation/Foundation.h>
-#import "EXCachedResource.h"
 #import "EXAppFetcher.h"
 #import "EXAppFetcherDevelopmentMode.h"
 #import "EXAppFetcherWithTimeout.h"
+#import "EXCachedResource.h"
 
 @class EXKernelAppRecord;
 @class EXAppLoader;
@@ -59,6 +59,11 @@ typedef enum EXAppLoaderStatus {
 - (void)requestFromCache;
 
 /**
+ *  Tell this AppLoader that everything has finished successfully and its manifest resource can be cached.
+ */
+- (void)writeManifestToCache;
+
+/**
  *  Reset status to `kEXAppLoaderStatusHasManifest` and fetch the bundle at the existing
  *  manifest. This is called when RN devtools reload an AppManager/RCTBridge directly
  *  via reload, live reload, etc.
@@ -76,7 +81,7 @@ typedef enum EXAppLoaderStatus {
 /**
  * Fetch manifest without any side effects or interaction with the timer.
  */
-- (void)fetchManifestWithCacheBehavior:(EXCachedResourceBehavior)cacheBehavior success:(void (^)(NSDictionary *))success failure:(void (^)(NSError *))failure;
+- (void)fetchManifestWithCacheBehavior:(EXManifestCacheBehavior)cacheBehavior success:(void (^)(NSDictionary *))success failure:(void (^)(NSError *))failure;
 
 @end
 

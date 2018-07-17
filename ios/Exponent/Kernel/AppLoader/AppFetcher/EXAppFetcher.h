@@ -10,7 +10,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol EXAppFetcherDelegate <NSObject>
 
-- (void)appFetcher:(EXAppFetcher *)appFetcher didSwitchToAppFetcher:(EXAppFetcher *)newAppFetcher;
+/**
+ *  If the delegate guessed incorrectly about which subclass of AppFetcher to use,
+ *  this method should be called so that the new AppFetcher can be set up properly.
+ *
+ *  Use retainingCurrent:YES only if the current (calling) AppFetcher is still doing work
+ *  (e.g. fetching an update in the background) and should not be immediately deallocated.
+ */
+- (void)appFetcher:(EXAppFetcher *)appFetcher didSwitchToAppFetcher:(EXAppFetcher *)newAppFetcher retainingCurrent:(BOOL)shouldRetain;
 
 - (void)appFetcher:(EXAppFetcher *)appFetcher didLoadOptimisticManifest:(NSDictionary *)manifest;
 - (void)appFetcher:(EXAppFetcher *)appFetcher didFinishLoadingManifest:(NSDictionary *)manifest bundle:(NSData *)bundle;

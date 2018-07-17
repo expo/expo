@@ -1,8 +1,10 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+#import "EXAppFetcherCacheOnly.h"
 #import "EXAppFetcherDevelopmentMode.h"
 #import "EXAppFetcherWithTimeout.h"
 #import "EXAppLoader.h"
+#import "EXUtil.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -32,20 +34,22 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)start
 {
   if (_timeout > 0) {
-    _timer = [NSTimer scheduledTimerWithTimeInterval:_timeout target:self selector:@selector(_timeOutWithTimer:) userInfo:nil repeats:NO];
+    [EXUtil performSynchronouslyOnMainThread:^{
+      self->_timer = [NSTimer scheduledTimerWithTimeInterval:self->_timeout target:self selector:@selector(_timeOutWithTimer:) userInfo:nil repeats:NO];
+    }];
   } else {
     // resolve right away but continue downloading updated code in the background
     [self _finishWithError:nil];
   }
 
-  [self.appLoader fetchManifestWithCacheBehavior:EXCachedResourceWriteToCache success:^(NSDictionary * _Nonnull manifest) {
+  [self.appLoader fetchManifestWithCacheBehavior:EXManifestPrepareToCache success:^(NSDictionary * _Nonnull manifest) {
     self.manifest = manifest;
     if ([[self class] areDevToolsEnabledWithManifest:manifest] && self.timer) {
       // make sure we never time out in dev mode
       // this can happen because there is no cached manifest & therefore we fall back to default behavior w/ timer
       [self _stopTimer];
       EXAppFetcherDevelopmentMode *newFetcher = [[EXAppFetcherDevelopmentMode alloc] initWithAppLoader:self.appLoader manifest:manifest];
-      [self.delegate appFetcher:self didSwitchToAppFetcher:newFetcher];
+      [self.delegate appFetcher:self didSwitchToAppFetcher:newFetcher retainingCurrent:NO];
       return;
     }
     [self.delegate appFetcher:self didLoadOptimisticManifest:self.manifest];
@@ -68,6 +72,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (strongSelf) {
       strongSelf.bundle = data;
       [strongSelf _finishWithError:nil];
+      [strongSelf.appLoader writeManifestToCache];
     }
   } error:^(NSError * _Nonnull error) {
     __strong typeof(weakSelf) strongSelf = weakSelf;
@@ -108,16 +113,9 @@ NS_ASSUME_NONNULL_BEGIN
     // we have everything
     [self.delegate appFetcher:self didFinishLoadingManifest:self.manifest bundle:self.bundle];
   } else if (self.appLoader.manifest) {
-    // we don't have a bundle but need to finish,
-    // try to grab a cache, using self.appLoader.manifest, which at this point is the cachedManifest
-    [self fetchJSBundleWithManifest:self.appLoader.manifest cacheBehavior:EXCachedResourceFallBackToNetwork timeoutInterval:kEXJSBundleTimeout progress:nil success:^(NSData * _Nonnull data) {
-      self.manifest = self.appLoader.manifest;
-      self.bundle = data;
-      [self.delegate appFetcher:self didFinishLoadingManifest:self.appLoader.manifest bundle:self.bundle];
-    } error:^(NSError * _Nonnull error) {
-      self.error = error;
-      [self.delegate appFetcher:self didFailWithError:self.error];
-    }];
+    // we don't have a bundle but need to finish, so switch to a cache-only AppFetcher
+    EXAppFetcherCacheOnly *newFetcher = [[EXAppFetcherCacheOnly alloc] initWithAppLoader:self.appLoader manifest:self.appLoader.manifest];
+    [self.delegate appFetcher:self didSwitchToAppFetcher:newFetcher retainingCurrent:YES];
   } else {
     // we have nothing to work with at all
     self.error = err;
