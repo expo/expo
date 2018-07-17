@@ -11,14 +11,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.app.NotificationManagerCompat;
-import android.support.v4.content.ContextCompat;
-
-import java.util.Collections;
-import java.util.List;
 
 import expo.core.ExportedModule;
 import expo.core.interfaces.ExpoMethod;
-import expo.core.interfaces.InternalModule;
 import expo.core.ModuleRegistry;
 import expo.core.interfaces.ModuleRegistryConsumer;
 import expo.core.Promise;
@@ -148,13 +143,6 @@ public class PermissionsModule extends ExportedModule implements ModuleRegistryC
     }
   }
 
-  private Bundle getAlwaysGrantedPermissions() {
-    Bundle response = new Bundle();
-    response.putString("status", "granted");
-    response.putString("expires", PERMISSION_EXPIRES_NEVER);
-    return response;
-  }
-
   private Bundle getNotificationPermissions() {
     Bundle response = new Bundle();
 
@@ -168,28 +156,22 @@ public class PermissionsModule extends ExportedModule implements ModuleRegistryC
 
   private Bundle getLocationPermissions() {
     Bundle response = new Bundle();
-    Boolean isGranted = false;
     String scope = "none";
 
-    int finePermission = ContextCompat.checkSelfPermission(getContext(),
-      Manifest.permission.ACCESS_FINE_LOCATION);
-    if (finePermission == PackageManager.PERMISSION_GRANTED) {
-      response.putString("status", "granted");
-      scope = "fine";
-      isGranted = true;
-    } else {
-      int coarsePermission = ContextCompat.checkSelfPermission(getContext(),
-        Manifest.permission.ACCESS_COARSE_LOCATION);
-      if (coarsePermission == PackageManager.PERMISSION_GRANTED) {
+    try {
+      if (getPermissions(new String[] { Manifest.permission.ACCESS_FINE_LOCATION })) {
+        response.putString("status", "granted");
+        scope = "fine";
+      } else if (getPermissions(new String[]{ Manifest.permission.ACCESS_COARSE_LOCATION })) {
         response.putString("status", "granted");
         scope = "coarse";
-        isGranted = true;
+      } else {
+        response.putString("status", "denied");
       }
+    } catch (IllegalStateException e) {
+      response.putString("status", "undetermined");
     }
 
-    if (!isGranted) {
-      response.putString("status", "denied");
-    }
     response.putString("expires", PERMISSION_EXPIRES_NEVER);
     Bundle platformMap = new Bundle();
     platformMap.putString("scope", scope);
@@ -224,10 +206,10 @@ public class PermissionsModule extends ExportedModule implements ModuleRegistryC
       intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
       getContext().startActivity(intent);
 
-      // Action returns nothing so we return unknown status
+      // Action returns nothing so we return undetermined status
       // https://stackoverflow.com/questions/44389632/proper-way-to-handle-action-manage-write-settings-activity
       Bundle response = new Bundle();
-      response.putString("status", "unknown");
+      response.putString("status", "undetermined");
       promise.resolve(response);
     } catch (Exception e) {
       promise.reject("Error launching write settings activity:", e.getMessage());
@@ -237,16 +219,16 @@ public class PermissionsModule extends ExportedModule implements ModuleRegistryC
   private Bundle getSimplePermission(String permission) {
     Bundle response = new Bundle();
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      int result = ContextCompat.checkSelfPermission(getContext(), permission);
-      if (result == PackageManager.PERMISSION_GRANTED) {
+    try {
+      if (getPermissions(new String[]{ permission })) {
         response.putString("status", "granted");
       } else {
         response.putString("status", "denied");
       }
-    } else {
-      response.putString("status", "granted");
+    } catch (IllegalStateException e) {
+      response.putString("status", "undetermined");
     }
+
     response.putString("expires", PERMISSION_EXPIRES_NEVER);
 
     return response;
@@ -299,19 +281,16 @@ public class PermissionsModule extends ExportedModule implements ModuleRegistryC
   private Bundle getCameraRollPermissions() {
     Bundle response = new Bundle();
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      int read = ContextCompat.checkSelfPermission(getContext(),
-        Manifest.permission.READ_EXTERNAL_STORAGE);
-      int write = ContextCompat.checkSelfPermission(getContext(),
-        Manifest.permission.WRITE_EXTERNAL_STORAGE);
-      if (read == PackageManager.PERMISSION_GRANTED && write == PackageManager.PERMISSION_GRANTED) {
+    try {
+      if (getPermissions(new String[]{ Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE })) {
         response.putString("status", "granted");
       } else {
         response.putString("status", "denied");
       }
-    } else {
-      response.putString("status", "granted");
+    } catch (IllegalStateException e) {
+      response.putString("status", "undetermined");
     }
+
     response.putString("expires", PERMISSION_EXPIRES_NEVER);
 
     return response;
@@ -333,23 +312,36 @@ public class PermissionsModule extends ExportedModule implements ModuleRegistryC
 
   private Bundle getCalendarPermissions() {
     Bundle response = new Bundle();
-
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      int readPermission = ContextCompat.checkSelfPermission(getContext(),
-        Manifest.permission.READ_CALENDAR);
-      int writePermission = ContextCompat.checkSelfPermission(getContext(),
-        Manifest.permission.WRITE_CALENDAR);
-      if (readPermission == PackageManager.PERMISSION_GRANTED && writePermission == PackageManager.PERMISSION_GRANTED) {
+    try {
+      if (getPermissions(new String[]{ Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR })) {
         response.putString("status", "granted");
       } else {
         response.putString("status", "denied");
       }
-    } else {
-      response.putString("status", "granted");
+    } catch (IllegalStateException e) {
+      response.putString("status", "undetermined");
     }
     response.putString("expires", PERMISSION_EXPIRES_NEVER);
 
     return response;
+  }
+
+  private boolean getPermissions(final String[] permissions) {
+    Permissions manager = mModuleRegistry.getModule(Permissions.class);
+    if (manager != null) {
+      int[] permissionsResults = manager.getPermissions(permissions);
+      if (permissions.length != permissionsResults.length) {
+        return false;
+      }
+      for (int result : permissionsResults) {
+        if (result != PackageManager.PERMISSION_GRANTED) {
+          return false;
+        }
+      }
+      return true;
+    } else {
+      throw new IllegalStateException("No Permissions module");
+    }
   }
 
   private boolean askForPermissions(final String[] permissions, PermissionsListener listener) {
