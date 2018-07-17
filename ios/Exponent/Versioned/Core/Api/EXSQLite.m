@@ -95,7 +95,7 @@ RCT_EXPORT_METHOD(exec:(NSString *)dbName
 RCT_EXPORT_METHOD(close:(NSString *)dbName)
 {
   @synchronized(self) {
-    [cachedDatabases removeObjectForKey:dbName]
+    [cachedDatabases removeObjectForKey:dbName];
   }
 }
 
