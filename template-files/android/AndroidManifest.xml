@@ -42,6 +42,8 @@
   <!-- ADD TEST PERMISSIONS HERE -->
 
   <uses-feature android:glEsVersion="0x00020000" android:required="false" />
+  <uses-feature android:name="android.software.leanback" android:required="false" />
+  <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
 
   <application
     android:name=".MainApplication"
@@ -134,6 +136,19 @@
       </intent-filter>
       <!-- END HOME INTENT FILTERS -->
     </activity>
+
+    <activity
+      android:name=".experience.TvActivity"
+      android:label="@string/app_name"
+      android:theme="@style/Theme.Exponent.Light"
+      android:screenOrientation="landscape">
+     <intent-filter>
+       <action android:name="android.intent.action.MAIN" />
+       <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+     </intent-filter> 
+   </activity>
+
+
 
     <activity android:name="com.facebook.react.devsupport.DevSettingsActivity"/>
     <!-- ADD DEV SETTINGS HERE -->
