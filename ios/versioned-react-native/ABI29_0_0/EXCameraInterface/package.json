@@ -1,0 +1,16 @@
+{
+  "name": "expo-camera-interface",
+  "version": "1.0.0-rc.2",
+  "description": "Expo Module Template standalone module",
+  "main": "index.js",
+  "keywords": [
+    "react-native",
+    "expo"
+  ],
+  "homepage": "https://docs.expo.io/",
+  "author": "650 Industries, Inc.",
+  "license": "BSD",
+  "dependencies": {
+    "expo-core": "^1.0.0-rc.2"
+  }
+}

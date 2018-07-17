@@ -1,0 +1,21 @@
+{
+  "name": "expo-sensors",
+  "version": "1.0.0-rc.2",
+  "description": "Expo Sensors universal module",
+  "main": "index.js",
+  "keywords": [
+    "react-native",
+    "expo"
+  ],
+  "homepage": "https://docs.expo.io/",
+  "author": "650 Industries, Inc.",
+  "license": "BSD",
+  "dependencies": {
+    "expo-core": "^1.0.0-rc.2",
+    "expo-sensors-interface": "^1.0.0-rc.2",
+    "invariant": "^2.2.4"
+  },
+  "devDependencies": {
+    "babel-preset-expo": "^4.0.0"
+  }
+}

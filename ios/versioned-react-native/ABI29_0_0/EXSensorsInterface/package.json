@@ -1,0 +1,16 @@
+{
+  "name": "expo-sensors-interface",
+  "version": "1.0.0-rc.2",
+  "description": "Expo interface package for Sensors",
+  "main": "index.js",
+  "keywords": [
+    "react-native",
+    "expo"
+  ],
+  "homepage": "https://docs.expo.io/",
+  "author": "650 Industries, Inc.",
+  "license": "BSD",
+  "dependencies": {
+    "expo-core": "^1.0.0-rc.2"
+  }
+}
