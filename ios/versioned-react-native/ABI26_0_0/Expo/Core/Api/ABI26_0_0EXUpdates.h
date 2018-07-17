@@ -17,7 +17,7 @@ FOUNDATION_EXPORT NSString * const ABI26_0_0EXUpdatesDownloadFinishedEventType;
 
 - (void)updatesModuleDidSelectReload:(id)scopedModule;
 - (void)updatesModule:(id)scopedModule
-didRequestManifestWithCacheBehavior:(ABI26_0_0EXCachedResourceBehavior)cacheBehavior
+didRequestManifestWithCacheBehavior:(ABI26_0_0EXManifestCacheBehavior)cacheBehavior
               success:(void (^)(NSDictionary * _Nonnull))success
               failure:(void (^)(NSError * _Nonnull))failure;
 - (void)updatesModule:(id)scopedModule

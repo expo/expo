@@ -339,6 +339,7 @@ public abstract class AppLoader {
               } catch (Exception e) {
                 EXL.e(TAG, e);
               }
+              mExponentSharedPreferences.updateSafeManifest(mManifestUrl, finalManifest);
             }
             resolve();
           }

@@ -18,6 +18,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithManifestUrl:(NSURL *)url
                         originalUrl:(NSURL * _Nullable)originalUrl NS_DESIGNATED_INITIALIZER;
 
+/**
+ *  Manifests will not be cached implicitly as we want to wait until we've also
+ *  downloaded the whole bundle. This method tells the ManifestResource it's safe to cache
+ */
+- (void)writeToCache;
+
 @end
 
 NS_ASSUME_NONNULL_END

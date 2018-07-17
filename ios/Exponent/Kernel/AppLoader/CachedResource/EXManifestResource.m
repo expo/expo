@@ -16,6 +16,8 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
 @interface EXManifestResource ()
 
 @property (nonatomic, strong) NSURL * _Nullable originalUrl;
+@property (nonatomic, strong) NSData *data;
+@property (nonatomic, assign) BOOL canBeWrittenToCache;
 
 // cache this value so we only have to compute it once per instance
 @property (nonatomic, strong) NSNumber * _Nullable isUsingEmbeddedManifest;
@@ -27,6 +29,7 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
 - (instancetype)initWithManifestUrl:(NSURL *)url originalUrl:(NSURL * _Nullable)originalUrl
 {
   _originalUrl = originalUrl;
+  _canBeWrittenToCache = NO;
   
   NSString *resourceName;
   if ([EXEnvironment sharedEnvironment].isDetached && [originalUrl.absoluteString isEqual:[EXEnvironment sharedEnvironment].standaloneManifestUrl]) {
@@ -51,6 +54,11 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
                       errorBlock:(EXCachedResourceErrorBlock)errorBlock
 {
   [super loadResourceWithBehavior:behavior progressBlock:progressBlock successBlock:^(NSData * _Nonnull data) {
+    self->_data = data;
+    if (self->_canBeWrittenToCache) {
+      [self writeToCache];
+    }
+
     __block NSError *jsonError;
     id manifestObj = [NSJSONSerialization JSONObjectWithData:data options:0 error:&jsonError];
     if (jsonError) {
@@ -110,6 +118,17 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
                                       }];
     }
   } errorBlock:errorBlock];
+}
+
+- (void)writeToCache
+{
+  if (_data) {
+    NSString *resourceCachePath = [self resourceCachePath];
+    NSLog(@"EXManifestResource: Caching manifest to %@...", resourceCachePath);
+    [_data writeToFile:resourceCachePath atomically:YES];
+  } else {
+    _canBeWrittenToCache = YES;
+  }
 }
 
 - (BOOL)isUsingEmbeddedResource

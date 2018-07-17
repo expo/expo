@@ -113,7 +113,7 @@
       [self.remoteUrl isEqual:[EXApiUtil encodedUrlFromString:[EXEnvironment sharedEnvironment].embeddedBundleUrl]]) {
     return YES;
   } else {
-    return [super isUsingEmbeddedResource];
+    return NO;
   }
 }
 

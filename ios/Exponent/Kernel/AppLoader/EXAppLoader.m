@@ -29,8 +29,10 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 
 @property (nonatomic, strong) NSDictionary * _Nullable confirmedManifest; // manifest that is actually being used
 @property (nonatomic, strong) NSDictionary * _Nullable cachedManifest; // manifest that is cached and we definitely have, may fall back to it
+@property (nonatomic, strong) EXManifestResource * _Nullable manifestResource;
 
 @property (nonatomic, strong) EXAppFetcher * _Nullable appFetcher;
+@property (nonatomic, strong) EXAppFetcher * _Nullable previousAppFetcherWaitingForBundle;
 @property (nonatomic, strong) NSError * _Nullable error;
 
 @property (nonatomic, assign) BOOL hasFinished;
@@ -65,8 +67,10 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
   _cachedManifest = nil;
   _error = nil;
   _appFetcher = nil;
+  _previousAppFetcherWaitingForBundle = nil;
   _hasFinished = NO;
   _shouldUseCacheOnly = NO;
+  _manifestResource = nil;
 }
 
 - (EXAppLoaderStatus)status
@@ -147,6 +151,14 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
   }
 }
 
+- (void)writeManifestToCache
+{
+  if (_manifestResource) {
+    [_manifestResource writeToCache];
+    _manifestResource = nil;
+  }
+}
+
 #pragma mark - internal
 
 + (NSURL *)_httpUrlFromManifestUrl:(NSURL *)url
@@ -187,7 +199,7 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 
 - (void)_fetchCachedManifest
 {
-  [self fetchManifestWithCacheBehavior:EXCachedResourceOnlyCache success:^(NSDictionary * cachedManifest) {
+  [self fetchManifestWithCacheBehavior:EXManifestOnlyCache success:^(NSDictionary * cachedManifest) {
     self.cachedManifest = cachedManifest;
     [self _fetchBundleWithManifest:cachedManifest];
   } failure:^(NSError * error) {
@@ -295,8 +307,11 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 
 #pragma mark - EXAppFetcherDelegate
 
-- (void)appFetcher:(EXAppFetcher *)appFetcher didSwitchToAppFetcher:(EXAppFetcher *)newAppFetcher
+- (void)appFetcher:(EXAppFetcher *)appFetcher didSwitchToAppFetcher:(EXAppFetcher *)newAppFetcher retainingCurrent:(BOOL)shouldRetain
 {
+  if (shouldRetain) {
+    _previousAppFetcherWaitingForBundle = appFetcher;
+  }
   [self _startAppFetcher:newAppFetcher];
 }
 
@@ -322,6 +337,11 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
   if (_delegate) {
     [_delegate appLoader:self didFailWithError:error];
   }
+  if (appFetcher == _previousAppFetcherWaitingForBundle) {
+    // previous app fetcher errored while trying to fetch a new bundle
+    // so we can deallocate it now
+    _previousAppFetcherWaitingForBundle = nil;
+  }
 }
 
 #pragma mark - EXAppFetcherDevelopmentModeDelegate
@@ -340,19 +360,17 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
   if (_delegate) {
     [_delegate appLoader:self didResolveUpdatedBundleWithManifest:manifest isFromCache:isFromCache error:error];
   }
+  if (appFetcher == _previousAppFetcherWaitingForBundle) {
+    // we no longer need to retain the previous app fetcher
+    // as the only reason to retain is to wait for it to finish downloading the new bundle
+    _previousAppFetcherWaitingForBundle = nil;
+  }
 }
 
 #pragma mark - helper methods for fetching
 
-- (void)fetchManifestWithCacheBehavior:(EXCachedResourceBehavior)cacheBehavior success:(void (^)(NSDictionary *))success failure:(void (^)(NSError *))failure
+- (void)fetchManifestWithCacheBehavior:(EXManifestCacheBehavior)manifestCacheBehavior success:(void (^)(NSDictionary *))success failure:(void (^)(NSError *))failure
 {
-  // this fetch behavior should never be used, as we re-create it ourselves within this class
-  if (cacheBehavior == EXCachedResourceFallBackToCache) {
-    @throw [NSException exceptionWithName:NSInternalInconsistencyException
-                                   reason:@"EXManifestResource should never be loaded with FallBackToCache behavior"
-                                 userInfo:nil];
-  }
-  
   // if we're using a localManifest, just return it immediately
   if (_localManifest) {
     success(_localManifest);
@@ -364,8 +382,18 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
     components.scheme = @"http";
     _httpManifestUrl = [components URL];
   }
+
   EXManifestResource *manifestResource = [[EXManifestResource alloc] initWithManifestUrl:_httpManifestUrl originalUrl:_manifestUrl];
-  [manifestResource loadResourceWithBehavior:cacheBehavior progressBlock:nil successBlock:^(NSData * _Nonnull data) {
+
+  EXCachedResourceBehavior cachedResourceBehavior = EXCachedResourceNoCache;
+  if (manifestCacheBehavior == EXManifestOnlyCache) {
+    cachedResourceBehavior = EXCachedResourceOnlyCache;
+  } else if (manifestCacheBehavior == EXManifestPrepareToCache) {
+    // in this case, we don't want to use the cache but will prepare to write the resulting manifest
+    // to the cache later, after the bundle is finished downloading, so we save the reference
+    _manifestResource = manifestResource;
+  }
+  [manifestResource loadResourceWithBehavior:cachedResourceBehavior progressBlock:nil successBlock:^(NSData * _Nonnull data) {
     NSError *error;
     id manifest = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
     if (!manifest) {
@@ -384,7 +412,7 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
     // insert loadedFromCache: boolean key into manifest
     NSMutableDictionary *mutableManifest = [(NSDictionary *)manifest mutableCopy];
     BOOL loadedFromCache = YES;
-    if (cacheBehavior == EXCachedResourceNoCache || cacheBehavior == EXCachedResourceWriteToCache) {
+    if (cachedResourceBehavior == EXCachedResourceNoCache) {
       loadedFromCache = NO;
     }
     mutableManifest[@"loadedFromCache"] = @(loadedFromCache);

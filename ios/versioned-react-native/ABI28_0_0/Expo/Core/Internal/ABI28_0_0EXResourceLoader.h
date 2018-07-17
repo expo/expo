@@ -41,6 +41,15 @@ typedef enum ABI28_0_0EXCachedResourceBehavior {
   ABI28_0_0EXCachedResourceOnlyCache,
 } ABI28_0_0EXCachedResourceBehavior;
 
+typedef enum ABI28_0_0EXManifestCacheBehavior {
+  // load the manifest without using any cache.
+  ABI28_0_0EXManifestNoCache,
+  // use a cache if it exists, otherwise fail. (don't download anything)
+  ABI28_0_0EXManifestOnlyCache,
+  // load the resource without reading from the cache, but still prepare to write the loaded resource to the cache.
+  ABI28_0_0EXManifestPrepareToCache,
+} ABI28_0_0EXManifestCacheBehavior;
+
 @protocol ABI28_0_0EXResourceLoader
 
 - (void)loadResourceWithBehavior:(ABI28_0_0EXCachedResourceBehavior)behavior

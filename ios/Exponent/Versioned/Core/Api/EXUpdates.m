@@ -58,7 +58,7 @@ RCT_EXPORT_METHOD(checkForUpdateAsync:(RCTPromiseResolveBlock)resolve
     reject(@"E_CHECK_UPDATE_FAILED", @"Cannot check for updates in dev mode", nil);
     return;
   }
-  [_kernelUpdatesServiceDelegate updatesModule:self didRequestManifestWithCacheBehavior:EXCachedResourceNoCache success:^(NSDictionary * _Nonnull manifest) {
+  [_kernelUpdatesServiceDelegate updatesModule:self didRequestManifestWithCacheBehavior:EXManifestNoCache success:^(NSDictionary * _Nonnull manifest) {
     NSString *currentRevisionId = self->_manifest[@"revisionId"];
     NSString *newRevisionId = manifest[@"revisionId"];
     if (!currentRevisionId || !newRevisionId) {
@@ -86,7 +86,7 @@ RCT_EXPORT_METHOD(fetchUpdateAsync:(RCTPromiseResolveBlock)resolve
     reject(@"E_FETCH_UPDATE_FAILED", @"Cannot fetch updates in dev mode", nil);
     return;
   }
-  [_kernelUpdatesServiceDelegate updatesModule:self didRequestManifestWithCacheBehavior:EXCachedResourceWriteToCache success:^(NSDictionary * _Nonnull manifest) {
+  [_kernelUpdatesServiceDelegate updatesModule:self didRequestManifestWithCacheBehavior:EXManifestPrepareToCache success:^(NSDictionary * _Nonnull manifest) {
     NSString *currentRevisionId = self->_manifest[@"revisionId"];
     NSString *newRevisionId = manifest[@"revisionId"];
     if (currentRevisionId && newRevisionId && [currentRevisionId isEqualToString:newRevisionId]) {

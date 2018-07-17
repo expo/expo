@@ -14,7 +14,7 @@
 
 @interface EXUpdatesManager ()
 
-@property (nonatomic, strong) EXAppLoader *appLoader;
+@property (nonatomic, strong) EXAppLoader *manifestAppLoader;
 
 @end
 
@@ -75,7 +75,7 @@ ofDownloadWithManifest:(NSDictionary * _Nullable)manifest
 }
 
 - (void)updatesModule:(id)scopedModule
-didRequestManifestWithCacheBehavior:(EXCachedResourceBehavior)cacheBehavior
+didRequestManifestWithCacheBehavior:(EXManifestCacheBehavior)cacheBehavior
               success:(void (^)(NSDictionary * _Nonnull))success
               failure:(void (^)(NSError * _Nonnull))failure
 {
@@ -85,6 +85,9 @@ didRequestManifestWithCacheBehavior:(EXCachedResourceBehavior)cacheBehavior
   }
   EXAppLoader *appLoader = [self _appLoaderWithScopedModule:scopedModule];
   [appLoader fetchManifestWithCacheBehavior:cacheBehavior success:success failure:failure];
+  if (cacheBehavior == EXManifestPrepareToCache) {
+    _manifestAppLoader = appLoader;
+  }
 }
 
 - (void)updatesModule:(id)scopedModule
@@ -104,13 +107,22 @@ didRequestBundleWithManifest:(NSDictionary *)manifest
                     @"total": progress.total
                     });
   };
-  EXAppLoader *appLoader = [self _appLoaderWithScopedModule:scopedModule];
+  EXAppLoader *appLoader = _manifestAppLoader ?: [self _appLoaderWithScopedModule:scopedModule];
   [appLoader fetchJSBundleWithManifest:manifest
                          cacheBehavior:EXCachedResourceWriteToCache
                        timeoutInterval:kEXJSBundleTimeout
                               progress:progressDictBlock
-                               success:success
-                                 error:failure];
+                               success:^(NSData * _Nonnull data) {
+                                         if (self->_manifestAppLoader) {
+                                           [self->_manifestAppLoader writeManifestToCache];
+                                         }
+                                         self->_manifestAppLoader = nil;
+                                         success(data);
+                                       }
+                                 error:^(NSError * _Nonnull error) {
+                                         self->_manifestAppLoader = nil;
+                                         failure(error);
+                                       }];
 }
 
 - (BOOL)_doesBridgeSupportUpdatesModule:(RCTBridge *)bridge
