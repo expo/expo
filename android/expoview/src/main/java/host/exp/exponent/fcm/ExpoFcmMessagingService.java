@@ -9,6 +9,15 @@ import host.exp.exponent.notifications.PushNotificationHelper;
 public class ExpoFcmMessagingService extends FirebaseMessagingService {
 
   @Override
+  public void onNewToken(String token) {
+    if (!Constants.FCM_ENABLED) {
+      return;
+    }
+
+    FcmRegistrationIntentService.registerForeground(getApplicationContext(), token);
+  }
+
+  @Override
   public void onMessageReceived(RemoteMessage remoteMessage) {
     if (!Constants.FCM_ENABLED) {
       return;

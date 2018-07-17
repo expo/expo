@@ -16,14 +16,12 @@ import android.support.v4.app.NotificationCompat;
 import android.text.format.DateUtils;
 
 import de.greenrobot.event.EventBus;
-import expolib_v1.okhttp3.Call;
-import expolib_v1.okhttp3.Callback;
 import expolib_v1.okhttp3.MediaType;
 import expolib_v1.okhttp3.Request;
 import expolib_v1.okhttp3.RequestBody;
-import expolib_v1.okhttp3.Response;
 import host.exp.exponent.Constants;
 import host.exp.exponent.analytics.EXL;
+import host.exp.exponent.fcm.FcmRegistrationIntentService;
 import host.exp.exponent.kernel.ExponentUrls;
 import host.exp.exponent.network.ExpoHttpCallback;
 import host.exp.exponent.network.ExpoResponse;
@@ -114,6 +112,10 @@ public class NotificationHelper {
       final ExponentNetwork exponentNetwork,
       final ExponentSharedPreferences exponentSharedPreferences,
       final TokenListener listener) {
+    if (Constants.FCM_ENABLED) {
+      FcmRegistrationIntentService.getTokenAndRegister(exponentSharedPreferences.getContext());
+    }
+
     AsyncCondition.wait("devicePushToken", new AsyncCondition.AsyncConditionListener() {
       @Override
       public boolean isReady() {
