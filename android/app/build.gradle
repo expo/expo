@@ -118,12 +118,12 @@ dependencies {
   implementation 'de.greenrobot:eventbus:2.4.0'
   implementation 'com.amplitude:android-sdk:2.9.2' // Be careful when upgrading! Upgrading might break experience scoping. Check with Jesse. See Analytics.resetAmplitudeDatabaseHelper
   implementation 'com.squareup.picasso:picasso:2.5.2'
-  implementation 'com.google.android.gms:play-services-gcm:12.0.1'
-  implementation 'com.google.android.gms:play-services-analytics:12.0.1'
-  implementation 'com.google.android.gms:play-services-maps:12.0.1'
-  implementation 'com.google.android.gms:play-services-auth:12.0.1'
-  implementation 'com.google.android.gms:play-services-location:12.0.1'
-  implementation 'com.google.android.gms:play-services-ads:12.0.1'
+  implementation 'com.google.android.gms:play-services-gcm:15.0.1'
+  implementation 'com.google.android.gms:play-services-analytics:16.0.1'
+  implementation 'com.google.android.gms:play-services-maps:15.0.1'
+  implementation 'com.google.android.gms:play-services-auth:15.0.1'
+  implementation 'com.google.android.gms:play-services-location:15.0.1'
+  implementation 'com.google.android.gms:play-services-ads:15.0.1'
   annotationProcessor 'com.raizlabs.android:DBFlow-Compiler:2.2.1'
   implementation "com.raizlabs.android:DBFlow-Core:2.2.1"
   implementation "com.raizlabs.android:DBFlow:2.2.1"
