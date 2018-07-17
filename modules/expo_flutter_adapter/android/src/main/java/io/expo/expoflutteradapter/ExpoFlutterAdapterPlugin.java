@@ -165,7 +165,10 @@ class ExpoFlutterAdapterModule implements
 
             @Override
             public void reject(String code, String message, Throwable e) {
-              result.error(code, message, e);
+              StringWriter sw = new StringWriter();
+              PrintWriter pw = new PrintWriter(sw);
+              e.printStackTrace(pw);
+              result.error("EXPO_MODULE_ERROR", message, sw.toString());
             }
           });
 
