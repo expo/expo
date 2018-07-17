@@ -34,8 +34,6 @@ NSString *const EXMediaLibraryDidChangeEvent = @"mediaLibraryDidChange";
 
 @implementation EXMediaLibrary
 
-@synthesize bridge = _bridge;
-
 EX_EXPORT_SCOPED_MODULE(ExponentMediaLibrary, PermissionsManager);
 
 - (instancetype)initWithExperienceId:(NSString *)experienceId kernelServiceDelegate:(id<EXPermissionsScopedModuleDelegate>)kernelServiceInstance params:(NSDictionary *)params
@@ -107,7 +105,7 @@ RCT_REMAP_METHOD(createAssetAsync,
     reject(@"E_INVALID_URI", @"Provided localUri is not a valid URI", nil);
     return;
   }
-  id<EXFileSystemInterface> fileSystem = [_bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
+  id<EXFileSystemInterface> fileSystem = [self.bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
   if (!([fileSystem permissionsForURI:assetUrl] & EXFileSystemPermissionRead)) {
     reject(@"E_FILESYSTEM_PERMISSIONS", [NSString stringWithFormat:@"File '%@' isn't readable.", assetUrl], nil);
     return;
