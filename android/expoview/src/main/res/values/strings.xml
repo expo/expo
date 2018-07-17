@@ -38,6 +38,7 @@
   <string name="perm_fine_location">fine location</string>
   <string name="perm_coarse_location">coarse location</string>
   <string name="perm_system_brightness">system brightness</string>
+  <string name="perm_read_sms">read sms</string>
   <string name="default_notification_channel_group">Default</string>
   <string name="persistent_notification_channel_group">Expo</string>
   <string name="persistent_notification_channel_name">Experience notifications</string>

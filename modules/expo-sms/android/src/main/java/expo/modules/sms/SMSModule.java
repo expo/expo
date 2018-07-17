@@ -72,9 +72,6 @@ public class SMSModule extends ExportedModule implements ModuleRegistryConsumer,
       return;
     }
 
-    // TODO: I've got problems with permissions on android.VERSION_CODE < Build.VERSION_CODES.M
-    // I've tracked it down and permission module is not adding per-experience permission and when below code is checking for existing permission it fails as there's no per-experience permission granted
-    // I believe PermissionsKernelService#grantPermissions method is not invoked whereas PermissionsKernelService#hasGrantedPermissions is called during checking process
     int[] grantResults = permissionsManager.getPermissions(new String[] { Manifest.permission.READ_SMS });
     if (grantResults.length != 1 || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
       promise.reject("E_NO_PERMISSIONS", "SMS permission is not granted. Ensure that user permits SMS usage via permissions module.");

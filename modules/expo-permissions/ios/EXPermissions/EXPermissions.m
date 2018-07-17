@@ -121,7 +121,7 @@ EX_EXPORT_METHOD_AS(askAsync,
       return;
     }
 
-    // we need custom resolver for the requester cause we need to
+    // we need custom resolver for the requester cause we need to save given permissions per experience
     void (^customResolver)(NSDictionary *result) = ^(NSDictionary *result) {
       if (_permissionsService != nil) {
         [_permissionsService savePermission:result ofType:type forExperience:_experienceId];

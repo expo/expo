@@ -24,8 +24,13 @@ public class PermissionsService implements InternalModule, Permissions {
   public int[] getPermissions(String[] permissions) {
     int[] results = new int[permissions.length];
     for (int i = 0; i < permissions.length; i++) {
-      results[i] = ContextCompat.checkSelfPermission(mContext, permissions[i]);
+      results[i] = getPermission(permissions[i]);
     }
     return results;
+  }
+
+  @Override
+  public int getPermission(String permission) {
+    return ContextCompat.checkSelfPermission(mContext, permission);
   }
 }

@@ -22,10 +22,17 @@ import expo.interfaces.permissions.PermissionsListener;
 import expo.interfaces.permissions.PermissionsManager;
 
 public class PermissionsModule extends ExportedModule implements ModuleRegistryConsumer {
+  private static final String EXPIRES_KEY = "expires";
+  private static final String STATUS_KEY = "status";
+  private static final String GRANTED_VALUE = "granted";
+  private static final String DENIED_VALUE = "denied";
+  private static final String UNDETERMINED_VALUE = "undetermined";
+
   private static String PERMISSION_EXPIRES_NEVER = "never";
   private static final int PERMISSIONS_REQUEST = 13;
 
-  private ModuleRegistry mModuleRegistry;
+  private PermissionsManager mPermissionManager;
+  private Permissions mPermissions;
 
   public PermissionsModule(Context context) {
     super(context);
@@ -33,7 +40,8 @@ public class PermissionsModule extends ExportedModule implements ModuleRegistryC
 
   @Override
   public void setModuleRegistry(ModuleRegistry moduleRegistry) {
-    mModuleRegistry = moduleRegistry;
+    mPermissionManager = moduleRegistry.getModule(PermissionsManager.class);
+    mPermissions = moduleRegistry.getModule(Permissions.class);
   }
 
   @Override
@@ -54,8 +62,8 @@ public class PermissionsModule extends ExportedModule implements ModuleRegistryC
   @ExpoMethod
   public void askAsync(final String type, final Promise promise) {
     Bundle existingPermissions = getPermissions(type);
-    if (existingPermissions != null && existingPermissions.getString("status") != null
-      && existingPermissions.getString("status").equals("granted")) {
+    if (existingPermissions != null && existingPermissions.getString(STATUS_KEY) != null
+      && existingPermissions.getString(STATUS_KEY).equals(GRANTED_VALUE)) {
       // if we already have permission granted, resolve immediately with that
       promise.resolve(existingPermissions);
     } else {
@@ -147,9 +155,9 @@ public class PermissionsModule extends ExportedModule implements ModuleRegistryC
     Bundle response = new Bundle();
 
     boolean areEnabled = NotificationManagerCompat.from(getContext()).areNotificationsEnabled();
-    response.putString("status", areEnabled ? "granted" : "denied");
+    response.putString(STATUS_KEY, areEnabled ? GRANTED_VALUE : DENIED_VALUE);
 
-    response.putString("expires", PERMISSION_EXPIRES_NEVER);
+    response.putString(EXPIRES_KEY, PERMISSION_EXPIRES_NEVER);
 
     return response;
   }
@@ -157,22 +165,21 @@ public class PermissionsModule extends ExportedModule implements ModuleRegistryC
   private Bundle getLocationPermissions() {
     Bundle response = new Bundle();
     String scope = "none";
-
     try {
-      if (getPermissions(new String[] { Manifest.permission.ACCESS_FINE_LOCATION })) {
-        response.putString("status", "granted");
+      if (getPermission(Manifest.permission.ACCESS_FINE_LOCATION)) {
+        response.putString(STATUS_KEY, GRANTED_VALUE);
         scope = "fine";
-      } else if (getPermissions(new String[]{ Manifest.permission.ACCESS_COARSE_LOCATION })) {
-        response.putString("status", "granted");
+      } else if (getPermission(Manifest.permission.ACCESS_COARSE_LOCATION)) {
+        response.putString(STATUS_KEY, GRANTED_VALUE);
         scope = "coarse";
       } else {
-        response.putString("status", "denied");
+        response.putString(STATUS_KEY, DENIED_VALUE);
       }
     } catch (IllegalStateException e) {
-      response.putString("status", "undetermined");
+      response.putString(STATUS_KEY, UNDETERMINED_VALUE);
     }
 
-    response.putString("expires", PERMISSION_EXPIRES_NEVER);
+    response.putString(EXPIRES_KEY, PERMISSION_EXPIRES_NEVER);
     Bundle platformMap = new Bundle();
     platformMap.putString("scope", scope);
     response.putBundle("android", platformMap);
@@ -186,14 +193,14 @@ public class PermissionsModule extends ExportedModule implements ModuleRegistryC
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       if (Settings.System.canWrite(getContext())) {
-        response.putString("status", "granted");
+        response.putString(STATUS_KEY, GRANTED_VALUE);
       } else {
-        response.putString("status", "denied");
+        response.putString(STATUS_KEY, DENIED_VALUE);
       }
     } else {
-      response.putString("status", "granted");
+      response.putString(STATUS_KEY, GRANTED_VALUE);
     }
-    response.putString("expires", PERMISSION_EXPIRES_NEVER);
+    response.putString(EXPIRES_KEY, PERMISSION_EXPIRES_NEVER);
 
     return response;
   }
@@ -209,7 +216,7 @@ public class PermissionsModule extends ExportedModule implements ModuleRegistryC
       // Action returns nothing so we return undetermined status
       // https://stackoverflow.com/questions/44389632/proper-way-to-handle-action-manage-write-settings-activity
       Bundle response = new Bundle();
-      response.putString("status", "undetermined");
+      response.putString(STATUS_KEY, UNDETERMINED_VALUE);
       promise.resolve(response);
     } catch (Exception e) {
       promise.reject("Error launching write settings activity:", e.getMessage());
@@ -220,16 +227,16 @@ public class PermissionsModule extends ExportedModule implements ModuleRegistryC
     Bundle response = new Bundle();
 
     try {
-      if (getPermissions(new String[]{ permission })) {
-        response.putString("status", "granted");
+      if (getPermission(permission)) {
+        response.putString(STATUS_KEY, GRANTED_VALUE);
       } else {
-        response.putString("status", "denied");
+        response.putString(STATUS_KEY, DENIED_VALUE);
       }
     } catch (IllegalStateException e) {
-      response.putString("status", "undetermined");
+      response.putString(STATUS_KEY, UNDETERMINED_VALUE);
     }
 
-    response.putString("expires", PERMISSION_EXPIRES_NEVER);
+    response.putString(EXPIRES_KEY, PERMISSION_EXPIRES_NEVER);
 
     return response;
   }
@@ -282,16 +289,18 @@ public class PermissionsModule extends ExportedModule implements ModuleRegistryC
     Bundle response = new Bundle();
 
     try {
-      if (getPermissions(new String[]{ Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE })) {
-        response.putString("status", "granted");
+      if (getPermissions(new String[]{
+          Manifest.permission.READ_EXTERNAL_STORAGE,
+          Manifest.permission.WRITE_EXTERNAL_STORAGE })) {
+        response.putString(STATUS_KEY, GRANTED_VALUE);
       } else {
-        response.putString("status", "denied");
+        response.putString(STATUS_KEY, DENIED_VALUE);
       }
     } catch (IllegalStateException e) {
-      response.putString("status", "undetermined");
+      response.putString(STATUS_KEY, UNDETERMINED_VALUE);
     }
 
-    response.putString("expires", PERMISSION_EXPIRES_NEVER);
+    response.putString(EXPIRES_KEY, PERMISSION_EXPIRES_NEVER);
 
     return response;
   }
@@ -313,23 +322,41 @@ public class PermissionsModule extends ExportedModule implements ModuleRegistryC
   private Bundle getCalendarPermissions() {
     Bundle response = new Bundle();
     try {
-      if (getPermissions(new String[]{ Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR })) {
-        response.putString("status", "granted");
+      if (getPermissions(new String[]{
+          Manifest.permission.READ_CALENDAR,
+          Manifest.permission.WRITE_CALENDAR })) {
+        response.putString(STATUS_KEY, GRANTED_VALUE);
       } else {
-        response.putString("status", "denied");
+        response.putString(STATUS_KEY, DENIED_VALUE);
       }
     } catch (IllegalStateException e) {
-      response.putString("status", "undetermined");
+      response.putString(STATUS_KEY, UNDETERMINED_VALUE);
     }
-    response.putString("expires", PERMISSION_EXPIRES_NEVER);
+    response.putString(EXPIRES_KEY, PERMISSION_EXPIRES_NEVER);
 
     return response;
   }
 
+  /**
+   * Checks whether given permission is granted or not.
+   * Throws IllegalStateException there's no Permissions module present.
+   */
+  private boolean getPermission(final String permission) {
+    if (mPermissions != null) {
+      int permissionResult = mPermissions.getPermission(permission);
+      return permissionResult == PackageManager.PERMISSION_GRANTED;
+    } else {
+      throw new IllegalStateException("No Permissions module present.");
+    }
+  }
+
+  /**
+   * Checks whether all given permissions are granted or not.
+   * Throws IllegalStateException there's no Permissions module present.
+   */
   private boolean getPermissions(final String[] permissions) {
-    Permissions manager = mModuleRegistry.getModule(Permissions.class);
-    if (manager != null) {
-      int[] permissionsResults = manager.getPermissions(permissions);
+    if (mPermissions != null) {
+      int[] permissionsResults = mPermissions.getPermissions(permissions);
       if (permissions.length != permissionsResults.length) {
         return false;
       }
@@ -340,14 +367,13 @@ public class PermissionsModule extends ExportedModule implements ModuleRegistryC
       }
       return true;
     } else {
-      throw new IllegalStateException("No Permissions module");
+      throw new IllegalStateException("No Permissions module present.");
     }
   }
 
   private boolean askForPermissions(final String[] permissions, PermissionsListener listener) {
-    PermissionsManager manager = mModuleRegistry.getModule(PermissionsManager.class);
-    if (manager != null) {
-      manager.requestPermissions(permissions, PERMISSIONS_REQUEST, listener);
+    if (mPermissionManager != null) {
+      mPermissionManager.requestPermissions(permissions, PERMISSIONS_REQUEST, listener);
       return true;
     } else {
       return false;
