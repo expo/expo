@@ -92,7 +92,7 @@ export default class Profile extends React.Component {
         style={styles.container}>
         {this._renderHeader()}
         {this._renderApps()}
-        {this._renderSnacks()}
+        {/* {this._renderSnacks()} */}
       </ScrollView>
     );
   }
