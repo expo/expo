@@ -7,13 +7,13 @@
 
 #import <UIKit/UIKit.h>
 
-@interface NSTextStorage (FontScaling)
+@interface NSTextStorage (ABI29_0_0FontScaling)
 
-- (void)scaleFontSizeToFitSize:(CGSize)size
+- (void)ABI29_0_0scaleFontSizeToFitSize:(CGSize)size
                minimumFontSize:(CGFloat)minimumFontSize
                maximumFontSize:(CGFloat)maximumFontSize;
 
-- (void)scaleFontSizeWithRatio:(CGFloat)ratio
+- (void)ABI29_0_0scaleFontSizeWithRatio:(CGFloat)ratio
                minimumFontSize:(CGFloat)minimumFontSize
                maximumFontSize:(CGFloat)maximumFontSize;
 

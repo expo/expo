@@ -222,7 +222,7 @@
   if (_adjustsFontSizeToFit) {
     CGFloat minimumFontSize =
       MAX(_minimumFontScale * (self.textAttributes.effectiveFont.pointSize), 4.0);
-    [textStorage scaleFontSizeToFitSize:size
+    [textStorage ABI29_0_0scaleFontSizeToFitSize:size
                         minimumFontSize:minimumFontSize
                         maximumFontSize:self.textAttributes.effectiveFont.pointSize];
   }

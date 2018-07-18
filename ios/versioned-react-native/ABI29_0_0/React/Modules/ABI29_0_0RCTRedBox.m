@@ -16,7 +16,7 @@
 #import "ABI29_0_0RCTRedBoxExtraDataViewController.h"
 #import "ABI29_0_0RCTUtils.h"
 
-#if ABI29_0_0RCT_DEBUG
+#if ABI29_0_0RCT_DEV
 
 @class ABI29_0_0RCTRedBoxWindow;
 
