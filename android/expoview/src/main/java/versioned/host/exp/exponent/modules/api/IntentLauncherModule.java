@@ -3,6 +3,7 @@ package versioned.host.exp.exponent.modules.api;
 import android.app.Activity;
 import android.content.Intent;
 import android.support.annotation.Nullable;
+import android.net.Uri;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.LifecycleEventListener;
@@ -28,7 +29,7 @@ public class IntentLauncherModule extends ReactContextBaseJavaModule implements 
 
 
   @ReactMethod
-  public void startActivity(String activity, @Nullable ReadableMap data, Promise promise) {
+  public void startActivity(String activity, @Nullable ReadableMap data, @Nullable String uri, Promise promise) {
     if (pendingPromise != null) {
       pendingPromise.reject("ERR_INTERRUPTED", "A new activity was started");
       pendingPromise = null;
@@ -45,6 +46,10 @@ public class IntentLauncherModule extends ReactContextBaseJavaModule implements 
 
       if (data != null) {
         intent.putExtras(Arguments.toBundle(data));
+      }
+
+      if (uri != null && !uri.isEmpty()) {
+        intent.setData(Uri.parse(uri));
       }
 
       if (currentActivity != null) {
