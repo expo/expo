@@ -60,7 +60,7 @@ Pod::Spec.new do |s|
                               "React/Views/RCTSlider*",
                               "React/Views/RCTSwitch*",
                               "React/Views/RCTWebView*"
-    ss.header_dir           = "ABI29_0_0React"
+    ss.header_dir           = "ReactABI29_0_0"
     ss.framework            = "JavaScriptCore"
     ss.libraries            = "stdc++"
     ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"" }
