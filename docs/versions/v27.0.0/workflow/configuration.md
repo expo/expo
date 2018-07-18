@@ -353,7 +353,7 @@ Configuration for how and when the app should request OTA JavaScript updates
       /*
         Sets `ITSAppUsesNonExemptEncryption` in the standalone ipa's Info.plist to the given boolean value.
       */
-      "usesNonExemptEncryption": STRING,
+      "usesNonExemptEncryption": BOOLEAN,
 
       /*
         Google Maps iOS SDK key for your standalone app. 
