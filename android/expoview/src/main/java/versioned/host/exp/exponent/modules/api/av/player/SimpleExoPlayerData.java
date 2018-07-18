@@ -287,7 +287,7 @@ class SimpleExoPlayerData extends PlayerData
 
   @Override
   public void onPlayerError(final ExoPlaybackException error) {
-    mErrorListener.onError("Player error: " + error.getMessage());
+    onFatalError(error.getCause());
   }
 
   @Override
@@ -302,11 +302,13 @@ class SimpleExoPlayerData extends PlayerData
     onFatalError(error);
   }
 
-  private void onFatalError(final Exception error) {
+  private void onFatalError(final Throwable error) {
     if (mLoadCompletionListener != null) {
       final LoadCompletionListener listener = mLoadCompletionListener;
       mLoadCompletionListener = null;
       listener.onLoadError(error.toString());
+    } else {
+      mErrorListener.onError("Player error: " + error.getMessage());
     }
     release();
   }
