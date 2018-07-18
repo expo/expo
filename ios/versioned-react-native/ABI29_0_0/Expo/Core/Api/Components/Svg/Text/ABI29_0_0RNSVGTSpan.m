@@ -11,7 +11,7 @@
 #import "ABI29_0_0RNSVGTextProperties.h"
 #import "ABI29_0_0RNSVGFontData.h"
 
-NSCharacterSet *separators = nil;
+NSCharacterSet *ABI29_0_0separators = nil;
 static double radToDeg = 180 / M_PI;
 
 @implementation ABI29_0_0RNSVGTSpan
@@ -30,8 +30,8 @@ static double radToDeg = 180 / M_PI;
 {
     self = [super init];
 
-    if (separators == nil) {
-        separators = [NSCharacterSet whitespaceCharacterSet];
+    if (ABI29_0_0separators == nil) {
+        ABI29_0_0separators = [NSCharacterSet whitespaceCharacterSet];
     }
 
     return self;
@@ -272,7 +272,7 @@ static double radToDeg = 180 / M_PI;
     enum ABI29_0_0RNSVGTextAnchor textAnchor = font->textAnchor;
     CGRect textBounds = CTLineGetBoundsWithOptions(line, 0);
     double textMeasure = CGRectGetWidth(textBounds);
-    double offset = getTextAnchorOffset(textAnchor, textMeasure);
+    double offset = ABI29_0_0getTextAnchorOffset(textAnchor, textMeasure);
 
     bool hasTextPath = textPath != nil;
 
@@ -703,7 +703,7 @@ static double radToDeg = 180 / M_PI;
 
             CFIndex currIndex = indices[g];
             char currentChar = [str characterAtIndex:currIndex];
-            bool isWordSeparator = [separators characterIsMember:currentChar];
+            bool isWordSeparator = [ABI29_0_0separators characterIsMember:currentChar];
             double wordSpace = isWordSeparator ? wordSpacing : 0;
             double spacing = wordSpace + letterSpacing;
             double advance = charWidth + spacing;
@@ -811,7 +811,7 @@ static double radToDeg = 180 / M_PI;
     return path;
 }
 
-CGFloat getTextAnchorOffset(enum ABI29_0_0RNSVGTextAnchor textAnchor, CGFloat width)
+CGFloat ABI29_0_0getTextAnchorOffset(enum ABI29_0_0RNSVGTextAnchor textAnchor, CGFloat width)
 {
     switch (textAnchor) {
         case ABI29_0_0RNSVGTextAnchorStart:

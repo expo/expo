@@ -141,7 +141,7 @@
                                    scaleMultiplier:1.0];
 }
 
-void pushIndices(ABI29_0_0RNSVGGlyphContext *self) {
+void ABI29_0_0pushIndices(ABI29_0_0RNSVGGlyphContext *self) {
     [self->mXsIndices_ addObject:[NSNumber numberWithLong:self->mXsIndex_]];
     [self->mYsIndices_ addObject:[NSNumber numberWithLong:self->mYsIndex_]];
     [self->mDXsIndices_ addObject:[NSNumber numberWithLong:self->mDXsIndex_]];
@@ -203,7 +203,7 @@ void pushIndices(ABI29_0_0RNSVGGlyphContext *self) {
     [self->mRIndices_ addObject:[NSNumber numberWithLong:self->mRIndex_]];
 
     [self->mFontContext_ addObject:self->topFont_];
-    pushIndices(self);
+    ABI29_0_0pushIndices(self);
     return self;
 }
 
@@ -211,7 +211,7 @@ void pushIndices(ABI29_0_0RNSVGGlyphContext *self) {
     return topFont_;
 }
 
-ABI29_0_0RNSVGFontData *getTopOrParentFont(ABI29_0_0RNSVGGlyphContext *self, ABI29_0_0RNSVGGroup* child) {
+ABI29_0_0RNSVGFontData *ABI29_0_0getTopOrParentFont(ABI29_0_0RNSVGGlyphContext *self, ABI29_0_0RNSVGGroup* child) {
     if (self->mTop_ > 0) {
         return self->topFont_;
     } else {
@@ -228,8 +228,8 @@ ABI29_0_0RNSVGFontData *getTopOrParentFont(ABI29_0_0RNSVGGlyphContext *self, ABI
     }
 }
 
-void pushNodeAndFont(ABI29_0_0RNSVGGlyphContext *self, ABI29_0_0RNSVGGroup* node, NSDictionary* font) {
-    ABI29_0_0RNSVGFontData *parent = getTopOrParentFont(self, node);
+void ABI29_0_0pushNodeAndFont(ABI29_0_0RNSVGGlyphContext *self, ABI29_0_0RNSVGGroup* node, NSDictionary* font) {
+    ABI29_0_0RNSVGFontData *parent = ABI29_0_0getTopOrParentFont(self, node);
     self->mTop_++;
     if (font == nil) {
         [self->mFontContext_ addObject:parent];
@@ -245,8 +245,8 @@ void pushNodeAndFont(ABI29_0_0RNSVGGlyphContext *self, ABI29_0_0RNSVGGroup* node
 
 - (void)pushContext:(ABI29_0_0RNSVGGroup*)node
                font:(NSDictionary*)font {
-    pushNodeAndFont(self, node, font);
-    pushIndices(self);
+    ABI29_0_0pushNodeAndFont(self, node, font);
+    ABI29_0_0pushIndices(self);
 }
 
 - (void)pushContext:(ABI29_0_0RNSVGText*)node
@@ -256,7 +256,7 @@ void pushNodeAndFont(ABI29_0_0RNSVGGlyphContext *self, ABI29_0_0RNSVGGroup* node
              deltaX:(NSArray*)deltaX
              deltaY:(NSArray*)deltaY
              rotate:(NSArray*)rotate {
-    pushNodeAndFont(self, (ABI29_0_0RNSVGGroup*)node, font);
+    ABI29_0_0pushNodeAndFont(self, (ABI29_0_0RNSVGGroup*)node, font);
     if (x != nil && [x count] != 0) {
         mXsIndex_++;
         mXIndex_ = -1;
@@ -292,7 +292,7 @@ void pushNodeAndFont(ABI29_0_0RNSVGGlyphContext *self, ABI29_0_0RNSVGGroup* node
         mRs_ = [rotate valueForKeyPath:@"self.doubleValue"];
         [mRsContext_ addObject:mRs_];
     }
-    pushIndices(self);
+    ABI29_0_0pushIndices(self);
 }
 
 - (void)popContext {
@@ -346,7 +346,7 @@ void pushNodeAndFont(ABI29_0_0RNSVGGlyphContext *self, ABI29_0_0RNSVGGroup* node
     }
 }
 
-void incrementIndices(NSMutableArray *indices, long topIndex) {
+void ABI29_0_0incrementIndices(NSMutableArray *indices, long topIndex) {
     for (long index = topIndex; index >= 0; index--) {
         long xIndex = [[indices  objectAtIndex:index] longValue];
         [indices setObject:[NSNumber numberWithLong:xIndex + 1] atIndexedSubscript:index];
@@ -389,7 +389,7 @@ void incrementIndices(NSMutableArray *indices, long topIndex) {
 }
 
 - (double)nextXWithDouble:(double)advance {
-    incrementIndices(mXIndices_, mXsIndex_);
+    ABI29_0_0incrementIndices(mXIndices_, mXsIndex_);
     long nextIndex = mXIndex_ + 1;
     if (nextIndex < [mXs_ count]) {
         mDX_ = 0;
@@ -406,7 +406,7 @@ void incrementIndices(NSMutableArray *indices, long topIndex) {
 }
 
 - (double)nextY {
-    incrementIndices(mYIndices_, mYsIndex_);
+    ABI29_0_0incrementIndices(mYIndices_, mYsIndex_);
     long nextIndex = mYIndex_ + 1;
     if (nextIndex < [mYs_ count]) {
         mDY_ = 0;
@@ -422,7 +422,7 @@ void incrementIndices(NSMutableArray *indices, long topIndex) {
 }
 
 - (double)nextDeltaX {
-    incrementIndices(mDXIndices_, mDXsIndex_);
+    ABI29_0_0incrementIndices(mDXIndices_, mDXsIndex_);
     long nextIndex = mDXIndex_ + 1;
     if (nextIndex < [mDXs_ count]) {
         mDXIndex_ = nextIndex;
@@ -438,7 +438,7 @@ void incrementIndices(NSMutableArray *indices, long topIndex) {
 }
 
 - (double)nextDeltaY {
-    incrementIndices(mDYIndices_, mDYsIndex_);
+    ABI29_0_0incrementIndices(mDYIndices_, mDYsIndex_);
     long nextIndex = mDYIndex_ + 1;
     if (nextIndex < [mDYs_ count]) {
         mDYIndex_ = nextIndex;
@@ -454,7 +454,7 @@ void incrementIndices(NSMutableArray *indices, long topIndex) {
 }
 
 - (NSNumber*)nextRotation {
-    incrementIndices(mRIndices_, mRsIndex_);
+    ABI29_0_0incrementIndices(mRIndices_, mRsIndex_);
     long nextIndex = mRIndex_ + 1;
     long count = [mRs_ count];
     if (nextIndex < count) {
