@@ -162,9 +162,12 @@ function buildAndSignIpaWithArguments() {
     certPassword: 'Must run with `--certPassword CERT_PASSWORD`',
     teamID: 'Must run with `--teamID TEAM_ID`',
     bundleIdentifier: 'Must run with `--bundleIdentifier BUNDLE_IDENTIFIER`',
+    manifestPath: 'Must run with `--manifestPath MANIFEST_PATH`',
   });
 
-  const builder = createIPABuilder(argv);
+  const manifest = JSON.parse(fs.readFileSync(argv.manifestPath, 'utf8'));
+
+  const builder = createIPABuilder({ manifest, ...argv });
   return builder.build();
 }
 
