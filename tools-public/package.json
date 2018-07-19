@@ -7,9 +7,6 @@
   "scripts": {
     "test": "jest"
   },
-  "powertools": {
-    "group": "client"
-  },
   "dependencies": {
     "@ccheever/crayon": "^5.0.0",
     "@expo/bunyan": "^1.8.10",
