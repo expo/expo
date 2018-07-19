@@ -59,7 +59,7 @@ const pickScale = meta => {
     };
   }
 
-  if (Constants.manifest && Constants.manifest.xde) {
+  if (Constants.manifest && Constants.manifest.developer) {
     // Development server URI is pieced together
     return {
       uri:
