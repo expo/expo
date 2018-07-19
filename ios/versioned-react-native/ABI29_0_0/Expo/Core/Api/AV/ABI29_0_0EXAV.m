@@ -177,9 +177,9 @@ NSString *const ABI29_0_0EXDidUpdatePlaybackStatusEventName = @"didUpdatePlaybac
   BOOL allowsRecording = ((NSNumber *)mode[@"allowsRecordingIOS"]).boolValue;
   
   if (!playsInSilentMode && interruptionMode == ABI29_0_0EXAudioInterruptionModeDuckOthers) {
-    return ABI29_0_0RCTErrorWithMessage(@"Impossible audio mode: playsInSilentMode and duckOthers cannot both be set on iOS.");
+    return ABI29_0_0RCTErrorWithMessage(@"Impossible audio mode: playsInSilentMode == false and duckOthers == true cannot be set on iOS.");
   } else if (!playsInSilentMode && allowsRecording) {
-    return ABI29_0_0RCTErrorWithMessage(@"Impossible audio mode: playsInSilentMode and allowsRecording cannot both be set on iOS.");
+    return ABI29_0_0RCTErrorWithMessage(@"Impossible audio mode: playsInSilentMode == false and allowsRecording == true cannot be set on iOS.");
   } else {
     if (!allowsRecording) {
       if (_audioRecorder && [_audioRecorder isRecording]) {
