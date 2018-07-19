@@ -133,7 +133,7 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
 
     if (![device lockForConfiguration:&error]) {
       if (error) {
-        EXLogError(@"%s: %@", __func__, error);
+        EXLogInfo(@"%s: %@", __func__, error);
       }
       return;
     }
@@ -145,7 +145,7 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
         [device unlockForConfiguration];
       } else {
         if (error) {
-          EXLogError(@"%s: %@", __func__, error);
+          EXLogInfo(@"%s: %@", __func__, error);
         }
       }
     }
@@ -156,7 +156,7 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
 
     if (![device lockForConfiguration:&error]) {
       if (error) {
-        EXLogError(@"%s: %@", __func__, error);
+        EXLogInfo(@"%s: %@", __func__, error);
       }
       return;
     }
@@ -171,7 +171,7 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
         [device unlockForConfiguration];
       } else {
         if (error) {
-          EXLogError(@"%s: %@", __func__, error);
+          EXLogInfo(@"%s: %@", __func__, error);
         }
       }
     }
@@ -187,7 +187,7 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
 
   if (![device lockForConfiguration:&error]) {
     if (error) {
-      EXLogError(@"%s: %@", __func__, error);
+      EXLogInfo(@"%s: %@", __func__, error);
     }
     return;
   }
@@ -197,7 +197,7 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
       [device setFocusMode:_autoFocus];
     } else {
       if (error) {
-        EXLogError(@"%s: %@", __func__, error);
+        EXLogInfo(@"%s: %@", __func__, error);
       }
     }
   }
@@ -218,7 +218,7 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
     if ([device isLockingFocusWithCustomLensPositionSupported]) {
       if (![device lockForConfiguration:&error]) {
         if (error) {
-          EXLogError(@"%s: %@", __func__, error);
+          EXLogInfo(@"%s: %@", __func__, error);
         }
         return;
       }
@@ -234,7 +234,7 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
     }
   }
 
-  EXLogWarn(@"%s: Setting focusDepth isn't supported for this camera device", __func__);
+  EXLogInfo(@"%s: Setting focusDepth isn't supported for this camera device", __func__);
   return;
 }
 
@@ -244,7 +244,7 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
 
   if (![device lockForConfiguration:&error]) {
     if (error) {
-      EXLogError(@"%s: %@", __func__, error);
+      EXLogInfo(@"%s: %@", __func__, error);
     }
     return;
   }
@@ -261,7 +261,7 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
 
   if (![device lockForConfiguration:&error]) {
     if (error) {
-      EXLogError(@"%s: %@", __func__, error);
+      EXLogInfo(@"%s: %@", __func__, error);
     }
     return;
   }
@@ -285,7 +285,7 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
       }];
     } else {
       if (error) {
-        EXLogError(@"%s: %@", __func__, error);
+        EXLogInfo(@"%s: %@", __func__, error);
       }
     }
   }
@@ -581,7 +581,13 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
     AVCaptureDeviceInput *captureDeviceInput = [AVCaptureDeviceInput deviceInputWithDevice:captureDevice error:&error];
 
     if (error || captureDeviceInput == nil) {
-      EXLogError(@"%s: %@", __func__, error);
+      NSString *errorMessage = @"Camera could not be started - ";
+      if (error) {
+        errorMessage = [errorMessage stringByAppendingString:[error description]];
+      } else {
+        errorMessage = [errorMessage stringByAppendingString:@"there's no captureDeviceInput available"];
+      }
+      [strongSelf onMountingError:@{@"message": errorMessage}];
       return;
     }
 
@@ -649,7 +655,7 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
         AVCaptureDeviceInput *audioDeviceInput = [AVCaptureDeviceInput deviceInputWithDevice:audioCaptureDevice error:&error];
 
         if (error || audioDeviceInput == nil) {
-          EXLogWarn(@"%s: %@", __func__, error);
+          EXLogInfo(@"%s: %@", __func__, error);
           return;
         }
 
