@@ -79,25 +79,25 @@ public class CameraViewHelper {
     }
   }
 
-  public static CamcorderProfile getCamcorderProfile(int quality) {
-    CamcorderProfile profile = CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH);
+  public static CamcorderProfile getCamcorderProfile(int cameraId, int quality) {
+    CamcorderProfile profile = CamcorderProfile.get(cameraId, CamcorderProfile.QUALITY_HIGH);
     switch (quality) {
       case CameraModule.VIDEO_2160P:
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-          profile = CamcorderProfile.get(CamcorderProfile.QUALITY_2160P);
+          profile = CamcorderProfile.get(cameraId, CamcorderProfile.QUALITY_2160P);
         }
         break;
       case CameraModule.VIDEO_1080P:
-        profile = CamcorderProfile.get(CamcorderProfile.QUALITY_1080P);
+        profile = CamcorderProfile.get(cameraId, CamcorderProfile.QUALITY_1080P);
         break;
       case CameraModule.VIDEO_720P:
-        profile = CamcorderProfile.get(CamcorderProfile.QUALITY_720P);
+        profile = CamcorderProfile.get(cameraId, CamcorderProfile.QUALITY_720P);
         break;
       case CameraModule.VIDEO_480P:
-        profile = CamcorderProfile.get(CamcorderProfile.QUALITY_480P);
+        profile = CamcorderProfile.get(cameraId, CamcorderProfile.QUALITY_480P);
         break;
       case CameraModule.VIDEO_4x3:
-        profile = CamcorderProfile.get(CamcorderProfile.QUALITY_480P);
+        profile = CamcorderProfile.get(cameraId, CamcorderProfile.QUALITY_480P);
         profile.videoFrameWidth = 640;
         break;
     }

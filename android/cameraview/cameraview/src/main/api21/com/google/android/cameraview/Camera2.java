@@ -343,6 +343,11 @@ class Camera2 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
     }
 
     @Override
+    int getCameraId() {
+        return Integer.parseInt(mCameraId);
+    }
+
+    @Override
     Set<AspectRatio> getSupportedAspectRatios() {
         return mPreviewSizes.ratios();
     }
@@ -1076,7 +1081,7 @@ class Camera2 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
         if (CamcorderProfile.hasProfile(Integer.parseInt(mCameraId), profile.quality)) {
             setCamcorderProfile(profile, recordAudio);
         } else {
-            setCamcorderProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH), recordAudio);
+            setCamcorderProfile(CamcorderProfile.get(Integer.parseInt(mCameraId), CamcorderProfile.QUALITY_HIGH), recordAudio);
         }
 
         mMediaRecorder.setOrientationHint(getOutputRotation());

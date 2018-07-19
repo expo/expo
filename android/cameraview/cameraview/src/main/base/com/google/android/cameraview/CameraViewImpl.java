@@ -51,6 +51,12 @@ abstract class CameraViewImpl {
 
     abstract int getFacing();
 
+    /**
+     * @return currently used camera ID (as an integer that can be used as a parameter to
+     * {@link CamcorderProfile#get(int, int)})
+     */
+    abstract int getCameraId();
+
     abstract Set<AspectRatio> getSupportedAspectRatios();
 
     abstract SortedSet<Size> getAvailablePictureSizes(AspectRatio ratio);

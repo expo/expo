@@ -379,6 +379,16 @@ public class CameraView extends FrameLayout {
     }
 
     /**
+     * Gets the currently used camera ID (an integer that can be used as a parameter to
+     * {@link CamcorderProfile#get(int, int)})
+     *
+     * @return Currently used camera ID.
+     */
+    public int getCameraId() {
+        return mImpl.getCameraId();
+    }
+
+    /**
      * Gets all the aspect ratios supported by the current camera.
      */
     public Set<AspectRatio> getSupportedAspectRatios() {

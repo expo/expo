@@ -206,9 +206,9 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
         maxFileSize = (double) options.get(MAX_FILE_SIZE_KEY);
       }
 
-      CamcorderProfile profile = CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH);
+      CamcorderProfile profile = CamcorderProfile.get(getCameraId(), CamcorderProfile.QUALITY_HIGH);
       if (options.get(QUALITY_KEY) != null) {
-        profile = CameraViewHelper.getCamcorderProfile((Integer) options.get(QUALITY_KEY));
+        profile = CameraViewHelper.getCamcorderProfile(getCameraId(), (Integer) options.get(QUALITY_KEY));
       }
 
       Boolean muteValue = (Boolean) options.get(MUTE_KEY);
