@@ -344,6 +344,9 @@ class Camera2 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
 
     @Override
     int getCameraId() {
+        // We only use front/back-facing cameras, and according to CameraManager.getCameraIdList()
+        // docs, internal cameras (external cams are represented as another "facing") always
+        // use integers for their identifiers, so parseInt() should never fail.
         return Integer.parseInt(mCameraId);
     }
 
@@ -1078,10 +1081,10 @@ class Camera2 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
         mMediaRecorder.setOutputFile(path);
         mVideoPath = path;
 
-        if (CamcorderProfile.hasProfile(Integer.parseInt(mCameraId), profile.quality)) {
+        if (CamcorderProfile.hasProfile(getCameraId(), profile.quality)) {
             setCamcorderProfile(profile, recordAudio);
         } else {
-            setCamcorderProfile(CamcorderProfile.get(Integer.parseInt(mCameraId), CamcorderProfile.QUALITY_HIGH), recordAudio);
+            setCamcorderProfile(CamcorderProfile.get(getCameraId(), CamcorderProfile.QUALITY_HIGH), recordAudio);
         }
 
         mMediaRecorder.setOrientationHint(getOutputRotation());
