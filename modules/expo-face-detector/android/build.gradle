@@ -77,6 +77,6 @@ dependencies {
     expendency 'expo-face-detector-interface'
     expendency 'expo-file-system-interface'
     compile 'com.android.support:exifinterface:26.0.1'
-    compile 'com.google.android.gms:play-services-vision:9.8.0'
+    compile 'com.google.android.gms:play-services-vision:15.0.2'
 }
   
