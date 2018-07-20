@@ -1,4 +1,5 @@
 #import <FBAudienceNetwork/FBNativeAd.h>
+#import <ReactABI29_0_0/ABI29_0_0RCTBridge.h>
 #import <ReactABI29_0_0/ABI29_0_0RCTView.h>
 #import <ReactABI29_0_0/ABI29_0_0RCTComponent.h>
 
@@ -9,5 +10,9 @@
 
 // NativeAd this view has been loaded with
 @property (nonatomic, strong) FBNativeAd* nativeAd;
+
+- (instancetype)initWithBridge:(ABI29_0_0RCTBridge *)bridge;
+
+- (void)registerViewsForInteraction:(FBMediaView *)mediaView adIcon:(FBAdIconView *)adIconView clickableViews:(NSArray<UIView *>*)clickable;
 
 @end

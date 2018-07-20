@@ -40,6 +40,8 @@ import versioned.host.exp.exponent.modules.api.MediaLibraryModule;
 import versioned.host.exp.exponent.modules.api.PedometerModule;
 import versioned.host.exp.exponent.modules.api.UpdatesModule;
 import versioned.host.exp.exponent.modules.api.av.video.VideoManager;
+import versioned.host.exp.exponent.modules.api.fbads.AdIconViewManager;
+import versioned.host.exp.exponent.modules.api.fbads.MediaViewManager;
 import versioned.host.exp.exponent.modules.api.print.PrintModule;
 import versioned.host.exp.exponent.modules.api.components.barcodescanner.BarCodeScannerModule;
 import versioned.host.exp.exponent.modules.api.components.barcodescanner.BarCodeScannerViewManager;
@@ -241,7 +243,9 @@ public class ExponentPackage implements ReactPackage {
         new VideoViewManager(),
         new NativeAdViewManager(),
         new BarCodeScannerViewManager(),
-        new BannerViewManager()
+        new BannerViewManager(),
+        new MediaViewManager(),
+        new AdIconViewManager()
     ));
 
     // Add view manager from 3rd party library packages.

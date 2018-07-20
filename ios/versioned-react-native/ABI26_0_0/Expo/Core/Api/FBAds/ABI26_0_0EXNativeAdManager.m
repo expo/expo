@@ -14,8 +14,6 @@
 
 ABI26_0_0RCT_ENUM_CONVERTER(FBNativeAdsCachePolicy, (@{
   @"none": @(FBNativeAdsCachePolicyNone),
-  @"icon": @(FBNativeAdsCachePolicyIcon),
-  @"image": @(FBNativeAdsCachePolicyCoverImage),
   @"all": @(FBNativeAdsCachePolicyAll),
 }), FBNativeAdsCachePolicyNone, integerValue)
 

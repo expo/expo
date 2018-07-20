@@ -6,9 +6,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.facebook.ads.NativeAdsManager;
-import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
@@ -18,6 +16,7 @@ import java.util.Map;
 
 public class NativeAdViewManager extends ViewGroupManager<NativeAdView> {
   private static String NAME = "CTKNativeAd";
+
   @Override
   public String getName() {
     return NAME;

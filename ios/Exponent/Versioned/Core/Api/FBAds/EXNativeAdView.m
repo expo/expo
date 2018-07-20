@@ -1,29 +1,63 @@
 #import "EXNativeAdView.h"
-
+#import "EXUtil.h"
 #import <FBAudienceNetwork/FBAudienceNetwork.h>
 #import <React/RCTUtils.h>
 
 @interface EXNativeAdView ()
 
+@property (nonatomic, strong) RCTBridge *bridge;
+
 @end
 
 @implementation EXNativeAdView
 
+- (instancetype)initWithBridge:(RCTBridge *)bridge
+{
+  if (self = [super init]) {
+    _bridge = bridge;
+  }
+  return self;
+}
+
+- (void)setOnAdLoaded:(RCTBubblingEventBlock)onAdLoaded
+{
+  _onAdLoaded = onAdLoaded;
+  
+  if (_nativeAd != nil) {
+    [self callOnAdLoadedWithAd:_nativeAd];
+  }
+}
+
 - (void)setNativeAd:(FBNativeAd *)nativeAd
 {
   _nativeAd = nativeAd;
+  [self callOnAdLoadedWithAd:_nativeAd];
+}
 
-  _onAdLoaded(@{
-    @"title": _nativeAd.title,
-    @"subtitle": _nativeAd.subtitle,
-    @"description": _nativeAd.body,
-    @"socialContext": _nativeAd.socialContext,
-    @"callToActionText": _nativeAd.callToAction,
-    @"coverImage": _nativeAd.coverImage ? [_nativeAd.coverImage.url absoluteString] : [NSNull null],
-    @"icon": _nativeAd.icon ? [_nativeAd.icon.url absoluteString] : [NSNull null],
-  });
+- (void)callOnAdLoadedWithAd:(FBNativeAd *)nativeAd
+{
+  if (_onAdLoaded != nil) {
+    _onAdLoaded(@{
+                  @"advertiserName": nativeAd.advertiserName,
+                  @"sponsoredTranslation": nativeAd.sponsoredTranslation,
+                  @"bodyText": nativeAd.bodyText,
+                  @"socialContext": nativeAd.socialContext,
+                  @"callToActionText": nativeAd.callToAction,
+                  @"translation": nativeAd.adTranslation,
+                  @"linkDescription": nativeAd.linkDescription,
+                  @"promotedTranslation": nativeAd.promotedTranslation,
+                  @"headline": nativeAd.headline,
+                  });
+  }
+}
 
-  [_nativeAd registerViewForInteraction:self withViewController:RCTKeyWindow().rootViewController];
+- (void)registerViewsForInteraction:(FBMediaView *)mediaView adIcon:(FBAdIconView *)adIconView clickableViews:(NSArray<UIView *> *)clickable
+{
+  [_nativeAd registerViewForInteraction:self
+                                  mediaView:mediaView
+                                   iconView:adIconView
+                             viewController:_bridge.scopedModules.util.currentViewController
+                             clickableViews:clickable];
 }
 
 @end

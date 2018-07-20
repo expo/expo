@@ -109,8 +109,8 @@ dependencies {
   // Our dependencies from ExpoView
   // DON'T ADD ANYTHING HERE THAT ISN'T IN EXPOVIEW. ONLY COPY THINGS FROM EXPOVIEW TO HERE.
   implementation 'com.android.support:appcompat-v7:27.1.1'
-  implementation 'com.facebook.android:facebook-android-sdk:4.28.0'
-  implementation('com.facebook.android:audience-network-sdk:4.26.1') {
+  implementation 'com.facebook.android:facebook-android-sdk:4.34.0'
+  implementation('com.facebook.android:audience-network-sdk:4.99.0') {
     exclude module: 'play-services-ads'
   }
   compileOnly 'org.glassfish:javax.annotation:3.1.1'
