@@ -16,7 +16,7 @@ if not IS_OSS_BUILD:
     load("@xplat//configurations/buck:default_platform_defs.bzl", "APPLE")
     jni_instrumentation_test_lib(
         name = 'tests',
-        class_under_test = 'abi28_0_0/com/facebook/react/XplatBridgeTest',
+        class_under_test = 'abi29_0_0/com/facebook/react/XplatBridgeTest',
         soname = 'libxplat-bridge.so',
         srcs = TEST_SRCS,
         compiler_flags = [
