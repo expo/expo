@@ -199,8 +199,8 @@ dependencies {
   api('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') {
     transitive = true;
   }
-  api 'com.facebook.android:facebook-android-sdk:4.28.0'
-  api('com.facebook.android:audience-network-sdk:4.26.1') {
+  api 'com.facebook.android:facebook-android-sdk:4.34.0'
+  api('com.facebook.android:audience-network-sdk:4.99.0') {
     exclude module: 'play-services-ads'
   }
   compileOnly 'org.glassfish:javax.annotation:3.1.1'
