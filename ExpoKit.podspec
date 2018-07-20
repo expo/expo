@@ -3,7 +3,7 @@
 
 Pod::Spec.new do |s|
   s.name = "ExpoKit"
-  s.version = "2.6.8"
+  s.version = "2.7.0"
   s.summary = 'ExpoKit'
   s.description = 'ExpoKit allows native projects to integrate with the Expo SDK.'
   s.homepage = 'http://docs.expo.io'
