@@ -75,7 +75,7 @@ class AdComponent extends React.Component {
   render() {
     return (
       <View>
-        <Text>{this.props.nativeAd.description}</Text>
+        <Text>{this.props.nativeAd.bodyText}</Text>
       </View>
     );
   }
@@ -86,15 +86,67 @@ export default FacebookAds.withNativeAd(AdComponent);
 
 The `nativeAd` object can contain the following properties:
 
-- `icon`: URL for the icon image
-- `coverImage` - URL for the cover image
-- `title` - Title of the Ad
-- `subtitle` - Subtitle of the Ad
-- `description` - A long description of the Ad
+- `advertiserName` - The name of the Facebook Page or mobile app that represents the business running each ad.
+- `headline` - The headline that the advertiser entered when they created their ad. This is usually the ad's main title.
+- `adLinkDescription` - Additional information that the advertiser may have entered.
+- `translation` - The word 'ad', translated into the language based upon Facebook app language setting.
+- `sponsoredTranslation` - The word 'sponsored', translated into the language based upon Facebook app language setting.
+- `bodyText` - Ad body
 - `callToActionText` - Call to action phrase, e.g. - "Install Now"
 - `socialContext` - social context for the Ad, for example "Over half a million users"
 
-#### 3. Render the ad component
+More information on how the properties correspond to an exemplary ad can be found in the official Facebook documentation for [Android](https://developers.facebook.com/docs/audience-network/android-native) and for [iOS](https://developers.facebook.com/docs/audience-network/ios-native).
+
+#### 3. `MediaView` and `AdIconView` Components
+
+`MediaView` displays native ad media content whereas `AdIconView` is responsible for displaying ad icon.
+
+> ** Note: ** Don't use more than one `MediaView`/`AdIconView` component within one native ad.
+  If you use more, only the last mounted one will be populated with ad content.
+
+```js
+import { FacebookAds } from 'expo';
+const { AdIconview, MediaView } = FacebookAds;
+
+class AdComponent extends React.Component {
+  render() {
+    return (
+      <View>
+        <MediaView />
+        <AdIconView />
+      </View>
+    );
+  }
+}
+
+export default FacebookAds.withNativeAd(AdComponent);
+```
+
+#### 4. Mark element as triggerable
+
+> ** Note: ** In order to mark elements as triggerable you also must include `MediaView` in the children tree.
+
+```js
+import { FacebookAds } from 'expo';
+const { TriggerableFragment, MediaView } = FacebookAds;
+
+class AdComponent extends React.Component {
+  render() {
+    return (
+      <View>
+        <MediaView />
+        <TriggerableFragment>
+          <Text>{this.props.nativeAd.bodyText}</Text>
+        </TriggerableFragment>
+      </View>
+    );
+  }
+}
+
+export default FacebookAds.withNativeAd(AdComponent);
+```
+
+#### 5. Render the ad component
 
 Now you can render the wrapped component and pass the `adsManager` instance you created earlier.
 
