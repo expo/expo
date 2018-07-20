@@ -3,6 +3,7 @@
 #import "EXNativeAdManager.h"
 #import "EXNativeAdView.h"
 #import "EXNativeAdEmitter.h"
+#import "EXUtil.h"
 
 #import <FBAudienceNetwork/FBAudienceNetwork.h>
 #import <React/RCTUtils.h>
@@ -117,7 +118,9 @@ RCT_EXPORT_METHOD(init:(NSString *)placementId withAdsToRequest:(nonnull NSNumbe
 
   [adsManager setDelegate:self];
 
-  [adsManager loadAds];
+  [EXUtil performSynchronouslyOnMainThread:^{
+    [adsManager loadAds];
+  }];
 
   [_adsManagers setValue:adsManager forKey:placementId];
 }

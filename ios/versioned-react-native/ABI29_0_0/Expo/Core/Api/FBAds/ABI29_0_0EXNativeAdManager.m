@@ -3,6 +3,7 @@
 #import "ABI29_0_0EXNativeAdManager.h"
 #import "ABI29_0_0EXNativeAdView.h"
 #import "ABI29_0_0EXNativeAdEmitter.h"
+#import "ABI29_0_0EXUtil.h"
 
 #import <FBAudienceNetwork/FBAudienceNetwork.h>
 #import <ReactABI29_0_0/ABI29_0_0RCTUtils.h>
@@ -117,7 +118,9 @@ ABI29_0_0RCT_EXPORT_METHOD(init:(NSString *)placementId withAdsToRequest:(nonnul
 
   [adsManager setDelegate:self];
 
-  [adsManager loadAds];
+  [ABI29_0_0EXUtil performSynchronouslyOnMainThread:^{
+    [adsManager loadAds];
+  }];
 
   [_adsManagers setValue:adsManager forKey:placementId];
 }
