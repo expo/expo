@@ -51,8 +51,8 @@
       resolve([[self class] permissions]);
     }
 
-    if (_delegate) {
-      [_delegate permissionRequesterDidFinish:self];
+    if (self->_delegate) {
+      [self->_delegate permissionRequesterDidFinish:self];
     }
   }];
 }

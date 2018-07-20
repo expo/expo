@@ -122,11 +122,15 @@ ABI29_0_0EX_EXPORT_METHOD_AS(askAsync,
     }
 
     // we need custom resolver for the requester cause we need to save given permissions per experience
+    __weak typeof(self) weakSelf = self;
     void (^customResolver)(NSDictionary *result) = ^(NSDictionary *result) {
-      if (_permissionsService != nil) {
-        [_permissionsService savePermission:result ofType:type forExperience:_experienceId];
+      __strong typeof(weakSelf) strongSelf = weakSelf;
+      if (strongSelf) {
+        if (strongSelf->_permissionsService != nil) {
+          [strongSelf->_permissionsService savePermission:result ofType:type forExperience:strongSelf->_experienceId];
+        }
+        resolve(result);
       }
-      resolve(result);
     };
 
     [_requests addObject:requester];
@@ -142,7 +146,7 @@ ABI29_0_0EX_EXPORT_METHOD_AS(askAsync,
   UIAlertAction *allow = [UIAlertAction actionWithTitle:@"Allow" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
     __strong typeof(weakSelf) strongSelf = weakSelf;
     if (strongSelf) {
-      if ([_permissionsService savePermission:globalPermissions ofType:type forExperience:strongSelf.experienceId]) {
+      if ([strongSelf->_permissionsService savePermission:globalPermissions ofType:type forExperience:strongSelf.experienceId]) {
         resolve(globalPermissions);
       } else {
         NSMutableDictionary *deniedResult = [[NSMutableDictionary alloc] initWithDictionary:globalPermissions];
