@@ -2,21 +2,26 @@
 
 import { NativeEventEmitter, Platform } from 'react-native';
 
+type NativeModule = {
+  startObserving: ?() => void,
+  stopObserving: ?() => void,
+};
+
 type Subscription = {
   remove: () => void,
 };
 
 class EventEmitter {
   _listenersCount = 0;
-  _nativeModule = null;
+  _nativeModule: NativeModule;
   _eventEmitter: NativeEventEmitter;
 
-  constructor(nativeModule) {
+  constructor(nativeModule: NativeModule) {
     this._nativeModule = nativeModule;
     this._eventEmitter = new NativeEventEmitter(nativeModule);
   }
 
-  addListener(eventName, listener): Subscription {
+  addListener<T>(eventName: string, listener: T => void): Subscription {
     this._listenersCount += 1;
     if (Platform.OS === 'android' && this._nativeModule.startObserving) {
       if (this._listenersCount === 1) {

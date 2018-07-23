@@ -5,7 +5,6 @@ import PropTypes from 'prop-types';
 import { NativeModulesProxy, requireNativeViewManager } from 'expo-core';
 import { Platform, View, ViewPropTypes, findNodeHandle } from 'react-native';
 
-// import Camera from './Camera';
 import packageJSON from '../package.json';
 
 type Props = {
@@ -129,7 +128,7 @@ export default class GLView extends React.Component<Props> {
     return ExponentGLViewManager.startARSessionAsync(findNodeHandle(this.nativeRef));
   }
 
-  async createCameraTextureAsync(cameraRef: Camera) {
+  async createCameraTextureAsync(cameraRef: React.Node) {
     const { exglCtxId } = this;
 
     if (!exglCtxId) {
