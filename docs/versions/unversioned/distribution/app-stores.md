@@ -22,16 +22,16 @@ Try your app on tablets in addition to handsets. Even if you have `ios.supportsT
 
 ## Play nicely with the system UI
 
-- Configure the [status bar](./configuring-statusbar.html) so it doesn't clash with your interface.
+- Configure the [status bar](../guides/configuring-statusbar.html) so it doesn't clash with your interface.
 - Use [native gestures](../sdk/gesture-handler.html) whenever possible.
 - Use interface elements that make sense on the device. For example, see the [iOS Human Interface Guidelines](https://developer.apple.com/ios/human-interface-guidelines/overview/themes/).
 
 ## Tailor your app metadata
 
-- Add a great [icon](./app-icons.html). Icon requirements between iOS and Android differ and are fairly strict, so be sure and familiarize yourself with that guide.
+- Add a great [icon](../guides/app-icons.html). Icon requirements between iOS and Android differ and are fairly strict, so be sure and familiarize yourself with that guide.
 - Customize your [primaryColor](../guides/configuration.html#primarycolor).
-- Make sure your app has a valid iOS [Bundle Identifier](./configuration.html#bundleidentifier) and [Android Package](./configuration.html#package). Take care in choosing these, as you will not be able to change them later.
-- Use [versionCode](configuration.html#versioncode) and [buildNumber](configuration.html#buildnumber) to distinguish different binaries of your app.
+- Make sure your app has a valid iOS [Bundle Identifier](../guides/configuration.html#bundleidentifier) and [Android Package](../guides/configuration.html#package). Take care in choosing these, as you will not be able to change them later.
+- Use [versionCode](../guides/configuration.html#versioncode) and [buildNumber](../guides/configuration.html#buildnumber) to distinguish different binaries of your app.
 
 ## iOS-specific guidelines
 
@@ -41,7 +41,7 @@ Try your app on tablets in addition to handsets. Even if you have `ios.supportsT
 ## Common App Rejections
 
 - It's helpful to glance over [Common App Rejections](https://developer.apple.com/app-store/review/rejections/).
-- Binaries can get rejected for having poorly formatted icons, so double check the [App Icon guide](./app-icons.html).
+- Binaries can get rejected for having poorly formatted icons, so double check the [App Icon guide](../guides/app-icons.html).
 - Apple can reject your app if elements don't render properly on an iPad, even if your app doesn't target the iPad form factor. Be sure and test your app on an iPad (or iPad simulator).
 - Occasionally people get a message from Apple which mentions an IPv6 network. Typically this is just Apple's way of informing you what kind of network they tested on, and the actual "IPv6" detail is a red herring. All of Expo's iOS code uses `NSURLSession`, which is IPv6-compatible. [More info](https://forums.expo.io/t/ios-standalone-rejected-at-review-because-of-ipv6/7062).
 
