@@ -88,8 +88,9 @@ The `nativeAd` object can contain the following properties:
 
 - `advertiserName` - The name of the Facebook Page or mobile app that represents the business running each ad.
 - `headline` - The headline that the advertiser entered when they created their ad. This is usually the ad's main title.
-- `adLinkDescription` - Additional information that the advertiser may have entered.
+- `linkDescription` - Additional information that the advertiser may have entered.
 - `translation` - The word 'ad', translated into the language based upon Facebook app language setting.
+- `promotedTranslation` - The word 'promoted', translated into the language based upon Facebook app language setting.
 - `sponsoredTranslation` - The word 'sponsored', translated into the language based upon Facebook app language setting.
 - `bodyText` - Ad body
 - `callToActionText` - Call to action phrase, e.g. - "Install Now"
@@ -124,20 +125,20 @@ export default FacebookAds.withNativeAd(AdComponent);
 
 #### 4. Mark element as triggerable
 
-> ** Note: ** In order to mark elements as triggerable you also must include `MediaView` in the children tree.
+> ** Note: ** In order for elements wrapped with `TriggerableView` to trigger the ad, you also must include `MediaView` in the children tree.
 
 ```js
 import { FacebookAds } from 'expo';
-const { TriggerableFragment, MediaView } = FacebookAds;
+const { TriggerableView, MediaView } = FacebookAds;
 
 class AdComponent extends React.Component {
   render() {
     return (
       <View>
         <MediaView />
-        <TriggerableFragment>
+        <TriggerableView>
           <Text>{this.props.nativeAd.bodyText}</Text>
-        </TriggerableFragment>
+        </TriggerableView>
       </View>
     );
   }
