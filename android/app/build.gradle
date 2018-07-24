@@ -171,7 +171,7 @@ dependencies {
   testImplementation 'com.android.support.test:rules:1.0.2-alpha1'
 
   /* UNCOMMENT WHEN DISTRIBUTING
-  implementation('host.exp.exponent:expoview:28.0.0@aar') {
+  implementation('host.exp.exponent:expoview:29.0.0@aar') {
     transitive = true
   }
   END UNCOMMENT WHEN DISTRIBUTING */

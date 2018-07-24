@@ -1,0 +1,677 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
+  <info organisation="host.exp.exponent" module="expoview" revision="29.0.0" status="integration" publication="20180723173452"/>
+  <configurations>
+    <conf name="androidTestAnnotationProcessor" visibility="private"/>
+    <conf name="androidTestApi" visibility="private" extends="androidTestCompile"/>
+    <conf name="androidTestCompile" visibility="private"/>
+    <conf name="androidTestCompileOnly" visibility="private" extends="androidTestProvided"/>
+    <conf name="androidTestDebugAnnotationProcessor" visibility="private"/>
+    <conf name="androidTestDebugApi" visibility="private" extends="androidTestDebugCompile"/>
+    <conf name="androidTestDebugCompile" visibility="private"/>
+    <conf name="androidTestDebugCompileOnly" visibility="private" extends="androidTestDebugProvided"/>
+    <conf name="androidTestDebugImplementation" visibility="private" extends="androidTestDebugApi"/>
+    <conf name="androidTestDebugProvided" visibility="private"/>
+    <conf name="androidTestDebugPublish" visibility="private"/>
+    <conf name="androidTestDebugRuntimeOnly" visibility="private" extends="androidTestDebugPublish"/>
+    <conf name="androidTestDebugWearApp" visibility="private"/>
+    <conf name="androidTestDevKernelAnnotationProcessor" visibility="private"/>
+    <conf name="androidTestDevKernelApi" visibility="private" extends="androidTestDevKernelCompile"/>
+    <conf name="androidTestDevKernelCompile" visibility="private"/>
+    <conf name="androidTestDevKernelCompileOnly" visibility="private" extends="androidTestDevKernelProvided"/>
+    <conf name="androidTestDevKernelImplementation" visibility="private" extends="androidTestDevKernelApi"/>
+    <conf name="androidTestDevKernelProvided" visibility="private"/>
+    <conf name="androidTestDevKernelPublish" visibility="private"/>
+    <conf name="androidTestDevKernelRuntimeOnly" visibility="private" extends="androidTestDevKernelPublish"/>
+    <conf name="androidTestDevKernelWearApp" visibility="private"/>
+    <conf name="androidTestDevMinSdkAnnotationProcessor" visibility="private"/>
+    <conf name="androidTestDevMinSdkApi" visibility="private" extends="androidTestDevMinSdkCompile"/>
+    <conf name="androidTestDevMinSdkCompile" visibility="private"/>
+    <conf name="androidTestDevMinSdkCompileOnly" visibility="private" extends="androidTestDevMinSdkProvided"/>
+    <conf name="androidTestDevMinSdkDevKernelAnnotationProcessor" visibility="private"/>
+    <conf name="androidTestDevMinSdkDevKernelApi" visibility="private" extends="androidTestDevMinSdkDevKernelCompile"/>
+    <conf name="androidTestDevMinSdkDevKernelCompile" visibility="private"/>
+    <conf name="androidTestDevMinSdkDevKernelCompileOnly" visibility="private" extends="androidTestDevMinSdkDevKernelProvided"/>
+    <conf name="androidTestDevMinSdkDevKernelDebugAnnotationProcessor" visibility="private"/>
+    <conf name="androidTestDevMinSdkDevKernelDebugApi" visibility="private" extends="androidTestDevMinSdkDevKernelDebugCompile"/>
+    <conf name="androidTestDevMinSdkDevKernelDebugCompile" visibility="private"/>
+    <conf name="androidTestDevMinSdkDevKernelDebugCompileOnly" visibility="private" extends="androidTestDevMinSdkDevKernelDebugProvided"/>
+    <conf name="androidTestDevMinSdkDevKernelDebugImplementation" visibility="private" extends="androidTestDevMinSdkDevKernelDebugApi"/>
+    <conf name="androidTestDevMinSdkDevKernelDebugProvided" visibility="private"/>
+    <conf name="androidTestDevMinSdkDevKernelDebugPublish" visibility="private"/>
+    <conf name="androidTestDevMinSdkDevKernelDebugRuntimeOnly" visibility="private" extends="androidTestDevMinSdkDevKernelDebugPublish"/>
+    <conf name="androidTestDevMinSdkDevKernelDebugWearApp" visibility="private"/>
+    <conf name="androidTestDevMinSdkDevKernelImplementation" visibility="private" extends="androidTestDevMinSdkDevKernelApi"/>
+    <conf name="androidTestDevMinSdkDevKernelProvided" visibility="private"/>
+    <conf name="androidTestDevMinSdkDevKernelPublish" visibility="private"/>
+    <conf name="androidTestDevMinSdkDevKernelRuntimeOnly" visibility="private" extends="androidTestDevMinSdkDevKernelPublish"/>
+    <conf name="androidTestDevMinSdkDevKernelWearApp" visibility="private"/>
+    <conf name="androidTestDevMinSdkImplementation" visibility="private" extends="androidTestDevMinSdkApi"/>
+    <conf name="androidTestDevMinSdkProdKernelAnnotationProcessor" visibility="private"/>
+    <conf name="androidTestDevMinSdkProdKernelApi" visibility="private" extends="androidTestDevMinSdkProdKernelCompile"/>
+    <conf name="androidTestDevMinSdkProdKernelCompile" visibility="private"/>
+    <conf name="androidTestDevMinSdkProdKernelCompileOnly" visibility="private" extends="androidTestDevMinSdkProdKernelProvided"/>
+    <conf name="androidTestDevMinSdkProdKernelDebugAnnotationProcessor" visibility="private"/>
+    <conf name="androidTestDevMinSdkProdKernelDebugApi" visibility="private" extends="androidTestDevMinSdkProdKernelDebugCompile"/>
+    <conf name="androidTestDevMinSdkProdKernelDebugCompile" visibility="private"/>
+    <conf name="androidTestDevMinSdkProdKernelDebugCompileOnly" visibility="private" extends="androidTestDevMinSdkProdKernelDebugProvided"/>
+    <conf name="androidTestDevMinSdkProdKernelDebugImplementation" visibility="private" extends="androidTestDevMinSdkProdKernelDebugApi"/>
+    <conf name="androidTestDevMinSdkProdKernelDebugProvided" visibility="private"/>
+    <conf name="androidTestDevMinSdkProdKernelDebugPublish" visibility="private"/>
+    <conf name="androidTestDevMinSdkProdKernelDebugRuntimeOnly" visibility="private" extends="androidTestDevMinSdkProdKernelDebugPublish"/>
+    <conf name="androidTestDevMinSdkProdKernelDebugWearApp" visibility="private"/>
+    <conf name="androidTestDevMinSdkProdKernelImplementation" visibility="private" extends="androidTestDevMinSdkProdKernelApi"/>
+    <conf name="androidTestDevMinSdkProdKernelProvided" visibility="private"/>
+    <conf name="androidTestDevMinSdkProdKernelPublish" visibility="private"/>
+    <conf name="androidTestDevMinSdkProdKernelRuntimeOnly" visibility="private" extends="androidTestDevMinSdkProdKernelPublish"/>
+    <conf name="androidTestDevMinSdkProdKernelWearApp" visibility="private"/>
+    <conf name="androidTestDevMinSdkProvided" visibility="private"/>
+    <conf name="androidTestDevMinSdkPublish" visibility="private"/>
+    <conf name="androidTestDevMinSdkRuntimeOnly" visibility="private" extends="androidTestDevMinSdkPublish"/>
+    <conf name="androidTestDevMinSdkWearApp" visibility="private"/>
+    <conf name="androidTestImplementation" visibility="private" extends="androidTestApi"/>
+    <conf name="androidTestProdKernelAnnotationProcessor" visibility="private"/>
+    <conf name="androidTestProdKernelApi" visibility="private" extends="androidTestProdKernelCompile"/>
+    <conf name="androidTestProdKernelCompile" visibility="private"/>
+    <conf name="androidTestProdKernelCompileOnly" visibility="private" extends="androidTestProdKernelProvided"/>
+    <conf name="androidTestProdKernelImplementation" visibility="private" extends="androidTestProdKernelApi"/>
+    <conf name="androidTestProdKernelProvided" visibility="private"/>
+    <conf name="androidTestProdKernelPublish" visibility="private"/>
+    <conf name="androidTestProdKernelRuntimeOnly" visibility="private" extends="androidTestProdKernelPublish"/>
+    <conf name="androidTestProdKernelWearApp" visibility="private"/>
+    <conf name="androidTestProdMinSdkAnnotationProcessor" visibility="private"/>
+    <conf name="androidTestProdMinSdkApi" visibility="private" extends="androidTestProdMinSdkCompile"/>
+    <conf name="androidTestProdMinSdkCompile" visibility="private"/>
+    <conf name="androidTestProdMinSdkCompileOnly" visibility="private" extends="androidTestProdMinSdkProvided"/>
+    <conf name="androidTestProdMinSdkDevKernelAnnotationProcessor" visibility="private"/>
+    <conf name="androidTestProdMinSdkDevKernelApi" visibility="private" extends="androidTestProdMinSdkDevKernelCompile"/>
+    <conf name="androidTestProdMinSdkDevKernelCompile" visibility="private"/>
+    <conf name="androidTestProdMinSdkDevKernelCompileOnly" visibility="private" extends="androidTestProdMinSdkDevKernelProvided"/>
+    <conf name="androidTestProdMinSdkDevKernelDebugAnnotationProcessor" visibility="private"/>
+    <conf name="androidTestProdMinSdkDevKernelDebugApi" visibility="private" extends="androidTestProdMinSdkDevKernelDebugCompile"/>
+    <conf name="androidTestProdMinSdkDevKernelDebugCompile" visibility="private"/>
+    <conf name="androidTestProdMinSdkDevKernelDebugCompileOnly" visibility="private" extends="androidTestProdMinSdkDevKernelDebugProvided"/>
+    <conf name="androidTestProdMinSdkDevKernelDebugImplementation" visibility="private" extends="androidTestProdMinSdkDevKernelDebugApi"/>
+    <conf name="androidTestProdMinSdkDevKernelDebugProvided" visibility="private"/>
+    <conf name="androidTestProdMinSdkDevKernelDebugPublish" visibility="private"/>
+    <conf name="androidTestProdMinSdkDevKernelDebugRuntimeOnly" visibility="private" extends="androidTestProdMinSdkDevKernelDebugPublish"/>
+    <conf name="androidTestProdMinSdkDevKernelDebugWearApp" visibility="private"/>
+    <conf name="androidTestProdMinSdkDevKernelImplementation" visibility="private" extends="androidTestProdMinSdkDevKernelApi"/>
+    <conf name="androidTestProdMinSdkDevKernelProvided" visibility="private"/>
+    <conf name="androidTestProdMinSdkDevKernelPublish" visibility="private"/>
+    <conf name="androidTestProdMinSdkDevKernelRuntimeOnly" visibility="private" extends="androidTestProdMinSdkDevKernelPublish"/>
+    <conf name="androidTestProdMinSdkDevKernelWearApp" visibility="private"/>
+    <conf name="androidTestProdMinSdkImplementation" visibility="private" extends="androidTestProdMinSdkApi"/>
+    <conf name="androidTestProdMinSdkProdKernelAnnotationProcessor" visibility="private"/>
+    <conf name="androidTestProdMinSdkProdKernelApi" visibility="private" extends="androidTestProdMinSdkProdKernelCompile"/>
+    <conf name="androidTestProdMinSdkProdKernelCompile" visibility="private"/>
+    <conf name="androidTestProdMinSdkProdKernelCompileOnly" visibility="private" extends="androidTestProdMinSdkProdKernelProvided"/>
+    <conf name="androidTestProdMinSdkProdKernelDebugAnnotationProcessor" visibility="private"/>
+    <conf name="androidTestProdMinSdkProdKernelDebugApi" visibility="private" extends="androidTestProdMinSdkProdKernelDebugCompile"/>
+    <conf name="androidTestProdMinSdkProdKernelDebugCompile" visibility="private"/>
+    <conf name="androidTestProdMinSdkProdKernelDebugCompileOnly" visibility="private" extends="androidTestProdMinSdkProdKernelDebugProvided"/>
+    <conf name="androidTestProdMinSdkProdKernelDebugImplementation" visibility="private" extends="androidTestProdMinSdkProdKernelDebugApi"/>
+    <conf name="androidTestProdMinSdkProdKernelDebugProvided" visibility="private"/>
+    <conf name="androidTestProdMinSdkProdKernelDebugPublish" visibility="private"/>
+    <conf name="androidTestProdMinSdkProdKernelDebugRuntimeOnly" visibility="private" extends="androidTestProdMinSdkProdKernelDebugPublish"/>
+    <conf name="androidTestProdMinSdkProdKernelDebugWearApp" visibility="private"/>
+    <conf name="androidTestProdMinSdkProdKernelImplementation" visibility="private" extends="androidTestProdMinSdkProdKernelApi"/>
+    <conf name="androidTestProdMinSdkProdKernelProvided" visibility="private"/>
+    <conf name="androidTestProdMinSdkProdKernelPublish" visibility="private"/>
+    <conf name="androidTestProdMinSdkProdKernelRuntimeOnly" visibility="private" extends="androidTestProdMinSdkProdKernelPublish"/>
+    <conf name="androidTestProdMinSdkProdKernelWearApp" visibility="private"/>
+    <conf name="androidTestProdMinSdkProvided" visibility="private"/>
+    <conf name="androidTestProdMinSdkPublish" visibility="private"/>
+    <conf name="androidTestProdMinSdkRuntimeOnly" visibility="private" extends="androidTestProdMinSdkPublish"/>
+    <conf name="androidTestProdMinSdkWearApp" visibility="private"/>
+    <conf name="androidTestProvided" visibility="private"/>
+    <conf name="androidTestPublish" visibility="private"/>
+    <conf name="androidTestRuntimeOnly" visibility="private" extends="androidTestPublish"/>
+    <conf name="androidTestUtil" visibility="private"/>
+    <conf name="androidTestWearApp" visibility="private"/>
+    <conf name="annotationProcessor" visibility="private"/>
+    <conf name="api" visibility="private" extends="compile"/>
+    <conf name="archives" visibility="public"/>
+    <conf name="compile" visibility="private"/>
+    <conf name="compileOnly" visibility="private" extends="provided"/>
+    <conf name="debugAnnotationProcessor" visibility="private"/>
+    <conf name="debugApi" visibility="private" extends="debugCompile"/>
+    <conf name="debugCompile" visibility="private"/>
+    <conf name="debugCompileOnly" visibility="private" extends="debugProvided"/>
+    <conf name="debugImplementation" visibility="private" extends="debugApi"/>
+    <conf name="debugProvided" visibility="private"/>
+    <conf name="debugPublish" visibility="private"/>
+    <conf name="debugRuntimeOnly" visibility="private" extends="debugPublish"/>
+    <conf name="debugWearApp" visibility="private"/>
+    <conf name="default" visibility="public"/>
+    <conf name="deployerJars" visibility="public"/>
+    <conf name="devKernelAnnotationProcessor" visibility="private"/>
+    <conf name="devKernelApi" visibility="private" extends="devKernelCompile"/>
+    <conf name="devKernelCompile" visibility="private"/>
+    <conf name="devKernelCompileOnly" visibility="private" extends="devKernelProvided"/>
+    <conf name="devKernelImplementation" visibility="private" extends="devKernelApi"/>
+    <conf name="devKernelProvided" visibility="private"/>
+    <conf name="devKernelPublish" visibility="private"/>
+    <conf name="devKernelRuntimeOnly" visibility="private" extends="devKernelPublish"/>
+    <conf name="devKernelWearApp" visibility="private"/>
+    <conf name="devMinSdkAnnotationProcessor" visibility="private"/>
+    <conf name="devMinSdkApi" visibility="private" extends="devMinSdkCompile"/>
+    <conf name="devMinSdkCompile" visibility="private"/>
+    <conf name="devMinSdkCompileOnly" visibility="private" extends="devMinSdkProvided"/>
+    <conf name="devMinSdkDevKernelAnnotationProcessor" visibility="private"/>
+    <conf name="devMinSdkDevKernelApi" visibility="private" extends="devMinSdkDevKernelCompile"/>
+    <conf name="devMinSdkDevKernelCompile" visibility="private"/>
+    <conf name="devMinSdkDevKernelCompileOnly" visibility="private" extends="devMinSdkDevKernelProvided"/>
+    <conf name="devMinSdkDevKernelDebugAndroidTestAnnotationProcessorClasspath" visibility="private" extends="androidTestAnnotationProcessor,androidTestDebugAnnotationProcessor,androidTestDevKernelAnnotationProcessor,androidTestDevMinSdkAnnotationProcessor,androidTestDevMinSdkDevKernelAnnotationProcessor,androidTestDevMinSdkDevKernelDebugAnnotationProcessor"/>
+    <conf name="devMinSdkDevKernelDebugAndroidTestCompileClasspath" visibility="private" extends="androidTestCompileOnly,androidTestDebugCompileOnly,androidTestDebugImplementation,androidTestDevKernelCompileOnly,androidTestDevKernelImplementation,androidTestDevMinSdkCompileOnly,androidTestDevMinSdkDevKernelCompileOnly,androidTestDevMinSdkDevKernelDebugCompileOnly,androidTestDevMinSdkDevKernelDebugImplementation,androidTestDevMinSdkDevKernelImplementation,androidTestDevMinSdkImplementation,androidTestImplementation,debugImplementation,devKernelImplementation,devMinSdkDevKernelDebugImplementation,devMinSdkDevKernelImplementation,devMinSdkImplementation,implementation"/>
+    <conf name="devMinSdkDevKernelDebugAndroidTestRuntimeClasspath" visibility="private" extends="androidTestDebugImplementation,androidTestDebugRuntimeOnly,androidTestDevKernelImplementation,androidTestDevKernelRuntimeOnly,androidTestDevMinSdkDevKernelDebugImplementation,androidTestDevMinSdkDevKernelDebugRuntimeOnly,androidTestDevMinSdkDevKernelImplementation,androidTestDevMinSdkDevKernelRuntimeOnly,androidTestDevMinSdkImplementation,androidTestDevMinSdkRuntimeOnly,androidTestImplementation,androidTestRuntimeOnly,debugImplementation,debugRuntimeOnly,devKernelImplementation,devKernelRuntimeOnly,devMinSdkDevKernelDebugImplementation,devMinSdkDevKernelDebugRuntimeOnly,devMinSdkDevKernelImplementation,devMinSdkDevKernelRuntimeOnly,devMinSdkImplementation,devMinSdkRuntimeOnly,implementation,runtimeOnly"/>
+    <conf name="devMinSdkDevKernelDebugAnnotationProcessor" visibility="private"/>
+    <conf name="devMinSdkDevKernelDebugAnnotationProcessorClasspath" visibility="private" extends="annotationProcessor,debugAnnotationProcessor,devKernelAnnotationProcessor,devMinSdkAnnotationProcessor,devMinSdkDevKernelAnnotationProcessor,devMinSdkDevKernelDebugAnnotationProcessor"/>
+    <conf name="devMinSdkDevKernelDebugApi" visibility="private" extends="devMinSdkDevKernelDebugCompile"/>
+    <conf name="devMinSdkDevKernelDebugApiElements" visibility="public" extends="api,debugApi,devKernelApi,devMinSdkApi,devMinSdkDevKernelApi,devMinSdkDevKernelDebugApi"/>
+    <conf name="devMinSdkDevKernelDebugCompile" visibility="private"/>
+    <conf name="devMinSdkDevKernelDebugCompileClasspath" visibility="private" extends="compileOnly,debugCompileOnly,debugImplementation,devKernelCompileOnly,devKernelImplementation,devMinSdkCompileOnly,devMinSdkDevKernelCompileOnly,devMinSdkDevKernelDebugCompileOnly,devMinSdkDevKernelDebugImplementation,devMinSdkDevKernelImplementation,devMinSdkImplementation,implementation"/>
+    <conf name="devMinSdkDevKernelDebugCompileOnly" visibility="private" extends="devMinSdkDevKernelDebugProvided"/>
+    <conf name="devMinSdkDevKernelDebugImplementation" visibility="private" extends="devMinSdkDevKernelDebugApi"/>
+    <conf name="devMinSdkDevKernelDebugProvided" visibility="private"/>
+    <conf name="devMinSdkDevKernelDebugPublish" visibility="private"/>
+    <conf name="devMinSdkDevKernelDebugRuntimeClasspath" visibility="private" extends="debugImplementation,debugRuntimeOnly,devKernelImplementation,devKernelRuntimeOnly,devMinSdkDevKernelDebugImplementation,devMinSdkDevKernelDebugRuntimeOnly,devMinSdkDevKernelImplementation,devMinSdkDevKernelRuntimeOnly,devMinSdkImplementation,devMinSdkRuntimeOnly,implementation,runtimeOnly"/>
+    <conf name="devMinSdkDevKernelDebugRuntimeElements" visibility="public" extends="devMinSdkDevKernelDebugRuntimeClasspath"/>
+    <conf name="devMinSdkDevKernelDebugRuntimeOnly" visibility="private" extends="devMinSdkDevKernelDebugPublish"/>
+    <conf name="devMinSdkDevKernelDebugUnitTestAnnotationProcessorClasspath" visibility="private" extends="testAnnotationProcessor,testDebugAnnotationProcessor,testDevKernelAnnotationProcessor,testDevMinSdkAnnotationProcessor,testDevMinSdkDevKernelAnnotationProcessor,testDevMinSdkDevKernelDebugAnnotationProcessor"/>
+    <conf name="devMinSdkDevKernelDebugUnitTestCompileClasspath" visibility="private" extends="debugImplementation,devKernelImplementation,devMinSdkDevKernelDebugImplementation,devMinSdkDevKernelImplementation,devMinSdkImplementation,implementation,testCompileOnly,testDebugCompileOnly,testDebugImplementation,testDevKernelCompileOnly,testDevKernelImplementation,testDevMinSdkCompileOnly,testDevMinSdkDevKernelCompileOnly,testDevMinSdkDevKernelDebugCompileOnly,testDevMinSdkDevKernelDebugImplementation,testDevMinSdkDevKernelImplementation,testDevMinSdkImplementation,testImplementation"/>
+    <conf name="devMinSdkDevKernelDebugUnitTestRuntimeClasspath" visibility="private" extends="debugImplementation,debugRuntimeOnly,devKernelImplementation,devKernelRuntimeOnly,devMinSdkDevKernelDebugImplementation,devMinSdkDevKernelDebugRuntimeOnly,devMinSdkDevKernelImplementation,devMinSdkDevKernelRuntimeOnly,devMinSdkImplementation,devMinSdkRuntimeOnly,implementation,runtimeOnly,testDebugImplementation,testDebugRuntimeOnly,testDevKernelImplementation,testDevKernelRuntimeOnly,testDevMinSdkDevKernelDebugImplementation,testDevMinSdkDevKernelDebugRuntimeOnly,testDevMinSdkDevKernelImplementation,testDevMinSdkDevKernelRuntimeOnly,testDevMinSdkImplementation,testDevMinSdkRuntimeOnly,testImplementation,testRuntimeOnly"/>
+    <conf name="devMinSdkDevKernelDebugWearApp" visibility="private"/>
+    <conf name="devMinSdkDevKernelImplementation" visibility="private" extends="devMinSdkDevKernelApi"/>
+    <conf name="devMinSdkDevKernelProvided" visibility="private"/>
+    <conf name="devMinSdkDevKernelPublish" visibility="private"/>
+    <conf name="devMinSdkDevKernelReleaseAnnotationProcessor" visibility="private"/>
+    <conf name="devMinSdkDevKernelReleaseAnnotationProcessorClasspath" visibility="private" extends="annotationProcessor,devKernelAnnotationProcessor,devMinSdkAnnotationProcessor,devMinSdkDevKernelAnnotationProcessor,devMinSdkDevKernelReleaseAnnotationProcessor,releaseAnnotationProcessor"/>
+    <conf name="devMinSdkDevKernelReleaseApi" visibility="private" extends="devMinSdkDevKernelReleaseCompile"/>
+    <conf name="devMinSdkDevKernelReleaseApiElements" visibility="public" extends="api,devKernelApi,devMinSdkApi,devMinSdkDevKernelApi,devMinSdkDevKernelReleaseApi,releaseApi"/>
+    <conf name="devMinSdkDevKernelReleaseCompile" visibility="private"/>
+    <conf name="devMinSdkDevKernelReleaseCompileClasspath" visibility="private" extends="compileOnly,devKernelCompileOnly,devKernelImplementation,devMinSdkCompileOnly,devMinSdkDevKernelCompileOnly,devMinSdkDevKernelImplementation,devMinSdkDevKernelReleaseCompileOnly,devMinSdkDevKernelReleaseImplementation,devMinSdkImplementation,implementation,releaseCompileOnly,releaseImplementation"/>
+    <conf name="devMinSdkDevKernelReleaseCompileOnly" visibility="private" extends="devMinSdkDevKernelReleaseProvided"/>
+    <conf name="devMinSdkDevKernelReleaseImplementation" visibility="private" extends="devMinSdkDevKernelReleaseApi"/>
+    <conf name="devMinSdkDevKernelReleaseProvided" visibility="private"/>
+    <conf name="devMinSdkDevKernelReleasePublish" visibility="private"/>
+    <conf name="devMinSdkDevKernelReleaseRuntimeClasspath" visibility="private" extends="devKernelImplementation,devKernelRuntimeOnly,devMinSdkDevKernelImplementation,devMinSdkDevKernelReleaseImplementation,devMinSdkDevKernelReleaseRuntimeOnly,devMinSdkDevKernelRuntimeOnly,devMinSdkImplementation,devMinSdkRuntimeOnly,implementation,releaseImplementation,releaseRuntimeOnly,runtimeOnly"/>
+    <conf name="devMinSdkDevKernelReleaseRuntimeElements" visibility="public" extends="devMinSdkDevKernelReleaseRuntimeClasspath"/>
+    <conf name="devMinSdkDevKernelReleaseRuntimeOnly" visibility="private" extends="devMinSdkDevKernelReleasePublish"/>
+    <conf name="devMinSdkDevKernelReleaseUnitTestAnnotationProcessorClasspath" visibility="private" extends="testAnnotationProcessor,testDevKernelAnnotationProcessor,testDevMinSdkAnnotationProcessor,testDevMinSdkDevKernelAnnotationProcessor,testDevMinSdkDevKernelReleaseAnnotationProcessor,testReleaseAnnotationProcessor"/>
+    <conf name="devMinSdkDevKernelReleaseUnitTestCompileClasspath" visibility="private" extends="devKernelImplementation,devMinSdkDevKernelImplementation,devMinSdkDevKernelReleaseImplementation,devMinSdkImplementation,implementation,releaseImplementation,testCompileOnly,testDevKernelCompileOnly,testDevKernelImplementation,testDevMinSdkCompileOnly,testDevMinSdkDevKernelCompileOnly,testDevMinSdkDevKernelImplementation,testDevMinSdkDevKernelReleaseCompileOnly,testDevMinSdkDevKernelReleaseImplementation,testDevMinSdkImplementation,testImplementation,testReleaseCompileOnly,testReleaseImplementation"/>
+    <conf name="devMinSdkDevKernelReleaseUnitTestRuntimeClasspath" visibility="private" extends="devKernelImplementation,devKernelRuntimeOnly,devMinSdkDevKernelImplementation,devMinSdkDevKernelReleaseImplementation,devMinSdkDevKernelReleaseRuntimeOnly,devMinSdkDevKernelRuntimeOnly,devMinSdkImplementation,devMinSdkRuntimeOnly,implementation,releaseImplementation,releaseRuntimeOnly,runtimeOnly,testDevKernelImplementation,testDevKernelRuntimeOnly,testDevMinSdkDevKernelImplementation,testDevMinSdkDevKernelReleaseImplementation,testDevMinSdkDevKernelReleaseRuntimeOnly,testDevMinSdkDevKernelRuntimeOnly,testDevMinSdkImplementation,testDevMinSdkRuntimeOnly,testImplementation,testReleaseImplementation,testReleaseRuntimeOnly,testRuntimeOnly"/>
+    <conf name="devMinSdkDevKernelReleaseWearApp" visibility="private"/>
+    <conf name="devMinSdkDevKernelRuntimeOnly" visibility="private" extends="devMinSdkDevKernelPublish"/>
+    <conf name="devMinSdkDevKernelWearApp" visibility="private"/>
+    <conf name="devMinSdkImplementation" visibility="private" extends="devMinSdkApi"/>
+    <conf name="devMinSdkProdKernelAnnotationProcessor" visibility="private"/>
+    <conf name="devMinSdkProdKernelApi" visibility="private" extends="devMinSdkProdKernelCompile"/>
+    <conf name="devMinSdkProdKernelCompile" visibility="private"/>
+    <conf name="devMinSdkProdKernelCompileOnly" visibility="private" extends="devMinSdkProdKernelProvided"/>
+    <conf name="devMinSdkProdKernelDebugAndroidTestAnnotationProcessorClasspath" visibility="private" extends="androidTestAnnotationProcessor,androidTestDebugAnnotationProcessor,androidTestDevMinSdkAnnotationProcessor,androidTestDevMinSdkProdKernelAnnotationProcessor,androidTestDevMinSdkProdKernelDebugAnnotationProcessor,androidTestProdKernelAnnotationProcessor"/>
+    <conf name="devMinSdkProdKernelDebugAndroidTestCompileClasspath" visibility="private" extends="androidTestCompileOnly,androidTestDebugCompileOnly,androidTestDebugImplementation,androidTestDevMinSdkCompileOnly,androidTestDevMinSdkImplementation,androidTestDevMinSdkProdKernelCompileOnly,androidTestDevMinSdkProdKernelDebugCompileOnly,androidTestDevMinSdkProdKernelDebugImplementation,androidTestDevMinSdkProdKernelImplementation,androidTestImplementation,androidTestProdKernelCompileOnly,androidTestProdKernelImplementation,debugImplementation,devMinSdkImplementation,devMinSdkProdKernelDebugImplementation,devMinSdkProdKernelImplementation,implementation,prodKernelImplementation"/>
+    <conf name="devMinSdkProdKernelDebugAndroidTestRuntimeClasspath" visibility="private" extends="androidTestDebugImplementation,androidTestDebugRuntimeOnly,androidTestDevMinSdkImplementation,androidTestDevMinSdkProdKernelDebugImplementation,androidTestDevMinSdkProdKernelDebugRuntimeOnly,androidTestDevMinSdkProdKernelImplementation,androidTestDevMinSdkProdKernelRuntimeOnly,androidTestDevMinSdkRuntimeOnly,androidTestImplementation,androidTestProdKernelImplementation,androidTestProdKernelRuntimeOnly,androidTestRuntimeOnly,debugImplementation,debugRuntimeOnly,devMinSdkImplementation,devMinSdkProdKernelDebugImplementation,devMinSdkProdKernelDebugRuntimeOnly,devMinSdkProdKernelImplementation,devMinSdkProdKernelRuntimeOnly,devMinSdkRuntimeOnly,implementation,prodKernelImplementation,prodKernelRuntimeOnly,runtimeOnly"/>
+    <conf name="devMinSdkProdKernelDebugAnnotationProcessor" visibility="private"/>
+    <conf name="devMinSdkProdKernelDebugAnnotationProcessorClasspath" visibility="private" extends="annotationProcessor,debugAnnotationProcessor,devMinSdkAnnotationProcessor,devMinSdkProdKernelAnnotationProcessor,devMinSdkProdKernelDebugAnnotationProcessor,prodKernelAnnotationProcessor"/>
+    <conf name="devMinSdkProdKernelDebugApi" visibility="private" extends="devMinSdkProdKernelDebugCompile"/>
+    <conf name="devMinSdkProdKernelDebugApiElements" visibility="public" extends="api,debugApi,devMinSdkApi,devMinSdkProdKernelApi,devMinSdkProdKernelDebugApi,prodKernelApi"/>
+    <conf name="devMinSdkProdKernelDebugCompile" visibility="private"/>
+    <conf name="devMinSdkProdKernelDebugCompileClasspath" visibility="private" extends="compileOnly,debugCompileOnly,debugImplementation,devMinSdkCompileOnly,devMinSdkImplementation,devMinSdkProdKernelCompileOnly,devMinSdkProdKernelDebugCompileOnly,devMinSdkProdKernelDebugImplementation,devMinSdkProdKernelImplementation,implementation,prodKernelCompileOnly,prodKernelImplementation"/>
+    <conf name="devMinSdkProdKernelDebugCompileOnly" visibility="private" extends="devMinSdkProdKernelDebugProvided"/>
+    <conf name="devMinSdkProdKernelDebugImplementation" visibility="private" extends="devMinSdkProdKernelDebugApi"/>
+    <conf name="devMinSdkProdKernelDebugProvided" visibility="private"/>
+    <conf name="devMinSdkProdKernelDebugPublish" visibility="private"/>
+    <conf name="devMinSdkProdKernelDebugRuntimeClasspath" visibility="private" extends="debugImplementation,debugRuntimeOnly,devMinSdkImplementation,devMinSdkProdKernelDebugImplementation,devMinSdkProdKernelDebugRuntimeOnly,devMinSdkProdKernelImplementation,devMinSdkProdKernelRuntimeOnly,devMinSdkRuntimeOnly,implementation,prodKernelImplementation,prodKernelRuntimeOnly,runtimeOnly"/>
+    <conf name="devMinSdkProdKernelDebugRuntimeElements" visibility="public" extends="devMinSdkProdKernelDebugRuntimeClasspath"/>
+    <conf name="devMinSdkProdKernelDebugRuntimeOnly" visibility="private" extends="devMinSdkProdKernelDebugPublish"/>
+    <conf name="devMinSdkProdKernelDebugUnitTestAnnotationProcessorClasspath" visibility="private" extends="testAnnotationProcessor,testDebugAnnotationProcessor,testDevMinSdkAnnotationProcessor,testDevMinSdkProdKernelAnnotationProcessor,testDevMinSdkProdKernelDebugAnnotationProcessor,testProdKernelAnnotationProcessor"/>
+    <conf name="devMinSdkProdKernelDebugUnitTestCompileClasspath" visibility="private" extends="debugImplementation,devMinSdkImplementation,devMinSdkProdKernelDebugImplementation,devMinSdkProdKernelImplementation,implementation,prodKernelImplementation,testCompileOnly,testDebugCompileOnly,testDebugImplementation,testDevMinSdkCompileOnly,testDevMinSdkImplementation,testDevMinSdkProdKernelCompileOnly,testDevMinSdkProdKernelDebugCompileOnly,testDevMinSdkProdKernelDebugImplementation,testDevMinSdkProdKernelImplementation,testImplementation,testProdKernelCompileOnly,testProdKernelImplementation"/>
+    <conf name="devMinSdkProdKernelDebugUnitTestRuntimeClasspath" visibility="private" extends="debugImplementation,debugRuntimeOnly,devMinSdkImplementation,devMinSdkProdKernelDebugImplementation,devMinSdkProdKernelDebugRuntimeOnly,devMinSdkProdKernelImplementation,devMinSdkProdKernelRuntimeOnly,devMinSdkRuntimeOnly,implementation,prodKernelImplementation,prodKernelRuntimeOnly,runtimeOnly,testDebugImplementation,testDebugRuntimeOnly,testDevMinSdkImplementation,testDevMinSdkProdKernelDebugImplementation,testDevMinSdkProdKernelDebugRuntimeOnly,testDevMinSdkProdKernelImplementation,testDevMinSdkProdKernelRuntimeOnly,testDevMinSdkRuntimeOnly,testImplementation,testProdKernelImplementation,testProdKernelRuntimeOnly,testRuntimeOnly"/>
+    <conf name="devMinSdkProdKernelDebugWearApp" visibility="private"/>
+    <conf name="devMinSdkProdKernelImplementation" visibility="private" extends="devMinSdkProdKernelApi"/>
+    <conf name="devMinSdkProdKernelProvided" visibility="private"/>
+    <conf name="devMinSdkProdKernelPublish" visibility="private"/>
+    <conf name="devMinSdkProdKernelReleaseAnnotationProcessor" visibility="private"/>
+    <conf name="devMinSdkProdKernelReleaseAnnotationProcessorClasspath" visibility="private" extends="annotationProcessor,devMinSdkAnnotationProcessor,devMinSdkProdKernelAnnotationProcessor,devMinSdkProdKernelReleaseAnnotationProcessor,prodKernelAnnotationProcessor,releaseAnnotationProcessor"/>
+    <conf name="devMinSdkProdKernelReleaseApi" visibility="private" extends="devMinSdkProdKernelReleaseCompile"/>
+    <conf name="devMinSdkProdKernelReleaseApiElements" visibility="public" extends="api,devMinSdkApi,devMinSdkProdKernelApi,devMinSdkProdKernelReleaseApi,prodKernelApi,releaseApi"/>
+    <conf name="devMinSdkProdKernelReleaseCompile" visibility="private"/>
+    <conf name="devMinSdkProdKernelReleaseCompileClasspath" visibility="private" extends="compileOnly,devMinSdkCompileOnly,devMinSdkImplementation,devMinSdkProdKernelCompileOnly,devMinSdkProdKernelImplementation,devMinSdkProdKernelReleaseCompileOnly,devMinSdkProdKernelReleaseImplementation,implementation,prodKernelCompileOnly,prodKernelImplementation,releaseCompileOnly,releaseImplementation"/>
+    <conf name="devMinSdkProdKernelReleaseCompileOnly" visibility="private" extends="devMinSdkProdKernelReleaseProvided"/>
+    <conf name="devMinSdkProdKernelReleaseImplementation" visibility="private" extends="devMinSdkProdKernelReleaseApi"/>
+    <conf name="devMinSdkProdKernelReleaseProvided" visibility="private"/>
+    <conf name="devMinSdkProdKernelReleasePublish" visibility="private"/>
+    <conf name="devMinSdkProdKernelReleaseRuntimeClasspath" visibility="private" extends="devMinSdkImplementation,devMinSdkProdKernelImplementation,devMinSdkProdKernelReleaseImplementation,devMinSdkProdKernelReleaseRuntimeOnly,devMinSdkProdKernelRuntimeOnly,devMinSdkRuntimeOnly,implementation,prodKernelImplementation,prodKernelRuntimeOnly,releaseImplementation,releaseRuntimeOnly,runtimeOnly"/>
+    <conf name="devMinSdkProdKernelReleaseRuntimeElements" visibility="public" extends="devMinSdkProdKernelReleaseRuntimeClasspath"/>
+    <conf name="devMinSdkProdKernelReleaseRuntimeOnly" visibility="private" extends="devMinSdkProdKernelReleasePublish"/>
+    <conf name="devMinSdkProdKernelReleaseUnitTestAnnotationProcessorClasspath" visibility="private" extends="testAnnotationProcessor,testDevMinSdkAnnotationProcessor,testDevMinSdkProdKernelAnnotationProcessor,testDevMinSdkProdKernelReleaseAnnotationProcessor,testProdKernelAnnotationProcessor,testReleaseAnnotationProcessor"/>
+    <conf name="devMinSdkProdKernelReleaseUnitTestCompileClasspath" visibility="private" extends="devMinSdkImplementation,devMinSdkProdKernelImplementation,devMinSdkProdKernelReleaseImplementation,implementation,prodKernelImplementation,releaseImplementation,testCompileOnly,testDevMinSdkCompileOnly,testDevMinSdkImplementation,testDevMinSdkProdKernelCompileOnly,testDevMinSdkProdKernelImplementation,testDevMinSdkProdKernelReleaseCompileOnly,testDevMinSdkProdKernelReleaseImplementation,testImplementation,testProdKernelCompileOnly,testProdKernelImplementation,testReleaseCompileOnly,testReleaseImplementation"/>
+    <conf name="devMinSdkProdKernelReleaseUnitTestRuntimeClasspath" visibility="private" extends="devMinSdkImplementation,devMinSdkProdKernelImplementation,devMinSdkProdKernelReleaseImplementation,devMinSdkProdKernelReleaseRuntimeOnly,devMinSdkProdKernelRuntimeOnly,devMinSdkRuntimeOnly,implementation,prodKernelImplementation,prodKernelRuntimeOnly,releaseImplementation,releaseRuntimeOnly,runtimeOnly,testDevMinSdkImplementation,testDevMinSdkProdKernelImplementation,testDevMinSdkProdKernelReleaseImplementation,testDevMinSdkProdKernelReleaseRuntimeOnly,testDevMinSdkProdKernelRuntimeOnly,testDevMinSdkRuntimeOnly,testImplementation,testProdKernelImplementation,testProdKernelRuntimeOnly,testReleaseImplementation,testReleaseRuntimeOnly,testRuntimeOnly"/>
+    <conf name="devMinSdkProdKernelReleaseWearApp" visibility="private"/>
+    <conf name="devMinSdkProdKernelRuntimeOnly" visibility="private" extends="devMinSdkProdKernelPublish"/>
+    <conf name="devMinSdkProdKernelWearApp" visibility="private"/>
+    <conf name="devMinSdkProvided" visibility="private"/>
+    <conf name="devMinSdkPublish" visibility="private"/>
+    <conf name="devMinSdkRuntimeOnly" visibility="private" extends="devMinSdkPublish"/>
+    <conf name="devMinSdkWearApp" visibility="private"/>
+    <conf name="implementation" visibility="private" extends="api"/>
+    <conf name="lintChecks" visibility="private"/>
+    <conf name="lintClassPath" visibility="private"/>
+    <conf name="prodKernelAnnotationProcessor" visibility="private"/>
+    <conf name="prodKernelApi" visibility="private" extends="prodKernelCompile"/>
+    <conf name="prodKernelCompile" visibility="private"/>
+    <conf name="prodKernelCompileOnly" visibility="private" extends="prodKernelProvided"/>
+    <conf name="prodKernelImplementation" visibility="private" extends="prodKernelApi"/>
+    <conf name="prodKernelProvided" visibility="private"/>
+    <conf name="prodKernelPublish" visibility="private"/>
+    <conf name="prodKernelRuntimeOnly" visibility="private" extends="prodKernelPublish"/>
+    <conf name="prodKernelWearApp" visibility="private"/>
+    <conf name="prodMinSdkAnnotationProcessor" visibility="private"/>
+    <conf name="prodMinSdkApi" visibility="private" extends="prodMinSdkCompile"/>
+    <conf name="prodMinSdkCompile" visibility="private"/>
+    <conf name="prodMinSdkCompileOnly" visibility="private" extends="prodMinSdkProvided"/>
+    <conf name="prodMinSdkDevKernelAnnotationProcessor" visibility="private"/>
+    <conf name="prodMinSdkDevKernelApi" visibility="private" extends="prodMinSdkDevKernelCompile"/>
+    <conf name="prodMinSdkDevKernelCompile" visibility="private"/>
+    <conf name="prodMinSdkDevKernelCompileOnly" visibility="private" extends="prodMinSdkDevKernelProvided"/>
+    <conf name="prodMinSdkDevKernelDebugAndroidTestAnnotationProcessorClasspath" visibility="private" extends="androidTestAnnotationProcessor,androidTestDebugAnnotationProcessor,androidTestDevKernelAnnotationProcessor,androidTestProdMinSdkAnnotationProcessor,androidTestProdMinSdkDevKernelAnnotationProcessor,androidTestProdMinSdkDevKernelDebugAnnotationProcessor"/>
+    <conf name="prodMinSdkDevKernelDebugAndroidTestCompileClasspath" visibility="private" extends="androidTestCompileOnly,androidTestDebugCompileOnly,androidTestDebugImplementation,androidTestDevKernelCompileOnly,androidTestDevKernelImplementation,androidTestImplementation,androidTestProdMinSdkCompileOnly,androidTestProdMinSdkDevKernelCompileOnly,androidTestProdMinSdkDevKernelDebugCompileOnly,androidTestProdMinSdkDevKernelDebugImplementation,androidTestProdMinSdkDevKernelImplementation,androidTestProdMinSdkImplementation,debugImplementation,devKernelImplementation,implementation,prodMinSdkDevKernelDebugImplementation,prodMinSdkDevKernelImplementation,prodMinSdkImplementation"/>
+    <conf name="prodMinSdkDevKernelDebugAndroidTestRuntimeClasspath" visibility="private" extends="androidTestDebugImplementation,androidTestDebugRuntimeOnly,androidTestDevKernelImplementation,androidTestDevKernelRuntimeOnly,androidTestImplementation,androidTestProdMinSdkDevKernelDebugImplementation,androidTestProdMinSdkDevKernelDebugRuntimeOnly,androidTestProdMinSdkDevKernelImplementation,androidTestProdMinSdkDevKernelRuntimeOnly,androidTestProdMinSdkImplementation,androidTestProdMinSdkRuntimeOnly,androidTestRuntimeOnly,debugImplementation,debugRuntimeOnly,devKernelImplementation,devKernelRuntimeOnly,implementation,prodMinSdkDevKernelDebugImplementation,prodMinSdkDevKernelDebugRuntimeOnly,prodMinSdkDevKernelImplementation,prodMinSdkDevKernelRuntimeOnly,prodMinSdkImplementation,prodMinSdkRuntimeOnly,runtimeOnly"/>
+    <conf name="prodMinSdkDevKernelDebugAnnotationProcessor" visibility="private"/>
+    <conf name="prodMinSdkDevKernelDebugAnnotationProcessorClasspath" visibility="private" extends="annotationProcessor,debugAnnotationProcessor,devKernelAnnotationProcessor,prodMinSdkAnnotationProcessor,prodMinSdkDevKernelAnnotationProcessor,prodMinSdkDevKernelDebugAnnotationProcessor"/>
+    <conf name="prodMinSdkDevKernelDebugApi" visibility="private" extends="prodMinSdkDevKernelDebugCompile"/>
+    <conf name="prodMinSdkDevKernelDebugApiElements" visibility="public" extends="api,debugApi,devKernelApi,prodMinSdkApi,prodMinSdkDevKernelApi,prodMinSdkDevKernelDebugApi"/>
+    <conf name="prodMinSdkDevKernelDebugCompile" visibility="private"/>
+    <conf name="prodMinSdkDevKernelDebugCompileClasspath" visibility="private" extends="compileOnly,debugCompileOnly,debugImplementation,devKernelCompileOnly,devKernelImplementation,implementation,prodMinSdkCompileOnly,prodMinSdkDevKernelCompileOnly,prodMinSdkDevKernelDebugCompileOnly,prodMinSdkDevKernelDebugImplementation,prodMinSdkDevKernelImplementation,prodMinSdkImplementation"/>
+    <conf name="prodMinSdkDevKernelDebugCompileOnly" visibility="private" extends="prodMinSdkDevKernelDebugProvided"/>
+    <conf name="prodMinSdkDevKernelDebugImplementation" visibility="private" extends="prodMinSdkDevKernelDebugApi"/>
+    <conf name="prodMinSdkDevKernelDebugProvided" visibility="private"/>
+    <conf name="prodMinSdkDevKernelDebugPublish" visibility="private"/>
+    <conf name="prodMinSdkDevKernelDebugRuntimeClasspath" visibility="private" extends="debugImplementation,debugRuntimeOnly,devKernelImplementation,devKernelRuntimeOnly,implementation,prodMinSdkDevKernelDebugImplementation,prodMinSdkDevKernelDebugRuntimeOnly,prodMinSdkDevKernelImplementation,prodMinSdkDevKernelRuntimeOnly,prodMinSdkImplementation,prodMinSdkRuntimeOnly,runtimeOnly"/>
+    <conf name="prodMinSdkDevKernelDebugRuntimeElements" visibility="public" extends="prodMinSdkDevKernelDebugRuntimeClasspath"/>
+    <conf name="prodMinSdkDevKernelDebugRuntimeOnly" visibility="private" extends="prodMinSdkDevKernelDebugPublish"/>
+    <conf name="prodMinSdkDevKernelDebugUnitTestAnnotationProcessorClasspath" visibility="private" extends="testAnnotationProcessor,testDebugAnnotationProcessor,testDevKernelAnnotationProcessor,testProdMinSdkAnnotationProcessor,testProdMinSdkDevKernelAnnotationProcessor,testProdMinSdkDevKernelDebugAnnotationProcessor"/>
+    <conf name="prodMinSdkDevKernelDebugUnitTestCompileClasspath" visibility="private" extends="debugImplementation,devKernelImplementation,implementation,prodMinSdkDevKernelDebugImplementation,prodMinSdkDevKernelImplementation,prodMinSdkImplementation,testCompileOnly,testDebugCompileOnly,testDebugImplementation,testDevKernelCompileOnly,testDevKernelImplementation,testImplementation,testProdMinSdkCompileOnly,testProdMinSdkDevKernelCompileOnly,testProdMinSdkDevKernelDebugCompileOnly,testProdMinSdkDevKernelDebugImplementation,testProdMinSdkDevKernelImplementation,testProdMinSdkImplementation"/>
+    <conf name="prodMinSdkDevKernelDebugUnitTestRuntimeClasspath" visibility="private" extends="debugImplementation,debugRuntimeOnly,devKernelImplementation,devKernelRuntimeOnly,implementation,prodMinSdkDevKernelDebugImplementation,prodMinSdkDevKernelDebugRuntimeOnly,prodMinSdkDevKernelImplementation,prodMinSdkDevKernelRuntimeOnly,prodMinSdkImplementation,prodMinSdkRuntimeOnly,runtimeOnly,testDebugImplementation,testDebugRuntimeOnly,testDevKernelImplementation,testDevKernelRuntimeOnly,testImplementation,testProdMinSdkDevKernelDebugImplementation,testProdMinSdkDevKernelDebugRuntimeOnly,testProdMinSdkDevKernelImplementation,testProdMinSdkDevKernelRuntimeOnly,testProdMinSdkImplementation,testProdMinSdkRuntimeOnly,testRuntimeOnly"/>
+    <conf name="prodMinSdkDevKernelDebugWearApp" visibility="private"/>
+    <conf name="prodMinSdkDevKernelImplementation" visibility="private" extends="prodMinSdkDevKernelApi"/>
+    <conf name="prodMinSdkDevKernelProvided" visibility="private"/>
+    <conf name="prodMinSdkDevKernelPublish" visibility="private"/>
+    <conf name="prodMinSdkDevKernelReleaseAnnotationProcessor" visibility="private"/>
+    <conf name="prodMinSdkDevKernelReleaseAnnotationProcessorClasspath" visibility="private" extends="annotationProcessor,devKernelAnnotationProcessor,prodMinSdkAnnotationProcessor,prodMinSdkDevKernelAnnotationProcessor,prodMinSdkDevKernelReleaseAnnotationProcessor,releaseAnnotationProcessor"/>
+    <conf name="prodMinSdkDevKernelReleaseApi" visibility="private" extends="prodMinSdkDevKernelReleaseCompile"/>
+    <conf name="prodMinSdkDevKernelReleaseApiElements" visibility="public" extends="api,devKernelApi,prodMinSdkApi,prodMinSdkDevKernelApi,prodMinSdkDevKernelReleaseApi,releaseApi"/>
+    <conf name="prodMinSdkDevKernelReleaseCompile" visibility="private"/>
+    <conf name="prodMinSdkDevKernelReleaseCompileClasspath" visibility="private" extends="compileOnly,devKernelCompileOnly,devKernelImplementation,implementation,prodMinSdkCompileOnly,prodMinSdkDevKernelCompileOnly,prodMinSdkDevKernelImplementation,prodMinSdkDevKernelReleaseCompileOnly,prodMinSdkDevKernelReleaseImplementation,prodMinSdkImplementation,releaseCompileOnly,releaseImplementation"/>
+    <conf name="prodMinSdkDevKernelReleaseCompileOnly" visibility="private" extends="prodMinSdkDevKernelReleaseProvided"/>
+    <conf name="prodMinSdkDevKernelReleaseImplementation" visibility="private" extends="prodMinSdkDevKernelReleaseApi"/>
+    <conf name="prodMinSdkDevKernelReleaseProvided" visibility="private"/>
+    <conf name="prodMinSdkDevKernelReleasePublish" visibility="private"/>
+    <conf name="prodMinSdkDevKernelReleaseRuntimeClasspath" visibility="private" extends="devKernelImplementation,devKernelRuntimeOnly,implementation,prodMinSdkDevKernelImplementation,prodMinSdkDevKernelReleaseImplementation,prodMinSdkDevKernelReleaseRuntimeOnly,prodMinSdkDevKernelRuntimeOnly,prodMinSdkImplementation,prodMinSdkRuntimeOnly,releaseImplementation,releaseRuntimeOnly,runtimeOnly"/>
+    <conf name="prodMinSdkDevKernelReleaseRuntimeElements" visibility="public" extends="prodMinSdkDevKernelReleaseRuntimeClasspath"/>
+    <conf name="prodMinSdkDevKernelReleaseRuntimeOnly" visibility="private" extends="prodMinSdkDevKernelReleasePublish"/>
+    <conf name="prodMinSdkDevKernelReleaseUnitTestAnnotationProcessorClasspath" visibility="private" extends="testAnnotationProcessor,testDevKernelAnnotationProcessor,testProdMinSdkAnnotationProcessor,testProdMinSdkDevKernelAnnotationProcessor,testProdMinSdkDevKernelReleaseAnnotationProcessor,testReleaseAnnotationProcessor"/>
+    <conf name="prodMinSdkDevKernelReleaseUnitTestCompileClasspath" visibility="private" extends="devKernelImplementation,implementation,prodMinSdkDevKernelImplementation,prodMinSdkDevKernelReleaseImplementation,prodMinSdkImplementation,releaseImplementation,testCompileOnly,testDevKernelCompileOnly,testDevKernelImplementation,testImplementation,testProdMinSdkCompileOnly,testProdMinSdkDevKernelCompileOnly,testProdMinSdkDevKernelImplementation,testProdMinSdkDevKernelReleaseCompileOnly,testProdMinSdkDevKernelReleaseImplementation,testProdMinSdkImplementation,testReleaseCompileOnly,testReleaseImplementation"/>
+    <conf name="prodMinSdkDevKernelReleaseUnitTestRuntimeClasspath" visibility="private" extends="devKernelImplementation,devKernelRuntimeOnly,implementation,prodMinSdkDevKernelImplementation,prodMinSdkDevKernelReleaseImplementation,prodMinSdkDevKernelReleaseRuntimeOnly,prodMinSdkDevKernelRuntimeOnly,prodMinSdkImplementation,prodMinSdkRuntimeOnly,releaseImplementation,releaseRuntimeOnly,runtimeOnly,testDevKernelImplementation,testDevKernelRuntimeOnly,testImplementation,testProdMinSdkDevKernelImplementation,testProdMinSdkDevKernelReleaseImplementation,testProdMinSdkDevKernelReleaseRuntimeOnly,testProdMinSdkDevKernelRuntimeOnly,testProdMinSdkImplementation,testProdMinSdkRuntimeOnly,testReleaseImplementation,testReleaseRuntimeOnly,testRuntimeOnly"/>
+    <conf name="prodMinSdkDevKernelReleaseWearApp" visibility="private"/>
+    <conf name="prodMinSdkDevKernelRuntimeOnly" visibility="private" extends="prodMinSdkDevKernelPublish"/>
+    <conf name="prodMinSdkDevKernelWearApp" visibility="private"/>
+    <conf name="prodMinSdkImplementation" visibility="private" extends="prodMinSdkApi"/>
+    <conf name="prodMinSdkProdKernelAnnotationProcessor" visibility="private"/>
+    <conf name="prodMinSdkProdKernelApi" visibility="private" extends="prodMinSdkProdKernelCompile"/>
+    <conf name="prodMinSdkProdKernelCompile" visibility="private"/>
+    <conf name="prodMinSdkProdKernelCompileOnly" visibility="private" extends="prodMinSdkProdKernelProvided"/>
+    <conf name="prodMinSdkProdKernelDebugAndroidTestAnnotationProcessorClasspath" visibility="private" extends="androidTestAnnotationProcessor,androidTestDebugAnnotationProcessor,androidTestProdKernelAnnotationProcessor,androidTestProdMinSdkAnnotationProcessor,androidTestProdMinSdkProdKernelAnnotationProcessor,androidTestProdMinSdkProdKernelDebugAnnotationProcessor"/>
+    <conf name="prodMinSdkProdKernelDebugAndroidTestCompileClasspath" visibility="private" extends="androidTestCompileOnly,androidTestDebugCompileOnly,androidTestDebugImplementation,androidTestImplementation,androidTestProdKernelCompileOnly,androidTestProdKernelImplementation,androidTestProdMinSdkCompileOnly,androidTestProdMinSdkImplementation,androidTestProdMinSdkProdKernelCompileOnly,androidTestProdMinSdkProdKernelDebugCompileOnly,androidTestProdMinSdkProdKernelDebugImplementation,androidTestProdMinSdkProdKernelImplementation,debugImplementation,implementation,prodKernelImplementation,prodMinSdkImplementation,prodMinSdkProdKernelDebugImplementation,prodMinSdkProdKernelImplementation"/>
+    <conf name="prodMinSdkProdKernelDebugAndroidTestRuntimeClasspath" visibility="private" extends="androidTestDebugImplementation,androidTestDebugRuntimeOnly,androidTestImplementation,androidTestProdKernelImplementation,androidTestProdKernelRuntimeOnly,androidTestProdMinSdkImplementation,androidTestProdMinSdkProdKernelDebugImplementation,androidTestProdMinSdkProdKernelDebugRuntimeOnly,androidTestProdMinSdkProdKernelImplementation,androidTestProdMinSdkProdKernelRuntimeOnly,androidTestProdMinSdkRuntimeOnly,androidTestRuntimeOnly,debugImplementation,debugRuntimeOnly,implementation,prodKernelImplementation,prodKernelRuntimeOnly,prodMinSdkImplementation,prodMinSdkProdKernelDebugImplementation,prodMinSdkProdKernelDebugRuntimeOnly,prodMinSdkProdKernelImplementation,prodMinSdkProdKernelRuntimeOnly,prodMinSdkRuntimeOnly,runtimeOnly"/>
+    <conf name="prodMinSdkProdKernelDebugAnnotationProcessor" visibility="private"/>
+    <conf name="prodMinSdkProdKernelDebugAnnotationProcessorClasspath" visibility="private" extends="annotationProcessor,debugAnnotationProcessor,prodKernelAnnotationProcessor,prodMinSdkAnnotationProcessor,prodMinSdkProdKernelAnnotationProcessor,prodMinSdkProdKernelDebugAnnotationProcessor"/>
+    <conf name="prodMinSdkProdKernelDebugApi" visibility="private" extends="prodMinSdkProdKernelDebugCompile"/>
+    <conf name="prodMinSdkProdKernelDebugApiElements" visibility="public" extends="api,debugApi,prodKernelApi,prodMinSdkApi,prodMinSdkProdKernelApi,prodMinSdkProdKernelDebugApi"/>
+    <conf name="prodMinSdkProdKernelDebugCompile" visibility="private"/>
+    <conf name="prodMinSdkProdKernelDebugCompileClasspath" visibility="private" extends="compileOnly,debugCompileOnly,debugImplementation,implementation,prodKernelCompileOnly,prodKernelImplementation,prodMinSdkCompileOnly,prodMinSdkImplementation,prodMinSdkProdKernelCompileOnly,prodMinSdkProdKernelDebugCompileOnly,prodMinSdkProdKernelDebugImplementation,prodMinSdkProdKernelImplementation"/>
+    <conf name="prodMinSdkProdKernelDebugCompileOnly" visibility="private" extends="prodMinSdkProdKernelDebugProvided"/>
+    <conf name="prodMinSdkProdKernelDebugImplementation" visibility="private" extends="prodMinSdkProdKernelDebugApi"/>
+    <conf name="prodMinSdkProdKernelDebugProvided" visibility="private"/>
+    <conf name="prodMinSdkProdKernelDebugPublish" visibility="private"/>
+    <conf name="prodMinSdkProdKernelDebugRuntimeClasspath" visibility="private" extends="debugImplementation,debugRuntimeOnly,implementation,prodKernelImplementation,prodKernelRuntimeOnly,prodMinSdkImplementation,prodMinSdkProdKernelDebugImplementation,prodMinSdkProdKernelDebugRuntimeOnly,prodMinSdkProdKernelImplementation,prodMinSdkProdKernelRuntimeOnly,prodMinSdkRuntimeOnly,runtimeOnly"/>
+    <conf name="prodMinSdkProdKernelDebugRuntimeElements" visibility="public" extends="prodMinSdkProdKernelDebugRuntimeClasspath"/>
+    <conf name="prodMinSdkProdKernelDebugRuntimeOnly" visibility="private" extends="prodMinSdkProdKernelDebugPublish"/>
+    <conf name="prodMinSdkProdKernelDebugUnitTestAnnotationProcessorClasspath" visibility="private" extends="testAnnotationProcessor,testDebugAnnotationProcessor,testProdKernelAnnotationProcessor,testProdMinSdkAnnotationProcessor,testProdMinSdkProdKernelAnnotationProcessor,testProdMinSdkProdKernelDebugAnnotationProcessor"/>
+    <conf name="prodMinSdkProdKernelDebugUnitTestCompileClasspath" visibility="private" extends="debugImplementation,implementation,prodKernelImplementation,prodMinSdkImplementation,prodMinSdkProdKernelDebugImplementation,prodMinSdkProdKernelImplementation,testCompileOnly,testDebugCompileOnly,testDebugImplementation,testImplementation,testProdKernelCompileOnly,testProdKernelImplementation,testProdMinSdkCompileOnly,testProdMinSdkImplementation,testProdMinSdkProdKernelCompileOnly,testProdMinSdkProdKernelDebugCompileOnly,testProdMinSdkProdKernelDebugImplementation,testProdMinSdkProdKernelImplementation"/>
+    <conf name="prodMinSdkProdKernelDebugUnitTestRuntimeClasspath" visibility="private" extends="debugImplementation,debugRuntimeOnly,implementation,prodKernelImplementation,prodKernelRuntimeOnly,prodMinSdkImplementation,prodMinSdkProdKernelDebugImplementation,prodMinSdkProdKernelDebugRuntimeOnly,prodMinSdkProdKernelImplementation,prodMinSdkProdKernelRuntimeOnly,prodMinSdkRuntimeOnly,runtimeOnly,testDebugImplementation,testDebugRuntimeOnly,testImplementation,testProdKernelImplementation,testProdKernelRuntimeOnly,testProdMinSdkImplementation,testProdMinSdkProdKernelDebugImplementation,testProdMinSdkProdKernelDebugRuntimeOnly,testProdMinSdkProdKernelImplementation,testProdMinSdkProdKernelRuntimeOnly,testProdMinSdkRuntimeOnly,testRuntimeOnly"/>
+    <conf name="prodMinSdkProdKernelDebugWearApp" visibility="private"/>
+    <conf name="prodMinSdkProdKernelImplementation" visibility="private" extends="prodMinSdkProdKernelApi"/>
+    <conf name="prodMinSdkProdKernelProvided" visibility="private"/>
+    <conf name="prodMinSdkProdKernelPublish" visibility="private"/>
+    <conf name="prodMinSdkProdKernelReleaseAnnotationProcessor" visibility="private"/>
+    <conf name="prodMinSdkProdKernelReleaseAnnotationProcessorClasspath" visibility="private" extends="annotationProcessor,prodKernelAnnotationProcessor,prodMinSdkAnnotationProcessor,prodMinSdkProdKernelAnnotationProcessor,prodMinSdkProdKernelReleaseAnnotationProcessor,releaseAnnotationProcessor"/>
+    <conf name="prodMinSdkProdKernelReleaseApi" visibility="private" extends="prodMinSdkProdKernelReleaseCompile"/>
+    <conf name="prodMinSdkProdKernelReleaseApiElements" visibility="public" extends="api,prodKernelApi,prodMinSdkApi,prodMinSdkProdKernelApi,prodMinSdkProdKernelReleaseApi,releaseApi"/>
+    <conf name="prodMinSdkProdKernelReleaseCompile" visibility="private"/>
+    <conf name="prodMinSdkProdKernelReleaseCompileClasspath" visibility="private" extends="compileOnly,implementation,prodKernelCompileOnly,prodKernelImplementation,prodMinSdkCompileOnly,prodMinSdkImplementation,prodMinSdkProdKernelCompileOnly,prodMinSdkProdKernelImplementation,prodMinSdkProdKernelReleaseCompileOnly,prodMinSdkProdKernelReleaseImplementation,releaseCompileOnly,releaseImplementation"/>
+    <conf name="prodMinSdkProdKernelReleaseCompileOnly" visibility="private" extends="prodMinSdkProdKernelReleaseProvided"/>
+    <conf name="prodMinSdkProdKernelReleaseImplementation" visibility="private" extends="prodMinSdkProdKernelReleaseApi"/>
+    <conf name="prodMinSdkProdKernelReleaseProvided" visibility="private"/>
+    <conf name="prodMinSdkProdKernelReleasePublish" visibility="private"/>
+    <conf name="prodMinSdkProdKernelReleaseRuntimeClasspath" visibility="private" extends="implementation,prodKernelImplementation,prodKernelRuntimeOnly,prodMinSdkImplementation,prodMinSdkProdKernelImplementation,prodMinSdkProdKernelReleaseImplementation,prodMinSdkProdKernelReleaseRuntimeOnly,prodMinSdkProdKernelRuntimeOnly,prodMinSdkRuntimeOnly,releaseImplementation,releaseRuntimeOnly,runtimeOnly"/>
+    <conf name="prodMinSdkProdKernelReleaseRuntimeElements" visibility="public" extends="prodMinSdkProdKernelReleaseRuntimeClasspath"/>
+    <conf name="prodMinSdkProdKernelReleaseRuntimeOnly" visibility="private" extends="prodMinSdkProdKernelReleasePublish"/>
+    <conf name="prodMinSdkProdKernelReleaseUnitTestAnnotationProcessorClasspath" visibility="private" extends="testAnnotationProcessor,testProdKernelAnnotationProcessor,testProdMinSdkAnnotationProcessor,testProdMinSdkProdKernelAnnotationProcessor,testProdMinSdkProdKernelReleaseAnnotationProcessor,testReleaseAnnotationProcessor"/>
+    <conf name="prodMinSdkProdKernelReleaseUnitTestCompileClasspath" visibility="private" extends="implementation,prodKernelImplementation,prodMinSdkImplementation,prodMinSdkProdKernelImplementation,prodMinSdkProdKernelReleaseImplementation,releaseImplementation,testCompileOnly,testImplementation,testProdKernelCompileOnly,testProdKernelImplementation,testProdMinSdkCompileOnly,testProdMinSdkImplementation,testProdMinSdkProdKernelCompileOnly,testProdMinSdkProdKernelImplementation,testProdMinSdkProdKernelReleaseCompileOnly,testProdMinSdkProdKernelReleaseImplementation,testReleaseCompileOnly,testReleaseImplementation"/>
+    <conf name="prodMinSdkProdKernelReleaseUnitTestRuntimeClasspath" visibility="private" extends="implementation,prodKernelImplementation,prodKernelRuntimeOnly,prodMinSdkImplementation,prodMinSdkProdKernelImplementation,prodMinSdkProdKernelReleaseImplementation,prodMinSdkProdKernelReleaseRuntimeOnly,prodMinSdkProdKernelRuntimeOnly,prodMinSdkRuntimeOnly,releaseImplementation,releaseRuntimeOnly,runtimeOnly,testImplementation,testProdKernelImplementation,testProdKernelRuntimeOnly,testProdMinSdkImplementation,testProdMinSdkProdKernelImplementation,testProdMinSdkProdKernelReleaseImplementation,testProdMinSdkProdKernelReleaseRuntimeOnly,testProdMinSdkProdKernelRuntimeOnly,testProdMinSdkRuntimeOnly,testReleaseImplementation,testReleaseRuntimeOnly,testRuntimeOnly"/>
+    <conf name="prodMinSdkProdKernelReleaseWearApp" visibility="private"/>
+    <conf name="prodMinSdkProdKernelRuntimeOnly" visibility="private" extends="prodMinSdkProdKernelPublish"/>
+    <conf name="prodMinSdkProdKernelWearApp" visibility="private"/>
+    <conf name="prodMinSdkProvided" visibility="private"/>
+    <conf name="prodMinSdkPublish" visibility="private"/>
+    <conf name="prodMinSdkRuntimeOnly" visibility="private" extends="prodMinSdkPublish"/>
+    <conf name="prodMinSdkWearApp" visibility="private"/>
+    <conf name="provided" visibility="private"/>
+    <conf name="publish" visibility="private"/>
+    <conf name="releaseAnnotationProcessor" visibility="private"/>
+    <conf name="releaseApi" visibility="private" extends="releaseCompile"/>
+    <conf name="releaseCompile" visibility="private"/>
+    <conf name="releaseCompileOnly" visibility="private" extends="releaseProvided"/>
+    <conf name="releaseImplementation" visibility="private" extends="releaseApi"/>
+    <conf name="releaseProvided" visibility="private"/>
+    <conf name="releasePublish" visibility="private"/>
+    <conf name="releaseRuntimeOnly" visibility="private" extends="releasePublish"/>
+    <conf name="releaseWearApp" visibility="private"/>
+    <conf name="runtimeOnly" visibility="private" extends="publish"/>
+    <conf name="testAnnotationProcessor" visibility="private"/>
+    <conf name="testApi" visibility="private" extends="testCompile"/>
+    <conf name="testCompile" visibility="private"/>
+    <conf name="testCompileOnly" visibility="private" extends="testProvided"/>
+    <conf name="testDebugAnnotationProcessor" visibility="private"/>
+    <conf name="testDebugApi" visibility="private" extends="testDebugCompile"/>
+    <conf name="testDebugCompile" visibility="private"/>
+    <conf name="testDebugCompileOnly" visibility="private" extends="testDebugProvided"/>
+    <conf name="testDebugImplementation" visibility="private" extends="testDebugApi"/>
+    <conf name="testDebugProvided" visibility="private"/>
+    <conf name="testDebugPublish" visibility="private"/>
+    <conf name="testDebugRuntimeOnly" visibility="private" extends="testDebugPublish"/>
+    <conf name="testDebugWearApp" visibility="private"/>
+    <conf name="testDevKernelAnnotationProcessor" visibility="private"/>
+    <conf name="testDevKernelApi" visibility="private" extends="testDevKernelCompile"/>
+    <conf name="testDevKernelCompile" visibility="private"/>
+    <conf name="testDevKernelCompileOnly" visibility="private" extends="testDevKernelProvided"/>
+    <conf name="testDevKernelImplementation" visibility="private" extends="testDevKernelApi"/>
+    <conf name="testDevKernelProvided" visibility="private"/>
+    <conf name="testDevKernelPublish" visibility="private"/>
+    <conf name="testDevKernelRuntimeOnly" visibility="private" extends="testDevKernelPublish"/>
+    <conf name="testDevKernelWearApp" visibility="private"/>
+    <conf name="testDevMinSdkAnnotationProcessor" visibility="private"/>
+    <conf name="testDevMinSdkApi" visibility="private" extends="testDevMinSdkCompile"/>
+    <conf name="testDevMinSdkCompile" visibility="private"/>
+    <conf name="testDevMinSdkCompileOnly" visibility="private" extends="testDevMinSdkProvided"/>
+    <conf name="testDevMinSdkDevKernelAnnotationProcessor" visibility="private"/>
+    <conf name="testDevMinSdkDevKernelApi" visibility="private" extends="testDevMinSdkDevKernelCompile"/>
+    <conf name="testDevMinSdkDevKernelCompile" visibility="private"/>
+    <conf name="testDevMinSdkDevKernelCompileOnly" visibility="private" extends="testDevMinSdkDevKernelProvided"/>
+    <conf name="testDevMinSdkDevKernelDebugAnnotationProcessor" visibility="private"/>
+    <conf name="testDevMinSdkDevKernelDebugApi" visibility="private" extends="testDevMinSdkDevKernelDebugCompile"/>
+    <conf name="testDevMinSdkDevKernelDebugCompile" visibility="private"/>
+    <conf name="testDevMinSdkDevKernelDebugCompileOnly" visibility="private" extends="testDevMinSdkDevKernelDebugProvided"/>
+    <conf name="testDevMinSdkDevKernelDebugImplementation" visibility="private" extends="testDevMinSdkDevKernelDebugApi"/>
+    <conf name="testDevMinSdkDevKernelDebugProvided" visibility="private"/>
+    <conf name="testDevMinSdkDevKernelDebugPublish" visibility="private"/>
+    <conf name="testDevMinSdkDevKernelDebugRuntimeOnly" visibility="private" extends="testDevMinSdkDevKernelDebugPublish"/>
+    <conf name="testDevMinSdkDevKernelDebugWearApp" visibility="private"/>
+    <conf name="testDevMinSdkDevKernelImplementation" visibility="private" extends="testDevMinSdkDevKernelApi"/>
+    <conf name="testDevMinSdkDevKernelProvided" visibility="private"/>
+    <conf name="testDevMinSdkDevKernelPublish" visibility="private"/>
+    <conf name="testDevMinSdkDevKernelReleaseAnnotationProcessor" visibility="private"/>
+    <conf name="testDevMinSdkDevKernelReleaseApi" visibility="private" extends="testDevMinSdkDevKernelReleaseCompile"/>
+    <conf name="testDevMinSdkDevKernelReleaseCompile" visibility="private"/>
+    <conf name="testDevMinSdkDevKernelReleaseCompileOnly" visibility="private" extends="testDevMinSdkDevKernelReleaseProvided"/>
+    <conf name="testDevMinSdkDevKernelReleaseImplementation" visibility="private" extends="testDevMinSdkDevKernelReleaseApi"/>
+    <conf name="testDevMinSdkDevKernelReleaseProvided" visibility="private"/>
+    <conf name="testDevMinSdkDevKernelReleasePublish" visibility="private"/>
+    <conf name="testDevMinSdkDevKernelReleaseRuntimeOnly" visibility="private" extends="testDevMinSdkDevKernelReleasePublish"/>
+    <conf name="testDevMinSdkDevKernelReleaseWearApp" visibility="private"/>
+    <conf name="testDevMinSdkDevKernelRuntimeOnly" visibility="private" extends="testDevMinSdkDevKernelPublish"/>
+    <conf name="testDevMinSdkDevKernelWearApp" visibility="private"/>
+    <conf name="testDevMinSdkImplementation" visibility="private" extends="testDevMinSdkApi"/>
+    <conf name="testDevMinSdkProdKernelAnnotationProcessor" visibility="private"/>
+    <conf name="testDevMinSdkProdKernelApi" visibility="private" extends="testDevMinSdkProdKernelCompile"/>
+    <conf name="testDevMinSdkProdKernelCompile" visibility="private"/>
+    <conf name="testDevMinSdkProdKernelCompileOnly" visibility="private" extends="testDevMinSdkProdKernelProvided"/>
+    <conf name="testDevMinSdkProdKernelDebugAnnotationProcessor" visibility="private"/>
+    <conf name="testDevMinSdkProdKernelDebugApi" visibility="private" extends="testDevMinSdkProdKernelDebugCompile"/>
+    <conf name="testDevMinSdkProdKernelDebugCompile" visibility="private"/>
+    <conf name="testDevMinSdkProdKernelDebugCompileOnly" visibility="private" extends="testDevMinSdkProdKernelDebugProvided"/>
+    <conf name="testDevMinSdkProdKernelDebugImplementation" visibility="private" extends="testDevMinSdkProdKernelDebugApi"/>
+    <conf name="testDevMinSdkProdKernelDebugProvided" visibility="private"/>
+    <conf name="testDevMinSdkProdKernelDebugPublish" visibility="private"/>
+    <conf name="testDevMinSdkProdKernelDebugRuntimeOnly" visibility="private" extends="testDevMinSdkProdKernelDebugPublish"/>
+    <conf name="testDevMinSdkProdKernelDebugWearApp" visibility="private"/>
+    <conf name="testDevMinSdkProdKernelImplementation" visibility="private" extends="testDevMinSdkProdKernelApi"/>
+    <conf name="testDevMinSdkProdKernelProvided" visibility="private"/>
+    <conf name="testDevMinSdkProdKernelPublish" visibility="private"/>
+    <conf name="testDevMinSdkProdKernelReleaseAnnotationProcessor" visibility="private"/>
+    <conf name="testDevMinSdkProdKernelReleaseApi" visibility="private" extends="testDevMinSdkProdKernelReleaseCompile"/>
+    <conf name="testDevMinSdkProdKernelReleaseCompile" visibility="private"/>
+    <conf name="testDevMinSdkProdKernelReleaseCompileOnly" visibility="private" extends="testDevMinSdkProdKernelReleaseProvided"/>
+    <conf name="testDevMinSdkProdKernelReleaseImplementation" visibility="private" extends="testDevMinSdkProdKernelReleaseApi"/>
+    <conf name="testDevMinSdkProdKernelReleaseProvided" visibility="private"/>
+    <conf name="testDevMinSdkProdKernelReleasePublish" visibility="private"/>
+    <conf name="testDevMinSdkProdKernelReleaseRuntimeOnly" visibility="private" extends="testDevMinSdkProdKernelReleasePublish"/>
+    <conf name="testDevMinSdkProdKernelReleaseWearApp" visibility="private"/>
+    <conf name="testDevMinSdkProdKernelRuntimeOnly" visibility="private" extends="testDevMinSdkProdKernelPublish"/>
+    <conf name="testDevMinSdkProdKernelWearApp" visibility="private"/>
+    <conf name="testDevMinSdkProvided" visibility="private"/>
+    <conf name="testDevMinSdkPublish" visibility="private"/>
+    <conf name="testDevMinSdkRuntimeOnly" visibility="private" extends="testDevMinSdkPublish"/>
+    <conf name="testDevMinSdkWearApp" visibility="private"/>
+    <conf name="testImplementation" visibility="private" extends="testApi"/>
+    <conf name="testProdKernelAnnotationProcessor" visibility="private"/>
+    <conf name="testProdKernelApi" visibility="private" extends="testProdKernelCompile"/>
+    <conf name="testProdKernelCompile" visibility="private"/>
+    <conf name="testProdKernelCompileOnly" visibility="private" extends="testProdKernelProvided"/>
+    <conf name="testProdKernelImplementation" visibility="private" extends="testProdKernelApi"/>
+    <conf name="testProdKernelProvided" visibility="private"/>
+    <conf name="testProdKernelPublish" visibility="private"/>
+    <conf name="testProdKernelRuntimeOnly" visibility="private" extends="testProdKernelPublish"/>
+    <conf name="testProdKernelWearApp" visibility="private"/>
+    <conf name="testProdMinSdkAnnotationProcessor" visibility="private"/>
+    <conf name="testProdMinSdkApi" visibility="private" extends="testProdMinSdkCompile"/>
+    <conf name="testProdMinSdkCompile" visibility="private"/>
+    <conf name="testProdMinSdkCompileOnly" visibility="private" extends="testProdMinSdkProvided"/>
+    <conf name="testProdMinSdkDevKernelAnnotationProcessor" visibility="private"/>
+    <conf name="testProdMinSdkDevKernelApi" visibility="private" extends="testProdMinSdkDevKernelCompile"/>
+    <conf name="testProdMinSdkDevKernelCompile" visibility="private"/>
+    <conf name="testProdMinSdkDevKernelCompileOnly" visibility="private" extends="testProdMinSdkDevKernelProvided"/>
+    <conf name="testProdMinSdkDevKernelDebugAnnotationProcessor" visibility="private"/>
+    <conf name="testProdMinSdkDevKernelDebugApi" visibility="private" extends="testProdMinSdkDevKernelDebugCompile"/>
+    <conf name="testProdMinSdkDevKernelDebugCompile" visibility="private"/>
+    <conf name="testProdMinSdkDevKernelDebugCompileOnly" visibility="private" extends="testProdMinSdkDevKernelDebugProvided"/>
+    <conf name="testProdMinSdkDevKernelDebugImplementation" visibility="private" extends="testProdMinSdkDevKernelDebugApi"/>
+    <conf name="testProdMinSdkDevKernelDebugProvided" visibility="private"/>
+    <conf name="testProdMinSdkDevKernelDebugPublish" visibility="private"/>
+    <conf name="testProdMinSdkDevKernelDebugRuntimeOnly" visibility="private" extends="testProdMinSdkDevKernelDebugPublish"/>
+    <conf name="testProdMinSdkDevKernelDebugWearApp" visibility="private"/>
+    <conf name="testProdMinSdkDevKernelImplementation" visibility="private" extends="testProdMinSdkDevKernelApi"/>
+    <conf name="testProdMinSdkDevKernelProvided" visibility="private"/>
+    <conf name="testProdMinSdkDevKernelPublish" visibility="private"/>
+    <conf name="testProdMinSdkDevKernelReleaseAnnotationProcessor" visibility="private"/>
+    <conf name="testProdMinSdkDevKernelReleaseApi" visibility="private" extends="testProdMinSdkDevKernelReleaseCompile"/>
+    <conf name="testProdMinSdkDevKernelReleaseCompile" visibility="private"/>
+    <conf name="testProdMinSdkDevKernelReleaseCompileOnly" visibility="private" extends="testProdMinSdkDevKernelReleaseProvided"/>
+    <conf name="testProdMinSdkDevKernelReleaseImplementation" visibility="private" extends="testProdMinSdkDevKernelReleaseApi"/>
+    <conf name="testProdMinSdkDevKernelReleaseProvided" visibility="private"/>
+    <conf name="testProdMinSdkDevKernelReleasePublish" visibility="private"/>
+    <conf name="testProdMinSdkDevKernelReleaseRuntimeOnly" visibility="private" extends="testProdMinSdkDevKernelReleasePublish"/>
+    <conf name="testProdMinSdkDevKernelReleaseWearApp" visibility="private"/>
+    <conf name="testProdMinSdkDevKernelRuntimeOnly" visibility="private" extends="testProdMinSdkDevKernelPublish"/>
+    <conf name="testProdMinSdkDevKernelWearApp" visibility="private"/>
+    <conf name="testProdMinSdkImplementation" visibility="private" extends="testProdMinSdkApi"/>
+    <conf name="testProdMinSdkProdKernelAnnotationProcessor" visibility="private"/>
+    <conf name="testProdMinSdkProdKernelApi" visibility="private" extends="testProdMinSdkProdKernelCompile"/>
+    <conf name="testProdMinSdkProdKernelCompile" visibility="private"/>
+    <conf name="testProdMinSdkProdKernelCompileOnly" visibility="private" extends="testProdMinSdkProdKernelProvided"/>
+    <conf name="testProdMinSdkProdKernelDebugAnnotationProcessor" visibility="private"/>
+    <conf name="testProdMinSdkProdKernelDebugApi" visibility="private" extends="testProdMinSdkProdKernelDebugCompile"/>
+    <conf name="testProdMinSdkProdKernelDebugCompile" visibility="private"/>
+    <conf name="testProdMinSdkProdKernelDebugCompileOnly" visibility="private" extends="testProdMinSdkProdKernelDebugProvided"/>
+    <conf name="testProdMinSdkProdKernelDebugImplementation" visibility="private" extends="testProdMinSdkProdKernelDebugApi"/>
+    <conf name="testProdMinSdkProdKernelDebugProvided" visibility="private"/>
+    <conf name="testProdMinSdkProdKernelDebugPublish" visibility="private"/>
+    <conf name="testProdMinSdkProdKernelDebugRuntimeOnly" visibility="private" extends="testProdMinSdkProdKernelDebugPublish"/>
+    <conf name="testProdMinSdkProdKernelDebugWearApp" visibility="private"/>
+    <conf name="testProdMinSdkProdKernelImplementation" visibility="private" extends="testProdMinSdkProdKernelApi"/>
+    <conf name="testProdMinSdkProdKernelProvided" visibility="private"/>
+    <conf name="testProdMinSdkProdKernelPublish" visibility="private"/>
+    <conf name="testProdMinSdkProdKernelReleaseAnnotationProcessor" visibility="private"/>
+    <conf name="testProdMinSdkProdKernelReleaseApi" visibility="private" extends="testProdMinSdkProdKernelReleaseCompile"/>
+    <conf name="testProdMinSdkProdKernelReleaseCompile" visibility="private"/>
+    <conf name="testProdMinSdkProdKernelReleaseCompileOnly" visibility="private" extends="testProdMinSdkProdKernelReleaseProvided"/>
+    <conf name="testProdMinSdkProdKernelReleaseImplementation" visibility="private" extends="testProdMinSdkProdKernelReleaseApi"/>
+    <conf name="testProdMinSdkProdKernelReleaseProvided" visibility="private"/>
+    <conf name="testProdMinSdkProdKernelReleasePublish" visibility="private"/>
+    <conf name="testProdMinSdkProdKernelReleaseRuntimeOnly" visibility="private" extends="testProdMinSdkProdKernelReleasePublish"/>
+    <conf name="testProdMinSdkProdKernelReleaseWearApp" visibility="private"/>
+    <conf name="testProdMinSdkProdKernelRuntimeOnly" visibility="private" extends="testProdMinSdkProdKernelPublish"/>
+    <conf name="testProdMinSdkProdKernelWearApp" visibility="private"/>
+    <conf name="testProdMinSdkProvided" visibility="private"/>
+    <conf name="testProdMinSdkPublish" visibility="private"/>
+    <conf name="testProdMinSdkRuntimeOnly" visibility="private" extends="testProdMinSdkPublish"/>
+    <conf name="testProdMinSdkWearApp" visibility="private"/>
+    <conf name="testProvided" visibility="private"/>
+    <conf name="testPublish" visibility="private"/>
+    <conf name="testReleaseAnnotationProcessor" visibility="private"/>
+    <conf name="testReleaseApi" visibility="private" extends="testReleaseCompile"/>
+    <conf name="testReleaseCompile" visibility="private"/>
+    <conf name="testReleaseCompileOnly" visibility="private" extends="testReleaseProvided"/>
+    <conf name="testReleaseImplementation" visibility="private" extends="testReleaseApi"/>
+    <conf name="testReleaseProvided" visibility="private"/>
+    <conf name="testReleasePublish" visibility="private"/>
+    <conf name="testReleaseRuntimeOnly" visibility="private" extends="testReleasePublish"/>
+    <conf name="testReleaseWearApp" visibility="private"/>
+    <conf name="testRuntimeOnly" visibility="private" extends="testPublish"/>
+    <conf name="testWearApp" visibility="private"/>
+    <conf name="wearApp" visibility="private"/>
+  </configurations>
+  <publications>
+    <artifact name="expoview" type="jar" ext="jar" conf="archives" m:classifier="sources"/>
+  </publications>
+  <dependencies>
+    <dependency org="com.raizlabs.android" name="DBFlow-Compiler" rev="2.2.1" conf="annotationProcessor-&gt;default"/>
+    <dependency org="com.jakewharton" name="butterknife-compiler" rev="8.8.1" conf="annotationProcessor-&gt;default"/>
+    <dependency org="com.android.support" name="multidex" rev="1.0.1" conf="api-&gt;default"/>
+    <dependency org="com.facebook.react" name="ReactAndroid" rev="29.0.0" conf="api-&gt;default"/>
+    <dependency org="com.facebook.react" name="react-native" rev="28.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-core" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-react-native-adapter" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-camera" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-camera-interface" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-sensors" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-sensors-interface" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-face-detector" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-file-system" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-file-system-interface" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-permissions" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-permissions-interface" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-constants" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-constants-interface" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-gl" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-gl-cpp" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-sms" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-gl-abi29_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-face-detector-abi29_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-sms-abi29_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-face-detector-interface-abi29_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-permissions-interface-abi29_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-file-system-interface-abi29_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-react-native-adapter-abi29_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-constants-interface-abi29_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-sensors-interface-abi29_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-camera-interface-abi29_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-permissions-abi29_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-file-system-abi29_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-constants-abi29_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-sensors-abi29_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-camera-abi29_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-core-abi29_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp" name="reactandroid-abi28_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp" name="reactandroid-abi27_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp" name="reactandroid-abi26_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp" name="reactandroid-abi25_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp" name="reactandroid-abi24_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp" name="reactandroid-abi23" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="com.android.support" name="recyclerview-v7" rev="27.1.1" conf="api-&gt;default"/>
+    <dependency org="com.facebook.fbui.textlayoutbuilder" name="textlayoutbuilder" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="com.facebook.fresco" name="fresco" rev="1.0.1" conf="api-&gt;default"/>
+    <dependency org="com.facebook.fresco" name="animated-gif" rev="1.0.1" conf="api-&gt;default"/>
+    <dependency org="com.facebook.fresco" name="animated-webp" rev="1.0.1" conf="api-&gt;default"/>
+    <dependency org="com.facebook.fresco" name="webpsupport" rev="1.0.1" conf="api-&gt;default"/>
+    <dependency org="expolib_v1.com.facebook.fresco" name="expolib_v1-imagepipeline-okhttp3" rev="1.0.1" conf="api-&gt;default"/>
+    <dependency org="com.facebook.stetho" name="stetho" rev="1.3.1" conf="api-&gt;default"/>
+    <dependency org="com.facebook.stetho" name="stetho-okhttp3" rev="1.3.1" conf="api-&gt;default"/>
+    <dependency org="com.facebook.soloader" name="soloader" rev="0.1.0" conf="api-&gt;default"/>
+    <dependency org="com.fasterxml.jackson.core" name="jackson-core" rev="2.2.3" conf="api-&gt;default"/>
+    <dependency org="com.google.code.findbugs" name="jsr305" rev="3.0.0" conf="api-&gt;default"/>
+    <dependency org="expolib_v1.com.squareup.okhttp3" name="okhttp" rev="3.6.0" conf="api-&gt;default"/>
+    <dependency org="expolib_v1.com.squareup.okhttp3" name="okhttp-urlconnection" rev="3.6.0" conf="api-&gt;default"/>
+    <dependency org="expolib_v1.com.squareup.okio" name="okio" rev="1.13.0" conf="api-&gt;default"/>
+    <dependency org="org.webkit" name="android-jsc" rev="r174650" conf="api-&gt;default"/>
+    <dependency org="com.android.support" name="appcompat-v7" rev="27.1.1" conf="api-&gt;default"/>
+    <dependency org="com.android.support" name="customtabs" rev="27.1.1" conf="api-&gt;default"/>
+    <dependency org="com.android.support" name="cardview-v7" rev="27.1.1" conf="api-&gt;default"/>
+    <dependency org="com.crashlytics.sdk.android" name="crashlytics" rev="2.5.5" conf="api-&gt;default">
+      <artifact name="crashlytics" type="aar" ext="aar" conf="api"/>
+    </dependency>
+    <dependency org="com.facebook.android" name="facebook-android-sdk" rev="4.34.0" conf="api-&gt;default"/>
+    <dependency org="com.facebook.android" name="audience-network-sdk" rev="4.99.0" conf="api-&gt;default">
+      <exclude org="*" module="play-services-ads" name="*" type="*" ext="*" conf="api" matcher="exact"/>
+    </dependency>
+    <dependency org="de.greenrobot" name="eventbus" rev="2.4.0" conf="api-&gt;default"/>
+    <dependency org="com.amplitude" name="android-sdk" rev="2.9.2" conf="api-&gt;default"/>
+    <dependency org="com.squareup.picasso" name="picasso" rev="2.5.2" conf="api-&gt;default"/>
+    <dependency org="com.google.android.gms" name="play-services-gcm" rev="15.0.1" conf="api-&gt;default"/>
+    <dependency org="com.google.android.gms" name="play-services-analytics" rev="16.0.1" conf="api-&gt;default"/>
+    <dependency org="com.google.android.gms" name="play-services-maps" rev="15.0.1" conf="api-&gt;default"/>
+    <dependency org="com.google.android.gms" name="play-services-auth" rev="15.0.1" conf="api-&gt;default"/>
+    <dependency org="com.google.android.gms" name="play-services-location" rev="15.0.1" conf="api-&gt;default"/>
+    <dependency org="com.google.android.gms" name="play-services-ads" rev="15.0.1" conf="api-&gt;default"/>
+    <dependency org="com.google.android.gms" name="play-services-fitness" rev="15.0.1" conf="api-&gt;default"/>
+    <dependency org="com.google.android.gms" name="play-services-vision" rev="15.0.2" conf="api-&gt;default"/>
+    <dependency org="com.google.android.gms" name="play-services-wallet" rev="15.0.1" conf="api-&gt;default"/>
+    <dependency org="com.stripe" name="stripe-android" rev="2.1.+" conf="api-&gt;default"/>
+    <dependency org="com.github.thefuntasty" name="CreditCardEntry" rev="1.4.8.4" conf="api-&gt;default"/>
+    <dependency org="com.raizlabs.android" name="DBFlow-Core" rev="2.2.1" conf="api-&gt;default"/>
+    <dependency org="com.raizlabs.android" name="DBFlow" rev="2.2.1" conf="api-&gt;default"/>
+    <dependency org="com.madgag.spongycastle" name="core" rev="1.53.0.0" conf="api-&gt;default"/>
+    <dependency org="com.madgag.spongycastle" name="prov" rev="1.53.0.0" conf="api-&gt;default"/>
+    <dependency org="com.facebook.device.yearclass" name="yearclass" rev="1.0.1" conf="api-&gt;default"/>
+    <dependency org="commons-io" name="commons-io" rev="1.3.2" conf="api-&gt;default"/>
+    <dependency org="com.google.android.exoplayer" name="exoplayer" rev="r2.5.4" conf="api-&gt;default"/>
+    <dependency org="me.leolin" name="ShortcutBadger" rev="1.1.4" transitive="false" conf="api-&gt;default">
+      <artifact name="ShortcutBadger" type="aar" ext="aar" conf="api"/>
+    </dependency>
+    <dependency org="com.nostra13.universalimageloader" name="universal-image-loader" rev="1.9.5" conf="api-&gt;default"/>
+    <dependency org="com.theartofdev.edmodo" name="android-image-cropper" rev="2.4.7" conf="api-&gt;default"/>
+    <dependency org="com.yqritc" name="android-scalablevideoview" rev="1.0.1" conf="api-&gt;default"/>
+    <dependency org="commons-codec" name="commons-codec" rev="1.10" conf="api-&gt;default"/>
+    <dependency org="com.segment.analytics.android" name="analytics" rev="4.3.0" conf="api-&gt;default"/>
+    <dependency org="com.google.zxing" name="core" rev="3.3.2" conf="api-&gt;default"/>
+    <dependency org="net.openid" name="appauth" rev="0.4.1" conf="api-&gt;default"/>
+    <dependency org="com.airbnb.android" name="lottie" rev="2.5.5" conf="api-&gt;default">
+      <exclude org="com.android.support" module="appcompat-v7" name="*" type="*" ext="*" conf="api" matcher="exact"/>
+    </dependency>
+    <dependency org="io.branch.sdk.android" name="library" rev="2.17.1" conf="api-&gt;default"/>
+    <dependency org="io.nlopez.smartlocation" name="library" rev="3.2.11" transitive="false" conf="api-&gt;default"/>
+    <dependency org="com.android.support" name="exifinterface" rev="27.1.1" conf="api-&gt;default"/>
+    <dependency org="com.google.android" name="cameraview" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="com.google.firebase" name="firebase-core" rev="16.0.1" conf="api-&gt;default"/>
+    <dependency org="com.google.firebase" name="firebase-messaging" rev="17.1.0" conf="api-&gt;default"/>
+    <dependency org="com.google.maps.android" name="android-maps-utils" rev="0.5+" conf="api-&gt;default"/>
+    <dependency org="com.jakewharton" name="butterknife" rev="8.4.0" conf="api-&gt;default"/>
+    <dependency org="host.exp" name="reactandroid-abi29_0_0" rev="1.0.0" conf="compile-&gt;default"/>
+    <dependency org="org.glassfish" name="javax.annotation" rev="3.1.1" conf="compileOnly-&gt;default"/>
+    <dependency org="com.squareup.leakcanary" name="leakcanary-android-no-op" rev="1.4-beta1" conf="debugApi-&gt;default"/>
+    <dependency org="com.android.tools.lint" name="lint-gradle" rev="26.1.0" conf="lintClassPath-&gt;default"/>
+    <dependency org="com.squareup.leakcanary" name="leakcanary-android-no-op" rev="1.4-beta1" conf="releaseApi-&gt;default"/>
+  </dependencies>
+</ivy-module>
