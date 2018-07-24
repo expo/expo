@@ -27,7 +27,7 @@ public class MainActivity extends DetachActivity {
 
   @Override
   public List<String> sdkVersions() {
-    return new ArrayList<>(Arrays.asList("28.0.0"));
+    return new ArrayList<>(Arrays.asList("29.0.0"));
   }
 
   @Override
