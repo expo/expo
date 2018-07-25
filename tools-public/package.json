@@ -10,8 +10,8 @@
   "dependencies": {
     "@ccheever/crayon": "^5.0.0",
     "@expo/bunyan": "^1.8.10",
-    "@expo/mux": "^1.0.6",
     "@expo/json-file": "^8.0.0",
+    "@expo/mux": "^1.0.6",
     "@exponent/spawn-async": "^1.2.4",
     "fs-extra": "^4.0.2",
     "globby": "^6.1.0",
@@ -31,6 +31,6 @@
     "xdl": "^50.5.0"
   },
   "devDependencies": {
-    "jest": "21.2.0"
+    "jest": "^23.4.1"
   }
 }
