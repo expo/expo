@@ -204,7 +204,7 @@ function generateUniversalModuleConfig(moduleInfo, modulesPath) {
 }
 
 function generateUniversalModulesConfig(universalModules, modulesPath) {
-  return universalModules.map(moduleInfo => generateUniversalModuleConfig(moduleInfo, modulesPath));
+  return universalModules.filter(moduleInfo => moduleInfo.isNativeModule).map(moduleInfo => generateUniversalModuleConfig(moduleInfo, modulesPath));
 }
 
 function kernelManifestObjectToJson(manifest) {
