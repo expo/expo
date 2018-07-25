@@ -93,7 +93,7 @@ public class AVModule extends ExpoKernelServiceConsumerBaseModule
   private int mSoundMapKeyCount = 0;
   // There will never be many PlayerData objects in the map, so HashMap is most efficient.
   private final Map<Integer, PlayerData> mSoundMap = new HashMap<>();
-  private final Set<AudioEventHandler> mVideoViewSet = new HashSet<>();
+  private final Set<VideoView> mVideoViewSet = new HashSet<>();
 
   private MediaRecorder mAudioRecorder = null;
   private String mAudioRecordingFilePath = null;
@@ -167,17 +167,20 @@ public class AVModule extends ExpoKernelServiceConsumerBaseModule
     for (final Integer key : mSoundMap.keySet()) {
       removeSoundForKey(key);
     }
+    for (final VideoView videoView : mVideoViewSet) {
+      videoView.unloadPlayerAndMediaController();
+    }
     removeAudioRecorder();
     abandonAudioFocus();
   }
 
   // Global audio state control API
 
-  public void registerVideoViewForAudioLifecycle(final AudioEventHandler videoView) {
+  public void registerVideoViewForAudioLifecycle(final VideoView videoView) {
     mVideoViewSet.add(videoView);
   }
 
-  public void unregisterVideoViewForAudioLifecycle(final AudioEventHandler videoView) {
+  public void unregisterVideoViewForAudioLifecycle(final VideoView videoView) {
     mVideoViewSet.remove(videoView);
   }
 

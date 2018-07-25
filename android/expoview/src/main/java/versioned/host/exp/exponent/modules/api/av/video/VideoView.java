@@ -1,7 +1,6 @@
 package versioned.host.exp.exponent.modules.api.av.video;
 
 import android.annotation.SuppressLint;
-import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.util.Pair;
 import android.view.MotionEvent;
@@ -84,7 +83,7 @@ public class VideoView extends FrameLayout implements AudioEventHandler, Fullscr
     maybeUpdateMediaControllerForUseNativeControls();
   }
 
-  private void unloadPlayerAndMediaController() {
+  public void unloadPlayerAndMediaController() {
     ensureFullscreenPlayerIsDismissed();
     if (mMediaController != null) {
       mMediaController.hide();
