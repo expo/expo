@@ -46,7 +46,7 @@ async function main() {
       configuration.javaModule = javaModule;
     }
   );
-  proc.execSync(`cp -R module-template ${configuration.jsName}`);
+  proc.execSync(`cp -R expo-module-template ${configuration.jsName}`);
   proc.execSync(`find ./${configuration.jsName} -name '.DS_Store' -type f -delete`);
   if (configuration.podName) {
     proc.execSync(
