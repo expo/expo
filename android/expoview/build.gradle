@@ -104,7 +104,7 @@ dependencies {
   // Current react native
   api project(':ReactAndroid')
   /* UNCOMMENT WHEN DISTRIBUTING
-  api 'com.facebook.react:react-native:28.0.0'
+  api 'com.facebook.react:react-native:29.0.0'
   api 'host.exp.exponent:expo-core:1.0.0'
   api 'host.exp.exponent:expo-react-native-adapter:1.0.0'
   api 'host.exp.exponent:expo-camera:1.0.0'
