@@ -1,6 +1,6 @@
 {
   "name": "expo-react-native-adapter",
-  "version": "1.0.0-rc.2",
+  "version": "1.0.0",
   "description": "Expo React Native adapter for universal modules",
   "main": "index.js",
   "keywords": [
@@ -15,8 +15,8 @@
     "react-native": "^0.55.4"
   },
   "dependencies": {
-    "expo-core": "^1.0.0-rc.2",
-    "expo-permissions-interface": "^1.0.0-rc.2",
+    "expo-core": "^1.0.0",
+    "expo-permissions-interface": "^1.0.0",
     "lodash.omit": "^4.5.0",
     "lodash.pick": "^4.4.0",
     "prop-types": "^15.6.1",
