@@ -11,8 +11,7 @@
   "author": "650 Industries, Inc.",
   "license": "BSD",
   "peerDependencies": {
-    "expo-file-system": "^1.0.0",
-    "react-native": "^0.54.0"
+    "expo-file-system": "^1.0.0"
   },
   "dependencies": {
     "expo-core": "^1.0.0"
