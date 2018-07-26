@@ -20,9 +20,9 @@ if (ExponentConstants && ExponentConstants.manifest) {
 }
 
 export default {
-  ...ExponentConstants,
-  manifest,
   // Legacy aliases
   deviceId: ExponentConstants ? ExponentConstants.installationId : undefined,
+  ...ExponentConstants,
+  manifest,
   linkingUrl: ExponentConstants ? ExponentConstants.linkingUri : undefined,
 };
