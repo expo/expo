@@ -40,7 +40,6 @@ import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
 import expo.core.interfaces.Package;
-import expo.modules.facedetector.FaceDetectorPackage;
 import host.exp.exponent.ABIVersion;
 import host.exp.exponent.AppLoader;
 import host.exp.exponent.Constants;
