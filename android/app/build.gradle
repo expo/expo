@@ -173,6 +173,8 @@ dependencies {
   /* UNCOMMENT WHEN DISTRIBUTING
   implementation('host.exp.exponent:expoview:29.0.0@aar') {
     transitive = true
+    exclude group: 'com.squareup.okhttp3', module: 'okhttp'
+    exclude group: 'com.squareup.okhttp3', module: 'okhttp-urlconnection'
   }
   END UNCOMMENT WHEN DISTRIBUTING */
   // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
