@@ -24,7 +24,7 @@ android {
     targetSdkVersion 26
     // ADD VERSIONS HERE
     // BEGIN VERSIONS
-    versionCode 86
+    versionCode 90
     versionName '2.7.0'
     // END VERSIONS
     ndk {
