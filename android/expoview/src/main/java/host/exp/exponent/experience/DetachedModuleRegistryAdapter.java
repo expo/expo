@@ -1,8 +1,5 @@
 package host.exp.exponent.experience;
 
-import android.content.pm.PackageManager;
-import android.support.annotation.Nullable;
-
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 
@@ -13,8 +10,6 @@ import java.util.Map;
 
 import expo.core.ModuleRegistry;
 import expo.core.ModuleRegistryProvider;
-import expo.interfaces.constants.ConstantsInterface;
-import expo.modules.constants.ConstantsService;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.utils.ScopedContext;
 import versioned.host.exp.exponent.modules.universal.ConstantsBinding;
