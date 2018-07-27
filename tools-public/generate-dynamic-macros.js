@@ -167,6 +167,10 @@ const macrosFuncs = {
       manifest = await ExponentTools.getManifestAsync(url, {
         'Exponent-Platform': platform,
       });
+      if (manifest.name !== 'expo-home') {
+        console.log(`Manifest at ${url} is not expo-home; using published kernel manifest instead...`);
+        return '';
+      }
     } catch (e) {
       console.error(`Unable to generate manifest from ${projectRoot}: ${e.message}`);
       return '';
