@@ -245,11 +245,14 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
       ViewGroup.LayoutParams layoutParams = mContainer.getLayoutParams();
       layoutParams.height = mLayout.getHeight();
       mContainer.setLayoutParams(layoutParams);
-    } else {
+    }
+
+    if (mLoadingView != null && mLoadingView.getParent() == mLayout) {
       mLoadingView.setAlpha(0.0f);
       mLoadingView.setShowIcon(false);
       mLoadingView.setDoneLoading();
     }
+
     mSplashScreenKernelService.reset();
     mIsLoading = false;
     mLoadingHandler.removeCallbacksAndMessages(null);
