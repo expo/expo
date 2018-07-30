@@ -59,3 +59,6 @@ project(":expo-react-native-adapter").projectDir = new File(rootDir, "../modules
 
 include ":expo-sms"
 project(":expo-sms").projectDir = new File(rootDir, "../modules/expo-sms/android")
+
+include ":expo-print"
+project(":expo-print").projectDir = new File(rootDir, "../modules/expo-print/android")
