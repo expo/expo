@@ -19,6 +19,7 @@ import java.util.Map;
 
 import expo.adapters.react.ReactModuleRegistryProvider;
 import expo.core.interfaces.Package;
+import expo.module.print.PrintPackage;
 import expo.modules.camera.CameraPackage;
 import expo.modules.constants.ConstantsPackage;
 import expo.modules.facedetector.FaceDetectorPackage;
@@ -108,7 +109,8 @@ public class ExponentPackage implements ReactPackage {
       new ConstantsPackage(),
       new GLPackage(),
       new PermissionsPackage(),
-      new SMSPackage()
+      new SMSPackage(),
+      new PrintPackage()
   );
 
   private static final String TAG = ExponentPackage.class.getSimpleName();

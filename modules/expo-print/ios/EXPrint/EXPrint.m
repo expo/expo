@@ -1,22 +1,9 @@
-//
-//  EXPrint.m
-//  Exponent
-//
-//  Created by Alicja Warchał on 07.02.2018.
-//  Copyright © 2018 650 Industries. All rights reserved.
-//
+// Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "EXPrint.h"
-#import "EXScopedModuleRegistry.h"
-#import "EXUtil.h"
-#import "EXModuleRegistryBinding.h"
-#import "EXPrintPDFRenderTask.h"
-
+#import <EXPrint/EXPrint.h>
+#import <EXPrint/EXPrintPDFRenderTask.h>
 #import <EXCore/EXUtilitiesInterface.h>
 #import <EXFileSystemInterface/EXFileSystemInterface.h>
-
-#import <React/RCTConvert.h>
-#import <React/RCTUtils.h>
 
 NSString *const EXPrintOrientationPortrait = @"portrait";
 NSString *const EXPrintOrientationLandscape = @"landscape";
@@ -25,11 +12,13 @@ NSString *const EXPrintOrientationLandscape = @"landscape";
 
 @property (nonatomic, strong) NSMutableDictionary<NSString *, UIPrinter *> *printers;
 
+@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
+
 @end
 
 @implementation EXPrint
 
-@synthesize bridge = _bridge;
+EX_EXPORT_MODULE(ExponentPrint);
 
 - (instancetype)init
 {
@@ -37,6 +26,11 @@ NSString *const EXPrintOrientationLandscape = @"landscape";
     _printers = [NSMutableDictionary new];
   }
   return self;
+}
+
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+{
+  _moduleRegistry = moduleRegistry;
 }
 
 - (dispatch_queue_t)methodQueue
@@ -59,15 +53,14 @@ NSString *const EXPrintOrientationLandscape = @"landscape";
            };
 }
 
-RCT_EXPORT_MODULE(ExponentPrint);
-
-RCT_EXPORT_METHOD(print:(NSDictionary *)options
-                  resolver:(RCTPromiseResolveBlock)resolve
-                  rejecter:(RCTPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(print,
+                    print:(NSDictionary *)options
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   [self _getPrintingDataForOptions:options callback:^(NSData *printingData, NSDictionary *errorDetails) {
     if (errorDetails != nil) {
-      reject(errorDetails[@"code"], errorDetails[@"message"], RCTErrorWithMessage(errorDetails[@"message"]));
+      reject(errorDetails[@"code"], errorDetails[@"message"], EXErrorWithMessage(errorDetails[@"message"]));
       return;
     }
     
@@ -78,15 +71,15 @@ RCT_EXPORT_METHOD(print:(NSDictionary *)options
       // Let's check if someone wanted to use previous implementation for `html` option
       // which uses print formatter instead of NSData instance.
       
-      if (options[@"markupFormatterIOS"]) {
-        NSString *htmlString = [RCTConvert NSString:options[@"markupFormatterIOS"]];
+      if (options[@"markupFormatterIOS"] && [options[@"markupFormatterIOS"] isKindOfClass:[NSString class]]) {
+        NSString *htmlString = options[@"markupFormatterIOS"];
         
         if (htmlString != nil) {
           UIMarkupTextPrintFormatter *formatter = [[UIMarkupTextPrintFormatter alloc] initWithMarkupText:htmlString];
           printInteractionController.printFormatter = formatter;
         } else {
           NSString *message = [NSString stringWithFormat:@"The specified html string is not valid for printing."];
-          reject(@"E_HTML_INVALID", message, RCTErrorWithMessage(message));
+          reject(@"E_HTML_INVALID", message, EXErrorWithMessage(message));
           return;
         }
       } else {
@@ -100,7 +93,7 @@ RCT_EXPORT_METHOD(print:(NSDictionary *)options
     NSString *printerURL;
     UIPrinter *printer;
     
-    if (options[@"printerUrl"]) {
+    if (options[@"printerUrl"] && [options[@"printerUrl"] isKindOfClass:[NSString class]]) {
       // @tsapeta: Printing to the printer created with given URL ([UIPrinter printerWithURL:]) doesn't work for me,
       // it seems to be a bug in iOS however I've found confirmation only on Xamarin forums.
       // https://forums.xamarin.com/discussion/58518/creating-a-working-uiprinter-object-from-url-for-dialogue-free-printing
@@ -108,7 +101,7 @@ RCT_EXPORT_METHOD(print:(NSDictionary *)options
       // them when printing to specific printer.
       // I guess it's also safe to fall back to this not working solution since it might be fixed in the future.
       
-      printerURL = [RCTConvert NSString:options[@"printerUrl"]];
+      printerURL = options[@"printerUrl"];
       printer = [self.printers objectForKey:printerURL];
       
       if (printer == nil) {
@@ -141,9 +134,8 @@ RCT_EXPORT_METHOD(print:(NSDictionary *)options
   }];
 }
 
-
-RCT_EXPORT_METHOD(selectPrinter:(RCTPromiseResolveBlock)resolve
-                  rejecter:(RCTPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(selectPrinter,selectPrinter:(EXPromiseResolveBlock)resolve
+                  rejecter:(EXPromiseRejectBlock)reject)
 {
   UIPrinterPickerController *printPicker = [UIPrinterPickerController printerPickerControllerWithInitiallySelectedPrinter:nil];
   
@@ -176,12 +168,12 @@ RCT_EXPORT_METHOD(selectPrinter:(RCTPromiseResolveBlock)resolve
   }
 }
 
-RCT_REMAP_METHOD(printToFileAsync,
-                 printToFileWithOptions:(nonnull NSDictionary *)options
-                 resolve:(RCTPromiseResolveBlock)resolve
-                 reject:(RCTPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(printToFileAsync,
+                    printToFileWithOptions:(nonnull NSDictionary *)options
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
-  NSString *format = [RCTConvert NSString:options[@"format"]];
+  NSString *format = options[@"format"];
   
   if (format != nil && ![format isEqualToString:@"pdf"]) {
     reject(@"E_PRINT_UNSUPPORTED_FORMAT", [NSString stringWithFormat:@"Given format '%@' is not supported.", format], nil);
@@ -224,7 +216,7 @@ RCT_REMAP_METHOD(printToFileAsync,
 
 - (UIViewController *)printInteractionControllerParentViewController:(UIPrintInteractionController *)printInteractionController
 {
-  id<EXUtilitiesInterface> utils = [_bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)];
+  id<EXUtilitiesInterface> utils = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)];
   return utils.currentViewController;
 }
 
@@ -232,7 +224,7 @@ RCT_REMAP_METHOD(printToFileAsync,
 
 - (UIViewController *)printerPickerControllerParentViewController:(UIPrinterPickerController *)printerPickerController
 {
-  id<EXUtilitiesInterface> utils = [_bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)];
+  id<EXUtilitiesInterface> utils = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)];
   return utils.currentViewController;
 }
 
@@ -255,7 +247,7 @@ RCT_REMAP_METHOD(printToFileAsync,
 
 - (UIPrintInteractionController *)_makePrintInteractionControllerWithOptions:(NSDictionary *)options
 {
-  NSString *uri = [RCTConvert NSString:options[@"uri"]];
+  NSString *uri = options[@"uri"];
   UIPrintInteractionController *printInteractionController = [UIPrintInteractionController sharedPrintController];
   printInteractionController.delegate = self;
   
@@ -279,7 +271,7 @@ RCT_REMAP_METHOD(printToFileAsync,
   NSData *printData;
   
   if (options[@"uri"]) {
-    NSString *uri = [RCTConvert NSString:options[@"uri"]];
+    NSString *uri = options[@"uri"];
     printData = [self _dataFromUri:uri];
     
     if (printData != nil) {
@@ -323,7 +315,7 @@ RCT_REMAP_METHOD(printToFileAsync,
 
 - (NSString *)_generatePath
 {
-  id<EXFileSystemInterface> fileSystem = [_bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
+  id<EXFileSystemInterface> fileSystem = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
   if (!fileSystem) {
     return nil;
   }

@@ -1,15 +1,8 @@
-//
-//  EXPrintPDFRenderTask.m
-//  Exponent
-//
-//  Created by Tomasz Sapeta on 23/05/2018.
-//  Copyright © 2018 650 Industries. All rights reserved.
-//
+// Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <UIKit/UIKit.h>
-#import <React/RCTConvert.h>
 
-#import "EXPrintPDFRenderTask.h"
+#import <EXPrint/EXPrintPDFRenderTask.h>
 
 #define kLetterPaperSize CGSizeMake(612, 792)
 
@@ -34,15 +27,15 @@
   _paperRect = CGRectMake(0, 0, kLetterPaperSize.width, kLetterPaperSize.height);
   
   if (options[@"html"] != nil) {
-    htmlString = [RCTConvert NSString:options[@"html"]];
+    htmlString = options[@"html"];
   }
   
   if (options[@"width"] != nil) {
-    _paperRect.size.width = [RCTConvert CGFloat:options[@"width"]];
+    _paperRect.size.width = [(NSNumber *)options[@"width"] floatValue];
   }
   
   if (options[@"height"] != nil) {
-    _paperRect.size.height = [RCTConvert CGFloat:options[@"height"]];
+    _paperRect.size.height = [(NSNumber *)options[@"height"] floatValue];
   }
   
   if ([options[@"orientation"] isEqualToString:@"landscape"]) {

@@ -1,10 +1,4 @@
-//
-//  EXPrintPDFRenderTask.h
-//  Exponent
-//
-//  Created by Tomasz Sapeta on 23/05/2018.
-//  Copyright © 2018 650 Industries. All rights reserved.
-//
+// Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <Foundation/Foundation.h>
 

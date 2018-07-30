@@ -67,6 +67,9 @@ target 'Exponent' do
   pod 'EXSMS',
     :path => "../modules/expo-sms/ios",
     :inhibit_warnings => true
+  pod 'EXPrint',
+    :path => "../modules/expo-print/ios",
+    :inhibit_warnings => true
   pod 'EXFaceDetector',
     :path => "../modules/expo-face-detector/ios",
     :inhibit_warnings => true

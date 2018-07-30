@@ -34,7 +34,6 @@
 		31E6D48020B845830082B09F /* EXSensorsManagerBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = 31E6D47F20B845830082B09F /* EXSensorsManagerBinding.m */; };
 		3C3C339520E24EC0000F8B92 /* EXSplashScreen.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C3C339420E24EC0000F8B92 /* EXSplashScreen.m */; };
 		3C55BD23944F76B366234629 /* libPods-Exponent.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2060A92EBAA9276D68C91B70 /* libPods-Exponent.a */; };
-		3CDB94EB202AE8900039E406 /* EXPrint.m in Sources */ = {isa = PBXBuildFile; fileRef = 3CDB94EA202AE8900039E406 /* EXPrint.m */; };
 		3CE8050D20488C8200D8D2DB /* EXPermissionsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3CE8050C20488C8200D8D2DB /* EXPermissionsManager.m */; };
 		3CEBDC411FFBC73E0025EF24 /* EXMailComposer.m in Sources */ = {isa = PBXBuildFile; fileRef = 3CEBDC401FFBC73D0025EF24 /* EXMailComposer.m */; };
 		6D3FF9032022B57E000D4015 /* EXLocalization.m in Sources */ = {isa = PBXBuildFile; fileRef = 6D3FF9012022B57D000D4015 /* EXLocalization.m */; };
@@ -315,7 +314,6 @@
 		CD4BAD342092A30A009A1287 /* EXAR.m in Sources */ = {isa = PBXBuildFile; fileRef = CD4BAD332092A30A009A1287 /* EXAR.m */; };
 		CD9939502040C1AA0087C883 /* EXHaptic.m in Sources */ = {isa = PBXBuildFile; fileRef = CD99394F2040C1AA0087C883 /* EXHaptic.m */; };
 		CDBF79FA20868287009B25D6 /* EXStoreReview.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBF79F920868287009B25D6 /* EXStoreReview.m */; };
-		F1374BC120B57B92008D888B /* EXPrintPDFRenderTask.m in Sources */ = {isa = PBXBuildFile; fileRef = F1374BC020B57B92008D888B /* EXPrintPDFRenderTask.m */; };
 		F1545BF920877E39002DAC67 /* EXMenuWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = F1545BF820877E39002DAC67 /* EXMenuWindow.m */; };
 		F167C43B209C7EE600F01382 /* EXUtilService.m in Sources */ = {isa = PBXBuildFile; fileRef = F167C43A209C7EE600F01382 /* EXUtilService.m */; };
 		F19BDA11206B877F00BE0843 /* EXMediaLibrary.m in Sources */ = {isa = PBXBuildFile; fileRef = F19BDA0F206B877F00BE0843 /* EXMediaLibrary.m */; };
@@ -965,8 +963,6 @@
 		CD99394F2040C1AA0087C883 /* EXHaptic.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXHaptic.m; sourceTree = "<group>"; };
 		CDBF79F820868287009B25D6 /* EXStoreReview.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXStoreReview.h; sourceTree = "<group>"; };
 		CDBF79F920868287009B25D6 /* EXStoreReview.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXStoreReview.m; sourceTree = "<group>"; };
-		F1374BBF20B57B92008D888B /* EXPrintPDFRenderTask.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXPrintPDFRenderTask.h; sourceTree = "<group>"; };
-		F1374BC020B57B92008D888B /* EXPrintPDFRenderTask.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXPrintPDFRenderTask.m; sourceTree = "<group>"; };
 		F1545BF720877E39002DAC67 /* EXMenuWindow.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXMenuWindow.h; sourceTree = "<group>"; };
 		F1545BF820877E39002DAC67 /* EXMenuWindow.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXMenuWindow.m; sourceTree = "<group>"; };
 		F167C439209C7EE600F01382 /* EXUtilService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXUtilService.h; sourceTree = "<group>"; };
@@ -1720,7 +1716,6 @@
 				B5FB73A51FF6DADB001C764B /* EXWebBrowser.m */,
 				B5FB73A61FF6DADB001C764B /* FBAds */,
 				B5FB73C91FF6DADB001C764B /* OAuthViewController */,
-				F1374BBE20B57B37008D888B /* Print */,
 				F174C8B9201E677600F434C9 /* MediaLibrary */,
 				B5FB73E81FF6DADB001C764B /* Standalone */,
 			);
@@ -2157,17 +2152,6 @@
 			path = Cognito;
 			sourceTree = "<group>";
 		};
-		F1374BBE20B57B37008D888B /* Print */ = {
-			isa = PBXGroup;
-			children = (
-				3CDB94E9202AE82D0039E406 /* EXPrint.h */,
-				3CDB94EA202AE8900039E406 /* EXPrint.m */,
-				F1374BBF20B57B92008D888B /* EXPrintPDFRenderTask.h */,
-				F1374BC020B57B92008D888B /* EXPrintPDFRenderTask.m */,
-			);
-			path = Print;
-			sourceTree = "<group>";
-		};
 		F174C8B9201E677600F434C9 /* MediaLibrary */ = {
 			isa = PBXGroup;
 			children = (
@@ -2548,7 +2532,6 @@
 				CDBF79FA20868287009B25D6 /* EXStoreReview.m in Sources */,
 				B56C65CF20477223002B2424 /* EXHomeDiagnosticsViewController.m in Sources */,
 				0779EE2620977C9E00C2D71B /* AIRGoogleMapOverlay.m in Sources */,
-				F1374BC120B57B92008D888B /* EXPrintPDFRenderTask.m in Sources */,
 				7846B22520355E9900638E43 /* RNSVGTSpan.m in Sources */,
 				7846B21620355E9900638E43 /* RNSVGImageManager.m in Sources */,
 				6D3FF9032022B57E000D4015 /* EXLocalization.m in Sources */,
@@ -2584,7 +2567,6 @@
 				B5FB74A21FF6DADC001C764B /* EXContacts.m in Sources */,
 				19B2EF751FB25A1A003F2E1B /* EXCachedResourceManager.m in Sources */,
 				BB50E89020B9C0D3003C752D /* RNLongPressHandler.m in Sources */,
-				3CDB94EB202AE8900039E406 /* EXPrint.m in Sources */,
 				B5FB74DF1FF6DADC001C764B /* EXDevSettings.m in Sources */,
 				3CEBDC411FFBC73E0025EF24 /* EXMailComposer.m in Sources */,
 				B5FB74A71FF6DADC001C764B /* EXFingerprint.m in Sources */,
