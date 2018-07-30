@@ -333,7 +333,7 @@ void ABI29_0_0EXRegisterScopedModule(Class moduleClass, ...)
   NSMutableSet *singletonModuleClasses = [NSMutableSet set];
   for (NSString *serviceName in services.allKeys) {
     id service = services[serviceName];
-    if ([[service class] isSubclassOfClass:[ABI29_0_0EXSingletonModule class]]) {
+    if ([[service class] respondsToSelector:@selector(sharedInstance)] && [[service class] respondsToSelector:@selector(name)]) {
       [singletonModuleClasses addObject:[service class]];
     }
   }

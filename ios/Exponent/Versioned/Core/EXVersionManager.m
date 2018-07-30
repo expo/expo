@@ -333,7 +333,10 @@ void EXRegisterScopedModule(Class moduleClass, ...)
   NSMutableSet *singletonModuleClasses = [NSMutableSet set];
   for (NSString *serviceName in services.allKeys) {
     id service = services[serviceName];
-    if ([[service class] isSubclassOfClass:[EXSingletonModule class]]) {
+    // We would use check against EXSingletonModule protocol here, but it would get versioned
+    // and since kernel services don't implement versioned protocols, until we sort out proper way
+    // to register singleton modules, let's use this.
+    if ([[service class] respondsToSelector:@selector(sharedInstance)] && [[service class] respondsToSelector:@selector(name)]) {
       [singletonModuleClasses addObject:[service class]];
     }
   }
