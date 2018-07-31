@@ -1,5 +1,5 @@
 ---
-title: Sms
+title: SMS
 ---
 
 Provides access to the system's UI/app for sending SMS messages.
