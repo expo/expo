@@ -6,7 +6,8 @@ fastlane_require 'shellwords'
 fastlane_version "1.30.0"
 default_platform :ios
 
-output_directory = File.expand_path('./fastlane/Deployment')
+# path relative to Fastfile
+output_directory = File.expand_path('./Deployment')
 
 def set_bundle_version_from_commit_count
   bundle_version = Actions.lane_context[SharedValues::VERSION_NUMBER] + ".10" + number_of_commits.to_s
