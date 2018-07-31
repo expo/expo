@@ -43,7 +43,6 @@ import versioned.host.exp.exponent.modules.api.UpdatesModule;
 import versioned.host.exp.exponent.modules.api.av.video.VideoManager;
 import versioned.host.exp.exponent.modules.api.fbads.AdIconViewManager;
 import versioned.host.exp.exponent.modules.api.fbads.MediaViewManager;
-import versioned.host.exp.exponent.modules.api.print.PrintModule;
 import versioned.host.exp.exponent.modules.api.components.barcodescanner.BarCodeScannerModule;
 import versioned.host.exp.exponent.modules.api.components.barcodescanner.BarCodeScannerViewManager;
 import versioned.host.exp.exponent.modules.api.AmplitudeModule;
@@ -219,7 +218,6 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new MailComposerModule(reactContext));
         nativeModules.add(new CalendarModule(reactContext, experienceId));
         nativeModules.add(new MediaLibraryModule(reactContext, experienceId));
-        nativeModules.add(new PrintModule(reactContext, scopedContext));
         nativeModules.add(new LocalizationModule(reactContext));
         nativeModules.add(new ReanimatedModule(reactContext));
         nativeModules.add(new SplashScreenModule(reactContext, experienceId));
