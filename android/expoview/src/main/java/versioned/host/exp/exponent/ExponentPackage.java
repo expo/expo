@@ -19,7 +19,7 @@ import java.util.Map;
 
 import expo.adapters.react.ReactModuleRegistryProvider;
 import expo.core.interfaces.Package;
-import expo.module.print.PrintPackage;
+import expo.modules.print.PrintPackage;
 import expo.modules.camera.CameraPackage;
 import expo.modules.constants.ConstantsPackage;
 import expo.modules.facedetector.FaceDetectorPackage;
