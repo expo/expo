@@ -121,6 +121,7 @@
       android:theme="@style/Theme.Exponent.Splash"
       android:windowSoftInputMode="adjustResize">
       <!-- ADD SHELL INTENT FILTERS HERE -->
+      <!-- APP SPECIFIC INTENT FILTERS -->
     </activity>
 
     <activity
