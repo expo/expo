@@ -490,7 +490,7 @@ public class NotificationHelper {
           intent.putExtra(KernelConstants.NOTIFICATION_KEY, body); // deprecated
           intent.putExtra(KernelConstants.NOTIFICATION_OBJECT_KEY, notificationEvent.toJSONObject(null).toString());
 
-          PendingIntent contentIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+          PendingIntent contentIntent = PendingIntent.getActivity(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
           builder.setContentIntent(contentIntent);
 
           int color = NotificationHelper.getColor(
