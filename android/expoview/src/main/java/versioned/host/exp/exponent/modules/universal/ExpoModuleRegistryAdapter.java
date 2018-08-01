@@ -32,7 +32,7 @@ import versioned.host.exp.exponent.modules.universal.sensors.ScopedMagnetometerU
 import versioned.host.exp.exponent.modules.universal.sensors.ScopedRotationVectorSensorService;
 
 public class ExpoModuleRegistryAdapter extends ModuleRegistryAdapter implements ScopedModuleRegistryAdapter {
-  private ReactAdapterPackage mReactAdapterPackage = new ReactAdapterPackage();
+  protected ReactAdapterPackage mReactAdapterPackage = new ReactAdapterPackage();
 
   public ExpoModuleRegistryAdapter(ModuleRegistryProvider moduleRegistryProvider) {
     super(moduleRegistryProvider);
