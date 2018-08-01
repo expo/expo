@@ -9,11 +9,11 @@ import expo.interfaces.permissions.PermissionsListener;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.expoview.Exponent;
 
-/* package */ class ScopedUIManagerModuleWrapper extends UIManagerModuleWrapper {
+public class ScopedUIManagerModuleWrapper extends UIManagerModuleWrapper {
   private final String mExperienceName;
   private final ExperienceId mExperienceId;
 
-  /* package */ ScopedUIManagerModuleWrapper(ReactContext reactContext, ExperienceId experienceId, String experienceName) {
+  public ScopedUIManagerModuleWrapper(ReactContext reactContext, ExperienceId experienceId, String experienceName) {
     super(reactContext);
     mExperienceId = experienceId;
     mExperienceName = experienceName;
