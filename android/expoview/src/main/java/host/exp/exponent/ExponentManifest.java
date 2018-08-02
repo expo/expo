@@ -12,8 +12,6 @@ import android.os.Debug;
 import android.util.Log;
 import android.util.LruCache;
 
-import com.amplitude.api.Amplitude;
-
 import expolib_v1.okhttp3.CacheControl;
 import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.analytics.EXL;
@@ -29,10 +27,7 @@ import host.exp.exponent.network.ExponentNetwork;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponent.utils.ColorParser;
 import host.exp.expoview.R;
-import expolib_v1.okhttp3.Call;
-import expolib_v1.okhttp3.Headers;
 import expolib_v1.okhttp3.Request;
-import expolib_v1.okhttp3.Response;
 
 import org.apache.commons.io.IOUtils;
 import org.json.JSONException;
@@ -494,7 +489,7 @@ public class ExponentManifest {
     if (exponentServerHeader != null) {
       try {
         JSONObject eventProperties = new JSONObject(exponentServerHeader);
-        Amplitude.getInstance().logEvent(Analytics.LOAD_DEVELOPER_MANIFEST, eventProperties);
+        Analytics.logEvent(Analytics.LOAD_DEVELOPER_MANIFEST, eventProperties);
       } catch (Throwable e) {
         EXL.e(TAG, e);
       }

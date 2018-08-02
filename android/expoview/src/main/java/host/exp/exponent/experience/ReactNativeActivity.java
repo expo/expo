@@ -16,7 +16,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import com.amplitude.api.Amplitude;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.devsupport.DoubleTapReloadRecognizer;
@@ -25,7 +24,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -554,7 +552,7 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
         eventProperties.put(Analytics.USER_ERROR_MESSAGE, errorMessage.userErrorMessage());
         eventProperties.put(Analytics.DEVELOPER_ERROR_MESSAGE, errorMessage.developerErrorMessage());
         eventProperties.put(Analytics.MANIFEST_URL, mManifestUrl);
-        Amplitude.getInstance().logEvent(Analytics.ERROR_RELOADED, eventProperties);
+        Analytics.logEvent(Analytics.ERROR_RELOADED, eventProperties);
       } catch (Exception e) {
         EXL.e(TAG, e.getMessage());
       }

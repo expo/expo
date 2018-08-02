@@ -26,6 +26,7 @@ public class Constants {
     public List<Constants.EmbeddedResponse> EMBEDDED_RESPONSES;
     public int ANDROID_VERSION_CODE;
     public boolean FCM_ENABLED;
+    public boolean ANALYTICS_ENABLED;
   }
 
   private static final String TAG = Constants.class.getSimpleName();
@@ -48,6 +49,7 @@ public class Constants {
   public static boolean ARE_REMOTE_UPDATES_ENABLED = true;
   public static int ANDROID_VERSION_CODE;
   public static boolean FCM_ENABLED;
+  public static boolean ANALYTICS_ENABLED;
 
   public static void setSdkVersions(List<String> sdkVersions) {
     ABI_VERSIONS = TextUtils.join(",", sdkVersions);
@@ -94,6 +96,7 @@ public class Constants {
       ARE_REMOTE_UPDATES_ENABLED = appConstants.ARE_REMOTE_UPDATES_ENABLED;
       ANDROID_VERSION_CODE = appConstants.ANDROID_VERSION_CODE;
       FCM_ENABLED = appConstants.FCM_ENABLED;
+      ANALYTICS_ENABLED = appConstants.ANALYTICS_ENABLED;
 
       embeddedResponses.addAll(appConstants.EMBEDDED_RESPONSES);
       EMBEDDED_RESPONSES = embeddedResponses;

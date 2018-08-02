@@ -15,7 +15,6 @@ import android.os.UserManager;
 import android.provider.Settings;
 import android.util.Log;
 
-import com.amplitude.api.Amplitude;
 import com.crashlytics.android.Crashlytics;
 import com.facebook.common.internal.ByteStreams;
 import com.facebook.drawee.backends.pipeline.Fresco;
@@ -41,7 +40,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URLEncoder;
 import java.security.Provider;
 import java.security.Security;
@@ -67,7 +65,6 @@ import host.exp.exponent.RNObject;
 import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.di.NativeModuleDepsProvider;
-import host.exp.exponent.generated.ExponentKeys;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.kernel.ExponentUrls;
 import host.exp.exponent.kernel.KernelConstants;
@@ -173,27 +170,7 @@ public class Exponent {
 
 
     // Amplitude
-    Analytics.resetAmplitudeDatabaseHelper();
-
-    try {
-      Amplitude.getInstance().initialize(context, ExpoViewBuildConfig.DEBUG ? ExponentKeys.AMPLITUDE_DEV_KEY : ExponentKeys.AMPLITUDE_KEY);
-    } catch (RuntimeException e) {
-      EXL.testError(e);
-    }
-
-    if (application != null) {
-      Amplitude.getInstance().enableForegroundTracking(application);
-    }
-    try {
-      JSONObject amplitudeUserProperties = new JSONObject();
-      amplitudeUserProperties.put("INITIAL_URL", Constants.INITIAL_URL);
-      amplitudeUserProperties.put("ABI_VERSIONS", Constants.ABI_VERSIONS);
-      amplitudeUserProperties.put("TEMPORARY_ABI_VERSION", Constants.TEMPORARY_ABI_VERSION);
-      amplitudeUserProperties.put("IS_DETACHED", Constants.isDetached());
-      Amplitude.getInstance().setUserProperties(amplitudeUserProperties);
-    } catch (JSONException e) {
-      EXL.e(TAG, e);
-    }
+    Analytics.initializeAmplitude(context, application);
 
     // TODO: profile this
     FlowManager.init(context);

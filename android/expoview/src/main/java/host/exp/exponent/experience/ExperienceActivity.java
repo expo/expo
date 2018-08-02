@@ -20,7 +20,6 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.RemoteViews;
 
-import com.amplitude.api.Amplitude;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.UiThreadUtil;
@@ -768,7 +767,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
         );
         kernelReactInstanceManager.onHostResume(ExperienceActivity.this, ExperienceActivity.this);
         addView(mNuxOverlayView);
-        Amplitude.getInstance().logEvent("NUX_EXPERIENCE_OVERLAY_SHOWN");
+        Analytics.logEvent("NUX_EXPERIENCE_OVERLAY_SHOWN");
       }
     });
   }
@@ -806,7 +805,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
               } catch (JSONException e) {
                 EXL.e(TAG, e.getMessage());
               }
-              Amplitude.getInstance().logEvent("NUX_EXPERIENCE_OVERLAY_DISMISSED", eventProperties);
+              Analytics.logEvent("NUX_EXPERIENCE_OVERLAY_DISMISSED", eventProperties);
             }
 
             public void onAnimationRepeat(Animation animation) {
