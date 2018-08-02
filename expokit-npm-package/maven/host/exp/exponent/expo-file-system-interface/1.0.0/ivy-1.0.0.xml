@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-  <info organisation="host.exp.exponent" module="expo-file-system-interface" revision="1.0.0" status="integration" publication="20180726171709"/>
+  <info organisation="host.exp.exponent" module="expo-file-system-interface" revision="1.0.0" status="integration" publication="20180802100413"/>
   <configurations>
     <conf name="androidTestAnnotationProcessor" visibility="private"/>
     <conf name="androidTestApi" visibility="private" extends="androidTestCompile"/>

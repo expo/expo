@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-  <info organisation="host.exp.exponent" module="expoview" revision="29.0.0" status="integration" publication="20180726171725"/>
+  <info organisation="host.exp.exponent" module="expoview" revision="29.0.0" status="integration" publication="20180802100523"/>
   <configurations>
     <conf name="androidTestAnnotationProcessor" visibility="private"/>
     <conf name="androidTestApi" visibility="private" extends="androidTestCompile"/>
@@ -125,6 +125,7 @@
     <dependency org="host.exp.exponent" name="expo-gl" rev="1.0.0" conf="api-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-gl-cpp" rev="1.0.0" conf="api-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-sms" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-print" rev="1.0.0" conf="api-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-gl-abi29_0_0" rev="1.0.0" conf="api-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-face-detector-abi29_0_0" rev="1.0.0" conf="api-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-sms-abi29_0_0" rev="1.0.0" conf="api-&gt;default"/>

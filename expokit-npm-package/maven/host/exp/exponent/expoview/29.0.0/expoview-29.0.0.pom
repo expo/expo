@@ -117,6 +117,12 @@
     </dependency>
     <dependency>
       <groupId>host.exp.exponent</groupId>
+      <artifactId>expo-print</artifactId>
+      <version>1.0.0</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>host.exp.exponent</groupId>
       <artifactId>expo-gl-abi29_0_0</artifactId>
       <version>1.0.0</version>
       <scope>compile</scope>
