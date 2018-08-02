@@ -4,8 +4,6 @@ package host.exp.exponent.network;
 
 import android.content.Context;
 
-import com.amplitude.api.Amplitude;
-
 import org.apache.commons.io.IOUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,7 +15,6 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.charset.Charset;
 
 import host.exp.exponent.Constants;
 import host.exp.exponent.analytics.Analytics;
@@ -264,7 +261,7 @@ public class ExponentHttpClient {
     try {
       JSONObject eventProperties = new JSONObject();
       eventProperties.put("URI", uri);
-      Amplitude.getInstance().logEvent(event, eventProperties);
+      Analytics.logEvent(event, eventProperties);
     } catch (JSONException e) {
       EXL.e(TAG, e);
     }

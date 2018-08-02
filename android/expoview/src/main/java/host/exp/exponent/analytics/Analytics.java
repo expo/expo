@@ -2,6 +2,9 @@
 
 package host.exp.exponent.analytics;
 
+import android.app.Application;
+import android.content.Context;
+
 import com.amplitude.api.Amplitude;
 
 import org.json.JSONException;
@@ -12,6 +15,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import host.exp.exponent.Constants;
+import host.exp.exponent.generated.ExponentKeys;
+import host.exp.expoview.ExpoViewBuildConfig;
 
 public class Analytics {
 
@@ -55,6 +60,48 @@ public class Analytics {
 
   private static final Map<TimedEvent, Long> sShellTimedEvents = new HashMap<>();
 
+  public static void initializeAmplitude(Context context, Application application) {
+    if (!Constants.ANALYTICS_ENABLED) {
+      return;
+    }
+
+    resetAmplitudeDatabaseHelper();
+
+    try {
+      Amplitude.getInstance().initialize(context, ExpoViewBuildConfig.DEBUG ? ExponentKeys.AMPLITUDE_DEV_KEY : ExponentKeys.AMPLITUDE_KEY);
+    } catch (RuntimeException e) {
+      EXL.testError(e);
+    }
+
+    if (application != null) {
+      Amplitude.getInstance().enableForegroundTracking(application);
+    }
+    try {
+      JSONObject amplitudeUserProperties = new JSONObject();
+      amplitudeUserProperties.put("INITIAL_URL", Constants.INITIAL_URL);
+      amplitudeUserProperties.put("ABI_VERSIONS", Constants.ABI_VERSIONS);
+      amplitudeUserProperties.put("TEMPORARY_ABI_VERSION", Constants.TEMPORARY_ABI_VERSION);
+      amplitudeUserProperties.put("IS_DETACHED", Constants.isDetached());
+      Amplitude.getInstance().setUserProperties(amplitudeUserProperties);
+    } catch (JSONException e) {
+      EXL.e(TAG, e);
+    }
+  }
+
+  public static void logEvent(String eventType) {
+    if (!Constants.ANALYTICS_ENABLED) {
+      return;
+    }
+    Amplitude.getInstance().logEvent(eventType);
+  }
+
+  public static void logEvent(String eventType, JSONObject eventProperties) {
+    if (!Constants.ANALYTICS_ENABLED) {
+      return;
+    }
+    Amplitude.getInstance().logEvent(eventType, eventProperties);
+  }
+
   public static void logEventWithManifestUrl(String eventType, String manifestUrl) {
     logEventWithManifestUrlSdkVersion(eventType, manifestUrl, null);
   }
@@ -71,7 +118,7 @@ public class Analytics {
       if (sdkVersion != null) {
         eventProperties.put(SDK_VERSION, sdkVersion);
       }
-      Amplitude.getInstance().logEvent(eventType, eventProperties);
+      logEvent(eventType, eventProperties);
     } catch (Exception e) {
       EXL.e(TAG, e.getMessage());
     }
@@ -105,7 +152,7 @@ public class Analytics {
       eventProperties.put("MANIFEST_URL", manifestUrl);
 
       boolean isShell = manifestUrl.equals(Constants.INITIAL_URL);
-      Amplitude.getInstance().logEvent(isShell ? "SHELL_EXPERIENCE_LOADED" : "EXPERIENCE_LOADED", eventProperties);
+      logEvent(isShell ? "SHELL_EXPERIENCE_LOADED" : "EXPERIENCE_LOADED", eventProperties);
     } catch (Exception e) {
       EXL.e(TAG, e.getMessage());
     } finally {

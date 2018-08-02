@@ -11,11 +11,11 @@ import android.os.Debug;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 
-import com.amplitude.api.Amplitude;
 import com.squareup.leakcanary.LeakCanary;
 
 import de.greenrobot.event.EventBus;
 import host.exp.exponent.RNObject;
+import host.exp.exponent.analytics.Analytics;
 import host.exp.expoview.BuildConfig;
 import host.exp.exponent.Constants;
 import host.exp.exponent.kernel.Kernel;
@@ -65,7 +65,7 @@ public class HomeActivity extends BaseExperienceActivity {
 
     SoLoader.init(this, false);
 
-    Amplitude.getInstance().logEvent("HOME_APPEARED");
+    Analytics.logEvent("HOME_APPEARED");
 
     registerForNotifications();
   }

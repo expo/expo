@@ -4,8 +4,6 @@ package host.exp.exponent.analytics;
 
 import android.util.Log;
 
-import com.amplitude.api.Amplitude;
-
 import org.json.JSONObject;
 
 import host.exp.exponent.Constants;
@@ -50,7 +48,7 @@ public class EXL {
       eventProperties.put("TAG", tag);
       eventProperties.put("MESSAGE", msg);
       eventProperties.put("STACK_TRACE", stackTrace);
-      Amplitude.getInstance().logEvent("LOG_ERROR", eventProperties);
+      Analytics.logEvent("LOG_ERROR", eventProperties);
     } catch (Throwable e) {
       Log.e(TAG, e.toString());
     }
