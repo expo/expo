@@ -19,5 +19,5 @@ fi
 pushd $scriptdir
 mkdir -p ../android/expoview/src/main/java/host/exp/exponent/generated/
 
-node_modules/.bin/gulp generate-dynamic-macros --buildConstantsPath ../android/expoview/src/main/java/host/exp/exponent/generated/ExponentBuildConstants.java --platform android
+gulp generate-dynamic-macros --buildConstantsPath ../android/expoview/src/main/java/host/exp/exponent/generated/ExponentBuildConstants.java --platform android
 popd
