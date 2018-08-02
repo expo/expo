@@ -47,6 +47,8 @@ following these steps:
 
 On iOS, add the key `EXAnalyticsDisabled` to your app's main `Info.plist` with the value `YES`.
 
+On Android, set `ANALYTICS_ENABLED` to `false` in your app's `android/app/src/main/host/exp/exponent/generated/AppConstants.java` file.
+
 ## Configuring the JS URL
 
 In development, your ExpoKit project will request your local build from XDE/exp. You can see this configuration in `EXBuildConstants.plist` (iOS) or `ExponentBuildConstants` (Android). You shouldn't need to edit it, because it's written automatically when you serve the project.
