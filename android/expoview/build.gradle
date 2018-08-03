@@ -226,7 +226,7 @@ dependencies {
   api 'expolib_v1.com.squareup.okhttp3:okhttp:3.6.0'
   api 'expolib_v1.com.squareup.okhttp3:okhttp-urlconnection:3.6.0'
   api 'expolib_v1.com.squareup.okio:okio:1.13.0'
-  api 'org.webkit:android-jsc:224109'
+  api 'org.webkit:android-jsc:r224109'
 
   // Our dependencies
   api 'com.android.support:appcompat-v7:27.1.1'
