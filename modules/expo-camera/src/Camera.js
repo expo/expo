@@ -9,6 +9,7 @@ type PictureOptions = {
   quality?: number,
   base64?: boolean,
   exif?: boolean,
+  skipProcessing?: boolean,
   onPictureSaved?: Function,
   // internal
   id?: number,

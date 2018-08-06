@@ -31,6 +31,7 @@ public class ResolveTakenPictureAsyncTask extends AsyncTask<Void, Void, Bundle> 
   private static final String DIRECTORY_NAME = "Camera";
   private static final String EXTENSION = ".jpg";
 
+  private static final String SKIP_PROCESSING_KEY = "skipProcessing";
   private static final String FAST_MODE_KEY = "fastMode";
   private static final String QUALITY_KEY = "quality";
   private static final String BASE64_KEY = "base64";
@@ -70,6 +71,11 @@ public class ResolveTakenPictureAsyncTask extends AsyncTask<Void, Void, Bundle> 
 
   @Override
   protected Bundle doInBackground(Void... voids) {
+    // handle SkipProcessing
+    if (mImageData != null && isOptionEnabled(SKIP_PROCESSING_KEY)) {
+      return handleSkipProcessing();
+    }
+
     Bundle response = new Bundle();
     ByteArrayInputStream inputStream = null;
 
@@ -147,6 +153,51 @@ public class ResolveTakenPictureAsyncTask extends AsyncTask<Void, Void, Bundle> 
     }
 
     // An exception had to occur, promise has already been rejected. Do not try to resolve it again.
+    return null;
+  }
+
+  private Bundle handleSkipProcessing() {
+    Bundle response = new Bundle();
+    try {
+      // save byte array (it's already a JPEG)
+      ByteArrayOutputStream imageStream = new ByteArrayOutputStream();
+      imageStream.write(mImageData);
+
+      // write compressed image to file in cache directory
+      String filePath = writeStreamToFile(imageStream);
+      File imageFile = new File(filePath);
+
+      // handle image uri
+      String fileUri = Uri.fromFile(imageFile).toString();
+      response.putString(URI_KEY, fileUri);
+
+      // read exif information
+      ExifInterface exifInterface = new ExifInterface(filePath);
+
+      // handle image dimensions
+      response.putInt(WIDTH_KEY, exifInterface.getAttributeInt(ExifInterface.TAG_IMAGE_WIDTH, -1));
+      response.putInt(HEIGHT_KEY, exifInterface.getAttributeInt(ExifInterface.TAG_IMAGE_LENGTH, -1));
+
+      // handle exif request
+      if (isOptionEnabled(EXIF_KEY)) {
+        Bundle exifData = CameraViewHelper.getExifData(exifInterface);
+        response.putBundle(EXIF_KEY, exifData);
+      }
+
+      // handle base64
+      if (isOptionEnabled(BASE64_KEY)) {
+        response.putString(BASE64_KEY, Base64.encodeToString(mImageData, Base64.DEFAULT));
+      }
+
+      return response;
+    } catch (IOException e) {
+      mPromise.reject(ERROR_TAG, UNKNOWN_IO_EXCEPTION_MSG, e);
+      e.printStackTrace();
+    } catch (Exception e) {
+      mPromise.reject(ERROR_TAG, UNKNOWN_EXCEPTION_MSG, e);
+      e.printStackTrace();
+    }
+    // error occurred
     return null;
   }
 
