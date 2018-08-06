@@ -17,7 +17,7 @@
   ABI29_0_0EXModuleRegistry *moduleRegistry = [self.moduleRegistryProvider moduleRegistryForExperienceId:experienceId];
   NSDictionary<Class, id> *scopedModulesDictionary = [self dictionaryFromScopedModulesArray:scopedModulesArray];
 
-  ABI29_0_0EXFileSystemBinding *fileSystemBinding = [[ABI29_0_0EXFileSystemBinding alloc] initWithScopedModuleDelegate:kernelServices[@"EXFileSystemManager"]];
+  ABI29_0_0EXFileSystemBinding *fileSystemBinding = [[ABI29_0_0EXFileSystemBinding alloc] init];
   [moduleRegistry registerInternalModule:fileSystemBinding];
 
   ABI29_0_0EXSensorsManagerBinding *sensorsManagerBinding = [[ABI29_0_0EXSensorsManagerBinding alloc] initWithExperienceId:experienceId andKernelService:kernelServices[@"EXSensorManager"]];

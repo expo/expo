@@ -2,19 +2,9 @@
 
 #import <Foundation/Foundation.h>
 #import <EXCore/EXInternalModule.h>
-#import <EXFileSystemInterface/EXFileSystemManagerInterface.h>
+#import <EXCore/EXModuleRegistryConsumer.h>
+#import <EXFileSystem/EXFileSystemManagerService.h>
 
-@protocol EXFileSystemScopedModuleDelegate
-
-- (NSString *)bundleDirectoryForExperienceId:(NSString *)experienceId;
-- (NSArray<NSString *> *)bundledAssetsForExperienceId:(NSString *)experienceId;
-
-@end
-
-@interface EXFileSystemBinding : NSObject <EXInternalModule, EXFileSystemManager>
-
-- (instancetype)initWithScopedModuleDelegate:(id<EXFileSystemScopedModuleDelegate>)kernelService;
-- (NSString *)bundleDirectoryForExperienceId:(NSString *)experienceId;
-- (NSArray<NSString *> *)bundledAssetsForExperienceId:(NSString *)experienceId;
+@interface EXFileSystemBinding : EXFileSystemManagerService <EXModuleRegistryConsumer>
 
 @end
