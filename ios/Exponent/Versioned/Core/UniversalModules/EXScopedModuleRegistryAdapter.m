@@ -15,7 +15,6 @@
 - (NSArray<id<RCTBridgeModule>> *)extraModulesForParams:(NSDictionary *)params andExperience:(NSString *)experienceId withScopedModulesArray:(NSArray<id<RCTBridgeModule>> *)scopedModulesArray withKernelServices:(NSDictionary *)kernelServices
 {
   EXModuleRegistry *moduleRegistry = [self.moduleRegistryProvider moduleRegistryForExperienceId:experienceId];
-  NSDictionary<Class, id> *scopedModulesDictionary = [self dictionaryFromScopedModulesArray:scopedModulesArray];
 
   EXFileSystemBinding *fileSystemBinding = [[EXFileSystemBinding alloc] initWithScopedModuleDelegate:kernelServices[EX_UNVERSIONED(@"EXFileSystemManager")]];
   [moduleRegistry registerInternalModule:fileSystemBinding];
