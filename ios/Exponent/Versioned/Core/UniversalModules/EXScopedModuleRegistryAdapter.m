@@ -16,7 +16,7 @@
 {
   EXModuleRegistry *moduleRegistry = [self.moduleRegistryProvider moduleRegistryForExperienceId:experienceId];
 
-  EXFileSystemBinding *fileSystemBinding = [[EXFileSystemBinding alloc] initWithScopedModuleDelegate:kernelServices[EX_UNVERSIONED(@"EXFileSystemManager")]];
+  EXFileSystemBinding *fileSystemBinding = [[EXFileSystemBinding alloc] init];
   [moduleRegistry registerInternalModule:fileSystemBinding];
 
   EXSensorsManagerBinding *sensorsManagerBinding = [[EXSensorsManagerBinding alloc] initWithExperienceId:experienceId andKernelService:kernelServices[EX_UNVERSIONED(@"EXSensorManager")]];

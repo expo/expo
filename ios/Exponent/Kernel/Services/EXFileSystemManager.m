@@ -12,13 +12,20 @@ BOOL EXIsStandaloneExperience(NSString *experienceId) {
 
 - (NSString *)bundleDirectoryForExperienceId:(NSString *)experienceId
 {
-  return nil;
+  if (!EXIsStandaloneExperience(experienceId)) {
+    return nil;
+  }
+
+  return [super bundleDirectoryForExperienceId:experienceId];
 }
 
 - (NSArray<NSString *> *)bundledAssetsForExperienceId:(NSString *)experienceId
 {
-  return nil;
+  if (!EXIsStandaloneExperience(experienceId)) {
+    return nil;
+  }
+  
+  return [super bundledAssetsForExperienceId:experienceId];
 }
 
 @end
-

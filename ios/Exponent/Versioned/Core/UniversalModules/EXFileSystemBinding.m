@@ -1,35 +1,37 @@
 // Copyright © 2018 650 Industries. All rights reserved.
 
 #import "EXFileSystemBinding.h"
+#import <EXConstantsInterface/EXConstantsInterface.h>
 
 @interface EXFileSystemBinding ()
 
-@property (nonatomic, weak) id<EXFileSystemScopedModuleDelegate> kernelService;
+@property (nonatomic, weak) id<EXConstantsInterface> constantsModule;
 
 @end
 
 @implementation EXFileSystemBinding
 
-- (instancetype)initWithScopedModuleDelegate:(id<EXFileSystemScopedModuleDelegate>)kernelService
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
-  if (self = [super init]) {
-    _kernelService = kernelService;
-  }
-  return self;
+  _constantsModule = [moduleRegistry getModuleImplementingProtocol:@protocol(EXConstantsInterface)];
 }
 
 - (NSString *)bundleDirectoryForExperienceId:(NSString *)experienceId
 {
-  return [_kernelService bundleDirectoryForExperienceId:experienceId];
+  if ([_constantsModule.appOwnership isEqualToString:@"expo"]) {
+    return nil;
+  }
+
+  return [super bundleDirectoryForExperienceId:experienceId];
 }
 
 - (NSArray<NSString *> *)bundledAssetsForExperienceId:(NSString *)experienceId
 {
-  return [_kernelService bundledAssetsForExperienceId:experienceId];
-}
+  if ([_constantsModule.appOwnership isEqualToString:@"expo"]) {
+    return nil;
+  }
 
-+ (const NSArray<Protocol *> *)exportedInterfaces {
-  return @[@protocol(EXFileSystemManager)];
+  return [super bundledAssetsForExperienceId:experienceId];
 }
 
 @end
