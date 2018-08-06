@@ -137,3 +137,54 @@ export default class App extends React.Component {
   }
 }
 ```
+
+## Example without any flickering between SplashScreen and it's later continueation
+
+```javascript
+import React from 'react';
+import { Image, Text, View } from 'react-native';
+import { Asset, AppLoading, SplashScreen } from 'expo';
+
+export default class App extends React.Component {
+  state = { areReasourcesReady: false };
+
+  constructor(props) {
+    super(props);
+    SplashScreen.preventAutoHide(); // Instruct SplashScreen not to hide yet
+  }
+
+  componentDidMount() {
+    this.cacheResourcesAsync() // ask for resources
+      .then(() => this.setState({ areReasourcesReady: true })) // mark reasources as loaded
+      .catch(error => console.error(`Unexpected error thrown when loading:\n${error.stack}`));
+  }
+
+  render() {
+    if (!this.state.areReasourcesReady) {
+      return null;
+    }
+    
+    return (
+      <View style={{ flex: 1 }}>
+        <Image
+          style={{ flex: 1, resizeMode: 'contain', width: undefined, height: undefined }}
+          source={require('./assets/splash.png')}
+          onLoadEnd={() => { // wait for image's content to fully load [`Image#onLoadEnd`] (https://facebook.github.io/react-native/docs/image#onloadend)
+            console.log('Image#onLoadEnd: hiding SplashScreen');
+            SplashScreen.hide(); // Image is fully presented, instruct SplashScreen to hide
+          }}
+          fadeDuration={0} // we need to adjust Android devices (https://facebook.github.io/react-native/docs/image#fadeduration) fadeDuration prop to `0` as it's default value is `300` 
+        />
+      </View>
+    );
+  }
+
+  async cacheResourcesAsync() {
+    const images = [
+      require('./assets/splash.png'),
+    ];
+    const cacheImages = images.map(image => Asset.fromModule(image).downloadAsync());
+    return Promise.all(cacheImages)
+  }
+}
+```
