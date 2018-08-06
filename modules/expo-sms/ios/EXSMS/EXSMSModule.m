@@ -59,8 +59,12 @@ EX_EXPORT_METHOD_AS(sendSMSAsync,
   composeViewController.recipients = addresses;
   composeViewController.body = message;
 
+  __weak EXSMSModule *weakSelf = self;
   [EXUtilities performSynchronouslyOnMainThread:^{
-    [_utils.currentViewController presentViewController:composeViewController animated:YES completion:nil];
+    __strong EXSMSModule *strongSelf = weakSelf;
+    if (strongSelf) {
+      [strongSelf.utils.currentViewController presentViewController:composeViewController animated:YES completion:nil];
+    }
   }];
 }
 

@@ -200,7 +200,9 @@ EX_EXPORT_METHOD_AS(takePicture,
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject)
 {
+#if TARGET_IPHONE_SIMULATOR
   __weak EXCameraManager *weakSelf = self;
+#endif
   [_uiManager addUIBlock:^(id view) {
     if (view != nil) {
 #if TARGET_IPHONE_SIMULATOR

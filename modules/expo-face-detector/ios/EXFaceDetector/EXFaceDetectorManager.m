@@ -65,15 +65,19 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
   
   if ([self isDetectingFaces] != newFaceDetecting) {
     _faceDetecting = newFaceDetecting;
+    __weak EXFaceDetectorManager *weakSelf = self;
     [self _runBlockIfQueueIsPresent:^{
-      if ([self isDetectingFaces]) {
-        if (_dataOutput) {
-          [self _setConnectionsEnabled:true];
+      __strong EXFaceDetectorManager *strongSelf = weakSelf;
+      if (strongSelf) {
+        if ([strongSelf isDetectingFaces]) {
+          if (strongSelf.dataOutput) {
+            [strongSelf _setConnectionsEnabled:true];
+          } else {
+            [strongSelf tryEnablingFaceDetection];
+          }
         } else {
-          [self tryEnablingFaceDetection];
+          [strongSelf _setConnectionsEnabled:false];
         }
-      } else {
-        [self _setConnectionsEnabled:false];
       }
     }];
   }

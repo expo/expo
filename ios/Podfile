@@ -23,59 +23,41 @@ target 'Exponent' do
 
   # Local CocoaPods
   pod 'EXGL',
-    :path => "../modules/expo-gl/ios",
-    :inhibit_warnings => true
+    :path => "../modules/expo-gl/ios"
   pod 'EXCore',
-    :path => "../modules/expo-core/ios",
-    :inhibit_warnings => true
+    :path => "../modules/expo-core/ios"
   pod 'EXCamera',
-    :path => "../modules/expo-camera/ios",
-    :inhibit_warnings => true
+    :path => "../modules/expo-camera/ios"
   pod 'EXSensors',
-    :path => "../modules/expo-sensors/ios",
-    :inhibit_warnings => true
+    :path => "../modules/expo-sensors/ios"
   pod 'EXConstants',
-    :path => "../modules/expo-constants/ios",
-    :inhibit_warnings => true
+    :path => "../modules/expo-constants/ios"
   pod 'EXFileSystem',
-    :path => "../modules/expo-file-system/ios",
-    :inhibit_warnings => true
+    :path => "../modules/expo-file-system/ios"
   pod 'EXPermissions',
-    :path => "../modules/expo-permissions/ios",
-    :inhibit_warnings => true
+    :path => "../modules/expo-permissions/ios"
   pod 'EXCameraInterface',
-    :path => "../modules/expo-camera-interface/ios",
-    :inhibit_warnings => true
+    :path => "../modules/expo-camera-interface/ios"
   pod 'EXSensorsInterface',
-    :path => "../modules/expo-sensors-interface/ios",
-    :inhibit_warnings => true
+    :path => "../modules/expo-sensors-interface/ios"
   pod 'EXConstantsInterface',
-    :path => "../modules/expo-constants-interface/ios",
-    :inhibit_warnings => true
+    :path => "../modules/expo-constants-interface/ios"
   pod 'EXReactNativeAdapter',
-    :path => "../modules/expo-react-native-adapter/ios",
-    :inhibit_warnings => true
+    :path => "../modules/expo-react-native-adapter/ios"
   pod 'EXFileSystemInterface',
-    :path => "../modules/expo-file-system-interface/ios",
-    :inhibit_warnings => true
+    :path => "../modules/expo-file-system-interface/ios"
   pod 'EXPermissionsInterface',
-    :path => "../modules/expo-permissions-interface/ios",
-    :inhibit_warnings => true
+    :path => "../modules/expo-permissions-interface/ios"
   pod 'EXFaceDetectorInterface',
-    :path => "../modules/expo-face-detector-interface/ios",
-    :inhibit_warnings => true
+    :path => "../modules/expo-face-detector-interface/ios"
   pod 'EXSMS',
-    :path => "../modules/expo-sms/ios",
-    :inhibit_warnings => true
+    :path => "../modules/expo-sms/ios"
   pod 'EXPrint',
-    :path => "../modules/expo-print/ios",
-    :inhibit_warnings => true
+    :path => "../modules/expo-print/ios"
   pod 'EXFaceDetector',
-    :path => "../modules/expo-face-detector/ios",
-    :inhibit_warnings => true
+    :path => "../modules/expo-face-detector/ios"
   pod 'EXGL-CPP',
-    :path => "../modules/expo-gl-cpp/cpp",
-    :inhibit_warnings => true
+    :path => "../modules/expo-gl-cpp/cpp"
 
   pod 'React',
     :path => "../js/node_modules/react-native",

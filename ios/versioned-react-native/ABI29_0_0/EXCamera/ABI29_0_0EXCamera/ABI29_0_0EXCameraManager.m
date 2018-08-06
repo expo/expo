@@ -200,7 +200,9 @@ ABI29_0_0EX_EXPORT_METHOD_AS(takePicture,
                     resolver:(ABI29_0_0EXPromiseResolveBlock)resolve
                     rejecter:(ABI29_0_0EXPromiseRejectBlock)reject)
 {
+#if TARGET_IPHONE_SIMULATOR
   __weak ABI29_0_0EXCameraManager *weakSelf = self;
+#endif
   [_uiManager addUIBlock:^(id view) {
     if (view != nil) {
 #if TARGET_IPHONE_SIMULATOR

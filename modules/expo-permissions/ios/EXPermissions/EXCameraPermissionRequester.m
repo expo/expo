@@ -45,10 +45,14 @@
 
 - (void)requestPermissionsWithResolver:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject
 {
+  __weak EXCameraPermissionRequester *weakSelf = self;
   [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo completionHandler:^(BOOL granted) {
-    resolve([[self class] permissions]);
-    if (_delegate) {
-      [_delegate permissionRequesterDidFinish:self];
+    __strong EXCameraPermissionRequester *strongSelf = weakSelf;
+    if (strongSelf) {
+      resolve([[strongSelf class] permissions]);
+      if (strongSelf.delegate) {
+        [strongSelf.delegate permissionRequesterDidFinish:strongSelf];
+      }
     }
   }];
 }

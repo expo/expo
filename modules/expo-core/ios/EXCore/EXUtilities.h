@@ -5,12 +5,6 @@
 #import <EXCore/EXUtilitiesInterface.h>
 #import <EXCore/EXModuleRegistryConsumer.h>
 
-@protocol EXUtilitiesInterface
-
-- (UIViewController *)currentViewController;
-
-@end
-
 @interface EXUtilities : NSObject <EXInternalModule, EXUtilitiesInterface, EXModuleRegistryConsumer>
 
 + (void)performSynchronouslyOnMainThread:(void (^)(void))block;

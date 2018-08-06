@@ -35,12 +35,16 @@ ABI29_0_0EX_EXPORT_METHOD_AS(getWebViewUserAgentAsync,
                     getWebViewUserAgentWithResolver:(ABI29_0_0EXPromiseResolveBlock)resolve
                     rejecter:(ABI29_0_0EXPromiseRejectBlock)reject)
 {
+  __weak ABI29_0_0EXConstants *weakSelf = self;
   dispatch_async(dispatch_get_main_queue(), ^{
-    if (!_webViewUserAgent) {
-      UIWebView *webView = [[UIWebView alloc] init];
-      _webViewUserAgent = [webView stringByEvaluatingJavaScriptFromString:@"navigator.userAgent"];
+    __strong ABI29_0_0EXConstants *strongSelf = weakSelf;
+    if (strongSelf) {
+      if (!strongSelf.webViewUserAgent) {
+        UIWebView *webView = [[UIWebView alloc] init];
+        strongSelf.webViewUserAgent = [webView stringByEvaluatingJavaScriptFromString:@"navigator.userAgent"];
+      }
+      resolve(strongSelf.webViewUserAgent);
     }
-    resolve(_webViewUserAgent);
   });
 }
 
