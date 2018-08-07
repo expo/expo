@@ -63,9 +63,9 @@ async function registerForPushNotificationsAsync() {
 
 Push notifications have to come from somewhere, and that somewhere is your server, probably (you could write a command line tool to send them if you wanted, it's all the same). When you're ready to send a push notification, grab the Expo push token off of the user record and send it over to the Expo API using a plain old HTTPS POST request. We've taken care of wrapping that for you in a few languages:![Diagram explaining sending a push from your server to device](./sending-notification.png)
 
--   [exponent-server-sdk-node](https://github.com/exponent/exponent-server-sdk-node) for Node.js. Maintained by the Expo team.
--   [exponent-server-sdk-python](https://github.com/exponent/exponent-server-sdk-python) for Python. Maintained by community developers.
--   [exponent-server-sdk-ruby](https://github.com/exponent/exponent-server-sdk-ruby) for Ruby. Maintained by community developers.
+-   [exponent-server-sdk-node](https://github.com/expo/exponent-server-sdk-node) for Node.js. Maintained by the Expo team.
+-   [exponent-server-sdk-python](https://github.com/expo/exponent-server-sdk-python) for Python. Maintained by community developers.
+-   [exponent-server-sdk-ruby](https://github.com/expo/exponent-server-sdk-ruby) for Ruby. Maintained by community developers.
 -   [ExpoNotificationsBundle](https://github.com/solvecrew/ExpoNotificationsBundle) for Symfony. Maintained by SolveCrew.
 -   [exponent-server-sdk-php](https://github.com/Alymosul/exponent-server-sdk-php) for PHP. Maintained by community developers.
 -   [exponent-server-sdk-golang](https://github.com/oliveroneill/exponent-server-sdk-golang) for Golang. Maintained by community developers.
@@ -143,6 +143,8 @@ Send a POST request to `https://exp.host/--/api/v2/push/send` with the following
     accept: application/json
     accept-encoding: gzip, deflate
     content-type: application/json
+
+The Expo server also optionally accepts gzip-compressed request bodies. This can greatly reduce the amount of upload bandwidth needed to send large numbers of notifications. The [Node SDK](https://github.com/expo/exponent-server-sdk-node) automatically gzips requests for you.
 
 This API currently does not require any authentication.
 
@@ -291,7 +293,7 @@ type PushMessage = {
 
 The response is a JSON object with two optional fields, `data` and `errors`. If there is an error with the entire request, the HTTP status code will be 4xx or 5xx and `errors` will be an array of error objects (usually just one):
 
-```javascript
+```json
 {
   "errors": [{
     "code": "INTERNAL_SERVER_ERROR",
@@ -300,9 +302,9 @@ The response is a JSON object with two optional fields, `data` and `errors`. If 
 }
 ```
 
-If there are errors that affect individual messages but not the entire request, the HTTP status code will be 200, the `errors` field will be empty, and the `data` field will contain push receipts that describe the errors:
+If there are errors that affect individual messages but not the entire request, the HTTP status code will be 200, the `errors` field will be empty, and the `data` field will contain push tickets that describe the errors:
 
-```javascript
+```json
 {
   "data": [{
     "status": "error",
@@ -326,4 +328,4 @@ The HTTP status code will be 200 also if all of the messages were successfully d
 
 -   `InvalidCredentials`: your push notification credentials for your standalone app are invalid (ex: you may have revoked them). Run `exp build:ios -c` to regenerate new push notification credentials for iOS.
 
-If we couldn't deliver the message to the Android or iOS push notification service, the receipt's details may also include service-specific information. This is useful mostly for debugging and reporting possible bugs to us.
+If Expo couldn't deliver the message to the Android or iOS push notification service, the receipt's details may also include service-specific information. This is useful mostly for debugging and reporting possible bugs to Expo.

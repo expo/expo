@@ -63,9 +63,9 @@ async function registerForPushNotificationsAsync() {
 
 Push notifications have to come from somewhere, and that somewhere is your server, probably (you could write a command line tool to send them if you wanted, it's all the same). When you're ready to send a push notification, grab the Expo push token off of the user record and send it over to the Expo API using a plain old HTTPS POST request. We've taken care of wrapping that for you in a few languages:![Diagram explaining sending a push from your server to device](./sending-notification.png)
 
--   [exponent-server-sdk-node](https://github.com/exponent/exponent-server-sdk-node) for Node.js. Maintained by the Expo team.
--   [exponent-server-sdk-python](https://github.com/exponent/exponent-server-sdk-python) for Python. Maintained by community developers.
--   [exponent-server-sdk-ruby](https://github.com/exponent/exponent-server-sdk-ruby) for Ruby. Maintained by community developers.
+-   [exponent-server-sdk-node](https://github.com/expo/exponent-server-sdk-node) for Node.js. Maintained by the Expo team.
+-   [exponent-server-sdk-python](https://github.com/expo/exponent-server-sdk-python) for Python. Maintained by community developers.
+-   [exponent-server-sdk-ruby](https://github.com/expo/exponent-server-sdk-ruby) for Ruby. Maintained by community developers.
 -   [ExpoNotificationsBundle](https://github.com/solvecrew/ExpoNotificationsBundle) for Symfony. Maintained by SolveCrew.
 -   [exponent-server-sdk-php](https://github.com/Alymosul/exponent-server-sdk-php) for PHP. Maintained by community developers.
 -   [exponent-server-sdk-golang](https://github.com/oliveroneill/exponent-server-sdk-golang) for Golang. Maintained by community developers.
@@ -152,6 +152,8 @@ accept-encoding: gzip, deflate
 content-type: application/json
 ```
 
+The Expo server also optionally accepts gzip-compressed request bodies. This can greatly reduce the amount of upload bandwidth needed to send large numbers of notifications. The [Node SDK](https://github.com/expo/exponent-server-sdk-node) automatically gzips requests for you.
+
 This API currently does not require any authentication.
 
 This is a "hello world" request using cURL (replace the placeholder push token with your own):
@@ -178,22 +180,51 @@ The HTTP request body must be JSON. It may either be a single message object or 
 }]
 ```
 
-Upon success, the HTTP response will be a JSON object whose `data` field is an array of push receipts, each of which corresponds to the message at its respective index in the request. Continuing the above example, this is what a successful response body looks like:
+Upon success, the HTTP response will be a JSON object whose `data` field is an array of **push tickets**, each of which corresponds to the message at its respective index in the request. Continuing the above example, this is what a successful response body looks like:
 
 ```json
 {
   "data": [
-    {"status": "ok"},
-    {"status": "ok"}
+    {"status": "ok", "id": "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"},
+    {"status": "ok", "id": "YYYYYYYY-YYYY-YYYY-YYYY-YYYYYYYYYYYY}
   ]
 }
 ```
 
-When there is an error delivering a message, the receipt's status will be "error" and the receipt will contain information about the error. More information about the response format is documented below.
+If you send a single message that isn't wrapped in an array, the `data` field will be the push ticket also not wrapped in an array.
 
-> **Note:** Even if a receipt says "ok", it doesn't guarantee that the device has received the messsage; "ok" means that we successfully delivered the message to the Android or iOS push notification service. If the recipient device is turned off, for example, the Android or iOS push notification service will try to deliver the message but the device won't necessarily receive it.
+#### Push tickets
 
-If you send a single message that isn't wrapped in an array, the `data` field will be the push receipt also not wrapped in an array.
+Each push ticket indicates whether Expo successfully received the notification and, when successful, a receipt ID to later retrieve a push receipt. When there is an error receiving a message, the ticket's status will be "error" and the ticket will contain information about the error and might not contain a receipt ID. More information about the response format is documented below.
+
+> **Note:** Even if a ticket says "ok", it doesn't guarantee that the notification will be delivered nor that the device has received the message; "ok" in a push ticket means that Expo successfully received the message and enqueued it to be delivered to the Android or iOS push notification service. 
+
+#### Push receipts
+
+After receiving a batch of notifications, Expo enqueues each notification to be delivered to the iOS and Android push notification services (APNs and FCM, respectively). Most notifications are typically delivered within a few seconds. Sometimes it may take longer to deliver notifications, particularly if the iOS or Android push notification services are taking longer than usual to receive and deliver notifications, or if Expo's cloud infrastructure is under high load. Once Expo delivers a notification to the iOS or Android push notification service, Expo creates a **push receipt** that indicates whether the iOS or Android push notification service successfully received the notification. If there was an error delivering the notification, perhaps due to faulty credentials or service downtime, the push receipt will contain information about the error.
+
+To fetch the push receipts, send a POST request to `https://exp.host/--/api/v2/push/getReceipts`. The request body must be a JSON object with a field name "ids" that is an array of receipt ID strings:
+
+```bash
+curl -H "Content-Type: application/json" -X POST https://exp.host/--/api/v2/push/getReceipts -d '{
+  "ids": ["XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX", "YYYYYYYY-YYYY-YYYY-YYYY-YYYYYYYYYYYY"]
+}'
+```
+
+The response body contains a mapping from receipt IDs to receipts:
+
+```json
+{
+  "data": {
+    "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX": { "status": "ok" },
+    "YYYYYYYY-YYYY-YYYY-YYYY-YYYYYYYYYYYY": { "status": "ok" }
+  }
+}
+```
+
+**You must check each push receipt, which may contain information about errors you need to resolve.** For example, if a device is no longer eligible to receive notifications, Apple's documentation asks that you stop sending notifications to that device. The push receipts will contain information about these errors.
+
+> **Note:** Even if a receipt says "ok", it doesn't guarantee that the device has received the message; "ok" in a push receipt means that the Android or iOS push notification service successfully received the notification. If the recipient device is turned off, for example, the iOS or Android push notification service will try to deliver the message but the device won't necessarily receive it.
 
 ### Message format
 
@@ -301,7 +332,7 @@ type PushMessage = {
 
 The response is a JSON object with two optional fields, `data` and `errors`. If there is an error with the entire request, the HTTP status code will be 4xx or 5xx and `errors` will be an array of error objects (usually just one):
 
-```javascript
+```json
 {
   "errors": [{
     "code": "INTERNAL_SERVER_ERROR",
@@ -310,9 +341,9 @@ The response is a JSON object with two optional fields, `data` and `errors`. If 
 }
 ```
 
-If there are errors that affect individual messages but not the entire request, the HTTP status code will be 200, the `errors` field will be empty, and the `data` field will contain push receipts that describe the errors:
+If there are errors that affect individual messages but not the entire request, the HTTP status code will be 200, the `errors` field will be empty, and the `data` field will contain push tickets that describe the errors:
 
-```javascript
+```json
 {
   "data": [{
     "status": "error",
@@ -320,17 +351,59 @@ If there are errors that affect individual messages but not the entire request, 
     "details": {
       "error": "DeviceNotRegistered"
     }
+  }, {
+    "status": "ok",
+    "id": "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
   }]
 }
 ```
 
-> **Note:** You must check the receipt for each notification to determine if there was a problem delivering it to the Android or iOS push notification service. In particular, **do not assume a 200 HTTP status code means your notifications were sent successfully**; the granularity of push notification errors is finer than that of HTTP statuses.
+> **Note:** You should check the ticket for each notification to determine if there was a problem delivering it to Expo. In particular, **do not assume a 200 HTTP status code means your notifications were sent successfully**; the granularity of push notification errors is finer than that of HTTP statuses.
+
+The HTTP status code will be 200 also if all of the messages were successfully delivered to Expo and enqueued to be delivered to the iOS and Android push notification services.
+
+Successful push receipts, and some types of failed ones, will contain an "id" field with the ID of a receipt to fetch later.
+
+### Receipt request format
+
+Each receipt request must contain a field named "ids" that is an array of receipt IDs:
+
+```javascript
+{
+  "ids": string[]
+}
+```
+
+### Receipt response format
+
+The response format for push receipts is similar to that of push tickets; it is a JSON object with two optional fields, `data` and `errors`. If there is an error with the entire request, the HTTP status code will be 4xx or 5xx and `errors` will be an array of error objects.
+
+If there are errors that affected individual notifications but not the entire request, the HTTP status code will be 200, the `errors` field will be empty, and the `data` field will be a JSON object whose keys are receipt IDs and values are corresponding push receipts. If there is no push receipt for a requested receipt ID, the mapping won't contain that ID. This is an example response:
+
+```json
+{
+  "data": {
+    "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX": {
+      "status": "error",
+      "message": "The Apple Push Notification service failed to send the notification",
+      "details": {
+        "error": "DeviceNotRegistered"
+      }
+    },
+    "YYYYYYYY-YYYY-YYYY-YYYY-YYYYYYYYYYYY": {
+      "status": "ok"
+    }
+  }
+}
+```
+
+> **Note:** You should check each receipt to determine if there was an issue delivering the notification to the Android or iOS push notification service. In particular, **do not assume a 200 HTTP status code means your notifications were sent successfully**; the granularity of push notification errors is finer than that of HTTP statuses.
 
 The HTTP status code will be 200 also if all of the messages were successfully delivered to the Android and iOS push notification services.
 
-**Important:** in particular, look for an `details` object with an `error` field. If present, it may be one of these values: `DeviceNotRegistered`, `MessageTooBig`, `MessageRateExceeded`, and `InvalidCredentials`. You should handle these errors like so:
+**Important:** in particular, look for an `details` object with an `error` field inside both push tickets and push receipts. If present, it may be one of these values: `DeviceNotRegistered`, `MessageTooBig`, `MessageRateExceeded`, and `InvalidCredentials`. You should handle these errors like so:
 
--   `DeviceNotRegistered`: the device cannot receive push notifications anymore and you should stop sending messages to the given Expo push token.
+-   `DeviceNotRegistered`: the device cannot receive push notifications anymore and you should stop sending messages to the corresponding Expo push token.
 
 -   `MessageTooBig`: the total notification payload was too large. On Android and iOS the total payload must be at most 4096 bytes.
 
@@ -338,4 +411,4 @@ The HTTP status code will be 200 also if all of the messages were successfully d
 
 -   `InvalidCredentials`: your push notification credentials for your standalone app are invalid (ex: you may have revoked them). Run `exp build:ios -c` to regenerate new push notification credentials for iOS.
 
-If we couldn't deliver the message to the Android or iOS push notification service, the receipt's details may also include service-specific information. This is useful mostly for debugging and reporting possible bugs to us.
+If Expo couldn't deliver the message to the Android or iOS push notification service, the receipt's details may also include service-specific information. This is useful mostly for debugging and reporting possible bugs to Expo.

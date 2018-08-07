@@ -22,7 +22,7 @@ Here are a couple examples of the use of `GLView` on Snack:
 -   [Rotating red box with THREE.js](https://snack.expo.io/rkpPMg8ie)
 -   [Game of Life with REGL](https://snack.expo.io/HkjUrfIje)
 
-The [@community/gl-test](https://expo.io/@community/gl-test) Expo app demonstrates a number of example scenes. The image below is a low-quality capture, try the app on Expo for the best-quality experience. The source code for these scenes is available [here](https://github.com/exponent/gl-test/tree/master/Scenes)
+The [@community/gl-test](https://expo.io/@community/gl-test) Expo app demonstrates a number of example scenes. The image below is a low-quality capture, try the app on Expo for the best-quality experience. The source code for these scenes is available [here](https://github.com/expo/gl-test/tree/master/Scenes)
 
 ![](./gl-test.gif)
 
@@ -51,6 +51,6 @@ The following WebGLRenderContext methods are currently unimplemented:
   - `getVertexAttrib`
   - `getVertexAttribOffset`
 
-`texImage2D` only supports the 9-argument form. The last argument must either be an ArrayBuffer with the texture data as in the WebGL spec, an `Expo.Asset` refering to an image to use as the source for the texture, or null. See [gl-test](https://github.com/exponent/gl-test/blob/deedfac1b7b6f9c9ce6e42a3b51700cf47da773c/Scenes/BasicTextureScene.js#L85-L88) for an example of using image assets as OpenGL textures.
+`texImage2D` only supports the 9-argument form. The last argument must either be an ArrayBuffer with the texture data as in the WebGL spec, an `Expo.Asset` refering to an image to use as the source for the texture, or null. See [gl-test](https://github.com/expo/gl-test/blob/deedfac1b7b6f9c9ce6e42a3b51700cf47da773c/Scenes/BasicTextureScene.js#L85-L88) for an example of using image assets as OpenGL textures.
 
 For efficiency reasons the current implementations of the methods don't perform type or bounds checking on their arguments. So, passing invalid arguments could cause a native crash. We plan to update the API to perform argument checking in upcoming SDK versions. Currently the priority for error checking is low since engines generally don't rely on the OpenGL API to perform argument checking and, even otherwise, checks performed by the underlying OpenGL ES implementation are often sufficient.
