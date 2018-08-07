@@ -181,7 +181,7 @@ This API does not require any authentication.
 Here's an hello world request done with curl (replace with your push token):
 
 ```bash
-curl -H "Content-Type: application/json" -X POST https://exp.host/--/api/v2/push/send -d '{
+curl -H "Content-Type: application/json" -X POST "https://exp.host/--/api/v2/push/send" -d '{
   "to": "ExponentPushToken[xxxxxxxxxxxxxxxxxxxxxx]",
   "title":"hello",
   "body": "world"
