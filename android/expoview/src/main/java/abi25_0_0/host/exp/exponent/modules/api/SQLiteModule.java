@@ -12,7 +12,11 @@ import abi25_0_0.com.facebook.react.bridge.ReadableType;
 import abi25_0_0.com.facebook.react.bridge.WritableNativeArray;
 
 import android.database.Cursor;
+import android.database.sqlite.SQLiteCursor;
+import android.database.sqlite.SQLiteCursorDriver;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteDirectCursorDriver;
+import android.database.sqlite.SQLiteQuery;
 import android.database.sqlite.SQLiteStatement;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -129,7 +133,26 @@ public class SQLiteModule extends ReactContextBaseJavaModule {
                                                                   SQLiteDatabase db) {
     Cursor cursor = null;
     try {
-      cursor = db.rawQuery(sql, bindArgs);
+      // From https://github.com/aosp-mirror/platform_frameworks_base/blob/4b1a8f46d6ec55796bf77fd8921a5a242a219278/core/java/android/database/sqlite/SQLiteDirectCursorDriver.java#L28
+      String editTable = null;
+      SQLiteCursorDriver driver = new SQLiteDirectCursorDriver(db, sql, editTable, null);
+      SQLiteQuery query = new SQLiteQuery(db, sql, null);
+      try {
+        if (bindArgs != null) {
+          for (int i = bindArgs.length; i != 0; i--) {
+            if (bindArgs[i - 1] == null) {
+              query.bindNull(i);
+            } else {
+              query.bindString(i, bindArgs[i - 1]);
+            }
+          }
+        }
+      } catch(RuntimeException ex) {
+        query.close();
+        throw ex;
+      }
+      cursor = new SQLiteCursor(driver, editTable, query);
+      
       int numRows = cursor.getCount();
       if (numRows == 0) {
         return EMPTY_RESULT;
