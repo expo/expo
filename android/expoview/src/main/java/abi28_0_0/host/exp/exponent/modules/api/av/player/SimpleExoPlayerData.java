@@ -253,7 +253,17 @@ class SimpleExoPlayerData extends PlayerData
   }
 
   @Override
+  public void onSeekProcessed() {
+
+  }
+
+  @Override
   public void onRepeatModeChanged(int repeatMode) {
+  }
+
+  @Override
+  public void onShuffleModeEnabledChanged(boolean shuffleModeEnabled) {
+
   }
 
   @Override
@@ -291,7 +301,7 @@ class SimpleExoPlayerData extends PlayerData
   }
 
   @Override
-  public void onPositionDiscontinuity() {
+  public void onPositionDiscontinuity(int reason) {
 
   }
 

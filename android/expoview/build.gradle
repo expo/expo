@@ -229,7 +229,7 @@ dependencies {
   api 'commons-io:commons-io:1.3.2'
   // Newer version introduces dependency versions conflict
   // on 'com.android.support:support-annotations'
-  api 'com.google.android.exoplayer:exoplayer:r2.5.4'
+  api 'com.google.android.exoplayer:exoplayer:2.6.1'
   api 'me.leolin:ShortcutBadger:1.1.4@aar'
   api 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
   api 'com.theartofdev.edmodo:android-image-cropper:2.4.7'
