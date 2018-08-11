@@ -3,6 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: docs
+  namespace: ${NAMESPACE}
   labels:
     app: docs
 spec:
@@ -25,7 +26,7 @@ spec:
       restartPolicy: Always
       containers:
         - name: docs
-          image: "gcr.io/exponentjs/exponent-docs-v2:${TAG}"
+          image: "${IMAGE}"
           ports:
           - containerPort: 80
             name: http
@@ -49,6 +50,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: docs
+  namespace: ${NAMESPACE}
   labels:
     app: docs
 spec:
@@ -63,6 +65,7 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: docs
+  namespace: ${NAMESPACE}
   labels:
     app: docs
     ssl: "true"
