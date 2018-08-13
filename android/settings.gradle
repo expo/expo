@@ -4,6 +4,27 @@ include ':tools'
 include ':ReactAndroid'
 project(':ReactAndroid').projectDir = new File(rootDir, 'ReactAndroid')
 
+include ':expoview-abi23_0_0'
+project(':expoview-abi23_0_0').projectDir = new File(rootDir, 'versioned-abis/expoview-abi23_0_0')
+
+include ':expoview-abi24_0_0'
+project(':expoview-abi24_0_0').projectDir = new File(rootDir, 'versioned-abis/expoview-abi24_0_0')
+
+include ':expoview-abi25_0_0'
+project(':expoview-abi25_0_0').projectDir = new File(rootDir, 'versioned-abis/expoview-abi25_0_0')
+
+include ':expoview-abi26_0_0'
+project(':expoview-abi26_0_0').projectDir = new File(rootDir, 'versioned-abis/expoview-abi26_0_0')
+
+include ':expoview-abi27_0_0'
+project(':expoview-abi27_0_0').projectDir = new File(rootDir, 'versioned-abis/expoview-abi27_0_0')
+
+include ':expoview-abi28_0_0'
+project(':expoview-abi28_0_0').projectDir = new File(rootDir, 'versioned-abis/expoview-abi28_0_0')
+
+include ':expoview-abi29_0_0'
+project(':expoview-abi29_0_0').projectDir = new File(rootDir, 'versioned-abis/expoview-abi29_0_0')
+
 // Universal modules
 
 def modulesDir = new File(rootDir, "../packages")

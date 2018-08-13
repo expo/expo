@@ -189,6 +189,10 @@ dependencies {
     exclude group: 'com.squareup.okhttp3', module: 'okhttp'
     exclude group: 'com.squareup.okhttp3', module: 'okhttp-urlconnection'
   }
+  implementation(project(':expoview-abi29_0_0')) {
+    exclude group: 'com.squareup.okhttp3', module: 'okhttp'
+    exclude group: 'com.squareup.okhttp3', module: 'okhttp-urlconnection'
+  }
   // WHEN_DISTRIBUTING_REMOVE_TO_HERE
 }
 

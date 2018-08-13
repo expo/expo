@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="wrap_content"
+  android:layout_height="wrap_content"
+  android:layout_gravity="top"
+  android:paddingTop="10dp"
+  android:paddingBottom="10dp"
+  android:gravity="top"
+  android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/error_console_item_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/error_header"
+        android:textColor="@color/errorMessage"
+        android:textSize="14sp"/>
+
+    <TextView
+        android:id="@+id/error_console_item_stack_preview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="14sp"/>
+
+    <TextView
+        android:id="@+id/error_console_item_timestamp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="12sp"/>
+</LinearLayout>
