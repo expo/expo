@@ -87,6 +87,23 @@ dependencies {
   api 'com.android.support:multidex:1.0.3'
 
   api 'host.exp:reactandroid-abi29_0_0:1.0.0'
+  api 'host.exp.exponent:expo-gl-abi29_0_0:1.0.0'
+  api 'host.exp.exponent:expo-face-detector-abi29_0_0:1.0.0'
+  api 'host.exp.exponent:expo-sms-abi29_0_0:1.0.0'
+  api 'host.exp.exponent:expo-face-detector-interface-abi29_0_0:1.0.0'
+  api 'host.exp.exponent:expo-permissions-interface-abi29_0_0:1.0.0'
+  api 'host.exp.exponent:expo-file-system-interface-abi29_0_0:1.0.0'
+  api 'host.exp.exponent:expo-react-native-adapter-abi29_0_0:1.0.0'
+  api 'host.exp.exponent:expo-constants-interface-abi29_0_0:1.0.0'
+  api 'host.exp.exponent:expo-sensors-interface-abi29_0_0:1.0.0'
+  api 'host.exp.exponent:expo-camera-interface-abi29_0_0:1.0.0'
+  api 'host.exp.exponent:expo-permissions-abi29_0_0:1.0.0'
+  api 'host.exp.exponent:expo-file-system-abi29_0_0:1.0.0'
+  api 'host.exp.exponent:expo-constants-abi29_0_0:1.0.0'
+  api 'host.exp.exponent:expo-sensors-abi29_0_0:1.0.0'
+  api 'host.exp.exponent:expo-camera-abi29_0_0:1.0.0'
+  api 'host.exp.exponent:expo-core-abi29_0_0:1.0.0'
+  api 'host.exp.exponent:expo-gl-abi29_0_0:1.0.0'
 
   // React native dependencies
   // We use a different version of appcompat
