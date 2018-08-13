@@ -5,7 +5,10 @@
   "main": "index.js",
   "keywords": [
     "react-native",
-    "expo"
+    "expo",
+    "face-detector",
+    "face",
+    "detection"
   ],
   "homepage": "https://docs.expo.io/",
   "author": "650 Industries, Inc.",

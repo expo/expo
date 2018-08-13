@@ -5,7 +5,8 @@
   "main": "index.js",
   "keywords": [
     "react-native",
-    "expo"
+    "expo",
+    "adapter"
   ],
   "homepage": "https://docs.expo.io/",
   "author": "650 Industries, Inc.",
@@ -19,8 +20,7 @@
     "expo-permissions-interface": "^1.0.0",
     "lodash.omit": "^4.5.0",
     "lodash.pick": "^4.4.0",
-    "prop-types": "^15.6.1",
-    "react": "^16.3"
+    "prop-types": "^15.6.1"
   },
   "devDependencies": {
     "babel-preset-expo": "^4.0.0"

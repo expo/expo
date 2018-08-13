@@ -1,11 +1,12 @@
 {
   "name": "expo-constants-interface",
   "version": "1.0.0",
-  "description": "Expo Module Template standalone module",
+  "description": "Expo Constants interface package",
   "main": "index.js",
   "keywords": [
     "react-native",
-    "expo"
+    "expo",
+    "constants"
   ],
   "homepage": "https://docs.expo.io/",
   "author": "650 Industries, Inc.",

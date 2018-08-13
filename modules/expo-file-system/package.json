@@ -5,7 +5,9 @@
   "main": "index.js",
   "keywords": [
     "react-native",
-    "expo"
+    "expo",
+    "file-system",
+    "file"
   ],
   "homepage": "https://docs.expo.io/",
   "author": "650 Industries, Inc.",

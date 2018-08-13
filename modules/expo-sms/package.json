@@ -5,7 +5,8 @@
   "main": "index.js",
   "keywords": [
     "react-native",
-    "expo"
+    "expo",
+    "sms"
   ],
   "homepage": "https://docs.expo.io/",
   "author": "650 Industries, Inc.",

@@ -5,7 +5,13 @@
   "main": "index.js",
   "keywords": [
     "react-native",
-    "expo"
+    "expo",
+    "sensors",
+    "accelerometer",
+    "devicemotion",
+    "gyroscope",
+    "magnetometer",
+    "pedometer"
   ],
   "homepage": "https://docs.expo.io/",
   "author": "650 Industries, Inc.",

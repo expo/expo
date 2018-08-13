@@ -1,11 +1,12 @@
 {
   "name": "expo-permissions",
   "version": "1.0.0",
-  "description": "Expo Module Template standalone universal module",
+  "description": "Expo Permissions standalone universal module",
   "main": "index.js",
   "keywords": [
     "react-native",
-    "expo"
+    "expo",
+    "permissions"
   ],
   "homepage": "https://docs.expo.io/",
   "author": "650 Industries, Inc.",
