@@ -112,6 +112,7 @@
       android:windowSoftInputMode="adjustResize">
       <!-- ADD DETACH SCHEME HERE -->
       <!-- ADD DETACH INTENT FILTERS HERE -->
+      <!-- ADD DETACH APP SPECIFIC INTENT FILTERS -->
     </activity>
 
     <activity
@@ -121,6 +122,7 @@
       android:theme="@style/Theme.Exponent.Splash"
       android:windowSoftInputMode="adjustResize">
       <!-- ADD SHELL INTENT FILTERS HERE -->
+      <!-- ADD SHELL APP SPECIFIC INTENT FILTERS -->
     </activity>
 
     <activity
