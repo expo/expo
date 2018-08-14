@@ -11,7 +11,6 @@ import android.support.media.ExifInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Base64;
 import android.webkit.MimeTypeMap;
@@ -24,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.Objects;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
@@ -54,7 +54,7 @@ public class ImagePickerModule extends ExpoKernelServiceConsumerBaseModule imple
   static final int REQUEST_LAUNCH_CAMERA = 1;
   static final int REQUEST_LAUNCH_IMAGE_LIBRARY = 2;
 
-  static final int DEFAULT_QUALITY = 100;
+  private static final int DEFAULT_QUALITY = 100;
 
   private Uri mCameraCaptureURI;
   private Promise mPromise;
@@ -68,7 +68,7 @@ public class ImagePickerModule extends ExpoKernelServiceConsumerBaseModule imple
   final String OPTION_BASE64 = "base64";
   final String OPTION_EXIF = "exif";
 
-  private int quality = 100;
+  private Integer quality = null;
   private Boolean allowsEditing = false;
   private ReadableArray forceAspect = null;
   private Boolean base64 = false;
@@ -92,8 +92,6 @@ public class ImagePickerModule extends ExpoKernelServiceConsumerBaseModule imple
   private boolean readOptions(final ReadableMap options, final Promise promise) {
     if (options.hasKey(OPTION_QUALITY)) {
       quality = (int) (options.getDouble(OPTION_QUALITY) * 100);
-    } else {
-      quality = DEFAULT_QUALITY;
     }
     allowsEditing = options.hasKey(OPTION_ALLOWS_EDITING) && options.getBoolean(OPTION_ALLOWS_EDITING);
     if (options.hasKey(OPTION_MEDIA_TYPES)) {
@@ -289,7 +287,7 @@ public class ImagePickerModule extends ExpoKernelServiceConsumerBaseModule imple
               cropImage
                   .setOutputUri(fileUri)
                   .setOutputCompressFormat(compressFormat)
-                  .setOutputCompressQuality(quality)
+                  .setOutputCompressQuality(quality == null ? DEFAULT_QUALITY : quality)
                   .start(Exponent.getInstance().getCurrentActivity());
             } else {
               // On some devices this has worked without decoding the URI and on some it has worked
@@ -326,14 +324,13 @@ public class ImagePickerModule extends ExpoKernelServiceConsumerBaseModule imple
                 return;
               }
               // create a cache file for an image picked from gallery
-              if (!new File(path).exists()) {
-                writeImage(bmp, path, compressFormat);
-              }
-
-              ByteArrayOutputStream out = null;
-              if (base64) {
-                out = new ByteArrayOutputStream();
-                bmp.compress(Bitmap.CompressFormat.JPEG, quality, out);
+              ByteArrayOutputStream out = base64 ? new ByteArrayOutputStream() : null;
+              File file = new File(path);
+              if (quality == null) {
+                saveImage(bmp, compressFormat, file, out);
+              } else {
+                // No modification requested
+                copyImage(uri, file, out);
               }
 
               returnImageResult(exifData, fileUri.toString(), bmp.getWidth(), bmp.getHeight(), out, promise);
@@ -361,6 +358,54 @@ public class ImagePickerModule extends ExpoKernelServiceConsumerBaseModule imple
         }
       }
     });
+  }
+
+  /**
+   * Compress and save the {@code bitmap} to {@code file}, optionally saving it in {@code out} if
+   * base64 is requested.
+   *
+   * @param bitmap bitmap to be saved
+   * @param compressFormat compression format to save the image in
+   * @param file file to save the image to
+   * @param out if not null, the stream to save the image to
+   */
+  private void saveImage(Bitmap bitmap, Bitmap.CompressFormat compressFormat, File file,
+                         ByteArrayOutputStream out) {
+    if (!file.exists()) {
+      writeImage(bitmap, file.getPath(), compressFormat);
+    }
+
+    if (base64) {
+      bitmap.compress(Bitmap.CompressFormat.JPEG, quality, out);
+    }
+  }
+
+  /**
+   * Copy the image file from {@code originalUri} to {@code file}, optionally saving it in
+   * {@code out} if base64 is requested.
+   *
+   * @param originalUri uri to the file to copy the data from
+   * @param file file to save the image to
+   * @param out if not null, the stream to save the image to
+   */
+  private void copyImage(Uri originalUri, File file, ByteArrayOutputStream out)
+      throws IOException {
+    InputStream is = Objects.requireNonNull(
+        mScopedContext.getApplicationContext().getContentResolver().openInputStream(originalUri));
+
+    if (out != null) {
+      IoUtils.copyStream(is, out, null);
+    }
+
+    if (!file.exists()) {
+      try (FileOutputStream fos = new FileOutputStream(file)) {
+        if (out != null) {
+          fos.write(out.toByteArray());
+        } else {
+          IoUtils.copyStream(is, fos, null);
+        }
+      }
+    }
   }
 
   private void handleCropperResult(Intent intent, Promise promise, WritableMap exifData) {
