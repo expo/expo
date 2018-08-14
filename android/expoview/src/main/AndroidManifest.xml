@@ -18,6 +18,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.MANAGE_DOCUMENTS" />
     <uses-permission android:name="android.permission.USE_FINGERPRINT" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
 
     <!-- These require runtime permissions on M -->
     <!-- All of these must be in the blacklist in xdl/src/detach/AndroidShellApp.js as well -->
