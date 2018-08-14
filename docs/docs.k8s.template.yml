@@ -26,7 +26,6 @@ spec:
       containers:
         - name: docs
           image: "gcr.io/exponentjs/exponent-docs-v2:${TAG}"
-          imagePullPolicy: Always
           ports:
           - containerPort: 80
             name: http
