@@ -1,6 +1,6 @@
 {
   "name": "expo-gl",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Expo GL standalone universal module",
   "main": "index.js",
   "keywords": [
@@ -19,10 +19,10 @@
     "react-native": "^0.55.4"
   },
   "dependencies": {
-    "expo-core": "^1.0.0",
-    "expo-camera-interface": "^1.0.0",
-    "expo-file-system-interface": "^1.0.0",
-    "expo-gl-cpp": "^1.0.0"
+    "expo-core": "^1.0.1",
+    "expo-camera-interface": "^1.0.1",
+    "expo-file-system-interface": "^1.0.1",
+    "expo-gl-cpp": "^1.0.1"
   },
   "devDependencies": {
     "babel-preset-expo": "^4.0.0"
