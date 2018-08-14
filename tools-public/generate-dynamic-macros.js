@@ -22,7 +22,7 @@ const ProjectVersions = require('./project-versions');
 
 const EXPONENT_DIR = process.env.EXPONENT_DIR || path.join(__dirname, '..');
 
-const EXPO_CLIENT_UNIVERSAL_MODULES = Modules.getAllForPlatform('ios');
+const EXPO_CLIENT_UNIVERSAL_MODULES = Modules.getAllNativeForExpoClientOnPlatform('ios');
 
 // We need these permissions when testing but don't want them
 // ending up in our release.
