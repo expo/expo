@@ -32,7 +32,7 @@ allprojects {
     jcenter()
     maven {
       // Local Maven repo containing AARs with JSC built for Android
-      url "$rootDir/../js/node_modules/jsc-android/android"
+      url "$rootDir/../home/node_modules/jsc-android/android"
     }
     flatDir {
       dirs 'libs'

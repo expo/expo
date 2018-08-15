@@ -1,0 +1,47 @@
+{
+  expo: {
+    name: "expo-home",
+    description: "",
+    slug: "home",
+    privacy: "unlisted",
+
+    // When publishing the sdkVersion needs to be set to the target sdkVersion.
+    // The Exponent client will load it as UNVERSIONED, but the server uses this field
+    // to know which clients to serve the bundle to.
+    sdkVersion: "29.0.0",
+
+    // Update this each time you publish so you're able to relate published
+    // bundles to specific commits in the repo
+    version: "29.0.0",
+    
+    orientation: "portrait",
+    platforms: [
+      "ios",
+      "android"
+    ],
+    primaryColor: "#cccccc",
+    icon: "https://s3.amazonaws.com/exp-brand-assets/ExponentEmptyManifest_192.png",
+    updates: {
+      checkAutomatically: "ON_LOAD",
+      fallbackToCacheTimeout: 0
+    },
+    ios: {
+      supportsTablet: true,
+      bundleIdentifier: "host.exp.exponent",
+      publishBundlePath: "../ios/Exponent/Supporting/kernel.ios.bundle"
+    },
+    android: {
+      package: "host.exp.exponent",
+      publishBundlePath: "../android/app/src/main/assets/kernel.android.bundle"
+    },
+    scheme: "exp",
+    extra: {
+      amplitudeApiKey: "081e5ec53f869b440b225d5e40ec73f9"
+    },
+    isKernel: true,
+    kernel: {
+      iosManifestPath: "../ios/Exponent/Supporting/kernel-manifest.json",
+      androidManifestPath: "../android/app/src/main/assets/kernel-manifest.json"
+    }
+  }
+}
