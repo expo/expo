@@ -22,13 +22,13 @@ exports.startReactNativeServer = function startReactNativeServer(callback) {
   }
 
   if (!isInUniverse) {
-    reactNativePath = path.join(rootPath, 'js/node_modules/react-native/');
+    reactNativePath = path.join(rootPath, 'home/node_modules/react-native/');
   }
 
   let cliPath = path.join(reactNativePath, 'local-cli/cli.js');
 
   let exponentPath = rootPath;
-  let exponentReactPath = path.join(exponentPath, 'js');
+  let exponentReactPath = path.join(exponentPath, 'home');
   let exponentAssetsPath = path.join(
     exponentPath,
     'ios/Exponent/Images.xcassets'

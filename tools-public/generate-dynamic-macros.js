@@ -153,9 +153,9 @@ const macrosFuncs = {
 
     let projectRoot;
     if (isInUniverse && useLegacyWorkflow) {
-      projectRoot = path.join(EXPONENT_DIR, 'js', '__internal__');
+      projectRoot = path.join(EXPONENT_DIR, 'home', '__internal__');
     } else {
-      projectRoot = path.join(EXPONENT_DIR, 'js');
+      projectRoot = path.join(EXPONENT_DIR, 'home');
     }
 
     let manifest;
@@ -471,7 +471,7 @@ async function writeIOSTemplatesAsync(
       path.join(EXPONENT_DIR, 'ios', '__github__', 'Podfile'),
       {
         TARGET_NAME: 'Exponent',
-        REACT_NATIVE_PATH: '../js/node_modules/react-native',
+        REACT_NATIVE_PATH: '../home/node_modules/react-native',
         UNIVERSAL_MODULES: generateUniversalModulesConfig(
           EXPO_CLIENT_UNIVERSAL_MODULES,
           '../modules/'
