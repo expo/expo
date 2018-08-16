@@ -33,7 +33,7 @@ To bundle assets in your binary, use the [assetBundlePatterns](./configuration.h
 
 Images with paths matching the given patterns will be bundled into your native binaries next time you run `exp build`.
 
-> **Note:** This behavior does not apply to detached ExpoKit projects. We're working on that.
+> **Note:** Expo SDK 27 is the first SDK where this functionality is supported in detached [ExpoKit](../expokit) projects. If you have an ExpoKit app and you are upgrading from an older SDK, follow these [one-time instructions](https://blog.expo.io/expo-sdk-v27-0-0-is-now-available-898bf1e5b0e4) to add support for bundled assets.
 
 ## Listen for changes in network availability
 
