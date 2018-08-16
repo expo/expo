@@ -41,9 +41,9 @@ import java.util.Map;
 
 public class ReactAndroidCodeTransformer {
 
-  private static final String REACT_COMMON_SOURCE_ROOT = "../react-native-lab/react-native/ReactCommon";
+  private static final String REACT_COMMON_SOURCE_ROOT = "react-native-lab/react-native/ReactCommon";
   private static final String REACT_COMMON_DEST_ROOT = "android/ReactCommon";
-  private static final String REACT_ANDROID_SOURCE_ROOT = "../react-native-lab/react-native/ReactAndroid";
+  private static final String REACT_ANDROID_SOURCE_ROOT = "react-native-lab/react-native/ReactAndroid";
   private static final String REACT_ANDROID_DEST_ROOT = "android/ReactAndroid";
   private static final String SOURCE_PATH = "src/main/java/com/facebook/react/";
 
