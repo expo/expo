@@ -500,7 +500,7 @@ async function writeIOSTemplatesAsync(
           EXPO_CLIENT_UNIVERSAL_MODULES,
           '../../modules'
         ),
-        REACT_NATIVE_PATH: '../../../react-native-lab/react-native',
+        REACT_NATIVE_PATH: '../../react-native-lab/react-native',
       }
     );
   }
