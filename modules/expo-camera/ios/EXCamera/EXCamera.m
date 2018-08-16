@@ -5,7 +5,7 @@
 #import <EXCamera/EXCameraManager.h>
 #import <EXPermissionsInterface/EXPermissionsInterface.h>
 #import <EXFileSystemInterface/EXFileSystemInterface.h>
-#import <EXFaceDetectorInterface/EXFaceDetectorManager.h>
+#import <EXFaceDetectorInterface/EXFaceDetectorManagerProvider.h>
 #import <EXCore/EXAppLifecycleService.h>
 #import <EXCore/EXUtilities.h>
 
@@ -831,23 +831,28 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
 
 - (id)createFaceDetectorManager
 {
-  id <EXFaceDetectorManager> faceDetector = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXFaceDetectorManager)];
-  if (faceDetector) {
-    __weak EXCamera *weakSelf = self;
-    [faceDetector setOnFacesDetected:^(NSArray<NSDictionary *> *faces) {
-      __strong EXCamera *strongSelf = weakSelf;
-      if (strongSelf) {
-        if (strongSelf.onFacesDetected) {
-          strongSelf.onFacesDetected(@{
-                                       @"type": @"face",
-                                       @"faces": faces
-                                       });
+  id <EXFaceDetectorManagerProvider> faceDetectorProvider = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXFaceDetectorManagerProvider)];
+
+  if (faceDetectorProvider) {
+    id <EXFaceDetectorManager> faceDetector = [faceDetectorProvider createFaceDetectorManager];
+    if (faceDetector) {
+      __weak EXCamera *weakSelf = self;
+      [faceDetector setOnFacesDetected:^(NSArray<NSDictionary *> *faces) {
+        __strong EXCamera *strongSelf = weakSelf;
+        if (strongSelf) {
+          if (strongSelf.onFacesDetected) {
+            strongSelf.onFacesDetected(@{
+                                         @"type": @"face",
+                                         @"faces": faces
+                                         });
+          }
         }
-      }
-    }];
-    [faceDetector setSessionQueue:_sessionQueue];
+      }];
+      [faceDetector setSessionQueue:_sessionQueue];
+    }
+    return faceDetector;
   }
-  return faceDetector;
+  return nil;
 }
 
 @end

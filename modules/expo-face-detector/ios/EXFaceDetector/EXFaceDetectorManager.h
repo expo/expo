@@ -10,9 +10,9 @@
 #import <AVFoundation/AVFoundation.h>
 #import <GoogleMobileVision/GoogleMobileVision.h>
 #import <GoogleMVDataOutput/GoogleMVDataOutput.h>
-#import <EXCore/EXInternalModule.h>
+#import <EXFaceDetectorInterface/EXFaceDetectorManager.h>
 
-@interface EXFaceDetectorManager : NSObject <EXInternalModule>
+@interface EXFaceDetectorManager : NSObject <EXFaceDetectorManager>
 
 - (void)setOnFacesDetected:(void (^)(NSArray<NSDictionary *> *))onFacesDetected;
 

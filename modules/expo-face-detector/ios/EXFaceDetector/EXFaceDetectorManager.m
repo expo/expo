@@ -4,7 +4,6 @@
 //
 //  Created by Stanisław Chmiela on 22.11.2017.
 //  Copyright © 2017 650 Industries. All rights reserved.
-//
 
 #import <EXFaceDetector/EXFaceEncoder.h>
 #import <EXFaceDetector/EXFaceDetectorUtils.h>
@@ -31,12 +30,6 @@ static const NSString *runClassificationsKeyPath = @"runClassifications";
 @end
 
 @implementation EXFaceDetectorManager
-
-EX_REGISTER_MODULE();
-
-+ (const NSArray<Protocol *> *)exportedInterfaces {
-  return @[@protocol(EXFaceDetectorManager)];
-}
 
 static NSDictionary *defaultFaceDetectorOptions = nil;
 
