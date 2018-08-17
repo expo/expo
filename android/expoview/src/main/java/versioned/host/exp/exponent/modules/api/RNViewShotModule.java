@@ -73,7 +73,7 @@ public class RNViewShotModule extends ReactContextBaseJavaModule {
       uiManager.addUIBlock(new ViewShot(tag, format, compressFormat, quality, width, height, tmpFile, result, promise));
     }
     catch (Exception e) {
-      promise.reject(ViewShot.ERROR_UNABLE_TO_SNAPSHOT, "Failed to snapshot view tag "+tag);
+      promise.reject(ViewShot.ERROR_UNABLE_TO_SNAPSHOT, "Failed to snapshot view tag "+ tag + ". " + e.getMessage(), e);
     }
   }
 
