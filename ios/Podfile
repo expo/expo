@@ -40,6 +40,8 @@ target 'Exponent' do
     :path => "../modules/expo-file-system/ios"
   pod 'EXPermissions',
     :path => "../modules/expo-permissions/ios"
+  pod 'EXSegment',
+    :path => "../modules/expo-analytics-segment/ios"
   pod 'EXMediaLibrary',
     :path => "../modules/expo-media-library/ios"
   pod 'EXCameraInterface',

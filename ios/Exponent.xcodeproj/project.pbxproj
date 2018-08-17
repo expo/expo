@@ -244,7 +244,6 @@
 		B5FB74AF1FF6DADC001C764B /* EXNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73951FF6DADB001C764B /* EXNotifications.m */; };
 		B5FB74B01FF6DADC001C764B /* EXScreenOrientation.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73971FF6DADB001C764B /* EXScreenOrientation.m */; };
 		B5FB74B11FF6DADC001C764B /* EXSecureStore.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73991FF6DADB001C764B /* EXSecureStore.m */; };
-		B5FB74B21FF6DADC001C764B /* EXSegment.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB739B1FF6DADB001C764B /* EXSegment.m */; };
 		B5FB74B31FF6DADC001C764B /* EXSpeech.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB739D1FF6DADB001C764B /* EXSpeech.m */; };
 		B5FB74B41FF6DADC001C764B /* EXSQLite.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB739F1FF6DADB001C764B /* EXSQLite.m */; };
 		B5FB74B51FF6DADC001C764B /* EXUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73A11FF6DADB001C764B /* EXUtil.m */; };
@@ -815,8 +814,6 @@
 		B5FB73971FF6DADB001C764B /* EXScreenOrientation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXScreenOrientation.m; sourceTree = "<group>"; };
 		B5FB73981FF6DADB001C764B /* EXSecureStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXSecureStore.h; sourceTree = "<group>"; };
 		B5FB73991FF6DADB001C764B /* EXSecureStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXSecureStore.m; sourceTree = "<group>"; };
-		B5FB739A1FF6DADB001C764B /* EXSegment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXSegment.h; sourceTree = "<group>"; };
-		B5FB739B1FF6DADB001C764B /* EXSegment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXSegment.m; sourceTree = "<group>"; };
 		B5FB739C1FF6DADB001C764B /* EXSpeech.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXSpeech.h; sourceTree = "<group>"; };
 		B5FB739D1FF6DADB001C764B /* EXSpeech.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXSpeech.m; sourceTree = "<group>"; };
 		B5FB739E1FF6DADB001C764B /* EXSQLite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXSQLite.h; sourceTree = "<group>"; };
@@ -1695,8 +1692,6 @@
 				B5FB73971FF6DADB001C764B /* EXScreenOrientation.m */,
 				B5FB73981FF6DADB001C764B /* EXSecureStore.h */,
 				B5FB73991FF6DADB001C764B /* EXSecureStore.m */,
-				B5FB739A1FF6DADB001C764B /* EXSegment.h */,
-				B5FB739B1FF6DADB001C764B /* EXSegment.m */,
 				B5FB739C1FF6DADB001C764B /* EXSpeech.h */,
 				B5FB739D1FF6DADB001C764B /* EXSpeech.m */,
 				B5FB739E1FF6DADB001C764B /* EXSQLite.h */,
@@ -2476,7 +2471,6 @@
 				B5FB745C1FF6DADB001C764B /* EXContainerView.m in Sources */,
 				B5AC39AD1E95A90B00540AA7 /* EXProvisioningProfile.m in Sources */,
 				BB5BD32420AEFCB4007E02FC /* REABezierNode.m in Sources */,
-				B5FB74B21FF6DADC001C764B /* EXSegment.m in Sources */,
 				7846B21F20355E9900638E43 /* RNSVGSolidColorBrush.m in Sources */,
 				7834361D205B8C5F00DD28C3 /* AIRMapManager.m in Sources */,
 				07E26F311FFFFB55004667A1 /* EXCalendar.m in Sources */,

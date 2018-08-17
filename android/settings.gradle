@@ -65,3 +65,6 @@ project(":expo-print").projectDir = new File(rootDir, "../modules/expo-print/and
 
 include ":expo-media-library"
 project(":expo-media-library").projectDir = new File(rootDir, "../modules/expo-media-library/android")
+
+include ":expo-analytics-segment"
+project(":expo-analytics-segment").projectDir = new File(rootDir, "../modules/expo-analytics-segment/android")
