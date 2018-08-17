@@ -118,6 +118,7 @@ dependencies {
   api 'host.exp.exponent:expo-permissions-interface:1.0.1'
   api 'host.exp.exponent:expo-constants:1.0.1'
   api 'host.exp.exponent:expo-constants-interface:1.0.1'
+  api 'host.exp.exponent:expo-image-loader-interface:1.0.0'
   api 'host.exp.exponent:expo-gl:1.0.1'
   api 'host.exp.exponent:expo-gl-cpp:1.0.1'
   api 'host.exp.exponent:expo-sms:1.0.1'
@@ -141,6 +142,7 @@ dependencies {
   api project(':expo-permissions-interface')
   api project(':expo-constants')
   api project(':expo-constants-interface')
+  api project(':expo-image-loader-interface')
   api project(':expo-gl')
   api project(':expo-gl-cpp')
   api project(':expo-sms')

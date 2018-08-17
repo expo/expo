@@ -56,6 +56,8 @@ target 'Exponent' do
     :path => "../modules/expo-file-system-interface/ios"
   pod 'EXPermissionsInterface',
     :path => "../modules/expo-permissions-interface/ios"
+  pod 'EXImageLoaderInterface',
+    :path => "../modules/expo-image-loader-interface/ios"
   pod 'EXFaceDetectorInterface',
     :path => "../modules/expo-face-detector-interface/ios"
   pod 'EXFaceDetector',
