@@ -21,10 +21,10 @@ Minimal Example:
 
 ```javascript
 
-    <FlatList
-      data=${"{"}[${"{"}key: 'a'${"}"}, ${"{"}key: 'b'${"}"}]${"}"}
-      renderItem=${"{"}(${"{"}item${"}"}) => <Text>${"{"}item.key${"}"}</Text>${"}"}
-    />
+<FlatList
+  data={[{key: 'a'}, {key: 'b'}]}
+  renderItem={({item}) => <Text>{item.key}</Text>}
+/>
 
 ```
 
@@ -36,60 +36,61 @@ More complex, multi-select example demonstrating `PureComponent` usage for perf 
 
 
 ```javascript
-    class MyListItem extends React.PureComponent ${"{"}
-      _onPress = () => ${"{"}
-        this.props.onPressItem(this.props.id);
-      ${"}"};
 
-      render() ${"{"}
-        const textColor = this.props.selected ? "red" : "black";
-        return (
-          <TouchableOpacity onPress=${"{"}this._onPress${"}"}>
-            <View>
-              <Text style=${"{"}${"{"} color: textColor ${"}"}${"}"}>
-                ${"{"}this.props.title${"}"}
-              </Text>
-            </View>
-          </TouchableOpacity>
-        );
-      ${"}"}
-    ${"}"}
+class MyListItem extends React.PureComponent {
+  _onPress = () => {
+    this.props.onPressItem(this.props.id);
+  };
 
-    class MultiSelectList extends React.PureComponent ${"{"}
-      state = ${"{"}selected: (new Map(): Map<string, boolean>)${"}"};
+  render() {
+    const textColor = this.props.selected ? "red" : "black";
+    return (
+      <TouchableOpacity onPress={this._onPress}>
+        <View>
+          <Text style={{ color: textColor }}>
+            {this.props.title}
+          </Text>
+        </View>
+      </TouchableOpacity>
+    );
+  }
+}
 
-      _keyExtractor = (item, index) => item.id;
+class MultiSelectList extends React.PureComponent {
+  state = {selected: (new Map(): Map<string, boolean>)};
 
-      _onPressItem = (id: string) => ${"{"}
-        // updater functions are preferred for transactional updates
-        this.setState((state) => ${"{"}
-          // copy the map rather than modifying state.
-          const selected = new Map(state.selected);
-          selected.set(id, !selected.get(id)); // toggle
-          return ${"{"}selected${"}"};
-        ${"}"});
-      ${"}"};
+  _keyExtractor = (item, index) => item.id;
 
-      _renderItem = (${"{"}item${"}"}) => (
-        <MyListItem
-          id=${"{"}item.id${"}"}
-          onPressItem=${"{"}this._onPressItem${"}"}
-          selected=${"{"}!!this.state.selected.get(item.id)${"}"}
-          title=${"{"}item.title${"}"}
-        />
-      );
+  _onPressItem = (id: string) => {
+    // updater functions are preferred for transactional updates
+    this.setState((state) => {
+      // copy the map rather than modifying state.
+      const selected = new Map(state.selected);
+      selected.set(id, !selected.get(id)); // toggle
+      return {selected};
+    });
+  };
 
-      render() ${"{"}
-        return (
-          <FlatList
-            data=${"{"}this.props.data${"}"}
-            extraData=${"{"}this.state${"}"}
-            keyExtractor=${"{"}this._keyExtractor${"}"}
-            renderItem=${"{"}this._renderItem${"}"}
-          />
-        );
-      ${"}"}
-    ${"}"}
+  _renderItem = ({item}) => (
+    <MyListItem
+      id={item.id}
+      onPressItem={this._onPressItem}
+      selected={!!this.state.selected.get(item.id)}
+      title={item.title}
+    />
+  );
+
+  render() {
+    return (
+      <FlatList
+        data={this.props.data}
+        extraData={this.state}
+        keyExtractor={this._keyExtractor}
+        renderItem={this._renderItem}
+      />
+    );
+  }
+}
 
 ```
 
