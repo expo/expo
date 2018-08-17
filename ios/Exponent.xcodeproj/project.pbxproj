@@ -316,7 +316,6 @@
 		CDBF79FA20868287009B25D6 /* EXStoreReview.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBF79F920868287009B25D6 /* EXStoreReview.m */; };
 		F1545BF920877E39002DAC67 /* EXMenuWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = F1545BF820877E39002DAC67 /* EXMenuWindow.m */; };
 		F167C43B209C7EE600F01382 /* EXUtilService.m in Sources */ = {isa = PBXBuildFile; fileRef = F167C43A209C7EE600F01382 /* EXUtilService.m */; };
-		F19BDA11206B877F00BE0843 /* EXMediaLibrary.m in Sources */ = {isa = PBXBuildFile; fileRef = F19BDA0F206B877F00BE0843 /* EXMediaLibrary.m */; };
 		F77DDB931E04AC1100624CA2 /* SafariServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F77DDB921E04AC1100624CA2 /* SafariServices.framework */; };
 /* End PBXBuildFile section */
 
@@ -965,8 +964,6 @@
 		F1545BF820877E39002DAC67 /* EXMenuWindow.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXMenuWindow.m; sourceTree = "<group>"; };
 		F167C439209C7EE600F01382 /* EXUtilService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXUtilService.h; sourceTree = "<group>"; };
 		F167C43A209C7EE600F01382 /* EXUtilService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXUtilService.m; sourceTree = "<group>"; };
-		F19BDA0F206B877F00BE0843 /* EXMediaLibrary.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXMediaLibrary.m; sourceTree = "<group>"; };
-		F19BDA10206B877F00BE0843 /* EXMediaLibrary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXMediaLibrary.h; sourceTree = "<group>"; };
 		F77DDB921E04AC1100624CA2 /* SafariServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SafariServices.framework; path = System/Library/Frameworks/SafariServices.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -1714,7 +1711,6 @@
 				B5FB73A51FF6DADB001C764B /* EXWebBrowser.m */,
 				B5FB73A61FF6DADB001C764B /* FBAds */,
 				B5FB73C91FF6DADB001C764B /* OAuthViewController */,
-				F174C8B9201E677600F434C9 /* MediaLibrary */,
 				B5FB73E81FF6DADB001C764B /* Standalone */,
 			);
 			path = Api;
@@ -2148,15 +2144,6 @@
 				BBD03192200011C9009F0434 /* RNAWSCognito.m */,
 			);
 			path = Cognito;
-			sourceTree = "<group>";
-		};
-		F174C8B9201E677600F434C9 /* MediaLibrary */ = {
-			isa = PBXGroup;
-			children = (
-				F19BDA10206B877F00BE0843 /* EXMediaLibrary.h */,
-				F19BDA0F206B877F00BE0843 /* EXMediaLibrary.m */,
-			);
-			path = MediaLibrary;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -2628,7 +2615,6 @@
 				B5FB74B61FF6DADC001C764B /* EXViewShot.m in Sources */,
 				78343619205B8C5F00DD28C3 /* AIRMapCalloutManager.m in Sources */,
 				7846B1FE20355E9900638E43 /* RNSVGUse.m in Sources */,
-				F19BDA11206B877F00BE0843 /* EXMediaLibrary.m in Sources */,
 				7846B20720355E9900638E43 /* RNSVGViewBox.m in Sources */,
 				BB50E89220B9C0D3003C752D /* RNTapHandler.m in Sources */,
 				BB5BD31D20AEFCB4007E02FC /* REAPropsNode.m in Sources */,

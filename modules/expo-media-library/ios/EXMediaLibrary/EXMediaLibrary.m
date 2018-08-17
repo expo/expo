@@ -1,21 +1,13 @@
-//
-//  EXMediaLibrary.m
-//  Exponent
-//
-//  Created by Tomasz Sapeta on 29.01.2018.
-//  Copyright © 2018 650 Industries. All rights reserved.
-//
+// Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "EXMediaLibrary.h"
-#import "EXModuleRegistryBinding.h"
-#import "EXScopedModuleRegistry.h"
-#import "EXCameraRollRequester.h"
-
+#import <EXMediaLibrary/EXMediaLibrary.h>
+#import <EXPermissions/EXCameraRollRequester.h>
+#import <EXCore/EXDefines.h>
 #import <EXFileSystemInterface/EXFileSystemInterface.h>
 #import <EXPermissions/EXPermissions.h>
 #import <Photos/Photos.h>
-#import <React/RCTUIManager.h>
 #import <MobileCoreServices/MobileCoreServices.h>
+#import <EXCore/EXEventEmitterService.h>
 
 NSString *const EXAssetMediaTypeAudio = @"audio";
 NSString *const EXAssetMediaTypePhoto = @"photo";
@@ -29,19 +21,21 @@ NSString *const EXMediaLibraryDidChangeEvent = @"mediaLibraryDidChange";
 
 @property (nonatomic, weak) id<EXPermissionsScopedModuleDelegate> kernelPermissionsServiceDelegate;
 @property (nonatomic, strong) PHFetchResult *allAssetsFetchResult;
+@property (nonatomic, weak) id<EXPermissionsInterface> permissionsManager;
+@property (nonatomic, weak) id<EXFileSystemInterface> fileSystem;
+@property (nonatomic, weak) id<EXEventEmitterService> eventEmitter;
 
 @end
 
 @implementation EXMediaLibrary
 
-EX_EXPORT_SCOPED_MODULE(ExponentMediaLibrary, PermissionsManager);
+EX_EXPORT_MODULE(ExponentMediaLibrary);
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId kernelServiceDelegate:(id<EXPermissionsScopedModuleDelegate>)kernelServiceInstance params:(NSDictionary *)params
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
-  if (self = [super initWithExperienceId:experienceId kernelServiceDelegate:kernelServiceInstance params:params]) {
-    _kernelPermissionsServiceDelegate = kernelServiceInstance;
-  }
-  return self;
+  _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
+  _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(EXEventEmitterService)];
+  _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXPermissionsInterface)];
 }
 
 - (dispatch_queue_t)methodQueue
@@ -83,10 +77,10 @@ EX_EXPORT_SCOPED_MODULE(ExponentMediaLibrary, PermissionsManager);
   return @[EXMediaLibraryDidChangeEvent];
 }
 
-RCT_REMAP_METHOD(createAssetAsync,
-                 createAssetFromLocalUri:(nonnull NSString *)localUri
-                 resolve:(RCTPromiseResolveBlock)resolve
-                 reject:(RCTPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(createAssetAsync,
+                    createAssetFromLocalUri:(nonnull NSString *)localUri
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
   if (![self _checkPermissions:reject]) {
     return;
@@ -105,8 +99,7 @@ RCT_REMAP_METHOD(createAssetAsync,
     reject(@"E_INVALID_URI", @"Provided localUri is not a valid URI", nil);
     return;
   }
-  id<EXFileSystemInterface> fileSystem = [self.bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
-  if (!([fileSystem permissionsForURI:assetUrl] & EXFileSystemPermissionRead)) {
+  if (!([_fileSystem permissionsForURI:assetUrl] & EXFileSystemPermissionRead)) {
     reject(@"E_FILESYSTEM_PERMISSIONS", [NSString stringWithFormat:@"File '%@' isn't readable.", assetUrl], nil);
     return;
   }
@@ -130,11 +123,11 @@ RCT_REMAP_METHOD(createAssetAsync,
   }];
 }
 
-RCT_REMAP_METHOD(addAssetsToAlbumAsync,
-                 addAssets:(NSArray<NSString *> *)assetIds
-                 toAlbum:(nonnull NSString *)albumId
-                 resolve:(RCTPromiseResolveBlock)resolve
-                 reject:(RCTPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(addAssetsToAlbumAsync,
+                    addAssets:(NSArray<NSString *> *)assetIds
+                    toAlbum:(nonnull NSString *)albumId
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
   if (![self _checkPermissions:reject]) {
     return;
@@ -149,11 +142,11 @@ RCT_REMAP_METHOD(addAssetsToAlbumAsync,
   }];
 }
 
-RCT_REMAP_METHOD(removeAssetsFromAlbumAsync,
-                 removeAssets:(NSArray<NSString *> *)assetIds
-                 fromAlbum:(nonnull NSString *)albumId
-                 resolve:(RCTPromiseResolveBlock)resolve
-                 reject:(RCTPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(removeAssetsFromAlbumAsync,
+                    removeAssets:(NSArray<NSString *> *)assetIds
+                    fromAlbum:(nonnull NSString *)albumId
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
   if (![self _checkPermissions:reject]) {
     return;
@@ -177,10 +170,10 @@ RCT_REMAP_METHOD(removeAssetsFromAlbumAsync,
   }];
 }
 
-RCT_REMAP_METHOD(deleteAssetsAsync,
-                 deleteAssets:(NSArray<NSString *>*)assetIds
-                 resolve:(RCTPromiseResolveBlock)resolve
-                 reject:(RCTPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(deleteAssetsAsync,
+                    deleteAssets:(NSArray<NSString *>*)assetIds
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
   if (![self _checkPermissions:reject]) {
     return;
@@ -199,8 +192,9 @@ RCT_REMAP_METHOD(deleteAssetsAsync,
   }];
 }
 
-RCT_EXPORT_METHOD(getAlbumsAsync:(RCTPromiseResolveBlock)resolve
-                  reject:(RCTPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getAlbumsAsync,
+                    getAlbums:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
   if (![self _checkPermissions:reject]) {
     return;
@@ -216,9 +210,9 @@ RCT_EXPORT_METHOD(getAlbumsAsync:(RCTPromiseResolveBlock)resolve
   resolve(albums);
 }
 
-RCT_REMAP_METHOD(getMomentsAsync,
-                 getMoments:(RCTPromiseResolveBlock)resolve
-                 reject:(RCTPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getMomentsAsync,
+                    getMoments:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
   if (![self _checkPermissions:reject]) {
     return;
@@ -234,10 +228,10 @@ RCT_REMAP_METHOD(getMomentsAsync,
   resolve(albums);
 }
 
-RCT_REMAP_METHOD(getAlbumAsync,
-                 getAlbumWithTitle:(nonnull NSString *)title
-                 resolve:(RCTPromiseResolveBlock)resolve
-                 reject:(RCTPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getAlbumAsync,
+                    getAlbumWithTitle:(nonnull NSString *)title
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
   if (![self _checkPermissions:reject]) {
     return;
@@ -247,11 +241,11 @@ RCT_REMAP_METHOD(getAlbumAsync,
   resolve([EXMediaLibrary _exportCollection:collection]);
 }
 
-RCT_REMAP_METHOD(createAlbumAsync,
-                 createAlbumWithTitle:(nonnull NSString *)title
-                 withAssetId:(NSString *)assetId
-                 resolve:(RCTPromiseResolveBlock)resolve
-                 reject:(RCTPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(createAlbumAsync,
+                    createAlbumWithTitle:(nonnull NSString *)title
+                    withAssetId:(NSString *)assetId
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
   if (![self _checkPermissions:reject]) {
     return;
@@ -276,10 +270,10 @@ RCT_REMAP_METHOD(createAlbumAsync,
   }];
 }
 
-RCT_REMAP_METHOD(getAssetInfoAsync,
-                 getAssetInfo:(nonnull NSString *)assetId
-                 resolve:(RCTPromiseResolveBlock)resolve
-                 reject:(RCTPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getAssetInfoAsync,
+                    getAssetInfo:(nonnull NSString *)assetId
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
   if (![self _checkPermissions:reject]) {
     return;
@@ -307,10 +301,10 @@ RCT_REMAP_METHOD(getAssetInfoAsync,
   }
 }
 
-RCT_REMAP_METHOD(getAssetsAsync,
-                 getAssetsWithOptions:(NSDictionary *)options
-                 resolve:(RCTPromiseResolveBlock)resolve
-                 reject:(RCTPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getAssetsAsync,
+                    getAssetsWithOptions:(NSDictionary *)options
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
   if (![self _checkPermissions:reject]) {
     return;
@@ -452,7 +446,7 @@ RCT_REMAP_METHOD(getAssetsAsync,
           [deletedAssets addObject:[EXMediaLibrary _exportAsset:asset]];
         }
         
-        [self sendEventWithName:EXMediaLibraryDidChangeEvent body:body];
+        [_eventEmitter sendEventWithName:EXMediaLibraryDidChangeEvent body:body];
       }
     }
   }
@@ -823,10 +817,11 @@ RCT_REMAP_METHOD(getAssetsAsync,
   return sortDescriptors;
 }
 
-- (BOOL)_checkPermissions:(RCTPromiseRejectBlock)reject
+
+- (BOOL)_checkPermissions:(EXPromiseRejectBlock)reject
 {
-  if ([EXPermissions statusForPermissions:[EXCameraRollRequester permissions]] != EXPermissionStatusGranted ||
-      ![_kernelPermissionsServiceDelegate hasGrantedPermission:@"cameraRoll" forExperience:self.experienceId]) {
+  NSDictionary *cameraRollPermissions = [_permissionsManager getPermissionsForResource:@"cameraRoll"];
+  if (![cameraRollPermissions[@"status"] isEqualToString:@"granted"]) {
     reject(@"E_NO_PERMISSIONS", @"CAMERA_ROLL permission is required to do this operation.", nil);
     return NO;
   }

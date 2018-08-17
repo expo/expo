@@ -62,3 +62,6 @@ project(":expo-sms").projectDir = new File(rootDir, "../modules/expo-sms/android
 
 include ":expo-print"
 project(":expo-print").projectDir = new File(rootDir, "../modules/expo-print/android")
+
+include ":expo-media-library"
+project(":expo-media-library").projectDir = new File(rootDir, "../modules/expo-media-library/android")
