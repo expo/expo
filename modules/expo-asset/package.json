@@ -16,7 +16,9 @@
     "react-native": "^0.55.4"
   },
   "dependencies": {
-    "expo-core": "^1.0.1"
+    "expo-core": "^1.0.1",
+    "uri-parser": "^1.0.1",
+    "url-join": "^4.0.0"
   },
   "devDependencies": {
     "babel-preset-expo": "^4.0.0"
