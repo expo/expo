@@ -75,8 +75,9 @@
   // so we just pass this call to the current controller.
   if ([viewControllerToPresent isKindOfClass:[UIAlertController class]]
       || [viewControllerToPresent isKindOfClass:[UIDocumentMenuViewController class]]
-      || [viewControllerToPresent isKindOfClass:[UIImagePickerController class]]
-      || [viewControllerToPresent isKindOfClass:[UIActivityViewController class]]) {
+//      || [viewControllerToPresent isKindOfClass:[UIImagePickerController class]] // ImagePicker invoked from WebView with this specific logic makes AppController holding WebView to be dismissed
+      || [viewControllerToPresent isKindOfClass:[UIActivityViewController class]]
+  ) {
     [[[ExpoKit sharedInstance] currentViewController] presentViewController:viewControllerToPresent animated:flag completion:completion];
   } else {
     [super presentViewController:viewControllerToPresent animated:flag completion:completion];
