@@ -91,3 +91,19 @@ export default class BarcodeScannerExample extends React.Component {
 - **torchMode (_string_)** -- When `'on'`, the flash on your device will turn on, when `'off'`, it will be off. Defaults to `'off'`.
 
 - **barCodeTypes (_Array<string>_)** -- An array of bar code types. Usage: `BarCodeScanner.Constants.BarCodeType.<codeType>` where `codeType` is one of the listed above. Default: all supported bar code types. For example: `barCodeTypes={[BarCodeScanner.Constants.BarCodeType.qr]}`
+
+
+## Static methods
+
+### `Expo.BarCodeScanner.readFromURL(url, barCodeTypes)`
+
+Read bar codes from the image given by the URL.
+
+#### Arguments
+
+-   **url (_string_)** -- URL to get the image from.
+-   **barCodeTypes (_Array<string>_)** -- (as in prop) An array of bar code types. Default: all supported bar code types. Only QR codes are supported on iOS.
+
+#### Returns
+
+A possibly empty array of objects of the shape `{ type: string, data: string }`, where the type refers to the bar code type that was scanned and the data is the information encoded in the bar code.
