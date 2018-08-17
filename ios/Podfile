@@ -24,8 +24,12 @@ target 'Exponent' do
   # Local CocoaPods
   pod 'EXGL',
     :path => "../modules/expo-gl/ios"
+  pod 'EXSMS',
+    :path => "../modules/expo-sms/ios"
   pod 'EXCore',
     :path => "../modules/expo-core/ios"
+  pod 'EXPrint',
+    :path => "../modules/expo-print/ios"
   pod 'EXCamera',
     :path => "../modules/expo-camera/ios"
   pod 'EXSensors',
@@ -36,6 +40,8 @@ target 'Exponent' do
     :path => "../modules/expo-file-system/ios"
   pod 'EXPermissions',
     :path => "../modules/expo-permissions/ios"
+  pod 'EXMediaLibrary',
+    :path => "../modules/expo-media-library/ios"
   pod 'EXCameraInterface',
     :path => "../modules/expo-camera-interface/ios"
   pod 'EXSensorsInterface',
@@ -50,10 +56,6 @@ target 'Exponent' do
     :path => "../modules/expo-permissions-interface/ios"
   pod 'EXFaceDetectorInterface',
     :path => "../modules/expo-face-detector-interface/ios"
-  pod 'EXSMS',
-    :path => "../modules/expo-sms/ios"
-  pod 'EXPrint',
-    :path => "../modules/expo-print/ios"
   pod 'EXFaceDetector',
     :path => "../modules/expo-face-detector/ios"
   pod 'EXGL-CPP',

@@ -122,6 +122,7 @@ dependencies {
   api 'host.exp.exponent:expo-gl-cpp:1.0.1'
   api 'host.exp.exponent:expo-sms:1.0.1'
   api 'host.exp.exponent:expo-print:1.0.0'
+  api 'host.exp.exponent:expo-media-library:1.0.0'
   END UNCOMMENT WHEN DISTRIBUTING */
 
   // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
@@ -143,6 +144,7 @@ dependencies {
   api project(':expo-gl-cpp')
   api project(':expo-sms')
   api project(':expo-print')
+  api project(':expo-media-library')
   // WHEN_DISTRIBUTING_REMOVE_TO_HERE
 
   // Versioned react native
