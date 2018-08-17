@@ -8,10 +8,7 @@
 
 @implementation EXUtilService
 
-+ (NSString *)name
-{
-  return @"Util";
-}
+EX_REGISTER_SINGLETON_MODULE(Util)
 
 - (UIViewController *)currentViewController
 {

@@ -34,7 +34,6 @@
 		31E6D48020B845830082B09F /* EXSensorsManagerBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = 31E6D47F20B845830082B09F /* EXSensorsManagerBinding.m */; };
 		3C3C339520E24EC0000F8B92 /* EXSplashScreen.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C3C339420E24EC0000F8B92 /* EXSplashScreen.m */; };
 		3C55BD23944F76B366234629 /* libPods-Exponent.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2060A92EBAA9276D68C91B70 /* libPods-Exponent.a */; };
-		3CE8050D20488C8200D8D2DB /* EXPermissionsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3CE8050C20488C8200D8D2DB /* EXPermissionsManager.m */; };
 		3CEBDC411FFBC73E0025EF24 /* EXMailComposer.m in Sources */ = {isa = PBXBuildFile; fileRef = 3CEBDC401FFBC73D0025EF24 /* EXMailComposer.m */; };
 		6D3FF9032022B57E000D4015 /* EXLocalization.m in Sources */ = {isa = PBXBuildFile; fileRef = 6D3FF9012022B57D000D4015 /* EXLocalization.m */; };
 		783435D3205B8BEE00DD28C3 /* AIRGoogleMapPolylineManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 783435AE205B8BE900DD28C3 /* AIRGoogleMapPolylineManager.m */; };
@@ -1543,8 +1542,6 @@
 				B5C2740B1EC24AE1003355CE /* EXKernelLinkingManager.m */,
 				B5AC39A31E95A90B00540AA7 /* EXLocalNotificationManager.h */,
 				B5AC39A41E95A90B00540AA7 /* EXLocalNotificationManager.m */,
-				3CE8050E20488CA700D8D2DB /* EXPermissionsManager.h */,
-				3CE8050C20488C8200D8D2DB /* EXPermissionsManager.m */,
 				B57180FE1F0FF41600315A66 /* EXScreenOrientationManager.h */,
 				B57180FF1F0FF41600315A66 /* EXScreenOrientationManager.m */,
 				07295CD720559E6200ED42D4 /* EXUpdatesManager.h */,
@@ -2542,7 +2539,6 @@
 				B5A72C2220A0D13E00974CCE /* EXJavaScriptResource.m in Sources */,
 				783435E4205B8BEE00DD28C3 /* AIRGMSMarker.m in Sources */,
 				31E6D48020B845830082B09F /* EXSensorsManagerBinding.m in Sources */,
-				3CE8050D20488C8200D8D2DB /* EXPermissionsManager.m in Sources */,
 				B5FB74A21FF6DADC001C764B /* EXContacts.m in Sources */,
 				19B2EF751FB25A1A003F2E1B /* EXCachedResourceManager.m in Sources */,
 				BB50E89020B9C0D3003C752D /* RNLongPressHandler.m in Sources */,

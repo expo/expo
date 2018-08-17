@@ -1,23 +1,18 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "EXEnvironment.h"
-#import "EXPermissionsManager.h"
-#import "EXUtil.h"
-
+#import <EXPermissions/EXPermissionsManager.h>
 #import <EXPermissions/EXPermissions.h>
 
 NSString * const kEXPermissionsKey = @"ExpoPermissions";
 
 @implementation EXPermissionsManager
 
-+ (NSString *)name
-{
-  return @"Permissions";
-}
+EX_REGISTER_SINGLETON_MODULE(Permissions)
 
 - (BOOL)hasGrantedPermission:(NSString *)permission forExperience:(NSString *)experienceId
 {
-  if ([EXEnvironment sharedEnvironment].isDetached) {
+  NSNumber *supportsAppMultiplexing = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"SupportsAppMultiplexing"];
+  if (![supportsAppMultiplexing boolValue]) {
     return YES;
   }
   
@@ -27,7 +22,7 @@ NSString * const kEXPermissionsKey = @"ExpoPermissions";
     return NO;
   }
 
-  NSString *experienceIdKey = [EXUtil escapedResourceName:experienceId];
+  NSString *experienceIdKey = [EXPermissionsManager escapedResourceName:experienceId];
   NSDictionary *experiencePermissions = expoPermissions[experienceIdKey];
   if (experiencePermissions == nil) {
     return NO;
@@ -48,7 +43,7 @@ NSString * const kEXPermissionsKey = @"ExpoPermissions";
     expoPermissions = [[NSMutableDictionary alloc] initWithDictionary:[userDefaults dictionaryForKey:kEXPermissionsKey]];
   }
   
-  NSString *experienceIdKey = [EXUtil escapedResourceName:experienceId];
+  NSString *experienceIdKey = [EXPermissionsManager escapedResourceName:experienceId];
   NSMutableDictionary *experiencePermissions;
   if ([expoPermissions objectForKey:experienceIdKey] == nil) {
     experiencePermissions = [[NSMutableDictionary alloc] init];
@@ -60,6 +55,13 @@ NSString * const kEXPermissionsKey = @"ExpoPermissions";
   expoPermissions[experienceIdKey] = experiencePermissions;
   [userDefaults setObject:expoPermissions forKey:kEXPermissionsKey];
   return [userDefaults synchronize];
+}
+
++ (NSString *)escapedResourceName:(NSString *)name
+{
+  NSString *charactersToEscape = @"!*'();:@&=+$,/?%#[]";
+  NSCharacterSet *allowedCharacters = [[NSCharacterSet characterSetWithCharactersInString:charactersToEscape] invertedSet];
+  return [name stringByAddingPercentEncodingWithAllowedCharacters:allowedCharacters];
 }
 
 @end

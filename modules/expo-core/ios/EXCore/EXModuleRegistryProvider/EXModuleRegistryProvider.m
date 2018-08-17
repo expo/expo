@@ -6,9 +6,11 @@
 
 static dispatch_once_t onceToken;
 static NSMutableSet<Class> *EXModuleClasses;
+static NSMutableSet<Class> *EXSingletonModuleClasses;
 
 void (^EXinitializeGlobalModulesRegistry)(void) = ^{
   EXModuleClasses = [NSMutableSet set];
+  EXSingletonModuleClasses = [NSMutableSet set];
 };
 
 extern void EXRegisterModule(Class);
@@ -18,21 +20,43 @@ extern void EXRegisterModule(Class moduleClass)
   [EXModuleClasses addObject:moduleClass];
 }
 
+extern void EXRegisterSingletonModule(Class);
+extern void EXRegisterSingletonModule(Class singletonModuleClass)
+{
+  dispatch_once(&onceToken, EXinitializeGlobalModulesRegistry);
+  [EXSingletonModuleClasses addObject:singletonModuleClass];
+}
+
+// Singleton modules classes register in EXSingletonModuleClasses
+// with EXRegisterSingletonModule function. Then they should be
+// initialized exactly once (onceSingletonModulesToken guards that).
+
+static dispatch_once_t onceSingletonModulesToken;
+static NSMutableSet<EXSingletonModule *> *EXSingletonModules;
+void (^EXinitializeGlobalSingletonModulesSet)(void) = ^{
+  EXSingletonModules = [NSMutableSet set];
+  for (Class singletonModuleClass in EXSingletonModuleClasses) {
+    [EXSingletonModules addObject:[[singletonModuleClass alloc] init]];
+  }
+};
+
 @interface EXModuleRegistryProvider ()
 
-@property (nonatomic, strong) NSMutableSet<Class> *singletonModuleClasses;
+@property (nonatomic, strong) NSSet *singletonModules;
 
 @end
 
 @implementation EXModuleRegistryProvider
 
-- (instancetype)initWithSingletonModuleClasses:(NSSet *)moduleClasses
+- (instancetype)init
+{
+  return [self initWithSingletonModules:[EXModuleRegistryProvider singletonModules]];
+}
+
+- (instancetype)initWithSingletonModules:(NSSet *)modules
 {
   if (self = [super init]) {
-    _singletonModuleClasses = [NSMutableSet set];
-    for (Class klass in moduleClasses) {
-      [_singletonModuleClasses addObject:klass];
-    }
+    _singletonModules = [NSSet setWithSet:modules];
   }
   return self;
 }
@@ -42,19 +66,17 @@ extern void EXRegisterModule(Class moduleClass)
   return EXModuleClasses;
 }
 
++ (NSSet<EXSingletonModule *> *)singletonModules
+{
+  dispatch_once(&onceSingletonModulesToken, EXinitializeGlobalSingletonModulesSet);
+  return EXSingletonModules;
+}
+
 - (EXModuleRegistry *)moduleRegistryForExperienceId:(NSString *)experienceId
 {
   NSMutableSet<id<EXInternalModule>> *internalModules = [NSMutableSet set];
   NSMutableSet<EXExportedModule *> *exportedModules = [NSMutableSet set];
   NSMutableSet<EXViewManager *> *viewManagerModules = [NSMutableSet set];
-  NSMutableSet<EXSingletonModule *> *singletonModules = [NSMutableSet set];
- 
-  // we can't wrap these in the EXRegisterModule macro because we want this hook to be robust to vendoring/versioning
-  for (Class klass in _singletonModuleClasses) {
-    EXSingletonModule *singletonModuleInstance = [[klass class] sharedInstance];
-    [singletonModules addObject:singletonModuleInstance];
-    continue;
-  }
   
   for (Class klass in [self getModulesClasses]) {
     if (![klass conformsToProtocol:@protocol(EXInternalModule)]) {
@@ -80,7 +102,7 @@ extern void EXRegisterModule(Class moduleClass)
   EXModuleRegistry *moduleRegistry = [[EXModuleRegistry alloc] initWithInternalModules:internalModules
                                                                        exportedModules:exportedModules
                                                                           viewManagers:viewManagerModules
-                                                                      singletonModules:singletonModules];
+                                                                      singletonModules:_singletonModules];
   [moduleRegistry setDelegate:_moduleRegistryDelegate];
   return moduleRegistry;
 }

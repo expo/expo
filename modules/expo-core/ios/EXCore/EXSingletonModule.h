@@ -6,8 +6,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface EXSingletonModule : NSObject
 
-+ (nonnull instancetype)sharedInstance;
-+ (NSString *)name;
++ (const NSString *)name;
 
 @end
 

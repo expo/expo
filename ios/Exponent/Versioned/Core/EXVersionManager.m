@@ -28,7 +28,6 @@
 
 #import <EXCore/EXModuleRegistry.h>
 #import <EXCore/EXModuleRegistryDelegate.h>
-#import <EXCore/EXSingletonModule.h>
 #import <EXReactNativeAdapter/EXNativeModulesProxy.h>
 #import "EXScopedModuleRegistryAdapter.h"
 #import "EXScopedModuleRegistryDelegate.h"
@@ -324,23 +323,8 @@ void EXRegisterScopedModule(Class moduleClass, ...)
     // additionally disable RCTRedBox
     [extraModules addObject:[[EXDisabledRedBox alloc] init]];
   }
-  
-  // TODO: clean this up
-  // right now some subset of our kernel services subclass EXSingletonModule
-  // which allows unimodules to access unversioned/singleton instances of these services.
-  // this is a bridge to allow both systems to coexist for now.
-  // see also: https://github.com/expo/universe/issues/2796
-  NSMutableSet *singletonModuleClasses = [NSMutableSet set];
-  for (NSString *serviceName in services.allKeys) {
-    id service = services[serviceName];
-    // We would use check against EXSingletonModule protocol here, but it would get versioned
-    // and since kernel services don't implement versioned protocols, until we sort out proper way
-    // to register singleton modules, let's use this.
-    if ([[service class] respondsToSelector:@selector(sharedInstance)] && [[service class] respondsToSelector:@selector(name)]) {
-      [singletonModuleClasses addObject:[service class]];
-    }
-  }
-  EXModuleRegistryProvider *moduleRegistryProvider = [[EXModuleRegistryProvider alloc] initWithSingletonModuleClasses:singletonModuleClasses];
+
+  EXModuleRegistryProvider *moduleRegistryProvider = [[EXModuleRegistryProvider alloc] initWithSingletonModules:params[@"singletonModules"]];
 
   Class resolverClass = [EXScopedModuleRegistryDelegate class];
   if (params[@"moduleRegistryDelegateClass"] && params[@"moduleRegistryDelegateClass"] != [NSNull null]) {
