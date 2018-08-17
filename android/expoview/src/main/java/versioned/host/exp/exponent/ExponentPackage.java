@@ -27,6 +27,7 @@ import expo.modules.filesystem.FileSystemPackage;
 import expo.modules.gl.GLPackage;
 import expo.modules.medialibrary.MediaLibraryPackage;
 import expo.modules.permissions.PermissionsPackage;
+import expo.modules.analytics.segment.SegmentPackage;
 import expo.modules.sensors.SensorsPackage;
 import expo.modules.sms.SMSPackage;
 import host.exp.exponent.ExponentManifest;
@@ -66,7 +67,6 @@ import versioned.host.exp.exponent.modules.api.NotificationsModule;
 import versioned.host.exp.exponent.modules.api.RNViewShotModule;
 import versioned.host.exp.exponent.modules.api.SQLiteModule;
 import versioned.host.exp.exponent.modules.api.ScreenOrientationModule;
-import versioned.host.exp.exponent.modules.api.SegmentModule;
 import versioned.host.exp.exponent.modules.api.ShakeModule;
 import versioned.host.exp.exponent.modules.api.SpeechModule;
 import versioned.host.exp.exponent.modules.api.URLHandlerModule;
@@ -110,7 +110,8 @@ public class ExponentPackage implements ReactPackage {
       new PermissionsPackage(),
       new SMSPackage(),
       new PrintPackage(),
-      new MediaLibraryPackage()
+      new MediaLibraryPackage(),
+      new SegmentPackage()
   );
 
   private static final String TAG = ExponentPackage.class.getSimpleName();
@@ -192,7 +193,6 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new FingerprintModule(reactContext));
         nativeModules.add(new GoogleModule(reactContext, mExperienceProperties));
         nativeModules.add(new AmplitudeModule(reactContext, scopedContext));
-        nativeModules.add(new SegmentModule(reactContext, scopedContext));
         nativeModules.add(new RNViewShotModule(reactContext, scopedContext));
         nativeModules.add(new KeepAwakeModule(reactContext));
         nativeModules.add(new ExponentTestNativeModule(reactContext));
