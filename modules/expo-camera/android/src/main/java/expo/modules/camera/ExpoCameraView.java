@@ -37,11 +37,7 @@ import expo.modules.camera.tasks.FaceDetectorAsyncTask;
 import expo.modules.camera.tasks.FaceDetectorAsyncTaskDelegate;
 import expo.modules.camera.tasks.PictureSavedDelegate;
 import expo.modules.camera.tasks.ResolveTakenPictureAsyncTask;
-import expo.modules.camera.utils.ExpoBarCodeDetector;
-import expo.modules.camera.utils.FileSystemUtils;
-import expo.modules.camera.utils.GMVBarCodeDetector;
-import expo.modules.camera.utils.ImageDimensions;
-import expo.modules.camera.utils.ZxingBarCodeDetector;
+import expo.modules.camera.utils.*;
 
 public class ExpoCameraView extends CameraView implements LifecycleEventListener, BarCodeScannerAsyncTaskDelegate, FaceDetectorAsyncTaskDelegate, PictureSavedDelegate, ExpoCameraViewInterface {
   private static final String MUTE_KEY = "mute";
@@ -237,10 +233,7 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
       }
     }
 
-    mDetector = new GMVBarCodeDetector(mBarCodeTypes, mThemedReactContext);
-    if (!mDetector.isAvailable()) {
-      mDetector = new ZxingBarCodeDetector(mBarCodeTypes, mThemedReactContext);
-    }
+    mDetector = BarCodeDetectorUtils.initBarcodeReader(mBarCodeTypes, mThemedReactContext);
   }
 
   public void setShouldScanBarCodes(boolean shouldScanBarCodes) {

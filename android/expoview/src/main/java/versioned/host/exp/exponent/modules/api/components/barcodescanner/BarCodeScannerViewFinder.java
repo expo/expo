@@ -13,6 +13,7 @@ import com.facebook.react.bridge.WritableMap;
 
 import java.util.List;
 
+import expo.modules.camera.utils.BarCodeDetectorUtils;
 import expo.modules.camera.utils.ExpoBarCodeDetector;
 import expo.modules.camera.utils.GMVBarCodeDetector;
 import expo.modules.camera.utils.ZxingBarCodeDetector;
@@ -39,7 +40,8 @@ class BarCodeScannerViewFinder extends TextureView implements TextureView.Surfac
     this.setSurfaceTextureListener(this);
     mCameraType = type;
     mBarCodeScannerView = barCodeScannerView;
-    this.initBarcodeReader(BarCodeScanner.getInstance().getBarCodeTypes());
+    mDetector = BarCodeDetectorUtils.initBarcodeReader(
+        BarCodeScanner.getInstance().getBarCodeTypes(), getContext());
   }
 
   @Override
@@ -154,18 +156,6 @@ class BarCodeScannerViewFinder extends TextureView implements TextureView.Surfac
       } finally {
         mIsStopping = false;
       }
-    }
-  }
-
-  /**
-   * Initialize the barcode decoder.
-   * Supports all iOS codes except [code138, code39mod43, interleaved2of5]
-   * Additionally supports [codabar, code128, upc_a]
-   */
-  private void initBarcodeReader(List<Integer> barCodeTypes) {
-    mDetector = new GMVBarCodeDetector(barCodeTypes, mContext);
-    if (!mDetector.isAvailable()) {
-      mDetector = new ZxingBarCodeDetector(barCodeTypes, mContext);
     }
   }
 

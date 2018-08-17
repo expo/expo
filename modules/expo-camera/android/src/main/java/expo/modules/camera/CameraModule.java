@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Build;
+import android.os.Bundle;
 
 import com.google.android.cameraview.AspectRatio;
 import com.google.android.cameraview.Constants;
@@ -26,8 +27,11 @@ import expo.core.ModuleRegistry;
 import expo.core.interfaces.ModuleRegistryConsumer;
 import expo.core.Promise;
 import expo.core.interfaces.services.UIManager;
+import expo.interfaces.imageloader.ImageLoader;
 import expo.interfaces.permissions.Permissions;
 import expo.modules.camera.tasks.ResolveTakenPictureAsyncTask;
+import expo.modules.camera.utils.BarCodeDetectorUtils;
+import expo.modules.camera.utils.ExpoBarCodeDetector;
 
 public class CameraModule extends ExportedModule implements ModuleRegistryConsumer {
   private static final String TAG = "ExponentCameraModule";
@@ -311,6 +315,39 @@ public class CameraModule extends ExportedModule implements ModuleRegistryConsum
       @Override
       public void reject(Throwable throwable) {
         promise.reject(ERROR_TAG, throwable);
+      }
+    });
+  }
+
+  @ExpoMethod
+  public void readBarCodeFromURL(String url, final List<Double> barCodeTypes, final Promise promise) {
+    final List<Integer> types = new ArrayList<>();
+    if (barCodeTypes != null) {
+      for (int i = 0; i < barCodeTypes.size(); i++) {
+        types.add(barCodeTypes.get(i).intValue());
+      }
+    }
+
+    final ImageLoader imageLoader = mModuleRegistry.getModule(ImageLoader.class);
+    imageLoader.loadImageForURL(url, new ImageLoader.ResultListener() {
+      @Override
+      public void onImageLoaded(Bitmap bitmap) {
+        ExpoBarCodeDetector detector = BarCodeDetectorUtils.initBarcodeReader(types, getContext());
+        List<ExpoBarCodeDetector.Result> results = detector.detectMultiple(bitmap);
+
+        List<Bundle> resultList = new ArrayList<>();
+        for (ExpoBarCodeDetector.Result result : results) {
+          Bundle bundle = new Bundle();
+          bundle.putString("data", result.getValue());
+          bundle.putInt("type", result.getType());
+          resultList.add(bundle);
+        }
+        promise.resolve(resultList);
+      }
+
+      @Override
+      public void onFailure(Throwable cause) {
+        promise.reject("E_IMAGE_RETRIEVAL_ERROR", "Could not get the image", cause);
       }
     });
   }

@@ -27,6 +27,9 @@ project(":expo-gl").projectDir = new File(rootDir, "../modules/expo-gl/android")
 include ":expo-gl-cpp"
 project(":expo-gl-cpp").projectDir = new File(rootDir, "../modules/expo-gl-cpp/android")
 
+include ":expo-image-loader-interface"
+project(":expo-image-loader-interface").projectDir = new File(rootDir, "../modules/expo-image-loader-interface/android")
+
 include ":expo-permissions-interface"
 project(":expo-permissions-interface").projectDir = new File(rootDir, "../modules/expo-permissions-interface/android")
 

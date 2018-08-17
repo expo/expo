@@ -1,14 +1,17 @@
 package expo.modules.camera.utils;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.BinaryBitmap;
 import com.google.zxing.DecodeHintType;
+import com.google.zxing.LuminanceSource;
 import com.google.zxing.MultiFormatReader;
 import com.google.zxing.NotFoundException;
 import com.google.zxing.PlanarYUVLuminanceSource;
+import com.google.zxing.RGBLuminanceSource;
 import com.google.zxing.common.HybridBinarizer;
 
 import java.util.Collections;
@@ -41,24 +44,39 @@ public class ZxingBarCodeDetector extends ExpoBarCodeDetector {
   }
 
   @Override
+  public List<Result> detectMultiple(Bitmap bitmap) {
+    int[] intArray = new int[bitmap.getWidth()*bitmap.getHeight()];
+    bitmap.getPixels(intArray, 0, bitmap.getWidth(), 0, 0,
+        bitmap.getWidth(), bitmap.getHeight());
+    LuminanceSource source = new RGBLuminanceSource(bitmap.getWidth(), bitmap.getHeight(),intArray);
+
+    Result result = detect(source);
+    return result == null ? Collections.<Result>emptyList() : Collections.singletonList(result);
+  }
+
+  @Override
   public Result detect(byte[] data, int width, int height, int rotation) {
+    // rotate for zxing if orientation is portrait
+    if (rotation == 0) {
+      byte[] rotated = new byte[data.length];
+      for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+          rotated[x * height + height - y - 1] = data[x + y * width];
+        }
+      }
+      width = width + height;
+      height = width - height;
+      width = width - height;
+      data = rotated;
+    }
+
+    return detect(generateSourceFromImageData(data, width, height));
+  }
+
+  private Result detect(LuminanceSource source) {
     com.google.zxing.Result barcode = null;
     try {
-      // rotate for zxing if orientation is portrait
-      if (rotation == 0) {
-        byte[] rotated = new byte[data.length];
-        for (int y = 0; y < height; y++) {
-          for (int x = 0; x < width; x++) {
-            rotated[x * height + height - y - 1] = data[x + y * width];
-          }
-        }
-        width = width + height;
-        height = width - height;
-        width = width - height;
-        data = rotated;
-      }
-
-      BinaryBitmap bitmap = generateBitmapFromImageData(data, width, height);
+      BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
       barcode = mMultiFormatReader.decodeWithState(bitmap);
     } catch (NotFoundException e) {
       // No barcode found, result is already null.
@@ -74,19 +92,18 @@ public class ZxingBarCodeDetector extends ExpoBarCodeDetector {
     return true;
   }
 
-  private BinaryBitmap generateBitmapFromImageData(byte[] imageData, int width, int height) {
-        PlanarYUVLuminanceSource source = new PlanarYUVLuminanceSource(
-                imageData, // byte[] yuvData
-                width, // int dataWidth
-                height, // int dataHeight
-                0, // int left
-                0, // int top
-                width, // int width
-                height, // int height
-                false // boolean reverseHorizontal
-                );
-        return new BinaryBitmap(new HybridBinarizer(source));
-      }
+  private LuminanceSource generateSourceFromImageData(byte[] imageData, int width, int height) {
+    return new PlanarYUVLuminanceSource(
+        imageData, // byte[] yuvData
+        width, // int dataWidth
+        height, // int dataHeight
+        0, // int left
+        0, // int top
+        width, // int width
+        height, // int height
+        false // boolean reverseHorizontal
+    );
+  }
 
   private static final Map<Integer, String> VALID_BARCODE_TYPES =
       Collections.unmodifiableMap(new HashMap<Integer, String>() {

@@ -1,6 +1,7 @@
 package expo.modules.camera.utils;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 
 import java.util.List;
 
@@ -14,6 +15,7 @@ public abstract class ExpoBarCodeDetector {
     mContext = context;
   }
 
+  public abstract List<Result> detectMultiple(Bitmap bitmap);
   public abstract Result detect(byte[] data, int width, int height, int rotation);
   public abstract boolean isAvailable();
 

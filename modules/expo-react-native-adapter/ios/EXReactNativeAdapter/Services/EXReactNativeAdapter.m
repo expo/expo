@@ -4,6 +4,7 @@
 #import <EXReactNativeAdapter/EXReactNativeAdapter.h>
 #import <React/RCTUIManager.h>
 #import <React/RCTAppState.h>
+#import <React/RCTImageLoader.h>
 
 @interface EXReactNativeAdapter ()
 
@@ -32,7 +33,7 @@ EX_REGISTER_MODULE();
 
 + (const NSArray<Protocol *> *)exportedInterfaces
 {
-  return @[@protocol(EXAppLifecycleService), @protocol(EXUIManager), @protocol(EXJavaScriptContextProvider)];
+  return @[@protocol(EXAppLifecycleService), @protocol(EXUIManager), @protocol(EXJavaScriptContextProvider), @protocol(EXImageLoaderInterface)];
 }
 
 # pragma mark - Lifecycle methods
@@ -101,6 +102,17 @@ EX_REGISTER_MODULE();
 - (JSGlobalContextRef)javaScriptContextRef
 {
   return _bridge.jsContextRef;
+}
+
+# pragma mark - EXImageLoader
+
+- (void)loadImageForURL:(NSURL *)imageURL
+      completionHandler:(EXImageLoaderCompletionBlock)completionHandler
+{
+   [_bridge.imageLoader loadImageWithURLRequest:[NSURLRequest requestWithURL:imageURL]
+                                       callback:^(NSError *error, UIImage *loadedImage) {
+                                         completionHandler(error, loadedImage);
+                                       }];
 }
 
 # pragma mark - App state observing

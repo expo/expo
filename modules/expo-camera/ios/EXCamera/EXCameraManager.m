@@ -4,11 +4,13 @@
 
 #import <EXCore/EXUIManager.h>
 #import <EXFileSystemInterface/EXFileSystemInterface.h>
+#import <EXImageLoaderInterface/EXImageLoaderInterface.h>
 
 @interface EXCameraManager ()
 
 @property (nonatomic, weak) id<EXFileSystemInterface> fileSystem;
 @property (nonatomic, weak) id<EXUIManager> uiManager;
+@property (nonatomic, weak) id<EXImageLoaderInterface> imageLoader;
 @property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
 
 @end
@@ -27,6 +29,7 @@ EX_EXPORT_MODULE(ExponentCameraManager);
   _moduleRegistry = moduleRegistry;
   _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
   _uiManager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXUIManager)];
+  _imageLoader = [moduleRegistry getModuleImplementingProtocol:@protocol(EXImageLoaderInterface)];
 }
 
 - (UIView *)view
@@ -328,5 +331,40 @@ EX_EXPORT_METHOD_AS(getAvailablePictureSizes,
   resolve([[[self class] pictureSizes] allKeys]);
 }
 
-@end
+EX_EXPORT_METHOD_AS(readBarCodeFromURL,
+                    readBarCodeFromURL:(NSString *)url
+                    barCodeTypes:(NSArray *)barCodeTypes
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
+{
+  // We only support QR codes, so barCodeTypes is ignored
+  NSURL *imageURL = [NSURL URLWithString:url];
+  [_imageLoader loadImageForURL:imageURL
+              completionHandler:^(NSError *error, UIImage *loadedImage) {
+                if (error != nil) {
+                  reject(@"E_IMAGE_RETRIEVAL_ERROR", @"Could not get the image", error);
+                  return;
+                }
 
+                CIDetector *detector = [CIDetector detectorOfType:CIDetectorTypeQRCode
+                                                          context:nil
+                                                          options:@{CIDetectorAccuracy:CIDetectorAccuracyHigh}];
+                if (detector)  {
+                  NSArray *features = [detector featuresInImage:[[CIImage alloc] initWithCGImage:loadedImage.CGImage]];
+
+                  NSMutableArray *result = [NSMutableArray arrayWithCapacity:1];
+                  for (CIQRCodeFeature *feature in features)  {
+                    [result addObject:@{
+                                        @"type" : AVMetadataObjectTypeQRCode,
+                                        @"data" : feature.messageString
+                                        }];
+                  }
+
+                  resolve(result);
+                } else {
+                  reject(@"E_SCANNER_INIT_FAILED", @"Could not initialize the barcode scanner", nil);
+                }
+              }];
+}
+
+@end

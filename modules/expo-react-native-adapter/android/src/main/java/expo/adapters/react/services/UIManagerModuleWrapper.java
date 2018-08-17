@@ -1,8 +1,17 @@
 package expo.adapters.react.services;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
+import android.os.AsyncTask;
 import android.view.View;
 
+import com.facebook.common.references.CloseableReference;
+import com.facebook.datasource.DataSource;
+import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.imagepipeline.core.ImagePipeline;
+import com.facebook.imagepipeline.datasource.BaseBitmapDataSubscriber;
+import com.facebook.imagepipeline.image.CloseableImage;
+import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.modules.core.PermissionAwareActivity;
 import com.facebook.react.modules.core.PermissionListener;
@@ -10,23 +19,21 @@ import com.facebook.react.uimanager.NativeViewHierarchyManager;
 import com.facebook.react.uimanager.UIManagerModule;
 
 import java.lang.ref.WeakReference;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.WeakHashMap;
+import java.util.*;
 
-import expo.core.interfaces.ActivityProvider;
-import expo.core.interfaces.InternalModule;
-import expo.core.interfaces.LifecycleEventListener;
-import expo.core.interfaces.JavaScriptContextProvider;
+import expo.core.interfaces.*;
 import expo.core.interfaces.services.UIManager;
+import expo.interfaces.imageloader.ImageLoader;
 import expo.interfaces.permissions.PermissionsManager;
 import expo.interfaces.permissions.PermissionsListener;
 
+import javax.annotation.Nullable;
+
 public class UIManagerModuleWrapper implements
     ActivityProvider,
-    JavaScriptContextProvider,
+    ImageLoader,
     InternalModule,
+    JavaScriptContextProvider,
     PermissionsManager,
     UIManager
 {
@@ -45,6 +52,7 @@ public class UIManagerModuleWrapper implements
   public List<Class> getExportedInterfaces() {
     return Arrays.<Class>asList(
       ActivityProvider.class,
+      ImageLoader.class,
       JavaScriptContextProvider.class,
       PermissionsManager.class,
       UIManager.class
@@ -155,6 +163,33 @@ public class UIManagerModuleWrapper implements
 
   public long getJavaScriptContextRef() {
     return mReactContext.getJavaScriptContextHolder().get();
+  }
+
+  @Override
+  public void loadImageForURL(String url, final ResultListener resultListener) {
+    ImageRequest imageRequest = ImageRequest.fromUri(url);
+
+    ImagePipeline imagePipeline = Fresco.getImagePipeline();
+    DataSource<CloseableReference<CloseableImage>> dataSource =
+        imagePipeline.fetchDecodedImage(imageRequest, mReactContext);
+
+    dataSource.subscribe(
+        new BaseBitmapDataSubscriber() {
+          @Override
+          public void onNewResultImpl(@Nullable Bitmap bitmap) {
+            if (bitmap == null) {
+              resultListener.onFailure(new Exception("Loaded bitmap is null"));
+              return;
+            }
+            resultListener.onImageLoaded(bitmap);
+          }
+
+          @Override
+          public void onFailureImpl(DataSource dataSource) {
+            resultListener.onFailure(dataSource.getFailureCause());
+          }
+        },
+        AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
   @Override
