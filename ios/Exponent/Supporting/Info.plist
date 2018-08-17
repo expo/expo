@@ -90,7 +90,7 @@
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Allow Expo experiences to access your microphone</string>
 	<key>NSMotionUsageDescription</key>
-	<string>Allow Expo experiences to access your device's accelerometer</string>
+	<string>Allow Expo experiences to access your device&apos;s accelerometer</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Give Expo experiences permission to save photos</string>
 	<key>NSPhotoLibraryUsageDescription</key>
@@ -114,5 +114,7 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>SupportsAppMultiplexing</key>
+	<true/>
 </dict>
 </plist>
