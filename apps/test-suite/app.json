@@ -1,0 +1,19 @@
+{
+  "expo": {
+    "name": "test-suite",
+    "description": "Test suite for the Exponent SDK",
+    "slug": "test-suite",
+    "version": "1.0.0",
+    "sdkVersion": "29.0.0",
+    "packagerOpts": {
+      "assetExts": [
+        "ttf",
+        "mp4",
+        "db"
+      ]
+    },
+    "ios": {
+      "bundleIdentifier": "io.expo.testsuite"
+    }
+  }
+}

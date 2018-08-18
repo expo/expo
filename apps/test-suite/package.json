@@ -1,0 +1,23 @@
+{
+  "name": "test-suite",
+  "version": "1.0.0",
+  "description": "Test suite for the Expo SDK",
+  "main": "index.js",
+  "scripts": {
+    "test": "cd Runner && yarn && cd .. && node Runner/index.js ."
+  },
+  "author": "",
+  "license": "BSD-2-Clause",
+  "powertools": {
+    "group": "client"
+  },
+  "dependencies": {
+    "async-retry": "^1.1.4",
+    "expo": "^29.0.0",
+    "immutable": "^3.8.1",
+    "jasmine-core": "^2.4.1",
+    "lodash": "^4.17.4",
+    "react": "16.3.1",
+    "react-native": "expo/react-native#sdk-29"
+  }
+}
