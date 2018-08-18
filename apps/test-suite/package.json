@@ -7,7 +7,7 @@
     "test": "cd Runner && yarn && cd .. && node Runner/index.js ."
   },
   "author": "",
-  "license": "BSD-2-Clause",
+  "license": "MIT",
   "powertools": {
     "group": "client"
   },

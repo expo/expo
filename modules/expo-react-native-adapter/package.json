@@ -10,7 +10,7 @@
   ],
   "homepage": "https://docs.expo.io/",
   "author": "650 Industries, Inc.",
-  "license": "BSD",
+  "license": "MIT",
   "peerDependencies": {
     "react": "^16.3.1",
     "react-native": "^0.55.4"

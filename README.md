@@ -118,4 +118,4 @@ For JS integration tests, test the `ExponentIntegrationTests` target (not includ
 Please check with us before putting work into a Pull Request! It is often harder to maintain code than it is to write it. The best place to talk to us is on Slack at https://slack.expo.io.
 
 ## License
-The Expo source code is made available under the [BSD 3-clause license](LICENSE). Some of the dependencies are licensed differently, with the MIT license, for example.
+The Expo source code is made available under the [MIT license](LICENSE). Some of the dependencies are licensed differently, with the BSD license, for example.
