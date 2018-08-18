@@ -112,7 +112,7 @@ For native XCTest unit tests:
 - Press Command+U in XCode to build and test the `Tests` unit test target.
 - Alternatively, run `fastlane ios test` from the parent directory of `ios`.
 
-For JS integration tests, test the `ExponentIntegrationTests` target (not included in the default test scheme). This target requires you to configure `EXTestEnvironment.plist` with a key `testSuiteUrl` whose value is the url to load some version of Expo's [test-suite](https://github.com/expo/test-suite) app. This will run a bunch of Jasmine tests against the Expo SDK.
+For JS integration tests, test the `ExponentIntegrationTests` target (not included in the default test scheme). This target requires you to configure `EXTestEnvironment.plist` with a key `testSuiteUrl` whose value is the URL to load some version of Expo's [test-suite](apps/test-suite) app. This will run a bunch of Jasmine tests against the Expo SDK.
 
 ## Contributing
 Please check with us before putting work into a Pull Request! It is often harder to maintain code than it is to write it. The best place to talk to us is on Slack at https://slack.expo.io.

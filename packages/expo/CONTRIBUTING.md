@@ -46,7 +46,9 @@ Finally, unit tests can go a long way. The first project that used Jest (before 
 
 ## Integration tests
 
-Our integration tests are under `apps/test-suite`. The `test-suite` project is an Expo project we run on our devices. It also can run in the simulator but has access to fewer APIs.
+Our integration tests are under `apps/test-suite` in the Expo repository. The `test-suite` project
+is an Expo project we run on our devices. It also can run in the simulator but has access to fewer
+APIs.
 
 If you make changes to native code, update `test-suite` too.
 
