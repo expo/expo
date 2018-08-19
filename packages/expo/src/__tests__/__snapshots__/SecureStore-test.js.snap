@@ -1,0 +1,33 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`checks for invalid keys 1`] = `[Error: Invalid key provided to SecureStore. Keys must not be empty and contain only alphanumeric characters, ".", "-", and "_".]`;
+
+exports[`checks for invalid keys 2`] = `[Error: Invalid key provided to SecureStore. Keys must not be empty and contain only alphanumeric characters, ".", "-", and "_".]`;
+
+exports[`checks for invalid keys 3`] = `[Error: Invalid key provided to SecureStore. Keys must not be empty and contain only alphanumeric characters, ".", "-", and "_".]`;
+
+exports[`checks for invalid keys 4`] = `[Error: Invalid key provided to SecureStore. Keys must not be empty and contain only alphanumeric characters, ".", "-", and "_".]`;
+
+exports[`checks for invalid keys 5`] = `[Error: Invalid key provided to SecureStore. Keys must not be empty and contain only alphanumeric characters, ".", "-", and "_".]`;
+
+exports[`checks for invalid values 1`] = `[Error: Invalid value provided to SecureStore. Values must be strings; consider JSON-encoding your values if they are serializable.]`;
+
+exports[`checks for invalid values 2`] = `[Error: Invalid value provided to SecureStore. Values must be strings; consider JSON-encoding your values if they are serializable.]`;
+
+exports[`checks for invalid values 3`] = `[Error: Invalid value provided to SecureStore. Values must be strings; consider JSON-encoding your values if they are serializable.]`;
+
+exports[`checks for invalid values 4`] = `[Error: Invalid value provided to SecureStore. Values must be strings; consider JSON-encoding your values if they are serializable.]`;
+
+exports[`exports accessibility options on iOS: AFTER_FIRST_UNLOCK 1`] = `0`;
+
+exports[`exports accessibility options on iOS: AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY 1`] = `1`;
+
+exports[`exports accessibility options on iOS: ALWAYS 1`] = `2`;
+
+exports[`exports accessibility options on iOS: ALWAYS_THIS_DEVICE_ONLY 1`] = `4`;
+
+exports[`exports accessibility options on iOS: WHEN_PASSCODE_SET_THIS_DEVICE_ONLY 1`] = `3`;
+
+exports[`exports accessibility options on iOS: WHEN_UNLOCKED 1`] = `5`;
+
+exports[`exports accessibility options on iOS: WHEN_UNLOCKED_THIS_DEVICE_ONLY 1`] = `6`;
