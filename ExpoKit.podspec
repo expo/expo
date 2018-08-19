@@ -3,7 +3,7 @@
 
 Pod::Spec.new do |s|
   s.name = "ExpoKit"
-  s.version = "2.2.2"
+  s.version = "2.2.5"
   s.summary = 'ExpoKit'
   s.description = 'ExpoKit allows native projects to integrate with the Expo SDK.'
   s.homepage = 'http://docs.expo.io'
@@ -35,6 +35,7 @@ Pod::Spec.new do |s|
     ss.dependency 'GPUImage', '~> 0.1.7'
     ss.dependency 'Branch', '~> 0.14.12'
     ss.dependency 'Google-Mobile-Ads-SDK', '~> 7.22.0'
+    ss.dependency 'React' # explicit dependency required for CocoaPods >= 1.5.0
   end
 
   s.subspec "CPP" do |ss|
