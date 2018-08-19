@@ -1,0 +1,23 @@
+version: 2
+jobs:
+  build:
+    working_directory: ~/expo-sdk
+    docker:
+      - image: circleci/node:8
+    steps:
+      - checkout
+      - restore_cache:
+          key: v1-node_modules
+      - run:
+          name: Install npm packages
+          command: yarn
+      - save_cache:
+          key: v1-node_modules
+          paths:
+            - node_modules
+      - run:
+          name: Run tests
+          command: yarn jest --coverage
+      - run:
+          name: Upload results to Codecov
+          command: bash <(curl -s https://codecov.io/bash)
