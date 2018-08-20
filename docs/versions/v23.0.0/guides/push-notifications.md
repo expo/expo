@@ -63,9 +63,9 @@ async function registerForPushNotificationsAsync() {
 
 Push notifications have to come from somewhere, and that somewhere is your server, probably (you could write a command line tool to send them if you wanted, it's all the same). When you're ready to send a push notification, grab the Expo push token off of the user record and send it over to the Expo API using a plain old HTTP POST request. We've taken care of wrapping that for you in a few languages:![Diagram explaining sending a push from your server to device](./sending-notification.png)
 
--   [exponent-server-sdk-ruby](https://github.com/expo/exponent-server-sdk-ruby)
--   [exponent-server-sdk-python](https://github.com/expo/exponent-server-sdk-python)
--   [exponent-server-sdk-node](https://github.com/expo/exponent-server-sdk-node)
+-   [expo-server-sdk-ruby](https://github.com/expo/expo-server-sdk-ruby)
+-   [expo-server-sdk-python](https://github.com/expo/expo-server-sdk-python)
+-   [expo-server-sdk-node](https://github.com/expo/expo-server-sdk-node)
 
 Check out the source if you would like to implement it in another language. For the sake of demonstration, let's look at our [simple-rails-push-server-example](https://github.com/expo/simple-rails-push-server-example).
 

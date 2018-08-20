@@ -63,9 +63,9 @@ async function registerForPushNotificationsAsync() {
 
 Push notifications have to come from somewhere, and that somewhere is your server, probably (you could write a command line tool to send them if you wanted, it's all the same). When you're ready to send a push notification, grab the Expo push token off of the user record and send it over to the Expo API using a plain old HTTPS POST request. We've taken care of wrapping that for you in a few languages:![Diagram explaining sending a push from your server to device](./sending-notification.png)
 
--   [exponent-server-sdk-node](https://github.com/expo/exponent-server-sdk-node) for Node.js. Maintained by the Expo team.
--   [exponent-server-sdk-python](https://github.com/expo/exponent-server-sdk-python) for Python. Maintained by community developers.
--   [exponent-server-sdk-ruby](https://github.com/expo/exponent-server-sdk-ruby) for Ruby. Maintained by community developers.
+-   [expo-server-sdk-node](https://github.com/expo/expo-server-sdk-node) for Node.js. Maintained by the Expo team.
+-   [expo-server-sdk-python](https://github.com/expo/expo-server-sdk-python) for Python. Maintained by community developers.
+-   [expo-server-sdk-ruby](https://github.com/expo/expo-server-sdk-ruby) for Ruby. Maintained by community developers.
 -   [ExpoNotificationsBundle](https://github.com/solvecrew/ExpoNotificationsBundle) for Symfony. Maintained by SolveCrew.
 -   [exponent-server-sdk-php](https://github.com/Alymosul/exponent-server-sdk-php) for PHP. Maintained by community developers.
 -   [exponent-server-sdk-golang](https://github.com/oliveroneill/exponent-server-sdk-golang) for Golang. Maintained by community developers.
@@ -144,7 +144,7 @@ Send a POST request to `https://exp.host/--/api/v2/push/send` with the following
     accept-encoding: gzip, deflate
     content-type: application/json
 
-The Expo server also optionally accepts gzip-compressed request bodies. This can greatly reduce the amount of upload bandwidth needed to send large numbers of notifications. The [Node SDK](https://github.com/expo/exponent-server-sdk-node) automatically gzips requests for you.
+The Expo server also optionally accepts gzip-compressed request bodies. This can greatly reduce the amount of upload bandwidth needed to send large numbers of notifications. The [Node SDK](https://github.com/expo/expo-server-sdk-node) automatically gzips requests for you.
 
 This API currently does not require any authentication.
 
