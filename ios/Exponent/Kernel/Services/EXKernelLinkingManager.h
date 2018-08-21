@@ -33,6 +33,11 @@
 
 + (NSString *)stringByRemovingDeepLink:(NSString *)path;
 
+/**
+ *  Determine if an url is hosted by expo
+ */
++ (BOOL)isExpoHostedUrl: (NSURL *)url;
+
 # pragma mark - app-wide linking handlers
 
 + (BOOL)application:(UIApplication *)application

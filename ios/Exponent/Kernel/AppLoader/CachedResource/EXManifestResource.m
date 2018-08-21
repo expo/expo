@@ -70,8 +70,8 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
     NSString *manifestSignature = (NSString *)manifestObj[@"signature"];
     
     NSMutableDictionary *innerManifestObj;
-    if (!innerManifestString && [self isUsingEmbeddedResource]) {
-      // locally bundled manifests are not signed
+    if (!innerManifestString) {
+      // this manifest is not signed
       innerManifestObj = [manifestObj mutableCopy];
     } else {
       @try {
@@ -99,6 +99,13 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
     };
     
     if ([self _isManifestVerificationBypassed]) {
+      if ([self _isThirdPartyHosted]){
+        // the manifest id determines the namespace/experience id an app is sandboxed with
+        // if manifest is obtained via https, we sandbox it with the hostname to avoid clobbering exp.host namespaces
+        // namespace is of the form <host><path>-<slug> (ie) quinlanj.github.io/selfhosting-myapp
+        NSString * slugSuffix = innerManifestObj[@"slug"] ? [@"-" stringByAppendingString:innerManifestObj[@"slug"]]: @"";
+        innerManifestObj[@"id"] = [NSString stringWithFormat:@"%@%@%@", self.remoteUrl.host, self.remoteUrl.path?:@"", slugSuffix];
+      }
       signatureSuccess(YES);
     } else {
       NSURL *publicKeyUrl = [NSURL URLWithString:kEXPublicKeyUrl];
@@ -229,6 +236,11 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
   return (cacheDirectoryExists) ? sourceDirectory : nil;
 }
 
+- (BOOL)_isThirdPartyHosted
+{
+  return (self.remoteUrl && [self.remoteUrl.scheme isEqualToString:@"https"] && ![EXKernelLinkingManager isExpoHostedUrl:self.remoteUrl]);
+}
+
 - (BOOL)_isManifestVerificationBypassed
 {
   return (
@@ -239,7 +251,10 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
           [EXEnvironment sharedEnvironment].isManifestVerificationBypassed ||
           
           // we're using a copy that came with the NSBundle and was therefore already codesigned
-          [self isUsingEmbeddedResource]
+          [self isUsingEmbeddedResource] ||
+          
+          // we sandbox third party hosted apps instead of verifying signature
+          [self _isThirdPartyHosted]
   );
 }
 
