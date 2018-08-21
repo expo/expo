@@ -4,13 +4,10 @@
     "description": "Test suite for the Exponent SDK",
     "slug": "test-suite",
     "version": "1.0.0",
-    "sdkVersion": "29.0.0",
+    "sdkVersion": "UNVERSIONED",
     "packagerOpts": {
-      "assetExts": [
-        "ttf",
-        "mp4",
-        "db"
-      ]
+      "assetExts": ["db"],
+      "config": "rn-cli.config.js"
     },
     "ios": {
       "bundleIdentifier": "io.expo.testsuite"

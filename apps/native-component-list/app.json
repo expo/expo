@@ -4,7 +4,7 @@
     "description":
       "This demonstrates a bunch of the native components that you can use in React Native core and Expo.",
     "slug": "native-component-list",
-    "sdkVersion": "29.0.0",
+    "sdkVersion": "UNVERSIONED",
     "version": "29.0.0",
     "githubUrl": "https://github.com/expo/native-component-list",
     "orientation": "portrait",
@@ -20,7 +20,7 @@
       "image": "./assets/icons/loadingIcon.png"
     },
     "packagerOpts": {
-      "assetExts": ["ttf", "mp4"]
+      "config": "rn-cli.config.js"
     },
     "facebookScheme": "fb1201211719949057",
     "facebookAppId": "1201211719949057",
@@ -62,7 +62,6 @@
       "assets/**",
       "node_modules/react-navigation/src/**/*.png",
       "node_modules/@expo/vector-icons/fonts/*.ttf"
-    ],
-    "scheme": "nclexp"
+    ]
   }
 }
