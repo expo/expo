@@ -1,0 +1,42 @@
+{
+  "name": "babel-preset-expo",
+  "version": "4.0.0",
+  "description": "The Babel preset for Expo projects",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/expo/expo.git"
+  },
+  "keywords": [
+    "babel",
+    "babel-preset",
+    "expo",
+    "react-native"
+  ],
+  "author": "Expo <support@expo.io>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "homepage": "https://github.com/expo/expo/tree/master/packages/babel-preset-expo#readme",
+  "jest": {
+    "testPathIgnorePatterns": [
+      "<rootDir>/node_modules/",
+      "<rootDir>/__tests__/samples/"
+    ]
+  },
+  "dependencies": {
+    "babel-plugin-module-resolver": "^2.7.1",
+    "babel-plugin-transform-decorators-legacy": "^1.3.4",
+    "babel-plugin-transform-exponentiation-operator": "^6.24.1",
+    "babel-plugin-transform-export-extensions": "^6.22.0",
+    "babel-preset-react-native": "^4.0.0"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "jest": "^21.2.1"
+  }
+}
