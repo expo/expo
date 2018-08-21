@@ -207,7 +207,7 @@ NSString *kEXExpoLegacyDeepLinkSeparator = @"+";
   if ([EXEnvironment sharedEnvironment].isDetached && [[EXEnvironment sharedEnvironment] isStandaloneUrlScheme:components.scheme]) {
     // if we're standalone and this uri had the standalone scheme, leave it alone.
   } else {
-    if ([components.scheme isEqualToString:@"https"]) {
+    if ([components.scheme isEqualToString:@"https"] || [components.scheme isEqualToString:@"exps"]) {
       components.scheme = @"exps";
     } else {
       components.scheme = @"exp";
