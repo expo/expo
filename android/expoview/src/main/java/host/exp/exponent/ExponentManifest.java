@@ -30,6 +30,7 @@ import host.exp.expoview.R;
 import expolib_v1.okhttp3.Request;
 
 import org.apache.commons.io.IOUtils;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -444,13 +445,37 @@ public class ExponentManifest {
     }
   }
 
-  private void fetchManifestStep2(final String manifestUrl, final String manifestString, final ExpoHeaders headers, final ManifestListener listener, final boolean isEmbedded, boolean isCached) throws JSONException, URISyntaxException {
+  private JSONObject extractManifest(final String manifestString) throws IOException {
+      try {
+          return new JSONObject(manifestString);
+      } catch (JSONException e) {
+        // Ignore this error, try to parse manifest as array
+      }
+
+      try {
+        // the manifestString could be an array of manifest objects
+        // in this case, we choose the first compatible manifest in the array
+        JSONArray manifestArray = new JSONArray(manifestString);
+        for (int i = 0; i < manifestArray.length(); i++) {
+          JSONObject manifestCandidate = manifestArray.getJSONObject(i);
+          String sdkVersion = manifestCandidate.getString(MANIFEST_SDK_VERSION_KEY);
+          if (Constants.SDK_VERSIONS_LIST.contains(sdkVersion)){
+            return manifestCandidate;
+          }
+        }
+      } catch (JSONException e){
+        throw new IOException("Manifest string is not a valid JSONObject or JSONArray: " + manifestString, e);
+      }
+      throw new IOException("No compatible manifest found. SDK Versions supported: " + Constants.SDK_VERSIONS + " Provided manifestString: " + manifestString);
+  }
+
+  private void fetchManifestStep2(final String manifestUrl, final String manifestString, final ExpoHeaders headers, final ManifestListener listener, final boolean isEmbedded, boolean isCached) throws JSONException, URISyntaxException, IOException {
     if (Constants.DEBUG_MANIFEST_METHOD_TRACING) {
       Debug.stopMethodTracing();
     }
     Analytics.markEvent(Analytics.TimedEvent.FINISHED_MANIFEST_NETWORK_REQUEST);
 
-    final JSONObject manifest = new JSONObject(manifestString);
+    final JSONObject manifest = extractManifest(manifestString);
     final boolean isMainShellAppExperience = manifestUrl.equals(Constants.INITIAL_URL);
     final URI parsedManifestUrl = new URI(manifestUrl);
 
