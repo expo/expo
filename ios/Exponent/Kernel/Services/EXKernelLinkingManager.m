@@ -175,7 +175,7 @@ NSString *kEXExpoLegacyDeepLinkSeparator = @"+";
       // TODO: remove this
       NSRange deepLinkRangeLegacy = [uriString rangeOfString:kEXExpoLegacyDeepLinkSeparator];
       NSString *deepLink = @"";
-      if (deepLinkRange.length > 0 && [[self class] _isExpoHostedUrl:normalizedUri]) {
+      if (deepLinkRange.length > 0 && [[self class] isExpoHostedUrl:normalizedUri]) {
         deepLink = [uriString substringFromIndex:deepLinkRange.location + kEXExpoDeepLinkSeparator.length];
       } else if (deepLinkRangeLegacy.length > 0) {
         deepLink = [uriString substringFromIndex:deepLinkRangeLegacy.location + kEXExpoLegacyDeepLinkSeparator.length];
@@ -235,7 +235,7 @@ NSString *kEXExpoLegacyDeepLinkSeparator = @"+";
   return NO;
 }
 
-+ (BOOL)_isExpoHostedUrl: (NSURL *)url
++ (BOOL)isExpoHostedUrl: (NSURL *)url
 {
   return [[self class] _isExpoHostedUrlComponents:[NSURLComponents componentsWithURL:url resolvingAgainstBaseURL:YES]];
 }
