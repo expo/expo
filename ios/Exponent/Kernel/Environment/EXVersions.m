@@ -146,4 +146,8 @@
   _versions = mutableVersions;
 }
 
+- (BOOL)supportsVersion:(NSString *)sdkVersion {
+  return [_versions[@"sdkVersions"] containsObject:(NSString *) sdkVersion];
+}
+
 @end
