@@ -19,7 +19,8 @@ import java.util.Map;
 
 import expo.adapters.react.ReactModuleRegistryProvider;
 import expo.core.interfaces.Package;
-import expo.modules.print.PrintPackage;
+import expo.modules.analytics.segment.SegmentPackage;
+import expo.modules.barcodescanner.BarCodeScannerPackage;
 import expo.modules.camera.CameraPackage;
 import expo.modules.constants.ConstantsPackage;
 import expo.modules.facedetector.FaceDetectorPackage;
@@ -27,7 +28,7 @@ import expo.modules.filesystem.FileSystemPackage;
 import expo.modules.gl.GLPackage;
 import expo.modules.medialibrary.MediaLibraryPackage;
 import expo.modules.permissions.PermissionsPackage;
-import expo.modules.analytics.segment.SegmentPackage;
+import expo.modules.print.PrintPackage;
 import expo.modules.sensors.SensorsPackage;
 import expo.modules.sms.SMSPackage;
 import host.exp.exponent.ExponentManifest;
@@ -44,8 +45,6 @@ import versioned.host.exp.exponent.modules.api.UpdatesModule;
 import versioned.host.exp.exponent.modules.api.av.video.VideoManager;
 import versioned.host.exp.exponent.modules.api.fbads.AdIconViewManager;
 import versioned.host.exp.exponent.modules.api.fbads.MediaViewManager;
-import versioned.host.exp.exponent.modules.api.components.barcodescanner.BarCodeScannerModule;
-import versioned.host.exp.exponent.modules.api.components.barcodescanner.BarCodeScannerViewManager;
 import versioned.host.exp.exponent.modules.api.AmplitudeModule;
 import versioned.host.exp.exponent.modules.api.CalendarModule;
 import versioned.host.exp.exponent.modules.api.ContactsModule;
@@ -111,7 +110,8 @@ public class ExponentPackage implements ReactPackage {
       new SMSPackage(),
       new PrintPackage(),
       new MediaLibraryPackage(),
-      new SegmentPackage()
+      new SegmentPackage(),
+      new BarCodeScannerPackage()
   );
 
   private static final String TAG = ExponentPackage.class.getSimpleName();
@@ -214,7 +214,6 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new BrightnessModule(reactContext));
         nativeModules.add(new RNGestureHandlerModule(reactContext));
         nativeModules.add(new StripeModule(reactContext));
-        nativeModules.add(new BarCodeScannerModule(reactContext));
         nativeModules.add(new RNAWSCognitoModule(reactContext));
         nativeModules.add(new MailComposerModule(reactContext));
         nativeModules.add(new CalendarModule(reactContext, experienceId));
@@ -242,7 +241,6 @@ public class ExponentPackage implements ReactPackage {
         new LinearGradientManager(),
         new VideoViewManager(),
         new NativeAdViewManager(),
-        new BarCodeScannerViewManager(),
         new BannerViewManager(),
         new MediaViewManager(),
         new AdIconViewManager()

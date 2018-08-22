@@ -55,6 +55,7 @@
   "dependencies": {
     "expo-analytics-segment": "^1.0.0",
     "expo-asset": "^1.0.0",
+    "expo-barcode-scanner": "^1.0.0",
     "expo-camera": "^1.0.0",
     "expo-constants": "^1.0.0",
     "expo-core": "^1.0.0",

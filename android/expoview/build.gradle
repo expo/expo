@@ -125,6 +125,8 @@ dependencies {
   api 'host.exp.exponent:expo-print:1.0.0'
   api 'host.exp.exponent:expo-media-library:1.0.0'
   api 'host.exp.exponent:expo-analytics-segment:1.0.0'
+  api 'host.exp.exponent:expo-barcode-scanner-interface:1.0.0'
+  api 'host.exp.exponent:expo-barcode-scanner:1.0.0'
   END UNCOMMENT WHEN DISTRIBUTING */
 
   // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
@@ -149,6 +151,8 @@ dependencies {
   api project(':expo-print')
   api project(':expo-media-library')
   api project(':expo-analytics-segment')
+  api project(':expo-barcode-scanner')
+  api project(':expo-barcode-scanner-interface')
   // WHEN_DISTRIBUTING_REMOVE_TO_HERE
 
   // Versioned react native
