@@ -23,7 +23,7 @@ Get the current position of the device.
 
 #### Returns
 
-Returns an object with the following fields:
+Returns a promise resolving to an object with the following fields:
 
 -   **coords (_object_)** -- The coordinates of the position, with the following fields:
     -   **latitude (_number_)** -- The latitude in degrees.
@@ -65,7 +65,7 @@ Subscribe to location updates from the device. Please note that updates will onl
 
 #### Returns
 
-Returns a subscription object, which has one field:
+Returns a promise resolving to a subscription object, which has one field:
 
 -   **remove (_function_)** -- Call this function with no arguments to remove this subscription. The callback will no longer be called for location updates.
 
@@ -75,7 +75,7 @@ Check status of location providers.
 
 #### Returns
 
-Returns an object with the following fields:
+Returns a promise resolving to an object with the following fields:
 
 -   **locationServicesEnabled (_boolean_)** -- Whether location services are enabled.
 -   **gpsAvailable (_boolean_)** (android only) -- If the GPS provider is available, if yes, location data will be from GPS.
@@ -85,10 +85,6 @@ Returns an object with the following fields:
 ### `Expo.Location.getHeadingAsync()`
 
 Gets the current heading information from the device
-
-#### Arguments
-
-None
 
 #### Returns
 
@@ -119,7 +115,7 @@ Suscribe to compass updates from the device
 
 #### Returns
 
-Returns a subscription object, which has one field:
+Returns a promise resolving to a subscription object, which has one field:
 
 - **remove (function)** — Call this function with no arguments to remove this subscription. The callback will no longer be called for location updates.
 
@@ -137,7 +133,7 @@ Geocode an address string to latitiude-longitude location.
 
 #### Returns
 
-Returns an array (in most cases its size is 1) of geocoded location objects with the following fields:
+Returns a promise resolving to an array (in most cases its size is 1) of geocoded location objects with the following fields:
 
 -   **latitude (_number_)** -- The latitude in degrees.
 -   **longitude (_number_)** -- The longitude in degrees.
@@ -162,7 +158,7 @@ Reverse geocode a location to postal address.
 
 #### Returns
 
-Returns an array (in most cases its size is 1) of address objects with following fields:
+Returns a promise resolving to an array (in most cases its size is 1) of address objects with following fields:
 
 -   **city (_string_)** -- City name of the address.
 -   **street (_string_)** -- Street name of the address.
