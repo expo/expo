@@ -126,7 +126,7 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
     };
     
     if ([self _isManifestVerificationBypassed]) {
-      if ([self _isThirdPartyHosted]){
+      if ([self _isThirdPartyHosted] && ![EXEnvironment sharedEnvironment].isDetached){
         // the manifest id determines the namespace/experience id an app is sandboxed with
         // if manifest is obtained via https, we sandbox it with the hostname to avoid clobbering exp.host namespaces
         // namespace is of the form <host><path>-<slug> (ie) quinlanj.github.io/selfhosting-myapp
