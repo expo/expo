@@ -1,9 +1,11 @@
 import { AppLoading, Asset, Constants, Font } from 'expo';
 import React from 'react';
 import { ActivityIndicator, Linking, Platform, StatusBar, StyleSheet, View } from 'react-native';
+import url from 'url';
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 
+import jwtDecode from 'jwt-decode';
 import Navigation from './navigation/Navigation';
 import HistoryActions from './redux/HistoryActions';
 import SessionActions from './redux/SessionActions';
@@ -14,7 +16,6 @@ import Store from './redux/Store';
 
 import addListenerWithNativeCallback from './utils/addListenerWithNativeCallback';
 import getViewerUsernameAsync from './utils/getViewerUsernameAsync';
-import jwtDecode from 'jwt-decode';
 
 function cacheImages(images) {
   return images.map(image => Asset.fromModule(image).downloadAsync());
@@ -33,11 +34,40 @@ export default class App extends React.Component {
     );
   }
 
+  _isExpoHost = host => {
+    return (
+      host === 'exp.host' ||
+      host === 'expo.io' ||
+      host === 'exp.direct' ||
+      host === 'expo.test' ||
+      host.endsWith('.exp.host') ||
+      host.endsWith('.expo.io') ||
+      host.endsWith('.exp.direct') ||
+      host.endsWith('.expo.test')
+    );
+  };
+
+  _isThirdPartyHosted = urlToCheck => {
+    if (!urlToCheck) {
+      return false;
+    }
+    const urlComponents = url.parse(urlToCheck);
+    const host = urlComponents.host;
+    if (!host) {
+      return false;
+    }
+    return !this._isExpoHost(host);
+  };
+
   _getIsValidHomeManifestToOpen = async event => {
-    const { manifest } = event;
+    const { manifest, manifestUrl } = event;
     let isValid = false;
     if (!Constants.isDevice) {
       // simulator has no restriction
+      isValid = true;
+    } else if (this._isThirdPartyHosted(manifestUrl)) {
+      // TODO(quin): figure out a long term solution for this
+      // allow self hosted applications to be loaded into the client
       isValid = true;
     } else if (manifest) {
       if (manifest.developer && manifest.developer.tool) {
