@@ -48,7 +48,4 @@ typedef NS_ENUM(NSInteger, EXCameraVideoResolution) {
 
 @interface EXCameraManager : EXViewManager <EXModuleRegistryConsumer>
 
-+ (NSDictionary *)validBarCodeTypes;
-
 @end
-

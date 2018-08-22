@@ -12,8 +12,7 @@ export default class BarcodeScannerExample extends React.Component {
 
   state = {
     isPermissionsGranted: false,
-    torchMode: 'off',
-    type: 'back',
+    type: BarCodeScanner.Constants.Type.back,
   };
 
   async componentDidMount() {
@@ -32,29 +31,29 @@ export default class BarcodeScannerExample extends React.Component {
     return (
       <View style={styles.container}>
         <BarCodeScanner
-          onBarCodeRead={this._handleBarCodeRead}
-          torchMode={this.state.torchMode}
+          onBarCodeScanned={this.handleBarCodeScanned}
+          barCodeTypes={[
+            BarCodeScanner.Constants.BarCodeType.qr,
+            BarCodeScanner.Constants.BarCodeType.pdf417,
+          ]}
           type={this.state.type}
           style={styles.preview}
         />
 
         <View style={styles.toolbar}>
-          <Button color={BUTTON_COLOR} title="Toggle Flashlight" onPress={this._toggleTorch} />
-          <Button color={BUTTON_COLOR} title="Toggle Direction" onPress={this._toggleType} />
+          <Button color={BUTTON_COLOR} title="Toggle Direction" onPress={this.toggleType} />
         </View>
       </View>
     );
   }
 
-  _toggleTorch = () => {
-    this.setState({ torchMode: this.state.torchMode === 'off' ? 'on' : 'off' });
-  };
+  toggleType = () => this.setState({ type:
+    this.state.type === BarCodeScanner.Constants.Type.back
+      ? BarCodeScanner.Constants.Type.front
+      : BarCodeScanner.Constants.Type.back,
+    });
 
-  _toggleType = () => {
-    this.setState({ type: this.state.type === 'back' ? 'front' : 'back' });
-  };
-
-  _handleBarCodeRead = data => {
+  handleBarCodeScanned = data => {
     this.props.navigation.goBack();
     requestAnimationFrame(() => {
       alert(JSON.stringify(data));

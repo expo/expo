@@ -62,6 +62,10 @@ target 'Exponent' do
     :path => "../modules/expo-face-detector-interface/ios"
   pod 'EXFaceDetector',
     :path => "../modules/expo-face-detector/ios"
+  pod 'EXBarCodeScannerInterface',
+    :path => "../modules/expo-barcode-scanner-interface/ios"
+  pod 'EXBarCodeScanner',
+    :path => "../modules/expo-barcode-scanner/ios"
   pod 'EXGL-CPP',
     :path => "../modules/expo-gl-cpp/cpp"
 

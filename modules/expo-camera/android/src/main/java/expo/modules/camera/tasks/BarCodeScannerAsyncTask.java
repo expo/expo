@@ -1,9 +1,10 @@
 package expo.modules.camera.tasks;
 
-import expo.modules.camera.utils.ExpoBarCodeDetector;
+import expo.interfaces.barcodescanner.BarCodeScanner;
+import expo.interfaces.barcodescanner.BarCodeScannerResult;
 
-public class BarCodeScannerAsyncTask extends android.os.AsyncTask<Void, Void, ExpoBarCodeDetector.Result> {
-  private final ExpoBarCodeDetector mDetector;
+public class BarCodeScannerAsyncTask extends android.os.AsyncTask<Void, Void, BarCodeScannerResult> {
+  private final BarCodeScanner mBarCodeScanner;
   private byte[] mImageData;
   private int mWidth;
   private int mHeight;
@@ -12,7 +13,7 @@ public class BarCodeScannerAsyncTask extends android.os.AsyncTask<Void, Void, Ex
 
   public BarCodeScannerAsyncTask(
       BarCodeScannerAsyncTaskDelegate delegate,
-      ExpoBarCodeDetector detector,
+      BarCodeScanner barCodeScanner,
       byte[] imageData,
       int width,
       int height,
@@ -22,24 +23,24 @@ public class BarCodeScannerAsyncTask extends android.os.AsyncTask<Void, Void, Ex
     mWidth = width;
     mHeight = height;
     mDelegate = delegate;
-    mDetector = detector;
+    mBarCodeScanner = barCodeScanner;
     mRotation = rotation;
   }
 
   @Override
-  protected ExpoBarCodeDetector.Result doInBackground(Void... ignored) {
+  protected BarCodeScannerResult doInBackground(Void... ignored) {
     if (isCancelled() || mDelegate == null) {
       return null;
     }
 
-    return mDetector.detect(mImageData, mWidth, mHeight, mRotation);
+    return mBarCodeScanner.scan(mImageData, mWidth, mHeight, mRotation);
   }
 
   @Override
-  protected void onPostExecute(ExpoBarCodeDetector.Result result) {
+  protected void onPostExecute(BarCodeScannerResult result) {
     super.onPostExecute(result);
     if (result != null) {
-      mDelegate.onBarCodeRead(result);
+      mDelegate.onBarCodeScanned(result);
     }
     mDelegate.onBarCodeScanningTaskCompleted();
   }

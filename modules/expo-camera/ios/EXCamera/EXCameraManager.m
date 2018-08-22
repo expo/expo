@@ -4,13 +4,11 @@
 
 #import <EXCore/EXUIManager.h>
 #import <EXFileSystemInterface/EXFileSystemInterface.h>
-#import <EXImageLoaderInterface/EXImageLoaderInterface.h>
 
 @interface EXCameraManager ()
 
 @property (nonatomic, weak) id<EXFileSystemInterface> fileSystem;
 @property (nonatomic, weak) id<EXUIManager> uiManager;
-@property (nonatomic, weak) id<EXImageLoaderInterface> imageLoader;
 @property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
 
 @end
@@ -29,7 +27,6 @@ EX_EXPORT_MODULE(ExponentCameraManager);
   _moduleRegistry = moduleRegistry;
   _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
   _uiManager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXUIManager)];
-  _imageLoader = [moduleRegistry getModuleImplementingProtocol:@protocol(EXImageLoaderInterface)];
 }
 
 - (UIView *)view
@@ -65,33 +62,18 @@ EX_EXPORT_MODULE(ExponentCameraManager);
                @"480p": @(EXCameraVideo4x3),
                @"4:3": @(EXCameraVideo4x3),
                },
-           @"BarCodeType" : [[self class] validBarCodeTypes]
            };
 }
 
 - (NSArray<NSString *> *)supportedEvents
 {
-  return @[@"onCameraReady", @"onMountError", @"onBarCodeRead", @"onFacesDetected", @"onPictureSaved"];
-}
-
-
-+ (NSDictionary *)validBarCodeTypes
-{
-  return @{
-           @"upc_e" : AVMetadataObjectTypeUPCECode,
-           @"code39" : AVMetadataObjectTypeCode39Code,
-           @"code39mod43" : AVMetadataObjectTypeCode39Mod43Code,
-           @"ean13" : AVMetadataObjectTypeEAN13Code,
-           @"ean8" : AVMetadataObjectTypeEAN8Code,
-           @"code93" : AVMetadataObjectTypeCode93Code,
-           @"code138" : AVMetadataObjectTypeCode128Code,
-           @"pdf417" : AVMetadataObjectTypePDF417Code,
-           @"qr" : AVMetadataObjectTypeQRCode,
-           @"aztec" : AVMetadataObjectTypeAztecCode,
-           @"interleaved2of5" : AVMetadataObjectTypeInterleaved2of5Code,
-           @"itf14" : AVMetadataObjectTypeITF14Code,
-           @"datamatrix" : AVMetadataObjectTypeDataMatrixCode
-           };
+  return @[
+           @"onCameraReady",
+           @"onMountError",
+           @"onPictureSaved",
+           @"onBarCodeScanned",
+           @"onFacesDetected",
+           ];
 }
 
 + (NSDictionary *)pictureSizes
@@ -132,6 +114,10 @@ EX_VIEW_PROPERTY(faceDetectorSettings, NSDictionary *, EXCamera)
   [view updateFaceDetectorSettings:value];
 }
 
+EX_VIEW_PROPERTY(barCodeScannerSettings, NSDictionary *, EXCamera)
+{
+  [view setBarCodeScannerSettings:value];
+}
 
 EX_VIEW_PROPERTY(autoFocus, NSNumber *, EXCamera)
 {
@@ -182,19 +168,12 @@ EX_VIEW_PROPERTY(faceDetectorEnabled, NSNumber *, EXCamera)
   }
 }
 
-
 EX_VIEW_PROPERTY(barCodeScannerEnabled, NSNumber *, EXCamera)
 {
   bool boolValue = [value boolValue];
-  if ([view isReadingBarCodes] != boolValue) {
-    [view setIsReadingBarCodes:boolValue];
-    [view setupOrDisableBarcodeScanner];
+  if ([view isScanningBarCodes] != boolValue) {
+    [view setIsScanningBarCodes:boolValue];
   }
-}
-
-EX_VIEW_PROPERTY(barCodeTypes, NSArray *, EXCamera)
-{
-  [view setBarCodeTypes:value];
 }
 
 EX_EXPORT_METHOD_AS(takePicture,
@@ -329,42 +308,6 @@ EX_EXPORT_METHOD_AS(getAvailablePictureSizes,
                                               rejecter:(EXPromiseRejectBlock)reject)
 {
   resolve([[[self class] pictureSizes] allKeys]);
-}
-
-EX_EXPORT_METHOD_AS(readBarCodeFromURL,
-                    readBarCodeFromURL:(NSString *)url
-                    barCodeTypes:(NSArray *)barCodeTypes
-                    resolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
-{
-  // We only support QR codes, so barCodeTypes is ignored
-  NSURL *imageURL = [NSURL URLWithString:url];
-  [_imageLoader loadImageForURL:imageURL
-              completionHandler:^(NSError *error, UIImage *loadedImage) {
-                if (error != nil) {
-                  reject(@"E_IMAGE_RETRIEVAL_ERROR", @"Could not get the image", error);
-                  return;
-                }
-
-                CIDetector *detector = [CIDetector detectorOfType:CIDetectorTypeQRCode
-                                                          context:nil
-                                                          options:@{CIDetectorAccuracy:CIDetectorAccuracyHigh}];
-                if (detector)  {
-                  NSArray *features = [detector featuresInImage:[[CIImage alloc] initWithCGImage:loadedImage.CGImage]];
-
-                  NSMutableArray *result = [NSMutableArray arrayWithCapacity:1];
-                  for (CIQRCodeFeature *feature in features)  {
-                    [result addObject:@{
-                                        @"type" : AVMetadataObjectTypeQRCode,
-                                        @"data" : feature.messageString
-                                        }];
-                  }
-
-                  resolve(result);
-                } else {
-                  reject(@"E_SCANNER_INIT_FAILED", @"Could not initialize the barcode scanner", nil);
-                }
-              }];
 }
 
 @end

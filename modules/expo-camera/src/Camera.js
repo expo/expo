@@ -53,15 +53,15 @@ type PropsType = ViewPropTypes & {
   focusDepth?: number,
   type?: number | string,
   onCameraReady?: Function,
-  onBarCodeRead?: Function,
   useCamera2Api?: boolean,
   flashMode?: number | string,
-  barCodeTypes?: Array<string | number>,
   whiteBalance?: number | string,
   autoFocus?: string | boolean | number,
   pictureSize?: string,
-  faceDetectionSettings?: {},
   onMountError?: MountErrorNativeEventType => void,
+  barCodeScannerSettings?: {},
+  onBarCodeScanned?: ({ type: string, data: string }) => void,
+  faceDetectorSettings?: {},
   onFacesDetected?: ({ faces: Array<*> }) => void,
 };
 
@@ -80,7 +80,6 @@ export default class Camera extends React.Component<PropsType> {
     AutoFocus: CameraManager.AutoFocus,
     WhiteBalance: CameraManager.WhiteBalance,
     VideoQuality: CameraManager.VideoQuality,
-    BarCodeType: CameraManager.BarCodeType,
   };
 
   // Values under keys from this object will be transformed to native options
@@ -100,10 +99,10 @@ export default class Camera extends React.Component<PropsType> {
     pictureSize: PropTypes.string,
     onCameraReady: PropTypes.func,
     useCamera2Api: PropTypes.bool,
-    onBarCodeRead: PropTypes.func,
+    onBarCodeScanned: PropTypes.func,
+    barCodeScannerSettings: PropTypes.object,
     onFacesDetected: PropTypes.func,
     faceDetectorSettings: PropTypes.object,
-    barCodeTypes: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.string, PropTypes.number])),
     type: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     flashMode: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     whiteBalance: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
@@ -119,7 +118,6 @@ export default class Camera extends React.Component<PropsType> {
     autoFocus: CameraManager.AutoFocus.on,
     flashMode: CameraManager.FlashMode.off,
     whiteBalance: CameraManager.WhiteBalance.auto,
-    barCodeTypes: Object.values(CameraManager.BarCodeType),
   };
 
   _cameraRef: ?Object;
@@ -230,6 +228,14 @@ export default class Camera extends React.Component<PropsType> {
     }
   };
 
+  _onBarCodeScanned = () => {
+    const onBarCodeRead = this.props.onBarCodeRead && ((data) => {
+      console.warn("'onBarCodeRead' is deprecated in favour of 'onBarCodeScanned'");
+      return this.props.onBarCodeRead(data);
+    });
+    return this.props.onBarCodeScanned || onBarCodeRead;
+  };
+
   render() {
     const nativeProps = this._convertNativeProps(this.props);
 
@@ -240,7 +246,7 @@ export default class Camera extends React.Component<PropsType> {
         onCameraReady={this._onCameraReady}
         onMountError={this._onMountError}
         onPictureSaved={this._onPictureSaved}
-        onBarCodeRead={this._onObjectDetected(this.props.onBarCodeRead)}
+        onBarCodeScanned={this._onObjectDetected(this._onBarCodeScanned())}
         onFacesDetected={this._onObjectDetected(this.props.onFacesDetected)}
       />
     );
@@ -249,7 +255,14 @@ export default class Camera extends React.Component<PropsType> {
   _convertNativeProps(props: PropsType) {
     const newProps = mapValues(props, this._convertProp);
 
-    if (props.onBarCodeRead) {
+    const propsKeys = Object.keys(newProps);
+    if (!propsKeys.includes("barCodeScannerSettings") && propsKeys.includes("barCodeTypes")) { // barCodeTypes is deprecated
+      newProps.barCodeScannerSettings = {
+        barCodeTypes: newProps.barCodeTypes,
+      };
+    }
+
+    if (props.onBarCodeScanned || props.onBarCodeRead) { // onBarCodeRead is deprecated
       newProps.barCodeScannerEnabled = true;
     }
 

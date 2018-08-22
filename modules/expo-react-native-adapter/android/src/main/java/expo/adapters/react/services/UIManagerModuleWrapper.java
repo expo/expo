@@ -166,7 +166,7 @@ public class UIManagerModuleWrapper implements
   }
 
   @Override
-  public void loadImageForURL(String url, final ResultListener resultListener) {
+  public void loadImageFromURL(String url, final ResultListener resultListener) {
     ImageRequest imageRequest = ImageRequest.fromUri(url);
 
     ImagePipeline imagePipeline = Fresco.getImagePipeline();
@@ -181,7 +181,7 @@ public class UIManagerModuleWrapper implements
               resultListener.onFailure(new Exception("Loaded bitmap is null"));
               return;
             }
-            resultListener.onImageLoaded(bitmap);
+            resultListener.onSuccess(bitmap);
           }
 
           @Override

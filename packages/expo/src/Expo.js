@@ -104,7 +104,7 @@ module.exports = {
     return require('./launch/AppLoading').default;
   },
   get BarCodeScanner() {
-    return require('./BarCodeScanner').default;
+    return require('expo-barcode-scanner').BarCodeScanner;
   },
   get BlurView() {
     return require('./effects/BlurView').default;

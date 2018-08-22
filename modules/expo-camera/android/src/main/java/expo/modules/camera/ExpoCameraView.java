@@ -27,6 +27,10 @@ import expo.core.ModuleRegistry;
 import expo.core.Promise;
 import expo.core.interfaces.services.EventEmitter;
 import expo.core.interfaces.services.UIManager;
+import expo.interfaces.barcodescanner.BarCodeScanner;
+import expo.interfaces.barcodescanner.BarCodeScannerProvider;
+import expo.interfaces.barcodescanner.BarCodeScannerResult;
+import expo.interfaces.barcodescanner.BarCodeScannerSettings;
 import expo.interfaces.camera.ExpoCameraViewInterface;
 import expo.interfaces.facedetector.FaceDetector;
 import expo.interfaces.facedetector.FaceDetectorProvider;
@@ -37,7 +41,8 @@ import expo.modules.camera.tasks.FaceDetectorAsyncTask;
 import expo.modules.camera.tasks.FaceDetectorAsyncTaskDelegate;
 import expo.modules.camera.tasks.PictureSavedDelegate;
 import expo.modules.camera.tasks.ResolveTakenPictureAsyncTask;
-import expo.modules.camera.utils.*;
+import expo.modules.camera.utils.FileSystemUtils;
+import expo.modules.camera.utils.ImageDimensions;
 
 public class ExpoCameraView extends CameraView implements LifecycleEventListener, BarCodeScannerAsyncTaskDelegate, FaceDetectorAsyncTaskDelegate, PictureSavedDelegate, ExpoCameraViewInterface {
   private static final String MUTE_KEY = "mute";
@@ -45,13 +50,11 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
   private static final String FAST_MODE_KEY = "fastMode";
   private static final String MAX_DURATION_KEY = "maxDuration";
   private static final String MAX_FILE_SIZE_KEY = "maxFileSize";
-  private Context mThemedReactContext;
 
   private Queue<Promise> mPictureTakenPromises = new ConcurrentLinkedQueue<>();
   private Map<Promise, Map<String, Object>> mPictureTakenOptions = new ConcurrentHashMap<>();
   private Map<Promise, File> mPictureTakenDirectories = new ConcurrentHashMap<>();
   private Promise mVideoRecordedPromise;
-  private List<Integer> mBarCodeTypes = null;
 
   private boolean mIsPaused = false;
   private boolean mIsNew = true;
@@ -61,7 +64,7 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
   public volatile boolean faceDetectorTaskLock = false;
 
   // Scanning-related properties
-  private ExpoBarCodeDetector mDetector;
+  private BarCodeScanner mBarCodeScanner;
   private FaceDetector mFaceDetector;
   private boolean mShouldDetectFaces = false;
   private boolean mShouldScanBarCodes = false;
@@ -71,8 +74,7 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
   public ExpoCameraView(Context themedReactContext, ModuleRegistry moduleRegistry) {
     super(themedReactContext, true);
     mModuleRegistry = moduleRegistry;
-    mThemedReactContext = themedReactContext;
-    initBarcodeReader();
+    initBarCodeScanner();
 
     mModuleRegistry.getModule(UIManager.class).registerLifecycleEventListener(this);
 
@@ -121,7 +123,7 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
         if (mShouldScanBarCodes && !barCodeScannerTaskLock && cameraView instanceof BarCodeScannerAsyncTaskDelegate) {
           barCodeScannerTaskLock = true;
           BarCodeScannerAsyncTaskDelegate delegate = (BarCodeScannerAsyncTaskDelegate) cameraView;
-          new BarCodeScannerAsyncTask(delegate, mDetector, data, width, height, rotation).execute();
+          new BarCodeScannerAsyncTask(delegate, mBarCodeScanner, data, width, height, rotation).execute();
         }
 
         if (mShouldDetectFaces && !faceDetectorTaskLock && cameraView instanceof FaceDetectorAsyncTaskDelegate) {
@@ -163,11 +165,6 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
     // @TODO figure out why there was a z order issue in the first place and fix accordingly.
     this.removeView(this.getView());
     this.addView(this.getView(), 0);
-  }
-
-  public void setBarCodeTypes(List<Integer> barCodeTypes) {
-    mBarCodeTypes = barCodeTypes;
-    initBarcodeReader();
   }
 
   public void takePicture(Map<String, Object> options, final Promise promise, File cacheDirectory) {
@@ -221,19 +218,15 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
   }
 
   /**
-   * Initialize the barcode decoder.
+   * Initialize the barcode scanner.
    * Supports all iOS codes except [code138, code39mod43, itf14]
    * Additionally supports [codabar, code128, maxicode, rss14, rssexpanded, upc_a, upc_ean]
    */
-  private void initBarcodeReader() {
-    int barcodeFormats = 0;
-    if (mBarCodeTypes != null) {
-      for (Integer code : mBarCodeTypes) {
-        barcodeFormats = barcodeFormats | code;
-      }
+  private void initBarCodeScanner() {
+    BarCodeScannerProvider barCodeScannerProvider = mModuleRegistry.getModule(BarCodeScannerProvider.class);
+    if (barCodeScannerProvider != null) {
+      mBarCodeScanner = barCodeScannerProvider.createBarCodeDetectorWithContext(getContext());
     }
-
-    mDetector = BarCodeDetectorUtils.initBarcodeReader(mBarCodeTypes, mThemedReactContext);
   }
 
   public void setShouldScanBarCodes(boolean shouldScanBarCodes) {
@@ -241,9 +234,15 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
     setScanning(mShouldScanBarCodes || mShouldDetectFaces);
   }
 
-  public void onBarCodeRead(ExpoBarCodeDetector.Result barCode) {
-    int barCodeType = barCode.getType();
-    if (!mShouldScanBarCodes || !mBarCodeTypes.contains(barCodeType)) {
+  public void setBarCodeScannerSettings(BarCodeScannerSettings settings) {
+    if (mBarCodeScanner != null) {
+      mBarCodeScanner.setSettings(settings);
+    }
+  }
+
+  @Override
+  public void onBarCodeScanned(BarCodeScannerResult barCode) {
+    if (!mShouldScanBarCodes) {
       return;
     }
 
