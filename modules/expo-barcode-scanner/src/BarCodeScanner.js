@@ -11,7 +11,7 @@ type EventCallbackArgumentsType = {
 
 type Props = ViewPropTypes & {
   onBarCodeScanned: EventCallbackArgumentsType => void,
-  barCodeTypes?: Array<>,
+  barCodeTypes?: Array<BarCodeScanner.Constants.BarCodeType>,
   type?: string | number,
 };
 
@@ -20,6 +20,11 @@ const { ExpoBarCodeScannerModule } = NativeModulesProxy;
 const EVENT_THROTTLE_MS = 500;
 
 export default class BarCodeScanner extends React.Component<Props> {
+  lastEvents: Object;
+  lastEventsTimes: Object;
+  barCodeScannerRef: ?Object;
+  barCodeScannerHandle: ?number;
+
   static Constants = {
     BarCodeType: ExpoBarCodeScannerModule.BarCodeType,
     Type: ExpoBarCodeScannerModule.Type,
@@ -61,8 +66,6 @@ export default class BarCodeScanner extends React.Component<Props> {
       return ExpoBarCodeScannerModule.scanFromURLAsync(url, [BarCodeScanner.Constants.BarCodeType.qr]);
     }
 
-    console.log('dupa');
-    console.log(barCodeTypes);
     // on Android if barCodeTypes not provided use all available types
     const effectiveBarCodeTypes = barCodeTypes || Object.values(ExpoBarCodeScannerModule.BarCodeType);
     return ExpoBarCodeScannerModule.scanFromURLAsync(url, effectiveBarCodeTypes);
