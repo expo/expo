@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)showQRReader;
 - (void)addHistoryItemWithUrl:(NSURL *)manifestUrl manifest:(NSDictionary *)manifest;
 - (void)getHistoryUrlForExperienceId:(NSString *)experienceId completion:(void (^)(NSString * _Nullable))completion;
-- (void)getIsValidHomeManifestToOpen:(NSDictionary *)manifest completion:(void (^)(BOOL isValid))completion;
+- (void)getIsValidHomeManifestToOpen:(NSDictionary *)manifest manifestUrl:(NSURL *) manifestUrl completion:(void (^)(BOOL isValid))completion;
 - (BOOL)isNuxFinished;
 - (void)setIsNuxFinished:(BOOL)isFinished;
 - (void)appDidFinishLoadingSuccessfully:(EXKernelAppRecord *)appRecord;

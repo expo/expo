@@ -51,10 +51,10 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
                    }];
 }
 
-- (void)getIsValidHomeManifestToOpen:(NSDictionary *)manifest completion:(void (^)(BOOL))completion
+- (void)getIsValidHomeManifestToOpen:(NSDictionary *)manifest manifestUrl:(NSURL *) manifestUrl completion:(void (^)(BOOL))completion
 {
   [self _dispatchHomeJSEvent:@"getIsValidHomeManifestToOpen"
-                        body:@{ @"manifest": manifest }
+                        body:@{ @"manifest": manifest, @"manifestUrl": manifestUrl.absoluteString }
                    onSuccess:^(NSDictionary *result) {
                      BOOL isValid = [result[@"isValid"] boolValue];
                      completion(isValid);
