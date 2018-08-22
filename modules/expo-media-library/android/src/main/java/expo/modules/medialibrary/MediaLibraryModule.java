@@ -190,6 +190,18 @@ public class MediaLibraryModule extends ExportedModule implements ModuleRegistry
   }
 
   @ExpoMethod
+  public void deleteAlbumsAsync(List<String> albumIds, Promise promise) {
+    if (isMissingPermissions()) {
+      promise.reject(ERROR_NO_PERMISSIONS, ERROR_NO_PERMISSIONS_MESSAGE);
+      return;
+    }
+
+    new DeleteAlbums(mContext, albumIds, promise)
+        .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
+  }
+
+  @ExpoMethod
   public void getAssetsAsync(Map<String, Object> assetOptions, Promise promise) {
     if (isMissingPermissions()) {
       promise.reject(ERROR_NO_PERMISSIONS, ERROR_NO_PERMISSIONS_MESSAGE);

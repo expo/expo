@@ -117,6 +117,12 @@ function checkAssetIds(assetIds) {
   }
 }
 
+function checkAlbumIds(albumIds) {
+  if (albumIds.some(id => !id || typeof id !== 'string')) {
+    throw new Error('Album ID must be a string!');
+  }
+}
+
 function checkMediaType(mediaType) {
   if (Object.values(MediaType).indexOf(mediaType) === -1) {
     throw new Error(`Invalid mediaType: ${mediaType}`);
@@ -241,6 +247,16 @@ export async function createAlbumAsync(
 
   if (Platform.OS === 'ios') return MediaLibrary.createAlbumAsync(albumName, assetId);
   return MediaLibrary.createAlbumAsync(albumName, assetId, !!copyAsset);
+}
+
+export async function deleteAlbumsAsync(albums: Array<AlbumRef> | AlbumRef, assetRemove: boolean = false) {
+  const albumIds = arrayize(albums).map(getId);
+
+  checkAlbumIds(albumIds);
+  if (Platform.OS === 'android') {
+    return MediaLibrary.deleteAlbumsAsync(albumIds);
+  }
+  return MediaLibrary.deleteAlbumsAsync(albumIds, !!assetRemove);
 }
 
 export async function getAssetsAsync(assetsOptions: AssetsOptions = {}): Promise<PagedInfo<Asset>> {

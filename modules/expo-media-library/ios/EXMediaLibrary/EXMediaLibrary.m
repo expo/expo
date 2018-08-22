@@ -270,6 +270,32 @@ EX_EXPORT_METHOD_AS(createAlbumAsync,
   }];
 }
 
+  
+EX_EXPORT_METHOD_AS(deleteAlbumsAsync,
+                    deleteAlbums:(nonnull NSArray<NSString *>*)albumIds
+                    assetRemove:(NSNumber *)assetRemove
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
+{
+
+  PHFetchResult *collections = [EXMediaLibrary _getAlbumsById:albumIds];
+  [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+    if (assetRemove) {
+      for (PHAssetCollection *collection in collections) {
+        PHFetchResult *fetch = [PHAsset fetchAssetsInAssetCollection:collection options:nil];
+        [PHAssetChangeRequest deleteAssets:fetch];
+      }
+    }
+    [PHAssetCollectionChangeRequest deleteAssetCollections:collections];
+  } completionHandler:^(BOOL success, NSError * _Nullable error) {
+    if (success == YES) {
+      resolve(@(success));
+    } else {
+      reject(@"E_ALBUM_DELETE_FAILED", @"Could not delete album", error);
+    }
+  }];
+}
+  
 EX_EXPORT_METHOD_AS(getAssetInfoAsync,
                     getAssetInfo:(nonnull NSString *)assetId
                     resolve:(EXPromiseResolveBlock)resolve
@@ -495,6 +521,13 @@ EX_EXPORT_METHOD_AS(getAssetsAsync,
 
   return fetchResult.firstObject;
 }
+
++ (PHFetchResult *)_getAlbumsById:(NSArray<NSString *>*)albumIds
+{
+  PHFetchOptions *options = [PHFetchOptions new];
+  return [PHAssetCollection fetchAssetCollectionsWithLocalIdentifiers:albumIds options:options];
+}
+
 
 + (PHAssetCollection *)_getAlbumById:(nonnull NSString *)albumId
 {
