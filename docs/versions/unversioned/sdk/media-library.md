@@ -113,6 +113,21 @@ In case it's copied you should keep in mind that `getAssetsAsync` will return du
 
 Newly created [album](#album).
 
+### `Expo.MediaLibrary.deleteAlbumsAsync(albums, deleteAssets)`
+
+Deletes given albums from the library.
+
+On Android by default it deletes assets belonging to given albums from the library. On iOS it doesn't delete these assets, however it's possible to do by passing `true` as `deleteAssets`.
+
+#### Arguments
+
+-   **albums (_array_)** -- Array of [albums](#album) or their IDs, that will be removed from the library.
+-   **deleteAssets (_boolean_)** -- Whether to also delete assets belonging to given albums. Defaults to `false`. (**iOS only**)
+
+#### Returns
+
+Returns a promise resolving to `true` if the albums were successfully deleted from the library.
+
 ### `Expo.MediaLibrary.addAssetsToAlbumAsync(assets, album, copyAssets)`
 
 Adds array of assets to the album.
