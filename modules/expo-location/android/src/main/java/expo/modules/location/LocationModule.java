@@ -234,9 +234,9 @@ public class LocationModule extends ExportedModule implements ModuleRegistryCons
   // Start Compass Module
 
   @ExpoMethod
-  public void watchDeviceHeading(final double watchId, final Promise promise) {
+  public void watchDeviceHeading(final int watchId, final Promise promise) {
     mSensorManager = (SensorManager) mContext.getSystemService(Context.SENSOR_SERVICE);
-    this.mHeadingId = (int) watchId;
+    this.mHeadingId = watchId;
     startHeadingUpdate();
     promise.resolve(null);
   }
@@ -354,7 +354,7 @@ public class LocationModule extends ExportedModule implements ModuleRegistryCons
 
   // TODO: Stop sending watchId from JS since we ignore it.
   @ExpoMethod
-  public void watchPositionImplAsync(final double watchId, final Map<String, Object> options, final Promise promise) {
+  public void watchPositionImplAsync(final int watchId, final Map<String, Object> options, final Promise promise) {
     // Read options
     final boolean highAccuracy = options.containsKey("enableHighAccuracy") && (Boolean) options.get("enableHighAccuracy");
     final double timeInterval = options.containsKey("timeInterval") ? (double) options.get("timeInterval") : 1000;
@@ -371,7 +371,7 @@ public class LocationModule extends ExportedModule implements ModuleRegistryCons
       @Override
       public void onLocationUpdated(Location location) {
         Bundle response = new Bundle();
-        response.putInt("watchId", (int) watchId);
+        response.putInt("watchId", watchId);
         response.putBundle("location", locationToMap(location));
 
         mEventEmitter.emit("Exponent.locationChanged", response);
@@ -387,14 +387,14 @@ public class LocationModule extends ExportedModule implements ModuleRegistryCons
 
   // TODO: Stop sending watchId from JS since we ignore it.
   @ExpoMethod
-  public void removeWatchAsync(final double watchId, final Promise promise) {
+  public void removeWatchAsync(final int watchId, final Promise promise) {
     if (isMissingPermissions()) {
       promise.reject("E_LOCATION_UNAUTHORIZED", "Not authorized to use location services");
       return;
     }
 
     // Check if we want to stop watching location or compass
-    if (((int) watchId) == mHeadingId) {
+    if (watchId == mHeadingId) {
       destroyHeadingWatch();
     } else {
       stopWatching();
