@@ -516,10 +516,12 @@ public class ExponentManifest {
       } else if (isThirdPartyHosted(parsedManifestUrl)){
         // Sandbox third party apps and consider them verified
         // sandboxed id is of form <host><path>-<slug> (ie) quinlanj.github.io/myProj-myApp
-        String path = parsedManifestUrl.getPath() != null ? parsedManifestUrl.getPath() : "";
-        String slug = manifest.has(MANIFEST_SLUG) ? manifest.getString(MANIFEST_SLUG) : "";
-        String sandboxedId = parsedManifestUrl.getHost() + path + "-" + slug;
-        manifest.put(MANIFEST_ID_KEY, sandboxedId);
+        if (!Constants.isDetached()){
+          String path = parsedManifestUrl.getPath() != null ? parsedManifestUrl.getPath() : "";
+          String slug = manifest.has(MANIFEST_SLUG) ? manifest.getString(MANIFEST_SLUG) : "";
+          String sandboxedId = parsedManifestUrl.getHost() + path + "-" + slug;
+          manifest.put(MANIFEST_ID_KEY, sandboxedId);
+        }
         fetchManifestStep3(manifestUrl, manifest, true, listener);
       } else {
         fetchManifestStep3(manifestUrl, manifest, false, listener);
