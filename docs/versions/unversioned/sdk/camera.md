@@ -162,11 +162,27 @@ Callback invoked when camera preview could not been started. It is provided with
 
 - **onBarCodeRead (_function_)**
 
-Callback that is invoked when a bar code has been successfully read. The callback is provided with an Object of the shape `{ type: string, data: string }`, where the type refers to the bar code type that was scanned and the data is the information encoded in the bar code (in this case of QR codes, this is often a URL)
+**Deprecated**. Use **onBarCodeScanned** instead.
+
+- **onBarCodeScanned (_function_)**
+
+Callback that is invoked when a bar code has been successfully scanned. The callback is provided with an object of the shape `{ type: BarCodeScanner.Constants.BarCodeType, data: string }`, where the type refers to the bar code type that was scanned and the data is the information encoded in the bar code (in this case of QR codes, this is often a URL). See [`BarCodeScanner.Constants.BarCodeType`](bar-code-scanner.md#supported-formats) for supported values.
 
 - **barCodeTypes (_Array<string>_)**
 
-An array of bar code types. Usage: `Camera.Constants.BarCodeType.<codeType>` where `codeType` is one of the listed above. Default: all supported bar code types. For example: `barCodeTypes={[Camera.Constants.BarCodeType.qr]}`
+**Deprecated**. Use **barCodeScannerSettings** instead.
+
+- **barCodeScannerSettings (_object_)**
+
+Settings exposed by [`BarCodeScanner`](bar-code-scanner.md) module. Supported settings: [**barCodeTypes**].
+
+```javascript
+<Camera
+  barCodeScannerSettings={{
+    barCodeTypes: [BarCodeScanner.Constants.BarCodeType.qr]
+  }}
+/>
+```
 
 - **useCamera2Api** (_boolean_)
 
@@ -261,30 +277,3 @@ Pauses the camera preview. It is not recommended to use `takePictureAsync` when 
 ### `resumePreview`
 
 Resumes the camera preview.
-
-# Supported bar code formats
-
-| Bar code format | iOS  | Android |
-| --------------- | ---- | ------- |
-| aztec           | Yes  | Yes     |
-| codabar         | No   | Yes     |
-| code39          | Yes  | Yes     |
-| code93          | Yes  | Yes     |
-| code128         | Yes  | Yes     |
-| code138         | Yes  | No      |
-| code39mod43     | Yes  | No      |
-| datamatrix      | Yes  | Yes     |
-| ean13           | Yes  | Yes     |
-| ean8            | Yes  | Yes     |
-| interleaved2of5 | Yes  | No      |
-| itf14           | Yes* | Yes     |
-| maxicode        | No   | Yes     |
-| pdf417          | Yes  | Yes     |
-| rss14           | No   | Yes     |
-| rssexpanded     | No   | Yes     |
-| upc_a           | No   | Yes     |
-| upc_e           | Yes  | Yes     |
-| upc_ean         | No   | Yes     |
-| qr              | Yes  | Yes     |
-
-* sometimes when an ITF-14 barcode is recognized it's type is set to `interleaved2of5`.
