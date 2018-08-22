@@ -1,5 +1,9 @@
 # expo-react-native-adapter
 
+A React Native adapter for Expo Universal Modules. It requires [`expo-core`](https://github.com/expo/expo-core) to be installed and linked.
+
+**Note:** The following installation/setup instructions are only applicable to plain React Native applications, i. e. if your project is a detached Expo project and it has ExpoKit/expoview included, the installation has already been done for you.
+
 ## JavaScript installation
 
 ```sh
@@ -16,11 +20,11 @@ $ npm install expo-react-native-adapter --save
 
 If you're using Cocoapods, add the dependency to your `Podfile`:
 
-`pod 'EXReactNativeAdapter'`
+`pod 'EXReactNativeAdapter', path: '../node_modules/expo-react-native-adapter/ios', inhibit_warnings: true`
 
 and run `pod install`.
 
-### iOS (no Cocoapods)
+### iOS (no Cocoapods) _[this method is currently not supported, sorry]_
 
 1.  In XCode, in the project navigator, right click `Libraries` ➜ `Add Files to [your project's name]`
 2.  Go to `node_modules` ➜ `expo-react-native-adapter` and add `EXReactNativeAdapter.xcodeproj`
@@ -44,17 +48,28 @@ and run `pod install`.
 #### iOS
 
 1. Open the `AppDelegate.m` of your application.
-2. Import `<EXCore/EXModuleRegistry.h>` and `<EXReactNativeAdapter/EXNativeModulesProxy.h>`.
+2. Import `<EXCore/EXModuleRegistry.h>`, `<EXReactNativeAdapter/EXNativeModulesProxy.h>` and `<EXReactNativeAdapter/EXModuleRegistryAdapter.h>`.
 3. Make `AppDelegate` implement `RCTBridgeDelegate` protocol (`@interface AppDelegate () <RCTBridgeDelegate>`).
-4. Add two methods to the implementation:
+4. Add a new instance variable to your `AppDelegate`:
+    ```objc
+    @interface AppDelegate () <RCTBridgeDelegate>
+
+    // add this line
+    @property (nonatomic, strong) EXModuleRegistryAdapter *moduleRegistryAdapter;
+
+    @end
+    ```
+5. In `-application:didFinishLaunchingWithOptions:` add the following at the top of the implementation:
+    ```objc
+    self.moduleRegistryAdapter = [[EXModuleRegistryAdapter alloc] initWithModuleRegistryProvider:[[EXModuleRegistryProvider alloc] init]];
+    ```
+4. Add two methods to the `AppDelegate`'s implementation:
     ```objc
     - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
     {
-        EXModuleRegistry *moduleRegistry = [[EXModuleRegistry alloc] initWithExperienceId:nil];
-        EXNativeModulesProxy *proxy = [[EXNativeModulesProxy alloc] initWithModuleRegistry:moduleRegistry];
-        NSMutableArray<id<RCTBridgeModule>> *modules = [NSMutableArray arrayWithObject:proxy];
-        [modules addObjectsFromArray:[proxy getBridgeModules]];
-        return modules;
+        NSArray<id<RCTBridgeModule>> *extraModules = [_moduleRegistryAdapter extraModulesForBridge:bridge andExperience:nil];
+        // If you'd like to export some custom RCTBridgeModules that are not Expo modules, add them here!
+        return extraModules;
     }
 
     - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge {
@@ -65,7 +80,59 @@ and run `pod install`.
     ```objc
     RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
     ```
-6. That's it!
+6. That's it! All in all, your `AppDelegate.m` should look similar to:
+    <details>
+        <summary>Click to expand</summary>
+        <p>
+
+    ```objc
+    #import "AppDelegate.h"
+
+    #import <React/RCTBundleURLProvider.h>
+    #import <React/RCTRootView.h>
+
+    #import <EXCore/EXModuleRegistry.h>
+    #import <EXReactNativeAdapter/EXNativeModulesProxy.h>
+    #import <EXReactNativeAdapter/EXModuleRegistryAdapter.h>
+
+    @interface AppDelegate () <RCTBridgeDelegate>
+
+    @property (nonatomic, strong) EXModuleRegistryAdapter *moduleRegistryAdapter;
+
+    @end
+
+    @implementation AppDelegate
+
+    - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+    {
+        self.moduleRegistryAdapter = [[EXModuleRegistryAdapter alloc] initWithModuleRegistryProvider:[[EXModuleRegistryProvider alloc] init]];
+        RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
+        RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge moduleName:@"YOUR_MODULE_NAME" initialProperties:nil];
+        rootView.backgroundColor = [[UIColor alloc] initWithRed:1.0f green:1.0f blue:1.0f alpha:1];
+
+        self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+        UIViewController *rootViewController = [UIViewController new];
+        rootViewController.view = rootView;
+        self.window.rootViewController = rootViewController;
+        [self.window makeKeyAndVisible];
+        return YES;
+    }
+
+    - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
+    {
+        NSArray<id<RCTBridgeModule>> *extraModules = [_moduleRegistryAdapter extraModulesForBridge:bridge andExperience:nil];
+        // If you'd like to export some custom RCTBridgeModules that are not Expo modules, add them here!
+        return extraModules;
+    }
+
+    - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge {
+        return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
+    }
+
+    @end
+    ```
+
+    </details>
 
 #### Android
 
