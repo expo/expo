@@ -26,6 +26,7 @@ import expo.modules.constants.ConstantsPackage;
 import expo.modules.facedetector.FaceDetectorPackage;
 import expo.modules.filesystem.FileSystemPackage;
 import expo.modules.gl.GLPackage;
+import expo.modules.location.LocationPackage;
 import expo.modules.medialibrary.MediaLibraryPackage;
 import expo.modules.permissions.PermissionsPackage;
 import expo.modules.print.PrintPackage;
@@ -60,7 +61,6 @@ import versioned.host.exp.exponent.modules.api.ImageCropperModule;
 import versioned.host.exp.exponent.modules.api.ImagePickerModule;
 import versioned.host.exp.exponent.modules.api.KeepAwakeModule;
 import versioned.host.exp.exponent.modules.api.KeyboardModule;
-import versioned.host.exp.exponent.modules.api.LocationModule;
 import versioned.host.exp.exponent.modules.api.LocalizationModule;
 import versioned.host.exp.exponent.modules.api.NotificationsModule;
 import versioned.host.exp.exponent.modules.api.RNViewShotModule;
@@ -111,6 +111,7 @@ public class ExponentPackage implements ReactPackage {
       new PrintPackage(),
       new MediaLibraryPackage(),
       new SegmentPackage(),
+      new LocationPackage(),
       new BarCodeScannerPackage()
   );
 
@@ -184,7 +185,6 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new ExponentAsyncStorageModule(reactContext, mManifest));
         nativeModules.add(new NotificationsModule(reactContext, mManifest, mExperienceProperties));
         nativeModules.add(new ContactsModule(reactContext, experienceId));
-        nativeModules.add(new LocationModule(reactContext, scopedContext, experienceId));
         nativeModules.add(new CryptoModule(reactContext));
         nativeModules.add(new ImagePickerModule(reactContext, scopedContext, experienceId));
         nativeModules.add(new ImageManipulatorModule(reactContext, scopedContext));

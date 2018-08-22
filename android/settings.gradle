@@ -72,6 +72,9 @@ project(":expo-media-library").projectDir = new File(rootDir, "../modules/expo-m
 include ":expo-analytics-segment"
 project(":expo-analytics-segment").projectDir = new File(rootDir, "../modules/expo-analytics-segment/android")
 
+include ":expo-location"
+project(":expo-location").projectDir = new File(rootDir, "../modules/expo-location/android")
+
 include ":expo-barcode-scanner"
 project(":expo-barcode-scanner").projectDir = new File(rootDir, "../modules/expo-barcode-scanner/android")
 

@@ -34,6 +34,8 @@ target 'Exponent' do
     :path => "../modules/expo-camera/ios"
   pod 'EXSensors',
     :path => "../modules/expo-sensors/ios"
+  pod 'EXLocation',
+    :path => "../modules/expo-location/ios"
   pod 'EXConstants',
     :path => "../modules/expo-constants/ios"
   pod 'EXFileSystem',
