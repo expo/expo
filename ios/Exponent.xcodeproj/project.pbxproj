@@ -239,7 +239,6 @@
 		B5FB74AB1FF6DADC001C764B /* EXImagePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB738D1FF6DADB001C764B /* EXImagePicker.m */; };
 		B5FB74AC1FF6DADC001C764B /* EXImageUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB738F1FF6DADB001C764B /* EXImageUtils.m */; };
 		B5FB74AD1FF6DADC001C764B /* EXKeepAwake.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73911FF6DADB001C764B /* EXKeepAwake.m */; };
-		B5FB74AE1FF6DADC001C764B /* EXLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73931FF6DADB001C764B /* EXLocation.m */; };
 		B5FB74AF1FF6DADC001C764B /* EXNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73951FF6DADB001C764B /* EXNotifications.m */; };
 		B5FB74B01FF6DADC001C764B /* EXScreenOrientation.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73971FF6DADB001C764B /* EXScreenOrientation.m */; };
 		B5FB74B11FF6DADC001C764B /* EXSecureStore.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73991FF6DADB001C764B /* EXSecureStore.m */; };
@@ -388,8 +387,6 @@
 		31E6D48120B845920082B09F /* EXSensorsManagerBinding.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXSensorsManagerBinding.h; sourceTree = "<group>"; };
 		3C3C339320E24E7D000F8B92 /* EXSplashScreen.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXSplashScreen.h; sourceTree = "<group>"; };
 		3C3C339420E24EC0000F8B92 /* EXSplashScreen.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXSplashScreen.m; sourceTree = "<group>"; };
-		3CE8050C20488C8200D8D2DB /* EXPermissionsManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXPermissionsManager.m; sourceTree = "<group>"; };
-		3CE8050E20488CA700D8D2DB /* EXPermissionsManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXPermissionsManager.h; sourceTree = "<group>"; };
 		3CEBDC3F1FFBC73C0025EF24 /* EXMailComposer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXMailComposer.h; sourceTree = "<group>"; };
 		3CEBDC401FFBC73D0025EF24 /* EXMailComposer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXMailComposer.m; sourceTree = "<group>"; };
 		52EE209A2B46C07B4237CBD5 /* libPods-ExponentIntegrationTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ExponentIntegrationTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -805,8 +802,6 @@
 		B5FB738F1FF6DADB001C764B /* EXImageUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXImageUtils.m; sourceTree = "<group>"; };
 		B5FB73901FF6DADB001C764B /* EXKeepAwake.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXKeepAwake.h; sourceTree = "<group>"; };
 		B5FB73911FF6DADB001C764B /* EXKeepAwake.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXKeepAwake.m; sourceTree = "<group>"; };
-		B5FB73921FF6DADB001C764B /* EXLocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXLocation.h; sourceTree = "<group>"; };
-		B5FB73931FF6DADB001C764B /* EXLocation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXLocation.m; sourceTree = "<group>"; };
 		B5FB73941FF6DADB001C764B /* EXNotifications.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXNotifications.h; sourceTree = "<group>"; };
 		B5FB73951FF6DADB001C764B /* EXNotifications.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXNotifications.m; sourceTree = "<group>"; };
 		B5FB73961FF6DADB001C764B /* EXScreenOrientation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXScreenOrientation.h; sourceTree = "<group>"; };
@@ -1679,8 +1674,6 @@
 				B5FB73911FF6DADB001C764B /* EXKeepAwake.m */,
 				6D3FF9022022B57D000D4015 /* EXLocalization.h */,
 				6D3FF9012022B57D000D4015 /* EXLocalization.m */,
-				B5FB73921FF6DADB001C764B /* EXLocation.h */,
-				B5FB73931FF6DADB001C764B /* EXLocation.m */,
 				3CEBDC3F1FFBC73C0025EF24 /* EXMailComposer.h */,
 				3CEBDC401FFBC73D0025EF24 /* EXMailComposer.m */,
 				B5FB73941FF6DADB001C764B /* EXNotifications.h */,
@@ -2593,7 +2586,6 @@
 				B5D52379205746E300F36C66 /* EXButtonView.m in Sources */,
 				B5FB74A11FF6DADC001C764B /* EXConstantsBinding.m in Sources */,
 				B526B5081E6A543500606CAB /* ExpoKit.m in Sources */,
-				B5FB74AE1FF6DADC001C764B /* EXLocation.m in Sources */,
 				B5FB74C81FF6DADC001C764B /* EXOAuthViewController.m in Sources */,
 				B5FB74A51FF6DADC001C764B /* EXErrorRecovery.m in Sources */,
 				7846B20420355E9900638E43 /* RNSVGBezierElement.m in Sources */,

@@ -2,20 +2,24 @@
 
 ## Installation
 
-### iOS (Cocoapods)
+*If your app is running in [Expo](https://expo.io) then everything is already set up for you, just `import { Permissions } from 'expo';`*
 
-If you're using Cocoapods, add the dependency to your `Podfile`:
+Otherwise, you need to install the package from `npm` registry.
 
-`pod 'EXPermissions'`
+`yarn add expo-permissions` or `npm install expo-permissions`
 
-and run `pod install`.
+Also, make sure that you have [expo-core](https://github.com/expo/expo-core) installed, as it is required by `expo-permissions` to work properly.
 
-### iOS (no Cocoapods)
+### iOS
 
-1. In XCode, in the project navigator, right click `Libraries` ➜ `Add Files to [your project's name]`
-2. Go to `node_modules` ➜ `expo-permissions` and add `EXPermissions.xcodeproj`
-3. In XCode, in the project navigator, select your project. Add `libEXPermissions.a` to your project's `Build Phases` ➜ `Link Binary With Libraries`
-4. Run your project (`Cmd+R`).
+Add these dependencies to your `Podfile`:
+
+```ruby
+pod 'EXPermissions', path: '../node_modules/expo-permissions/ios'
+pod 'EXPermissionsInterface', path: '../node_modules/expo-permissions-interface/ios'
+```
+
+and run `pod install` under the parent directory of your `Podfile`.
 
 ### Android
 
@@ -37,6 +41,7 @@ and run `pod install`.
    ```gradle
    compile project(':expo-permissions-interface')
    ```
+3.  Add `new PermissionsPackage()` to your module registry provider in `MainApplication.java`.
 
 ## Introduction
 

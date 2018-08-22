@@ -1,8 +1,10 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-package versioned.host.exp.exponent.modules.api;
+package expo.modules.location;
 
 import android.Manifest;
+import android.content.Context;
+import android.content.pm.PackageManager;
 import android.hardware.GeomagneticField;
 import android.location.Address;
 import android.location.Geocoder;
@@ -11,24 +13,22 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.Bundle;
 
-import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.LifecycleEventListener;
-import com.facebook.react.bridge.Promise;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.WritableArray;
-import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.common.SystemClock;
-import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
-
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-import host.exp.exponent.kernel.ExperienceId;
-import host.exp.exponent.utils.ScopedContext;
-import host.exp.exponent.utils.TimeoutObject;
-import host.exp.expoview.Exponent;
+import expo.core.ExportedModule;
+import expo.core.ModuleRegistry;
+import expo.core.Promise;
+import expo.core.interfaces.ExpoMethod;
+import expo.core.interfaces.LifecycleEventListener;
+import expo.core.interfaces.ModuleRegistryConsumer;
+import expo.core.interfaces.services.EventEmitter;
+import expo.core.interfaces.services.UIManager;
+import expo.interfaces.permissions.Permissions;
+import expo.modules.location.utils.TimeoutObject;
 import io.nlopez.smartlocation.OnGeocodingListener;
 import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.OnReverseGeocodingListener;
@@ -37,15 +37,19 @@ import io.nlopez.smartlocation.geocoding.utils.LocationAddress;
 import io.nlopez.smartlocation.location.config.LocationAccuracy;
 import io.nlopez.smartlocation.location.config.LocationParams;
 import io.nlopez.smartlocation.location.utils.LocationState;
-import versioned.host.exp.exponent.modules.ExpoKernelServiceConsumerBaseModule;
 
-public class LocationModule extends ExpoKernelServiceConsumerBaseModule implements LifecycleEventListener, SensorEventListener {
+public class LocationModule extends ExportedModule implements ModuleRegistryConsumer, LifecycleEventListener, SensorEventListener {
 
-  private ScopedContext mScopedContext;
+  private Context mContext;
   private LocationParams mLocationParams;
   private OnLocationUpdatedListener mOnLocationUpdatedListener;
   private SensorManager mSensorManager;
   private GeomagneticField mGeofield;
+
+  // modules
+  private EventEmitter mEventEmitter;
+  private UIManager mUIManager;
+  private Permissions mPermissions;
 
   private float[] mGravity;
   private float[] mGeomagnetic;
@@ -58,37 +62,49 @@ public class LocationModule extends ExpoKernelServiceConsumerBaseModule implemen
   private static final double DEGREE_DELTA = 0.0355; // in radians, about 2 degrees
   private static final float TIME_DELTA = 50; // in milliseconds
 
-  public LocationModule(ReactApplicationContext reactContext, ScopedContext scopedContext,
-                        ExperienceId experienceId) {
-    super(reactContext, experienceId);
-    reactContext.addLifecycleEventListener(this);
-
-    mScopedContext = scopedContext;
+  public LocationModule(Context context) {
+    super(context);
+    mContext = context;
   }
 
   @Override
   public String getName() {
-    return "ExponentLocation";
+    return "ExpoLocation";
   }
 
-  private static WritableMap locationToMap(Location location) {
-    WritableMap map = Arguments.createMap();
-    WritableMap coords = Arguments.createMap();
+  @Override
+  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+    if (mUIManager != null) {
+      mUIManager.unregisterLifecycleEventListener(this);
+    }
+
+    mEventEmitter = moduleRegistry.getModule(EventEmitter.class);
+    mUIManager = moduleRegistry.getModule(UIManager.class);
+    mPermissions = moduleRegistry.getModule(Permissions.class);
+
+    if (mUIManager != null) {
+      mUIManager.registerLifecycleEventListener(this);
+    }
+  }
+
+  public static Bundle locationToMap(Location location) {
+    Bundle map = new Bundle();
+    Bundle coords = new Bundle();
     coords.putDouble("latitude", location.getLatitude());
     coords.putDouble("longitude", location.getLongitude());
     coords.putDouble("altitude", location.getAltitude());
     coords.putDouble("accuracy", location.getAccuracy());
     coords.putDouble("heading", location.getBearing());
     coords.putDouble("speed", location.getSpeed());
-    map.putMap("coords", coords);
+    map.putBundle("coords", coords);
     map.putDouble("timestamp", location.getTime());
     map.putBoolean("mocked", location.isFromMockProvider());
 
     return map;
   }
 
-  private static WritableMap addressToMap(Address address) {
-    WritableMap map = Arguments.createMap();
+  private static Bundle addressToMap(Address address) {
+    Bundle map = new Bundle();
     map.putString("city", address.getLocality());
     map.putString("street", address.getThoroughfare());
     map.putString("region", address.getAdminArea());
@@ -101,20 +117,21 @@ public class LocationModule extends ExpoKernelServiceConsumerBaseModule implemen
   }
 
   private boolean isMissingPermissions() {
-    return !Exponent.getInstance().getPermissions(android.Manifest.permission.ACCESS_FINE_LOCATION, this.experienceId) &&
-        !Exponent.getInstance().getPermissions(Manifest.permission.ACCESS_COARSE_LOCATION, this.experienceId);
+    return mPermissions == null
+        && mPermissions.getPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+        && mPermissions.getPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED;
   }
 
-  @ReactMethod
-  public void getCurrentPositionAsync(final ReadableMap options, final Promise promise) {
+  @ExpoMethod
+  public void getCurrentPositionAsync(final Map<String, Object> options, final Promise promise) {
     // Read options
-    final Long timeout = options.hasKey("timeout") ? (long) options.getDouble("timeout") : null;
-    boolean highAccuracy = options.hasKey("enableHighAccuracy") && options.getBoolean("enableHighAccuracy");
+    final Long timeout = options.containsKey("timeout") ? (long) options.get("timeout") : null;
+    boolean highAccuracy = options.containsKey("enableHighAccuracy") && (boolean) options.get("enableHighAccuracy");
 
     final LocationParams locationParams = highAccuracy ? LocationParams.NAVIGATION : LocationParams.BEST_EFFORT;
     // LocationControl has an internal map from Context -> LocationProvider, so each experience
     // will only have one instance of a LocationProvider.
-    SmartLocation.LocationControl locationControl = SmartLocation.with(mScopedContext).location().oneFix().config(locationParams);
+    SmartLocation.LocationControl locationControl = SmartLocation.with(mContext).location().oneFix().config(locationParams);
 
     if (!locationControl.state().isAnyProviderAvailable()) {
       promise.reject("E_LOCATION_SERVICES_DISABLED", "Location services are disabled");
@@ -128,10 +145,10 @@ public class LocationModule extends ExpoKernelServiceConsumerBaseModule implemen
     }
 
     // Have location cached already?
-    if (options.hasKey("maximumAge")) {
-      double maximumAge = options.getDouble("maximumAge");
+    if (options.containsKey("maximumAge")) {
+      double maximumAge = (double) options.get("maximumAge");
       Location location = locationControl.getLastLocation();
-      if (location != null && SystemClock.currentTimeMillis() - location.getTime() < maximumAge) {
+      if (location != null && System.currentTimeMillis() - location.getTime() < maximumAge) {
         promise.resolve(locationToMap(location));
         return;
       }
@@ -157,7 +174,7 @@ public class LocationModule extends ExpoKernelServiceConsumerBaseModule implemen
   }
 
   private boolean startWatching() {
-    if (mScopedContext == null) {
+    if (mContext == null) {
       return false;
     }
 
@@ -172,7 +189,7 @@ public class LocationModule extends ExpoKernelServiceConsumerBaseModule implemen
 
     // LocationControl has an internal map from Context -> LocationProvider, so each experience
     // will only have one instance of a LocationProvider.
-    SmartLocation.LocationControl locationControl = SmartLocation.with(mScopedContext).location().config(mLocationParams);
+    SmartLocation.LocationControl locationControl = SmartLocation.with(mContext).location().config(mLocationParams);
     if (!locationControl.state().isAnyProviderAvailable()) {
       return false;
     }
@@ -181,30 +198,30 @@ public class LocationModule extends ExpoKernelServiceConsumerBaseModule implemen
   }
 
   private void stopWatching() {
-    if (mScopedContext == null) {
+    if (mContext == null) {
       return;
     }
 
     // if permissions not granted it won't work anyway, but this can be invoked when permission dialog appears
     if (Geocoder.isPresent() && !isMissingPermissions()) {
-      SmartLocation.with(mScopedContext).geocoding().stop();
+      SmartLocation.with(mContext).geocoding().stop();
       mGeocoderPaused = true;
     }
 
     if (mLocationParams == null || mOnLocationUpdatedListener == null) {
-      SmartLocation.with(mScopedContext).location().stop();
+      SmartLocation.with(mContext).location().stop();
     }
   }
 
-  @ReactMethod
+  @ExpoMethod
   public void getProviderStatusAsync(final Promise promise) {
-    if (mScopedContext == null) {
+    if (mContext == null) {
       promise.reject("E_CONTEXT_UNAVAILABLE", "Context is not available");
     }
 
-    LocationState state = SmartLocation.with(mScopedContext).location().state();
+    LocationState state = SmartLocation.with(mContext).location().state();
 
-    WritableMap map = Arguments.createMap();
+    Bundle map = new Bundle();
 
     map.putBoolean("locationServicesEnabled", state.locationServicesEnabled()); // If location is off
     map.putBoolean("gpsAvailable", state.isGpsAvailable()); // If GPS provider is enabled
@@ -216,20 +233,20 @@ public class LocationModule extends ExpoKernelServiceConsumerBaseModule implemen
 
   // Start Compass Module
 
-  @ReactMethod
-  public void watchDeviceHeading(final int watchId, final Promise promise) {
-    mSensorManager = (SensorManager) mScopedContext.getSystemService(ScopedContext.SENSOR_SERVICE);
-    this.mHeadingId = watchId;
+  @ExpoMethod
+  public void watchDeviceHeading(final double watchId, final Promise promise) {
+    mSensorManager = (SensorManager) mContext.getSystemService(Context.SENSOR_SERVICE);
+    this.mHeadingId = (int) watchId;
     startHeadingUpdate();
     promise.resolve(null);
   }
 
   public void startHeadingUpdate() {
-    if (mSensorManager == null || mScopedContext == null) {
+    if (mSensorManager == null || mContext == null) {
       return;
     }
 
-    SmartLocation.LocationControl locationControl = SmartLocation.with(mScopedContext).location().oneFix().config(LocationParams.BEST_EFFORT);
+    SmartLocation.LocationControl locationControl = SmartLocation.with(mContext).location().oneFix().config(LocationParams.BEST_EFFORT);
     Location currLoc = locationControl.getLastLocation();
     if (currLoc != null) {
       mGeofield = new GeomagneticField(
@@ -268,6 +285,7 @@ public class LocationModule extends ExpoKernelServiceConsumerBaseModule implemen
     float R[] = new float[9];
     float I[] = new float[9];
     boolean success = SensorManager.getRotationMatrix(R, I, mGravity, mGeomagnetic);
+
     if (success) {
       float orientation[] = new float[3];
       SensorManager.getOrientation(R, orientation);
@@ -281,14 +299,17 @@ public class LocationModule extends ExpoKernelServiceConsumerBaseModule implemen
         float trueNorth = calcTrueNorth(magneticNorth);
 
         // Write data to send back to React
-        WritableMap response = Arguments.createMap();
-        response.putInt("watchId", this.mHeadingId);
-        WritableMap heading = Arguments.createMap();
+        Bundle response = new Bundle();
+        Bundle heading = new Bundle();
+
+        response.putInt("watchId", mHeadingId);
+
         heading.putDouble("trueHeading", trueNorth);
         heading.putDouble("magHeading", magneticNorth);
         heading.putInt("accuracy", mAccuracy);
-        response.putMap("heading", heading);
-        getReactApplicationContext().getJSModule(RCTDeviceEventEmitter.class).emit("Exponent.headingChanged", response);
+        response.putBundle("heading", heading);
+
+        mEventEmitter.emit("Exponent.headingChanged", response);
       }
     }
   }
@@ -332,12 +353,12 @@ public class LocationModule extends ExpoKernelServiceConsumerBaseModule implemen
   // End Compass
 
   // TODO: Stop sending watchId from JS since we ignore it.
-  @ReactMethod
-  public void watchPositionImplAsync(final int watchId, final ReadableMap options, final Promise promise) {
+  @ExpoMethod
+  public void watchPositionImplAsync(final double watchId, final Map<String, Object> options, final Promise promise) {
     // Read options
-    final boolean highAccuracy = options.hasKey("enableHighAccuracy") && options.getBoolean("enableHighAccuracy");
-    final int timeInterval = options.hasKey("timeInterval") ? options.getInt("timeInterval") : 1000;
-    final int distanceInterval = options.hasKey("distanceInterval") ? options.getInt("distanceInterval") : 100;
+    final boolean highAccuracy = options.containsKey("enableHighAccuracy") && (Boolean) options.get("enableHighAccuracy");
+    final double timeInterval = options.containsKey("timeInterval") ? (double) options.get("timeInterval") : 1000;
+    final double distanceInterval = options.containsKey("distanceInterval") ? (double) options.get("distanceInterval") : 100;
 
     // Check for permissions
     if (isMissingPermissions()) {
@@ -345,15 +366,15 @@ public class LocationModule extends ExpoKernelServiceConsumerBaseModule implemen
       return;
     }
 
-    mLocationParams = (new LocationParams.Builder()).setAccuracy(highAccuracy ? LocationAccuracy.HIGH : LocationAccuracy.MEDIUM).setDistance(distanceInterval).setInterval(timeInterval).build();
+    mLocationParams = (new LocationParams.Builder()).setAccuracy(highAccuracy ? LocationAccuracy.HIGH : LocationAccuracy.MEDIUM).setDistance((float) distanceInterval).setInterval((long) timeInterval).build();
     mOnLocationUpdatedListener = new OnLocationUpdatedListener() {
       @Override
       public void onLocationUpdated(Location location) {
-        WritableMap response = Arguments.createMap();
-        response.putInt("watchId", watchId);
-        response.putMap("location", locationToMap(location));
-        getReactApplicationContext().getJSModule(RCTDeviceEventEmitter.class)
-            .emit("Exponent.locationChanged", response);
+        Bundle response = new Bundle();
+        response.putInt("watchId", (int) watchId);
+        response.putBundle("location", locationToMap(location));
+
+        mEventEmitter.emit("Exponent.locationChanged", response);
       }
     };
 
@@ -365,15 +386,15 @@ public class LocationModule extends ExpoKernelServiceConsumerBaseModule implemen
   }
 
   // TODO: Stop sending watchId from JS since we ignore it.
-  @ReactMethod
-  public void removeWatchAsync(final int watchId, final Promise promise) {
+  @ExpoMethod
+  public void removeWatchAsync(final double watchId, final Promise promise) {
     if (isMissingPermissions()) {
       promise.reject("E_LOCATION_UNAUTHORIZED", "Not authorized to use location services");
       return;
     }
 
     // Check if we want to stop watching location or compass
-    if (watchId == mHeadingId) {
+    if (((int) watchId) == mHeadingId) {
       destroyHeadingWatch();
     } else {
       stopWatching();
@@ -384,7 +405,7 @@ public class LocationModule extends ExpoKernelServiceConsumerBaseModule implemen
     promise.resolve(null);
   }
 
-  @ReactMethod
+  @ExpoMethod
   public void geocodeAsync(final String address, final Promise promise) {
     if (mGeocoderPaused) {
       promise.reject("E_CANNOT_GEOCODE", "Geocoder is not running.");
@@ -397,33 +418,34 @@ public class LocationModule extends ExpoKernelServiceConsumerBaseModule implemen
     }
 
     if (Geocoder.isPresent()) {
-      SmartLocation.with(mScopedContext).geocoding()
-        .direct(address, new OnGeocodingListener() {
-          @Override
-          public void onLocationResolved(String s, List<LocationAddress> list) {
-          WritableArray results = Arguments.createArray();
+      SmartLocation.with(mContext).geocoding()
+          .direct(address, new OnGeocodingListener() {
+            @Override
+            public void onLocationResolved(String s, List<LocationAddress> list) {
+              List<Bundle> results = new ArrayList<>(list.size());
 
-          for (LocationAddress locationAddress : list) {
-            WritableMap coords = Arguments.createMap();
-            Location location = locationAddress.getLocation();
-            coords.putDouble("latitude", location.getLatitude());
-            coords.putDouble("longitude", location.getLongitude());
-            coords.putDouble("altitude", location.getAltitude());
-            coords.putDouble("accuracy", location.getAccuracy());
-            results.pushMap(coords);
-          }
+              for (LocationAddress locationAddress : list) {
+                Bundle coords = new Bundle();
+                Location location = locationAddress.getLocation();
 
-          SmartLocation.with(mScopedContext).geocoding().stop();
-          promise.resolve(results);
-          }
-        });
+                coords.putDouble("latitude", location.getLatitude());
+                coords.putDouble("longitude", location.getLongitude());
+                coords.putDouble("altitude", location.getAltitude());
+                coords.putDouble("accuracy", location.getAccuracy());
+                results.add(coords);
+              }
+
+              SmartLocation.with(mContext).geocoding().stop();
+              promise.resolve(results);
+            }
+          });
     } else {
       promise.reject("E_NO_GEOCODER", "Geocoder service is not available for this device.");
     }
   }
 
-  @ReactMethod
-  public void reverseGeocodeAsync(final ReadableMap locationMap, final Promise promise) {
+  @ExpoMethod
+  public void reverseGeocodeAsync(final Map<String, Object> locationMap, final Promise promise) {
     if (mGeocoderPaused) {
       promise.reject("E_CANNOT_GEOCODE", "Geocoder is not running.");
       return;
@@ -435,28 +457,30 @@ public class LocationModule extends ExpoKernelServiceConsumerBaseModule implemen
     }
 
     Location location = new Location("");
-    location.setLatitude(locationMap.getDouble("latitude"));
-    location.setLongitude(locationMap.getDouble("longitude"));
+    location.setLatitude((double) locationMap.get("latitude"));
+    location.setLongitude((double) locationMap.get("longitude"));
 
     if (Geocoder.isPresent()) {
-      SmartLocation.with(mScopedContext).geocoding()
-        .reverse(location, new OnReverseGeocodingListener() {
-          @Override
-          public void onAddressResolved(Location original, List<Address> addresses) {
-            WritableArray results = Arguments.createArray();
+      SmartLocation.with(mContext).geocoding()
+          .reverse(location, new OnReverseGeocodingListener() {
+            @Override
+            public void onAddressResolved(Location original, List<Address> addresses) {
+              List<Bundle> results = new ArrayList<>(addresses.size());
 
-            for (Address address : addresses) {
-              results.pushMap(addressToMap(address));
+              for (Address address : addresses) {
+                results.add(addressToMap(address));
+              }
+
+              SmartLocation.with(mContext).geocoding().stop();
+              promise.resolve(results);
             }
-
-            SmartLocation.with(mScopedContext).geocoding().stop();
-            promise.resolve(results);
-          }
-        });
+          });
     } else {
       promise.reject("E_NO_GEOCODER", "Geocoder service is not available for this device.");
     }
   }
+
+  // App lifecycle listeners
 
   @Override
   public void onHostResume() {

@@ -1,10 +1,10 @@
 // @flow
 import invariant from 'invariant';
-import { NativeEventEmitter, NativeModules, Platform } from 'react-native';
+import { NativeModulesProxy, EventEmitter } from 'expo-core';
+import { Platform } from 'react-native';
 
-import { Permissions } from 'expo-permissions';
-
-const LocationEventEmitter = new NativeEventEmitter(NativeModules.ExponentLocation);
+const { ExpoLocation: Location } = NativeModulesProxy;
+const LocationEventEmitter = new EventEmitter(Location);
 
 type ProviderStatus = {
   locationServicesEnabled: boolean,
@@ -17,6 +17,11 @@ type LocationOptions = {
   enableHighAccuracy?: boolean,
   timeInterval?: number,
   distanceInterval?: number,
+};
+
+type LocationTaskOptions = {
+  type: string,
+  backgroundOnly: boolean,
 };
 
 type LocationData = {
@@ -40,8 +45,6 @@ type HeadingData = {
 type LocationCallback = (data: LocationData) => any;
 type HeadingCallback = (data: HeadingData) => any;
 
-const { ExponentLocation } = NativeModules;
-
 let nextWatchId = 0;
 let headingId;
 function _getNextWatchId() {
@@ -61,39 +64,11 @@ let googleApiKey;
 const googleApiUrl = 'https://maps.googleapis.com/maps/api/geocode/json';
 
 function getProviderStatusAsync(): Promise<ProviderStatus> {
-  return ExponentLocation.getProviderStatusAsync();
+  return Location.getProviderStatusAsync();
 }
 
-function getCurrentPositionAsync(options: LocationOptions = {}): Promise<LocationData> {
-  // On Android we have a native method for this case.
-  if (Platform.OS === 'android') {
-    return ExponentLocation.getCurrentPositionAsync(options);
-  }
-
-  // On iOS we implement it in terms of `.watchPositionAsync(...)`
-  // TODO: Use separate native method for iOS too?
-  return new Promise(async (resolve, reject) => {
-    try {
-      let done = false; // To make sure we only resolve once.
-      let subscription;
-      subscription = await watchPositionAsync(options, location => {
-        if (!done) {
-          resolve(location);
-          done = true;
-        }
-        subscription && subscription.remove();
-        subscription = null;
-      });
-
-      // In case the callback is fired before we get here.
-      if (done) {
-        subscription && subscription.remove();
-        subscription = null;
-      }
-    } catch (e) {
-      reject(e);
-    }
-  });
+async function getCurrentPositionAsync(options: LocationOptions = {}): Promise<LocationData> {
+  return Location.getCurrentPositionAsync(options);
 }
 
 // Start Compass Module
@@ -158,14 +133,14 @@ async function watchHeadingAsync(callback: HeadingCallback) {
       if (callback) {
         callback(heading);
       } else {
-        ExponentLocation.removeWatchAsync(watchId);
+        Location.removeWatchAsync(watchId);
       }
     }
   );
 
   headingId = _getNextWatchId();
   watchCallbacks[headingId] = callback;
-  await ExponentLocation.watchDeviceHeading(headingId);
+  await Location.watchDeviceHeading(headingId);
   return {
     remove() {
       _removeHeadingWatcher(headingId);
@@ -179,7 +154,7 @@ function _removeHeadingWatcher(watchId) {
     return;
   }
   delete watchCallbacks[watchId];
-  ExponentLocation.removeWatchAsync(watchId);
+  Location.removeWatchAsync(watchId);
   LocationEventEmitter.removeSubscription(headingEventSub);
   headingEventSub = null;
 }
@@ -194,25 +169,15 @@ function _maybeInitializeEmitterSubscription() {
         if (callback) {
           callback(location);
         } else {
-          ExponentLocation.removeWatchAsync(watchId);
+          Location.removeWatchAsync(watchId);
         }
       }
     );
   }
 }
 
-async function _askPermissionForWatchAsync(success, error, options, watchId) {
-  let { status } = await Permissions.askAsync(Permissions.LOCATION);
-  if (status === 'granted') {
-    ExponentLocation.watchPositionImplAsync(watchId, options);
-  } else {
-    _removeWatcher(watchId);
-    error({ watchId, message: 'No permission to access location' });
-  }
-}
-
 async function geocodeAsync(address: string) {
-  return ExponentLocation.geocodeAsync(address).catch(error => {
+  return Location.geocodeAsync(address).catch(error => {
     if (Platform.OS === 'android' && error.code === 'E_NO_GEOCODER') {
       if (!googleApiKey) {
         throw new Error(error.message + ' Please set a Google API Key to use geocoding.');
@@ -229,7 +194,7 @@ async function reverseGeocodeAsync(location: { latitude: number, longitude: numb
       'Location should be an object with number properties `latitude` and `longitude`.'
     );
   }
-  return ExponentLocation.reverseGeocodeAsync(location).catch(error => {
+  return Location.reverseGeocodeAsync(location).catch(error => {
     if (Platform.OS === 'android' && error.code === 'E_NO_GEOCODER') {
       if (!googleApiKey) {
         throw new Error(error.message + ' Please set a Google API Key to use geocoding.');
@@ -302,7 +267,11 @@ function watchPosition(
 
   const watchId = _getNextWatchId();
   watchCallbacks[watchId] = success;
-  _askPermissionForWatchAsync(success, error, options, watchId);
+
+  Location.watchPositionImplAsync(watchId, options).catch(err => {
+    _removeWatcher(watchId);
+    error({ watchId, message: err.message, code: err.code });
+  });
 
   return watchId;
 }
@@ -312,7 +281,7 @@ async function watchPositionAsync(options: LocationOptions, callback: LocationCa
 
   const watchId = _getNextWatchId();
   watchCallbacks[watchId] = callback;
-  await ExponentLocation.watchPositionImplAsync(watchId, options);
+  await Location.watchPositionImplAsync(watchId, options);
 
   return {
     remove() {
@@ -332,7 +301,7 @@ function _removeWatcher(watchId) {
     return;
   }
 
-  ExponentLocation.removeWatchAsync(watchId);
+  Location.removeWatchAsync(watchId);
   delete watchCallbacks[watchId];
   if (Object.keys(watchCallbacks).length === 0) {
     LocationEventEmitter.removeSubscription(deviceEventSubscription);
@@ -363,14 +332,7 @@ async function _getCurrentPositionAsyncWrapper(
   options: LocationOptions
 ): Promise<*> {
   try {
-    let { status } = await Permissions.askAsync(Permissions.LOCATION);
-    if (status !== 'granted') {
-      throw new Error(
-        'Permission to access location not granted. User must now enable it manually in settings'
-      );
-    }
-
-    let result = await Location.getCurrentPositionAsync(options);
+    const result = await getCurrentPositionAsync(options);
     success(result);
   } catch (e) {
     error(e);
@@ -389,7 +351,7 @@ window.navigator.geolocation = {
   stopObserving: () => {},
 };
 
-const Location = {
+export default {
   getProviderStatusAsync,
   getCurrentPositionAsync,
   watchPositionAsync,
@@ -403,5 +365,3 @@ const Location = {
   EventEmitter: LocationEventEmitter,
   _getCurrentWatchId,
 };
-
-export default Location;

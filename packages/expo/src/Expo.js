@@ -1,8 +1,8 @@
 // @flow
 import './environment/validate';
 import './environment/logging';
-import './Location'; // polyfill navigator.geolocation
 
+import 'expo-location/src/Location'; // polyfill navigator.geolocation
 import 'expo-asset/src/Asset'; // load expo-asset immediately, as it sets custom source transformer in React Native)
 import { Constants } from 'expo-constants';
 import { NativeModules, Platform, YellowBox } from 'react-native';
@@ -196,7 +196,7 @@ module.exports = {
     return require('./Linking').default;
   },
   get Location() {
-    return require('./Location').default;
+    return require('expo-location').Location;
   },
   get Logs() {
     return require('./logs/Logs').default;

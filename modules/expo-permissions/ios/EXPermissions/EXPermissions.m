@@ -214,6 +214,19 @@ EX_EXPORT_METHOD_AS(askAsync,
   }
 }
 
+// shorthand method that checks both global and per-experience permission
+- (BOOL)hasGrantedPermission:(NSString *)permissionType
+{
+  NSDictionary *permissions = [self getPermissionsForResource:permissionType];
+
+  if (!permissions) {
+    EXLogWarn(@"Permission with type '%@' not found.", permissionType);
+    return false;
+  }
+  
+  return [permissions[@"status"] isEqualToString:@"granted"] && [_permissionsService hasGrantedPermission:permissionType forExperience:_experienceId];
+}
+
 + (id<EXPermissionRequester>)getPermissionRequesterForType:(NSString *)type
 {
   if ([type isEqualToString:@"notifications"]) {
