@@ -2,23 +2,23 @@
 title: Fingerprint
 ---
 
-Use TouchID (iOS) or the Fingerprint API (Android) to authenticate the user with a fingerprint scan.
+Use TouchID and FaceID (iOS) or the Fingerprint API (Android) to authenticate the user with a face or fingerprint scan.
 
 ### `Expo.Fingerprint.hasHardwareAsync()`
 
-Determine whether the Fingerprint scanner is available on the device.
+Determines whether a face or fingerprint scanner is available on the device.
 
 #### Returns
 
-- A boolean indicating whether the Fingerprint scanner is available on this device.
+- A boolean indicating whether a face or fingerprint scanner is available on this device.
 
 ### `Expo.Fingerprint.isEnrolledAsync()`
 
-Determine whether the device has saved fingerprints to use for authentication.
+Determine whether the device has saved fingerprints or facial data to use for authentication.
 
 #### Returns
 
-- A boolean indicating whether the device has saved fingerprints for authentication.
+- A boolean indicating whether the device has saved fingerprints or facial data for authentication.
 
 ### `Expo.Fingerprint.authenticateAsync()`
 
@@ -27,7 +27,7 @@ Attempts to authenticate via Fingerprint.
 
 #### Arguments
 
-- (**iOS only**) **promptMessage (_string_)** A message that is shown alongside the TouchID prompt.
+- (**iOS only**) **promptMessage (_string_)** A message that is shown alongside the TouchID or FaceID prompt.
 
 #### Returns
 
