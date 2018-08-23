@@ -7,7 +7,7 @@
 #import <EXFont/UIFont+EXFontLoader.h>
 #import <objc/runtime.h>
 
-static NSString *exponentPrefix = @"ExponentFont-";
+static NSString *exponentPrefix = @"ExpoFont-";
 
 @implementation EXFontLoaderProcessor
 

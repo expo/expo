@@ -48,7 +48,7 @@ public class FontLoaderModule extends ExportedModule implements ModuleRegistryCo
         promise.reject("E_NO_FONT_MANAGER", "There is no FontManager in module registry. Are you sure all the dependencies of expo-font are installed and linked?");
         return;
       }
-      fontManager.setTypeface("ExponentFont-" + fontFamilyName, Typeface.NORMAL, typeface);
+      fontManager.setTypeface("ExpoFont-" + fontFamilyName, Typeface.NORMAL, typeface);
       promise.resolve(null);
     } catch (Exception e) {
       promise.reject("E_UNEXPECTED", "Font.loadAsync unexpected exception: " + e.getMessage(), e);

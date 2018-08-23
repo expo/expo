@@ -25,9 +25,13 @@ EX_EXPORT_METHOD_AS(initializeIOS,
   resolve(nil);
 }
 
-EX_EXPORT_METHOD_AS(initializeAndroid, initializeAndroid:(NSString *)writeKey)
+EX_EXPORT_METHOD_AS(initializeAndroid,
+                    initializeAndroid:(NSString *)writeKey
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   // NO-OP. Need this here because Segment has different keys for iOS and Android.
+  reject(@"E_WRONG_PLATFORM", @"Method initializeAndroid should not be called on iOS, please file an issue on GitHub.", nil);
 }
 
 EX_EXPORT_METHOD_AS(identify,
