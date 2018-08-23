@@ -24,19 +24,39 @@ type PermissionDetailsLocationIOS = {
 type PermissionDetailsLocationAndroid = {
   scope: 'fine' | 'coarse' | 'none',
 };
-type PermissionResponse = {
+type SimpleResponse = {
   status: PermissionStatus,
   expires: PermissionExpires,
   ios?: PermissionDetailsLocationIOS,
   android?: PermissionDetailsLocationAndroid,
 };
-
-export async function getAsync(type: PermissionType): Promise<PermissionResponse> {
-  return Permissions.getAsync(type);
+type PermissionsResponse = {
+  status: PermissionStatus,
+  expires: PermissionExpires,
+  permissions: { [key: PermissionType]: SimpleResponse },
 }
 
-export async function askAsync(type: PermissionType): Promise<PermissionResponse> {
-  return Permissions.askAsync(type);
+async function handlePermissionsRequest(
+  types: Array<PermissionType>,
+  handlePermissions: (Array<PermissionType>) => Promise<{ [key: PermissionType]: SimpleResponse }>
+): Promise<PermissionsResponse> {
+  if (!types.length) {
+    throw new Error('No permission requested!');
+  }
+  const permissions = await handlePermissions(types);
+  return {
+    status: Object.keys(permissions).reduce((acc, key) => permissions[key].status !== 'granted' ? permissions[key].status : acc, 'granted'),
+    expires: Object.keys(permissions).reduce((acc, key) => permissions[key].expires !== 'never' ? permissions[key].expires : acc, 'never'),
+    permissions,
+  };
+}
+
+export async function getAsync(...types: Array<PermissionType>): Promise<PermissionsResponse> {
+  return handlePermissionsRequest(types, Permissions.getAsync)
+}
+
+export async function askAsync(...types: Array<PermissionType>): Promise<PermissionsResponse> {
+  return handlePermissionsRequest(types, Permissions.askAsync);
 }
 
 export const CAMERA = 'camera';

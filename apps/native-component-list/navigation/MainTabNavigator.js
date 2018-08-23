@@ -61,6 +61,7 @@ import HapticScreen from '../screens/HapticScreen';
 import StoreReview from '../screens/StoreReview';
 import BranchScreen from '../screens/BranchScreen';
 import SMSScreen from '../screens/SMSScreen';
+import PermissionsScreen from '../screens/PermissionsScreen';
 
 const styles = StyleSheet.create({
   tabBar: {
@@ -147,6 +148,7 @@ const ExpoApisStackNavigator = createStackNavigator(
     Notification: { screen: NotificationScreen },
     Location: { screen: LocationScreen },
     Pedometer: { screen: PedometerScreen },
+    Permissions: PermissionsScreen,
     Print: { screen: PrintScreen },
     Reminders: { screen: RemindersScreen },
     ScreenOrientation: { screen: ScreenOrientationScreen },

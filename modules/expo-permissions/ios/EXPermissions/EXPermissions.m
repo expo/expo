@@ -1,6 +1,7 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
 #import <EXCore/EXUtilitiesInterface.h>
+#import <EXCore/EXUtilities.h>
 #import <EXPermissions/EXAudioRecordingPermissionRequester.h>
 #import <EXPermissions/EXCalendarRequester.h>
 #import <EXPermissions/EXCameraPermissionRequester.h>
@@ -64,120 +65,233 @@ EX_EXPORT_MODULE(ExponentPermissions);
   _utils = [moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)];
 }
 
+# pragma mark - Expo exported methods
+
 EX_EXPORT_METHOD_AS(getAsync,
-                    getCurrentPermissionsWithType:(NSString *)type
+                    getPermissionsWithTypes:(NSArray<NSString *> *)permissionsTypes
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject)
 {
-  NSDictionary *globalPermissions = [self getPermissionsForResource:type];
-
-  if (globalPermissions == nil) {
-    reject(@"E_PERMISSION_UNKNOWN", [NSString stringWithFormat:@"Unrecognized permission: %@", type], nil);
-    return;
-  }
-
-  if (_permissionsService != nil) {
-    NSMutableDictionary *response = [[NSMutableDictionary alloc] initWithDictionary:globalPermissions];
-
-    if (![[self class] isExcludedScopedPermission:type] &&
-        [globalPermissions[@"status"] isEqualToString:[[self class] permissionStringForStatus:EXPermissionStatusGranted]] &&
-        ![_permissionsService hasGrantedPermission:type forExperience:_experienceId]) {
-      response[@"status"] = [[self class] permissionStringForStatus:EXPermissionStatusDenied];
+  NSMutableDictionary *permissions = [NSMutableDictionary new];
+  for (NSString *permissionType in permissionsTypes) {
+    NSMutableDictionary *permission = [NSMutableDictionary dictionaryWithDictionary:[self getPermissionsForResource:permissionType]];
+    // permission type not found - reject immediately
+    if (permission == nil) {
+      return reject(@"E_PERMISSIONS_UNKNOWN", [NSString stringWithFormat:@"Unrecognized permission: %@", permissionType], nil);
     }
-    resolve(response);
-  } else {
-    resolve(globalPermissions);
+    
+    // check scoped permissions if available
+    if (_permissionsService != nil) {
+      if (![[self class] isExcludedScopedPermission:permissionType]
+          && [permission[@"status"] isEqualToString:[[self class] permissionStringForStatus:EXPermissionStatusGranted]]
+          && ![_permissionsService hasGrantedPermission:permissionType forExperience:_experienceId])
+      {
+        permission[@"status"] = [[self class] permissionStringForStatus:EXPermissionStatusDenied];
+      }
+    }
+    permissions[permissionType] = permission;
   }
+  resolve([NSDictionary dictionaryWithDictionary:permissions]);
 }
 
 EX_EXPORT_METHOD_AS(askAsync,
-                    askForPermissionsWithType:(NSString *)type
+                    askForPermissionsWithTypes:(NSArray<NSString *> *)permissionsTypes
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject)
 {
-  NSDictionary *globalPermissions = [self getPermissionsForResource:type];
+  NSMutableArray<NSString *> *scopedPermissionsToBeAsked = [NSMutableArray new];
+  NSMutableArray<NSString *> *globalPermissionsToBeAsked = [NSMutableArray new];
+  NSMutableDictionary *permissions = [NSMutableDictionary new];
 
-  if (globalPermissions == nil) {
-    reject(@"E_PERMISSION_UNKNOWN", [NSString stringWithFormat:@"Unrecognized permission: %@", type], nil);
-    return;
+  if ([permissionsTypes count] != 1 && [permissionsTypes containsObject:@"location"]) {
+    return reject (@"E_PERMISSIONS_INVALID", @"iOS platform requires you to ask for Permissions.LOCATION separately.", nil);
+  }
+  
+  for (NSString *permissionType in permissionsTypes) {
+    NSMutableDictionary *permission = [[self getPermissionsForResource:permissionType] mutableCopy];
+
+    // permission type not found - reject immediately
+    if (permission == nil) {
+      return reject(@"E_PERMISSIONS_UNKNOWN", [NSString stringWithFormat:@"Unrecognized permission: %@", permissionType], nil);
+    }
+
+    if ([permission[@"status"] isEqualToString:[EXPermissions permissionStringForStatus:EXPermissionStatusGranted]]) {
+      // global permission is granted
+      
+      if ([[self class] isPermissionImplicitlyGranted:permissionType]) {
+        // permission is implicitly granted
+        permissions[permissionType] = permission;
+      } else if (_permissionsService != nil
+                 && ![[self class] isExcludedScopedPermission:permissionType]
+                 && ![_permissionsService hasGrantedPermission:permissionType forExperience:_experienceId])
+      {
+        // scoped permission is not granted
+        [scopedPermissionsToBeAsked addObject:permissionType];
+      } else {
+        permissions[permissionType] = permission;
+      }
+    } else {
+      // global permission is not granted
+      [globalPermissionsToBeAsked addObject:permissionType];
+    }
+  }
+  
+  void (^globalPermissionResolver)(NSDictionary *) = ^(NSDictionary *globalPermissions) {
+    [permissions addEntriesFromDictionary:globalPermissions];
+    resolve([NSDictionary dictionaryWithDictionary:permissions]);
+  };
+
+  EX_WEAKIFY(self);
+  void (^scopedPermissionResolver)(NSDictionary *) = ^(NSDictionary *scopedPermissions) {
+    EX_ENSURE_STRONGIFY(self);
+    [permissions addEntriesFromDictionary:scopedPermissions];
+    [self askForGlobalPermissions:globalPermissionsToBeAsked
+                     withResolver:globalPermissionResolver
+                     withRejecter:reject];
+  };
+  
+  [self askForScopedPermissions:scopedPermissionsToBeAsked withResolver:scopedPermissionResolver withRejecter:reject];
+}
+
+# pragma mark - permission requsters / getters
+
+- (void)askForGlobalPermissions:(NSArray<NSString *> *)permissionsTypes
+                   withResolver:(void (^)(NSDictionary *))resolver
+                   withRejecter:(EXPromiseRejectBlock)reject
+{
+  // nothing to ask for - return immediately
+  if (permissionsTypes.count == 0) {
+    return resolver(@{});
   }
 
-  if ([globalPermissions[@"status"] isEqualToString:[EXPermissions permissionStringForStatus:EXPermissionStatusGranted]]) {
-    // global permission for the app is granted
-
-    if (_permissionsService != nil && ![[self class] isExcludedScopedPermission:type] && ![_permissionsService hasGrantedPermission:type forExperience:_experienceId]) {
-      // per-experience permission is not granted
-      [self askForExperiencePermission:type withGlobalPermissions:globalPermissions resolve:resolve reject:reject];
-    } else {
-      // if we already have both global and scoped permissions granted, resolve immediately with that
-      resolve(globalPermissions);
+  __block NSMutableDictionary *permissions = [NSMutableDictionary new];
+  __block NSMutableSet *permissionsToBeAsked = [NSMutableSet setWithArray:permissionsTypes];
+  __block NSString *permissionType; // accumulator for currently proceessed permissionType
+  EX_WEAKIFY(self);
+  
+  __block void (^customResolver)(NSDictionary *); // forward declaration
+  __block void (^askForNextPermission)(void) = ^() {
+    // stop condition: no permission left to be asked - resolve with results
+    if (permissionsToBeAsked.count == 0) {
+      return resolver(permissions);
     }
-  } else {
-    id<EXPermissionRequester> requester = [[self class] getPermissionRequesterForType:type];
-
+  
+    EX_ENSURE_STRONGIFY(self);
+  
+    // pop next permissionType from set
+    permissionType = [permissionsToBeAsked anyObject];
+    [permissionsToBeAsked removeObject:permissionType];
+    
+    id<EXPermissionRequester> requester = [[self class] getPermissionRequesterForType:permissionType];
+    
     if (requester == nil) {
       // TODO: other types of permission requesters, e.g. facebook
-      reject(@"E_PERMISSION_UNSUPPORTED", [NSString stringWithFormat:@"Cannot request permission: %@", type], nil);
+      reject(@"E_PERMISSIONS_UNSUPPORTED", [NSString stringWithFormat:@"Cannot request permission: %@", permissionType], nil);
       return;
     }
 
-    // we need custom resolver for the requester cause we need to save given permissions per experience
-    __weak typeof(self) weakSelf = self;
-    void (^customResolver)(NSDictionary *result) = ^(NSDictionary *result) {
-      __strong typeof(weakSelf) strongSelf = weakSelf;
-      if (strongSelf) {
-        if (strongSelf->_permissionsService != nil) {
-          [strongSelf->_permissionsService savePermission:result ofType:type forExperience:strongSelf->_experienceId];
-        }
-        resolve(result);
-      }
-    };
-
-    [_requests addObject:requester];
+    [self->_requests addObject:requester];
     [requester setDelegate:self];
     [requester requestPermissionsWithResolver:customResolver rejecter:reject];
-  }
-}
-
-- (void)askForExperiencePermission:(NSString *)type withGlobalPermissions:(NSDictionary *)globalPermissions resolve:(EXPromiseResolveBlock)resolve reject:(EXPromiseRejectBlock)reject
-{
-  __weak typeof(self) weakSelf = self;
-
-  UIAlertAction *allow = [UIAlertAction actionWithTitle:@"Allow" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
-    __strong typeof(weakSelf) strongSelf = weakSelf;
-    if (strongSelf) {
-      if ([strongSelf->_permissionsService savePermission:globalPermissions ofType:type forExperience:strongSelf.experienceId]) {
-        resolve(globalPermissions);
-      } else {
-        NSMutableDictionary *deniedResult = [[NSMutableDictionary alloc] initWithDictionary:globalPermissions];
-        deniedResult[@"status"] = [[weakSelf class] permissionStringForStatus:EXPermissionStatusDenied];
-        resolve(deniedResult);
-      }
+  };
+  
+  // we need custom resolver for the requester cause we need to save given permissions per experience
+  customResolver = ^(NSDictionary *permission) {
+    EX_ENSURE_STRONGIFY(self);
+    
+    // save results for permission
+    permissions[permissionType] = [NSMutableDictionary dictionaryWithDictionary:permission];
+    
+    // check if save scoped permissions & singal possible failure by marking permission as denied
+    if (self.permissionsService != nil
+        && ![[self class] isExcludedScopedPermission:permissionType]
+        && ![self.permissionsService savePermission:permission
+                                             ofType:permissionType
+                                      forExperience:self.experienceId])
+    {
+      permissions[permissionType][@"status"] = [[self class] permissionStringForStatus:EXPermissionStatusDenied];
     }
-  }];
-
-  UIAlertAction *deny = [UIAlertAction actionWithTitle:@"Deny" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
-    NSMutableDictionary *deniedResult = [[NSMutableDictionary alloc] initWithDictionary:globalPermissions];
-    deniedResult[@"status"] = [[weakSelf class] permissionStringForStatus:EXPermissionStatusDenied];
-    resolve(deniedResult);
-  }];
-  [self showPermissionRequestAlert:type withAllowAction:allow withDenyAction:deny];
+    
+    askForNextPermission();
+  };
+  
+  // ask for first permission
+  askForNextPermission();
 }
 
-- (void)showPermissionRequestAlert:(NSString *)type withAllowAction:(UIAlertAction *)allow withDenyAction:(UIAlertAction *)deny
+- (void)askForScopedPermissions:(NSArray<NSString *> *)permissionsTypes
+                   withResolver:(void (^)(NSDictionary *))resolver
+                   withRejecter:(EXPromiseRejectBlock)reject
 {
-  NSString *permissionString = [[self class] textForPermissionType:type];
-  NSString *experienceName = self.experienceId; // TODO: we might want to use name from the manifest?
+  // nothing to ask for - return immediately
+  if (permissionsTypes.count == 0) {
+    return resolver(@{});
+  }
 
-  NSString *message = [NSString stringWithFormat:@"%1$@ needs permissions for %2$@. You\'ve already granted permission to another Expo experience. Allow %1$@ to use it also?", experienceName, permissionString];
+  __block NSMutableDictionary *permissions = [NSMutableDictionary new];
+  __block NSMutableSet *permissionsToBeAsked = [NSMutableSet setWithArray:permissionsTypes];
+  __block NSString *permissionType; // accumulator for currently proceessed permissionType
+  EX_WEAKIFY(self);
+  
+  __block void (^askForNextPermission)(void) = ^() {
+    // stop condition: no permission left to be asked - resolve with results
+    if (permissionsToBeAsked.count == 0) {
+      return resolver(permissions);
+    }
+    
+    EX_ENSURE_STRONGIFY(self);
+
+    // pop next permissionType from set
+    permissionType = [permissionsToBeAsked anyObject];
+    [permissionsToBeAsked removeObject:permissionType];
+
+    // initilize as global permission
+    permissions[permissionType] = [NSMutableDictionary dictionaryWithDictionary:[self getPermissionsForResource:permissionType]];
+
+    // had to reinitilize UIAlertActions between alertShow invocations
+    UIAlertAction *allowAction = [UIAlertAction actionWithTitle:@"Allow" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+      EX_ENSURE_STRONGIFY(self);
+      // try to save scoped permissions - if fails than permission is denied
+      if (![self.permissionsService savePermission:permissions[permissionType] ofType:permissionType forExperience:self.experienceId]) {
+        permissions[permissionType][@"status"] = [[self class] permissionStringForStatus:EXPermissionStatusDenied];
+      }
+      askForNextPermission();
+    }];
+
+    UIAlertAction *denyAction = [UIAlertAction actionWithTitle:@"Deny" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+      EX_ENSURE_STRONGIFY(self);
+      permissions[permissionType][@"status"] = [[self class] permissionStringForStatus:EXPermissionStatusDenied];
+      askForNextPermission();
+    }];
+
+    [self showPermissionRequestAlert:permissionType withAllowAction:allowAction withDenyAction:denyAction];
+  };
+
+  // ask for first scoped permission
+  askForNextPermission();
+}
+
+- (void)showPermissionRequestAlert:(NSString *)permissionType
+                   withAllowAction:(UIAlertAction *)allow
+                    withDenyAction:(UIAlertAction *)deny
+{
+  NSString *experienceName = self.experienceId; // TODO: we might want to use name from the manifest?
+  NSString *messageTemplate = @"%1$@ needs permissions for %2$@. You\'ve already granted permission to another Expo experience. Allow %1$@ to use it also?";
+  NSString *permissionString = [[self class] textForPermissionType:permissionType];
+  
+  NSString *message = [NSString stringWithFormat:messageTemplate, experienceName, permissionString];
   UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Experience needs permissions"
                                                                  message:message
                                                           preferredStyle:UIAlertControllerStyleAlert];
-
   [alert addAction:deny];
   [alert addAction:allow];
 
-  [_utils.currentViewController presentViewController:alert animated:YES completion:nil];
+  EX_WEAKIFY(self);
+  [EXUtilities performSynchronouslyOnMainThread:^{
+    EX_ENSURE_STRONGIFY(self);
+    // TODO: below line is sometimes failing with: "Presenting view controllers on detached view controllers is discourage"
+    [self->_utils.currentViewController presentViewController:alert animated:YES completion:nil];
+  }];
 }
 
 + (NSDictionary *)alwaysGrantedPermissions {

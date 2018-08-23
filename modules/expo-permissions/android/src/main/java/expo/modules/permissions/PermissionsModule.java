@@ -3,6 +3,7 @@
 package expo.modules.permissions;
 
 import android.Manifest;
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -11,6 +12,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.app.NotificationManagerCompat;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import expo.core.ExportedModule;
 import expo.core.interfaces.ExpoMethod;
@@ -27,6 +33,7 @@ public class PermissionsModule extends ExportedModule implements ModuleRegistryC
   private static final String GRANTED_VALUE = "granted";
   private static final String DENIED_VALUE = "denied";
   private static final String UNDETERMINED_VALUE = "undetermined";
+  private static final String ERROR_TAG = "E_PERMISSIONS";
 
   private static String PERMISSION_EXPIRES_NEVER = "never";
   private static final int PERMISSIONS_REQUEST = 13;
@@ -50,115 +57,149 @@ public class PermissionsModule extends ExportedModule implements ModuleRegistryC
   }
 
   @ExpoMethod
-  public void getAsync(final String type, final Promise promise) {
-    Bundle result = getPermissions(type);
-    if (result != null) {
-      promise.resolve(result);
-    } else {
-      promise.reject("E_PERMISSION_UNKNOWN", String.format("Unrecognized permission %s", type));
+  public void getAsync(final ArrayList<String> requestedPermissionsTypes, final Promise promise) {
+    try {
+      promise.resolve(getPermissions(requestedPermissionsTypes));
+    } catch (IllegalStateException e)  {
+      promise.reject(ERROR_TAG + "_UNKNOWN", e);
     }
   }
 
   @ExpoMethod
-  public void askAsync(final String type, final Promise promise) {
-    Bundle existingPermissions = getPermissions(type);
-    if (existingPermissions != null && existingPermissions.getString(STATUS_KEY) != null
-      && existingPermissions.getString(STATUS_KEY).equals(GRANTED_VALUE)) {
-      // if we already have permission granted, resolve immediately with that
-      promise.resolve(existingPermissions);
-    } else {
-      switch (type) {
-        case "notifications": {
-          promise.resolve(getNotificationPermissions());
-          break;
+  public void askAsync(final ArrayList<String> requestedPermissionsTypes, final Promise promise) {
+    final Set<String> requestedPermissionsTypesSet = new HashSet<>(requestedPermissionsTypes);
+    try {
+      Bundle existingPermissions = getPermissions(requestedPermissionsTypes);
+
+      // iterate over existing permissions and filter out those that are already granted
+      for (String elementBundleKey : existingPermissions.keySet()) {
+        final Bundle elementBundle = existingPermissions.getBundle(elementBundleKey);
+        if (elementBundle.getString(STATUS_KEY) != null
+            && elementBundle.getString(STATUS_KEY).equals(GRANTED_VALUE)) {
+          requestedPermissionsTypesSet.remove(elementBundleKey);
         }
-        case "userFacingNotifications": {
-          promise.resolve(getNotificationPermissions());
-          break;
-        }
-        case "location": {
-          askForLocationPermissions(promise);
-          break;
-        }
-        case "camera": {
-          askForSimplePermission(Manifest.permission.CAMERA, promise);
-          break;
-        }
-        case "contacts": {
-          askForSimplePermission(Manifest.permission.READ_CONTACTS, promise);
-          break;
-        }
-        case "audioRecording": {
-          askForSimplePermission(Manifest.permission.RECORD_AUDIO, promise);
-          break;
-        }
-        case "systemBrightness": {
-          askForWriteSettingsPermission(promise);
-          break;
-        }
-        case "cameraRoll": {
-          askForCameraRollPermissions(promise);
-          break;
-        }
-        case "calendar": {
-          askForCalendarPermissions(promise);
-          break;
-        }
-        case "SMS": {
-          askForSimplePermission(Manifest.permission.READ_SMS, promise);
-          break;
-        }
-        default:
-          promise.reject("E_PERMISSION_UNSUPPORTED", String.format("Cannot request permission: %s", type));
       }
+
+      // all permissions are granted - resolve with them
+      if (requestedPermissionsTypesSet.isEmpty()) {
+        promise.resolve(existingPermissions);
+        return;
+      }
+    } catch (IllegalStateException e) {
+      promise.reject(ERROR_TAG + "_UNKNOWN", e);
+      return;
+    }
+
+    // proceed with asking for non-granted permissions
+    final ArrayList<String> permissionsTypesToBeAsked = new ArrayList<>();
+    for (final String type : requestedPermissionsTypesSet) {
+      switch (type) {
+        case "notifications":
+        case "userFacingNotifications":
+        case "reminders":
+          // we do not have to ask for it
+          break;
+        case "location":
+          permissionsTypesToBeAsked.add(Manifest.permission.ACCESS_FINE_LOCATION);
+          permissionsTypesToBeAsked.add(Manifest.permission.ACCESS_COARSE_LOCATION);
+          break;
+        case "camera":
+          permissionsTypesToBeAsked.add(Manifest.permission.CAMERA);
+          break;
+        case "contacts":
+          permissionsTypesToBeAsked.add(Manifest.permission.READ_CONTACTS);
+          break;
+        case "audioRecording":
+          permissionsTypesToBeAsked.add(Manifest.permission.RECORD_AUDIO);
+          break;
+        case "systemBrightness":
+          if (requestedPermissionsTypes.size() != 1) {
+            promise.reject(ERROR_TAG + "_INVALID", "Asking for Permissions.SYSTEM_BRIGHTNESS should only be done individually on Android!");
+            return;
+          }
+          try {
+            askForWriteSettingsPermission();
+          } catch (Exception e) {
+            promise.reject(ERROR_TAG + "_UNSUPPORTED", String.format("Error launching write settings activity: %s", e.getMessage()));
+            return;
+          }
+          break;
+        case "cameraRoll":
+          permissionsTypesToBeAsked.add(Manifest.permission.READ_EXTERNAL_STORAGE);
+          permissionsTypesToBeAsked.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+          break;
+        case "calendar":
+          permissionsTypesToBeAsked.add(Manifest.permission.READ_CALENDAR);
+          permissionsTypesToBeAsked.add(Manifest.permission.WRITE_CALENDAR);
+          break;
+        case "SMS":
+          permissionsTypesToBeAsked.add(Manifest.permission.READ_SMS);
+          break;
+        default:
+          promise.reject(ERROR_TAG + "_UNSUPPORTED", String.format("Cannot request permission: %s", type));
+          return;
+      }
+    }
+
+    final boolean askedPermissions = askForPermissions(
+        permissionsTypesToBeAsked.toArray(new String[permissionsTypesToBeAsked.size()]), // permissionsTypesToBeAsked handles empty array
+        new PermissionsListener() {
+          @Override
+          public void onPermissionResult(String[] permissions, int[] grantResults) {
+            // read actual permissions results
+            promise.resolve(getPermissions(requestedPermissionsTypes));
+          }
+        });
+
+    if (!askedPermissions) {
+      promise.reject(ERROR_TAG + "_UNAVAILABLE", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?");
     }
   }
 
-  private Bundle getPermissions(final String type) {
-    switch (type) {
-      case "notifications": {
+  private Bundle getPermissions(final ArrayList<String> permissionsTypes) throws IllegalStateException {
+    Bundle permissions = new Bundle();
+    for (final String permissionType : permissionsTypes) {
+      permissions.putBundle(permissionType, getPermission(permissionType));
+    }
+    return permissions;
+  }
+
+  private Bundle getPermission(final String permissionType) throws IllegalStateException {
+    switch (permissionType) {
+      case "notifications":
+      case "userFacingNotifications":
         return getNotificationPermissions();
-      }
-      case "userFacingNotifications": {
-        return getNotificationPermissions();
-      }
-      case "location": {
+      case "location":
         return getLocationPermissions();
-      }
-      case "camera": {
+      case "camera":
         return getSimplePermission(android.Manifest.permission.CAMERA);
-      }
-      case "contacts": {
+      case "contacts":
         return getSimplePermission(Manifest.permission.READ_CONTACTS);
-      }
-      case "audioRecording": {
+      case "audioRecording":
         return getSimplePermission(Manifest.permission.RECORD_AUDIO);
-      }
-      case "systemBrightness": {
+      case "systemBrightness":
         return getWriteSettingsPermission();
-      }
-      case "cameraRoll": {
+      case "cameraRoll":
         return getCameraRollPermissions();
-      }
-      case "calendar": {
+      case "calendar":
         return getCalendarPermissions();
-      }
-      case "SMS": {
+      case "SMS":
         return getSimplePermission(Manifest.permission.READ_SMS);
-      }
+      case "reminders":
+        Bundle response = new Bundle();
+        response.putString(STATUS_KEY, GRANTED_VALUE);
+        response.putString(EXPIRES_KEY, PERMISSION_EXPIRES_NEVER);;
+        return response;
       default:
-        return null;
+        throw new IllegalStateException(String.format("Unrecognized permission type: %s", permissionType));
     }
   }
 
   private Bundle getNotificationPermissions() {
     Bundle response = new Bundle();
-
     boolean areEnabled = NotificationManagerCompat.from(getContext()).areNotificationsEnabled();
     response.putString(STATUS_KEY, areEnabled ? GRANTED_VALUE : DENIED_VALUE);
-
     response.putString(EXPIRES_KEY, PERMISSION_EXPIRES_NEVER);
-
     return response;
   }
 
@@ -166,10 +207,10 @@ public class PermissionsModule extends ExportedModule implements ModuleRegistryC
     Bundle response = new Bundle();
     String scope = "none";
     try {
-      if (getPermission(Manifest.permission.ACCESS_FINE_LOCATION)) {
+      if (isPermissionGranted(Manifest.permission.ACCESS_FINE_LOCATION)) {
         response.putString(STATUS_KEY, GRANTED_VALUE);
         scope = "fine";
-      } else if (getPermission(Manifest.permission.ACCESS_COARSE_LOCATION)) {
+      } else if (isPermissionGranted(Manifest.permission.ACCESS_COARSE_LOCATION)) {
         response.putString(STATUS_KEY, GRANTED_VALUE);
         scope = "coarse";
       } else {
@@ -190,44 +231,38 @@ public class PermissionsModule extends ExportedModule implements ModuleRegistryC
   // checkSelfPermission does not return accurate status of WRITE_SETTINGS
   private Bundle getWriteSettingsPermission() {
     Bundle response = new Bundle();
+    response.putString(EXPIRES_KEY, PERMISSION_EXPIRES_NEVER);
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      if (Settings.System.canWrite(getContext())) {
-        response.putString(STATUS_KEY, GRANTED_VALUE);
-      } else {
+      try {
+        // TODO: Android's is throwing here:
+        // Xiaomi Redmi 4A: Android 7.1.2
+        // Method threw 'java.lang.AbstractMethodError' exception.
+        // java.lang.AbstractMethodError: abstract method "java.lang.String android.content.Context.getOpPackageName()"
+        if (Settings.System.canWrite(getContext())) {
+          response.putString(STATUS_KEY, GRANTED_VALUE);
+        } else {
+          response.putString(STATUS_KEY, DENIED_VALUE);
+        }
+      } catch (AbstractMethodError error) {
         response.putString(STATUS_KEY, DENIED_VALUE);
       }
     } else {
       response.putString(STATUS_KEY, GRANTED_VALUE);
     }
-    response.putString(EXPIRES_KEY, PERMISSION_EXPIRES_NEVER);
 
     return response;
   }
 
-  private void askForWriteSettingsPermission(final Promise promise) {
-    try {
-      // Launch systems dialog for write settings
-      Intent intent = new Intent(android.provider.Settings.ACTION_MANAGE_WRITE_SETTINGS);
-      intent.setData(Uri.parse("package:" + getContext().getPackageName()));
-      intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-      getContext().startActivity(intent);
-
-      // Action returns nothing so we return undetermined status
-      // https://stackoverflow.com/questions/44389632/proper-way-to-handle-action-manage-write-settings-activity
-      Bundle response = new Bundle();
-      response.putString(STATUS_KEY, UNDETERMINED_VALUE);
-      promise.resolve(response);
-    } catch (Exception e) {
-      promise.reject("Error launching write settings activity:", e.getMessage());
-    }
-  }
-
+  /**
+   * Checks status for Android built-in permission
+   * @param permission {@link Manifest.permission}
+   */
   private Bundle getSimplePermission(String permission) {
     Bundle response = new Bundle();
 
     try {
-      if (getPermission(permission)) {
+      if (isPermissionGranted(permission)) {
         response.putString(STATUS_KEY, GRANTED_VALUE);
       } else {
         response.putString(STATUS_KEY, DENIED_VALUE);
@@ -241,55 +276,11 @@ public class PermissionsModule extends ExportedModule implements ModuleRegistryC
     return response;
   }
 
-  private void askForSimplePermission(final String permission, final Promise promise) {
-    boolean askedForPermissions = askForPermissions(new String[]{permission}, new PermissionsListener() {
-      @Override
-      public void onPermissionResult(String[] permissions, int[] grantResults) {
-        promise.resolve(getSimplePermission(permission));
-      }
-    });
-
-    if (!askedForPermissions) {
-      promise.reject("E_ACTIVITY_DOES_NOT_EXIST", "No visible activity. Must request " + permission + " when visible.");
-    }
-  }
-
-  private void askForLocationPermissions(final Promise promise) {
-    final String[] permissions = new String[] { Manifest.permission.ACCESS_FINE_LOCATION,
-      Manifest.permission.ACCESS_COARSE_LOCATION };
-    boolean askedForPermissions = askForPermissions(permissions, new PermissionsListener() {
-      @Override
-      public void onPermissionResult(String[] permissions, int[] grantResults) {
-        promise.resolve(getLocationPermissions());
-      }
-    });
-
-    if (!askedForPermissions) {
-      promise.reject("E_ACTIVITY_DOES_NOT_EXIST", "No visible activity. Must request location when visible.");
-    }
-  }
-
-  private void askForCameraRollPermissions(final Promise promise) {
-    final String[] permissions = new String[] { Manifest.permission.READ_EXTERNAL_STORAGE,
-      Manifest.permission.WRITE_EXTERNAL_STORAGE };
-    boolean askedForPermissions = askForPermissions(permissions, new PermissionsListener() {
-      @Override
-      public void onPermissionResult(String[] permissions, int[] grantResults) {
-        promise.resolve(getCameraRollPermissions());
-      }
-    });
-
-    if (!askedForPermissions) {
-      promise.reject("E_ACTIVITY_DOES_NOT_EXIST",
-        "No visible activity. Must request camera roll permission when visible.");
-    }
-  }
-
   private Bundle getCameraRollPermissions() {
     Bundle response = new Bundle();
 
     try {
-      if (getPermissions(new String[]{
+      if (arePermissionsGranted(new String[]{
           Manifest.permission.READ_EXTERNAL_STORAGE,
           Manifest.permission.WRITE_EXTERNAL_STORAGE })) {
         response.putString(STATUS_KEY, GRANTED_VALUE);
@@ -305,24 +296,10 @@ public class PermissionsModule extends ExportedModule implements ModuleRegistryC
     return response;
   }
 
-  private void askForCalendarPermissions(final Promise promise) {
-    final String[] permissions = new String[] { Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR };
-    boolean askedForPermissions = askForPermissions(permissions, new PermissionsListener() {
-      @Override
-      public void onPermissionResult(String[] permissions, int[] grantResults) {
-        promise.resolve(getCalendarPermissions());
-      }
-    });
-
-    if (!askedForPermissions) {
-      promise.reject("E_ACTIVITY_DOES_NOT_EXIST", "No visible activity. Must request calendar when visible.");
-    }
-  }
-
   private Bundle getCalendarPermissions() {
     Bundle response = new Bundle();
     try {
-      if (getPermissions(new String[]{
+      if (arePermissionsGranted(new String[]{
           Manifest.permission.READ_CALENDAR,
           Manifest.permission.WRITE_CALENDAR })) {
         response.putString(STATUS_KEY, GRANTED_VALUE);
@@ -341,7 +318,7 @@ public class PermissionsModule extends ExportedModule implements ModuleRegistryC
    * Checks whether given permission is granted or not.
    * Throws IllegalStateException there's no Permissions module present.
    */
-  private boolean getPermission(final String permission) {
+  private boolean isPermissionGranted(final String permission) {
     if (mPermissions != null) {
       int permissionResult = mPermissions.getPermission(permission);
       return permissionResult == PackageManager.PERMISSION_GRANTED;
@@ -354,7 +331,7 @@ public class PermissionsModule extends ExportedModule implements ModuleRegistryC
    * Checks whether all given permissions are granted or not.
    * Throws IllegalStateException there's no Permissions module present.
    */
-  private boolean getPermissions(final String[] permissions) {
+  private boolean arePermissionsGranted(final String[] permissions) {
     if (mPermissions != null) {
       int[] permissionsResults = mPermissions.getPermissions(permissions);
       if (permissions.length != permissionsResults.length) {
@@ -378,5 +355,21 @@ public class PermissionsModule extends ExportedModule implements ModuleRegistryC
     } else {
       return false;
     }
+  }
+
+  @TargetApi(Build.VERSION_CODES.M)
+  private void askForWriteSettingsPermission() throws Exception {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+      return;
+    }
+
+    // Launch systems dialog for write settings
+    Intent intent = new Intent(android.provider.Settings.ACTION_MANAGE_WRITE_SETTINGS);
+    intent.setData(Uri.parse("package:" + getContext().getPackageName()));
+    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    getContext().startActivity(intent);
+
+    // TODO: we can monitor coming back to application using onResume lifecycle function like we do in other Intent driven modules (like SMS)
+    // https://stackoverflow.com/questions/44389632/proper-way-to-handle-action-manage-write-settings-activity
   }
 }

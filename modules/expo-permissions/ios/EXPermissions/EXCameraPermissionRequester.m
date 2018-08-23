@@ -30,7 +30,8 @@
     case AVAuthorizationStatusAuthorized:
       status = EXPermissionStatusGranted;
       break;
-    case AVAuthorizationStatusDenied: case AVAuthorizationStatusRestricted:
+    case AVAuthorizationStatusDenied:
+    case AVAuthorizationStatusRestricted:
       status = EXPermissionStatusDenied;
       break;
     case AVAuthorizationStatusNotDetermined:
