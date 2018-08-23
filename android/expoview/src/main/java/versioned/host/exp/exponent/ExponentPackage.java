@@ -19,6 +19,8 @@ import java.util.Map;
 
 import expo.adapters.react.ReactModuleRegistryProvider;
 import expo.core.interfaces.Package;
+import expo.modules.font.FontLoaderPackage;
+import expo.modules.print.PrintPackage;
 import expo.modules.analytics.segment.SegmentPackage;
 import expo.modules.barcodescanner.BarCodeScannerPackage;
 import expo.modules.camera.CameraPackage;
@@ -55,7 +57,6 @@ import versioned.host.exp.exponent.modules.api.ErrorRecoveryModule;
 import versioned.host.exp.exponent.modules.api.FabricModule;
 import versioned.host.exp.exponent.modules.api.FacebookModule;
 import versioned.host.exp.exponent.modules.api.FingerprintModule;
-import versioned.host.exp.exponent.modules.api.FontLoaderModule;
 import versioned.host.exp.exponent.modules.api.GoogleModule;
 import versioned.host.exp.exponent.modules.api.ImageCropperModule;
 import versioned.host.exp.exponent.modules.api.ImagePickerModule;
@@ -111,6 +112,7 @@ public class ExponentPackage implements ReactPackage {
       new PrintPackage(),
       new MediaLibraryPackage(),
       new SegmentPackage(),
+      new FontLoaderPackage(),
       new LocationPackage(),
       new BarCodeScannerPackage()
   );
@@ -164,7 +166,6 @@ public class ExponentPackage implements ReactPackage {
     List<NativeModule> nativeModules = new ArrayList<>(Arrays.<NativeModule>asList(
         new URLHandlerModule(reactContext),
         new ShakeModule(reactContext),
-        new FontLoaderModule(reactContext),
         new KeyboardModule(reactContext),
         new UpdatesModule(reactContext, mExperienceProperties, mManifest),
         new ExponentIntentModule(reactContext, mExperienceProperties)

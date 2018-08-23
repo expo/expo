@@ -175,7 +175,7 @@ module.exports = {
     return require('expo-file-system').FileSystem;
   },
   get Font() {
-    return require('./Font');
+    return require('expo-font').Font;
   },
   get Google() {
     return require('./Google');

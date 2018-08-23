@@ -4,6 +4,12 @@ import { NativeModules, StyleSheet, Text, View } from 'react-native';
 
 const { ExpoNativeModuleIntrospection } = NativeModules;
 
+if (!ExpoNativeModuleIntrospection) {
+  console.warn(
+    'Looks like there is no `ExpoNativeModuleIntrospection` module. Please make sure you are running this app on iOS.'
+  );
+}
+
 export default class App extends React.Component {
   async componentDidMount() {
     let moduleSpecs = await _getExpoModuleSpecsAsync();

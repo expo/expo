@@ -3,7 +3,7 @@
 import React, { type ComponentType } from 'react';
 import { AppRegistry, StyleSheet } from 'react-native';
 
-import { processFontFamily } from '../Font';
+import { Font } from 'expo-font';
 import Notifications from '../Notifications';
 import RootErrorBoundary from './RootErrorBoundary';
 
@@ -21,7 +21,7 @@ type InitialProps = {
 function wrapWithExpoRoot<P: InitialProps>(AppRootComponent: ComponentType<P>): ComponentType<P> {
   return class ExpoRootComponent extends React.Component<P> {
     componentWillMount() {
-      StyleSheet.setStyleAttributePreprocessor('fontFamily', processFontFamily);
+      StyleSheet.setStyleAttributePreprocessor('fontFamily', Font.processFontFamily);
 
       if (this.props.exp.notification) {
         Notifications._setInitialNotification(this.props.exp.notification);

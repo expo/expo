@@ -1,13 +1,13 @@
-import { NativeModules } from 'react-native';
-
+import { Location } from 'expo-location';
+import { NativeModulesProxy } from 'expo-core';
 import { Permissions } from 'expo-permissions';
+
 import {
   mockProperty,
   unmockAllProperties,
   mockPlatformIOS,
   mockPlatformAndroid,
 } from '../../test/mocking';
-import Location from '../Location';
 
 const fakeReturnValue = {
   coords: {
@@ -25,11 +25,11 @@ let ExpoLocation;
 
 function applyMocks() {
   mockProperty(
-    NativeModules.ExponentLocation,
+    NativeModulesProxy.ExpoLocation,
     'getCurrentPositionAsync',
     jest.fn(async () => fakeReturnValue)
   );
-  ExpoLocation = NativeModules.ExponentLocation;
+  ExpoLocation = NativeModulesProxy.ExpoLocation;
 }
 
 describe('Location', () => {

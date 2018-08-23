@@ -28,6 +28,8 @@ target 'Exponent' do
     :path => "../modules/expo-sms/ios"
   pod 'EXCore',
     :path => "../modules/expo-core/ios"
+  pod 'EXFont',
+    :path => "../modules/expo-font/ios"
   pod 'EXPrint',
     :path => "../modules/expo-print/ios"
   pod 'EXCamera',
@@ -46,6 +48,8 @@ target 'Exponent' do
     :path => "../modules/expo-analytics-segment/ios"
   pod 'EXMediaLibrary',
     :path => "../modules/expo-media-library/ios"
+  pod 'EXFontInterface',
+    :path => "../modules/expo-font-interface/ios"
   pod 'EXCameraInterface',
     :path => "../modules/expo-camera-interface/ios"
   pod 'EXSensorsInterface',
