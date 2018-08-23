@@ -125,6 +125,7 @@ dependencies {
   api 'host.exp.exponent:expo-print:1.0.0'
   api 'host.exp.exponent:expo-media-library:1.0.0'
   api 'host.exp.exponent:expo-analytics-segment:1.0.0'
+  api 'host.exp.exponent:expo-font:1.0.0'
   api 'host.exp.exponent:expo-location:1.0.0'
   api 'host.exp.exponent:expo-barcode-scanner-interface:1.0.0'
   api 'host.exp.exponent:expo-barcode-scanner:1.0.0'
@@ -141,6 +142,7 @@ dependencies {
   api project(':expo-face-detector')
   api project(':expo-file-system')
   api project(':expo-file-system-interface')
+  api project(':expo-font')
   api project(':expo-permissions')
   api project(':expo-permissions-interface')
   api project(':expo-constants')

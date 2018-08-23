@@ -62,6 +62,7 @@ apply from: project(":expo-core").file("../expo-core.gradle")
 
 dependencies {
     expendency "expo-core"
+    expendency 'expo-font-interface'
     expendency 'expo-permissions-interface'
     expendency 'expo-image-loader-interface'
     provided 'com.facebook.react:react-native:+'

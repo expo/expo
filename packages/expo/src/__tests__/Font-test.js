@@ -8,16 +8,16 @@ jest.mock('expo-constants', () => ({
   },
 }));
 
-let NativeModules;
+let NativeModulesProxy;
 let Font;
 
 function applyMocks() {
-  mockProperty(NativeModules.ExponentFontLoader, 'loadAsync', jest.fn(async () => {}));
+  mockProperty(NativeModulesProxy.ExpoFontLoader, 'loadAsync', jest.fn(async () => {}));
 }
 
 beforeEach(() => {
-  ({ NativeModules } = require('react-native'));
-  Font = require('../Font');
+  NativeModulesProxy = require('expo-core').NativeModulesProxy;
+  Font = require('expo-font').Font;
 
   applyMocks();
 });
@@ -28,7 +28,7 @@ afterEach(() => {
 
 describe('loadAsync', () => {
   it(`completes after loading a font`, async () => {
-    const NativeFontLoader = NativeModules.ExponentFontLoader;
+    const NativeFontLoader = NativeModulesProxy.ExpoFontLoader;
 
     const mockAsset = _createMockAsset();
     await Font.loadAsync('test-font', mockAsset);
@@ -41,7 +41,7 @@ describe('loadAsync', () => {
   });
 
   it(`throws if downloading a font fails`, async () => {
-    const NativeFontLoader = NativeModules.ExponentFontLoader;
+    const NativeFontLoader = NativeModulesProxy.ExpoFontLoader;
 
     const mockAsset = {
       downloaded: false,
@@ -56,7 +56,7 @@ describe('loadAsync', () => {
   });
 
   it(`throws if loading a downloaded font fails`, async () => {
-    const NativeFontLoader = NativeModules.ExponentFontLoader;
+    const NativeFontLoader = NativeModulesProxy.ExpoFontLoader;
     NativeFontLoader.loadAsync.mockImplementation(async () => {
       throw new Error('Intentional error from FontLoader mock');
     });
@@ -71,7 +71,7 @@ describe('loadAsync', () => {
   });
 
   it(`doesn't redownload a loaded font`, async () => {
-    const NativeFontLoader = NativeModules.ExponentFontLoader;
+    const NativeFontLoader = NativeModulesProxy.ExpoFontLoader;
 
     const mockAsset1 = _createMockAsset();
     await Font.loadAsync('test-font', mockAsset1);
@@ -98,7 +98,7 @@ describe('loadAsync', () => {
   });
 
   it(`downloads a font that failed to load`, async () => {
-    const NativeFontLoader = NativeModules.ExponentFontLoader;
+    const NativeFontLoader = NativeModulesProxy.ExpoFontLoader;
 
     const mockAsset1 = {
       downloaded: false,
@@ -117,7 +117,7 @@ describe('loadAsync', () => {
   });
 
   it(`coalesces concurrent loads`, async () => {
-    const NativeFontLoader = NativeModules.ExponentFontLoader;
+    const NativeFontLoader = NativeModulesProxy.ExpoFontLoader;
 
     const mockAsset1 = _createMockAsset();
     const loadPromise1 = Font.loadAsync('test-font', mockAsset1);
@@ -192,7 +192,7 @@ describe('loadAsync', () => {
   });
 
   it(`coalesces concurrent loads across maps`, async () => {
-    const NativeFontLoader = NativeModules.ExponentFontLoader;
+    const NativeFontLoader = NativeModulesProxy.ExpoFontLoader;
 
     const loadPromise1 = Font.loadAsync({
       'test-font-1': _createMockAsset({

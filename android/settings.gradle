@@ -72,6 +72,12 @@ project(":expo-media-library").projectDir = new File(rootDir, "../modules/expo-m
 include ":expo-analytics-segment"
 project(":expo-analytics-segment").projectDir = new File(rootDir, "../modules/expo-analytics-segment/android")
 
+include ":expo-font"
+project(":expo-font").projectDir = new File(rootDir, "../modules/expo-font/android")
+
+include ":expo-font-interface"
+project(":expo-font-interface").projectDir = new File(rootDir, "../modules/expo-font-interface/android")
+
 include ":expo-location"
 project(":expo-location").projectDir = new File(rootDir, "../modules/expo-location/android")
 

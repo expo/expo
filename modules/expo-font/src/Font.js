@@ -1,9 +1,27 @@
 // @flow
 
 import invariant from 'invariant';
-import { Asset } from 'expo-asset';
-import { Constants } from 'expo-constants';
-import { NativeModules } from 'react-native';
+import { NativeModulesProxy } from 'expo-core';
+const { ExpoFontLoader } = NativeModulesProxy;
+
+const { Asset } = requireAsset();
+const { Constants } = requireConstants();
+
+function requireAsset() {
+  try {
+    return require('expo-asset');
+  } catch (error) {
+    throw new Error('expo-font needs expo-asset to be installed');
+  }
+}
+
+function requireConstants() {
+  try {
+    return require('expo-constants');
+  } catch (error) {
+    throw new Error('expo-font needs expo-constants to be installed');
+  }
+}
 
 type FontSource = string | number | Asset;
 
@@ -24,17 +42,17 @@ export function processFontFamily(name: ?string): ?string {
       if (isLoading(name)) {
         console.error(
           `You started loading '${name}', but used it before it finished loading\n\n` +
-            `- You need to wait for Expo.Font.loadAsync to complete before using the font.\n\n` +
+            `- You need to wait for Font.loadAsync to complete before using the font.\n\n` +
             `- We recommend loading all fonts before rendering the app, and rendering only ` +
             `Expo.AppLoading while waiting for loading to complete.`
         );
       } else {
         console.error(
           `fontFamily '${name}' is not a system font and has not been loaded through ` +
-            `Expo.Font.loadAsync.\n\n` +
+            `Font.loadAsync.\n\n` +
             `- If you intended to use a system font, make sure you typed the name ` +
             `correctly and that it is supported by your device operating system.\n\n` +
-            `- If this is a custom font, be sure to load it with Expo.Font.loadAsync.`
+            `- If this is a custom font, be sure to load it with Font.loadAsync.`
         );
       }
     }
@@ -42,7 +60,7 @@ export function processFontFamily(name: ?string): ?string {
     return 'System';
   }
 
-  return `ExponentFont-${_getNativeFontName(name)}`;
+  return `ExpoFont-${_getNativeFontName(name)}`;
 }
 
 export function isLoaded(name: string): boolean {
@@ -120,8 +138,7 @@ async function _loadSingleFontAsync(name: string, asset: Asset): Promise<void> {
   if (!asset.downloaded) {
     throw new Error(`Failed to download asset for font "${name}"`);
   }
-
-  await NativeModules.ExponentFontLoader.loadAsync(_getNativeFontName(name), asset.localUri);
+  await ExpoFontLoader.loadAsync(_getNativeFontName(name), asset.localUri);
 }
 
 function _getNativeFontName(name: string): string {
