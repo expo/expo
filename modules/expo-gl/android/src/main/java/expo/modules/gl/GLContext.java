@@ -146,16 +146,18 @@ public class GLContext {
   }
 
   public void destroy() {
-    mManager.deleteContextWithId(mEXGLCtxId);
-    EXGLContextDestroy(mEXGLCtxId);
+    if (mGLThread != null) {
+      mManager.deleteContextWithId(mEXGLCtxId);
+      EXGLContextDestroy(mEXGLCtxId);
 
-    try {
-      mGLThread.interrupt();
-      mGLThread.join();
-    } catch (InterruptedException e) {
-      Log.e("EXGL", "Can't interrupt GL thread.", e);
+      try {
+        mGLThread.interrupt();
+        mGLThread.join();
+      } catch (InterruptedException e) {
+        Log.e("EXGL", "Can't interrupt GL thread.", e);
+      }
+      mGLThread = null;
     }
-    mGLThread = null;
   }
 
   // must be called in GL thread

@@ -73,6 +73,10 @@ public class GLView extends TextureView implements TextureView.SurfaceTextureLis
   @Override
   public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
     mGLContext.destroy();
+
+    // reset flag, so the context will be recreated when the new surface is available
+    mOnSurfaceCreateCalled = false;
+
     return true;
   }
 
