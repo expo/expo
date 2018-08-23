@@ -6,17 +6,40 @@ When it comes to adding functionality that can access potentially sensitive info
 
 If you are deploying your app to the Apple iTunes Store, you should consider adding additional metadata to your app in order to customize the system permissions dialog and explain why your app requires permissions. See more info in the [App Store Deployment Guide](../guides/app-stores.html#system-permissions-dialogs-on-ios).
 
-### `Expo.Permissions.getAsync(type)`
+## Methods
 
-Determines whether your app has already been granted access to the provided permission type.
+### `Expo.Permissions.getAsync(...permissionTypes)`
+
+Determines whether your app has already been granted access to the provided permissions types.
 
 #### Arguments
 
--   **type (_string_)** -- The name of the permission.
+-   **permissionTypes (_string_)** -- The names of the permissions types.
 
 #### Returns
 
-Returns a `Promise` that is resolved with the information about the permission, including status, expiration and scope (if it applies to the permission type).
+Returns a `Promise` that is resolved with the information about the permissions, including status, expiration and scope (if it applies to the permission type).
+Top-level `status` and `exprires` keys stores combined info of each component permission that is asked for.
+If any permission resulted in negative result than that negative result is propagated here, that means top-level values are positive only if all component values are positive.
+
+Examples `[...componentsValues] => topLevelStatus`: 
+* `[granted, denied, granted] => denied`
+* `[granted, granted, granted] => granted`
+
+```javascript
+{
+  status, // combined status of all component permissions being asked for, if any of has status !== 'granted' then that status is propagated here
+  expires, // combined expires of all permissions being asked for, same as status
+  permissions: { // an object with an entry for each permission requested
+    [Permissions.TYPE]: {
+      status,
+      expires,
+      ... // any additional permission-specific fields
+    },
+    ...
+  },
+}
+```
 
 #### Example
 
@@ -28,19 +51,27 @@ async function alertIfRemoteNotificationsDisabledAsync() {
     alert('Hey! You might want to enable notifications for my app, they are good.');
   }
 }
+
+async function checkMultiPermissions() {
+  const { Permissions } = Expo;
+  const { status, expires, permissions } = await Permissions.getAsync(Permissions.CALENDAR, Permissions.SMS, Permissions.CONTACTS)
+  if (status !== 'granted') {
+    alert('Hey! You heve not enabled selected permissions');
+  }
+}
 ```
 
-### `Expo.Permissions.askAsync(type)`
+### `Expo.Permissions.askAsync(...types)`
 
-Prompt the user for a permission. If they have already granted access, response will be success.
+Prompt the user for types of permissions. If they have already granted access, response will be success.
 
 #### Arguments
 
--   **type (_string_)** -- The name of the permission.
+-   **types (_string_)** -- The names of the permissions types.
 
 #### Returns
 
-Returns a `Promise` that is resolved with the information about the permission, including status, expiration and scope (if it applies to the permission type).
+Same as for `Permissions.getAsync`
 
 #### Example
 
@@ -55,6 +86,8 @@ async function getLocationAsync() {
   }
 }
 ```
+
+## Permissions types
 
 ### `Expo.Permissions.NOTIFICATIONS`
 
@@ -78,6 +111,10 @@ The permission type for user-facing notifications. This does **not** register yo
 
 The permission type for location access.
 
+<!-- TODO: Permissions.LOCATION issue (search by this phrase) -->
+> **Note:** iOS is not working with this permission being not individually, `Permissions.askAsync(Permissions.SOME_PERMISSIONS, Permissions.LOCATION, Permissions.CAMERA, ...)` would throw.
+On iOS ask for this permission type individually.
+
 ### `Expo.Permissions.CAMERA`
 
 The permission type for photo and video taking.
@@ -100,21 +137,31 @@ The permission type for reading or writing to the calendar.
 
 ### `Expo.Permissions.REMINDERS`
 
-The permission type for reading or writing reminders (iOS only).
+The permission type for reading or writing reminders.
+(iOS only, on Android would return `granted` immediately)
 
 ### `Expo.Permissions.SMS`
-SDK API
-The permission for accesing SMS storage.
 
-### Permissions equivalents inside `app.json`
+The permission type for accessing SMS storage.
+(Android only, iOS would return `granted` immediately)
+
+### `Expo.Permissions.SYSTEM_BRIGHTNESS`
+
+The permissions type for changing brighness of the screen
+
+> **Note:** Android would reject from `Permissions.askAsync` if this permission type is not being asked individually.
+On Android ask for this permission individually.
+
+## Android: permissions equivalents inside `app.json`
 
 If you specified `android.permissions` inside your `app.json` ([read more about configuration](../workflow/configuration.html#android))  you have to use values corresponding to their `Expo.Permissions` equivalents. 
 
-| Expo            | Android                                       |
-| --------------- | --------------------------------------------- |
-| LOCATION        | ACCESS\_COARSE\_LOCATION, ACCESS\_FINE_LOCATION  |
-| CAMERA          | CAMERA                                        |
-| AUDIO_RECORDING | RECORD_AUDIO                                  |
-| CONTACTS        | READ_CONTACTS                                 |
+| Expo            | Android                                           |
+| --------------- | --------------------------------------------------|
+| LOCATION        | ACCESS\_COARSE\_LOCATION, ACCESS\_FINE_LOCATION   |
+| CAMERA          | CAMERA                                            |
+| AUDIO_RECORDING | RECORD_AUDIO                                      |
+| CONTACTS        | READ_CONTACTS                                     |
 | CAMERA_ROLL     | READ\_EXTERNAL\_STORAGE, WRITE\_EXTERNAL\_STORAGE |
-| CALENDAR        | READ\_CALENDAR, WRITE\_CALENDAR                 |
+| CALENDAR        | READ\_CALENDAR, WRITE\_CALENDAR                   |
+| SMS             | READ_SMS                                          |
