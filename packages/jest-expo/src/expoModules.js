@@ -56,7 +56,6 @@ module.exports = {
       type: 'object',
       mock: {
         ExpoFaceDetector: [{ key: 0, argumentsCount: 1, name: 'detectFaces' }],
-        ExpoFontLoader: [{ key: 0, argumentsCount: 2, name: 'loadAsync' }],
         ExponentMediaLibrary: [
           { key: 0, argumentsCount: 1, name: 'getAlbumAsync' },
           { key: 1, argumentsCount: 1, name: 'createAssetAsync' },
@@ -65,9 +64,10 @@ module.exports = {
           { key: 4, argumentsCount: 2, name: 'addAssetsToAlbumAsync' },
           { key: 5, argumentsCount: 0, name: 'getMomentsAsync' },
           { key: 6, argumentsCount: 1, name: 'getAssetInfoAsync' },
-          { key: 7, argumentsCount: 1, name: 'getAssetsAsync' },
+          { key: 7, argumentsCount: 2, name: 'deleteAlbumsAsync' },
           { key: 8, argumentsCount: 2, name: 'removeAssetsFromAlbumAsync' },
           { key: 9, argumentsCount: 2, name: 'createAlbumAsync' },
+          { key: 10, argumentsCount: 1, name: 'getAssetsAsync' },
         ],
         ExponentPedometer: [
           { key: 0, argumentsCount: 2, name: 'getStepCountAsync' },
@@ -82,6 +82,7 @@ module.exports = {
           { key: 5, argumentsCount: 1, name: 'resumePreview' },
         ],
         ExponentGLViewManager: [],
+        ExpoFontLoader: [{ key: 0, argumentsCount: 2, name: 'loadAsync' }],
         ExpoBarCodeScannerView: [],
         ExponentSegment: [
           { key: 0, argumentsCount: 0, name: 'flush' },
@@ -89,7 +90,7 @@ module.exports = {
           { key: 2, argumentsCount: 1, name: 'screen' },
           { key: 3, argumentsCount: 1, name: 'identify' },
           { key: 4, argumentsCount: 2, name: 'identifyWithTraits' },
-          { key: 5, argumentsCount: -1, name: 'initializeAndroid' },
+          { key: 5, argumentsCount: 1, name: 'initializeAndroid' },
           { key: 6, argumentsCount: 2, name: 'trackWithProperties' },
           { key: 7, argumentsCount: 1, name: 'initializeIOS' },
           { key: 8, argumentsCount: 2, name: 'groupWithTraits' },
@@ -139,7 +140,7 @@ module.exports = {
         ExponentGLObjectManager: [
           { key: 0, argumentsCount: 0, name: 'createContextAsync' },
           { key: 1, argumentsCount: 1, name: 'destroyContextAsync' },
-          { key: 2, argumentsCount: -1, name: 'destroyObjectAsync' },
+          { key: 2, argumentsCount: 1, name: 'destroyObjectAsync' },
           { key: 3, argumentsCount: 2, name: 'createCameraTextureAsync' },
           { key: 4, argumentsCount: 2, name: 'takeSnapshotAsync' },
         ],
@@ -187,7 +188,7 @@ module.exports = {
           addListener: { type: 'function' },
           appOwnership: { type: 'string' },
           deviceName: { type: 'string' },
-          deviceYearClass: { type: 'number', mock: 2017 },
+          deviceYearClass: { type: 'number', mock: 2015 },
           experienceUrl: { type: 'string' },
           expoRuntimeVersion: { type: 'string' },
           expoVersion: { type: 'string' },
@@ -235,6 +236,7 @@ module.exports = {
           addListener: { type: 'function' },
           createAlbumAsync: { type: 'function' },
           createAssetAsync: { type: 'function' },
+          deleteAlbumsAsync: { type: 'function' },
           deleteAssetsAsync: { type: 'function' },
           getAlbumAsync: { type: 'function' },
           getAlbumsAsync: { type: 'function' },
@@ -256,7 +258,7 @@ module.exports = {
     },
     viewManagersNames: {
       type: 'array',
-      mock: ['ExponentCamera', 'ExpoBarCodeScannerView', 'ExponentGLView'],
+      mock: ['ExpoBarCodeScannerView', 'ExponentGLView', 'ExponentCamera'],
     },
   },
   ExponentAR: {
