@@ -14,6 +14,63 @@ Check out a full example at [expo/camerja](https://github.com/expo/camerja). You
 
 `FaceDetector` is used in Gallery screen — it should detect faces on saved photos and show the probability that the face is smiling.
 
+## Intermodule interface
+
+Other modules, like eg. [Camera](camera) are able to use this `FaceDetector`.
+
+### Settings
+
+In order to configure detector's behavior modules pass a settings object which is then interpreted by this module. The shape of the object should be as follows:
+
+- **mode? (_FaceDetector.Constants.Mode_)** -- Whether to detect faces in fast or accurate mode. Use `FaceDetector.Constants.Mode.{fast, accurate}`.
+- **detectLandmarks? (_FaceDetector.Constants.Landmarks_)** -- Whether to detect and return landmarks positions on the face (ears, eyes, mouth, cheeks, nose). Use `FaceDetector.Constants.Landmarks.{all, none}`.
+- **runClassifications? (_FaceDetector.Constants.Classifications_)** -- Whether to run additional classifications on detected faces (smiling probability, open eye probabilities). Use `FaceDetector.Constants.Classifications.{all, none}`.
+
+Eg. you could use the following snippet to detect faces in fast mode without detecting landmarks or whether face is smiling:
+
+```js
+import { FaceDetector } from 'expo';
+
+<Camera
+  // ... other props
+  onFacesDetected={this.handleFacesDetected}
+  faceDetectorSettings={{
+    mode: FaceDetector.Constants.Mode.fast,
+    detectLandmarks: FaceDetector.Constants.Mode.none,
+    runClassifications: FaceDetector.Constants.Mode.none,
+  }}
+/>
+```
+
+### Event shape
+
+While detecting faces, `FaceDetector` will emit object events of the following shape:
+
+- **faces** (_array_) - array of faces objects:
+  - **faceID (_number_)** -- a face identifier (used for tracking, if the same face appears on consecutive frames it will have the same `faceID`).
+  - **bounds (_object_)** -- an object containing:
+    - **origin (`{ x: number, y: number }`)** -- position of the top left corner of a square containing the face in view coordinates,
+    - **size (`{ width: number, height: number }`)** -- size of the square containing the face in view coordinates,
+  - **rollAngle (_number_)** -- roll angle of the face (bank),
+  - **yawAngle (_number_)** -- yaw angle of the face (heading, turning head left or right),
+  - **smilingProbability (_number_)** -- probability that the face is smiling,
+  - **leftEarPosition (`{ x: number, y: number}`)** -- position of the left ear in view coordinates,
+  - **rightEarPosition (`{ x: number, y: number}`)** -- position of the right ear in view coordinates,
+  - **leftEyePosition (`{ x: number, y: number}`)** -- position of the left eye in view coordinates,
+  - **leftEyeOpenProbability (_number_)** -- probability that the left eye is open,
+  - **rightEyePosition (`{ x: number, y: number}`)** -- position of the right eye in view coordinates,
+  - **rightEyeOpenProbability (_number_)** -- probability that the right eye is open,
+  - **leftCheekPosition (`{ x: number, y: number}`)** -- position of the left cheek in view coordinates,
+  - **rightCheekPosition (`{ x: number, y: number}`)** -- position of the right cheek in view coordinates,
+  - **mouthPosition (`{ x: number, y: number}`)** -- position of the center of the mouth in view coordinates,
+  - **leftMouthPosition (`{ x: number, y: number}`)** -- position of the left edge of the mouth in view coordinates,
+  - **rightMouthPosition (`{ x: number, y: number}`)** -- position of the right edge of the mouth in view coordinates,
+  - **noseBasePosition (`{ x: number, y: number}`)** -- position of the nose base in view coordinates.
+
+`smilingProbability`, `leftEyeOpenProbability` and `rightEyeOpenProbability` are returned only if `faceDetectionClassifications` property is set to `.all`.
+
+Positions of face landmarks are returned only if `faceDetectionLandmarks` property is set to `.all`.
+
 ## Methods
 
 To use methods that `FaceDetector` exposes one just has to import the module. (In detached apps on iOS face detection will be supported only if you add the `FaceDetector` subspec to your project. Refer to [Adding the Payments Module on iOS](payments#adding-the-payments-module-on-ios) for an example of adding a subspec to your detached project.)
