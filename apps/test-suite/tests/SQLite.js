@@ -221,5 +221,25 @@ export function test(t) {
       const { exists } = await FS.getInfoAsync(`${FS.documentDirectory}SQLite/test.db`);
       t.expect(exists).toBeTruthy();
     });
+
+    t.it('should allow nulls as bind parameters in SELECT statements', async () => {
+      const db = SQLite.openDatabase('test.db');
+      await new Promise((resolve, reject) => {
+        db.transaction(
+          tx => {
+            const nop = () => {};
+            const onError = (tx, error) => reject(error);
+            tx.executeSql('SELECT COALESCE(?, 1) AS foo, ? AS bar', [null, null],
+              (tx, results) => {
+                t.expect(results.rows._array[0].foo).toEqual(1);
+                t.expect(results.rows._array[0].bar).toBeNull();
+              },
+              onError);
+          },
+          reject,
+          resolve,
+        );
+      })
+    })
   });
 }
