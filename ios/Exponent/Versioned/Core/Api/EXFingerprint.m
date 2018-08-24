@@ -75,7 +75,9 @@ RCT_EXPORT_METHOD(authenticateAsync:(NSString *)reason
     }
   }
   LAContext *context = [LAContext new];
-
+  if (@available(iOS 11.0, *)) {
+    context.interactionNotAllowed = false;
+  }
   [context evaluatePolicy:LAPolicyDeviceOwnerAuthentication
           localizedReason:reason
                     reply:^(BOOL success, NSError *error) {
@@ -84,7 +86,7 @@ RCT_EXPORT_METHOD(authenticateAsync:(NSString *)reason
                       } else {
                         resolve(@{
                           @"success": @(NO),
-                          @"error": [self convertErrorCode:error.code],
+                          @"error": [self convertErrorCode:error],
                         });
                       }
                     }];
@@ -92,9 +94,9 @@ RCT_EXPORT_METHOD(authenticateAsync:(NSString *)reason
 
 }
 
-- (NSString *)convertErrorCode:(NSInteger)code
+- (NSString *)convertErrorCode:(NSError *)error
 {
-  switch (code) {
+  switch (error.code) {
     case LAErrorSystemCancel:
       return @"system_cancel";
     case LAErrorAppCancel:
@@ -116,7 +118,7 @@ RCT_EXPORT_METHOD(authenticateAsync:(NSString *)reason
     case LAErrorAuthenticationFailed:
       return @"authentication_failed";
     default:
-      return @"unknown";
+      return [@"unknown: " stringByAppendingFormat:@"%ld, %@", error.code, error.localizedDescription];
   }
 }
 
