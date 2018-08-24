@@ -27,6 +27,9 @@ project(":expo-gl").projectDir = new File(rootDir, "../modules/expo-gl/android")
 include ":expo-gl-cpp"
 project(":expo-gl-cpp").projectDir = new File(rootDir, "../modules/expo-gl-cpp/android")
 
+include ":expo-image-loader-interface"
+project(":expo-image-loader-interface").projectDir = new File(rootDir, "../modules/expo-image-loader-interface/android")
+
 include ":expo-permissions-interface"
 project(":expo-permissions-interface").projectDir = new File(rootDir, "../modules/expo-permissions-interface/android")
 
@@ -62,3 +65,24 @@ project(":expo-sms").projectDir = new File(rootDir, "../modules/expo-sms/android
 
 include ":expo-print"
 project(":expo-print").projectDir = new File(rootDir, "../modules/expo-print/android")
+
+include ":expo-media-library"
+project(":expo-media-library").projectDir = new File(rootDir, "../modules/expo-media-library/android")
+
+include ":expo-analytics-segment"
+project(":expo-analytics-segment").projectDir = new File(rootDir, "../modules/expo-analytics-segment/android")
+
+include ":expo-font"
+project(":expo-font").projectDir = new File(rootDir, "../modules/expo-font/android")
+
+include ":expo-font-interface"
+project(":expo-font-interface").projectDir = new File(rootDir, "../modules/expo-font-interface/android")
+
+include ":expo-location"
+project(":expo-location").projectDir = new File(rootDir, "../modules/expo-location/android")
+
+include ":expo-barcode-scanner"
+project(":expo-barcode-scanner").projectDir = new File(rootDir, "../modules/expo-barcode-scanner/android")
+
+include ":expo-barcode-scanner-interface"
+project(":expo-barcode-scanner-interface").projectDir = new File(rootDir, "../modules/expo-barcode-scanner-interface/android")

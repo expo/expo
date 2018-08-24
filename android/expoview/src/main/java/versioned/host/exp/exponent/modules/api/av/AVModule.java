@@ -7,11 +7,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.media.MediaRecorder;
 import android.os.Build;
-import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.net.Uri;
 
@@ -20,7 +18,6 @@ import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
@@ -44,7 +41,6 @@ import host.exp.exponent.utils.ScopedContext;
 import host.exp.expoview.Exponent;
 import versioned.host.exp.exponent.modules.ExpoKernelServiceConsumerBaseModule;
 import versioned.host.exp.exponent.modules.api.av.player.PlayerData;
-import versioned.host.exp.exponent.modules.api.av.video.VideoTextureView;
 import versioned.host.exp.exponent.modules.api.av.video.VideoView;
 import versioned.host.exp.exponent.modules.api.av.video.VideoViewWrapper;
 
@@ -63,6 +59,9 @@ public class AVModule extends ExpoKernelServiceConsumerBaseModule
   private static final String RECORDING_OPTION_NUMBER_OF_CHANNELS_KEY = "numberOfChannels";
   private static final String RECORDING_OPTION_BIT_RATE_KEY = "bitRate";
   private static final String RECORDING_OPTION_MAX_FILE_SIZE_KEY = "maxFileSize";
+  private static final String AUDIO_MODE_PLAY_THROUGH_EARPIECE = "playThroughEarpieceAndroid";
+
+  private boolean mShouldRouteThroughEarpiece = false;
 
   private enum AudioInterruptionMode {
     DO_NOT_MIX,
@@ -147,6 +146,9 @@ public class AVModule extends ExpoKernelServiceConsumerBaseModule
       for (final AudioEventHandler handler : getAllRegisteredAudioEventHandlers()) {
         handler.onResume();
       }
+      if (mShouldRouteThroughEarpiece) {
+        updatePlaySoundThroughEarpiece(true);
+      }
     }
   }
 
@@ -158,6 +160,10 @@ public class AVModule extends ExpoKernelServiceConsumerBaseModule
         handler.onPause();
       }
       abandonAudioFocus();
+
+      if (mShouldRouteThroughEarpiece) {
+        updatePlaySoundThroughEarpiece(false);
+      }
     }
   }
 
@@ -170,6 +176,7 @@ public class AVModule extends ExpoKernelServiceConsumerBaseModule
     for (final VideoView videoView : mVideoViewSet) {
       videoView.unloadPlayerAndMediaController();
     }
+
     removeAudioRecorder();
     abandonAudioFocus();
   }
@@ -271,6 +278,11 @@ public class AVModule extends ExpoKernelServiceConsumerBaseModule
     }
   }
 
+  private void updatePlaySoundThroughEarpiece(boolean playThroughEarpiece) {
+    mAudioManager.setMode(playThroughEarpiece ? AudioManager.MODE_IN_COMMUNICATION : AudioManager.MODE_NORMAL);
+    mAudioManager.setSpeakerphoneOn(!playThroughEarpiece);
+  }
+
   @ReactMethod
   public void setAudioIsEnabled(final Boolean value, final Promise promise) {
     mEnabled = value;
@@ -286,6 +298,11 @@ public class AVModule extends ExpoKernelServiceConsumerBaseModule
     if (!mShouldDuckAudio) {
       mIsDuckingAudio = false;
       updateDuckStatusForAllPlayersPlaying();
+    }
+
+    if (map.hasKey(AUDIO_MODE_PLAY_THROUGH_EARPIECE)) {
+      mShouldRouteThroughEarpiece = map.getBoolean(AUDIO_MODE_PLAY_THROUGH_EARPIECE);
+      updatePlaySoundThroughEarpiece(mShouldRouteThroughEarpiece);
     }
 
     final int interruptionModeInt = map.getInt(AUDIO_MODE_INTERRUPTION_MODE_KEY);

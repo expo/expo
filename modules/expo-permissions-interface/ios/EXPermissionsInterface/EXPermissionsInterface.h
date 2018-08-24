@@ -5,6 +5,7 @@
 @protocol EXPermissionsInterface
 
 - (NSDictionary *)getPermissionsForResource:(NSString *)resource;
+- (BOOL)hasGrantedPermission:(NSString *)permissionType;
 
 @end
 

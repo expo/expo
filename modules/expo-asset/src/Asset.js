@@ -1,3 +1,5 @@
+import uriparser from 'uri-parser';
+import urljoin from 'url-join';
 import { PixelRatio, Platform } from 'react-native';
 import AssetRegistry from 'react-native/Libraries/Image/AssetRegistry';
 import AssetSourceResolver from 'react-native/Libraries/Image/AssetSourceResolver';
@@ -17,19 +19,61 @@ try {
   throw new Error('`expo-asset` requires `expo-constants` package to be installed and linked.');
 }
 
+const parser = new uriparser.Parser();
+
 // Fast lookup check if assets are available in the local bundle.
 const bundledAssets = new Set(FS.bundledAssets || []);
 
+// Fast lookup check if asset map has any overrides in the manifest
+const assetMapOverride = Constants.manifest && Constants.manifest.assetMapOverride;
+
+// get base url of manifest (ie) https://site.com
+const getManifestBaseUrl = manifestUrl => {
+  const urlComponents = parser.parse(manifestUrl);
+
+  // change to http(s) if scheme is exp/exps
+  if (urlComponents.protocol === 'exp') {
+    urlComponents.protocol = 'http';
+  } else if (urlComponents.protocol === 'exps') {
+    urlComponents.protocol = 'https';
+  }
+
+  // trim file extension and query params, if any (ie) https://site.com/index.exp?s=q -> https://site.com
+  urlComponents.relative = urlComponents.directory;
+  return parser.format(urlComponents);
+};
+
+// compute manifest base url if available
+const manifestBaseUrl = Constants.experienceUrl
+  ? getManifestBaseUrl(Constants.experienceUrl)
+  : null;
+
+// resolve against manifestBaseUrl if uri is relative
+const resolveIfRelative = uri => {
+  const uriComponents = parser.parse(uri);
+  if (uriComponents.protocol === '' && manifestBaseUrl) {
+    // uri is relative (ie) ./assets, remove ./ prefix if exists
+    return urljoin(manifestBaseUrl, uri.replace(/^\.?\//, ''));
+  } else {
+    return uri;
+  }
+};
+
 // Return { uri, hash } for an asset's file, picking the correct scale, based on its React Native
 // metadata. If the asset isn't an image just picks the first file.
-const pickScale = meta => {
+const pickScale = originalMeta => {
+  // Override with the asset map in manifest if available
+  const meta = assetMapOverride
+    ? { ...originalMeta, ...assetMapOverride[originalMeta.hash] }
+    : originalMeta;
+
   // This logic is based on that in AssetSourceResolver.js, we just do it with our own tweaks for
   // Expo
-
   const scale =
     meta.scales.length > 1 ? AssetSourceResolver.pickScale(meta.scales, PixelRatio.get()) : 1;
   const index = meta.scales.findIndex(s => s === scale);
   const hash = meta.fileHashes ? meta.fileHashes[index] || meta.fileHashes[0] : meta.hash;
+  const uri = meta.fileUris ? meta.fileUris[index] || meta.fileUris[0] : meta.uri;
 
   const suffix =
     '/' +
@@ -43,9 +87,18 @@ const pickScale = meta => {
     meta.hash;
 
   // Allow asset processors to directly provide the URL that will be loaded
-  if (meta.uri) {
+  if (uri) {
     return {
-      uri: meta.uri,
+      uri: resolveIfRelative(uri),
+      hash,
+    };
+  }
+
+  // Check if the assetUrl was overriden in the manifest
+  const assetUrlOverride = Constants.manifest && Constants.manifest.assetUrlOverride;
+  if (assetUrlOverride) {
+    return {
+      uri: resolveIfRelative(urljoin(assetUrlOverride, hash)),
       hash,
     };
   }

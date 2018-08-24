@@ -15,8 +15,8 @@
 #import "EXSensorManager.h"
 #import "EXAudioSessionManager.h"
 #import "EXUpdatesManager.h"
-#import "EXPermissionsManager.h"
-#import "EXUtilService.h"
+
+#import <EXCore/EXModuleRegistryProvider.h>
 
 @interface EXKernelServiceRegistry ()
 
@@ -32,8 +32,6 @@
 @property (nonatomic, strong) EXSensorManager *sensorManager;
 @property (nonatomic, strong) EXAudioSessionManager *audioSessionManager;
 @property (nonatomic, strong) EXUpdatesManager *updatesManager;
-@property (nonatomic, strong) EXPermissionsManager *permissionsManager;
-@property (nonatomic, strong) EXUtilService *utilService;
 @property (nonatomic, strong) NSDictionary<NSString *, id> *allServices;
 
 @end
@@ -56,8 +54,6 @@
     [self fileSystemManager];
     [self audioSessionManager];
     [self updatesManager];
-    [self permissionsManager];
-    [self utilService];
   }
   return self;
 }
@@ -158,27 +154,32 @@
   return _updatesManager;
 }
 
-- (EXPermissionsManager *)permissionsManager
-{
-  if (!_permissionsManager) {
-    _permissionsManager = [[EXPermissionsManager alloc] init];
-  }
-  return _permissionsManager;
-}
-
-- (EXUtilService *)utilService
-{
-  if (!_utilService) {
-    _utilService = [[EXUtilService alloc] init];
-  }
-  return _utilService;
-}
-
 - (NSDictionary *)allServices
 {
   if (!_allServices) {
     NSMutableDictionary *result = [NSMutableDictionary dictionary];
-    for (id service in @[ self.branchManager, self.cachedResourceManager, self.errorRecoveryManager, self.fileSystemManager, self.googleAuthManager, self.homeModuleManager, self.linkingManager, self.remoteNotificationManager, self.screenOrientationManager, self.sensorManager, self.updatesManager, self.audioSessionManager, self.permissionsManager, self.utilService ]) {
+    // Here we have services that must be accessible by our scoped Expo modules
+    // EXVersionManagers pass these modules to scoped modules as an initializer argument
+    //
+    // New modules should access singleton modules via the module registry.
+    // New singleton modules should register themselves in EXModuleRegistryProvider's set
+    // using EX_REGISTER_SINGLETON_MODULE macro.
+    NSArray *registryServices = @[
+                                  self.branchManager,
+                                  self.cachedResourceManager,
+                                  self.errorRecoveryManager,
+                                  self.fileSystemManager,
+                                  self.googleAuthManager,
+                                  self.homeModuleManager,
+                                  self.linkingManager,
+                                  self.remoteNotificationManager,
+                                  self.screenOrientationManager,
+                                  self.sensorManager,
+                                  self.updatesManager,
+                                  self.audioSessionManager
+                                  ];
+    NSArray *allServices = [registryServices arrayByAddingObjectsFromArray:[[EXModuleRegistryProvider singletonModules] allObjects]];
+    for (id service in allServices) {
       NSString *className = NSStringFromClass([service class]);
       result[className] = service;
     }

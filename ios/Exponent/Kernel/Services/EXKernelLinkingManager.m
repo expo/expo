@@ -175,7 +175,7 @@ NSString *kEXExpoLegacyDeepLinkSeparator = @"+";
       // TODO: remove this
       NSRange deepLinkRangeLegacy = [uriString rangeOfString:kEXExpoLegacyDeepLinkSeparator];
       NSString *deepLink = @"";
-      if (deepLinkRange.length > 0 && [[self class] _isExpoHostedUrl:normalizedUri]) {
+      if (deepLinkRange.length > 0 && [[self class] isExpoHostedUrl:normalizedUri]) {
         deepLink = [uriString substringFromIndex:deepLinkRange.location + kEXExpoDeepLinkSeparator.length];
       } else if (deepLinkRangeLegacy.length > 0) {
         deepLink = [uriString substringFromIndex:deepLinkRangeLegacy.location + kEXExpoLegacyDeepLinkSeparator.length];
@@ -207,7 +207,7 @@ NSString *kEXExpoLegacyDeepLinkSeparator = @"+";
   if ([EXEnvironment sharedEnvironment].isDetached && [[EXEnvironment sharedEnvironment] isStandaloneUrlScheme:components.scheme]) {
     // if we're standalone and this uri had the standalone scheme, leave it alone.
   } else {
-    if ([components.scheme isEqualToString:@"https"]) {
+    if ([components.scheme isEqualToString:@"https"] || [components.scheme isEqualToString:@"exps"]) {
       components.scheme = @"exps";
     } else {
       components.scheme = @"exp";
@@ -235,7 +235,7 @@ NSString *kEXExpoLegacyDeepLinkSeparator = @"+";
   return NO;
 }
 
-+ (BOOL)_isExpoHostedUrl: (NSURL *)url
++ (BOOL)isExpoHostedUrl: (NSURL *)url
 {
   return [[self class] _isExpoHostedUrlComponents:[NSURLComponents componentsWithURL:url resolvingAgainstBaseURL:YES]];
 }

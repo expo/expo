@@ -6,9 +6,10 @@
 #import <EXCore/EXAppLifecycleListener.h>
 #import <EXCore/EXModuleRegistryConsumer.h>
 #import <EXCore/EXJavaScriptContextProvider.h>
+#import <EXImageLoaderInterface/EXImageLoaderInterface.h>
 #import <EXReactNativeAdapter/EXBridgeModule.h>
 #import <EXReactNativeAdapter/EXNativeModulesProxy.h>
 
-@interface EXReactNativeAdapter : NSObject <EXInternalModule, EXBridgeModule, EXAppLifecycleService, EXUIManager, EXJavaScriptContextProvider>
+@interface EXReactNativeAdapter : NSObject <EXInternalModule, EXBridgeModule, EXAppLifecycleService, EXUIManager, EXJavaScriptContextProvider, EXImageLoaderInterface>
 
 @end

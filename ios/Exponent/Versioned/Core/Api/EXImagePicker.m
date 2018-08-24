@@ -16,6 +16,9 @@
 @import MobileCoreServices;
 @import Photos;
 
+// 1.0 best to 0.0 worst
+const CGFloat EXDefaultImageQuality = 0.2;
+
 @interface EXImagePicker ()
 
 @property (nonatomic, strong) UIAlertController *alertController;
@@ -49,7 +52,6 @@ EX_EXPORT_SCOPED_MODULE(ExponentImagePicker, PermissionsManager);
                             @"cancelButtonTitle": @"Cancel",
                             @"takePhotoButtonTitle": @"Take Photo…",
                             @"chooseFromLibraryButtonTitle": @"Choose from Library…",
-                            @"quality" : @0.2, // 1.0 best to 0.0 worst
                             @"allowsEditing" : @NO,
                             @"base64": @NO,
                             };
@@ -193,7 +195,9 @@ RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
   response[@"height"] = @(image.size.height);
 
   NSString *extension = @".jpg";
-  NSData *data = UIImageJPEGRepresentation(image, [[self.options valueForKey:@"quality"] floatValue]);
+
+  NSNumber *quality = [self.options valueForKey:@"quality"];
+  NSData *data = UIImageJPEGRepresentation(image, quality == nil ? EXDefaultImageQuality : [quality floatValue]);
 
   if ([[imageURL absoluteString] containsString:@"ext=PNG"]) {
     extension = @".png";
@@ -207,13 +211,28 @@ RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
     self.reject(@"E_NO_MODULE", @"No FileSystem module.", nil);
     return;
   }
+
   NSString *path = [fileSystem generatePathInDirectory:directory withExtension:extension];
-  [data writeToFile:path atomically:YES];
   NSURL *fileURL = [NSURL fileURLWithPath:path];
+
+  BOOL fileCopied = false;
+  if (![[self.options objectForKey:@"allowsEditing"] boolValue] && quality == nil) {
+    // No modification requested
+    fileCopied = [self tryCopyImage:info path:path];
+  }
+  if (!fileCopied) {
+    [data writeToFile:path atomically:YES];
+  }
+
   NSString *filePath = [fileURL absoluteString];
   response[@"uri"] = filePath;
   
   if ([[self.options objectForKey:@"base64"] boolValue]) {
+    if (@available(iOS 11.0, *)) {
+      if (fileCopied) {
+        data = [NSData dataWithContentsOfFile:path];
+      }
+    }
     response[@"base64"] = [data base64EncodedStringWithOptions:0];
   }
   if ([[self.options objectForKey:@"exif"] boolValue]) {
@@ -241,6 +260,21 @@ RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
   } else {
     completionHandler();
   }
+}
+
+- (BOOL)tryCopyImage:(NSDictionary * _Nonnull)info path:(NSString *)path {
+  if (@available(iOS 11.0, *)) {
+    NSError *error = nil;
+    [[NSFileManager defaultManager] copyItemAtPath:[[info objectForKey:UIImagePickerControllerImageURL] path]
+                                            toPath:path
+                                             error:&error];
+    if (error == nil) {
+      return true;
+    }
+  }
+
+  // Try to save recompressed image if saving the original one failed
+  return false;
 }
 
 - (void)handleVideoWithInfo:(NSDictionary * _Nonnull)info saveAt:(NSString *)directory updateResponse:(NSMutableDictionary *)response

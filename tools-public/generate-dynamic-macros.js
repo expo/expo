@@ -22,7 +22,7 @@ const ProjectVersions = require('./project-versions');
 
 const EXPONENT_DIR = process.env.EXPONENT_DIR || path.join(__dirname, '..');
 
-const EXPO_CLIENT_UNIVERSAL_MODULES = Modules.getAllForPlatform('ios');
+const EXPO_CLIENT_UNIVERSAL_MODULES = Modules.getAllNativeForExpoClientOnPlatform('ios');
 
 // We need these permissions when testing but don't want them
 // ending up in our release.
@@ -64,7 +64,7 @@ const macrosFuncs = {
       return process.env.TEST_SUITE_URI;
     } else if (isInUniverse) {
       try {
-        let testSuitePath = path.join(__dirname, '..', '..', 'apps', 'test-suite');
+        let testSuitePath = path.join(__dirname, '..', 'apps', 'test-suite');
         let status = await Project.currentStatus(testSuitePath);
         if (status === 'running') {
           return await UrlUtils.constructManifestUrlAsync(testSuitePath);
@@ -153,9 +153,9 @@ const macrosFuncs = {
 
     let projectRoot;
     if (isInUniverse && useLegacyWorkflow) {
-      projectRoot = path.join(EXPONENT_DIR, 'js', '__internal__');
+      projectRoot = path.join(EXPONENT_DIR, 'home', '__internal__');
     } else {
-      projectRoot = path.join(EXPONENT_DIR, 'js');
+      projectRoot = path.join(EXPONENT_DIR, 'home');
     }
 
     let manifest;
@@ -471,7 +471,7 @@ async function writeIOSTemplatesAsync(
       path.join(EXPONENT_DIR, 'ios', '__github__', 'Podfile'),
       {
         TARGET_NAME: 'Exponent',
-        REACT_NATIVE_PATH: '../js/node_modules/react-native',
+        REACT_NATIVE_PATH: '../home/node_modules/react-native',
         UNIVERSAL_MODULES: generateUniversalModulesConfig(
           EXPO_CLIENT_UNIVERSAL_MODULES,
           '../modules/'
@@ -500,7 +500,7 @@ async function writeIOSTemplatesAsync(
           EXPO_CLIENT_UNIVERSAL_MODULES,
           '../../modules'
         ),
-        REACT_NATIVE_PATH: '../../../react-native-lab/react-native',
+        REACT_NATIVE_PATH: '../../react-native-lab/react-native',
       }
     );
   }

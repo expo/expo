@@ -36,6 +36,33 @@
 #define EX_REGISTER_MODULE(_custom_load_code) \
   _EX_DEFINE_CUSTOM_LOAD(_custom_load_code)
 
+#define EX_REGISTER_SINGLETON_MODULE_WITH_CUSTOM_LOAD(singleton_name, _custom_load_code) \
+  extern void EXRegisterSingletonModule(Class); \
+  + (const NSString *)name { \
+    return @#singleton_name; \
+  } \
+  \
+  + (void)load { \
+    EXRegisterSingletonModule(self); \
+    _custom_load_code \
+  }
+
+#define EX_REGISTER_SINGLETON_MODULE(singleton_name) \
+  EX_REGISTER_SINGLETON_MODULE_WITH_CUSTOM_LOAD(singleton_name,)
+
+#define EX_WEAKIFY(var) \
+__weak typeof(var) EXWeak_##var = var;
+
+#define EX_STRONGIFY(var) \
+_Pragma("clang diagnostic push") \
+_Pragma("clang diagnostic ignored \"-Wshadow\"") \
+__strong typeof(var) var = EXWeak_##var; \
+_Pragma("clang diagnostic pop")
+
+#define EX_ENSURE_STRONGIFY(var) \
+EX_STRONGIFY(var); \
+if (var == nil) { return; }
+
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
 

@@ -1,8 +1,8 @@
 package expo.modules.camera.tasks;
 
-import expo.modules.camera.utils.ExpoBarCodeDetector;
+import expo.interfaces.barcodescanner.BarCodeScannerResult;
 
 public interface BarCodeScannerAsyncTaskDelegate {
-  void onBarCodeRead(ExpoBarCodeDetector.Result barCode);
+  void onBarCodeScanned(BarCodeScannerResult barCode);
   void onBarCodeScanningTaskCompleted();
 }

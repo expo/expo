@@ -17,6 +17,8 @@
 #import <React/RCTUtils.h>
 #import <React/RCTBridge.h>
 
+#import <EXCore/EXModuleRegistryProvider.h>
+
 NSString * const kEXHomeLaunchUrlDefaultsKey = @"EXKernelLaunchUrlDefaultsKey";
 NSString *kEXHomeBundleResourceName = @"kernel.ios";
 NSString *kEXHomeManifestResourceName = @"kernel-manifest";
@@ -49,10 +51,10 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
                    }];
 }
 
-- (void)getIsValidHomeManifestToOpen:(NSDictionary *)manifest completion:(void (^)(BOOL))completion
+- (void)getIsValidHomeManifestToOpen:(NSDictionary *)manifest manifestUrl:(NSURL *) manifestUrl completion:(void (^)(BOOL))completion
 {
   [self _dispatchHomeJSEvent:@"getIsValidHomeManifestToOpen"
-                        body:@{ @"manifest": manifest }
+                        body:@{ @"manifest": manifest, @"manifestUrl": manifestUrl.absoluteString }
                    onSuccess:^(NSDictionary *result) {
                      BOOL isValid = [result[@"isValid"] boolValue];
                      completion(isValid);
@@ -89,6 +91,7 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
                                    @"isStandardDevMenuAllowed": @(YES), // kernel enables traditional RN dev menu
                                    @"manifest": self.appRecord.appLoader.manifest,
                                    @"services": [EXKernel sharedInstance].serviceRegistry.allServices,
+                                   @"singletonModules": [EXModuleRegistryProvider singletonModules],
                                    } mutableCopy];
   
 

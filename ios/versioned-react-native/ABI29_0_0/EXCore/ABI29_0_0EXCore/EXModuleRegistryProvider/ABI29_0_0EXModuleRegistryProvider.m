@@ -1,7 +1,6 @@
 // Copyright © 2018 650 Industries. All rights reserved.
 
 #import <Foundation/Foundation.h>
-#import <ABI29_0_0EXCore/ABI29_0_0EXSingletonModule.h>
 #import <ABI29_0_0EXCore/ABI29_0_0EXModuleRegistryProvider.h>
 
 static dispatch_once_t onceToken;
@@ -20,19 +19,16 @@ extern void ABI29_0_0EXRegisterModule(Class moduleClass)
 
 @interface ABI29_0_0EXModuleRegistryProvider ()
 
-@property (nonatomic, strong) NSMutableSet<Class> *singletonModuleClasses;
+@property (nonatomic, strong) NSSet *singletonModules;
 
 @end
 
 @implementation ABI29_0_0EXModuleRegistryProvider
 
-- (instancetype)initWithSingletonModuleClasses:(NSSet *)moduleClasses
+- (instancetype)initWithSingletonModules:(NSSet *)singletonModules
 {
   if (self = [super init]) {
-    _singletonModuleClasses = [NSMutableSet set];
-    for (Class klass in moduleClasses) {
-      [_singletonModuleClasses addObject:klass];
-    }
+    _singletonModules = singletonModules;
   }
   return self;
 }
@@ -47,15 +43,7 @@ extern void ABI29_0_0EXRegisterModule(Class moduleClass)
   NSMutableSet<id<ABI29_0_0EXInternalModule>> *internalModules = [NSMutableSet set];
   NSMutableSet<ABI29_0_0EXExportedModule *> *exportedModules = [NSMutableSet set];
   NSMutableSet<ABI29_0_0EXViewManager *> *viewManagerModules = [NSMutableSet set];
-  NSMutableSet<ABI29_0_0EXSingletonModule *> *singletonModules = [NSMutableSet set];
- 
-  // we can't wrap these in the ABI29_0_0EXRegisterModule macro because we want this hook to be robust to vendoring/versioning
-  for (Class klass in _singletonModuleClasses) {
-    ABI29_0_0EXSingletonModule *singletonModuleInstance = [[klass class] sharedInstance];
-    [singletonModules addObject:singletonModuleInstance];
-    continue;
-  }
-  
+
   for (Class klass in [self getModulesClasses]) {
     if (![klass conformsToProtocol:@protocol(ABI29_0_0EXInternalModule)]) {
       ABI29_0_0EXLogWarn(@"Registered class `%@` does not conform to the `ABI29_0_0EXModule` protocol.", [klass description]);
@@ -80,7 +68,7 @@ extern void ABI29_0_0EXRegisterModule(Class moduleClass)
   ABI29_0_0EXModuleRegistry *moduleRegistry = [[ABI29_0_0EXModuleRegistry alloc] initWithInternalModules:internalModules
                                                                        exportedModules:exportedModules
                                                                           viewManagers:viewManagerModules
-                                                                      singletonModules:singletonModules];
+                                                                      singletonModules:_singletonModules];
   [moduleRegistry setDelegate:_moduleRegistryDelegate];
   return moduleRegistry;
 }

@@ -3,7 +3,6 @@
 #import <objc/runtime.h>
 #import <EXCore/EXModuleRegistry.h>
 #import <EXCore/EXModuleRegistryConsumer.h>
-#import <EXCore/EXSingletonModule.h>
 
 @interface EXModuleRegistry ()
 
@@ -15,7 +14,7 @@
 @property NSMutableDictionary<Class, EXExportedModule *> *exportedModulesByClass;
 @property NSMutableDictionary<const NSString *, EXExportedModule *> *exportedModules;
 @property NSMutableDictionary<const NSString *, EXViewManager *> *viewManagerModules;
-@property NSMutableDictionary<const NSString *, EXSingletonModule *> *singletonModules;
+@property NSMutableDictionary<const NSString *, id> *singletonModules;
 
 @property NSMutableSet<id<EXModuleRegistryConsumer>> *registryConsumers;
 
@@ -42,7 +41,7 @@
 - (instancetype)initWithInternalModules:(NSSet<id<EXInternalModule>> *)internalModules
                         exportedModules:(NSSet<EXExportedModule *> *)exportedModules
                            viewManagers:(NSSet<EXViewManager *> *)viewManagers
-                       singletonModules:(NSSet<EXSingletonModule *> *)singletonModules
+                       singletonModules:(NSSet *)singletonModules
 {
   if (self = [self init]) {
     for (id<EXInternalModule> internalModule in internalModules) {
@@ -57,7 +56,7 @@
       [self registerViewManager:viewManager];
     }
 
-    for (EXSingletonModule *singletonModule in singletonModules) {
+    for (id singletonModule in singletonModules) {
       [self registerSingletonModule:singletonModule];
     }
   }
@@ -139,9 +138,16 @@
   [self maybeAddRegistryConsumer:viewManager];
 }
 
-- (void)registerSingletonModule:(EXSingletonModule *)singletonModule
+- (void)registerSingletonModule:(id)singletonModule
 {
-  [_singletonModules setObject:singletonModule forKey:[[singletonModule class] name]];
+  if ([[singletonModule class] respondsToSelector:@selector(name)]) {
+    #pragma clang diagnostic push
+    #pragma clang diagnostic ignored "-Wobjc-method-access"
+    [_singletonModules setObject:singletonModule forKey:[[singletonModule class] name]];
+    #pragma clang diagnostic pop
+  } else {
+    EXLogWarn(@"One of the singleton modules does not respond to +(NSString *)name selector. This probably means you're either try to pass a strange object as a singleton module (it won't get registered in the module registry, sorry) or the EXSingletonModule interface and the EXModuleRegistry implementations versions are out of sync, which means things will probably not work as expected.");
+  }
 }
 
 - (void)maybeAddRegistryConsumer:(id)maybeConsumer
@@ -173,7 +179,7 @@
   return [_exportedModulesByClass objectForKey:moduleClass];
 }
 
-- (EXSingletonModule *)getSingletonModuleForName:(NSString *)singletonModuleName
+- (id)getSingletonModuleForName:(NSString *)singletonModuleName
 {
   return [_singletonModules objectForKey:singletonModuleName];
 }
@@ -193,7 +199,7 @@
   return [_viewManagerModules allValues];
 }
 
-- (NSArray<EXSingletonModule *> *)getAllSingletonModules
+- (NSArray *)getAllSingletonModules
 {
   return [_singletonModules allValues];
 }

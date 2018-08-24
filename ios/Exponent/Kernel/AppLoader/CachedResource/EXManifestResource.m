@@ -48,6 +48,25 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
   return self;
 }
 
+- (NSMutableDictionary *) _chooseManifest:(NSArray *)manifestArray {
+  // Find supported sdk versions
+  if (manifestArray) {
+    for (id providedManifest in manifestArray) {
+      if ([providedManifest isKindOfClass:[NSDictionary class]] && providedManifest[@"sdkVersion"]){
+        NSString *sdkVersion = providedManifest[@"sdkVersion"];
+        if ([[EXVersions sharedInstance] supportsVersion:sdkVersion]){
+          return providedManifest;
+        }
+      }
+    }
+  }
+  
+  return [self _formatError:[NSError errorWithDomain:EXNetworkErrorDomain code:0 userInfo:@{
+                                                                                            @"errorCode": @"NO_COMPATIBLE_EXPERIENCE_FOUND",
+                                                                                            NSLocalizedDescriptionKey: [NSString stringWithFormat:@"No compatible experience found at %@. Only %@ are supported.", self.originalUrl, [[EXVersions sharedInstance].versions[@"sdkVersions"] componentsJoinedByString:@","]]
+                                                                                            }]];
+}
+
 - (void)loadResourceWithBehavior:(EXCachedResourceBehavior)behavior
                    progressBlock:(EXCachedResourceProgressBlock)progressBlock
                     successBlock:(EXCachedResourceSuccessBlock)successBlock
@@ -60,18 +79,26 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
     }
 
     __block NSError *jsonError;
-    id manifestObj = [NSJSONSerialization JSONObjectWithData:data options:0 error:&jsonError];
+    id manifestObjOrArray = [NSJSONSerialization JSONObjectWithData:data options:0 error:&jsonError];
     if (jsonError) {
       errorBlock(jsonError);
       return;
     }
-
+    
+    id manifestObj;
+    // Check if server sent an array of manifests (multi-manifests)
+    if ([manifestObjOrArray isKindOfClass:[NSArray class]]) {
+      NSArray *manifestArray = (NSArray *)manifestObjOrArray;
+      manifestObj = [self _chooseManifest:(NSArray *)manifestArray];
+    } else {
+      manifestObj = manifestObjOrArray;
+    }
     NSString *innerManifestString = (NSString *)manifestObj[@"manifestString"];
     NSString *manifestSignature = (NSString *)manifestObj[@"signature"];
     
     NSMutableDictionary *innerManifestObj;
-    if (!innerManifestString && [self isUsingEmbeddedResource]) {
-      // locally bundled manifests are not signed
+    if (!innerManifestString) {
+      // this manifest is not signed
       innerManifestObj = [manifestObj mutableCopy];
     } else {
       @try {
@@ -99,6 +126,13 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
     };
     
     if ([self _isManifestVerificationBypassed]) {
+      if ([self _isThirdPartyHosted] && ![EXEnvironment sharedEnvironment].isDetached){
+        // the manifest id determines the namespace/experience id an app is sandboxed with
+        // if manifest is obtained via https, we sandbox it with the hostname to avoid clobbering exp.host namespaces
+        // namespace is of the form <host><path>-<slug> (ie) quinlanj.github.io/selfhosting-myapp
+        NSString * slugSuffix = innerManifestObj[@"slug"] ? [@"-" stringByAppendingString:innerManifestObj[@"slug"]]: @"";
+        innerManifestObj[@"id"] = [NSString stringWithFormat:@"%@%@%@", self.remoteUrl.host, self.remoteUrl.path?:@"", slugSuffix];
+      }
       signatureSuccess(YES);
     } else {
       NSURL *publicKeyUrl = [NSURL URLWithString:kEXPublicKeyUrl];
@@ -229,6 +263,11 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
   return (cacheDirectoryExists) ? sourceDirectory : nil;
 }
 
+- (BOOL)_isThirdPartyHosted
+{
+  return (self.remoteUrl && [self.remoteUrl.scheme isEqualToString:@"https"] && ![EXKernelLinkingManager isExpoHostedUrl:self.remoteUrl]);
+}
+
 - (BOOL)_isManifestVerificationBypassed
 {
   return (
@@ -239,7 +278,10 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
           [EXEnvironment sharedEnvironment].isManifestVerificationBypassed ||
           
           // we're using a copy that came with the NSBundle and was therefore already codesigned
-          [self isUsingEmbeddedResource]
+          [self isUsingEmbeddedResource] ||
+          
+          // we sandbox third party hosted apps instead of verifying signature
+          [self _isThirdPartyHosted]
   );
 }
 
@@ -347,6 +389,8 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
                         "requires at least v%@. The author should update their experience to a newer Expo SDK version.", sdkVersionRequired, earliestSDKVersion];
   } else if ([errorCode isEqualToString:@"EXPERIENCE_SDK_VERSION_TOO_NEW"]) {
     formattedMessage = @"The experience you requested requires a newer version of the Expo Client app. Please download the latest version from the App Store.";
+  } else if ([errorCode isEqualToString:@"NO_COMPATIBLE_EXPERIENCE_FOUND"]){
+    formattedMessage = rawMessage; // No compatible experience found at ${originalUrl}. Only ${currentSdkVersions} are supported.
   } else if ([errorCode isEqualToString:@"USER_SNACK_NOT_FOUND"] || [errorCode isEqualToString:@"SNACK_NOT_FOUND"]) {
     formattedMessage = [NSString stringWithFormat:@"No snack found at %@.", self.originalUrl];
   } else if ([errorCode isEqualToString:@"SNACK_RUNTIME_NOT_RELEASE"]) {

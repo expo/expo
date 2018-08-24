@@ -1,0 +1,28 @@
+{
+  "name": "jest-expo",
+  "version": "29.0.0",
+  "license": "MIT",
+  "scripts": {
+    "generate": "tools/generate-jest-preset.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/expo/jest-expo.git"
+  },
+  "files": [
+    "src",
+    "jest-preset.json"
+  ],
+  "peerDependencies": {
+    "react-native": "*"
+  },
+  "dependencies": {
+    "babel-jest": "^23.4.0",
+    "jest": "^23.4.0",
+    "json5": "^0.5.1",
+    "react-test-renderer": "^16.3.1"
+  },
+  "devDependencies": {
+    "react": "^16.3.1"
+  }
+}

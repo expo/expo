@@ -191,11 +191,27 @@ Callback invoked when camera preview could not been started. It is provided with
 
 * **onBarCodeRead (_function_)**
 
-Callback that is invoked when a bar code has been successfully read. The callback is provided with an Object of the shape `{ type: string, data: string }`, where the type refers to the bar code type that was scanned and the data is the information encoded in the bar code (in this case of QR codes, this is often a URL)
+**Deprecated**. Use **onBarCodeScanned** instead.
+
+* **onBarCodeScanned (_function_)**
+
+Callback that is invoked when a bar code has been successfully scanned. The callback is provided with an Object of the shape `{ type: BarCodeScanner.Constants.BarCodeType, data: string }`, where the type refers to the bar code type that was scanned and the data is the information encoded in the bar code (in this case of QR codes, this is often a URL). See [`BarCodeScanner.Constants.BarCodeType`](https://docs.expo.io/versions/latest/sdk/bar-code-scanner#supported-formats) for supported values.
 
 * **barCodeTypes (_Array<string>_)**
 
-An array of bar code types. Usage: `Camera.Constants.BarCodeType.<codeType>` where `codeType` is one of the listed above. Default: all supported bar code types. For example: `barCodeTypes={[Camera.Constants.BarCodeType.qr]}`
+**Deprecated**. Use **barCodeScannerSettings** instead.
+
+* **barCodeScannerSettings (_object_)**
+
+Settings passed to [`BarCodeScanner`](https://docs.expo.io/versions/latest/sdk/bar-code-scanner) module (if present). Supported settings: [**barCodeTypes**].
+
+```javascript
+<Camera
+  barCodeScannerSettings={{
+    barCodeTypes: [BarCodeScanner.Constants.BarCodeType.qr]
+  }}
+/>
+```
 
 * **useCamera2Api** (_boolean_)
 
@@ -270,30 +286,3 @@ Android only. Get aspect ratios that are supported by the device and can be pass
 #### Returns
 
 Returns a Promise that resolves to an array of strings representing ratios, eg. `['4:3', '1:1']`.
-
-# Supported bar code formats
-
-| Bar code format | iOS   | Android |
-| --------------- | ----- | ------- |
-| aztec           | Yes   | Yes     |
-| codabar         | No    | Yes     |
-| code39          | Yes   | Yes     |
-| code93          | Yes   | Yes     |
-| code128         | Yes   | Yes     |
-| code138         | Yes   | No      |
-| code39mod43     | Yes   | No      |
-| datamatrix      | Yes   | Yes     |
-| ean13           | Yes   | Yes     |
-| ean8            | Yes   | Yes     |
-| interleaved2of5 | Yes   | No      |
-| itf14           | Yes\* | Yes     |
-| maxicode        | No    | Yes     |
-| pdf417          | Yes   | Yes     |
-| rss14           | No    | Yes     |
-| rssexpanded     | No    | Yes     |
-| upc_a           | No    | Yes     |
-| upc_e           | Yes   | Yes     |
-| upc_ean         | No    | Yes     |
-| qr              | Yes   | Yes     |
-
-* sometimes when an ITF-14 barcode is recognized it's type is set to `interleaved2of5`.

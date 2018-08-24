@@ -23,7 +23,7 @@ If you need to make native code changes to your Expo project, such as adding cus
 Please use Node 8+ and npm 4. We recommend installing Node using [nvm](https://github.com/creationix/nvm). We support building the clients only on macOS.
 
 - Install [the Gulp CLI](http://gulpjs.com/) globally: `npm install gulp-cli -g`.
-- Run `npm install` in the `js` and `tools-public` directories.
+- Run `npm install` in the `home` and `tools-public` directories.
 
 #### iOS
 - Make sure you have latest non-beta Xcode installed.
@@ -32,7 +32,7 @@ Please use Node 8+ and npm 4. We recommend installing Node using [nvm](https://g
 - Open and run `ios/Exponent.xcworkspace` in Xcode.
 
 #### Android
-- Make sure you have Android Studio 2 and the [Android NDK](https://facebook.github.io/react-native/docs/building-from-source.html#download-links-for-android-ndk) version `r10e` installed.
+- Make sure you have Android Studio 3 and the [Android NDK](https://facebook.github.io/react-native/docs/building-from-source.html#download-links-for-android-ndk) version `r10e` installed.
 - Build and install Android with `cd android; ./run.sh; cd ..`. It might fail the first time. If so just run `./run.sh` again.
 
 If you are running on an phone with Android 5 you might have to use `./run.sh installDev19Debug`. There is a bug running multidex applications in debug mode on Android 5 devices: https://code.google.com/p/android/issues/detail?id=79826.
@@ -87,18 +87,18 @@ Here are the steps to build a standalone iOS app:
 - There are a few more optional flags you can pass to this script. They are all documented in the block comments inside `xdl/src/detach/IosShellApp.js`.
 
 ## Modifying JS Code
-The Expo client apps run a root Expo project in addition to native code. By default this will use a published version of the project, so any changes made in the `js` directory will not show up without some extra work.
+The Expo client apps run a root Expo project in addition to native code. By default this will use a published version of the project, so any changes made in the `home` directory will not show up without some extra work.
 
-Serve this project locally by running `exp start` from the `js` directory. On iOS, you'll additionally need to set `DEV_KERNEL_SOURCE` to `LOCAL` in `EXBuildConstants.plist` (the default is `PUBLISHED`).
+Serve this project locally by running `exp start` from the `home` directory. On iOS, you'll additionally need to set `DEV_KERNEL_SOURCE` to `LOCAL` in `EXBuildConstants.plist` (the default is `PUBLISHED`).
 
 The native Android Studio and XCode projects have a build hook which will find this if `exp start` is running. Keep this running and rebuild the app on each platform.
 
 ## Project Layout
 
 - `android` contains the Android project.
+- `home` contains the JavaScript source code of the app.
 - `ios` contains the iOS project.
 - `ios/Exponent.xcworkspace` is the Xcode workspace. Always open this instead of `Exponent.xcodeproj` because the workspace also loads the CocoaPods dependencies.
-- `js` contains the JavaScript source code of the app.
 - `tools-public` contains build and configuration tools.
 - `template-files` contains templates for files that require private keys. They are populated using the keys in `template-files/keys.json`.
 - `template-files/ios/dependencies.json` specifies the CocoaPods dependencies of the app.
@@ -112,7 +112,7 @@ For native XCTest unit tests:
 - Press Command+U in XCode to build and test the `Tests` unit test target.
 - Alternatively, run `fastlane ios test` from the parent directory of `ios`.
 
-For JS integration tests, test the `ExponentIntegrationTests` target (not included in the default test scheme). This target requires you to configure `EXTestEnvironment.plist` with a key `testSuiteUrl` whose value is the url to load some version of Expo's [test-suite](https://github.com/expo/test-suite) app. This will run a bunch of Jasmine tests against the Expo SDK.
+For JS integration tests, test the `ExponentIntegrationTests` target (not included in the default test scheme). This target requires you to configure `EXTestEnvironment.plist` with a key `testSuiteUrl` whose value is the URL to load some version of Expo's [test-suite](apps/test-suite) app. This will run a bunch of Jasmine tests against the Expo SDK.
 
 ## Contributing
 Please check with us before putting work into a Pull Request! It is often harder to maintain code than it is to write it. The best place to talk to us is on Slack at https://slack.expo.io.

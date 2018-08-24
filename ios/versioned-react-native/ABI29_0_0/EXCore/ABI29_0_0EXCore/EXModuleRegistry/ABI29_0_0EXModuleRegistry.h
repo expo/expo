@@ -4,7 +4,6 @@
 #import <ABI29_0_0EXCore/ABI29_0_0EXInternalModule.h>
 #import <ABI29_0_0EXCore/ABI29_0_0EXExportedModule.h>
 #import <ABI29_0_0EXCore/ABI29_0_0EXViewManager.h>
-#import <ABI29_0_0EXCore/ABI29_0_0EXSingletonModule.h>
 #import <ABI29_0_0EXCore/ABI29_0_0EXModuleRegistryDelegate.h>
 
 @interface ABI29_0_0EXModuleRegistry : NSObject
@@ -14,7 +13,7 @@
 - (instancetype)initWithInternalModules:(NSSet<id<ABI29_0_0EXInternalModule>> *)internalModules
                         exportedModules:(NSSet<ABI29_0_0EXExportedModule *> *)exportedModules
                            viewManagers:(NSSet<ABI29_0_0EXViewManager *> *)viewManagers
-                       singletonModules:(NSSet<ABI29_0_0EXSingletonModule *> *)singletonModules;
+                       singletonModules:(NSSet *)singletonModules;
 
 - (void)registerInternalModule:(id<ABI29_0_0EXInternalModule>)internalModule;
 - (void)registerExportedModule:(ABI29_0_0EXExportedModule *)exportedModule;
@@ -30,11 +29,11 @@
 - (ABI29_0_0EXExportedModule *)getExportedModuleForName:(NSString *)name;
 - (ABI29_0_0EXExportedModule *)getExportedModuleOfClass:(Class)moduleClass;
 - (id)getModuleImplementingProtocol:(Protocol *)protocol;
-- (ABI29_0_0EXSingletonModule *)getSingletonModuleForName:(NSString *)singletonModuleName;
+- (id)getSingletonModuleForName:(NSString *)singletonModuleName;
 
 - (NSArray<id<ABI29_0_0EXInternalModule>> *)getAllInternalModules;
 - (NSArray<ABI29_0_0EXExportedModule *> *)getAllExportedModules;
 - (NSArray<ABI29_0_0EXViewManager *> *)getAllViewManagers;
-- (NSArray<ABI29_0_0EXSingletonModule *> *)getAllSingletonModules;
+- (NSArray *)getAllSingletonModules;
 
 @end

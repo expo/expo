@@ -3,7 +3,6 @@
 #import <objc/runtime.h>
 #import <ABI29_0_0EXCore/ABI29_0_0EXModuleRegistry.h>
 #import <ABI29_0_0EXCore/ABI29_0_0EXModuleRegistryConsumer.h>
-#import <ABI29_0_0EXCore/ABI29_0_0EXSingletonModule.h>
 
 @interface ABI29_0_0EXModuleRegistry ()
 
@@ -15,7 +14,7 @@
 @property NSMutableDictionary<Class, ABI29_0_0EXExportedModule *> *exportedModulesByClass;
 @property NSMutableDictionary<const NSString *, ABI29_0_0EXExportedModule *> *exportedModules;
 @property NSMutableDictionary<const NSString *, ABI29_0_0EXViewManager *> *viewManagerModules;
-@property NSMutableDictionary<const NSString *, ABI29_0_0EXSingletonModule *> *singletonModules;
+@property NSMutableDictionary<const NSString *, id> *singletonModules;
 
 @property NSMutableSet<id<ABI29_0_0EXModuleRegistryConsumer>> *registryConsumers;
 
@@ -42,7 +41,7 @@
 - (instancetype)initWithInternalModules:(NSSet<id<ABI29_0_0EXInternalModule>> *)internalModules
                         exportedModules:(NSSet<ABI29_0_0EXExportedModule *> *)exportedModules
                            viewManagers:(NSSet<ABI29_0_0EXViewManager *> *)viewManagers
-                       singletonModules:(NSSet<ABI29_0_0EXSingletonModule *> *)singletonModules
+                       singletonModules:(NSSet *)singletonModules
 {
   if (self = [self init]) {
     for (id<ABI29_0_0EXInternalModule> internalModule in internalModules) {
@@ -57,7 +56,7 @@
       [self registerViewManager:viewManager];
     }
 
-    for (ABI29_0_0EXSingletonModule *singletonModule in singletonModules) {
+    for (id singletonModule in singletonModules) {
       [self registerSingletonModule:singletonModule];
     }
   }
@@ -139,9 +138,16 @@
   [self maybeAddRegistryConsumer:viewManager];
 }
 
-- (void)registerSingletonModule:(ABI29_0_0EXSingletonModule *)singletonModule
+- (void)registerSingletonModule:(id)singletonModule
 {
-  [_singletonModules setObject:singletonModule forKey:[[singletonModule class] name]];
+  if ([[singletonModule class] respondsToSelector:@selector(name)]) {
+    #pragma clang diagnostic push
+    #pragma clang diagnostic ignored "-Wobjc-method-access"
+    [_singletonModules setObject:singletonModule forKey:[[singletonModule class] name]];
+    #pragma clang diagnostic pop
+  } else {
+    ABI29_0_0EXLogWarn(@"One of the singleton modules does not respond to +(NSString *)name selector. This probably means you're either try to pass a strange object as a singleton module (it won't get registered in the module registry, sorry) or the ABI29_0_0EXSingletonModule interface and the ABI29_0_0EXModuleRegistry implementations versions are out of sync, which means things will probably not work as expected.");
+  }
 }
 
 - (void)maybeAddRegistryConsumer:(id)maybeConsumer
@@ -173,7 +179,7 @@
   return [_exportedModulesByClass objectForKey:moduleClass];
 }
 
-- (ABI29_0_0EXSingletonModule *)getSingletonModuleForName:(NSString *)singletonModuleName
+- (id)getSingletonModuleForName:(NSString *)singletonModuleName
 {
   return [_singletonModules objectForKey:singletonModuleName];
 }
@@ -193,7 +199,7 @@
   return [_viewManagerModules allValues];
 }
 
-- (NSArray<ABI29_0_0EXSingletonModule *> *)getAllSingletonModules
+- (NSArray *)getAllSingletonModules
 {
   return [_singletonModules allValues];
 }

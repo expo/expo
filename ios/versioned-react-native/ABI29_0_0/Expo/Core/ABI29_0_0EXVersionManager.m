@@ -28,7 +28,6 @@
 
 #import <ABI29_0_0EXCore/ABI29_0_0EXModuleRegistry.h>
 #import <ABI29_0_0EXCore/ABI29_0_0EXModuleRegistryDelegate.h>
-#import <ABI29_0_0EXCore/ABI29_0_0EXSingletonModule.h>
 #import <ABI29_0_0EXReactNativeAdapter/ABI29_0_0EXNativeModulesProxy.h>
 #import "ABI29_0_0EXScopedModuleRegistryAdapter.h"
 #import "ABI29_0_0EXScopedModuleRegistryDelegate.h"
@@ -324,20 +323,8 @@ void ABI29_0_0EXRegisterScopedModule(Class moduleClass, ...)
     // additionally disable ABI29_0_0RCTRedBox
     [extraModules addObject:[[ABI29_0_0EXDisabledRedBox alloc] init]];
   }
-  
-  // TODO: clean this up
-  // right now some subset of our kernel services subclass ABI29_0_0EXSingletonModule
-  // which allows unimodules to access unversioned/singleton instances of these services.
-  // this is a bridge to allow both systems to coexist for now.
-  // see also: https://github.com/expo/universe/issues/2796
-  NSMutableSet *singletonModuleClasses = [NSMutableSet set];
-  for (NSString *serviceName in services.allKeys) {
-    id service = services[serviceName];
-    if ([[service class] respondsToSelector:@selector(sharedInstance)] && [[service class] respondsToSelector:@selector(name)]) {
-      [singletonModuleClasses addObject:[service class]];
-    }
-  }
-  ABI29_0_0EXModuleRegistryProvider *moduleRegistryProvider = [[ABI29_0_0EXModuleRegistryProvider alloc] initWithSingletonModuleClasses:singletonModuleClasses];
+
+  ABI29_0_0EXModuleRegistryProvider *moduleRegistryProvider = [[ABI29_0_0EXModuleRegistryProvider alloc] initWithSingletonModules:params[@"singletonModules"]];
 
   Class resolverClass = [ABI29_0_0EXScopedModuleRegistryDelegate class];
   if (params[@"moduleRegistryDelegateClass"] && params[@"moduleRegistryDelegateClass"] != [NSNull null]) {

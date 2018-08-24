@@ -6,7 +6,7 @@ buildscript {
     jcenter()
   }
   dependencies {
-    classpath 'com.android.tools.build:gradle:3.1.0'
+    classpath 'com.android.tools.build:gradle:3.1.4'
     classpath 'com.google.gms:google-services:3.2.0'
     classpath 'de.undercouch:gradle-download-task:2.0.0'
   }
@@ -32,7 +32,7 @@ allprojects {
     jcenter()
     maven {
       // Local Maven repo containing AARs with JSC built for Android
-      url "$rootDir/../js/node_modules/jsc-android/android"
+      url "$rootDir/../home/node_modules/jsc-android/android"
     }
     flatDir {
       dirs 'libs'

@@ -129,9 +129,12 @@ EX_EXPORT_METHOD_AS(destroyContextAsync,
 # pragma mark - Camera integration
 
 EX_EXPORT_METHOD_AS(destroyObjectAsync,
-                    destroyObjectAsync:(nonnull NSNumber *)exglObjId)
+                    destroyObjectAsync:(nonnull NSNumber *)exglObjId
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
   _objects[exglObjId] = nil;
+  resolve(@(YES));
 }
 
 EX_EXPORT_METHOD_AS(createCameraTextureAsync,

@@ -12,6 +12,6 @@ FOUNDATION_EXPORT NSString *kEXHomeManifestResourceName;
 - (void)addHistoryItemWithUrl:(NSURL *)manifestUrl manifest:(NSDictionary *)manifest;
 - (void)getHistoryUrlForExperienceId:(NSString *)experienceId completion:(void (^)(NSString *))completion;
 - (void)showQRReader;
-- (void)getIsValidHomeManifestToOpen:(NSDictionary *)manifest completion:(void (^)(BOOL isValid))completion;
+- (void)getIsValidHomeManifestToOpen:(NSDictionary *)manifest manifestUrl:(NSURL *) manifestUrl completion:(void (^)(BOOL isValid))completion;
 
 @end

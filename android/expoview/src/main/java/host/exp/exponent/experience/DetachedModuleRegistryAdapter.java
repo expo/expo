@@ -29,7 +29,7 @@ public class DetachedModuleRegistryAdapter extends ExpoModuleRegistryAdapter {
     ReactApplicationContext reactApplicationContext = (ReactApplicationContext) scopedContext.getContext();
 
     // We only use React application context, because we're detached -- no scopes
-    ModuleRegistry moduleRegistry = mModuleRegistryProvider.get(reactApplicationContext);
+    ModuleRegistry moduleRegistry = mModuleRegistryProvider.get(scopedContext);
 
     moduleRegistry.registerInternalModule(new ConstantsBinding(scopedContext, experienceProperties, manifest));
 

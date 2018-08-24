@@ -1,16 +1,17 @@
 {
   "name": "expo-permissions-interface",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Expo Permissions interface package",
   "main": "index.js",
   "keywords": [
     "react-native",
-    "expo"
+    "expo",
+    "permissions"
   ],
   "homepage": "https://docs.expo.io/",
   "author": "650 Industries, Inc.",
   "license": "BSD",
   "dependencies": {
-    "expo-core": "^1.0.0"
+    "expo-core": "^1.0.1"
   }
 }

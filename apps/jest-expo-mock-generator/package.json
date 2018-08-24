@@ -1,0 +1,13 @@
+{
+  "name": "jest-expo-mock-generator",
+  "version": "0.0.0",
+  "author": "Expo",
+  "private": true,
+  "main": "node_modules/expo/AppEntry.js",
+  "dependencies": {
+    "@expo/mux": "^1.0.7",
+    "expo": "^29.0.0",
+    "react": "16.3.1",
+    "react-native": "expo/react-native#sdk-29"
+  }
+}

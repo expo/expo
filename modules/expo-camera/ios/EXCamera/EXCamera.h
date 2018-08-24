@@ -14,10 +14,8 @@
 @property (nonatomic, strong) AVCaptureDeviceInput *videoCaptureDeviceInput;
 @property (nonatomic, strong) AVCaptureStillImageOutput *stillImageOutput;
 @property (nonatomic, strong) AVCaptureMovieFileOutput *movieFileOutput;
-@property (nonatomic, strong) AVCaptureMetadataOutput *metadataOutput;
 @property (nonatomic, strong) id runtimeErrorHandlingObserver;
 @property (nonatomic, strong) AVCaptureVideoPreviewLayer *previewLayer;
-@property (nonatomic, strong) NSArray *barCodeTypes;
 
 @property (nonatomic, assign) NSInteger presetCamera;
 @property (nonatomic, assign) NSInteger flashMode;
@@ -27,7 +25,7 @@
 @property (nonatomic, assign) NSInteger whiteBalance;
 @property (assign, nonatomic) AVCaptureSessionPreset pictureSize;
 
-@property (nonatomic, assign) BOOL isReadingBarCodes;
+@property (nonatomic, assign) BOOL isScanningBarCodes;
 @property (nonatomic, assign) BOOL isDetectingFaces;
 
 - (id)initWithModuleRegistry:(EXModuleRegistry *)moduleRegistry;
@@ -39,15 +37,14 @@
 - (void)updateWhiteBalance;
 - (void)updatePictureSize;
 - (void)updateFaceDetectorSettings:(NSDictionary *)settings;
+- (void)setBarCodeScannerSettings:(NSDictionary *)settings;
 - (void)takePicture:(NSDictionary *)options resolve:(EXPromiseResolveBlock)resolve reject:(EXPromiseRejectBlock)reject;
 - (void)record:(NSDictionary *)options resolve:(EXPromiseResolveBlock)resolve reject:(EXPromiseRejectBlock)reject;
 - (void)stopRecording;
 - (void)resumePreview;
 - (void)pausePreview;
-- (void)setupOrDisableBarcodeScanner;
 - (void)onReady:(NSDictionary *)event;
 - (void)onMountingError:(NSDictionary *)event;
-- (void)onCodeRead:(NSDictionary *)event;
 - (void)onPictureSaved:(NSDictionary *)event;
 
 @end

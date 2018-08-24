@@ -114,10 +114,6 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
   private boolean mIsLoadExperienceAllowedToRun = false;
   private boolean mShouldShowLoadingScreenWithOptimisticManifest = false;
 
-  // In detach we want UNVERSIONED most places. We still need the numbered sdk version
-  // when creating cache keys.
-  private String mDetachSdkVersion;
-
   @Inject
   ExponentManifest mExponentManifest;
 

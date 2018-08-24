@@ -114,6 +114,10 @@
 
 - (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status
 {
+  // TODO: Permissions.LOCATION issue (search by this phrase)
+  // if Permissions.LOCATION is being called for the first time on iOS devide and prompts for user action it might not call this callback at all
+  // it happens if user requests more that one permission at the same time via Permissions.askAsync(...) and LOCATION dialog is not being called first
+  // to reproduce this find NCL code testing that
   if (status == kCLAuthorizationStatusNotDetermined) {
     // CLLocationManager calls this delegate method once on start with kCLAuthorizationNotDetermined even before the user responds
     // to the "Don't Allow" / "Allow" dialog box. This isn't the event we care about so we skip it. See:

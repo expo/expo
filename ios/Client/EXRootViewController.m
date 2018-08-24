@@ -155,9 +155,9 @@ NS_ASSUME_NONNULL_BEGIN
   [[self _getHomeAppManager] addHistoryItemWithUrl:manifestUrl manifest:manifest];
 }
 
-- (void)getIsValidHomeManifestToOpen:(NSDictionary *)manifest completion:(void (^)(BOOL isValid))completion
+- (void)getIsValidHomeManifestToOpen:(NSDictionary *)manifest manifestUrl:(NSURL *) manifestUrl completion:(void (^)(BOOL isValid))completion
 {
-  [[self _getHomeAppManager] getIsValidHomeManifestToOpen:manifest completion:completion];
+  [[self _getHomeAppManager] getIsValidHomeManifestToOpen:manifest manifestUrl:(NSURL *) manifestUrl completion:completion];
 }
 
 - (void)getHistoryUrlForExperienceId:(NSString *)experienceId completion:(void (^)(NSString *))completion

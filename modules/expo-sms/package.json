@@ -1,11 +1,12 @@
 {
   "name": "expo-sms",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Expo SMS universal module",
   "main": "index.js",
   "keywords": [
     "react-native",
-    "expo"
+    "expo",
+    "sms"
   ],
   "homepage": "https://docs.expo.io/",
   "author": "650 Industries, Inc.",
@@ -14,8 +15,8 @@
     "react-native": "^0.55.4"
   },
   "dependencies": {
-    "expo-core": "^1.0.0",
-    "expo-permissions-interface": "^1.0.0"
+    "expo-core": "^1.0.1",
+    "expo-permissions-interface": "^1.0.1"
   },
   "devDependencies": {
     "babel-preset-expo": "^4.0.0",

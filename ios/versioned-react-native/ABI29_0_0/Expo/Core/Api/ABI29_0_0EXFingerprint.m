@@ -75,7 +75,9 @@ ABI29_0_0RCT_EXPORT_METHOD(authenticateAsync:(NSString *)reason
     }
   }
   LAContext *context = [LAContext new];
-
+  if (@available(iOS 11.0, *)) {
+    context.interactionNotAllowed = false;
+  }
   [context evaluatePolicy:LAPolicyDeviceOwnerAuthentication
           localizedReason:reason
                     reply:^(BOOL success, NSError *error) {

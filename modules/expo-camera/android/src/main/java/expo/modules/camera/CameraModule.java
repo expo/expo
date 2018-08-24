@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Build;
+import android.os.Bundle;
 
 import com.google.android.cameraview.AspectRatio;
 import com.google.android.cameraview.Constants;
@@ -26,6 +27,7 @@ import expo.core.ModuleRegistry;
 import expo.core.interfaces.ModuleRegistryConsumer;
 import expo.core.Promise;
 import expo.core.interfaces.services.UIManager;
+import expo.interfaces.imageloader.ImageLoader;
 import expo.interfaces.permissions.Permissions;
 import expo.modules.camera.tasks.ResolveTakenPictureAsyncTask;
 
@@ -40,7 +42,7 @@ public class CameraModule extends ExportedModule implements ModuleRegistryConsum
   static final int VIDEO_480P = 3;
   static final int VIDEO_4x3 = 4;
 
-  public static final Map<String, Object> VALID_BARCODE_TYPES =
+  static final Map<String, Object> VALID_BARCODE_TYPES =
       Collections.unmodifiableMap(new HashMap<String, Object>() {
         {
           put("aztec", Barcode.AZTEC);

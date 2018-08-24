@@ -15,7 +15,7 @@
 
 - (instancetype)initWithExperienceId:(NSString *)experienceId andParams:(NSDictionary *)params
 {
-  if (self = [super init]) {
+  if (self = [super initWithExperienceId:experienceId]) {
     _unversionedConstants = params[@"constants"];
     if (_unversionedConstants && _unversionedConstants[@"appOwnership"]) {
       _appOwnership = _unversionedConstants[@"appOwnership"];

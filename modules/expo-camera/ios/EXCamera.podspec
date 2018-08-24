@@ -18,8 +18,10 @@ Pod::Spec.new do |s|
 
   s.dependency 'EXCore'
   s.dependency 'EXFileSystemInterface'
+  s.dependency 'EXImageLoaderInterface'
   s.dependency 'EXPermissionsInterface'
   s.dependency 'EXFaceDetectorInterface'
+  s.dependency 'EXBarCodeScannerInterface'
 end
 
   

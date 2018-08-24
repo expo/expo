@@ -219,7 +219,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)appLoader:(EXAppLoader *)appLoader didLoadOptimisticManifest:(NSDictionary *)manifest
 {
-  [self _whenManifestIsValidToOpen:manifest performBlock:^{
+  [self _whenManifestIsValidToOpen:manifest manifestUrl:appLoader.manifestUrl performBlock:^{
     if ([EXKernel sharedInstance].browserController) {
       [[EXKernel sharedInstance].browserController addHistoryItemWithUrl:appLoader.manifestUrl manifest:manifest];
     }
@@ -236,7 +236,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)appLoader:(EXAppLoader *)appLoader didFinishLoadingManifest:(NSDictionary *)manifest bundle:(NSData *)data
 {
-  [self _whenManifestIsValidToOpen:manifest performBlock:^{
+  [self _whenManifestIsValidToOpen:manifest manifestUrl:appLoader.manifestUrl performBlock:^{
     [self _rebuildBridgeWithLoadingViewManifest:manifest];
     if (self->_appRecord.appManager.status == kEXReactAppManagerStatusBridgeLoading) {
       [self->_appRecord.appManager appLoaderFinished];
@@ -448,10 +448,10 @@ NS_ASSUME_NONNULL_BEGIN
   }
 }
 
-- (void)_whenManifestIsValidToOpen:(NSDictionary *)manifest performBlock:(void (^)(void))block
+- (void)_whenManifestIsValidToOpen:(NSDictionary *)manifest manifestUrl:(NSURL *) manifestUrl performBlock:(void (^)(void))block
 {
   if (self.appRecord.appManager.requiresValidManifests && [EXKernel sharedInstance].browserController) {
-    [[EXKernel sharedInstance].browserController getIsValidHomeManifestToOpen:manifest completion:^(BOOL isValid) {
+    [[EXKernel sharedInstance].browserController getIsValidHomeManifestToOpen:manifest manifestUrl:manifestUrl completion:^(BOOL isValid) {
       if (isValid) {
         block();
       } else {

@@ -19,13 +19,19 @@ import java.util.Map;
 
 import expo.adapters.react.ReactModuleRegistryProvider;
 import expo.core.interfaces.Package;
+import expo.modules.font.FontLoaderPackage;
 import expo.modules.print.PrintPackage;
+import expo.modules.analytics.segment.SegmentPackage;
+import expo.modules.barcodescanner.BarCodeScannerPackage;
 import expo.modules.camera.CameraPackage;
 import expo.modules.constants.ConstantsPackage;
 import expo.modules.facedetector.FaceDetectorPackage;
 import expo.modules.filesystem.FileSystemPackage;
 import expo.modules.gl.GLPackage;
+import expo.modules.location.LocationPackage;
+import expo.modules.medialibrary.MediaLibraryPackage;
 import expo.modules.permissions.PermissionsPackage;
+import expo.modules.print.PrintPackage;
 import expo.modules.sensors.SensorsPackage;
 import expo.modules.sms.SMSPackage;
 import host.exp.exponent.ExponentManifest;
@@ -37,14 +43,11 @@ import versioned.host.exp.exponent.modules.api.SplashScreenModule;
 import versioned.host.exp.exponent.modules.api.BrightnessModule;
 import versioned.host.exp.exponent.modules.api.ImageManipulatorModule;
 import versioned.host.exp.exponent.modules.api.MailComposerModule;
-import versioned.host.exp.exponent.modules.api.MediaLibraryModule;
 import versioned.host.exp.exponent.modules.api.PedometerModule;
 import versioned.host.exp.exponent.modules.api.UpdatesModule;
 import versioned.host.exp.exponent.modules.api.av.video.VideoManager;
 import versioned.host.exp.exponent.modules.api.fbads.AdIconViewManager;
 import versioned.host.exp.exponent.modules.api.fbads.MediaViewManager;
-import versioned.host.exp.exponent.modules.api.components.barcodescanner.BarCodeScannerModule;
-import versioned.host.exp.exponent.modules.api.components.barcodescanner.BarCodeScannerViewManager;
 import versioned.host.exp.exponent.modules.api.AmplitudeModule;
 import versioned.host.exp.exponent.modules.api.CalendarModule;
 import versioned.host.exp.exponent.modules.api.ContactsModule;
@@ -54,19 +57,16 @@ import versioned.host.exp.exponent.modules.api.ErrorRecoveryModule;
 import versioned.host.exp.exponent.modules.api.FabricModule;
 import versioned.host.exp.exponent.modules.api.FacebookModule;
 import versioned.host.exp.exponent.modules.api.FingerprintModule;
-import versioned.host.exp.exponent.modules.api.FontLoaderModule;
 import versioned.host.exp.exponent.modules.api.GoogleModule;
 import versioned.host.exp.exponent.modules.api.ImageCropperModule;
 import versioned.host.exp.exponent.modules.api.ImagePickerModule;
 import versioned.host.exp.exponent.modules.api.KeepAwakeModule;
 import versioned.host.exp.exponent.modules.api.KeyboardModule;
-import versioned.host.exp.exponent.modules.api.LocationModule;
 import versioned.host.exp.exponent.modules.api.LocalizationModule;
 import versioned.host.exp.exponent.modules.api.NotificationsModule;
 import versioned.host.exp.exponent.modules.api.RNViewShotModule;
 import versioned.host.exp.exponent.modules.api.SQLiteModule;
 import versioned.host.exp.exponent.modules.api.ScreenOrientationModule;
-import versioned.host.exp.exponent.modules.api.SegmentModule;
 import versioned.host.exp.exponent.modules.api.ShakeModule;
 import versioned.host.exp.exponent.modules.api.SpeechModule;
 import versioned.host.exp.exponent.modules.api.URLHandlerModule;
@@ -109,7 +109,12 @@ public class ExponentPackage implements ReactPackage {
       new GLPackage(),
       new PermissionsPackage(),
       new SMSPackage(),
-      new PrintPackage()
+      new PrintPackage(),
+      new MediaLibraryPackage(),
+      new SegmentPackage(),
+      new FontLoaderPackage(),
+      new LocationPackage(),
+      new BarCodeScannerPackage()
   );
 
   private static final String TAG = ExponentPackage.class.getSimpleName();
@@ -161,7 +166,6 @@ public class ExponentPackage implements ReactPackage {
     List<NativeModule> nativeModules = new ArrayList<>(Arrays.<NativeModule>asList(
         new URLHandlerModule(reactContext),
         new ShakeModule(reactContext),
-        new FontLoaderModule(reactContext),
         new KeyboardModule(reactContext),
         new UpdatesModule(reactContext, mExperienceProperties, mManifest),
         new ExponentIntentModule(reactContext, mExperienceProperties)
@@ -182,7 +186,6 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new ExponentAsyncStorageModule(reactContext, mManifest));
         nativeModules.add(new NotificationsModule(reactContext, mManifest, mExperienceProperties));
         nativeModules.add(new ContactsModule(reactContext, experienceId));
-        nativeModules.add(new LocationModule(reactContext, scopedContext, experienceId));
         nativeModules.add(new CryptoModule(reactContext));
         nativeModules.add(new ImagePickerModule(reactContext, scopedContext, experienceId));
         nativeModules.add(new ImageManipulatorModule(reactContext, scopedContext));
@@ -191,7 +194,6 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new FingerprintModule(reactContext));
         nativeModules.add(new GoogleModule(reactContext, mExperienceProperties));
         nativeModules.add(new AmplitudeModule(reactContext, scopedContext));
-        nativeModules.add(new SegmentModule(reactContext, scopedContext));
         nativeModules.add(new RNViewShotModule(reactContext, scopedContext));
         nativeModules.add(new KeepAwakeModule(reactContext));
         nativeModules.add(new ExponentTestNativeModule(reactContext));
@@ -213,11 +215,9 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new BrightnessModule(reactContext));
         nativeModules.add(new RNGestureHandlerModule(reactContext));
         nativeModules.add(new StripeModule(reactContext));
-        nativeModules.add(new BarCodeScannerModule(reactContext));
         nativeModules.add(new RNAWSCognitoModule(reactContext));
         nativeModules.add(new MailComposerModule(reactContext));
         nativeModules.add(new CalendarModule(reactContext, experienceId));
-        nativeModules.add(new MediaLibraryModule(reactContext, experienceId));
         nativeModules.add(new LocalizationModule(reactContext));
         nativeModules.add(new ReanimatedModule(reactContext));
         nativeModules.add(new SplashScreenModule(reactContext, experienceId));
@@ -242,7 +242,6 @@ public class ExponentPackage implements ReactPackage {
         new LinearGradientManager(),
         new VideoViewManager(),
         new NativeAdViewManager(),
-        new BarCodeScannerViewManager(),
         new BannerViewManager(),
         new MediaViewManager(),
         new AdIconViewManager()

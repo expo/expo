@@ -11,7 +11,6 @@ import android.os.Build;
 import android.view.ViewGroup;
 
 import com.google.android.cameraview.CameraView;
-import com.google.android.gms.vision.barcode.Barcode;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -19,14 +18,14 @@ import java.util.List;
 import java.util.Locale;
 
 import expo.core.interfaces.services.EventEmitter;
+import expo.interfaces.barcodescanner.BarCodeScannerResult;
 import expo.interfaces.facedetector.FaceDetector;
-import expo.modules.camera.events.BarCodeReadEvent;
+import expo.modules.camera.events.BarCodeScannedEvent;
 import expo.modules.camera.events.CameraMountErrorEvent;
 import expo.modules.camera.events.CameraReadyEvent;
 import expo.modules.camera.events.FaceDetectionErrorEvent;
 import expo.modules.camera.events.FacesDetectedEvent;
 import expo.modules.camera.events.PictureSavedEvent;
-import expo.modules.camera.utils.ExpoBarCodeDetector;
 
 public class CameraViewHelper {
   // Mount error event
@@ -45,8 +44,8 @@ public class CameraViewHelper {
 
   // Bar code read event
 
-  public static void emitBarCodeReadEvent(EventEmitter emitter, ViewGroup view, ExpoBarCodeDetector.Result barCode) {
-    BarCodeReadEvent event = BarCodeReadEvent.obtain(view.getId(), barCode);
+  public static void emitBarCodeReadEvent(EventEmitter emitter, ViewGroup view, BarCodeScannerResult barCode) {
+    BarCodeScannedEvent event = BarCodeScannedEvent.obtain(view.getId(), barCode);
     emitter.emit(view.getId(), event);
   }
 

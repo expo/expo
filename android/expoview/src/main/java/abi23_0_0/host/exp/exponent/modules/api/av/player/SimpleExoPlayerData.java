@@ -5,16 +5,14 @@ import android.os.Handler;
 import android.util.Pair;
 import android.view.Surface;
 
-import abi23_0_0.com.facebook.react.bridge.ReadableMap;
-import abi23_0_0.com.facebook.react.bridge.WritableMap;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.Timeline;
-import com.google.android.exoplayer2.extractor.ExtractorsFactory;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
+import com.google.android.exoplayer2.extractor.ExtractorsFactory;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.TrackGroupArray;
@@ -31,6 +29,8 @@ import com.google.android.exoplayer2.util.Util;
 
 import java.io.IOException;
 
+import abi23_0_0.com.facebook.react.bridge.ReadableMap;
+import abi23_0_0.com.facebook.react.bridge.WritableMap;
 import abi23_0_0.host.exp.exponent.modules.api.av.AVModule;
 
 class SimpleExoPlayerData extends PlayerData
@@ -242,7 +242,17 @@ class SimpleExoPlayerData extends PlayerData
   }
 
   @Override
+  public void onSeekProcessed() {
+
+  }
+
+  @Override
   public void onRepeatModeChanged(int repeatMode) {
+  }
+
+  @Override
+  public void onShuffleModeEnabledChanged(boolean shuffleModeEnabled) {
+
   }
 
   @Override
@@ -274,9 +284,10 @@ class SimpleExoPlayerData extends PlayerData
   }
 
   @Override
-  public void onPositionDiscontinuity() {
+  public void onPositionDiscontinuity(int reason) {
 
   }
+
 
   // ExtractorMediaSource.EventListener
 

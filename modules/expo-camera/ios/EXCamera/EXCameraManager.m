@@ -62,33 +62,18 @@ EX_EXPORT_MODULE(ExponentCameraManager);
                @"480p": @(EXCameraVideo4x3),
                @"4:3": @(EXCameraVideo4x3),
                },
-           @"BarCodeType" : [[self class] validBarCodeTypes]
            };
 }
 
 - (NSArray<NSString *> *)supportedEvents
 {
-  return @[@"onCameraReady", @"onMountError", @"onBarCodeRead", @"onFacesDetected", @"onPictureSaved"];
-}
-
-
-+ (NSDictionary *)validBarCodeTypes
-{
-  return @{
-           @"upc_e" : AVMetadataObjectTypeUPCECode,
-           @"code39" : AVMetadataObjectTypeCode39Code,
-           @"code39mod43" : AVMetadataObjectTypeCode39Mod43Code,
-           @"ean13" : AVMetadataObjectTypeEAN13Code,
-           @"ean8" : AVMetadataObjectTypeEAN8Code,
-           @"code93" : AVMetadataObjectTypeCode93Code,
-           @"code138" : AVMetadataObjectTypeCode128Code,
-           @"pdf417" : AVMetadataObjectTypePDF417Code,
-           @"qr" : AVMetadataObjectTypeQRCode,
-           @"aztec" : AVMetadataObjectTypeAztecCode,
-           @"interleaved2of5" : AVMetadataObjectTypeInterleaved2of5Code,
-           @"itf14" : AVMetadataObjectTypeITF14Code,
-           @"datamatrix" : AVMetadataObjectTypeDataMatrixCode
-           };
+  return @[
+           @"onCameraReady",
+           @"onMountError",
+           @"onPictureSaved",
+           @"onBarCodeScanned",
+           @"onFacesDetected",
+           ];
 }
 
 + (NSDictionary *)pictureSizes
@@ -129,6 +114,10 @@ EX_VIEW_PROPERTY(faceDetectorSettings, NSDictionary *, EXCamera)
   [view updateFaceDetectorSettings:value];
 }
 
+EX_VIEW_PROPERTY(barCodeScannerSettings, NSDictionary *, EXCamera)
+{
+  [view setBarCodeScannerSettings:value];
+}
 
 EX_VIEW_PROPERTY(autoFocus, NSNumber *, EXCamera)
 {
@@ -179,19 +168,12 @@ EX_VIEW_PROPERTY(faceDetectorEnabled, NSNumber *, EXCamera)
   }
 }
 
-
 EX_VIEW_PROPERTY(barCodeScannerEnabled, NSNumber *, EXCamera)
 {
   bool boolValue = [value boolValue];
-  if ([view isReadingBarCodes] != boolValue) {
-    [view setIsReadingBarCodes:boolValue];
-    [view setupOrDisableBarcodeScanner];
+  if ([view isScanningBarCodes] != boolValue) {
+    [view setIsScanningBarCodes:boolValue];
   }
-}
-
-EX_VIEW_PROPERTY(barCodeTypes, NSArray *, EXCamera)
-{
-  [view setBarCodeTypes:value];
 }
 
 EX_EXPORT_METHOD_AS(takePicture,
@@ -329,4 +311,3 @@ EX_EXPORT_METHOD_AS(getAvailablePictureSizes,
 }
 
 @end
-

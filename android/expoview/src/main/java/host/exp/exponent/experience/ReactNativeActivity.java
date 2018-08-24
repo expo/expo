@@ -95,6 +95,10 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
   protected String mSDKVersion;
   protected int mActivityId;
 
+  // In detach we want UNVERSIONED most places. We still need the numbered sdk version
+  // when creating cache keys.
+  protected String mDetachSdkVersion;
+
   protected RNObject mReactRootView;
   private FrameLayout mLayout;
   private FrameLayout mContainer;
@@ -579,15 +583,17 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
     }
 
     try {
-      Set<KernelConstants.ExperienceEvent> events = KernelProvider.getInstance().consumeExperienceEvents(mManifestUrl);
+      RNObject rctDeviceEventEmitter = new RNObject("com.facebook.react.modules.core.DeviceEventManagerModule$RCTDeviceEventEmitter");
+      rctDeviceEventEmitter.loadVersion(mDetachSdkVersion);
+      RNObject existingEmitter = mReactInstanceManager.callRecursive("getCurrentReactContext")
+          .callRecursive("getJSModule", rctDeviceEventEmitter.rnClass());
 
-      for (KernelConstants.ExperienceEvent event : events) {
-        RNObject rctDeviceEventEmitter = new RNObject("com.facebook.react.modules.core.DeviceEventManagerModule$RCTDeviceEventEmitter");
-        rctDeviceEventEmitter.loadVersion(mSDKVersion);
+      if (existingEmitter != null) {
+        Set<KernelConstants.ExperienceEvent> events = KernelProvider.getInstance().consumeExperienceEvents(mManifestUrl);
 
-        mReactInstanceManager.callRecursive("getCurrentReactContext")
-            .callRecursive("getJSModule", rctDeviceEventEmitter.rnClass())
-            .call("emit", event.eventName, event.eventPayload);
+        for (KernelConstants.ExperienceEvent event : events) {
+          existingEmitter.call("emit", event.eventName, event.eventPayload);
+        }
       }
     } catch (Throwable e) {
       EXL.e(TAG, e);

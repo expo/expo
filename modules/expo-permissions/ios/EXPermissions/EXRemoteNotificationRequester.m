@@ -3,7 +3,7 @@
 #import <EXPermissions/EXRemoteNotificationRequester.h>
 #import <EXPermissions/EXLocalNotificationRequester.h>
 
-NSString * const EXAppDidRegisterForRemoteNotificationsNotificationName = @"EXAppDidRegisterForRemoteNotificationsNotification";
+NSString * const EXAppDidRegisterForRemoteNotificationsNotificationName = @"kEXAppDidRegisterForRemoteNotificationsNotification";
 
 @interface EXRemoteNotificationRequester ()
 

@@ -14,6 +14,7 @@
 #import "EXReactAppManager+Private.h"
 #import "EXVersionManager.h"
 #import "EXVersions.h"
+#import <EXCore/EXModuleRegistryProvider.h>
 
 #import <React/RCTBridge.h>
 #import <React/RCTRootView.h>
@@ -267,6 +268,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
                            @"manifest": _appRecord.appLoader.manifest,
                            @"constants": @{
                                @"linkingUri": RCTNullIfNil([EXKernelLinkingManager linkingUriForExperienceUri:_appRecord.appLoader.manifestUrl useLegacy:[self _compareVersionTo:27] == NSOrderedAscending]),
+                               @"experienceUrl": RCTNullIfNil(_appRecord.appLoader.manifestUrl? _appRecord.appLoader.manifestUrl.absoluteString: nil),
                                @"installationId": [EXKernel deviceInstallUUID],
                                @"expoRuntimeVersion": [EXBuildConstants sharedInstance].expoRuntimeVersion,
                                @"manifest": _appRecord.appLoader.manifest,
@@ -278,6 +280,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
                            @"isStandardDevMenuAllowed": @(isStandardDevMenuAllowed),
                            @"testEnvironment": @([EXEnvironment sharedEnvironment].testEnvironment),
                            @"services": [EXKernel sharedInstance].serviceRegistry.allServices,
+                           @"singletonModules": [EXModuleRegistryProvider singletonModules],
                            @"moduleRegistryDelegateClass": RCTNullIfNil([self moduleRegistryDelegateClass]),
                            };
   return [self.versionManager extraModulesWithParams:params];

@@ -1,18 +1,24 @@
 {
   "name": "expo-sensors",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Expo Sensors universal module",
   "main": "index.js",
   "keywords": [
     "react-native",
-    "expo"
+    "expo",
+    "sensors",
+    "accelerometer",
+    "devicemotion",
+    "gyroscope",
+    "magnetometer",
+    "pedometer"
   ],
   "homepage": "https://docs.expo.io/",
   "author": "650 Industries, Inc.",
   "license": "BSD",
   "dependencies": {
-    "expo-core": "^1.0.0",
-    "expo-sensors-interface": "^1.0.0",
+    "expo-core": "^1.0.1",
+    "expo-sensors-interface": "^1.0.1",
     "invariant": "^2.2.4"
   },
   "devDependencies": {
