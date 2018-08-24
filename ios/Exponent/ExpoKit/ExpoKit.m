@@ -19,8 +19,8 @@
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 #import <GoogleMaps/GoogleMaps.h>
 
-NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"EXAppDidRegisterForRemoteNotificationsNotification";
-NSString * const EXAppDidRegisterUserNotificationSettingsNotification = @"EXAppDidRegisterUserNotificationSettingsNotification";
+NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"kEXAppDidRegisterForRemoteNotificationsNotification";
+NSString * const EXAppDidRegisterUserNotificationSettingsNotification = @"kEXAppDidRegisterUserNotificationSettingsNotification";
 
 @interface ExpoKit () <CrashlyticsDelegate>
 {

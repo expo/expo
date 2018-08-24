@@ -63,7 +63,7 @@
   } else {
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(_handleDidRegisterUserNotificationSettings:)
-                                                 name:@"EXAppDidRegisterUserNotificationSettingsNotification"
+                                                 name:@"kEXAppDidRegisterUserNotificationSettingsNotification"
                                                object:nil];
     UIUserNotificationType types = UIUserNotificationTypeBadge | UIUserNotificationTypeSound | UIUserNotificationTypeAlert;
     [ABI26_0_0RCTSharedApplication() registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:types categories:nil]];

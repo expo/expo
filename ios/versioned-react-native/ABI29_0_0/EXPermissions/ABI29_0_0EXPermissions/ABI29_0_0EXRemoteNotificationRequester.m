@@ -3,7 +3,7 @@
 #import <ABI29_0_0EXPermissions/ABI29_0_0EXRemoteNotificationRequester.h>
 #import <ABI29_0_0EXPermissions/ABI29_0_0EXLocalNotificationRequester.h>
 
-NSString * const ABI29_0_0EXAppDidRegisterForRemoteNotificationsNotificationName = @"ABI29_0_0EXAppDidRegisterForRemoteNotificationsNotification";
+NSString * const ABI29_0_0EXAppDidRegisterForRemoteNotificationsNotificationName = @"kEXAppDidRegisterForRemoteNotificationsNotification";
 
 @interface ABI29_0_0EXRemoteNotificationRequester ()
 

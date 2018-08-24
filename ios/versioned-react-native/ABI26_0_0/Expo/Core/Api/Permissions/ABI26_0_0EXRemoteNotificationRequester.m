@@ -55,7 +55,7 @@
   } else {
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(_handleDidRegisterForRemoteNotifications:)
-                                                 name:@"EXAppDidRegisterForRemoteNotificationsNotification"
+                                                 name:@"kEXAppDidRegisterForRemoteNotificationsNotification"
                                                object:nil];
     _localNotificationRequester = [[ABI26_0_0EXLocalNotificationRequester alloc] init];
     [_localNotificationRequester setDelegate:self];

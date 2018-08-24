@@ -37,7 +37,7 @@
   } else {
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(_handleDidRegisterForRemoteNotifications:)
-                                                 name:@"EXAppDidRegisterForRemoteNotificationsNotification"
+                                                 name:@"kEXAppDidRegisterForRemoteNotificationsNotification"
                                                object:nil];
     UIUserNotificationType types = UIUserNotificationTypeBadge | UIUserNotificationTypeSound | UIUserNotificationTypeAlert;
     [ABI24_0_0RCTSharedApplication() registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:types categories:nil]];
