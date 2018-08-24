@@ -221,5 +221,61 @@ export function test(t) {
       const { exists } = await FS.getInfoAsync(`${FS.documentDirectory}SQLite/test.db`);
       t.expect(exists).toBeTruthy();
     });
+
+    t.it('should support PRAGMA statements', async () => {
+      const db = SQLite.openDatabase('test.db');
+      await new Promise((resolve, reject) => {
+        db.transaction(
+          tx => {
+            const nop = () => {};
+            const onError = (tx, error) => reject(error);
+
+            tx.executeSql('DROP TABLE IF EXISTS SomeTable;', [], nop, onError);
+            tx.executeSql(
+              'CREATE TABLE IF NOT EXISTS SomeTable (id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64));',
+              [],
+              nop,
+              onError
+            );
+            // a result-returning pragma
+            tx.executeSql(
+              'PRAGMA table_info(SomeTable);',
+              [],
+              (tx, results) => {
+                t.expect(results.rows.length).toEqual(2);
+                t.expect(results.rows._array[0].name).toEqual("id");
+                t.expect(results.rows._array[1].name).toEqual("name");
+              },
+              onError
+            );
+            // a no-result pragma
+            tx.executeSql(
+              'PRAGMA case_sensitive_like = true;',
+              [],
+              nop,
+              onError
+            );
+            // a setter/getter pragma
+            tx.executeSql(
+              'PRAGMA user_version = 123;',
+              [],
+              nop,
+              onError
+            );
+            tx.executeSql(
+              'PRAGMA user_version;',
+              [],
+              (tx, results) => {
+                t.expect(results.rows.length).toEqual(1);
+                t.expect(results.rows._array[0].user_version).toEqual(123);
+              },
+              onError
+            );
+          },
+          reject,
+          resolve
+        );
+      });
+    })
   });
 }
