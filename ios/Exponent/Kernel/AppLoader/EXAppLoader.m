@@ -172,10 +172,6 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
   }
   NSMutableString *path = [((components.path) ? components.path : @"") mutableCopy];
   path = [[EXKernelLinkingManager stringByRemovingDeepLink:path] mutableCopy];
-  if (path.length == 0 || [path characterAtIndex:path.length - 1] != '/') {
-    [path appendString:@"/"];
-  }
-  [path appendString:@"index.exp"];
   components.path = path;
   return [components URL];
 }
