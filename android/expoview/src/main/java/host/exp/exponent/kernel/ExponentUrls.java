@@ -48,7 +48,8 @@ public class ExponentUrls {
     Request.Builder builder = new Request.Builder()
         .url(urlString)
         .header("Exponent-SDK-Version", sdkVersions)
-        .header("Exponent-Platform", "android");
+        .header("Exponent-Platform", "android")
+        .header("Accept", "application/expo+json,application/json");
 
     if (isShellAppManifest) {
       builder.header("Expo-Release-Channel", Constants.RELEASE_CHANNEL);

@@ -174,13 +174,11 @@ public class ExponentManifest {
       //    android:pathPattern=".*"
       //    android:scheme="https"/>
       // so we have to add some special logic to handle that. This is than handling arbitrary HTTP 301s and 302
-      // because we need to add /index.exp to the paths.
       realManifestUrl = Uri.decode(realManifestUrl.substring(realManifestUrl.indexOf(REDIRECT_SNIPPET) + REDIRECT_SNIPPET.length()));
     }
 
     String httpManifestUrl = ExponentUrls.toHttp(realManifestUrl);
 
-    // Append index.exp to path
     Uri uri = Uri.parse(httpManifestUrl);
     String newPath = uri.getPath();
     if (newPath == null) {
@@ -190,11 +188,6 @@ public class ExponentManifest {
     if (deepLinkIndex > -1) {
       newPath = newPath.substring(0, deepLinkIndex);
     }
-    if (!newPath.endsWith("/")) {
-      newPath += "/";
-    }
-    newPath += "index.exp";
-
     return uri.buildUpon().encodedPath(newPath);
   }
 
