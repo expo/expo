@@ -15,6 +15,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) NSTimeInterval requestTimeoutInterval;
 @property (nonatomic, strong, nullable) NSString *releaseChannel;
 
+// TODO: delete this when we no longer support SDK's with legacy paths (ie) 27, 29
+@property (nonatomic, strong) NSArray *legacyResourceCachePaths;
+
 - (instancetype)initWithResourceName:(NSString *)resourceName
                         resourceType:(NSString *)resourceType
                            remoteUrl:(NSURL *)url

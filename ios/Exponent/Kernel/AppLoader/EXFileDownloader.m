@@ -90,6 +90,7 @@ NSTimeInterval const EXFileDownloaderDefaultTimeoutInterval = 60;
   [request setValue:requestAbiVersion forHTTPHeaderField:@"Exponent-SDK-Version"];
   [request setValue:@"ios" forHTTPHeaderField:@"Exponent-Platform"];
   [request setValue:@"true" forHTTPHeaderField:@"Exponent-Accept-Signature"];
+  [request setValue:@"application/expo+json,application/json" forHTTPHeaderField:@"Accept"];
 }
 
 - (NSString *)_userAgentString
