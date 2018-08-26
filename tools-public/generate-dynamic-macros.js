@@ -136,6 +136,7 @@ const macrosFuncs = {
       manifest = await ExponentTools.getManifestAsync(savedDevHomeUrl, {
         'Exponent-Platform': platform,
         'Exponent-SDK-Version': sdkVersion,
+        Accept: 'application/expo+json,application/json',
       });
     } catch (e) {
       const msg = `Unable to download manifest from ${savedDevHomeUrl}: ${e.message}`
@@ -166,6 +167,7 @@ const macrosFuncs = {
       );
       manifest = await ExponentTools.getManifestAsync(url, {
         'Exponent-Platform': platform,
+        Accept: 'application/expo+json,application/json',
       });
       if (manifest.name !== 'expo-home') {
         console.log(`Manifest at ${url} is not expo-home; using published kernel manifest instead...`);
