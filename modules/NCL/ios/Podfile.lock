@@ -1,46 +1,46 @@
 PODS:
   - boost-for-react-native (1.63.0)
   - DoubleConversion (1.1.5)
-  - EXCamera (1.0.0):
+  - EXCamera (1.0.1):
     - EXCore
     - EXFaceDetectorInterface
     - EXFileSystemInterface
     - EXPermissionsInterface
-  - EXCameraInterface (1.0.0):
+  - EXCameraInterface (1.0.1):
     - EXCore
-  - EXConstants (1.0.0):
+  - EXConstants (1.0.1):
     - EXConstantsInterface
     - EXCore
-  - EXConstantsInterface (1.0.0):
+  - EXConstantsInterface (1.0.1):
     - EXCore
-  - EXCore (1.0.0)
-  - EXFaceDetectorInterface (1.0.0):
+  - EXCore (1.0.1)
+  - EXFaceDetectorInterface (1.0.1):
     - EXCore
-  - EXFileSystem (1.0.0):
+  - EXFileSystem (1.0.1):
     - EXCore
     - EXFileSystemInterface
-  - EXFileSystemInterface (1.0.0):
+  - EXFileSystemInterface (1.0.1):
     - EXCore
-  - EXGL (1.0.0):
+  - EXGL (1.0.1):
     - EXCameraInterface
     - EXCore
     - EXFileSystemInterface
     - EXGL-CPP
-  - EXGL-CPP (1.0.0):
-    - EXGL-CPP/UEXGL (= 1.0.0)
-  - EXGL-CPP/UEXGL (1.0.0)
-  - EXPermissions (1.0.0):
+  - EXGL-CPP (1.0.1):
+    - EXGL-CPP/UEXGL (= 1.0.1)
+  - EXGL-CPP/UEXGL (1.0.1)
+  - EXPermissions (1.0.1):
     - EXCore
     - EXPermissionsInterface
-  - EXPermissionsInterface (1.0.0):
+  - EXPermissionsInterface (1.0.1):
     - EXCore
-  - EXReactNativeAdapter (1.0.0):
+  - EXReactNativeAdapter (1.0.1):
     - EXCore
     - React
-  - EXSensors (1.0.0):
+  - EXSensors (1.0.1):
     - EXCore
     - EXSensorsInterface
-  - EXSensorsInterface (1.0.0):
+  - EXSensorsInterface (1.0.1):
     - EXCore
   - Folly (2016.09.26.00):
     - boost-for-react-native
@@ -135,7 +135,7 @@ DEPENDENCIES:
   - yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
-  https://github.com/CocoaPods/Specs.git:
+  https://github.com/cocoapods/specs.git:
     - boost-for-react-native
 
 EXTERNAL SOURCES:
@@ -192,7 +192,7 @@ SPEC CHECKSUMS:
   EXFileSystem: 02c505c7954258a3b239cdc3e3b6f956a73fd88d
   EXFileSystemInterface: effe9ede025f8d487fbdfbc59b4e5d6fd1c6c2fd
   EXGL: ce6f87dc239b56a0c7c8e0bcb18c96c64a6db27f
-  EXGL-CPP: 2097dde1158fcc1469f772681ee4a4bd003dc45a
+  EXGL-CPP: a7fd8224fdc8a2503ba5531ceca1b02c4432f2b2
   EXPermissions: 1c524493270ba64f494f805b6e0e75d4b498ecb5
   EXPermissionsInterface: 814a15d3259873c39646ed3cfe58bb49160445c1
   EXReactNativeAdapter: 75eb0f3343ac335516c32fe4b93eb28bacac3f7b
@@ -205,4 +205,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 1dbfccb6eb74f0f222f5e5743b5fc1045954c5d9
 
-COCOAPODS: 1.5.0
+COCOAPODS: 1.5.3

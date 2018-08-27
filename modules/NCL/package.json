@@ -7,6 +7,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "babel-preset-expo": "^4.0.0",
     "expo-asset": "^1.0.0",
     "expo-camera": "^1.0.0",
     "expo-constants": "^1.0.0",
@@ -19,6 +20,7 @@
     "expo-sensors": "^1.0.0",
     "path": "^0.12.7",
     "pixi.js": "^4.8.1",
+    "prop-types": "^15.6.2",
     "react": "16.3.1",
     "react-native": "0.55.4",
     "react-native-platform-touchable": "^1.1.1",
@@ -26,8 +28,10 @@
     "url": "^0.11.0"
   },
   "devDependencies": {
-    "babel-jest": "22.4.3",
+    "babel-core": "^6.26.3",
+    "babel-jest": "^23.4.2",
     "babel-preset-react-native": "4.0.0",
+    "eslint": "^4.0.0",
     "jest": "22.4.3",
     "react-test-renderer": "16.3.1"
   },
