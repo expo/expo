@@ -11,16 +11,16 @@
 static BOOL ABI29_0_0EXIsFaceIDDevice() {
   static BOOL isIPhoneX = NO;
   static dispatch_once_t onceToken;
-  
+
   dispatch_once(&onceToken, ^{
     ABI29_0_0RCTAssertMainQueue();
-    
+
     isIPhoneX = CGSizeEqualToSize(
                                   [UIScreen mainScreen].nativeBounds.size,
                                   CGSizeMake(1125, 2436)
                                   );
   });
-  
+
   return isIPhoneX;
 }
 
@@ -86,7 +86,7 @@ ABI29_0_0RCT_EXPORT_METHOD(authenticateAsync:(NSString *)reason
                       } else {
                         resolve(@{
                           @"success": @(NO),
-                          @"error": [self convertErrorCode:error.code],
+                          @"error": [self convertErrorCode:error],
                         });
                       }
                     }];
@@ -94,9 +94,9 @@ ABI29_0_0RCT_EXPORT_METHOD(authenticateAsync:(NSString *)reason
 
 }
 
-- (NSString *)convertErrorCode:(NSInteger)code
+- (NSString *)convertErrorCode:(NSError *)error
 {
-  switch (code) {
+  switch (error.code) {
     case LAErrorSystemCancel:
       return @"system_cancel";
     case LAErrorAppCancel:
@@ -118,7 +118,7 @@ ABI29_0_0RCT_EXPORT_METHOD(authenticateAsync:(NSString *)reason
     case LAErrorAuthenticationFailed:
       return @"authentication_failed";
     default:
-      return @"unknown";
+      return [@"unknown: " stringByAppendingFormat:@"%ld, %@", error.code, error.localizedDescription];
   }
 }
 
