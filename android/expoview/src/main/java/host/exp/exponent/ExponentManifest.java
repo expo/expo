@@ -508,11 +508,14 @@ public class ExponentManifest {
         fetchManifestStep3(manifestUrl, manifest, true, listener);
       } else if (isThirdPartyHosted(parsedManifestUrl)){
         // Sandbox third party apps and consider them verified
-        // sandboxed id is of form <host><path>-<slug> (ie) quinlanj.github.io/myProj-myApp
+        // for https urls, sandboxed id is of form quinlanj.github.io/myProj-myApp
+        // for http urls, sandboxed id is of form UNVERIFIED-quinlanj.github.io/myProj-myApp
         if (!Constants.isDetached()){
+          String protocol = parsedManifestUrl.getScheme();
+          String securityPrefix = protocol.equals("https") || protocol.equals("exps") ? "" : "UNVERIFIED-";
           String path = parsedManifestUrl.getPath() != null ? parsedManifestUrl.getPath() : "";
           String slug = manifest.has(MANIFEST_SLUG) ? manifest.getString(MANIFEST_SLUG) : "";
-          String sandboxedId = parsedManifestUrl.getHost() + path + "-" + slug;
+          String sandboxedId = securityPrefix + parsedManifestUrl.getHost() + path + "-" + slug;
           manifest.put(MANIFEST_ID_KEY, sandboxedId);
         }
         fetchManifestStep3(manifestUrl, manifest, true, listener);
@@ -534,11 +537,9 @@ public class ExponentManifest {
 
   private boolean isThirdPartyHosted(final URI uri) {
     String host= uri.getHost();
-    String protocol = uri.getScheme();
     boolean isExpoHost = host.equals("exp.host") || host.equals("expo.io") || host.equals("exp.direct") || host.equals("expo.test") ||
         host.endsWith(".exp.host") || host.endsWith(".expo.io") || host.endsWith(".exp.direct") || host.endsWith(".expo.test");
-    boolean isHttps = protocol.equals("https") || protocol.equals("exps");
-    return !isExpoHost && isHttps;
+    return !isExpoHost;
   }
 
   private void fetchManifestStep3(final String manifestUrl, final JSONObject manifest, final boolean isVerified, final ManifestListener listener) {

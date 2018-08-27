@@ -130,10 +130,12 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
     if ([self _isManifestVerificationBypassed]) {
       if ([self _isThirdPartyHosted] && ![EXEnvironment sharedEnvironment].isDetached){
         // the manifest id determines the namespace/experience id an app is sandboxed with
-        // if manifest is obtained via https, we sandbox it with the hostname to avoid clobbering exp.host namespaces
-        // namespace is of the form <host><path>-<slug> (ie) quinlanj.github.io/selfhosting-myapp
+        // if manifest is hosted by third parties, we sandbox it with the hostname to avoid clobbering exp.host namespaces
+        // for https urls, sandboxed id is of form quinlanj.github.io/myProj-myApp
+        // for http urls, sandboxed id is of form UNVERIFIED-quinlanj.github.io/myProj-myApp
+        NSString * securityPrefix = [self.remoteUrl.scheme isEqualToString:@"https"] ? @"" : @"UNVERIFIED-";
         NSString * slugSuffix = innerManifestObj[@"slug"] ? [@"-" stringByAppendingString:innerManifestObj[@"slug"]]: @"";
-        innerManifestObj[@"id"] = [NSString stringWithFormat:@"%@%@%@", self.remoteUrl.host, self.remoteUrl.path?:@"", slugSuffix];
+        innerManifestObj[@"id"] = [NSString stringWithFormat:@"%@%@%@%@", securityPrefix, self.remoteUrl.host, self.remoteUrl.path?:@"", slugSuffix];
       }
       signatureSuccess(YES);
     } else {
@@ -292,7 +294,7 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
 
 - (BOOL)_isThirdPartyHosted
 {
-  return (self.remoteUrl && [self.remoteUrl.scheme isEqualToString:@"https"] && ![EXKernelLinkingManager isExpoHostedUrl:self.remoteUrl]);
+  return (self.remoteUrl && ![EXKernelLinkingManager isExpoHostedUrl:self.remoteUrl]);
 }
 
 - (BOOL)_isManifestVerificationBypassed
