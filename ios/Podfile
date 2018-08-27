@@ -38,6 +38,8 @@ target 'Exponent' do
     :path => "../modules/expo-sensors/ios"
   pod 'EXLocation',
     :path => "../modules/expo-location/ios"
+  pod 'EXAdsAdMob',
+    :path => "../modules/expo-ads-admob/ios"
   pod 'EXConstants',
     :path => "../modules/expo-constants/ios"
   pod 'EXFileSystem',
@@ -50,6 +52,8 @@ target 'Exponent' do
     :path => "../modules/expo-media-library/ios"
   pod 'EXFontInterface',
     :path => "../modules/expo-font-interface/ios"
+  pod 'EXBarCodeScanner',
+    :path => "../modules/expo-barcode-scanner/ios"
   pod 'EXCameraInterface',
     :path => "../modules/expo-camera-interface/ios"
   pod 'EXSensorsInterface',
@@ -66,12 +70,10 @@ target 'Exponent' do
     :path => "../modules/expo-image-loader-interface/ios"
   pod 'EXFaceDetectorInterface',
     :path => "../modules/expo-face-detector-interface/ios"
-  pod 'EXFaceDetector',
-    :path => "../modules/expo-face-detector/ios"
   pod 'EXBarCodeScannerInterface',
     :path => "../modules/expo-barcode-scanner-interface/ios"
-  pod 'EXBarCodeScanner',
-    :path => "../modules/expo-barcode-scanner/ios"
+  pod 'EXFaceDetector',
+    :path => "../modules/expo-face-detector/ios"
   pod 'EXGL-CPP',
     :path => "../modules/expo-gl-cpp/cpp"
 

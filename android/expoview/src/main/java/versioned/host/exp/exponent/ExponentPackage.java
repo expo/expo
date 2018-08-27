@@ -19,14 +19,14 @@ import java.util.Map;
 
 import expo.adapters.react.ReactModuleRegistryProvider;
 import expo.core.interfaces.Package;
-import expo.modules.font.FontLoaderPackage;
-import expo.modules.print.PrintPackage;
+import expo.modules.ads.admob.AdMobPackage;
 import expo.modules.analytics.segment.SegmentPackage;
 import expo.modules.barcodescanner.BarCodeScannerPackage;
 import expo.modules.camera.CameraPackage;
 import expo.modules.constants.ConstantsPackage;
 import expo.modules.facedetector.FaceDetectorPackage;
 import expo.modules.filesystem.FileSystemPackage;
+import expo.modules.font.FontLoaderPackage;
 import expo.modules.gl.GLPackage;
 import expo.modules.location.LocationPackage;
 import expo.modules.medialibrary.MediaLibraryPackage;
@@ -114,7 +114,8 @@ public class ExponentPackage implements ReactPackage {
       new SegmentPackage(),
       new FontLoaderPackage(),
       new LocationPackage(),
-      new BarCodeScannerPackage()
+      new BarCodeScannerPackage(),
+      new AdMobPackage()
   );
 
   private static final String TAG = ExponentPackage.class.getSimpleName();

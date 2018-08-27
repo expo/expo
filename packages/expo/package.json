@@ -53,6 +53,7 @@
   },
   "homepage": "https://github.com/expo/expo-sdk",
   "dependencies": {
+    "expo-ads-admob": "^1.0.0",
     "expo-analytics-segment": "^1.0.0",
     "expo-asset": "^1.0.0",
     "expo-barcode-scanner": "^1.0.0",
