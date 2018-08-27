@@ -11,16 +11,16 @@
 static BOOL EXIsFaceIDDevice() {
   static BOOL isIPhoneX = NO;
   static dispatch_once_t onceToken;
-  
+
   dispatch_once(&onceToken, ^{
     RCTAssertMainQueue();
-    
+
     isIPhoneX = CGSizeEqualToSize(
                                   [UIScreen mainScreen].nativeBounds.size,
                                   CGSizeMake(1125, 2436)
                                   );
   });
-  
+
   return isIPhoneX;
 }
 
