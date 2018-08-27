@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, NativeModules, Platform } from 'react-native';
-import Expo, { AdMobBanner, AdMobRewarded, AdMobInterstitial } from 'expo';
+import { AdMobBanner, AdMobRewarded, AdMobInterstitial } from 'expo';
 import Button from '../components/Button';
 import { Colors } from '../constants';
 
@@ -8,7 +8,7 @@ export default class AdMobScreen extends React.Component {
   static navigationOptions = {
     title: 'AdMob',
   };
-  
+
   constructor() {
     super();
     AdMobRewarded.setTestDeviceID('EMULATOR');

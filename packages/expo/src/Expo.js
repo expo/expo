@@ -89,16 +89,16 @@ module.exports = {
 
   // components
   get AdMobBanner() {
-    return require('./admob/RNAdMobBanner').default;
+    return require('expo-ads-admob').AdMobBanner;
   },
   get PublisherBanner() {
-    return require('./admob/RNPublisherBanner').default;
+    return require('expo-ads-admob').PublisherBanner;
   },
   get AdMobInterstitial() {
-    return require('./admob/RNAdMobInterstitial');
+    return require('expo-ads-admob').AdMobInterstitial;
   },
   get AdMobRewarded() {
-    return require('./admob/RNAdMobRewarded');
+    return require('expo-ads-admob').AdMobRewarded;
   },
   get AppLoading() {
     return require('./launch/AppLoading').default;
