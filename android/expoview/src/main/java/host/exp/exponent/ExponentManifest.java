@@ -82,6 +82,7 @@ public class ExponentManifest {
   public static final String MANIFEST_SHOW_EXPONENT_NOTIFICATION_KEY = "androidShowExponentNotificationInShellApp";
   public static final String MANIFEST_REVISION_ID_KEY = "revisionId";
   public static final String MANIFEST_PUBLISHED_TIME_KEY = "publishedTime";
+  public static final String MANIFEST_COMMIT_TIME_KEY = "commitTime";
   public static final String MANIFEST_LOADED_FROM_CACHE_KEY = "loadedFromCache";
   public static final String MANIFEST_SLUG = "slug";
 
@@ -421,8 +422,17 @@ public class ExponentManifest {
   }
 
   private JSONObject newerManifest(JSONObject manifest1, JSONObject manifest2) throws JSONException, ParseException {
-    String manifest1Timestamp = manifest1.getString(MANIFEST_PUBLISHED_TIME_KEY);
-    String manifest2Timestamp = manifest2.getString(MANIFEST_PUBLISHED_TIME_KEY);
+    // use commitTime instead of publishedTime as it is more accurate;
+    // however, fall back to publishedTime in case older cached manifests do not contain
+    // the commitTime key (we have not always served it)
+    String manifest1Timestamp = manifest1.optString(MANIFEST_COMMIT_TIME_KEY);
+    if (manifest1Timestamp == null) {
+      manifest1Timestamp = manifest1.getString(MANIFEST_PUBLISHED_TIME_KEY);
+    }
+    String manifest2Timestamp = manifest2.optString(MANIFEST_COMMIT_TIME_KEY);
+    if (manifest2Timestamp == null) {
+      manifest2Timestamp = manifest2.getString(MANIFEST_PUBLISHED_TIME_KEY);
+    }
 
     // SimpleDateFormat on Android does not support the ISO-8601 representation of the timezone,
     // namely, using 'Z' to represent GMT. Since all our dates here are in the same timezone,
