@@ -4,7 +4,7 @@ import { Constants, DangerZone } from 'expo';
 
 const { Branch } = DangerZone;
 
-export default class AuthSessionScreen extends React.Component {
+export default class BranchScreen extends React.Component {
   static navigationOptions = {
     title: 'Branch',
   };
