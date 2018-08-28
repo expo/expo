@@ -18,7 +18,7 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
 @property (nonatomic, strong) NSURL * _Nullable originalUrl;
 @property (nonatomic, strong) NSData *data;
 @property (nonatomic, assign) BOOL canBeWrittenToCache;
-@property (nonatomic, assign) NSString *resourceName;
+@property (nonatomic, strong) NSString *resourceName;
 
 // cache this value so we only have to compute it once per instance
 @property (nonatomic, strong) NSNumber * _Nullable isUsingEmbeddedManifest;
