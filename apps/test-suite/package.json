@@ -4,6 +4,7 @@
   "description": "Test suite for the Expo SDK",
   "main": "index.js",
   "scripts": {
+    "postinstall": "expo-yarn-workspaces postinstall",
     "test": "cd Runner && yarn && cd .. && node Runner/index.js ."
   },
   "author": "",
@@ -18,6 +19,9 @@
     "jasmine-core": "^2.4.1",
     "lodash": "^4.17.4",
     "react": "16.3.1",
-    "react-native": "expo/react-native#sdk-29"
+    "react-native": "^0.55.4"
+  },
+  "devDependencies": {
+    "expo-yarn-workspaces": "^1.0.0"
   }
 }
