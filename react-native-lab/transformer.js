@@ -16,6 +16,7 @@
  *     dependencies from react-native-lab's copy of react-native, to simulate
  *     if we hadn't forked the transformer at all
  */
+/*eslint-disable import/order */
 
 const babel = require('./react-native/node_modules/babel-core');
 const crypto = require('crypto');
