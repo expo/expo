@@ -262,9 +262,17 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
 - (NSDate * _Nullable)_publishedDateFromManifest:(id)manifest
 {
   if (manifest) {
-    NSString *publishDateString = manifest[@"publishedTime"];
-    if (publishDateString) {
-      return [RCTConvert NSDate:publishDateString];
+    // use commitTime instead of publishTime as it is more accurate;
+    // however, fall back to publishedTime in case older cached manifests do not contain
+    // the commitTime key (we have not always served it)
+    NSString *commitDateString = manifest[@"commitTime"];
+    if (commitDateString) {
+      return [RCTConvert NSDate:commitDateString];
+    } else {
+      NSString *publishDateString = manifest[@"publishedTime"];
+      if (publishDateString) {
+        return [RCTConvert NSDate:publishDateString];
+      }
     }
   }
   return nil;
