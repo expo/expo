@@ -1,9 +1,13 @@
 {
   "name": "native-component-list",
+  "version": "0.0.0",
   "description": "A list of the various APIs you can use with the Expo client",
   "author": "Expo",
   "private": true,
-  "main": "node_modules/expo/AppEntry.js",
+  "main": ".expo/AppEntry.js",
+  "scripts": {
+    "postinstall": "expo-yarn-workspaces postinstall"
+  },
   "powertools": {
     "group": "client"
   },
@@ -18,8 +22,11 @@
     "processing-js": "^1.6.6",
     "prop-types": "^15.6.0",
     "react": "16.3.1",
-    "react-native": "expo/react-native#sdk-29",
+    "react-native": "^0.55.4",
+    "react-native-gesture-handler": "1.0.6",
     "react-native-platform-touchable": "^1.1.1",
+    "react-native-reanimated": "1.0.0-alpha.3",
+    "react-native-svg": "6.2.2",
     "react-navigation": "2.6.2",
     "react-navigation-header-buttons": "^1.2.1",
     "react-navigation-material-bottom-tabs": "^0.3.0",
@@ -28,5 +35,8 @@
     "url": "^0.11.0",
     "uuid": "^3.1.0",
     "victory-native": "~0.15.0"
+  },
+  "devDependencies": {
+    "expo-yarn-workspaces": "^1.0.0"
   }
 }
