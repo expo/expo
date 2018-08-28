@@ -1,8 +1,13 @@
 {
   "name": "@expo/expo",
   "version": "1.4.0",
+  "private": true,
+  "author": "Expo",
+  "license": "MIT",
   "exp": {
     "sdkVersion": "29.0.0"
   },
-  "private": true
+  "workspaces": {
+    "packages": ["apps/*", "home", "modules/*", "packages/*", "react-native-lab/react-native"]
+  }
 }
