@@ -8,7 +8,7 @@ module.exports = {
     return require('lottie-react-native');
   },
   get Branch() {
-    return require('react-native-branch').default;
+    return require('./Branch').default;
   },
   get GestureHandler() {
     console.warn(
