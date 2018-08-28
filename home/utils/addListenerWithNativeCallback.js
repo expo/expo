@@ -1,5 +1,4 @@
-import { DeviceEventEmitter } from 'react-native';
-import { NativeModules } from 'react-native';
+import { DeviceEventEmitter, NativeModules } from 'react-native';
 
 const { ExponentKernel } = NativeModules;
 

@@ -1,9 +1,11 @@
 {
   "name": "@expo/home",
-  "main": "node_modules/expo/AppEntry.js",
+  "version": "0.0.0",
+  "main": ".expo/AppEntry.js",
   "private": true,
   "description": "The Expo client app",
   "scripts": {
+    "postinstall": "expo-yarn-workspaces postinstall",
     "test": "jest"
   },
   "author": "650 Industries",
@@ -34,9 +36,9 @@
     "react": "^16.3.1",
     "react-apollo": "~1.0.1",
     "react-mixin": "^3.0.4",
-    "react-native": "expo/react-native#sdk-29",
+    "react-native": "*",
     "react-native-deprecated-custom-components": "^0.1.0",
-    "react-native-infinite-scroll-view": "^0.4.2",
+    "react-native-infinite-scroll-view": "^0.4.5",
     "react-navigation": "2.3.1",
     "react-navigation-material-bottom-tabs": "^0.3.0",
     "react-redux": "^5.0.1",
@@ -47,6 +49,7 @@
     "url": "^0.11.0"
   },
   "devDependencies": {
+    "expo-yarn-workspaces": "^1.0.0",
     "hashids": "^1.1.1",
     "jest-expo": "^27.0.0",
     "jsc-android": "^216113.0.0",

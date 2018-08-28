@@ -4,10 +4,24 @@
   "private": true,
   "author": "Expo",
   "license": "MIT",
+  "scripts": {
+    "lint": "eslint ."
+  },
   "exp": {
     "sdkVersion": "29.0.0"
   },
   "workspaces": {
-    "packages": ["apps/*", "home", "modules/*", "packages/*", "react-native-lab/react-native"]
+    "packages": [
+      "apps/*",
+      "home",
+      "modules/*",
+      "packages/*",
+      "react-native-lab/react-native"
+    ]
+  },
+  "devDependencies": {
+    "eslint": "^5.4.0",
+    "eslint-config-universe": "^2.0.0-alpha.0",
+    "prettier": "^1.14.2"
   }
 }
