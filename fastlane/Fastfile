@@ -85,9 +85,7 @@ platform :ios do
       output_name: "Exponent.ipa",
     )
 
-    deliver(
-      submit_for_review: false
-    )
+    deliver()
   end
 
   after_all do |lane|
