@@ -145,7 +145,7 @@ An object used to describe an Android notification channel that you would like t
 -   **name (_string_)** -- user-facing name of the channel (or "category" in the Settings UI). Required.
 -   **description (_optional_) (_string_)** -- user-facing description of the channel, which will be displayed in the Settings UI.
 -   **sound (_optional_) (_boolean_)** -- if `true`, notifications posted to this channel will play a sound. Default: `false`.
--   **priority (_optional_) (_min | low | high | max_)** -- Android may present notifications in this channel differently according to the priority. For example, a `high` priority notification will likely to be shown as a heads-up notification.
+-   **priority (_optional_) (_min | low | default | high | max_)** -- Android may present notifications in this channel differently according to the priority. For example, a `high` priority notification will likely to be shown as a heads-up notification. Note that the Android OS gives no guarantees about the user-facing behavior these abstractions produce -- for example, on many devices, there is no noticeable difference between `high` and `max`.
 -   **vibrate (_optional_) (_boolean_ or _array_)** -- if `true`, vibrate the device whenever a notification is posted to this channel. An array can be supplied instead to customize the vibration pattern, e.g. - `[ 0, 500 ]` or `[ 0, 250, 250, 250 ]`. Default: `false`.
 -   **badge (_optional_) (_boolean_)** -- if `true`, unread notifications posted to this channel will cause the app launcher icon to be displayed with a badge on Android 8.0+. If `false`, notifications in this channel will never cause a badge. Default: `true`.
 
