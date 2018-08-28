@@ -31,5 +31,5 @@ export default class App extends React.Component {
   }
 }
 if (JSCExecutor) {
-  JSCExecutor.setContextName('Exponent');
+  JSCExecutor.setContextName('Expo Home');
 }
