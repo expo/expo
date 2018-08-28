@@ -31,7 +31,7 @@ const ANDROID_TEST_PERMISSIONS = `
 `;
 
 // some files are absent on turtle builders and we don't want log errors there
-const isTurtle = process.env.TURTLE_WORKING_DIR_PATH ? true : false;
+const isTurtle = !!process.env.TURTLE_WORKING_DIR_PATH;
 
 let isInUniverse = true;
 try {
@@ -139,7 +139,7 @@ const macrosFuncs = {
         Accept: 'application/expo+json,application/json',
       });
     } catch (e) {
-      const msg = `Unable to download manifest from ${savedDevHomeUrl}: ${e.message}`
+      const msg = `Unable to download manifest from ${savedDevHomeUrl}: ${e.message}`;
       console[isTurtle ? 'debug' : 'error'](msg);
       return '';
     }
@@ -170,7 +170,9 @@ const macrosFuncs = {
         Accept: 'application/expo+json,application/json',
       });
       if (manifest.name !== 'expo-home') {
-        console.log(`Manifest at ${url} is not expo-home; using published kernel manifest instead...`);
+        console.log(
+          `Manifest at ${url} is not expo-home; using published kernel manifest instead...`
+        );
         return '';
       }
     } catch (e) {
@@ -210,7 +212,9 @@ function generateUniversalModuleConfig(moduleInfo, modulesPath) {
 }
 
 function generateUniversalModulesConfig(universalModules, modulesPath) {
-  return universalModules.filter(moduleInfo => moduleInfo.isNativeModule).map(moduleInfo => generateUniversalModuleConfig(moduleInfo, modulesPath));
+  return universalModules
+    .filter(moduleInfo => moduleInfo.isNativeModule)
+    .map(moduleInfo => generateUniversalModuleConfig(moduleInfo, modulesPath));
 }
 
 function kernelManifestObjectToJson(manifest) {
