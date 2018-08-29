@@ -6,6 +6,12 @@ anchors:
     docker:
       - image: circleci/node:8
 
+  - &android_job
+    working_directory: ~/expo
+    resource_class: xlarge
+    docker:
+      - image: circleci/android:api-26-node8-alpha
+
   - &default_env_vars
     YARN_CACHE_FOLDER: ~/.cache/yarn
 
@@ -67,6 +73,7 @@ workflows:
   client:
     jobs:
       - home
+      - android
 
 jobs:
   expo_sdk:
@@ -116,3 +123,35 @@ jobs:
       - run:
           <<: *jest
           working_directory: ~/expo/home
+
+  android:
+    <<: *android_job
+    environment:
+      <<: *default_env_vars
+    steps:
+      - checkout
+      - *set_up_environment
+      - *restore_yarn_cache
+      - *install_workspace_dependencies
+      # - *restore_gradle_cache
+      - run:
+          name: Build Android
+          working_directory: ~/expo/android
+          command: |
+            exponent/tools-public/generate-dynamic-macros-android.sh
+            # force fetching dependencies
+            ./gradlew :app:preBuild || true # but permit failure bc we'll try again
+            ./gradlew :app:assembleProdMinSdkProdKernelRelease
+
+            # TODO sign the apk:
+
+            # prep keystore
+            # echo $ANDROID_KEYSTORE_B64 | base64 -d > exponentkeystore.jks
+
+            #  zipalign -v -p 4 ./app/build/outputs/apk/prodMinSdkProdKernel/release/app-prodMinSdk-prodKernel-release-unsigned.apk app-prod-release-unsigned-aligned.apk
+
+            #  apksigner sign --ks exponentkeystore.jks --ks-key-alias $ANDROID_KEY_ALIAS --ks-pass env:ANDROID_KEYSTORE_PASSWORD --key-pass env:ANDROID_KEY_PASSWORD --out exponent-release.apk app-prod-release-unsigned-aligned.apk
+      # - store_artifacts:
+      #     path: ~/expo/android/exponent-release.apk
+      # - *save_gradle_cache
+      - *save_yarn_cache
