@@ -618,7 +618,7 @@ export function getProvidesAudioData(): ?boolean {
   if (ExponentAR.getProvidesAudioData) return ExponentAR.getProvidesAudioData();
 }
 
-export function setProvidesAudioData(providesAudioData: Boolean) {
+export function setProvidesAudioData(providesAudioData: boolean) {
   if (ExponentAR.setProvidesAudioData) ExponentAR.setProvidesAudioData(providesAudioData);
 }
 
@@ -638,7 +638,7 @@ export function setWorldOriginAsync(matrix_float4x4: Matrix): ?Promise<any> {
   if (ExponentAR.setWorldOriginAsync) return ExponentAR.setWorldOriginAsync(matrix_float4x4);
 }
 
-export function setLightEstimationEnabled(isLightEstimationEnabled: Boolean) {
+export function setLightEstimationEnabled(isLightEstimationEnabled: boolean) {
   if (ExponentAR.setLightEstimationEnabled)
     ExponentAR.setLightEstimationEnabled(isLightEstimationEnabled);
 }
@@ -647,7 +647,7 @@ export function getLightEstimationEnabled(): ?boolean {
   if (ExponentAR.getLightEstimationEnabled) return ExponentAR.getLightEstimationEnabled();
 }
 
-export function setAutoFocusEnabled(isAutoFocusEnabled: Boolean) {
+export function setAutoFocusEnabled(isAutoFocusEnabled: boolean) {
   if (ExponentAR.setAutoFocusEnabled) ExponentAR.setAutoFocusEnabled(isAutoFocusEnabled);
 }
 

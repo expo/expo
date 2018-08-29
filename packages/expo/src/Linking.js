@@ -26,11 +26,11 @@ const IS_EXPO_HOSTED =
     manifest.developer);
 
 function _removeScheme(url) {
-  return url.replace(/^[a-zA-Z0-9+\.\-]+:\/\//, '');
+  return url.replace(/^[a-zA-Z0-9+.-]+:\/\//, '');
 }
 
 function _removePort(url) {
-  return url.replace(/(?=([a-zA-Z0-9+\.\-]+:\/\/)?[^\/]):\d+/, '');
+  return url.replace(/(?=([a-zA-Z0-9+.-]+:\/\/)?[^/]):\d+/, '');
 }
 
 function _removeLeadingSlash(url) {

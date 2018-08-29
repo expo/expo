@@ -63,10 +63,12 @@ function escapeForAndroid(args) {
 
 function escapeBlob(data) {
   if (typeof data === 'string') {
+    /* eslint-disable no-control-regex */
     return data
       .replace(/\u0002/g, '\u0002\u0002')
       .replace(/\u0001/g, '\u0001\u0002')
       .replace(/\u0000/g, '\u0001\u0001');
+    /* eslint-enable no-control-regex */
   } else {
     return data;
   }

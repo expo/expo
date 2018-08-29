@@ -183,9 +183,9 @@ export default {
     return ExponentNotifications.getExponentPushTokenAsync();
   },
 
-  getDevicePushTokenAsync: (
-    config: { gcmSenderId?: string }
-  ): Promise<{ type: string, data: string }> =>
+  getDevicePushTokenAsync: (config: {
+    gcmSenderId?: string,
+  }): Promise<{ type: string, data: string }> =>
     ExponentNotifications.getDevicePushTokenAsync(config || {}),
 
   createChannelAndroidAsync(id: string, channel: Channel): Promise<void> {

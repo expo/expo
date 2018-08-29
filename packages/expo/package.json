@@ -17,7 +17,7 @@
     "lint": "eslint src tools",
     "prepublishOnly": "proofread",
     "test": "jest --watch",
-    "ci": "yarn run lint && yarn flow check && yarn jest --ci --maxWorkers 2"
+    "ci": "yarn lint --max-warnings 0 && yarn flow check && yarn jest --ci --maxWorkers 2"
   },
   "jest": {
     "preset": "jest-expo",
@@ -30,7 +30,6 @@
     ]
   },
   "eslintConfig": {
-    "root": true,
     "extends": "universe/native",
     "overrides": {
       "files": "**/__tests__/*.js",
