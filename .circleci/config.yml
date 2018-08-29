@@ -5,7 +5,7 @@ anchors:
     working_directory: ~/expo
     docker:
       - image: circleci/node:8
- 
+
   - &default_env_vars
     YARN_CACHE_FOLDER: ~/.cache/yarn
 
@@ -67,7 +67,7 @@ jobs:
       - run:
           name: Lint
           working_directory: ~/expo/packages/expo
-          command: yarn lint
+          command: yarn lint --max-warnings 0
 
   babel_preset:
     <<: *node_job

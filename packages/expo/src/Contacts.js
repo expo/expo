@@ -1,6 +1,6 @@
 // @flow
 
-import { NativeModules, Share, AsyncStorage, Platform } from 'react-native';
+import { NativeModules, Share, Platform } from 'react-native';
 import UUID from 'uuid-js';
 const { ExponentContacts } = NativeModules;
 
