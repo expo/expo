@@ -1,7 +1,6 @@
 // @flow
 
 import { Constants } from 'expo-constants';
-import { Platform } from 'react-native';
 import qs from 'qs';
 
 import Linking from './Linking';

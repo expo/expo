@@ -1,6 +1,5 @@
 // @flow
 import React from 'react';
-import { NativeModules } from 'react-native';
 import { EventEmitter } from 'fbemitter';
 
 import NativeAppLoading from './AppLoadingNativeWrapper';
