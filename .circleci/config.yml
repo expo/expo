@@ -138,7 +138,7 @@ jobs:
           name: Build Android
           working_directory: ~/expo/android
           command: |
-            exponent/tools-public/generate-dynamic-macros-android.sh
+            ../tools-public/generate-dynamic-macros-android.sh
             # force fetching dependencies
             ./gradlew :app:preBuild || true # but permit failure bc we'll try again
             ./gradlew :app:assembleProdMinSdkProdKernelRelease
