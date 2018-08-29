@@ -37,6 +37,7 @@ anchors:
     run:
       name: Install Yarn workspace dependencies (node_modules)
       command: |
+        npm install --global gulp-cli
         # Run `yarn install` from the workspace root to install all of the workspaces' dependencies
         # including each other if there are co-dependencies
         yarn install
