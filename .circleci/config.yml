@@ -33,7 +33,7 @@ anchors:
         echo '--install.non-interactive true' >> ~/.yarnrc
         echo 'disable-self-update-check true' >> ~/.yarnrc
 
-        echo "PATH=\$PATH:$(yarn global bin)" >> $BASH_ENV
+        echo "export PATH=\$PATH:$(yarn global bin)" >> $BASH_ENV
 
         # for when we ssh to builds
         echo 'source $BASH_ENV' >> ~/.bashrc
