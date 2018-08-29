@@ -1,0 +1,96 @@
+version: 2
+
+anchors:
+  - &node_job
+    working_directory: ~/expo
+    docker:
+      - image: circleci/node:8
+ 
+  - &default_env_vars
+    YARN_CACHE_FOLDER: ~/.cache/yarn
+
+  - &set_up_environment
+    run:
+      name: Set up the environment
+      command: |
+        # Clone the submodules
+        git submodule init
+        git submodule update --remote
+
+        # Trust all of the .envrc files for direnv
+        find . -name '.envrc' -exec direnv allow {} \;
+
+  - &install_workspace_dependencies
+    run:
+      name: Install Yarn workspace dependencies (node_modules)
+      command: |
+        # Run `yarn install` from the workspace root to install all of the workspaces' dependencies
+        # including each other if there are co-dependencies
+        yarn install
+
+  - &restore_yarn_cache
+    restore_cache:
+      # TODO: make the cache key depend on {{ checksum "yarn.lock" }} once we have a yarn.lock file
+      key: yarn-v0-{{ .Branch }}
+
+  - &save_yarn_cache
+    save_cache:
+      key: yarn-v0-{{ .Branch }}
+      paths:
+        - ~/.cache/yarn  # set by YARN_CACHE_FOLDER
+
+workflows:
+  version: 2
+
+  # JavaScript packages that make up the SDK
+  sdk:
+    jobs:
+      - expo_sdk
+      - babel_preset
+
+  # Android and iOS clients
+  client:
+    jobs:
+      - home
+
+jobs:
+  expo_sdk:
+    <<: *node_job
+    environment:
+      <<: *default_env_vars
+    steps:
+      - checkout
+      - *set_up_environment
+      - *restore_yarn_cache
+      - *install_workspace_dependencies
+      - *save_yarn_cache
+      - run:
+          name: Lint
+          working_directory: ~/expo/packages/expo
+          command: yarn lint
+
+  babel_preset:
+    <<: *node_job
+    environment:
+      <<: *default_env_vars
+    steps:
+      - checkout
+      - *set_up_environment
+      - *restore_yarn_cache
+      - *install_workspace_dependencies
+      - *save_yarn_cache
+      - run:
+          name: Unit tests
+          working_directory: ~/expo/packages/babel-preset-expo
+          command: yarn jest --maxWorkers 2
+
+  home:
+    <<: *node_job
+    environment:
+      <<: *default_env_vars
+    steps:
+      - checkout
+      - *set_up_environment
+      - *restore_yarn_cache
+      - *install_workspace_dependencies
+      - *save_yarn_cache
