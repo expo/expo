@@ -145,6 +145,7 @@ jobs:
           name: Build Android
           working_directory: ~/expo/android
           command: |
+            source $BASH_ENV
             ../tools-public/generate-dynamic-macros-android.sh
             # force fetching dependencies
             ./gradlew :app:preBuild || true # but permit failure bc we'll try again
