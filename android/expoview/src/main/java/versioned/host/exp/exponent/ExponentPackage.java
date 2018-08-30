@@ -20,6 +20,9 @@ import java.util.Map;
 import expo.adapters.react.ReactModuleRegistryProvider;
 import expo.core.interfaces.Package;
 import expo.modules.ads.admob.AdMobPackage;
+import expo.modules.font.FontLoaderPackage;
+import expo.modules.payments.stripe.StripePackage;
+import expo.modules.print.PrintPackage;
 import expo.modules.analytics.segment.SegmentPackage;
 import expo.modules.barcodescanner.BarCodeScannerPackage;
 import expo.modules.camera.CameraPackage;
@@ -92,7 +95,6 @@ import versioned.host.exp.exponent.modules.api.standalone.branch.RNBranchModule;
 import versioned.host.exp.exponent.modules.internal.ExponentAsyncStorageModule;
 import versioned.host.exp.exponent.modules.internal.ExponentIntentModule;
 import versioned.host.exp.exponent.modules.internal.ExponentUnsignedAsyncStorageModule;
-import versioned.host.exp.exponent.modules.api.components.payments.StripeModule;
 import versioned.host.exp.exponent.modules.test.ExponentTestNativeModule;
 import versioned.host.exp.exponent.modules.universal.ExpoModuleRegistryAdapter;
 import versioned.host.exp.exponent.modules.universal.ScopedModuleRegistryAdapter;
@@ -116,7 +118,8 @@ public class ExponentPackage implements ReactPackage {
       new LocationPackage(),
       new ContactsPackage(),
       new BarCodeScannerPackage(),
-      new AdMobPackage()
+      new AdMobPackage(),
+      new StripePackage()
   );
 
   private static final String TAG = ExponentPackage.class.getSimpleName();
@@ -215,7 +218,6 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new SecureStoreModule(reactContext, scopedContext));
         nativeModules.add(new BrightnessModule(reactContext));
         nativeModules.add(new RNGestureHandlerModule(reactContext));
-        nativeModules.add(new StripeModule(reactContext));
         nativeModules.add(new RNAWSCognitoModule(reactContext));
         nativeModules.add(new MailComposerModule(reactContext));
         nativeModules.add(new CalendarModule(reactContext, experienceId));

@@ -83,6 +83,9 @@ android {
   packagingOptions {
     pickFirst "**"
   }
+  configurations.all {
+    resolutionStrategy.force 'com.android.support:design:27.1.0'
+  }
 }
 
 // Don't use modern jsc-android since it still has some critical bugs that

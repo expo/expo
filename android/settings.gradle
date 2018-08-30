@@ -45,6 +45,9 @@ project(":expo-file-system-interface").projectDir = new File(rootDir, "../module
 include ":expo-file-system"
 project(":expo-file-system").projectDir = new File(rootDir, "../modules/expo-file-system/android")
 
+include ":expo-payments-stripe"
+project(":expo-payments-stripe").projectDir = new File(rootDir, "../modules/expo-payments-stripe/android")
+
 include ":expo-permissions-interface"
 project(":expo-permissions-interface").projectDir = new File(rootDir, "../modules/expo-permissions-interface/android")
 

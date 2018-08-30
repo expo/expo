@@ -194,6 +194,22 @@
       android:name=".oauth.OAuthResultActivity">
     </activity>
 
+    <!-- START OF STRIPE SCHEMES -->
+    <activity
+        android:exported="true"
+        android:launchMode="singleTask"
+        android:name="expo.modules.payments.stripe.RedirectUriReceiver"
+        android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen">
+        <intent-filter>
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.DEFAULT" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <data android:scheme="expo.modules.payments.stripe" />
+        </intent-filter>
+    </activity>
+    <!-- Versioned Activity for Stripe -->
+    <!-- END OF STRIPE SCHEMES -->
+
     <activity
       android:name=".chrometabs.ChromeTabsManagerActivity">
     </activity>
@@ -330,6 +346,8 @@
 
     <!-- The Facebook SDK runs FacebookInitProvider on startup and crashes if there isn't an ID here -->
     <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="fb0"/>
+
+    <!-- ADD HERE STRIPE SCHEME META DATA -->
   </application>
 
 </manifest>
