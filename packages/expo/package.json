@@ -14,6 +14,7 @@
     "AppEntry.js"
   ],
   "scripts": {
+    "jest": "jest",
     "lint": "eslint src tools",
     "prepublishOnly": "proofread",
     "test": "jest --watch",
@@ -24,8 +25,6 @@
     "clearMocks": true,
     "testRegex": "/__tests__/.*-test\\.js$",
     "setupFiles": [
-      "<rootDir>/node_modules/react-native/jest/setup.js",
-      "<rootDir>/node_modules/jest-expo/src/setup.js",
       "<rootDir>/test/setup.js"
     ]
   },
@@ -105,7 +104,7 @@
     "eslint-plugin-prettier": "^2.1.2",
     "eslint-plugin-react": "^7.1.0",
     "flow-bin": "^0.77.0",
-    "jest-expo": "^27.0.1",
+    "jest-expo": "^29.0.0",
     "prettier": "^1.7.4",
     "react": "16.3.1",
     "react-native#": "^0.55.4",
