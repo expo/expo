@@ -299,6 +299,24 @@ EX_EXPORT_METHOD_AS(reverseGeocodeAsync,
   }];
 }
 
+EX_EXPORT_METHOD_AS(requestPermissionsAsync,
+                    requestPermissionsResolver:(EXPromiseResolveBlock)resolve
+                                      rejecter:(EXPromiseRejectBlock)reject)
+{
+  if (_permissions == nil) {
+    return reject(@"E_NO_PERMISSIONS", @"Permissions module is null. Are you sure all the installed Expo modules are properly linked?", nil);
+  }
+  
+  [_permissions askForPermission:@"location"
+                      withResult:^(BOOL result){
+                        if (!result) {
+                          return reject(@"E_LOCATION_UNAUTHORIZED", @"Not authorized to use location services", nil);
+                        }
+                        resolve(nil);
+                      }
+                    withRejecter:reject];
+}
+
 # pragma mark - helpers
 
 - (CLLocationManager *)locationManagerWithOptions:(NSDictionary *)options

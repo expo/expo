@@ -118,8 +118,10 @@ public class LocationModule extends ExportedModule implements ModuleRegistryCons
 
   private boolean isMissingPermissions() {
     return mPermissions == null
-        && mPermissions.getPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-        && mPermissions.getPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED;
+        || (
+            mPermissions.getPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+            && mPermissions.getPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
+        );
   }
 
   @ExpoMethod
@@ -478,6 +480,33 @@ public class LocationModule extends ExportedModule implements ModuleRegistryCons
     } else {
       promise.reject("E_NO_GEOCODER", "Geocoder service is not available for this device.");
     }
+  }
+
+  @ExpoMethod
+  public void requestPermissionsAsync(final Promise promise) {
+    if (mPermissions == null) {
+      promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?");
+      return;
+    }
+
+    mPermissions.askForPermissions(
+        new String[] {
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+        },
+        new Permissions.PermissionsRequestListener() {
+          @Override
+          public void onPermissionsResult(int[] results) {
+            for (int result : results) {
+              // we need at least one of asked permissions to be granted
+              if (result == PackageManager.PERMISSION_GRANTED) {
+                promise.resolve(null);
+                return;
+              }
+            }
+            promise.reject("E_LOCATION_UNAUTHORIZED", "Not authorized to use location services");
+          }
+        });
   }
 
   // App lifecycle listeners

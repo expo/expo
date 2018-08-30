@@ -99,58 +99,9 @@ EX_EXPORT_METHOD_AS(askAsync,
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject)
 {
-  NSMutableArray<NSString *> *scopedPermissionsToBeAsked = [NSMutableArray new];
-  NSMutableArray<NSString *> *globalPermissionsToBeAsked = [NSMutableArray new];
-  NSMutableDictionary *permissions = [NSMutableDictionary new];
-
-  if ([permissionsTypes count] != 1 && [permissionsTypes containsObject:@"location"]) {
-    return reject (@"E_PERMISSIONS_INVALID", @"iOS platform requires you to ask for Permissions.LOCATION separately.", nil);
-  }
-  
-  for (NSString *permissionType in permissionsTypes) {
-    NSMutableDictionary *permission = [[self getPermissionsForResource:permissionType] mutableCopy];
-
-    // permission type not found - reject immediately
-    if (permission == nil) {
-      return reject(@"E_PERMISSIONS_UNKNOWN", [NSString stringWithFormat:@"Unrecognized permission: %@", permissionType], nil);
-    }
-
-    if ([permission[@"status"] isEqualToString:[EXPermissions permissionStringForStatus:EXPermissionStatusGranted]]) {
-      // global permission is granted
-      
-      if ([[self class] isPermissionImplicitlyGranted:permissionType]) {
-        // permission is implicitly granted
-        permissions[permissionType] = permission;
-      } else if (_permissionsService != nil
-                 && ![[self class] isExcludedScopedPermission:permissionType]
-                 && ![_permissionsService hasGrantedPermission:permissionType forExperience:_experienceId])
-      {
-        // scoped permission is not granted
-        [scopedPermissionsToBeAsked addObject:permissionType];
-      } else {
-        permissions[permissionType] = permission;
-      }
-    } else {
-      // global permission is not granted
-      [globalPermissionsToBeAsked addObject:permissionType];
-    }
-  }
-  
-  void (^globalPermissionResolver)(NSDictionary *) = ^(NSDictionary *globalPermissions) {
-    [permissions addEntriesFromDictionary:globalPermissions];
-    resolve([NSDictionary dictionaryWithDictionary:permissions]);
-  };
-
-  EX_WEAKIFY(self);
-  void (^scopedPermissionResolver)(NSDictionary *) = ^(NSDictionary *scopedPermissions) {
-    EX_ENSURE_STRONGIFY(self);
-    [permissions addEntriesFromDictionary:scopedPermissions];
-    [self askForGlobalPermissions:globalPermissionsToBeAsked
-                     withResolver:globalPermissionResolver
-                     withRejecter:reject];
-  };
-  
-  [self askForScopedPermissions:scopedPermissionsToBeAsked withResolver:scopedPermissionResolver withRejecter:reject];
+  [self askForPermissionsWithTypes:permissionsTypes
+                       withResults:resolve
+                      withRejecter:reject];
 }
 
 # pragma mark - permission requsters / getters
@@ -339,6 +290,88 @@ EX_EXPORT_METHOD_AS(askAsync,
   }
   
   return [permissions[@"status"] isEqualToString:@"granted"] && [_permissionsService hasGrantedPermission:permissionType forExperience:_experienceId];
+}
+
+- (void)askForPermission:(NSString *)permissionType
+              withResult:(void (^)(BOOL))onResult
+            withRejecter:(EXPromiseRejectBlock)reject
+{
+  return [self askForPermissions:@[permissionType]
+                     withResults:^(NSArray<NSNumber *> *results) { onResult([results[0] boolValue]); } // we are sure that result is results.count == 1
+                    withRejecter:reject];
+}
+
+- (void)askForPermissions:(NSArray<NSString *> *)permissionsTypes
+              withResults:(void (^)(NSArray<NSNumber *> *))onResults
+             withRejecter:(EXPromiseRejectBlock)reject
+{
+  return [self askForPermissionsWithTypes:permissionsTypes withResults:^(NSDictionary *results) {
+    NSMutableArray<NSNumber *> *finalResults = [NSMutableArray new];
+    [results enumerateKeysAndObjectsUsingBlock:^(id _Nonnull key, NSDictionary *singleResult, BOOL * _Nonnull stop) {
+      BOOL value = [singleResult[@"status"] isEqualToString:[EXPermissions permissionStringForStatus:EXPermissionStatusGranted]];
+      [finalResults addObject:[NSNumber numberWithBool:value]];
+    }];
+    onResults(finalResults);
+  }
+  withRejecter:reject];
+}
+
+- (void)askForPermissionsWithTypes:(NSArray<NSString *> *)permissionsTypes
+                       withResults:(void (^)(NSDictionary *results))onResults
+                      withRejecter:(EXPromiseRejectBlock)reject
+{
+  NSMutableArray<NSString *> *scopedPermissionsToBeAsked = [NSMutableArray new];
+  NSMutableArray<NSString *> *globalPermissionsToBeAsked = [NSMutableArray new];
+  NSMutableDictionary *permissions = [NSMutableDictionary new];
+  
+  if ([permissionsTypes count] != 1 && [permissionsTypes containsObject:@"location"]) {
+    return reject (@"E_PERMISSIONS_INVALID", @"iOS platform requires you to ask for Permissions.LOCATION separately.", nil);
+  }
+  
+  for (NSString *permissionType in permissionsTypes) {
+    NSMutableDictionary *permission = [[self getPermissionsForResource:permissionType] mutableCopy];
+    
+    // permission type not found - reject immediately
+    if (permission == nil) {
+      return reject(@"E_PERMISSIONS_UNKNOWN", [NSString stringWithFormat:@"Unrecognized permission: %@", permissionType], nil);
+    }
+    
+    if ([permission[@"status"] isEqualToString:[EXPermissions permissionStringForStatus:EXPermissionStatusGranted]]) {
+      // global permission is granted
+      
+      if ([[self class] isPermissionImplicitlyGranted:permissionType]) {
+        // permission is implicitly granted
+        permissions[permissionType] = permission;
+      } else if (_permissionsService != nil
+                 && ![[self class] isExcludedScopedPermission:permissionType]
+                 && ![_permissionsService hasGrantedPermission:permissionType forExperience:_experienceId])
+      {
+        // scoped permission is not granted
+        [scopedPermissionsToBeAsked addObject:permissionType];
+      } else {
+        permissions[permissionType] = permission;
+      }
+    } else {
+      // global permission is not granted
+      [globalPermissionsToBeAsked addObject:permissionType];
+    }
+  }
+  
+  void (^globalPermissionResolver)(NSDictionary *) = ^(NSDictionary *globalPermissions) {
+    [permissions addEntriesFromDictionary:globalPermissions];
+    onResults([NSDictionary dictionaryWithDictionary:permissions]);
+  };
+  
+  EX_WEAKIFY(self);
+  void (^scopedPermissionResolver)(NSDictionary *) = ^(NSDictionary *scopedPermissions) {
+    EX_ENSURE_STRONGIFY(self);
+    [permissions addEntriesFromDictionary:scopedPermissions];
+    [self askForGlobalPermissions:globalPermissionsToBeAsked
+                     withResolver:globalPermissionResolver
+                     withRejecter:reject];
+  };
+  
+  [self askForScopedPermissions:scopedPermissionsToBeAsked withResolver:scopedPermissionResolver withRejecter:reject];
 }
 
 + (id<EXPermissionRequester>)getPermissionRequesterForType:(NSString *)type

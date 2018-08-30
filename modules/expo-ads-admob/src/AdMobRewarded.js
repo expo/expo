@@ -7,8 +7,6 @@ import { Platform } from 'react-native';
 
 const AdMobRewardedVideoAdManager: Object = NativeModulesProxy.ExpoAdsAdMobRewardedVideoAdManager;
 
-console.log(NativeModulesProxy);
-
 const adMobRewardedEventEmitter = new EventEmitter(AdMobRewardedVideoAdManager);
 
 const eventNames = [

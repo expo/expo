@@ -56,6 +56,10 @@ class EventEmitter {
 
     this._eventEmitter.removeSubscription(subscription);
   }
+
+  emit(eventType: string, ...params: Array<*>) {
+    this._eventEmitter.emit(eventType, ...params);
+  }
 }
 
 module.exports = EventEmitter;

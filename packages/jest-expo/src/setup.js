@@ -156,7 +156,7 @@ const NativeModulesProxy = ExpoReactNativeAdapter.NativeModulesProxy;
 for (let moduleName of Object.keys(NativeModulesProxy)) {
   for (let propName of Object.keys(NativeModulesProxy[moduleName])) {
     if (NativeModulesProxy[moduleName][propName] instanceof Function) {
-      NativeModulesProxy[moduleName][propName] = jest.fn(() => Promise.resolve());
+      NativeModulesProxy[moduleName][propName] = jest.fn(() => new Promise(resolve => resolve()));
     }
   }
 }

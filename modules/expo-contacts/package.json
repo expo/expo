@@ -15,7 +15,8 @@
     "react-native": "^0.55.4"
   },
   "dependencies": {
-    "expo-core": "^1.0.1"
+    "expo-core": "^1.0.1",
+    "uuid-js": "^0.7.5"
   },
   "devDependencies": {
     "babel-preset-expo": "^4.0.0",

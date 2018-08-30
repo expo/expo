@@ -14,7 +14,6 @@ import android.provider.Settings;
 import android.support.v4.app.NotificationManagerCompat;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -25,7 +24,6 @@ import expo.core.interfaces.ModuleRegistryConsumer;
 import expo.core.Promise;
 import expo.interfaces.permissions.Permissions;
 import expo.interfaces.permissions.PermissionsListener;
-import expo.interfaces.permissions.PermissionsManager;
 
 public class PermissionsModule extends ExportedModule implements ModuleRegistryConsumer {
   private static final String EXPIRES_KEY = "expires";
@@ -36,9 +34,7 @@ public class PermissionsModule extends ExportedModule implements ModuleRegistryC
   private static final String ERROR_TAG = "E_PERMISSIONS";
 
   private static String PERMISSION_EXPIRES_NEVER = "never";
-  private static final int PERMISSIONS_REQUEST = 13;
-
-  private PermissionsManager mPermissionManager;
+  private PermissionsRequester mPermissionsRequester;
   private Permissions mPermissions;
 
   public PermissionsModule(Context context) {
@@ -47,7 +43,7 @@ public class PermissionsModule extends ExportedModule implements ModuleRegistryC
 
   @Override
   public void setModuleRegistry(ModuleRegistry moduleRegistry) {
-    mPermissionManager = moduleRegistry.getModule(PermissionsManager.class);
+    mPermissionsRequester = new PermissionsRequester(moduleRegistry);
     mPermissions = moduleRegistry.getModule(Permissions.class);
   }
 
@@ -141,7 +137,7 @@ public class PermissionsModule extends ExportedModule implements ModuleRegistryC
       }
     }
 
-    final boolean askedPermissions = askForPermissions(
+    final boolean askedPermissions = mPermissionsRequester.askForPermissions(
         permissionsTypesToBeAsked.toArray(new String[permissionsTypesToBeAsked.size()]), // permissionsTypesToBeAsked handles empty array
         new PermissionsListener() {
           @Override
@@ -345,15 +341,6 @@ public class PermissionsModule extends ExportedModule implements ModuleRegistryC
       return true;
     } else {
       throw new IllegalStateException("No Permissions module present.");
-    }
-  }
-
-  private boolean askForPermissions(final String[] permissions, PermissionsListener listener) {
-    if (mPermissionManager != null) {
-      mPermissionManager.requestPermissions(permissions, PERMISSIONS_REQUEST, listener);
-      return true;
-    } else {
-      return false;
     }
   }
 

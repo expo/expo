@@ -1,4 +1,5 @@
 // @flow
+
 import invariant from 'invariant';
 import { NativeModulesProxy, EventEmitter } from 'expo-core';
 import { Platform } from 'react-native';
@@ -332,6 +333,7 @@ async function _getCurrentPositionAsyncWrapper(
   options: LocationOptions
 ): Promise<*> {
   try {
+    await Location.requestPermissionsAsync();
     const result = await getCurrentPositionAsync(options);
     success(result);
   } catch (e) {
