@@ -58,6 +58,7 @@
     "expo-barcode-scanner": "^1.0.0",
     "expo-camera": "^1.0.0",
     "expo-constants": "^1.0.0",
+    "expo-contacts": "^1.0.0",
     "expo-core": "^1.0.0",
     "expo-gl": "^1.0.0",
     "expo-face-detector": "^1.0.0",

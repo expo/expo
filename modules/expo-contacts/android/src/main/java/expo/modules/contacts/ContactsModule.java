@@ -2,42 +2,43 @@
 package expo.modules.contacts;
 
 import android.Manifest;
+import android.content.ContentProviderOperation;
+import android.content.ContentProviderResult;
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds;
 import android.text.TextUtils;
 import android.content.pm.PackageManager;
 
 import expo.core.*;
+import expo.core.interfaces.ActivityProvider;
 import expo.core.interfaces.ExpoMethod;
 import expo.core.interfaces.ModuleRegistryConsumer;
 import expo.interfaces.permissions.Permissions;
+import expo.modules.contacts.models.DateModel;
+import expo.modules.contacts.models.EmailModel;
+import expo.modules.contacts.models.ExtraNameModel;
+import expo.modules.contacts.models.ImAddressModel;
+import expo.modules.contacts.models.PhoneNumberModel;
+import expo.modules.contacts.models.PostalAddressModel;
+import expo.modules.contacts.models.RelationshipModel;
+import expo.modules.contacts.models.UrlAddressModel;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static expo.modules.contacts.models.BaseModel.decodeList;
+
 public class ContactsModule extends ExportedModule implements ModuleRegistryConsumer {
-  private static final String NAME = "ExponentContacts";
-
   private ModuleRegistry mModuleRegistry;
-
-  private static List<String> PROJECTION = new ArrayList<String>() {{
-    add(ContactsContract.Data.CONTACT_ID);
-    add(ContactsContract.Data.LOOKUP_KEY);
-    add(ContactsContract.Contacts.Data.MIMETYPE);
-    add(ContactsContract.Profile.DISPLAY_NAME);
-    add(CommonDataKinds.Contactables.PHOTO_URI);
-    add(CommonDataKinds.StructuredName.DISPLAY_NAME);
-    add(CommonDataKinds.StructuredName.GIVEN_NAME);
-    add(CommonDataKinds.StructuredName.MIDDLE_NAME);
-    add(CommonDataKinds.StructuredName.FAMILY_NAME);
-    add(CommonDataKinds.Organization.COMPANY);
-    add(CommonDataKinds.Organization.TITLE);
-    add(CommonDataKinds.Organization.DEPARTMENT);
-  }};
 
   public ContactsModule(Context context) {
     super(context);
@@ -45,7 +46,7 @@ public class ContactsModule extends ExportedModule implements ModuleRegistryCons
 
   @Override
   public String getName() {
-    return NAME;
+    return "ExpoContacts";
   }
 
   @Override
@@ -53,191 +54,694 @@ public class ContactsModule extends ExportedModule implements ModuleRegistryCons
     mModuleRegistry = moduleRegistry;
   }
 
+  private static final String TAG = ContactsModule.class.getSimpleName();
+
+  // TODO: Evan: default API is confusing. Duplicate data being requested.
+  private static final List<String> DEFAULT_PROJECTION = new ArrayList<String>() {
+    {
+      add(ContactsContract.Data.CONTACT_ID);
+      add(ContactsContract.Data.LOOKUP_KEY);
+      add(ContactsContract.Contacts.Data.MIMETYPE);
+      add(ContactsContract.Profile.DISPLAY_NAME);
+      add(CommonDataKinds.Contactables.PHOTO_URI);
+      add(CommonDataKinds.Contactables.PHOTO_THUMBNAIL_URI);
+      add(CommonDataKinds.StructuredName.DISPLAY_NAME);
+      add(CommonDataKinds.StructuredName.GIVEN_NAME);
+      add(CommonDataKinds.StructuredName.MIDDLE_NAME);
+      add(CommonDataKinds.StructuredName.FAMILY_NAME);
+      add(CommonDataKinds.StructuredName.PREFIX);
+      add(CommonDataKinds.StructuredName.SUFFIX);
+      add(CommonDataKinds.StructuredName.PHONETIC_GIVEN_NAME);
+      add(CommonDataKinds.StructuredName.PHONETIC_MIDDLE_NAME);
+      add(CommonDataKinds.StructuredName.PHONETIC_FAMILY_NAME);
+      add(CommonDataKinds.Organization.COMPANY);
+      add(CommonDataKinds.Organization.TITLE);
+      add(CommonDataKinds.Organization.DEPARTMENT);
+    }
+  };
+
+  // TODO: Evan: Test
   @ExpoMethod
   public void getContactsAsync(final Map<String, Object> options, final Promise promise) {
-    if (isMissingPermissions()) {
-      promise.reject("E_MISSING_PERMISSION", "Missing contacts permission.");
-      return;
-    }
-
-    Set<String> fieldsSet = getFieldsSet((List<String>) options.get("fields"));
-
-    int pageOffset = (Integer) options.get("pageOffset");
-    int pageSize = (Integer) options.get("pageSize");
-    boolean fetchSingleContact = options.get("id") != null;
-    HashMap<String, Object> response = new HashMap<String, Object>();
-
-    Map<String, Contact> contacts;
-
-    ContentResolver cr = getContext().getContentResolver();
-    Cursor cursor;
+    if (isMissingPermissions(promise)) return;
 
 
-    ArrayList<String> selectionArgs = new ArrayList<>(
-        Arrays.asList(
-            CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE,
-            CommonDataKinds.Organization.CONTENT_ITEM_TYPE
-        )
-    );
+    new Thread(new Runnable() {
+      @Override
+      public void run() {
 
-    // selection ORs need to match arg count from above selectionArgs
-    String selection = ContactsContract.Data.MIMETYPE + "=? OR " +
-        ContactsContract.Data.MIMETYPE + "=?";
-
-    // handle "add on" fields from query request
-    if (fieldsSet.contains("phoneNumbers")) {
-      PROJECTION.add(CommonDataKinds.Phone.NUMBER);
-      PROJECTION.add(CommonDataKinds.Phone.TYPE);
-      PROJECTION.add(CommonDataKinds.Phone.LABEL);
-      PROJECTION.add(CommonDataKinds.Phone.IS_PRIMARY);
-      PROJECTION.add(CommonDataKinds.Phone._ID);
-      selection += " OR " + ContactsContract.Data.MIMETYPE + "=?";
-      selectionArgs.add(CommonDataKinds.Phone.CONTENT_ITEM_TYPE);
-    }
-
-    if (fieldsSet.contains("emails")) {
-      PROJECTION.add(CommonDataKinds.Email.DATA);
-      PROJECTION.add(CommonDataKinds.Email.ADDRESS);
-      PROJECTION.add(CommonDataKinds.Email.TYPE);
-      PROJECTION.add(CommonDataKinds.Email.LABEL);
-      PROJECTION.add(CommonDataKinds.Email.IS_PRIMARY);
-      PROJECTION.add(CommonDataKinds.Email._ID);
-      selection += " OR " + ContactsContract.Data.MIMETYPE + "=?";
-      selectionArgs.add(CommonDataKinds.Email.CONTENT_ITEM_TYPE);
-    }
-
-    if (fieldsSet.contains("addresses")) {
-      PROJECTION.add(CommonDataKinds.StructuredPostal.FORMATTED_ADDRESS);
-      PROJECTION.add(CommonDataKinds.StructuredPostal.TYPE);
-      PROJECTION.add(CommonDataKinds.StructuredPostal.LABEL);
-      PROJECTION.add(CommonDataKinds.StructuredPostal.STREET);
-      PROJECTION.add(CommonDataKinds.StructuredPostal.POBOX);
-      PROJECTION.add(CommonDataKinds.StructuredPostal.NEIGHBORHOOD);
-      PROJECTION.add(CommonDataKinds.StructuredPostal.CITY);
-      PROJECTION.add(CommonDataKinds.StructuredPostal.REGION);
-      PROJECTION.add(CommonDataKinds.StructuredPostal.POSTCODE);
-      PROJECTION.add(CommonDataKinds.StructuredPostal.COUNTRY);
-      selection += " OR " + ContactsContract.Data.MIMETYPE + "=?";
-      selectionArgs.add(CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE);
-    }
-
-    if (fieldsSet.contains("note")) {
-      selection += " OR " + ContactsContract.Data.MIMETYPE + "=?";
-      selectionArgs.add(ContactsContract.CommonDataKinds.Note.CONTENT_ITEM_TYPE);
-    }
-
-    if (fieldsSet.contains("birthday") || fieldsSet.contains("dates")) {
-      selection += " OR " + ContactsContract.Data.MIMETYPE + "=?";
-      selectionArgs.add(ContactsContract.CommonDataKinds.Event.CONTENT_ITEM_TYPE);
-    }
-
-    if (fieldsSet.contains("instantMessageAddresses")) {
-      PROJECTION.add(CommonDataKinds.Im.DATA);
-      PROJECTION.add(CommonDataKinds.Im.TYPE);
-      PROJECTION.add(CommonDataKinds.Im.PROTOCOL);
-      PROJECTION.add(CommonDataKinds.Im._ID);
-      selection += " OR " + ContactsContract.Data.MIMETYPE + "=?";
-      selectionArgs.add(CommonDataKinds.Im.CONTENT_ITEM_TYPE);
-    }
-
-    if (fieldsSet.contains("urlAddresses")) {
-      PROJECTION.add(CommonDataKinds.Website.URL);
-      PROJECTION.add(CommonDataKinds.Website.TYPE);
-      PROJECTION.add(CommonDataKinds.Website._ID);
-      selection += " OR " + ContactsContract.Data.MIMETYPE + "=?";
-      selectionArgs.add(CommonDataKinds.Website.CONTENT_ITEM_TYPE);
-    }
-
-    if (fieldsSet.contains("relationships")) {
-      PROJECTION.add(CommonDataKinds.Relation.NAME);
-      PROJECTION.add(CommonDataKinds.Relation.TYPE);
-      PROJECTION.add(CommonDataKinds.Relation._ID);
-      selection += " OR " + ContactsContract.Data.MIMETYPE + "=?";
-      selectionArgs.add(CommonDataKinds.Relation.CONTENT_ITEM_TYPE);
-    }
-
-    if (fieldsSet.contains("phoneticFirstName")) {
-      PROJECTION.add(CommonDataKinds.StructuredName.PHONETIC_GIVEN_NAME);
-    }
-
-    if (fieldsSet.contains("phoneticLastName")) {
-      PROJECTION.add(CommonDataKinds.StructuredName.PHONETIC_FAMILY_NAME);
-    }
-
-    if (fieldsSet.contains("phoneticMiddleName")) {
-      PROJECTION.add(CommonDataKinds.StructuredName.PHONETIC_MIDDLE_NAME);
-    }
-
-    if (fieldsSet.contains("namePrefix")) {
-      PROJECTION.add(CommonDataKinds.StructuredName.PREFIX);
-    }
-
-    if (fieldsSet.contains("nameSuffix")) {
-      PROJECTION.add(CommonDataKinds.StructuredName.SUFFIX);
-    }
-
-    if (fetchSingleContact) {
-      cursor = cr.query(
-          ContactsContract.Data.CONTENT_URI,
-          PROJECTION.toArray(new String[PROJECTION.size()]),
-          ContactsContract.Data.CONTACT_ID + " = ?",
-          new String[]{(String) options.get("id")},
-          null);
-    } else {
-      cursor = cr.query(
-          ContactsContract.Data.CONTENT_URI,
-          PROJECTION.toArray(new String[PROJECTION.size()]),
-          selection,
-          selectionArgs.toArray(new String[selectionArgs.size()]),
-          null);
-    }
-    if (cursor != null) {
-      try {
-        contacts = loadContactsFrom(cursor, fieldsSet);
-
-        ArrayList contactsArray = new ArrayList();
-
-        // introduce paging at this level to ensure all data elements
-        // are appropriately mapped to contacts from cursor
-        // NOTE: paging performance improvement is minimized as cursor iterations will always fully run
-        int currentIndex;
-        ArrayList<Contact> contactList = new ArrayList<>(contacts.values());
-        int contactListSize = contactList.size();
-        // convert from contact pojo to react native
-        for (currentIndex = pageOffset; currentIndex < contactListSize; currentIndex++) {
-          Contact contact = contactList.get(currentIndex);
-
-          // if fetching single contact, short circuit and return contact
-          if (fetchSingleContact) {
-            promise.resolve(contact.toMap(fieldsSet));
-            break;
-          } else {
-            if ((currentIndex - pageOffset) >= pageSize) {
-              break;
-            }
-            contactsArray.add(contact.toMap(fieldsSet));
-          }
+        String sortOrder = null;
+        if (options.containsKey("sort") && options.get("sort") instanceof String) {
+          sortOrder = (String)options.get("sort");
         }
 
-        if (!fetchSingleContact) {
-          // wrap in pagination
-          response.put("data", contactsArray);
-          response.put("hasPreviousPage", pageOffset > 0);
-          response.put("hasNextPage", pageOffset + pageSize < contactListSize);
-          response.put("total", contactListSize);
-          promise.resolve(response);
+        ArrayList fields = null;
+        if (options.containsKey("fields") && options.get("fields") instanceof ArrayList) {
+          fields = (ArrayList) options.get("fields");
+        }
+
+        Set<String> keysToFetch = getFieldsSet(fields);
+
+        if (options.containsKey("id") && options.get("id") instanceof String) {
+          Contact contact = getContactById((String) options.get("id"), keysToFetch, promise);
+          if (contact == null)
+            return;
+          Collection contacts = new ArrayList();
+          contacts.add(contact);
+          ArrayList data = serializeContacts(contacts, keysToFetch, promise);
+          if (data == null)
+            return;
+          Bundle output = new Bundle();
+          output.putParcelableArrayList("data", data);
+          promise.resolve(output);
+        } else if (options.containsKey("name") && options.get("name") instanceof String) {
+          String predicateMatchingName = (String)options.get("name");
+          HashMap<String, Object> contactData = getContactByName(predicateMatchingName, keysToFetch, sortOrder,
+              promise);
+          Collection<Contact> contacts = (Collection<Contact>) contactData.get("data");
+          ArrayList data = serializeContacts(contacts, keysToFetch, promise);
+          if (data == null)
+            return;
+          Bundle output = new Bundle();
+          output.putParcelableArrayList("data", data);
+          output.putBoolean("hasNextPage", (Boolean) contactData.get("hasNextPage"));
+          output.putBoolean("hasPreviousPage", (Boolean) contactData.get("hasPreviousPage"));
+          promise.resolve(output);
+
+        } else {
+          getAllContactsAsync(options, keysToFetch, sortOrder, promise);
+        }
+
+      }
+    }).start();
+  }
+
+  // TODO: Evan: Test
+  @ExpoMethod
+  public void addContactAsync(Map<String, Object> data, Map<String, Object> options, Promise promise) {
+    if (isMissingPermissions(promise) || isMissingWritePermissions(promise)) return;
+    Contact contact = mutateContact(null, data);
+
+    ArrayList<ContentProviderOperation> ops = contact.toOperationList();
+
+    try {
+      ContentProviderResult[] result = getResolver().applyBatch(ContactsContract.AUTHORITY, ops);
+
+      if (result != null && result.length > 0) {
+        String rawId = String.valueOf(ContentUris.parseId(result[0].uri));
+        promise.resolve(rawId);
+      }
+    } catch (Exception e) {
+      promise.reject(e);
+    }
+  }
+
+  // TODO: Evan: Test
+  @ExpoMethod
+  public void updateContactAsync(Map<String, Object> contact, final Promise promise) {
+    if (isMissingPermissions(promise) || isMissingWritePermissions(promise)) return;
+
+    String id = contact.containsKey("id") ? (String)contact.get("id") : null;
+    Set<String> keysToFetch = getFieldsSet(null);
+    Contact targetContact = getContactById(id, keysToFetch, promise);
+    if (targetContact != null) {
+      targetContact = mutateContact(targetContact, contact);
+      ArrayList<ContentProviderOperation> ops = targetContact.toOperationList();
+      try {
+        ContentProviderResult[] result = getResolver().applyBatch(ContactsContract.AUTHORITY, ops);
+        if (result != null && result.length > 0) {
+          promise.resolve(id);
+        } else {
+          // TODO: Evan: Reject?
+        }
+      } catch (Exception e) {
+        promise.reject(e);
+      }
+
+    } else {
+      promise.reject("E_CONTACTS", "Couldn't find contact");
+    }
+  }
+
+  // TODO: Evan: Test
+  @ExpoMethod
+  public void removeContactAsync(Map<String, Object> contact, final Promise promise) {
+    if (isMissingPermissions(promise) || isMissingWritePermissions(promise)) return;
+
+    String id = contact.containsKey("id") ? (String)contact.get("id") : null;
+    Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI, id);
+    try {
+      getResolver().delete(uri, null, null);
+      promise.resolve(id);
+    } catch (Exception e) {
+      promise.reject(e);
+    }
+  }
+
+  @ExpoMethod
+  public void shareContactAsync(String contactId, String subject, final Promise promise) {
+    String lookupKey = getLookupKeyForContactId(contactId);
+    if (lookupKey == null) {
+      promise.reject("E_CONTACTS", "Couldn't find lookup key for contact.");
+    }
+    Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_VCARD_URI, lookupKey);
+
+    Intent intent = new Intent(Intent.ACTION_SEND);
+    intent.setType(ContactsContract.Contacts.CONTENT_VCARD_TYPE);
+    intent.putExtra(Intent.EXTRA_STREAM, uri);
+    intent.putExtra(Intent.EXTRA_SUBJECT, subject);
+    ActivityProvider activityProvider = mModuleRegistry.getModule(ActivityProvider.class);
+    activityProvider.getCurrentActivity().startActivity(intent);
+  }
+
+  @ExpoMethod
+  public void writeContactToFileAsync(Map<String, Object> contact, final Promise promise) {
+    if (isMissingPermissions(promise)) return;
+
+
+    String id = contact.containsKey("id") ? (String)contact.get("id") : null;
+    String lookupKey = getLookupKeyForContactId(id);
+    if (lookupKey == null) {
+      promise.reject("E_CONTACTS", "Couldn't find lookup key for contact.");
+    }
+    Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_VCARD_URI, lookupKey);
+    promise.resolve(uri.toString());
+  }
+
+  @ExpoMethod
+  public void presentFormAsync(String contactId, Map<String, Object> contactData, Map<String, Object> options, Promise promise) {
+    if (isMissingPermissions(promise)) return;
+
+
+    if (contactId != null) {
+      Set<String> keysToFetch = getFieldsSet(null);
+      Contact contact = getContactById(contactId, keysToFetch, promise);
+      if (contact == null) {
+        promise.reject("E_CONTACTS", "Couldn't find contact with ID.");
+        return;
+      }
+      // contact = mutateContact(contact, contactData);
+      presentEditForm(contact);
+      promise.resolve(0);
+      return;
+    }
+    // Create contact from supplied data.
+    Contact contact = mutateContact(null, contactData);
+
+    presentForm(contact);
+  }
+
+  private void presentForm(Contact contact) {
+    Intent intent = new Intent(Intent.ACTION_INSERT, ContactsContract.Contacts.CONTENT_URI);
+    intent.putExtra(ContactsContract.Intents.Insert.NAME, contact.displayName);
+    intent.putParcelableArrayListExtra(ContactsContract.Intents.Insert.DATA, contact.getContentValues());
+    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+    ActivityProvider activityProvider = mModuleRegistry.getModule(ActivityProvider.class);
+    activityProvider.getCurrentActivity().startActivity(intent);
+  }
+
+  private void presentEditForm(Contact contact) {
+    Uri selectedContactUri = ContactsContract.Contacts.getLookupUri(Long.parseLong(contact.contactId),
+        contact.lookupKey);
+    Intent intent = new Intent(Intent.ACTION_EDIT);
+    intent.setDataAndType(selectedContactUri, ContactsContract.Contacts.CONTENT_ITEM_TYPE);
+    ActivityProvider activityProvider = mModuleRegistry.getModule(ActivityProvider.class);
+    activityProvider.getCurrentActivity().startActivity(intent);
+  }
+
+  // TODO: Evan: WIP - Not for SDK 29
+  @ExpoMethod
+  public void getContactByPhoneNumber(final String phoneNumber, final Promise promise) {
+    if (isMissingPermissions(promise)) return;
+
+
+    // TODO: Replace this with new format
+    AsyncTask.execute(new Runnable() {
+      @Override
+      public void run() {
+        Bundle contact = new Bundle();
+        Uri uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(phoneNumber));
+
+        String[] projection = new String[]{ContactsContract.PhoneLookup.DISPLAY_NAME};
+        Cursor cursor = getResolver().query(uri, projection, null, null, null);
+        if (cursor == null) {
+          promise.reject("E_CONTACTS", "Couldn't query contact by number");
+          return;
+        }
+
+        try {
+          if (cursor.moveToFirst()) {
+            String name = cursor.getString(cursor.getColumnIndex(ContactsContract.PhoneLookup.DISPLAY_NAME));
+            contact.putString("displayName", name);
+          }
+        } catch (Exception e) {
+          promise.reject(e);
+        } finally {
+          if (cursor != null && !cursor.isClosed()) {
+            cursor.close();
+          }
+        }
+        promise.resolve(contact);
+      }
+    });
+  }
+
+  private ContentResolver getResolver() {
+    return getContext().getContentResolver();
+  }
+
+  //TODO: Evan: Add nickname and maidenName to .NickName
+  private Contact mutateContact(Contact contact, Map<String, Object> data) {
+    if (contact == null) {
+      contact = new Contact(UUID.randomUUID().toString());
+    }
+    if (data.containsKey("firstName"))
+      contact.firstName = (String) data.get("firstName");
+    if (data.containsKey("middleName"))
+      contact.middleName = (String) data.get("middleName");
+    if (data.containsKey("lastName"))
+      contact.lastName = (String) data.get("lastName");
+    if (data.containsKey("namePrefix"))
+      contact.prefix = (String) data.get("namePrefix");
+    if (data.containsKey("nameSuffix"))
+      contact.suffix = (String) data.get("nameSuffix");
+    if (data.containsKey("phoneticFirstName"))
+      contact.phoneticFirstName = (String) data.get("phoneticFirstName");
+    if (data.containsKey("phoneticMiddleName"))
+      contact.phoneticMiddleName = (String) data.get("phoneticMiddleName");
+    if (data.containsKey("phoneticLastName"))
+      contact.phoneticLastName = (String) data.get("phoneticLastName");
+
+    if (data.containsKey("company"))
+      contact.company = (String) data.get("company");
+    if (data.containsKey("jobTitle"))
+      contact.jobTitle = (String) data.get("jobTitle");
+    if (data.containsKey("department"))
+      contact.department = (String) data.get("department");
+
+    if (data.containsKey("note"))
+      contact.note = (String) data.get("note");
+
+    ArrayList results;
+
+    try {
+      results = decodeList(data.containsKey("addresses") ? (List) data.get("addresses") : null,
+          PostalAddressModel.class);
+      if (results != null)
+        contact.addresses = results;
+
+      results = decodeList(data.containsKey("phoneNumbers") ? (List) data.get("phoneNumbers") : null,
+          PhoneNumberModel.class);
+      if (results != null)
+        contact.phones = results;
+
+      results = decodeList(data.containsKey("emails") ? (List) data.get("emails") : null, EmailModel.class);
+      if (results != null)
+        contact.emails = results;
+
+      results = decodeList(data.containsKey("instantMessageAddresses") ? (List) data.get("instantMessageAddresses") : null,
+          ImAddressModel.class);
+      if (results != null)
+        contact.imAddresses = results;
+
+      results = decodeList(data.containsKey("urlAddresses") ? (List) data.get("urlAddresses") : null,
+          UrlAddressModel.class);
+      if (results != null)
+        contact.urlAddresses = results;
+
+      results = decodeList(data.containsKey("extraNames") ? (List) data.get("extraNames") : null, ExtraNameModel.class);
+      if (results != null)
+        contact.extraNames = results;
+
+      results = decodeList(data.containsKey("dates") ? (List) data.get("dates") : null, DateModel.class);
+      if (results != null)
+        contact.dates = results;
+
+      results = decodeList(data.containsKey("relationships") ? (List) data.get("relationships") : null,
+          RelationshipModel.class);
+      if (results != null)
+        contact.relationships = results;
+    } catch (Exception e) {
+      // promise.reject(e);
+    }
+    return contact;
+  }
+
+  private String getLookupKeyForContactId(String contactId) {
+    Cursor cur = getResolver().query(ContactsContract.Contacts.CONTENT_URI, new String[]{ContactsContract.Contacts.LOOKUP_KEY},
+        ContactsContract.Contacts._ID + " = " + contactId, null, null);
+    if (cur.moveToFirst()) {
+      return cur.getString(0);
+    }
+    return null;
+  }
+
+  public Contact getContactById(String contactId, Set<String> keysToFetch, Promise promise) {
+    HashMap queryMap = createProjectionForQuery(keysToFetch);
+    List<String> projection = (List<String>) queryMap.get("projection");
+    String selection = (String) queryMap.get("selection");
+    ArrayList<String> selectionArgs = (ArrayList<String>) queryMap.get("selectionArgs");
+
+    String[] cursorProjection = projection.toArray(new String[projection.size()]);
+    String cursorSelection = ContactsContract.Data.CONTACT_ID + " = ?";
+    String cursorSortOrder = null;
+
+    Cursor cursor = getResolver().query(
+        ContactsContract.Data.CONTENT_URI,
+        cursorProjection,
+        cursorSelection,
+        (new String[]{contactId}),
+        cursorSortOrder
+    );
+
+    if (cursor != null) {
+      try {
+        Map<String, Contact> contacts = loadContactsFrom(cursor);
+        ArrayList<Contact> contactList = new ArrayList<>(contacts.values());
+        if (contactList.size() > 0) {
+          return contactList.get(0);
         }
       } catch (Exception e) {
         promise.reject(e);
       } finally {
         cursor.close();
       }
+    }
+
+    return null;
+  }
+
+  private ArrayList serializeContacts(Collection<Contact> contacts, Set<String> keysToFetch, Promise promise) {
+    if (contacts == null)
+      return null;
+    ArrayList contactsArray = new ArrayList();
+    try {
+      for (Contact contact : contacts) {
+        contactsArray.add(contact.toMap(keysToFetch));
+      }
+    } catch (Exception e) {
+      promise.reject(e);
+    }
+    return contactsArray;
+  }
+
+  public HashMap<String, Object> getContactByName(final String query, final Set<String> keysToFetch, String sortOrder,
+                                                  final Promise promise) {
+    return fetchContacts(0, 9999, (new String[]{query}), ContactsContract.Data.DISPLAY_NAME_PRIMARY, keysToFetch, sortOrder, promise);
+  }
+
+  private Set<String> ensureFieldsSet(final Set<String> fieldsSet) {
+    if (fieldsSet == null) {
+      return newHashSet("phoneNumbers", "emails", "addresses", "note", "birthday", "dates", "instantMessageAddresses",
+          "urlAddresses", "extraNames", "relationships", "phoneticFirstName", "phoneticLastName", "phoneticMiddleName",
+          "namePrefix", "nameSuffix", "name", "firstName", "middleName", "lastName", "nickname", "id", "jobTitle",
+          "company", "department", "image", "imageAvailable", "note");
+    }
+    return fieldsSet;
+  }
+
+  private Set<String> convertReadableArray(final ArrayList fields) {
+    Set<String> fieldStrings = new HashSet<>();
+
+    for (Object key : fields) {
+      if (key instanceof String) {
+        String field = (String)key;
+        if (field != null) {
+          fieldStrings.add(field);
+        }
+      }
+    }
+    return fieldStrings;
+  }
+
+  private Set<String> getFieldsSet(final ArrayList fields) {
+    if (fields != null) {
+      Set<String> fieldStrings = convertReadableArray(fields);
+      return ensureFieldsSet(fieldStrings);
     } else {
-      promise.resolve(response);
+      return ensureFieldsSet(null);
     }
   }
 
-  private Map<String, Contact> loadContactsFrom(Cursor cursor, Set<String> fieldsSet) {
+  public void getAllContactsAsync(final Map<String, Object> options, final Set<String> keysToFetch, String sortOrder,
+                                  final Promise promise) {
+
+    int pageOffset = 0;
+    if (options.containsKey("pageOffset") && options.get("pageOffset") instanceof Number) {
+      pageOffset = ((Number)options.get("pageOffset")).intValue();
+    }
+
+    int pageSize = 0;
+    if (options.containsKey("pageSize") && options.get("pageSize") instanceof Number) {
+      pageSize = ((Number)options.get("pageSize")).intValue();
+    }
+
+    HashMap<String, Object> contactsData = fetchContacts(pageOffset, pageSize, null, null, keysToFetch, sortOrder,
+        promise);
+
+    if (contactsData != null) {
+      ArrayList<Contact> contacts = (ArrayList<Contact>) contactsData.get("data");
+      ArrayList contactsArray = new ArrayList();
+      try {
+        for (Contact contact : contacts) {
+          contactsArray.add(contact.toMap(keysToFetch));
+        }
+
+        Bundle output = new Bundle();
+        output.putBoolean("hasNextPage", (Boolean) contactsData.get("hasNextPage"));
+        output.putBoolean("hasPreviousPage", (Boolean) contactsData.get("hasPreviousPage"));
+        output.putParcelableArrayList("data", contactsArray);
+        output.putInt("total", (Integer) contactsData.get("total"));
+
+        promise.resolve(output);
+      } catch (Exception e) {
+        promise.reject(e);
+      }
+    }
+  }
+
+  private HashMap createProjectionForQuery(final Set<String> keysToFetch) {
+    List<String> projection = new ArrayList<>(DEFAULT_PROJECTION);
+
+    ArrayList<String> selectionArgs = new ArrayList<>(Arrays.asList(CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE,
+        CommonDataKinds.Organization.CONTENT_ITEM_TYPE));
+
+    // selection ORs need to match arg count from above selectionArgs
+    String selection = EXColumns.MIMETYPE + "=? OR " + ContactsContract.Data.MIMETYPE + "=?";
+
+    // handle "add on" fields from query request
+    if (keysToFetch.contains("phoneNumbers")) {
+      projection.add(CommonDataKinds.Phone.NUMBER);
+      projection.add(CommonDataKinds.Phone.TYPE);
+      projection.add(CommonDataKinds.Phone.LABEL);
+      projection.add(CommonDataKinds.Phone.IS_PRIMARY);
+      projection.add(CommonDataKinds.Phone._ID);
+      selection += " OR " + EXColumns.MIMETYPE + "=?";
+      selectionArgs.add(CommonDataKinds.Phone.CONTENT_ITEM_TYPE);
+    }
+
+    if (keysToFetch.contains("emails")) {
+      projection.add(CommonDataKinds.Email.DATA);
+      projection.add(CommonDataKinds.Email.ADDRESS);
+      projection.add(CommonDataKinds.Email.TYPE);
+      projection.add(CommonDataKinds.Email.LABEL);
+      projection.add(CommonDataKinds.Email.IS_PRIMARY);
+      projection.add(CommonDataKinds.Email._ID);
+      selection += " OR " + EXColumns.MIMETYPE + "=?";
+      selectionArgs.add(CommonDataKinds.Email.CONTENT_ITEM_TYPE);
+    }
+
+    if (keysToFetch.contains("addresses")) {
+      projection.add(CommonDataKinds.StructuredPostal.FORMATTED_ADDRESS);
+      projection.add(CommonDataKinds.StructuredPostal.TYPE);
+      projection.add(CommonDataKinds.StructuredPostal.LABEL);
+      projection.add(CommonDataKinds.StructuredPostal.STREET);
+      projection.add(CommonDataKinds.StructuredPostal.POBOX);
+      projection.add(CommonDataKinds.StructuredPostal.NEIGHBORHOOD);
+      projection.add(CommonDataKinds.StructuredPostal.CITY);
+      projection.add(CommonDataKinds.StructuredPostal.REGION);
+      projection.add(CommonDataKinds.StructuredPostal.POSTCODE);
+      projection.add(CommonDataKinds.StructuredPostal.COUNTRY);
+      selection += " OR " + ContactsContract.Data.MIMETYPE + "=?";
+      selectionArgs.add(CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE);
+    }
+
+    if (keysToFetch.contains("note")) {
+      selection += " OR " + ContactsContract.Data.MIMETYPE + "=?";
+      selectionArgs.add(CommonDataKinds.Note.CONTENT_ITEM_TYPE);
+    }
+
+    if (keysToFetch.contains("birthday") || keysToFetch.contains("dates")) {
+      selection += " OR " + ContactsContract.Data.MIMETYPE + "=?";
+      selectionArgs.add(CommonDataKinds.Event.CONTENT_ITEM_TYPE);
+    }
+
+    if (keysToFetch.contains("instantMessageAddresses")) {
+      projection.add(CommonDataKinds.Im.DATA);
+      projection.add(CommonDataKinds.Im.TYPE);
+      projection.add(CommonDataKinds.Im.PROTOCOL);
+      projection.add(CommonDataKinds.Im._ID);
+      selection += " OR " + ContactsContract.Data.MIMETYPE + "=?";
+      selectionArgs.add(CommonDataKinds.Im.CONTENT_ITEM_TYPE);
+    }
+
+    if (keysToFetch.contains("urlAddresses")) {
+      projection.add(CommonDataKinds.Website.URL);
+      projection.add(CommonDataKinds.Website.TYPE);
+      projection.add(CommonDataKinds.Website._ID);
+      selection += " OR " + ContactsContract.Data.MIMETYPE + "=?";
+      selectionArgs.add(CommonDataKinds.Website.CONTENT_ITEM_TYPE);
+    }
+
+    if (keysToFetch.contains("extraNames")) {
+      selection += " OR " + ContactsContract.Data.MIMETYPE + "=?";
+      selectionArgs.add(CommonDataKinds.Nickname.CONTENT_ITEM_TYPE);
+    }
+
+    if (keysToFetch.contains("relationships")) {
+      projection.add(CommonDataKinds.Relation.NAME);
+      projection.add(CommonDataKinds.Relation.TYPE);
+      projection.add(CommonDataKinds.Relation._ID);
+      selection += " OR " + ContactsContract.Data.MIMETYPE + "=?";
+      selectionArgs.add(CommonDataKinds.Relation.CONTENT_ITEM_TYPE);
+    }
+
+    if (keysToFetch.contains("phoneticFirstName"))
+      projection.add(CommonDataKinds.StructuredName.PHONETIC_GIVEN_NAME);
+
+    if (keysToFetch.contains("phoneticLastName"))
+      projection.add(CommonDataKinds.StructuredName.PHONETIC_FAMILY_NAME);
+
+    if (keysToFetch.contains("phoneticMiddleName"))
+      projection.add(CommonDataKinds.StructuredName.PHONETIC_MIDDLE_NAME);
+
+    if (keysToFetch.contains("namePrefix"))
+      projection.add(CommonDataKinds.StructuredName.PREFIX);
+
+    if (keysToFetch.contains("nameSuffix"))
+      projection.add(CommonDataKinds.StructuredName.SUFFIX);
+
+    HashMap map = new HashMap();
+    map.put("projection", projection);
+    map.put("selection", selection);
+    map.put("selectionArgs", selectionArgs);
+    return map;
+  }
+
+  private HashMap<String, Object> fetchContacts(int pageOffset, int pageSize, String[] queryStrings, String queryField,
+                                                final Set<String> keysToFetch, String sortOrder, Promise promise) {
+    boolean getAll = pageSize == 0;
+    queryField = queryField != null ? queryField : ContactsContract.Data.CONTACT_ID;
+
+    HashMap queryMap = createProjectionForQuery(keysToFetch);
+    List<String> projection = (List<String>) queryMap.get("projection");
+    // selection ORs need to match arg count from above selectionArgs
+    String selection = (String) queryMap.get("selection");
+
+    Map<String, Contact> contacts;
+    ContentResolver cr = getResolver();
+    Cursor cursor;
+
+    ArrayList<String> selectionArgs = (ArrayList<String>) queryMap.get("selectionArgs");
+
+    String cursorSortOrder = null;
+
+    if (queryStrings != null && queryStrings.length > 0) {
+      String[] cursorProjection = projection.toArray(new String[projection.size()]);
+      String cursorSelection = queryField + " = ?";
+
+      cursor = cr.query(
+          ContactsContract.Data.CONTENT_URI,
+          cursorProjection,
+          cursorSelection,
+          queryStrings,
+          cursorSortOrder);
+    } else {
+      cursor = cr.query(
+          ContactsContract.Data.CONTENT_URI,
+          projection.toArray(new String[projection.size()]),
+          selection,
+          selectionArgs.toArray(new String[selectionArgs.size()]),
+          cursorSortOrder);
+    }
+    if (cursor != null) {
+      try {
+        contacts = loadContactsFrom(cursor);
+
+        ArrayList contactsArray = new ArrayList();
+
+        // introduce paging at this level to ensure all data elements
+        // are appropriately mapped to contacts from cursor
+        // NOTE: paging performance improvement is minimized as cursor iterations will
+        // always fully run
+        int currentIndex;
+        ArrayList<Contact> contactList = new ArrayList<>(contacts.values());
+        contactList = sortContactsBy(contactList, sortOrder);
+        int contactListSize = contactList.size();
+        HashMap<String, Object> response = new HashMap<String, Object>();
+
+        // convert from contact pojo to react native
+        for (currentIndex = getAll ? 0 : pageOffset; currentIndex < contactListSize; currentIndex++) {
+          Contact contact = contactList.get(currentIndex);
+
+          // if fetching single contact, short circuit and return contact
+          if (!getAll && (currentIndex - pageOffset) >= pageSize) {
+            break;
+          }
+          contactsArray.add(contact);
+
+        }
+        response.put("data", contactsArray);
+        response.put("hasPreviousPage", pageOffset > 0);
+        response.put("hasNextPage", pageOffset + pageSize < contactListSize);
+        response.put("total", contactListSize);
+        return response;
+      } catch (Exception e) {
+        promise.reject(e);
+      } finally {
+        cursor.close();
+      }
+    }
+    return null;
+  }
+
+  private ArrayList<Contact> sortContactsBy(ArrayList<Contact> input, String sortOrder) {
+    if (sortOrder == null)
+      return input;
+
+    switch (sortOrder) {
+      case "firstName":
+        Collections.sort(input, new Comparator<Contact>() {
+          public int compare(Contact p1, Contact p2) {
+            return p1.getFirstName().compareToIgnoreCase(p2.getFirstName());
+          }
+        });
+        return input;
+      case "lastName":
+        Collections.sort(input, new Comparator<Contact>() {
+          public int compare(Contact p1, Contact p2) {
+            return p1.getLastName().compareToIgnoreCase(p2.getLastName());
+          }
+        });
+        return input;
+      default:
+        return input;
+    }
+
+  }
+
+  public static Set<String> newHashSet(String... strings) {
+    HashSet<String> set = new HashSet<>();
+
+    for (String s : strings) {
+      set.add(s);
+    }
+    return set;
+  }
+
+
+  private Map<String, Contact> loadContactsFrom(Cursor cursor) {
 
     Map<String, Contact> map = new LinkedHashMap<>();
 
@@ -251,573 +755,41 @@ public class ContactsModule extends ExportedModule implements ModuleRegistryCons
       }
 
       Contact contact = map.get(contactId);
-
-      String mimeType = cursor.getString(cursor.getColumnIndex(ContactsContract.Data.MIMETYPE));
-
-      String name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
-      if (!TextUtils.isEmpty(name) && TextUtils.isEmpty(contact.displayName)) {
-        contact.displayName = name;
-      }
-
-      if (TextUtils.isEmpty(contact.photoUri)) {
-        String rawPhotoURI = cursor.getString(cursor.getColumnIndex(CommonDataKinds.Contactables.PHOTO_URI));
-        if (!TextUtils.isEmpty(rawPhotoURI)) {
-          contact.photoUri = rawPhotoURI;
-          contact.hasPhoto = true;
-        }
-      }
-
-      if (mimeType.equals(CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)) {
-        contact.givenName = cursor.getString(cursor.getColumnIndex(CommonDataKinds.StructuredName.GIVEN_NAME));
-        contact.middleName = cursor.getString(cursor.getColumnIndex(CommonDataKinds.StructuredName.MIDDLE_NAME));
-        contact.familyName = cursor.getString(cursor.getColumnIndex(CommonDataKinds.StructuredName.FAMILY_NAME));
-        contact.prefix = fieldsSet.contains("namePrefix") ? cursor.getString(cursor.getColumnIndex(CommonDataKinds.StructuredName.PREFIX)) : "";
-        contact.suffix = fieldsSet.contains("nameSuffix") ? cursor.getString(cursor.getColumnIndex(CommonDataKinds.StructuredName.SUFFIX)) : "";
-        contact.phoneticFirstName = fieldsSet.contains("phoneticFirstName") ? cursor.getString(cursor.getColumnIndex(CommonDataKinds.StructuredName.PHONETIC_GIVEN_NAME)) : "";
-        contact.phoneticMiddleName = fieldsSet.contains("phoneticMiddleName") ? cursor.getString(cursor.getColumnIndex(CommonDataKinds.StructuredName.PHONETIC_MIDDLE_NAME)) : "";
-        contact.phoneticLastName = fieldsSet.contains("phoneticLastName") ? cursor.getString(cursor.getColumnIndex(CommonDataKinds.StructuredName.PHONETIC_FAMILY_NAME)) : "";
-      } else if (mimeType.equals(CommonDataKinds.Phone.CONTENT_ITEM_TYPE)) {
-        String phoneNumber = cursor.getString(cursor.getColumnIndex(CommonDataKinds.Phone.NUMBER));
-        int type = cursor.getInt(cursor.getColumnIndex(CommonDataKinds.Phone.TYPE));
-        int isPrimary = cursor.getInt(cursor.getColumnIndex(CommonDataKinds.Phone.IS_PRIMARY));
-        String id = String.valueOf(cursor.getLong(cursor.getColumnIndex(CommonDataKinds.Phone._ID)));
-
-        if (!TextUtils.isEmpty(phoneNumber)) {
-          String label;
-          switch (type) {
-            case CommonDataKinds.Phone.TYPE_HOME:
-              label = "home";
-              break;
-            case CommonDataKinds.Phone.TYPE_WORK:
-              label = "work";
-              break;
-            case CommonDataKinds.Phone.TYPE_MOBILE:
-              label = "mobile";
-              break;
-            case CommonDataKinds.Phone.TYPE_OTHER:
-              label = "other";
-              break;
-            case CommonDataKinds.Phone.TYPE_CUSTOM:
-              label = "custom";
-              break;
-            default:
-              label = "unknown";
-          }
-          contact.phones.add(new Contact.Item(label, phoneNumber, isPrimary, id));
-        }
-      } else if (mimeType.equals(CommonDataKinds.Email.CONTENT_ITEM_TYPE)) {
-        String email = cursor.getString(cursor.getColumnIndex(CommonDataKinds.Email.ADDRESS));
-        int type = cursor.getInt(cursor.getColumnIndex(CommonDataKinds.Email.TYPE));
-        int isPrimary = cursor.getInt(cursor.getColumnIndex(CommonDataKinds.Email.IS_PRIMARY));
-        String id = String.valueOf(cursor.getLong(cursor.getColumnIndex(CommonDataKinds.Email._ID)));
-        if (!TextUtils.isEmpty(email)) {
-          String label;
-          switch (type) {
-            case CommonDataKinds.Email.TYPE_HOME:
-              label = "home";
-              break;
-            case CommonDataKinds.Email.TYPE_WORK:
-              label = "work";
-              break;
-            case CommonDataKinds.Email.TYPE_MOBILE:
-              label = "mobile";
-              break;
-            case CommonDataKinds.Email.TYPE_CUSTOM:
-              if (cursor.getString(cursor.getColumnIndex(CommonDataKinds.Email.LABEL)) != null) {
-                label = cursor.getString(cursor.getColumnIndex(CommonDataKinds.Email.LABEL)).toLowerCase();
-              } else {
-                label = "";
-              }
-              break;
-            default:
-              label = "other";
-          }
-          contact.emails.add(new Contact.Item(label, email, isPrimary, id));
-        }
-      } else if (mimeType.equals(CommonDataKinds.Organization.CONTENT_ITEM_TYPE)) {
-        contact.company = cursor.getString(cursor.getColumnIndex(CommonDataKinds.Organization.COMPANY));
-        contact.jobTitle = cursor.getString(cursor.getColumnIndex(CommonDataKinds.Organization.TITLE));
-        contact.department = cursor.getString(cursor.getColumnIndex(CommonDataKinds.Organization.DEPARTMENT));
-      } else if (mimeType.equals(CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE)) {
-        contact.postalAddresses.add(new Contact.PostalAddressItem(cursor));
-      } else if (mimeType.equals(CommonDataKinds.Note.CONTENT_ITEM_TYPE)) {
-        contact.note = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Note.NOTE));
-      } else if (mimeType.equals(CommonDataKinds.Event.CONTENT_ITEM_TYPE)) {
-        String date = cursor.getString(cursor.getColumnIndex(CommonDataKinds.Event.START_DATE));
-        int type = cursor.getInt(cursor.getColumnIndex(CommonDataKinds.Event.TYPE));
-
-        if (!TextUtils.isEmpty(date)) {
-          String label;
-          switch (type) {
-            case CommonDataKinds.Event.TYPE_ANNIVERSARY:
-              label = "anniversary";
-              break;
-            case CommonDataKinds.Event.TYPE_BIRTHDAY:
-              label = "birthday";
-              break;
-            case CommonDataKinds.Event.TYPE_OTHER:
-              label = "other";
-              break;
-            case CommonDataKinds.Event.TYPE_CUSTOM:
-              label = "custom";
-              break;
-            default:
-              label = "unknown";
-          }
-          contact.dates.add(new Contact.Item(label, date));
-        }
-      } else if (mimeType.equals(CommonDataKinds.Im.CONTENT_ITEM_TYPE)) {
-        contact.imAddresses.add(new Contact.ImAddressItem(cursor));
-      } else if (mimeType.equals(CommonDataKinds.Website.CONTENT_ITEM_TYPE)) {
-        contact.urlAddresses.add(new Contact.UrlAddressItem(cursor));
-      } else if (mimeType.equals(CommonDataKinds.Relation.CONTENT_ITEM_TYPE)) {
-        contact.relationships.add(new Contact.RelationshipItem(cursor));
-      }
+      contact.fromCursor(cursor);
     }
     return map;
   }
 
-
-  private boolean isMissingPermissions() {
+  private boolean isMissingPermissions(Promise promise) {
     Permissions permissionsManager = mModuleRegistry.getModule(Permissions.class);
     if (permissionsManager == null) {
+      promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?");
       return false;
     }
     int[] grantResults = permissionsManager.getPermissions(new String[] { Manifest.permission.READ_CONTACTS });
-    return !(grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED);
+
+    Boolean hasPermission = (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED);
+
+        if (!hasPermission) {
+          promise.reject("E_MISSING_PERMISSION", "Missing read contacts permission.");
+        }
+    return !hasPermission;
+
   }
 
-  private static class Contact {
-    private String contactId;
-    private String displayName;
-    private String givenName = "";
-    private String middleName = "";
-    private String familyName = "";
-    private String prefix = "";
-    private String suffix = "";
-    private String phoneticFirstName = "";
-    private String phoneticMiddleName = "";
-    private String phoneticLastName = "";
-    private String company = "";
-    private String jobTitle = "";
-    private String department = "";
-    private String nickname = "";
-    private boolean hasPhoto = false;
-    private String photoUri;
-    private String note;
-    private List<Item> emails = new ArrayList<>();
-    private List<Item> phones = new ArrayList<>();
-    private List<Item> dates = new ArrayList<>();
-    private List<PostalAddressItem> postalAddresses = new ArrayList<>();
-    private List<ImAddressItem> imAddresses = new ArrayList<>();
-    private List<UrlAddressItem> urlAddresses = new ArrayList<>();
-    private List<RelationshipItem> relationships = new ArrayList<>();
-
-    public Contact(String contactId) {
-      this.contactId = contactId;
+  private boolean isMissingWritePermissions(Promise promise) {
+    Permissions permissionsManager = mModuleRegistry.getModule(Permissions.class);
+    if (permissionsManager == null) {
+      promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?");
+      return false;
     }
+    int[] grantResults = permissionsManager.getPermissions(new String[] { Manifest.permission.WRITE_CONTACTS });
 
-    // convert to react native object
-    public HashMap<String, Object> toMap(Set<String> fieldSet) throws ParseException {
-      HashMap<String, Object> contact = new HashMap<String, Object>();
-      contact.put("id", contactId);
-      contact.put("name", !TextUtils.isEmpty(displayName) ? displayName : givenName + " " + familyName);
-      if (!TextUtils.isEmpty(givenName)) {
-        contact.put("firstName", givenName);
-      }
-      if (!TextUtils.isEmpty(middleName)) {
-        contact.put("middleName", middleName);
-      }
-      if (!TextUtils.isEmpty(familyName)) {
-        contact.put("lastName", familyName);
-      }
-      if (!TextUtils.isEmpty(nickname)) {
-        contact.put("nickname", nickname);
-      }
-      if (!TextUtils.isEmpty(suffix)) {
-        contact.put("nameSuffix", suffix);
-      }
-      if (!TextUtils.isEmpty(prefix)) {
-        contact.put("namePrefix", prefix);
-      }
-      if (!TextUtils.isEmpty(phoneticFirstName)) {
-        contact.put("phoneticFirstName", phoneticFirstName);
-      }
-      if (!TextUtils.isEmpty(phoneticLastName)) {
-        contact.put("phoneticLastName", phoneticLastName);
-      }
-      if (!TextUtils.isEmpty(phoneticMiddleName)) {
-        contact.put("phoneticMiddleName", phoneticMiddleName);
-      }
-      if (!TextUtils.isEmpty(company)) {
-        contact.put("company", company);
-      }
-      if (!TextUtils.isEmpty(jobTitle)) {
-        contact.put("jobTitle", jobTitle);
-      }
-      if (!TextUtils.isEmpty(department)) {
-        contact.put("department", department);
-      }
-      contact.put("imageAvailable", this.hasPhoto);
-      if (fieldSet.contains("thumbnail")) {
-        HashMap<String, Object> thumbnail = new HashMap<String, Object>();
-        thumbnail.put("uri", this.hasPhoto ? photoUri : null);
-        contact.put("thumbnail", thumbnail);
-      }
+    Boolean hasPermission = (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED);
 
-      if (fieldSet.contains("note") && !TextUtils.isEmpty(note)) { // double if check with query
-        contact.put("note", note);
-      }
-
-      if (fieldSet.contains("phoneNumbers")) {
-        ArrayList phoneNumbers = new ArrayList();
-        for (Item item : phones) {
-          HashMap<String, Object> map = new HashMap<String, Object>();
-          map.put("number", item.value);
-          map.put("label", item.label);
-          map.put("id", item.id);
-          map.put("primary", item.primary);
-          phoneNumbers.add(map);
-        }
-        contact.put("phoneNumbers", phoneNumbers);
-      }
-
-      if (fieldSet.contains("emails")) {
-        ArrayList emailAddresses = new ArrayList();
-        for (Item item : emails) {
-          HashMap<String, Object> map = new HashMap<String, Object>();
-          map.put("email", item.value);
-          map.put("label", item.label);
-          map.put("id", item.id);
-          map.put("primary", item.primary);
-          emailAddresses.add(map);
-        }
-        contact.put("emails", emailAddresses);
-      }
-
-      if (fieldSet.contains("addresses")) {
-        ArrayList postalAddresses = new ArrayList();
-        for (PostalAddressItem item : this.postalAddresses) {
-          postalAddresses.add(item.map);
-        }
-        contact.put("addresses", postalAddresses);
-      }
-
-      if (fieldSet.contains("instantMessageAddresses")) {
-        ArrayList imAddresses = new ArrayList();
-        for (ImAddressItem item : this.imAddresses) {
-          imAddresses.add(item.map);
-        }
-        contact.put("instantMessageAddresses", imAddresses);
-      }
-
-      if (fieldSet.contains("urlAddresses")) {
-        ArrayList urlAddresses = new ArrayList();
-        for (UrlAddressItem item : this.urlAddresses) {
-          urlAddresses.add(item.map);
-        }
-        contact.put("urlAddresses", urlAddresses);
-      }
-
-      if (fieldSet.contains("relationships")) {
-        ArrayList relationships = new ArrayList();
-        for (RelationshipItem item : this.relationships) {
-          relationships.add(item.map);
-        }
-        contact.put("relationships", relationships);
-      }
-
-      boolean showBirthday = fieldSet.contains("birthday");
-      boolean showDates = fieldSet.contains("dates");
-
-      if (showDates || showBirthday) { // double if check with query with cursor
-        boolean hasYear;
-        Calendar calendar = Calendar.getInstance();
-        SimpleDateFormat datePattern = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-        SimpleDateFormat noYearPattern = new SimpleDateFormat("--MM-dd", Locale.getDefault());
-
-        ArrayList datesArray = new ArrayList();
-        for (Item item : dates) {
-          HashMap<String, Object> details = new HashMap<String, Object>();
-          String dateString = item.value;
-          String label = item.label;
-
-          hasYear = !dateString.startsWith("--");
-
-          if (hasYear) {
-            calendar.setTime(datePattern.parse(dateString));
-          } else {
-            calendar.setTime(noYearPattern.parse(dateString));
-          }
-
-          if (hasYear) {
-            details.put("year", calendar.get(Calendar.YEAR));
-          }
-          details.put("month", calendar.get(Calendar.MONTH) + 1);
-          details.put("day", calendar.get(Calendar.DAY_OF_MONTH));
-          if (showBirthday && label.equals("birthday")) {
-            contact.put("birthday", details);
-          } else {
-            details.put("label", label);
-            datesArray.add(details);
-          }
-        }
-        if (showDates && datesArray.size() > 0) {
-          contact.put("dates", datesArray);
-        }
-      }
-
-      return contact;
+    if (!hasPermission) {
+      promise.reject("E_MISSING_PERMISSION", "Missing write contacts permission.");
     }
-
-    public static class Item {
-      public String label;
-      public String value;
-      public boolean primary;
-      public String id;
-
-      public Item(String label, String value) {
-        this.label = label;
-        this.value = value;
-      }
-
-      public Item(String label, String value, int isPrimary, String id) {
-        this.label = label;
-        this.value = value;
-        this.primary = isPrimary == 1;
-        this.id = id;
-      }
-    }
-
-    public static class PostalAddressItem {
-      public final HashMap<String, Object> map;
-
-      public PostalAddressItem(Cursor cursor) {
-        map = new HashMap<String, Object>();
-
-        map.put("label", getLabel(cursor));
-        putString(cursor, "formattedAddress", CommonDataKinds.StructuredPostal.FORMATTED_ADDRESS);
-        putString(cursor, "street", CommonDataKinds.StructuredPostal.STREET);
-        putString(cursor, "poBox", CommonDataKinds.StructuredPostal.POBOX);
-        putString(cursor, "neighborhood", CommonDataKinds.StructuredPostal.NEIGHBORHOOD);
-        putString(cursor, "city", CommonDataKinds.StructuredPostal.CITY);
-        putString(cursor, "region", CommonDataKinds.StructuredPostal.REGION);
-        putString(cursor, "state", CommonDataKinds.StructuredPostal.REGION);
-        putString(cursor, "postalCode", CommonDataKinds.StructuredPostal.POSTCODE);
-        putString(cursor, "country", CommonDataKinds.StructuredPostal.COUNTRY);
-        putString(cursor, "id", CommonDataKinds.StructuredPostal._ID);
-      }
-
-      private void putString(Cursor cursor, String key, String androidKey) {
-        final String value = cursor.getString(cursor.getColumnIndex(androidKey));
-        if (!TextUtils.isEmpty(value))
-          map.put(key, value);
-      }
-
-      static String getLabel(Cursor cursor) {
-        switch (cursor.getInt(cursor.getColumnIndex(CommonDataKinds.StructuredPostal.TYPE))) {
-          case CommonDataKinds.StructuredPostal.TYPE_HOME:
-            return "home";
-          case CommonDataKinds.StructuredPostal.TYPE_WORK:
-            return "work";
-          case CommonDataKinds.StructuredPostal.TYPE_OTHER:
-            return "other";
-          case CommonDataKinds.StructuredPostal.TYPE_CUSTOM:
-            final String label = cursor.getString(cursor.getColumnIndex(CommonDataKinds.StructuredPostal.LABEL));
-            return label != null ? label : "";
-        }
-        return "unknown";
-      }
-    }
-
-    public static class ImAddressItem {
-      public final HashMap<String, Object> map;
-
-      public ImAddressItem(Cursor cursor) {
-        String username = cursor.getString(cursor.getColumnIndex(CommonDataKinds.Im.DATA));
-        int type = cursor.getInt(cursor.getColumnIndex(CommonDataKinds.Im.TYPE));
-        int protocol = cursor.getInt(cursor.getColumnIndex(CommonDataKinds.Im.PROTOCOL));
-        long imId = cursor.getLong(cursor.getColumnIndex(CommonDataKinds.Im._ID));
-
-        map = new HashMap<String, Object>();
-
-        String label, service;
-
-        switch (type) {
-          case CommonDataKinds.Im.TYPE_HOME:
-            label = "home";
-            break;
-          case CommonDataKinds.Im.TYPE_OTHER:
-            label = "other";
-            break;
-          case CommonDataKinds.Im.TYPE_WORK:
-            label = "work";
-            break;
-          case CommonDataKinds.Im.TYPE_CUSTOM:
-            label = "custom";
-            break;
-          default:
-            label = "unknown";
-        }
-
-        switch (protocol) {
-          case CommonDataKinds.Im.PROTOCOL_AIM:
-            service = "aim";
-            break;
-          case CommonDataKinds.Im.PROTOCOL_GOOGLE_TALK:
-            service = "googleTalk";
-            break;
-          case CommonDataKinds.Im.PROTOCOL_ICQ:
-            service = "icq";
-            break;
-          case CommonDataKinds.Im.PROTOCOL_JABBER:
-            service = "jabber";
-            break;
-          case CommonDataKinds.Im.PROTOCOL_MSN:
-            service = "msn";
-            break;
-          case CommonDataKinds.Im.PROTOCOL_NETMEETING:
-            service = "netmeeting";
-            break;
-          case CommonDataKinds.Im.PROTOCOL_QQ:
-            service = "qq";
-            break;
-          case CommonDataKinds.Im.PROTOCOL_SKYPE:
-            service = "skype";
-            break;
-          case CommonDataKinds.Im.PROTOCOL_YAHOO:
-            service = "yahoo";
-            break;
-          case CommonDataKinds.Im.PROTOCOL_CUSTOM:
-            service = "custom";
-            break;
-          default:
-            service = "unknown";
-        }
-
-        map.put("username", username);
-        map.put("label", label);
-        map.put("service", service);
-        map.put("id", String.valueOf(imId));
-      }
-    }
-
-    public static class UrlAddressItem {
-      public final HashMap<String, Object> map;
-
-      public UrlAddressItem(Cursor cursor) {
-        map = new HashMap<String, Object>();
-        map.put("url", cursor.getString(cursor.getColumnIndex(CommonDataKinds.Website.URL)));
-        int type = cursor.getInt(cursor.getColumnIndex(CommonDataKinds.Website.TYPE));
-        String label;
-
-        switch (type) {
-          case CommonDataKinds.Website.TYPE_HOME:
-            label = "home";
-            break;
-          case CommonDataKinds.Website.TYPE_OTHER:
-            label = "other";
-            break;
-          case CommonDataKinds.Website.TYPE_WORK:
-            label = "work";
-            break;
-          case CommonDataKinds.Website.TYPE_BLOG:
-            label = "blog";
-            break;
-          case CommonDataKinds.Website.TYPE_HOMEPAGE:
-            label = "homepage";
-            break;
-          case CommonDataKinds.Website.TYPE_FTP:
-            label = "ftp";
-            break;
-          case CommonDataKinds.Website.TYPE_PROFILE:
-            label = "profile";
-            break;
-          case CommonDataKinds.Website.TYPE_CUSTOM:
-            label = "custom";
-            break;
-          default:
-            label = "unknown";
-        }
-
-        map.put("label", label);
-        map.put("id", String.valueOf(cursor.getLong(cursor.getColumnIndex(CommonDataKinds.Website._ID))));
-      }
-    }
-
-    public static class RelationshipItem {
-      public final HashMap<String, Object> map;
-
-      public RelationshipItem(Cursor cursor) {
-        map = new HashMap<String, Object>();
-        map.put("name", cursor.getString(cursor.getColumnIndex(CommonDataKinds.Relation.NAME)));
-        int type = cursor.getInt(cursor.getColumnIndex(CommonDataKinds.Relation.TYPE));
-        String label;
-
-        switch (type) {
-          case CommonDataKinds.Relation.TYPE_ASSISTANT:
-            label = "assistant";
-            break;
-          case CommonDataKinds.Relation.TYPE_BROTHER:
-            label = "bother";
-            break;
-          case CommonDataKinds.Relation.TYPE_CHILD:
-            label = "child";
-            break;
-          case CommonDataKinds.Relation.TYPE_DOMESTIC_PARTNER:
-            label = "domesticPartner";
-            break;
-          case CommonDataKinds.Relation.TYPE_FATHER:
-            label = "father";
-            break;
-          case CommonDataKinds.Relation.TYPE_FRIEND:
-            label = "friend";
-            break;
-          case CommonDataKinds.Relation.TYPE_MANAGER:
-            label = "manager";
-            break;
-          case CommonDataKinds.Relation.TYPE_MOTHER:
-            label = "mother";
-            break;
-          case CommonDataKinds.Relation.TYPE_PARENT:
-            label = "parent";
-            break;
-          case CommonDataKinds.Relation.TYPE_PARTNER:
-            label = "partner";
-            break;
-          case CommonDataKinds.Relation.TYPE_REFERRED_BY:
-            label = "referredBy";
-            break;
-          case CommonDataKinds.Relation.TYPE_RELATIVE:
-            label = "relative";
-            break;
-          case CommonDataKinds.Relation.TYPE_SISTER:
-            label = "sister";
-            break;
-          case CommonDataKinds.Relation.TYPE_SPOUSE:
-            label = "spouse";
-            break;
-          case CommonDataKinds.Relation.TYPE_CUSTOM:
-            label = "custom";
-            break;
-          default:
-            label = "unknown";
-        }
-
-        map.put("label", label);
-        map.put("id", String.valueOf(cursor.getLong(cursor.getColumnIndex(CommonDataKinds.Relation._ID))));
-      }
-    }
-  }
-
-  private Set<String> getFieldsSet(final List<String> fields) {
-    Set<String> fieldStrings = new HashSet<>();
-    for (int ii = 0; ii < fields.size(); ii++) {
-      String field = fields.get(ii);
-      if (field != null) {
-        fieldStrings.add(field);
-      }
-    }
-    return fieldStrings;
+    return !hasPermission;
   }
 }

@@ -16,6 +16,8 @@
 + (nullable NSArray *)urlsForContact:(CNContact * _Nonnull) person;
 + (nullable NSArray *)datesForContact:(CNContact * _Nonnull)person;
 + (nullable NSArray *)relationsForContact:(CNContact * _Nonnull)person;
++ (nullable NSDictionary *)encodeContainer:(CNContainer * _Nonnull)container;
++ (nullable NSDictionary *)encodeGroup:(CNGroup * _Nonnull)group;
 
 + (nullable NSDateComponents *)decodeBirthday:(nullable NSDictionary *)input contact:(CNContact *_Nonnull)contact;
 + (nullable NSMutableArray<CNLabeledValue *> *)decodeAddresses:(nullable NSArray *)input;

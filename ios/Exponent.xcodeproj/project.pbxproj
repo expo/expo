@@ -155,7 +155,6 @@
 		B57181001F0FF41600315A66 /* EXScreenOrientationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B57180FF1F0FF41600315A66 /* EXScreenOrientationManager.m */; };
 		B575EEA41D54175B00DCABBC /* shell-app-manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = B575EEA21D54175A00DCABBC /* shell-app-manifest.json */; };
 		B575EEA51D54175B00DCABBC /* shell-app.bundle in Resources */ = {isa = PBXBuildFile; fileRef = B575EEA31D54175B00DCABBC /* shell-app.bundle */; };
-		B580892520FFB5B000675EED /* EXContacts+Serialization.m in Sources */ = {isa = PBXBuildFile; fileRef = B580892420FFB5B000675EED /* EXContacts+Serialization.m */; };
 		B5854ED720D078C6001D2F6E /* EXClientTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = B5854ED620D078C6001D2F6E /* EXClientTestCase.m */; };
 		B5854ED920D0790C001D2F6E /* EXDevDetachTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = B5854ED820D0790C001D2F6E /* EXDevDetachTestCase.m */; };
 		B5854EDB20D07944001D2F6E /* EXProdServiceTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = B5854EDA20D07944001D2F6E /* EXProdServiceTestCase.m */; };
@@ -222,7 +221,6 @@
 		B5FB749F1FF6DADC001C764B /* EXAmplitude.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73751FF6DADB001C764B /* EXAmplitude.m */; };
 		B5FB74A01FF6DADC001C764B /* EXBrightness.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73771FF6DADB001C764B /* EXBrightness.m */; };
 		B5FB74A11FF6DADC001C764B /* EXConstantsBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73791FF6DADB001C764B /* EXConstantsBinding.m */; };
-		B5FB74A21FF6DADC001C764B /* EXContacts.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB737B1FF6DADB001C764B /* EXContacts.m */; };
 		B5FB74A31FF6DADC001C764B /* EXDocumentPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB737D1FF6DADB001C764B /* EXDocumentPicker.m */; };
 		B5FB74A51FF6DADC001C764B /* EXErrorRecovery.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73811FF6DADB001C764B /* EXErrorRecovery.m */; };
 		B5FB74A61FF6DADC001C764B /* EXFacebook.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73831FF6DADB001C764B /* EXFacebook.m */; };
@@ -632,8 +630,6 @@
 		B57180FF1F0FF41600315A66 /* EXScreenOrientationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXScreenOrientationManager.m; sourceTree = "<group>"; };
 		B575EEA21D54175A00DCABBC /* shell-app-manifest.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "shell-app-manifest.json"; sourceTree = "<group>"; };
 		B575EEA31D54175B00DCABBC /* shell-app.bundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "shell-app.bundle"; sourceTree = "<group>"; };
-		B580892320FFB5B000675EED /* EXContacts+Serialization.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "EXContacts+Serialization.h"; sourceTree = "<group>"; };
-		B580892420FFB5B000675EED /* EXContacts+Serialization.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "EXContacts+Serialization.m"; sourceTree = "<group>"; };
 		B5854ED620D078C6001D2F6E /* EXClientTestCase.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXClientTestCase.m; sourceTree = "<group>"; };
 		B5854ED820D0790C001D2F6E /* EXDevDetachTestCase.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXDevDetachTestCase.m; sourceTree = "<group>"; };
 		B5854EDA20D07944001D2F6E /* EXProdServiceTestCase.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXProdServiceTestCase.m; sourceTree = "<group>"; };
@@ -761,8 +757,6 @@
 		B5FB73771FF6DADB001C764B /* EXBrightness.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXBrightness.m; sourceTree = "<group>"; };
 		B5FB73781FF6DADB001C764B /* EXConstantsBinding.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXConstantsBinding.h; sourceTree = "<group>"; };
 		B5FB73791FF6DADB001C764B /* EXConstantsBinding.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXConstantsBinding.m; sourceTree = "<group>"; };
-		B5FB737A1FF6DADB001C764B /* EXContacts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXContacts.h; sourceTree = "<group>"; };
-		B5FB737B1FF6DADB001C764B /* EXContacts.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXContacts.m; sourceTree = "<group>"; };
 		B5FB737C1FF6DADB001C764B /* EXDocumentPicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXDocumentPicker.h; sourceTree = "<group>"; };
 		B5FB737D1FF6DADB001C764B /* EXDocumentPicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXDocumentPicker.m; sourceTree = "<group>"; };
 		B5FB73801FF6DADB001C764B /* EXErrorRecovery.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXErrorRecovery.h; sourceTree = "<group>"; };
@@ -1622,10 +1616,6 @@
 				B5FB73751FF6DADB001C764B /* EXAmplitude.m */,
 				B5FB73761FF6DADB001C764B /* EXBrightness.h */,
 				B5FB73771FF6DADB001C764B /* EXBrightness.m */,
-				B5FB737A1FF6DADB001C764B /* EXContacts.h */,
-				B5FB737B1FF6DADB001C764B /* EXContacts.m */,
-				B580892320FFB5B000675EED /* EXContacts+Serialization.h */,
-				B580892420FFB5B000675EED /* EXContacts+Serialization.m */,
 				B5FB737C1FF6DADB001C764B /* EXDocumentPicker.h */,
 				B5FB737D1FF6DADB001C764B /* EXDocumentPicker.m */,
 				B5FB73801FF6DADB001C764B /* EXErrorRecovery.h */,
@@ -2488,7 +2478,6 @@
 				B5A72C2220A0D13E00974CCE /* EXJavaScriptResource.m in Sources */,
 				783435E4205B8BEE00DD28C3 /* AIRGMSMarker.m in Sources */,
 				31E6D48020B845830082B09F /* EXSensorsManagerBinding.m in Sources */,
-				B5FB74A21FF6DADC001C764B /* EXContacts.m in Sources */,
 				19B2EF751FB25A1A003F2E1B /* EXCachedResourceManager.m in Sources */,
 				BB50E89020B9C0D3003C752D /* RNLongPressHandler.m in Sources */,
 				B5FB74DF1FF6DADC001C764B /* EXDevSettings.m in Sources */,
@@ -2639,7 +2628,6 @@
 				F167C43B209C7EE600F01382 /* EXUtilService.m in Sources */,
 				B5FB74371FF6DADB001C764B /* EXBlurView.m in Sources */,
 				B5D0D67A204F4C0400DDFC99 /* EXReactAppExceptionHandler.m in Sources */,
-				B580892520FFB5B000675EED /* EXContacts+Serialization.m in Sources */,
 				B5FB74AC1FF6DADC001C764B /* EXImageUtils.m in Sources */,
 				7846B20620355E9900638E43 /* RNSVGPercentageConverter.m in Sources */,
 				B57181001F0FF41600315A66 /* EXScreenOrientationManager.m in Sources */,

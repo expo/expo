@@ -38,6 +38,8 @@ target 'Exponent' do
     :path => "../modules/expo-sensors/ios"
   pod 'EXLocation',
     :path => "../modules/expo-location/ios"
+  pod 'EXContacts',
+    :path => "../modules/expo-contacts/ios"
   pod 'EXAdsAdMob',
     :path => "../modules/expo-ads-admob/ios"
   pod 'EXConstants',

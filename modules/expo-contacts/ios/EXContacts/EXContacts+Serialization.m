@@ -263,6 +263,37 @@
   return @"";
 }
 
++ (NSDictionary *)encodeContainer:(CNContainer * _Nonnull)container
+{
+    return @{
+             @"name": container.name,
+             @"id": container.identifier,
+             @"type": [self encodeContainerType:container.type],
+             };
+}
+
++ (NSString *)encodeContainerType:(CNContainerType)type
+{
+    switch (type) {
+        case CNContainerTypeLocal:
+            return @"local";
+        case CNContainerTypeExchange:
+            return @"exchange";
+        case CNContainerTypeCardDAV:
+            return @"cardDAV";
+        default:
+            return @"unassigned";
+    }
+}
+
++ (NSDictionary *)encodeGroup:(CNGroup * _Nonnull)group
+{
+    NSMutableDictionary *object = [NSMutableDictionary new];
+    [object setObject:group.identifier forKey:@"id"];
+    if (group.name) [object setObject:group.name forKey:@"name"];
+    return object;
+}
+
 #pragma mark - Decode Labels
 
 + (NSString *)decodeContactLabel:(NSString *)label

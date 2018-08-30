@@ -24,6 +24,7 @@ import expo.modules.analytics.segment.SegmentPackage;
 import expo.modules.barcodescanner.BarCodeScannerPackage;
 import expo.modules.camera.CameraPackage;
 import expo.modules.constants.ConstantsPackage;
+import expo.modules.contacts.ContactsPackage;
 import expo.modules.facedetector.FaceDetectorPackage;
 import expo.modules.filesystem.FileSystemPackage;
 import expo.modules.font.FontLoaderPackage;
@@ -50,7 +51,6 @@ import versioned.host.exp.exponent.modules.api.fbads.AdIconViewManager;
 import versioned.host.exp.exponent.modules.api.fbads.MediaViewManager;
 import versioned.host.exp.exponent.modules.api.AmplitudeModule;
 import versioned.host.exp.exponent.modules.api.CalendarModule;
-import versioned.host.exp.exponent.modules.api.ContactsModule;
 import versioned.host.exp.exponent.modules.api.CryptoModule;
 import versioned.host.exp.exponent.modules.api.DocumentPickerModule;
 import versioned.host.exp.exponent.modules.api.ErrorRecoveryModule;
@@ -114,6 +114,7 @@ public class ExponentPackage implements ReactPackage {
       new SegmentPackage(),
       new FontLoaderPackage(),
       new LocationPackage(),
+      new ContactsPackage(),
       new BarCodeScannerPackage(),
       new AdMobPackage()
   );
@@ -186,7 +187,6 @@ public class ExponentPackage implements ReactPackage {
 
         nativeModules.add(new ExponentAsyncStorageModule(reactContext, mManifest));
         nativeModules.add(new NotificationsModule(reactContext, mManifest, mExperienceProperties));
-        nativeModules.add(new ContactsModule(reactContext, experienceId));
         nativeModules.add(new CryptoModule(reactContext));
         nativeModules.add(new ImagePickerModule(reactContext, scopedContext, experienceId));
         nativeModules.add(new ImageManipulatorModule(reactContext, scopedContext));

@@ -87,5 +87,8 @@ project(":expo-barcode-scanner").projectDir = new File(rootDir, "../modules/expo
 include ":expo-barcode-scanner-interface"
 project(":expo-barcode-scanner-interface").projectDir = new File(rootDir, "../modules/expo-barcode-scanner-interface/android")
 
+include ":expo-contacts"
+project(":expo-contacts").projectDir = new File(rootDir, "../modules/expo-contacts/android")
+
 include ":expo-ads-admob"
 project(":expo-ads-admob").projectDir = new File(rootDir, "../modules/expo-ads-admob/android")

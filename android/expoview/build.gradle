@@ -129,6 +129,7 @@ dependencies {
   api 'host.exp.exponent:expo-location:1.0.0'
   api 'host.exp.exponent:expo-barcode-scanner-interface:1.0.0'
   api 'host.exp.exponent:expo-barcode-scanner:1.0.0'
+  api 'host.exp.exponent:expo-contacts:1.0.0'
   api 'host.exp.exponent:expo-ads-admob:1.0.0'
   END UNCOMMENT WHEN DISTRIBUTING */
 
@@ -158,6 +159,7 @@ dependencies {
   api project(':expo-location')
   api project(':expo-barcode-scanner')
   api project(':expo-barcode-scanner-interface')
+  api project(':expo-contacts')
   api project(':expo-ads-admob')
   // WHEN_DISTRIBUTING_REMOVE_TO_HERE
 

@@ -1,8 +1,11 @@
 // @flow
 
-import { NativeModules, Share, Platform } from 'react-native';
+//TODO:Bacon: No React Native
+import { Share } from 'react-native';
+import { NativeModulesProxy, Platform } from 'expo-core';
 import UUID from 'uuid-js';
-const { ExponentContacts } = NativeModules;
+
+const { ExpoContacts } = NativeModulesProxy;
 
 type CalendarFormatType =
   | typeof CalendarFormats.Gregorian
@@ -251,12 +254,12 @@ export async function shareContactAsync(
       shareOptions
     );
   } else {
-    return ExponentContacts.shareContactAsync(contactId, message);
+    return ExpoContacts.shareContactAsync(contactId, message);
   }
 }
 
 export function getContactsAsync(contactQuery: ContactQuery = {}): Promise<ContactResponse> {
-  return ExponentContacts.getContactsAsync(contactQuery);
+  return ExpoContacts.getContactsAsync(contactQuery);
 }
 
 export function getPagedContactsAsync(contactQuery: ContactQuery = {}): Promise<ContactResponse> {
@@ -276,7 +279,7 @@ export async function getContactByIdAsync(id: string, fields?: FieldType): Promi
   if (id == null) {
     throw new Error('Error: Contacts.getContactByIdAsync: Please pass an ID as a parameter');
   } else {
-    const results = await NativeModules.ExponentContacts.getContactsAsync({
+    const results = await ExpoContacts.getContactsAsync({
       pageSize: 1,
       pageOffset: 0,
       fields,
@@ -290,19 +293,19 @@ export async function getContactByIdAsync(id: string, fields?: FieldType): Promi
 }
 
 export function addContactAsync(contact: Contact, containerId: string): Promise<string> {
-  return ExponentContacts.addContactAsync(contact, containerId);
+  return ExpoContacts.addContactAsync(contact, containerId);
 }
 
 export function updateContactAsync(contact: Contact): Promise<string> {
-  return ExponentContacts.updateContactAsync(contact);
+  return ExpoContacts.updateContactAsync(contact);
 }
 
 export function removeContactAsync(contactId: string): Promise<any> {
-  return ExponentContacts.removeContactAsync(contactId);
+  return ExpoContacts.removeContactAsync(contactId);
 }
 
 export function writeContactToFileAsync(contactQuery: ContactQuery = {}): Promise<?string> {
-  return ExponentContacts.writeContactToFileAsync(contactQuery);
+  return ExpoContacts.writeContactToFileAsync(contactQuery);
 }
 
 // TODO: Evan: Test
@@ -327,9 +330,9 @@ export function presentFormAsync(
         );
       }
     }
-    return ExponentContacts.presentFormAsync(contactId, contact, adjustedOptions);
+    return ExpoContacts.presentFormAsync(contactId, contact, adjustedOptions);
   } else {
-    return ExponentContacts.presentFormAsync(contactId, contact, formOptions);
+    return ExpoContacts.presentFormAsync(contactId, contact, formOptions);
   }
 }
 
@@ -340,7 +343,7 @@ export function addExistingGroupToContainerAsync(
   containerId: string
 ): Promise<any> {
   if (isIos) {
-    return ExponentContacts.addExistingGroupToContainerAsync(groupId, containerId);
+    return ExpoContacts.addExistingGroupToContainerAsync(groupId, containerId);
   } else {
     throw new Error('Error: Contacts.addExistingGroupToContainerAsync: iOS Only');
   }
@@ -351,7 +354,7 @@ export async function createGroupAsync(name: ?string, containerId: ?string): Pro
     name = name || UUID.create().toString();
     if (!containerId) containerId = await getDefaultContainerIdAsync();
 
-    return ExponentContacts.createGroupAsync(name, containerId);
+    return ExpoContacts.createGroupAsync(name, containerId);
   } else {
     throw new Error('Error: Contacts.createGroupAsync: iOS Only');
   }
@@ -359,7 +362,7 @@ export async function createGroupAsync(name: ?string, containerId: ?string): Pro
 
 export function updateGroupNameAsync(groupName: string, groupId: string): Promise<any> {
   if (isIos) {
-    return ExponentContacts.updateGroupNameAsync(groupName, groupId);
+    return ExpoContacts.updateGroupNameAsync(groupName, groupId);
   } else {
     throw new Error('Error: Contacts.updateGroupNameAsync: iOS Only');
   }
@@ -367,7 +370,7 @@ export function updateGroupNameAsync(groupName: string, groupId: string): Promis
 
 export function removeGroupAsync(groupId: string): Promise<any> {
   if (isIos) {
-    return ExponentContacts.removeGroupAsync(groupId);
+    return ExpoContacts.removeGroupAsync(groupId);
   } else {
     throw new Error('Error: Contacts.removeGroupAsync: iOS Only');
   }
@@ -375,7 +378,7 @@ export function removeGroupAsync(groupId: string): Promise<any> {
 
 export function addExistingContactToGroupAsync(contactId: string, groupId: string): Promise<any> {
   if (isIos) {
-    return ExponentContacts.addExistingContactToGroupAsync(contactId, groupId);
+    return ExpoContacts.addExistingContactToGroupAsync(contactId, groupId);
   } else {
     throw new Error('Error: Contacts.addExistingContactToGroupAsync: iOS Only');
   }
@@ -383,7 +386,7 @@ export function addExistingContactToGroupAsync(contactId: string, groupId: strin
 
 export function removeContactFromGroupAsync(contactId: string, groupId: string): Promise<any> {
   if (isIos) {
-    return ExponentContacts.removeContactFromGroupAsync(contactId, groupId);
+    return ExpoContacts.removeContactFromGroupAsync(contactId, groupId);
   } else {
     throw new Error('Error: Contacts.removeContactFromGroupAsync: iOS Only');
   }
@@ -391,7 +394,7 @@ export function removeContactFromGroupAsync(contactId: string, groupId: string):
 
 export function getGroupsAsync(groupQuery: GroupQuery): Promise<Group[]> {
   if (isIos) {
-    return ExponentContacts.getGroupsAsync(groupQuery);
+    return ExpoContacts.getGroupsAsync(groupQuery);
   } else {
     throw new Error('Error: Contacts.getGroupsAsync: iOS Only');
   }
@@ -399,7 +402,7 @@ export function getGroupsAsync(groupQuery: GroupQuery): Promise<Group[]> {
 
 export function getDefaultContainerIdAsync(): Promise<string> {
   if (isIos) {
-    return ExponentContacts.getDefaultContainerIdentifierAsync();
+    return ExpoContacts.getDefaultContainerIdentifierAsync();
   } else {
     throw new Error('Error: Contacts.getDefaultContainerIdAsync: iOS Only');
   }
@@ -407,7 +410,7 @@ export function getDefaultContainerIdAsync(): Promise<string> {
 
 export function getContainersAsync(containerQuery: ContainerQuery): Promise<Container[]> {
   if (isIos) {
-    return ExponentContacts.getContainersAsync(containerQuery);
+    return ExpoContacts.getContainersAsync(containerQuery);
   } else {
     throw new Error('Error: Contacts.getContainersAsync: iOS Only');
   }
