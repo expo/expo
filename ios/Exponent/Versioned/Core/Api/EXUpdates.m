@@ -94,12 +94,6 @@ RCT_EXPORT_METHOD(fetchUpdateAsync:(RCTPromiseResolveBlock)resolve
       resolve(nil);
       return;
     }
-    
-    if ([self->_manifest[@"bundleUrl"] isEqualToString:manifest[@"bundleUrl"]]) {
-      [self sendEventWithBody:@{ @"type": EXUpdatesNotAvailableEventType }];
-      resolve(nil);
-      return;
-    }
 
     void (^progressBlock)(NSDictionary * _Nonnull) = ^void(NSDictionary * _Nonnull progressDict) {
       NSMutableDictionary *eventBody = [progressDict mutableCopy];
