@@ -163,7 +163,7 @@ module.exports = {
     return require('expo-constants').Constants;
   },
   get Contacts() {
-    return require('./Contacts');
+    return require('expo-contacts').Contacts;
   },
   get DangerZone() {
     return require('./DangerZone');
