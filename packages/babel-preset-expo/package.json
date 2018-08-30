@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/expo/expo/tree/master/packages/babel-preset-expo#readme",
   "jest": {
+    "testEnvironment": "node",
     "testPathIgnorePatterns": [
       "<rootDir>/node_modules/",
       "<rootDir>/__tests__/samples/"
@@ -37,6 +38,6 @@
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
-    "jest": "^23.5.0"
+    "jest": "^22.4.2"
   }
 }

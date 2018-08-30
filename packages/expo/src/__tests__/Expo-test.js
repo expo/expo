@@ -1,8 +1,7 @@
-// This list lets us skip over exports that throw an error when we import them,
-// which can happen when we add or change a native module and haven't yet
-// updated the mocks in jest-expo. This list is a temporary workaround, not a
-// way to indefinitely avoid testing modules.
-const skippedExports = [];
+// This list lets us skip over exports that throw an error when we import them, which can happen
+// when we add or change a native module and haven't yet updated the mocks in jest-expo. This list
+// is a temporary workaround, not a way to indefinitely avoid testing modules.
+const skippedExports = ['GestureHandler', 'MapView'];
 
 describe(`Expo APIs`, () => {
   const Expo = require('../Expo');

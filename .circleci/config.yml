@@ -14,8 +14,7 @@ anchors:
       name: Set up the environment
       command: |
         # Clone the submodules
-        git submodule init
-        git submodule update --remote
+        git submodule update --init --remote --depth 1
 
         # Trust all of the .envrc files for direnv
         find . -name '.envrc' -exec direnv allow {} \;
