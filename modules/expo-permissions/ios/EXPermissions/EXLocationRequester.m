@@ -22,10 +22,9 @@
   NSString *scope = @"none";
   
   CLAuthorizationStatus systemStatus;
-  NSString *alwaysUsageDescription = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationAlwaysUsageDescription"];
   NSString *whenInUseUsageDescription = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationWhenInUseUsageDescription"];
-  if (!(alwaysUsageDescription || whenInUseUsageDescription)) {
-    EXFatal(EXErrorWithMessage(@"This app is missing NSLocationAlwaysUsageDescription or NSLocationWhenInUseUsageDescription, so location services will fail. Add one of these keys to your bundle's Info.plist."));
+  if (!whenInUseUsageDescription) {
+    EXFatal(EXErrorWithMessage(@"This app is missing NSLocationWhenInUseUsageDescription, so location services will fail. Add one of these keys to your bundle's Info.plist."));
     systemStatus = kCLAuthorizationStatusDenied;
   } else {
     systemStatus = [CLLocationManager authorizationStatus];
@@ -78,14 +77,11 @@
     _locMgr = [[CLLocationManager alloc] init];
     _locMgr.delegate = self;
 
-    if ([[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationAlwaysUsageDescription"] &&
-        [_locMgr respondsToSelector:@selector(requestAlwaysAuthorization)]) {
-        [_locMgr requestAlwaysAuthorization];
-    } else if ([[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationWhenInUseUsageDescription"] &&
+    if ([[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationWhenInUseUsageDescription"] &&
                [_locMgr respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
         [_locMgr requestWhenInUseAuthorization];
     } else {
-      _reject(@"E_LOCATION_INFO_PLIST", @"Either NSLocationWhenInUseUsageDescription or NSLocationAlwaysUsageDescription key must be present in Info.plist to use geolocation.", nil);
+      _reject(@"E_LOCATION_INFO_PLIST", @"Either NSLocationWhenInUseUsageDescription key must be present in Info.plist to use geolocation.", nil);
       if (_delegate) {
         [_delegate permissionRequesterDidFinish:self];
       }
