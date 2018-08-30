@@ -16,7 +16,8 @@
       "home",
       "modules/*",
       "packages/*",
-      "react-native-lab/react-native"
+      "react-native-lab/react-native",
+      "tools-public"
     ]
   },
   "devDependencies": {
