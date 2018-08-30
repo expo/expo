@@ -3,6 +3,7 @@ package abi25_0_0.host.exp.exponent.modules.api.components.payments.dialog;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
@@ -43,12 +44,14 @@ public class AddCardDialogFragment extends DialogFragment {
   private boolean successful;
   private CardFlipAnimator cardFlipAnimator;
   private Button doneButton;
+  private Context mContext;
 
-  public static AddCardDialogFragment newInstance(final String PUBLISHABLE_KEY) {
+  public static AddCardDialogFragment newInstance(final String PUBLISHABLE_KEY, Context context) {
     Bundle args = new Bundle();
     args.putString(KEY, PUBLISHABLE_KEY);
     AddCardDialogFragment fragment = new AddCardDialogFragment();
     fragment.setArguments(args);
+    fragment.setContext(context);
     return fragment;
   }
 
@@ -56,6 +59,8 @@ public class AddCardDialogFragment extends DialogFragment {
   public void setPromise(Promise promise) {
     this.promise = promise;
   }
+
+
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
@@ -163,7 +168,7 @@ public class AddCardDialogFragment extends DialogFragment {
 
     String errorMessage = Utils.validateCard(card);
     if (errorMessage == null) {
-      new Stripe().createToken(
+      new Stripe(mContext).createToken(
           card,
           PUBLISHABLE_KEY,
           new TokenCallback() {
@@ -209,5 +214,9 @@ public class AddCardDialogFragment extends DialogFragment {
       progressBar.setVisibility(View.GONE);
       Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_LONG).show();
     }
+  }
+
+  public void setContext(Context context) {
+    mContext = context;
   }
 }

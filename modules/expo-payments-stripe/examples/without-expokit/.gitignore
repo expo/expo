@@ -1,0 +1,12 @@
+node_modules/**/*
+.expo/*
+npm-debug.*
+android/app/build
+ios/Pods
+android/.idea/caches/
+# Android Studio
+/*/build/
+/*/local.properties
+/*/out
+/*/*/build
+/*/*/production

@@ -2,6 +2,7 @@ package abi26_0_0.host.exp.exponent.modules.api.components.payments;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -36,14 +37,13 @@ import com.google.android.gms.wallet.PaymentMethodTokenizationParameters;
 import com.google.android.gms.wallet.PaymentMethodTokenizationType;
 import com.google.android.gms.wallet.Wallet;
 import com.google.android.gms.wallet.WalletConstants;
+import com.stripe.android.BuildConfig;
 import com.stripe.android.Stripe;
 import com.stripe.android.TokenCallback;
 import com.stripe.android.exception.AuthenticationException;
 import com.stripe.android.model.BankAccount;
 import com.stripe.android.model.Card;
 import com.stripe.android.model.Token;
-import com.stripe.android.net.StripeApiHandler;
-import com.stripe.android.net.TokenParser;
 
 import org.json.JSONException;
 
@@ -94,14 +94,9 @@ public class StripeModule extends ReactContextBaseJavaModule {
             //A token will only be returned in production mode,
             //i.e. WalletConstants.ENVIRONMENT_PRODUCTION
             if (mEnvironment == WalletConstants.ENVIRONMENT_PRODUCTION) {
-              try {
-                Token token = TokenParser.parseToken(tokenJSON);
-                Log.d(TAG, "onActivityResult: Stripe Token: " + token.toString());
-                payPromise.resolve(token.toString());
-              } catch (JSONException jsonException) {
-                // Log the error and notify Stripe helpß
-                Log.e(TAG, "onActivityResult: ", jsonException);
-              }
+              Token token = Token.fromString(tokenJSON);
+              Log.d(TAG, "onActivityResult: Stripe Token: " + token.toString());
+              payPromise.resolve(token.toString());
             }
           }
         } else {
@@ -110,11 +105,12 @@ public class StripeModule extends ReactContextBaseJavaModule {
       }
     }
   };
+  private Context mContext;
 
 
   public StripeModule(ReactApplicationContext reactContext) {
     super(reactContext);
-
+    mContext = reactContext;
     // Add the listener for `onActivityResult`
     reactContext.addActivityEventListener(mActivityEventListener);
   }
@@ -127,11 +123,7 @@ public class StripeModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void initialize(ReadableMap options) {
     publicKey = options.getString("publishableKey");
-    try {
-      stripe = new Stripe(publicKey);
-    } catch (AuthenticationException e) {
-      Log.e(TAG, "initialize: ", e);
-    }
+    stripe = new Stripe(mContext, publicKey);
   }
 
   @ReactMethod
@@ -229,7 +221,7 @@ public class StripeModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void paymentRequestWithCardFormAsync(ReadableMap unused, final Promise promise) {
     if (getCurrentActivity() != null) {
-      final AddCardDialogFragment cardDialog = AddCardDialogFragment.newInstance(publicKey);
+      final AddCardDialogFragment cardDialog = AddCardDialogFragment.newInstance(publicKey, getReactApplicationContext());
       cardDialog.setPromise(promise);
       cardDialog.show(getCurrentActivity().getFragmentManager(), "AddNewCard");
     }
@@ -296,7 +288,7 @@ public class StripeModule extends ReactContextBaseJavaModule {
             .setPaymentMethodTokenizationType(PaymentMethodTokenizationType.PAYMENT_GATEWAY)
             .addParameter("gateway", "stripe")
             .addParameter("stripe:publishableKey", publicKey)
-            .addParameter("stripe:version", StripeApiHandler.VERSION)
+            .addParameter("stripe:version", BuildConfig.VERSION_NAME)
             .build())
         // You want the shipping address:
         .setShippingAddressRequired(true)
@@ -418,7 +410,8 @@ public class StripeModule extends ReactContextBaseJavaModule {
         exist(cardData, "fingerprint"),
         exist(cardData, "funding"),
         exist(cardData, "country"),
-        exist(cardData, "currency")
+        exist(cardData, "currency"),
+        exist(cardData, "id")
     );
   }
 

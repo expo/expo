@@ -19,8 +19,8 @@ module.exports = {
   get Localization() {
     return require('./Localization').default;
   },
-  get Payments() {
-    return require('./Payments');
+  get Stripe() {
+    return require('expo-payments-stripe').PaymentsStripe;
   },
   get Print() {
     console.warn(

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>DEFAULT_API_KEYS</key>
+	<dict>
+		<key>AMPLITUDE_KEY</key>
+		<string>1e246ef3dacaabe8648768d7c35fceb1</string>
+		<key>GOOGLE_MAPS_IOS_API_KEY</key>
+		<string></string>
+	</dict>
+	<key>EXPO_RUNTIME_VERSION</key>
+	<string>2.7.0</string>
+	<key>STANDALONE_CONTEXT_TYPE</key>
+	<string>user</string>
+	<key>developmentUrl</key>
+	<string>expb30bd136a19a44adba16125e3f75abc5://192.168.83.158:19000</string>
+</dict>
+</plist>

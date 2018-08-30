@@ -1,5 +1,6 @@
 package expo.core.interfaces.services;
 
+import expo.core.interfaces.ActivityEventListener;
 import expo.core.interfaces.LifecycleEventListener;
 
 public interface UIManager {
@@ -13,4 +14,5 @@ public interface UIManager {
   void runOnClientCodeQueueThread(Runnable runnable);
   void registerLifecycleEventListener(LifecycleEventListener listener);
   void unregisterLifecycleEventListener(LifecycleEventListener listener);
+  void registerActivityEventListener(ActivityEventListener activityEventListener);
 }

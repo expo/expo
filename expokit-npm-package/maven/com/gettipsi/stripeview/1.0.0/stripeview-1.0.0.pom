@@ -26,9 +26,9 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>com.github.thefuntasty</groupId>
+      <groupId>com.github.tipsi</groupId>
       <artifactId>CreditCardEntry</artifactId>
-      <version>1.4.8.6</version>
+      <version>1.4.8.10</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>

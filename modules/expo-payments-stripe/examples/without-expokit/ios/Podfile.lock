@@ -1,0 +1,148 @@
+PODS:
+  - boost-for-react-native (1.63.0)
+  - DoubleConversion (1.1.5)
+  - EXCore (1.0.1)
+  - EXImageLoaderInterface (1.0.0):
+    - EXCore
+  - EXPaymentsStripe (1.0.0):
+    - EXCore
+    - Stripe (~> 13.0.3)
+  - EXPermissions (1.0.1):
+    - EXCore
+    - EXPermissionsInterface
+  - EXPermissionsInterface (1.0.1):
+    - EXCore
+  - EXReactNativeAdapter (1.0.1):
+    - EXCore
+    - React
+  - Folly (2016.09.26.00):
+    - boost-for-react-native
+    - DoubleConversion
+    - glog
+  - glog (0.3.4)
+  - React (0.55.4):
+    - React/Core (= 0.55.4)
+  - React/ART (0.55.4):
+    - React/Core
+  - React/Core (0.55.4):
+    - yoga (= 0.55.4.React)
+  - React/CxxBridge (0.55.4):
+    - Folly (= 2016.09.26.00)
+    - React/Core
+    - React/cxxreact
+  - React/cxxreact (0.55.4):
+    - boost-for-react-native (= 1.63.0)
+    - Folly (= 2016.09.26.00)
+    - React/jschelpers
+    - React/jsinspector
+  - React/DevSupport (0.55.4):
+    - React/Core
+    - React/RCTWebSocket
+  - React/fishhook (0.55.4)
+  - React/jschelpers (0.55.4):
+    - Folly (= 2016.09.26.00)
+    - React/PrivateDatabase
+  - React/jsinspector (0.55.4)
+  - React/PrivateDatabase (0.55.4)
+  - React/RCTActionSheet (0.55.4):
+    - React/Core
+  - React/RCTAnimation (0.55.4):
+    - React/Core
+  - React/RCTBlob (0.55.4):
+    - React/Core
+  - React/RCTCameraRoll (0.55.4):
+    - React/Core
+    - React/RCTImage
+  - React/RCTGeolocation (0.55.4):
+    - React/Core
+  - React/RCTImage (0.55.4):
+    - React/Core
+    - React/RCTNetwork
+  - React/RCTLinkingIOS (0.55.4):
+    - React/Core
+  - React/RCTNetwork (0.55.4):
+    - React/Core
+  - React/RCTText (0.55.4):
+    - React/Core
+  - React/RCTVibration (0.55.4):
+    - React/Core
+  - React/RCTWebSocket (0.55.4):
+    - React/Core
+    - React/fishhook
+    - React/RCTBlob
+  - Stripe (13.0.3)
+  - yoga (0.55.4.React)
+
+DEPENDENCIES:
+  - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
+  - EXCore (from `../node_modules/expo-core/ios`)
+  - EXImageLoaderInterface (from `../node_modules/expo-image-loader-interface/ios`)
+  - EXPaymentsStripe (from `../node_modules/expo-payments-stripe/ios`)
+  - EXPermissions (from `../node_modules/expo-permissions/ios`)
+  - EXPermissionsInterface (from `../node_modules/expo-permissions-interface/ios`)
+  - EXReactNativeAdapter (from `../node_modules/expo-react-native-adapter/ios`)
+  - Folly (from `../node_modules/react-native/third-party-podspecs/Folly.podspec`)
+  - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
+  - React/ART (from `../node_modules/react-native`)
+  - React/Core (from `../node_modules/react-native`)
+  - React/CxxBridge (from `../node_modules/react-native`)
+  - React/DevSupport (from `../node_modules/react-native`)
+  - React/RCTActionSheet (from `../node_modules/react-native`)
+  - React/RCTAnimation (from `../node_modules/react-native`)
+  - React/RCTCameraRoll (from `../node_modules/react-native`)
+  - React/RCTGeolocation (from `../node_modules/react-native`)
+  - React/RCTImage (from `../node_modules/react-native`)
+  - React/RCTLinkingIOS (from `../node_modules/react-native`)
+  - React/RCTNetwork (from `../node_modules/react-native`)
+  - React/RCTText (from `../node_modules/react-native`)
+  - React/RCTVibration (from `../node_modules/react-native`)
+  - React/RCTWebSocket (from `../node_modules/react-native`)
+  - yoga (from `../node_modules/react-native/ReactCommon/yoga`)
+
+SPEC REPOS:
+  https://github.com/CocoaPods/Specs.git:
+    - boost-for-react-native
+    - Stripe
+
+EXTERNAL SOURCES:
+  DoubleConversion:
+    :podspec: "../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec"
+  EXCore:
+    :path: "../node_modules/expo-core/ios"
+  EXImageLoaderInterface:
+    :path: "../node_modules/expo-image-loader-interface/ios"
+  EXPaymentsStripe:
+    :path: "../node_modules/expo-payments-stripe/ios"
+  EXPermissions:
+    :path: "../node_modules/expo-permissions/ios"
+  EXPermissionsInterface:
+    :path: "../node_modules/expo-permissions-interface/ios"
+  EXReactNativeAdapter:
+    :path: "../node_modules/expo-react-native-adapter/ios"
+  Folly:
+    :podspec: "../node_modules/react-native/third-party-podspecs/Folly.podspec"
+  glog:
+    :podspec: "../node_modules/react-native/third-party-podspecs/glog.podspec"
+  React:
+    :path: "../node_modules/react-native"
+  yoga:
+    :path: "../node_modules/react-native/ReactCommon/yoga"
+
+SPEC CHECKSUMS:
+  boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
+  DoubleConversion: e22e0762848812a87afd67ffda3998d9ef29170c
+  EXCore: 70e5cb8627048c5373820d6372faa54cbefb3b12
+  EXImageLoaderInterface: e6aa5b14ab3376c4771b18b798aaa6b696d66001
+  EXPaymentsStripe: 7b9a230a1ceadd3ef955fca88b5e30d2f35edf6a
+  EXPermissions: 1c524493270ba64f494f805b6e0e75d4b498ecb5
+  EXPermissionsInterface: 814a15d3259873c39646ed3cfe58bb49160445c1
+  EXReactNativeAdapter: 75eb0f3343ac335516c32fe4b93eb28bacac3f7b
+  Folly: 211775e49d8da0ca658aebc8eab89d642935755c
+  glog: 1de0bb937dccdc981596d3b5825ebfb765017ded
+  React: aa2040dbb6f317b95314968021bd2888816e03d5
+  Stripe: 76c203e21555089b708e6cbe972a3e3baf1ab4d8
+  yoga: a23273df0088bf7f2bb7e5d7b00044ea57a2a54a
+
+PODFILE CHECKSUM: da5f410b3802a07dcbe0859655b25cf3c5920a40
+
+COCOAPODS: 1.5.0

@@ -12,6 +12,7 @@ import com.facebook.imagepipeline.core.ImagePipeline;
 import com.facebook.imagepipeline.datasource.BaseBitmapDataSubscriber;
 import com.facebook.imagepipeline.image.CloseableImage;
 import com.facebook.imagepipeline.request.ImageRequest;
+import android.content.Intent;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.modules.core.PermissionAwareActivity;
 import com.facebook.react.modules.core.PermissionListener;
@@ -19,9 +20,16 @@ import com.facebook.react.uimanager.NativeViewHierarchyManager;
 import com.facebook.react.uimanager.UIManagerModule;
 
 import java.lang.ref.WeakReference;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
 
-import expo.core.interfaces.*;
+import expo.core.interfaces.ActivityEventListener;
+import expo.core.interfaces.ActivityProvider;
+import expo.core.interfaces.InternalModule;
+import expo.core.interfaces.LifecycleEventListener;
+import expo.core.interfaces.JavaScriptContextProvider;
 import expo.core.interfaces.services.UIManager;
 import expo.interfaces.imageloader.ImageLoader;
 import expo.interfaces.permissions.PermissionsManager;
@@ -137,6 +145,21 @@ public class UIManagerModuleWrapper implements
   public void unregisterLifecycleEventListener(LifecycleEventListener listener) {
     getContext().removeLifecycleEventListener(mLifecycleListenersMap.get(listener));
     mLifecycleListenersMap.remove(listener);
+  }
+
+  @Override
+  public void registerActivityEventListener(final ActivityEventListener activityEventListener) {
+    mReactContext.addActivityEventListener(new com.facebook.react.bridge.ActivityEventListener() {
+      @Override
+      public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
+        activityEventListener.onActivityResult(activity, requestCode, resultCode, data);
+      }
+
+      @Override
+      public void onNewIntent(Intent intent) {
+
+      }
+    });
   }
 
   @Override

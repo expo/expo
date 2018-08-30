@@ -1,0 +1,24 @@
+rootProject.name = 'example'
+
+include ':app'
+
+include ':expo-payments-stripe'
+project(':expo-payments-stripe').projectDir = new File(rootProject.projectDir, '../node_modules/expo-payments-stripe/android')
+
+include ':expo-core'
+project(':expo-core').projectDir = new File(rootProject.projectDir, '../node_modules/expo-core/android')
+
+include ':expo-react-native-adapter'
+project(':expo-react-native-adapter').projectDir = new File(rootProject.projectDir, '../node_modules/expo-react-native-adapter/android')
+
+include ':expo-permissions'
+project(':expo-permissions').projectDir = new File(rootProject.projectDir, '../node_modules/expo-permissions/android')
+
+include ':expo-permissions-interface'
+project(':expo-permissions-interface').projectDir = new File(rootProject.projectDir, '../node_modules/expo-permissions-interface/android')
+
+include ':expo-image-loader-interface'
+project(':expo-image-loader-interface').projectDir = new File(rootProject.projectDir, '../node_modules/expo-image-loader-interface/android')
+
+include ':expo-font-interface'
+project(':expo-font-interface').projectDir = new File(rootProject.projectDir, '../node_modules/expo-font-interface/android')

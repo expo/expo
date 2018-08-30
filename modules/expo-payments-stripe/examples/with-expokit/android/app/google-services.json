@@ -1,0 +1,50 @@
+{
+  "project_info": {
+    "project_id": "exponent-5dd6d",
+    "project_number": "367315174693",
+    "name": "Exponent Play Services"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:367315174693:android:f968efbb41d1fa7a",
+        "client_id": "android:host.exp.exponent",
+        "client_type": 1,
+        "android_client_info": {
+          "package_name": "host.exp.exponent.payments.stripe.examples.expokit",
+          "certificate_hash": ""
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": ""
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 2,
+          "analytics_property": {
+            "tracking_id": "UA-76673608-1"
+          }
+        },
+        "cloud_messaging_service": {
+          "status": 2,
+          "apns_config": []
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "google_signin_service": {
+          "status": 1
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "client_info": [],
+  "ARTIFACT_VERSION": "1"
+}

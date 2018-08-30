@@ -1,0 +1,197 @@
+buildscript {
+  repositories {
+    google()
+    maven { url 'https://maven.fabric.io/public' }
+  }
+
+  dependencies {
+    classpath 'io.fabric.tools:gradle:1.+'
+  }
+}
+apply plugin: 'com.android.application'
+apply plugin: 'io.fabric'
+
+repositories {
+  maven { url 'https://maven.fabric.io/public' }
+}
+
+android {
+  compileSdkVersion 27
+  buildToolsVersion '27.0.3'
+
+  defaultConfig {
+    applicationId 'host.exp.exponent.payments.stripe.examples.expokit'
+    targetSdkVersion 26
+    versionCode 1
+    versionName '1.0.0'
+    ndk {
+      abiFilters 'armeabi-v7a', 'x86'
+    }
+    multiDexEnabled true
+    testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    // Deprecated. Used by net.openid:appauth
+    manifestPlaceholders = [
+      'appAuthRedirectScheme': 'host.exp.exponent'
+    ]
+  }
+  dexOptions {
+    javaMaxHeapSize System.getenv("DISABLE_DEX_MAX_HEAP") ? null : "8g"
+  }
+
+  flavorDimensions 'minSdk', 'remoteKernel'
+  productFlavors {
+    devKernel {
+      dimension 'remoteKernel'
+    }
+    prodKernel {
+      dimension 'remoteKernel'
+    }
+    devMinSdk {
+      dimension 'minSdk'
+      // dev utilizes minSDKVersion = 21 to allow the Android gradle plugin
+      // to pre-dex each module and produce an APK that can be tested on
+      // Android Lollipop without time consuming dex merging processes.
+      minSdkVersion 21
+    }
+    prodMinSdk {
+      dimension 'minSdk'
+      minSdkVersion 19
+    }
+  }
+  buildTypes {
+    debug {
+      debuggable true
+      ext.enableCrashlytics = false
+    }
+    release {
+      /*minifyEnabled true
+      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'*/
+      zipAlignEnabled true
+    }
+  }
+  signingConfigs {
+    debug {
+      storeFile file('../debug.keystore')
+    }
+  }
+  lintOptions {
+    abortOnError false
+  }
+  packagingOptions {
+    pickFirst "**"
+  }
+
+    configurations.all {
+        resolutionStrategy.force 'com.android.support:design:27.1.0'
+    }
+
+}
+
+// Don't use modern jsc-android since it still has some critical bugs that
+// crash applications when the string for the JS bundle is loaded and when
+// locale-specific date functions are called.
+// configurations.all {
+//   resolutionStrategy {
+//     force 'org.webkit:android-jsc:r216113'
+//   }
+// }
+
+
+apply from: 'expo.gradle'
+
+
+dependencies {
+  implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+  implementation project(':expo-permissions')
+  implementation project(':expo-permissions-interface')
+  implementation project(':expo-payments-stripe')
+  implementation project(':expo-core')
+  implementation project(':expo-react-native-adapter')
+  implementation 'com.android.support:multidex:1.0.3'
+
+  // Our dependencies
+
+  // Our dependencies from ExpoView
+  // DON'T ADD ANYTHING HERE THAT ISN'T IN EXPOVIEW. ONLY COPY THINGS FROM EXPOVIEW TO HERE.
+  implementation 'com.android.support:appcompat-v7:27.1.1'
+  implementation 'com.facebook.android:facebook-android-sdk:4.34.0'
+  implementation('com.facebook.android:audience-network-sdk:4.99.0') {
+    exclude module: 'play-services-ads'
+  }
+  compileOnly 'org.glassfish:javax.annotation:3.1.1'
+  implementation 'com.jakewharton:butterknife:8.4.0'
+  implementation 'de.greenrobot:eventbus:2.4.0'
+  implementation 'com.amplitude:android-sdk:2.9.2' // Be careful when upgrading! Upgrading might break experience scoping. Check with Jesse. See Analytics.resetAmplitudeDatabaseHelper
+  implementation 'com.squareup.picasso:picasso:2.5.2'
+  implementation 'com.google.android.gms:play-services-gcm:15.0.1'
+  implementation 'com.google.android.gms:play-services-analytics:16.0.1'
+  implementation 'com.google.android.gms:play-services-maps:15.0.1'
+  implementation 'com.google.android.gms:play-services-auth:15.0.1'
+  implementation 'com.google.android.gms:play-services-location:15.0.1'
+  implementation 'com.google.android.gms:play-services-ads:15.0.1'
+  annotationProcessor 'com.raizlabs.android:DBFlow-Compiler:2.2.1'
+  implementation "com.raizlabs.android:DBFlow-Core:2.2.1"
+  implementation "com.raizlabs.android:DBFlow:2.2.1"
+  implementation "com.madgag.spongycastle:core:1.53.0.0"
+  implementation "com.madgag.spongycastle:prov:1.53.0.0"
+  debugImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta1'
+  // debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.4-beta1'
+  releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta1'
+  implementation 'com.facebook.device.yearclass:yearclass:1.0.1'
+  implementation 'commons-io:commons-io:1.3.2'
+  implementation 'me.leolin:ShortcutBadger:1.1.4@aar'
+  implementation 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
+  implementation 'com.theartofdev.edmodo:android-image-cropper:2.4.7'
+  implementation 'com.yqritc:android-scalablevideoview:1.0.1'
+  implementation 'commons-codec:commons-codec:1.10'
+  implementation 'com.segment.analytics.android:analytics:4.3.0'
+  implementation 'com.google.zxing:core:3.2.1'
+  implementation 'net.openid:appauth:0.4.1'
+  implementation('com.airbnb.android:lottie:2.5.5')  {
+      exclude group: 'com.android.support', module: 'appcompat-v7'
+  }
+  implementation 'io.branch.sdk.android:library:2.17.1'
+  implementation('io.nlopez.smartlocation:library:3.2.11') {
+    transitive = false
+  }
+  implementation 'com.android.support:exifinterface:27.1.1'
+  implementation 'com.squareup.okhttp3:okhttp:3.4.1'
+  implementation 'com.squareup.okhttp3:okhttp-urlconnection:3.4.1'
+  implementation 'com.squareup.okhttp3:okhttp-ws:3.4.1'
+  implementation 'com.squareup.okio:okio:1.9.0'
+
+  // Testing
+  androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+  // We use a modified build of com.android.support.test:runner:1.0.1. Explanation in maven-test/README
+  androidTestImplementation 'com.android.support.test:runner:1.0.1'
+  androidTestImplementation 'com.android.support:support-annotations:27.1.1'
+  androidTestImplementation 'com.google.code.findbugs:jsr305:3.0.0'
+  androidTestImplementation 'com.android.support.test.uiautomator:uiautomator-v18:2.1.1'
+  androidTestImplementation 'com.azimolabs.conditionwatcher:conditionwatcher:0.2'
+
+  testImplementation 'junit:junit:4.12'
+  testImplementation 'org.mockito:mockito-core:1.10.19'
+  testImplementation 'org.robolectric:robolectric:3.8'
+  testImplementation 'com.android.support.test:runner:1.0.2-alpha1'
+  testImplementation 'com.android.support.test:rules:1.0.2-alpha1'
+
+
+  implementation('host.exp.exponent:expoview:29.0.0@aar') {
+    transitive = true
+    exclude group: 'com.squareup.okhttp3', module: 'okhttp'
+    exclude group: 'com.github.thefuntasty', module: 'CreditCardEntry'
+    exclude group: 'com.squareup.okhttp3', module: 'okhttp-urlconnection'
+  }
+
+  /* REMOVED_WHEN_DISTRIBUTING_FROM_HERE
+  implementation(project(path: ':expoview')) {
+    // Excluding okhttp3 included by expo-file-system
+    exclude group: 'com.squareup.okhttp3', module: 'okhttp'
+    exclude group: 'com.squareup.okhttp3', module: 'okhttp-urlconnection'
+  }
+  REMOVED_WHEN_DISTRIBUTING_TO_HERE */
+}
+
+// This has to be down here for some reason
+apply plugin: 'com.google.gms.google-services'

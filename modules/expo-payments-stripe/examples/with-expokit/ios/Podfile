@@ -1,0 +1,140 @@
+source 'https://github.com/CocoaPods/Specs.git'
+platform :ios, '9.0'
+
+target 'with-expokit' do
+  pod 'ExpoKit',
+    :git => "http://github.com/expo/expo.git",
+    :tag => "ios/2.7.0",
+    :subspecs => [
+      "Core"
+    ],
+    :inhibit_warnings => true
+  pod 'EXGL',
+    :path => "../node_modules/expo-gl/ios",
+    :inhibit_warnings => true
+  pod 'EXCore',
+    :path => "../node_modules/expo-core/ios",
+    :inhibit_warnings => true
+  pod 'EXCamera',
+    :path => "../node_modules/expo-camera/ios",
+    :inhibit_warnings => true
+  pod 'EXSensors',
+    :path => "../node_modules/expo-sensors/ios",
+    :inhibit_warnings => true
+  pod 'EXConstants',
+    :path => "../node_modules/expo-constants/ios",
+    :inhibit_warnings => true
+  pod 'EXFileSystem',
+    :path => "../node_modules/expo-file-system/ios",
+    :inhibit_warnings => true
+  pod 'EXPermissions',
+    :path => "../node_modules/expo-permissions/ios",
+    :inhibit_warnings => true
+  pod 'EXPaymentsStripe',
+    :path => "../node_modules/expo-payments-stripe/ios",
+    :inhibit_warnings => true
+  pod 'EXCameraInterface',
+    :path => "../node_modules/expo-camera-interface/ios",
+    :inhibit_warnings => true
+  pod 'EXSensorsInterface',
+    :path => "../node_modules/expo-sensors-interface/ios",
+    :inhibit_warnings => true
+  pod 'EXConstantsInterface',
+    :path => "../node_modules/expo-constants-interface/ios",
+    :inhibit_warnings => true
+  pod 'EXReactNativeAdapter',
+    :path => "../node_modules/expo-react-native-adapter/ios",
+    :inhibit_warnings => true
+  pod 'EXFileSystemInterface',
+    :path => "../node_modules/expo-file-system-interface/ios",
+    :inhibit_warnings => true
+  pod 'EXPermissionsInterface',
+    :path => "../node_modules/expo-permissions-interface/ios",
+    :inhibit_warnings => true
+  pod 'EXFaceDetectorInterface',
+    :path => "../node_modules/expo-face-detector-interface/ios",
+    :inhibit_warnings => true
+  pod 'EXSMS',
+    :path => "../node_modules/expo-sms/ios",
+    :inhibit_warnings => true
+  pod 'EXGL-CPP',
+    :path => "../node_modules/expo-gl-cpp/cpp",
+    :inhibit_warnings => true
+  pod 'EXImageLoaderInterface',
+    :path => "../node_modules/expo-image-loader-interface/ios",
+    :inhibit_warnings => true
+
+  pod 'React',
+    :path => "../node_modules/react-native",
+    :inhibit_warnings => true,
+    :subspecs => [
+      "Core",
+      "ART",
+      "RCTActionSheet",
+      "RCTAnimation",
+      "RCTCameraRoll",
+      "RCTGeolocation",
+      "RCTImage",
+      "RCTNetwork",
+      "RCTText",
+      "RCTVibration",
+      "RCTWebSocket",
+      "DevSupport",
+      "CxxBridge"
+    ]
+  pod 'yoga',
+    :path => "../node_modules/react-native/ReactCommon/yoga",
+    :inhibit_warnings => true
+  pod 'DoubleConversion',
+    :podspec => "../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec",
+    :inhibit_warnings => true
+  pod 'Folly',
+    :podspec => "../node_modules/react-native/third-party-podspecs/Folly.podspec",
+    :inhibit_warnings => true
+  pod 'glog',
+    :podspec => "../node_modules/react-native/third-party-podspecs/glog.podspec",
+    :inhibit_warnings => true
+
+
+  post_install do |installer|
+    installer.pods_project.main_group.tab_width = '2';
+    installer.pods_project.main_group.indent_width = '2';
+
+    installer.pod_targets.each do |target|
+
+    if target.pod_name == 'ExpoKit'
+      target.native_target.build_configurations.each do |config|
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'EX_DETACHED=1'
+
+        # needed for GoogleMaps 2.x
+        config.build_settings['FRAMEWORK_SEARCH_PATHS'] ||= []
+        config.build_settings['FRAMEWORK_SEARCH_PATHS'] << '${PODS_ROOT}/GoogleMaps/Base/Frameworks'
+        config.build_settings['FRAMEWORK_SEARCH_PATHS'] << '${PODS_ROOT}/GoogleMaps/Maps/Frameworks'
+      end
+    end
+
+
+    if ['Amplitude-iOS','Analytics','AppAuth','Branch','CocoaLumberjack','FBSDKCoreKit','FBSDKLoginKit','FBSDKShareKit','GPUImage','JKBigInteger2'].include? target.pod_name
+      target.native_target.build_configurations.each do |config|
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '9.0'
+      end
+    end
+    # Can't specify this in the React podspec because we need
+    # to use those podspecs for detached projects which don't reference ExponentCPP.
+    if target.pod_name.start_with?('React')
+      target.native_target.build_configurations.each do |config|
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '9.0'
+        config.build_settings['HEADER_SEARCH_PATHS'] ||= ['$(inherited)']
+      end
+    end
+    # Build React Native with RCT_DEV enabled
+    next unless target.pod_name == 'React'
+    target.native_target.build_configurations.each do |config|
+      config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
+      config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'RCT_DEV=1'
+    end
+
+    end
+  end
+end
