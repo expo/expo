@@ -13,6 +13,7 @@ anchors:
       - image: circleci/android:api-26-node8-alpha
 
   - &default_env_vars
+    TERM: ci
     YARN_CACHE_FOLDER: ~/.cache/yarn
 
   - &set_up_environment
