@@ -89,12 +89,6 @@ ABI26_0_0RCT_EXPORT_METHOD(fetchUpdateAsync:(ABI26_0_0RCTPromiseResolveBlock)res
       resolve(nil);
       return;
     }
-    
-    if ([_manifest[@"bundleUrl"] isEqualToString:manifest[@"bundleUrl"]]) {
-      [self sendEventWithBody:@{ @"type": ABI26_0_0EXUpdatesNotAvailableEventType }];
-      resolve(nil);
-      return;
-    }
 
     void (^progressBlock)(NSDictionary * _Nonnull) = ^void(NSDictionary * _Nonnull progressDict) {
       NSMutableDictionary *eventBody = [progressDict mutableCopy];
