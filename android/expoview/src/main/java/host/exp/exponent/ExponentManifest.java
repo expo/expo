@@ -520,7 +520,7 @@ public class ExponentManifest {
         // Sandbox third party apps and consider them verified
         // for https urls, sandboxed id is of form quinlanj.github.io/myProj-myApp
         // for http urls, sandboxed id is of form UNVERIFIED-quinlanj.github.io/myProj-myApp
-        if (!Constants.isDetached()){
+        if (!Constants.isShellApp()){
           String protocol = parsedManifestUrl.getScheme();
           String securityPrefix = protocol.equals("https") || protocol.equals("exps") ? "" : "UNVERIFIED-";
           String path = parsedManifestUrl.getPath() != null ? parsedManifestUrl.getPath() : "";
