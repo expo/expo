@@ -6,46 +6,138 @@ Expo includes support for payments through [Stripe](https://stripe.com/) and [Ap
 
 Need more help than what's on the page? The Payments module is largely based off [tipsi-stripe](https://github.com/tipsi/tipsi-stripe). The documentation and questions there may prove helpful.
 
+We encourage you to look at our [examples](https://github.com/expo/expo-payments-stripe/tree/master/examples) of detached expo app.
+
+_Note_: (Android only) If you are using Expo Client then the setup has already been done for you.
+Also, the way you should use payments is slightly different. Instead of importing
+from `'expo-payments-stripe'` use the following code:
+
+```js
+import { DangerZone } from 'expo';
+const { Stripe } = DangerZone;
+```
+
 ## Setup
 
 If you haven't done payments with Stripe before, create an account with [Stripe](https://dashboard.stripe.com/register). After getting the account set up, navigate to the [Stripe API dashboard](https://dashboard.stripe.com/account/apikeys). Here, you'll need to make a note of the Publishable key and Secret key listed.
 
 ## Adding the Payments Module on iOS
 
-The Payments module is currently only supported through ExpoKit on iOS (to understand why, refer to [Why ExpoKit on iOS?](#why-expokit-on-ios)).
+The Payments module is currently only supported through `EXPaymentsStripe` pod on iOS.
 
-First, detach your Expo project using ExpoKit (refer to [Detach to ExpoKit]('../guides/detach.md') for more information). Then, navigate to and open `your-project-name/ios/Podfile`. Add "Payments" to your Podfile's subspecs. Example:
+First, detach your Expo project using ExpoKit (refer to [Detach to ExpoKit]('../guides/detach.md') for more information). Then, add `expo-payments-stripe` to the list of dependencies of your project and install the dependencies. Then, navigate to and open `your-project-name/ios/Podfile`. Add `EXPaymentsStripe` to your Podfile's subspecs. Example:
 
 ```ruby
-
 ...
 target 'your-project-name' do
-  pod 'ExpoKit',
-    :git => "https://github.com/expo/expo.git",
-    :subspecs => [
-      "Core",
-      "CPP", # Add a comma here!
-      "Payments" # Add this line here!
-    ]
-
-  pod 'React',
   ...
 
+  pod 'EXPaymentsStripe',
+    :path => "../node_modules/expo-payments-stripe/ios",
+    :inhibit_warnings => true
+
+  ...
+  pod 'React',
+  ...
 ```
 
 Finally, make sure [CocoaPods](https://cocoapods.org/) is installed and run `pod install` in `your-project-name/ios`. This will add the Payments module files to your project and the corresponding dependencies.
 
+### Register hook in order to let Stripe process source authorization
+
+> You don't need to make this step if you're not going to use [sources](https://stripe.com/docs/mobile/ios/sources).
+
+Follow [Stripe instructions](https://stripe.com/docs/mobile/ios/sources#redirecting-your-customer).
+If you have problems with this step just look at files: `Info.plist` and `AppDelegate.m` in one of our [examples](https://github.com/expo/expo-payments-stripe/tree/master/examples).
+
 ## Adding the Payments Module on Android
 
-The Payments module is included with the Expo bundle on Android. Skip ahead to [importing payments](#importing-payments).
+_Note_: These steps are required only if you have detached your app with SDK < 30. If at the moment of detaching you had `sdkVersion` set to 30 or higher in your `app.json`, the following setup should have been performed automatically.
+
+1. Add these lines into your settings.gradle file.
+
+  ```groovy
+  include ':expo-payments-stripe'
+  project(':expo-payments-stripe').projectDir = new File(rootProject.projectDir, '../node_modules/expo-payments-stripe/android')
+  ```
+
+2. Add dependencies in your build.gradle file.
+
+  ```groovy
+  implementation project(':expo-payments-stripe')
+  ```
+
+3. Force specific `com.android.support:design` version in your `build.gradle` file.
+
+  ```groovy
+    android {
+      ...
+      configurations.all {
+        resolutionStrategy.force 'com.android.support:design:27.1.0'
+      }
+      ...
+    }
+  ```
+
+4. Exclude old version of `CreditCardEntry` in `your-project/android/app/build.gradle` file.
+
+  ```groovy
+      implementation('host.exp.exponent:expoview:29.0.0@aar') {
+        transitive = true
+        exclude group: 'com.squareup.okhttp3', module: 'okhttp'
+        exclude group: 'com.github.thefuntasty', module: 'CreditCardEntry' // add this line
+        exclude group: 'com.squareup.okhttp3', module: 'okhttp-urlconnection'
+      }
+  ```
+
+5. Make sure your list of repositories in `build.gradle` contains `jitpack`.
+
+  ```groovy
+      allprojects {
+        repositories {
+          ...
+          maven { url "https://jitpack.io" }
+          ...
+        }
+      }
+  ```
+
+### Register hook in order to let Stripe process source authorization
+
+> You don't need to make this step if you're not going to use [sources](https://stripe.com/docs/mobile/ios/sources).
+
+Add the following code to your `AndroidManifest.xml`, replacing `your_scheme` with the URI scheme you're going to use when specifying return URL for payment process.
+
+```xml
+      ...
+      <activity
+          android:exported="true"
+          android:launchMode="singleTask"
+          android:name="expo.modules.payments.stripe.RedirectUriReceiver"
+          android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen">
+          <intent-filter>
+              <action android:name="android.intent.action.VIEW" />
+              <category android:name="android.intent.category.DEFAULT" />
+              <category android:name="android.intent.category.BROWSABLE" />
+
+              <data android:scheme="your_scheme" />
+          </intent-filter>
+      </activity>
+      ...
+```
+
+If you have problems with this step just look at `AndroidManifest.xml` in one of our [examples](https://github.com/expo/expo-payments-stripe/tree/master/examples). Remember to use the same scheme as the one which was set in `Info.plist` file (only if you are also developing app for iOS).
 
 ## Importing Payments
 
-The Payments SDK is in Alpha and currently lives under Expo's **DangerZone** namespace. You can import it like this:
-
 ```javascript
-import { DangerZone } from 'expo';
-const { Payments } = DangerZone;
+import { PaymentsStripe as Stripe } from 'expo-payments-stripe';
+
+...
+Stripe.setOptionsAsync({
+    ...
+});
+...
 ```
 
 ## Using the Payments SDK
@@ -53,49 +145,535 @@ const { Payments } = DangerZone;
 First, initialize the Payments module with your credentials:
 
 ```javascript
-payments.initialize({
-  publishableKey: 'PUBLISHABLE_KEY' // Your Stripe publishable key
-})
+Stripe.setOptionsAsync({
+  publishableKey: 'PUBLISHABLE_KEY', // Your key
+  androidPayMode: 'test', // [optional] used to set wallet environment (AndroidPay)
+  merchantId: 'your_merchant_id', // [optional] used for payments with ApplePay
+});
 ```
 
-Next, you'll need to create a token object. After creating the token, you'll need to send it to some kind of backend (for example, a [Node.js server](https://stripe.com/docs/api/node)) to handle processing the payment. It's important not to handle sensitive card details in the front-end Expo application.
+### Creating token [Android, iOS]
+
+Creates token based on passed card params.
+
+**params** — An object with the following keys:
+
+| Key                   | Type   | Description                                                                                                                                                                                                                                                                                      |
+| :-------------------- | :----- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| number (Required)     | String | The card’s number                                                                                                                                                                                                                                                                                |
+| expMonth (Required)   | Number | The card’s expiration month                                                                                                                                                                                                                                                                      |
+| expYear (Required)    | Number | The card’s expiration year                                                                                                                                                                                                                                                                       |
+| cvc                   | String | The card’s security code, found on the back                                                                                                                                                                                                                                                      |
+| name                  | String | The cardholder’s name                                                                                                                                                                                                                                                                            |
+| addressLine1          | String | The first line of the billing address                                                                                                                                                                                                                                                            |
+| addressLine2          | String | The second line of the billing address                                                                                                                                                                                                                                                           |
+| addressCity           | String | City of the billing address                                                                                                                                                                                                                                                                      |
+| addressState          | String | State of the billing address                                                                                                                                                                                                                                                                     |
+| addressZip            | String | Zip code of the billing address                                                                                                                                                                                                                                                                  |
+| addressCountry        | String | Country for the billing address                                                                                                                                                                                                                                                                  |
+| brand (Android)       | String | Brand of this card. Can be one of: **JCB ‖ American Express ‖ Visa ‖ Discover ‖ Diners Club ‖ MasterCard ‖ Unknown**                                                                                                                                                                             |
+| last4 (Android)       | String | last 4 digits of the card                                                                                                                                                                                                                                                                        |
+| fingerprint (Android) | String | The card fingerprint                                                                                                                                                                                                                                                                             |
+| funding (Android)     | String | The funding type of the card. Can be one of: **debit ‖ credit ‖ prepaid ‖ unknown**                                                                                                                                                                                                              |
+| country (Android)     | String | ISO country code of the card itself                                                                                                                                                                                                                                                              |
+| currency              | String | Three-letter ISO currency code representing the currency paid out to the bank account. This is only applicable when tokenizing debit cards to issue payouts to managed accounts. You should not set it otherwise. The card can then be used as a transfer destination for funds in this currency |
+
+```js
+const params = {
+  // mandatory
+  number: '4242424242424242',
+  expMonth: 11,
+  expYear: 17,
+  cvc: '223',
+  // optional
+  name: 'Test User',
+  currency: 'usd',
+  addressLine1: '123 Test Street',
+  addressLine2: 'Apt. 5',
+  addressCity: 'Test City',
+  addressState: 'Test State',
+  addressCountry: 'Test Country',
+  addressZip: '55555',
+};
+
+const token = await stripe.createTokenWithCardAsync(params);
+
+// Client specific code
+// api.sendTokenToBackend(token)
+```
+
+> Remember to initialize the Payments module before creating token.
+
+## Payment request with card form [Android, iOS]
+
+Launch `Add Card` view to to accept payment.
+
+**options (iOS only)** — An object with the following keys:
+
+| Key                          | Type   | Description                                                                                                                                             |
+| :--------------------------- | :----- | :------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| requiredBillingAddressFields | String | The billing address fields the user must fill out when prompted for their payment details. Can be one of: **full** or **zip** or not specify to disable |
+| prefilledInformation         | Object | You can set this property to pre-fill any information you’ve already collected from your user                                                           |
+| managedAccountCurrency       | String | Required to be able to add the card to an account (in all other cases, this parameter is not used). More info                                           |
+| theme                        | Object | Can be used to visually style Stripe-provided UI                                                                                                        |
+
+**options.prefilledInformation** — An object with the following keys:
+
+| Key            | Type   | Description                                                                              |
+| :------------- | :----- | :--------------------------------------------------------------------------------------- |
+| email          | String | The user’s email address                                                                 |
+| phone          | String | The user’s phone number                                                                  |
+| billingAddress | Object | The user’s billing address. When set, the add card form will be filled with this address |
+
+**options.prefilledInformation.billingAddress** — An object with the following keys:
+
+| Key        | Type   | Description                                                                         |
+| :--------- | :----- | :---------------------------------------------------------------------------------- |
+| name       | String | The user’s full name (e.g. "Jane Doe")                                              |
+| line1      | String | The first line of the user’s street address (e.g. "123 Fake St")                    |
+| line2      | String | The apartment, floor number, etc of the user’s street address (e.g. "Apartment 1A") |
+| city       | String | The city in which the user resides (e.g. "San Francisco")                           |
+| state      | String | The state in which the user resides (e.g. "CA")                                     |
+| postalCode | String | The postal code in which the user resides (e.g. "90210")                            |
+| country    | String | The ISO country code of the address (e.g. "US")                                     |
+| phone      | String | The phone number of the address (e.g. "8885551212")                                 |
+| email      | String | The email of the address (e.g. "jane@doe.com")                                      |
+
+**options.theme** — An object with the following keys:
+
+| Key                      | Type   | Description                                                                                                                                                                                                               |
+| :----------------------- | :----- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| primaryBackgroundColor   | String | The primary background color of the theme                                                                                                                                                                                 |
+| secondaryBackgroundColor | String | The secondary background color of this theme                                                                                                                                                                              |
+| primaryForegroundColor   | String | The primary foreground color of this theme. This will be used as the text color for any important labels in a view with this theme (such as the text color for a text field that the user needs to fill out)              |
+| secondaryForegroundColor | String | The secondary foreground color of this theme. This will be used as the text color for any supplementary labels in a view with this theme (such as the placeholder color for a text field that the user needs to fill out) |
+| accentColor              | String | The accent color of this theme - it will be used for any buttons and other elements on a view that are important to highlight                                                                                             |
+| errorColor               | String | The error color of this theme - it will be used for rendering any error messages or view                                                                                                                                  |
+
+### Example
+
+```js
+const options = {
+  requiredBillingAddressFields: 'full',
+  prefilledInformation: {
+    billingAddress: {
+      name: 'Gunilla Haugeh',
+      line1: 'Canary Place',
+      line2: '3',
+      city: 'Macon',
+      state: 'Georgia',
+      country: 'US',
+      postalCode: '31217',
+    },
+  },
+};
+
+const token = await stripe.paymentRequestWithCardFormAsync(options);
+
+// Client specific code
+// api.sendTokenToBackend(token)
+```
+
+## Creating source [Android, iOS]
+
+Creates source object based on params. Sources are used to create payments for a variety of [payment methods](https://stripe.com/docs/sources)
+
+_NOTE_: For sources that require redirecting your customer to authorize the payment, you need to specify a return URL when you create the source. This allows your customer to be redirected back to your app after they authorize the payment. The prefix before ':' in your return URL should be the same as the scheme in your `info.plist` and `AndroidManifest.xml`. If You are not sure about this step look at above sections "Register hook in order to Stripe could process source authorization".
+
+_NOTE_: If you are using Expo Client or a detached Expo application, do not specify `returnURL`.
+
+`params` — An object with the following keys:
+
+**Depending on the type you need to provide different params. Check the STPSourceParams docs for reference**
+
+| Key                 | Type   | Description                                                                                                                                     |
+| :------------------ | :----- | :---------------------------------------------------------------------------------------------------------------------------------------------- |
+| type (Required)     | String | The type of the source to create. Can be one of: **bancontact ‖ bitcoin ‖ card ‖ griopay ‖ ideal ‖ sepaDebit ‖ sofort ‖ threeDSecure ‖ alipay** |
+| amount              | Number | A positive number in the smallest currency unit representing the amount to charge the customer (e.g., 1099 for a €10.99 payment)                |
+| name                | String | The full name of the account holder                                                                                                             |
+| returnURL           | String | The URL the customer should be redirected to after they have successfully verified the payment                                                  |
+| statementDescriptor | String | A custom statement descriptor for the payment                                                                                                   |
+| currency            | String | The currency associated with the source. This is the currency for which the source will be chargeable once ready                                |
+| email               | String | The customer’s email address                                                                                                                    |
+| bank                | String | The customer’s bank                                                                                                                             |
+| iban                | String | The IBAN number for the bank account you wish to debit                                                                                          |
+| addressLine1        | String | The bank account holder’s first address line (optional)                                                                                         |
+| city                | String | The bank account holder’s city                                                                                                                  |
+| postalCode          | String | The bank account holder’s postal code                                                                                                           |
+| country             | String | The bank account holder’s two-letter country code (sepaDebit) or the country code of the customer’s bank (sofort)                               |
+| card                | String | The ID of the card source                                                                                                                       |
+
+### Example
+
+```js
+const params = {
+  type: 'alipay',
+  amount: 5,
+  currency: 'EUR',
+  returnURL: 'expaymentsstripe://stripe-redirect',
+};
+
+const source = await stripe.createSourceWithParamsAsync(params);
+
+// Client specific code
+// api.sendSourceToBackend(source)
+```
+
+## ApplePay [iOS]
+
+Remember: to use Apple Pay on a real device, you need to [set up apple pay first](#enabling-apple-pay-in-expokit).
+
+### `openApplePaySetupAsync()`
+
+Opens the user interface to set up credit cards for Apple Pay.
+
+### `canMakeApplePayPaymentsAsync([options]) -> Promise`
+
+Returns whether the user can make Apple Pay payments with specified options.
+If there are no configured payment cards, this method always returns `false`.
+Return `true` if the user can make Apple Pay payments through any of the specified networks; otherwise, `false`.
+
+**NOTE**: iOS Simulator always returns `true`
+
+##### `options`
+
+| Key      | Type          | Description                                                                                                                                                                                                                               |
+| :------- | :------------ | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| networks | Array[String] | Indicates whether the user can make Apple Pay payments through the specified network. Available networks: **american_express ‖ discover ‖ master_card ‖ visa**. If option does not specify we pass all available networks under the hood. |
+
+#### Example
+
+```js
+import { PaymentsStripe as Stripe } from 'expo-payments-stripe';
+
+await Stripe.canMakeApplePayPaymentsAsync();
+```
+
+```js
+import { PaymentsStripe as Stripe } from 'expo-payments-stripe';
+
+await Stripe.canMakeApplePayPaymentsAsync(['american_express', 'discover']);
+```
+
+### `deviceSupportsApplePayAsync() -> Promise`
+
+Returns whether the user can make Apple Pay payments.
+User may not be able to make payments for a variety of reasons. For example, this functionality may not be supported by their hardware, or it may be restricted by parental controls.
+Returns `true` if the device supports making payments; otherwise, `false`.
+
+_NOTE_: iOS Simulator always returns `true`
+
+### `paymentRequestWithApplePayAsync(items, [options]) -> Promise`
+
+Launch the  Pay view to accept payment.
+
+##### `items` — An array of object with the following keys:
+
+| Key    | Type     | Description                                                                 |
+| :----- | :------- | :-------------------------------------------------------------------------- |
+| label  | _String_ | A short, localized description of the item.                                 |
+| amount | _String_ | The summary item’s amount.                                                  |
+| type   | _String_ | The summary item’s type. Must be "pending" or "final". Defaults to "final". |
+
+**NOTE**: The final item should represent your company; it'll be prepended with the word "Pay" (i.e. "Pay Tipsi, Inc $50")
+
+##### `options` — An object with the following keys:
+
+| Key                           | Type          | Description                                                                                                                                                                                      |
+| :---------------------------- | :------------ | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| requiredBillingAddressFields  | Array[String] | A bit field of billing address fields that you need in order to process the transaction. Array should contain one of: **all ‖ name ‖ email ‖ phone ‖ postal_address** or not specify to disable  |
+| requiredShippingAddressFields | Array[String] | A bit field of shipping address fields that you need in order to process the transaction. Array should contain one of: **all ‖ name ‖ email ‖ phone ‖ postal_address** or not specify to disable |
+| shippingMethods               | Array         | An array of `shippingMethod` objects that describe the supported shipping methods.                                                                                                               |
+| currencyCode                  | String        | The three-letter ISO 4217 currency code. Default is **USD**                                                                                                                                      |
+| countryCode                   | String        | The two-letter code for the country where the payment will be processed. Default is **US**                                                                                                       |
+| shippingType                  | String        | An optional value that indicates how purchased items are to be shipped. Default is **shipping**. Available options are: **shipping ‖ delivery ‖ store_pickup ‖ service_pickup**                  |
+
+##### `shippingMethod` — An object with the following keys:
+
+| Key    | Type   | Description                                                  |
+| :----- | :----- | :----------------------------------------------------------- |
+| id     | String | A unique identifier for the shipping method, used by the app |
+| id     | String | A short, localized description of the shipping method        |
+| label  | String | A unique identifier for the shipping method, used by the app |
+| detail | String | A user-readable description of the shipping method           |
+| amount | String | The shipping method’s amount                                 |
+
+#### Example
+
+```js
+const items = [
+  {
+    label: 'Whisky',
+    amount: '50.00',
+  },
+  {
+    label: 'Tipsi, Inc',
+    amount: '50.00',
+  },
+];
+
+const shippingMethods = [
+  {
+    id: 'fedex',
+    label: 'FedEX',
+    detail: 'Test @ 10',
+    amount: '10.00',
+  },
+];
+
+const options = {
+  requiredBillingAddressFields: ['all'],
+  requiredShippingAddressFields: ['phone', 'postal_address'],
+  shippingMethods,
+};
+
+const token = await stripe.paymentRequestWithApplePayAsync(items, options);
+```
+
+#### Token structure – `paymentRequestWithApplePayAsync` response
+
+`extra` — An object with the following keys
+
+| Key             | Type   | Description                        |
+| :-------------- | :----- | :--------------------------------- |
+| shippingMethod  | Object | Selected shippingMethod object     |
+| billingContact  | Object | The user's billing contact object  |
+| shippingContact | Object | The user's shipping contact object |
+
+`contact` — An object with the following keys
+
+| Key                      | Type   | Description                                              |
+| :----------------------- | :----- | :------------------------------------------------------- |
+| name                     | String | The contact’s name                                       |
+| phoneNumber              | String | The contact’s phone number                               |
+| emailAddress             | String | The contact’s email address                              |
+| street                   | String | The street name in a postal address                      |
+| city                     | String | The city name in a postal address                        |
+| state                    | String | The state name in a postal address                       |
+| country                  | String | The country name in a postal address                     |
+| ISOCountryCode           | String | The ISO country code for the country in a postal address |
+| postalCode               | String | The postal code in a postal address                      |
+| supplementarySubLocality | String | The contact’s sublocality                                |
+
+### `completeApplePayRequestAsync()/cancelApplePayRequestAsync() -> Promise`
+
+After `paymentRequestWithApplePayAsync` you should complete the operation by calling `completeApplePayRequestAsync` or cancel if an error occurred. This closes Apple Pay. (resolves to undefined, you do not need to store the Promise)
+
+```js
+const items = [
+  {
+    label: 'Whisky',
+    amount: '50.00',
+  },
+  {
+    label: 'Tipsi, Inc',
+    amount: '50.00',
+  },
+];
+
+const shippingMethods = [
+  {
+    id: 'fedex',
+    label: 'FedEX',
+    detail: 'Test @ 10',
+    amount: '10.00',
+  },
+];
+
+const options = {
+  requiredBillingAddressFields: 'all',
+  requiredShippingAddressFields: 'all',
+  shippingMethods,
+};
+
+try {
+  const token = await stripe.paymentRequestWithApplePayAsync(items, options);
+
+  // Client specific code
+  // api.sendTokenToBackend(token)
+
+  // You should complete the operation by calling
+  stripe.completeApplePayRequestAsync();
+} catch (error) {
+  // Or cancel if an error occurred
+  // stripe.cancelApplePayRequestAsync()
+}
+```
+
+## AndroidPay
+
+### `deviceSupportsAndroidPayAsync() -> Promise`
+
+Indicates whether or not the device supports AndroidPay. Returns a `Boolean` value.
+
+```js
+import { PaymentsStripe as Stripe } from 'expo-payments-stripe';
+
+await Stripe.deviceSupportsAndroidPayAsync();
+```
+
+### `canMakeAndroidPayPaymentsAsync() -> Promise`
+
+Indicates whether or not the device supports AndroidPay and user has existing payment method. Returns a `Boolean` value.
+
+```js
+import { PaymentsStripe as Stripe } from 'expo-payments-stripe';
+
+await Stripe.canMakeAndroidPayPaymentsAsync();
+```
+
+### `paymentRequestWithAndroidPayAsync(options) -> Promise`
+
+**options** — An object with the following keys:
+
+| Key                                       | Type   | Description                                                                           |
+| :---------------------------------------- | :----- | :------------------------------------------------------------------------------------ |
+| total_price                               | String | Total price for items                                                                 |
+| currency_code                             | String | Three-letter ISO currency code representing the currency paid out to the bank account |
+| shipping_address_required&nbsp;(Optional) | Bool   | Is shipping address menu required? Default is **false**                               |
+| billing_address_required&nbsp;(Optional)  | Bool   | Is billing address menu required? Default is **false**                                |
+| line_items                                | Array  | Array of purchased items. Each item contains **line_item**                            |
+
+**line_item** — An object with the following keys:
+
+| Key           | Type   | Description                               |
+| :------------ | :----- | :---------------------------------------- |
+| currency_code | String | Currency code string                      |
+| description   | String | Short description that will shown to user |
+| total_price   | String | Total order price                         |
+| unit_price    | String | Price per unit                            |
+| quantity      | String | Number of items                           |
+
+#### Example
+
+```js
+const options = {
+  total_price: '80.00',
+  currency_code: 'USD',
+  shipping_address_required: false,
+  billing_address_required: true,
+  shipping_countries: ['US', 'CA'],
+  line_items: [
+    {
+      currency_code: 'USD',
+      description: 'Whisky',
+      total_price: '50.00',
+      unit_price: '50.00',
+      quantity: '1',
+    },
+    {
+      currency_code: 'USD',
+      description: 'Vine',
+      total_price: '30.00',
+      unit_price: '30.00',
+      quantity: '1',
+    },
+  ],
+};
+
+const token = await stripe.paymentRequestWithAndroidPayAsync(options);
+
+// Client specific code
+// api.sendTokenToBackend(token)
+```
+
+Example of token:
+
+```
+{ card:
+  { currency: null,
+    fingerprint: null,
+    funding: "credit",
+    brand: "MasterCard",
+    number: null,
+    addressState: null,
+    country: "US",
+    cvc: null,
+    expMonth: 12,
+    addressLine1: null,
+    expYear: 2022,
+    addressCountry: null,
+    name: null,
+    last4: "4448",
+    addressLine2: null,
+    addressCity: null,
+    addressZip: null
+  },
+  created: 1512322244000,
+  used: false,
+  extra: {
+    email: "randomemail@mail.com",
+    billingContact: {
+      postalCode: "220019",
+      name: "John Doe",
+      locality: "NY",
+      countryCode: "US",
+      administrativeArea: "US",
+      address1: "Time square 1/11"
+    },
+    shippingContact: {}
+  },
+  livemode: false,
+  tokenId: "tok_1BV1IeDZwqOES60ZphBXBoDr"
+}
+```
+
+## Structures of the objects
 
 ### The Token object
 
-A token object returned from submitting payment details (via `paymentRequestWithApplePayAsync` and `createTokenWithCardAsync`) to the Stripe API.
+A `token object` returned from submitting payment details to the Stripe API via:
 
-##### `token`
+- `paymentRequestWithApplePayAsync`
+- `paymentRequestWithCardFormAsync`
+- `createTokenWithCardAsync`
 
-An object with the following keys:
+##### `token` — an object with the following keys
 
-* `tokenId` _String_ - The value of the token. You can store this value on your server and use it to make charges and customers.
-* `created` _Number_ - When the token was created.
-* `livemode` _Number_ - Whether or not this token was created in livemode. Will be `1` if you used your `Live Publishable Key`, and `0` if you used your `Test Publishable Key`.
-* `card` _Object_ - The credit card details object that were used to create the token.
-* `bankAccount` _Object_ - The external (bank) account details object that were used to create the token.
-* `extra` _Object_  (iOS only)- An additional information that method can provide.
+| Key         | Type   | Description                                                                                                                                     |
+| :---------- | :----- | :---------------------------------------------------------------------------------------------------------------------------------------------- |
+| tokenId     | String | The value of the token. You can store this value on your server and use it to make charges and customers                                        |
+| created     | Number | When the token was created                                                                                                                      |
+| livemode    | Number | Whether or not this token was created in livemode. Will be 1 if you used your Live Publishable Key, and 0 if you used your Test Publishable Key |
+| card        | Object | The credit card details object that were used to create the token                                                                               |
+| bankAccount | Object | The external (bank) account details object that were used to create the token                                                                   |
+| extra       | Object | An additional information that method can provide                                                                                               |
 
-##### `card`
+##### `card` — an object with the following keys
 
-An object with the following keys:
+| Key                       | Type   | Description                                                                                                                                                              |
+| :------------------------ | :----- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| cardId                    | String | The Stripe ID for the card                                                                                                                                               |
+| brand                     | String | The card’s brand. Can be one of: **JCB **‖ **American Express **‖ **Visa **‖ **Discover **‖ **Diners Club **‖ **MasterCard **‖ **Unknown**                               |
+| funding (iOS)             | String | The card’s funding. Can be one of: **debit **‖ **credit **‖ **prepaid **‖ **unknown**                                                                                    |
+| last4                     | String | The last 4 digits of the card                                                                                                                                            |
+| dynamicLast4&nbsp;(iOS)   | String | For cards made with Apple Pay, this refers to the last 4 digits of the Device Account Number for the tokenized card                                                      |
+| isApplePayCard&nbsp;(iOS) | Bool   | Whether or not the card originated from Apple Pay                                                                                                                        |
+| expMonth                  | Number | The card’s expiration month. 1-indexed (i.e. 1 == January)                                                                                                               |
+| expYear                   | Number | The card’s expiration year                                                                                                                                               |
+| country                   | String | Two-letter ISO code representing the issuing country of the card                                                                                                         |
+| currency                  | String | This is only applicable when tokenizing debit cards to issue payouts to managed accounts. The card can then be used as a transfer destination for funds in this currency |
+| name                      | String | The cardholder’s name                                                                                                                                                    |
+| addressLine1              | String | The cardholder’s first address line                                                                                                                                      |
+| addressLine2              | String | The cardholder’s second address line                                                                                                                                     |
+| addressCity               | String | The cardholder’s city                                                                                                                                                    |
+| addressState              | String | The cardholder’s state                                                                                                                                                   |
+| addressCountry            | String | The cardholder’s country                                                                                                                                                 |
+| addressZip                | String | The cardholder’s zip code                                                                                                                                                |
 
-* `cardId` _String_ - The Stripe ID for the card.
-* `brand` _String_ - The card’s brand. Can be one of: `JCB`|`American Express`|`Visa`|`Discover`|`Diners Club`|`MasterCard`|`Unknown`.
-* `funding` _String_ (iOS only) - The card’s funding. Can be one of: `debit`|`credit`|`prepaid`|`unknown`.
-* `last4` _String_ - The last 4 digits of the card.
-* `dynamicLast4` _String_ (iOS only) - For cards made with `Apple Pay`, this refers to the last 4 digits of the `Device Account Number` for the tokenized card.
-* `isApplePayCard` _Bool_ (iOS only) - Whether or not the card originated from Apple Pay.
-* `expMonth` _Number_ - The card’s expiration month. 1-indexed (i.e. 1 == January)
-* `expYear` _Number_ - The card’s expiration year.
-* `country` _String_ - Two-letter ISO code representing the issuing country of the card.
-* `currency` _String_ - This is only applicable when tokenizing debit cards to issue payouts to managed accounts. The card can then be used as a transfer destination for funds in this currency.
-* `name` _String_ - The cardholder’s name.
-* `addressLine1` _String_ - The cardholder’s first address line.
-* `addressLine2` _String_ - The cardholder’s second address line.
-* `addressCity` _String_ - The cardholder’s city.
-* `addressState` _String_ - The cardholder’s state.
-* `addressCountry` _String_ - The cardholder’s country.
-* `addressZip` _String_ - The cardholder’s zip code.
+##### `bankAccount`
+
+| Key               | Type   | Description                                                        |
+| :---------------- | :----- | :----------------------------------------------------------------- |
+| routingNumber     | String | The routing number of this account                                 |
+| accountNumber     | String | The account number for this BankAccount.                           |
+| countryCode       | String | The two-letter country code that this account was created in       |
+| currency          | String | The currency of this account                                       |
+| accountHolderName | String | The account holder's name                                          |
+| accountHolderType | String | the bank account type. Can be one of: **company **‖ **individual** |
+| fingerprint       | String | The account fingerprint                                            |
+| bankName          | String | The name of bank                                                   |
+| last4             | String | The last four digits of the account number                         |
 
 #### Example
 
@@ -120,249 +698,131 @@ An object with the following keys:
     addressCountry: 'US',
     addressZip: '37211',
   },
-}
-```
-
-### Generating a token with Apple Pay
-
-Remember: to use Apple Pay on a real device, you need to [set up apple pay first](#enabling-apple-pay-in-expokit).
-
-### `openApplePaySetup()`
-
-Opens the user interface to set up credit cards for Apple Pay.
-
-### `deviceSupportsApplePayAsync() -> Promise`
-
-Returns whether the user can make Apple Pay payments.
-User may not be able to make payments for a variety of reasons. For example, this functionality may not be supported by their hardware, or it may be restricted by parental controls.
-Returns `true` if the device supports making payments; otherwise, `false`.
-
-_NOTE_: iOS Simulator always returns `true`
-
-### `paymentRequestWithApplePayAsync(items, [options]) -> Promise`
-
-Launch the `Apple Pay` view to accept payment.
-
-#### `items`
-
-An array of object with the following keys:
-
-* `label` _String_ - A short, localized description of the item.
-* `amount` _String_ - The summary item’s amount.
-
-_NOTE_: The final item should represent your company; it'll be prepended with the word "Pay" (i.e. "Pay Tipsi, Inc $50")
-
-#### `options`
-
-An object with the following keys:
-
-* `requiredBillingAddressFields` _String_ - A bit field of billing address fields that you need in order to process the transaction. Can be one of: `all`|`name`|`email`|`phone`|`postal_address` or not specify to disable.
-* `requiredShippingAddressFields` _String_ - A bit field of shipping address fields that you need in order to process the transaction. Can be one of: `all`|`name`|`email`|`phone`|`postal_address` or not specify to disable.
-* `shippingMethods` _Array_ - An array of `shippingMethod` objects that describe the supported shipping methods.
-* `currencyCode` _String_ - The three-letter ISO 4217 currency code.
-
-#### `shippingMethod`
-
-An object with the following keys:
-
-* `id` _String_ - A unique identifier for the shipping method, used by the app.
-* `label` _String_ - A short, localized description of the shipping method.
-* `detail` _String_ - A user-readable description of the shipping method.
-* `amount` _String_ - The shipping method’s amount.
-
-### `completeApplePayRequestAsync()/cancelApplePayRequestAsync() -> Promise`
-
-After `requiredBillingAddressFields` you should complete the operation by calling `completeApplePayRequest` or cancel if an error occurred. This closes Apple Pay. (resolves to undefined, you do not need to store the Promise)
-
-#### Extra info
-
-Token's `extra` field
-
-#### `extra`
-
-An object with the following keys:
-
-* `shippingMethod` _Object_ - Selected `shippingMethod` object.
-* `billingContact` _Object_ - The user's billing `contact` object.
-* `shippingContact` _Object_ - The user's shipping `contact` object.
-
-#### `contact`
-
-An object with the following keys:
-
-* `name` _String_ - The contact’s name.
-* `phoneNumber` _String_ - The contact’s phone number.
-* `emailAddress` _String_ - The contact’s email address.
-* `street` _String_ - The street name in a postal address.
-* `city` _String_ - The city name in a postal address.
-* `state` _String_ - The state name in a postal address.
-* `country` _String_ - The country name in a postal address.
-* `ISOCountryCode` _String_ - The ISO country code for the country in a postal address.
-* `postalCode` _String_ - The postal code in a postal address.
-* `supplementarySubLocality` _String_ - The contact’s sublocality.
-
-#### Example
-
-```js
-const items = [{
-  label: 'T-Shirt',
-  amount: '50.00',
-}, {
-  label: 'Expo, Inc',
-  amount: '50.00',
-}]
-
-const shippingMethods = [{
-  id: 'fedex',
-  label: 'FedEX',
-  detail: 'Test @ 10',
-  amount: '10.00',
-}]
-
-const options = {
-  requiredBillingAddressFields: 'all',
-  requiredShippingAddressFields: 'all',
-  shippingMethods,
-}
-
-const token = await payments.paymentRequestWithApplePayAsync(items, options)
-
-// Client specific code
-// api.sendTokenToBackend(token)
-
-// You should complete the operation by calling
-payments.completeApplePayRequestAsync()
-
-// Or cancel if an error occurred
-// payments.cancelApplePayRequestAsync()
-```
-
-### Generating a token by launching a card form
-
-### `paymentRequestWithCardFormAsync(options) -> Promise`
-
-This promise launches a Card Form dialog and resolves to a token upon successful completion of the card form, and an error otherwise.
-
-##### `options`
-
-An object with the following keys:
-
-* `requiredBillingAddressFields` _String_ - The billing address fields the user must fill out when prompted for their payment details. Can be one of: `full`|`zip` or not specify to disable.
-* `prefilledInformation` _Object_ - You can set this property to pre-fill any information you’ve already collected from your user.
-* `managedAccountCurrency` _String_ - Required to be able to add the card to an account (in all other cases, this parameter is not used). [More info](https://stripe.com/docs/api#create_card_token-card-currency).
-* `smsAutofillDisabled` _Bool_ - When entering their payment information, users who have a saved card with Stripe will be prompted to autofill it by entering an SMS code. Set this property to `true` to disable this feature.
-* `theme` _Object_ - Can be used to visually style Stripe-provided UI.
-
-##### `prefilledInformation`
-
-An object with the following keys:
-
-* `email` _String_ - The user’s email address.
-* `phone` _String_ - The user’s phone number.
-* `billingAddress` _Object_ - The user’s billing address. When set, the add card form will be filled with this address.
-
-##### `billingAddress`
-
-An object with the following keys:
-
-* `name` _String_ - The user’s full name (e.g. "Jane Doe").
-* `line1` _String_ - The first line of the user’s street address (e.g. "123 Fake St").
-* `line2` _String_ - The apartment, floor number, etc of the user’s street address (e.g. "Apartment 1A").
-* `city` _String_ - The city in which the user resides (e.g. "San Francisco").
-* `state` _String_ - The state in which the user resides (e.g. "CA").
-* `postalCode` _String_ - The postal code in which the user resides (e.g. "90210").
-* `country` _String_ - The ISO country code of the address (e.g. "US").
-* `phone` _String_ - The phone number of the address (e.g. "8885551212").
-* `email` _String_ - The email of the address (e.g. "jane@doe.com").
-
-##### `theme`
-
-An object with the following keys:
-
-* `primaryBackgroundColor` _String_ - The primary background color of the theme.
-* `secondaryBackgroundColor` _String_ - The secondary background color of this theme.
-* `primaryForegroundColor` _String_ - The primary foreground color of this theme. This will be used as the text color for any important labels in a view with this theme (such as the text color for a text field that the user needs to fill out).
-* `secondaryForegroundColor` _String_ - The secondary foreground color of this theme. This will be used as the text color for any supplementary labels in a view with this theme (such as the placeholder color for a text field that the user needs to fill out).
-* `accentColor` _String_ - The accent color of this theme - it will be used for any buttons and other elements on a view that are important to highlight.
-* `errorColor` _String_ - The error color of this theme - it will be used for rendering any error messages or view.
-
-#### Example
-
-```js
-const options = {
-  smsAutofillDisabled: true,
-  requiredBillingAddressFields: 'full',
-  prefilledInformation: {
-    billingAddress: {
-      name: 'Gunilla Haugeh',
-      line1: 'Canary Place',
-      line2: '3',
-      city: 'Macon',
-      state: 'Georgia',
-      country: 'US',
-      postalCode: '31217',
-    },
+  bankAccount: {
+    bankName: 'STRIPE TEST BANK',
+    accountHolderType: 'company',
+    last4: '6789',
+    accountHolderName: 'Test holder name',
+    currency: 'usd',
+    fingerprint: 'afghsajhaartkjasd',
+    countryCode: 'US',
+    accountNumber: '424542424',
+    routingNumber: '110000000',
   },
 }
-
-const token = await Payments.paymentRequestWithCardFormAsync(options)
-
-// Client specific code
-// api.sendTokenToBackend(token)
 ```
 
-### Generating a token with a custom card form
+### The Source object
 
-It's also possible to generate a token by simply passing the necessary details in a parameter.
+A source object returned from creating a source (via `createSourceWithParamsAsync`) with the Stripe API.
 
-### `createTokenWithCardAsync(params) -> Promise`
+##### `source` — an object with the following keys:
 
-#### `params`
+| Key              | Type              | Description                                                                                                                                                   |
+| :--------------- | :---------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| amount           | Number            | The amount associated with the source                                                                                                                         |
+| clientSecret     | String            | The client secret of the source. Used for client-side polling using a publishable key                                                                         |
+| created          | Number            | When the source was created                                                                                                                                   |
+| currency         | String            | The currency associated with the source                                                                                                                       |
+| flow             | String            | The authentication flow of the source. Can be one of: **none ‖ redirect ‖ verification ‖ receiver ‖ unknown**                                                 |
+| livemode         | Bool              | Whether or not this source was created in _livemode_. Will be _true_ if you used your Live Publishable Key, and _false_ if you used your Test Publishable Key |
+| metadata         | Object            | A set of key/value pairs associated with the source object                                                                                                    |
+| owner            | Object            | Information about the owner of the payment instrument                                                                                                         |
+| receiver         | Object (Optional) | Information related to the receiver flow. Present if the source is a receiver                                                                                 |
+| redirect         | Object (Optional) | Information related to the redirect flow. Present if the source is authenticated by a redirect                                                                |
+| status           | String            | The status of the source. Can be one of: **pending ‖ chargable ‖ consumed ‖ cancelled ‖ failed**                                                              |
+| type             | String            | The type of the source. Can be one of: **bancontact ‖ card ‖ griopay ‖ ideal ‖ sepaDebit ‖ sofort ‖ threeDSecure ‖ alipay ‖ unknown**                         |
+| usage            | String            | Whether this source should be reusable or not. Can be one of: **reusable ‖ single ‖ unknown**                                                                 |
+| verification     | Object (Optional) | Information related to the verification flow. Present if the source is authenticated by a verification                                                        |
+| details          | Object            | Information about the source specific to its type                                                                                                             |
+| cardDetails      | Object (Optional) | If this is a card source, this property contains information about the card                                                                                   |
+| sepaDebitDetails | Object (Optional) | If this is a SEPA Debit source, this property contains information about the sepaDebit                                                                        |
 
-An object with the following keys:
+##### `owner`
 
-* `number` _String_ (Required) - The card’s number.
-* `expMonth` _Number_ (Required) - The card’s expiration month.
-* `expYear` _Number_ (Required) - The card’s expiration year.
-* `cvc` _String_ - The card’s security code, found on the back.
-* `name` _String_ - The cardholder’s name.
-* `addressLine1` _String_ - The first line of the billing address.
-* `addressLine2` _String_ - The second line of the billing address.
-* `addressCity` _String_ - City of the billing address.
-* `addressState` _String_ - State of the billing address.
-* `addressZip` _String_ - Zip code of the billing address.
-* `addressCountry` _String_ - Country for the billing address.
-* `brand` _String_ (Android only) - Brand of this card. Can be one of: `JCB`|`American Express`|`Visa`|`Discover`|`Diners Club`|`MasterCard`|`Unknown`.
-* `last4` _String_ (Android only) - last 4 digits of the card.
-* `fingerprint` _String_ (Android only) - The card fingerprint.
-* `funding` _String_ (Android only) - The funding type of the card. Can be one of: `debit`|`credit`|`prepaid`|`unknown`.
-* `country` _String_ (Android only) - ISO country code of the card itself.
-* `currency` _String_ - Three-letter ISO currency code representing the currency paid out to the bank account. This is only applicable when tokenizing debit cards to issue payouts to managed accounts. You should not set it otherwise. The card can then be used as a transfer destination for funds in this currency.
+| Key             | Type              | Description                    |
+| :-------------- | :---------------- | :----------------------------- |
+| address         | Object (Optional) | Owner’s address                |
+| email           | String (Optional) | Owner’s email address          |
+| name            | String (Optional) | Owner’s full name              |
+| phone           | String (Optional) | Owner’s phone number           |
+| verifiedAddress | Object (Optional) | Verified owner’s address       |
+| verifiedEmail   | String (Optional) | Verified owner’s email address |
+| verifiedName    | String (Optional) | Verified owner’s full name     |
+| verifiedPhone   | String (Optional) | Verified owner’s phone number  |
 
-#### Example
+##### `receiver`
+
+| Key            | Type   | Description                                                                                                              |
+| :------------- | :----- | :----------------------------------------------------------------------------------------------------------------------- |
+| address        | Object | The address of the receiver source. This is the value that should be communicated to the customer to send their funds to |
+| amountCharged  | Number | The total amount charged by you                                                                                          |
+| amountReceived | Number | The total amount received by the receiver source                                                                         |
+| amountReturned | Number | The total amount that was returned to the customer                                                                       |
+
+##### `redirect`
+
+| Key       | Type   | Description                                                                                 |
+| :-------- | :----- | :------------------------------------------------------------------------------------------ |
+| returnURL | String | The URL you provide to redirect the customer to after they authenticated their payment      |
+| status    | String | The status of the redirect. Can be one of: **pending ‖ succeeded ‖ failed ‖ unknown**       |
+| url       | String | The URL provided to you to redirect a customer to as part of a redirect authentication flow |
+
+##### `verification`
+
+| Key               | Type   | Description                                                                                 |
+| :---------------- | :----- | :------------------------------------------------------------------------------------------ |
+| attemptsRemaining | Number | The number of attempts remaining to authenticate the source object with a verification code |
+| status            | String | The status of the verification. Can be one of: **pending ‖ succeeded ‖ failed ‖ unknown**   |
+
+##### `cardDetails`
+
+| Key             | Type   | Description                                                                                                              |
+| :-------------- | :----- | :----------------------------------------------------------------------------------------------------------------------- |
+| last4           | String | The last 4 digits of the card                                                                                            |
+| expMonth        | Number | The card’s expiration month. 1-indexed \(i.e. 1 == January\)                                                             |
+| expYear         | Number | The card’s expiration year                                                                                               |
+| brand           | String | The issuer of the card. Can be one of: **JCB ‖ American Express ‖ Visa ‖ Discover ‖ Diners Club ‖ MasterCard ‖ Unknown** |
+| funding \(iOS\) | String | The funding source for the card. Can be one of: **debit ‖ credit ‖ prepaid ‖ unknown**                                   |
+| country         | String | Two-letter ISO code representing the issuing country of the card                                                         |
+| threeDSecure    | String | Whether 3D Secure is supported or required by the card. Can be one of: **required ‖ optional ‖ notSupported ‖ unknown**  |
+
+##### `sepaDebitDetails`
+
+| Key              | Type   | Description                                                      |
+| :--------------- | :----- | :--------------------------------------------------------------- |
+| last4            | String | The last 4 digits of the account number                          |
+| bankCode         | String | The account’s bank code                                          |
+| country          | String | Two-letter ISO code representing the country of the bank account |
+| fingerprint      | String | The account’s fingerprint                                        |
+| mandateReference | String | The reference of the mandate accepted by your customer           |
+| mandateURL       | String | The details of the mandate accepted by your customer             |
+
+# Example
 
 ```js
-const params = {
-  // mandatory
-  number: '4242424242424242',
-  expMonth: 11,
-  expYear: 17,
-  cvc: '223',
-  // optional
-  name: 'Test User',
-  currency: 'usd',
-  addressLine1: '123 Test Street',
-  addressLine2: 'Apt. 5',
-  addressCity: 'Test City',
-  addressState: 'Test State',
-  addressCountry: 'Test Country',
-  addressZip: '55555',
+{
+  livemode: false,
+  amount: 50,
+  owner: {},
+  metadata: {},
+  clientSecret: 'src_client_secret_BLnXIZxZprDmdhw3zv12123L',
+  details: {
+    native_url: null,
+    statement_descriptor: null
+  },
+  type: 'alipay',
+  redirect: {
+    url: 'https://hooks.stripe.com/redirect/authenticate/src_1Az5vzE5aJKqY779Kes5s61m?client_secret=src_client_secret_BLnXIZxZprDmdhw3zv12123L',
+    returnURL: 'example://stripe-redirect?redirect_merchant_name=example',
+    status: 'succeeded'
+  },
+  usage: 'single',
+  created: 1504713563,
+  flow: 'redirect',
+  currency: 'euro',
+  status: 'chargable',
 }
-
-const token = await stripe.createTokenWithCardAsync(params)
-
-// Client specific code
-// api.sendTokenToBackend(token)
 ```
 
 ## Enabling Apple Pay in ExpoKit
@@ -371,19 +831,4 @@ If you want to use Apple Pay for payments, you'll need to set up your merchant I
 
 If you haven't already, set up an Apple Merchant ID via the [Apple Developer Portal](https://developer.apple.com/). Then, open the application in XCode and navigate to the capabilities tab. Enable Apple Pay and insert your merchant ID into the corresponding space.
 
-![applepay](/static/icloud-entitlement.png)
-
-Finally, you'll want to include your merchant ID in the JavaScript code before publishing your standalone application. Change the initialization of payments to mimic the following:
-
-```javascript
-payments.initialize({
-  publishableKey: 'PUBLISHABLE_KEY', // Your Stripe publishable key
-  merchantId: 'MERCHANT_ID' // Your Apple Pay merchant ID
-})
-```
-
 Note: Apple Pay can be used only for real world items (ex. appeal, car sharing, food) and not virtual goods. For more information about proper usage of Apple Pay, visit Apple's [Apple Pay guidelines](https://developer.apple.com/app-store/review/guidelines/#apple-pay) and [Acceptable Use](https://developer.apple.com/apple-pay/acceptable-use-guidelines-for-websites/).
-
-## Why ExpoKit on iOS?
-
-Expo previously included support for a native Payments API without ExpoKit. We learned that apple sometimes rejects apps which contain the Stripe SDK but don’t offer anything for sale. To help your App Review process go more smoothly, we’ve decided to remove the Stripe SDK and experimental Payments API from apps built with the Expo standalone builder. We’re still excited to give developers a way to let users pay for goods when they need to and we’ll announce ways to do so shortly.
