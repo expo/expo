@@ -35,10 +35,6 @@ anchors:
 
         echo "export PATH=\$PATH:$(yarn global bin)" >> $BASH_ENV
 
-        # for when we ssh to builds
-        echo 'source $BASH_ENV' >> ~/.bashrc
-        source $BASH_ENV
-
   - &install_workspace_dependencies
     run:
       name: Install Yarn workspace dependencies (node_modules)
