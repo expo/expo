@@ -232,6 +232,11 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
 
 - (BOOL)_isUsingEmbeddedManifest:(id)embeddedManifest withCachedManifest:(id)cachedManifest
 {
+  // if there's no cachedManifest at resourceCachePath, we definitely want to use the embedded manifest
+  if (embeddedManifest && !cachedManifest) {
+    return YES;
+  }
+
   NSDate *embeddedPublishDate = [self _publishedDateFromManifest:embeddedManifest];
   NSDate *cachedPublishDate;
 
