@@ -5,42 +5,23 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
 
-import java.util.Collections;
-import java.util.List;
-
 import javax.inject.Inject;
 
-import expo.core.interfaces.InternalModule;
-import expo.interfaces.permissions.Permissions;
+import expo.modules.permissions.PermissionsService;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.kernel.services.ExpoKernelServiceRegistry;
 
-/* package */ class PermissionsBinding implements InternalModule, Permissions {
+/* package */ class PermissionsServiceBinding extends PermissionsService {
   @Inject
   protected ExpoKernelServiceRegistry mKernelServiceRegistry;
 
-  private Context mContext;
   private ExperienceId mExperienceId;
 
-  /* package */ PermissionsBinding(Context context, ExperienceId experienceId) {
-    mContext = context;
+  /* package */ PermissionsServiceBinding(Context context, ExperienceId experienceId) {
+    super(context);
     mExperienceId = experienceId;
-    NativeModuleDepsProvider.getInstance().inject(PermissionsBinding.class, this);
-  }
-
-  @Override
-  public List<Class> getExportedInterfaces() {
-    return Collections.<Class>singletonList(Permissions.class);
-  }
-
-  @Override
-  public int[] getPermissions(String[] permissions) {
-    int[] permissionsResults = new int[permissions.length];
-    for (int i = 0; i < permissions.length; i++) {
-      permissionsResults[i] = getPermission(permissions[i]);
-    }
-    return permissionsResults;
+    NativeModuleDepsProvider.getInstance().inject(PermissionsServiceBinding.class, this);
   }
 
   @Override

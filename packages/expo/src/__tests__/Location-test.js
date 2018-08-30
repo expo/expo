@@ -1,6 +1,5 @@
 import { Location } from 'expo-location';
 import { NativeModulesProxy } from 'expo-core';
-import { Permissions } from 'expo-permissions';
 
 import {
   mockProperty,
@@ -21,15 +20,13 @@ const fakeReturnValue = {
   timestamp: 7,
 };
 
-let ExpoLocation;
-
 function applyMocks() {
   mockProperty(
     NativeModulesProxy.ExpoLocation,
     'getCurrentPositionAsync',
     jest.fn(async () => fakeReturnValue)
   );
-  ExpoLocation = NativeModulesProxy.ExpoLocation;
+  mockProperty(NativeModulesProxy.ExpoLocation, 'requestPermissionsAsync', jest.fn(async () => {}));
 }
 
 describe('Location', () => {
@@ -44,27 +41,29 @@ describe('Location', () => {
   describe('getCurrentPositionAsync', () => {
     it('works on Android', async () => {
       mockPlatformAndroid();
-      let result = await Location.getCurrentPositionAsync({});
+      const result = await Location.getCurrentPositionAsync({});
       expect(result).toEqual(fakeReturnValue);
     });
 
     it('works on iOS', async () => {
       mockPlatformIOS();
-
-      // Asynchronously notify the watcher used to get the current position
-      ExpoLocation.watchPositionImplAsync.mockImplementationOnce(async () => {
-        setImmediate(() => emitNativeLocationUpdate(fakeReturnValue));
-      });
-
-      let result = await Location.getCurrentPositionAsync({});
+      const result = await Location.getCurrentPositionAsync({});
       expect(result).toEqual(fakeReturnValue);
     });
   });
 
   describe('watchPositionAsync', () => {
     it('receives repeated events', async () => {
-      let callback = jest.fn();
-      let watchBarrier = createMockFunctionBarrier(ExpoLocation.watchPositionImplAsync);
+      let resolveBarrier;
+      const callback = jest.fn();
+      const watchBarrier = new Promise(resolve => {
+        resolveBarrier = resolve;
+      });
+      mockProperty(
+        NativeModulesProxy.ExpoLocation,
+        'watchPositionImplAsync',
+        jest.fn(resolveBarrier)
+      );
       await Location.watchPositionAsync({}, callback);
       await watchBarrier;
 
@@ -77,7 +76,7 @@ describe('Location', () => {
   describe('geocodeAsync', () => {
     it('falls back to Google Maps API on Android without Google Play services', () => {
       mockPlatformAndroid();
-      ExpoLocation.geocodeAsync.mockImplementationOnce(async () => {
+      mockProperty(NativeModulesProxy.ExpoLocation, 'geocodeAsync', async () => {
         const error = new Error();
         error.code = 'E_NO_GEOCODER';
         throw error;
@@ -99,8 +98,6 @@ describe('Location', () => {
   });
 
   describe('navigator.geolocation polyfill', () => {
-    const noop = () => {};
-
     beforeEach(() => {
       applyMocks();
     });
@@ -110,72 +107,38 @@ describe('Location', () => {
     });
 
     describe('getCurrentPosition', () => {
-      it('asks for permissions beforehand', () => {
-        let askAsyncMock = jest.fn();
-        mockProperty(Permissions, 'askAsync', askAsyncMock);
-        global.navigator.geolocation.getCurrentPosition(noop, noop, {});
-        expect(askAsyncMock).toHaveBeenCalledWith(Permissions.LOCATION);
-      });
-
-      it('invokes error callback if permissions are rejected', async () => {
-        let denyPermission = jest.fn(async () => ({ status: 'denied' }));
-        mockProperty(Permissions, 'askAsync', denyPermission);
-
-        let permissionBarrier = createMockFunctionBarrier(Permissions.askAsync);
-        let errorCallback = jest.fn();
-        navigator.geolocation.getCurrentPosition(noop, errorCallback, {});
-        await permissionBarrier;
-        expect(errorCallback).toHaveBeenCalled();
-      });
-
-      it('delegates to getCurrentPositionAsync when permissions are granted', async () => {
-        mockProperty(Permissions, 'askAsync', async () => ({
-          status: 'granted',
-        }));
-
-        mockProperty(Location, 'getCurrentPositionAsync', jest.fn(async () => {}));
-
+      it('delegates to getCurrentPositionAsync', async () => {
         let pass;
-        let barrier = new Promise(resolve => {
+        const barrier = new Promise(resolve => {
           pass = resolve;
         });
-
-        let options = {};
+        const options = {};
         navigator.geolocation.getCurrentPosition(pass, pass, options);
         await barrier;
-        expect(Location.getCurrentPositionAsync).toHaveBeenCalledWith(options);
+        expect(NativeModulesProxy.ExpoLocation.getCurrentPositionAsync).toHaveBeenCalledWith(
+          options
+        );
       });
     });
 
     describe('watchPosition', () => {
-      it('asks for permissions beforehand', () => {
-        let grantPermission = jest.fn(async () => ({ status: 'granted' }));
-        mockProperty(Permissions, 'askAsync', grantPermission);
-        navigator.geolocation.watchPosition(noop, noop);
-        expect(grantPermission).toHaveBeenCalledWith(Permissions.LOCATION);
-      });
-
-      it('invokes error callback if permissions are rejected', async () => {
-        let denyPermission = jest.fn(async () => ({ status: 'denied' }));
-        mockProperty(Permissions, 'askAsync', denyPermission);
-
-        let permissionBarrier = createMockFunctionBarrier(Permissions.askAsync);
-        let errorCallback = jest.fn();
-        navigator.geolocation.watchPosition(noop, errorCallback);
-        await permissionBarrier;
-        expect(errorCallback).toHaveBeenCalled();
-      });
-
       it('watches for updates and stops when clearWatch is called', async () => {
-        mockProperty(Permissions, 'askAsync', async () => ({
-          status: 'granted',
-        }));
+        let resolveBarrier;
+        const watchBarrier = new Promise(resolve => {
+          resolveBarrier = resolve;
+        });
+        mockProperty(
+          NativeModulesProxy.ExpoLocation,
+          'watchPositionImplAsync',
+          jest.fn(async () => {
+            resolveBarrier();
+          })
+        );
+        const callback = jest.fn();
 
-        let watchBarrier = createMockFunctionBarrier(ExpoLocation.watchPositionImplAsync);
-
-        let callback = jest.fn();
-        let watchId = navigator.geolocation.watchPosition(callback);
+        const watchId = navigator.geolocation.watchPosition(callback);
         await watchBarrier;
+
         emitNativeLocationUpdate(fakeReturnValue);
         emitNativeLocationUpdate(fakeReturnValue);
         expect(callback).toHaveBeenCalledTimes(2);
@@ -185,12 +148,6 @@ describe('Location', () => {
         expect(callback).toHaveBeenCalledTimes(2);
       });
     });
-
-    describe('stopObserving', () => {
-      it('does nothing!', () => {
-        // but should it do something?
-      });
-    });
   });
 });
 
@@ -198,14 +155,5 @@ function emitNativeLocationUpdate(location) {
   Location.EventEmitter.emit('Exponent.locationChanged', {
     watchId: Location._getCurrentWatchId(),
     location,
-  });
-}
-
-function createMockFunctionBarrier(mockFn) {
-  return new Promise(resolve => {
-    mockFn.mockImplementationOnce(() => {
-      setImmediate(resolve);
-      return mockFn();
-    });
   });
 }
