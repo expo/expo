@@ -58,7 +58,7 @@
 }
 
 // Convert one element to RNSVGBezierElement and save to array
-void GetBezierElements(void *info, const CGPathElement *element)
+void ABI30_0_0GetBezierElements(void *info, const CGPathElement *element)
 {
     NSMutableArray *bezierElements = (__bridge NSMutableArray *)info;
     if (element)
@@ -69,7 +69,7 @@ void GetBezierElements(void *info, const CGPathElement *element)
 + (NSArray *) elementsFromCGPath:(CGPathRef)path
 {
     NSMutableArray *elements = [NSMutableArray array];
-    CGPathApply(path, (__bridge void *)elements, GetBezierElements);
+    CGPathApply(path, (__bridge void *)elements, ABI30_0_0GetBezierElements);
     return elements;
 }
 
