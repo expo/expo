@@ -283,6 +283,8 @@
 		BB50E89320B9C0D3003C752D /* RNNativeViewHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = BB50E88220B9C0D3003C752D /* RNNativeViewHandler.m */; };
 		BB50E89420B9C0D3003C752D /* RNPinchHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = BB50E88420B9C0D3003C752D /* RNPinchHandler.m */; };
 		BB50E89520B9C0D3003C752D /* RNGestureHandlerModule.m in Sources */ = {isa = PBXBuildFile; fileRef = BB50E88720B9C0D3003C752D /* RNGestureHandlerModule.m */; };
+		BB557F0F2138C81200053523 /* REAAlwaysNode.m in Sources */ = {isa = PBXBuildFile; fileRef = BB557F0D2138C81100053523 /* REAAlwaysNode.m */; };
+		BB557F122138C81B00053523 /* REAConcatNode.m in Sources */ = {isa = PBXBuildFile; fileRef = BB557F102138C81A00053523 /* REAConcatNode.m */; };
 		BB5BD31C20AEFCB4007E02FC /* REAModule.m in Sources */ = {isa = PBXBuildFile; fileRef = BB5BD2FB20AEFCB4007E02FC /* REAModule.m */; };
 		BB5BD31D20AEFCB4007E02FC /* REAPropsNode.m in Sources */ = {isa = PBXBuildFile; fileRef = BB5BD2FD20AEFCB4007E02FC /* REAPropsNode.m */; };
 		BB5BD31E20AEFCB4007E02FC /* REAStyleNode.m in Sources */ = {isa = PBXBuildFile; fileRef = BB5BD30320AEFCB4007E02FC /* REAStyleNode.m */; };
@@ -890,6 +892,10 @@
 		BB50E88520B9C0D3003C752D /* RNRotationHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNRotationHandler.h; sourceTree = "<group>"; };
 		BB50E88620B9C0D3003C752D /* RNGestureHandlerRegistry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNGestureHandlerRegistry.h; sourceTree = "<group>"; };
 		BB50E88720B9C0D3003C752D /* RNGestureHandlerModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNGestureHandlerModule.m; sourceTree = "<group>"; };
+		BB557F0D2138C81100053523 /* REAAlwaysNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = REAAlwaysNode.m; sourceTree = "<group>"; };
+		BB557F0E2138C81200053523 /* REAAlwaysNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = REAAlwaysNode.h; sourceTree = "<group>"; };
+		BB557F102138C81A00053523 /* REAConcatNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = REAConcatNode.m; sourceTree = "<group>"; };
+		BB557F112138C81A00053523 /* REAConcatNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = REAConcatNode.h; sourceTree = "<group>"; };
 		BB5BD2FB20AEFCB4007E02FC /* REAModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = REAModule.m; sourceTree = "<group>"; };
 		BB5BD2FD20AEFCB4007E02FC /* REAPropsNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = REAPropsNode.m; sourceTree = "<group>"; };
 		BB5BD2FE20AEFCB4007E02FC /* REABezierNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = REABezierNode.h; sourceTree = "<group>"; };
@@ -2061,6 +2067,10 @@
 		BB5BD2FC20AEFCB4007E02FC /* Nodes */ = {
 			isa = PBXGroup;
 			children = (
+				BB557F112138C81A00053523 /* REAConcatNode.h */,
+				BB557F102138C81A00053523 /* REAConcatNode.m */,
+				BB557F0E2138C81200053523 /* REAAlwaysNode.h */,
+				BB557F0D2138C81100053523 /* REAAlwaysNode.m */,
 				BB5BD2FD20AEFCB4007E02FC /* REAPropsNode.m */,
 				BB5BD2FE20AEFCB4007E02FC /* REABezierNode.h */,
 				BB5BD2FF20AEFCB4007E02FC /* REAJSCallNode.h */,
@@ -2518,6 +2528,7 @@
 				7846B1FD20355E9900638E43 /* RNSVGSvgView.m in Sources */,
 				B5FB74AD1FF6DADC001C764B /* EXKeepAwake.m in Sources */,
 				B5D0D65C204F152D00DDFC99 /* EXViewController.m in Sources */,
+				BB557F122138C81B00053523 /* REAConcatNode.m in Sources */,
 				B5FB74EB1FF6DADC001C764B /* EXStatusBarManager.m in Sources */,
 				0779EE2820977C9E00C2D71B /* AIRDummyView.m in Sources */,
 				B5A473E3204A676C0035C61C /* EXAppLoadingProgressView.m in Sources */,
@@ -2723,6 +2734,7 @@
 				B5D0D673204F4C0400DDFC99 /* EXApiUtil.m in Sources */,
 				7846B20D20355E9900638E43 /* RNSVGSymbolManager.m in Sources */,
 				78343622205B8C5F00DD28C3 /* AIRMapUrlTileManager.m in Sources */,
+				BB557F0F2138C81200053523 /* REAAlwaysNode.m in Sources */,
 				B5FB74D71FF6DADC001C764B /* BranchUniversalObject+RNBranch.m in Sources */,
 				7846B20F20355E9900638E43 /* RNSVGClipPathManager.m in Sources */,
 				783435E2205B8BEE00DD28C3 /* AIRGoogleMapManager.m in Sources */,

@@ -4,34 +4,35 @@ import com.facebook.react.bridge.JavaOnlyArray;
 import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableArray;
 import versioned.host.exp.exponent.modules.api.reanimated.NodesManager;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class TransformNode extends Node<WritableArray> {
+public class TransformNode extends Node {
 
   private static abstract class TransformConfig {
     public String propertyName;
 
-    public abstract double getValue(NodesManager nodesManager);
+    public abstract Object getValue(NodesManager nodesManager);
   }
 
   private static class AnimatedTransformConfig extends TransformConfig {
     public int nodeID;
 
     @Override
-    public double getValue(NodesManager nodesManager) {
+    public Object getValue(NodesManager nodesManager) {
       return nodesManager.getNodeValue(nodeID);
     }
   }
 
   private static class StaticTransformConfig extends TransformConfig {
-    public double value;
+    public Object value;
 
     @Override
-    public double getValue(NodesManager nodesManager) {
+    public Object getValue(NodesManager nodesManager) {
       return value;
     }
   }
@@ -49,7 +50,10 @@ public class TransformNode extends Node<WritableArray> {
       } else {
         StaticTransformConfig transformConfig = new StaticTransformConfig();
         transformConfig.propertyName = property;
-        transformConfig.value = transformConfigMap.getDouble("value");
+        transformConfig.value = transformConfigMap.getType("value") ==
+                ReadableType.String ?
+                transformConfigMap.getString("value") :
+                transformConfigMap.getDouble("value");
         configs.add(transformConfig);
       }
     }

@@ -5,7 +5,7 @@ import android.graphics.PointF;
 import com.facebook.react.bridge.ReadableMap;
 import versioned.host.exp.exponent.modules.api.reanimated.NodesManager;
 
-public class BezierNode extends Node<Double> {
+public class BezierNode extends Node {
 
   private static class CubicBezierInterpolator {
 
@@ -83,7 +83,7 @@ public class BezierNode extends Node<Double> {
 
   @Override
   protected Double evaluate() {
-    Double in = mNodesManager.getNodeValue(mInputID);
+    Double in = (Double) mNodesManager.getNodeValue(mInputID);
     return Double.valueOf(mInterpolator.getInterpolation(in.floatValue()));
   }
 }

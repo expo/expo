@@ -6,6 +6,7 @@
 
 #import <React/RCTLog.h>
 #import <React/RCTUIManager.h>
+#import <React/RCTComponentData.h>
 
 @implementation REAPropsNode
 {
@@ -39,33 +40,39 @@
 
 - (id)evaluate
 {
+  NSMutableDictionary *uiProps = [NSMutableDictionary new];
   NSMutableDictionary *nativeProps = [NSMutableDictionary new];
   NSMutableDictionary *jsProps = [NSMutableDictionary new];
-
+  
   void (^addBlock)(NSString *key, id obj, BOOL * stop) = ^(NSString *key, id obj, BOOL * stop){
-    if ([self.nodesManager.nativeProps containsObject:key]) {
+    if ([self.nodesManager.uiProps containsObject:key]) {
+      uiProps[key] = obj;
+    } else if ([self.nodesManager.nativeProps containsObject:key]) {
       nativeProps[key] = obj;
     } else {
       jsProps[key] = obj;
     }
   };
-
+  
   for (NSString *prop in _propsConfig) {
     REANode *propNode = [self.nodesManager findNodeByID:_propsConfig[prop]];
-
+    
     if ([propNode isKindOfClass:[REAStyleNode class]]) {
       [[propNode value] enumerateKeysAndObjectsUsingBlock:addBlock];
     } else {
       addBlock(prop, [propNode value], nil);
     }
   }
-
+  
   if (_connectedViewTag != nil) {
-    if (nativeProps.count > 0) {
+    if (uiProps.count > 0) {
       [self.nodesManager.uiManager
        synchronouslyUpdateViewOnUIThread:_connectedViewTag
        viewName:_connectedViewName
-       props:nativeProps];
+       props:uiProps];
+    }
+    if (nativeProps.count > 0) {
+      [self.nodesManager enqueueUpdateViewOnNativeThread:_connectedViewTag viewName:_connectedViewName nativeProps:nativeProps];
     }
     if (jsProps.count > 0) {
       [self.nodesManager.reanimatedModule
@@ -73,7 +80,7 @@
        body:@{@"viewTag": _connectedViewTag, @"props": jsProps }];
     }
   }
-
+  
   return @(0);
 }
 

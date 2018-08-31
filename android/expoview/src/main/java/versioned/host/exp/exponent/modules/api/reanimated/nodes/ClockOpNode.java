@@ -3,7 +3,7 @@ package versioned.host.exp.exponent.modules.api.reanimated.nodes;
 import com.facebook.react.bridge.ReadableMap;
 import versioned.host.exp.exponent.modules.api.reanimated.NodesManager;
 
-public abstract class ClockOpNode extends Node<Double> {
+public abstract class ClockOpNode extends Node {
 
   public static class ClockStartNode extends ClockOpNode {
     public ClockStartNode(int nodeID, ReadableMap config, NodesManager nodesManager) {

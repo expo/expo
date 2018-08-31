@@ -107,12 +107,14 @@ RCT_EXPORT_METHOD(detachEvent:(nonnull NSNumber *)viewTag
   }];
 }
 
-RCT_EXPORT_METHOD(configureNativeProps:(nonnull NSArray<NSString *> *)nativeProps)
+RCT_EXPORT_METHOD(configureProps:(nonnull NSArray<NSString *> *)nativeProps
+                         uiProps:(nonnull NSArray<NSString *> *)uiProps)
 {
-    [self addOperationBlock:^(REANodesManager *nodesManager) {
-        [nodesManager configureNativeProps:[NSSet setWithArray:nativeProps]];
-    }];
+  [self addOperationBlock:^(REANodesManager *nodesManager) {
+    [nodesManager configureProps:[NSSet setWithArray:nativeProps] uiProps:[NSSet setWithArray:uiProps]];
+  }];
 }
+
 
 #pragma mark -- Batch handling
 

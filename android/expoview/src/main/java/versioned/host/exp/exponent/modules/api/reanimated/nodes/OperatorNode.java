@@ -5,7 +5,7 @@ import com.facebook.react.bridge.ReadableMap;
 import versioned.host.exp.exponent.modules.api.reanimated.NodesManager;
 import versioned.host.exp.exponent.modules.api.reanimated.Utils;
 
-public class OperatorNode extends Node<Double> {
+public class OperatorNode extends Node {
 
   private static boolean truthy(Object value) {
     return value != null && !value.equals(0.);
@@ -145,7 +145,7 @@ public class OperatorNode extends Node<Double> {
     @Override
     public double evaluate(Node[] input) {
       Object res = input[0].value();
-      return (res != null && !((Double) res).isNaN()) ? 1. : 0.;
+      return (res != null && !(res instanceof Double && ((Double) res).isNaN())) ? 1. : 0.;
     }
   };
 
@@ -245,7 +245,7 @@ public class OperatorNode extends Node<Double> {
   }
 
   @Override
-  protected Double evaluate() {
+  protected Object evaluate() {
     for (int i = 0; i < mInputIDs.length; i++) {
       mInputNodes[i] = mNodesManager.findNodeById(mInputIDs[i], Node.class);
     }

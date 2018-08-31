@@ -4,7 +4,7 @@ import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableMap;
 import versioned.host.exp.exponent.modules.api.reanimated.NodesManager;
 
-public class SetNode extends Node<Double> {
+public class SetNode extends Node {
 
   private int mWhatNodeID, mValueNodeID;
 
@@ -15,8 +15,8 @@ public class SetNode extends Node<Double> {
   }
 
   @Override
-  protected Double evaluate() {
-    Double newValue = mNodesManager.getNodeValue(mValueNodeID);
+  protected Object evaluate() {
+    Object newValue = mNodesManager.getNodeValue(mValueNodeID);
     ValueNode what = mNodesManager.findNodeById(mWhatNodeID, ValueNode.class);
     what.setValue(newValue);
     return newValue;

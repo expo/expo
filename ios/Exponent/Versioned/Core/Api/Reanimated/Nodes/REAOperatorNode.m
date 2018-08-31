@@ -68,7 +68,7 @@ return @(OP); \
             @"not": REA_SINGLE(!a),
             @"defined": ^(NSArray<REANode *> *inputNodes) {
               id val = [inputNodes[0] value];
-              id res = @(val != nil && !isnan([val doubleValue]));
+              id res = @(val != nil && !([val isKindOfClass:[NSNumber class]] && isnan([val doubleValue])));
               return res;
             },
 
