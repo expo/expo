@@ -181,13 +181,6 @@ public class TestSuiteTests extends BaseTestClass {
     runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-24-0-0", false);
   }
 
-  @Test
-  @ExpoTestSuiteTest
-  @ExpoSdkVersionTest("23.0.0")
-  public void sdk23TestSuite() {
-    runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-23-0-0", false);
-  }
-
   /* SDK 22 test-suite is borked so just skip it for now
   @Test
   @ExpoTestSuiteTest
