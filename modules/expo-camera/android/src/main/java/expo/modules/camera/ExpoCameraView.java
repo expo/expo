@@ -201,7 +201,7 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
 
       CamcorderProfile profile = CamcorderProfile.get(getCameraId(), CamcorderProfile.QUALITY_HIGH);
       if (options.get(QUALITY_KEY) != null) {
-        profile = CameraViewHelper.getCamcorderProfile(getCameraId(), (Integer) options.get(QUALITY_KEY));
+        profile = CameraViewHelper.getCamcorderProfile(getCameraId(), ((Double) options.get(QUALITY_KEY)).intValue());
       }
 
       Boolean muteValue = (Boolean) options.get(MUTE_KEY);
