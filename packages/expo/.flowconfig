@@ -5,7 +5,6 @@
 
 <PROJECT_ROOT>/node_modules/metro-bundler/.*
 <PROJECT_ROOT>/node_modules/react-native/.*
-.*/eslint-config-universe/.*
 .*/jest-expo/node_modules/.*
 .*/vector-icons/.*
 .*/react-native-gesture-handler/.*
