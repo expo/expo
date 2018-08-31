@@ -2,6 +2,7 @@ import './LegacyReact';
 
 import Expo, { Asset } from 'expo';
 import React from 'react';
+import { Ionicons } from '@expo/vector-icons';
 import { Platform, StatusBar, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-navigation';
 
@@ -29,6 +30,7 @@ export default class App extends React.Component {
         Asset.loadAsync(iconRequires),
         Asset.loadAsync(require('react-navigation/src/views/assets/back-icon.png')),
         Asset.loadAsync(require('react-navigation/src/views/assets/back-icon-mask.png')),
+        Expo.Font.loadAsync(Ionicons.font),
         Expo.Font.loadAsync({ 'space-mono': require('./assets/fonts/SpaceMono-Regular.ttf') })
       ]);
     } catch (e) {
