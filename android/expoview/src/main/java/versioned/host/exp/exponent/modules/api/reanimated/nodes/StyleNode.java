@@ -2,6 +2,7 @@ package versioned.host.exp.exponent.modules.api.reanimated.nodes;
 
 import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import versioned.host.exp.exponent.modules.api.reanimated.NodesManager;
 import versioned.host.exp.exponent.modules.api.reanimated.Utils;
@@ -10,7 +11,7 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
-public class StyleNode extends Node<WritableMap> {
+public class StyleNode extends Node {
 
   private final Map<String, Integer> mMapping;
 
@@ -25,9 +26,16 @@ public class StyleNode extends Node<WritableMap> {
     for (Map.Entry<String, Integer> entry : mMapping.entrySet()) {
       Node node = mNodesManager.findNodeById(entry.getValue(), Node.class);
       if (node instanceof TransformNode) {
-        propMap.putArray(entry.getKey(), ((TransformNode) node).value());
+        propMap.putArray(entry.getKey(), (WritableArray) node.value());
       } else {
-        propMap.putDouble(entry.getKey(), node.doubleValue());
+        Object val = node.value();
+        if (val instanceof Double) {
+          propMap.putDouble(entry.getKey(), (Double) val);
+        } else if (val instanceof String) {
+          propMap.putString(entry.getKey(), (String) val);
+        } else {
+          throw new IllegalStateException("Wrong style form");
+        }
       }
     }
     return propMap;

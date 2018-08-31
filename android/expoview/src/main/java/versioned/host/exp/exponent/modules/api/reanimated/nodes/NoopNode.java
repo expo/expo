@@ -16,7 +16,7 @@ public class NoopNode extends ValueNode {
   }
 
   @Override
-  public void setValue(Double value) {
+  public void setValue(Object value) {
     // no-op
   }
 

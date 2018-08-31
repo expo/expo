@@ -7,7 +7,7 @@ import com.facebook.react.bridge.WritableMap;
 import versioned.host.exp.exponent.modules.api.reanimated.NodesManager;
 import versioned.host.exp.exponent.modules.api.reanimated.Utils;
 
-public class JSCallNode extends Node<Double> {
+public class JSCallNode extends Node {
 
   private final int[] mInputIDs;
 

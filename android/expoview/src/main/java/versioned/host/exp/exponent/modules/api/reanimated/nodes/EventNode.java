@@ -12,7 +12,7 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-public class EventNode extends Node<Double> implements RCTEventEmitter {
+public class EventNode extends Node implements RCTEventEmitter {
 
   private static class EventMap {
     private final int nodeID;
