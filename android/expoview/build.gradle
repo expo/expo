@@ -190,7 +190,6 @@ dependencies {
   api 'host.exp:reactandroid-abi26_0_0:1.0.0'
   api 'host.exp:reactandroid-abi25_0_0:1.0.0'
   api 'host.exp:reactandroid-abi24_0_0:1.0.0'
-  api 'host.exp:reactandroid-abi23:1.0.0'
 
   // React native dependencies
   // We use a different version of appcompat
