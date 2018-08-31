@@ -14,10 +14,14 @@ anchors:
       name: Set up the environment
       command: |
         # Clone the submodules
-        git submodule update --init --remote --depth 1
+        git submodule update --init
 
         # Trust all of the .envrc files for direnv
         find . -name '.envrc' -exec direnv allow {} \;
+
+        # Update Yarn
+        curl -o- -L https://yarnpkg.com/install.sh | bash
+        echo 'export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"' >> "$BASH_ENV"
 
   - &install_workspace_dependencies
     run:
@@ -37,6 +41,14 @@ anchors:
       key: yarn-v0-{{ .Branch }}
       paths:
         - ~/.cache/yarn  # set by YARN_CACHE_FOLDER
+
+  - &lint
+    name: Lint
+    command: yarn lint --max-warnings 0
+
+  - &jest
+    name: Unit tests (Jest)
+    command: yarn jest --maxWorkers 2
 
 workflows:
   version: 2
@@ -64,9 +76,11 @@ jobs:
       - *install_workspace_dependencies
       - *save_yarn_cache
       - run:
-          name: Lint
+          <<: *lint
           working_directory: ~/expo/packages/expo
-          command: yarn lint --max-warnings 0
+      - run:
+          <<: *jest
+          working_directory: ~/expo/packages/expo
 
   babel_preset:
     <<: *node_job
@@ -79,9 +93,11 @@ jobs:
       - *install_workspace_dependencies
       - *save_yarn_cache
       - run:
-          name: Unit tests
+          <<: *lint
           working_directory: ~/expo/packages/babel-preset-expo
-          command: yarn jest --maxWorkers 2
+      - run:
+          <<: *jest
+          working_directory: ~/expo/packages/babel-preset-expo
 
   home:
     <<: *node_job
@@ -93,3 +109,6 @@ jobs:
       - *restore_yarn_cache
       - *install_workspace_dependencies
       - *save_yarn_cache
+      - run:
+          <<: *jest
+          working_directory: ~/expo/home

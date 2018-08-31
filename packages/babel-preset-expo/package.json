@@ -4,7 +4,9 @@
   "description": "The Babel preset for Expo projects",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "jest": "jest",
+    "lint": "eslint .",
+    "test": "jest --watch"
   },
   "repository": {
     "type": "git",
@@ -22,6 +24,9 @@
     "url": "https://github.com/expo/expo/issues"
   },
   "homepage": "https://github.com/expo/expo/tree/master/packages/babel-preset-expo#readme",
+  "eslintConfig": {
+    "extends": "universe/node"
+  },
   "jest": {
     "testEnvironment": "node",
     "testPathIgnorePatterns": [
@@ -38,6 +43,6 @@
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
-    "jest": "^22.4.2"
+    "jest": "^23.5.0"
   }
 }

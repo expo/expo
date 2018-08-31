@@ -10,11 +10,12 @@
     "url": "git://github.com/expo/jest-expo.git"
   },
   "files": [
+    "bin",
     "src",
     "jest-preset.json"
   ],
-  "peerDependencies": {
-    "react-native": "*"
+  "bin": {
+    "jest": "bin/jest.js"
   },
   "dependencies": {
     "babel-jest": "^22.4.2",
