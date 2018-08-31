@@ -61,6 +61,7 @@ public class NativeModulesProxy extends ReactContextBaseJavaModule {
   @Nullable
   @Override
   public Map<String, Object> getConstants() {
+    mModuleRegistry.ensureIsInitialized();
     Collection<ExportedModule> exportedModules = mModuleRegistry.getAllExportedModules();
     Collection<ViewManager> viewManagers = mModuleRegistry.getAllViewManagers();
 

@@ -11,6 +11,7 @@ import expo.core.interfaces.InternalModule;
 import expo.core.interfaces.ModuleRegistryConsumer;
 
 public class ModuleRegistry {
+  private volatile boolean mIsInitialized = false;
   private final Map<Class, InternalModule> mInternalModulesMap = new HashMap<>();
   private final Map<String, ViewManager> mViewManagersMap = new HashMap<>();
   private final Map<String, ExportedModule> mExportedModulesMap = new HashMap<>();
@@ -120,6 +121,13 @@ public class ModuleRegistry {
    * in this {@link ModuleRegistry}, so its consumers can access
    * all the needed instances.
    */
+  public synchronized void ensureIsInitialized() {
+    if (!mIsInitialized) {
+      initialize();
+      mIsInitialized = true;
+    }
+  }
+
   public void initialize() {
     Collection<WeakReference> emptyReferences = new ArrayList<>();
     for (WeakReference<ModuleRegistryConsumer> consumerWeakReference : mRegistryConsumers) {

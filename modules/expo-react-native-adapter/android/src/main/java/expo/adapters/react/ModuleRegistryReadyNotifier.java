@@ -25,6 +25,6 @@ public class ModuleRegistryReadyNotifier extends BaseJavaModule {
 
   @Override
   public void initialize() {
-    mModuleRegistry.initialize();
+    mModuleRegistry.ensureIsInitialized();
   }
 }
