@@ -61,6 +61,7 @@ import HapticScreen from '../screens/HapticScreen';
 import StoreReview from '../screens/StoreReview';
 import BranchScreen from '../screens/BranchScreen';
 import SMSScreen from '../screens/SMSScreen';
+import ScreensScreen from '../screens/Screens';
 import PermissionsScreen from '../screens/PermissionsScreen';
 
 const styles = StyleSheet.create({
@@ -155,6 +156,7 @@ const ExpoApisStackNavigator = createStackNavigator(
     SecureStore: { screen: SecureStoreScreen },
     Sensor: { screen: SensorScreen },
     SMS: { screen: SMSScreen },
+    Screens: { screen: ScreensScreen },
     StoreReview: { screen: StoreReview },
     TextToSpeech: { screen: TextToSpeechScreen },
     Util: { screen: UtilScreen },

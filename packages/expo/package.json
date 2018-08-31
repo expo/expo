@@ -89,6 +89,7 @@
     "react-native-gesture-handler": "1.0.6",
     "react-native-maps": "0.21.0",
     "react-native-reanimated": "1.0.0-alpha.3",
+    "react-native-screens": "^1.0.0-alpha.5",
     "react-native-svg": "6.2.2",
     "uuid-js": "^0.7.5"
   },
