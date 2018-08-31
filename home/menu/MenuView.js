@@ -1,4 +1,4 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
 import {
   Alert,
   AppRegistry,
@@ -6,7 +6,6 @@ import {
   Dimensions,
   Image,
   NativeModules,
-  Platform,
   PixelRatio,
   ScrollView,
   StatusBar,
@@ -18,7 +17,6 @@ import {
 } from 'react-native';
 
 import Expo, { Constants } from 'expo';
-import { Ionicons } from '@expo/vector-icons';
 import ResponsiveImage from '@expo/react-native-responsive-image';
 
 import DevIndicator from '../components/DevIndicator';
@@ -73,7 +71,7 @@ export default class MenuView extends React.Component {
         });
       }
     });
-  }
+  };
 
   forceStatusBarUpdateAsync = async () => {
     if (NativeModules.StatusBarManager._captureProperties) {
@@ -95,9 +93,9 @@ export default class MenuView extends React.Component {
   };
   render() {
     if (!this.state.isLoaded) {
-      return (<View />);
+      return <View />;
     }
-    
+
     let copyUrlButton;
     if (this.props.task && this.props.task.manifestUrl) {
       copyUrlButton = this._renderButton({
@@ -140,7 +138,10 @@ export default class MenuView extends React.Component {
             onPress={this._onPressClose}
             underlayColor="#eee"
             hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}>
-            <Ionicons name="md-close" size={20} style={styles.closeButtonIcon} />
+            <Image
+              source={require('../assets/menu-md-close.png')}
+              style={{ width: 12, height: 20 }}
+            />
           </TouchableHighlight>
         </ScrollView>
       </View>
@@ -224,7 +225,8 @@ export default class MenuView extends React.Component {
 
   _maybeRenderDevServerName() {
     let { task } = this.props;
-    let devServerName = (task.manifest && task.manifest.developer) ? task.manifest.developer.tool : null;
+    let devServerName =
+      task.manifest && task.manifest.developer ? task.manifest.developer.tool : null;
     if (devServerName) {
       // XDE is upper
       if (devServerName === 'xde') {
@@ -286,28 +288,23 @@ export default class MenuView extends React.Component {
         onPress={() => {
           Alert.alert(title, detail);
         }}>
-        <Ionicons
-          name="ios-information-circle"
-          size={20}
-          style={{ color: '#9ca0a6', marginVertical: 10 }}
+        <Image
+          style={{ width: 16, height: 20, marginVertical: 10 }}
+          source={require('../assets/ios-menu-information-circle.png')}
         />
       </TouchableOpacity>
     );
   }
 
   _renderButton(options) {
-    const { key, text, onPress, iconSource, svgName, withSeparator } = options;
+    const { key, text, onPress, iconSource, withSeparator } = options;
 
     let icon;
     if (iconSource) {
       icon = <Image style={styles.buttonIcon} source={iconSource} />;
-    } else if (svgName) {
-      icon = <Ionicons style={styles.buttonSvgIcon} size={20} name={svgName} color="#4e9bde" />;
     } else {
       icon = <View style={styles.buttonIcon} />;
     }
-
-    const buttonTextStyles = svgName ? styles.buttonSvgText : styles.buttonText;
 
     const buttonStyles = withSeparator
       ? [styles.button, styles.buttonWithSeparator]
@@ -316,7 +313,7 @@ export default class MenuView extends React.Component {
     return (
       <TouchableOpacity key={key} style={buttonStyles} onPress={onPress}>
         {icon}
-        <Text style={buttonTextStyles}>{text}</Text>
+        <Text style={styles.buttonText}>{text}</Text>
       </TouchableOpacity>
     );
   }
@@ -359,9 +356,6 @@ let styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#ffffff',
     marginTop: Constants.statusBarHeight,
-  },
-  closeButtonIcon: {
-    color: '#49a7e8',
   },
   closeButton: {
     position: 'absolute',
@@ -441,13 +435,6 @@ let styles = StyleSheet.create({
     marginLeft: 20,
     alignSelf: 'flex-start',
   },
-  buttonSvgIcon: {
-    width: 20,
-    height: 20,
-    marginVertical: 10,
-    marginLeft: 20,
-    alignSelf: 'flex-start',
-  },
   buttonText: {
     color: '#595c68',
     fontSize: 14,
@@ -455,16 +442,6 @@ let styles = StyleSheet.create({
     marginVertical: 12,
     marginRight: 5,
     paddingHorizontal: 12,
-    fontWeight: '700',
-  },
-  buttonSvgText: {
-    color: '#595c68',
-    fontSize: 14,
-    textAlign: 'left',
-    marginVertical: 12,
-    marginRight: 5,
-    paddingLeft: 9,
-    paddingRight: 12,
     fontWeight: '700',
   },
   nuxRow: {
