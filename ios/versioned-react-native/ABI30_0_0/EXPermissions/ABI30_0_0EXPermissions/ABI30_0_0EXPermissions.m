@@ -187,7 +187,9 @@ ABI30_0_0EX_EXPORT_METHOD_AS(askAsync,
   __block void (^askForNextPermission)(void) = ^() {
     // stop condition: no permission left to be asked - resolve with results
     if (permissionsToBeAsked.count == 0) {
-      return resolver(permissions);
+      resolver(permissions);
+      askForNextPermission = nil;
+      return;
     }
     
     ABI30_0_0EX_ENSURE_STRONGIFY(self);

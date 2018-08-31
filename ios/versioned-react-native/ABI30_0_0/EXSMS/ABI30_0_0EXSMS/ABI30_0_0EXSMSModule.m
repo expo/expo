@@ -28,11 +28,13 @@ ABI30_0_0EX_EXPORT_METHOD_AS(isAvailableAsync,
                     isAvailable:(ABI30_0_0EXPromiseResolveBlock)resolve
                        rejecter:(ABI30_0_0EXPromiseRejectBlock)reject)
 {
-  if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"sms:"]]) {
-    resolve(@YES);
-  } else {
-    resolve(@NO);
-  }
+  dispatch_async(dispatch_get_main_queue(), ^{
+    if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"sms:"]]) {
+      resolve(@YES);
+    } else {
+      resolve(@NO);
+    }
+  });
 }
 
 ABI30_0_0EX_EXPORT_METHOD_AS(sendSMSAsync,

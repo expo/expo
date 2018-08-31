@@ -24,6 +24,16 @@ ABI30_0_0EX_EXPORT_MODULE(ExpoAdsAdMobBannerView);
            ];
 }
 
+- (void)startObserving
+{
+  // do nothing
+}
+
+- (void)stopObserving
+{
+  // do nothing
+}
+
 - (UIView *)view
 {
   return [[ABI30_0_0EXAdsAdMobBannerView alloc] init];

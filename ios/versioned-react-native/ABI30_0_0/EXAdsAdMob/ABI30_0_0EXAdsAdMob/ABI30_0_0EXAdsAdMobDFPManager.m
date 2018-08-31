@@ -25,6 +25,16 @@ ABI30_0_0EX_EXPORT_MODULE(ExpoPublisherBannerView);
            ];
 }
 
+- (void)startObserving
+{
+  // do nothing
+}
+
+- (void)stopObserving
+{
+  // do nothing
+}
+
 - (UIView *)view
 {
   return [[ABI30_0_0EXAdsDFPBannerView alloc] init];
