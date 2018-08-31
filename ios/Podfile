@@ -254,6 +254,54 @@ target 'Exponent' do
     # End generated dependency
 
 
+    # Generated dependency: ReactABI30_0_0
+    pod 'ReactABI30_0_0', :inhibit_warnings => true, :path => './versioned-react-native/ABI30_0_0', :subspecs => [
+      'Core',
+      'ART',
+      'DevSupport',
+      'RCTActionSheet',
+      'RCTAnimation',
+      'RCTCameraRoll',
+      'RCTGeolocation',
+      'RCTImage',
+      'RCTNetwork',
+      'RCTText',
+      'RCTVibration',
+      'RCTWebSocket',
+      'CxxBridge',
+      'Expo', 'ExpoOptional'
+    ]
+    pod 'yogaABI30_0_0', :path => './versioned-react-native/ABI30_0_0/ReactCommon/ABI30_0_0yoga'
+    pod 'ABI30_0_0EXGL', :path => './versioned-react-native/ABI30_0_0/EXGL'
+    pod 'ABI30_0_0EXSMS', :path => './versioned-react-native/ABI30_0_0/EXSMS'
+    pod 'ABI30_0_0EXCore', :path => './versioned-react-native/ABI30_0_0/EXCore'
+    pod 'ABI30_0_0EXFont', :path => './versioned-react-native/ABI30_0_0/EXFont'
+    pod 'ABI30_0_0EXPrint', :path => './versioned-react-native/ABI30_0_0/EXPrint'
+    pod 'ABI30_0_0EXCamera', :path => './versioned-react-native/ABI30_0_0/EXCamera'
+    pod 'ABI30_0_0EXSensors', :path => './versioned-react-native/ABI30_0_0/EXSensors'
+    pod 'ABI30_0_0EXLocation', :path => './versioned-react-native/ABI30_0_0/EXLocation'
+    pod 'ABI30_0_0EXContacts', :path => './versioned-react-native/ABI30_0_0/EXContacts'
+    pod 'ABI30_0_0EXAdsAdMob', :path => './versioned-react-native/ABI30_0_0/EXAdsAdMob'
+    pod 'ABI30_0_0EXConstants', :path => './versioned-react-native/ABI30_0_0/EXConstants'
+    pod 'ABI30_0_0EXFileSystem', :path => './versioned-react-native/ABI30_0_0/EXFileSystem'
+    pod 'ABI30_0_0EXPermissions', :path => './versioned-react-native/ABI30_0_0/EXPermissions'
+    pod 'ABI30_0_0EXSegment', :path => './versioned-react-native/ABI30_0_0/EXSegment'
+    pod 'ABI30_0_0EXMediaLibrary', :path => './versioned-react-native/ABI30_0_0/EXMediaLibrary'
+    pod 'ABI30_0_0EXFontInterface', :path => './versioned-react-native/ABI30_0_0/EXFontInterface'
+    pod 'ABI30_0_0EXBarCodeScanner', :path => './versioned-react-native/ABI30_0_0/EXBarCodeScanner'
+    pod 'ABI30_0_0EXCameraInterface', :path => './versioned-react-native/ABI30_0_0/EXCameraInterface'
+    pod 'ABI30_0_0EXSensorsInterface', :path => './versioned-react-native/ABI30_0_0/EXSensorsInterface'
+    pod 'ABI30_0_0EXConstantsInterface', :path => './versioned-react-native/ABI30_0_0/EXConstantsInterface'
+    pod 'ABI30_0_0EXReactNativeAdapter', :path => './versioned-react-native/ABI30_0_0/EXReactNativeAdapter'
+    pod 'ABI30_0_0EXFileSystemInterface', :path => './versioned-react-native/ABI30_0_0/EXFileSystemInterface'
+    pod 'ABI30_0_0EXPermissionsInterface', :path => './versioned-react-native/ABI30_0_0/EXPermissionsInterface'
+    pod 'ABI30_0_0EXImageLoaderInterface', :path => './versioned-react-native/ABI30_0_0/EXImageLoaderInterface'
+    pod 'ABI30_0_0EXFaceDetectorInterface', :path => './versioned-react-native/ABI30_0_0/EXFaceDetectorInterface'
+    pod 'ABI30_0_0EXBarCodeScannerInterface', :path => './versioned-react-native/ABI30_0_0/EXBarCodeScannerInterface'
+    pod 'ABI30_0_0EXFaceDetector', :path => './versioned-react-native/ABI30_0_0/EXFaceDetector'
+    # End generated dependency
+
+
     # Build React Native with RCT_DEV enabled
   post_install do |installer|
     installer.pods_project.main_group.tab_width = '2';
@@ -342,6 +390,21 @@ target 'Exponent' do
         config.build_settings['OTHER_CFLAGS'] = ['-DkNeverRequested=ReactABI29_0_0kNeverRequested','-DkNeverProgressed=ReactABI29_0_0kNeverProgressed','-DkSMCalloutViewRepositionDelayForUIScrollView=ReactABI29_0_0kSMCalloutViewRepositionDelayForUIScrollView','-DregionAsJSON=ReactABI29_0_0regionAsJSON','-DunionRect=ReactABI29_0_0unionRect','-DJSNoBytecodeFileFormatVersion=ReactABI29_0_0JSNoBytecodeFileFormatVersion','-DJSSamplingProfilerEnabled=ReactABI29_0_0JSSamplingProfilerEnabled','-DRECONNECT_DELAY_MS=ReactABI29_0_0RECONNECT_DELAY_MS','-DMAX_DELTA_TIME=ReactABI29_0_0MAX_DELTA_TIME','-DgCurrentGenerationCount=ReactABI29_0_0gCurrentGenerationCount','-DgPrintSkips=ReactABI29_0_0gPrintSkips','-DgPrintChanges=ReactABI29_0_0gPrintChanges','-DlayoutNodeInternal=ReactABI29_0_0layoutNodeInternal','-DgDepth=ReactABI29_0_0gDepth','-DgPrintTree=ReactABI29_0_0gPrintTree','-DisUndefined=ReactABI29_0_0isUndefined','-DgNodeInstanceCount=ReactABI29_0_0gNodeInstanceCount']
         config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
         config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'ABI29_0_0RCT_DEV=1'
+        # needed for GoogleMaps 2.x
+        config.build_settings['FRAMEWORK_SEARCH_PATHS'] ||= []
+        config.build_settings['FRAMEWORK_SEARCH_PATHS'] << '${PODS_ROOT}/GoogleMaps/Base/Frameworks'
+        config.build_settings['FRAMEWORK_SEARCH_PATHS'] << '${PODS_ROOT}/GoogleMaps/Maps/Frameworks'
+      end
+    end
+    # End generated postinstall
+
+
+    # Generated postinstall: ReactABI30_0_0
+    if target.pod_name == 'ReactABI30_0_0'
+      target.native_target.build_configurations.each do |config|
+        config.build_settings['OTHER_CFLAGS'] = ['-DkNeverRequested=ReactABI30_0_0kNeverRequested','-DkNeverProgressed=ReactABI30_0_0kNeverProgressed','-DkSMCalloutViewRepositionDelayForUIScrollView=ReactABI30_0_0kSMCalloutViewRepositionDelayForUIScrollView','-DregionAsJSON=ReactABI30_0_0regionAsJSON','-DunionRect=ReactABI30_0_0unionRect','-DJSNoBytecodeFileFormatVersion=ReactABI30_0_0JSNoBytecodeFileFormatVersion','-DJSSamplingProfilerEnabled=ReactABI30_0_0JSSamplingProfilerEnabled','-DRECONNECT_DELAY_MS=ReactABI30_0_0RECONNECT_DELAY_MS','-DMAX_DELTA_TIME=ReactABI30_0_0MAX_DELTA_TIME','-DgCurrentGenerationCount=ReactABI30_0_0gCurrentGenerationCount','-DgPrintSkips=ReactABI30_0_0gPrintSkips','-DgPrintChanges=ReactABI30_0_0gPrintChanges','-DlayoutNodeInternal=ReactABI30_0_0layoutNodeInternal','-DgDepth=ReactABI30_0_0gDepth','-DgPrintTree=ReactABI30_0_0gPrintTree','-DisUndefined=ReactABI30_0_0isUndefined','-DgNodeInstanceCount=ReactABI30_0_0gNodeInstanceCount']
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'ABI30_0_0RCT_DEV=1'
         # needed for GoogleMaps 2.x
         config.build_settings['FRAMEWORK_SEARCH_PATHS'] ||= []
         config.build_settings['FRAMEWORK_SEARCH_PATHS'] << '${PODS_ROOT}/GoogleMaps/Base/Frameworks'
