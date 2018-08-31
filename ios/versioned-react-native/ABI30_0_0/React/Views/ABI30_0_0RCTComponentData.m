@@ -437,6 +437,7 @@ static NSString *moduleNameForClass(Class managerClass)
   if (name.length == 0) {
     name = NSStringFromClass(managerClass);
   }
+  name = ABI30_0_0EX_REMOVE_VERSION(name);
   if ([name hasPrefix:@"RK"]) {
     name = [name stringByReplacingCharactersInRange:(NSRange){0, @"RK".length} withString:@"RCT"];
   }

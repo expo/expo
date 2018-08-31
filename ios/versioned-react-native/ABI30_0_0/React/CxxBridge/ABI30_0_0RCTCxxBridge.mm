@@ -1059,6 +1059,7 @@ ABI30_0_0RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *
   if (!self.valid) {
     return;
   }
+  module = ABI30_0_0EX_REMOVE_VERSION(module);
 
   /**
    * AnyThread
