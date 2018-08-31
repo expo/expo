@@ -29,6 +29,7 @@ import com.facebook.react.packagerconnection.RequestOnlyHandler;
 import com.facebook.react.packagerconnection.Responder;
 import java.io.File;
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Locale;
@@ -465,7 +466,11 @@ public class DevServerHelper {
         }
         mOnChangePollingEnabled = true;
         mOnServerContentChangeListener = onServerContentChangeListener;
-        mOnChangePollingClient = new OkHttpClient.Builder().connectionPool(new ConnectionPool(1, LONG_POLL_KEEP_ALIVE_DURATION_MS, TimeUnit.MINUTES)).connectTimeout(HTTP_CONNECT_TIMEOUT_MS, TimeUnit.MILLISECONDS).build();
+        mOnChangePollingClient = new OkHttpClient.Builder()
+            .connectionPool(new ConnectionPool(1, LONG_POLL_KEEP_ALIVE_DURATION_MS, TimeUnit.MILLISECONDS))
+            .connectTimeout(HTTP_CONNECT_TIMEOUT_MS, TimeUnit.MILLISECONDS)
+            .readTimeout(0, TimeUnit.MILLISECONDS)
+            .build();
         enqueueOnChangeEndpointLongPolling();
     }
 
@@ -497,13 +502,19 @@ public class DevServerHelper {
                     // of a failure, so that we don't flood network queue with frequent requests in case when
                     // dev server is down
                     FLog.d(ReactConstants.TAG, "Error while requesting /onchange endpoint", e);
+                    int delay = LONG_POLL_FAILURE_DELAY_MS;
+                    // in case our connection closed due to a timeout, we should just retry immediately
+                    // so that there isn't a disruption in listening to the onchange endpoint
+                    if (e instanceof SocketTimeoutException) {
+                      delay = 0;
+                    }
                     mRestartOnChangePollingHandler.postDelayed(new Runnable() {
 
                         @Override
                         public void run() {
                             handleOnChangePollingResponse(false);
                         }
-                    }, LONG_POLL_FAILURE_DELAY_MS);
+                    }, delay);
                 }
             }
 
