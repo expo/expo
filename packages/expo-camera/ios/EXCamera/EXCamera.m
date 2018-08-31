@@ -451,7 +451,7 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
         [connection setPreferredVideoStabilizationMode:self.videoStabilizationMode];
       }
     }
-    [connection setVideoOrientation:[EXCameraUtils videoOrientationForInterfaceOrientation:[[UIApplication sharedApplication] statusBarOrientation]]];
+    [connection setVideoOrientation:[EXCameraUtils videoOrientationForDeviceOrientation:[[UIDevice currentDevice] orientation]]];
 
     EX_WEAKIFY(self);
     dispatch_async(self.sessionQueue, ^{
