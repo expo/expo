@@ -17,7 +17,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven'
 
 group = 'host.exp.exponent'
-version = '1.0.1'
+version = '1.1.0-rc.0'
 
 //Upload android library to maven with javadoc and android sources
 configurations {
@@ -50,8 +50,8 @@ android {
     defaultConfig {
         minSdkVersion 19
         targetSdkVersion 26
-        versionCode 2
-        versionName "1.0.1"
+        versionCode 3
+        versionName "1.1.0-rc.0"
     }
     lintOptions {
         abortOnError false

@@ -1,6 +1,6 @@
 {
   "name": "expo-font-interface",
-  "version": "1.0.0",
+  "version": "1.0.0-rc.0",
   "description": "Interface for managing fonts",
   "main": "index.js",
   "keywords": [
@@ -10,6 +10,6 @@
   "author": "650 Industries, Inc.",
   "license": "BSD",
   "dependencies": {
-    "expo-core": "^1.0.0"
+    "expo-core": "^1.1.0-rc.0"
   }
 }

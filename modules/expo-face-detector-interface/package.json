@@ -1,6 +1,6 @@
 {
   "name": "expo-face-detector-interface",
-  "version": "1.0.1",
+  "version": "1.0.2-rc.0",
   "description": "Expo interface package for Face Detector",
   "main": "index.js",
   "keywords": [
@@ -14,6 +14,6 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "dependencies": {
-    "expo-core": "^1.0.1"
+    "expo-core": "^1.1.0-rc.0"
   }
 }

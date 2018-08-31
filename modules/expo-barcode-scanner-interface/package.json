@@ -1,6 +1,6 @@
 {
   "name": "expo-barcode-scanner-interface",
-  "version": "1.0.0",
+  "version": "1.0.0-rc.0",
   "description": "Expo BarCode Scanner interface for standalone module",
   "main": "index.js",
   "keywords": [

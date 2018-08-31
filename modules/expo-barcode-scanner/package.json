@@ -1,6 +1,6 @@
 {
   "name": "expo-barcode-scanner",
-  "version": "1.0.0",
+  "version": "1.0.0-rc.0",
   "description": "Expo BarCode Scanner standalone universal module",
   "main": "index.js",
   "keywords": [
@@ -13,10 +13,10 @@
   "author": "650 Industries, Inc.",
   "license": "BSD",
   "peerDependencies": {
-    "expo-core": "^1.0.1"
+    "expo-core": "^1.1.0-rc.0"
   },
   "dependencies": {
-    "expo-barcode-scanner-interface": "^1.0.0",
+    "expo-barcode-scanner-interface": "^1.0.0-rc.0",
     "lodash.mapvalues": "^4.6.0",
     "prop-types": "^15.6.0"
   },
