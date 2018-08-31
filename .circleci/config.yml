@@ -35,6 +35,7 @@ anchors:
         echo 'disable-self-update-check true' >> ~/.yarnrc
 
         echo "export PATH=\$PATH:$(yarn global bin)" >> $BASH_ENV
+        echo "source $BASH_ENV" >> ~/.bash_profile
 
   - &install_workspace_dependencies
     run:
