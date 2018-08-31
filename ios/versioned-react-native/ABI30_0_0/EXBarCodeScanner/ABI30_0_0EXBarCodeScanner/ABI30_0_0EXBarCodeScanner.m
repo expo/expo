@@ -16,7 +16,7 @@
 
 @end
 
-NSString * const BARCODE_TYPES_KEY = @"barCodeTypes";
+NSString * const ABI30_0_0EX_BARCODE_TYPES_KEY = @"barCodeTypes";
 
 @implementation ABI30_0_0EXBarCodeScanner
 
@@ -33,12 +33,12 @@ NSString * const BARCODE_TYPES_KEY = @"barCodeTypes";
 - (void)setSettings:(NSDictionary<NSString *, id> *)settings
 {
   for (NSString* key in settings) {
-    if ([key isEqualToString:BARCODE_TYPES_KEY]) {
+    if ([key isEqualToString:ABI30_0_0EX_BARCODE_TYPES_KEY]) {
       NSArray<NSString *> *value = settings[key];
-      NSSet *previousTypes = [NSSet setWithArray:_settings[BARCODE_TYPES_KEY]];
+      NSSet *previousTypes = [NSSet setWithArray:_settings[ABI30_0_0EX_BARCODE_TYPES_KEY]];
       NSSet *newTypes = [NSSet setWithArray:value];
       if (![previousTypes isEqualToSet:newTypes]) {
-        _settings[BARCODE_TYPES_KEY] = value;
+        _settings[ABI30_0_0EX_BARCODE_TYPES_KEY] = value;
         [self maybeStartBarCodeScanning];
       }
     }
@@ -93,8 +93,8 @@ NSString * const BARCODE_TYPES_KEY = @"barCodeTypes";
   NSArray<AVMetadataObjectType> *availableRequestedObjectTypes = @[];
   NSArray<AVMetadataObjectType> *requestedObjectTypes = @[];
   NSArray<AVMetadataObjectType> *availableObjectTypes = _metadataOutput.availableMetadataObjectTypes;
-  if (_settings && _settings[BARCODE_TYPES_KEY]) {
-    requestedObjectTypes = [[NSArray alloc] initWithArray:_settings[BARCODE_TYPES_KEY]];
+  if (_settings && _settings[ABI30_0_0EX_BARCODE_TYPES_KEY]) {
+    requestedObjectTypes = [[NSArray alloc] initWithArray:_settings[ABI30_0_0EX_BARCODE_TYPES_KEY]];
   }
   
   for(AVMetadataObjectType objectType in requestedObjectTypes) {
@@ -150,14 +150,14 @@ NSString * const BARCODE_TYPES_KEY = @"barCodeTypes";
 - (void)captureOutput:(AVCaptureOutput *)captureOutput didOutputMetadataObjects:(NSArray *)metadataObjects
        fromConnection:(AVCaptureConnection *)connection
 {
-  if (!_settings || !_settings[BARCODE_TYPES_KEY] || !_metadataOutput) {
+  if (!_settings || !_settings[ABI30_0_0EX_BARCODE_TYPES_KEY] || !_metadataOutput) {
     return;
   }
   
   for(AVMetadataObject *metadata in metadataObjects) {
     if([metadata isKindOfClass:[AVMetadataMachineReadableCodeObject class]]) {
       AVMetadataMachineReadableCodeObject *codeMetadata = (AVMetadataMachineReadableCodeObject *) metadata;
-      for (id barcodeType in _settings[BARCODE_TYPES_KEY]) {
+      for (id barcodeType in _settings[ABI30_0_0EX_BARCODE_TYPES_KEY]) {
         if ([metadata.type isEqualToString:barcodeType]) {
           
           NSDictionary *event = @{
@@ -180,7 +180,7 @@ NSString * const BARCODE_TYPES_KEY = @"barCodeTypes";
 + (NSDictionary *)_getDefaultSettings
 {
   return @{
-           BARCODE_TYPES_KEY: [[ABI30_0_0EXBarCodeScannerUtils validBarCodeTypes] allValues],
+           ABI30_0_0EX_BARCODE_TYPES_KEY: [[ABI30_0_0EXBarCodeScannerUtils validBarCodeTypes] allValues],
            };
 }
 

@@ -51,7 +51,7 @@ static SEL selectorForType(NSString *type)
 
     _name = moduleNameForClass(managerClass);
   }
-    name = ABI30_0_0EX_REMOVE_VERSION(name);
+  _name = ABI30_0_0EX_REMOVE_VERSION(_name);
   return self;
 }
 

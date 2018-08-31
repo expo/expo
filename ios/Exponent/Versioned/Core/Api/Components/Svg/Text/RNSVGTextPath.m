@@ -27,9 +27,9 @@
 static CGFloat idealFlatness = .01;
 
 /**
- * returns the distance between two points
+ * returns the ABI30_0_0distance between two points
  */
-CGFloat distance(CGPoint p1, CGPoint p2)
+CGFloat ABI30_0_0distance(CGPoint p1, CGPoint p2)
 {
     CGFloat dx = p2.x - p1.x;
     CGFloat dy = p2.y - p1.y;
@@ -68,7 +68,7 @@ CGFloat distance(CGPoint p1, CGPoint p2)
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-void subdivideBezierAtT(const CGPoint bez[4], CGPoint bez1[4], CGPoint bez2[4], CGFloat t)
+void ABI30_0_0subdivideBezierAtT(const CGPoint bez[4], CGPoint bez1[4], CGPoint bez2[4], CGFloat t)
 {
     CGPoint q;
     CGFloat mt = 1 - t;
@@ -94,10 +94,10 @@ void subdivideBezierAtT(const CGPoint bez[4], CGPoint bez1[4], CGPoint bez2[4], 
     bez1[3].y = bez2[0].y = mt * bez1[2].y + t * bez2[1].y;
 }
 
-void addLine(CGPoint *last, const CGPoint *next, NSMutableArray *lines, CGFloat *length, NSMutableArray *lengths) {
+void ABI30_0_0addLine(CGPoint *last, const CGPoint *next, NSMutableArray *lines, CGFloat *length, NSMutableArray *lengths) {
     NSArray *line = @[[NSValue valueWithCGPoint:*last], [NSValue valueWithCGPoint:*next]];
     [lines addObject:line];
-    *length += distance(*last, *next);
+    *length += ABI30_0_0distance(*last, *next);
     [lengths addObject:[NSNumber numberWithDouble:*length]];
     *last = *next;
 }
@@ -138,7 +138,7 @@ void addLine(CGPoint *last, const CGPoint *next, NSMutableArray *lines, CGFloat 
 
                 case kCGPathElementAddLineToPoint: {
                     CGPoint next = element.point;
-                    addLine(&last, &next, lines, &length, lengths);
+                    ABI30_0_0addLine(&last, &next, lines, &length, lengths);
                     lineCount++;
                     break;
                 }
@@ -166,20 +166,20 @@ void addLine(CGPoint *last, const CGPoint *next, NSMutableArray *lines, CGFloat 
                         CGPoint ctrl2 = bez[2];
                         CGPoint next = bez[3];
                         CGFloat polyLen =
-                            distance(last, ctrl1) +
-                            distance(ctrl1, ctrl2) +
-                            distance(ctrl2, next);
-                        CGFloat chordLen = distance(last, next);
+                            ABI30_0_0distance(last, ctrl1) +
+                            ABI30_0_0distance(ctrl1, ctrl2) +
+                            ABI30_0_0distance(ctrl2, next);
+                        CGFloat chordLen = ABI30_0_0distance(last, next);
                         CGFloat error = polyLen - chordLen;
 
                         // if the error is less than our accepted level of error
                         // then add a line, else, split the curve in half
                         if (error <= idealFlatness) {
-                            addLine(&last, &next, lines, &length, lengths);
+                            ABI30_0_0addLine(&last, &next, lines, &length, lengths);
                             lineCount++;
                         } else {
                             CGPoint bez1[4], bez2[4];
-                            subdivideBezierAtT(bez, bez1, bez2, .5);
+                            ABI30_0_0subdivideBezierAtT(bez, bez1, bez2, .5);
                             [curves addObject:[NSValue valueWithBytes:&bez2 objCType:@encode(CGPoint[4])]];
                             [curves addObject:[NSValue valueWithBytes:&bez1 objCType:@encode(CGPoint[4])]];
                             curveIndex += 2;
@@ -190,7 +190,7 @@ void addLine(CGPoint *last, const CGPoint *next, NSMutableArray *lines, CGFloat 
 
                 case kCGPathElementCloseSubpath: {
                     CGPoint next = origin;
-                    addLine(&last, &next, lines, &length, lengths);
+                    ABI30_0_0addLine(&last, &next, lines, &length, lengths);
                     lineCount++;
                     isClosed = YES;
                     break;

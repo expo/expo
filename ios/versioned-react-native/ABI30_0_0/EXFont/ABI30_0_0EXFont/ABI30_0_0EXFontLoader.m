@@ -6,7 +6,7 @@
 #import <ABI30_0_0EXFontInterface/ABI30_0_0EXFontManagerInterface.h>
 #import <ABI30_0_0EXFont/ABI30_0_0EXFont.h>
 #import <objc/runtime.h>
-#import <ABI30_0_0EXFont/UIFont+ABI30_0_0EXFontLoader.h>
+#import <ABI30_0_0EXFont/ABI30_0_0UIFont+EXFontLoader.h>
 #import <ABI30_0_0EXFont/ABI30_0_0EXFontManager.h>
 
 @interface ABI30_0_0EXFontLoader ()

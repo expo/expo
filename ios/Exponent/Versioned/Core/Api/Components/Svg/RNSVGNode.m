@@ -21,7 +21,7 @@
     RNSVGSvgView *_svgView;
 }
 
-CGFloat const M_SQRT1_2l = 0.707106781186547524400844362104849039;
+CGFloat const ABI30_0_0M_SQRT1_2l = 0.707106781186547524400844362104849039;
 CGFloat const RNSVG_DEFAULT_FONT_SIZE = 12;
 
 - (instancetype)init
@@ -262,7 +262,7 @@ CGFloat const RNSVG_DEFAULT_FONT_SIZE = 12;
     CGFloat height = [self getContextHeight];
     CGFloat powX = width * width;
     CGFloat powY = height * height;
-    CGFloat r = sqrt(powX + powY) * M_SQRT1_2l;
+    CGFloat r = sqrt(powX + powY) * ABI30_0_0M_SQRT1_2l;
     return [RNSVGPropHelper fromRelativeWithNSString:length
                                          relative:r
                                            offset:0

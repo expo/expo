@@ -1,6 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import <ABI30_0_0EXFont/UIFont+ABI30_0_0EXFontLoader.h>
+#import <ABI30_0_0EXFont/ABI30_0_0UIFont+EXFontLoader.h>
 #import <ABI30_0_0EXFont/ABI30_0_0EXFont.h>
 #import <objc/runtime.h>
 
