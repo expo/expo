@@ -25,6 +25,7 @@ export function test(t) {
       //     interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DUCK_OTHERS,
       //     shouldDuckAndroid: true,
       //     interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DUCK_OTHERS,
+      //     playThroughEarpieceAndroid: false,
       //   };
       //   try {
       //     const receivedMode = await Audio.setAudioModeAsync(mode);
@@ -42,6 +43,7 @@ export function test(t) {
       //     interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DO_NOT_MIX,
       //     shouldDuckAndroid: false,
       //     interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
+      //     playThroughEarpieceAndroid: false,
       //   };
       //   try {
       //     const receivedMode = await Audio.setAudioModeAsync(mode);
@@ -60,6 +62,7 @@ export function test(t) {
             interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DO_NOT_MIX,
             shouldDuckAndroid: false,
             interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
+            playThroughEarpieceAndroid: false,
           };
           let error = null;
           try {
