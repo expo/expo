@@ -66,6 +66,11 @@ ABI30_0_0RCT_EXPORT_MODULE()
     return self;
 }
 
++ (BOOL)requiresMainQueueSetup
+{
+  return false;
+}
+
 - (void)setUp
 {
     // Set defaults
