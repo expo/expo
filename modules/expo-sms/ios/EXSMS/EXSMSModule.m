@@ -28,11 +28,10 @@ EX_EXPORT_METHOD_AS(isAvailableAsync,
                     isAvailable:(EXPromiseResolveBlock)resolve
                        rejecter:(EXPromiseRejectBlock)reject)
 {
-  if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"sms:"]]) {
-    resolve(@YES);
-  } else {
-    resolve(@NO);
-  }
+  dispatch_async(dispatch_get_main_queue(), ^{
+    BOOL canOpenURL = [[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"sms:"]];
+    resolve(@(canOpenURL));
+  });
 }
 
 EX_EXPORT_METHOD_AS(sendSMSAsync,
