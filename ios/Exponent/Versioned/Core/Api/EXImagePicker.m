@@ -202,7 +202,7 @@ RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
   if ([[imageURL absoluteString] containsString:@"ext=PNG"]) {
     extension = @".png";
     data = UIImagePNGRepresentation(image);
-  } else if (![[imageURL absoluteString] containsString:@"ext=JPG"]) {
+  } else if (imageURL != nil && ![[imageURL absoluteString] containsString:@"ext=JPG"]) {
     RCTLogWarn(@"Unsupported format of the picked image. Using JPEG instead.");
   }
 
@@ -262,11 +262,15 @@ RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
   }
 }
 
-- (BOOL)tryCopyImage:(NSDictionary * _Nonnull)info path:(NSString *)path {
+- (BOOL)tryCopyImage:(NSDictionary * _Nonnull)info path:(NSString *)toPath {
   if (@available(iOS 11.0, *)) {
     NSError *error = nil;
-    [[NSFileManager defaultManager] copyItemAtPath:[[info objectForKey:UIImagePickerControllerImageURL] path]
-                                            toPath:path
+    NSString *fromPath = [[info objectForKey:UIImagePickerControllerImageURL] path];
+    if (fromPath == nil) {
+      return false;
+    }
+    [[NSFileManager defaultManager] copyItemAtPath:fromPath
+                                            toPath:toPath
                                              error:&error];
     if (error == nil) {
       return true;
