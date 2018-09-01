@@ -12,7 +12,7 @@
 @property (nonatomic, weak) dispatch_queue_t sessionQueue;
 @property (nonatomic, copy, nullable) void (^onBarCodeScanned)(NSDictionary*);
 @property (nonatomic, assign, getter=isScanningBarCodes) BOOL barCodesScanning;
-@property (nonatomic, strong) NSMutableDictionary<NSString *, id> *settings;
+@property (nonatomic, strong) NSDictionary<NSString *, id> *settings;
 
 @end
 
@@ -38,7 +38,9 @@ NSString * const ABI30_0_0EX_BARCODE_TYPES_KEY = @"barCodeTypes";
       NSSet *previousTypes = [NSSet setWithArray:_settings[ABI30_0_0EX_BARCODE_TYPES_KEY]];
       NSSet *newTypes = [NSSet setWithArray:value];
       if (![previousTypes isEqualToSet:newTypes]) {
-        _settings[ABI30_0_0EX_BARCODE_TYPES_KEY] = value;
+        NSMutableDictionary *nextSettings = [NSMutableDictionary dictionaryWithDictionary:_settings];
+        nextSettings[ABI30_0_0EX_BARCODE_TYPES_KEY] = value;
+        _settings = nextSettings;
         [self maybeStartBarCodeScanning];
       }
     }
