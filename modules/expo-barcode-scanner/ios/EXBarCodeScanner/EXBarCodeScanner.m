@@ -12,7 +12,7 @@
 @property (nonatomic, weak) dispatch_queue_t sessionQueue;
 @property (nonatomic, copy, nullable) void (^onBarCodeScanned)(NSDictionary*);
 @property (nonatomic, assign, getter=isScanningBarCodes) BOOL barCodesScanning;
-@property (nonatomic, strong) NSMutableDictionary<NSString *, id> *settings;
+@property (nonatomic, strong) NSDictionary<NSString *, id> *settings;
 
 @end
 
@@ -32,13 +32,15 @@ NSString * const BARCODE_TYPES_KEY = @"barCodeTypes";
 
 - (void)setSettings:(NSDictionary<NSString *, id> *)settings
 {
-  for (NSString* key in settings) {
+  for (NSString *key in settings) {
     if ([key isEqualToString:BARCODE_TYPES_KEY]) {
       NSArray<NSString *> *value = settings[key];
       NSSet *previousTypes = [NSSet setWithArray:_settings[BARCODE_TYPES_KEY]];
       NSSet *newTypes = [NSSet setWithArray:value];
       if (![previousTypes isEqualToSet:newTypes]) {
-        _settings[BARCODE_TYPES_KEY] = value;
+        NSMutableDictionary<NSString *, id> *nextSettings = [[NSMutableDictionary alloc] initWithDictionary:_settings];
+        nextSettings[BARCODE_TYPES_KEY] = value;
+        _settings = nextSettings;
         [self maybeStartBarCodeScanning];
       }
     }

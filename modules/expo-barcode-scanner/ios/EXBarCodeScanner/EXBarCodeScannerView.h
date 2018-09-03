@@ -12,7 +12,7 @@
 @property (nonatomic, strong) NSArray *barCodeTypes;
 
 - (instancetype)initWithModuleRegistry:(EXModuleRegistry *)moduleRegistry;
-- (void)onReady:(NSDictionary *)event;
+- (void)onReady;
 - (void)onMountingError:(NSDictionary *)event;
 - (void)onBarCodeScanned:(NSDictionary *)event;
 

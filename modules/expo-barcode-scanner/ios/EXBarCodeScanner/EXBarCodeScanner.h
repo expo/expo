@@ -11,7 +11,7 @@
 - (void)setOnBarCodeScanned:(void (^)(NSDictionary *))onBarCodeScanned;
 
 - (void)setIsEnabled:(BOOL)enabled;
-- (void)setSettings:(NSDictionary *)settings;
+- (void)setSettings:(NSDictionary<NSString *, id> *)settings;
 
 - (void)maybeStartBarCodeScanning;
 - (void)stopBarCodeScanning;
