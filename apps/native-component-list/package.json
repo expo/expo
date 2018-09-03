@@ -25,7 +25,6 @@
     "react-native": "^0.55.4",
     "react-native-gesture-handler": "1.0.6",
     "react-native-platform-touchable": "^1.1.1",
-    "react-native-reanimated": "1.0.0-alpha.3",
     "react-native-svg": "6.2.2",
     "react-navigation": "2.6.2",
     "react-navigation-header-buttons": "^1.2.1",

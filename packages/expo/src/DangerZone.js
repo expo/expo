@@ -31,4 +31,23 @@ module.exports = {
   get DeviceMotion() {
     return require('expo-sensors').DeviceMotion;
   },
+
+  // react-native-reanimated
+  get Animated() {
+    return require('react-native-reanimated').default;
+  },
+  get Easing() {
+    return require('react-native-reanimated').Easing;
+  },
+
+  // react-native-screens
+  get Screen() {
+    return require('react-native-screens').Screen;
+  },
+  get ScreenContainer() {
+    return require('react-native-screens').ScreenContainer;
+  },
+  get ScreenStack() {
+    return require('react-native-screens').ScreenStack;
+  },
 };
