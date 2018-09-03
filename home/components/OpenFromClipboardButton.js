@@ -50,7 +50,7 @@ export default class OpenFromClipboardButton extends React.Component {
         style={[styles.container, styles.bottomBorder]}>
         <View style={styles.iconContainer}>
           <Ionicons
-            name={Platform.OS === 'ios' ? 'ios-open-outline' : 'md-open'}
+            name={Platform.OS === 'ios' ? 'ios-open' : 'md-open'}
             size={28}
             color="#888"
           />

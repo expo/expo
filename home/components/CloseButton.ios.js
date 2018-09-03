@@ -15,7 +15,7 @@ export default class CloseButton extends React.Component {
         hitSlop={{ top: 15, left: 15, right: 15, bottom: 15 }}
         onPress={this._handlePress}
         style={styles.buttonContainer}>
-        <Ionicons name="ios-close-outline" size={40} color={Colors.tintColor} />
+        <Ionicons name="ios-close" size={40} color={Colors.tintColor} />
       </TouchableOpacity>
     );
   }
