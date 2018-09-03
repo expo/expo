@@ -326,7 +326,7 @@ public class ImagePickerModule extends ExpoKernelServiceConsumerBaseModule imple
               // create a cache file for an image picked from gallery
               ByteArrayOutputStream out = base64 ? new ByteArrayOutputStream() : null;
               File file = new File(path);
-              if (quality == null) {
+              if (quality != null) {
                 saveImage(bmp, compressFormat, file, out);
               } else {
                 // No modification requested
