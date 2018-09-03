@@ -8,8 +8,6 @@
 
 #import "ABI24_0_0EXUnversioned.h"
 
-#import <GPUImage.h>
-
 #if __has_include("ABI24_0_0EXGLARSessionManager.h")
 #import "ABI24_0_0EXGLARSessionManager.h"
 #else
@@ -67,8 +65,7 @@ ABI24_0_0RCT_NOT_IMPLEMENTED(- (instancetype)init);
     };
 
     // Initialize GL context, view buffers will be created on layout event
-    _eaglCtx = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2
-                                     sharegroup:GPUImageContext.sharedImageProcessingContext.context.sharegroup];
+    _eaglCtx = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
     _msaaFramebuffer = _msaaRenderbuffer = _viewFramebuffer = _viewColorbuffer = _viewDepthStencilbuffer = 0;
 
     // Set up a draw loop

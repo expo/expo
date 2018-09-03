@@ -80,7 +80,6 @@ Pod::Spec.new do |s|
     ss.dependency 'Google-Mobile-Ads-SDK'
     ss.dependency 'GoogleSignIn'
     ss.dependency 'GoogleMaps'
-    ss.dependency 'GPUImage'
     ss.dependency 'lottie-ios'
     ss.dependency 'JKBigInteger2'
     ss.dependency 'Branch'

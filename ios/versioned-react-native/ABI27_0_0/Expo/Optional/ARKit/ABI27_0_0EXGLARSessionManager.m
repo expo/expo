@@ -1,10 +1,11 @@
 #import "ABI27_0_0EXGLARSessionManager.h"
 
 #import <ARKit/ARKit.h>
-#import <GPUImage.h>
 #include <OpenGLES/ES2/gl.h>
 #include <OpenGLES/ES2/glext.h>
 #import <EXGL-CPP/UEXGL.h>
+
+#define STRINGIZE(x) #x
 
 @interface ABI27_0_0EXGLARSessionManager ()
 {
