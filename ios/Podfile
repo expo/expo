@@ -16,7 +16,6 @@ target 'Exponent' do
   pod 'GoogleMaps', '~> 2.5.0', :inhibit_warnings => true
   pod 'Google-Maps-iOS-Utils', '~> 2.1.0', :inhibit_warnings => true
   pod 'lottie-ios', '~> 2.5.0', :inhibit_warnings => true
-  pod 'GPUImage', '~> 0.1.7', :inhibit_warnings => true
   pod 'JKBigInteger2', '0.0.5', :inhibit_warnings => true
   pod 'Branch', '~> 0.24.2', :inhibit_warnings => true
   pod 'Google-Mobile-Ads-SDK', '~> 7.22.0', :inhibit_warnings => true
@@ -352,7 +351,7 @@ target 'Exponent' do
     # End generated postinstall
 
 
-    if ['Amplitude-iOS','Analytics','AppAuth','Branch','CocoaLumberjack','FBSDKCoreKit','FBSDKLoginKit','FBSDKShareKit','GPUImage','JKBigInteger2'].include? target.pod_name
+    if ['Amplitude-iOS','Analytics','AppAuth','Branch','CocoaLumberjack','FBSDKCoreKit','FBSDKLoginKit','FBSDKShareKit','JKBigInteger2'].include? target.pod_name
       target.native_target.build_configurations.each do |config|
         config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '9.0'
       end

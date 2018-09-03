@@ -56,10 +56,6 @@
     "version": "~> 2.5.0"
   },
   {
-    "name": "GPUImage",
-    "version": "~> 0.1.7"
-  },
-  {
     "name": "JKBigInteger2",
     "version": "0.0.5"
   },

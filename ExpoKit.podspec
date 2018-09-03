@@ -33,7 +33,6 @@ Pod::Spec.new do |s|
     ss.dependency 'GoogleMaps', '~> 2.5.0'
     ss.dependency 'Google-Maps-iOS-Utils', '~> 2.1.0'
     ss.dependency 'lottie-ios', '~> 2.5.0'
-    ss.dependency 'GPUImage', '~> 0.1.7'
     ss.dependency 'JKBigInteger2', '0.0.5'
     ss.dependency 'Branch', '~> 0.24.2'
     ss.dependency 'Google-Mobile-Ads-SDK', '~> 7.22.0'
