@@ -238,7 +238,7 @@ ABI30_0_0EX_EXPORT_METHOD_AS(getAlbumAsync,
   }
   
   PHAssetCollection *collection = [ABI30_0_0EXMediaLibrary _getAlbumWithTitle:title];
-  resolve([ABI30_0_0EXMediaLibrary _exportCollection:collection]);
+  resolve(ABI30_0_0EXNullIfNil([ABI30_0_0EXMediaLibrary _exportCollection:collection]));
 }
 
 ABI30_0_0EX_EXPORT_METHOD_AS(createAlbumAsync,
@@ -256,13 +256,13 @@ ABI30_0_0EX_EXPORT_METHOD_AS(createAlbumAsync,
       if (assetId) {
         [ABI30_0_0EXMediaLibrary _addAssets:@[assetId] toAlbum:collection.localIdentifier withCallback:^(BOOL success, NSError *error) {
           if (success) {
-            resolve([ABI30_0_0EXMediaLibrary _exportCollection:collection]);
+            resolve(ABI30_0_0EXNullIfNil([ABI30_0_0EXMediaLibrary _exportCollection:collection]));
           } else {
             reject(@"E_ALBUM_CANT_ADD_ASSET", @"Unable to add asset to the new album", error);
           }
         }];
       } else {
-        resolve([ABI30_0_0EXMediaLibrary _exportCollection:collection]);
+        resolve(ABI30_0_0EXNullIfNil([ABI30_0_0EXMediaLibrary _exportCollection:collection]));
       }
     } else {
       reject(@"E_ALBUM_CREATE_FAILED", @"Could not create album", error);
@@ -624,7 +624,7 @@ ABI30_0_0EX_EXPORT_METHOD_AS(getAssetsAsync,
   return (id)[NSNull null];
 }
 
-+ (NSDictionary *)_exportCollection:(PHAssetCollection *)collection
++ (nullable NSDictionary *)_exportCollection:(PHAssetCollection *)collection
 {
   if (collection) {
     return @{
@@ -638,7 +638,7 @@ ABI30_0_0EX_EXPORT_METHOD_AS(getAssetsAsync,
              @"locationNames": collection.localizedLocationNames,
              };
   }
-  return [NSNull null];
+  return nil;
 }
 
 + (NSArray *)_exportCollections:(PHFetchResult *)collections
