@@ -95,3 +95,6 @@ project(":expo-contacts").projectDir = new File(rootDir, "../modules/expo-contac
 
 include ":expo-ads-admob"
 project(":expo-ads-admob").projectDir = new File(rootDir, "../modules/expo-ads-admob/android")
+
+include ":expo-local-authentication"
+project(":expo-local-authentication").projectDir = new File(rootDir, "../modules/expo-local-authentication/android")
