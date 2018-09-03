@@ -1,74 +1,74 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-package versioned.host.exp.exponent.modules.api;
+package expo.modules.localauthentication;
 
+import android.content.Context;
 import android.hardware.fingerprint.FingerprintManager;
+import android.os.Bundle;
 import android.support.v4.hardware.fingerprint.FingerprintManagerCompat;
 import android.support.v4.os.CancellationSignal;
 
-import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.Promise;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.UiThreadUtil;
-import com.facebook.react.bridge.WritableMap;
+import expo.core.ExportedModule;
+import expo.core.ModuleRegistry;
+import expo.core.Promise;
+import expo.core.interfaces.ExpoMethod;
+import expo.core.interfaces.ModuleRegistryConsumer;
+import expo.core.interfaces.services.UIManager;
 
-import javax.annotation.Nullable;
-
-public class FingerprintModule extends ReactContextBaseJavaModule {
+public class LocalAuthenticationModule extends ExportedModule implements ModuleRegistryConsumer {
   private final FingerprintManagerCompat mFingerprintManager;
-  private @Nullable CancellationSignal mCancellationSignal;
-  private @Nullable Promise mPromise;
+  private CancellationSignal mCancellationSignal;
+  private Promise mPromise;
   private boolean mIsAuthenticating = false;
+  private UIManager mUIManager;
 
   private final FingerprintManagerCompat.AuthenticationCallback mAuthenticationCallback =
       new FingerprintManagerCompat.AuthenticationCallback() {
-    @Override
-    public void onAuthenticationSucceeded(FingerprintManagerCompat.AuthenticationResult result) {
-      mIsAuthenticating = false;
-      WritableMap successResult = Arguments.createMap();
-      successResult.putBoolean("success", true);
-      safeResolve(successResult);
-    }
+        @Override
+        public void onAuthenticationSucceeded(FingerprintManagerCompat.AuthenticationResult result) {
+          mIsAuthenticating = false;
+          Bundle successResult = new Bundle();
+          successResult.putBoolean("success", true);
+          safeResolve(successResult);
+        }
 
-    @Override
-    public void onAuthenticationFailed() {
-      mIsAuthenticating = false;
-      WritableMap failResult = Arguments.createMap();
-      failResult.putBoolean("success", false);
-      failResult.putString("error", "authentication_failed");
-      safeResolve(failResult);
-      // Failed authentication doesn't stop the authentication process, stop it anyway so it works
-      // with the promise API.
-      safeCancel();
-    }
+        @Override
+        public void onAuthenticationFailed() {
+          mIsAuthenticating = false;
+          Bundle failResult = new Bundle();
+          failResult.putBoolean("success", false);
+          failResult.putString("error", "authentication_failed");
+          safeResolve(failResult);
+          // Failed authentication doesn't stop the authentication process, stop it anyway so it works
+          // with the promise API.
+          safeCancel();
+        }
 
-    @Override
-    public void onAuthenticationError(int errMsgId, CharSequence errString) {
-      mIsAuthenticating = false;
-      WritableMap errorResult = Arguments.createMap();
-      errorResult.putBoolean("success", false);
-      errorResult.putString("error", convertErrorCode(errMsgId));
-      errorResult.putString("message", errString.toString());
-      safeResolve(errorResult);
-    }
+        @Override
+        public void onAuthenticationError(int errMsgId, CharSequence errString) {
+          mIsAuthenticating = false;
+          Bundle errorResult = new Bundle();
+          errorResult.putBoolean("success", false);
+          errorResult.putString("error", convertErrorCode(errMsgId));
+          errorResult.putString("message", errString.toString());
+          safeResolve(errorResult);
+        }
 
-    @Override
-    public void onAuthenticationHelp(int helpMsgId, CharSequence helpString) {
-      mIsAuthenticating = false;
-      WritableMap helpResult = Arguments.createMap();
-      helpResult.putBoolean("success", false);
-      helpResult.putString("error", convertHelpCode(helpMsgId));
-      helpResult.putString("message", helpString.toString());
-      safeResolve(helpResult);
-      // Help doesn't stop the authentication process, stop it anyway so it works with the
-      // promise API.
-      safeCancel();
-    }
-  };
+        @Override
+        public void onAuthenticationHelp(int helpMsgId, CharSequence helpString) {
+          mIsAuthenticating = false;
+          Bundle helpResult = new Bundle();
+          helpResult.putBoolean("success", false);
+          helpResult.putString("error", convertHelpCode(helpMsgId));
+          helpResult.putString("message", helpString.toString());
+          safeResolve(helpResult);
+          // Help doesn't stop the authentication process, stop it anyway so it works with the
+          // promise API.
+          safeCancel();
+        }
+      };
 
-  public FingerprintModule(ReactApplicationContext context) {
+  public LocalAuthenticationModule(Context context) {
     super(context);
 
     mFingerprintManager = FingerprintManagerCompat.from(context);
@@ -76,30 +76,35 @@ public class FingerprintModule extends ReactContextBaseJavaModule {
 
   @Override
   public String getName() {
-    return "ExponentFingerprint";
+    return "ExpoLocalAuthentication";
   }
 
-  @ReactMethod
-  public void hasHardwareAsync(Promise promise) {
+  @Override
+  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+    mUIManager = moduleRegistry.getModule(UIManager.class);
+  }
+
+  @ExpoMethod
+  public void hasHardwareAsync(final Promise promise) {
     boolean hasHardware = mFingerprintManager.isHardwareDetected();
     promise.resolve(hasHardware);
   }
 
-  @ReactMethod
-  public void isEnrolledAsync(Promise promise) {
+  @ExpoMethod
+  public void isEnrolledAsync(final Promise promise) {
     boolean isEnrolled = mFingerprintManager.hasEnrolledFingerprints();
     promise.resolve(isEnrolled);
   }
 
-  @ReactMethod
+  @ExpoMethod
   public void authenticateAsync(final Promise promise) {
     // FingerprintManager callbacks are invoked on the main thread so also run this there to avoid
     // having to do locking.
-    UiThreadUtil.runOnUiThread(new Runnable() {
+    mUIManager.runOnUiQueueThread(new Runnable() {
       @Override
       public void run() {
         if (mIsAuthenticating) {
-          WritableMap cancelResult = Arguments.createMap();
+          Bundle cancelResult = new Bundle();
           cancelResult.putBoolean("success", false);
           cancelResult.putString("error", "app_cancel");
           safeResolve(cancelResult);
@@ -115,9 +120,9 @@ public class FingerprintModule extends ReactContextBaseJavaModule {
     });
   }
 
-  @ReactMethod
-  public void cancelAuthenticate() {
-    UiThreadUtil.runOnUiThread(new Runnable() {
+  @ExpoMethod
+  public void cancelAuthenticate(final Promise promise) {
+    mUIManager.runOnUiQueueThread(new Runnable() {
       @Override
       public void run() {
         safeCancel();

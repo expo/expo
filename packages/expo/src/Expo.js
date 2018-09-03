@@ -140,7 +140,13 @@ module.exports = {
     return require('./Svg').default;
   },
   get Fingerprint() {
-    return require('./Fingerprint');
+    console.warn(
+      'Expo.Fingerprint has been renamed to Expo.LocalAuthentication. The old name might be removed in the future releases.'
+    );
+    return this.LocalAuthentication;
+  },
+  get LocalAuthentication() {
+    return require('expo-local-authentication').LocalAuthentication;
   },
 
   // globs

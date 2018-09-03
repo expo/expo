@@ -132,6 +132,7 @@ dependencies {
   api 'host.exp.exponent:expo-barcode-scanner:1.0.0'
   api 'host.exp.exponent:expo-contacts:1.0.0'
   api 'host.exp.exponent:expo-ads-admob:1.0.0'
+  api 'host.exp.exponent:expo-local-authentication:1.0.0'
   END UNCOMMENT WHEN DISTRIBUTING */
 
   // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
@@ -163,6 +164,7 @@ dependencies {
   api project(':expo-barcode-scanner-interface')
   api project(':expo-contacts')
   api project(':expo-ads-admob')
+  api project(':expo-local-authentication')
   // WHEN_DISTRIBUTING_REMOVE_TO_HERE
 
   // Versioned react native

@@ -21,7 +21,6 @@ import ContactDetailScreen from '../screens/Contacts/ContactDetailScreen';
 import EventsScreen from '../screens/EventsScreen';
 import AuthSessionScreen from '../screens/AuthSessionScreen';
 import FacebookLoginScreen from '../screens/FacebookLoginScreen';
-import FingerprintScreen from '../screens/FingerprintScreen';
 import GestureHandlerPinchScreen from '../screens/GestureHandlerPinchScreen';
 import GestureHandlerListScreen from '../screens/GestureHandlerListScreen';
 import GestureHandlerSwipeableScreen from '../screens/GestureHandlerSwipeableScreen';
@@ -35,6 +34,7 @@ import ImagePickerScreen from '../screens/ImagePickerScreen';
 import ImagePreviewScreen from '../screens/Reanimated/ImagePreviewScreen';
 import IntentLauncherScreen from '../screens/IntentLauncherScreen';
 import LinearGradientScreen from '../screens/LinearGradientScreen';
+import LocalAuthenticationScreen from '../screens/LocalAuthenticationScreen';
 import KeepAwakeScreen from '../screens/KeepAwakeScreen';
 import FacebookAdsScreen from '../screens/FacebookAdsScreen';
 import MailComposerScreen from '../screens/MailComposerScreen';
@@ -131,7 +131,6 @@ const ExpoApisStackNavigator = createStackNavigator(
     Localization: { screen: LocalizationScreen },
     FacebookLogin: { screen: FacebookLoginScreen },
     FileSystem: { screen: FileSystemScreen },
-    Fingerprint: { screen: FingerprintScreen },
     Font: { screen: FontScreen },
     GoogleLogin: { screen: GoogleLoginScreen },
     Haptic: { screen: HapticScreen },
@@ -148,6 +147,7 @@ const ExpoApisStackNavigator = createStackNavigator(
     MailComposer: { screen: MailComposerScreen },
     ...MediaLibraryScreens,
     Notification: { screen: NotificationScreen },
+    LocalAuthentication: { screen: LocalAuthenticationScreen },
     Location: { screen: LocationScreen },
     Pedometer: { screen: PedometerScreen },
     Permissions: PermissionsScreen,

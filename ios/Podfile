@@ -64,6 +64,8 @@ target 'Exponent' do
     :path => "../modules/expo-constants-interface/ios"
   pod 'EXReactNativeAdapter',
     :path => "../modules/expo-react-native-adapter/ios"
+  pod 'EXLocalAuthentication',
+    :path => "../modules/expo-local-authentication/ios"
   pod 'EXFileSystemInterface',
     :path => "../modules/expo-file-system-interface/ios"
   pod 'EXPermissionsInterface',

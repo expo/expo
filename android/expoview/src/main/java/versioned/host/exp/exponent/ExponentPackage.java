@@ -21,6 +21,7 @@ import expo.adapters.react.ReactModuleRegistryProvider;
 import expo.core.interfaces.Package;
 import expo.modules.ads.admob.AdMobPackage;
 import expo.modules.font.FontLoaderPackage;
+import expo.modules.localauthentication.LocalAuthenticationPackage;
 import expo.modules.payments.stripe.StripePackage;
 import expo.modules.print.PrintPackage;
 import expo.modules.analytics.segment.SegmentPackage;
@@ -30,12 +31,10 @@ import expo.modules.constants.ConstantsPackage;
 import expo.modules.contacts.ContactsPackage;
 import expo.modules.facedetector.FaceDetectorPackage;
 import expo.modules.filesystem.FileSystemPackage;
-import expo.modules.font.FontLoaderPackage;
 import expo.modules.gl.GLPackage;
 import expo.modules.location.LocationPackage;
 import expo.modules.medialibrary.MediaLibraryPackage;
 import expo.modules.permissions.PermissionsPackage;
-import expo.modules.print.PrintPackage;
 import expo.modules.sensors.SensorsPackage;
 import expo.modules.sms.SMSPackage;
 import host.exp.exponent.ExponentManifest;
@@ -59,7 +58,6 @@ import versioned.host.exp.exponent.modules.api.DocumentPickerModule;
 import versioned.host.exp.exponent.modules.api.ErrorRecoveryModule;
 import versioned.host.exp.exponent.modules.api.FabricModule;
 import versioned.host.exp.exponent.modules.api.FacebookModule;
-import versioned.host.exp.exponent.modules.api.FingerprintModule;
 import versioned.host.exp.exponent.modules.api.GoogleModule;
 import versioned.host.exp.exponent.modules.api.ImageCropperModule;
 import versioned.host.exp.exponent.modules.api.ImagePickerModule;
@@ -120,7 +118,8 @@ public class ExponentPackage implements ReactPackage {
       new ContactsPackage(),
       new BarCodeScannerPackage(),
       new AdMobPackage(),
-      new StripePackage()
+      new StripePackage(),
+      new LocalAuthenticationPackage()
   );
 
   private static final String TAG = ExponentPackage.class.getSimpleName();
@@ -196,7 +195,6 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new ImageManipulatorModule(reactContext, scopedContext));
         nativeModules.add(new FacebookModule(reactContext));
         nativeModules.add(new FabricModule(reactContext, mExperienceProperties));
-        nativeModules.add(new FingerprintModule(reactContext));
         nativeModules.add(new GoogleModule(reactContext, mExperienceProperties));
         nativeModules.add(new AmplitudeModule(reactContext, scopedContext));
         nativeModules.add(new RNViewShotModule(reactContext, scopedContext));

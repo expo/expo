@@ -223,7 +223,6 @@
 		B5FB74A31FF6DADC001C764B /* EXDocumentPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB737D1FF6DADB001C764B /* EXDocumentPicker.m */; };
 		B5FB74A51FF6DADC001C764B /* EXErrorRecovery.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73811FF6DADB001C764B /* EXErrorRecovery.m */; };
 		B5FB74A61FF6DADC001C764B /* EXFacebook.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73831FF6DADB001C764B /* EXFacebook.m */; };
-		B5FB74A71FF6DADC001C764B /* EXFingerprint.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73851FF6DADB001C764B /* EXFingerprint.m */; };
 		B5FB74A91FF6DADC001C764B /* EXGoogle.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73891FF6DADB001C764B /* EXGoogle.m */; };
 		B5FB74AA1FF6DADC001C764B /* EXImageManipulator.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB738B1FF6DADB001C764B /* EXImageManipulator.m */; };
 		B5FB74AB1FF6DADC001C764B /* EXImagePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB738D1FF6DADB001C764B /* EXImagePicker.m */; };
@@ -766,8 +765,6 @@
 		B5FB73811FF6DADB001C764B /* EXErrorRecovery.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXErrorRecovery.m; sourceTree = "<group>"; };
 		B5FB73821FF6DADB001C764B /* EXFacebook.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXFacebook.h; sourceTree = "<group>"; };
 		B5FB73831FF6DADB001C764B /* EXFacebook.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXFacebook.m; sourceTree = "<group>"; };
-		B5FB73841FF6DADB001C764B /* EXFingerprint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXFingerprint.h; sourceTree = "<group>"; };
-		B5FB73851FF6DADB001C764B /* EXFingerprint.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXFingerprint.m; sourceTree = "<group>"; };
 		B5FB73881FF6DADB001C764B /* EXGoogle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXGoogle.h; sourceTree = "<group>"; };
 		B5FB73891FF6DADB001C764B /* EXGoogle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXGoogle.m; sourceTree = "<group>"; };
 		B5FB738A1FF6DADB001C764B /* EXImageManipulator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXImageManipulator.h; sourceTree = "<group>"; };
@@ -1638,8 +1635,6 @@
 				B5FB73811FF6DADB001C764B /* EXErrorRecovery.m */,
 				B5FB73821FF6DADB001C764B /* EXFacebook.h */,
 				B5FB73831FF6DADB001C764B /* EXFacebook.m */,
-				B5FB73841FF6DADB001C764B /* EXFingerprint.h */,
-				B5FB73851FF6DADB001C764B /* EXFingerprint.m */,
 				B5FB73881FF6DADB001C764B /* EXGoogle.h */,
 				B5FB73891FF6DADB001C764B /* EXGoogle.m */,
 				CD99394E2040C1AA0087C883 /* EXHaptic.h */,
@@ -2517,7 +2512,6 @@
 				BB50E89020B9C0D3003C752D /* RNLongPressHandler.m in Sources */,
 				B5FB74DF1FF6DADC001C764B /* EXDevSettings.m in Sources */,
 				3CEBDC411FFBC73E0025EF24 /* EXMailComposer.m in Sources */,
-				B5FB74A71FF6DADC001C764B /* EXFingerprint.m in Sources */,
 				78D8252E2051217F00CBD9D9 /* NSData+EXRemoteNotifications.m in Sources */,
 				B5A72C3420A0D42D00974CCE /* EXAppLoader.m in Sources */,
 				B5FB74AB1FF6DADC001C764B /* EXImagePicker.m in Sources */,

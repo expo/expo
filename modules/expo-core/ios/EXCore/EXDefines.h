@@ -63,6 +63,9 @@ _Pragma("clang diagnostic pop")
 EX_STRONGIFY(var); \
 if (var == nil) { return; }
 
+// Converts nil -> [NSNull null]
+#define EXNullIfNil(value) (value ?: [NSNull null])
+
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
 
