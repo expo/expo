@@ -38,6 +38,7 @@
     pod 'ABI30_0_0EXSensorsInterface', :path => '${VERSIONED_REACT_NATIVE_PATH}/ABI30_0_0/EXSensorsInterface'
     pod 'ABI30_0_0EXConstantsInterface', :path => '${VERSIONED_REACT_NATIVE_PATH}/ABI30_0_0/EXConstantsInterface'
     pod 'ABI30_0_0EXReactNativeAdapter', :path => '${VERSIONED_REACT_NATIVE_PATH}/ABI30_0_0/EXReactNativeAdapter'
+    pod 'ABI30_0_0EXLocalAuthentication', :path => '${VERSIONED_REACT_NATIVE_PATH}/ABI30_0_0/EXLocalAuthentication'
     pod 'ABI30_0_0EXFileSystemInterface', :path => '${VERSIONED_REACT_NATIVE_PATH}/ABI30_0_0/EXFileSystemInterface'
     pod 'ABI30_0_0EXPermissionsInterface', :path => '${VERSIONED_REACT_NATIVE_PATH}/ABI30_0_0/EXPermissionsInterface'
     pod 'ABI30_0_0EXImageLoaderInterface', :path => '${VERSIONED_REACT_NATIVE_PATH}/ABI30_0_0/EXImageLoaderInterface'

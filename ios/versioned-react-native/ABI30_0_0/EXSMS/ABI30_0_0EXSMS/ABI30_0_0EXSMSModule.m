@@ -29,11 +29,8 @@ ABI30_0_0EX_EXPORT_METHOD_AS(isAvailableAsync,
                        rejecter:(ABI30_0_0EXPromiseRejectBlock)reject)
 {
   dispatch_async(dispatch_get_main_queue(), ^{
-    if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"sms:"]]) {
-      resolve(@YES);
-    } else {
-      resolve(@NO);
-    }
+    BOOL canOpenURL = [[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"sms:"]];
+    resolve(@(canOpenURL));
   });
 }
 

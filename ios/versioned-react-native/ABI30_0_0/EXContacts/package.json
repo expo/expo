@@ -1,6 +1,6 @@
 {
   "name": "expo-contacts",
-  "version": "1.0.0",
+  "version": "1.0.0-rc.0",
   "description": "Expo Contacts universal module",
   "main": "index.js",
   "keywords": [
@@ -15,7 +15,7 @@
     "react-native": "^0.55.4"
   },
   "dependencies": {
-    "expo-core": "^1.0.1",
+    "expo-core": "^1.1.0-rc.0",
     "uuid-js": "^0.7.5"
   },
   "devDependencies": {

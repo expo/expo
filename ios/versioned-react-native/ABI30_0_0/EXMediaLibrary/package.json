@@ -1,6 +1,6 @@
 {
   "name": "expo-media-library",
-  "version": "1.0.0",
+  "version": "1.0.0-rc.0",
   "description": "Expo MediaLibrary module",
   "main": "index.js",
   "keywords": [
@@ -14,8 +14,8 @@
     "react-native": "^0.55.4"
   },
   "dependencies": {
-    "expo-core": "^1.0.0",
-    "expo-permissions-interface": "^1.0.0"
+    "expo-core": "^1.1.0-rc.0",
+    "expo-permissions-interface": "^1.1.0-rc.0"
   },
   "devDependencies": {
     "babel-preset-expo": "^4.0.0",

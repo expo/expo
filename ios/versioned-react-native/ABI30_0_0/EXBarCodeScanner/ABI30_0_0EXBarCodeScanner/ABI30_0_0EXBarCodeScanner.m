@@ -38,7 +38,7 @@ NSString * const ABI30_0_0EX_BARCODE_TYPES_KEY = @"barCodeTypes";
       NSSet *previousTypes = [NSSet setWithArray:_settings[ABI30_0_0EX_BARCODE_TYPES_KEY]];
       NSSet *newTypes = [NSSet setWithArray:value];
       if (![previousTypes isEqualToSet:newTypes]) {
-        NSMutableDictionary *nextSettings = [NSMutableDictionary dictionaryWithDictionary:_settings];
+        NSMutableDictionary<NSString *, id> *nextSettings = [[NSMutableDictionary alloc] initWithDictionary:_settings];
         nextSettings[ABI30_0_0EX_BARCODE_TYPES_KEY] = value;
         _settings = nextSettings;
         [self maybeStartBarCodeScanning];

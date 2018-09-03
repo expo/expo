@@ -293,6 +293,7 @@ target 'Exponent' do
     pod 'ABI30_0_0EXSensorsInterface', :path => './versioned-react-native/ABI30_0_0/EXSensorsInterface'
     pod 'ABI30_0_0EXConstantsInterface', :path => './versioned-react-native/ABI30_0_0/EXConstantsInterface'
     pod 'ABI30_0_0EXReactNativeAdapter', :path => './versioned-react-native/ABI30_0_0/EXReactNativeAdapter'
+    pod 'ABI30_0_0EXLocalAuthentication', :path => './versioned-react-native/ABI30_0_0/EXLocalAuthentication'
     pod 'ABI30_0_0EXFileSystemInterface', :path => './versioned-react-native/ABI30_0_0/EXFileSystemInterface'
     pod 'ABI30_0_0EXPermissionsInterface', :path => './versioned-react-native/ABI30_0_0/EXPermissionsInterface'
     pod 'ABI30_0_0EXImageLoaderInterface', :path => './versioned-react-native/ABI30_0_0/EXImageLoaderInterface'
