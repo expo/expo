@@ -1,13 +1,6 @@
 import React, { Component } from 'react';
-import {
-  StyleSheet,
-  Button,
-  View,
-  TextInput,
-  Animated,
-  Easing,
-} from 'react-native';
-import { Screen, ScreenStack } from 'react-native-screens';
+import { StyleSheet, Button, View, TextInput, Animated, Easing } from 'react-native';
+import { Screen, ScreenStack } from 'expo/DangerZone';
 
 const COLORS = ['azure', 'pink', 'cyan'];
 
@@ -99,8 +92,7 @@ export class Stack extends Component {
       }
     }
     const active =
-      index === stack.length - 1 ||
-      (transitioning !== 0 && index === stack.length - 2);
+      index === stack.length - 1 || (transitioning !== 0 && index === stack.length - 2);
     return (
       <Screen style={style} key={key} active={active ? 1 : 0}>
         {this.props.renderScreen(key)}
@@ -144,12 +136,7 @@ class App extends Component {
     );
   };
   render() {
-    return (
-      <Stack
-        ref={stack => (this.stack = stack)}
-        renderScreen={this.renderScreen}
-      />
-    );
+    return <Stack ref={stack => (this.stack = stack)} renderScreen={this.renderScreen} />;
   }
 }
 

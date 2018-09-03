@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { StyleSheet, Button, View, TextInput } from 'react-native';
-import { Screen, ScreenContainer } from 'react-native-screens';
+import { Screen, ScreenContainer } from 'expo/DangerZone';
 
 export class LazyTabs extends Component {
   state = {
@@ -24,9 +24,7 @@ export class LazyTabs extends Component {
   };
   render() {
     const screens = this.state.screens.map(this.renderScreen);
-    return (
-      <ScreenContainer style={styles.container}>{screens}</ScreenContainer>
-    );
+    return <ScreenContainer style={styles.container}>{screens}</ScreenContainer>;
   }
 }
 
@@ -48,26 +46,11 @@ class App extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <LazyTabs
-          ref={tabs => (this.tabs = tabs)}
-          renderScreen={this.renderScreen}
-        />
+        <LazyTabs ref={tabs => (this.tabs = tabs)} renderScreen={this.renderScreen} />
         <View style={styles.tabbar}>
-          <Button
-            style={styles.tabbutton}
-            title="azure"
-            onPress={() => this.tabs.goto('azure')}
-          />
-          <Button
-            style={styles.tabbutton}
-            title="pink"
-            onPress={() => this.tabs.goto('pink')}
-          />
-          <Button
-            style={styles.tabbutton}
-            title="cyan"
-            onPress={() => this.tabs.goto('cyan')}
-          />
+          <Button style={styles.tabbutton} title="azure" onPress={() => this.tabs.goto('azure')} />
+          <Button style={styles.tabbutton} title="pink" onPress={() => this.tabs.goto('pink')} />
+          <Button style={styles.tabbutton} title="cyan" onPress={() => this.tabs.goto('cyan')} />
         </View>
       </View>
     );

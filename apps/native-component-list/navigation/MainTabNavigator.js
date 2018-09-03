@@ -117,6 +117,7 @@ const ExpoComponentsStackNavigator = createStackNavigator(
     Lottie: { screen: LottieScreen },
     Maps: { screen: MapsScreen },
     Video: { screen: VideoScreen },
+    Screens: { screen: ScreensScreen },
   },
   StackConfig
 );
@@ -156,7 +157,6 @@ const ExpoApisStackNavigator = createStackNavigator(
     SecureStore: { screen: SecureStoreScreen },
     Sensor: { screen: SensorScreen },
     SMS: { screen: SMSScreen },
-    Screens: { screen: ScreensScreen },
     StoreReview: { screen: StoreReview },
     TextToSpeech: { screen: TextToSpeechScreen },
     Util: { screen: UtilScreen },

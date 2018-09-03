@@ -1,12 +1,8 @@
 import React, { Component } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import {
-  PanGestureHandler,
-  State,
-  PinchGestureHandler,
-} from 'react-native-gesture-handler';
+import { PanGestureHandler, State, PinchGestureHandler } from 'react-native-gesture-handler';
 
-import Animated, { Easing } from 'react-native-reanimated';
+import { Animated, Easing } from 'expo/src/DangerZone';
 
 const {
   set,
@@ -49,11 +45,7 @@ function scaleDiff(value) {
 function dragDiff(value, updating) {
   const tmp = new Value(0);
   const prev = new Value(0);
-  return cond(
-    updating,
-    [set(tmp, sub(value, prev)), set(prev, value), tmp],
-    set(prev, 0)
-  );
+  return cond(updating, [set(tmp, sub(value, prev)), set(prev, value), tmp], set(prev, 0));
 }
 
 // returns linear friction coeff. When `value` is 0 coeff is 1 (no friction), then
@@ -62,10 +54,7 @@ function dragDiff(value, updating) {
 function friction(value) {
   const MAX_FRICTION = 5;
   const MAX_VALUE = 100;
-  return max(
-    1,
-    min(MAX_FRICTION, add(1, multiply(value, (MAX_FRICTION - 1) / MAX_VALUE)))
-  );
+  return max(1, min(MAX_FRICTION, add(1, multiply(value, (MAX_FRICTION - 1) / MAX_VALUE))));
 }
 
 function speed(value) {
@@ -94,11 +83,7 @@ function scaleFriction(value, rest, delta) {
     1,
     min(MAX_FRICTION, add(1, multiply(howFar, (MAX_FRICTION - 1) / MAX_VALUE)))
   );
-  return cond(
-    lessThan(0, howFar),
-    multiply(value, add(1, divide(add(delta, -1), friction))),
-    res
-  );
+  return cond(lessThan(0, howFar), multiply(value, add(1, divide(add(delta, -1), friction))), res);
 }
 
 function runTiming(clock, value, dest, startStopClock = true) {
@@ -155,15 +140,7 @@ function runDecay(clock, value, velocity) {
   ];
 }
 
-function bouncyPinch(
-  value,
-  gesture,
-  gestureActive,
-  focalX,
-  displacementX,
-  focalY,
-  displacementY
-) {
+function bouncyPinch(value, gesture, gestureActive, focalX, displacementX, focalY, displacementY) {
   const clock = new Clock();
 
   const delta = scaleDiff(gesture);
@@ -185,14 +162,8 @@ function bouncyPinch(
     [
       stopClock(clock),
       set(nextScale, scaleFriction(value, rest, delta)),
-      set(
-        displacementX,
-        sub(displacementX, multiply(focalX, add(-1, divide(nextScale, value))))
-      ),
-      set(
-        displacementY,
-        sub(displacementY, multiply(focalY, add(-1, divide(nextScale, value))))
-      ),
+      set(displacementX, sub(displacementX, multiply(focalX, add(-1, divide(nextScale, value))))),
+      set(displacementY, sub(displacementY, multiply(focalY, add(-1, divide(nextScale, value))))),
       nextScale,
     ],
     cond(
@@ -207,24 +178,14 @@ function bouncyPinch(
   );
 }
 
-function bouncy(
-  value,
-  gestureDiv,
-  gestureActive,
-  lowerBound,
-  upperBound,
-  friction
-) {
+function bouncy(value, gestureDiv, gestureActive, lowerBound, upperBound, friction) {
   const timingClock = new Clock();
   const decayClock = new Clock();
 
   const velocity = speed(value);
 
   // did value go beyond the limits (lower, upper)
-  const isOutOfBounds = or(
-    lessThan(value, lowerBound),
-    lessThan(upperBound, value)
-  );
+  const isOutOfBounds = or(lessThan(value, lowerBound), lessThan(upperBound, value));
   // position to snap to (upper or lower is beyond or the current value elsewhere)
   const rest = cond(
     lessThan(value, lowerBound),
@@ -287,15 +248,9 @@ class Viewer extends Component {
     const scale = new Value(1);
     const pinchActive = eq(pinchState, State.ACTIVE);
     this._focalDisplacementX = new Value(0);
-    const relativeFocalX = sub(
-      pinchFocalX,
-      add(panTransX, this._focalDisplacementX)
-    );
+    const relativeFocalX = sub(pinchFocalX, add(panTransX, this._focalDisplacementX));
     this._focalDisplacementY = new Value(0);
-    const relativeFocalY = sub(
-      pinchFocalY,
-      add(panTransY, this._focalDisplacementY)
-    );
+    const relativeFocalY = sub(pinchFocalY, add(panTransY, this._focalDisplacementY));
     this._scale = set(
       scale,
       bouncyPinch(
@@ -327,11 +282,7 @@ class Viewer extends Component {
     const panFriction = value => friction(value);
 
     // X
-    const panUpX = cond(
-      lessThan(this._scale, 1),
-      0,
-      multiply(-1, this._focalDisplacementX)
-    );
+    const panUpX = cond(lessThan(this._scale, 1), 0, multiply(-1, this._focalDisplacementX));
     const panLowX = add(panUpX, multiply(-WIDTH, add(max(1, this._scale), -1)));
     this._panTransX = set(
       panTransX,
@@ -346,15 +297,8 @@ class Viewer extends Component {
     );
 
     // Y
-    const panUpY = cond(
-      lessThan(this._scale, 1),
-      0,
-      multiply(-1, this._focalDisplacementY)
-    );
-    const panLowY = add(
-      panUpY,
-      multiply(-HEIGHT, add(max(1, this._scale), -1))
-    );
+    const panUpY = cond(lessThan(this._scale, 1), 0, multiply(-1, this._focalDisplacementY));
+    const panLowY = add(panUpY, multiply(-HEIGHT, add(max(1, this._scale), -1)));
     this._panTransY = set(
       panTransY,
       bouncy(
@@ -404,7 +348,7 @@ class Viewer extends Component {
                 ]}
                 resizeMode="stretch"
                 source={this.props.source}
-                />
+              />
             </PanGestureHandler>
           </Animated.View>
         </PinchGestureHandler>
@@ -415,13 +359,16 @@ class Viewer extends Component {
 
 export default class Example extends Component {
   static navigationOptions = {
-    title: 'ImagePreview using reanimated'
+    title: 'ImagePreview using reanimated',
   };
 
   render() {
     return (
       <View style={styles.container}>
-        <Text style={styles.infoText}>This is an example that uses React Native Gesture Handler and Reanimated to implement an Image Preview component with panning and zooming on the main thread.</Text>
+        <Text style={styles.infoText}>
+          This is an example that uses React Native Gesture Handler and Reanimated to implement an
+          Image Preview component with panning and zooming on the main thread.
+        </Text>
         <Viewer source={require('./grid.png')} />
       </View>
     );

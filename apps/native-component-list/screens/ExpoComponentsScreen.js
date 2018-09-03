@@ -27,6 +27,7 @@ export default class ExpoComponentsScreen extends React.Component {
       'LinearGradient',
       'Lottie',
       'Maps',
+      'Screens',
       'SVG',
       'Video',
     ];
