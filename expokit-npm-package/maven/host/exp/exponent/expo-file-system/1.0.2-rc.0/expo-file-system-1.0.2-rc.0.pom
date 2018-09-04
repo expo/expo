@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>host.exp.exponent</groupId>
+  <artifactId>expo-file-system</artifactId>
+  <version>1.0.2-rc.0</version>
+  <packaging>aar</packaging>
+  <dependencies>
+    <dependency>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+      <version>1.10</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>1.4</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.squareup.okhttp3</groupId>
+      <artifactId>okhttp</artifactId>
+      <version>3.10.0</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.squareup.okhttp3</groupId>
+      <artifactId>okhttp-urlconnection</artifactId>
+      <version>3.10.0</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>host.exp.exponent</groupId>
+      <artifactId>expo-core</artifactId>
+      <version>1.1.0-rc.0</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>host.exp.exponent</groupId>
+      <artifactId>expo-file-system-interface</artifactId>
+      <version>1.0.2-rc.0</version>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
+</project>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-  <info organisation="host.exp.exponent" module="expoview" revision="30.0.0" status="integration" publication="20180904140003"/>
+  <info organisation="host.exp.exponent" module="expoview" revision="30.0.0" status="integration" publication="20180904162008"/>
   <configurations>
     <conf name="androidTestAnnotationProcessor" visibility="private"/>
     <conf name="androidTestApi" visibility="private" extends="androidTestCompile"/>
@@ -109,34 +109,34 @@
     <dependency org="com.jakewharton" name="butterknife-compiler" rev="8.8.1" conf="annotationProcessor-&gt;default"/>
     <dependency org="com.android.support" name="multidex" rev="1.0.1" conf="api-&gt;default"/>
     <dependency org="com.facebook.react" name="react-native" rev="30.0.0" conf="api-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-core" rev="1.0.1" conf="api-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-react-native-adapter" rev="1.0.1" conf="api-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-camera" rev="1.0.1" conf="api-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-camera-interface" rev="1.0.1" conf="api-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-sensors" rev="1.0.1" conf="api-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-sensors-interface" rev="1.0.1" conf="api-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-face-detector" rev="1.0.1" conf="api-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-file-system" rev="1.0.1" conf="api-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-file-system-interface" rev="1.0.1" conf="api-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-payments-stripe" rev="1.0.0" conf="api-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-permissions" rev="1.0.1" conf="api-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-permissions-interface" rev="1.0.1" conf="api-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-constants" rev="1.0.1" conf="api-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-constants-interface" rev="1.0.1" conf="api-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-image-loader-interface" rev="1.0.0" conf="api-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-gl" rev="1.0.1" conf="api-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-gl-cpp" rev="1.0.1" conf="api-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-sms" rev="1.0.1" conf="api-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-print" rev="1.0.0" conf="api-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-media-library" rev="1.0.0" conf="api-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-analytics-segment" rev="1.0.0" conf="api-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-font" rev="1.0.0" conf="api-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-location" rev="1.0.0" conf="api-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-barcode-scanner-interface" rev="1.0.0" conf="api-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-barcode-scanner" rev="1.0.0" conf="api-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-contacts" rev="1.0.0" conf="api-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-ads-admob" rev="1.0.0" conf="api-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-local-authentication" rev="1.0.1" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-core" rev="1.1.0-rc.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-react-native-adapter" rev="1.1.0-rc.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-camera" rev="1.1.0-rc.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-camera-interface" rev="1.0.2-rc.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-sensors" rev="1.0.2-rc.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-sensors-interface" rev="1.0.2-rc.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-face-detector" rev="1.0.2-rc.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-file-system" rev="1.0.2-rc.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-file-system-interface" rev="1.0.2-rc.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-payments-stripe" rev="1.0.0-rc.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-permissions" rev="1.1.0-rc.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-permissions-interface" rev="1.1.0-rc.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-constants" rev="1.0.2-rc.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-constants-interface" rev="1.0.2-rc.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-image-loader-interface" rev="1.0.0-rc.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-gl" rev="1.0.2-rc.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-gl-cpp" rev="1.0.2-rc.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-sms" rev="1.0.2-rc.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-print" rev="1.0.0-rc.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-media-library" rev="1.0.0-rc.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-analytics-segment" rev="1.0.0-rc.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-font" rev="1.0.0-rc.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-location" rev="1.0.0-rc.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-barcode-scanner-interface" rev="1.0.0-rc.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-barcode-scanner" rev="1.0.0-rc.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-contacts" rev="1.0.0-rc.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-ads-admob" rev="1.0.0-rc.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-local-authentication" rev="1.0.0-rc.0" conf="api-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-sms-abi30_0_0" rev="1.0.0" conf="api-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-sensors-interface-abi30_0_0" rev="1.0.0" conf="api-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-sensors-abi30_0_0" rev="1.0.0" conf="api-&gt;default"/>
