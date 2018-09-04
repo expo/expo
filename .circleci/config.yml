@@ -55,6 +55,7 @@ anchors:
     run:
       name: Install Android dependencies
       command: |
+        sudo su
         mkdir -p ${ANDROID_HOME}
         curl -L "${ANDROID_SDK_URL}" > ${ANDROID_HOME}/sdk.zip
         cd ${ANDROID_HOME}
