@@ -41,6 +41,7 @@ import extractReleaseChannel from '../utils/extractReleaseChannel';
 
 const IS_RESTRICTED = Constants.isDevice && Platform.OS === 'ios';
 const PROJECT_UPDATE_INTERVAL = 10000;
+const USE_STAGING = false;
 
 @withNavigationFocus
 @withNavigation
@@ -203,7 +204,7 @@ export default class ProjectsScreen extends React.Component {
 
   _fetchProjectsAsync = async () => {
     try {
-      let BASE_URL = __DEV__ ? 'https://staging.expo.io' : 'https://exp.host';
+      let BASE_URL = USE_STAGING ? 'https://staging.expo.io' : 'https://exp.host';
       let fetchStrategy = isAuthenticated() ? authenticatedFetch : fetch;
       let response = await fetchStrategy(
         `${BASE_URL}/--/api/v2/development-sessions?deviceId=${getSnackId()}`
