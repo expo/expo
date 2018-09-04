@@ -59,7 +59,8 @@ export function test(t) {
           const localResult = await Permissions.getAsync(Permissions.NOTIFICATIONS);
           const remoteResult = await Permissions.getAsync(Permissions.USER_FACING_NOTIFICATIONS);
 
-          t.expect(remoteResult).toEqual(localResult);
+          t.expect(remoteResult.status).toEqual(localResult.status);
+          t.expect(remoteResult.granted).toEqual(localResult.granted);
         });
       }
     });
