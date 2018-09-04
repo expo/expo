@@ -132,7 +132,7 @@ dependencies {
   api 'host.exp.exponent:expo-barcode-scanner:1.0.0'
   api 'host.exp.exponent:expo-contacts:1.0.0'
   api 'host.exp.exponent:expo-ads-admob:1.0.0'
-  api 'host.exp.exponent:expo-local-authentication:1.0.0'
+  api 'host.exp.exponent:expo-local-authentication:1.0.1'
   END UNCOMMENT WHEN DISTRIBUTING */
 
   // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
