@@ -6,12 +6,6 @@ anchors:
     docker:
       - image: circleci/node:8
 
-  - &android_job
-    working_directory: ~/expo
-    resource_class: xlarge
-    docker:
-      - image: circleci/android:api-26-node8-alpha
-
   - &default_env_vars
     TERM: xterm-color
     YARN_CACHE_FOLDER: ~/.cache/yarn
@@ -34,7 +28,18 @@ anchors:
         echo '--install.non-interactive true' >> ~/.yarnrc
         echo 'disable-self-update-check true' >> ~/.yarnrc
 
-        echo "export PATH=\$PATH:$(yarn global bin)" >> $BASH_ENV
+        cat << 'EOF' >> $BASH_ENV
+        export PATH=$PATH:$(yarn global bin)
+        export PATH=$PATH:$(npm config get prefix)/bin
+
+        export ANDROID_NDK_VERSION=android-ndk-r10e
+        export ANDROID_NDK_FILE=${ANDROID_NDK_VERSION}-linux-x86_64.bin
+        export ANDROID_NDK_URL=https://dl.google.com/android/ndk/${ANDROID_NDK_FILE}
+        export ANDROID_NDK=/opt/${ANDROID_NDK_VERSION}
+        export ANDROID_HOME=/usr/local/android-sdk-linux
+        export ANDROID_SDK=/usr/local/android-sdk-linux
+        export ANDROID_SDK_URL=https://dl.google.com/android/repository/sdk-tools-linux-3859397.zip
+        EOF
         echo "source $BASH_ENV" >> ~/.bash_profile
 
   - &install_workspace_dependencies
@@ -45,6 +50,51 @@ anchors:
         # Run `yarn install` from the workspace root to install all of the workspaces' dependencies
         # including each other if there are co-dependencies
         yarn install
+
+  - &install_android_dependencies
+    run:
+      name: Install Android dependencies
+      command: |
+        mkdir -p ${ANDROID_HOME}
+        curl -L "${ANDROID_SDK_URL}" > ${ANDROID_HOME}/sdk.zip
+        cd ${ANDROID_HOME}
+        unzip -q sdk.zip
+        rm sdk.zip
+        # prevents warnings about missing repo config
+        mkdir -p ${HOME}/.android
+        touch ${HOME}/.android/repositories.cfg
+
+        # PATH ${ANDROID_HOME}/platform-tools:${PATH}
+        # PATH ${ANDROID_HOME}/tools:${PATH}
+        # PATH ${ANDROID_HOME}/tools/bin:${PATH}
+        # PATH ${ANDROID_HOME}/build-tools/25.0.0/:${PATH}
+
+        yes | sdkmanager --licenses > /dev/null
+
+        # Install Android SDK components
+        sdkmanager \
+            "platform-tools" \
+            "platforms;android-23" \
+            "build-tools;25.0.0" \
+            "extras;android;m2repository" \
+            "extras;google;m2repository"
+
+        # Install Android NDK
+        # i have no clue why some of this is here, but it's working elsewhere
+        # it appears to install the NDK version expo needs, so that's cool
+        mkdir /ndk_setup
+        cd /ndk_setup
+        curl -L ${ANDROID_NDK_URL} > ${ANDROID_NDK_FILE}
+        chmod +x ${ANDROID_NDK_FILE}
+        sync ./${ANDROID_NDK_FILE}
+        mv ./${ANDROID_NDK_VERSION} ${ANDROID_NDK}
+        cp -R \
+          ${ANDROID_NDK}/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86_64 \
+          ${ANDROID_NDK}/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86
+        cp -R \
+          ${ANDROID_NDK}/toolchains/x86-4.8/prebuilt/linux-x86_64 \
+          ${ANDROID_NDK}/toolchains/x86-4.8/prebuilt/linux-x86
+        cd && rm -rf /ndk_setup
 
   - &restore_yarn_cache
     restore_cache:
@@ -130,7 +180,8 @@ jobs:
           working_directory: ~/expo/home
 
   android:
-    <<: *android_job
+    <<: *node_job
+    resource_class: xlarge
     environment:
       <<: *default_env_vars
     steps:
@@ -138,6 +189,7 @@ jobs:
       - *set_up_environment
       - *restore_yarn_cache
       - *install_workspace_dependencies
+      - *install_android_dependencies
       # - *restore_gradle_cache
       - run:
           name: Build Android
