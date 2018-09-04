@@ -2,7 +2,7 @@ LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 
-LOCAL_MODULE := privatedata_abi29_0_0
+LOCAL_MODULE := privatedata_abi30_0_0
 
 LOCAL_SRC_FILES := \
   PrivateDataBase.cpp \
