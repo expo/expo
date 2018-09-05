@@ -216,7 +216,7 @@ dependencies {
   api 'host.exp.exponent:expo-camera-abi29_0_0:1.0.0'
   api 'host.exp.exponent:expo-core-abi29_0_0:1.0.0'
   api 'host.exp.exponent:expo-gl-abi29_0_0:1.0.0'
-  compile 'host.exp:reactandroid-abi29_0_0:1.0.0'
+  api 'host.exp:reactandroid-abi29_0_0:1.0.0'
   api 'host.exp:reactandroid-abi28_0_0:1.0.0'
   api 'host.exp:reactandroid-abi27_0_0:1.0.0'
   api 'host.exp:reactandroid-abi26_0_0:1.0.0'
