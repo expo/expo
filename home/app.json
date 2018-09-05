@@ -8,11 +8,11 @@
     // When publishing the sdkVersion needs to be set to the target sdkVersion.
     // The Exponent client will load it as UNVERSIONED, but the server uses this field
     // to know which clients to serve the bundle to.
-    sdkVersion: "29.0.0",
+    sdkVersion: "30.0.0",
 
     // Update this each time you publish so you're able to relate published
     // bundles to specific commits in the repo
-    version: "29.0.0",
+    version: "30.0.0",
     
     orientation: "portrait",
     platforms: [
