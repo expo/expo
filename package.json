@@ -20,6 +20,7 @@
     ]
   },
   "devDependencies": {
+    "babel-eslint": "^9.0.0",
     "eslint": "^5.4.0",
     "eslint-config-universe": "^2.0.0-alpha.0",
     "prettier": "^1.14.2"

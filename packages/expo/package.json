@@ -18,7 +18,7 @@
     "lint": "eslint src tools",
     "prepublishOnly": "proofread",
     "test": "jest --watch",
-    "ci": "yarn lint --max-warnings 0 && yarn flow check && yarn jest --ci --maxWorkers 2"
+    "ci": "yarn flow check && yarn jest --ci --maxWorkers 2"
   },
   "jest": {
     "preset": "jest-expo",
