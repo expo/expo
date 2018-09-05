@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { Ionicons } from '@expo/vector-icons';
 
 @connect()
-export default class App extends React.Component {
+class App extends React.Component {
   state = { assetsAreLoaded: false };
 
   componentDidMount() {
@@ -39,6 +39,8 @@ export default class App extends React.Component {
     }
   };
 }
+
+export default App;
 
 const styles = StyleSheet.create({
   container: {
