@@ -63,7 +63,7 @@
     "expo-face-detector": "^1.0.2-rc.0",
     "expo-file-system": "^1.0.2-rc.0",
     "expo-font": "^1.0.0-rc.0",
-    "expo-local-authentication": "^1.0.0",
+    "expo-local-authentication": "^1.0.0-rc.0",
     "expo-location": "^1.0.0-rc.0",
     "expo-media-library": "^1.0.0-rc.0",
     "expo-payments-stripe": "^1.0.0-rc.0",
