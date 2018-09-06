@@ -1,4 +1,4 @@
-# Expo Client [![Slack](https://slack.expo.io/badge.svg)](https://slack.expo.io)
+# Expo Client [![Forums](https://img.shields.io/badge/expo-forum-blue.svg)](https://forums.expo.io)
 
 The Expo client app for Android and iOS.
 
