@@ -24,6 +24,7 @@
     "react": "16.3.1",
     "react-native": "expo/react-native#sdk-30.0.0",
     "react-native-gesture-handler": "1.0.6",
+    "react-native-paper": "^2.0.0-alpha.4",
     "react-native-platform-touchable": "^1.1.1",
     "react-native-svg": "6.2.2",
     "react-navigation": "2.6.2",
