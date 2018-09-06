@@ -75,9 +75,7 @@ jobs:
       - *restore_yarn_cache
       - *install_workspace_dependencies
       - *save_yarn_cache
-      - run:
-          <<: *lint
-          working_directory: ~/expo/packages/expo
+      # Add back linting once we get ESLint or TSLint set up
       - run:
           <<: *jest
           working_directory: ~/expo/packages/expo

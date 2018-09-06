@@ -1,8 +1,9 @@
+import { DangerZone } from 'expo';
 import React, { Component } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { PanGestureHandler, State, PinchGestureHandler } from 'react-native-gesture-handler';
 
-import { Animated, Easing } from 'expo/src/DangerZone';
+const { Animated, Easing } = DangerZone;
 
 const {
   set,

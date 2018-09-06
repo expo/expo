@@ -1,3 +1,4 @@
 {
-  "presets": ["babel-preset-expo"]
+  "presets": ["babel-preset-expo"],
+  "sourceMaps": "inline"
 }

@@ -1,6 +1,6 @@
-import React from 'react';
-import { Button, ScrollView, Text, View } from 'react-native';
 import { LinearGradient } from 'expo';
+import React from 'react';
+import { Text, View } from 'react-native';
 
 function incrementColor(color, step) {
   const intColor = parseInt(color.substr(1), 16);
@@ -12,7 +12,7 @@ export default class LinearGradientScreen extends React.Component {
   static navigationOptions = {
     title: 'LinearGradient',
   };
-  
+
   state = {
     count: 0,
     colorTop: '#000000',
