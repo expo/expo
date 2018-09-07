@@ -1,9 +1,7 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#import <EXFontInterface/EXFontManagerInterface.h>
-#import <EXCore/EXModuleRegistryConsumer.h>
 #import <EXCore/EXInternalModule.h>
-#import <EXCore/EXAppLifecycleListener.h>
+#import <EXFontInterface/EXFontManagerInterface.h>
 
-@interface EXReactFontManager : NSObject <EXFontManagerInterface, EXInternalModule, EXModuleRegistryConsumer, EXAppLifecycleListener>
+@interface EXReactFontManager : NSObject <EXFontManagerInterface, EXInternalModule>
 @end

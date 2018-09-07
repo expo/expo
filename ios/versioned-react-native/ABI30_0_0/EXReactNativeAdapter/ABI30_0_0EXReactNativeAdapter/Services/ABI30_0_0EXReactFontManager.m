@@ -6,7 +6,9 @@
 #import <ABI30_0_0EXCore/ABI30_0_0EXAppLifecycleService.h>
 #import <objc/runtime.h>
 
-static __weak NSArray<id<ABI30_0_0EXFontProcessorInterface>> *currentFontProcessors;
+static dispatch_once_t initializeCurrentFontProcessorsOnce;
+
+static NSPointerArray *currentFontProcessors;
 
 @implementation ABI30_0_0RCTFont (ABI30_0_0EXReactFontManager)
 
@@ -18,9 +20,8 @@ static __weak NSArray<id<ABI30_0_0EXFontProcessorInterface>> *currentFontProcess
                  variant:(NSArray<NSDictionary *> *)variant
          scaleMultiplier:(CGFloat)scaleMultiplier
 {
-  NSArray<id<ABI30_0_0EXFontProcessorInterface>> *fontProcessors = currentFontProcessors;
   UIFont *font;
-  for (id<ABI30_0_0EXFontProcessorInterface> fontProcessor in fontProcessors) {
+  for (id<ABI30_0_0EXFontProcessorInterface> fontProcessor in currentFontProcessors) {
     font = [fontProcessor updateFont:uiFont withFamily:family size:size weight:weight style:style variant:variant scaleMultiplier:scaleMultiplier];
     if (font) {
       return font;
@@ -48,17 +49,14 @@ static __weak NSArray<id<ABI30_0_0EXFontProcessorInterface>> *currentFontProcess
  *    calls in fact implementation we've defined up here and calling `ABI30_0_0RCTFont ABI30_0_0EXUpdateFont` falls back
  *    to the default implementation. (This is why we call `[self ABI30_0_0EXUpdateFont]` at the end of that function,
  *    though it seems like an endless loop, in fact we dispatch to another implementation.)
- *  - When some module adds a font processor using ABI30_0_0EXFontManagerInterface, ABI30_0_0EXReactFontManager adds it
- *    to fontProcessors array instance variable. The static currentFontProcessors variable should always point
- *    to the fontProcessors array of a foregrounded app/experience (see `- (void)maybeUpdateStaticFontProcessors`).
+ *  - When some module adds a font processor using ABI30_0_0EXFontManagerInterface, ABI30_0_0EXReactFontManager adds a weak pointer to it
+ *    to currentFontProcessors array.
  *  - Implementation logic of `ABI30_0_0RCTFont.ABI30_0_0EXUpdateFont` uses current value of currentFontProcessors when processing arguments.
  */
 
 @interface ABI30_0_0EXReactFontManager ()
 
-@property (nonatomic, assign) BOOL isForegrounded;
-@property (nonatomic, strong) NSMutableArray<id<ABI30_0_0EXFontProcessorInterface>> *fontProcessors;
-@property (nonatomic, weak) id<ABI30_0_0EXAppLifecycleService> lifecycleManager;
+@property (nonatomic, strong) NSMutableSet *fontProcessors;
 
 @end
 
@@ -69,8 +67,7 @@ ABI30_0_0EX_REGISTER_MODULE();
 - (instancetype)init
 {
   if (self = [super init]) {
-    _isForegrounded = true;
-    _fontProcessors = [NSMutableArray array];
+    _fontProcessors = [NSMutableSet set];
   }
   return self;
 }
@@ -82,6 +79,10 @@ ABI30_0_0EX_REGISTER_MODULE();
 
 + (void)initialize
 {
+  dispatch_once(&initializeCurrentFontProcessorsOnce, ^{
+    currentFontProcessors = [NSPointerArray weakObjectsPointerArray];
+  });
+
   Class rtcClass = [ABI30_0_0RCTFont class];
   SEL rtcUpdate = @selector(updateFont:withFamily:size:weight:style:variant:scaleMultiplier:);
   SEL exUpdate = @selector(ABI30_0_0EXUpdateFont:withFamily:size:weight:style:variant:scaleMultiplier:);
@@ -90,59 +91,13 @@ ABI30_0_0EX_REGISTER_MODULE();
                                  class_getClassMethod(rtcClass, exUpdate));
 }
 
-- (void)setModuleRegistry:(ABI30_0_0EXModuleRegistry *)moduleRegistry
-{
-  if (_lifecycleManager) {
-    [_lifecycleManager unregisterAppLifecycleListener:self];
-  }
-  
-  _lifecycleManager = nil;
-  
-  if (moduleRegistry) {
-    _lifecycleManager = [moduleRegistry getModuleImplementingProtocol:@protocol(ABI30_0_0EXAppLifecycleService)];
-  }
-  
-  if (_lifecycleManager) {
-    [_lifecycleManager registerAppLifecycleListener:self];
-  }
-}
-
-# pragma mark - ABI30_0_0EXFontManager
-
-- (void)onAppBackgrounded {
-  _isForegrounded = false;
-  [self maybeUpdateStaticFontProcessors];
-}
-
-- (void)onAppForegrounded {
-  _isForegrounded = true;
-  [self maybeUpdateStaticFontProcessors];
-}
-
 # pragma mark - ABI30_0_0EXFontManager
 
 - (void)addFontProccessor:(id<ABI30_0_0EXFontProcessorInterface>)processor
 {
   [_fontProcessors addObject:processor];
-  [self maybeUpdateStaticFontProcessors];
-}
-
-# pragma mark - Internals
-
-- (void)maybeUpdateStaticFontProcessors
-{
-  if (_isForegrounded) {
-    currentFontProcessors = _fontProcessors;
-  } else if (currentFontProcessors == _fontProcessors) {
-    currentFontProcessors = nil;
-  }
-}
-
-- (void)dealloc
-{
-  if (_lifecycleManager) {
-    [_lifecycleManager unregisterAppLifecycleListener:self];
-  }
+  [currentFontProcessors compact];
+  [currentFontProcessors addPointer:(__bridge void * _Nullable)(processor)];
 }
 
 @end
