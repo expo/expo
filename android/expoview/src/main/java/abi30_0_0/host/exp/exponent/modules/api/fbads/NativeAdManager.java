@@ -1,7 +1,10 @@
 package abi30_0_0.host.exp.exponent.modules.api.fbads;
 
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewParent;
 
 import com.facebook.ads.AdError;
 import com.facebook.ads.AdIconView;
@@ -137,6 +140,27 @@ public class NativeAdManager extends ReactContextBaseJavaModule implements Nativ
   }
 
   @ReactMethod
+  public void triggerEvent(final int nativeAdView, final Promise promise) {
+    getReactApplicationContext().getNativeModule(UIManagerModule.class).addUIBlock(new UIBlock() {
+      @Override
+      public void execute(NativeViewHierarchyManager nativeViewHierarchyManager) {
+        try {
+          ((NativeAdView) nativeViewHierarchyManager.resolveView(nativeAdView)).triggerClick();
+          promise.resolve(null);
+        } catch (ClassCastException e) {
+          promise.reject("E_CANNOT_CAST", e);
+        } catch (IllegalViewOperationException e) {
+          promise.reject("E_INVALID_TAG_ERROR", e);
+        } catch (NullPointerException e) {
+          promise.reject("E_NO_NATIVE_AD_VIEW", e);
+        } catch (Exception e) {
+          promise.reject("E_AD_REGISTER_ERROR", e);
+        }
+      }
+    });
+  }
+
+  @ReactMethod
   public void registerViewsForInteraction(final int adTag,
                                           final int mediaViewTag,
                                           final int adIconViewTag,
@@ -163,12 +187,6 @@ public class NativeAdManager extends ReactContextBaseJavaModule implements Nativ
           }
 
           List<View> clickableViews = new ArrayList<>();
-
-          for (int i = 0; i < clickableViewsTags.size(); ++i) {
-            View view = nativeViewHierarchyManager.resolveView(clickableViewsTags.getInt(i));
-            clickableViews.add(view);
-          }
-
           nativeAdView.registerViewsForInteraction(mediaView, adIconView, clickableViews);
           promise.resolve(null);
 
