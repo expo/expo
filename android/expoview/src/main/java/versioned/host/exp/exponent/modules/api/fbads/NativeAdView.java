@@ -15,6 +15,7 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.facebook.react.views.view.ReactViewGroup;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +26,7 @@ public class NativeAdView extends ReactViewGroup {
    * @{NativeAd} received from the ads manager
    **/
   private NativeAd mNativeAd;
+  private WeakReference<MediaView> mMediaView;
 
   /**
    * @{RCTEventEmitter} instance used for sending events back to JS
@@ -75,6 +77,15 @@ public class NativeAdView extends ReactViewGroup {
   }
 
   public void registerViewsForInteraction(MediaView mediaView, AdIconView adIconView, List<View> clickableViews) {
+    clickableViews.add(mediaView);
     mNativeAd.registerViewForInteraction(this, mediaView, adIconView, clickableViews);
+    mMediaView = new WeakReference<MediaView>(mediaView);
+  }
+
+  public void triggerClick() {
+    MediaView tempMediaView = mMediaView.get();
+    if (tempMediaView != null) {
+      tempMediaView.performClick();
+    }
   }
 }

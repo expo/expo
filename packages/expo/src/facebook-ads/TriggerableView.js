@@ -1,7 +1,7 @@
 // @flow
 
 import * as React from 'react';
-import { View, ViewPropTypes } from 'react-native';
+import { View, ViewPropTypes, TouchableOpacity } from 'react-native';
 
 import { TriggerableContext } from './withNativeAd';
 import type { TriggerableContextValueType } from './withNativeAd';
@@ -24,7 +24,14 @@ class TriggerableViewChild extends React.Component<PropsType> {
   };
 
   render() {
-    return <View {...this.props} ref={this._handleWrapperRef} />;
+    return (
+      <TouchableOpacity
+        {...this.props}
+        ref={this._handleWrapperRef}
+        collapsable={false}
+        onPress={this.props.onTriggerEvent}
+      />
+    );
   }
 }
 

@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { EmitterSubscription } from 'fbemitter';
-import { requireNativeComponent, findNodeHandle } from 'react-native';
+import { requireNativeComponent, findNodeHandle, Platform } from 'react-native';
 
 import AdsManager from './NativeAdsManager';
 import { NativeAdIconView } from './AdIconViewManager';
@@ -77,6 +77,7 @@ export default <T>(Component: React.ComponentType<T>) =>
       this._registerFunctionsForTriggerables = {
         register: this._registerClickableChild,
         unregister: this._unregisterClickableChild,
+        onTriggerEvent: this._onTriggerEvent,
       };
 
       this._registerFunctionsForMediaView = {
@@ -86,10 +87,10 @@ export default <T>(Component: React.ComponentType<T>) =>
 
       this._registerFunctionsForAdIconView = {
         unregister: this._unregisterAdIconView,
-        register: this._registerMediaView,
+        register: this._registerAdIconView,
       };
 
-      this._clickableChildrenNodeHandles = {};
+      this._clickableChildrenNodeHandles = new Map();
 
       this.state = {
         ad: null,
@@ -116,9 +117,12 @@ export default <T>(Component: React.ComponentType<T>) =>
           this.state.mediaViewNodeHandle !== prevState.mediaViewNodeHandle;
         const adIconViewNodeHandleChanged =
           this.state.adIconViewNodeHandle !== prevState.adIconViewNodeHandle;
-        const clickableChildrenChanged = [...prevState.clickableChildren].filter(
+        const clickableChildrenDiff = [...prevState.clickableChildren].filter(
           child => !this.state.clickableChildren.has(child)
         );
+        const clickableChildrenChanged = prevState.clickableChildren.size !== this.state.clickableChildren.size
+          || clickableChildrenDiff.length > 0;
+        
         if (mediaViewNodeHandleChanged || adIconViewNodeHandleChanged || clickableChildrenChanged) {
           AdsManager.registerViewsForInteractionAsync(
             findNodeHandle(this._nativeAdViewRef),
@@ -148,17 +152,23 @@ export default <T>(Component: React.ComponentType<T>) =>
     _unregisterAdIconView = () => this.setState({ adIconViewNodeHandle: -1 });
 
     _registerClickableChild = (child: React.Node) => {
-      this._clickableChildrenNodeHandles[child] = findNodeHandle(child);
+      this._clickableChildrenNodeHandles.set(child, findNodeHandle(child));
       this.setState({ clickableChildren: this.state.clickableChildren.add(findNodeHandle(child)) });
     };
 
     _unregisterClickableChild = (child: React.Node) => {
       this.setState(({ clickableChildren }) => {
         const newClickableChildren = new Set(clickableChildren);
-        newClickableChildren.delete(this._clickableChildrenNodeHandles[child]);
-        delete this._clickableChildrenNodeHandles[child];
+        newClickableChildren.delete(this._clickableChildrenNodeHandles.get(child));
+        this._clickableChildrenNodeHandles.delete(child);
         return { clickableChildren: newClickableChildren };
       });
+    };
+
+    _onTriggerEvent = () => {
+      if (this.state.mediaViewNodeHandle !== -1 && Platform.OS === 'android') {
+        AdsManager.triggerEvent(findNodeHandle(this._nativeAdViewRef));
+      }
     };
 
     _handleAdUpdated = () => this.props.onAdLoaded && this.props.onAdLoaded(this.state.ad);

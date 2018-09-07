@@ -38,6 +38,10 @@ class NativeAdsManager {
     );
   }
 
+  static triggerEvent(nativeAdViewTag: number) {
+    return CTKNativeAdManager.triggerEvent(nativeAdViewTag);
+  }
+
   /**
    * Creates an instance of AdsManager with a given placementId and adsToRequest.
    * Default number of ads to request is `10`.
