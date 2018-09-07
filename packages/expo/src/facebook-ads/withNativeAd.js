@@ -69,7 +69,7 @@ export default <T>(Component: React.ComponentType<T>) =>
     _registerFunctionsForTriggerables: TriggerableContextValueType;
     _registerFunctionsForMediaView: MediaViewContextValueType;
     _registerFunctionsForAdIconView: AdIconViewContextValueType;
-    _clickableChildrenNodeHandles: { [React.Node]: number };
+    _clickableChildrenNodeHandles: Map<React.Node, number>;
 
     constructor(props: NativeAdWrapperProps & T) {
       super(props);
@@ -120,9 +120,10 @@ export default <T>(Component: React.ComponentType<T>) =>
         const clickableChildrenDiff = [...prevState.clickableChildren].filter(
           child => !this.state.clickableChildren.has(child)
         );
-        const clickableChildrenChanged = prevState.clickableChildren.size !== this.state.clickableChildren.size
-          || clickableChildrenDiff.length > 0;
-        
+        const clickableChildrenChanged =
+          prevState.clickableChildren.size !== this.state.clickableChildren.size ||
+          clickableChildrenDiff.length > 0;
+
         if (mediaViewNodeHandleChanged || adIconViewNodeHandleChanged || clickableChildrenChanged) {
           AdsManager.registerViewsForInteractionAsync(
             findNodeHandle(this._nativeAdViewRef),
@@ -158,10 +159,14 @@ export default <T>(Component: React.ComponentType<T>) =>
 
     _unregisterClickableChild = (child: React.Node) => {
       this.setState(({ clickableChildren }) => {
-        const newClickableChildren = new Set(clickableChildren);
-        newClickableChildren.delete(this._clickableChildrenNodeHandles.get(child));
-        this._clickableChildrenNodeHandles.delete(child);
-        return { clickableChildren: newClickableChildren };
+        const newClickableChildren: Set<number> = new Set(clickableChildren);
+        const nodeHandle = this._clickableChildrenNodeHandles.get(child);
+
+        if (nodeHandle) {
+          newClickableChildren.delete(nodeHandle);
+          this._clickableChildrenNodeHandles.delete(child);
+          return { clickableChildren: newClickableChildren };
+        }
       });
     };
 
