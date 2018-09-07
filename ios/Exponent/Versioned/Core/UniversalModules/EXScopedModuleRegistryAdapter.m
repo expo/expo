@@ -8,6 +8,7 @@
 #import "EXConstantsBinding.h"
 #import "EXUnversioned.h"
 
+#import "EXScopedReactNativeAdapter.h"
 #import "EXModuleRegistryBinding.h"
 
 @implementation EXScopedModuleRegistryAdapter
@@ -24,6 +25,9 @@
   
   EXConstantsBinding *constantsBinding = [[EXConstantsBinding alloc] initWithExperienceId:experienceId andParams:params];
   [moduleRegistry registerInternalModule:constantsBinding];
+
+  EXScopedReactNativeAdapter *reactNativeAdapter = [[EXScopedReactNativeAdapter alloc] init];
+  [moduleRegistry registerInternalModule:reactNativeAdapter];
 
   NSArray<id<RCTBridgeModule>> *bridgeModules = [self extraModulesForModuleRegistry:moduleRegistry];
   return [bridgeModules arrayByAddingObject:[[EXModuleRegistryBinding alloc] initWithModuleRegistry:moduleRegistry]];
