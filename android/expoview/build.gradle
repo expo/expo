@@ -78,8 +78,8 @@ android {
       ext.enableCrashlytics = false
     }
     release {
-      /*minifyEnabled false
-      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'*/
+      minifyEnabled false
+      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
     }
   }
 }
