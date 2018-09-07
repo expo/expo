@@ -148,6 +148,13 @@ public class TestSuiteTests extends BaseTestClass {
 
   @Test
   @ExpoTestSuiteTest
+  @ExpoSdkVersionTest("30.0.0")
+  public void sdk30TestSuite() {
+    runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-30-0-0", false);
+  }
+
+  @Test
+  @ExpoTestSuiteTest
   @ExpoSdkVersionTest("28.0.0")
   public void sdk28TestSuite() {
     runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-28-0-0", false);
@@ -180,14 +187,6 @@ public class TestSuiteTests extends BaseTestClass {
   public void sdk24TestSuite() {
     runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-24-0-0", false);
   }
-
-  /* SDK 22 test-suite is borked so just skip it for now
-  @Test
-  @ExpoTestSuiteTest
-  @ExpoSdkVersionTest("22.0.0")
-  public void sdk22TestSuite() {
-    runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-22-0-0", false);
-  }*/
 
   @Test
   @ExpoAlwaysPassThroughFilter
