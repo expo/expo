@@ -38,7 +38,15 @@ and run `pod install`.
     ```gradle
     compile project(':expo-core')
     ```
-
+3.  If you're using ProGuard, you'll need to append these lines to your ProGuard rules file for it not to strip out methods required for Expo modules to work.
+    ```pro
+    -keepclassmembers class * {
+      @expo.core.interfaces.ExpoProp *;
+    }
+    -keepclassmembers class * {
+      @expo.core.interfaces.ExpoMethod *;
+    }
+    ```
 
 ## Usage
 
