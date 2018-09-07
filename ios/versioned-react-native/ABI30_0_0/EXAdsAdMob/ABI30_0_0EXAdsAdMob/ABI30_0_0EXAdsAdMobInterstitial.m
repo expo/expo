@@ -1,5 +1,6 @@
 #import <ABI30_0_0EXCore/ABI30_0_0EXUIManager.h>
 #import <ABI30_0_0EXCore/ABI30_0_0EXEventEmitterService.h>
+#import <ABI30_0_0EXCore/ABI30_0_0EXUtilitiesInterface.h>
 #import <ABI30_0_0EXAdsAdMob/ABI30_0_0EXAdsAdMobInterstitial.h>
 
 static NSString *const ABI30_0_0EXAdsAdMobInterstitialDidLoad = @"interstitialDidLoad";
@@ -11,6 +12,7 @@ static NSString *const ABI30_0_0EXAdsAdMobInterstitialWillLeaveApplication = @"i
 @interface ABI30_0_0EXAdsAdMobInterstitial ()
 
 @property (nonatomic, weak) id<ABI30_0_0EXEventEmitterService> eventEmitter;
+@property (nonatomic, weak) id<ABI30_0_0EXUtilitiesInterface> utilities;
 
 @end
 
@@ -28,6 +30,7 @@ ABI30_0_0EX_EXPORT_MODULE(ExpoAdsAdMobInterstitialManager);
 
 - (void)setModuleRegistry:(ABI30_0_0EXModuleRegistry *)moduleRegistry
 {
+  _utilities = [moduleRegistry getModuleImplementingProtocol:@protocol(ABI30_0_0EXUtilitiesInterface)];
   _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(ABI30_0_0EXEventEmitterService)];
 }
 
@@ -108,7 +111,7 @@ ABI30_0_0EX_EXPORT_METHOD_AS(showAd,
     ABI30_0_0EX_WEAKIFY(self);
     dispatch_async(dispatch_get_main_queue(), ^{
       ABI30_0_0EX_ENSURE_STRONGIFY(self);
-      [self->_interstitial presentFromRootViewController:[UIApplication sharedApplication].delegate.window.rootViewController];
+      [self->_interstitial presentFromRootViewController:self.utilities.currentViewController];
     });
   } else if (_showAdResolver != nil) {
     reject(@"E_AD_ALREADY_SHOWING", @"An ad is already being shown, await the first promise.", nil);
@@ -121,19 +124,20 @@ ABI30_0_0EX_EXPORT_METHOD_AS(dismissAd,
                     dismissAd:(ABI30_0_0EXPromiseResolveBlock)resolve
                     rejecter:(ABI30_0_0EXPromiseRejectBlock)reject)
 {
-  UIViewController *presentedViewController = [UIApplication sharedApplication].delegate.window.rootViewController.presentedViewController;
-  if (presentedViewController != nil && [NSStringFromClass([presentedViewController class]) isEqualToString:@"GADInterstitialViewController"]) {
-    ABI30_0_0EX_WEAKIFY(self);
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [[UIApplication sharedApplication].delegate.window.rootViewController dismissViewControllerAnimated:true completion:^{
-        ABI30_0_0EX_ENSURE_STRONGIFY(self);
+  ABI30_0_0EX_WEAKIFY(self);
+  dispatch_async(dispatch_get_main_queue(), ^{
+    ABI30_0_0EX_ENSURE_STRONGIFY(self);
+    UIViewController *presentedViewController = self.utilities.currentViewController;
+    if (presentedViewController != nil && [NSStringFromClass([presentedViewController class]) isEqualToString:@"GADInterstitialViewController"]) {
+      [presentedViewController dismissViewControllerAnimated:true completion:^{
         resolve(nil);
+        ABI30_0_0EX_ENSURE_STRONGIFY(self);
         self->_interstitial = nil;
       }];
-    });
-  } else {
-    reject(@"E_AD_NOT_SHOWN", @"Ad is not being shown.", nil);
-  }
+    } else {
+      reject(@"E_AD_NOT_SHOWN", @"Ad is not being shown.", nil);
+    }
+  });
 }
 
 ABI30_0_0EX_EXPORT_METHOD_AS(getIsReady,

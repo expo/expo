@@ -1,4 +1,5 @@
 #import <ABI30_0_0EXCore/ABI30_0_0EXUIManager.h>
+#import <ABI30_0_0EXCore/ABI30_0_0EXUtilitiesInterface.h>
 #import <ABI30_0_0EXCore/ABI30_0_0EXEventEmitterService.h>
 #import <ABI30_0_0EXAdsAdMob/ABI30_0_0EXAdsAdMobRewarded.h>
 
@@ -13,6 +14,7 @@ static NSString *const ABI30_0_0EXAdsAdMobRewardedWillLeaveApplication = @"rewar
 @interface ABI30_0_0EXAdsAdMobRewarded ()
 
 @property (nonatomic, weak) id<ABI30_0_0EXEventEmitterService> eventEmitter;
+@property (nonatomic, weak) id<ABI30_0_0EXUtilitiesInterface> utilities;
 
 @end
 
@@ -29,6 +31,7 @@ ABI30_0_0EX_EXPORT_MODULE(ExpoAdsAdMobRewardedVideoAdManager);
 
 - (void)setModuleRegistry:(ABI30_0_0EXModuleRegistry *)moduleRegistry
 {
+  _utilities = [moduleRegistry getModuleImplementingProtocol:@protocol(ABI30_0_0EXUtilitiesInterface)];
   _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(ABI30_0_0EXEventEmitterService)];
 }
 
@@ -110,8 +113,10 @@ ABI30_0_0EX_EXPORT_METHOD_AS(showAd,
 {
   if (_showAdResolver == nil && [[GADRewardBasedVideoAd sharedInstance] isReady]) {
     _showAdResolver = resolve;
+    ABI30_0_0EX_WEAKIFY(self);
     dispatch_async(dispatch_get_main_queue(), ^{
-      [[GADRewardBasedVideoAd sharedInstance] presentFromRootViewController:[UIApplication sharedApplication].delegate.window.rootViewController];
+      ABI30_0_0EX_ENSURE_STRONGIFY(self);
+      [[GADRewardBasedVideoAd sharedInstance] presentFromRootViewController:self.utilities.currentViewController];
     });
   } else if ([[GADRewardBasedVideoAd sharedInstance] isReady]) {
     reject(@"E_AD_BEING_SHOWN", @"Ad is already being shown, await the previous promise.", nil);
@@ -124,16 +129,18 @@ ABI30_0_0EX_EXPORT_METHOD_AS(dismissAd,
                     dismissAd:(ABI30_0_0EXPromiseResolveBlock)resolve
                     rejecter:(ABI30_0_0EXPromiseRejectBlock)reject)
 {
-  UIViewController *presentedViewController = [UIApplication sharedApplication].delegate.window.rootViewController.presentedViewController;
-  if (presentedViewController != nil && [NSStringFromClass([presentedViewController class]) isEqualToString:@"GADInterstitialViewController"]) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [[UIApplication sharedApplication].delegate.window.rootViewController dismissViewControllerAnimated:true completion:^{
+  ABI30_0_0EX_WEAKIFY(self);
+  dispatch_async(dispatch_get_main_queue(), ^{
+    ABI30_0_0EX_ENSURE_STRONGIFY(self);
+    UIViewController *presentedViewController = self.utilities.currentViewController;
+    if (presentedViewController != nil && [NSStringFromClass([presentedViewController class]) isEqualToString:@"GADInterstitialViewController"]) {
+      [presentedViewController dismissViewControllerAnimated:true completion:^{
         resolve(nil);
       }];
-    });
-  } else {
-    reject(@"E_AD_NOT_SHOWN", @"Ad is not being shown.", nil);
-  }
+    } else {
+      reject(@"E_AD_NOT_SHOWN", @"Ad is not being shown.", nil);
+    }
+  });
 }
 
 ABI30_0_0EX_EXPORT_METHOD_AS(getIsReady,
