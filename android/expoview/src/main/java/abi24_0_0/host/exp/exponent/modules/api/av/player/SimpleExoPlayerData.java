@@ -27,6 +27,8 @@ import com.google.android.exoplayer2.upstream.BandwidthMeter;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
 import com.google.android.exoplayer2.util.Util;
 
 import java.io.IOException;
@@ -76,7 +78,15 @@ class SimpleExoPlayerData extends PlayerData
     mSimpleExoPlayer.addVideoListener(this);
 
     // Produces DataSource instances through which media data is loaded.
-    final DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(mAVModule.mScopedContext, Util.getUserAgent(mAVModule.mScopedContext, "yourApplicationName"));
+    DefaultHttpDataSourceFactory httpDataSourceFactory = new DefaultHttpDataSourceFactory(
+            Util.getUserAgent(mAVModule.mScopedContext, "yourApplicationName"),
+            null,
+            DefaultHttpDataSource.DEFAULT_CONNECT_TIMEOUT_MILLIS,
+            DefaultHttpDataSource.DEFAULT_READ_TIMEOUT_MILLIS,
+            true
+        );
+    final DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(mAVModule.mScopedContext, null, httpDataSourceFactory);
+    
     // Produces Extractor instances for parsing the media data.
     final ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
     // This is the MediaSource representing the media to be played.

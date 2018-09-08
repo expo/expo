@@ -7,6 +7,7 @@ import abi30_0_0.com.facebook.react.bridge.ReactContext;
 import abi30_0_0.com.facebook.react.modules.network.NetworkingModule;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.upstream.HttpDataSource;
 
@@ -23,7 +24,12 @@ public class SharedCookiesDataSourceFactory implements DataSource.Factory {
 
   public SharedCookiesDataSourceFactory(Uri uri, Context context, ReactContext reactApplicationContext, String userAgent) {
     if (uri.getScheme().equals("http") || uri.getScheme().equals("https")) {
-      mDataSourceFactory = new DefaultHttpDataSourceFactory(userAgent);
+      mDataSourceFactory = new DefaultHttpDataSourceFactory(
+        userAgent,
+        null,        
+        DefaultHttpDataSource.DEFAULT_CONNECT_TIMEOUT_MILLIS,
+        DefaultHttpDataSource.DEFAULT_READ_TIMEOUT_MILLIS,
+        true);
     } else {
       mDataSourceFactory = new DefaultDataSourceFactory(context, userAgent);
     }
