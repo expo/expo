@@ -8,7 +8,7 @@ We recommend the Genymotion emulator over the Android Studio emulator. If you ru
 
 Genymotion and XDE/`exp` both bundle their own versions of the Android tools. In order for XDE or `exp` to communicate with Genymotion they need to share the same set of tools. You can do this by either telling XDE/`exp` to use Genymotion's tools, or by installing Android Studio and telling both XDE/`exp` and Genymotion to use the tools from Android Studio.
 
-Choose one of these two options:
+Choose **one** of these two options:
 
 ### Option 1: Use Android Studio's tools
 
