@@ -1,6 +1,6 @@
---
+---
 title: Testing on physical devices
---
+---
 
 The best way to interactively test and verify the behavior and feel of your app as you change code is by loading it in the Expo Client App, as described in other guides.
 
