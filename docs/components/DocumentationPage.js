@@ -26,6 +26,21 @@ const STYLES_DOCUMENT = css`
   }
 `;
 
+const STYLES_ALERT = css`
+  padding: 16px;
+  border-radius: 4px;
+  margin-bottom: 24px;
+  line-height: 1.4;
+  color: ${Constants.colors.white};
+  background: ${Constants.colors.black};
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+`;
+
+const STYLES_ALERT_BOLD = css`
+  color: ${Constants.colors.white};
+  font-family: ${Constants.fontFamilies.demi};
+`;
+
 const mutateRouteDataForRender = data => {
   data.forEach(element => {
     if (element.href) {
@@ -131,6 +146,8 @@ export default class DocumentationPage extends React.Component {
       <DocumentationSidebar url={this.props.url} asPath={this.props.asPath} routes={routes} />
     );
 
+    console.log(this.props.title);
+
     return (
       <DocumentationNestedScrollLayout
         ref="layout"
@@ -145,6 +162,19 @@ export default class DocumentationPage extends React.Component {
 
         {!this.state.isMenuActive ? (
           <div className={STYLES_DOCUMENT}>
+            {this.props.title === 'Quick Start' ? (
+              <div className={STYLES_ALERT}>
+                <strong className={STYLES_ALERT_BOLD}>Hey friend!</strong> We are co-hosting a
+                conference with <strong className={STYLES_ALERT_BOLD}>Software Mansion</strong>,{' '}
+                <a
+                  className={STYLES_ALERT_BOLD}
+                  style={{ color: Constants.colors.lila }}
+                  href="https://appjs.co/"
+                  target="blank">
+                  learn more
+                </a>.
+              </div>
+            ) : null}
             <H1>{this.props.title}</H1>
             {this.props.children}
             <DocumentationFooter />
