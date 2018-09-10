@@ -34,11 +34,11 @@ export default class PermissionsScreen extends React.Component {
   };
 
   state = {
-    permissionsFunction: Permissions.askAsync,
+    permissionsFunction: 'askAsync',
   };
 
   invokePermissionsFunction = async (...types) => {
-    const result = await this.state.permissionsFunction(...types);
+    const result = await Permissions[this.state.permissionsFunction](...types);
     alert(JSON.stringify(result, null, 2));
   }
 
@@ -76,21 +76,21 @@ export default class PermissionsScreen extends React.Component {
       >
         <View>
           <Text style={styles.switchText}>
-            Function to be invoked Permissions.{this.state.permissionsFunction.name}
+            Function to be invoked Permissions.{this.state.permissionsFunction}
           </Text>
           <View style={styles.switchContainer}>
             <View style={styles.switchButton}>
               <CustomButton
-                disabled={this.state.permissionsFunction.name === 'askAsync'}
+                disabled={this.state.permissionsFunction === 'askAsync'}
                 title="askAsync"
-                onPress={() => this.setState({ permissionsFunction: Permissions.askAsync})}
+                onPress={() => this.setState({ permissionsFunction: 'askAsync'})}
               />
             </View>
             <View style={styles.switchButton}>
               <CustomButton
-                disabled={this.state.permissionsFunction.name === 'getAsync'}
+                disabled={this.state.permissionsFunction === 'getAsync'}
                 title="getAsync"
-                onPress={() => this.setState({ permissionsFunction: Permissions.getAsync})}
+                onPress={() => this.setState({ permissionsFunction: 'getAsync'})}
               />
             </View>
           </View>
@@ -111,11 +111,11 @@ export default class PermissionsScreen extends React.Component {
                 ...[
                   Permissions.CAMERA,
                   Permissions.AUDIO_RECORDING,
-                  (Platform.OS !== 'ios' || this.state.permissionsFunction.name !== 'askAsync') && Permissions.LOCATION, // TODO: Permissions.LOCATION issue (search by this phrase)
+                  (Platform.OS !== 'ios' || this.state.permissionsFunction !== 'askAsync') && Permissions.LOCATION, // TODO: Permissions.LOCATION issue (search by this phrase)
                   Permissions.USER_FACING_NOTIFICATIONS,
                   Permissions.NOTIFICATIONS,
                   Permissions.CONTACTS,
-                  (Platform.OS !== 'android' || this.state.permissionsFunction.name !== 'askAsync') && Permissions.SYSTEM_BRIGHTNESS, // askAsync with Permissions.SYSTEM_BRIGHTNESS on Android should be called individually
+                  (Platform.OS !== 'android' || this.state.permissionsFunction !== 'askAsync') && Permissions.SYSTEM_BRIGHTNESS, // askAsync with Permissions.SYSTEM_BRIGHTNESS on Android should be called individually
                   Permissions.CAMERA_ROLL,
                   Permissions.CALENDAR,
                   Permissions.REMINDERS,
@@ -123,9 +123,9 @@ export default class PermissionsScreen extends React.Component {
               )}
               title={'Ask for Permissions: '
                 + 'CAMERA, AUDIO_RECORDING, '
-                + `${Platform.OS !== 'ios' || this.state.permissionsFunction.name !== 'askAsync' ? 'LOCATION, ' : ''}`
+                + `${Platform.OS !== 'ios' || this.state.permissionsFunction !== 'askAsync' ? 'LOCATION, ' : ''}`
                 + 'USER_FACING_NOTIFICATIONS, NOTIFICATIONS, CONTACTS, '
-                + `${Platform.OS !== 'android' || this.state.permissionsFunction.name !== 'askAsync' ? `SYSTEM_BRIGHTNESS, ` : ''}`
+                + `${Platform.OS !== 'android' || this.state.permissionsFunction !== 'askAsync' ? `SYSTEM_BRIGHTNESS, ` : ''}`
                 + 'CAMERA_ROLL, CALENDAR, REMINDERS, SMS'
               }
             />
