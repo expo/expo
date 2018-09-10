@@ -43,3 +43,23 @@ If you use XDE, you may need to complete this step to properly integrate the And
 -   Select an OS version to load on the emulator (probably one of the system images in the "Recommended" tab), and download the image.
 
 -   Change any other settings you'd like, and press "Finish" to create the virtual device. You can now run this device anytime by pressing the Play button in the AVD Manager window.
+
+#### Multiple `adb` versions
+
+Having multiple `adb` versions on your system can result in the error `adb server version (xx) doesn't match this client (xx); killing...`
+
+This is because the adb version on your system is different from the adb version on the android sdk platform-tools.
+
+- Open the terminal and check the `adb` version on the system:
+
+`$adb version`
+
+- And from the Android SDK platform-tool directory: 
+
+`$cd ~/Android/Sdk/platform-tools`
+
+`$./adb version`
+
+- Copy `adb` from Android SDK directory to `usr/bin` directory:
+
+`$sudo cp ~/Android/Sdk/platform-tools/adb /usr/bin`
