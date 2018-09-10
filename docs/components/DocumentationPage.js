@@ -162,19 +162,17 @@ export default class DocumentationPage extends React.Component {
 
         {!this.state.isMenuActive ? (
           <div className={STYLES_DOCUMENT}>
-            {this.props.title === 'Quick Start' ? (
-              <div className={STYLES_ALERT}>
-                <strong className={STYLES_ALERT_BOLD}>Hey friend!</strong> We are co-hosting a
-                conference with <strong className={STYLES_ALERT_BOLD}>Software Mansion</strong>,{' '}
-                <a
-                  className={STYLES_ALERT_BOLD}
-                  style={{ color: Constants.colors.lila }}
-                  href="https://appjs.co/"
-                  target="blank">
-                  learn more
-                </a>.
-              </div>
-            ) : null}
+            <div className={STYLES_ALERT}>
+              <strong className={STYLES_ALERT_BOLD}>Hey friend!</strong> We are co-hosting a
+              conference with <strong className={STYLES_ALERT_BOLD}>Software Mansion</strong>,{' '}
+              <a
+                className={STYLES_ALERT_BOLD}
+                style={{ color: Constants.colors.lila }}
+                href="https://appjs.co/"
+                target="blank">
+                learn more
+              </a>.
+            </div>
             <H1>{this.props.title}</H1>
             {this.props.children}
             <DocumentationFooter />
