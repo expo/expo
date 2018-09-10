@@ -187,7 +187,7 @@ Configuration for remote (push) notifications.
   "notification": {
     /* 
       Local path or remote url to an image to use as the icon for push notifications. 
-      48x48 png grayscale with transparency. 
+      96x96 png grayscale with transparency.
     */
     "icon": STRING,
 
