@@ -46,3 +46,7 @@ Choose one of these two options:
 Run `npm install -g exp` to install `exp` globally.
 
 Then run `exp path`. This will save your `PATH` environment variable so that XDE knows where to find your Android tools.
+
+## Installing Google Play Services / using Google Maps with Genymotion
+
+ Genymotion (2.10.0) now allows you to install GApps from the emulator toolbar: click the GApps button the toolbar.
