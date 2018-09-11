@@ -96,3 +96,17 @@ ExpoKit's release cycle follows the Expo SDK release cycle. When a new version o
 If upgrading from SDK 28 or below, you'll also need to follow these instructions:
 - Change all instances of `android\\detach-scripts` and `android/detach-scripts` to `node_modules\\expokit\\detach-scripts` and `node_modules/expokit/detach-scripts` respectively in `android/app/expo.gradle`.
 - Add `maven { url "$rootDir/../node_modules/expokit/maven" }` under `allprojects.repositories` in `android/build.gradle`.
+- In `android/app/build.gradle`, replace
+```groovy
+compile('host.exp.exponent:expoview:[SDK VERSION]@aar') {
+  transitive = true
+}
+```
+with
+```groovy
+compile('host.exp.exponent:expoview:[SDK VERSION]@aar') {
+  transitive = true
+  exclude group: 'com.squareup.okhttp3', module: 'okhttp'
+  exclude group: 'com.squareup.okhttp3', module: 'okhttp-urlconnection'
+}
+```
