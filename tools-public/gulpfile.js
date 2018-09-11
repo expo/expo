@@ -9,7 +9,7 @@ const minimist = require('minimist');
 const path = require('path');
 const _ = require('lodash');
 const {
-  IosIcons,
+  ImageUtils,
   IosShellApp,
   AndroidShellApp,
   AndroidKeystore,
@@ -82,6 +82,8 @@ function createAndroidShellAppWithArguments() {
     sdkVersion: 'Must run with `--sdkVersion SDK_VERSION`',
   });
 
+  setImageFunctions();
+
   return AndroidShellApp.createAndroidShellAppAsync(argv);
 }
 
@@ -90,6 +92,8 @@ function updateAndroidShellAppWithArguments() {
     url: 'Must run with `--url MANIFEST_URL`',
     sdkVersion: 'Must run with `--sdkVersion SDK_VERSION`',
   });
+
+  setImageFunctions();
 
   return AndroidShellApp.updateAndroidShellAppAsync(argv);
 }
@@ -107,13 +111,7 @@ function createAndroidKeystoreWithArguments() {
 }
 
 function createIOSShellAppWithArguments() {
-  const { resizeIconWithSharpAsync, getImageDimensionsWithSharpAsync } = require('./image-helpers');
-  logger.info(
-    { buildPhase: 'icons setup' },
-    'IosIcons: setting image functions to alternative sharp implementations'
-  );
-  IosIcons.setResizeImageFunction(resizeIconWithSharpAsync);
-  IosIcons.setGetImageDimensionsFunction(getImageDimensionsWithSharpAsync);
+  setImageFunctions();
 
   if (argv.action === 'build') {
     return IosShellApp.buildAndCopyArtifactAsync(argv);
@@ -177,6 +175,16 @@ function validateArgv(errors) {
       throw new Error(errors[fieldName]);
     }
   });
+}
+
+function setImageFunctions() {
+  const { resizeIconWithSharpAsync, getImageDimensionsWithSharpAsync } = require('./image-helpers');
+  logger.info(
+    { buildPhase: 'icons setup' },
+    'ImageUtils: setting image functions to alternative sharp implementations'
+  );
+  ImageUtils.setResizeImageFunction(resizeIconWithSharpAsync);
+  ImageUtils.setGetImageDimensionsFunction(getImageDimensionsWithSharpAsync);
 }
 
 let watcher = null;
