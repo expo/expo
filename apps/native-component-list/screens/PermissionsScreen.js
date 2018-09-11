@@ -115,18 +115,17 @@ export default class PermissionsScreen extends React.Component {
                   Permissions.USER_FACING_NOTIFICATIONS,
                   Permissions.NOTIFICATIONS,
                   Permissions.CONTACTS,
-                  (Platform.OS !== 'android' || this.state.permissionsFunction !== 'askAsync') && Permissions.SYSTEM_BRIGHTNESS, // askAsync with Permissions.SYSTEM_BRIGHTNESS on Android should be called individually
+                  Permissions.SYSTEM_BRIGHTNESS,
                   Permissions.CAMERA_ROLL,
                   Permissions.CALENDAR,
                   Permissions.REMINDERS,
-                  Permissions.SMS].filter(n => n && typeof n !== 'boolean')
+                  Permissions.SMS,
+                ].filter(n => n && typeof n !== 'boolean')
               )}
               title={'Ask for Permissions: '
                 + 'CAMERA, AUDIO_RECORDING, '
                 + `${Platform.OS !== 'ios' || this.state.permissionsFunction !== 'askAsync' ? 'LOCATION, ' : ''}`
-                + 'USER_FACING_NOTIFICATIONS, NOTIFICATIONS, CONTACTS, '
-                + `${Platform.OS !== 'android' || this.state.permissionsFunction !== 'askAsync' ? `SYSTEM_BRIGHTNESS, ` : ''}`
-                + 'CAMERA_ROLL, CALENDAR, REMINDERS, SMS'
+                + 'USER_FACING_NOTIFICATIONS, NOTIFICATIONS, CONTACTS, SYSTEM_BRIGHTNESS, CAMERA_ROLL, CALENDAR, REMINDERS, SMS'
               }
             />
           </View>
