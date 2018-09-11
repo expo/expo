@@ -110,6 +110,11 @@ module.exports = {
         ],
         ExpoPublisherBannerView: [],
         ExponentGyroscope: [{ key: 0, argumentsCount: 1, name: 'setUpdateInterval' }],
+        ExpoLocalAuthentication: [
+          { key: 0, argumentsCount: 0, name: 'hasHardwareAsync' },
+          { key: 1, argumentsCount: 0, name: 'isEnrolledAsync' },
+          { key: 2, argumentsCount: 1, name: 'authenticateAsync' },
+        ],
         ExponentGLViewManager: [],
         ExponentCameraManager: [
           { key: 0, argumentsCount: 1, name: 'stopRecording' },
@@ -403,11 +408,6 @@ module.exports = {
   ExponentFacebook: {
     logInWithReadPermissionsAsync: { type: 'function', functionType: 'promise' },
   },
-  ExponentFingerprint: {
-    authenticateAsync: { type: 'function', functionType: 'promise' },
-    hasHardwareAsync: { type: 'function', functionType: 'promise' },
-    isEnrolledAsync: { type: 'function', functionType: 'promise' },
-  },
   ExponentGoogle: { logInAsync: { type: 'function', functionType: 'promise' } },
   ExponentHaptic: {
     impact: { type: 'function', functionType: 'async' },
@@ -571,6 +571,9 @@ module.exports = {
     removeListeners: { type: 'function', functionType: 'async' },
     updateGestureHandler: { type: 'function', functionType: 'async' },
   },
+  RNSScreenContainerManager: {},
+  RNSScreenManager: {},
+  RNSScreenStackManager: {},
   RNSVGCircleManager: {},
   RNSVGClipPathManager: {},
   RNSVGDefsManager: {},
