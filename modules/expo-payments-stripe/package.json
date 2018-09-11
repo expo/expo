@@ -1,6 +1,6 @@
 {
   "name": "expo-payments-stripe",
-  "version": "1.0.0-rc.1",
+  "version": "1.0.0",
   "description": "Expo Payments Module",
   "main": "index.js",
   "files": [
@@ -21,6 +21,6 @@
     "react": "16.3.1"
   },
   "dependencies": {
-    "expo-core": "^1.1.0-rc.1"
+    "expo-core": "~1.1.0"
   }
 }

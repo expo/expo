@@ -1,6 +1,6 @@
 {
   "name": "expo-image-loader-interface",
-  "version": "1.0.0-rc.0",
+  "version": "1.0.0",
   "description": "Expo Module interface for ImageLoader",
   "main": "index.js",
   "keywords": [
@@ -14,7 +14,7 @@
     "react-native": "^0.55.4"
   },
   "dependencies": {
-    "expo-core": "^1.1.0-rc.0"
+    "expo-core": "~1.1.0"
   },
   "devDependencies": {
     "babel-preset-expo": "^4.0.0",

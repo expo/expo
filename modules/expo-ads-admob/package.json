@@ -1,6 +1,6 @@
 {
   "name": "expo-ads-admob",
-  "version": "1.0.0-rc.1",
+  "version": "1.0.0",
   "description": "Expo ads AdMob standalone module",
   "main": "index.js",
   "keywords": [
@@ -13,7 +13,7 @@
   "author": "650 Industries, Inc.",
   "license": "BSD",
   "peerDependencies": {
-    "expo-core": "^1.1.0-rc.1",
+    "expo-core": "~1.1.0",
     "react-native": "^0.55.4"
   },
   "dependencies": {
