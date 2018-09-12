@@ -120,7 +120,7 @@ module.exports = {
     return require('react-native-maps').default;
   },
   get Modal() {
-    return require('./modal/Modal').default;
+    console.error('The undocumented Modal API has been removed.');
   },
   get Video() {
     return require('./av/Video').default;
