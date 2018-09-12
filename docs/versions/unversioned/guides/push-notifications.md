@@ -303,7 +303,7 @@ type PushMessage = {
    * "default" to play the device's default notification sound, or omit this
    * field to play no sound.
    *
-   * Note that on apps that target Android 8.0+ (if using `exp build`, built
+   * Note that on apps that target Android 8.0+ (if using `expo build`, built
    * in June 2018 or later), this setting will have no effect on Android.
    * Instead, use `channelId` and a channel with the desired setting.
    */
@@ -413,6 +413,6 @@ The HTTP status code will be 200 also if all of the messages were successfully d
 
 -   `MessageRateExceeded`: you are sending messages too frequently to the given device. Implement exponential backoff and slowly retry sending messages.
 
--   `InvalidCredentials`: your push notification credentials for your standalone app are invalid (ex: you may have revoked them). Run `exp build:ios -c` to regenerate new push notification credentials for iOS.
+-   `InvalidCredentials`: your push notification credentials for your standalone app are invalid (ex: you may have revoked them). Run `expo build:ios -c` to regenerate new push notification credentials for iOS.
 
 If Expo couldn't deliver the message to the Android or iOS push notification service, the receipt's details may also include service-specific information. This is useful mostly for debugging and reporting possible bugs to Expo.

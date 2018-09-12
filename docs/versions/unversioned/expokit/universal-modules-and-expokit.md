@@ -11,7 +11,7 @@ Not all Expo SDK modules are Universal Modules. Right now, only a small part of 
 
 # Omitting Unneeded Modules
 
-When you [create an ExpoKit project](./detach.html), we automatically add most of the same native APIs that are available in the Expo Client app. Each of these APIs is supported by some native code which increases the size of your native binary.
+When you [create an ExpoKit project](./eject.html), we automatically add most of the same native APIs that are available in the Expo Client app. Each of these APIs is supported by some native code which increases the size of your native binary.
 
 You can remove any Expo Universal Module from your ExpoKit project if you don't think you need it. This means it will no longer be available in your native binary; if you write some JS which tries to import this API, you might cause a fatal error in your app. If you send an [OTA update](../guides/configuring-ota-updates.html) to your app which contains API calls that aren't present in your native binary, you might cause a fatal error.
 
@@ -44,18 +44,18 @@ Omitting Universal Modules is not currently supported on Android.
 
 # Adding Optional Modules on iOS
 
-A few Expo modules are not included by default in ExpoKit iOS projects, nor in Standalone iOS Apps produced by `exp build`. Typically this is either because they add a disproportionate amount of bloat to the binary, or because they include APIs that are governed by extra Apple review guidelines. Right now those modules are:
+A few Expo modules are not included by default in ExpoKit iOS projects, nor in Standalone iOS Apps produced by `expo build`. Typically this is either because they add a disproportionate amount of bloat to the binary, or because they include APIs that are governed by extra Apple review guidelines. Right now those modules are:
 
 - FaceDetector (`EXFaceDetector`)
 - ARKit
 - Payments
 
-If you want to use any of these modules in your Expo iOS app, you need to detach to ExpoKit rather than using `exp build`. (It's on our roadmap to improve this.)
+If you want to use any of these modules in your Expo iOS app, you need to eject to ExpoKit rather than using `expo build`. (It's on our roadmap to improve this.)
 
 To add FaceDetector:
 
-1. Add `expo-face-detector` to `package.json` and install JS dependencies.
-2. Add `pod 'EXFaceDetector', path: '../node_modules/expo-face-detector/ios'` to your `Podfile`.
-3. Re-run `pod install`.
+1.  Add `expo-face-detector` to `package.json` and install JS dependencies.
+2.  Add `pod 'EXFaceDetector', path: '../node_modules/expo-face-detector/ios'` to your `Podfile`.
+3.  Re-run `pod install`.
 
 To add `Payments` or `AR`, add the [respective subspec](https://github.com/expo/expo/blob/master/ExpoKit.podspec) to your `ExpoKit` dependency in your `Podfile`, and re-run `pod install`.

@@ -7,12 +7,12 @@ native iOS/Android project.
 
 ## Before you read this guide
 
-There are two ways to get an ExpoKit project:
+To create an ExpoKit project:
 
-- Create a pure-JS project in XDE, then use [exp detach](detach.html) to add ExpoKit.
-- Create an app with [create-react-native-app](https://github.com/react-community/create-react-native-app), then choose "eject with ExpoKit".
+1.  Create a pure-JS project with Expo CLI (also projects that were created with exp, XDE or create-react-native-app will work)
+2.  Then use [`expo eject`](eject.html) to add ExpoKit (choose the "ExpoKit" option).
 
-Make sure you follow one of the above paths before continuing in this guide. The remainder of the guide will assume you have created an ExpoKit project.
+Make sure to perform these steps before continuing in this guide. The remainder of the guide will assume you have created an ExpoKit project.
 
 ## Setting up your project
 
@@ -23,11 +23,9 @@ By this point you should have a JS app which additionally contains `ios` and `an
 - Your project's `package.json` should contain a `react-native` dependency pointing at Expo's fork of React Native. This should already be configured for you.
 - Your JS dependencies should already be installed (via `npm install` or `yarn`).
 
-### 2. Run the project in XDE or exp
+### 2. Run the project with Expo CLI
 
-Open the project in XDE. If you were already running this project in XDE, press **Restart**.
-
-If you prefer `exp`, run `exp start` from the project directory.
+Run `expo start` from the project directory.
 
 This step ensures that the React Native packager is running and serving your app's JS bundle for development. Leave this running and continue with the following steps.
 
@@ -41,7 +39,7 @@ This step ensures the native iOS project is correctly configured and ready for d
 - Open your project's `xcworkspace` file in Xcode.
 - Use Xcode to build, install and run the project on your test device or simulator. (this will happen by default if you click the big "Play" button in Xcode.)
 
-Once it's running, the iOS app should automatically request your JS bundle from the project you're serving from XDE or `exp`.
+Once it's running, the iOS app should automatically request your JS bundle from the project you're serving from Expo CLI.
 
 ### 4. Android: Build and run
 
@@ -51,12 +49,11 @@ When opening the project, Android Studio may prompt you to upgrade the version o
 
 If you prefer to use the command line, you can run `./gradlew installDevMinSdkDevKernelDebug` from inside the `android` directory to build the project and install it on the running device/emulator.
 
-Once the Android project is running, it should automatically request your development url from XDE
-or `exp`. You can develop your project normally from here.
+Once the Android project is running, it should automatically request your development url from Expo CLI. You can develop your project normally from here.
 
 ## Continuing with development
 
-Every time you want to develop, ensure your project's JS is being served by XDE (step 2), then run the native code from Xcode or Android Studio respectively.
+Every time you want to develop, ensure your project's JS is being served by Expo CLI (step 2), then run the native code from Xcode or Android Studio respectively.
 
 Your ExpoKit project is configured to load your app's published url when you build it for release. So when you want to release it, don't forget to publish, like with any normal (non-ExpoKit) project.
 
@@ -94,6 +91,7 @@ ExpoKit's release cycle follows the Expo SDK release cycle. When a new version o
 - Go to `android/app/build.gradle` and replace `compile('host.exp.exponent:expoview:[OLD SDK VERSION]@aar') {` with `compile('host.exp.exponent:expoview:[NEW SDK VERSION]@aar') {`.
 
 If upgrading from SDK 28 or below, you'll also need to follow these instructions:
+
 - Change all instances of `android\\detach-scripts` and `android/detach-scripts` to `node_modules\\expokit\\detach-scripts` and `node_modules/expokit/detach-scripts` respectively in `android/app/expo.gradle`.
 - Add `maven { url "$rootDir/../node_modules/expokit/maven" }` under `allprojects.repositories` in `android/build.gradle`.
 - In `android/app/build.gradle`, replace

@@ -33,6 +33,6 @@ In addition, you'll also need to enable the iCloud Application Service in your A
 
 Enable iCloud service with CloudKit support, create one iCloud Container, and name it `iCloud.<your_bundle_identifier>`.
 
-And finally, to apply those changes, you'll need to revoke your existing provisioning profile and run `exp build:ios -c`
+And finally, to apply those changes, you'll need to revoke your existing provisioning profile and run `expo build:ios -c`
 
 For ExpoKit apps, you need to open the project in Xcode and follow the [Using DocumentPicker instructions](../guides/advanced-expokit-topics.html#using-documentpicker) in the Advanced ExpoKit Topics guide.

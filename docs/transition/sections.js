@@ -1,12 +1,12 @@
 const WORKFLOW = [
   'configuration',
+  'expo-cli',
   'create-react-native-app',
   'debugging-host.png',
   'debugging',
   'developer-menu.png',
   'development-mode',
   'development-mode.png',
-  'exp-cli',
   'expo-refresh.png',
   'fetch-app-from-xde.png',
   'fetch-app-production.png',

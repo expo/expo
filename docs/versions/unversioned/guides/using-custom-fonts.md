@@ -6,7 +6,7 @@ Both iOS and Android come with their own set of platform fonts but if you want t
 
 ## Starting code
 
-First let's start with a basic "Hello world!" app. Create a new project in XDE/exp and change `App.js` to the following:
+First let's start with a basic "Hello world!" app. Create a new project with `expo init` and change `App.js` to the following:
 
 ```javascript
 import React from 'react';

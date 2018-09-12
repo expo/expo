@@ -13,13 +13,11 @@ It's a good idea to read the best practices about [Deploying to App Stores](./ap
 ensure your app is in good shape to get accepted into the Apple and Google marketplaces. We can
 generate builds for you, but it's up to you to make your app awesome.
 
-## 1. Install exp
+## 1. Install Expo CLI
 
-XDE currently doesn't include an option for building a standalone app, so we'll need `exp` for
-this. Run `npm install -g exp` to get it.
+Expo CLI is the tool for developing and building Expo apps. Run `npm install -g expo-cli` to get it.
 
-If you haven't used `exp` before, the first thing you'll need to do is login with your Expo account
-using `exp login`.
+If you haven't created an Expo account before, you'll be asked to create one when running the build command.
 
 **Windows users** must have WSL enabled. We recommend picking Ubuntu from the Windows Store. Be sure
 to Launch Ubuntu at least once. After that, use an Admin powershell to run:
@@ -58,7 +56,7 @@ for App Store metadata.
 
 ## 3. Start the build
 
-Run `exp build:android` or `exp build:ios`. If you don't already have a packager running for this
+Run `expo build:android` or `expo build:ios`. If you don't already have a packager running for this
 project, `exp` will start one for you.
 
 ### If you choose to build for Android
@@ -77,7 +75,7 @@ If you don't know what this means, let us handle it! :)
   2) I want to upload my own keystore!
 ```
 
-> **Note:** If you choose the first option and later decide to upload your own keystore, we currently offer an option to clear your current Android keystore from our build servers by running `exp build:android --clear-credentials.` **This is irreversible, so only run this command if you know what you are doing!** You can download a backup copy of the keystore by running `exp fetch:android:keystore`. If you do not have a local copy of your keystore , you will be unable to publish new versions of your app to the Play Store. Your only option would be to generate a new keystore and re-upload your application as a new application. You can learn more about how code signing and keystores work [in the Android documentation](https://developer.android.com/studio/publish/app-signing.html).
+> **Note:** If you choose the first option and later decide to upload your own keystore, we currently offer an option to clear your current Android keystore from our build servers by running `expo build:android --clear-credentials.` **This is irreversible, so only run this command if you know what you are doing!** You can download a backup copy of the keystore by running `expo fetch:android:keystore`. If you do not have a local copy of your keystore , you will be unable to publish new versions of your app to the Play Store. Your only option would be to generate a new keystore and re-upload your application as a new application. You can learn more about how code signing and keystores work [in the Android documentation](https://developer.android.com/studio/publish/app-signing.html).
 
 ### If you choose to build for iOS
 
@@ -112,12 +110,12 @@ when prompted.
 > Program"](https://developer.apple.com/programs/enterprise/). Only normal Apple developer accounts
 > can build apps that can be submitted to the Apple App Store, and only enterprise developer
 > accounts can build apps that can be distributed using enterprise distribution methods. When you
-> call `exp build:ios`, use the `--apple-enterprise-account` flag. At this time, the standalone app
+> call `expo build:ios`, use the `--apple-enterprise-account` flag. At this time, the standalone app
 > builder does not support "ad hoc" distribution certificates or provisioning profiles.
 
 ## 4. Wait for it to finish building
 
-When one of our building machines will be free, it'll start building your app. You can check how long you'll wait on [Turtle status](https://expo.io/turtle-status) site. We'll print a url you can visit (such as `expo.io/builds/some-unique-id`) to watch your build logs. Alternatively, you can check up on it by running `exp build:status`. When it's done, you'll see the url of a `.apk` (Android) or `.ipa` (iOS) file -- this is your app. Copy and paste the link into your browser to download the file.
+When one of our building machines will be free, it'll start building your app. You can check how long you'll wait on [Turtle status](https://expo.io/turtle-status) site. We'll print a url you can visit (such as `expo.io/builds/some-unique-id`) to watch your build logs. Alternatively, you can check up on it by running `expo build:status`. When it's done, you'll see the url of a `.apk` (Android) or `.ipa` (iOS) file -- this is your app. Copy and paste the link into your browser to download the file.
 
 > **Note:** We enable bitcode for iOS, so the `.ipa` files for iOS are much larger than the eventual App Store download available to your users. For more information, see [App Thinning](https://developer.apple.com/library/content/documentation/IDEs/Conceptual/AppDistributionGuide/AppThinning/AppThinning.html).
 
@@ -125,7 +123,7 @@ When one of our building machines will be free, it'll start building your app. Y
 
 * You can drag and drop the `.apk` into your Android emulator. This is the easiest way to test out that the build was successful. But it's not the most satisfying.
 * **To run it on your Android device**, make sure you have the Android platform tools installed along with `adb`, then just run `adb install app-filename.apk` with [USB debugging enabled on your device](https://developer.android.com/studio/run/device.html#device-developer-options) and the device plugged in.
-* **To run it on your iOS Simulator**, first build your expo project with the simulator flag by running `exp build:ios -t simulator`, then download the tarball with the link given upon completion when running `exp build:status`. Unpack the tar.gz by running `tar -xvzf your-app.tar.gz`. Then you can run it by starting an iOS Simulator instance, then running `xcrun simctl install booted <app path>` and `xcrun simctl launch booted <app identifier>`.
+* **To run it on your iOS Simulator**, first build your expo project with the simulator flag by running `expo build:ios -t simulator`, then download the tarball with the link given upon completion when running `expo build:status`. Unpack the tar.gz by running `tar -xvzf your-app.tar.gz`. Then you can run it by starting an iOS Simulator instance, then running `xcrun simctl install booted <app path>` and `xcrun simctl launch booted <app identifier>`.
 * **To test a device build with Apple TestFlight**, download the .ipa file to your local machine. You are ready to upload your app to TestFlight. Within TestFlight, click the plus icon and create a New App. Make sure your `bundleIdentifier` matches what you've placed in `app.json`.
 
 > **Note:** You will not see your build here just yet! You will need to use Xcode or Application Loader to upload your IPA first. Once you do that, you can check the status of your build under `Activity`. Processing an app can take 10-15 minutes before it shows up under available builds.
@@ -136,7 +134,7 @@ We don't automate this step (yet), but at this point you should be able to follo
 
 ## 7. Update your app
 
-For the most part, when you want to update your app, just Publish again from exp or XDE. Your users will download the new JS the next time they open the app. To ensure your users have a seamless experience downloading JS updates, you may want to enable [background JS downloads](../guides/offline-support.html). However, there are a couple reasons why you might want to rebuild and resubmit the native binaries:
+For the most part, when you want to update your app, just Publish again from Expo CLI. Your users will download the new JS the next time they open the app. To ensure your users have a seamless experience downloading JS updates, you may want to enable [background JS downloads](../guides/offline-support.html). However, there are a couple reasons why you might want to rebuild and resubmit the native binaries:
 
 * If you want to change native metadata like the app's name or icon
 * If you upgrade to a newer `sdkVersion` of your app (which requires new native code)

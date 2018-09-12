@@ -73,7 +73,7 @@ Positions of face landmarks are returned only if `faceDetectionLandmarks` proper
 
 ## Methods
 
-To use methods that `FaceDetector` exposes one just has to import the module. (In detached apps on iOS face detection will be supported only if you add the `FaceDetector` subspec to your project. Refer to [Adding the Payments Module on iOS](payments#adding-the-payments-module-on-ios) for an example of adding a subspec to your detached project.)
+To use methods that `FaceDetector` exposes one just has to import the module. (In ejected apps on iOS face detection will be supported only if you add the `FaceDetector` subspec to your project. Refer to [Adding the Payments Module on iOS](payments#adding-the-payments-module-on-ios) for an example of adding a subspec to your ejected project.)
 
 ```javascript
 import { FaceDetector } from 'expo';

@@ -12,7 +12,7 @@ Use release channels in Expo to send out different versions of your application 
 
 Publish your release by running:
 
-`exp publish --release-channel <your-channel>`
+`expo publish --release-channel <your-channel>`
 
 with the `exp` cli. Your users can see this release in the Expo client app with a parameterized URL `https://exp.host/@username/yourApp?release-channel=<your-channel>`. If you do not specify a channel, you will publish to the `default` channel.
 
@@ -20,9 +20,9 @@ with the `exp` cli. Your users can see this release in the Expo client app with 
 
 Build your standalone app by running
 
-`exp build:ios --release-channel <your-channel>`
+`expo build:ios --release-channel <your-channel>`
 
-`exp build:android --release-channel <your-channel>`
+`expo build:android --release-channel <your-channel>`
 
 with the `exp` cli. The binary produced will only pull releases published under the specified channel. If you do not specify a channel, your binary will pull releases from the `default` channel.
 
@@ -36,17 +36,17 @@ You can access the channel your release is published under with the `releaseChan
 
 Consider a situation where you have a Staging stack for testing on Expo Client, and a Production stack for pushing through TestFlight, then promoting to the AppStore.
 
-On the staging stack, run `exp publish --release-channel staging`. Your test users can see the staging version of your app by specifying the channel in the query parameter of the URL (ie)`https://exp.host/@username/yourApp?release-channel=staging`, then opening the URL in their web browser, and finally scanning the QR code with the Expo client. Alternatively, they can open that URL directly on their mobile device.
+On the staging stack, run `expo publish --release-channel staging`. Your test users can see the staging version of your app by specifying the channel in the query parameter of the URL (ie)`https://exp.host/@username/yourApp?release-channel=staging`, then opening the URL in their web browser, and finally scanning the QR code with the Expo client. Alternatively, they can open that URL directly on their mobile device.
 
-On the production stack, release v1 of your app by running `exp publish --release-channel prod-v1`. You can build this version of your app into a standalone ipa by running `exp build:ios --release-channel prod-v1`. You can push updates to your app by publishing to the `prod-v1` channel. The standalone app will update with the most recent compatible version of your app on the `prod-v1` channel.
+On the production stack, release v1 of your app by running `expo publish --release-channel prod-v1`. You can build this version of your app into a standalone ipa by running `expo build:ios --release-channel prod-v1`. You can push updates to your app by publishing to the `prod-v1` channel. The standalone app will update with the most recent compatible version of your app on the `prod-v1` channel.
 
-If you have a new version that you dont want v1 users getting, release v2 of your app by running `exp publish --release-channel prod-v2` and building it with `exp build:ios --release-channel prod-v2`. Users with the `prod-v2` ipa will only be pulling releases from that channel.
+If you have a new version that you dont want v1 users getting, release v2 of your app by running `expo publish --release-channel prod-v2` and building it with `expo build:ios --release-channel prod-v2`. Users with the `prod-v2` ipa will only be pulling releases from that channel.
 
-You can continue updating v1 of your app with `exp publish --release-channel prod-v1`, and users who havent updated to the latest `prod-v2` ipa in the Apple App Store will continue receiving the latest `prod-v1` releases.
+You can continue updating v1 of your app with `expo publish --release-channel prod-v1`, and users who havent updated to the latest `prod-v2` ipa in the Apple App Store will continue receiving the latest `prod-v1` releases.
 
 ## Using Release Channels with ExpoKit
 
-Since `exp build` does not apply to ExpoKit projects, you can edit the native project's release channel manually by modifying the `releaseChannel` key in [EXShell.plist](https://github.com/expo/expo/blob/master/ios/Exponent/Supporting/EXShell.plist) (iOS) or the `RELEASE_CHANNEL` value in [AppConstants.java](https://github.com/expo/expo/blob/master/android/app/src/main/java/host/exp/exponent/generated/AppConstants.java) (Android).
+Since `expo build` does not apply to ExpoKit projects, you can edit the native project's release channel manually by modifying the `releaseChannel` key in [EXShell.plist](https://github.com/expo/expo/blob/master/ios/Exponent/Supporting/EXShell.plist) (iOS) or the `RELEASE_CHANNEL` value in [AppConstants.java](https://github.com/expo/expo/blob/master/android/app/src/main/java/host/exp/exponent/generated/AppConstants.java) (Android).
 
 ## Using Release Channels for Environment Variable Configuration
 
@@ -54,12 +54,12 @@ Environment variables don't exist explicitly, but you can utilize release channe
 
 Say you have a workflow of releasing builds like this:
 
-- `exp publish --release-channel prod-v1`
-- `exp publish --release-channel prod-v2`
-- `exp publish --release-channel prod-v3`
+- `expo publish --release-channel prod-v1`
+- `expo publish --release-channel prod-v2`
+- `expo publish --release-channel prod-v3`
 
-- `exp publish --release-channel staging-v1`
-- `exp publish --release-channel staging-v2`
+- `expo publish --release-channel staging-v1`
+- `expo publish --release-channel staging-v2`
 
 
 You can create a function that looks for the specific release and sets the correct variable.

@@ -17,7 +17,7 @@ cd your-project && yarn install
 lein figwheel
 
 # Now in a new tab, open the project in a simulator
-exp start --ios
+expo start --ios
 ```
 
 > **Note:** This guide was written by [@tiensonqin](https://github.com/tiensonqin), feel free to reach out to him on the [Expo Slack](http://slack.expo.io/) if you have questions!
@@ -84,24 +84,20 @@ Run `(start-figwheel)` in the connected REPL.
 
 ## 3. Start Expo server
 
-### Using `exp` CLI
+### Using Expo CLI
 
 ```javascript
-# Install exp if you have not already
-npm install -g exp
+# Install Expo CLI if you have not already
+npm install -g expo-cli
 
 # Connect to iOS simulator
-exp start --ios
+expo start --ios
 
 # Or connect to Android devices or simulators
-exp start --android
+expo start --android
 ```
 
-For more information, see [exp Command-Line Interface](exp-cli.html#exp-cli).
-
-### Using XDE
-
-For more information, see [XDE tour](../introduction/xde-tour.html#xde-tour).
+For more information, see [Expo CLI](expo-cli.html).
 
 ## 4. Publish your app
 
@@ -109,7 +105,7 @@ For more information, see [XDE tour](../introduction/xde-tour.html#xde-tour).
 # Generate main.js
 lein prod-build
 
-exp publish
+expo publish
 ```
 
 This will publish your app to a persistent URL on Expo, for example: <https://expo.io/@community/startr>

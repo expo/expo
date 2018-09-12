@@ -4,7 +4,7 @@ title: Linking
 
 ## Introduction
 
-Every good website is prefixed with `https://`, and `https` is what is known as a *URL scheme*. Insecure websites are prefixed with `http://`, and `http` is the URL scheme. Let's call it scheme for short.
+Every good website is prefixed with `https://`, and `https` is what is known as a _URL scheme_. Insecure websites are prefixed with `http://`, and `http` is the URL scheme. Let's call it scheme for short.
 
 To navigate from one website to another, you can use an anchor tag (`<a>`) on the web. You can also use JavaScript APIs like `window.history` and `window.location`.
 
@@ -12,7 +12,7 @@ In addition to `https`, you're likely also familiar with the `mailto` scheme. Wh
 
 `https` and `http` are handled by your browser, but it's possible to link to other applications by using different url schemes. For example, when you get a "Magic Link" email from Slack, the "Launch Slack" button is an anchor tag with an href that looks something like: `slack://secret/magic-login/other-secret`. Like with Slack, you can tell the operating system that you want to handle a custom scheme. Read more about [configuring a scheme](#in-a-standalone-app). When the Slack app opens, it receives the URL that was used to open it and can then act on the data that is made available through the url -- in this case, a secret string that will log the user in to a particular server. This is often referred to as **deep linking**. Read more about [handling deep links into your app](#handling-links-into-your-app).
 
-Deep linking with scheme isn't the only linking tool available to you -- we are working on adding support for universal links on iOS, and we support deferred deep links with [Branch](../sdk/branch.html) already.  We will update this documentation with more information in future SDKs.
+Deep linking with scheme isn't the only linking tool available to you -- we are working on adding support for universal links on iOS, and we support deferred deep links with [Branch](../sdk/branch.html) already. We will update this documentation with more information in future SDKs.
 
 ## Linking from your app to other apps
 
@@ -20,13 +20,12 @@ Deep linking with scheme isn't the only linking tool available to you -- we are 
 
 As mentioned in the introduction, there are some URL schemes for core functionality that exist on every platform. The following is a non-exhaustive list, but covers the most commonly used schemes.
 
-| Scheme                | Description                                       | iOS | Android
-|-----------------------| --------------------------------------------------|-----|---------
-| `mailto`              | Open mail app, eg: `mailto: support@expo.io`      | ✅   | ✅
-| `tel`                 | Open phone app, eg: `tel:+123456789`              | ✅   | ✅
-| `sms`                 | Open SMS app, eg: `sms:+123456789`                | ✅   | ✅
-| `https` / `http`      | Open web browser app, eg: `https://expo.io`       | ✅   | ✅
-
+| Scheme           | Description                                  | iOS | Android |
+| ---------------- | -------------------------------------------- | --- | ------- |
+| `mailto`         | Open mail app, eg: `mailto: support@expo.io` | ✅  | ✅      |
+| `tel`            | Open phone app, eg: `tel:+123456789`         | ✅  | ✅      |
+| `sms`            | Open SMS app, eg: `sms:+123456789`           | ✅  | ✅      |
+| `https` / `http` | Open web browser app, eg: `https://expo.io`  | ✅  | ✅      |
 
 ### Opening links from your app
 
@@ -94,7 +93,7 @@ If you don't specify this list, `Linking.canOpenURL` may return `false` regardle
 
 Before continuing it's worth taking a moment to learn how to link to your app within the Expo client. The Expo client uses the `exp://` scheme, but if we link to `exp://` without any address afterwards, it will open the app to the main screen.
 
-In development, your app will live at a url like `exp://wg-qka.community.app.exp.direct:80`. When it's deployed, it will be at a URL like `exp://exp.host/@community/with-webbrowser-redirect`.  If you create a website with a link like `<a href="exp://expo.io/@community/with-webbrowser-redirect">Open my project</a>`, then open that site on your device and click the link, it will open your app within the Expo client. You can link to it from another app by using `Linking.openURL` too.
+In development, your app will live at a url like `exp://wg-qka.community.app.exp.direct:80`. When it's deployed, it will be at a URL like `exp://exp.host/@community/with-webbrowser-redirect`. If you create a website with a link like `<a href="exp://expo.io/@community/with-webbrowser-redirect">Open my project</a>`, then open that site on your device and click the link, it will open your app within the Expo client. You can link to it from another app by using `Linking.openURL` too.
 
 ### In a standalone app
 
@@ -110,15 +109,15 @@ To link to your standalone app, you need to specify a scheme for your app. You c
 
 Once you build your standalone app and install it to your device, you will be able to open it with links to `myapp://`.
 
-If your app is detached, note that like some other parts of `app.json`, changing the `scheme` key after your app is already detached will not have the desired effect. If you'd like to change the deep link scheme in your detached app, see [this guide](../expokit/advanced-expokit-topics.html#changing-the-deep-link-scheme).
+If your app is ejected, note that like some other parts of `app.json`, changing the `scheme` key after your app is already ejected will not have the desired effect. If you'd like to change the deep link scheme in your ejected app, see [this guide](../expokit/advanced-expokit-topics.html#changing-the-deep-link-scheme).
 
 ### `Expo.Linking` module
 
 To save you the trouble of inserting a bunch of conditionals based on the environment that you're in and hardcoding urls, we provide some helper methods in our extension of the `Linking` module. When you want to provide a service with a url that it needs to redirect back into your app, you can call `Expo.Linking.makeUrl()` and it will resolve to the following:
 
-- *Published app in Expo client*: `exp://exp.host/@community/with-webbrowser-redirect`
-- *Published app in standalone*: `myapp://`
-- *Development*: `exp://wg-qka.community.app.exp.direct:80`
+- _Published app in Expo client_: `exp://exp.host/@community/with-webbrowser-redirect`
+- _Published app in standalone_: `myapp://`
+- _Development_: `exp://wg-qka.community.app.exp.direct:80`
 
 You can also change the returned url by passing optional parameters into `Expo.Linking.makeUrl()`. These will be used by your app to receive data, which we will talk about in the next section.
 
@@ -141,7 +140,7 @@ See the examples below to see these in action.
 To pass some data into your app, you can append it as a path or query string on your url. `Expo.Linking.makeUrl(path, queryParams)` will construct a working url automatically for you. You can use it like this:
 
 ```javascript
-let redirectUrl = Expo.Linking.makeUrl('path/into/app', { hello: 'world', goodbye: 'now'});
+let redirectUrl = Expo.Linking.makeUrl('path/into/app', { hello: 'world', goodbye: 'now' });
 ```
 
 This would return something like `myapp://path/into/app?hello=world&goodbye=now` for a standalone app.
@@ -151,11 +150,11 @@ When your app is opened using the deep link, you can parse the link with `Expo.L
 When [handling the URL that is used to open/foreground your app](#handling-urls-in-your-app), it would look something like this:
 
 ```javascript
-_handleUrl = (url) => {
+_handleUrl = url => {
   this.setState({ url });
   let { path, queryParams } = Expo.Linking.parse(url);
   alert(`Linked to app with path: ${path} and data: ${JSON.stringify(queryParams)}`);
-}
+};
 ```
 
 If you opened a URL like
@@ -172,11 +171,11 @@ A common use case for linking to your app is to redirect back to your app after 
 
 **Note**: if try to use `Linking.openURL` to open the web browser for authentication then your app may be rejected by Apple on the grounds of a bad or confusing user experience. `WebBrowser.openBrowserAsync` opens the browser window in a modal, which looks and feels good and is Apple approved.
 
-To see a full example of using `WebBrowser` for authentication with Facebook, see [examples/with-facebook-auth](https://github.com/expo/examples/tree/master/with-facebook-auth).  Currently Facebook authentication requires that you deploy a small webserver to redirect back to your app (as described in the example) because Facebook does not let you redirect to custom schemes, Expo is working on a solution to make this easier for you. [Try it out in Expo](https://expo.io/@community/with-facebook-auth).
+To see a full example of using `WebBrowser` for authentication with Facebook, see [examples/with-facebook-auth](https://github.com/expo/examples/tree/master/with-facebook-auth). Currently Facebook authentication requires that you deploy a small webserver to redirect back to your app (as described in the example) because Facebook does not let you redirect to custom schemes, Expo is working on a solution to make this easier for you. [Try it out in Expo](https://expo.io/@community/with-facebook-auth).
 
 Another example of using `WebBrowser` for authentication can be found at [expo/auth0-example](https://github.com/expo/auth0-example).
 
-## When to *not* use deep links
+## When to _not_ use deep links
 
 This is the easiest way to set up deep links into your app because it requires a minimal amount of configuration.
 

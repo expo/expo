@@ -3,7 +3,7 @@ title: Publishing
 ---
 
 While you’re developing your project, you’re writing code on your
-computer, and when you use XDE or exp, a server and the React Native
+computer, and when you use Expo CLI, a server and the React Native
 packager run on your machine and bundle up all your source code and make
 it available from a URL. Your URL for a project you’re working on
 probably looks something like this:
@@ -16,7 +16,7 @@ your project on your phone or send it someone else you’re collaborating
 with who isn’t on the same LAN.
 
 But since the packager and server are running on your computer, if you
-turn off your laptop or close XDE, you won’t be able to load your
+turn off your laptop or stop Expo CLI, you won’t be able to load your
 project from that URL. "Publish" is the term we use for deploying your
 project. It makes your project available at a persistent URL, for
 example https://expo.io/@community/native-component-list, which can be
@@ -26,9 +26,8 @@ here](how-expo-works.html#publishingdeploying-an-expo-app-in-production)).
 
 ## How to Publish
 
-To publish a project, click the Publish button in XDE. (It’s in the
-upper right of the window.) If you're using `exp`, run
-`exp publish`. No setup is required, go ahead and create a new project
+To publish a project, click the Publish button in Expo Dev Tools. (It’s in the left side bar.) If you're using command line, run
+`expo publish`. No setup is required, go ahead and create a new project
 and publish it without any changes and you will see that it works.
 
 When you do this, the packager will minify all your code and generate

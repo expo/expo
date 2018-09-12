@@ -24,7 +24,7 @@ We think if we can make Expo good enough, we can eventually help developers make
 
 Expo is kind of like Rails for React Native. Lots of things are set up for you, so it's quicker to get started and on the right path.
 
-With Expo, you don't need Xcode or Android Studio. You just write JavaScript using whatever text editor you are comfortable with (Atom, vim, emacs, Sublime, VS Code, whatever you like). You can run XDE (our desktop software) on Mac, Windows, and Linux.
+With Expo, you don't need Xcode or Android Studio. You just write JavaScript using whatever text editor you are comfortable with (Atom, vim, emacs, Sublime, VS Code, whatever you like). You can run Expo CLI (our command line tool and web UI) on Mac, Windows, and Linux.
 
 Here are some of the things Expo gives you out of the box that work right away:
 
@@ -42,7 +42,7 @@ Here are some of the things Expo gives you out of the box that work right away:
 
 -   **Instant Updating**
 
-    All Expo apps can be updated in seconds by just clicking Publish in XDE. You don't have to set anything up; it just works this way. If you aren't using Expo, you'd either use Microsoft Code Push or roll your own solution for this problem.
+    All Expo apps can be updated in seconds by just clicking Publish in Expo Dev Tools. You don't have to set anything up; it just works this way. If you aren't using Expo, you'd either use Microsoft Code Push or roll your own solution for this problem.
 
 -   **Asset Management**
 
@@ -74,7 +74,7 @@ Expo and React Native are similar to React. You'll have to learn a new set of co
 
 ## How do I share my Expo project? Can I submit it to the app stores?
 
-The fastest way to share your Expo project is to publish it. You can do this by clicking 'Publish' in XDE or running `exp publish` in your project. This gives your app a URL; you can share this URL with anybody who has the Expo Client for Android and they can open your app immediately. [Read more about publishing on Expo](https://blog.expo.io/publishing-on-exponent-790493660d24). To share with iOS users, you can use Apple TestFlight.
+The fastest way to share your Expo project is to publish it. You can do this by clicking 'Publish' in Expo Dev Tools or running `expo publish` in your project. This gives your app a URL; you can share this URL with anybody who has the Expo Client for Android and they can open your app immediately. [Read more about publishing on Expo](https://blog.expo.io/publishing-on-exponent-790493660d24). To share with iOS users, you can use Apple TestFlight.
 
 When you're ready, you can create a standalone app (`.ipa` and `.apk`) for submission to Apple and Google's app stores. Expo will build the binary for you when you run one command; see [Building Standalone Apps](../guides/building-standalone-apps.html#building-standalone-apps). Apple charges $99/year to publish your app in the App Store and Google charges a $25 one-time fee for the Play Store.
 
@@ -84,7 +84,7 @@ Each Expo SDK Version corresponds to a React Native release. For example, SDK 19
 
 ## How do I get my existing React Native project running with Expo?
 
-Right now, the easiest way to do this is to use XDE or exp to make a new project, and then copy over all your JavaScript source code from your existing project, and then `yarn add`ing the library dependencies you have.
+Right now, the easiest way to do this is to use `expo init` (with Expo CLI) to make a new project, and then copy over all your JavaScript source code from your existing project, and then `yarn add`ing the library dependencies you have.
 
 If you have similar native module dependencies to what is exposed through the Expo SDK, this process shouldn't take more than a few minutes (not including `npm install` time). Please feel free to ask us questions if you run into any issues.
 

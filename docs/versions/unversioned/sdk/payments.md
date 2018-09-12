@@ -6,7 +6,7 @@ Expo includes support for payments through [Stripe](https://stripe.com/) and [Ap
 
 Need more help than what's on the page? The Payments module is largely based off [tipsi-stripe](https://github.com/tipsi/tipsi-stripe). The documentation and questions there may prove helpful.
 
-We encourage you to look at our [examples](https://github.com/expo/expo-payments-stripe/tree/master/examples) of detached expo app.
+We encourage you to look at our [examples](https://github.com/expo/expo-payments-stripe/tree/master/examples) of ExpoKit apps.
 
 _Note_: (Android only) If you are using Expo Client then the setup has already been done for you.
 Also, the way you should use payments is slightly different. Instead of importing
@@ -25,7 +25,7 @@ If you haven't done payments with Stripe before, create an account with [Stripe]
 
 The Payments module is currently only supported through `EXPaymentsStripe` pod on iOS.
 
-First, detach your Expo project using ExpoKit (refer to [Detach to ExpoKit]('../guides/detach.md') for more information). Then, add `expo-payments-stripe` to the list of dependencies of your project and install the dependencies. Then, navigate to and open `your-project-name/ios/Podfile`. Add `EXPaymentsStripe` to your Podfile's subspecs. Example:
+First, eject your Expo project using ExpoKit (refer to [Eject to ExpoKit]('../guides/detach.md') for more information). Then, add `expo-payments-stripe` to the list of dependencies of your project and install the dependencies. Then, navigate to and open `your-project-name/ios/Podfile`. Add `EXPaymentsStripe` to your Podfile's subspecs. Example:
 
 ```ruby
 ...
@@ -52,55 +52,55 @@ If you have problems with this step just look at files: `Info.plist` and `AppDel
 
 ## Adding the Payments Module on Android
 
-_Note_: These steps are required only if you have detached your app with SDK < 30. If at the moment of detaching you had `sdkVersion` set to 30 or higher in your `app.json`, the following setup should have been performed automatically.
+_Note_: These steps are required only if you have ejected your app with SDK < 30. If at the moment of ejecting you had `sdkVersion` set to 30 or higher in your `app.json`, the following setup should have been performed automatically.
 
-1. Add these lines into your settings.gradle file.
+1.  Add these lines into your settings.gradle file.
 
-  ```groovy
-  include ':expo-payments-stripe'
-  project(':expo-payments-stripe').projectDir = new File(rootProject.projectDir, '../node_modules/expo-payments-stripe/android')
-  ```
+```groovy
+include ':expo-payments-stripe'
+project(':expo-payments-stripe').projectDir = new File(rootProject.projectDir, '../node_modules/expo-payments-stripe/android')
+```
 
-2. Add dependencies in your build.gradle file.
+2.  Add dependencies in your build.gradle file.
 
-  ```groovy
-  implementation project(':expo-payments-stripe')
-  ```
+```groovy
+implementation project(':expo-payments-stripe')
+```
 
-3. Force specific `com.android.support:design` version in your `build.gradle` file.
+3.  Force specific `com.android.support:design` version in your `build.gradle` file.
 
-  ```groovy
-    android {
-      ...
-      configurations.all {
-        resolutionStrategy.force 'com.android.support:design:27.1.0'
-      }
-      ...
+```groovy
+  android {
+    ...
+    configurations.all {
+      resolutionStrategy.force 'com.android.support:design:27.1.0'
     }
-  ```
+    ...
+  }
+```
 
-4. Exclude old version of `CreditCardEntry` in `your-project/android/app/build.gradle` file.
+4.  Exclude old version of `CreditCardEntry` in `your-project/android/app/build.gradle` file.
 
-  ```groovy
-      implementation('host.exp.exponent:expoview:29.0.0@aar') {
-        transitive = true
-        exclude group: 'com.squareup.okhttp3', module: 'okhttp'
-        exclude group: 'com.github.thefuntasty', module: 'CreditCardEntry' // add this line
-        exclude group: 'com.squareup.okhttp3', module: 'okhttp-urlconnection'
+```groovy
+    implementation('host.exp.exponent:expoview:29.0.0@aar') {
+      transitive = true
+      exclude group: 'com.squareup.okhttp3', module: 'okhttp'
+      exclude group: 'com.github.thefuntasty', module: 'CreditCardEntry' // add this line
+      exclude group: 'com.squareup.okhttp3', module: 'okhttp-urlconnection'
+    }
+```
+
+5.  Make sure your list of repositories in `build.gradle` contains `jitpack`.
+
+```groovy
+    allprojects {
+      repositories {
+        ...
+        maven { url "https://jitpack.io" }
+        ...
       }
-  ```
-
-5. Make sure your list of repositories in `build.gradle` contains `jitpack`.
-
-  ```groovy
-      allprojects {
-        repositories {
-          ...
-          maven { url "https://jitpack.io" }
-          ...
-        }
-      }
-  ```
+    }
+```
 
 ### Register hook in order to let Stripe process source authorization
 
@@ -280,7 +280,7 @@ Creates source object based on params. Sources are used to create payments for a
 
 _NOTE_: For sources that require redirecting your customer to authorize the payment, you need to specify a return URL when you create the source. This allows your customer to be redirected back to your app after they authorize the payment. The prefix before ':' in your return URL should be the same as the scheme in your `info.plist` and `AndroidManifest.xml`. If You are not sure about this step look at above sections "Register hook in order to Stripe could process source authorization".
 
-_NOTE_: If you are using Expo Client or a detached Expo application, do not specify `returnURL`.
+_NOTE_: If you are using Expo Client or an ejected Expo application, do not specify `returnURL`.
 
 `params` — An object with the following keys:
 

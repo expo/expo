@@ -12,7 +12,7 @@ Try the [playlist example app](http://expo.io/@community/playlist) (source code 
 
 ### `Expo.Audio.setIsEnabledAsync(value)`
 
-Audio is enabled by default, but if you want to write your own Audio API in a detached app, you might want to disable the Expo Audio API.
+Audio is enabled by default, but if you want to write your own Audio API in an ExpoKit app, you might want to disable the Expo Audio API.
 
 #### Arguments
 
@@ -35,26 +35,27 @@ We provide this API to customize the audio experience on iOS and Android.
     -   `playsInSilentModeIOS` : a boolean selecting if your experience's audio should play in silent mode on iOS. This value defaults to `false`.
     -   `allowsRecordingIOS` : a boolean selecting if recording is enabled on iOS. This value defaults to `false`. NOTE: when this flag is set to `true`, playback may be routed to the phone receiver instead of to the speaker.
     -   `interruptionModeIOS` : an enum selecting how your experience's audio should interact with the audio from other apps on iOS:
-        - `INTERRUPTION_MODE_IOS_MIX_WITH_OTHERS` : This is the default option. If this option is set, your experience's audio is mixed with audio playing in background apps.
-        - `INTERRUPTION_MODE_IOS_DO_NOT_MIX` : If this option is set, your experience's audio interrupts audio from other apps.
-        - `INTERRUPTION_MODE_IOS_DUCK_OTHERS` : If this option is set, your experience's audio lowers the volume ("ducks") of audio from other apps while your audio plays.
+        -   `INTERRUPTION_MODE_IOS_MIX_WITH_OTHERS` : This is the default option. If this option is set, your experience's audio is mixed with audio playing in background apps.
+        -   `INTERRUPTION_MODE_IOS_DO_NOT_MIX` : If this option is set, your experience's audio interrupts audio from other apps.
+        -   `INTERRUPTION_MODE_IOS_DUCK_OTHERS` : If this option is set, your experience's audio lowers the volume ("ducks") of audio from other apps while your audio plays.
     -   `shouldDuckAndroid` : a boolean selecting if your experience's audio should automatically be lowered in volume ("duck") if audio from another app interrupts your experience. This value defaults to `true`. If `false`, audio from other apps will pause your audio.
     -   `interruptionModeAndroid` : an enum selecting how your experience's audio should interact with the audio from other apps on Android:
-        - `INTERRUPTION_MODE_ANDROID_DO_NOT_MIX` : If this option is set, your experience's audio interrupts audio from other apps.
-        - `INTERRUPTION_MODE_ANDROID_DUCK_OTHERS` : This is the default option. If this option is set, your experience's audio lowers the volume ("ducks") of audio from other apps while your audio plays.
-    - `playThroughEarpieceAndroid` : set to true to route audio to earpiece (on Android).
+        -   `INTERRUPTION_MODE_ANDROID_DO_NOT_MIX` : If this option is set, your experience's audio interrupts audio from other apps.
+        -   `INTERRUPTION_MODE_ANDROID_DUCK_OTHERS` : This is the default option. If this option is set, your experience's audio lowers the volume ("ducks") of audio from other apps while your audio plays.
+    -   `playThroughEarpieceAndroid` : set to true to route audio to earpiece (on Android).
 
 #### Returns
 
 A `Promise` that will reject if the audio mode could not be enabled for the device. Note that these are the only legal AudioMode combinations of (`playsInSilentModeIOS`, `allowsRecordingIOS`, `interruptionModeIOS`), and any other will result in promise rejection:
- - `false, false, INTERRUPTION_MODE_IOS_DO_NOT_MIX`
- - `false, false, INTERRUPTION_MODE_IOS_MIX_WITH_OTHERS`
- - `true, true, INTERRUPTION_MODE_IOS_DO_NOT_MIX`
- - `true, true, INTERRUPTION_MODE_IOS_DUCK_OTHERS`
- - `true, true, INTERRUPTION_MODE_IOS_MIX_WITH_OTHERS`
- - `true, false, INTERRUPTION_MODE_IOS_DO_NOT_MIX`
- - `true, false, INTERRUPTION_MODE_IOS_DUCK_OTHERS`
- - `true, false, INTERRUPTION_MODE_IOS_MIX_WITH_OTHERS`
+
+-   `false, false, INTERRUPTION_MODE_IOS_DO_NOT_MIX`
+-   `false, false, INTERRUPTION_MODE_IOS_MIX_WITH_OTHERS`
+-   `true, true, INTERRUPTION_MODE_IOS_DO_NOT_MIX`
+-   `true, true, INTERRUPTION_MODE_IOS_DUCK_OTHERS`
+-   `true, true, INTERRUPTION_MODE_IOS_MIX_WITH_OTHERS`
+-   `true, false, INTERRUPTION_MODE_IOS_DO_NOT_MIX`
+-   `true, false, INTERRUPTION_MODE_IOS_DUCK_OTHERS`
+-   `true, false, INTERRUPTION_MODE_IOS_MIX_WITH_OTHERS`
 
 ## Playing sounds
 
@@ -307,9 +308,9 @@ We provide the following preset options for convenience, as used in the example 
 
 -   `Expo.Audio.RECORDING_OPTIONS_PRESET_LOW_QUALITY`
 
- We also provide the ability to define your own custom recording options, but **we recommend you use the presets, as not all combinations of options will allow you to successfully `prepareToRecordAsync()`.** You will have to test your custom options on iOS and Android to make sure it's working. In the future, we will enumerate all possible valid combinations, but at this time, our goal is to make the basic use-case easy (with presets) and the advanced use-case possible (by exposing all the functionality available in native). As always, feel free to ping us on the forums or Slack with any questions.
+We also provide the ability to define your own custom recording options, but **we recommend you use the presets, as not all combinations of options will allow you to successfully `prepareToRecordAsync()`.** You will have to test your custom options on iOS and Android to make sure it's working. In the future, we will enumerate all possible valid combinations, but at this time, our goal is to make the basic use-case easy (with presets) and the advanced use-case possible (by exposing all the functionality available in native). As always, feel free to ping us on the forums or Slack with any questions.
 
- In order to define your own custom recording options, you must provide a dictionary of the following key value pairs.
+In order to define your own custom recording options, you must provide a dictionary of the following key value pairs.
 
 -   `android` : a dictionary of key-value pairs for the Android platform. This key is required.
 
@@ -365,176 +366,176 @@ Following is an enumeration of all of the valid values for certain `RecordingOpt
 
     -   `outputFormat` :
 
-        - `Expo.Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_DEFAULT`
+        -   `Expo.Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_DEFAULT`
 
-        - `Expo.Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_THREE_GPP`
+        -   `Expo.Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_THREE_GPP`
 
-        - `Expo.Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_MPEG_4`
+        -   `Expo.Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_MPEG_4`
 
-        - `Expo.Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_AMR_NB`
+        -   `Expo.Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_AMR_NB`
 
-        - `Expo.Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_AMR_WB`
+        -   `Expo.Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_AMR_WB`
 
-        - `Expo.Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_AAC_ADIF`
+        -   `Expo.Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_AAC_ADIF`
 
-        - `Expo.Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_AAC_ADTS`
+        -   `Expo.Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_AAC_ADTS`
 
-        - `Expo.Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_RTP_AVP`
+        -   `Expo.Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_RTP_AVP`
 
-        - `Expo.Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_MPEG2TS`
+        -   `Expo.Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_MPEG2TS`
 
-        - `Expo.Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_WEBM`
+        -   `Expo.Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_WEBM`
 
     -   `audioEncoder` :
 
-        - `Expo.Audio.RECORDING_OPTION_ANDROID_AUDIO_ENCODER_DEFAULT`
+        -   `Expo.Audio.RECORDING_OPTION_ANDROID_AUDIO_ENCODER_DEFAULT`
 
-        - `Expo.Audio.RECORDING_OPTION_ANDROID_AUDIO_ENCODER_AMR_NB`
+        -   `Expo.Audio.RECORDING_OPTION_ANDROID_AUDIO_ENCODER_AMR_NB`
 
-        - `Expo.Audio.RECORDING_OPTION_ANDROID_AUDIO_ENCODER_AMR_WB`
+        -   `Expo.Audio.RECORDING_OPTION_ANDROID_AUDIO_ENCODER_AMR_WB`
 
-        - `Expo.Audio.RECORDING_OPTION_ANDROID_AUDIO_ENCODER_AAC`
+        -   `Expo.Audio.RECORDING_OPTION_ANDROID_AUDIO_ENCODER_AAC`
 
-        - `Expo.Audio.RECORDING_OPTION_ANDROID_AUDIO_ENCODER_HE_AAC`
+        -   `Expo.Audio.RECORDING_OPTION_ANDROID_AUDIO_ENCODER_HE_AAC`
 
-        - `Expo.Audio.RECORDING_OPTION_ANDROID_AUDIO_ENCODER_AAC_ELD`
+        -   `Expo.Audio.RECORDING_OPTION_ANDROID_AUDIO_ENCODER_AAC_ELD`
 
 -   `ios` :
 
     -   `outputFormat` :
 
-        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_LINEARPCM`
+        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_LINEARPCM`
 
-        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_AC3`
+        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_AC3`
 
-        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_60958AC3`
+        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_60958AC3`
 
-        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_APPLEIMA4`
+        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_APPLEIMA4`
 
-        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4AAC`
+        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4AAC`
 
-        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4CELP`
+        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4CELP`
 
-        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4HVXC`
+        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4HVXC`
 
-        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4TWINVQ`
+        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4TWINVQ`
 
-        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MACE3`
+        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MACE3`
 
-        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MACE6`
+        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MACE6`
 
-        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_ULAW`
+        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_ULAW`
 
-        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_ALAW`
+        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_ALAW`
 
-        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_QDESIGN`
+        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_QDESIGN`
 
-        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_QDESIGN2`
+        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_QDESIGN2`
 
-        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_QUALCOMM`
+        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_QUALCOMM`
 
-        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEGLAYER1`
+        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEGLAYER1`
 
-        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEGLAYER2`
+        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEGLAYER2`
 
-        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEGLAYER3`
+        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEGLAYER3`
 
-        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_APPLELOSSLESS`
+        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_APPLELOSSLESS`
 
-        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4AAC_HE`
+        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4AAC_HE`
 
-        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4AAC_LD`
+        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4AAC_LD`
 
-        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4AAC_ELD`
+        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4AAC_ELD`
 
-        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4AAC_ELD_SBR`
+        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4AAC_ELD_SBR`
 
-        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4AAC_ELD_V2`
+        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4AAC_ELD_V2`
 
-        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4AAC_HE_V2`
+        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4AAC_HE_V2`
 
-        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4AAC_SPATIAL`
+        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4AAC_SPATIAL`
 
-        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_AMR`
+        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_AMR`
 
-        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_AMR_WB`
+        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_AMR_WB`
 
-        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_AUDIBLE`
+        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_AUDIBLE`
 
-        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_ILBC`
+        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_ILBC`
 
-        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_DVIINTELIMA`
+        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_DVIINTELIMA`
 
-        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MICROSOFTGSM`
+        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MICROSOFTGSM`
 
-        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_AES3`
+        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_AES3`
 
-        - `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_ENHANCEDAC3`
+        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_ENHANCEDAC3`
 
     -   `audioQuality` :
 
-        - `Expo.Audio.RECORDING_OPTION_IOS_AUDIO_QUALITY_MIN`
+        -   `Expo.Audio.RECORDING_OPTION_IOS_AUDIO_QUALITY_MIN`
 
-        - `Expo.Audio.RECORDING_OPTION_IOS_AUDIO_QUALITY_LOW`
+        -   `Expo.Audio.RECORDING_OPTION_IOS_AUDIO_QUALITY_LOW`
 
-        - `Expo.Audio.RECORDING_OPTION_IOS_AUDIO_QUALITY_MEDIUM`
+        -   `Expo.Audio.RECORDING_OPTION_IOS_AUDIO_QUALITY_MEDIUM`
 
-        - `Expo.Audio.RECORDING_OPTION_IOS_AUDIO_QUALITY_HIGH`
+        -   `Expo.Audio.RECORDING_OPTION_IOS_AUDIO_QUALITY_HIGH`
 
-        - `Expo.Audio.RECORDING_OPTION_IOS_AUDIO_QUALITY_MAX`
+        -   `Expo.Audio.RECORDING_OPTION_IOS_AUDIO_QUALITY_MAX`
 
     -   `bitRateStrategy` :
 
-        - `Expo.Audio.RECORDING_OPTION_IOS_BIT_RATE_STRATEGY_CONSTANT`
+        -   `Expo.Audio.RECORDING_OPTION_IOS_BIT_RATE_STRATEGY_CONSTANT`
 
-        - `Expo.Audio.RECORDING_OPTION_IOS_BIT_RATE_STRATEGY_LONG_TERM_AVERAGE`
+        -   `Expo.Audio.RECORDING_OPTION_IOS_BIT_RATE_STRATEGY_LONG_TERM_AVERAGE`
 
-        - `Expo.Audio.RECORDING_OPTION_IOS_BIT_RATE_STRATEGY_VARIABLE_CONSTRAINED`
+        -   `Expo.Audio.RECORDING_OPTION_IOS_BIT_RATE_STRATEGY_VARIABLE_CONSTRAINED`
 
-        - `Expo.Audio.RECORDING_OPTION_IOS_BIT_RATE_STRATEGY_VARIABLE`
+        -   `Expo.Audio.RECORDING_OPTION_IOS_BIT_RATE_STRATEGY_VARIABLE`
 
 For reference, following are the definitions of the two preset examples of `RecordingOptions`, as implemented in the Audio SDK:
 
 ```javascript
 export const RECORDING_OPTIONS_PRESET_HIGH_QUALITY: RecordingOptions = {
-  android: {
-    extension: '.m4a',
-    outputFormat: RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_MPEG_4,
-    audioEncoder: RECORDING_OPTION_ANDROID_AUDIO_ENCODER_AAC,
-    sampleRate: 44100,
-    numberOfChannels: 2,
-    bitRate: 128000,
-  },
-  ios: {
-    extension: '.caf',
-    audioQuality: RECORDING_OPTION_IOS_AUDIO_QUALITY_MAX,
-    sampleRate: 44100,
-    numberOfChannels: 2,
-    bitRate: 128000,
-    linearPCMBitDepth: 16,
-    linearPCMIsBigEndian: false,
-    linearPCMIsFloat: false,
-  },
+    android: {
+        extension: '.m4a',
+        outputFormat: RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_MPEG_4,
+        audioEncoder: RECORDING_OPTION_ANDROID_AUDIO_ENCODER_AAC,
+        sampleRate: 44100,
+        numberOfChannels: 2,
+        bitRate: 128000,
+    },
+    ios: {
+        extension: '.caf',
+        audioQuality: RECORDING_OPTION_IOS_AUDIO_QUALITY_MAX,
+        sampleRate: 44100,
+        numberOfChannels: 2,
+        bitRate: 128000,
+        linearPCMBitDepth: 16,
+        linearPCMIsBigEndian: false,
+        linearPCMIsFloat: false,
+    },
 };
 
 export const RECORDING_OPTIONS_PRESET_LOW_QUALITY: RecordingOptions = {
-  android: {
-    extension: '.3gp',
-    outputFormat: RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_THREE_GPP,
-    audioEncoder: RECORDING_OPTION_ANDROID_AUDIO_ENCODER_AMR_NB,
-    sampleRate: 44100,
-    numberOfChannels: 2,
-    bitRate: 128000,
-  },
-  ios: {
-    extension: '.caf',
-    audioQuality: RECORDING_OPTION_IOS_AUDIO_QUALITY_MIN,
-    sampleRate: 44100,
-    numberOfChannels: 2,
-    bitRate: 128000,
-    linearPCMBitDepth: 16,
-    linearPCMIsBigEndian: false,
-    linearPCMIsFloat: false,
-  },
+    android: {
+        extension: '.3gp',
+        outputFormat: RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_THREE_GPP,
+        audioEncoder: RECORDING_OPTION_ANDROID_AUDIO_ENCODER_AMR_NB,
+        sampleRate: 44100,
+        numberOfChannels: 2,
+        bitRate: 128000,
+    },
+    ios: {
+        extension: '.caf',
+        audioQuality: RECORDING_OPTION_IOS_AUDIO_QUALITY_MIN,
+        sampleRate: 44100,
+        numberOfChannels: 2,
+        bitRate: 128000,
+        linearPCMBitDepth: 16,
+        linearPCMIsBigEndian: false,
+        linearPCMIsFloat: false,
+    },
 };
 ```

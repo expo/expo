@@ -31,7 +31,7 @@ To bundle assets in your binary, use the [assetBundlePatterns](./configuration.h
 ],
 ```
 
-Images with paths matching the given patterns will be bundled into your native binaries next time you run `exp build`.
+Images with paths matching the given patterns will be bundled into your native binaries next time you run `expo build`.
 
 ## Listen for changes in network availability
 

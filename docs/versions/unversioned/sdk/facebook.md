@@ -23,7 +23,7 @@ Follow [Facebook's developer documentation](https://developers.facebook.com/docs
 -   **Android standalone app**
 
     -   [Build your standalone app](../guides/building-standalone-apps.html#building-standalone-apps) for Android.
-    -   Run `exp fetch:android:hashes`.
+    -   Run `expo fetch:android:hashes`.
     -   Copy `Facebook Key Hash` and paste it as an additional key hash in your Facebook developer page pictured above.
 
 You may have to switch the app from 'development mode' to 'public mode' on the Facebook developer page before other users can log in.

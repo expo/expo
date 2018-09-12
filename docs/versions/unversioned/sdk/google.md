@@ -107,14 +107,14 @@ If you want to use Google Sign In for a standalone app, you can follow these ste
     3.  Click **Create credentials**, then **API Key**, and finally click **RESTRICT KEY** in the modal that pops up.
     4.  Click the **Android apps** radio button under **Key restriction**, then click **+ Add package name and fingerprint**.
     5.  Add your `android.package` from `app.json` (eg: `ca.brentvatne.growlerprowler`) to the **Package name** field.
-    6.  Run `exp fetch:android:hashes`.
+    6.  Run `expo fetch:android:hashes`.
     7.  Take `Google Certificate Fingerprint` from previous step and insert it in the **SHA-1 certificate fingerprint** field.
     8.  Press **Save**.
 -   **Get an OAuth client ID for your app**
     1.  Build a standalone app and download the apk, or find one that you have already built.
     2.  Go to the [Google Developer Credentials](https://console.developers.google.com/apis/credentials).
     3.  Click **Create credentials**, then **OAuth client ID**, then select the **Android** radio button.
-    4.  Run `exp fetch:android:hashes`.
+    4.  Run `expo fetch:android:hashes`.
     5.  Take `Google Certificate Fingerprint` from previous step and insert it in the **Signing-certificate fingerprint** field.
     6.  Add your `android.package` from `app.json` (eg: `ca.brentvatne.growlerprowler`) to the **Package name** field.
     7.  Press **Create**.
@@ -122,12 +122,12 @@ If you want to use Google Sign In for a standalone app, you can follow these ste
     1.  Build a standalone app and download the apk, or find one that you have already built.
     2.  Go to the [Google Developer Credentials](https://console.developers.google.com/apis/credentials) and find your API key.
     3.  Open `app.json` and add your **Google API Key** to `android.config.googleSignIn.apiKey`.
-    4.  Run `exp fetch:android:hashes`.
+    4.  Run `expo fetch:android:hashes`.
     5.  Take `Google Certificate Hash` from the previous step to `app.json` under `android.config.googleSignIn.certificateHash`.
     6.  When you use `Expo.Google.logInAsync(..)`, pass in the **OAuth client ID** as the `androidStandaloneAppClientId` option.
     7.  Rebuild your standalone app.
 
-Note that if you've enabled Google Play's app signing service, you will need to grab their app signing certificate in production rather than the upload certificate returned by `exp fetch:android:hashes`. You can do this by grabbing the signature from Play Console -> Your App -> Release management -> App signing, and then going to the [API Dashboard](https://console.developers.google.com/apis/) -> Credentials and adding the signature to your existing credential.
+Note that if you've enabled Google Play's app signing service, you will need to grab their app signing certificate in production rather than the upload certificate returned by `expo fetch:android:hashes`. You can do this by grabbing the signature from Play Console -> Your App -> Release management -> App signing, and then going to the [API Dashboard](https://console.developers.google.com/apis/) -> Credentials and adding the signature to your existing credential.
 
 ## Deploying to a standalone app on iOS
 

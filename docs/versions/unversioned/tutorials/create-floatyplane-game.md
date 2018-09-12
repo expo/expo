@@ -14,9 +14,10 @@ Demo: https://snack.expo.io/@community/flappy-bird
 ${<SnackEmbed snackId="@community/flappy-bird" />}
 
 ### Prerequisites
-* NodeJS 6+ (LTS)
-* Git
-* Expo XDE + iOS/Android App
+
+- NodeJS 6+ (LTS)
+- Git
+- Expo CLI + iOS/Android App
 
 ### Getting Started
 The starter code sets up the basics of creating an Expo app with [Three.js](threejs.org/). It also has some a psuedo-lib called GameKit which emulates some of the core features from [phaser.js](https://phaser.io/).

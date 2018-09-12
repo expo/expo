@@ -14,7 +14,6 @@ The [iOS Human Interface Guidelines](https://developer.apple.com/ios/human-inter
 
 Android screen sizes vary greatly with the massive variety of devices on the market. One strategy to deal with this is to look at the most common resolutions and design around that - [you can see some statistics on this published by Unity here](https://hwstats.unity3d.com/mobile/display-android.html). Given that we can resize and crop our splash image automatically, it looks like we can stick with our dimensions, as long as we don't depend on the splash image fitting the screen exactly. This is convenient because we can use one splash image for both iOS and Android - less for you to read in this guide and less work for you to do.
 
-
 You can work off of [this Sketch template](https://github.com/expo/files/blob/b264c7f7bf2cacfbdb45640063988ab61dfbbe23/splash-template.sketch?raw=true) if you like. I did, and I changed the background color to a faint yellow and put a Noodle emoji in the middle. It's worth noting that the splash image supports transparency, although we didn't use it here.
 
 ![](./splash-example.png)
@@ -71,7 +70,7 @@ Notice that in the last example, we stretched the image to fill the entire width
 
 Any of the splash options can be configured on a per-platform basis by nesting the configuration under the `android` or `ios` keys within `app.json` (the same as how you would customize an icon for either platform). In addition to this, certain configuration options are only available on iOS or Android.
 
-- On iOS, you can set [ios.splash.tabletImage](configuration.html#tabletimage) if you would like to have a different splash image on iPads. 
+- On iOS, you can set [ios.splash.tabletImage](configuration.html#tabletimage) if you would like to have a different splash image on iPads.
 - On Android, you can set splash images for [different device DPIs](configuration.html#ldpi), from `ldpi` to `xxxhdpi`.
 
 ### Using `AppLoading` and/or `SplashScreen`
@@ -88,20 +87,19 @@ Your app can be opened from the Expo client or in a standalone app, and it can b
 
 - **On the left**, we are in the Expo client and loading an app that is currently in development. Notice that on the bottom of the splash screen you see an information bar that shows information relevant to preparing the JavaScript and downloading it to the device. We see an orange screen before the splash image appears, because the background color is set immediately but the image needs to be downloaded.
 - **In the middle**, we are in the Expo client and we are loading a published app. Notice that again the splash image does not appear immediately.
-- **On the right**, we are in a standalone app. Notice that the splash image appears immediately. 
+- **On the right**, we are in a standalone app. Notice that the splash image appears immediately.
 
+### Ejected ExpoKit apps
 
-### Detached ExpoKit apps
+If you run `expo eject` (choosing the ExpoKit option) on iOS and your app already uses the splash API, the resulting ExpoKit project will contain an Interface Builder launch screen file configured correctly for your app. After this, if you want to make changes to your app's splash screen, just edit the Interface Builder file directly.
 
-If you run `exp detach` on iOS and your app already uses the splash API, the resulting ExpoKit project will contain an Interface Builder launch screen file configured correctly for your app. After this, if you want to make changes to your app's splash screen, just edit the Interface Builder file directly.
-
-For people who run `exp detach` without the splash API, we add `isSplashScreenDisabled: YES` in your EXShell plist (iOS). If you later decide to use a splash screen in your detached iOS project, add an Interface Builder file called `LaunchScreen` to your Xcode project, and delete this key from the plist.
+For people who run `expo eject` without the splash API, we add `isSplashScreenDisabled: YES` in your EXShell plist (iOS). If you later decide to use a splash screen in your ejected iOS project, add an Interface Builder file called `LaunchScreen` to your Xcode project, and delete this key from the plist.
 
 ### Known issues
 
 The following exists are known to us and will be resolved shortly.
 
-- iOS splash screen status bar is white in standalone apps but dark in Expo client. It should be dark in standalone apps by default too, and also it should be customizable. 
+- iOS splash screen status bar is white in standalone apps but dark in Expo client. It should be dark in standalone apps by default too, and also it should be customizable.
 
 ### Migrating from the `loading` API
 

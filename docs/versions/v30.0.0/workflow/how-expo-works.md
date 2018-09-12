@@ -4,28 +4,28 @@ title: How Expo Works
 
 While it's certainly not necessary to know any of this to use Expo, many engineers like to know how their tools work. We'll walk through a few key concepts here, including:
 
--   Local development of your app
--   Publishing/deploying a production version of your app
--   How Expo manages changes to its SDK
--   Opening Expo apps offline
+- Local development of your app
+- Publishing/deploying a production version of your app
+- How Expo manages changes to its SDK
+- Opening Expo apps offline
 
 You can also browse the source, fork, hack on and contribute to the Expo tooling on [github/@expo](https://github.com/expo).
 
 ## Serving an Expo project for local development
 
-There are two pieces here: the Expo app and the Expo development tool (either XDE or `exp` CLI). We'll just assume XDE here for simplicity of naming. When you open an app up in XDE, it spawns and manages two server processes in the background: the Expo Development Server and the React Native Packager Server.
+There are two pieces here: the Expo app and Expo CLI. When you start an app with Expo CLI, it spawns and manages two server processes in the background: the Expo Development Server and the React Native Packager Server.
 
 ![](./fetch-app-from-xde.png)
 
-> **Note:** XDE also spawns a tunnel process, which allows devices outside of your LAN to access the the above servers without you needing to change your firewall settings. If you want to learn more, see [ngrok](https://ngrok.com/).
+> **Note:** Expo CLI also spawns a tunnel process, which allows devices outside of your LAN to access the the above servers without you needing to change your firewall settings. If you want to learn more, see [ngrok](https://ngrok.com/).
 
 ### `Expo Development Server`
 
-This server is the endpoint that you hit first when you type the URL into the Expo app. Its purpose is to serve the **Expo Manifest** and provide a communication layer between the XDE UI and the Expo app on your phone or simulator.
+This server is the endpoint that you hit first when you type the URL into the Expo app. Its purpose is to serve the **Expo Manifest** and provide a communication layer between Expo CLI and the Expo app on your phone or simulator.
 
 #### `Expo Manifest`
 
-The following is an example of a manifest being served through XDE. The first thing that you should notice is there are a lot of identical fields to `app.json` (see the [Configuration with app.json](configuration.html#exp) section if you haven't read it yet). These fields are taken directly from that file -- this is how the Expo app accesses your configuration.
+The following is an example of a manifest being served through Expo CLI. The first thing that you should notice is there are a lot of identical fields to `app.json` (see the [Configuration with app.json](configuration.html#exp) section if you haven't read it yet). These fields are taken directly from that file -- this is how the Expo app accesses your configuration.
 
 ```javascript
 {
@@ -67,15 +67,15 @@ The following is an example of a manifest being served through XDE. The first th
 
 Every field in the manifest is some configuration option that tells Expo what it needs to know to run your app. The app fetches the manifest first and uses it to show your app's loading icon that you specified in `app.json`, then proceeds to fetch your app's JavaScript at the given `bundleUrl` -- this URL points to the React Native Packager Server.
 
-In order to stream logs to XDE, the Expo SDK intercepts calls to `console.log`, `console.warn`, etc. and posts them to the `logUrl` specified in the manifest. This endpoint is on the Expo Development Server.
+In order to stream logs to Expo CLI, the Expo SDK intercepts calls to `console.log`, `console.warn`, etc. and posts them to the `logUrl` specified in the manifest. This endpoint is on the Expo Development Server.
 
 ### React Native Packager Server
 
-If you use React Native without Expo, you would start the packager by running `react-native start` in your project directory. Expo starts this up for you and pipes `STDOUT` to XDE. This server has two purposes.
+If you use React Native without Expo, you would start the packager by running `react-native start` in your project directory. Expo starts this up for you and pipes `STDOUT` to Expo CLI. This server has two purposes.
 
 The first is to serve your app JavaScript compiled into a single file and translating any JavaScript code that you wrote which isn't compatible with your phone's JavaScript engine. JSX, for example, is not valid JavaScript -- it is a language extension that makes working with React components more pleasant and it compiles down into plain function calls -- so `<HelloWorld />` would become `React.createElement(HelloWorld, {}, null)` (see [JSX in Depth](https://facebook.github.io/react/docs/jsx-in-depth.html) for more information). Other language features like [async/await](https://blog.expo.io/react-native-meets-async-functions-3e6f81111173#.4c2517o5m) are not yet available in most engines and so they need to be compiled down into JavaScript code that will run on your phone's JavaScript engine, JavaScriptCore.
 
-The second purpose is to serve assets. When you include an image in your app, you will use syntax like `<Image source={require('./assets/example.png')} />`, unless you have already cached that asset you will see a request in the XDE logs like: `<START> processing asset request my-proejct/assets/example@3x.png`. Notice that it serves up the correct asset for your screen DPI, assuming that it exists.
+The second purpose is to serve assets. When you include an image in your app, you will use syntax like `<Image source={require('./assets/example.png')} />`, unless you have already cached that asset you will see a request in the Expo CLI logs like: `<START> processing asset request my-proejct/assets/example@3x.png`. Notice that it serves up the correct asset for your screen DPI, assuming that it exists.
 
 ## Publishing/Deploying an Expo app in Production
 

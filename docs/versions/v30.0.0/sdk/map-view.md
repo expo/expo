@@ -30,12 +30,12 @@ If you have already integrated Google Sign In into your standalone app, this is 
     6.  Choose the **Android apps** radio button under **Key restriction**.
     7.  Click the **+ Add package name and fingerprint** button.
     8.  Add your `android.package` from `app.json` (eg: `ca.brentvatne.growlerprowler`) to the Package name field.
-    9.  Run `exp fetch:android:hashes`.
+    9.  Run `expo fetch:android:hashes`.
     10. Copy `Google Certificate Fingerprint` from the output from step 9 and insert it in the "SHA-1 certificate fingerprint" field.
     11. Copy the API key (the first text input on the page) into `app.json` under the `android.config.googleMaps.apiKey` field. [See an example diff](https://github.com/brentvatne/growler-prowler/commit/3496e69b14adb21eb2025ef9e0719c2edbef2aa2).
     12. Press `Save` and then rebuild the app like in step 1.
 
-Note that if you've enabled Google Play's app signing service, you will need to grab their app signing certificate in production rather than the upload certificate returned by `exp fetch:android:hashes`. You can do this by grabbing the signature from Play Console -> Your App -> Release management -> App signing, and then going to the [API Dashboard](https://console.developers.google.com/apis/) -> Credentials and adding the signature to your existing credential.
+Note that if you've enabled Google Play's app signing service, you will need to grab their app signing certificate in production rather than the upload certificate returned by `expo fetch:android:hashes`. You can do this by grabbing the signature from Play Console -> Your App -> Release management -> App signing, and then going to the [API Dashboard](https://console.developers.google.com/apis/) -> Credentials and adding the signature to your existing credential.
 
 ## Deploying Google Maps to a standalone app on iOS
 
@@ -43,10 +43,10 @@ Apple Maps should just work with no extra configuration. For Google Maps, you ca
 
 ## Deploying Google Maps to ExpoKit for iOS
 
-If you want to add MapView with Google Maps to an [ExpoKit](../expokit) (detached) project on iOS, you may need to manually provide a key by calling:
+If you want to add MapView with Google Maps to an [ExpoKit](../expokit) (ejected) project on iOS, you may need to manually provide a key by calling:
 
 ```
 [GMSServices provideApiKey:@"your api key"]
 ```
 
-Alternatively, you can provide the `GMSApiKey` key in your app's `Info.plist` and ExpoKit will pick it up automatically. If you detached after already configuring Google Maps, the detach step may have already provided this for you.
+Alternatively, you can provide the `GMSApiKey` key in your app's `Info.plist` and ExpoKit will pick it up automatically. If you ejected after already configuring Google Maps, the eject step may have already provided this for you.

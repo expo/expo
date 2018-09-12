@@ -12,27 +12,34 @@ The React Native equivalent of [create-react-app](https://github.com/facebookinc
 
 ### detach
 
-The term "detach" is used in Expo to describe leaving the cozy comfort of the standard Expo development environment, where you do not have to deal with build configuration or native code. When you "detach" from Expo, you get the native projects along with [ExpoKit](#expokit), so you can continue building your project using the Expo APIs but your workflow now is the same as if you were building a React Native application without Expo. [Read more in "Detaching to ExpoKit"](https://docs.expo.io/versions/latest/guides/detach.html).
+The term "detach" was previously used in Expo to mean [ejecting](#eject) your app to use [ExpoKit](#expokit).
 
 ### eject
 
-The term "eject" was popularized by [create-react-app](https://github.com/facebookincubator/create-react-app), and it is used for [create-react-native-app](https://github.com/react-community/create-react-native-app). When you "eject" your project, you take a more extreme step than just [detach](#detach) -- you lose access to Expo APIs and completely leave the Expo environment. [Read more about ejecting](https://github.com/react-community/create-react-native-app/blob/master/EJECTING.md).
+The term "eject" was popularized by [create-react-app](https://github.com/facebookincubator/create-react-app), and it is used in Expo to describe leaving the cozy comfort of the standard Expo development environment, where you do not have to deal with build configuration or native code. When you "eject" from Expo, you have two choices:
+
+- _Eject to ExpoKit_, where you get the native projects along with [ExpoKit](#expokit), so you can continue building your project using the Expo APIs but your workflow now is the same as if you were building a React Native application without Expo. [Read more in "Ejecting to ExpoKit"](../expokit/eject.html).
+- _Eject to plain React Native_, where you take a more extreme step than just ejecting to [ExpoKit](#expokit) -- you lose access to Expo APIs and completely leave the Expo environment. [Read more about ejecting](https://github.com/react-community/create-react-native-app/blob/master/EJECTING.md).
 
 ### Emulator
 
 Emulator is used to describe software emulators of Android devices on your computers. Typically iOS emulators are referred to as [Simulators](#simulator).
 
-### exp
-
-The command-line tool for working with Expo. [Read more](exp-cli.html).
-
 ### Experience
 
 A synonym for app that usually implies something more single-use and smaller in scope, sometimes artistic and whimsical.
 
+### Expo CLI
+
+The command-line tool for working with Expo. [Read more](exp-cli.html).
+
 ### Expo Client
 
 The iOS and Android app that runs Expo apps. When you want to run your app outside of the Expo Client and deploy it to the App and/or Play stores, you can build a [Standalone App](#standalone-app).
+
+### Expo Dev Tools
+
+Expo Developer Tools is a web browser based UI included in [Expo CLI](#expo-cli).
 
 ### Expo SDK
 
@@ -40,7 +47,7 @@ The Expo SDK provides access to device/system functionality such as camera, push
 
 ### ExpoKit
 
-ExpoKit is an Objective-C and Java library that allows you to use the [Expo SDK](#expo-sdk) and platform and your existing Expo project as part of a larger standard native project — one that you would normally create using Xcode, Android Studio, or `react-native init`. [Read more](detach.html).
+ExpoKit is an Objective-C and Java library that allows you to use the [Expo SDK](#expo-sdk) and platform and your existing Expo project as part of a larger standard native project — one that you would normally create using Xcode, Android Studio, or `react-native init`. [Read more](../expokit/eject.html).
 
 ### iOS
 
@@ -48,7 +55,7 @@ The operating system used on iPhone, iPad, and Apple TV. Expo currently runs on 
 
 ### Linking
 
-Linking can mean [deep linking into apps similar to how you link to websites on the web](linking.html) or [linking native libraries into your detached ExpoKit app](expokit.html#changing-native-dependencies).
+Linking can mean [deep linking into apps similar to how you link to websites on the web](linking.html) or [linking native libraries into your ejected ExpoKit app](../expokit/expokit.html#changing-native-dependencies).
 
 ### Manifest
 
@@ -100,7 +107,7 @@ An application binary that can be submitted to the iOS App Store or Android Play
 
 ### XDE
 
-A desktop tool with a graphical user interface (GUI) for working with Expo projects. It mostly the same functionality as the [exp CLI tool](#exp) but is intended for people who are more comfortable with a GUI.
+XDE was a desktop tool with a graphical user interface (GUI) for working with Expo projects. It's been replaced by [Expo CLI](#expo-cli), which now provides both command line and web interfaces.
 
 ### yarn
 
