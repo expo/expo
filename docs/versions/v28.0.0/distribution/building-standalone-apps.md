@@ -103,7 +103,7 @@ use your own. Similar to the Android keystore, if you don't know what
 a distribution certificate is, just let us handle it for you. If you
 do need to upload your own certificates, we recommend following
 [this excellent guide on making a p12file](https://calvium.com/how-to-make-a-p12-file/).
-**Note:**: this guide recommends leaving the p12's password blank, but a p12 password
+**Note:** this guide recommends leaving the p12's password blank, but a p12 password
 is required to upload your own certificate to Expo's service. Please enter a password
 when prompted.
 
