@@ -21,6 +21,12 @@ First, you’ll need to export all the static files of your app so they can be s
       └── ios-ee8206cc754d3f7aa9123b7f909d94ea.js
 ```
 
+## Hosting your static files
+
+Once you've exported your app's static files, you can host the contents on your own server. For example, in your `dist` output directory, an easy way to host your own files is to push the contents to Github. You can enable [Github Pages](https://pages.github.com/) to make your app available at a base URL like https://username.github.io/project-name.
+
+To host your files locally, follow the instructions below in the 'Loading QR Code/URL in Development' section on setting up a local HTTP server.
+
 ## Build standalone app
 
 In order to configure your standalone binary to pull OTA updates from your server, you’ll need to define the URL where you will host your `index.json` file. Pass the URL to your hosted `index.json` file to the `expo build` command.
@@ -50,8 +56,9 @@ QR code: Generate the URI from a website like https://www.qr-code-generator.com/
 Run `expo export` in dev mode and then start a simple HTTP server in your output directory:
 
 ```
+# Find your local IP address with `ipconfig getifaddr en0`
 # export static app files
-expo export --dev
+expo export --public-url http://`ipconfig getifaddr en0`:8000 --dev
 
 # cd into your output directory
 cd dist
@@ -60,7 +67,7 @@ cd dist
 python -m SimpleHTTPServer 8000
 ```
 
-URI: `exp://localhost:8000/android-index.json`
+URI: `exp://192.xxx.xxx.xxx:8000/android-index.json` (find your local IP with a command like `ipconfig getifaddr en0`)
 
 QR code: Generate a QR code using your URI from a website like https://www.qr-code-generator.com/
 
