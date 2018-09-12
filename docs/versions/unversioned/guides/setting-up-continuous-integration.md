@@ -249,7 +249,7 @@ Most vendors make use of environment variables which are "injected" into the env
 To perform the authentication, we will add this script to our configuration:
 
 ```bash
-$ npx login -u <EXPO USERNAME> -p <EXO PASSWORD>
+$ npx expo login -u <EXPO USERNAME> -p <EXO PASSWORD>
 ```
 
 ### Publish new builds
@@ -261,7 +261,7 @@ It finalizes the whole workflow of creating, testing and shipping your applicati
 To create the builds, we will add this script to our configuration:
 
 ```bash
-$ npx publish --non-interactive
+$ npx expo publish --non-interactive
 ```
 
 <details><summary>Travis CI</summary>
