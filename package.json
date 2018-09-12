@@ -5,7 +5,9 @@
   "author": "Expo",
   "license": "MIT",
   "scripts": {
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "android-image": ".circleci/android-image.sh",
+    "android-shell": ".circleci/android-shell.sh"
   },
   "exp": {
     "sdkVersion": "29.0.0"

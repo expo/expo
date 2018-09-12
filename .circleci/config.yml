@@ -6,6 +6,12 @@ anchors:
     docker:
       - image: circleci/node:8
 
+  - &android_job
+    working_directory: ~/expo
+    docker:
+      - image: dikaiosune/android-oss-ci:1
+    resource_class: xlarge
+
   - &default_env_vars
     TERM: xterm-color
     YARN_CACHE_FOLDER: ~/.cache/yarn
@@ -50,52 +56,6 @@ anchors:
         # Run `yarn install` from the workspace root to install all of the workspaces' dependencies
         # including each other if there are co-dependencies
         yarn install
-
-  - &install_android_dependencies
-    run:
-      name: Install Android dependencies
-      command: |
-        sudo su
-        mkdir -p ${ANDROID_HOME}
-        curl -L "${ANDROID_SDK_URL}" > ${ANDROID_HOME}/sdk.zip
-        cd ${ANDROID_HOME}
-        unzip -q sdk.zip
-        rm sdk.zip
-        # prevents warnings about missing repo config
-        mkdir -p ${HOME}/.android
-        touch ${HOME}/.android/repositories.cfg
-
-        # PATH ${ANDROID_HOME}/platform-tools:${PATH}
-        # PATH ${ANDROID_HOME}/tools:${PATH}
-        # PATH ${ANDROID_HOME}/tools/bin:${PATH}
-        # PATH ${ANDROID_HOME}/build-tools/25.0.0/:${PATH}
-
-        yes | sdkmanager --licenses > /dev/null
-
-        # Install Android SDK components
-        sdkmanager \
-            "platform-tools" \
-            "platforms;android-23" \
-            "build-tools;25.0.0" \
-            "extras;android;m2repository" \
-            "extras;google;m2repository"
-
-        # Install Android NDK
-        # i have no clue why some of this is here, but it's working elsewhere
-        # it appears to install the NDK version expo needs, so that's cool
-        mkdir /ndk_setup
-        cd /ndk_setup
-        curl -L ${ANDROID_NDK_URL} > ${ANDROID_NDK_FILE}
-        chmod +x ${ANDROID_NDK_FILE}
-        sync ./${ANDROID_NDK_FILE}
-        mv ./${ANDROID_NDK_VERSION} ${ANDROID_NDK}
-        cp -R \
-          ${ANDROID_NDK}/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86_64 \
-          ${ANDROID_NDK}/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86
-        cp -R \
-          ${ANDROID_NDK}/toolchains/x86-4.8/prebuilt/linux-x86_64 \
-          ${ANDROID_NDK}/toolchains/x86-4.8/prebuilt/linux-x86
-        cd && rm -rf /ndk_setup
 
   - &restore_yarn_cache
     restore_cache:
@@ -181,8 +141,7 @@ jobs:
           working_directory: ~/expo/home
 
   android:
-    <<: *node_job
-    resource_class: xlarge
+    <<: *android_job
     environment:
       <<: *default_env_vars
     steps:
@@ -190,7 +149,6 @@ jobs:
       - *set_up_environment
       - *restore_yarn_cache
       - *install_workspace_dependencies
-      - *install_android_dependencies
       # - *restore_gradle_cache
       - run:
           name: Build Android
@@ -201,7 +159,7 @@ jobs:
             ./gradlew :app:preBuild || true # but permit failure bc we'll try again
             ./gradlew :app:assembleProdMinSdkProdKernelRelease
 
-            # TODO sign the apk:
+            # TODO sign the apk on master only:
 
             # prep keystore
             # echo $ANDROID_KEYSTORE_B64 | base64 -d > exponentkeystore.jks
