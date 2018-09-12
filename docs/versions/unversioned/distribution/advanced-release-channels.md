@@ -2,8 +2,6 @@
 title: Advanced Release Channels
 ---
 
-> **WARNING:** Channel features are in beta, run `npm install -g exp` to get the most up to date features.
-
 ## Introduction
 
 For a quick introduction to release channels, read [this](https://docs.expo.io/versions/latest/guides/release-channels.html).
