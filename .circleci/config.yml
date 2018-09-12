@@ -9,7 +9,7 @@ anchors:
   - &android_job
     working_directory: ~/expo
     docker:
-      - image: dikaiosune/android-oss-ci:1
+      - image: dikaiosune/android-oss-ci:2
     resource_class: xlarge
 
   - &default_env_vars
