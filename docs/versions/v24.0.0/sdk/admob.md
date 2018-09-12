@@ -35,7 +35,7 @@ AdMobInterstitial.setTestDeviceID('EMULATOR');
 AdMobInterstitial.requestAd(() => AdMobInterstitial.showAd())
 
 // Display a rewarded ad
-AdMobRewarded.setAdUnitID('ca-app-pub-3940256099942544/1033173712'); // Test ID, Replace with your-admob-unit-id
+AdMobRewarded.setAdUnitID('ca-app-pub-3940256099942544/5224354917'); // Test ID, Replace with your-admob-unit-id
 AdMobRewarded.setTestDeviceID('EMULATOR');
 AdMobRewarded.requestAd(() => AdMobRewarded.showAd());
 ```
