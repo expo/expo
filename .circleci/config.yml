@@ -5,6 +5,7 @@ anchors:
     working_directory: ~/expo
     docker:
       - image: circleci/node:8
+    resource_class: small
 
   - &android_job
     working_directory: ~/expo
