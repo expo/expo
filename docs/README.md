@@ -96,6 +96,8 @@ so don't worry if you have code changes or such elsewhere.
 
 When we release a new SDK, we copy the `unversioned` directory, and rename it to the new version. Latest version of docs is read from `package.json` so make sure to update the `version` key there as well. However, if you update the `version` key there, you need to `rm -rf node_modules/.cache/` before the change is picked up (why? [read this](https://github.com/zeit/next.js/blob/4.0.0/examples/with-universal-configuration/README.md#caveats)).
 
+Make sure to also grab the upgrade instructions from the release notes blog post and put them in `upgrading-expo-sdk-walkthrough.md`.
+
 That's all you need to do. The `versions` directory is listed on server start to find all available versions. The routes and navbar contents are automatically inferred from the directory structure within `versions`. So, `/versions/v24.0.0/guides/development-mode` refers to `pages/versions/guides/development-mode`.
 
 Because the navbar is automatically generated from the directory structure, the default ordering of the links under each section is alphabetical. However, for many sections, this is not ideal UX. So, if you wish to override the alphabetical ordering, manipulate page titles in `sidebar-navigation-order.js`.
