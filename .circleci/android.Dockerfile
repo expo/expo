@@ -62,7 +62,8 @@ RUN sudo mkdir /ndk_setup && sudo chown $(whoami):$(whoami) /ndk_setup && \
   sudo cp -R \
     ${ANDROID_NDK}/toolchains/x86-4.8/prebuilt/linux-x86_64 \
     ${ANDROID_NDK}/toolchains/x86-4.8/prebuilt/linux-x86 && \
-  cd && sudo rm -rf /ndk_setup
+  cd && sudo rm -rf /ndk_setup && \
+  sudo chown -R $(whoami):$(whoami) ${ANDROID_NDK}
 
 RUN yarn global add eslint@4.19.1 gulp@4.0.0
 
