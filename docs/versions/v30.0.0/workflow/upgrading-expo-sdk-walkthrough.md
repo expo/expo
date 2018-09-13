@@ -6,6 +6,48 @@ If you are a couple of versions behind, upgrading your projects Expo SDK version
 
 Expo only provides support for the last 6 versions since the latest version.
 
+## SDK 30
+
+#### Upgrade from SDK 29
+
+- `app.json`, change `sdkVersion` to `"30.0.0"`,
+- In package.json, change these dependencies:
+
+```json
+{
+  "react-native": "https://github.com/expo/react-native/archive/sdk-30.0.0.tar.gz",
+  "expo": "^30.0.0",
+  "react": "16.3.1"
+}
+```
+
+- Delete your project’s node_modules directory and run npm install again
+
+#### Notes
+
+- `Fingerprint` has been renamed to `LocalAuthentication`
+
+## SDK 29
+
+#### Upgrade from SDK 28
+
+- `app.json`, change `sdkVersion` to `"29.0.0"`,
+- In package.json, change these dependencies:
+
+```json
+{
+  "react-native": "https://github.com/expo/react-native/archive/sdk-29.0.0.tar.gz",
+  "expo": "^29.0.0",
+  "react": "16.3.1"
+}
+```
+
+- Delete your project’s node_modules directory and run npm install again
+
+#### Notes
+
+- Some field names in `Contacts` were changed. See the [documentation](../sdk/contacts) for more information.
+
 ## SDK 28
 
 #### Upgrade from SDK 27
