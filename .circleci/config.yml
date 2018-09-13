@@ -171,11 +171,11 @@ jobs:
             ./gradlew :app:preBuild || true # but permit failure bc we'll try again
             ./gradlew :app:assembleProdMinSdkProdKernelRelease
 
-            # TODO sign the apk on master only:
             zipalign -v -p 4 ./app/build/outputs/apk/prodMinSdkProdKernel/release/app-prodMinSdk-prodKernel-release-unsigned.apk app-prod-release-unsigned-aligned.apk
+            # TODO sign the apk on master only:
             # echo $ANDROID_KEYSTORE_B64 | base64 -d > exponentkeystore.jks
             #  apksigner sign --ks exponentkeystore.jks --ks-key-alias $ANDROID_KEY_ALIAS --ks-pass env:ANDROID_KEYSTORE_PASSWORD --key-pass env:ANDROID_KEY_PASSWORD --out exponent-release.apk app-prod-release-unsigned-aligned.apk
       - store_artifacts:
-          path: app-prod-release-unsigned-aligned.apk
+          path: ./android/app-prod-release-unsigned-aligned.apk
       - *save_gradle_cache
       - *save_yarn_cache
