@@ -68,6 +68,17 @@ anchors:
       paths:
         - ~/.cache/yarn  # set by YARN_CACHE_FOLDER
 
+  - &restore_gradle_cache
+    restore_cache:
+      # TODO: make the cache key depend on {{ checksum "yarn.lock" }} once we have a yarn.lock file
+      key: gradle-v0-{{ .Branch }}
+
+  - &save_gradle_cache
+    save_cache:
+      key: gradle-v0-{{ .Branch }}
+      paths:
+        - ~/.gradle/caches
+
   - &lint
     name: Lint
     command: yarn lint --max-warnings 0
@@ -149,7 +160,7 @@ jobs:
       - *set_up_environment
       - *restore_yarn_cache
       - *install_workspace_dependencies
-      # - *restore_gradle_cache
+      - *restore_gradle_cache
       - run:
           name: Build Android
           working_directory: ~/expo/android
@@ -160,14 +171,10 @@ jobs:
             ./gradlew :app:assembleProdMinSdkProdKernelRelease
 
             # TODO sign the apk on master only:
-
-            # prep keystore
+            zipalign -v -p 4 ./app/build/outputs/apk/prodMinSdkProdKernel/release/app-prodMinSdk-prodKernel-release-unsigned.apk app-prod-release-unsigned-aligned.apk
             # echo $ANDROID_KEYSTORE_B64 | base64 -d > exponentkeystore.jks
-
-            #  zipalign -v -p 4 ./app/build/outputs/apk/prodMinSdkProdKernel/release/app-prodMinSdk-prodKernel-release-unsigned.apk app-prod-release-unsigned-aligned.apk
-
             #  apksigner sign --ks exponentkeystore.jks --ks-key-alias $ANDROID_KEY_ALIAS --ks-pass env:ANDROID_KEYSTORE_PASSWORD --key-pass env:ANDROID_KEY_PASSWORD --out exponent-release.apk app-prod-release-unsigned-aligned.apk
-      # - store_artifacts:
-      #     path: ~/expo/android/exponent-release.apk
-      # - *save_gradle_cache
+      - store_artifacts:
+          path: app-prod-release-unsigned-aligned.apk
+      - *save_gradle_cache
       - *save_yarn_cache
