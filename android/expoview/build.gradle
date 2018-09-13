@@ -106,7 +106,7 @@ dependencies {
   /* UNCOMMENT WHEN DISTRIBUTING
   api 'com.facebook.react:react-native:30.0.0'
   api 'host.exp.exponent:expo-core:1.1.0'
-  api 'host.exp.exponent:expo-react-native-adapter:1.1.0'
+  api 'host.exp.exponent:expo-react-native-adapter:1.1.1'
   api 'host.exp.exponent:expo-camera:1.1.0'
   api 'host.exp.exponent:expo-camera-interface:1.0.2'
   api 'host.exp.exponent:expo-sensors:1.0.2'
