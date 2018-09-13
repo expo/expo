@@ -142,10 +142,14 @@ public class PermissionsModule extends ExportedModule implements ModuleRegistryC
 
     // check whether to launch WritingSettingsActivity
     if (requestedPermissionsTypesSet.contains("systemBrightness") && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      if (mAskAsyncPromise != null) {
+        promise.reject(ERROR_TAG + "_ASKING_IN_PROGRESS", "Different asking for permissions in progress. Await the old request and then try again.");
+        return;
+      }
       mAskAsyncPromise = promise;
       mAskAsyncRequestedPermissionsTypes = requestedPermissionsTypes;
       mAskAsyncPermissionsTypesToBeAsked = permissionsTypesToBeAsked;
-      askForWriteSettingsPermission();
+      askForWriteSettingsPermissionFirst();
       return;
     }
 
@@ -353,8 +357,18 @@ public class PermissionsModule extends ExportedModule implements ModuleRegistryC
     }
   }
 
+  /**
+   * Asking for {@link android.provider.Settings#ACTION_MANAGE_WRITE_SETTINGS} via separate activity
+   * WARNING: has to be asked first among all permissions being asked in request
+   * Scenario that forces this order:
+   *  1. user asks for "systemBrightness" (actual {@link android.provider.Settings#ACTION_MANAGE_WRITE_SETTINGS}) and for some other permission (e.g. {@link android.Manifest.permission#CAMERA})
+   *  2. first goes ACTION_MANAGE_WRITE_SETTINGS that moves app into background and launches system-specific fullscreen activity
+   *  3. upon user action system resumes app and {@link this#onHostResume} is being called for the first time and logic for other permission is invoked
+   *  4. other permission invokes other system-specific activity that is visible as dialog what moves app again into background
+   *  5. upon user action app is restored and {@link this#onHostResume} is being called again, but no further action is invoked and promise is resolved
+   */
   @TargetApi(Build.VERSION_CODES.M)
-  private void askForWriteSettingsPermission() {
+  private void askForWriteSettingsPermissionFirst() {
     // Launch systems dialog for write settings
     Intent intent = new Intent(android.provider.Settings.ACTION_MANAGE_WRITE_SETTINGS);
     intent.setData(Uri.parse("package:" + getContext().getPackageName()));
@@ -370,12 +384,16 @@ public class PermissionsModule extends ExportedModule implements ModuleRegistryC
     }
     mWritingPermissionBeingAsked = false;
 
-    askForPermissions(mAskAsyncRequestedPermissionsTypes, mAskAsyncPermissionsTypesToBeAsked, mAskAsyncPromise);
-
     // cleanup
+    Promise askAsyncPromise = mAskAsyncPromise;
+    ArrayList<String> askAsyncRequestedPermissionsTypes = mAskAsyncRequestedPermissionsTypes;
+    ArrayList<String> askAsyncPermissionsTypesToBeAsked = mAskAsyncPermissionsTypesToBeAsked;
     mAskAsyncPromise = null;
     mAskAsyncRequestedPermissionsTypes = null;
     mAskAsyncPermissionsTypesToBeAsked = null;
+
+    // invoke actual asking for permissions
+    askForPermissions(askAsyncRequestedPermissionsTypes, askAsyncPermissionsTypesToBeAsked, askAsyncPromise);
   }
 
   @Override
