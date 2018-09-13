@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "expo-core": "~1.1.0",
+    "expo-image-loader-interface": "~1.0.0",
     "expo-permissions-interface": "~1.1.0",
     "lodash.omit": "^4.5.0",
     "lodash.pick": "^4.4.0",
