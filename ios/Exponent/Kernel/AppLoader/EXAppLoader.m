@@ -164,11 +164,11 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 + (NSURL *)_httpUrlFromManifestUrl:(NSURL *)url
 {
   NSURLComponents *components = [NSURLComponents componentsWithURL:url resolvingAgainstBaseURL:YES];
-  // if scheme is exp or http, use http. Else default to https
-  if (components.scheme && ([components.scheme isEqualToString:@"exp"] || [components.scheme isEqualToString:@"http"])){
-    components.scheme = @"http";
-  } else {
+  // if scheme is exps or https, use https. Else default to http
+  if (components.scheme && ([components.scheme isEqualToString:@"exps"] || [components.scheme isEqualToString:@"https"])){
     components.scheme = @"https";
+  } else {
+    components.scheme = @"http";
   }
   NSMutableString *path = [((components.path) ? components.path : @"") mutableCopy];
   path = [[EXKernelLinkingManager stringByRemovingDeepLink:path] mutableCopy];
