@@ -127,7 +127,7 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
       successBlock([NSJSONSerialization dataWithJSONObject:innerManifestObj options:0 error:&jsonError]);
     };
     
-    if ([self _isManifestVerificationBypassed]) {
+    if ([self _isManifestVerificationBypassed:manifestObj]) {
       if ([self _isThirdPartyHosted] && ![EXEnvironment sharedEnvironment].isDetached){
         // the manifest id determines the namespace/experience id an app is sandboxed with
         // if manifest is hosted by third parties, we sandbox it with the hostname to avoid clobbering exp.host namespaces
@@ -310,21 +310,25 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
   return (self.remoteUrl && ![EXKernelLinkingManager isExpoHostedUrl:self.remoteUrl]);
 }
 
-- (BOOL)_isManifestVerificationBypassed
+- (BOOL)_isManifestVerificationBypassed: (id) manifestObj
 {
-  return (
-          // HACK: because `SecItemCopyMatching` doesn't work in older iOS (see EXApiUtil.m)
-          ([UIDevice currentDevice].systemVersion.floatValue < 10) ||
-          
-          // the developer disabled manifest verification
-          [EXEnvironment sharedEnvironment].isManifestVerificationBypassed ||
-          
-          // we're using a copy that came with the NSBundle and was therefore already codesigned
-          [self isUsingEmbeddedResource] ||
-          
-          // we sandbox third party hosted apps instead of verifying signature
-          [self _isThirdPartyHosted]
-  );
+  bool shouldBypassVerification =(
+                                  // HACK: because `SecItemCopyMatching` doesn't work in older iOS (see EXApiUtil.m)
+                                  ([UIDevice currentDevice].systemVersion.floatValue < 10) ||
+                                  
+                                  // the developer disabled manifest verification
+                                  [EXEnvironment sharedEnvironment].isManifestVerificationBypassed ||
+                                  
+                                  // we're using a copy that came with the NSBundle and was therefore already codesigned
+                                  [self isUsingEmbeddedResource] ||
+                                  
+                                  // we sandbox third party hosted apps instead of verifying signature
+                                  [self _isThirdPartyHosted]
+                                  );
+  
+  return
+  // only consider bypassing if there is no signature provided
+  !((NSString *)manifestObj[@"signature"]) && shouldBypassVerification;
 }
 
 - (NSError *)_validateResponseData:(NSData *)data response:(NSURLResponse *)response
