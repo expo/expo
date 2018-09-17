@@ -2,7 +2,7 @@
 title: Payments
 ---
 
-Expo includes support for payments through [Stripe](https://stripe.com/) and [Apple Pay](https://www.apple.com/apple-pay/) on iOS via ExpoKit, and Stripe and Android Pay on Android.
+Expo includes support for payments through [Stripe](https://stripe.com/) and [Apple Pay](https://www.apple.com/apple-pay/) on iOS via ExpoKit, and Stripe on Android (plus Android Pay via ExpoKit).
 
 Need more help than what's on the page? The Payments module is largely based off [tipsi-stripe](https://github.com/tipsi/tipsi-stripe). The documentation and questions there may prove helpful.
 
@@ -501,6 +501,14 @@ try {
 ```
 
 ## AndroidPay
+
+Android Pay (also known as Google Pay) is currently only supported on ExpoKit apps. To add it to your app, add the following lines to your `AndroidManifest.xml` file, inside of the `<application>....</applicaton>` tags:
+
+```xml
+<meta-data
+  android:name="com.google.android.gms.wallet.api.enabled"
+  android:value="true" />
+```
 
 ### `deviceSupportsAndroidPayAsync() -> Promise`
 
