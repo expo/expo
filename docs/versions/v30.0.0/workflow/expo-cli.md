@@ -1,5 +1,5 @@
 ---
-title: Expo CLI 
+title: Expo CLI
 ---
 
 Expo CLI is a command line interface for developing Expo apps. It also includes a web-based inteface (Expo Dev Tools) for using some of the most often used features also from a quick to use graphical interface.
@@ -56,5 +56,8 @@ Commands:
   url|u [options] [project-dir]                   Displays the URL you can use to view your project in Expo
   url:ipa [options] [project-dir]                 Displays the standalone iOS binary URL you can use to download your app binary
   url:apk [options] [project-dir]                 Displays the standalone Android binary URL you can use to download your app binary
+  webhooks:set [options] [project-dir]            Set a webhook for the project.
+  webhooks:show [options] [project-dir]           Show webhooks for the project.
+  webhooks:clear [options] [project-dir]          Clear a webhook associated with this project.
   whoami|w [options]                              Checks with the server and then says who you are logged in as
 ```

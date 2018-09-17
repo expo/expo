@@ -117,6 +117,42 @@ when prompted.
 
 When one of our building machines will be free, it'll start building your app. You can check how long you'll wait on [Turtle status](https://expo.io/turtle-status) site. We'll print a url you can visit (such as `expo.io/builds/some-unique-id`) to watch your build logs. Alternatively, you can check up on it by running `expo build:status`. When it's done, you'll see the url of a `.apk` (Android) or `.ipa` (iOS) file -- this is your app. Copy and paste the link into your browser to download the file.
 
+If you would like to, we can also call your webhook once the build has finished. You can set up a webhook for you project using `expo webhooks:set --event build --url <webhook-url>` command. You will be asked to type a webhook secret. It has to be at least 16 characters long and it will be used to calculate the signature of the request body which we send as the value of the `Expo-Signature` HTTP header. You can use the signature to verify a webhook request is genuine. We promise you that we keep your secret securely encrypted in our database.
+
+We call your webhook using an HTTP POST request and we pass data in the request body. Expo sends your webhook with JSON object with following fields:
+- `status` - a string specifying whether your build has finished successfully (can be either `finished` or `errored`)
+- `id` - the unique ID of your build
+- `artifactUrl` - the URL to the build artifact (we only include this field if the build is successful)
+
+Additionally, we send an `Expo-Signature` HTTP header with the hash signature of the payload. You can use this signature to verify the request is from Expo. The signature is a hex-encoded HMAC-SHA1 digest of the request body, using your webhook secret as the HMAC key.
+
+This is how you can implement your server:
+```javascript
+import crypto from 'crypto';
+import express from 'express';
+import bodyParser from 'body-parser';
+import safeCompare from 'safe-compare';
+
+const app = express();
+app.use(bodyParser.text({ type: '*/*' }));
+app.post('/webhook', (req, res) => {
+  const expoSignature = req.headers['expo-signature'];
+  // process.env.SECRET_WEBHOOK_KEY has to match <webhook-secret> value set with `expo webhooks:set ...` command
+  const hmac = crypto.createHmac('sha1', process.env.SECRET_WEBHOOK_KEY);
+  hmac.update(req.body);
+  const hash = `sha1=${hmac.digest('hex')}`;
+  if (!safeCompare(expoSignature, hash)) {
+    res.status(500).send("Signatures didn't match!");
+  } else {
+    // do sth here
+    res.send('OK!');
+  }
+});
+app.listen(8080, () => console.log('Listening on port 8080'));
+```
+
+You can always change your webhook URL and/or webhook secret using the same command you used to set up the webhook for the first time. To see what your webhook is currently set to, you can use `expo webhooks:show` command. If you would like us to stop sending requests to your webhook, simply run `expo webhooks:clear` in your project.
+
 > **Note:** We enable bitcode for iOS, so the `.ipa` files for iOS are much larger than the eventual App Store download available to your users. For more information, see [App Thinning](https://developer.apple.com/library/content/documentation/IDEs/Conceptual/AppDistributionGuide/AppThinning/AppThinning.html).
 
 ## 5. Test it on your device or simulator
