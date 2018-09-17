@@ -1,7 +1,7 @@
 // @flow
 
 import { Constants } from 'expo-constants';
-import { NativeModules } from 'react-native';
+import { NativeModules, Platform } from 'react-native';
 
 const Google = NativeModules.ExponentGoogle;
 
@@ -11,6 +11,7 @@ type LogInConfig = {
   iosClientId?: string,
   iosStandaloneAppClientId?: string,
   webClientId?: string,
+  clientId?: string,
   behavior?: 'system' | 'web',
   scopes?: Array<string>,
 };
@@ -42,9 +43,10 @@ export async function logInAsync(config: LogInConfig): Promise<LogInResult> {
   }
 
   // Only standalone apps can use system login.
-  if (behavior === 'system' && Constants.appOwnership !== 'standalone') {
-    behavior = 'web';
+  if (Constants.appOwnership !== 'standalone' && (behavior === 'system' && Platform.OS === "android") ) {
+      behavior = 'web';
   }
+  
 
   let scopes = config.scopes;
   if (!scopes) {
@@ -59,8 +61,8 @@ export async function logInAsync(config: LogInConfig): Promise<LogInResult> {
     Constants.appOwnership === 'standalone' ? config.iosStandaloneAppClientId : config.iosClientId;
 
   const logInResult = await Google.logInAsync({
-    androidClientId,
-    iosClientId,
+    androidClientId: androidClientId || config.clientId,
+    iosClientId: iosClientId || config.clientId,
     webClientId: config.webClientId,
     behavior,
     scopes,

@@ -1,0 +1,34 @@
+{
+  "name": "expo-firebase-crashlytics",
+  "version": "1.0.0-rc.0",
+  "description": "Expo Unimodule for interfacing with Firebase Crashlytics",
+  "main": "src/index.js",
+  "keywords": [
+    "react-native",
+    "flutter",
+    "expo",
+    "firebase",
+    "crash",
+    "fabric"
+  ],
+  "homepage": "https://docs.expo.io/",
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "contributors": [
+    "Evan Bacon <bacon@expo.io> (https://github.com/evanbacon)"
+  ],
+  "readmeFilename": "README.md",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/expo/expo-firebase-crashlytics.git"
+  },
+  "bugs": "https://github.com/expo/expo-firebase-crashlytics/issues",
+  "dependencies": {
+    "expo-core": "^1.0.0",
+    "expo-firebase-app": "^1.0.0-rc.0"
+  },
+  "devDependencies": {
+    "babel-preset-expo": "^4.0.0",
+    "flow-bin": "^0.77.0"
+  }
+}
