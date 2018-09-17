@@ -43,7 +43,7 @@ const GUIDES = [
   'Notification Channels',
   'Using Modern JavaScript',
   'Using ClojureScript',
-  'Using Firebase',
+  'Using Firebase: Web SDK',
   'Using GraphQL',
   'Using Sentry',
 ];
