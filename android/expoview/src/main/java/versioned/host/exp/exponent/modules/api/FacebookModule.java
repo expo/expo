@@ -9,12 +9,14 @@ import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
+import com.facebook.login.LoginBehavior;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
@@ -23,6 +25,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 
 import host.exp.exponent.ActivityResultListener;
@@ -45,6 +48,14 @@ public class FacebookModule extends ReactContextBaseJavaModule implements Activi
     return "ExponentFacebook";
   }
 
+  private WritableArray arrayFromPermissions(Set<String> permissions) {
+    WritableArray permissionsArray = Arguments.createArray();
+    for (String permission : permissions) {
+      permissionsArray.pushString(permission);
+    }
+    return permissionsArray;
+  }
+
   @ReactMethod
   public void logInWithReadPermissionsAsync(final String appId, final ReadableMap config, final Promise promise) {
     AccessToken.setCurrentAccessToken(null);
@@ -58,7 +69,20 @@ public class FacebookModule extends ReactContextBaseJavaModule implements Activi
         permissions.add(ps.getString(i));
       }
     } else {
-      permissions = Arrays.asList("public_profile", "email", "user_friends");
+      permissions = Arrays.asList("public_profile", "email");
+    }
+
+    if (config.hasKey("behavior")) {
+      LoginBehavior behavior = LoginBehavior.NATIVE_WITH_FALLBACK;
+      switch (config.getString("behavior")) {
+        case "browser":
+          behavior = LoginBehavior.WEB_ONLY;
+          break;
+        case "web":
+          behavior = LoginBehavior.WEB_VIEW_ONLY;
+          break;
+      }
+      LoginManager.getInstance().setLoginBehavior(behavior);
     }
 
     LoginManager.getInstance().registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
@@ -76,6 +100,9 @@ public class FacebookModule extends ReactContextBaseJavaModule implements Activi
         response.putString("type", "success");
         response.putString("token", loginResult.getAccessToken().getToken());
         response.putInt("expires", (int) (loginResult.getAccessToken().getExpires().getTime() / 1000));
+
+        response.putArray("permissions", arrayFromPermissions(loginResult.getAccessToken().getPermissions()));
+        response.putArray("declinedPermissions", arrayFromPermissions(loginResult.getAccessToken().getDeclinedPermissions()));
         promise.resolve(response);
       }
 

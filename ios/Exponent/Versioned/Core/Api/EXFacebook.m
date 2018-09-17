@@ -24,6 +24,9 @@
 
 @end
 
+NSString * const EXFacebookLoginErrorDomain = @"E_FBLOGIN";
+NSString * const EXFacebookLoginBehaviorErrorDomain = @"E_FBLOGIN_BEHAVIOR";
+
 @implementation EXFacebook
 
 @synthesize bridge = _bridge;
@@ -38,7 +41,7 @@ RCT_REMAP_METHOD(logInWithReadPermissionsAsync,
 {
   NSArray *permissions = config[@"permissions"];
   if (!permissions) {
-    permissions = @[@"public_profile", @"email", @"user_friends"];
+    permissions = @[@"public_profile", @"email"];
   }
 
   NSString *behavior = config[@"behavior"];
@@ -50,7 +53,7 @@ RCT_REMAP_METHOD(logInWithReadPermissionsAsync,
     [FBSDKSettings setAppID:appId];
     FBSDKLoginManager *loginMgr = [[FBSDKLoginManager alloc] init];
 
-    loginMgr.loginBehavior = FBSDKLoginBehaviorWeb;
+    loginMgr.loginBehavior = FBSDKLoginBehaviorSystemAccount;
     if (behavior) {
       // TODO: Support other logon behaviors?
       //       - browser is problematic because it navigates to fb<appid>:// when done
@@ -70,28 +73,21 @@ RCT_REMAP_METHOD(logInWithReadPermissionsAsync,
     if (loginMgr.loginBehavior != FBSDKLoginBehaviorWeb) {
       id<EXConstantsInterface> constants = [self->_bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXConstantsInterface)];
       
-      if ([constants.appOwnership isEqualToString:@"expo"]) {
-        // expo client: only web
-        NSString *message = @"Only `web` behavior is supported in Expo Client.";
-        reject(@"E_BEHAVIOR_NOT_PERMITTED", message, RCTErrorWithMessage(message));
+      if (![constants.appOwnership isEqualToString:@"expo"] && ![[self class] facebookAppIdFromNSBundle]) {
+        // standalone: non-web requires native config
+        NSString *message = [NSString stringWithFormat:
+                             @"Tried to perform Facebook login with behavior `%@`, but "
+                             "no Facebook app id was provided. Specify Facebook app id in app.json "
+                             "or switch to `web` behavior.", behavior];
+        reject(EXFacebookLoginBehaviorErrorDomain, message, RCTErrorWithMessage(message));
         return;
-      } else {
-        if (![[self class] facebookAppIdFromNSBundle]) {
-          // standalone: non-web requires native config
-          NSString *message = [NSString stringWithFormat:
-                               @"Tried to perform Facebook login with behavior `%@`, but "
-                               "no Facebook app id was provided. Specify Facebook app id in app.json "
-                               "or switch to `web` behavior.", behavior];
-          reject(@"E_BEHAVIOR_NOT_SUPPORTED", message, RCTErrorWithMessage(message));
-          return;
-        }
       }
     }
 
     @try {
       [loginMgr logInWithReadPermissions:permissions fromViewController:nil handler:^(FBSDKLoginManagerLoginResult *result, NSError *error) {
         if (error) {
-          reject(@"E_FBLOGIN_ERROR", @"Error with Facebook login", error);
+          reject(EXFacebookLoginErrorDomain, @"Error with Facebook login", error);
           return;
         }
 
@@ -101,17 +97,30 @@ RCT_REMAP_METHOD(logInWithReadPermissionsAsync,
         }
 
         if (![result.token.appID isEqualToString:appId]) {
-          reject(@"E_FBLOGIN_ERROR", @"Logged into wrong app, try again?", nil);
+          reject(EXFacebookLoginErrorDomain, @"Logged into wrong app, try again?", nil);
           return;
         }
 
         NSInteger expiration = [result.token.expirationDate timeIntervalSince1970];
-        resolve(@{ @"type": @"success", @"token": result.token.tokenString, @"expires": @(expiration) });
+        resolve(@{
+                  @"type": @"success",
+                  @"token": result.token.tokenString,
+                  @"expires": @(expiration),
+                  @"permissions": [result.token.permissions allObjects],
+                  @"declinedPermissions": [result.token.declinedPermissions allObjects]
+                  });
       }];
     }
     @catch (NSException *exception) {
-      NSString *message = [@"An error occurred while trying to log in to Facebook: " stringByAppendingString:exception.reason];
-      reject(@"E_FBLOGIN_ERROR", message, nil);
+      NSError *error = [[NSError alloc] initWithDomain:EXFacebookLoginErrorDomain code:650 userInfo:@{
+                                   NSLocalizedDescriptionKey: exception.description,
+                                   NSLocalizedFailureReasonErrorKey: exception.reason,
+                                   @"ExceptionUserInfo": exception.userInfo,
+                                   @"ExceptionCallStackSymbols": exception.callStackSymbols,
+                                   @"ExceptionCallStackReturnAddresses": exception.callStackReturnAddresses,
+                                   @"ExceptionName": exception.name
+                                   }];
+      reject(error.domain, exception.reason, error);
     }
   });
 }
