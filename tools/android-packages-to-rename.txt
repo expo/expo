@@ -1,0 +1,15 @@
+com.facebook.catalyst
+com.facebook.csslayout
+com.facebook.jni
+com.facebook.perftest
+com.facebook.proguard
+com.facebook.quicklog
+com.facebook.react
+com.facebook.systrace
+com.facebook.infer
+com.facebook.yoga
+com.facebook.debug
+expo.core
+expo.interfaces
+expo.modules
+expo.adapters
