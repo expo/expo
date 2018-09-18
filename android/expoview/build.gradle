@@ -114,7 +114,7 @@ dependencies {
   api 'host.exp.exponent:expo-face-detector:1.0.2'
   api 'host.exp.exponent:expo-file-system:1.0.2'
   api 'host.exp.exponent:expo-file-system-interface:1.0.2'
-  api 'host.exp.exponent:expo-payments-stripe:1.0.0'
+  api 'host.exp.exponent:expo-payments-stripe:1.0.1'
   api 'host.exp.exponent:expo-permissions:1.1.0'
   api 'host.exp.exponent:expo-permissions-interface:1.1.0'
   api 'host.exp.exponent:expo-constants:1.0.2'
