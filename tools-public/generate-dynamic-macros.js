@@ -469,24 +469,6 @@ async function writeIOSTemplatesAsync(
     }
   );
 
-  // also render the Podfile for the OSS repo, if we're in universe
-  // stubbed in to eliminate the step of running this script before building the client from expo/expo
-  if (fs.existsSync(path.join(EXPONENT_DIR, 'ios', '__github__'))) {
-    await renderPodfileAsync(
-      path.join(templateFilesPath, platform, 'Podfile'),
-      path.join(EXPONENT_DIR, 'ios', '__github__', 'Podfile'),
-      {
-        TARGET_NAME: 'Exponent',
-        REACT_NATIVE_PATH: '../home/node_modules/react-native',
-        UNIVERSAL_MODULES: generateUniversalModulesConfig(
-          EXPO_CLIENT_UNIVERSAL_MODULES,
-          '../modules/'
-        ),
-        REACT_NATIVE_EXPO_SUBSPECS: ['Expo', 'ExpoOptional'],
-      }
-    );
-  }
-
   if (args.expoKitPath) {
     let expoKitPath = path.join(process.cwd(), args.expoKitPath);
     await renderExpoKitPodspecAsync(

@@ -1,0 +1,3 @@
+rule okhttp3.** expolib_v1.okhttp3.@1
+rule okio.** expolib_v1.okio.@1
+rule com.facebook.imagepipeline.backends.okhttp3.** expolib_v1.com.facebook.imagepipeline.backends.okhttp3.@1

@@ -1,0 +1,28 @@
+{
+  "name": "@expo/expo-tools",
+  "version": "1.0.0",
+  "private": true,
+  "author": "Expo",
+  "license": "Copyright 2013-present 650 Industries",
+  "dependencies": {
+    "@ccheever/crayon": "^5.0.0",
+    "@exponent/spawn-async": "^1.2.8",
+    "appc-aar-tools": "^1.1.4",
+    "chalk": "^2.3.0",
+    "form-data": "^2.2.0",
+    "fs-extra": "^4.0.3",
+    "glob": "^7.0.5",
+    "glob-promise": "^3.3.0",
+    "got": "^6.3.0",
+    "gulp": "^4.0.0",
+    "gulp-shell": "^0.5.2",
+    "lodash.escaperegexp": "^4.1.2",
+    "minimist": "^1.2.0",
+    "nullthrows": "^1.0.0",
+    "shelljs": "^0.7.0",
+    "tmp": "^0.0.33",
+    "xdl": "^50.4.2",
+    "xml2js": "^0.4.17",
+    "yesno": "0.0.1"
+  }
+}
