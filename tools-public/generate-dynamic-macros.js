@@ -33,24 +33,6 @@ const ANDROID_TEST_PERMISSIONS = `
 // some files are absent on turtle builders and we don't want log errors there
 const isTurtle = !!process.env.TURTLE_WORKING_DIR_PATH;
 
-let isInUniverse = true;
-try {
-  let universePkgJson = require(process.env.UNIVERSE_PKG_JSON || '../../package.json');
-  if (universePkgJson.name !== 'universe') {
-    isInUniverse = false;
-  }
-} catch (e) {
-  isInUniverse = false;
-}
-
-let useLegacyWorkflow = false;
-if (isInUniverse) {
-  // determine workflow
-  if (!fs.existsSync('../../.pt-state')) {
-    useLegacyWorkflow = true;
-  }
-}
-
 async function getSavedDevHomeUrlAsync(platform) {
   let devHomeConfig = await new JsonFile(
     path.join(EXPONENT_DIR, 'dev-home-config.json')
@@ -62,7 +44,7 @@ const macrosFuncs = {
   async TEST_APP_URI() {
     if (process.env.TEST_SUITE_URI) {
       return process.env.TEST_SUITE_URI;
-    } else if (isInUniverse) {
+    } else {
       try {
         let testSuitePath = path.join(__dirname, '..', 'apps', 'test-suite');
         let status = await Project.currentStatus(testSuitePath);
@@ -74,8 +56,6 @@ const macrosFuncs = {
       } catch (e) {
         return '';
       }
-    } else {
-      return '';
     }
   },
 
@@ -90,19 +70,17 @@ const macrosFuncs = {
   async TEST_SERVER_URL() {
     let url = 'TODO';
 
-    if (isInUniverse) {
-      try {
-        let lanAddress = ip.address();
-        let localServerUrl = `http://${lanAddress}:3013`;
-        let result = await request.get({
-          url: `${localServerUrl}/expo-test-server-status`,
-          timeout: 500, // ms
-        });
-        if (result.body === 'running!') {
-          url = localServerUrl;
-        }
-      } catch (e) {}
-    }
+    try {
+      let lanAddress = ip.address();
+      let localServerUrl = `http://${lanAddress}:3013`;
+      let result = await request.get({
+        url: `${localServerUrl}/expo-test-server-status`,
+        timeout: 500, // ms
+      });
+      if (result.body === 'running!') {
+        url = localServerUrl;
+      }
+    } catch (e) {}
 
     return url;
   },
@@ -152,13 +130,7 @@ const macrosFuncs = {
       return '';
     }
 
-    let projectRoot;
-    if (isInUniverse && useLegacyWorkflow) {
-      projectRoot = path.join(EXPONENT_DIR, 'home', '__internal__');
-    } else {
-      projectRoot = path.join(EXPONENT_DIR, 'home');
-    }
-
+    let projectRoot = path.join(EXPONENT_DIR, 'home');
     let manifest;
     try {
       let url = await UrlUtils.constructManifestUrlAsync(projectRoot);
