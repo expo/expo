@@ -8,26 +8,14 @@ const fs = require('fs');
 
 exports.startReactNativeServer = function startReactNativeServer(callback) {
   let rootPath = path.join(__dirname, '..');
-  let reactNativePath = path.join(rootPath, 'react-native-lab/react-native/');
-  let isInUniverse = true;
-  try {
-    if (!fs.statSync(reactNativePath).isDirectory()) {
-      isInUniverse = false;
-    }
-  } catch (e) {
-    isInUniverse = false;
-  }
-
-  if (!isInUniverse) {
-    reactNativePath = path.join(rootPath, 'home/node_modules/react-native/');
-  }
-
+  let reactNativePath = path.join(rootPath, 'react-native-lab/react-native/');isIn
   let cliPath = path.join(reactNativePath, 'local-cli/cli.js');
 
   let exponentPath = rootPath;
   let exponentReactPath = path.join(exponentPath, 'home');
   let exponentAssetsPath = path.join(exponentPath, 'ios/Exponent/Images.xcassets');
   let exponentConfigPath = path.join(exponentReactPath, 'rn-cli.config.js');
+  let exponentTransformerPath = path.join(rootPath, 'react-native-lab/transformer.js');
 
   let serverArgs = [
     'start',
@@ -36,11 +24,9 @@ exports.startReactNativeServer = function startReactNativeServer(callback) {
     '--config',
     exponentConfigPath,
     // '--reset-cache',
+    '--transformer',
+    exponentTransformerPath,
   ];
-  if (isInUniverse) {
-    let exponentTransformerPath = path.join(rootPath, 'react-native-lab/transformer.js');
-    serverArgs.push('--transformer', exponentTransformerPath);
-  }
 
   let serverOptions = {
     stdio: 'inherit',
