@@ -33,6 +33,12 @@ Try your app on tablets in addition to handsets. Even if you have `ios.supportsT
 - Make sure your app has a valid iOS [Bundle Identifier](../guides/configuration.html#bundleidentifier) and [Android Package](../guides/configuration.html#package). Take care in choosing these, as you will not be able to change them later.
 - Use [versionCode](../guides/configuration.html#versioncode) and [buildNumber](../guides/configuration.html#buildnumber) to distinguish different binaries of your app.
 
+## Privacy Policy
+
+- Starting October 3, 2018, all new iOS apps and app updates will be required to have a privacy policy in order to pass the App Store Review Guidelines.
+- Additionally, a number of developers have reported warnings from Google if their app does not have a privacy policy, since by default all Expo apps contain code for requesting the Android Advertising ID. Though this code may not be executed depending on which Expo APIs you use, we still recommend that all apps on the Google Play Store include a privacy policy as well.
+- If you're unsure where to start, there are many template Privacy Policies on the web, as well as [this generator tool from Firebase](https://app-privacy-policy-generator.firebaseapp.com/).
+
 ## iOS-specific guidelines
 
 - All apps in the iTunes Store must abide by the [App Store Review Guidelines](https://developer.apple.com/app-store/review/guidelines/).
