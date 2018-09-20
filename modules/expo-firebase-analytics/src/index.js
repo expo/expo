@@ -147,7 +147,7 @@ export default class Analytics extends ModuleBase {
 
   /**
    * Sets multiple user properties to the supplied values.
-   * @RNFirebaseSpecific
+   * @EXFirebaseSpecific
    * @param object
    */
   setUserProperties(object: Object): void {

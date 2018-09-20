@@ -41,14 +41,29 @@ and run `pod install`.
 
 2.  Insert the following lines inside the dependencies block in `android/app/build.gradle`:
     ```gradle
-    compile project(':expo-firebase-database')
+    api project(':expo-firebase-database')
     ```
     and if not already included
     ```gradle
-    compile project(':expo-core')
-    compile project(':expo-firebase-app')
+    api project(':expo-core')
+    api project(':expo-firebase-app')
     ```
-3.  [Now follow the setup instructions in the docs.](https://rnfirebase.io/docs/master/database/android)
+
+Some Unimodules are not included in the default `ExpoKit` suite, these modules will needed to be added manually.
+If your Android build cannot find the Native Modules, you can add them like this:
+
+`./android/app/src/main/java/host/exp/exponent/MainActivity.java`
+
+```java
+@Override
+public List<Package> expoPackages() {
+  // Here you can add your own packages.
+  return Arrays.<Package>asList(
+    new FirebaseAppPackage(), // This should be here for all Expo Firebase features.
+    new FirebaseDatabasePackage() // Include this.
+  );
+}
+```
 
 ## Usage
 

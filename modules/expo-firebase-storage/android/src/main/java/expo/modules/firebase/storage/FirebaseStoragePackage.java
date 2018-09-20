@@ -10,12 +10,6 @@ import expo.core.ExportedModule;
 
 @SuppressWarnings("unused")
 public class FirebaseStoragePackage extends BasePackage {
-//  @RequiresPermission(
-//    allOf = {"android.permission.INTERNET", "android.permission.ACCESS_NETWORK_STATE", "android.permission.READ_EXTERNAL_STORAGE", "android.permission.WRITE_EXTERNAL_STORAGE"}
-//  )
-//  public RNFirebaseStoragePackage() {
-//  }
-
   @Override
   public List<ExportedModule> createExportedModules(Context context) {
     return Collections.singletonList((ExportedModule) new FirebaseStorageModule(context));

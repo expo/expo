@@ -337,12 +337,4 @@ export {
   AndroidNotifications,
   AndroidRemoteInput,
   Notification,
-  OnNotification,
-  OnNotificationObserver,
-  OnNotificationOpened,
-  OnNotificationOpenedObserver,
-  NotificationOpen,
-  NativeNotification,
-  NativeNotificationOpen,
-  Schedule,
 };

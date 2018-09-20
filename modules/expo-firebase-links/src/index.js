@@ -5,16 +5,6 @@
 import { events, getLogger, ModuleBase, getNativeModule, registerModule } from 'expo-firebase-app';
 import type App from 'expo-firebase-app';
 
-import type {
-  NativeAnalyticsParameters,
-  NativeAndroidParameters,
-  NativeIOSParameters,
-  NativeITunesParameters,
-  NativeNavigationParameters,
-  NativeSocialParameters,
-  NativeDynamicLink,
-} from './types';
-
 import { Platform } from 'expo-core';
 import DynamicLink from './DynamicLink';
 const { SharedEventEmitter } = events;
@@ -129,15 +119,5 @@ export { default as IOSParameters } from './IOSParameters';
 export { default as ITunesParameters } from './ITunesParameters';
 export { default as NavigationParameters } from './NavigationParameters';
 export { default as SocialParameters } from './SocialParameters';
-
-export {
-  NativeAnalyticsParameters,
-  NativeAndroidParameters,
-  NativeIOSParameters,
-  NativeITunesParameters,
-  NativeNavigationParameters,
-  NativeSocialParameters,
-  NativeDynamicLink,
-};
 
 registerModule(Links);

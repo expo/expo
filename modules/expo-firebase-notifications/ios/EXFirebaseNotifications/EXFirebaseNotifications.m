@@ -80,7 +80,7 @@ EX_EXPORT_MODULE(ExpoFirebaseNotifications);
  [super setValue:value forKey:key];
  if ([key isEqualToString:@"bridge"] && value) {
  for (NSDictionary* event in pendingEvents) {
- [RNFirebaseUtil sendJSEvent:self name:event[@"name"] body:event[@"body"]];
+ [EXFirebaseUtil sendJSEvent:self name:event[@"name"] body:event[@"body"]];
  }
  [pendingEvents removeAllObjects];
  }
@@ -108,7 +108,7 @@ EX_EXPORT_MODULE(ExpoFirebaseNotifications);
                        @"notification": notification
                        };
     }
-    [self sendJSEvent:self name:event body:notification];
+    [self sendJSEvent:_eventEmitter name:event body:notification];
   }
 }
 
@@ -116,7 +116,7 @@ EX_EXPORT_MODULE(ExpoFirebaseNotifications);
 - (void)didReceiveRemoteNotification:(NSDictionary *)userInfo
               fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
   // FCM Data messages come through here if they specify content-available=true
-  // Pass them over to the RNFirebaseMessaging handler instead
+  // Pass them over to the EXFirebaseMessaging handler instead
   if (userInfo[@"aps"] && ((NSDictionary*)userInfo[@"aps"]).count == 1 && userInfo[@"aps"][@"content-available"]) {
     [[EXFirebaseMessaging instance] didReceiveRemoteNotification:userInfo];
     completionHandler(UIBackgroundFetchResultNoData);
@@ -150,7 +150,7 @@ EX_EXPORT_MODULE(ExpoFirebaseNotifications);
                      };
   }
   
-  [self sendJSEvent:self name:event body:notification];
+  [self sendJSEvent:_eventEmitter name:event body:notification];
   completionHandler(UIBackgroundFetchResultNoData);
 }
 
@@ -198,7 +198,7 @@ EX_EXPORT_MODULE(ExpoFirebaseNotifications);
     event = NOTIFICATIONS_NOTIFICATION_DISPLAYED;
   }
   
-  [self sendJSEvent:self name:event body:message];
+  [self sendJSEvent:_eventEmitter name:event body:message];
   completionHandler(options);
 }
 
@@ -210,7 +210,7 @@ EX_EXPORT_MODULE(ExpoFirebaseNotifications);
 didReceiveNotificationResponse:(UNNotificationResponse *)response
          withCompletionHandler:(void(^)(void))completionHandler NS_AVAILABLE_IOS(10_0) {
   NSDictionary *message = [self parseUNNotificationResponse:response];
-  [self sendJSEvent:self name:NOTIFICATIONS_NOTIFICATION_OPENED body:message];
+  [self sendJSEvent:_eventEmitter name:NOTIFICATIONS_NOTIFICATION_OPENED body:message];
   completionHandler();
 }
 #else
@@ -304,7 +304,7 @@ EX_EXPORT_METHOD_AS(getInitialNotification,
       resolve(initialNotification);
     
   } else {
-      NSDictionary *launchOptions = [_utils launchOptions];
+      NSDictionary *launchOptions = nil; //[_utils launchOptions];
       if (!launchOptions) {
           reject(@"E_NO_LAUNCH_OPTIONS", @"The application's launch options couldn't be retrieved.", nil);
           return;
@@ -424,9 +424,9 @@ EX_EXPORT_METHOD_AS(jsInitialised,
 }
 
 // Because of the time delay between the app starting and the bridge being initialised
-// we create a temporary instance of RNFirebaseNotifications.
+// we create a temporary instance of EXFirebaseNotifications.
 // With this temporary instance, we cache any events to be sent as soon as the bridge is set on the module
-- (void)sendJSEvent:(id<EXEventEmitter>)emitter name:(NSString *)name body:(id)body {
+- (void)sendJSEvent:(id<EXEventEmitterService>)emitter name:(NSString *)name body:(id)body {
   if (emitter != nil && jsReady) {
     [EXFirebaseAppUtil sendJSEvent:emitter name:name body:body];
   } else {
@@ -793,6 +793,6 @@ EX_EXPORT_METHOD_AS(jsInitialised,
 @end
 
 #else
-@implementation RNFirebaseNotifications
+@implementation EXFirebaseNotifications
 @end
 #endif

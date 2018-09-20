@@ -17,7 +17,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven'
 
 group = 'host.exp.exponent'
-version = '1.0.0-rc.0'
+version = '1.0.0-rc.1'
 
 // Upload android library to maven with javadoc and android sources
 configurations {
@@ -51,7 +51,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 26
         versionCode 1
-        versionName "1.0.0-rc.0"
+        versionName "1.0.0-rc.1"
     }
     lintOptions {
         abortOnError false
@@ -73,7 +73,7 @@ dependencies {
     expendency "expo-firebase-app"
     compileOnly "com.google.android.gms:play-services-base:15.0.1"
     api "com.google.firebase:firebase-invites:16.0.1"
-    //TODO:Bacon: Remove React
-    compileOnly 'com.facebook.react:react-native:29.0.0'
+    // TODO:Bacon: Remove React
+    compileOnly "com.facebook.react:react-native:+"  // From node_modules
 
 }

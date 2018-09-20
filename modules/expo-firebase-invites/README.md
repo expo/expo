@@ -70,15 +70,31 @@ Replace the `EXFirebaseLinks` methods with `EXFirebaseInvites` as follows:
 
 2.  Insert the following lines inside the dependencies block in `android/app/build.gradle`:
     ```gradle
-    compile project(':expo-firebase-invites')
+    api project(':expo-firebase-invites')
     ```
     and if not already included
     ```gradle
-    compile project(':expo-core')
-    compile project(':expo-firebase-app')
-    compile project(':expo-firebase-links')
+    api project(':expo-core')
+    api project(':expo-firebase-app')
+    api project(':expo-firebase-links')
     ```
 3.  [Now follow the setup instructions in the docs.](https://rnfirebase.io/docs/master/invites/android)
+
+Some Unimodules are not included in the default `ExpoKit` suite, these modules will needed to be added manually.
+If your Android build cannot find the Native Modules, you can add them like this:
+
+`./android/app/src/main/java/host/exp/exponent/MainActivity.java`
+
+```java
+@Override
+public List<Package> expoPackages() {
+  // Here you can add your own packages.
+  return Arrays.<Package>asList(
+    new FirebaseAppPackage(), // This should be here for all Expo Firebase features.
+    new FirebaseInvitesPackage() // Include this.
+  );
+}
+```
 
 ## Usage
 
@@ -111,3 +127,7 @@ export default class DemoView extends React.Component {
   }
 }
 ```
+
+## Trouble Shooting
+
+If you run into issues installing the ios Pod, you may want to update `GoogleSignIn`. You can do this with: `pod update GoogleSignIn`

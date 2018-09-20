@@ -344,7 +344,7 @@ public class FirebaseNotificationManager {
 
     // Scheduled alarms are cleared on restart
     // We store them so that they can be re-scheduled when the phone restarts in
-    // RNFirebaseNotificationsRebootReceiver
+    // EXFirebaseNotificationsRebootReceiver
     try {
       JSONObject json = BundleJSONConverter.convertToJSON(notification);
       preferences.edit().putString(notificationId, json.toString()).apply();

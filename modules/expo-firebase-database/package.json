@@ -1,6 +1,6 @@
 {
   "name": "expo-firebase-database",
-  "version": "1.0.0-rc.0",
+  "version": "1.0.0-rc.1",
   "description": "Expo Unimodule for interfacing with Firebase Database",
   "main": "src/index.js",
   "keywords": [
@@ -25,7 +25,7 @@
   "bugs": "https://github.com/expo/expo-firebase-database/issues",
   "dependencies": {
     "expo-core": "^1.0.0",
-    "expo-firebase-app": "^1.0.0-rc.0"
+    "expo-firebase-app": "^1.0.0-rc.1"
   },
   "devDependencies": {
     "babel-preset-expo": "^4.0.0",

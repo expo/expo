@@ -20,7 +20,24 @@ pod 'EXFirebaseCrashlytics', path: '../node_modules/expo-firebase-crashlytics/io
 
 and run `pod install`.
 
-Finally add the [**crashlytics build script**](https://rnfirebase.io/docs/master/crashlytics/ios#Add-the-Crashlytics-run-script)
+**Add the Crashlytics run script**
+
+RNFirebase [**crashlytics build script**](https://rnfirebase.io/docs/master/crashlytics/ios#Add-the-Crashlytics-run-script)
+
+1.  Open your project in Xcode and select its project file in the Navigator
+2.  Open the `Build Phases` tab.
+3.  Click `+` Add a new build phase, and select `New Run Script Phase`.
+4.  Add the following line to the `Type a script...` text box:
+
+```rb
+"${PODS_ROOT}/Fabric/run" <FABRIC API KEY> <FABRIC BUILD SECRECT>
+```
+
+5.  [XCode 10 only] Add your app's built Info.plist location to the Build Phase's Input Files field:
+
+```rb
+$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)
+```
 
 #### Android
 
@@ -43,14 +60,29 @@ Finally add the [**crashlytics build script**](https://rnfirebase.io/docs/master
 
 2.  Insert the following lines inside the dependencies block in `android/app/build.gradle`:
     ```gradle
-    compile project(':expo-firebase-crashlytics')
+    api project(':expo-firebase-crashlytics')
     ```
     and if not already included
     ```gradle
-    compile project(':expo-core')
-    compile project(':expo-firebase-app')
+    api project(':expo-core')
+    api project(':expo-firebase-app')
     ```
-3.  [Now include the package in React Native.](https://rnfirebase.io/docs/master/crashlytics/android#Install-the-RNFirebase-Crashlytics-package)
+
+Some Unimodules are not included in the default `ExpoKit` suite, these modules will needed to be added manually.
+If your Android build cannot find the Native Modules, you can add them like this:
+
+`./android/app/src/main/java/host/exp/exponent/MainActivity.java`
+
+```java
+@Override
+public List<Package> expoPackages() {
+  // Here you can add your own packages.
+  return Arrays.<Package>asList(
+    new FirebaseAppPackage(), // This should be here for all Expo Firebase features.
+    new FirebaseCrashlyticsPackage() // Include this.
+  );
+}
+```
 
 ## Usage
 
@@ -80,3 +112,7 @@ export default class DemoView extends React.Component {
   }
 }
 ```
+
+## Trouble Shooting
+
+You may find that the Crashlytics tab is stuck on the onboarding page in the firebase console. If this happens then make sure your Firebase app id matches Expo bundle ID/Package ID. For instance, if you start testing with `host.exp.Exponent` then detach, you will need to update the config to reflect your new ID.

@@ -41,14 +41,30 @@ and run `pod install`.
 
 2.  Insert the following lines inside the dependencies block in `android/app/build.gradle`:
     ```gradle
-    compile project(':expo-firebase-auth')
+    api project(':expo-firebase-auth')
     ```
     and if not already included
     ```gradle
-    compile project(':expo-core')
-    compile project(':expo-firebase-app')
+    api project(':expo-core')
+    api project(':expo-firebase-app')
     ```
 3.  [Now include the package in React Native.](https://rnfirebase.io/docs/master/auth/android#Install-the-RNFirebase-Authentication-package)
+
+Some Unimodules are not included in the default `ExpoKit` suite, these modules will needed to be added manually.
+If your Android build cannot find the Native Modules, you can add them like this:
+
+`./android/app/src/main/java/host/exp/exponent/MainActivity.java`
+
+```java
+@Override
+public List<Package> expoPackages() {
+  // Here you can add your own packages.
+  return Arrays.<Package>asList(
+    new FirebaseAppPackage(), // This should be here for all Expo Firebase features.
+    new FirebaseAuthPackage() // Include this.
+  );
+}
+```
 
 ## Usage
 
@@ -135,3 +151,9 @@ export default class DemoView extends React.Component {
   }
 }
 ```
+
+## Trouble Shooting
+
+If your app crashes instantly on Android in a detached project:
+`java.lang.RuntimeException: Unable to get provider com.google.firebase.provider.FirebaseInitProvider: java.lang.IllegalArgumentException: Given String is empty or null`
+Check to make sure your native `android/app/google-services.json` has a `"current_key": "YOUR_KEY"` and not a blank string.

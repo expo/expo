@@ -42,10 +42,6 @@ public class FirebaseLinksModule extends ExportedModule
 
   public FirebaseLinksModule(Context context) {
     super(context);
-    // TODO:Bacon: Remove React
-    if (getApplicationContext() instanceof ReactContext) {
-      ((ReactContext) getApplicationContext()).addActivityEventListener(this);
-    }
   }
 
   @Override
@@ -56,15 +52,28 @@ public class FirebaseLinksModule extends ExportedModule
   @Override
   public void setModuleRegistry(ModuleRegistry moduleRegistry) {
     // Unregister from old UIManager
-    if (mModuleRegistry != null && mModuleRegistry.getModule(UIManager.class) != null) {
-      mModuleRegistry.getModule(UIManager.class).unregisterLifecycleEventListener(this);
+    if (mModuleRegistry != null) {
+      if (getApplicationContext() instanceof ReactContext) {
+        ((ReactContext) getApplicationContext()).removeActivityEventListener(this);
+      }
+
+      if (mModuleRegistry.getModule(UIManager.class) != null) {
+        mModuleRegistry.getModule(UIManager.class).unregisterLifecycleEventListener(this);
+      }
     }
 
     mModuleRegistry = moduleRegistry;
 
-    // Register to new UIManager
-    if (mModuleRegistry != null && mModuleRegistry.getModule(UIManager.class) != null) {
-      mModuleRegistry.getModule(UIManager.class).registerLifecycleEventListener(this);
+    if (mModuleRegistry != null) {
+      // TODO:Bacon: Remove React
+      if (getApplicationContext() instanceof ReactContext) {
+        ((ReactContext) getApplicationContext()).addActivityEventListener(this);
+      }
+
+      // Register to new UIManager
+      if (mModuleRegistry.getModule(UIManager.class) != null) {
+        mModuleRegistry.getModule(UIManager.class).registerLifecycleEventListener(this);
+      }
     }
   }
 

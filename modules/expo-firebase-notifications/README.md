@@ -70,8 +70,8 @@ Then add the following methods to your `ios/[App Name]/AppDelegate.m`:
 1.  Append the following lines to `android/settings.gradle`:
 
     ```gradle
-    include ':expo-firebase-messaging'
-    project(':expo-firebase-messaging').projectDir = new File(rootProject.projectDir, '../node_modules/expo-firebase-messaging/android')
+    include ':expo-firebase-notifications'
+    project(':expo-firebase-notifications').projectDir = new File(rootProject.projectDir, '../node_modules/expo-firebase-notifications/android')
     ```
 
     and if not already included
@@ -89,15 +89,30 @@ Then add the following methods to your `ios/[App Name]/AppDelegate.m`:
 
 2.  Insert the following lines inside the dependencies block in `android/app/build.gradle`:
     ```gradle
-    compile project(':expo-firebase-messaging')
+    api project(':expo-firebase-notifications')
     ```
     and if not already included
     ```gradle
-    compile project(':expo-core')
-    compile project(':expo-firebase-app')
-    compile project(':expo-firebase-messaging')
+    api project(':expo-core')
+    api project(':expo-firebase-app')
+    api project(':expo-firebase-messaging')
     ```
-3.  [Follow the `RNFirebase` Android docs](https://rnfirebase.io/docs/master/messaging/android#Update-Android-Manifest)
+
+Some Unimodules are not included in the default `ExpoKit` suite, these modules will needed to be added manually.
+If your Android build cannot find the Native Modules, you can add them like this:
+
+`./android/app/src/main/java/host/exp/exponent/MainActivity.java`
+
+```java
+@Override
+public List<Package> expoPackages() {
+  // Here you can add your own packages.
+  return Arrays.<Package>asList(
+    new FirebaseAppPackage(), // This should be here for all Expo Firebase features.
+    new FirebaseNotificationsPackage() // Include this.
+  );
+}
+```
 
 ## Usage
 

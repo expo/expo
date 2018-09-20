@@ -88,6 +88,25 @@ EX_EXPORT_METHOD_AS(deleteApp,
   }];
 }
 
+- (NSMutableDictionary *)encodeFirOptions:(FIROptions *)firOptions
+{
+  NSMutableDictionary *appOptions = [NSMutableDictionary new];
+  appOptions[@"apiKey"] = firOptions.APIKey;
+  appOptions[@"appId"] = firOptions.googleAppID;
+  appOptions[@"databaseURL"] = firOptions.databaseURL;
+  appOptions[@"messagingSenderId"] = firOptions.GCMSenderID;
+  appOptions[@"projectId"] = firOptions.projectID;
+  appOptions[@"storageBucket"] = firOptions.storageBucket;
+  
+  // missing from android sdk / ios only:
+  appOptions[@"clientId"] = firOptions.clientID;
+  appOptions[@"trackingId"] = firOptions.trackingID;
+  appOptions[@"androidClientID"] = firOptions.androidClientID;
+  appOptions[@"deepLinkUrlScheme"] = firOptions.deepLinkURLScheme;
+  
+  return appOptions;
+}
+
 /**
  * React native constant exports - exports native firebase apps mainly
  * @return NSDictionary
@@ -99,27 +118,22 @@ EX_EXPORT_METHOD_AS(deleteApp,
   NSMutableArray *appsArray = [NSMutableArray new];
   
   for (id key in firApps) {
-    NSMutableDictionary *appOptions = [NSMutableDictionary new];
+    
     FIRApp *firApp = firApps[key];
     FIROptions *firOptions = [firApp options];
+    NSMutableDictionary *appOptions = [self encodeFirOptions: firOptions];
     appOptions[@"name"] = [EXFirebaseAppUtil getAppDisplayName:firApp.name];
-    appOptions[@"apiKey"] = firOptions.APIKey;
-    appOptions[@"appId"] = firOptions.googleAppID;
-    appOptions[@"databaseURL"] = firOptions.databaseURL;
-    appOptions[@"messagingSenderId"] = firOptions.GCMSenderID;
-    appOptions[@"projectId"] = firOptions.projectID;
-    appOptions[@"storageBucket"] = firOptions.storageBucket;
-    
-    // missing from android sdk / ios only:
-    appOptions[@"clientId"] = firOptions.clientID;
-    appOptions[@"trackingId"] = firOptions.trackingID;
-    appOptions[@"androidClientID"] = firOptions.androidClientID;
-    appOptions[@"deepLinkUrlScheme"] = firOptions.deepLinkURLScheme;
     
     [appsArray addObject:appOptions];
   }
   
   constants[@"apps"] = appsArray;
+  
+  FIROptions *defaultOptions = [FIROptions defaultOptions];
+  if (defaultOptions != nil) {
+    constants[@"defaultOptions"] = [self encodeFirOptions:defaultOptions];
+  }
+    
   return constants;
 }
 

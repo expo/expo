@@ -154,28 +154,29 @@ EX_EXPORT_METHOD_AS(createShortDynamicLink,
 EX_EXPORT_METHOD_AS(getInitialLink,
                     getInitialLink:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
-  if (_utils.launchOptions[UIApplicationLaunchOptionsURLKey]) {
-    NSURL* url = (NSURL*)_utils.launchOptions[UIApplicationLaunchOptionsURLKey];
-    FIRDynamicLink *dynamicLink = [[FIRDynamicLinks dynamicLinks] dynamicLinkFromCustomSchemeURL:url];
-    resolve(dynamicLink ? dynamicLink.url.absoluteString : initialLink);
-  } else if (_utils.launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey]
-             && [_utils.launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey][UIApplicationLaunchOptionsUserActivityTypeKey] isEqualToString:NSUserActivityTypeBrowsingWeb]) {
-    NSDictionary *dictionary = _utils.launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey];
-    NSUserActivity* userActivity = (NSUserActivity*) dictionary[@"UIApplicationLaunchOptionsUserActivityKey"];
-    [[FIRDynamicLinks dynamicLinks] handleUniversalLink:userActivity.webpageURL
-                                             completion:^(FIRDynamicLink * _Nullable dynamicLink, NSError * _Nullable error) {
-                                               if (error != nil){
-                                                 NSLog(@"Failed to handle universal link: %@", [error localizedDescription]);
-                                                 reject(@"links/failure", @"Failed to handle universal link", error);
-                                               } else {
-                                                 NSString* urlString = dynamicLink ? dynamicLink.url.absoluteString : userActivity.webpageURL.absoluteString;
-                                                 NSLog(@"initial link is: %@", urlString);
-                                                 resolve(urlString);
-                                               }
-                                             }];
-  } else {
-    resolve(initialLink);
-  }
+  // if (_utils.launchOptions[UIApplicationLaunchOptionsURLKey]) {
+  //   NSURL* url = (NSURL*)_utils.launchOptions[UIApplicationLaunchOptionsURLKey];
+  //   FIRDynamicLink *dynamicLink = [[FIRDynamicLinks dynamicLinks] dynamicLinkFromCustomSchemeURL:url];
+  //   resolve(dynamicLink ? dynamicLink.url.absoluteString : initialLink);
+  // } else if (_utils.launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey]
+  //            && [_utils.launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey][UIApplicationLaunchOptionsUserActivityTypeKey] isEqualToString:NSUserActivityTypeBrowsingWeb]) {
+  //   NSDictionary *dictionary = _utils.launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey];
+  //   NSUserActivity* userActivity = (NSUserActivity*) dictionary[@"UIApplicationLaunchOptionsUserActivityKey"];
+  //   [[FIRDynamicLinks dynamicLinks] handleUniversalLink:userActivity.webpageURL
+  //                                            completion:^(FIRDynamicLink * _Nullable dynamicLink, NSError * _Nullable error) {
+  //                                              if (error != nil){
+  //                                                NSLog(@"Failed to handle universal link: %@", [error localizedDescription]);
+  //                                                reject(@"links/failure", @"Failed to handle universal link", error);
+  //                                              } else {
+  //                                                NSString* urlString = dynamicLink ? dynamicLink.url.absoluteString : userActivity.webpageURL.absoluteString;
+  //                                                NSLog(@"initial link is: %@", urlString);
+  //                                                resolve(urlString);
+  //                                              }
+  //                                            }];
+  // } else {
+  //   resolve(initialLink);
+  // }
+  reject(@"links/failure", @"getInitialLink is not implemented in Expo-Firebase yet", nil);
 }
 
 EX_EXPORT_METHOD_AS(jsInitialised,

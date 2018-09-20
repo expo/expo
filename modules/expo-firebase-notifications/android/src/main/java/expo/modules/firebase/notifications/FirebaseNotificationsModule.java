@@ -48,10 +48,6 @@ public class FirebaseNotificationsModule extends ExportedModule
 
   public FirebaseNotificationsModule(Context context) {
     super(context);
-    // TODO:Bacon: Remove React Native
-    if (getApplicationContext() instanceof ReactContext) {
-      ((ReactContext) getApplicationContext()).addActivityEventListener(this);
-    }
 
     notificationManager = new FirebaseNotificationManager(context, mModuleRegistry);
     sharedPreferences = context.getSharedPreferences(BADGE_FILE, Context.MODE_PRIVATE);
@@ -70,13 +66,26 @@ public class FirebaseNotificationsModule extends ExportedModule
 
   @Override
   public String getName() {
-    return "ExpoFirebaseLinks";
+    return "ExpoFirebaseNotifications";
   }
 
   @Override
   public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+    if (mModuleRegistry != null) {
+      if (getApplicationContext() instanceof ReactContext) {
+        ((ReactContext) getApplicationContext()).removeActivityEventListener(this);
+      }
+    }
+
     mModuleRegistry = moduleRegistry;
     FirebaseNotificationsModule.moduleRegistry = moduleRegistry;
+    
+    if (mModuleRegistry != null) {
+      // TODO:Bacon: Remove React
+      if (getApplicationContext() instanceof ReactContext) {
+        ((ReactContext) getApplicationContext()).addActivityEventListener(this);
+      }
+    }
   }
 
   protected final Context getApplicationContext() {
@@ -179,7 +188,7 @@ public class FirebaseNotificationsModule extends ExportedModule
   }
 
   @ExpoMethod
-  public void createChannelGroup(List channelGroupsArray, Promise promise) {
+  public void createChannelGroups(List channelGroupsArray, Promise promise) {
     notificationManager.createChannelGroups(channelGroupsArray);
     promise.resolve(null);
   }
