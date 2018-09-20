@@ -207,7 +207,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -eo pipefail\n\nif [ \"$CONFIGURATION\" == \"Debug\" ]; then\n  echo \"Skipping asset bundling in debug mode.\"\n  exit 0\nfi\n\npushd \"${SRCROOT}/..\"\nvalue=$(cat ~/.expo/PATH)\ndest=$CONFIGURATION_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH\nPATH=\"$PATH:$value\" exp bundle-assets --platform ios --dest \"$dest\"\npopd";
+			shellScript = "set -eo pipefail\n\nif [ \"$CONFIGURATION\" == \"Debug\" ]; then\n  echo \"Skipping asset bundling in debug mode.\"\n  exit 0\nfi\n\nif [ -x "$(command -v expo)" ]; then\n  expocommand="expo"\nelif [ -x "$(command -v exp)" ]; then\n  expocommand="exp"\nelse\n  echo "Please install expo-cli command"\n  exit 1\nfi\n\npushd \"${SRCROOT}/..\"\nvalue=$(cat ~/.expo/PATH)\ndest=$CONFIGURATION_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH\nPATH=\"$PATH:$value\" $expocommand bundle-assets --platform ios --dest \"$dest\"\npopd";
 		};
 		23539343DCC44EF8449429EE /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -266,7 +266,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/bash;
-			shellScript = "set -eo pipefail\n\npushd \"${SRCROOT}/..\"\nvalue=$(cat ~/.expo/PATH)\nPATH=\"$PATH:$value\" exp prepare-detached-build --platform ios\npopd\n";
+			shellScript = "set -eo pipefail\n\nif [ -x "$(command -v expo)" ]; then\n  expocommand="expo"\nelif [ -x "$(command -v exp)" ]; then\n  expocommand="exp"\nelse\n  echo "Please install expo-cli command"\n  exit 1\nfi\n\npushd \"${SRCROOT}/..\"\nvalue=$(cat ~/.expo/PATH)\nPATH=\"$PATH:$value\" $expocommand prepare-detached-build --platform ios\npopd\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
