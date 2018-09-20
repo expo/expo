@@ -1,0 +1,6 @@
+{
+  "extends": "./tsconfig",
+  "compilerOptions": {
+    "module": "es6"
+  }
+}

@@ -536,38 +536,14 @@ export function test(t, { setPortalChild, cleanupPortal }) {
         await retryForStatus(instance, { isPlaying: true });
         await new Promise(resolve => {
           setTimeout(() => {
-            t
-              .expect(onPlaybackStatusUpdate)
-              .toHaveBeenCalledWith(t.jasmine.objectContaining({ didJustFinish: true }));
+            t.expect(onPlaybackStatusUpdate).toHaveBeenCalledWith(
+              t.jasmine.objectContaining({ didJustFinish: true })
+            );
             resolve();
           }, 1000);
         });
       });
     });
-
-    // It should work, but it doesn't.
-    // TODO: fix.
-    /* t.describe('Video.setOnPlaybackStatusUpdate', () => {
-      t.it('sets the update callback func which is called during playing', async () => {
-        const onPlaybackStatusUpdate = t.jasmine.createSpy('onPlaybackStatusUpdate');
-        const props = {
-          style,
-          source,
-          ref: refSetter,
-          shouldPlay: true,
-        };
-        await mountAndWaitFor(<Video {...props} />);
-        instance.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
-        await instance.setProgressUpdateIntervalAsync(100);
-        await new Promise(resolve => {
-          setTimeout(() => {
-            t.expect(onPlaybackStatusUpdate).toHaveBeenCalled();
-            t.expect(onPlaybackStatusUpdate.calls.count()).toBeGreaterThan(5);
-            resolve();
-          }, 800);
-        });
-      });
-    }); */
 
     /*t.describe('Video.setProgressUpdateIntervalAsync', () => {
       t.it('sets frequence of the progress updates', async () => {
@@ -710,9 +686,9 @@ export function test(t, { setPortalChild, cleanupPortal }) {
         });
         await new Promise(resolve => {
           setTimeout(() => {
-            t
-              .expect(onPlaybackStatusUpdate)
-              .toHaveBeenCalledWith(t.jasmine.objectContaining({ didJustFinish: true }));
+            t.expect(onPlaybackStatusUpdate).toHaveBeenCalledWith(
+              t.jasmine.objectContaining({ didJustFinish: true })
+            );
             resolve();
           }, 1000);
         });
@@ -734,9 +710,9 @@ export function test(t, { setPortalChild, cleanupPortal }) {
         });
         await new Promise(resolve => {
           setTimeout(() => {
-            t
-              .expect(onPlaybackStatusUpdate)
-              .toHaveBeenCalledWith(t.jasmine.objectContaining({ didJustFinish: true }));
+            t.expect(onPlaybackStatusUpdate).toHaveBeenCalledWith(
+              t.jasmine.objectContaining({ didJustFinish: true })
+            );
             resolve();
           }, 1000);
         });
@@ -769,9 +745,9 @@ export function test(t, { setPortalChild, cleanupPortal }) {
         });
         await new Promise(resolve => {
           setTimeout(() => {
-            t
-              .expect(onPlaybackStatusUpdate)
-              .toHaveBeenCalledWith(t.jasmine.objectContaining({ didJustFinish: true }));
+            t.expect(onPlaybackStatusUpdate).toHaveBeenCalledWith(
+              t.jasmine.objectContaining({ didJustFinish: true })
+            );
             resolve();
           }, 1000);
         });

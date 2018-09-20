@@ -101,3 +101,6 @@ ios/RCTTest.podspec
 ios/Podfile.lock
 ios/Pods
 .expo
+
+# Yarn
+yarn-error.log
