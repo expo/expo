@@ -10,9 +10,9 @@ const {
   InterstitialAdManager,
   BannerView,
   withNativeAd,
-  MediaView,
+  AdMediaView,
   AdIconView,
-  TriggerableView,
+  AdTriggerView,
 } = Expo.FacebookAds;
 
 AdSettings.addTestDevice(AdSettings.currentDeviceHash);
@@ -41,7 +41,7 @@ class ChangingFullAd extends React.Component {
         <View style={styles.nativeRow}>
           <AdIconView style={styles.iconView} />
           <View style={styles.nativeColumn}>
-            <TriggerableView>
+            <AdTriggerView>
               {nativeAd.advertiserName && (
                 <Text style={styles.title}>{nativeAd.advertiserName}</Text>
               )}
@@ -49,12 +49,12 @@ class ChangingFullAd extends React.Component {
                 <Text style={styles.description}>{nativeAd.sponsoredTranslation}</Text>
               )}
               {nativeAd.headline && <Text style={styles.title}>{nativeAd.headline}</Text>}
-            </TriggerableView>
+            </AdTriggerView>
           </View>
         </View>
 
         <View style={styles.nativeRow}>
-          <MediaView style={styles.mediaView} />
+          <AdMediaView style={styles.mediaView} />
         </View>
 
         {this.state.expanded && (
@@ -67,9 +67,9 @@ class ChangingFullAd extends React.Component {
             </View>
 
             <View style={styles.adButton}>
-              <TriggerableView>
+              <AdTriggerView>
                 <Text>{nativeAd.callToActionText}</Text>
-              </TriggerableView>
+              </AdTriggerView>
             </View>
           </View>
         )}

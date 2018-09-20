@@ -5,10 +5,11 @@
   "author": "Expo",
   "license": "MIT",
   "scripts": {
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "tsc": "echo 'You are trying to run \"tsc\" in the workspace root. Run it from an individual package instead.'"
   },
   "exp": {
-    "sdkVersion": "29.0.0"
+    "sdkVersion": "30.0.0"
   },
   "workspaces": {
     "packages": [
@@ -23,6 +24,7 @@
     "babel-eslint": "^9.0.0",
     "eslint": "^5.4.0",
     "eslint-config-universe": "^2.0.0-alpha.0",
-    "prettier": "^1.14.2"
+    "prettier": "^1.14.2",
+    "typescript": "^3.0.3"
   }
 }
