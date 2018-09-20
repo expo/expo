@@ -21,7 +21,7 @@
     "prepublishOnly": "proofread",
     "test": "jest --watch",
     "tsc": "../../node_modules/.bin/tsc",
-    "ci": "yarn flow check && yarn jest --ci --maxWorkers 2"
+    "ci": "yarn jest --ci --maxWorkers 2"
   },
   "jest": {
     "preset": "jest-expo",
