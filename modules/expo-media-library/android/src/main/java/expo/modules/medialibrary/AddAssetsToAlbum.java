@@ -3,6 +3,7 @@ package expo.modules.medialibrary;
 import android.content.Context;
 import android.database.Cursor;
 import android.media.MediaScannerConnection;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
 
@@ -10,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import expo.core.Promise;
 
@@ -89,8 +91,16 @@ class AddAssetsToAlbum extends AsyncTask<Void, Void, Void> {
         File newAsset = mStrategy.apply(asset, album, mContext);
         paths.add(newAsset.getPath());
       }
-      MediaScannerConnection.scanFile(mContext, paths.toArray(new String[0]), null, null);
-      mPromise.resolve(null);
+
+      final AtomicInteger atomicInteger = new AtomicInteger(paths.size());
+      MediaScannerConnection.scanFile(mContext, paths.toArray(new String[0]), null, new MediaScannerConnection.OnScanCompletedListener() {
+        @Override
+        public void onScanCompleted(String path, Uri uri) {
+          if (atomicInteger.decrementAndGet() == 0) {
+            mPromise.resolve(true);
+          }
+        }
+      });
     } catch (SecurityException e) {
       mPromise.reject(ERROR_UNABLE_TO_SAVE_PERMISSION, "Could not get albums: need WRITE_EXTERNAL_STORAGE permission.", e);
     } catch (IOException e) {
