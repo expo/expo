@@ -51,7 +51,7 @@
   "devDependencies": {
     "expo-yarn-workspaces": "^1.0.0",
     "hashids": "^1.1.1",
-    "jest-expo": "^29.0.0",
+    "jest-expo": "^30.0.0",
     "jsc-android": "^216113.0.0",
     "node-fetch": "^2.0.0",
     "uuid": "^3.0.1"
