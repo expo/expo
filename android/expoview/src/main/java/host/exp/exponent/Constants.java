@@ -26,6 +26,7 @@ public class Constants {
     public List<Constants.EmbeddedResponse> EMBEDDED_RESPONSES;
     public int ANDROID_VERSION_CODE;
     public boolean FCM_ENABLED;
+    // no longer used, but we need to leave this here so that people's old detached apps don't break
     public boolean ANALYTICS_ENABLED;
   }
 
@@ -96,7 +97,7 @@ public class Constants {
       ARE_REMOTE_UPDATES_ENABLED = appConstants.ARE_REMOTE_UPDATES_ENABLED;
       ANDROID_VERSION_CODE = appConstants.ANDROID_VERSION_CODE;
       FCM_ENABLED = appConstants.FCM_ENABLED;
-      ANALYTICS_ENABLED = appConstants.ANALYTICS_ENABLED;
+      ANALYTICS_ENABLED = !isShellApp();
 
       embeddedResponses.addAll(appConstants.EMBEDDED_RESPONSES);
       EMBEDDED_RESPONSES = embeddedResponses;
