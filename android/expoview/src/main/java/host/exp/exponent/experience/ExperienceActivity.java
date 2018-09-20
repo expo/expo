@@ -865,4 +865,8 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
       e.printStackTrace();
     }
   }
+
+  public String getExperienceId() {
+    return mExperienceIdString;
+  }
 }
