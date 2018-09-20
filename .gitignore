@@ -1,74 +1,73 @@
-# Xcode
+# Expo
+.expo
+
+# macOS
 .DS_Store
-*.pbxuser
-!default.pbxuser
-*.mode1v3
-!default.mode1v3
-*.mode2v3
-!default.mode2v3
-*.perspectivev3
-!default.perspectivev3
-xcuserdata
-*.moved-aside
-DerivedData
-*.hmap
-*.xccheckout
-*.xcscmblueprint
-
-# Android Studio
-**/.idea/libraries
-**/.idea/workspace.xml
-**/.idea/gradle.xml
-**/.idea/misc.xml
-**/.idea/modules.xml
-**/.idea/vcs.xml
-*.iml
-.gradle
-/android/app/build
-/android/build
-/android/captures
-/android/local.properties
-/android/tools/build
-/android/ReactAndroid/build
-/android/app/libs/ReactAndroid-temp
-/android/versioned-react-native/build
-/android/versioned-react-native/local.properties
-/android/versioned-react-native/ReactAndroid
-ReactAndroid-temp.aar
-*.apk
-
-# Tools
-jarjar-rules.txt
 
 # Node
 node_modules
 npm-debug.log
+yarn-error.log
 
-# Hyperinstall
-.hyperinstall-state.json
+# Emacs
+*~
 
-# Dynamic Macros
-/ios/Exponent/Supporting/Generated/EXDynamicMacros.h
-/android/app/src/main/java/host/exp/exponent/generated/ExponentBuildConstants.java
-/android/app/src/androidTest/java/host/exp/exponent/generated/TestBuildConstants.java
-.kernel-ngrok-url
-
-# Python
-*.pyc
+# Vim
+.*.swp
+.*.swo
+.*.swn
+.*.swm
 
 # Sublime Text
 *.sublime-project
 *.sublime-workspace
 
-# Floobits
-.floo
-.flooignore
+# Xcode
+*.pbxuser
+!default.pbxuser
+*.xccheckout
+*.xcscmblueprint
+xcuserdata
 
-# Vim temporary files
-.*.swp
-.*.swo
-.*.swn
-.*.swm
+# Android Studio
+*.iml
+.gradle
+.idea/libraries
+.idea/workspace.xml
+.idea/gradle.xml
+.idea/misc.xml
+.idea/modules.xml
+.idea/vcs.xml
+
+# Android
+*.apk
+/android/**/build
+/android/**/local.properties
+/android/captures
+/android/expoview/libs/ReactAndroid-temp
+/android/versioned-react-native/ReactAndroid
+ReactAndroid-temp.aar
+
+# Tools
+jarjar-rules.txt
+
+# Dynamic Macros
+/ios/Exponent/Supporting/EXBuildConstants.plist.bak
+/ios/Exponent/Supporting/EXBuildConstants.plist.json
+/ios/Exponent/Supporting/EXBuildConstants.plist
+/android/expoview/src/main/java/host/exp/exponent/generated/ExponentBuildConstants.java
+/android/app/src/androidTest/java/host/exp/exponent/generated/TestBuildConstants.java
+.kernel-ngrok-url
+
+# Template files
+/android/app/src/main/AndroidManifest.xml
+/android/app/google-services.json
+/android/expoview/src/main/java/host/exp/exponent/generated/ExponentKeys.java
+/android/app/fabric.properties
+/ios/Exponent/Generated/EXKeys.h
+/ios/ExponentIntegrationTests/EXTestEnvironment.plist
+/ios/Podfile
+/exponent-view-template/ios/Podfile
 
 # Codemod
 .codemod.bookmark
@@ -80,27 +79,18 @@ npm-debug.log
 /Deployment
 /Preview.html
 
-# Emacs
-*~
-
 # CI
-android/logcat.txt
+/android/logcat.txt
 
 # Shell apps
 android-shell-app
+shellAppBase-*
+shellAppIntermediates
+shellAppWorkspaces
 
-# Template files
-android/app/src/main/AndroidManifest.xml
-android/app/google-services.json
-android/app/src/main/java/host/exp/exponent/generated/ExponentKeys.java
-android/app/fabric.properties
-ios/Exponent/Supporting/Generated/EXKeys.h
-ios/RCTTest.podspec
+# Expo Client builds
+/client-builds
 
-# Open source
-ios/Podfile.lock
-ios/Pods
-.expo
-
-# Yarn
-yarn-error.log
+# Temporary
+/ios/Podfile.lock
+/ios/Pods
