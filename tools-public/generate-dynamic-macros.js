@@ -375,7 +375,7 @@ async function copyTemplateFileAsync(source, dest, templateSubstitutions, config
 
   _.map(templateSubstitutions, (value, textToReplace) => {
     currentSourceFile = currentSourceFile.replace(
-      new RegExp(`\\\$\\\{${textToReplace}\\\}`, 'g'),
+      new RegExp(`\\$\\{${textToReplace}\\}`, 'g'),
       value
     );
   });
