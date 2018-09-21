@@ -24,6 +24,7 @@
 @property (nonatomic, assign) float focusDepth;
 @property (nonatomic, assign) NSInteger whiteBalance;
 @property (assign, nonatomic) AVCaptureSessionPreset pictureSize;
+@property (nonatomic, assign) NSInteger videoStabilizationMode;
 
 @property (nonatomic, assign) BOOL isScanningBarCodes;
 @property (nonatomic, assign) BOOL isDetectingFaces;

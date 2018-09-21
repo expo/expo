@@ -18,6 +18,13 @@ typedef NS_ENUM(NSInteger, EXCameraFlashMode) {
   EXCameraFlashModeAuto = AVCaptureFlashModeAuto
 };
 
+typedef NS_ENUM(NSInteger, EXCameraVideoStabilizationMode) {
+  EXCameraVideoStabilizationModeOff = AVCaptureVideoStabilizationModeOff,
+  EXCameraVideoStabilizationModeStandard = AVCaptureVideoStabilizationModeStandard,
+  EXCameraVideoStabilizationModeCinematic = AVCaptureVideoStabilizationModeCinematic,
+  EXCameraAVCaptureVideoStabilizationModeAuto = AVCaptureVideoStabilizationModeAuto
+};
+
 typedef NS_ENUM(NSInteger, EXCameraAutoFocus) {
   EXCameraAutoFocusOff = AVCaptureFocusModeLocked,
   EXCameraAutoFocusOn = AVCaptureFocusModeContinuousAutoFocus,

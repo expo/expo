@@ -446,6 +446,13 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
     [self updateSessionAudioIsMuted:shouldBeMuted];
 
     AVCaptureConnection *connection = [_movieFileOutput connectionWithMediaType:AVMediaTypeVideo];
+    if (self.videoStabilizationMode != nil) {
+      if (connection.isVideoStabilizationSupported == NO) {
+        EXLogWarn(@"%s: Video Stabilization is not supported on this device.", __func__);
+      } else {
+        [connection setPreferredVideoStabilizationMode:self.videoStabilizationMode];
+      }
+    }
     [connection setVideoOrientation:[EXCameraUtils videoOrientationForInterfaceOrientation:[[UIApplication sharedApplication] statusBarOrientation]]];
 
     EX_WEAKIFY(self);
