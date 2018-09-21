@@ -107,8 +107,7 @@ NSString * const EXBranchLinkOpenedNotification = @"RNBranchLinkOpenedNotificati
       // on the native module of the standalone app.
       NSNotification *notification =
         [[NSNotification alloc] initWithName:EXBranchLinkOpenedNotification object:self userInfo:result];
-      id branchModule = [[EXKernel sharedInstance] nativeModuleForAppManager:appForModule.appManager named:@"RNBranch"];
-      [branchModule onInitSessionFinished:notification];
+      [versionedBranchModule onInitSessionFinished:notification];
     }];
   }
 }
