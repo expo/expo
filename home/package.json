@@ -36,7 +36,7 @@
     "react": "^16.3.1",
     "react-apollo": "~1.0.1",
     "react-mixin": "^3.0.4",
-    "react-native": "expo/react-native#sdk-30.0.0",
+    "react-native": "*",
     "react-native-deprecated-custom-components": "^0.1.0",
     "react-native-infinite-scroll-view": "^0.4.5",
     "react-navigation": "2.3.1",
