@@ -1,4 +1,4 @@
-# Expo Client [![Forums](https://img.shields.io/badge/expo-forum-blue.svg)](https://forums.expo.io)
+# Expo Client [![CircleCI](https://circleci.com/gh/expo/expo.svg?style=svg)](https://circleci.com/gh/expo/expo) [![Forums](https://img.shields.io/badge/expo-forum-blue.svg)](https://forums.expo.io)
 
 The Expo client app for Android and iOS.
 
