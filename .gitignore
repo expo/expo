@@ -90,7 +90,3 @@ shellAppWorkspaces
 
 # Expo Client builds
 /client-builds
-
-# Temporary
-/ios/Podfile.lock
-/ios/Pods
