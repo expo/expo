@@ -33,9 +33,9 @@ Once the simulator is open and you have a project open in XDE, you can press _Op
 > **Not working?** Occasionally XDE will have trouble installing the Expo Client automatically, usually due to annoying small differences in your environment or Xcode toolchain. If you need to install the Expo Client on your simulator manually, you can follow these steps:
 > 
 > - Download the [latest simulator build](http://expo.io/--/api/v2/versions/download-ios-simulator-build).
-> - Extract the contents of the archive. You should get a directory like `Exponent-X.XX.X`.
+> - Extract the contents of the archive: `mkdir Exponent-X.XX.X.app && tar xvf Exponent-X.XX.X.tar.gz -C Exponent-X.XX.X.app`. You should get a directory like `Exponent-X.XX.X.app`.
 > - Make sure Simulator is running.
-> - At a terminal, run `xcrun simctl install booted [path to extracted directory]`.
+> - At a terminal, run `xcrun simctl install booted [path to Exponent-X.XX.X.app]`.
 
 ### Android emulator
 
