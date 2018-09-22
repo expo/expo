@@ -379,6 +379,61 @@ pipelines:
 </p>
 </details>
 
+<details><summary>CircleCI</summary>
+<p>
+
+```yaml
+---
+version: 2
+publish: &publish
+  working_directory: ~/my-app
+  docker:
+    - image: circleci/node:10.4.1
+  steps:
+    - checkout
+
+    - run:
+        name: Installing dependencies
+        command: npm install
+
+    - run:
+        name: Login into Expo
+        command: npx expo login -u $EXPO_USERNAME -p $EXPO_PASSWORD
+
+    - run:
+        name: Publish to Expo
+        command: npx expo publish --non-interactive --max-workers 1 --release-channel $EXPO_RELEASE_CHANNEL
+
+jobs:
+  publish_to_expo_dev:
+    environment:
+      EXPO_RELEASE_CHANNEL: dev
+    <<: *publish
+
+  publish_to_expo_prod:
+    environment:
+      EXPO_RELEASE_CHANNEL: default
+    <<: *publish
+
+workflows:
+  version: 2
+  my_app:
+    jobs:
+      - publish_to_expo_dev:
+          filters:
+            branches:
+              only: development
+      - publish_to_expo_prod:
+          filters:
+            branches:
+              only: master
+```
+
+> Put this into `.circleci/config.yml` in the root of your repository.
+
+</p>
+</details>
+
 ## Next steps
 
 CI and CD are concepts which are far from fully covered in this guide.
