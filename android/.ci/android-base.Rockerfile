@@ -18,7 +18,7 @@ ADD ./tools-public /src/exponent/tools-public
 RUN cd ./tools-public && yarn --pure-lockfile && yarn add /src/xdl/xdl-packaged.tgz && rm -rf /src/xdl
 
 # Copy relevant files
-ADD ./__internal__ /src/exponent/__internal__
+ADD ./secrets /src/exponent/secrets
 ADD ./template-files /src/exponent/template-files
 ADD ./android /src/exponent/android
 ADD ./cpp /src/exponent/cpp

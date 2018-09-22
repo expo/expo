@@ -290,7 +290,7 @@ async function generateAndroidBuildConstantsFromMacrosAsync(macros) {
     macros.BUILD_MACHINE_KERNEL_MANIFEST = macros.DEV_PUBLISHED_KERNEL_MANIFEST;
     console.log('\n\nUsing published dev version of Expo Home\n\n');
   } else {
-    console.log('\n\nUsing Expo Home from __internal__\n\n');
+    console.log('\n\nUsing Expo Home from your local master branch\n\n');
   }
   delete macros['DEV_PUBLISHED_KERNEL_MANIFEST'];
 
@@ -412,9 +412,9 @@ async function modifyIOSInfoPlistAsync(path, filename, templateSubstitutions) {
 
 async function getTemplateSubstitutions() {
   try {
-    return await new JsonFile(path.join(EXPONENT_DIR, '__internal__', 'keys.json')).readAsync();
+    return await new JsonFile(path.join(EXPONENT_DIR, 'secrets', 'keys.json')).readAsync();
   } catch (e) {
-    // Don't have __internal__, use public keys
+    // Don't have access to decrypted secrets, use public keys
     console.log('generate-dynamic-macros is falling back to `template-files/keys.json`');
     return await new JsonFile(path.join(EXPONENT_DIR, 'template-files', 'keys.json')).readAsync();
   }
