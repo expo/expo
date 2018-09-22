@@ -1,0 +1,53 @@
+{
+  "name": "Folly",
+  "version": "2016.09.26.00",
+  "license": {
+    "type": "Apache License, Version 2.0"
+  },
+  "homepage": "https://github.com/facebook/folly",
+  "summary": "An open-source C++ library developed and used at Facebook.",
+  "authors": "Facebook",
+  "source": {
+    "git": "https://github.com/facebook/folly.git",
+    "tag": "v2016.09.26.00"
+  },
+  "module_name": "folly",
+  "dependencies": {
+    "boost-for-react-native": [
+
+    ],
+    "DoubleConversion": [
+
+    ],
+    "glog": [
+
+    ]
+  },
+  "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",
+  "source_files": [
+    "folly/Bits.cpp",
+    "folly/Conv.cpp",
+    "folly/Demangle.cpp",
+    "folly/StringBase.cpp",
+    "folly/Unicode.cpp",
+    "folly/dynamic.cpp",
+    "folly/json.cpp",
+    "folly/portability/BitsFunctexcept.cpp",
+    "folly/detail/MallocImpl.cpp"
+  ],
+  "preserve_paths": [
+    "folly/*.h",
+    "folly/detail/*.h",
+    "folly/portability/*.h"
+  ],
+  "libraries": "stdc++",
+  "pod_target_xcconfig": {
+    "USE_HEADERMAP": "NO",
+    "CLANG_CXX_LANGUAGE_STANDARD": "c++14",
+    "HEADER_SEARCH_PATHS": "\"$(PODS_TARGET_SRCROOT)\" \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\""
+  },
+  "platforms": {
+    "ios": "8.0",
+    "tvos": "9.2"
+  }
+}

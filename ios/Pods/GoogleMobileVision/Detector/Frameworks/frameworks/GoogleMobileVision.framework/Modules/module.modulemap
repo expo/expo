@@ -1,0 +1,18 @@
+framework module GoogleMobileVision {
+
+  export *
+
+  umbrella header "GoogleMobileVision.h"
+
+  header "GMVDetector.h"
+  header "GMVDetectorConstants.h"
+  header "GMVFeature.h"
+  header "GMVUtility.h"
+
+  link framework "Foundation"
+  link framework "UIKit"
+  link framework "CoreMedia"
+  link framework "CoreVideo"
+  link framework "CoreGraphics"
+  link framework "Accelerate"
+}

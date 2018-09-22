@@ -1,0 +1,1 @@
+../../../../../modules/expo-camera/ios/EXCamera/EXCamera.h

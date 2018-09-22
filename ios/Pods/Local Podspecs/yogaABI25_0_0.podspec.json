@@ -1,0 +1,30 @@
+{
+  "name": "yogaABI25_0_0",
+  "version": "0.52.0.React",
+  "license": {
+    "type": "BSD"
+  },
+  "homepage": "https://facebook.github.io/ABI25_0_0yoga/",
+  "documentation_url": "https://facebook.github.io/ABI25_0_0yoga/docs/api/c/",
+  "summary": "Yoga is a cross-platform layout engine which implements Flexbox.",
+  "description": "Yoga is a cross-platform layout engine enabling maximum collaboration within your team by implementing an API many designers are familiar with, and opening it up to developers across different platforms.",
+  "authors": "Facebook",
+  "source": {
+    "path": "."
+  },
+  "module_name": "ABI25_0_0yoga",
+  "requires_arc": false,
+  "compiler_flags": [
+    "-fno-omit-frame-pointer",
+    "-fexceptions",
+    "-Wall",
+    "-Werror",
+    "-std=c++1y",
+    "-fPIC"
+  ],
+  "platforms": {
+    "ios": "8.0",
+    "tvos": "9.2"
+  },
+  "source_files": "yoga/**/*.{cpp,h}"
+}

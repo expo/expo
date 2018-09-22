@@ -1,0 +1,23 @@
+{
+  "name": "EXFileSystemInterface",
+  "version": "1.0.2",
+  "summary": "Expo interface package for File System",
+  "description": "Expo interface package for File System",
+  "license": "MIT",
+  "authors": "650 Industries, Inc.",
+  "homepage": "https://docs.expo.io/",
+  "platforms": {
+    "ios": "9.0"
+  },
+  "source": {
+    "git": "https://github.com/expo/expo.git"
+  },
+  "source_files": "EXFileSystemInterface/**/*.{h,m}",
+  "preserve_paths": "EXFileSystemInterface/**/*.{h,m}",
+  "requires_arc": true,
+  "dependencies": {
+    "EXCore": [
+
+    ]
+  }
+}

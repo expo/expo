@@ -1,0 +1,23 @@
+{
+  "name": "EXSMS",
+  "version": "1.0.2",
+  "summary": "Expo SMS universal module",
+  "description": "Expo SMS universal module",
+  "license": "MIT",
+  "authors": "650 Industries, Inc.",
+  "homepage": "https://docs.expo.io/",
+  "platforms": {
+    "ios": "9.0"
+  },
+  "source": {
+    "git": "https://github.com/expo/expo.git"
+  },
+  "source_files": "EXSMS/**/*.{h,m}",
+  "preserve_paths": "EXSMS/**/*.{h,m}",
+  "requires_arc": true,
+  "dependencies": {
+    "EXCore": [
+
+    ]
+  }
+}

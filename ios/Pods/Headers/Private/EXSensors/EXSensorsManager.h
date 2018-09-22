@@ -1,0 +1,1 @@
+../../../../../modules/expo-sensors/ios/EXSensors/EXSensorsManager.h

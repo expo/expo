@@ -1,0 +1,1 @@
+../../../../../modules/expo-contacts/ios/EXContacts/EXContacts+Serialization.h

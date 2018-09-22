@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI24_0_0/Expo/Core/Api/FileSystem/ABI24_0_0EXFileSystem.h
