@@ -252,7 +252,7 @@ Configuration for how and when the app should request OTA JavaScript updates
     /* 
       How long (in ms) to allow for fetching OTA updates before falling back to a cached version of the app. 
 
-      Defaults to 30000 (30 sec). Must be between 0 and 300000 (5 minutes). 
+      Defaults to 0. Must be between 0 and 300000 (5 minutes). 
     */
     "fallbackToCacheTimeout": NUMBER
   }
