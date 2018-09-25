@@ -33,12 +33,11 @@ anchors:
 
   - &restore_yarn_cache
     restore_cache:
-      # TODO: make the cache key depend on {{ checksum "yarn.lock" }} once we have a yarn.lock file
-      key: yarn-v0-{{ .Branch }}
+      key: yarn-v1-{{ checksum "yarn.lock" }}
 
   - &save_yarn_cache
     save_cache:
-      key: yarn-v0-{{ .Branch }}
+      key: yarn-v1-{{ checksum "yarn.lock" }}
       paths:
         - ~/.cache/yarn  # set by YARN_CACHE_FOLDER
 
