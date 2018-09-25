@@ -17,10 +17,10 @@
     "clean": "rm -rf build",
     "jest": "jest",
     "lint": "eslint src tools",
-    "prepare": "rm -rf build && tsc",
+    "prepare": "rm -rf build && tsc --project .",
     "prepublishOnly": "proofread",
     "test": "jest --watch",
-    "tsc": "tsc",
+    "tsc": "tsc --project .",
     "ci": "jest --ci --maxWorkers 2"
   },
   "jest": {
