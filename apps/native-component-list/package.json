@@ -12,7 +12,7 @@
     "group": "client"
   },
   "dependencies": {
-    "expo": "^30.0.0-rc.0",
+    "expo": "^30.0.0",
     "expo-processing": "1.0.3",
     "expo-three": "^2.0.3",
     "gl-mat4": "^1.1.4",
@@ -21,8 +21,8 @@
     "pixi.js": "^4.6.1",
     "processing-js": "^1.6.6",
     "prop-types": "^15.6.0",
-    "react": "16.3.1",
-    "react-native": "expo/react-native#sdk-30.0.0",
+    "react": "16.5.0",
+    "react-native": "^0.57.1",
     "react-native-gesture-handler": "1.0.6",
     "react-native-paper": "^2.0.0-alpha.4",
     "react-native-platform-touchable": "^1.1.1",

@@ -14,12 +14,12 @@
   },
   "dependencies": {
     "async-retry": "^1.1.4",
-    "expo": "^30.0.0-rc.0",
+    "expo": "^30.0.0",
     "immutable": "^3.8.1",
     "jasmine-core": "^2.4.1",
     "lodash": "^4.17.4",
-    "react": "16.3.1",
-    "react-native": "expo/react-native#sdk-30.0.0"
+    "react": "16.5.0",
+    "react-native": "^0.57.1"
   },
   "devDependencies": {
     "expo-yarn-workspaces": "^1.0.0"

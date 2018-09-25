@@ -6,6 +6,9 @@
     "start": "node node_modules/react-native/local-cli/cli.js start",
     "test": "jest"
   },
+  "jest": {
+    "preset": "react-native"
+  },
   "dependencies": {
     "async-retry": "^1.2.1",
     "expo-camera": "^1.0.0",
@@ -17,16 +20,13 @@
     "immutable": "^3.8.2",
     "jasmine-core": "^3.1.0",
     "lodash": "^4.17.5",
-    "react": "^16.3.1",
-    "react-native": "0.55.4"
+    "react": "16.5.0",
+    "react-native": "^0.57.1"
   },
   "devDependencies": {
     "babel-jest": "22.4.3",
     "babel-preset-react-native": "4.0.0",
     "jest": "22.4.3",
-    "react-test-renderer": "^16.4.0"
-  },
-  "jest": {
-    "preset": "react-native"
+    "react-test-renderer": "16.5.0"
   }
 }
