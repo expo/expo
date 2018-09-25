@@ -1,22 +1,21 @@
 # READ THIS FIRST, PLEASE!
 
-The App Store version of the Expo iOS client recently had to remove the QR code scanner from the app. If you intend to load your app on a physical iOS device, please use `exp send` with exp, the “Send” button with XDE, or the "s" hotkey with create-react-native-app to send your project development URL to your phone by SMS or email.
+Hello! Thanks for reporting an issue. Please make sure you're posting this in the right place:
 
-Read more at https://blog.expo.io/upcoming-limitations-to-ios-expo-client-8076d01aee1a. We apologize for any inconvenience this may cause you!
+1. If this is an issue with Expo CLI, our command line tool, please post it in the
+  https://github.com/expo/expo-cli repo instead.
+2. If this is a feature request, please vote or post it at https://expo.canny.io instead.
+3. If you are unable to create a reproducible Snack example that demonstrates the bug/issue,
+  please first post in our forums at https://forums.expo.io/ before opening an issue here!
+  (Unless the bug/issue pertains to a standalone, non-ejected build)
 
-<!--
-  Is this a feature request? Please vote or post it at https://expo.canny.io instead.
--->
+Thanks for helping us make Expo better!
 
-### Attention
 
-  If you are unable to create a reproducible Snack example that demonstrates the bug/issue,
-  please first post in our forums at https://forums.expo.io/ before opening an issue here! 
-  (Unless the bug/issue pertains to a standalone, non-detached build)
-  
+
 ### Environment
 
-<!-- In your terminal run `exp diagnostics` and paste the output here. -->
+<!-- In your terminal run `expo diagnostics` and paste the output here. -->
 
 <!-- Please also let us know about your app's target (iOS, Android, Client, Standalone, ExpoKit) -->
 
