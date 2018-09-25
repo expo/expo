@@ -6,6 +6,11 @@ anchors:
     docker:
       - image: circleci/node:8
 
+  - &default_mac
+    working_directory: /Users/distiller/project
+    macos: # https://circleci.com/docs/2.0/testing-ios/#supported-xcode-versions
+      xcode: "9.4.1"
+
   - &default_env_vars
     YARN_CACHE_FOLDER: ~/.cache/yarn
 
@@ -27,6 +32,12 @@ anchors:
         # Run `yarn install` from the workspace root to install all of the workspaces' dependencies
         # including each other if there are co-dependencies
         yarn install
+
+  - &fetch_cocoapods_specs
+    run:
+      name: Fetch CocoaPods Specs
+      command: |
+        curl https://cocoapods-specs.circleci.com/fetch-cocoapods-repo-from-s3.sh | bash -s cf
 
   - &restore_yarn_cache
     restore_cache:
@@ -59,6 +70,18 @@ workflows:
   client:
     jobs:
       - home
+      - client_ios
+  #     - shell_app_sim_base_ios
+  #     - shell_app_ios_tests:
+  #         requires:
+  #           - shell_app_sim_base_ios
+  #           - test_suite_publish
+  #     - test_suite_publish
+  #     - client_android
+  #     - client_android_tests:
+  #         requires:
+  #           - test_suite_publish
+  #     - shell_app_base_android_new
 
 jobs:
   expo_sdk:
@@ -106,3 +129,19 @@ jobs:
       - run:
           <<: *jest
           working_directory: ~/expo/home
+
+  client_ios:
+    <<: *default_mac
+    environment:
+      <<: *default_env_vars
+    steps:
+      - checkout
+      - *set_up_environment
+      - *fetch_cocoapods_specs
+      - run:
+          working_directory: ~/project/tools-public
+          command: yarn install
+      - run:
+          working_directory: ~/project/tools-public
+          command: PATH=$(yarn bin):$PATH ./generate-files-ios.sh
+      - run: fastlane ios create_simulator_build
