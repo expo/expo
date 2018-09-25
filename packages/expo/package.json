@@ -16,12 +16,12 @@
   "scripts": {
     "clean": "rm -rf build",
     "jest": "jest",
-    "lint": "../../node_modules/.bin/eslint src tools",
-    "prepare": "rm -rf build && ../../node_modules/.bin/tsc",
+    "lint": "eslint src tools",
+    "prepare": "rm -rf build && tsc",
     "prepublishOnly": "proofread",
     "test": "jest --watch",
-    "tsc": "../../node_modules/.bin/tsc",
-    "ci": "yarn jest --ci --maxWorkers 2"
+    "tsc": "tsc",
+    "ci": "jest --ci --maxWorkers 2"
   },
   "jest": {
     "preset": "jest-expo",
