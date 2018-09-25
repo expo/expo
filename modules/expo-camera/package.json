@@ -11,10 +11,6 @@
   "homepage": "https://docs.expo.io/",
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "peerDependencies": {
-    "react": "^16.4.0",
-    "react-native": "^0.55.4"
-  },
   "dependencies": {
     "expo-core": "~1.1.0",
     "expo-camera-interface": "~1.0.2",

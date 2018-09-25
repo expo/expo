@@ -16,8 +16,7 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "peerDependencies": {
-    "expo-constants-interface": "~1.0.2",
-    "react-native": "^0.55.4"
+    "expo-constants-interface": "~1.0.2"
   },
   "dependencies": {
     "expo-core": "~1.1.0",
