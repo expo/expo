@@ -17,7 +17,6 @@ const STYLES_SELECT = css`
   height: 48px;
   padding: 0 16px 0 16px;
   border-left: 1px solid ${Constants.colors.border};
-  border-right: 1px solid ${Constants.colors.border};
 `;
 
 const STYLES_SELECT_TEXT = css`
