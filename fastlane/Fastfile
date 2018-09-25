@@ -49,7 +49,10 @@ platform :ios do
   end
 
   lane :create_simulator_build do
-    directory = prompt(text: "Please enter the path where we should output the sim build, relative to ./ios (i.e. ../my-simulator-build):")
+    directory = prompt(
+      ci_input: "./build",
+      text: "Please enter the path where we should output the sim build, relative to ./ios (i.e. ../my-simulator-build):",
+    )
     puts "Build will be written to: " + File.expand_path(directory)
     commands = [
       "cd ../ios",
