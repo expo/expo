@@ -12,8 +12,8 @@
     "expo-permissions": "^1.0.0",
     "expo-file-system": "^1.0.0",
     "expo-react-native-adapter": "^1.0.0",
-    "react": "16.3.1",
-    "react-native": "0.55.4",
+    "react": "16.5.0",
+    "react-native": "^0.57.1",
     "react-native-is-iphonex": "^1.0.1"
   },
   "devDependencies": {

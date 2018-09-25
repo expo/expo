@@ -13,8 +13,7 @@
   "author": "650 Industries, Inc.",
   "license": "BSD",
   "peerDependencies": {
-    "expo-core": "~1.1.0",
-    "react-native": "^0.55.4"
+    "expo-core": "~1.1.0"
   },
   "dependencies": {
     "prop-types": "^15.6.2"
