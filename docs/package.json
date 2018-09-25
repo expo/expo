@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "concurrently -k 'yarn run mdjs' 'node server.js'",
-    "build": "yarn run mdjs-prod && cross-env NODE_ENV=production --max-old-space-size=2048 next build",
+    "build":
+      "yarn run mdjs-prod && cross-env NODE_ENV=production --max-old-space-size=2048 next build",
     "export": "cross-env NODE_ENV=production next export",
     "start": "cross-env NODE_ENV=production node server.js",
     "lint": "eslint .",
@@ -17,6 +18,7 @@
     "import-react-native-docs": "node ./scripts/import-react-native-docs.js"
   },
   "dependencies": {
+    "babel-plugin-module-resolver": "3.1.1",
     "babel-runtime": "6.23.0",
     "body-parser": "^1.18.3",
     "compression": "^1.7.2",
@@ -55,17 +57,12 @@
   "devDependencies": {
     "@babel/cli": "^7.0.0-beta.32",
     "@babel/core": "^7.0.0-beta.32",
-    "babel-plugin-module-resolver": "3.1.1",
     "concurrently": "^3.6.0",
     "lint-staged": "7.2.0",
     "minimist": "^1.2.0",
     "shelljs": "^0.8.2"
   },
   "lint-staged": {
-    "*.js": [
-      "eslint",
-      "prettier --write --no-semi --single-quote",
-      "git add"
-    ]
+    "*.js": ["eslint", "prettier --write --no-semi --single-quote", "git add"]
   }
 }
