@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 scriptdir=$(dirname ${BASH_SOURCE[0]})
 
