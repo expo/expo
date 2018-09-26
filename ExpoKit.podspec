@@ -29,7 +29,7 @@ Pod::Spec.new do |s|
     ss.dependency 'FBSDKLoginKit', '~> 4.28'
     ss.dependency 'FBSDKShareKit', '~> 4.28'
     ss.dependency 'Fabric', '~> 1.6'
-    ss.dependency 'GoogleSignIn', '~> 3.0'
+    ss.dependency 'GoogleSignIn', '~> 4.1'
     ss.dependency 'GoogleMaps', '~> 2.5.0'
     ss.dependency 'Google-Maps-iOS-Utils', '~> 2.1.0'
     ss.dependency 'lottie-ios', '~> 2.5.0'

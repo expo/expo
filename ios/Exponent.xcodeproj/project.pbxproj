@@ -2355,7 +2355,7 @@
 				"${PODS_ROOT}/Amplitude-iOS/Amplitude/ComodoRsaCA.der",
 				"${PODS_ROOT}/Amplitude-iOS/Amplitude/ComodoRsaDomainValidationCA.der",
 				"${PODS_ROOT}/FBSDKCoreKit/FacebookSDKStrings.bundle",
-				"${PODS_ROOT}/GoogleAuthUtilities/Frameworks/frameworks/GoogleAuthUtilities.framework/Resources/GTMOAuth2ViewTouch.xib",
+				"${PODS_ROOT}/GTMOAuth2/Source/Touch/GTMOAuth2ViewTouch.xib",
 				"${PODS_ROOT}/GoogleMaps/Maps/Frameworks/GoogleMaps.framework/Resources/GoogleMaps.bundle",
 				"${PODS_ROOT}/GoogleMobileVision/FaceDetector/Resources/BCLjoy_100.emd",
 				"${PODS_ROOT}/GoogleMobileVision/FaceDetector/Resources/BCLlefteyeclosed_200.emd",

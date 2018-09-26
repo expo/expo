@@ -259,11 +259,6 @@ PODS:
   - Google-Maps-iOS-Utils/QuadTree (2.1.0):
     - GoogleMaps
   - Google-Mobile-Ads-SDK (7.22.0)
-  - GoogleAppUtilities (1.1.2):
-    - GoogleSymbolUtilities (~> 1.1)
-  - GoogleAuthUtilities (2.0.2):
-    - GoogleNetworkingUtilities (~> 1.2)
-    - GoogleSymbolUtilities (~> 1.1)
   - GoogleInterchangeUtilities (1.2.2):
     - GoogleSymbolUtilities (~> 1.1)
   - GoogleMaps (2.5.0):
@@ -281,14 +276,29 @@ PODS:
     - GoogleMobileVision/Detector
   - GoogleNetworkingUtilities (1.2.2):
     - GoogleSymbolUtilities (~> 1.1)
-  - GoogleSignIn (3.0.0):
-    - GoogleAppUtilities (~> 1.0)
-    - GoogleAuthUtilities (~> 2.0)
-    - GoogleNetworkingUtilities (~> 1.0)
-    - GoogleUtilities (~> 1.0)
+  - GoogleSignIn (4.2.0):
+    - "GoogleToolboxForMac/NSDictionary+URLArguments (~> 2.1)"
+    - "GoogleToolboxForMac/NSString+URLArguments (~> 2.1)"
+    - GTMOAuth2 (~> 1.0)
+    - GTMSessionFetcher/Core (~> 1.1)
   - GoogleSymbolUtilities (1.1.2)
+  - GoogleToolboxForMac/DebugUtils (2.1.4):
+    - GoogleToolboxForMac/Defines (= 2.1.4)
+  - GoogleToolboxForMac/Defines (2.1.4)
+  - "GoogleToolboxForMac/NSDictionary+URLArguments (2.1.4)":
+    - GoogleToolboxForMac/DebugUtils (= 2.1.4)
+    - GoogleToolboxForMac/Defines (= 2.1.4)
+    - "GoogleToolboxForMac/NSString+URLArguments (= 2.1.4)"
+  - "GoogleToolboxForMac/NSString+URLArguments (2.1.4)"
   - GoogleUtilities (1.3.2):
     - GoogleSymbolUtilities (~> 1.1)
+  - GTMOAuth2 (1.1.6):
+    - GTMSessionFetcher (~> 1.1)
+  - GTMSessionFetcher (1.2.0):
+    - GTMSessionFetcher/Full (= 1.2.0)
+  - GTMSessionFetcher/Core (1.2.0)
+  - GTMSessionFetcher/Full (1.2.0):
+    - GTMSessionFetcher/Core (= 1.2.0)
   - JKBigInteger2 (0.0.5)
   - lottie-ios (2.5.0)
   - React (0.55.4):
@@ -949,7 +959,7 @@ DEPENDENCIES:
   - Google-Maps-iOS-Utils (~> 2.1.0)
   - Google-Mobile-Ads-SDK (~> 7.22.0)
   - GoogleMaps (~> 2.5.0)
-  - GoogleSignIn (~> 3.0)
+  - GoogleSignIn (~> 4.1)
   - JKBigInteger2 (= 0.0.5)
   - lottie-ios (~> 2.5.0)
   - React/ART (from `../react-native-lab/react-native`)
@@ -1096,15 +1106,16 @@ SPEC REPOS:
     - FBSDKShareKit
     - Google-Maps-iOS-Utils
     - Google-Mobile-Ads-SDK
-    - GoogleAppUtilities
-    - GoogleAuthUtilities
     - GoogleInterchangeUtilities
     - GoogleMaps
     - GoogleMobileVision
     - GoogleNetworkingUtilities
     - GoogleSignIn
     - GoogleSymbolUtilities
+    - GoogleToolboxForMac
     - GoogleUtilities
+    - GTMOAuth2
+    - GTMSessionFetcher
     - JKBigInteger2
     - lottie-ios
 
@@ -1386,15 +1397,16 @@ SPEC CHECKSUMS:
   glog: 1de0bb937dccdc981596d3b5825ebfb765017ded
   Google-Maps-iOS-Utils: c32891ff472eaaa1fca032beedafa1a013af7875
   Google-Mobile-Ads-SDK: 1bdf1a4244d0553b1840239874c209c01aef055f
-  GoogleAppUtilities: a8a552aa74f6597f805e45b5a3962766c3134973
-  GoogleAuthUtilities: ccad2e0a9284699973ff57c0dd24c3893657fda4
   GoogleInterchangeUtilities: d5bc4d88d5b661ab72f9d70c58d02ca8c27ad1f7
   GoogleMaps: c087b8e5dfe87ca6ebf59adb9b4894a4146bec4f
   GoogleMobileVision: d344d69c8987ee239c8a47257e2039084682d181
   GoogleNetworkingUtilities: 3edd3a8161347494f2da60ea0deddc8a472d94cb
-  GoogleSignIn: 3d571172b8603be39dcb1705d8217146bb76fe62
+  GoogleSignIn: 591e46382014e591269f862ba6e7bc0fbd793532
   GoogleSymbolUtilities: 631ee17048aa5e9ab133470d768ea997a5ef9b96
+  GoogleToolboxForMac: 91c824d21e85b31c2aae9bb011c5027c9b4e738f
   GoogleUtilities: 8bbc733218aad26306f9d4a253823986110e3358
+  GTMOAuth2: c77fe325e4acd453837e72d91e3b5f13116857b2
+  GTMSessionFetcher: 0c4baf0a73acd0041bf9f71ea018deedab5ea84e
   JKBigInteger2: e91672035c42328c48b7dd015b66812ddf40ca9b
   lottie-ios: d699fdee68d7b63e721d949388b015fef1aaa4ac
   React: aa2040dbb6f317b95314968021bd2888816e03d5
@@ -1414,6 +1426,6 @@ SPEC CHECKSUMS:
   yogaABI29_0_0: 4fdf5bbd444d2968ec42ccadec97b02c672eda80
   yogaABI30_0_0: 4c86e39466368a6b018b8b78aeb654b6620512a1
 
-PODFILE CHECKSUM: 7090b75f8b20b7ded721907f740b10a0f4462b02
+PODFILE CHECKSUM: b57834a916dc700304a8937efad924ac4409fe32
 
 COCOAPODS: 1.5.3
