@@ -154,7 +154,9 @@ On Android ask for this permission individually.
 
 ## Android: permissions equivalents inside `app.json`
 
-If you specified `android.permissions` inside your `app.json` ([read more about configuration](../workflow/configuration.html#android))  you have to use values corresponding to their `Expo.Permissions` equivalents. 
+If you specified `android.permissions` inside your `app.json` ([read more about configuration](../workflow/configuration.html#android))  you have to use values corresponding to their `Expo.Permissions` equivalents.
+
+> **Note:** If you haven't specified `android.permissions` inside your `app.json` your standalone Android app will require the permissions listed below by default.
 
 | Expo            | Android                                           |
 | --------------- | --------------------------------------------------|
