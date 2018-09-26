@@ -1,4 +1,4 @@
-const babel = require('babel-core');
+const babel = require('@babel/core');
 const fs = require('fs');
 const path = require('path');
 
@@ -27,6 +27,7 @@ it(`aliases @expo/vector-icons`, () => {
   let options = {
     babelrc: false,
     presets: [preset],
+    filename: 'unknown',
     // Make the snapshot easier to read
     retainLines: true,
   };
@@ -40,7 +41,7 @@ imposter.import('react-native-vector-icons');
 `;
   let { code } = babel.transform(sourceCode, options);
 
-  expect(code).toMatch(/'@expo\/vector-icons'/);
+  expect(code).toMatch(/"@expo\/vector-icons"/);
   expect(code).toMatchSnapshot();
 });
 
@@ -52,21 +53,22 @@ it(`composes with babel-plugin-module-resolver`, () => {
       [
         'module-resolver',
         {
-          alias: { 'react-native': '@expo/react-native' },
+          alias: { rn: 'react-native' },
         },
       ],
     ],
+    filename: 'unknown',
     // Make the snapshot easier to read
     retainLines: true,
   };
 
   let sourceCode = `
-import 'react-native';
+import 'rn';
 import 'react-native-vector-icons';
 `;
   let { code } = babel.transform(sourceCode, options);
 
-  expect(code).toMatch(/'@expo\/react-native'/);
-  expect(code).toMatch(/'@expo\/vector-icons'/);
+  expect(code).toMatch(/"react-native"/);
+  expect(code).toMatch(/"@expo\/vector-icons"/);
   expect(code).toMatchSnapshot();
 });
