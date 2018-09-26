@@ -3,6 +3,7 @@
 #import "AppDelegate.h"
 #import "ExpoKit.h"
 #import "EXViewController.h"
+#import <Stripe/Stripe.h>
 
 @interface AppDelegate ()
 
@@ -33,7 +34,6 @@
     if (stripeHandled) {
         return YES;
     }
-
     return [[ExpoKit sharedInstance] application:application openURL:url sourceApplication:sourceApplication annotation:annotation];
 }
 

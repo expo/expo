@@ -4,7 +4,7 @@
     "description": "This project is really great.",
     "slug": "with-expokit",
     "privacy": "public",
-    "sdkVersion": "29.0.0",
+    "sdkVersion": "30.0.0",
     "platforms": [
       "ios",
       "android"
@@ -31,12 +31,12 @@
     },
     "isDetached": true,
     "detach": {
-      "iosExpoViewUrl": "https://s3.amazonaws.com/exp-exponent-view-code/ios-v2.7.0-sdk29.0.0-de70611d-e42d-4d50-a6a5-2d8eabf6ed72.tar.gz",
-      "androidExpoViewUrl": "https://s3.amazonaws.com/exp-exponent-view-code/android-v2.6.0-sdk29.0.0-2366e226-0c19-4600-aa66-dce75dd474fb.tar.gz"
+      "iosExpoViewUrl": "https://s3.amazonaws.com/exp-exponent-view-code/ios-v2.8.3-sdk30.0.0-fa2277b2-7f1a-4a20-b124-246a322e10b5.tar.gz",
+      "androidExpoViewUrl": "https://s3.amazonaws.com/exp-exponent-view-code/android-v2.8.1-sdk30.0.0-271c32ab-0715-4dfb-8270-ecead3679bb4.tar.gz"
     },
-    "scheme": "expb30bd136a19a44adba16125e3f75abc5",
+    "scheme": "exp9d1ea7e1de174f31828a156ea7a38e11",
     "android": {
-      "package": "host.exp.exponent.payments.stripe.examples.expokit",
+      "package": "host.exp.exponent",
       "publishBundlePath": "android/app/src/main/assets/shell-app.bundle",
       "publishManifestPath": "android/app/src/main/assets/shell-app-manifest.json"
     }

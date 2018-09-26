@@ -10,7 +10,6 @@ import java.util.Collections;
 import java.util.List;
 
 import expo.core.interfaces.Package;
-import expo.modules.payments.stripe.StripePackage;
 import host.exp.exponent.generated.DetachBuildConstants;
 import host.exp.exponent.experience.DetachActivity;
 
@@ -28,7 +27,7 @@ public class MainActivity extends DetachActivity {
 
   @Override
   public List<String> sdkVersions() {
-    return new ArrayList<>(Arrays.asList("29.0.0"));
+    return new ArrayList<>(Arrays.asList("30.0.0"));
   }
 
   @Override
@@ -39,9 +38,7 @@ public class MainActivity extends DetachActivity {
   @Override
   public List<Package> expoPackages() {
     // Here you can add your own packages.
-    List<Package> packages = new ArrayList<>(super.expoPackages());
-    packages.add(new StripePackage());
-    return packages;
+    return super.expoPackages();
   }
 
   @Override

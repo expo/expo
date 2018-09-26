@@ -11,15 +11,16 @@ import host.exp.exponent.Constants;
 @DoNotStrip
 public class AppConstants {
 
-  public static final String VERSION_NAME = "2.7.1";
+  public static final String VERSION_NAME = "2.8.1";
   public static String INITIAL_URL = "exp://exp.host/@szymon20000/with-expokit";
   public static final boolean IS_DETACHED = true;
-  public static final String SHELL_APP_SCHEME = "expb30bd136a19a44adba16125e3f75abc5";
+  public static final String SHELL_APP_SCHEME = "exp9d1ea7e1de174f31828a156ea7a38e11";
   public static final String RELEASE_CHANNEL = "default";
   public static boolean SHOW_LOADING_VIEW_IN_SHELL_APP = false;
   public static boolean ARE_REMOTE_UPDATES_ENABLED = true;
   public static final List<Constants.EmbeddedResponse> EMBEDDED_RESPONSES;
   public static boolean FCM_ENABLED = false;
+  public static boolean ANALYTICS_ENABLED = true;
 
   static {
     List<Constants.EmbeddedResponse> embeddedResponses = new ArrayList<>();
@@ -43,6 +44,7 @@ public class AppConstants {
     constants.EMBEDDED_RESPONSES = EMBEDDED_RESPONSES;
     constants.ANDROID_VERSION_CODE = BuildConfig.VERSION_CODE;
     constants.FCM_ENABLED = FCM_ENABLED;
+    constants.ANALYTICS_ENABLED = ANALYTICS_ENABLED;
     return constants;
   }
 }
