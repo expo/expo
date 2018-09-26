@@ -492,7 +492,22 @@ Configuration for how and when the app should request OTA JavaScript updates
 
       Don't use "permissions" to use the default list.
 
-      Set "permissions" to [] to use ONLY the MINIMUM necessary permissions.
+      Set "permissions" to [] to use ONLY the following MINIMUM necessary permissions:
+      
+      •	receive data from Internet
+      •	view network connections
+      •	full network access
+      •	change your audio settings
+      •	draw over other apps
+      •	prevent device from sleeping
+      •	view network connections
+      •	full network access
+      •	change your audio settings
+      •	draw over other apps
+      •	prevent device from sleeping
+      
+      Note: these do not require privacy policy when uploading to Google Play Store.
+      
     */
     "permissions": [
       "ACCESS_COARSE_LOCATION",
