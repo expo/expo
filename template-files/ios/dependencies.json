@@ -41,7 +41,7 @@
   },
   {
     "name": "GoogleSignIn",
-    "version": "~> 3.0"
+    "version": "~> 4.1"
   },
   {
     "name": "GoogleMaps",
