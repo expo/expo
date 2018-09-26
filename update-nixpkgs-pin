@@ -1,0 +1,19 @@
+#!/usr/bin/env nix-shell
+#!nix-shell -i bash -I . --packages nix-prefetch-git
+set -euo pipefail
+
+# This file updates "nixpkgs.json" with information on latest tested commit of
+# the nixpkgs package repository.
+
+# "nixpkgs-channels" is a mirror of "nixpkgs" with branches that track release channels
+repo=https://github.com/NixOS/nixpkgs-channels.git
+
+# "nixos-unstable" is a branch which points to the latest commit that has passed their CI
+rev=${1:-refs/heads/nixos-unstable} 
+
+# "nix-prefetch-git" is a tool that downloads and prints information about a git reference
+# Notably, it includes a commit sha and content hash
+newCommit=$(nix-prefetch-git --url $repo --rev $rev)
+
+# "default.nix" uses this file to pin exact dependencies
+echo "$newCommit" > nixpkgs.json

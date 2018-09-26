@@ -1,14 +1,22 @@
 version: 2.1
 
 commands:
-  set_up_environment:
+  install_nix:
+    steps:
+      - run: curl https://nixos.org/releases/nix/nix-2.1.2/install | bash -s -- --no-daemon
+      - run: echo ". ~/.nix-profile/etc/profile.d/nix.sh" >> ~/.bash_profile
+  setup:
+    steps:
+      # ssh: used in circleci checkout steps
+      # direnv: used to configure environment with .envrc files
+      - run: nix-env -iA nixpkgs.openssh nixpkgs.direnv
+      - run: mkdir -p ~/.config/direnv
+      - run: echo -e "[whitelist]\nprefix = [ \"$HOME\" ]" > ~/.config/direnv/config.toml
+      - run: echo 'eval "$(direnv export bash)"' >> ~/.bash_profile
+      - checkout
+  update_submodules:
     steps:
       - run: git submodule update --init
-      - run: curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version 1.10.1
-  install_workspace_dependencies:
-    description: "Run `yarn install` from the workspace root to install all of the workspaces' dependencies"
-    steps:
-      - run: yarn install
   fetch_cocoapods_specs:
     steps:
       - run: curl https://cocoapods-specs.circleci.com/fetch-cocoapods-repo-from-s3.sh | bash -s cf
@@ -21,41 +29,33 @@ commands:
       - save_cache:
           key: yarn-v1-{{ checksum "yarn.lock" }}
           paths:
-            - ~/.cache/yarn  # set by YARN_CACHE_FOLDER
-  jest:
+            - ~/.cache/yarn  # `yarn cache dir`
+  yarn:
     parameters:
-      dir:
+      command:
         type: string
-      workers:
-        type: string
-        default: "1"
-    steps:
-      - run:
-          working_directory: << parameters.dir >>
-          command: yarn jest --maxWorkers << parameters.workers >>
-  lint:
-    parameters:
-      dir:
+        default: install
+      working_directory:
         type: string
     steps:
       - run:
-          working_directory: << parameters.dir >>
-          command: yarn lint --max-warnings 0
+          working_directory: << parameters.working_directory >>
+          command: for i in {1..5}; do nix run nixpkgs.yarn -c yarn << parameters.command >> && break || sleep 5; done
 
 executors:
+  # We add -l to all the shell commands to make it easier to use direnv
   js:
     docker:
-      - image: circleci/node:8
+      - image: lnl7/nix:latest # only latest includes common utils we want
     resource_class: small
     working_directory: ~/expo
-    environment:
-      YARN_CACHE_FOLDER: ~/.cache/yarn
+    # Symlink to the readline-enabled bash which is the default command of the container
+    shell: /run/current-system/sw/bin/bash -leo pipefail
   mac:
     macos: # https://circleci.com/docs/2.0/testing-ios/#supported-xcode-versions
       xcode: "10.0.0"
     working_directory: /Users/distiller/project
-    environment:
-      YARN_CACHE_FOLDER: ~/.cache/yarn
+    shell: /bin/bash -leo pipefail
 
 workflows:
   version: 2
@@ -87,49 +87,53 @@ jobs:
   expo_sdk:
     executor: js
     steps:
-      - checkout
-      - set_up_environment
+      - setup
+      - update_submodules
       - restore_yarn_cache
-      - install_workspace_dependencies
+      - yarn:
+          working_directory: ~/expo
       - save_yarn_cache
       # Add back linting once we get ESLint or TSLint set up
-      - jest:
-          dir: ~/expo/packages/expo
+      - yarn:
+          command: jest --maxWorkers 1
+          working_directory: ~/expo/packages/expo
 
   babel_preset:
     executor: js
     steps:
-      - checkout
-      - set_up_environment
+      - setup
+      - update_submodules
       - restore_yarn_cache
-      - install_workspace_dependencies
+      - yarn:
+          working_directory: ~/expo
       - save_yarn_cache
-      - lint:
-          dir: ~/expo/packages/babel-preset-expo
-      - jest:
-          dir: ~/expo/packages/babel-preset-expo
+      - yarn:
+          command: lint --max-warnings 0
+          working_directory: ~/expo/packages/babel-preset-expo
+      - yarn:
+          command: jest --maxWorkers 1
+          working_directory: ~/expo/packages/babel-preset-expo
 
   home:
     executor: js
     steps:
-      - checkout
-      - set_up_environment
+      - setup
+      - update_submodules
       - restore_yarn_cache
-      - install_workspace_dependencies
+      - yarn:
+          working_directory: ~/expo
       - save_yarn_cache
-      - jest:
-          dir: ~/expo/home
+      - yarn:
+          command: jest --maxWorkers 1
+          working_directory: ~/expo/home
 
   client_ios:
     executor: mac
     steps:
-      - checkout
-      - set_up_environment
+      - install_nix
+      - setup
       - fetch_cocoapods_specs
-      - run:
+      - yarn:
           working_directory: ~/project/tools-public
-          command: yarn install
-      - run:
-          working_directory: ~/project/tools-public
-          command: PATH=$(yarn bin):$PATH ./generate-files-ios.sh
+      - run: nix run nixpkgs.nodejs-8_x -c ~/project/tools-public/generate-files-ios.sh
       - run: fastlane ios create_simulator_build
