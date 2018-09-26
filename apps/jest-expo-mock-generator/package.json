@@ -14,6 +14,6 @@
     "react-native": "^0.55.4"
   },
   "devDependencies": {
-    "expo-yarn-workspaces": "1.0.0"
+    "expo-yarn-workspaces": "^1.1.0"
   }
 }

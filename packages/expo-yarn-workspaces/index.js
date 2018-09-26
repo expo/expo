@@ -11,7 +11,7 @@ const path = require('path');
  * configuration:
  *
  *   * includes the Yarn workspace root in Metro's list of root directories
- *   * resolves symlinked packages, namely workspaces 
+ *   * resolves symlinked packages, namely workspaces
  *   * excludes all modules from Haste's module system (providesModule)
  *   * excludes modules in the native Android and Xcode projects
  */
@@ -52,10 +52,7 @@ exports.createReactNativeConfiguration = function createReactNativeConfiguration
 
     // Ignore JS files in the native Android and Xcode projects
     getBlacklistRE() {
-      return blacklist([
-        /.*\/android\/ReactAndroid\/.*/,
-        /.*\/versioned-react-native\/.*/,
-      ]);
+      return blacklist([/.*\/android\/ReactAndroid\/.*/, /.*\/versioned-react-native\/.*/]);
     },
   };
 };
