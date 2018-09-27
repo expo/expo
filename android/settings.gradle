@@ -98,3 +98,6 @@ project(":expo-ads-admob").projectDir = new File(rootDir, "../modules/expo-ads-a
 
 include ":expo-local-authentication"
 project(":expo-local-authentication").projectDir = new File(rootDir, "../modules/expo-local-authentication/android")
+
+include ":expo-firebase-app"
+project(":expo-firebase-app").projectDir = new File(rootDir, "../modules/expo-firebase-app/android")

@@ -51,4 +51,7 @@ module.exports = {
   get ScreenStack() {
     return require('react-native-screens').ScreenStack;
   },
+  get firebase() {
+    return require('expo-firebase-app').default;
+  },
 };

@@ -37,6 +37,7 @@ import expo.modules.medialibrary.MediaLibraryPackage;
 import expo.modules.permissions.PermissionsPackage;
 import expo.modules.sensors.SensorsPackage;
 import expo.modules.sms.SMSPackage;
+import expo.modules.firebase.app.FirebaseAppPackage;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.kernel.ExperienceId;
@@ -119,7 +120,8 @@ public class ExponentPackage implements ReactPackage {
       new BarCodeScannerPackage(),
       new AdMobPackage(),
       new StripePackage(),
-      new LocalAuthenticationPackage()
+      new LocalAuthenticationPackage(),
+      new FirebaseAppPackage()
   );
 
   private static final String TAG = ExponentPackage.class.getSimpleName();
