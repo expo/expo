@@ -64,9 +64,6 @@ const WORKING_WITH_EXPO = [
   'Building Standalone Apps',
   'Publishing',
   'Linking',
-  'Detaching to ExpoKit',
-  'Developing With ExpoKit',
-  'Advanced ExpoKit Topics',
   'Expo & "Create React Native App"',
   'How Expo Works',
 ];
@@ -78,7 +75,13 @@ const DISTRIBUTION = [
   'Advanced Release Channels',
 ];
 
-const EXPOKIT = ['Detaching to ExpoKit', 'Developing With ExpoKit', 'Advanced ExpoKit Topics'];
+const EXPOKIT = [
+  'Detaching to ExpoKit',
+  'Ejecting to ExpoKit',
+  'Developing With ExpoKit',
+  'Advanced ExpoKit Topics',
+  'Universal Modules and ExpoKit',
+];
 
 const REACT_NATIVE = [
   // 'REACT NATIVE BASICS',
