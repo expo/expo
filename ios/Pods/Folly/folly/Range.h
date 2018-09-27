@@ -22,6 +22,7 @@
 #include <folly/FBString.h>
 #include <folly/Portability.h>
 #include <folly/SpookyHashV2.h>
+#include <folly/portability/BitsFunctexcept.h>
 #include <folly/portability/Constexpr.h>
 #include <folly/portability/String.h>
 
@@ -217,7 +218,7 @@ public:
   template <class T = Iter, typename detail::IsCharPointer<T>::const_type = 0>
   Range(const std::string& str, std::string::size_type startFrom) {
     if (UNLIKELY(startFrom > str.size())) {
-      throw std::out_of_range("index out of range");
+      std::__throw_out_of_range("index out of range");
     }
     b_ = str.data() + startFrom;
     e_ = str.data() + str.size();
@@ -228,7 +229,7 @@ public:
         std::string::size_type startFrom,
         std::string::size_type size) {
     if (UNLIKELY(startFrom > str.size())) {
-      throw std::out_of_range("index out of range");
+      std::__throw_out_of_range("index out of range");
     }
     b_ = str.data() + startFrom;
     if (str.size() - startFrom < size) {
@@ -251,7 +252,7 @@ public:
   template <class T = Iter, typename detail::IsCharPointer<T>::const_type = 0>
   Range(const fbstring& str, fbstring::size_type startFrom) {
     if (UNLIKELY(startFrom > str.size())) {
-      throw std::out_of_range("index out of range");
+      std::__throw_out_of_range("index out of range");
     }
     b_ = str.data() + startFrom;
     e_ = str.data() + str.size();
@@ -261,7 +262,7 @@ public:
   Range(const fbstring& str, fbstring::size_type startFrom,
         fbstring::size_type size) {
     if (UNLIKELY(startFrom > str.size())) {
-      throw std::out_of_range("index out of range");
+      std::__throw_out_of_range("index out of range");
     }
     b_ = str.data() + startFrom;
     if (str.size() - startFrom < size) {
@@ -426,12 +427,12 @@ public:
   }
 
   value_type& at(size_t i) {
-    if (i >= size()) throw std::out_of_range("index out of range");
+    if (i >= size()) std::__throw_out_of_range("index out of range");
     return b_[i];
   }
 
   const value_type& at(size_t i) const {
-    if (i >= size()) throw std::out_of_range("index out of range");
+    if (i >= size()) std::__throw_out_of_range("index out of range");
     return b_[i];
   }
 
@@ -441,6 +442,19 @@ public:
   // (The above advice does not apply if you are targeting a 32-bit system.)
   //
   // Works only for Range<const char*> and Range<char*>
+  //
+  //
+  //         ** WANT TO GET RID OF THIS LINT? **
+  //
+  // A) Use a better hash function (*cough*folly::Hash*cough*), but
+  //    only if you don't serialize data in a format that depends on
+  //    this formula (ie the writer and reader assume this exact hash
+  //    function is used).
+  //
+  // B) If you have to use this exact function then make your own hasher
+  //    object and copy the body over (see thrift example: D3972362).
+  //    https://github.com/facebook/fbthrift/commit/f8ed502e24ab4a32a9d5f266580
+  FOLLY_DEPRECATED("Replace with folly::Hash if the hash is not serialized")
   uint32_t hash() const {
     // Taken from fbi/nstring.h:
     //    Quick and dirty bernstein hash...fine for short ascii strings
@@ -453,16 +467,40 @@ public:
 
   void advance(size_type n) {
     if (UNLIKELY(n > size())) {
-      throw std::out_of_range("index out of range");
+      std::__throw_out_of_range("index out of range");
     }
     b_ += n;
   }
 
   void subtract(size_type n) {
     if (UNLIKELY(n > size())) {
-      throw std::out_of_range("index out of range");
+      std::__throw_out_of_range("index out of range");
     }
     e_ -= n;
+  }
+
+  Range subpiece(size_type first, size_type length = npos) const {
+    if (UNLIKELY(first > size())) {
+      std::__throw_out_of_range("index out of range");
+    }
+
+    return Range(b_ + first, std::min(length, size() - first));
+  }
+
+  // unchecked versions
+  void uncheckedAdvance(size_type n) {
+    DCHECK_LE(n, size());
+    b_ += n;
+  }
+
+  void uncheckedSubtract(size_type n) {
+    DCHECK_LE(n, size());
+    e_ -= n;
+  }
+
+  Range uncheckedSubpiece(size_type first, size_type length = npos) const {
+    DCHECK_LE(first, size());
+    return Range(b_ + first, std::min(length, size() - first));
   }
 
   void pop_front() {
@@ -473,14 +511,6 @@ public:
   void pop_back() {
     assert(b_ < e_);
     --e_;
-  }
-
-  Range subpiece(size_type first, size_type length = npos) const {
-    if (UNLIKELY(first > size())) {
-      throw std::out_of_range("index out of range");
-    }
-
-    return Range(b_ + first, std::min(length, size() - first));
   }
 
   // string work-alike functions
@@ -612,7 +642,7 @@ public:
     } else if (e == e_) {
       e_ = b;
     } else {
-      throw std::out_of_range("index out of range");
+      std::__throw_out_of_range("index out of range");
     }
   }
 
@@ -954,13 +984,6 @@ std::enable_if<detail::ComparableAsStringPiece<T, U>::value, bool>::type
 operator>=(const T& lhs, const U& rhs) {
   return StringPiece(lhs) >= StringPiece(rhs);
 }
-
-// Do NOT use this, use SpookyHashV2 instead, see commment on hash() above.
-struct StringPieceHash {
-  std::size_t operator()(const StringPiece str) const {
-    return static_cast<std::size_t>(str.hash());
-  }
-};
 
 /**
  * Finds substrings faster than brute force by borrowing from Boyer-Moore

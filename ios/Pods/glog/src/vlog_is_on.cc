@@ -162,29 +162,31 @@ int SetVLOGLevel(const char* module_pattern, int log_level) {
   int result = FLAGS_v;
   int const pattern_len = strlen(module_pattern);
   bool found = false;
-  MutexLock l(&vmodule_lock);  // protect whole read-modify-write
-  for (const VModuleInfo* info = vmodule_list;
-       info != NULL; info = info->next) {
-    if (info->module_pattern == module_pattern) {
-      if (!found) {
+  {
+    MutexLock l(&vmodule_lock);  // protect whole read-modify-write
+    for (const VModuleInfo* info = vmodule_list;
+         info != NULL; info = info->next) {
+      if (info->module_pattern == module_pattern) {
+        if (!found) {
+          result = info->vlog_level;
+          found = true;
+        }
+        info->vlog_level = log_level;
+      } else if (!found  &&
+                 SafeFNMatch_(info->module_pattern.c_str(),
+                              info->module_pattern.size(),
+                              module_pattern, pattern_len)) {
         result = info->vlog_level;
         found = true;
       }
-      info->vlog_level = log_level;
-    } else if (!found  &&
-               SafeFNMatch_(info->module_pattern.c_str(),
-                            info->module_pattern.size(),
-                            module_pattern, pattern_len)) {
-      result = info->vlog_level;
-      found = true;
     }
-  }
-  if (!found) {
-    VModuleInfo* info = new VModuleInfo;
-    info->module_pattern = module_pattern;
-    info->vlog_level = log_level;
-    info->next = vmodule_list;
-    vmodule_list = info;
+    if (!found) {
+      VModuleInfo* info = new VModuleInfo;
+      info->module_pattern = module_pattern;
+      info->vlog_level = log_level;
+      info->next = vmodule_list;
+      vmodule_list = info;
+    }
   }
   RAW_VLOG(1, "Set VLOG level for \"%s\" to %d", module_pattern, log_level);
   return result;

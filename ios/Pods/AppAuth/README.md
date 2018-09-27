@@ -165,7 +165,7 @@ order to continue the authorization flow from the redirect.
 ```objc
 // property of the app's AppDelegate
 @property(nonatomic, strong, nullable)
-    id<OIDAuthorizationFlowSession> currentAuthorizationFlow;
+    id<OIDExternalUserAgentSession> currentAuthorizationFlow;
 ```
 
 And your main class, a property to store the auth state:
@@ -224,7 +224,7 @@ authorization session (created in the previous session).
             options:(NSDictionary<NSString *, id> *)options {
   // Sends the URL to the current authorization flow (if any) which will
   // process it if it relates to an authorization response.
-  if ([_currentAuthorizationFlow resumeAuthorizationFlowWithURL:url]) {
+  if ([_currentAuthorizationFlow resumeExternalUserAgentFlowWithURL:url]) {
     _currentAuthorizationFlow = nil;
     return YES;
   }

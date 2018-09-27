@@ -50,20 +50,20 @@ typedef void (^FBSDKTestUsersManagerRemoveTestAccountHandler)(NSError *error) ;
 
 /**
   construct or return the shared instance
- - Parameter appID: the Facebook app id
- - Parameter appSecret: the Facebook app secret
+ @param appID the Facebook app id
+ @param appSecret the Facebook app secret
  */
 + (instancetype)sharedInstanceForAppID:(NSString *)appID appSecret:(NSString *)appSecret;
 
 /**
   retrieve FBSDKAccessToken instances for test accounts with the specific permissions.
- - Parameter arraysOfPermissions: an array of permissions sets, such as @[ [NSSet setWithObject:@"email"], [NSSet setWithObject:@"user_birthday"]]
+ @param arraysOfPermissions an array of permissions sets, such as @[ [NSSet setWithObject:@"email"], [NSSet setWithObject:@"user_birthday"]]
  if you needed two test accounts with email and birthday permissions, respectively. You can pass in empty nested sets
  if you need two arbitrary test accounts. For convenience, passing nil is treated as @[ [NSSet set] ]
  for fetching a single test user.
- - Parameter createIfNotFound: if YES, new test accounts are created if no test accounts existed that fit the permissions
+ @param createIfNotFound if YES, new test accounts are created if no test accounts existed that fit the permissions
  requirement
- - Parameter handler: the callback to invoke which will return an array of `FBAccessTokenData` instances or an `NSError`.
+ @param handler the callback to invoke which will return an array of `FBAccessTokenData` instances or an `NSError`.
  If param `createIfNotFound` is NO, the array may contain `[NSNull null]` instances.
 
 
@@ -77,24 +77,24 @@ typedef void (^FBSDKTestUsersManagerRemoveTestAccountHandler)(NSError *error) ;
 
 /**
   add a test account with the specified permissions
- - Parameter permissions: the set of permissions, e.g., [NSSet setWithObjects:@"email", @"user_friends"]
- - Parameter handler: the callback handler
+ @param permissions the set of permissions, e.g., [NSSet setWithObjects:@"email", @"user_friends"]
+ @param handler the callback handler
  */
 - (void)addTestAccountWithPermissions:(NSSet *)permissions
                     completionHandler:(FBSDKTestUsersManagerRetrieveTestAccountTokensHandler)handler;
 
 /**
   remove a test account for the given user id
- - Parameter userId: the user id
- - Parameter handler: the callback handler
+ @param userId the user id
+ @param handler the callback handler
  */
 - (void)removeTestAccount:(NSString *)userId completionHandler:(FBSDKTestUsersManagerRemoveTestAccountHandler)handler;
 
 /**
   Make two test users friends with each other.
- - Parameter first: the token of the first user
- - Parameter second: the token of the second user
- - Parameter callback: the callback handler
+ @param first the token of the first user
+ @param second the token of the second user
+ @param callback the callback handler
  */
 - (void)makeFriendsWithFirst:(FBSDKAccessToken *)first second:(FBSDKAccessToken *)second callback:(void (^)(NSError *))callback;
 

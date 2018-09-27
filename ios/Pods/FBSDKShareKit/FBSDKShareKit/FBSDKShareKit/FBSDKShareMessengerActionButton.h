@@ -27,7 +27,7 @@
 
 /**
  The title displayed to the user for the button.
- - Returns: The title for the button.
+ @return The title for the button.
  */
 @property (nonatomic, copy) NSString *title;
 

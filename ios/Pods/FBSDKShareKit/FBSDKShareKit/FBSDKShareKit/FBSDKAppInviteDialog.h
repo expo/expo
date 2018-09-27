@@ -30,10 +30,10 @@
 
 /**
  Convenience method to show a FBSDKAppInviteDialog
- - Parameter viewController: A UIViewController to present the dialog from.
- - Parameter content: The content for the app invite.
- - Parameter delegate: The receiver's delegate.
- - Warning: This method is deprecated.
+ @param viewController A UIViewController to present the dialog from.
+ @param content The content for the app invite.
+ @param delegate The receiver's delegate.
+ @warning This method is deprecated.
  */
 + (instancetype)showFromViewController:(UIViewController *)viewController
                            withContent:(FBSDKAppInviteContent *)content
@@ -43,7 +43,7 @@ __attribute__ ((deprecated("App Invites no longer supported")));
 
 /**
 
- - Warning:use showFromViewController:withContent:delegate: instead
+ @warning use showFromViewController:withContent:delegate: instead
  */
 + (instancetype)showWithContent:(FBSDKAppInviteContent *)content delegate:(id<FBSDKAppInviteDialogDelegate>)delegate
 __attribute__ ((deprecated("use showFromViewController:withContent:delegate: instead")));
@@ -72,21 +72,21 @@ __attribute__ ((deprecated("use showFromViewController:withContent:delegate: ins
  required but not available.  This method does not validate the content on the receiver, so this can be checked before
  building up the content.
 
- - See:validateWithError:
- - Returns: YES if the receiver can show the dialog, otherwise NO.
+ @see validateWithError:
+ @return YES if the receiver can show the dialog, otherwise NO.
  */
 - (BOOL)canShow;
 
 /**
  Begins the app invite from the receiver.
- - Returns: YES if the receiver was able to show the dialog, otherwise NO.
+ @return YES if the receiver was able to show the dialog, otherwise NO.
  */
 - (BOOL)show;
 
 /**
  Validates the content on the receiver.
- - Parameter errorRef: If an error occurs, upon return contains an NSError object that describes the problem.
- - Returns: YES if the content is valid, otherwise NO.
+ @param errorRef If an error occurs, upon return contains an NSError object that describes the problem.
+ @return YES if the content is valid, otherwise NO.
  */
 - (BOOL)validateWithError:(NSError *__autoreleasing *)errorRef;
 
@@ -103,15 +103,15 @@ __attribute__ ((deprecated("use showFromViewController:withContent:delegate: ins
 
 /**
  Sent to the delegate when the app invite completes without error.
- - Parameter appInviteDialog: The FBSDKAppInviteDialog that completed.
- - Parameter results: The results from the dialog.  This may be nil or empty.
+ @param appInviteDialog The FBSDKAppInviteDialog that completed.
+ @param results The results from the dialog.  This may be nil or empty.
  */
 - (void)appInviteDialog:(FBSDKAppInviteDialog *)appInviteDialog didCompleteWithResults:(NSDictionary *)results;
 
 /**
  Sent to the delegate when the app invite encounters an error.
- - Parameter appInviteDialog: The FBSDKAppInviteDialog that completed.
- - Parameter error: The error.
+ @param appInviteDialog The FBSDKAppInviteDialog that completed.
+ @param error The error.
  */
 - (void)appInviteDialog:(FBSDKAppInviteDialog *)appInviteDialog didFailWithError:(NSError *)error;
 

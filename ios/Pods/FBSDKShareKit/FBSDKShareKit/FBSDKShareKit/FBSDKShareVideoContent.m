@@ -18,6 +18,8 @@
 
 #import "FBSDKShareVideoContent.h"
 
+#import <Photos/Photos.h>
+
 #import "FBSDKCoreKit+Internal.h"
 #import "FBSDKHashtag.h"
 #import "FBSDKShareUtility.h"
@@ -63,6 +65,85 @@
   if (![FBSDKInternalUtility object:_peopleIDs isEqualToObject:peopleIDs]) {
     _peopleIDs = [peopleIDs copy];
   }
+}
+
+#pragma mark - FBSDKSharingContent
+
+- (void)addToParameters:(NSMutableDictionary<NSString *, id> *)parameters
+          bridgeOptions:(FBSDKShareBridgeOptions)bridgeOptions
+{
+  NSMutableDictionary<NSString *, id> *videoParameters = [[NSMutableDictionary alloc] init];
+  if (_video.videoAsset) {
+    if (bridgeOptions & FBSDKShareBridgeOptionsVideoAsset) {
+      // bridge the PHAsset.localIdentifier
+      [FBSDKInternalUtility dictionary:videoParameters
+                             setObject:_video.videoAsset.localIdentifier
+                                forKey:@"assetIdentifier"];
+    } else {
+      // bridge the legacy "assets-library" URL from AVAsset
+      dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+      PHVideoRequestOptions *options = [[PHVideoRequestOptions alloc] init];
+      options.version = PHVideoRequestOptionsVersionCurrent;
+      options.deliveryMode = PHVideoRequestOptionsDeliveryModeAutomatic;
+      options.networkAccessAllowed = YES;
+      [[PHImageManager defaultManager] requestAVAssetForVideo:_video.videoAsset
+                                                      options:options
+                                                resultHandler:^(AVAsset *avAsset, AVAudioMix *audioMix, NSDictionary<NSString *, id> *info) {
+                                                  NSURL *filePathURL = [[(AVURLAsset *)avAsset URL] filePathURL];
+                                                  NSString *pathExtension = [filePathURL pathExtension];
+                                                  NSString *localIdentifier = [_video.videoAsset localIdentifier];
+                                                  NSRange range = [localIdentifier rangeOfString:@"/"];
+                                                  NSString *uuid = [localIdentifier substringToIndex:range.location];
+                                                  NSString *assetPath = [NSString stringWithFormat:@"assets-library://asset/asset.%@?id=%@&ext=%@", pathExtension, uuid, pathExtension];
+                                                  if (assetPath) {
+                                                    [FBSDKInternalUtility dictionary:videoParameters
+                                                                           setObject:[NSURL URLWithString:assetPath]
+                                                                              forKey:@"assetURL"];
+                                                  }
+                                                  dispatch_semaphore_signal(semaphore);
+                                                }];
+      dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, 500 * NSEC_PER_MSEC));
+    }
+  } else if (_video.data) {
+    if (bridgeOptions & FBSDKShareBridgeOptionsVideoData) {
+      // bridge the data
+      [FBSDKInternalUtility dictionary:videoParameters
+                             setObject:_video.data
+                                forKey:@"data"];
+    }
+  } else if (_video.videoURL) {
+    if ([[_video.videoURL.scheme lowercaseString] isEqualToString:@"assets-library"]) {
+      // bridge the legacy "assets-library" URL
+      [FBSDKInternalUtility dictionary:videoParameters
+                             setObject:_video.videoURL
+                                forKey:@"assetURL"];
+    } else if (_video.videoURL.isFileURL) {
+      if (bridgeOptions & FBSDKShareBridgeOptionsVideoData) {
+        // load the contents of the file and bridge the data
+        NSData *data = [NSData dataWithContentsOfURL:_video.videoURL options:NSDataReadingMappedIfSafe error:NULL];
+        [FBSDKInternalUtility dictionary:videoParameters
+                               setObject:data
+                                  forKey:@"data"];
+      }
+    }
+  }
+  [FBSDKInternalUtility dictionary:videoParameters
+                         setObject:[FBSDKShareUtility convertPhoto:_previewPhoto]
+                            forKey:@"previewPhoto"];
+
+  [FBSDKInternalUtility dictionary:parameters
+                         setObject:videoParameters
+                            forKey:@"video"];
+}
+
+#pragma mark - FBSDKSharingValidation
+
+- (BOOL)validateWithOptions:(FBSDKShareBridgeOptions)bridgeOptions error:(NSError *__autoreleasing *)errorRef
+{
+  if (![FBSDKShareUtility validateRequiredValue:_video name:@"video" error:errorRef]) {
+    return NO;
+  }
+  return [_video validateWithOptions:bridgeOptions error:errorRef];
 }
 
 #pragma mark - Equality

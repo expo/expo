@@ -28,7 +28,7 @@
 
 /**
   Open Graph Action to be shared.
- - Returns: The action
+ @return The action
  */
 @property (nonatomic, copy) FBSDKShareOpenGraphAction *action;
 
@@ -36,14 +36,14 @@
   Property name that points to the primary Open Graph Object in the action.
 
  The value that this action points to will be use for rendering the preview for the share.
- - Returns: The property name for the Open Graph Object in the action
+ @return The property name for the Open Graph Object in the action
  */
 @property (nonatomic, copy) NSString *previewPropertyName;
 
 /**
   Compares the receiver to another Open Graph content.
- - Parameter content: The other content
- - Returns: YES if the receiver's values are equal to the other content's values; otherwise NO
+ @param content The other content
+ @return YES if the receiver's values are equal to the other content's values; otherwise NO
  */
 - (BOOL)isEqualToShareOpenGraphContent:(FBSDKShareOpenGraphContent *)content;
 

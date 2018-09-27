@@ -21,9 +21,9 @@
 /**
   The common interface for components that initiate liking.
 
-- See:FBSDKLikeButton
+ @see FBSDKLikeButton
 
-- See:FBSDKLikeControl
+ @see FBSDKLikeControl
  */
 @protocol FBSDKLiking <NSObject>
 

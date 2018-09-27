@@ -18,19 +18,32 @@
 
 #import <Foundation/Foundation.h>
 
-@class FBSDKShareMessengerGenericTemplateContent;
-@class FBSDKShareMessengerMediaTemplateContent;
-@class FBSDKShareMessengerOpenGraphMusicTemplateContent;
+@class FBSDKShareMessengerURLActionButton;
+@protocol FBSDKShareMessengerActionButton;
+
+extern NSString *const kFBSDKShareMessengerTemplateTypeKey;
+extern NSString *const kFBSDKShareMessengerTemplateKey;
+extern NSString *const kFBSDKShareMessengerPayloadKey;
+extern NSString *const kFBSDKShareMessengerTypeKey;
+extern NSString *const kFBSDKShareMessengerAttachmentKey;
+extern NSString *const kFBSDKShareMessengerElementsKey;
+extern NSString *const kFBSDKShareMessengerButtonsKey;
+
+void AddToContentPreviewDictionaryForButton(NSMutableDictionary<NSString *, id> *dictionary,
+                                            id<FBSDKShareMessengerActionButton> button);
+
+NSDictionary<NSString *, id> *SerializableButtonFromURLButton(FBSDKShareMessengerURLActionButton *button, BOOL isDefaultAction);
+NSArray<NSDictionary<NSString *, id> *> *SerializableButtonsFromButton(id<FBSDKShareMessengerActionButton> button);
 
 @interface FBSDKShareMessengerContentUtility : NSObject
 
-+ (void)addToParameters:(NSMutableDictionary *)parameters
-forShareMessengerGenericTemplateContent:(FBSDKShareMessengerGenericTemplateContent *)genericTemplateContent;
++ (void)addToParameters:(NSMutableDictionary<NSString *, id> *)parameters
+        contentForShare:(NSMutableDictionary<NSString *, id> *)contentForShare
+      contentForPreview:(NSMutableDictionary<NSString *, id> *)contentForPreview;
 
-+ (void)addToParameters:(NSMutableDictionary *)parameters
-forShareMessengerMediaTemplateContent:(FBSDKShareMessengerMediaTemplateContent *)mediaTemplateContent;
-
-+ (void)addToParameters:(NSMutableDictionary *)parameters
-forShareMessengerOpenGraphMusicTemplateContent:(FBSDKShareMessengerOpenGraphMusicTemplateContent *)openGraphMusicTemplate;
++ (BOOL)validateMessengerActionButton:(id<FBSDKShareMessengerActionButton>)button
+                isDefaultActionButton:(BOOL)isDefaultActionButton
+                               pageID:(NSString *)pageID
+                                error:(NSError *__autoreleasing *)errorRef;
 
 @end

@@ -199,7 +199,7 @@ static NSMutableArray *g_pendingFBSDKShareAPI;
   if (errorRef != NULL){
     *errorRef = nil;
   }
-  return [FBSDKShareUtility validateShareContent:shareContent error:errorRef];
+  return [FBSDKShareUtility validateShareContent:shareContent bridgeOptions:FBSDKShareBridgeOptionsDefault error:errorRef];
 }
 
 - (FBSDKAccessToken *)accessToken

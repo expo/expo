@@ -45,16 +45,6 @@
  * Also see folly/json.h for the serialization and deserialization
  * functions for JSON.
  *
- * Note: dynamic is not DefaultConstructible.  Rationale:
- *
- *   - The intuitive thing to initialize a defaulted dynamic to would
- *     be nullptr.
- *
- *   - However, the expression dynamic d = {} is required to call the
- *     default constructor by the standard, which is confusing
- *     behavior for dynamic unless the default constructor creates an
- *     empty array.
- *
  * Additional documentation is in folly/docs/Dynamic.md.
  *
  * @author Jordan DeLong <delong.j@fb.com>
@@ -63,7 +53,6 @@
 #pragma once
 
 #include <cstdint>
-#include <initializer_list>
 #include <memory>
 #include <ostream>
 #include <string>
@@ -96,6 +85,7 @@ struct dynamic : private boost::operators<dynamic> {
     OBJECT,
     STRING,
   };
+  template<class T, class Enable = void> struct NumericTypeHelper;
 
   /*
    * We support direct iteration of arrays, and indirect iteration of objects.
@@ -135,7 +125,6 @@ public:
    *   d["something_else"] = dynamic::array(1, 2, 3, nullptr);
    */
 private:
-  struct PrivateTag {};
   struct EmptyArrayTag {};
   struct ObjectMaker;
 
@@ -145,18 +134,20 @@ public:
   static dynamic array(Args&& ...args);
 
   static ObjectMaker object();
-  static ObjectMaker object(dynamic&&, dynamic&&);
-  static ObjectMaker object(dynamic const&, dynamic&&);
-  static ObjectMaker object(dynamic&&, dynamic const&);
-  static ObjectMaker object(dynamic const&, dynamic const&);
+  static ObjectMaker object(dynamic, dynamic);
+
+  /**
+   * Default constructor, initializes with nullptr.
+   */
+  dynamic();
 
   /*
    * String compatibility constructors.
    */
+  /* implicit */ dynamic(std::nullptr_t);
   /* implicit */ dynamic(StringPiece val);
   /* implicit */ dynamic(char const* val);
-  /* implicit */ dynamic(std::string const& val);
-  /* implicit */ dynamic(std::string&& val);
+  /* implicit */ dynamic(std::string val);
 
   /*
    * This is part of the plumbing for array() and object(), above.
@@ -168,31 +159,18 @@ public:
   /* implicit */ dynamic(ObjectMaker&&);
 
   /*
-   * Create a new array from an initializer list.
-   *
-   * For example:
-   *
-   *   dynamic v = { 1, 2, 3, "foo" };
+   * Constructors for integral and float types.
+   * Other types are SFINAEd out with NumericTypeHelper.
    */
-  // TODO(ott, 10300209): Remove once all uses have been eradicated.
-
-  FOLLY_DEPRECATED(
-      "Initializer list syntax is deprecated (#10300209). Use dynamic::array.")
-  /* implicit */ dynamic(std::initializer_list<dynamic> il);
-  FOLLY_DEPRECATED(
-      "Initializer list syntax is deprecated (#10300209). Use dynamic::array.")
-  dynamic& operator=(std::initializer_list<dynamic> il);
-
-  /*
-   * Conversion constructors from most of the other types.
-   */
-  template<class T> /* implicit */ dynamic(T t);
+  template<class T, class NumericType = typename NumericTypeHelper<T>::type>
+  /* implicit */ dynamic(T t);
 
   /*
    * Create a dynamic that is an array of the values from the supplied
    * iterator range.
    */
-  template<class Iterator> dynamic(Iterator first, Iterator last);
+  template<class Iterator>
+  explicit dynamic(Iterator first, Iterator last);
 
   dynamic(dynamic const&);
   dynamic(dynamic&&) noexcept;
@@ -543,7 +521,7 @@ private:
   template<class T> struct GetAddrImpl;
   template<class T> struct PrintImpl;
 
-  dynamic(Array&& array, PrivateTag);
+  explicit dynamic(Array&& array);
 
   template<class T> T const& get() const;
   template<class T> T&       get();

@@ -43,8 +43,13 @@
     NSArray *subviews = [(UIWindow *)obj subviews];
     for (UIView *child in subviews) {
       if (child != rootVC.view) {
-        [children addObject:child];
-      } else if (child == rootVC.view) {
+        UIViewController *vc = [FBSDKViewHierarchy getParentViewController:child];
+        if (vc != nil && vc.view == child) {
+          [children addObject:vc];
+        } else {
+          [children addObject:child];
+        }
+      } else {
         if (rootVC) {
           [children addObject:rootVC];
         }
@@ -52,8 +57,13 @@
     }
   } else if ([obj isKindOfClass:[UIView class]]) {
     NSArray *subviews = [[(UIView *)obj subviews] copy];
-    for (NSObject *child in subviews) {
-      [children addObject:child];
+    for (UIView *child in subviews) {
+      UIViewController *vc = [FBSDKViewHierarchy getParentViewController:child];
+      if (vc && vc.view == child) {
+        [children addObject:vc];
+      } else {
+        [children addObject:child];
+      }
     }
   } else if ([obj isKindOfClass:[UINavigationController class]]) {
     UIViewController *vc = [(UINavigationController*)obj visibleViewController];

@@ -16,6 +16,7 @@
 
 #pragma once
 
+#include <folly/detail/TryDetail.h>
 #include <stdexcept>
 
 namespace folly {
@@ -171,6 +172,12 @@ makeTryWith(F&& f) {
   } catch (...) {
     return Try<void>(exception_wrapper(std::current_exception()));
   }
+}
+
+template <typename... Ts>
+std::tuple<Ts...> unwrapTryTuple(std::tuple<folly::Try<Ts>...>&& ts) {
+  return detail::TryTuple<Ts...>::unwrap(
+      std::forward<std::tuple<folly::Try<Ts>...>>(ts));
 }
 
 } // folly

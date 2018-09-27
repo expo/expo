@@ -19,6 +19,20 @@
 /* These definitions are in a separate file so that they
  * may be included from C- as well as C++-based projects. */
 
+/**
+ * Portable version check.
+ */
+#ifndef __GNUC_PREREQ
+# if defined __GNUC__ && defined __GNUC_MINOR__
+/* nolint */
+#  define __GNUC_PREREQ(maj, min) ((__GNUC__ << 16) + __GNUC_MINOR__ >= \
+                                   ((maj) << 16) + (min))
+# else
+/* nolint */
+#  define __GNUC_PREREQ(maj, min) 0
+# endif
+#endif
+
 /* Define a convenience macro to test when address sanitizer is being used
  * across the different compilers (e.g. clang, gcc) */
 #if defined(__clang__)
@@ -80,3 +94,16 @@
 #else
 # define UBSAN_DISABLE(x)
 #endif // UNDEFINED_SANITIZER
+
+/**
+ * Macro for marking functions as having public visibility.
+ */
+#if defined(__GNUC__)
+# if __GNUC_PREREQ(4, 9)
+#  define FOLLY_EXPORT [[gnu::visibility("default")]]
+# else
+#  define FOLLY_EXPORT __attribute__((__visibility__("default")))
+# endif
+#else
+# define FOLLY_EXPORT
+#endif

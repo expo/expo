@@ -138,13 +138,15 @@ static void DumpStackTraceAndExit() {
 
   // TOOD(hamaji): Use signal instead of sigaction?
 #ifdef HAVE_SIGACTION
-  // Set the default signal handler for SIGABRT, to avoid invoking our
-  // own signal handler installed by InstallFailedSignalHandler().
-  struct sigaction sig_action;
-  memset(&sig_action, 0, sizeof(sig_action));
-  sigemptyset(&sig_action.sa_mask);
-  sig_action.sa_handler = SIG_DFL;
-  sigaction(SIGABRT, &sig_action, NULL);
+  if (IsFailureSignalHandlerInstalled()) {
+    // Set the default signal handler for SIGABRT, to avoid invoking our
+    // own signal handler installed by InstallFailureSignalHandler().
+    struct sigaction sig_action;
+    memset(&sig_action, 0, sizeof(sig_action));
+    sigemptyset(&sig_action.sa_mask);
+    sig_action.sa_handler = SIG_DFL;
+    sigaction(SIGABRT, &sig_action, NULL);
+  }
 #endif  // HAVE_SIGACTION
 
   abort();

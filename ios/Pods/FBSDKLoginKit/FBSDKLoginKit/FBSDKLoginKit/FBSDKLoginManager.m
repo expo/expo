@@ -64,6 +64,7 @@ typedef NS_ENUM(NSInteger, FBSDKLoginManagerState) {
 {
   self = [super init];
   if (self) {
+    self.authType = @"rerequest";
     NSString *keyChainServiceIdentifier = [NSString stringWithFormat:@"com.facebook.sdk.loginmanager.%@", [[NSBundle mainBundle] bundleIdentifier]];
     _keychainStore = [[FBSDKKeychainStore alloc] initWithService:keyChainServiceIdentifier accessGroup:nil];
   }
@@ -260,12 +261,10 @@ typedef NS_ENUM(NSInteger, FBSDKLoginManagerState) {
           // in a reauth, short circuit and let the login handler be called when the validation finishes.
           return;
         }
-      } else {
-        cancelled = YES;
       }
     }
 
-    if (cancelled) {
+    if (cancelled || recentlyGrantedPermissions.count == 0) {
       NSSet *declinedPermissions = nil;
       if ([FBSDKAccessToken currentAccessToken] != nil) {
         if (parameters.isSystemAccount) {
@@ -282,7 +281,7 @@ typedef NS_ENUM(NSInteger, FBSDKLoginManagerState) {
       }
 
       result = [[FBSDKLoginManagerLoginResult alloc] initWithToken:nil
-                                                       isCancelled:YES
+                                                       isCancelled:cancelled
                                                 grantedPermissions:nil
                                                declinedPermissions:declinedPermissions];
     }
@@ -362,7 +361,7 @@ typedef NS_ENUM(NSInteger, FBSDKLoginManagerState) {
   loginParams[@"return_scopes"] = @"true";
   loginParams[@"sdk_version"] = FBSDK_VERSION_STRING;
   loginParams[@"fbapp_pres"] = @([FBSDKInternalUtility isFacebookAppInstalled]);
-  loginParams[@"auth_type"] = @"rerequest";
+  loginParams[@"auth_type"] = self.authType;
   loginParams[@"logging_token"] = serverConfiguration.loggingToken;
 
   [FBSDKInternalUtility dictionary:loginParams setObject:[FBSDKSettings appURLSchemeSuffix] forKey:@"local_client_id"];

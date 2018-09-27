@@ -166,6 +166,9 @@ inline void podFill(Pod* b, Pod* e, T c) {
  */
 template <class Pod>
 inline void podCopy(const Pod* b, const Pod* e, Pod* d) {
+  FBSTRING_ASSERT(b != nullptr);
+  FBSTRING_ASSERT(e != nullptr);
+  FBSTRING_ASSERT(d != nullptr);
   FBSTRING_ASSERT(e >= b);
   FBSTRING_ASSERT(d >= e || d + (e - b) <= b);
   memcpy(d, b, (e - b) * sizeof(Pod));
@@ -362,15 +365,10 @@ public:
   }
 
   ~fbstring_core() noexcept {
-    auto const c = category();
-    if (c == Category::isSmall) {
+    if (category() == Category::isSmall) {
       return;
     }
-    if (c == Category::isMedium) {
-      free(ml_.data_);
-      return;
-    }
-    RefCounted::decrementRefs(ml_.data_);
+    destroyMediumLarge();
   }
 
   // Snatches a previously mallocated string. The parameter "size"
@@ -426,15 +424,11 @@ public:
     fbstring_detail::assume_unreachable();
   }
 
-  const Char * c_str() const {
-    auto const c = category();
-    if (c == Category::isSmall) {
-      FBSTRING_ASSERT(small_[smallSize()] == '\0');
-      return small_;
-    }
-    FBSTRING_ASSERT(c == Category::isMedium || c == Category::isLarge);
-    FBSTRING_ASSERT(ml_.data_[ml_.size_] == '\0');
-    return ml_.data_;
+  const Char* c_str() const {
+    const Char* ptr = ml_.data_;
+    // With this syntax, GCC and Clang generate a CMOV instead of a branch.
+    ptr = (category() == Category::isSmall) ? small_ : ptr;
+    return ptr;
   }
 
   void shrink(const size_t delta) {
@@ -448,6 +442,7 @@ public:
     }
   }
 
+  FOLLY_MALLOC_NOINLINE
   void reserve(size_t minCapacity, bool disableSSO = FBSTRING_DISABLE_SSO) {
     switch (category()) {
       case Category::isSmall:
@@ -475,7 +470,19 @@ public:
   }
 
   size_t size() const {
-    return category() == Category::isSmall ? smallSize() : ml_.size_;
+    size_t ret = ml_.size_;
+    /* static */ if (kIsLittleEndian) {
+      // We can save a couple instructions, because the category is
+      // small iff the last char, as unsigned, is <= maxSmallSize.
+      typedef typename std::make_unsigned<Char>::type UChar;
+      auto maybeSmallSize = size_t(maxSmallSize) -
+          size_t(static_cast<UChar>(small_[maxSmallSize]));
+      // With this syntax, GCC and Clang generate a CMOV instead of a branch.
+      ret = (static_cast<ssize_t>(maybeSmallSize) >= 0) ? maybeSmallSize : ret;
+    } else {
+      ret = (category() == Category::isSmall) ? smallSize() : ret;
+    }
+    return ret;
   }
 
   size_t capacity() const {
@@ -502,14 +509,18 @@ private:
   // Disabled
   fbstring_core & operator=(const fbstring_core & rhs);
 
-  // Equivalent to setSmallSize(0) but a few ns faster in
-  // microbenchmarks.
   void reset() {
-    ml_.capacity_ = kIsLittleEndian
-      ? maxSmallSize << (8 * (sizeof(size_t) - sizeof(Char)))
-      : maxSmallSize << 2;
-    small_[0] = '\0';
-    FBSTRING_ASSERT(category() == Category::isSmall && size() == 0);
+    setSmallSize(0);
+  }
+
+  FOLLY_MALLOC_NOINLINE void destroyMediumLarge() noexcept {
+    auto const c = category();
+    FBSTRING_ASSERT(c != Category::isSmall);
+    if (c == Category::isMedium) {
+      free(ml_.data_);
+    } else {
+      RefCounted::decrementRefs(ml_.data_);
+    }
   }
 
   struct RefCounted {
@@ -555,7 +566,9 @@ private:
     static RefCounted * create(const Char * data, size_t * size) {
       const size_t effectiveSize = *size;
       auto result = create(size);
-      fbstring_detail::podCopy(data, data + effectiveSize, result->data_);
+      if (FBSTRING_LIKELY(effectiveSize > 0)) {
+        fbstring_detail::podCopy(data, data + effectiveSize, result->data_);
+      }
       return result;
     }
 
@@ -579,22 +592,17 @@ private:
     }
   };
 
-  typedef std::conditional<sizeof(size_t) == 4, uint32_t, uint64_t>::type
-          category_type;
+  typedef uint8_t category_type;
 
   enum class Category : category_type {
     isSmall = 0,
-    isMedium = kIsLittleEndian
-      ? sizeof(size_t) == 4 ? 0x80000000 : 0x8000000000000000
-      : 0x2,
-    isLarge =  kIsLittleEndian
-      ? sizeof(size_t) == 4 ? 0x40000000 : 0x4000000000000000
-      : 0x1,
+    isMedium = kIsLittleEndian ? 0x80 : 0x2,
+    isLarge = kIsLittleEndian ? 0x40 : 0x1,
   };
 
   Category category() const {
     // works for both big-endian and little-endian
-    return static_cast<Category>(ml_.capacity_ & categoryExtractMask);
+    return static_cast<Category>(bytes_[lastChar] & categoryExtractMask);
   }
 
   struct MediumLarge {
@@ -609,29 +617,27 @@ private:
     }
 
     void setCapacity(size_t cap, Category cat) {
-        capacity_ = kIsLittleEndian
-          ? cap | static_cast<category_type>(cat)
-          : (cap << 2) | static_cast<category_type>(cat);
+      capacity_ = kIsLittleEndian
+          ? cap | (static_cast<size_t>(cat) << kCategoryShift)
+          : (cap << 2) | static_cast<size_t>(cat);
     }
   };
 
   union {
+    uint8_t bytes_[sizeof(MediumLarge)]; // For accessing the last byte.
     Char small_[sizeof(MediumLarge) / sizeof(Char)];
     MediumLarge ml_;
   };
 
-  enum : size_t {
-    lastChar = sizeof(MediumLarge) - 1,
-    maxSmallSize = lastChar / sizeof(Char),
-    maxMediumSize = 254 / sizeof(Char),            // coincides with the small
-                                                   // bin size in dlmalloc
-    categoryExtractMask = kIsLittleEndian
-      ? sizeof(size_t) == 4 ? 0xC0000000 : size_t(0xC000000000000000)
-      : 0x3,
-    capacityExtractMask = kIsLittleEndian
-      ? ~categoryExtractMask
-      : 0x0 /*unused*/,
-  };
+  constexpr static size_t lastChar = sizeof(MediumLarge) - 1;
+  constexpr static size_t maxSmallSize = lastChar / sizeof(Char);
+  constexpr static size_t maxMediumSize = 254 / sizeof(Char);
+  constexpr static uint8_t categoryExtractMask = kIsLittleEndian ? 0xC0 : 0x3;
+  constexpr static size_t kCategoryShift = (sizeof(size_t) - 1) * 8;
+  constexpr static size_t capacityExtractMask = kIsLittleEndian
+      ? ~(size_t(categoryExtractMask) << kCategoryShift)
+      : 0x0 /* unused */;
+
   static_assert(!(sizeof(MediumLarge) % sizeof(Char)),
                 "Corrupt memory layout for fbstring.");
 
@@ -670,6 +676,7 @@ private:
   void shrinkMedium(size_t delta);
   void shrinkLarge(size_t delta);
 
+  void unshare(size_t minCapacity = 0);
   Char* mutableDataLarge();
 };
 
@@ -693,7 +700,8 @@ inline void fbstring_core<Char>::copySmall(const fbstring_core& rhs) {
 }
 
 template <class Char>
-inline void fbstring_core<Char>::copyMedium(const fbstring_core& rhs) {
+FOLLY_MALLOC_NOINLINE inline void fbstring_core<Char>::copyMedium(
+    const fbstring_core& rhs) {
   // Medium strings are copied eagerly. Don't forget to allocate
   // one extra Char for the null terminator.
   auto const allocSize = goodMallocSize((1 + rhs.ml_.size_) * sizeof(Char));
@@ -707,7 +715,8 @@ inline void fbstring_core<Char>::copyMedium(const fbstring_core& rhs) {
 }
 
 template <class Char>
-inline void fbstring_core<Char>::copyLarge(const fbstring_core& rhs) {
+FOLLY_MALLOC_NOINLINE inline void fbstring_core<Char>::copyLarge(
+    const fbstring_core& rhs) {
   // Large strings are just refcounted
   ml_ = rhs.ml_;
   RefCounted::incrementRefs(ml_.data_);
@@ -759,20 +768,22 @@ inline void fbstring_core<Char>::initSmall(
 }
 
 template <class Char>
-inline void fbstring_core<Char>::initMedium(
+FOLLY_MALLOC_NOINLINE inline void fbstring_core<Char>::initMedium(
     const Char* const data, const size_t size) {
   // Medium strings are allocated normally. Don't forget to
   // allocate one extra Char for the terminating null.
   auto const allocSize = goodMallocSize((1 + size) * sizeof(Char));
   ml_.data_ = static_cast<Char*>(checkedMalloc(allocSize));
-  fbstring_detail::podCopy(data, data + size, ml_.data_);
+  if (FBSTRING_LIKELY(size > 0)) {
+    fbstring_detail::podCopy(data, data + size, ml_.data_);
+  }
   ml_.size_ = size;
   ml_.setCapacity(allocSize / sizeof(Char) - 1, Category::isMedium);
   ml_.data_[size] = '\0';
 }
 
 template <class Char>
-inline void fbstring_core<Char>::initLarge(
+FOLLY_MALLOC_NOINLINE inline void fbstring_core<Char>::initLarge(
     const Char* const data, const size_t size) {
   // Large strings are allocated differently
   size_t effectiveCapacity = size;
@@ -784,43 +795,42 @@ inline void fbstring_core<Char>::initLarge(
 }
 
 template <class Char>
+FOLLY_MALLOC_NOINLINE inline void fbstring_core<Char>::unshare(
+    size_t minCapacity) {
+  FBSTRING_ASSERT(category() == Category::isLarge);
+  size_t effectiveCapacity = std::max(minCapacity, ml_.capacity());
+  auto const newRC = RefCounted::create(&effectiveCapacity);
+  // If this fails, someone placed the wrong capacity in an
+  // fbstring.
+  FBSTRING_ASSERT(effectiveCapacity >= ml_.capacity());
+  // Also copies terminator.
+  fbstring_detail::podCopy(ml_.data_, ml_.data_ + ml_.size_ + 1, newRC->data_);
+  RefCounted::decrementRefs(ml_.data_);
+  ml_.data_ = newRC->data_;
+  ml_.setCapacity(effectiveCapacity, Category::isLarge);
+  // size_ remains unchanged.
+}
+
+template <class Char>
 inline Char* fbstring_core<Char>::mutableDataLarge() {
   FBSTRING_ASSERT(category() == Category::isLarge);
-  if (RefCounted::refs(ml_.data_) > 1) {
-    // Ensure unique.
-    size_t effectiveCapacity = ml_.capacity();
-    auto const newRC = RefCounted::create(&effectiveCapacity);
-    // If this fails, someone placed the wrong capacity in an
-    // fbstring.
-    FBSTRING_ASSERT(effectiveCapacity >= ml_.capacity());
-    // Also copies terminator.
-    fbstring_detail::podCopy(
-        ml_.data_, ml_.data_ + ml_.size_ + 1, newRC->data_);
-    RefCounted::decrementRefs(ml_.data_);
-    ml_.data_ = newRC->data_;
+  if (RefCounted::refs(ml_.data_) > 1) { // Ensure unique.
+    unshare();
   }
   return ml_.data_;
 }
 
 template <class Char>
-inline void fbstring_core<Char>::reserveLarge(size_t minCapacity) {
+FOLLY_MALLOC_NOINLINE inline void fbstring_core<Char>::reserveLarge(
+    size_t minCapacity) {
   FBSTRING_ASSERT(category() == Category::isLarge);
-  // Ensure unique
-  if (RefCounted::refs(ml_.data_) > 1) {
+  if (RefCounted::refs(ml_.data_) > 1) { // Ensure unique
     // We must make it unique regardless; in-place reallocation is
     // useless if the string is shared. In order to not surprise
     // people, reserve the new block at current capacity or
     // more. That way, a string's capacity never shrinks after a
     // call to reserve.
-    minCapacity = std::max(minCapacity, ml_.capacity());
-    auto const newRC = RefCounted::create(&minCapacity);
-    // Also copies terminator.
-    fbstring_detail::podCopy(
-        ml_.data_, ml_.data_ + ml_.size_ + 1, newRC->data_);
-    RefCounted::decrementRefs(ml_.data_);
-    ml_.data_ = newRC->data_;
-    ml_.setCapacity(minCapacity, Category::isLarge);
-    // size remains unchanged
+    unshare(minCapacity);
   } else {
     // String is not shared, so let's try to realloc (if needed)
     if (minCapacity > ml_.capacity()) {
@@ -835,7 +845,8 @@ inline void fbstring_core<Char>::reserveLarge(size_t minCapacity) {
 }
 
 template <class Char>
-inline void fbstring_core<Char>::reserveMedium(const size_t minCapacity) {
+FOLLY_MALLOC_NOINLINE inline void fbstring_core<Char>::reserveMedium(
+    const size_t minCapacity) {
   FBSTRING_ASSERT(category() == Category::isMedium);
   // String is not shared
   if (minCapacity <= ml_.capacity()) {
@@ -867,7 +878,7 @@ inline void fbstring_core<Char>::reserveMedium(const size_t minCapacity) {
 }
 
 template <class Char>
-inline void fbstring_core<Char>::reserveSmall(
+FOLLY_MALLOC_NOINLINE inline void fbstring_core<Char>::reserveSmall(
     size_t minCapacity, const bool disableSSO) {
   FBSTRING_ASSERT(category() == Category::isSmall);
   if (!disableSSO && minCapacity <= maxSmallSize) {
@@ -1145,21 +1156,23 @@ public:
     assign(str, pos, n);
   }
 
+  FOLLY_MALLOC_NOINLINE
   /* implicit */ basic_fbstring(const value_type* s, const A& /*a*/ = A())
-      : store_(s, basic_fbstring::traitsLength(s)) {
-  }
+      : store_(s, traitsLength(s)) {}
 
+  FOLLY_MALLOC_NOINLINE
   basic_fbstring(const value_type* s, size_type n, const A& /*a*/ = A())
       : store_(s, n) {
   }
 
+  FOLLY_MALLOC_NOINLINE
   basic_fbstring(size_type n, value_type c, const A& /*a*/ = A()) {
     auto const pData = store_.expandNoinit(n);
     fbstring_detail::podFill(pData, pData + n, c);
   }
 
   template <class InIt>
-  basic_fbstring(
+  FOLLY_MALLOC_NOINLINE basic_fbstring(
       InIt begin,
       InIt end,
       typename std::enable_if<
@@ -1169,6 +1182,7 @@ public:
   }
 
   // Specialization for const char*, const char*
+  FOLLY_MALLOC_NOINLINE
   basic_fbstring(const value_type* b, const value_type* e, const A& /*a*/ = A())
       : store_(b, e - b) {
   }
@@ -1180,12 +1194,12 @@ public:
   }
 
   // Construction from initialization list
+  FOLLY_MALLOC_NOINLINE
   basic_fbstring(std::initializer_list<value_type> il) {
     assign(il.begin(), il.end());
   }
 
-  ~basic_fbstring() noexcept {
-  }
+  ~basic_fbstring() noexcept {}
 
   basic_fbstring& operator=(const basic_fbstring& lhs);
 
@@ -1357,7 +1371,7 @@ public:
   basic_fbstring& append(const value_type* s, size_type n);
 
   basic_fbstring& append(const value_type* s) {
-    return append(s, traits_type::length(s));
+    return append(s, traitsLength(s));
   }
 
   basic_fbstring& append(size_type n, value_type c);
@@ -1391,7 +1405,7 @@ public:
   basic_fbstring& assign(const value_type* s, const size_type n);
 
   basic_fbstring& assign(const value_type* s) {
-    return assign(s, traits_type::length(s));
+    return assign(s, traitsLength(s));
   }
 
   basic_fbstring& assign(std::initializer_list<value_type> il) {
@@ -1421,7 +1435,7 @@ public:
   }
 
   basic_fbstring& insert(size_type pos, const value_type* s) {
-    return insert(pos, s, traits_type::length(s));
+    return insert(pos, s, traitsLength(s));
   }
 
   basic_fbstring& insert(size_type pos, size_type n, value_type c) {
@@ -1530,7 +1544,7 @@ public:
 
   // Replaces at most n1 chars of *this, starting with pos, with chars from s
   basic_fbstring& replace(size_type pos, size_type n1, const value_type* s) {
-    return replace(pos, n1, s, traits_type::length(s));
+    return replace(pos, n1, s, traitsLength(s));
   }
 
   // Replaces at most n1 chars of *this, starting with pos, with n2
@@ -1556,7 +1570,7 @@ public:
   }
 
   basic_fbstring& replace(iterator i1, iterator i2, const value_type* s) {
-    return replace(i1, i2, s, traits_type::length(s));
+    return replace(i1, i2, s, traitsLength(s));
   }
 
 private:
@@ -1659,7 +1673,7 @@ private:
       const;
 
   size_type find(const value_type* s, size_type pos = 0) const {
-    return find(s, pos, traits_type::length(s));
+    return find(s, pos, traitsLength(s));
   }
 
   size_type find (value_type c, size_type pos = 0) const {
@@ -1673,7 +1687,7 @@ private:
   size_type rfind(const value_type* s, size_type pos, size_type n) const;
 
   size_type rfind(const value_type* s, size_type pos = npos) const {
-    return rfind(s, pos, traits_type::length(s));
+    return rfind(s, pos, traitsLength(s));
   }
 
   size_type rfind(value_type c, size_type pos = npos) const {
@@ -1688,7 +1702,7 @@ private:
       const;
 
   size_type find_first_of(const value_type* s, size_type pos = 0) const {
-    return find_first_of(s, pos, traits_type::length(s));
+    return find_first_of(s, pos, traitsLength(s));
   }
 
   size_type find_first_of(value_type c, size_type pos = 0) const {
@@ -1704,7 +1718,7 @@ private:
 
   size_type find_last_of (const value_type* s,
                           size_type pos = npos) const {
-    return find_last_of(s, pos, traits_type::length(s));
+    return find_last_of(s, pos, traitsLength(s));
   }
 
   size_type find_last_of (value_type c, size_type pos = npos) const {
@@ -1721,7 +1735,7 @@ private:
 
   size_type find_first_not_of(const value_type* s,
                               size_type pos = 0) const {
-    return find_first_not_of(s, pos, traits_type::length(s));
+    return find_first_not_of(s, pos, traitsLength(s));
   }
 
   size_type find_first_not_of(value_type c, size_type pos = 0) const {
@@ -1738,7 +1752,7 @@ private:
 
   size_type find_last_not_of(const value_type* s,
                              size_type pos = npos) const {
-    return find_last_not_of(s, pos, traits_type::length(s));
+    return find_last_not_of(s, pos, traitsLength(s));
   }
 
   size_type find_last_not_of (value_type c, size_type pos = npos) const {
@@ -1771,7 +1785,7 @@ private:
 
   int compare(size_type pos1, size_type n1,
               const value_type* s) const {
-    return compare(pos1, n1, s, traits_type::length(s));
+    return compare(pos1, n1, s, traitsLength(s));
   }
 
   int compare(size_type pos1, size_type n1,
@@ -1793,9 +1807,9 @@ private:
 
   // Code from Jean-Francois Bastien (03/26/2007)
   int compare(const value_type* s) const {
-    // Could forward to compare(0, size(), s, traits_type::length(s))
+    // Could forward to compare(0, size(), s, traitsLength(s))
     // but that does two extra checks
-    const size_type n1(size()), n2(traits_type::length(s));
+    const size_type n1(size()), n2(traitsLength(s));
     const int r = traits_type::compare(data(), s, std::min(n1, n2));
     return r != 0 ? r : n1 > n2 ? 1 : n1 < n2 ? -1 : 0;
   }
@@ -1806,7 +1820,7 @@ private:
 };
 
 template <typename E, class T, class A, class S>
-inline typename basic_fbstring<E, T, A, S>::size_type
+FOLLY_MALLOC_NOINLINE inline typename basic_fbstring<E, T, A, S>::size_type
 basic_fbstring<E, T, A, S>::traitsLength(const value_type* s) {
   return s ? traits_type::length(s)
            : (std::__throw_logic_error(
@@ -1896,8 +1910,8 @@ inline basic_fbstring<E, T, A, S>& basic_fbstring<E, T, A, S>::append(
 }
 
 template <typename E, class T, class A, class S>
-inline basic_fbstring<E, T, A, S>& basic_fbstring<E, T, A, S>::append(
-    const value_type* s, size_type n) {
+FOLLY_MALLOC_NOINLINE inline basic_fbstring<E, T, A, S>&
+basic_fbstring<E, T, A, S>::append(const value_type* s, size_type n) {
   Invariant checker(*this);
 
   if (FBSTRING_UNLIKELY(!n)) {
@@ -1947,11 +1961,10 @@ inline basic_fbstring<E, T, A, S>& basic_fbstring<E, T, A, S>::assign(
 }
 
 template <typename E, class T, class A, class S>
-inline basic_fbstring<E, T, A, S>& basic_fbstring<E, T, A, S>::assign(
-    const value_type* s, const size_type n) {
+FOLLY_MALLOC_NOINLINE inline basic_fbstring<E, T, A, S>&
+basic_fbstring<E, T, A, S>::assign(const value_type* s, const size_type n) {
   Invariant checker(*this);
 
-  // s can alias this, we need to use podMove.
   if (n == 0) {
     resize(0);
   } else if (size() >= n) {

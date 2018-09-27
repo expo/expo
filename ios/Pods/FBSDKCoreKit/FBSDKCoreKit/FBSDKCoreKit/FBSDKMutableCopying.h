@@ -29,7 +29,7 @@
 
 /**
   Implemented by NSObject as a convenience to mutableCopyWithZone:.
- - Returns: A mutable copy of the receiver.
+ @return A mutable copy of the receiver.
  */
 - (id)mutableCopy;
 

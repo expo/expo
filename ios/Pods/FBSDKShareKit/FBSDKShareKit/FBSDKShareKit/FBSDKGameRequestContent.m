@@ -19,6 +19,7 @@
 #import "FBSDKGameRequestContent.h"
 
 #import "FBSDKCoreKit+Internal.h"
+#import "FBSDKShareError.h"
 #import "FBSDKShareUtility.h"
 
 #define FBSDK_APP_REQUEST_CONTENT_TO_KEY @"to"
@@ -68,6 +69,76 @@
 - (void)setTo:(NSArray *)to
 {
   self.recipients = to;
+}
+
+#pragma mark - FBSDKSharingValidation
+
+- (BOOL)validateWithOptions:(FBSDKShareBridgeOptions)bridgeOptions error:(NSError *__autoreleasing *)errorRef
+{
+  if (![FBSDKShareUtility validateRequiredValue:_message name:@"message" error:errorRef]) {
+    return NO;
+  }
+  BOOL mustHaveobjectID = _actionType == FBSDKGameRequestActionTypeSend
+  || _actionType == FBSDKGameRequestActionTypeAskFor;
+  BOOL hasobjectID = [_objectID length] > 0;
+  if (mustHaveobjectID ^ hasobjectID) {
+    if (errorRef != NULL) {
+      NSString *message = @"The objectID is required when the actionType is either send or askfor.";
+      *errorRef = [FBSDKShareError requiredArgumentErrorWithName:@"objectID" message:message];
+    }
+    return NO;
+  }
+  BOOL hasTo = [_recipients count] > 0;
+  BOOL hasFilters = _filters != FBSDKGameRequestFilterNone;
+  BOOL hasSuggestions = [_recipientSuggestions count] > 0;
+  if (hasTo && hasFilters) {
+    if (errorRef != NULL) {
+      NSString *message = @"Cannot specify to and filters at the same time.";
+      *errorRef = [FBSDKShareError invalidArgumentErrorWithName:@"recipients" value:_recipients message:message];
+    }
+    return NO;
+  }
+  if (hasTo && hasSuggestions) {
+    if (errorRef != NULL) {
+      NSString *message = @"Cannot specify to and suggestions at the same time.";
+      *errorRef = [FBSDKShareError invalidArgumentErrorWithName:@"recipients" value:_recipients message:message];
+    }
+    return NO;
+  }
+
+  if (hasFilters && hasSuggestions) {
+    if (errorRef != NULL) {
+      NSString *message = @"Cannot specify filters and suggestions at the same time.";
+      *errorRef = [FBSDKShareError invalidArgumentErrorWithName:@"recipientSuggestions" value:_recipientSuggestions message:message];
+    }
+    return NO;
+  }
+
+  if ([_data length] > 255) {
+    if (errorRef != NULL) {
+      NSString *message = @"The data cannot be longer than 255 characters";
+      *errorRef = [FBSDKShareError invalidArgumentErrorWithName:@"data" value:_data message:message];
+    }
+    return NO;
+  }
+
+  if (errorRef != NULL) {
+    *errorRef = nil;
+  }
+
+  return [FBSDKShareUtility validateArgumentWithName:@"actionType"
+                                               value:_actionType
+                                                isIn:@[@(FBSDKGameRequestActionTypeNone),
+                                                       @(FBSDKGameRequestActionTypeSend),
+                                                       @(FBSDKGameRequestActionTypeAskFor),
+                                                       @(FBSDKGameRequestActionTypeTurn)]
+                                               error:errorRef]
+    && [FBSDKShareUtility validateArgumentWithName:@"filters"
+                                             value:_filters
+                                              isIn:@[@(FBSDKGameRequestFilterNone),
+                                                     @(FBSDKGameRequestFilterAppUsers),
+                                                     @(FBSDKGameRequestFilterAppNonUsers)]
+                                             error:errorRef];
 }
 
 #pragma mark - Equality
