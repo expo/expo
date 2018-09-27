@@ -249,12 +249,11 @@ struct ExpectedUnion {
   union {
     Value value_;
     Error error_;
-    char ch_;
+    char ch_{};
   };
-  Which which_;
+  Which which_ = Which::eEmpty;
 
-  explicit constexpr ExpectedUnion(EmptyTag) noexcept
-      : ch_{}, which_(Which::eEmpty) {}
+  explicit constexpr ExpectedUnion(EmptyTag) noexcept {}
   template <class... Vs>
   explicit constexpr ExpectedUnion(ValueTag, Vs&&... vs) noexcept(
       noexcept(Value(static_cast<Vs&&>(vs)...)))

@@ -18,20 +18,22 @@
 
 #import "FBSDKShareCameraEffectContent.h"
 
+#import "FBSDKCameraEffectArguments+Internal.h"
+#import "FBSDKCameraEffectTextures+Internal.h"
 #import "FBSDKCoreKit+Internal.h"
 #import "FBSDKHashtag.h"
 #import "FBSDKShareUtility.h"
 
-static NSString *const FBSDKShareCameraEffectContentEffectIDKey = @"effectID";
-static NSString *const FBSDKShareCameraEffectContentEffectArgumentsKey = @"effectArguments";
-static NSString *const FBSDKShareCameraEffectContentEffectTexturesKey = @"effectTextures";
-static NSString *const FBSDKShareCameraEffectContentContentURLKey = @"contentURL";
-static NSString *const FBSDKShareCameraEffectContentHashtagKey = @"hashtag";
-static NSString *const FBSDKShareCameraEffectContentPeopleIDsKey = @"peopleIDs";
-static NSString *const FBSDKShareCameraEffectContentPlaceIDKey = @"placeID";
-static NSString *const FBSDKShareCameraEffectContentRefKey = @"ref";
-static NSString *const FBSDKShareCameraEffectContentPageIDKey = @"pageID";
-static NSString *const FBSDKShareCameraEffectContentUUIDKey = @"uuid";
+static NSString *const kFBSDKShareCameraEffectContentEffectIDKey = @"effectID";
+static NSString *const kFBSDKShareCameraEffectContentEffectArgumentsKey = @"effectArguments";
+static NSString *const kFBSDKShareCameraEffectContentEffectTexturesKey = @"effectTextures";
+static NSString *const kFBSDKShareCameraEffectContentContentURLKey = @"contentURL";
+static NSString *const kFBSDKShareCameraEffectContentHashtagKey = @"hashtag";
+static NSString *const kFBSDKShareCameraEffectContentPeopleIDsKey = @"peopleIDs";
+static NSString *const kFBSDKShareCameraEffectContentPlaceIDKey = @"placeID";
+static NSString *const kFBSDKShareCameraEffectContentRefKey = @"ref";
+static NSString *const kFBSDKShareCameraEffectContentPageIDKey = @"pageID";
+static NSString *const kFBSDKShareCameraEffectContentUUIDKey = @"uuid";
 
 @implementation FBSDKShareCameraEffectContent
 
@@ -57,6 +59,77 @@ static NSString *const FBSDKShareCameraEffectContentUUIDKey = @"uuid";
     _shareUUID = [NSUUID UUID].UUIDString;
   }
   return self;
+}
+
+#pragma mark - FBSDKSharingContent
+
+- (void)addToParameters:(NSMutableDictionary<NSString *, id> *)parameters
+          bridgeOptions:(FBSDKShareBridgeOptions)bridgeOptions
+{
+  [FBSDKInternalUtility dictionary:parameters
+                         setObject:_effectID
+                            forKey:@"effect_id"];
+
+  NSString *effectArgumentsJSON;
+  if (_effectArguments) {
+    effectArgumentsJSON = [FBSDKInternalUtility JSONStringForObject:[_effectArguments allArguments]
+                                                              error:NULL
+                                               invalidObjectHandler:NULL];
+  }
+  [FBSDKInternalUtility dictionary:parameters
+                         setObject:effectArgumentsJSON
+                            forKey:@"effect_arguments"];
+
+  NSData *effectTexturesData;
+  if (_effectTextures) {
+    // Convert the entire textures dictionary into one NSData, because
+    // the existing API protocol only allows one value to be put into the pasteboard.
+    NSDictionary<NSString *, UIImage *> *texturesDict = [_effectTextures allTextures];
+    NSMutableDictionary<NSString *, NSData *> *texturesDataDict = [NSMutableDictionary dictionaryWithCapacity:texturesDict.count];
+    [texturesDict enumerateKeysAndObjectsUsingBlock:^(NSString *key, UIImage *img, BOOL *stop) {
+      // Convert UIImages to NSData, because UIImage is not archivable.
+      NSData *imageData = UIImagePNGRepresentation(img);
+      if (imageData) {
+        [texturesDataDict setObject:imageData forKey:key];
+      }
+    }];
+    effectTexturesData = [NSKeyedArchiver archivedDataWithRootObject:texturesDataDict];
+  }
+  [FBSDKInternalUtility dictionary:parameters
+                         setObject:effectTexturesData
+                            forKey:@"effect_textures"];
+}
+
+#pragma mark - FBSDKSharingScheme
+
+- (NSString *)schemeForMode:(FBSDKShareDialogMode)mode
+{
+  if ((FBSDKShareDialogModeNative == mode) || (FBSDKShareDialogModeAutomatic == mode)) {
+    if ([FBSDKInternalUtility isMSQRDPlayerAppInstalled]) {
+      // If installed, launch MSQRD Player for testing effects.
+      return FBSDK_CANOPENURL_MSQRD_PLAYER;
+    }
+  }
+  return nil;
+}
+
+#pragma mark - FBSDKSharingValidation
+
+- (BOOL)validateWithOptions:(FBSDKShareBridgeOptions)bridgeOptions error:(NSError *__autoreleasing *)errorRef
+{
+  if ([_effectID length] > 0) {
+    NSCharacterSet* nonDigitCharacters = [[NSCharacterSet decimalDigitCharacterSet] invertedSet];
+    if ([_effectID rangeOfCharacterFromSet:nonDigitCharacters].location != NSNotFound) {
+      if (errorRef != NULL) {
+        *errorRef = [FBSDKError invalidArgumentErrorWithName:@"effectID"
+                                                       value:_effectID
+                                                     message:@"Invalid value for effectID, effectID can contain only numerical characters."];
+      }
+      return NO;
+    }
+  }
+
+  return YES;
 }
 
 #pragma mark - Equality
@@ -114,32 +187,32 @@ static NSString *const FBSDKShareCameraEffectContentUUIDKey = @"uuid";
 - (id)initWithCoder:(NSCoder *)decoder
 {
   if ((self = [self init])) {
-    _effectID = [decoder decodeObjectOfClass:[NSString class] forKey:FBSDKShareCameraEffectContentEffectIDKey];
-    _effectArguments = [decoder decodeObjectOfClass:[FBSDKCameraEffectArguments class] forKey:FBSDKShareCameraEffectContentEffectArgumentsKey];
-    _effectTextures = [decoder decodeObjectOfClass:[FBSDKCameraEffectTextures class] forKey:FBSDKShareCameraEffectContentEffectTexturesKey];
-    _contentURL = [decoder decodeObjectOfClass:[NSURL class] forKey:FBSDKShareCameraEffectContentContentURLKey];
-    _hashtag = [decoder decodeObjectOfClass:[FBSDKHashtag class] forKey:FBSDKShareCameraEffectContentHashtagKey];
-    _peopleIDs = [decoder decodeObjectOfClass:[NSArray class] forKey:FBSDKShareCameraEffectContentPeopleIDsKey];
-    _placeID = [decoder decodeObjectOfClass:[NSString class] forKey:FBSDKShareCameraEffectContentPlaceIDKey];
-    _ref = [decoder decodeObjectOfClass:[NSString class] forKey:FBSDKShareCameraEffectContentRefKey];
-    _pageID = [decoder decodeObjectOfClass:[NSString class] forKey:FBSDKShareCameraEffectContentPageIDKey];
-    _shareUUID = [decoder decodeObjectOfClass:[NSString class] forKey:FBSDKShareCameraEffectContentUUIDKey];
+    _effectID = [decoder decodeObjectOfClass:[NSString class] forKey:kFBSDKShareCameraEffectContentEffectIDKey];
+    _effectArguments = [decoder decodeObjectOfClass:[FBSDKCameraEffectArguments class] forKey:kFBSDKShareCameraEffectContentEffectArgumentsKey];
+    _effectTextures = [decoder decodeObjectOfClass:[FBSDKCameraEffectTextures class] forKey:kFBSDKShareCameraEffectContentEffectTexturesKey];
+    _contentURL = [decoder decodeObjectOfClass:[NSURL class] forKey:kFBSDKShareCameraEffectContentContentURLKey];
+    _hashtag = [decoder decodeObjectOfClass:[FBSDKHashtag class] forKey:kFBSDKShareCameraEffectContentHashtagKey];
+    _peopleIDs = [decoder decodeObjectOfClass:[NSArray class] forKey:kFBSDKShareCameraEffectContentPeopleIDsKey];
+    _placeID = [decoder decodeObjectOfClass:[NSString class] forKey:kFBSDKShareCameraEffectContentPlaceIDKey];
+    _ref = [decoder decodeObjectOfClass:[NSString class] forKey:kFBSDKShareCameraEffectContentRefKey];
+    _pageID = [decoder decodeObjectOfClass:[NSString class] forKey:kFBSDKShareCameraEffectContentPageIDKey];
+    _shareUUID = [decoder decodeObjectOfClass:[NSString class] forKey:kFBSDKShareCameraEffectContentUUIDKey];
   }
   return self;
 }
 
 - (void)encodeWithCoder:(NSCoder *)encoder
 {
-  [encoder encodeObject:_effectID forKey:FBSDKShareCameraEffectContentEffectIDKey];
-  [encoder encodeObject:_effectArguments forKey:FBSDKShareCameraEffectContentEffectArgumentsKey];
-  [encoder encodeObject:_effectTextures forKey:FBSDKShareCameraEffectContentEffectTexturesKey];
-  [encoder encodeObject:_contentURL forKey:FBSDKShareCameraEffectContentContentURLKey];
-  [encoder encodeObject:_hashtag forKey:FBSDKShareCameraEffectContentHashtagKey];
-  [encoder encodeObject:_peopleIDs forKey:FBSDKShareCameraEffectContentPeopleIDsKey];
-  [encoder encodeObject:_placeID forKey:FBSDKShareCameraEffectContentPlaceIDKey];
-  [encoder encodeObject:_ref forKey:FBSDKShareCameraEffectContentRefKey];
-  [encoder encodeObject:_pageID forKey:FBSDKShareCameraEffectContentPageIDKey];
-  [encoder encodeObject:_shareUUID forKey:FBSDKShareCameraEffectContentUUIDKey];
+  [encoder encodeObject:_effectID forKey:kFBSDKShareCameraEffectContentEffectIDKey];
+  [encoder encodeObject:_effectArguments forKey:kFBSDKShareCameraEffectContentEffectArgumentsKey];
+  [encoder encodeObject:_effectTextures forKey:kFBSDKShareCameraEffectContentEffectTexturesKey];
+  [encoder encodeObject:_contentURL forKey:kFBSDKShareCameraEffectContentContentURLKey];
+  [encoder encodeObject:_hashtag forKey:kFBSDKShareCameraEffectContentHashtagKey];
+  [encoder encodeObject:_peopleIDs forKey:kFBSDKShareCameraEffectContentPeopleIDsKey];
+  [encoder encodeObject:_placeID forKey:kFBSDKShareCameraEffectContentPlaceIDKey];
+  [encoder encodeObject:_ref forKey:kFBSDKShareCameraEffectContentRefKey];
+  [encoder encodeObject:_pageID forKey:kFBSDKShareCameraEffectContentPageIDKey];
+  [encoder encodeObject:_shareUUID forKey:kFBSDKShareCameraEffectContentUUIDKey];
 }
 
 #pragma mark - NSCopying

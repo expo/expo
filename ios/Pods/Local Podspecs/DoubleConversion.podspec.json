@@ -1,6 +1,6 @@
 {
   "name": "DoubleConversion",
-  "version": "1.1.5",
+  "version": "1.1.6",
   "license": {
     "type": "MIT"
   },
@@ -10,12 +10,12 @@
   "prepare_command": "mv src double-conversion",
   "source": {
     "git": "https://github.com/google/double-conversion.git",
-    "tag": "v1.1.5"
+    "tag": "v1.1.6"
   },
   "module_name": "DoubleConversion",
   "source_files": "double-conversion/*.{h,cc}",
   "platforms": {
-    "ios": "8.0",
+    "ios": "9.0",
     "tvos": "9.2"
   }
 }

@@ -88,6 +88,10 @@ using std::perror;
 using std::fdopen;
 #endif
 
+#ifdef _WIN32
+#define fdopen _fdopen
+#endif
+
 // There is no thread annotation support.
 #define EXCLUSIVE_LOCKS_REQUIRED(mu)
 
@@ -160,6 +164,8 @@ static const char* DefaultLogDir() {
   }
   return "";
 }
+
+GLOG_DEFINE_int32(logfile_mode, 0664, "Log file mode/permissions.");
 
 GLOG_DEFINE_string(log_dir, DefaultLogDir(),
                    "If specified, logfiles are written into this directory instead "
@@ -253,6 +259,7 @@ static bool TerminalSupportsColor() {
       !strcmp(term, "xterm") ||
       !strcmp(term, "xterm-color") ||
       !strcmp(term, "xterm-256color") ||
+      !strcmp(term, "screen-256color") ||
       !strcmp(term, "screen") ||
       !strcmp(term, "linux") ||
       !strcmp(term, "cygwin");
@@ -569,7 +576,7 @@ inline void LogDestination::FlushLogFilesUnsafe(int min_severity) {
   // assume we have the log_mutex or we simply don't care
   // about it
   for (int i = min_severity; i < NUM_SEVERITIES; i++) {
-    LogDestination* log = log_destination(i);
+    LogDestination* log = log_destinations_[i];
     if (log != NULL) {
       // Flush the base fileobject_ logger directly instead of going
       // through any wrappers to reduce chance of deadlock.
@@ -816,6 +823,9 @@ void LogDestination::DeleteLogDestinations() {
     delete log_destinations_[severity];
     log_destinations_[severity] = NULL;
   }
+  MutexLock l(&sink_mutex_);
+  delete sinks_;
+  sinks_ = NULL;
 }
 
 namespace {
@@ -896,7 +906,7 @@ bool LogFileObject::CreateLogfile(const string& time_pid_string) {
   string string_filename = base_filename_+filename_extension_+
                            time_pid_string;
   const char* filename = string_filename.c_str();
-  int fd = open(filename, O_WRONLY | O_CREAT | O_EXCL, 0664);
+  int fd = open(filename, O_WRONLY | O_CREAT | O_EXCL, FLAGS_logfile_mode);
   if (fd == -1) return false;
 #ifdef HAVE_FCNTL
   // Mark the file close-on-exec. We don't really care if this fails
@@ -1459,7 +1469,7 @@ static void logging_fail() {
 #if defined(_DEBUG) && defined(_MSC_VER)
   // When debugging on windows, avoid the obnoxious dialog and make
   // it possible to continue past a LOG(FATAL) in the debugger
-  _asm int 3
+  __debugbreak();
 #else
   abort();
 #endif

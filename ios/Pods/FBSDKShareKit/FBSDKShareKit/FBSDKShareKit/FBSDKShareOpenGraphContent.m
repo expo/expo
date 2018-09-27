@@ -66,6 +66,30 @@
   }
 }
 
+#pragma mark - FBSDKSharingContent
+
+- (void)addToParameters:(NSMutableDictionary<NSString *, id> *)parameters
+          bridgeOptions:(FBSDKShareBridgeOptions)bridgeOptions
+{
+  NSString *previewPropertyName = [FBSDKShareUtility getOpenGraphNameAndNamespaceFromFullName:_previewPropertyName namespace:nil];
+  [FBSDKInternalUtility dictionary:parameters
+                         setObject:previewPropertyName
+                            forKey:@"previewPropertyName"];
+  [FBSDKInternalUtility dictionary:parameters setObject:_action.actionType forKey:@"actionType"];
+  [FBSDKInternalUtility dictionary:parameters
+                         setObject:[FBSDKShareUtility convertOpenGraphValueContainer:_action requireNamespace:NO]
+                            forKey:@"action"];
+}
+
+#pragma mark - FBSDKSharingValidation
+
+- (BOOL)validateWithOptions:(FBSDKShareBridgeOptions)bridgeOptions error:(NSError *__autoreleasing *)errorRef
+{
+  return ([FBSDKShareUtility validateRequiredValue:_action name:@"action" error:errorRef] &&
+          [FBSDKShareUtility validateRequiredValue:_previewPropertyName name:@"previewPropertyName" error:errorRef] &&
+          [FBSDKShareUtility validateRequiredValue:_action[_previewPropertyName] name:_previewPropertyName error:errorRef]);
+}
+
 #pragma mark - Equality
 
 - (NSUInteger)hash

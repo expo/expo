@@ -27,7 +27,7 @@
 
 /**
   Implemented by NSObject as a convenience to copyWithZone:.
- - Returns: A copy of the receiver.
+ @return A copy of the receiver.
  */
 - (id)copy;
 

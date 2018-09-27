@@ -19,6 +19,7 @@
 #include <folly/Portability.h>
 #include <folly/Preprocessor.h> // for FB_ANONYMOUS_VARIABLE
 #include <folly/ScopeGuard.h>
+#include <folly/Traits.h>
 #include <folly/portability/GFlags.h>
 #include <folly/portability/Time.h>
 
@@ -51,13 +52,6 @@ inline bool runBenchmarksOnFlag() {
 }
 
 namespace detail {
-
-/**
- * This is the clock ID used for measuring time. On older kernels, the
- * resolution of this clock will be very coarse, which will cause the
- * benchmarks to fail.
- */
-enum Clock { DEFAULT_CLOCK_ID = CLOCK_REALTIME };
 
 typedef std::pair<uint64_t, unsigned int> TimeIterPair;
 
@@ -116,7 +110,7 @@ inline uint64_t timespecDiff(timespec end, timespec start,
  */
 struct BenchmarkSuspender {
   BenchmarkSuspender() {
-    CHECK_EQ(0, clock_gettime(detail::DEFAULT_CLOCK_ID, &start));
+    CHECK_EQ(0, clock_gettime(CLOCK_REALTIME, &start));
   }
 
   BenchmarkSuspender(const BenchmarkSuspender &) = delete;
@@ -149,7 +143,7 @@ struct BenchmarkSuspender {
 
   void rehire() {
     assert(start.tv_nsec == 0 || start.tv_sec == 0);
-    CHECK_EQ(0, clock_gettime(detail::DEFAULT_CLOCK_ID, &start));
+    CHECK_EQ(0, clock_gettime(CLOCK_REALTIME, &start));
   }
 
   template <class F>
@@ -176,7 +170,7 @@ struct BenchmarkSuspender {
 private:
   void tally() {
     timespec end;
-    CHECK_EQ(0, clock_gettime(detail::DEFAULT_CLOCK_ID, &end));
+    CHECK_EQ(0, clock_gettime(CLOCK_REALTIME, &end));
     nsSpent += detail::timespecDiff(end, start);
     start = end;
   }
@@ -203,9 +197,9 @@ addBenchmark(const char* file, const char* name, Lambda&& lambda) {
     unsigned int niter;
 
     // CORE MEASUREMENT STARTS
-    auto const r1 = clock_gettime(detail::DEFAULT_CLOCK_ID, &start);
+    auto const r1 = clock_gettime(CLOCK_REALTIME, &start);
     niter = lambda(times);
-    auto const r2 = clock_gettime(detail::DEFAULT_CLOCK_ID, &end);
+    auto const r2 = clock_gettime(CLOCK_REALTIME, &end);
     // CORE MEASUREMENT ENDS
 
     CHECK_EQ(0, r1);
@@ -242,32 +236,73 @@ addBenchmark(const char* file, const char* name, Lambda&& lambda) {
 }
 
 /**
- * Call doNotOptimizeAway(var) against variables that you use for
+ * Call doNotOptimizeAway(var) to ensure that var will be computed even
+ * post-optimization.  Use it for variables that are computed during
  * benchmarking but otherwise are useless. The compiler tends to do a
- * good job at eliminating unused variables, and this function fools
- * it into thinking var is in fact needed.
+ * good job at eliminating unused variables, and this function fools it
+ * into thinking var is in fact needed.
+ *
+ * Call makeUnpredictable(var) when you don't want the optimizer to use
+ * its knowledge of var to shape the following code.  This is useful
+ * when constant propagation or power reduction is possible during your
+ * benchmark but not in real use cases.
  */
+
 #ifdef _MSC_VER
 
 #pragma optimize("", off)
 
-template <class T>
-void doNotOptimizeAway(T&& datum) {
-  datum = datum;
-}
+inline void doNotOptimizeDependencySink(const void*) {}
 
 #pragma optimize("", on)
 
-#elif defined(__clang__)
-
 template <class T>
-__attribute__((__optnone__)) void doNotOptimizeAway(T&& /* datum */) {}
+void doNotOptimizeAway(const T& datum) {
+  doNotOptimizeDependencySink(&datum);
+}
+
+template <typename T>
+void makeUnpredictable(T& datum) {
+  doNotOptimizeDependencySink(&datum);
+}
 
 #else
 
-template <class T>
-void doNotOptimizeAway(T&& datum) {
-  asm volatile("" : "+r" (datum));
+namespace detail {
+template <typename T>
+struct DoNotOptimizeAwayNeedsIndirect {
+  using Decayed = typename std::decay<T>::type;
+
+  // First two constraints ensure it can be an "r" operand.
+  // std::is_pointer check is because callers seem to expect that
+  // doNotOptimizeAway(&x) is equivalent to doNotOptimizeAway(x).
+  constexpr static bool value = !folly::IsTriviallyCopyable<Decayed>::value ||
+      sizeof(Decayed) > sizeof(long) || std::is_pointer<Decayed>::value;
+};
+} // detail namespace
+
+template <typename T>
+auto doNotOptimizeAway(const T& datum) -> typename std::enable_if<
+    !detail::DoNotOptimizeAwayNeedsIndirect<T>::value>::type {
+  asm volatile("" ::"X"(datum));
+}
+
+template <typename T>
+auto doNotOptimizeAway(const T& datum) -> typename std::enable_if<
+    detail::DoNotOptimizeAwayNeedsIndirect<T>::value>::type {
+  asm volatile("" ::"m"(datum) : "memory");
+}
+
+template <typename T>
+auto makeUnpredictable(T& datum) -> typename std::enable_if<
+    !detail::DoNotOptimizeAwayNeedsIndirect<T>::value>::type {
+  asm volatile("" : "+r"(datum));
+}
+
+template <typename T>
+auto makeUnpredictable(T& datum) -> typename std::enable_if<
+    detail::DoNotOptimizeAwayNeedsIndirect<T>::value>::type {
+  asm volatile("" ::"m"(datum) : "memory");
 }
 
 #endif
@@ -430,7 +465,7 @@ void doNotOptimizeAway(T&& datum) {
 /**
  * Just like BENCHMARK, but prints the time relative to a
  * baseline. The baseline is the most recent BENCHMARK() seen in
- * lexical order. Example:
+ * the current scope. Example:
  *
  * // This is the baseline
  * BENCHMARK(insertVectorBegin, n) {

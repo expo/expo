@@ -286,7 +286,7 @@ static bool DiyFpStrtod(Vector<const char> buffer,
   const int kDenominator = 1 << kDenominatorLog;
   // Move the remaining decimals into the exponent.
   exponent += remaining_decimals;
-  int error = (remaining_decimals == 0 ? 0 : kDenominator / 2);
+  uint64_t error = (remaining_decimals == 0 ? 0 : kDenominator / 2);
 
   int old_e = input.e();
   input.Normalize();

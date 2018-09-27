@@ -106,7 +106,7 @@ static id<OIDSafariViewControllerFactory> __nullable gSafariViewControllerFactor
         NSError *safariError =
             [OIDErrorUtilities errorWithCode:OIDErrorCodeUserCanceledAuthorizationFlow
                              underlyingError:error
-                                 description:nil];
+                                 description:@"User cancelled."];
         [strongSelf->_session failExternalUserAgentFlowWithError:safariError];
       }
     }];
@@ -185,7 +185,7 @@ static id<OIDSafariViewControllerFactory> __nullable gSafariViewControllerFactor
   [self cleanUp];
   NSError *error = [OIDErrorUtilities errorWithCode:OIDErrorCodeUserCanceledAuthorizationFlow
                                     underlyingError:nil
-                                        description:nil];
+                                        description:@"No external user agent flow in progress."];
   [session failExternalUserAgentFlowWithError:error];
 }
 

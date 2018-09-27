@@ -73,6 +73,12 @@ void EXRegisterScopedModule(Class moduleClass, ...)
   }
 }
 
+@interface RCTBridgeHack <NSObject>
+
+- (void)reload;
+
+@end
+
 @interface EXVersionManager ()
 
 // is this the first time this ABI has been touched at runtime?
@@ -174,7 +180,9 @@ void EXRegisterScopedModule(Class moduleClass, ...)
   RCTAssertMainQueue();
   RCTDevSettings *devSettings = [self _moduleInstanceForBridge:bridge named:@"DevSettings"];
   if ([key isEqualToString:@"dev-reload"]) {
-    [bridge reload];
+    // bridge could be an RCTBridge of any version and we need to cast it since ARC needs to know
+    // the return type
+    [(RCTBridgeHack *)bridge reload];
   } else if ([key isEqualToString:@"dev-remote-debug"]) {
     devSettings.isDebuggingRemotely = !devSettings.isDebuggingRemotely;
   } else if ([key isEqualToString:@"dev-live-reload"]) {

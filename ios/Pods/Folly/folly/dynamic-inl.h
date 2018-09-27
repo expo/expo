@@ -93,44 +93,6 @@ namespace detail {
   };
 
   /*
-   * The enable_if junk here is necessary to avoid ambiguous
-   * conversions relating to bool and double when you implicitly
-   * convert an int or long to a dynamic.
-   */
-  template<class T, class Enable = void> struct ConversionHelper;
-  template<class T>
-  struct ConversionHelper<
-    T,
-    typename std::enable_if<
-      std::is_integral<T>::value && !std::is_same<T,bool>::value
-    >::type
-  > {
-    typedef int64_t type;
-  };
-  template <>
-  struct ConversionHelper<float> {
-    typedef double type;
-  };
-  template <class T>
-  struct ConversionHelper<
-      T,
-      typename std::enable_if<
-          (!std::is_integral<T>::value || std::is_same<T, bool>::value) &&
-          !std::is_same<T, float>::value &&
-          !std::is_same<T, std::nullptr_t>::value>::type> {
-    typedef T type;
-  };
-  template<class T>
-  struct ConversionHelper<
-    T,
-    typename std::enable_if<
-      std::is_same<T,std::nullptr_t>::value
-    >::type
-  > {
-    typedef void* type;
-  };
-
-  /*
    * Helper for implementing numeric conversions in operators on
    * numbers.  Just promotes to double when one of the arguments is
    * double, or throws if either is not a numeric type.
@@ -173,12 +135,7 @@ struct dynamic::ObjectMaker {
   friend struct dynamic;
 
   explicit ObjectMaker() : val_(dynamic::object) {}
-  explicit ObjectMaker(dynamic const& key, dynamic val)
-    : val_(dynamic::object)
-  {
-    val_.insert(key, std::move(val));
-  }
-  explicit ObjectMaker(dynamic&& key, dynamic val)
+  explicit ObjectMaker(dynamic key, dynamic val)
     : val_(dynamic::object)
   {
     val_.insert(std::move(key), std::move(val));
@@ -191,15 +148,10 @@ struct dynamic::ObjectMaker {
   ObjectMaker& operator=(ObjectMaker const&) = delete;
   ObjectMaker& operator=(ObjectMaker&&) = delete;
 
-  // These return rvalue-references instead of lvalue-references to allow
-  // constructs like this to moved instead of copied:
+  // This returns an rvalue-reference instead of an lvalue-reference
+  // to allow constructs like this to moved instead of copied:
   //  dynamic a = dynamic::object("a", "b")("c", "d")
-  ObjectMaker&& operator()(dynamic const& key, dynamic val) {
-    val_.insert(key, std::move(val));
-    return std::move(*this);
-  }
-
-  ObjectMaker&& operator()(dynamic&& key, dynamic val) {
+  ObjectMaker&& operator()(dynamic key, dynamic val) {
     val_.insert(std::move(key), std::move(val));
     return std::move(*this);
   }
@@ -212,28 +164,12 @@ inline void dynamic::array(EmptyArrayTag) {}
 
 template <class... Args>
 inline dynamic dynamic::array(Args&& ...args) {
-  return dynamic(Array{std::forward<Args>(args)...}, PrivateTag());
+  return dynamic(Array{std::forward<Args>(args)...});
 }
 
-// This looks like a case for perfect forwarding, but our use of
-// std::initializer_list for constructing dynamic arrays makes it less
-// functional than doing this manually.
-
-// TODO(ott, 10300209): When the initializer_list constructor is gone,
-// simplify this.
 inline dynamic::ObjectMaker dynamic::object() { return ObjectMaker(); }
-inline dynamic::ObjectMaker dynamic::object(dynamic&& a, dynamic&& b) {
+inline dynamic::ObjectMaker dynamic::object(dynamic a, dynamic b) {
   return ObjectMaker(std::move(a), std::move(b));
-}
-inline dynamic::ObjectMaker dynamic::object(dynamic const& a, dynamic&& b) {
-  return ObjectMaker(a, std::move(b));
-}
-inline dynamic::ObjectMaker dynamic::object(dynamic&& a, dynamic const& b) {
-  return ObjectMaker(std::move(a), b);
-}
-inline dynamic::ObjectMaker
-dynamic::object(dynamic const& a, dynamic const& b) {
-  return ObjectMaker(a, b);
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -275,6 +211,10 @@ struct dynamic::const_value_iterator
 
 //////////////////////////////////////////////////////////////////////
 
+inline dynamic::dynamic() : dynamic(nullptr) {}
+
+inline dynamic::dynamic(std::nullptr_t) : type_(NULLT) {}
+
 inline dynamic::dynamic(void (*)(EmptyArrayTag))
   : type_(ARRAY)
 {
@@ -299,22 +239,10 @@ inline dynamic::dynamic(char const* s)
   new (&u_.string) std::string(s);
 }
 
-inline dynamic::dynamic(std::string const& s)
+inline dynamic::dynamic(std::string s)
   : type_(STRING)
 {
-  new (&u_.string) std::string(s);
-}
-
-inline dynamic::dynamic(std::string&& s) : type_(STRING) {
   new (&u_.string) std::string(std::move(s));
-}
-
-inline dynamic::dynamic(std::initializer_list<dynamic> il)
-    : dynamic(Array(std::move(il)), PrivateTag()) {}
-
-inline dynamic& dynamic::operator=(std::initializer_list<dynamic> il) {
-  (*this) = dynamic(Array(std::move(il)), PrivateTag());
-  return *this;
 }
 
 inline dynamic::dynamic(ObjectMaker&& maker)
@@ -338,14 +266,32 @@ inline dynamic::dynamic(dynamic&& o) noexcept
 
 inline dynamic::~dynamic() noexcept { destroy(); }
 
-template<class T>
+// Integral types except bool convert to int64_t, float types to double.
+template <class T>
+struct dynamic::NumericTypeHelper<
+    T, typename std::enable_if<std::is_integral<T>::value>::type> {
+  using type = int64_t;
+};
+template <>
+struct dynamic::NumericTypeHelper<bool> {
+  using type = bool;
+};
+template <>
+struct dynamic::NumericTypeHelper<float> {
+  using type = double;
+};
+template <>
+struct dynamic::NumericTypeHelper<double> {
+  using type = double;
+};
+
+template<class T, class NumericType /* = typename NumericTypeHelper<T>::type */>
 dynamic::dynamic(T t) {
-  typedef typename detail::ConversionHelper<T>::type U;
-  type_ = TypeInfo<U>::type;
-  new (getAddress<U>()) U(std::move(t));
+  type_ = TypeInfo<NumericType>::type;
+  new (getAddress<NumericType>()) NumericType(t);
 }
 
-template<class Iterator>
+template <class Iterator>
 dynamic::dynamic(Iterator first, Iterator last)
   : type_(ARRAY)
 {
@@ -674,7 +620,7 @@ inline void dynamic::pop_back() {
 
 //////////////////////////////////////////////////////////////////////
 
-inline dynamic::dynamic(Array&& r, PrivateTag) : type_(ARRAY) {
+inline dynamic::dynamic(Array&& r) : type_(ARRAY) {
   new (&u_.array) Array(std::move(r));
 }
 
@@ -687,7 +633,7 @@ inline dynamic::dynamic(Array&& r, PrivateTag) : type_(ARRAY) {
 
 FOLLY_DYNAMIC_DEC_TYPEINFO(void*,               "null",    dynamic::NULLT)
 FOLLY_DYNAMIC_DEC_TYPEINFO(bool,                "boolean", dynamic::BOOL)
-FOLLY_DYNAMIC_DEC_TYPEINFO(std::string, "string", dynamic::STRING)
+FOLLY_DYNAMIC_DEC_TYPEINFO(std::string,         "string",  dynamic::STRING)
 FOLLY_DYNAMIC_DEC_TYPEINFO(dynamic::Array,      "array",   dynamic::ARRAY)
 FOLLY_DYNAMIC_DEC_TYPEINFO(double,              "double",  dynamic::DOUBLE)
 FOLLY_DYNAMIC_DEC_TYPEINFO(int64_t,             "int64",   dynamic::INT64)

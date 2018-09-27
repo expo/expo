@@ -111,7 +111,7 @@ typedef NS_ENUM(NSInteger, FBSDKErrorCode)
 
   /**
 
-- Warning:use FBSDKBrowserUnavailableErrorCode instead
+@warning use FBSDKBrowserUnavailableErrorCode instead
    */
   FBSDKBrowswerUnavailableErrorCode __attribute__ ((deprecated("use FBSDKBrowserUnavailableErrorCode instead"))) = FBSDKBrowserUnavailableErrorCode,
 };
@@ -207,11 +207,11 @@ FBSDK_EXTERN NSString *const FBSDKGraphRequestErrorParsedJSONResponseKey;
 
 /**
   attempt the recovery
- - Parameter error: the error
- - Parameter recoveryOptionIndex: the selected option index
- - Parameter delegate: the delegate
- - Parameter didRecoverSelector: the callback selector, see discussion.
- - Parameter contextInfo: context info to pass back to callback selector, see discussion.
+ @param error the error
+ @param recoveryOptionIndex the selected option index
+ @param delegate the delegate
+ @param didRecoverSelector the callback selector, see discussion.
+ @param contextInfo context info to pass back to callback selector, see discussion.
 
 
  Given that an error alert has been presented document-modally to the user, and the user has chosen one of the error's recovery options, attempt recovery from the error, and send the selected message to the specified delegate. The option index is an index into the error's array of localized recovery options. The method selected by didRecoverSelector must have the same signature as:

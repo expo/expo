@@ -133,7 +133,7 @@ inline uint64_t decodeVarint(Range<T*>& data) {
     val |= static_cast<uint64_t>(*p++) << shift;
   }
 
-  data.advance(p - begin);
+  data.uncheckedAdvance(p - begin);
   return val;
 }
 

@@ -29,9 +29,9 @@
 
 /**
   Convenience method to show an FBSDKShareDialog with a fromViewController, content and a delegate.
- - Parameter viewController: A UIViewController to present the dialog from, if appropriate.
- - Parameter content: The content to be shared.
- - Parameter delegate: The receiver's delegate.
+ @param viewController A UIViewController to present the dialog from, if appropriate.
+ @param content The content to be shared.
+ @param delegate The receiver's delegate.
  */
 + (instancetype)showFromViewController:(UIViewController *)viewController
                            withContent:(id<FBSDKSharingContent>)content

@@ -45,14 +45,14 @@
 
 /**
   Convenience method to build a new action and set the object for the specified key.
- - Parameter properties: Properties for the Open Graph object, which will be parsed into the proper models
+ @param properties Properties for the Open Graph object, which will be parsed into the proper models
  */
 + (instancetype)objectWithProperties:(NSDictionary *)properties;
 
 /**
   Compares the receiver to another Open Graph Object.
- - Parameter object: The other object
- - Returns: YES if the receiver's values are equal to the other object's values; otherwise NO
+ @param object The other object
+ @return YES if the receiver's values are equal to the other object's values; otherwise NO
  */
 - (BOOL)isEqualToShareOpenGraphObject:(FBSDKShareOpenGraphObject *)object;
 

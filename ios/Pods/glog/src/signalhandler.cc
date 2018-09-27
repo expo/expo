@@ -335,6 +335,22 @@ void FailureSignalHandler(int signal_number,
 
 #endif  // HAVE_SIGACTION
 
+namespace glog_internal_namespace_ {
+
+bool IsFailureSignalHandlerInstalled() {
+#ifdef HAVE_SIGACTION
+  struct sigaction sig_action;
+  memset(&sig_action, 0, sizeof(sig_action));
+  sigemptyset(&sig_action.sa_mask);
+  sigaction(SIGABRT, NULL, &sig_action);
+  if (sig_action.sa_sigaction == &FailureSignalHandler)
+    return true;
+#endif  // HAVE_SIGACTION
+  return false;
+}
+
+}  // namespace glog_internal_namespace_
+
 void InstallFailureSignalHandler() {
 #ifdef HAVE_SIGACTION
   // Build the sigaction struct.

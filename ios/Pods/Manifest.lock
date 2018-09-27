@@ -126,7 +126,7 @@ PODS:
     - ABI30_0_0EXCore
   - Amplitude-iOS (3.14.1)
   - Analytics (3.6.9)
-  - AppAuth (0.93.0)
+  - AppAuth (0.94.0)
   - Bolts (1.9.0):
     - Bolts/AppLinks (= 1.9.0)
     - Bolts/Tasks (= 1.9.0)
@@ -143,9 +143,9 @@ PODS:
   - CocoaLumberjack/Default (3.2.1)
   - CocoaLumberjack/Extensions (3.2.1):
     - CocoaLumberjack/Default
-  - Crashlytics (3.10.5):
-    - Fabric (~> 1.7.9)
-  - DoubleConversion (1.1.5)
+  - Crashlytics (3.10.7):
+    - Fabric (~> 1.7.11)
+  - DoubleConversion (1.1.6)
   - EXAdsAdMob (1.0.0):
     - EXCore
     - Google-Mobile-Ads-SDK
@@ -229,19 +229,19 @@ PODS:
     - EXCore
   - EXSMS (1.0.2):
     - EXCore
-  - Fabric (1.7.9)
+  - Fabric (1.7.11)
   - FBAudienceNetwork (4.99.0)
-  - FBSDKCoreKit (4.34.0):
+  - FBSDKCoreKit (4.36.0):
     - Bolts (~> 1.7)
-  - FBSDKLoginKit (4.34.0):
+  - FBSDKLoginKit (4.36.0):
     - FBSDKCoreKit
-  - FBSDKShareKit (4.34.0):
-    - FBSDKCoreKit (~> 4.34.0)
-  - Folly (2016.09.26.00):
+  - FBSDKShareKit (4.36.0):
+    - FBSDKCoreKit (~> 4.36.0)
+  - Folly (2016.10.31.00):
     - boost-for-react-native
     - DoubleConversion
     - glog
-  - glog (0.3.4)
+  - glog (0.3.5)
   - Google-Maps-iOS-Utils (2.1.0):
     - Google-Maps-iOS-Utils/Clustering (= 2.1.0)
     - Google-Maps-iOS-Utils/Geometry (= 2.1.0)
@@ -301,56 +301,56 @@ PODS:
     - GTMSessionFetcher/Core (= 1.2.0)
   - JKBigInteger2 (0.0.5)
   - lottie-ios (2.5.0)
-  - React (0.55.4):
-    - React/Core (= 0.55.4)
-  - React/ART (0.55.4):
+  - React (0.57.1):
+    - React/Core (= 0.57.1)
+  - React/ART (0.57.1):
     - React/Core
-  - React/Core (0.55.4):
-    - yoga (= 0.55.4.React)
-  - React/CxxBridge (0.55.4):
-    - Folly (= 2016.09.26.00)
+  - React/Core (0.57.1):
+    - yoga (= 0.57.1.React)
+  - React/CxxBridge (0.57.1):
+    - Folly (= 2016.10.31.00)
     - React/Core
     - React/cxxreact
-  - React/cxxreact (0.55.4):
+  - React/cxxreact (0.57.1):
     - boost-for-react-native (= 1.63.0)
-    - Folly (= 2016.09.26.00)
+    - Folly (= 2016.10.31.00)
     - React/jschelpers
     - React/jsinspector
-  - React/DevSupport (0.55.4):
+  - React/DevSupport (0.57.1):
     - React/Core
     - React/RCTWebSocket
-  - React/fishhook (0.55.4)
-  - React/jschelpers (0.55.4):
-    - Folly (= 2016.09.26.00)
+  - React/fishhook (0.57.1)
+  - React/jschelpers (0.57.1):
+    - Folly (= 2016.10.31.00)
     - React/PrivateDatabase
-  - React/jsinspector (0.55.4)
-  - React/PrivateDatabase (0.55.4)
-  - React/RCTActionSheet (0.55.4):
+  - React/jsinspector (0.57.1)
+  - React/PrivateDatabase (0.57.1)
+  - React/RCTActionSheet (0.57.1):
     - React/Core
-  - React/RCTAnimation (0.55.4):
+  - React/RCTAnimation (0.57.1):
     - React/Core
-  - React/RCTBlob (0.55.4):
+  - React/RCTBlob (0.57.1):
     - React/Core
-  - React/RCTCameraRoll (0.55.4):
+  - React/RCTCameraRoll (0.57.1):
     - React/Core
     - React/RCTImage
-  - React/RCTGeolocation (0.55.4):
+  - React/RCTGeolocation (0.57.1):
     - React/Core
-  - React/RCTImage (0.55.4):
+  - React/RCTImage (0.57.1):
     - React/Core
     - React/RCTNetwork
-  - React/RCTNetwork (0.55.4):
+  - React/RCTNetwork (0.57.1):
     - React/Core
-  - React/RCTText (0.55.4):
+  - React/RCTText (0.57.1):
     - React/Core
-  - React/RCTVibration (0.55.4):
+  - React/RCTVibration (0.57.1):
     - React/Core
-  - React/RCTWebSocket (0.55.4):
+  - React/RCTWebSocket (0.57.1):
     - React/Core
     - React/fishhook
     - React/RCTBlob
   - ReactABI24_0_0/ABI24_0_0jschelpers (0.51.0):
-    - Folly (= 2016.09.26.00)
+    - Folly (= 2016.10.31.00)
     - ReactABI24_0_0/ABI24_0_0PrivateDatabase
   - ReactABI24_0_0/ABI24_0_0PrivateDatabase (0.51.0)
   - ReactABI24_0_0/ART (0.51.0):
@@ -358,12 +358,12 @@ PODS:
   - ReactABI24_0_0/Core (0.51.0):
     - yogaABI24_0_0 (= 0.51.0.React)
   - ReactABI24_0_0/CxxBridge (0.51.0):
-    - Folly (= 2016.09.26.00)
+    - Folly (= 2016.10.31.00)
     - ReactABI24_0_0/Core
     - ReactABI24_0_0/cxxReactABI24_0_0
   - ReactABI24_0_0/cxxReactABI24_0_0 (0.51.0):
     - boost-for-react-native (= 1.63.0)
-    - Folly (= 2016.09.26.00)
+    - Folly (= 2016.10.31.00)
     - ReactABI24_0_0/ABI24_0_0jschelpers
   - ReactABI24_0_0/DevSupport (0.51.0):
     - ReactABI24_0_0/Core
@@ -414,7 +414,7 @@ PODS:
     - ReactABI24_0_0/fishhook
     - ReactABI24_0_0/RCTBlob
   - ReactABI25_0_0/ABI25_0_0jschelpers (0.52.0):
-    - Folly (= 2016.09.26.00)
+    - Folly (= 2016.10.31.00)
     - ReactABI25_0_0/ABI25_0_0PrivateDatabase
   - ReactABI25_0_0/ABI25_0_0jsinspector (0.52.0)
   - ReactABI25_0_0/ABI25_0_0PrivateDatabase (0.52.0)
@@ -423,12 +423,12 @@ PODS:
   - ReactABI25_0_0/Core (0.52.0):
     - yogaABI25_0_0 (= 0.52.0.React)
   - ReactABI25_0_0/CxxBridge (0.52.0):
-    - Folly (= 2016.09.26.00)
+    - Folly (= 2016.10.31.00)
     - ReactABI25_0_0/Core
     - ReactABI25_0_0/cxxReactABI25_0_0
   - ReactABI25_0_0/cxxReactABI25_0_0 (0.52.0):
     - boost-for-react-native (= 1.63.0)
-    - Folly (= 2016.09.26.00)
+    - Folly (= 2016.10.31.00)
     - ReactABI25_0_0/ABI25_0_0jschelpers
     - ReactABI25_0_0/ABI25_0_0jsinspector
   - ReactABI25_0_0/DevSupport (0.52.0):
@@ -480,7 +480,7 @@ PODS:
     - ReactABI25_0_0/fishhook
     - ReactABI25_0_0/RCTBlob
   - ReactABI26_0_0/ABI26_0_0jschelpers (0.54.2):
-    - Folly (= 2016.09.26.00)
+    - Folly (= 2016.10.31.00)
     - ReactABI26_0_0/ABI26_0_0PrivateDatabase
   - ReactABI26_0_0/ABI26_0_0jsinspector (0.54.2)
   - ReactABI26_0_0/ABI26_0_0PrivateDatabase (0.54.2)
@@ -489,12 +489,12 @@ PODS:
   - ReactABI26_0_0/Core (0.54.2):
     - yogaABI26_0_0 (= 0.54.2.React)
   - ReactABI26_0_0/CxxBridge (0.54.2):
-    - Folly (= 2016.09.26.00)
+    - Folly (= 2016.10.31.00)
     - ReactABI26_0_0/Core
     - ReactABI26_0_0/cxxReactABI26_0_0
   - ReactABI26_0_0/cxxReactABI26_0_0 (0.54.2):
     - boost-for-react-native (= 1.63.0)
-    - Folly (= 2016.09.26.00)
+    - Folly (= 2016.10.31.00)
     - ReactABI26_0_0/ABI26_0_0jschelpers
     - ReactABI26_0_0/ABI26_0_0jsinspector
   - ReactABI26_0_0/DevSupport (0.54.2):
@@ -546,9 +546,9 @@ PODS:
     - ReactABI26_0_0/fishhook
     - ReactABI26_0_0/RCTBlob
   - ReactABI27_0_0/ABI27_0_0fabric (0.55.2):
-    - Folly (= 2016.09.26.00)
+    - Folly (= 2016.10.31.00)
   - ReactABI27_0_0/ABI27_0_0jschelpers (0.55.2):
-    - Folly (= 2016.09.26.00)
+    - Folly (= 2016.10.31.00)
     - ReactABI27_0_0/ABI27_0_0PrivateDatabase
   - ReactABI27_0_0/ABI27_0_0jsinspector (0.55.2)
   - ReactABI27_0_0/ABI27_0_0PrivateDatabase (0.55.2)
@@ -558,12 +558,12 @@ PODS:
     - ReactABI27_0_0/ABI27_0_0fabric
     - yogaABI27_0_0 (= 0.55.2.React)
   - ReactABI27_0_0/CxxBridge (0.55.2):
-    - Folly (= 2016.09.26.00)
+    - Folly (= 2016.10.31.00)
     - ReactABI27_0_0/Core
     - ReactABI27_0_0/cxxReactABI27_0_0
   - ReactABI27_0_0/cxxReactABI27_0_0 (0.55.2):
     - boost-for-react-native (= 1.63.0)
-    - Folly (= 2016.09.26.00)
+    - Folly (= 2016.10.31.00)
     - ReactABI27_0_0/ABI27_0_0jschelpers
     - ReactABI27_0_0/ABI27_0_0jsinspector
   - ReactABI27_0_0/DevSupport (0.55.2):
@@ -615,7 +615,7 @@ PODS:
     - ReactABI27_0_0/fishhook
     - ReactABI27_0_0/RCTBlob
   - ReactABI28_0_0/ABI28_0_0jschelpers (0.55.4):
-    - Folly (= 2016.09.26.00)
+    - Folly (= 2016.10.31.00)
     - ReactABI28_0_0/ABI28_0_0PrivateDatabase
   - ReactABI28_0_0/ABI28_0_0jsinspector (0.55.4)
   - ReactABI28_0_0/ABI28_0_0PrivateDatabase (0.55.4)
@@ -624,12 +624,12 @@ PODS:
   - ReactABI28_0_0/Core (0.55.4):
     - yogaABI28_0_0 (= 0.55.4.React)
   - ReactABI28_0_0/CxxBridge (0.55.4):
-    - Folly (= 2016.09.26.00)
+    - Folly (= 2016.10.31.00)
     - ReactABI28_0_0/Core
     - ReactABI28_0_0/cxxReactABI28_0_0
   - ReactABI28_0_0/cxxReactABI28_0_0 (0.55.4):
     - boost-for-react-native (= 1.63.0)
-    - Folly (= 2016.09.26.00)
+    - Folly (= 2016.10.31.00)
     - ReactABI28_0_0/ABI28_0_0jschelpers
     - ReactABI28_0_0/ABI28_0_0jsinspector
   - ReactABI28_0_0/DevSupport (0.55.4):
@@ -684,7 +684,7 @@ PODS:
   - ReactABI29_0_0 (0.55.4):
     - ReactABI29_0_0/Core (= 0.55.4)
   - ReactABI29_0_0/ABI29_0_0jschelpers (0.55.4):
-    - Folly (= 2016.09.26.00)
+    - Folly (= 2016.10.31.00)
     - ReactABI29_0_0/ABI29_0_0PrivateDatabase
   - ReactABI29_0_0/ABI29_0_0jsinspector (0.55.4)
   - ReactABI29_0_0/ABI29_0_0PrivateDatabase (0.55.4)
@@ -693,12 +693,12 @@ PODS:
   - ReactABI29_0_0/Core (0.55.4):
     - yogaABI29_0_0 (= 0.55.4.React)
   - ReactABI29_0_0/CxxBridge (0.55.4):
-    - Folly (= 2016.09.26.00)
+    - Folly (= 2016.10.31.00)
     - ReactABI29_0_0/Core
     - ReactABI29_0_0/cxxReactABI29_0_0
   - ReactABI29_0_0/cxxReactABI29_0_0 (0.55.4):
     - boost-for-react-native (= 1.63.0)
-    - Folly (= 2016.09.26.00)
+    - Folly (= 2016.10.31.00)
     - ReactABI29_0_0/ABI29_0_0jschelpers
     - ReactABI29_0_0/ABI29_0_0jsinspector
   - ReactABI29_0_0/DevSupport (0.55.4):
@@ -767,7 +767,7 @@ PODS:
   - ReactABI30_0_0 (0.55.4):
     - ReactABI30_0_0/Core (= 0.55.4)
   - ReactABI30_0_0/ABI30_0_0jschelpers (0.55.4):
-    - Folly (= 2016.09.26.00)
+    - Folly (= 2016.10.31.00)
     - ReactABI30_0_0/PrivateDatabase
   - ReactABI30_0_0/ABI30_0_0jsinspector (0.55.4)
   - ReactABI30_0_0/ART (0.55.4):
@@ -775,12 +775,12 @@ PODS:
   - ReactABI30_0_0/Core (0.55.4):
     - yogaABI30_0_0 (= 0.55.4.React)
   - ReactABI30_0_0/CxxBridge (0.55.4):
-    - Folly (= 2016.09.26.00)
+    - Folly (= 2016.10.31.00)
     - ReactABI30_0_0/Core
     - ReactABI30_0_0/cxxReactABI30_0_0
   - ReactABI30_0_0/cxxReactABI30_0_0 (0.55.4):
     - boost-for-react-native (= 1.63.0)
-    - Folly (= 2016.09.26.00)
+    - Folly (= 2016.10.31.00)
     - ReactABI30_0_0/ABI30_0_0jschelpers
     - ReactABI30_0_0/ABI30_0_0jsinspector
   - ReactABI30_0_0/DevSupport (0.55.4):
@@ -859,7 +859,7 @@ PODS:
     - ReactABI30_0_0/Core
     - ReactABI30_0_0/fishhook
     - ReactABI30_0_0/RCTBlob
-  - yoga (0.55.4.React)
+  - yoga (0.57.1.React)
   - yogaABI24_0_0 (0.51.0.React)
   - yogaABI25_0_0 (0.52.0.React)
   - yogaABI26_0_0 (0.54.2.React)
@@ -1352,13 +1352,13 @@ SPEC CHECKSUMS:
   ABI30_0_0EXSMS: 06faf03eac91ca0960cad026240884f282292bcd
   Amplitude-iOS: 4a3c8807b2ea5369dc11e87e23825bff01e5a922
   Analytics: 6541ce337e99d9f7a2240a8b3953940a7be5f998
-  AppAuth: 1096c2ad48507c4a2a8c85c8a6ff065741ab9931
+  AppAuth: 0f099c2286a1a9754e5bd27211c43d307dc4f778
   Bolts: ac6567323eac61e203f6a9763667d0f711be34c8
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   Branch: 0d98d22745a9b68bcb4fa6dc1c6a92b64d4fdd7b
   CocoaLumberjack: 2800c03334042fe80589423c8d80e582dcaec482
-  Crashlytics: 7f2e38d302d9da96475b3d64d86fb29e31a542b7
-  DoubleConversion: e22e0762848812a87afd67ffda3998d9ef29170c
+  Crashlytics: ccaac42660eb9351b9960c0d66106b0bcf99f4fa
+  DoubleConversion: bb338842f62ab1d708ceb63ec3d999f0f3d98ecd
   EXAdsAdMob: 66a3c271540f54f4d964fa72f0c8a953faea5a03
   EXBarCodeScanner: 0ed39b41ccec72935521823eceed3d60c73fc43d
   EXBarCodeScannerInterface: 4453aa03ca1e0a1c9b320aaf4ce5b7d88064d192
@@ -1388,13 +1388,13 @@ SPEC CHECKSUMS:
   EXSensors: 6aa3b3b9906beb0b574a88943d171ebc226b0fe5
   EXSensorsInterface: 9e845bc03ad23a846fa6bcd4e2a60f1d0b1a6906
   EXSMS: 2a2f1abfb2f37b686e892261678c70f39c9b7fa8
-  Fabric: a2917d3895e4c1569b9c3170de7320ea1b1e6661
+  Fabric: f233c9492b3bbc1f04e3882986740f7988a58edb
   FBAudienceNetwork: 80275c0a28574ff5ce820abdc251d05e07e6ae7a
-  FBSDKCoreKit: 0ff57f093b85c8c9d5aba697d3edf68a8960ce78
-  FBSDKLoginKit: 8c78f57a145afb756e4755e69195ebe08a42466e
-  FBSDKShareKit: 511d1dfc71204c0a8d69e6c5e3c964dcf0d4f3d9
-  Folly: 211775e49d8da0ca658aebc8eab89d642935755c
-  glog: 1de0bb937dccdc981596d3b5825ebfb765017ded
+  FBSDKCoreKit: 3b8e6570eedb443f9fc4af196a7bf39f18e3a3d8
+  FBSDKLoginKit: 8bccb6064708ab2f4251a7fc4e3b6d8d00ad91ba
+  FBSDKShareKit: 7090fdd55c39b03941efddb64c83a64ff6b3949f
+  Folly: c89ac2d5c6ab169cd7397ef27485c44f35f742c7
+  glog: e8acf0ebbf99759d3ff18c86c292a5898282dcde
   Google-Maps-iOS-Utils: c32891ff472eaaa1fca032beedafa1a013af7875
   Google-Mobile-Ads-SDK: 1bdf1a4244d0553b1840239874c209c01aef055f
   GoogleInterchangeUtilities: d5bc4d88d5b661ab72f9d70c58d02ca8c27ad1f7
@@ -1409,15 +1409,15 @@ SPEC CHECKSUMS:
   GTMSessionFetcher: 0c4baf0a73acd0041bf9f71ea018deedab5ea84e
   JKBigInteger2: e91672035c42328c48b7dd015b66812ddf40ca9b
   lottie-ios: d699fdee68d7b63e721d949388b015fef1aaa4ac
-  React: aa2040dbb6f317b95314968021bd2888816e03d5
-  ReactABI24_0_0: 6a7ba2e4f5b235c4dc63eed676b78ea808a81647
-  ReactABI25_0_0: d72eae414d6eb88602163d3b365e1eb7f8ebd297
-  ReactABI26_0_0: bec05484d450082298e09c7eab697d7cb96aa1b3
-  ReactABI27_0_0: d58ae7a0d43f45c8a079cb3645d4960f4dc91300
-  ReactABI28_0_0: 47f88b911e1c9760880a64578a4737a502923180
-  ReactABI29_0_0: 343ae9ba9a44a88ae2c9b0392be52d45282a096f
-  ReactABI30_0_0: 9ec008468396aa1eac6c0859b7cddfc6b09660b0
-  yoga: a23273df0088bf7f2bb7e5d7b00044ea57a2a54a
+  React: 1fe0eb13d90b625d94c3b117c274dcfd2e760e11
+  ReactABI24_0_0: ff3ee96b5ad38f3aa380dd1d68004f68aed00589
+  ReactABI25_0_0: f99e2a66f3435216031b49793d65e46dbf6f11e3
+  ReactABI26_0_0: 42bd2f67b539d66bdc63c57f4fe0f75d94605e36
+  ReactABI27_0_0: c9a420256ec867ad158d6bec5087e0316cae1043
+  ReactABI28_0_0: 81a22bc10779e2ee144e1ac58d83a44d5da96131
+  ReactABI29_0_0: 00e8258a226893d84b01ce136b8bf160b30b39b8
+  ReactABI30_0_0: 3d1d194067363dcc0f0f8941b4cdac1fc7e268b8
+  yoga: b1ce48b6cf950b98deae82838f5173ea7cf89e85
   yogaABI24_0_0: 73be953a3320aed6e4b4fcc3fe3d8c3dee538e8b
   yogaABI25_0_0: 166718f403275ee181e3ddb3d6e19c72be2f5cde
   yogaABI26_0_0: 3d0b9ddd940a22bab64f64291415846298cb263c

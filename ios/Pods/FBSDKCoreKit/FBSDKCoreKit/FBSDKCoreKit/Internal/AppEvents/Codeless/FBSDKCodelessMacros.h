@@ -18,8 +18,6 @@
 #ifndef FBSDKCodelessMacros_h
 #define FBSDKCodelessMacros_h
 
-#define FBSDK_SERVER_CONFIGURARION_CODELESS_EVENT_MAPPINGS_FIELD @"auto_event_mapping_ios"
-
 //  keys for event binding path compoenent
 #define CODELESS_MAPPING_METHOD_KEY             @"method"
 #define CODELESS_MAPPING_EVENT_NAME_KEY         @"event_name"

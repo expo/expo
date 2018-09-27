@@ -77,6 +77,39 @@
   }
 }
 
+#pragma mark - FBSDKSharingContent
+
+- (void)addToParameters:(NSMutableDictionary<NSString *, id> *)parameters
+          bridgeOptions:(FBSDKShareBridgeOptions)bridgeOptions
+{
+  [FBSDKInternalUtility dictionary:parameters setObject:_contentURL forKey:@"link"];
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+  [FBSDKInternalUtility dictionary:parameters setObject:_contentTitle forKey:@"name"];
+  [FBSDKInternalUtility dictionary:parameters setObject:_contentDescription forKey:@"description"];
+  [FBSDKInternalUtility dictionary:parameters setObject:_imageURL forKey:@"picture"];
+#pragma clang diagnostic pop
+  [FBSDKInternalUtility dictionary:parameters setObject:_quote forKey:@"quote"];
+
+  /**
+   Pass link parameter as "messenger_link" due to versioning requirements for message dialog flow.
+   We will only use the new share flow we developed if messenger_link is present, not link.
+   */
+  [FBSDKInternalUtility dictionary:parameters setObject:_contentURL forKey:@"messenger_link"];
+}
+
+#pragma mark - FBSDKSharingValidation
+
+- (BOOL)validateWithOptions:(FBSDKShareBridgeOptions)bridgeOptions error:(NSError *__autoreleasing *)errorRef
+{
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+  return ([FBSDKShareUtility validateNetworkURL:_contentURL name:@"contentURL" error:errorRef] &&
+          [FBSDKShareUtility validateNetworkURL:_imageURL name:@"imageURL" error:errorRef]);
+#pragma clang diagnostic pop
+}
+
 #pragma mark - Equality
 
 - (NSUInteger)hash

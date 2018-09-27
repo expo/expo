@@ -328,9 +328,9 @@ class ConcurrentSkipList {
       // locks acquired and all valid, need to modify the links under the locks.
       newNode =
         NodeType::create(recycler_.alloc(), nodeHeight, std::forward<U>(data));
-      for (int layer = 0; layer < nodeHeight; ++layer) {
-        newNode->setSkip(layer, succs[layer]);
-        preds[layer]->setSkip(layer, newNode);
+      for (int k = 0; k < nodeHeight; ++k) {
+        newNode->setSkip(k, succs[k]);
+        preds[k]->setSkip(k, newNode);
       }
 
       newNode->setFullyLinked();
@@ -378,8 +378,8 @@ class ConcurrentSkipList {
         continue;  // this will unlock all the locks
       }
 
-      for (int layer = nodeHeight - 1; layer >= 0; --layer) {
-        preds[layer]->setSkip(layer, nodeToDelete->skip(layer));
+      for (int k = nodeHeight - 1; k >= 0; --k) {
+        preds[k]->setSkip(k, nodeToDelete->skip(k));
       }
 
       incrementSize(-1);
