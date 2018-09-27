@@ -4,7 +4,7 @@ set -xeo pipefail
 
 tag="$1"
 
-echo tag
+echo $tag
 
 docs="$(pwd)"
 
