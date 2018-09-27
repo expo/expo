@@ -1,6 +1,6 @@
 {
   "name": "Folly",
-  "version": "2016.09.26.00",
+  "version": "2016.10.31.00",
   "license": {
     "type": "Apache License, Version 2.0"
   },
@@ -9,7 +9,7 @@
   "authors": "Facebook",
   "source": {
     "git": "https://github.com/facebook/folly.git",
-    "tag": "v2016.09.26.00"
+    "tag": "v2016.10.31.00"
   },
   "module_name": "folly",
   "dependencies": {
@@ -47,7 +47,7 @@
     "HEADER_SEARCH_PATHS": "\"$(PODS_TARGET_SRCROOT)\" \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\""
   },
   "platforms": {
-    "ios": "8.0",
+    "ios": "9.0",
     "tvos": "9.2"
   }
 }

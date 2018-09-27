@@ -71,13 +71,14 @@
 #define BASE_DEMANGLE_H_
 
 #include "config.h"
+#include "glog/logging.h"
 
 _START_GOOGLE_NAMESPACE_
 
 // Demangle "mangled".  On success, return true and write the
 // demangled symbol name to "out".  Otherwise, return false.
 // "out" is modified even if demangling is unsuccessful.
-bool Demangle(const char *mangled, char *out, int out_size);
+bool GOOGLE_GLOG_DLL_DECL Demangle(const char *mangled, char *out, int out_size);
 
 _END_GOOGLE_NAMESPACE_
 

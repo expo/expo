@@ -18,10 +18,26 @@
 
 #import "FBSDKShareMessengerOpenGraphMusicTemplateContent.h"
 
+#import "FBSDKCoreKit+Internal.h"
+#import "FBSDKShareMessengerContentUtility.h"
+#import "FBSDKShareUtility.h"
+
 static NSString *const kMusicTemplatePageIDKey = @"pageID";
 static NSString *const kMusicTemplateURLKey = @"url";
 static NSString *const kMusicTemplateButtonKey = @"button";
 static NSString *const kMusicTemplateUUIDKey = @"uuid";
+
+static NSArray<NSDictionary<NSString *, id> *> *_SerializableOpenGraphMusicTemplateContentFromContent(FBSDKShareMessengerOpenGraphMusicTemplateContent *openGraphMusicTemplateContent)
+{
+  NSMutableArray<NSDictionary<NSString *, id> *> *serializableOpenGraphMusicTemplateContent = [NSMutableArray array];
+
+  NSMutableDictionary<NSString *, id> *openGraphMusicTemplateContentDictionary = [NSMutableDictionary dictionary];
+  [FBSDKInternalUtility dictionary:openGraphMusicTemplateContentDictionary setObject:openGraphMusicTemplateContent.url.absoluteString forKey:@"url"];
+  [FBSDKInternalUtility dictionary:openGraphMusicTemplateContentDictionary setObject:SerializableButtonsFromButton(openGraphMusicTemplateContent.button) forKey:kFBSDKShareMessengerButtonsKey];
+  [serializableOpenGraphMusicTemplateContent addObject:openGraphMusicTemplateContentDictionary];
+
+  return serializableOpenGraphMusicTemplateContent;
+}
 
 @implementation FBSDKShareMessengerOpenGraphMusicTemplateContent
 
@@ -44,6 +60,42 @@ static NSString *const kMusicTemplateUUIDKey = @"uuid";
     _shareUUID = [NSUUID UUID].UUIDString;
   }
   return self;
+}
+
+#pragma mark - FBSDKSharingContent
+
+- (void)addToParameters:(NSMutableDictionary<NSString *, id> *)parameters
+          bridgeOptions:(FBSDKShareBridgeOptions)bridgeOptions
+{
+  NSMutableDictionary<NSString *, id> *payload = [NSMutableDictionary dictionary];
+  [payload setObject:@"open_graph" forKey:kFBSDKShareMessengerTemplateTypeKey];
+  [payload setObject:_SerializableOpenGraphMusicTemplateContentFromContent(self) forKey:kFBSDKShareMessengerElementsKey];
+
+  NSMutableDictionary<NSString *, id> *attachment = [NSMutableDictionary dictionary];
+  [attachment setObject:kFBSDKShareMessengerTemplateKey forKey:kFBSDKShareMessengerTypeKey];
+  [attachment setObject:payload forKey:kFBSDKShareMessengerPayloadKey];
+
+  NSMutableDictionary<NSString *, id> *contentForShare = [NSMutableDictionary dictionary];
+  [contentForShare setObject:attachment forKey:kFBSDKShareMessengerAttachmentKey];
+
+  NSMutableDictionary<NSString *, id> *contentForPreview = [NSMutableDictionary dictionary];
+  [FBSDKInternalUtility dictionary:contentForPreview setObject:@"OPEN_GRAPH" forKey:@"preview_type"];
+  [FBSDKInternalUtility dictionary:contentForPreview setObject:_url.absoluteString forKey:@"open_graph_url"];
+  AddToContentPreviewDictionaryForButton(contentForPreview, _button);
+
+  [FBSDKShareMessengerContentUtility addToParameters:parameters contentForShare:contentForShare contentForPreview:contentForPreview];
+}
+
+#pragma mark - FBSDKSharingValidation
+
+- (BOOL)validateWithOptions:(FBSDKShareBridgeOptions)bridgeOptions error:(NSError *__autoreleasing *)errorRef
+{
+  return [FBSDKShareUtility validateRequiredValue:_url name:@"url" error:errorRef]
+      && [FBSDKShareUtility validateRequiredValue:_pageID name:@"pageID" error:errorRef]
+      && [FBSDKShareMessengerContentUtility validateMessengerActionButton:_button
+                                                    isDefaultActionButton:NO
+                                                                   pageID:_pageID
+                                                                    error:errorRef];
 }
 
 #pragma mark - NSCoding

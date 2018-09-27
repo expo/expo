@@ -67,7 +67,7 @@ FBSDK_EXTERN NSString *const FBSDKLoggingBehaviorDeveloperErrors;
 
 /**
   Set the Facebook App ID to be used by the SDK.
- - Parameter appID: The Facebook App ID to be used by the SDK.
+ @param appID The Facebook App ID to be used by the SDK.
  */
 + (void)setAppID:(NSString *)appID;
 
@@ -80,7 +80,7 @@ FBSDK_EXTERN NSString *const FBSDKLoggingBehaviorDeveloperErrors;
 
 /**
   Set the app url scheme suffix used by the SDK.
- - Parameter appURLSchemeSuffix: The url scheme suffix to be used by the SDK.
+ @param appURLSchemeSuffix The url scheme suffix to be used by the SDK.
  */
 + (void)setAppURLSchemeSuffix:(NSString *)appURLSchemeSuffix;
 
@@ -95,14 +95,14 @@ FBSDK_EXTERN NSString *const FBSDKLoggingBehaviorDeveloperErrors;
   Sets the Client Token for the Facebook App.
 
  This is needed for certain API calls when made anonymously, without a user-based access token.
- - Parameter clientToken: The Facebook App's "client token", which, for a given appid can be found in the Security
+ @param clientToken The Facebook App's "client token", which, for a given appid can be found in the Security
  section of the Advanced tab of the Facebook App settings found at <https://developers.facebook.com/apps/[your-app-id]>
  */
 + (void)setClientToken:(NSString *)clientToken;
 
 /**
   A convenient way to toggle error recovery for all FBSDKGraphRequest instances created after this is set.
- - Parameter disableGraphErrorRecovery: YES or NO.
+ @param disableGraphErrorRecovery YES or NO.
  */
 + (void)setGraphErrorRecoveryDisabled:(BOOL)disableGraphErrorRecovery;
 
@@ -118,7 +118,7 @@ FBSDK_EXTERN NSString *const FBSDKLoggingBehaviorDeveloperErrors;
 
   This should match the Display Name that has been set for the app with the corresponding Facebook App ID,
  in the Facebook App Dashboard.
- - Parameter displayName: The Facebook Display Name to be used by the SDK.
+ @param displayName The Facebook Display Name to be used by the SDK.
  */
 + (void)setDisplayName:(NSString *)displayName;
 
@@ -134,7 +134,7 @@ FBSDK_EXTERN NSString *const FBSDKLoggingBehaviorDeveloperErrors;
 
  This can be used to change the Facebook domain (e.g. @"beta") so that requests will be sent to
  graph.beta.facebook.com
- - Parameter facebookDomainPart: The domain part to be inserted into facebook.com.
+ @param facebookDomainPart The domain part to be inserted into facebook.com.
  */
 + (void)setFacebookDomainPart:(NSString *)facebookDomainPart;
 
@@ -143,14 +143,14 @@ FBSDK_EXTERN NSString *const FBSDKLoggingBehaviorDeveloperErrors;
 
  If not explicitly set, the default is 0.9.
 
-- See:[UIImageJPEGRepresentation](https://developer.apple.com/library/ios/documentation/UIKit/Reference/UIKitFunctionReference/#//apple_ref/c/func/UIImageJPEGRepresentation) */
+ @see [UIImageJPEGRepresentation](https://developer.apple.com/library/ios/documentation/UIKit/Reference/UIKitFunctionReference/#//apple_ref/c/func/UIImageJPEGRepresentation) */
 + (CGFloat)JPEGCompressionQuality;
 
 /**
   Set the quality of JPEG images sent to Facebook from the SDK.
- - Parameter JPEGCompressionQuality: The quality for JPEG images, expressed as a value from 0.0 to 1.0.
+ @param JPEGCompressionQuality The quality for JPEG images, expressed as a value from 0.0 to 1.0.
 
-- See:[UIImageJPEGRepresentation](https://developer.apple.com/library/ios/documentation/UIKit/Reference/UIKitFunctionReference/#//apple_ref/c/func/UIImageJPEGRepresentation) */
+ @see [UIImageJPEGRepresentation](https://developer.apple.com/library/ios/documentation/UIKit/Reference/UIKitFunctionReference/#//apple_ref/c/func/UIImageJPEGRepresentation) */
 + (void)setJPEGCompressionQuality:(CGFloat)JPEGCompressionQuality;
 
 /**
@@ -161,9 +161,21 @@ FBSDK_EXTERN NSString *const FBSDKLoggingBehaviorDeveloperErrors;
 
 /**
  Set the flag which controls the auto logging of basic app events, such as activateApp and deactivateApp.
- - Parameter AutoLogAppEventsEnabled: Flag value, expressed as a value from 0 - false or 1 - true.
+ @param AutoLogAppEventsEnabled Flag value, expressed as a value from 0 - false or 1 - true.
  */
 + (void)setAutoLogAppEventsEnabled:(NSNumber *)AutoLogAppEventsEnabled;
+
+/**
+ Flag which controls the fb_codeless_debug logging event
+ If not explicitly set, the default is 1 - true
+ */
++ (NSNumber *)codelessDebugLogEnabled;
+
+/**
+ Set the flag which controls the fb_codeless_debug logging event
+ @param CodelessDebugLogEnabled Flag value, expressed as a value from 0 - false or 1 - true.
+ */
++ (void)setCodelessDebugLogEnabled:(NSNumber *)CodelessDebugLogEnabled;
 
 /**
   Gets whether data such as that generated through FBSDKAppEvents and sent to Facebook should be restricted from being used for other than analytics and conversions.  Defaults to NO.  This value is stored on the device and persists across app launches.
@@ -173,7 +185,7 @@ FBSDK_EXTERN NSString *const FBSDKLoggingBehaviorDeveloperErrors;
 /**
   Sets whether data such as that generated through FBSDKAppEvents and sent to Facebook should be restricted from being used for other than analytics and conversions.  Defaults to NO.  This value is stored on the device and persists across app launches.
 
- - Parameter limitEventAndDataUsage:   The desired value.
+ @param limitEventAndDataUsage   The desired value.
  */
 + (void)setLimitEventAndDataUsage:(BOOL)limitEventAndDataUsage;
 
@@ -191,7 +203,7 @@ FBSDK_EXTERN NSString *const FBSDKLoggingBehaviorDeveloperErrors;
   Set the current Facebook SDK logging behavior.  This should consist of strings defined as
  constants with FBSDKLoggingBehavior*.
 
- - Parameter loggingBehavior: A set of strings indicating what information should be logged.  If nil is provided, the logging
+ @param loggingBehavior A set of strings indicating what information should be logged.  If nil is provided, the logging
  behavior is reset to the default set of enabled behaviors.  Set to an empty set in order to disable all logging.
 
 
@@ -202,21 +214,21 @@ FBSDK_EXTERN NSString *const FBSDKLoggingBehaviorDeveloperErrors;
 /**
   Enable a particular Facebook SDK logging behavior.
 
- - Parameter loggingBehavior: The LoggingBehavior to enable. This should be a string defined as a constant with FBSDKLoggingBehavior*.
+ @param loggingBehavior The LoggingBehavior to enable. This should be a string defined as a constant with FBSDKLoggingBehavior*.
  */
 + (void)enableLoggingBehavior:(NSString *)loggingBehavior;
 
 /**
   Disable a particular Facebook SDK logging behavior.
 
- - Parameter loggingBehavior: The LoggingBehavior to disable. This should be a string defined as a constant with FBSDKLoggingBehavior*.
+ @param loggingBehavior The LoggingBehavior to disable. This should be a string defined as a constant with FBSDKLoggingBehavior*.
  */
 + (void)disableLoggingBehavior:(NSString *)loggingBehavior;
 
 /**
   Set the user defaults key used by legacy token caches.
 
- - Parameter tokenInformationKeyName: the key used by legacy token caches.
+ @param tokenInformationKeyName the key used by legacy token caches.
 
 
  Use this only if you customized FBSessionTokenCachingStrategy in v3.x of

@@ -19,6 +19,7 @@
 #import "FBSDKAppInviteContent.h"
 
 #import "FBSDKCoreKit+Internal.h"
+#import "FBSDKShareUtility.h"
 
 #define FBSDK_APP_INVITE_CONTENT_APP_LINK_URL_KEY @"appLinkURL"
 #define FBSDK_APP_INVITE_CONTENT_PREVIEW_IMAGE_KEY @"previewImage"
@@ -37,6 +38,60 @@
 - (void)setPreviewImageURL:(NSURL *)previewImageURL
 {
   self.appInvitePreviewImageURL = previewImageURL;
+}
+
+#pragma mark - FBSDKSharingValidation
+
+- (BOOL)validateWithOptions:(FBSDKShareBridgeOptions)bridgeOptions error:(NSError *__autoreleasing *)errorRef
+{
+  return ([FBSDKShareUtility validateRequiredValue:_appLinkURL name:@"appLinkURL" error:errorRef] &&
+          [FBSDKShareUtility validateNetworkURL:_appLinkURL name:@"appLinkURL" error:errorRef] &&
+          [FBSDKShareUtility validateNetworkURL:_appInvitePreviewImageURL name:@"appInvitePreviewImageURL" error:errorRef] &&
+          [self _validatePromoCodeWithError:errorRef]);
+}
+
+- (BOOL)_validatePromoCodeWithError:(NSError *__autoreleasing *)errorRef
+{
+  if ([_promotionText length] > 0 || [_promotionCode length] > 0) {
+    NSMutableCharacterSet *alphanumericWithSpaces = [NSMutableCharacterSet alphanumericCharacterSet];
+    [alphanumericWithSpaces formUnionWithCharacterSet:[NSCharacterSet whitespaceCharacterSet]];
+
+    // Check for validity of promo text and promo code.
+    if (!([_promotionText length] > 0 && [_promotionText length] <= 80)) {
+      if (errorRef != NULL) {
+        *errorRef = [FBSDKError invalidArgumentErrorWithName:@"promotionText" value:_promotionText message:@"Invalid value for promotionText, promotionText has to be between 1 and 80 characters long."];
+      }
+      return NO;
+    }
+
+    if (!([_promotionCode length] <= 10)) {
+      if (errorRef != NULL) {
+        *errorRef = [FBSDKError invalidArgumentErrorWithName:@"promotionCode" value:_promotionCode message:@"Invalid value for promotionCode, promotionCode has to be between 0 and 10 characters long and is required when promoCode is set."];
+      }
+      return NO;
+    }
+
+    if ([_promotionText rangeOfCharacterFromSet:[alphanumericWithSpaces invertedSet]].location != NSNotFound) {
+      if (errorRef != NULL) {
+        *errorRef = [FBSDKError invalidArgumentErrorWithName:@"promotionText" value:_promotionText message:@"Invalid value for promotionText, promotionText can contain only alphanumeric characters and spaces."];
+      }
+      return NO;
+    }
+
+    if ([_promotionCode length] > 0 && [_promotionCode rangeOfCharacterFromSet:[alphanumericWithSpaces invertedSet]].location != NSNotFound) {
+      if (errorRef != NULL) {
+        *errorRef = [FBSDKError invalidArgumentErrorWithName:@"promotionCode" value:_promotionCode message:@"Invalid value for promotionCode, promotionCode can contain only alphanumeric characters and spaces."];
+      }
+      return NO;
+    }
+
+  }
+
+  if (errorRef != NULL) {
+    *errorRef = nil;
+  }
+
+  return YES;
 }
 
 #pragma mark - Equality

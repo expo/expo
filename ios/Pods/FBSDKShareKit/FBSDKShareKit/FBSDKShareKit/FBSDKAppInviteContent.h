@@ -19,6 +19,7 @@
 #import <Foundation/Foundation.h>
 
 #import <FBSDKCoreKit/FBSDKCopying.h>
+#import <FBSDKShareKit/FBSDKSharingValidation.h>
 
 /**
  NS_ENUM(NSUInteger, FBSDKAppInviteDestination)
@@ -35,7 +36,7 @@ typedef NS_ENUM(NSUInteger, FBSDKAppInviteDestination)
 /**
   A model for app invite.
  */
-@interface FBSDKAppInviteContent : NSObject <FBSDKCopying, NSSecureCoding>
+@interface FBSDKAppInviteContent : NSObject <FBSDKCopying, FBSDKSharingValidation, NSSecureCoding>
 
 /**
   A URL to a preview image that will be displayed with the app invite
@@ -55,7 +56,7 @@ typedef NS_ENUM(NSUInteger, FBSDKAppInviteDestination)
 
 /**
 
-- Warning:Use `appInvitePreviewImageURL` instead.
+@warning Use `appInvitePreviewImageURL` instead.
  */
 @property (nonatomic, copy) NSURL *previewImageURL __attribute__ ((deprecated("use appInvitePreviewImageURL instead")));
 
@@ -87,8 +88,8 @@ typedef NS_ENUM(NSUInteger, FBSDKAppInviteDestination)
 
 /**
   Compares the receiver to another app invite content.
- - Parameter content: The other content
- - Returns: YES if the receiver's values are equal to the other content's values; otherwise NO
+ @param content The other content
+ @return YES if the receiver's values are equal to the other content's values; otherwise NO
  */
 - (BOOL)isEqualToAppInviteContent:(FBSDKAppInviteContent *)content;
 

@@ -39,6 +39,7 @@
 #include <folly/Likely.h>
 #include <folly/Malloc.h>
 #include <folly/Traits.h>
+#include <folly/portability/BitsFunctexcept.h>
 
 #include <boost/operators.hpp>
 
@@ -1042,7 +1043,7 @@ public:
   }
   const_reference at(size_type n) const {
     if (UNLIKELY(n >= size())) {
-      throw std::out_of_range("fbvector: index is greater than size.");
+      std::__throw_out_of_range("fbvector: index is greater than size.");
     }
     return (*this)[n];
   }

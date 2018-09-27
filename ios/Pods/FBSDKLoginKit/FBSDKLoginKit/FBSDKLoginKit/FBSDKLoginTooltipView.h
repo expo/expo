@@ -61,8 +61,8 @@
 /**
   Asks the delegate if the tooltip view should appear
 
- - Parameter view: The tooltip view.
- - Parameter appIsEligible: The value fetched from the server identifying if the app
+ @param view The tooltip view.
+ @param appIsEligible The value fetched from the server identifying if the app
  is eligible for the new login experience.
 
 
@@ -74,7 +74,7 @@
   Tells the delegate the tooltip view will appear, specifically after it's been
  added to the super view but before the fade in animation.
 
- - Parameter view: The tooltip view.
+ @param view The tooltip view.
  */
 - (void)loginTooltipViewWillAppear:(FBSDKLoginTooltipView *)view;
 
@@ -82,7 +82,7 @@
   Tells the delegate the tooltip view will not appear (i.e., was not
  added to the super view).
 
- - Parameter view: The tooltip view.
+ @param view The tooltip view.
  */
 - (void)loginTooltipViewWillNotAppear:(FBSDKLoginTooltipView *)view;
 

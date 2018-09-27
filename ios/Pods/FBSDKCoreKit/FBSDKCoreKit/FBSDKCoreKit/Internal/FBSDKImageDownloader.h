@@ -30,9 +30,9 @@
 
 /*
   download an image or retrieve it from cache
- - Parameter url: the url to download
- - Parameter ttl: the amount of time (in seconds) that using a cached version is acceptable.
- - Parameter completion: the callback with the image - for simplicity nil is returned rather than surfacing an error.
+ @param url the url to download
+ @param ttl the amount of time (in seconds) that using a cached version is acceptable.
+ @param completion the callback with the image - for simplicity nil is returned rather than surfacing an error.
  */
 - (void)downloadImageWithURL:(NSURL *)url ttl:(NSTimeInterval)ttl completion:(void(^)(UIImage* image))completion;
 

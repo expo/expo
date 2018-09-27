@@ -27,8 +27,10 @@
 
 static NSString *const FBSDKAppEventParameterImplicitlyLoggedPurchase = @"_implicitlyLogged";
 static NSString *const FBSDKAppEventNamePurchaseFailed = @"fb_mobile_purchase_failed";
+static NSString *const FBSDKAppEventParameterNameInAppPurchaseType = @"fb_iap_product_type";
 static NSString *const FBSDKAppEventParameterNameProductTitle = @"fb_content_title";
 static NSString *const FBSDKAppEventParameterNameTransactionID = @"fb_transaction_id";
+static NSString *const FBSDKAppEventParameterNameSubscriptionPeriod = @"fb_iap_subs_period";
 static int const FBSDKMaxParameterValueLength = 100;
 static NSMutableArray *g_pendingRequestors;
 
@@ -223,6 +225,29 @@ static NSMutableArray *g_pendingRequestors;
                                                  FBSDKAppEventParameterNameProductTitle: [self getTruncatedString:product.localizedTitle],
                                                  FBSDKAppEventParameterNameDescription: [self getTruncatedString:product.localizedDescription],
                                                  }];
+#if !TARGET_OS_TV
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_11_2
+    if (@available(iOS 11.2, *)) {
+      BOOL isSubscription = product.subscriptionPeriod != nil;
+      if (isSubscription) {
+        // subs inapp
+        SKProductSubscriptionPeriod *period = product.subscriptionPeriod;
+        NSString *unit = nil;
+        switch (period.unit) {
+          case SKProductPeriodUnitDay: unit = @"D"; break;
+          case SKProductPeriodUnitWeek: unit = @"W"; break;
+          case SKProductPeriodUnitMonth: unit = @"M"; break;
+          case SKProductPeriodUnitYear: unit = @"Y"; break;
+        }
+        NSString *p = [NSString stringWithFormat:@"P%lu%@", (unsigned long)period.numberOfUnits, unit];
+        [eventParameters setObject:p forKey:FBSDKAppEventParameterNameSubscriptionPeriod];
+        [eventParameters setObject:@"subs" forKey:FBSDKAppEventParameterNameInAppPurchaseType];
+      } else {
+        [eventParameters setObject:@"inapp" forKey:FBSDKAppEventParameterNameInAppPurchaseType];
+      }
+    }
+#endif
+#endif
     if (transactionID) {
       [eventParameters setObject:transactionID forKey:FBSDKAppEventParameterNameTransactionID];
     }
@@ -279,7 +304,7 @@ static NSMutableArray *g_pendingRequestors;
     }
   }
 
-  [eventParameters setObject:@"1"forKey:FBSDKAppEventParameterImplicitlyLoggedPurchase];
+  [eventParameters setObject:@"1" forKey:FBSDKAppEventParameterImplicitlyLoggedPurchase];
   [FBSDKAppEvents logEvent:eventName
                 valueToSum:valueToSum
                 parameters:eventParameters];

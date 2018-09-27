@@ -1390,7 +1390,7 @@ bool SharedMutexImpl<ReaderPriority, Tag_, Atom, BlockImmediately>::
       return false;
     }
 
-    uint32_t slot;
+    uint32_t slot = tls_lastDeferredReaderSlot;
     uintptr_t slotValue = 1; // any non-zero value will do
 
     bool canAlreadyDefer = (state & kMayDefer) != 0;
@@ -1399,7 +1399,6 @@ bool SharedMutexImpl<ReaderPriority, Tag_, Atom, BlockImmediately>::
     bool drainInProgress = ReaderPriority && (state & kBegunE) != 0;
     if (canAlreadyDefer || (aboveDeferThreshold && !drainInProgress)) {
       /* Try using the most recent slot first. */
-      slot = tls_lastDeferredReaderSlot;
       slotValue = deferredReader(slot)->load(std::memory_order_relaxed);
       if (slotValue != 0) {
         // starting point for our empty-slot search, can change after

@@ -23,6 +23,7 @@
 #import "OIDError.h"
 #import "OIDFieldMapping.h"
 #import "OIDTokenRequest.h"
+#import "OIDTokenUtilities.h"
 
 /*! @brief The key for the @c authorizationCode property in the incoming parameters and for
         @c NSSecureCoding.
@@ -181,10 +182,10 @@ static NSString *const kTokenExchangeRequestException =
                                     (void *)self,
                                     _authorizationCode,
                                     _state,
-                                    _accessToken,
+                                    [OIDTokenUtilities redact:_accessToken],
                                     _accessTokenExpirationDate,
                                     _tokenType,
-                                    _idToken,
+                                    [OIDTokenUtilities redact:_idToken],
                                     _scope,
                                     _additionalParameters,
                                     _request];

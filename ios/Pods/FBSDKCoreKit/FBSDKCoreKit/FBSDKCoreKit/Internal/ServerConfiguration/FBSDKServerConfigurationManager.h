@@ -20,6 +20,7 @@
 
 #import "FBSDKServerConfiguration.h"
 
+#define FBSDK_SERVER_CONFIGURATION_MANAGER_CACHE_TIMEOUT (60 * 60)
 typedef void(^FBSDKServerConfigurationManagerLoadBlock)(FBSDKServerConfiguration *serverConfiguration, NSError *error);
 
 @interface FBSDKServerConfigurationManager : NSObject

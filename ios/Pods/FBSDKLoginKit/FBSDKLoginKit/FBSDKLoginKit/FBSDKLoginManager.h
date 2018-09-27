@@ -24,8 +24,8 @@
 
 /**
   Describes the call back to the FBSDKLoginManager
- - Parameter result: the result of the authorization
- - Parameter error: the authorization error, if any.
+ @param result the result of the authorization
+ @param error the authorization error, if any.
  */
 typedef void (^FBSDKLoginManagerRequestTokenHandler)(FBSDKLoginManagerLoginResult *result, NSError *error);
 
@@ -111,6 +111,10 @@ typedef NS_ENUM(NSUInteger, FBSDKLoginBehavior)
 @interface FBSDKLoginManager : NSObject
 
 /**
+ Auth type
+ */
+@property (strong, nonatomic) NSString *authType;
+/**
   the default audience.
 
  you should set this if you intend to ask for publish permissions.
@@ -124,25 +128,25 @@ typedef NS_ENUM(NSUInteger, FBSDKLoginBehavior)
 
 /**
 
-- Warning:use logInWithReadPermissions:fromViewController:handler: instead
+@warning use logInWithReadPermissions:fromViewController:handler: instead
  */
 - (void)logInWithReadPermissions:(NSArray *)permissions handler:(FBSDKLoginManagerRequestTokenHandler)handler
 __attribute__ ((deprecated("use logInWithReadPermissions:fromViewController:handler: instead")));
 
 /**
 
-- Warning:use logInWithPublishPermissions:fromViewController:handler: instead
+@warning use logInWithPublishPermissions:fromViewController:handler: instead
  */
 - (void)logInWithPublishPermissions:(NSArray *)permissions handler:(FBSDKLoginManagerRequestTokenHandler)handler
 __attribute__ ((deprecated("use logInWithPublishPermissions:fromViewController:handler: instead")));
 
 /**
   Logs the user in or authorizes additional permissions.
- - Parameter permissions: the optional array of permissions. Note this is converted to NSSet and is only
+ @param permissions the optional array of permissions. Note this is converted to NSSet and is only
   an NSArray for the convenience of literal syntax.
- - Parameter fromViewController: the view controller to present from. If nil, the topmost view controller will be
+ @param fromViewController the view controller to present from. If nil, the topmost view controller will be
   automatically determined as best as possible.
- - Parameter handler: the callback.
+ @param handler the callback.
 
  Use this method when asking for read permissions. You should only ask for permissions when they
   are needed and explain the value to the user. You can inspect the result.declinedPermissions to also
@@ -160,11 +164,11 @@ __attribute__ ((deprecated("use logInWithPublishPermissions:fromViewController:h
 
 /**
   Logs the user in or authorizes additional permissions.
- - Parameter permissions: the optional array of permissions. Note this is converted to NSSet and is only
+ @param permissions the optional array of permissions. Note this is converted to NSSet and is only
  an NSArray for the convenience of literal syntax.
- - Parameter fromViewController: the view controller to present from. If nil, the topmost view controller will be
+ @param fromViewController the view controller to present from. If nil, the topmost view controller will be
  automatically determined as best as possible.
- - Parameter handler: the callback.
+ @param handler the callback.
 
  Use this method when asking for publish permissions. You should only ask for permissions when they
  are needed and explain the value to the user. You can inspect the result.declinedPermissions to also
@@ -192,7 +196,7 @@ __attribute__ ((deprecated("use logInWithPublishPermissions:fromViewController:h
 
   Issues an asynchronous renewCredentialsForAccount call to the device's Facebook account store.
 
- - Parameter handler: The completion handler to call when the renewal is completed. This can be invoked on an arbitrary thread.
+ @param handler The completion handler to call when the renewal is completed. This can be invoked on an arbitrary thread.
 
 
  This can be used to explicitly renew account credentials and is provided as a convenience wrapper around

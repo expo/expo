@@ -38,6 +38,7 @@
 #import "FBSDKUtility.h"
 
 #if !TARGET_OS_TV
+#import "FBSDKAppEventsUninstall.h"
 #import "FBSDKBoltsMeasurementEventListener.h"
 #import "FBSDKBridgeAPIRequest.h"
 #import "FBSDKBridgeAPIResponse.h"
@@ -92,6 +93,13 @@ static NSString *const FBSDKAppLinkInboundEvent = @"fb_al_inbound";
 
   // Remove the observer
   [[NSNotificationCenter defaultCenter] removeObserver:self];
+  
+#if !TARGET_OS_TV
+  if (![FBSDKAppEventsUninstall initiated]){
+    [FBSDKAppEventsUninstall installSwizzler];
+  }
+#endif
+
 }
 
 + (instancetype)sharedInstance
@@ -112,6 +120,8 @@ static NSString *const FBSDKAppLinkInboundEvent = @"fb_al_inbound";
     NSNotificationCenter *defaultCenter = [NSNotificationCenter defaultCenter];
     [defaultCenter addObserver:self selector:@selector(applicationDidEnterBackground:) name:UIApplicationDidEnterBackgroundNotification object:nil];
     [defaultCenter addObserver:self selector:@selector(applicationDidBecomeActive:) name:UIApplicationDidBecomeActiveNotification object:nil];
+
+    [[FBSDKAppEvents singleton] registerNotifications];
   }
   return self;
 }
@@ -351,13 +361,18 @@ static NSString *const FBSDKAppLinkInboundEvent = @"fb_al_inbound";
     if ([sender isAuthenticationURL:url]) {
       Class SFAuthenticationSessionClass = fbsdkdfl_SFAuthenticationSessionClass();
       if (SFAuthenticationSessionClass != nil) {
-        _authenticationSession = [[SFAuthenticationSessionClass alloc] initWithURL:url callbackURLScheme:[FBSDKInternalUtility appURLScheme] completionHandler:^ (NSURL *aURL, NSError *error) {
-          handler(error == nil, error);
-          if (error == nil) {
-            [self application:[UIApplication sharedApplication] openURL:aURL sourceApplication:@"com.apple" annotation:nil];
+          if (_authenticationSession != nil) {
+              [FBSDKLogger singleShotLogEntry:FBSDKLoggingBehaviorDeveloperErrors
+                                 formatString:@"There is already a request for authenticated session. Cancelling active SFAuthenticationSession before starting the new one.", nil];
+              [_authenticationSession cancel];
           }
-          _authenticationSession = nil;
-        }];
+          _authenticationSession = [[SFAuthenticationSessionClass alloc] initWithURL:url callbackURLScheme:[FBSDKInternalUtility appURLScheme] completionHandler:^ (NSURL *aURL, NSError *error) {
+              handler(error == nil, error);
+              if (error == nil) {
+                  [self application:[UIApplication sharedApplication] openURL:aURL sourceApplication:@"com.apple" annotation:nil];
+              }
+              _authenticationSession = nil;
+          }];
         [_authenticationSession start];
         return;
       }
@@ -508,6 +523,9 @@ static NSString *const FBSDKAppLinkInboundEvent = @"fb_al_inbound";
   }
   if (objc_lookUpClass("FBSDKTVInterfaceFactory.m") != nil) {
     [params setObject:@1 forKey:@"tv_lib_included"];
+  }
+  if (objc_lookUpClass("FBSDKAutoLog") != nil) {
+    [params setObject:@1 forKey:@"marketing_lib_included"];
   }
   [FBSDKAppEvents logEvent:@"fb_sdk_initialize" parameters:params];
 }

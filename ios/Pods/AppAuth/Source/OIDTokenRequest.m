@@ -19,9 +19,11 @@
 #import "OIDTokenRequest.h"
 
 #import "OIDDefines.h"
+#import "OIDError.h"
 #import "OIDScopeUtilities.h"
 #import "OIDServiceConfiguration.h"
 #import "OIDURLQueryComponent.h"
+#import "OIDTokenUtilities.h"
 
 /*! @brief The key for the @c configuration property for @c NSSecureCoding
  */
@@ -95,7 +97,7 @@ static NSString *const kAdditionalParametersKey = @"additionalParameters";
 - (instancetype)initWithConfiguration:(OIDServiceConfiguration *)configuration
                grantType:(NSString *)grantType
        authorizationCode:(nullable NSString *)code
-             redirectURL:(NSURL *)redirectURL
+             redirectURL:(nullable NSURL *)redirectURL
                 clientID:(NSString *)clientID
             clientSecret:(nullable NSString *)clientSecret
                   scopes:(nullable NSArray<NSString *> *)scopes
@@ -117,7 +119,7 @@ static NSString *const kAdditionalParametersKey = @"additionalParameters";
 - (instancetype)initWithConfiguration:(OIDServiceConfiguration *)configuration
                grantType:(NSString *)grantType
        authorizationCode:(nullable NSString *)code
-             redirectURL:(NSURL *)redirectURL
+             redirectURL:(nullable NSURL *)redirectURL
                 clientID:(NSString *)clientID
             clientSecret:(nullable NSString *)clientSecret
                    scope:(nullable NSString *)scope
@@ -137,6 +139,16 @@ static NSString *const kAdditionalParametersKey = @"additionalParameters";
     _codeVerifier = [codeVerifier copy];
     _additionalParameters =
         [[NSDictionary alloc] initWithDictionary:additionalParameters copyItems:YES];
+    
+    // Additional validation for the authorization_code grant type
+    if ([_grantType isEqual:OIDGrantTypeAuthorizationCode]) {
+      // redirect URI must not be nil
+      if (!_redirectURL) {
+        [NSException raise:OIDOAuthExceptionInvalidTokenRequestNullRedirectURL
+                    format:@"%@", OIDOAuthExceptionInvalidTokenRequestNullRedirectURL, nil];
+
+      }
+    }
   }
   return self;
 }
@@ -274,7 +286,14 @@ static NSString *const kAdditionalParametersKey = @"additionalParameters";
   NSMutableDictionary *httpHeaders = [[NSMutableDictionary alloc] init];
 
   if (_clientSecret) {
-    NSString *credentials = [NSString stringWithFormat:@"%@:%@", _clientID, _clientSecret];
+    // The client id and secret are encoded using the "application/x-www-form-urlencoded" 
+    // encoding algorithm per RFC 6749 Section 2.3.1.
+    // https://tools.ietf.org/html/rfc6749#section-2.3.1
+    NSString *encodedClientID = [OIDTokenUtilities formUrlEncode:_clientID];
+    NSString *encodedClientSecret = [OIDTokenUtilities formUrlEncode:_clientSecret];
+    
+    NSString *credentials =
+        [NSString stringWithFormat:@"%@:%@", encodedClientID, encodedClientSecret];
     NSData *plainData = [credentials dataUsingEncoding:NSUTF8StringEncoding];
     NSString *basicAuth = [plainData base64EncodedStringWithOptions:kNilOptions];
 

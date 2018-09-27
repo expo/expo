@@ -1302,6 +1302,7 @@ void swap(Synchronized<T, M>& lhs, Synchronized<T, M>& rhs) {
 #define SYNCHRONIZED(...)                                             \
   FOLLY_PUSH_WARNING                                                  \
   FOLLY_GCC_DISABLE_WARNING(shadow)                                   \
+  FOLLY_GCC_DISABLE_NEW_SHADOW_WARNINGS                               \
   if (bool SYNCHRONIZED_state = false) {                              \
   } else                                                              \
     for (auto SYNCHRONIZED_lockedPtr =                                \

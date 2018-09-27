@@ -25,9 +25,9 @@
 
 /**
   Initializes the receiver with the attachment data and metadata.
- - Parameter data: The attachment data (retained, not copied)
- - Parameter filename: The filename for the attachment
- - Parameter contentType: The content type for the attachment
+ @param data The attachment data (retained, not copied)
+ @param filename The filename for the attachment
+ @param contentType The content type for the attachment
  */
 - (instancetype)initWithData:(NSData *)data
                     filename:(NSString *)filename

@@ -69,7 +69,7 @@ NS_ASSUME_NONNULL_BEGIN
     @remarks redirect_uri
     @see https://tools.ietf.org/html/rfc6749#section-4.1.3
  */
-@property(nonatomic, readonly) NSURL *redirectURL;
+@property(nonatomic, readonly, nullable) NSURL *redirectURL;
 
 /*! @brief The client identifier.
     @remarks client_id
@@ -127,7 +127,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithConfiguration:(OIDServiceConfiguration *)configuration
                grantType:(NSString *)grantType
        authorizationCode:(nullable NSString *)code
-             redirectURL:(NSURL *)redirectURL
+             redirectURL:(nullable NSURL *)redirectURL
                 clientID:(NSString *)clientID
             clientSecret:(nullable NSString *)clientSecret
                   scopes:(nullable NSArray<NSString *> *)scopes
@@ -151,7 +151,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithConfiguration:(OIDServiceConfiguration *)configuration
                grantType:(NSString *)grantType
        authorizationCode:(nullable NSString *)code
-             redirectURL:(NSURL *)redirectURL
+             redirectURL:(nullable NSURL *)redirectURL
                 clientID:(NSString *)clientID
             clientSecret:(nullable NSString *)clientSecret
                    scope:(nullable NSString *)scope
