@@ -14,7 +14,7 @@ title: AR
 
 Here is an example of a 3D scene that is configured with `three.js` and `Expo.AR`
 
-<div data-snack-id="@bacon/basic-ar-scene" data-snack-platform="ios" data-snack-preview="false" data-snack-theme="light" style="overflow:hidden;background:#fafafa;border:1px solid rgba(0,0,0,.08);border-radius:4px;height:505px;width:100%"></div><script async src="https://snack.expo.io/embed.js"></script>
+${<SnackEmbed snackId="@bacon/basic-ar-scene" platform="ios" preview="true" />}
 
 ### Availability
 
@@ -255,10 +255,10 @@ type ARFrame = {
   // Serialized array of anchors, by default each will have: type, transform, and id.
   // You can filter these by `type` if you wish.
   anchors?: ?Array<Anchor>,
-  // A RawFeaturePoint will have {x,y,z,id}. 
+  // A RawFeaturePoint will have {x,y,z,id}.
   //This can be visualized with `ExpoTHREE.AR.Points`.
   rawFeaturePoints?: ?Array<RawFeaturePoint>,
-  // The light estimation will return `ambientIntensity` (Lumens) and `ambientColorTemperature` (Kelvin) 
+  // The light estimation will return `ambientIntensity` (Lumens) and `ambientColorTemperature` (Kelvin)
   // An example of how to use these values can be found in `ExpoTHREE.AR.Light`
   lightEstimation?: ?LightEstimation,
 };
@@ -269,19 +269,19 @@ Here is a breakdown on the keys, and their return values.
 
 ###### FrameAttributes.Anchors
 
-The input to this value can be used to capture complex face data. 
+The input to this value can be used to capture complex face data.
 Because there is a lot of face data, we don't want to get everything all the time.
 ```js
 type ARFrameAnchorRequest = {
   // You pass in the anchor's class name.
   // Currently only `ARFaceAnchor` is supported.
   ARFaceAnchor?: {
-    // When the value is `true` all `BlendShapes` will be returned. 
+    // When the value is `true` all `BlendShapes` will be returned.
     // Optionally you can pass in an object that will only include some of the `BlendShapes`.
     // Ex: `{ [AR.BlendShapes.CheekPuff]: true }` will send back just the puffed cheek value.
     blendShapes?: boolean | { [BlendShape]: boolean },
     // [Experimental]: If included and true, this will return all the data required to create the face mesh.
-    // This will freeze the the thread, as there is a lot of data. 
+    // This will freeze the the thread, as there is a lot of data.
     // Currently looking into a better way to return this.
     geometry?: boolean,
   },
@@ -296,13 +296,13 @@ const { anchors } = AR.getCurrentFrame({
   },
 });
 
-const { 
-  [AR.AnchorTypes.Face]: { 
+const {
+  [AR.AnchorTypes.Face]: {
     blendShapes: {
         [AR.BlendShapes.BrowDownL]: browDownLValue,
         [AR.BlendShapes.BrowDownR]: browDownRValue
       }
-    } 
+    }
   } = anchors;
 
 console.log(browDownLValue, browDownRValue);
@@ -316,21 +316,21 @@ type Anchor = {
   type: AnchorType,
   transform: Matrix,
   id: string,
-  
+
   // ARPlaneAnchor only
-  // This is the origin offset from the center of the plane. 
+  // This is the origin offset from the center of the plane.
   // { x: number, z: number }
-  center?: Vector3, 
+  center?: Vector3,
   // The size of the plane
   extent?: { width: number, length: number },
-  
+
   // ARImageAnchor only
   image?: {
     name: ?string,
     // Size in meters
     size: Size,
   },
-  
+
   // ARFaceAnchor only
   geometry?: FaceGeometry,
   blendShapes?: { [BlendShape]: number },
@@ -338,15 +338,15 @@ type Anchor = {
 ```
 
 ###### FrameAttributes.RawFeaturePoints
-When this key is provided an array of raw feature points will be returned. 
+When this key is provided an array of raw feature points will be returned.
 Examples on usage can be found in `expo-three`
 
 ```js
-type RawFeaturePoint = { 
-  x: number, 
-  y: number, 
-  z: number, 
-  id: string 
+type RawFeaturePoint = {
+  x: number,
+  y: number,
+  z: number,
+  id: string
 };
 ```
 
