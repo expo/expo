@@ -25,6 +25,9 @@
       checkAutomatically: "ON_LOAD",
       fallbackToCacheTimeout: 0
     },
+    packagerOpts: {
+      config: "rn-cli.config.js"
+    },
     ios: {
       supportsTablet: true,
       bundleIdentifier: "host.exp.exponent",

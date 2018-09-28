@@ -1,10 +1,9 @@
 /**
- * @providesModule ApiV2Client
  * @flow
  */
 'use strict';
 
-import ApiV2HttpClient from 'ApiV2HttpClient';
+import ApiV2HttpClient from './ApiV2HttpClient';
 
 let _client: ?ApiV2HttpClient;
 

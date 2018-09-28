@@ -1,4 +1,4 @@
-import 'LegacyReact';
+import './LegacyReact';
 
 import Expo from 'expo';
 import React from 'react';

@@ -1,5 +1,5 @@
 /* @flow */
-import ApiV2HttpClient from 'ApiV2HttpClient';
+import ApiV2HttpClient from './ApiV2HttpClient';
 
 const SignUpEndpoint = 'https://exp.host/--/api/v2/auth/createOrUpdateUser';
 const SignOutEndpoint = 'https://exp.host/--/api/v2/auth/logoutAsync';
