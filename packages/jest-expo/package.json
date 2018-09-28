@@ -18,12 +18,14 @@
     "jest": "bin/jest.js"
   },
   "dependencies": {
-    "babel-jest": "^22.4.2",
-    "jest": "^22.4.2",
-    "json5": "^0.5.1",
-    "react-test-renderer": "^16.3.1"
+    "@babel/core": "^7.1.0",
+    "babel-core": "^7.0.0-bridge.0",
+    "babel-jest": "^23.6.0",
+    "jest": "^23.6.0",
+    "json5": "^2.1.0",
+    "react-test-renderer": "^16.5.0"
   },
   "devDependencies": {
-    "react": "^16.3.1"
+    "react": "^16.5.0"
   }
 }
