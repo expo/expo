@@ -153,7 +153,7 @@ PODS:
     - EXCore
   - EXBarCodeScannerInterface (1.0.0):
     - EXCore
-  - EXCamera (1.1.0):
+  - EXCamera (1.1.1-rc.0):
     - EXBarCodeScannerInterface
     - EXCore
     - EXFaceDetectorInterface
