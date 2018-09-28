@@ -16,7 +16,7 @@ Please ask us on the [forums](https://forums.expo.io/) if you get stuck.
 
 If you want to build a standalone app that has a custom icon and name, see [our documentation here](https://docs.expo.io/versions/latest/guides/building-standalone-apps.html). You're in the wrong place, you shouldn't need to build the Expo clients from source.
 
-If you need to make native code changes to your Expo project, such as adding custom native modules, we can [generate a native project for you](https://docs.expo.io/versions/latest/guides/changing-native-code.html). You're in the wrong place, you shouldn't need to build the Expo clients from source.
+If you need to make native code changes to your Expo project, such as adding custom native modules, we can [generate a native project for you](https://docs.expo.io/versions/latest/expokit/eject). You're in the wrong place, you shouldn't need to build the Expo clients from source.
 
 ## Set Up
 
@@ -28,7 +28,7 @@ Please use Node 8+ and npm 4. We recommend installing Node using [nvm](https://g
 #### iOS
 - Make sure you have latest non-beta Xcode installed.
 - Install [Cocoapods](https://cocoapods.org/): `gem install cocoapods --no-ri --no-rdoc`
-- Run `pod install` in the `ios` directory.
+- Run `./generate-files-ios.sh` in the `tools-public` directory.
 - Open and run `ios/Exponent.xcworkspace` in Xcode.
 
 #### Android
@@ -36,8 +36,6 @@ Please use Node 8+ and npm 4. We recommend installing Node using [nvm](https://g
 - Build and install Android with `cd android; ./run.sh; cd ..`. It might fail the first time. If so just run `./run.sh` again.
 
 If you are running on an phone with Android 5 you might have to use `./run.sh installDev19Debug`. There is a bug running multidex applications in debug mode on Android 5 devices: https://code.google.com/p/android/issues/detail?id=79826.
-
-**These instructions are different if you are using Expo's internal monorepo.** In that case, read the `__internal__` instructions instead.
 
 ## Running on a Device
 
@@ -67,8 +65,8 @@ The Android standalone app script creates a new directory `android-shell-app` wi
 Here are the steps to build a standalone Android app:
 - Publish your experience from `XDE` or `exp`. Note the published url.
 - `cd tools-public`.
-- If you want a signed `.apk`, run `gulp android-shell-app --url [the published experience url] --sdkVersion [sdk version of your experience] --keystore [path to keystore] --alias [keystore alias] --keystorePassword [keystore password] --keyPassword [key password]`.
-- If you don't want a signed `.apk`, run `gulp android-shell-app --url [the published experience url] --sdkVersion [sdk version of your experience]`.
+- If you want a signed `.apk`, run `gulp android-shell-app --url [the published experience url] --sdkVersion [sdk version of your experience] --keystore [path to keystore] --alias [keystore alias] --keystorePassword [keystore password] --keyPassword [key password] --workingDir=../`.
+- If you don't want a signed `.apk`, run `gulp android-shell-app --url [the published experience url] --sdkVersion [sdk version of your experience] --workingDir=../`.
 - The `.apk` file will be at `/tmp/shell-signed.apk` for a signed `.apk` or at `/tmp/shell-debug.apk` for an unsigned `.apk`.
 - `adb install` the `.apk` file to test it.
 - Upload to the Play Store!
