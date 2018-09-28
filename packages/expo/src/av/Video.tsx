@@ -421,6 +421,7 @@ export default class Video extends React.Component<Props, State> implements Play
 
   _renderPoster = () =>
     this.props.usePoster && this.state.showPoster ? (
+      // @ts-ignore: the react-native type declarations are overly restrictive
       <Image style={_STYLES.poster} source={this.props.posterSource!} />
     ) : null;
 
