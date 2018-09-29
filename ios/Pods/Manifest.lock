@@ -202,6 +202,8 @@ PODS:
   - EXLocalAuthentication (1.0.0):
     - EXConstantsInterface
     - EXCore
+  - EXLocalization (1.0.2):
+    - EXCore
   - EXLocation (1.0.0):
     - EXCore
     - EXPermissionsInterface
@@ -939,6 +941,7 @@ DEPENDENCIES:
   - EXGL-CPP (from `../modules/expo-gl-cpp/cpp`)
   - EXImageLoaderInterface (from `../modules/expo-image-loader-interface/ios`)
   - EXLocalAuthentication (from `../modules/expo-local-authentication/ios`)
+  - EXLocalization (from `../modules/expo-localization/ios`)
   - EXLocation (from `../modules/expo-location/ios`)
   - EXMediaLibrary (from `../modules/expo-media-library/ios`)
   - EXPermissions (from `../modules/expo-permissions/ios`)
@@ -1248,6 +1251,8 @@ EXTERNAL SOURCES:
     :path: "../modules/expo-image-loader-interface/ios"
   EXLocalAuthentication:
     :path: "../modules/expo-local-authentication/ios"
+  EXLocalization:
+    :path: "../modules/expo-localization/ios"
   EXLocation:
     :path: "../modules/expo-location/ios"
   EXMediaLibrary:
@@ -1378,6 +1383,7 @@ SPEC CHECKSUMS:
   EXGL-CPP: a7fd8224fdc8a2503ba5531ceca1b02c4432f2b2
   EXImageLoaderInterface: e6aa5b14ab3376c4771b18b798aaa6b696d66001
   EXLocalAuthentication: 9b6263750716482fd5e176093c5b00fd22d4a1ff
+  EXLocalization: 211e5e98730da65b8c2a6929cbbee36d00071e5d
   EXLocation: d3826ac9100a338192c9913af353ced1e6fa9a51
   EXMediaLibrary: 1410f21ff08dbc3ee783003b27fcf72ad20bb9c2
   EXPermissions: 1c524493270ba64f494f805b6e0e75d4b498ecb5
@@ -1426,6 +1432,6 @@ SPEC CHECKSUMS:
   yogaABI29_0_0: 4fdf5bbd444d2968ec42ccadec97b02c672eda80
   yogaABI30_0_0: 4c86e39466368a6b018b8b78aeb654b6620512a1
 
-PODFILE CHECKSUM: b57834a916dc700304a8937efad924ac4409fe32
+PODFILE CHECKSUM: 9537a43145ec643e0d82a80c85f2c2d987994174
 
 COCOAPODS: 1.5.3
