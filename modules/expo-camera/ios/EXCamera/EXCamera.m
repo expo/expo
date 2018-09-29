@@ -216,22 +216,20 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
     return;
   }
 
-  if (@available(iOS 10.0, *)) {
-    if ([device isLockingFocusWithCustomLensPositionSupported]) {
-      if (![device lockForConfiguration:&error]) {
-        if (error) {
-          EXLogInfo(@"%s: %@", __func__, error);
-        }
-        return;
+  if ([device isLockingFocusWithCustomLensPositionSupported]) {
+    if (![device lockForConfiguration:&error]) {
+      if (error) {
+        EXLogInfo(@"%s: %@", __func__, error);
       }
-
-      EX_WEAKIFY(device);
-      [device setFocusModeLockedWithLensPosition:_focusDepth completionHandler:^(CMTime syncTime) {
-        EX_ENSURE_STRONGIFY(device);
-        [device unlockForConfiguration];
-      }];
       return;
     }
+
+    EX_WEAKIFY(device);
+    [device setFocusModeLockedWithLensPosition:_focusDepth completionHandler:^(CMTime syncTime) {
+      EX_ENSURE_STRONGIFY(device);
+      [device unlockForConfiguration];
+    }];
+    return;
   }
 
   EXLogInfo(@"%s: Setting focusDepth isn't supported for this camera device", __func__);

@@ -748,9 +748,7 @@ ABI29_0_0RCT_REMAP_METHOD(getAssetsAsync,
                                                                @"highFrameRate": @(PHAssetMediaSubtypeVideoHighFrameRate)
                                                                } mutableCopy];
   
-  if (@available(iOS 9.1, *)) {
-    subtypesDict[@"livePhoto"] = @(PHAssetMediaSubtypePhotoLive);
-  }
+  subtypesDict[@"livePhoto"] = @(PHAssetMediaSubtypePhotoLive);
   if (@available(iOS 10.2, *)) {
     subtypesDict[@"depthEffect"] = @(PHAssetMediaSubtypePhotoDepthEffect);
   }
