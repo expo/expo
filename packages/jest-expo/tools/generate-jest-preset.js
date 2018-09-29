@@ -26,7 +26,7 @@ function generateJestPreset() {
     expoJestPreset.transform = {};
   }
 
-  const defaultAssetNamePattern = '^[./a-zA-Z0-9$_-]+\\.(bmp|gif|jpg|jpeg|mp4|png|psd|svg|webp)$';
+  const defaultAssetNamePattern = '^.+\\.(bmp|gif|jpg|jpeg|mp4|png|psd|svg|webp)$';
   assert(expoJestPreset.transform.hasOwnProperty(defaultAssetNamePattern));
   delete expoJestPreset.transform[defaultAssetNamePattern];
 
