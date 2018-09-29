@@ -1,27 +1,7 @@
 import { EventEmitter, EventSubscription } from 'fbemitter';
 import { DeviceEventEmitter } from 'react-native';
 
-import Localization from './Localization';
 import * as Updates from './Updates';
-
-export function getCurrentDeviceCountryAsync(): Promise<string> {
-  console.warn(
-    'Util.getCurrentDeviceCountryAsync is deprecated and will be removed in SDK 31, use Localization.getCurrentDeviceCountryAsync'
-  );
-  return Localization.getCurrentDeviceCountryAsync();
-}
-
-export function getCurrentLocaleAsync(): Promise<string> {
-  console.warn('Util.getCurrentLocaleAsync is deprecated and will be removed in SDK 31, use Localization.getCurrentLocaleAsync');
-  return Localization.getCurrentLocaleAsync();
-}
-
-export function getCurrentTimeZoneAsync(): Promise<string> {
-  console.warn(
-    'Util.getCurrentTimeZoneAsync is deprecated and will be removed in SDK 31, use Localization.getCurrentTimeZoneAsync'
-  );
-  return Localization.getCurrentTimeZoneAsync();
-}
 
 export function reload(): void {
   console.warn('Util.reload is deprecated and will be removed in SDK 31, use Updates.reload instead');
