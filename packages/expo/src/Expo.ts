@@ -193,6 +193,9 @@ module.exports = {
   get Linking() {
     return require('./Linking').default;
   },
+  get Localization() {
+    return require('expo-localization').Localization;
+  },
   get Location() {
     return require('expo-location').Location;
   },
