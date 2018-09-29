@@ -110,6 +110,7 @@ class LocaleStore {
 }
 
 const getCurrentLocaleAsync = async () => {
+  console.warn('Deprecated: Use `Expo.Localization.language` instead');
   return (await ExponentLocalization.getCurrentLocaleAsync()).replace('-', '_');
 };
 
