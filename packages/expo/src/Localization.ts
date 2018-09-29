@@ -1,6 +1,5 @@
-import { NativeModules, Platform } from 'react-native';
-
-const { ExponentLocalization } = NativeModules;
+import { NativeModulesProxy, Platform } from 'expo-core'
+const { ExpoLocalization } = NativeModulesProxy;
 
 const isObject = obj => obj && obj.constructor && obj.constructor === Object;
 
@@ -111,11 +110,11 @@ class LocaleStore {
 
 const getCurrentLocaleAsync = async () => {
   console.warn('Deprecated: Use `Expo.Localization.language` instead');
-  return (await ExponentLocalization.getCurrentLocaleAsync()).replace('-', '_');
+  return (ExpoLocalization.locale).replace('-', '_');
 };
 
 export default {
-  ...ExponentLocalization,
+  ...ExpoLocalization,
   getCurrentLocaleAsync,
   LocaleStore,
 };

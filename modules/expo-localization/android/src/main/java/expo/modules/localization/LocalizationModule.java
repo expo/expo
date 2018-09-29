@@ -127,14 +127,14 @@ public class LocalizationModule extends ExportedModule implements ModuleRegistry
 
         if (SDK_INT < LOLLIPOP) {
             StringBuilder builder = new StringBuilder();
-            builder.append(locale.getLocale());
+            builder.append(locale.getLanguage());
             if (locale.getCountry() != null) {
                 builder.append("-");
                 builder.append(locale.getCountry());
             }
             localeTag = builder.toString();
         } else {
-            localeTag = locale.toLocaleTag();
+            localeTag = locale.getLanguage();
         }
 
         if (localeTag.matches("^(iw|in|ji).*")) {
