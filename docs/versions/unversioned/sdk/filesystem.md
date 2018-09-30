@@ -18,6 +18,13 @@ Expo APIs that create files generally operate within these directories. This inc
 
 Some `FileSystem` functions are able to read from (but not write to) other locations. Currently `Expo.FileSystem.getInfoAsync()` and `Expo.FileSystem.copyAsync()` are able to read from URIs returned by [`CameraRoll.getPhotos()`](https://facebook.github.io/react-native/docs/cameraroll.html#getphotos) from React Native.
 
+-   **`Expo.FileSystem.EncodingTypes`**
+
+  These constants can be used to define how data is read / written.
+
+  - **Expo.FileSystem.EncodingTypes.UTF8** -- Standard readable format.
+
+  - **Expo.FileSystem.EncodingTypes.Base64** -- Binary, radix-64 representation.
 
 ### `Expo.FileSystem.getInfoAsync(fileUri, options)`
 
@@ -50,19 +57,27 @@ If no item exists at this URI, returns `{ exists: false, isDirectory: false }`. 
 -   **md5 (_string_)** -- Present if the `md5` option was truthy. Contains the MD5 hash of the file.
 
 
-### `Expo.FileSystem.readAsStringAsync(fileUri)`
+### `Expo.FileSystem.readAsStringAsync(fileUri, options)`
 
-Read the entire contents of a file as a string.
+Read the entire contents of a file as a string. Binary will be returned in raw format, you will need to append `data:image/png;base64,` to use it as Base64.
 
 #### Arguments
 
 -   **fileUri (_string_)** -- `file://` URI to the file or directory.
 
+-   **options (_object_)** -- Optional props that define how a file must be read.
+
+  -   **encoding (_EncodingType_)** -- The encoding format to use when reading the file. Options: `FileSystem.EncodingTypes.UTF8`, `FileSystem.EncodingTypes.Base64`. Default is `FileSystem.EncodingTypes.UTF8`.
+
+  -   **length (_number_)** -- Optional number of bytes to read. This option is only used when `encoding: FileSystem.EncodingTypes.Base64` and `position` is defined.
+
+  -   **position (_number_)** -- Optional number of bytes to skip. This option is only used when `encoding: FileSystem.EncodingTypes.Base64` and `length` is defined. 
+
 #### Returns
 
 A string containing the entire contents of the file.
 
-### `Expo.FileSystem.writeAsStringAsync(fileUri, contents)`
+### `Expo.FileSystem.writeAsStringAsync(fileUri, contents, options)`
 
 Write the entire contents of a file as a string.
 
@@ -71,6 +86,10 @@ Write the entire contents of a file as a string.
 -   **fileUri (_string_)** -- `file://` URI to the file or directory.
 
 -   **contents (_string_)** -- The string to replace the contents of the file with.
+
+-   **options (_object_)** -- Optional props that define how a file must be written.
+
+  -   **encoding (_string_)** -- The encoding format to use when writing the file. Options: `FileSystem.EncodingTypes.UTF8`, `FileSystem.EncodingTypes.Base64`. Default is `FileSystem.EncodingTypes.UTF8`
 
 ### `Expo.FileSystem.deleteAsync(fileUri, options)`
 
