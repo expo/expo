@@ -75,7 +75,7 @@ public List<Package> expoPackages() {
 
 ```javascript
 import React from 'react';
-import { Button } from 'react-native';
+import { Text } from 'react-native';
 import { Localization } from 'expo-localization';
 
 import i18n from 'i18n-js';
@@ -90,12 +90,29 @@ const fr = {
   bar: 'chatouiller {{someValue}}',
 };
 
-i18n.locale = Localization.locale;
+i18n.fallbacks = true;
 i18n.translations = { fr, en };
+i18n.locale = Localization.locale;
 
 export default class LitView extends React.Component {
+  componentWillMount() {
+    this._subscription = Localization.addListener(({ locale }) => {
+      i18n.locale = locale;
+    });
+  }
+
+  componentWillUnmount() {
+    if (!!this._subscription) {
+      this._subscription.remove();
+    }
+  }
+
   render() {
-    return (<Text>{i18n.t('foo')} {i18n.t('bar', { someValue: Date.now() })}</Text>);
+    return (
+      <Text>
+        {i18n.t('foo')} {i18n.t('bar', { someValue: Date.now() })}
+      </Text>
+    );
   }
 }
 ```
@@ -104,22 +121,44 @@ export default class LitView extends React.Component {
 
 ### Constants
 
-#### `Localization.country`
+This API is mostly synchronous and driven by constants.
 
-#### `Localization.isoCurrencyCodes`
+#### `Localization.locale: string`
 
-#### `Localization.locale`
+Native device language, returned in standard format. ex: `en-US`, `es-US`.
 
-#### `Localization.locales`
+#### `Localization.locales: Array<string>`
 
-#### `Localization.timezone`
+List of all the native languages provided by the user settings. These are returned in the order the user defines in their native settings.
+
+#### `Localization.country: ?string`
+
+Country code for your device.
+
+#### `Localization.isoCurrencyCodes: ?Array<string>`
+
+A list of all the supported ISO codes.
+
+#### `Localization.timezone: string`
+
+The current time zone in display format. ex: `America/Los_Angeles`
+
+#### `Localization.isRTL: boolean`
+
+This will return `true` if the current language is Right-to-Left.
 
 ### Methods
 
-#### `Localization.addListener`
+> Callbacks are Android only, changing the native locale on iOS will cause all the apps to reset.
 
-> Android only, changing the locale on iOS will cause the app to reset.
+#### `Localization.addListener(listener: Listener): ?Subscription`
 
-#### `Localization.removeListener`
+Observe when a language is added or moved in the Android settings.
 
-> Android only, changing the locale on iOS will cause the app to reset.
+#### `Localization.removeAllListeners(): void`
+
+Clear all language observers.
+
+#### `Localization.removeSubscription(subscription: Subscription): void`
+
+Stop observing when the native languages are edited.

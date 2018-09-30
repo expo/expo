@@ -1,70 +1,68 @@
 // @flow
-
-import { NativeModulesProxy, NativeEventEmitter, Platform } from 'expo-core';
+import { NativeModulesProxy, EventEmitter, Platform } from 'expo-core';
 const { ExpoLocalization } = NativeModulesProxy;
 
 type NativeEvent = {
-    locale: string,
-    locales: Array<string>,
-    timezone: string,
-    isoCurrencyCodes: ?Array<string>,
-    country: ?Array<string>,
-};
-
-type Watcher = (eventData: NativeEvent) => any;
-
-type NativeEventName = 'change';
-
-type ExpoLocalizationModule = {
-  _nativeEventWatchers?: Set<Watcher>,
-  _nativeEmitter?: NativeEventEmitter,
-
   locale: string,
   locales: Array<string>,
   timezone: string,
   isoCurrencyCodes: ?Array<string>,
-  country: ?Array<string>,
-
-  addListener: (nativeEventName: NativeEventName, watcher: Watcher) => void,
-  removeListener: (nativeEventName: NativeEventName, watcher: Watcher) => void,
+  country: ?string,
+  isRTL: boolean,
 };
 
-let LocalizationModule: ExpoLocalizationModule = {
-  locale: ExpoLocalization.locale,
-  locales: ExpoLocalization.locales,
-  timezone: ExpoLocalization.timezone,
-  isoCurrencyCodes: ExpoLocalization.isoCurrencyCodes,
-  country: ExpoLocalization.country,
-  addListener: function(nativeEventName: NativeEvent, watcher: Watcher) {
-    if (nativeEventName !== 'change') {
-      throw new Error(`Cannot subscribe to event: ${nativeEventName}`);
-    } else if (!!this._nativeEventWatchers && !this._nativeEventWatchers.has(watcher)) {
-      this._nativeEventWatchers.add(watcher);
-    }
-  },
-  removeListener: function(nativeEventName: NativeEvent, watcher: Watcher) {
-    if (nativeEventName !== 'change') {
-      throw new Error(`Cannot unsubscribe to event: ${nativeEventName}`);
-    } else if (!!this._nativeEventWatchers && this._nativeEventWatchers.has(watcher)) {
-      this._nativeEventWatchers.delete(watcher);
-    }
-  },
+type Listener = (event: NativeEvent) => void;
+
+type Subscription = {
+  remove: () => void,
 };
 
-if (Platform.OS === 'android') {
-  LocalizationModule._nativeEventWatchers = new Set();
+class LocalizationModule {
+  _nativeEmitter: ?EventEmitter;
+  _nativeEventName: string = 'Expo.onLocaleUpdated';
 
-  LocalizationModule._nativeEmitter = new NativeEventEmitter(ExpoLocalization);
-  LocalizationModule._nativeEmitter.addListener('Expo.onLocaleUpdated', (event: NativeEvent) => {
-    LocalizationModule.locale = event.locale;
-    LocalizationModule.locales = event.locales;
-    LocalizationModule.timezone = event.timezone;
-    LocalizationModule.isoCurrencyCodes = event.isoCurrencyCodes;
-    LocalizationModule.country = event.country;
+  locale: string;
+  locales: Array<string>;
+  timezone: string;
+  isoCurrencyCodes: ?Array<string>;
+  country: ?string;
+  isRTL: boolean;
 
-    if (LocalizationModule._nativeEventWatchers)
-      LocalizationModule._nativeEventWatchers.forEach(callback => callback(event));
-  });
+  constructor() {
+    this._syncLocals(ExpoLocalization);
+    if (Platform.OS === 'android') {
+      this._nativeEmitter = new EventEmitter(ExpoLocalization);
+      // TODO: Bacon: Need a way to destory this listener
+      this._localSubscription = this.addListener(this._syncLocals);
+    }
+  }
+
+  _syncLocals = ({ locale, locales, timezone, isoCurrencyCodes, country, isRTL }: NativeEvent) => {
+    this.locale = locale;
+    this.locales = locales;
+    this.timezone = timezone;
+    this.isoCurrencyCodes = isoCurrencyCodes;
+    this.country = country;
+    this.isRTL = isRTL;
+  };
+
+  addListener(listener: Listener): ?Subscription {
+    if (!!this._nativeEmitter) {
+      let subscription = this._nativeEmitter.addListener(this._nativeEventName, listener);
+      subscription.remove = () => this.removeSubscription(subscription);
+      return subscription;
+    } else {
+      return { remove: function() {} };
+    }
+  }
+
+  removeAllListeners(): void {
+    if (!!this._nativeEmitter) this._nativeEmitter.removeAllListeners(this._nativeEventName);
+  }
+
+  removeSubscription(subscription: Subscription): void {
+    if (!!this._nativeEmitter) this._nativeEmitter.removeSubscription(subscription);
+  }
 }
 
-export default LocalizationModule;
+export default new LocalizationModule();

@@ -6,8 +6,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.LocaleList;
+import android.text.TextUtils;
+import android.view.View;
 
 import java.util.ArrayList;
 import java.util.Currency;
@@ -32,15 +35,12 @@ import static java.util.Currency.getAvailableCurrencies;
 
 public class LocalizationModule extends ExportedModule implements ModuleRegistryConsumer {
 
-    private final LocalesBroadcastReceiver mReceiver;
+    private LocalesBroadcastReceiver mReceiver;
     private ModuleRegistry mModuleRegistry;
     private EventEmitter mEventEmitter;
 
     public LocalizationModule(Context context) {
         super(context);
-        mReceiver = new LocalesBroadcastReceiver();
-
-        getApplicationContext().registerReceiver(mReceiver, new IntentFilter(ACTION_LOCALE_CHANGED));
     }
 
     private final Context getApplicationContext() {
@@ -59,8 +59,16 @@ public class LocalizationModule extends ExportedModule implements ModuleRegistry
 
     @Override
     public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+        if (mReceiver != null) {
+            getApplicationContext().unregisterReceiver(mReceiver);
+            mReceiver = null;
+        }
+
         mEventEmitter = moduleRegistry.getModule(EventEmitter.class);
         mModuleRegistry = moduleRegistry;
+
+        mReceiver = new LocalesBroadcastReceiver();
+        getApplicationContext().registerReceiver(mReceiver, new IntentFilter(ACTION_LOCALE_CHANGED));
     }
 
     @Override
@@ -69,7 +77,9 @@ public class LocalizationModule extends ExportedModule implements ModuleRegistry
 
         ArrayList<Locale> locales = getLocales();
         ArrayList<String> localeNames = getLocaleNames(locales);
+        Boolean isRTL = TextUtils.getLayoutDirectionFromLocale(Locale.getDefault())== View.LAYOUT_DIRECTION_RTL;
 
+        constants.put("isRTL", isRTL);
         constants.put("locale", localeNames.get(0));
         constants.put("locales", localeNames);
         constants.put("timezone", TimeZone.getDefault().getID());
@@ -84,7 +94,9 @@ public class LocalizationModule extends ExportedModule implements ModuleRegistry
 
         ArrayList<Locale> locales = getLocales();
         ArrayList<String> localeNames = getLocaleNames(locales);
+        Boolean isRTL = TextUtils.getLayoutDirectionFromLocale(Locale.getDefault())== View.LAYOUT_DIRECTION_RTL;
 
+        constants.putBoolean("isRTL", isRTL);
         constants.putString("locale", localeNames.get(0));
         constants.putStringArrayList("locales", localeNames);
         constants.putString("timezone", TimeZone.getDefault().getID());
@@ -105,12 +117,12 @@ public class LocalizationModule extends ExportedModule implements ModuleRegistry
         ArrayList<Locale> locales = new ArrayList<>();
 
         Configuration configuration = getApplicationContext().getResources().getConfiguration();
-        if (SDK_INT < N) {
-            locales.add(configuration.locale);
-        } else {
+        if (SDK_INT >= N) {
             LocaleList localeList = configuration.getLocales();
             for (int i = 0; i < localeList.size(); i++)
                 locales.add(localeList.get(i));
+        } else {
+            locales.add(configuration.locale);
         }
 
         return locales;
@@ -125,7 +137,9 @@ public class LocalizationModule extends ExportedModule implements ModuleRegistry
     private String toLocaleTag(Locale locale) {
         String localeTag;
 
-        if (SDK_INT < LOLLIPOP) {
+        if (SDK_INT >= LOLLIPOP) {
+            localeTag = locale.toLanguageTag();
+        } else {
             StringBuilder builder = new StringBuilder();
             builder.append(locale.getLanguage());
             if (locale.getCountry() != null) {
@@ -133,8 +147,6 @@ public class LocalizationModule extends ExportedModule implements ModuleRegistry
                 builder.append(locale.getCountry());
             }
             localeTag = builder.toString();
-        } else {
-            localeTag = locale.getLanguage();
         }
 
         if (localeTag.matches("^(iw|in|ji).*")) {

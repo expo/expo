@@ -37,7 +37,11 @@ EX_EXPORT_MODULE(ExpoLocalization)
   NSString *countryCode =
   [[NSLocale currentLocale] objectForKey:NSLocaleCountryCode];
   
+  NSLocaleLanguageDirection localeLanguageDirection = [NSLocale characterDirectionForLanguage:[NSLocale preferredLanguages][0]];
+  BOOL isRTL = localeLanguageDirection == NSLocaleLanguageDirectionRightToLeft;
+  
   return @{
+           @"isRTL": @(isRTL),
            @"locale": [preferredLocales objectAtIndex:0],
            @"locales": preferredLocales,
            @"timezone": [currentTimeZone name],
