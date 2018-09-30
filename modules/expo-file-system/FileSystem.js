@@ -14,6 +14,10 @@ export const documentDirectory = FS.documentDirectory;
 export const cacheDirectory = FS.cacheDirectory;
 export const bundledAssets = FS.bundledAssets;
 export const bundleDirectory = FS.bundleDirectory;
+export const EncodingTypes = {
+  UTF8: "utf8",
+  Base64: "base64",
+}
 
 type FileInfo =
   | {
@@ -28,16 +32,29 @@ type FileInfo =
       isDirectory: false,
     };
 
+export type EncodingType =
+  | typeof EncodingTypes.UTF8
+  | typeof EncodingTypes.Base64
+
+export type ReadingOptions = {
+  encoding?: EncodingType,
+  position?: number,
+  length?: number
+}
+export type WritingOptions = {
+  encoding?: EncodingType,
+}
+
 export function getInfoAsync(fileUri: string, options: { md5?: boolean } = {}): Promise<FileInfo> {
   return FS.getInfoAsync(fileUri, options);
 }
 
-export function readAsStringAsync(fileUri: string): Promise<string> {
-  return FS.readAsStringAsync(fileUri, {});
+export function readAsStringAsync(fileUri: string, options?: ReadingOptions): Promise<string> {
+  return FS.readAsStringAsync(fileUri, options || {});
 }
 
-export function writeAsStringAsync(fileUri: string, contents: string): Promise<void> {
-  return FS.writeAsStringAsync(fileUri, contents, {});
+export function writeAsStringAsync(fileUri: string, contents: string, options?: WritingOptions): Promise<void> {
+  return FS.writeAsStringAsync(fileUri, contents, options || {});
 }
 
 export function deleteAsync(

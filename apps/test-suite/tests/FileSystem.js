@@ -2,7 +2,7 @@
 
 export const name = 'FileSystem';
 
-import { FileSystem as FS } from 'expo';
+import { FileSystem as FS, Asset } from 'expo';
 import { CameraRoll } from 'react-native';
 
 export function test(t) {
@@ -55,6 +55,32 @@ export function test(t) {
       },
       9000
     );*/
+
+    t.it('Can read/write Base64', async () => {
+      const asset = await Asset.fromModule(require('../assets/icons/app.png'));
+      await asset.downloadAsync();
+
+      let startingPosition = 0;
+
+      for (let i = 0; i < 3; i++) {
+        const options = {
+          encoding: FS.EncodingTypes.Base64,
+          position: i,
+          length: i + 1,
+        };
+
+        const b64 = await FS.readAsStringAsync(asset.localUri, options);
+        t.expect(b64).toBeDefined();
+        t.expect(typeof b64).toBe('string');
+        t.expect(b64.split('') % 4).toBe(0);
+        
+        const localUri = FS.documentDirectory + 'b64.png';
+
+        await FS.writeAsStringAsync(localUri, b64, options);
+
+        t.expect(await FS.readAsStringAsync(localUri, options)).toBe(b64);
+      }
+    });
 
     t.it('delete(idempotent) -> delete[error]', async () => {
       const localUri = FS.documentDirectory + 'willDelete.png';
