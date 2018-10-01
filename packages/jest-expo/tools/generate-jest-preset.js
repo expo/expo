@@ -18,8 +18,22 @@ function generateJestPreset() {
   // Derive the Expo Jest preset from the React Native one
   const expoJestPreset = JSON.parse(JSON.stringify(rnJestPreset));
 
+  if (expoJestPreset.haste) {
+    assert(expoJestPreset.haste.hasOwnProperty('hasteImplModulePath'));
+    expoJestPreset.haste.hasteImplModulePath = expoJestPreset.haste.hasteImplModulePath.replace(
+      /^<rootDir>\/node_modules\//,
+      ''
+    );
+  }
+
   if (!expoJestPreset.moduleNameMapper) {
     expoJestPreset.moduleNameMapper = {};
+  }
+
+  if (expoJestPreset.modulePathIgnorePatterns) {
+    expoJestPreset.modulePathIgnorePatterns = expoJestPreset.modulePathIgnorePatterns.map(pattern =>
+      pattern.replace(/^<rootDir>\/node_modules\//, '')
+    );
   }
 
   if (!expoJestPreset.transform) {
