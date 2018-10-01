@@ -4,9 +4,6 @@ include ':tools'
 include ':ReactAndroid'
 project(':ReactAndroid').projectDir = new File(rootDir, 'ReactAndroid')
 
-include ':expoview-abi23_0_0'
-project(':expoview-abi23_0_0').projectDir = new File(rootDir, 'versioned-abis/expoview-abi23_0_0')
-
 include ':expoview-abi24_0_0'
 project(':expoview-abi24_0_0').projectDir = new File(rootDir, 'versioned-abis/expoview-abi24_0_0')
 
