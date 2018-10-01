@@ -124,6 +124,46 @@ EX_REGISTER_MODULE();
   
 }
 
+- (NSDictionary *)encodingMap
+{
+  /*
+   TODO:Bacon: match node.js fs
+   https://github.com/nodejs/node/blob/master/lib/buffer.js
+   ascii
+   base64
+   binary
+   hex
+   ucs2/ucs-2
+   utf16le/utf-16le
+   utf8/utf-8
+   latin1 (ISO8859-1, only in node 6.4.0+)
+   */
+  return @{
+           @"ascii": @(NSASCIIStringEncoding),
+           @"nextstep": @(NSNEXTSTEPStringEncoding),
+           @"japaneseeuc": @(NSJapaneseEUCStringEncoding),
+           @"utf8": @(NSUTF8StringEncoding),
+           @"isolatin1": @(NSISOLatin1StringEncoding),
+           @"symbol": @(NSSymbolStringEncoding),
+           @"nonlossyascii": @(NSNonLossyASCIIStringEncoding),
+           @"shiftjis": @(NSShiftJISStringEncoding),
+           @"isolatin2": @(NSISOLatin2StringEncoding),
+           @"unicode": @(NSUnicodeStringEncoding),
+           @"windowscp1251": @(NSWindowsCP1251StringEncoding),
+           @"windowscp1252": @(NSWindowsCP1252StringEncoding),
+           @"windowscp1253": @(NSWindowsCP1253StringEncoding),
+           @"windowscp1254": @(NSWindowsCP1254StringEncoding),
+           @"windowscp1250": @(NSWindowsCP1250StringEncoding),
+           @"iso2022jp": @(NSISO2022JPStringEncoding),
+           @"macosroman": @(NSMacOSRomanStringEncoding),
+           @"utf16": @(NSUTF16StringEncoding),
+           @"utf16bigendian": @(NSUTF16BigEndianStringEncoding),
+           @"utf16littleendian": @(NSUTF16LittleEndianStringEncoding),
+           @"utf32": @(NSUTF32StringEncoding),
+           @"utf32bigendian": @(NSUTF32BigEndianStringEncoding),
+           @"utf32littleendian": @(NSUTF32LittleEndianStringEncoding),
+           };
+}
 
 EX_EXPORT_METHOD_AS(getInfoAsync,
                     getInfoAsyncWithURI:(NSString *)uriString
@@ -165,14 +205,45 @@ EX_EXPORT_METHOD_AS(readAsStringAsync,
   }
   
   if ([uri.scheme isEqualToString:@"file"]) {
-    NSError *error;
-    NSString *string = [NSString stringWithContentsOfFile:uri.path encoding:NSUTF8StringEncoding error:&error];
-    if (string) {
-      resolve(string);
+    NSString *encodingType = @"utf8";
+    if (options[@"encoding"] != nil && [options[@"encoding"] stringValue] && ![[options[@"encoding"] stringValue] isEqualToString:@""]) {
+      encodingType = [[options[@"encoding"] stringValue] lowercaseString];
+    }
+    if ([encodingType isEqualToString:@"base64"]) {
+      NSFileHandle *file = [NSFileHandle fileHandleForReadingAtPath:uri.path];
+      if (file == nil) {
+        reject(@"E_FILE_NOT_READ",
+               [NSString stringWithFormat:@"File '%@' could not be read.", uri.path],
+               nil);
+        return;
+      }
+      // position and length are used as a cursor/paging system.
+      if (options[@"position"] != nil && [options[@"position"] intValue]) {
+        [file seekToFileOffset:(int)options[@"position"]];
+      }
+      
+      NSData *data;
+      if (options[@"length"] != nil && [options[@"length"] intValue] && (int)options[@"length"] > 0) {
+        data = [file readDataOfLength:(int)options[@"length"]];
+      } else {
+        data = [file readDataToEndOfFile];
+      }
+      resolve([data base64EncodedStringWithOptions:NSDataBase64EncodingEndLineWithLineFeed]);
     } else {
-      reject(@"E_FILE_NOT_READ",
-             [NSString stringWithFormat:@"File '%@' could not be read.", uri],
-             error);
+      NSUInteger encoding = NSUTF8StringEncoding;
+      id possibleEncoding = [[self encodingMap] valueForKey:encodingType];
+      if (possibleEncoding != nil) {
+        encoding = [possibleEncoding integerValue];
+      }
+      NSError *error;
+      NSString *string = [NSString stringWithContentsOfFile:uri.path encoding:encoding error:&error];
+      if (string) {
+        resolve(string);
+      } else {
+        reject(@"E_FILE_NOT_READ",
+               [NSString stringWithFormat:@"File '%@' could not be read.", uri],
+               error);
+      }
     }
   } else {
     reject(@"E_FILESYSTEM_INVALID_URI",
@@ -197,13 +268,43 @@ EX_EXPORT_METHOD_AS(writeAsStringAsync,
   }
   
   if ([uri.scheme isEqualToString:@"file"]) {
-    NSError *error;
-    if ([string writeToFile:uri.path atomically:YES encoding:NSUTF8StringEncoding error:&error]) {
-      resolve(nil);
+    NSString *encodingType = @"utf8";
+    if (options[@"encoding"] != nil && [options[@"encoding"] stringValue] && ![[options[@"encoding"] stringValue] isEqualToString:@""]) {
+      encodingType = options[@"encoding"];
+    }
+    if ([encodingType isEqualToString:@"base64"]) {
+      dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        NSData *imageData = [[NSData alloc] initWithBase64EncodedString:string options:NSDataBase64DecodingIgnoreUnknownCharacters];
+        if (imageData) {
+          // TODO:Bacon: Should we surface `attributes`?
+          if ([[NSFileManager defaultManager] createFileAtPath:uri.path contents:imageData attributes:nil]) {
+            resolve([NSNull null]);
+          } else {
+            return reject(@"E_FILE_UNKNOWN",
+                          [NSString stringWithFormat:@"No such file or directory '%@'", uri.path],
+                          nil);
+          }
+        } else {
+          reject(@"E_INVALID_FORMAT",
+                 @"Failed to parse base64 string.",
+                 nil);
+        }
+      });
     } else {
-      reject(@"E_FILE_NOT_WRITTEN",
-             [NSString stringWithFormat:@"File '%@' could not be written.", uri],
-             error);
+      NSUInteger encoding = NSUTF8StringEncoding;
+      id possibleEncoding = [[self encodingMap] valueForKey:encodingType];
+      if (possibleEncoding != nil) {
+        encoding = [possibleEncoding integerValue];
+      }
+      
+      NSError *error;
+      if ([string writeToFile:uri.path atomically:YES encoding:encoding error:&error]) {
+        resolve([NSNull null]);
+      } else {
+        reject(@"E_FILE_NOT_WRITTEN",
+               [NSString stringWithFormat:@"File '%@' could not be written.", uri],
+               error);
+      }
     }
   } else {
     reject(@"E_FILESYSTEM_INVALID_URI",
@@ -231,7 +332,7 @@ EX_EXPORT_METHOD_AS(deleteAsync,
     if ([[NSFileManager defaultManager] fileExistsAtPath:path]) {
       NSError *error;
       if ([[NSFileManager defaultManager] removeItemAtPath:path error:&error]) {
-        resolve(nil);
+        resolve([NSNull null]);
       } else {
         reject(@"E_FILE_NOT_DELETED",
                [NSString stringWithFormat:@"File '%@' could not be deleted.", uri],
@@ -239,7 +340,7 @@ EX_EXPORT_METHOD_AS(deleteAsync,
       }
     } else {
       if (options[@"idempotent"]) {
-        resolve(nil);
+        resolve([NSNull null]);
       } else {
         reject(@"E_FILE_NOT_FOUND",
                [NSString stringWithFormat:@"File '%@' could not be deleted because it could not be found.", uri],
@@ -296,7 +397,7 @@ EX_EXPORT_METHOD_AS(moveAsync,
       }
     }
     if ([[NSFileManager defaultManager] moveItemAtPath:fromPath toPath:toPath error:&error]) {
-      resolve(nil);
+      resolve([NSNull null]);
     } else {
       reject(@"E_FILE_NOT_MOVED",
              [NSString stringWithFormat:@"File '%@' could not be moved to '%@'.", from, to],
@@ -369,7 +470,7 @@ EX_EXPORT_METHOD_AS(makeDirectoryAsync,
                                   withIntermediateDirectories:options[@"intermediates"]
                                                    attributes:nil
                                                         error:&error]) {
-      resolve(nil);
+      resolve([NSNull null]);
     } else {
       reject(@"E_DIRECTORY_NOT_CREATED",
              [NSString stringWithFormat:@"Directory '%@' could not be created.", uri],
@@ -577,7 +678,7 @@ EX_EXPORT_METHOD_AS(downloadResumablePauseAsync,
       if (strongSelf) {
         [strongSelf.downloadObjects removeObjectForKey:uuid];
       }
-      resolve(nil);
+      resolve([NSNull null]);
     } else {
       reject(@"E_UNABLE_TO_DOWNLOAD",
              [NSString stringWithFormat:@"Unable to download from: %@", url.absoluteString],

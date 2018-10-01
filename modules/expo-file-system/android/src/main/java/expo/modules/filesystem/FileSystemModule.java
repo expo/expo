@@ -5,6 +5,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 
 import org.apache.commons.codec.binary.Hex;
@@ -15,6 +16,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -217,8 +219,8 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
         Bundle result = new Bundle();
         try {
           InputStream is = "content".equals(uri.getScheme()) ?
-              getContext().getContentResolver().openInputStream(uri) :
-              openAssetInputStream(uri);
+                  getContext().getContentResolver().openInputStream(uri) :
+                  openAssetInputStream(uri);
           if (is == null) {
             throw new FileNotFoundException();
           }
@@ -252,13 +254,44 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
     try {
       Uri uri = Uri.parse(uriStr);
       ensurePermission(uri, Permission.READ);
-      if ("file".equals(uri.getScheme())) {
-        promise.resolve(IOUtils.toString(new FileInputStream(uriToFile(uri))));
-      } else if("asset".equals(uri.getScheme())) {
-        promise.resolve(IOUtils.toString(openAssetInputStream(uri)));
-      } else {
-        throw new IOException("Unsupported scheme for location '" + uri +  "'.");
+
+      // TODO:Bacon: Add more encoding types to match iOS
+      String encoding = "utf8";
+      if (options.containsKey("encoding") && options.get("encoding") instanceof String) {
+        encoding = ((String)options.get("encoding")).toLowerCase();
       }
+      String contents;
+      if (encoding.equalsIgnoreCase("base64")) {
+        InputStream inputStream;
+        if ("file".equals(uri.getScheme())) {
+          inputStream = new FileInputStream(uriToFile(uri));
+        } else if ("asset".equals(uri.getScheme())) {
+          inputStream = openAssetInputStream(uri);
+        } else {
+          throw new IOException("Unsupported scheme for location '" + uri + "'.");
+        }
+
+        if (options.containsKey("length") && options.containsKey("position")) {
+          int length = ((Number)options.get("length")).intValue();
+          int position = ((Number)options.get("position")).intValue();
+          byte[] buffer = new byte[length];
+          inputStream.skip(position);
+          int bytesRead = inputStream.read(buffer, 0, length);
+          contents = Base64.encodeToString(buffer, 0, bytesRead, Base64.NO_WRAP);
+        } else {
+          byte[] inputData = getInputStreamBytes(inputStream);
+          contents = Base64.encodeToString(inputData, Base64.NO_WRAP);
+        }
+      } else {
+        if ("file".equals(uri.getScheme())) {
+          contents = IOUtils.toString(new FileInputStream(uriToFile(uri)));
+        } else if ("asset".equals(uri.getScheme())) {
+          contents = IOUtils.toString(openAssetInputStream(uri));
+        } else {
+          throw new IOException("Unsupported scheme for location '" + uri + "'.");
+        }
+      }
+      promise.resolve(contents);
     } catch (Exception e) {
       Log.e(TAG, e.getMessage());
       promise.reject(e);
@@ -271,10 +304,21 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
       Uri uri = Uri.parse(uriStr);
       ensurePermission(uri, Permission.WRITE);
       if ("file".equals(uri.getScheme())) {
+
+        String encoding = "utf8";
+        if (options.containsKey("encoding") && options.get("encoding") instanceof String) {
+          encoding = ((String)options.get("encoding")).toLowerCase();
+        }
+
         FileOutputStream out = new FileOutputStream(uriToFile(uri));
-        OutputStreamWriter writer = new OutputStreamWriter(out);
-        writer.write(string);
-        writer.close();
+        if (encoding.equals("base64")) {
+          byte[] bytes = Base64.decode(string, Base64.DEFAULT);
+          out.write(bytes);
+        } else {
+          OutputStreamWriter writer = new OutputStreamWriter(out);
+          writer.write(string);
+          writer.close();
+        }
         out.close();
         promise.resolve(null);
       } else {
@@ -524,16 +568,16 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
       };
 
       OkHttpClient client =
-        getOkHttpClientBuilder()
-          .addNetworkInterceptor(new Interceptor() {
-          @Override public Response intercept(Chain chain) throws IOException {
-              Response originalResponse = chain.proceed(chain.request());
-              return originalResponse.newBuilder()
-                .body(new ProgressResponseBody(originalResponse.body(), progressListener))
-                .build();
-            }
-          })
-          .build();
+              getOkHttpClientBuilder()
+                      .addNetworkInterceptor(new Interceptor() {
+                        @Override public Response intercept(Chain chain) throws IOException {
+                          Response originalResponse = chain.proceed(chain.request());
+                          return originalResponse.newBuilder()
+                                  .body(new ProgressResponseBody(originalResponse.body(), progressListener))
+                                  .build();
+                        }
+                      })
+                      .build();
 
       Request.Builder requestBuilder = new Request.Builder();
       if (isResume) {
@@ -582,6 +626,26 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
       Log.e(TAG, e.getMessage());
       promise.reject(e);
     }
+  }
+
+  private static byte[] getInputStreamBytes(InputStream inputStream) throws IOException {
+    byte[] bytesResult;
+    ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
+    int bufferSize = 1024;
+    byte[] buffer = new byte[bufferSize];
+    try {
+      int len;
+      while ((len = inputStream.read(buffer)) != -1) {
+        byteBuffer.write(buffer, 0, len);
+      }
+      bytesResult = byteBuffer.toByteArray();
+    } finally {
+      try {
+        byteBuffer.close();
+      } catch (IOException ignored) {
+      }
+    }
+    return bytesResult;
   }
 
   private static class DownloadResumableTaskParams {
