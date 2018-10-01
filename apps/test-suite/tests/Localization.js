@@ -28,8 +28,6 @@ export function test(t) {
       t.expect(result).toBeDefined();
       t.expect(typeof result).toBe('string');
       t.expect(result.length > 0).toBe(true);
-      // Format: expect en-US and not en_US
-      t.expect(result.split('-').length > 1).toBe(true);
     });
     t.it('Gets the preferred locales', async () => {
       const result = Localization.locales;
@@ -58,7 +56,7 @@ export function test(t) {
       t.expect(result.split('/').length > 1).toBe(true);
     });
 
-    t.it('Gets the current layout direction', async () => {
+    t.it('Gets the current layout direction (ltr only)', async () => {
       const result = Localization.isRTL;
       t.expect(result).toBeDefined();
       t.expect(result).toBe(false);
@@ -88,7 +86,7 @@ export function test(t) {
     i18n.missingTranslationPrefix = 'EE: ';
     i18n.fallbacks = true;
 
-    t.it('expect language to match strings', async () => {
+    t.it('expect language to match strings (en only)', async () => {
       const target = 'foo';
 
       i18n.locale = Localization.locale;

@@ -1,4 +1,4 @@
-import { NativeModulesProxy, Platform } from 'expo-core'
+import { NativeModulesProxy, Platform } from 'expo-core';
 const { ExpoLocalization } = NativeModulesProxy;
 
 const isObject = obj => obj && obj.constructor && obj.constructor === Object;

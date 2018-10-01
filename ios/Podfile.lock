@@ -202,7 +202,7 @@ PODS:
   - EXLocalAuthentication (1.0.0):
     - EXConstantsInterface
     - EXCore
-  - EXLocalization (1.0.2):
+  - EXLocalization (1.0.0):
     - EXCore
   - EXLocation (1.0.0):
     - EXCore
@@ -1383,7 +1383,7 @@ SPEC CHECKSUMS:
   EXGL-CPP: 46b589a3ed0c59ae2e7f9434897b66cd8dd2e70c
   EXImageLoaderInterface: 3f460f6ff344ba6c4e00621806c0d1d76249cd8f
   EXLocalAuthentication: b70696613cb24d726d3c98a1818c22c481a46b01
-  EXLocalization: 211e5e98730da65b8c2a6929cbbee36d00071e5d
+  EXLocalization: 1243adc132eaad4793dd7e5b497135ad5d803441
   EXLocation: c686b2b139bea46c653a96f62dc49e47c9b08fe5
   EXMediaLibrary: f91c4f6ff2c9be8102e06d0a4d08987231a7e286
   EXPermissions: dd31cb432c078eed1f4c1e290bc32649d5280bd3
@@ -1432,6 +1432,6 @@ SPEC CHECKSUMS:
   yogaABI29_0_0: 4fdf5bbd444d2968ec42ccadec97b02c672eda80
   yogaABI30_0_0: 4c86e39466368a6b018b8b78aeb654b6620512a1
 
-PODFILE CHECKSUM: 8ab71565271f17cd76db54f3073442b0702c1038
+PODFILE CHECKSUM: 03862c40a2c78af62c419004a8a8c7dcb7c4b857
 
 COCOAPODS: 1.5.3
