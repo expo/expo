@@ -149,7 +149,7 @@ dependencies {
   api 'com.google.android.gms:play-services-vision:15.0.2'
   api 'com.google.android.gms:play-services-wallet:15.0.1' //may need 10.+
   api 'com.stripe:stripe-android:2.1.+'
-  api 'com.github.thefuntasty:CreditCardEntry:1.4.8.4'
+  api 'com.github.tipsi:CreditCardEntry:1.4.8.10'
   annotationProcessor 'com.raizlabs.android:DBFlow-Compiler:2.2.1'
   api "com.raizlabs.android:DBFlow-Core:2.2.1"
   api "com.raizlabs.android:DBFlow:2.2.1"

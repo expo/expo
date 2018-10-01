@@ -25,6 +25,9 @@ project(':expoview-abi28_0_0').projectDir = new File(rootDir, 'versioned-abis/ex
 include ':expoview-abi29_0_0'
 project(':expoview-abi29_0_0').projectDir = new File(rootDir, 'versioned-abis/expoview-abi29_0_0')
 
+include ':expoview-abi30_0_0'
+project(':expoview-abi30_0_0').projectDir = new File(rootDir, 'versioned-abis/expoview-abi30_0_0')
+
 // Universal modules
 
 def modulesDir = new File(rootDir, "../packages")
