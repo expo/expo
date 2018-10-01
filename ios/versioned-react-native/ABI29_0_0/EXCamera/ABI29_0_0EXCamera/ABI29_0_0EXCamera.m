@@ -214,24 +214,22 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
     return;
   }
 
-  if (@available(iOS 10.0, *)) {
-    if ([device isLockingFocusWithCustomLensPositionSupported]) {
-      if (![device lockForConfiguration:&error]) {
-        if (error) {
-          ABI29_0_0EXLogInfo(@"%s: %@", __func__, error);
-        }
-        return;
+  if ([device isLockingFocusWithCustomLensPositionSupported]) {
+    if (![device lockForConfiguration:&error]) {
+      if (error) {
+        ABI29_0_0EXLogInfo(@"%s: %@", __func__, error);
       }
-
-      __weak AVCaptureDevice *weakDevice = device;
-      [device setFocusModeLockedWithLensPosition:_focusDepth completionHandler:^(CMTime syncTime) {
-        __strong AVCaptureDevice *strongDevice = weakDevice;
-        if (strongDevice) {
-          [strongDevice unlockForConfiguration];
-        }
-      }];
       return;
     }
+
+    __weak AVCaptureDevice *weakDevice = device;
+    [device setFocusModeLockedWithLensPosition:_focusDepth completionHandler:^(CMTime syncTime) {
+      __strong AVCaptureDevice *strongDevice = weakDevice;
+      if (strongDevice) {
+        [strongDevice unlockForConfiguration];
+      }
+    }];
+    return;
   }
 
   ABI29_0_0EXLogInfo(@"%s: Setting focusDepth isn't supported for this camera device", __func__);

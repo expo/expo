@@ -40,32 +40,26 @@ ABI27_0_0RCT_EXPORT_MODULE(ExponentHaptic);
 
 ABI27_0_0RCT_EXPORT_METHOD(notification:(UINotificationFeedbackType)type)
 {
-  if (@available(iOS 10, *)) {
-    UINotificationFeedbackGenerator *feedback = [UINotificationFeedbackGenerator new];
-    [feedback prepare];
-    [feedback notificationOccurred:type];
-    feedback = nil;
-  }
+  UINotificationFeedbackGenerator *feedback = [UINotificationFeedbackGenerator new];
+  [feedback prepare];
+  [feedback notificationOccurred:type];
+  feedback = nil;
 }
 
 ABI27_0_0RCT_EXPORT_METHOD(impact:(UIImpactFeedbackStyle)style)
 {
-  if (@available(iOS 10, *)) {
-    UIImpactFeedbackGenerator *feedback = [[UIImpactFeedbackGenerator alloc] initWithStyle:style];
-    [feedback prepare];
-    [feedback impactOccurred];
-    feedback = nil;
-  }
+  UIImpactFeedbackGenerator *feedback = [[UIImpactFeedbackGenerator alloc] initWithStyle:style];
+  [feedback prepare];
+  [feedback impactOccurred];
+  feedback = nil;
 }
 
 ABI27_0_0RCT_EXPORT_METHOD(selection)
 {
-  if (@available(iOS 10, *)) {
-    UISelectionFeedbackGenerator *feedback = [UISelectionFeedbackGenerator new];
-    [feedback prepare];
-    [feedback selectionChanged];
-    feedback = nil;
-  }
+  UISelectionFeedbackGenerator *feedback = [UISelectionFeedbackGenerator new];
+  [feedback prepare];
+  [feedback selectionChanged];
+  feedback = nil;
 }
 
 @end

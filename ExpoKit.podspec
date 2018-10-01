@@ -3,14 +3,14 @@
 
 Pod::Spec.new do |s|
   s.name = "ExpoKit"
-  s.version = "2.8.3"
+  s.version = "2.8.4"
   s.summary = 'ExpoKit'
   s.description = 'ExpoKit allows native projects to integrate with the Expo SDK.'
   s.homepage = 'http://docs.expo.io'
   s.license = 'MIT'
   s.author = "650 Industries, Inc."
   s.requires_arc = true
-  s.platform = :ios, "9.0"
+  s.platform = :ios, "10.0"
   s.default_subspec = "Core"
   s.source = { :git => "http://github.com/expo/expo.git" }
 

@@ -89,12 +89,8 @@ NSString * const EXAppDidRegisterUserNotificationSettingsNotification = @"kEXApp
 
 - (void)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-  if (@available(iOS 10, *)) {
-    [DDLog addLogger:[DDOSLogger sharedInstance]];
-  } else {
-    [DDLog addLogger:[DDASLLogger sharedInstance]];
-    [DDLog addLogger:[DDTTYLogger sharedInstance]];
-  }
+  [DDLog addLogger:[DDOSLogger sharedInstance]];
+  
 
   RCTSetFatalHandler(handleFatalReactError);
 
