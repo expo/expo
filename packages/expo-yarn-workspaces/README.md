@@ -20,7 +20,7 @@ Each Expo app in the repository that is intended to work with Yarn workspaces (a
 
 ### Define the entry module in the `"main"` field of package.json
 
-The postinstall script determines the location of the generated entry module by looking at the `"main"` field in package.json. In a conventional Expo app, the value of the `"main"` field is `node_modules/expo/AppEntry.js`. In a workspace in the Expo repo, **specify `".expo/AppEntry.js"` as the value of the `"main"` field in package.json.**
+The postinstall script determines the location of the generated entry module by looking at the `"main"` field in package.json. In a conventional Expo app, the value of the `"main"` field is `node_modules/expo/AppEntry.js`. In a workspace in the Expo repo, **specify `"__generated__/AppEntry.js"` as the value of the `"main"` field in package.json.**
 
 You can specify other paths too. The `.expo` directory is convenient since it already contains auto-generated files and is .gitignore'd.
 
