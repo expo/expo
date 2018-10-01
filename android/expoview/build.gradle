@@ -99,7 +99,7 @@ preBuild.dependsOn generateDynamicMacros
 
 dependencies {
   api fileTree(dir: 'libs', include: ['*.jar'])
-  api 'com.android.support:multidex:1.0.1'
+  api 'com.android.support:multidex:1.0.3'
 
   // Current react native
   api project(':ReactAndroid')
@@ -172,14 +172,13 @@ dependencies {
   // Versioned react native
   // THIS COMMENT IS USED BY android-build-aar.sh DO NOT MODIFY
 
- compileOnly 'host.exp:reactandroid-abi30_0_0:1.0.0'
-//  compileOnly 'host.exp:reactandroid-abi29_0_0:1.0.0'
-//  compileOnly 'host.exp:reactandroid-abi28_0_0:1.0.0'
-//  compileOnly 'host.exp:reactandroid-abi27_0_0:1.0.0'
-//  compileOnly 'host.exp:reactandroid-abi26_0_0:1.0.0'
-//  compileOnly 'host.exp:reactandroid-abi25_0_0:1.0.0'
-//  compileOnly 'host.exp:reactandroid-abi24_0_0:1.0.0'
-//  compileOnly 'host.exp:reactandroid-abi23:1.0.0'
+  compileOnly 'host.exp:reactandroid-abi30_0_0:1.0.0'
+  compileOnly 'host.exp:reactandroid-abi29_0_0:1.0.0'
+  compileOnly 'host.exp:reactandroid-abi28_0_0:1.0.0'
+  compileOnly 'host.exp:reactandroid-abi27_0_0:1.0.0'
+  compileOnly 'host.exp:reactandroid-abi26_0_0:1.0.0'
+  compileOnly 'host.exp:reactandroid-abi25_0_0:1.0.0'
+  compileOnly 'host.exp:reactandroid-abi24_0_0:1.0.0'
 
   // React native dependencies
   // We use a different version of appcompat

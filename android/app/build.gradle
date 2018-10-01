@@ -193,34 +193,30 @@ dependencies {
     exclude group: 'com.squareup.okhttp3', module: 'okhttp'
     exclude group: 'com.squareup.okhttp3', module: 'okhttp-urlconnection'
   }
-//  implementation(project(':expoview-abi29_0_0')) {
-//    exclude group: 'com.squareup.okhttp3', module: 'okhttp'
-//    exclude group: 'com.squareup.okhttp3', module: 'okhttp-urlconnection'
-//  }
-//  implementation(project(':expoview-abi28_0_0')) {
-//    exclude group: 'com.squareup.okhttp3', module: 'okhttp'
-//    exclude group: 'com.squareup.okhttp3', module: 'okhttp-urlconnection'
-//  }
-//  implementation(project(':expoview-abi27_0_0')) {
-//    exclude group: 'com.squareup.okhttp3', module: 'okhttp'
-//    exclude group: 'com.squareup.okhttp3', module: 'okhttp-urlconnection'
-//  }
-//  implementation(project(':expoview-abi26_0_0')) {
-//    exclude group: 'com.squareup.okhttp3', module: 'okhttp'
-//    exclude group: 'com.squareup.okhttp3', module: 'okhttp-urlconnection'
-//  }
-//  implementation(project(':expoview-abi25_0_0')) {
-//    exclude group: 'com.squareup.okhttp3', module: 'okhttp'
-//    exclude group: 'com.squareup.okhttp3', module: 'okhttp-urlconnection'
-//  }
-//  implementation(project(':expoview-abi24_0_0')) {
-//    exclude group: 'com.squareup.okhttp3', module: 'okhttp'
-//    exclude group: 'com.squareup.okhttp3', module: 'okhttp-urlconnection'
-//  }
-//  implementation(project(':expoview-abi23_0_0')) {
-//    exclude group: 'com.squareup.okhttp3', module: 'okhttp'
-//    exclude group: 'com.squareup.okhttp3', module: 'okhttp-urlconnection'
-//  }
+  implementation(project(':expoview-abi29_0_0')) {
+    exclude group: 'com.squareup.okhttp3', module: 'okhttp'
+    exclude group: 'com.squareup.okhttp3', module: 'okhttp-urlconnection'
+  }
+  implementation(project(':expoview-abi28_0_0')) {
+    exclude group: 'com.squareup.okhttp3', module: 'okhttp'
+    exclude group: 'com.squareup.okhttp3', module: 'okhttp-urlconnection'
+  }
+  implementation(project(':expoview-abi27_0_0')) {
+    exclude group: 'com.squareup.okhttp3', module: 'okhttp'
+    exclude group: 'com.squareup.okhttp3', module: 'okhttp-urlconnection'
+  }
+  implementation(project(':expoview-abi26_0_0')) {
+    exclude group: 'com.squareup.okhttp3', module: 'okhttp'
+    exclude group: 'com.squareup.okhttp3', module: 'okhttp-urlconnection'
+  }
+  implementation(project(':expoview-abi25_0_0')) {
+    exclude group: 'com.squareup.okhttp3', module: 'okhttp'
+    exclude group: 'com.squareup.okhttp3', module: 'okhttp-urlconnection'
+  }
+  implementation(project(':expoview-abi24_0_0')) {
+    exclude group: 'com.squareup.okhttp3', module: 'okhttp'
+    exclude group: 'com.squareup.okhttp3', module: 'okhttp-urlconnection'
+  }
   // WHEN_DISTRIBUTING_REMOVE_TO_HERE
 }
 
