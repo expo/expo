@@ -1,7 +1,7 @@
 {
   "name": "@expo/home",
   "version": "0.0.0",
-  "main": ".expo/AppEntry.js",
+  "main": "__generated__/AppEntry.js",
   "private": true,
   "description": "The Expo client app",
   "scripts": {
@@ -40,7 +40,7 @@
     "react-native": "^0.57.1",
     "react-native-deprecated-custom-components": "^0.1.0",
     "react-native-infinite-scroll-view": "^0.4.5",
-    "react-navigation": "^2.16.0",
+    "react-navigation": "^2.17.0",
     "react-navigation-material-bottom-tabs": "^0.3.0",
     "react-redux": "^5.0.1",
     "react-timer-mixin": "^0.13.3",
@@ -50,6 +50,7 @@
     "url": "^0.11.0"
   },
   "devDependencies": {
+    "@babel/plugin-transform-runtime": "^7.1.0",
     "expo-yarn-workspaces": "^1.0.0",
     "hashids": "^1.1.1",
     "jest-expo": "^30.0.0",
