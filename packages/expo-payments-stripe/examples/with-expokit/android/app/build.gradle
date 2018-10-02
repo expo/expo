@@ -20,7 +20,7 @@ android {
   buildToolsVersion '27.0.3'
 
   defaultConfig {
-    applicationId 'host.exp.exponent'
+    applicationId 'host.exp.exponent.payments.stripe'
     targetSdkVersion 26
     versionCode 1
     versionName '1.0.0'
