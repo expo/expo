@@ -68,8 +68,8 @@ public class LocalizationModule extends ExportedModule implements ModuleRegistry
         mEventEmitter = moduleRegistry.getModule(EventEmitter.class);
         mModuleRegistry = moduleRegistry;
 
-        mReceiver = new LocalesBroadcastReceiver();
-        mReceiver.setModule(this);
+        mReceiver = new LocalesBroadcastReceiver(this);
+        getApplicationContext().registerReceiver(mReceiver, new IntentFilter(Intent.ACTION_LOCALE_CHANGED));
     }
 
     @Override
@@ -77,9 +77,9 @@ public class LocalizationModule extends ExportedModule implements ModuleRegistry
         HashMap<String, Object> constants = new HashMap<>();
 
         Bundle bundle = getBundledConstants();
-        for (String key : bundle.keySet())
+        for (String key : bundle.keySet()) {
             constants.put(key, bundle.get(key));
-
+        }
         return constants;
     }
 
@@ -103,7 +103,9 @@ public class LocalizationModule extends ExportedModule implements ModuleRegistry
     private ArrayList<String> getISOCurrencyCodes() {
         ArrayList<String> locales = new ArrayList<>();
         final Set<Currency> availableCurrencies = getAvailableCurrencies();
-        for (Currency handle : availableCurrencies) locales.add(handle.getCurrencyCode());
+        for (Currency handle : availableCurrencies) {
+            locales.add(handle.getCurrencyCode());
+        }
         return locales;
     }
 
@@ -113,8 +115,9 @@ public class LocalizationModule extends ExportedModule implements ModuleRegistry
         Configuration configuration = getApplicationContext().getResources().getConfiguration();
         if (SDK_INT >= N) {
             LocaleList localeList = configuration.getLocales();
-            for (int i = 0; i < localeList.size(); i++)
+            for (int i = 0; i < localeList.size(); i++) {
                 locales.add(localeList.get(i));
+            }
         } else {
             locales.add(configuration.locale);
         }
@@ -162,7 +165,7 @@ class LocalesBroadcastReceiver extends BroadcastReceiver {
 
     private WeakReference<LocalizationModule> module;
 
-    public void setModule(LocalizationModule module) {
+    protected LocalesBroadcastReceiver(LocalizationModule module) {
         this.module = new WeakReference<>(module);
     }
 
@@ -172,6 +175,8 @@ class LocalesBroadcastReceiver extends BroadcastReceiver {
             LocalizationModule module = this.module.get();
             if (module != null) {
                 module.onLocaleUpdated();
+            } else {
+                context.unregisterReceiver(this);
             }
         }
     }
