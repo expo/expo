@@ -6,9 +6,12 @@
  */
 package com.facebook.react.modules.storage;
 
+import java.util.ArrayDeque;
 import java.util.HashSet;
+import java.util.concurrent.Executor;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
+import android.os.AsyncTask;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
@@ -20,6 +23,7 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.common.ModuleDataCleaner;
 import static com.facebook.react.modules.storage.ReactDatabaseSupplier.KEY_COLUMN;
@@ -39,8 +43,52 @@ public class AsyncStorageModule extends ReactContextBaseJavaModule implements Mo
 
     public boolean mShuttingDown = false;
 
+    // Adapted from https://android.googlesource.com/platform/frameworks/base.git/+/1488a3a19d4681a41fb45570c15e14d99db1cb66/core/java/android/os/AsyncTask.java#237
+    private class SerialExecutor implements Executor {
+
+        public final ArrayDeque<Runnable> mTasks = new ArrayDeque<Runnable>();
+
+        public Runnable mActive;
+
+        public final Executor executor;
+
+        SerialExecutor(Executor executor) {
+            this.executor = executor;
+        }
+
+        public synchronized void execute(final Runnable r) {
+            mTasks.offer(new Runnable() {
+
+                public void run() {
+                    try {
+                        r.run();
+                    } finally {
+                        scheduleNext();
+                    }
+                }
+            });
+            if (mActive == null) {
+                scheduleNext();
+            }
+        }
+
+        synchronized void scheduleNext() {
+            if ((mActive = mTasks.poll()) != null) {
+                executor.execute(mActive);
+            }
+        }
+    }
+
+    public final SerialExecutor executor;
+
     public AsyncStorageModule(ReactApplicationContext reactContext) {
+        this(reactContext, AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    @VisibleForTesting
+    AsyncStorageModule(ReactApplicationContext reactContext, Executor executor) {
         super(reactContext);
+        this.executor = new SerialExecutor(executor);
         mReactDatabaseSupplier = ReactDatabaseSupplier.getInstance(reactContext);
     }
 
@@ -126,7 +174,7 @@ public class AsyncStorageModule extends ReactContextBaseJavaModule implements Mo
                 }
                 callback.invoke(null, data);
             }
-        }.execute();
+        }.executeOnExecutor(executor);
     }
 
     /**
@@ -191,7 +239,7 @@ public class AsyncStorageModule extends ReactContextBaseJavaModule implements Mo
                     callback.invoke();
                 }
             }
-        }.execute();
+        }.executeOnExecutor(executor);
     }
 
     /**
@@ -238,7 +286,7 @@ public class AsyncStorageModule extends ReactContextBaseJavaModule implements Mo
                     callback.invoke();
                 }
             }
-        }.execute();
+        }.executeOnExecutor(executor);
     }
 
     /**
@@ -296,7 +344,7 @@ public class AsyncStorageModule extends ReactContextBaseJavaModule implements Mo
                     callback.invoke();
                 }
             }
-        }.execute();
+        }.executeOnExecutor(executor);
     }
 
     /**
@@ -320,7 +368,7 @@ public class AsyncStorageModule extends ReactContextBaseJavaModule implements Mo
                     callback.invoke(AsyncStorageErrorUtil.getError(null, e.getMessage()));
                 }
             }
-        }.execute();
+        }.executeOnExecutor(executor);
     }
 
     /**
@@ -354,7 +402,7 @@ public class AsyncStorageModule extends ReactContextBaseJavaModule implements Mo
                 }
                 callback.invoke(null, data);
             }
-        }.execute();
+        }.executeOnExecutor(executor);
     }
 
     /**
