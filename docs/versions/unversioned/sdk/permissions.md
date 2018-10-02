@@ -149,9 +149,6 @@ The permission type for accessing SMS storage.
 
 The permissions type for changing brighness of the screen
 
-> **Note:** Android would reject from `Permissions.askAsync` if this permission type is not being asked individually.
-On Android ask for this permission individually.
-
 ## Android: permissions equivalents inside `app.json`
 
 If you specified `android.permissions` inside your `app.json` ([read more about configuration](../workflow/configuration.html#android))  you have to use values corresponding to their `Expo.Permissions` equivalents.
