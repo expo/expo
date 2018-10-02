@@ -33,6 +33,7 @@ Please use Node 8+ and npm 4. We recommend installing Node using [nvm](https://g
 
 #### Android
 - Make sure you have Android Studio 3 and the [Android NDK](https://facebook.github.io/react-native/docs/building-from-source.html#download-links-for-android-ndk) version `r10e` installed.
+- Run `./generate-dynamic-macros-android.sh` in the `tools-public` directory.
 - Build and install Android with `cd android; ./run.sh; cd ..`. It might fail the first time. If so just run `./run.sh` again.
 
 If you are running on an phone with Android 5 you might have to use `./run.sh installDev19Debug`. There is a bug running multidex applications in debug mode on Android 5 devices: https://code.google.com/p/android/issues/detail?id=79826.
