@@ -151,7 +151,13 @@ Settings exposed by [`BarCodeScanner`](bar-code-scanner.md) module. Supported se
 
 - **useCamera2Api** (_boolean_)
 
-Android only. Whether to use Android's Camera2 API. See `Note` at the top of this page.
+**Android only**. Whether to use Android's Camera2 API. See `Note` at the top of this page.
+
+* **videoStabilizationMode** (_Camera.Constants.VideoStabilization_)
+
+**iOS only**. The video stabilization mode used for a video recording. Use one of `Camera.Constants.VideoStabilization.{off, standard, cinematic, auto}`.
+
+You can read more about each stabilization type [here](https://developer.apple.com/documentation/avfoundation/avcapturevideostabilizationmode).
 
 ## Methods
 
