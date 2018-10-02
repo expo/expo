@@ -6,11 +6,6 @@
 
 EX_EXPORT_MODULE(ExpoLocalization)
 
-+ (BOOL)requiresMainQueueSetup
-{
-  return NO;
-}
-
 - (NSMutableArray *)ensureLocaleTags:(NSArray *)locales
 {
     NSMutableArray *sanitizedLocales = [NSMutableArray array];

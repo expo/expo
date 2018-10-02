@@ -45,12 +45,19 @@ public class LocalizationModule extends ExportedModule implements ModuleRegistry
     }
 
     private final Context getApplicationContext() {
-        return getCurrentActivity().getApplicationContext();
+        Activity activity = getCurrentActivity();
+        if (activity != null) {
+            return activity.getApplicationContext();
+        }
+        return null;
     }
 
     private Activity getCurrentActivity() {
-        ActivityProvider activityProvider = mModuleRegistry.getModule(ActivityProvider.class);
-        return activityProvider.getCurrentActivity();
+        if (mModuleRegistry != null) {
+            ActivityProvider activityProvider = mModuleRegistry.getModule(ActivityProvider.class);
+            return activityProvider.getCurrentActivity();
+        }
+        return null;
     }
 
     @Override
@@ -60,20 +67,19 @@ public class LocalizationModule extends ExportedModule implements ModuleRegistry
 
     @Override
     public void setModuleRegistry(ModuleRegistry moduleRegistry) {
-
-        mModuleRegistry = moduleRegistry;
-        mEventEmitter = null;
-
-        if (mReceiver != null) {
+        if (mReceiver != null && mModuleRegistry != null) {
             getApplicationContext().unregisterReceiver(mReceiver);
             mReceiver = null;
         }
 
-        mEventEmitter = moduleRegistry.getModule(EventEmitter.class);
         mModuleRegistry = moduleRegistry;
+        mEventEmitter = null;
 
-        mReceiver = new LocalesBroadcastReceiver(this);
-        getApplicationContext().registerReceiver(mReceiver, new IntentFilter(Intent.ACTION_LOCALE_CHANGED));
+        if (moduleRegistry != null) {
+            mEventEmitter = moduleRegistry.getModule(EventEmitter.class);
+            mReceiver = new LocalesBroadcastReceiver(this);
+            getApplicationContext().registerReceiver(mReceiver, new IntentFilter(Intent.ACTION_LOCALE_CHANGED));
+        }
     }
 
     @Override
