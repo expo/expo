@@ -1,4 +1,4 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) 2004-present, Facebook, Inc.
 package com.facebook.react.modules.systeminfo;
 
 import java.util.Locale;
