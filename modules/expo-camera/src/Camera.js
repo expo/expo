@@ -58,6 +58,7 @@ type PropsType = ViewPropTypes & {
   whiteBalance?: number | string,
   autoFocus?: string | boolean | number,
   pictureSize?: string,
+  videoStabilizationMode?: number,
   onMountError?: MountErrorNativeEventType => void,
   barCodeScannerSettings?: {},
   onBarCodeScanned?: ({ type: string, data: string }) => void,
@@ -80,6 +81,8 @@ export default class Camera extends React.Component<PropsType> {
     AutoFocus: CameraManager.AutoFocus,
     WhiteBalance: CameraManager.WhiteBalance,
     VideoQuality: CameraManager.VideoQuality,
+    VideoStabilization: CameraManager.VideoStabilization || {}
+
   };
 
   // Values under keys from this object will be transformed to native options
@@ -105,6 +108,7 @@ export default class Camera extends React.Component<PropsType> {
     faceDetectorSettings: PropTypes.object,
     type: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     flashMode: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    videoStabilizationMode: PropTypes.number,
     whiteBalance: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     autoFocus: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.bool]),
   };

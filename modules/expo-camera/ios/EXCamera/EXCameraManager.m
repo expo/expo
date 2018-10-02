@@ -62,6 +62,12 @@ EX_EXPORT_MODULE(ExponentCameraManager);
                @"480p": @(EXCameraVideo4x3),
                @"4:3": @(EXCameraVideo4x3),
                },
+           @"VideoStabilization": @{
+               @"off": @(EXCameraVideoStabilizationModeOff),
+               @"standard": @(EXCameraVideoStabilizationModeStandard),
+               @"cinematic": @(EXCameraVideoStabilizationModeCinematic),
+               @"auto": @(EXCameraAVCaptureVideoStabilizationModeAuto)
+               },
            };
 }
 
