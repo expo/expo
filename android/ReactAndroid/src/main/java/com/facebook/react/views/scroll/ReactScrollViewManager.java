@@ -9,9 +9,13 @@ package com.facebook.react.views.scroll;
 
 import android.annotation.TargetApi;
 import android.graphics.Color;
+import android.support.v4.view.ViewCompat;
+import android.util.DisplayMetrics;
+
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
+import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
 import com.facebook.react.uimanager.Spacing;
@@ -21,13 +25,16 @@ import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import com.facebook.yoga.YogaConstants;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
 
 /**
  * View manager for {@link ReactScrollView} components.
  *
- * <p>Note that {@link ReactScrollView} and {@link ReactHorizontalScrollView} are exposed to JS
+ * <p>Note that {@link ReactScrollView} and {@link ReactScrollView} are exposed to JS
  * as a single ScrollView component, configured via the {@code horizontal} boolean property.
  */
 @TargetApi(11)
@@ -72,6 +79,28 @@ public class ReactScrollViewManager
     view.setVerticalScrollBarEnabled(value);
   }
 
+  @ReactProp(name = "decelerationRate")
+  public void setDecelerationRate(ReactScrollView view, float decelerationRate) {
+    view.setDecelerationRate(decelerationRate);
+  }
+
+  @ReactProp(name = "snapToInterval")
+  public void setSnapToInterval(ReactScrollView view, float snapToInterval) {
+    // snapToInterval needs to be exposed as a float because of the Javascript interface.
+    DisplayMetrics screenDisplayMetrics = DisplayMetricsHolder.getScreenDisplayMetrics();
+    view.setSnapInterval((int) (snapToInterval * screenDisplayMetrics.density));
+  }
+
+  @ReactProp(name = "snapToOffsets")
+  public void setSnapToOffsets(ReactScrollView view, @Nullable ReadableArray snapToOffsets) {
+    DisplayMetrics screenDisplayMetrics = DisplayMetricsHolder.getScreenDisplayMetrics();
+    List<Integer> offsets = new ArrayList<Integer>();
+    for (int i = 0; i < snapToOffsets.size(); i++) {
+      offsets.add((int) (snapToOffsets.getDouble(i) * screenDisplayMetrics.density));
+    }
+    view.setSnapOffsets(offsets);
+  }
+
   @ReactProp(name = ReactClippingViewGroupHelper.PROP_REMOVE_CLIPPED_SUBVIEWS)
   public void setRemoveClippedSubviews(ReactScrollView view, boolean removeClippedSubviews) {
     view.setRemoveClippedSubviews(removeClippedSubviews);
@@ -102,6 +131,11 @@ public class ReactScrollViewManager
     view.setScrollPerfTag(scrollPerfTag);
   }
 
+  @ReactProp(name = "pagingEnabled")
+  public void setPagingEnabled(ReactScrollView view, boolean pagingEnabled) {
+    view.setPagingEnabled(pagingEnabled);
+  }
+
   /**
    * When set, fills the rest of the scrollview with a color to avoid setting a background and
    * creating unnecessary overdraw.
@@ -119,6 +153,11 @@ public class ReactScrollViewManager
   @ReactProp(name = "overScrollMode")
   public void setOverScrollMode(ReactScrollView view, String value) {
     view.setOverScrollMode(ReactScrollViewHelper.parseOverScrollMode(value));
+  }
+
+  @ReactProp(name = "nestedScrollEnabled")
+  public void setNestedScrollEnabled(ReactScrollView view, boolean value) {
+    ViewCompat.setNestedScrollingEnabled(view, value);
   }
 
   @Override

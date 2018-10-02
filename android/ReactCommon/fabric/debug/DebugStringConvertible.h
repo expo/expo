@@ -8,6 +8,7 @@
 #pragma once
 
 #include <string>
+#include <memory>
 #include <vector>
 
 namespace facebook {
@@ -16,7 +17,12 @@ namespace react {
 class DebugStringConvertible;
 
 using SharedDebugStringConvertible = std::shared_ptr<const DebugStringConvertible>;
-using SharedDebugStringConvertibleList = std::vector<const SharedDebugStringConvertible>;
+using SharedDebugStringConvertibleList = std::vector<SharedDebugStringConvertible>;
+
+struct DebugStringConvertibleOptions {
+  bool format {true};
+  int maximumDepth {INT_MAX};
+};
 
 // Abstract class describes conformance to DebugStringConvertible concept
 // and implements basic recursive debug string assembly algorithm.
@@ -26,6 +32,8 @@ using SharedDebugStringConvertibleList = std::vector<const SharedDebugStringConv
 class DebugStringConvertible {
 
 public:
+  virtual ~DebugStringConvertible() = default;
+
   // Returns a name of the object.
   // Default implementation returns "Node".
   virtual std::string getDebugName() const;
@@ -47,12 +55,12 @@ public:
   // Returns a string which represents the object in a human-readable way.
   // Default implementation returns a description of the subtree
   // rooted at this node, represented in XML-like format.
-  virtual std::string getDebugDescription(int level = 0) const;
+  virtual std::string getDebugDescription(DebugStringConvertibleOptions options = {}, int depth = 0) const;
 
   // Do same as `getDebugDescription` but return only *children* and
   // *properties* parts (which are used in `getDebugDescription`).
-  virtual std::string getDebugPropsDescription(int level = 0) const;
-  virtual std::string getDebugChildrenDescription(int level = 0) const;
+  virtual std::string getDebugPropsDescription(DebugStringConvertibleOptions options = {}, int depth = 0) const;
+  virtual std::string getDebugChildrenDescription(DebugStringConvertibleOptions options = {}, int depth = 0) const;
 };
 
 } // namespace react
