@@ -2,7 +2,7 @@
 import { Platform } from 'react-native';
 import { NativeModulesProxy } from 'expo-core';
 
-const { ExponentPermissions: Permissions } = NativeModulesProxy;
+const { ExpoPermissions: Permissions } = NativeModulesProxy;
 
 type PermissionType =
   | 'audioRecording'

@@ -26,7 +26,7 @@ NSString * const EXPermissionExpiresNever = @"never";
 
 @implementation EXPermissions
 
-EX_EXPORT_MODULE(ExponentPermissions);
+EX_EXPORT_MODULE(ExpoPermissions);
 
 + (const NSArray<Protocol *> *)exportedInterfaces
 {

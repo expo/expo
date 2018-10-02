@@ -18,14 +18,17 @@ import java.util.HashSet;
 import java.util.Set;
 
 import expo.core.ExportedModule;
+import expo.core.interfaces.ActivityProvider;
 import expo.core.interfaces.ExpoMethod;
 import expo.core.ModuleRegistry;
+import expo.core.interfaces.LifecycleEventListener;
 import expo.core.interfaces.ModuleRegistryConsumer;
 import expo.core.Promise;
+import expo.core.interfaces.services.UIManager;
 import expo.interfaces.permissions.Permissions;
 import expo.interfaces.permissions.PermissionsListener;
 
-public class PermissionsModule extends ExportedModule implements ModuleRegistryConsumer {
+public class PermissionsModule extends ExportedModule implements ModuleRegistryConsumer, LifecycleEventListener {
   private static final String EXPIRES_KEY = "expires";
   private static final String STATUS_KEY = "status";
   private static final String GRANTED_VALUE = "granted";
@@ -36,6 +39,13 @@ public class PermissionsModule extends ExportedModule implements ModuleRegistryC
   private static String PERMISSION_EXPIRES_NEVER = "never";
   private PermissionsRequester mPermissionsRequester;
   private Permissions mPermissions;
+  private ActivityProvider mActivityProvider;
+
+  // state holders for asking for writing permissions
+  private boolean mWritingPermissionBeingAsked = false; // change this directly before calling corresponding startActivity
+  private Promise mAskAsyncPromise = null;
+  private ArrayList<String> mAskAsyncRequestedPermissionsTypes = null;
+  private ArrayList<String> mAskAsyncPermissionsTypesToBeAsked = null;
 
   public PermissionsModule(Context context) {
     super(context);
@@ -45,11 +55,13 @@ public class PermissionsModule extends ExportedModule implements ModuleRegistryC
   public void setModuleRegistry(ModuleRegistry moduleRegistry) {
     mPermissionsRequester = new PermissionsRequester(moduleRegistry);
     mPermissions = moduleRegistry.getModule(Permissions.class);
+    mActivityProvider = moduleRegistry.getModule(ActivityProvider.class);
+    moduleRegistry.getModule(UIManager.class).registerLifecycleEventListener(this);
   }
 
   @Override
   public String getName() {
-    return "ExponentPermissions";
+    return "ExpoPermissions";
   }
 
   @ExpoMethod
@@ -95,6 +107,9 @@ public class PermissionsModule extends ExportedModule implements ModuleRegistryC
         case "reminders":
           // we do not have to ask for it
           break;
+        case "systemBrightness":
+          // here we do nothing but later we're checking whether to launch WritingSettingsActivity
+          break;
         case "location":
           permissionsTypesToBeAsked.add(Manifest.permission.ACCESS_FINE_LOCATION);
           permissionsTypesToBeAsked.add(Manifest.permission.ACCESS_COARSE_LOCATION);
@@ -107,18 +122,6 @@ public class PermissionsModule extends ExportedModule implements ModuleRegistryC
           break;
         case "audioRecording":
           permissionsTypesToBeAsked.add(Manifest.permission.RECORD_AUDIO);
-          break;
-        case "systemBrightness":
-          if (requestedPermissionsTypes.size() != 1) {
-            promise.reject(ERROR_TAG + "_INVALID", "Asking for Permissions.SYSTEM_BRIGHTNESS should only be done individually on Android!");
-            return;
-          }
-          try {
-            askForWriteSettingsPermission();
-          } catch (Exception e) {
-            promise.reject(ERROR_TAG + "_UNSUPPORTED", String.format("Error launching write settings activity: %s", e.getMessage()));
-            return;
-          }
           break;
         case "cameraRoll":
           permissionsTypesToBeAsked.add(Manifest.permission.READ_EXTERNAL_STORAGE);
@@ -137,13 +140,31 @@ public class PermissionsModule extends ExportedModule implements ModuleRegistryC
       }
     }
 
+    // check whether to launch WritingSettingsActivity
+    if (requestedPermissionsTypesSet.contains("systemBrightness") && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      if (mAskAsyncPromise != null) {
+        promise.reject(ERROR_TAG + "_ASKING_IN_PROGRESS", "Different asking for permissions in progress. Await the old request and then try again.");
+        return;
+      }
+      mAskAsyncPromise = promise;
+      mAskAsyncRequestedPermissionsTypes = requestedPermissionsTypes;
+      mAskAsyncPermissionsTypesToBeAsked = permissionsTypesToBeAsked;
+      askForWriteSettingsPermissionFirst();
+      return;
+    }
+
+    askForPermissions(requestedPermissionsTypes, permissionsTypesToBeAsked, promise);
+  }
+
+  private void askForPermissions(final ArrayList<String> requestedPermissionsTypes,
+                                 final ArrayList<String> permissionsTypesToBeAsked,
+                                 final Promise promise) {
     final boolean askedPermissions = mPermissionsRequester.askForPermissions(
         permissionsTypesToBeAsked.toArray(new String[permissionsTypesToBeAsked.size()]), // permissionsTypesToBeAsked handles empty array
         new PermissionsListener() {
           @Override
           public void onPermissionResult(String[] permissions, int[] grantResults) {
-            // read actual permissions results
-            promise.resolve(getPermissions(requestedPermissionsTypes));
+            promise.resolve(getPermissions(requestedPermissionsTypes)); // read all requested permissions statuses
           }
         });
 
@@ -230,17 +251,9 @@ public class PermissionsModule extends ExportedModule implements ModuleRegistryC
     response.putString(EXPIRES_KEY, PERMISSION_EXPIRES_NEVER);
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      try {
-        // TODO: Android's is throwing here:
-        // Xiaomi Redmi 4A: Android 7.1.2
-        // Method threw 'java.lang.AbstractMethodError' exception.
-        // java.lang.AbstractMethodError: abstract method "java.lang.String android.content.Context.getOpPackageName()"
-        if (Settings.System.canWrite(getContext())) {
-          response.putString(STATUS_KEY, GRANTED_VALUE);
-        } else {
-          response.putString(STATUS_KEY, DENIED_VALUE);
-        }
-      } catch (AbstractMethodError error) {
+     if (Settings.System.canWrite(mActivityProvider.getCurrentActivity().getApplicationContext())) {
+        response.putString(STATUS_KEY, GRANTED_VALUE);
+      } else {
         response.putString(STATUS_KEY, DENIED_VALUE);
       }
     } else {
@@ -344,19 +357,52 @@ public class PermissionsModule extends ExportedModule implements ModuleRegistryC
     }
   }
 
+  /**
+   * Asking for {@link android.provider.Settings#ACTION_MANAGE_WRITE_SETTINGS} via separate activity
+   * WARNING: has to be asked first among all permissions being asked in request
+   * Scenario that forces this order:
+   *  1. user asks for "systemBrightness" (actual {@link android.provider.Settings#ACTION_MANAGE_WRITE_SETTINGS}) and for some other permission (e.g. {@link android.Manifest.permission#CAMERA})
+   *  2. first goes ACTION_MANAGE_WRITE_SETTINGS that moves app into background and launches system-specific fullscreen activity
+   *  3. upon user action system resumes app and {@link this#onHostResume} is being called for the first time and logic for other permission is invoked
+   *  4. other permission invokes other system-specific activity that is visible as dialog what moves app again into background
+   *  5. upon user action app is restored and {@link this#onHostResume} is being called again, but no further action is invoked and promise is resolved
+   */
   @TargetApi(Build.VERSION_CODES.M)
-  private void askForWriteSettingsPermission() throws Exception {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-      return;
-    }
-
+  private void askForWriteSettingsPermissionFirst() {
     // Launch systems dialog for write settings
     Intent intent = new Intent(android.provider.Settings.ACTION_MANAGE_WRITE_SETTINGS);
     intent.setData(Uri.parse("package:" + getContext().getPackageName()));
     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    mWritingPermissionBeingAsked = true;
     getContext().startActivity(intent);
+  }
 
-    // TODO: we can monitor coming back to application using onResume lifecycle function like we do in other Intent driven modules (like SMS)
-    // https://stackoverflow.com/questions/44389632/proper-way-to-handle-action-manage-write-settings-activity
+  @Override
+  public void onHostResume() {
+    if (!mWritingPermissionBeingAsked) {
+      return;
+    }
+    mWritingPermissionBeingAsked = false;
+
+    // cleanup
+    Promise askAsyncPromise = mAskAsyncPromise;
+    ArrayList<String> askAsyncRequestedPermissionsTypes = mAskAsyncRequestedPermissionsTypes;
+    ArrayList<String> askAsyncPermissionsTypesToBeAsked = mAskAsyncPermissionsTypesToBeAsked;
+    mAskAsyncPromise = null;
+    mAskAsyncRequestedPermissionsTypes = null;
+    mAskAsyncPermissionsTypesToBeAsked = null;
+
+    // invoke actual asking for permissions
+    askForPermissions(askAsyncRequestedPermissionsTypes, askAsyncPermissionsTypesToBeAsked, askAsyncPromise);
+  }
+
+  @Override
+  public void onHostPause() {
+    // do nothing
+  }
+
+  @Override
+  public void onHostDestroy() {
+    // do nothing
   }
 }
