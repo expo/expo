@@ -1,5 +1,7 @@
 import { NativeModules } from 'react-native';
 
+const { ExponentScreenOrientation } = NativeModules;
+
 export enum Orientation {
   ALL = 'ALL',
   ALL_BUT_UPSIDE_DOWN = 'ALL_BUT_UPSIDE_DOWN',
@@ -12,5 +14,14 @@ export enum Orientation {
 }
 
 export function allow(orientation: Orientation): void {
-  NativeModules.ExponentScreenOrientation.allow(orientation);
+  console.warn("'ScreenOrientation.allow' is deprecated in favour of 'ScreenOrientation.allowAsync'");
+  allowAsync(orientation);
+}
+
+export function allowAsync(orientation: Orientation): Promise<void> {
+  return ExponentScreenOrientation.allowAsync(orientation);
+}
+
+export function doesSupportAsync(orientation: Orientation): Promise<Boolean> {
+  return ExponentScreenOrientation.doesSupportAsync(orientation);
 }
