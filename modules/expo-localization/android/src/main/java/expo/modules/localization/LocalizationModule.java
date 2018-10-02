@@ -60,6 +60,10 @@ public class LocalizationModule extends ExportedModule implements ModuleRegistry
 
     @Override
     public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+
+        mModuleRegistry = moduleRegistry;
+        mEventEmitter = null;
+
         if (mReceiver != null) {
             getApplicationContext().unregisterReceiver(mReceiver);
             mReceiver = null;
