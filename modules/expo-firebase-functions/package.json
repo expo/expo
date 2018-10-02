@@ -20,9 +20,9 @@
   "readmeFilename": "README.md",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/expo/expo-firebase-functions.git"
+    "url": "git+https://github.com/expo/expo.git"
   },
-  "bugs": "https://github.com/expo/expo-firebase-functions/issues",
+  "bugs": "https://github.com/expo/expo/issues",
   "dependencies": {
     "expo-core": "^1.0.0",
     "expo-firebase-app": "^1.0.0-rc.1"
