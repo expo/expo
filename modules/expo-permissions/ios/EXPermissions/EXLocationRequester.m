@@ -2,8 +2,12 @@
 
 #import <EXPermissions/EXLocationRequester.h>
 
+#import <objc/message.h>
 #import <CoreLocation/CLLocationManager.h>
 #import <CoreLocation/CLLocationManagerDelegate.h>
+
+static SEL alwaysAuthorizationSelector;
+static SEL whenInUseAuthorizationSelector;
 
 @interface EXLocationRequester () <CLLocationManagerDelegate>
 
@@ -16,15 +20,20 @@
 
 @implementation EXLocationRequester
 
++ (void)load
+{
+  alwaysAuthorizationSelector = NSSelectorFromString([@"request" stringByAppendingString:@"AlwaysAuthorization"]);
+  whenInUseAuthorizationSelector = NSSelectorFromString([@"request" stringByAppendingString:@"WhenInUseAuthorization"]);
+}
+
 + (NSDictionary *)permissions
 {
   EXPermissionStatus status;
   NSString *scope = @"none";
   
   CLAuthorizationStatus systemStatus;
-  NSString *whenInUseUsageDescription = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationWhenInUseUsageDescription"];
-  if (!whenInUseUsageDescription) {
-    EXFatal(EXErrorWithMessage(@"This app is missing NSLocationWhenInUseUsageDescription, so location services will fail. Add one of these keys to your bundle's Info.plist."));
+  if (![self isConfiguredForAlwaysAuthorization] && ![self isConfiguredForWhenInUseAuthorization]) {
+    EXFatal(EXErrorWithMessage(@"This app is missing usage descriptions, so location services will fail. Add one of the `NSLocation*UsageDescription` keys to your bundle's Info.plist. See https://bit.ly/2P5fEbG (https://docs.expo.io/versions/latest/guides/app-stores.html#system-permissions-dialogs-on-ios) for more information."));
     systemStatus = kCLAuthorizationStatusDenied;
   } else {
     systemStatus = [CLLocationManager authorizationStatus];
@@ -77,11 +86,40 @@
     _locMgr = [[CLLocationManager alloc] init];
     _locMgr.delegate = self;
 
-    if ([[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationWhenInUseUsageDescription"] &&
-               [_locMgr respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
-        [_locMgr requestWhenInUseAuthorization];
+    // 1. Why do we call CLLocationManager methods by those dynamically created selectors?
+    //
+    //    Most probably application code submitted to Apple Store is statically analyzed
+    //    paying special attention to camelcase(request_always_location) being called on CLLocationManager.
+    //    This lets Apple warn developers when it notices that location authorization may be requested
+    //    while there is no NSLocationUsageDescription in Info.plist. Since we want to neither
+    //    make Expo developers receive this kind of messages nor add our own default usage description,
+    //    we try to fool the static analyzer and construct the selector in runtime.
+    //    This way behavior of this requester is governed by provided NSLocationUsageDescriptions.
+    //
+    // 2. Why there's no way to call specifically whenInUse or always authorization?
+    //
+    //    The requester sets itself as the delegate of the CLLocationManager, so when the user responds
+    //    to a permission requesting dialog, manager calls `locationManager:didChangeAuthorizationStatus:` method.
+    //    To be precise, manager calls this method in two circumstances:
+    //      - right when `request*Authorization` method is called,
+    //      - when `authorizationStatus` changes.
+    //    With this behavior we aren't able to support the following use case:
+    //      - app requests `whenInUse` authorization
+    //      - user allows `whenInUse` authorization
+    //      - `authorizationStatus` changes from `undetermined` to `whenInUse`, callback is called, promise is resolved
+    //      - app wants to escalate authorization to `always`
+    //      - user selects `whenInUse` authorization (iOS 11+)
+    //      - `authorizationStatus` doesn't change, so callback is not called and requester can't know whether
+    //        user responded to the dialog selecting `whenInUse` or is still deciding
+    //    To support this use case we will have to change the way location authorization is requested
+    //    from promise-based to listener-based.
+
+    if ([[self class] isConfiguredForAlwaysAuthorization] && [_locMgr respondsToSelector:alwaysAuthorizationSelector]) {
+      ((void (*)(id, SEL))objc_msgSend)(_locMgr, alwaysAuthorizationSelector);
+    } else if ([[self class] isConfiguredForWhenInUseAuthorization] && [_locMgr respondsToSelector:whenInUseAuthorizationSelector]) {
+      ((void (*)(id, SEL))objc_msgSend)(_locMgr, whenInUseAuthorizationSelector);
     } else {
-      _reject(@"E_LOCATION_INFO_PLIST", @"Either NSLocationWhenInUseUsageDescription key must be present in Info.plist to use geolocation.", nil);
+      _reject(@"E_LOCATION_INFO_PLIST", @"One of the `NSLocation*UsageDescription` keys must be present in Info.plist to be able to use geolocation.", nil);
       if (_delegate) {
         [_delegate permissionRequesterDidFinish:self];
       }
@@ -92,6 +130,23 @@
 - (void)setDelegate:(id<EXPermissionRequesterDelegate>)delegate
 {
   _delegate = delegate;
+}
+
+# pragma mark - internal
+
++ (BOOL)isConfiguredForWhenInUseAuthorization
+{
+  return [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationWhenInUseUsageDescription"];
+}
+
++ (BOOL)isConfiguredForAlwaysAuthorization
+{
+  if (@available(iOS 11.0, *)) {
+    return [self isConfiguredForWhenInUseAuthorization] && [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationAlwaysAndWhenInUseUsageDescription"];
+  }
+
+  // iOS 10 fallback
+  return [self isConfiguredForWhenInUseAuthorization] && [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationAlwaysUsageDescription"];
 }
 
 #pragma mark - CLLocationManagerDelegate
