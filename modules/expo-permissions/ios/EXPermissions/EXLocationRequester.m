@@ -33,7 +33,7 @@ static SEL whenInUseAuthorizationSelector;
   
   CLAuthorizationStatus systemStatus;
   if (![self isConfiguredForAlwaysAuthorization] && ![self isConfiguredForWhenInUseAuthorization]) {
-    EXFatal(EXErrorWithMessage(@"This app is missing usage descriptions, so location services will fail. Add one of the `NSLocation*UsageDescription` keys to your bundle's Info.plist."));
+    EXFatal(EXErrorWithMessage(@"This app is missing usage descriptions, so location services will fail. Add one of the `NSLocation*UsageDescription` keys to your bundle's Info.plist. See https://bit.ly/2P5fEbG (https://docs.expo.io/versions/latest/guides/app-stores.html#system-permissions-dialogs-on-ios) for more information."));
     systemStatus = kCLAuthorizationStatusDenied;
   } else {
     systemStatus = [CLLocationManager authorizationStatus];
