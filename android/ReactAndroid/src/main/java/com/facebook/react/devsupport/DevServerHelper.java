@@ -29,6 +29,7 @@ import com.facebook.react.packagerconnection.RequestOnlyHandler;
 import com.facebook.react.packagerconnection.Responder;
 import java.io.File;
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Locale;
