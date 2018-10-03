@@ -11,6 +11,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.ByteBuffer;
+import java.nio.channels.ReadableByteChannel;
 import java.util.LinkedHashMap;
 import javax.annotation.Nullable;
 
@@ -184,7 +186,7 @@ public abstract class BundleDeltaClient {
     protected Pair<Boolean, NativeDeltaClient> processDelta(
         BufferedSource body,
         File outputFile) throws IOException {
-      nativeClient.processDelta(body);
+      nativeClient.processDelta(new ReadableBufferedSource(body));
       return Pair.create(Boolean.FALSE, nativeClient);
     }
 
@@ -192,6 +194,37 @@ public abstract class BundleDeltaClient {
     public void reset() {
       super.reset();
       nativeClient.reset();
+    }
+
+    private static class ReadableBufferedSource implements ReadableByteChannel {
+      private BufferedSource mBufferedSource;
+
+      ReadableBufferedSource(BufferedSource bufferedSource) {
+        mBufferedSource = bufferedSource;
+      }
+
+      @Override
+      // https://github.com/square/okio/blob/6d6b5158141cfd9753dcc417a90c55a7d5b3651c/okio/jvm/src/main/java/okio/RealBufferedSource.kt#L146-L153
+      public int read(ByteBuffer byteBuffer) throws IOException {
+        if (mBufferedSource.buffer().size() == 0L) {
+          // https://github.com/square/okio/blob/6b74d43d3fd891aaabbc9cab6b120f782aee91c9/okio/src/main/kotlin/okio/Segment.kt#L169
+          long read = mBufferedSource.read(mBufferedSource.buffer(), 8192);
+          if (read == -1L) return -1;
+        }
+
+        return mBufferedSource.buffer().read(byteBuffer.array());
+      }
+
+      @Override
+      public boolean isOpen() {
+        // ??
+        return false;
+      }
+
+      @Override
+      public void close() throws IOException {
+        mBufferedSource.close();
+      }
     }
   }
 }
