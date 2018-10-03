@@ -42,20 +42,20 @@ commands:
           working_directory: << parameters.dir >>
           command: yarn lint --max-warnings 0
 
-
-anchors:
-  - &node_job
-    working_directory: ~/expo
+executors:
+  js:
     docker:
       - image: circleci/node:8
-
-  - &default_mac
-    working_directory: /Users/distiller/project
+    resource_class: small
+    working_directory: ~/expo
+    environment:
+      YARN_CACHE_FOLDER: ~/.cache/yarn
+  mac:
     macos: # https://circleci.com/docs/2.0/testing-ios/#supported-xcode-versions
       xcode: "10.0.0"
-
-  - &default_env_vars
-    YARN_CACHE_FOLDER: ~/.cache/yarn
+    working_directory: /Users/distiller/project
+    environment:
+      YARN_CACHE_FOLDER: ~/.cache/yarn
 
 workflows:
   version: 2
@@ -85,9 +85,7 @@ workflows:
 
 jobs:
   expo_sdk:
-    <<: *node_job
-    environment:
-      <<: *default_env_vars
+    executor: js
     steps:
       - checkout
       - set_up_environment
@@ -99,9 +97,7 @@ jobs:
           dir: ~/expo/packages/expo
 
   babel_preset:
-    <<: *node_job
-    environment:
-      <<: *default_env_vars
+    executor: js
     steps:
       - checkout
       - set_up_environment
@@ -114,9 +110,7 @@ jobs:
           dir: ~/expo/packages/babel-preset-expo
 
   home:
-    <<: *node_job
-    environment:
-      <<: *default_env_vars
+    executor: js
     steps:
       - checkout
       - set_up_environment
@@ -127,9 +121,7 @@ jobs:
           dir: ~/expo/home
 
   client_ios:
-    <<: *default_mac
-    environment:
-      <<: *default_env_vars
+    executor: mac
     steps:
       - checkout
       - set_up_environment
