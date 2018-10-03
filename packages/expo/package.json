@@ -73,7 +73,7 @@
   },
   "homepage": "https://github.com/expo/expo-sdk",
   "dependencies": {
-    "@expo/vector-icons": "^6.3.1",
+    "@expo/vector-icons": "^8.0.0",
     "@expo/websql": "^1.0.1",
     "@types/fbemitter": "^2.0.32",
     "@types/invariant": "^2.2.29",
