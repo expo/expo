@@ -14,6 +14,40 @@ const fr = {
 export const name = 'Localization';
 
 export function test(t) {
+  t.describe(`Localization methods`, () => {
+    t.it('expect async to return locale', async () => {
+      function validateString(result) {
+        t.expect(result).toBeDefined();
+        t.expect(typeof result).toBe('string');
+        t.expect(result.length > 0).toBe(true);
+      }
+
+      function validateStringArray(result) {
+        t.expect(result).toBeDefined();
+        t.expect(Array.isArray(result)).toBe(true);
+        t.expect(result.length > 0).toBe(true);
+      }
+
+      const {
+        locale,
+        locales,
+        timezone,
+        isoCurrencyCodes,
+        country,
+        isRTL,
+      } = await Localization.getLocalizationAsync();
+
+      validateString(locale);
+      validateString(timezone);
+      validateString(country);
+
+      validateStringArray(isoCurrencyCodes);
+      validateStringArray(locales);
+      t.expect(locales[0]).toBe(Localization.locale);
+      t.expect(typeof isRTL).toBe('boolean');
+    });
+  });
+
   t.describe(`Localization defines constants`, () => {
     t.it('Gets the current device country', async () => {
       const result = Localization.country;
@@ -60,23 +94,6 @@ export function test(t) {
       const result = Localization.isRTL;
       t.expect(result).toBeDefined();
       t.expect(result).toBe(false);
-    });
-  });
-
-  t.describe(`Localization has listeners`, () => {
-    t.it('Can use callbacks', async () => {
-      function isFunction(functionToCheck) {
-        return functionToCheck && {}.toString.call(functionToCheck) === '[object Function]';
-      }
-
-      t.expect(isFunction(Localization.addListener)).toBe(true);
-      t.expect(isFunction(Localization.removeSubscription)).toBe(true);
-      t.expect(isFunction(Localization.removeAllListeners)).toBe(true);
-      const subscription = Localization.addListener(() => {});
-
-      t.expect(subscription).toBeDefined();
-      t.expect(isFunction(subscription.remove)).toBe(true);
-      subscription.remove();
     });
   });
 

@@ -1,19 +1,13 @@
 package expo.modules.localization;
 
 import android.app.Activity;
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.res.Configuration;
-import android.os.BaseBundle;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.LocaleList;
 import android.text.TextUtils;
 import android.view.View;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.HashMap;
@@ -24,11 +18,11 @@ import java.util.TimeZone;
 
 import expo.core.ExportedModule;
 import expo.core.ModuleRegistry;
+import expo.core.Promise;
 import expo.core.interfaces.ActivityProvider;
+import expo.core.interfaces.ExpoMethod;
 import expo.core.interfaces.ModuleRegistryConsumer;
-import expo.core.interfaces.services.EventEmitter;
 
-import static android.content.Intent.ACTION_LOCALE_CHANGED;
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.LOLLIPOP;
 import static android.os.Build.VERSION_CODES.N;
@@ -36,9 +30,7 @@ import static java.util.Currency.getAvailableCurrencies;
 
 public class LocalizationModule extends ExportedModule implements ModuleRegistryConsumer {
 
-    private LocalesBroadcastReceiver mReceiver;
     private ModuleRegistry mModuleRegistry;
-    private EventEmitter mEventEmitter;
 
     public LocalizationModule(Context context) {
         super(context);
@@ -67,19 +59,7 @@ public class LocalizationModule extends ExportedModule implements ModuleRegistry
 
     @Override
     public void setModuleRegistry(ModuleRegistry moduleRegistry) {
-        if (mReceiver != null && mModuleRegistry != null) {
-            getApplicationContext().unregisterReceiver(mReceiver);
-            mReceiver = null;
-        }
-
         mModuleRegistry = moduleRegistry;
-        mEventEmitter = null;
-
-        if (moduleRegistry != null) {
-            mEventEmitter = moduleRegistry.getModule(EventEmitter.class);
-            mReceiver = new LocalesBroadcastReceiver(this);
-            getApplicationContext().registerReceiver(mReceiver, new IntentFilter(Intent.ACTION_LOCALE_CHANGED));
-        }
     }
 
     @Override
@@ -93,12 +73,17 @@ public class LocalizationModule extends ExportedModule implements ModuleRegistry
         return constants;
     }
 
+    @ExpoMethod
+    public void getLocalizationAsync(Promise promise) {
+        promise.resolve(getBundledConstants());
+    }
+
     private Bundle getBundledConstants() {
         Bundle constants = new Bundle();
 
         ArrayList<Locale> locales = getLocales();
         ArrayList<String> localeNames = getLocaleNames(locales);
-        Boolean isRTL = TextUtils.getLayoutDirectionFromLocale(Locale.getDefault())== View.LAYOUT_DIRECTION_RTL;
+        Boolean isRTL = TextUtils.getLayoutDirectionFromLocale(Locale.getDefault()) == View.LAYOUT_DIRECTION_RTL;
 
         constants.putBoolean("isRTL", isRTL);
         constants.putString("locale", localeNames.get(0));
@@ -122,15 +107,19 @@ public class LocalizationModule extends ExportedModule implements ModuleRegistry
     private ArrayList<Locale> getLocales() {
         ArrayList<Locale> locales = new ArrayList<>();
 
-        Configuration configuration = getApplicationContext().getResources().getConfiguration();
-        if (SDK_INT >= N) {
-            LocaleList localeList = configuration.getLocales();
-            for (int i = 0; i < localeList.size(); i++) {
-                locales.add(localeList.get(i));
+        Context context = getApplicationContext();
+        if (context != null) {
+            Configuration configuration = context.getResources().getConfiguration();
+            if (SDK_INT >= N) {
+                LocaleList localeList = configuration.getLocales();
+                for (int i = 0; i < localeList.size(); i++) {
+                    locales.add(localeList.get(i));
+                }
+            } else {
+                locales.add(configuration.locale);
             }
-        } else {
-            locales.add(configuration.locale);
         }
+
 
         return locales;
     }
@@ -166,28 +155,4 @@ public class LocalizationModule extends ExportedModule implements ModuleRegistry
         return localeTag;
     }
 
-    protected void onLocaleUpdated() {
-        mEventEmitter.emit("Expo.onLocaleUpdated", getBundledConstants());
-    }
-}
-
-class LocalesBroadcastReceiver extends BroadcastReceiver {
-
-    private WeakReference<LocalizationModule> module;
-
-    protected LocalesBroadcastReceiver(LocalizationModule module) {
-        this.module = new WeakReference<>(module);
-    }
-
-    @Override
-    public void onReceive(Context context, Intent intent) {
-        if (intent.getAction().equals(ACTION_LOCALE_CHANGED)) {
-            LocalizationModule module = this.module.get();
-            if (module != null) {
-                module.onLocaleUpdated();
-            } else {
-                context.unregisterReceiver(this);
-            }
-        }
-    }
 }

@@ -1,2 +1,6 @@
 // @flow
-export default {};
+export default {
+  getLocalizationAsync() {
+    return null;
+  },
+};

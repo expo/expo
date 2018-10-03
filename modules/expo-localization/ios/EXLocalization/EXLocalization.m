@@ -15,6 +15,13 @@ EX_EXPORT_MODULE(ExpoLocalization)
     return sanitizedLocales;
 }
 
+EX_EXPORT_METHOD_AS(getLocalizationAsync,
+                    getLocalizationAsync:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
+{
+  resolve([self constantsToExport]);
+}
+
 - (NSDictionary *)constantsToExport
 {
   NSArray *preferredLocales = [self ensureLocaleTags:[NSLocale preferredLanguages]];
