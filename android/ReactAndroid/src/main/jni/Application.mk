@@ -14,4 +14,4 @@ APP_CFLAGS := -Wall -Werror
 APP_CPPFLAGS := -std=c++1y
 APP_LDFLAGS := -Wl,--build-id
 
-NDK_TOOLCHAIN_VERSION := 4.9
+NDK_TOOLCHAIN_VERSION := 4.8
