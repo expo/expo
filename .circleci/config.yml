@@ -22,7 +22,7 @@ anchors:
         git submodule update --init
 
         # Install Yarn
-        curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version 1.9.4
+        curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version 1.10.1
 
   - &install_workspace_dependencies
     run:
