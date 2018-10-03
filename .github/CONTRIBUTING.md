@@ -2,13 +2,37 @@
 
 We ask pull requests to be coherent and maintainable, and require code review by the Expo team.
 
-## On coherent pull requests
+## Code reviews
+
+The Expo team reviews all PRs and makes the judgement call on whether to accept them. An Expo team member will look at each PR and assign it to the appropriate reviewer for an in-depth review or request changes.
+
+Writing a maintainable PR as described above is the best way to get it reviewed timely and potentially accepted. The easier to review and maintain the code, the more likely it will be accepted.
+
+## Updating the changelog
+
+Add a short, one-line description of the change to [CHANGELOG.md](/CHANGELOG.md), under the section appropriate for the change. This is especially helpful for breaking changes.
+
+## Writing a commit message
+
+Commit messages should include a title, summary, and test plan.
+
+Write the title in the imperative mood and prefix it with a tag that describes the affected code, like `[android]` or `[video]`, and makes it easier to read through the commit log.
+
+In the summary, explain the motivation behind the commit ("why") and the approach it takes ("how"). Note things that aren't communicated by the code or require more context to infer.
+
+Use the test plan to communicate how to verify the code actually works and to help others in the future create their test plans for the same area of the codebase. Read the Expo guide on [Git and Code Reviews](/guides/Git%20and%20Code%20Reviews.md) for more guidance on PRs and test plans.
+
+This post called ["How to Write a Git Commit Message"](https://chris.beams.io/posts/git-commit/) has a lot of good guidance, too.
+
+## Guidance
+
+### On coherent pull requests
 
 Each PR should correspond to one idea and implement it coherently. This idea may be a feature that spans several parts of the codebase. For example, changing an API may include changes to the Android, iOS, and web implementations, the JavaScript SDK, and the docs for the API.
 
 Generally, each PR should contain one commit that is amended as you address code review feedback. Each commit should be meaningful and make sense on its own. Similarly, it should be easy to revert each commit. This keeps the commit history easier to read when people are working on this code or searching for a commit that could have broken something.
 
-## On maintainable code
+### On maintainable code
 
 Code is much more expensive to maintain than it is to write. A maintainable PR is much more likely to be accepted.
 
@@ -17,9 +41,3 @@ A maintainable PR is simple to understand and often small in scope. It is robust
 Tests and types can improve maintainability and we expect PRs to include them. In particular, use tests to demonstrate the behavior of edge cases that are less likely to occur than the common code path. It is the edge cases we are less likely to notice if they break, and it is the edge cases that we need to behave correctly when they expose an issue in an app and the developer needs to debug. It is relatively easy to get code working; write tests to keep the code working.
 
 However, tests and types can also obstruct maintainability. Overfitted tests break more often and are more difficult to update even when refactoring code that doesn't change its public API. They consume time and attention. Some APIs don't lend themselves well to static typing and lead to precarious type definitions that are not simple to understand or modify. We use tests and types as a means to an end, not an end to zealously pursue.
-
-## Code reviews
-
-The Expo team reviews all PRs and makes the judgement call on whether to accept them. An Expo team member will look at each PR and assign it to the appropriate reviewer for an in-depth review or request changes.
-
-Writing a maintainable PR as described above is the best way to get it reviewed timely and potentially accepted. The easier to review and maintain the code, the more likely it will be accepted.
