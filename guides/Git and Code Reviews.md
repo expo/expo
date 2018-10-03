@@ -37,7 +37,7 @@ Keep your master branch up to date. If you make your master branch use rebasing 
 
 Rebasing your feature branches often (`git rebase master`) also increases the likelihood your code works with master and decreases the likelihood of a large merge conflict instead of smaller ones.
 
-If you’ve rebased a branch that you’ve sent for code review, you’ll need to force-push it to the remote branch on GitHub with `git push` `--``force`. Universe is configured to block accidental force-pushes to master.
+If you’ve rebased a branch that you’ve sent for code review, you’ll need to force-push it to the remote branch on GitHub with `git push --force`. The Expo repository is configured to block accidental force-pushes to master.
 
 ## Commit often
 
