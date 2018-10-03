@@ -1,4 +1,47 @@
-version: 2
+version: 2.1
+
+commands:
+  set_up_environment:
+    steps:
+      - run: git submodule update --init
+      - run: curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version 1.10.1
+  install_workspace_dependencies:
+    description: "Run `yarn install` from the workspace root to install all of the workspaces' dependencies"
+    steps:
+      - run: yarn install
+  fetch_cocoapods_specs:
+    steps:
+      - run: curl https://cocoapods-specs.circleci.com/fetch-cocoapods-repo-from-s3.sh | bash -s cf
+  restore_yarn_cache:
+    steps:
+      - restore_cache:
+          key: yarn-v1-{{ checksum "yarn.lock" }}
+  save_yarn_cache:
+    steps:
+      - save_cache:
+          key: yarn-v1-{{ checksum "yarn.lock" }}
+          paths:
+            - ~/.cache/yarn  # set by YARN_CACHE_FOLDER
+  jest:
+    parameters:
+      dir:
+        type: string
+      workers:
+        type: string
+        default: "1"
+    steps:
+      - run:
+          working_directory: << parameters.dir >>
+          command: yarn jest --maxWorkers << parameters.workers >>
+  lint:
+    parameters:
+      dir:
+        type: string
+    steps:
+      - run:
+          working_directory: << parameters.dir >>
+          command: yarn lint --max-warnings 0
+
 
 anchors:
   - &node_job
@@ -13,48 +56,6 @@ anchors:
 
   - &default_env_vars
     YARN_CACHE_FOLDER: ~/.cache/yarn
-
-  - &set_up_environment
-    run:
-      name: Set up the environment
-      command: |
-        # Clone the submodules
-        git submodule update --init
-
-        # Install Yarn
-        curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version 1.10.1
-
-  - &install_workspace_dependencies
-    run:
-      name: Install Yarn workspace dependencies (node_modules)
-      command: |
-        # Run `yarn install` from the workspace root to install all of the workspaces' dependencies
-        # including each other if there are co-dependencies
-        yarn install
-
-  - &fetch_cocoapods_specs
-    run:
-      name: Fetch CocoaPods Specs
-      command: |
-        curl https://cocoapods-specs.circleci.com/fetch-cocoapods-repo-from-s3.sh | bash -s cf
-
-  - &restore_yarn_cache
-    restore_cache:
-      key: yarn-v1-{{ checksum "yarn.lock" }}
-
-  - &save_yarn_cache
-    save_cache:
-      key: yarn-v1-{{ checksum "yarn.lock" }}
-      paths:
-        - ~/.cache/yarn  # set by YARN_CACHE_FOLDER
-
-  - &lint
-    name: Lint
-    command: yarn lint --max-warnings 0
-
-  - &jest
-    name: Unit tests (Jest)
-    command: yarn jest --maxWorkers 2
 
 workflows:
   version: 2
@@ -89,14 +90,13 @@ jobs:
       <<: *default_env_vars
     steps:
       - checkout
-      - *set_up_environment
-      - *restore_yarn_cache
-      - *install_workspace_dependencies
-      - *save_yarn_cache
+      - set_up_environment
+      - restore_yarn_cache
+      - install_workspace_dependencies
+      - save_yarn_cache
       # Add back linting once we get ESLint or TSLint set up
-      - run:
-          <<: *jest
-          working_directory: ~/expo/packages/expo
+      - jest:
+          dir: ~/expo/packages/expo
 
   babel_preset:
     <<: *node_job
@@ -104,16 +104,14 @@ jobs:
       <<: *default_env_vars
     steps:
       - checkout
-      - *set_up_environment
-      - *restore_yarn_cache
-      - *install_workspace_dependencies
-      - *save_yarn_cache
-      - run:
-          <<: *lint
-          working_directory: ~/expo/packages/babel-preset-expo
-      - run:
-          <<: *jest
-          working_directory: ~/expo/packages/babel-preset-expo
+      - set_up_environment
+      - restore_yarn_cache
+      - install_workspace_dependencies
+      - save_yarn_cache
+      - lint:
+          dir: ~/expo/packages/babel-preset-expo
+      - jest:
+          dir: ~/expo/packages/babel-preset-expo
 
   home:
     <<: *node_job
@@ -121,13 +119,12 @@ jobs:
       <<: *default_env_vars
     steps:
       - checkout
-      - *set_up_environment
-      - *restore_yarn_cache
-      - *install_workspace_dependencies
-      - *save_yarn_cache
-      - run:
-          <<: *jest
-          working_directory: ~/expo/home
+      - set_up_environment
+      - restore_yarn_cache
+      - install_workspace_dependencies
+      - save_yarn_cache
+      - jest:
+          dir: ~/expo/home
 
   client_ios:
     <<: *default_mac
@@ -135,8 +132,8 @@ jobs:
       <<: *default_env_vars
     steps:
       - checkout
-      - *set_up_environment
-      - *fetch_cocoapods_specs
+      - set_up_environment
+      - fetch_cocoapods_specs
       - run:
           working_directory: ~/project/tools-public
           command: yarn install
