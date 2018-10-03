@@ -627,7 +627,50 @@ Configuration for how and when the app should request OTA JavaScript updates
       "xhdpi": STRING,
       "xxhdpi": STRING,
       "xxxhdpi": STRING
-    }
+    },
+
+    /*
+      Configuration for setting custom intent filters in Android manifest.
+      The following example demonstrates how to set up deep links. When
+      the user taps a link matching *.myapp.io, they will be shown a
+      dialog asking whether the link should be handled by your app or by
+      the web browser.
+
+      The data attribute may either be an object or an array of objects. The object may have the following keys to specify attributes of URLs matched by the filter:
+
+      - scheme (string): the scheme of the URL, e.g. "https"
+      - host (string): the host, e.g. "myapp.io"
+      - port (string): the port, e.g. "3000"
+      - path (string): an exact path for URLs that should be matched by the filter, e.g. "/records"
+      - pathPattern (string): a regex for paths that should be matched by the filter, e.g. ".*"
+      - pathPrefix (string): a prefix for paths that should be matched by the filter, e.g. "/records/" will match "/records/123"
+      - mimeType (string): a mime type for URLs that should be matched by the filter
+
+      See Android's documentation for more details on intent filter matching:
+
+      developer.android.com/guide/components/intents-filters
+
+      You may also use an intent filter to set your app as the default handler
+      for links (without showing the user a dialog with options). To do so, you
+      must set "autoVerify": true on the filter object below, and then
+      configure your server to serve a JSON file verifying that you own the
+      domain. See Android's documentation for details:
+
+      developer.android.com/training/app-links
+    */
+    "intentFilters": [
+      {
+        "action": "VIEW",
+        "data": {
+          "scheme": "https",
+          "host": "*.myapp.io"
+        },
+        "category": [
+          "BROWSABLE",
+          "DEFAULT"
+        ]
+      }
+    ]
   }
 }
 ```

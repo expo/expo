@@ -12,7 +12,7 @@ In addition to `https`, you're likely also familiar with the `mailto` scheme. Wh
 
 `https` and `http` are handled by your browser, but it's possible to link to other applications by using different url schemes. For example, when you get a "Magic Link" email from Slack, the "Launch Slack" button is an anchor tag with an href that looks something like: `slack://secret/magic-login/other-secret`. Like with Slack, you can tell the operating system that you want to handle a custom scheme. Read more about [configuring a scheme](#in-a-standalone-app). When the Slack app opens, it receives the URL that was used to open it and can then act on the data that is made available through the url -- in this case, a secret string that will log the user in to a particular server. This is often referred to as **deep linking**. Read more about [handling deep links into your app](#handling-links-into-your-app).
 
-Deep linking with scheme isn't the only linking tool available to you -- we are working on adding support for universal links on iOS, and we support deferred deep links with [Branch](../sdk/branch.html) already. We will update this documentation with more information in future SDKs.
+Deep linking with scheme isn't the only linking tool available to you. It is often desirable for regular HTTPS links to open your application on mobile. For example, if you're sending a notification email about a change to a record, you don't want to use a custom URL scheme in links in the email, because then the links would be broken on desktop. Instead, you want to use a regular HTTPS link such as `https://www.myapp.io/records/123`, and on mobile you want that link to open your app. iOS terms this concept "universal links" and Android calls it "deep links"; Expo supports these links on both platforms (with some [configuration](#universal-deep-links-without-a-custom-scheme)). Expo also supports deferred deep links with [Branch](../sdk/branch.html).
 
 ## Linking from your app to other apps
 
@@ -174,6 +174,79 @@ A common use case for linking to your app is to redirect back to your app after 
 To see a full example of using `WebBrowser` for authentication with Facebook, see [examples/with-facebook-auth](https://github.com/expo/examples/tree/master/with-facebook-auth). Currently Facebook authentication requires that you deploy a small webserver to redirect back to your app (as described in the example) because Facebook does not let you redirect to custom schemes, Expo is working on a solution to make this easier for you. [Try it out in Expo](https://expo.io/@community/with-facebook-auth).
 
 Another example of using `WebBrowser` for authentication can be found at [expo/auth0-example](https://github.com/expo/auth0-example).
+
+## Universal/deep links (without a custom scheme)
+
+It is often desirable for regular HTTPS links (without a custom URL scheme) to directly open your app on mobile devices. This allows you to send notification emails with links that work as expected in a web browser on desktop, while opening the content in your app on mobile. iOS refers to this concept as "universal links" while Android calls it "deep links" (but in this section, we are specifically discussing deep links that do not use a custom URL scheme).
+
+### Universal links on iOS
+
+To implement universal links on iOS, you must first set up verification that you own your domain. This is done by serving an Apple App Site Association (AASA) file from your webserver. The AASA must be served from `/apple-app-site-association` or `/.well-known/apple-app-site-association` (with no extension). The AASA contains JSON which specifies your Apple app ID and a list of paths on your domain that should be handled by your mobile app. For example, if you want links of the format `https://www.myapp.io/records/123` to be opened by your mobile app, your AASA would have the following contents:
+
+```
+{
+  "applinks": {
+    "apps": [],
+    "details": [{
+      "appID": "LKWJEF.io.myapp.example",
+      "paths": ["/records/*"]
+    }]
+  }
+}
+```
+
+This tells iOS that any links to `https://www.myapp.io/records/*` (with wildcard matching for the record ID) should be opened directly by your mobile app. See [Apple's documentation](https://developer.apple.com/documentation/uikit/core_app/allowing_apps_and_websites_to_link_to_your_content/enabling_universal_links) for further details on the format of the AASA. Branch provides an [AASA validator](https://branch.io/resources/aasa-validator/) which can help you confirm that your AASA is correctly deployed and has a valid format.
+
+Note that iOS will download your AASA when your app is first installed and when updates are installed from the App Store, but it will not refresh any more frequently. If you wish to change the paths in your AASA for a production app, you will need to issue a full update via the App Store so that all of your users' apps re-fetch your AASA and recognize the new paths.
+
+After deploying your AASA, you must also configure your app to use your associated domain. First, you need to add the `associatedDomains` [configuration](../workflow/configuration#ios) to your `app.json`. Second, you need to edit your App ID on the Apple developer portal and enable the "Associated Domains" application service. You will also need to regenerate your provisioning profile after adding the service to the App ID.
+
+At this point, opening a link on your mobile device should now open your app! If it doesn't, re-check the previous steps to ensure that your AASA is valid, the path is specified in the AASA, and you have correctly configured your App ID in the Apple developer portal. Once you've got your app opening, move to the [Handling links into your app](#handling-links-into-your-app) section for details on how to handle the inbound link and show the user the content they requested.
+
+### Deep links on Android
+
+Implementing deep links on Android (without a custom URL scheme) is somewhat simpler than on iOS. You simply need to add `intentFilters` to the [Android section](../workflow/configuration#android) of your `app.json`. The following basic configuration will cause your app to be presented in the standard Android dialog as an option for handling any record links to `myapp.io`:
+
+```
+"intentFilters": [
+  {
+    "action": "VIEW",
+    "data": [
+      {
+        "scheme": "https",
+        "host": "*.myapp.io"
+        "pathPrefix": "/records"
+      },
+    ],
+    "category": [
+      "BROWSABLE",
+      "DEFAULT"
+    ]
+  }
+]
+```
+
+It may be desirable for links to your domain to always open your app (without presenting the user a dialog where they can choose the browser or a different handler). You can implement this with Android App Links, which use a similar verification process as Universal Links on iOS. First, you must publish a JSON file at `/.well-known/assetlinks.json` specifying your app ID and which links should be opened by your app. See [Android's documentation](https://developer.android.com/training/app-links/verify-site-associations) for details about formatting this file. Second, add `"autoVerify": true` to the intent filter in your `app.json`; this tells Android to check for your `assetlinks.json` on your server and register your app as the automatic handler for the specified paths:
+
+```
+"intentFilters": [
+  {
+    "action": "VIEW",
+    "autoVerify": true,
+    "data": [
+      {
+        "scheme": "https",
+        "host": "*.myapp.io"
+        "pathPrefix": "/records"
+      },
+    ],
+    "category": [
+      "BROWSABLE",
+      "DEFAULT"
+    ]
+  }
+]
+```
 
 ## When to _not_ use deep links
 
