@@ -9,7 +9,7 @@ anchors:
   - &default_mac
     working_directory: /Users/distiller/project
     macos: # https://circleci.com/docs/2.0/testing-ios/#supported-xcode-versions
-      xcode: "9.4.1"
+      xcode: "10.0.0"
 
   - &default_env_vars
     YARN_CACHE_FOLDER: ~/.cache/yarn
