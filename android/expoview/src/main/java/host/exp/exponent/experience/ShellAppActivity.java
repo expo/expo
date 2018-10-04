@@ -23,6 +23,8 @@ public class ShellAppActivity extends ExperienceActivity {
 
     boolean forceCache = getIntent().getBooleanExtra(KernelConstants.LOAD_FROM_CACHE_KEY, false);
 
+    mKernel.handleIntent(this, getIntent());
+
     new AppLoader(Constants.INITIAL_URL, forceCache) {
       @Override
       public void onOptimisticManifest(final JSONObject optimisticManifest) {
