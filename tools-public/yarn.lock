@@ -1229,9 +1229,9 @@ combined-stream@~1.0.6:
     delayed-stream "~1.0.0"
 
 command-exists@^1.2.7:
-  version "1.2.8"
-  resolved "https://registry.yarnpkg.com/command-exists/-/command-exists-1.2.8.tgz#715acefdd1223b9c9b37110a149c6392c2852291"
-  integrity sha512-PM54PkseWbiiD/mMsbvW351/u+dafwTJ0ye2qB60G1aGQP9j3xK2gmMDc+R34L3nDtx4qMCitXT75mkbkGJDLw==
+  version "1.2.7"
+  resolved "https://registry.yarnpkg.com/command-exists/-/command-exists-1.2.7.tgz#16828f0c3ff2b0c58805861ef211b64fc15692a8"
+  integrity sha512-doWDvhXCcW5LK0cIUWrOQ8oMFXJv3lEQCkJpGVjM8v9SV0uhqYXB943538tEA2CiaWqSyuYUGAm5ezDwEx9xlw==
 
 commander@^2.9.0:
   version "2.18.0"
@@ -6406,10 +6406,10 @@ ws@^5.2.0:
   dependencies:
     async-limiter "~1.0.0"
 
-xdl@51.4.1-alpha.23:
-  version "51.4.1-alpha.23"
-  resolved "https://registry.yarnpkg.com/xdl/-/xdl-51.4.1-alpha.23.tgz#3d6e774fd3053934bc53928e11b022d45746e071"
-  integrity sha512-Njxg8/VqJSAYZx0gXEBYiZFAKjwyoWcYo2BifS3USvWat4Mo1CTE6TAw9rcJi3yYZqirEprYxkvqAm7qu4jVfA==
+xdl@51.4.1-alpha.34:
+  version "51.4.1-alpha.34"
+  resolved "https://registry.yarnpkg.com/xdl/-/xdl-51.4.1-alpha.34.tgz#fe2f95a0397adc881bee4771cc00ccfe9ee9e0be"
+  integrity sha512-b4FzALI/5HCWbpRQ4r9+hJyv0pUsn/pzrgyBmVebeDiPkGWDdVOVHIuZaZwzNeuu19OqJWmjcYlrEdgudFV4oQ==
   dependencies:
     "@expo/bunyan" "3.0.2"
     "@expo/json-file" "^8.0.1"
