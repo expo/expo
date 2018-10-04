@@ -14,6 +14,6 @@
     "minimist": "^1.2.0",
     "request": "^2.83.0",
     "request-promise-native": "^1.0.4",
-    "xdl": "file:../../../dev/xdl"
+    "xdl": "^51.4.0"
   }
 }
