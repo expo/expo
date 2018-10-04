@@ -6,7 +6,7 @@ set -eo pipefail
 scriptdir=$(dirname ${BASH_SOURCE[0]})
 
 # Initialize the shell if we aren't already running in a terminal (initialize just once)
-if [[ -z "$TERM" ]] || [[ $TERM == "dumb" ]]; then
+if [[ -z "$EXPO_SKIP_SOURCING" ]] && ([[ -z "$TERM" ]] || [[ $TERM == "dumb" ]]); then
   if [ -f /etc/profile ]; then
     source /etc/profile >/dev/null
   fi
