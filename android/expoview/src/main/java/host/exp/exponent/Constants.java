@@ -9,7 +9,9 @@ import android.text.TextUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import host.exp.exponent.analytics.EXL;
 
@@ -62,23 +64,39 @@ public class Constants {
   }
 
   static {
-    List<String> abiVersions = new ArrayList<>();
+    Set<String> abiVersions = new HashSet<>();
     // ADD ABI VERSIONS HERE
     // START ABI VERSIONS
+    // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
+    // BEGIN_SDK_30
     abiVersions.add("30.0.0");
+    // END_SDK_30
+    // BEGIN_SDK_29
     abiVersions.add("29.0.0");
+    // END_SDK_29
+    // BEGIN_SDK_28
     abiVersions.add("28.0.0");
+    // END_SDK_28
+    // BEGIN_SDK_27
     abiVersions.add("27.0.0");
+    // END_SDK_27
+    // BEGIN_SDK_26
     abiVersions.add("26.0.0");
+    // END_SDK_26
+    // BEGIN_SDK_25
     abiVersions.add("25.0.0");
+    // END_SDK_25
+    // BEGIN_SDK_24
     abiVersions.add("24.0.0");
+    // END_SDK_24
+    // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
     // END ABI VERSIONS
 
     if (TEMPORARY_ABI_VERSION != null) {
       abiVersions.add(TEMPORARY_ABI_VERSION);
     }
 
-    setSdkVersions(abiVersions);
+    setSdkVersions(new ArrayList<>(abiVersions));
 
     List<EmbeddedResponse> embeddedResponses = new ArrayList<>();
     embeddedResponses.add(new EmbeddedResponse("https://exp.host/@exponent/home/bundle", EMBEDDED_KERNEL_PATH, "application/javascript"));
