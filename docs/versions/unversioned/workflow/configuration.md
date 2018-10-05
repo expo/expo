@@ -467,6 +467,8 @@ Configuration for how and when the app should request OTA JavaScript updates
       /*
         Color to use as the background for your app's Adaptive Icon on Android.
         Defaults to white (#FFFFFF).
+
+        Has no effect if "foregroundImage" is not specified.
       */
       "backgroundColor": STRING,
 
@@ -475,7 +477,8 @@ Configuration for how and when the app should request OTA JavaScript updates
         the background of your app's icon on Android.
 
         If specified, this overrides the "backgroundColor" key.
-        Must have the same dimensions as "foregroundImage".
+        Must have the same dimensions as "foregroundImage", and has no effect if
+        "foregroundImage" is not specified.
       */
       "backgroundImage": STRING
     },

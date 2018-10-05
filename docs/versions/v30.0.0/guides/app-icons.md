@@ -20,10 +20,11 @@ The most straightforward way to provide an icon for your app is to provide the [
 
 ### Android
 
-- The Android icon is formed from two separate layers -- a foreground image and a background color or image. This allows the OS to mask the icon into different shapes and also support visual effects.
+- The Android Adaptive Icon is formed from two separate layers -- a foreground image and a background color or image. This allows the OS to mask the icon into different shapes and also support visual effects.
 - The design you provide should follow the [Android Adaptive Icon Guidelines](https://developer.android.com/guide/practices/ui_guidelines/icon_design_adaptive) for launcher icons.
-- Use a png file.
+- Use png files.
 - The default background color is white; to specify a different background color, use the `android.adaptiveIcon.backgroundColor` field. You can instead specify a background image using the `android.adaptiveIcon.backgroundImage` field; ensure that it has the same dimensions as your foreground image.
+- You may also want to provide a separate icon for older Android devices that do not support Adaptive Icons; you can do so with the `android.icon` field. This single icon would probably be a combination of your foreground and background layers.
 - You may still want to follow some of the [Apple best practices](https://developer.apple.com/ios/human-interface-guidelines/icons-and-images/app-icon/) to ensure your icon looks professional, such as testing your icon on different wallpapers, and avoiding text besides your product's wordmark.
 - Provide something that's at least 512x512 pixels. Since you already need 1024x1024 for iOS, it won't hurt to just provide that here as well.
 
