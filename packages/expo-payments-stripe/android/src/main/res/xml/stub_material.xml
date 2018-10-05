@@ -14,4 +14,4 @@
     app:include_zip="false"
     app:input_background="@color/transparent_background"
     app:cursor_color="@color/colorAccent"
-    app:text_size="18sp" />
+    />

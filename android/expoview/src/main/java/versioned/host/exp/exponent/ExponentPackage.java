@@ -124,7 +124,7 @@ public class ExponentPackage implements ReactPackage {
   );
 
   private static final String TAG = ExponentPackage.class.getSimpleName();
-
+  
   private final boolean mIsKernel;
   private final Map<String, Object> mExperienceProperties;
   private final JSONObject mManifest;

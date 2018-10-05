@@ -5,7 +5,7 @@ buildscript {
   }
 
   dependencies {
-    classpath 'io.fabric.tools:gradle:1.+'
+    classpath 'io.fabric.tools:gradle:1.26.1'
   }
 }
 apply plugin: 'com.android.application'
@@ -16,12 +16,11 @@ repositories {
 }
 
 android {
-  compileSdkVersion 27
-  buildToolsVersion '27.0.3'
+  compileSdkVersion 28
 
   defaultConfig {
     applicationId 'host.exp.exponent'
-    targetSdkVersion 26
+    targetSdkVersion 28
     // ADD VERSIONS HERE
     // BEGIN VERSIONS
     versionCode 95
@@ -84,7 +83,7 @@ android {
     pickFirst "**"
   }
   configurations.all {
-    resolutionStrategy.force 'com.android.support:design:27.1.0'
+    resolutionStrategy.force 'com.android.support:design:28.0.0'
   }
 }
 
@@ -104,14 +103,12 @@ END UNCOMMENT WHEN DISTRIBUTING */
 dependencies {
   implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-  implementation 'com.android.support:multidex:1.0.1'
+  implementation 'com.android.support:multidex:1.0.3'
 
-  // Our dependencies
-  implementation 'com.android.support:appcompat-v7:27.1.1'
 
   // Our dependencies from ExpoView
   // DON'T ADD ANYTHING HERE THAT ISN'T IN EXPOVIEW. ONLY COPY THINGS FROM EXPOVIEW TO HERE.
-  implementation 'com.android.support:appcompat-v7:27.1.1'
+  implementation 'com.android.support:appcompat-v7:28.0.0'
   implementation 'com.facebook.android:facebook-android-sdk:4.34.0'
   implementation('com.facebook.android:audience-network-sdk:4.99.0') {
     exclude module: 'play-services-ads'
@@ -122,7 +119,7 @@ dependencies {
   implementation 'com.amplitude:android-sdk:2.9.2' // Be careful when upgrading! Upgrading might break experience scoping. Check with Jesse. See Analytics.resetAmplitudeDatabaseHelper
   implementation 'com.squareup.picasso:picasso:2.5.2'
   implementation 'com.google.android.gms:play-services-gcm:15.0.1'
-  implementation 'com.google.android.gms:play-services-analytics:16.0.1'
+  implementation 'com.google.android.gms:play-services-analytics:16.0.3'
   implementation 'com.google.android.gms:play-services-maps:15.0.1'
   implementation 'com.google.android.gms:play-services-auth:15.0.1'
   implementation 'com.google.android.gms:play-services-location:15.0.1'
@@ -143,7 +140,7 @@ dependencies {
   implementation 'com.yqritc:android-scalablevideoview:1.0.1'
   implementation 'commons-codec:commons-codec:1.10'
   implementation 'com.segment.analytics.android:analytics:4.3.0'
-  implementation 'com.google.zxing:core:3.2.1'
+  implementation 'com.google.zxing:core:3.2.2'
   implementation 'net.openid:appauth:0.4.1'
   implementation('com.airbnb.android:lottie:2.5.5')  {
       exclude group: 'com.android.support', module: 'appcompat-v7'
@@ -152,7 +149,7 @@ dependencies {
   implementation('io.nlopez.smartlocation:library:3.2.11') {
     transitive = false
   }
-  implementation 'com.android.support:exifinterface:27.1.1'
+  implementation 'com.android.support:exifinterface:28.0.0'
   implementation 'com.squareup.okhttp3:okhttp:3.4.1'
   implementation 'com.squareup.okhttp3:okhttp-urlconnection:3.4.1'
   implementation 'com.squareup.okhttp3:okhttp-ws:3.4.1'
@@ -162,19 +159,19 @@ dependencies {
   implementation 'expolib_v1.com.google.android.exoplayer:expolib_v1-extension-okhttp:2.6.1@aar'
 
   // Testing
-  androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+  androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
   // We use a modified build of com.android.support.test:runner:1.0.1. Explanation in maven-test/README
-  androidTestImplementation 'com.android.support.test:runner:1.0.1'
-  androidTestImplementation 'com.android.support:support-annotations:27.1.1'
-  androidTestImplementation 'com.google.code.findbugs:jsr305:3.0.0'
-  androidTestImplementation 'com.android.support.test.uiautomator:uiautomator-v18:2.1.1'
+  androidTestImplementation 'com.android.support.test:runner:1.0.2'
+  androidTestImplementation 'com.android.support:support-annotations:28.0.0'
+  androidTestImplementation 'com.google.code.findbugs:jsr305:3.0.2'
+  androidTestImplementation 'com.android.support.test.uiautomator:uiautomator-v18:2.1.3'
   androidTestImplementation 'com.azimolabs.conditionwatcher:conditionwatcher:0.2'
 
   testImplementation 'junit:junit:4.12'
   testImplementation 'org.mockito:mockito-core:1.10.19'
   testImplementation 'org.robolectric:robolectric:3.8'
-  testImplementation 'com.android.support.test:runner:1.0.2-alpha1'
-  testImplementation 'com.android.support.test:rules:1.0.2-alpha1'
+  testImplementation 'com.android.support.test:runner:1.0.2'
+  testImplementation 'com.android.support.test:rules:1.0.2'
 
   /* UNCOMMENT WHEN DISTRIBUTING
   implementation('host.exp.exponent:expoview:30.0.0@aar') {

@@ -58,7 +58,7 @@
         app:include_zip="false"
         app:input_background="@drawable/card_input_custom_background"
         app:cursor_color="@color/colorAccent"
-        app:text_size="18sp"/>
+        />
 
     <ProgressBar
         android:id="@+id/buttonProgress"

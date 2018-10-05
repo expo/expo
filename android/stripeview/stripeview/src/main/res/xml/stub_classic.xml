@@ -13,4 +13,4 @@
     app:include_helper="true"
     app:include_zip="false"
     app:cursor_color="@color/colorAccent"
-    app:text_size="18sp"/>
+    />

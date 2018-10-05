@@ -13,7 +13,7 @@ def includeUniversalModule = { name ->
   project(":$name").projectDir = new File(modulesDir, "$name/android")
 }
 
-[
+Set<String> modules = [
   'expo-ads-admob',
   'expo-analytics-segment',
   'expo-barcode-scanner',
@@ -45,4 +45,6 @@ def includeUniversalModule = { name ->
   'expo-sensors',
   'expo-sensors-interface',
   'expo-sms',
-].forEach({ moduleName -> includeUniversalModule(moduleName) })
+]
+
+modules.forEach(includeUniversalModule)
