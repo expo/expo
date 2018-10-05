@@ -210,12 +210,12 @@ dependencies {
   }
   // END_SDK_29
 
-  // BEGIN_SDK_27
+  // BEGIN_SDK_28
   implementation(project(':expoview-abi28_0_0')) {
     exclude group: 'com.squareup.okhttp3', module: 'okhttp'
     exclude group: 'com.squareup.okhttp3', module: 'okhttp-urlconnection'
   }
-  // END_SDK_27
+  // END_SDK_28
 
   // BEGIN_SDK_27
   implementation(project(':expoview-abi27_0_0')) {
