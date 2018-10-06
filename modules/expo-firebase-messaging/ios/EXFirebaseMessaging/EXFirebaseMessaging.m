@@ -3,10 +3,12 @@
 @import UserNotifications;
 
 #import <EXFirebaseMessaging/EXFirebaseMessaging.h>
-#import <EXFirebaseApp/EXFirebaseAppEvents.h>
 #import <EXFirebaseApp/EXFirebaseAppUtil.h>
 #import <FirebaseMessaging/FirebaseMessaging.h>
 #import <EXCore/EXUtilitiesInterface.h>
+
+static NSString *const MESSAGING_MESSAGE_RECEIVED = @"Expo.Firebase.messaging_message_received";
+static NSString *const MESSAGING_TOKEN_REFRESHED = @"Expo.Firebase.messaging_token_refreshed";
 
 @interface EXFirebaseMessaging ()
 

@@ -311,7 +311,7 @@ public class DisplayNotificationTask extends AsyncTask<Void, Void, Void> {
       if (mModuleRegistry != null) {
         Utils.sendEvent(
             mModuleRegistry,
-          "notifications_notification_displayed",
+          "Expo.Firebase.notifications_notification_displayed",
           notification
         );
       }

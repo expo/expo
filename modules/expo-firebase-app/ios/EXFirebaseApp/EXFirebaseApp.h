@@ -1,7 +1,6 @@
-
 #import <UIKit/UIKit.h>
 #import <EXCore/EXModuleRegistry.h>
 
-@interface EXFirebaseApp : EXExportedModule
+@interface EXFirebaseApp: EXExportedModule
 
 @end

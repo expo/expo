@@ -3,9 +3,12 @@
 #import <EXFirebaseDatabase/EXFirebaseDatabase.h>
 #import <Firebase.h>
 #import <EXFirebaseDatabase/EXFirebaseDatabaseReference.h>
-#import <EXFirebaseApp/EXFirebaseAppEvents.h>
 #import <EXFirebaseApp/EXFirebaseAppUtil.h>
 #import <EXCore/EXUtilities.h>
+
+static NSString *const DATABASE_SYNC_EVENT = @"Expo.Firebase.database_sync_event";
+static NSString *const DATABASE_TRANSACTION_EVENT = @"Expo.Firebase.database_transaction_event";
+
 @interface EXFirebaseDatabase ()
 
 @property (nonatomic, weak) EXModuleRegistry *moduleRegistry;

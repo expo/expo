@@ -4,7 +4,10 @@
 #import <EXFirebaseFirestore/EXFirebaseFirestoreCollectionReference.h>
 #import <EXFirebaseFirestore/EXFirebaseFirestore.h>
 #import <Firebase.h>
-#import <EXFirebaseApp/EXFirebaseAppEvents.h>
+
+static NSString *const FIRESTORE_TRANSACTION_EVENT = @"Expo.Firebase.firestore_transaction_event";
+static NSString *const FIRESTORE_COLLECTION_SYNC_EVENT = @"Expo.Firebase.firestore_collection_sync_event";
+static NSString *const FIRESTORE_DOCUMENT_SYNC_EVENT = @"Expo.Firebase.firestore_document_sync_event";
 
 @interface EXFirebaseFirestore ()
 

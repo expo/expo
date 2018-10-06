@@ -11,9 +11,7 @@ import {
   registerModule,
 } from 'expo-firebase-app';
 import type App from 'expo-firebase-app';
-const { SharedEventEmitter } = events;
 import { Platform } from 'expo-core';
-const { isFunction, isObject } = utils;
 
 import AndroidAction from './AndroidAction';
 import AndroidChannel from './AndroidChannel';
@@ -34,6 +32,8 @@ import {
 
 import type { NotificationOpen } from './Notification';
 import type { NativeNotification, NativeNotificationOpen, Schedule } from './types';
+const { SharedEventEmitter } = events;
+const { isFunction, isObject } = utils;
 
 type OnNotification = Notification => any;
 
@@ -48,9 +48,9 @@ type OnNotificationOpenedObserver = {
 };
 
 const NATIVE_EVENTS = [
-  'notifications_notification_displayed',
-  'notifications_notification_opened',
-  'notifications_notification_received',
+  'Expo.Firebase.notifications_notification_displayed',
+  'Expo.Firebase.notifications_notification_opened',
+  'Expo.Firebase.notifications_notification_received',
 ];
 
 export const MODULE_NAME = 'ExpoFirebaseNotifications';
@@ -111,7 +111,7 @@ export default class Notifications extends ModuleBase {
     SharedEventEmitter.addListener(
       // sub to internal native event - this fans out to
       // public event name: onNotificationDisplayed
-      'notifications_notification_displayed',
+      'Expo.Firebase.notifications_notification_displayed',
       (notification: NativeNotification) => {
         SharedEventEmitter.emit('onNotificationDisplayed', new Notification(notification));
       }
@@ -120,7 +120,7 @@ export default class Notifications extends ModuleBase {
     SharedEventEmitter.addListener(
       // sub to internal native event - this fans out to
       // public event name: onNotificationOpened
-      'notifications_notification_opened',
+      'Expo.Firebase.notifications_notification_opened',
       (notificationOpen: NativeNotificationOpen) => {
         SharedEventEmitter.emit('onNotificationOpened', {
           action: notificationOpen.action,
@@ -133,7 +133,7 @@ export default class Notifications extends ModuleBase {
     SharedEventEmitter.addListener(
       // sub to internal native event - this fans out to
       // public event name: onNotification
-      'notifications_notification_received',
+      'Expo.Firebase.notifications_notification_received',
       (notification: NativeNotification) => {
         SharedEventEmitter.emit('onNotification', new Notification(notification));
       }

@@ -12,9 +12,9 @@ import {
   registerModule,
   utils,
 } from 'expo-firebase-app';
+import type App from 'expo-firebase-app';
 import RemoteMessage from './RemoteMessage';
 
-import type App from 'expo-firebase-app';
 import type {
   NativeInboundRemoteMessage,
   NativeOutboundRemoteMessage,
@@ -36,7 +36,7 @@ export type OnTokenRefreshObserver = {
   next: OnTokenRefresh,
 };
 
-const NATIVE_EVENTS = ['messaging_message_received', 'messaging_token_refreshed'];
+const NATIVE_EVENTS = ['Expo.Firebase.messaging_message_received', 'messaging_token_refreshed'];
 
 export const MODULE_NAME = 'ExpoFirebaseMessaging';
 export const NAMESPACE = 'messaging';
@@ -65,7 +65,7 @@ export default class Messaging extends ModuleBase {
     SharedEventEmitter.addListener(
       // sub to internal native event - this fans out to
       // public event name: onMessage
-      'messaging_message_received',
+      'Expo.Firebase.messaging_message_received',
       (message: NativeInboundRemoteMessage) => {
         SharedEventEmitter.emit('onMessage', new RemoteMessage(message));
       }

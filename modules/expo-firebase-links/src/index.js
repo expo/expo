@@ -8,7 +8,7 @@ import type App from 'expo-firebase-app';
 import { Platform } from 'expo-core';
 import DynamicLink from './DynamicLink';
 const { SharedEventEmitter } = events;
-const NATIVE_EVENTS = ['links_link_received'];
+const NATIVE_EVENTS = ['Expo.Firebase.links_link_received'];
 
 export const MODULE_NAME = 'ExpoFirebaseLinks';
 export const NAMESPACE = 'links';
@@ -37,7 +37,7 @@ export default class Links extends ModuleBase {
     SharedEventEmitter.addListener(
       // sub to internal native event - this fans out to
       // public event name: onMessage
-      'links_link_received',
+      'Expo.Firebase.links_link_received',
       ({ link }) => {
         SharedEventEmitter.emit('onLink', link);
       }

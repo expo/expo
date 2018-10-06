@@ -386,7 +386,7 @@ class FirebaseDatabaseReference {
           event.putString("key", key);
           event.putString("eventType", eventType);
           event.putBundle("registration", Utils.readableMapToWritableMap(registration));
-          Utils.sendEvent(moduleRegistry, "database_sync_event", event);
+          Utils.sendEvent(moduleRegistry, "Expo.Firebase.database_sync_event", event);
         }
       }
     };
@@ -406,7 +406,7 @@ class FirebaseDatabaseReference {
     event.putBundle("error", FirebaseDatabaseModule.getJSError(error));
     event.putBundle("registration", Utils.readableMapToWritableMap(registration));
 
-    Utils.sendEvent(moduleRegistry, "database_sync_event", event);
+    Utils.sendEvent(moduleRegistry, "Expo.Firebase.database_sync_event", event);
   }
 
   /**

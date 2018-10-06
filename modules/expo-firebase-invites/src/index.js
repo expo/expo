@@ -5,12 +5,12 @@
 import { events, getLogger, ModuleBase, getNativeModule, registerModule } from 'expo-firebase-app';
 import { Platform } from 'expo-core';
 import type App from 'expo-firebase-app';
-const { SharedEventEmitter } = events;
 import Invitation from './Invitation';
+const { SharedEventEmitter } = events;
 
 export const MODULE_NAME = 'ExpoFirebaseInvites';
 export const NAMESPACE = 'invites';
-const NATIVE_EVENTS = ['invites_invitation_received'];
+const NATIVE_EVENTS = ['Expo.Firebase.invites_invitation_received'];
 
 export const statics = {
   Invitation,
@@ -38,7 +38,7 @@ export default class Invites extends ModuleBase {
     SharedEventEmitter.addListener(
       // sub to internal native event - this fans out to
       // public event name: onMessage
-      'invites_invitation_received',
+      'Expo.Firebase.invites_invitation_received',
       (invitation: InvitationOpen) => {
         SharedEventEmitter.emit('onInvitation', invitation);
       }

@@ -49,7 +49,7 @@ export default class TransactionHandler {
     this._pending = {};
     this._firestore = firestore;
     SharedEventEmitter.addListener(
-      getAppEventName(this._firestore, 'firestore_transaction_event'),
+      getAppEventName(this._firestore, 'Expo.Firebase.firestore_transaction_event'),
       this._handleTransactionEvent.bind(this)
     );
   }

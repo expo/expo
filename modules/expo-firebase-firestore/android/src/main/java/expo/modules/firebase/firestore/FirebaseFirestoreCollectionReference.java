@@ -257,7 +257,7 @@ public class FirebaseFirestoreCollectionReference {
     event.putString("listenerId", listenerId);
     event.putBundle("querySnapshot", data);
 
-    Utils.sendEvent(moduleRegistry, "firestore_collection_sync_event", event);
+    Utils.sendEvent(moduleRegistry, "Expo.Firebase.firestore_collection_sync_event", event);
   }
 
   /**
@@ -274,6 +274,6 @@ public class FirebaseFirestoreCollectionReference {
     event.putString("listenerId", listenerId);
     event.putBundle("error", FirebaseFirestoreModule.getJSError(exception));
 
-    Utils.sendEvent(moduleRegistry, "firestore_collection_sync_event", event);
+    Utils.sendEvent(moduleRegistry, "Expo.Firebase.firestore_collection_sync_event", event);
   }
 }

@@ -3,9 +3,10 @@
 #import <EXFirebaseLinks/EXFirebaseLinks.h>
 
 #import <Firebase.h>
-#import <EXFirebaseApp/EXFirebaseAppEvents.h>
 #import <EXFirebaseApp/EXFirebaseAppUtil.h>
 #import <EXCore/EXUtilitiesInterface.h>
+
+static NSString *const LINKS_LINK_RECEIVED = @"Expo.Firebase.links_link_received";
 
 @interface EXFirebaseLinks ()
 

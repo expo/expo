@@ -4,6 +4,7 @@
  */
 import { NativeModulesProxy } from 'expo-core';
 import { events, ModuleBase, utils, getNativeModule, registerModule } from 'expo-firebase-app';
+import type { App } from 'expo-firebase-app';
 import CollectionReference from './CollectionReference';
 import DocumentReference from './DocumentReference';
 import FieldPath from './FieldPath';
@@ -16,7 +17,6 @@ import TransactionHandler from './TransactionHandler';
 import Transaction from './Transaction';
 
 import type DocumentSnapshot from './DocumentSnapshot';
-import type { App } from 'expo-firebase-app';
 import type QuerySnapshot from './QuerySnapshot';
 
 type CollectionSyncEvent = {
@@ -46,8 +46,8 @@ const { getAppEventName, SharedEventEmitter } = events;
 const { isBoolean, isObject, isString, hop } = utils;
 
 const NATIVE_EVENTS = [
-  'firestore_transaction_event',
-  'firestore_document_sync_event',
+  'Expo.Firebase.firestore_transaction_event',
+  'Expo.Firebase.firestore_document_sync_event',
   'firestore_collection_sync_event',
 ];
 
@@ -111,7 +111,7 @@ export default class Firestore extends ModuleBase {
     SharedEventEmitter.addListener(
       // sub to internal native event - this fans out to
       // public event name: onDocumentSnapshot
-      getAppEventName(this, 'firestore_document_sync_event'),
+      getAppEventName(this, 'Expo.Firebase.firestore_document_sync_event'),
       this._onDocumentSyncEvent.bind(this)
     );
   }

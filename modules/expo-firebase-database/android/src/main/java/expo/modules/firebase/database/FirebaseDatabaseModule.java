@@ -195,7 +195,7 @@ public class FirebaseDatabaseModule extends ExportedModule implements ModuleRegi
             AsyncTask.execute(new Runnable() {
               @Override
               public void run() {
-                Utils.sendEvent(mModuleRegistry, "database_transaction_event", updatesMap);
+                Utils.sendEvent(mModuleRegistry, "Expo.Firebase.database_transaction_event", updatesMap);
               }
             });
 
@@ -219,7 +219,7 @@ public class FirebaseDatabaseModule extends ExportedModule implements ModuleRegi
           public void onComplete(DatabaseError error, boolean committed, DataSnapshot snapshot) {
             FirebaseTransactionHandler transactionHandler = transactionHandlers.get(transactionId);
             Bundle resultMap = transactionHandler.createResultMap(error, committed, snapshot);
-            Utils.sendEvent(mModuleRegistry, "database_transaction_event", resultMap);
+            Utils.sendEvent(mModuleRegistry, "Expo.Firebase.database_transaction_event", resultMap);
             transactionHandlers.delete(transactionId);
 
             if (error != null) {

@@ -1,13 +1,20 @@
 
 
 #import <EXFirebaseStorage/EXFirebaseStorage.h>
-
-#import <EXFirebaseApp/EXFirebaseAppEvents.h>
 #import <EXFirebaseApp/EXFirebaseAppUtil.h>
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <Photos/Photos.h>
 #import <Firebase.h>
 #import <EXCore/EXUtilities.h>
+
+static NSString *const STORAGE_EVENT = @"Expo.Firebase.storage_event";
+static NSString *const STORAGE_ERROR = @"Expo.Firebase.storage_error";
+
+static NSString *const STORAGE_STATE_CHANGED = @"Expo.Firebase.state_changed";
+static NSString *const STORAGE_UPLOAD_SUCCESS = @"Expo.Firebase.upload_success";
+static NSString *const STORAGE_UPLOAD_FAILURE = @"Expo.Firebase.upload_failure";
+static NSString *const STORAGE_DOWNLOAD_SUCCESS = @"Expo.Firebase.download_success";
+static NSString *const STORAGE_DOWNLOAD_FAILURE = @"Expo.Firebase.download_failure";
 
 @interface EXFirebaseStorage ()
 

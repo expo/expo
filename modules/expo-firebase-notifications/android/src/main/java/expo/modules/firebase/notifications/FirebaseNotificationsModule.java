@@ -226,7 +226,7 @@ public class FirebaseNotificationsModule extends ExportedModule
   public void onNewIntent(Intent intent) {
     Bundle notificationOpenMap = parseIntentForNotification(intent);
     if (notificationOpenMap != null) {
-      Utils.sendEvent(mModuleRegistry, "notifications_notification_opened", notificationOpenMap);
+      Utils.sendEvent(mModuleRegistry, "Expo.Firebase.notifications_notification_opened", notificationOpenMap);
     }
   }
 
@@ -377,7 +377,7 @@ public class FirebaseNotificationsModule extends ExportedModule
           RemoteMessage message = intent.getParcelableExtra("notification");
           Bundle messageMap = parseRemoteMessage(message);
 
-          Utils.sendEvent(mModuleRegistry, "notifications_notification_received", messageMap);
+          Utils.sendEvent(mModuleRegistry, "Expo.Firebase.notifications_notification_received", messageMap);
         }
       }
     }
@@ -394,7 +394,7 @@ public class FirebaseNotificationsModule extends ExportedModule
 
           Bundle notification = intent.getBundleExtra("notification");
 
-          Utils.sendEvent(mModuleRegistry, "notifications_notification_received", notification);
+          Utils.sendEvent(mModuleRegistry, "Expo.Firebase.notifications_notification_received", notification);
         }
       }
     }

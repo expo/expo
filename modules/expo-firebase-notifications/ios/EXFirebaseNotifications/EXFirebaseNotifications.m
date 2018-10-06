@@ -1,8 +1,12 @@
 #import <EXFirebaseNotifications/EXFirebaseNotifications.h>
-#import <EXFirebaseApp/EXFirebaseAppEvents.h>
 #import <EXFirebaseApp/EXFirebaseAppUtil.h>
 #import <EXFirebaseMessaging/EXFirebaseMessaging.h>
 #import <EXCore/EXUtilitiesInterface.h>
+
+static NSString *const NOTIFICATIONS_NOTIFICATION_DISPLAYED = @"Expo.Firebase.notifications_notification_displayed";
+static NSString *const NOTIFICATIONS_NOTIFICATION_OPENED = @"Expo.Firebase.notifications_notification_opened";
+static NSString *const NOTIFICATIONS_NOTIFICATION_RECEIVED = @"Expo.Firebase.notifications_notification_received";
+
 // For iOS 10 we need to implement UNUserNotificationCenterDelegate to receive display
 // notifications via APNS
 #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0

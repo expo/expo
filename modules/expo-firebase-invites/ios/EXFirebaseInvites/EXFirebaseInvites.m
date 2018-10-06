@@ -1,11 +1,12 @@
 
 
 #import <EXFirebaseInvites/EXFirebaseInvites.h>
-#import <EXFirebaseApp/EXFirebaseAppEvents.h>
 #import <EXFirebaseLinks/EXFirebaseLinks.h>
 #import <EXFirebaseApp/EXFirebaseAppUtil.h>
 #import <FirebaseInvites/FirebaseInvites.h>
 #import <EXCore/EXUtilitiesInterface.h>
+
+static NSString *const INVITES_INVITATION_RECEIVED = @"Expo.Firebase.invites_invitation_received";
 
 @interface EXFirebaseInvites ()
 

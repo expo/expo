@@ -110,10 +110,10 @@ class FirebaseAuthModule extends ExportedModule implements ModuleRegistryConsume
           if (user != null) {
             msgMap.putString("appName", appName); // for js side distribution
             msgMap.putBundle("user", firebaseUserToMap(user));
-            Utils.sendEvent(mModuleRegistry, "auth_state_changed", msgMap);
+            Utils.sendEvent(mModuleRegistry, "Expo.Firebase.auth_state_changed", msgMap);
           } else {
             msgMap.putString("appName", appName); // for js side distribution
-            Utils.sendEvent(mModuleRegistry, "auth_state_changed", msgMap);
+            Utils.sendEvent(mModuleRegistry, "Expo.Firebase.auth_state_changed", msgMap);
           }
         }
       };
@@ -163,11 +163,11 @@ class FirebaseAuthModule extends ExportedModule implements ModuleRegistryConsume
             msgMap.putBoolean("authenticated", true);
             msgMap.putString("appName", appName); // for js side distribution
             msgMap.putBundle("user", firebaseUserToMap(user));
-            Utils.sendEvent(mModuleRegistry, "auth_id_token_changed", msgMap);
+            Utils.sendEvent(mModuleRegistry, "Expo.Firebase.auth_id_token_changed", msgMap);
           } else {
             msgMap.putString("appName", appName); // for js side distribution
             msgMap.putBoolean("authenticated", false);
-            Utils.sendEvent(mModuleRegistry, "auth_id_token_changed", msgMap);
+            Utils.sendEvent(mModuleRegistry, "Expo.Firebase.auth_id_token_changed", msgMap);
           }
         }
       };
@@ -1692,7 +1692,7 @@ class FirebaseAuthModule extends ExportedModule implements ModuleRegistryConsume
     eventMap.putString("requestKey", requestKey);
     eventMap.putString("type", type);
     eventMap.putBundle("state", state);
-    Utils.sendEvent(mModuleRegistry, "phone_auth_state_changed", eventMap);
+    Utils.sendEvent(mModuleRegistry, "Expo.Firebase.phone_auth_state_changed", eventMap);
   }
 
   /**

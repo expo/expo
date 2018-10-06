@@ -183,7 +183,7 @@ public class FirebaseFirestoreDocumentReference {
     event.putString("listenerId", listenerId);
     event.putBundle("documentSnapshot", data);
 
-    Utils.sendEvent(moduleRegistry, "firestore_document_sync_event", event);
+    Utils.sendEvent(moduleRegistry, "Expo.Firebase.firestore_document_sync_event", event);
   }
 
   /**
@@ -200,6 +200,6 @@ public class FirebaseFirestoreDocumentReference {
     event.putString("listenerId", listenerId);
     event.putBundle("error", FirebaseFirestoreModule.getJSError(exception));
 
-    Utils.sendEvent(moduleRegistry, "firestore_document_sync_event", event);
+    Utils.sendEvent(moduleRegistry, "Expo.Firebase.firestore_document_sync_event", event);
   }
 }

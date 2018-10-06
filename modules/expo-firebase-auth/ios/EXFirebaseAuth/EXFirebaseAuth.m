@@ -1,9 +1,9 @@
-
-
-#import <EXFirebaseApp/EXFirebaseAppEvents.h>
 #import <EXFirebaseApp/EXFirebaseAppUtil.h>
 #import <EXFirebaseAuth/EXFirebaseAuth.h>
 
+static NSString *const AUTH_STATE_CHANGED_EVENT = @"Expo.Firebase.auth_state_changed";
+static NSString *const AUTH_ID_TOKEN_CHANGED_EVENT = @"Expo.Firebase.auth_id_token_changed";
+static NSString *const PHONE_AUTH_STATE_CHANGED_EVENT = @"Expo.Firebase.phone_auth_state_changed";
 
 @interface EXFirebaseAuth()
 

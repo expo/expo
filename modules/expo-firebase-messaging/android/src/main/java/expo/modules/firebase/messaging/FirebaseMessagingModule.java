@@ -172,7 +172,7 @@ public class FirebaseMessagingModule extends ExportedModule implements ModuleReg
         RemoteMessage message = intent.getParcelableExtra("message");
         Bundle messageMap = MessagingSerializer.parseRemoteMessageToBundle(message);
 
-        Utils.sendEvent(mModuleRegistry, "messaging_message_received", messageMap);
+        Utils.sendEvent(mModuleRegistry, "Expo.Firebase.messaging_message_received", messageMap);
       }
     }
   }

@@ -1,5 +1,3 @@
-
-
 #import <FirebaseCore/FirebaseCore.h>
 #import <EXCore/EXUtilities.h>
 #import <EXFirebaseApp/EXFirebaseApp.h>
