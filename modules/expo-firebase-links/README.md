@@ -10,7 +10,9 @@ Firstly, you need to install the package from `npm` registry.
 
 `npm install expo-firebase-links` or `yarn add expo-firebase-links`
 
-#### iOS
+### iOS
+
+#### Cocoapods
 
 If you're using Cocoapods, add the dependency to your `Podfile`:
 
@@ -19,6 +21,17 @@ pod 'EXFirebaseLinks', path: '../node_modules/expo-firebase-links/ios'
 ```
 
 and run `pod install`.
+
+#### Manually
+
+You could also choose install this module manually.
+
+1.  In XCode, in the project navigator, right click `Libraries` ➜ `Add Files to [your project's name]`
+2.  Go to `node_modules` ➜ `expo-firebase-links` and add `EXFirebaseLinks.xcodeproj`
+3.  In XCode, in the project navigator, select your project. Add `libEXFirebaseLinks.a` to your project's `Build Phases` ➜ `Link Binary With Libraries`
+4.  Run your project (`Cmd+R`).
+
+#### Common Setup
 
 [Now follow the setup instructions in the docs.](https://rnfirebase.io/docs/master/links/ios#Configure-XCode)
 
@@ -66,7 +79,7 @@ if that is the case you can perform check below
 }
 ```
 
-#### Android
+### Android
 
 1.  Append the following lines to `android/settings.gradle`:
 
@@ -102,6 +115,15 @@ If your Android build cannot find the Native Modules, you can add them like this
 `./android/app/src/main/java/host/exp/exponent/MainActivity.java`
 
 ```java
+/*
+ * At the top of the file.
+ * This is automatically imported with Android Studio, but if you are in any other editor you will need to manually import the module.
+*/
+import expo.modules.firebase.app.FirebaseAppPackage; // This should be here for all Expo Firebase features.
+import expo.modules.firebase.links.FirebaseLinksPackage;
+
+// Later in the file...
+
 @Override
 public List<Package> expoPackages() {
   // Here you can add your own packages.
