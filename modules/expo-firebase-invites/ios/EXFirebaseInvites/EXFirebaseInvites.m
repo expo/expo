@@ -179,7 +179,7 @@ EX_EXPORT_METHOD_AS(sendInvitation,
 EX_EXPORT_METHOD_AS(jsInitialised,
                  jsInitialised:(EXPromiseResolveBlock)resolve
                  rejecter:(EXPromiseRejectBlock)reject) {
-  jsReady = TRUE;
+  jsReady = YES;
   resolve(nil);
 }
 
@@ -221,11 +221,6 @@ EX_EXPORT_METHOD_AS(jsInitialised,
 
 - (void)stopObserving {
 
-}
-
-+ (BOOL)requiresMainQueueSetup
-{
-  return YES;
 }
 
 @end
