@@ -21,7 +21,7 @@ static NSString *const INVITES_INVITATION_RECEIVED = @"Expo.Firebase.invites_inv
 
 static EXFirebaseInvites *theEXFirebaseInvites = nil;
 static NSString *initialInvite = nil;
-static bool jsReady = FALSE;
+static bool jsReady = NO;
 
 + (nonnull instancetype)instance {
     // If an event comes in before the bridge has initialised the native module
@@ -180,7 +180,7 @@ EX_EXPORT_METHOD_AS(jsInitialised,
                  jsInitialised:(EXPromiseResolveBlock)resolve
                  rejecter:(EXPromiseRejectBlock)reject) {
   jsReady = YES;
-  resolve(nil);
+  resolve([NSNull null]);
 }
 
 // ** Start internals **

@@ -12,7 +12,7 @@ EX_EXPORT_METHOD_AS(delete,
     if (error) {
       reject(@"instance_id_error", @"Failed to delete instance id", error);
     } else {
-      resolve(nil);
+      resolve([NSNull null]);
     }
   }];
 }
@@ -56,7 +56,7 @@ EX_EXPORT_METHOD_AS(deleteToken,
     if (error) {
       reject(@"instance_id_error", @"Failed to deleteToken", error);
     } else {
-      resolve(nil);
+      resolve([NSNull null]);
     }
   }];
 }

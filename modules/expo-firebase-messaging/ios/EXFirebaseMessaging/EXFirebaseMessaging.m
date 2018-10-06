@@ -20,7 +20,7 @@ static NSString *const MESSAGING_TOKEN_REFRESHED = @"Expo.Firebase.messaging_tok
 @implementation EXFirebaseMessaging
 
 static EXFirebaseMessaging *shared = nil;
-static bool jsReady = FALSE;
+static bool jsReady = NO;
 static NSString* initialToken = nil;
 static NSMutableArray* pendingMessages = nil;
 
@@ -131,7 +131,7 @@ EX_EXPORT_METHOD_AS(sendMessage,
   [[FIRMessaging messaging] sendMessage:data to:to withMessageID:messageId timeToLive:[ttl intValue]];
   
   // TODO: Listen for send success / errors
-  resolve(nil);
+  resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(subscribeToTopic,
@@ -139,7 +139,7 @@ EX_EXPORT_METHOD_AS(subscribeToTopic,
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
   [[FIRMessaging messaging] subscribeToTopic:topic];
-  resolve(nil);
+  resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(unsubscribeFromTopic,
@@ -147,13 +147,13 @@ EX_EXPORT_METHOD_AS(unsubscribeFromTopic,
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
   [[FIRMessaging messaging] unsubscribeFromTopic:topic];
-  resolve(nil);
+  resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(jsInitialised,
                     jsInitialised:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
-  jsReady = TRUE;
+  jsReady = YES;
   if (initialToken) {
     [self sendJSEvent:_eventEmitter name:MESSAGING_TOKEN_REFRESHED body:initialToken];
   }
@@ -163,7 +163,7 @@ EX_EXPORT_METHOD_AS(jsInitialised,
     }
     pendingMessages = nil;
   }
-  resolve(nil);
+  resolve([NSNull null]);
 }
 
 // ** Start internals **

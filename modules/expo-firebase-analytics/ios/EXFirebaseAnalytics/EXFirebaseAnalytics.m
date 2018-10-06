@@ -14,7 +14,7 @@ EX_EXPORT_METHOD_AS(logEvent,
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
     [FIRAnalytics logEventWithName:name parameters:props];
-    resolve(nil);
+    resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(setAnalyticsCollectionEnabled,
@@ -22,7 +22,7 @@ EX_EXPORT_METHOD_AS(setAnalyticsCollectionEnabled,
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
     [[FIRAnalyticsConfiguration sharedInstance] setAnalyticsCollectionEnabled:enabled];
-    resolve(nil);
+    resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(setCurrentScreen,
@@ -33,7 +33,7 @@ EX_EXPORT_METHOD_AS(setCurrentScreen,
     [EXUtilities performSynchronouslyOnMainThread:^{
         [FIRAnalytics setScreenName:screenName screenClass:screenClass];
     }];
-    resolve(nil);
+    resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(setUserId,
@@ -41,7 +41,7 @@ EX_EXPORT_METHOD_AS(setUserId,
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
     [FIRAnalytics setUserID:userId];
-    resolve(nil);
+    resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(setUserProperty,
@@ -50,14 +50,14 @@ EX_EXPORT_METHOD_AS(setUserProperty,
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
     [FIRAnalytics setUserPropertyString:value forName:name];
-    resolve(nil);
+    resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(reset,
                     reset:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
   [FIRAnalytics resetAnalyticsData];
-  resolve(nil);
+  resolve([NSNull null]);
 }
 
 // not implemented on iOS sdk
@@ -65,13 +65,13 @@ EX_EXPORT_METHOD_AS(setMinimumSessionDuration,
                     setMinimumSessionDuration:(nonnull NSNumber *)milliseconds
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
-    resolve(nil);
+    resolve([NSNull null]);
 }
 EX_EXPORT_METHOD_AS(setSessionTimeoutDuration,
                     setSessionTimeoutDuration:(nonnull NSNumber *)milliseconds
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
-    resolve(nil);
+    resolve([NSNull null]);
 }
 @end
 

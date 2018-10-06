@@ -59,7 +59,7 @@ EX_EXPORT_METHOD_AS(goOnline,
     return;
   }
   [database goOnline];
-  resolve(nil);
+  resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(goOffline,
@@ -73,7 +73,7 @@ EX_EXPORT_METHOD_AS(goOffline,
     return;
   }
   [database goOffline];
-  resolve(nil);
+  resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(setPersistence,
@@ -88,7 +88,7 @@ EX_EXPORT_METHOD_AS(setPersistence,
     return;
   }
   database.persistenceEnabled = state;
-  resolve(nil);
+  resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(setPersistenceCacheSizeBytes,
@@ -103,7 +103,7 @@ EX_EXPORT_METHOD_AS(setPersistenceCacheSizeBytes,
     return;
   }
   database.persistenceCacheSizeBytes = (NSUInteger)size;
-  resolve(nil);
+  resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(enableLogging,
@@ -111,7 +111,7 @@ EX_EXPORT_METHOD_AS(enableLogging,
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
   [FIRDatabase setLoggingEnabled:enabled];
-  resolve(nil);
+  resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(keepSynced,
@@ -125,7 +125,7 @@ EX_EXPORT_METHOD_AS(keepSynced,
                     rejecter:(EXPromiseRejectBlock)reject) {
   FIRDatabaseQuery *query = [self getInternalReferenceForApp:appDisplayName dbURL:dbURL key:key path:path modifiers:modifiers].query;
   [query keepSynced:state];
-  resolve(nil);
+  resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(transactionTryCommit,
@@ -158,7 +158,7 @@ EX_EXPORT_METHOD_AS(transactionTryCommit,
   }
   
   dispatch_semaphore_signal(sema);
-  resolve(nil);
+  resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(transactionStart,
@@ -211,7 +211,7 @@ EX_EXPORT_METHOD_AS(transactionStart,
       [EXFirebaseAppUtil sendJSEvent:self->_eventEmitter name:DATABASE_TRANSACTION_EVENT body:resultMap];
     } withLocalEvents:applyLocally];
   });
-  resolve(nil);
+  resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(onDisconnectSet,
@@ -386,7 +386,7 @@ EX_EXPORT_METHOD_AS(on,
                     rejecter:(EXPromiseRejectBlock)reject) {
   EXFirebaseDatabaseReference *ref = [self getCachedInternalReferenceForApp:appDisplayName dbURL:dbURL props:props];
   [ref on:props[@"eventType"] registration:props[@"registration"]];
-  resolve(nil);
+  resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(off,
@@ -402,7 +402,7 @@ EX_EXPORT_METHOD_AS(off,
       [_dbReferences removeObjectForKey:key];
     }
   }
-  resolve(nil);
+  resolve([NSNull null]);
 }
 
 /*
@@ -413,7 +413,7 @@ EX_EXPORT_METHOD_AS(off,
     NSDictionary *jsError = [EXFirebaseDatabase getJSError:databaseError];
     reject([jsError valueForKey:@"code"], [jsError valueForKey:@"message"], databaseError);
   } else {
-    resolve(nil);
+    resolve([NSNull null]);
   }
 }
 

@@ -20,7 +20,7 @@ static NSString *const LINKS_LINK_RECEIVED = @"Expo.Firebase.links_link_received
 
 static EXFirebaseLinks *theEXFirebaseLinks = nil;
 static NSString *initialLink = nil;
-static bool jsReady = FALSE;
+static bool jsReady = NO;
 
 + (nonnull instancetype)instance {
     // If an event comes in before the bridge has initialised the native module
@@ -186,8 +186,8 @@ EX_EXPORT_METHOD_AS(getInitialLink,
 EX_EXPORT_METHOD_AS(jsInitialised,
                     jsInitialised:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
-  jsReady = TRUE;
-  resolve(nil);
+  jsReady = YES;
+  resolve([NSNull null]);
 }
 
 // ** Start internals **

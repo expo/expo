@@ -129,7 +129,7 @@ static NSMutableDictionary *_listeners;
     if (error) {
         [EXFirebaseFirestore promiseRejectException:reject error:error];
     } else {
-        resolve(nil);
+        resolve([NSNull null]);
     }
 }
 

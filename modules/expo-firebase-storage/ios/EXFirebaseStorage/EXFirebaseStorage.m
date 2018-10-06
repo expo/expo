@@ -65,7 +65,7 @@ EX_EXPORT_METHOD_AS(delete,
     if (error != nil) {
       [self promiseRejectStorageException:reject error:error];
     } else {
-      resolve(nil);
+      resolve([NSNull null]);
     }
   }];
 }

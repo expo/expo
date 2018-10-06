@@ -74,12 +74,12 @@ EX_EXPORT_METHOD_AS(deleteApp,
   FIRApp *existingApp = [EXFirebaseAppUtil getApp:appDisplayName];
   
   if (!existingApp) {
-    return resolve(nil);
+    return resolve([NSNull null]);
   }
   
   [existingApp deleteApp:^(BOOL success) {
     if (success) {
-      resolve(nil);
+      resolve([NSNull null]);
     } else {
       reject(@"app/delete-app-failed", @"Failed to delete the specified app.", nil);
     }

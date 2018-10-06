@@ -44,7 +44,7 @@ EX_EXPORT_METHOD_AS(enableDeveloperMode,
                     rejecter:(EXPromiseRejectBlock)reject) {
   FIRRemoteConfigSettings *remoteConfigSettings = [[FIRRemoteConfigSettings alloc] initWithDeveloperModeEnabled:YES];
   [FIRRemoteConfig remoteConfig].configSettings = remoteConfigSettings;
-  resolve(nil);
+  resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(fetch,
@@ -116,7 +116,7 @@ EX_EXPORT_METHOD_AS(setDefaults,
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
   [[FIRRemoteConfig remoteConfig] setDefaults:defaults];
-  resolve(nil);
+  resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(setDefaultsFromResource,
@@ -124,7 +124,7 @@ EX_EXPORT_METHOD_AS(setDefaultsFromResource,
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
   [[FIRRemoteConfig remoteConfig] setDefaultsFromPlistFileName:fileName];
-  resolve(nil);
+  resolve([NSNull null]);
 }
 
 @end

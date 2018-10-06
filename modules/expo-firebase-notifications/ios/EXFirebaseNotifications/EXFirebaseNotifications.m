@@ -27,7 +27,7 @@ static EXFirebaseNotifications *theEXFirebaseNotifications = nil;
 // PRE-BRIDGE-EVENTS: Consider enabling this to allow events built up before the bridge is built to be sent to the JS side
 // static NSMutableArray *pendingEvents = nil;
 static NSDictionary *initialNotification = nil;
-static bool jsReady = FALSE;
+static bool jsReady = NO;
 static NSString *const DEFAULT_ACTION = @"com.apple.UNNotificationDefaultActionIdentifier";
 
 + (nonnull instancetype)instance {
@@ -245,7 +245,7 @@ EX_EXPORT_METHOD_AS(cancelAllNotifications,
       }
     }
   }
-  resolve(nil);
+  resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(cancelNotification,
@@ -267,7 +267,7 @@ EX_EXPORT_METHOD_AS(cancelNotification,
       }
     }
   }
-  resolve(nil);
+  resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(displayNotification,
@@ -277,13 +277,13 @@ EX_EXPORT_METHOD_AS(displayNotification,
   if ([self isIOS89]) {
     UILocalNotification* notif = [self buildUILocalNotification:notification withSchedule:false];
     [EXSharedApplication() presentLocalNotificationNow:notif];
-    resolve(nil);
+    resolve([NSNull null]);
   } else {
     if (@available(iOS 10.0, *)) {
       UNNotificationRequest* request = [self buildUNNotificationRequest:notification withSchedule:false];
       [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:request withCompletionHandler:^(NSError * _Nullable error) {
         if (!error) {
-          resolve(nil);
+          resolve([NSNull null]);
         } else{
           reject(@"notifications/display_notification_error", @"Failed to display notificaton", error);
         }
@@ -326,7 +326,7 @@ EX_EXPORT_METHOD_AS(getInitialNotification,
                     @"notification": [self parseUserInfo:remoteNotification]
                     });
       } else {
-          resolve(nil);
+          resolve([NSNull null]);
       }
   }
 }
@@ -368,7 +368,7 @@ EX_EXPORT_METHOD_AS(removeAllDeliveredNotifications,
       }
     }
   }
-  resolve(nil);
+  resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(removeDeliveredNotification,
@@ -385,7 +385,7 @@ EX_EXPORT_METHOD_AS(removeDeliveredNotification,
       }
     }
   }
-  resolve(nil);
+  resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(scheduleNotification,
@@ -395,13 +395,13 @@ EX_EXPORT_METHOD_AS(scheduleNotification,
   if ([self isIOS89]) {
     UILocalNotification* notif = [self buildUILocalNotification:notification withSchedule:true];
     [EXSharedApplication() scheduleLocalNotification:notif];
-    resolve(nil);
+    resolve([NSNull null]);
   } else {
     if (@available(iOS 10.0, *)) {
       UNNotificationRequest* request = [self buildUNNotificationRequest:notification withSchedule:true];
       [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:request withCompletionHandler:^(NSError * _Nullable error) {
         if (!error) {
-          resolve(nil);
+          resolve([NSNull null]);
         } else{
           reject(@"notification/schedule_notification_error", @"Failed to schedule notificaton", error);
         }
@@ -416,15 +416,15 @@ EX_EXPORT_METHOD_AS(setBadge,
                     rejecter:(EXPromiseRejectBlock)reject) {
   dispatch_async(dispatch_get_main_queue(), ^{
     [EXSharedApplication() setApplicationIconBadgeNumber:number];
-    resolve(nil);
+    resolve([NSNull null]);
   });
 }
 
 EX_EXPORT_METHOD_AS(jsInitialised,
                     jsInitialised:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
-  jsReady = TRUE;
-  resolve(nil);
+  jsReady = YES;
+  resolve([NSNull null]);
 }
 
 // Because of the time delay between the app starting and the bridge being initialised

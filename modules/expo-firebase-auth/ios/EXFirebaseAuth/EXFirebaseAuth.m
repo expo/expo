@@ -52,7 +52,7 @@ EX_EXPORT_METHOD_AS(addAuthStateListener,
     
     _authStateHandlers[firApp.name] = [NSValue valueWithNonretainedObject:newListenerHandle];
   }
-  resolve(nil);
+  resolve([NSNull null]);
 }
 
 /**
@@ -69,7 +69,7 @@ EX_EXPORT_METHOD_AS(removeAuthStateListener,
     [[FIRAuth authWithApp:firApp] removeAuthStateDidChangeListener:[_authStateHandlers valueForKey:firApp.name]];
     [_authStateHandlers removeObjectForKey:firApp.name];
   }
-  resolve(nil);
+  resolve([NSNull null]);
 }
 
 /**
@@ -93,7 +93,7 @@ EX_EXPORT_METHOD_AS(addIdTokenListener,
     
     _idTokenHandlers[firApp.name] = [NSValue valueWithNonretainedObject:newListenerHandle];
   }
-  resolve(nil);
+  resolve([NSNull null]);
 }
 
 /**
@@ -110,7 +110,7 @@ EX_EXPORT_METHOD_AS(removeIdTokenListener,
     [[FIRAuth authWithApp:firApp] removeIDTokenDidChangeListener:[_idTokenHandlers valueForKey:firApp.name]];
     [_idTokenHandlers removeObjectForKey:firApp.name];
   }
-  resolve(nil);
+  resolve([NSNull null]);
 }
 
 
@@ -1149,7 +1149,7 @@ EX_EXPORT_METHOD_AS(setLanguageCode,
   FIRApp *firApp = [EXFirebaseAppUtil getApp:appDisplayName];
   
   [FIRAuth authWithApp:firApp].languageCode = code;
-  resolve(nil);
+  resolve([NSNull null]);
 }
 
 /**
@@ -1165,7 +1165,7 @@ EX_EXPORT_METHOD_AS(useDeviceLanguage,
   FIRApp *firApp = [EXFirebaseAppUtil getApp:appDisplayName];
   
   [[FIRAuth authWithApp:firApp] useAppLanguage];
-  resolve(nil);
+  resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(verifyPasswordResetCode,
@@ -1208,7 +1208,7 @@ EX_EXPORT_METHOD_AS(verifyPasswordResetCode,
   if (isError) {
     reject(@"auth/no-current-user", @"No user currently signed in.", nil);
   } else {
-    resolve(nil);
+    resolve([NSNull null]);
   }
 }
 
