@@ -193,8 +193,7 @@ public class FirebaseFirestoreCollectionReference {
   }
 
   private Query applyOrders(Query query) {
-    List<Object> ordersList = Utils.recursivelyDeconstructReadableArray(orders);
-    for (Object o : ordersList) {
+    for (Object o : orders) {
       Map<String, Object> order = (Map) o;
       String direction = (String) order.get("direction");
       Map<String, Object> fieldPathMap = (Map) order.get("fieldPath");

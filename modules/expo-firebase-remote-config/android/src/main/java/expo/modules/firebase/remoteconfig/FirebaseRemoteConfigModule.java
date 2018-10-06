@@ -115,9 +115,7 @@ class FirebaseRemoteConfigModule extends ExportedModule implements ModuleRegistr
       return;
     }
     List<Bundle> array = new ArrayList<>();
-    List<Object> keysList = Utils.recursivelyDeconstructReadableArray(keys);
-
-    for (Object key : keysList) {
+    for (Object key : keys) {
       FirebaseRemoteConfigValue value = FirebaseRemoteConfig.getInstance().getValue((String) key);
       array.add(convertRemoteConfigValue(value));
     }

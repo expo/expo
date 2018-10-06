@@ -36,15 +36,17 @@ public class DisplayNotificationTask extends AsyncTask<Void, Void, Void> {
   private ModuleRegistry mModuleRegistry;
 
   public DisplayNotificationTask(
-    Context context, ModuleRegistry mModuleRegistry,
+    Context context, 
+    ModuleRegistry mModuleRegistry,
     NotificationManager notificationManager,
-    Bundle notification, Promise promise
+    Bundle notification, 
+    Promise promise
   ) {
     this.context = context;
-    this.notification = notification;
-    this.notificationManager = notificationManager;
-    this.promise = promise;
     this.mModuleRegistry = mModuleRegistry;
+    this.notificationManager = notificationManager;
+    this.notification = notification;
+    this.promise = promise;
   }
 
   @Override

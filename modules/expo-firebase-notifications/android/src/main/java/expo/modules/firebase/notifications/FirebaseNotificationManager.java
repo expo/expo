@@ -150,7 +150,7 @@ public class FirebaseNotificationManager {
   }
 
   public void displayNotification(Map<String, Object> notification, Promise promise) {
-    Bundle notificationBundle = Utils.readableMapToWritableMap(notification);
+    Bundle notificationBundle = Utils.bundleToMap(notification);
     displayNotification(notificationBundle, promise);
   }
 
@@ -221,7 +221,7 @@ public class FirebaseNotificationManager {
   }
 
   public void scheduleNotification(Map<String, Object> notification, Promise promise) {
-    Bundle notificationBundle = Utils.readableMapToWritableMap(notification);
+    Bundle notificationBundle = Utils.bundleToMap(notification);
 
     scheduleNotification(notificationBundle, promise);
   }

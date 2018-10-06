@@ -266,7 +266,7 @@ public class FirebaseDatabaseModule extends ExportedModule implements ModuleRegi
       onDisconnect.setValue(map, listener);
       break;
     case "array":
-      List<Object> list = Utils.recursivelyDeconstructReadableArray((ArrayList) props.get("value"));
+      List<Object> list = (List) props.get("value");
       onDisconnect.setValue(list, listener);
       break;
     case "string":

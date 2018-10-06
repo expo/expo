@@ -35,9 +35,6 @@ EX_EXPORT_METHOD_AS(getToken,
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
   NSDictionary * options = nil;
-  //    if ([FIRMessaging messaging].APNSToken) {
-  //        options = @{@"apns_token": [FIRMessaging messaging].APNSToken};
-  //    }
   [[FIRInstanceID instanceID] tokenWithAuthorizedEntity:authorizedEntity scope:scope options:options handler:^(NSString * _Nullable identity, NSError * _Nullable error) {
     if (error) {
       reject(@"instance_id_error", @"Failed to getToken", error);

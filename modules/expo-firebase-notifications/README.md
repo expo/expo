@@ -59,10 +59,6 @@ Then add the following methods to your `ios/[App Name]/AppDelegate.m`:
                                                        fetchCompletionHandler:(nonnull void (^)(UIBackgroundFetchResult))completionHandler{
   [[EXFirebaseNotifications instance] didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
 }
-
-- (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings {
-  [[EXFirebaseMessaging instance] didRegisterUserNotificationSettings:notificationSettings];
-}
 ```
 
 #### Android

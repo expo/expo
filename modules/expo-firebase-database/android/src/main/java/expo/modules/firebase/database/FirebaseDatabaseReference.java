@@ -39,7 +39,7 @@ class FirebaseDatabaseReference {
   private HashMap<String, ValueEventListener> valueEventListeners = new HashMap<>();
 
   /**
-   * AsyncTask to convert DataSnapshot instances to WritableMap instances.
+   * AsyncTask to convert DataSnapshot instances to Bundle instances.
    *
    * Introduced due to https://github.com/invertase/react-native-firebase/issues/1284
    */
@@ -385,7 +385,7 @@ class FirebaseDatabaseReference {
           event.putBundle("data", data);
           event.putString("key", key);
           event.putString("eventType", eventType);
-          event.putBundle("registration", Utils.readableMapToWritableMap(registration));
+          event.putBundle("registration", Utils.bundleToMap(registration));
           Utils.sendEvent(moduleRegistry, "Expo.Firebase.database_sync_event", event);
         }
       }
@@ -404,7 +404,7 @@ class FirebaseDatabaseReference {
 
     event.putString("key", key);
     event.putBundle("error", FirebaseDatabaseModule.getJSError(error));
-    event.putBundle("registration", Utils.readableMapToWritableMap(registration));
+    event.putBundle("registration", Utils.bundleToMap(registration));
 
     Utils.sendEvent(moduleRegistry, "Expo.Firebase.database_sync_event", event);
   }
@@ -417,9 +417,8 @@ class FirebaseDatabaseReference {
   private void buildDatabaseQueryAtPathAndModifiers(String path, ArrayList modifiers) {
     FirebaseDatabase firebaseDatabase = FirebaseDatabaseModule.getDatabaseForApp(appName, dbURL);
     query = firebaseDatabase.getReference(path);
-    List<Object> modifiersList = Utils.recursivelyDeconstructReadableArray(modifiers);
 
-    for (Object m : modifiersList) {
+    for (Object m : modifiers) {
       Map modifier = (Map) m;
       String type = (String) modifier.get("type");
       String name = (String) modifier.get("name");

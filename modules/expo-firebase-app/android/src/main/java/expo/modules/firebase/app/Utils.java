@@ -38,7 +38,7 @@ public class Utils {
    *
    * @param key   String key to set on target map
    * @param value Object value to set on target map
-   * @param map   WritableMap target map to write the value to
+   * @param map   Bundle target map to write the value to
    */
   @SuppressWarnings("unchecked")
   public static void mapPutValue(String key, @Nullable Object value, Bundle map) {
@@ -79,7 +79,7 @@ public class Utils {
           for (Object item : (List) value) {
             if (item != null && Map.class.isAssignableFrom(item.getClass())) {
               Map<String, Object> valueMap = (Map<String, Object>) item;
-              nList.add(readableMapToWritableMap(valueMap));
+              nList.add(bundleToMap(valueMap));
             } else {
               nList.add(item);
             }
@@ -87,7 +87,7 @@ public class Utils {
           map.putParcelableArrayList(key, (ArrayList<? extends Parcelable>) nList);
         } else if (Map.class.isAssignableFrom(value.getClass())) {
           Map<String, Object> valueMap = (Map<String, Object>) value;
-          map.putBundle(key, readableMapToWritableMap(valueMap));
+          map.putBundle(key, bundleToMap(valueMap));
         } else {
           Log.d(TAG, "utils:mapPutValue:unknownType:" + type);
           map.remove(key);
@@ -97,13 +97,13 @@ public class Utils {
   }
 
   /**
-   * Convert a ReadableMap to a WritableMap for the purposes of re-sending back to
+   * Convert a ReadableMap to a Bundle for the purposes of re-sending back to
    * JS TODO This is now a legacy util - internally uses RN functionality
    *
    * @param map ReadableMap
-   * @return WritableMap
+   * @return Bundle
    */
-  public static Bundle readableMapToWritableMap(Map<String, Object> map) {
+  public static Bundle bundleToMap(Map<String, Object> map) {
     Bundle bundle = new Bundle();
     for (Map.Entry<String, Object> entry : map.entrySet()) {
 
@@ -116,17 +116,6 @@ public class Utils {
   }
 
   /**
-   * Convert a ReadableArray into a native Java Map TODO This is now a legacy util
-   * - internally uses RN functionality
-   *
-   * @param readableArray ReadableArray
-   * @return List<Object>
-   */
-  public static List<Object> recursivelyDeconstructReadableArray(List<Object> readableArray) {
-    return readableArray;
-  }
-
-  /**
    * We need to check if app is in foreground otherwise the app will crash.
    * http://stackoverflow.com/questions/8489993/check-android-application-is-in-foreground-or-not
    *
@@ -135,13 +124,15 @@ public class Utils {
    */
   public static boolean isAppInForeground(Context context) {
     ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-    if (activityManager == null)
+    if (activityManager == null) {
       return false;
+    }
 
     List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
-    if (appProcesses == null)
+    if (appProcesses == null) {
       return false;
-
+    }
+    
     final String packageName = context.getPackageName();
     for (ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
       if (appProcess.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND

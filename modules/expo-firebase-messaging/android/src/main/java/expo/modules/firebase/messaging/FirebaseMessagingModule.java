@@ -36,18 +36,11 @@ public class FirebaseMessagingModule extends ExportedModule implements ModuleReg
   private ModuleRegistry mModuleRegistry;
   private Boolean isDestroyed = false;
 
+  private MessageReceiver mMessageReceiver = null;
+  private RefreshTokenReceiver mRefreshTokenReceiver = null;
+
   public FirebaseMessagingModule(Context context) {
     super(context);
-
-    LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(context);
-
-    // Subscribe to message events
-    localBroadcastManager.registerReceiver(new MessageReceiver(),
-        new IntentFilter(EXFirebaseMessagingService.MESSAGE_EVENT));
-
-    // Subscribe to token refresh events
-    localBroadcastManager.registerReceiver(new RefreshTokenReceiver(),
-        new IntentFilter(EXFirebaseInstanceIdService.TOKEN_REFRESH_EVENT));
   }
 
   @Override
@@ -58,25 +51,42 @@ public class FirebaseMessagingModule extends ExportedModule implements ModuleReg
   @Override
   public void setModuleRegistry(ModuleRegistry moduleRegistry) {
     // Unregister from old UIManager
-    if (mModuleRegistry != null && mModuleRegistry.getModule(UIManager.class) != null) {
-      mModuleRegistry.getModule(UIManager.class).unregisterLifecycleEventListener(this);
+    if (mModuleRegistry != null) {
+      if (mModuleRegistry.getModule(UIManager.class) != null) {
+        mModuleRegistry.getModule(UIManager.class).unregisterLifecycleEventListener(this);
+      }
+
+      LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(context);
+
+      if (mMessageReceiver != null) {
+        localBroadcastManager.unregisterReceiver(mMessageReceiver);
+        mMessageReceiver = null;
+      }
+
+      if (mRefreshTokenReceiver != null) {
+        localBroadcastManager.unregisterReceiver(mRefreshTokenReceiver);
+        mRefreshTokenReceiver = null;
+      }
     }
 
     mModuleRegistry = moduleRegistry;
 
     // Register to new UIManager
-    if (mModuleRegistry != null && mModuleRegistry.getModule(UIManager.class) != null) {
-      mModuleRegistry.getModule(UIManager.class).registerLifecycleEventListener(this);
+    if (mModuleRegistry != null) {
+      if (mModuleRegistry.getModule(UIManager.class) != null) {
+        mModuleRegistry.getModule(UIManager.class).registerLifecycleEventListener(this);
+      }
+
+      LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(context);
+
+      mMessageReceiver = new MessageReceiver();
+      // Subscribe to message events
+      localBroadcastManager.registerReceiver(mMessageReceiver, new IntentFilter(EXFirebaseMessagingService.MESSAGE_EVENT));
+
+      mRefreshTokenReceiver = new RefreshTokenReceiver();
+      // Subscribe to token refresh events
+      localBroadcastManager.registerReceiver(mRefreshTokenReceiver, new IntentFilter(EXFirebaseInstanceIdService.TOKEN_REFRESH_EVENT));
     }
-  }
-
-  protected final Context getApplicationContext() {
-    return getCurrentActivity().getApplicationContext();
-  }
-
-  final Activity getCurrentActivity() {
-    ActivityProvider activityProvider = mModuleRegistry.getModule(ActivityProvider.class);
-    return activityProvider.getCurrentActivity();
   }
 
   @ExpoMethod

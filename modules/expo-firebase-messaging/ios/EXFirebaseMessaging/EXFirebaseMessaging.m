@@ -76,11 +76,6 @@ EX_EXPORT_MODULE(ExpoFirebaseMessaging)
   [self sendJSEvent:_eventEmitter name:MESSAGING_MESSAGE_RECEIVED body:message];
 }
 
-- (void)didRegisterUserNotificationSettings:(nonnull UIUserNotificationSettings *)notificationSettings
-{
-
-}
-
 // *******************************************************
 // ** Finish AppDelegate methods
 // *******************************************************
