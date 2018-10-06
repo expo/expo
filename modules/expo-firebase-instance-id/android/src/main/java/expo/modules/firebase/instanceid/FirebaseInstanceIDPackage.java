@@ -8,10 +8,9 @@ import java.util.List;
 import expo.core.BasePackage;
 import expo.core.ExportedModule;
 
-@SuppressWarnings("unused")
 public class FirebaseInstanceIDPackage extends BasePackage {
   @Override
   public List<ExportedModule> createExportedModules(Context context) {
-    return Collections.singletonList((ExportedModule) new FirebaseInstanceIDModule(context));
+    return Collections.<ExportedModule>singletonList(new FirebaseInstanceIDModule(context));
   }
 }

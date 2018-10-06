@@ -81,7 +81,7 @@ public class FirebaseNotificationsModule extends ExportedModule
     FirebaseNotificationsModule.moduleRegistry = moduleRegistry;
     
     if (mModuleRegistry != null) {
-      // TODO:Bacon: Remove React
+      //TODO: Bacon: Remove React
       if (getApplicationContext() instanceof ReactContext) {
         ((ReactContext) getApplicationContext()).addActivityEventListener(this);
       }

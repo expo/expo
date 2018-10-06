@@ -20,8 +20,7 @@ pod 'EXFirebaseMessaging', path: '../node_modules/expo-firebase-messaging/ios'
 
 and run `pod install`.
 
-1. [**Setup Certificates**](https://rnfirebase.io/docs/master/messaging/ios#Setup-Certificates)
-2. [**Enable Capabilities**](https://rnfirebase.io/docs/master/messaging/ios#Enable-Capabilities)
+1. [**Enable Capabilities**](https://rnfirebase.io/docs/master/messaging/ios#Enable-Capabilities)
 
 You can reliably produce a `.p12` file with fastlane. 
 

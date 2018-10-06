@@ -19,8 +19,6 @@ public class FirebaseInstanceIDModule extends ExportedModule implements ModuleRe
 
   private static final String TAG = FirebaseInstanceIDModule.class.getCanonicalName();
 
-  private ModuleRegistry mModuleRegistry;
-
   public FirebaseInstanceIDModule(Context context) {
     super(context);
   }
@@ -32,16 +30,6 @@ public class FirebaseInstanceIDModule extends ExportedModule implements ModuleRe
 
   @Override
   public void setModuleRegistry(ModuleRegistry moduleRegistry) {
-    mModuleRegistry = moduleRegistry;
-  }
-
-  protected final Context getApplicationContext() {
-    return getCurrentActivity().getApplicationContext();
-  }
-
-  protected final Activity getCurrentActivity() {
-    ActivityProvider activityProvider = mModuleRegistry.getModule(ActivityProvider.class);
-    return activityProvider.getCurrentActivity();
   }
 
   @ExpoMethod

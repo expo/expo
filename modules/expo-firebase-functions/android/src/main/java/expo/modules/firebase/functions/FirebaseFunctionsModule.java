@@ -33,8 +33,6 @@ public class FirebaseFunctionsModule extends ExportedModule implements ModuleReg
   private static final String ERROR_KEY = "__error";
   private static final String DETAILS_KEY = "details";
 
-  private ModuleRegistry mModuleRegistry;
-
   public FirebaseFunctionsModule(Context context) {
     super(context);
   }
@@ -46,18 +44,7 @@ public class FirebaseFunctionsModule extends ExportedModule implements ModuleReg
 
   @Override
   public void setModuleRegistry(ModuleRegistry moduleRegistry) {
-    mModuleRegistry = moduleRegistry;
   }
-
-  protected final Context getApplicationContext() {
-    return getCurrentActivity().getApplicationContext();
-  }
-
-  protected final Activity getCurrentActivity() {
-    ActivityProvider activityProvider = mModuleRegistry.getModule(ActivityProvider.class);
-    return activityProvider.getCurrentActivity();
-  }
-
 
   @ExpoMethod
   public void httpsCallable(final String name, Map<String, Object> wrapper, final Promise promise) {

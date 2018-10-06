@@ -76,7 +76,6 @@ public class FirebaseStorageModule extends ExportedModule implements ModuleRegis
     return "ExpoFirebaseStorage";
   }
 
-
   @Override
   public void setModuleRegistry(ModuleRegistry moduleRegistry) {
     mModuleRegistry = moduleRegistry;

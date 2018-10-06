@@ -187,6 +187,7 @@ public class FirebaseMessagingModule extends ExportedModule implements ModuleReg
     }
   }
 
+  // TODO: Bacon: Should this be a part of iid?
   private class RefreshTokenReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -194,8 +195,6 @@ public class FirebaseMessagingModule extends ExportedModule implements ModuleReg
         String token = FirebaseInstanceId.getInstance().getToken();
         Log.d(TAG, "Received new FCM token: " + token);
 
-        // TODO: Evan: Verify this shape can work. Was string originally but EXCore
-        // needs a Bundle not Object.
         Bundle tokenPayload = new Bundle();
         tokenPayload.putString("token", token);
 

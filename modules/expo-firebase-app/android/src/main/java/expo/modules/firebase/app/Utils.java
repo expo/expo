@@ -28,7 +28,9 @@ public class Utils {
     if (eventEmitter != null) {
       eventEmitter.emit(eventName, body);
     } else {
-      Log.e(TAG, "Could not emit " + eventName + " event, no event emitter present.");
+      String errorMessage = "Could not emit " + eventName + " event, no event emitter present.";
+      Log.e(TAG, errorMessage);
+      // throw new NullPointerException(errorMessage); 
     }
   }
 

@@ -37,11 +37,11 @@ class FirebaseRemoteConfigModule extends ExportedModule implements ModuleRegistr
   private static final String NUMBER_VALUE = "numberValue";
   private static final String SOURCE = "source";
 
-  private ModuleRegistry mModuleRegistry;
   private Context mContext;
 
   FirebaseRemoteConfigModule(Context context) {
     super(context);
+    //TODO: Bacon: Can't we get this some other way?
     mContext = context;
     Log.d(TAG, "New instance");
   }
@@ -53,22 +53,19 @@ class FirebaseRemoteConfigModule extends ExportedModule implements ModuleRegistr
 
   @Override
   public void setModuleRegistry(ModuleRegistry moduleRegistry) {
-    mModuleRegistry = moduleRegistry;
   }
 
-  protected final Context getApplicationContext() {
-    return getCurrentActivity().getApplicationContext();
-  }
-
-  final Activity getCurrentActivity() {
-    ActivityProvider activityProvider = mModuleRegistry.getModule(ActivityProvider.class);
-    return activityProvider.getCurrentActivity();
+  private Boolean getDefaultAppOrReject(Promise promise) {
+    Boolean hasDefaultApp = FirebaseApp.getInstance() != null;
+    if (!hasDefaultApp) {
+      promise.reject("E_FIREBASE_REMOTE_CONFIG", "Default app is not initialized yet.");
+    }
+    return hasDefaultApp;
   }
 
   @ExpoMethod
   public void enableDeveloperMode(Promise promise) {
-    if (FirebaseApp.getInstance() == null) {
-      promise.reject("E_FIREBASE_REMOTE_CONFIG", "Default app is not initialized yet.");
+    if (!getDefaultAppOrReject(promise)) {
       return;
     }
     FirebaseRemoteConfigSettings.Builder settings = new FirebaseRemoteConfigSettings.Builder();
@@ -90,8 +87,7 @@ class FirebaseRemoteConfigModule extends ExportedModule implements ModuleRegistr
 
   @ExpoMethod
   public void activateFetched(final Promise promise) {
-    if (FirebaseApp.getInstance() == null) {
-      promise.reject("E_FIREBASE_REMOTE_CONFIG", "Default app is not initialized yet.");
+    if (!getDefaultAppOrReject(promise)) {
       return;
     }
     Boolean status = FirebaseRemoteConfig.getInstance().activateFetched();
@@ -100,8 +96,7 @@ class FirebaseRemoteConfigModule extends ExportedModule implements ModuleRegistr
 
   @ExpoMethod
   public void getValue(String key, final Promise promise) {
-    if (FirebaseApp.getInstance() == null) {
-      promise.reject("E_FIREBASE_REMOTE_CONFIG", "Default app is not initialized yet.");
+    if (!getDefaultAppOrReject(promise)) {
       return;
     }
     FirebaseRemoteConfigValue value = FirebaseRemoteConfig.getInstance().getValue(key);
@@ -110,8 +105,7 @@ class FirebaseRemoteConfigModule extends ExportedModule implements ModuleRegistr
 
   @ExpoMethod
   public void getValues(List keys, final Promise promise) {
-    if (FirebaseApp.getInstance() == null) {
-      promise.reject("E_FIREBASE_REMOTE_CONFIG", "Default app is not initialized yet.");
+    if (!getDefaultAppOrReject(promise)) {
       return;
     }
     List<Bundle> array = new ArrayList<>();
@@ -125,8 +119,7 @@ class FirebaseRemoteConfigModule extends ExportedModule implements ModuleRegistr
 
   @ExpoMethod
   public void getKeysByPrefix(String prefix, final Promise promise) {
-    if (FirebaseApp.getInstance() == null) {
-      promise.reject("E_FIREBASE_REMOTE_CONFIG", "Default app is not initialized yet.");
+    if (!getDefaultAppOrReject(promise)) {
       return;
     }
     Set<String> keys = FirebaseRemoteConfig.getInstance().getKeysByPrefix(prefix);
@@ -135,26 +128,21 @@ class FirebaseRemoteConfigModule extends ExportedModule implements ModuleRegistr
     for (String key : keys) {
       array.add(key);
     }
-
     promise.resolve(array);
   }
 
   @ExpoMethod
   public void setDefaults(Map<String, Object> map, Promise promise) {
-    if (FirebaseApp.getInstance() == null) {
-      promise.reject("E_FIREBASE_REMOTE_CONFIG", "Default app is not initialized yet.");
+    if (!getDefaultAppOrReject(promise)) {
       return;
     }
-    // TODO: Evan: Possibly clone
-    Map<String, Object> convertedMap = map;
-    FirebaseRemoteConfig.getInstance().setDefaults(convertedMap);
+    FirebaseRemoteConfig.getInstance().setDefaults(map);
     promise.resolve(null);
   }
 
   @ExpoMethod
   public void setDefaultsFromResource(int resourceId, Promise promise) {
-    if (FirebaseApp.getInstance() == null) {
-      promise.reject("E_FIREBASE_REMOTE_CONFIG", "Default app is not initialized yet.");
+    if (!getDefaultAppOrReject(promise)) {
       return;
     }
     FirebaseRemoteConfig.getInstance().setDefaults(resourceId);
@@ -162,8 +150,7 @@ class FirebaseRemoteConfigModule extends ExportedModule implements ModuleRegistr
   }
 
   private void fetchInternal(final Promise promise, Boolean withExpiration, long expirationDuration) {
-    if (FirebaseApp.getInstance() == null) {
-      promise.reject("E_FIREBASE_REMOTE_CONFIG", "Default app is not initialized yet.");
+    if (!getDefaultAppOrReject(promise)) {
       return;
     }
     FirebaseRemoteConfig.getInstance().fetch(withExpiration ? expirationDuration : 43200) // 12 hours default
