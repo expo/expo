@@ -2,10 +2,12 @@
  * @flow
  * CollectionReference representation wrapper
  */
+import { utils } from 'expo-firebase-app';
+
 import DocumentReference from './DocumentReference';
 import Query from './Query';
-import { utils } from 'expo-firebase-app';
-import type Firestore from './';
+
+import type Firestore from '.';
 import type { GetOptions, MetadataChanges, QueryDirection, QueryOperator } from './types';
 import type FieldPath from './FieldPath';
 import type Path from './Path';

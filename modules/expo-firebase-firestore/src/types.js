@@ -18,6 +18,10 @@ export type SetOptions = {
   merge?: boolean,
 };
 
+export type SnapshotOptions = {
+  INNER?: string,
+};
+
 export type SnapshotMetadata = {
   fromCache: boolean,
   hasPendingWrites: boolean,

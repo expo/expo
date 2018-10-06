@@ -1,4 +1,3 @@
-#import <Foundation/Foundation.h>
 #import <FirebaseFirestore/FirebaseFirestore.h>
 #import <EXCore/EXEventEmitterService.h>
 #import <EXFirebaseFirestore/EXFirebaseFirestore.h>

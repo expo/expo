@@ -112,9 +112,9 @@ EX_EXPORT_METHOD_AS(transactionDispose,
     }
     
     dispatch_semaphore_t semaphore = [transactionState valueForKey:@"semaphore"];
-    [transactionState setValue:@true forKey:@"abort"];
+    [transactionState setValue:@YES forKey:@"abort"];
     dispatch_semaphore_signal(semaphore);
-    resolve(nil);
+    resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(transactionApplyBuffer,
@@ -137,7 +137,7 @@ EX_EXPORT_METHOD_AS(transactionApplyBuffer,
     dispatch_semaphore_t semaphore = [transactionState valueForKey:@"semaphore"];
     [transactionState setValue:commandBuffer forKey:@"commandBuffer"];
     dispatch_semaphore_signal(semaphore);
-    resolve(nil);
+    resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(transactionBegin,
@@ -163,7 +163,7 @@ EX_EXPORT_METHOD_AS(transactionBegin,
                 eventMap[@"type"] = @"update";
                 eventMap[@"id"] = transactionId;
                 eventMap[@"appName"] = appDisplayName;
-                [EXFirebaseAppUtil sendJSEvent:self.eventEmitter name:FIRESTORE_TRANSACTION_EVENT body:eventMap];
+                [EXFirebaseAppUtil sendJSEvent:_eventEmitter name:FIRESTORE_TRANSACTION_EVENT body:eventMap];
             });
             
             // wait for the js event handler to call transactionApplyBuffer
@@ -225,11 +225,11 @@ EX_EXPORT_METHOD_AS(transactionBegin,
                     eventMap[@"type"] = @"complete";
                 }
                 
-                [EXFirebaseAppUtil sendJSEvent:self.eventEmitter name:FIRESTORE_TRANSACTION_EVENT body:eventMap];
+                [EXFirebaseAppUtil sendJSEvent:_eventEmitter name:FIRESTORE_TRANSACTION_EVENT body:eventMap];
             }
         }];
     });
-    resolve(nil);
+    resolve([NSNull null]);
 }
 
 /**
@@ -245,7 +245,7 @@ EX_EXPORT_METHOD_AS(disableNetwork,
         if (error) {
             [EXFirebaseFirestore promiseRejectException:reject error:error];
         } else {
-            resolve(nil);
+            resolve([NSNull null]);
         }
     }];
 }
@@ -259,7 +259,7 @@ EX_EXPORT_METHOD_AS(setLogLevel,
     } else {
         [FIRFirestore enableLogging:false];
     }
-    resolve(nil);
+    resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(enableNetwork,
@@ -271,7 +271,7 @@ EX_EXPORT_METHOD_AS(enableNetwork,
         if (error) {
             [EXFirebaseFirestore promiseRejectException:reject error:error];
         } else {
-            resolve(nil);
+            resolve([NSNull null]);
         }
     }];
 }
@@ -298,7 +298,7 @@ EX_EXPORT_METHOD_AS(collectionOffSnapshot,
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
     [EXFirebaseFirestoreCollectionReference offSnapshot:listenerId];
-    resolve(nil);
+    resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(collectionOnSnapshot,
@@ -313,7 +313,7 @@ EX_EXPORT_METHOD_AS(collectionOnSnapshot,
                     rejecter:(EXPromiseRejectBlock)reject) {
     EXFirebaseFirestoreCollectionReference *ref = [self getCollectionForAppPath:appDisplayName path:path filters:filters orders:orders options:options];
     [ref onSnapshot:listenerId queryListenOptions:queryListenOptions];
-    resolve(nil);
+    resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(documentBatch,
@@ -349,7 +349,7 @@ EX_EXPORT_METHOD_AS(documentBatch,
         if (error) {
             [EXFirebaseFirestore promiseRejectException:reject error:error];
         } else {
-            resolve(nil);
+            resolve([NSNull null]);
         }
     }];
 }
@@ -359,8 +359,7 @@ EX_EXPORT_METHOD_AS(documentDelete,
                     path:(NSString *)path
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
-  EXFirebaseFirestoreDocumentReference *ref = [self getDocumentForAppPath:appDisplayName path:path];
-
+    EXFirebaseFirestoreDocumentReference *ref = [self getDocumentForAppPath:appDisplayName path:path];
     [ref delete:resolve rejecter:reject];
 }
 
@@ -371,7 +370,6 @@ EX_EXPORT_METHOD_AS(documentGet,
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
   EXFirebaseFirestoreDocumentReference *ref = [self getDocumentForAppPath:appDisplayName path:path];
-  
   [ref get:getOptions resolver:resolve rejecter:reject];
 }
 
@@ -382,7 +380,7 @@ EX_EXPORT_METHOD_AS(documentOffSnapshot,
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
     [EXFirebaseFirestoreDocumentReference offSnapshot:listenerId];
-    resolve(nil);
+    resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(documentOnSnapshot,
@@ -394,7 +392,7 @@ EX_EXPORT_METHOD_AS(documentOnSnapshot,
                     rejecter:(EXPromiseRejectBlock)reject) {
     EXFirebaseFirestoreDocumentReference *ref = [self getDocumentForAppPath:appDisplayName path:path];
     [ref onSnapshot:listenerId docListenOptions:docListenOptions];
-    resolve(nil);
+    resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(documentSet,
@@ -414,8 +412,7 @@ EX_EXPORT_METHOD_AS(documentUpdate,
                     data:(NSDictionary *)data
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
-  EXFirebaseFirestoreDocumentReference *ref = [self getDocumentForAppPath:appDisplayName path:path];
-
+    EXFirebaseFirestoreDocumentReference *ref = [self getDocumentForAppPath:appDisplayName path:path];
     [ref update:data resolver:resolve rejecter:reject];
 }
 
@@ -452,7 +449,7 @@ EX_EXPORT_METHOD_AS(settings,
     }
     
     [firestore setSettings:firestoreSettings];
-    resolve(nil);
+    resolve([NSNull null]);
 }
 
 /*
@@ -479,11 +476,11 @@ EX_EXPORT_METHOD_AS(settings,
 }
 
 - (EXFirebaseFirestoreCollectionReference *)getCollectionForAppPath:(NSString *)appDisplayName path:(NSString *)path filters:(NSArray *)filters orders:(NSArray *)orders options:(NSDictionary *)options {
-    return [[EXFirebaseFirestoreCollectionReference alloc] initWithPathAndModifiers:self.eventEmitter appDisplayName:appDisplayName path:path filters:filters orders:orders options:options];
+    return [[EXFirebaseFirestoreCollectionReference alloc] initWithPathAndModifiers:_eventEmitter appDisplayName:appDisplayName path:path filters:filters orders:orders options:options];
 }
 
 - (EXFirebaseFirestoreDocumentReference *)getDocumentForAppPath:(NSString *)appDisplayName path:(NSString *)path {
-    return [[EXFirebaseFirestoreDocumentReference alloc] initWithPath:self.eventEmitter appDisplayName:appDisplayName path:path];
+    return [[EXFirebaseFirestoreDocumentReference alloc] initWithPath:_eventEmitter appDisplayName:appDisplayName path:path];
 }
 
 // TODO: Move to error util for use in other modules
@@ -587,10 +584,6 @@ EX_EXPORT_METHOD_AS(settings,
 
 - (NSArray<NSString *> *)supportedEvents {
     return @[FIRESTORE_COLLECTION_SYNC_EVENT, FIRESTORE_DOCUMENT_SYNC_EVENT, FIRESTORE_TRANSACTION_EVENT];
-}
-
-+ (BOOL)requiresMainQueueSetup {
-    return NO;
 }
 
 @end
