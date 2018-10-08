@@ -2,8 +2,10 @@
  * @flow
  * StorageReference representation wrapper
  */
-import { ReferenceBase, getNativeModule } from 'expo-firebase-app';
-import StorageTask, { UPLOAD_TASK, DOWNLOAD_TASK } from './task';
+import { ReferenceBase } from 'expo-firebase-app';
+
+import StorageTask, { DOWNLOAD_TASK, UPLOAD_TASK } from './task';
+
 import type Storage from './index';
 
 /**
@@ -39,7 +41,7 @@ export default class StorageReference extends ReferenceBase {
    * @returns {Promise.<T>|*}
    */
   delete(): Promise<void> {
-    return getNativeModule(this._storage).delete(this.path);
+    return this._storage.nativeModule.delete(this.path);
   }
 
   /**
@@ -47,7 +49,7 @@ export default class StorageReference extends ReferenceBase {
    * @returns {Promise.<T>|*}
    */
   getDownloadURL(): Promise<string> {
-    return getNativeModule(this._storage).getDownloadURL(this.path);
+    return this._storage.nativeModule.getDownloadURL(this.path);
   }
 
   /**
@@ -55,7 +57,7 @@ export default class StorageReference extends ReferenceBase {
    * @returns {Promise.<T>|*}
    */
   getMetadata(): Promise<Object> {
-    return getNativeModule(this._storage).getMetadata(this.path);
+    return this._storage.nativeModule.getMetadata(this.path);
   }
 
   /**
@@ -64,7 +66,7 @@ export default class StorageReference extends ReferenceBase {
    * @returns {Promise.<T>|*}
    */
   updateMetadata(metadata: Object = {}): Promise<Object> {
-    return getNativeModule(this._storage).updateMetadata(this.path, metadata);
+    return this._storage.nativeModule.updateMetadata(this.path, metadata);
   }
 
   /**
@@ -75,7 +77,7 @@ export default class StorageReference extends ReferenceBase {
   downloadFile(filePath: string): Promise<Object> {
     return new StorageTask(
       DOWNLOAD_TASK,
-      getNativeModule(this._storage).downloadFile(this.path, filePath),
+      this._storage.nativeModule.downloadFile(this.path, filePath),
       this
     );
   }
@@ -99,7 +101,7 @@ export default class StorageReference extends ReferenceBase {
     if (_filePath.includes('%')) _filePath = decodeURI(_filePath);
     return new StorageTask(
       UPLOAD_TASK,
-      getNativeModule(this._storage).putFile(this.path, _filePath, metadata),
+      this._storage.nativeModule.putFile(this.path, _filePath, metadata),
       this
     );
   }

@@ -1,8 +1,9 @@
 /**
  * @flow
  */
-import { initialiseLogger } from './log';
-import { initialiseNativeModule } from './native';
+import { initialiseLogger, getLogger } from './log';
+import { initialiseNativeModule, getNativeModule } from './native';
+import { SharedEventEmitter } from './events';
 
 import firebase from '../index';
 
@@ -43,4 +44,18 @@ export default class ModuleBase {
   get app(): App {
     return this._app;
   }
+
+  get nativeModule() {
+    return getNativeModule(this);
+  }
+
+  get logger() {
+    return getLogger(this);
+  }
+
+  get sharedEventEmitter() {
+    return SharedEventEmitter;
+  }
+
+  addSharedEventListener() {}
 }

@@ -1,7 +1,4 @@
-/**
- * @flow
- * Notification representation wrapper
- */
+// @flow
 import { Platform } from 'expo-core';
 import AndroidNotification from './AndroidNotification';
 import IOSNotification from './IOSNotification';

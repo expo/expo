@@ -1,6 +1,5 @@
-/**
- * @flow
- */
+// @flow
+
 import type User from './User';
 
 export type IdTokenResult = {

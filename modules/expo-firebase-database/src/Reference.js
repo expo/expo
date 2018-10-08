@@ -2,11 +2,13 @@
  * @flow
  * Database Reference representation wrapper
  */
-import { getLogger, utils, getNativeModule, ReferenceBase } from 'expo-firebase-app';
-import SyncTree from './SyncTree';
-import Query from './Query';
+import { ReferenceBase, utils } from 'expo-firebase-app';
+
 import DataSnapshot from './DataSnapshot';
 import OnDisconnect from './OnDisconnect';
+import Query from './Query';
+import SyncTree from './SyncTree';
+
 import type Database from './index';
 import type { DatabaseModifier, FirebaseError } from './types';
 
@@ -82,7 +84,7 @@ export default class Reference extends ReferenceBase {
     this._refListeners = {};
     this._database = database;
     this._query = new Query(this, existingModifiers);
-    getLogger(database).debug('Created new Reference', this._getRefKey());
+    database.logger.debug('Created new Reference', this._getRefKey());
   }
 
   /**
@@ -96,7 +98,7 @@ export default class Reference extends ReferenceBase {
    * @returns {*}
    */
   keepSynced(bool: boolean): Promise<void> {
-    return getNativeModule(this._database).keepSynced(
+    return this._database.nativeModule.keepSynced(
       this._getRefKey(),
       this.path,
       this._query.getModifiers(),
@@ -114,7 +116,7 @@ export default class Reference extends ReferenceBase {
    */
   set(value: any, onComplete?: Function): Promise<void> {
     return promiseOrCallback(
-      getNativeModule(this._database).set(this.path, this._serializeAnyType(value)),
+      this._database.nativeModule.set(this.path, this._serializeAnyType(value)),
       onComplete
     );
   }
@@ -131,7 +133,7 @@ export default class Reference extends ReferenceBase {
     const _priority = this._serializeAnyType(priority);
 
     return promiseOrCallback(
-      getNativeModule(this._database).setPriority(this.path, _priority),
+      this._database.nativeModule.setPriority(this.path, _priority),
       onComplete
     );
   }
@@ -154,7 +156,7 @@ export default class Reference extends ReferenceBase {
     const _priority = this._serializeAnyType(priority);
 
     return promiseOrCallback(
-      getNativeModule(this._database).setWithPriority(this.path, _value, _priority),
+      this._database.nativeModule.setWithPriority(this.path, _value, _priority),
       onComplete
     );
   }
@@ -170,7 +172,7 @@ export default class Reference extends ReferenceBase {
   update(val: Object, onComplete?: Function): Promise<void> {
     const value = this._serializeObject(val);
 
-    return promiseOrCallback(getNativeModule(this._database).update(this.path, value), onComplete);
+    return promiseOrCallback(this._database.nativeModule.update(this.path, value), onComplete);
   }
 
   /**
@@ -181,7 +183,7 @@ export default class Reference extends ReferenceBase {
    * @return {Promise}
    */
   remove(onComplete?: Function): Promise<void> {
-    return promiseOrCallback(getNativeModule(this._database).remove(this.path), onComplete);
+    return promiseOrCallback(this._database.nativeModule.remove(this.path), onComplete);
   }
 
   /**
@@ -242,7 +244,7 @@ export default class Reference extends ReferenceBase {
     cancelOrContext: (error: FirebaseError) => void,
     context?: Object
   ) {
-    return getNativeModule(this._database)
+    return this._database.nativeModule
       .once(this._getRefKey(), this.path, this._query.getModifiers(), eventName)
       .then(({ snapshot }) => {
         const _snapshot = new DataSnapshot(this, snapshot);
@@ -559,8 +561,9 @@ export default class Reference extends ReferenceBase {
    * @return {string}
    */
   _getRegistrationKey(eventType: string): string {
-    return `$${this._database.databaseUrl}$/${this
-      .path}$${this._query.queryIdentifier()}$${listeners}$${eventType}`;
+    return `$${this._database.databaseUrl}$/${
+      this.path
+    }$${this._query.queryIdentifier()}$${listeners}$${eventType}`;
   }
 
   /**
@@ -725,7 +728,7 @@ export default class Reference extends ReferenceBase {
     }
 
     // initialise the native listener if not already listening
-    getNativeModule(this._database).on({
+    this._database.nativeModule.on({
       eventType,
       path: this.path,
       key: this._getRefKey(),

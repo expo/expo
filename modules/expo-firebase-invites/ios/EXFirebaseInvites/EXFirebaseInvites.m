@@ -103,11 +103,13 @@ continueUserActivity:(NSUserActivity *)userActivity
 EX_EXPORT_METHOD_AS(getInitialInvitation,
                     getInitialInvitation:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
+  
+  NSDictionary *launchOptions = [self launchOptions];
   NSURL* url = nil;
-  if (_utils.launchOptions[UIApplicationLaunchOptionsURLKey]) {
-    url = (NSURL*)_utils.launchOptions[UIApplicationLaunchOptionsURLKey];
-  } else if (_utils.launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey]) {
-    NSDictionary *dictionary = _utils.launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey];
+  if (launchOptions[UIApplicationLaunchOptionsURLKey]) {
+    url = (NSURL*)launchOptions[UIApplicationLaunchOptionsURLKey];
+  } else if (launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey]) {
+    NSDictionary *dictionary = launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey];
     if ([dictionary[UIApplicationLaunchOptionsUserActivityTypeKey] isEqual:NSUserActivityTypeBrowsingWeb]) {
       NSUserActivity* userActivity = (NSUserActivity*) dictionary[@"UIApplicationLaunchOptionsUserActivityKey"];
       url = userActivity.webpageURL;
@@ -131,6 +133,12 @@ EX_EXPORT_METHOD_AS(getInitialInvitation,
   } else {
     resolve(initialInvite);
   }
+}
+
+- (NSDictionary *)launchOptions
+{
+  // _utils.launchOptions;
+  return @{};
 }
 
 EX_EXPORT_METHOD_AS(sendInvitation,

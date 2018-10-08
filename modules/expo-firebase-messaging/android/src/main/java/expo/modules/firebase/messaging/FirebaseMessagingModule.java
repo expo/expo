@@ -56,7 +56,7 @@ public class FirebaseMessagingModule extends ExportedModule implements ModuleReg
         mModuleRegistry.getModule(UIManager.class).unregisterLifecycleEventListener(this);
       }
 
-      LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(context);
+      LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(getContext());
 
       if (mMessageReceiver != null) {
         localBroadcastManager.unregisterReceiver(mMessageReceiver);
@@ -77,7 +77,7 @@ public class FirebaseMessagingModule extends ExportedModule implements ModuleReg
         mModuleRegistry.getModule(UIManager.class).registerLifecycleEventListener(this);
       }
 
-      LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(context);
+      LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(getContext());
 
       mMessageReceiver = new MessageReceiver();
       // Subscribe to message events

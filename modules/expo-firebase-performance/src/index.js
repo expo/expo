@@ -1,10 +1,10 @@
-/**
- * @flow
- * Performance monitoring representation wrapper
- */
-import Trace from './Trace';
+// @flow
+
+import { ModuleBase, registerModule } from 'expo-firebase-app';
+
 import HttpMetric from './HttpMetric';
-import { ModuleBase, getNativeModule, registerModule } from 'expo-firebase-app';
+import Trace from './Trace';
+
 import type { App } from 'expo-firebase-app';
 
 export const MODULE_NAME = 'ExpoFirebasePerformance';
@@ -42,8 +42,8 @@ export default class PerformanceMonitoring extends ModuleBase {
   constructor(app: App) {
     super(app, {
       moduleName: MODULE_NAME,
-      multiApp: false,
-      hasShards: false,
+      hasMultiAppSupport: false,
+      hasCustomUrlSupport: false,
       namespace: NAMESPACE,
     });
   }
@@ -57,7 +57,7 @@ export default class PerformanceMonitoring extends ModuleBase {
     if (typeof enabled !== 'boolean') {
       throw new Error('firebase.perf().setPerformanceCollectionEnabled() requires a boolean value');
     }
-    return getNativeModule(this).setPerformanceCollectionEnabled(enabled);
+    return this.nativeModule.setPerformanceCollectionEnabled(enabled);
   }
 
   /**
@@ -96,12 +96,6 @@ export default class PerformanceMonitoring extends ModuleBase {
 
 registerModule(PerformanceMonitoring);
 
-export {
-  Trace,
-  HttpMetric,
-  HTTP_METHODS
-}
+export { Trace, HttpMetric, HTTP_METHODS };
 
-export type {
-  HttpMethod
-}
+export type { HttpMethod };

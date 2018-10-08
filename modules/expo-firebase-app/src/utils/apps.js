@@ -1,11 +1,14 @@
 /**
  * @flow
  */
-import { NativeModulesProxy } from 'expo-core';
+import { NativeModulesProxy, Platform } from 'expo-core';
+
 import App from '../app';
+import { isObject, isString } from './';
 import INTERNALS from './internals';
-import { isAndroid, isObject, isString } from './';
 import parseConfig from './parseConfig';
+
+const isAndroid = Platform.OS === 'android';
 
 import type {
   FirebaseModule,

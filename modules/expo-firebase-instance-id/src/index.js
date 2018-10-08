@@ -2,8 +2,8 @@
  * @flow
  * Instance ID representation wrapper
  */
+import { ModuleBase, registerModule } from 'expo-firebase-app';
 
-import { ModuleBase, getNativeModule, registerModule } from 'expo-firebase-app';
 import type { App } from 'expo-firebase-app';
 
 export const MODULE_NAME = 'ExpoFirebaseInstanceID';
@@ -17,19 +17,19 @@ export default class InstanceId extends ModuleBase {
 
   constructor(app: App) {
     super(app, {
-      hasShards: false,
+      hasCustomUrlSupport: false,
       moduleName: MODULE_NAME,
-      multiApp: false,
+      hasMultiAppSupport: false,
       namespace: NAMESPACE,
     });
   }
 
   delete(): Promise<void> {
-    return getNativeModule(this).delete();
+    return this.nativeModule.delete();
   }
 
   get(): Promise<string> {
-    return getNativeModule(this).get();
+    return this.nativeModule.get();
   }
 
   _validateAuthorizedEntity = (token: ?string): ?string => {
@@ -47,14 +47,14 @@ export default class InstanceId extends ModuleBase {
   };
 
   getToken = (authorizedEntity?: string, scope?: string): Promise<string> => {
-    return getNativeModule(this).getToken(
+    return this.nativeModule.getToken(
       this._validateAuthorizedEntity(authorizedEntity),
       this._validateScope(scope)
     );
   };
 
   deleteToken = (authorizedEntity?: string, scope?: string): Promise<void> => {
-    return getNativeModule(this).deleteToken(
+    return this.nativeModule.deleteToken(
       this._validateAuthorizedEntity(authorizedEntity),
       this._validateScope(scope)
     );

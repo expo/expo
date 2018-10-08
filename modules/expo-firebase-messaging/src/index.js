@@ -3,18 +3,11 @@
  * Messaging (FCM) representation wrapper
  */
 import { Platform } from 'expo-core';
-import {
-  events,
-  internals,
-  getLogger,
-  ModuleBase,
-  getNativeModule,
-  registerModule,
-  utils,
-} from 'expo-firebase-app';
-import type App from 'expo-firebase-app';
+import { events, internals, ModuleBase, registerModule, utils } from 'expo-firebase-app';
+
 import RemoteMessage from './RemoteMessage';
 
+import type App from 'expo-firebase-app';
 import type {
   NativeInboundRemoteMessage,
   NativeOutboundRemoteMessage,
@@ -57,8 +50,8 @@ export default class Messaging extends ModuleBase {
     super(app, {
       events: NATIVE_EVENTS,
       moduleName: MODULE_NAME,
-      multiApp: false,
-      hasShards: false,
+      hasMultiAppSupport: false,
+      hasCustomUrlSupport: false,
       namespace: NAMESPACE,
     });
 
@@ -82,7 +75,7 @@ export default class Messaging extends ModuleBase {
 
     // Tell the native module that we're ready to receive events
     if (Platform.OS === 'ios') {
-      getNativeModule(this).jsInitialised();
+      this.nativeModule.jsInitialised();
     }
   }
 
@@ -99,12 +92,12 @@ export default class Messaging extends ModuleBase {
       );
     }
 
-    getLogger(this).info('Creating onMessage listener');
+    this.logger.info('Creating onMessage listener');
 
     SharedEventEmitter.addListener('onMessage', listener);
 
     return () => {
-      getLogger(this).info('Removing onMessage listener');
+      this.logger.info('Removing onMessage listener');
       SharedEventEmitter.removeListener('onMessage', listener);
     };
   }
@@ -122,11 +115,11 @@ export default class Messaging extends ModuleBase {
       );
     }
 
-    getLogger(this).info('Creating onTokenRefresh listener');
+    this.logger.info('Creating onTokenRefresh listener');
     SharedEventEmitter.addListener('onTokenRefresh', listener);
 
     return () => {
-      getLogger(this).info('Removing onTokenRefresh listener');
+      this.logger.info('Removing onTokenRefresh listener');
       SharedEventEmitter.removeListener('onTokenRefresh', listener);
     };
   }
@@ -144,18 +137,18 @@ export default class Messaging extends ModuleBase {
       );
     }
     try {
-      return getNativeModule(this).sendMessage(remoteMessage.build());
+      return this.nativeModule.sendMessage(remoteMessage.build());
     } catch (error) {
       return Promise.reject(error);
     }
   }
 
   subscribeToTopic(topic: string): Promise<void> {
-    return getNativeModule(this).subscribeToTopic(topic);
+    return this.nativeModule.subscribeToTopic(topic);
   }
 
   unsubscribeFromTopic(topic: string): Promise<void> {
-    return getNativeModule(this).unsubscribeFromTopic(topic);
+    return this.nativeModule.unsubscribeFromTopic(topic);
   }
 
   /**

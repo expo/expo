@@ -1,9 +1,5 @@
-/**
- * @flow
- * User representation wrapper
- */
-import { native, internals as INTERNALS } from 'expo-firebase-app';
-const { getNativeModule } = native;
+// @flow
+import { internals as INTERNALS } from 'expo-firebase-app';
 
 import type Auth from './';
 import type {
@@ -89,11 +85,9 @@ export default class User {
    * @return {Promise}
    */
   delete(): Promise<void> {
-    return getNativeModule(this._auth)
-      .delete()
-      .then(() => {
-        this._auth._setUser();
-      });
+    return this._auth.nativeModule.delete().then(() => {
+      this._auth._setUser();
+    });
   }
 
   /**
@@ -103,7 +97,7 @@ export default class User {
    * @return {Promise<string>}
    */
   getIdToken(forceRefresh: boolean = false): Promise<string> {
-    return getNativeModule(this._auth).getIdToken(forceRefresh);
+    return this._auth.nativeModule.getIdToken(forceRefresh);
   }
 
   /**
@@ -114,14 +108,14 @@ export default class User {
    * @return {Promise<IdTokenResult>}
    */
   getIdTokenResult(forceRefresh: boolean = false): Promise<IdTokenResult> {
-    return getNativeModule(this._auth).getIdTokenResult(forceRefresh);
+    return this._auth.nativeModule.getIdTokenResult(forceRefresh);
   }
 
   /**
    * @param credential
    */
   linkWithCredential(credential: AuthCredential): Promise<UserCredential> {
-    return getNativeModule(this._auth)
+    return this._auth.nativeModule
       .linkWithCredential(credential.providerId, credential.token, credential.secret)
       .then(userCredential => this._auth._setUserCredential(userCredential));
   }
@@ -132,7 +126,7 @@ export default class User {
    */
   linkAndRetrieveDataWithCredential(credential: AuthCredential): Promise<UserCredential> {
     console.warn('Deprecated linkAndRetrieveDataWithCredential in favor of linkWithCredential.');
-    return getNativeModule(this._auth)
+    return this._auth.nativeModule
       .linkWithCredential(credential.providerId, credential.token, credential.secret)
       .then(userCredential => this._auth._setUserCredential(userCredential));
   }
@@ -142,7 +136,7 @@ export default class User {
    * @return {Promise}         A promise resolved upon completion
    */
   reauthenticateWithCredential(credential: AuthCredential): Promise<UserCredential> {
-    return getNativeModule(this._auth)
+    return this._auth.nativeModule
       .reauthenticateWithCredential(credential.providerId, credential.token, credential.secret)
       .then(userCredential => this._auth._setUserCredential(userCredential));
   }
@@ -157,7 +151,7 @@ export default class User {
     console.warn(
       'Deprecated reauthenticateAndRetrieveDataWithCredential in favor of reauthenticateWithCredential.'
     );
-    return getNativeModule(this._auth)
+    return this._auth.nativeModule
       .reauthenticateWithCredential(credential.providerId, credential.token, credential.secret)
       .then(userCredential => this._auth._setUserCredential(userCredential));
   }
@@ -167,22 +161,18 @@ export default class User {
    * @return {Promise}
    */
   reload(): Promise<void> {
-    return getNativeModule(this._auth)
-      .reload()
-      .then(user => {
-        this._auth._setUser(user);
-      });
+    return this._auth.nativeModule.reload().then(user => {
+      this._auth._setUser(user);
+    });
   }
 
   /**
    * Send verification email to current user.
    */
   sendEmailVerification(actionCodeSettings?: ActionCodeSettings): Promise<void> {
-    return getNativeModule(this._auth)
-      .sendEmailVerification(actionCodeSettings)
-      .then(user => {
-        this._auth._setUser(user);
-      });
+    return this._auth.nativeModule.sendEmailVerification(actionCodeSettings).then(user => {
+      this._auth._setUser(user);
+    });
   }
 
   toJSON(): Object {
@@ -195,9 +185,7 @@ export default class User {
    * @return {Promise.<TResult>|*}
    */
   unlink(providerId: string): Promise<User> {
-    return getNativeModule(this._auth)
-      .unlink(providerId)
-      .then(user => this._auth._setUser(user));
+    return this._auth.nativeModule.unlink(providerId).then(user => this._auth._setUser(user));
   }
 
   /**
@@ -207,11 +195,9 @@ export default class User {
    * @return {Promise}       A promise resolved upon completion
    */
   updateEmail(email: string): Promise<void> {
-    return getNativeModule(this._auth)
-      .updateEmail(email)
-      .then(user => {
-        this._auth._setUser(user);
-      });
+    return this._auth.nativeModule.updateEmail(email).then(user => {
+      this._auth._setUser(user);
+    });
   }
 
   /**
@@ -220,11 +206,9 @@ export default class User {
    * @return {Promise}
    */
   updatePassword(password: string): Promise<void> {
-    return getNativeModule(this._auth)
-      .updatePassword(password)
-      .then(user => {
-        this._auth._setUser(user);
-      });
+    return this._auth.nativeModule.updatePassword(password).then(user => {
+      this._auth._setUser(user);
+    });
   }
 
   /**
@@ -234,7 +218,7 @@ export default class User {
    * @return {Promise}
    */
   updatePhoneNumber(credential: AuthCredential): Promise<void> {
-    return getNativeModule(this._auth)
+    return this._auth.nativeModule
       .updatePhoneNumber(credential.providerId, credential.token, credential.secret)
       .then(user => {
         this._auth._setUser(user);
@@ -247,11 +231,9 @@ export default class User {
    * @return {Promise}
    */
   updateProfile(updates: UpdateProfile = {}): Promise<void> {
-    return getNativeModule(this._auth)
-      .updateProfile(updates)
-      .then(user => {
-        this._auth._setUser(user);
-      });
+    return this._auth.nativeModule.updateProfile(updates).then(user => {
+      this._auth._setUser(user);
+    });
   }
 
   /**

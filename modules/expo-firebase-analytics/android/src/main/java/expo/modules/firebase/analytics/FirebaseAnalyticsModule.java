@@ -74,14 +74,6 @@ public class FirebaseAnalyticsModule extends ExportedModule implements ModuleReg
     return context;
   }
 
-  private Context getUIManagerOrReject(Promise promise) {
-    UIManager mUIManager = getUIManager();
-    if (mUIManager == null) {
-      promise.reject("E_EXPO_FIREBASE_ANALYTICS", "Module registry is not initialized, or UIManager is not available.");
-    }
-    return mUIManager;
-  }
-
   @ExpoMethod
   public void logEvent(final String name, @Nullable Map<String, Object> params, Promise promise) {
     Context context = getApplicationContextOrReject(promise);
@@ -120,20 +112,19 @@ public class FirebaseAnalyticsModule extends ExportedModule implements ModuleReg
     Context context = getApplicationContextOrReject(promise);
     if (context == null) {
       return;
-    } 
-    
-    UIManager mUIManager = getUIManagerOrReject(promise);
-    if (mUIManager == null) {
-      return;
     }
-    // needs to be run on main thread
-    Log.d(TAG, "setCurrentScreen " + screenName + " - " + screenClassOverride);
-    mUIManager.runOnUiQueueThread(new Runnable() {
-      @Override
-      public void run() {
-        FirebaseAnalytics.getInstance(context).setCurrentScreen(activity, screenName, screenClassOverride);
-      }
-    });
+
+    final Activity activity = getCurrentActivity();
+    if (activity != null) {
+      // needs to be run on main thread
+      Log.d(TAG, "setCurrentScreen " + screenName + " - " + screenClassOverride);
+      activity.runOnUiThread(new Runnable() {
+        @Override
+        public void run() {
+          FirebaseAnalytics.getInstance(getApplicationContext()).setCurrentScreen(activity, screenName, screenClassOverride);
+        }
+      });
+    }
     promise.resolve(null);
   }
 

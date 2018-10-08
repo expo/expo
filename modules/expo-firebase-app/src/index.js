@@ -13,26 +13,9 @@ import internals from './utils/internals';
 
 import './utils/UtilsModule';
 
-// TODO: Evan: Rethink utils
-
-const { getLogger } = log;
-const { getNativeModule } = native;
-
 export { default as ModuleBase } from './utils/ModuleBase';
 export { default as ReferenceBase } from './utils/ReferenceBase';
 export { default as registerModule } from './utils/registerModule';
-export { default as Base64 } from './utils/Base64';
-export {
-  events,
-  utils,
-  log,
-  native,
-  getLogger,
-  getNativeModule,
-  internals,
-  App,
-  parseConfig,
-  configUtils,
-};
+export { events, utils, log, native, internals, App, parseConfig, configUtils };
 
 export default Firebase;

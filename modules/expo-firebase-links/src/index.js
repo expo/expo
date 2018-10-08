@@ -2,11 +2,13 @@
  * @flow
  * Dynamic Links representation wrapper
  */
-import { events, getLogger, ModuleBase, getNativeModule, registerModule } from 'expo-firebase-app';
+import { Platform } from 'expo-core';
+import { events, ModuleBase, registerModule } from 'expo-firebase-app';
+
+import DynamicLink from './DynamicLink';
+
 import type App from 'expo-firebase-app';
 
-import { Platform } from 'expo-core';
-import DynamicLink from './DynamicLink';
 const { SharedEventEmitter } = events;
 const NATIVE_EVENTS = ['Expo.Firebase.links_link_received'];
 
@@ -29,8 +31,8 @@ export default class Links extends ModuleBase {
     super(app, {
       events: NATIVE_EVENTS,
       moduleName: MODULE_NAME,
-      multiApp: false,
-      hasShards: false,
+      hasMultiAppSupport: false,
+      hasCustomUrlSupport: false,
       namespace: NAMESPACE,
     });
 
@@ -45,7 +47,7 @@ export default class Links extends ModuleBase {
 
     // Tell the native module that we're ready to receive events
     if (Platform.OS === 'ios') {
-      getNativeModule(this).jsInitialised();
+      this.nativeModule.jsInitialised();
     }
   }
 
@@ -61,7 +63,7 @@ export default class Links extends ModuleBase {
       );
     }
     try {
-      return getNativeModule(this).createDynamicLink(link.build());
+      return this.nativeModule.createDynamicLink(link.build());
     } catch (error) {
       return Promise.reject(error);
     }
@@ -81,7 +83,7 @@ export default class Links extends ModuleBase {
       );
     }
     try {
-      return getNativeModule(this).createShortDynamicLink(link.build(), type);
+      return this.nativeModule.createShortDynamicLink(link.build(), type);
     } catch (error) {
       return Promise.reject(error);
     }
@@ -92,7 +94,7 @@ export default class Links extends ModuleBase {
    * @returns {Promise.<String>}
    */
   getInitialLink(): Promise<?string> {
-    return getNativeModule(this).getInitialLink();
+    return this.nativeModule.getInitialLink();
   }
 
   /**
@@ -101,12 +103,12 @@ export default class Links extends ModuleBase {
    * @returns {Function}
    */
   onLink(listener: string => any): () => any {
-    getLogger(this).info('Creating onLink listener');
+    this.logger.info('Creating onLink listener');
 
     SharedEventEmitter.addListener('onLink', listener);
 
     return () => {
-      getLogger(this).info('Removing onLink listener');
+      this.logger.info('Removing onLink listener');
       SharedEventEmitter.removeListener('onLink', listener);
     };
   }

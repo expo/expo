@@ -1,6 +1,7 @@
-import { getNativeModule, utils } from 'expo-firebase-app';
+import { Platform } from 'expo-core';
 
-const { isAndroid, isIOS } = utils;
+const isIOS = Platform.OS === 'ios';
+const isAndroid = Platform.OS === 'android';
 
 import type Auth from '.';
 
@@ -33,7 +34,7 @@ export default class AuthSettings {
   set appVerificationDisabledForTesting(disabled: boolean) {
     if (isIOS) {
       this._appVerificationDisabledForTesting = disabled;
-      getNativeModule(this._auth).setAppVerificationDisabledForTesting(disabled);
+      this._auth.nativeModule.setAppVerificationDisabledForTesting(disabled);
     }
   }
 
@@ -51,10 +52,7 @@ export default class AuthSettings {
    */
   setAutoRetrievedSmsCodeForPhoneNumber(phoneNumber: string, smsCode: string): Promise<null> {
     if (isAndroid) {
-      return getNativeModule(this._auth).setAutoRetrievedSmsCodeForPhoneNumber(
-        phoneNumber,
-        smsCode
-      );
+      return this._auth.nativeModule.setAutoRetrievedSmsCodeForPhoneNumber(phoneNumber, smsCode);
     }
 
     return Promise.resolve(null);

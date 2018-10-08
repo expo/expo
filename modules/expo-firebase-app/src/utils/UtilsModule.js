@@ -1,10 +1,11 @@
 // @flow
-import { NativeModulesProxy } from 'expo-core';
+import { NativeModulesProxy, Platform } from 'expo-core';
+import INTERNALS from './internals';
+import ModuleBase from './ModuleBase';
 import registerModule from './registerModule';
 
-import INTERNALS from './internals';
-import { isIOS } from './index';
-import ModuleBase from './ModuleBase';
+const isIOS = Platform.OS === 'ios';
+
 import type App from '../app';
 
 const { ExpoFirebaseApp } = NativeModulesProxy;
@@ -30,8 +31,8 @@ export default class ExpoFirebaseUtils extends ModuleBase {
   constructor(app: App) {
     super(app, {
       moduleName: MODULE_NAME,
-      multiApp: false,
-      hasShards: false,
+      hasMultiAppSupport: false,
+      hasCustomUrlSupport: false,
       namespace: NAMESPACE,
     });
   }
@@ -53,8 +54,8 @@ export default class ExpoFirebaseUtils extends ModuleBase {
       } else {
         const error = INTERNALS.STRINGS.ERROR_PLAY_SERVICES(status);
         if (INTERNALS.OPTIONS.errorOnMissingPlayServices) {
-          if (status === 2)
-            console.warn(error); // only warn if it exists but may need an update
+          if (status === 2) console.warn(error);
+          // only warn if it exists but may need an update
           else throw new Error(error);
         } else {
           console.warn(error);

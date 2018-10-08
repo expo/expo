@@ -25,7 +25,8 @@
   "bugs": "https://github.com/expo/expo/issues",
   "dependencies": {
     "expo-core": "^1.0.0",
-    "expo-firebase-app": "^1.0.0-rc.1"
+    "expo-firebase-app": "^1.0.0-rc.1",
+    "js-base64": "^2.4.9"
   },
   "devDependencies": {
     "babel-preset-expo": "^4.0.0",

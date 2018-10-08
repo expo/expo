@@ -2,10 +2,12 @@
  * @flow
  * Database representation wrapper
  */
-import firebase, { registerModule, getNativeModule, ModuleBase } from 'expo-firebase-app';
 import { NativeModulesProxy } from 'expo-core';
+import firebase, { ModuleBase, registerModule } from 'expo-firebase-app';
+
 import Reference from './Reference';
 import TransactionHandler from './transaction';
+
 import type { App } from 'expo-firebase-app';
 
 const NATIVE_EVENTS = [
@@ -60,8 +62,8 @@ export default class Database extends ModuleBase {
       {
         events: NATIVE_EVENTS,
         moduleName: MODULE_NAME,
-        multiApp: true,
-        hasShards: true,
+        hasMultiAppSupport: true,
+        hasCustomUrlSupport: true,
         namespace: NAMESPACE,
       },
       serviceUrl
@@ -72,7 +74,7 @@ export default class Database extends ModuleBase {
     this._transactionHandler = new TransactionHandler(this);
 
     if (options.persistence) {
-      getNativeModule(this).setPersistence(options.persistence);
+      this.nativeModule.setPersistence(options.persistence);
     }
 
     // server time listener
@@ -99,14 +101,14 @@ export default class Database extends ModuleBase {
    *
    */
   goOnline(): void {
-    getNativeModule(this).goOnline();
+    this.nativeModule.goOnline();
   }
 
   /**
    *
    */
   goOffline(): void {
-    getNativeModule(this).goOffline();
+    this.nativeModule.goOffline();
   }
 
   /**

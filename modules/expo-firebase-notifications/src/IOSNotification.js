@@ -1,8 +1,5 @@
-/**
- * @flow
- * IOSNotification representation wrapper
- */
-import { getLogger, getNativeModule, utils } from 'expo-firebase-app';
+// @flow
+import { Platform } from 'expo-core';
 
 import { BackgroundFetchResultValue } from './IOSNotifications';
 
@@ -10,7 +7,8 @@ import type Notification from './Notification';
 import type Notifications from '.';
 import type { IOSAttachment, IOSAttachmentOptions, NativeIOSNotification } from './types';
 
-const { isIOS } = utils;
+const isIOS = Platform.OS === 'ios';
+
 type CompletionHandler = BackgroundFetchResultValue => void;
 
 export default class IOSNotification {
@@ -57,10 +55,10 @@ export default class IOSNotification {
     if (isIOS && notifications && notifications.ios) {
       const complete = (fetchResult: BackgroundFetchResultValue) => {
         const { notificationId } = notification;
-        getLogger(notifications).debug(
+        notifications.logger.debug(
           `Completion handler called for notificationId=${notificationId}`
         );
-        getNativeModule(notifications).complete(notificationId, fetchResult);
+        notifications.nativeModule.complete(notificationId, fetchResult);
       };
 
       if (notifications.ios.shouldAutoComplete) {

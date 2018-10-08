@@ -1,11 +1,8 @@
-/**
- * @flow
- * AndroidNotifications representation wrapper
- */
+// @flow
 import { Platform } from 'expo-core';
+
 import AndroidChannel from './AndroidChannel';
 import AndroidChannelGroup from './AndroidChannelGroup';
-import { getNativeModule } from 'expo-firebase-app';
 
 import type Notifications from '.';
 
@@ -23,7 +20,7 @@ export default class AndroidNotifications {
           `AndroidNotifications:createChannel expects an 'AndroidChannel' but got type ${typeof channel}`
         );
       }
-      return getNativeModule(this._notifications).createChannel(channel.build());
+      return this._notifications.nativeModule.createChannel(channel.build());
     }
     return Promise.resolve();
   }
@@ -35,7 +32,7 @@ export default class AndroidNotifications {
           `AndroidNotifications:createChannelGroup expects an 'AndroidChannelGroup' but got type ${typeof channelGroup}`
         );
       }
-      return getNativeModule(this._notifications).createChannelGroup(channelGroup.build());
+      return this._notifications.nativeModule.createChannelGroup(channelGroup.build());
     }
     return Promise.resolve();
   }
@@ -57,7 +54,7 @@ export default class AndroidNotifications {
         }
         nativeChannelGroups.push(channelGroup.build());
       }
-      return getNativeModule(this._notifications).createChannelGroups(nativeChannelGroups);
+      return this._notifications.nativeModule.createChannelGroups(nativeChannelGroups);
     }
     return Promise.resolve();
   }
@@ -79,7 +76,7 @@ export default class AndroidNotifications {
         }
         nativeChannels.push(channel.build());
       }
-      return getNativeModule(this._notifications).createChannels(nativeChannels);
+      return this._notifications.nativeModule.createChannels(nativeChannels);
     }
     return Promise.resolve();
   }
@@ -91,7 +88,7 @@ export default class AndroidNotifications {
           `AndroidNotifications:removeDeliveredNotificationsByTag expects an 'string' but got type ${typeof tag}`
         );
       }
-      return getNativeModule(this._notifications).removeDeliveredNotificationsByTag(tag);
+      return this._notifications.nativeModule.removeDeliveredNotificationsByTag(tag);
     }
     return Promise.resolve();
   }
@@ -103,7 +100,7 @@ export default class AndroidNotifications {
           `AndroidNotifications:deleteChannelGroup expects an 'string' but got type ${typeof groupId}`
         );
       }
-      return getNativeModule(this._notifications).deleteChannelGroup(groupId);
+      return this._notifications.nativeModule.deleteChannelGroup(groupId);
     }
     return Promise.resolve();
   }
@@ -115,7 +112,7 @@ export default class AndroidNotifications {
           `AndroidNotifications:deleteChannel expects an 'string' but got type ${typeof channelId}`
         );
       }
-      return getNativeModule(this._notifications).deleteChannel(channelId);
+      return this._notifications.nativeModule.deleteChannel(channelId);
     }
     return Promise.resolve();
   }

@@ -2,10 +2,11 @@
  * @flow
  * Functions representation wrapper
  */
-import { ModuleBase, utils, getNativeModule, registerModule } from 'expo-firebase-app';
-const { isObject } = utils;
+import { ModuleBase, registerModule, utils } from 'expo-firebase-app';
 
 import HttpsError from './HttpsError';
+
+const { isObject } = utils;
 
 import type { HttpsCallable, HttpsErrorCode, HttpsCallablePromise } from './types.flow';
 
@@ -61,8 +62,8 @@ export default class Functions extends ModuleBase {
   static statics = statics;
   constructor(app: App) {
     super(app, {
-      multiApp: false,
-      hasShards: false,
+      hasMultiAppSupport: false,
+      hasCustomUrlSupport: false,
       namespace: NAMESPACE,
       moduleName: MODULE_NAME,
     });
@@ -80,7 +81,7 @@ export default class Functions extends ModuleBase {
    */
   httpsCallable(name: string): HttpsCallable {
     return (data?: any): HttpsCallablePromise => {
-      const promise = getNativeModule(this).httpsCallable(name, { data });
+      const promise = this.nativeModule.httpsCallable(name, { data });
       return promise.then(errorOrResult);
     };
   }

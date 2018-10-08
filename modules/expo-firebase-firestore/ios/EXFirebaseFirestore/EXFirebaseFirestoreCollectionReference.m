@@ -1,4 +1,5 @@
 #import <EXFirebaseFirestore/EXFirebaseFirestoreCollectionReference.h>
+#import <EXFirebaseFirestore/EXFirebaseFirestoreEvents.h>
 
 @implementation EXFirebaseFirestoreCollectionReference
 

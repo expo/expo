@@ -2,7 +2,6 @@
  * @flow
  * WriteBatch representation wrapper
  */
-import { getNativeModule } from 'expo-firebase-app';
 import { parseUpdateArgs } from './utils';
 import { buildNativeMap } from './utils/serialize';
 
@@ -30,7 +29,7 @@ export default class WriteBatch {
   }
 
   commit(): Promise<void> {
-    return getNativeModule(this._firestore).documentBatch(this._writes);
+    return this._firestore.nativeModule.documentBatch(this._writes);
   }
 
   delete(docRef: DocumentReference): WriteBatch {

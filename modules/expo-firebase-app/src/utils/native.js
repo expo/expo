@@ -38,7 +38,7 @@ export const initialiseNativeModule = (
   config: FirebaseModuleConfig,
   serviceUrl: ?string
 ): Object => {
-  const { moduleName, multiApp, hasShards, namespace } = config;
+  const { moduleName, hasMultiAppSupport, hasCustomUrlSupport, namespace } = config;
   const nativeModule = NativeModulesProxy[moduleName];
   const key = nativeModuleKey(module);
 
@@ -49,10 +49,10 @@ export const initialiseNativeModule = (
   // used by the modules that extend ModuleBase
   // to access their native module counterpart
   const argToPrepend = [];
-  if (multiApp) {
+  if (hasMultiAppSupport) {
     argToPrepend.push(module.app.name);
   }
-  if (hasShards) {
+  if (hasCustomUrlSupport) {
     argToPrepend.push(serviceUrl);
   }
 

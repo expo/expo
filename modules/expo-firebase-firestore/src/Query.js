@@ -2,7 +2,8 @@
  * @flow
  * Query representation wrapper
  */
-import { utils, events, getLogger, getNativeModule } from 'expo-firebase-app';
+import { events, utils } from 'expo-firebase-app';
+
 import DocumentSnapshot from './DocumentSnapshot';
 import FieldPath from './FieldPath';
 import QuerySnapshot from './QuerySnapshot';
@@ -150,7 +151,7 @@ export default class Query {
         );
       }
     }
-    return getNativeModule(this._firestore)
+    return this._firestore.nativeModule
       .collectionGet(
         this._referencePath.relativeName,
         this._fieldFilters,
@@ -276,7 +277,7 @@ export default class Query {
     }
 
     // Add the native listener
-    getNativeModule(this._firestore).collectionOnSnapshot(
+    this._firestore.nativeModule.collectionOnSnapshot(
       this._referencePath.relativeName,
       this._fieldFilters,
       this._fieldOrders,
@@ -401,7 +402,7 @@ export default class Query {
    * @param listener
    */
   _offCollectionSnapshot(listenerId: string, listener: Function) {
-    getLogger(this._firestore).info('Removing onQuerySnapshot listener');
+    this._firestore.logger.info('Removing onQuerySnapshot listener');
     SharedEventEmitter.removeListener(
       getAppEventName(this._firestore, `onQuerySnapshot:${listenerId}`),
       listener
@@ -410,7 +411,7 @@ export default class Query {
       getAppEventName(this._firestore, `onQuerySnapshotError:${listenerId}`),
       listener
     );
-    getNativeModule(this._firestore).collectionOffSnapshot(
+    this._firestore.nativeModule.collectionOffSnapshot(
       this._referencePath.relativeName,
       this._fieldFilters,
       this._fieldOrders,
