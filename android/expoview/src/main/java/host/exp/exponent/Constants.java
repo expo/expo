@@ -65,9 +65,8 @@ public class Constants {
 
   static {
     Set<String> abiVersions = new HashSet<>();
-    // ADD ABI VERSIONS HERE
-    // START ABI VERSIONS
     // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
+    // ADD ABI VERSIONS HERE DO NOT MODIFY
     // BEGIN_SDK_30
     abiVersions.add("30.0.0");
     // END_SDK_30
@@ -90,7 +89,6 @@ public class Constants {
     abiVersions.add("24.0.0");
     // END_SDK_24
     // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
-    // END ABI VERSIONS
 
     if (TEMPORARY_ABI_VERSION != null) {
       abiVersions.add(TEMPORARY_ABI_VERSION);

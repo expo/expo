@@ -1,6 +1,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'maven'
 
+// REMOVE_WHEN_VERSIONING_FROM_HERE
 //maven repository info
 group = 'host.exp.exponent'
 version = '30.0.0'
@@ -32,6 +33,7 @@ uploadArchives {
     }
   }
 }
+// REMOVE_WHEN_VERSIONING_TO_HERE
 
 buildscript {
   repositories {
@@ -48,8 +50,6 @@ buildscript {
 }
 
 apply plugin: 'com.jakewharton.butterknife'
-
-import org.apache.tools.ant.taskdefs.condition.Os
 
 repositories {
   maven { url 'https://maven.fabric.io/public' }
@@ -68,9 +68,11 @@ android {
     ndk {
       abiFilters 'armeabi-v7a', 'x86'
     }
+    // REMOVE_WHEN_VERSIONING_FROM_HERE
     manifestPlaceholders = [
       'appAuthRedirectScheme': 'host.exp.exponent'
     ]
+    // REMOVE_WHEN_VERSIONING_TO_HERE
   }
 
   buildTypes {
@@ -84,6 +86,9 @@ android {
   }
 }
 
+// REMOVE_WHEN_VERSIONING_FROM_HERE
+import org.apache.tools.ant.taskdefs.condition.Os
+
 task generateDynamicMacros(type: Exec) {
   environment "EXPO_ANDROID_GRADLE_TASK_NAMES", "${gradle.startParameter.taskNames}"
   if (Os.isFamily(Os.FAMILY_WINDOWS)) {
@@ -96,11 +101,15 @@ task generateDynamicMacros(type: Exec) {
   }
 }
 preBuild.dependsOn generateDynamicMacros
+// REMOVE_WHEN_VERSIONING_TO_HERE
 
 dependencies {
   api fileTree(dir: 'libs', include: ['*.jar'])
   api 'com.android.support:multidex:1.0.3'
 
+  // WHEN_VERSIONING_REPLACE_WITH_DEPENDENCIES
+
+  // REMOVE_WHEN_VERSIONING_FROM_HERE
   // Current react native
   api project(':ReactAndroid')
   /* UNCOMMENT WHEN DISTRIBUTING
@@ -170,31 +179,31 @@ dependencies {
   // WHEN_DISTRIBUTING_REMOVE_TO_HERE
 
   // Versioned react native
-  // THIS COMMENT IS USED BY android-build-aar.sh DO NOT MODIFY
-
   // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
+  // THIS COMMENT IS USED BY android-build-aar.sh DO NOT MODIFY
   // BEGIN_SDK_30
-  compileOnly 'host.exp:reactandroid-abi30_0_0:1.0.0'
+  api 'host.exp:reactandroid-abi30_0_0:1.0.0'
   // END_SDK_30
   // BEGIN_SDK_29
-  compileOnly 'host.exp:reactandroid-abi29_0_0:1.0.0'
+  api'host.exp:reactandroid-abi29_0_0:1.0.0'
   // END_SDK_29
   // BEGIN_SDK_28
-  compileOnly 'host.exp:reactandroid-abi28_0_0:1.0.0'
+  api 'host.exp:reactandroid-abi28_0_0:1.0.0'
   // END_SDK_28
   // BEGIN_SDK_27
-  compileOnly 'host.exp:reactandroid-abi27_0_0:1.0.0'
+  api 'host.exp:reactandroid-abi27_0_0:1.0.0'
   // END_SDK_27
   // BEGIN_SDK_26
-  compileOnly 'host.exp:reactandroid-abi26_0_0:1.0.0'
+  api 'host.exp:reactandroid-abi26_0_0:1.0.0'
   // END_SDK_26
   // BEGIN_SDK_25
-  compileOnly 'host.exp:reactandroid-abi25_0_0:1.0.0'
+  api 'host.exp:reactandroid-abi25_0_0:1.0.0'
   // END_SDK_25
   // BEGIN_SDK_24
-  compileOnly 'host.exp:reactandroid-abi24_0_0:1.0.0'
+  api 'host.exp:reactandroid-abi24_0_0:1.0.0'
   // END_SDK_24
   // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
+  // REMOVE_WHEN_VERSIONING_TO_HERE
 
   // React native dependencies
   // We use a different version of appcompat

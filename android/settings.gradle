@@ -4,26 +4,19 @@ include ':tools'
 include ':ReactAndroid'
 project(':ReactAndroid').projectDir = new File(rootDir, 'ReactAndroid')
 
-include ':expoview-abi24_0_0'
-project(':expoview-abi24_0_0').projectDir = new File(rootDir, 'versioned-abis/expoview-abi24_0_0')
-
-include ':expoview-abi25_0_0'
-project(':expoview-abi25_0_0').projectDir = new File(rootDir, 'versioned-abis/expoview-abi25_0_0')
-
-include ':expoview-abi26_0_0'
-project(':expoview-abi26_0_0').projectDir = new File(rootDir, 'versioned-abis/expoview-abi26_0_0')
-
-include ':expoview-abi27_0_0'
-project(':expoview-abi27_0_0').projectDir = new File(rootDir, 'versioned-abis/expoview-abi27_0_0')
-
-include ':expoview-abi28_0_0'
-project(':expoview-abi28_0_0').projectDir = new File(rootDir, 'versioned-abis/expoview-abi28_0_0')
-
-include ':expoview-abi29_0_0'
-project(':expoview-abi29_0_0').projectDir = new File(rootDir, 'versioned-abis/expoview-abi29_0_0')
-
-include ':expoview-abi30_0_0'
-project(':expoview-abi30_0_0').projectDir = new File(rootDir, 'versioned-abis/expoview-abi30_0_0')
+[
+    // ADD_NEW_SUPPORTED_ABIS_HERE
+    "abi30_0_0",
+    "abi29_0_0",
+    "abi28_0_0",
+    "abi27_0_0",
+    "abi26_0_0",
+    "abi25_0_0",
+    "abi24_0_0",
+].forEach({ abiVariant ->
+  include ":expoview-$abiVariant"
+  project(":expoview-$abiVariant").projectDir = new File(rootDir, "versioned-abis/expoview-$abiVariant")
+})
 
 // Universal modules
 

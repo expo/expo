@@ -196,6 +196,8 @@ dependencies {
 
   // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
 
+  // ADD_NEW_SDKS_HERE
+
   // BEGIN_SDK_30
   implementation(project(':expoview-abi30_0_0')) {
     exclude group: 'com.squareup.okhttp3', module: 'okhttp'

@@ -3,20 +3,45 @@
 
 ABI_VERSION=`echo $1 | sed 's/\./_/g'`
 ABI_VERSION="abi$ABI_VERSION"
+VERSIONED_ABI_PATH=versioned-abis/expoview-$ABI_VERSION
 
 pushd ../android
 
-cp -r expoview/src/main/java/versioned expoview/src/main/java/$ABI_VERSION
+mkdir -p $VERSIONED_ABI_PATH/src/main/java
+
+# Prepare build.gradle of the new expoview-abiXX_X_X subproject
+awk '
+  /REMOVE_WHEN_VERSIONING_FROM_HERE/ { removing = 1 }
+  /REMOVE_WHEN_VERSIONING_TO_HERE/ { stopRemoving = 1 }
+  // { if (removing == 0) print $0 }
+  // { if (stopRemoving == 1) removing = 0 }
+  // { if (removing == 0) stopRemoving = 0 }
+' expoview/build.gradle > $VERSIONED_ABI_PATH/build.gradle
+sed -i '' "s/\/\/ WHEN_VERSIONING_REPLACE_WITH_DEPENDENCIES/implementation project(\":expoview\")/g" $VERSIONED_ABI_PATH/build.gradle
+
+# Prepare an empty AndroidManifest.xml of the new project
+echo "<manifest xmlns:android=\"http://schemas.android.com/apk/res/android\" package=\"$ABI_VERSION.host.exp.expoview\" />" > $VERSIONED_ABI_PATH/src/main/AndroidManifest.xml
+
+# Add the new expoview-abiXX_X_X subproject to root project
+NEWLINE='\
+'
+SED_APPEND_COMMAND=" a$NEWLINE"
+sed -i '' "/ADD_NEW_SUPPORTED_ABIS_HERE/$SED_APPEND_COMMAND\ \ \ \ \"$ABI_VERSION\",$NEWLINE" settings.gradle
+
+# Copy all the versioned code
+cp -r expoview/src/main/java/versioned/* $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION
 
 # Rename references to other packages previously under versioned.host.exp.exponent
-find expoview/src/main/java/$ABI_VERSION -iname '*.java' -type f -print0 | xargs -0 sed -i '' "s/import versioned\.host\.exp\.exponent/import $ABI_VERSION\.host\.exp\.exponent/g"
-find expoview/src/main/java/$ABI_VERSION -iname '*.java' -type f -print0 | xargs -0 sed -i '' "s/import static versioned\.host\.exp\.exponent/import static $ABI_VERSION\.host\.exp\.exponent/g"
-find expoview/src/main/java/$ABI_VERSION -iname '*.java' -type f -print0 | xargs -0 sed -i '' "s/package versioned\.host\.exp\.exponent/package $ABI_VERSION\.host\.exp\.exponent/g"
+find $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION -iname '*.java' -type f -print0 | xargs -0 sed -i '' "s/import versioned\.host\.exp\.exponent/import $ABI_VERSION\.host\.exp\.exponent/g"
+find $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION -iname '*.java' -type f -print0 | xargs -0 sed -i '' "s/import expo\./import $ABI_VERSION\.expo\./g"
+find $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION -iname '*.java' -type f -print0 | xargs -0 sed -i '' "s/import static versioned\.host\.exp\.exponent/import static $ABI_VERSION\.host\.exp\.exponent/g"
+find $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION -iname '*.java' -type f -print0 | xargs -0 sed -i '' "s/import static expo\./import static $ABI_VERSION\.expo\./g"
+find $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION -iname '*.java' -type f -print0 | xargs -0 sed -i '' "s/package versioned\.host\.exp\.exponent/package $ABI_VERSION\.host\.exp\.exponent/g"
 # Rename references to react native
 while read PACKAGE
 do
-  find expoview/src/main/java/$ABI_VERSION -iname '*.java' -type f -print0 | xargs -0 sed -i '' "s/import $PACKAGE/import $ABI_VERSION.$PACKAGE/g"
-  find expoview/src/main/java/$ABI_VERSION -iname '*.java' -type f -print0 | xargs -0 sed -i '' "s/import static $PACKAGE/import static $ABI_VERSION.$PACKAGE/g"
-done < ../Tools/android-packages-to-rename.txt
+  find $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION -iname '*.java' -type f -print0 | xargs -0 sed -i '' "s/import $PACKAGE/import $ABI_VERSION.$PACKAGE/g"
+  find $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION -iname '*.java' -type f -print0 | xargs -0 sed -i '' "s/import static $PACKAGE/import static $ABI_VERSION.$PACKAGE/g"
+done < ../tools/android-packages-to-rename.txt
 
 popd
