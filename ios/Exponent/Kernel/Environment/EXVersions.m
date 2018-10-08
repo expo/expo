@@ -119,14 +119,7 @@
   } else {
     _temporarySdkVersion = [EXBuildConstants sharedInstance].temporarySdkVersion;
   }
-  if (_temporarySdkVersion) {
-    if (mutableVersions[@"sdkVersions"]) {
-      NSArray *existingVersions = mutableVersions[@"sdkVersions"];
-      if ([existingVersions indexOfObject:_temporarySdkVersion] == NSNotFound) {
-        mutableVersions[@"sdkVersions"] = [[existingVersions mutableCopy] arrayByAddingObject:_temporarySdkVersion];
-      }
-    }
-  } else {
+  if (!_temporarySdkVersion) {
     // no temporary sdk version specified in any way, fall back to using the highest version
     NSArray *sdkVersions = mutableVersions[@"sdkVersions"];
     NSUInteger highestVersion = 0;
