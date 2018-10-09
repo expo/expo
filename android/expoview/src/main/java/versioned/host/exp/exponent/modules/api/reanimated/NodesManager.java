@@ -2,6 +2,8 @@ package versioned.host.exp.exponent.modules.api.reanimated;
 
 import android.util.SparseArray;
 
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.GuardedRunnable;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactContext;
@@ -352,6 +354,10 @@ public class NodesManager implements EventDispatcherListener {
   public void configureProps(Set<String> nativePropsSet, Set<String> uiPropsSet) {
     nativeProps = nativePropsSet;
     uiProps = uiPropsSet;
+  }
+
+  public void getValue(int nodeID, Callback callback) {
+    callback.invoke(mAnimatedNodes.get(nodeID).value());
   }
 
   public void postRunUpdatesAfterAnimation() {

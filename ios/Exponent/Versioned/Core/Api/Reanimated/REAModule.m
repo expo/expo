@@ -56,6 +56,13 @@ RCT_EXPORT_METHOD(dropNode:(nonnull NSNumber *)nodeID)
   }];
 }
 
+RCT_EXPORT_METHOD(getValue:(nonnull NSNumber *)nodeID
+                  callback:(RCTResponseSenderBlock)callback) {
+  [self addOperationBlock:^(REANodesManager *nodesManager) {
+    [nodesManager getValue:nodeID callback:(RCTResponseSenderBlock)callback];
+  }];
+}
+
 RCT_EXPORT_METHOD(connectNodes:(nonnull NSNumber *)parentID
                   childTag:(nonnull NSNumber *)childID)
 {
@@ -140,6 +147,7 @@ RCT_EXPORT_METHOD(configureProps:(nonnull NSArray<NSString *> *)nativeProps
     for (AnimatedOperation operation in operations) {
       operation(nodesManager);
     }
+    [nodesManager operationsBatchDidComplete];
   }];
 }
 

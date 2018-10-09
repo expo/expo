@@ -5,6 +5,9 @@ import React from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { Platform, StatusBar, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-navigation';
+import { useScreens } from 'react-native-screens';
+useScreens();
+
 
 // workaround for large android status bar in react-nav beta.27
 if (Platform.OS === 'android') {

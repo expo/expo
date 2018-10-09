@@ -268,7 +268,6 @@
 		B5FB74F11FF6DADC001C764B /* EXScopedEventEmitter.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB74281FF6DADB001C764B /* EXScopedEventEmitter.m */; };
 		BB36BC632135C98E00AFFD58 /* RNSScreenContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = BB36BC5E2135C98D00AFFD58 /* RNSScreenContainer.m */; };
 		BB36BC642135C98E00AFFD58 /* RNSScreen.m in Sources */ = {isa = PBXBuildFile; fileRef = BB36BC612135C98D00AFFD58 /* RNSScreen.m */; };
-		BB36BC652135C98E00AFFD58 /* RNSScreenStack.m in Sources */ = {isa = PBXBuildFile; fileRef = BB36BC622135C98D00AFFD58 /* RNSScreenStack.m */; };
 		BB50E88820B9C0D3003C752D /* RNGestureHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = BB50E86920B9C0D3003C752D /* RNGestureHandler.m */; };
 		BB50E88920B9C0D3003C752D /* RNGestureHandlerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = BB50E86C20B9C0D3003C752D /* RNGestureHandlerManager.m */; };
 		BB50E88A20B9C0D3003C752D /* RNGestureHandlerRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = BB50E86F20B9C0D3003C752D /* RNGestureHandlerRegistry.m */; };
@@ -858,10 +857,8 @@
 		B5FB74281FF6DADB001C764B /* EXScopedEventEmitter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXScopedEventEmitter.m; sourceTree = "<group>"; };
 		BB36BC5D2135C98D00AFFD58 /* RNSScreen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNSScreen.h; sourceTree = "<group>"; };
 		BB36BC5E2135C98D00AFFD58 /* RNSScreenContainer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNSScreenContainer.m; sourceTree = "<group>"; };
-		BB36BC5F2135C98D00AFFD58 /* RNSScreenStack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNSScreenStack.h; sourceTree = "<group>"; };
 		BB36BC602135C98D00AFFD58 /* RNSScreenContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNSScreenContainer.h; sourceTree = "<group>"; };
 		BB36BC612135C98D00AFFD58 /* RNSScreen.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNSScreen.m; sourceTree = "<group>"; };
-		BB36BC622135C98D00AFFD58 /* RNSScreenStack.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNSScreenStack.m; sourceTree = "<group>"; };
 		BB50E86920B9C0D3003C752D /* RNGestureHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNGestureHandler.m; sourceTree = "<group>"; };
 		BB50E86A20B9C0D3003C752D /* RNGestureHandlerButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNGestureHandlerButton.h; sourceTree = "<group>"; };
 		BB50E86B20B9C0D3003C752D /* RNGestureHandlerDirection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNGestureHandlerDirection.h; sourceTree = "<group>"; };
@@ -1998,10 +1995,8 @@
 			children = (
 				BB36BC5D2135C98D00AFFD58 /* RNSScreen.h */,
 				BB36BC5E2135C98D00AFFD58 /* RNSScreenContainer.m */,
-				BB36BC5F2135C98D00AFFD58 /* RNSScreenStack.h */,
 				BB36BC602135C98D00AFFD58 /* RNSScreenContainer.h */,
 				BB36BC612135C98D00AFFD58 /* RNSScreen.m */,
-				BB36BC622135C98D00AFFD58 /* RNSScreenStack.m */,
 			);
 			name = Screens;
 			path = Exponent/Versioned/Core/Api/Screens;
@@ -2635,7 +2630,6 @@
 				783435E0205B8BEE00DD28C3 /* AIRGoogleMapMarker.m in Sources */,
 				B5AC39D61E95B17300540AA7 /* EXErrorRecoveryManager.m in Sources */,
 				78343625205B8C5F00DD28C3 /* AIRMapCallout.m in Sources */,
-				BB36BC652135C98E00AFFD58 /* RNSScreenStack.m in Sources */,
 				B5FB74A01FF6DADC001C764B /* EXBrightness.m in Sources */,
 				B58F125C20B73455003E13F1 /* EXEnvironment.m in Sources */,
 				3C3C339520E24EC0000F8B92 /* EXSplashScreen.m in Sources */,

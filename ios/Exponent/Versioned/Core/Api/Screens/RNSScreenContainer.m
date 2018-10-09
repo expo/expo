@@ -5,7 +5,7 @@
 #import <React/RCTUIManagerObserverCoordinator.h>
 #import <React/RCTUIManagerUtils.h>
 
-@interface RNSScreenContainerManager : RCTViewManager <RCTUIManagerObserver>
+@interface RNSScreenContainerManager : RCTViewManager
 
 - (void)markUpdated:(RNSScreenContainerView *)screen;
 
@@ -17,7 +17,7 @@
 @property (nonatomic, retain) NSMutableSet<RNSScreenView *> *activeScreens;
 @property (nonatomic, retain) NSMutableArray<RNSScreenView *> *reactSubviews;
 
-- (void)updateConatiner;
+- (void)updateContainer;
 
 @end
 
@@ -42,9 +42,8 @@
 - (void)markChildUpdated
 {
   // We want 'updateContainer' to be executed on main thread after all enqueued operations in
-  // uimanager are complete. In order to achieve that we enqueue call on UIManagerQueue from which
-  // we enqueue call on the main queue. This seems to be working ok in all the cases I've tried but
-  // there is a chance it is not the correct way to do that.
+  // uimanager are complete. For that we collect all marked containers in manager class and enqueue
+  // operation on ui thread that should run once all the updates are completed.
   if (!_needUpdate) {
     _needUpdate = YES;
     [_manager markUpdated:self];
@@ -154,45 +153,17 @@ RCT_EXPORT_MODULE()
 - (void)markUpdated:(RNSScreenContainerView *)screen
 {
   RCTAssertMainQueue();
-  @synchronized(self) {
-    // we need to synchronize write operations so that in didPerformMounting we can reliably
-    // tell if _markedCOntainers is empty or not
-    [_markedContainers addObject:screen];
-  }
-}
-
-#pragma mark - RCTUIManagerObserver
-
-- (void)setBridge:(RCTBridge *)bridge
-{
-  [super setBridge:bridge];
-  [self.bridge.uiManager.observerCoordinator addObserver:self];
-}
-
-- (void)invalidate
-{
-  [self.bridge.uiManager.observerCoordinator removeObserver:self];
-}
-
-- (void)uiManagerDidPerformMounting:(__unused RCTUIManager *)manager
-{
-  @synchronized(self) {
-    if ([_markedContainers count] == 0) {
-      // we return early if there are no updated containers. This check needs to be
-      // synchronized as UIThread can modify _markedContainers array
-      return;
-    }
-  }
-  RCTExecuteOnMainQueue(^{
-    for (RNSScreenContainerView *screen in _markedContainers) {
-      [screen updateContainer];
-    }
-    @synchronized(self) {
-      // we only synchronize write operations and not reading in UIThread as UIThread
-      // is the only thread that changes _markedContainers
+  [_markedContainers addObject:screen];
+  if ([_markedContainers count] == 1) {
+    // we enqueue updates to be run on the main queue in order to make sure that
+    // all this updates (new screens attached etc) are executed in one batch
+    RCTExecuteOnMainQueue(^{
+      for (RNSScreenContainerView *container in _markedContainers) {
+        [container updateContainer];
+      }
       [_markedContainers removeAllObjects];
-    }
-  });
+    });
+  }
 }
 
 @end
