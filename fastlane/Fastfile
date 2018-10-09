@@ -37,6 +37,7 @@ platform :ios do
       xcodeproj: "./ios/Exponent.xcodeproj"
     )
     set_bundle_version_from_commit_count
+    setup_circle_ci
   end
 
   lane :test do
