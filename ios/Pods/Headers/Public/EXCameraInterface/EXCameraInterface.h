@@ -1,1 +1,1 @@
-../../../../../modules/expo-camera-interface/ios/EXCameraInterface/EXCameraInterface.h
+../../../../../packages/expo-camera-interface/ios/EXCameraInterface/EXCameraInterface.h

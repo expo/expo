@@ -1,1 +1,1 @@
-../../../../../modules/expo-core/ios/EXCore/EXExportedModule.h
+../../../../../packages/expo-core/ios/EXCore/EXExportedModule.h

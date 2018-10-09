@@ -920,35 +920,35 @@ DEPENDENCIES:
   - CocoaLumberjack (~> 3.2.1)
   - Crashlytics (~> 3.8)
   - DoubleConversion (from `../react-native-lab/react-native/third-party-podspecs/DoubleConversion.podspec`)
-  - EXAdsAdMob (from `../modules/expo-ads-admob/ios`)
-  - EXBarCodeScanner (from `../modules/expo-barcode-scanner/ios`)
-  - EXBarCodeScannerInterface (from `../modules/expo-barcode-scanner-interface/ios`)
-  - EXCamera (from `../modules/expo-camera/ios`)
-  - EXCameraInterface (from `../modules/expo-camera-interface/ios`)
-  - EXConstants (from `../modules/expo-constants/ios`)
-  - EXConstantsInterface (from `../modules/expo-constants-interface/ios`)
-  - EXContacts (from `../modules/expo-contacts/ios`)
-  - EXCore (from `../modules/expo-core/ios`)
-  - EXFaceDetector (from `../modules/expo-face-detector/ios`)
-  - EXFaceDetectorInterface (from `../modules/expo-face-detector-interface/ios`)
-  - EXFileSystem (from `../modules/expo-file-system/ios`)
-  - EXFileSystemInterface (from `../modules/expo-file-system-interface/ios`)
-  - EXFont (from `../modules/expo-font/ios`)
-  - EXFontInterface (from `../modules/expo-font-interface/ios`)
-  - EXGL (from `../modules/expo-gl/ios`)
-  - EXGL-CPP (from `../modules/expo-gl-cpp/cpp`)
-  - EXImageLoaderInterface (from `../modules/expo-image-loader-interface/ios`)
-  - EXLocalAuthentication (from `../modules/expo-local-authentication/ios`)
-  - EXLocation (from `../modules/expo-location/ios`)
-  - EXMediaLibrary (from `../modules/expo-media-library/ios`)
-  - EXPermissions (from `../modules/expo-permissions/ios`)
-  - EXPermissionsInterface (from `../modules/expo-permissions-interface/ios`)
-  - EXPrint (from `../modules/expo-print/ios`)
-  - EXReactNativeAdapter (from `../modules/expo-react-native-adapter/ios`)
-  - EXSegment (from `../modules/expo-analytics-segment/ios`)
-  - EXSensors (from `../modules/expo-sensors/ios`)
-  - EXSensorsInterface (from `../modules/expo-sensors-interface/ios`)
-  - EXSMS (from `../modules/expo-sms/ios`)
+  - EXAdsAdMob (from `../packages/expo-ads-admob/ios`)
+  - EXBarCodeScanner (from `../packages/expo-barcode-scanner/ios`)
+  - EXBarCodeScannerInterface (from `../packages/expo-barcode-scanner-interface/ios`)
+  - EXCamera (from `../packages/expo-camera/ios`)
+  - EXCameraInterface (from `../packages/expo-camera-interface/ios`)
+  - EXConstants (from `../packages/expo-constants/ios`)
+  - EXConstantsInterface (from `../packages/expo-constants-interface/ios`)
+  - EXContacts (from `../packages/expo-contacts/ios`)
+  - EXCore (from `../packages/expo-core/ios`)
+  - EXFaceDetector (from `../packages/expo-face-detector/ios`)
+  - EXFaceDetectorInterface (from `../packages/expo-face-detector-interface/ios`)
+  - EXFileSystem (from `../packages/expo-file-system/ios`)
+  - EXFileSystemInterface (from `../packages/expo-file-system-interface/ios`)
+  - EXFont (from `../packages/expo-font/ios`)
+  - EXFontInterface (from `../packages/expo-font-interface/ios`)
+  - EXGL (from `../packages/expo-gl/ios`)
+  - EXGL-CPP (from `../packages/expo-gl-cpp/cpp`)
+  - EXImageLoaderInterface (from `../packages/expo-image-loader-interface/ios`)
+  - EXLocalAuthentication (from `../packages/expo-local-authentication/ios`)
+  - EXLocation (from `../packages/expo-location/ios`)
+  - EXMediaLibrary (from `../packages/expo-media-library/ios`)
+  - EXPermissions (from `../packages/expo-permissions/ios`)
+  - EXPermissionsInterface (from `../packages/expo-permissions-interface/ios`)
+  - EXPrint (from `../packages/expo-print/ios`)
+  - EXReactNativeAdapter (from `../packages/expo-react-native-adapter/ios`)
+  - EXSegment (from `../packages/expo-analytics-segment/ios`)
+  - EXSensors (from `../packages/expo-sensors/ios`)
+  - EXSensorsInterface (from `../packages/expo-sensors-interface/ios`)
+  - EXSMS (from `../packages/expo-sms/ios`)
   - Fabric (~> 1.6)
   - FBAudienceNetwork (= 4.99.0)
   - FBSDKCoreKit (~> 4.28)
@@ -1211,63 +1211,63 @@ EXTERNAL SOURCES:
   DoubleConversion:
     :podspec: "../react-native-lab/react-native/third-party-podspecs/DoubleConversion.podspec"
   EXAdsAdMob:
-    :path: "../modules/expo-ads-admob/ios"
+    :path: "../packages/expo-ads-admob/ios"
   EXBarCodeScanner:
-    :path: "../modules/expo-barcode-scanner/ios"
+    :path: "../packages/expo-barcode-scanner/ios"
   EXBarCodeScannerInterface:
-    :path: "../modules/expo-barcode-scanner-interface/ios"
+    :path: "../packages/expo-barcode-scanner-interface/ios"
   EXCamera:
-    :path: "../modules/expo-camera/ios"
+    :path: "../packages/expo-camera/ios"
   EXCameraInterface:
-    :path: "../modules/expo-camera-interface/ios"
+    :path: "../packages/expo-camera-interface/ios"
   EXConstants:
-    :path: "../modules/expo-constants/ios"
+    :path: "../packages/expo-constants/ios"
   EXConstantsInterface:
-    :path: "../modules/expo-constants-interface/ios"
+    :path: "../packages/expo-constants-interface/ios"
   EXContacts:
-    :path: "../modules/expo-contacts/ios"
+    :path: "../packages/expo-contacts/ios"
   EXCore:
-    :path: "../modules/expo-core/ios"
+    :path: "../packages/expo-core/ios"
   EXFaceDetector:
-    :path: "../modules/expo-face-detector/ios"
+    :path: "../packages/expo-face-detector/ios"
   EXFaceDetectorInterface:
-    :path: "../modules/expo-face-detector-interface/ios"
+    :path: "../packages/expo-face-detector-interface/ios"
   EXFileSystem:
-    :path: "../modules/expo-file-system/ios"
+    :path: "../packages/expo-file-system/ios"
   EXFileSystemInterface:
-    :path: "../modules/expo-file-system-interface/ios"
+    :path: "../packages/expo-file-system-interface/ios"
   EXFont:
-    :path: "../modules/expo-font/ios"
+    :path: "../packages/expo-font/ios"
   EXFontInterface:
-    :path: "../modules/expo-font-interface/ios"
+    :path: "../packages/expo-font-interface/ios"
   EXGL:
-    :path: "../modules/expo-gl/ios"
+    :path: "../packages/expo-gl/ios"
   EXGL-CPP:
-    :path: "../modules/expo-gl-cpp/cpp"
+    :path: "../packages/expo-gl-cpp/cpp"
   EXImageLoaderInterface:
-    :path: "../modules/expo-image-loader-interface/ios"
+    :path: "../packages/expo-image-loader-interface/ios"
   EXLocalAuthentication:
-    :path: "../modules/expo-local-authentication/ios"
+    :path: "../packages/expo-local-authentication/ios"
   EXLocation:
-    :path: "../modules/expo-location/ios"
+    :path: "../packages/expo-location/ios"
   EXMediaLibrary:
-    :path: "../modules/expo-media-library/ios"
+    :path: "../packages/expo-media-library/ios"
   EXPermissions:
-    :path: "../modules/expo-permissions/ios"
+    :path: "../packages/expo-permissions/ios"
   EXPermissionsInterface:
-    :path: "../modules/expo-permissions-interface/ios"
+    :path: "../packages/expo-permissions-interface/ios"
   EXPrint:
-    :path: "../modules/expo-print/ios"
+    :path: "../packages/expo-print/ios"
   EXReactNativeAdapter:
-    :path: "../modules/expo-react-native-adapter/ios"
+    :path: "../packages/expo-react-native-adapter/ios"
   EXSegment:
-    :path: "../modules/expo-analytics-segment/ios"
+    :path: "../packages/expo-analytics-segment/ios"
   EXSensors:
-    :path: "../modules/expo-sensors/ios"
+    :path: "../packages/expo-sensors/ios"
   EXSensorsInterface:
-    :path: "../modules/expo-sensors-interface/ios"
+    :path: "../packages/expo-sensors-interface/ios"
   EXSMS:
-    :path: "../modules/expo-sms/ios"
+    :path: "../packages/expo-sms/ios"
   Folly:
     :podspec: "../react-native-lab/react-native/third-party-podspecs/Folly.podspec"
   glog:
@@ -1426,6 +1426,6 @@ SPEC CHECKSUMS:
   yogaABI29_0_0: 4fdf5bbd444d2968ec42ccadec97b02c672eda80
   yogaABI30_0_0: 4c86e39466368a6b018b8b78aeb654b6620512a1
 
-PODFILE CHECKSUM: bce5fe6b1fa5db1699042fd1863caf1a5ab8981d
+PODFILE CHECKSUM: 8ffa894a8028a5d909eb4b86bfea0ab488944d85
 
 COCOAPODS: 1.5.3

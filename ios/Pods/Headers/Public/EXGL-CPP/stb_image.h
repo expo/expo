@@ -1,1 +1,1 @@
-../../../../../modules/expo-gl-cpp/cpp/stb_image.h
+../../../../../packages/expo-gl-cpp/cpp/stb_image.h

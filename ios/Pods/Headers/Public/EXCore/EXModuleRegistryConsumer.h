@@ -1,1 +1,1 @@
-../../../../../modules/expo-core/ios/EXCore/Protocols/EXModuleRegistryConsumer.h
+../../../../../packages/expo-core/ios/EXCore/Protocols/EXModuleRegistryConsumer.h

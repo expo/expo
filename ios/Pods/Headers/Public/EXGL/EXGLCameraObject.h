@@ -1,1 +1,1 @@
-../../../../../modules/expo-gl/ios/EXGL/EXGLCameraObject.h
+../../../../../packages/expo-gl/ios/EXGL/EXGLCameraObject.h

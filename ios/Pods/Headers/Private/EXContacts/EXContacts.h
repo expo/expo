@@ -1,1 +1,1 @@
-../../../../../modules/expo-contacts/ios/EXContacts/EXContacts.h
+../../../../../packages/expo-contacts/ios/EXContacts/EXContacts.h

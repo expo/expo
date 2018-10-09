@@ -1,1 +1,1 @@
-../../../../../modules/expo-core/ios/EXCore/EXModuleRegistry/EXModuleRegistryDelegate.h
+../../../../../packages/expo-core/ios/EXCore/EXModuleRegistry/EXModuleRegistryDelegate.h

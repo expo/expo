@@ -1,1 +1,1 @@
-../../../../../modules/expo-sensors/ios/EXSensors/Modules/EXPedometer.h
+../../../../../packages/expo-sensors/ios/EXSensors/Modules/EXPedometer.h

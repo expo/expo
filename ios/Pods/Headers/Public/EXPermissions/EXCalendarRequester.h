@@ -1,1 +1,1 @@
-../../../../../modules/expo-permissions/ios/EXPermissions/EXCalendarRequester.h
+../../../../../packages/expo-permissions/ios/EXPermissions/EXCalendarRequester.h

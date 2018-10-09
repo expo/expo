@@ -1,1 +1,1 @@
-../../../../../modules/expo-core/ios/EXCore/EXViewManager.h
+../../../../../packages/expo-core/ios/EXCore/EXViewManager.h

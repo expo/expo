@@ -1,1 +1,1 @@
-../../../../../modules/expo-print/ios/EXPrint/EXPrint.h
+../../../../../packages/expo-print/ios/EXPrint/EXPrint.h

@@ -1,1 +1,1 @@
-../../../../../modules/expo-react-native-adapter/ios/EXReactNativeAdapter/EXBridgeModule.h
+../../../../../packages/expo-react-native-adapter/ios/EXReactNativeAdapter/EXBridgeModule.h

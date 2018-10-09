@@ -1,1 +1,1 @@
-../../../../../modules/expo-file-system/ios/EXFileSystem/EXFileSystemManagerService.h
+../../../../../packages/expo-file-system/ios/EXFileSystem/EXFileSystemManagerService.h

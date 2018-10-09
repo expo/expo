@@ -1,1 +1,1 @@
-../../../../../modules/expo-ads-admob/ios/EXAdsAdMob/EXAdsAdMobRewarded.h
+../../../../../packages/expo-ads-admob/ios/EXAdsAdMob/EXAdsAdMobRewarded.h

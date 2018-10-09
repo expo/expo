@@ -1,1 +1,1 @@
-../../../../../modules/expo-file-system-interface/ios/EXFileSystemInterface/EXFileSystemManagerInterface.h
+../../../../../packages/expo-file-system-interface/ios/EXFileSystemInterface/EXFileSystemManagerInterface.h

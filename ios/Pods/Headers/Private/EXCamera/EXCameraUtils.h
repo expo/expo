@@ -1,1 +1,1 @@
-../../../../../modules/expo-camera/ios/EXCamera/Utilities/EXCameraUtils.h
+../../../../../packages/expo-camera/ios/EXCamera/Utilities/EXCameraUtils.h
