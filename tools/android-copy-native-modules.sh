@@ -20,7 +20,14 @@ awk '
 sed -i '' "s/\/\/ WHEN_VERSIONING_REPLACE_WITH_DEPENDENCIES/implementation project(\":expoview\")/g" $VERSIONED_ABI_PATH/build.gradle
 
 # Prepare an empty AndroidManifest.xml of the new project
-echo "<manifest xmlns:android=\"http://schemas.android.com/apk/res/android\" package=\"$ABI_VERSION.host.exp.expoview\" />" > $VERSIONED_ABI_PATH/src/main/AndroidManifest.xml
+awk '
+  /REMOVE_WHEN_VERSIONING_FROM_HERE/ { removing = 1 }
+  /REMOVE_WHEN_VERSIONING_TO_HERE/ { stopRemoving = 1 }
+  // { if (removing == 0) print $0 }
+  // { if (stopRemoving == 1) removing = 0 }
+  // { if (removing == 0) stopRemoving = 0 }
+' expoview/src/main/AndroidManifest.xml > $VERSIONED_ABI_PATH/src/main/AndroidManifest.xml
+sed -i '' "s/host.exp.expoview/$ABI_VERSION.host.exp.expoview/g" $VERSIONED_ABI_PATH/src/main/AndroidManifest.xml
 
 # Add the new expoview-abiXX_X_X subproject to root project
 NEWLINE='\

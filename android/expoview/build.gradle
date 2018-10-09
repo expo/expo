@@ -1,5 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'maven'
+apply plugin: 'com.jakewharton.butterknife'
 
 // REMOVE_WHEN_VERSIONING_FROM_HERE
 //maven repository info
@@ -48,8 +49,6 @@ buildscript {
     classpath 'com.jakewharton:butterknife-gradle-plugin:8.4.0'
   }
 }
-
-apply plugin: 'com.jakewharton.butterknife'
 
 repositories {
   maven { url 'https://maven.fabric.io/public' }
