@@ -77,6 +77,10 @@ executors:
       xcode: "10.0.0"
     working_directory: /Users/distiller/project
     shell: /bin/bash -leo pipefail
+    environment:
+      # fastlane complains if these are not set
+      LC_ALL: en_US.UTF-8
+      LANG: en_US.UTF-8
 
 workflows:
   version: 2
@@ -157,7 +161,7 @@ jobs:
       - yarn:
           working_directory: ~/project/tools-public
       - run: nix run nixpkgs.nodejs-8_x -c ~/project/tools-public/generate-files-ios.sh
-      - run: fastlane ios create_simulator_build
+      - run: nix run nixpkgs.nodejs-8_x nixpkgs.fastlane -c fastlane ios create_simulator_build
 
   client_android:
     executor: android
