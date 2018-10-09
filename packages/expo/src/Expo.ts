@@ -35,9 +35,8 @@ export { SMS } from 'expo-sms';
 import * as GestureHandler from 'react-native-gesture-handler';
 export { GestureHandler };
 export { default as MapView } from 'react-native-maps';
+export { AR } from 'expo-ar';
 
-import * as AR from './AR';
-export { AR };
 export { default as Amplitude } from './Amplitude';
 export { default as AuthSession } from './AuthSession';
 import * as Brightness from './Brightness';

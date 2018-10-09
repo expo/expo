@@ -1,0 +1,13 @@
+{
+  "presets": ["babel-preset-expo"],
+  "env": {
+    "development": {
+      "plugins": [
+        "transform-react-jsx-source"
+      ]
+    }
+  },
+  "plugins": [
+    "@babel/plugin-proposal-export-namespace-from"
+  ]
+}

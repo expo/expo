@@ -1,0 +1,60 @@
+{
+  "name": "expo-three",
+  "version": "3.0.0",
+  "description": "Utilities for using THREE.js on Expo",
+  "files": [
+    "src"
+  ],
+  "homepage": "https://github.com/expo/expo-three#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/expo/expo-three.git"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo-three/issues"
+  },
+  "main": "src/ExpoTHREE.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint .",
+    "prettier": "eslint . --fix"
+  },
+  "directories": {
+    "src": "src"
+  },
+  "keywords": [
+    "expo",
+    "three.js",
+    "graphics",
+    "opengl",
+    "gl",
+    "arkit"
+  ],
+  "author": "Nikhilesh Sigatapu",
+  "license": "MIT",
+  "dependencies": {
+    "@expo/browser-polyfill": "^0.0.0-alpha.4",
+    "color-temperature": "0.2.7",
+    "expo-asset-utils": "^0.0.4-alpha.2"
+  },
+  "peerDependencies": {
+    "react-native": "*",
+    "three": "0.96.0"
+  },
+  "devDependencies": {
+    "babel-jest": "^23.0.1",
+    "babel-preset-expo": "^4.0.0",
+    "babel-preset-react-native": "^4.0.0",
+    "eslint": "^4.19.1",
+    "eslint-config-react-native-prettier": "^1.0.1",
+    "expo": "^30.0.0",
+    "expo-ar": "^1.0.0",
+    "flow-bin": "^0.26.0",
+    "jest": "^23.1.0",
+    "prettier": "^1.13.5",
+    "three": "0.96.0"
+  },
+  "eslintConfig": {
+    "extends": "expo"
+  }
+}

@@ -1,0 +1,1 @@
+../../../../../packages/expo-ar/ios/EXAR/EXARModule+Serialization.h

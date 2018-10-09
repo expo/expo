@@ -57,6 +57,7 @@ export default class ExpoApisScreen extends React.Component {
 
   _getApis = () => {
     return [
+      'AR',
       'AuthSession',
       'Branch',
       'Calendars',

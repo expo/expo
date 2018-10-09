@@ -6,7 +6,7 @@ public class GLObject {
   protected int exglCtxId;
   protected int exglObjId;
 
-  GLObject(int exglCtxId) {
+  public GLObject(int exglCtxId) {
     // Generic
     this.exglCtxId = exglCtxId;
     this.exglObjId = EXGLContextCreateObject(exglCtxId);
@@ -16,7 +16,7 @@ public class GLObject {
     return exglObjId;
   }
 
-  void destroy() {
+  public void destroy() {
     EXGLContextDestroyObject(exglCtxId, exglObjId);
   }
 }

@@ -44,6 +44,9 @@
 
     <application>
 
+      <!-- ARCore -->
+      <meta-data android:name="com.google.ar.core" android:value="optional" />
+
       <!-- Scheduled notifications -->
       <receiver
         android:name="host.exp.exponent.notifications.ScheduledNotificationReceiver"

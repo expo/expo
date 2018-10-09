@@ -134,6 +134,7 @@ dependencies {
   api 'host.exp.exponent:expo-ads-admob:1.0.0'
   api 'host.exp.exponent:expo-local-authentication:1.0.0'
   api 'host.exp.exponent:expo-localization:1.0.0'
+  api 'host.exp.exponent:expo-ar:1.0.0'
   END UNCOMMENT WHEN DISTRIBUTING */
 
   // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
@@ -167,6 +168,7 @@ dependencies {
   api project(':expo-ads-admob')
   api project(':expo-local-authentication')
   api project(':expo-localization')
+  api project(':expo-ar')
   // WHEN_DISTRIBUTING_REMOVE_TO_HERE
 
   // Versioned react native

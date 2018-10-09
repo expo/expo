@@ -206,7 +206,7 @@ public class GLCameraObject extends GLObject implements SurfaceTexture.OnFrameAv
   }
 
   @Override
-  void destroy() {
+  public void destroy() {
     if (mCameraView != null) {
       mCameraView.setPreviewTexture(null);
       mCameraView = null;

@@ -20,6 +20,7 @@ import java.util.Map;
 import expo.adapters.react.ReactModuleRegistryProvider;
 import expo.core.interfaces.Package;
 import expo.modules.ads.admob.AdMobPackage;
+import expo.modules.ar.ARPackage;
 import expo.modules.font.FontLoaderPackage;
 import expo.modules.localauthentication.LocalAuthenticationPackage;
 import expo.modules.payments.stripe.StripePackage;
@@ -120,7 +121,8 @@ public class ExponentPackage implements ReactPackage {
       new AdMobPackage(),
       new StripePackage(),
       new LocalAuthenticationPackage(),
-      new LocalizationPackage()
+      new LocalizationPackage(),
+      new ARPackage()
   );
 
   private static final String TAG = ExponentPackage.class.getSimpleName();
