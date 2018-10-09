@@ -23,7 +23,6 @@ import ProjectsForUserScreen from '../screens/ProjectsForUserScreen';
 import SnacksForUserScreen from '../screens/SnacksForUserScreen';
 
 import Colors from '../constants/Colors';
-import SearchBar from '../components/SearchBar';
 import defaultNavigationOptions from './defaultNavigationOptions';
 
 const ProjectsStack = createStackNavigator(
