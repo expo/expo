@@ -111,7 +111,6 @@ dependencies {
 
   // REMOVE_WHEN_VERSIONING_FROM_HERE
   // Current react native
-  api project(':ReactAndroid')
   /* UNCOMMENT WHEN DISTRIBUTING
   api 'com.facebook.react:react-native:30.0.0'
   api 'host.exp.exponent:expo-core:1.1.0'
@@ -146,6 +145,8 @@ dependencies {
   END UNCOMMENT WHEN DISTRIBUTING */
 
   // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
+  api project(':ReactAndroid')
+
   // Universal modules
   api project(':expo-react-native-adapter')
   api project(':expo-core')
@@ -176,7 +177,6 @@ dependencies {
   api project(':expo-ads-admob')
   api project(':expo-local-authentication')
   api project(':expo-localization')
-  // WHEN_DISTRIBUTING_REMOVE_TO_HERE
 
   // Versioned react native
   // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
@@ -204,6 +204,7 @@ dependencies {
   // END_SDK_24
   // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
   // REMOVE_WHEN_VERSIONING_TO_HERE
+  // WHEN_DISTRIBUTING_REMOVE_TO_HERE
 
   // React native dependencies
   // We use a different version of appcompat

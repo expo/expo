@@ -160,6 +160,7 @@ async function spawnAsyncPrintCommand(command, args = [], other) {
 exports.updateExpoViewAsync = async function updateExpoViewAsync(sdkVersion) {
   let androidRoot = path.join(process.cwd(), '..', 'android');
   let expoViewBuildGradle = path.join(androidRoot, 'expoview', 'build.gradle');
+  const multipleVersionReactNativeActivity = path.join(androidRoot, 'expoview/src/main/java/host/exp/exponent/experience/MultipleVersionReactNativeActivity.java');
 
   // Modify permanently
   await regexFileAsync(expoViewBuildGradle, /version = '[\d\.]+'/, `version = '${sdkVersion}'`);
@@ -198,10 +199,10 @@ exports.updateExpoViewAsync = async function updateExpoViewAsync(sdkVersion) {
   const detachableUniversalModules = Modules.getAllNativeForExpoClientOnPlatform('android');
 
   await stashFileAsync(expoViewBuildGradle);
+  await stashFileAsync(multipleVersionReactNativeActivity);
   // Modify temporarily
   await regexFileAsync(expoViewBuildGradle, '/* UNCOMMENT WHEN DISTRIBUTING', '');
   await regexFileAsync(expoViewBuildGradle, 'END UNCOMMENT WHEN DISTRIBUTING */', '');
-  await regexFileAsync(expoViewBuildGradle, `api project(':ReactAndroid')`, '');
   await regexFileAsync(
     expoViewBuildGradle,
     `// WHEN_DISTRIBUTING_REMOVE_FROM_HERE`,
@@ -210,7 +211,17 @@ exports.updateExpoViewAsync = async function updateExpoViewAsync(sdkVersion) {
   await regexFileAsync(
     expoViewBuildGradle,
     `// WHEN_DISTRIBUTING_REMOVE_TO_HERE`,
-    'WHEN_DISTRIBUTING_REMOVE_FROM_HERE */'
+    'WHEN_DISTRIBUTING_REMOVE_TO_HERE */'
+  );
+  await regexFileAsync(
+    multipleVersionReactNativeActivity,
+    `// WHEN_DISTRIBUTING_REMOVE_FROM_HERE`,
+    '/* WHEN_DISTRIBUTING_REMOVE_FROM_HERE'
+  );
+  await regexFileAsync(
+    multipleVersionReactNativeActivity,
+    `// WHEN_DISTRIBUTING_REMOVE_TO_HERE`,
+    'WHEN_DISTRIBUTING_REMOVE_TO_HERE */'
   );
 
   // Clear maven local so that we don't end up with multiple versions
@@ -240,6 +251,7 @@ exports.updateExpoViewAsync = async function updateExpoViewAsync(sdkVersion) {
   }
 
   await restoreFileAsync(expoViewBuildGradle);
+  await restoreFileAsync(multipleVersionReactNativeActivity);
 
   await spawnAsyncPrintCommand('rm', [
     '-rf',
