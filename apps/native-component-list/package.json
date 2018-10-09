@@ -23,7 +23,6 @@
     "prop-types": "^15.6.0",
     "react": "16.5.0",
     "react-native": "^0.57.1",
-    "react-native-gesture-handler": "1.0.6",
     "react-native-paper": "^2.0.0-alpha.4",
     "react-native-platform-touchable": "^1.1.1",
     "react-native-svg": "6.2.2",

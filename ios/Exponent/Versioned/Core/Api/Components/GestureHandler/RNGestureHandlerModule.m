@@ -27,6 +27,16 @@ RCT_EXPORT_MODULE(RNGestureHandlerButton)
 
 RCT_EXPORT_VIEW_PROPERTY(enabled, BOOL)
 
+RCT_CUSTOM_VIEW_PROPERTY(hitSlop, UIEdgeInsets, RNGestureHandlerButton)
+{
+  if (json) {
+    UIEdgeInsets hitSlopInsets = [RCTConvert UIEdgeInsets:json];
+    view.hitTestEdgeInsets = UIEdgeInsetsMake(-hitSlopInsets.top, -hitSlopInsets.left, -hitSlopInsets.bottom, -hitSlopInsets.right);
+  } else {
+    view.hitTestEdgeInsets = defaultView.hitTestEdgeInsets;
+  }
+}
+
 - (UIView *)view
 {
     return [RNGestureHandlerButton new];
