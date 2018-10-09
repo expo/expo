@@ -3,8 +3,8 @@ import * as React from 'react';
 import { View, ViewPropTypes, requireNativeComponent } from 'react-native';
 
 type Props = {
-  tint: BlurTint,
-  intensity: number,
+  tint: BlurTint;
+  intensity: number;
 } & React.ElementProps<View>;
 type BlurTint = 'light' | 'dark' | 'default';
 

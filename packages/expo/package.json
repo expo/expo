@@ -16,7 +16,7 @@
   "scripts": {
     "clean": "rm -rf build",
     "jest": "jest",
-    "lint": "eslint src tools",
+    "lint": "eslint tools",
     "prepare": "rm -rf build && tsc --project .",
     "prepublishOnly": "proofread",
     "test": "jest --watch",

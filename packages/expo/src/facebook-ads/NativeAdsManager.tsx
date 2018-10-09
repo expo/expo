@@ -1,4 +1,4 @@
-import { NativeModules, NativeEventEmitter } from 'react-native';
+import { NativeEventEmitter, NativeModules } from 'react-native';
 import { EventEmitter, EventSubscription } from 'fbemitter';
 
 const { CTKNativeAdManager, CTKNativeAdEmitter } = NativeModules;

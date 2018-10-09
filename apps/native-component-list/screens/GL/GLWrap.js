@@ -1,4 +1,4 @@
-import Expo from 'expo';
+import { GLView } from 'expo';
 import React from 'react';
 import { View } from 'react-native';
 
@@ -23,7 +23,7 @@ export default (title, onContextCreate) =>
             },
             this.props.style,
           ]}>
-          <Expo.GLView style={{ flex: 1 }} onContextCreate={this._onContextCreate} />
+          <GLView style={{ flex: 1 }} onContextCreate={this._onContextCreate} />
         </View>
       );
     }

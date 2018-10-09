@@ -1,4 +1,4 @@
-import Expo from 'expo';
+import { Asset, GLView } from 'expo';
 import React from 'react';
 import * as THREE from 'three';
 import ExpoTHREE from 'expo-three';
@@ -42,7 +42,7 @@ export default class GLSnapshotsScreen extends React.PureComponent {
     const geometry = new THREE.BoxGeometry(1, 1, 1);
     const material = new THREE.MeshBasicMaterial({
       map: await ExpoTHREE.createTextureAsync({
-        asset: Expo.Asset.fromModule(require('../../assets/images/swmansion.png')),
+        asset: Asset.fromModule(require('../../assets/images/swmansion.png')),
       }),
     });
     const cube = new THREE.Mesh(geometry, material);
@@ -74,7 +74,7 @@ export default class GLSnapshotsScreen extends React.PureComponent {
 
     return (
       <View style={styles.flex}>
-        <Expo.GLView
+        <GLView
           style={styles.flex}
           onContextCreate={this.onContextCreate}
           ref={this.setGLViewRef}

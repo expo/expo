@@ -1,21 +1,21 @@
 import './LegacyReact';
 
-import Expo, { Asset } from 'expo';
+import { AppLoading, Asset, Font } from 'expo';
 import React from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { Platform, StatusBar, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-navigation';
 import { useScreens } from 'react-native-screens';
-useScreens();
 
+import Icons from './constants/Icons';
+import RootNavigation from './navigation/RootNavigation';
+
+useScreens();
 
 // workaround for large android status bar in react-nav beta.27
 if (Platform.OS === 'android') {
   SafeAreaView.setStatusBarHeight(0);
 }
-
-import Icons from './constants/Icons';
-import RootNavigation from './navigation/RootNavigation';
 
 export default class App extends React.Component {
   state = {
@@ -33,8 +33,8 @@ export default class App extends React.Component {
         Asset.loadAsync(iconRequires),
         Asset.loadAsync(require('react-navigation/src/views/assets/back-icon.png')),
         Asset.loadAsync(require('react-navigation/src/views/assets/back-icon-mask.png')),
-        Expo.Font.loadAsync(Ionicons.font),
-        Expo.Font.loadAsync({ 'space-mono': require('./assets/fonts/SpaceMono-Regular.ttf') })
+        Font.loadAsync(Ionicons.font),
+        Font.loadAsync({ 'space-mono': require('./assets/fonts/SpaceMono-Regular.ttf') })
       ]);
     } catch (e) {
       console.log({ e });
@@ -54,7 +54,7 @@ export default class App extends React.Component {
         </View>
       );
     } else {
-      return <Expo.AppLoading />;
+      return <AppLoading />;
     }
   }
 }

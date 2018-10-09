@@ -3,8 +3,7 @@
  * up to date if you plan to use any of these.
  */
 
-// @ts-ignore
-module.exports = {
+export default {
   get Lottie() {
     return require('lottie-react-native');
   },

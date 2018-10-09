@@ -2,7 +2,7 @@ import React from 'react';
 import * as SplashScreen from './SplashScreen';
 
 type Props = {
-  autoHideSplash?: boolean,
+  autoHideSplash?: boolean;
 };
 
 export default class AppLoading extends React.Component<Props> {
