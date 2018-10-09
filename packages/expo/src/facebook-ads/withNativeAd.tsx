@@ -165,7 +165,7 @@ export default function withNativeAd<P>(
     }: AdNodeHandles): void {
       let adMediaViewChanged = adMediaViewNodeHandle !== this._adMediaViewNodeHandle;
       let adIconViewChanged = adIconViewNodeHandle !== this._adIconViewNodeHandle;
-    
+
       let interactiveTriggersChanged = !_areEqualSets(
         new Set(interactiveTriggerNodeHandles.values()),
         new Set(this._interactiveTriggerNodeHandles.values())
