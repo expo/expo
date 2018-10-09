@@ -7,257 +7,149 @@ import 'expo-asset/src/Asset';
 import 'expo-location/src/Location';
 
 import { Constants } from 'expo-constants';
-import { NativeModules, Platform, YellowBox } from 'react-native';
+import { NativeModules, Platform } from 'react-native';
 
 if (typeof Constants.manifest.env === 'object') {
   Object.assign(process.env, Constants.manifest.env);
 }
 
-// ignore annoying deprecation warnings stemming from react-native JS internals
-// TODO: remove this once there are no more calls to isMounted() in react-native
-global.__old_console_warn = global.__old_console_warn || console.warn;
-global.console.warn = (...args) => {
-  let tst = (args[0] || '') + '';
-  if (tst.startsWith('Warning: isMounted(...) is deprecated')) {
-    return;
-  }
-  return global.__old_console_warn.apply(console, args);
-};
+export { AdMobBanner, AdMobInterstitial, AdMobRewarded, PublisherBanner } from 'expo-ads-admob';
+export { Segment } from 'expo-analytics-segment';
+export { Asset } from 'expo-asset';
+export { BarCodeScanner } from 'expo-barcode-scanner';
+export { Camera } from 'expo-camera';
+export { Constants } from 'expo-constants';
+export { Contacts } from 'expo-contacts';
+export { FaceDetector } from 'expo-face-detector';
+export { FileSystem } from 'expo-file-system';
+export { Font } from 'expo-font';
+export { GLView } from 'expo-gl';
+export { LocalAuthentication } from 'expo-local-authentication';
+export { Location } from 'expo-location';
+export { MediaLibrary } from 'expo-media-library';
+export { Permissions } from 'expo-permissions';
+export { Print } from 'expo-print';
+export { Accelerometer, Gyroscope, Magnetometer, MagnetometerUncalibrated } from 'expo-sensors';
+export { SMS } from 'expo-sms';
+import * as GestureHandler from 'react-native-gesture-handler';
+export { GestureHandler };
+export { default as MapView } from 'react-native-maps';
+
+import * as AR from './AR';
+export { AR };
+export { default as Amplitude } from './Amplitude';
+export { default as AuthSession } from './AuthSession';
+import * as Brightness from './Brightness';
+export { Brightness };
+import * as Calendar from './Calendar';
+export { Calendar };
+export { default as DangerZone } from './DangerZone';
+import * as DocumentPicker from './DocumentPicker';
+export { DocumentPicker };
+export { default as ErrorRecovery } from './ErrorRecovery';
+import * as Facebook from './Facebook';
+export { Facebook };
+import * as Google from './Google';
+export { Google };
+import * as Haptic from './Haptic';
+export { Haptic };
+export { default as Icon } from './Icon';
+import * as ImageManipulator from './ImageManipulator';
+export { ImageManipulator };
+import * as ImagePicker from './ImagePicker';
+export { ImagePicker };
+import * as IntentLauncherAndroid from './IntentLauncherAndroid';
+export { IntentLauncherAndroid };
+export { default as KeepAwake } from './KeepAwake';
+export { default as Linking } from './Linking';
+import * as MailComposer from './MailComposer';
+export { MailComposer };
+export { default as Notifications } from './Notifications';
+export { default as SQLite } from './SQLite';
+import * as ScreenOrientation from './ScreenOrientation';
+export { ScreenOrientation };
+import * as SecureStore from './SecureStore';
+export { SecureStore };
+import * as Speech from './Speech';
+export { Speech };
+import * as StoreReview from './StoreReview';
+export { StoreReview };
+export { default as Svg } from './Svg';
+import * as Updates from './Updates';
+export { Updates };
+import * as Util from './Util';
+export { Util };
+export { default as WebBrowser } from './WebBrowser';
+export { default as apisAreAvailable } from './apisAreAvailable';
+export { default as takeSnapshotAsync } from './takeSnapshotAsync';
+export { default as Audio } from './av/Audio';
+export { default as Video } from './av/Video';
+export { default as BlurView } from './effects/BlurView';
+export { default as LinearGradient } from './effects/LinearGradient';
+import * as FacebookAds from './facebook-ads';
+export { FacebookAds };
+export { default as AppLoading } from './launch/AppLoading';
+import * as SplashScreen from './launch/SplashScreen';
+export { SplashScreen };
+export { default as registerRootComponent } from './launch/registerRootComponent';
+export { default as Logs } from './logs/Logs';
 
 // @ts-ignore
-module.exports = {
-  // constants
-  get Crypto() {
-    return NativeModules.ExponentCrypto;
+Object.defineProperties(exports, {
+  Fingerprint: {
+    enumerable: true,
+    get() {
+      console.warn(
+        'Expo.Fingerprint has been renamed to Expo.LocalAuthentication. The old name is deprecated and will be removed in SDK 32.'
+      );
+      return this.LocalAuthentication;
+    },
   },
-  get Fabric() {
-    return NativeModules.ExponentFabric;
-  },
-  get ImageCropper() {
-    return NativeModules.ExponentImageCropper;
-  },
-
-  // defaults
-  get apisAreAvailable() {
-    return require('./apisAreAvailable').default;
-  },
-  get registerRootComponent() {
-    return require('./launch/registerRootComponent').default;
-  },
-  get takeSnapshotAsync() {
-    return require('./takeSnapshotAsync').default;
-  },
-  get Accelerometer() {
-    return require('expo-sensors').Accelerometer;
-  },
-  get Asset() {
-    return require('expo-asset').Asset;
-  },
-  get AuthSession() {
-    return require('./AuthSession').default;
-  },
-  get ErrorRecovery() {
-    return require('./ErrorRecovery').default;
-  },
-  get GLView() {
-    return require('expo-gl').GLView;
-  },
-  get Gyroscope() {
-    return require('expo-sensors').Gyroscope;
-  },
-  get Magnetometer() {
-    return require('expo-sensors').Magnetometer;
-  },
-  get MagnetometerUncalibrated() {
-    return require('expo-sensors').MagnetometerUncalibrated;
-  },
-  get Notifications() {
-    return require('./Notifications').default;
-  },
-  get SQLite() {
-    return require('./SQLite').default;
+  // TODO: Unify the Pedometer module across platforms so we can export it normally
+  Pedometer: {
+    enumerable: true,
+    get() {
+      if (Platform.OS === 'android') {
+        return require('./Pedometer');
+      } else {
+        return require('expo-sensors').Pedometer;
+      }
+    },
   },
 
-  // components
-  get AdMobBanner() {
-    return require('expo-ads-admob').AdMobBanner;
+  // Directly exposed modules that we need to revisit or drop
+  Crypto: {
+    get() {
+      console.warn(`Expo.Crypto is not part of the public API and will be removed in SDK 32.`);
+      return NativeModules.ExponentCrypto;
+    },
   },
-  get PublisherBanner() {
-    return require('expo-ads-admob').PublisherBanner;
+  Fabric: {
+    get() {
+      console.warn(`Expo.Fabric is not part of the public API and will be removed in SDK 32.`);
+      return NativeModules.ExponentFabric;
+    },
   },
-  get AdMobInterstitial() {
-    return require('expo-ads-admob').AdMobInterstitial;
+  ImageCropper: {
+    get() {
+      console.warn(
+        `Expo.ImageCropper is not part of the public API and will be removed in SDK 32.`
+      );
+      return NativeModules.ExponentImageCropper;
+    },
   },
-  get AdMobRewarded() {
-    return require('expo-ads-admob').AdMobRewarded;
-  },
-  get AppLoading() {
-    return require('./launch/AppLoading').default;
-  },
-  get BarCodeScanner() {
-    return require('expo-barcode-scanner').BarCodeScanner;
-  },
-  get BlurView() {
-    return require('./effects/BlurView').default;
-  },
-  get Camera() {
-    return require('expo-camera').Camera;
-  },
-  get FaceDetector() {
-    return require('expo-face-detector').FaceDetector;
-  },
-  get GestureHandler() {
-    return require('react-native-gesture-handler');
-  },
-  get KeepAwake() {
-    return require('./KeepAwake').default;
-  },
-  get LinearGradient() {
-    return require('./effects/LinearGradient').default;
-  },
-  get MapView() {
-    return require('react-native-maps').default;
-  },
-  get Modal() {
-    console.error('The undocumented Modal API has been removed.');
-    return undefined;
-  },
-  get Video() {
-    return require('./av/Video').default;
-  },
-  get WebBrowser() {
-    return require('./WebBrowser').default;
-  },
-  get Svg() {
-    return require('./Svg').default;
-  },
-  get Fingerprint() {
+});
+
+// @ts-ignore print a warning when the default export is imported
+Object.defineProperty(exports, 'default', {
+  get() {
     console.warn(
-      'Expo.Fingerprint has been renamed to Expo.LocalAuthentication. The old name might be removed in the future releases.'
+      `The syntax "import Expo from 'expo'" has been deprecated in favor of "import { A, B, C } from 'expo'" or "import * as Expo from 'expo'". This sets us up to support static analysis tools like TypeScript and dead-import elimination better in the future. The deprecated import syntax will be removed in SDK 32.`
     );
-    return this.LocalAuthentication;
+    // @ts-ignore
+    return exports;
   },
-  get LocalAuthentication() {
-    return require('expo-local-authentication').LocalAuthentication;
-  },
-
-  // globs
-  get Amplitude() {
-    return require('./Amplitude').default;
-  },
-  get AR() {
-    return require('./AR');
-  },
-  get Audio() {
-    return require('./av/Audio');
-  },
-  get Brightness() {
-    return require('./Brightness');
-  },
-  get Calendar() {
-    return require('./Calendar');
-  },
-  get Constants() {
-    return require('expo-constants').Constants;
-  },
-  get Contacts() {
-    return require('expo-contacts').Contacts;
-  },
-  get DangerZone() {
-    return require('./DangerZone');
-  },
-  get DocumentPicker() {
-    return require('./DocumentPicker');
-  },
-  get FileSystem() {
-    return require('expo-file-system').FileSystem;
-  },
-  get Font() {
-    return require('expo-font').Font;
-  },
-  get Google() {
-    return require('./Google');
-  },
-  get Haptic() {
-    return require('./Haptic');
-  },
-  get Icon() {
-    return require('./Icon').default;
-  },
-  get ImageManipulator() {
-    return require('./ImageManipulator');
-  },
-  get ImagePicker() {
-    return require('./ImagePicker');
-  },
-  get Linking() {
-    return require('./Linking').default;
-  },
-  get Location() {
-    return require('expo-location').Location;
-  },
-  get Logs() {
-    return require('./logs/Logs').default;
-  },
-  get MailComposer() {
-    return require('./MailComposer');
-  },
-  get MediaLibrary() {
-    return require('expo-media-library').MediaLibrary;
-  },
-  get Pedometer() {
-    if (Platform.OS === 'android') {
-      return require('./Pedometer');
-    } else {
-      return require('expo-sensors').Pedometer;
-    }
-  },
-  get Permissions() {
-    return require('expo-permissions').Permissions;
-  },
-  get Print() {
-    return require('expo-print').Print;
-  },
-  get Facebook() {
-    return require('./Facebook').default;
-  },
-  get FacebookAds() {
-    return require('./facebook-ads').default;
-  },
-  get IntentLauncherAndroid() {
-    return require('./IntentLauncherAndroid');
-  },
-  get ScreenOrientation() {
-    return require('./ScreenOrientation');
-  },
-  get SecureStore() {
-    return require('./SecureStore');
-  },
-  get Segment() {
-    return require('expo-analytics-segment').Segment;
-  },
-  get SMS() {
-    return require('expo-sms').SMS;
-  },
-  get Speech() {
-    return require('./Speech');
-  },
-  get SplashScreen() {
-    return require('./launch/SplashScreen');
-  },
-  get StoreReview() {
-    return require('./StoreReview');
-  },
-  get Updates() {
-    return require('./Updates');
-  },
-  get Util() {
-    return require('./Util');
-  },
-};
-
-// @ts-ignore this is here so that import syntax works
-export default module.exports;
+});
 
 if (global) {
   // @ts-ignore
