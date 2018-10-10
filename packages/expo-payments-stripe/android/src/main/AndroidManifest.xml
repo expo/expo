@@ -1,0 +1,10 @@
+<manifest package="expo.modules.payments.stripe"
+          xmlns:android="http://schemas.android.com/apk/res/android">
+    <application>
+        <activity
+        android:name=".OpenBrowserActivity"
+        android:exported="false"
+        android:launchMode="singleTask"
+        android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+    </application>
+  </manifest>

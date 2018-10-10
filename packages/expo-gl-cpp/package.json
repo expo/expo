@@ -1,0 +1,20 @@
+{
+  "name": "expo-gl-cpp",
+  "version": "1.0.2",
+  "description": "C++ bindings for WebGL 2.0 used in Expo GL module",
+  "main": "index.js",
+  "keywords": [
+    "react-native",
+    "expo",
+    "gl",
+    "glview",
+    "webgl",
+    "cpp"
+  ],
+  "homepage": "https://docs.expo.io/",
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "dependencies": {
+    "expo-core": "~1.1.0"
+  }
+}
