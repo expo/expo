@@ -119,7 +119,7 @@
     "react-native-maps": "0.21.0",
     "react-native-reanimated": "1.0.0-alpha.9",
     "react-native-screens": "^1.0.0-alpha.14",
-    "react-native-svg": "6.2.2",
+    "react-native-svg": "6.5.2",
     "serialize-error": "^2.1.0",
     "uuid-js": "^0.7.5",
     "whatwg-fetch": "^2.0.4"
