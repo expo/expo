@@ -9,7 +9,7 @@ import Path from './Path';
 import { parseNativeMap } from './utils/serialize';
 
 import type Firestore from './';
-import type { NativeDocumentSnapshot, SnapshotMetadata } from './types';
+import type { NativeDocumentSnapshot, SnapshotMetadata } from './firestoreTypes.flow';
 
 const { isObject, deepGet } = utils;
 

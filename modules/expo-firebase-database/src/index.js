@@ -11,7 +11,7 @@ import TransactionHandler from './transaction';
 import type { App } from 'expo-firebase-app';
 
 const NATIVE_EVENTS = [
-  'database_transaction_event',
+  'Expo.Firebase.database_transaction_event',
   // 'database_server_offset', // TODO
 ];
 
@@ -41,21 +41,25 @@ export default class Database extends ModuleBase {
   static namespace = NAMESPACE;
   static statics = statics;
 
+  _databaseURL: string;
   _offsetRef: Reference;
   _serverTimeOffset: number;
   _transactionHandler: TransactionHandler;
-  _serviceUrl: string;
 
-  constructor(appOrUrl: App | string, options: Object = {}) {
+  constructor(appOrCustomUrl: App | string, customUrl?: string) {
     let app;
-    let serviceUrl;
-    if (typeof appOrUrl === 'string') {
+    let url;
+
+    if (typeof appOrCustomUrl === 'string') {
       app = firebase.app();
-      serviceUrl = appOrUrl.endsWith('/') ? appOrUrl : `${appOrUrl}/`;
+      url = appOrCustomUrl;
     } else {
-      app = appOrUrl;
-      serviceUrl = app.options.databaseURL;
+      app = appOrCustomUrl;
+      url = customUrl || app.options.databaseURL;
     }
+
+    // enforce trailing slash
+    url = url.endsWith('/') ? url : `${url}/`;
 
     super(
       app,
@@ -66,15 +70,15 @@ export default class Database extends ModuleBase {
         hasCustomUrlSupport: true,
         namespace: NAMESPACE,
       },
-      serviceUrl
+      url
     );
 
     this._serverTimeOffset = 0;
-    this._serviceUrl = serviceUrl;
+    this._databaseURL = url;
     this._transactionHandler = new TransactionHandler(this);
 
-    if (options.persistence) {
-      this.nativeModule.setPersistence(options.persistence);
+    if (app.options.persistence) {
+      this.nativeModule.setPersistence(app.options.persistence);
     }
 
     // server time listener
@@ -125,7 +129,7 @@ export default class Database extends ModuleBase {
    * @returns {string}
    */
   get databaseUrl(): string {
-    return this._serviceUrl;
+    return this._databaseURL;
   }
 }
 

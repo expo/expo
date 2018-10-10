@@ -45,10 +45,10 @@ EX_EXPORT_METHOD_AS(recordError,
 
 EX_EXPORT_METHOD_AS(setBoolValue,
                     setBoolValue:(NSString *)key
-                    boolValue:(BOOL *)boolValue
+                    boolValue:(NSNumber *)value
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
-    [CrashlyticsKit setBoolValue:boolValue forKey:key];
+    [CrashlyticsKit setBoolValue:[value boolValue] forKey:key];
     resolve([NSNull null]);
 }
 

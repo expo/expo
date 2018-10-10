@@ -22,7 +22,7 @@ apply plugin: 'maven'
 apply plugin: "io.fabric"
 
 group = 'host.exp.exponent'
-version = '1.0.0-rc.1'
+version = '1.0.0-rc.2'
 
 // Upload android library to maven with javadoc and android sources
 configurations {

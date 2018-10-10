@@ -29,7 +29,10 @@ export type OnTokenRefreshObserver = {
   next: OnTokenRefresh,
 };
 
-const NATIVE_EVENTS = ['Expo.Firebase.messaging_message_received', 'messaging_token_refreshed'];
+const NATIVE_EVENTS = [
+  'Expo.Firebase.messaging_message_received',
+  'Expo.Firebase.messaging_token_refreshed',
+];
 
 export const MODULE_NAME = 'ExpoFirebaseMessaging';
 export const NAMESPACE = 'messaging';
@@ -67,7 +70,7 @@ export default class Messaging extends ModuleBase {
     SharedEventEmitter.addListener(
       // sub to internal native event - this fans out to
       // public event name: onMessage
-      'messaging_token_refreshed',
+      'Expo.Firebase.messaging_token_refreshed',
       ({ token }) => {
         SharedEventEmitter.emit('onTokenRefresh', token);
       }

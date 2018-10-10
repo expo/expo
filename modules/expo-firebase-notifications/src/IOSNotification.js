@@ -1,13 +1,9 @@
 // @flow
-import { Platform } from 'expo-core';
-
 import { BackgroundFetchResultValue } from './IOSNotifications';
 
 import type Notification from './Notification';
 import type Notifications from '.';
 import type { IOSAttachment, IOSAttachmentOptions, NativeIOSNotification } from './types';
-
-const isIOS = Platform.OS === 'ios';
 
 type CompletionHandler = BackgroundFetchResultValue => void;
 
@@ -52,20 +48,16 @@ export default class IOSNotification {
       this._threadIdentifier = data.threadIdentifier;
     }
 
-    if (isIOS && notifications && notifications.ios) {
-      const complete = (fetchResult: BackgroundFetchResultValue) => {
-        const { notificationId } = notification;
-        notifications.logger.debug(
-          `Completion handler called for notificationId=${notificationId}`
-        );
-        notifications.nativeModule.complete(notificationId, fetchResult);
-      };
+    const complete = (fetchResult: BackgroundFetchResultValue) => {
+      const { notificationId } = notification;
+      notifications.logger.debug(`Completion handler called for notificationId=${notificationId}`);
+      notifications.nativeModule.complete(notificationId, fetchResult);
+    };
 
-      if (notifications.ios.shouldAutoComplete) {
-        complete(notifications.ios.backgroundFetchResult.noData);
-      } else {
-        this._complete = complete;
-      }
+    if (notifications.ios.shouldAutoComplete) {
+      complete(notifications.ios.backgroundFetchResult.noData);
+    } else {
+      this._complete = complete;
     }
 
     // Defaults

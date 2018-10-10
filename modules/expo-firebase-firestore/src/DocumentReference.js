@@ -10,7 +10,12 @@ import { parseUpdateArgs } from './utils';
 import { buildNativeMap } from './utils/serialize';
 
 import type Firestore from './';
-import type { GetOptions, MetadataChanges, NativeDocumentSnapshot, SetOptions } from './types';
+import type {
+  GetOptions,
+  MetadataChanges,
+  NativeDocumentSnapshot,
+  SetOptions,
+} from './firestoreTypes.flow';
 import type Path from './Path';
 
 type ObserverOnError = Object => void;

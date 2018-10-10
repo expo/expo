@@ -1,9 +1,32 @@
 #import <EXFirebaseApp/EXFirebaseAppUtil.h>
 #import <EXFirebaseAuth/EXFirebaseAuth.h>
 
+static NSString *const keyIOS = @"iOS";
+static NSString *const keyUrl = @"url";
+static NSString *const keyUid = @"uid";
+static NSString *const keyUser = @"user";
+static NSString *const keyEmail = @"email";
+static NSString *const keyAndroid = @"android";
+static NSString *const keyProfile = @"profile";
+static NSString *const keyNewUser = @"isNewUser";
+static NSString *const keyUsername = @"username";
+static NSString *const keyPhotoUrl = @"photoURL";
+static NSString *const keyBundleId = @"bundleId";
+static NSString *const keyInstallApp = @"installApp";
+static NSString *const keyProviderId = @"providerId";
+static NSString *const keyPhoneNumber = @"phoneNumber";
+static NSString *const keyDisplayName = @"displayName";
+static NSString *const keyPackageName = @"packageName";
+static NSString *const keyMinVersion = @"minimumVersion";
+static NSString *const constAppLanguage = @"APP_LANGUAGE";
+static NSString *const keyHandleCodeInApp = @"handleCodeInApp";
+static NSString *const keyAdditionalUserInfo = @"additionalUserInfo";
+
 static NSString *const AUTH_STATE_CHANGED_EVENT = @"Expo.Firebase.auth_state_changed";
 static NSString *const AUTH_ID_TOKEN_CHANGED_EVENT = @"Expo.Firebase.auth_id_token_changed";
 static NSString *const PHONE_AUTH_STATE_CHANGED_EVENT = @"Expo.Firebase.phone_auth_state_changed";
+
+typedef void (^EXFirebaseAuthCallback)(NSError *_Nullable error);
 
 @interface EXFirebaseAuth()
 
@@ -18,7 +41,8 @@ EX_EXPORT_MODULE(ExpoFirebaseAuth);
 
 - (instancetype)initWithExperienceId:(NSString *)experienceId
 {
-  if (self = [super init]) {
+  self = [super init];
+  if (self != nil) {
     _authStateHandlers = [[NSMutableDictionary alloc] init];
     _idTokenHandlers = [[NSMutableDictionary alloc] init];
   }
@@ -113,6 +137,19 @@ EX_EXPORT_METHOD_AS(removeIdTokenListener,
   resolve([NSNull null]);
 }
 
+/**
+ * Flag to determine whether app verification should be disabled for testing or not.
+ *
+ * @return
+ */
+EX_EXPORT_METHOD_AS(setAppVerificationDisabledForTesting,
+                  setAppVerificationDisabledForTesting:(NSString *)appDisplayName
+                  disabled:(BOOL)disabled
+                  resolver:(EXPromiseResolveBlock)resolve
+                  rejecter:(EXPromiseRejectBlock)reject) {
+  [EXFirebaseAuth getAuth:appDisplayName].settings.appVerificationDisabledForTesting = disabled;
+  resolve([NSNull null]);
+}
 
 
 /**
@@ -126,13 +163,10 @@ EX_EXPORT_METHOD_AS(signOut,
                     signOut:(NSString *)appDisplayName
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
-  FIRApp *firApp = [EXFirebaseAppUtil getApp:appDisplayName];
-  
-  FIRUser *user = [FIRAuth authWithApp:firApp].currentUser;
-  
-  if (user) {
+  FIRAuth *auth = [EXFirebaseAuth getAuth:appDisplayName];
+  if (auth.currentUser) {
     NSError *error;
-    [[FIRAuth authWithApp:firApp] signOut:&error];
+    [auth signOut:&error];
     if (!error) [self promiseNoUser:resolve rejecter:reject isError:NO];
     else [self promiseRejectAuthException:reject error:error];
   } else {
@@ -152,38 +186,7 @@ EX_EXPORT_METHOD_AS(signInAnonymously,
                     signInAnonymously:(NSString *)appDisplayName
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
-  [self signInAnonymously:appDisplayName withData:false resolver:resolve rejecter:reject];
-}
-
-/**
- signInAnonymouslyAndRetrieveData
- 
- @param EXPromiseResolveBlock resolve
- @param EXPromiseRejectBlock reject
- @return
- */
-EX_EXPORT_METHOD_AS(signInAnonymouslyAndRetrieveData,
-                    signInAnonymouslyAndRetrieveData:(NSString *)appDisplayName
-                    resolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject) {
-  [self signInAnonymously:appDisplayName withData:true resolver:resolve rejecter:reject];
-}
-
--(void)signInAnonymously:(NSString *)appDisplayName
-                withData:(BOOL)withData
-                resolver:(EXPromiseResolveBlock)resolve
-                rejecter:(EXPromiseRejectBlock)reject {
-  FIRApp *firApp = [EXFirebaseAppUtil getApp:appDisplayName];
-  
-  [[FIRAuth authWithApp:firApp] signInAnonymouslyWithCompletion:^(FIRAuthDataResult *authResult, NSError *error) {
-    if (error) {
-      [self promiseRejectAuthException:reject error:error];
-    } else if (withData) {
-      [self promiseWithAuthResult:resolve rejecter:reject authResult:authResult];
-    } else {
-      [self promiseWithUser:resolve rejecter:reject user:authResult.user];
-    }
-  }];
+  [[EXFirebaseAuth getAuth:appDisplayName] signInAnonymouslyWithCompletion:[self getAuthDataResultCallback:resolve rejecter:reject]];
 }
 
 /**
@@ -201,44 +204,7 @@ EX_EXPORT_METHOD_AS(signInWithEmailAndPassword,
                     pass:(NSString *)password
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
-  [self signInWithEmail:appDisplayName email:email password:password withData:false resolver:resolve rejecter:reject];
-}
-
-/**
- signInAndRetrieveDataWithEmailAndPassword
- 
- @param NSString NSString email
- @param NSString NSString password
- @param EXPromiseResolveBlock resolve
- @param EXPromiseRejectBlock reject
- @return return
- */
-EX_EXPORT_METHOD_AS(signInAndRetrieveDataWithEmailAndPassword,
-                    signInAndRetrieveDataWithEmailAndPassword:(NSString *)appDisplayName
-                    email:(NSString *)email
-                    password:(NSString *)password
-                    resolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject) {
-  [self signInWithEmail:appDisplayName email:email password:password withData:true resolver:resolve rejecter:reject];
-}
-
--(void)signInWithEmail:(NSString *)appDisplayName
-                 email:(NSString *)email
-              password:(NSString *)password
-              withData:(BOOL)withData
-              resolver:(EXPromiseResolveBlock) resolve
-              rejecter:(EXPromiseRejectBlock) reject {
-  FIRApp *firApp = [EXFirebaseAppUtil getApp:appDisplayName];
-  
-  [[FIRAuth authWithApp:firApp] signInWithEmail:email password:password completion:^(FIRAuthDataResult *authResult, NSError *error) {
-    if (error) {
-      [self promiseRejectAuthException:reject error:error];
-    } else if (withData) {
-      [self promiseWithAuthResult:resolve rejecter:reject authResult:authResult];
-    } else {
-      [self promiseWithUser:resolve rejecter:reject user:authResult.user];
-    }
-  }];
+  [[EXFirebaseAuth getAuth:appDisplayName] signInWithEmail:email password:password completion:[self getAuthDataResultCallback:resolve rejecter:reject]];
 }
 
 /**
@@ -256,15 +222,7 @@ EX_EXPORT_METHOD_AS(signInWithEmailLink,
                     emailLink:(NSString *)emailLink
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
-  FIRApp *firApp = [EXFirebaseAppUtil getApp:appDisplayName];
-  
-  [[FIRAuth authWithApp:firApp] signInWithEmail:email link:emailLink completion:^(FIRAuthDataResult *authResult, NSError *error) {
-    if (error) {
-      [self promiseRejectAuthException:reject error:error];
-    } else {
-      [self promiseWithAuthResult:resolve rejecter:reject authResult:authResult];
-    }
-  }];
+  [[EXFirebaseAuth getAuth:appDisplayName] signInWithEmail:email link:emailLink completion:[self getAuthDataResultCallback:resolve rejecter:reject]];
 }
 
 /**
@@ -282,44 +240,7 @@ EX_EXPORT_METHOD_AS(createUserWithEmailAndPassword,
                     pass:(NSString *)password
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
-  [self createUserWithEmail:appDisplayName email:email password:password withData:false resolver:resolve rejecter:reject];
-}
-
-/**
- createUserAndRetrieveDataWithEmailAndPassword
- 
- @param NSString NSString email
- @param NSString NSString password
- @param EXPromiseResolveBlock resolve
- @param EXPromiseRejectBlock reject
- @return return
- */
-EX_EXPORT_METHOD_AS(createUserAndRetrieveDataWithEmailAndPassword,
-                    createUserAndRetrieveDataWithEmailAndPassword:(NSString *)appDisplayName
-                    email:(NSString *)email
-                    password:(NSString *)password
-                    resolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject) {
-  [self createUserWithEmail:appDisplayName email:email password:password withData:true resolver:resolve rejecter:reject];
-}
-
--(void)createUserWithEmail:(NSString *)appDisplayName
-                     email:(NSString *)email
-                  password:(NSString *)password
-                  withData:(BOOL)withData
-                  resolver:(EXPromiseResolveBlock) resolve
-                  rejecter:(EXPromiseRejectBlock) reject {
-  FIRApp *firApp = [EXFirebaseAppUtil getApp:appDisplayName];
-  
-  [[FIRAuth authWithApp:firApp] createUserWithEmail:email password:password completion:^(FIRAuthDataResult *authResult, NSError *error) {
-    if (error) {
-      [self promiseRejectAuthException:reject error:error];
-    } else if (withData) {
-      [self promiseWithAuthResult:resolve rejecter:reject authResult:authResult];
-    } else {
-      [self promiseWithUser:resolve rejecter:reject user:authResult.user];
-    }
-  }];
+  [[EXFirebaseAuth getAuth:appDisplayName] createUserWithEmail:email password:password completion:[self getAuthDataResultCallback:resolve rejecter:reject]];
 }
 
 /**
@@ -333,17 +254,9 @@ EX_EXPORT_METHOD_AS(delete,
                     delete:(NSString *)appDisplayName
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
-  FIRApp *firApp = [EXFirebaseAppUtil getApp:appDisplayName];
-  FIRUser *user = [FIRAuth authWithApp:firApp].currentUser;
-  
-  if (user) {
-    [user deleteWithCompletion:^(NSError *_Nullable error) {
-      if (error) {
-        [self promiseRejectAuthException:reject error:error];
-      } else {
-        [self promiseNoUser:resolve rejecter:reject isError:NO];
-      }
-    }];
+  FIRAuth *auth = [EXFirebaseAuth getAuth:appDisplayName];
+  if (auth.currentUser) {
+    [auth.currentUser deleteWithCompletion:[self getNoUserProfileChangeCallback:resolve rejecter:reject]];
   } else {
     [self promiseNoUser:resolve rejecter:reject isError:YES];
   }
@@ -360,12 +273,9 @@ EX_EXPORT_METHOD_AS(reload,
                     reload:(NSString *)appDisplayName
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
-  FIRApp *firApp = [EXFirebaseAppUtil getApp:appDisplayName];
-  
-  FIRUser *user = [FIRAuth authWithApp:firApp].currentUser;
-  
-  if (user) {
-    [self reloadAndReturnUser:user resolver:resolve rejecter: reject];
+  FIRAuth *auth = [EXFirebaseAuth getAuth:appDisplayName];
+  if (auth.currentUser) {
+    [self reloadAndReturnUser:auth.currentUser resolver:resolve rejecter: reject];
   } else {
     [self promiseNoUser:resolve rejecter:reject isError:YES];
   }
@@ -383,15 +293,15 @@ EX_EXPORT_METHOD_AS(sendEmailVerification,
                     actionCodeSettings:(NSDictionary *)actionCodeSettings
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
-  FIRApp *firApp = [EXFirebaseAppUtil getApp:appDisplayName];
+  FIRAuth *auth = [EXFirebaseAuth getAuth:appDisplayName];
+  FIRUser *user = auth.currentUser;
   
-  FIRUser *user = [FIRAuth authWithApp:firApp].currentUser;
   if (user) {
     id handler = ^(NSError *_Nullable error) {
       if (error) {
         [self promiseRejectAuthException:reject error:error];
       } else {
-        FIRUser *userAfterUpdate = [FIRAuth authWithApp:firApp].currentUser;
+        FIRUser *userAfterUpdate = auth.currentUser;
         [self promiseWithUser:resolve rejecter:reject user:userAfterUpdate];
       }
     };
@@ -419,17 +329,9 @@ EX_EXPORT_METHOD_AS(updateEmail,
                     email:(NSString *)email
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
-  FIRApp *firApp = [EXFirebaseAppUtil getApp:appDisplayName];
-  FIRUser *user = [FIRAuth authWithApp:firApp].currentUser;
-  
-  if (user) {
-    [user updateEmail:email completion:^(NSError *_Nullable error) {
-      if (error) {
-        [self promiseRejectAuthException:reject error:error];
-      } else {
-        [self reloadAndReturnUser:user resolver:resolve rejecter: reject];
-      }
-    }];
+  FIRAuth *auth = [EXFirebaseAuth getAuth:appDisplayName];
+  if (auth.currentUser) {
+    [auth.currentUser updateEmail:email completion:[self getUserProfileChangeCallback:auth resolver:resolve rejecter:reject]];
   } else {
     [self promiseNoUser:resolve rejecter:reject isError:YES];
   }
@@ -448,16 +350,14 @@ EX_EXPORT_METHOD_AS(updatePassword,
                     password:(NSString *)password
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
-  FIRApp *firApp = [EXFirebaseAppUtil getApp:appDisplayName];
-  
-  FIRUser *user = [FIRAuth authWithApp:firApp].currentUser;
-  
-  if (user) {
-    [user updatePassword:password completion:^(NSError *_Nullable error) {
+  FIRAuth *auth = [EXFirebaseAuth getAuth:appDisplayName];
+  if (auth.currentUser) {
+    // TODO: Bacon: General completion block
+    [auth.currentUser updatePassword:password completion:^(NSError *_Nullable error) {
       if (error) {
         [self promiseRejectAuthException:reject error:error];
       } else {
-        FIRUser *userAfterUpdate = [FIRAuth authWithApp:firApp].currentUser;
+        FIRUser *userAfterUpdate = auth.currentUser;
         [self promiseWithUser:resolve rejecter:reject user:userAfterUpdate];
       }
     }];
@@ -465,6 +365,48 @@ EX_EXPORT_METHOD_AS(updatePassword,
     [self promiseNoUser:resolve rejecter:reject isError:YES];
   }
 }
+
+/**
+ updatePhoneNumber
+ @param NSString password
+ @param NSString provider
+ @param NSString authToken
+ @param NSString authSecret
+ @param RCTPromiseResolveBlock resolve
+ @param RCTPromiseRejectBlock reject
+ @return
+ */
+EX_EXPORT_METHOD_AS(updatePhoneNumber,
+                    updatePhoneNumber:(NSString *)appDisplayName
+                    provider:(NSString *)provider
+                    token:(NSString *)authToken
+                    secret:(NSString *)authSecret
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject) {
+  FIRAuth *auth = [EXFirebaseAuth getAuth:appDisplayName];
+  if (auth.currentUser) {
+    FIRPhoneAuthCredential *credential =
+    (FIRPhoneAuthCredential *) [self getCredentialForProvider:provider token:authToken secret:authSecret];
+    
+    if (credential == nil) {
+      return reject(@"auth/invalid-credential",
+                    @"The supplied auth credential is malformed, has expired or is not currently supported.",
+                    nil);
+    }
+    
+    [auth.currentUser updatePhoneNumberCredential:credential completion:^(NSError *_Nullable error) {
+      if (error) {
+        [self promiseRejectAuthException:reject error:error];
+      } else {
+        FIRUser *userAfterUpdate = auth.currentUser;
+        [self promiseWithUser:resolve rejecter:reject user:userAfterUpdate];
+      }
+    }];
+  } else {
+    [self promiseNoUser:resolve rejecter:reject isError:YES];
+  }
+}
+
 
 /**
  updateProfile
@@ -479,17 +421,15 @@ EX_EXPORT_METHOD_AS(updateProfile,
                     props:(NSDictionary *)props
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
-  FIRApp *firApp = [EXFirebaseAppUtil getApp:appDisplayName];
+  FIRAuth *auth = [EXFirebaseAuth getAuth:appDisplayName];
   
-  FIRUser *user = [FIRAuth authWithApp:firApp].currentUser;
-  
-  if (user) {
-    FIRUserProfileChangeRequest *changeRequest = [user profileChangeRequest];
+  if (auth.currentUser) {
+    FIRUserProfileChangeRequest *changeRequest = [auth.currentUser profileChangeRequest];
     NSMutableArray *allKeys = [[props allKeys] mutableCopy];
     
     for (NSString *key in allKeys) {
       @try {
-        if ([key isEqualToString:@"photoURL"]) {
+        if ([key isEqualToString:keyPhotoUrl]) {
           NSURL *url = [NSURL URLWithString:[props valueForKey:key]];
           [changeRequest setValue:url forKey:key];
         } else {
@@ -500,13 +440,7 @@ EX_EXPORT_METHOD_AS(updateProfile,
       }
     }
     
-    [changeRequest commitChangesWithCompletion:^(NSError *_Nullable error) {
-      if (error) {
-        [self promiseRejectAuthException:reject error:error];
-      } else {
-        [self reloadAndReturnUser:user resolver:resolve rejecter: reject];
-      }
-    }];
+    [changeRequest commitChangesWithCompletion:[self getUserProfileChangeCallback:auth resolver:resolve rejecter:reject]];
   } else {
     [self promiseNoUser:resolve rejecter:reject isError:YES];
   }
@@ -524,9 +458,7 @@ EX_EXPORT_METHOD_AS(getToken,
                     forceRefresh:(BOOL)forceRefresh
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
-  FIRApp *firApp = [EXFirebaseAppUtil getApp:appDisplayName];
-  
-  FIRUser *user = [FIRAuth authWithApp:firApp].currentUser;
+  FIRUser *user = [EXFirebaseAuth getAuth:appDisplayName].currentUser;
   
   if (user) {
     [user getIDTokenForcingRefresh:(BOOL) forceRefresh completion:^(NSString *token, NSError *_Nullable error) {
@@ -534,6 +466,74 @@ EX_EXPORT_METHOD_AS(getToken,
         [self promiseRejectAuthException:reject error:error];
       } else {
         resolve(token);
+      }
+    }];
+  } else {
+    [self promiseNoUser:resolve rejecter:reject isError:YES];
+  }
+}
+
+/**
+ getIdToken
+ @param RCTPromiseResolveBlock resolve
+ @param RCTPromiseRejectBlock reject
+ @return
+ */
+EX_EXPORT_METHOD_AS(getIdToken,
+                    getIdToken:(NSString *)appDisplayName
+                    forceRefresh:(BOOL)forceRefresh
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject) {
+  FIRUser *user = [EXFirebaseAuth getAuth:appDisplayName].currentUser;
+  
+  if (user) {
+    [user getIDTokenForcingRefresh:(BOOL) forceRefresh completion:^(NSString *token, NSError *_Nullable error) {
+      if (error) {
+        [self promiseRejectAuthException:reject error:error];
+      } else {
+        resolve(token);
+      }
+    }];
+  } else {
+    [self promiseNoUser:resolve rejecter:reject isError:YES];
+  }
+}
+
+/**
+ * getIdTokenResult
+ *
+ * @param RCTPromiseResolveBlock resolve
+ * @param RCTPromiseRejectBlock reject
+ * @return
+ */
+EX_EXPORT_METHOD_AS(getIdTokenResult,
+                    getIdTokenResult:(NSString *)appDisplayName
+                    forceRefresh:(BOOL)forceRefresh
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject) {
+  FIRUser *user = [EXFirebaseAuth getAuth:appDisplayName].currentUser;
+  
+  if (user) {
+    [user getIDTokenResultForcingRefresh:(BOOL) forceRefresh completion:^(FIRAuthTokenResult *_Nullable tokenResult,
+                                                                          NSError *_Nullable error) {
+      if (error) {
+        [self promiseRejectAuthException:reject error:error];
+      } else {
+        NSMutableDictionary *tokenResultDict = [NSMutableDictionary dictionary];
+        [tokenResultDict setValue:[EXFirebaseAppUtil getISO8601String:tokenResult.authDate] forKey:@"authTime"];
+        [tokenResultDict setValue:[EXFirebaseAppUtil getISO8601String:tokenResult.issuedAtDate] forKey:@"issuedAtTime"];
+        [tokenResultDict setValue:[EXFirebaseAppUtil getISO8601String:tokenResult.expirationDate] forKey:@"expirationTime"];
+        
+        [tokenResultDict setValue:tokenResult.token forKey:@"token"];
+        [tokenResultDict setValue:tokenResult.claims forKey:@"claims"];
+        
+        NSString *provider = tokenResult.signInProvider;
+        if (!provider) {
+          provider = tokenResult.claims[@"firebase"][@"sign_in_provider"];
+        }
+        
+        [tokenResultDict setValue:provider forKey:@"signInProvider"];
+        resolve(tokenResultDict);
       }
     }];
   } else {
@@ -558,53 +558,15 @@ EX_EXPORT_METHOD_AS(signInWithCredential,
                     secret:(NSString *)authSecret
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
-  [self signInWithCredential:appDisplayName provider:provider token:authToken secret:authSecret withData:false resolver:resolve rejecter:reject];
-}
-
-/**
- signInAndRetrieveDataWithCredential
- 
- @param NSString provider
- @param NSString authToken
- @param NSString authSecret
- @param EXPromiseResolveBlock resolve
- @param EXPromiseRejectBlock reject
- @return
- */
-EX_EXPORT_METHOD_AS(signInAndRetrieveDataWithCredential,
-                    signInAndRetrieveDataWithCredential:(NSString *)appDisplayName
-                    provider:(NSString *)provider
-                    token:(NSString *)authToken
-                    secret:(NSString *)authSecret
-                    resolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject) {
-  [self signInWithCredential:appDisplayName provider:provider token:authToken secret:authSecret withData:true resolver:resolve rejecter:reject];
-}
-
--(void)signInWithCredential:(NSString *)appDisplayName
-                   provider:(NSString *) provider
-                      token:(NSString *) authToken
-                     secret:(NSString *) authSecret
-                   withData:(BOOL)withData
-                   resolver:(EXPromiseResolveBlock) resolve
-                   rejecter:(EXPromiseRejectBlock) reject {
-  FIRApp *firApp = [EXFirebaseAppUtil getApp:appDisplayName];
-  
   FIRAuthCredential *credential = [self getCredentialForProvider:provider token:authToken secret:authSecret];
-  
+
   if (credential == nil) {
-    return reject(@"auth/invalid-credential", @"The supplied auth credential is malformed, has expired or is not currently supported.", nil);
+    return reject(@"auth/invalid-credential",
+                  @"The supplied auth credential is malformed, has expired or is not currently supported.",
+                  nil);
   }
   
-  [[FIRAuth authWithApp:firApp] signInAndRetrieveDataWithCredential:credential completion:^(FIRAuthDataResult *authResult, NSError *error) {
-    if (error) {
-      [self promiseRejectAuthException:reject error:error];
-    } else if (withData) {
-      [self promiseWithAuthResult:resolve rejecter:reject authResult:authResult];
-    } else {
-      [self promiseWithUser:resolve rejecter:reject user:authResult.user];
-    }
-  }];
+  [[EXFirebaseAuth getAuth:appDisplayName] signInAndRetrieveDataWithCredential:credential completion:[self getAuthDataResultCallback:resolve rejecter:reject]];
 }
 
 /**
@@ -622,15 +584,7 @@ EX_EXPORT_METHOD_AS(confirmPasswordReset,
                     newPassword:(NSString *)newPassword
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
-  FIRApp *firApp = [EXFirebaseAppUtil getApp:appDisplayName];
-  
-  [[FIRAuth authWithApp:firApp] confirmPasswordResetWithCode:code newPassword:newPassword completion:^(NSError *_Nullable error) {
-    if (error) {
-      [self promiseRejectAuthException:reject error:error];
-    } else {
-      [self promiseNoUser:resolve rejecter:reject isError:NO];
-    }
-  }];
+  [[EXFirebaseAuth getAuth:appDisplayName] confirmPasswordResetWithCode:code newPassword:newPassword completion:[self getNoUserProfileChangeCallback:resolve rejecter:reject]];
 }
 
 
@@ -647,15 +601,7 @@ EX_EXPORT_METHOD_AS(applyActionCode,
                     code:(NSString *)code
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
-  FIRApp *firApp = [EXFirebaseAppUtil getApp:appDisplayName];
-  
-  [[FIRAuth authWithApp:firApp] applyActionCode:code completion:^(NSError *_Nullable error) {
-    if (error) {
-      [self promiseRejectAuthException:reject error:error];
-    } else {
-      [self promiseNoUser:resolve rejecter:reject isError:NO];
-    }
-  }];
+  [[EXFirebaseAuth getAuth:appDisplayName] applyActionCode:code completion:[self getNoUserProfileChangeCallback:resolve rejecter:reject]];
 }
 
 /**
@@ -671,32 +617,40 @@ EX_EXPORT_METHOD_AS(checkActionCode,
                     code:(NSString *)code
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
-  FIRApp *firApp = [EXFirebaseAppUtil getApp:appDisplayName];
-  
-  [[FIRAuth authWithApp:firApp] checkActionCode:code completion:^(FIRActionCodeInfo *_Nullable info, NSError *_Nullable error) {
+  [[EXFirebaseAuth getAuth:appDisplayName] checkActionCode:code completion:^(FIRActionCodeInfo *_Nullable info,
+                                                                  NSError *_Nullable error) {
     if (error) {
       [self promiseRejectAuthException:reject error:error];
     } else {
       NSString *actionType = @"ERROR";
       switch (info.operation) {
-        case FIRActionCodeOperationPasswordReset:
-          actionType = @"PASSWORD_RESET";
+        case FIRActionCodeOperationPasswordReset:actionType = @"PASSWORD_RESET";
           break;
-        case FIRActionCodeOperationVerifyEmail:
-          actionType = @"VERIFY_EMAIL";
+        case FIRActionCodeOperationVerifyEmail:actionType = @"VERIFY_EMAIL";
           break;
-        case FIRActionCodeOperationUnknown:
-          actionType = @"UNKNOWN";
+        case FIRActionCodeOperationUnknown:actionType = @"UNKNOWN";
           break;
-        case FIRActionCodeOperationRecoverEmail:
-          actionType = @"RECOVER_EMAIL";
+        case FIRActionCodeOperationRecoverEmail:actionType = @"RECOVER_EMAIL";
           break;
-        case FIRActionCodeOperationEmailLink:
-          actionType = @"EMAIL_SIGNIN";
+        case FIRActionCodeOperationEmailLink:actionType = @"EMAIL_SIGNIN";
           break;
       }
       
-      NSDictionary *result = @{@"data": @{@"email": [info dataForKey:FIRActionCodeEmailKey], @"fromEmail": [info dataForKey:FIRActionCodeFromEmailKey],}, @"actionType": actionType,};
+      NSMutableDictionary *data = [NSMutableDictionary dictionary];
+      
+      if ([info dataForKey:FIRActionCodeEmailKey] != nil) {
+        [data setValue:[info dataForKey:FIRActionCodeEmailKey] forKey:keyEmail];
+      } else {
+        [data setValue:[NSNull null] forKey:keyEmail];
+      }
+      
+      if ([info dataForKey:FIRActionCodeFromEmailKey] != nil) {
+        [data setValue:[info dataForKey:FIRActionCodeFromEmailKey] forKey:@"fromEmail"];
+      } else {
+        [data setValue:[NSNull null] forKey:@"fromEmail"];
+      }
+      
+      NSDictionary *result = @{@"data": data, @"operation": actionType};
       
       resolve(result);
     }
@@ -717,21 +671,15 @@ EX_EXPORT_METHOD_AS(sendPasswordResetEmail,
                     actionCodeSettings:(NSDictionary *)actionCodeSettings
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
-  FIRApp *firApp = [EXFirebaseAppUtil getApp:appDisplayName];
+  FIRAuth *auth = [EXFirebaseAuth getAuth:appDisplayName];
   
-  id handler = ^(NSError *_Nullable error) {
-    if (error) {
-      [self promiseRejectAuthException:reject error:error];
-    } else {
-      [self promiseNoUser:resolve rejecter:reject isError:NO];
-    }
-  };
-  
+  id handler = [self getNoUserProfileChangeCallback:resolve rejecter:reject];
+
   if (actionCodeSettings) {
     FIRActionCodeSettings *settings = [self buildActionCodeSettings:actionCodeSettings];
-    [[FIRAuth authWithApp:firApp] sendPasswordResetWithEmail:email actionCodeSettings:settings completion:handler];
+    [auth sendPasswordResetWithEmail:email actionCodeSettings:settings completion:handler];
   } else {
-    [[FIRAuth authWithApp:firApp] sendPasswordResetWithEmail:email completion:handler];
+    [auth sendPasswordResetWithEmail:email completion:handler];
   }
 }
 
@@ -750,35 +698,8 @@ EX_EXPORT_METHOD_AS(sendSignInLinkToEmail,
                     actionCodeSettings:(NSDictionary *)actionCodeSettings
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
-  FIRApp *firApp = [EXFirebaseAppUtil getApp:appDisplayName];
-  
-  id handler = ^(NSError *_Nullable error) {
-    if (error) {
-      [self promiseRejectAuthException:reject error:error];
-    } else {
-      [self promiseNoUser:resolve rejecter:reject isError:NO];
-    }
-  };
-  
-  
   FIRActionCodeSettings *settings = [self buildActionCodeSettings:actionCodeSettings];
-  [[FIRAuth authWithApp:firApp] sendSignInLinkToEmail:email actionCodeSettings:settings completion:handler];
-}
-
-
-/**
- signInAndRetrieveDataWithCustomToken
- 
- @param EXPromiseResolveBlock resolve
- @param EXPromiseRejectBlock reject
- @return
- */
-EX_EXPORT_METHOD_AS(signInAndRetrieveDataWithCustomToken,
-                    signInAndRetrieveDataWithCustomToken:(NSString *)appDisplayName
-                    customToken:(NSString *)customToken
-                    resolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject) {
-  [self signInWithCustomToken:appDisplayName customToken:customToken withData:true resolver:resolve rejecter:reject];
+  [[EXFirebaseAuth getAuth:appDisplayName] sendSignInLinkToEmail:email actionCodeSettings:settings completion:[self getNoUserProfileChangeCallback:resolve rejecter:reject]];
 }
 
 /**
@@ -793,25 +714,7 @@ EX_EXPORT_METHOD_AS(signInWithCustomToken,
                     customToken:(NSString *)customToken
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
-  [self signInWithCustomToken:appDisplayName customToken:customToken withData:false resolver:resolve rejecter:reject];
-}
-
--(void)signInWithCustomToken:(NSString *)appDisplayName
-                 customToken:(NSString *) customToken
-                    withData:(BOOL)withData
-                    resolver:(EXPromiseResolveBlock) resolve
-                    rejecter:(EXPromiseRejectBlock) reject {
-  FIRApp *firApp = [EXFirebaseAppUtil getApp:appDisplayName];
-  
-  [[FIRAuth authWithApp:firApp] signInWithCustomToken:customToken completion:^(FIRAuthDataResult *authResult, NSError *error) {
-    if (error) {
-      [self promiseRejectAuthException:reject error:error];
-    } else if (withData) {
-      [self promiseWithAuthResult:resolve rejecter:reject authResult:authResult];
-    } else {
-      [self promiseWithUser:resolve rejecter:reject user:authResult.user];
-    }
-  }];
+  [[EXFirebaseAuth getAuth:appDisplayName] signInWithCustomToken:customToken completion:[self getAuthDataResultCallback:resolve rejecter:reject]];
 }
 
 /**
@@ -827,10 +730,10 @@ EX_EXPORT_METHOD_AS(signInWithPhoneNumber,
                     phoneNumber:(NSString *)phoneNumber
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
-  FIRApp *firApp = [EXFirebaseAppUtil getApp:appDisplayName];
-  
     // This will only work in Standalone
-  [[FIRPhoneAuthProvider providerWithAuth:[FIRAuth authWithApp:firApp]] verifyPhoneNumber:phoneNumber UIDelegate:nil completion:^(NSString * _Nullable verificationID, NSError * _Nullable error) {
+  [[FIRPhoneAuthProvider providerWithAuth:[EXFirebaseAuth getAuth:appDisplayName]] verifyPhoneNumber:phoneNumber UIDelegate:nil completion:^(
+                                                                                                                                  NSString *_Nullable verificationID,
+                                                                                                                                  NSError *_Nullable error) {
     if (error) {
       [self promiseRejectAuthException:reject error:error];
     } else {
@@ -859,24 +762,27 @@ EX_EXPORT_METHOD_AS(verifyPhoneNumber,
                     rejecter:(EXPromiseRejectBlock)reject) {
   FIRApp *firApp = [EXFirebaseAppUtil getApp:appDisplayName];
   // This will only work in Standalone
-  [[FIRPhoneAuthProvider providerWithAuth:[FIRAuth authWithApp:firApp]] verifyPhoneNumber:phoneNumber UIDelegate:nil completion:^(NSString * _Nullable verificationID, NSError * _Nullable error) {
+  
+  [[FIRPhoneAuthProvider providerWithAuth:[FIRAuth authWithApp:firApp]] verifyPhoneNumber:phoneNumber UIDelegate:nil completion:^(
+                                                                                                                                  NSString *_Nullable verificationID,
+                                                                                                                                  NSError *_Nullable error) {
     if (error) {
-      NSDictionary * jsError = [self getJSError:(error)];
+      NSDictionary *jsError = [self getJSError:(error)];
       NSDictionary *body = @{
                              @"type": @"onVerificationFailed",
-                             @"requestKey":requestKey,
+                             @"requestKey": requestKey,
                              @"state": @{@"error": jsError},
                              };
-      [EXFirebaseAppUtil sendJSEventWithAppName:self.eventEmitter app:firApp name:PHONE_AUTH_STATE_CHANGED_EVENT body:body];
+      [EXFirebaseAppUtil sendJSEventWithAppName:self->_eventEmitter app:firApp name:PHONE_AUTH_STATE_CHANGED_EVENT body:body];
     } else {
       NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
       [defaults setObject:verificationID forKey:@"authVerificationID"];
       NSDictionary *body = @{
                              @"type": @"onCodeSent",
-                             @"requestKey":requestKey,
+                             @"requestKey": requestKey,
                              @"state": @{@"verificationId": verificationID},
                              };
-      [EXFirebaseAppUtil sendJSEventWithAppName:self.eventEmitter app:firApp name:PHONE_AUTH_STATE_CHANGED_EVENT body:body];
+      [EXFirebaseAppUtil sendJSEventWithAppName:self->_eventEmitter app:firApp name:PHONE_AUTH_STATE_CHANGED_EVENT body:body];
     }
   }];
 }
@@ -886,12 +792,11 @@ EX_EXPORT_METHOD_AS(_confirmVerificationCode,
                     verificationCode:(NSString *)verificationCode
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
-  FIRApp *firApp = [EXFirebaseAppUtil getApp:appDisplayName];
   NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
   NSString *verificationId = [defaults stringForKey:@"authVerificationID"];
   FIRAuthCredential *credential = [[FIRPhoneAuthProvider provider] credentialWithVerificationID:verificationId verificationCode:verificationCode];
   
-  [[FIRAuth authWithApp:firApp] signInAndRetrieveDataWithCredential:credential completion:^(FIRAuthDataResult *authResult, NSError *error) {
+  [[EXFirebaseAuth getAuth:appDisplayName] signInAndRetrieveDataWithCredential:credential completion:^(FIRAuthDataResult *authResult, NSError *error) {
     if (error) {
       [self promiseRejectAuthException:reject error:error];
     } else {
@@ -917,55 +822,15 @@ EX_EXPORT_METHOD_AS(linkWithCredential,
                     authSecret:(NSString *)authSecret
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
-  [self linkWithCredential:appDisplayName provider:provider authToken:authToken authSecret:authSecret withData:false resolver:resolve rejecter:reject];
-}
-
-/**
- linkAndRetrieveDataWithCredential
- 
- @param NSString provider
- @param NSString authToken
- @param NSString authSecret
- @param EXPromiseResolveBlock resolve
- @param EXPromiseRejectBlock reject
- @return
- */
-EX_EXPORT_METHOD_AS(linkAndRetrieveDataWithCredential,
-                    linkAndRetrieveDataWithCredential:(NSString *)appDisplayName
-                    provider:(NSString *)provider
-                    authToken:(NSString *)authToken
-                    authSecret:(NSString *)authSecret
-                    resolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject) {
-  [self linkWithCredential:appDisplayName provider:provider authToken:authToken authSecret:authSecret withData:true resolver:resolve rejecter:reject];
-}
-
--(void)linkWithCredential:(NSString *)appDisplayName
-                 provider:(NSString *)provider
-                authToken:(NSString *)authToken
-               authSecret:(NSString *)authSecret
-                 withData:(BOOL)withData
-                 resolver:(EXPromiseResolveBlock)resolve
-                 rejecter:(EXPromiseRejectBlock)reject {
-  FIRApp *firApp = [EXFirebaseAppUtil getApp:appDisplayName];
+  FIRUser *user = [EXFirebaseAuth getAuth:appDisplayName].currentUser;
   FIRAuthCredential *credential = [self getCredentialForProvider:provider token:authToken secret:authSecret];
-  
   if (credential == nil) {
-    return reject(@"auth/invalid-credential", @"The supplied auth credential is malformed, has expired or is not currently supported.", nil);
+    return reject(@"auth/invalid-credential",
+                  @"The supplied auth credential is malformed, has expired or is not currently supported.",
+                  nil);
   }
-  
-  FIRUser *user = [FIRAuth authWithApp:firApp].currentUser;
   if (user) {
-    [user linkAndRetrieveDataWithCredential:credential
-                                 completion:^(FIRAuthDataResult * _Nullable authResult, NSError * _Nullable error) {
-                                   if (error) {
-                                     [self promiseRejectAuthException:reject error:error];
-                                   } else if (withData) {
-                                     [self promiseWithAuthResult:resolve rejecter:reject authResult:authResult];
-                                   } else {
-                                     [self promiseWithUser:resolve rejecter:reject user:authResult.user];
-                                   }
-                                 }];
+    [user linkAndRetrieveDataWithCredential:credential completion:[self getAuthDataResultCallback:resolve rejecter:reject]];
   } else {
     [self promiseNoUser:resolve rejecter:reject isError:YES];
   }
@@ -986,16 +851,10 @@ EX_EXPORT_METHOD_AS(unlink,
                     providerId:(NSString *)providerId
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
-  FIRApp *firApp = [EXFirebaseAppUtil getApp:appDisplayName];
-  FIRUser *user = [FIRAuth authWithApp:firApp].currentUser;
-  
-  if (user) {
-    [user unlinkFromProvider:providerId completion:^(FIRUser *_Nullable _user, NSError *_Nullable error) {
-      if (error) {
-        [self promiseRejectAuthException:reject error:error];
-      } else {
-        [self reloadAndReturnUser:user resolver:resolve rejecter: reject];
-      }
+  FIRAuth *auth = [EXFirebaseAuth getAuth:appDisplayName];
+  if (auth.currentUser) {
+    [auth.currentUser unlinkFromProvider:providerId completion:^(FIRUser *_Nullable _user, NSError *_Nullable error) {
+      [self getUserProfileChangeCallback:auth resolver:resolve rejecter:reject](error);
     }];
   } else {
     [self promiseNoUser:resolve rejecter:reject isError:YES];
@@ -1019,56 +878,18 @@ EX_EXPORT_METHOD_AS(reauthenticateWithCredential,
                     authSecret:(NSString *)authSecret
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
-  [self reauthenticateWithCredential:appDisplayName provider:provider authToken:authToken authSecret:authSecret withData:false resolver:resolve rejecter:reject];
-}
-
-/**
- reauthenticateAndRetrieveDataWithCredential
- 
- @param NSString provider
- @param NSString authToken
- @param NSString authSecret
- @param EXPromiseResolveBlock resolve
- @param EXPromiseRejectBlock reject
- @return
- */
-EX_EXPORT_METHOD_AS(reauthenticateAndRetrieveDataWithCredential,
-                    reauthenticateAndRetrieveDataWithCredential:(NSString *)appDisplayName
-                    provider:(NSString *)provider
-                    authToken:(NSString *)authToken
-                    authSecret:(NSString *)authSecret
-                    resolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject) {
-  [self reauthenticateWithCredential:appDisplayName provider:provider authToken:authToken authSecret:authSecret withData:true resolver:resolve rejecter:reject];
-}
-
--(void)reauthenticateWithCredential:(NSString *) appDisplayName
-                           provider:(NSString *) provider
-                          authToken:(NSString *) authToken
-                         authSecret:(NSString *) authSecret
-                           withData:(BOOL) withData
-                           resolver:(EXPromiseResolveBlock) resolve
-                           rejecter:(EXPromiseRejectBlock) reject {
-  FIRApp *firApp = [EXFirebaseAppUtil getApp:appDisplayName];
-  
   FIRAuthCredential *credential = [self getCredentialForProvider:provider token:authToken secret:authSecret];
   
   if (credential == nil) {
-    return reject(@"auth/invalid-credential", @"The supplied auth credential is malformed, has expired or is not currently supported.", nil);
+    return reject(@"auth/invalid-credential",
+                  @"The supplied auth credential is malformed, has expired or is not currently supported.",
+                  nil);
   }
   
-  FIRUser *user = [FIRAuth authWithApp:firApp].currentUser;
+  FIRUser *user = [EXFirebaseAuth getAuth:appDisplayName].currentUser;
   
   if (user) {
-    [user reauthenticateAndRetrieveDataWithCredential:credential completion:^(FIRAuthDataResult * _Nullable authResult, NSError * _Nullable error) {
-      if (error) {
-        [self promiseRejectAuthException:reject error:error];
-      } else if (withData) {
-        [self promiseWithAuthResult:resolve rejecter:reject authResult:authResult];
-      } else {
-        [self promiseWithUser:resolve rejecter:reject user:authResult.user];
-      }
-    }];
+    [user reauthenticateAndRetrieveDataWithCredential:credential completion:[self getAuthDataResultCallback:resolve rejecter:reject]];
   } else {
     [self promiseNoUser:resolve rejecter:reject isError:YES];
   }
@@ -1087,9 +908,8 @@ EX_EXPORT_METHOD_AS(fetchSignInMethodsForEmail,
                     email:(NSString *)email
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
-  FIRApp *firApp = [EXFirebaseAppUtil getApp:appDisplayName];
-  
-  [[FIRAuth authWithApp:firApp] fetchSignInMethodsForEmail:email completion:^(NSArray<NSString *> *_Nullable providers, NSError *_Nullable error) {
+  [[EXFirebaseAuth getAuth:appDisplayName] fetchSignInMethodsForEmail:email completion:^(NSArray<NSString *> *_Nullable providers,
+                                                                              NSError *_Nullable error) {
     if (error) {
       [self promiseRejectAuthException:reject error:error];
     } else if (!providers) {
@@ -1146,9 +966,7 @@ EX_EXPORT_METHOD_AS(setLanguageCode,
                     code:(NSString *)code
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
-  FIRApp *firApp = [EXFirebaseAppUtil getApp:appDisplayName];
-  
-  [FIRAuth authWithApp:firApp].languageCode = code;
+  [EXFirebaseAuth getAuth:appDisplayName].languageCode = code;
   resolve([NSNull null]);
 }
 
@@ -1162,9 +980,7 @@ EX_EXPORT_METHOD_AS(useDeviceLanguage,
                     useDeviceLanguage:(NSString *)appDisplayName
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
-  FIRApp *firApp = [EXFirebaseAppUtil getApp:appDisplayName];
-  
-  [[FIRAuth authWithApp:firApp] useAppLanguage];
+  [[EXFirebaseAuth getAuth:appDisplayName] useAppLanguage];
   resolve([NSNull null]);
 }
 
@@ -1173,8 +989,7 @@ EX_EXPORT_METHOD_AS(verifyPasswordResetCode,
                     code:(NSString *)code
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
-  FIRApp *firApp = [EXFirebaseAppUtil getApp:appDisplayName];
-  [[FIRAuth authWithApp:firApp] verifyPasswordResetCode:code completion:^(NSString * _Nullable email, NSError * _Nullable error) {
+  [[EXFirebaseAuth getAuth:appDisplayName] verifyPasswordResetCode:code completion:^(NSString * _Nullable email, NSError * _Nullable error) {
     if (error) {
       [self promiseRejectAuthException:reject error:error];
     } else {
@@ -1364,7 +1179,6 @@ EX_EXPORT_METHOD_AS(verifyPasswordResetCode,
   } else {
     [self promiseNoUser:resolve rejecter:reject isError:YES];
   }
-  
 }
 
 /**
@@ -1376,21 +1190,47 @@ EX_EXPORT_METHOD_AS(verifyPasswordResetCode,
  */
 - (void)promiseWithAuthResult:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject authResult:(FIRAuthDataResult *)authResult {
   if (authResult && authResult.user) {
-    NSDictionary *userDict = [self firebaseUserToDict:authResult.user];
-    NSDictionary *authResultDict = @{
-                                     @"additionalUserInfo": authResult.additionalUserInfo ? @{
-                                       @"isNewUser": @(authResult.additionalUserInfo.isNewUser),
-                                       @"profile": authResult.additionalUserInfo.profile ? authResult.additionalUserInfo.profile : [NSNull null],
-                                       @"providerId": authResult.additionalUserInfo.providerID ? authResult.additionalUserInfo.providerID : [NSNull null],
-                                       @"username": authResult.additionalUserInfo.username ? authResult.additionalUserInfo.username : [NSNull null]
-                                       } : [NSNull null],
-                                     @"user": userDict
-                                     };
+    NSMutableDictionary *authResultDict = [NSMutableDictionary dictionary];
+    
+    // additionalUserInfo
+    if (authResult.additionalUserInfo) {
+      NSMutableDictionary *additionalUserInfo = [NSMutableDictionary dictionary];
+      
+      // isNewUser
+      [additionalUserInfo setValue:@(authResult.additionalUserInfo.isNewUser) forKey:keyNewUser];
+      
+      // profile
+      if (authResult.additionalUserInfo.profile) {
+        [additionalUserInfo setValue:authResult.additionalUserInfo.profile forKey:keyProfile];
+      } else {
+        [additionalUserInfo setValue:[NSNull null] forKey:keyProfile];
+      }
+      
+      // providerId
+      if (authResult.additionalUserInfo.providerID) {
+        [additionalUserInfo setValue:authResult.additionalUserInfo.providerID forKey:keyProviderId];
+      } else {
+        [additionalUserInfo setValue:[NSNull null] forKey:keyProviderId];
+      }
+      
+      // username
+      if (authResult.additionalUserInfo.username) {
+        [additionalUserInfo setValue:authResult.additionalUserInfo.username forKey:keyUsername];
+      } else {
+        [additionalUserInfo setValue:[NSNull null] forKey:keyUsername];
+      }
+      
+      [authResultDict setValue:additionalUserInfo forKey:keyAdditionalUserInfo];
+    } else {
+      [authResultDict setValue:[NSNull null] forKey:keyAdditionalUserInfo];
+    }
+    
+    // user
+    [authResultDict setValue:[self firebaseUserToDict:authResult.user] forKey:keyUser];
     resolve(authResultDict);
   } else {
     [self promiseNoUser:resolve rejecter:reject isError:YES];
   }
-  
 }
 
 /**
@@ -1402,31 +1242,31 @@ EX_EXPORT_METHOD_AS(verifyPasswordResetCode,
 - (NSArray <NSObject *> *)convertProviderData:(NSArray <id <FIRUserInfo>> *)providerData {
   NSMutableArray *output = [NSMutableArray array];
   
-  for (id <FIRUserInfo> userInfo in providerData) {
+  for (id<FIRUserInfo> userInfo in providerData) {
     NSMutableDictionary *pData = [NSMutableDictionary dictionary];
     
     if (userInfo.providerID != nil) {
-      [pData setValue:userInfo.providerID forKey:@"providerId"];
+      [pData setValue:userInfo.providerID forKey:keyProviderId];
     }
     
     if (userInfo.uid != nil) {
-      [pData setValue:userInfo.uid forKey:@"uid"];
+      [pData setValue:userInfo.uid forKey:keyUid];
     }
     
     if (userInfo.displayName != nil) {
-      [pData setValue:userInfo.displayName forKey:@"displayName"];
+      [pData setValue:userInfo.displayName forKey:keyDisplayName];
     }
     
     if (userInfo.photoURL != nil) {
-      [pData setValue:[userInfo.photoURL absoluteString] forKey:@"photoURL"];
+      [pData setValue:[userInfo.photoURL absoluteString] forKey:keyPhotoUrl];
     }
     
     if (userInfo.email != nil) {
-      [pData setValue:userInfo.email forKey:@"email"];
+      [pData setValue:userInfo.email forKey:keyEmail];
     }
     
     if (userInfo.phoneNumber != nil) {
-      [pData setValue:userInfo.phoneNumber forKey:@"phoneNumber"];
+      [pData setValue:userInfo.phoneNumber forKey:keyPhoneNumber];
     }
     
     [output addObject:pData];
@@ -1440,13 +1280,12 @@ EX_EXPORT_METHOD_AS(verifyPasswordResetCode,
  * @return NSDictionary
  */
 - (NSDictionary *)constantsToExport {
-  NSMutableDictionary *constants = [NSMutableDictionary new];
   NSDictionary *firApps = [FIRApp allApps];
+  NSMutableDictionary *constants = [NSMutableDictionary new];
   NSMutableDictionary *appLanguage = [NSMutableDictionary new];
   
   for (id key in firApps) {
     FIRApp *firApp = firApps[key];
-    
     appLanguage[firApp.name] = [FIRAuth authWithApp:firApp].languageCode;
   }
   
@@ -1462,44 +1301,59 @@ EX_EXPORT_METHOD_AS(verifyPasswordResetCode,
  */
 - (NSDictionary *)firebaseUserToDict:(FIRUser *)user {
   return @{
-           @"displayName": user.displayName ? user.displayName : [NSNull null],
-           @"email": user.email ? user.email : [NSNull null],
+           keyDisplayName: user.displayName ? user.displayName : [NSNull null],
+           keyEmail: user.email ? user.email : [NSNull null],
            @"emailVerified": @(user.emailVerified),
            @"isAnonymous": @(user.anonymous),
            @"metadata": @{
-               @"creationTime": user.metadata.creationDate ? @(round([user.metadata.creationDate timeIntervalSince1970] * 1000.0)): [NSNull null],
-               @"lastSignInTime": user.metadata.lastSignInDate ? @(round([user.metadata.lastSignInDate timeIntervalSince1970] * 1000.0)) : [NSNull null],
+               @"creationTime": user.metadata.creationDate ? @(round(
+                                                                     [user.metadata.creationDate timeIntervalSince1970] * 1000.0)) : [NSNull null],
+               @"lastSignInTime": user.metadata.lastSignInDate ? @(round(
+                                                                         [user.metadata.lastSignInDate timeIntervalSince1970] * 1000.0)) : [NSNull null],
                },
-           @"phoneNumber": user.phoneNumber ? user.phoneNumber : [NSNull null],
-           @"photoURL": user.photoURL ? [user.photoURL absoluteString] : [NSNull null],
+           keyPhoneNumber: user.phoneNumber ? user.phoneNumber : [NSNull null],
+           keyPhotoUrl: user.photoURL ? [user.photoURL absoluteString] : [NSNull null],
            @"providerData": [self convertProviderData:user.providerData],
-           @"providerId": [user.providerID lowercaseString],
+           keyProviderId: [user.providerID lowercaseString],
            @"refreshToken": user.refreshToken,
-           @"uid": user.uid
+           keyUid: user.uid
            };
 }
 
+/**
+ * Create a FIRActionCodeSettings instance from JS args
+ *
+ * @param actionCodeSettings NSDictionary
+ * @return FIRActionCodeSettings
+ */
 - (FIRActionCodeSettings *)buildActionCodeSettings:(NSDictionary *)actionCodeSettings {
+  NSString *url = actionCodeSettings[keyUrl];
+  NSDictionary *ios = actionCodeSettings[keyIOS];
+  NSDictionary *android = actionCodeSettings[keyAndroid];
+  BOOL handleCodeInApp = [actionCodeSettings[keyHandleCodeInApp] boolValue];
+  
   FIRActionCodeSettings *settings = [[FIRActionCodeSettings alloc] init];
-  NSDictionary *android = actionCodeSettings[@"android"];
-  BOOL handleCodeInApp = actionCodeSettings[@"handleCodeInApp"];
-  NSDictionary *ios = actionCodeSettings[@"iOS"];
-  NSString *url = actionCodeSettings[@"url"];
+  
   if (android) {
-    BOOL installApp = android[@"installApp"];
-    NSString *minimumVersion = android[@"minimumVersion"];
-    NSString *packageName = android[@"packageName"];
+    NSString *packageName = android[keyPackageName];
+    NSString *minimumVersion = android[keyMinVersion];
+    BOOL installApp = [android[keyInstallApp] boolValue];
+    
     [settings setAndroidPackageName:packageName installIfNotAvailable:installApp minimumVersion:minimumVersion];
   }
+  
   if (handleCodeInApp) {
     [settings setHandleCodeInApp:handleCodeInApp];
   }
-  if (ios && ios[@"bundleId"]) {
-    [settings setIOSBundleID:ios[@"bundleId"]];
+  
+  if (ios && ios[keyBundleId]) {
+    [settings setIOSBundleID:ios[keyBundleId]];
   }
+  
   if (url) {
     [settings setURL:[NSURL URLWithString:url]];
   }
+  
   return settings;
 }
 
@@ -1515,9 +1369,47 @@ EX_EXPORT_METHOD_AS(verifyPasswordResetCode,
   
 }
 
-+ (BOOL)requiresMainQueueSetup
+- (FIRUserProfileChangeCallback)getUserProfileChangeCallback:(FIRAuth *)auth
+                                                    resolver:(EXPromiseResolveBlock)resolve
+                                                    rejecter:(EXPromiseRejectBlock)reject
 {
-  return YES;
+  return ^(NSError *_Nullable error) {
+    if (error) {
+      [self promiseRejectAuthException:reject error:error];
+    } else {
+      [self reloadAndReturnUser:auth.currentUser resolver:resolve rejecter:reject];
+    }
+  };
+}
+
+- (FIRAuthDataResultCallback)getAuthDataResultCallback:(EXPromiseResolveBlock)resolve
+                                              rejecter:(EXPromiseRejectBlock)reject
+{
+  return ^(FIRAuthDataResult *authResult, NSError *error) {
+    if (error) {
+      [self promiseRejectAuthException:reject error:error];
+    } else {
+      [self promiseWithAuthResult:resolve rejecter:reject authResult:authResult];
+    }
+  };
+}
+
+- (FIRUserProfileChangeCallback)getNoUserProfileChangeCallback:(EXPromiseResolveBlock)resolve
+                                                      rejecter:(EXPromiseRejectBlock)reject
+{
+  return ^(NSError *_Nullable error) {
+    if (error) {
+      [self promiseRejectAuthException:reject error:error];
+    } else {
+      [self promiseNoUser:resolve rejecter:reject isError:NO];
+    }
+  };
+}
+
++ (FIRAuth *)getAuth:(NSString *)appName
+{
+  FIRApp *firApp = [EXFirebaseAppUtil getApp:appName];
+  return [FIRAuth authWithApp:firApp];
 }
 
 @end

@@ -21,6 +21,7 @@ import com.google.firebase.database.Transaction;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -37,15 +38,18 @@ public class FirebaseDatabaseModule extends ExportedModule implements ModuleRegi
 
   private static final String TAG = FirebaseDatabaseModule.class.getCanonicalName();
 
+  private static FirebaseDatabaseModule instance = null;
+
   private static boolean enableLogging = false;
-  private HashMap<String, FirebaseDatabaseReference> references = new HashMap<>();
+  private static HashMap<String, FirebaseDatabaseReference> references = new HashMap<>();
   private static HashMap<String, Boolean> loggingLevelSet = new HashMap<>();
-  private SparseArray<FirebaseTransactionHandler> transactionHandlers = new SparseArray<>();
+  private static SparseArray<FirebaseTransactionHandler> transactionHandlers = new SparseArray<>();
 
   private ModuleRegistry mModuleRegistry;
 
   FirebaseDatabaseModule(Context context) {
     super(context);
+    instance = this;
   }
 
   @Override
@@ -523,6 +527,14 @@ public class FirebaseDatabaseModule extends ExportedModule implements ModuleRegi
     }
   }
 
+  public static FirebaseDatabaseModule getInstance() {
+    return instance;
+  }
+
+  public void handleException(Exception e) {
+    //TODO: Bacon: Handle
+  }
+
   /**
    * Get a database instance for a specific firebase app instance
    *
@@ -601,8 +613,20 @@ public class FirebaseDatabaseModule extends ExportedModule implements ModuleRegi
    */
   private FirebaseDatabaseReference getInternalReferenceForApp(String appName, String dbURL, String key, String path,
       ArrayList modifiers) {
-    return new FirebaseDatabaseReference(getApplicationContext(), mModuleRegistry, appName, dbURL, key, path,
+    return new FirebaseDatabaseReference(mModuleRegistry, appName, dbURL, key, path,
         modifiers);
+  }
+
+  //TODO: Bacon: Invoke this
+  private void onDestroy() {
+    instance = null;
+    Iterator refIterator = references.entrySet().iterator();
+    while (refIterator.hasNext()) {
+      Map.Entry pair = (Map.Entry) refIterator.next();
+      FirebaseDatabaseReference nativeRef = (FirebaseDatabaseReference) pair.getValue();
+      nativeRef.removeAllEventListeners();
+      refIterator.remove(); // avoids a ConcurrentModificationException
+    }
   }
 
   /**

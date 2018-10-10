@@ -24,6 +24,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthProvider;
+import com.google.firebase.auth.FirebaseAuthSettings;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.FirebaseUserMetadata;
 import com.google.firebase.auth.GetTokenResult;
@@ -198,6 +199,33 @@ class FirebaseAuthModule extends ExportedModule implements ModuleRegistryConsume
     promise.resolve(null);
   }
 
+  /**
+   * The phone number and SMS code here must have been configured in the
+   * Firebase Console (Authentication > Sign In Method > Phone).
+   * <p>
+   * Calling this method a second time will overwrite the previously passed parameters.
+   * Only one number can be configured at a given time.
+   *
+   * @param appName
+   * @param phoneNumber
+   * @param smsCode
+   * @param promise
+   */
+  @ExpoMethod
+  public void setAutoRetrievedSmsCodeForPhoneNumber(
+          String appName,
+          String phoneNumber,
+          String smsCode,
+          Promise promise
+  ) {
+    Log.d(TAG, "setAutoRetrievedSmsCodeForPhoneNumber");
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+    FirebaseAuthSettings firebaseAuthSettings = firebaseAuth.getFirebaseAuthSettings();
+    firebaseAuthSettings.setAutoRetrievedSmsCodeForPhoneNumber(phoneNumber, smsCode);
+    promise.resolve(null);
+  }
+
   @ExpoMethod
   public void signOut(String appName, Promise promise) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
@@ -214,38 +242,27 @@ class FirebaseAuthModule extends ExportedModule implements ModuleRegistryConsume
 
   @ExpoMethod
   public void signInAnonymously(String appName, final Promise promise) {
-    signInAnonymously(appName, promise, false);
-  }
-
-  @ExpoMethod
-  public void signInAnonymouslyAndRetrieveData(String appName, final Promise promise) {
-    signInAnonymously(appName, promise, true);
-  }
-
-  private void signInAnonymously(String appName, final Promise promise, final boolean withData) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
 
     Log.d(TAG, "signInAnonymously");
-    firebaseAuth.signInAnonymously()
-      .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
-        @Override
-        public void onSuccess(AuthResult authResult) {
-          Log.d(TAG, "signInAnonymously:onComplete:success");
-          if (withData) {
-            promiseWithAuthResult(authResult, promise);
-          } else {
-            promiseWithUser(authResult.getUser(), promise);
-          }
-        }
-      })
-      .addOnFailureListener(new OnFailureListener() {
-        @Override
-        public void onFailure(@NonNull Exception exception) {
-          Log.e(TAG, "signInAnonymously:onComplete:failure", exception);
-          promiseRejectAuthException(promise, exception);
-        }
-      });
+    firebaseAuth
+            .signInAnonymously()
+            .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+              @Override
+              public void onSuccess(AuthResult authResult) {
+                Log.d(TAG, "signInAnonymously:onComplete:success");
+                promiseWithAuthResult(authResult, promise);
+              }
+            })
+            .addOnFailureListener(new OnFailureListener() {
+              @Override
+              public void onFailure(@NonNull Exception exception) {
+                Log.e(TAG, "signInAnonymously:onComplete:failure", exception);
+                promiseRejectAuthException(promise, exception);
+              }
+            });
+
   }
 
   /**
@@ -257,38 +274,26 @@ class FirebaseAuthModule extends ExportedModule implements ModuleRegistryConsume
    */
   @ExpoMethod
   public void createUserWithEmailAndPassword(String appName, final String email, final String password, final Promise promise) {
-    createUserWithEmailAndPassword(appName, email, password, promise, false);
-  }
-
-  @ExpoMethod
-  public void createUserAndRetrieveDataWithEmailAndPassword(String appName, final String email, final String password, final Promise promise) {
-    createUserWithEmailAndPassword(appName, email, password, promise, true);
-  }
-
-  private void createUserWithEmailAndPassword(String appName, final String email, final String password, final Promise promise, final boolean withData) {
     Log.d(TAG, "createUserWithEmailAndPassword");
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
 
-    firebaseAuth.createUserWithEmailAndPassword(email, password)
-      .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
-        @Override
-        public void onSuccess(AuthResult authResult) {
-          Log.d(TAG, "createUserWithEmailAndPassword:onComplete:success");
-          if (withData) {
-            promiseWithAuthResult(authResult, promise);
-          } else {
-            promiseWithUser(authResult.getUser(), promise);
-          }
-        }
-      })
-      .addOnFailureListener(new OnFailureListener() {
-        @Override
-        public void onFailure(@NonNull Exception exception) {
-          Log.e(TAG, "createUserWithEmailAndPassword:onComplete:failure", exception);
-          promiseRejectAuthException(promise, exception);
-        }
-      });
+    firebaseAuth
+            .createUserWithEmailAndPassword(email, password)
+            .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+              @Override
+              public void onSuccess(AuthResult authResult) {
+                Log.d(TAG, "createUserWithEmailAndPassword:onComplete:success");
+                promiseWithAuthResult(authResult, promise);
+              }
+            })
+            .addOnFailureListener(new OnFailureListener() {
+              @Override
+              public void onFailure(@NonNull Exception exception) {
+                Log.e(TAG, "createUserWithEmailAndPassword:onComplete:failure", exception);
+                promiseRejectAuthException(promise, exception);
+              }
+            });
   }
 
   /**
@@ -300,38 +305,26 @@ class FirebaseAuthModule extends ExportedModule implements ModuleRegistryConsume
    */
   @ExpoMethod
   public void signInWithEmailAndPassword(String appName, final String email, final String password, final Promise promise) {
-    signInWithEmailAndPassword(appName, email, password, promise, false);
-  }
-
-  @ExpoMethod
-  public void signInAndRetrieveDataWithEmailAndPassword(String appName, final String email, final String password, final Promise promise) {
-    signInWithEmailAndPassword(appName, email, password, promise, true);
-  }
-
-  private void signInWithEmailAndPassword(String appName, final String email, final String password, final Promise promise, final boolean withData) {
     Log.d(TAG, "signInWithEmailAndPassword");
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
 
-    firebaseAuth.signInWithEmailAndPassword(email, password)
-      .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
-        @Override
-        public void onSuccess(AuthResult authResult) {
-          Log.d(TAG, "signInWithEmailAndPassword:onComplete:success");
-          if (withData) {
-            promiseWithAuthResult(authResult, promise);
-          } else {
-            promiseWithUser(authResult.getUser(), promise);
-          }
-        }
-      })
-      .addOnFailureListener(new OnFailureListener() {
-        @Override
-        public void onFailure(@NonNull Exception exception) {
-          Log.e(TAG, "signInWithEmailAndPassword:onComplete:failure", exception);
-          promiseRejectAuthException(promise, exception);
-        }
-      });
+    firebaseAuth
+            .signInWithEmailAndPassword(email, password)
+            .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+              @Override
+              public void onSuccess(AuthResult authResult) {
+                Log.d(TAG, "signInWithEmailAndPassword:onComplete:success");
+                promiseWithAuthResult(authResult, promise);
+              }
+            })
+            .addOnFailureListener(new OnFailureListener() {
+              @Override
+              public void onFailure(@NonNull Exception exception) {
+                Log.e(TAG, "signInWithEmailAndPassword:onComplete:failure", exception);
+                promiseRejectAuthException(promise, exception);
+              }
+            });
   }
 
   /**
@@ -348,59 +341,47 @@ class FirebaseAuthModule extends ExportedModule implements ModuleRegistryConsume
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
 
-    firebaseAuth.signInWithEmailLink(email, emailLink)
-      .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
-        @Override
-        public void onSuccess(AuthResult authResult) {
-          Log.d(TAG, "signInWithEmailLink:onComplete:success");
-          promiseWithAuthResult(authResult, promise);
-        }
-      })
-      .addOnFailureListener(new OnFailureListener() {
-        @Override
-        public void onFailure(@NonNull Exception exception) {
-          Log.e(TAG, "signInWithEmailLink:onComplete:failure", exception);
-          promiseRejectAuthException(promise, exception);
-        }
-      });
+    firebaseAuth
+            .signInWithEmailLink(email, emailLink)
+            .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+              @Override
+              public void onSuccess(AuthResult authResult) {
+                Log.d(TAG, "signInWithEmailLink:onComplete:success");
+                promiseWithAuthResult(authResult, promise);
+              }
+            })
+            .addOnFailureListener(new OnFailureListener() {
+              @Override
+              public void onFailure(@NonNull Exception exception) {
+                Log.e(TAG, "signInWithEmailLink:onComplete:failure", exception);
+                promiseRejectAuthException(promise, exception);
+              }
+            });
   }
 
 
   @ExpoMethod
   public void signInWithCustomToken(String appName, final String token, final Promise promise) {
-    signInWithCustomToken(appName, token, promise, false);
-  }
-
-
-  @ExpoMethod
-  public void signInAndRetrieveDataWithCustomToken(String appName, final String token, final Promise promise) {
-    signInWithCustomToken(appName, token, promise, true);
-  }
-
-  private void signInWithCustomToken(String appName, final String token, final Promise promise, final boolean withData) {
     Log.d(TAG, "signInWithCustomToken");
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
 
-    firebaseAuth.signInWithCustomToken(token)
-      .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
-        @Override
-        public void onSuccess(AuthResult authResult) {
-          Log.d(TAG, "signInWithCustomToken:onComplete:success");
-          if (withData) {
-            promiseWithAuthResult(authResult, promise);
-          } else {
-            promiseWithUser(authResult.getUser(), promise);
-          }
-        }
-      })
-      .addOnFailureListener(new OnFailureListener() {
-        @Override
-        public void onFailure(@NonNull Exception exception) {
-          Log.e(TAG, "signInWithCustomToken:onComplete:failure", exception);
-          promiseRejectAuthException(promise, exception);
-        }
-      });
+    firebaseAuth
+            .signInWithCustomToken(token)
+            .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+              @Override
+              public void onSuccess(AuthResult authResult) {
+                Log.d(TAG, "signInWithCustomToken:onComplete:success");
+                promiseWithAuthResult(authResult, promise);
+              }
+            })
+            .addOnFailureListener(new OnFailureListener() {
+              @Override
+              public void onFailure(@NonNull Exception exception) {
+                Log.e(TAG, "signInWithCustomToken:onComplete:failure", exception);
+                promiseRejectAuthException(promise, exception);
+              }
+            });
   }
 
   /**
@@ -430,10 +411,14 @@ class FirebaseAuthModule extends ExportedModule implements ModuleRegistryConsume
     };
 
     if (actionCodeSettings == null) {
-      firebaseAuth.sendPasswordResetEmail(email).addOnCompleteListener(listener);
+      firebaseAuth
+              .sendPasswordResetEmail(email)
+              .addOnCompleteListener(listener);
     } else {
       ActionCodeSettings settings = buildActionCodeSettings(actionCodeSettings);
-      firebaseAuth.sendPasswordResetEmail(email, settings).addOnCompleteListener(listener);
+      firebaseAuth
+              .sendPasswordResetEmail(email, settings)
+              .addOnCompleteListener(listener);
     }
   }
 
@@ -465,7 +450,9 @@ class FirebaseAuthModule extends ExportedModule implements ModuleRegistryConsume
 
 
     ActionCodeSettings settings = buildActionCodeSettings(actionCodeSettings);
-    firebaseAuth.sendSignInLinkToEmail(email, settings).addOnCompleteListener(listener);
+    firebaseAuth
+            .sendSignInLinkToEmail(email, settings)
+            .addOnCompleteListener(listener);
   }
 
 
@@ -487,20 +474,21 @@ class FirebaseAuthModule extends ExportedModule implements ModuleRegistryConsume
     FirebaseUser user = firebaseAuth.getCurrentUser();
     Log.d(TAG, "delete");
     if (user != null) {
-      user.delete()
-        .addOnCompleteListener(new OnCompleteListener<Void>() {
-          @Override
-          public void onComplete(@NonNull Task<Void> task) {
-            if (task.isSuccessful()) {
-              Log.d(TAG, "delete:onComplete:success");
-              promiseNoUser(promise, false);
-            } else {
-              Exception exception = task.getException();
-              Log.e(TAG, "delete:onComplete:failure", exception);
-              promiseRejectAuthException(promise, exception);
-            }
-          }
-        });
+      user
+              .delete()
+              .addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                  if (task.isSuccessful()) {
+                    Log.d(TAG, "delete:onComplete:success");
+                    promiseNoUser(promise, false);
+                  } else {
+                    Exception exception = task.getException();
+                    Log.e(TAG, "delete:onComplete:failure", exception);
+                    promiseRejectAuthException(promise, exception);
+                  }
+                }
+              });
     } else {
       Log.e(TAG, "delete:failure:noCurrentUser");
       promiseNoUser(promise, true);
@@ -524,20 +512,21 @@ class FirebaseAuthModule extends ExportedModule implements ModuleRegistryConsume
       promiseNoUser(promise, false);
       Log.e(TAG, "reload:failure:noCurrentUser");
     } else {
-      user.reload()
-        .addOnCompleteListener(new OnCompleteListener<Void>() {
-          @Override
-          public void onComplete(@NonNull Task<Void> task) {
-            if (task.isSuccessful()) {
-              Log.d(TAG, "reload:onComplete:success");
-              promiseWithUser(firebaseAuth.getCurrentUser(), promise);
-            } else {
-              Exception exception = task.getException();
-              Log.e(TAG, "reload:onComplete:failure", exception);
-              promiseRejectAuthException(promise, exception);
-            }
-          }
-        });
+      user
+              .reload()
+              .addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                  if (task.isSuccessful()) {
+                    Log.d(TAG, "reload:onComplete:success");
+                    promiseWithUser(firebaseAuth.getCurrentUser(), promise);
+                  } else {
+                    Exception exception = task.getException();
+                    Log.e(TAG, "reload:onComplete:failure", exception);
+                    promiseRejectAuthException(promise, exception);
+                  }
+                }
+              });
     }
   }
 
@@ -573,10 +562,14 @@ class FirebaseAuthModule extends ExportedModule implements ModuleRegistryConsume
       };
 
       if (actionCodeSettings == null) {
-        user.sendEmailVerification().addOnCompleteListener(listener);
+        user
+                .sendEmailVerification()
+                .addOnCompleteListener(listener);
       } else {
         ActionCodeSettings settings = buildActionCodeSettings(actionCodeSettings);
-        user.sendEmailVerification(settings).addOnCompleteListener(listener);
+        user
+                .sendEmailVerification(settings)
+                .addOnCompleteListener(listener);
       }
     }
   }
@@ -599,22 +592,24 @@ class FirebaseAuthModule extends ExportedModule implements ModuleRegistryConsume
       promiseNoUser(promise, false);
       Log.e(TAG, "updateEmail:failure:noCurrentUser");
     } else {
-      user.updateEmail(email)
-        .addOnCompleteListener(new OnCompleteListener<Void>() {
-          @Override
-          public void onComplete(@NonNull Task<Void> task) {
-            if (task.isSuccessful()) {
-              Log.d(TAG, "updateEmail:onComplete:success");
-              promiseWithUser(firebaseAuth.getCurrentUser(), promise);
-            } else {
-              Exception exception = task.getException();
-              Log.e(TAG, "updateEmail:onComplete:failure", exception);
-              promiseRejectAuthException(promise, exception);
-            }
-          }
-        });
+      user
+              .updateEmail(email)
+              .addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                  if (task.isSuccessful()) {
+                    Log.d(TAG, "updateEmail:onComplete:success");
+                    promiseWithUser(firebaseAuth.getCurrentUser(), promise);
+                  } else {
+                    Exception exception = task.getException();
+                    Log.e(TAG, "updateEmail:onComplete:failure", exception);
+                    promiseRejectAuthException(promise, exception);
+                  }
+                }
+              });
     }
   }
+
 
   /**
    * updatePassword
@@ -634,22 +629,83 @@ class FirebaseAuthModule extends ExportedModule implements ModuleRegistryConsume
       promiseNoUser(promise, false);
       Log.e(TAG, "updatePassword:failure:noCurrentUser");
     } else {
-      user.updatePassword(password)
-        .addOnCompleteListener(new OnCompleteListener<Void>() {
-          @Override
-          public void onComplete(@NonNull Task<Void> task) {
-            if (task.isSuccessful()) {
-              Log.d(TAG, "updatePassword:onComplete:success");
-              promiseWithUser(firebaseAuth.getCurrentUser(), promise);
-            } else {
-              Exception exception = task.getException();
-              Log.e(TAG, "updatePassword:onComplete:failure", exception);
-              promiseRejectAuthException(promise, exception);
-            }
-          }
-        });
+      user
+              .updatePassword(password)
+              .addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                  if (task.isSuccessful()) {
+                    Log.d(TAG, "updatePassword:onComplete:success");
+                    promiseWithUser(firebaseAuth.getCurrentUser(), promise);
+                  } else {
+                    Exception exception = task.getException();
+                    Log.e(TAG, "updatePassword:onComplete:failure", exception);
+                    promiseRejectAuthException(promise, exception);
+                  }
+                }
+              });
     }
   }
+
+
+
+  /**
+   * updatePhoneNumber
+   *
+   * @param provider
+   * @param authToken
+   * @param authSecret
+   * @param promise
+   */
+  @ExpoMethod
+  private void updatePhoneNumber(
+          String appName,
+          String provider,
+          String authToken,
+          String authSecret,
+          final Promise promise
+  ) {
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+    final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+    FirebaseUser user = firebaseAuth.getCurrentUser();
+
+    if (!provider.equals("phone")) {
+      promise.reject(
+              "auth/invalid-credential",
+              "The supplied auth credential does not have a phone provider."
+      );
+    }
+
+    PhoneAuthCredential credential = getPhoneAuthCredential(authToken, authSecret);
+
+    if (credential == null) {
+      promise.reject(
+              "auth/invalid-credential",
+              "The supplied auth credential is malformed, has expired or is not currently supported."
+      );
+    } else if (user == null) {
+      promiseNoUser(promise, false);
+      Log.e(TAG, "updatePhoneNumber:failure:noCurrentUser");
+    } else {
+      Log.d(TAG, "updatePhoneNumber");
+      user
+              .updatePhoneNumber(credential)
+              .addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                  if (task.isSuccessful()) {
+                    Log.d(TAG, "updatePhoneNumber:onComplete:success");
+                    promiseWithUser(firebaseAuth.getCurrentUser(), promise);
+                  } else {
+                    Exception exception = task.getException();
+                    Log.e(TAG, "updatePhoneNumber:onComplete:failure", exception);
+                    promiseRejectAuthException(promise, exception);
+                  }
+                }
+              });
+    }
+  }
+
 
   /**
    * updateProfile
@@ -683,61 +739,53 @@ class FirebaseAuthModule extends ExportedModule implements ModuleRegistryConsume
 
       UserProfileChangeRequest profileUpdates = profileBuilder.build();
 
-      user.updateProfile(profileUpdates)
-        .addOnCompleteListener(new OnCompleteListener<Void>() {
-          @Override
-          public void onComplete(@NonNull Task<Void> task) {
-            if (task.isSuccessful()) {
-              Log.d(TAG, "updateProfile:onComplete:success");
-              promiseWithUser(firebaseAuth.getCurrentUser(), promise);
-            } else {
-              Exception exception = task.getException();
-              Log.e(TAG, "updateProfile:onComplete:failure", exception);
-              promiseRejectAuthException(promise, exception);
-            }
-          }
-        });
+      user
+              .updateProfile(profileUpdates)
+              .addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                  if (task.isSuccessful()) {
+                    Log.d(TAG, "updateProfile:onComplete:success");
+                    promiseWithUser(firebaseAuth.getCurrentUser(), promise);
+                  } else {
+                    Exception exception = task.getException();
+                    Log.e(TAG, "updateProfile:onComplete:failure", exception);
+                    promiseRejectAuthException(promise, exception);
+                  }
+                }
+              });
     }
   }
 
   @ExpoMethod
   public void signInWithCredential(String appName, String provider, String authToken, String authSecret, final Promise promise) {
-    signInWithCredential(appName, provider, authToken, authSecret, promise, false);
-  }
-
-  @ExpoMethod
-  public void signInAndRetrieveDataWithCredential(String appName, String provider, String authToken, String authSecret, final Promise promise) {
-    signInWithCredential(appName, provider, authToken, authSecret, promise, true);
-  }
-
-  private void signInWithCredential(String appName, String provider, String authToken, String authSecret, final Promise promise, final boolean withData) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
 
     AuthCredential credential = getCredentialForProvider(provider, authToken, authSecret);
 
     if (credential == null) {
-      promise.reject("auth/invalid-credential", "The supplied auth credential is malformed, has expired or is not currently supported.");
+      promise.reject(
+              "auth/invalid-credential",
+              "The supplied auth credential is malformed, has expired or is not currently supported."
+      );
     } else {
       Log.d(TAG, "signInWithCredential");
-      firebaseAuth.signInWithCredential(credential)
-        .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-          @Override
-          public void onComplete(@NonNull Task<AuthResult> task) {
-            if (task.isSuccessful()) {
-              Log.d(TAG, "signInWithCredential:onComplete:success");
-              if (withData) {
-                promiseWithAuthResult(task.getResult(), promise);
-              } else {
-                promiseWithUser(task.getResult().getUser(), promise);
-              }
-            } else {
-              Exception exception = task.getException();
-              Log.e(TAG, "signInWithCredential:onComplete:failure", exception);
-              promiseRejectAuthException(promise, exception);
-            }
-          }
-        });
+      firebaseAuth
+              .signInWithCredential(credential)
+              .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                @Override
+                public void onComplete(@NonNull Task<AuthResult> task) {
+                  if (task.isSuccessful()) {
+                    Log.d(TAG, "signInWithCredential:onComplete:success");
+                    promiseWithAuthResult(task.getResult(), promise);
+                  } else {
+                    Exception exception = task.getException();
+                    Log.e(TAG, "signInWithCredential:onComplete:failure", exception);
+                    promiseRejectAuthException(promise, exception);
+                  }
+                }
+              });
     }
   }
 
@@ -779,8 +827,17 @@ class FirebaseAuthModule extends ExportedModule implements ModuleRegistryConsume
                 // To ensure that there is no hanging promise, we resolve it with a null verificationId
                 // as calling ConfirmationResult.confirm(code) is invalid in this case anyway
                 if (!promiseResolved) {
+
+                  Parcel parcel = Parcel.obtain();
+                  phoneAuthCredential.writeToParcel(parcel, 0);
+                  parcel.setDataPosition(16); // verificationId
+                  String verificationId = parcel.readString();
+                  mVerificationId = verificationId;
+                  parcel.recycle();
+
+
                   Bundle verificationMap = new Bundle();
-                  verificationMap.remove("verificationId");
+                  verificationMap.putString("verificationId", verificationId);
                   promise.resolve(verificationMap);
                 }
               } else {
@@ -824,29 +881,31 @@ class FirebaseAuthModule extends ExportedModule implements ModuleRegistryConsume
         // Purposefully not doing anything with this at the moment
       }
     };
-
     if (activity != null) {
       if (forceResend && mForceResendingToken != null) {
-        PhoneAuthProvider.getInstance(firebaseAuth)
-          .verifyPhoneNumber(
-            phoneNumber,
-            60,
-            TimeUnit.SECONDS,
-            activity,
-            callbacks,
-            mForceResendingToken
-          );
+        PhoneAuthProvider
+                .getInstance(firebaseAuth)
+                .verifyPhoneNumber(
+                        phoneNumber,
+                        60,
+                        TimeUnit.SECONDS,
+                        activity,
+                        callbacks,
+                        mForceResendingToken
+                );
       } else {
-        PhoneAuthProvider.getInstance(firebaseAuth)
-          .verifyPhoneNumber(
-            phoneNumber,
-            60,
-            TimeUnit.SECONDS,
-            activity,
-            callbacks
-          );
+        PhoneAuthProvider
+                .getInstance(firebaseAuth)
+                .verifyPhoneNumber(
+                        phoneNumber,
+                        60,
+                        TimeUnit.SECONDS,
+                        activity,
+                        callbacks
+                );
       }
     }
+
   }
 
   @ExpoMethod
@@ -1007,20 +1066,21 @@ class FirebaseAuthModule extends ExportedModule implements ModuleRegistryConsume
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
 
-    firebaseAuth.confirmPasswordReset(code, newPassword)
-      .addOnCompleteListener(new OnCompleteListener<Void>() {
-        @Override
-        public void onComplete(@NonNull Task<Void> task) {
-          if (task.isSuccessful()) {
-            Log.d(TAG, "confirmPasswordReset:onComplete:success");
-            promiseNoUser(promise, false);
-          } else {
-            Exception exception = task.getException();
-            Log.e(TAG, "confirmPasswordReset:onComplete:failure", exception);
-            promiseRejectAuthException(promise, exception);
-          }
-        }
-      });
+    firebaseAuth
+            .confirmPasswordReset(code, newPassword)
+            .addOnCompleteListener(new OnCompleteListener<Void>() {
+              @Override
+              public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()) {
+                  Log.d(TAG, "confirmPasswordReset:onComplete:success");
+                  promiseNoUser(promise, false);
+                } else {
+                  Exception exception = task.getException();
+                  Log.e(TAG, "confirmPasswordReset:onComplete:failure", exception);
+                  promiseRejectAuthException(promise, exception);
+                }
+              }
+            });
   }
 
   /**
@@ -1036,19 +1096,21 @@ class FirebaseAuthModule extends ExportedModule implements ModuleRegistryConsume
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
 
-    firebaseAuth.applyActionCode(code).addOnCompleteListener(new OnCompleteListener<Void>() {
-      @Override
-      public void onComplete(@NonNull Task<Void> task) {
-        if (task.isSuccessful()) {
-          Log.d(TAG, "applyActionCode:onComplete:success");
-          promiseNoUser(promise, false);
-        } else {
-          Exception exception = task.getException();
-          Log.e(TAG, "applyActionCode:onComplete:failure", exception);
-          promiseRejectAuthException(promise, exception);
-        }
-      }
-    });
+    firebaseAuth
+            .applyActionCode(code)
+            .addOnCompleteListener(new OnCompleteListener<Void>() {
+              @Override
+              public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()) {
+                  Log.d(TAG, "applyActionCode:onComplete:success");
+                  promiseNoUser(promise, false);
+                } else {
+                  Exception exception = task.getException();
+                  Log.e(TAG, "applyActionCode:onComplete:failure", exception);
+                  promiseRejectAuthException(promise, exception);
+                }
+              }
+            });
   }
 
   /**
@@ -1097,7 +1159,7 @@ class FirebaseAuthModule extends ExportedModule implements ModuleRegistryConsume
               break;
           }
 
-          writableMap.putString("actionType", actionType);
+          writableMap.putString("operation", actionType);
 
           promise.resolve(writableMap);
         } else {
@@ -1119,49 +1181,41 @@ class FirebaseAuthModule extends ExportedModule implements ModuleRegistryConsume
    */
   @ExpoMethod
   public void linkWithCredential(String appName, String provider, String authToken, String authSecret, final Promise promise) {
-    link(appName, provider, authToken, authSecret, promise, false);
-  }
-
-  @ExpoMethod
-  public void linkAndRetrieveDataWithCredential(String appName, String provider, String authToken, String authSecret, final Promise promise) {
-    link(appName, provider, authToken, authSecret, promise, true);
-  }
-
-  private void link(String appName, String provider, String authToken, String authSecret, final Promise promise, final boolean withData) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
 
     AuthCredential credential = getCredentialForProvider(provider, authToken, authSecret);
 
     if (credential == null) {
-      promise.reject("auth/invalid-credential", "The supplied auth credential is malformed, has expired or is not currently supported.");
+      promise.reject(
+              "auth/invalid-credential",
+              "The supplied auth credential is malformed, has expired or is not currently supported."
+      );
     } else {
       FirebaseUser user = firebaseAuth.getCurrentUser();
       Log.d(TAG, "link");
 
       if (user != null) {
-        user.linkWithCredential(credential)
-          .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-              if (task.isSuccessful()) {
-                Log.d(TAG, "link:onComplete:success");
-                if (withData) {
-                  promiseWithAuthResult(task.getResult(), promise);
-                } else {
-                  promiseWithUser(task.getResult().getUser(), promise);
-                }
-              } else {
-                Exception exception = task.getException();
-                Log.e(TAG, "link:onComplete:failure", exception);
-                promiseRejectAuthException(promise, exception);
-              }
-            }
-          });
+        user
+                .linkWithCredential(credential)
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                  @Override
+                  public void onComplete(@NonNull Task<AuthResult> task) {
+                    if (task.isSuccessful()) {
+                      Log.d(TAG, "link:onComplete:success");
+                      promiseWithAuthResult(task.getResult(), promise);
+                    } else {
+                      Exception exception = task.getException();
+                      Log.e(TAG, "link:onComplete:failure", exception);
+                      promiseRejectAuthException(promise, exception);
+                    }
+                  }
+                });
       } else {
         promiseNoUser(promise, true);
       }
     }
+
   }
 
   @ExpoMethod
@@ -1172,66 +1226,61 @@ class FirebaseAuthModule extends ExportedModule implements ModuleRegistryConsume
     Log.d(TAG, "unlink");
 
     if (user != null) {
-      user.unlink(providerId)
-        .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-          @Override
-          public void onComplete(@NonNull Task<AuthResult> task) {
-            if (task.isSuccessful()) {
-              Log.d(TAG, "unlink:onComplete:success");
-              promiseWithUser(task.getResult().getUser(), promise);
-            } else {
-              Exception exception = task.getException();
-              Log.e(TAG, "unlink:onComplete:failure", exception);
-              promiseRejectAuthException(promise, exception);
-            }
-          }
-        });
+      user
+              .unlink(providerId)
+              .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                @Override
+                public void onComplete(@NonNull Task<AuthResult> task) {
+                  if (task.isSuccessful()) {
+                    Log.d(TAG, "unlink:onComplete:success");
+                    promiseWithUser(task
+                            .getResult()
+                            .getUser(), promise);
+                  } else {
+                    Exception exception = task.getException();
+                    Log.e(TAG, "unlink:onComplete:failure", exception);
+                    promiseRejectAuthException(promise, exception);
+                  }
+                }
+              });
     } else {
       promiseNoUser(promise, true);
     }
+
   }
 
   @ExpoMethod
   public void reauthenticateWithCredential(String appName, String provider, String authToken, String authSecret, final Promise promise) {
-    reauthenticate(appName, provider, authToken, authSecret, promise, false);
-  }
-
-  @ExpoMethod
-  public void reauthenticateAndRetrieveDataWithCredential(String appName, String provider, String authToken, String authSecret, final Promise promise) {
-    reauthenticate(appName, provider, authToken, authSecret, promise, true);
-  }
-
-  private void reauthenticate(String appName, String provider, String authToken, String authSecret, final Promise promise, final boolean withData) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
 
     AuthCredential credential = getCredentialForProvider(provider, authToken, authSecret);
 
     if (credential == null) {
-      promise.reject("auth/invalid-credential", "The supplied auth credential is malformed, has expired or is not currently supported.");
+      promise.reject(
+              "auth/invalid-credential",
+              "The supplied auth credential is malformed, has expired or is not currently supported."
+      );
     } else {
       FirebaseUser user = firebaseAuth.getCurrentUser();
       Log.d(TAG, "reauthenticate");
 
       if (user != null) {
-        user.reauthenticateAndRetrieveData(credential)
-          .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-              if (task.isSuccessful()) {
-                Log.d(TAG, "reauthenticate:onComplete:success");
-                if (withData) {
-                  promiseWithAuthResult(task.getResult(), promise);
-                } else {
-                  promiseWithUser(task.getResult().getUser(), promise);
-                }
-              } else {
-                Exception exception = task.getException();
-                Log.e(TAG, "reauthenticate:onComplete:failure", exception);
-                promiseRejectAuthException(promise, exception);
-              }
-            }
-          });
+        user
+                .reauthenticateAndRetrieveData(credential)
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                  @Override
+                  public void onComplete(@NonNull Task<AuthResult> task) {
+                    if (task.isSuccessful()) {
+                      Log.d(TAG, "reauthenticate:onComplete:success");
+                      promiseWithAuthResult(task.getResult(), promise);
+                    } else {
+                      Exception exception = task.getException();
+                      Log.e(TAG, "reauthenticate:onComplete:failure", exception);
+                      promiseRejectAuthException(promise, exception);
+                    }
+                  }
+                });
       } else {
         promiseNoUser(promise, true);
       }
@@ -1254,15 +1303,6 @@ class FirebaseAuthModule extends ExportedModule implements ModuleRegistryConsume
       case "oauth":
         return OAuthProvider.getCredential(provider, authToken, authSecret);
       case "phone":
-        // If the phone number is auto-verified quickly, then the verificationId can be null
-        // We cached the credential as part of the verifyPhoneNumber request to be re-used here
-        // if possible
-        if (authToken == null && mCredential != null) {
-          PhoneAuthCredential credential = mCredential;
-          // Reset the cached credential
-          mCredential = null;
-          return credential;
-        }
         return PhoneAuthProvider.getCredential(authToken, authSecret);
       case "password":
         // authToken = email
@@ -1275,6 +1315,31 @@ class FirebaseAuthModule extends ExportedModule implements ModuleRegistryConsume
       default:
         return null;
     }
+  }
+
+
+  /**
+   * Returns an instance of PhoneAuthCredential, potentially cached
+   */
+  private PhoneAuthCredential getPhoneAuthCredential(
+          String authToken,
+          String authSecret
+  ) {
+    // If the phone number is auto-verified quickly, then the verificationId can be null
+    // We cached the credential as part of the verifyPhoneNumber request to be re-used here
+    // if possible
+    if (authToken == null && mCredential != null) {
+      PhoneAuthCredential credential = mCredential;
+      // Reset the cached credential
+      mCredential = null;
+      return credential;
+    }
+
+    if (authToken != null) {
+      return PhoneAuthProvider.getCredential(authToken, authSecret);
+    }
+
+    return null;
   }
 
   @ExpoMethod
@@ -1303,6 +1368,122 @@ class FirebaseAuthModule extends ExportedModule implements ModuleRegistryConsume
     } else {
       promiseNoUser(promise, true);
     }
+  }
+
+  /**
+   * getIdToken
+   *
+   * @param appName
+   * @param forceRefresh
+   * @param promise
+   */
+  @ExpoMethod
+  public void getIdToken(String appName, Boolean forceRefresh, final Promise promise) {
+    Log.d(TAG, "getIdToken");
+
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+    FirebaseUser user = firebaseAuth.getCurrentUser();
+
+    if (user == null) {
+      promiseNoUser(promise, true);
+      return;
+    }
+
+    user
+            .getIdToken(forceRefresh)
+            .addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
+              @Override
+              public void onComplete(@NonNull Task<GetTokenResult> task) {
+                if (task.isSuccessful()) {
+                  Log.d(TAG, "getIdToken:onComplete:success");
+                  GetTokenResult tokenResult = task.getResult();
+                  promise.resolve(tokenResult.getToken());
+                } else {
+                  Exception exception = task.getException();
+                  Log.e(TAG, "getIdToken:onComplete:failure", exception);
+                  promiseRejectAuthException(promise, exception);
+                }
+              }
+            });
+  }
+
+
+
+  /**
+   * getIdTokenResult
+   *
+   * @param appName
+   * @param forceRefresh
+   * @param promise
+   */
+  @ExpoMethod
+  public void getIdTokenResult(String appName, Boolean forceRefresh, final Promise promise) {
+    Log.d(TAG, "getIdTokenResult");
+
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+    FirebaseUser user = firebaseAuth.getCurrentUser();
+
+    if (user == null) {
+      promiseNoUser(promise, true);
+      return;
+    }
+
+    user
+            .getIdToken(forceRefresh)
+            .addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
+              @Override
+              public void onComplete(@NonNull Task<GetTokenResult> task) {
+                if (task.isSuccessful()) {
+                  Log.d(TAG, "getIdTokenResult:onComplete:success");
+                  GetTokenResult tokenResult = task.getResult();
+                  Bundle tokenResultMap = new Bundle();
+
+                  Utils.mapPutValue(
+                          "authTime",
+                          Utils.timestampToUTC(tokenResult.getAuthTimestamp()),
+                          tokenResultMap
+                  );
+
+                  Utils.mapPutValue(
+                          "expirationTime",
+                          Utils.timestampToUTC(tokenResult.getExpirationTimestamp()),
+                          tokenResultMap
+                  );
+
+                  Utils.mapPutValue(
+                          "issuedAtTime",
+                          Utils.timestampToUTC(tokenResult.getIssuedAtTimestamp()),
+                          tokenResultMap
+                  );
+
+                  Utils.mapPutValue(
+                          "claims",
+                          tokenResult.getClaims(),
+                          tokenResultMap
+                  );
+
+                  Utils.mapPutValue(
+                          "signInProvider",
+                          tokenResult.getSignInProvider(),
+                          tokenResultMap
+                  );
+
+                  Utils.mapPutValue(
+                          "token",
+                          tokenResult.getToken(),
+                          tokenResultMap
+                  );
+
+                  promise.resolve(tokenResultMap);
+                } else {
+                  Exception exception = task.getException();
+                  Log.e(TAG, "getIdTokenResult:onComplete:failure", exception);
+                  promiseRejectAuthException(promise, exception);
+                }
+              }
+            });
   }
 
   @ExpoMethod

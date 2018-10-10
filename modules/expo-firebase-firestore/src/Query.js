@@ -11,7 +11,7 @@ import { buildNativeArray, buildTypeMap } from './utils/serialize';
 
 import type Firestore from './index';
 import type Path from './Path';
-import type { MetadataChanges, QueryDirection, QueryOperator } from './types';
+import type { MetadataChanges, QueryDirection, QueryOperator } from './firestoreTypes.flow';
 
 const { getAppEventName, SharedEventEmitter } = events;
 const { firestoreAutoId, isFunction, isObject } = utils;

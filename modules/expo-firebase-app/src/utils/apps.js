@@ -22,8 +22,27 @@ import type {
 const { ExpoFirebaseApp: FirebaseCoreModule } = NativeModulesProxy;
 
 const APPS: { [string]: App } = {};
-const APP_MODULES: { [string]: { [string]: FirebaseModule } } = {};
 const DEFAULT_APP_NAME = '[DEFAULT]';
+const APP_MODULES: { [string]: { [string]: FirebaseModule } } = {};
+const CUSTOM_URL_OR_REGION_NAMESPACES = {
+  database: true,
+  functions: true,
+  storage: false, // TODO true once multi-bucket support added.
+  // for flow:
+  admob: false,
+  analytics: false,
+  auth: false,
+  config: false,
+  crashlytics: false,
+  firestore: false,
+  iid: false,
+  invites: false,
+  links: false,
+  messaging: false,
+  notifications: false,
+  perf: false,
+  utils: false,
+};
 
 function _getModule(name) {
   //TODO: Fix this - no globals
@@ -63,14 +82,15 @@ export default {
     namespace: FirebaseNamespace,
     InstanceClass: Class<M>
   ): () => FirebaseModule {
-    return (serviceUrl: ?string = null): M => {
-      if (serviceUrl && namespace !== 'database') {
+    return (customUrlOrRegion: ?string = null): M => {
+      if (customUrlOrRegion && !CUSTOM_URL_OR_REGION_NAMESPACES[namespace]) {
         throw new Error(INTERNALS.STRINGS.ERROR_INIT_SERVICE_URL_UNSUPPORTED(namespace));
       }
 
-      const appOrShardName = serviceUrl || app.name;
-      if (!APP_MODULES[appOrShardName]) {
-        APP_MODULES[appOrShardName] = {};
+      const appInstanceIdentifier = `${app.name}${customUrlOrRegion || ''}`;
+
+      if (!APP_MODULES[appInstanceIdentifier]) {
+        APP_MODULES[appInstanceIdentifier] = {};
       }
 
       if (isAndroid && namespace !== 'utils' && !INTERNALS.FLAGS.checkedPlayServices) {
@@ -78,7 +98,7 @@ export default {
         app.utils().checkPlayServicesAvailability();
       }
 
-      if (!APP_MODULES[appOrShardName][namespace]) {
+      if (!APP_MODULES[appInstanceIdentifier][namespace]) {
         if (!InstanceClass) {
           try {
             InstanceClass = _getModule(namespace);
@@ -86,10 +106,10 @@ export default {
             console.error(message);
           }
         }
-        APP_MODULES[appOrShardName][namespace] = new InstanceClass(serviceUrl || app, app.options);
+        APP_MODULES[appInstanceIdentifier][namespace] = new InstanceClass(app, customUrlOrRegion);
       }
 
-      return APP_MODULES[appOrShardName][namespace];
+      return APP_MODULES[appInstanceIdentifier][namespace];
     };
   },
 
@@ -190,12 +210,16 @@ export default {
     moduleName: FirebaseModuleName
   ): FirebaseModuleAndStatics<M, S> {
     const module = _getModule(namespace);
-    const getModule = (appOrUrl?: App | string): FirebaseModule => {
-      let _app = appOrUrl;
-      let _serviceUrl: ?string = null;
-      if (typeof appOrUrl === 'string' && namespace === 'database') {
+    const getModule = (
+      appOrUrlOrRegion?: App | string,
+      customUrlOrRegion?: string
+    ): FirebaseModule => {
+      let _app = appOrUrlOrRegion;
+      let _customUrlOrRegion: ?string = customUrlOrRegion || null;
+
+      if (typeof appOrUrlOrRegion === 'string' && CUSTOM_URL_OR_REGION_NAMESPACES[namespace]) {
         _app = null;
-        _serviceUrl = appOrUrl;
+        _customUrlOrRegion = appOrUrlOrRegion;
       }
 
       // throw an error if it's not a valid app instance
@@ -207,11 +231,11 @@ export default {
         _app = this.app(DEFAULT_APP_NAME);
       // $FlowExpectedError: Flow doesn't support indexable signatures on classes: https://github.com/facebook/flow/issues/1323
       const module = _app[namespace];
-      return module(_serviceUrl);
+      return module(_customUrlOrRegion);
     };
 
-    return Object.assign(getModule, module.statics, {
-      nativeModuleExists: !!NativeModulesProxy[module.moduleName],
+    return Object.assign(getModule, statics, {
+      nativeModuleExists: !!NativeModulesProxy[moduleName],
     });
   },
 };

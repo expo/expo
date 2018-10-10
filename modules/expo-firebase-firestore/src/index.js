@@ -237,7 +237,7 @@ export default class Firestore extends ModuleBase {
     if (event.error) {
       SharedEventEmitter.emit(
         getAppEventName(this, `onQuerySnapshotError:${event.listenerId}`),
-        event.error
+        event
       );
     } else {
       SharedEventEmitter.emit(
@@ -257,7 +257,7 @@ export default class Firestore extends ModuleBase {
     if (event.error) {
       SharedEventEmitter.emit(
         getAppEventName(this, `onDocumentSnapshotError:${event.listenerId}`),
-        event.error
+        event
       );
     } else {
       SharedEventEmitter.emit(

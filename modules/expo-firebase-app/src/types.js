@@ -20,7 +20,8 @@ export type FirebaseModuleConfig = {
   events?: string[],
   moduleName: FirebaseModuleName,
   hasMultiAppSupport: boolean,
-  hasCustomUrlSupport: boolean,
+  hasCustomUrlSupport?: boolean,
+  hasRegionsSupport?: boolean,
   namespace: FirebaseNamespace,
 };
 
@@ -44,11 +45,9 @@ export type FirebaseModuleName =
   | 'ExpoFirebaseUtils';
 
 export type FirebaseNamespace =
-  | 'admob'
   | 'analytics'
   | 'auth'
   | 'config'
-  | 'crash'
   | 'crashlytics'
   | 'database'
   | 'firestore'

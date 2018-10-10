@@ -7,10 +7,15 @@ import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 
 
 import expo.core.ModuleRegistry;
@@ -19,6 +24,16 @@ import expo.core.interfaces.services.EventEmitter;
 @SuppressWarnings("WeakerAccess")
 public class Utils {
   private static final String TAG = "Utils";
+
+
+  public static String timestampToUTC(long timestamp) {
+    Calendar calendar = Calendar.getInstance();
+    Date date = new Date((timestamp + calendar.getTimeZone().getOffset(timestamp)) * 1000);
+    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
+    format.setTimeZone(TimeZone.getTimeZone("UTC"));
+    return format.format(date);
+  }
+
 
   /**
    * send a JS event

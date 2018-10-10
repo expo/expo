@@ -206,7 +206,7 @@ public class FirebaseNotificationManager {
   public void removeDeliveredNotificationsByTag(String tag, Promise promise) {
     StatusBarNotification[] statusBarNotifications = notificationManager.getActiveNotifications();
     for (StatusBarNotification statusBarNotification : statusBarNotifications) {
-      if (statusBarNotification.getTag() == tag) {
+      if (tag.equals(statusBarNotification.getTag())) {
         notificationManager.cancel(statusBarNotification.getTag(), statusBarNotification.getId());
       }
     }

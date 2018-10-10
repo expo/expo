@@ -29,7 +29,7 @@ export default class TransactionHandler {
     this._database = database;
 
     SharedEventEmitter.addListener(
-      getAppEventName(this._database, 'database_transaction_event'),
+      getAppEventName(this._database, 'Expo.Firebase.database_transaction_event'),
       this._handleTransactionEvent.bind(this)
     );
   }

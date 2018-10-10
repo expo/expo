@@ -18,6 +18,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -32,7 +33,6 @@ class FirebaseDatabaseReference {
   private Query query;
   private String appName;
   private String dbURL;
-  private Context context;
   private ModuleRegistry moduleRegistry;
 
   private HashMap<String, ChildEventListener> childEventListeners = new HashMap<>();
@@ -45,14 +45,10 @@ class FirebaseDatabaseReference {
    */
   private static class DataSnapshotToMapAsyncTask extends AsyncTask<Object, Void, Bundle> {
 
-    private WeakReference<Context> contextWeakReference;
     private WeakReference<FirebaseDatabaseReference> referenceWeakReference;
-    private WeakReference<ModuleRegistry> moduleRegistryWeakReferenceWeakReference;
 
-    DataSnapshotToMapAsyncTask(Context context, FirebaseDatabaseReference reference, ModuleRegistry moduleRegistry) {
+    DataSnapshotToMapAsyncTask(FirebaseDatabaseReference reference) {
       referenceWeakReference = new WeakReference<>(reference);
-      contextWeakReference = new WeakReference<>(context);
-      moduleRegistryWeakReferenceWeakReference = new WeakReference<>(moduleRegistry);
     }
 
     @Override
@@ -64,11 +60,7 @@ class FirebaseDatabaseReference {
         return FirebaseDatabaseUtils.snapshotToMap(dataSnapshot, previousChildName);
       } catch (RuntimeException e) {
         if (isAvailable()) {
-          // TODO: Evan: Add this without React
-//          contextWeakReference.get();
-//          if (contextWeakReference.get() instanceof ReactApplicationContext) {
-//            ((ReactApplicationContext)contextWeakReference.get()).handleException(e);
-//          }
+          FirebaseDatabaseModule.getInstance().handleException(e);
         }
         throw e;
       }
@@ -80,7 +72,7 @@ class FirebaseDatabaseReference {
     }
 
     Boolean isAvailable() {
-      return contextWeakReference.get() != null && referenceWeakReference.get() != null && moduleRegistryWeakReferenceWeakReference.get() != null;
+      return FirebaseDatabaseModule.getInstance() != null && referenceWeakReference.get() != null;
     }
   }
 
@@ -88,20 +80,38 @@ class FirebaseDatabaseReference {
    * Firebase wrapper around FirebaseDatabaseReference,
    * handles Query generation and event listeners.
    *
-   * @param context
    * @param app
    * @param refKey
    * @param refPath
    * @param modifiersArray
    */
-  FirebaseDatabaseReference(Context context, ModuleRegistry moduleRegistry, String app, String url, String refKey, String refPath, ArrayList modifiersArray) {
+  FirebaseDatabaseReference(ModuleRegistry moduleRegistry, String app, String url, String refKey, String refPath, ArrayList modifiersArray) {
     this.key = refKey;
     this.query = null;
     this.appName = app;
     this.dbURL = url;
-    this.context = context;
     this.moduleRegistry = moduleRegistry;
     buildDatabaseQueryAtPathAndModifiers(refPath, modifiersArray);
+  }
+
+
+  void removeAllEventListeners() {
+    if (hasListeners()) {
+      Iterator valueIterator = valueEventListeners.entrySet().iterator();
+      while (valueIterator.hasNext()) {
+        Map.Entry pair = (Map.Entry) valueIterator.next();
+        ValueEventListener valueEventListener = (ValueEventListener) pair.getValue();
+        query.removeEventListener(valueEventListener);
+        valueIterator.remove();
+      }
+      Iterator childIterator = childEventListeners.entrySet().iterator();
+      while (childIterator.hasNext()) {
+        Map.Entry pair = (Map.Entry) childIterator.next();
+        ChildEventListener childEventListener = (ChildEventListener) pair.getValue();
+        query.removeEventListener(childEventListener);
+        childIterator.remove();
+      }
+    }
   }
 
 
@@ -183,7 +193,7 @@ class FirebaseDatabaseReference {
    */
   private void addOnceValueEventListener(final Promise promise) {
     @SuppressLint("StaticFieldLeak")
-    final DataSnapshotToMapAsyncTask asyncTask = new DataSnapshotToMapAsyncTask(context, this, moduleRegistry) {
+    final DataSnapshotToMapAsyncTask asyncTask = new DataSnapshotToMapAsyncTask(this) {
       @Override
       protected void onPostExecute(Bundle writableMap) {
         if (this.isAvailable()) {
@@ -377,7 +387,7 @@ class FirebaseDatabaseReference {
    */
   private void handleDatabaseEvent(final String eventType, final Map<String, Object> registration, DataSnapshot dataSnapshot, @Nullable String previousChildName) {
     @SuppressLint("StaticFieldLeak")
-    DataSnapshotToMapAsyncTask asyncTask = new DataSnapshotToMapAsyncTask(context, this, moduleRegistry) {
+    DataSnapshotToMapAsyncTask asyncTask = new DataSnapshotToMapAsyncTask(this) {
       @Override
       protected void onPostExecute(Bundle data) {
         if (this.isAvailable()) {
