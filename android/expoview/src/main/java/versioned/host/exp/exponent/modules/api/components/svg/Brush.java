@@ -18,7 +18,9 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Shader;
 
+import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.common.ReactConstants;
 
 class Brush {
     private BrushType mType = BrushType.LINEAR_GRADIENT;
@@ -107,6 +109,17 @@ class Brush {
         int[] stopsColors = new int[stopsCount];
         float[] stops = new float[stopsCount];
         parseGradientStops(mColors, stopsCount, stops, stopsColors, opacity);
+
+        if (stops.length == 1) {
+            // Gradient with only one stop will make LinearGradient/RadialGradient
+            // throw. It may happen when source SVG contains only one stop or
+            // two stops at the same spot (see lib/extract/extractGradient.js).
+            // Although it's mistake SVGs like this can be produced by vector
+            // editors or other tools, so let's handle that gracefully.
+            stopsColors = new int[] { stopsColors[0], stopsColors[0] };
+            stops = new float[] { stops[0], stops[0] };
+            FLog.w(ReactConstants.TAG, "Gradient contains only on stop");
+        }
 
         if (mType == BrushType.LINEAR_GRADIENT) {
             double x1 = PropHelper.fromRelative(mPoints.getString(0), width, offsetX, scale, paint.getTextSize());
