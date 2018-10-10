@@ -20,7 +20,7 @@ android {
   buildToolsVersion '27.0.3'
 
   defaultConfig {
-    applicationId 'host.exp.exponent.payments.stripe.examples.expokit'
+    applicationId 'host.exp.exponent.payments.stripe'
     targetSdkVersion 26
     versionCode 1
     versionName '1.0.0'
@@ -64,8 +64,8 @@ android {
       ext.enableCrashlytics = false
     }
     release {
-      /*minifyEnabled true
-      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'*/
+      minifyEnabled true
+      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
       zipAlignEnabled true
     }
   }
@@ -80,11 +80,9 @@ android {
   packagingOptions {
     pickFirst "**"
   }
-
-    configurations.all {
-        resolutionStrategy.force 'com.android.support:design:27.1.0'
-    }
-
+  configurations.all {
+    resolutionStrategy.force 'com.android.support:design:27.1.0'
+  }
 }
 
 // Don't use modern jsc-android since it still has some critical bugs that
@@ -103,14 +101,10 @@ apply from: 'expo.gradle'
 dependencies {
   implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-  implementation project(':expo-permissions')
-  implementation project(':expo-permissions-interface')
-  implementation project(':expo-payments-stripe')
-  implementation project(':expo-core')
-  implementation project(':expo-react-native-adapter')
-  implementation 'com.android.support:multidex:1.0.3'
+  implementation 'com.android.support:multidex:1.0.1'
 
   // Our dependencies
+  implementation 'com.android.support:appcompat-v7:27.1.1'
 
   // Our dependencies from ExpoView
   // DON'T ADD ANYTHING HERE THAT ISN'T IN EXPOVIEW. ONLY COPY THINGS FROM EXPOVIEW TO HERE.
@@ -176,14 +170,13 @@ dependencies {
   testImplementation 'com.android.support.test:runner:1.0.2-alpha1'
   testImplementation 'com.android.support.test:rules:1.0.2-alpha1'
 
-
-  implementation('host.exp.exponent:expoview:29.0.0@aar') {
+  
+  implementation('host.exp.exponent:expoview:30.0.0@aar') {
     transitive = true
     exclude group: 'com.squareup.okhttp3', module: 'okhttp'
-    exclude group: 'com.github.thefuntasty', module: 'CreditCardEntry'
     exclude group: 'com.squareup.okhttp3', module: 'okhttp-urlconnection'
   }
-
+  
   /* REMOVED_WHEN_DISTRIBUTING_FROM_HERE
   implementation(project(path: ':expoview')) {
     // Excluding okhttp3 included by expo-file-system

@@ -4,65 +4,69 @@ platform :ios, '10.0'
 target 'with-expokit' do
   pod 'ExpoKit',
     :git => "http://github.com/expo/expo.git",
-    :tag => "ios/2.7.0",
+    :tag => "ios/2.8.3",
     :subspecs => [
       "Core"
     ],
     :inhibit_warnings => true
-  pod 'EXGL',
-    :path => "../node_modules/expo-gl/ios",
-    :inhibit_warnings => true
-  pod 'EXCore',
-    :path => "../node_modules/expo-core/ios",
-    :inhibit_warnings => true
+  pod 'EXAdsAdMob',
+    :path => "../node_modules/expo-ads-admob/ios"
+  pod 'EXBarCodeScanner',
+    :path => "../node_modules/expo-barcode-scanner/ios"
+  pod 'EXBarCodeScannerInterface',
+    :path => "../node_modules/expo-barcode-scanner-interface/ios"
   pod 'EXCamera',
-    :path => "../node_modules/expo-camera/ios",
-    :inhibit_warnings => true
-  pod 'EXSensors',
-    :path => "../node_modules/expo-sensors/ios",
-    :inhibit_warnings => true
-  pod 'EXConstants',
-    :path => "../node_modules/expo-constants/ios",
-    :inhibit_warnings => true
-  pod 'EXFileSystem',
-    :path => "../node_modules/expo-file-system/ios",
-    :inhibit_warnings => true
-  pod 'EXPermissions',
-    :path => "../node_modules/expo-permissions/ios",
-    :inhibit_warnings => true
-  pod 'EXPaymentsStripe',
-    :path => "../node_modules/expo-payments-stripe/ios",
-    :inhibit_warnings => true
+    :path => "../node_modules/expo-camera/ios"
   pod 'EXCameraInterface',
-    :path => "../node_modules/expo-camera-interface/ios",
-    :inhibit_warnings => true
-  pod 'EXSensorsInterface',
-    :path => "../node_modules/expo-sensors-interface/ios",
-    :inhibit_warnings => true
+    :path => "../node_modules/expo-camera-interface/ios"
+  pod 'EXConstants',
+    :path => "../node_modules/expo-constants/ios"
   pod 'EXConstantsInterface',
-    :path => "../node_modules/expo-constants-interface/ios",
-    :inhibit_warnings => true
-  pod 'EXReactNativeAdapter',
-    :path => "../node_modules/expo-react-native-adapter/ios",
-    :inhibit_warnings => true
-  pod 'EXFileSystemInterface',
-    :path => "../node_modules/expo-file-system-interface/ios",
-    :inhibit_warnings => true
-  pod 'EXPermissionsInterface',
-    :path => "../node_modules/expo-permissions-interface/ios",
-    :inhibit_warnings => true
+    :path => "../node_modules/expo-constants-interface/ios"
+  pod 'EXContacts',
+    :path => "../node_modules/expo-contacts/ios"
+  pod 'EXCore',
+    :path => "../node_modules/expo-core/ios"
   pod 'EXFaceDetectorInterface',
-    :path => "../node_modules/expo-face-detector-interface/ios",
-    :inhibit_warnings => true
-  pod 'EXSMS',
-    :path => "../node_modules/expo-sms/ios",
-    :inhibit_warnings => true
+    :path => "../node_modules/expo-face-detector-interface/ios"
+  pod 'EXFileSystem',
+    :path => "../node_modules/expo-file-system/ios"
+  pod 'EXFileSystemInterface',
+    :path => "../node_modules/expo-file-system-interface/ios"
+  pod 'EXFont',
+    :path => "../node_modules/expo-font/ios"
+  pod 'EXFontInterface',
+    :path => "../node_modules/expo-font-interface/ios"
+  pod 'EXGL',
+    :path => "../node_modules/expo-gl/ios"
   pod 'EXGL-CPP',
-    :path => "../node_modules/expo-gl-cpp/cpp",
-    :inhibit_warnings => true
+    :path => "../node_modules/expo-gl-cpp/cpp"
   pod 'EXImageLoaderInterface',
-    :path => "../node_modules/expo-image-loader-interface/ios",
-    :inhibit_warnings => true
+    :path => "../node_modules/expo-image-loader-interface/ios"
+  pod 'EXLocalAuthentication',
+    :path => "../node_modules/expo-local-authentication/ios"
+  pod 'EXLocation',
+    :path => "../node_modules/expo-location/ios"
+  pod 'EXMediaLibrary',
+    :path => "../node_modules/expo-media-library/ios"
+  pod 'EXPaymentsStripe',
+    :path => "../node_modules/expo-payments-stripe/ios"
+  pod 'EXPermissions',
+    :path => "../node_modules/expo-permissions/ios"
+  pod 'EXPermissionsInterface',
+    :path => "../node_modules/expo-permissions-interface/ios"
+  pod 'EXPrint',
+    :path => "../node_modules/expo-print/ios"
+  pod 'EXReactNativeAdapter',
+    :path => "../node_modules/expo-react-native-adapter/ios"
+  pod 'EXSegment',
+    :path => "../node_modules/expo-analytics-segment/ios"
+  pod 'EXSensors',
+    :path => "../node_modules/expo-sensors/ios"
+  pod 'EXSensorsInterface',
+    :path => "../node_modules/expo-sensors-interface/ios"
+  pod 'EXSMS',
+    :path => "../node_modules/expo-sms/ios"
 
   pod 'React',
     :path => "../node_modules/react-native",
@@ -106,7 +110,7 @@ target 'with-expokit' do
       target.native_target.build_configurations.each do |config|
         config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
         config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'EX_DETACHED=1'
-
+        
         # needed for GoogleMaps 2.x
         config.build_settings['FRAMEWORK_SEARCH_PATHS'] ||= []
         config.build_settings['FRAMEWORK_SEARCH_PATHS'] << '${PODS_ROOT}/GoogleMaps/Base/Frameworks'

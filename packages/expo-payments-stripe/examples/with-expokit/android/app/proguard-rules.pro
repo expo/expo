@@ -28,6 +28,22 @@
 ##### Crashlytics #####
 -keepattributes SourceFile,LineNumberTable
 
+##### Expo Universal Modules #####
+
+-keepclassmembers class * {
+  @expo.core.interfaces.ExpoProp *;
+}
+-keepclassmembers class * {
+  @expo.core.interfaces.ExpoMethod *;
+}
+
+-keepclassmembers class * {
+  @**.expo.core.interfaces.ExpoProp *;
+}
+-keepclassmembers class * {
+  @**.expo.core.interfaces.ExpoMethod *;
+}
+
 ##### React Native #####
 -keep,allowobfuscation @interface **.facebook.proguard.annotations.DoNotStrip
 -keep,allowobfuscation @interface **.facebook.proguard.annotations.KeepGettersAndSetters

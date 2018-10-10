@@ -6,7 +6,7 @@ buildscript {
     jcenter()
   }
   dependencies {
-    classpath 'com.android.tools.build:gradle:3.1.0'
+    classpath 'com.android.tools.build:gradle:3.1.4'
     classpath 'com.google.gms:google-services:3.2.0'
     classpath 'de.undercouch:gradle-download-task:2.0.0'
   }
@@ -22,7 +22,6 @@ allprojects {
     maven {
       url "$rootDir/../node_modules/expokit/maven"
     }
-
     maven {
       // We use a modified build of com.android.support.test:runner:1.0.1. Explanation in maven-test/README
       url "$rootDir/maven-test"
@@ -33,13 +32,14 @@ allprojects {
     jcenter()
     maven {
       // Local Maven repo containing AARs with JSC built for Android
-      url "$rootDir/../js/node_modules/jsc-android/android"
+      url "$rootDir/../home/node_modules/jsc-android/android"
     }
     flatDir {
       dirs 'libs'
       // dirs project(':expoview').file('libs')
     }
     maven { url "https://jitpack.io" }
+
     // Want this last so that we never end up with a stale cache
     mavenLocal()
   }

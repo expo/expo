@@ -5,11 +5,11 @@
   xmlns:tools="http://schemas.android.com/tools">
 
   <permission
-    android:name="host.exp.exponent.payments.stripe.examples.expokit.permission.C2D_MESSAGE"
+    android:name="host.exp.exponent.permission.C2D_MESSAGE"
     android:protectionLevel="signature"/>
 
   <!-- These are required permissions to make the app run -->
-  <uses-permission android:name="host.exp.exponent.payments.stripe.examples.expokit.permission.C2D_MESSAGE" />
+  <uses-permission android:name="host.exp.exponent.permission.C2D_MESSAGE" />
   <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
   <uses-permission android:name="android.permission.INTERNET" />
@@ -24,6 +24,7 @@
   <uses-permission android:name="android.permission.USE_FINGERPRINT" />
   <uses-permission android:name="android.permission.VIBRATE" />
   <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />
+  <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
 
   <!-- These require runtime permissions on M -->
   <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -75,7 +76,7 @@
       android:theme="@style/Theme.Exponent.Splash"
       android:windowSoftInputMode="adjustResize">
       <intent-filter>
-        <data android:scheme="expb30bd136a19a44adba16125e3f75abc5"/>
+        <data android:scheme="exp9d1ea7e1de174f31828a156ea7a38e11"/>
 
         <action android:name="android.intent.action.VIEW"/>
 
@@ -87,6 +88,7 @@
 
         <category android:name="android.intent.category.LAUNCHER"/>
       </intent-filter>
+      <!-- ADD DETACH APP SPECIFIC INTENT FILTERS -->
     </activity>
 
     <activity
@@ -96,6 +98,7 @@
       android:theme="@style/Theme.Exponent.Splash"
       android:windowSoftInputMode="adjustResize">
       <!-- ADD SHELL INTENT FILTERS HERE -->
+      <!-- ADD SHELL APP SPECIFIC INTENT FILTERS -->
     </activity>
 
     <activity
@@ -121,13 +124,13 @@
 
     <activity android:name="com.facebook.react.devsupport.DevSettingsActivity"/>
     <!-- ADD DEV SETTINGS HERE -->
+    <activity android:name="abi30_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
     <activity android:name="abi29_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
     <activity android:name="abi28_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
     <activity android:name="abi27_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
     <activity android:name="abi26_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
     <activity android:name="abi25_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
     <activity android:name="abi24_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
-    <activity android:name="abi23_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
 
     <activity
       android:name=".ExponentDevActivity"
@@ -151,27 +154,29 @@
         <action android:name="android.intent.action.VIEW"/>
         <category android:name="android.intent.category.DEFAULT"/>
         <category android:name="android.intent.category.BROWSABLE"/>
-        <data android:scheme="host.exp.exponent.payments.stripe.examples.expokit" android:path="oauthredirect"/>
+        <data android:scheme="host.exp.exponent" android:path="oauthredirect"/>
       </intent-filter>
     </activity>
-
-      <activity
-          android:exported="true"
-          android:launchMode="singleTask"
-          android:name="expo.modules.payments.stripe.RedirectUriReceiver"
-          android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen">
-          <intent-filter>
-              <action android:name="android.intent.action.VIEW" />
-              <category android:name="android.intent.category.DEFAULT" />
-              <category android:name="android.intent.category.BROWSABLE" />
-
-              <data android:scheme="expaymentsstripe" />
-          </intent-filter>
-      </activity>
 
     <activity
       android:name=".oauth.OAuthResultActivity">
     </activity>
+
+    <!-- START OF STRIPE SCHEMES -->
+    <activity
+        android:exported="true"
+        android:launchMode="singleTask"
+        android:name="expo.modules.payments.stripe.RedirectUriReceiver"
+        android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen">
+        <intent-filter>
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.DEFAULT" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <data android:scheme="expo.modules.payments.stripe.200dd997-2f5c-4a54-ba60-811275997c0c" />
+        </intent-filter>
+    </activity>
+    <!-- Versioned Activity for Stripe -->
+    <!-- END OF STRIPE SCHEMES -->
 
     <activity
       android:name=".chrometabs.ChromeTabsManagerActivity">
@@ -243,7 +248,7 @@
         <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
         <action android:name="com.google.android.c2dm.intent.REGISTRATION"/>
 
-        <category android:name="host.exp.exponent.payments.stripe.examples.expokit"/>
+        <category android:name="host.exp.exponent"/>
       </intent-filter>
     </receiver>
 
@@ -309,6 +314,8 @@
 
     <!-- The Facebook SDK runs FacebookInitProvider on startup and crashes if there isn't an ID here -->
     <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="fb0"/>
+
+    <meta-data android:name="standaloneStripeScheme" android:value="200dd997-2f5c-4a54-ba60-811275997c0c" />
   </application>
 
 </manifest>

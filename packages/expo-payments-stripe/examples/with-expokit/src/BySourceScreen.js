@@ -28,7 +28,7 @@ export default class BySourceScreen extends React.Component {
         type: 'alipay',
         amount: 50,
         currency: 'EUR',
-        returnURL: 'expaymentsstripe://stripe-redirect',
+        returnURL: '',
       });
       this.setState({ loading: false, source });
     } catch (error) {

@@ -11,7 +11,7 @@
         "client_id": "android:host.exp.exponent",
         "client_type": 1,
         "android_client_info": {
-          "package_name": "host.exp.exponent.payments.stripe.examples.expokit",
+          "package_name": "host.exp.exponent.payments.stripe",
           "certificate_hash": ""
         }
       },
