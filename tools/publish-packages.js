@@ -614,7 +614,7 @@ async function _updateAndroidDependenciesAsync(allConfigs) {
   const modules = Modules.getPublishableModules().map(module => {
     return {
       ...module,
-      dir: `${process.env.EXPO_UNIVERSE_DIR}/exponent/modules/${module.libName}`,
+      dir: `${process.env.EXPO_UNIVERSE_DIR}/exponent/packages/${module.libName}`,
     };
   });
 

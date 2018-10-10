@@ -1,1 +1,1 @@
-../../../../../modules/expo-core/ios/EXCore/Protocols/EXAppLifecycleService.h
+../../../../../packages/expo-core/ios/EXCore/Protocols/EXAppLifecycleService.h

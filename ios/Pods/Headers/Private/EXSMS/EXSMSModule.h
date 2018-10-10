@@ -1,1 +1,1 @@
-../../../../../modules/expo-sms/ios/EXSMS/EXSMSModule.h
+../../../../../packages/expo-sms/ios/EXSMS/EXSMSModule.h

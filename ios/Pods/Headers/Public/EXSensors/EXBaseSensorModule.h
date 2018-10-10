@@ -1,1 +1,1 @@
-../../../../../modules/expo-sensors/ios/EXSensors/Modules/SensorModules/EXBaseSensorModule.h
+../../../../../packages/expo-sensors/ios/EXSensors/Modules/SensorModules/EXBaseSensorModule.h

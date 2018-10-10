@@ -1,1 +1,1 @@
-../../../../../modules/expo-font/ios/EXFont/EXFontManager.h
+../../../../../packages/expo-font/ios/EXFont/EXFontManager.h

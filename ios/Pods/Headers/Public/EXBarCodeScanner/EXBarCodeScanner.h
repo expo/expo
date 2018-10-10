@@ -1,1 +1,1 @@
-../../../../../modules/expo-barcode-scanner/ios/EXBarCodeScanner/EXBarCodeScanner.h
+../../../../../packages/expo-barcode-scanner/ios/EXBarCodeScanner/EXBarCodeScanner.h

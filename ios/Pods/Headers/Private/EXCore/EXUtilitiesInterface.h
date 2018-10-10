@@ -1,1 +1,1 @@
-../../../../../modules/expo-core/ios/EXCore/Protocols/EXUtilitiesInterface.h
+../../../../../packages/expo-core/ios/EXCore/Protocols/EXUtilitiesInterface.h

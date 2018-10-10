@@ -1,1 +1,1 @@
-../../../../../modules/expo-permissions/ios/EXPermissions/EXLocalNotificationRequester.h
+../../../../../packages/expo-permissions/ios/EXPermissions/EXLocalNotificationRequester.h

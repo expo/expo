@@ -1,1 +1,1 @@
-../../../../../modules/expo-ads-admob/ios/EXAdsAdMob/EXAdsAdMobInterstitial.h
+../../../../../packages/expo-ads-admob/ios/EXAdsAdMob/EXAdsAdMobInterstitial.h
