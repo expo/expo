@@ -20,7 +20,7 @@ public class BrightnessModule extends ReactContextBaseJavaModule {
 
   @Override
   public String getName() {
-    return "ExponentBrightness";
+    return "ExpoBrightness";
   }
 
   @ReactMethod
@@ -34,8 +34,8 @@ public class BrightnessModule extends ReactContextBaseJavaModule {
           lp.screenBrightness = brightnessValue;
           activity.getWindow().setAttributes(lp); // must be done on UI thread
           promise.resolve(null);
-        } catch (Exception e){
-          promise.reject("E_BRIGHTNESS", e.getMessage());
+        } catch (Exception e) {
+          promise.reject("ERR_BRIGHTNESS", "Failed to set the current screen brightness", e);
         }
       }
     });
@@ -45,13 +45,22 @@ public class BrightnessModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void getBrightnessAsync(final Promise promise) {
     WindowManager.LayoutParams lp = getCurrentActivity().getWindow().getAttributes();
-    promise.resolve(lp.screenBrightness);
+    if (lp.screenBrightness == WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE) {
+      // system brightness is not overridden by the current activity, so just resolve with it
+      getSystemBrightnessAsync(promise);
+    } else {
+      promise.resolve(lp.screenBrightness);
+    }
   }
 
   @ReactMethod
   public void getSystemBrightnessAsync(final Promise promise){
-    String brightness = Settings.System.getString(getCurrentActivity().getContentResolver(), "screen_brightness");
-    promise.resolve(Integer.parseInt(brightness)/255f);
+    try {
+      String brightness = Settings.System.getString(getCurrentActivity().getContentResolver(), Settings.System.SCREEN_BRIGHTNESS);
+      promise.resolve(Integer.parseInt(brightness) / 255f);
+    } catch (Exception e) {
+      promise.reject("ERR_BRIGHTNESS_SYSTEM", "Failed to get the system brightness value", e);
+    }
   }
 
   @ReactMethod
@@ -71,10 +80,85 @@ public class BrightnessModule extends ReactContextBaseJavaModule {
         );
         promise.resolve(null);
       } else {
-        promise.reject("E_BRIGHTNESS_PERMISSIONS", "WRITE_SETTINGS not granted");
+        promise.reject("ERR_BRIGHTNESS_PERMISSIONS", "WRITE_SETTINGS not granted");
       }
     } catch (Exception e){
-      promise.reject("E_BRIGHTNESS", e.getMessage());
+      promise.reject("ERR_BRIGHTNESS_SYSTEM", "Failed to set the system brightness value", e);
+    }
+  }
+
+  @ReactMethod
+  public void useSystemBrightnessAsync(final Promise promise) {
+    final Activity activity = getCurrentActivity();
+    activity.runOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        try {
+          WindowManager.LayoutParams lp = activity.getWindow().getAttributes();
+          lp.screenBrightness = WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE;
+          activity.getWindow().setAttributes(lp); // must be done on UI thread
+          promise.resolve(null);
+        } catch (Exception e) {
+          promise.reject("ERR_BRIGHTNESS", "Failed to set the brightness of the current screen", e);
+        }
+      }
+    });
+  }
+
+  @ReactMethod
+  public void getSystemBrightnessModeAsync(Promise promise) {
+    try {
+      int brightnessMode = Settings.System.getInt(
+          getCurrentActivity().getContentResolver(),
+          Settings.System.SCREEN_BRIGHTNESS_MODE
+      );
+      promise.resolve(brightnessModeNativeToJS(brightnessMode));
+    } catch (Exception e) {
+      promise.reject("ERR_BRIGHTNESS_MODE", "Failed to get the system brightness mode", e);
+    }
+  }
+
+  @ReactMethod
+  public void setSystemBrightnessModeAsync(int brightnessMode, Promise promise) {
+    try {
+      // we have to just check this every time
+      // if we try to store a value for this permission, there is no way to know if the user has changed it
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && Settings.System.canWrite(getCurrentActivity()) || Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+        Settings.System.putInt(
+            getCurrentActivity().getContentResolver(),
+            Settings.System.SCREEN_BRIGHTNESS_MODE,
+            brightnessModeJSToNative(brightnessMode)
+        );
+        promise.resolve(null);
+      } else {
+        // TODO: what to do if we are rejecting but there is no native error?
+        // should we create a new Exception in order to get the native stack trace?
+        promise.reject("ERR_BRIGHTNESS_PERMISSIONS", "WRITE_SETTINGS permission has not been granted");
+      }
+    } catch (Exception e) {
+      promise.reject("ERR_BRIGHTNESS_MODE", "Failed to set the system brightness mode. Make sure the input is valid.", e);
+    }
+  }
+
+  private int brightnessModeNativeToJS(int nativeValue) {
+    switch (nativeValue) {
+      case Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC:
+        return 1;
+      case Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL:
+        return 2;
+      default:
+        return 0;
+    }
+  }
+
+  private int brightnessModeJSToNative(int jsValue) throws Exception {
+    switch (jsValue) {
+      case 1:
+        return Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC;
+      case 2:
+        return Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL;
+      default:
+        throw new Exception("Unsupported brightness mode");
     }
   }
 }
