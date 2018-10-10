@@ -11,8 +11,8 @@
 #import "RNSVGTextProperties.h"
 #import "RNSVGFontData.h"
 
-NSCharacterSet *ABI30_0_0separators = nil;
-static double radToDeg = 180 / M_PI;
+static NSCharacterSet *RNSVGTSpan_separators = nil;
+static double RNSVGTSpan_radToDeg = 180 / M_PI;
 
 @implementation RNSVGTSpan
 {
@@ -30,8 +30,8 @@ static double radToDeg = 180 / M_PI;
 {
     self = [super init];
 
-    if (ABI30_0_0separators == nil) {
-        ABI30_0_0separators = [NSCharacterSet whitespaceCharacterSet];
+    if (RNSVGTSpan_separators == nil) {
+        RNSVGTSpan_separators = [NSCharacterSet whitespaceCharacterSet];
     }
 
     return self;
@@ -46,13 +46,13 @@ static double radToDeg = 180 / M_PI;
     _content = content;
 }
 
-- (void)renderLayerTo:(CGContextRef)context
+- (void)renderLayerTo:(CGContextRef)context rect:(CGRect)rect
 {
     if (self.content) {
-        [self renderPathTo:context];
+        [self renderPathTo:context rect:rect];
     } else {
         [self clip:context];
-        [self renderGroupTo:context];
+        [self renderGroupTo:context rect:rect];
     }
 }
 
@@ -96,7 +96,7 @@ static double radToDeg = 180 / M_PI;
     // Create a dictionary for this font
     CTFontRef fontRef = [self getFontFromContext];
     CGMutablePathRef path = CGPathCreateMutable();
-    RNSVGGlyphContext* gc = [[self getTextRoot] getGlyphContext];
+    RNSVGGlyphContext* gc = [self.textRoot getGlyphContext];
     RNSVGFontData* font = [gc getFont];
     NSUInteger n = str.length;
     /*
@@ -230,17 +230,30 @@ static double radToDeg = 180 / M_PI;
      */
     // OpenType.js font data
     NSDictionary * fontData = font->fontData;
+    NSMutableDictionary *attrs = [[NSMutableDictionary alloc] init];
 
     NSNumber *lig = [NSNumber numberWithInt:allowOptionalLigatures ? 2 : 1];
+    attrs[NSLigatureAttributeName] = lig;
     CFDictionaryRef attributes;
     if (fontRef != nil) {
-        attributes = (__bridge CFDictionaryRef)@{
-                                                 (NSString *)kCTFontAttributeName: (__bridge id)fontRef,
-                                                 (NSString *)NSLigatureAttributeName: lig                                                };
-    } else {
-        attributes = (__bridge CFDictionaryRef)@{
-                                                 (NSString *)NSLigatureAttributeName: lig                                                            };
+        attrs[NSFontAttributeName] = (__bridge id)fontRef;
     }
+    if (!autoKerning) {
+        NSNumber *noAutoKern = [NSNumber numberWithFloat:0.0f];
+
+#if DTCORETEXT_SUPPORT_NS_ATTRIBUTES
+        if (___useiOS6Attributes)
+        {
+            [attrs setObject:noAutoKern forKey:NSKernAttributeName];
+        }
+        else
+#endif
+        {
+            [attrs setObject:noAutoKern forKey:(id)kCTKernAttributeName];
+        }
+    }
+
+    attributes = (__bridge CFDictionaryRef)attrs;
 
     CFStringRef string = (__bridge CFStringRef)str;
     CFAttributedStringRef attrString = CFAttributedStringCreate(kCFAllocatorDefault, string, attributes);
@@ -272,7 +285,7 @@ static double radToDeg = 180 / M_PI;
     enum RNSVGTextAnchor textAnchor = font->textAnchor;
     CGRect textBounds = CTLineGetBoundsWithOptions(line, 0);
     double textMeasure = CGRectGetWidth(textBounds);
-    double offset = ABI30_0_0getTextAnchorOffset(textAnchor, textMeasure);
+    double offset = [RNSVGTSpan getTextAnchorOffset:textAnchor width:textMeasure];
 
     bool hasTextPath = textPath != nil;
 
@@ -509,8 +522,8 @@ static double radToDeg = 180 / M_PI;
     double top = ascenderHeight;
     double totalHeight = top + bottom;
     double baselineShift = 0;
-    NSString *baselineShiftString = [self getBaselineShift];
-    enum RNSVGAlignmentBaseline baseline = RNSVGAlignmentBaselineFromString([self getAlignmentBaseline]);
+    NSString *baselineShiftString = self.baselineShift;
+    enum RNSVGAlignmentBaseline baseline = RNSVGAlignmentBaselineFromString(self.alignmentBaseline);
     if (baseline != RNSVGAlignmentBaselineBaseline) {
         // TODO alignment-baseline, test / verify behavior
         // TODO get per glyph baselines from font baseline table, for high-precision alignment
@@ -683,11 +696,7 @@ static double radToDeg = 180 / M_PI;
             /*
              Determine the glyph's charwidth (i.e., the amount which the current text position
              advances horizontally when the glyph is drawn using horizontal text layout).
-             */
-            double unkernedAdvance = CTFontGetAdvancesForGlyphs(fontRef, kCTFontOrientationHorizontal, &glyph, NULL, 1);
-            CGFloat charWidth = unkernedAdvance * scaleSpacingAndGlyphs;
 
-            /*
              For each subsequent glyph, set a new startpoint-on-the-path as the previous
              endpoint-on-the-path, but with appropriate adjustments taking into account
              horizontal kerning tables in the font and current values of various attributes
@@ -696,14 +705,11 @@ static double radToDeg = 180 / M_PI;
              adjustments are calculated as distance adjustments along the path, calculated
              using the user agent's distance along the path algorithm.
              */
-            if (autoKerning) {
-                double kerned = advances[g].width * scaleSpacingAndGlyphs;
-                kerning = kerned - charWidth;
-            }
+            CGFloat charWidth = advances[g].width * scaleSpacingAndGlyphs;
 
             CFIndex currIndex = indices[g];
             char currentChar = [str characterAtIndex:currIndex];
-            bool isWordSeparator = [ABI30_0_0separators characterIsMember:currentChar];
+            bool isWordSeparator = [RNSVGTSpan_separators characterIsMember:currentChar];
             double wordSpace = isWordSeparator ? wordSpacing : 0;
             double spacing = wordSpace + letterSpacing;
             double advance = charWidth + spacing;
@@ -712,7 +718,7 @@ static double radToDeg = 180 / M_PI;
             double y = [gc nextY];
             double dx = [gc nextDeltaX];
             double dy = [gc nextDeltaY];
-            double r = [[gc nextRotation] doubleValue] / radToDeg;
+            double r = [[gc nextRotation] doubleValue] / RNSVGTSpan_radToDeg;
 
             CFIndex endIndex = g + 1 == runGlyphCount ? currIndex : indices[g + 1];
             while (++currIndex < endIndex) {
@@ -811,7 +817,7 @@ static double radToDeg = 180 / M_PI;
     return path;
 }
 
-CGFloat ABI30_0_0getTextAnchorOffset(enum RNSVGTextAnchor textAnchor, CGFloat width)
++ (CGFloat)getTextAnchorOffset:(RNSVGTextAnchor)textAnchor width:(CGFloat) width
 {
     switch (textAnchor) {
         case RNSVGTextAnchorStart:

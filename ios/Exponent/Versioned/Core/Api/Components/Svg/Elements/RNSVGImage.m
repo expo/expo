@@ -9,6 +9,7 @@
 #import "RNSVGImage.h"
 #import "RCTConvert+RNSVG.h"
 #import <React/RCTImageSource.h>
+#import <React/RCTImageLoader.h>
 #import <React/RCTLog.h>
 #import "RNSVGViewBox.h"
 
@@ -16,6 +17,7 @@
 {
     CGImageRef _image;
     CGSize _imageSize;
+    RCTImageLoaderCancellationBlock _reloadImageCancellationBlock;
 }
 
 - (void)setSrc:(id)src
@@ -25,14 +27,26 @@
     }
     _src = src;
     CGImageRelease(_image);
-    _image = CGImageRetain([RCTConvert CGImage:src]);
     RCTImageSource *source = [RCTConvert RCTImageSource:src];
     if (source.size.width != 0 && source.size.height != 0) {
         _imageSize = source.size;
     } else {
-        _imageSize = CGSizeMake(CGImageGetWidth(_image), CGImageGetHeight(_image));
+        _imageSize = CGSizeMake(0, 0);
     }
-    [self invalidate];
+
+    RCTImageLoaderCancellationBlock previousCancellationBlock = _reloadImageCancellationBlock;
+    if (previousCancellationBlock) {
+        previousCancellationBlock();
+        _reloadImageCancellationBlock = nil;
+    }
+
+    _reloadImageCancellationBlock = [self.bridge.imageLoader loadImageWithURLRequest:[RCTConvert NSURLRequest:src] callback:^(NSError *error, UIImage *image) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self->_image = CGImageRetain(image.CGImage);
+            self->_imageSize = CGSizeMake(CGImageGetWidth(self->_image), CGImageGetHeight(self->_image));
+            [self invalidate];
+        });
+    }];
 }
 
 - (void)setX:(NSString *)x
@@ -94,7 +108,7 @@
     CGImageRelease(_image);
 }
 
-- (void)renderLayerTo:(CGContextRef)context
+- (void)renderLayerTo:(CGContextRef)context rect:(CGRect)rect
 {
     CGContextSaveGState(context);
 
