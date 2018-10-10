@@ -13,6 +13,11 @@ import java.util.List;
 import java.util.Map;
 
 public class ExpoFaceDetector implements expo.interfaces.facedetector.FaceDetector {
+  private static final String RUN_CLASSIFICATIONS_KEY = "runClassifications";
+  private static final String DETECT_LANDMARKS_KEY = "detectLandmarks";
+  private static final String TRACKING_KEY = "tracking";
+  private static final String MODE_KEY = "mode";
+
   public static int ALL_CLASSIFICATIONS = FaceDetector.ALL_CLASSIFICATIONS;
   public static int NO_CLASSIFICATIONS = FaceDetector.NO_CLASSIFICATIONS;
   public static int ALL_LANDMARKS = FaceDetector.ALL_LANDMARKS;
@@ -85,10 +90,21 @@ public class ExpoFaceDetector implements expo.interfaces.facedetector.FaceDetect
   }
 
   public void setSettings(Map<String, Object> settings) {
-    setMode(((Number) settings.get("mode")).intValue());
-    setLandmarkType(((Number) settings.get("detectLandmarks")).intValue());
-    setTrackingEnabled((Boolean) settings.get("tracking"));
-    setClassificationType(((Number) settings.get("runClassifications")).intValue());
+    if (settings.get(MODE_KEY) instanceof Number) {
+      setMode(((Number) settings.get(MODE_KEY)).intValue());
+    }
+
+    if (settings.get(DETECT_LANDMARKS_KEY) instanceof Number) {
+      setLandmarkType(((Number) settings.get(DETECT_LANDMARKS_KEY)).intValue());
+    }
+
+    if (settings.get(TRACKING_KEY) instanceof Boolean) {
+      setTrackingEnabled((Boolean) settings.get(TRACKING_KEY));
+    }
+
+    if (settings.get(RUN_CLASSIFICATIONS_KEY) instanceof Number) {
+      setClassificationType(((Number) settings.get(RUN_CLASSIFICATIONS_KEY)).intValue());
+    }
   }
 
   public void setClassificationType(int classificationType) {

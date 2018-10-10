@@ -66,6 +66,7 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
   // Scanning-related properties
   private BarCodeScanner mBarCodeScanner;
   private FaceDetector mFaceDetector;
+  private Map<String, Object> mPendingFaceDetectorSettings;
   private boolean mShouldDetectFaces = false;
   private boolean mShouldScanBarCodes = false;
 
@@ -270,6 +271,10 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
           FaceDetectorProvider faceDetectorProvider = mModuleRegistry.getModule(FaceDetectorProvider.class);
           if (faceDetectorProvider != null) {
             mFaceDetector = faceDetectorProvider.createFaceDetectorWithContext(getContext());
+            if (mPendingFaceDetectorSettings != null) {
+              mFaceDetector.setSettings(mPendingFaceDetectorSettings);
+              mPendingFaceDetectorSettings = null;
+            }
           }
         }
       }
@@ -308,7 +313,9 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
   }
 
   public void setFaceDetectorSettings(Map<String, Object> settings) {
-    if (mFaceDetector != null) {
+    if (mFaceDetector == null) {
+      mPendingFaceDetectorSettings = settings;
+    } else {
       mFaceDetector.setSettings(settings);
     }
   }
