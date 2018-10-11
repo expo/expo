@@ -23,12 +23,15 @@ type AdContainerProps<P> = {
 type AdContainerState = {
   ad: NativeAd | null;
   canRequestAds: boolean;
-  adMediaViewNodeHandle: number | null;
-  adIconViewNodeHandle: number | null;
-  interactiveTriggerNodeHandles: Map<React.Component, number>;
 };
 
 type AdProps = { nativeAd: NativeAd };
+
+type AdNodeHandles = {
+  adMediaViewNodeHandle?: number | null;
+  adIconViewNodeHandle?: number | null;
+  interactiveTriggerNodeHandles?: Map<React.Component, number>;
+};
 
 /**
  * A higher-order function that wraps the given `Component` type and returns a new container
@@ -43,6 +46,9 @@ export default function withNativeAd<P>(
   return class NativeAdContainer extends React.Component<AdContainerProps<P>, AdContainerState> {
     _subscription: EventSubscription | null = null;
     _nativeAdViewRef = React.createRef<NativeAdView>();
+    _adMediaViewNodeHandle: number | null = null;
+    _adIconViewNodeHandle: number | null = null;
+    _interactiveTriggerNodeHandles: Map<React.Component, number> = new Map();
 
     state: AdContainerState;
 
@@ -51,9 +57,6 @@ export default function withNativeAd<P>(
       this.state = {
         ad: null,
         canRequestAds: props.adsManager.isValid,
-        adMediaViewNodeHandle: null,
-        adIconViewNodeHandle: null,
-        interactiveTriggerNodeHandles: new Map<React.Component, number>(),
       };
     }
 
@@ -63,25 +66,6 @@ export default function withNativeAd<P>(
         this._subscription = this.props.adsManager.onAdsLoaded(() => {
           this.setState({ canRequestAds: true });
         });
-      }
-    }
-
-    componentDidUpdate(prevProps: AdContainerProps<P>, prevState: AdContainerState) {
-      let adMediaViewChanged = this.state.adMediaViewNodeHandle !== prevState.adMediaViewNodeHandle;
-      let adIconViewChanged = this.state.adIconViewNodeHandle !== prevState.adIconViewNodeHandle;
-      let interactiveTriggersChanged = _areEqualSets(
-        new Set(this.state.interactiveTriggerNodeHandles.values()),
-        new Set(prevState.interactiveTriggerNodeHandles.values())
-      );
-
-      if (adMediaViewChanged || adIconViewChanged || interactiveTriggersChanged) {
-        // TODO: handle unregistering views when components are unmounted
-        AdsManager.registerViewsForInteractionAsync(
-          nullthrows(findNodeHandle(this._nativeAdViewRef.current)),
-          this.state.adMediaViewNodeHandle !== null ? this.state.adMediaViewNodeHandle : -1,
-          this.state.adIconViewNodeHandle !== null ? this.state.adIconViewNodeHandle : -1,
-          [...this.state.interactiveTriggerNodeHandles.values()]
-        );
       }
     }
 
@@ -132,9 +116,9 @@ export default function withNativeAd<P>(
     _adMediaViewContextValue = {
       nativeRef: (component: NativeAdMediaView | null) => {
         if (component) {
-          this.setState({ adMediaViewNodeHandle: nullthrows(findNodeHandle(component)) });
+          this._setAdNodeHandles({ adMediaViewNodeHandle: nullthrows(findNodeHandle(component)) });
         } else {
-          this.setState({ adMediaViewNodeHandle: null });
+          this._setAdNodeHandles({ adMediaViewNodeHandle: null });
         }
       },
     };
@@ -142,9 +126,9 @@ export default function withNativeAd<P>(
     _adIconViewContextValue = {
       nativeRef: (component: NativeAdIconView | null) => {
         if (component) {
-          this.setState({ adIconViewNodeHandle: nullthrows(findNodeHandle(component)) });
+          this._setAdNodeHandles({ adIconViewNodeHandle: nullthrows(findNodeHandle(component)) });
         } else {
-          this.setState({ adIconViewNodeHandle: null });
+          this._setAdNodeHandles({ adIconViewNodeHandle: null });
         }
       },
     };
@@ -152,26 +136,57 @@ export default function withNativeAd<P>(
     _adTriggerViewContextValue = {
       registerComponent: (component: React.Component) => {
         let nodeHandle = nullthrows(findNodeHandle(component));
-        this.setState(state => {
-          let interactiveTriggerNodeHandles = new Map(state.interactiveTriggerNodeHandles);
-          interactiveTriggerNodeHandles.set(component, nodeHandle);
-          return { interactiveTriggerNodeHandles };
-        });
+        let interactiveTriggerNodeHandles = new Map(this._interactiveTriggerNodeHandles);
+        interactiveTriggerNodeHandles.set(component, nodeHandle);
+        this._setAdNodeHandles({ interactiveTriggerNodeHandles });
       },
       unregisterComponent: (component: React.Component) => {
-        this.setState(state => {
-          let interactiveTriggerNodeHandles = new Map(state.interactiveTriggerNodeHandles);
-          interactiveTriggerNodeHandles.delete(component);
-          return { interactiveTriggerNodeHandles };
-        });
+        let interactiveTriggerNodeHandles = new Map(this._interactiveTriggerNodeHandles);
+        interactiveTriggerNodeHandles.delete(component);
+        this._setAdNodeHandles({ interactiveTriggerNodeHandles });
       },
       onTriggerAd: () => {
-        if (this.state.adMediaViewNodeHandle !== null && Platform.OS === 'android') {
+        if (this._adMediaViewNodeHandle !== null && Platform.OS === 'android') {
           let nodeHandle = findNodeHandle(this._nativeAdViewRef.current)!;
           AdsManager.triggerEvent(nodeHandle);
         }
       },
     };
+
+    /**
+     * Updates the registered ad views given their node handles. The node handles are not stored in
+     * this component's state nor does this method call "setState" to avoid unnecessarily
+     * re-rendering.
+     */
+    _setAdNodeHandles({
+      adMediaViewNodeHandle = this._adMediaViewNodeHandle,
+      adIconViewNodeHandle = this._adIconViewNodeHandle,
+      interactiveTriggerNodeHandles = this._interactiveTriggerNodeHandles,
+    }: AdNodeHandles): void {
+      let adMediaViewChanged = adMediaViewNodeHandle !== this._adMediaViewNodeHandle;
+      let adIconViewChanged = adIconViewNodeHandle !== this._adIconViewNodeHandle;
+    
+      let interactiveTriggersChanged = !_areEqualSets(
+        new Set(interactiveTriggerNodeHandles.values()),
+        new Set(this._interactiveTriggerNodeHandles.values())
+      );
+
+      if (adMediaViewChanged || adIconViewChanged || interactiveTriggersChanged) {
+        this._adMediaViewNodeHandle = adMediaViewNodeHandle;
+        this._adIconViewNodeHandle = adIconViewNodeHandle;
+        this._interactiveTriggerNodeHandles = interactiveTriggerNodeHandles;
+
+        // TODO: handle unregistering views when components are unmounted
+        if (this._adMediaViewNodeHandle !== null && this._adIconViewNodeHandle !== null) {
+          AdsManager.registerViewsForInteractionAsync(
+            nullthrows(findNodeHandle(this._nativeAdViewRef.current)),
+            this._adMediaViewNodeHandle,
+            this._adIconViewNodeHandle,
+            [...this._interactiveTriggerNodeHandles.values()]
+          );
+        }
+      }
+    }
   };
 }
 
