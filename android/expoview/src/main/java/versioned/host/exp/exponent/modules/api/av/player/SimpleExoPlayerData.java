@@ -89,7 +89,7 @@ class SimpleExoPlayerData extends PlayerData
     mSimpleExoPlayer.addVideoListener(this);
 
     // Produces DataSource instances through which media data is loaded.
-    final DataSource.Factory dataSourceFactory = new SharedCookiesDataSourceFactory(mUri, mAVModule.mScopedContext, mReactContext, Util.getUserAgent(mAVModule.mScopedContext, "yourApplicationName"));
+    final DataSource.Factory dataSourceFactory = new SharedCookiesDataSourceFactory(mUri, mReactContext, Util.getUserAgent(mAVModule.mScopedContext, "yourApplicationName"));
     try {
       // This is the MediaSource representing the media to be played.
       final MediaSource source = buildMediaSource(mUri, mOverridingExtension, mainHandler, dataSourceFactory);
