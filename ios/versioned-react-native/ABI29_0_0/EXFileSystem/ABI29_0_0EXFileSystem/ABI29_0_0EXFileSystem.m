@@ -508,7 +508,7 @@ ABI29_0_0EX_EXPORT_METHOD_AS(downloadResumablePauseAsync,
       if (downloadTask) {
         [downloadTask cancelByProducingResumeData:^(NSData * _Nullable resumeData) {
           NSString *data = [[NSString alloc] initWithData:resumeData encoding:NSUTF8StringEncoding];
-          resolve(@{@"resumeData":data});
+          resolve(@{@"resumeData": data ?: [NSNull null]});
         }];
       } else {
         reject(@"E_UNABLE_TO_PAUSE",
