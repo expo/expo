@@ -152,6 +152,19 @@ export function test(t) {
         });
       });
 
+      t.it('redirects from HTTPS URL to HTTPS URL (301)', async () => {
+        let error = null;
+        try {
+          await soundObject.loadAsync({
+            uri:
+              'https://player.vimeo.com/external/181375362.sd.mp4?s=cf573e9cf7d747f4eaf7e57eeec88e9b22e3933f&profile_id=165',
+          });
+        } catch (err) {
+          error = err;
+        }
+        t.expect(error).toBeNull();
+      });
+
       if (Platform.OS === 'android') {
         t.it(
           'rejects the file from the Internet that redirects to non-standard content',
