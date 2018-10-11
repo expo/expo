@@ -609,7 +609,7 @@ EX_EXPORT_METHOD_AS(downloadResumablePauseAsync,
       if (downloadTask) {
         [downloadTask cancelByProducingResumeData:^(NSData * _Nullable resumeData) {
           NSString *data = [[NSString alloc] initWithData:resumeData encoding:NSUTF8StringEncoding];
-          resolve(@{@"resumeData":data});
+          resolve(@{@"resumeData":EXNullIfNil(data)});
         }];
       } else {
         reject(@"E_UNABLE_TO_PAUSE",
