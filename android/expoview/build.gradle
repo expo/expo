@@ -275,4 +275,8 @@ dependencies {
   api 'com.jakewharton:butterknife:8.4.0'
   annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
   // Remember to update DetachAppTemplate build.gradle if you add any excludes or transitive = false here!
+
+  // expo-file-system
+  api 'com.squareup.okhttp3:okhttp:3.10.0'
+  api 'com.squareup.okhttp3:okhttp-urlconnection:3.10.0'
 }
