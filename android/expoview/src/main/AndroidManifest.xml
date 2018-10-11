@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="host.exp.expoview">
 
-    <!-- REMOVE_WHEN_VERSIONING_FROM_HERE -->
+    <!-- WHEN_VERSIONING_REMOVE_FROM_HERE -->
     <supports-screens
         android:anyDensity="true"
         android:largeScreens="true"
@@ -9,7 +9,7 @@
         android:smallScreens="true"
         android:xlargeScreens="true" >
     </supports-screens>
-    <!-- REMOVE_WHEN_VERSIONING_TO_HERE -->
+    <!-- WHEN_VERSIONING_REMOVE_TO_HERE -->
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT"/>
@@ -46,12 +46,12 @@
 
     <application>
 
-        <!-- REMOVE_WHEN_VERSIONING_FROM_HERE -->
+        <!-- WHEN_VERSIONING_REMOVE_FROM_HERE -->
         <!-- Scheduled notifications -->
         <receiver
             android:name="host.exp.exponent.notifications.ScheduledNotificationReceiver"
             android:exported="false" />
-        <!-- REMOVE_WHEN_VERSIONING_TO_HERE -->
+        <!-- WHEN_VERSIONING_REMOVE_TO_HERE -->
 
         <provider
             android:name="android.support.v4.content.FileProvider"

@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven'
 apply plugin: 'com.jakewharton.butterknife'
 
-// REMOVE_WHEN_VERSIONING_FROM_HERE
+// WHEN_VERSIONING_REMOVE_FROM_HERE
 //maven repository info
 group = 'host.exp.exponent'
 version = '30.0.0'
@@ -34,7 +34,7 @@ uploadArchives {
     }
   }
 }
-// REMOVE_WHEN_VERSIONING_TO_HERE
+// WHEN_VERSIONING_REMOVE_TO_HERE
 
 buildscript {
   repositories {
@@ -67,11 +67,11 @@ android {
     ndk {
       abiFilters 'armeabi-v7a', 'x86'
     }
-    // REMOVE_WHEN_VERSIONING_FROM_HERE
+    // WHEN_VERSIONING_REMOVE_FROM_HERE
     manifestPlaceholders = [
       'appAuthRedirectScheme': 'host.exp.exponent'
     ]
-    // REMOVE_WHEN_VERSIONING_TO_HERE
+    // WHEN_VERSIONING_REMOVE_TO_HERE
   }
 
   buildTypes {
@@ -85,7 +85,7 @@ android {
   }
 }
 
-// REMOVE_WHEN_VERSIONING_FROM_HERE
+// WHEN_VERSIONING_REMOVE_FROM_HERE
 import org.apache.tools.ant.taskdefs.condition.Os
 
 task generateDynamicMacros(type: Exec) {
@@ -100,7 +100,7 @@ task generateDynamicMacros(type: Exec) {
   }
 }
 preBuild.dependsOn generateDynamicMacros
-// REMOVE_WHEN_VERSIONING_TO_HERE
+// WHEN_VERSIONING_REMOVE_TO_HERE
 
 dependencies {
   api fileTree(dir: 'libs', include: ['*.jar'])
@@ -108,7 +108,7 @@ dependencies {
 
   // WHEN_VERSIONING_REPLACE_WITH_DEPENDENCIES
 
-  // REMOVE_WHEN_VERSIONING_FROM_HERE
+  // WHEN_VERSIONING_REMOVE_FROM_HERE
   // Current react native
   /* UNCOMMENT WHEN DISTRIBUTING
   api 'com.facebook.react:react-native:30.0.0'
@@ -202,7 +202,7 @@ dependencies {
   api 'host.exp:reactandroid-abi24_0_0:1.0.0'
   // END_SDK_24
   // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
-  // REMOVE_WHEN_VERSIONING_TO_HERE
+  // WHEN_VERSIONING_REMOVE_TO_HERE
   // WHEN_DISTRIBUTING_REMOVE_TO_HERE
 
   // React native dependencies

@@ -11,8 +11,8 @@ mkdir -p $VERSIONED_ABI_PATH/src/main/java
 
 # Prepare build.gradle of the new expoview-abiXX_X_X subproject
 awk '
-  /REMOVE_WHEN_VERSIONING_FROM_HERE/ { removing = 1 }
-  /REMOVE_WHEN_VERSIONING_TO_HERE/ { stopRemoving = 1 }
+  /WHEN_VERSIONING_REMOVE_FROM_HERE/ { removing = 1 }
+  /WHEN_VERSIONING_REMOVE_TO_HERE/ { stopRemoving = 1 }
   // { if (removing == 0) print $0 }
   // { if (stopRemoving == 1) removing = 0 }
   // { if (removing == 0) stopRemoving = 0 }
@@ -21,8 +21,8 @@ sed -i '' "s/\/\/ WHEN_VERSIONING_REPLACE_WITH_DEPENDENCIES/implementation proje
 
 # Prepare an empty AndroidManifest.xml of the new project
 awk '
-  /REMOVE_WHEN_VERSIONING_FROM_HERE/ { removing = 1 }
-  /REMOVE_WHEN_VERSIONING_TO_HERE/ { stopRemoving = 1 }
+  /WHEN_VERSIONING_REMOVE_FROM_HERE/ { removing = 1 }
+  /WHEN_VERSIONING_REMOVE_TO_HERE/ { stopRemoving = 1 }
   // { if (removing == 0) print $0 }
   // { if (stopRemoving == 1) removing = 0 }
   // { if (removing == 0) stopRemoving = 0 }
