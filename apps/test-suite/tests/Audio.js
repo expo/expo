@@ -114,6 +114,7 @@ export function test(t) {
           try {
             await fetch('https://authenticated-static-files-pybhevxezw.now.sh/sign_out', {
               method: 'DELETE',
+              credentials: true,
             });
           } catch (error) {
             console.warn(`Could not sign out of cookie session test backend, error: ${error}.`);
@@ -137,7 +138,7 @@ export function test(t) {
           }
           const signInResponse = await (await fetch(
             'https://authenticated-static-files-pybhevxezw.now.sh/sign_in',
-            { method: 'POST' }
+            { method: 'POST', credentials: true }
           )).text();
           t.expect(signInResponse).toMatch('Signed in successfully!');
           error = null;
