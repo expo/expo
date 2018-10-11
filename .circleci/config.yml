@@ -157,6 +157,8 @@ jobs:
     steps:
       - install_nix
       - setup
+      - update_submodules
+      - run: git lfs pull
       - fetch_cocoapods_specs
       - yarn:
           working_directory: ~/project/tools-public
