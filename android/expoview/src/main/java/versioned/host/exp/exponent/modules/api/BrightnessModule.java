@@ -5,12 +5,10 @@ import android.os.Build;
 import android.provider.Settings;
 import android.view.WindowManager;
 
-import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.WritableMap;
 
 public class BrightnessModule extends ReactContextBaseJavaModule {
 
@@ -56,8 +54,25 @@ public class BrightnessModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void getSystemBrightnessAsync(final Promise promise){
     try {
-      String brightness = Settings.System.getString(getCurrentActivity().getContentResolver(), Settings.System.SCREEN_BRIGHTNESS);
-      promise.resolve(Integer.parseInt(brightness) / 255f);
+      int brightnessMode = Settings.System.getInt(
+          getCurrentActivity().getContentResolver(),
+          Settings.System.SCREEN_BRIGHTNESS_MODE
+      );
+      if (brightnessMode == Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC) {
+        float brightness = Settings.System.getFloat(
+            getCurrentActivity().getContentResolver(),
+            // https://stackoverflow.com/questions/29349153/change-adaptive-brightness-level-programatically
+            // this setting cannot be changed starting in targetSdkVersion 23, but it can still be read
+            "screen_auto_brightness_adj"
+        );
+        promise.resolve((brightness + 1.0f) / 2);
+      } else {
+        String brightness = Settings.System.getString(
+            getCurrentActivity().getContentResolver(),
+            Settings.System.SCREEN_BRIGHTNESS
+        );
+        promise.resolve(Integer.parseInt(brightness) / 255f);
+      }
     } catch (Exception e) {
       promise.reject("ERR_BRIGHTNESS_SYSTEM", "Failed to get the system brightness value", e);
     }
@@ -66,6 +81,8 @@ public class BrightnessModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void setSystemBrightnessAsync(final float brightnessValue, final Promise promise) {
     try {
+      // we have to just check this every time
+      // if we try to store a value for this permission, there is no way to know if the user has changed it
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && Settings.System.canWrite(getCurrentActivity()) || Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
         // manual mode must be set in order to change system brightness (sets the automatic mode off)
         Settings.System.putInt(
