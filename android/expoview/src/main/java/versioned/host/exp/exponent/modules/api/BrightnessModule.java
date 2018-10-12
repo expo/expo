@@ -10,6 +10,8 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 
+import expo.core.InvalidArgumentException;
+
 public class BrightnessModule extends ReactContextBaseJavaModule {
 
   public BrightnessModule(ReactApplicationContext reactContext) {
@@ -37,22 +39,27 @@ public class BrightnessModule extends ReactContextBaseJavaModule {
         }
       }
     });
-
   }
 
   @ReactMethod
   public void getBrightnessAsync(final Promise promise) {
-    WindowManager.LayoutParams lp = getCurrentActivity().getWindow().getAttributes();
-    if (lp.screenBrightness == WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE) {
-      // system brightness is not overridden by the current activity, so just resolve with it
-      getSystemBrightnessAsync(promise);
-    } else {
-      promise.resolve(lp.screenBrightness);
-    }
+    final Activity activity = getCurrentActivity();
+    activity.runOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        WindowManager.LayoutParams lp = getCurrentActivity().getWindow().getAttributes();
+        if (lp.screenBrightness == WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE) {
+          // system brightness is not overridden by the current activity, so just resolve with it
+          getSystemBrightnessAsync(promise);
+        } else {
+          promise.resolve(lp.screenBrightness);
+        }
+      }
+    });
   }
 
   @ReactMethod
-  public void getSystemBrightnessAsync(final Promise promise){
+  public void getSystemBrightnessAsync(Promise promise){
     try {
       int brightnessMode = Settings.System.getInt(
           getCurrentActivity().getContentResolver(),
@@ -79,26 +86,26 @@ public class BrightnessModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void setSystemBrightnessAsync(final float brightnessValue, final Promise promise) {
+  public void setSystemBrightnessAsync(float brightnessValue, Promise promise) {
     try {
       // we have to just check this every time
       // if we try to store a value for this permission, there is no way to know if the user has changed it
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && Settings.System.canWrite(getCurrentActivity()) || Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-        // manual mode must be set in order to change system brightness (sets the automatic mode off)
-        Settings.System.putInt(
-            getCurrentActivity().getContentResolver(),
-            Settings.System.SCREEN_BRIGHTNESS_MODE,
-            Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL
-        );
-        Settings.System.putInt(
-            getCurrentActivity().getContentResolver(),
-            Settings.System.SCREEN_BRIGHTNESS,
-            Math.round(brightnessValue * 255)
-        );
-        promise.resolve(null);
-      } else {
-        promise.reject("ERR_BRIGHTNESS_PERMISSIONS", "WRITE_SETTINGS not granted");
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.System.canWrite(getCurrentActivity())) {
+        promise.reject("ERR_BRIGHTNESS_PERMISSIONS_DENIED", "WRITE_SETTINGS permission has not been granted");
+        return;
       }
+      // manual mode must be set in order to change system brightness (sets the automatic mode off)
+      Settings.System.putInt(
+          getCurrentActivity().getContentResolver(),
+          Settings.System.SCREEN_BRIGHTNESS_MODE,
+          Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL
+      );
+      Settings.System.putInt(
+          getCurrentActivity().getContentResolver(),
+          Settings.System.SCREEN_BRIGHTNESS,
+          Math.round(brightnessValue * 255)
+      );
+      promise.resolve(null);
     } catch (Exception e){
       promise.reject("ERR_BRIGHTNESS_SYSTEM", "Failed to set the system brightness value", e);
     }
@@ -140,20 +147,20 @@ public class BrightnessModule extends ReactContextBaseJavaModule {
     try {
       // we have to just check this every time
       // if we try to store a value for this permission, there is no way to know if the user has changed it
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && Settings.System.canWrite(getCurrentActivity()) || Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-        Settings.System.putInt(
-            getCurrentActivity().getContentResolver(),
-            Settings.System.SCREEN_BRIGHTNESS_MODE,
-            brightnessModeJSToNative(brightnessMode)
-        );
-        promise.resolve(null);
-      } else {
-        // TODO: what to do if we are rejecting but there is no native error?
-        // should we create a new Exception in order to get the native stack trace?
-        promise.reject("ERR_BRIGHTNESS_PERMISSIONS", "WRITE_SETTINGS permission has not been granted");
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.System.canWrite(getCurrentActivity())) {
+        promise.reject("ERR_BRIGHTNESS_PERMISSIONS_DENIED", "WRITE_SETTINGS permission has not been granted");
+        return;
       }
+      Settings.System.putInt(
+          getCurrentActivity().getContentResolver(),
+          Settings.System.SCREEN_BRIGHTNESS_MODE,
+          brightnessModeJSToNative(brightnessMode)
+      );
+      promise.resolve(null);
+    } catch (InvalidArgumentException e) {
+      promise.reject("ERR_BRIGHTNESS_INVALID_BRIGHTNESS_MODE", "Failed to set the system brightness mode. Make sure the input is valid.", e);
     } catch (Exception e) {
-      promise.reject("ERR_BRIGHTNESS_MODE", "Failed to set the system brightness mode. Make sure the input is valid.", e);
+      promise.reject("ERR_BRIGHTNESS_MODE", "Failed to set the system brightness mode", e);
     }
   }
 
@@ -175,7 +182,7 @@ public class BrightnessModule extends ReactContextBaseJavaModule {
       case 2:
         return Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL;
       default:
-        throw new Exception("Unsupported brightness mode");
+        throw new InvalidArgumentException("Unsupported brightness mode " + String.valueOf(jsValue));
     }
   }
 }

@@ -26,31 +26,27 @@ export async function setSystemBrightnessAsync(brightnessValue: number): Promise
   brightnessValue = Math.max(0, Math.min(brightnessValue, 1));
   if (Platform.OS !== 'android') {
     return await setBrightnessAsync(brightnessValue);
-  } else {
-    return await NativeModules.ExpoBrightness.setSystemBrightnessAsync(brightnessValue);
   }
+  return await NativeModules.ExpoBrightness.setSystemBrightnessAsync(brightnessValue);
 }
 
 export async function useSystemBrightnessAsync(): Promise<void> {
   if (Platform.OS !== 'android') {
     return;
-  } else {
-    return await NativeModules.ExpoBrightness.useSystemBrightnessAsync();
   }
+  return await NativeModules.ExpoBrightness.useSystemBrightnessAsync();
 }
 
 export async function getSystemBrightnessModeAsync(): Promise<BrightnessMode> {
   if (Platform.OS !== 'android') {
     return BrightnessMode.UNKNOWN;
-  } else {
-    return await NativeModules.ExpoBrightness.getSystemBrightnessAsync();
   }
+  return await NativeModules.ExpoBrightness.getSystemBrightnessAsync();
 }
 
 export async function setSystemBrightnessModeAsync(brightnessMode: BrightnessMode): Promise<void> {
   if (Platform.OS !== 'android' || brightnessMode === BrightnessMode.UNKNOWN) {
     return;
-  } else {
-    return await NativeModules.ExpoBrightness.setSystemBrightnessModeAsync(brightnessMode);
   }
+  return await NativeModules.ExpoBrightness.setSystemBrightnessModeAsync(brightnessMode);
 }
