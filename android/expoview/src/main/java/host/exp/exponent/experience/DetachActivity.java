@@ -15,12 +15,14 @@ import java.util.List;
 
 import expo.adapters.react.ReactModuleRegistryProvider;
 import expo.core.interfaces.Package;
+import expo.core.interfaces.SingletonModule;
 import host.exp.exponent.AppLoader;
 import host.exp.exponent.Constants;
 import host.exp.exponent.kernel.ExponentUrls;
 import host.exp.exponent.kernel.KernelConstants;
 import host.exp.expoview.ExpoViewBuildConfig;
 import host.exp.expoview.Exponent;
+import versioned.host.exp.exponent.ExponentPackage;
 import versioned.host.exp.exponent.ExponentPackageDelegate;
 import versioned.host.exp.exponent.modules.universal.ExpoModuleRegistryAdapter;
 
@@ -129,7 +131,7 @@ public abstract class DetachActivity extends ExperienceActivity implements Expon
   }
 
   @Override
-  public ExpoModuleRegistryAdapter getScopedModuleRegistryAdapterForPackages(List<Package> packages) {
-    return new DetachedModuleRegistryAdapter(new ReactModuleRegistryProvider(packages));
+  public ExpoModuleRegistryAdapter getScopedModuleRegistryAdapterForPackages(List<Package> packages, List<SingletonModule> singletonModules) {
+    return new DetachedModuleRegistryAdapter(new ReactModuleRegistryProvider(packages, singletonModules));
   }
 }

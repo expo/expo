@@ -1,5 +1,6 @@
 package expo.adapters.react;
 
+import android.util.Log;
 import android.util.SparseArray;
 
 import com.facebook.react.bridge.Dynamic;

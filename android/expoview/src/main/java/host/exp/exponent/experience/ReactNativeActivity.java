@@ -55,8 +55,10 @@ import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponent.utils.JSONBundleConverter;
 import host.exp.expoview.Exponent;
 import host.exp.expoview.R;
+import versioned.host.exp.exponent.ExponentPackage;
 
 import static host.exp.exponent.kernel.KernelConstants.INTENT_URI_KEY;
+import static host.exp.exponent.kernel.KernelConstants.IS_HEADLESS_KEY;
 import static host.exp.exponent.kernel.KernelConstants.LINKING_URI_KEY;
 import static host.exp.exponent.kernel.KernelConstants.MANIFEST_URL_KEY;
 
@@ -405,7 +407,8 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
     Map<String, Object> experienceProperties = MapBuilder.<String, Object>of(
         MANIFEST_URL_KEY, mManifestUrl,
         LINKING_URI_KEY, linkingUri,
-        INTENT_URI_KEY, mIntentUri
+        INTENT_URI_KEY, mIntentUri,
+        IS_HEADLESS_KEY, false
     );
 
     Exponent.InstanceManagerBuilderProperties instanceManagerBuilderProperties = new Exponent.InstanceManagerBuilderProperties();
@@ -416,6 +419,7 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
     instanceManagerBuilderProperties.expoPackages = extraExpoPackages;
     instanceManagerBuilderProperties.exponentPackageDelegate = delegate.getExponentPackageDelegate();
     instanceManagerBuilderProperties.manifest = mManifest;
+    instanceManagerBuilderProperties.singletonModules = ExponentPackage.createSingletonModules(getApplicationContext());
 
     RNObject versionedUtils = new RNObject("host.exp.exponent.VersionedUtils").loadVersion(mSDKVersion);
     RNObject builder = versionedUtils.callRecursive("getReactInstanceManagerBuilder", instanceManagerBuilderProperties);

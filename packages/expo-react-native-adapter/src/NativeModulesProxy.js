@@ -1,5 +1,7 @@
 import { NativeModules } from 'react-native';
 
+console.log(Object.keys(NativeModules));
+console.log(NativeModules.hasOwnProperty('ExpoNativeModuleProxy'));
 const NativeProxy = NativeModules.ExpoNativeModuleProxy;
 const modulesConstantsKey = "modulesConstants";
 const exportedMethodsKey = "exportedMethods";

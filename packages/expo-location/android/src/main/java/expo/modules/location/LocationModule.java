@@ -13,9 +13,12 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.BaseBundle;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,6 +31,9 @@ import expo.core.interfaces.ModuleRegistryConsumer;
 import expo.core.interfaces.services.EventEmitter;
 import expo.core.interfaces.services.UIManager;
 import expo.interfaces.permissions.Permissions;
+import expo.interfaces.taskManager.TaskManagerInterface;
+import expo.modules.location.taskConsumers.GeofencingTaskConsumer;
+import expo.modules.location.taskConsumers.LocationTaskConsumer;
 import expo.modules.location.utils.TimeoutObject;
 import io.nlopez.smartlocation.OnGeocodingListener;
 import io.nlopez.smartlocation.OnLocationUpdatedListener;
@@ -40,6 +46,20 @@ import io.nlopez.smartlocation.location.utils.LocationState;
 
 public class LocationModule extends ExportedModule implements ModuleRegistryConsumer, LifecycleEventListener, SensorEventListener {
 
+  public static final String ACCURACY_BEST_FOR_NAVIGATION = "bestForNavigation";
+  public static final String ACCURACY_HIGHEST = "highest";
+  public static final String ACCURACY_HIGH = "high";
+  public static final String ACCURACY_BALANCED = "balanced";
+  public static final String ACCURACY_LOW = "low";
+  public static final String ACCURACY_LOWEST = "lowest";
+
+  public static final String GEOFENCING_EVENT_ENTER = "enter";
+  public static final String GEOFENCING_EVENT_EXIT = "exit";
+
+  public static final String GEOFENCING_REGION_STATE_UNKNOWN = "unknown";
+  public static final String GEOFENCING_REGION_STATE_INSIDE = "inside";
+  public static final String GEOFENCING_REGION_STATE_OUTSIDE = "outside";
+
   private Context mContext;
   private LocationParams mLocationParams;
   private OnLocationUpdatedListener mOnLocationUpdatedListener;
@@ -50,6 +70,7 @@ public class LocationModule extends ExportedModule implements ModuleRegistryCons
   private EventEmitter mEventEmitter;
   private UIManager mUIManager;
   private Permissions mPermissions;
+  private TaskManagerInterface mTaskManager;
 
   private float[] mGravity;
   private float[] mGeomagnetic;
@@ -73,6 +94,29 @@ public class LocationModule extends ExportedModule implements ModuleRegistryCons
   }
 
   @Override
+  public Map<String, Object> getConstants() {
+    return new HashMap<String, Object>() {{
+      put("Accuracy", new HashMap<String, Object>() {{
+        put("BEST_FOR_NAVIGATION", ACCURACY_BEST_FOR_NAVIGATION);
+        put("HIGHEST", ACCURACY_HIGHEST);
+        put("HIGH", ACCURACY_HIGH);
+        put("BALANCED", ACCURACY_BALANCED);
+        put("LOW", ACCURACY_LOW);
+        put("LOWEST", ACCURACY_LOWEST);
+      }});
+      put("GeofencingEventType", new HashMap<String, Object>() {{
+        put("ENTER", GEOFENCING_EVENT_ENTER);
+        put("EXIT", GEOFENCING_EVENT_EXIT);
+      }});
+      put("GeofencingRegionState", new HashMap<String, Object>() {{
+        put("UNKNOWN", GEOFENCING_REGION_STATE_UNKNOWN);
+        put("INSIDE", GEOFENCING_REGION_STATE_INSIDE);
+        put("OUTSIDE", GEOFENCING_REGION_STATE_OUTSIDE);
+      }});
+    }};
+  }
+
+  @Override
   public void setModuleRegistry(ModuleRegistry moduleRegistry) {
     if (mUIManager != null) {
       mUIManager.unregisterLifecycleEventListener(this);
@@ -81,30 +125,43 @@ public class LocationModule extends ExportedModule implements ModuleRegistryCons
     mEventEmitter = moduleRegistry.getModule(EventEmitter.class);
     mUIManager = moduleRegistry.getModule(UIManager.class);
     mPermissions = moduleRegistry.getModule(Permissions.class);
+    mTaskManager = moduleRegistry.getModule(TaskManagerInterface.class);
 
     if (mUIManager != null) {
       mUIManager.registerLifecycleEventListener(this);
     }
   }
 
-  public static Bundle locationToMap(Location location) {
-    Bundle map = new Bundle();
-    Bundle coords = new Bundle();
-    coords.putDouble("latitude", location.getLatitude());
-    coords.putDouble("longitude", location.getLongitude());
-    coords.putDouble("altitude", location.getAltitude());
-    coords.putDouble("accuracy", location.getAccuracy());
-    coords.putDouble("heading", location.getBearing());
-    coords.putDouble("speed", location.getSpeed());
-    map.putBundle("coords", coords);
-    map.putDouble("timestamp", location.getTime());
-    map.putBoolean("mocked", location.isFromMockProvider());
+  public static <BundleType extends BaseBundle> BundleType locationToBundle(Location location, Class<BundleType> bundleTypeClass) {
+    try {
+      BundleType map = bundleTypeClass.newInstance();
+      BundleType coords = bundleTypeClass.newInstance();
 
-    return map;
+      coords.putDouble("latitude", location.getLatitude());
+      coords.putDouble("longitude", location.getLongitude());
+      coords.putDouble("altitude", location.getAltitude());
+      coords.putDouble("accuracy", location.getAccuracy());
+      coords.putDouble("heading", location.getBearing());
+      coords.putDouble("speed", location.getSpeed());
+
+      if (map instanceof PersistableBundle) {
+        ((PersistableBundle) map).putPersistableBundle("coords", (PersistableBundle) coords);
+      } else if (map instanceof Bundle) {
+        ((Bundle) map).putBundle("coords", (Bundle) coords);
+        ((Bundle) map).putBoolean("mocked", location.isFromMockProvider());
+      }
+      map.putDouble("timestamp", location.getTime());
+
+      return map;
+    } catch (IllegalAccessException | InstantiationException e) {
+      e.printStackTrace();
+      return null;
+    }
   }
 
   private static Bundle addressToMap(Address address) {
     Bundle map = new Bundle();
+
     map.putString("city", address.getLocality());
     map.putString("street", address.getThoroughfare());
     map.putString("region", address.getAdminArea());
@@ -151,7 +208,7 @@ public class LocationModule extends ExportedModule implements ModuleRegistryCons
       double maximumAge = (double) options.get("maximumAge");
       Location location = locationControl.getLastLocation();
       if (location != null && System.currentTimeMillis() - location.getTime() < maximumAge) {
-        promise.resolve(locationToMap(location));
+        promise.resolve(locationToBundle(location, Bundle.class));
         return;
       }
     }
@@ -169,7 +226,7 @@ public class LocationModule extends ExportedModule implements ModuleRegistryCons
       @Override
       public void onLocationUpdated(Location location) {
         if (timeoutObject.markDoneIfNotTimedOut()) {
-          promise.resolve(locationToMap(location));
+          promise.resolve(locationToBundle(location, Bundle.class));
         }
       }
     });
@@ -357,24 +414,19 @@ public class LocationModule extends ExportedModule implements ModuleRegistryCons
   // TODO: Stop sending watchId from JS since we ignore it.
   @ExpoMethod
   public void watchPositionImplAsync(final int watchId, final Map<String, Object> options, final Promise promise) {
-    // Read options
-    final boolean highAccuracy = options.containsKey("enableHighAccuracy") && (Boolean) options.get("enableHighAccuracy");
-    final double timeInterval = options.containsKey("timeInterval") ? (double) options.get("timeInterval") : 1000;
-    final double distanceInterval = options.containsKey("distanceInterval") ? (double) options.get("distanceInterval") : 100;
-
     // Check for permissions
     if (isMissingPermissions()) {
       promise.reject("E_LOCATION_UNAUTHORIZED", "Not authorized to use location services");
       return;
     }
 
-    mLocationParams = (new LocationParams.Builder()).setAccuracy(highAccuracy ? LocationAccuracy.HIGH : LocationAccuracy.MEDIUM).setDistance((float) distanceInterval).setInterval((long) timeInterval).build();
+    mLocationParams = mapOptionsToLocationParams(options);
     mOnLocationUpdatedListener = new OnLocationUpdatedListener() {
       @Override
       public void onLocationUpdated(Location location) {
         Bundle response = new Bundle();
         response.putInt("watchId", watchId);
-        response.putBundle("location", locationToMap(location));
+        response.putBundle("location", locationToBundle(location, Bundle.class));
 
         mEventEmitter.emit("Exponent.locationChanged", response);
       }
@@ -509,7 +561,63 @@ public class LocationModule extends ExportedModule implements ModuleRegistryCons
         });
   }
 
-  // App lifecycle listeners
+  //region Background location
+
+  @ExpoMethod
+  public void startLocationUpdatesAsync(String taskName, Map<String, Object> options, final Promise promise) {
+    try {
+      mTaskManager.registerTask(taskName, LocationTaskConsumer.class, options);
+      promise.resolve(null);
+    } catch (Exception e) {
+      promise.reject(e);
+    }
+  }
+
+  @ExpoMethod
+  public void stopLocationUpdatesAsync(String taskName, final Promise promise) {
+    try {
+      mTaskManager.unregisterTask(taskName, LocationTaskConsumer.class);
+      promise.resolve(null);
+    } catch (Exception e) {
+      promise.reject(e);
+    }
+  }
+
+  @ExpoMethod
+  public void hasStartedLocationUpdatesAsync(String taskName, final Promise promise) {
+    promise.resolve(mTaskManager.taskHasConsumerOfClass(taskName, LocationTaskConsumer.class));
+  }
+
+  //endregion Background location
+  //region Geofencing
+
+  @ExpoMethod
+  public void startGeofencingAsync(String taskName, Map<String, Object> options, final Promise promise) {
+    try {
+      mTaskManager.registerTask(taskName, GeofencingTaskConsumer.class, options);
+      promise.resolve(null);
+    } catch (Exception e) {
+      promise.reject(e);
+    }
+  }
+
+  @ExpoMethod
+  public void stopGeofencingAsync(String taskName, final Promise promise) {
+    try {
+      mTaskManager.unregisterTask(taskName, GeofencingTaskConsumer.class);
+      promise.resolve(null);
+    } catch (Exception e) {
+      promise.reject(e);
+    }
+  }
+
+  @ExpoMethod
+  public void hasStartedGeofencingAsync(String taskName, final Promise promise) {
+    promise.resolve(mTaskManager.taskHasConsumerOfClass(taskName, GeofencingTaskConsumer.class));
+  }
+
+  //endregion Geofencing
+  //region App lifecycle listeners
 
   @Override
   public void onHostResume() {
@@ -527,5 +635,63 @@ public class LocationModule extends ExportedModule implements ModuleRegistryCons
   public void onHostDestroy() {
     stopWatching();
     stopHeadingWatch();
+  }
+
+  //endregion
+  //region static helpers
+
+  public static LocationParams.Builder accuracyBuilderFromString(String accuracyString) {
+    switch (accuracyString) {
+      case ACCURACY_BEST_FOR_NAVIGATION:
+        return new LocationParams.Builder()
+            .setAccuracy(LocationAccuracy.HIGH)
+            .setDistance(0)
+            .setInterval(500);
+      case ACCURACY_HIGHEST:
+        return new LocationParams.Builder()
+            .setAccuracy(LocationAccuracy.HIGH)
+            .setDistance(25)
+            .setInterval(1000);
+      case ACCURACY_HIGH:
+        return new LocationParams.Builder()
+            .setAccuracy(LocationAccuracy.HIGH)
+            .setDistance(50)
+            .setInterval(2000);
+      case ACCURACY_BALANCED:
+      default:
+        return new LocationParams.Builder()
+            .setAccuracy(LocationAccuracy.MEDIUM)
+            .setDistance(100)
+            .setInterval(3000);
+      case ACCURACY_LOW:
+        return new LocationParams.Builder()
+            .setAccuracy(LocationAccuracy.LOW)
+            .setDistance(1000)
+            .setInterval(5000);
+      case ACCURACY_LOWEST:
+        return new LocationParams.Builder()
+            .setAccuracy(LocationAccuracy.LOWEST)
+            .setDistance(3000)
+            .setInterval(10000);
+    }
+  }
+
+  public static LocationParams mapOptionsToLocationParams(Map<String, Object> options) {
+    // `enableHighAccuracy` is deprecated - use `accuracy` instead
+    final boolean highAccuracy = options.containsKey("enableHighAccuracy") && (Boolean) options.get("enableHighAccuracy");
+
+    String accuracyString = options.containsKey("accuracy")
+        ? (String) options.get("accuracy")
+        : highAccuracy ? ACCURACY_HIGH : ACCURACY_BALANCED;
+
+    LocationParams.Builder locationParamsBuilder = accuracyBuilderFromString(accuracyString);
+
+    if (options.containsKey("timeInterval")) {
+      locationParamsBuilder.setInterval((long) options.get("timeInterval"));
+    }
+    if (options.containsKey("distanceInterval")) {
+      locationParamsBuilder.setDistance((float) options.get("distanceInterval"));
+    }
+    return locationParamsBuilder.build();
   }
 }

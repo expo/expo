@@ -4,6 +4,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@protocol EXSingletonInterface <NSObject>
+
++ (nonnull instancetype)sharedInstance;
+
+@end
+
 @interface EXSingletonModule : NSObject
 
 + (const NSString *)name;

@@ -12,6 +12,8 @@ import RootNavigation from './navigation/RootNavigation';
 
 useScreens();
 
+console.log('native-component-list:App.js console test');
+
 // workaround for large android status bar in react-nav beta.27
 if (Platform.OS === 'android') {
   SafeAreaView.setStatusBarHeight(0);

@@ -43,7 +43,7 @@ import TextToSpeechScreen from '../screens/TextToSpeechScreen';
 import ScreenOrientationScreen from '../screens/ScreenOrientationScreen';
 import SecureStoreScreen from '../screens/SecureStoreScreen';
 import SVGScreen from '../screens/SVGScreen';
-import LocationScreen from '../screens/LocationScreen';
+import LocationScreens from '../screens/Location/LocationScreens';
 import LottieScreen from '../screens/LottieScreen';
 import MapsScreen from '../screens/MapsScreen';
 import NotificationScreen from '../screens/NotificationScreen';
@@ -63,6 +63,7 @@ import BranchScreen from '../screens/BranchScreen';
 import SMSScreen from '../screens/SMSScreen';
 import ScreensScreen from '../screens/Screens';
 import PermissionsScreen from '../screens/PermissionsScreen';
+import TaskManagerScreen from '../screens/TaskManagerScreen';
 
 const styles = StyleSheet.create({
   tabBar: {
@@ -148,7 +149,7 @@ const ExpoApisStackNavigator = createStackNavigator(
     ...MediaLibraryScreens,
     Notification: { screen: NotificationScreen },
     LocalAuthentication: { screen: LocalAuthenticationScreen },
-    Location: { screen: LocationScreen },
+    ...LocationScreens,
     Pedometer: { screen: PedometerScreen },
     Permissions: PermissionsScreen,
     Print: { screen: PrintScreen },
@@ -158,6 +159,7 @@ const ExpoApisStackNavigator = createStackNavigator(
     Sensor: { screen: SensorScreen },
     SMS: { screen: SMSScreen },
     StoreReview: { screen: StoreReview },
+    TaskManager: { screen: TaskManagerScreen },
     TextToSpeech: { screen: TextToSpeechScreen },
     Util: { screen: UtilScreen },
     WebBrowser: { screen: WebBrowserScreen },

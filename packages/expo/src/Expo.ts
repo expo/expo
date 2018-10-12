@@ -3,8 +3,6 @@ import './environment/logging';
 
 // load expo-asset immediately to set a custom `source` transformer in React Native
 import 'expo-asset/src/Asset';
-// polyfill navigator.geolocation
-import 'expo-location/src/Location';
 
 import { Constants } from 'expo-constants';
 import { NativeModules, Platform } from 'react-native';
@@ -16,6 +14,7 @@ if (typeof Constants.manifest.env === 'object') {
 export { AdMobBanner, AdMobInterstitial, AdMobRewarded, PublisherBanner } from 'expo-ads-admob';
 export { Segment } from 'expo-analytics-segment';
 export { Asset } from 'expo-asset';
+export { BackgroundFetch } from 'expo-background-fetch';
 export { BarCodeScanner } from 'expo-barcode-scanner';
 export { Camera } from 'expo-camera';
 export { Constants } from 'expo-constants';
@@ -26,12 +25,13 @@ export { Font } from 'expo-font';
 export { GLView } from 'expo-gl';
 export { LocalAuthentication } from 'expo-local-authentication';
 export { Localization } from 'expo-localization';
-export { Location } from 'expo-location';
+export { Location } from 'expo-location'; // polyfills navigator.geolocation
 export { MediaLibrary } from 'expo-media-library';
 export { Permissions } from 'expo-permissions';
 export { Print } from 'expo-print';
 export { Accelerometer, Gyroscope, Magnetometer, MagnetometerUncalibrated } from 'expo-sensors';
 export { SMS } from 'expo-sms';
+export { TaskManager } from 'expo-task-manager';
 import * as GestureHandler from 'react-native-gesture-handler';
 export { GestureHandler };
 export { default as MapView } from 'react-native-maps';

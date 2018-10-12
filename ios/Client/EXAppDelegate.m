@@ -7,6 +7,7 @@
 
 #import <Crashlytics/Crashlytics.h>
 #import <Fabric/Fabric.h>
+#import <EXTaskManager/EXTaskService.h>
 
 #import "ExpoKit.h"
 #import "EXRootViewController.h"
@@ -26,17 +27,39 @@ NS_ASSUME_NONNULL_BEGIN
   [Fabric with:@[CrashlyticsKit]];
   [CrashlyticsKit setObjectValue:[EXBuildConstants sharedInstance].expoRuntimeVersion forKey:@"exp_client_version"];
 
-  [[ExpoKit sharedInstance] registerRootViewControllerClass:[EXRootViewController class]];
-  [[ExpoKit sharedInstance] application:application didFinishLaunchingWithOptions:launchOptions];
-  
-  _window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-  _window.backgroundColor = [UIColor whiteColor];
-  _rootViewController = (EXRootViewController *)[ExpoKit sharedInstance].rootViewController;
-  _window.rootViewController = _rootViewController;
-
-  [_window makeKeyAndVisible];
-
+  if ([application applicationState] != UIApplicationStateBackground) {
+    // App launched in foreground
+    [self _setupUserInterfaceForApplication:application withLaunchOptions:launchOptions];
+  }
+  [[EXTaskService sharedInstance] applicationDidFinishLaunchingWithOptions:launchOptions];
   return YES;
+}
+
+- (void)applicationWillEnterForeground:(UIApplication *)application
+{
+  [self _setupUserInterfaceForApplication:application withLaunchOptions:nil];
+}
+
+- (void)_setupUserInterfaceForApplication:(UIApplication *)application withLaunchOptions:(nullable NSDictionary *)launchOptions
+{
+  if (_window == nil) {
+    [[ExpoKit sharedInstance] registerRootViewControllerClass:[EXRootViewController class]];
+    [[ExpoKit sharedInstance] application:application didFinishLaunchingWithOptions:nil];
+
+    _window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    _window.backgroundColor = [UIColor whiteColor];
+    _rootViewController = (EXRootViewController *)[ExpoKit sharedInstance].rootViewController;
+    _window.rootViewController = _rootViewController;
+
+    [_window makeKeyAndVisible];
+  }
+}
+
+#pragma mark - Background Fetch
+
+- (void)application:(UIApplication *)application performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
+{
+  [[EXTaskService sharedInstance] runTasksWithReason:EXTaskLaunchReasonBackgroundFetch userInfo:nil completionHandler:completionHandler];
 }
 
 #pragma mark - Handling URLs
@@ -52,6 +75,11 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 #pragma mark - Notifications
+
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
+{
+  [[EXTaskService sharedInstance] runTasksWithReason:EXTaskLaunchReasonRemoteNotification userInfo:userInfo completionHandler:completionHandler];
+}
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)token
 {

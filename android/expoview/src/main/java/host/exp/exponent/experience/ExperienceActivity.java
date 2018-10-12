@@ -98,7 +98,6 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
   private static final int NOTIFICATION_ID = 10101;
   private static String READY_FOR_BUNDLE = "readyForBundle";
 
-  private RNObject mLinkingPackage = null;
   private ReactUnthemedRootView mNuxOverlayView;
   private ExponentNotification mNotification;
   private ExponentNotification mTempNotification;
@@ -464,13 +463,6 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
 
     final ExponentNotification finalNotificationObject = notificationObject;
 
-    // TODO: deprecated
-    // LinkingPackage was removed after ABI 5.0.0
-    if (ABIVersion.toNumber(mDetachSdkVersion) <= ABIVersion.toNumber("5.0.0")) {
-      mLinkingPackage = new RNObject("host.exp.exponent.modules.external.linking.LinkingPackage");
-      mLinkingPackage.loadVersion(mDetachSdkVersion).construct(this, mIntentUri);
-    }
-
     BranchManager.handleLink(this, mIntentUri, mDetachSdkVersion);
 
     runOnUiThread(new Runnable() {
@@ -607,10 +599,6 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
   }
 
   private void handleUri(String uri) {
-    if (mLinkingPackage != null && mLinkingPackage.isNotNull()) {
-      mLinkingPackage.call("onNewUri", uri);
-    }
-
     // Emits a "url" event to the Linking event emitter
     Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
     super.onNewIntent(intent);
@@ -630,7 +618,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     Exponent.getInstance().testPackagerStatus(isDebugModeEnabled(), mManifest, new Exponent.PackagerStatusCallback() {
       @Override
       public void onSuccess() {
-        mReactInstanceManager = startReactInstance(ExperienceActivity.this, mIntentUri, mLinkingPackage, mDetachSdkVersion, mNotification, mIsShellApp, reactPackages(), expoPackages(), mDevBundleDownloadProgressListener);
+        mReactInstanceManager = startReactInstance(ExperienceActivity.this, mIntentUri, null, mDetachSdkVersion, mNotification, mIsShellApp, reactPackages(), expoPackages(), mDevBundleDownloadProgressListener);
       }
 
       @Override

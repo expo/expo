@@ -35,11 +35,6 @@ static dispatch_once_t selectorRegularExpressionOnceToken = 0;
   return self;
 }
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId
-{
-  return self = [self init];
-}
-
 + (const NSArray<Protocol *> *)exportedInterfaces {
   return nil;
 }

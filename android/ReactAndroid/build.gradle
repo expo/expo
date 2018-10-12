@@ -296,33 +296,31 @@ android {
 }
 
 dependencies {
-    api 'com.facebook.infer.annotation:infer-annotation:0.11.2'
-    api 'javax.inject:javax.inject:1'
-    api 'com.android.support:appcompat-v7:27.1.1'
-    api "com.facebook.fresco:fresco:${FRESCO_VERSION}"
-    api "com.facebook.fresco:imagepipeline-okhttp3:${FRESCO_VERSION}"
-    api 'com.facebook.soloader:soloader:0.5.1'
-    api 'com.google.code.findbugs:jsr305:3.0.2'
-    api "com.squareup.okhttp3:okhttp:${OKHTTP_VERSION}"
-    api "com.squareup.okhttp3:okhttp-urlconnection:${OKHTTP_VERSION}"
-    api 'com.squareup.okio:okio:1.14.0'
-    compile 'org.webkit:android-jsc:r174650'
-    implementation 'expolib_v1.com.squareup.okhttp3:okhttp:3.6.0'
-    implementation 'expolib_v1.com.squareup.okio:okio:1.13.0'
-    implementation 'expolib_v1.com.squareup.okhttp3:okhttp-urlconnection:3.6.0'
-    implementation 'expolib_v1.com.facebook.fresco:expolib_v1-imagepipeline-okhttp3:1.0.1'
-
-    testImplementation "junit:junit:${JUNIT_VERSION}"
-    testImplementation "org.powermock:powermock-api-mockito:${POWERMOCK_VERSION}"
-    testImplementation "org.powermock:powermock-module-junit4-rule:${POWERMOCK_VERSION}"
-    testImplementation "org.powermock:powermock-classloading-xstream:${POWERMOCK_VERSION}"
-    testImplementation "org.mockito:mockito-core:${MOCKITO_CORE_VERSION}"
-    testImplementation "org.easytesting:fest-assert-core:${FEST_ASSERT_CORE_VERSION}"
-    testImplementation "org.robolectric:robolectric:${ROBOLECTRIC_VERSION}"
-
-    androidTestImplementation fileTree(dir: 'src/main/third-party/java/buck-android-support/', include: ['*.jar'])
-    androidTestImplementation 'com.android.support.test:runner:0.3'
-    androidTestImplementation "org.mockito:mockito-core:${MOCKITO_CORE_VERSION}"
+  api 'com.facebook.infer.annotation:infer-annotation:0.11.2'
+  api 'javax.inject:javax.inject:1'
+  api 'com.android.support:appcompat-v7:27.1.1'
+  api "com.facebook.fresco:fresco:${FRESCO_VERSION}"
+  api "com.facebook.fresco:imagepipeline-okhttp3:${FRESCO_VERSION}"
+  api 'com.facebook.soloader:soloader:0.5.1'
+  api 'com.google.code.findbugs:jsr305:3.0.2'
+  api "com.squareup.okhttp3:okhttp:${OKHTTP_VERSION}"
+  api "com.squareup.okhttp3:okhttp-urlconnection:${OKHTTP_VERSION}"
+  api 'com.squareup.okio:okio:1.14.0'
+  compile 'org.webkit:android-jsc:r174650'
+  implementation 'expolib_v1.com.squareup.okhttp3:okhttp:3.6.0'
+  implementation 'expolib_v1.com.squareup.okio:okio:1.13.0'
+  implementation 'expolib_v1.com.squareup.okhttp3:okhttp-urlconnection:3.6.0'
+  implementation 'expolib_v1.com.facebook.fresco:expolib_v1-imagepipeline-okhttp3:1.0.1'
+  testImplementation "junit:junit:${JUNIT_VERSION}"
+  testImplementation "org.powermock:powermock-api-mockito:${POWERMOCK_VERSION}"
+  testImplementation "org.powermock:powermock-module-junit4-rule:${POWERMOCK_VERSION}"
+  testImplementation "org.powermock:powermock-classloading-xstream:${POWERMOCK_VERSION}"
+  testImplementation "org.mockito:mockito-core:${MOCKITO_CORE_VERSION}"
+  testImplementation "org.easytesting:fest-assert-core:${FEST_ASSERT_CORE_VERSION}"
+  testImplementation "org.robolectric:robolectric:${ROBOLECTRIC_VERSION}"
+  androidTestImplementation fileTree(include: ['*.jar'], dir: 'src/main/third-party/java/buck-android-support/')
+  androidTestImplementation 'com.android.support.test:runner:0.3'
+  androidTestImplementation "org.mockito:mockito-core:${MOCKITO_CORE_VERSION}"
 }
 
 apply from: 'release.gradle'

@@ -85,6 +85,10 @@
 	<string>Expo uses your camera to scan project QR codes. Expo experiences you open may use the camera with the Expo camera API.</string>
 	<key>NSContactsUsageDescription</key>
 	<string>Allow Expo experiences to access your contacts</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Allow Expo experiences to use your location</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Allow Expo experiences to use your location</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Allow Expo experiences to use your location</string>
 	<key>NSMicrophoneUsageDescription</key>
@@ -99,6 +103,11 @@
 	<string>Allow Expo experiences to access your reminders</string>
 	<key>SupportsAppMultiplexing</key>
 	<true/>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>location</string>
+	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>

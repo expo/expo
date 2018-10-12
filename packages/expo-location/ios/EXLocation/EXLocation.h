@@ -10,5 +10,6 @@
 @interface EXLocation : EXExportedModule <EXAppLifecycleListener, EXEventEmitter, EXModuleRegistryConsumer>
 
 + (NSDictionary *)exportLocation:(CLLocation *)location;
++ (CLLocationAccuracy)accuracyFromString:(NSString *)accuracyString;
 
 @end

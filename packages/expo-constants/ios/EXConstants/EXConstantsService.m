@@ -32,6 +32,20 @@
   if (!_sessionId) {
     _sessionId = [[NSUUID UUID] UUIDString];
   }
+
+  BOOL isDebugXCodeScheme = NO;
+#if DEBUG
+  isDebugXCodeScheme = YES;
+#endif
+
+  BOOL isDetached = YES;
+#ifdef EXPO_CLIENT
+  isDetached = NO;
+#endif
+#ifdef EX_DETACHED
+  isDetached = YES;
+#endif
+
   return @{
            @"sessionId": _sessionId,
            @"statusBarHeight": @([self statusBarHeight]),
@@ -39,6 +53,9 @@
            @"deviceName": [[self class] deviceName],
            @"isDevice": @([self isDevice]),
            @"systemFonts": [self systemFontNames],
+           @"debugMode": @(isDebugXCodeScheme),
+           @"isDetached": @(isDetached),
+           @"isHeadless": @(NO),
            @"platform": @{
                @"ios": @{
                    @"buildNumber": [self buildNumber],

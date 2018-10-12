@@ -1,6 +1,6 @@
 {
   "name": "expo",
-  "version": "30.0.0",
+  "version": "30.0.1",
   "description": "The Expo SDK",
   "main": "build/Expo.js",
   "bin": {
@@ -85,6 +85,7 @@
     "expo-ads-admob": "^1.0.0",
     "expo-analytics-segment": "^1.0.0",
     "expo-asset": "^1.1.0",
+    "expo-background-fetch": "~1.0.0",
     "expo-barcode-scanner": "^1.0.0",
     "expo-camera": "^1.1.0",
     "expo-constants": "^1.0.2",
@@ -104,6 +105,7 @@
     "expo-react-native-adapter": "^1.1.0",
     "expo-sensors": "^1.0.2",
     "expo-sms": "^1.0.2",
+    "expo-task-manager": "~1.0.0",
     "fbemitter": "^2.1.1",
     "invariant": "^2.2.2",
     "lodash.map": "^4.6.0",

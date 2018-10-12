@@ -1,0 +1,19 @@
+{
+  "name": "expo-task-manager-interface",
+  "version": "1.0.0",
+  "description": "Expo interface package for TaskManager",
+  "main": "index.js",
+  "keywords": [
+    "react-native",
+    "expo",
+    "task-manager",
+    "task",
+    "background"
+  ],
+  "homepage": "https://docs.expo.io/",
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "dependencies": {
+    "expo-core": "~1.1.0"
+  }
+}
