@@ -5,7 +5,7 @@
 
 @implementation EXBrightness
 
-RCT_EXPORT_MODULE(ExponentBrightness);
+RCT_EXPORT_MODULE(ExpoBrightness);
 
 
 RCT_EXPORT_METHOD(setBrightnessAsync:
