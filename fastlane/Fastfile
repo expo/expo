@@ -21,8 +21,9 @@ end
 
 def clear_bundle_version
   puts "removing CFBundleVersion..."
-  update_plist(
-    plist_path: "./ios/Exponent/Supporting/Info.plist",
+  update_info_plist(
+    xcodeproj: "ios/Exponent.xcodeproj",
+    plist_path: "Exponent/Supporting/Info.plist",
     block: proc do |plist|
       plist.delete("CFBundleVersion")
     end
