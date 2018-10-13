@@ -27,7 +27,7 @@
 static CGFloat idealFlatness = .01;
 
 /**
- * returns the ABI30_0_0distance between two points
+ * returns the distance between two points
  */
 CGFloat ABI30_0_0distance(CGPoint p1, CGPoint p2)
 {
