@@ -1,12 +1,15 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <EXSegment/EXSegment.h>
-
+#import <EXConstantsInterface/EXConstantsInterface.h>
 #import <SEGAnalytics.h>
+
+static NSString *const EXSegmentOptOutKey = @"EXSegmentOptOutKey";
 
 @interface EXSegment ()
 
 @property (nonatomic, strong) SEGAnalytics *instance;
+@property (nonatomic, weak) id<EXConstantsInterface> constants;
 
 @end
 
@@ -14,6 +17,10 @@
 
 EX_EXPORT_MODULE(ExponentSegment)
 
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+{
+  _constants = [moduleRegistry getModuleImplementingProtocol:@protocol(EXConstantsInterface)];
+}
 
 EX_EXPORT_METHOD_AS(initializeIOS,
                     initializeIOS:(NSString *)writeKey
@@ -22,6 +29,10 @@ EX_EXPORT_METHOD_AS(initializeIOS,
 {
   SEGAnalyticsConfiguration *configuration = [SEGAnalyticsConfiguration configurationWithWriteKey:writeKey];
   _instance = [[SEGAnalytics alloc] initWithConfiguration:configuration];
+  NSNumber *optOutSetting = [[NSUserDefaults standardUserDefaults] objectForKey:EXSegmentOptOutKey];
+  if (optOutSetting != nil && ![optOutSetting boolValue]) {
+    [_instance disable];
+  }
   resolve(nil);
 }
 
@@ -146,17 +157,29 @@ EX_EXPORT_METHOD_AS(flush,
   resolve(nil);
 }
 
-EX_EXPORT_METHOD_AS(optOut,
-                    optOut:(BOOL)optOut
+EX_EXPORT_METHOD_AS(getEnabledAsync,
+                    getEnabledWithResolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
+{
+  NSNumber *optOutSetting = [[NSUserDefaults standardUserDefaults] objectForKey:EXSegmentOptOutKey];
+  resolve(optOutSetting ?: @(YES));
+}
+
+EX_EXPORT_METHOD_AS(setEnabledAsync,
+                    setEnabled:(BOOL)enabled
                     withResolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject)
 {
+  if ([_constants.appOwnership isEqualToString:@"expo"]) {
+    reject(@"E_UNSUPPORTED", @"Setting Segment's `enabled` is not supported in Expo Client.", nil);
+    return;
+  }
+  [[NSUserDefaults standardUserDefaults] setBool:enabled forKey:EXSegmentOptOutKey];
   if (_instance) {
-    if (optOut) {
-      [_instance disable];
-    }
-    else {
+    if (enabled) {
       [_instance enable];
+    } else {
+      [_instance disable];
     }
   }
   resolve(nil);
