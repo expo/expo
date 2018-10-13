@@ -1,1 +1,1 @@
-../../../../../modules/expo-react-native-adapter/ios/EXReactNativeAdapter/Services/EXReactFontManager.h
+../../../../../packages/expo-react-native-adapter/ios/EXReactNativeAdapter/Services/EXReactFontManager.h

@@ -2,13 +2,7 @@ import { NativeModules } from 'react-native';
 
 const { CTKAdSettingsManager } = NativeModules;
 
-export type AdLogLevel =
-  | 'none'
-  | 'debug'
-  | 'verbose'
-  | 'warning'
-  | 'error'
-  | 'notification';
+export type AdLogLevel = 'none' | 'debug' | 'verbose' | 'warning' | 'error' | 'notification';
 
 // TODO: rewrite the docblocks
 export default {

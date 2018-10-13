@@ -30,17 +30,17 @@
 
 /**
   Indicates the error recovery has been attempted.
- - Parameter processor: the processor instance.
- - Parameter didRecover: YES if the recovery was successful.
- - Parameter error: the error that that was attempted to be recovered from.
+ @param processor the processor instance.
+ @param didRecover YES if the recovery was successful.
+ @param error the error that that was attempted to be recovered from.
  */
 - (void)processorDidAttemptRecovery:(FBSDKGraphErrorRecoveryProcessor *)processor didRecover:(BOOL)didRecover error:(NSError *)error;
 
 @optional
 /**
   Indicates the processor is about to process the error.
- - Parameter processor: the processor instance.
- - Parameter error: the error is about to be processed.
+ @param processor the processor instance.
+ @param error the error is about to be processed.
 
  return NO if the processor should not process the error. For example,
  if you want to prevent alerts of localized messages but otherwise perform retries and recoveries,
@@ -83,16 +83,16 @@
 
 /**
   Attempts to process the error, return YES if the error can be processed.
- - Parameter error: the error to process.
- - Parameter request: the related request that may be reissued.
- - Parameter delegate: the delegate that will be retained until recovery is complete.
+ @param error the error to process.
+ @param request the related request that may be reissued.
+ @param delegate the delegate that will be retained until recovery is complete.
  */
 - (BOOL)processError:(NSError *)error request:(FBSDKGraphRequest *)request delegate:(id<FBSDKGraphErrorRecoveryProcessorDelegate>) delegate;
 
 /**
   The callback for FBSDKErrorRecoveryAttempting
- - Parameter didRecover: if the recovery succeeded
- - Parameter contextInfo: unused
+ @param didRecover if the recovery succeeded
+ @param contextInfo unused
  */
 - (void)didPresentErrorWithRecovery:(BOOL)didRecover contextInfo:(void *)contextInfo;
 

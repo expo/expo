@@ -55,6 +55,9 @@ public class GestureHandler<T extends GestureHandler> {
   private boolean mEnabled = true;
   private float mHitSlop[];
 
+  private float mLastX, mLastY;
+  private float mLastEventOffsetX, mLastEventOffsetY;
+
   private boolean mShouldCancelWhenOutside;
   private int mNumberOfPointers = 0;
 
@@ -304,6 +307,12 @@ public class GestureHandler<T extends GestureHandler> {
       }
       return;
     }
+
+    mLastX = GestureUtils.getLastPointerX(event, true);
+    mLastY = GestureUtils.getLastPointerY(event, true);
+    mLastEventOffsetX = event.getRawX() - event.getX();
+    mLastEventOffsetY = event.getRawY() - event.getY();
+
     onHandle(event);
     if (event != origEvent) {
       event.recycle();
@@ -481,5 +490,21 @@ public class GestureHandler<T extends GestureHandler> {
   public String toString() {
     String viewString = mView == null ? null : mView.getClass().getSimpleName();
     return this.getClass().getSimpleName() + "@[" + mTag + "]:"  + viewString;
+  }
+
+  public float getLastAbsolutePositionX() {
+    return mLastX;
+  }
+
+  public float getLastAbsolutePositionY() {
+    return mLastY;
+  }
+
+  public float getLastRelativePositionX() {
+    return mLastX - mLastEventOffsetX;
+  }
+
+  public float getLastRelativePositionY() {
+    return mLastY - mLastEventOffsetY;
   }
 }

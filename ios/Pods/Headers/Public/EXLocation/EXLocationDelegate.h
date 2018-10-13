@@ -1,1 +1,1 @@
-../../../../../modules/expo-location/ios/EXLocation/EXLocationDelegate.h
+../../../../../packages/expo-location/ios/EXLocation/EXLocationDelegate.h

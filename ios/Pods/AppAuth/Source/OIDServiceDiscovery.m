@@ -88,7 +88,7 @@ static NSString *const kOPTosURIKey = @"op_tos_uri";
   if (!json || jsonError) {
     *error = [OIDErrorUtilities errorWithCode:OIDErrorCodeJSONDeserializationError
                               underlyingError:jsonError
-                                  description:nil];
+                                  description:jsonError.localizedDescription];
     return nil;
   }
   return [self initWithDictionary:json error:error];

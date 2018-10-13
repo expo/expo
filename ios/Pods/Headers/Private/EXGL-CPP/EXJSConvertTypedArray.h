@@ -1,1 +1,1 @@
-../../../../../modules/expo-gl-cpp/cpp/EXJSConvertTypedArray.h
+../../../../../packages/expo-gl-cpp/cpp/EXJSConvertTypedArray.h

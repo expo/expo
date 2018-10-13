@@ -207,5 +207,6 @@ FBSDK_EXTERN NSString *const FBSDKAppEventsWKWebViewMessagesPixelIDKey;
 
 + (FBSDKAppEvents *)singleton;
 - (void)flushForReason:(FBSDKAppEventsFlushReason)flushReason;
+- (void)registerNotifications;
 
 @end

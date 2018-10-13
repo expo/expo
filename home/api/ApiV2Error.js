@@ -1,5 +1,4 @@
 /**
- * @providesModule ApiV2Error
  * @flow
  */
 'use strict';

@@ -24,4 +24,3 @@ export default {
   enableExpoCliLogging,
   disableExpoCliLogging,
 };
-

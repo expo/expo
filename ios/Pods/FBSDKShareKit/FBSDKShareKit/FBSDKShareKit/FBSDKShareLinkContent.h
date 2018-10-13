@@ -30,7 +30,7 @@
 
  If not specified, this field is automatically populated by information scraped from the contentURL,
  typically the title of the page.  This value may be discarded for specially handled links (ex: iTunes URLs).
- - Returns: The description of the link
+ @return The description of the link
 
  @deprecated `contentDescription` is deprecated from Graph API 2.9.
  For more information, see https://developers.facebook.com/docs/apps/changelog#v2_9_deprecations.
@@ -42,7 +42,7 @@
   The title to display for this link.
 
  This value may be discarded for specially handled links (ex: iTunes URLs).
- - Returns: The link title
+ @return The link title
 
  @deprecated `contentTitle` is deprecated from Graph API 2.9.
  For more information, see https://developers.facebook.com/docs/apps/changelog#v2_9_deprecations
@@ -52,7 +52,7 @@
 
 /**
   The URL of a picture to attach to this content.
- - Returns: The network URL of an image
+ @return The network URL of an image
 
  @deprecated `imageURL` is deprecated from Graph API 2.9.
  For more information, see https://developers.facebook.com/docs/apps/changelog#v2_9_deprecations
@@ -64,14 +64,14 @@
   Some quote text of the link.
 
  If specified, the quote text will render with custom styling on top of the link.
- - Returns: The quote text of a link
+ @return The quote text of a link
  */
 @property (nonatomic, copy) NSString *quote;
 
 /**
   Compares the receiver to another link content.
- - Parameter content: The other content
- - Returns: YES if the receiver's values are equal to the other content's values; otherwise NO
+ @param content The other content
+ @return YES if the receiver's values are equal to the other content's values; otherwise NO
  */
 - (BOOL)isEqualToShareLinkContent:(FBSDKShareLinkContent *)content;
 

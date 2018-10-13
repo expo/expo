@@ -112,9 +112,8 @@ window.document.body = new DOMElement('body');
 window.location = 'data:'; // <- Not sure about this... or anything for that matter ¯\_(ツ)_/¯
 global.userAgent = global.navigator.userAgent = 'iPhone'; // <- This could be made better, but I'm not sure if it'll matter for PIXI
 
-class HTMLImageElement extends Image {
+class HTMLImageElement {
   constructor(props) {
-    super();
     this.align = 'center';
     this.alt = null;
     this.border = null;

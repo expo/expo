@@ -9,4 +9,10 @@
 #import "RNGestureHandler.h"
 
 @interface RNGestureHandlerButton : UIControl
+
+/**
+ *  Insets used when hit testing inside this view.
+ */
+@property (nonatomic, assign) UIEdgeInsets hitTestEdgeInsets;
+
 @end

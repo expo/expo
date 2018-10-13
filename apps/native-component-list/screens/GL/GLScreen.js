@@ -1,9 +1,6 @@
-import Expo from 'expo';
 import React from 'react';
-import { View, ScrollView, Text, StyleSheet, Platform } from 'react-native';
-import Touchable from 'react-native-platform-touchable';
+import { View, ScrollView, StyleSheet } from 'react-native';
 import ListButton from '../../components/ListButton';
-import { Colors } from '../../constants';
 
 import GLScreens from './GLScreens';
 

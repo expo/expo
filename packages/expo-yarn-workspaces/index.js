@@ -3,7 +3,7 @@
 const debug = require('debug')('workspaces');
 const findYarnWorkspaceRoot = require('find-yarn-workspace-root');
 const fs = require('fs');
-const blacklist = require('metro/src/blacklist');
+const blacklist = require('metro-config/src/defaults/blacklist');
 const path = require('path');
 
 /**
@@ -19,40 +19,44 @@ exports.createReactNativeConfiguration = function createReactNativeConfiguration
   projectPath = path.resolve(projectPath);
   debug(`Creating a React Native configuration for the project at %s`, projectPath);
 
-  let projectRoots;
+  let watchFolders;
   let extraNodeModules;
 
   let workspaceRootPath = findYarnWorkspaceRoot(projectPath);
   if (workspaceRootPath) {
     debug(`Found Yarn workspace root at %s`, workspaceRootPath);
-    projectRoots = [projectPath, workspaceRootPath];
+    watchFolders = [workspaceRootPath];
     extraNodeModules = {
       ...getSymlinkedNodeModulesForDirectory(workspaceRootPath),
       ...getSymlinkedNodeModulesForDirectory(projectPath),
     };
   } else {
     debug(`Could not find Yarn workspace root`);
-    projectRoots = [projectPath];
+    watchFolders = [];
     extraNodeModules = getSymlinkedNodeModulesForDirectory(projectPath);
   }
 
   return {
-    // Include npm packages from the project and the workspace root, where packages are hoisted
-    getProjectRoots() {
-      return projectRoots;
+    // Search for modules from the project's root directory
+    projectRoot: projectPath,
+
+    // Include npm packages from the workspace root, where packages are hoisted
+    watchFolders,
+
+    resolver: {
+      // Make the symlinked packages visible to Metro
+      extraNodeModules,
+
+      // Use Node-style module resolution instead of Haste everywhere
+      providesModuleNodeModules: [],
+
+      // Ignore JS files in the native Android and Xcode projects
+      blacklistRE: blacklist([/.*\/android\/ReactAndroid\/.*/, /.*\/versioned-react-native\/.*/]),
     },
 
-    // Make the symlinked packages visible to Metro
-    extraNodeModules,
-
-    // Use Node-style module resolution instead of Haste everywhere
-    getProvidesModuleNodeModules() {
-      return [];
-    },
-
-    // Ignore JS files in the native Android and Xcode projects
-    getBlacklistRE() {
-      return blacklist([/.*\/android\/ReactAndroid\/.*/, /.*\/versioned-react-native\/.*/]);
+    transformer: {
+      // Ignore file-relative Babel configurations and apply only the project's
+      enableBabelRCLookup: false,
     },
   };
 };

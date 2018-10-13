@@ -458,7 +458,7 @@ async function writeIOSTemplatesAsync(
         EXPOKIT_PATH: '../..',
         UNIVERSAL_MODULES: generateUniversalModulesConfig(
           EXPO_CLIENT_UNIVERSAL_MODULES,
-          '../../modules'
+          '../../packages'
         ),
         REACT_NATIVE_PATH: '../../react-native-lab/react-native',
       }

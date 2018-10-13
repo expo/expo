@@ -350,7 +350,7 @@ static void fb_dispatch_on_default_thread(dispatch_block_t block) {
                 for (FBSDKEventBinding *binding in bindings) {
                   FBSDKCodelessPathComponent *component = binding.path.lastObject;
                   if ((component.section == -1 || component.section == indexPath.section)
-                      && (component.row == - 1 || component.row == indexPath.row)) {
+                      && (component.row ==  -1 || component.row == indexPath.row)) {
                     UICollectionViewCell *cell = [collectionView cellForItemAtIndexPath:indexPath];
                     [binding trackEvent:cell];
                   }

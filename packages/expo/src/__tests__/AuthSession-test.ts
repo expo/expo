@@ -1,10 +1,9 @@
 import { Constants } from 'expo-constants';
+
 import AuthSession from '../AuthSession';
-import Expo from '../Expo';
+import { WebBrowser } from '../Expo';
 
 import { mockLinking, mockProperty, unmockAllProperties } from '../../test/mocking';
-
-const { WebBrowser } = Expo;
 
 function applyMocks() {
   mockProperty(Constants.manifest, 'id', '@example/abc');
@@ -130,7 +129,7 @@ it('throws from AuthSession.startAsync if authUrl is falsy', async () => {
   }
 });
 
-it.only('lets us call AuthSession.startAsync after param validation throws', async () => {
+it('lets us call AuthSession.startAsync after param validation throws', async () => {
   AuthSession.startAsync({ authUrl: null as any });
 
   const emitLinkingEvent = mockLinking();

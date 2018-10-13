@@ -25,6 +25,8 @@ typedef void (^REANativeAnimationOp)(RCTUIManager *uiManager);
 
 - (void)invalidate;
 
+- (void)operationsBatchDidComplete;
+
 //
 
 - (void)postOnAnimation:(REAOnAnimationCallback)clb;
@@ -32,6 +34,8 @@ typedef void (^REANativeAnimationOp)(RCTUIManager *uiManager);
 - (void)enqueueUpdateViewOnNativeThread:(nonnull NSNumber *)reactTag
                                viewName:(NSString *) viewName
                             nativeProps:(NSMutableDictionary *)nativeProps;
+- (void)getValue:(REANodeID)nodeID
+        callback:(RCTResponseSenderBlock)callback;
 
 // graph
 

@@ -21,6 +21,7 @@
 #import "OIDDefines.h"
 #import "OIDFieldMapping.h"
 #import "OIDTokenRequest.h"
+#import "OIDTokenUtilities.h"
 
 /*! @brief Key used to encode the @c request property for @c NSSecureCoding
  */
@@ -156,11 +157,11 @@ static NSString *const kAdditionalParametersKey = @"additionalParameters";
                                      "scope: \"%@\", additionalParameters: %@, request: %@>",
                                     NSStringFromClass([self class]),
                                     (void *)self,
-                                    _accessToken,
+                                    [OIDTokenUtilities redact:_accessToken],
                                     _accessTokenExpirationDate,
                                     _tokenType,
-                                    _idToken,
-                                    _refreshToken,
+                                    [OIDTokenUtilities redact:_idToken],
+                                    [OIDTokenUtilities redact:_refreshToken],
                                     _scope,
                                     _additionalParameters,
                                     _request];

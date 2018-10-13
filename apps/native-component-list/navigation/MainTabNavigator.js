@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
 
 const StackConfig = {
   cardStyle: styles.card,
-  headerTransitionPreset: 'uikit',
+  // headerTransitionPreset: 'uikit',
   navigationOptions: () => ({
     headerStyle: styles.header,
     headerTintColor: Colors.tintColor,

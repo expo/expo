@@ -24,7 +24,7 @@ public class ScreenContainerViewManager extends ViewGroupManager<ScreenContainer
   @Override
   public void addView(ScreenContainer parent, View child, int index) {
     if (!(child instanceof Screen)) {
-      throw new IllegalArgumentException("Attempt attach child that is not of type RNScreen");
+      throw new IllegalArgumentException("Attempt attach child that is not of type RNScreens");
     }
     parent.addScreen((Screen) child, index);
   }

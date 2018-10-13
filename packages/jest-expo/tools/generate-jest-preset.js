@@ -18,15 +18,29 @@ function generateJestPreset() {
   // Derive the Expo Jest preset from the React Native one
   const expoJestPreset = JSON.parse(JSON.stringify(rnJestPreset));
 
+  if (expoJestPreset.haste) {
+    assert(expoJestPreset.haste.hasOwnProperty('hasteImplModulePath'));
+    expoJestPreset.haste.hasteImplModulePath = expoJestPreset.haste.hasteImplModulePath.replace(
+      /^<rootDir>\/node_modules\//,
+      ''
+    );
+  }
+
   if (!expoJestPreset.moduleNameMapper) {
     expoJestPreset.moduleNameMapper = {};
+  }
+
+  if (expoJestPreset.modulePathIgnorePatterns) {
+    expoJestPreset.modulePathIgnorePatterns = expoJestPreset.modulePathIgnorePatterns.map(pattern =>
+      pattern.replace(/^<rootDir>\/node_modules\//, '')
+    );
   }
 
   if (!expoJestPreset.transform) {
     expoJestPreset.transform = {};
   }
 
-  const defaultAssetNamePattern = '^[./a-zA-Z0-9$_-]+\\.(bmp|gif|jpg|jpeg|mp4|png|psd|svg|webp)$';
+  const defaultAssetNamePattern = '^.+\\.(bmp|gif|jpg|jpeg|mp4|png|psd|svg|webp)$';
   assert(expoJestPreset.transform.hasOwnProperty(defaultAssetNamePattern));
   delete expoJestPreset.transform[defaultAssetNamePattern];
 

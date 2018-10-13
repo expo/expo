@@ -1,1 +1,1 @@
-../../../../../modules/expo-permissions/ios/EXPermissions/EXPermissionsManager.h
+../../../../../packages/expo-permissions/ios/EXPermissions/EXPermissionsManager.h

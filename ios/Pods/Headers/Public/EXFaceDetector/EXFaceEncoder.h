@@ -1,1 +1,1 @@
-../../../../../modules/expo-face-detector/ios/EXFaceDetector/EXFaceEncoder.h
+../../../../../packages/expo-face-detector/ios/EXFaceDetector/EXFaceEncoder.h

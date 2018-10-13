@@ -1,1 +1,1 @@
-../../../../../modules/expo-permissions/ios/EXPermissions/EXContactsRequester.h
+../../../../../packages/expo-permissions/ios/EXPermissions/EXContactsRequester.h

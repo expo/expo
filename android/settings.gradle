@@ -6,95 +6,42 @@ project(':ReactAndroid').projectDir = new File(rootDir, 'ReactAndroid')
 
 // Universal modules
 
-include ":expo-core"
-project(":expo-core").projectDir = new File(rootDir, "../modules/expo-core/android")
+def modulesDir = new File(rootDir, "../packages")
 
-include ":expo-camera-interface"
-project(":expo-camera-interface").projectDir = new File(rootDir, "../modules/expo-camera-interface/android");
+def includeUniversalModule = { name ->
+  include ":$name"
+  project(":$name").projectDir = new File(modulesDir, "$name/android")
+}
 
-include ":expo-camera"
-project(":expo-camera").projectDir = new File(rootDir, "../modules/expo-camera/android")
-
-include ":expo-constants-interface"
-project(":expo-constants-interface").projectDir = new File(rootDir, "../modules/expo-constants-interface/android")
-
-include ":expo-constants"
-project(":expo-constants").projectDir = new File(rootDir, "../modules/expo-constants/android")
-
-include ":expo-gl"
-project(":expo-gl").projectDir = new File(rootDir, "../modules/expo-gl/android")
-
-include ":expo-gl-cpp"
-project(":expo-gl-cpp").projectDir = new File(rootDir, "../modules/expo-gl-cpp/android")
-
-include ":expo-image-loader-interface"
-project(":expo-image-loader-interface").projectDir = new File(rootDir, "../modules/expo-image-loader-interface/android")
-
-include ":expo-permissions-interface"
-project(":expo-permissions-interface").projectDir = new File(rootDir, "../modules/expo-permissions-interface/android")
-
-include ":expo-face-detector-interface"
-project(":expo-face-detector-interface").projectDir = new File(rootDir, "../modules/expo-face-detector-interface/android")
-
-include ":expo-face-detector"
-project(":expo-face-detector").projectDir = new File(rootDir, "../modules/expo-face-detector/android")
-
-include ":expo-file-system-interface"
-project(":expo-file-system-interface").projectDir = new File(rootDir, "../modules/expo-file-system-interface/android")
-
-include ":expo-file-system"
-project(":expo-file-system").projectDir = new File(rootDir, "../modules/expo-file-system/android")
-
-include ":expo-payments-stripe"
-project(":expo-payments-stripe").projectDir = new File(rootDir, "../modules/expo-payments-stripe/android")
-
-include ":expo-permissions-interface"
-project(":expo-permissions-interface").projectDir = new File(rootDir, "../modules/expo-permissions-interface/android")
-
-include ":expo-permissions"
-project(":expo-permissions").projectDir = new File(rootDir, "../modules/expo-permissions/android")
-
-include ":expo-sensors-interface"
-project(":expo-sensors-interface").projectDir = new File(rootDir, "../modules/expo-sensors-interface/android")
-
-include ":expo-sensors"
-project(":expo-sensors").projectDir = new File(rootDir, "../modules/expo-sensors/android")
-
-include ":expo-react-native-adapter"
-project(":expo-react-native-adapter").projectDir = new File(rootDir, "../modules/expo-react-native-adapter/android")
-
-include ":expo-sms"
-project(":expo-sms").projectDir = new File(rootDir, "../modules/expo-sms/android")
-
-include ":expo-print"
-project(":expo-print").projectDir = new File(rootDir, "../modules/expo-print/android")
-
-include ":expo-media-library"
-project(":expo-media-library").projectDir = new File(rootDir, "../modules/expo-media-library/android")
-
-include ":expo-analytics-segment"
-project(":expo-analytics-segment").projectDir = new File(rootDir, "../modules/expo-analytics-segment/android")
-
-include ":expo-font"
-project(":expo-font").projectDir = new File(rootDir, "../modules/expo-font/android")
-
-include ":expo-font-interface"
-project(":expo-font-interface").projectDir = new File(rootDir, "../modules/expo-font-interface/android")
-
-include ":expo-location"
-project(":expo-location").projectDir = new File(rootDir, "../modules/expo-location/android")
-
-include ":expo-barcode-scanner"
-project(":expo-barcode-scanner").projectDir = new File(rootDir, "../modules/expo-barcode-scanner/android")
-
-include ":expo-barcode-scanner-interface"
-project(":expo-barcode-scanner-interface").projectDir = new File(rootDir, "../modules/expo-barcode-scanner-interface/android")
-
-include ":expo-contacts"
-project(":expo-contacts").projectDir = new File(rootDir, "../modules/expo-contacts/android")
-
-include ":expo-ads-admob"
-project(":expo-ads-admob").projectDir = new File(rootDir, "../modules/expo-ads-admob/android")
-
-include ":expo-local-authentication"
-project(":expo-local-authentication").projectDir = new File(rootDir, "../modules/expo-local-authentication/android")
+[
+  'expo-ads-admob',
+  'expo-analytics-segment',
+  'expo-barcode-scanner',
+  'expo-barcode-scanner-interface',
+  'expo-camera',
+  'expo-camera-interface',
+  'expo-constants',
+  'expo-constants-interface',
+  'expo-contacts',
+  'expo-core',
+  'expo-face-detector',
+  'expo-face-detector-interface',
+  'expo-file-system',
+  'expo-file-system-interface',
+  'expo-font',
+  'expo-font-interface',
+  'expo-gl',
+  'expo-gl-cpp',
+  'expo-image-loader-interface',
+  'expo-local-authentication',
+  'expo-location',
+  'expo-media-library',
+  'expo-payments-stripe',
+  'expo-permissions',
+  'expo-permissions-interface',
+  'expo-print',
+  'expo-react-native-adapter',
+  'expo-sensors',
+  'expo-sensors-interface',
+  'expo-sms',
+].forEach({ moduleName -> includeUniversalModule(moduleName) })

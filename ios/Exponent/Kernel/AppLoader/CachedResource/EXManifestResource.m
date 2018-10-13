@@ -367,6 +367,12 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
         if (manifestSdkVersion > newestSdkVersion) {
           errorCode = @"EXPERIENCE_SDK_VERSION_TOO_NEW";
         }
+
+        if ([[EXVersions sharedInstance].temporarySdkVersion integerValue] == manifestSdkVersion) {
+          // It seems there is no matching versioned SDK,
+          // but version of the unversioned code matches the requested one. That's ok.
+          errorCode = nil;
+        }
       } else {
         errorCode = @"MALFORMED_SDK_VERSION";
       }

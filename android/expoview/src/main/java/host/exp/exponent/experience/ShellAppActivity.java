@@ -2,6 +2,7 @@
 
 package host.exp.exponent.experience;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import org.json.JSONException;
@@ -22,6 +23,8 @@ public class ShellAppActivity extends ExperienceActivity {
     super.onCreate(savedInstanceState);
 
     boolean forceCache = getIntent().getBooleanExtra(KernelConstants.LOAD_FROM_CACHE_KEY, false);
+
+    mKernel.handleIntent(this, getIntent());
 
     new AppLoader(Constants.INITIAL_URL, forceCache) {
       @Override
@@ -72,5 +75,11 @@ public class ShellAppActivity extends ExperienceActivity {
         mKernel.handleError(e);
       }
     }.start();
+  }
+
+  @Override
+  public void onNewIntent(Intent intent) {
+    super.onNewIntent(intent);
+    mKernel.handleIntent(this, intent);
   }
 }

@@ -22,7 +22,7 @@ export type LogEntryFields = {
 };
 
 export type LogData = string | LogErrorData;
-export type LogErrorData = { message: string; stack: string }
+export type LogErrorData = { message: string; stack: string };
 
 type TransportErrorListener = (event: { error: Error; response?: Response }) => void;
 

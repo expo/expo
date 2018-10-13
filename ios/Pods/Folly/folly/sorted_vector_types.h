@@ -68,6 +68,7 @@
 #include <vector>
 
 #include <boost/operators.hpp>
+#include <folly/portability/BitsFunctexcept.h>
 
 namespace folly {
 
@@ -215,7 +216,7 @@ public:
     insert(first, last);
   }
 
-  explicit sorted_vector_set(
+  /* implicit */ sorted_vector_set(
       std::initializer_list<value_type> list,
       const Compare& comp = Compare(),
       const Allocator& alloc = Allocator())
@@ -558,7 +559,7 @@ public:
     if (it != end()) {
       return it->second;
     }
-    throw std::out_of_range("sorted_vector_map::at");
+    std::__throw_out_of_range("sorted_vector_map::at");
   }
 
   const mapped_type& at(const key_type& key) const {
@@ -566,7 +567,7 @@ public:
     if (it != end()) {
       return it->second;
     }
-    throw std::out_of_range("sorted_vector_map::at");
+    std::__throw_out_of_range("sorted_vector_map::at");
   }
 
   size_type count(const key_type& key) const {

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>detachedNativeVersions</key>
+	<dict>
+		<key>kernel</key>
+		<string>30.0.0</string>
+		<key>shell</key>
+		<string>30.0.0</string>
+	</dict>
+	<key>sdkVersions</key>
+	<array>
+		<string>30.0.0</string>
+	</array>
+</dict>
+</plist>

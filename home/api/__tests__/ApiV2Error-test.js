@@ -1,4 +1,4 @@
-import ApiV2Error from 'ApiV2Error';
+import ApiV2Error from '../ApiV2Error';
 
 it(`works with instanceof`, () => {
   let error = new ApiV2Error('Testing');

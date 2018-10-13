@@ -4,12 +4,12 @@ export * from './Audio/Recording';
 export * from './Audio/Sound';
 
 export type AudioMode = {
-  allowsRecordingIOS: boolean,
-  interruptionModeIOS: number,
-  playsInSilentModeIOS: boolean,
-  interruptionModeAndroid: boolean,
-  shouldDuckAndroid: boolean,
-  playThroughEarpieceAndroid: boolean,
+  allowsRecordingIOS: boolean;
+  interruptionModeIOS: number;
+  playsInSilentModeIOS: boolean;
+  interruptionModeAndroid: boolean;
+  shouldDuckAndroid: boolean;
+  playThroughEarpieceAndroid: boolean;
 };
 
 export const INTERRUPTION_MODE_IOS_MIX_WITH_OTHERS = 0;

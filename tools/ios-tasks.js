@@ -9,7 +9,7 @@ const { Modules } = require('xdl');
 const UNVERSIONED_PLACEHOLDER = '__UNVERSIONED__';
 const RELATIVE_RN_PATH = './react-native-lab/react-native';
 
-const RELATIVE_UNIVERSAL_MODULES_PATH = './modules';
+const RELATIVE_UNIVERSAL_MODULES_PATH = './packages';
 const EXTERNAL_REACT_ABI_DEPENDENCIES = [
   'Amplitude-iOS',
   'Analytics',

@@ -63,8 +63,11 @@ class ThreadCachedInt : boost::noncopyable {
   // Reads the current value plus all the cached increments.  Requires grabbing
   // a lock, so this is significantly slower than readFast().
   IntT readFull() const {
+    // This could race with thread destruction and so the access lock should be
+    // acquired before reading the current value
+    auto accessor = cache_.accessAllThreads();
     IntT ret = readFast();
-    for (const auto& cache : cache_.accessAllThreads()) {
+    for (const auto& cache : accessor) {
       if (!cache.reset_.load(std::memory_order_acquire)) {
         ret += cache.val_.load(std::memory_order_relaxed);
       }
@@ -82,8 +85,11 @@ class ThreadCachedInt : boost::noncopyable {
   // little off, however, but it should be much better than calling readFull()
   // and set(0) sequentially.
   IntT readFullAndReset() {
+    // This could race with thread destruction and so the access lock should be
+    // acquired before reading the current value
+    auto accessor = cache_.accessAllThreads();
     IntT ret = readFastAndReset();
-    for (auto& cache : cache_.accessAllThreads()) {
+    for (auto& cache : accessor) {
       if (!cache.reset_.load(std::memory_order_acquire)) {
         ret += cache.val_.load(std::memory_order_relaxed);
         cache.reset_.store(true, std::memory_order_release);
@@ -128,7 +134,8 @@ class ThreadCachedInt : boost::noncopyable {
  private:
   std::atomic<IntT> target_;
   std::atomic<uint32_t> cacheSize_;
-  ThreadLocalPtr<IntCache,Tag> cache_; // Must be last for dtor ordering
+  ThreadLocalPtr<IntCache, Tag, AccessModeStrict>
+      cache_; // Must be last for dtor ordering
 
   // This should only ever be modified by one thread
   struct IntCache {

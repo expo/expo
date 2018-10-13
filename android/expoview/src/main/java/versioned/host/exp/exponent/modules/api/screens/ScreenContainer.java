@@ -42,7 +42,7 @@ public class ScreenContainer extends ViewGroup {
       mFragmentManager = ((FragmentActivity) activity).getSupportFragmentManager();
     } else {
       throw new IllegalStateException(
-              "In order to use RNScreen components your app's activity need to extend ReactFragmentActivity or ReactCompatActivity");
+              "In order to use RNScreens components your app's activity need to extend ReactFragmentActivity or ReactCompatActivity");
     }
   }
 

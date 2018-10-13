@@ -25,45 +25,52 @@
 
 /**
   Parses a query string into a dictionary.
- - Parameter queryString: The query string value.
- - Returns: A dictionary with the key/value pairs.
+ @param queryString The query string value.
+ @return A dictionary with the key/value pairs.
  */
 + (NSDictionary *)dictionaryWithQueryString:(NSString *)queryString;
 
 /**
   Constructs a query string from a dictionary.
- - Parameter dictionary: The dictionary with key/value pairs for the query string.
- - Parameter errorRef: If an error occurs, upon return contains an NSError object that describes the problem.
- - Returns: Query string representation of the parameters.
+ @param dictionary The dictionary with key/value pairs for the query string.
+ @param errorRef If an error occurs, upon return contains an NSError object that describes the problem.
+ @return Query string representation of the parameters.
  */
 + (NSString *)queryStringWithDictionary:(NSDictionary *)dictionary error:(NSError *__autoreleasing *)errorRef;
 
 /**
   Decodes a value from an URL.
- - Parameter value: The value to decode.
- - Returns: The decoded value.
+ @param value The value to decode.
+ @return The decoded value.
  */
 + (NSString *)URLDecode:(NSString *)value;
 
 /**
   Encodes a value for an URL.
- - Parameter value: The value to encode.
- - Returns: The encoded value.
+ @param value The value to encode.
+ @return The encoded value.
  */
 + (NSString *)URLEncode:(NSString *)value;
 
 /**
   Creates a timer using Grand Central Dispatch.
- - Parameter interval: The interval to fire the timer, in seconds.
- - Parameter block: The code block to execute when timer is fired.
- - Returns: The dispatch handle.
+ @param interval The interval to fire the timer, in seconds.
+ @param block The code block to execute when timer is fired.
+ @return The dispatch handle.
  */
 + (dispatch_source_t)startGCDTimerWithInterval:(double)interval block:(dispatch_block_t)block;
 
 /**
  Stop a timer that was started by startGCDTimerWithInterval.
- - Parameter timer: The dispatch handle received from startGCDTimerWithInterval.
+ @param timer The dispatch handle received from startGCDTimerWithInterval.
  */
 + (void)stopGCDTimer:(dispatch_source_t)timer;
+
+/**
+ Get SHA256 hased string of NSString/NSData
+
+ @param input The data that needs to be hashed, it could be NSString or NSData.
+ */
++ (NSString *)SHA256Hash:(NSObject *)input;
 
 @end

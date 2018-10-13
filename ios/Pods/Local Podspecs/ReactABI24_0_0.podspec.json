@@ -150,7 +150,7 @@
       "name": "CxxBridge",
       "dependencies": {
         "Folly": [
-          "2016.09.26.00"
+          "2016.10.31.00"
         ],
         "ReactABI24_0_0/Core": [
 
@@ -216,7 +216,7 @@
       "name": "ABI24_0_0jschelpers",
       "dependencies": {
         "Folly": [
-          "2016.09.26.00"
+          "2016.10.31.00"
         ],
         "ReactABI24_0_0/ABI24_0_0PrivateDatabase": [
 
@@ -248,7 +248,7 @@
           "1.63.0"
         ],
         "Folly": [
-          "2016.09.26.00"
+          "2016.10.31.00"
         ]
       },
       "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",

@@ -1,15 +1,13 @@
 import { Constants } from 'expo-constants';
 import prettyFormat from 'pretty-format';
-import parseErrorStack, {
-  StackFrame,
-} from 'react-native/Libraries/Core/Devtools/parseErrorStack';
+import parseErrorStack, { StackFrame } from 'react-native/Libraries/Core/Devtools/parseErrorStack';
 import symbolicateStackTrace from 'react-native/Libraries/Core/Devtools/symbolicateStackTrace';
 
 import { LogData, LogLevel } from './RemoteLogging';
 
 type SerializedData = {
-  body: LogData[],
-  includesStack: boolean,
+  body: LogData[];
+  includesStack: boolean;
 };
 
 export const EXPO_CONSOLE_METHOD_NAME = '__expoConsoleLog';

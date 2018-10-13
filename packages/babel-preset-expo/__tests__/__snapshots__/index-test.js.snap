@@ -2,8 +2,8 @@
 
 exports[`aliases @expo/vector-icons 1`] = `
 "
-require('@expo/vector-icons');
-require('@expo/vector-icons');
+require(\\"@expo/vector-icons\\");
+require(\\"@expo/vector-icons\\");
 
 imposter.require('react-native-vector-icons');
 imposter.import('react-native-vector-icons');"
@@ -11,6 +11,6 @@ imposter.import('react-native-vector-icons');"
 
 exports[`composes with babel-plugin-module-resolver 1`] = `
 "
-require('@expo/react-native');
-require('@expo/vector-icons');"
+require(\\"react-native\\");
+require(\\"@expo/vector-icons\\");"
 `;

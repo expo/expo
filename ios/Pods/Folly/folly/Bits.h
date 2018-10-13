@@ -143,7 +143,9 @@ typename std::enable_if<
    sizeof(T) <= sizeof(unsigned int)),
   unsigned int>::type
   findLastSet(T x) {
-  return x ? 8 * sizeof(unsigned int) - __builtin_clz(x) : 0;
+  // If X is a power of two X - Y = ((X - 1) ^ Y) + 1. Doing this transformation
+  // allows GCC to remove its own xor that it adds to implement clz using bsr
+  return x ? ((8 * sizeof(unsigned int) - 1) ^ __builtin_clz(x)) + 1 : 0;
 }
 
 template <class T>
@@ -155,7 +157,7 @@ typename std::enable_if<
    sizeof(T) <= sizeof(unsigned long)),
   unsigned int>::type
   findLastSet(T x) {
-  return x ? 8 * sizeof(unsigned long) - __builtin_clzl(x) : 0;
+  return x ? ((8 * sizeof(unsigned long) - 1) ^ __builtin_clzl(x)) + 1 : 0;
 }
 
 template <class T>
@@ -167,7 +169,8 @@ typename std::enable_if<
    sizeof(T) <= sizeof(unsigned long long)),
   unsigned int>::type
   findLastSet(T x) {
-  return x ? 8 * sizeof(unsigned long long) - __builtin_clzll(x) : 0;
+  return x ? ((8 * sizeof(unsigned long long) - 1) ^ __builtin_clzll(x)) + 1
+           : 0;
 }
 
 template <class T>
@@ -190,10 +193,16 @@ nextPowTwo(T v) {
 }
 
 template <class T>
-inline constexpr
-typename std::enable_if<
-  std::is_integral<T>::value && std::is_unsigned<T>::value,
-  bool>::type
+inline FOLLY_INTRINSIC_CONSTEXPR typename std::
+    enable_if<std::is_integral<T>::value && std::is_unsigned<T>::value, T>::type
+    prevPowTwo(T v) {
+  return v ? (T(1) << (findLastSet(v) - 1)) : 0;
+}
+
+template <class T>
+inline constexpr typename std::enable_if<
+    std::is_integral<T>::value && std::is_unsigned<T>::value,
+    bool>::type
 isPowTwo(T v) {
   return (v != 0) && !(v & (v - 1));
 }

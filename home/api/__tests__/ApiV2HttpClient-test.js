@@ -1,5 +1,5 @@
-import ApiV2HttpClient from 'ApiV2HttpClient';
-import ApiV2Error from 'ApiV2Error';
+import ApiV2HttpClient from '../ApiV2HttpClient';
+import ApiV2Error from '../ApiV2Error';
 
 jest.mock('react-native', () => {
   const ReactNative = require.requireActual('react-native');

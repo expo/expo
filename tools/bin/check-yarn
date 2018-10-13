@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+readonly min_version=1.10.1
+
+check_yarn() {
+  if [ -x "$(command -v yarn)" ]; then
+    readonly current_version=$(yarn --version)
+    compare_semver "$current_version" "$min_version"
+    if [[ $? == 2 ]]; then
+      echo "⚠️  The Expo repository expects Yarn ${min_version} or greater but you are currently using ${current_version}. Consider upgrading Yarn."
+    fi
+  else
+    echo "⚠️  Could not find \"yarn\" installed. The Expo repository requires Yarn ${min_version} or greater."
+  fi
+}
+
+# Compares two semver strings and returns 1 if the first is greater, 2 if the second is greater, and
+# 0 if they are equal
+compare_semver() {
+  local v1
+  local v2
+  IFS=. read -r -a v1 <<< "$1"
+  IFS=. read -r -a v2 <<< "$2"
+
+  local i
+  for (( i=0; i<3; i++ )); do
+    local n1=${v1[i]:-0}
+    local n2=${v2[i]:-0}
+    if (( 10#${n1} > 10#${n2} )); then
+      return 1
+    elif (( 10#${n1} < 10#${n2} )); then
+      return 2
+    fi
+  done
+  return 0
+}
+
+check_yarn

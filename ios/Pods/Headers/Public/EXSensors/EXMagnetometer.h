@@ -1,1 +1,1 @@
-../../../../../modules/expo-sensors/ios/EXSensors/Modules/SensorModules/EXMagnetometer.h
+../../../../../packages/expo-sensors/ios/EXSensors/Modules/SensorModules/EXMagnetometer.h

@@ -1,1 +1,1 @@
-../../../../../modules/expo-ads-admob/ios/EXAdsAdMob/EXAdsAdMobBannerViewManager.h
+../../../../../packages/expo-ads-admob/ios/EXAdsAdMob/EXAdsAdMobBannerViewManager.h

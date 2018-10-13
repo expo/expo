@@ -42,10 +42,21 @@
 
 static NSMapTable *swizzles;
 
+static FBSDKSwizzle* fb_findSwizzle(id self, SEL _cmd){
+  Method aMethod = class_getInstanceMethod([self class], _cmd);
+  FBSDKSwizzle *swizzle = (FBSDKSwizzle *)[swizzles objectForKey:MAPTABLE_ID(aMethod)];
+  Class this_class = [self class];
+  while (!swizzle && class_getSuperclass(this_class)){
+    this_class = class_getSuperclass(this_class);
+    aMethod = class_getInstanceMethod(this_class, _cmd);
+    swizzle = (FBSDKSwizzle *)[swizzles objectForKey:MAPTABLE_ID(aMethod)];
+  }
+  return swizzle;
+}
+
 static void fb_swizzledMethod_2(id self, SEL _cmd)
 {
-    Method aMethod = class_getInstanceMethod([self class], _cmd);
-    FBSDKSwizzle *swizzle = (FBSDKSwizzle *)[swizzles objectForKey:MAPTABLE_ID(aMethod)];
+    FBSDKSwizzle *swizzle = fb_findSwizzle(self, _cmd);
     if (swizzle) {
         ((void(*)(id, SEL))swizzle.originalMethod)(self, _cmd);
 
@@ -59,23 +70,21 @@ static void fb_swizzledMethod_2(id self, SEL _cmd)
 
 static void fb_swizzledMethod_3(id self, SEL _cmd, id arg)
 {
-    Method aMethod = class_getInstanceMethod([self class], _cmd);
-    FBSDKSwizzle *swizzle = (FBSDKSwizzle *)[swizzles objectForKey:MAPTABLE_ID(aMethod)];
+    FBSDKSwizzle *swizzle = fb_findSwizzle(self, _cmd);
     if (swizzle) {
         ((void(*)(id, SEL, id))swizzle.originalMethod)(self, _cmd, arg);
 
         NSEnumerator *blocks = [swizzle.blocks objectEnumerator];
         swizzleBlock block;
         while ((block = [blocks nextObject])) {
-            block(self, _cmd, arg);
+          block(self, _cmd, arg);
         }
     }
 }
 
 static void fb_swizzledMethod_4(id self, SEL _cmd, id arg, id arg2)
 {
-    Method aMethod = class_getInstanceMethod([self class], _cmd);
-    FBSDKSwizzle *swizzle = (FBSDKSwizzle *)[swizzles objectForKey:(__bridge id)((void *)aMethod)];
+    FBSDKSwizzle *swizzle = fb_findSwizzle(self, _cmd);
     if (swizzle) {
         ((void(*)(id, SEL, id, id))swizzle.originalMethod)(self, _cmd, arg, arg2);
 
@@ -89,8 +98,7 @@ static void fb_swizzledMethod_4(id self, SEL _cmd, id arg, id arg2)
 
 static void fb_swizzledMethod_5(id self, SEL _cmd, id arg, id arg2, id arg3)
 {
-    Method aMethod = class_getInstanceMethod([self class], _cmd);
-    FBSDKSwizzle *swizzle = (FBSDKSwizzle *)[swizzles objectForKey:(__bridge id)((void *)aMethod)];
+    FBSDKSwizzle *swizzle = fb_findSwizzle(self, _cmd);
     if (swizzle) {
         ((void(*)(id, SEL, id, id, id))swizzle.originalMethod)(self, _cmd, arg, arg2, arg3);
 
@@ -104,8 +112,7 @@ static void fb_swizzledMethod_5(id self, SEL _cmd, id arg, id arg2, id arg3)
 
 static void fb_swizzleMethod_4_io(id self, SEL _cmd, NSInteger arg, id arg2)
 {
-  Method aMethod = class_getInstanceMethod([self class], _cmd);
-  FBSDKSwizzle *swizzle = (FBSDKSwizzle *)[swizzles objectForKey:(__bridge id)((void *)aMethod)];
+  FBSDKSwizzle *swizzle = fb_findSwizzle(self, _cmd);
   if (swizzle) {
     ((void(*)(id, SEL, NSInteger, id))swizzle.originalMethod)(self, _cmd, arg, arg2);
 
@@ -179,9 +186,9 @@ static void (*fb_swizzledMethods[MAX_ARGS - MIN_ARGS + 1])() = {fb_swizzledMetho
             IMP swizzledMethod = (IMP)fb_swizzledMethods[numArgs - 2];
             // Check whether the first parameter is integer
             if (4 == numArgs) {
-                NSString *firstType = [NSString stringWithUTF8String:method_copyArgumentType(aMethod, 2)];
-                NSString *integerTypes = @"islq";
-                if ([integerTypes containsString:[firstType lowercaseString]]) {
+              NSString *firstType = [NSString stringWithUTF8String:method_copyArgumentType(aMethod, 2)];
+              NSString *integerTypes = @"islq";
+              if ([integerTypes containsString:[firstType lowercaseString]]) {
                 swizzledMethod = (IMP)fb_swizzleMethod_4_io;
               }
             }
