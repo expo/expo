@@ -48,7 +48,7 @@ xcuserdata
 /android/expoview/libs/ReactAndroid-temp
 /android/versioned-react-native/ReactAndroid
 ReactAndroid-temp.aar
-
+*/**/.idea/*
 # Tools
 jarjar-rules.txt
 
