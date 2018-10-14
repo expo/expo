@@ -1,4 +1,6 @@
 const { testDocRef } = TestHelpers.firestore;
+const should = require('should');
+
 export default function test({
   describe,
   xdescribe,

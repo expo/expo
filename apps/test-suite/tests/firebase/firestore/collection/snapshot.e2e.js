@@ -1,3 +1,5 @@
+import { SnapshotError } from 'expo-firebase-firestore';
+
 const {
   COL_DOC_1,
   DOC_2_PATH,
@@ -7,7 +9,7 @@ const {
   TEST_COLLECTION_NAME_DYNAMIC,
 } = TestHelpers.firestore;
 
-import { SnapshotError } from 'expo-firebase-firestore';
+const should = require('should');
 
 export default function test({
   describe,

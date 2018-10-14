@@ -9,6 +9,7 @@ const {
 } = TestHelpers.firestore;
 
 import { SnapshotError } from 'expo-firebase-firestore';
+const should = require('should');
 
 export default function test({
   describe,

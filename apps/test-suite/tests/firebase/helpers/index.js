@@ -1,9 +1,9 @@
 /* eslint-disable global-require */
+import firebase from '../firebase';
+
 global.sinon = require('sinon');
 require('should-sinon');
 global.should = require('should');
-
-import firebase from '../firebase';
 
 Object.defineProperty(global, 'firebase', {
   get() {
@@ -21,9 +21,12 @@ global.isObject = function isObject(item) {
   return item ? typeof item === 'object' && !Array.isArray(item) && item !== null : false;
 };
 
-global.sleep = duration => new Promise(resolve => setTimeout(resolve, duration));
+function sleep(duration) {
+  return new Promise(resolve => setTimeout(resolve, duration));
+}
+global.sleep = sleep;
 
-global.randomString = (length, chars) => {
+function randomString(length, chars) {
   let mask = '';
   if (chars.indexOf('a') > -1) mask += 'abcdefghijklmnopqrstuvwxyz';
   if (chars.indexOf('A') > -1) mask += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -34,7 +37,10 @@ global.randomString = (length, chars) => {
     result += mask[Math.round(Math.random() * (mask.length - 1))];
   }
   return result;
-};
+}
+
+global.randomString = randomString;
+
 global.testRunId = randomString(4, 'aA#');
 
 /** ------------------
@@ -132,3 +138,5 @@ global.TestHelpers = {
   firestore: require('./firestore'),
   database: require('./database'),
 };
+
+export { sleep, randomString };

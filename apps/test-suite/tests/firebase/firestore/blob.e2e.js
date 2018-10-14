@@ -7,6 +7,7 @@ const testObjectLarge = new Array(5000).fill(testObject);
 const testStringLarge = JSON.stringify(testObjectLarge);
 const testBufferLarge = Buffer.from(testStringLarge);
 const testBase64Large = testBufferLarge.toString('base64');
+const should = require('should');
 
 export default function test({
   describe,

@@ -1,4 +1,5 @@
 import 'expo-firebase-remote-config';
+const should = require('should');
 
 export default function test({
   describe,

@@ -1,11 +1,3 @@
-const {
-  COL_DOC_1,
-  COL_DOC_1_ID,
-  COL_DOC_1_PATH,
-  testCollectionDoc,
-  resetTestCollectionDoc,
-} = TestHelpers.firestore;
-
 import {
   CollectionReference,
   DocumentReference,
@@ -18,6 +10,15 @@ import {
   TransactionHandler,
   Transaction,
 } from 'expo-firebase-firestore';
+
+const {
+  COL_DOC_1,
+  COL_DOC_1_ID,
+  COL_DOC_1_PATH,
+  testCollectionDoc,
+  resetTestCollectionDoc,
+} = TestHelpers.firestore;
+const should = require('should');
 
 export default function test({
   describe,

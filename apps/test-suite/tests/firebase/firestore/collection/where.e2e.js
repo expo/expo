@@ -1,3 +1,5 @@
+const should = require('should');
+
 const {
   COL_DOC_1,
   COL_DOC_1_PATH,

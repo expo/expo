@@ -1,5 +1,7 @@
 import { Path } from 'expo-firebase-firestore';
 
+const should = require('should');
+
 export default function test({
   describe,
   xdescribe,

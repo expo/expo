@@ -1,4 +1,5 @@
 const TEST_DATA = TestHelpers.functions.data;
+const should = require('should');
 
 export default function test({
   describe,

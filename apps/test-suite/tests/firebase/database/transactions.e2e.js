@@ -1,3 +1,5 @@
+const should = require('should');
+
 const { setDatabaseContents } = TestHelpers.database;
 export default function test({
   describe,

@@ -1,4 +1,5 @@
 const { COL_DOC_1, cleanCollection, TEST_COLLECTION_NAME_DYNAMIC } = TestHelpers.firestore;
+const should = require('should');
 
 export default function test({
   describe,

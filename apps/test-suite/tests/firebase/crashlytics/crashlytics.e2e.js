@@ -19,7 +19,7 @@ export default function test({
     xdescribe('crash()', () => {
       it('should force an app crash', async () => {
         await firebase.crashlytics().crash();
-        if (device.getPlatform() === 'ios') {
+        if (OS === 'ios') {
           // ios responds quicker after a fatal exception if we re-install
           await device.uninstallApp();
           await device.installApp();

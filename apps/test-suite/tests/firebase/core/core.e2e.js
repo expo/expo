@@ -24,6 +24,8 @@ function rand(from = 1, to = 9999) {
   const r = Math.random();
   return Math.floor(r * (to - from + from));
 }
+const should = require('should');
+
 export default function test({
   describe,
   xdescribe,

@@ -1,6 +1,9 @@
-import firebase from '../firebase';
-
 import { User } from 'expo-firebase-auth';
+
+import firebase from '../firebase';
+import { sleep } from '../helpers';
+
+const should = require('should');
 
 const TEST_PHONE_A = '+';
 const TEST_CODE_A = '123456';

@@ -1,4 +1,5 @@
 import { Trace, HttpMetric } from 'expo-firebase-performance';
+const should = require('should');
 
 export default function test({
   describe,
