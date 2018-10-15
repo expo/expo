@@ -42,15 +42,14 @@ RNFirebase [**crashlytics build script**](https://rnfirebase.io/docs/master/cras
 3.  Click `+` Add a new build phase, and select `New Run Script Phase`.
 4.  Add the following line to the `Type a script...` text box:
 
-```rb
-"${PODS_ROOT}/Fabric/run" <FABRIC API KEY> <FABRIC BUILD SECRECT>
-```
+    ```rb
+    "${PODS_ROOT}/Fabric/run"
+    ```
 
-5.  [XCode 10 only] Add your app's built Info.plist location to the Build Phase's Input Files field:
-
-```rb
-$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)
-```
+5.  **XCode 10 only:** Add your app's built `Info.plist` location to the Build Phase's Input Files field:
+    ```rb
+    $(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)
+    ```
 
 ### Android
 
@@ -80,31 +79,27 @@ $(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)
     api project(':expo-core')
     api project(':expo-firebase-app')
     ```
+3.  Some Unimodules are not included in the default `ExpoKit` suite, these modules will needed to be added manually. If your Android build cannot find the Native Modules, you can add them like this: `./android/app/src/main/java/host/exp/exponent/MainActivity.java`
 
-Some Unimodules are not included in the default `ExpoKit` suite, these modules will needed to be added manually.
-If your Android build cannot find the Native Modules, you can add them like this:
+    ```java
+    /*
+    * At the top of the file.
+    * This is automatically imported with Android Studio, but if you are in any other editor you will need to manually import the module.
+    */
+    import expo.modules.firebase.app.FirebaseAppPackage; // This should be here for all Expo Firebase features.
+    import expo.modules.firebase.fabric.crashlytics.FirebaseCrashlyticsPackage;
 
-`./android/app/src/main/java/host/exp/exponent/MainActivity.java`
+    // Later in the file...
 
-```java
-/*
- * At the top of the file.
- * This is automatically imported with Android Studio, but if you are in any other editor you will need to manually import the module.
-*/
-import expo.modules.firebase.app.FirebaseAppPackage; // This should be here for all Expo Firebase features.
-import expo.modules.firebase.fabric.crashlytics.FirebaseCrashlyticsPackage;
-
-// Later in the file...
-
-@Override
-public List<Package> expoPackages() {
-  // Here you can add your own packages.
-  return Arrays.<Package>asList(
-    new FirebaseAppPackage(), // This should be here for all Expo Firebase features.
-    new FirebaseCrashlyticsPackage() // Include this.
-  );
-}
-```
+    @Override
+    public List<Package> expoPackages() {
+      // Here you can add your own packages.
+      return Arrays.<Package>asList(
+        new FirebaseAppPackage(), // This should be here for all Expo Firebase features.
+        new FirebaseCrashlyticsPackage() // Include this.
+      );
+    }
+    ```
 
 ## Usage
 

@@ -59,32 +59,27 @@ You could also choose install this module manually.
     api project(':expo-core')
     api project(':expo-firebase-app')
     ```
-3.  [Now include the package in React Native.](https://rnfirebase.io/docs/master/auth/android#Install-the-RNFirebase-Authentication-package)
+3.  Some Unimodules are not included in the default `ExpoKit` suite, these modules will needed to be added manually. If your Android build cannot find the Native Modules, you can add them like this: `./android/app/src/main/java/host/exp/exponent/MainActivity.java`
 
-Some Unimodules are not included in the default `ExpoKit` suite, these modules will needed to be added manually.
-If your Android build cannot find the Native Modules, you can add them like this:
+    ```java
+    /*
+    * At the top of the file.
+    * This is automatically imported with Android Studio, but if you are in any other editor you will need to manually import the module.
+    */
+    import expo.modules.firebase.app.FirebaseAppPackage; // This should be here for all Expo Firebase features.
+    import expo.modules.firebase.auth.FirebaseAuthPackage;
 
-`./android/app/src/main/java/host/exp/exponent/MainActivity.java`
+    // Later in the file...
 
-```java
-/*
- * At the top of the file.
- * This is automatically imported with Android Studio, but if you are in any other editor you will need to manually import the module.
-*/
-import expo.modules.firebase.app.FirebaseAppPackage; // This should be here for all Expo Firebase features.
-import expo.modules.firebase.auth.FirebaseAuthPackage;
-
-// Later in the file...
-
-@Override
-public List<Package> expoPackages() {
-  // Here you can add your own packages.
-  return Arrays.<Package>asList(
-    new FirebaseAppPackage(), // This should be here for all Expo Firebase features.
-    new FirebaseAuthPackage() // Include this.
-  );
-}
-```
+    @Override
+    public List<Package> expoPackages() {
+      // Here you can add your own packages.
+      return Arrays.<Package>asList(
+        new FirebaseAppPackage(), // This should be here for all Expo Firebase features.
+        new FirebaseAuthPackage() // Include this.
+      );
+    }
+    ```
 
 ## Usage
 

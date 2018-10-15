@@ -1,6 +1,4 @@
-
-
 #import <EXCore/EXModuleRegistry.h>
 
-@interface EXFirebaseAnalytics : EXExportedModule
+@interface EXFirebaseAnalytics: EXExportedModule
 @end
