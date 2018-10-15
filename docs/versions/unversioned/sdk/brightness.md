@@ -1,29 +1,87 @@
 ---
 title: Brightness
 ---
+
 An API to get and set screen brightness.
 
-### `Expo.Brightness.setBrightness(brightnessValue)`
-Sets screen brightness.
+On Android, there is a global system-wide brightness setting, and each app has its own brightness setting that can optionally override the global setting. It is possible to set either of these values with this API. On iOS, the system brightness setting cannot be changed programmatically; instead, any changes to the screen brightness will persist until the device is locked or powered off.
 
-#### Arguments
-
--   **brightnessValue (_number_)** -- A number between 0 and 1, representing the desired screen brightness.
+-   [`Expo.Brightness.getBrightnessAsync()`](#expobrightnessgetbrightnessasync)
+-   [`Expo.Brightness.setBrightnessAsync(brightnessValue)`](#expobrightnesssetbrightnessasyncbrightnessvalue)
+-   [`Expo.Brightness.useSystemBrightnessAsync()`](#expobrightnessusesystembrightnessasync)
+-   [`Expo.Brightness.getSystemBrightnessAsync()`](#expobrightnessgetsystembrightnessasync)
+-   [`Expo.Brightness.setSystemBrightnessAsync(brightnessValue)`](#expobrightnesssetsystembrightnessasyncbrightnessvalue)
+-   [`Expo.Brightness.getSystemBrightnessModeAsync()`](#expobrightnessgetsystembrightnessmodeasync)
+-   [`Expo.Brightness.setSystemBrightnessModeAsync(brightnessMode)`](#expobrightnesssetsystembrightnessmodeasyncbrightnessmode)
+-   [`Expo.Brightness.BrightnessMode`](#expobrightnessbrightnessmode)
+-   [Error codes](#error-codes)
 
 ### `Expo.Brightness.getBrightnessAsync()`
-Gets screen brightness.
+
+Gets the current screen brightness.
 
 #### Returns
-A `Promise` that is resolved with a number between 0 and 1, representing the current screen brightness. 
 
-### `Expo.Brightness.setSystemBrightness(brightnessValue)`
-> **WARNING:** this method is experimental.
+A `Promise` that is resolved with a number between 0 and 1, representing the current screen brightness.
 
-Sets global system screen brightness, requires `WRITE_SETTINGS` permissions on Android.
+### `Expo.Brightness.setBrightnessAsync(brightnessValue)`
+
+Sets the current screen brightness. On iOS, this setting will persist until the device is locked, after which the screen brightness will revert to the user's default setting. On Android, this setting only applies to the current activity; it will override the system brightness value whenever your app is in the foreground.
 
 #### Arguments
 
 -   **brightnessValue (_number_)** -- A number between 0 and 1, representing the desired screen brightness.
+
+#### Returns
+
+A `Promise` that is resolved when the brightness has been successfully set.
+
+#### Error types
+
+-   `ERR_BRIGHTNESS` -- An unexpected OS error occurred when trying to set the brightness. See the `nativeError` object for more information.
+
+### `Expo.Brightness.useSystemBrightnessAsync()`
+
+**Android only.** Resets the brightness setting of the current activity to use the system-wide brightness value rather than overriding it.
+
+#### Returns
+
+A `Promise` that is resolved when the setting has been successfully changed.
+
+#### Error types
+
+-   `ERR_BRIGHTNESS` -- An unexpected OS error occurred when trying to set the brightness. See the `nativeError` object for more information.
+
+### `Expo.Brightness.getSystemBrightnessAsync()`
+
+**Android only.** Gets the global system screen brightness.
+
+#### Returns
+
+A `Promise` that is resolved with a number between 0 and 1, representing the current system screen brightness.
+
+#### Error types
+
+-   `ERR_BRIGHTNESS_SYSTEM` -- An unexpected OS error occurred when trying to get the system brightness. See the `nativeError` object for more information.
+
+### `Expo.Brightness.setSystemBrightnessAsync(brightnessValue)`
+
+> **WARNING:** This method is experimental.
+
+**Android only.** Sets the global system screen brightness and changes the brightness mode to `MANUAL`. Requires `SYSTEM_BRIGHTNESS` permissions.
+
+#### Arguments
+
+-   **brightnessValue (_number_)** -- A number between 0 and 1, representing the desired screen brightness.
+
+#### Returns
+
+A `Promise` that is resolved when the brightness has been successfully set.
+
+#### Error types
+
+-   `ERR_BRIGHTNESS_PERMISSIONS_DENIED` -- The user did not grant `SYSTEM_BRIGHTNESS` permissions.
+-   `ERR_BRIGHTNESS_SYSTEM` -- An unexpected OS error occurred when trying to set the system brightness. See the `nativeError` object for more information.
 
 #### Example
 
@@ -32,14 +90,54 @@ await Permissions.askAsync(Permissions.SYSTEM_BRIGHTNESS);
 
 const { status } = await Permissions.getAsync(Permissions.SYSTEM_BRIGHTNESS);
 if (status === 'granted') {
-  Expo.Brightness.setSystemBrightness(100);
+  Expo.Brightness.setSystemBrightnessAsync(100);
 }
-...
 ```
-### `Expo.Brightness.getSystemBrightnessAsync()`
-> **WARNING:** this method is experimental.
 
-Gets global system screen brightness.
+### `Expo.Brightness.getSystemBrightnessModeAsync()`
+
+**Android only.** Gets the system brightness mode.
 
 #### Returns
-A `Promise` that is resolved with a number between 0 and 1, representing the current system screen brightness.
+
+A `Promise` that is resolved with a `BrightnessMode`. Requires `SYSTEM_BRIGHTNESS` permissions.
+
+#### Error types
+
+-   `ERR_BRIGHTNESS_MODE` -- An unexpected OS error occurred when trying to get the brightness mode. See the `nativeError` object for more information.
+
+### `Expo.Brightness.setSystemBrightnessModeAsync(brightnessMode)`
+
+**Android only.** Sets the system brightness mode.
+
+#### Arguments
+
+-   **brightnessMode (_BrightnessMode_)** -- One of `BrightnessMode.MANUAL` or `BrightnessMode.AUTOMATIC`. The system brightness mode cannot be set to `BrightnessMode.UNKNOWN`.
+
+#### Returns
+
+A `Promise` that is resolved when the brightness mode has been successfully set.
+
+#### Error types
+
+-   `ERR_BRIGHTNESS_INVALID_BRIGHTNESS_MODE` -- An invalid argument was passed. Only `BrightnessMode.MANUAL` or `BrightnessMode.AUTOMATIC` are allowed.
+-   `ERR_BRIGHTNESS_MODE` -- An unexpected OS error occurred when trying to set the brightness mode. See the `nativeError` object for more information.
+-   `ERR_BRIGHTNESS_PERMISSIONS_DENIED` -- The user did not grant `SYSTEM_BRIGHTNESS` permissions.
+
+## Enum types
+
+### BrightnessMode
+
+-   **`BrightnessMode.AUTOMATIC`** -- Mode in which the device OS will automatically adjust the screen brightness depending on the ambient light.
+-   **`BrightnessMode.MANUAL`** -- Mode in which the screen brightness will remain constant and will not be adjusted by the OS.
+-   **`BrightnessMode.UNKNOWN`** -- Means that the current brightness mode cannot be determined.
+
+## Error codes
+
+| Code | Description |
+| --- | --- |
+| `ERR_BRIGHTNESS` | An error occurred when getting or setting the app brightness. |
+| `ERR_BRIGHTNESS_INVALID_BRIGHTNESS_MODE` | An invalid brightness mode was passed as a method argument. |
+| `ERR_BRIGHTNESS_MODE` | An error occurred when getting or setting the system brightness mode. |
+| `ERR_BRIGHTNESS_PERMISSIONS_DENIED` | An attempt to set the system brightness was made without the proper permissions from the user. |
+| `ERR_BRIGHTNESS_SYSTEM` | An error occurred when getting or setting the system brightness. |
