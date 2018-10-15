@@ -156,7 +156,6 @@ jobs:
       - fetch_cocoapods_specs
       - yarn:
           working_directory: ~/project/tools-public
-      - run: nix run nixpkgs.nodejs-8_x -c ~/project/tools-public/generate-files-ios.sh
       - run: nix run nixpkgs.nodejs-8_x nixpkgs.fastlane -c fastlane ios create_simulator_build
 
   client_android:
