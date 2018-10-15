@@ -760,7 +760,7 @@ Let's add sounds whenever a key moment occurs:
 
 ```js
 // 1
-componentWillMount() {
+componentDidMount() {
     this.setupAudio();
 }
 

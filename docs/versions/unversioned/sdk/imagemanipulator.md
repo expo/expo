@@ -46,7 +46,7 @@ export default class ImageManipulatorSample extends React.Component {
     image: null,
   };
 
-  componentWillMount() {
+  componentDidMount() {
     (async () => {
       const image = Asset.fromModule(require('../path/to/image.jpg'));
       await image.downloadAsync();
