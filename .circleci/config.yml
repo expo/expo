@@ -91,7 +91,7 @@ workflows:
       - home
       - client_android
       - client_ios
-  #     - shell_app_sim_base_ios
+      - shell_app_sim_base_ios
   #     - shell_app_ios_tests:
   #         requires:
   #           - shell_app_sim_base_ios
@@ -159,6 +159,23 @@ jobs:
       - run: nix run nixpkgs.nodejs-8_x nixpkgs.fastlane -c fastlane ios create_simulator_build
       - store_artifacts:
           path: ~/Library/Logs/fastlane/
+
+  shell_app_sim_base_ios:
+    executor: mac
+    steps:
+      - install_nix
+      - setup
+      - update_submodules
+      - run: git lfs pull
+      - fetch_cocoapods_specs
+      - yarn:
+          working_directory: ~/project/tools-public
+      - run: nix run nixpkgs.nodejs-8_x -c ~/project/tools-public/generate-files-ios.sh
+      - run:
+          name: Build ios shell app simulator
+          working_directory: ~/project/tools-public
+          no_output_timeout: 30m
+          command: nix run nixpkgs.nodePackages.gulp-cli nixpkgs.cocoapods nixpkgs.xcpretty nixpkgs.expo-cli --command gulp ios-shell-app --action build --type simulator --verbose true --skipRepoUpdate
 
   client_android:
     executor: android
