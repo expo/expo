@@ -96,11 +96,11 @@ workflows:
   #         requires:
   #           - shell_app_sim_base_ios
   #           - test_suite_publish
-  #     - test_suite_publish
+  #     - test_suite_publish # universe/tools/powertools
   #     - client_android_tests:
   #         requires:
   #           - test_suite_publish
-  #     - shell_app_base_android_new
+  #     - shell_app_base_android_new # tarball built and uploaded from universe/server/turtle
 
 jobs:
   expo_sdk:
