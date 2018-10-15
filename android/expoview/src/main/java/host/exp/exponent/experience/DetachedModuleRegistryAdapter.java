@@ -10,7 +10,6 @@ import java.util.Map;
 
 import expo.adapters.react.ReactModuleRegistryProvider;
 import expo.core.ModuleRegistry;
-import expo.core.ModuleRegistryProvider;
 import expo.core.interfaces.InternalModule;
 import expo.core.interfaces.ModuleRegistryConsumer;
 import host.exp.exponent.ExponentManifest;

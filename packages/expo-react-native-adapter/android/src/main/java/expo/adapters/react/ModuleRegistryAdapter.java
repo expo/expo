@@ -11,12 +11,11 @@ import java.util.List;
 import expo.adapters.react.views.SimpleViewManagerAdapter;
 import expo.adapters.react.views.ViewGroupManagerAdapter;
 import expo.core.ModuleRegistry;
-import expo.core.ModuleRegistryProvider;
 
 /**
  * An adapter over {@link ModuleRegistry}, compatible with React (implementing {@link ReactPackage}).
  * Provides React Native with native modules and view managers,
- * which in turn are created by packages provided by {@link ModuleRegistryProvider}.
+ * which in turn are created by packages provided by {@link ReactModuleRegistryProvider}.
  */
 public class ModuleRegistryAdapter implements ReactPackage {
   protected ReactModuleRegistryProvider mModuleRegistryProvider;
