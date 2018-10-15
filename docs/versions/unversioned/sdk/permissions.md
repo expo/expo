@@ -19,7 +19,7 @@ Determines whether your app has already been granted access to the provided perm
 #### Returns
 
 Returns a `Promise` that is resolved with the information about the permissions, including status, expiration and scope (if it applies to the permission type).
-Top-level `status` and `exprires` keys stores combined info of each component permission that is asked for.
+Top-level `status` and `expires` keys stores combined info of each component permission that is asked for.
 If any permission resulted in negative result than that negative result is propagated here, that means top-level values are positive only if all component values are positive.
 
 Examples `[...componentsValues] => topLevelStatus`: 
