@@ -45,7 +45,7 @@ const generateJsPage = (filePath, filename) => {
 
   // Perform neccessary replacements
 
-  // Fix type syntax
+  // Fix type syntax. It is invalid in <(Inline)?Code> blocks, we replace it back when replacing $ with \$.
   markdown = markdown.replace(/Array<\w*?(>)/g, match => {
     return match.replace(/>/gi, '&gt;');
   });
@@ -90,14 +90,15 @@ const generateJsPage = (filePath, filename) => {
   });
 
   // Replace $ with \$ (i.e. escape $) inside <Code> and <InlineCode> blocks
+  // Replace &lt; with < and &gt; with > inside <Code> and <InlineCode> blocks
   let regex = /<Code>{`([\s\S]*?)`}<\/Code>/g;
   markdown = markdown.replace(regex, match => {
-    return match.replace(/\$/gi, '\\$');
+    return match.replace(/\$/gi, '\\$').replace(/Array&lt;(\w*?)&gt;/gi, 'Array<$1>');
   });
 
   regex = /<InlineCode>{`([\s\S]*?)`}<\/InlineCode>/g;
   markdown = markdown.replace(regex, match => {
-    return match.replace(/\$/gi, '\\$');
+    return match.replace(/\$/gi, '\\$').replace(/Array&lt;(\w*?)&gt;/gi, 'Array<$1>');
   });
 
   // Extract language marker from ``` blocks and turn it into a prop on <Code>
