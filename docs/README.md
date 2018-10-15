@@ -55,7 +55,7 @@ Always try to use the existing components and features in markdown. Create a new
 
 ### Quirks
 
-* You can can't have curly brace without quotes: '{}' -> `{}`
+* You can't have curly brace without quotes: \`{}\` -> `{}`
 * Make sure to leave a empty newline between a table and following content
 
 ## Transition from current docs to next.js docs
