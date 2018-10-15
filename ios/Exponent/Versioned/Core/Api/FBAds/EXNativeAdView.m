@@ -38,15 +38,17 @@
 {
   if (_onAdLoaded != nil) {
     _onAdLoaded(@{
+                  @"headline": nativeAd.headline,
+                  @"linkDescription": nativeAd.linkDescription,
                   @"advertiserName": nativeAd.advertiserName,
-                  @"sponsoredTranslation": nativeAd.sponsoredTranslation,
-                  @"bodyText": nativeAd.bodyText,
                   @"socialContext": nativeAd.socialContext,
                   @"callToActionText": nativeAd.callToAction,
+                  @"bodyText": nativeAd.bodyText,
+                  // TODO: Remove this deprecated field (in lieu of adTranslation) in SDK 32+
                   @"translation": nativeAd.adTranslation,
-                  @"linkDescription": nativeAd.linkDescription,
+                  @"adTranslation": nativeAd.adTranslation,
                   @"promotedTranslation": nativeAd.promotedTranslation,
-                  @"headline": nativeAd.headline,
+                  @"sponsoredTranslation": nativeAd.sponsoredTranslation,
                   });
   }
 }
