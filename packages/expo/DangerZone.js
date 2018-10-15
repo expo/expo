@@ -1,2 +1,3 @@
 // A convenience module that allows writing "import { X } from 'expo/DangerZone'"
-export * from './build/Expo/DangerZone';
+import DangerZone from './build/DangerZone';
+module.exports = DangerZone;
