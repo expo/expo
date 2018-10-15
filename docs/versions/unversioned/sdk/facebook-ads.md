@@ -30,7 +30,7 @@ To use Facebook Ads in production with real ads, you need to publish your app on
 
 ### Interstitial Ads
 
-Interstitial Ad is a type of an ad that displays full screen modal dialog with media content. It has a dismiss button as well as the clickable area that takes user outside of your app.
+Interstitial Ad is a type of ad that displays a full-screen modal dialog with media content. It has a dismiss button as well as a touchable area that takes the user outside of your app to the advertised content.
 
 Example:
 
@@ -42,15 +42,15 @@ FacebookAds.InterstitialAdManager.showAd(placementId)
   .catch(error => {})
 ```
 
-The method returns a promise that will be rejected when an error occurs during a call (e.g. no fill from ad server or network error) and resolve when user either dimisses or interacts with the displayed ad.
+The method returns a promise that will be rejected when an error occurs during a call (e.g. no fill from ad server or network error) and resolved when the user either dimisses or interacts with the displayed ad.
 
 ### Native Ads
 
-Native Ads can be customized to match the design of the app. To display a native ad, you need to,
+Native ads can be customized to match the design of your app. To display a native ad, you need to:
 
 #### 1. Create NativeAdsManager instance
 
-The `NativeAdManager` that is responsible for caching and fetching ads as you request them.
+The `NativeAdManager` is responsible for fetching and caching ads as you request them.
 
 ```js
 import { FacebookAds } from 'expo';
@@ -60,13 +60,12 @@ const adsManager = new FacebookAds.NativeAdsManager(placementId, numberOfAdsToRe
 
 The constructor accepts two parameters:
 
-- `placementId` - which is an unique identifier describing your ad units
+- `placementId` - which is a unique identifier describing your ad units
 - `numberOfAdsToRequest` - which is a number of ads to request by ads manager at a time
 
 #### 2. Wrap your component with `withNativeAd` HOC
 
-Now you need to wrap the component you want to use to show your add with the `withNativeAd` HOC.
-The component will receive the `nativeAd` prop you can use to render an ad.
+Next, you need to wrap the component you want to use to show your add with the `withNativeAd` higher-order component. The wrapped component will receive a prop named `nativeAd`, which you can use to render an ad.
 
 ```js
 import { FacebookAds } from 'expo';
@@ -89,7 +88,7 @@ The `nativeAd` object can contain the following properties:
 - `advertiserName` - The name of the Facebook Page or mobile app that represents the business running each ad.
 - `headline` - The headline that the advertiser entered when they created their ad. This is usually the ad's main title.
 - `linkDescription` - Additional information that the advertiser may have entered.
-- `translation` - The word 'ad', translated into the language based upon Facebook app language setting.
+- `adTranslation` - The word 'ad', translated into the language based upon Facebook app language setting.
 - `promotedTranslation` - The word 'promoted', translated into the language based upon Facebook app language setting.
 - `sponsoredTranslation` - The word 'sponsored', translated into the language based upon Facebook app language setting.
 - `bodyText` - Ad body
@@ -98,22 +97,21 @@ The `nativeAd` object can contain the following properties:
 
 More information on how the properties correspond to an exemplary ad can be found in the official Facebook documentation for [Android](https://developers.facebook.com/docs/audience-network/android-native) and for [iOS](https://developers.facebook.com/docs/audience-network/ios-native).
 
-#### 3. `MediaView` and `AdIconView` Components
+#### 3. Add `AdMediaView` and `AdIconView` components
 
-`MediaView` displays native ad media content whereas `AdIconView` is responsible for displaying ad icon.
+`AdMediaView` displays native ad media content whereas `AdIconView` is responsible for displaying an ad icon.
 
-> ** Note: ** Don't use more than one `MediaView`/`AdIconView` component within one native ad.
-  If you use more, only the last mounted one will be populated with ad content.
+> ** Note: ** Don't use more than one `AdMediaView` and `AdIconView` component (each) within one native ad. If you use more, only the last mounted one will be populated with ad content.
 
 ```js
 import { FacebookAds } from 'expo';
-const { AdIconview, MediaView } = FacebookAds;
+const { AdIconView, AdMediaView } = FacebookAds;
 
 class AdComponent extends React.Component {
   render() {
     return (
       <View>
-        <MediaView />
+        <AdMediaView />
         <AdIconView />
       </View>
     );
@@ -123,22 +121,22 @@ class AdComponent extends React.Component {
 export default FacebookAds.withNativeAd(AdComponent);
 ```
 
-#### 4. Mark element as triggerable
+#### 4. Mark which components trigger the ad
 
-> ** Note: ** In order for elements wrapped with `TriggerableView` to trigger the ad, you also must include `MediaView` in the children tree.
+> ** Note:** In order for elements wrapped with `AdTriggerView` to trigger the ad, you also must include `AdMediaView` in the children tree.
 
 ```js
 import { FacebookAds } from 'expo';
-const { TriggerableView, MediaView } = FacebookAds;
+const { AdTriggerView, AdMediaView } = FacebookAds;
 
 class AdComponent extends React.Component {
   render() {
     return (
       <View>
-        <MediaView />
-        <TriggerableView>
+        <AdMediaView />
+        <AdTriggerView>
           <Text>{this.props.nativeAd.bodyText}</Text>
-        </TriggerableView>
+        </AdTriggerView>
       </View>
     );
   }
@@ -163,9 +161,9 @@ class MyApp extends React.Component {
 }
 ```
 
-### BannerView
+### BannerAd
 
-BannerView component allows you to display native as banners (know as *AdView*).
+The `BannerAd` component allows you to display native as banners (known as *AdView*).
 
 Banners are available in 3 sizes:
 
@@ -175,7 +173,7 @@ Banners are available in 3 sizes:
 
 #### 1. Showing ad
 
-In order to show an ad, you have to first import it `BannerView` from the package:
+In order to show an ad, you first have to import `BannerAd` from the package:
 
 ```js
 import { FacebookAds } from 'expo';
@@ -183,11 +181,11 @@ import { FacebookAds } from 'expo';
 function ViewWithBanner(props) {
   return (
     <View>
-      <FacebookAds.BannerView
+      <FacebookAds.BannerAd
         placementId="YOUR_BANNER_PLACEMENT_ID"
         type="standard"
         onPress={() => console.log('click')}
-        onError={(err) => console.log('error', err)}
+        onError={(error) => console.log('error', error)}
       />
     </View>
   );
@@ -216,7 +214,7 @@ This controls which media from the native ads are cached before being displayed.
 adsManager.setMediaCachePolicy('none' | 'icon' | 'image' | 'all');
 ```
 
-**Note:** This method is a noop on Android
+**Note:** This method is a no-op on Android
 
 ### InterstitialAdManager
 
@@ -273,7 +271,7 @@ Sets current SDK log level.
 FacebookAds.AdSettings.setLogLevel('none' | 'debug' | 'verbose' | 'warning' | 'error' | 'notification');
 ```
 
-**Note:** This method is a noop on Android.
+**Note:** This method is a no-op on Android.
 
 #### setIsChildDirected
 
@@ -285,7 +283,7 @@ FacebookAds.AdSettings.setIsChildDirected(true | false);
 
 #### setMediationService
 
-If an ad provided service is mediating Audience Network in their sdk, it is required to set the name of the mediation service
+If an ad provided service is mediating Audience Network in their SDK, it is required to set the name of the mediation service
 
 ```js
 FacebookAds.AdSettings.setMediationService('foobar');
@@ -293,7 +291,7 @@ FacebookAds.AdSettings.setMediationService('foobar');
 
 #### setUrlPrefix
 
-Sets the url prefix to use when making ad requests.
+Sets the URL prefix to use when making ad requests.
 
 ```js
 FacebookAds.AdSettings.setUrlPrefix('...');
