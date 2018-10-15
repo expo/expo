@@ -20,4 +20,5 @@ Finally, the Expo SDK provides access to services which typically are a pain to 
 - Head over to [Installation](introduction/installation.html) to grab our tools and have a look around.
 - Make your first project by following the [Up and Running](guides/up-and-running.html) guide.
 - If you're not already familiar with React and React Native, you can bootstrap your knowledge with [React Native Express](http://www.reactnativeexpress.com/).
+- For hands-on React Native projects from beginner to advanced, check out [Fullstack React Native](https://www.fullstackreact.com/react-native/), a (paid) book by the author of React Native Express.
 - Join our [Community](introduction/community.html) and let us know what you're working on!

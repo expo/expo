@@ -20,6 +20,7 @@ The following resources are useful for learning Expo and some of the projects th
 ## React Native
 
 - [React Native Express](http://www.reactnativeexpress.com/) - The best way to get started with React Native! It's a walkthrough the building blocks of React and React Native.
+- [Fullstack React Native](https://www.fullstackreact.com/react-native/) (book) - From the author of React Native Express: build 7 complete apps, covering React Native fundamentals and advanced topics in-depth.
 - [Official React Native Documentation](https://facebook.github.io/react-native/docs/sample-application-movies.html)
 - [React Native Fundamentals](https://egghead.io/courses/react-native-fundamentals) (video course on Egghead.io)
 - [Animating React Native UI Elements](https://egghead.io/courses/animate-react-native-ui-elements) (video course on Egghead.io)
