@@ -8,7 +8,7 @@ The Expo client app for Android and iOS.
 
 This is the source code for the Expo client app used to view experiences published to the Expo service. If you want to build and install the Expo client directly onto a device, you're in the right place. Note that if you just want to install the Expo client app on a simulator, you do not need to build it from source. Instead, you should [follow the instructions here](https://docs.expo.io/versions/latest/introduction/installation.html).
 
-To build the Expo client app, follow the instructions in the [Set Up](#set-up) section below. You'll be able to use [XDE](https://github.com/expo/xde) or [exp](https://github.com/expo/exp) and the rest of Expo's infrastructure with the app you build.
+To build the Expo client app, follow the instructions in the [Set Up](#set-up) section below. Use the [expo-cli](https://docs.expo.io/versions/latest/workflow/expo-cli) command line to use Expo's infrastructure to build your app.
 
 Please ask us on the [forums](https://forums.expo.io/) if you get stuck.
 
