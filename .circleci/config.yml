@@ -50,6 +50,7 @@ commands:
         type: string
     steps:
       - run:
+          name: yarn << parameters.command >> (<< parameters.working_directory >>)
           working_directory: << parameters.working_directory >>
           command: for i in {1..5}; do nix run nixpkgs.yarn -c yarn << parameters.command >> && break || sleep 5; done
 
