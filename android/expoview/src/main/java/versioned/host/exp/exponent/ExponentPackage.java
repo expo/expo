@@ -37,6 +37,7 @@ import expo.modules.medialibrary.MediaLibraryPackage;
 import expo.modules.permissions.PermissionsPackage;
 import expo.modules.sensors.SensorsPackage;
 import expo.modules.sms.SMSPackage;
+import expo.modules.localization.LocalizationPackage;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.kernel.ExperienceId;
@@ -63,7 +64,6 @@ import versioned.host.exp.exponent.modules.api.ImageCropperModule;
 import versioned.host.exp.exponent.modules.api.ImagePickerModule;
 import versioned.host.exp.exponent.modules.api.KeepAwakeModule;
 import versioned.host.exp.exponent.modules.api.KeyboardModule;
-import versioned.host.exp.exponent.modules.api.LocalizationModule;
 import versioned.host.exp.exponent.modules.api.NotificationsModule;
 import versioned.host.exp.exponent.modules.api.RNViewShotModule;
 import versioned.host.exp.exponent.modules.api.SQLiteModule;
@@ -119,7 +119,8 @@ public class ExponentPackage implements ReactPackage {
       new BarCodeScannerPackage(),
       new AdMobPackage(),
       new StripePackage(),
-      new LocalAuthenticationPackage()
+      new LocalAuthenticationPackage(),
+      new LocalizationPackage()
   );
 
   private static final String TAG = ExponentPackage.class.getSimpleName();
@@ -220,7 +221,6 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new RNAWSCognitoModule(reactContext));
         nativeModules.add(new MailComposerModule(reactContext));
         nativeModules.add(new CalendarModule(reactContext, experienceId));
-        nativeModules.add(new LocalizationModule(reactContext));
         nativeModules.add(new ReanimatedModule(reactContext));
         nativeModules.add(new SplashScreenModule(reactContext, experienceId));
 
