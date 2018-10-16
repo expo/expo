@@ -43,7 +43,7 @@ public class ReactModuleRegistryProvider extends ModuleRegistryProvider {
     return new ModuleRegistry(internalModules, exportedModules, getViewManagers(context));
   }
 
-  private Collection<ViewManager> getViewManagers(Context context) {
+  /* package */ Collection<ViewManager> getViewManagers(Context context) {
     if (mViewManagers != null) {
       return mViewManagers;
     }

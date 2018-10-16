@@ -11,17 +11,16 @@ import java.util.List;
 import expo.adapters.react.views.SimpleViewManagerAdapter;
 import expo.adapters.react.views.ViewGroupManagerAdapter;
 import expo.core.ModuleRegistry;
-import expo.core.ModuleRegistryProvider;
 
 /**
  * An adapter over {@link ModuleRegistry}, compatible with React (implementing {@link ReactPackage}).
  * Provides React Native with native modules and view managers,
- * which in turn are created by packages provided by {@link ModuleRegistryProvider}.
+ * which in turn are created by packages provided by {@link ReactModuleRegistryProvider}.
  */
 public class ModuleRegistryAdapter implements ReactPackage {
-  protected ModuleRegistryProvider mModuleRegistryProvider;
+  protected ReactModuleRegistryProvider mModuleRegistryProvider;
 
-  public ModuleRegistryAdapter(ModuleRegistryProvider moduleRegistryProvider) {
+  public ModuleRegistryAdapter(ReactModuleRegistryProvider moduleRegistryProvider) {
     mModuleRegistryProvider = moduleRegistryProvider;
   }
 
@@ -46,11 +45,9 @@ public class ModuleRegistryAdapter implements ReactPackage {
   @Override
   @SuppressWarnings("unchecked")
   public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
-    ModuleRegistry moduleRegistry = mModuleRegistryProvider.get(reactContext);
-
     List<ViewManager> viewManagerList = new ArrayList<>();
 
-    for (expo.core.ViewManager viewManager : moduleRegistry.getAllViewManagers()) {
+    for (expo.core.ViewManager viewManager : mModuleRegistryProvider.getViewManagers(reactContext)) {
       switch (viewManager.getViewManagerType()) {
         case GROUP:
           viewManagerList.add(new ViewGroupManagerAdapter(viewManager));

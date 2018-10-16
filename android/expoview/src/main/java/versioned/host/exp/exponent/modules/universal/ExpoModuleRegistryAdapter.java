@@ -2,7 +2,6 @@ package versioned.host.exp.exponent.modules.universal;
 
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.uimanager.ViewManager;
 
 import org.json.JSONObject;
 
@@ -14,10 +13,8 @@ import expo.adapters.react.ModuleRegistryAdapter;
 import expo.adapters.react.ModuleRegistryReadyNotifier;
 import expo.adapters.react.NativeModulesProxy;
 import expo.adapters.react.ReactAdapterPackage;
-import expo.adapters.react.views.SimpleViewManagerAdapter;
-import expo.adapters.react.views.ViewGroupManagerAdapter;
+import expo.adapters.react.ReactModuleRegistryProvider;
 import expo.core.ModuleRegistry;
-import expo.core.ModuleRegistryProvider;
 import expo.core.interfaces.InternalModule;
 import expo.core.interfaces.ModuleRegistryConsumer;
 import host.exp.exponent.ExponentManifest;
@@ -34,7 +31,7 @@ import versioned.host.exp.exponent.modules.universal.sensors.ScopedRotationVecto
 public class ExpoModuleRegistryAdapter extends ModuleRegistryAdapter implements ScopedModuleRegistryAdapter {
   protected ReactAdapterPackage mReactAdapterPackage = new ReactAdapterPackage();
 
-  public ExpoModuleRegistryAdapter(ModuleRegistryProvider moduleRegistryProvider) {
+  public ExpoModuleRegistryAdapter(ReactModuleRegistryProvider moduleRegistryProvider) {
     super(moduleRegistryProvider);
   }
 
@@ -90,26 +87,5 @@ public class ExpoModuleRegistryAdapter extends ModuleRegistryAdapter implements 
   @Override
   public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
     throw new RuntimeException("Use createNativeModules(ReactApplicationContext, ExperienceId, JSONObject, List<NativeModule>) to get a list of native modules.");
-  }
-
-  @Override
-  @SuppressWarnings("unchecked")
-  public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
-    ModuleRegistry moduleRegistry = mModuleRegistryProvider.get(reactContext);
-
-    List<ViewManager> viewManagerList = new ArrayList<>();
-
-    // Naming conflict -- add abiXX_X_X. prefix to expo.core.ViewManager manually 
-    for (expo.core.ViewManager viewManager : moduleRegistry.getAllViewManagers()) {
-      switch (viewManager.getViewManagerType()) {
-        case GROUP:
-          viewManagerList.add(new ViewGroupManagerAdapter(viewManager));
-          break;
-        case SIMPLE:
-          viewManagerList.add(new SimpleViewManagerAdapter(viewManager));
-          break;
-      }
-    }
-    return viewManagerList;
   }
 }
