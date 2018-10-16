@@ -12,6 +12,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 
 import java.lang.ref.WeakReference;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -20,6 +21,7 @@ import versioned.host.exp.exponent.modules.api.av.AudioEventHandler;
 
 public abstract class PlayerData implements AudioEventHandler {
   static final String STATUS_ANDROID_IMPLEMENTATION_KEY_PATH = "androidImplementation";
+  static final String STATUS_HEADERS_KEY_PATH = "headers";
   static final String STATUS_IS_LOADED_KEY_PATH = "isLoaded";
   public static final String STATUS_URI_KEY_PATH = "uri";
   static final String STATUS_OVERRIDING_EXTENSION_KEY_PATH = "overridingExtension";
@@ -74,6 +76,7 @@ public abstract class PlayerData implements AudioEventHandler {
 
   final AVModule mAVModule;
   final Uri mUri;
+  final Map<String, Object> mRequestHeaders;
 
   private Handler mHandler = new Handler();
   private Runnable mProgressUpdater = new ProgressUpdater(this);
@@ -107,22 +110,27 @@ public abstract class PlayerData implements AudioEventHandler {
   float mVolume = 1.0f;
   boolean mIsMuted = false;
 
-  PlayerData(final AVModule avModule, final Uri uri) {
+  PlayerData(final AVModule avModule, final Uri uri, final Map<String, Object> requestHeaders) {
+    mRequestHeaders = requestHeaders;
     mAVModule = avModule;
     mUri = uri;
   }
 
   public static PlayerData createUnloadedPlayerData(final AVModule avModule, final ReactContext context, final ReadableMap source, final ReadableMap status) {
     final String uriString = source.getString(STATUS_URI_KEY_PATH);
+    Map<String, Object> requestHeaders = null;
+    if (source.hasKey(STATUS_HEADERS_KEY_PATH)) {
+      requestHeaders = source.getMap(STATUS_HEADERS_KEY_PATH).toHashMap();
+    }
     final String uriOverridingExtension = source.hasKey(STATUS_OVERRIDING_EXTENSION_KEY_PATH) ? source.getString(STATUS_OVERRIDING_EXTENSION_KEY_PATH) : null;
     // uriString is guaranteed not to be null (both VideoView.setSource and Sound.loadAsync handle that case)
     final Uri uri = Uri.parse(uriString);
 
     if (status.hasKey(STATUS_ANDROID_IMPLEMENTATION_KEY_PATH)
         && status.getString(STATUS_ANDROID_IMPLEMENTATION_KEY_PATH).equals(MediaPlayerData.IMPLEMENTATION_NAME)) {
-      return new MediaPlayerData(avModule, context, uri);
+      return new MediaPlayerData(avModule, context, uri, requestHeaders);
     } else {
-      return new SimpleExoPlayerData(avModule, context, uri, uriOverridingExtension);
+      return new SimpleExoPlayerData(avModule, context, uri, uriOverridingExtension, requestHeaders);
     }
   }
 

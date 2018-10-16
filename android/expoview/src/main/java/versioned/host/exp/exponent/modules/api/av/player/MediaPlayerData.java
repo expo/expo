@@ -45,8 +45,8 @@ class MediaPlayerData extends PlayerData implements
   private Integer mPlayableDurationMillis = null;
   private boolean mIsBuffering = false;
 
-  MediaPlayerData(final AVModule avModule, final ReactContext context, final Uri uri) {
-    super(avModule, uri);
+  MediaPlayerData(final AVModule avModule, final ReactContext context, final Uri uri, final Map<String, Object> requestHeaders) {
+    super(avModule, uri, requestHeaders);
     mReactContext = context;
   }
 
@@ -83,6 +83,13 @@ class MediaPlayerData extends PlayerData implements
         }
         cookieBuilder.append("\r\n");
         headers.put("Cookie", cookieBuilder.toString());
+        if (mRequestHeaders != null) {
+          for (Map.Entry<String, Object> headerEntry : mRequestHeaders.entrySet()) {
+            if (headerEntry.getValue() instanceof String) {
+              headers.put(headerEntry.getKey(), (String) headerEntry.getValue());
+            }
+          }
+        }
         unpreparedPlayer.setDataSource(mAVModule.mScopedContext, mUri, headers);
       }
     } catch (final Throwable throwable) {

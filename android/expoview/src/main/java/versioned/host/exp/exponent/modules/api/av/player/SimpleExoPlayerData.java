@@ -39,6 +39,7 @@ import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.util.Util;
 
 import java.io.IOException;
+import java.util.Map;
 
 import versioned.host.exp.exponent.modules.api.av.AVModule;
 
@@ -57,8 +58,8 @@ class SimpleExoPlayerData extends PlayerData
   private boolean mIsLoading = true;
   private ReactContext mReactContext;
 
-  SimpleExoPlayerData(final AVModule avModule, final ReactContext context, final Uri uri, final String overridingExtension) {
-    super(avModule, uri);
+  SimpleExoPlayerData(final AVModule avModule, final ReactContext context, final Uri uri, final String overridingExtension, final Map<String, Object> requestHeaders) {
+    super(avModule, uri, requestHeaders);
     mReactContext = context;
     mOverridingExtension = overridingExtension;
   }
@@ -89,7 +90,7 @@ class SimpleExoPlayerData extends PlayerData
     mSimpleExoPlayer.addVideoListener(this);
 
     // Produces DataSource instances through which media data is loaded.
-    final DataSource.Factory dataSourceFactory = new SharedCookiesDataSourceFactory(mUri, mReactContext, Util.getUserAgent(mAVModule.mScopedContext, "yourApplicationName"));
+    final DataSource.Factory dataSourceFactory = new SharedCookiesDataSourceFactory(mUri, mReactContext, Util.getUserAgent(mAVModule.mScopedContext, "yourApplicationName"), mRequestHeaders);
     try {
       // This is the MediaSource representing the media to be played.
       final MediaSource source = buildMediaSource(mUri, mOverridingExtension, mainHandler, dataSourceFactory);
