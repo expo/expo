@@ -15,6 +15,8 @@
 
 @interface RNSVGSvgView : UIView <RNSVGContainer>
 
+@property (nonatomic, strong) NSString *bbWidth;
+@property (nonatomic, strong) NSString *bbHeight;
 @property (nonatomic, assign) CGFloat minX;
 @property (nonatomic, assign) CGFloat minY;
 @property (nonatomic, assign) CGFloat vbWidth;
@@ -22,6 +24,12 @@
 @property (nonatomic, strong) NSString *align;
 @property (nonatomic, assign) RNSVGVBMOS meetOrSlice;
 @property (nonatomic, assign) BOOL responsible;
+@property (nonatomic, assign) BOOL active;
+@property (nonatomic, assign) CGRect boundingBox;
+@property (nonatomic, assign) CGAffineTransform initialCTM;
+@property (nonatomic, assign) CGAffineTransform invInitialCTM;
+
+
 
 /**
  * define <ClipPath></ClipPath> content as clipPath template.
@@ -41,5 +49,9 @@
 - (NSString *)getDataURL;
 
 - (CGRect)getContextBounds;
+
+- (void)drawRect:(CGRect)rect;
+
+- (void)drawToContext:(CGContextRef)context withRect:(CGRect)rect;
 
 @end

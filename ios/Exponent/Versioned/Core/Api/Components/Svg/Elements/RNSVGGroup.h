@@ -18,8 +18,8 @@
 
 @property (nonatomic, strong) NSDictionary *font;
 
-- (void)renderPathTo:(CGContextRef)context;
-- (void)renderGroupTo:(CGContextRef)context;
+- (void)renderPathTo:(CGContextRef)context rect:(CGRect)rect;
+- (void)renderGroupTo:(CGContextRef)context rect:(CGRect)rect;
 
 - (RNSVGGlyphContext *)getGlyphContext;
 - (void)pushGlyphContext;

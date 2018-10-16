@@ -84,8 +84,6 @@ class TSpanShadowNode extends TextShadowNode {
         mCache = getLinePath(mContent, paint, canvas);
         popGlyphContext();
 
-        mCache.computeBounds(new RectF(), true);
-
         return mCache;
     }
 
@@ -948,5 +946,40 @@ class TSpanShadowNode extends TextShadowNode {
 
             parent = parent.getParent();
         }
+    }
+
+    @Override
+    public int hitTest(final float[] src) {
+        if (mContent == null) {
+            return super.hitTest(src);
+        }
+        if (mPath == null || !mInvertible) {
+            return -1;
+        }
+
+        float[] dst = new float[2];
+        mInvMatrix.mapPoints(dst, src);
+        int x = Math.round(dst[0]);
+        int y = Math.round(dst[1]);
+
+        if (mRegion == null && mPath != null) {
+            mRegion = getRegion(mPath);
+        }
+        if (mRegion == null || !mRegion.contains(x, y)) {
+            return -1;
+        }
+
+        Path clipPath = getClipPath();
+        if (clipPath != null) {
+            if (mClipRegionPath != clipPath) {
+                mClipRegionPath = clipPath;
+                mClipRegion = getRegion(clipPath);
+            }
+            if (!mClipRegion.contains(x, y)) {
+                return -1;
+            }
+        }
+
+        return getReactTag();
     }
 }

@@ -562,10 +562,10 @@ class PropHelper {
                 arc -= Math.PI * 2;
             }
 
-            int n = (int) Math.ceil(Math.abs(arc / (Math.PI / 2)));
+            int n = (int) Math.ceil(Math.abs(round(arc / (Math.PI / 2), 4)));
 
             float step = arc / n;
-            float k = (4 / 3) * (float) Math.tan(step / 4);
+            float k = (float) ((4 / 3.0) * Math.tan(step / 4));
 
             float x = (float) Math.cos(sa);
             float y = (float) Math.sin(sa);
@@ -581,14 +581,14 @@ class PropHelper {
                 float cp2x = x + k * y;
                 float cp2y = y - k * x;
 
-                mPath.cubicTo(
-                        (cx + xx * cp1x + yx * cp1y) * mScale,
-                        (cy + xy * cp1x + yy * cp1y) * mScale,
-                        (cx + xx * cp2x + yx * cp2y) * mScale,
-                        (cy + xy * cp2x + yy * cp2y) * mScale,
-                        (cx + xx * x + yx * y) * mScale,
-                        (cy + xy * x + yy * y) * mScale
-                    );
+                float c1x = (cx + xx * cp1x + yx * cp1y);
+                float c1y = (cy + xy * cp1x + yy * cp1y);
+                float c2x = (cx + xx * cp2x + yx * cp2y);
+                float c2y = (cy + xy * cp2x + yy * cp2y);
+                float ex = (cx + xx * x + yx * y);
+                float ey = (cy + xy * x + yy * y);
+
+                mPath.cubicTo(c1x * mScale, c1y * mScale, c2x * mScale, c2y * mScale, ex * mScale, ey * mScale);
             }
         }
 
@@ -598,6 +598,11 @@ class PropHelper {
                 mPenDownY = mPenY;
                 mPendDownSet = true;
             }
+        }
+
+        private double round(double val, int sigDig) {
+            double multiplier = Math.pow(10, sigDig);
+            return Math.round(val * multiplier) / multiplier;
         }
     }
 }

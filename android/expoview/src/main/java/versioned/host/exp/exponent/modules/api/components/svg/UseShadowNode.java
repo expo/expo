@@ -63,6 +63,8 @@ class UseShadowNode extends RenderableShadowNode {
                 template.draw(canvas, paint, opacity * mOpacity);
             }
 
+            this.setClientRect(template.getClientRect());
+
             template.restoreCanvas(canvas, count);
             if (template instanceof RenderableShadowNode) {
                 ((RenderableShadowNode)template).resetProperties();
@@ -71,6 +73,24 @@ class UseShadowNode extends RenderableShadowNode {
             FLog.w(ReactConstants.TAG, "`Use` element expected a pre-defined svg template as `href` prop, " +
                 "template named: " + mHref + " is not defined.");
         }
+    }
+
+    @Override
+    public int hitTest(float[] src) {
+        if (!mInvertible) {
+            return -1;
+        }
+
+        float[] dst = new float[2];
+        mInvMatrix.mapPoints(dst, src);
+
+        VirtualNode template = getSvgShadowNode().getDefinedTemplate(mHref);
+        int hitChild = template.hitTest(dst);
+        if (hitChild != -1) {
+            return (template.isResponsible() || hitChild != template.getReactTag()) ? hitChild : getReactTag();
+        }
+
+        return -1;
     }
 
     @Override

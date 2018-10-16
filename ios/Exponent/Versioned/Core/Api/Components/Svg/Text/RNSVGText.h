@@ -24,7 +24,5 @@
 - (void)releaseCachedPath;
 - (CGPathRef)getGroupPath:(CGContextRef)context;
 - (CTFontRef)getFontFromContext;
-- (NSString*) getAlignmentBaseline;
-- (NSString*) getBaselineShift;
 
 @end
