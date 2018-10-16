@@ -5077,10 +5077,10 @@ jsbn@~0.1.0:
   resolved "https://registry.yarnpkg.com/jsbn/-/jsbn-0.1.1.tgz#a5e654c2e5a2deb5f201d96cefbca80c0ef2f513"
   integrity sha1-peZUwuWi3rXyAdls77yoDA7y9RM=
 
-jsc-android@^216113.0.0:
-  version "216113.0.3"
-  resolved "https://registry.yarnpkg.com/jsc-android/-/jsc-android-216113.0.3.tgz#fd655b06cacb84b57abe281641d44a39ac54480f"
-  integrity sha512-x5na/rMdZk3wBsavoOw35BBEzB8coFnTioDdFur040zMR6ShkYCLJXe7junb5vNH58ZsbWj/BrTa7cPnbvV8ug==
+jsc-android@^224109.1.0:
+  version "224109.1.0"
+  resolved "https://registry.yarnpkg.com/jsc-android/-/jsc-android-224109.1.0.tgz#9749ec92f1e284b3c09befe7c47cc6e60b1f0cdf"
+  integrity sha512-mhALFynePc/wJsUt9BJuH13mSK/dGWtBO/pcYwVV1I0A7iduyqy3fSoAt1b0yI+/B3TzlGyue/gqjPxsqG1HRQ==
 
 jsdom@^11.5.1:
   version "11.12.0"
