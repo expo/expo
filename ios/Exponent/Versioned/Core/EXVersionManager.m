@@ -283,7 +283,7 @@ void EXRegisterScopedModule(Class moduleClass, ...)
   NSString *experienceId = manifest[@"id"];
   NSDictionary *services = params[@"services"];
   NSString *localStorageDirectory = [[EXFileSystem documentDirectoryForExperienceId:experienceId] stringByAppendingPathComponent:EX_UNVERSIONED(@"RCTAsyncLocalStorage")];
-  BOOL isOpeningHomeInProductionMode = params[@"browserModuleClass"] && params[@"releaseChannel"];
+  BOOL isOpeningHomeInProductionMode = params[@"browserModuleClass"] && !manifest[@"developer"];
 
   NSMutableArray *extraModules = [NSMutableArray arrayWithArray:
                                   @[
