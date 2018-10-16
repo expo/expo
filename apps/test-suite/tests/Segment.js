@@ -68,4 +68,22 @@ export function test(t) {
         .toThrow();
     });
   });
+
+  t.describe('Segment.enabled state toggle', () => {
+    t.it('Segment.getEnabledAsync() returns true', async () => {
+      const enabled = await Segment.getEnabledAsync();
+      t.expect(enabled).toBe(true);
+    });
+
+    t.it('Segment.setEnabledAsync() rejects with a meaningful message', async () => {
+      let error = null;
+      try {
+        await Segment.setEnabledAsync(false)
+      } catch (e) {
+        error = e;
+      }
+      t.expect(error).not.toBeNull();
+      t.expect(error).toMatch('not supported in Expo Client');
+    });
+  });
 }

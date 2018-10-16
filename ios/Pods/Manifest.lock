@@ -221,6 +221,7 @@ PODS:
     - React
   - EXSegment (1.0.0):
     - Analytics (~> 3.5)
+    - EXConstantsInterface
     - EXCore
   - EXSensors (1.0.2):
     - EXCore
@@ -1384,7 +1385,7 @@ SPEC CHECKSUMS:
   EXPermissionsInterface: 76f80a0dcd16afde36498e3d3aa168cb43999558
   EXPrint: b6aab9715518cf67954ae260b71e28afd843353e
   EXReactNativeAdapter: 253efa069b53a6c8be7c3f2afd49ef6b4e97e902
-  EXSegment: b39f68ecbd4f7262b1f9cb3f187e684c92651894
+  EXSegment: cfe9aed31dbd7f1455724afe89a4920e5dad0049
   EXSensors: 6aa3b3b9906beb0b574a88943d171ebc226b0fe5
   EXSensorsInterface: 9e845bc03ad23a846fa6bcd4e2a60f1d0b1a6906
   EXSMS: 2a2f1abfb2f37b686e892261678c70f39c9b7fa8

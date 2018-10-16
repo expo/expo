@@ -19,6 +19,9 @@
     "EXCore": [
 
     ],
+    "EXConstantsInterface": [
+
+    ],
     "Analytics": [
       "~> 3.5"
     ]
