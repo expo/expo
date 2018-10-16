@@ -942,7 +942,7 @@ DEPENDENCIES:
   - EXGL-CPP (from `../packages/expo-gl-cpp/cpp`)
   - EXImageLoaderInterface (from `../packages/expo-image-loader-interface/ios`)
   - EXLocalAuthentication (from `../packages/expo-local-authentication/ios`)
-  - EXLocalization (from `../modules/expo-localization/ios`)
+  - EXLocalization (from `../packages/expo-localization/ios`)
   - EXLocation (from `../packages/expo-location/ios`)
   - EXMediaLibrary (from `../packages/expo-media-library/ios`)
   - EXPermissions (from `../packages/expo-permissions/ios`)
@@ -1253,7 +1253,7 @@ EXTERNAL SOURCES:
   EXLocalAuthentication:
     :path: "../packages/expo-local-authentication/ios"
   EXLocalization:
-    :path: "../modules/expo-localization/ios"
+    :path: "../packages/expo-localization/ios"
   EXLocation:
     :path: "../packages/expo-location/ios"
   EXMediaLibrary:
@@ -1433,6 +1433,6 @@ SPEC CHECKSUMS:
   yogaABI29_0_0: 4fdf5bbd444d2968ec42ccadec97b02c672eda80
   yogaABI30_0_0: 4c86e39466368a6b018b8b78aeb654b6620512a1
 
-PODFILE CHECKSUM: 8ffa894a8028a5d909eb4b86bfea0ab488944d85
+PODFILE CHECKSUM: 48300a992da7f8e95e9189a22e73d80d0af49220
 
 COCOAPODS: 1.5.3
