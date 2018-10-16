@@ -25,6 +25,7 @@ export { FileSystem } from 'expo-file-system';
 export { Font } from 'expo-font';
 export { GLView } from 'expo-gl';
 export { LocalAuthentication } from 'expo-local-authentication';
+export { Localization } from 'expo-localization';
 export { Location } from 'expo-location';
 export { MediaLibrary } from 'expo-media-library';
 export { Permissions } from 'expo-permissions';

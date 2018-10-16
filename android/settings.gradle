@@ -35,6 +35,7 @@ def includeUniversalModule = { name ->
   'expo-image-loader-interface',
   'expo-local-authentication',
   'expo-location',
+  'expo-localization',
   'expo-media-library',
   'expo-payments-stripe',
   'expo-permissions',

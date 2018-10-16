@@ -1,6 +1,5 @@
-import { NativeModules, Platform } from 'react-native';
-
-const { ExponentLocalization } = NativeModules;
+import { NativeModulesProxy, Platform } from 'expo-core';
+const { ExpoLocalization } = NativeModulesProxy;
 
 const isObject = obj => obj && obj.constructor && obj.constructor === Object;
 
@@ -109,12 +108,33 @@ class LocaleStore {
   }
 }
 
-const getCurrentLocaleAsync = async () => {
-  return (await ExponentLocalization.getCurrentLocaleAsync()).replace('-', '_');
-};
+function warnDeprecated(deprecated, replacement) {
+  console.warn(
+    `Expo.DangerZone.Localization.${deprecated} is deprecated. Use \`Expo.Localization.${replacement}\` instead.`
+  );
+}
 
 export default {
-  ...ExponentLocalization,
-  getCurrentLocaleAsync,
+  ...ExpoLocalization,
+  getCurrentDeviceCountryAsync() {
+    warnDeprecated('getCurrentDeviceCountryAsync()', 'country');
+    return ExpoLocalization.country;
+  },
+  getCurrentLocaleAsync() {
+    warnDeprecated('getCurrentLocaleAsync()', 'locale');
+    return ExpoLocalization.locale.replace('-', '_');
+  },
+  getCurrentTimeZoneAsync() {
+    warnDeprecated('getCurrentTimeZoneAsync()', 'timezone');
+    return ExpoLocalization.timezone;
+  },
+  getPreferredLocalesAsync() {
+    warnDeprecated('getPreferredLocalesAsync()', 'locales');
+    return ExpoLocalization.locales;
+  },
+  getISOCurrencyCodesAsync() {
+    warnDeprecated('getISOCurrencyCodesAsync()', 'isoCurrencyCodes');
+    return ExpoLocalization.isoCurrencyCodes;
+  },
   LocaleStore,
 };
