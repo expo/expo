@@ -6,6 +6,10 @@ When it comes to adding functionality that can access potentially sensitive info
 
 If you are deploying your app to the Apple iTunes Store, you should consider adding additional metadata to your app in order to customize the system permissions dialog and explain why your app requires permissions. See more info in the [App Store Deployment Guide](../guides/app-stores.html#system-permissions-dialogs-on-ios).
 
+## Manually testing permissions
+
+Often you want to be able to test what happens when you reject a permission to ensure that it has the desired behavior. An operating-system level restriction on both iOS and Android prohibits an app from asking for the same permission more than once (you can imagine how this could be annoying for the user to be repeatedly prompted for permissions). So in order to test different flows involving permissions, you may need to uninstall and reinstall the Expo app. In the simulator this is as easy as deleting the app and expo-cli will automatically install it again next time you launch the project from it.
+
 ## Methods
 
 ### `Expo.Permissions.getAsync(...permissionTypes)`
@@ -22,7 +26,7 @@ Returns a `Promise` that is resolved with the information about the permissions,
 Top-level `status` and `exprires` keys stores combined info of each component permission that is asked for.
 If any permission resulted in negative result than that negative result is propagated here, that means top-level values are positive only if all component values are positive.
 
-Examples `[...componentsValues] => topLevelStatus`: 
+Examples `[...componentsValues] => topLevelStatus`:
 * `[granted, denied, granted] => denied`
 * `[granted, granted, granted] => granted`
 
