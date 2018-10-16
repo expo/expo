@@ -151,13 +151,14 @@
 
 - (void)dealloc
 {
+    CGPathRelease(self.path);
     CGPathRelease(_hitArea);
     if (_strokeDasharrayData.array) {
         free(_strokeDasharrayData.array);
     }
 }
 
-- (void)renderTo:(CGContextRef)context
+- (void)renderTo:(CGContextRef)context rect:(CGRect)rect
 {
     // This needs to be painted on a layer before being composited.
     CGContextSaveGState(context);
@@ -165,25 +166,31 @@
     CGContextSetAlpha(context, self.opacity);
 
     [self beginTransparencyLayer:context];
-    [self renderLayerTo:context];
+    [self renderLayerTo:context rect:rect];
     [self endTransparencyLayer:context];
 
     CGContextRestoreGState(context);
 }
 
 
-- (void)renderLayerTo:(CGContextRef)context
+- (void)renderLayerTo:(CGContextRef)context rect:(CGRect)rect
 {
     if (!self.fill && !self.stroke) {
         return;
     }
 
-    CGPathRef path = [self getPath:context];
-    [self setHitArea:path];
-
     if (self.opacity == 0) {
         return;
     }
+
+    if (!self.path) {
+        self.path = CGPathRetain(CFAutorelease(CGPathCreateCopy([self getPath:context])));
+        [self setHitArea:self.path];
+    }
+    
+    const CGRect pathBounding = CGPathGetBoundingBox(self.path);
+    const CGAffineTransform svgToClientTransform = CGAffineTransformConcat(CGContextGetCTM(context), self.svgView.invInitialCTM);
+    self.clientRect = CGRectApplyAffineTransform(pathBounding, svgToClientTransform);
 
     CGPathDrawingMode mode = kCGPathStroke;
     BOOL fillColor = NO;
@@ -198,11 +205,11 @@
             mode = evenodd ? kCGPathEOFill : kCGPathFill;
         } else {
             CGContextSaveGState(context);
-            CGContextAddPath(context, path);
+            CGContextAddPath(context, self.path);
             CGContextClip(context);
             [self.fill paint:context
                      opacity:self.fillOpacity
-                     painter:[[self getSvgView] getDefinedPainter:self.fill.brushRef]
+                     painter:[self.svgView getDefinedPainter:self.fill.brushRef]
              ];
             CGContextRestoreGState(context);
 
@@ -224,7 +231,7 @@
         }
 
         if (!fillColor) {
-            CGContextAddPath(context, path);
+            CGContextAddPath(context, self.path);
             CGContextReplacePathWithStrokedPath(context);
             CGContextClip(context);
         }
@@ -236,55 +243,49 @@
         } else if (!strokeColor) {
             // draw fill
             if (fillColor) {
-                CGContextAddPath(context, path);
+                CGContextAddPath(context, self.path);
                 CGContextDrawPath(context, mode);
             }
 
             // draw stroke
-            CGContextAddPath(context, path);
+            CGContextAddPath(context, self.path);
             CGContextReplacePathWithStrokedPath(context);
             CGContextClip(context);
 
             [self.stroke paint:context
                        opacity:self.strokeOpacity
-                       painter:[[self getSvgView] getDefinedPainter:self.stroke.brushRef]
+                       painter:[self.svgView getDefinedPainter:self.stroke.brushRef]
              ];
             return;
         }
     }
 
-    CGContextAddPath(context, path);
+    CGContextAddPath(context, self.path);
     CGContextDrawPath(context, mode);
 }
 
 - (void)setHitArea:(CGPathRef)path
 {
     CGPathRelease(_hitArea);
-    if (self.responsible) {
-        // Add path to hitArea
-        CGMutablePathRef hitArea = CGPathCreateMutableCopy(path);
-
-        if (self.stroke && self.strokeWidth) {
-            // Add stroke to hitArea
-            CGFloat width = [self relativeOnOther:self.strokeWidth];
-            CGPathRef strokePath = CGPathCreateCopyByStrokingPath(hitArea, nil, width, self.strokeLinecap, self.strokeLinejoin, self.strokeMiterlimit);
-            CGPathAddPath(hitArea, nil, strokePath);
-            CGPathRelease(strokePath);
-        }
-
-        _hitArea = CGPathRetain(CFAutorelease(CGPathCreateCopy(hitArea)));
-        CGPathRelease(hitArea);
+    _hitArea = nil;
+    // Add path to hitArea
+    CGMutablePathRef hitArea = CGPathCreateMutableCopy(path);
+    
+    if (self.stroke && self.strokeWidth) {
+        // Add stroke to hitArea
+        CGFloat width = [self relativeOnOther:self.strokeWidth];
+        CGPathRef strokePath = CGPathCreateCopyByStrokingPath(hitArea, nil, width, self.strokeLinecap, self.strokeLinejoin, self.strokeMiterlimit);
+        CGPathAddPath(hitArea, nil, strokePath);
+        CGPathRelease(strokePath);
     }
+    
+    _hitArea = CGPathRetain(CFAutorelease(CGPathCreateCopy(hitArea)));
+    CGPathRelease(hitArea);
 
 }
 
 // hitTest delagate
 - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
-{
-    return [self hitTest:point withEvent:event withTransform:CGAffineTransformIdentity];
-}
-
-- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event withTransform:(CGAffineTransform)transform
 {
     if (!_hitArea) {
         return nil;
@@ -297,25 +298,18 @@
         return self;
     }
 
-    CGAffineTransform matrix = CGAffineTransformConcat(self.matrix, transform);
-    CGPathRef hitArea = CGPathCreateCopyByTransformingPath(_hitArea, &matrix);
-    BOOL contains = CGPathContainsPoint(hitArea, nil, point, NO);
-    CGPathRelease(hitArea);
+    CGPoint transformed = CGPointApplyAffineTransform(point, self.invmatrix);
 
-    if (contains) {
-        CGPathRef clipPath = [self getClipPath];
-
-        if (!clipPath) {
-            return self;
-        } else {
-            CGPathRef transformedClipPath = CGPathCreateCopyByTransformingPath(clipPath, &matrix);
-            BOOL result = CGPathContainsPoint(transformedClipPath, nil, point, self.clipRule == kRNSVGCGFCRuleEvenodd);
-            CGPathRelease(transformedClipPath);
-            return result ? self : nil;
-        }
-    } else {
+    if (!CGPathContainsPoint(_hitArea, nil, transformed, NO)) {
         return nil;
     }
+
+    CGPathRef clipPath = [self getClipPath];
+    if (clipPath && !CGPathContainsPoint(clipPath, nil, transformed, self.clipRule == kRNSVGCGFCRuleEvenodd)) {
+        return nil;
+    }
+
+    return self;
 }
 
 - (NSArray<NSString *> *)getAttributeList

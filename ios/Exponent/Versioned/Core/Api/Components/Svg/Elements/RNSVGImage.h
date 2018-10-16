@@ -8,11 +8,13 @@
 
 #import <Foundation/Foundation.h>
 
+#import <React/RCTBridge.h>
 #import "RNSVGRenderable.h"
 #import "RNSVGVBMOS.h"
 
 @interface RNSVGImage : RNSVGRenderable
 
+@property (nonatomic, weak) RCTBridge *bridge;
 @property (nonatomic, assign) id src;
 @property (nonatomic, strong) NSString* x;
 @property (nonatomic, strong) NSString* y;

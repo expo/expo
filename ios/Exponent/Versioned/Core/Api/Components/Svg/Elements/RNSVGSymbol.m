@@ -72,15 +72,15 @@
     _meetOrSlice = meetOrSlice;
 }
 
-- (void)renderTo:(CGContextRef)context
+- (void)renderTo:(CGContextRef)context rect:(CGRect)rect
 {
     // Do not render Symbol
 }
 
 - (void)renderSymbolTo:(CGContextRef)context width:(CGFloat)width height:(CGFloat)height
 {
+    CGRect eRect = CGRectMake(0, 0, width, height);
     if (self.align) {
-        CGRect eRect = CGRectMake(0, 0, width, height);
         
         CGAffineTransform viewBoxTransform = [RNSVGViewBox getTransform:CGRectMake(self.minX, self.minY, self.vbWidth, self.vbHeight)
                                                                   eRect:eRect
@@ -89,7 +89,7 @@
         
         CGContextConcatCTM(context, viewBoxTransform);
     }
-    [self renderGroupTo:context];
+    [self renderGroupTo:context rect:eRect];
 }
 
 @end
