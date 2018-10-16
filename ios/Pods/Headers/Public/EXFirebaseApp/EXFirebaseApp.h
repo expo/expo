@@ -1,0 +1,1 @@
+../../../../../packages/expo-firebase-app/ios/EXFirebaseApp/EXFirebaseApp.h

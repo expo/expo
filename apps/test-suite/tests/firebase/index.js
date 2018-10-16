@@ -47,7 +47,7 @@ const tests = [
   // httpMetric,
   // config,
   // core,
-  functions,
+  // functions,
   // storage,
   // auth,
   // authEmailLink,
