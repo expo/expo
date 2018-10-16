@@ -11,6 +11,7 @@ const soundUri = 'http://www.noiseaddicts.com/samples_1w72b820/280.mp3';
 const hlsStreamUri = 'http://qthttp.apple.com.edgesuite.net/1010qwoeiuryfg/sl.m3u8';
 const hlsStreamUriWithRedirect = 'http://bit.ly/1iy90bn';
 const redirectingSoundUri = 'http://bit.ly/2qBMx80';
+const authenticatedStaticFilesBackend = 'https://authenticated-static-files-hagckpsbra.now.sh';
 
 export function test(t) {
   t.describe('Audio class', () => {
@@ -112,7 +113,7 @@ export function test(t) {
       t.describe('cookie session', () => {
         t.afterEach(async () => {
           try {
-            await fetch('https://authenticated-static-files-pybhevxezw.now.sh/sign_out', {
+            await fetch(`${authenticatedStaticFilesBackend}/sign_out`, {
               method: 'DELETE',
               credentials: true,
             });
@@ -125,7 +126,7 @@ export function test(t) {
           let error = null;
           try {
             await soundObject.loadAsync({
-              uri: 'https://authenticated-static-files-pybhevxezw.now.sh/LLizard.mp3',
+              uri: `${authenticatedStaticFilesBackend}/LLizard.mp3`,
             });
           } catch (err) {
             error = err;
@@ -136,15 +137,15 @@ export function test(t) {
           } else {
             t.expect(error.toString()).toMatch('error code -1013');
           }
-          const signInResponse = await (await fetch(
-            'https://authenticated-static-files-pybhevxezw.now.sh/sign_in',
-            { method: 'POST', credentials: true }
-          )).text();
+          const signInResponse = await (await fetch(`${authenticatedStaticFilesBackend}/sign_in`, {
+            method: 'POST',
+            credentials: true,
+          })).text();
           t.expect(signInResponse).toMatch('Signed in successfully!');
           error = null;
           try {
             await soundObject.loadAsync({
-              uri: 'https://authenticated-static-files-pybhevxezw.now.sh/LLizard.mp3',
+              uri: `${authenticatedStaticFilesBackend}/LLizard.mp3`,
             });
           } catch (err) {
             error = err;
@@ -152,6 +153,65 @@ export function test(t) {
           t.expect(error).toBeNull();
         });
       });
+
+      t.it('supports adding custom headers to media request', async () => {
+        let error = null;
+        try {
+          await soundObject.loadAsync({
+            uri: `${authenticatedStaticFilesBackend}/LLizard.mp3`,
+          });
+        } catch (err) {
+          error = err;
+        }
+        if (!error) {
+          throw new Error('Backend unexpectedly allowed unauthenticated request.');
+        }
+        error = null;
+        try {
+          await soundObject.loadAsync({
+            uri: `${authenticatedStaticFilesBackend}/LLizard.mp3`,
+            headers: {
+              authorization: 'mellon',
+            },
+          });
+        } catch (err) {
+          error = err;
+        }
+        t.expect(error).toBeNull();
+      });
+
+      if (Platform.OS === 'android') {
+        t.it(
+          'supports adding custom headers to media request (MediaPlayer implementation)',
+          async () => {
+            let error = null;
+            try {
+              await soundObject.loadAsync({
+                uri: `${authenticatedStaticFilesBackend}/LLizard.mp3`,
+                androidImplementation: 'MediaPlayer',
+              });
+            } catch (err) {
+              error = err;
+            }
+            if (!error) {
+              throw new Error('Backend unexpectedly allowed unauthenticated request.');
+            }
+            error = null;
+            try {
+              await soundObject.loadAsync({
+                uri: `${authenticatedStaticFilesBackend}/LLizard.mp3`,
+                androidImplementation: 'MediaPlayer',
+                headers: {
+                  authorization: 'mellon',
+                },
+              });
+            } catch (err) {
+              error = err;
+            }
+            t.expect(error).toBeNull();
+          }
+        );
+      }
 
       t.it('redirects from HTTPS URL to HTTPS URL (301)', async () => {
         let error = null;
