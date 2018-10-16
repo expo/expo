@@ -13,6 +13,9 @@
   "dependencies": {
     "expo-core": "~1.1.0"
   },
+  "peerDependencies": {
+    "expo-constants-interface": "^1.0.0"
+  },
   "devDependencies": {
     "babel-preset-expo": "^4.0.0"
   }

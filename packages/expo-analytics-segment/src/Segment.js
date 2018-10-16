@@ -55,4 +55,16 @@ export default {
   flush(): void {
     ExponentSegment.flush();
   },
+
+  getEnabledAsync(): Promise<boolean> {
+    return new Promise((resolve, reject) =>
+      ExponentSegment.getEnabledAsync()
+        .then(isEnabledNumber => resolve(!!isEnabledNumber))
+        .catch(reject)
+    );
+  },
+
+  setEnabledAsync(enabled: boolean): Promise<void> {
+    return ExponentSegment.setEnabledAsync(enabled);
+  },
 };
