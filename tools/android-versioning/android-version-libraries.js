@@ -39,12 +39,17 @@ const LIBRARIES = [
     name: 'imagepipeline-okhttp3',
     version: '1.0.1',
   },
+  {
+    group: 'com.google.android.exoplayer',
+    name: 'extension-okhttp',
+    version: '2.6.1',
+  }
 ];
 
 const AAR_LIBRARY = {
-  group: 'com.facebook.fresco',
-  name: 'imagepipeline-okhttp3',
-  version: '1.3.0',
+  group: 'com.google.android.exoplayer',
+  name: 'extension-okhttp',
+  version: '2.6.1',
 };
 
 const AAR_JAR_JAR_RULES_FILE = 'okhttpjarjar.txt';
@@ -94,7 +99,12 @@ dependencies {
 ${deps}
 }
 
-repositories { mavenCentral() }
+repositories {
+  mavenCentral()
+  maven { url "https://maven.google.com" }
+  google()
+  jcenter()
+}
 
 task getDeps(type: Copy) {
   from sourceSets.main.runtimeClasspath

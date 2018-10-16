@@ -114,6 +114,7 @@ export function test(t) {
           try {
             await fetch('https://authenticated-static-files-pybhevxezw.now.sh/sign_out', {
               method: 'DELETE',
+              credentials: true,
             });
           } catch (error) {
             console.warn(`Could not sign out of cookie session test backend, error: ${error}.`);
@@ -137,7 +138,7 @@ export function test(t) {
           }
           const signInResponse = await (await fetch(
             'https://authenticated-static-files-pybhevxezw.now.sh/sign_in',
-            { method: 'POST' }
+            { method: 'POST', credentials: true }
           )).text();
           t.expect(signInResponse).toMatch('Signed in successfully!');
           error = null;
@@ -150,6 +151,19 @@ export function test(t) {
           }
           t.expect(error).toBeNull();
         });
+      });
+
+      t.it('redirects from HTTPS URL to HTTPS URL (301)', async () => {
+        let error = null;
+        try {
+          await soundObject.loadAsync({
+            uri:
+              'https://player.vimeo.com/external/181375362.sd.mp4?s=cf573e9cf7d747f4eaf7e57eeec88e9b22e3933f&profile_id=165',
+          });
+        } catch (err) {
+          error = err;
+        }
+        t.expect(error).toBeNull();
       });
 
       if (Platform.OS === 'android') {
