@@ -117,6 +117,7 @@ Get the current position of the device.
 
     -   **enableHighAccuracy (_boolean_)** -- Whether to enable high-accuracy mode. For low-accuracy the implementation can avoid geolocation providers that consume a significant amount of power (such as GPS).
     -   **maximumAge (_number_)** -- (Android only). If specified, allow returning a previously cached position that is at most this old in milliseconds. If not specified, always gets a new location. On iOS this option is ignored and a new location is always returned.
+    -   **timeout (_number_)** -- (Android only). If specified, allow device to determine the position for a maximum of _limit_ time (in miliseconds).
 
 #### Returns
 
