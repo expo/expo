@@ -17,7 +17,7 @@
 
 - (void)parseReference
 {
-    [[self getSvgView] defineClipPath:self clipPathName:self.name];
+    [self.svgView defineClipPath:self clipPathName:self.name];
 }
 
 

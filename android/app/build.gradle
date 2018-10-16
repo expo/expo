@@ -158,6 +158,9 @@ dependencies {
   implementation 'com.squareup.okhttp3:okhttp-ws:3.4.1'
   implementation 'com.squareup.okio:okio:1.9.0'
 
+  implementation 'com.google.android.exoplayer:exoplayer:2.6.1'
+  implementation 'expolib_v1.com.google.android.exoplayer:expolib_v1-extension-okhttp:2.6.1@aar'
+
   // Testing
   androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
   // We use a modified build of com.android.support.test:runner:1.0.1. Explanation in maven-test/README

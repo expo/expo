@@ -259,10 +259,8 @@ export type NativeAd = {
 
   /**
    * The word "ad", translated into the viewer's language
-   *
-   * TODO: Rename this field to `adTranslation` to be consistent with the other translation fields
    */
-  translation?: string;
+  adTranslation?: string;
 
   /**
    * The word "promoted", translated into the viewer's language

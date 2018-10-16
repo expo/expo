@@ -15,18 +15,17 @@
 
 @implementation RNSVGText
 {
-    RNSVGText *_textRoot;
     RNSVGGlyphContext *_glyphContext;
 }
 
-- (void)renderLayerTo:(CGContextRef)context
+- (void)renderLayerTo:(CGContextRef)context rect:(CGRect)rect
 {
     [self clip:context];
     CGContextSaveGState(context);
     [self setupGlyphContext:context];
 
     CGPathRef path = [self getGroupPath:context];
-    [self renderGroupTo:context];
+    [self renderGroupTo:context rect:rect];
     [self releaseCachedPath];
     CGContextRestoreGState(context);
 
@@ -69,75 +68,76 @@
     return (CGPathRef)CFAutorelease(CGPathCreateCopyByTransformingPath(groupPath, &CGAffineTransformIdentity));
 }
 
-- (void)renderGroupTo:(CGContextRef)context
+- (void)renderGroupTo:(CGContextRef)context rect:(CGRect)rect
 {
     [self pushGlyphContext];
-    [super renderGroupTo:context];
+    [super renderGroupTo:context rect:rect];
     [self popGlyphContext];
 }
 
-- (RNSVGText *)getTextRoot
+// TODO: Optimisation required
+- (RNSVGText *)textRoot
 {
-    if (!_textRoot) {
-        _textRoot = self;
-        while (_textRoot && [_textRoot class] != [RNSVGText class]) {
-            if (![_textRoot isKindOfClass:[RNSVGText class]]) {
-                //todo: throw exception here
-                break;
-            }
-            _textRoot = (RNSVGText*)[_textRoot superview];
+    RNSVGText *root = self;
+    while (root && [root class] != [RNSVGText class]) {
+        if (![root isKindOfClass:[RNSVGText class]]) {
+            //todo: throw exception here
+            break;
         }
+        root = (RNSVGText*)[root superview];
     }
 
-    return _textRoot;
+    return root;
 }
 
-- (NSString*) getAlignmentBaseline
+- (NSString *)alignmentBaseline
 {
-    if (self.alignmentBaseline != nil) {
-        return self.alignmentBaseline;
+    if (_alignmentBaseline != nil) {
+        return _alignmentBaseline;
     }
-    UIView* parent = [self superview];
+    
+    UIView* parent = self.superview;
     while (parent != nil) {
         if ([parent isKindOfClass:[RNSVGText class]]) {
             RNSVGText* node = (RNSVGText*)parent;
             NSString* baseline = node.alignmentBaseline;
             if (baseline != nil) {
-                self.alignmentBaseline = baseline;
+                _alignmentBaseline = baseline;
                 return baseline;
             }
         }
         parent = [parent superview];
     }
-    if (self.alignmentBaseline == nil) {
-        self.alignmentBaseline = RNSVGAlignmentBaselineStrings[0];
+    
+    if (_alignmentBaseline == nil) {
+        _alignmentBaseline = RNSVGAlignmentBaselineStrings[0];
     }
-    return self.alignmentBaseline;
+    return _alignmentBaseline;
 }
 
-- (NSString*) getBaselineShift
+- (NSString *)baselineShift
 {
-    if (self.baselineShift != nil) {
-        return self.baselineShift;
+    if (_baselineShift != nil) {
+        return _baselineShift;
     }
-    if (self.baselineShift == nil) {
-        UIView* parent = [self superview];
-        while (parent != nil) {
-            if ([parent isKindOfClass:[RNSVGText class]]) {
-                RNSVGText* node = (RNSVGText*)parent;
-                NSString* baselineShift = node.baselineShift;
-                if (baselineShift != nil) {
-                    self.baselineShift = baselineShift;
-                    return baselineShift;
-                }
+    
+    UIView* parent = [self superview];
+    while (parent != nil) {
+        if ([parent isKindOfClass:[RNSVGText class]]) {
+            RNSVGText* node = (RNSVGText*)parent;
+            NSString* baselineShift = node.baselineShift;
+            if (baselineShift != nil) {
+                _baselineShift = baselineShift;
+                return baselineShift;
             }
-            parent = [parent superview];
         }
+        parent = [parent superview];
     }
-    if (self.baselineShift == nil) {
-        self.baselineShift = @"";
-    }
-    return self.baselineShift;
+    
+    // set default value
+    _baselineShift = @"";
+    
+    return _baselineShift;
 }
 
 - (RNSVGGlyphContext *)getGlyphContext
@@ -147,23 +147,23 @@
 
 - (void)pushGlyphContext
 {
-    [[[self getTextRoot] getGlyphContext] pushContext:self
-                                                              font:self.font
-                                                                 x:self.positionX
-                                                                 y:self.positionY
-                                                            deltaX:self.deltaX
-                                                            deltaY:self.deltaY
-                                                            rotate:self.rotate];
+    [[self.textRoot getGlyphContext] pushContext:self
+                                            font:self.font
+                                               x:self.positionX
+                                               y:self.positionY
+                                          deltaX:self.deltaX
+                                          deltaY:self.deltaY
+                                          rotate:self.rotate];
 }
 
 - (void)popGlyphContext
 {
-    [[[self getTextRoot] getGlyphContext] popContext];
+    [[self.textRoot getGlyphContext] popContext];
 }
 
 - (CTFontRef)getFontFromContext
 {
-    return [[[self getTextRoot] getGlyphContext] getGlyphFont];
+    return [[self.textRoot getGlyphContext] getGlyphFont];
 }
 
 @end

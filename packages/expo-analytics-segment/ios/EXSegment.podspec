@@ -17,6 +17,7 @@ Pod::Spec.new do |s|
   s.requires_arc   = true
 
   s.dependency 'EXCore'
+  s.dependency 'EXConstantsInterface'
   s.dependency 'Analytics', '~> 3.5'
 
 end

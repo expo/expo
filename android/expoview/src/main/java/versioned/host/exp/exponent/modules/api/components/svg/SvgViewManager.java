@@ -12,11 +12,11 @@ package versioned.host.exp.exponent.modules.api.components.svg;
 import android.graphics.Bitmap;
 import android.util.SparseArray;
 
-import com.facebook.yoga.YogaMeasureMode;
-import com.facebook.yoga.YogaMeasureFunction;
-import com.facebook.yoga.YogaNode;
-import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
+import com.facebook.react.uimanager.ViewGroupManager;
+import com.facebook.yoga.YogaMeasureFunction;
+import com.facebook.yoga.YogaMeasureMode;
+import com.facebook.yoga.YogaNode;
 
 import javax.annotation.Nullable;
 
@@ -24,7 +24,7 @@ import javax.annotation.Nullable;
  * ViewManager for RNSVGSvgView React views. Renders as a {@link SvgView} and handles
  * invalidating the native view on shadow view updates happening in the underlying tree.
  */
-class SvgViewManager extends BaseViewManager<SvgView, SvgViewShadowNode> {
+class SvgViewManager extends ViewGroupManager<SvgView> {
 
     private static final String REACT_CLASS = "RNSVGSvgView";
 
@@ -51,6 +51,12 @@ class SvgViewManager extends BaseViewManager<SvgView, SvgViewShadowNode> {
         mTagToSvgView.put(svg.getId(), svg);
     }
 
+    static void dropSvgView(SvgView view) {
+        int tag = view.getId();
+        mTagToShadowNode.remove(tag);
+        mTagToSvgView.remove(tag);
+    }
+
     @SuppressWarnings("unused")
     static @Nullable SvgView getSvgViewByTag(int tag) {
         return mTagToSvgView.get(tag);
@@ -75,13 +81,6 @@ class SvgViewManager extends BaseViewManager<SvgView, SvgViewShadowNode> {
         SvgViewShadowNode node = new SvgViewShadowNode();
         node.setMeasureFunction(MEASURE_FUNCTION);
         return node;
-    }
-
-    @Override
-    public void onDropViewInstance(SvgView view) {
-        int tag = view.getId();
-        mTagToShadowNode.remove(tag);
-        mTagToSvgView.remove(tag);
     }
 
     @Override

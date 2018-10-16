@@ -11,9 +11,9 @@ import { Asset } from 'expo-asset';
 
 export type PlaybackSource =
   | number
-  | { uri: string; overrideFileExtensionAndroid?: string }
+  | { uri: string; overrideFileExtensionAndroid?: string; headers?: { [fieldName: string]: string } }
   | Asset;
-export type PlaybackNativeSource = { uri: string; overridingExtension?: string | null };
+export type PlaybackNativeSource = { uri: string; overridingExtension?: string | null; headers?: { [fieldName: string]: string } };
 
 export type PlaybackStatus =
   | {
@@ -78,6 +78,7 @@ export function getNativeSourceFromSource(
 ): PlaybackNativeSource | null {
   let uri: string | null = null;
   let overridingExtension: string | null = null;
+  let headers: { [fieldName: string]: string } | undefined;
 
   let asset: Asset | null = _getAssetFromPlaybackSource(source);
   if (asset != null) {
@@ -103,7 +104,11 @@ export function getNativeSourceFromSource(
   ) {
     overridingExtension = source.overrideFileExtensionAndroid;
   }
-  return { uri, overridingExtension };
+
+  if (source != null && typeof source !== 'number' && 'headers' in source && typeof source.headers === 'object') {
+    headers = source.headers;
+  }
+  return { uri, overridingExtension, headers };
 }
 
 function _getAssetFromPlaybackSource(source: PlaybackSource | null): Asset | null {

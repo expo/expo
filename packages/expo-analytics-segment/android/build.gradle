@@ -70,5 +70,6 @@ if (new File(rootProject.projectDir.parentFile, 'pubspec.yaml').exists()) {
 
 dependencies {
     expendency "expo-core"
+    expendency "expo-constants-interface"
     compile 'com.segment.analytics.android:analytics:4.3.0'
 }

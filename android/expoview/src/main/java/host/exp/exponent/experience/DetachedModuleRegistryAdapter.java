@@ -8,8 +8,8 @@ import org.json.JSONObject;
 import java.util.List;
 import java.util.Map;
 
+import expo.adapters.react.ReactModuleRegistryProvider;
 import expo.core.ModuleRegistry;
-import expo.core.ModuleRegistryProvider;
 import expo.core.interfaces.InternalModule;
 import expo.core.interfaces.ModuleRegistryConsumer;
 import host.exp.exponent.ExponentManifest;
@@ -20,7 +20,7 @@ import versioned.host.exp.exponent.modules.universal.ExpoModuleRegistryAdapter;
 import versioned.host.exp.exponent.modules.universal.ScopedUIManagerModuleWrapper;
 
 public class DetachedModuleRegistryAdapter extends ExpoModuleRegistryAdapter {
-  public DetachedModuleRegistryAdapter(ModuleRegistryProvider moduleRegistryProvider) {
+  public DetachedModuleRegistryAdapter(ReactModuleRegistryProvider moduleRegistryProvider) {
     super(moduleRegistryProvider);
   }
 

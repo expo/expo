@@ -6,6 +6,7 @@
 
 NSString *const EXAVPlayerDataStatusIsLoadedKeyPath = @"isLoaded";
 NSString *const EXAVPlayerDataStatusURIKeyPath = @"uri";
+NSString *const EXAVPlayerDataStatusHeadersKeyPath = @"headers";
 NSString *const EXAVPlayerDataStatusProgressUpdateIntervalMillisKeyPath = @"progressUpdateIntervalMillis";
 NSString *const EXAVPlayerDataStatusDurationMillisKeyPath = @"durationMillis";
 NSString *const EXAVPlayerDataStatusPositionMillisKeyPath = @"positionMillis";
@@ -34,6 +35,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
 @property (nonatomic, weak) EXAV *exAV;
 
 @property (nonatomic, assign) BOOL isLoaded;
+@property (nonatomic, strong) NSDictionary *headers;
 @property (nonatomic, strong) void (^loadFinishBlock)(BOOL success, NSDictionary *successStatus, NSString *error);
 
 @property (nonatomic, strong) id <NSObject> timeObserver;
@@ -81,6 +83,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
     _player = nil;
   
     _url = [NSURL URLWithString:[source objectForKey:EXAVPlayerDataStatusURIKeyPath]];
+    _headers = [self validatedRequestHeaders:source[EXAVPlayerDataStatusHeadersKeyPath]];
   
     _timeObserver = nil;
     _finishObserver = nil;
@@ -110,7 +113,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
 - (void)_loadNewPlayer
 {
   NSArray *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies];
-  AVURLAsset *avAsset = [AVURLAsset URLAssetWithURL:_url options:@{AVURLAssetHTTPCookiesKey : cookies}];
+  AVURLAsset *avAsset = [AVURLAsset URLAssetWithURL:_url options:@{AVURLAssetHTTPCookiesKey : cookies, @"AVURLAssetHTTPHeaderFieldsKey": _headers}];
   
   // unless we preload, the asset will not necessarily load the duration by the time we try to play it.
   // http://stackoverflow.com/questions/20581567/avplayer-and-avfoundationerrordomain-code-11819
@@ -877,6 +880,24 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
 {
   [self _removeTimeObserver];
   [self _removeObservers];
+}
+
+# pragma mark - Utilities
+
+/*
+ * For a given NSDictionary returns a new NSDictionary with
+ * entries only of type (String, String).
+ */
+- (NSDictionary *)validatedRequestHeaders:(NSDictionary *)requestHeaders
+{
+  NSMutableDictionary *validatedHeaders = [NSMutableDictionary new];
+  for (id key in requestHeaders.allKeys) {
+    id value = requestHeaders[key];
+    if ([key isKindOfClass:[NSString class]] && [value isKindOfClass:[NSString class]]) {
+      validatedHeaders[key] = value;
+    }
+  }
+  return validatedHeaders;
 }
 
 @end

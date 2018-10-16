@@ -1228,6 +1228,11 @@ combined-stream@~1.0.6:
   dependencies:
     delayed-stream "~1.0.0"
 
+command-exists@^1.2.7:
+  version "1.2.8"
+  resolved "https://registry.yarnpkg.com/command-exists/-/command-exists-1.2.8.tgz#715acefdd1223b9c9b37110a149c6392c2852291"
+  integrity sha512-PM54PkseWbiiD/mMsbvW351/u+dafwTJ0ye2qB60G1aGQP9j3xK2gmMDc+R34L3nDtx4qMCitXT75mkbkGJDLw==
+
 commander@^2.9.0:
   version "2.18.0"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.18.0.tgz#2bf063ddee7c7891176981a2cc798e5754bc6970"
@@ -6401,10 +6406,10 @@ ws@^5.2.0:
   dependencies:
     async-limiter "~1.0.0"
 
-xdl@^51.2.2:
-  version "51.3.1"
-  resolved "https://registry.yarnpkg.com/xdl/-/xdl-51.3.1.tgz#8cd7943620257efb0b3708e0c0df3ffcaca876c7"
-  integrity sha512-FMIfY2+sx8HmLocmQl45/nc3BhmFct0q3BwV1m4Odcww+wjW0HtXoQ/CixAFzkskUhAXzlmQ/QtaINpACCAYHg==
+xdl@51.4.1-alpha.23:
+  version "51.4.1-alpha.23"
+  resolved "https://registry.yarnpkg.com/xdl/-/xdl-51.4.1-alpha.23.tgz#3d6e774fd3053934bc53928e11b022d45746e071"
+  integrity sha512-Njxg8/VqJSAYZx0gXEBYiZFAKjwyoWcYo2BifS3USvWat4Mo1CTE6TAw9rcJi3yYZqirEprYxkvqAm7qu4jVfA==
   dependencies:
     "@expo/bunyan" "3.0.2"
     "@expo/json-file" "^8.0.1"
@@ -6416,6 +6421,7 @@ xdl@^51.2.2:
     axios "0.16.2"
     body-parser "^1.15.2"
     chalk "^2.4.1"
+    command-exists "^1.2.7"
     concat-stream "^1.6.0"
     decache "^4.1.0"
     delay-async "^1.0.0"
@@ -6443,7 +6449,6 @@ xdl@^51.2.2:
     lodash "^4.14.1"
     md5hex "^1.0.0"
     minimatch "^3.0.4"
-    mkdirp "^0.5.1"
     mv "^2.1.1"
     ncp "^2.0.0"
     node-forge "^0.7.4"

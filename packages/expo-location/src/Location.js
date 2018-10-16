@@ -18,6 +18,7 @@ type LocationOptions = {
   enableHighAccuracy?: boolean,
   timeInterval?: number,
   distanceInterval?: number,
+  timeout?: number,
 };
 
 type LocationTaskOptions = {

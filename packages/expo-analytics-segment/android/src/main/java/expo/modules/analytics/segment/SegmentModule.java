@@ -3,6 +3,7 @@
 package expo.modules.analytics.segment;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.segment.analytics.Analytics;
@@ -17,21 +18,34 @@ import java.util.Iterator;
 import java.util.Map;
 
 import expo.core.ExportedModule;
+import expo.core.ModuleRegistry;
 import expo.core.Promise;
 import expo.core.interfaces.ExpoMethod;
+import expo.core.interfaces.ModuleRegistryConsumer;
+import expo.interfaces.constants.ConstantsInterface;
 
-public class SegmentModule extends ExportedModule {
-
+public class SegmentModule extends ExportedModule implements ModuleRegistryConsumer {
+  private static final String NAME = "ExponentSegment";
+  private static final String ENABLED_PREFERENCE_KEY = "enabled";
   private static final String TAG = SegmentModule.class.getSimpleName();
 
   private static int sCurrentTag = 0;
 
   private Context mContext;
   private Analytics mClient;
+  private ConstantsInterface mConstants;
+  // We have to keep track of `enabled` on our own.
+  // Since we have to change tag every time (see commit 083f051), Segment may or may not properly apply
+  // remembered preference to the instance. The module in a standalone app would start disabled
+  // (settings = { 0 => disabled }, tag = 0) but after OTA update it would reload with
+  // (settings = { 0 => disabled }, tag = 1) and segment would become enabled if the app does not
+  // disable it on start.
+  private SharedPreferences mSharedPreferences;
 
   public SegmentModule(Context context) {
     super(context);
     mContext = context;
+    mSharedPreferences = mContext.getSharedPreferences(NAME, Context.MODE_PRIVATE);
   }
 
   private static Traits readableMapToTraits(Map<String, Object> properties) {
@@ -68,7 +82,7 @@ public class SegmentModule extends ExportedModule {
 
   @Override
   public String getName() {
-    return "ExponentSegment";
+    return NAME;
   }
 
   @ExpoMethod
@@ -76,6 +90,7 @@ public class SegmentModule extends ExportedModule {
     Analytics.Builder builder = new Analytics.Builder(mContext, writeKey);
     builder.tag(Integer.toString(sCurrentTag++));
     mClient = builder.build();
+    mClient.optOut(!getEnabledPreferenceValue());
     promise.resolve(null);
   }
 
@@ -163,5 +178,35 @@ public class SegmentModule extends ExportedModule {
       mClient.reset();
     }
     promise.resolve(null);
+  }
+
+  @ExpoMethod
+  public void getEnabledAsync(final Promise promise) {
+    promise.resolve(getEnabledPreferenceValue());
+  }
+
+  @ExpoMethod
+  public void setEnabledAsync(final boolean enabled, final Promise promise) {
+    if (mConstants.getAppOwnership().equals("expo")) {
+      promise.reject("E_UNSUPPORTED", "Setting Segment's `enabled` is not supported in Expo Client.");
+      return;
+    }
+    mSharedPreferences.edit().putBoolean(ENABLED_PREFERENCE_KEY, enabled).apply();
+    if (mClient != null) {
+      mClient.optOut(!enabled);
+    }
+    promise.resolve(null);
+  }
+
+  @Override
+  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+    mConstants = null;
+    if (moduleRegistry != null) {
+      mConstants = moduleRegistry.getModule(ConstantsInterface.class);
+    }
+  }
+
+  private boolean getEnabledPreferenceValue() {
+    return mSharedPreferences.getBoolean(ENABLED_PREFERENCE_KEY, true);
   }
 }
