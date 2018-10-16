@@ -73,3 +73,24 @@ Record that a user has seen a screen to Segment with custom properties. See <htt
 ### `Expo.Segment.flush()`
 
 Manually flush the event queue. You shouldn't need to call this in most cases.
+
+
+### Opting out (enabling/disabling all tracking)
+
+> Depending on the audience for your app (e.g. children) or the countries where you sell your app (e.g. the EU), you may need to offer the ability for users to opt-out of analytics data collection inside your app. You can turn off forwarding to ALL destinations including Segment itself:
+> ([Source – Segment docs](https://segment.com/docs/sources/mobile/ios/#opt-out))
+
+```js
+import { Segment } from 'expo';
+
+Segment.setEnabledAsync(false);
+
+// Or if they opt-back-in, you can re-enable data collection:
+Segment.setEnabledAsync(true);
+```
+
+> **Note:** disabling the Segment SDK ensures that all data collection method invocations (eg. `track`, `identify`, etc) are ignored.
+
+This method is only supported in standalone and detached apps. In Expo Client the promise will reject.
+
+The setting value will be persisted across restarts, so once you call `setEnabledAsync(false)`, Segment won't track the users even when the app restarts. To check whether tracking is enabled, use `Segment.getEnabledAsync()` which returns a promise which should resolve to a boolean.
