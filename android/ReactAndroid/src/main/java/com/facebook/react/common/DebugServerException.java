@@ -64,6 +64,9 @@ public class DebugServerException extends RuntimeException {
     try {
       JSONObject jsonObject = new JSONObject(str);
       String fullFileName = jsonObject.getString("filename");
+
+      // NOTE(expo): Metro's error payload is inconsistently formatted and sometimes we need to
+      // retrieve the "description" field from the "errors" array
       String description = null;
       if (jsonObject.has("description")) {
         description = jsonObject.getString("description");

@@ -1,1 +1,1 @@
-../../../../../modules/expo-sensors-interface/ios/EXSensorsInterface/EXAccelerometerInterface.h
+../../../../../packages/expo-sensors-interface/ios/EXSensorsInterface/EXAccelerometerInterface.h

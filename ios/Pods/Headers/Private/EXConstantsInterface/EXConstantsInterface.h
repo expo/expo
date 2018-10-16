@@ -1,1 +1,1 @@
-../../../../../modules/expo-constants-interface/ios/EXConstantsInterface/EXConstantsInterface.h
+../../../../../packages/expo-constants-interface/ios/EXConstantsInterface/EXConstantsInterface.h

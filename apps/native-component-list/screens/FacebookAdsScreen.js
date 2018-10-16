@@ -1,4 +1,4 @@
-import Expo from 'expo';
+import { FacebookAds } from 'expo';
 import React from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, ScrollView, Switch } from 'react-native';
 
@@ -8,12 +8,12 @@ const {
   NativeAdsManager,
   AdSettings,
   InterstitialAdManager,
-  BannerView,
+  BannerAd,
   withNativeAd,
   AdMediaView,
   AdIconView,
   AdTriggerView,
-} = Expo.FacebookAds;
+} = FacebookAds;
 
 AdSettings.addTestDevice(AdSettings.currentDeviceHash);
 
@@ -104,7 +104,7 @@ export default class App extends React.Component {
         <Text style={styles.header}>Native Ad</Text>
         <FullNativeAd adsManager={adsManager} />
         <Text style={styles.header}>Banner Ad</Text>
-        <BannerView
+        <BannerAd
           type="large"
           placementId="629712900716487_662949307392846"
           onPress={this.onBannerAdPress}

@@ -68,6 +68,10 @@
   if (userID) {
     parameters[@"app_user_id"] = userID;
   }
+  NSString *userData = [FBSDKAppEvents getUserData];
+  if (userData){
+    parameters[@"ud"] = userData;
+  }
 
   [FBSDKAppEventsDeviceInfo extendDictionaryWithDeviceInfo:parameters];
 

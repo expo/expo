@@ -1,7 +1,7 @@
 // This list lets us skip over exports that throw an error when we import them, which can happen
 // when we add or change a native module and haven't yet updated the mocks in jest-expo. This list
 // is a temporary workaround, not a way to indefinitely avoid testing modules.
-const skippedExports = ['GestureHandler', 'MapView'];
+const skippedExports: string[] = [];
 
 describe(`Expo APIs`, () => {
   const Expo = require('../Expo');
@@ -48,14 +48,13 @@ describe(`importing Expo`, () => {
         });
       }
     };
-    // Clear all the native modules as a way to simulate running outside
-    // of Expo
+    // Clear all the native modules as a way to simulate running outside of Expo
     const { NativeModules } = require('react-native');
     const { NativeModulesProxy } = require('expo-react-native-adapter');
     clearPropertiesInPlace(NativeModules);
     clearPropertiesInPlace(NativeModulesProxy);
 
-    // Silence "No native module found" warnings raised in erna and expo-constants
+    // Silence "No native module found" warnings raised in CRNA and expo-constants
     const warn = console.warn;
 
     global.console.warn = str => {

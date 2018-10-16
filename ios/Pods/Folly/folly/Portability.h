@@ -167,16 +167,12 @@ constexpr bool kHasUnalignedAccess = false;
 # define FOLLY_MSVC_DISABLE_WARNING(warningNumber)
 #endif
 
-// portable version check
-#ifndef __GNUC_PREREQ
-# if defined __GNUC__ && defined __GNUC_MINOR__
-/* nolint */
-#  define __GNUC_PREREQ(maj, min) ((__GNUC__ << 16) + __GNUC_MINOR__ >= \
-                                   ((maj) << 16) + (min))
-# else
-/* nolint */
-#  define __GNUC_PREREQ(maj, min) 0
-# endif
+#ifdef HAVE_SHADOW_LOCAL_WARNINGS
+#define FOLLY_GCC_DISABLE_NEW_SHADOW_WARNINGS        \
+  FOLLY_GCC_DISABLE_WARNING(shadow-compatible-local) \
+  FOLLY_GCC_DISABLE_WARNING(shadow-local)
+#else
+#define FOLLY_GCC_DISABLE_NEW_SHADOW_WARNINGS /* empty */
 #endif
 
 #if defined(__GNUC__) && !defined(__APPLE__) && !__GNUC_PREREQ(4,9)

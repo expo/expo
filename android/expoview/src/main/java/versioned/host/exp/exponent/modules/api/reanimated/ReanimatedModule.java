@@ -1,5 +1,6 @@
 package versioned.host.exp.exponent.modules.api.reanimated;
 
+import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -191,6 +192,16 @@ public class ReanimatedModule extends ReactContextBaseJavaModule implements
       @Override
       public void execute(NodesManager nodesManager) {
         nodesManager.configureProps(nativeProps, uiProps);
+      }
+    });
+  }
+
+  @ReactMethod
+  public void getValue(final int nodeID, final Callback callback) {
+    mOperations.add(new UIThreadOperation() {
+      @Override
+      public void execute(NodesManager nodesManager) {
+        nodesManager.getValue(nodeID, callback);
       }
     });
   }

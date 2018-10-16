@@ -68,7 +68,7 @@ import versioned.host.exp.exponent.modules.api.NotificationsModule;
 import versioned.host.exp.exponent.modules.api.RNViewShotModule;
 import versioned.host.exp.exponent.modules.api.SQLiteModule;
 import versioned.host.exp.exponent.modules.api.ScreenOrientationModule;
-import versioned.host.exp.exponent.modules.api.screens.RNScreenPackage;
+import versioned.host.exp.exponent.modules.api.screens.RNScreensPackage;
 import versioned.host.exp.exponent.modules.api.ShakeModule;
 import versioned.host.exp.exponent.modules.api.SpeechModule;
 import versioned.host.exp.exponent.modules.api.URLHandlerModule;
@@ -255,7 +255,7 @@ public class ExponentPackage implements ReactPackage {
       new MapsPackage(),
       new LottiePackage(),
       new RNGestureHandlerPackage(),
-      new RNScreenPackage()
+      new RNScreensPackage()
     ));
 
     viewManagers.addAll(mModuleRegistryAdapter.createViewManagers(reactContext));

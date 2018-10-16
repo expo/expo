@@ -1,6 +1,6 @@
 {
   "name": "yoga",
-  "version": "0.55.4.React",
+  "version": "0.57.1.React",
   "license": {
     "type": "MIT"
   },
@@ -11,7 +11,7 @@
   "authors": "Facebook",
   "source": {
     "git": "https://github.com/facebook/react-native.git",
-    "tag": "v0.55.4"
+    "tag": "v0.57.1"
   },
   "module_name": "yoga",
   "requires_arc": false,
@@ -24,8 +24,9 @@
     "-fPIC"
   ],
   "platforms": {
-    "ios": "8.0",
+    "ios": "9.0",
     "tvos": "9.2"
   },
-  "source_files": "yoga/**/*.{cpp,h}"
+  "source_files": "yoga/**/*.{cpp,h}",
+  "public_header_files": "yoga/{Yoga,YGEnums,YGMacros}.h"
 }

@@ -1,1 +1,1 @@
-../../../../../modules/expo-gl/ios/EXGL/EXGLViewManager.h
+../../../../../packages/expo-gl/ios/EXGL/EXGLViewManager.h

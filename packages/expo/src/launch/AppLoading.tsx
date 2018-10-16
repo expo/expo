@@ -5,15 +5,15 @@ import NativeAppLoading from './AppLoadingNativeWrapper';
 
 type Props =
   | {
-      startAsync: () => Promise<void>,
-      onError?: (error: Error) => void,
-      onFinish?: () => void,
-      autoHideSplash?: boolean,
+      startAsync: () => Promise<void>;
+      onError?: (error: Error) => void;
+      onFinish?: () => void;
+      autoHideSplash?: boolean;
     }
   | {
-      startAsync: null,
-      onError: null,
-      onFinish: null,
+      startAsync: null;
+      onError: null;
+      onFinish: null;
     };
 
 export default class AppLoading extends React.Component<Props> {

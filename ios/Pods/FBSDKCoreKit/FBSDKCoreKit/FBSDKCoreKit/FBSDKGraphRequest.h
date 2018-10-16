@@ -39,23 +39,23 @@
  By default, FBSDKGraphRequest will attempt to recover any errors returned from
  Facebook. You can disable this via `disableErrorRecovery:`.
 
-- See:FBSDKGraphErrorRecoveryProcessor
+ @see FBSDKGraphErrorRecoveryProcessor
  */
 @interface FBSDKGraphRequest : NSObject
 
 /**
   Initializes a new instance that use use `[FBSDKAccessToken currentAccessToken]`.
- - Parameter graphPath: the graph path (e.g., @"me").
- - Parameter parameters: the optional parameters dictionary.
+ @param graphPath the graph path (e.g., @"me").
+ @param parameters the optional parameters dictionary.
  */
 - (instancetype)initWithGraphPath:(NSString *)graphPath
                        parameters:(NSDictionary *)parameters;
 
 /**
   Initializes a new instance that use use `[FBSDKAccessToken currentAccessToken]`.
- - Parameter graphPath: the graph path (e.g., @"me").
- - Parameter parameters: the optional parameters dictionary.
- - Parameter HTTPMethod: the optional HTTP method. nil defaults to @"GET".
+ @param graphPath the graph path (e.g., @"me").
+ @param parameters the optional parameters dictionary.
+ @param HTTPMethod the optional HTTP method. nil defaults to @"GET".
  */
 - (instancetype)initWithGraphPath:(NSString *)graphPath
                        parameters:(NSDictionary *)parameters
@@ -63,11 +63,11 @@
 
 /**
   Initializes a new instance.
- - Parameter graphPath: the graph path (e.g., @"me").
- - Parameter parameters: the optional parameters dictionary.
- - Parameter tokenString: the token string to use. Specifying nil will cause no token to be used.
- - Parameter version: the optional Graph API version (e.g., @"v2.0"). nil defaults to `[FBSDKSettings graphAPIVersion]`.
- - Parameter HTTPMethod: the optional HTTP method (e.g., @"POST"). nil defaults to @"GET".
+ @param graphPath the graph path (e.g., @"me").
+ @param parameters the optional parameters dictionary.
+ @param tokenString the token string to use. Specifying nil will cause no token to be used.
+ @param version the optional Graph API version (e.g., @"v2.0"). nil defaults to `[FBSDKSettings graphAPIVersion]`.
+ @param HTTPMethod the optional HTTP method (e.g., @"POST"). nil defaults to @"GET".
  */
 - (instancetype)initWithGraphPath:(NSString *)graphPath
                        parameters:(NSDictionary *)parameters
@@ -103,7 +103,7 @@ NS_DESIGNATED_INITIALIZER;
 
 /**
   If set, disables the automatic error recovery mechanism.
- - Parameter disable: whether to disable the automatic error recovery mechanism
+ @param disable whether to disable the automatic error recovery mechanism
 
  By default, non-batched FBSDKGraphRequest instances will automatically try to recover
  from errors by constructing a `FBSDKGraphErrorRecoveryProcessor` instance that
@@ -116,7 +116,7 @@ NS_DESIGNATED_INITIALIZER;
 
 /**
   Starts a connection to the Graph API.
- - Parameter handler: The handler block to call when the request completes.
+ @param handler The handler block to call when the request completes.
  */
 - (FBSDKGraphRequestConnection *)startWithCompletionHandler:(FBSDKGraphRequestHandler)handler;
 

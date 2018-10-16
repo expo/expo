@@ -39,8 +39,8 @@
 /**
  Asynchronously resolves App Link data for a given URL.
 
- - Parameter url: The URL to resolve into an App Link.
- - Returns: A BFTask that will return a BFAppLink for the given URL.
+ @param url The URL to resolve into an App Link.
+ @return A BFTask that will return a BFAppLink for the given URL.
  */
 - (BFTask *)appLinkFromURLInBackground:(NSURL *)url;
 
@@ -64,8 +64,8 @@
 /**
   Asynchronously resolves App Link data for multiple URLs.
 
- - Parameter urls: An array of NSURLs to resolve into App Links.
- - Returns: A BFTask that will return dictionary mapping input NSURLs to their
+ @param urls An array of NSURLs to resolve into App Links.
+ @return A BFTask that will return dictionary mapping input NSURLs to their
   corresponding BFAppLink.
 
 

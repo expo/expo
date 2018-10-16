@@ -23,7 +23,6 @@ public class TapGestureHandler extends GestureHandler<TapGestureHandler> {
   private float mStartX, mStartY;
   private float mOffsetX, mOffsetY;
   private float mLastX, mLastY;
-  private float mLastEventOffsetX, mLastEventOffsetY;
 
   private Handler mHandler;
   private int mTapsSoFar;
@@ -128,15 +127,11 @@ public class TapGestureHandler extends GestureHandler<TapGestureHandler> {
       mOffsetY += mLastY - mStartY;
       mLastX = GestureUtils.getLastPointerX(event, true);
       mLastY = GestureUtils.getLastPointerY(event, true);
-      mLastEventOffsetX = event.getRawX() - event.getX();
-      mLastEventOffsetY = event.getRawY() - event.getY();
       mStartX = mLastX;
       mStartY = mLastY;
     } else {
       mLastX = GestureUtils.getLastPointerX(event, true);
       mLastY = GestureUtils.getLastPointerY(event, true);
-      mLastEventOffsetX = event.getRawX() - event.getX();
-      mLastEventOffsetY = event.getRawY() - event.getY();
     }
 
     if (mNumberOfPointers < event.getPointerCount()) {
@@ -173,21 +168,5 @@ public class TapGestureHandler extends GestureHandler<TapGestureHandler> {
     if (mHandler != null) {
       mHandler.removeCallbacksAndMessages(null);
     }
-  }
-
-  public float getLastAbsolutePositionX() {
-    return mLastX;
-  }
-
-  public float getLastAbsolutePositionY() {
-    return mLastY;
-  }
-
-  public float getLastRelativePositionX() {
-    return mLastX - mLastEventOffsetX;
-  }
-
-  public float getLastRelativePositionY() {
-    return mLastY - mLastEventOffsetY;
   }
 }

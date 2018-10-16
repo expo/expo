@@ -1,1 +1,1 @@
-../../../../../modules/expo-face-detector/ios/EXFaceDetector/EXFaceDetectorManagerProvider.h
+../../../../../packages/expo-face-detector/ios/EXFaceDetector/EXFaceDetectorManagerProvider.h

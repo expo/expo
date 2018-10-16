@@ -71,6 +71,15 @@
 // Where create and destroy are functions, Singleton<T>::CreateFunc
 // Singleton<T>::TeardownFunc.
 //
+// For example, if you need to pass arguments to your class's constructor:
+//   class X {
+//    public:
+//      X(int a1, std::string a2);
+//    // ...
+//   }
+// Make your singleton like this:
+//   folly::Singleton<X> singleton_x([]() { return new X(42, "foo"); });
+//
 // The above examples detail a situation where an expensive singleton is loaded
 // on-demand (thus only if needed).  However if there is an expensive singleton
 // that will likely be needed, and initialization takes a potentially long time,
@@ -434,7 +443,7 @@ class SingletonVault {
   // tests only.
   template <typename VaultTag = detail::DefaultTag>
   static SingletonVault* singleton() {
-    static SingletonVault* vault =
+    /* library-local */ static auto vault =
         detail::createGlobal<SingletonVault, VaultTag>();
     return vault;
   }
@@ -442,9 +451,8 @@ class SingletonVault {
   typedef std::string(*StackTraceGetterPtr)();
 
   static std::atomic<StackTraceGetterPtr>& stackTraceGetter() {
-    static std::atomic<StackTraceGetterPtr>* stackTraceGetterPtr =
-        detail::createGlobal<std::atomic<StackTraceGetterPtr>,
-                             SingletonVault>();
+    /* library-local */ static auto stackTraceGetterPtr = detail::
+        createGlobal<std::atomic<StackTraceGetterPtr>, SingletonVault>();
     return *stackTraceGetterPtr;
   }
 
@@ -657,7 +665,7 @@ class LeakySingleton {
   };
 
   static Entry& entryInstance() {
-    static auto entry = detail::createGlobal<Entry, Tag>();
+    /* library-local */ static auto entry = detail::createGlobal<Entry, Tag>();
     return *entry;
   }
 

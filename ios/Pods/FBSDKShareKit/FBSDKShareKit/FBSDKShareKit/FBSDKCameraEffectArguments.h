@@ -28,29 +28,29 @@
 
 /**
  Sets a string argument in the container.
- - Parameter string: The argument
- - Parameter key: The key for the argument
+ @param string The argument
+ @param key The key for the argument
  */
 - (void)setString:(NSString *)string forKey:(NSString *)key;
 
 /**
  Gets a string argument from the container.
- - Parameter key: The key for the argument
- - Returns: The string value or nil
+ @param key The key for the argument
+ @return The string value or nil
  */
 - (NSString *)stringForKey:(NSString *)key;
 
 /**
  Sets a string array argument in the container.
- - Parameter array: The array argument
- - Parameter key: The key for the argument
+ @param array The array argument
+ @param key The key for the argument
  */
 - (void)setArray:(NSArray<NSString *> *)array forKey:(NSString *)key;
 
 /**
  Gets an array argument from the container.
- - Parameter key: The key for the argument
- - Returns: The array argument
+ @param key The key for the argument
+ @return The array argument
  */
 - (NSArray *)arrayForKey:(NSString *)key;
 

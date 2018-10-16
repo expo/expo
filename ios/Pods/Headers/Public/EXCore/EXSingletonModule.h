@@ -1,1 +1,1 @@
-../../../../../modules/expo-core/ios/EXCore/EXSingletonModule.h
+../../../../../packages/expo-core/ios/EXCore/EXSingletonModule.h

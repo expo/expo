@@ -20,7 +20,8 @@
 
 #import "FBSDKCoreKit+Internal.h"
 #import "FBSDKHashtag.h"
-#import "FBSDKShareUtility.h"
+#import "FBSDKShareError.h"
+#import "FBSDKShareMessengerContentUtility.h"
 
 static NSString *const kMediaTemplatePageIDKey = @"pageID";
 static NSString *const kMediaTemplateMediaTypeKey = @"mediaType";
@@ -28,6 +29,55 @@ static NSString *const kMediaTemplateAttachmentIDKey = @"attachmentID";
 static NSString *const kMediaTemplateMediaURLKey = @"mediaURL";
 static NSString *const kMediaTemplateButtonKey = @"button";
 static NSString *const kMediaTemplateUUIDKey = @"uuid";
+
+static BOOL _URLHasFacebookDomain(NSURL *URL)
+{
+  NSString *urlHost = [URL.host lowercaseString];
+  NSArray<NSString *> *pathComponents = [URL pathComponents];
+
+  /**
+   Check the following three different cases...
+   1. Check if host is facebook.com, such as in 'https://facebok.com/test'
+   2. Check if host is someprefix.facebook.com, such as in 'https://www.facebook.com/test'
+   3. Check if host is null, but the first path component is facebook.com
+   */
+  return [urlHost isEqualToString:@"facebook.com"] ||
+  [urlHost hasSuffix:@".facebook.com"] ||
+  ([[[pathComponents firstObject] lowercaseString] hasSuffix:@"facebook.com"]);
+}
+
+static NSString *_MediaTemplateURLSerializationKey(NSURL *mediaURL)
+{
+  if (_URLHasFacebookDomain(mediaURL)) {
+    return @"facebook_media_url";
+  } else {
+    return @"image_url";
+  }
+}
+
+static NSString *_MediaTypeString(FBSDKShareMessengerMediaTemplateMediaType mediaType)
+{
+  switch (mediaType) {
+    case FBSDKShareMessengerMediaTemplateMediaTypeImage:
+      return @"image";
+    case FBSDKShareMessengerMediaTemplateMediaTypeVideo:
+      return @"video";
+  }
+}
+
+static NSArray<NSDictionary<NSString *, id> *> *_SerializableMediaTemplateContentFromContent(FBSDKShareMessengerMediaTemplateContent *mediaTemplateContent)
+{
+  NSMutableArray<NSDictionary<NSString *, id> *> *serializableMediaTemplateContent = [NSMutableArray array];
+
+  NSMutableDictionary<NSString *, id> *mediaTemplateContentDictionary = [NSMutableDictionary dictionary];
+  [FBSDKInternalUtility dictionary:mediaTemplateContentDictionary setObject:_MediaTypeString(mediaTemplateContent.mediaType) forKey:@"media_type"];
+  [FBSDKInternalUtility dictionary:mediaTemplateContentDictionary setObject:mediaTemplateContent.mediaURL.absoluteString forKey:@"url"];
+  [FBSDKInternalUtility dictionary:mediaTemplateContentDictionary setObject:mediaTemplateContent.attachmentID forKey:@"attachment_id"];
+  [FBSDKInternalUtility dictionary:mediaTemplateContentDictionary setObject:SerializableButtonsFromButton(mediaTemplateContent.button) forKey:kFBSDKShareMessengerButtonsKey];
+  [serializableMediaTemplateContent addObject:mediaTemplateContentDictionary];
+
+  return serializableMediaTemplateContent;
+}
 
 @implementation FBSDKShareMessengerMediaTemplateContent
 
@@ -61,6 +111,50 @@ static NSString *const kMediaTemplateUUIDKey = @"uuid";
     _shareUUID = [NSUUID UUID].UUIDString;
   }
   return self;
+}
+
+#pragma mark - FBSDKSharingContent
+
+- (void)addToParameters:(NSMutableDictionary<NSString *, id> *)parameters
+          bridgeOptions:(FBSDKShareBridgeOptions)bridgeOptions
+{
+  NSMutableDictionary<NSString *, id> *payload = [NSMutableDictionary dictionary];
+  [payload setObject:@"media" forKey:kFBSDKShareMessengerTemplateTypeKey];
+  [payload setObject:_SerializableMediaTemplateContentFromContent(self) forKey:kFBSDKShareMessengerElementsKey];
+
+  NSMutableDictionary<NSString *, id> *attachment = [NSMutableDictionary dictionary];
+  [attachment setObject:kFBSDKShareMessengerTemplateKey forKey:kFBSDKShareMessengerTypeKey];
+  [attachment setObject:payload forKey:kFBSDKShareMessengerPayloadKey];
+
+  NSMutableDictionary<NSString *, id> *contentForShare = [NSMutableDictionary dictionary];
+  [contentForShare setObject:attachment forKey:kFBSDKShareMessengerAttachmentKey];
+
+  NSMutableDictionary<NSString *, id> *contentForPreview = [NSMutableDictionary dictionary];
+  [FBSDKInternalUtility dictionary:contentForPreview setObject:@"DEFAULT" forKey:@"preview_type"];
+  [FBSDKInternalUtility dictionary:contentForPreview setObject:_attachmentID forKey:@"attachment_id"];
+  [FBSDKInternalUtility dictionary:contentForPreview
+                         setObject:_mediaURL.absoluteString
+                            forKey:_MediaTemplateURLSerializationKey(_mediaURL)];
+  [FBSDKInternalUtility dictionary:contentForPreview setObject:_MediaTypeString(_mediaType) forKey:@"media_type"];
+  AddToContentPreviewDictionaryForButton(contentForPreview, _button);
+
+  [FBSDKShareMessengerContentUtility addToParameters:parameters contentForShare:contentForShare contentForPreview:contentForPreview];
+}
+
+#pragma mark - FBSDKSharingValidation
+
+- (BOOL)validateWithOptions:(FBSDKShareBridgeOptions)bridgeOptions error:(NSError *__autoreleasing *)errorRef
+{
+  if (!_mediaURL && !_attachmentID) {
+    if (errorRef != NULL) {
+      *errorRef = [FBSDKShareError requiredArgumentErrorWithName:@"attachmentID/mediaURL" message:@"Must specify either attachmentID or mediaURL"];
+    }
+    return NO;
+  }
+  return [FBSDKShareMessengerContentUtility validateMessengerActionButton:_button
+                                                    isDefaultActionButton:NO
+                                                                   pageID:_pageID
+                                                                    error:errorRef];
 }
 
 #pragma mark - NSCoding

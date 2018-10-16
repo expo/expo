@@ -83,6 +83,31 @@
   [self stopUpdatingOnAnimationFrame];
 }
 
+- (void)operationsBatchDidComplete
+{
+  if (_displayLink) {
+    // if display link is set it means some of the operations that have run as a part of the batch
+    // requested updates. We want updates to be run in the same frame as in which operations have
+    // been scheduled as it may mean the new view has just been mounted and expects its initial
+    // props to be calculated.
+    // Unfortunately if the operation has just scheduled animation callback it won't run until the
+    // next frame. So if displayLink is set we trigger onAnimationFrame callback to make sure it
+    // runs in the correct frame.
+    [REANode runPropUpdates:_updateContext];
+    if (_operationsInBatch.count != 0) {
+      NSMutableArray<REANativeAnimationOp> *copiedOperationsQueue = _operationsInBatch;
+      _operationsInBatch = [NSMutableArray new];
+      RCTExecuteOnUIManagerQueue(^{
+        for (int i = 0; i < copiedOperationsQueue.count; i++) {
+          copiedOperationsQueue[i](self.uiManager);
+        }
+        [self.uiManager setNeedsLayout];
+      });
+    }
+    _wantRunUpdates = NO;
+  }
+}
+
 - (REANode *)findNodeByID:(REANodeID)nodeID
 {
   return _nodes[nodeID];
@@ -161,6 +186,12 @@
   [_operationsInBatch addObject:^(RCTUIManager *uiManager) {
     [uiManager updateView:reactTag viewName:viewName props:nativeProps];
   }];
+}
+
+- (void)getValue:(REANodeID)nodeID
+        callback:(RCTResponseSenderBlock)callback
+{
+  callback(@[_nodes[nodeID].value]);
 }
 
 #pragma mark -- Graph

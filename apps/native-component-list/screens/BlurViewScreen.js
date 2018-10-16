@@ -7,7 +7,7 @@ export default class BlurViewScreen extends React.Component {
   static navigationOptions = {
     title: 'BlurView',
   };
-  
+
   state = {
     intensity: new Animated.Value(0),
   };

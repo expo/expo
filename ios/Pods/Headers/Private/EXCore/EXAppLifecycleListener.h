@@ -1,1 +1,1 @@
-../../../../../modules/expo-core/ios/EXCore/Protocols/EXAppLifecycleListener.h
+../../../../../packages/expo-core/ios/EXCore/Protocols/EXAppLifecycleListener.h

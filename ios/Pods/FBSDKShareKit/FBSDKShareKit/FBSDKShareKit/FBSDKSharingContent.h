@@ -19,26 +19,27 @@
 #import <Foundation/Foundation.h>
 
 #import <FBSDKCoreKit/FBSDKCopying.h>
+#import <FBSDKShareKit/FBSDKSharingValidation.h>
 
 @class FBSDKHashtag;
 
 /**
   A base interface for content to be shared.
  */
-@protocol FBSDKSharingContent <FBSDKCopying, NSSecureCoding>
+@protocol FBSDKSharingContent <FBSDKCopying, FBSDKSharingValidation, NSSecureCoding>
 
 /**
   URL for the content being shared.
 
  This URL will be checked for all link meta tags for linking in platform specific ways.  See documentation
  for App Links (https://developers.facebook.com/docs/applinks/)
- - Returns: URL representation of the content link
+ @return URL representation of the content link
  */
 @property (nonatomic, copy) NSURL *contentURL;
 
 /**
   Hashtag for the content being shared.
- - Returns: The hashtag for the content being shared.
+ @return The hashtag for the content being shared.
  */
 @property (nonatomic, copy) FBSDKHashtag *hashtag;
 
@@ -46,32 +47,39 @@
   List of IDs for taggable people to tag with this content.
   See documentation for Taggable Friends
  (https://developers.facebook.com/docs/graph-api/reference/user/taggable_friends)
- - Returns: Array of IDs for people to tag (NSString)
+ @return Array of IDs for people to tag (NSString)
  */
 @property (nonatomic, copy) NSArray *peopleIDs;
 
 /**
   The ID for a place to tag with this content.
- - Returns: The ID for the place to tag
+ @return The ID for the place to tag
  */
 @property (nonatomic, copy) NSString *placeID;
 
 /**
   A value to be added to the referrer URL when a person follows a link from this shared content on feed.
- - Returns: The ref for the content.
+ @return The ref for the content.
  */
 @property (nonatomic, copy) NSString *ref;
 
 /**
  For shares into Messenger, this pageID will be used to map the app to page and attach attribution to the share.
- - Returns: The ID of the Facebok page this share is associated with.
+ @return The ID of the Facebok page this share is associated with.
  */
 @property (nonatomic, copy) NSString *pageID;
 
 /**
  A unique identifier for a share involving this content, useful for tracking purposes.
- - Returns: A unique string identifying this share data.
+ @return A unique string identifying this share data.
  */
 @property (nonatomic, copy, readonly) NSString *shareUUID;
+
+/**
+ Adds content to a dictionary as key/value pairs.
+ - Parameter parameters: A mutable dictionary that may be appended with key/value pairs of content.
+ */
+- (void)addToParameters:(NSMutableDictionary<NSString *, id> *)parameters
+          bridgeOptions:(FBSDKShareBridgeOptions)bridgeOptions;
 
 @end

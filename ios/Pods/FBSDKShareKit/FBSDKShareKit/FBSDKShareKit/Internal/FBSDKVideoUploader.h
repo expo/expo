@@ -35,10 +35,10 @@
 
 /**
   Initialize videoUploader
- - Parameter videoName: The file name of the video to be uploaded
- - Parameter videoSize: The size of the video to be uploaded
- - Parameter parameters: Optional parameters for video uploads. See Graph API documentation for the full list of parameters https://developers.facebook.com/docs/graph-api/reference/video
- - Parameter delegate: Receiver's delegate
+ @param videoName The file name of the video to be uploaded
+ @param videoSize The size of the video to be uploaded
+ @param parameters Optional parameters for video uploads. See Graph API documentation for the full list of parameters https://developers.facebook.com/docs/graph-api/reference/video
+ @param delegate Receiver's delegate
  */
 - (instancetype)initWithVideoName:(NSString *)videoName videoSize:(NSUInteger)videoSize parameters:(NSDictionary *)parameters delegate:(id<FBSDKVideoUploaderDelegate>)delegate
 NS_DESIGNATED_INITIALIZER;
@@ -81,23 +81,23 @@ NS_DESIGNATED_INITIALIZER;
 
 /**
   get chunk of the video to be uploaded in 'NSData' format
- - Parameter videoUploader: The `FBSDKVideoUploader` object which is performing the upload process
- - Parameter startOffset: The start offset of video chunk to be uploaded
- - Parameter endOffset: The end offset of video chunk being to be uploaded
+ @param videoUploader The `FBSDKVideoUploader` object which is performing the upload process
+ @param startOffset The start offset of video chunk to be uploaded
+ @param endOffset The end offset of video chunk being to be uploaded
  */
 - (NSData *)videoChunkDataForVideoUploader:(FBSDKVideoUploader *)videoUploader startOffset:(NSUInteger) startOffset endOffset:(NSUInteger) endOffset;
 
 /**
   Notify the delegate that upload process success.
- - Parameter videoUploader: The `FBSDKVideoUploader` object which is performing the upload process
- - Parameter results: The result from successful upload
+ @param videoUploader The `FBSDKVideoUploader` object which is performing the upload process
+ @param results The result from successful upload
  */
 - (void)videoUploader:(FBSDKVideoUploader *)videoUploader didCompleteWithResults:(NSDictionary *)results;
 
 /**
   Notify the delegate that upload process fails.
- - Parameter videoUploader: The `FBSDKVideoUploader` object which is performing the upload process
- - Parameter error: The error object from unsuccessful upload
+ @param videoUploader The `FBSDKVideoUploader` object which is performing the upload process
+ @param error The error object from unsuccessful upload
  */
 - (void)videoUploader:(FBSDKVideoUploader *)videoUploader didFailWithError:(NSError *)error;
 

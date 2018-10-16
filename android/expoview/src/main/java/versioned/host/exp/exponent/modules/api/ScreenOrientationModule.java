@@ -5,6 +5,7 @@ import android.content.pm.ActivityInfo;
 
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.LifecycleEventListener;
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
@@ -53,18 +54,29 @@ public class ScreenOrientationModule extends ReactContextBaseJavaModule implemen
     }
   }
 
-  @SuppressWarnings("WrongConstant")
   @ReactMethod
-  void allow(String orientation) {
+  public void allowAsync(String orientation, Promise promise) {
     Activity activity = getCurrentActivity();
     if (activity == null) {
       return;
     }
 
     activity.setRequestedOrientation(convertToOrientationEnum(orientation));
+    promise.resolve(null);
   }
 
-  private int convertToOrientationEnum(String orientation) {
+  @ReactMethod
+  public void doesSupportAsync(String orientation, Promise promise) {
+    try {
+      convertToOrientationEnum(orientation);
+    } catch (JSApplicationIllegalArgumentException exception) {
+      promise.reject(exception);
+      return;
+    }
+    promise.resolve(true);
+  }
+
+  private int convertToOrientationEnum(String orientation) throws JSApplicationIllegalArgumentException {
     switch (orientation) {
       case "ALL":
         return ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR;

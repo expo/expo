@@ -115,7 +115,8 @@ class ScopedMockLog : public GOOGLE_NAMESPACE::LogSink {
   // WaitTillSent() and Log() are executed in the same thread.
   virtual void send(GOOGLE_NAMESPACE::LogSeverity severity,
                     const char* full_filename,
-                    const char* base_filename, int line, const tm* tm_time,
+                    const char* /*base_filename*/, int /*line*/,
+                    const tm* /*tm_time*/,
                     const char* message, size_t message_len) {
     // We are only interested in the log severity, full file name, and
     // log message.

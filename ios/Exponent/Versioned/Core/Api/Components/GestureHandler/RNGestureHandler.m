@@ -40,7 +40,7 @@ CGRect RNGHHitSlopInsetRect(CGRect rect, RNGHHitSlop hitSlop) {
     rect.origin.y -= RNGH_HIT_SLOP_INSET(top);
 
     if (!isnan(hitSlop.width)) {
-        if (!isnan(hitSlop.left)) {
+        if (!isnan(hitSlop.right)) {
             rect.origin.x = rect.size.width - hitSlop.width + RNGH_HIT_SLOP_INSET(right);
         }
         rect.size.width = hitSlop.width;
@@ -48,7 +48,7 @@ CGRect RNGHHitSlopInsetRect(CGRect rect, RNGHHitSlop hitSlop) {
         rect.size.width += (RNGH_HIT_SLOP_INSET(left) + RNGH_HIT_SLOP_INSET(right));
     }
     if (!isnan(hitSlop.height)) {
-        if (!isnan(hitSlop.top)) {
+        if (!isnan(hitSlop.bottom)) {
             rect.origin.y = rect.size.height - hitSlop.height + RNGH_HIT_SLOP_INSET(bottom);
         }
         rect.size.height = hitSlop.height;

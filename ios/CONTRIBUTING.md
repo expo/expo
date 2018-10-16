@@ -52,6 +52,16 @@ Code for each SDK version includes a copy of React Native corresponding to that 
 
 Contributions to the Expo Client happened in "unversioned" code; that is, code which has not been included in an Expo SDK yet, without any symbol prefix.
 
+To test changes in the "unversioned" code, change your `sdkVersion` from `app.json` to `UNVERSIONED`.
+
+```json
+{
+  "expo": {
+    "sdkVersion": "UNVERSIONED"
+  }
+}
+```
+
 ## Project Architecture
 
 The Expo Client is an iOS app containing the Expo Kernel. The Kernel is a piece of code which can run and manage multiple React Native apps at once. Most of the technical challenges of the codebase arise from these constraints:

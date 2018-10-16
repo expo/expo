@@ -1,1 +1,1 @@
-../../../../../modules/expo-core/ios/EXCore/Protocols/EXEventEmitterService.h
+../../../../../packages/expo-core/ios/EXCore/Protocols/EXEventEmitterService.h

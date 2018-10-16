@@ -35,8 +35,8 @@
 
 /**
   Convenience method to build up a share API with content and a delegate.
- - Parameter content: The content to be shared.
- - Parameter delegate: The receiver's delegate.
+ @param content The content to be shared.
+ @param delegate The receiver's delegate.
  */
 + (instancetype)shareWithContent:(id<FBSDKSharingContent>)content delegate:(id<FBSDKSharingDelegate>)delegate;
 
@@ -66,14 +66,14 @@
  required but not available.  This method does not validate the content on the receiver, so this can be checked before
  building up the content.
 
-- See:[FBSDKSharing validateWithError:]
- - Returns: YES if the receiver can send, otherwise NO.
+ @see [FBSDKSharing validateWithError:]
+ @return YES if the receiver can send, otherwise NO.
  */
 - (BOOL)canShare;
 
 /**
   Creates an User Owned Open Graph object without an action.
- - Parameter openGraphObject: The open graph object to create.
+ @param openGraphObject The open graph object to create.
 
  Use this method to create an object alone, when an action is not going to be posted with the object.  If
  the object will be used within an action, just put the object in the action and share that as the shareContent and the
@@ -81,13 +81,13 @@
 
  Also see https://developers.facebook.com/docs/sharing/opengraph/object-api#objectapi-creatinguser
 
- - Returns: YES if the receiver was able to send the request to create the object, otherwise NO.
+ @return YES if the receiver was able to send the request to create the object, otherwise NO.
  */
 - (BOOL)createOpenGraphObject:(FBSDKShareOpenGraphObject *)openGraphObject;
 
 /**
   Begins the send from the receiver.
- - Returns: YES if the receiver was able to send the share, otherwise NO.
+ @return YES if the receiver was able to send the share, otherwise NO.
  */
 - (BOOL)share;
 

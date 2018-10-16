@@ -59,7 +59,6 @@
       android:launchMode="singleTask"
       android:screenOrientation="portrait"
       android:theme="@android:style/Theme.Translucent.NoTitleBar">
-      <!-- ADD SHELL SCHEME HERE -->
       <!-- START LAUNCHER INTENT FILTERS -->
       <intent-filter>
         <data android:scheme="exp"/>
@@ -123,6 +122,7 @@
       android:theme="@style/Theme.Exponent.Splash"
       android:windowSoftInputMode="adjustResize">
       <!-- ADD SHELL INTENT FILTERS HERE -->
+      <!-- ADD SHELL SCHEME HERE -->
       <!-- ADD SHELL APP SPECIFIC INTENT FILTERS -->
     </activity>
 

@@ -108,7 +108,7 @@ Pod::Spec.new do |s|
   end
 
   s.subspec "CxxBridge" do |ss|
-    ss.dependency             "Folly", "2016.09.26.00"
+    ss.dependency             "Folly", "2016.10.31.00"
     ss.dependency             "ReactABI29_0_0/Core"
     ss.dependency             "ReactABI29_0_0/cxxReactABI29_0_0"
     ss.compiler_flags       = folly_compiler_flags
@@ -129,7 +129,7 @@ Pod::Spec.new do |s|
   end
 
   s.subspec "ABI29_0_0jschelpers" do |ss|
-    ss.dependency             "Folly", "2016.09.26.00"
+    ss.dependency             "Folly", "2016.10.31.00"
     ss.dependency             "ReactABI29_0_0/ABI29_0_0PrivateDatabase"
     ss.compiler_flags       = folly_compiler_flags
     ss.source_files         = "ReactCommon/ABI29_0_0jschelpers/*.{cpp,h}"
@@ -154,7 +154,7 @@ Pod::Spec.new do |s|
     ss.dependency             "ReactABI29_0_0/ABI29_0_0jschelpers"
     ss.dependency             "ReactABI29_0_0/ABI29_0_0jsinspector"
     ss.dependency             "boost-for-react-native", "1.63.0"
-    ss.dependency             "Folly", "2016.09.26.00"
+    ss.dependency             "Folly", "2016.10.31.00"
     ss.compiler_flags       = folly_compiler_flags
     ss.source_files         = "ReactCommon/cxxReactABI29_0_0/*.{cpp,h}"
     ss.exclude_files        = "ReactCommon/cxxReactABI29_0_0/ABI29_0_0SampleCxxModule.*"

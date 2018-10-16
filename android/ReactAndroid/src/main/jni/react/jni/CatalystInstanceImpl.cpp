@@ -1,20 +1,27 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) 2004-present, Facebook, Inc.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 #include "CatalystInstanceImpl.h"
 
 #include <mutex>
 #include <condition_variable>
+#include <sstream>
+#include <vector>
 
 #include <cxxreact/CxxNativeModule.h>
 #include <cxxreact/Instance.h>
 #include <cxxreact/JSBigString.h>
 #include <cxxreact/JSBundleType.h>
+#include <cxxreact/JSDeltaBundleClient.h>
 #include <cxxreact/JSIndexedRAMBundle.h>
 #include <cxxreact/MethodCall.h>
 #include <cxxreact/ModuleRegistry.h>
 #include <cxxreact/RecoverableError.h>
 #include <cxxreact/RAMBundleRegistry.h>
 #include <fb/log.h>
+#include <fb/fbjni/ByteBuffer.h>
 #include <folly/dynamic.h>
 #include <folly/Memory.h>
 #include <jni/Countable.h>
@@ -35,7 +42,6 @@ namespace {
 
 class Exception : public jni::JavaClass<Exception> {
  public:
-  static auto constexpr kJavaDescriptor = "Ljava/lang/Exception;";
 };
 
 class JInstanceCallback : public InstanceCallback {
@@ -101,6 +107,7 @@ void CatalystInstanceImpl::registerNatives() {
     makeNativeMethod("jniLoadScriptFromAssets", CatalystInstanceImpl::jniLoadScriptFromAssets),
     makeNativeMethod("jniLoadScriptFromFile", CatalystInstanceImpl::jniLoadScriptFromFile),
     makeNativeMethod("jniLoadScriptFromString", CatalystInstanceImpl::jniLoadScriptFromString),
+    makeNativeMethod("jniLoadScriptFromDeltaBundle", CatalystInstanceImpl::jniLoadScriptFromDeltaBundle),
     makeNativeMethod("jniCallJSFunction", CatalystInstanceImpl::jniCallJSFunction),
     makeNativeMethod("jniCallJSCallback", CatalystInstanceImpl::jniCallJSCallback),
     makeNativeMethod("setGlobalVariable", CatalystInstanceImpl::setGlobalVariable),
@@ -196,14 +203,6 @@ void CatalystInstanceImpl::jniLoadScriptFromAssets(
   }
 }
 
-void CatalystInstanceImpl::jniLoadScriptFromString(
-    const std::string& scriptStdString,
-    const std::string& sourceURL,
-    bool loadSynchronously) {
-  std::unique_ptr<const JSBigStdString> script = folly::make_unique<const JSBigStdString>(scriptStdString);
-  instance_->loadScriptFromString(std::move(script), sourceURL, loadSynchronously);
-}
-
 void CatalystInstanceImpl::jniLoadScriptFromFile(const std::string& fileName,
                                                  const std::string& sourceURL,
                                                  bool loadSynchronously) {
@@ -217,6 +216,27 @@ void CatalystInstanceImpl::jniLoadScriptFromFile(const std::string& fileName,
       });
     instance_->loadScriptFromString(std::move(script), sourceURL, loadSynchronously);
   }
+}
+
+void CatalystInstanceImpl::jniLoadScriptFromString(
+    const std::string& scriptStdString,
+    const std::string& sourceURL,
+    bool loadSynchronously) {
+  std::unique_ptr<const JSBigStdString> script = folly::make_unique<const JSBigStdString>(scriptStdString);
+  instance_->loadScriptFromString(std::move(script), sourceURL, loadSynchronously);
+}
+
+void CatalystInstanceImpl::jniLoadScriptFromDeltaBundle(
+    const std::string& sourceURL,
+    jni::alias_ref<NativeDeltaClient::jhybridobject> jDeltaClient,
+    bool loadSynchronously) {
+
+  auto deltaClient = jDeltaClient->cthis()->getDeltaClient();
+  auto registry = RAMBundleRegistry::singleBundleRegistry(
+    folly::make_unique<JSDeltaBundleClientRAMBundle>(deltaClient));
+
+  instance_->loadRAMBundle(
+    std::move(registry), deltaClient->getStartupCode(), sourceURL, loadSynchronously);
 }
 
 void CatalystInstanceImpl::jniCallJSFunction(std::string module, std::string method, NativeArray* arguments) {
@@ -250,9 +270,7 @@ jlong CatalystInstanceImpl::getJavaScriptContext() {
 }
 
 void CatalystInstanceImpl::handleMemoryPressure(int pressureLevel) {
-  #ifdef WITH_JSC_MEMORY_PRESSURE
   instance_->handleMemoryPressure(pressureLevel);
-  #endif
 }
 
 }}

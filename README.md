@@ -8,7 +8,7 @@ The Expo client app for Android and iOS.
 
 This is the source code for the Expo client app used to view experiences published to the Expo service. If you want to build and install the Expo client directly onto a device, you're in the right place. Note that if you just want to install the Expo client app on a simulator, you do not need to build it from source. Instead, you should [follow the instructions here](https://docs.expo.io/versions/latest/introduction/installation.html).
 
-To build the Expo client app, follow the instructions in the [Set Up](#set-up) section below. You'll be able to use [XDE](https://github.com/expo/xde) or [exp](https://github.com/expo/exp) and the rest of Expo's infrastructure with the app you build.
+To build the Expo client app, follow the instructions in the [Set Up](#set-up) section below. Use the [expo-cli](https://docs.expo.io/versions/latest/workflow/expo-cli) command line to use Expo's infrastructure to build your app.
 
 Please ask us on the [forums](https://forums.expo.io/) if you get stuck.
 
@@ -22,17 +22,21 @@ If you need to make native code changes to your Expo project, such as adding cus
 
 Please use Node 8+ and npm 4. We recommend installing Node using [nvm](https://github.com/creationix/nvm). We support building the clients only on macOS.
 
+- Install the [`git-lfs`](https://git-lfs.github.com/) command line extension for `git`.
 - Install [the Gulp CLI](http://gulpjs.com/) globally: `npm install gulp-cli -g`.
-- Run `npm install` in the `home` and `tools-public` directories.
+- Clone this repo; we recommend cloning it to a directory whose full path does not include any spaces.
+- Run `yarn` in the `tools-public` directory.
 
 #### iOS
 - Make sure you have latest non-beta Xcode installed.
 - Install [Cocoapods](https://cocoapods.org/): `gem install cocoapods --no-ri --no-rdoc`
+- Run `git lfs pull`.
 - Run `./generate-files-ios.sh` in the `tools-public` directory.
 - Open and run `ios/Exponent.xcworkspace` in Xcode.
 
 #### Android
 - Make sure you have Android Studio 3 and the [Android NDK](https://facebook.github.io/react-native/docs/building-from-source.html#download-links-for-android-ndk) version `r10e` installed.
+- Run `./generate-dynamic-macros-android.sh` in the `tools-public` directory.
 - Build and install Android with `cd android; ./run.sh; cd ..`. It might fail the first time. If so just run `./run.sh` again.
 
 If you are running on an phone with Android 5 you might have to use `./run.sh installDev19Debug`. There is a bug running multidex applications in debug mode on Android 5 devices: https://code.google.com/p/android/issues/detail?id=79826.

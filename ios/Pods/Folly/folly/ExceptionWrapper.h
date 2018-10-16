@@ -18,6 +18,7 @@
 
 #include <cassert>
 #include <exception>
+#include <iostream>
 #include <memory>
 #include <folly/ExceptionString.h>
 #include <folly/detail/ExceptionWrapper.h>
@@ -148,12 +149,18 @@ class exception_wrapper {
     assign_eptr(eptr);
   }
 
-  void throwException() const {
+  // If the exception_wrapper does not contain an exception, std::terminate()
+  // is invoked to assure the [[noreturn]] behaviour.
+  [[noreturn]] void throwException() const {
     if (throwfn_) {
       throwfn_(item_.get());
     } else if (eptr_) {
       std::rethrow_exception(eptr_);
     }
+    std::cerr
+        << "Cannot use `throwException` with an empty folly::exception_wrapper"
+        << std::endl;
+    std::terminate();
   }
 
   explicit operator bool() const {
@@ -260,7 +267,9 @@ class exception_wrapper {
     bool>::type
   with_exception(F f) const {
     try {
-      throwException();
+      if (*this) {
+        throwException();
+      }
     } catch (typename std::decay<Ex>::type& e) {
       f(e);
       return true;
@@ -276,7 +285,9 @@ class exception_wrapper {
     }
 
     try {
-      throwException();
+      if (*this) {
+        throwException();
+      }
     } catch (...) {
       return std::current_exception();
     }

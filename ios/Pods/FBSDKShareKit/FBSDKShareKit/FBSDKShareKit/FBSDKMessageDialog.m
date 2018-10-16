@@ -19,6 +19,7 @@
 #import "FBSDKMessageDialog.h"
 
 #import "FBSDKCoreKit+Internal.h"
+#import "FBSDKShareCameraEffectContent.h"
 #import "FBSDKShareConstants.h"
 #import "FBSDKShareDefines.h"
 #import "FBSDKShareError.h"
@@ -81,6 +82,7 @@
 
   id<FBSDKSharingContent> shareContent = self.shareContent;
   NSDictionary *parameters = [FBSDKShareUtility parametersForShareContent:shareContent
+                                                            bridgeOptions:FBSDKShareBridgeOptionsDefault
                                                     shouldFailOnDataError:self.shouldFailOnDataError];
   NSString *methodName = ([shareContent isKindOfClass:[FBSDKShareOpenGraphContent class]] ?
                           FBSDK_SHARE_OPEN_GRAPH_METHOD_NAME :
@@ -110,26 +112,24 @@
 
 - (BOOL)validateWithError:(NSError *__autoreleasing *)errorRef
 {
-  id<FBSDKSharingContent> shareContent = self.shareContent;
-  if (!shareContent) {
-    if (errorRef != NULL) {
-      *errorRef = [FBSDKShareError requiredArgumentErrorWithName:@"shareContent" message:nil];
-    }
-    return NO;
-  }
-  if ([shareContent isKindOfClass:[FBSDKShareVideoContent class]]) {
-    if (![FBSDKShareUtility validateAssetLibraryURLWithShareVideoContent:(FBSDKShareVideoContent *)shareContent name:@"videoURL" error:errorRef]) {
+  if (self.shareContent) {
+    if ([self.shareContent isKindOfClass:[FBSDKShareLinkContent class]] ||
+        [self.shareContent isKindOfClass:[FBSDKShareMessengerGenericTemplateContent class]] ||
+        [self.shareContent isKindOfClass:[FBSDKShareMessengerMediaTemplateContent class]] ||
+        [self.shareContent isKindOfClass:[FBSDKShareMessengerOpenGraphMusicTemplateContent class]]) {
+    } else {
+      if (errorRef != NULL) {
+        NSString *message = [NSString stringWithFormat:@"Message dialog does not support %@.",
+                                                       NSStringFromClass(self.shareContent.class)];
+        *errorRef = [FBSDKShareError requiredArgumentErrorWithName:@"shareContent"
+                                                           message:message];
+      }
       return NO;
     }
   }
-  if ([shareContent isKindOfClass:[FBSDKShareCameraEffectContent class]]) {
-    if (errorRef != NULL) {
-      *errorRef = [FBSDKShareError requiredArgumentErrorWithName:@"shareContent"
-                                                         message:@"Message dialog does not support camera content."];
-    }
-    return NO;
-  }
-  return [FBSDKShareUtility validateShareContent:self.shareContent error:errorRef];
+  return [FBSDKShareUtility validateShareContent:self.shareContent
+                                   bridgeOptions:FBSDKShareBridgeOptionsDefault
+                                           error:errorRef];
 }
 
 #pragma mark - Helper Methods

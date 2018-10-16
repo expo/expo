@@ -23,9 +23,9 @@
 /**
   The common interface for sharing buttons.
 
-- See:FBSDKSendButton
+ @see FBSDKSendButton
 
-- See:FBSDKShareButton
+ @see FBSDKShareButton
  */
 @protocol FBSDKSharingButton <NSObject>
 

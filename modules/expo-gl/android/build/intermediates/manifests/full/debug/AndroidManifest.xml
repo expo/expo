@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="expo.modules.gl"
+    android:versionCode="4"
+    android:versionName="1.0.2" >
+
+    <uses-sdk
+        android:minSdkVersion="19"
+        android:targetSdkVersion="26" />
+
+    <uses-feature
+        android:glEsVersion="0x00020000"
+        android:required="false" />
+
+</manifest>

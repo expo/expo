@@ -1,0 +1,49 @@
+-- Merging decision tree log ---
+manifest
+ADDED from /Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/AndroidManifest.xml:1:1-10:14
+INJECTED from /Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/AndroidManifest.xml:1:1-10:14
+INJECTED from /Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/AndroidManifest.xml:1:1-10:14
+INJECTED from /Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/AndroidManifest.xml:1:1-10:14
+INJECTED from /Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/AndroidManifest.xml:1:1-10:14
+INJECTED from /Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/AndroidManifest.xml:1:1-10:14
+INJECTED from /Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/AndroidManifest.xml:1:1-10:14
+	package
+		ADDED from /Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/AndroidManifest.xml:1:11-49
+		INJECTED from /Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/AndroidManifest.xml
+		INJECTED from /Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/AndroidManifest.xml
+	android:versionName
+		INJECTED from /Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/AndroidManifest.xml
+		ADDED from /Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/AndroidManifest.xml:1:1-10:14
+		INJECTED from /Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/AndroidManifest.xml
+	android:versionCode
+		INJECTED from /Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/AndroidManifest.xml
+		ADDED from /Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/AndroidManifest.xml:1:1-10:14
+		INJECTED from /Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/AndroidManifest.xml
+	xmlns:android
+		ADDED from /Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/AndroidManifest.xml:2:11-69
+application
+ADDED from /Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/AndroidManifest.xml:3:5-9:19
+activity#expo.modules.payments.stripe.OpenBrowserActivity
+ADDED from /Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/AndroidManifest.xml:4:9-8:71
+	android:launchMode
+		ADDED from /Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/AndroidManifest.xml:7:9-40
+	android:exported
+		ADDED from /Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/AndroidManifest.xml:6:9-33
+	android:theme
+		ADDED from /Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/AndroidManifest.xml:8:9-68
+	android:name
+		ADDED from /Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/AndroidManifest.xml:5:9-44
+uses-sdk
+INJECTED from /Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from /Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/AndroidManifest.xml
+INJECTED from /Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/AndroidManifest.xml
+INJECTED from /Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/AndroidManifest.xml
+INJECTED from /Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/AndroidManifest.xml
+	android:targetSdkVersion
+		INJECTED from /Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/AndroidManifest.xml
+		ADDED from /Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/AndroidManifest.xml
+		INJECTED from /Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from /Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/AndroidManifest.xml
+		ADDED from /Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/AndroidManifest.xml
+		INJECTED from /Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/AndroidManifest.xml

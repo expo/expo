@@ -18,13 +18,46 @@
 
 #import "FBSDKShareMessengerGenericTemplateContent.h"
 
+#import "FBSDKCoreKit+Internal.h"
+#import "FBSDKShareMessengerContentUtility.h"
 #import "FBSDKShareMessengerGenericTemplateElement.h"
+#import "FBSDKShareMessengerURLActionButton.h"
+#import "FBSDKShareUtility.h"
 
 static NSString *const kGenericTemplatePageIDKey = @"pageID";
 static NSString *const kGenericTemplateUUIDKey = @"UUID";
 static NSString *const kGenericTemplateIsSharableKey = @"isSharable";
 static NSString *const kGenericTemplateImageAspectRatioKey = @"imageAspectRatio";
 static NSString *const kGenericTemplateElementKey = @"element";
+
+static NSString *_ImageAspectRatioString(FBSDKShareMessengerGenericTemplateImageAspectRatio imageAspectRatio)
+{
+  switch (imageAspectRatio) {
+    case FBSDKShareMessengerGenericTemplateImageAspectRatioSquare:
+      return @"square";
+    case FBSDKShareMessengerGenericTemplateImageAspectRatioHorizontal:
+      return @"horizontal";
+  }
+}
+
+static NSArray<NSDictionary<NSString *, id> *> *_SerializableGenericTemplateElementsFromElements(NSArray<FBSDKShareMessengerGenericTemplateElement *> *elements)
+{
+  NSMutableArray<NSDictionary<NSString *, id> *> *serializableElements = [NSMutableArray array];
+  for (FBSDKShareMessengerGenericTemplateElement *element in elements) {
+    NSMutableDictionary<NSString *, id> *elementDictionary = [NSMutableDictionary dictionary];
+    [FBSDKInternalUtility dictionary:elementDictionary setObject:element.title forKey:@"title"];
+    [FBSDKInternalUtility dictionary:elementDictionary setObject:element.subtitle forKey:@"subtitle"];
+    [FBSDKInternalUtility dictionary:elementDictionary setObject:element.imageURL.absoluteString forKey:@"image_url"];
+    [FBSDKInternalUtility dictionary:elementDictionary setObject:SerializableButtonsFromButton(element.button) forKey:kFBSDKShareMessengerButtonsKey];
+    if ([element.defaultAction isKindOfClass:[FBSDKShareMessengerURLActionButton class]]) {
+      [FBSDKInternalUtility dictionary:elementDictionary setObject:SerializableButtonFromURLButton(element.defaultAction, YES) forKey:@"default_action"];
+    }
+
+    [serializableElements addObject:elementDictionary];
+  }
+
+  return serializableElements;
+}
 
 @implementation FBSDKShareMessengerGenericTemplateContent
 
@@ -47,6 +80,57 @@ static NSString *const kGenericTemplateElementKey = @"element";
     _shareUUID = [NSUUID UUID].UUIDString;
   }
   return self;
+}
+
+#pragma mark - FBSDKSharingContent
+
+- (void)addToParameters:(NSMutableDictionary<NSString *, id> *)parameters
+          bridgeOptions:(FBSDKShareBridgeOptions)bridgeOptions
+{
+  NSMutableDictionary<NSString *, id> *payload = [NSMutableDictionary dictionary];
+  [payload setObject:@"generic" forKey:kFBSDKShareMessengerTemplateTypeKey];
+  [payload setObject:@(_isSharable) forKey:@"sharable"];
+  [payload setObject:_ImageAspectRatioString(_imageAspectRatio) forKey:@"image_aspect_ratio"];
+  [payload setObject:_SerializableGenericTemplateElementsFromElements(@[_element]) forKey:kFBSDKShareMessengerElementsKey];
+
+  NSMutableDictionary<NSString *, id> *attachment = [NSMutableDictionary dictionary];
+  [attachment setObject:kFBSDKShareMessengerTemplateKey forKey:kFBSDKShareMessengerTypeKey];
+  [attachment setObject:payload forKey:kFBSDKShareMessengerPayloadKey];
+
+  NSMutableDictionary<NSString
+  *, id> *contentForShare = [NSMutableDictionary dictionary];
+  [contentForShare setObject:attachment forKey:kFBSDKShareMessengerAttachmentKey];
+
+  FBSDKShareMessengerGenericTemplateElement *firstElement = _element;
+  NSMutableDictionary<NSString *, id> *contentForPreview = [NSMutableDictionary dictionary];
+  [FBSDKInternalUtility dictionary:contentForPreview setObject:@"DEFAULT" forKey:@"preview_type"];
+  [FBSDKInternalUtility dictionary:contentForPreview setObject:firstElement.title forKey:@"title"];
+  [FBSDKInternalUtility dictionary:contentForPreview setObject:firstElement.subtitle forKey:@"subtitle"];
+  [FBSDKInternalUtility dictionary:contentForPreview setObject:firstElement.imageURL.absoluteString forKey:@"image_url"];
+  if (firstElement.button) {
+    AddToContentPreviewDictionaryForButton(contentForPreview, firstElement.button);
+  } else {
+    AddToContentPreviewDictionaryForButton(contentForPreview, firstElement.defaultAction);
+  }
+
+  [FBSDKShareMessengerContentUtility addToParameters:parameters contentForShare:contentForShare contentForPreview:contentForPreview];
+}
+
+#pragma mark - FBSDKSharingValidation
+
+- (BOOL)validateWithOptions:(FBSDKShareBridgeOptions)bridgeOptions error:(NSError *__autoreleasing *)errorRef
+{
+  return [FBSDKShareUtility validateRequiredValue:_element.title
+                                             name:@"element.title"
+                                            error:errorRef]
+      && [FBSDKShareMessengerContentUtility validateMessengerActionButton:_element.defaultAction
+                                                    isDefaultActionButton:YES
+                                                                   pageID:_pageID
+                                                                    error:errorRef]
+      && [FBSDKShareMessengerContentUtility validateMessengerActionButton:_element.button
+                                                    isDefaultActionButton:NO
+                                                                   pageID:_pageID
+                                                                    error:errorRef];
 }
 
 #pragma mark - NSCoding

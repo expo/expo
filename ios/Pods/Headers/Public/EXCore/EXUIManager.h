@@ -1,1 +1,1 @@
-../../../../../modules/expo-core/ios/EXCore/Protocols/EXUIManager.h
+../../../../../packages/expo-core/ios/EXCore/Protocols/EXUIManager.h

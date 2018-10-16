@@ -418,6 +418,9 @@ typename std::enable_if<
   Try<void>>::type
 makeTryWith(F&& f);
 
+template <typename... Ts>
+std::tuple<Ts...> unwrapTryTuple(std::tuple<folly::Try<Ts>...>&& ts);
+
 } // folly
 
 #include <folly/Try-inl.h>

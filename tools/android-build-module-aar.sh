@@ -11,10 +11,10 @@ pushd ../android
 
 # Clean aar
 rm -rf expoview/libs/$MODULE_NAME-temp
-rm ../modules/$MODULE_NAME/android/build/outputs/aar/$MODULE_NAME-release.aar
+rm ../packages/$MODULE_NAME/android/build/outputs/aar/$MODULE_NAME-release.aar
 
 # Build aar
-pushd ../modules/$MODULE_NAME/android
+pushd ../packages/$MODULE_NAME/android
 # The build directory sometimes has old .so files
 rm -rf build
 popd
@@ -22,7 +22,7 @@ set -e
 ./gradlew $MODULE_NAME:assembleRelease
 
 # Grab the aar and unzip it
-cp ../modules/$MODULE_NAME/android/build/outputs/aar/$MODULE_NAME-release.aar expoview/libs/$MODULE_NAME-temp.aar
+cp ../packages/$MODULE_NAME/android/build/outputs/aar/$MODULE_NAME-release.aar expoview/libs/$MODULE_NAME-temp.aar
 rm -rf expoview/libs/$MODULE_NAME-temp
 unzip expoview/libs/$MODULE_NAME-temp.aar -d expoview/libs/$MODULE_NAME-temp
 

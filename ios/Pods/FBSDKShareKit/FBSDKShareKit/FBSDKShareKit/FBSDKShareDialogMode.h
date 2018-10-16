@@ -60,6 +60,6 @@ typedef NS_ENUM(NSUInteger, FBSDKShareDialogMode)
 };
 
 /**
-  Converts an FBLikeControlObjectType to an NSString.
+  Converts an FBSDKShareDialogMode to an NSString.
  */
 FBSDK_EXTERN NSString *NSStringFromFBSDKShareDialogMode(FBSDKShareDialogMode dialogMode);

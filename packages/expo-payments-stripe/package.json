@@ -1,0 +1,22 @@
+{
+  "name": "expo-payments-stripe",
+  "version": "1.0.1",
+  "description": "Expo Payments Module",
+  "main": "index.js",
+  "files": [
+    "android/",
+    "ios/",
+    "src/",
+    "index.js"
+  ],
+  "keywords": [
+    "react-native",
+    "expo"
+  ],
+  "homepage": "https://docs.expo.io/",
+  "author": "650 Industries, Inc.",
+  "license": "BSD",
+  "dependencies": {
+    "expo-core": "~1.1.0"
+  }
+}

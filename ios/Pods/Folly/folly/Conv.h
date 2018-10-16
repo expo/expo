@@ -1490,7 +1490,7 @@ Expected<Tgt, detail::ParseToError<Tgt>> tryTo(StringPiece* src) {
 
 template <class Tgt>
 Tgt to(StringPiece* src) {
-  Tgt result;
+  Tgt result{};
   using Error = detail::ParseToError<Tgt>;
   return parseTo(*src, result)
       .thenOrThrow(

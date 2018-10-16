@@ -1,1 +1,1 @@
-../../../../../modules/expo-local-authentication/ios/EXLocalAuthentication/EXLocalAuthentication.h
+../../../../../packages/expo-local-authentication/ios/EXLocalAuthentication/EXLocalAuthentication.h

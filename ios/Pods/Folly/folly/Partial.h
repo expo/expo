@@ -20,6 +20,13 @@
 
 namespace folly {
 
+namespace detail {
+namespace partial {
+
+// helper type to make sure that the templated constructor in Partial does
+// not accidentally act as copy or move constructor
+struct PartialConstructFromCallable {};
+
 template <typename F, typename Tuple>
 class Partial {
  private:
@@ -28,7 +35,7 @@ class Partial {
 
  public:
   template <typename Callable, typename... Args>
-  Partial(Callable&& callable, Args&&... args)
+  Partial(PartialConstructFromCallable, Callable&& callable, Args&&... args)
       : f_(std::forward<Callable>(callable)),
         stored_args_(std::forward<Args>(args)...) {}
 
@@ -69,6 +76,9 @@ class Partial {
   }
 };
 
+} // namespace partial
+} // namespace detail
+
 /**
  * Partially applies arguments to a callable
  *
@@ -92,10 +102,12 @@ class Partial {
  * and passed to the original callable.
  */
 template <typename F, typename... Args>
-auto partial(F&& f, Args&&... args) -> Partial<
+auto partial(F&& f, Args&&... args) -> detail::partial::Partial<
     typename std::decay<F>::type,
     std::tuple<typename std::decay<Args>::type...>> {
-  return {std::forward<F>(f), std::forward<Args>(args)...};
+  return {detail::partial::PartialConstructFromCallable{},
+          std::forward<F>(f),
+          std::forward<Args>(args)...};
 }
 
 } // namespace folly

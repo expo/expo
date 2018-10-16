@@ -64,14 +64,16 @@ public class NativeAdView extends ReactViewGroup {
 
     WritableMap event = Arguments.createMap();
     event.putString("headline", nativeAd.getAdHeadline());
-    event.putString("socialContext", nativeAd.getAdSocialContext());
-    event.putString("bodyText", nativeAd.getAdBodyText());
-    event.putString("callToActionText", nativeAd.getAdCallToAction());
-    event.putString("sponsoredTranslation", nativeAd.getSponsoredTranslation());
-    event.putString("advertiserName", nativeAd.getAdvertiserName());
-    event.putString("promotedTranslation", nativeAd.getPromotedTranslation());
-    event.putString("translation", nativeAd.getAdTranslation());
     event.putString("linkDescription", nativeAd.getAdLinkDescription());
+    event.putString("advertiserName", nativeAd.getAdvertiserName());
+    event.putString("socialContext", nativeAd.getAdSocialContext());
+    event.putString("callToActionText", nativeAd.getAdCallToAction());
+    event.putString("bodyText", nativeAd.getAdBodyText());
+    // TODO: Remove this deprecated field in SDK 32+
+    event.putString("translation", nativeAd.getAdTranslation());
+    event.putString("adTranslation", nativeAd.getAdTranslation());
+    event.putString("promotedTranslation", nativeAd.getPromotedTranslation());
+    event.putString("sponsoredTranslation", nativeAd.getSponsoredTranslation());
 
     mEventEmitter.receiveEvent(getId(), "onAdLoaded", event);
   }

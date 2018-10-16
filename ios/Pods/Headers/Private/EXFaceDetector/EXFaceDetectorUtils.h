@@ -1,1 +1,1 @@
-../../../../../modules/expo-face-detector/ios/EXFaceDetector/Utilities/EXFaceDetectorUtils.h
+../../../../../packages/expo-face-detector/ios/EXFaceDetector/Utilities/EXFaceDetectorUtils.h

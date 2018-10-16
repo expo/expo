@@ -103,7 +103,7 @@ __attribute__ ((deprecated))
   The position for the auxiliary view for the receiver.
 
 
-- See:FBSDKLikeControlAuxiliaryPosition
+ @see FBSDKLikeControlAuxiliaryPosition
  */
 @property (nonatomic, assign) FBSDKLikeControlAuxiliaryPosition likeControlAuxiliaryPosition;
 
@@ -120,7 +120,7 @@ __attribute__ ((deprecated))
   The style to use for the receiver.
 
 
-- See:FBSDKLikeControlStyle
+ @see FBSDKLikeControlStyle
  */
 @property (nonatomic, assign) FBSDKLikeControlStyle likeControlStyle;
 

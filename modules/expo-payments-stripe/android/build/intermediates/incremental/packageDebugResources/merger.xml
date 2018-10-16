@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merger version="3"><dataSet config="main$Generated" generated="true"><source path="/Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/res"/><source path="/Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/build/generated/res/rs/debug"/><source path="/Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/build/generated/res/resValues/debug"/></dataSet><dataSet config="main" generated-set="main$Generated"><source path="/Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/res"><file name="edit_text_holo_dark" path="/Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/res/drawable/edit_text_holo_dark.xml" qualifiers="" type="drawable"/><file name="stp_card_form_front" path="/Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/res/drawable/stp_card_form_front.png" qualifiers="" type="drawable"/><file name="spinner_background_holo_dark" path="/Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/res/drawable/spinner_background_holo_dark.xml" qualifiers="" type="drawable"/><file name="btn_default_holo_dark" path="/Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/res/drawable/btn_default_holo_dark.xml" qualifiers="" type="drawable"/><file name="card_512" path="/Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/res/drawable/card_512.png" qualifiers="" type="drawable"/><file name="header_dark" path="/Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/res/drawable/header_dark.xml" qualifiers="" type="drawable"/><file name="stp_card_form_back" path="/Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/res/drawable/stp_card_form_back.png" qualifiers="" type="drawable"/><file name="payment_form_fragment_two" path="/Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/res/layout/payment_form_fragment_two.xml" qualifiers="" type="layout"/><file name="payment_form_fragment" path="/Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/res/layout/payment_form_fragment.xml" qualifiers="" type="layout"/><file path="/Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/res/values/dates.xml" qualifiers=""><string-array name="year_array">
+    <item>Year</item>
+    <item>2016</item>
+    <item>2017</item>
+    <item>2018</item>
+    <item>2019</item>
+    <item>2020</item>
+    <item>2021</item>
+    <item>2022</item>
+    <item>2023</item>
+    <item>2024</item>
+    <item>2025</item>
+    <item>2026</item>
+    <item>2027</item>
+    <item>2028</item>
+    <item>2029</item>
+    <item>2030</item>
+  </string-array><string-array name="month_array">
+    <item>Month</item>
+    <item>1</item>
+    <item>2</item>
+    <item>3</item>
+    <item>4</item>
+    <item>5</item>
+    <item>6</item>
+    <item>7</item>
+    <item>8</item>
+    <item>9</item>
+    <item>10</item>
+    <item>11</item>
+    <item>12</item>
+  </string-array></file><file path="/Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/res/values/colors.xml" qualifiers=""><color name="colorPrimary">#3F51B5</color><color name="colorPrimaryDark">#303F9F</color><color name="colorAccent">#005eff</color><color name="spinnerItem">#AAAAAA</color><color name="editText">#AAAAAA</color><color name="buttonText">#EEEEEE</color><color name="headerText">#EEEEEE</color><color name="white_background">#FFFFFF</color><color name="transparent_background">#00FFFFFF</color></file><file path="/Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/res/values/dimens.xml" qualifiers=""><dimen name="activity_horizontal_margin">16dp</dimen><dimen name="activity_vertical_margin">16dp</dimen><dimen name="fab_margin">16dp</dimen></file><file path="/Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/res/values/styles.xml" qualifiers=""><style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style><style name="Theme" parent="@android:style/Theme.Black.NoTitleBar">
+        <item name="android:spinnerItemStyle">@style/SpinnerItem</item>
+    </style><style name="TextField" parent="@android:style/Widget.EditText">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/editText</item>
+        <item name="android:background">@drawable/edit_text_holo_dark</item>
+    </style><style name="CardNumber" parent="@style/TextField">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:inputType">numberDecimal</item>
+        <item name="android:hint">@string/gettipsi_card_number</item>
+    </style><style name="CVC" parent="@style/TextField">
+        <item name="android:inputType">numberDecimal</item>
+        <item name="android:hint">@string/gettipsi_card_cvc</item>
+        <item name="android:layout_width">match_parent</item>
+    </style><style name="Button" parent="@android:style/Widget.Button">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingTop">12dp</item>
+        <item name="android:paddingBottom">12dp</item>
+        <item name="android:textColor">@color/buttonText</item>
+        <item name="android:background">@drawable/btn_default_holo_dark</item>
+    </style><style name="Save" parent="@style/Button">
+        <item name="android:layout_width">160dp</item>
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:text">@string/gettipsi_save</item>
+    </style><style name="Spinner" parent="@android:style/Widget.Spinner">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/spinner_background_holo_dark</item>
+        <item name="android:spinnerItemStyle">@style/SpinnerItem</item>
+    </style><style name="SpinnerItem" parent="@android:style/Widget.TextView.SpinnerItem">
+
+        <item name="android:textAppearance">@style/TextAppearance.SpinnerItem</item>
+        <item name="android:textColor">@color/spinnerItem</item>
+    </style><style name="TextAppearance.SpinnerItem" parent="@android:style/TextAppearance.Widget.TextView.SpinnerItem">
+        <item name="android:textColor">@color/spinnerItem</item>
+    </style><style name="ExpMonth" parent="@style/Spinner">
+        <item name="android:entries">@array/month_array</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_weight">1.0</item>
+    </style><style name="ExpYear" parent="@style/Spinner">
+        <item name="android:entries">@array/year_array</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_weight">0.8</item>
+    </style><style name="Currency" parent="@style/Spinner">
+        <item name="android:entries">@array/gettipsi_currency_array</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_weight">1.0</item>
+    </style><style name="Header" parent="@android:style/Widget.TextView">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/header_dark</item>
+        <item name="android:layout_marginBottom">5dp</item>
+        <item name="android:paddingBottom">4dp</item>
+        <item name="android:paddingLeft">3dp</item>
+        <item name="android:textSize">18dp</item>
+        <item name="android:textColor">@color/headerText</item>
+        <item name="android:gravity">center_vertical</item>
+    </style></file><file path="/Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/res/values/strings.xml" qualifiers=""><string name="gettipsi_card_number">Card Number</string><string name="gettipsi_save">Save</string><string name="gettipsi_card_cvc">CVC</string><string name="gettipsi_google_pay_unavaliable">Google Pay is unavailable on your device.</string><string name="gettipsi_user_cancel_dialog">A user has canceled the dialog. No card added!</string><string name="gettipsi_card_enter_dialog_title">Enter your card</string><string name="gettipsi_card_enter_dialog_positive_button">Done</string><string name="gettipsi_card_enter_dialog_negative_button">Cancel</string><string name="gettipsi_card_number_label">Card</string><string-array name="gettipsi_currency_array">
+    <item>Currency (optional)</item>
+    <item>Unspecified</item>
+    <item>USD</item>
+  </string-array></file><file path="/Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/res/values/integers.xml" qualifiers=""><integer name="card_flip_time_full">700</integer><integer name="card_flip_time_half">350</integer></file><file name="card_flip_left_out" path="/Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/res/animator/card_flip_left_out.xml" qualifiers="" type="animator"/><file name="card_flip_left_in" path="/Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/res/animator/card_flip_left_in.xml" qualifiers="" type="animator"/><file name="card_flip_right_in" path="/Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/res/animator/card_flip_right_in.xml" qualifiers="" type="animator"/><file name="card_flip_right_out" path="/Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/res/animator/card_flip_right_out.xml" qualifiers="" type="animator"/><file name="stub_classic" path="/Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/res/xml/stub_classic.xml" qualifiers="" type="xml"/><file name="stub_material" path="/Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/res/xml/stub_material.xml" qualifiers="" type="xml"/><file name="spinner_pressed_holo_dark" path="/Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/res/drawable-hdpi/spinner_pressed_holo_dark.9.png" qualifiers="hdpi-v4" type="drawable"/><file name="btn_default_disabled_focused_holo_dark" path="/Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/res/drawable-hdpi/btn_default_disabled_focused_holo_dark.9.png" qualifiers="hdpi-v4" type="drawable"/><file name="btn_default_disabled_holo_dark" path="/Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/res/drawable-hdpi/btn_default_disabled_holo_dark.9.png" qualifiers="hdpi-v4" type="drawable"/><file name="spinner_disabled_holo_dark" path="/Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/res/drawable-hdpi/spinner_disabled_holo_dark.9.png" qualifiers="hdpi-v4" type="drawable"/><file name="spinner_focused_holo_dark" path="/Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/res/drawable-hdpi/spinner_focused_holo_dark.9.png" qualifiers="hdpi-v4" type="drawable"/><file name="textfield_disabled_holo_dark" path="/Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/res/drawable-hdpi/textfield_disabled_holo_dark.9.png" qualifiers="hdpi-v4" type="drawable"/><file name="spinner_default_holo_dark" path="/Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/res/drawable-hdpi/spinner_default_holo_dark.9.png" qualifiers="hdpi-v4" type="drawable"/><file name="btn_default_pressed_holo_dark" path="/Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/res/drawable-hdpi/btn_default_pressed_holo_dark.9.png" qualifiers="hdpi-v4" type="drawable"/><file name="textfield_activated_holo_dark" path="/Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/res/drawable-hdpi/textfield_activated_holo_dark.9.png" qualifiers="hdpi-v4" type="drawable"/><file name="textfield_default_holo_dark" path="/Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/res/drawable-hdpi/textfield_default_holo_dark.9.png" qualifiers="hdpi-v4" type="drawable"/><file name="btn_default_normal_holo_dark" path="/Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/res/drawable-hdpi/btn_default_normal_holo_dark.9.png" qualifiers="hdpi-v4" type="drawable"/><file name="textfield_disabled_focused_holo_dark" path="/Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/res/drawable-hdpi/textfield_disabled_focused_holo_dark.9.png" qualifiers="hdpi-v4" type="drawable"/><file name="btn_default_focused_holo_dark" path="/Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/main/res/drawable-hdpi/btn_default_focused_holo_dark.9.png" qualifiers="hdpi-v4" type="drawable"/></source><source path="/Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/build/generated/res/rs/debug"/><source path="/Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/build/generated/res/resValues/debug"/></dataSet><dataSet config="debug$Generated" generated="true"><source path="/Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/debug/res"/></dataSet><dataSet config="debug" generated-set="debug$Generated"><source path="/Users/evanbacon/Documents/GitHub/expo/modules/expo-payments-stripe/android/src/debug/res"/></dataSet><mergedItems/></merger>

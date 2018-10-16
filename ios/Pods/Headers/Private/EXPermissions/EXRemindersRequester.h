@@ -1,1 +1,1 @@
-../../../../../modules/expo-permissions/ios/EXPermissions/EXRemindersRequester.h
+../../../../../packages/expo-permissions/ios/EXPermissions/EXRemindersRequester.h

@@ -20,6 +20,7 @@
 
 #import "FBSDKCoreKit+Internal.h"
 #import "FBSDKHashtag.h"
+#import "FBSDKShareError.h"
 #import "FBSDKSharePhoto.h"
 #import "FBSDKShareUtility.h"
 #import "FBSDKShareVideo.h"
@@ -72,6 +73,63 @@
   if (![FBSDKInternalUtility object:_media isEqualToObject:media]) {
     _media = [media copy];
   }
+}
+
+#pragma mark - FBSDKSharingContent
+
+- (void)addToParameters:(NSMutableDictionary<NSString *, id> *)parameters
+          bridgeOptions:(FBSDKShareBridgeOptions)bridgeOptions
+{
+  // FBSDKShareMediaContent is currently available via the Share extension only (thus no parameterization implemented at this time)
+}
+
+#pragma mark - FBSDKSharingValidation
+
+- (BOOL)validateWithOptions:(FBSDKShareBridgeOptions)bridgeOptions error:(NSError *__autoreleasing *)errorRef
+{
+  if (![FBSDKShareUtility validateArray:_media minCount:1 maxCount:20 name:@"photos" error:errorRef]) {
+    return NO;
+  }
+  int videoCount = 0;
+  for (id media in _media) {
+    if ([media isKindOfClass:[FBSDKSharePhoto class]]) {
+      FBSDKSharePhoto *photo = (FBSDKSharePhoto *)media;
+      if (![photo validateWithOptions:bridgeOptions error:NULL]) {
+        if (errorRef != NULL) {
+          *errorRef = [FBSDKShareError invalidArgumentErrorWithName:@"media"
+                                                              value:media
+                                                            message:@"photos must have UIImages"];
+        }
+        return NO;
+      }
+    } else if ([media isKindOfClass:[FBSDKShareVideo class]]) {
+      if (videoCount > 0) {
+        if (errorRef != NULL) {
+          *errorRef = [FBSDKShareError invalidArgumentErrorWithName:@"media"
+                                                              value:media
+                                                            message:@"Only 1 video is allowed"];
+          return NO;
+        }
+      }
+      videoCount++;
+      FBSDKShareVideo *video = (FBSDKShareVideo *)media;
+      if (![FBSDKShareUtility validateRequiredValue:video name:@"video" error:errorRef]) {
+        return NO;
+      }
+      if (![video validateWithOptions:bridgeOptions error:errorRef]) {
+        return NO;
+      }
+
+    } else {
+      if (errorRef != NULL) {
+        *errorRef = [FBSDKShareError invalidArgumentErrorWithName:@"media"
+                                                            value:media
+                                                          message:@"Only FBSDKSharePhoto and FBSDKShareVideo are allowed in `media` property"];
+      }
+      return NO;
+    }
+  }
+  return YES;
 }
 
 #pragma mark - Equality

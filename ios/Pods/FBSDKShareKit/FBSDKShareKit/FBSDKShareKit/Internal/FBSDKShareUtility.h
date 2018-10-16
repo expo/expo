@@ -25,12 +25,6 @@
 #import <FBSDKShareKit/FBSDKShareVideoContent.h>
 #import <FBSDKShareKit/FBSDKSharingContent.h>
 
-#if !TARGET_OS_TV
-#import <FBSDKShareKit/FBSDKAppInviteContent.h>
-#import <FBSDKShareKit/FBSDKGameRequestContent.h>
-#import <FBSDKShareKit/FBSDKShareCameraEffectContent.h>
-#endif
-
 @interface FBSDKShareUtility : NSObject
 
 + (void)assertCollection:(id<NSFastEnumeration>)collection ofClass:itemClass name:(NSString *)name;
@@ -38,40 +32,46 @@
 + (void)assertOpenGraphKey:(id)key requireNamespace:(BOOL)requireNamespace;
 + (void)assertOpenGraphValue:(id)value;
 + (void)assertOpenGraphValues:(NSDictionary *)dictionary requireKeyNamespace:(BOOL)requireKeyNamespace;
-+ (id)convertOpenGraphValue:(id)value;
+
 + (BOOL)buildWebShareContent:(id<FBSDKSharingContent>)content
                   methodName:(NSString *__autoreleasing *)methodNameRef
                   parameters:(NSDictionary *__autoreleasing *)parametersRef
                        error:(NSError *__autoreleasing *)errorRef;
 + (void)buildAsyncWebPhotoContent:(FBSDKSharePhotoContent *)content
                 completionHandler:(void(^)(BOOL, NSString *, NSDictionary *))completion;
-+ (NSDictionary *)convertOpenGraphValues:(NSDictionary *)dictionary;
++ (id)convertOpenGraphValue:(id)value;
++ (NSDictionary<NSString *, id> *)convertOpenGraphValueContainer:(FBSDKShareOpenGraphValueContainer *)container
+                                                requireNamespace:(BOOL)requireNamespace;
++ (NSDictionary<NSString *, id> *)convertOpenGraphValues:(NSDictionary<NSString *, id> *)dictionary;
++ (NSDictionary<NSString *, id> *)convertPhoto:(FBSDKSharePhoto *)photo;
 + (NSDictionary *)feedShareDictionaryForContent:(id<FBSDKSharingContent>)content;
++ (NSString *)getOpenGraphNameAndNamespaceFromFullName:(NSString *)fullName namespace:(NSString **)namespace;
 + (NSString *)hashtagStringFromHashtag:(FBSDKHashtag *)hashtag;
 + (UIImage *)imageWithCircleColor:(UIColor *)color
                        canvasSize:(CGSize)canvasSize
                        circleSize:(CGSize)circleSize;
 + (NSDictionary *)parametersForShareContent:(id<FBSDKSharingContent>)shareContent
+                              bridgeOptions:(FBSDKShareBridgeOptions)bridgeOptions
                       shouldFailOnDataError:(BOOL)shouldFailOnDataError;
 + (void)testShareContent:(id<FBSDKSharingContent>)shareContent
            containsMedia:(BOOL *)containsMediaRef
           containsPhotos:(BOOL *)containsPhotosRef
           containsVideos:(BOOL *)containsVideosRef;
 + (BOOL)shareMediaContentContainsPhotosAndVideos:(FBSDKShareMediaContent *)shareMediaContent;
-+ (BOOL)validateAssetLibraryURLWithShareVideoContent:(FBSDKShareVideoContent *)videoContent name:(NSString *)name error:(NSError *__autoreleasing *)errorRef;
-+ (BOOL)validateAssetLibraryURLsWithShareMediaContent:(FBSDKShareMediaContent *)mediaContent name:(NSString *)name error:(NSError *__autoreleasing *)errorRef;
-+ (BOOL)validateShareContent:(id<FBSDKSharingContent>)shareContent error:(NSError *__autoreleasing *)errorRef;
-+ (BOOL)validateShareLinkContent:(FBSDKShareLinkContent *)linkContent error:(NSError *__autoreleasing *)errorRef;
-+ (BOOL)validateShareMediaContent:(FBSDKShareMediaContent *)mediaContent error:(NSError *__autoreleasing *)errorRef;
-+ (BOOL)validateShareOpenGraphContent:(FBSDKShareOpenGraphContent *)openGraphContent
-                                error:(NSError *__autoreleasing *)errorRef;
-+ (BOOL)validateSharePhotoContent:(FBSDKSharePhotoContent *)photoContent error:(NSError *__autoreleasing *)errorRef;
-+ (NSString *)getOpenGraphNameAndNamespaceFromFullName:(NSString *)fullName namespace:(NSString **)namespace;
 
-#if !TARGET_OS_TV
-+ (BOOL)validateAppInviteContent:(FBSDKAppInviteContent *)appInviteContent error:(NSError *__autoreleasing *)errorRef;
-+ (BOOL)validateShareCameraEffectContent:(FBSDKShareCameraEffectContent *)ShareCameraEffectContent
-                                   error:(NSError *__autoreleasing *)errorRef;
-+ (BOOL)validateGameRequestContent:(FBSDKGameRequestContent *)gameRequestContent error:(NSError *__autoreleasing *)errorRef;
-#endif
++ (BOOL)validateArgumentWithName:(NSString *)argumentName
+                           value:(NSUInteger)value
+                            isIn:(NSArray<NSNumber *> *)possibleValues
+                           error:(NSError *__autoreleasing *)errorRef;
++ (BOOL)validateArray:(NSArray<id> *)array
+             minCount:(NSUInteger)minCount
+             maxCount:(NSUInteger)maxCount
+                 name:(NSString *)name
+                error:(NSError *__autoreleasing *)errorRef;
++ (BOOL)validateNetworkURL:(NSURL *)URL name:(NSString *)name error:(NSError *__autoreleasing *)errorRef;
++ (BOOL)validateRequiredValue:(id)value name:(NSString *)name error:(NSError *__autoreleasing *)errorRef;
++ (BOOL)validateShareContent:(id<FBSDKSharingContent>)shareContent
+               bridgeOptions:(FBSDKShareBridgeOptions)bridgeOptions
+                       error:(NSError *__autoreleasing *)errorRef;
+
 @end

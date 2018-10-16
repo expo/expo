@@ -1,5 +1,4 @@
 /**
- * @providesModule ApiV2HttpClient
  * @flow
  */
 'use strict';
@@ -7,7 +6,7 @@
 import { NativeModules, Platform } from 'react-native';
 import querystring from 'querystring';
 
-import ApiV2Error from 'ApiV2Error';
+import ApiV2Error from './ApiV2Error';
 import Config from './Config';
 
 const { ExponentKernel } = NativeModules;

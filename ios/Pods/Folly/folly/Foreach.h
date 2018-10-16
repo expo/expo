@@ -29,13 +29,13 @@
  * and everything is taken care of.
  *
  * The implementation is a bit convoluted to make sure the container is
- * only evaluated once (however, keep in mind that c.end() is evaluated
+ * evaluated only once (however, keep in mind that c.end() is evaluated
  * at every pass through the loop). To ensure the container is not
  * evaluated multiple times, the macro defines one do-nothing if
  * statement to inject the Boolean variable FOR_EACH_state1, and then a
  * for statement that is executed only once, which defines the variable
- * FOR_EACH_state2 holding a rvalue reference to the container being
- * iterated. The workhorse is the last loop, which uses the just defined
+ * FOR_EACH_state2 holding an rvalue reference to the container being
+ * iterated. The workhorse is the last loop, which uses the just-defined
  * rvalue reference FOR_EACH_state2.
  *
  * The state variables are nested so they don't interfere; you can use
@@ -47,18 +47,25 @@
  */
 
 #include <type_traits>
+#include <folly/Preprocessor.h>
+
+/*
+ * Form a local variable name from "FOR_EACH_" x __LINE__, so that
+ * FOR_EACH can be nested without creating shadowed declarations.
+ */
+#define _FE_ANON(x) FB_CONCATENATE(FOR_EACH_, FB_CONCATENATE(x, __LINE__))
 
 /*
  * Shorthand for:
  *   for (auto i = c.begin(); i != c.end(); ++i)
- * except that c is only evaluated once.
+ * except that c is evaluated only once.
  */
-#define FOR_EACH(i, c)                              \
-  if (bool FOR_EACH_state1 = false) {} else         \
-    for (auto && FOR_EACH_state2 = (c);             \
-         !FOR_EACH_state1; FOR_EACH_state1 = true)  \
-      for (auto i = FOR_EACH_state2.begin();        \
-           i != FOR_EACH_state2.end(); ++i)
+#define FOR_EACH(i, c)                                  \
+  if (bool _FE_ANON(s1_) = false) {} else               \
+    for (auto && _FE_ANON(s2_) = (c);                   \
+         !_FE_ANON(s1_); _FE_ANON(s1_) = true)          \
+      for (auto i = _FE_ANON(s2_).begin();              \
+           i != _FE_ANON(s2_).end(); ++i)
 
 /*
  * Similar to FOR_EACH, but iterates the container backwards by

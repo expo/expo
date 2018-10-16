@@ -1,1 +1,1 @@
-../../../../../modules/expo-core/ios/EXCore/Protocols/EXKernelService.h
+../../../../../packages/expo-core/ios/EXCore/Protocols/EXKernelService.h
