@@ -25,6 +25,8 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<key>NFCReaderUsageDescription</key>
+	<string>Allow Expo experiences to access your NFC Reader</string>
 	<key>NSCalendarsUsageDescription</key>
 	<string>Allow Expo experiences to access your calendar</string>
 	<key>NSCameraUsageDescription</key>
