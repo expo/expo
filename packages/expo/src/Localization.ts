@@ -108,13 +108,33 @@ class LocaleStore {
   }
 }
 
-const getCurrentLocaleAsync = async () => {
-  console.warn('Deprecated: Use `Expo.Localization.language` instead');
-  return (ExpoLocalization.locale).replace('-', '_');
-};
+function warnDeprecated(deprecated, replacement) {
+  console.warn(
+    `Expo.DangerZone.Localization.${deprecated} is deprecated. Use \`Expo.Localization.${replacement}\` instead.`
+  );
+}
 
 export default {
   ...ExpoLocalization,
-  getCurrentLocaleAsync,
+  getCurrentDeviceCountryAsync() {
+    warnDeprecated('getCurrentDeviceCountryAsync()', 'country');
+    return ExpoLocalization.country;
+  },
+  getCurrentLocaleAsync() {
+    warnDeprecated('getCurrentLocaleAsync()', 'locale');
+    return ExpoLocalization.locale.replace('-', '_');
+  },
+  getCurrentTimeZoneAsync() {
+    warnDeprecated('getCurrentTimeZoneAsync()', 'timezone');
+    return ExpoLocalization.timezone;
+  },
+  getPreferredLocalesAsync() {
+    warnDeprecated('getPreferredLocalesAsync()', 'locales');
+    return ExpoLocalization.locales;
+  },
+  getISOCurrencyCodesAsync() {
+    warnDeprecated('getISOCurrencyCodesAsync()', 'isoCurrencyCodes');
+    return ExpoLocalization.isoCurrencyCodes;
+  },
   LocaleStore,
 };

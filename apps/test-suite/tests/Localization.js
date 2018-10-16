@@ -1,4 +1,5 @@
 import { Localization } from 'expo';
+import { Localization as DangerZoneLocalization } from 'expo/DangerZone';
 import i18n from 'i18n-js';
 
 const en = {
@@ -112,6 +113,39 @@ export function test(t) {
       const translation = i18n.translations[expoPredictedLangTag];
 
       t.expect(translation[target]).toBe(i18n.t(target));
+    });
+  });
+
+  t.describe(`DangerZone.Localization`, () => {
+    const currentWarn = console.warn;
+
+    t.beforeEach(() => {
+      console.warn = currentWarn;
+    });
+
+    [
+      ['getCurrentDeviceCountryAsync', 'country'],
+      ['getCurrentLocaleAsync', 'locale'],
+      ['getCurrentTimeZoneAsync', 'timezone'],
+      ['getPreferredLocalesAsync', 'locales'],
+      ['getISOCurrencyCodesAsync', 'isoCurrencyCodes'],
+    ].forEach(obj => {
+      const [deprecated, replacement] = obj;
+
+      t.it(`${deprecated} is deprecated`, async () => {
+        const target = `Expo.DangerZone.Localization.${deprecated}() is deprecated. Use \`Expo.Localization.${replacement}\` instead.`;
+
+        let warning = null;
+        console.warn = (...props) => {
+          warning = props[0];
+          console.warn = currentWarn;
+        };
+
+        const value = await DangerZoneLocalization[deprecated]();
+
+        t.expect(warning).toBe(target);
+        t.expect(value + '').toBe(Localization[replacement] + '');
+      });
     });
   });
 }
