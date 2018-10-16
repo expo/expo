@@ -1,9 +1,8 @@
 'use strict';
 
-export const name = 'FileSystem';
-
 import { FileSystem as FS, Asset } from 'expo';
-import { CameraRoll } from 'react-native';
+
+export const name = 'FileSystem';
 
 export function test(t) {
   t.describe('FileSystem', () => {
@@ -60,25 +59,25 @@ export function test(t) {
       const asset = await Asset.fromModule(require('../assets/icons/app.png'));
       await asset.downloadAsync();
 
-      let startingPosition = 0;
-
-      for (let i = 0; i < 3; i++) {
+      for (let startingPosition = 0; startingPosition < 3; startingPosition++) {
         const options = {
           encoding: FS.EncodingTypes.Base64,
-          position: i,
-          length: i + 1,
+          position: startingPosition,
+          length: startingPosition + 1,
         };
 
         const b64 = await FS.readAsStringAsync(asset.localUri, options);
         t.expect(b64).toBeDefined();
         t.expect(typeof b64).toBe('string');
-        t.expect(b64.split('') % 4).toBe(0);
-        
+        t.expect(b64.length % 4).toBe(0);
+
         const localUri = FS.documentDirectory + 'b64.png';
 
-        await FS.writeAsStringAsync(localUri, b64, options);
+        await FS.writeAsStringAsync(localUri, b64, { encoding: FS.EncodingTypes.Base64 });
 
-        t.expect(await FS.readAsStringAsync(localUri, options)).toBe(b64);
+        t.expect(await FS.readAsStringAsync(localUri, { encoding: FS.EncodingTypes.Base64 })).toBe(
+          b64
+        );
       }
     });
 
@@ -334,9 +333,7 @@ export function test(t) {
 
         await FS.deleteAsync(localUri, { idempotent: true });
 
-        const {
-          md5,
-        } = await FS.downloadAsync(
+        const { md5 } = await FS.downloadAsync(
           'https://s3-us-west-1.amazonaws.com/test-suite-data/avatar2.png',
           localUri,
           { md5: true }
@@ -350,7 +347,7 @@ export function test(t) {
 
         await FS.deleteAsync(localUri);
       },
-      9000
+      30000
     );
 
     t.it('throws out-of-scope exceptions', async () => {
@@ -451,7 +448,7 @@ export function test(t) {
         await assertExists(false);
         await FS.deleteAsync(localUri, { idempotent: true });
       },
-      9000
+      30000
     );
 
     t.it(
@@ -480,7 +477,7 @@ export function test(t) {
         await FS.deleteAsync(localUri);
         await assertExists(false);
       },
-      9000
+      30000
     );
   });
 }

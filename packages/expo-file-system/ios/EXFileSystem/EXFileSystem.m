@@ -206,8 +206,8 @@ EX_EXPORT_METHOD_AS(readAsStringAsync,
   
   if ([uri.scheme isEqualToString:@"file"]) {
     NSString *encodingType = @"utf8";
-    if (options[@"encoding"] != nil && [options[@"encoding"] stringValue] && ![[options[@"encoding"] stringValue] isEqualToString:@""]) {
-      encodingType = [[options[@"encoding"] stringValue] lowercaseString];
+    if (options[@"encoding"] && [options[@"encoding"] isKindOfClass:[NSString class]]) {
+      encodingType = [options[@"encoding"] lowercaseString];
     }
     if ([encodingType isEqualToString:@"base64"]) {
       NSFileHandle *file = [NSFileHandle fileHandleForReadingAtPath:uri.path];
@@ -218,13 +218,13 @@ EX_EXPORT_METHOD_AS(readAsStringAsync,
         return;
       }
       // position and length are used as a cursor/paging system.
-      if (options[@"position"] != nil && [options[@"position"] intValue]) {
-        [file seekToFileOffset:(int)options[@"position"]];
+      if ([options[@"position"] isKindOfClass:[NSNumber class]]) {
+        [file seekToFileOffset:[options[@"position"] intValue]];
       }
       
       NSData *data;
-      if (options[@"length"] != nil && [options[@"length"] intValue] && (int)options[@"length"] > 0) {
-        data = [file readDataOfLength:(int)options[@"length"]];
+      if ([options[@"length"] isKindOfClass:[NSNumber class]]) {
+        data = [file readDataOfLength:[options[@"length"] intValue]];
       } else {
         data = [file readDataToEndOfFile];
       }
@@ -269,8 +269,8 @@ EX_EXPORT_METHOD_AS(writeAsStringAsync,
   
   if ([uri.scheme isEqualToString:@"file"]) {
     NSString *encodingType = @"utf8";
-    if (options[@"encoding"] != nil && [options[@"encoding"] stringValue] && ![[options[@"encoding"] stringValue] isEqualToString:@""]) {
-      encodingType = options[@"encoding"];
+    if ([options[@"encoding"] isKindOfClass:[NSString class]]) {
+      encodingType = [options[@"encoding"] lowercaseString];
     }
     if ([encodingType isEqualToString:@"base64"]) {
       dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
