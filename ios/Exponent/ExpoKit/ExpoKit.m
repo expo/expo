@@ -12,7 +12,7 @@
 #import "EXKernelLinkingManager.h"
 #import "EXReactAppExceptionHandler.h"
 #import "EXRemoteNotificationManager.h"
-#import "EXLocalNotificationManager.h"
+#import "EXUserNotificationManager.h"
 #import "EXBranchManager.h"
 
 #import <Crashlytics/Crashlytics.h>
@@ -113,6 +113,7 @@ NSString * const EXAppDidRegisterUserNotificationSettingsNotification = @"kEXApp
     }
   }
 
+  [UNUserNotificationCenter currentNotificationCenter].delegate = [EXUserNotificationManager sharedInstance];
   // This is safe to call; if the app doesn't have permission to display user-facing notifications
   // then registering for a push token is a no-op
   [[EXKernel sharedInstance].serviceRegistry.remoteNotificationManager registerForRemoteNotifications];
@@ -148,21 +149,10 @@ NSString * const EXAppDidRegisterUserNotificationSettingsNotification = @"kEXApp
   [[NSNotificationCenter defaultCenter] postNotificationName:EXAppDidRegisterForRemoteNotificationsNotification object:nil];
 }
 
-- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)notification
-{
-  BOOL isFromBackground = !(application.applicationState == UIApplicationStateActive);
-  [[EXKernel sharedInstance].serviceRegistry.remoteNotificationManager handleRemoteNotification:notification fromBackground:isFromBackground];
-}
-
-- (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
-{
-  BOOL isFromBackground = !(application.applicationState == UIApplicationStateActive);
-  [[EXLocalNotificationManager sharedInstance] handleLocalNotification:notification fromBackground:isFromBackground];
-}
-
-- (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(nonnull UIUserNotificationSettings *)notificationSettings
-{
-  [[NSNotificationCenter defaultCenter] postNotificationName:EXAppDidRegisterUserNotificationSettingsNotification object:nil];
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
+fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler {
+  // ToDo add here background task execution
+  completionHandler(UIBackgroundFetchResultNoData);
 }
 
 #pragma mark - deep linking hooks

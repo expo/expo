@@ -9,6 +9,7 @@
 #import "EXKernelAppRecord.h"
 #import "EXKernelLinkingManager.h"
 #import "EXLinkingManager.h"
+#import "EXSendNotificationParams.h"
 #import "EXVersions.h"
 
 #import <React/RCTBridge+Private.h>
@@ -26,6 +27,8 @@ NSString * const kEXKernelClearJSCacheUserDefaultsKey = @"EXKernelClearJSCacheUs
 const NSUInteger kEXErrorCodeAppForbidden = 424242;
 
 @interface EXKernel () <EXKernelAppRegistryDelegate>
+
+@property (atomic, strong) EXSendNotificationParams * pendingNotificationParams;
 
 @end
 
@@ -139,10 +142,23 @@ const NSUInteger kEXErrorCodeAppForbidden = 424242;
   [self _moveAppToVisible:app];
 }
 
+- (void)flushPendingNotifications
+{
+  if (_pendingNotificationParams == nil) {
+    return;
+  }
+  [self sendNotification:_pendingNotificationParams.body
+       toExperienceWithId:_pendingNotificationParams.experienceId
+           fromBackground:_pendingNotificationParams.isFromBackground
+                 isRemote:_pendingNotificationParams.isRemote
+                 actionId:_pendingNotificationParams.actionId
+                 userText:_pendingNotificationParams.userText];
+  _pendingNotificationParams = nil;
+}
+
 - (id)nativeModuleForAppManager:(EXReactAppManager *)appManager named:(NSString *)moduleName
 {
   id destinationBridge = appManager.reactBridge;
-
   if ([destinationBridge respondsToSelector:@selector(batchedBridge)]) {
     id batchedBridge = [destinationBridge batchedBridge];
     id moduleData = [batchedBridge moduleDataForName:moduleName];
@@ -168,9 +184,15 @@ const NSUInteger kEXErrorCodeAppForbidden = 424242;
       toExperienceWithId:(NSString *)destinationExperienceId
           fromBackground:(BOOL)isFromBackground
                 isRemote:(BOOL)isRemote
+                actionId:(NSString *)actionId
+                userText:(NSString *)userText
 {
   EXKernelAppRecord *destinationApp = [_appRegistry newestRecordWithExperienceId:destinationExperienceId];
-  NSDictionary *bodyWithOrigin = [self _notificationPropsWithBody:notifBody isFromBackground:isFromBackground isRemote:isRemote];
+  NSDictionary *bodyWithOrigin = [self _notificationPropsWithBody:notifBody
+                                                 isFromBackground:isFromBackground
+                                                         isRemote:isRemote
+                                                         actionId:actionId
+                                                         userText:userText];
   if (destinationApp) {
     // send the body to the already-open experience
     [self _dispatchJSEvent:@"Exponent.notification" body:bodyWithOrigin toApp:destinationApp];
@@ -186,6 +208,13 @@ const NSUInteger kEXErrorCodeAppForbidden = 424242;
           if (url) {
             [weakSelf createNewAppWithUrl:url initialProps:@{ @"notification": bodyWithOrigin }];
           }
+        } else {
+          weakSelf.pendingNotificationParams = [[EXSendNotificationParams alloc] initWithExperienceId:destinationExperienceId
+                                                                           notificationBody:notifBody
+                                                                                   isRemote:@(isRemote)
+                                                                           isFromBackground:@(isFromBackground)
+                                                                                   actionId:actionId
+                                                                                   userText:userText];
         }
       }];
     }
@@ -216,19 +245,14 @@ const NSUInteger kEXErrorCodeAppForbidden = 424242;
 - (NSDictionary *)initialAppPropsFromLaunchOptions:(NSDictionary *)launchOptions
 {
   NSMutableDictionary *initialProps = [NSMutableDictionary dictionary];
-  
-  NSDictionary *remoteNotification = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
-  if (remoteNotification) {
-    initialProps[@"notification"] = [self _notificationPropsWithBody:remoteNotification[@"body"] isFromBackground:YES isRemote:YES];
-  }
-  UILocalNotification *localNotification = [launchOptions objectForKey:UIApplicationLaunchOptionsLocalNotificationKey];
-  if (localNotification) {
-    initialProps[@"notification"] = [self _notificationPropsWithBody:localNotification.userInfo[@"body"] isFromBackground:YES isRemote:NO];
-  }
   return initialProps;
 }
 
-- (NSDictionary *)_notificationPropsWithBody:(NSDictionary *)notifBody isFromBackground:(BOOL)isFromBackground isRemote:(BOOL)isRemote
+- (NSDictionary *)_notificationPropsWithBody:(NSDictionary *)notifBody
+                            isFromBackground:(BOOL)isFromBackground
+                                    isRemote:(BOOL)isRemote
+                                    actionId:(NSString *)actionId
+                                    userText:(NSString *)userText
 {
   // if the notification came from the background, in most but not all cases, this means the user acted on an iOS notification
   // and caused the app to launch.
@@ -238,11 +262,16 @@ const NSUInteger kEXErrorCodeAppForbidden = 424242;
   if (!notifBody) {
     notifBody = @{};
   }
-  return @{
-    @"origin": (isFromBackground) ? @"selected" : @"received",
-    @"remote": @(isRemote),
-    @"data": notifBody,
-  };
+  NSMutableDictionary *res = [@{
+                              @"origin": (isFromBackground) ? @"selected" : @"received",
+                              @"remote": @(isRemote),
+                              @"data": notifBody,
+                              @"actionId": actionId
+                              } mutableCopy];
+  if (userText) {
+    [res addEntriesFromDictionary:@{@"userText": userText}];
+  }
+  return res;
 }
 
 #pragma mark - App State

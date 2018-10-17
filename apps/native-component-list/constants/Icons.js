@@ -21,6 +21,7 @@ export default {
   Lottie: require('../assets/icons/api/Lottie.png'),
   Maps: require('../assets/icons/api/Maps.png'),
   MediaLibrary: require('../assets/icons/api/FileSystem.png'),
+  UserNotifications: require('../assets/icons/api/Notification.png'),
   Notification: require('../assets/icons/api/Notification.png'),
   Pedometer: require('../assets/icons/api/Pedometer.png'),
   Print: require('../assets/icons/api/Print.png'),

@@ -41,6 +41,41 @@ type Channel = {
   badge?: boolean;
 };
 
+type IntervalTrigger = {
+  intervalMs?: number;
+  repeats?: boolean;
+};
+
+type DateMatchingTrigger = {
+  day?: number;
+  month?: number;
+  year?: number;
+  weekday?: number;
+  quarter?: number;
+  leapMonth?: number;
+  nanosecond?: number;
+  era?: number;
+  weekdayOrdinal?: number;
+  weekOfMonth?: number;
+  weekOfYear?: number;
+  hour?: number;
+  second?: number;
+  minute?: number;
+  yearForWeekOfYear?: number;
+  repeats?: boolean;
+};
+
+type ActionType = {
+  actionId: string;
+  buttonTitle: string;
+  isDestructive?: boolean;
+  isAuthenticationRequired?: boolean;
+  textInput?: {
+    submitButtonTitle: string;
+    placeholder: string;
+  };
+};
+
 // Android assigns unique number to each notification natively.
 // Since that's not supported on iOS, we generate an unique string.
 type LocalNotificationId = string | number;
@@ -172,6 +207,11 @@ export default {
     _initialNotification = notification;
   },
 
+  // User passes set of actions titles.
+  createCategoryAsync(categoryId: string, actions: Array<ActionType>): Promise<void> {
+    return ExponentNotifications.createCategory(categoryId, actions);
+  },
+
   /* Re-export */
   getExpoPushTokenAsync(): Promise<string> {
     return ExponentNotifications.getExponentPushTokenAsync();
@@ -243,6 +283,19 @@ export default {
     }
   },
 
+  async scheduleLocalNotificationWithMatchIOSAsync(notification: LocalNotification, options: DateMatchingTrigger) {
+    if (Platform.OS !== 'ios') {
+       throw new Error("This function is supported only on iOS.");
+    }
+    return ExponentNotifications.scheduleLocalNotification(notification, options);
+  },
+
+  async scheduleLocalNotificationWithTimeIntervalIOSAsync(notification: LocalNotification, options: IntervalTrigger) {
+    if (Platform.OS !== 'ios') {
+       throw new Error("This function is supported only on iOS.");
+    }
+    return ExponentNotifications.scheduleLocalNotificationWithTimeInterval(notification, options);
+  },
   /* Schedule a notification at a later date */
   async scheduleLocalNotificationAsync(
     notification: LocalNotification,
@@ -250,6 +303,8 @@ export default {
       time?: Date | number;
       repeat?: 'minute' | 'hour' | 'day' | 'week' | 'month' | 'year';
       intervalMs?: number;
+      dateMatchingTriggerIOS?: DateMatchingTrigger;
+      intervalTriggerIOS?: IntervalTrigger;
     } = {}
   ): Promise<LocalNotificationId> {
     // set now at the beginning of the method, to prevent potential weird warnings when we validate
@@ -286,18 +341,42 @@ export default {
         `Provided value for "time" is before the current date. Did you possibly pass number of seconds since Unix Epoch instead of number of milliseconds?`
       );
 
-      // If iOS, pass time as milliseconds
-      if (Platform.OS === 'ios') {
-        options = {
-          ...options,
-          time: timeAsDateObj.getTime(),
-        };
-      } else {
-        options = {
-          ...options,
-          time: timeAsDateObj,
-        };
+      if (Platform.OS === "ios" ) {
+        warning(
+          options.repeat == undefined,
+          'The "repeat" option for scheduled local notifications has been removed on iOS. Use "dateMatchingTriggerIOS" instead.'
+        );
+        return this.scheduleLocalNotificationWithMatchIOSAsync(
+          notification,
+          {
+            second: timeAsDateObj.getSeconds(),
+            minute: timeAsDateObj.getMinutes(),
+            hour: timeAsDateObj.getHours(),
+            day: timeAsDateObj.getUTCDate(),
+            month: timeAsDateObj.getUTCMonth() + 1,
+            year: timeAsDateObj.getFullYear(),
+          }
+        );
       }
+
+      options = {
+        ...options,
+        time: timeAsDateObj,
+      };
+    }
+
+    if (options.intervalTriggerIOS != null && Platform.OS == "ios") {
+      return this.scheduleLocalNotificationWithTimeIntervalIOSAsync(
+        notification,
+        options.intervalTriggerIOS
+      );
+    }
+
+    if (options.dateMatchingTriggerIOS != null && Platform.OS == "ios") {
+      return this.scheduleLocalNotificationWithMatchIOSAsync(
+        notification,
+        options.dateMatchingTriggerIOS
+      );
     }
 
     if (options.intervalMs != null && options.repeat != null) {
@@ -315,10 +394,6 @@ export default {
     }
 
     if (options.intervalMs != null) {
-      if (Platform.OS === 'ios') {
-        throw new Error(`The "intervalMs" option is not supported on iOS`);
-      }
-
       if (options.intervalMs <= 0 || !Number.isInteger(options.intervalMs)) {
         throw new Error(
           `Pass an integer greater than zero as the value for the "intervalMs" option`
@@ -326,32 +401,28 @@ export default {
       }
     }
 
-    if (Platform.OS === 'ios') {
-      return ExponentNotifications.scheduleLocalNotification(nativeNotification, options);
-    } else {
-      let _channel;
-      if (nativeNotification.channelId) {
-        _channel = await _legacyReadChannel(nativeNotification.channelId);
-      }
+    let _channel;
+    if (nativeNotification.channelId) {
+      _channel = await _legacyReadChannel(nativeNotification.channelId);
+    }
 
-      if (IS_USING_NEW_BINARY) {
-        // delete the legacy channel from AsyncStorage so this codepath isn't triggered anymore
-        _legacyDeleteChannel(nativeNotification.channelId);
-        return ExponentNotifications.scheduleLocalNotificationWithChannel(
-          nativeNotification,
-          options,
-          _channel
-        );
-      } else {
-        // TODO: remove this codepath before releasing, it will never be triggered on SDK 28+
-        // channel does not actually exist, so add its settings to the individual notification
-        if (_channel) {
-          nativeNotification.sound = _channel.sound;
-          nativeNotification.priority = _channel.priority;
-          nativeNotification.vibrate = _channel.vibrate;
-        }
-        return ExponentNotifications.scheduleLocalNotification(nativeNotification, options);
+    if (IS_USING_NEW_BINARY) {
+      // delete the legacy channel from AsyncStorage so this codepath isn't triggered anymore
+      _legacyDeleteChannel(nativeNotification.channelId);
+      return ExponentNotifications.scheduleLocalNotificationWithChannel(
+        nativeNotification,
+        options,
+        _channel
+      );
+    } else {
+      // TODO: remove this codepath before releasing, it will never be triggered on SDK 28+
+      // channel does not actually exist, so add its settings to the individual notification
+      if (_channel) {
+        nativeNotification.sound = _channel.sound;
+        nativeNotification.priority = _channel.priority;
+        nativeNotification.vibrate = _channel.vibrate;
       }
+      return ExponentNotifications.scheduleLocalNotification(nativeNotification, options);
     }
   },
 

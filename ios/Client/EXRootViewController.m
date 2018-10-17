@@ -178,6 +178,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)appDidFinishLoadingSuccessfully:(EXKernelAppRecord *)appRecord
 {
+  if (appRecord == [EXKernel sharedInstance].appRegistry.homeAppRecord) {
+    [[EXKernel sharedInstance] flushPendingNotifications];
+  }
   // show nux if needed
   if (!self.isNuxFinished
       && appRecord == [EXKernel sharedInstance].visibleApp

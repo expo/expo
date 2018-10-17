@@ -85,19 +85,8 @@ NS_ASSUME_NONNULL_BEGIN
   [[ExpoKit sharedInstance] application:application didFailToRegisterForRemoteNotificationsWithError:err];
 }
 
-- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)notification
-{
-  [[ExpoKit sharedInstance] application:application didReceiveRemoteNotification:notification];
-}
-
-- (void)application:(UIApplication *)application didReceiveLocalNotification:(nonnull UILocalNotification *)notification
-{
-  [[ExpoKit sharedInstance] application:application didReceiveLocalNotification:notification];
-}
-
-- (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(nonnull UIUserNotificationSettings *)notificationSettings
-{
-  [[ExpoKit sharedInstance] application:application didRegisterUserNotificationSettings:notificationSettings];
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler {
+  [[ExpoKit sharedInstance] application:application didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
 }
 
 @end

@@ -1,0 +1,1 @@
+../../../../../packages/expo-permissions/ios/EXPermissions/EXUserNotificationCenterProxyInVanillaApps.h
