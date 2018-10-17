@@ -14,6 +14,7 @@ import com.segment.analytics.Traits;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -62,6 +63,37 @@ public class SegmentModule extends ExportedModule implements ModuleRegistryConsu
     }
 
     return traits;
+  }
+
+  private static Map<String, Object> coalesceAnonymousMapToJsonObject(Map map) {
+    Map<String, Object> validObject = new HashMap<>();
+    for (Object key : map.keySet()) {
+      if (key instanceof String) {
+        validObject.put((String) key, map.get(key));
+      }
+    }
+    return validObject;
+  }
+
+  private static Options readableMapToOptions(Map<String, Object> properties) {
+    Options options = new Options();
+    if (properties != null) {
+      for (Map.Entry<String, Object> entry : properties.entrySet()) {
+        String integrationKey = entry.getKey();
+        if (entry.getValue() instanceof Map) {
+          Map integrationOptions = (Map) entry.getValue();
+          if (integrationOptions.get("enabled") instanceof Double) {
+            boolean enabled = (Double) integrationOptions.get("enabled") > 0;
+            options.setIntegration(integrationKey, enabled);
+          }
+          if (integrationOptions.get("options") instanceof Map) {
+            Map<String, Object> jsonOptions = coalesceAnonymousMapToJsonObject((Map) integrationOptions.get("options"));
+            options.setIntegrationOptions(integrationKey, jsonOptions);
+          }
+        }
+      }
+    }
+    return options;
   }
 
   private static Properties readableMapToProperties(Map<String, Object> properties) {
@@ -130,6 +162,17 @@ public class SegmentModule extends ExportedModule implements ModuleRegistryConsu
       mClient.track(eventName, readableMapToProperties(properties));
     }
     promise.resolve(null);
+  }
+
+  @ExpoMethod
+  public void alias(final String newId, final Map<String, Object> options, Promise promise) {
+    Analytics client = mClient;
+    if (client != null) {
+      client.alias(newId, readableMapToOptions(options));
+      promise.resolve(null);
+    } else {
+      promise.reject("E_NO_SEG", "Segment instance has not been initialized yet, have you tried calling Segment.initialize prior to calling Segment.alias?");
+    }
   }
 
   @ExpoMethod

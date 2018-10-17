@@ -32,6 +32,10 @@ export default {
     ExponentSegment.groupWithTraits(groupId, traits);
   },
 
+  alias(newId: string, options: ?{ [string]: any }): Promise<boolean> {
+    return ExponentSegment.alias(newId, options);
+  },
+
   reset(): void {
     ExponentSegment.reset();
   },
