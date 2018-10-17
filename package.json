@@ -17,13 +17,11 @@
   "workspaces": {
     "packages": [
       "apps/*",
+      "expokit-npm-package",
       "home",
       "packages/*",
       "react-native-lab/react-native"
     ]
-  },
-  "dependencies": {
-    "jsc-android": "^224109.1.0"
   },
   "devDependencies": {
     "babel-core": "^7.0.0-bridge.0",
