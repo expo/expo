@@ -106,7 +106,7 @@ public class BrightnessModule extends ReactContextBaseJavaModule {
           Math.round(brightnessValue * 255)
       );
       promise.resolve(null);
-    } catch (Exception e){
+    } catch (Exception e) {
       promise.reject("ERR_BRIGHTNESS_SYSTEM", "Failed to set the system brightness value", e);
     }
   }
