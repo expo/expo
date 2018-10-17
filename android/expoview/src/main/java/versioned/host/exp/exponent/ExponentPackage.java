@@ -20,6 +20,21 @@ import java.util.Map;
 import expo.adapters.react.ReactModuleRegistryProvider;
 import expo.core.interfaces.Package;
 import expo.modules.ads.admob.AdMobPackage;
+import expo.modules.firebase.analytics.FirebaseAnalyticsPackage;
+import expo.modules.firebase.app.FirebaseAppPackage;
+import expo.modules.firebase.auth.FirebaseAuthPackage;
+import expo.modules.firebase.database.FirebaseDatabasePackage;
+import expo.modules.firebase.fabric.crashlytics.FirebaseCrashlyticsPackage;
+import expo.modules.firebase.firestore.FirebaseFirestorePackage;
+import expo.modules.firebase.functions.FirebaseFunctionsPackage;
+import expo.modules.firebase.instanceid.FirebaseInstanceIDPackage;
+import expo.modules.firebase.invites.FirebaseInvitesPackage;
+import expo.modules.firebase.links.FirebaseLinksPackage;
+import expo.modules.firebase.messaging.FirebaseMessagingPackage;
+import expo.modules.firebase.notifications.FirebaseNotificationsPackage;
+import expo.modules.firebase.performance.FirebasePerformancePackage;
+import expo.modules.firebase.remoteconfig.FirebaseRemoteConfigPackage;
+import expo.modules.firebase.storage.FirebaseStoragePackage;
 import expo.modules.font.FontLoaderPackage;
 import expo.modules.localauthentication.LocalAuthenticationPackage;
 import expo.modules.payments.stripe.StripePackage;
@@ -120,7 +135,26 @@ public class ExponentPackage implements ReactPackage {
       new AdMobPackage(),
       new StripePackage(),
       new LocalAuthenticationPackage(),
-      new LocalizationPackage()
+      new LocalizationPackage(),
+      new FirebaseAnalyticsPackage(),
+      new FirebaseAuthPackage(),
+      new FirebaseAppPackage(),
+      new FirebaseDatabasePackage(),
+
+      new FirebaseFirestorePackage(),
+      new FirebaseCrashlyticsPackage(),
+      new FirebaseFunctionsPackage(),
+      new FirebaseInstanceIDPackage(),
+      new FirebaseMessagingPackage(),
+      new FirebaseStoragePackage(),
+      new FirebaseNotificationsPackage(),
+
+      new FirebasePerformancePackage(),
+
+      new FirebaseLinksPackage(),
+      new FirebaseRemoteConfigPackage(),
+
+      new FirebaseInvitesPackage()
   );
 
   private static final String TAG = ExponentPackage.class.getSimpleName();

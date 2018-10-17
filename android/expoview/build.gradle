@@ -95,7 +95,7 @@ task generateDynamicMacros(type: Exec) {
     commandLine '../../tools-public/generate-dynamic-macros-android.sh'
   }
 }
-preBuild.dependsOn generateDynamicMacros
+//preBuild.dependsOn generateDynamicMacros
 
 dependencies {
   api fileTree(dir: 'libs', include: ['*.jar'])
@@ -167,6 +167,24 @@ dependencies {
   api project(':expo-ads-admob')
   api project(':expo-local-authentication')
   api project(':expo-localization')
+
+  api project(':expo-firebase-analytics')
+  api project(':expo-firebase-app')
+  api project(':expo-firebase-auth')
+  api project(':expo-firebase-database')
+  api project(':expo-firebase-messaging')
+  api project(':expo-firebase-instance-id')
+  api project(':expo-firebase-storage')
+  api project(':expo-firebase-firestore')
+  api project(':expo-firebase-functions')
+  api project(':expo-firebase-crashlytics')
+  api project(':expo-firebase-notifications')
+
+  api project(':expo-firebase-remote-config')
+  api project(':expo-firebase-performance')
+    api project(':expo-firebase-links')
+    api project(':expo-firebase-invites')
+
   // WHEN_DISTRIBUTING_REMOVE_TO_HERE
 
   // Versioned react native

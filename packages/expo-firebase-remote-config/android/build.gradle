@@ -72,5 +72,5 @@ dependencies {
     expendency "expo-core"
     expendency "expo-firebase-app"
     compileOnly "com.google.android.gms:play-services-base:15.0.1"
-    api "com.google.firebase:firebase-config:16.0.1"
+    api "com.google.firebase:firebase-config:16.0.0"
 }

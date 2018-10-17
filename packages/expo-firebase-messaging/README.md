@@ -82,11 +82,6 @@ PEM: /Users/you/Documents/yourapp/ios/production_com.company.yourapp.pem
             <action android:name="com.google.firebase.MESSAGING_EVENT" />
         </intent-filter>
     </service>
-    <service android:name="expo.modules.firebase.messaging.EXFirebaseInstanceIdService">
-        <intent-filter>
-            <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
-        </intent-filter>
-    </service>
     <!--Inlcude this for Background Messages-->
     <service android:name="expo.modules.firebase.messaging.FirebaseBackgroundMessagingService" />
     ```
@@ -156,3 +151,40 @@ export default class DemoView extends React.Component {
   }
 }
 ```
+
+### [Listen for FCM messages in the background](https://rnfirebase.io/docs/v5.x.x/messaging/receiving-messages#4)-(Optional)(Android-only)-Listen-for-FCM-messages-in-the-background)
+
+Android allows you to act on data-only messages when your application is closed or running in the background. This is particularly useful if you'd like to be able to show heads-up notifications to your user.
+
+1.  Ensure your manifest has the following service registered (`android/app/src/main/AndroidManifest.xml`):
+    ```xml
+    <!--Inlcude this for Background Messages-->
+    <service android:name="expo.modules.firebase.messaging.FirebaseBackgroundMessagingService" />
+    ```
+2.  Create a task handler
+
+    ```js
+    // @flow
+    import firebase from 'expo-firebase-app';
+    // Optional flow type
+    import type { RemoteMessage } from 'expo-firebase-messaging';
+
+    export default async (message: RemoteMessage) => {
+      // handle your message
+
+      return Promise.resolve();
+    };
+    ```
+
+    > This handler method must return a promise and resolve within 60 seconds.
+
+3.  Register the background handler in your Expo app (`App.js`)
+
+    ```js
+    import { AppRegistry } from 'react-native';
+    import messageTask from './messageTask';
+
+    AppRegistry.registerHeadlessTask('FirebaseBackgroundMessage', () => messageTask);
+    ```
+
+    > The name **`"FirebaseBackgroundMessage"`** is very important.

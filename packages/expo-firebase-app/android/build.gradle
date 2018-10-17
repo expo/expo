@@ -71,6 +71,6 @@ if (new File(rootProject.projectDir.parentFile, 'pubspec.yaml').exists()) {
 dependencies {
     expendency "expo-core"
     compileOnly "com.google.android.gms:play-services-base:15.0.1"
-    api "com.google.firebase:firebase-core:16.0.4"
+    api "com.google.firebase:firebase-core:16.0.1"
 
 }

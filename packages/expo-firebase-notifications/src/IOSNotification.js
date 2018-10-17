@@ -2,7 +2,8 @@
 import { BackgroundFetchResultValue } from './IOSNotifications';
 
 import type Notification from './Notification';
-import type Notifications from '.';
+// import type Notifications from '.';
+type Notifications = Object;
 import type { IOSAttachment, IOSAttachmentOptions, NativeIOSNotification } from './types';
 
 type CompletionHandler = BackgroundFetchResultValue => void;

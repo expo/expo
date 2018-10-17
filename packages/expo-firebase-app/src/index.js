@@ -7,8 +7,7 @@ import * as events from './utils/events';
 import * as utils from './utils';
 import * as log from './utils/log';
 import * as native from './utils/native';
-import parseConfig from './utils/parseConfig';
-import * as configUtils from './utils/parseConfig';
+import parseConfig, * as configUtils from './utils/parseConfig';
 import internals from './utils/internals';
 
 import './utils/UtilsModule';

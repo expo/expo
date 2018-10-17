@@ -26,7 +26,7 @@ public class FirebaseBackgroundNotificationActionsService extends HeadlessJsTask
     if (isBackgroundNotficationIntent(intent)) {
       WritableMap notificationOpenMap = toNotificationOpenMap(intent);
 
-      return new HeadlessJsTaskConfig("EXFirebaseBackgroundNotificationAction", notificationOpenMap, 60000, true);
+      return new HeadlessJsTaskConfig("FirebaseBackgroundNotificationAction", notificationOpenMap, 60000, true);
     }
     return null;
   }

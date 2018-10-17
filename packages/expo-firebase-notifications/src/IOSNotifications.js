@@ -1,6 +1,6 @@
 // @flow
-import type Notifications from '.';
-
+// import type Notifications from '.';
+type Notifications = Object;
 export type BackgroundFetchResultValue = string;
 type BackgroundFetchResult = {
   noData: BackgroundFetchResultValue,
