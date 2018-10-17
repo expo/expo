@@ -46,7 +46,7 @@ Subscribe to location updates from the device. Please note that updates will onl
       A map of options:
 
     -   **enableHighAccuracy (_boolean_)** -- Whether to enable high accuracy mode. For low accuracy the implementation can avoid geolocation providers that consume a significant amount of power (such as GPS).
-    -   **timeInterval (_number_)** -- Minimum time to wait between each update in milliseconds.
+    -   **timeInterval (_number_)** -- (Android only) Minimum time to wait between each update in milliseconds. On iOS this option is ignored.
     -   **distanceInterval (_number_)** -- Receive updates only when the location has changed by at least this distance in meters.
 
 -   **callback (_function_)** --
