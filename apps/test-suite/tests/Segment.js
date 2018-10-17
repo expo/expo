@@ -10,14 +10,12 @@ const IOS_WRITE_KEY = 'ios-write-key';
 export function test(t) {
   t.describe('Segment initialization', () => {
     t.it('works on all platforms', () => {
-      t
-        .expect(
-          Segment.initialize({
-            androidWriteKey: ANDROID_WRITE_KEY,
-            iosWriteKey: IOS_WRITE_KEY,
-          })
-        )
-        .toBe(undefined);
+      t.expect(
+        Segment.initialize({
+          androidWriteKey: ANDROID_WRITE_KEY,
+          iosWriteKey: IOS_WRITE_KEY,
+        })
+      ).toBe(undefined);
     });
   });
 
@@ -38,6 +36,14 @@ export function test(t) {
 
     t.it('reset()', () => {
       t.expect(Segment.reset()).toBe(undefined);
+    });
+
+    t.it('group(groupId)', () => {
+      t.expect(Segment.group('testSuiteGroupId')).toBe(undefined);
+    });
+
+    t.it('groupWithTraits(groupId, traits)', () => {
+      t.expect(Segment.groupWithTraits('testSuiteGroupId', { trait: true })).toBe(undefined);
     });
 
     t.it('track(event)', () => {
@@ -61,11 +67,9 @@ export function test(t) {
     });
 
     t.it('non-existant method fails', () => {
-      t
-        .expect(() => {
-          Segment.doesNotExist();
-        })
-        .toThrow();
+      t.expect(() => {
+        Segment.doesNotExist();
+      }).toThrow();
     });
   });
 
@@ -78,12 +82,24 @@ export function test(t) {
     t.it('Segment.setEnabledAsync() rejects with a meaningful message', async () => {
       let error = null;
       try {
-        await Segment.setEnabledAsync(false)
+        await Segment.setEnabledAsync(false);
       } catch (e) {
         error = e;
       }
       t.expect(error).not.toBeNull();
       t.expect(error).toMatch('not supported in Expo Client');
+    });
+  });
+
+  t.describe('Segment.alias', () => {
+    t.it('resolves when no options passed', async () => {
+      await Segment.alias('testSuiteId');
+    });
+
+    t.it('resolves when some options passed', async () => {
+      await Segment.alias('testSuiteId', {
+        'Google Analytics Integration Key': { enabled: false },
+      });
     });
   });
 }
