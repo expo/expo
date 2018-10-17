@@ -56,6 +56,7 @@ async function getTestModulesAsync() {
     modules = modules.concat([require('./tests/Brightness')]);
     modules = modules.concat([require('./tests/BarCodeScanner')]);
     if (Platform.OS === 'android') {
+      modules = modules.concat([require('./tests/JSC')]);
       // The Camera tests are flaky on iOS, i.e. they fail randomly
       modules = modules.concat([require('./tests/Camera')]);
     }
