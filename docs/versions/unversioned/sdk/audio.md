@@ -98,7 +98,8 @@ A static convenience method to construct and load a sound is also provided:
 
     -   **source (_object_ / _number_ / _Asset_)** -- The source of the sound. The following forms are supported:
 
-        -   A dictionary of the form `{ uri: 'http://path/to/file' }` with a network URL pointing to an audio file on the web.
+        -   A dictionary of the form `{ uri: string, headers?: { [string]: string }, overrideFileExtensionAndroid?: string }` with a network URL pointing to a media file on the web, an optional headers object passed in a network request to the `uri` and an optional Android-specific `overrideFileExtensionAndroid` string overriding extension inferred from the URL.
+            The `overrideFileExtensionAndroid` property may come in handy if the player receives an URL like `example.com/play` which redirects to `example.com/player.m3u8`. Setting this property to `m3u8` would allow the Android player to properly infer the content type of the media and use proper media file reader.
         -   `require('path/to/file')` for an audio file asset in the source code directory.
         -   An [`Expo.Asset`](asset.html) object for an audio file asset.
 

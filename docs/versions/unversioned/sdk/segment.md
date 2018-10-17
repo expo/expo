@@ -1,12 +1,20 @@
----
+–-
 title: Segment
----
+–-
 
 Provides access to <https://segment.com/> mobile analytics. Wraps Segment's [iOS](https://segment.com/docs/sources/mobile/ios/) and [Android](https://segment.com/docs/sources/mobile/android/) sources.
 
 > **Note:** Session tracking may not work correctly when running Experiences in the main Expo app. It will work correctly if you create a standalone app.
 
-### `Expo.Segment.initialize({ androidWriteKey, iosWriteKey })`
+### Accessing Segment module
+
+To access the Segment module just import it from `Expo`:
+
+```js
+import { Segment } from 'expo';
+```
+
+### `Segment.initialize({ androidWriteKey, iosWriteKey })`
 
 Segment requires separate write keys for iOS and Android. You will need to log in to Segment to recieve these <https://segment.com/docs/guides/setup/how-do-i-find-my-write-key/>
 
@@ -14,66 +22,95 @@ Segment requires separate write keys for iOS and Android. You will need to log i
 
 Accepts an object with the following keys:
 
--   **androidWriteKey (_string_)** -- Write key for Android source.
--   **iosWriteKey (_string_)** -- Write key for iOS source.
+-   **androidWriteKey (_string_)** – Write key for Android source.
+-   **iosWriteKey (_string_)** – Write key for iOS source.
 
-### `Expo.Segment.identify(userId)`
+### `Segment.identify(userId)`
 
-Associates the current user with a user ID. Call this after calling [`Expo.Segment.initialize()`](#exposegmentinitialize "Expo.Segment.initialize") but before other segment calls. See <https://segment.com/docs/spec/identify/>.
-
-#### Arguments
-
--   **userId (_string_)** -- User ID for the current user.
-
-### `Expo.Segment.identifyWithTraits(userId, traits)`
-
-Associates the current user with a user ID and some metadata. Call this after calling [`Expo.Segment.initialize()`](#exposegmentinitialize "Expo.Segment.initialize") but before other segment calls. See <https://segment.com/docs/spec/identify/>.
+Associates the current user with a user ID. Call this after calling [`Segment.initialize()`](#exposegmentinitialize "Segment.initialize") but before other segment calls. See <https://segment.com/docs/spec/identify/>.
 
 #### Arguments
 
--   **userId (_string_)** -- User ID for the current user.
--   **traits (_object_)** -- A map of custom properties.
+-   **userId (_string_)** – User ID for the current user.
 
-### `Expo.Segment.reset()`
+### `Segment.identifyWithTraits(userId, traits)`
+
+<!– Associates the current user with a user ID and some metadata. Call this after calling [`Segment.initialize()`](#exposegmentinitialize "Segment.initialize") but before other segment calls. See <https://segment.com/docs/spec/identify/>. –>
+
+#### Arguments
+
+-   **userId (_string_)** – User ID for the current user.
+-   **traits (_object_)** – A map of custom properties.
+
+### `Segment.reset()`
 
 Clears the current user. See <https://segment.com/docs/sources/mobile/ios/#reset>.
 
-### `Expo.Segment.track(event)`
+### `Segment.track(event)`
 
 Log an event to Segment. See <https://segment.com/docs/spec/track/>.
 
 #### Arguments
 
--   **event (_string_)** -- The event name.
+-   **event (_string_)** – The event name.
 
-### `Expo.Segment.trackWithProperties(event, properties)`
+### `Segment.trackWithProperties(event, properties)`
 
 Log an event to Segment with custom properties. See <https://segment.com/docs/spec/track/>.
 
 #### Arguments
 
--   **event (_string_)** -- The event name.
--   **properties (_object_)** -- A map of custom properties.
+-   **event (_string_)** – The event name.
+-   **properties (_object_)** – A map of custom properties.
 
-### `Expo.Segment.screen(screenName)`
+### `Segment.group(groupId)`
+
+Associate the user with a group. See <https://segment.com/docs/spec/group/>.
+
+#### Arguments
+
+-   **groupId (_string_)** – ID of the group.
+
+### `Segment.groupWithTraits(groupId, traits)`
+
+Associate the user with a group with traits. See <https://segment.com/docs/spec/group/>.
+
+#### Arguments
+
+-   **groupId (_string_)** – ID of the group.
+-   **traits (_object_)** – free-form dictionary of traits of the group.
+
+### `Segment.alias(newId, [options])`
+
+Associate current identity with a new identifier. See <https://segment.com/docs/spec/alias/>.
+
+#### Arguments
+
+-   **newId (_string_)** – Identifier to associate with.
+-   **options (_object_)** – _(optional)_ extra dictionary with options for the call. You could pass a dictionary of form `{ [integrationKey]: { enabled: boolean, options: object } }` to configure destinations of the call.
+
+#### Returns
+
+-   A `Promise` resolving to a `boolean` indicating whether the method has been executed on the underlying Segment instance or not.
+
+### `Segment.screen(screenName)`
 
 Record that a user has seen a screen to Segment. See <https://segment.com/docs/spec/screen/>.
 
 #### Arguments
 
--   **screenName (_string_)** -- Name of the screen.
+-   **screenName (_string_)** – Name of the screen.
 
-### `Expo.Segment.screenWithProperties(screenName, properties)`
+### `Segment.screenWithProperties(screenName, properties)`
 
 Record that a user has seen a screen to Segment with custom properties. See <https://segment.com/docs/spec/screen/>.
 
--   **screenName (_string_)** -- Name of the screen.
--   **properties (_object_)** -- A map of custom properties.
+-   **screenName (_string_)** – Name of the screen.
+-   **properties (_object_)** – A map of custom properties.
 
-### `Expo.Segment.flush()`
+### `Segment.flush()`
 
 Manually flush the event queue. You shouldn't need to call this in most cases.
-
 
 ### Opting out (enabling/disabling all tracking)
 
