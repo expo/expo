@@ -106,31 +106,86 @@ Then add the following methods to your `ios/[App Name]/AppDelegate.m`:
     api project(':expo-firebase-app')
     api project(':expo-firebase-messaging')
     ```
+3.  In order to use the module in Expo, add it to the Activity: `./android/app/src/main/java/host/exp/exponent/MainActivity.java`
 
-Some Unimodules are not included in the default `ExpoKit` suite, these modules will needed to be added manually.
-If your Android build cannot find the Native Modules, you can add them like this:
+    ```java
+    /*
+    * At the top of the file.
+    * This is automatically imported with Android Studio, but if you are in any other editor you will need to manually import the module.
+    */
+    import expo.modules.firebase.app.FirebaseAppPackage; // This should be here for all Expo Firebase features.
+    import expo.modules.firebase.notifications.FirebaseNotificationsPackage;
 
-`./android/app/src/main/java/host/exp/exponent/MainActivity.java`
+    // Later in the file...
 
-```java
-/*
- * At the top of the file.
- * This is automatically imported with Android Studio, but if you are in any other editor you will need to manually import the module.
-*/
-import expo.modules.firebase.app.FirebaseAppPackage; // This should be here for all Expo Firebase features.
-import expo.modules.firebase.notifications.FirebaseNotificationsPackage;
+    @Override
+    public List<Package> expoPackages() {
+      // Here you can add your own packages.
+      return Arrays.<Package>asList(
+        new FirebaseAppPackage(), // This should be here for all Expo Firebase features.
+        new FirebaseNotificationsPackage() // Include this.
+      );
+    }
+    ```
 
-// Later in the file...
+4.  Add permissions to the manifest `android/app/src/main/AndroidManifest.xml`:
+    ```xml
+    <manifest ...>
+      <uses-permission android:name="android.permission.INTERNET" />
+      <uses-permission android:name="android.permission.VIBRATE" />
+      <!-- Not included in ExpoKit by default -->
+      <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    ```
+5.  Set app launch mode inside activity props `android/app/src/main/AndroidManifest.xml`:
+    ```xml
+    <activity
+        ...
+        android:launchMode="singleTop">
+    ```
+6.  **Optional: Scheduled Notifications** If you would like to schedule local notifications then you also need to add the following to the application component of `android/app/src/main/AndroidManifest.xml`:
 
-@Override
-public List<Package> expoPackages() {
-  // Here you can add your own packages.
-  return Arrays.<Package>asList(
-    new FirebaseAppPackage(), // This should be here for all Expo Firebase features.
-    new FirebaseNotificationsPackage() // Include this.
-  );
-}
-```
+    ```xml
+    <application ...>
+      <!-- Scheduled Notifications -->
+      <receiver android:name="expo.modules.firebase.notifications.FirebaseNotificationReceiver"/>
+      <receiver android:enabled="true" android:exported="true"  android:name="expo.modules.firebase.notifications.FirebaseNotificationsRebootReceiver">
+        <intent-filter>
+          <action android:name="android.intent.action.BOOT_COMPLETED"/>
+          <action android:name="android.intent.action.QUICKBOOT_POWERON"/>
+          <action android:name="com.htc.intent.action.QUICKBOOT_POWERON"/>
+          <category android:name="android.intent.category.DEFAULT" />
+        </intent-filter>
+      </receiver>
+    </application>
+    ```
+
+7.  **Optional: Default icon and color** can be set in the manifest `android/app/src/main/AndroidManifest.xml`:
+    Within the application component, add metadata elements to set a default notification icon and color. Android uses these values whenever incoming messages do not explicitly set icon or color.
+
+    ```xml
+    <application ...>
+      <!-- Set custom default icon. This is used when no icon is set for incoming notification messages.
+          See README(https://goo.gl/l4GJaQ) for more. -->
+      <meta-data
+        android:name="com.google.firebase.messaging.default_notification_icon"
+        android:resource="@drawable/ic_stat_ic_notification" />
+      <!-- Set color used with incoming notification messages. This is used when no color is set for the incoming
+          notification message. See README(https://goo.gl/6BKBk7) for more. -->
+      <meta-data
+        android:name="com.google.firebase.messaging.default_notification_color"
+        android:resource="@color/colorAccent" />
+    </application>
+    ```
+
+8.  **Optional: Notification Channels** from Android 8.0 (API level 26) and higher, notification channels are supported and recommended. FCM provides a default notification channel with basic settings. If you prefer to create and use your own default channel, set default_notification_channel_id to the ID of your notification channel object as shown; FCM will use this value whenever incoming messages do not explicitly set a notification channel. `android/app/src/main/AndroidManifest.xml`:
+    ```xml
+    <application ...>
+      <!-- Notification Channels -->
+      <meta-data
+        android:name="com.google.firebase.messaging.default_notification_channel_id"
+        android:value="@string/default_notification_channel_id"/>
+    </application>
+    ```
 
 ## Usage
 
@@ -154,6 +209,7 @@ export default class DemoView extends React.Component {
 
   async componentDidMount() {
     const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+    // Optionally: Permissions.USER_FACING_NOTIFICATIONS;
     if (status !== 'granted') return;
 
     this.notificationDisplayedListener = firebase

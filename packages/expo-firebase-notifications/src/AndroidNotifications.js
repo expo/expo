@@ -4,7 +4,7 @@ import { Platform } from 'expo-core';
 import AndroidChannel from './AndroidChannel';
 import AndroidChannelGroup from './AndroidChannelGroup';
 
-import type Notifications from '.';
+type Notifications = Object;
 
 export default class AndroidNotifications {
   _notifications: Notifications;

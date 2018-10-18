@@ -37,7 +37,7 @@ public class FirebaseNotificationManager {
   private static final String TAG = FirebaseNotificationManager.class.getCanonicalName();
   private AlarmManager alarmManager;
   private Context context;
-  private ModuleRegistry mModuleRegistry;
+  public ModuleRegistry mModuleRegistry;
   private NotificationManager notificationManager;
   private SharedPreferences preferences;
 
@@ -204,11 +204,15 @@ public class FirebaseNotificationManager {
   }
 
   public void removeDeliveredNotificationsByTag(String tag, Promise promise) {
-    StatusBarNotification[] statusBarNotifications = notificationManager.getActiveNotifications();
-    for (StatusBarNotification statusBarNotification : statusBarNotifications) {
-      if (tag.equals(statusBarNotification.getTag())) {
-        notificationManager.cancel(statusBarNotification.getTag(), statusBarNotification.getId());
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      StatusBarNotification[] statusBarNotifications = notificationManager.getActiveNotifications();
+      for (StatusBarNotification statusBarNotification : statusBarNotifications) {
+        if (tag.equals(statusBarNotification.getTag())) {
+          notificationManager.cancel(statusBarNotification.getTag(), statusBarNotification.getId());
+        }
       }
+    } else {
+      // TODO: Bacon: Add support for older versions
     }
     promise.resolve(null);
   }
@@ -251,7 +255,12 @@ public class FirebaseNotificationManager {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       String channelId = (String) channelMap.get("channelId");
       String name = (String) channelMap.get("name");
-      int importance = (int) channelMap.get("importance");
+      int importance = NotificationManager.IMPORTANCE_UNSPECIFIED;
+
+      if (channelMap.containsKey("importance") && channelMap.get("importance") instanceof Number) {
+        Number mImportance = (Number) channelMap.get("importance");
+        importance = mImportance.intValue();
+      }
 
       NotificationChannel channel = new NotificationChannel(channelId, name, importance);
       if (channelMap.containsKey("bypassDnd")) {

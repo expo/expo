@@ -48,9 +48,6 @@ public class FirebaseNotificationsModule extends ExportedModule
 
   public FirebaseNotificationsModule(Context context) {
     super(context);
-
-    notificationManager = new FirebaseNotificationManager(context, mModuleRegistry);
-    sharedPreferences = context.getSharedPreferences(BADGE_FILE, Context.MODE_PRIVATE);
   }
 
   @Override
@@ -67,6 +64,16 @@ public class FirebaseNotificationsModule extends ExportedModule
     }
 
     mModuleRegistry = moduleRegistry;
+
+    if (notificationManager == null) {
+      notificationManager = new FirebaseNotificationManager(getContext(), mModuleRegistry);
+    } else if (moduleRegistry != null) {
+      notificationManager.mModuleRegistry = mModuleRegistry;
+    } else {
+      notificationManager = null;
+    }
+
+    sharedPreferences = getContext().getSharedPreferences(BADGE_FILE, Context.MODE_PRIVATE);
     FirebaseNotificationsModule.moduleRegistry = moduleRegistry;
     
     if (mModuleRegistry != null) {
