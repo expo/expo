@@ -28,6 +28,8 @@ public class SMSModule extends ExportedModule implements ModuleRegistryConsumer,
   private static final String TAG = "ExpoSMS";
   private static final String ERROR_TAG = "E_SMS";
 
+  private static final Integer CHECKING_FOR_RESULT_TIME_THRESHOLD = 250; // in ms, for explanation see usage
+
   private ModuleRegistry mModuleRegistry;
   private Promise mPromise;
   private Date mDate;
@@ -82,9 +84,6 @@ public class SMSModule extends ExportedModule implements ModuleRegistryConsumer,
       promise.reject(ERROR_TAG + "_SENDING_IN_PROGRESS", "Different SMS sending in progress. Await the old request and then try again.");
       return;
     }
-    mPromise = promise;
-    mDate = new Date();
-    mAddresses = new ArrayList<>(addresses);
 
     final StringBuilder addressesBuilder = new StringBuilder(addresses.get(0));
     for (int idx = 1; idx < addresses.size(); idx++) {
@@ -103,6 +102,13 @@ public class SMSModule extends ExportedModule implements ModuleRegistryConsumer,
       promise.reject(ERROR_TAG + "_NO_SMS_APP", "No messaging application available");
       return;
     }
+
+    mPromise = promise;
+    mAddresses = new ArrayList<>(addresses);
+
+    // that would be used to check only these recorded SMS messages that appeared after this timestamp
+    // and also for lifecycle flickering when app is paused -> resumed -> paused -> SMS activity -> resumed
+    mDate = new Date();
 
     ActivityProvider activityProvider = mModuleRegistry.getModule(ActivityProvider.class);
     activityProvider.getCurrentActivity().startActivity(SMSIntent);
@@ -215,7 +221,18 @@ public class SMSModule extends ExportedModule implements ModuleRegistryConsumer,
 
   @Override
   public void onHostResume() {
-    checkSMSMessageStatus();
+    // Some Android devices (like OnePlus 6) are having strange lifecycle logic that upon starting external activity:
+    //   onHostPause
+    //   onHostResume (almost immediately, no idea from where it comes)
+    //   onHostPause (desired one)
+    //   external Activity logic
+    //   onHostResume (desired one)
+    // Other devices (like Xiaomi Redmi 4A) don't trigger these first onHostPause & onHostResume
+
+    // Check whether the minimum amount of time has passed since launching external SMS activity
+    if (mDate != null && new Date().getTime() - mDate.getTime() >= CHECKING_FOR_RESULT_TIME_THRESHOLD) {
+      checkSMSMessageStatus();
+    }
   }
 
   @Override

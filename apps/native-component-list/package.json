@@ -25,7 +25,6 @@
     "react-native": "^0.57.1",
     "react-native-paper": "^2.0.0-alpha.4",
     "react-native-platform-touchable": "^1.1.1",
-    "react-native-svg": "6.2.2",
     "react-navigation": "3.0.0-alpha.4",
     "react-navigation-header-buttons": "^1.2.1",
     "react-navigation-material-bottom-tabs": "^0.3.0",
