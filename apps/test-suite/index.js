@@ -7,10 +7,8 @@ import jasmineModule from 'jasmine-core/lib/jasmine-core/jasmine';
 import Immutable from 'immutable';
 
 import * as TestUtils from './TestUtils';
-import startAppAsync from './tests/firebase/startAppAsync';
 
 let { ExponentTest } = NativeModules;
-
 
 // List of all modules for tests. Each file path must be statically present for
 // the packager to pick them all up.
@@ -23,10 +21,6 @@ async function getTestModulesAsync() {
     }
   }
 
-
-  await startAppAsync();
-  return require('./tests/firebase');
-  
   let modules = [
     // require('./tests/Basic1'),
     // require('./tests/Basic2'),

@@ -45,21 +45,4 @@ def includeUniversalModule = { name ->
   'expo-sensors',
   'expo-sensors-interface',
   'expo-sms',
-
-  'expo-firebase-app',
-  'expo-firebase-analytics',
-  'expo-firebase-auth',
-  'expo-firebase-database',
-  'expo-firebase-messaging',
-  'expo-firebase-links',
-  'expo-firebase-notifications',
-  'expo-firebase-invites',
-  'expo-firebase-instance-id',
-  'expo-firebase-storage',
-  'expo-firebase-remote-config',
-  'expo-firebase-crashlytics',
-  'expo-firebase-instance-id',
-  'expo-firebase-firestore',
-  'expo-firebase-functions',
-  'expo-firebase-performance'
 ].forEach({ moduleName -> includeUniversalModule(moduleName) })

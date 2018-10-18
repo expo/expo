@@ -1,8 +1,0 @@
---recursive
---timeout 120000
---reporter list
---slow 600
---bail
---exit
---require bridge/platform/node
---require ./helpers

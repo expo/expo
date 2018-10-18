@@ -43,14 +43,6 @@
 				<string>host.exp.exponent</string>
 			</array>
 		</dict>
-		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>com.googleusercontent.apps.149884608757-f525l942v9jqkl0or3984o0e35kgtgim</string>
-			</array>
-		</dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>2.8.4</string>
