@@ -114,6 +114,25 @@ EX_EXPORT_METHOD_AS(groupWithTraits,
   resolve(nil);
 }
 
+EX_EXPORT_METHOD_AS(alias,
+                    alias:(NSString *)newId
+                    withOptions:(NSDictionary *)options
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
+{
+  SEGAnalytics *analytics = _instance;
+  if (analytics) {
+    if (options) {
+      [analytics alias:newId options:@{@"integrations": options}];
+    } else {
+      [analytics alias:newId];
+    }
+    resolve(EXNullIfNil(nil));
+  } else {
+    reject(@"E_NO_SEG", @"Segment instance has not been initialized yet, have you tried calling Segment.initialize prior to calling Segment.alias?", nil);
+  }
+}
+
 EX_EXPORT_METHOD_AS(screen,
                     screen:(NSString *)screenName
                     resolver:(EXPromiseResolveBlock)resolve
