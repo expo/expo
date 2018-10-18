@@ -8,6 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface EXCachedResource : NSObject <EXResourceLoader>
 
+@property (nonatomic, readonly) NSString *resourceName;
 @property (nonatomic, strong) NSURL *remoteUrl;
 @property (nonatomic, assign) BOOL shouldVersionCache;
 @property (nonatomic, strong, nullable) NSString *abiVersion;
