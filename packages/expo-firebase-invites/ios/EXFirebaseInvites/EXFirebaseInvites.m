@@ -104,7 +104,7 @@ EX_EXPORT_METHOD_AS(getInitialInvitation,
                     getInitialInvitation:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
   NSDictionary *launchOptions = [self launchOptions];
-  NSURL* url = nil;
+  NSURL *url = nil;
   if (launchOptions[UIApplicationLaunchOptionsURLKey]) {
     url = (NSURL*)launchOptions[UIApplicationLaunchOptionsURLKey];
   } else if (launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey]) {

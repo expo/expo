@@ -485,8 +485,9 @@ EX_EXPORT_METHOD_AS(jsInitialised,
   return floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max;
 }
 
-- (UILocalNotification*) buildUILocalNotification:(NSDictionary *) notification
-                                     withSchedule:(BOOL) withSchedule {
+- (UILocalNotification *)buildUILocalNotification:(NSDictionary *)notification
+                                     withSchedule:(BOOL)withSchedule
+{
   UILocalNotification *localNotification = [[UILocalNotification alloc] init];
   if (notification[@"body"]) {
     localNotification.alertBody = notification[@"body"];
@@ -543,8 +544,8 @@ EX_EXPORT_METHOD_AS(jsInitialised,
   return localNotification;
 }
 
-- (UNNotificationRequest*) buildUNNotificationRequest:(NSDictionary *) notification
-                                         withSchedule:(BOOL) withSchedule NS_AVAILABLE_IOS(10_0) {
+- (UNNotificationRequest *)buildUNNotificationRequest:(NSDictionary *)notification
+                                         withSchedule:(BOOL)withSchedule NS_AVAILABLE_IOS(10_0) {
   UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
   if (notification[@"body"]) {
     content.body = notification[@"body"];

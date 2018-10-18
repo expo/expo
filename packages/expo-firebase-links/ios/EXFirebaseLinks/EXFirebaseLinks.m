@@ -159,13 +159,13 @@ EX_EXPORT_METHOD_AS(getInitialLink,
   NSDictionary *launchOptions = [self launchOptions];
 
   if (launchOptions[UIApplicationLaunchOptionsURLKey]) {
-    NSURL* url = (NSURL*)launchOptions[UIApplicationLaunchOptionsURLKey];
+    NSURL *url = (NSURL*)launchOptions[UIApplicationLaunchOptionsURLKey];
     FIRDynamicLink *dynamicLink = [[FIRDynamicLinks dynamicLinks] dynamicLinkFromCustomSchemeURL:url];
     resolve(dynamicLink ? dynamicLink.url.absoluteString : initialLink);
   } else if (launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey]
              && [launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey][UIApplicationLaunchOptionsUserActivityTypeKey] isEqualToString:NSUserActivityTypeBrowsingWeb]) {
     NSDictionary *dictionary = launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey];
-    NSUserActivity* userActivity = (NSUserActivity*) dictionary[@"UIApplicationLaunchOptionsUserActivityKey"];
+    NSUserActivity *userActivity = (NSUserActivity *) dictionary[@"UIApplicationLaunchOptionsUserActivityKey"];
     [[FIRDynamicLinks dynamicLinks] handleUniversalLink:userActivity.webpageURL
                                              completion:^(FIRDynamicLink * _Nullable dynamicLink, NSError * _Nullable error) {
                                                if (error != nil){
