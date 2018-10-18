@@ -18,7 +18,6 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
 @property (nonatomic, strong) NSURL * _Nullable originalUrl;
 @property (nonatomic, strong) NSData *data;
 @property (nonatomic, assign) BOOL canBeWrittenToCache;
-@property (nonatomic, strong) NSString *resourceName;
 
 // cache this value so we only have to compute it once per instance
 @property (nonatomic, strong) NSNumber * _Nullable isUsingEmbeddedManifest;
@@ -32,17 +31,18 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
   _originalUrl = originalUrl;
   _canBeWrittenToCache = NO;
   
+  NSString *resourceName;
   if ([EXEnvironment sharedEnvironment].isDetached && [originalUrl.absoluteString isEqual:[EXEnvironment sharedEnvironment].standaloneManifestUrl]) {
-    _resourceName = kEXEmbeddedManifestResourceName;
+    resourceName = kEXEmbeddedManifestResourceName;
     if ([EXEnvironment sharedEnvironment].releaseChannel){
       self.releaseChannel = [EXEnvironment sharedEnvironment].releaseChannel;
     }
     NSLog(@"EXManifestResource: Standalone manifest remote url is %@ (%@)", url, originalUrl);
   } else {
-    _resourceName = [EXKernelLinkingManager linkingUriForExperienceUri:url useLegacy:YES];
+    resourceName = [EXKernelLinkingManager linkingUriForExperienceUri:url useLegacy:YES];
   }
 
-  if (self = [super initWithResourceName:_resourceName resourceType:@"json" remoteUrl:url cachePath:[[self class] cachePath]]) {
+  if (self = [super initWithResourceName:resourceName resourceType:@"json" remoteUrl:url cachePath:[[self class] cachePath]]) {
     self.shouldVersionCache = NO;
   }
   return self;
@@ -177,7 +177,7 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
 
 - (NSString *)resourceCachePath
 {
-  NSString *resourceCacheFilename = [NSString stringWithFormat:@"%@-%lu", _resourceName, (unsigned long)[_originalUrl hash]];
+  NSString *resourceCacheFilename = [NSString stringWithFormat:@"%@-%lu", self.resourceName, (unsigned long)[_originalUrl hash]];
   NSString *versionedResourceFilename = [NSString stringWithFormat:@"%@.%@", resourceCacheFilename, @"json"];
   return [[[self class] cachePath] stringByAppendingPathComponent:versionedResourceFilename];
 }
