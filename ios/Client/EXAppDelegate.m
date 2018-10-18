@@ -40,7 +40,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-static NSString *const EXLinkingUrlScheme = @"";
+static NSString *const EXLinkingUrlScheme = @"https://expodemo.page.link";
 
 @interface ExpoKit (Crashlytics) <CrashlyticsDelegate>
 

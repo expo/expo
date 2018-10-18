@@ -144,10 +144,10 @@ EX_EXPORT_METHOD_AS(removeIdTokenListener,
  */
 EX_EXPORT_METHOD_AS(setAppVerificationDisabledForTesting,
                   setAppVerificationDisabledForTesting:(NSString *)appDisplayName
-                  disabled:(BOOL)disabled
+                  disabled:(NSNumber *)disabled
                   resolver:(EXPromiseResolveBlock)resolve
                   rejecter:(EXPromiseRejectBlock)reject) {
-  [EXFirebaseAuth getAuth:appDisplayName].settings.appVerificationDisabledForTesting = disabled;
+  [EXFirebaseAuth getAuth:appDisplayName].settings.appVerificationDisabledForTesting = [disabled boolValue];
   resolve([NSNull null]);
 }
 
@@ -455,13 +455,13 @@ EX_EXPORT_METHOD_AS(updateProfile,
  */
 EX_EXPORT_METHOD_AS(getToken,
                     getToken:(NSString *)appDisplayName
-                    forceRefresh:(BOOL)forceRefresh
+                    forceRefresh:(NSNumber *)forceRefresh
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
   FIRUser *user = [EXFirebaseAuth getAuth:appDisplayName].currentUser;
   
   if (user) {
-    [user getIDTokenForcingRefresh:(BOOL) forceRefresh completion:^(NSString *token, NSError *_Nullable error) {
+    [user getIDTokenForcingRefresh:[forceRefresh boolValue] completion:^(NSString *token, NSError *_Nullable error) {
       if (error) {
         [self promiseRejectAuthException:reject error:error];
       } else {
@@ -481,13 +481,13 @@ EX_EXPORT_METHOD_AS(getToken,
  */
 EX_EXPORT_METHOD_AS(getIdToken,
                     getIdToken:(NSString *)appDisplayName
-                    forceRefresh:(BOOL)forceRefresh
+                    forceRefresh:(NSNumber *)forceRefresh
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
   FIRUser *user = [EXFirebaseAuth getAuth:appDisplayName].currentUser;
   
   if (user) {
-    [user getIDTokenForcingRefresh:(BOOL) forceRefresh completion:^(NSString *token, NSError *_Nullable error) {
+    [user getIDTokenForcingRefresh:[forceRefresh boolValue] completion:^(NSString *token, NSError *_Nullable error) {
       if (error) {
         [self promiseRejectAuthException:reject error:error];
       } else {
@@ -508,13 +508,13 @@ EX_EXPORT_METHOD_AS(getIdToken,
  */
 EX_EXPORT_METHOD_AS(getIdTokenResult,
                     getIdTokenResult:(NSString *)appDisplayName
-                    forceRefresh:(BOOL)forceRefresh
+                    forceRefresh:(NSNumber *)forceRefresh
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
   FIRUser *user = [EXFirebaseAuth getAuth:appDisplayName].currentUser;
   
   if (user) {
-    [user getIDTokenResultForcingRefresh:(BOOL) forceRefresh completion:^(FIRAuthTokenResult *_Nullable tokenResult,
+    [user getIDTokenResultForcingRefresh:[forceRefresh boolValue] completion:^(FIRAuthTokenResult *_Nullable tokenResult,
                                                                           NSError *_Nullable error) {
       if (error) {
         [self promiseRejectAuthException:reject error:error];

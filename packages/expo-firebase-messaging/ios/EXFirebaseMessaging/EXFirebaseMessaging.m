@@ -130,7 +130,7 @@ EX_EXPORT_METHOD_AS(sendMessage,
 }
 
 EX_EXPORT_METHOD_AS(subscribeToTopic,
-                    subscribeToTopic:(NSString*)topic
+                    subscribeToTopic:(NSString *)topic
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
   [[FIRMessaging messaging] subscribeToTopic:topic];
@@ -138,7 +138,7 @@ EX_EXPORT_METHOD_AS(subscribeToTopic,
 }
 
 EX_EXPORT_METHOD_AS(unsubscribeFromTopic,
-                    unsubscribeFromTopic:(NSString*)topic
+                    unsubscribeFromTopic:(NSString *)topic
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
   [[FIRMessaging messaging] unsubscribeFromTopic:topic];

@@ -18,10 +18,10 @@ EX_EXPORT_METHOD_AS(logEvent,
 }
 
 EX_EXPORT_METHOD_AS(setAnalyticsCollectionEnabled,
-                    setAnalyticsCollectionEnabled:(BOOL)enabled
+                    setAnalyticsCollectionEnabled:(NSNumber *)enabled
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
-    [[FIRAnalyticsConfiguration sharedInstance] setAnalyticsCollectionEnabled:enabled];
+    [[FIRAnalyticsConfiguration sharedInstance] setAnalyticsCollectionEnabled:[enabled boolValue]];
     resolve([NSNull null]);
 }
 

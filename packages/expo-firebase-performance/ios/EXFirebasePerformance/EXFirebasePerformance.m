@@ -56,10 +56,10 @@ EX_EXPORT_MODULE(ExpoFirebasePerformance);
 }
 
 EX_EXPORT_METHOD_AS(setPerformanceCollectionEnabled,
-                    setPerformanceCollectionEnabled:(BOOL *)enabled
+                    setPerformanceCollectionEnabled:(NSNumber *)enabled
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
-  [FIRPerformance sharedInstance].dataCollectionEnabled = (BOOL)enabled;
+  [FIRPerformance sharedInstance].dataCollectionEnabled = [enabled boolValue];
   resolve(@([FIRPerformance sharedInstance].dataCollectionEnabled));
 }
 

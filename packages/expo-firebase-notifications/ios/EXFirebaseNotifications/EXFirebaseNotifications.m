@@ -21,7 +21,9 @@ static NSString *const NOTIFICATIONS_NOTIFICATION_RECEIVED = @"Expo.Firebase.not
 
 @end
 
-@implementation EXFirebaseNotifications
+@implementation EXFirebaseNotifications {
+  NSMutableDictionary<NSString *, void (^)(UIBackgroundFetchResult)> *completionHandlers;
+}
 
 static EXFirebaseNotifications *theEXFirebaseNotifications = nil;
 // PRE-BRIDGE-EVENTS: Consider enabling this to allow events built up before the bridge is built to be sent to the JS side
@@ -59,6 +61,8 @@ EX_EXPORT_MODULE(ExpoFirebaseNotifications);
   
   // Set static instance for use from AppDelegate
   theEXFirebaseNotifications = self;
+  completionHandlers = [[NSMutableDictionary alloc] init];
+
 }
 
 - (void)startObserving {
@@ -127,6 +131,10 @@ EX_EXPORT_MODULE(ExpoFirebaseNotifications);
     return;
   }
   
+  NSDictionary *notification = [self parseUserInfo:userInfo];
+  NSString *handlerKey = notification[@"notificationId"];
+
+  
   NSString *event;
   if (EXSharedApplication().applicationState == UIApplicationStateBackground) {
     event = NOTIFICATIONS_NOTIFICATION_DISPLAYED;
@@ -145,7 +153,6 @@ EX_EXPORT_MODULE(ExpoFirebaseNotifications);
     return;
   }
   
-  NSDictionary *notification = [self parseUserInfo:userInfo];
   // For onOpened events, we set the default action name as iOS 8/9 has no concept of actions
   if (event == NOTIFICATIONS_NOTIFICATION_OPENED) {
     notification = @{
@@ -154,8 +161,14 @@ EX_EXPORT_MODULE(ExpoFirebaseNotifications);
                      };
   }
   
+  
+  if (handlerKey != nil) {
+    completionHandlers[handlerKey] = completionHandler;
+  } else {
+    completionHandler(UIBackgroundFetchResultNoData);
+  }
+  
   [self sendJSEvent:_eventEmitter name:event body:notification];
-  completionHandler(UIBackgroundFetchResultNoData);
 }
 
 // *******************************************************
@@ -166,6 +179,30 @@ EX_EXPORT_MODULE(ExpoFirebaseNotifications);
 // ** Start UNUserNotificationCenterDelegate methods
 // ** iOS 10+
 // *******************************************************
+
+EX_EXPORT_METHOD_AS(complete,
+                    complete:(NSString *)handlerKey
+                    fetchResult:(NSString *)fetchResult
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject) {
+  if (handlerKey != nil) {
+    void (^completionHandler)(UIBackgroundFetchResult) = completionHandlers[handlerKey];
+    if(completionHandler != nil) {
+      completionHandlers[handlerKey] = nil;
+      completionHandler([EXFirebaseNotifications decodeUIBackgroundFetchResult:fetchResult]);
+    }
+  }
+}
+
++ (UIBackgroundFetchResult)decodeUIBackgroundFetchResult:(NSString *)fetchResult
+{
+  if ([fetchResult isEqualToString:@"backgroundFetchResultNewData"]) {
+    return UIBackgroundFetchResultNewData;
+  }  else if ([fetchResult isEqualToString:@"backgroundFetchResultFailed"]) {
+    return UIBackgroundFetchResultFailed;
+  }
+  return UIBackgroundFetchResultNoData;
+}
 
 #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
 // Handle incoming notification messages while app is in the foreground.
@@ -249,7 +286,7 @@ EX_EXPORT_METHOD_AS(cancelAllNotifications,
 }
 
 EX_EXPORT_METHOD_AS(cancelNotification,
-                    cancelNotification:(NSString*)notificationId
+                    cancelNotification:(NSString *)notificationId
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
   if ([self isIOS89]) {
@@ -271,7 +308,7 @@ EX_EXPORT_METHOD_AS(cancelNotification,
 }
 
 EX_EXPORT_METHOD_AS(displayNotification,
-                    displayNotification:(NSDictionary*)notification
+                    displayNotification:(NSDictionary *)notification
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
   if ([self isIOS89]) {
@@ -301,8 +338,8 @@ EX_EXPORT_METHOD_AS(getBadge,
 }
 
 EX_EXPORT_METHOD_AS(getInitialNotification,
-                       getInitialNotification:(EXPromiseResolveBlock)resolve
-                       rejecter:(EXPromiseRejectBlock)reject) {
+                    getInitialNotification:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject) {
   // Check if we've cached an initial notification as this will contain the accurate action
   if (initialNotification) {
       resolve(initialNotification);
@@ -372,7 +409,7 @@ EX_EXPORT_METHOD_AS(removeAllDeliveredNotifications,
 }
 
 EX_EXPORT_METHOD_AS(removeDeliveredNotification,
-                    removeDeliveredNotification:(NSString*)notificationId
+                    removeDeliveredNotification:(NSString *)notificationId
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
   if ([self isIOS89]) {
@@ -389,7 +426,7 @@ EX_EXPORT_METHOD_AS(removeDeliveredNotification,
 }
 
 EX_EXPORT_METHOD_AS(scheduleNotification,
-                    scheduleNotification:(NSDictionary*)notification
+                    scheduleNotification:(NSDictionary *)notification
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
   if ([self isIOS89]) {
@@ -411,11 +448,11 @@ EX_EXPORT_METHOD_AS(scheduleNotification,
 }
 
 EX_EXPORT_METHOD_AS(setBadge,
-                    setBadge:(NSInteger)number
+                    setBadge:(NSNumber *)number
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
   dispatch_async(dispatch_get_main_queue(), ^{
-    [EXSharedApplication() setApplicationIconBadgeNumber:number];
+    [EXSharedApplication() setApplicationIconBadgeNumber:[number integerValue]];
     resolve([NSNull null]);
   });
 }

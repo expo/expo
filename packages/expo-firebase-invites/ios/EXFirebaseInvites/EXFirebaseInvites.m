@@ -103,7 +103,6 @@ continueUserActivity:(NSUserActivity *)userActivity
 EX_EXPORT_METHOD_AS(getInitialInvitation,
                     getInitialInvitation:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
-  
   NSDictionary *launchOptions = [self launchOptions];
   NSURL* url = nil;
   if (launchOptions[UIApplicationLaunchOptionsURLKey]) {
@@ -142,9 +141,9 @@ EX_EXPORT_METHOD_AS(getInitialInvitation,
 }
 
 EX_EXPORT_METHOD_AS(sendInvitation,
-                 sendInvitation:(NSDictionary *)invitation
-                 resolve:(EXPromiseResolveBlock)resolve
-                 reject:(EXPromiseRejectBlock)reject) {
+                    sendInvitation:(NSDictionary *)invitation
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject) {
   if (!invitation[@"message"]) {
     reject(@"invites/invalid-invitation", @"The supplied invitation is missing a 'message' field", nil);
   }
@@ -185,8 +184,8 @@ EX_EXPORT_METHOD_AS(sendInvitation,
 }
 
 EX_EXPORT_METHOD_AS(jsInitialised,
-                 jsInitialised:(EXPromiseResolveBlock)resolve
-                 rejecter:(EXPromiseRejectBlock)reject) {
+                    jsInitialised:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject) {
   jsReady = YES;
   resolve([NSNull null]);
 }
