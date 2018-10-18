@@ -79,7 +79,7 @@ RNFirebase [**crashlytics build script**](https://rnfirebase.io/docs/master/cras
     api project(':expo-core')
     api project(':expo-firebase-app')
     ```
-3.  Some Unimodules are not included in the default `ExpoKit` suite, these modules will needed to be added manually. If your Android build cannot find the Native Modules, you can add them like this: `./android/app/src/main/java/host/exp/exponent/MainActivity.java`
+3.  Include the module in your expo packages: `./android/app/src/main/java/host/exp/exponent/MainActivity.java`
 
     ```java
     /*

@@ -59,31 +59,27 @@ You could also choose install this module manually.
     api project(':expo-core')
     api project(':expo-firebase-app')
     ```
+3.  Include the module in your expo packages: `./android/app/src/main/java/host/exp/exponent/MainActivity.java`
 
-Some Unimodules are not included in the default `ExpoKit` suite, these modules will needed to be added manually.
-If your Android build cannot find the Native Modules, you can add them like this:
+    ```java
+    /*
+    * At the top of the file.
+    * This is automatically imported with Android Studio, but if you are in any other editor you will need to manually import the module.
+    */
+    import expo.modules.firebase.app.FirebaseAppPackage; // This should be here for all Expo Firebase features.
+    import expo.modules.firebase.functions.FirebaseFunctionsPackage;
 
-`./android/app/src/main/java/host/exp/exponent/MainActivity.java`
+    // Later in the file...
 
-```java
-/*
- * At the top of the file.
- * This is automatically imported with Android Studio, but if you are in any other editor you will need to manually import the module.
-*/
-import expo.modules.firebase.app.FirebaseAppPackage; // This should be here for all Expo Firebase features.
-import expo.modules.firebase.functions.FirebaseFunctionsPackage;
-
-// Later in the file...
-
-@Override
-public List<Package> expoPackages() {
-  // Here you can add your own packages.
-  return Arrays.<Package>asList(
-    new FirebaseAppPackage(), // This should be here for all Expo Firebase features.
-    new FirebaseFunctionsPackage() // Include this.
-  );
-}
-```
+    @Override
+    public List<Package> expoPackages() {
+      // Here you can add your own packages.
+      return Arrays.<Package>asList(
+        new FirebaseAppPackage(), // This should be here for all Expo Firebase features.
+        new FirebaseFunctionsPackage() // Include this.
+      );
+    }
+    ```
 
 ## Usage
 

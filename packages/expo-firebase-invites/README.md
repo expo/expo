@@ -37,7 +37,7 @@ You could also choose install this module manually.
 
 [Now follow the setup instructions in the docs.](https://rnfirebase.io/docs/master/invites/ios#Update-%3Ccode%3EAppDelegate.m%3C/code%3E)
 
-Invites will only work on iOS if the user is authenticated with Google.
+> Invites will only work on iOS if the user is authenticated with Google.
 
 **Update AppDelegate.m**
 
@@ -92,31 +92,27 @@ Replace the `EXFirebaseLinks` methods with `EXFirebaseInvites` as follows:
     api project(':expo-firebase-links')
     ```
 3.  [Now follow the setup instructions in the docs.](https://rnfirebase.io/docs/master/invites/android)
+4.  Include the module in your expo packages: `./android/app/src/main/java/host/exp/exponent/MainActivity.java`
 
-Some Unimodules are not included in the default `ExpoKit` suite, these modules will needed to be added manually.
-If your Android build cannot find the Native Modules, you can add them like this:
+    ```java
+    /*
+    * At the top of the file.
+    * This is automatically imported with Android Studio, but if you are in any other editor you will need to manually import the module.
+    */
+    import expo.modules.firebase.app.FirebaseAppPackage; // This should be here for all Expo Firebase features.
+    import expo.modules.firebase.invites.FirebaseInvitesPackage;
 
-`./android/app/src/main/java/host/exp/exponent/MainActivity.java`
+    // Later in the file...
 
-```java
-/*
- * At the top of the file.
- * This is automatically imported with Android Studio, but if you are in any other editor you will need to manually import the module.
-*/
-import expo.modules.firebase.app.FirebaseAppPackage; // This should be here for all Expo Firebase features.
-import expo.modules.firebase.invites.FirebaseInvitesPackage;
-
-// Later in the file...
-
-@Override
-public List<Package> expoPackages() {
-  // Here you can add your own packages.
-  return Arrays.<Package>asList(
-    new FirebaseAppPackage(), // This should be here for all Expo Firebase features.
-    new FirebaseInvitesPackage() // Include this.
-  );
-}
-```
+    @Override
+    public List<Package> expoPackages() {
+      // Here you can add your own packages.
+      return Arrays.<Package>asList(
+        new FirebaseAppPackage(), // This should be here for all Expo Firebase features.
+        new FirebaseInvitesPackage() // Include this.
+      );
+    }
+    ```
 
 ## Usage
 
