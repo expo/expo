@@ -44,8 +44,6 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
 
   if (self = [super initWithResourceName:_resourceName resourceType:@"json" remoteUrl:url cachePath:[[self class] cachePath]]) {
     self.shouldVersionCache = NO;
-    NSString *manifestLegacyPath = [self _getLegacyResourceCachePath:url];
-    self.legacyResourceCachePaths = [self.legacyResourceCachePaths arrayByAddingObject:manifestLegacyPath];
   }
   return self;
 }
@@ -167,24 +165,6 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
   } else {
     _canBeWrittenToCache = YES;
   }
-}
-
-// TODO: delete when SDK 29 is no longer supported
-// in SDK 29 and earlier, we used to cache by the httpUrl and append index.exp to it
-- (NSString *)_getLegacyResourceCachePath:(NSURL *)httpUrl
-{
-  NSURLComponents *components = [NSURLComponents componentsWithURL:httpUrl resolvingAgainstBaseURL:YES];
-  NSMutableString *path = [((components.path) ? components.path : @"") mutableCopy];
-  if (path.length == 0 || [path characterAtIndex:path.length - 1] != '/') {
-    [path appendString:@"/"];
-  }
-  [path appendString:@"index.exp"];
-  components.path = path;
-  NSURL *legacyUrl = [components URL];
-  NSString *resourceCacheFilename = [NSString stringWithFormat:@"%@-%lu", _resourceName, (unsigned long)[legacyUrl hash]];
-  NSString *versionedResourceFilename = [NSString stringWithFormat:@"%@.%@", resourceCacheFilename, @"json"];
-  NSString *cachePath = [[self class] cachePath];
-  return [cachePath stringByAppendingPathComponent:versionedResourceFilename];
 }
 
 - (NSString *)resourceCachePath
