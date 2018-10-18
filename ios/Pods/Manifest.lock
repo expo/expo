@@ -184,9 +184,6 @@ PODS:
     - EXFileSystemInterface
   - EXFileSystemInterface (1.0.2):
     - EXCore
-  - EXFirebaseApp (1.0.0-rc.2):
-    - EXCore
-    - Firebase/Core
   - EXFont (1.0.0):
     - EXCore
     - EXFontInterface
@@ -243,20 +240,6 @@ PODS:
     - FBSDKCoreKit
   - FBSDKShareKit (4.36.0):
     - FBSDKCoreKit (~> 4.36.0)
-  - Firebase/Core (5.4.1):
-    - Firebase/CoreOnly
-    - FirebaseAnalytics (= 5.0.1)
-  - Firebase/CoreOnly (5.4.1):
-    - FirebaseCore (= 5.0.6)
-  - FirebaseAnalytics (5.0.1):
-    - FirebaseCore (~> 5.0)
-    - FirebaseInstanceID (~> 3.0)
-    - "GoogleToolboxForMac/NSData+zlib (~> 2.1)"
-    - nanopb (~> 0.3)
-  - FirebaseCore (5.0.6):
-    - "GoogleToolboxForMac/NSData+zlib (~> 2.1)"
-  - FirebaseInstanceID (3.1.1):
-    - FirebaseCore (~> 5.0)
   - Folly (2016.10.31.00):
     - boost-for-react-native
     - DoubleConversion
@@ -305,8 +288,6 @@ PODS:
   - GoogleToolboxForMac/DebugUtils (2.1.4):
     - GoogleToolboxForMac/Defines (= 2.1.4)
   - GoogleToolboxForMac/Defines (2.1.4)
-  - "GoogleToolboxForMac/NSData+zlib (2.1.4)":
-    - GoogleToolboxForMac/Defines (= 2.1.4)
   - "GoogleToolboxForMac/NSDictionary+URLArguments (2.1.4)":
     - GoogleToolboxForMac/DebugUtils (= 2.1.4)
     - GoogleToolboxForMac/Defines (= 2.1.4)
@@ -323,11 +304,6 @@ PODS:
     - GTMSessionFetcher/Core (= 1.2.0)
   - JKBigInteger2 (0.0.5)
   - lottie-ios (2.5.0)
-  - nanopb (0.3.8):
-    - nanopb/decode (= 0.3.8)
-    - nanopb/encode (= 0.3.8)
-  - nanopb/decode (0.3.8)
-  - nanopb/encode (0.3.8)
   - React (0.57.1):
     - React/Core (= 0.57.1)
   - React/ART (0.57.1):
@@ -960,7 +936,6 @@ DEPENDENCIES:
   - EXFaceDetectorInterface (from `../packages/expo-face-detector-interface/ios`)
   - EXFileSystem (from `../packages/expo-file-system/ios`)
   - EXFileSystemInterface (from `../packages/expo-file-system-interface/ios`)
-  - EXFirebaseApp (from `../packages/expo-firebase-app/ios`)
   - EXFont (from `../packages/expo-font/ios`)
   - EXFontInterface (from `../packages/expo-font-interface/ios`)
   - EXGL (from `../packages/expo-gl/ios`)
@@ -1133,10 +1108,6 @@ SPEC REPOS:
     - FBSDKCoreKit
     - FBSDKLoginKit
     - FBSDKShareKit
-    - Firebase
-    - FirebaseAnalytics
-    - FirebaseCore
-    - FirebaseInstanceID
     - Google-Maps-iOS-Utils
     - Google-Mobile-Ads-SDK
     - GoogleInterchangeUtilities
@@ -1151,7 +1122,6 @@ SPEC REPOS:
     - GTMSessionFetcher
     - JKBigInteger2
     - lottie-ios
-    - nanopb
 
 EXTERNAL SOURCES:
   ABI29_0_0EXCamera:
@@ -1270,8 +1240,6 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-file-system/ios"
   EXFileSystemInterface:
     :path: "../packages/expo-file-system-interface/ios"
-  EXFirebaseApp:
-    :path: "../packages/expo-firebase-app/ios"
   EXFont:
     :path: "../packages/expo-font/ios"
   EXFontInterface:
@@ -1410,7 +1378,6 @@ SPEC CHECKSUMS:
   EXFaceDetectorInterface: 8727fe51fbd189a94ccd70152a25cdef913a0ae5
   EXFileSystem: 0872826fd9ebc7d842a5e389b088c93f5b9fab88
   EXFileSystemInterface: 8e1225e4e1776ea7abf997a7ded593b4b8e86863
-  EXFirebaseApp: 3a729933a919fe1fc3be7bfd1a3c44ec0a17dda2
   EXFont: 5c0220788732ef1c4bfe0f5079a003b4c64add95
   EXFontInterface: 06126ec4f6a67415426074c3383a82b241f087c1
   EXGL: 9a5dd454a7ed9660b25b71d82d8009ac9bd6f85a
@@ -1433,10 +1400,6 @@ SPEC CHECKSUMS:
   FBSDKCoreKit: 3b8e6570eedb443f9fc4af196a7bf39f18e3a3d8
   FBSDKLoginKit: 8bccb6064708ab2f4251a7fc4e3b6d8d00ad91ba
   FBSDKShareKit: 7090fdd55c39b03941efddb64c83a64ff6b3949f
-  Firebase: 355bd535bfdacaa82a7fe8d9784115edefd6fc03
-  FirebaseAnalytics: b3628aea54c50464c32c393fb2ea032566e7ecc2
-  FirebaseCore: 4c28e3b9708ba48a765e76515f913a71596eb5dd
-  FirebaseInstanceID: f3f0657372592ecdfdfe2cac604a5a75758376a6
   Folly: c89ac2d5c6ab169cd7397ef27485c44f35f742c7
   glog: e8acf0ebbf99759d3ff18c86c292a5898282dcde
   Google-Maps-iOS-Utils: c32891ff472eaaa1fca032beedafa1a013af7875
@@ -1453,7 +1416,6 @@ SPEC CHECKSUMS:
   GTMSessionFetcher: 0c4baf0a73acd0041bf9f71ea018deedab5ea84e
   JKBigInteger2: e91672035c42328c48b7dd015b66812ddf40ca9b
   lottie-ios: d699fdee68d7b63e721d949388b015fef1aaa4ac
-  nanopb: 5601e6bca2dbf1ed831b519092ec110f66982ca3
   React: 1fe0eb13d90b625d94c3b117c274dcfd2e760e11
   ReactABI24_0_0: ff3ee96b5ad38f3aa380dd1d68004f68aed00589
   ReactABI25_0_0: f99e2a66f3435216031b49793d65e46dbf6f11e3
@@ -1471,6 +1433,6 @@ SPEC CHECKSUMS:
   yogaABI29_0_0: 4fdf5bbd444d2968ec42ccadec97b02c672eda80
   yogaABI30_0_0: 4c86e39466368a6b018b8b78aeb654b6620512a1
 
-PODFILE CHECKSUM: 95408222d2c3fe9b90ff5815cfe1526e31da50c9
+PODFILE CHECKSUM: c380abbaf7b53120c12f35b9710cacafdf55688e
 
 COCOAPODS: 1.5.3
