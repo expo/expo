@@ -48,7 +48,7 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
   return self;
 }
 
-- (NSMutableDictionary *) _chooseManifest:(NSArray *)manifestArray {
+- (NSMutableDictionary * _Nullable) _chooseManifest:(NSArray *)manifestArray error:(NSError **)error {
   // Find supported sdk versions
   if (manifestArray) {
     for (id providedManifest in manifestArray) {
@@ -61,10 +61,13 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
     }
   }
   
-  return [self _formatError:[NSError errorWithDomain:EXNetworkErrorDomain code:0 userInfo:@{
-                                                                                            @"errorCode": @"NO_COMPATIBLE_EXPERIENCE_FOUND",
-                                                                                            NSLocalizedDescriptionKey: [NSString stringWithFormat:@"No compatible experience found at %@. Only %@ are supported.", self.originalUrl, [[EXVersions sharedInstance].versions[@"sdkVersions"] componentsJoinedByString:@","]]
-                                                                                            }]];
+  if (error) {
+    * error = [self _formatError:[NSError errorWithDomain:EXNetworkErrorDomain code:0 userInfo:@{
+                                                                                       @"errorCode": @"NO_COMPATIBLE_EXPERIENCE_FOUND",
+                                                                                       NSLocalizedDescriptionKey: [NSString stringWithFormat:@"No compatible experience found at %@. Only %@ are supported.", self.originalUrl, [[EXVersions sharedInstance].versions[@"sdkVersions"] componentsJoinedByString:@","]]
+                                                                                       }]];
+  }
+  return nil;
 }
 
 - (void)loadResourceWithBehavior:(EXCachedResourceBehavior)behavior
@@ -89,7 +92,12 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
     // Check if server sent an array of manifests (multi-manifests)
     if ([manifestObjOrArray isKindOfClass:[NSArray class]]) {
       NSArray *manifestArray = (NSArray *)manifestObjOrArray;
-      manifestObj = [self _chooseManifest:(NSArray *)manifestArray];
+      __block NSError *manifestError;
+      manifestObj = [self _chooseManifest:(NSArray *)manifestArray error:&manifestError];
+      if (!manifestObj) {
+        errorBlock(manifestError);
+        return;
+      }
     } else {
       manifestObj = manifestObjOrArray;
     }
