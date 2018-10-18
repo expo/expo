@@ -32,7 +32,6 @@ NS_ASSUME_NONNULL_BEGIN
     _resourceType = resourceType;
     _remoteUrl = url;
     _cachePath = (cachePath) ? cachePath : [self _defaultCachePath];
-    _legacyResourceCachePaths = @[[self _getLegacyResourceCachePath]];
   }
   return self;
 }
@@ -224,15 +223,6 @@ NS_ASSUME_NONNULL_BEGIN
   }
 }
 
-// TODO: delete when SDK 27 is no longer supported
-// before SDK 27 minor release, we did not include the url hash in the filename,
-// so we need to check for the old format as well
-- (NSString *)_getLegacyResourceCachePath
-{
-  NSString *versionedResourceFilename = [NSString stringWithFormat:@"%@.%@", [self _resourceCacheFilenameUsingLegacy:YES], _resourceType];
-  return [_cachePath stringByAppendingPathComponent:versionedResourceFilename];
-}
-
 - (NSString *)resourceCachePath
 {
   NSString *versionedResourceFilename = [NSString stringWithFormat:@"%@.%@", [self _resourceCacheFilenameUsingLegacy:NO], _resourceType];
@@ -248,37 +238,16 @@ NS_ASSUME_NONNULL_BEGIN
 {
   if ([self isUsingEmbeddedResource]) {
     return [self resourceBundlePath];
-  } else {
-    NSString *localPath = [self resourceCachePath];
-    if (![[NSFileManager defaultManager] fileExistsAtPath:localPath isDirectory:nil]) {
-      // check legacy paths to see if there is a resource from an older version
-      for (NSString *legacyLocalPath in _legacyResourceCachePaths){
-        if ([[NSFileManager defaultManager] fileExistsAtPath:legacyLocalPath isDirectory:nil]) {
-          localPath = legacyLocalPath;
-        }
-      }
-    }
-    return localPath;
   }
+  return [self resourceCachePath];
 }
 
 - (BOOL)isUsingEmbeddedResource
 {
-  // by default, only use the embedded resource if no cached (or legacy cached) copy exists
+  // by default, only use the embedded resource if no cached copy exists
   // but this behavior can be overridden by subclasses
   NSString *localPath = [self resourceCachePath];
-  if (![[NSFileManager defaultManager] fileExistsAtPath:localPath isDirectory:nil]) {
-    // check legacy paths to see if there is a resource from an older version
-    bool fileAtLegacyPath = NO;
-    for (NSString *legacyLocalPath in _legacyResourceCachePaths){
-      if ([[NSFileManager defaultManager] fileExistsAtPath:legacyLocalPath isDirectory:nil]) {
-        fileAtLegacyPath = YES;
-      }
-    }
-    // if there are no files in the caches, use NSBundle copy
-    return !fileAtLegacyPath;
-  }
-  return NO;
+  return ![[NSFileManager defaultManager] fileExistsAtPath:localPath isDirectory:nil];
 }
 
 - (BOOL)removeCache
