@@ -39,6 +39,21 @@ export default class LocalAuthenticationScreen extends React.Component {
     }
   };
 
+  checkAuthenticationsTypes = async () => {
+    const result = await LocalAuthentication.supportedAuthenticationTypesAsync();
+    const stringResult = result.map(type => {
+      switch (type) {
+        case LocalAuthentication.AuthenticationType.FINGERPRINT:
+          return 'FINGERPRINT';
+        case LocalAuthentication.AuthenticationType.FACIAL_RECOGNITION:
+          return 'FACIAL_RECOGNITION';
+        default:
+          throw new Error(`Unrecognised authentication type returned: '${type}'`);
+      }
+    }).join(', ');
+    alert(stringResult ? `Available types: ${stringResult}` : 'No available authentication types!');
+  };
+
   render() {
     const { hasHardware, isEnrolled } = this.state;
 
@@ -57,6 +72,10 @@ export default class LocalAuthenticationScreen extends React.Component {
         <Button
           onPress={this.authenticate}
           title={this.state.waiting ? 'Waiting for authentication... ' : 'Authenticate'}
+        />
+        <Button
+          onPress={this.checkAuthenticationsTypes}
+          title="Check aunthentications types available on the device"
         />
       </View>
     );
