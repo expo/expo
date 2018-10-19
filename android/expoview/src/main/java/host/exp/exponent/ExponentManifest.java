@@ -209,7 +209,7 @@ public class ExponentManifest {
     String httpManifestUrl = uriBuilder.build().toString();
 
     // Fetch manifest
-    Request.Builder requestBuilder = ExponentUrls.addExponentHeadersToUrl(httpManifestUrl, manifestUrl.equals(Constants.INITIAL_URL), false);
+    Request.Builder requestBuilder = ExponentUrls.addExponentHeadersToManifestUrl(httpManifestUrl, manifestUrl.equals(Constants.INITIAL_URL));
     requestBuilder.header("Exponent-Accept-Signature", "true");
     requestBuilder.header("Expo-JSON-Error", "true");
     requestBuilder.cacheControl(CacheControl.FORCE_NETWORK);
@@ -290,7 +290,7 @@ public class ExponentManifest {
     }
 
     // Fetch manifest
-    Request.Builder requestBuilder = ExponentUrls.addExponentHeadersToUrl(httpManifestUrl, manifestUrl.equals(Constants.INITIAL_URL), false);
+    Request.Builder requestBuilder = ExponentUrls.addExponentHeadersToManifestUrl(httpManifestUrl, manifestUrl.equals(Constants.INITIAL_URL));
     requestBuilder.header("Exponent-Accept-Signature", "true");
     requestBuilder.header("Expo-JSON-Error", "true");
 
@@ -404,7 +404,7 @@ public class ExponentManifest {
   public void fetchEmbeddedManifest(final String manifestUrl, final ManifestListener listener) {
     String httpManifestUrl = httpManifestUrlBuilder(manifestUrl).build().toString();
 
-    Request.Builder requestBuilder = ExponentUrls.addExponentHeadersToUrl(httpManifestUrl, manifestUrl.equals(Constants.INITIAL_URL), false);
+    Request.Builder requestBuilder = ExponentUrls.addExponentHeadersToManifestUrl(httpManifestUrl, manifestUrl.equals(Constants.INITIAL_URL));
     requestBuilder.header("Exponent-Accept-Signature", "true");
     requestBuilder.header("Expo-JSON-Error", "true");
     String finalUri = requestBuilder.build().url().toString();

@@ -100,7 +100,7 @@ public abstract class ExponentNotificationIntentService extends IntentService {
         params.put("type", getServerType());
 
         RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), params.toString());
-        Request request = ExponentUrls.addExponentHeadersToUrl("https://exp.host/--/api/v2/push/updateDeviceToken", false, true)
+        Request request = ExponentUrls.addExponentHeadersToUrl("https://exp.host/--/api/v2/push/updateDeviceToken")
             .header("Content-Type", "application/json")
             .post(body)
             .build();

@@ -365,7 +365,10 @@ public class Exponent {
     }
 
     try {
-      Request.Builder requestBuilder = ExponentUrls.addExponentHeadersToUrl(urlString, false, KernelConstants.KERNEL_BUNDLE_ID.equals(id));
+      Request.Builder requestBuilder = KernelConstants.KERNEL_BUNDLE_ID.equals(id)
+          // TODO(eric): remove once home bundle is loaded normally
+          ? ExponentUrls.addExponentHeadersToUrl(urlString)
+          : new Request.Builder().url(urlString);
       if (shouldForceNetwork) {
         requestBuilder.cacheControl(CacheControl.FORCE_NETWORK);
       }
