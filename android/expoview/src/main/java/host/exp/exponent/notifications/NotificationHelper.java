@@ -144,7 +144,7 @@ public class NotificationHelper {
         }
 
         RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), params.toString());
-        Request request = ExponentUrls.addExponentHeadersToUrl("https://exp.host/--/api/v2/push/getExpoPushToken", false, true)
+        Request request = ExponentUrls.addExponentHeadersToUrl("https://exp.host/--/api/v2/push/getExpoPushToken")
             .header("Content-Type", "application/json")
             .post(body)
             .build();

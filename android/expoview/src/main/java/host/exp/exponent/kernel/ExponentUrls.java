@@ -38,25 +38,30 @@ public class ExponentUrls {
     return uri.buildUpon().scheme(useHttps ? "https" : "http").build().toString();
   }
 
-  public static Request.Builder addExponentHeadersToUrl(String urlString, boolean isShellAppManifest, boolean isKernel) {
+  public static Request.Builder addExponentHeadersToUrl(String urlString) {
     // TODO: set user agent
-    String sdkVersions = Constants.SDK_VERSIONS;
-    // !isKernel is important for when FORCE_UNVERSIONED_PUBLISHED_EXPERIENCES is set to true
-    if (KernelConfig.FORCE_UNVERSIONED_PUBLISHED_EXPERIENCES && !isKernel) {
-      sdkVersions = "UNVERSIONED";
-    }
     Request.Builder builder = new Request.Builder()
         .url(urlString)
-        .header("Exponent-SDK-Version", sdkVersions)
-        .header("Exponent-Platform", "android")
+        .header("Exponent-SDK-Version", Constants.SDK_VERSIONS)
+        .header("Exponent-Platform", "android");
+
+    if (ExpoViewKernel.getInstance().getVersionName() != null) {
+      builder.header("Exponent-Version", ExpoViewKernel.getInstance().getVersionName());
+    }
+
+    return builder;
+  }
+
+  public static Request.Builder addExponentHeadersToManifestUrl(String urlString, boolean isShellAppManifest) {
+    Request.Builder builder = addExponentHeadersToUrl(urlString)
         .header("Accept", "application/expo+json,application/json");
+
+    if (KernelConfig.FORCE_UNVERSIONED_PUBLISHED_EXPERIENCES) {
+      builder.header("Exponent-SDK-Version", "UNVERSIONED");
+    }
 
     if (isShellAppManifest) {
       builder.header("Expo-Release-Channel", Constants.RELEASE_CHANNEL);
-    }
-
-    if (ExpoViewKernel.getInstance().getVersionName() != null) {
-      builder = builder.header("Exponent-Version", ExpoViewKernel.getInstance().getVersionName());
     }
 
     return builder;

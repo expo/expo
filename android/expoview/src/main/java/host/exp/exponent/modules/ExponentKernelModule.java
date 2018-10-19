@@ -176,24 +176,4 @@ public class ExponentKernelModule extends ReactContextBaseJavaModule implements 
     }
     promise.resolve(true);
   }
-
-  @ReactMethod
-  public void preloadBundleUrlAsync(final String url, final Promise promise) {
-    preloadRequestAsync(ExponentUrls.addExponentHeadersToUrl(url, false, false).build(), promise);
-  }
-
-  private void preloadRequestAsync(final Request request, final Promise promise) {
-    mExponentNetwork.getClient().call(request, new ExpoHttpCallback() {
-      @Override
-      public void onFailure(IOException e) {
-        promise.reject(e);
-      }
-
-      @Override
-      public void onResponse(ExpoResponse response) throws IOException {
-        ExponentNetwork.flushResponse(response);
-        promise.resolve(true);
-      }
-    });
-  }
 }
