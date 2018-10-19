@@ -17,6 +17,7 @@
   "workspaces": {
     "packages": [
       "apps/*",
+      "expokit-npm-package",
       "home",
       "packages/*",
       "react-native-lab/react-native"
