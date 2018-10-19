@@ -62,14 +62,14 @@ public class FirebaseInvitesModule extends ExportedModule
       if (getApplicationContext() instanceof ReactContext) {
         ((ReactContext) getApplicationContext()).removeActivityEventListener(this);
       }
-      
+
       if (mModuleRegistry.getModule(UIManager.class) != null) {
         mModuleRegistry.getModule(UIManager.class).unregisterLifecycleEventListener(this);
       }
     }
 
     mModuleRegistry = moduleRegistry;
-    
+
     if (mModuleRegistry != null) {
       // TODO:Bacon: Remove React
       if (getApplicationContext() instanceof ReactContext) {
@@ -234,7 +234,7 @@ public class FirebaseInvitesModule extends ExportedModule
               String deepLink = pendingDynamicLinkData.getLink().toString();
               String invitationId = invite.getInvitationId();
               Bundle invitationMap = buildInvitationMap(deepLink, invitationId);
-              Utils.sendEvent(mModuleRegistry, "invites_invitation_received", invitationMap);
+              Utils.sendEvent(mModuleRegistry, "Expo.Firebase.invites_invitation_received", invitationMap);
             }
           }
         });

@@ -1,6 +1,4 @@
 
-
-#import <Foundation/Foundation.h>
 #import <FirebaseDatabase/FIRDatabase.h>
 #import <EXCore/EXModuleRegistry.h>
 #import <EXCore/EXModuleRegistryConsumer.h>

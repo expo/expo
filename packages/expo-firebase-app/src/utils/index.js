@@ -1,6 +1,4 @@
 // @flow
-import { Platform } from 'expo-core';
-
 // todo cleanup unused utilities from legacy code
 
 // modeled after base64 web-safe chars, but ordered by ASCII
@@ -136,10 +134,6 @@ export function isString(value: mixed): boolean %checks {
 export function isBoolean(value: mixed): boolean %checks {
   return typeof value === 'boolean';
 }
-
-// platform checks
-export const isIOS = Platform.OS === 'ios';
-export const isAndroid = Platform.OS === 'android';
 
 /**
  *

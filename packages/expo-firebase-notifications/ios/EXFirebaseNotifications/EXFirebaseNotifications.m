@@ -1,8 +1,12 @@
 #import <EXFirebaseNotifications/EXFirebaseNotifications.h>
-#import <EXFirebaseApp/EXFirebaseAppEvents.h>
 #import <EXFirebaseApp/EXFirebaseAppUtil.h>
 #import <EXFirebaseMessaging/EXFirebaseMessaging.h>
 #import <EXCore/EXUtilitiesInterface.h>
+
+static NSString *const NOTIFICATIONS_NOTIFICATION_DISPLAYED = @"Expo.Firebase.notifications_notification_displayed";
+static NSString *const NOTIFICATIONS_NOTIFICATION_OPENED = @"Expo.Firebase.notifications_notification_opened";
+static NSString *const NOTIFICATIONS_NOTIFICATION_RECEIVED = @"Expo.Firebase.notifications_notification_received";
+
 // For iOS 10 we need to implement UNUserNotificationCenterDelegate to receive display
 // notifications via APNS
 #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
@@ -17,13 +21,15 @@
 
 @end
 
-@implementation EXFirebaseNotifications
+@implementation EXFirebaseNotifications {
+  NSMutableDictionary<NSString *, void (^)(UIBackgroundFetchResult)> *completionHandlers;
+}
 
 static EXFirebaseNotifications *theEXFirebaseNotifications = nil;
 // PRE-BRIDGE-EVENTS: Consider enabling this to allow events built up before the bridge is built to be sent to the JS side
 // static NSMutableArray *pendingEvents = nil;
 static NSDictionary *initialNotification = nil;
-static bool jsReady = FALSE;
+static bool jsReady = NO;
 static NSString *const DEFAULT_ACTION = @"com.apple.UNNotificationDefaultActionIdentifier";
 
 + (nonnull instancetype)instance {
@@ -55,6 +61,8 @@ EX_EXPORT_MODULE(ExpoFirebaseNotifications);
   
   // Set static instance for use from AppDelegate
   theEXFirebaseNotifications = self;
+  completionHandlers = [[NSMutableDictionary alloc] init];
+
 }
 
 - (void)startObserving {
@@ -123,6 +131,10 @@ EX_EXPORT_MODULE(ExpoFirebaseNotifications);
     return;
   }
   
+  NSDictionary *notification = [self parseUserInfo:userInfo];
+  NSString *handlerKey = notification[@"notificationId"];
+
+  
   NSString *event;
   if (EXSharedApplication().applicationState == UIApplicationStateBackground) {
     event = NOTIFICATIONS_NOTIFICATION_DISPLAYED;
@@ -141,7 +153,6 @@ EX_EXPORT_MODULE(ExpoFirebaseNotifications);
     return;
   }
   
-  NSDictionary *notification = [self parseUserInfo:userInfo];
   // For onOpened events, we set the default action name as iOS 8/9 has no concept of actions
   if (event == NOTIFICATIONS_NOTIFICATION_OPENED) {
     notification = @{
@@ -150,8 +161,14 @@ EX_EXPORT_MODULE(ExpoFirebaseNotifications);
                      };
   }
   
+  
+  if (handlerKey != nil) {
+    completionHandlers[handlerKey] = completionHandler;
+  } else {
+    completionHandler(UIBackgroundFetchResultNoData);
+  }
+  
   [self sendJSEvent:_eventEmitter name:event body:notification];
-  completionHandler(UIBackgroundFetchResultNoData);
 }
 
 // *******************************************************
@@ -162,6 +179,30 @@ EX_EXPORT_MODULE(ExpoFirebaseNotifications);
 // ** Start UNUserNotificationCenterDelegate methods
 // ** iOS 10+
 // *******************************************************
+
+EX_EXPORT_METHOD_AS(complete,
+                    complete:(NSString *)handlerKey
+                    fetchResult:(NSString *)fetchResult
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject) {
+  if (handlerKey != nil) {
+    void (^completionHandler)(UIBackgroundFetchResult) = completionHandlers[handlerKey];
+    if(completionHandler != nil) {
+      completionHandlers[handlerKey] = nil;
+      completionHandler([EXFirebaseNotifications decodeUIBackgroundFetchResult:fetchResult]);
+    }
+  }
+}
+
++ (UIBackgroundFetchResult)decodeUIBackgroundFetchResult:(NSString *)fetchResult
+{
+  if ([fetchResult isEqualToString:@"backgroundFetchResultNewData"]) {
+    return UIBackgroundFetchResultNewData;
+  }  else if ([fetchResult isEqualToString:@"backgroundFetchResultFailed"]) {
+    return UIBackgroundFetchResultFailed;
+  }
+  return UIBackgroundFetchResultNoData;
+}
 
 #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
 // Handle incoming notification messages while app is in the foreground.
@@ -241,11 +282,11 @@ EX_EXPORT_METHOD_AS(cancelAllNotifications,
       }
     }
   }
-  resolve(nil);
+  resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(cancelNotification,
-                    cancelNotification:(NSString*)notificationId
+                    cancelNotification:(NSString *)notificationId
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
   if ([self isIOS89]) {
@@ -263,23 +304,23 @@ EX_EXPORT_METHOD_AS(cancelNotification,
       }
     }
   }
-  resolve(nil);
+  resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(displayNotification,
-                    displayNotification:(NSDictionary*)notification
+                    displayNotification:(NSDictionary *)notification
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
   if ([self isIOS89]) {
     UILocalNotification* notif = [self buildUILocalNotification:notification withSchedule:false];
     [EXSharedApplication() presentLocalNotificationNow:notif];
-    resolve(nil);
+    resolve([NSNull null]);
   } else {
     if (@available(iOS 10.0, *)) {
       UNNotificationRequest* request = [self buildUNNotificationRequest:notification withSchedule:false];
       [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:request withCompletionHandler:^(NSError * _Nullable error) {
         if (!error) {
-          resolve(nil);
+          resolve([NSNull null]);
         } else{
           reject(@"notifications/display_notification_error", @"Failed to display notificaton", error);
         }
@@ -297,8 +338,8 @@ EX_EXPORT_METHOD_AS(getBadge,
 }
 
 EX_EXPORT_METHOD_AS(getInitialNotification,
-                       getInitialNotification:(EXPromiseResolveBlock)resolve
-                       rejecter:(EXPromiseRejectBlock)reject) {
+                    getInitialNotification:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject) {
   // Check if we've cached an initial notification as this will contain the accurate action
   if (initialNotification) {
       resolve(initialNotification);
@@ -322,7 +363,7 @@ EX_EXPORT_METHOD_AS(getInitialNotification,
                     @"notification": [self parseUserInfo:remoteNotification]
                     });
       } else {
-          resolve(nil);
+          resolve([NSNull null]);
       }
   }
 }
@@ -364,11 +405,11 @@ EX_EXPORT_METHOD_AS(removeAllDeliveredNotifications,
       }
     }
   }
-  resolve(nil);
+  resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(removeDeliveredNotification,
-                    removeDeliveredNotification:(NSString*)notificationId
+                    removeDeliveredNotification:(NSString *)notificationId
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
   if ([self isIOS89]) {
@@ -381,23 +422,23 @@ EX_EXPORT_METHOD_AS(removeDeliveredNotification,
       }
     }
   }
-  resolve(nil);
+  resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(scheduleNotification,
-                    scheduleNotification:(NSDictionary*)notification
+                    scheduleNotification:(NSDictionary *)notification
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
   if ([self isIOS89]) {
     UILocalNotification* notif = [self buildUILocalNotification:notification withSchedule:true];
     [EXSharedApplication() scheduleLocalNotification:notif];
-    resolve(nil);
+    resolve([NSNull null]);
   } else {
     if (@available(iOS 10.0, *)) {
       UNNotificationRequest* request = [self buildUNNotificationRequest:notification withSchedule:true];
       [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:request withCompletionHandler:^(NSError * _Nullable error) {
         if (!error) {
-          resolve(nil);
+          resolve([NSNull null]);
         } else{
           reject(@"notification/schedule_notification_error", @"Failed to schedule notificaton", error);
         }
@@ -407,20 +448,20 @@ EX_EXPORT_METHOD_AS(scheduleNotification,
 }
 
 EX_EXPORT_METHOD_AS(setBadge,
-                    setBadge:(NSInteger)number
+                    setBadge:(NSNumber *)number
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
   dispatch_async(dispatch_get_main_queue(), ^{
-    [EXSharedApplication() setApplicationIconBadgeNumber:number];
-    resolve(nil);
+    [EXSharedApplication() setApplicationIconBadgeNumber:[number integerValue]];
+    resolve([NSNull null]);
   });
 }
 
 EX_EXPORT_METHOD_AS(jsInitialised,
                     jsInitialised:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
-  jsReady = TRUE;
-  resolve(nil);
+  jsReady = YES;
+  resolve([NSNull null]);
 }
 
 // Because of the time delay between the app starting and the bridge being initialised
@@ -444,8 +485,9 @@ EX_EXPORT_METHOD_AS(jsInitialised,
   return floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max;
 }
 
-- (UILocalNotification*) buildUILocalNotification:(NSDictionary *) notification
-                                     withSchedule:(BOOL) withSchedule {
+- (UILocalNotification *)buildUILocalNotification:(NSDictionary *)notification
+                                     withSchedule:(BOOL)withSchedule
+{
   UILocalNotification *localNotification = [[UILocalNotification alloc] init];
   if (notification[@"body"]) {
     localNotification.alertBody = notification[@"body"];
@@ -502,8 +544,8 @@ EX_EXPORT_METHOD_AS(jsInitialised,
   return localNotification;
 }
 
-- (UNNotificationRequest*) buildUNNotificationRequest:(NSDictionary *) notification
-                                         withSchedule:(BOOL) withSchedule NS_AVAILABLE_IOS(10_0) {
+- (UNNotificationRequest *)buildUNNotificationRequest:(NSDictionary *)notification
+                                         withSchedule:(BOOL)withSchedule NS_AVAILABLE_IOS(10_0) {
   UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
   if (notification[@"body"]) {
     content.body = notification[@"body"];

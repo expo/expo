@@ -1,6 +1,5 @@
-/**
- * @flow
- */
+// @flow
+
 import DocumentReference from '../DocumentReference';
 import Blob from '../Blob';
 import { DOCUMENT_ID } from '../FieldPath';
@@ -10,7 +9,7 @@ import Path from '../Path';
 import { utils } from 'expo-firebase-app';
 
 import type Firestore from '../';
-import type { NativeTypeMap } from '../types';
+import type { NativeTypeMap } from '../firestoreTypes.flow';
 
 const { typeOf } = utils;
 
@@ -48,42 +47,63 @@ export const buildNativeArray = (array: Object[]): NativeTypeMap[] => {
 
 export const buildTypeMap = (value: any): NativeTypeMap | null => {
   const type = typeOf(value);
-  if (value === null || value === undefined || Number.isNaN(value)) {
+
+  if (Number.isNaN(value)) {
+    return {
+      type: 'nan',
+      value: null,
+    };
+  }
+
+  if (value === Infinity) {
+    return {
+      type: 'infinity',
+      value: null,
+    };
+  }
+
+  if (value === null || value === undefined) {
     return {
       type: 'null',
       value: null,
     };
   }
+
   if (value === DELETE_FIELD_VALUE) {
     return {
       type: 'fieldvalue',
       value: 'delete',
     };
   }
+
   if (value === SERVER_TIMESTAMP_FIELD_VALUE) {
     return {
       type: 'fieldvalue',
       value: 'timestamp',
     };
   }
+
   if (value === DOCUMENT_ID) {
     return {
       type: 'documentid',
       value: null,
     };
   }
+
   if (type === 'boolean' || type === 'number' || type === 'string') {
     return {
       type,
       value,
     };
   }
+
   if (type === 'array') {
     return {
       type,
       value: buildNativeArray(value),
     };
   }
+
   if (type === 'object') {
     if (value instanceof DocumentReference) {
       return {
@@ -91,6 +111,7 @@ export const buildTypeMap = (value: any): NativeTypeMap | null => {
         value: value.path,
       };
     }
+
     if (value instanceof GeoPoint) {
       return {
         type: 'geopoint',
@@ -100,23 +121,27 @@ export const buildTypeMap = (value: any): NativeTypeMap | null => {
         },
       };
     }
+
     if (value instanceof Date) {
       return {
         type: 'date',
         value: value.getTime(),
       };
     }
+
     if (value instanceof Blob) {
       return {
         type: 'blob',
         value: value.toBase64(),
       };
     }
+
     return {
       type: 'object',
       value: buildNativeMap(value),
     };
   }
+
   console.warn(`Unknown data type received ${type}`);
   return null;
 };
@@ -150,6 +175,7 @@ const parseNativeArray = (firestore: Firestore, nativeArray: NativeTypeMap[]): a
   return array;
 };
 
+//TODO: Bacon: Switch
 const parseTypeMap = (firestore: Firestore, typeMap: NativeTypeMap): any => {
   const { type, value } = typeMap;
   if (type === 'null') {
@@ -175,6 +201,12 @@ const parseTypeMap = (firestore: Firestore, typeMap: NativeTypeMap): any => {
   }
   if (type === 'blob') {
     return Blob.fromBase64String(value);
+  }
+  if (type === 'infinity') {
+    return Infinity;
+  }
+  if (type === 'nan') {
+    return NaN;
   }
   console.warn(`Unknown data type received ${type}`);
   return value;

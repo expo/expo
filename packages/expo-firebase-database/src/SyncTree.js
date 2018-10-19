@@ -36,7 +36,10 @@ class SyncTree {
     this._reverseLookup = {};
     if (NativeModulesProxy.ExpoFirebaseDatabase) {
       this._nativeEmitter = new EventEmitter(NativeModulesProxy.ExpoFirebaseDatabase);
-      this._nativeEmitter.addListener('database_sync_event', this._handleSyncEvent.bind(this));
+      this._nativeEmitter.addListener(
+        'Expo.Firebase.database_sync_event',
+        this._handleSyncEvent.bind(this)
+      );
     }
   }
 

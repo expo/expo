@@ -1,11 +1,12 @@
 
 
 #import <EXFirebaseInvites/EXFirebaseInvites.h>
-#import <EXFirebaseApp/EXFirebaseAppEvents.h>
 #import <EXFirebaseLinks/EXFirebaseLinks.h>
 #import <EXFirebaseApp/EXFirebaseAppUtil.h>
 #import <FirebaseInvites/FirebaseInvites.h>
 #import <EXCore/EXUtilitiesInterface.h>
+
+static NSString *const INVITES_INVITATION_RECEIVED = @"Expo.Firebase.invites_invitation_received";
 
 @interface EXFirebaseInvites ()
 
@@ -20,7 +21,7 @@
 
 static EXFirebaseInvites *theEXFirebaseInvites = nil;
 static NSString *initialInvite = nil;
-static bool jsReady = FALSE;
+static bool jsReady = NO;
 
 + (nonnull instancetype)instance {
     // If an event comes in before the bridge has initialised the native module
@@ -102,11 +103,12 @@ continueUserActivity:(NSUserActivity *)userActivity
 EX_EXPORT_METHOD_AS(getInitialInvitation,
                     getInitialInvitation:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
-  NSURL* url = nil;
-  if (_utils.launchOptions[UIApplicationLaunchOptionsURLKey]) {
-    url = (NSURL*)_utils.launchOptions[UIApplicationLaunchOptionsURLKey];
-  } else if (_utils.launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey]) {
-    NSDictionary *dictionary = _utils.launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey];
+  NSDictionary *launchOptions = [self launchOptions];
+  NSURL *url = nil;
+  if (launchOptions[UIApplicationLaunchOptionsURLKey]) {
+    url = (NSURL*)launchOptions[UIApplicationLaunchOptionsURLKey];
+  } else if (launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey]) {
+    NSDictionary *dictionary = launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey];
     if ([dictionary[UIApplicationLaunchOptionsUserActivityTypeKey] isEqual:NSUserActivityTypeBrowsingWeb]) {
       NSUserActivity* userActivity = (NSUserActivity*) dictionary[@"UIApplicationLaunchOptionsUserActivityKey"];
       url = userActivity.webpageURL;
@@ -132,10 +134,16 @@ EX_EXPORT_METHOD_AS(getInitialInvitation,
   }
 }
 
+- (NSDictionary *)launchOptions
+{
+  // _utils.launchOptions;
+  return @{};
+}
+
 EX_EXPORT_METHOD_AS(sendInvitation,
-                 sendInvitation:(NSDictionary *)invitation
-                 resolve:(EXPromiseResolveBlock)resolve
-                 reject:(EXPromiseRejectBlock)reject) {
+                    sendInvitation:(NSDictionary *)invitation
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject) {
   if (!invitation[@"message"]) {
     reject(@"invites/invalid-invitation", @"The supplied invitation is missing a 'message' field", nil);
   }
@@ -176,10 +184,10 @@ EX_EXPORT_METHOD_AS(sendInvitation,
 }
 
 EX_EXPORT_METHOD_AS(jsInitialised,
-                 jsInitialised:(EXPromiseResolveBlock)resolve
-                 rejecter:(EXPromiseRejectBlock)reject) {
-  jsReady = TRUE;
-  resolve(nil);
+                    jsInitialised:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject) {
+  jsReady = YES;
+  resolve([NSNull null]);
 }
 
 // ** Start internals **
@@ -220,11 +228,6 @@ EX_EXPORT_METHOD_AS(jsInitialised,
 
 - (void)stopObserving {
 
-}
-
-+ (BOOL)requiresMainQueueSetup
-{
-  return YES;
 }
 
 @end

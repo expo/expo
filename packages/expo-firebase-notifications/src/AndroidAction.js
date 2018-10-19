@@ -1,10 +1,6 @@
-/**
- * @flow
- * AndroidAction representation wrapper
- */
-import RemoteInput, {
-  fromNativeAndroidRemoteInput,
-} from './AndroidRemoteInput';
+// @flow
+
+import RemoteInput, { fromNativeAndroidRemoteInput } from './AndroidRemoteInput';
 import { SemanticAction } from './types';
 import type { NativeAndroidAction, SemanticActionType } from './types';
 
@@ -91,9 +87,7 @@ export default class AndroidAction {
    */
   setSemanticAction(semanticAction: SemanticActionType): AndroidAction {
     if (!Object.values(SemanticAction).includes(semanticAction)) {
-      throw new Error(
-        `AndroidAction:setSemanticAction Invalid Semantic Action: ${semanticAction}`
-      );
+      throw new Error(`AndroidAction:setSemanticAction Invalid Semantic Action: ${semanticAction}`);
     }
     this._semanticAction = semanticAction;
     return this;
@@ -130,14 +124,8 @@ export default class AndroidAction {
   }
 }
 
-export const fromNativeAndroidAction = (
-  nativeAction: NativeAndroidAction
-): AndroidAction => {
-  const action = new AndroidAction(
-    nativeAction.action,
-    nativeAction.icon,
-    nativeAction.title
-  );
+export const fromNativeAndroidAction = (nativeAction: NativeAndroidAction): AndroidAction => {
+  const action = new AndroidAction(nativeAction.action, nativeAction.icon, nativeAction.title);
   if (nativeAction.allowGeneratedReplies) {
     action.setAllowGenerateReplies(nativeAction.allowGeneratedReplies);
   }

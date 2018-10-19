@@ -1,4 +1,4 @@
-import { Base64 } from 'expo-firebase-app';
+import { Base64 } from 'js-base64';
 
 export default class Blob {
   _binaryString: string;

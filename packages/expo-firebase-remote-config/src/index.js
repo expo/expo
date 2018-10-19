@@ -1,8 +1,6 @@
-/**
- * @flow
- * Remote Config representation wrapper
- */
-import { getLogger, ModuleBase, getNativeModule, log, registerModule } from 'expo-firebase-app';
+// @flow
+import { ModuleBase, registerModule } from 'expo-firebase-app';
+
 import type { App } from 'expo-firebase-app';
 
 type NativeValue = {
@@ -34,8 +32,8 @@ export default class RemoteConfig extends ModuleBase {
   constructor(app: App) {
     super(app, {
       moduleName: MODULE_NAME,
-      multiApp: false,
-      hasShards: false,
+      hasMultiAppSupport: false,
+      hasCustomUrlSupport: false,
       namespace: NAMESPACE,
     });
     this._developerModeEnabled = false;
@@ -81,8 +79,8 @@ export default class RemoteConfig extends ModuleBase {
    */
   enableDeveloperMode() {
     if (!this._developerModeEnabled) {
-      getLogger(this).debug('Enabled developer mode');
-      getNativeModule(this).enableDeveloperMode();
+      this.logger.debug('Enabled developer mode');
+      this.nativeModule.enableDeveloperMode();
       this._developerModeEnabled = true;
     }
   }
@@ -94,11 +92,11 @@ export default class RemoteConfig extends ModuleBase {
    */
   fetch(expiration?: number): Promise<string> {
     if (expiration !== undefined) {
-      getLogger(this).debug(`Fetching remote config data with expiration ${expiration.toString()}`);
-      return getNativeModule(this).fetchWithExpirationDuration(expiration);
+      this.logger.debug(`Fetching remote config data with expiration ${expiration.toString()}`);
+      return this.nativeModule.fetchWithExpirationDuration(expiration);
     }
-    getLogger(this).debug('Fetching remote config data');
-    return getNativeModule(this).fetch();
+    this.logger.debug('Fetching remote config data');
+    return this.nativeModule.fetch();
   }
 
   /**
@@ -108,8 +106,8 @@ export default class RemoteConfig extends ModuleBase {
    * rejects if no Fetched Config was found, or the Fetched Config was already activated.
    */
   activateFetched(): Promise<boolean> {
-    getLogger(this).debug('Activating remote config');
-    return getNativeModule(this).activateFetched();
+    this.logger.debug('Activating remote config');
+    return this.nativeModule.activateFetched();
   }
 
   /**
@@ -126,9 +124,7 @@ export default class RemoteConfig extends ModuleBase {
    *  }
    */
   getValue(key: string): Promise<ConfigSnapshot> {
-    return getNativeModule(this)
-      .getValue(key || '')
-      .then(this._nativeValueToJS);
+    return this.nativeModule.getValue(key || '').then(this._nativeValueToJS);
   }
 
   /**
@@ -146,15 +142,13 @@ export default class RemoteConfig extends ModuleBase {
    *  }
    */
   getValues(keys: Array<string>): Promise<{ [string]: ConfigSnapshot }> {
-    return getNativeModule(this)
-      .getValues(keys || [])
-      .then(nativeValues => {
-        const values: { [string]: Object } = {};
-        for (let i = 0, len = keys.length; i < len; i++) {
-          values[keys[i]] = this._nativeValueToJS(nativeValues[i]);
-        }
-        return values;
-      });
+    return this.nativeModule.getValues(keys || []).then(nativeValues => {
+      const values: { [string]: Object } = {};
+      for (let i = 0, len = keys.length; i < len; i++) {
+        values[keys[i]] = this._nativeValueToJS(nativeValues[i]);
+      }
+      return values;
+    });
   }
 
   /**
@@ -163,7 +157,7 @@ export default class RemoteConfig extends ModuleBase {
    * @returns {*|Promise.<Array<String>>}
    */
   getKeysByPrefix(prefix?: string): Promise<string[]> {
-    return getNativeModule(this).getKeysByPrefix(prefix);
+    return this.nativeModule.getKeysByPrefix(prefix);
   }
 
   /**
@@ -171,7 +165,7 @@ export default class RemoteConfig extends ModuleBase {
    * @param defaults: A dictionary mapping a String key to a Object values.
    */
   setDefaults(defaults: Object): void {
-    getNativeModule(this).setDefaults(defaults);
+    this.nativeModule.setDefaults(defaults);
   }
 
   /**
@@ -179,13 +173,10 @@ export default class RemoteConfig extends ModuleBase {
    * @param resource: The plist file name or resource ID
    */
   setDefaultsFromResource(resource: string | number): void {
-    getNativeModule(this).setDefaultsFromResource(resource);
+    this.nativeModule.setDefaultsFromResource(resource);
   }
 }
 
 registerModule(RemoteConfig);
 
-export type {
-  NativeValue,
-  ConfigSnapshot, 
-}
+export type { NativeValue, ConfigSnapshot };

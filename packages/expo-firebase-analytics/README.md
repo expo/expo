@@ -10,7 +10,9 @@ Now, you need to install the package from `npm` registry.
 
 `npm install expo-firebase-analytics` or `yarn add expo-firebase-analytics`
 
-#### iOS
+### iOS
+
+#### Cocoapods
 
 If you're using Cocoapods, add the dependency to your `Podfile`:
 
@@ -20,7 +22,33 @@ pod 'EXFirebaseAnalytics', path: '../node_modules/expo-firebase-analytics/ios'
 
 and run `pod install`.
 
-#### Android
+#### Manually
+
+You could also choose install this module manually.
+
+1.  In XCode, in the project navigator, right click `Libraries` ➜ `Add Files to [your project's name]`
+2.  Go to `node_modules` ➜ `expo-firebase-analytics` and add `EXFirebaseAnalytics.xcodeproj`
+3.  In XCode, in the project navigator, select your project. Add `libEXFirebaseAnalytics.a` to your project's `Build Phases` ➜ `Link Binary With Libraries`
+4.  Run your project (`Cmd+R`).
+
+#### Common Setup
+
+**Optional: Enable AdSupport**
+
+To get extra features like `audiences`, `campaign attribution`, and some `user properties`, such as `Age` and `Interests`, you will need to include AdSupport.
+This isn't in by default as Apple & Google are strict with this library.
+
+To enable the AdSupport framework:
+
+- In your Xcode project, select your project's target
+- Select the General tab for your target
+- Expand the Linked Frameworks and Libraries section
+- Click `+` to add a framework
+- Select `AdSupport.framework`
+
+[Learn more in the Firebase Docs](https://firebase.google.com/support/guides/analytics-adsupport)
+
+### Android
 
 1.  Append the following lines to `android/settings.gradle`:
 
@@ -48,22 +76,27 @@ and run `pod install`.
     api project(':expo-core')
     api project(':expo-firebase-app')
     ```
+3.  Include the module in your expo packages: `./android/app/src/main/java/host/exp/exponent/MainActivity.java`
 
-Some Unimodules are not included in the default `ExpoKit` suite, these modules will needed to be added manually.
-If your Android build cannot find the Native Modules, you can add them like this:
+    ```java
+    /*
+    * At the top of the file.
+    * This is automatically imported with Android Studio, but if you are in any other editor you will need to manually import the module.
+    */
+    import expo.modules.firebase.app.FirebaseAppPackage; // This should be here for all Expo Firebase features.
+    import expo.modules.firebase.analytics.FirebaseAnalyticsPackage;
 
-`./android/app/src/main/java/host/exp/exponent/MainActivity.java`
+    // Later in the file...
 
-```java
-@Override
-public List<Package> expoPackages() {
-  // Here you can add your own packages.
-  return Arrays.<Package>asList(
-    new FirebaseAppPackage(), // This should be here for all Expo Firebase features.
-    new FirebaseAnalyticsPackage() // Include this.
-  );
-}
-```
+    @Override
+    public List<Package> expoPackages() {
+      // Here you can add your own packages.
+      return Arrays.<Package>asList(
+        new FirebaseAppPackage(), // This should be here for all Expo Firebase features.
+        new FirebaseAnalyticsPackage() // Include this.
+      );
+    }
+    ```
 
 ## Usage
 

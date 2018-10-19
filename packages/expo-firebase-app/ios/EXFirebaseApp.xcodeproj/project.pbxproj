@@ -27,7 +27,6 @@
 		134814201AA4EA6300B7C361 /* libEXFirebaseApp.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libEXFirebaseApp.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		31B7209920613F50005A6134 /* EXFirebaseApp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXFirebaseApp.h; sourceTree = "<group>"; };
 		31B720B420614BF6005A6134 /* EXFirebaseApp.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXFirebaseApp.m; sourceTree = "<group>"; };
-		CDC86C40211948380013A119 /* EXFirebaseAppEvents.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXFirebaseAppEvents.h; sourceTree = "<group>"; };
 		CDC86C412119486C0013A119 /* EXFirebaseAppUtil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXFirebaseAppUtil.h; sourceTree = "<group>"; };
 		CDC86C422119486C0013A119 /* EXFirebaseAppUtil.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXFirebaseAppUtil.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -58,7 +57,6 @@
 				31B720B420614BF6005A6134 /* EXFirebaseApp.m */,
 				CDC86C412119486C0013A119 /* EXFirebaseAppUtil.h */,
 				CDC86C422119486C0013A119 /* EXFirebaseAppUtil.m */,
-				CDC86C40211948380013A119 /* EXFirebaseAppEvents.h */,
 			);
 			path = EXFirebaseApp;
 			sourceTree = "<group>";

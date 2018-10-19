@@ -1,4 +1,5 @@
 #import <EXFirebaseDatabase/EXFirebaseDatabaseReference.h>
+#import <EXFirebaseDatabase/EXFirebaseDatabaseEvents.h>
 
 @implementation EXFirebaseDatabaseReference
 

@@ -1,7 +1,4 @@
-/**
- * @flow
- * AndroidNotification representation wrapper
- */
+// @flow
 import AndroidAction, { fromNativeAndroidAction } from './AndroidAction';
 import { BadgeIconType, Category, GroupAlert, Priority } from './types';
 import type Notification from './Notification';
@@ -369,11 +366,7 @@ export default class AndroidNotification {
     return this._notification;
   }
 
-  setBigText(
-    text: string,
-    contentTitle?: string,
-    summaryText?: string
-  ): Notification {
+  setBigText(text: string, contentTitle?: string, summaryText?: string): Notification {
     this._bigText = {
       contentTitle,
       summaryText,
@@ -389,9 +382,7 @@ export default class AndroidNotification {
    */
   setCategory(category: CategoryType): Notification {
     if (!Object.values(Category).includes(category)) {
-      throw new Error(
-        `AndroidNotification:setCategory Invalid Category: ${category}`
-      );
+      throw new Error(`AndroidNotification:setCategory Invalid Category: ${category}`);
     }
     this._category = category;
     return this._notification;
@@ -565,9 +556,7 @@ export default class AndroidNotification {
    */
   setPriority(priority: PriorityType): Notification {
     if (!Object.values(Priority).includes(priority)) {
-      throw new Error(
-        `AndroidNotification:setPriority Invalid Priority: ${priority}`
-      );
+      throw new Error(`AndroidNotification:setPriority Invalid Priority: ${priority}`);
     }
     this._priority = priority;
     return this._notification;
@@ -580,11 +569,7 @@ export default class AndroidNotification {
    * @param indeterminate
    * @returns {Notification}
    */
-  setProgress(
-    max: number,
-    progress: number,
-    indeterminate: boolean
-  ): Notification {
+  setProgress(max: number, progress: number, indeterminate: boolean): Notification {
     this._progress = {
       max,
       progress,
@@ -730,13 +715,9 @@ export default class AndroidNotification {
   build(): NativeAndroidNotification {
     // TODO: Validation of required fields
     if (!this._channelId) {
-      throw new Error(
-        'AndroidNotification: Missing required `channelId` property'
-      );
+      throw new Error('AndroidNotification: Missing required `channelId` property');
     } else if (!this._smallIcon) {
-      throw new Error(
-        'AndroidNotification: Missing required `smallIcon` property'
-      );
+      throw new Error('AndroidNotification: Missing required `smallIcon` property');
     }
 
     return {

@@ -1,14 +1,15 @@
-/**
- * @flow
- * IOSNotification representation wrapper
- */
-import type Notification from './Notification';
-import type {
-  IOSAttachment,
-  IOSAttachmentOptions,
-  NativeIOSNotification,
-} from './types';
+// @flow
+import { Platform } from 'expo-core';
+import { BackgroundFetchResultValue } from './IOSNotifications';
 
+import type Notification from './Notification';
+import type { IOSAttachment, IOSAttachmentOptions, NativeIOSNotification } from './types';
+// import type Notifications from '.';
+type Notifications = Object;
+
+type CompletionHandler = BackgroundFetchResultValue => void;
+
+const isIOS = Platform.OS === 'ios';
 export default class IOSNotification {
   _alertAction: string | void;
 
@@ -31,7 +32,13 @@ export default class IOSNotification {
 
   _threadIdentifier: string | void; // N/A | threadIdentifier
 
-  constructor(notification: Notification, data?: NativeIOSNotification) {
+  _complete: CompletionHandler;
+
+  constructor(
+    notification: Notification,
+    notifications: Notifications,
+    data?: NativeIOSNotification
+  ) {
     this._notification = notification;
 
     if (data) {
@@ -42,6 +49,22 @@ export default class IOSNotification {
       this._hasAction = data.hasAction;
       this._launchImage = data.launchImage;
       this._threadIdentifier = data.threadIdentifier;
+    }
+
+    const complete = (fetchResult: BackgroundFetchResultValue) => {
+      const { notificationId } = notification;
+      if (notificationId) {
+        notifications.logger.debug(
+          `Completion handler called for notificationId=${notificationId}`
+        );
+      }
+      notifications.nativeModule.complete(notificationId, fetchResult);
+    };
+
+    if (isIOS && notifications && notifications.ios.shouldAutoComplete) {
+      complete(notifications.ios.backgroundFetchResult.noData);
+    } else {
+      this._complete = complete;
     }
 
     // Defaults
@@ -76,6 +99,10 @@ export default class IOSNotification {
     return this._threadIdentifier;
   }
 
+  get complete(): CompletionHandler {
+    return this._complete;
+  }
+
   /**
    *
    * @param identifier
@@ -83,11 +110,7 @@ export default class IOSNotification {
    * @param options
    * @returns {Notification}
    */
-  addAttachment(
-    identifier: string,
-    url: string,
-    options?: IOSAttachmentOptions
-  ): Notification {
+  addAttachment(identifier: string, url: string, options?: IOSAttachmentOptions): Notification {
     this._attachments.push({
       identifier,
       options,

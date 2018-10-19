@@ -10,7 +10,9 @@ First, you need to install the package from `npm` registry.
 
 `npm install expo-firebase-instance-id` or `yarn add expo-firebase-instance-id`
 
-#### iOS
+### iOS
+
+#### Cocoapods
 
 If you're using Cocoapods, add the dependency to your `Podfile`:
 
@@ -20,7 +22,16 @@ pod 'EXFirebaseInstanceID', path: '../node_modules/expo-firebase-instance-id/ios
 
 and run `pod install`.
 
-#### Android
+#### Manually
+
+You could also choose install this module manually.
+
+1.  In XCode, in the project navigator, right click `Libraries` ➜ `Add Files to [your project's name]`
+2.  Go to `node_modules` ➜ `expo-firebase-instance-id` and add `EXFirebaseInstanceID.xcodeproj`
+3.  In XCode, in the project navigator, select your project. Add `libEXFirebaseInstanceID.a` to your project's `Build Phases` ➜ `Link Binary With Libraries`
+4.  Run your project (`Cmd+R`).
+
+### Android
 
 1.  Append the following lines to `android/settings.gradle`:
 
@@ -48,22 +59,27 @@ and run `pod install`.
     api project(':expo-core')
     api project(':expo-firebase-app')
     ```
+3.  Include the module in your expo packages: `./android/app/src/main/java/host/exp/exponent/MainActivity.java`
 
-Some Unimodules are not included in the default `ExpoKit` suite, these modules will needed to be added manually.
-If your Android build cannot find the Native Modules, you can add them like this:
+    ```java
+    /*
+    * At the top of the file.
+    * This is automatically imported with Android Studio, but if you are in any other editor you will need to manually import the module.
+    */
+    import expo.modules.firebase.app.FirebaseAppPackage; // This should be here for all Expo Firebase features.
+    import expo.modules.firebase.instanceid.FirebaseInstanceIDPackage;
 
-`./android/app/src/main/java/host/exp/exponent/MainActivity.java`
+    // Later in the file...
 
-```java
-@Override
-public List<Package> expoPackages() {
-  // Here you can add your own packages.
-  return Arrays.<Package>asList(
-    new FirebaseAppPackage(), // This should be here for all Expo Firebase features.
-    new FirebaseInstanceIDPackage() // Include this.
-  );
-}
-```
+    @Override
+    public List<Package> expoPackages() {
+      // Here you can add your own packages.
+      return Arrays.<Package>asList(
+        new FirebaseAppPackage(), // This should be here for all Expo Firebase features.
+        new FirebaseInstanceIDPackage() // Include this.
+      );
+    }
+    ```
 
 ## Usage
 

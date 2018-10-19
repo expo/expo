@@ -2,8 +2,6 @@
  * @flow
  * ConfirmationResult representation wrapper
  */
-import { native } from 'expo-firebase-app';
-const { getNativeModule } = native;
 import type Auth from '../';
 import type User from '../User';
 
@@ -27,7 +25,7 @@ export default class ConfirmationResult {
    * @return {*}
    */
   confirm(verificationCode: string): Promise<User> {
-    return getNativeModule(this._auth)
+    return this._auth.nativeModule
       ._confirmVerificationCode(verificationCode)
       .then(user => this._auth._setUser(user));
   }

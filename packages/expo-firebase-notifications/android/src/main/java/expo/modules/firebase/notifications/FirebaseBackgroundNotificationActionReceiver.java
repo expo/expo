@@ -32,7 +32,7 @@ public class FirebaseBackgroundNotificationActionReceiver extends BroadcastRecei
 
     if (Utils.isAppInForeground(context)) {
       Bundle notificationOpenMap = toNotificationOpenMap(intent);
-      Utils.sendEvent(FirebaseNotificationsModule.moduleRegistry, "notifications_notification_opened", notificationOpenMap);
+      Utils.sendEvent(FirebaseNotificationsModule.moduleRegistry, "Expo.Firebase.notifications_notification_opened", notificationOpenMap);
     } else {
       Intent serviceIntent = new Intent(
         context,
