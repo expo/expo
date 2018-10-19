@@ -5,6 +5,9 @@ import android.graphics.SurfaceTexture;
 import android.os.Bundle;
 import android.view.TextureView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import expo.core.ModuleRegistry;
 import expo.core.interfaces.services.EventEmitter;
 
@@ -13,6 +16,7 @@ public class GLView extends TextureView implements TextureView.SurfaceTextureLis
 
   private GLContext mGLContext;
   private ModuleRegistry mModuleRegistry;
+  private List<OnSurfaceTextureUpdatedListener> mOnSurfaceTextureUpdatedListeners = new ArrayList<>();
 
   // Suppresses ViewConstructor warnings
   public GLView(Context context) {
@@ -38,7 +42,6 @@ public class GLView extends TextureView implements TextureView.SurfaceTextureLis
   public GLContext getGLContext() {
     return mGLContext;
   }
-
 
   // `TextureView.SurfaceTextureListener` events
 
@@ -86,6 +89,9 @@ public class GLView extends TextureView implements TextureView.SurfaceTextureLis
 
   @Override
   public void onSurfaceTextureUpdated(SurfaceTexture surface) {
+    for (OnSurfaceTextureUpdatedListener listener: mOnSurfaceTextureUpdatedListeners) {
+      listener.onSurfaceTextureUpdated(surface);
+    }
   }
 
   public void flush() {
@@ -94,6 +100,14 @@ public class GLView extends TextureView implements TextureView.SurfaceTextureLis
 
   public int getEXGLCtxId() {
     return mGLContext.getContextId();
+  }
+
+  public void registerOnSurfaceTextureUpdatedListener(OnSurfaceTextureUpdatedListener listener) {
+    mOnSurfaceTextureUpdatedListeners.add(listener);
+  }
+
+  public interface OnSurfaceTextureUpdatedListener {
+    void onSurfaceTextureUpdated(SurfaceTexture surfaceTexture);
   }
 }
 

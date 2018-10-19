@@ -5,6 +5,7 @@ package expo.modules.ar;
 import android.content.Context;
 import android.os.Bundle;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 import expo.core.ExportedModule;
@@ -39,29 +40,39 @@ public class ARModule extends ExportedModule implements ModuleRegistryConsumer, 
     mUImanager = mModuleRegistry.getModule(UIManager.class);
   }
 
+  // ---------------------------------------------------------------------------------------------
+  //                                         EXPO METHODS
+  // ---------------------------------------------------------------------------------------------
+
+  // ---------------------------------------------------------------------------------------------
+  //                                      Lifecycle methods
+  // ---------------------------------------------------------------------------------------------
+
   @ExpoMethod
   public void startAsync(final int glViewTag, final String configuration, final Promise promise) {
     if (mUImanager == null) {
-      promise.reject(ERROR_TAG + "_INVALID", new IllegalStateException("Implementation of " + UIManager.class.getName() + " is null. Are you sure you've included a proper Expo adapter for your platform?"));
+      promise.reject(ERROR_TAG + "_UI_MANAGER_NOT_FOUND", "UIManager not found in module registry.");
       return;
     }
+
+    if (mARSessionManager != null) {
+      mARSessionManager.stop();
+      mARSessionManager = null;
+    }
+    mARSessionManager = new ARSessionManager(mModuleRegistry);
 
     mUImanager.addUIBlock(glViewTag, new UIManager.UIBlock<GLView>() {
       @Override
       public void resolve(GLView view) {
         mGLView = view;
 
-        if (mARSessionManager != null) {
-          mARSessionManager.stop();
-          mARSessionManager = null;
-        }
-
-        mARSessionManager = new ARSessionManager(mModuleRegistry);
-        mARSessionManager.startWithGLView(mGLView, promise);
-
-
-//        mARSessionManager.mDelegate = this;
-//        view.setARSessionManager(mARSessionManager); // TODO handle stopping upon destruction
+        mARSessionManager.startWithGLView(mGLView, new Runnable() {
+          @Override
+          public void run() {
+            promise.resolve(null);
+          }
+        });
+        // TODO handle stopping upon destruction
       }
 
       @Override
@@ -73,87 +84,49 @@ public class ARModule extends ExportedModule implements ModuleRegistryConsumer, 
 
   @ExpoMethod
   public void stopAsync(Promise promise) {
-    if (!sessionExistsOrReject(promise)) return;
+    if (!sessionExistsOrReject(promise)) {
+      return;
+    }
     mARSessionManager.stop();
     promise.resolve(null);
   }
 
   @ExpoMethod
   public void pauseAsync(Promise promise) {
-    if (!sessionExistsOrReject(promise)) return;
+    if (!sessionExistsOrReject(promise)) {
+      return;
+    }
     mARSessionManager.pause();
     promise.resolve(null);
   }
 
   @ExpoMethod
   public void resumeAsync(Promise promise) {
-    if (!sessionExistsOrReject(promise)) return;
-    mARSessionManager.resume(promise);
-  }
-
-  @ExpoMethod
-  public void resetAsync(Promise promise) {
-    if (!sessionExistsOrReject(promise)) return;
-    //TODO:Bacon:...
-    promise.resolve(null);
-  }
-//
-//
-//  @ExpoMethod
-//  public void getARCoreStatus(Promise promise) {
-//    String status = "unknown";
-//    Boolean isSupported = false;
-//
-//    switch (ArCoreApk.getInstance().checkAvailability(getContext())) {
-//      case UNSUPPORTED_DEVICE_NOT_CAPABLE:
-//        status = "notCapable";
-//        break;
-//      case SUPPORTED_NOT_INSTALLED:
-//        status = "notInstalled";
-//        isSupported = true;
-//        break;
-//      case SUPPORTED_INSTALLED:
-//        status = "installed";
-//        isSupported = true;
-//        break;
-//    }
-//
-//    Bundle map = new Bundle();
-//    map.putString("status", status);
-//    map.putBoolean("isSupported", isSupported);
-//    promise.resolve(map);
-//  }
-
-
-  @ExpoMethod
-  public void performHitTestAsync(Map<String, Number> point, String types, Promise promise) {
-    if (!sessionExistsOrReject(promise)) return;
-
-    if (point.containsKey("x") && point.containsKey("y")) {
-      mARSessionManager.performHitTestAsync(point.get("x").floatValue(), point.get("y").floatValue(), types, promise);
-    } else {
-      //TODO:Bacon...
-      promise.reject("", "");
+    if (!sessionExistsOrReject(promise)) {
+      return;
     }
-
+    try {
+      mARSessionManager.createOrResumeARSession();
+      promise.resolve(null);
+    } catch (IllegalStateException e) {
+      promise.reject(ERROR_TAG, e);
+    }
   }
-//
-  @ExpoMethod
-  public void getCurrentFrameAsync(Map<String, Object> attributes, Promise promise) {
+
+  // ---------------------------------------------------------------------------------------------
+  //                                      Actions methods
+  // ---------------------------------------------------------------------------------------------
+  public void performHitTestAsync(Map<String, Number> point, ArrayList<String> types, Promise promise) {
     if (!sessionExistsOrReject(promise)) {
       return;
     }
 
-    mARSessionManager.getCurrentFrameAsync(attributes, promise);
-  }
-//
-
-  private boolean sessionExistsOrReject(Promise promise) {
-    if (mARSessionManager != null) {
-      return true;
+    if (point.containsKey("x") && point.containsKey("y")) {
+      mARSessionManager.performHitTestAsync(point.get("x").floatValue(), point.get("y").floatValue(), types, promise);
+    } else {
+      promise.reject("", "");
     }
-    promise.reject("E_NO_SESSION", "AR Session is not initialized");
-    return false;
+
   }
 
   @ExpoMethod
@@ -161,20 +134,30 @@ public class ARModule extends ExportedModule implements ModuleRegistryConsumer, 
     if (!sessionExistsOrReject(promise)) return;
     mARSessionManager.getProjectionMatrix(zNear.floatValue(), zFar.floatValue(), promise);
   }
-//
+
   @ExpoMethod
   public void getCameraTextureAsync(Promise promise) {
     if (!sessionExistsOrReject(promise)) return;
     mARSessionManager.getCameraTextureAsync(promise);
   }
-//
-//  @ExpoMethod
-//  public void setDetectionImagesAsync(Bundle images, Promise promise) {
-//    promise.resolve(new Bundle());
-//  }
 
+  // ---------------------------------------------------------------------------------------------
+  //                               ARSessionManagerDelegate methods
+  // ---------------------------------------------------------------------------------------------
   @Override
   public void didUpdateWithEvent(String eventName, Bundle payload) {
 
+  }
+
+  // ---------------------------------------------------------------------------------------------
+  //                                  Supporting private methods
+  // ---------------------------------------------------------------------------------------------
+
+  private boolean sessionExistsOrReject(Promise promise) {
+    if (mARSessionManager != null) {
+      return true;
+    }
+    promise.reject("E_NO_SESSION", "AR Session is not initialized");
+    return false;
   }
 }

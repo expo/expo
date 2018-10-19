@@ -187,8 +187,9 @@ public class GLCameraObject extends GLObject implements SurfaceTexture.OnFrameAv
         mCameraSurfaceTexture.getTransformMatrix(transformMatrix);
 
         // set uniforms
+        glActiveTexture(GL_TEXTURE10);
         glBindTexture(GL_TEXTURE_EXTERNAL_OES, mExtTexture);
-        glUniform1i(textureLocation, prevActiveTexture[0] - GL_TEXTURE0);
+        glUniform1i(textureLocation, 10);
         glUniformMatrix4fv(transformLocation, 1, false, transformMatrix, 0);
 
         // change viewport to fit the texture and draw
@@ -197,6 +198,7 @@ public class GLCameraObject extends GLObject implements SurfaceTexture.OnFrameAv
 
         // restore previous state
         glViewport(viewport[0], viewport[1], viewport[2], viewport[3]);
+        glActiveTexture(prevActiveTexture[0]);
         glBindTexture(GL_TEXTURE_2D, prevTexture[0]);
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, prevFramebuffer[0]);
         glBindVertexArray(prevVertexArray[0]);

@@ -31,8 +31,8 @@ public class ARGLContextManager {
   public void saveGLContext() {
     glGetIntegerv(GL_ARRAY_BUFFER_BINDING, mPrevArrayBuffer, 0);
     glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, mPrevFramebuffer, 0);
-    glGetIntegerv(GL_ACTIVE_TEXTURE, mPrevActiveTexture, 0);
     glGetIntegerv(GL_TEXTURE_BINDING_2D, mPrevTexture, 0);
+    glGetIntegerv(GL_ACTIVE_TEXTURE, mPrevActiveTexture, 0);
     glGetIntegerv(GL_CURRENT_PROGRAM, mPrevPrograms, 0);
     glGetIntegerv(GL_VIEWPORT, mViewport, 0);
     glGetIntegerv(GL_VERTEX_ARRAY_BINDING, mPrevVertexArray, 0);

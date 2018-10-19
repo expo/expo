@@ -160,7 +160,7 @@ public class ARGLBackgroundRenderer {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
     // Compile shaders & create program
-    mProgramHandle = ARGLShaderUtils.createProgram(mContext, R.raw.vertex_shader, R.raw.fragment_shader);
+    mProgramHandle = ARGLUtils.createProgram(mContext, R.raw.vertex_shader, R.raw.fragment_shader);
     glUseProgram(mProgramHandle);
     glValidateProgram(mProgramHandle);
 
@@ -272,8 +272,8 @@ public class ARGLBackgroundRenderer {
     glVertexAttribPointer(mTextureCoordinatesHandle, 2, GL_FLOAT, false, FLOAT_SIZE * 2, mQuadTextureCoordinatesTransformedBuffer);
 
     // set texture
-    glBindTexture(GL_TEXTURE_EXTERNAL_OES, mExternalOESTexture);
     glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_EXTERNAL_OES, mExternalOESTexture);
     glUniform1i(mUniformTextureHandle, 0);
 
     // set MVPMatrix
