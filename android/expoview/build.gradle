@@ -102,6 +102,12 @@ task generateDynamicMacros(type: Exec) {
 preBuild.dependsOn generateDynamicMacros
 // WHEN_VERSIONING_REMOVE_TO_HERE
 
+configurations.all {
+  resolutionStrategy {
+    force 'org.webkit:android-jsc:r224109'
+  }
+}
+
 dependencies {
   api fileTree(dir: 'libs', include: ['*.jar'])
   api 'com.android.support:multidex:1.0.3'
@@ -220,7 +226,7 @@ dependencies {
   api 'expolib_v1.com.squareup.okhttp3:okhttp:3.6.0'
   api 'expolib_v1.com.squareup.okhttp3:okhttp-urlconnection:3.6.0'
   api 'expolib_v1.com.squareup.okio:okio:1.13.0'
-  api 'org.webkit:android-jsc:r174650'
+  api 'org.webkit:android-jsc:r224109'
 
   // Our dependencies
   api 'com.android.support:appcompat-v7:27.1.1'
