@@ -170,23 +170,53 @@ class Camera2 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
         @Override
         public void onImageAvailable(ImageReader reader) {
             try (Image image = reader.acquireNextImage()) {
-                Image.Plane[] planes = image.getPlanes();
-                if (planes.length > 0) {
-                    ByteBuffer buffer = planes[0].getBuffer();
+                if (image.getFormat() == ImageFormat.JPEG) {
+                    ByteBuffer buffer = image.getPlanes()[0].getBuffer();
                     byte[] data = new byte[buffer.remaining()];
                     buffer.get(data);
-                    if (image.getFormat() == ImageFormat.JPEG) {
-                        mCallback.onPictureTaken(data);
-                    } else {
-                        mCallback.onFramePreview(data, image.getWidth(), image.getHeight(), mDisplayOrientation);
-                    }
-                    image.close();
+
+                    mCallback.onPictureTaken(data);
+                } else { // ImageFormat.YUV_420_888
+                    byte[] data = YUV_420_888toNV21(image);
+
+                    int w = image.getWidth();
+                    int h = image.getHeight();
+
+                    // this part fixes an issue when YUV to NV21 conversion doesn't work (Pixel 2)
+                    // properly so the result image is skewed and barcodes can't be detected
+                    // it appears there is a padding must be considered
+                    Image.Plane plane = image.getPlanes()[0];
+                    int ps = plane.getPixelStride();
+                    int rs = plane.getRowStride();
+                    int padding = rs - ps * w;
+                    int dw = padding / ps;
+
+                    mCallback.onFramePreview(data, w + dw, h, mDisplayOrientation);
                 }
             }
         }
 
     };
 
+    private static byte[] YUV_420_888toNV21(Image image) {
+        byte[] nv21;
+        ByteBuffer yBuffer = image.getPlanes()[0].getBuffer();
+        ByteBuffer uBuffer = image.getPlanes()[1].getBuffer();
+        ByteBuffer vBuffer = image.getPlanes()[2].getBuffer();
+
+        int ySize = yBuffer.remaining();
+        int uSize = uBuffer.remaining();
+        int vSize = vBuffer.remaining();
+
+        nv21 = new byte[ySize + uSize + vSize];
+
+        // U and V are swapped
+        yBuffer.get(nv21, 0, ySize);
+        vBuffer.get(nv21, ySize, vSize);
+        uBuffer.get(nv21, ySize + vSize, uSize);
+
+        return nv21;
+    }
 
     private String mCameraId;
 
