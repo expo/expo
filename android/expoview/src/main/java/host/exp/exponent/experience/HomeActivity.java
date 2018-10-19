@@ -16,6 +16,7 @@ import com.squareup.leakcanary.LeakCanary;
 import de.greenrobot.event.EventBus;
 import host.exp.exponent.RNObject;
 import host.exp.exponent.analytics.Analytics;
+import host.exp.exponent.kernel.KernelConstants;
 import host.exp.expoview.BuildConfig;
 import host.exp.exponent.Constants;
 import host.exp.exponent.kernel.Kernel;
@@ -29,6 +30,7 @@ public class HomeActivity extends BaseExperienceActivity {
     super.onCreate(savedInstanceState);
     mShouldDestroyRNInstanceOnExit = false;
     mSDKVersion = RNObject.UNVERSIONED;
+    mManifestUrl = KernelConstants.KERNEL_MANIFEST_URL_PLACEHOLDER;
 
     EventBus.getDefault().registerSticky(this);
     mKernel.startJSKernel();

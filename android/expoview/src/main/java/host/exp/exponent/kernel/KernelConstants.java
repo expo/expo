@@ -24,6 +24,7 @@ public class KernelConstants {
   public static final String HOME_MODULE_NAME = "main";
   public static final String BUNDLE_FILE_PREFIX = "cached-bundle-";
   public static final String KERNEL_BUNDLE_ID = "kernel";
+  public static final String KERNEL_MANIFEST_URL_PLACEHOLDER = "kernel";
   public static final String OPEN_OPTIMISTIC_EXPERIENCE_ACTIVITY_KEY = "openOptimisticExperienceActivity";
   public static final String OPEN_EXPERIENCE_ACTIVITY_KEY = "openExperienceActivity";
   public static final String LOAD_BUNDLE_FOR_EXPERIENCE_ACTIVITY_KEY = "loadBundleForExperienceActivity";

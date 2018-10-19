@@ -91,11 +91,12 @@ public abstract class AppLoader {
     boolean isFetchingCachedManifest = mExponentManifest.fetchCachedManifest(mManifestUrl, new ExponentManifest.ManifestListener() {
       @Override
       public void onCompleted(JSONObject manifest) {
+
         mCachedManifest = manifest;
 
         boolean shouldCheckForUpdate = true;
         int fallbackToCacheTimeout = DEFAULT_TIMEOUT_LENGTH;
-        String manifestSdkVersion = null;
+        String manifestSdkVersion;
 
         try {
           // another check in case dev mode check failed before
@@ -107,11 +108,17 @@ public abstract class AppLoader {
           manifestSdkVersion = mCachedManifest.optString(ExponentManifest.MANIFEST_SDK_VERSION_KEY, null);
           JSONObject updatesManifest = mCachedManifest.optJSONObject(ExponentManifest.MANIFEST_UPDATES_INFO_KEY);
           if (updatesManifest != null) {
-            String checkAutomaticallyBehavior = updatesManifest.optString(ExponentManifest.MANIFEST_UPDATES_CHECK_AUTOMATICALLY_KEY, ExponentManifest.MANIFEST_UPDATES_CHECK_AUTOMATICALLY_ON_LOAD);
+            String checkAutomaticallyBehavior = updatesManifest.optString(
+                ExponentManifest.MANIFEST_UPDATES_CHECK_AUTOMATICALLY_KEY,
+                ExponentManifest.MANIFEST_UPDATES_CHECK_AUTOMATICALLY_ON_LOAD
+            );
             if (checkAutomaticallyBehavior.equals(ExponentManifest.MANIFEST_UPDATES_CHECK_AUTOMATICALLY_ON_ERROR)) {
               shouldCheckForUpdate = false;
             }
-            fallbackToCacheTimeout = updatesManifest.optInt(ExponentManifest.MANIFEST_UPDATES_TIMEOUT_KEY, fallbackToCacheTimeout);
+            fallbackToCacheTimeout = updatesManifest.optInt(
+                ExponentManifest.MANIFEST_UPDATES_TIMEOUT_KEY,
+                fallbackToCacheTimeout
+            );
           }
 
           // if previous run of this app failed due to a loading error, set shouldCheckForUpdate to true regardless
@@ -120,11 +127,13 @@ public abstract class AppLoader {
             shouldCheckForUpdate = true;
           }
         } catch (JSONException e) {
-          onError(e);
+          EXL.e(TAG, "Error reading cached manifest, falling back to default timeout: " + ExceptionUtils.exceptionToErrorMessage(e).developerErrorMessage());
+          startTimerAndFetchRemoteManifest();
+          return;
         }
 
-        if (Constants.isShellApp() || Constants.isDetached()) {
-          // in shell/detached apps with SDK <26, we should default to 0 timeout to not introduce a breaking change
+        if (Constants.isShellApp()) {
+          // in shell apps with SDK <26, we should default to 0 timeout to not introduce a breaking change
           if (manifestSdkVersion != null) {
             if (ABIVersion.toNumber(manifestSdkVersion) < ABIVersion.toNumber("26.0.0")) {
               fallbackToCacheTimeout = DEFAULT_TIMEOUT_LENGTH_BEFORE_SDK26;
@@ -165,6 +174,23 @@ public abstract class AppLoader {
       // we're in dev mode so start fetching remotely without setting a timer
       fetchRemoteManifest();
     }
+  }
+
+  // TODO(eric): can remove once home is loaded like a regular app
+  public void startWithLocalManifest(JSONObject manifest) {
+    // we want to fetch the kernel bundle but skip the manifest fetching steps
+    mCachedManifest = manifest;
+    if (ExpoViewBuildConfig.DEBUG || mExponentSharedPreferences.getBoolean(ExponentSharedPreferences.SHOULD_NOT_USE_KERNEL_CACHE)) {
+      // in debug mode, we're using dev home and it isn't embedded
+      // so we just want to set the manifest immediately and fetch the bundle remotely
+      // same if the kernel has just crashed
+      mManifest = manifest;
+    } else {
+      // in prod mode, we want to emulate fallbackToCacheTimeout: 0 behavior
+      // without actually fetching a manifest, so we just resolve before fetching the new bundle
+      resolve();
+    }
+    fetchJSBundle(false);
   }
 
   public abstract void onOptimisticManifest(JSONObject optimisticManifest);
@@ -279,18 +305,18 @@ public abstract class AppLoader {
     }
 
     try {
-      String oldBundleUrl = null;
+      String oldRevisionId = null;
       try {
         JSONObject oldManifest = mExponentSharedPreferences.getManifest(mManifestUrl).manifest;
-        oldBundleUrl = oldManifest.getString(ExponentManifest.MANIFEST_BUNDLE_URL_KEY);
+        oldRevisionId = oldManifest.getString(ExponentManifest.MANIFEST_REVISION_ID_KEY);
       } catch (Throwable e) {
         EXL.e(TAG, "Couldn't get old manifest from shared preferences");
       }
-      final String finalOldBundleUrl = oldBundleUrl;
 
       try {
         String bundleUrl = mManifest.getString(ExponentManifest.MANIFEST_BUNDLE_URL_KEY);
-        final boolean wasUpdated = !bundleUrl.equals(finalOldBundleUrl);
+        String revisionId = mManifest.getString(ExponentManifest.MANIFEST_REVISION_ID_KEY);
+        final boolean wasUpdated = !revisionId.equals(oldRevisionId);
         String id = mManifest.getString(ExponentManifest.MANIFEST_ID_KEY);
         String sdkVersion = mManifest.getString(ExponentManifest.MANIFEST_SDK_VERSION_KEY);
 
@@ -305,6 +331,9 @@ public abstract class AppLoader {
             if (shouldFailOnError) {
               resolve(e);
               return;
+            } else {
+              // don't swallow exception
+              EXL.e(TAG, e);
             }
             if (forceCache) {
               fetchJSBundle(false, true);

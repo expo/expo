@@ -12,7 +12,6 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.provider.Settings;
 import android.support.v4.content.pm.ShortcutInfoCompat;
 import android.support.v4.content.pm.ShortcutManagerCompat;
@@ -29,7 +28,6 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.LifecycleState;
-import com.facebook.react.modules.network.OkHttpClientProvider;
 import com.facebook.react.modules.network.ReactCookieJarContainer;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
@@ -40,10 +38,8 @@ import org.json.JSONObject;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -184,6 +180,10 @@ public class Kernel extends KernelInterface {
       mIsStarted = true;
     }
 
+    reloadJSKernelBundle();
+  }
+
+  public void reloadJSKernelBundle() {
     mHasError = false;
 
     if (!mExponentSharedPreferences.shouldUseInternetKernel()) {
@@ -205,53 +205,105 @@ public class Kernel extends KernelInterface {
       }
     }
 
-    // On first run use the embedded kernel js but fire off a request for the new js in the background.
-    final String bundleUrl = getBundleUrl() + (ExpoViewBuildConfig.DEBUG ? "" : "?versionName=" + ExpoViewKernel.getInstance().getVersionName());
+    try {
+      JSONObject kernelManifest = mExponentManifest.getKernelManifest();
+      String bundleUrl = kernelManifest.getString(ExponentManifest.MANIFEST_BUNDLE_URL_KEY);
+      kernelManifest.put(ExponentManifest.MANIFEST_BUNDLE_URL_KEY, bundleUrl);
+      kernelManifest.put(ExponentManifest.MANIFEST_SDK_VERSION_KEY, RNObject.UNVERSIONED);
 
-    if (mExponentSharedPreferences.shouldUseInternetKernel() &&
-        mExponentSharedPreferences.getBoolean(ExponentSharedPreferences.IS_FIRST_KERNEL_RUN_KEY)) {
-      kernelBundleListener().onBundleLoaded(Constants.EMBEDDED_KERNEL_PATH);
-
-      // Now preload bundle for next run
-      new Handler().postDelayed(new Runnable() {
+      new AppLoader(KernelConstants.KERNEL_MANIFEST_URL_PLACEHOLDER) {
         @Override
-        public void run() {
-          Exponent.getInstance().loadJSBundle(null, bundleUrl, KernelConstants.KERNEL_BUNDLE_ID, RNObject.UNVERSIONED, new Exponent.BundleListener() {
-            @Override
-            public void onBundleLoaded(String localBundlePath) {
-              mExponentSharedPreferences.setBoolean(ExponentSharedPreferences.IS_FIRST_KERNEL_RUN_KEY, false);
-              EXL.d(TAG, "Successfully preloaded kernel bundle");
-            }
+        public void onOptimisticManifest(final JSONObject optimisticManifest) { }
 
+        @Override
+        public void onManifestCompleted(final JSONObject manifest) { }
+
+        @Override
+        public void onBundleCompleted(final String localBundlePath) {
+          if (!ExpoViewBuildConfig.DEBUG) {
+            mExponentSharedPreferences.setString(ExponentSharedPreferences.KERNEL_REVISION_ID, getKernelRevisionId());
+          }
+
+          Exponent.getInstance().runOnUiThread(new Runnable() {
             @Override
-            public void onError(Exception e) {
-              EXL.e(TAG, "Error preloading kernel bundle: " + e.toString());
+            public void run() {
+              ReactInstanceManagerBuilder builder = ReactInstanceManager.builder()
+                  .setApplication(mApplicationContext)
+                  .setJSBundleFile(localBundlePath)
+                  .addPackage(new MainReactPackage())
+                  .addPackage(ExponentPackage.kernelExponentPackage(mExponentManifest.getKernelManifest()))
+                  .setInitialLifecycleState(LifecycleState.RESUMED);
+
+              if (!KernelConfig.FORCE_NO_KERNEL_DEBUG_MODE && mExponentManifest.isDebugModeEnabled(mExponentManifest.getKernelManifest())) {
+                if (Exponent.getInstance().shouldRequestDrawOverOtherAppsPermission()) {
+                  new AlertDialog.Builder(mActivityContext)
+                      .setTitle("Please enable \"Permit drawing over other apps\"")
+                      .setMessage("Click \"ok\" to open settings. Once you've enabled the setting you'll have to restart the app.")
+                      .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                          Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                              Uri.parse("package:" + mActivityContext.getPackageName()));
+                          mActivityContext.startActivityForResult(intent, KernelConstants.OVERLAY_PERMISSION_REQUEST_CODE);
+                        }
+                      })
+                      .setCancelable(false)
+                      .show();
+                  return;
+                }
+
+                Exponent.enableDeveloperSupport("UNVERSIONED", mExponentManifest.getKernelManifestField(ExponentManifest.MANIFEST_DEBUGGER_HOST_KEY),
+                    mExponentManifest.getKernelManifestField(ExponentManifest.MANIFEST_MAIN_MODULE_NAME_KEY), RNObject.wrap(builder));
+              }
+
+              mReactInstanceManager = builder.build();
+              mReactInstanceManager.createReactContextInBackground();
+              if (getActivityContext() != null) {
+                // RN expects an activity in some places.
+                mReactInstanceManager.onHostResume(getActivityContext(), null);
+              }
+
+              mIsRunning = true;
+              EventBus.getDefault().postSticky(new KernelStartedRunningEvent());
+              EXL.d(TAG, "Kernel started running.");
+
+              // Reset this flag if we crashed
+              mExponentSharedPreferences.setBoolean(ExponentSharedPreferences.SHOULD_NOT_USE_KERNEL_CACHE, false);
             }
           });
         }
-      }, KernelConstants.DELAY_TO_PRELOAD_KERNEL_JS);
-    } else {
-      boolean shouldNotUseKernelCache = mExponentSharedPreferences.getBoolean(ExponentSharedPreferences.SHOULD_NOT_USE_KERNEL_CACHE);
 
-      if (!ExpoViewBuildConfig.DEBUG) {
-        String oldKernelRevisionId = mExponentSharedPreferences.getString(ExponentSharedPreferences.KERNEL_REVISION_ID, "");
-
-        if (!oldKernelRevisionId.equals(getKernelRevisionId())) {
-          shouldNotUseKernelCache = true;
+        @Override
+        public void emitEvent(JSONObject params) {
+          KernelProvider.getInstance().addEventForExperience(
+              KernelConstants.KERNEL_MANIFEST_URL_PLACEHOLDER,
+              new KernelConstants.ExperienceEvent(AppLoader.UPDATES_EVENT_NAME, params.toString())
+          );
         }
-      }
 
-      Exponent.getInstance().loadJSBundle(null, bundleUrl, KernelConstants.KERNEL_BUNDLE_ID, RNObject.UNVERSIONED, kernelBundleListener(), shouldNotUseKernelCache);
+        @Override
+        public void onError(Exception e) {
+          handleKernelError(e.getMessage());
+        }
+
+        @Override
+        public void onError(String e) {
+          handleKernelError(e);
+        }
+      }.startWithLocalManifest(kernelManifest);
+    } catch (Exception e) {
+      handleKernelError(e.getMessage());
     }
   }
 
-  public void reloadJSBundle() {
-    if (Constants.isShellApp()) {
-      return;
+  public void handleKernelError(String message) {
+    setHasError();
+
+    if (ExpoViewBuildConfig.DEBUG) {
+      handleError("Can't load kernel. Are you sure your packager is running and your phone is on the same wifi? " + message);
+    } else {
+      handleError("Expo requires an internet connection.");
+      EXL.e(TAG, "Expo requires an internet connection." + message);
     }
-    String bundleUrl = getBundleUrl();
-    mHasError = false;
-    Exponent.getInstance().loadJSBundle(null, bundleUrl, KernelConstants.KERNEL_BUNDLE_ID, RNObject.UNVERSIONED, kernelBundleListener(), true);
   }
 
   public static void addIntentDocumentFlags(Intent intent) {
@@ -263,76 +315,6 @@ public class Kernel extends KernelInterface {
     } else {
       intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
     }
-  }
-
-  private Exponent.BundleListener kernelBundleListener() {
-    return new Exponent.BundleListener() {
-      @Override
-      public void onBundleLoaded(final String localBundlePath) {
-        if (!ExpoViewBuildConfig.DEBUG) {
-          mExponentSharedPreferences.setString(ExponentSharedPreferences.KERNEL_REVISION_ID, getKernelRevisionId());
-        }
-
-        Exponent.getInstance().runOnUiThread(new Runnable() {
-          @Override
-          public void run() {
-            ReactInstanceManagerBuilder builder = ReactInstanceManager.builder()
-                .setApplication(mApplicationContext)
-                .setJSBundleFile(localBundlePath)
-                .addPackage(new MainReactPackage())
-                .addPackage(ExponentPackage.kernelExponentPackage(mExponentManifest.getKernelManifest()))
-                .setInitialLifecycleState(LifecycleState.RESUMED);
-
-            if (!KernelConfig.FORCE_NO_KERNEL_DEBUG_MODE && mExponentManifest.isDebugModeEnabled(mExponentManifest.getKernelManifest())) {
-              if (Exponent.getInstance().shouldRequestDrawOverOtherAppsPermission()) {
-                new AlertDialog.Builder(mActivityContext)
-                    .setTitle("Please enable \"Permit drawing over other apps\"")
-                    .setMessage("Click \"ok\" to open settings. Once you've enabled the setting you'll have to restart the app.")
-                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                      public void onClick(DialogInterface dialog, int which) {
-                        Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                            Uri.parse("package:" + mActivityContext.getPackageName()));
-                        mActivityContext.startActivityForResult(intent, KernelConstants.OVERLAY_PERMISSION_REQUEST_CODE);
-                      }
-                    })
-                    .setCancelable(false)
-                    .show();
-                return;
-              }
-
-              Exponent.enableDeveloperSupport("UNVERSIONED", mExponentManifest.getKernelManifestField(ExponentManifest.MANIFEST_DEBUGGER_HOST_KEY),
-                  mExponentManifest.getKernelManifestField(ExponentManifest.MANIFEST_MAIN_MODULE_NAME_KEY), RNObject.wrap(builder));
-            }
-
-            mReactInstanceManager = builder.build();
-            mReactInstanceManager.createReactContextInBackground();
-            if (getActivityContext() != null) {
-              // RN expects an activity in some places.
-              mReactInstanceManager.onHostResume(getActivityContext(), null);
-            }
-
-            mIsRunning = true;
-            EventBus.getDefault().postSticky(new KernelStartedRunningEvent());
-            EXL.d(TAG, "Kernel started running.");
-
-            // Reset this flag if we crashed
-            mExponentSharedPreferences.setBoolean(ExponentSharedPreferences.SHOULD_NOT_USE_KERNEL_CACHE, false);
-          }
-        });
-      }
-
-      @Override
-      public void onError(Exception e) {
-        setHasError();
-
-        if (ExpoViewBuildConfig.DEBUG) {
-          handleError("Can't load kernel. Are you sure your packager is running and your phone is on the same wifi? " + e.getMessage());
-        } else {
-          handleError("Expo requires an internet connection.");
-          EXL.d(TAG, "Expo requires an internet connection." + e.getMessage());
-        }
-      }
-    };
   }
 
   private String getBundleUrl() {
@@ -677,6 +659,10 @@ public class Kernel extends KernelInterface {
 
     final ActivityManager.AppTask finalExistingTask = existingTask;
     if (existingTask == null) {
+      if (manifestUrl == KernelConstants.KERNEL_MANIFEST_URL_PLACEHOLDER) {
+        reloadJSKernelBundle();
+        return;
+      }
       new AppLoader(manifestUrl, forceCache) {
         @Override
         public void onOptimisticManifest(final JSONObject optimisticManifest) {
@@ -788,53 +774,6 @@ public class Kernel extends KernelInterface {
     for (ExperienceActivityTask task : sManifestUrlToExperienceActivityTask.values()) {
       if (task.activityId == activityId) {
         return task.bundleUrl;
-      }
-    }
-
-    return null;
-  }
-
-  // <= SDK 25
-  @DoNotStrip
-  public static String getBundleUrlForActivityId(final int activityId, String host, String jsModulePath, boolean devMode, boolean jsMinify) {
-    if (activityId == -1) {
-      // This is the kernel
-      return sInstance.getBundleUrl();
-    }
-
-    for (ExperienceActivityTask task : sManifestUrlToExperienceActivityTask.values()) {
-      if (task.activityId == activityId) {
-        return task.bundleUrl;
-      }
-    }
-
-    return null;
-  }
-
-  // <= SDK 21
-  @DoNotStrip
-  public static String getBundleUrlForActivityId(final int activityId, String host, String jsModulePath, boolean devMode, boolean hmr, boolean jsMinify) {
-    if (activityId == -1) {
-      // This is the kernel
-      return sInstance.getBundleUrl();
-    }
-
-    for (ExperienceActivityTask task : sManifestUrlToExperienceActivityTask.values()) {
-      if (task.activityId == activityId) {
-        String url = task.bundleUrl;
-        if (url == null) {
-          return null;
-        }
-
-        if (hmr) {
-          if (url.contains("hot=false")) {
-            url = url.replace("hot=false", "hot=true");
-          } else {
-            url = url + "&hot=true";
-          }
-        }
-
-        return url;
       }
     }
 
