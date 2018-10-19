@@ -2,7 +2,8 @@
  * @flow
  * Analytics representation wrapper
  */
-import { ModuleBase, getNativeModule, utils, registerModule } from 'expo-firebase-app';
+import { ModuleBase, registerModule, utils } from 'expo-firebase-app';
+
 const { isString, isObject } = utils;
 import type { App } from 'expo-firebase-app';
 
@@ -36,8 +37,8 @@ export default class Analytics extends ModuleBase {
   constructor(app: App) {
     super(app, {
       moduleName: MODULE_NAME,
-      multiApp: false,
-      hasShards: false,
+      hasMultiAppSupport: false,
+      hasCustomUrlSupport: false,
       namespace: NAMESPACE,
     });
   }
@@ -84,7 +85,7 @@ export default class Analytics extends ModuleBase {
     // types are supported. String parameter values can be up to 36 characters long. The "firebase_"
     // prefix is reserved and should not be used for parameter names.
 
-    getNativeModule(this).logEvent(name, params);
+    this.nativeModule.logEvent(name, params);
   }
 
   /**
@@ -92,7 +93,7 @@ export default class Analytics extends ModuleBase {
    * @param enabled
    */
   setAnalyticsCollectionEnabled(enabled: boolean): void {
-    getNativeModule(this).setAnalyticsCollectionEnabled(enabled);
+    this.nativeModule.setAnalyticsCollectionEnabled(enabled);
   }
 
   /**
@@ -101,7 +102,7 @@ export default class Analytics extends ModuleBase {
    * @param screenClassOverride
    */
   setCurrentScreen(screenName: string, screenClassOverride: string): void {
-    getNativeModule(this).setCurrentScreen(screenName, screenClassOverride);
+    this.nativeModule.setCurrentScreen(screenName, screenClassOverride);
   }
 
   /**
@@ -109,7 +110,7 @@ export default class Analytics extends ModuleBase {
    * @param milliseconds
    */
   setMinimumSessionDuration(milliseconds: number = 10000): void {
-    getNativeModule(this).setMinimumSessionDuration(milliseconds);
+    this.nativeModule.setMinimumSessionDuration(milliseconds);
   }
 
   /**
@@ -117,7 +118,7 @@ export default class Analytics extends ModuleBase {
    * @param milliseconds
    */
   setSessionTimeoutDuration(milliseconds: number = 1800000): void {
-    getNativeModule(this).setSessionTimeoutDuration(milliseconds);
+    this.nativeModule.setSessionTimeoutDuration(milliseconds);
   }
 
   /**
@@ -128,7 +129,7 @@ export default class Analytics extends ModuleBase {
     if (id !== null && !isString(id)) {
       throw new Error('analytics.setUserId(): The supplied userId must be a string value or null.');
     }
-    getNativeModule(this).setUserId(id);
+    this.nativeModule.setUserId(id);
   }
 
   /**
@@ -142,24 +143,23 @@ export default class Analytics extends ModuleBase {
         'analytics.setUserProperty(): The supplied property must be a string value or null.'
       );
     }
-    getNativeModule(this).setUserProperty(name, value);
+    this.nativeModule.setUserProperty(name, value);
   }
 
   /**
    * Sets multiple user properties to the supplied values.
-   * @EXFirebaseSpecific
    * @param object
    */
   setUserProperties(object: Object): void {
-    Object.keys(object).forEach(property => {
-      const value = object[property];
+    for (const entry of Object.entries(object)) {
+      const [property, value] = entry;
       if (value !== null && !isString(value)) {
         throw new Error(
           `analytics.setUserProperties(): The property with name '${property}' must be a string value or null.`
         );
       }
-      getNativeModule(this).setUserProperty(property, object[property]);
-    });
+      this.nativeModule.setUserProperty(property, value);
+    }
   }
 }
 
