@@ -4,35 +4,39 @@ import { NativeModules, Platform } from 'react-native';
 const Google = NativeModules.ExponentGoogle;
 
 type LogInConfig = {
-  androidClientId?: string,
-  androidStandaloneAppClientId?: string,
-  iosClientId?: string,
-  iosStandaloneAppClientId?: string,
-  webClientId?: string,
-  clientId?: string,
-  behavior?: 'system' | 'web',
-  scopes?: string[],
+  androidClientId?: string;
+  androidStandaloneAppClientId?: string;
+  iosClientId?: string;
+  iosStandaloneAppClientId?: string;
+  webClientId?: string;
+  clientId?: string;
+  behavior?: 'system' | 'web';
+  scopes?: string[];
 };
 
 type LogInResult =
   | {
-      type: 'cancel',
+      type: 'cancel';
     }
   | {
-      type: 'success',
-      accessToken?: string,
-      idToken: string | null,
-      refreshToken: string | null,
-      serverAuthCode: string | null,
+      type: 'success';
+      accessToken?: string;
+      idToken: string | null;
+      refreshToken: string | null;
+      serverAuthCode: string | null;
       user: {
-        id?: string,
-        name?: string,
-        givenName?: string,
-        familyName?: string,
-        photoUrl?: string,
-        email?: string,
-      },
+        id?: string;
+        name?: string;
+        givenName?: string;
+        familyName?: string;
+        photoUrl?: string;
+        email?: string;
+      };
     };
+
+export function logoutAsync(): void {
+  return Google.logout();
+}
 
 export async function logInAsync(config: LogInConfig): Promise<LogInResult> {
   let behavior = config.behavior;
@@ -41,10 +45,12 @@ export async function logInAsync(config: LogInConfig): Promise<LogInResult> {
   }
 
   // Only standalone apps can use system login.
-  if (Constants.appOwnership !== 'standalone' && (behavior === 'system' && Platform.OS === "android") ) {
-      behavior = 'web';
+  if (
+    Constants.appOwnership !== 'standalone' &&
+    (behavior === 'system' && Platform.OS === 'android')
+  ) {
+    behavior = 'web';
   }
-  
 
   let scopes = config.scopes;
   if (!scopes) {
