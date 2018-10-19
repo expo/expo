@@ -1,15 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="host.exp.expoview">
-
-    <!-- WHEN_VERSIONING_REMOVE_FROM_HERE -->
-    <supports-screens
-        android:anyDensity="true"
-        android:largeScreens="true"
-        android:normalScreens="true"
-        android:smallScreens="true"
-        android:xlargeScreens="true" >
-    </supports-screens>
-    <!-- WHEN_VERSIONING_REMOVE_TO_HERE -->
+    package="abi28_0_0.host.exp.exponent">
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT"/>
@@ -20,7 +10,6 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.MANAGE_DOCUMENTS" />
     <uses-permission android:name="android.permission.USE_FINGERPRINT" />
-    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
 
     <!-- These require runtime permissions on M -->
     <!-- All of these must be in the blacklist in xdl/src/detach/AndroidShellApp.js as well -->
@@ -45,23 +34,15 @@
     <uses-feature android:name="android.hardware.bluetooth" android:required="false"/>
 
     <application>
-
-        <!-- WHEN_VERSIONING_REMOVE_FROM_HERE -->
-        <!-- Scheduled notifications -->
-        <receiver
-            android:name="host.exp.exponent.notifications.ScheduledNotificationReceiver"
-            android:exported="false" />
-        <!-- WHEN_VERSIONING_REMOVE_TO_HERE -->
-
-        <provider
-            android:name="android.support.v4.content.FileProvider"
-            android:authorities="${applicationId}.provider"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider_paths"/>
-        </provider>
+      <provider
+        android:name="android.support.v4.content.FileProvider"
+        android:authorities="${applicationId}.provider"
+        android:exported="false"
+        android:grantUriPermissions="true">
+        <meta-data
+          android:name="android.support.FILE_PROVIDER_PATHS"
+          android:resource="@xml/provider_paths"/>
+      </provider>
     </application>
 
 </manifest>

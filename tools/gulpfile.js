@@ -65,22 +65,6 @@ gulp.task('assert-abi-argument', function(done) {
   done();
 });
 
-gulp.task('assert-lib_name-argument', function(done) {
-  if (!argv.lib_name) {
-    throw new Error('Must run with `--lib_name expo-module-name`');
-  }
-
-  done();
-});
-
-function runShellScriptForUniversalModule(script) {
-  return gulp.series(
-    'assert-abi-argument',
-    'assert-lib_name-argument',
-    shell.task([`${script} ${argv.abi}`])
-  );
-}
-
 gulp.task(
   'android-update-rn',
   gulp.series(
@@ -108,21 +92,12 @@ gulp.task(
   runShellScriptWithABIArgument('./android-copy-native-modules.sh')
 );
 gulp.task(
-  'android-build-universal-module-aar',
-  runShellScriptForUniversalModule('./android-build-module-aar.sh')
-);
-gulp.task(
-  'android-build-universal-modules',
-  gulp.series([
-    'assert-abi-argument',
-    ...Modules.getVersionableModulesForPlatform('android')
-      .map(({ libName }) =>
-        gulp.series(
-          'assert-abi-argument',
-          shell.task([`./android-build-module-aar.sh ${libName} ${argv.abi}`])
-        )
-      ),
-  ])
+  'android-copy-universal-modules',
+  gulp.series(...Modules.getVersionableModulesForPlatform('android').map(
+    module => shell.task([
+      `./android-copy-universal-module.sh ${argv.abi} ../modules/${module.libName}/${module.subdirectory}`
+    ])
+  ))
 );
 gulp.task('update-exponent-view', updateExpoViewWithArguments);
 gulp.task(
@@ -131,8 +106,8 @@ gulp.task(
     'android-update-versioned-rn',
     'android-rename-jni-libs',
     'android-build-aar',
-    'android-build-universal-modules',
-    'android-copy-native-modules'
+    'android-copy-native-modules',
+    'android-copy-universal-modules'
   )
 );
 

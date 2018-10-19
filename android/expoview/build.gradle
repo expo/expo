@@ -1,6 +1,8 @@
 apply plugin: 'com.android.library'
 apply plugin: 'maven'
+apply plugin: 'com.jakewharton.butterknife'
 
+// WHEN_VERSIONING_REMOVE_FROM_HERE
 //maven repository info
 group = 'host.exp.exponent'
 version = '30.0.0'
@@ -32,6 +34,7 @@ uploadArchives {
     }
   }
 }
+// WHEN_VERSIONING_REMOVE_TO_HERE
 
 buildscript {
   repositories {
@@ -46,10 +49,6 @@ buildscript {
     classpath 'com.jakewharton:butterknife-gradle-plugin:8.4.0'
   }
 }
-
-apply plugin: 'com.jakewharton.butterknife'
-
-import org.apache.tools.ant.taskdefs.condition.Os
 
 repositories {
   maven { url 'https://maven.fabric.io/public' }
@@ -68,9 +67,11 @@ android {
     ndk {
       abiFilters 'armeabi-v7a', 'x86'
     }
+    // WHEN_VERSIONING_REMOVE_FROM_HERE
     manifestPlaceholders = [
       'appAuthRedirectScheme': 'host.exp.exponent'
     ]
+    // WHEN_VERSIONING_REMOVE_TO_HERE
   }
 
   buildTypes {
@@ -84,6 +85,9 @@ android {
   }
 }
 
+// WHEN_VERSIONING_REMOVE_FROM_HERE
+import org.apache.tools.ant.taskdefs.condition.Os
+
 task generateDynamicMacros(type: Exec) {
   environment "EXPO_ANDROID_GRADLE_TASK_NAMES", "${gradle.startParameter.taskNames}"
   if (Os.isFamily(Os.FAMILY_WINDOWS)) {
@@ -96,13 +100,16 @@ task generateDynamicMacros(type: Exec) {
   }
 }
 preBuild.dependsOn generateDynamicMacros
+// WHEN_VERSIONING_REMOVE_TO_HERE
 
 dependencies {
   api fileTree(dir: 'libs', include: ['*.jar'])
-  api 'com.android.support:multidex:1.0.1'
+  api 'com.android.support:multidex:1.0.3'
 
+  // WHEN_VERSIONING_REPLACE_WITH_DEPENDENCIES
+
+  // WHEN_VERSIONING_REMOVE_FROM_HERE
   // Current react native
-  api project(':ReactAndroid')
   /* UNCOMMENT WHEN DISTRIBUTING
   api 'com.facebook.react:react-native:30.0.0'
   api 'host.exp.exponent:expo-core:1.1.0'
@@ -137,6 +144,8 @@ dependencies {
   END UNCOMMENT WHEN DISTRIBUTING */
 
   // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
+  api project(':ReactAndroid')
+
   // Universal modules
   api project(':expo-react-native-adapter')
   api project(':expo-core')
@@ -167,68 +176,37 @@ dependencies {
   api project(':expo-ads-admob')
   api project(':expo-local-authentication')
   api project(':expo-localization')
-  // WHEN_DISTRIBUTING_REMOVE_TO_HERE
 
   // Versioned react native
+  // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
   // THIS COMMENT IS USED BY android-build-aar.sh DO NOT MODIFY
-  api 'host.exp.exponent:expo-sms-abi30_0_0:1.0.0'
-  api 'host.exp.exponent:expo-sensors-interface-abi30_0_0:1.0.0'
-  api 'host.exp.exponent:expo-sensors-abi30_0_0:1.0.0'
-  api 'host.exp.exponent:expo-analytics-segment-abi30_0_0:1.0.0'
-  api 'host.exp.exponent:expo-react-native-adapter-abi30_0_0:1.0.0'
-  api 'host.exp.exponent:expo-print-abi30_0_0:1.0.0'
-  api 'host.exp.exponent:expo-permissions-interface-abi30_0_0:1.0.0'
-  api 'host.exp.exponent:expo-permissions-abi30_0_0:1.0.0'
-  api 'host.exp.exponent:expo-payments-stripe-abi30_0_0:1.0.0'
-  api 'host.exp.exponent:expo-media-library-abi30_0_0:1.0.0'
-  api 'host.exp.exponent:expo-location-abi30_0_0:1.0.0'
-  api 'host.exp.exponent:expo-local-authentication-abi30_0_0:1.0.0'
-  api 'host.exp.exponent:expo-image-loader-interface-abi30_0_0:1.0.0'
-  api 'host.exp.exponent:expo-gl-abi30_0_0:1.0.0'
-  api 'host.exp.exponent:expo-font-interface-abi30_0_0:1.0.0'
-  api 'host.exp.exponent:expo-font-abi30_0_0:1.0.0'
-  api 'host.exp.exponent:expo-file-system-interface-abi30_0_0:1.0.0'
-  api 'host.exp.exponent:expo-file-system-abi30_0_0:1.0.0'
-  api 'host.exp.exponent:expo-face-detector-interface-abi30_0_0:1.0.0'
-  api 'host.exp.exponent:expo-face-detector-abi30_0_0:1.0.0'
-  api 'host.exp.exponent:expo-core-abi30_0_0:1.0.0'
-  api 'host.exp.exponent:expo-contacts-abi30_0_0:1.0.0'
-  api 'host.exp.exponent:expo-constants-interface-abi30_0_0:1.0.0'
-  api 'host.exp.exponent:expo-constants-abi30_0_0:1.0.0'
-  api 'host.exp.exponent:expo-camera-interface-abi30_0_0:1.0.0'
-  api 'host.exp.exponent:expo-camera-abi30_0_0:1.0.0'
-  api 'host.exp.exponent:expo-barcode-scanner-interface-abi30_0_0:1.0.0'
-  api 'host.exp.exponent:expo-barcode-scanner-abi30_0_0:1.0.0'
-  api 'host.exp.exponent:expo-ads-admob-abi30_0_0:1.0.0'
+  // BEGIN_SDK_30
   api 'host.exp:reactandroid-abi30_0_0:1.0.0'
-  api 'host.exp.exponent:expo-gl-abi29_0_0:1.0.0'
-  api 'host.exp.exponent:expo-face-detector-abi29_0_0:1.0.0'
-  api 'host.exp.exponent:expo-sms-abi29_0_0:1.0.0'
-  api 'host.exp.exponent:expo-face-detector-interface-abi29_0_0:1.0.0'
-  api 'host.exp.exponent:expo-permissions-interface-abi29_0_0:1.0.0'
-  api 'host.exp.exponent:expo-file-system-interface-abi29_0_0:1.0.0'
-  api 'host.exp.exponent:expo-react-native-adapter-abi29_0_0:1.0.0'
-  api 'host.exp.exponent:expo-constants-interface-abi29_0_0:1.0.0'
-  api 'host.exp.exponent:expo-sensors-interface-abi29_0_0:1.0.0'
-  api 'host.exp.exponent:expo-camera-interface-abi29_0_0:1.0.0'
-  api 'host.exp.exponent:expo-permissions-abi29_0_0:1.0.0'
-  api 'host.exp.exponent:expo-file-system-abi29_0_0:1.0.0'
-  api 'host.exp.exponent:expo-constants-abi29_0_0:1.0.0'
-  api 'host.exp.exponent:expo-sensors-abi29_0_0:1.0.0'
-  api 'host.exp.exponent:expo-camera-abi29_0_0:1.0.0'
-  api 'host.exp.exponent:expo-core-abi29_0_0:1.0.0'
-  api 'host.exp.exponent:expo-gl-abi29_0_0:1.0.0'
-  api 'host.exp:reactandroid-abi29_0_0:1.0.0'
+  // END_SDK_30
+  // BEGIN_SDK_29
+  api'host.exp:reactandroid-abi29_0_0:1.0.0'
+  // END_SDK_29
+  // BEGIN_SDK_28
   api 'host.exp:reactandroid-abi28_0_0:1.0.0'
+  // END_SDK_28
+  // BEGIN_SDK_27
   api 'host.exp:reactandroid-abi27_0_0:1.0.0'
+  // END_SDK_27
+  // BEGIN_SDK_26
   api 'host.exp:reactandroid-abi26_0_0:1.0.0'
+  // END_SDK_26
+  // BEGIN_SDK_25
   api 'host.exp:reactandroid-abi25_0_0:1.0.0'
+  // END_SDK_25
+  // BEGIN_SDK_24
   api 'host.exp:reactandroid-abi24_0_0:1.0.0'
+  // END_SDK_24
+  // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
+  // WHEN_VERSIONING_REMOVE_TO_HERE
+  // WHEN_DISTRIBUTING_REMOVE_TO_HERE
 
   // React native dependencies
   // We use a different version of appcompat
-  api 'com.android.support:recyclerview-v7:27.1.1'
-  api 'com.facebook.fbui.textlayoutbuilder:textlayoutbuilder:1.0.0'
   api 'com.facebook.fresco:fresco:1.0.1'
   api 'com.facebook.fresco:animated-gif:1.0.1'
   api 'com.facebook.fresco:animated-webp:1.0.1'
@@ -247,7 +225,6 @@ dependencies {
   // Our dependencies
   api 'com.android.support:appcompat-v7:27.1.1'
   api 'com.android.support:customtabs:27.1.1'
-  api 'com.android.support:cardview-v7:27.1.1'
   api('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') {
     transitive = true;
   }
@@ -264,12 +241,8 @@ dependencies {
   api 'com.google.android.gms:play-services-maps:15.0.1'
   api 'com.google.android.gms:play-services-auth:15.0.1'
   api 'com.google.android.gms:play-services-location:15.0.1'
-  api 'com.google.android.gms:play-services-ads:15.0.1'
   api 'com.google.android.gms:play-services-fitness:15.0.1'
-  api 'com.google.android.gms:play-services-vision:15.0.2'
   api 'com.google.android.gms:play-services-wallet:15.0.1' //may need 10.+
-  api 'com.stripe:stripe-android:2.1.+'
-  api 'com.github.tipsi:CreditCardEntry:1.4.8.10'
   annotationProcessor 'com.raizlabs.android:DBFlow-Compiler:2.2.1'
   api "com.raizlabs.android:DBFlow-Core:2.2.1"
   api "com.raizlabs.android:DBFlow:2.2.1"
@@ -278,7 +251,6 @@ dependencies {
   debugApi 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta1'
   // debugApi 'com.squareup.leakcanary:leakcanary-android:1.4-beta1'
   releaseApi 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta1'
-  api 'com.facebook.device.yearclass:yearclass:1.0.1'
   api 'commons-io:commons-io:1.3.2'
   // Newer version introduces dependency versions conflict
   // on 'com.android.support:support-annotations'
@@ -291,26 +263,20 @@ dependencies {
   api 'com.theartofdev.edmodo:android-image-cropper:2.4.7'
   api 'com.yqritc:android-scalablevideoview:1.0.1'
   api 'commons-codec:commons-codec:1.10'
-  api 'com.segment.analytics.android:analytics:4.3.0'
-  api 'com.google.zxing:core:3.3.2'
   api 'net.openid:appauth:0.4.1'
   api('com.airbnb.android:lottie:2.5.5') {
     exclude group: 'com.android.support', module: 'appcompat-v7'
   }
   api 'io.branch.sdk.android:library:2.17.1'
-  api('io.nlopez.smartlocation:library:3.2.11') {
-    transitive = false
-  }
   api 'com.android.support:exifinterface:27.1.1'
-  api 'com.google.android:cameraview:1.0.0'
   api 'com.google.firebase:firebase-core:16.0.1'
   api 'com.google.firebase:firebase-messaging:17.1.0'
   api 'com.google.maps.android:android-maps-utils:0.5+'
   api 'com.jakewharton:butterknife:8.4.0'
   annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
-  /*api('com.gettipsi:stripeview:1.0.0') {
-      transitive = false
-      exclude group: 'com.facebook.react', module: 'react-native'
-  }*/
   // Remember to update DetachAppTemplate build.gradle if you add any excludes or transitive = false here!
+
+  // expo-file-system
+  api 'com.squareup.okhttp3:okhttp:3.10.0'
+  api 'com.squareup.okhttp3:okhttp-urlconnection:3.10.0'
 }

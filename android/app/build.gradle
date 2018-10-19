@@ -153,13 +153,14 @@ dependencies {
     transitive = false
   }
   implementation 'com.android.support:exifinterface:27.1.1'
-  implementation 'com.squareup.okhttp3:okhttp:3.4.1'
-  implementation 'com.squareup.okhttp3:okhttp-urlconnection:3.4.1'
-  implementation 'com.squareup.okhttp3:okhttp-ws:3.4.1'
   implementation 'com.squareup.okio:okio:1.9.0'
 
   implementation 'com.google.android.exoplayer:exoplayer:2.6.1'
   implementation 'expolib_v1.com.google.android.exoplayer:expolib_v1-extension-okhttp:2.6.1@aar'
+
+  // expo-file-system
+  implementation 'com.squareup.okhttp3:okhttp:3.10.0'
+  implementation 'com.squareup.okhttp3:okhttp-urlconnection:3.10.0'
 
   // Testing
   androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
@@ -183,12 +184,46 @@ dependencies {
     exclude group: 'com.squareup.okhttp3', module: 'okhttp-urlconnection'
   }
   END UNCOMMENT WHEN DISTRIBUTING */
+
   // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
-  implementation(project(path: ':expoview')) {
-    // Excluding okhttp3 included by expo-file-system
-    exclude group: 'com.squareup.okhttp3', module: 'okhttp'
-    exclude group: 'com.squareup.okhttp3', module: 'okhttp-urlconnection'
-  }
+
+  // BEGIN_SDK_UNVERSIONED
+  implementation(project(path: ':expoview'))
+  // END_SDK_UNVERSIONED
+
+  // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
+
+  // ADD_NEW_SDKS_HERE
+
+  // BEGIN_SDK_30
+  implementation(project(':expoview-abi30_0_0'))
+  // END_SDK_30
+
+  // BEGIN_SDK_29
+  implementation(project(':expoview-abi29_0_0'))
+  // END_SDK_29
+
+  // BEGIN_SDK_28
+  implementation(project(':expoview-abi28_0_0'))
+  // END_SDK_28
+
+  // BEGIN_SDK_27
+  implementation(project(':expoview-abi27_0_0'))
+  // END_SDK_27
+
+  // BEGIN_SDK_26
+  implementation(project(':expoview-abi26_0_0'))
+  // END_SDK_26
+
+  // BEGIN_SDK_25
+  implementation(project(':expoview-abi25_0_0'))
+  // END_SDK_25
+
+  // BEGIN_SDK_24
+  implementation(project(':expoview-abi24_0_0'))
+  // END_SDK_24
+
+  // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
   // WHEN_DISTRIBUTING_REMOVE_TO_HERE
 }
 
