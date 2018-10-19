@@ -5,30 +5,19 @@ package expo.modules.ar;
 import android.content.Context;
 import android.graphics.SurfaceTexture;
 import android.os.Bundle;
-import android.os.Parcelable;
 
-import com.google.ar.core.Anchor;
-import com.google.ar.core.AugmentedImage;
 import com.google.ar.core.Camera;
 import com.google.ar.core.Config;
 import com.google.ar.core.Frame;
 import com.google.ar.core.HitResult;
-import com.google.ar.core.LightEstimate;
-import com.google.ar.core.Plane;
-import com.google.ar.core.Point;
-import com.google.ar.core.PointCloud;
-import com.google.ar.core.Pose;
 import com.google.ar.core.Session;
-import com.google.ar.core.Trackable;
 import com.google.ar.core.TrackingState;
 import com.google.ar.core.exceptions.CameraNotAvailableException;
 import com.google.ar.core.exceptions.UnavailableApkTooOldException;
 import com.google.ar.core.exceptions.UnavailableArcoreNotInstalledException;
 import com.google.ar.core.exceptions.UnavailableSdkTooOldException;
 
-import java.nio.FloatBuffer;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -36,7 +25,6 @@ import expo.core.ModuleRegistry;
 import expo.core.Promise;
 import expo.core.interfaces.ActivityProvider;
 import expo.modules.ar.gl.ARGLCameraObject;
-import expo.modules.ar.gl.ARGLCameraObject2;
 import expo.modules.gl.GLView;
 
 public class ARSessionManager implements GLView.OnSurfaceTextureUpdatedListener {
@@ -51,8 +39,8 @@ public class ARSessionManager implements GLView.OnSurfaceTextureUpdatedListener 
 
   public ARSessionManagerDelegate delegate;
 
-//  private ARGLCameraObject mCameraObject;
-  private ARGLCameraObject2 mCameraObject;
+//  private ARGLCameraObjectExperimental mCameraObject;
+  private ARGLCameraObject mCameraObject;
   private Session mSession;
   private GLView mGLView;
   private boolean isReady = false;
@@ -85,7 +73,7 @@ public class ARSessionManager implements GLView.OnSurfaceTextureUpdatedListener 
     mGLView.runOnGLThread(new Runnable() {
       @Override
       public void run() {
-        mCameraObject = new ARGLCameraObject2(mContext, mSession, mGLView);
+        mCameraObject = new ARGLCameraObject(mContext, mSession, mGLView);
         mCameraObject.createOnGLThread();
         completionHandler.run();
       }

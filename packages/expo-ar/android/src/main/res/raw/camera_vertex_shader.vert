@@ -1,9 +1,13 @@
-attribute vec2 aPosition;
-attribute vec2 aTextureCoord;
+#version 300 es
 
-varying vec2 uv;
+precision highp float;
+
+in vec2 aPosition;
+uniform mat4 uTransformMatrix;
+out vec2 uv;
 
 void main() {
-   uv = aTextureCoord;
-   gl_Position = vec4(aPosition, 0.0, 1.0);
+   vec2 clipSpace = (1.0 - 2.0 * aPosition.xy);
+   uv = (uTransformMatrix * vec4(aPosition, 0.0, 0.0)).xy;
+   gl_Position = vec4(clipSpace, 0.0, 1.0);
 }
