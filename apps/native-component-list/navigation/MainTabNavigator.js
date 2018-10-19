@@ -6,6 +6,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 
 import { Colors, Layout } from '../constants';
 
+import ARScreen from '../screens/AR/ARScreen';
 import ARScreens from '../screens/AR/ARScreens';
 import BarCodeScannerScreen from '../screens/BarCodeScannerScreen';
 import BlurViewScreen from '../screens/BlurViewScreen';
@@ -125,8 +126,9 @@ const ExpoComponentsStackNavigator = createStackNavigator(
 
 const ExpoApisStackNavigator = createStackNavigator(
   {
-    ...ARScreens,
     ExpoApis: { screen: ExpoApisScreen },
+    ...ARScreens,
+    AR: { screen: ARScreen },
     AuthSession: { screen: AuthSessionScreen },
     Branch: { screen: BranchScreen },
     DocumentPicker: { screen: DocumentPickerScreen },

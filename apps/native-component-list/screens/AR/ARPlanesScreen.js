@@ -1,19 +1,23 @@
 import React from 'react';
-import { AR } from 'expo';
+import { AR, Permissions } from 'expo';
 import * as ExpoTHREE from 'expo-three';
 import * as THREE from 'three';
+
+import { PermissionsRequester } from './components';
 
 export default class App extends React.Component {
   static title = 'AR Planes';
 
   render() {
     return (
-      <AR.ARView
-        style={{ flex: 1 }}
-        onContextCreate={this.onContextCreate}
-        onRender={this.onRender}
-        onResize={this.onResize}
-      />
+      <PermissionsRequester permissionsTypes={[Permissions.CAMERA]}>
+        <AR.ARView
+          style={{ flex: 1 }}
+          onContextCreate={this.onContextCreate}
+          onRender={this.onRender}
+          onResize={this.onResize}
+        />
+      </PermissionsRequester>
     );
   }
 
@@ -41,7 +45,7 @@ export default class App extends React.Component {
     this.scene.add(this.planes);
   };
 
-  onResize = ({ x, y, scale, width, height }) => {
+  onResize = ({ scale, width, height }) => {
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
     this.renderer.setPixelRatio(scale);

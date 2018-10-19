@@ -120,7 +120,7 @@ export enum PlaneDetection {
  * Possible types for specifying a hit-test search, or for the result of a hit-test search.
  * https://developer.apple.com/documentation/arkit/arhittestresulttype
  */
-export enum HitTestResultTypes {
+export enum HitTestResultType {
   /**
    * Result type from intersecting the nearest feature point.
    */

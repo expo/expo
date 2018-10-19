@@ -258,8 +258,7 @@ API_AVAILABLE(ios(11.3))
 
 #pragma mark - Decode AR
 
-+ (ARPlaneDetection)decodeARPlaneDetection:(NSString *)input
-API_AVAILABLE(ios(11.0))
++ (ARPlaneDetection)decodeARPlaneDetection:(NSString *)input API_AVAILABLE(ios(11.0))
 {
   if ([input isEqualToString:@"horizontal"]) {
     return ARPlaneDetectionHorizontal;
@@ -273,8 +272,7 @@ API_AVAILABLE(ios(11.0))
   return ARPlaneDetectionNone;
 }
 
-+ (ARHitTestResultType)decodeARHitTestResultType:(NSString *)input
-API_AVAILABLE(ios(11.0))
++ (ARHitTestResultType)decodeARHitTestResultType:(NSString *)input API_AVAILABLE(ios(11.0))
 {
   if ([input isEqualToString:@"horizontalPlane"]) {
     return ARHitTestResultTypeEstimatedHorizontalPlane;

@@ -318,13 +318,19 @@ EX_EXPORT_METHOD_AS(setWorldAlignmentAsync,
 
 EX_EXPORT_METHOD_AS(performHitTestAsync,
                     performHitTestAsync:(NSDictionary *)point
-                    types:(NSString *)types
+                    types:(NSArray<NSString *> *)types
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject)
+API_AVAILABLE(ios(11.0))
 {
-  if (![self sessionExistsOrReject:reject]) return;
-  if (![self V2OrReject:reject]) return;
-  resolve([_arSessionManager performHitTest:CGPointMake([point[@"x"] doubleValue], [point[@"y"] doubleValue]) types:[[self class] decodeARHitTestResultType:types]]);
+  if (![self sessionExistsOrReject:reject] || ![self V2OrReject:reject]) {
+    return;
+  }
+  CGPoint requestedPoint = CGPointMake([point[@"x"] doubleValue], [point[@"y"] doubleValue]);
+  // TODO: bbarthec handle multiple types
+  ARHitTestResultType requestedTypes = [[self class] decodeARHitTestResultType:types[0]];
+  NSDictionary *result = [_arSessionManager performHitTest:requestedPoint types:requestedTypes];
+  resolve(result);
 }
 
 EX_EXPORT_METHOD_AS(getWorldAlignmentAsync,

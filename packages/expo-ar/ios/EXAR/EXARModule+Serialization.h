@@ -3,7 +3,7 @@
 #import <ARKit/ARKit.h>
 #import <EXAR/EXARModule.h>
 
-API_AVAILABLE(ios(11.3))
+API_AVAILABLE(ios(11.0))
 @interface EXARModule (Serialization)
 
 + (nullable NSArray *)encodeMatrixFloat4x4:(matrix_float4x4)matrix;

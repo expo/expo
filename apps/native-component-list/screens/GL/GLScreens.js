@@ -1,10 +1,13 @@
 import { Dimensions } from 'react-native';
+import * as Expo from 'expo';
 
 import GLScreen from './GLScreen';
 import GLWrap from './GLWrap';
 import GLCameraScreen from './GLCameraScreen';
 import GLSnapshotsScreen from './GLSnapshotsScreen';
 import GLHeadlessRenderingScreen from './GLHeadlessRenderingScreen';
+import GLRotatingCubeWithCameraScreen from './GLRotatingCubeWithCameraScreen';
+import GLTHREEWithCameraTextureScreen from './GLTHREEWithCameraTextureScreen';
 
 const THREE = require('three');
 global.THREE = THREE;
@@ -16,7 +19,7 @@ require('three/examples/js/postprocessing/RenderPass');
 require('three/examples/js/postprocessing/ShaderPass');
 require('three/examples/js/postprocessing/GlitchPass');
 require('three/examples/js/postprocessing/FilmPass');
-import ExpoTHREE from 'expo-three';
+import * as ExpoTHREE from 'expo-three';
 
 import ProcessingWrap from './ProcessingWrap';
 
@@ -252,6 +255,10 @@ void main () {
     }),
   },
 
+  THREEWithCameraTexture: {
+    screen: GLTHREEWithCameraTextureScreen,
+  },
+
   ProcessingInAndOut: {
     screen: ProcessingWrap(`'In and out' from openprocessing.org`, p => {
       p.setup = () => {
@@ -369,30 +376,12 @@ void main () {
     }),
   },
 
-  PIXISprite: {
-    screen: GLWrap('pixi.js sprite rendering', async gl => {
-      const { scale: resolution } = Dimensions.get('window');
-      const width = gl.drawingBufferWidth / resolution;
-      const height = gl.drawingBufferHeight / resolution;
-      const app = new PIXI.Application({
-        context: gl,
-        width,
-        height,
-        resolution,
-        backgroundColor: 0xffffff,
-      });
-      app.ticker.add(() => gl.endFrameEXP());
-
-      const asset = Expo.Asset.fromModule(require('../../assets/images/nikki.png'));
-      await asset.downloadAsync();
-      const image = new HTMLImageElement(asset);
-      const sprite = PIXI.Sprite.from(image);
-      app.stage.addChild(sprite);
-    }),
-  },
-
   Camera: {
     screen: GLCameraScreen,
+  },
+
+  RotatingCubeWithCamera: {
+    screen: GLRotatingCubeWithCameraScreen,
   },
 
   // WebGL 2.0 sample - http://webglsamples.org/WebGL2Samples/#transform_feedback_separated_2

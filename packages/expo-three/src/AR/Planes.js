@@ -70,7 +70,6 @@ class Planes extends THREE.Object3D {
       [AR.FrameAttribute.Anchors]: {},
     });
     const planes = anchors.filter(({ type }) => type === AR.AnchorType.Plane);
-    console.log(planes.length);
     this.data = planes;
   };
 }

@@ -1,5 +1,5 @@
 // @flow
-import Expo from 'expo';
+import { Asset } from 'expo';
 import { Image } from 'react-native';
 import AssetUtils from 'expo-asset-utils';
 
@@ -19,7 +19,7 @@ const resolveAsset = async fileReference => {
 
 export async function stringFromAsset(asset): Promise<string | void> {
   let url: string;
-  if (asset instanceof Expo.Asset) {
+  if (asset instanceof Asset) {
     if (!asset.localUri) {
       await asset.downloadAsync();
     }

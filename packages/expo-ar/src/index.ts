@@ -1,1 +1,2 @@
-export * from './AR';
+import * as AR from './AR';
+export { AR };

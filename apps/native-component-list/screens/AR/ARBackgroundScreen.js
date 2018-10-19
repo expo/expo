@@ -1,56 +1,66 @@
 import React from 'react';
-import { AR, GLView } from 'expo';
-import { findNodeHandle, StyleSheet, View } from 'react-native';
+import { AR, GLView, Permissions } from 'expo';
+import { StyleSheet, View } from 'react-native';
 
 import { initShaderProgram, checkGLError } from './ARUtils';
+import { PermissionsRequester } from './components';
 
 export default class ARBackgroundScreen extends React.Component {
-  static title = 'AR Background';
+  static title = 'AR Camera Preview Background (plain WebGL)';
 
   render() {
     return (
-      <View style={{ flex: 1 }}>
-        <GLView
-          ref={ref => (this.glView = ref)}
-          style={StyleSheet.absoluteFill}
-          onContextCreate={this.onGLContextCreate}
-        />
-      </View>
+      <PermissionsRequester permissionsTypes={[Permissions.CAMERA]}>
+        <View style={{ flex: 1 }}>
+          <GLView
+            ref={ref => (this.glView = ref)}
+            style={StyleSheet.absoluteFill}
+            onContextCreate={this.onGLContextCreate}
+          />
+        </View>
+      </PermissionsRequester>
     );
   }
 
   createBackgroundGLProgram = gl => {
-    const program = initShaderProgram(gl, `
-      precision highp float;
+    const program = initShaderProgram(
+      gl,
+      `
+        #version 300 es
+        precision highp float;
 
-      attribute vec2 aTextureCoord;
-      varying vec2 uv;
+        in vec2 aTextureCoord;
+        out vec2 uv;
 
-      void main() {
-        uv = aTextureCoord;
-        gl_Position = vec4(1.0 - 2.0 * aTextureCoord, -1, 1);
-      }
-    `, `
-      precision highp float;
-      
-      uniform sampler2D uSampler;
-      varying vec2 uv;
-      
-      void main() {
-        gl_FragColor = texture2D(uSampler, vec2(1) - uv);
-      }
-    `);
+        void main() {
+          uv = aTextureCoord;
+          gl_Position = vec4(1.0 - 2.0 * aTextureCoord, 0.0, 1.0);
+        }
+      `,
+      `
+        #version 300 es
+        precision highp float;
+        
+        uniform sampler2D uSampler;
+        in vec2 uv;
+        out vec4 fragColor;
+
+        void main() {
+          fragColor = vec4(1.0 - texture(uSampler, 1.0 - uv).rgb, 1.0);
+        }
+      `
+    );
 
     return {
       program,
       attribLocations: {
-        textureCoord: gl.getAttribLocation(program, 'position'),
+        textureCoord: gl.getAttribLocation(program, 'aTextureCoord'),
       },
       uniformLocations: {
         uSampler: gl.getUniformLocation(program, 'uSampler'),
       },
     };
-  }
+  };
 
   createBackgroundBuffers = gl => {
     // vertices would be placed outside the visible box
@@ -64,14 +74,18 @@ export default class ARBackgroundScreen extends React.Component {
     //      /  |______|__\
     //     /       ___/
     //    /    ___/
-    //   / ___/        
+    //   / ___/
     //  /_/
     //
+
+    /* eslint-disable prettier/prettier */
     const verticesCoords = [ // these vertices would be transformed by vertexShader into:
       -2,  0, //  5,  1
        0, -2, //  1,  5
        2,  2, // -3, -3
     ]; // that would allow us to render only one triangle that would contain whole visible screen with texture
+    /* eslint-enable */
+
     const positionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verticesCoords), gl.STATIC_DRAW);
@@ -79,39 +93,35 @@ export default class ARBackgroundScreen extends React.Component {
     return {
       positionBuffer,
     };
-  }
+  };
 
   createCameraStream = async gl => {
-    const {
-      program,
-      attribLocations,
-      uniformLocations,
-    } = this.createBackgroundGLProgram(gl);
+    const { program, attribLocations, uniformLocations } = this.createBackgroundGLProgram(gl);
+    checkGLError(gl, 'CREATE PROGRAM');
+    const { positionBuffer } = this.createBackgroundBuffers(gl);
+    checkGLError(gl, 'CREATE BUFFERS');
 
-    const {
-      positionBuffer,
-    } = this.createBackgroundBuffers(gl);
+    const texture = await AR.getCameraTextureAsync();
 
-    const capturedCameraTexture = await AR.getCameraTextureAsync();
-    const texture = new WebGLTexture(capturedCameraTexture);
-    
     return {
       draw: () => {
         gl.useProgram(program);
+        checkGLError(gl, 'USE PROGRAM');
 
         gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
         gl.enableVertexAttribArray(attribLocations.textureCoord);
         gl.vertexAttribPointer(attribLocations.textureCoord, 2, gl.FLOAT, false, 0, 0);
+        checkGLError(gl, 'PASS TEXTURE COORDS');
 
-        gl.uniform1i(uniformLocations.uSampler, 0);
+        gl.uniform1i(uniformLocations.uSampler, 2);
+        checkGLError(gl, 'PASS TEXTURE');
 
-        // cleanup element array buffer
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
-
-        gl.activeTexture(gl.TEXTURE0);
+        gl.activeTexture(gl.TEXTURE2);
+        checkGLError(gl, 'ACTIVE TEXTURE');
         gl.bindTexture(gl.TEXTURE_2D, texture);
-        gl.drawArrays(gl.TRIANGLES, 0, 3); // we have 3 vertices
-        checkGLError(gl, 'draw camera');
+        checkGLError(gl, 'BIND TEXTURE');
+        gl.drawArrays(gl.TRIANGLES, 0, 3);
+        checkGLError(gl, 'DRAW ELEMENTS');
       },
     };
   };
@@ -119,33 +129,34 @@ export default class ARBackgroundScreen extends React.Component {
   onGLContextCreate = async gl => {
     this.gl = gl;
 
-    await AR.startAsync(findNodeHandle(this.glView.nativeRef), AR.TrackingConfiguration.World);
+    // gl.enableLogging = true;
+
+    await AR.startAsync(this.glView.nativeRef, AR.TrackingConfiguration.World);
 
     this.cameraStream = await this.createCameraStream(this.gl);
 
-    let then = 0;
-    // Render loop
-    const loop = time => {
-      const now = time * 0.001;
-      const deltaTime = now - then;
-      then = now;
+    checkGLError(gl, 'BEFORE RENDERING LOOP');
 
+    // Render loop
+    const loop = () => {
+      if (!checkGLError(gl, 'NATIVE GL FAILURE')) {
+        alert('Native part of GL code failed! Inspect there for a reason!');
+        return;
+      }
       // Clear
-      gl.clearColor(0.2, 0.5, 0.5, 1);
-      gl.clearDepth(1.0);
-      gl.enable(gl.DEPTH_TEST);
-      gl.depthFunc(gl.LEQUAL);
+      gl.clearColor(0, 0.1, 0.2, 1);
       gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+      if (!checkGLError(gl, 'CLEAR')) {
+        return;
+      }
 
       // Draw camera stream
-      if (this.cameraStream) {
-        this.cameraStream.draw(deltaTime);
-      }
+      this.cameraStream.draw();
 
       // Submit frame
       gl.endFrameEXP();
       requestAnimationFrame(loop);
     };
-    requestAnimationFrame(loop);
+    loop();
   };
 }

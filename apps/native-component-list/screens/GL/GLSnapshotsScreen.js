@@ -1,7 +1,7 @@
 import { Asset, GLView } from 'expo';
 import React from 'react';
 import * as THREE from 'three';
-import ExpoTHREE from 'expo-three';
+import * as ExpoTHREE from 'expo-three';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default class GLSnapshotsScreen extends React.PureComponent {

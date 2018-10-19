@@ -457,31 +457,39 @@ static GLfloat imagePlaneVerts[6] = { -2.0f, 0.0f, 0.0f, -2.0f, 2.0f, 2.0f };
   return nil;
 }
 
-- (NSDictionary *)performHitTest:(CGPoint)point types:(ARHitTestResultType)types
+- (NSArray *)performHitTest:(CGPoint)point types:(ARHitTestResultType)types
 {
   if (!self.session) {
     return nil;
   }
-  NSMutableArray *hitTest = [NSMutableArray array];
   
   if (@available(iOS 11.0, *)) {
     CGPoint adjustedPoint = CGPointApplyAffineTransform(point, CGAffineTransformInvert(_viewportTransform));
-    
     NSArray<ARHitTestResult *> *results = [self.session.currentFrame hitTest:adjustedPoint types:types];
     
-    for (ARHitTestResult *result in results) {
-      [hitTest addObject:@{
-                           @"type": [NSNumber numberWithInt: result.type],
-                           @"distance": [NSNumber numberWithFloat:result.distance],
-                           @"localTransform": [[EXARModule class] encodeMatrixFloat4x4:result.localTransform],
-                           // Change to transform
-                           @"worldTransform": [[EXARModule class] encodeMatrixFloat4x4:result.worldTransform],
-                           @"transform": [[EXARModule class] encodeMatrixFloat4x4:result.worldTransform],
-                           @"anchor": [[EXARModule class] encodeARAnchor:result.anchor props:@{}]
-                           }];
-    }
+    return [self serializeHitResults:results];
+  } else {
+    return @[];
   }
-  return hitTest;
+}
+
+- (NSArray<NSDictionary *> *)serializeHitResults:(NSArray<ARHitTestResult *> *)hitResults
+{
+  NSMutableArray *results = [NSMutableArray array];
+  for (ARHitTestResult *result in hitResults) {
+    [results addObject:@{
+                         // common with Android
+                         @"anchor": [[EXARModule class] encodeARAnchor:result.anchor props:@{}],
+                         @"distance": [NSNumber numberWithFloat:result.distance],
+                         @"transform": [[EXARModule class] encodeMatrixFloat4x4:result.worldTransform],
+                         
+                         // iOS-specific
+                         @"type": [NSNumber numberWithInt:result.type],
+                         @"localTransform": [[EXARModule class] encodeMatrixFloat4x4:result.localTransform],
+                         @"worldTransform": [[EXARModule class] encodeMatrixFloat4x4:result.worldTransform],
+                         }];
+  }
+  return results;
 }
 
 #pragma mark - Private Methods

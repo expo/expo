@@ -59,10 +59,6 @@ export type HitTest = {
   anchor: Anchor;
 };
 
-export type HitTestResults = {
-  hitTest: HitTest;
-};
-
 export type DetectionImage = {
   uri: string;
   width: number;

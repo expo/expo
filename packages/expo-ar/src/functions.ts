@@ -1,3 +1,9 @@
+declare global {
+  class WebGLTexture {
+    constructor(textureID: number);
+  }
+}
+
 import {
   Dimensions,
   EmitterSubscription,
@@ -10,7 +16,7 @@ import { EventEmitter, NativeModulesProxy } from 'expo-core';
 import {
   AnchorEventType,
   EventType,
-  HitTestResultTypes,
+  HitTestResultType,
   PlaneDetection,
   TrackingState,
   TrackingStateReason,
@@ -23,7 +29,7 @@ import {
   ARFrame,
   ARMatrices,
   DetectionImage,
-  HitTestResults,
+  HitTest,
   Matrix,
   VideoFormat,
   Vector2,
@@ -64,39 +70,27 @@ export function getUnavailabilityReason(): string {
   return 'Unknown Reason';
 }
 
-export function onFrameDidUpdate(
-  listener: (event: {}) => void
-): EmitterSubscription {
+export function onFrameDidUpdate(listener: (event: {}) => void): EmitterSubscription {
   return _addListener(EventType.FrameDidUpdate, listener);
 }
 
-export function onDidFailWithError(
-  listener: (event: { error: Error }) => void
-): EmitterSubscription {
+export function onDidFailWithError(listener: (event: { error: Error }) => void): EmitterSubscription {
   return _addListener(EventType.DidFailWithError, listener);
 }
 
-export function onAnchorsDidUpdate(
-  listener: (event: { eventType: AnchorEventType; anchors: Anchor[] }) => void
-): EmitterSubscription {
+export function onAnchorsDidUpdate(listener: (event: { eventType: AnchorEventType; anchors: Anchor[] }) => void): EmitterSubscription {
   return _addListener(EventType.AnchorsDidUpdate, listener);
 }
 
-export function onCameraDidChangeTrackingState(
-  listener: (event: { trackingState: TrackingState, trackingStateReason: TrackingStateReason }) => void
-): EmitterSubscription {
+export function onCameraDidChangeTrackingState(listener: (event: { trackingState: TrackingState, trackingStateReason: TrackingStateReason }) => void): EmitterSubscription {
   return _addListener(EventType.CameraDidChangeTrackingState, listener);
 }
 
-export function onSessionWasInterrupted(
-  listener: (event: {}) => void
-): EmitterSubscription {
+export function onSessionWasInterrupted(listener: (event: {}) => void): EmitterSubscription {
   return _addListener(EventType.SessionWasInterrupted, listener);
 }
 
-export function onSessionInterruptionEnded(
-  listener: (event: {}) => void
-): EmitterSubscription {
+export function onSessionInterruptionEnded(listener: (event: {}) => void): EmitterSubscription {
   return _addListener(EventType.SessionInterruptionEnded, listener);
 }
 
@@ -109,7 +103,7 @@ export function removeAllListeners(eventType?: EventType): void {
 }
 
 // TODO: support multiple types (take an array or bit flags)
-export function performHitTest(point: Vector2, types: HitTestResultTypes): HitTestResults {
+export async function performHitTest(point: Vector2, types: HitTestResultType): Promise<HitTest[]> {
   return ExpoAR.performHitTest(point, types);
 }
 
@@ -129,7 +123,9 @@ export async function stopAsync(): Promise<void> {
   return ExpoAR.stopAsync();
 }
 
-
+/**
+ * Start AR session
+ */
 export async function startAsync(
   node: number | React.Component,
   configuration: TrackingConfiguration
@@ -177,8 +173,9 @@ export function getPlaneDetection(): PlaneDetection {
   return ExpoAR.getPlaneDetection();
 }
 
-export async function getCameraTextureAsync(): Promise<number> {
-  return ExpoAR.getCameraTextureAsync();
+export async function getCameraTextureAsync(): Promise<WebGLTexture> {
+  const capturedCameraTexture = await ExpoAR.getCameraTextureAsync();
+  return new WebGLTexture(capturedCameraTexture);
 }
 
 export async function setWorldOriginAsync(matrix_float4x4: Matrix): Promise<void> {

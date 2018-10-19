@@ -21,8 +21,9 @@ export function initShaderProgram(gl, vertexShaderSource, fragmentShaderSource) 
   gl.linkProgram(program);
 
   if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-    throw new Error(`Unable to initialize the shader program: ${gl.getProgramInfoLog(program)}`);
+    throw new Error(`Unable to initialize the sahder program: ${gl.getProgramInfoLog(program)}`);
   }
+  gl.validateProgram(program);
   return program;
 }
 
@@ -38,9 +39,8 @@ export function checkGLError(gl, logPrefix) {
     default: 'NOT RECOGNISED ERROR',
   };
   let errorCode;
-  if ((errorCode = gl.getError())) {
+  while ((errorCode = gl.getError())) {
+    // eslint-disable-next-line prettier/prettier
     console.warn(`${logPrefix ? `[${String(logPrefix).toUpperCase()}]` : ''} GL error occured: ${codes[errorCode] || codes.default}`);
-    return false;
   }
-  return true;
 }

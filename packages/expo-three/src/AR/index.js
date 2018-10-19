@@ -8,6 +8,11 @@ export { default as ShadowFloor } from './ShadowFloor';
 export { default as Camera } from './Camera';
 export { default as BackgroundTexture } from './BackgroundTexture';
 
+/**
+ * Use this insted of THREE.js#Scene on Android
+ */
+export { default as Scene } from './Scene';
+
 export {
   suppressWarnings,
   hitTestWithFeatures,

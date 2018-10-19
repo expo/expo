@@ -23,10 +23,6 @@ export default class ComponentListScreen extends React.Component {
     }),
   };
 
-  componentWillMount() {
-    const { tabName } = this.props;
-  }
-
   componentDidMount() {
     let dataSource = this.state.dataSource.cloneWithRowsAndSections(
       this.props.apis.reduce((sections, name) => {
