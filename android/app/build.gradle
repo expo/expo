@@ -58,7 +58,7 @@ android {
     }
     prodMinSdk {
       dimension 'minSdk'
-      minSdkVersion 19
+      minSdkVersion 21
     }
   }
   buildTypes {
