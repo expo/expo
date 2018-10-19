@@ -198,9 +198,6 @@ class Camera2 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
 
     };
 
-    // WARNING
-    // this is a simplified version of a conversion, but it's enough for QR code detection
-    // for a proper conversion U-channel should be extracted into byte array result
     private static byte[] YUV_420_888toNV21(Image image) {
         byte[] nv21;
         ByteBuffer yBuffer = image.getPlanes()[0].getBuffer();
