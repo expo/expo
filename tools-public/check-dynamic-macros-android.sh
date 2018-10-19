@@ -18,6 +18,13 @@ fi
 
 pushd $scriptdir
 
+function throwIfFileDoesntExist() {
+  if [ ! -f "../$1" ]; then
+    echo "File $1 not found!" > /dev/stderr
+    exit 1
+  fi
+}
+
 awk -F'"' '
   # splits lines on `"` character which lets us detect key and value in:
   #   "fileName": "pathForFile",
@@ -31,10 +38,9 @@ awk -F'"' '
   }' ../template-files/android-paths.json |
 while read PATH_TO_CHECK
 do
-if [ ! -f "../$PATH_TO_CHECK" ]; then
-  echo "File $PATH_TO_CHECK not found!" > /dev/stderr
-  exit 1
-fi
+  throwIfFileDoesntExist $PATH_TO_CHECK
 done
+
+throwIfFileDoesntExist "android/expoview/src/main/java/host/exp/exponent/generated/ExponentBuildConstants.java"
 
 popd
