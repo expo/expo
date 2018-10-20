@@ -48,16 +48,6 @@ export default class LinearGradient extends React.Component<Props> {
   }
 }
 
-const NativeLinearGradient = requireNativeComponent('ExponentLinearGradient', {
-  propTypes: {
-    ...ViewPropTypes,
-    colors: PropTypes.arrayOf(PropTypes.number),
-    locations: LinearGradient.propTypes.locations,
-    startPoint: PropTypes.arrayOf(PropTypes.number),
-    endPoint: PropTypes.arrayOf(PropTypes.number),
-  },
-});
-
 function _normalizePoint(point: Point): [number, number] {
   return Array.isArray(point) ? point : [point.x, point.y];
 }
