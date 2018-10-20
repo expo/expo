@@ -14,13 +14,13 @@
     "AppEntry.js"
   ],
   "scripts": {
-    "clean": "rm -rf build",
-    "jest": "jest",
+    "build": "expo-module build",
+    "clean": "expo-module clean",
     "lint": "eslint tools",
-    "prepare": "rm -rf build && tsc --project .",
-    "prepublishOnly": "proofread",
-    "test": "jest --watch",
-    "tsc": "tsc --project ."
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
   },
   "jest": {
     "preset": "jest-expo",
@@ -126,7 +126,6 @@
     "whatwg-fetch": "^2.0.4"
   },
   "devDependencies": {
-    "@expo/npm-proofread": "^1.0.1",
     "@types/jest": "^23.3.2",
     "@types/react": "^16.4.13",
     "@types/react-native": "^0.56.22",
