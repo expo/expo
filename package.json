@@ -29,7 +29,6 @@
     "eslint": "^5.4.0",
     "eslint-config-universe": "^2.0.0-alpha.0",
     "expo-yarn-workspaces": "^1.1.0",
-    "prettier": "^1.14.2",
-    "typescript": "^3.0.3"
+    "prettier": "^1.14.2"
   }
 }

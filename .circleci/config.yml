@@ -120,7 +120,7 @@ jobs:
       - save_yarn_cache
       # Add back linting once we get ESLint or TSLint set up
       - yarn:
-          command: jest --maxWorkers 1
+          command: test --maxWorkers 1
           working_directory: ~/expo/packages/expo
 
   babel_preset:

@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+set -eo pipefail
+
+export EXPO_NONINTERACTIVE=1
+
+npx proofread
