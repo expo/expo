@@ -11,8 +11,11 @@ export async function getBrightnessAsync(): Promise<number> {
 }
 
 export async function setBrightnessAsync(brightnessValue: number): Promise<void> {
-  brightnessValue = Math.max(0, Math.min(brightnessValue, 1));
-  return await NativeModules.ExpoBrightness.setBrightnessAsync(brightnessValue);
+  let clampedBrightnessValue = Math.max(0, Math.min(brightnessValue, 1));
+  if (isNaN(clampedBrightnessValue)) {
+    throw new TypeError(`setBrightnessAsync cannot be called with ${brightnessValue}`);
+  }
+  return await NativeModules.ExpoBrightness.setBrightnessAsync(clampedBrightnessValue);
 }
 
 export async function getSystemBrightnessAsync(): Promise<number> {
@@ -23,11 +26,14 @@ export async function getSystemBrightnessAsync(): Promise<number> {
 }
 
 export async function setSystemBrightnessAsync(brightnessValue: number): Promise<void> {
-  brightnessValue = Math.max(0, Math.min(brightnessValue, 1));
-  if (Platform.OS !== 'android') {
-    return await setBrightnessAsync(brightnessValue);
+  let clampedBrightnessValue = Math.max(0, Math.min(brightnessValue, 1));
+  if (isNaN(clampedBrightnessValue)) {
+    throw new TypeError(`setSystemBrightnessAsync cannot be called with ${brightnessValue}`);
   }
-  return await NativeModules.ExpoBrightness.setSystemBrightnessAsync(brightnessValue);
+  if (Platform.OS !== 'android') {
+    return await setBrightnessAsync(clampedBrightnessValue);
+  }
+  return await NativeModules.ExpoBrightness.setSystemBrightnessAsync(clampedBrightnessValue);
 }
 
 export async function useSystemBrightnessAsync(): Promise<void> {
@@ -41,7 +47,7 @@ export async function getSystemBrightnessModeAsync(): Promise<BrightnessMode> {
   if (Platform.OS !== 'android') {
     return BrightnessMode.UNKNOWN;
   }
-  return await NativeModules.ExpoBrightness.getSystemBrightnessAsync();
+  return await NativeModules.ExpoBrightness.getSystemBrightnessModeAsync();
 }
 
 export async function setSystemBrightnessModeAsync(brightnessMode: BrightnessMode): Promise<void> {

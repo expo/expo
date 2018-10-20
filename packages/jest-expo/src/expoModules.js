@@ -67,6 +67,15 @@ module.exports = {
     registerViewsForInteraction: { type: 'function', functionType: 'promise' },
     setMediaCachePolicy: { type: 'function', functionType: 'async' },
   },
+  ExpoBrightness: {
+    getBrightnessAsync: { type: 'function', functionType: 'promise' },
+    setBrightnessAsync: { type: 'function', functionType: 'promise' },
+    getSystemBrightnessAsync: { type: 'function', functionType: 'promise' },
+    setSystemBrightnessAsync: { type: 'function', functionType: 'promise' },
+    useSystemBrightnessAsync: { type: 'function', functionType: 'promise' },
+    getSystemBrightnessModeAsync: { type: 'function', functionType: 'promise' },
+    setSystemBrightnessModeAsync: { type: 'function', functionType: 'promise' },
+  },
   ExpoNativeModuleIntrospection: {
     getNativeModuleNamesAsync: { type: 'function', functionType: 'promise' },
     introspectNativeModuleAsync: { type: 'function', functionType: 'promise' },
@@ -102,6 +111,8 @@ module.exports = {
           { key: 4, argumentsCount: 1, name: 'setAdUnitID' },
           { key: 5, argumentsCount: 0, name: 'getIsReady' },
         ],
+        ExpoPublisherBannerView: [],
+        ExponentGyroscope: [{ key: 0, argumentsCount: 1, name: 'setUpdateInterval' }],
         ExpoBarCodeScannerView: [],
         ExponentMediaLibrary: [
           { key: 0, argumentsCount: 1, name: 'getAlbumAsync' },
@@ -128,8 +139,6 @@ module.exports = {
           { key: 4, argumentsCount: 1, name: 'setAdUnitID' },
           { key: 5, argumentsCount: 0, name: 'getIsReady' },
         ],
-        ExpoPublisherBannerView: [],
-        ExponentGyroscope: [{ key: 0, argumentsCount: 1, name: 'setUpdateInterval' }],
         ExpoLocalAuthentication: [
           { key: 0, argumentsCount: 0, name: 'hasHardwareAsync' },
           { key: 1, argumentsCount: 0, name: 'isEnrolledAsync' },
@@ -144,6 +153,7 @@ module.exports = {
           { key: 4, argumentsCount: 2, name: 'record' },
           { key: 5, argumentsCount: 1, name: 'resumePreview' },
         ],
+        ExpoLocalization: [{ key: 0, argumentsCount: 0, name: 'getLocalizationAsync' }],
         ExpoPermissions: [
           { key: 0, argumentsCount: 1, name: 'getAsync' },
           { key: 1, argumentsCount: 1, name: 'askAsync' },
@@ -167,7 +177,6 @@ module.exports = {
           { key: 7, argumentsCount: 1, name: 'watchDeviceHeading' },
         ],
         ExpoAdsAdMobBannerView: [],
-        ExponentMagnetometer: [{ key: 0, argumentsCount: 1, name: 'setUpdateInterval' }],
         ExponentMagnetometerUncalibrated: [
           { key: 0, argumentsCount: 1, name: 'setUpdateInterval' },
         ],
@@ -182,10 +191,11 @@ module.exports = {
           { key: 7, argumentsCount: 2, name: 'trackWithProperties' },
           { key: 8, argumentsCount: 1, name: 'initializeIOS' },
           { key: 9, argumentsCount: 2, name: 'groupWithTraits' },
-          { key: 10, argumentsCount: 1, name: 'group' },
-          { key: 11, argumentsCount: 0, name: 'getEnabledAsync' },
+          { key: 10, argumentsCount: 2, name: 'alias' },
+          { key: 11, argumentsCount: 1, name: 'group' },
           { key: 12, argumentsCount: 1, name: 'track' },
-          { key: 13, argumentsCount: 0, name: 'reset' },
+          { key: 13, argumentsCount: 0, name: 'getEnabledAsync' },
+          { key: 14, argumentsCount: 0, name: 'reset' },
         ],
         ExponentGLObjectManager: [
           { key: 0, argumentsCount: 0, name: 'createContextAsync' },
@@ -194,6 +204,7 @@ module.exports = {
           { key: 3, argumentsCount: 2, name: 'createCameraTextureAsync' },
           { key: 4, argumentsCount: 2, name: 'takeSnapshotAsync' },
         ],
+        ExponentMagnetometer: [{ key: 0, argumentsCount: 1, name: 'setUpdateInterval' }],
         ExpoFontLoader: [{ key: 0, argumentsCount: 2, name: 'loadAsync' }],
         ExponentPrint: [
           { key: 0, argumentsCount: 1, name: 'print' },
@@ -233,6 +244,17 @@ module.exports = {
           detectFaces: { type: 'function' },
           removeListeners: { type: 'function' },
         },
+        ExpoLocalization: {
+          addListener: { type: 'function' },
+          country: { type: 'string' },
+          getLocalizationAsync: { type: 'function' },
+          isRTL: { type: 'boolean', mock: false },
+          isoCurrencyCodes: { type: 'array' },
+          locale: { type: 'string' },
+          locales: { type: 'array' },
+          removeListeners: { type: 'function' },
+          timezone: { type: 'string' },
+        },
         ExponentCameraManager: {
           AutoFocus: { type: 'object' },
           FlashMode: { type: 'object' },
@@ -265,7 +287,7 @@ module.exports = {
           platform: { type: 'object' },
           removeListeners: { type: 'function' },
           sessionId: { type: 'string' },
-          statusBarHeight: { type: 'number', mock: 44 },
+          statusBarHeight: { type: 'number', mock: 20 },
           systemFonts: { type: 'array' },
         },
         ExponentDeviceMotion: {
@@ -325,8 +347,8 @@ module.exports = {
       type: 'array',
       mock: [
         'ExpoAdsPublisherBannerView',
-        'ExponentGLView',
         'ExpoBarCodeScannerView',
+        'ExponentGLView',
         'ExpoAdsAdMobBannerView',
         'ExponentCamera',
       ],
@@ -407,10 +429,6 @@ module.exports = {
     setUserProperties: { type: 'function', functionType: 'async' },
   },
   ExponentBlurViewManager: {},
-  ExponentBrightness: {
-    getBrightnessAsync: { type: 'function', functionType: 'promise' },
-    setBrightnessAsync: { type: 'function', functionType: 'promise' },
-  },
   ExponentCalendar: {
     deleteCalendarAsync: { type: 'function', functionType: 'promise' },
     deleteEventAsync: { type: 'function', functionType: 'promise' },
@@ -448,13 +466,6 @@ module.exports = {
     deactivate: { type: 'function', functionType: 'async' },
   },
   ExponentLinearGradientManager: {},
-  ExponentLocalization: {
-    getCurrentDeviceCountryAsync: { type: 'function', functionType: 'promise' },
-    getCurrentLocaleAsync: { type: 'function', functionType: 'promise' },
-    getCurrentTimeZoneAsync: { type: 'function', functionType: 'promise' },
-    getISOCurrencyCodesAsync: { type: 'function', functionType: 'promise' },
-    getPreferredLocalesAsync: { type: 'function', functionType: 'promise' },
-  },
   ExponentMailComposer: { composeAsync: { type: 'function', functionType: 'promise' } },
   ExponentNotifications: {
     cancelAllScheduledNotifications: { type: 'function', functionType: 'promise' },
