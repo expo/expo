@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+set -eo pipefail
+
+if [[ ! -f package.json ]]; then
+  echo "The current working directory is not a package's root directory"
+  exit 1
+fi
+
+rm -rf build
