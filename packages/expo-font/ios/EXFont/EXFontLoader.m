@@ -3,12 +3,16 @@
 #import <EXFont/EXFontLoader.h>
 #import <EXFont/EXFontLoaderProcessor.h>
 #import <EXFontInterface/EXFontManagerInterface.h>
+#import <EXFont/EXFontScaler.h>
 #import <EXFont/EXFont.h>
 #import <objc/runtime.h>
 #import <EXFont/EXFontManager.h>
+#import <EXFont/EXFontScalersManager.h>
 
 @interface EXFontLoader ()
 
+@property (nonatomic, strong) EXFontScaler *scaler;
+@property (nonatomic, strong) EXFontLoaderProcessor *processor;
 
 @end
 
@@ -16,13 +20,23 @@
 
 EX_EXPORT_MODULE(ExpoFontLoader);
 
+- (instancetype)init
+{
+  if (self = [super init]) {
+    _scaler = [[EXFontScaler alloc] init];
+    _processor = [[EXFontLoaderProcessor alloc] init];
+  }
+  return self;
+}
+
 - (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   if (moduleRegistry) {
     id<EXFontManagerInterface> manager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXFontManagerInterface)];
-    [manager addFontProccessor:[[EXFontLoaderProcessor alloc] init]];
-  }
+    [manager addFontProccessor:_processor];
 
+    id<EXFontScalersManagerInterface> scalersManager = [moduleRegistry getSingletonModuleForName:@"FontScalersManager"];
+    [scalersManager registerFontScaler:_scaler];
   }
 }
 
