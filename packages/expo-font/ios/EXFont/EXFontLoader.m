@@ -5,7 +5,6 @@
 #import <EXFontInterface/EXFontManagerInterface.h>
 #import <EXFont/EXFont.h>
 #import <objc/runtime.h>
-#import <EXFont/UIFont+EXFontLoader.h>
 #import <EXFont/EXFontManager.h>
 
 @interface EXFontLoader ()
