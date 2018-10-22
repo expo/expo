@@ -21,16 +21,26 @@
 
 - (void)setBridge:(ABI30_0_0RCTBridge *)bridge
 {
-  [super setBridge:bridge];
+  if (bridge) {
+    [super setBridge:bridge];
 
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(handleAppStateDidChange:)
-                                               name:@"EXKernelBridgeDidForegroundNotification"
-                                             object:self.bridge];
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(handleAppStateDidChange:)
-                                               name:@"EXKernelBridgeDidBackgroundNotification"
-                                             object:self.bridge];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(handleAppStateDidChange:)
+                                                 name:@"EXKernelBridgeDidForegroundNotification"
+                                               object:self.bridge];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(handleAppStateDidChange:)
+                                                 name:@"EXKernelBridgeDidBackgroundNotification"
+                                               object:self.bridge];
+    [self setAppStateToForeground];
+  } else {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+  }
+}
+
+- (void)dealloc
+{
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)handleAppStateDidChange:(NSNotification *)notification
