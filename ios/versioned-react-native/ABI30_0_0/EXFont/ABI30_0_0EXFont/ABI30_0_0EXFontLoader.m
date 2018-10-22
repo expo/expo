@@ -1,48 +1,50 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <ABI30_0_0EXFont/ABI30_0_0EXFontLoader.h>
-#import <ABI30_0_0EXCore/ABI30_0_0EXAppLifecycleService.h>
 #import <ABI30_0_0EXFont/ABI30_0_0EXFontLoaderProcessor.h>
 #import <ABI30_0_0EXFontInterface/ABI30_0_0EXFontManagerInterface.h>
 #import <ABI30_0_0EXFont/ABI30_0_0EXFont.h>
 #import <objc/runtime.h>
-#import <ABI30_0_0EXFont/ABI30_0_0UIFont+EXFontLoader.h>
 #import <ABI30_0_0EXFont/ABI30_0_0EXFontManager.h>
+#import <ABI30_0_0EXFont/ABI30_0_0EXFontScaler.h>
+
+// Post-versioning addition to integrate ABI30_0_0EXFont with
+// EXFontScalersManager singleton module.
+
+@interface ABI30_0_0EXScalersManager
+
+- (void)registerFontScaler:(id)fontScaler;
+
+@end
 
 @interface ABI30_0_0EXFontLoader ()
 
-@property (nonatomic, assign) BOOL isInForeground;
-@property (nonatomic, weak) id<ABI30_0_0EXAppLifecycleService> lifecycleManager;
+@property (nonatomic, strong) ABI30_0_0EXFontScaler *scaler;
+@property (nonatomic, strong) ABI30_0_0EXFontLoaderProcessor *processor;
 
 @end
 
 @implementation ABI30_0_0EXFontLoader
 
+- (instancetype)init
+{
+  if (self = [super init]) {
+    _scaler = [[ABI30_0_0EXFontScaler alloc] init];
+    _processor = [[ABI30_0_0EXFontLoaderProcessor alloc] init];
+  }
+  return self;
+}
+
 ABI30_0_0EX_EXPORT_MODULE(ExpoFontLoader);
 
 - (void)setModuleRegistry:(ABI30_0_0EXModuleRegistry *)moduleRegistry
 {
-  if (_lifecycleManager) {
-    [_lifecycleManager unregisterAppLifecycleListener:self];
-  }
-
-  _lifecycleManager = nil;
-
   if (moduleRegistry) {
     id<ABI30_0_0EXFontManagerInterface> manager = [moduleRegistry getModuleImplementingProtocol:@protocol(ABI30_0_0EXFontManagerInterface)];
-    [manager addFontProccessor:[[ABI30_0_0EXFontLoaderProcessor alloc] init]];
-    _lifecycleManager = [moduleRegistry getModuleImplementingProtocol:@protocol(ABI30_0_0EXAppLifecycleService)];
-  }
+    [manager addFontProccessor:_processor];
 
-  if (_lifecycleManager) {
-    [_lifecycleManager registerAppLifecycleListener:self];
-  }
-}
-
-- (void)dealloc
-{
-  if (_lifecycleManager) {
-    [_lifecycleManager unregisterAppLifecycleListener:self];
+    id scalersManager = [moduleRegistry getSingletonModuleForName:@"FontScalersManager"];
+    [scalersManager registerFontScaler:_scaler];
   }
 }
 
@@ -81,32 +83,6 @@ ABI30_0_0EX_EXPORT_METHOD_AS(loadAsync,
 
   [ABI30_0_0EXFontManager setFont:[[ABI30_0_0EXFont alloc] initWithCGFont:font] forName:fontFamilyName];
   resolve(nil);
-}
-
-#pragma mark - internal
-
-- (void)_swizzleUIFont
-{
-  SEL a = @selector(ABI30_0_0EXFontWithSize:);
-  SEL b = @selector(fontWithSize:);
-  method_exchangeImplementations(class_getInstanceMethod([UIFont class], a),
-                                 class_getInstanceMethod([UIFont class], b));
-}
-
-- (void)onAppForegrounded
-{
-  if (!_isInForeground) {
-    [self _swizzleUIFont];
-    _isInForeground = YES;
-  }
-}
-
-- (void)onAppBackgrounded
-{
-  if (_isInForeground) {
-    _isInForeground = NO;
-    [self _swizzleUIFont];
-  }
 }
 
 @end
