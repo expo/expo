@@ -1,7 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <EXFont/EXFontLoader.h>
-#import <EXCore/EXAppLifecycleService.h>
 #import <EXFont/EXFontLoaderProcessor.h>
 #import <EXFontInterface/EXFontManagerInterface.h>
 #import <EXFont/EXFont.h>
@@ -11,8 +10,6 @@
 
 @interface EXFontLoader ()
 
-@property (nonatomic, assign) BOOL isInForeground;
-@property (nonatomic, weak) id<EXAppLifecycleService> lifecycleManager;
 
 @end
 
@@ -22,27 +19,11 @@ EX_EXPORT_MODULE(ExpoFontLoader);
 
 - (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
-  if (_lifecycleManager) {
-    [_lifecycleManager unregisterAppLifecycleListener:self];
-  }
-
-  _lifecycleManager = nil;
-
   if (moduleRegistry) {
     id<EXFontManagerInterface> manager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXFontManagerInterface)];
     [manager addFontProccessor:[[EXFontLoaderProcessor alloc] init]];
-    _lifecycleManager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXAppLifecycleService)];
   }
 
-  if (_lifecycleManager) {
-    [_lifecycleManager registerAppLifecycleListener:self];
-  }
-}
-
-- (void)dealloc
-{
-  if (_lifecycleManager) {
-    [_lifecycleManager unregisterAppLifecycleListener:self];
   }
 }
 
@@ -81,32 +62,6 @@ EX_EXPORT_METHOD_AS(loadAsync,
 
   [EXFontManager setFont:[[EXFont alloc] initWithCGFont:font] forName:fontFamilyName];
   resolve(nil);
-}
-
-#pragma mark - internal
-
-- (void)_swizzleUIFont
-{
-  SEL a = @selector(EXFontWithSize:);
-  SEL b = @selector(fontWithSize:);
-  method_exchangeImplementations(class_getInstanceMethod([UIFont class], a),
-                                 class_getInstanceMethod([UIFont class], b));
-}
-
-- (void)onAppForegrounded
-{
-  if (!_isInForeground) {
-    [self _swizzleUIFont];
-    _isInForeground = YES;
-  }
-}
-
-- (void)onAppBackgrounded
-{
-  if (_isInForeground) {
-    _isInForeground = NO;
-    [self _swizzleUIFont];
-  }
 }
 
 @end
