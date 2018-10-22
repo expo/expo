@@ -3,6 +3,7 @@
 package host.exp.exponent.experience;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 
 import org.json.JSONException;
@@ -10,8 +11,6 @@ import org.json.JSONObject;
 
 import host.exp.exponent.AppLoader;
 import host.exp.exponent.Constants;
-import host.exp.exponent.ExponentManifest;
-import host.exp.exponent.RNObject;
 import host.exp.exponent.kernel.ExponentUrls;
 import host.exp.exponent.kernel.KernelConstants;
 import host.exp.expoview.Exponent;
