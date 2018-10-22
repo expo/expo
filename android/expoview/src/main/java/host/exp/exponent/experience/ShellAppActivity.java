@@ -24,7 +24,9 @@ public class ShellAppActivity extends ExperienceActivity {
 
     boolean forceCache = getIntent().getBooleanExtra(KernelConstants.LOAD_FROM_CACHE_KEY, false);
 
-    mKernel.handleIntent(this, getIntent());
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      mKernel.handleIntent(this, getIntent());
+    }
 
     new AppLoader(Constants.INITIAL_URL, forceCache) {
       @Override
