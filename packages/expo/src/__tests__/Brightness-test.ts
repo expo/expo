@@ -36,7 +36,7 @@ it(`does nothing if setSystemBrightnessModeAsync is called with BrightnessMode.U
   unmockAllProperties();
 });
 
-describe('  system brightness', () => {
+describe(`iOS system brightness`, () => {
   beforeAll(() => {
     mockPlatformIOS();
   });
@@ -45,20 +45,20 @@ describe('  system brightness', () => {
     unmockAllProperties();
   });
 
-  it('getSystemBrightnessAsync calls getBrightnessAsync', async () => {
+  it(`calls getBrightnessAsync from getSystemBrightnessAsync`, async () => {
     await Brightness.getSystemBrightnessAsync();
     expect(NativeModules.ExpoBrightness.getBrightnessAsync).toHaveBeenCalled();
     expect(NativeModules.ExpoBrightness.getSystemBrightnessAsync).not.toHaveBeenCalled();
   });
 
-  it('setSystemBrightnessAsync calls setBrightnessAsync', async () => {
+  it(`calls setBrightnessAsync from setSystemBrightnessAsync`, async () => {
     await Brightness.setSystemBrightnessAsync(1);
     expect(NativeModules.ExpoBrightness.setBrightnessAsync).toHaveBeenCalled();
     expect(NativeModules.ExpoBrightness.setSystemBrightnessAsync).not.toHaveBeenCalled();
   });
 });
 
-describe('🤖  system brightness', () => {
+describe(`Android system brightness`, () => {
   beforeAll(() => {
     mockPlatformAndroid();
   });
@@ -67,13 +67,13 @@ describe('🤖  system brightness', () => {
     unmockAllProperties();
   });
 
-  it('getSystemBrightnessAsync calls getBrightnessAsync', async () => {
+  it(`doesn't call getBrightnessAsync from getSystemBrightnessAsync`, async () => {
     await Brightness.getSystemBrightnessAsync();
     expect(NativeModules.ExpoBrightness.getBrightnessAsync).not.toHaveBeenCalled();
     expect(NativeModules.ExpoBrightness.getSystemBrightnessAsync).toHaveBeenCalled();
   });
 
-  it('setSystemBrightnessAsync calls setBrightnessAsync', async () => {
+  it(`doesn't call setBrightnessAsync from setSystemBrightnessAsync`, async () => {
     await Brightness.setSystemBrightnessAsync(1);
     expect(NativeModules.ExpoBrightness.setBrightnessAsync).not.toHaveBeenCalled();
     expect(NativeModules.ExpoBrightness.setSystemBrightnessAsync).toHaveBeenCalled();
