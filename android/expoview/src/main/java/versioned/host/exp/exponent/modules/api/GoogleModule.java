@@ -117,6 +117,14 @@ public class GoogleModule extends ReactContextBaseJavaModule implements Activity
     });
   }
 
+  @ReactMethod
+  public void logoutAsync(Promise promise) {
+    GoogleSignInOptions.Builder builder = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN);
+    GoogleApiClient apiClient = createApiClient(builder);
+    Auth.GoogleSignInApi.signOut(apiClient);
+    promise.resolve(null);
+  }
+
   @Override
   public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
     // checking mScopes prevents running this in other abi packages
@@ -124,6 +132,30 @@ public class GoogleModule extends ReactContextBaseJavaModule implements Activity
       GoogleSignInResult logInResult = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
       handleLogInResult(logInResult);
     }
+  }
+
+  private GoogleApiClient createApiClient(GoogleSignInOptions.Builder builder, Promise promise) {
+    GoogleSignInOptions gso = builder.build();
+    return new GoogleApiClient.Builder(getReactApplicationContext())
+        .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
+          @Override
+          public void onConnected(@Nullable Bundle bundle) {
+          }
+
+          @Override
+          public void onConnectionSuspended(int i) {
+          }
+        }).addOnConnectionFailedListener(new GoogleApiClient.OnConnectionFailedListener() {
+          @Override
+          public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+            if (promise != null) {
+              promise.reject(connectionResult.getErrorMessage(), null);
+            } else {
+              reject(connectionResult.getErrorMessage(), null);
+            }
+
+          }
+        }).addApi(Auth.GOOGLE_SIGN_IN_API, gso).build();
   }
 
   private void systemLogIn(Scope[] scopes, @Nullable String webClientId) {
@@ -152,28 +184,7 @@ public class GoogleModule extends ReactContextBaseJavaModule implements Activity
       builder.requestScopes(scope);
     }
 
-    GoogleSignInOptions gso = builder.build();
-
-    GoogleApiClient apiClient = new GoogleApiClient.Builder(getReactApplicationContext())
-        .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
-          @Override
-          public void onConnected(@Nullable Bundle bundle) {
-
-          }
-
-          @Override
-          public void onConnectionSuspended(int i) {
-
-          }
-        })
-        .addOnConnectionFailedListener(new GoogleApiClient.OnConnectionFailedListener() {
-          @Override
-          public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-            reject(connectionResult.getErrorMessage(), null);
-          }
-        })
-        .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-        .build();
+    GoogleApiClient apiClient = createApiClient(builder);
 
     Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(apiClient);
     mIsLoggingIn = true;
@@ -189,31 +200,26 @@ public class GoogleModule extends ReactContextBaseJavaModule implements Activity
 
     AuthorizationServiceConfiguration configuration = new AuthorizationServiceConfiguration(
         Uri.parse("https://accounts.google.com/o/oauth2/v2/auth"),
-        Uri.parse("https://www.googleapis.com/oauth2/v4/token"),
-        null);
+        Uri.parse("https://www.googleapis.com/oauth2/v4/token"), null);
 
-    AuthorizationRequest request = new AuthorizationRequest.Builder(configuration,
-        clientId,
-        ResponseTypeValues.CODE,
-        Uri.parse(getReactApplicationContext().getPackageName() + ":/oauthredirect"))
-        .setScopes(scopes)
-        .build();
+    AuthorizationRequest request = new AuthorizationRequest.Builder(configuration, clientId, ResponseTypeValues.CODE,
+        Uri.parse(getReactApplicationContext().getPackageName() + ":/oauthredirect")).setScopes(scopes).build();
 
     EventBus.getDefault().register(this);
 
     Intent postAuthIntent = new Intent(activity, OAuthResultActivity.class);
 
-    // The auth intent gets started in the root task because it uses `singleTask` launch mode so if
-    // we are not a standalone app we need to redirect back to the proper task when done.
+    // The auth intent gets started in the root task because it uses `singleTask`
+    // launch mode so if
+    // we are not a standalone app we need to redirect back to the proper task when
+    // done.
     if (!getAppOwnership().equals("standalone")) {
-      postAuthIntent.putExtra(
-          OAuthResultActivity.EXTRA_REDIRECT_EXPERIENCE_URL,
+      postAuthIntent.putExtra(OAuthResultActivity.EXTRA_REDIRECT_EXPERIENCE_URL,
           (String) mExperienceProperties.get(KernelConstants.MANIFEST_URL_KEY));
     }
 
     AuthorizationService service = new AuthorizationService(activity);
-    service.performAuthorizationRequest(
-        request,
+    service.performAuthorizationRequest(request,
         PendingIntent.getActivity(activity, request.hashCode(), postAuthIntent, 0),
         PendingIntent.getActivity(activity, request.hashCode(), postAuthIntent, 0));
   }
@@ -306,7 +312,8 @@ public class GoogleModule extends ReactContextBaseJavaModule implements Activity
         scopesBuilder.append(" ");
       }
       try {
-        String token = GoogleAuthUtil.getToken(getReactApplicationContext(), new Account(mail, "com.google"), scopesBuilder.toString());
+        String token = GoogleAuthUtil.getToken(getReactApplicationContext(), new Account(mail, "com.google"),
+            scopesBuilder.toString());
         result.putString("accessToken", token);
         return result;
       } catch (Exception e) {
