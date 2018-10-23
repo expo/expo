@@ -16,8 +16,6 @@ export const toString = node => {
 };
 
 export const generateSlug = (node, length = 7) => {
-  GithubSluggerInstance.reset();
-
   const stringToSlug = toString(node)
     .split(' ')
     .splice(0, length)
