@@ -197,6 +197,9 @@ PODS:
   - EXGL-CPP (1.0.2):
     - EXGL-CPP/UEXGL (= 1.0.2)
   - EXGL-CPP/UEXGL (1.0.2)
+  - EXGoogleSignIn (1.0.0):
+    - EXCore
+    - GoogleSignIn
   - EXImageLoaderInterface (1.0.0):
     - EXCore
   - EXLocalAuthentication (1.0.0):
@@ -940,6 +943,7 @@ DEPENDENCIES:
   - EXFontInterface (from `../packages/expo-font-interface/ios`)
   - EXGL (from `../packages/expo-gl/ios`)
   - EXGL-CPP (from `../packages/expo-gl-cpp/cpp`)
+  - EXGoogleSignIn (from `../packages/expo-google-sign-in/ios`)
   - EXImageLoaderInterface (from `../packages/expo-image-loader-interface/ios`)
   - EXLocalAuthentication (from `../packages/expo-local-authentication/ios`)
   - EXLocalization (from `../packages/expo-localization/ios`)
@@ -1248,6 +1252,8 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-gl/ios"
   EXGL-CPP:
     :path: "../packages/expo-gl-cpp/cpp"
+  EXGoogleSignIn:
+    :path: "../packages/expo-google-sign-in/ios"
   EXImageLoaderInterface:
     :path: "../packages/expo-image-loader-interface/ios"
   EXLocalAuthentication:
@@ -1382,6 +1388,7 @@ SPEC CHECKSUMS:
   EXFontInterface: 06126ec4f6a67415426074c3383a82b241f087c1
   EXGL: 9a5dd454a7ed9660b25b71d82d8009ac9bd6f85a
   EXGL-CPP: 46b589a3ed0c59ae2e7f9434897b66cd8dd2e70c
+  EXGoogleSignIn: 564982511494643bdcf5a1e06d0095939ee41902
   EXImageLoaderInterface: 3f460f6ff344ba6c4e00621806c0d1d76249cd8f
   EXLocalAuthentication: b70696613cb24d726d3c98a1818c22c481a46b01
   EXLocalization: 1243adc132eaad4793dd7e5b497135ad5d803441
@@ -1433,6 +1440,6 @@ SPEC CHECKSUMS:
   yogaABI29_0_0: 4fdf5bbd444d2968ec42ccadec97b02c672eda80
   yogaABI30_0_0: 4c86e39466368a6b018b8b78aeb654b6620512a1
 
-PODFILE CHECKSUM: c380abbaf7b53120c12f35b9710cacafdf55688e
+PODFILE CHECKSUM: 6b101a0bd54f83da5b8b92da886317542bbe32e3
 
 COCOAPODS: 1.5.3

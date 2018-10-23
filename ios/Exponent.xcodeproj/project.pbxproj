@@ -223,7 +223,6 @@
 		B5FB74A31FF6DADC001C764B /* EXDocumentPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB737D1FF6DADB001C764B /* EXDocumentPicker.m */; };
 		B5FB74A51FF6DADC001C764B /* EXErrorRecovery.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73811FF6DADB001C764B /* EXErrorRecovery.m */; };
 		B5FB74A61FF6DADC001C764B /* EXFacebook.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73831FF6DADB001C764B /* EXFacebook.m */; };
-		B5FB74A91FF6DADC001C764B /* EXGoogle.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73891FF6DADB001C764B /* EXGoogle.m */; };
 		B5FB74AA1FF6DADC001C764B /* EXImageManipulator.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB738B1FF6DADB001C764B /* EXImageManipulator.m */; };
 		B5FB74AB1FF6DADC001C764B /* EXImagePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB738D1FF6DADB001C764B /* EXImagePicker.m */; };
 		B5FB74AC1FF6DADC001C764B /* EXImageUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB738F1FF6DADB001C764B /* EXImageUtils.m */; };
@@ -301,6 +300,7 @@
 		BB5BD32B20AEFCB4007E02FC /* REANodesManager.m in Sources */ = {isa = PBXBuildFile; fileRef = BB5BD31B20AEFCB4007E02FC /* REANodesManager.m */; };
 		BBD03196200011C9009F0434 /* RNAWSCognito.m in Sources */ = {isa = PBXBuildFile; fileRef = BBD03192200011C9009F0434 /* RNAWSCognito.m */; };
 		C7AB1A74D650FCF755E54086 /* libPods-Exponent.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A9955E33AC4A6A878EF5A17 /* libPods-Exponent.a */; };
+		CD0E8E62217EADEA00AFAEA6 /* EXGoogle.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0E8E61217EADE900AFAEA6 /* EXGoogle.m */; };
 		CD4BAD342092A30A009A1287 /* EXAR.m in Sources */ = {isa = PBXBuildFile; fileRef = CD4BAD332092A30A009A1287 /* EXAR.m */; };
 		CD9939502040C1AA0087C883 /* EXHaptic.m in Sources */ = {isa = PBXBuildFile; fileRef = CD99394F2040C1AA0087C883 /* EXHaptic.m */; };
 		CDBF79FA20868287009B25D6 /* EXStoreReview.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBF79F920868287009B25D6 /* EXStoreReview.m */; };
@@ -764,8 +764,6 @@
 		B5FB73811FF6DADB001C764B /* EXErrorRecovery.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXErrorRecovery.m; sourceTree = "<group>"; };
 		B5FB73821FF6DADB001C764B /* EXFacebook.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXFacebook.h; sourceTree = "<group>"; };
 		B5FB73831FF6DADB001C764B /* EXFacebook.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXFacebook.m; sourceTree = "<group>"; };
-		B5FB73881FF6DADB001C764B /* EXGoogle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXGoogle.h; sourceTree = "<group>"; };
-		B5FB73891FF6DADB001C764B /* EXGoogle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXGoogle.m; sourceTree = "<group>"; };
 		B5FB738A1FF6DADB001C764B /* EXImageManipulator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXImageManipulator.h; sourceTree = "<group>"; };
 		B5FB738B1FF6DADB001C764B /* EXImageManipulator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXImageManipulator.m; sourceTree = "<group>"; };
 		B5FB738C1FF6DADB001C764B /* EXImagePicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXImagePicker.h; sourceTree = "<group>"; };
@@ -925,6 +923,8 @@
 		BBD0318B200011C9009F0434 /* RNAWSCognito.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNAWSCognito.h; sourceTree = "<group>"; };
 		BBD03192200011C9009F0434 /* RNAWSCognito.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNAWSCognito.m; sourceTree = "<group>"; };
 		BEBABA2BA15649492989E40A /* libPods-ExponentIntegrationTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ExponentIntegrationTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		CD0E8E60217EADE900AFAEA6 /* EXGoogle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXGoogle.h; sourceTree = "<group>"; };
+		CD0E8E61217EADE900AFAEA6 /* EXGoogle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXGoogle.m; sourceTree = "<group>"; };
 		CD4BAD322092A30A009A1287 /* EXAR.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXAR.h; sourceTree = "<group>"; };
 		CD4BAD332092A30A009A1287 /* EXAR.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXAR.m; sourceTree = "<group>"; };
 		CD99394E2040C1AA0087C883 /* EXHaptic.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXHaptic.h; sourceTree = "<group>"; };
@@ -1634,8 +1634,8 @@
 				B5FB73811FF6DADB001C764B /* EXErrorRecovery.m */,
 				B5FB73821FF6DADB001C764B /* EXFacebook.h */,
 				B5FB73831FF6DADB001C764B /* EXFacebook.m */,
-				B5FB73881FF6DADB001C764B /* EXGoogle.h */,
-				B5FB73891FF6DADB001C764B /* EXGoogle.m */,
+				CD0E8E60217EADE900AFAEA6 /* EXGoogle.h */,
+				CD0E8E61217EADE900AFAEA6 /* EXGoogle.m */,
 				CD99394E2040C1AA0087C883 /* EXHaptic.h */,
 				CD99394F2040C1AA0087C883 /* EXHaptic.m */,
 				CDBF79F820868287009B25D6 /* EXStoreReview.h */,
@@ -2407,7 +2407,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/bash;
-			shellScript = "set -eo pipefail\n\nif [ -z \"$EXPONENT_TOOLS_DIR\" ]; then\n    EXPONENT_TOOLS_DIR=\"${SRCROOT}/../tools-public\"\nfi\n\npushd ${EXPONENT_TOOLS_DIR}\nsource source-login-scripts.sh\nnode_modules/.bin/gulp cleanup-dynamic-macros --infoPlistPath \"${SRCROOT}/Exponent/Supporting\" --platform ios\npopd";
+			shellScript = "set -eo pipefail\n\nif [ -z \"$EXPONENT_TOOLS_DIR\" ]; then\n    EXPONENT_TOOLS_DIR=\"${SRCROOT}/../tools-public\"\nfi\n\npushd ${EXPONENT_TOOLS_DIR}\nsource source-login-scripts.sh\nnode_modules/.bin/gulp cleanup-dynamic-macros --infoPlistPath \"${SRCROOT}/Exponent/Supporting\" --platform ios\npopd\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -2618,7 +2618,6 @@
 				B5FB74BE1FF6DADC001C764B /* EXNativeAdView.m in Sources */,
 				B5A473DC204A66F70035C61C /* EXErrorView.m in Sources */,
 				B532EB672058431000569CF2 /* EXMenuGestureRecognizer.m in Sources */,
-				B5FB74A91FF6DADC001C764B /* EXGoogle.m in Sources */,
 				78343620205B8C5F00DD28C3 /* AIRMapMarker.m in Sources */,
 				0726F05C2007E446004992E7 /* EXKernelAppRegistry.m in Sources */,
 				783435E0205B8BEE00DD28C3 /* AIRGoogleMapMarker.m in Sources */,
@@ -2630,6 +2629,7 @@
 				B5AC39AF1E95A90B00540AA7 /* EXVersions.m in Sources */,
 				19A04FA4209119B300D6EFE9 /* BranchEvent+RNBranch.m in Sources */,
 				B5A72C2F20A0D1BF00974CCE /* EXAppFetcherDevelopmentMode.m in Sources */,
+				CD0E8E62217EADEA00AFAEA6 /* EXGoogle.m in Sources */,
 				B56C65C8204768F3002B2424 /* EXHomeAppManager.m in Sources */,
 				7846B21020355E9900638E43 /* RNSVGSvgViewManager.m in Sources */,
 				783435DA205B8BEE00DD28C3 /* AIRGMSPolyline.m in Sources */,
