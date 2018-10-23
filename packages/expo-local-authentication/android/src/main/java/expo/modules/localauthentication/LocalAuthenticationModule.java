@@ -8,6 +8,9 @@ import android.os.Bundle;
 import android.support.v4.hardware.fingerprint.FingerprintManagerCompat;
 import android.support.v4.os.CancellationSignal;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import expo.core.ExportedModule;
 import expo.core.ModuleRegistry;
 import expo.core.Promise;
@@ -21,6 +24,8 @@ public class LocalAuthenticationModule extends ExportedModule implements ModuleR
   private Promise mPromise;
   private boolean mIsAuthenticating = false;
   private UIManager mUIManager;
+
+  private static final int AUTHENTICATION_TYPE_FINGERPRINT = 1;
 
   private final FingerprintManagerCompat.AuthenticationCallback mAuthenticationCallback =
       new FingerprintManagerCompat.AuthenticationCallback() {
@@ -82,6 +87,16 @@ public class LocalAuthenticationModule extends ExportedModule implements ModuleR
   @Override
   public void setModuleRegistry(ModuleRegistry moduleRegistry) {
     mUIManager = moduleRegistry.getModule(UIManager.class);
+  }
+
+  @ExpoMethod
+  public void supportedAuthenticationTypesAsync(final Promise promise) {
+    boolean hasHardware = mFingerprintManager.isHardwareDetected();
+    List<Integer> results = new ArrayList<>();
+    if (hasHardware) {
+      results.add(AUTHENTICATION_TYPE_FINGERPRINT);
+    }
+    promise.resolve(results);
   }
 
   @ExpoMethod
