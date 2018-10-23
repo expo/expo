@@ -34,11 +34,11 @@ commands:
   restore_gradle_cache:
     steps:
       - restore_cache:
-          key: jars-v0-{{ checksum "android/build.gradle" }}-{{ checksum "android/app/build.gradle" }}
+          key: jars-v1-{{ checksum "android/build.gradle" }}-{{ checksum "android/app/build.gradle" }}
   save_gradle_cache:
     steps:
       - save_cache:
-          key: jars-v0-{{ checksum "android/build.gradle" }}-{{ checksum "android/app/build.gradle" }}
+          key: jars-v1-{{ checksum "android/build.gradle" }}-{{ checksum "android/app/build.gradle" }}
           paths:
             - ~/.gradle
   yarn:
@@ -55,24 +55,18 @@ commands:
 
 executors:
   # We add -l to all the shell commands to make it easier to use direnv
-  android:
-    working_directory: ~/expo
-    docker:
-      # https://hub.docker.com/r/circleci/android/tags/
-      # https://github.com/CircleCI-Public/circleci-dockerfiles/tree/master/android/images
-      - image: circleci/android:api-27-ndk-r17b # Should match compileSdkVersion in android/app/build.gradle
-    shell: /bin/bash -leo pipefail
-    resource_class: large
-    environment:
-      # nix installation fails if this is not set
-      USER: circleci
-  js:
+  nix: &nix
     docker:
       - image: lnl7/nix:latest # only latest includes common utils we want
-    resource_class: small
-    working_directory: ~/expo
     # Symlink to the readline-enabled bash which is the default command of the container
     shell: /run/current-system/sw/bin/bash -leo pipefail
+    working_directory: ~/expo
+    resource_class: small
+  android:
+    <<: *nix
+    resource_class: large
+  js:
+    <<: *nix
   mac:
     macos: # https://circleci.com/docs/2.0/testing-ios/#supported-xcode-versions
       xcode: "10.0.0"
@@ -167,26 +161,17 @@ jobs:
   client_android:
     executor: android
     steps:
-      - install_nix
       - setup
       - yarn:
           working_directory: ~/expo # need jsc-android dependency in expokit-npm-package
       - yarn:
           working_directory: ~/expo/tools-public
-      - run: nix-env -f . -iA nodejs-8_x # For some reason `nix run` doesn't work
-      - run: ~/expo/tools-public/generate-dynamic-macros-android.sh
       - restore_gradle_cache
       - run:
           working_directory: ~/expo/android
-          command: ./gradlew :app:preBuild
+          command: nix-shell --run ./make-release.sh
       - save_gradle_cache
-      - run:
-          working_directory: ~/expo/android
-          command: ./gradlew :app:assembleProdMinSdkProdKernelRelease
-      - run: echo 'export PATH="/opt/android/sdk/build-tools/27.0.3:$PATH"' >> $BASH_ENV # should match buildToolsVersion in android/app/build.gradle
-      - run: zipalign -v -p 4 android/app/build/outputs/apk/prodMinSdkProdKernel/release/app-prodMinSdk-prodKernel-release-unsigned.apk app-prod-release-unsigned-aligned.apk
-      - run:
-          name: Sign APK
-          command: apksigner sign --ks <(echo $ANDROID_KEYSTORE_B64 | base64 -d) --ks-key-alias $ANDROID_KEY_ALIAS --ks-pass env:ANDROID_KEYSTORE_PASSWORD --key-pass env:ANDROID_KEY_PASSWORD --out exponent-release.apk app-prod-release-unsigned-aligned.apk
       - store_artifacts:
-          path: ~/expo/exponent-release.apk
+          path: ~/expo/android/exponent-release.apk
+      - store_artifacts: # daemon logs for debugging crashes
+          path: ~/.gradle/daemon/4.4
