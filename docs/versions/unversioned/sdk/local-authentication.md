@@ -12,6 +12,14 @@ Determine whether a face or fingerprint scanner is available on the device.
 
 Returns a promise resolving to boolean value indicating whether a face or fingerprint scanner is available on this device.
 
+### `Expo.LocalAuthentication.supportedAuthenticationTypesAsync()`
+
+Determine what kinds of authentications are available on the device.
+
+#### Returns
+
+Returns a promise resolving to an array containing `Expo.LocalAuthentication.AuthenticationType.{FINGERPRINT, FACIAL_RECOGNITION}`. These determine what kinds of authentications are available on the device.
+
 ### `Expo.LocalAuthentication.isEnrolledAsync()`
 
 Determine whether the device has saved fingerprints or facial data to use for authentication.
