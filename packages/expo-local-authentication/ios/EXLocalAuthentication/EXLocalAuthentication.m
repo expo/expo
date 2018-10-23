@@ -6,6 +6,11 @@
 #import <EXConstantsInterface/EXConstantsInterface.h>
 #import <EXLocalAuthentication/EXLocalAuthentication.h>
 
+typedef NS_ENUM(NSInteger, EXAuthenticationType) {
+  EXAuthenticationTypeFingerprint = 1,
+  EXAuthenticationTypeFacialRecognition = 2,
+};
+
 @interface EXLocalAuthentication ()
 
 @property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
@@ -19,6 +24,21 @@ EX_EXPORT_MODULE(ExpoLocalAuthentication)
 - (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
+}
+
+
+EX_EXPORT_METHOD_AS(supportedAuthenticationTypesAsync,
+                    supportedAuthenticationTypesAsync:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
+{
+  NSMutableArray *results = [NSMutableArray array];
+  if (EXIsTouchIDDevice()) {
+    [results addObject:@(EXAuthenticationTypeFingerprint)];
+  }
+  if (EXIsFaceIDDevice()) {
+    [results addObject:@(EXAuthenticationTypeFacialRecognition)];
+  }
+  resolve(results);
 }
 
 EX_EXPORT_METHOD_AS(hasHardwareAsync,
@@ -135,6 +155,20 @@ static BOOL EXIsFaceIDDevice()
   }
 
   return isFaceIDDevice;
+}
+
+static BOOL EXIsTouchIDDevice()
+{
+  static BOOL isTouchIDDevice = NO;
+  static dispatch_once_t onceToken;
+
+  dispatch_once(&onceToken, ^{
+    LAContext *context = [LAContext new];
+    [context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:nil];
+    isTouchIDDevice = context.biometryType == LABiometryTypeTouchID;
+  });
+
+  return isTouchIDDevice;
 }
 
 @end
