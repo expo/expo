@@ -21,6 +21,11 @@ import { H1 } from '~/components/base/headings';
 const STYLES_DOCUMENT = css`
   padding: 24px 24px 24px 32px;
 
+  hr {
+    border-top: 1px solid ${Constants.colors.border};
+    border-bottom: 0px;
+  }
+
   @media screen and (max-width: ${Constants.breakpoints.mobile}) {
     padding: 32px 16px 48px 16px;
   }
