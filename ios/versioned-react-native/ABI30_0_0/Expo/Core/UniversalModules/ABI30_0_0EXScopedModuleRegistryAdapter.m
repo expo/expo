@@ -3,6 +3,7 @@
 #import "ABI30_0_0EXScopedModuleRegistry.h"
 
 #import "ABI30_0_0EXScopedModuleRegistryAdapter.h"
+#import "ABI30_0_0EXScopedReactNativeAdapter.h"
 #import "ABI30_0_0EXFileSystemBinding.h"
 #import "ABI30_0_0EXSensorsManagerBinding.h"
 #import "ABI30_0_0EXConstantsBinding.h"
@@ -24,6 +25,9 @@
   
   ABI30_0_0EXConstantsBinding *constantsBinding = [[ABI30_0_0EXConstantsBinding alloc] initWithExperienceId:experienceId andParams:params];
   [moduleRegistry registerInternalModule:constantsBinding];
+
+  ABI30_0_0EXScopedReactNativeAdapter *reactNativeAdapter = [[ABI30_0_0EXScopedReactNativeAdapter alloc] init];
+  [moduleRegistry registerInternalModule:reactNativeAdapter];
 
   NSArray<id<ABI30_0_0RCTBridgeModule>> *bridgeModules = [self extraModulesForModuleRegistry:moduleRegistry];
   return [bridgeModules arrayByAddingObject:[[ABI30_0_0EXModuleRegistryBinding alloc] initWithModuleRegistry:moduleRegistry]];
