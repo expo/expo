@@ -128,4 +128,4 @@ export class Code extends React.Component {
   }
 }
 
-export const InlineCode = ({ children }) => <code className={STYLES_INLINE_CODE}>{children}</code>;
+export const InlineCode = ({ children }) => <code className={`${STYLES_INLINE_CODE} inline`}>{children}</code>;
