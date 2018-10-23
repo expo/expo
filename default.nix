@@ -11,5 +11,8 @@ in
 { ... } @ args:
 
   import nixpkgs (args // {
-    config = { };
+    config = {
+      allowUnfree = true;
+      android_sdk.accept_license = true;
+    };
   })
