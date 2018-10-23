@@ -48,7 +48,8 @@ const STYLES_H3 = css`
 
   code.inline {
     background-color: ${Constants.colors.portage};
-    font-weight: bold;
+    font-size: 1.1rem;
+    line-height: 1.75rem;
   }
 `;
 
