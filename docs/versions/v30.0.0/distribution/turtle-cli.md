@@ -371,6 +371,7 @@ env:
   global:
     - EXPO_SDK_VERSION="30.0.0"
     - TURTLE_VERSION="0.2.1"
+    - YARN_VERSION="1.10.1"
 
 jobs:
   include:
@@ -380,6 +381,9 @@ jobs:
       cache:
         directories:
           - $HOME/yarn_cache
+      before_install:
+        - curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version $YARN_VERSION
+        - export PATH="$HOME/.yarn/bin:$PATH"
       install:
         - yarn global add expo-cli
       script:
@@ -394,6 +398,9 @@ jobs:
           - $HOME/.turtle
           - $HOME/yarn_cache
           - $HOME/.gradle/wrapper
+      before_install:
+        - curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version $YARN_VERSION
+        - export PATH="$HOME/.yarn/bin:$PATH"
       install:
         - pip install --user awscli
         - yarn global add gulp-cli turtle-cli@$TURTLE_VERSION
@@ -417,10 +424,12 @@ jobs:
         directories:
           - $HOME/.turtle
           - $HOME/yarn_cache
+      before_install:
+        - curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version $YARN_VERSION
+        - export PATH="$HOME/.yarn/bin:$PATH"
       install:
         - pip install --user awscli
-        - npm i -g yarn
-        - export PATH=/Users/travis/Library/Python/2.7/bin:/Users/travis/.yarn/bin:$PATH
+        - export PATH=/Users/travis/Library/Python/2.7/bin:$PATH
         - yarn global add turtle-cli@$TURTLE_VERSION
       script:
         - export ARTIFACT_PATH="/Users/travis/expo-project-$TRAVIS_COMMIT-`date +%s`.tar.gz"
@@ -440,10 +449,12 @@ jobs:
         directories:
           - $HOME/.turtle
           - $HOME/yarn_cache
+      before_install:
+        - curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version $YARN_VERSION
+        - export PATH="$HOME/.yarn/bin:$PATH"
       install:
         - pip install --user awscli
-        - npm i -g yarn
-        - export PATH=/Users/travis/Library/Python/2.7/bin:/Users/travis/.yarn/bin:$PATH
+        - export PATH=/Users/travis/Library/Python/2.7/bin:$PATH
         - yarn global add turtle-cli@$TURTLE_VERSION
       script:
         - export ARTIFACT_PATH="/Users/travis/expo-project-$TRAVIS_COMMIT-`date +%s`.ipa"
