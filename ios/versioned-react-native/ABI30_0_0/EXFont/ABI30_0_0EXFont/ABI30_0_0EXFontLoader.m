@@ -41,7 +41,7 @@ ABI30_0_0EX_EXPORT_MODULE(ExpoFontLoader);
 {
   if (moduleRegistry) {
     id<ABI30_0_0EXFontManagerInterface> manager = [moduleRegistry getModuleImplementingProtocol:@protocol(ABI30_0_0EXFontManagerInterface)];
-    [manager addFontProccessor:_processor];
+    [manager addFontProcessor:_processor];
 
     id scalersManager = [moduleRegistry getSingletonModuleForName:@"FontScalersManager"];
     [scalersManager registerFontScaler:_scaler];

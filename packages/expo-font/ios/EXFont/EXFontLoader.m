@@ -33,7 +33,7 @@ EX_EXPORT_MODULE(ExpoFontLoader);
 {
   if (moduleRegistry) {
     id<EXFontManagerInterface> manager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXFontManagerInterface)];
-    [manager addFontProccessor:_processor];
+    [manager addFontProcessor:_processor];
 
     id<EXFontScalersManagerInterface> scalersManager = [moduleRegistry getSingletonModuleForName:@"FontScalersManager"];
     [scalersManager registerFontScaler:_scaler];
