@@ -112,6 +112,16 @@ public class ExponentKernelModule extends ReactContextBaseJavaModule implements 
   }
 
   @ReactMethod
+  public void setSessionSecret(String sessionSecret) {
+    ExponentUrls.setSessionSecret(sessionSecret);
+  }
+
+  @ReactMethod
+  public void removeSessionSecret() {
+    ExponentUrls.setSessionSecret(null);
+  }
+
+  @ReactMethod
   public void createShortcutAsync(String manifestUrl, ReadableMap manifest, String bundleUrl, Promise promise) {
     mKernel.installShortcut(manifestUrl, manifest, bundleUrl);
 

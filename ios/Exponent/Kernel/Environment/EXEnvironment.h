@@ -59,6 +59,11 @@ FOUNDATION_EXPORT NSString * const kEXEmbeddedManifestResourceName;
 @property (nonatomic, readonly) BOOL areRemoteUpdatesEnabled;
 
 /**
+ *  The session secret for the signed in user in the Expo Client
+ */
+@property (nonatomic, strong, nullable) NSString *sessionSecret;
+
+/**
  *  Whether the app is running in a test environment (local Xcode test target, CI, or not at all).
  */
 @property (nonatomic, assign) EXTestEnvironment testEnvironment;

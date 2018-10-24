@@ -1,5 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+#import "EXEnvironment.h"
 #import "EXHomeModule.h"
 #import "EXUnversioned.h"
 
@@ -167,6 +168,16 @@ RCT_EXPORT_METHOD(selectQRReader)
   if (_delegate) {
     [_delegate homeModuleDidSelectQRReader:self];
   }
+}
+
+RCT_EXPORT_METHOD(setSessionSecret:(NSString *)sessionSecret)
+{
+  [EXEnvironment sharedEnvironment].sessionSecret = sessionSecret;
+}
+
+RCT_EXPORT_METHOD(removeSessionSecret)
+{
+  [EXEnvironment sharedEnvironment].sessionSecret = nil;
 }
 
 RCT_EXPORT_METHOD(addDevMenu)
