@@ -7,7 +7,6 @@
 
 #import <objc/runtime.h>
 
-static dispatch_once_t initializeCurrentFontScalersOnce;
 static NSPointerArray *currentFontScalers;
 
 @implementation UIFont (EXFontLoader)
@@ -40,6 +39,7 @@ EX_REGISTER_SINGLETON_MODULE(FontScalersManager);
 
 + (void)initialize
 {
+  static dispatch_once_t initializeCurrentFontScalersOnce;
   dispatch_once(&initializeCurrentFontScalersOnce, ^{
     currentFontScalers = [NSPointerArray weakObjectsPointerArray];
 
