@@ -5,6 +5,8 @@
 //  Created by Gil Birman on 9/1/16.
 //
 
+#ifdef HAVE_GOOGLE_MAPS
+
 #import "AIRGoogleMap.h"
 #import "AIRGoogleMapMarker.h"
 #import "AIRGoogleMapMarkerManager.h"
@@ -14,14 +16,26 @@
 #import "AIRGoogleMapUrlTile.h"
 #import "AIRGoogleMapOverlay.h"
 #import <GoogleMaps/GoogleMaps.h>
-#import <Google-Maps-iOS-Utils/GMUKMLParser.h>
-#import <Google-Maps-iOS-Utils/GMUPlacemark.h>
-#import <Google-Maps-iOS-Utils/GMUPoint.h>
-#import <Google-Maps-iOS-Utils/GMUGeometryRenderer.h>
 #import <MapKit/MapKit.h>
 #import <React/UIView+React.h>
 #import <React/RCTBridge.h>
 #import "RCTConvert+AirMap.h"
+
+#ifdef HAVE_GOOGLE_MAPS_UTILS
+#import <Google-Maps-iOS-Utils/GMUKMLParser.h>
+#import <Google-Maps-iOS-Utils/GMUPlacemark.h>
+#import <Google-Maps-iOS-Utils/GMUPoint.h>
+#import <Google-Maps-iOS-Utils/GMUGeometryRenderer.h>
+#define REQUIRES_GOOGLE_MAPS_UTILS(feature) do {} while (0)
+#else
+#define GMUKMLParser void
+#define GMUPlacemark void
+#define REQUIRES_GOOGLE_MAPS_UTILS(feature) do { \
+ [NSException raise:@"ReactNativeMapsDependencyMissing" \
+             format:@"Use of " feature "requires Google-Maps-iOS-Utils, you  must install via CocoaPods to use this feature"]; \
+} while (0)
+#endif
+
 
 id regionAsJSON(MKCoordinateRegion region) {
   return @{
@@ -301,6 +315,38 @@ id regionAsJSON(MKCoordinateRegion region) {
   return self.padding;
 }
 
+- (void)setPaddingAdjustmentBehaviorString:(NSString *)str
+{
+  if ([str isEqualToString:@"never"])
+  {
+    self.paddingAdjustmentBehavior = kGMSMapViewPaddingAdjustmentBehaviorNever;
+  }
+  else if ([str isEqualToString:@"automatic"])
+  {
+    self.paddingAdjustmentBehavior = kGMSMapViewPaddingAdjustmentBehaviorAutomatic;
+  }
+  else //if ([str isEqualToString:@"always"]) <-- default
+  {
+    self.paddingAdjustmentBehavior = kGMSMapViewPaddingAdjustmentBehaviorAlways;
+  }
+}
+
+- (NSString *)paddingAdjustmentBehaviorString
+{
+  switch (self.paddingAdjustmentBehavior)
+  {
+    case kGMSMapViewPaddingAdjustmentBehaviorNever:
+      return @"never";
+    case kGMSMapViewPaddingAdjustmentBehaviorAutomatic:
+      return @"automatic";
+    case kGMSMapViewPaddingAdjustmentBehaviorAlways:
+      return @"always";
+      
+    default:
+      return @"unknown";
+  }
+}
+
 - (void)setScrollEnabled:(BOOL)scrollEnabled {
   self.settings.scrollGestures = scrollEnabled;
 }
@@ -393,6 +439,14 @@ id regionAsJSON(MKCoordinateRegion region) {
   [self setMinZoom:self.minZoom maxZoom:maxZoomLevel ];
 }
 
+- (void)setShowsIndoors:(BOOL)showsIndoors {
+  self.indoorEnabled = showsIndoors;
+}
+
+- (BOOL)showsIndoors {
+  return self.indoorEnabled;
+}
+
 - (void)setShowsIndoorLevelPicker:(BOOL)showsIndoorLevelPicker {
   self.settings.indoorPicker = showsIndoorLevelPicker;
 }
@@ -449,6 +503,7 @@ id regionAsJSON(MKCoordinateRegion region) {
                     @"latitude": @(location.coordinate.latitude),
                     @"longitude": @(location.coordinate.longitude),
                     @"altitude": @(location.altitude),
+                    @"timestamp": @(location.timestamp.timeIntervalSinceReferenceDate * 1000),
                     @"accuracy": @(location.horizontalAccuracy),
                     @"altitudeAccuracy": @(location.verticalAccuracy),
                     @"speed": @(location.speed),
@@ -463,6 +518,7 @@ id regionAsJSON(MKCoordinateRegion region) {
 }
 
 + (NSString *)GetIconUrl:(GMUPlacemark *) marker parser:(GMUKMLParser *) parser {
+#ifdef HAVE_GOOGLE_MAPS_UTILS
   if (marker.style.styleID != nil) {
     for (GMUStyle *style in parser.styles) {
       if (style.styleID == marker.style.styleID) {
@@ -472,6 +528,9 @@ id regionAsJSON(MKCoordinateRegion region) {
   }
 
   return marker.style.iconUrl;
+#else
+    REQUIRES_GOOGLE_MAPS_UTILS("GetIconUrl:parser:"); return @"";
+#endif
 }
 
 - (NSString *)KmlSrc {
@@ -479,6 +538,7 @@ id regionAsJSON(MKCoordinateRegion region) {
 }
 
 - (void)setKmlSrc:(NSString *)kmlUrl {
+#ifdef HAVE_GOOGLE_MAPS_UTILS
 
   _kmlSrc = kmlUrl;
 
@@ -530,6 +590,11 @@ id regionAsJSON(MKCoordinateRegion region) {
 
   id event = @{@"markers": markers};
   if (self.onKmlReady) self.onKmlReady(event);
+#else
+    REQUIRES_GOOGLE_MAPS_UTILS();
+#endif
 }
 
 @end
+
+#endif

@@ -1,9 +1,11 @@
 //
-//  DummyView.h
+//  AIRDummyView.h
 //  AirMapsExplorer
 //
 //  Created by Gil Birman on 10/4/16.
 //
+
+#ifdef HAVE_GOOGLE_MAPS
 
 #import <UIKit/UIKit.h>
 
@@ -12,3 +14,5 @@
 @property (nonatomic, weak) UIView *view;
 - (instancetype)initWithView:(UIView*)view;
 @end
+
+#endif

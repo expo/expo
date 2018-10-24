@@ -22,9 +22,10 @@
 
 @property (nonatomic, strong) MKTileOverlay *tileOverlay;
 @property (nonatomic, strong) MKTileOverlayRenderer *renderer;
-
 @property (nonatomic, copy) NSString *urlTemplate;
 @property NSInteger maximumZ;
+@property NSInteger minimumZ;
+@property BOOL shouldReplaceMapContent;
 
 #pragma mark MKOverlay protocol
 

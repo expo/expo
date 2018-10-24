@@ -26,6 +26,7 @@
   "devDependencies": {
     "babel-core": "^7.0.0-bridge.0",
     "babel-eslint": "^9.0.0",
+    "babel-plugin-module-resolver": "^3.0.0",
     "eslint": "^5.4.0",
     "eslint-config-universe": "^2.0.0-alpha.0",
     "expo-yarn-workspaces": "^1.1.0",

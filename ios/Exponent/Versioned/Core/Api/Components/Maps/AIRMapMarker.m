@@ -28,6 +28,14 @@ NSInteger const AIR_CALLOUT_OPEN_ZINDEX_BASELINE = 999;
     NSInteger _zIndexBeforeOpen;
 }
 
+- (instancetype)initWithFrame:(CGRect)frame {
+    self = [super initWithFrame:frame];
+    if (self) {
+        [self.layer addObserver:self forKeyPath:@"zPosition" options:NSKeyValueObservingOptionNew context:nil];
+    }
+    return self;
+}
+
 - (void)reactSetFrame:(CGRect)frame
 {
     // Make sure we use the image size when available
@@ -310,6 +318,16 @@ NSInteger const AIR_CALLOUT_OPEN_ZINDEX_BASELINE = 999;
     _zIndexBeforeOpen = zIndex;
     _zIndex = _calloutIsOpen ? zIndex + AIR_CALLOUT_OPEN_ZINDEX_BASELINE : zIndex;
     self.layer.zPosition = zIndex;
+}
+
+- (void)dealloc {
+    [self.layer removeObserver:self forKeyPath:@"zPosition"];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
+    if ([keyPath isEqualToString:@"zPosition"]) {
+        self.layer.zPosition = _zIndex;
+    }
 }
 
 @end
