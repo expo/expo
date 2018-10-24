@@ -1,17 +1,17 @@
-import React from 'react';
-import { Dimensions, StyleSheet, View } from 'react-native';
-import { VictoryChart, VictoryStack, VictoryArea } from 'victory-native';
-import Svg, { Text } from 'react-native-svg';
+import React, { Component } from 'react';
+import { View, Dimensions, Text } from 'react-native';
+import Svg, { Text as RNSVGText } from 'react-native-svg';
+
 import { Font } from 'expo';
 
-export default class SVGScreen extends React.Component {
-  static navigationOptions = {
-    title: '<Svg />',
-  };
+import { VictoryChart, VictoryStack, VictoryArea } from 'victory-native';
+
+class VictoryChartExample extends Component {
+  static title = 'VictoryChart';
 
   render() {
     return (
-      <View style={styles.container}>
+      <View>
         <VictoryChart>
           <VictoryStack>
             <VictoryArea
@@ -52,9 +52,8 @@ export default class SVGScreen extends React.Component {
             />
           </VictoryStack>
         </VictoryChart>
-
         <Svg width={Dimensions.get('window').width} height={50}>
-          <Text
+          <RNSVGText
             fill="#fff"
             stroke="#000"
             fontSize={15}
@@ -62,15 +61,15 @@ export default class SVGScreen extends React.Component {
             x={25}
             y={15}>
             drawn with victory-native
-          </Text>
+          </RNSVGText>
         </Svg>
       </View>
     );
   }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
+const icon = <Text>VN</Text>;
+
+const samples = [VictoryChartExample];
+
+export { icon, samples };

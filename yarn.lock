@@ -775,11 +775,6 @@
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.116.tgz#5ccf215653e3e8c786a58390751033a9adca0eb9"
   integrity sha512-lRnAtKnxMXcYYXqOiotTmJd74uawNWuPnsnPrrO7HiFuE3npE2iQhfABatbYDyxTNqZNuXzcKGhw37R7RjBFLg==
 
-"@types/node@^10.12.0":
-  version "10.12.0"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.12.0.tgz#ea6dcbddbc5b584c83f06c60e82736d8fbb0c235"
-  integrity sha512-3TUHC3jsBAB7qVRGxT6lWyYo2v96BMmD2PTcl47H25Lu7UXtFH/2qqmKiVrnel6Ne//0TFYf6uvNX+HW2FRkLQ==
-
 "@types/prop-types@*":
   version "15.5.6"
   resolved "https://registry.yarnpkg.com/@types/prop-types/-/prop-types-15.5.6.tgz#9c03d3fed70a8d517c191b7734da2879b50ca26c"
@@ -6971,10 +6966,10 @@ react-native-scrollable-mixin@^1.0.0:
   resolved "https://registry.yarnpkg.com/react-native-scrollable-mixin/-/react-native-scrollable-mixin-1.0.1.tgz#34a32167b64248594154fd0d6a8b03f22740548e"
   integrity sha1-NKMhZ7ZCSFlBVP0NaosD8idAVI4=
 
-react-native-svg@6.5.2:
-  version "6.5.2"
-  resolved "https://registry.yarnpkg.com/react-native-svg/-/react-native-svg-6.5.2.tgz#1105896b8873b0856821b18daa0c6898cea6c00c"
-  integrity sha512-r9SXx/AOzlo/jkahAo9WjNTRJ+A2lDHE3yS3WtgZ4Gzqqyxb3L6LpuAG02x1TaKEowdTEG3r6u7vhnCZON8N/A==
+react-native-svg@8.0.3:
+  version "8.0.3"
+  resolved "https://registry.yarnpkg.com/react-native-svg/-/react-native-svg-8.0.3.tgz#e27303f0811e85d616b8b922531e96a7bfac3675"
+  integrity sha512-H99NDSjAYaEKd27Nkrh+X9LyHFuOUrO1bH+524/AurJkmUvEvqbTF56KNw1ezXRHiHMmsDjGgDeNA7d2/cn/hQ==
   dependencies:
     color "^2.0.1"
     lodash "^4.16.6"
