@@ -9,14 +9,13 @@ import {
   Clipboard,
   Platform,
   RefreshControl,
-  ScrollView,
   StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
-import { withNavigationFocus, withNavigation } from 'react-navigation';
+import { ScrollView, withNavigationFocus, withNavigation } from 'react-navigation';
 import { Constants } from 'expo';
 import { connect } from 'react-redux';
 import _ from 'lodash';
