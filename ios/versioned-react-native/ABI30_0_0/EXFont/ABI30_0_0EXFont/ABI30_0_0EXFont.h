@@ -2,6 +2,8 @@
 
 #import <Foundation/Foundation.h>
 
+static const char *ABI30_0_0EXFontAssocKey = "ABI30_0_0EXFont";
+
 @interface ABI30_0_0EXFont : NSObject
 
 - (instancetype)initWithCGFont:(CGFontRef)cgFont;

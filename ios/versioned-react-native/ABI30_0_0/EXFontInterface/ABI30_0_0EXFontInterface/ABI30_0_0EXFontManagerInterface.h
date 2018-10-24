@@ -3,6 +3,6 @@
 
 @protocol ABI30_0_0EXFontManagerInterface
 
-- (void)addFontProccessor:(id<ABI30_0_0EXFontProcessorInterface>)processor;
+- (void)addFontProcessor:(id<ABI30_0_0EXFontProcessorInterface>)processor;
 
 @end

@@ -3,7 +3,6 @@
 #import <EXFont/EXFont.h>
 #import <objc/runtime.h>
 #import <CoreText/CoreText.h>
-#import <UIFont+EXFontLoader.h>
 
 @interface EXFont ()
 
