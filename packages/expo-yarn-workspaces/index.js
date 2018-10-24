@@ -45,7 +45,8 @@ exports.createReactNativeConfiguration = function createReactNativeConfiguration
     watchFolders,
 
     resolver: {
-      assetExts: assetExts.concat(['db']),
+      // test-suite includes a db asset
+      assetExts: [...assetExts, 'db'],
 
       // Make the symlinked packages visible to Metro
       extraNodeModules,
