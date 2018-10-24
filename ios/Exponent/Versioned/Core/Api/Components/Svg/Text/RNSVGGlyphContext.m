@@ -12,64 +12,64 @@
     NSMutableArray *mFontContext_;
 
     // Unique input attribute lists (only added if node sets a value)
-    NSMutableArray *mXsContext_;
-    NSMutableArray *mYsContext_;
-    NSMutableArray *mDXsContext_;
-    NSMutableArray *mDYsContext_;
-    NSMutableArray *mRsContext_;
+    NSMutableArray<NSArray<RNSVGLength*>*> *mXsContext_;
+    NSMutableArray<NSArray<RNSVGLength*>*> *mYsContext_;
+    NSMutableArray<NSArray<RNSVGLength*>*> *mDXsContext_;
+    NSMutableArray<NSArray<RNSVGLength*>*> *mDYsContext_;
+    NSMutableArray<NSArray<RNSVGLength*>*> *mRsContext_;
 
     // Unique index into attribute list (one per unique list)
-    NSMutableArray *mXIndices_;
-    NSMutableArray *mYIndices_;
-    NSMutableArray *mDXIndices_;
-    NSMutableArray *mDYIndices_;
-    NSMutableArray *mRIndices_;
+    NSMutableArray<NSNumber*> *mXIndices_;
+    NSMutableArray<NSNumber*> *mYIndices_;
+    NSMutableArray<NSNumber*> *mDXIndices_;
+    NSMutableArray<NSNumber*> *mDYIndices_;
+    NSMutableArray<NSNumber*> *mRIndices_;
 
     // Index of unique context used (one per node push/pop)
-    NSMutableArray *mXsIndices_;
-    NSMutableArray *mYsIndices_;
-    NSMutableArray *mDXsIndices_;
-    NSMutableArray *mDYsIndices_;
-    NSMutableArray *mRsIndices_;
+    NSMutableArray<NSNumber*> *mXsIndices_;
+    NSMutableArray<NSNumber*> *mYsIndices_;
+    NSMutableArray<NSNumber*> *mDXsIndices_;
+    NSMutableArray<NSNumber*> *mDYsIndices_;
+    NSMutableArray<NSNumber*> *mRsIndices_;
 
     // Calculated on push context, percentage and em length depends on parent font size
-    double mFontSize_;
+    CGFloat mFontSize_;
     RNSVGFontData *topFont_;
 
     // Current accumulated values
     // https://www.w3.org/TR/SVG/types.html#DataTypeCoordinate
     // <coordinate> syntax is the same as that for <length>
-    double mX_;
-    double mY_;
+    CGFloat mX_;
+    CGFloat mY_;
 
     // https://www.w3.org/TR/SVG/types.html#Length
-    double mDX_;
-    double mDY_;
+    CGFloat mDX_;
+    CGFloat mDY_;
 
     // Current <list-of-coordinates> SVGLengthList
     // https://www.w3.org/TR/SVG/types.html#InterfaceSVGLengthList
     // https://www.w3.org/TR/SVG/types.html#DataTypeCoordinates
 
     // https://www.w3.org/TR/SVG/text.html#TSpanElementXAttribute
-    NSArray *mXs_;
+    NSArray<RNSVGLength*> *mXs_;
 
     // https://www.w3.org/TR/SVG/text.html#TSpanElementYAttribute
-    NSArray *mYs_;
+    NSArray<RNSVGLength*> *mYs_;
 
     // Current <list-of-lengths> SVGLengthList
     // https://www.w3.org/TR/SVG/types.html#DataTypeLengths
 
     // https://www.w3.org/TR/SVG/text.html#TSpanElementDXAttribute
-    NSArray *mDXs_;
+    NSArray<RNSVGLength*> *mDXs_;
 
     // https://www.w3.org/TR/SVG/text.html#TSpanElementDYAttribute
-    NSArray *mDYs_;
+    NSArray<RNSVGLength*> *mDYs_;
 
     // Current <list-of-numbers> SVGLengthList
     // https://www.w3.org/TR/SVG/types.html#DataTypeNumbers
 
     // https://www.w3.org/TR/SVG/text.html#TSpanElementRotateAttribute
-    NSArray *mRs_;
+    NSArray<RNSVGLength*> *mRs_;
 
     // Current attribute list index
     long mXsIndex_;
@@ -89,18 +89,17 @@
     long mTop_;
 
     // Constructor parameters
-    float mScale_;
-    float mWidth_;
-    float mHeight_;
+    CGFloat mWidth_;
+    CGFloat mHeight_;
 }
 
-- (void)pushContext:(RNSVGText *)node
-               font:(NSDictionary *)font
-                  x:(NSArray*)x
-                  y:(NSArray*)y
-             deltaX:(NSArray*)deltaX
-             deltaY:(NSArray*)deltaY
-             rotate:(NSArray*)rotate;
+- (void)pushContext:(RNSVGText*)node
+               font:(NSDictionary*)font
+                  x:(NSArray<RNSVGLength*>*)x
+                  y:(NSArray<RNSVGLength*>*)y
+             deltaX:(NSArray<RNSVGLength*>*)deltaX
+             deltaY:(NSArray<RNSVGLength*>*)deltaY
+             rotate:(NSArray<RNSVGLength*>*)rotate;
 
 - (void)pushContext:(RNSVGGroup*)node
                font:(NSDictionary *)font;
@@ -150,9 +149,9 @@
     [self->mRsIndices_ addObject:[NSNumber numberWithLong:self->mRsIndex_]];
 }
 
-- (instancetype)initWithScale:(float)scale_
-                        width:(float)width
-                       height:(float)height {
+- (instancetype)initWithWidth:(CGFloat)width
+                       height:(CGFloat)height {
+    self = [super init];
     self->mFontContext_ = [[NSMutableArray alloc]init];
     self->mXsContext_ = [[NSMutableArray alloc]init];
     self->mYsContext_ = [[NSMutableArray alloc]init];
@@ -179,7 +178,7 @@
     self->mYs_ = [[NSArray alloc]init];
     self->mDXs_ = [[NSArray alloc]init];
     self->mDYs_ = [[NSArray alloc]init];
-    self->mRs_ = [[NSArray alloc]initWithObjects:@0, nil];
+    self->mRs_ = [[NSArray alloc]initWithObjects:[RNSVGLength lengthWithNumber:0], nil];
 
     self->mXIndex_ = -1;
     self->mYIndex_ = -1;
@@ -187,7 +186,6 @@
     self->mDYIndex_ = -1;
     self->mRIndex_ = -1;
 
-    self->mScale_ = scale_;
     self->mWidth_ = width;
     self->mHeight_ = height;
 
@@ -239,8 +237,7 @@
         return;
     }
     RNSVGFontData *data = [RNSVGFontData initWithNSDictionary:font
-                                                 parent:parent
-                                                  scale:self->mScale_];
+                                                       parent:parent];
     self->mFontSize_ = data->fontSize;
     [self->mFontContext_ addObject:data];
     self->topFont_ = data;
@@ -254,11 +251,11 @@
 
 - (void)pushContext:(RNSVGText*)node
                font:(NSDictionary*)font
-                  x:(NSArray*)x
-                  y:(NSArray*)y
-             deltaX:(NSArray*)deltaX
-             deltaY:(NSArray*)deltaY
-             rotate:(NSArray*)rotate {
+                  x:(NSArray<RNSVGLength*>*)x
+                  y:(NSArray<RNSVGLength*>*)y
+             deltaX:(NSArray<RNSVGLength*>*)deltaX
+             deltaY:(NSArray<RNSVGLength*>*)deltaY
+             rotate:(NSArray<RNSVGLength*>*)rotate {
     [self pushNode:(RNSVGGroup*)node andFont:font];
     if (x != nil && [x count] != 0) {
         mXsIndex_++;
@@ -292,7 +289,7 @@
         mRsIndex_++;
         mRIndex_ = -1;
         [mRIndices_ addObject:[NSNumber numberWithLong:mRIndex_]];
-        mRs_ = [rotate valueForKeyPath:@"self.doubleValue"];
+        mRs_ = rotate;
         [mRsContext_ addObject:mRs_];
     }
     [self pushIndices];
@@ -388,76 +385,68 @@
  * Except for any additional information provided in this specification,
  * the normative definition of the property is in CSS2 ([CSS2], section 15.2.4).
  */
-- (double)getFontSize {
+- (CGFloat)getFontSize {
     return mFontSize_;
 }
 
-- (double)nextXWithDouble:(double)advance {
+- (CGFloat)nextXWithDouble:(CGFloat)advance {
     [RNSVGGlyphContext incrementIndices:mXIndices_ topIndex:mXsIndex_];
     long nextIndex = mXIndex_ + 1;
     if (nextIndex < [mXs_ count]) {
         mDX_ = 0;
         mXIndex_ = nextIndex;
-        NSString *string = [mXs_ objectAtIndex:nextIndex];
-        mX_ = [RNSVGPropHelper fromRelativeWithNSString:string
-                                            relative:mWidth_
-                                              offset:0
-                                               scale:mScale_
-                                            fontSize:mFontSize_];
+        RNSVGLength *length = [mXs_ objectAtIndex:nextIndex];
+        mX_ = [RNSVGPropHelper fromRelative:length
+                                   relative:mWidth_
+                                   fontSize:mFontSize_];
     }
     mX_ += advance;
     return mX_;
 }
 
-- (double)nextY {
+- (CGFloat)nextY {
     [RNSVGGlyphContext incrementIndices:mYIndices_ topIndex:mYsIndex_];
     long nextIndex = mYIndex_ + 1;
     if (nextIndex < [mYs_ count]) {
         mDY_ = 0;
         mYIndex_ = nextIndex;
-        NSString *string = [mYs_ objectAtIndex:nextIndex];
-        mY_ = [RNSVGPropHelper fromRelativeWithNSString:string
-                                            relative:mHeight_
-                                              offset:0
-                                               scale:mScale_
-                                            fontSize:mFontSize_];
+        RNSVGLength *length = [mYs_ objectAtIndex:nextIndex];
+        mY_ = [RNSVGPropHelper fromRelative:length
+                                   relative:mHeight_
+                                   fontSize:mFontSize_];
     }
     return mY_;
 }
 
-- (double)nextDeltaX {
+- (CGFloat)nextDeltaX {
     [RNSVGGlyphContext incrementIndices:mDXIndices_ topIndex:mDXsIndex_];
     long nextIndex = mDXIndex_ + 1;
     if (nextIndex < [mDXs_ count]) {
         mDXIndex_ = nextIndex;
-        NSString *string = [mDXs_ objectAtIndex:nextIndex];
-        double val = [RNSVGPropHelper fromRelativeWithNSString:string
-                                                   relative:mWidth_
-                                                     offset:0
-                                                      scale:mScale_
-                                                   fontSize:mFontSize_];
+        RNSVGLength *length = [mDXs_ objectAtIndex:nextIndex];
+        CGFloat val = [RNSVGPropHelper fromRelative:length
+                                          relative:mWidth_
+                                          fontSize:mFontSize_];
         mDX_ += val;
     }
     return mDX_;
 }
 
-- (double)nextDeltaY {
+- (CGFloat)nextDeltaY {
     [RNSVGGlyphContext incrementIndices:mDYIndices_ topIndex:mDYsIndex_];
     long nextIndex = mDYIndex_ + 1;
     if (nextIndex < [mDYs_ count]) {
         mDYIndex_ = nextIndex;
-        NSString *string = [mDYs_ objectAtIndex:nextIndex];
-        double val = [RNSVGPropHelper fromRelativeWithNSString:string
-                                                   relative:mHeight_
-                                                     offset:0
-                                                      scale:mScale_
-                                                   fontSize:mFontSize_];
+        RNSVGLength *length = [mDYs_ objectAtIndex:nextIndex];
+        CGFloat val = [RNSVGPropHelper fromRelative:length
+                                          relative:mHeight_
+                                          fontSize:mFontSize_];
         mDY_ += val;
     }
     return mDY_;
 }
 
-- (NSNumber*)nextRotation {
+- (CGFloat)nextRotation {
     [RNSVGGlyphContext incrementIndices:mRIndices_ topIndex:mRsIndex_];
     long nextIndex = mRIndex_ + 1;
     long count = [mRs_ count];
@@ -466,14 +455,14 @@
     } else {
         mRIndex_ = count - 1;
     }
-    return mRs_[mRIndex_];
+    return [mRs_[mRIndex_] value];
 }
 
-- (float)getWidth {
+- (CGFloat)getWidth {
     return mWidth_;
 }
 
-- (float)getHeight {
+- (CGFloat)getHeight {
     return mHeight_;
 }
 @end

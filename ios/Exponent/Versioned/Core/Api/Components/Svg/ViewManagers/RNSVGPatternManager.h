@@ -6,8 +6,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RNSVGBrush.h"
+#import "RNSVGGroupManager.h"
 
-@interface RNSVGPattern : RNSVGBrush
+@interface RNSVGPatternManager : RNSVGGroupManager
 
 @end

@@ -7,19 +7,22 @@
  */
 
 #import "RNSVGPainter.h"
+#import "RNSVGPattern.h"
 #import "RNSVGPercentageConverter.h"
+#import "RNSVGViewBox.h"
 
 @implementation RNSVGPainter
 {
-    NSArray<NSString *> *_points;
+    NSArray<RNSVGLength *> *_points;
     NSArray<NSNumber *> *_colors;
     RNSVGBrushType _type;
     BOOL _useObjectBoundingBox;
+    BOOL _useContentObjectBoundingBox;
     CGAffineTransform _transform;
     CGRect _userSpaceBoundingBox;
 }
 
-- (instancetype)initWithPointsArray:(NSArray<NSString *> *)pointsArray
+- (instancetype)initWithPointsArray:(NSArray<RNSVGLength *> *)pointsArray
 {
     if ((self = [super init])) {
         _points = pointsArray;
@@ -34,6 +37,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     _useObjectBoundingBox = unit == kRNSVGUnitsObjectBoundingBox;
 }
 
+- (void)setContentUnits:(RNSVGUnits)unit
+{
+    _useContentObjectBoundingBox = unit == kRNSVGUnitsObjectBoundingBox;
+}
+
 - (void)setUserSpaceBoundingBox:(CGRect)userSpaceBoundingBox
 {
     _userSpaceBoundingBox = userSpaceBoundingBox;
@@ -42,6 +50,17 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (void)setTransform:(CGAffineTransform)transform
 {
     _transform = transform;
+}
+
+- (void)setPattern:(RNSVGPattern *)pattern
+{
+    if (_type != kRNSVGUndefinedType) {
+        // todo: throw error
+        return;
+    }
+
+    _type = kRNSVGPattern;
+    _pattern = pattern;
 }
 
 - (void)setLinearGradientColors:(NSArray<NSNumber *> *)colors
@@ -66,24 +85,24 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     _colors = colors;
 }
 
-- (void)paint:(CGContextRef)context
+- (void)paint:(CGContextRef)context bounds:(CGRect)bounds
 {
     if (_type == kRNSVGLinearGradient) {
-        [self paintLinearGradient:context];
+        [self paintLinearGradient:context bounds:bounds];
     } else if (_type == kRNSVGRadialGradient) {
-        [self paintRidialGradient:context];
+        [self paintRadialGradient:context bounds:bounds];
     } else if (_type == kRNSVGPattern) {
-        // todo:
+        [self paintPattern:context bounds:bounds];
     }
 }
 
-- (CGRect)getPaintRect:(CGContextRef)context
+- (CGRect)getPaintRect:(CGContextRef)context bounds:(CGRect)bounds
 {
-    CGRect rect = _useObjectBoundingBox ? CGContextGetClipBoundingBox(context) : _userSpaceBoundingBox;
-    float height = CGRectGetHeight(rect);
-    float width = CGRectGetWidth(rect);
-    float x = 0.0;
-    float y = 0.0;
+    CGRect rect = _useObjectBoundingBox ? bounds : _userSpaceBoundingBox;
+    CGFloat height = CGRectGetHeight(rect);
+    CGFloat width = CGRectGetWidth(rect);
+    CGFloat x = 0.0;
+    CGFloat y = 0.0;
 
     if (_useObjectBoundingBox) {
         x = CGRectGetMinX(rect);
@@ -93,28 +112,89 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     return CGRectMake(x, y, width, height);
 }
 
-- (void)paintLinearGradient:(CGContextRef)context
+void PatternFunction(void* info, CGContextRef context)
+{
+    RNSVGPainter *_painter = (__bridge RNSVGPainter *)info;
+    RNSVGPattern *_pattern = [_painter pattern];
+    CGRect rect = _painter.paintBounds;
+
+    CGAffineTransform _viewBoxTransform = [RNSVGViewBox getTransform:CGRectMake(_pattern.minX, _pattern.minY, _pattern.vbWidth, _pattern.vbHeight)
+                                             eRect:rect
+                                             align:_pattern.align
+                                       meetOrSlice:_pattern.meetOrSlice];
+    CGContextConcatCTM(context, _viewBoxTransform);
+
+    [_pattern renderTo:context rect:rect];
+}
+
+- (void)paintPattern:(CGContextRef)context bounds:(CGRect)bounds
+{
+    CGRect rect = [self getPaintRect:context bounds:bounds];
+    CGFloat height = CGRectGetHeight(rect);
+    CGFloat width = CGRectGetWidth(rect);
+    CGFloat offsetX = CGRectGetMinX(rect);
+    CGFloat offsetY = CGRectGetMinY(rect);
+
+    CGFloat x = [RNSVGPercentageConverter lengthToFloat:[_points objectAtIndex:0]
+                                                relative:width
+                                                  offset:offsetX];
+    CGFloat y = [RNSVGPercentageConverter lengthToFloat:[_points objectAtIndex:1]
+                                                relative:height
+                                                  offset:offsetY];
+    CGFloat w = [RNSVGPercentageConverter lengthToFloat:[_points objectAtIndex:2]
+                                                relative:width
+                                                  offset:offsetX];
+    CGFloat h = [RNSVGPercentageConverter lengthToFloat:[_points objectAtIndex:3]
+                                                relative:height
+                                                  offset:offsetY];
+
+    CGAffineTransform viewbox = [self.pattern.svgView getViewBoxTransform];
+    CGRect newBounds = CGRectApplyAffineTransform(CGRectMake(x, y, w, h), viewbox);
+    CGSize size = newBounds.size;
+    self.paintBounds = newBounds;
+
+    const CGPatternCallbacks callbacks = { 0, &PatternFunction, NULL };
+    CGColorSpaceRef patternSpace = CGColorSpaceCreatePattern(NULL);
+    CGContextSetFillColorSpace(context, patternSpace);
+    CGColorSpaceRelease(patternSpace);
+
+    CGPatternRef pattern = CGPatternCreate((__bridge void * _Nullable)(self),
+                                           newBounds,
+                                           CGAffineTransformIdentity,
+                                           size.width,
+                                           size.height,
+                                           kCGPatternTilingConstantSpacing,
+                                           true,
+                                           &callbacks);
+    CGFloat alpha = 1.0;
+    CGContextSetFillPattern(context, pattern, &alpha);
+    CGPatternRelease(pattern);
+
+    CGContextFillRect(context, bounds);
+}
+
+- (void)paintLinearGradient:(CGContextRef)context bounds:(CGRect)bounds
 {
 
     CGGradientRef gradient = CGGradientRetain([RCTConvert RNSVGCGGradient:_colors offset:0]);
     CGGradientDrawingOptions extendOptions = kCGGradientDrawsBeforeStartLocation | kCGGradientDrawsAfterEndLocation;
 
-    CGRect rect = [self getPaintRect:context];
-    float height = CGRectGetHeight(rect);
-    float width = CGRectGetWidth(rect);
-    float offsetX = CGRectGetMinX(rect);
-    float offsetY = CGRectGetMinY(rect);
+    CGRect rect = [self getPaintRect:context bounds:bounds];
+    CGFloat height = CGRectGetHeight(rect);
+    CGFloat width = CGRectGetWidth(rect);
+    CGFloat offsetX = CGRectGetMinX(rect);
+    CGFloat offsetY = CGRectGetMinY(rect);
 
-    CGFloat x1 = [RNSVGPercentageConverter stringToFloat:(NSString *)[_points objectAtIndex:0]
+    CGFloat x1 = [RNSVGPercentageConverter lengthToFloat:[_points objectAtIndex:0]
                                                 relative:width
                                                   offset:offsetX];
-    CGFloat y1 = [RNSVGPercentageConverter stringToFloat:(NSString *)[_points objectAtIndex:1]
+    CGFloat y1 = [RNSVGPercentageConverter lengthToFloat:[_points objectAtIndex:1]
                                                 relative:height
                                                   offset:offsetY];
-    CGFloat x2 = [RNSVGPercentageConverter stringToFloat:(NSString *)[_points objectAtIndex:2]
+    CGFloat x2 = [RNSVGPercentageConverter lengthToFloat:[_points objectAtIndex:2]
                                                 relative:width
                                                   offset:offsetX];
-    CGFloat y2 = [RNSVGPercentageConverter stringToFloat:(NSString *)[_points objectAtIndex:3]
+    CGFloat y2 = [RNSVGPercentageConverter lengthToFloat:[_points objectAtIndex:3]
                                                 relative:height
                                                   offset:offsetY];
 
@@ -124,33 +204,33 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     CGGradientRelease(gradient);
 }
 
-- (void)paintRidialGradient:(CGContextRef)context
+- (void)paintRadialGradient:(CGContextRef)context bounds:(CGRect)bounds
 {
     CGGradientRef gradient = CGGradientRetain([RCTConvert RNSVGCGGradient:_colors offset:0]);
     CGGradientDrawingOptions extendOptions = kCGGradientDrawsBeforeStartLocation | kCGGradientDrawsAfterEndLocation;
 
-    CGRect rect = [self getPaintRect:context];
-    float height = CGRectGetHeight(rect);
-    float width = CGRectGetWidth(rect);
-    float offsetX = CGRectGetMinX(rect);
-    float offsetY = CGRectGetMinY(rect);
+    CGRect rect = [self getPaintRect:context bounds:bounds];
+    CGFloat height = CGRectGetHeight(rect);
+    CGFloat width = CGRectGetWidth(rect);
+    CGFloat offsetX = CGRectGetMinX(rect);
+    CGFloat offsetY = CGRectGetMinY(rect);
 
-    CGFloat rx = [RNSVGPercentageConverter stringToFloat:(NSString *)[_points objectAtIndex:2]
+    CGFloat rx = [RNSVGPercentageConverter lengthToFloat:[_points objectAtIndex:2]
                                                 relative:width
                                                   offset:0];
-    CGFloat ry = [RNSVGPercentageConverter stringToFloat:(NSString *)[_points objectAtIndex:3]
+    CGFloat ry = [RNSVGPercentageConverter lengthToFloat:[_points objectAtIndex:3]
                                                 relative:height
                                                   offset:0];
-    CGFloat fx = [RNSVGPercentageConverter stringToFloat:(NSString *)[_points objectAtIndex:0]
+    CGFloat fx = [RNSVGPercentageConverter lengthToFloat:[_points objectAtIndex:0]
                                                 relative:width
                                                   offset:offsetX];
-    CGFloat fy = [RNSVGPercentageConverter stringToFloat:(NSString *)[_points objectAtIndex:1]
+    CGFloat fy = [RNSVGPercentageConverter lengthToFloat:[_points objectAtIndex:1]
                                                 relative:height
                                                   offset:offsetY] / (ry / rx);
-    CGFloat cx = [RNSVGPercentageConverter stringToFloat:(NSString *)[_points objectAtIndex:4]
+    CGFloat cx = [RNSVGPercentageConverter lengthToFloat:[_points objectAtIndex:4]
                                                 relative:width
                                                   offset:offsetX];
-    CGFloat cy = [RNSVGPercentageConverter stringToFloat:(NSString *)[_points objectAtIndex:5]
+    CGFloat cy = [RNSVGPercentageConverter lengthToFloat:[_points objectAtIndex:5]
                                                 relative:height
                                                   offset:offsetY] / (ry / rx);
 

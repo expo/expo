@@ -6,14 +6,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <Foundation/Foundation.h>
+#import "RNSVGGroupManager.h"
 
-#import "RNSVGContainer.h"
-#import "RNSVGGroup.h"
-#import "RNSVGSvgView.h"
-
-@interface RNSVGClipPath : RNSVGGroup
-
-- (BOOL)isSimpleClipPath;
+@interface RNSVGMaskManager : RNSVGGroupManager
 
 @end

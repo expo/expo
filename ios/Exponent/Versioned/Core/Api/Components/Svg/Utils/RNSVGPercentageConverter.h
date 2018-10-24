@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <QuartzCore/QuartzCore.h>
+#import "RNSVGLength.h"
 
 @interface RNSVGPercentageConverter : NSObject
 
@@ -16,5 +17,7 @@
 + (CGFloat) stringToFloat:(NSString *)string relative:(CGFloat)relative offset:(CGFloat)offset;
 
 + (BOOL) isPercentage:(NSString *) string;
+
++ (CGFloat)lengthToFloat:(RNSVGLength *)length relative:(CGFloat)relative offset:(CGFloat)offset;
 
 @end
