@@ -332,6 +332,11 @@ RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
       exif[[@"GPS" stringByAppendingString:gpsKey]] = gps[gpsKey];
     }
   }
+  
+  // Inject orientation into exif
+  if ([metadata valueForKey:(NSString *)kCGImagePropertyOrientation] != nil) {
+    exif[(NSString *)kCGImagePropertyOrientation] = metadata[(NSString *)kCGImagePropertyOrientation];
+  }
 
   [response setObject:exif forKey:@"exif"];
 }
