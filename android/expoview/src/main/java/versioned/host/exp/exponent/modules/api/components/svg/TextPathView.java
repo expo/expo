@@ -9,60 +9,67 @@
 
 package versioned.host.exp.exponent.modules.api.components.svg;
 
+import android.annotation.SuppressLint;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
 
+import com.facebook.react.bridge.Dynamic;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.uimanager.annotations.ReactProp;
 
 import javax.annotation.Nullable;
 
-/**
- * Shadow node for virtual TextPath view
- */
-class TextPathShadowNode extends TextShadowNode {
+import static versioned.host.exp.exponent.modules.api.components.svg.TextProperties.*;
+
+@SuppressLint("ViewConstructor")
+class TextPathView extends TextView {
 
     private String mHref;
     private TextPathSide mSide;
     private TextPathMidLine mMidLine;
-    private @Nullable String mStartOffset;
+    private @Nullable SVGLength mStartOffset;
     private TextPathMethod mMethod = TextPathMethod.align;
     private TextPathSpacing mSpacing = TextPathSpacing.exact;
+
+    public TextPathView(ReactContext reactContext) {
+        super(reactContext);
+    }
 
     @ReactProp(name = "href")
     public void setHref(String href) {
         mHref = href;
-        markUpdated();
+        invalidate();
     }
 
     @ReactProp(name = "startOffset")
-    public void setStartOffset(@Nullable String startOffset) {
-        mStartOffset = startOffset;
-        markUpdated();
+    public void setStartOffset(Dynamic startOffset) {
+        mStartOffset = getLengthFromDynamic(startOffset);
+        invalidate();
     }
 
     @ReactProp(name = "method")
     public void setMethod(@Nullable String method) {
         mMethod = TextPathMethod.valueOf(method);
-        markUpdated();
+        invalidate();
     }
 
     @ReactProp(name = "spacing")
     public void setSpacing(@Nullable String spacing) {
         mSpacing = TextPathSpacing.valueOf(spacing);
-        markUpdated();
+        invalidate();
     }
 
     @ReactProp(name = "side")
     public void setSide(@Nullable String side) {
         mSide = TextPathSide.valueOf(side);
-        markUpdated();
+        invalidate();
     }
 
     @ReactProp(name = "midLine")
     public void setSharp(@Nullable String midLine) {
         mMidLine = TextPathMidLine.valueOf(midLine);
-        markUpdated();
+        invalidate();
     }
 
     @SuppressWarnings("unused")
@@ -83,40 +90,40 @@ class TextPathShadowNode extends TextShadowNode {
         return mMidLine;
     }
 
-    String getStartOffset() {
+    SVGLength getStartOffset() {
         return mStartOffset;
     }
 
     @Override
-    public void draw(Canvas canvas, Paint paint, float opacity) {
+    void draw(Canvas canvas, Paint paint, float opacity) {
         drawGroup(canvas, paint, opacity);
     }
 
-    public Path getPath() {
-        SvgViewShadowNode svg = getSvgShadowNode();
-        VirtualNode template = svg.getDefinedTemplate(mHref);
+    Path getTextPath(Canvas canvas, Paint paint) {
+        SvgView svg = getSvgView();
+        VirtualView template = svg.getDefinedTemplate(mHref);
 
-        if (template == null || template.getClass() != PathShadowNode.class) {
+        if (template == null || !(template instanceof RenderableView)) {
             // warning about this.
             return null;
         }
 
-        PathShadowNode path = (PathShadowNode)template;
-        return path.getPath();
+        RenderableView view = (RenderableView)template;
+        return view.getPath(canvas, paint);
     }
 
     @Override
-    protected Path getPath(Canvas canvas, Paint paint) {
+    Path getPath(Canvas canvas, Paint paint) {
         return getGroupPath(canvas, paint);
     }
 
     @Override
-    protected void pushGlyphContext() {
+    void pushGlyphContext() {
         // do nothing
     }
 
     @Override
-    protected void popGlyphContext() {
+    void popGlyphContext() {
         // do nothing
     }
 }

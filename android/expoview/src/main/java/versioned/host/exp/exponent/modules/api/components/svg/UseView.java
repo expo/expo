@@ -9,56 +9,60 @@
 
 package versioned.host.exp.exponent.modules.api.components.svg;
 
+import android.annotation.SuppressLint;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
 
 import com.facebook.common.logging.FLog;
+import com.facebook.react.bridge.Dynamic;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.annotations.ReactProp;
 
-/**
- * Shadow node for virtual Use view
- */
-class UseShadowNode extends RenderableShadowNode {
-
+@SuppressLint("ViewConstructor")
+class UseView extends RenderableView {
     private String mHref;
-    private String mWidth;
-    private String mHeight;
+    private SVGLength mW;
+    private SVGLength mH;
+
+    public UseView(ReactContext reactContext) {
+        super(reactContext);
+    }
 
     @ReactProp(name = "href")
     public void setHref(String href) {
         mHref = href;
-        markUpdated();
+        invalidate();
     }
 
     @ReactProp(name = "width")
-    public void setWidth(String width) {
-        mWidth = width;
-        markUpdated();
+    public void setWidth(Dynamic width) {
+        mW = getLengthFromDynamic(width);
+        invalidate();
     }
 
     @ReactProp(name = "height")
-    public void setHeight(String height) {
-        mHeight = height;
-        markUpdated();
+    public void setHeight(Dynamic height) {
+        mH = getLengthFromDynamic(height);
+        invalidate();
     }
 
     @Override
-    public void draw(Canvas canvas, Paint paint, float opacity) {
-        VirtualNode template = getSvgShadowNode().getDefinedTemplate(mHref);
+    void draw(Canvas canvas, Paint paint, float opacity) {
+        VirtualView template = getSvgView().getDefinedTemplate(mHref);
 
         if (template != null) {
-            if (template instanceof RenderableShadowNode) {
-                ((RenderableShadowNode)template).mergeProperties(this);
+            if (template instanceof RenderableView) {
+                ((RenderableView)template).mergeProperties(this);
             }
 
             int count = template.saveAndSetupCanvas(canvas);
             clip(canvas, paint);
 
-            if (template instanceof SymbolShadowNode) {
-                SymbolShadowNode symbol = (SymbolShadowNode)template;
-                symbol.drawSymbol(canvas, paint, opacity, (float) relativeOnWidth(mWidth), (float) relativeOnHeight(mHeight));
+            if (template instanceof SymbolView) {
+                SymbolView symbol = (SymbolView)template;
+                symbol.drawSymbol(canvas, paint, opacity, (float) relativeOnWidth(mW), (float) relativeOnHeight(mH));
             } else {
                 template.draw(canvas, paint, opacity * mOpacity);
             }
@@ -66,8 +70,8 @@ class UseShadowNode extends RenderableShadowNode {
             this.setClientRect(template.getClientRect());
 
             template.restoreCanvas(canvas, count);
-            if (template instanceof RenderableShadowNode) {
-                ((RenderableShadowNode)template).resetProperties();
+            if (template instanceof RenderableView) {
+                ((RenderableView)template).resetProperties();
             }
         } else {
             FLog.w(ReactConstants.TAG, "`Use` element expected a pre-defined svg template as `href` prop, " +
@@ -76,25 +80,26 @@ class UseShadowNode extends RenderableShadowNode {
     }
 
     @Override
-    public int hitTest(float[] src) {
-        if (!mInvertible) {
+    int hitTest(float[] src) {
+        if (!mInvertible || !mTransformInvertible) {
             return -1;
         }
 
         float[] dst = new float[2];
         mInvMatrix.mapPoints(dst, src);
+        mInvTransform.mapPoints(dst, src);
 
-        VirtualNode template = getSvgShadowNode().getDefinedTemplate(mHref);
+        VirtualView template = getSvgView().getDefinedTemplate(mHref);
         int hitChild = template.hitTest(dst);
         if (hitChild != -1) {
-            return (template.isResponsible() || hitChild != template.getReactTag()) ? hitChild : getReactTag();
+            return (template.isResponsible() || hitChild != template.getId()) ? hitChild : getId();
         }
 
         return -1;
     }
 
     @Override
-    protected Path getPath(Canvas canvas, Paint paint) {
+    Path getPath(Canvas canvas, Paint paint) {
         // todo:
         return new Path();
     }

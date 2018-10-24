@@ -9,61 +9,31 @@
 
 package versioned.host.exp.exponent.modules.api.components.svg;
 
-import android.graphics.Bitmap;
 import android.util.SparseArray;
 
 import com.facebook.react.uimanager.ThemedReactContext;
-import com.facebook.react.uimanager.ViewGroupManager;
-import com.facebook.yoga.YogaMeasureFunction;
-import com.facebook.yoga.YogaMeasureMode;
-import com.facebook.yoga.YogaNode;
+import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.views.view.ReactViewGroup;
+import com.facebook.react.views.view.ReactViewManager;
 
 import javax.annotation.Nullable;
 
 /**
  * ViewManager for RNSVGSvgView React views. Renders as a {@link SvgView} and handles
- * invalidating the native view on shadow view updates happening in the underlying tree.
+ * invalidating the native view on view updates happening in the underlying tree.
  */
-class SvgViewManager extends ViewGroupManager<SvgView> {
+class SvgViewManager extends ReactViewManager {
 
     private static final String REACT_CLASS = "RNSVGSvgView";
 
-    private static final YogaMeasureFunction MEASURE_FUNCTION = new YogaMeasureFunction() {
-        @Override
-        public long measure(
-                YogaNode node,
-                float width,
-                YogaMeasureMode widthMode,
-                float height,
-                YogaMeasureMode heightMode) {
-            throw new IllegalStateException("SurfaceView should have explicit width and height set");
-        }
-    };
-
-    private static final SparseArray<SvgViewShadowNode> mTagToShadowNode = new SparseArray<>();
     private static final SparseArray<SvgView> mTagToSvgView = new SparseArray<>();
 
-    static void setShadowNode(SvgViewShadowNode shadowNode) {
-        mTagToShadowNode.put(shadowNode.getReactTag(), shadowNode);
+    static void setSvgView(int tag, SvgView svg) {
+        mTagToSvgView.put(tag, svg);
     }
 
-    static void setSvgView(SvgView svg) {
-        mTagToSvgView.put(svg.getId(), svg);
-    }
-
-    static void dropSvgView(SvgView view) {
-        int tag = view.getId();
-        mTagToShadowNode.remove(tag);
-        mTagToSvgView.remove(tag);
-    }
-
-    @SuppressWarnings("unused")
     static @Nullable SvgView getSvgViewByTag(int tag) {
         return mTagToSvgView.get(tag);
-    }
-
-    static @Nullable SvgViewShadowNode getShadowNodeByTag(int tag) {
-        return mTagToShadowNode.get(tag);
     }
 
     @Override
@@ -72,25 +42,69 @@ class SvgViewManager extends ViewGroupManager<SvgView> {
     }
 
     @Override
-    public Class<SvgViewShadowNode> getShadowNodeClass() {
-        return SvgViewShadowNode.class;
-    }
-
-    @Override
-    public SvgViewShadowNode createShadowNodeInstance() {
-        SvgViewShadowNode node = new SvgViewShadowNode();
-        node.setMeasureFunction(MEASURE_FUNCTION);
-        return node;
-    }
-
-    @Override
-    protected SvgView createViewInstance(ThemedReactContext reactContext) {
+    public SvgView createViewInstance(ThemedReactContext reactContext) {
         return new SvgView(reactContext);
     }
 
     @Override
-    public void updateExtraData(SvgView root, Object extraData) {
-        root.setBitmap((Bitmap) extraData);
+    public void updateExtraData(ReactViewGroup root, Object extraData) {
+        super.updateExtraData(root, extraData);
+        root.invalidate();
     }
 
+    @Override
+    public void onDropViewInstance(ReactViewGroup view) {
+        super.onDropViewInstance(view);
+        mTagToSvgView.remove(view.getId());
+    }
+
+    @Override
+    public boolean needsCustomLayoutForChildren() {
+        return true;
+    }
+
+    @ReactProp(name = "tintColor", customType = "Color")
+    public void setTintColor(SvgView node, @Nullable Integer tintColor) {
+        node.setTintColor(tintColor);
+    }
+
+    @ReactProp(name = "minX")
+    public void setMinX(SvgView node, float minX) {
+        node.setMinX(minX);
+    }
+
+    @ReactProp(name = "minY")
+    public void setMinY(SvgView node, float minY) {
+        node.setMinY(minY);
+    }
+
+    @ReactProp(name = "vbWidth")
+    public void setVbWidth(SvgView node, float vbWidth) {
+        node.setVbWidth(vbWidth);
+    }
+
+    @ReactProp(name = "vbHeight")
+    public void setVbHeight(SvgView node, float vbHeight) {
+        node.setVbHeight(vbHeight);
+    }
+
+    @ReactProp(name = "bbWidth")
+    public void setVbWidth(SvgView node, String bbWidth) {
+        node.setVbWidth(bbWidth);
+    }
+
+    @ReactProp(name = "bbHeight")
+    public void setVbHeight(SvgView node, String bbHeight) {
+        node.setVbHeight(bbHeight);
+    }
+
+    @ReactProp(name = "align")
+    public void setAlign(SvgView node, String align) {
+        node.setAlign(align);
+    }
+
+    @ReactProp(name = "meetOrSlice")
+    public void setMeetOrSlice(SvgView node, int meetOrSlice) {
+        node.setMeetOrSlice(meetOrSlice);
+    }
 }

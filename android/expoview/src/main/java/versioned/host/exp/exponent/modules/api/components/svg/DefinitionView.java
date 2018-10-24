@@ -9,31 +9,35 @@
 
 package versioned.host.exp.exponent.modules.api.components.svg;
 
+import android.annotation.SuppressLint;
 import android.graphics.Canvas;
-import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.Point;
 
-/**
- * Shadow node for virtual Definition type views
- */
-class DefinitionShadowNode extends VirtualNode {
+import com.facebook.react.bridge.ReactContext;
 
-    public void draw(Canvas canvas, Paint paint, float opacity) {}
+@SuppressLint("ViewConstructor")
+class DefinitionView extends VirtualView {
+
+    DefinitionView(ReactContext reactContext) {
+        super(reactContext);
+    }
+
+    @SuppressWarnings("EmptyMethod")
+    void draw(Canvas canvas, Paint paint, float opacity) {}
 
     @Override
-    public boolean isResponsible() {
+    boolean isResponsible() {
         return false;
     }
 
     @Override
-    protected Path getPath(Canvas canvas, Paint paint) {
+    Path getPath(Canvas canvas, Paint paint) {
         return null;
     }
 
     @Override
-    public int hitTest(float[] src) {
+    int hitTest(float[] src) {
         return -1;
     }
 }

@@ -9,65 +9,67 @@
 
 package versioned.host.exp.exponent.modules.api.components.svg;
 
+import android.annotation.SuppressLint;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
+
+import com.facebook.react.bridge.Dynamic;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.uimanager.annotations.ReactProp;
 
-/**
- * Shadow node for virtual Rect view
- */
-class RectShadowNode extends RenderableShadowNode {
+@SuppressLint("ViewConstructor")
+class RectView extends RenderableView {
+    private SVGLength mX;
+    private SVGLength mY;
+    private SVGLength mW;
+    private SVGLength mH;
+    private SVGLength mRx;
+    private SVGLength mRy;
 
-    private String mX;
-    private String mY;
-    private String mW;
-    private String mH;
-    private String mRx;
-    private String mRy;
-
+    public RectView(ReactContext reactContext) {
+        super(reactContext);
+    }
 
     @ReactProp(name = "x")
-    public void setX(String x) {
-        mX = x;
-        markUpdated();
+    public void setX(Dynamic x) {
+        mX = getLengthFromDynamic(x);
+        invalidate();
     }
 
     @ReactProp(name = "y")
-    public void setY(String y) {
-        mY = y;
-        markUpdated();
+    public void setY(Dynamic y) {
+        mY = getLengthFromDynamic(y);
+        invalidate();
     }
 
     @ReactProp(name = "width")
-    public void setWidth(String width) {
-        mW = width;
-        markUpdated();
+    public void setWidth(Dynamic width) {
+        mW = getLengthFromDynamic(width);
+        invalidate();
     }
-
 
     @ReactProp(name = "height")
-    public void setHeight(String height) {
-        mH = height;
-        markUpdated();
+    public void setHeight(Dynamic height) {
+        mH = getLengthFromDynamic(height);
+        invalidate();
     }
 
-
     @ReactProp(name = "rx")
-    public void setRx(String rx) {
-        mRx = rx;
-        markUpdated();
+    public void setRx(Dynamic rx) {
+        mRx = getLengthFromDynamic(rx);
+        invalidate();
     }
 
     @ReactProp(name = "ry")
-    public void setRy(String ry) {
-        mRy = ry;
-        markUpdated();
+    public void setRy(Dynamic ry) {
+        mRy = getLengthFromDynamic(ry);
+        invalidate();
     }
 
     @Override
-    protected Path getPath(Canvas canvas, Paint paint) {
+    Path getPath(Canvas canvas, Paint paint) {
         Path path = new Path();
         double x = relativeOnWidth(mX);
         double y = relativeOnHeight(mY);

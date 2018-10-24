@@ -9,26 +9,26 @@
 
 package versioned.host.exp.exponent.modules.api.components.svg;
 
+import android.annotation.SuppressLint;
 import android.graphics.Matrix;
 
 import com.facebook.common.logging.FLog;
-import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.Dynamic;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.annotations.ReactProp;
 
 import javax.annotation.Nullable;
 
-/**
- * Shadow node for virtual LinearGradient definition view
- */
-class LinearGradientShadowNode extends DefinitionShadowNode {
-
-    private String mX1;
-    private String mY1;
-    private String mX2;
-    private String mY2;
+@SuppressLint("ViewConstructor")
+class RadialGradientView extends DefinitionView {
+    private SVGLength mFx;
+    private SVGLength mFy;
+    private SVGLength mRx;
+    private SVGLength mRy;
+    private SVGLength mCx;
+    private SVGLength mCy;
     private ReadableArray mGradient;
     private Brush.BrushUnits mGradientUnits;
 
@@ -39,34 +39,50 @@ class LinearGradientShadowNode extends DefinitionShadowNode {
     };
     private Matrix mMatrix = null;
 
-    @ReactProp(name = "x1")
-    public void setX1(String x1) {
-        mX1 = x1;
-        markUpdated();
+    public RadialGradientView(ReactContext reactContext) {
+        super(reactContext);
     }
 
-    @ReactProp(name = "y1")
-    public void setY1(String y1) {
-        mY1 = y1;
-        markUpdated();
+    @ReactProp(name = "fx")
+    public void setFx(Dynamic fx) {
+        mFx = getLengthFromDynamic(fx);
+        invalidate();
     }
 
-    @ReactProp(name = "x2")
-    public void setX2(String x2) {
-        mX2 = x2;
-        markUpdated();
+    @ReactProp(name = "fy")
+    public void setFy(Dynamic fy) {
+        mFy = getLengthFromDynamic(fy);
+        invalidate();
     }
 
-    @ReactProp(name = "y2")
-    public void setY2(String y2) {
-        mY2 = y2;
-        markUpdated();
+    @ReactProp(name = "rx")
+    public void setRx(Dynamic rx) {
+        mRx = getLengthFromDynamic(rx);
+        invalidate();
+    }
+
+    @ReactProp(name = "ry")
+    public void setRy(Dynamic ry) {
+        mRy = getLengthFromDynamic(ry);
+        invalidate();
+    }
+
+    @ReactProp(name = "cx")
+    public void setCx(Dynamic cx) {
+        mCx = getLengthFromDynamic(cx);
+        invalidate();
+    }
+
+    @ReactProp(name = "cy")
+    public void setCy(Dynamic cy) {
+        mCy = getLengthFromDynamic(cy);
+        invalidate();
     }
 
     @ReactProp(name = "gradient")
     public void setGradient(ReadableArray gradient) {
         mGradient = gradient;
-        markUpdated();
+        invalidate();
     }
 
     @ReactProp(name = "gradientUnits")
@@ -79,7 +95,7 @@ class LinearGradientShadowNode extends DefinitionShadowNode {
                 mGradientUnits = Brush.BrushUnits.USER_SPACE_ON_USE;
                 break;
         }
-        markUpdated();
+        invalidate();
     }
 
     @ReactProp(name = "gradientTransform")
@@ -98,25 +114,20 @@ class LinearGradientShadowNode extends DefinitionShadowNode {
             mMatrix = null;
         }
 
-        markUpdated();
+        invalidate();
     }
 
     @Override
-    protected void saveDefinition() {
+    void saveDefinition() {
         if (mName != null) {
-            WritableArray points = Arguments.createArray();
-            points.pushString(mX1);
-            points.pushString(mY1);
-            points.pushString(mX2);
-            points.pushString(mY2);
-
-            Brush brush = new Brush(Brush.BrushType.LINEAR_GRADIENT, points, mGradientUnits);
+            SVGLength[] points = new SVGLength[]{mFx,mFy,mRx,mRy,mCx,mCy};
+            Brush brush = new Brush(Brush.BrushType.RADIAL_GRADIENT, points, mGradientUnits);
             brush.setGradientColors(mGradient);
             if (mMatrix != null) {
                 brush.setGradientTransform(mMatrix);
             }
 
-            SvgViewShadowNode svg = getSvgShadowNode();
+            SvgView svg = getSvgView();
             if (mGradientUnits == Brush.BrushUnits.USER_SPACE_ON_USE) {
                 brush.setUserSpaceBoundingBox(svg.getCanvasBounds());
             }

@@ -9,54 +9,68 @@
 
 package versioned.host.exp.exponent.modules.api.components.svg;
 
+import android.annotation.SuppressLint;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.Region;
+import android.view.ViewParent;
 
-import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.uimanager.ReactShadowNode;
+import com.facebook.react.bridge.Dynamic;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.uimanager.annotations.ReactProp;
+
+import java.util.ArrayList;
 
 import javax.annotation.Nullable;
 
-/**
- * Shadow node for virtual Text view
- */
+import static versioned.host.exp.exponent.modules.api.components.svg.TextProperties.AlignmentBaseline;
+import static versioned.host.exp.exponent.modules.api.components.svg.TextProperties.TextLengthAdjust;
 
-class TextShadowNode extends GroupShadowNode {
-    String mTextLength = null;
-    private String mBaselineShift = null;
+@SuppressLint("ViewConstructor")
+class TextView extends GroupView {
+    SVGLength mTextLength = null;
+    String mBaselineShift = null;
     TextLengthAdjust mLengthAdjust = TextLengthAdjust.spacing;
-    private AlignmentBaseline mAlignmentBaseline;
-    private @Nullable ReadableArray mPositionX;
-    private @Nullable ReadableArray mPositionY;
-    private @Nullable ReadableArray mRotate;
-    private @Nullable ReadableArray mDeltaX;
-    private @Nullable ReadableArray mDeltaY;
+    AlignmentBaseline mAlignmentBaseline;
+    @Nullable ArrayList<SVGLength> mPositionX;
+    @Nullable ArrayList<SVGLength> mPositionY;
+    @Nullable ArrayList<SVGLength> mRotate;
+    @Nullable ArrayList<SVGLength> mDeltaX;
+    @Nullable ArrayList<SVGLength> mDeltaY;
+
+    public TextView(ReactContext reactContext) {
+        super(reactContext);
+    }
+
+    @Override
+    public void invalidate() {
+        super.invalidate();
+        releaseCachedPath();
+    }
 
     @ReactProp(name = "textLength")
-    public void setmTextLength(@Nullable String length) {
-        mTextLength = length;
-        markUpdated();
+    public void setTextLength(Dynamic length) {
+        mTextLength = getLengthFromDynamic(length);
+        invalidate();
     }
 
     @ReactProp(name = "lengthAdjust")
     public void setLengthAdjust(@Nullable String adjustment) {
         mLengthAdjust = TextLengthAdjust.valueOf(adjustment);
-        markUpdated();
+        invalidate();
     }
 
     @ReactProp(name = "alignmentBaseline")
     public void setMethod(@Nullable String alignment) {
         mAlignmentBaseline = AlignmentBaseline.getEnum(alignment);
-        markUpdated();
+        invalidate();
     }
 
     @ReactProp(name = "baselineShift")
-    public void setBaselineShift(@Nullable String baselineShift) {
-        mBaselineShift = baselineShift;
-        markUpdated();
+    public void setBaselineShift(Dynamic baselineShift) {
+        mBaselineShift = getStringFromDynamic(baselineShift);
+        invalidate();
     }
 
     @ReactProp(name = "verticalAlign")
@@ -78,70 +92,66 @@ class TextShadowNode extends GroupShadowNode {
             mAlignmentBaseline = AlignmentBaseline.baseline;
             mBaselineShift = null;
         }
-        markUpdated();
+        invalidate();
     }
 
     @ReactProp(name = "rotate")
-    public void setRotate(@Nullable ReadableArray rotate) {
-        mRotate = rotate;
-        markUpdated();
+    public void setRotate(Dynamic rotate) {
+        mRotate = getLengthArrayFromDynamic(rotate);
+        invalidate();
     }
 
-    @ReactProp(name = "deltaX")
-    public void setDeltaX(@Nullable ReadableArray deltaX) {
-        mDeltaX = deltaX;
-        markUpdated();
+    @ReactProp(name = "dx")
+    public void setDeltaX(Dynamic deltaX) {
+        mDeltaX = getLengthArrayFromDynamic(deltaX);
+        invalidate();
     }
 
-    @ReactProp(name = "deltaY")
-    public void setDeltaY(@Nullable ReadableArray deltaY) {
-        mDeltaY = deltaY;
-        markUpdated();
+    @ReactProp(name = "dy")
+    public void setDeltaY(Dynamic deltaY) {
+        mDeltaY = getLengthArrayFromDynamic(deltaY);
+        invalidate();
     }
 
-    @ReactProp(name = "positionX")
-    public void setPositionX(@Nullable ReadableArray positionX) {
-        mPositionX = positionX;
-        markUpdated();
+    @ReactProp(name = "x")
+    public void setPositionX(Dynamic positionX) {
+        mPositionX = getLengthArrayFromDynamic(positionX);
+        invalidate();
     }
 
-    @ReactProp(name = "positionY")
-    public void setPositionY(@Nullable ReadableArray positionY) {
-        mPositionY = positionY;
-        markUpdated();
-    }
-
-    @ReactProp(name = "font")
-    public void setFont(@Nullable ReadableMap font) {
-        mFont = font;
-        markUpdated();
+    @ReactProp(name = "y")
+    public void setPositionY(Dynamic positionY) {
+        mPositionY = getLengthArrayFromDynamic(positionY);
+        invalidate();
     }
 
     @Override
-    public void draw(Canvas canvas, Paint paint, float opacity) {
+    void draw(Canvas canvas, Paint paint, float opacity) {
         if (opacity > MIN_OPACITY_FOR_DRAW) {
             setupGlyphContext(canvas);
             clip(canvas, paint);
             getGroupPath(canvas, paint);
             drawGroup(canvas, paint, opacity);
-            releaseCachedPath();
         }
     }
 
     @Override
-    protected Path getPath(Canvas canvas, Paint paint) {
+    Path getPath(Canvas canvas, Paint paint) {
         setupGlyphContext(canvas);
-        Path groupPath = getGroupPath(canvas, paint);
-        releaseCachedPath();
-        return groupPath;
+        return getGroupPath(canvas, paint);
+    }
+
+    @Override
+    Path getPath(Canvas canvas, Paint paint, Region.Op op) {
+        return getPath(canvas, paint);
     }
 
     AlignmentBaseline getAlignmentBaseline() {
         if (mAlignmentBaseline == null) {
-            ReactShadowNode parent = this.getParent();
+            ViewParent parent = this.getParent();
             while (parent != null) {
-                if (parent instanceof TextShadowNode) {
-                    TextShadowNode node = (TextShadowNode)parent;
+                if (parent instanceof TextView) {
+                    TextView node = (TextView)parent;
                     final AlignmentBaseline baseline = node.mAlignmentBaseline;
                     if (baseline != null) {
                         mAlignmentBaseline = baseline;
@@ -159,10 +169,10 @@ class TextShadowNode extends GroupShadowNode {
 
     String getBaselineShift() {
         if (mBaselineShift == null) {
-            ReactShadowNode parent = this.getParent();
+            ViewParent parent = this.getParent();
             while (parent != null) {
-                if (parent instanceof TextShadowNode) {
-                    TextShadowNode node = (TextShadowNode)parent;
+                if (parent instanceof TextView) {
+                    TextView node = (TextView)parent;
                     final String baselineShift = node.mBaselineShift;
                     if (baselineShift != null) {
                         mBaselineShift = baselineShift;
@@ -175,16 +185,6 @@ class TextShadowNode extends GroupShadowNode {
         return mBaselineShift;
     }
 
-    void releaseCachedPath() {
-        traverseChildren(new NodeRunnable() {
-            public void run(ReactShadowNode node) {
-                if (node instanceof TextShadowNode) {
-                    ((TextShadowNode)node).releaseCachedPath();
-                }
-            }
-        });
-    }
-
     Path getGroupPath(Canvas canvas, Paint paint) {
         pushGlyphContext();
         Path groupPath = super.getPath(canvas, paint);
@@ -195,7 +195,7 @@ class TextShadowNode extends GroupShadowNode {
 
     @Override
     void pushGlyphContext() {
-        boolean isTextNode = !(this instanceof TextPathShadowNode) && !(this instanceof TSpanShadowNode);
+        boolean isTextNode = !(this instanceof TextPathView) && !(this instanceof TSpanView);
         getTextRootGlyphContext().pushContext(isTextNode, this, mFont, mPositionX, mPositionY, mDeltaX, mDeltaY, mRotate);
     }
 }

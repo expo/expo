@@ -10,6 +10,7 @@
 package versioned.host.exp.exponent.modules.api.components.svg;
 
 
+import android.annotation.SuppressLint;
 import android.content.res.AssetManager;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
@@ -20,9 +21,10 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.os.Build;
+import android.view.ViewParent;
 
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.uimanager.ReactShadowNode;
 import com.facebook.react.uimanager.annotations.ReactProp;
 
 import javax.annotation.Nullable;
@@ -31,11 +33,10 @@ import static android.graphics.Matrix.MTRANS_X;
 import static android.graphics.Matrix.MTRANS_Y;
 import static android.graphics.PathMeasure.POSITION_MATRIX_FLAG;
 import static android.graphics.PathMeasure.TANGENT_MATRIX_FLAG;
+import static versioned.host.exp.exponent.modules.api.components.svg.TextProperties.*;
 
-/**
- * Shadow node for virtual TSpan view
- */
-class TSpanShadowNode extends TextShadowNode {
+@SuppressLint("ViewConstructor")
+class TSpanView extends TextView {
     private static final double tau = 2 * Math.PI;
     private static final double radToDeg = 360 / tau;
 
@@ -45,16 +46,20 @@ class TSpanShadowNode extends TextShadowNode {
 
     private Path mCache;
     @Nullable String mContent;
-    private TextPathShadowNode textPath;
+    private TextPathView textPath;
+
+    public TSpanView(ReactContext reactContext) {
+        super(reactContext);
+    }
 
     @ReactProp(name = "content")
     public void setContent(@Nullable String content) {
         mContent = content;
-        markUpdated();
+        invalidate();
     }
 
     @Override
-    public void draw(Canvas canvas, Paint paint, float opacity) {
+    void draw(Canvas canvas, Paint paint, float opacity) {
         if (mContent != null) {
             drawPath(canvas, paint, opacity);
         } else {
@@ -64,12 +69,13 @@ class TSpanShadowNode extends TextShadowNode {
     }
 
     @Override
-    protected void releaseCachedPath() {
+    void releaseCachedPath() {
         mCache = null;
+        mPath = null;
     }
 
     @Override
-    protected Path getPath(Canvas canvas, Paint paint) {
+    Path getPath(Canvas canvas, Paint paint) {
         if (mCache != null) {
             return mCache;
         }
@@ -101,7 +107,7 @@ class TSpanShadowNode extends TextShadowNode {
         boolean isClosed = false;
         final boolean hasTextPath = textPath != null;
         if (hasTextPath) {
-            pm = new PathMeasure(textPath.getPath(), false);
+            pm = new PathMeasure(textPath.getTextPath(canvas, paint), false);
             pathLength = pm.getLength();
             isClosed = pm.isClosed();
             if (pathLength == 0) {
@@ -672,6 +678,7 @@ class TSpanShadowNode extends TextShadowNode {
         final Matrix end = new Matrix();
 
         final float[] startPointMatrixData = new float[9];
+        final float[] midPointMatrixData = new float[9];
         final float[] endPointMatrixData = new float[9];
 
         for (int index = 0; index < length; index++) {
@@ -694,12 +701,9 @@ class TSpanShadowNode extends TextShadowNode {
                         break;
                     }
                     String nextLigature = current + String.valueOf(chars[nextIndex]);
-                    boolean hasNextLigature = PaintCompat.hasGlyph(paint, nextLigature);
-                    if (hasNextLigature) {
-                        ligature[nextIndex] = true;
-                        current = nextLigature;
-                        hasLigature = true;
-                    }
+                    ligature[nextIndex] = true;
+                    current = nextLigature;
+                    hasLigature = true;
                 }
             }
             double charWidth = paint.measureText(current) * scaleSpacingAndGlyphs;
@@ -729,7 +733,7 @@ class TSpanShadowNode extends TextShadowNode {
             double dy = gc.nextDeltaY();
             double r = gc.nextRotation();
 
-            if (alreadyRenderedGraphemeCluster) {
+            if (alreadyRenderedGraphemeCluster || isWordSeparator) {
                 // Skip rendering other grapheme clusters of ligatures (already rendered),
                 // But, make sure to increment index positions by making gc.next() calls.
                 continue;
@@ -852,14 +856,26 @@ class TSpanShadowNode extends TextShadowNode {
             } else {
                 glyph = bag.getOrCreateAndCache(currentChar, current);
             }
-            glyph.transform(mid);
-            path.addPath(glyph);
+            RectF bounds = new RectF();
+            glyph.computeBounds(bounds, true);
+            float width = bounds.width();
+            if (width == 0) { // Render unicode emoji
+                mid.getValues(midPointMatrixData);
+                double midX = midPointMatrixData[MTRANS_X];
+                double midY = midPointMatrixData[MTRANS_Y];
+                canvas.rotate((float) r, (float)midX, (float)midY);
+                canvas.drawText(current, (float)midX, (float)midY, paint);
+                canvas.rotate((float) -r, (float)midX, (float)midY);
+            } else {
+                glyph.transform(mid);
+                path.addPath(glyph);
+            }
         }
 
         return path;
     }
 
-    private double getAbsoluteStartOffset(String startOffset, double distance, double fontSize) {
+    private double getAbsoluteStartOffset(SVGLength startOffset, double distance, double fontSize) {
         return PropHelper.fromRelative(startOffset, distance, 0, mScale, fontSize);
     }
 
@@ -878,13 +894,14 @@ class TSpanShadowNode extends TextShadowNode {
     }
 
     private void applyTextPropertiesToPaint(Paint paint, FontData font) {
-        AssetManager assetManager = getThemedContext().getResources().getAssets();
+        AssetManager assetManager = mContext.getResources().getAssets();
 
         double fontSize = font.fontSize * mScale;
 
         boolean isBold = font.fontWeight == FontWeight.Bold;
         boolean isItalic = font.fontStyle == FontStyle.italic;
 
+        /*
         boolean underlineText = false;
         boolean strikeThruText = false;
 
@@ -894,6 +911,7 @@ class TSpanShadowNode extends TextShadowNode {
         } else if (decoration == TextDecoration.LineThrough) {
             strikeThruText = true;
         }
+        */
 
         int fontStyle;
         if (isBold && isItalic) {
@@ -929,18 +947,18 @@ class TSpanShadowNode extends TextShadowNode {
         paint.setTextAlign(Paint.Align.LEFT);
 
         // Do these have any effect for anyone? Not for me (@msand) at least.
-        paint.setUnderlineText(underlineText);
-        paint.setStrikeThruText(strikeThruText);
+        // paint.setUnderlineText(underlineText);
+        // paint.setStrikeThruText(strikeThruText);
     }
 
     private void setupTextPath() {
-        ReactShadowNode parent = getParent();
+        ViewParent parent = getParent();
 
         while (parent != null) {
-            if (parent.getClass() == TextPathShadowNode.class) {
-                textPath = (TextPathShadowNode) parent;
+            if (parent.getClass() == TextPathView.class) {
+                textPath = (TextPathView) parent;
                 break;
-            } else if (!(parent instanceof TextShadowNode)) {
+            } else if (!(parent instanceof TextView)) {
                 break;
             }
 
@@ -949,23 +967,30 @@ class TSpanShadowNode extends TextShadowNode {
     }
 
     @Override
-    public int hitTest(final float[] src) {
+    int hitTest(final float[] src) {
         if (mContent == null) {
             return super.hitTest(src);
         }
-        if (mPath == null || !mInvertible) {
+        if (mPath == null || !mInvertible || !mTransformInvertible) {
             return -1;
         }
 
         float[] dst = new float[2];
         mInvMatrix.mapPoints(dst, src);
+        mInvTransform.mapPoints(dst, src);
         int x = Math.round(dst[0]);
         int y = Math.round(dst[1]);
 
-        if (mRegion == null && mPath != null) {
-            mRegion = getRegion(mPath);
+        if (mRegion == null && mFillPath != null) {
+            mRegion = getRegion(mFillPath);
         }
-        if (mRegion == null || !mRegion.contains(x, y)) {
+        if (mStrokeRegion == null && mStrokePath != null) {
+            mStrokeRegion = getRegion(mStrokePath);
+        }
+        if (
+            (mRegion == null || !mRegion.contains(x, y)) &&
+            (mStrokeRegion == null || !mStrokeRegion.contains(x, y))
+        ) {
             return -1;
         }
 
@@ -980,6 +1005,6 @@ class TSpanShadowNode extends TextShadowNode {
             }
         }
 
-        return getReactTag();
+        return getId();
     }
 }

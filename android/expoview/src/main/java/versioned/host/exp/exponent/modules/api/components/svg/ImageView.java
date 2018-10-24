@@ -9,6 +9,7 @@
 
 package versioned.host.exp.exponent.modules.api.components.svg;
 
+import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
@@ -28,29 +29,25 @@ import com.facebook.imagepipeline.image.CloseableBitmap;
 import com.facebook.imagepipeline.image.CloseableImage;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
+import com.facebook.react.bridge.Dynamic;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.annotations.ReactProp;
-import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper;
 import com.facebook.react.views.imagehelper.ImageSource;
+import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.facebook.react.bridge.ReadableArray;
-
-/**
- * Shadow node for virtual Image view
- */
-class ImageShadowNode extends RenderableShadowNode {
-
-    private String mX;
-    private String mY;
-    private String mW;
-    private String mH;
-    private Uri mUri;
+@SuppressLint("ViewConstructor")
+class ImageView extends RenderableView {
+    private SVGLength mX;
+    private SVGLength mY;
+    private SVGLength mW;
+    private SVGLength mH;
     private String uriString;
     private int mImageWidth;
     private int mImageHeight;
@@ -58,35 +55,32 @@ class ImageShadowNode extends RenderableShadowNode {
     private int mMeetOrSlice;
     private final AtomicBoolean mLoading = new AtomicBoolean(false);
 
-    private static final float[] sRawMatrix = new float[]{
-        1, 0, 0,
-        0, 1, 0,
-        0, 0, 1
-    };
-    private Matrix mMatrix = null;
+    public ImageView(ReactContext reactContext) {
+        super(reactContext);
+    }
 
     @ReactProp(name = "x")
-    public void setX(String x) {
-        mX = x;
-        markUpdated();
+    public void setX(Dynamic x) {
+        mX = getLengthFromDynamic(x);
+        invalidate();
     }
 
     @ReactProp(name = "y")
-    public void setY(String y) {
-        mY = y;
-        markUpdated();
+    public void setY(Dynamic y) {
+        mY = getLengthFromDynamic(y);
+        invalidate();
     }
 
     @ReactProp(name = "width")
-    public void setWidth(String width) {
-        mW = width;
-        markUpdated();
+    public void setWidth(Dynamic width) {
+        mW = getLengthFromDynamic(width);
+        invalidate();
     }
 
     @ReactProp(name = "height")
-    public void seHeight(String height) {
-        mH = height;
-        markUpdated();
+    public void setHeight(Dynamic height) {
+        mH = getLengthFromDynamic(height);
+        invalidate();
     }
 
     @ReactProp(name = "src")
@@ -106,77 +100,56 @@ class ImageShadowNode extends RenderableShadowNode {
                 mImageWidth = 0;
                 mImageHeight = 0;
             }
-            mUri = Uri.parse(uriString);
+            Uri mUri = Uri.parse(uriString);
             if (mUri.getScheme() == null) {
-                mUri = ResourceDrawableIdHelper.getInstance().getResourceDrawableUri(getThemedContext(), uriString);
+                ResourceDrawableIdHelper.getInstance().getResourceDrawableUri(mContext, uriString);
             }
         }
     }
 
-
     @ReactProp(name = "align")
     public void setAlign(String align) {
         mAlign = align;
-        markUpdated();
+        invalidate();
     }
 
     @ReactProp(name = "meetOrSlice")
     public void setMeetOrSlice(int meetOrSlice) {
         mMeetOrSlice = meetOrSlice;
-        markUpdated();
+        invalidate();
     }
-
-    @ReactProp(name = "matrix")
-    public void setMatrix(@Nullable ReadableArray matrixArray) {
-        if (matrixArray != null) {
-            int matrixSize = PropHelper.toMatrixData(matrixArray, sRawMatrix, mScale);
-            if (matrixSize == 6) {
-                if (mMatrix == null) {
-                    mMatrix = new Matrix();
-                }
-                mMatrix.setValues(sRawMatrix);
-            } else if (matrixSize != -1) {
-                FLog.w(ReactConstants.TAG, "RNSVG: Transform matrices must be of size 6");
-            }
-        } else {
-            mMatrix = null;
-        }
-
-        markUpdated();
-    }
-
 
     @Override
-    public void draw(final Canvas canvas, final Paint paint, final float opacity) {
+    void draw(final Canvas canvas, final Paint paint, final float opacity) {
         if (!mLoading.get()) {
-            final ImageSource imageSource = new ImageSource(getThemedContext(), uriString);
+            final ImageSource imageSource = new ImageSource(mContext, uriString);
 
             final ImageRequest request = ImageRequestBuilder.newBuilderWithSource(imageSource.getUri()).build();
             if (Fresco.getImagePipeline().isInBitmapMemoryCache(request)) {
                 tryRender(request, canvas, paint, opacity * mOpacity);
             } else {
-                loadBitmap(request, canvas, paint, opacity * mOpacity);
+                loadBitmap(request);
             }
         }
     }
 
     @Override
-    protected Path getPath(Canvas canvas, Paint paint) {
+    Path getPath(Canvas canvas, Paint paint) {
         Path path = new Path();
         path.addRect(getRect(), Path.Direction.CW);
         return path;
     }
 
-    private void loadBitmap(ImageRequest request, final Canvas canvas, final Paint paint, final float opacity) {
+    private void loadBitmap(ImageRequest request) {
         final DataSource<CloseableReference<CloseableImage>> dataSource
-            = Fresco.getImagePipeline().fetchDecodedImage(request, getThemedContext());
+            = Fresco.getImagePipeline().fetchDecodedImage(request, mContext);
         dataSource.subscribe(new BaseBitmapDataSubscriber() {
                                  @Override
                                  public void onNewResultImpl(Bitmap bitmap) {
                                      mLoading.set(false);
-                                     SvgViewShadowNode shadowNode = getSvgShadowNode();
-                                     if(shadowNode != null) {
-                                         shadowNode.markUpdated();
+                                     SvgView view = getSvgView();
+                                     if (view != null) {
+                                         view.invalidate();
                                      }
                                  }
 
@@ -253,7 +226,7 @@ class ImageShadowNode extends RenderableShadowNode {
 
     private void tryRender(ImageRequest request, Canvas canvas, Paint paint, float opacity) {
         final DataSource<CloseableReference<CloseableImage>> dataSource
-            = Fresco.getImagePipeline().fetchImageFromBitmapCache(request, getThemedContext());
+            = Fresco.getImagePipeline().fetchImageFromBitmapCache(request, mContext);
 
         try {
             final CloseableReference<CloseableImage> imageReference = dataSource.getResult();
@@ -279,13 +252,4 @@ class ImageShadowNode extends RenderableShadowNode {
         }
     }
 
-    private void bitmapTryRender(Bitmap bitmap, Canvas canvas, Paint paint, float opacity) {
-        try {
-            if (bitmap != null) {
-                doRender(canvas, paint, bitmap, opacity);
-            }
-        } catch (Exception e) {
-            throw new IllegalStateException(e);
-        }
-    }
 }

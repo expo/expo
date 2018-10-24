@@ -5,13 +5,16 @@ package versioned.host.exp.exponent.modules.api.components.svg;
 import android.graphics.Path;
 import android.graphics.PathMeasure;
 import android.graphics.PointF;
-
-import com.facebook.react.uimanager.ReactShadowNode;
+import android.view.View;
 
 import java.util.ArrayList;
 
-@SuppressWarnings("unused")
-public class TextLayoutAlgorithm {
+import static versioned.host.exp.exponent.modules.api.components.svg.TextProperties.Direction;
+import static versioned.host.exp.exponent.modules.api.components.svg.TextProperties.TextAnchor;
+import static versioned.host.exp.exponent.modules.api.components.svg.TextProperties.TextPathSide;
+
+@SuppressWarnings("ALL")
+class TextLayoutAlgorithm {
     class CharacterInformation {
         int index;
         double x = 0;
@@ -19,7 +22,7 @@ public class TextLayoutAlgorithm {
         double advance;
         char character;
         double rotate = 0;
-        TextShadowNode element;
+        TextView element;
         boolean hidden = false;
         boolean middle = false;
         boolean resolved = false;
@@ -37,35 +40,35 @@ public class TextLayoutAlgorithm {
     }
 
     class LayoutInput {
-        TextShadowNode text;
+        TextView text;
         boolean horizontal;
     }
 
     private void getSubTreeTypographicCharacterPositions(
-        ArrayList<TextPathShadowNode> inTextPath,
-        ArrayList<TextShadowNode> subtree,
-        StringBuilder line,
-        ReactShadowNode node,
-        TextPathShadowNode textPath
+            ArrayList<TextPathView> inTextPath,
+            ArrayList<TextView> subtree,
+            StringBuilder line,
+            View node,
+            TextPathView textPath
     ) {
-        if (node instanceof TSpanShadowNode) {
-            final TSpanShadowNode tSpanShadowNode = (TSpanShadowNode) node;
-            String content = tSpanShadowNode.mContent;
+        if (node instanceof TSpanView) {
+            final TSpanView tSpanView = (TSpanView) node;
+            String content = tSpanView.mContent;
             if (content == null) {
-                for (int i = 0; i < node.getChildCount(); i++) {
-                    getSubTreeTypographicCharacterPositions(inTextPath, subtree, line, node.getChildAt(i), textPath);
+                for (int i = 0; i < tSpanView.getChildCount(); i++) {
+                    getSubTreeTypographicCharacterPositions(inTextPath, subtree, line, tSpanView.getChildAt(i), textPath);
                 }
             } else {
                 for (int i = 0; i < content.length(); i++) {
-                    subtree.add(tSpanShadowNode);
+                    subtree.add(tSpanView);
                     inTextPath.add(textPath);
                 }
                 line.append(content);
             }
         } else {
-            textPath = node instanceof TextPathShadowNode ? (TextPathShadowNode) node : textPath;
-            for (int i = 0; i < node.getChildCount(); i++) {
-                getSubTreeTypographicCharacterPositions(inTextPath, subtree, line, node.getChildAt(i), textPath);
+            textPath = node instanceof TextPathView ? (TextPathView) node : textPath;
+            for (int i = 0; i < textPath.getChildCount(); i++) {
+                getSubTreeTypographicCharacterPositions(inTextPath, subtree, line, textPath.getChildAt(i), textPath);
             }
         }
     }
@@ -82,10 +85,10 @@ public class TextLayoutAlgorithm {
         This will be a single line of text unless the
         white-space property causes line breaks.
 */
-        TextShadowNode text = layoutInput.text;
+        TextView text = layoutInput.text;
         StringBuilder line = new StringBuilder();
-        ArrayList<TextShadowNode> subtree = new ArrayList<>();
-        ArrayList<TextPathShadowNode> inTextPath = new ArrayList<>();
+        ArrayList<TextView> subtree = new ArrayList<>();
+        ArrayList<TextPathView> inTextPath = new ArrayList<>();
         getSubTreeTypographicCharacterPositions(inTextPath, subtree, line, text, null);
         final char[] root = line.toString().toCharArray();
 /*
@@ -271,11 +274,11 @@ public class TextLayoutAlgorithm {
                 this.resolve_dy = resolve_dy;
             }
 
-            private void resolveCharacterPositioning(TextShadowNode node) {
+            private void resolveCharacterPositioning(TextView node) {
 /*
           If node is a ‘text’ or ‘tspan’ node:
 */
-                if (node.getClass() == TextShadowNode.class || node.getClass() == TSpanShadowNode.class) {
+                if (node.getClass() == TextView.class || node.getClass() == TSpanView.class) {
 /*
           Let index equal the "global index number" of the
           first character in the node.
@@ -344,7 +347,7 @@ public class TextLayoutAlgorithm {
           Let length be the number of DOM characters in the
           subtree rooted at node.
 */
-                    String content = ((TSpanShadowNode) node).mContent;
+                    String content = ((TSpanView) node).mContent;
                     int length = content == null ? 0 : content.length();
 /*
           Let i = 0 and j = 0.
@@ -462,7 +465,7 @@ public class TextLayoutAlgorithm {
           Let index equal the global index number of the
           first character in the node (including descendant nodes).
 */
-                } else if (node.getClass() == TextPathShadowNode.class) {
+                } else if (node.getClass() == TextPathView.class) {
                     int index = global;
 /*
           Set the "anchored chunk" flag of result[index]
@@ -481,7 +484,7 @@ public class TextLayoutAlgorithm {
             positioning of child.
 */
                     for (int child = 0; child < node.getChildCount(); child++) {
-                        resolveCharacterPositioning((TextShadowNode) node.getChildAt(child));
+                        resolveCharacterPositioning((TextView) node.getChildAt(child));
                     }
 /*
           If node is a ‘textPath’ node:
@@ -489,7 +492,7 @@ public class TextLayoutAlgorithm {
           Set "in_text_path" flag false.
 
 */
-                    if (node instanceof TextPathShadowNode) {
+                    if (node instanceof TextPathView) {
                         in_text_path = false;
                     }
                 }
@@ -570,16 +573,16 @@ public class TextLayoutAlgorithm {
         class TextLengthResolver {
             int global;
 
-            private void resolveTextLength(TextShadowNode node) {
+            private void resolveTextLength(TextView node) {
             /*
 
           If node is a ‘text’ or ‘tspan’ node
           and if the node has a valid ‘textLength’ attribute value:
 */
-                final Class<? extends TextShadowNode> nodeClass = node.getClass();
+                final Class<? extends TextView> nodeClass = node.getClass();
                 final boolean validTextLength = node.mTextLength != null;
                 if (
-                    (nodeClass == TSpanShadowNode.class)
+                    (nodeClass == TSpanView.class)
                         && validTextLength
                     ) {
                 /*
@@ -594,7 +597,7 @@ public class TextLayoutAlgorithm {
           index of the first character and last characters
           in node, respectively.
 */
-                    String content = ((TSpanShadowNode) node).mContent;
+                    String content = ((TSpanView) node).mContent;
                     int i = global;
                     int j = i + (content == null ? 0 : content.length());
 /*
@@ -658,7 +661,7 @@ public class TextLayoutAlgorithm {
               Find the distance delta = ‘textLength’
               computed value − (b − a).
 */
-                        double delta = Double.parseDouble(node.mTextLength) - (b - a);
+                        double delta = node.mTextLength.value - (b - a);
 /*
 
             User agents are required to shift the last
@@ -687,8 +690,8 @@ public class TextLayoutAlgorithm {
                         int n = 0;
                         int resolvedDescendantNodes = 0;
                         for (int c = 0; c < node.getChildCount(); c++) {
-                            if (((TextPathShadowNode) node.getChildAt(c)).mTextLength == null) {
-                                String ccontent = ((TSpanShadowNode) node).mContent;
+                            if (((TextPathView) node.getChildAt(c)).mTextLength == null) {
+                                String ccontent = ((TSpanView) node).mContent;
                                 n += ccontent == null ? 0 : ccontent.length();
                             } else {
                                 result[n].firstCharacterInResolvedDescendant = true;
@@ -985,9 +988,9 @@ public class TextLayoutAlgorithm {
 
           Set "in path" flag to true.
 */
-            final TextPathShadowNode textPathShadowNode = inTextPath.get(index);
-            if (textPathShadowNode != null && result[index].addressable) {
-                textPath = textPathShadowNode.getPath();
+            final TextPathView textPathView = inTextPath.get(index);
+            if (textPathView != null && result[index].addressable) {
+                textPath = textPathView.getTextPath(null, null);
                 inPath = true;
 /*
 
@@ -1009,7 +1012,7 @@ public class TextLayoutAlgorithm {
              TODO reverse path.
 */
                     Path path = textPath;
-                    if (textPathShadowNode.getSide() == TextPathSide.right) {
+                    if (textPathView.getSide() == TextPathSide.right) {
 
                     }
 /*
@@ -1026,7 +1029,7 @@ public class TextLayoutAlgorithm {
               referenced element (if the referenced element is
               a ‘path’ element).
 */
-                    double offset = Double.parseDouble(textPathShadowNode.getStartOffset());
+                    double offset = textPathView.getStartOffset().value;
 /*
               Let advance = the advance of
               the typographic character corresponding
@@ -1243,7 +1246,7 @@ public class TextLayoutAlgorithm {
         This sets the starting point for rendering any characters that
         occur after a ‘textPath’ element to the end of the path.
 */
-            if (textPathShadowNode == null && result[index].addressable) {
+            if (textPathView == null && result[index].addressable) {
 /*
         If the "in path" flag is true:
 
