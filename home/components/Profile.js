@@ -4,13 +4,13 @@ import React from 'react';
 import {
   ActivityIndicator,
   Image,
-  ScrollView,
   StyleSheet,
   RefreshControl,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
+import { ScrollView } from 'react-navigation';
 import FadeIn from '@expo/react-native-fade-in-image';
 
 import { take, takeRight } from 'lodash';

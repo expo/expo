@@ -3,6 +3,7 @@
 import React from 'react';
 import { Platform, StyleSheet, Text, View } from 'react-native';
 import {
+  createAppContainer,
   createStackNavigator,
   createSwitchNavigator,
   createBottomTabNavigator,
@@ -32,17 +33,16 @@ const ProjectsStack = createStackNavigator(
   },
   {
     initialRouteName: 'Projects',
-    navigationOptions: defaultNavigationOptions,
+    navigationOptions: {
+      tabBarIcon: ({ focused }) => renderIcon(Entypo, 'grid', 24, focused),
+      tabBarLabel: 'Projects',
+    },
+    defaultNavigationOptions,
     cardStyle: {
       backgroundColor: Colors.greyBackground,
     },
   }
 );
-
-ProjectsStack.navigationOptions = {
-  tabBarIcon: ({ focused }) => renderIcon(Entypo, 'grid', 24, focused),
-  tabBarLabel: 'Projects',
-};
 
 const ExploreSearchSwitch = createBottomTabNavigator(
   {
@@ -51,20 +51,19 @@ const ExploreSearchSwitch = createBottomTabNavigator(
   },
   {
     tabBarComponent: null,
-    navigationOptions: {
+    navigationOptions: ({ navigation }) => {
+      let { routeName } = navigation.state.routes[navigation.state.index];
+
+      return {
+        header: null,
+        title: routeName,
+      };
+    },
+    defaultNavigationOptions: {
       tabBarVisible: false,
     },
   }
 );
-
-ExploreSearchSwitch.navigationOptions = ({ navigation }) => {
-  let { routeName } = navigation.state.routes[navigation.state.index];
-
-  return {
-    header: null,
-    title: routeName,
-  };
-};
 
 const ExploreStack = createStackNavigator(
   {
@@ -75,29 +74,36 @@ const ExploreStack = createStackNavigator(
   },
   {
     initialRouteName: 'ExploreAndSearch',
-    navigationOptions: defaultNavigationOptions,
+    defaultNavigationOptions,
+    navigationOptions: {
+      tabBarIcon: ({ focused }) => renderIcon(Ionicons, 'ios-search', 24, focused),
+      tabBarLabel: 'Explore',
+      tabBarOnPress: ({ navigation, defaultHandler }) => {
+        if (!navigation.isFocused()) {
+          defaultHandler();
+          return;
+        }
+
+        navigation.popToTop();
+
+        if (navigation.state.routes[0].index > 0) {
+          navigation.navigate('Explore');
+        } else {
+          navigation.emit('refocus');
+        }
+      },
+    },
     cardStyle: {
       backgroundColor: Colors.greyBackground,
     },
   }
 );
 
-ExploreStack.navigationOptions = {
-  tabBarIcon: ({ focused }) => renderIcon(Ionicons, 'ios-search', 24, focused),
-  tabBarLabel: 'Explore',
-  tabBarOnPress: ({ navigation, defaultHandler }) => {
-    if (!navigation.isFocused()) {
-      defaultHandler();
-      return;
-    }
-
-    navigation.popToTop();
-
-    if (navigation.state.routes[0].index > 0) {
-      navigation.navigate('Explore');
-    }
-  },
-};
+console.log('returned');
+console.log(ExploreStack.navigationOptions);
+console.log('--------------')
+console.log(ExploreStack.butts)
+console.log('--------------')
 
 const ProfileStack = createStackNavigator(
   {
@@ -108,17 +114,16 @@ const ProfileStack = createStackNavigator(
   },
   {
     initialRouteName: 'Profile',
-    navigationOptions: defaultNavigationOptions,
+    defaultNavigationOptions,
+    navigationOptions: {
+      tabBarIcon: ({ focused }) => renderIcon(Ionicons, 'ios-person', 26, focused),
+      tabBarLabel: 'Profile',
+    },
     cardStyle: {
       backgroundColor: Colors.greyBackground,
     },
   }
 );
-
-ProfileStack.navigationOptions = {
-  tabBarIcon: ({ focused }) => renderIcon(Ionicons, 'ios-person', 26, focused),
-  tabBarLabel: 'Profile',
-};
 
 const TabRoutes =
   Platform.OS === 'android' || !Constants.isDevice
@@ -136,6 +141,9 @@ const TabNavigator =
   Platform.OS === 'ios'
     ? createBottomTabNavigator(TabRoutes, {
         initialRouteName: 'ProfileStack',
+        navigationOptions: {
+          header: null,
+        },
         tabBarOptions: {
           style: {
             backgroundColor: Colors.tabBar,
@@ -147,16 +155,15 @@ const TabNavigator =
         initialRouteName: 'ProjectsStack',
         activeTintColor: Colors.tabIconSelected,
         inactiveTintColor: Colors.tabIconDefault,
+        navigationOptions: {
+          header: null,
+        },
         barStyle: {
           backgroundColor: '#fff',
         },
       });
 
-TabNavigator.navigationOptions = {
-  header: null,
-};
-
-export default createStackNavigator(
+const RootStack = createStackNavigator(
   {
     Tabs: TabNavigator,
     SignIn: SignInScreen,
@@ -166,9 +173,11 @@ export default createStackNavigator(
   {
     initialRouteName: 'Tabs',
     mode: 'modal',
-    navigationOptions: defaultNavigationOptions,
+    defaultNavigationOptions,
   }
 );
+
+export default createAppContainer(RootStack);
 
 function renderIcon(IconComponent: any, iconName: string, iconSize: number, isSelected: boolean) {
   let color = isSelected ? Colors.tabIconSelected : Colors.tabIconDefault;
