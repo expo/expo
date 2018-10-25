@@ -16,7 +16,10 @@ public class GLView extends TextureView implements TextureView.SurfaceTextureLis
 
   private GLContext mGLContext;
   private ModuleRegistry mModuleRegistry;
-  private List<OnSurfaceTextureUpdatedListener> mOnSurfaceTextureUpdatedListeners = new ArrayList<>();
+  private List<OnSurfaceTextureChangedListener> mOnSurfaceTextureChangedListeners = new ArrayList<>();
+  private int mWidth = -1;
+  private int mHeight = -1;
+  private SurfaceTexture mSurfaceTexture;
 
   // Suppresses ViewConstructor warnings
   public GLView(Context context) {
@@ -48,6 +51,9 @@ public class GLView extends TextureView implements TextureView.SurfaceTextureLis
   @Override
   public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
     if (!mOnSurfaceCreateCalled) {
+      mWidth = width;
+      mHeight = height;
+      mSurfaceTexture = surface;
       mGLContext.initialize(getContext(), surface, new Runnable() {
         @Override
         public void run() {
@@ -70,11 +76,24 @@ public class GLView extends TextureView implements TextureView.SurfaceTextureLis
         }
       });
       mOnSurfaceCreateCalled = true;
+
+      for (OnSurfaceTextureChangedListener listener: mOnSurfaceTextureChangedListeners) {
+        listener.onSurfaceTextureAvailable(surface, width, height);
+      }
     }
   }
 
   @Override
   public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
+    for (OnSurfaceTextureChangedListener listener: mOnSurfaceTextureChangedListeners) {
+      listener.onSurfaceTextureDestroyed(surface);
+    }
+
+    // cleanup
+    mWidth = -1;
+    mHeight = -1;
+    mSurfaceTexture = null;
+
     mGLContext.destroy();
 
     // reset flag, so the context will be recreated when the new surface is available
@@ -85,11 +104,16 @@ public class GLView extends TextureView implements TextureView.SurfaceTextureLis
 
   @Override
   public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
+    mWidth = width;
+    mHeight = height;
+    for (OnSurfaceTextureChangedListener listener: mOnSurfaceTextureChangedListeners) {
+      listener.onSurfaceTextureSizeChanged(surface, width, height);
+    }
   }
 
   @Override
   public void onSurfaceTextureUpdated(SurfaceTexture surface) {
-    for (OnSurfaceTextureUpdatedListener listener: mOnSurfaceTextureUpdatedListeners) {
+    for (OnSurfaceTextureChangedListener listener: mOnSurfaceTextureChangedListeners) {
       listener.onSurfaceTextureUpdated(surface);
     }
   }
@@ -102,12 +126,19 @@ public class GLView extends TextureView implements TextureView.SurfaceTextureLis
     return mGLContext.getContextId();
   }
 
-  public void registerOnSurfaceTextureUpdatedListener(OnSurfaceTextureUpdatedListener listener) {
-    mOnSurfaceTextureUpdatedListeners.add(listener);
+  public void registerOnSurfaceTextureUpdatedListener(OnSurfaceTextureChangedListener listener) {
+    mOnSurfaceTextureChangedListeners.add(listener);
+    // provide immediate callback for surfaceTexture creation if one's already available
+    if (mOnSurfaceCreateCalled && mSurfaceTexture != null) {
+      listener.onSurfaceTextureAvailable(mSurfaceTexture, mWidth, mHeight);
+    }
   }
 
-  public interface OnSurfaceTextureUpdatedListener {
+  public interface OnSurfaceTextureChangedListener {
+    void onSurfaceTextureAvailable(SurfaceTexture surfaceTexture, int width, int height);
     void onSurfaceTextureUpdated(SurfaceTexture surfaceTexture);
+    void onSurfaceTextureSizeChanged(SurfaceTexture surfaceTexture, int width, int height);
+    void onSurfaceTextureDestroyed(SurfaceTexture surfaceTexture);
   }
 }
 

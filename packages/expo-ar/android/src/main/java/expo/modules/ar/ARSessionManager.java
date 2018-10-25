@@ -5,6 +5,8 @@ package expo.modules.ar;
 import android.content.Context;
 import android.graphics.SurfaceTexture;
 import android.os.Bundle;
+import android.util.Log;
+import android.util.Size;
 
 import com.google.ar.core.Camera;
 import com.google.ar.core.Config;
@@ -27,19 +29,19 @@ import expo.core.interfaces.ActivityProvider;
 import expo.modules.ar.gl.ARGLCameraObject;
 import expo.modules.gl.GLView;
 
-public class ARSessionManager implements GLView.OnSurfaceTextureUpdatedListener {
+public class ARSessionManager implements GLView.OnSurfaceTextureChangedListener {
   private static final String ERROR_TAG = "E_AR";
   private static final String TAG = ARSessionManager.class.getSimpleName();
 
   private final ModuleRegistry mModuleRegistry;
   private final ActivityProvider mActivityProvider;
   private final ARDependenciesHelper mARDependenciesHelper;
+  private final ARDisplayRotationHelper mARDisplayRotationHelper;
   private final ARSerializer mARSerializer;
   private final Context mContext;
 
   public ARSessionManagerDelegate delegate;
 
-//  private ARGLCameraObjectExperimental mCameraObject;
   private ARGLCameraObject mCameraObject;
   private Session mSession;
   private GLView mGLView;
@@ -47,7 +49,6 @@ public class ARSessionManager implements GLView.OnSurfaceTextureUpdatedListener 
 
   private float[] viewMatrix = new float[16];
   private float[] projectionMatrix = new float[16];
-  private float[] poseMatrix = new float[16];
 
   private TrackingState trackingState = TrackingState.STOPPED;
 
@@ -58,6 +59,7 @@ public class ARSessionManager implements GLView.OnSurfaceTextureUpdatedListener 
     mActivityProvider = mModuleRegistry.getModule(ActivityProvider.class);
     mContext = mActivityProvider.getCurrentActivity().getApplicationContext();
     mARDependenciesHelper = new ARDependenciesHelper(mModuleRegistry);
+    mARDisplayRotationHelper = new ARDisplayRotationHelper(mContext);
     mARSerializer = new ARSerializer();
   }
 
@@ -73,7 +75,7 @@ public class ARSessionManager implements GLView.OnSurfaceTextureUpdatedListener 
     mGLView.runOnGLThread(new Runnable() {
       @Override
       public void run() {
-        mCameraObject = new ARGLCameraObject(mContext, mSession, mGLView);
+        mCameraObject = new ARGLCameraObject(mContext, mGLView.getGLContext());
         mCameraObject.createOnGLThread();
         completionHandler.run();
       }
@@ -213,7 +215,30 @@ public class ARSessionManager implements GLView.OnSurfaceTextureUpdatedListener 
     if (!cameraExistsOrReject(promise)) {
       return;
     }
-    promise.resolve(mCameraObject.getCameraTexture());
+    promise.resolve(mCameraObject.getJSAvailableCameraTexture());
+  }
+
+  private void updateFrame() {
+    mARDisplayRotationHelper.updateSessionIfNeeded(mSession);
+
+    try {
+      // Instruct ARCore session to use texture provided by CameraObject
+      mSession.setCameraTextureName(mCameraObject.getCameraTexture());
+
+      // Obtain the current frame from ARSession. When the configuration is set to
+      // UpdateMode.BLOCKING (it is by default), this will throttle the rendering to the camera framerate.
+      Frame frame = mSession.update();
+      Size previewSize = mSession.getCameraConfig().getTextureSize();
+      mCameraObject.drawFrame(frame, previewSize);
+    } catch (CameraNotAvailableException e) {
+      // Avoid crashing the application due to unhandled exceptions.
+      Log.e(TAG, "Exception on the OpenGL thread", e);
+    }
+  }
+
+  @Override
+  public void onSurfaceTextureAvailable(SurfaceTexture surfaceTexture, int width, int height) {
+    mARDisplayRotationHelper.onSurfaceChanged(width, height);
   }
 
   @Override
@@ -222,14 +247,18 @@ public class ARSessionManager implements GLView.OnSurfaceTextureUpdatedListener 
       mGLView.runOnGLThread(new Runnable() {
         @Override
         public void run() {
-          try {
-            final Frame frame = mSession.update();
-            mCameraObject.drawFrame(frame);
-          } catch (CameraNotAvailableException e) {
-            e.printStackTrace();
-          }
+          updateFrame();
         }
       });
     }
+  }
+
+  @Override
+  public void onSurfaceTextureSizeChanged(SurfaceTexture surfaceTexture, int width, int height) {
+    mARDisplayRotationHelper.onSurfaceChanged(width, height);
+  }
+
+  @Override
+  public void onSurfaceTextureDestroyed(SurfaceTexture surfaceTexture) {
   }
 }

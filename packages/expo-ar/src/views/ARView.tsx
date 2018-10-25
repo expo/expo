@@ -181,7 +181,7 @@ export default class ARView extends React.Component<Props> {
 
     if (isAREnabled) {
       // Start AR session
-      await startAsync(findNodeHandle(this.nativeRef!) as number, ARTrackingConfiguration);
+      await startAsync(this.nativeRef!, ARTrackingConfiguration);
     }
 
     await onContextCreate({
