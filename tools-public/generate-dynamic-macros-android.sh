@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # This is used by AndroidShellApp.js
 set -eo pipefail

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Usage: ./android-copy-native-modules 4.0.0 copies native modules to abi4_0_0.host.exp.exponent
 
 ABI_VERSION=`echo $1 | sed 's/\./_/g'`
