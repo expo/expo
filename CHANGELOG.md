@@ -8,6 +8,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 
 - The default export from the expo package is deprecated in favor of named exports to pave the way for static analysis tools (#2387)
 - upgrade `react-native-svg` to `8.0.5` ([#2492](https://github.com/expo/expo/pull/2492))
+- upgrade underyling Facebook SDK native dependencies to `4.37.0` by [@sjchmiela](https://github.com/sjchmiela) ([#2508](https://github.com/expo/expo/pull/2508))
 
 ### New features
 
