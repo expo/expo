@@ -78,6 +78,11 @@ FBSDK_EXTERN NSString *const FBSDKAccessTokenDidExpire;
 @property (readonly, copy, nonatomic) NSString *appID;
 
 /**
+ Returns the expiration date for data access
+ */
+@property (readonly, copy, nonatomic) NSDate *dataAccessExpirationDate;
+
+/**
   Returns the known declined permissions.
  */
 @property (readonly, copy, nonatomic) NSSet *declinedPermissions;
@@ -112,11 +117,16 @@ FBSDK_EXTERN NSString *const FBSDKAccessTokenDidExpire;
  */
 @property (readonly, assign, nonatomic, getter = isExpired) BOOL expired;
 
+/**
+ Returns whether user data access is still active for the given access token
+ */
+@property (readonly, assign, nonatomic, getter = isDataAccessExpired) BOOL dataAccessExpired;
+
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new NS_UNAVAILABLE;
 
 /**
-  Initializes a new instance.
+ Initializes a new instance.
  @param tokenString the opaque token string.
  @param permissions the granted permissions. Note this is converted to NSSet and is only
  an NSArray for the convenience of literal syntax.
@@ -137,7 +147,34 @@ FBSDK_EXTERN NSString *const FBSDKAccessTokenDidExpire;
                               appID:(NSString *)appID
                              userID:(NSString *)userID
                      expirationDate:(NSDate *)expirationDate
+                        refreshDate:(NSDate *)refreshDate;
+
+/**
+  Initializes a new instance.
+ @param tokenString the opaque token string.
+ @param permissions the granted permissions. Note this is converted to NSSet and is only
+ an NSArray for the convenience of literal syntax.
+ @param declinedPermissions the declined permissions. Note this is converted to NSSet and is only
+ an NSArray for the convenience of literal syntax.
+ @param appID the app ID.
+ @param userID the user ID.
+ @param expirationDate the optional expiration date (defaults to distantFuture).
+ @param refreshDate the optional date the token was last refreshed (defaults to today).
+ @param dataAccessExpirationDate the date which data access will expire for the given user
+ (defaults to distantFuture).
+
+ This initializer should only be used for advanced apps that
+ manage tokens explicitly. Typical login flows only need to use `FBSDKLoginManager`
+ along with `+currentAccessToken`.
+ */
+- (instancetype)initWithTokenString:(NSString *)tokenString
+                        permissions:(NSArray *)permissions
+                declinedPermissions:(NSArray *)declinedPermissions
+                              appID:(NSString *)appID
+                             userID:(NSString *)userID
+                     expirationDate:(NSDate *)expirationDate
                         refreshDate:(NSDate *)refreshDate
+                 dataAccessExpirationDate:(NSDate *)dataAccessExpirationDate
 NS_DESIGNATED_INITIALIZER;
 
 /**

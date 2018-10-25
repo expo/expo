@@ -72,7 +72,8 @@ NSString *const FBSDKTokenInformationUUIDKey = @"com.facebook.sdk:TokenInformati
                                                    appID:dictionary[FBSDK_TOKEN_INFORMATION_APP_ID_KEY]
                                                   userID:dictionary[FBSDK_TOKEN_INFORMATION_USER_FBID_KEY]
                                           expirationDate:expirationDate
-                                             refreshDate:dictionary[FBSDK_TOKEN_INFORMATION_REFRESH_DATE_KEY]];
+                                             refreshDate:dictionary[FBSDK_TOKEN_INFORMATION_REFRESH_DATE_KEY]
+                                             dataAccessExpirationDate:nil];
   }
   return nil;
 }

@@ -1,0 +1,302 @@
+// Copyright (c) 2014-present, Facebook, Inc. All rights reserved.
+//
+// You are hereby granted a non-exclusive, worldwide, royalty-free license to use,
+// copy, modify, and distribute this software in source code or binary form for use
+// in connection with the web services and APIs provided by Facebook.
+//
+// As with any software that integrates with the Facebook platform, your use of
+// this software is subject to the Facebook Developer Principles and Policies
+// [http://developers.facebook.com/policy/]. This copyright notice shall be
+// included in all copies or substantial portions of the software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+// FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+// COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+// IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+// CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+#import "FBSDKAppLinkNavigation.h"
+
+#import "FBSDKAppLinkTarget.h"
+#import "FBSDKAppLink_Internal.h"
+#import "FBSDKMeasurementEvent_Internal.h"
+#import "FBSDKSettings.h"
+#import "FBSDKWebViewAppLinkResolver.h"
+
+FOUNDATION_EXPORT NSString *const FBSDKAppLinkDataParameterName;
+FOUNDATION_EXPORT NSString *const FBSDKAppLinkTargetKeyName;
+FOUNDATION_EXPORT NSString *const FBSDKAppLinkUserAgentKeyName;
+FOUNDATION_EXPORT NSString *const FBSDKAppLinkExtrasKeyName;
+FOUNDATION_EXPORT NSString *const FBSDKAppLinkVersionKeyName;
+FOUNDATION_EXPORT NSString *const FBSDKAppLinkRefererAppLink;
+FOUNDATION_EXPORT NSString *const FBSDKAppLinkRefererAppName;
+FOUNDATION_EXPORT NSString *const FBSDKAppLinkRefererUrl;
+
+static id<FBSDKAppLinkResolving> defaultResolver;
+
+@interface FBSDKAppLinkNavigation ()
+
+@property (nonatomic, copy, readwrite) NSDictionary<NSString *, id> *extras;
+@property (nonatomic, copy, readwrite) NSDictionary<NSString *, id> *appLinkData;
+@property (nonatomic, strong, readwrite) FBSDKAppLink *appLink;
+
+@end
+
+@implementation FBSDKAppLinkNavigation
+
++ (instancetype)navigationWithAppLink:(FBSDKAppLink *)appLink
+                               extras:(NSDictionary<NSString *, id> *)extras
+                          appLinkData:(NSDictionary<NSString *, id> *)appLinkData {
+    FBSDKAppLinkNavigation *navigation = [[self alloc] init];
+    navigation.appLink = appLink;
+    navigation.extras = extras;
+    navigation.appLinkData = appLinkData;
+    return navigation;
+}
+
++ (NSDictionary<NSString *, NSDictionary<NSString *, NSString *> *> *)callbackAppLinkDataForAppWithName:(NSString *)appName
+                                                                                                    url:(NSString *)url {
+    return @{FBSDKAppLinkRefererAppLink: @{FBSDKAppLinkRefererAppName: appName, FBSDKAppLinkRefererUrl: url}};
+}
+
+- (NSString *)stringByEscapingQueryString:(NSString *)string {
+#if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_7_0 || __MAC_OS_X_VERSION_MIN_REQUIRED >= __MAC_10_9
+    return [string stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+#else
+    return (NSString *)CFBridgingRelease(CFURLCreateStringByAddingPercentEscapes(NULL,
+                                                                                 (CFStringRef)string,
+                                                                                 NULL,
+                                                                                 (CFStringRef) @":/?#[]@!$&'()*+,;=",
+                                                                                 kCFStringEncodingUTF8));
+#endif
+}
+
+- (NSURL *)appLinkURLWithTargetURL:(NSURL *)targetUrl error:(NSError **)error {
+    NSMutableDictionary<NSString *, id> *appLinkData =
+    [NSMutableDictionary dictionaryWithDictionary:self.appLinkData ?: @{}];
+
+    // Add applink protocol data
+    if (!appLinkData[FBSDKAppLinkUserAgentKeyName]) {
+        appLinkData[FBSDKAppLinkUserAgentKeyName] = [NSString stringWithFormat:@"FBSDK %@", FBSDKSettings.sdkVersion];
+    }
+    if (!appLinkData[FBSDKAppLinkVersionKeyName]) {
+        appLinkData[FBSDKAppLinkVersionKeyName] = FBSDKAppLinkVersion;
+    }
+    if (self.appLink.sourceURL.absoluteString) {
+        appLinkData[FBSDKAppLinkTargetKeyName] = self.appLink.sourceURL.absoluteString;
+    }
+    appLinkData[FBSDKAppLinkExtrasKeyName] = self.extras ?: @{};
+
+    // JSON-ify the applink data
+    NSError *jsonError = nil;
+    NSData *jsonBlob = [NSJSONSerialization dataWithJSONObject:appLinkData options:0 error:&jsonError];
+    if (!jsonError) {
+        NSString *jsonString = [[NSString alloc] initWithData:jsonBlob encoding:NSUTF8StringEncoding];
+        NSString *encoded = [self stringByEscapingQueryString:jsonString];
+
+        NSString *endUrlString = [NSString stringWithFormat:@"%@%@%@=%@",
+                                  [targetUrl absoluteString],
+                                  targetUrl.query ? @"&" : @"?",
+                                  FBSDKAppLinkDataParameterName,
+                                  encoded];
+
+        return [NSURL URLWithString:endUrlString];
+    } else {
+        if (error) {
+            *error = jsonError;
+        }
+
+        // If there was an error encoding the app link data, fail hard.
+        return nil;
+    }
+}
+
+- (FBSDKAppLinkNavigationType)navigate:(NSError **)error {
+    NSURL *openedURL = nil;
+    NSError *encodingError = nil;
+    FBSDKAppLinkNavigationType retType = FBSDKAppLinkNavigationTypeFailure;
+
+    // Find the first eligible/launchable target in the FBSDKAppLink.
+    for (FBSDKAppLinkTarget *target in self.appLink.targets) {
+        NSURL *appLinkAppURL = [self appLinkURLWithTargetURL:target.URL error:&encodingError];
+        if (encodingError || !appLinkAppURL) {
+            if (error) {
+                *error = encodingError;
+            }
+        } else if ([[UIApplication sharedApplication] openURL:appLinkAppURL]) {
+            retType = FBSDKAppLinkNavigationTypeApp;
+            openedURL = appLinkAppURL;
+            break;
+        }
+    }
+
+    if (!openedURL && self.appLink.webURL) {
+        // Fall back to opening the url in the browser if available.
+        NSURL *appLinkBrowserURL = [self appLinkURLWithTargetURL:self.appLink.webURL error:&encodingError];
+        if (encodingError || !appLinkBrowserURL) {
+            // If there was an error encoding the app link data, fail hard.
+            if (error) {
+                *error = encodingError;
+            }
+        } else if ([[UIApplication sharedApplication] openURL:appLinkBrowserURL]) {
+            // This was a browser navigation.
+            retType = FBSDKAppLinkNavigationTypeBrowser;
+            openedURL = appLinkBrowserURL;
+        }
+    }
+
+    [self postAppLinkNavigateEventNotificationWithTargetURL:openedURL
+                                                      error:error ? *error : nil
+                                                       type:retType];
+    return retType;
+}
+
+- (void)postAppLinkNavigateEventNotificationWithTargetURL:(NSURL *)outputURL error:(NSError *)error type:(FBSDKAppLinkNavigationType)type {
+    NSString *const EVENT_YES_VAL = @"1";
+    NSString *const EVENT_NO_VAL = @"0";
+    NSMutableDictionary<NSString *, id> *logData =
+    [[NSMutableDictionary alloc] init];
+
+    NSString *outputURLScheme = [outputURL scheme];
+    NSString *outputURLString = [outputURL absoluteString];
+    if (outputURLScheme) {
+        logData[@"outputURLScheme"] = outputURLScheme;
+    }
+    if (outputURLString) {
+        logData[@"outputURL"] = outputURLString;
+    }
+
+    NSString *sourceURLString = [self.appLink.sourceURL absoluteString];
+    NSString *sourceURLHost = [self.appLink.sourceURL host];
+    NSString *sourceURLScheme = [self.appLink.sourceURL scheme];
+    if (sourceURLString) {
+        logData[@"sourceURL"] = sourceURLString;
+    }
+    if (sourceURLHost) {
+        logData[@"sourceHost"] = sourceURLHost;
+    }
+    if (sourceURLScheme) {
+        logData[@"sourceScheme"] = sourceURLScheme;
+    }
+    if ([error localizedDescription]) {
+        logData[@"error"] = [error localizedDescription];
+    }
+    NSString *success = nil; //no
+    NSString *linkType = nil; // unknown;
+    switch (type) {
+        case FBSDKAppLinkNavigationTypeFailure:
+            success = EVENT_NO_VAL;
+            linkType = @"fail";
+            break;
+        case FBSDKAppLinkNavigationTypeBrowser:
+            success = EVENT_YES_VAL;
+            linkType = @"web";
+            break;
+        case FBSDKAppLinkNavigationTypeApp:
+            success = EVENT_YES_VAL;
+            linkType = @"app";
+            break;
+        default:
+            break;
+    }
+    if (success) {
+        logData[@"success"] = success;
+    }
+    if (linkType) {
+        logData[@"type"] = linkType;
+    }
+
+    if ([self.appLink isBackToReferrer]) {
+        [FBSDKMeasurementEvent postNotificationForEventName:FBSDKAppLinkNavigateBackToReferrerEventName args:logData];
+    } else {
+        [FBSDKMeasurementEvent postNotificationForEventName:FBSDKAppLinkNavigateOutEventName args:logData];
+    }
+}
+
++ (void)resolveAppLink:(NSURL *)destination
+              resolver:(id<FBSDKAppLinkResolving>)resolver
+               handler:(FBSDKAppLinkFromURLHandler)handler {
+  [resolver appLinkFromURL:destination handler:handler];
+}
+
++ (void)resolveAppLink:(NSURL *)destination handler:(FBSDKAppLinkFromURLHandler)handler {
+  [self resolveAppLink:destination resolver:[self defaultResolver] handler:handler];
+}
+
++ (void)navigateToURL:(NSURL *)destination handler:(FBSDKAppLinkNavigationHandler)handler {
+  [self navigateToURL:destination resolver:[self defaultResolver] handler:handler];
+}
+
++ (void)navigateToURL:(NSURL *)destination
+             resolver:(id<FBSDKAppLinkResolving>)resolver
+              handler:(FBSDKAppLinkNavigationHandler)handler {
+
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [self resolveAppLink:destination
+                resolver:resolver
+                 handler:^(FBSDKAppLink * _Nullable appLink, NSError * _Nullable error) {
+                   if (error) {
+                     handler(FBSDKAppLinkNavigationTypeFailure, error);
+                     return;
+                   }
+
+                   NSError *navigateError = nil;
+                   FBSDKAppLinkNavigationType result = [self navigateToAppLink:appLink error:&navigateError];
+                   handler(result, navigateError);
+                 }];
+  });
+}
+
++ (FBSDKAppLinkNavigationType)navigateToAppLink:(FBSDKAppLink *)link error:(NSError **)error {
+    return [[FBSDKAppLinkNavigation navigationWithAppLink:link
+                                                   extras:@{}
+                                              appLinkData:@{}] navigate:error];
+}
+
++ (FBSDKAppLinkNavigationType)navigationTypeForLink:(FBSDKAppLink *)link {
+    return [[self navigationWithAppLink:link extras:@{} appLinkData:@{}] navigationType];
+}
+
+- (FBSDKAppLinkNavigationType)navigationType {
+    FBSDKAppLinkTarget *eligibleTarget = nil;
+    for (FBSDKAppLinkTarget *target in self.appLink.targets) {
+        if ([[UIApplication sharedApplication] canOpenURL:target.URL]) {
+            eligibleTarget = target;
+            break;
+        }
+    }
+
+    if (eligibleTarget != nil) {
+        NSURL *appLinkURL = [self appLinkURLWithTargetURL:eligibleTarget.URL error:nil];
+        if (appLinkURL != nil) {
+            return FBSDKAppLinkNavigationTypeApp;
+        } else {
+            return FBSDKAppLinkNavigationTypeFailure;
+        }
+    }
+
+    if (self.appLink.webURL != nil) {
+        NSURL *appLinkURL = [self appLinkURLWithTargetURL:eligibleTarget.URL error:nil];
+        if (appLinkURL != nil) {
+            return FBSDKAppLinkNavigationTypeBrowser;
+        } else {
+            return FBSDKAppLinkNavigationTypeFailure;
+        }
+    }
+
+    return FBSDKAppLinkNavigationTypeFailure;
+}
+
++ (id<FBSDKAppLinkResolving>)defaultResolver {
+    if (defaultResolver) {
+        return defaultResolver;
+    }
+    return [FBSDKWebViewAppLinkResolver sharedInstance];
+}
+
++ (void)setDefaultResolver:(id<FBSDKAppLinkResolving>)resolver {
+    defaultResolver = resolver;
+}
+
+@end

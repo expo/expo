@@ -184,7 +184,7 @@ static CGMutablePathRef _fbsdkCreateDownPointingBubbleWithRect(CGRect rect, CGFl
   [self animateFadeOutWithCompletion:^{
     [self removeFromSuperview];
     [self cancelAllScheduledFadeOutMethods];
-    _isFadingOut = NO;
+    self->_isFadingOut = NO;
   }];
 }
 
@@ -244,9 +244,9 @@ static CGMutablePathRef _fbsdkCreateDownPointingBubbleWithRect(CGRect rect, CGFl
   void (^zoomIn)(void) = ^{
     self.alpha = 1.0;
 
-    CGFloat newZoomOffsetX = (centerPos - _arrowMidpoint) * (kZoomInScale - 1.0f);
+    CGFloat newZoomOffsetX = (centerPos - self->_arrowMidpoint) * (kZoomInScale - 1.0f);
     CGFloat newZoomOffsetY = -0.5f * self.bounds.size.height * (kZoomInScale - 1.0f);
-    if (_pointingUp) {
+    if (self->_pointingUp) {
       newZoomOffsetY = -newZoomOffsetY;
     }
 
@@ -258,9 +258,9 @@ static CGMutablePathRef _fbsdkCreateDownPointingBubbleWithRect(CGRect rect, CGFl
   // 2nd Step.
   void (^bounceZoom)(void) = ^{
     CGFloat centerPos2 = self.bounds.size.width / 2.0;
-    CGFloat zoomOffsetX2 = (centerPos2 - _arrowMidpoint) * (kZoomBounceScale - 1.0f);
+    CGFloat zoomOffsetX2 = (centerPos2 - self->_arrowMidpoint) * (kZoomBounceScale - 1.0f);
     CGFloat zoomOffsetY2 = -0.5f * self.bounds.size.height * (kZoomBounceScale - 1.0f);
-    if (_pointingUp) {
+    if (self->_pointingUp) {
       zoomOffsetY2 = -zoomOffsetY2;
     }
     self.layer.transform = fbsdkdfl_CATransform3DConcat(fbsdkdfl_CATransform3DMakeScale(kZoomBounceScale, kZoomBounceScale, kZoomBounceScale),

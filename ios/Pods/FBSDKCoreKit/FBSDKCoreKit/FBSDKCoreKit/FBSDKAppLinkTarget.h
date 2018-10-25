@@ -18,27 +18,28 @@
 
 #import <Foundation/Foundation.h>
 
-#import <FBSDKCoreKit/FBSDKMacros.h>
+NS_ASSUME_NONNULL_BEGIN
 
-FBSDK_EXTERN NSString* const EMAIL;
-FBSDK_EXTERN NSString* const FIRST_NAME;
-FBSDK_EXTERN NSString* const LAST_NAME;
-FBSDK_EXTERN NSString* const PHONE;
-FBSDK_EXTERN NSString* const DATE_OF_BIRTH;
-FBSDK_EXTERN NSString* const GENDER;
-FBSDK_EXTERN NSString* const CITY;
-FBSDK_EXTERN NSString* const STATE;
-FBSDK_EXTERN NSString* const ZIP;
-FBSDK_EXTERN NSString* const COUNTRY;
+/*!
+ Represents a target defined in App Link metadata, consisting of at least
+ a URL, and optionally an App Store ID and name.
+ */
+@interface FBSDKAppLinkTarget : NSObject
 
-@interface FBSDKUserDataStore : NSObject
+/*! Creates a FBSDKAppLinkTarget with the given app site and target URL. */
++ (instancetype)appLinkTargetWithURL:(NSURL *)url
+                          appStoreId:(nullable NSString *)appStoreId
+                             appName:(NSString *)appName;
 
-+ (void)initStore;
+/*! The URL prefix for this app link target */
+@property (nonatomic, strong, readonly) NSURL *URL;
 
-+ (void)initAndWait;
+/*! The app ID for the app store */
+@property (nonatomic, copy, readonly, nullable) NSString *appStoreId;
 
-+ (void) setUserDataAndHash:(NSDictionary*)ud;
-
-+ (NSString*) getHashedUserData;
+/*! The name of the app */
+@property (nonatomic, copy, readonly) NSString *appName;
 
 @end
+
+NS_ASSUME_NONNULL_END
