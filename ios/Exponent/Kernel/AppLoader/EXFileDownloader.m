@@ -1,5 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+#import "EXEnvironment.h"
 #import "EXFileDownloader.h"
 #import "EXVersions.h"
 #import "EXKernelUtil.h"
@@ -85,12 +86,28 @@ NSTimeInterval const EXFileDownloaderDefaultTimeoutInterval = 60;
   } else {
     releaseChannel = @"default";
   }
+  NSString *clientEnvironment;
+  if ([EXEnvironment sharedEnvironment].isDetached) {
+    clientEnvironment = @"STANDALONE";
+  } else {
+    clientEnvironment = @"EXPO_DEVICE";
+#if TARGET_IPHONE_SIMULATOR
+    clientEnvironment = @"EXPO_SIMULATOR";
+#endif
+  }
   [request setValue:releaseChannel forHTTPHeaderField:@"Expo-Release-Channel"];
   [request setValue:@"true" forHTTPHeaderField:@"Expo-JSON-Error"];
   [request setValue:requestAbiVersion forHTTPHeaderField:@"Exponent-SDK-Version"];
   [request setValue:@"ios" forHTTPHeaderField:@"Exponent-Platform"];
   [request setValue:@"true" forHTTPHeaderField:@"Exponent-Accept-Signature"];
   [request setValue:@"application/expo+json,application/json" forHTTPHeaderField:@"Accept"];
+  [request setValue:@"1" forHTTPHeaderField:@"Expo-Api-Version"];
+  [request setValue:clientEnvironment forHTTPHeaderField:@"Expo-Client-Environment"];
+
+  NSString *sessionSecret = [EXEnvironment sharedEnvironment].sessionSecret;
+  if (sessionSecret) {
+    [request setValue:sessionSecret forHTTPHeaderField:@"Expo-Session"];
+  }
 }
 
 - (NSString *)_userAgentString

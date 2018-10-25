@@ -3,7 +3,6 @@
 #import <ABI30_0_0EXFont/ABI30_0_0EXFont.h>
 #import <objc/runtime.h>
 #import <CoreText/CoreText.h>
-#import <ABI30_0_0EXFont/ABI30_0_0UIFont+EXFontLoader.h>
 
 @interface ABI30_0_0EXFont ()
 

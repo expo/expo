@@ -1,6 +1,6 @@
 'use strict';
 
-import Expo from 'expo';
+import { FacebookAds } from 'expo';
 import React from 'react';
 import { View, Text } from 'react-native';
 
@@ -10,10 +10,10 @@ const {
   NativeAdsManager,
   AdSettings,
   withNativeAd,
-  MediaView,
+  AdMediaView,
   AdIconView,
-  TriggerableView,
-} = Expo.FacebookAds;
+  AdTriggerView,
+} = FacebookAds;
 
 AdSettings.addTestDevice(AdSettings.currentDeviceHash);
 
@@ -37,16 +37,16 @@ const FullNativeAd = withNativeAd(({ nativeAd }) => (
     <View>
       <AdIconView />
       <View>
-        <TriggerableView>
+        <AdTriggerView>
           {nativeAd.advertiserName && <Text>{nativeAd.advertiserName}</Text>}
           {nativeAd.sponsoredTranslation && <Text>{nativeAd.sponsoredTranslation}</Text>}
           {nativeAd.headline && <Text>{nativeAd.headline}</Text>}
-        </TriggerableView>
+        </AdTriggerView>
       </View>
     </View>
 
     <View>
-      <MediaView />
+      <AdMediaView />
     </View>
 
     <View>
@@ -56,9 +56,9 @@ const FullNativeAd = withNativeAd(({ nativeAd }) => (
       </View>
 
       <View>
-        <TriggerableView>
+        <AdTriggerView>
           <Text>{nativeAd.callToActionText}</Text>
-        </TriggerableView>
+        </AdTriggerView>
       </View>
     </View>
   </View>

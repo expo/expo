@@ -224,6 +224,9 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new ReanimatedModule(reactContext));
         nativeModules.add(new SplashScreenModule(reactContext, experienceId));
 
+        SvgPackage svgPackage = new SvgPackage();
+        nativeModules.addAll(svgPackage.createNativeModules(reactContext));
+
         // Call to create native modules has to be at the bottom --
         // -- ExpoModuleRegistryAdapter uses the list of native modules
         // to create Bindings for internal modules.

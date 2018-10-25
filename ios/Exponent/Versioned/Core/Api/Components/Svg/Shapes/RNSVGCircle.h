@@ -12,9 +12,9 @@
 
 @interface RNSVGCircle : RNSVGRenderable
 
-@property (nonatomic, strong) NSString* cx;
-@property (nonatomic, strong) NSString* cy;
-@property (nonatomic, strong) NSString* r;
+@property (nonatomic, strong) RNSVGLength* cx;
+@property (nonatomic, strong) RNSVGLength* cy;
+@property (nonatomic, strong) RNSVGLength* r;
 
 @end
 

@@ -96,6 +96,11 @@ public class StripeModule extends ExportedModule implements ModuleRegistryConsum
     public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
       boolean handled = getPayFlow().onActivityResult(requestCode, resultCode, data);
     }
+
+    @Override
+    public void onNewIntent(Intent intent) {
+      // Do nothing...
+    }
   };
 
 

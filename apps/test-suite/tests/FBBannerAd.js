@@ -1,10 +1,10 @@
 'use strict';
 
 import React from 'react';
-import Expo from 'expo';
+import { FacebookAds } from 'expo';
 import { mountAndWaitForWithTimeout } from './helpers';
 
-const { BannerView, AdSettings } = Expo.FacebookAds;
+const { BannerAd, AdSettings } = FacebookAds;
 
 AdSettings.addTestDevice(AdSettings.currentDeviceHash);
 
@@ -24,7 +24,7 @@ export function test(t, { setPortalChild, cleanupPortal }) {
       t.it("doesn't call onError", async () => {
         try {
           await mountAndWaitForWithTimeout(
-            <BannerView type="large" placementId={placementId} />,
+            <BannerAd type="large" placementId={placementId} />,
             'onError',
             setPortalChild,
             1000
@@ -36,15 +36,19 @@ export function test(t, { setPortalChild, cleanupPortal }) {
     });
 
     t.describe('when given no placementId', () => {
-      t.it('calls onError', async () => {
-        const error = await mountAndWaitForWithTimeout(
-          <BannerView type="large" placementId="" />,
-          'onError',
-          setPortalChild,
-          1000
-        );
-        t.expect(error).toBeDefined();
-      });
+      t.it(
+        'calls onError',
+        async () => {
+          const error = await mountAndWaitForWithTimeout(
+            <BannerAd type="large" placementId="" />,
+            'onError',
+            setPortalChild,
+            30000
+          );
+          t.expect(error).toBeDefined();
+        },
+        30000
+      );
     });
   });
 }

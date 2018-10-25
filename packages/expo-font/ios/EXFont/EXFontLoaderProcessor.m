@@ -4,7 +4,6 @@
 #import <EXFont/EXFontLoader.h>
 #import <EXFont/EXFont.h>
 #import <EXFont/EXFontManager.h>
-#import <EXFont/UIFont+EXFontLoader.h>
 #import <objc/runtime.h>
 
 static NSString *exponentPrefix = @"ExpoFont-";

@@ -7,17 +7,18 @@
  */
 
 #import "RNSVGNode.h"
+#import "RNSVGLength.h"
 
 @interface RNSVGRadialGradient : RNSVGNode
 
-@property (nonatomic, strong) NSString *fx;
-@property (nonatomic, strong) NSString *fy;
-@property (nonatomic, strong) NSString *rx;
-@property (nonatomic, strong) NSString *ry;
-@property (nonatomic, strong) NSString *cx;
-@property (nonatomic, strong) NSString *cy;
+@property (nonatomic, strong) RNSVGLength *fx;
+@property (nonatomic, strong) RNSVGLength *fy;
+@property (nonatomic, strong) RNSVGLength *rx;
+@property (nonatomic, strong) RNSVGLength *ry;
+@property (nonatomic, strong) RNSVGLength *cx;
+@property (nonatomic, strong) RNSVGLength *cy;
 @property (nonatomic, copy) NSArray<NSNumber *> *gradient;
-@property (nonatomic, assign)RNSVGUnits gradientUnits;
-@property (nonatomic, assign)CGAffineTransform gradientTransform;
+@property (nonatomic, assign) RNSVGUnits gradientUnits;
+@property (nonatomic, assign) CGAffineTransform gradientTransform;
 
 @end

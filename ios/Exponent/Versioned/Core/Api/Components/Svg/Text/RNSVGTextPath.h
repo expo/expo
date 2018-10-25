@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <CoreText/CoreText.h>
 #import "RNSVGText.h"
+#import "RNSVGLength.h"
 
 @interface RNSVGTextPath : RNSVGText
 
@@ -17,7 +18,7 @@
 @property (nonatomic, strong) NSString *method;
 @property (nonatomic, strong) NSString *midLine;
 @property (nonatomic, strong) NSString *spacing;
-@property (nonatomic, strong) NSString *startOffset;
+@property (nonatomic, strong) RNSVGLength *startOffset;
 
 - (void)getPathLength:(CGFloat*)length lineCount:(NSUInteger*)lineCount lengths:(NSArray* __strong *)lengths lines:(NSArray* __strong *)lines isClosed:(BOOL*)isClosed;
 

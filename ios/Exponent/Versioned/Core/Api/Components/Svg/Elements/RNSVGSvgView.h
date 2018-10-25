@@ -46,6 +46,10 @@
 
 - (RNSVGPainter *)getDefinedPainter:(NSString *)painterName;
 
+- (void)defineMask:(RNSVGNode *)mask maskName:(NSString *)maskName;
+
+- (RNSVGNode *)getDefinedMask:(NSString *)maskName;
+
 - (NSString *)getDataURL;
 
 - (CGRect)getContextBounds;
@@ -53,5 +57,7 @@
 - (void)drawRect:(CGRect)rect;
 
 - (void)drawToContext:(CGContextRef)context withRect:(CGRect)rect;
+
+- (CGAffineTransform)getViewBoxTransform;
 
 @end

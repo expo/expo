@@ -16,7 +16,7 @@ export default class LikeButton extends React.Component {
           style={[styles.container, liked && styles.containerLiked]}>
           <Ionicons
             style={[styles.icon, liked && styles.iconLiked]}
-            name={liked ? 'md-heart' : 'md-heart-outline'}
+            name={liked ? 'md-heart' : 'md-heart-empty'}
             size={14}
           />
           <Text style={[styles.text, liked && styles.textLiked]}>{liked ? 'Liked' : 'Like'}</Text>

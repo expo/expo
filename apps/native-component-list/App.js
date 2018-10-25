@@ -5,6 +5,7 @@ import React from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { Platform, StatusBar, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-navigation';
+import { Assets as StackAssets } from 'react-navigation-stack';
 import { useScreens } from 'react-native-screens';
 
 import Icons from './constants/Icons';
@@ -31,8 +32,7 @@ export default class App extends React.Component {
       const iconRequires = Object.keys(Icons).map(key => Icons[key]);
       await Promise.all([
         Asset.loadAsync(iconRequires),
-        Asset.loadAsync(require('react-navigation/src/views/assets/back-icon.png')),
-        Asset.loadAsync(require('react-navigation/src/views/assets/back-icon-mask.png')),
+        // Asset.loadAsync(StackAssets),
         Font.loadAsync(Ionicons.font),
         Font.loadAsync({ 'space-mono': require('./assets/fonts/SpaceMono-Regular.ttf') })
       ]);

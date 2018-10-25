@@ -12,7 +12,7 @@ import {
 
 import { Entypo } from '@expo/vector-icons';
 import ExpoAPIIcon from '../components/ExpoAPIIcon';
-import { withNavigation } from 'react-navigation';
+import { ScrollView, withNavigation } from 'react-navigation';
 
 @withNavigation
 export default class ComponentListScreen extends React.Component {
@@ -66,6 +66,7 @@ export default class ComponentListScreen extends React.Component {
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="on-drag"
         contentContainerStyle={{ backgroundColor: '#fff' }}
+        renderScrollComponent={props => <ScrollView {...props} />}
         dataSource={this.state.dataSource}
         renderRow={this._renderRow}
       />

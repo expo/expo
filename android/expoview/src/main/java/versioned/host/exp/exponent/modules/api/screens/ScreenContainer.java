@@ -96,7 +96,7 @@ public class ScreenContainer extends ViewGroup {
 
   private void tryCommitTransaction() {
     if (mCurrentTransaction != null) {
-      mCurrentTransaction.commit();
+      mCurrentTransaction.commitAllowingStateLoss();
       mCurrentTransaction = null;
     }
   }

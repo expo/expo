@@ -11,36 +11,36 @@
 
 @implementation RNSVGLine
 
-- (void)setX1:(NSString *)x1
+- (void)setX1:(RNSVGLength *)x1
 {
-    if (x1 == _x1) {
+    if ([x1 isEqualTo:_x1]) {
         return;
     }
     [self invalidate];
     _x1 = x1;
 }
 
-- (void)setY1:(NSString *)y1
+- (void)setY1:(RNSVGLength *)y1
 {
-    if (y1 == _y1) {
+    if ([y1 isEqualTo:_y1]) {
         return;
     }
     [self invalidate];
     _y1 = y1;
 }
 
-- (void)setX2:(NSString *)x2
+- (void)setX2:(RNSVGLength *)x2
 {
-    if (x2 == _x2) {
+    if ([x2 isEqualTo:_x2]) {
         return;
     }
     [self invalidate];
     _x2 = x2;
 }
 
-- (void)setY2:(NSString *)y2
+- (void)setY2:(RNSVGLength *)y2
 {
-    if (y2 == _y2) {
+    if ([y2 isEqualTo:_y2]) {
         return;
     }
     [self invalidate];

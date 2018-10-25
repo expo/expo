@@ -16,7 +16,7 @@
     CGColorRef _color;
 }
 
-- (instancetype)initWithArray:(NSArray<NSNumber *> *)array
+- (instancetype)initWithArray:(NSArray<RNSVGLength *> *)array
 {
     if ((self = [super initWithArray:array])) {
         _color = CGColorRetain([RCTConvert RNSVGCGColor:array offset:1]);

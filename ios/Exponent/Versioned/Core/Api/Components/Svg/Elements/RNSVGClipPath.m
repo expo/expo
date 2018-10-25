@@ -10,15 +10,22 @@
 
 @implementation RNSVGClipPath
 
-- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
-{
-    return nil;
-}
-
 - (void)parseReference
 {
     [self.svgView defineClipPath:self clipPathName:self.name];
 }
 
+
+- (BOOL)isSimpleClipPath
+{
+    NSArray<UIView*> *children = self.subviews;
+    if (children.count == 1) {
+        UIView* child = children[0];
+        if ([child class] != [RNSVGGroup class]) {
+            return true;
+        }
+    }
+    return false;
+}
 
 @end
