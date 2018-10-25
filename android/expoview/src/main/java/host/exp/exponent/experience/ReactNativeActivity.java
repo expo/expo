@@ -137,7 +137,7 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
+    super.onCreate(null);
 
     mLayout = new FrameLayout(this);
     setContentView(mLayout);
