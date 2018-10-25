@@ -40,7 +40,7 @@ commands:
       - save_cache:
           key: jars-v0-{{ checksum "android/build.gradle" }}-{{ checksum "android/app/build.gradle" }}
           paths:
-            - /.gradle
+            - ~/.gradle
   yarn:
     parameters:
       command:
