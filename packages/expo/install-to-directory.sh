@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 echo "Creating packfile"
 PACKFILE="$(npm pack)"
