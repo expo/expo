@@ -3,8 +3,6 @@
 //  Created by Nick Italiano on 11/5/16.
 //
 
-#ifdef HAVE_GOOGLE_MAPS
-
 #import "AIRGoogleMapUrlTileManager.h"
 #import "AIRGoogleMapUrlTile.h"
 
@@ -28,5 +26,3 @@ RCT_EXPORT_VIEW_PROPERTY(maximumZ, NSInteger)
 RCT_EXPORT_VIEW_PROPERTY(minimumZ, NSInteger)
 
 @end
-
-#endif

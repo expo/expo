@@ -5,8 +5,6 @@
 //  Created by Gil Birman on 9/2/16.
 //
 
-#ifdef HAVE_GOOGLE_MAPS
-
 #import <GoogleMaps/GoogleMaps.h>
 #import <React/RCTBridge.h>
 #import "AIRGMSMarker.h"
@@ -47,5 +45,3 @@
 - (void)didEndDraggingMarker:(AIRGMSMarker *)marker;
 - (void)didDragMarker:(AIRGMSMarker *)marker;
 @end
-
-#endif

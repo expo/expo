@@ -4,8 +4,6 @@
 //  Created by Nick Italiano on 10/22/16.
 //
 
-#ifdef HAVE_GOOGLE_MAPS
-
 #import "AIRGoogleMapPolylineManager.h"
 
 #import <React/RCTBridge.h>
@@ -43,5 +41,3 @@ RCT_EXPORT_VIEW_PROPERTY(tappable, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(onPress, RCTBubblingEventBlock)
 
 @end
-
-#endif

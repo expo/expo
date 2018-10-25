@@ -5,8 +5,6 @@
 //  Created by Gil Birman on 9/1/16.
 //
 
-#ifdef HAVE_GOOGLE_MAPS
-
 
 #import "AIRGoogleMapManager.h"
 #import <React/RCTViewManager.h>
@@ -355,7 +353,7 @@ RCT_EXPORT_METHOD(pointForCoordinate:(nonnull NSNumber *)reactTag
       AIRGoogleMap *mapView = (AIRGoogleMap *)view;
 
       CGPoint touchPoint = [mapView.projection pointForCoordinate:coord];
-      
+
       resolve(@{
                 @"x": @(touchPoint.x),
                 @"y": @(touchPoint.y),
@@ -382,7 +380,7 @@ RCT_EXPORT_METHOD(coordinateForPoint:(nonnull NSNumber *)reactTag
       AIRGoogleMap *mapView = (AIRGoogleMap *)view;
 
       CLLocationCoordinate2D coordinate = [mapView.projection coordinateForPoint:pt];
-      
+
       resolve(@{
                 @"latitude": @(coordinate.latitude),
                 @"longitude": @(coordinate.longitude),
@@ -565,5 +563,3 @@ RCT_EXPORT_METHOD(setIndoorActiveLevelIndex:(nonnull NSNumber *)reactTag
     [googleMapView didTapPOIWithPlaceID:placeID name:name location:location];
 }
 @end
-
-#endif

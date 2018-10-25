@@ -5,8 +5,6 @@
 //  Created by Gil Birman on 9/5/16.
 //
 
-#ifdef HAVE_GOOGLE_MAPS
-
 #import <GoogleMaps/GoogleMaps.h>
 #import <React/UIView+React.h>
 
@@ -23,5 +21,3 @@
 @required
 -(void)didTapMarker;
 @end
-
-#endif

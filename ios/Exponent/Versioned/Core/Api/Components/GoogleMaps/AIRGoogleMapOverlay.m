@@ -3,8 +3,6 @@
 //  Created by Nick Italiano on 3/5/17.
 //
 
-#ifdef HAVE_GOOGLE_MAPS
-
 #import "AIRGoogleMapOverlay.h"
 
 #import <React/RCTEventDispatcher.h>
@@ -76,5 +74,3 @@
 }
 
 @end
-
-#endif
