@@ -20,11 +20,20 @@ RCT_EXPORT_MODULE()
   return [RNSVGRect new];
 }
 
-RCT_EXPORT_VIEW_PROPERTY(x, NSString)
-RCT_EXPORT_VIEW_PROPERTY(y, NSString)
-RCT_EXPORT_VIEW_PROPERTY(width, NSString)
-RCT_EXPORT_VIEW_PROPERTY(height, NSString)
-RCT_EXPORT_VIEW_PROPERTY(rx, NSString)
-RCT_EXPORT_VIEW_PROPERTY(ry, NSString)
+RCT_EXPORT_VIEW_PROPERTY(x, RNSVGLength*)
+RCT_EXPORT_VIEW_PROPERTY(y, RNSVGLength*)
+RCT_EXPORT_VIEW_PROPERTY(rectheight, RNSVGLength*)
+RCT_EXPORT_VIEW_PROPERTY(rectwidth, RNSVGLength*)
+RCT_CUSTOM_VIEW_PROPERTY(height, id, RNSVGRect)
+{
+    view.rectheight = [RCTConvert RNSVGLength:json];
+}
+
+RCT_CUSTOM_VIEW_PROPERTY(width, id, RNSVGRect)
+{
+    view.rectwidth = [RCTConvert RNSVGLength:json];
+}
+RCT_EXPORT_VIEW_PROPERTY(rx, RNSVGLength*)
+RCT_EXPORT_VIEW_PROPERTY(ry, RNSVGLength*)
 
 @end

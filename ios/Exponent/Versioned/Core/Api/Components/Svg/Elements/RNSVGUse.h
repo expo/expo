@@ -7,6 +7,7 @@
  */
 
 #import "RNSVGRenderable.h"
+#import "RNSVGLength.h"
 
 /**
  * RNSVG defination are implemented as abstract UIViews for all elements inside Defs.
@@ -15,6 +16,6 @@
 @interface RNSVGUse : RNSVGRenderable
 
 @property (nonatomic, strong) NSString *href;
-@property (nonatomic, strong) NSString *width;
-@property (nonatomic, strong) NSString *height;
+@property (nonatomic, strong) RNSVGLength *usewidth;
+@property (nonatomic, strong) RNSVGLength *useheight;
 @end

@@ -11,6 +11,47 @@
 
 @implementation RNSVGLinearGradient
 
+
+- (void)setX1:(RNSVGLength *)x1
+{
+    if ([x1 isEqualTo:_x1]) {
+        return;
+    }
+    
+    _x1 = x1;
+    [self invalidate];
+}
+
+- (void)setY1:(RNSVGLength *)y1
+{
+    if ([y1 isEqualTo:_y1]) {
+        return;
+    }
+    
+    _y1 = y1;
+    [self invalidate];
+}
+
+- (void)setX2:(RNSVGLength *)x2
+{
+    if ([x2 isEqualTo:_x2]) {
+        return;
+    }
+    
+    _x2 = x2;
+    [self invalidate];
+}
+
+- (void)setY2:(RNSVGLength *)y2
+{
+    if ([y2 isEqualTo:_y2]) {
+        return;
+    }
+    
+    _y2 = y2;
+    [self invalidate];
+}
+
 - (void)setGradient:(NSArray<NSNumber *> *)gradient
 {
     if (gradient == _gradient) {
@@ -21,6 +62,22 @@
     [self invalidate];
 }
 
+- (void)setGradientUnits:(RNSVGUnits)gradientUnits
+{
+    if (gradientUnits == _gradientUnits) {
+        return;
+    }
+    
+    _gradientUnits = gradientUnits;
+    [self invalidate];
+}
+
+- (void)setGradientTransform:(CGAffineTransform)gradientTransform
+{
+    _gradientTransform = gradientTransform;
+    [self invalidate];
+}
+
 - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
 {
     return nil;
@@ -28,7 +85,7 @@
 
 - (void)parseReference
 {
-    NSArray<NSString *> *points = @[self.x1, self.y1, self.x2, self.y2];
+    NSArray<RNSVGLength *> *points = @[self.x1, self.y1, self.x2, self.y2];
     RNSVGPainter *painter = [[RNSVGPainter alloc] initWithPointsArray:points];
     [painter setUnits:self.gradientUnits];
     [painter setTransform:self.gradientTransform];

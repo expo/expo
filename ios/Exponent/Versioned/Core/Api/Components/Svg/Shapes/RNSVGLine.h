@@ -11,8 +11,8 @@
 #import "RNSVGPath.h"
 
 @interface RNSVGLine : RNSVGRenderable
-@property (nonatomic, strong) NSString* x1;
-@property (nonatomic, strong) NSString* y1;
-@property (nonatomic, strong) NSString* x2;
-@property (nonatomic, strong) NSString* y2;
+@property (nonatomic, strong) RNSVGLength* x1;
+@property (nonatomic, strong) RNSVGLength* y1;
+@property (nonatomic, strong) RNSVGLength* x2;
+@property (nonatomic, strong) RNSVGLength* y2;
 @end

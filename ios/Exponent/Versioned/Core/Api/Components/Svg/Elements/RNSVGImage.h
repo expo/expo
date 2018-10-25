@@ -11,15 +11,16 @@
 #import <React/RCTBridge.h>
 #import "RNSVGRenderable.h"
 #import "RNSVGVBMOS.h"
+#import "RNSVGLength.h"
 
 @interface RNSVGImage : RNSVGRenderable
 
 @property (nonatomic, weak) RCTBridge *bridge;
 @property (nonatomic, assign) id src;
-@property (nonatomic, strong) NSString* x;
-@property (nonatomic, strong) NSString* y;
-@property (nonatomic, strong) NSString* width;
-@property (nonatomic, strong) NSString* height;
+@property (nonatomic, strong) RNSVGLength* x;
+@property (nonatomic, strong) RNSVGLength* y;
+@property (nonatomic, strong) RNSVGLength* imagewidth;
+@property (nonatomic, strong) RNSVGLength* imageheight;
 @property (nonatomic, strong) NSString *align;
 @property (nonatomic, assign) RNSVGVBMOS meetOrSlice;
 

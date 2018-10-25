@@ -10,37 +10,36 @@
 
 - (CTFontRef)getGlyphFont;
 
-- (instancetype)initWithScale:(float)scale_
-                        width:(float)width
-                       height:(float)height;
+- (instancetype)initWithWidth:(CGFloat)width
+                       height:(CGFloat)height;
 
 - (RNSVGFontData *)getFont;
 
-- (double)getFontSize;
+- (CGFloat)getFontSize;
 
-- (float)getHeight;
+- (CGFloat)getHeight;
 
-- (float)getWidth;
+- (CGFloat)getWidth;
 
-- (double)nextDeltaX;
+- (CGFloat)nextDeltaX;
 
-- (double)nextDeltaY;
+- (CGFloat)nextDeltaY;
 
-- (NSNumber*)nextRotation;
+- (CGFloat)nextRotation;
 
-- (double)nextXWithDouble:(double)advance;
+- (CGFloat)nextXWithDouble:(CGFloat)advance;
 
-- (double)nextY;
+- (CGFloat)nextY;
 
 - (void)popContext;
 
-- (void)pushContext:(RNSVGText *)node
-                            font:(NSDictionary *)font
-                               x:(NSArray*)x
-                               y:(NSArray*)y
-                          deltaX:(NSArray*)deltaX
-                          deltaY:(NSArray*)deltaY
-                          rotate:(NSArray*)rotate;
+- (void)pushContext:(RNSVGText*)node
+               font:(NSDictionary*)font
+                  x:(NSArray<RNSVGLength*>*)x
+                  y:(NSArray<RNSVGLength*>*)y
+             deltaX:(NSArray<RNSVGLength*>*)deltaX
+             deltaY:(NSArray<RNSVGLength*>*)deltaY
+             rotate:(NSArray<RNSVGLength*>*)rotate;
 
 - (void)pushContext:(RNSVGGroup*)node
                              font:(NSDictionary *)font;

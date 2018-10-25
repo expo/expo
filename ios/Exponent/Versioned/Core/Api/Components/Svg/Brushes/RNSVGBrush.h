@@ -35,6 +35,6 @@
  * be clipped.
  * @abstract
  */
-- (void)paint:(CGContextRef)context opacity:(CGFloat)opacity painter:(RNSVGPainter *)painter;
+- (void)paint:(CGContextRef)context opacity:(CGFloat)opacity painter:(RNSVGPainter *)painter bounds:(CGRect)bounds;
 
 @end
