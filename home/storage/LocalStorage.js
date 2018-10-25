@@ -60,6 +60,7 @@ async function getSessionAsync() {
 }
 
 async function saveSessionAsync(session) {
+  ExponentKernel.setSessionSecret(session.sessionSecret);
   return AsyncStorage.setItem(Keys.Session, JSON.stringify(session));
 }
 
@@ -88,6 +89,7 @@ async function removeAuthTokensAsync() {
 }
 
 async function removeSessionAsync() {
+  ExponentKernel.removeSessionSecret();
   return AsyncStorage.removeItem(Keys.Session);
 }
 

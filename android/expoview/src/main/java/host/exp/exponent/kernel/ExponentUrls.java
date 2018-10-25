@@ -3,6 +3,7 @@
 package host.exp.exponent.kernel;
 
 import android.net.Uri;
+import android.os.Build;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +12,8 @@ import host.exp.exponent.Constants;
 import expolib_v1.okhttp3.Request;
 
 public class ExponentUrls {
+
+  private static String sSessionSecret;
 
   private static final List<String> HTTPS_HOSTS = new ArrayList<>();
   static {
@@ -26,6 +29,10 @@ public class ExponentUrls {
     }
 
     return false;
+  }
+
+  public static void setSessionSecret(String sessionSecret) {
+    sSessionSecret = sessionSecret;
   }
 
   public static String toHttp(final String rawUrl) {
@@ -60,8 +67,20 @@ public class ExponentUrls {
       builder.header("Exponent-SDK-Version", "UNVERSIONED");
     }
 
+    String clientEnvironment;
     if (isShellAppManifest) {
       builder.header("Expo-Release-Channel", Constants.RELEASE_CHANNEL);
+      clientEnvironment = "STANDALONE";
+    } else {
+      clientEnvironment = (Build.FINGERPRINT.contains("vbox") || Build.FINGERPRINT.contains("generic"))
+          ? "EXPO_SIMULATOR"
+          : "EXPO_DEVICE";
+    }
+
+    builder.header("Expo-Api-Version", "1")
+        .header("Expo-Client-Environment", clientEnvironment);
+    if (sSessionSecret != null) {
+      builder.header("Expo-Session", sSessionSecret);
     }
 
     return builder;

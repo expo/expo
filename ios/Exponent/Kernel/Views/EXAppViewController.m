@@ -448,6 +448,8 @@ NS_ASSUME_NONNULL_BEGIN
   }
 }
 
+// this is deprecated in favor of the server side check
+// TODO(eric): remove
 - (void)_whenManifestIsValidToOpen:(NSDictionary *)manifest manifestUrl:(NSURL *) manifestUrl performBlock:(void (^)(void))block
 {
   if (self.appRecord.appManager.requiresValidManifests && [EXKernel sharedInstance].browserController) {
