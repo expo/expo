@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # ./gradlew :app:connectedDevMinSdkDevKernelDebugAndroidTest runs test differently than Android Studio.
 # This script runs the same commands as Android Studio and seems to behave more predictably.
 
