@@ -4,6 +4,7 @@ const debug = require('debug')('workspaces');
 const findYarnWorkspaceRoot = require('find-yarn-workspace-root');
 const fs = require('fs');
 const blacklist = require('metro-config/src/defaults/blacklist');
+const { assetExts } = require('metro-config/src/defaults/defaults');
 const path = require('path');
 
 /**
@@ -44,6 +45,9 @@ exports.createReactNativeConfiguration = function createReactNativeConfiguration
     watchFolders,
 
     resolver: {
+      // test-suite includes a db asset
+      assetExts: [...assetExts, 'db'],
+
       // Make the symlinked packages visible to Metro
       extraNodeModules,
 

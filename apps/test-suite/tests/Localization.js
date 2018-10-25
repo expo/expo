@@ -3,13 +3,18 @@ import { Localization as DangerZoneLocalization } from 'expo/DangerZone';
 import i18n from 'i18n-js';
 
 const en = {
-  foo: 'Nave',
-  bar: 'Nocab',
+  good: 'good',
+  morning: 'morning',
 };
 
 const fr = {
-  foo: 'Nocab',
-  bar: 'Nave',
+  good: 'bien',
+  morning: 'matin',
+};
+
+const pl = {
+  good: 'dobry',
+  morning: 'rano',
 };
 
 export const name = 'Localization';
@@ -100,12 +105,12 @@ export function test(t) {
 
   t.describe(`Localization works with i18n-js`, () => {
     i18n.locale = Localization.locale;
-    i18n.translations = { en, fr };
+    i18n.translations = { en, fr, pl };
     i18n.missingTranslationPrefix = 'EE: ';
     i18n.fallbacks = true;
 
-    t.it('expect language to match strings (en only)', async () => {
-      const target = 'foo';
+    t.it('expect language to match strings (en, pl, fr supported)', async () => {
+      const target = 'good';
 
       i18n.locale = Localization.locale;
 
@@ -144,7 +149,7 @@ export function test(t) {
         const value = await DangerZoneLocalization[deprecated]();
 
         t.expect(warning).toBe(target);
-        t.expect(value + '').toBe(Localization[replacement] + '');
+        t.expect(`${value}`.replace('_', '-')).toBe(`${Localization[replacement]}`);
       });
     });
   });

@@ -122,7 +122,48 @@ export function test(t) {
           }
         });
 
-        t.it('is shared with fetch session', async () => {
+        t.it(
+          'is shared with fetch session',
+          async () => {
+            let error = null;
+            try {
+              await soundObject.loadAsync({
+                uri: `${authenticatedStaticFilesBackend}/LLizard.mp3`,
+              });
+            } catch (err) {
+              error = err;
+            }
+            t.expect(error).toBeDefined();
+            if (Platform.OS === 'android') {
+              t.expect(error.toString()).toMatch('Response code: 401');
+            } else {
+              t.expect(error.toString()).toMatch('error code -1013');
+            }
+            const signInResponse = await (await fetch(
+              `${authenticatedStaticFilesBackend}/sign_in`,
+              {
+                method: 'POST',
+                credentials: true,
+              }
+            )).text();
+            t.expect(signInResponse).toMatch('Signed in successfully!');
+            error = null;
+            try {
+              await soundObject.loadAsync({
+                uri: `${authenticatedStaticFilesBackend}/LLizard.mp3`,
+              });
+            } catch (err) {
+              error = err;
+            }
+            t.expect(error).toBeNull();
+          },
+          30000
+        );
+      });
+
+      t.it(
+        'supports adding custom headers to media request',
+        async () => {
           let error = null;
           try {
             await soundObject.loadAsync({
@@ -131,54 +172,24 @@ export function test(t) {
           } catch (err) {
             error = err;
           }
-          t.expect(error).toBeDefined();
-          if (Platform.OS === 'android') {
-            t.expect(error.toString()).toMatch('Response code: 401');
-          } else {
-            t.expect(error.toString()).toMatch('error code -1013');
+          if (!error) {
+            throw new Error('Backend unexpectedly allowed unauthenticated request.');
           }
-          const signInResponse = await (await fetch(`${authenticatedStaticFilesBackend}/sign_in`, {
-            method: 'POST',
-            credentials: true,
-          })).text();
-          t.expect(signInResponse).toMatch('Signed in successfully!');
           error = null;
           try {
             await soundObject.loadAsync({
               uri: `${authenticatedStaticFilesBackend}/LLizard.mp3`,
+              headers: {
+                authorization: 'mellon',
+              },
             });
           } catch (err) {
             error = err;
           }
           t.expect(error).toBeNull();
-        });
-      });
-
-      t.it('supports adding custom headers to media request', async () => {
-        let error = null;
-        try {
-          await soundObject.loadAsync({
-            uri: `${authenticatedStaticFilesBackend}/LLizard.mp3`,
-          });
-        } catch (err) {
-          error = err;
-        }
-        if (!error) {
-          throw new Error('Backend unexpectedly allowed unauthenticated request.');
-        }
-        error = null;
-        try {
-          await soundObject.loadAsync({
-            uri: `${authenticatedStaticFilesBackend}/LLizard.mp3`,
-            headers: {
-              authorization: 'mellon',
-            },
-          });
-        } catch (err) {
-          error = err;
-        }
-        t.expect(error).toBeNull();
-      });
+        },
+        30000
+      );
 
       if (Platform.OS === 'android') {
         t.it(

@@ -60,33 +60,37 @@ export function test(t) {
       t.expect(exists).toBeTruthy();
     });
 
-    t.it('should work with a downloaded .db file', async () => {
-      await FS.downloadAsync(
-        Asset.fromModule(require('../assets/asset-db.db')).uri,
-        `${FS.documentDirectory}SQLite/downloaded.db`
-      );
-
-      const db = SQLite.openDatabase('downloaded.db');
-      await new Promise((resolve, reject) => {
-        db.transaction(
-          tx => {
-            const nop = () => {};
-            const onError = (tx, error) => reject(error);
-            tx.executeSql(
-              'SELECT * FROM Users',
-              [],
-              (tx, results) => {
-                t.expect(results.rows.length).toEqual(3);
-                t.expect(results.rows._array[0].j).toBeCloseTo(23.4);
-              },
-              onError
-            );
-          },
-          reject,
-          resolve
+    t.it(
+      'should work with a downloaded .db file',
+      async () => {
+        await FS.downloadAsync(
+          Asset.fromModule(require('../assets/asset-db.db')).uri,
+          `${FS.documentDirectory}SQLite/downloaded.db`
         );
-      });
-    });
+
+        const db = SQLite.openDatabase('downloaded.db');
+        await new Promise((resolve, reject) => {
+          db.transaction(
+            tx => {
+              const nop = () => {};
+              const onError = (tx, error) => reject(error);
+              tx.executeSql(
+                'SELECT * FROM Users',
+                [],
+                (tx, results) => {
+                  t.expect(results.rows.length).toEqual(3);
+                  t.expect(results.rows._array[0].j).toBeCloseTo(23.4);
+                },
+                onError
+              );
+            },
+            reject,
+            resolve
+          );
+        });
+      },
+      30000
+    );
 
     t.it('should be able to recreate db from scratch by deleting file', async () => {
       {
@@ -243,25 +247,15 @@ export function test(t) {
               [],
               (tx, results) => {
                 t.expect(results.rows.length).toEqual(2);
-                t.expect(results.rows._array[0].name).toEqual("id");
-                t.expect(results.rows._array[1].name).toEqual("name");
+                t.expect(results.rows._array[0].name).toEqual('id');
+                t.expect(results.rows._array[1].name).toEqual('name');
               },
               onError
             );
             // a no-result pragma
-            tx.executeSql(
-              'PRAGMA case_sensitive_like = true;',
-              [],
-              nop,
-              onError
-            );
+            tx.executeSql('PRAGMA case_sensitive_like = true;', [], nop, onError);
             // a setter/getter pragma
-            tx.executeSql(
-              'PRAGMA user_version = 123;',
-              [],
-              nop,
-              onError
-            );
+            tx.executeSql('PRAGMA user_version = 123;', [], nop, onError);
             tx.executeSql(
               'PRAGMA user_version;',
               [],
@@ -276,6 +270,6 @@ export function test(t) {
           resolve
         );
       });
-    })
+    });
   });
 }
