@@ -23,6 +23,7 @@
 @protocol EXUtilService
 
 - (UIViewController *)currentViewController;
+- (NSDictionary *)launchOptions;
 
 @end
 

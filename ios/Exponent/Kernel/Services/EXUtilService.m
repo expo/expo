@@ -15,4 +15,9 @@ EX_REGISTER_SINGLETON_MODULE(Util)
   return [[ExpoKit sharedInstance] currentViewController];
 }
 
+- (nullable NSDictionary *)launchOptions
+{
+  return [[ExpoKit sharedInstance] launchOptions];
+}
+
 @end
