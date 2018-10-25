@@ -13,10 +13,11 @@ export default class ARRotatingCubeScreen extends React.Component {
     return (
       <PermissionsRequester permissionsTypes={[Permissions.CAMERA]}>
         <View style={{ flex: 1 }}>
-          <GLView
+          <AR.ARView
             ref={ref => (this.glView = ref)}
             style={StyleSheet.absoluteFill}
             onContextCreate={this.onGLContextCreate}
+            onRender={this.onRender}
           />
         </View>
       </PermissionsRequester>
@@ -220,7 +221,7 @@ export default class ARRotatingCubeScreen extends React.Component {
         // Tell the shader we bound the texture will be bound to specific texture unit
         gl.uniform1i(uniformLocations.uSampler, 2);
         checkGLError(gl, 'PASSING TEXTURE TO SHADER');
-        // Tell WebGL we want to affect texture unit 1
+        // Tell WebGL we want to affect texture unit 2
         gl.activeTexture(gl.TEXTURE2);
         checkGLError(gl, 'ACTIVATING TEXTURE');
         // Bind the texture to texture specified texture unit
@@ -234,39 +235,24 @@ export default class ARRotatingCubeScreen extends React.Component {
     };
   };
 
-  onGLContextCreate = async gl => {
+  onGLContextCreate = async ({ gl }) => {
     this.gl = gl;
-
-    await AR.startAsync(this.glView.nativeRef, AR.TrackingConfiguration.World);
-
     this.cubeStream = await this.createCubeStream(this.gl);
+  };
 
-    checkGLError(gl, 'BEFORE RENDERING LOOP');
+  onRender = deltaTime => {
+    if (!checkGLError(this.gl, 'NATIVE GL FAILURE')) {
+      alert('Native part of GL code failed! Inspect there for a reason!');
+      return;
+    }
 
-    let then = 0;
-    // Render loop
-    const loop = time => {
-      if (!checkGLError(gl, 'NATIVE GL FAILURE')) {
-        alert('Native part of GL code failed! Inspect there for a reason!');
-        return;
-      }
-      const now = time * 0.001;
-      const deltaTime = now - then;
-      then = now;
+    // Clear
+    this.gl.clearColor(0.2, 0.5, 0.5, 1);
+    this.gl.clearDepth(1.0);
+    this.gl.enable(this.gl.DEPTH_TEST);
+    this.gl.depthFunc(this.gl.LEQUAL);
+    this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
-      // Clear
-      gl.clearColor(0.2, 0.5, 0.5, 1);
-      gl.clearDepth(1.0);
-      gl.enable(gl.DEPTH_TEST);
-      gl.depthFunc(gl.LEQUAL);
-      gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-      this.cubeStream.draw(deltaTime);
-
-      // Submit frame
-      gl.endFrameEXP();
-      requestAnimationFrame(loop);
-    };
-    requestAnimationFrame(loop);
+    this.cubeStream.draw(deltaTime);
   };
 }

@@ -12,10 +12,10 @@ export default class ARBackgroundScreen extends React.Component {
     return (
       <PermissionsRequester permissionsTypes={[Permissions.CAMERA]}>
         <View style={{ flex: 1 }}>
-          <GLView
-            ref={ref => (this.glView = ref)}
+          <AR.ARView
             style={StyleSheet.absoluteFill}
             onContextCreate={this.onGLContextCreate}
+            onRender={this.onRender}
           />
         </View>
       </PermissionsRequester>
@@ -126,37 +126,24 @@ export default class ARBackgroundScreen extends React.Component {
     };
   };
 
-  onGLContextCreate = async gl => {
+  onGLContextCreate = async ({ gl }) => {
     this.gl = gl;
-
-    // gl.enableLogging = true;
-
-    await AR.startAsync(this.glView.nativeRef, AR.TrackingConfiguration.World);
-
     this.cameraStream = await this.createCameraStream(this.gl);
+  };
 
-    checkGLError(gl, 'BEFORE RENDERING LOOP');
+  onRender = () => {
+    if (!checkGLError(this.gl, 'NATIVE GL FAILURE')) {
+      alert('Native part of GL code failed! Inspect there for a reason!');
+      return;
+    }
+    // Clear
+    this.gl.clearColor(0, 0.1, 0.2, 1);
+    this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+    if (!checkGLError(this.gl, 'CLEAR')) {
+      return;
+    }
 
-    // Render loop
-    const loop = () => {
-      if (!checkGLError(gl, 'NATIVE GL FAILURE')) {
-        alert('Native part of GL code failed! Inspect there for a reason!');
-        return;
-      }
-      // Clear
-      gl.clearColor(0, 0.1, 0.2, 1);
-      gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-      if (!checkGLError(gl, 'CLEAR')) {
-        return;
-      }
-
-      // Draw camera stream
-      this.cameraStream.draw();
-
-      // Submit frame
-      gl.endFrameEXP();
-      requestAnimationFrame(loop);
-    };
-    loop();
+    // Draw camera stream
+    this.cameraStream.draw();
   };
 }

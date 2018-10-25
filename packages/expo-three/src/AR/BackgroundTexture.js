@@ -13,6 +13,6 @@ export default class BackgroundTexture extends THREE.Texture {
     const cameraTexture = await AR.getCameraTextureAsync();
     const properties = renderer.properties.get(this);
     properties.__webglInit = true;
-    properties.__webglTexture = new WebGLTexture(cameraTexture);
+    properties.__webglTexture = cameraTexture;
   };
 }
