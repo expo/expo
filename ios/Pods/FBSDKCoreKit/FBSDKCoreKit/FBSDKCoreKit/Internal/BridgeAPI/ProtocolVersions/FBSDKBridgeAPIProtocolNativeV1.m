@@ -20,8 +20,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import <FBSDKCoreKit/FBSDKMacros.h>
-
 #import "FBSDKApplicationDelegate+Internal.h"
 #import "FBSDKBase64.h"
 #import "FBSDKBridgeAPIRequest.h"
@@ -125,12 +123,6 @@ static const struct
   return self;
 }
 
-- (instancetype)init
-{
-  FBSDK_NOT_DESIGNATED_INITIALIZER(initWithAppScheme:);
-  return [self initWithAppScheme:nil];
-}
-
 #pragma mark - FBSDKBridgeAPIProtocol
 
 - (NSURL *)requestURLWithActionID:(NSString *)actionID
@@ -194,7 +186,7 @@ static const struct
   bridgeParameters = [FBSDKTypeUtility dictionaryValue:bridgeParameters];
   if (!bridgeParameters) {
     if (error && (errorRef != NULL)) {
-      *errorRef = [FBSDKError invalidArgumentErrorWithName:FBSDKBridgeAPIProtocolNativeV1InputKeys.bridgeArgs
+      *errorRef = [NSError fbInvalidArgumentErrorWithName:FBSDKBridgeAPIProtocolNativeV1InputKeys.bridgeArgs
                                                      value:bridgeParametersJSON
                                                    message:@"Invalid bridge_args."
                                            underlyingError:error];
@@ -219,7 +211,7 @@ static const struct
   NSDictionary *resultParameters = [FBSDKInternalUtility objectForJSONString:resultParametersJSON error:&error];
   if (!resultParameters) {
     if (errorRef != NULL) {
-      *errorRef = [FBSDKError invalidArgumentErrorWithName:FBSDKBridgeAPIProtocolNativeV1InputKeys.methodResults
+      *errorRef = [NSError fbInvalidArgumentErrorWithName:FBSDKBridgeAPIProtocolNativeV1InputKeys.methodResults
                                                      value:resultParametersJSON
                                                    message:@"Invalid method_results."
                                            underlyingError:error];
@@ -271,7 +263,7 @@ static const struct
   NSString *domain = [FBSDKTypeUtility stringValue:dictionary[FBSDKBridgeAPIProtocolNativeV1ErrorKeys.domain]] ?:
     FBSDKErrorDomain;
   NSInteger code = [FBSDKTypeUtility integerValue:dictionary[FBSDKBridgeAPIProtocolNativeV1ErrorKeys.code]] ?:
-    FBSDKUnknownErrorCode;
+    FBSDKErrorUnknown;
   NSDictionary *userInfo = [FBSDKTypeUtility dictionaryValue:dictionary[FBSDKBridgeAPIProtocolNativeV1ErrorKeys.userInfo]];
   return [NSError errorWithDomain:domain code:code userInfo:userInfo];
 }
@@ -290,7 +282,7 @@ static const struct
     if ([invalidObject isKindOfClass:[NSData class]]) {
       NSData *data = (NSData *)invalidObject;
       NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
-      if (didAddToPasteboard || !enablePasteboard || !_pasteboard || (data.length < _dataLengthThreshold)) {
+      if (didAddToPasteboard || !enablePasteboard || !self->_pasteboard || (data.length < self->_dataLengthThreshold)) {
         dictionary[FBSDKBridgeAPIProtocolNativeV1DataKeys.isBase64] = @YES;
         dictionary[FBSDKBridgeAPIProtocolNativeV1DataKeys.tag] = dataTag;
         [FBSDKInternalUtility dictionary:dictionary
@@ -299,18 +291,18 @@ static const struct
       } else {
         dictionary[FBSDKBridgeAPIProtocolNativeV1DataKeys.isPasteboard] = @YES;
         dictionary[FBSDKBridgeAPIProtocolNativeV1DataKeys.tag] = dataTag;
-        dictionary[FBSDKBridgeAPIProtocolNativeV1DataKeys.value] = _pasteboard.name;
-        [_pasteboard setData:data forPasteboardType:FBSDKBridgeAPIProtocolNativeV1DataPasteboardKey];
+        dictionary[FBSDKBridgeAPIProtocolNativeV1DataKeys.value] = self->_pasteboard.name;
+        [self->_pasteboard setData:data forPasteboardType:FBSDKBridgeAPIProtocolNativeV1DataPasteboardKey];
         // this version of the protocol only supports a single item on the pasteboard, so if when we add an item, make
         // sure we don't add another item
         didAddToPasteboard = YES;
         // if we are adding this to the general pasteboard, then we want to remove it when we are done with the share.
         // the Facebook app will not clear the value with this version of the protocol, so we should do it when the app
         // becomes active again
-        NSString *pasteboardName = _pasteboard.name;
+        NSString *pasteboardName = self->_pasteboard.name;
         if ([pasteboardName isEqualToString:UIPasteboardNameGeneral] ||
             [pasteboardName isEqualToString:UIPasteboardNameFind]) {
-          [[self class] clearData:data fromPasteboardOnApplicationDidBecomeActive:_pasteboard];
+          [[self class] clearData:data fromPasteboardOnApplicationDidBecomeActive:self->_pasteboard];
         }
       }
       return dictionary;

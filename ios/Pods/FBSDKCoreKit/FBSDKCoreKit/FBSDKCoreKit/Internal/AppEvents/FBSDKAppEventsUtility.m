@@ -30,7 +30,6 @@
 #import "FBSDKError.h"
 #import "FBSDKInternalUtility.h"
 #import "FBSDKLogger.h"
-#import "FBSDKMacros.h"
 #import "FBSDKSettings.h"
 #import "FBSDKTimeSpentData.h"
 
@@ -214,7 +213,7 @@
   }
 
   [FBSDKLogger singleShotLogEntry:behaviorToLog logEntry:msg];
-  NSError *error = [FBSDKError errorWithCode:FBSDKAppEventsFlushErrorCode message:msg];
+  NSError *error = [NSError fbErrorWithCode:FBSDKErrorAppEventsFlush message:msg];
   [[NSNotificationCenter defaultCenter] postNotificationName:FBSDKAppEventsLoggingResultNotification object:error];
 }
 
@@ -383,10 +382,36 @@ restOfStringCharacterSet:(NSCharacterSet *)restOfStringCharacterSet
   return value;
 }
 
-- (instancetype)init
-{
-  FBSDK_NO_DESIGNATED_INITIALIZER();
-  return nil;
++ (BOOL)isDebugBuild {
+#if TARGET_IPHONE_SIMULATOR
+  return YES;
+#else
+  BOOL isDevelopment = NO;
+
+  // There is no provisioning profile in AppStore Apps.
+  @try
+  {
+    NSData *data = [NSData dataWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"embedded" ofType:@"mobileprovision"]];
+    if (data) {
+      const char *bytes = [data bytes];
+      NSMutableString *profile = [[NSMutableString alloc] initWithCapacity:data.length];
+      for (NSUInteger i = 0; i < data.length; i++) {
+        [profile appendFormat:@"%c", bytes[i]];
+      }
+      // Look for debug value, if detected we're in a development build.
+      NSString *cleared = [[profile componentsSeparatedByCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet] componentsJoinedByString:@""];
+      isDevelopment = ([cleared rangeOfString:@"<key>get-task-allow</key><true/>"].length > 0);
+    }
+
+    return isDevelopment;
+  }
+  @catch(NSException *exception)
+  {
+
+  }
+
+  return NO;
+#endif
 }
 
 @end

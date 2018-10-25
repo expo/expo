@@ -20,7 +20,8 @@
 
 #import <FBSDKCoreKit/FBSDKCopying.h>
 #import <FBSDKCoreKit/FBSDKGraphRequestConnection.h>
-#import <FBSDKCoreKit/FBSDKMacros.h>
+
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
 
 /**
   Notification indicating that the `currentAccessToken` has changed.
@@ -29,7 +30,20 @@
  `FBSDKAccessTokenChangeOldKey` and
  `FBSDKAccessTokenChangeNewKey`.
  */
-FBSDK_EXTERN NSString *const FBSDKAccessTokenDidChangeNotification;
+FOUNDATION_EXPORT NSNotificationName const FBSDKAccessTokenDidChangeNotification;
+
+#else
+
+/**
+  Notification indicating that the `currentAccessToken` has changed.
+
+ the userInfo dictionary of the notification will contain keys
+ `FBSDKAccessTokenChangeOldKey` and
+ `FBSDKAccessTokenChangeNewKey`.
+ */
+FOUNDATION_EXPORT NSString *const FBSDKAccessTokenDidChangeNotification;
+
+#endif
 
 /**
   A key in the notification's userInfo that will be set
@@ -44,27 +58,27 @@ FBSDK_EXTERN NSString *const FBSDKAccessTokenDidChangeNotification;
   of an access token, this key will also exist since the access token
   is moving from a null state (no user) to a non-null state (user).
  */
-FBSDK_EXTERN NSString *const FBSDKAccessTokenDidChangeUserID;
+FOUNDATION_EXPORT NSString *const FBSDKAccessTokenDidChangeUserID;
 
 /*
   key in notification's userInfo object for getting the old token.
 
  If there was no old token, the key will not be present.
  */
-FBSDK_EXTERN NSString *const FBSDKAccessTokenChangeOldKey;
+FOUNDATION_EXPORT NSString *const FBSDKAccessTokenChangeOldKey;
 
 /*
   key in notification's userInfo object for getting the new token.
 
  If there is no new token, the key will not be present.
  */
-FBSDK_EXTERN NSString *const FBSDKAccessTokenChangeNewKey;
+FOUNDATION_EXPORT NSString *const FBSDKAccessTokenChangeNewKey;
 
 /*
  A key in the notification's userInfo that will be set
  if and only if the token has expired.
  */
-FBSDK_EXTERN NSString *const FBSDKAccessTokenDidExpire;
+FOUNDATION_EXPORT NSString *const FBSDKAccessTokenDidExpire;
 
 
 /**
@@ -76,6 +90,11 @@ FBSDK_EXTERN NSString *const FBSDKAccessTokenDidExpire;
   Returns the app ID.
  */
 @property (readonly, copy, nonatomic) NSString *appID;
+
+/**
+ Returns the expiration date for data access
+ */
+@property (readonly, copy, nonatomic) NSDate *dataAccessExpirationDate;
 
 /**
   Returns the known declined permissions.
@@ -112,11 +131,16 @@ FBSDK_EXTERN NSString *const FBSDKAccessTokenDidExpire;
  */
 @property (readonly, assign, nonatomic, getter = isExpired) BOOL expired;
 
+/**
+ Returns whether user data access is still active for the given access token
+ */
+@property (readonly, assign, nonatomic, getter = isDataAccessExpired) BOOL dataAccessExpired;
+
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new NS_UNAVAILABLE;
 
 /**
-  Initializes a new instance.
+ Initializes a new instance.
  @param tokenString the opaque token string.
  @param permissions the granted permissions. Note this is converted to NSSet and is only
  an NSArray for the convenience of literal syntax.
@@ -137,7 +161,34 @@ FBSDK_EXTERN NSString *const FBSDKAccessTokenDidExpire;
                               appID:(NSString *)appID
                              userID:(NSString *)userID
                      expirationDate:(NSDate *)expirationDate
+                        refreshDate:(NSDate *)refreshDate;
+
+/**
+  Initializes a new instance.
+ @param tokenString the opaque token string.
+ @param permissions the granted permissions. Note this is converted to NSSet and is only
+ an NSArray for the convenience of literal syntax.
+ @param declinedPermissions the declined permissions. Note this is converted to NSSet and is only
+ an NSArray for the convenience of literal syntax.
+ @param appID the app ID.
+ @param userID the user ID.
+ @param expirationDate the optional expiration date (defaults to distantFuture).
+ @param refreshDate the optional date the token was last refreshed (defaults to today).
+ @param dataAccessExpirationDate the date which data access will expire for the given user
+ (defaults to distantFuture).
+
+ This initializer should only be used for advanced apps that
+ manage tokens explicitly. Typical login flows only need to use `FBSDKLoginManager`
+ along with `+currentAccessToken`.
+ */
+- (instancetype)initWithTokenString:(NSString *)tokenString
+                        permissions:(NSArray *)permissions
+                declinedPermissions:(NSArray *)declinedPermissions
+                              appID:(NSString *)appID
+                             userID:(NSString *)userID
+                     expirationDate:(NSDate *)expirationDate
                         refreshDate:(NSDate *)refreshDate
+                 dataAccessExpirationDate:(NSDate *)dataAccessExpirationDate
 NS_DESIGNATED_INITIALIZER;
 
 /**

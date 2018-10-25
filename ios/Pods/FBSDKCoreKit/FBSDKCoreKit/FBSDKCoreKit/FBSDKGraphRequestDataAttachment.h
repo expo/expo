@@ -23,6 +23,9 @@
  */
 @interface FBSDKGraphRequestDataAttachment : NSObject
 
+- (instancetype)init NS_UNAVAILABLE;
++ (instancetype)new NS_UNAVAILABLE;
+
 /**
   Initializes the receiver with the attachment data and metadata.
  @param data The attachment data (retained, not copied)

@@ -38,6 +38,9 @@ typedef void (^FBSDKURLConnectionHandler)(FBSDKURLConnection *connection,
 
 @interface FBSDKURLConnection : NSObject
 
+- (instancetype)init NS_UNAVAILABLE;
++ (instancetype)new NS_UNAVAILABLE;
+
 - (FBSDKURLConnection *)initWithRequest:(NSURLRequest *)request
                       completionHandler:(FBSDKURLConnectionHandler)handler
 NS_DESIGNATED_INITIALIZER;

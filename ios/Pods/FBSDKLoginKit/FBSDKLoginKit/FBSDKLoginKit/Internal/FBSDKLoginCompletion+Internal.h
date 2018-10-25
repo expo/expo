@@ -20,18 +20,20 @@
 
 @interface FBSDKLoginCompletionParameters ()
 
-@property (nonatomic, copy, readwrite) NSString *accessTokenString;
+@property (nonatomic, copy) NSString *accessTokenString;
 
-@property (nonatomic, copy, readwrite) NSSet *permissions;
-@property (nonatomic, copy, readwrite) NSSet *declinedPermissions;
+@property (nonatomic, copy) NSSet *permissions;
+@property (nonatomic, copy) NSSet *declinedPermissions;
 
-@property (nonatomic, copy, readwrite) NSString *appID;
-@property (nonatomic, copy, readwrite) NSString *userID;
+@property (nonatomic, copy) NSString *appID;
+@property (nonatomic, copy) NSString *userID;
 
-@property (nonatomic, copy, readwrite) NSError *error;
+@property (nonatomic, copy) NSError *error;
 
-@property (nonatomic, readwrite, getter=isSystemAccount) BOOL systemAccount;
-@property (nonatomic, copy, readwrite) NSDate *expirationDate;
-@property (nonatomic, copy, readwrite) NSString *challenge;
+@property (nonatomic, assign, getter=isSystemAccount) BOOL systemAccount;
+@property (nonatomic, copy) NSDate *expirationDate;
+@property (nonatomic, copy) NSDate *dataAccessExpirationDate;
+
+@property (nonatomic, copy) NSString *challenge;
 
 @end

@@ -16,15 +16,26 @@
 // IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#import "FBSDKDeviceLoginError.h"
+#import "FBSDKAppLinkTarget.h"
 
-#import "FBSDKLoginConstants.h"
+@interface FBSDKAppLinkTarget ()
 
-@implementation FBSDKDeviceLoginError
+@property (nonatomic, strong) NSURL *URL;
+@property (nonatomic, copy) NSString *appStoreId;
+@property (nonatomic, copy) NSString *appName;
 
-+ (NSString *)errorDomain
-{
-  return FBSDKLoginErrorDomain;
+@end
+
+@implementation FBSDKAppLinkTarget
+
++ (instancetype)appLinkTargetWithURL:(NSURL *)url
+                          appStoreId:(NSString *)appStoreId
+                             appName:(NSString *)appName {
+    FBSDKAppLinkTarget *target = [[self alloc] init];
+    target.URL = url;
+    target.appStoreId = appStoreId;
+    target.appName = appName;
+    return target;
 }
 
 @end

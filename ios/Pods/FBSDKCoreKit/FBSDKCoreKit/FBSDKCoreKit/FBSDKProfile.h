@@ -14,10 +14,11 @@
 // FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
 // COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 // IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
-// CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
 
-#import "FBSDKMacros.h"
 #import "FBSDKProfilePictureView.h"
+
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
 
 /**
   Notification indicating that the `currentProfile` has changed.
@@ -26,19 +27,32 @@
  `FBSDKProfileChangeOldKey` and
  `FBSDKProfileChangeNewKey`.
  */
-FBSDK_EXTERN NSString *const FBSDKProfileDidChangeNotification;
+FOUNDATION_EXPORT NSNotificationName const FBSDKProfileDidChangeNotification;
+
+#else
+
+/**
+  Notification indicating that the `currentProfile` has changed.
+
+ the userInfo dictionary of the notification will contain keys
+ `FBSDKProfileChangeOldKey` and
+ `FBSDKProfileChangeNewKey`.
+ */
+FOUNDATION_EXPORT NSString *const FBSDKProfileDidChangeNotification;
+
+#endif
 
 /*   key in notification's userInfo object for getting the old profile.
 
  If there was no old profile, the key will not be present.
  */
-FBSDK_EXTERN NSString *const FBSDKProfileChangeOldKey;
+FOUNDATION_EXPORT NSString *const FBSDKProfileChangeOldKey;
 
 /*   key in notification's userInfo object for getting the new profile.
 
  If there is no new profile, the key will not be present.
  */
-FBSDK_EXTERN NSString *const FBSDKProfileChangeNewKey;
+FOUNDATION_EXPORT NSString *const FBSDKProfileChangeNewKey;
 
 /**
   Represents an immutable Facebook profile
@@ -53,6 +67,9 @@ FBSDK_EXTERN NSString *const FBSDKProfileChangeNewKey;
  You can use this class to build your own `FBSDKProfilePictureView` or in place of typical requests to "/me".
  */
 @interface FBSDKProfile : NSObject<NSCopying, NSSecureCoding>
+
+- (instancetype)init NS_UNAVAILABLE;
++ (instancetype)new NS_UNAVAILABLE;
 
 /**
   initializes a new instance.
@@ -156,7 +173,7 @@ FBSDK_EXTERN NSString *const FBSDKProfileChangeNewKey;
  @param size The height and width. This will be rounded to integer precision.
  */
 - (NSString *)imagePathForPictureMode:(FBSDKProfilePictureMode)mode size:(CGSize)size
-__attribute__ ((deprecated("use imageURLForPictureMode:size: instead")));
+DEPRECATED_MSG_ATTRIBUTE("use imageURLForPictureMode:size: instead");
 
 /**
   Returns YES if the profile is equivalent to the receiver.

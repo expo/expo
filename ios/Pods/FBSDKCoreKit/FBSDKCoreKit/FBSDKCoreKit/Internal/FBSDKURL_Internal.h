@@ -16,13 +16,8 @@
 // IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#import <Foundation/Foundation.h>
+#import "FBSDKURL.h"
 
-
-@interface FBSDKAppEventsUninstall : NSObject
-
-+ (BOOL)initiated;
-+ (void)setUninstallTrackingEnabled:(BOOL)_uninstallTrackingEnabled;
-+ (void)installSwizzler;
-+ (void)updateAndUploadToken:(NSString*)tokenString;
+@interface FBSDKURL (Internal)
++ (FBSDKURL *)URLForRenderBackToReferrerBarURL:(NSURL *)url;
 @end

@@ -18,8 +18,6 @@
 
 #import <Foundation/Foundation.h>
 
-#import <FBSDKCoreKit/FBSDKMacros.h>
-
 @class FBSDKGraphRequest;
 @class FBSDKGraphRequestConnection;
 
@@ -153,7 +151,7 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite;
 /**
   Gets or sets the timeout interval to wait for a response before giving up.
  */
-@property (nonatomic) NSTimeInterval timeout;
+@property (nonatomic, assign) NSTimeInterval timeout;
 
 /**
   The raw response that was returned from the server.  (readonly)
@@ -320,4 +318,4 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite;
  will be wrapped into a dictionary using this const as the key. This only applies for very few Graph API
  prior to v2.1.
  */
-FBSDK_EXTERN NSString *const FBSDKNonJSONResponseProperty;
+FOUNDATION_EXPORT NSString *const FBSDKNonJSONResponseProperty;

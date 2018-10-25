@@ -19,8 +19,6 @@
 #import "FBSDKShareOpenGraphValueContainer.h"
 #import "FBSDKShareOpenGraphValueContainer+Internal.h"
 
-#import <FBSDKCoreKit/FBSDKMacros.h>
-
 #import "FBSDKCoreKit+Internal.h"
 #import "FBSDKShareOpenGraphObject.h"
 #import "FBSDKSharePhoto.h"

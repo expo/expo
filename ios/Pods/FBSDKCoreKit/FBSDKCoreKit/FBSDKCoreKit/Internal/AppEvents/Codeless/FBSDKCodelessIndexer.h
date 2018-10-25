@@ -16,15 +16,10 @@
 // IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#import "FBSDKShareError.h"
+#import <Foundation/Foundation.h>
 
-#import "FBSDKShareConstants.h"
+@interface FBSDKCodelessIndexer : NSObject
 
-@implementation FBSDKShareError
-
-+ (NSString *)errorDomain
-{
-  return FBSDKShareErrorDomain;
-}
++ (NSString *)extInfo;
 
 @end

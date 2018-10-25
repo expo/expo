@@ -19,7 +19,6 @@
 #import "FBSDKAppEventsState.h"
 
 #import "FBSDKInternalUtility.h"
-#import "FBSDKMacros.h"
 
 #define FBSDK_APPEVENTSTATE_ISIMPLICIT_KEY @"isImplicit"
 
@@ -35,12 +34,6 @@
 @implementation FBSDKAppEventsState
 {
   NSMutableArray *_mutableEvents;
-}
-
-- (instancetype)init
-{
-  FBSDK_NOT_DESIGNATED_INITIALIZER(initWithToken:appID:);
-  return [self initWithToken:nil appID:nil];
 }
 
 - (instancetype)initWithToken:(NSString *)tokenString appID:(NSString *)appID
@@ -118,7 +111,7 @@
     _numSkipped++;
   } else {
     [_mutableEvents addObject:@{
-                                @"event" : eventDictionary,
+                                @"event" : [eventDictionary mutableCopy],
                                 FBSDK_APPEVENTSTATE_ISIMPLICIT_KEY : @(isImplicit)
                                 }];
   }

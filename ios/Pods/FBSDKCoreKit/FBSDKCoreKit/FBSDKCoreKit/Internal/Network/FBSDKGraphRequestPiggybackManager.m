@@ -50,6 +50,7 @@ static int const FBSDKTokenRefreshRetrySeconds = 60 * 60;           // hour
   __block NSMutableSet *declinedPermissions = nil;
   __block NSString *tokenString = nil;
   __block NSNumber *expirationDateNumber = nil;
+  __block NSNumber *dataAccessExpirationDateNumber = nil;
   __block int expectingCallbacksCount = 2;
   void (^expectingCallbackComplete)(void) = ^{
     if (--expectingCallbacksCount == 0) {
@@ -60,13 +61,20 @@ static int const FBSDKTokenRefreshRetrySeconds = 60 * 60;           // hour
                           [NSDate dateWithTimeIntervalSince1970:[expirationDateNumber doubleValue]] :
                           [NSDate distantFuture]);
       }
+      NSDate *dataExpirationDate = currentToken.dataAccessExpirationDate;
+      if (dataAccessExpirationDateNumber) {
+            dataExpirationDate = ([dataAccessExpirationDateNumber doubleValue] > 0 ?
+                              [NSDate dateWithTimeIntervalSince1970:[dataAccessExpirationDateNumber doubleValue]] :
+                              [NSDate distantFuture]);
+      }
       FBSDKAccessToken *refreshedToken = [[FBSDKAccessToken alloc] initWithTokenString:tokenString ?: currentToken.tokenString
                                                                            permissions:[(permissions ?: currentToken.permissions) allObjects]
                                                                    declinedPermissions:[(declinedPermissions ?: currentToken.declinedPermissions) allObjects]
                                                                                  appID:currentToken.appID
                                                                                 userID:currentToken.userID
                                                                         expirationDate:expirationDate
-                                                                           refreshDate:[NSDate date]];
+                                                                           refreshDate:[NSDate date]
+                                                                           dataAccessExpirationDate:dataExpirationDate];
       if (expectedToken == currentToken) {
         [FBSDKAccessToken setCurrentAccessToken:refreshedToken];
       }
@@ -81,6 +89,7 @@ static int const FBSDKTokenRefreshRetrySeconds = 60 * 60;           // hour
   [connection addRequest:extendRequest completionHandler:^(FBSDKGraphRequestConnection *innerConnection, id result, NSError *error) {
     tokenString = result[@"access_token"];
     expirationDateNumber = result[@"expires_at"];
+    dataAccessExpirationDateNumber = result[@"data_access_expiration_time"];
     expectingCallbackComplete();
   }];
   FBSDKGraphRequest *permissionsRequest = [[FBSDKGraphRequest alloc] initWithGraphPath:@"me/permissions"

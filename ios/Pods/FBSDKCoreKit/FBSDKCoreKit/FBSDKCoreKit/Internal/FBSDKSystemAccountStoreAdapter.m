@@ -171,7 +171,7 @@ static FBSDKSystemAccountStoreAdapter *_singletonInstance = nil;
 {
   if (!self.accountType) {
     if (handler) {
-      handler(nil, [FBSDKError errorWithCode:FBSDKUnknownErrorCode message:@"Invalid request to account store"]);
+      handler(nil, [NSError fbErrorWithCode:FBSDKErrorUnknown message:@"Invalid request to account store"]);
     }
     return;
   }
@@ -257,7 +257,8 @@ static FBSDKSystemAccountStoreAdapter *_singletonInstance = nil;
                                                                                    appID:currentToken.appID
                                                                                   userID:currentToken.userID
                                                                           expirationDate:[NSDate distantFuture]
-                                                                             refreshDate:[NSDate date]];
+                                                                             refreshDate:[NSDate date]
+                                                                dataAccessExpirationDate:[NSDate distantFuture]];
           [FBSDKAccessToken setCurrentAccessToken:updatedToken];
         }
         if (handler) {

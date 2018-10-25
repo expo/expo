@@ -18,27 +18,21 @@
 
 #import <Foundation/Foundation.h>
 
-#import <FBSDKCoreKit/FBSDKMacros.h>
+#import "FBSDKAppLinkResolving.h"
 
-FBSDK_EXTERN NSString* const EMAIL;
-FBSDK_EXTERN NSString* const FIRST_NAME;
-FBSDK_EXTERN NSString* const LAST_NAME;
-FBSDK_EXTERN NSString* const PHONE;
-FBSDK_EXTERN NSString* const DATE_OF_BIRTH;
-FBSDK_EXTERN NSString* const GENDER;
-FBSDK_EXTERN NSString* const CITY;
-FBSDK_EXTERN NSString* const STATE;
-FBSDK_EXTERN NSString* const ZIP;
-FBSDK_EXTERN NSString* const COUNTRY;
+NS_ASSUME_NONNULL_BEGIN
 
-@interface FBSDKUserDataStore : NSObject
+/*!
+ A reference implementation for an App Link resolver that uses a hidden UIWebView
+ to parse the HTML containing App Link metadata.
+ */
+@interface FBSDKWebViewAppLinkResolver : NSObject <FBSDKAppLinkResolving>
 
-+ (void)initStore;
-
-+ (void)initAndWait;
-
-+ (void) setUserDataAndHash:(NSDictionary*)ud;
-
-+ (NSString*) getHashedUserData;
+/*!
+ Gets the instance of a FBSDKWebViewAppLinkResolver.
+ */
++ (instancetype)sharedInstance;
 
 @end
+
+NS_ASSUME_NONNULL_END
