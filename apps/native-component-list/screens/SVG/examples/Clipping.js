@@ -12,6 +12,7 @@ import Svg, {
   Polygon,
   Path,
   Circle,
+  Use,
 } from 'react-native-svg';
 
 class ClipPathElement extends Component {
@@ -46,17 +47,26 @@ class ClipRule extends Component {
   static title = 'Clip a group with clipRule="evenodd"';
   render() {
     return (
-      <Svg height="100" width="100">
+      <Svg height={200} width={200}>
         <Defs>
-          <ClipPath id="clip">
-            <Path d="M50,5L20,99L95,39L5,39L80,99z" />
+          <ClipPath id="c" clipRule="nonzero">
+            <Path d="M50 5L20 99l75-60H5l75 60z" />
           </ClipPath>
+          <ClipPath id="b" clipRule="evenodd">
+            <Path d="M50 5L20 99l75-60H5l75 60z" />
+          </ClipPath>
+          <G id="a">
+            <Path fill="red" d="M0 0h50v50H0z" />
+            <Path fill="#00f" d="M50 0h50v50H50z" />
+            <Path fill="#ff0" d="M0 50h50v50H0z" />
+            <Path fill="green" d="M50 50h50v50H50z" />
+          </G>
         </Defs>
-        <G clipPath="url(#clip)" clipRule="evenodd">
-          <Rect x="0" y="0" width="50" height="50" fill="red" />
-          <Rect x="50" y="0" width="50" height="50" fill="blue" />
-          <Rect x="0" y="50" width="50" height="50" fill="yellow" />
-          <Rect x="50" y="50" width="50" height="50" fill="green" />
+        <Use href="#a" clipPath="url(#b)" />
+        <Use href="#a" clipPath="url(#c)" y={100} />
+        <G transform="translate(100)">
+          <Use href="#a" clipPath="url(#b)" clipRule="evenodd" />
+          <Use href="#a" clipPath="url(#c)" y={100} />
         </G>
       </Svg>
     );
