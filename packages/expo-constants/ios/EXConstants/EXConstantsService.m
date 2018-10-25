@@ -237,7 +237,7 @@
                             @"x86_64": @"Simulator",
                             };
 
-  NSString *deviceModel = [mapping objectForKey:platform];
+  NSString *deviceModel = mapping[platform];
 
   if (!deviceModel) {
     // Not found in the database. At least guess main device type from string contents.
@@ -371,7 +371,7 @@
                             @"iPad5,2": @2015,
                             };
 
-  NSNumber *deviceYear = [mapping objectForKey:platform];
+  NSNumber *deviceYear = mapping[platform];
 
   if (deviceYear) {
     return deviceYear;
