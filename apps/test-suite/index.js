@@ -35,6 +35,7 @@ async function getTestModulesAsync() {
     require('./tests/Localization'),
     require('./tests/Location'),
     require('./tests/Linking'),
+    require('./tests/RandomBytes'),
     require('./tests/Recording'),
     require('./tests/SecureStore'),
     require('./tests/Segment'),
