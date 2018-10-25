@@ -195,33 +195,22 @@ class ImageView extends RenderableView {
         if (mMatrix != null) {
             mMatrix.mapRect(vbRect);
         }
+        if (mTransform != null) {
+            mTransform.mapRect(vbRect);
+        }
 
-        Path clip = new Path();
+        canvas.clipPath(getPath(canvas, paint));
+
         Path clipPath = getClipPath(canvas, paint);
-        Path path = getPath(canvas, paint);
         if (clipPath != null) {
-            // clip by the common area of clipPath and mPath
-            clip.setFillType(Path.FillType.INVERSE_EVEN_ODD);
-
-            Path inverseWindingPath = new Path();
-            inverseWindingPath.setFillType(Path.FillType.INVERSE_WINDING);
-            inverseWindingPath.addPath(path);
-            inverseWindingPath.addPath(clipPath);
-
-            Path evenOddPath = new Path();
-            evenOddPath.setFillType(Path.FillType.EVEN_ODD);
-            evenOddPath.addPath(path);
-            evenOddPath.addPath(clipPath);
-
-            canvas.clipPath(evenOddPath, Region.Op.DIFFERENCE);
-            canvas.clipPath(inverseWindingPath, Region.Op.DIFFERENCE);
-        } else {
-            canvas.clipPath(path, Region.Op.REPLACE);
+            canvas.clipPath(clipPath);
         }
 
         Paint alphaPaint = new Paint();
         alphaPaint.setAlpha((int) (opacity * 255));
         canvas.drawBitmap(bitmap, null, vbRect, alphaPaint);
+        canvas.getMatrix().mapRect(vbRect);
+        this.setClientRect(vbRect);
     }
 
     private void tryRender(ImageRequest request, Canvas canvas, Paint paint, float opacity) {

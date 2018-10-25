@@ -21,6 +21,7 @@
 {
     RNSVGGlyphContext *glyphContext;
     BOOL _transparent;
+    RNSVGClipPath *_clipNode;
     CGPathRef _cachedClipPath;
     CGImageRef _clipMask;
     CGFloat canvasWidth;
@@ -248,7 +249,7 @@ CGFloat const RNSVG_DEFAULT_FONT_SIZE = 12;
 - (CGPathRef)getClipPath:(CGContextRef)context
 {
     if (self.clipPath) {
-        RNSVGClipPath *_clipNode = (RNSVGClipPath*)[self.svgView getDefinedClipPath:self.clipPath];
+        _clipNode = (RNSVGClipPath*)[self.svgView getDefinedClipPath:self.clipPath];
         _cachedClipPath = CGPathRetain([_clipNode getPath:context]);
         if (_clipMask) {
             CGImageRelease(_clipMask);
@@ -280,7 +281,7 @@ CGFloat const RNSVG_DEFAULT_FONT_SIZE = 12;
     if (clipPath) {
         if (!_clipMask) {
             CGContextAddPath(context, clipPath);
-            if (self.clipRule == kRNSVGCGFCRuleEvenodd) {
+            if (_clipNode.clipRule == kRNSVGCGFCRuleEvenodd) {
                 CGContextEOClip(context);
             } else {
                 CGContextClip(context);

@@ -6966,10 +6966,10 @@ react-native-scrollable-mixin@^1.0.0:
   resolved "https://registry.yarnpkg.com/react-native-scrollable-mixin/-/react-native-scrollable-mixin-1.0.1.tgz#34a32167b64248594154fd0d6a8b03f22740548e"
   integrity sha1-NKMhZ7ZCSFlBVP0NaosD8idAVI4=
 
-react-native-svg@8.0.3:
-  version "8.0.3"
-  resolved "https://registry.yarnpkg.com/react-native-svg/-/react-native-svg-8.0.3.tgz#e27303f0811e85d616b8b922531e96a7bfac3675"
-  integrity sha512-H99NDSjAYaEKd27Nkrh+X9LyHFuOUrO1bH+524/AurJkmUvEvqbTF56KNw1ezXRHiHMmsDjGgDeNA7d2/cn/hQ==
+react-native-svg@8.0.8:
+  version "8.0.8"
+  resolved "https://registry.yarnpkg.com/react-native-svg/-/react-native-svg-8.0.8.tgz#5d4c636751d9db2d98a9b3cfc4ef45c4eac65d60"
+  integrity sha512-a5q7896HJztH3XBa4MouuBcwhOvDsJXRZB/PPvEMvc4NhudIDXDUKpwd9V7Hm6beDjg5CjFIdE/c92jnVo+0CA==
   dependencies:
     color "^2.0.1"
     lodash "^4.16.6"

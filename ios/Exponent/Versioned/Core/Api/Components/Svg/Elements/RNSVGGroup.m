@@ -133,7 +133,7 @@
         RNSVGClipPath *clipNode = (RNSVGClipPath*)[self.svgView getDefinedClipPath:self.clipPath];
         if ([clipNode isSimpleClipPath]) {
             CGPathRef clipPath = [self getClipPath];
-            if (clipPath && !CGPathContainsPoint(clipPath, nil, transformed, self.clipRule == kRNSVGCGFCRuleEvenodd)) {
+            if (clipPath && !CGPathContainsPoint(clipPath, nil, transformed, clipNode.clipRule == kRNSVGCGFCRuleEvenodd)) {
                 return nil;
             }
         } else {

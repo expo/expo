@@ -22,6 +22,7 @@ class ClipPathView extends GroupView {
 
     public ClipPathView(ReactContext reactContext) {
         super(reactContext);
+        mClipRule = CLIP_RULE_NONZERO;
     }
 
     @Override
