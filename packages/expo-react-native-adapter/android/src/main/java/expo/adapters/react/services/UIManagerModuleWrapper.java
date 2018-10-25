@@ -157,7 +157,7 @@ public class UIManagerModuleWrapper implements
 
       @Override
       public void onNewIntent(Intent intent) {
-
+        activityEventListener.onNewIntent(intent);
       }
     });
   }
