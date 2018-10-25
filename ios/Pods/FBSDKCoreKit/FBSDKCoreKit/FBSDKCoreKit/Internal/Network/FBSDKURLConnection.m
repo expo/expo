@@ -20,6 +20,7 @@
 
 #import "FBSDKInternalUtility.h"
 #import "FBSDKLogger.h"
+#import "FBSDKMacros.h"
 #import "FBSDKSettings.h"
 
 @interface FBSDKURLConnection () <NSURLConnectionDataDelegate>
@@ -54,6 +55,12 @@
       _handler = [handler copy];
   }
   return self;
+}
+
+- (instancetype)init
+{
+  FBSDK_NOT_DESIGNATED_INITIALIZER(initWithRequest:completionHandler:);
+  return [self initWithRequest:nil completionHandler:NULL];
 }
 
 - (void)logAndInvokeHandler:(FBSDKURLConnectionHandler)handler

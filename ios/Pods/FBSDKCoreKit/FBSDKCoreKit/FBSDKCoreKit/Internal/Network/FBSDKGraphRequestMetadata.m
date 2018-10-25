@@ -19,6 +19,7 @@
 #import "FBSDKGraphRequestMetadata.h"
 
 #import "FBSDKGraphRequest.h"
+#import "FBSDKMacros.h"
 
 @implementation FBSDKGraphRequestMetadata
 
@@ -32,6 +33,12 @@
     _completionHandler = [handler copy];
   }
   return self;
+}
+
+- (instancetype)init
+{
+  FBSDK_NOT_DESIGNATED_INITIALIZER(initWithRequest:completionHandler:batchParameters:);
+  return [self initWithRequest:nil completionHandler:NULL batchParameters:nil];
 }
 
 - (void)invokeCompletionHandlerForConnection:(FBSDKGraphRequestConnection *)connection

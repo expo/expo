@@ -40,7 +40,7 @@
    `valid` property.
  @return The hashtag string.
  */
-@property (nonatomic, copy) NSString *stringRepresentation;
+@property (nonatomic, readwrite, copy) NSString *stringRepresentation;
 
 /**
   Tests if a hashtag is valid.

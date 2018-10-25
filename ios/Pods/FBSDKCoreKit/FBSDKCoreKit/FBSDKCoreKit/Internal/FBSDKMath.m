@@ -25,6 +25,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "FBSDKMacros.h"
+
 @implementation FBSDKMath
 
 #pragma mark - Class Methods
@@ -144,6 +146,14 @@
   hash += (hash << 31);
 #endif
   return hash;
+}
+
+#pragma mark - Object Lifecycle
+
+- (instancetype)init
+{
+  FBSDK_NO_DESIGNATED_INITIALIZER();
+  return nil;
 }
 
 @end

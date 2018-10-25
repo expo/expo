@@ -24,9 +24,6 @@
 
 @interface FBSDKBridgeAPIResponse : NSObject <FBSDKCopying>
 
-- (instancetype)init NS_UNAVAILABLE;
-+ (instancetype)new NS_UNAVAILABLE;
-
 + (instancetype)bridgeAPIResponseWithRequest:(FBSDKBridgeAPIRequest *)request error:(NSError *)error;
 + (instancetype)bridgeAPIResponseWithRequest:(FBSDKBridgeAPIRequest *)request
                                  responseURL:(NSURL *)responseURL

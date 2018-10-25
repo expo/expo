@@ -25,9 +25,6 @@
  */
 @interface FBSDKLoginManagerLoginResult : NSObject
 
-- (instancetype)init NS_UNAVAILABLE;
-+ (instancetype)new NS_UNAVAILABLE;
-
 /**
   the access token.
  */

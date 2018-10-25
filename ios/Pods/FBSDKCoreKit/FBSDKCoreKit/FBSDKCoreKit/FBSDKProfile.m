@@ -20,16 +20,7 @@
 
 #import "FBSDKCoreKit+Internal.h"
 
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
-
-NSNotificationName const FBSDKProfileDidChangeNotification = @"com.facebook.sdk.FBSDKProfile.FBSDKProfileDidChangeNotification";;
-
-#else
-
 NSString *const FBSDKProfileDidChangeNotification = @"com.facebook.sdk.FBSDKProfile.FBSDKProfileDidChangeNotification";;
-
-#endif
-
 NSString *const FBSDKProfileChangeOldKey = @"FBSDKProfileOld";
 NSString *const FBSDKProfileChangeNewKey = @"FBSDKProfileNew";
 static NSString *const FBSDKProfileUserDefaultsKey = @"com.facebook.sdk.FBSDKProfile.currentProfile";
@@ -47,6 +38,11 @@ static FBSDKProfile *g_currentProfile;
 #define FBSDKPROFILE_STALE_IN_SECONDS (60 * 60 * 24)
 
 @implementation FBSDKProfile
+
+- (instancetype)init NS_UNAVAILABLE
+{
+  assert(0);
+}
 
 - (instancetype)initWithUserID:(NSString *)userID
                      firstName:(NSString *)firstName

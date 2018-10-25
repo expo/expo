@@ -18,6 +18,8 @@
 
 #import "FBSDKTypeUtility.h"
 
+#import "FBSDKMacros.h"
+
 @implementation FBSDKTypeUtility
 
 #pragma mark - Class Methods
@@ -109,6 +111,14 @@
   } else {
     return nil;
   }
+}
+
+#pragma mark - Object Lifecycle
+
+- (instancetype)init
+{
+  FBSDK_NO_DESIGNATED_INITIALIZER();
+  return nil;
 }
 
 #pragma mark - Helper Methods

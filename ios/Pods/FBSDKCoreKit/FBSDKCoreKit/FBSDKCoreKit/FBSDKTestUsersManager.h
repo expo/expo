@@ -48,9 +48,6 @@ typedef void (^FBSDKTestUsersManagerRemoveTestAccountHandler)(NSError *error) ;
  */
 @interface FBSDKTestUsersManager : NSObject
 
-- (instancetype)init NS_UNAVAILABLE;
-+ (instancetype)new NS_UNAVAILABLE;
-
 /**
   construct or return the shared instance
  @param appID the Facebook app id

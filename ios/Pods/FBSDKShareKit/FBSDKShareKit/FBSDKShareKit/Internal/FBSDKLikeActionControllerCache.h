@@ -20,8 +20,6 @@
 
 @interface FBSDKLikeActionControllerCache : NSObject <NSSecureCoding>
 
-- (instancetype)init NS_UNAVAILABLE;
-+ (instancetype)new NS_UNAVAILABLE;
 - (instancetype)initWithAccessTokenString:(NSString *)accessTokenString NS_DESIGNATED_INITIALIZER;
 
 @property (nonatomic, copy, readonly) NSString *accessTokenString;

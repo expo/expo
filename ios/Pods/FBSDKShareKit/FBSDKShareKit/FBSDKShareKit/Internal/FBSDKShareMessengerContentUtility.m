@@ -19,7 +19,7 @@
 #import "FBSDKShareMessengerContentUtility.h"
 
 #import "FBSDKCoreKit+Internal.h"
-#import "FBSDKShareConstants.h"
+#import "FBSDKShareError.h"
 #import "FBSDKShareMessengerGenericTemplateContent.h"
 #import "FBSDKShareMessengerGenericTemplateElement.h"
 #import "FBSDKShareMessengerMediaTemplateContent.h"
@@ -136,10 +136,7 @@ NSArray<NSDictionary<NSString *, id> *> *SerializableButtonsFromButton(id<FBSDKS
     (urlActionButton.isMessengerExtensionURL ? [FBSDKShareUtility validateRequiredValue:pageID name:@"content pageID" error:errorRef] : YES);
   } else {
     if (errorRef != NULL) {
-      *errorRef = [NSError fbInvalidArgumentErrorWithDomain:FBSDKShareErrorDomain
-                                                       name:@"buttons"
-                                                      value:button
-                                                    message:nil];
+      *errorRef = [FBSDKShareError invalidArgumentErrorWithName:@"buttons" value:button message:nil];
     }
     return NO;
   }

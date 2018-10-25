@@ -23,16 +23,7 @@
 #import "FBSDKMath.h"
 #import "FBSDKSettings+Internal.h"
 
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
-
-NSNotificationName const FBSDKAccessTokenDidChangeNotification = @"com.facebook.sdk.FBSDKAccessTokenData.FBSDKAccessTokenDidChangeNotification";
-
-#else
-
 NSString *const FBSDKAccessTokenDidChangeNotification = @"com.facebook.sdk.FBSDKAccessTokenData.FBSDKAccessTokenDidChangeNotification";
-
-#endif
-
 NSString *const FBSDKAccessTokenDidChangeUserID = @"FBSDKAccessTokenDidChangeUserID";
 NSString *const FBSDKAccessTokenChangeNewKey = @"FBSDKAccessToken";
 NSString *const FBSDKAccessTokenChangeOldKey = @"FBSDKAccessTokenOld";
@@ -51,6 +42,11 @@ static FBSDKAccessToken *g_currentAccessToken;
 
 
 @implementation FBSDKAccessToken
+
+- (instancetype)init NS_UNAVAILABLE
+{
+  assert(0);
+}
 
 - (instancetype)initWithTokenString:(NSString *)tokenString
                         permissions:(NSArray *)permissions
@@ -153,7 +149,7 @@ static FBSDKAccessToken *g_currentAccessToken;
     [connection start];
   } else {
     if (completionHandler) {
-      completionHandler(nil, nil, [NSError fbErrorWithCode:FBSDKErrorAccessTokenRequired message:@"No current access token to refresh"]);
+      completionHandler(nil, nil, [FBSDKError errorWithCode:FBSDKAccessTokenRequiredErrorCode message:@"No current access token to refresh"]);
     }
   }
 }

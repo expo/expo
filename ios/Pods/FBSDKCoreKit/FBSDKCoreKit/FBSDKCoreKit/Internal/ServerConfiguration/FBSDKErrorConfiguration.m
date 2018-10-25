@@ -32,6 +32,12 @@ static NSString *const kErrorCategoryLogin = @"login";
   NSMutableDictionary *_configurationDictionary;
 }
 
+- (instancetype)init
+{
+  FBSDK_NOT_DESIGNATED_INITIALIZER(initWithDictionary:);
+  return [self initWithDictionary:nil];
+}
+
 - (instancetype)initWithDictionary:(NSDictionary *)dictionary
 {
   if ((self = [super init])) {
@@ -87,7 +93,7 @@ static NSString *const kErrorCategoryLogin = @"login";
                                                     _configurationDictionary[code][@"*"] ?:
                                                     _configurationDictionary[@"*"][subcode] ?:
                                                     _configurationDictionary[@"*"][@"*"]);
-  if (configuration.errorCategory == FBSDKGraphRequestErrorRecoverable &&
+  if (configuration.errorCategory == FBSDKGraphRequestErrorCategoryRecoverable &&
       [FBSDKSettings clientToken] &&
       [request.parameters[@"access_token"] hasSuffix:[FBSDKSettings clientToken]]) {
     // do not attempt to recovery client tokens.
@@ -100,14 +106,14 @@ static NSString *const kErrorCategoryLogin = @"login";
 {
   for (NSDictionary *dictionary in array) {
     [dictionary enumerateKeysAndObjectsUsingBlock:^(NSString *key, id obj, BOOL *stop) {
-      FBSDKGraphRequestError category;
+      FBSDKGraphRequestErrorCategory category;
       NSString *action = dictionary[@"name"];
       if ([action isEqualToString:kErrorCategoryOther]) {
-        category = FBSDKGraphRequestErrorOther;
+        category = FBSDKGraphRequestErrorCategoryOther;
       } else if ([action isEqualToString:kErrorCategoryTransient]) {
-        category = FBSDKGraphRequestErrorTransient;
+        category = FBSDKGraphRequestErrorCategoryTransient;
       } else {
-        category = FBSDKGraphRequestErrorRecoverable;
+        category = FBSDKGraphRequestErrorCategoryRecoverable;
       }
       NSString *suggestion = dictionary[@"recovery_message"];
       NSArray *options = dictionary[@"recovery_options"];

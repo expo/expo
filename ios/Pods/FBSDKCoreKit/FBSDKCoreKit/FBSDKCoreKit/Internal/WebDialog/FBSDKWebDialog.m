@@ -90,7 +90,10 @@ static FBSDKWebDialog *g_currentDialog = nil;
     return NO;
   }
 
-  _dialogView = [[FBSDKWebDialogView alloc] initWithFrame:window.screen.bounds];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+  _dialogView = [[FBSDKWebDialogView alloc] initWithFrame:window.screen.applicationFrame];
+#pragma clang diagnostic pop
 
   _dialogView.delegate = self;
   [_dialogView loadURL:URL];
@@ -279,7 +282,10 @@ static FBSDKWebDialog *g_currentDialog = nil;
 
 - (CGRect)_applicationFrameForOrientation
 {
-  CGRect applicationFrame = _dialogView.window.screen.bounds;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+  CGRect applicationFrame = _dialogView.window.screen.applicationFrame;
+#pragma clang diagnostic pop
   if ([FBSDKInternalUtility shouldManuallyAdjustOrientation]) {
     switch ([UIApplication sharedApplication].statusBarOrientation) {
       case UIInterfaceOrientationLandscapeLeft:
@@ -312,7 +318,10 @@ static FBSDKWebDialog *g_currentDialog = nil;
   void(^updateBlock)(void) = ^{
     self->_dialogView.transform = transform;
 
-    CGRect mainFrame = self->_dialogView.window.screen.bounds;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    CGRect mainFrame = self->_dialogView.window.screen.applicationFrame;
+#pragma clang diagnostic pop
     self->_dialogView.center = CGPointMake(CGRectGetMidX(mainFrame),
                                      CGRectGetMidY(mainFrame));
     self->_backgroundView.alpha = alpha;

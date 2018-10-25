@@ -23,9 +23,6 @@
  */
 @interface FBSDKUtility : NSObject
 
-- (instancetype)init NS_UNAVAILABLE;
-+ (instancetype)new NS_UNAVAILABLE;
-
 /**
   Parses a query string into a dictionary.
  @param queryString The query string value.

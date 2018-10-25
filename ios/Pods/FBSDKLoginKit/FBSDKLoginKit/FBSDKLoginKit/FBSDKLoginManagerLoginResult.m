@@ -24,6 +24,11 @@
   NSMutableDictionary *_mutableLoggingExtras;
 }
 
+- (instancetype)init NS_UNAVAILABLE
+{
+  assert(0);
+}
+
 - (instancetype)initWithToken:(FBSDKAccessToken *)token
                   isCancelled:(BOOL)isCancelled
            grantedPermissions:(NSSet *)grantedPermissions

@@ -21,9 +21,6 @@
 
 @interface FBSDKMath : NSObject
 
-- (instancetype)init NS_UNAVAILABLE;
-+ (instancetype)new NS_UNAVAILABLE;
-
 + (CGPoint)ceilForPoint:(CGPoint)value;
 + (CGSize)ceilForSize:(CGSize)value;
 + (CGPoint)floorForPoint:(CGPoint)value;

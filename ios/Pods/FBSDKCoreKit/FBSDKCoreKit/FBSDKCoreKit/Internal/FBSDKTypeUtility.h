@@ -20,9 +20,6 @@
 
 @interface FBSDKTypeUtility : NSObject
 
-- (instancetype)init NS_UNAVAILABLE;
-+ (instancetype)new NS_UNAVAILABLE;
-
 + (NSArray *)arrayValue:(id)object;
 + (BOOL)boolValue:(id)object;
 + (NSDictionary *)dictionaryValue:(id)object;

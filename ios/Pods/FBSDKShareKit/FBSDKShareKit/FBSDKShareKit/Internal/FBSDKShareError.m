@@ -16,26 +16,15 @@
 // IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#import <Foundation/Foundation.h>
+#import "FBSDKShareError.h"
 
-NS_ASSUME_NONNULL_BEGIN
+#import "FBSDKShareConstants.h"
 
-@interface FBSDKGateKeeperManager : NSObject
-- (instancetype)init NS_UNAVAILABLE;
-+ (instancetype)new NS_UNAVAILABLE;
+@implementation FBSDKShareError
 
-/**
- Returns the locally cached configuration.
- */
-+ (BOOL)boolForKey:(NSString *)key
-             appID:(NSString *)appID
-      defaultValue:(BOOL)defaultValue;
-
-/**
- Load the gate keeper configurations from server
- */
-+ (void)loadGateKeepers;
++ (NSString *)errorDomain
+{
+  return FBSDKShareErrorDomain;
+}
 
 @end
-
-NS_ASSUME_NONNULL_END

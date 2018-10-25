@@ -120,16 +120,6 @@ typedef NS_ENUM(NSInteger, FBSDKLoginManagerState) {
   [self logInWithPermissions:permissionSet handler:handler];
 }
 
-- (void)reauthorizeDataAccess:(UIViewController *)fromViewController handler:(FBSDKLoginManagerRequestTokenHandler)handler
-{
-  if (![self validateLoginStartState]) {
-    return;
-  }
-  self.fromViewController = fromViewController;
-  [self reauthorizeDataAccess:handler];
-}
-
-
 - (void)logOut
 {
   [FBSDKAccessToken setCurrentAccessToken:nil];
@@ -141,9 +131,9 @@ typedef NS_ENUM(NSInteger, FBSDKLoginManagerState) {
   FBSDKSystemAccountStoreAdapter *adapter = [FBSDKSystemAccountStoreAdapter sharedInstance];
 
   if (!adapter.accountType) {
-    handler(ACAccountCredentialRenewResultFailed, [NSError fbErrorForFailedLoginWithCode:FBSDKLoginErrorSystemAccountUnavailable]);
+    handler(ACAccountCredentialRenewResultFailed, [FBSDKLoginError errorForFailedLoginWithCode:FBSDKLoginSystemAccountUnavailableErrorCode]);
   } else if (!adapter.accountType.accessGranted) {
-    handler(ACAccountCredentialRenewResultFailed, [NSError fbErrorForFailedLoginWithCode:FBSDKLoginErrorSystemAccountAppDisabled]);
+    handler(ACAccountCredentialRenewResultFailed, [FBSDKLoginError errorForFailedLoginWithCode:FBSDKLoginSystemAccountAppDisabledErrorCode]);
   } else {
     [[FBSDKSystemAccountStoreAdapter sharedInstance] renewSystemAuthorization:handler];
   }
@@ -237,7 +227,7 @@ typedef NS_ENUM(NSInteger, FBSDKLoginManagerState) {
 
     // Don't overwrite an existing error, if any.
     if (!error && !cancelled && !challengePassed) {
-      error = [NSError fbErrorForFailedLoginWithCode:FBSDKLoginErrorBadChallengeString];
+      error = [FBSDKLoginError errorForFailedLoginWithCode:FBSDKLoginBadChallengeString];
     }
   }
 
@@ -401,18 +391,6 @@ typedef NS_ENUM(NSInteger, FBSDKLoginManagerState) {
   [self logInWithBehavior:self.loginBehavior];
 }
 
-- (void)reauthorizeDataAccess:(FBSDKLoginManagerRequestTokenHandler)handler
-{
-  FBSDKServerConfiguration *serverConfiguration = [FBSDKServerConfigurationManager cachedServerConfiguration];
-  _logger = [[FBSDKLoginManagerLogger alloc] initWithLoggingToken:serverConfiguration.loggingToken];
-  _handler = [handler copy];
-  // Don't need to pass permissions for data reauthorization.
-  _requestedPermissions = [NSSet set];
-  self.authType = @"reauthorize";
-  [_logger startSessionForLoginManager:self];
-  [self logInWithBehavior:self.loginBehavior];
-}
-
 - (void)logInWithBehavior:(FBSDKLoginBehavior)loginBehavior
 {
   FBSDKServerConfiguration *serverConfiguration = [FBSDKServerConfigurationManager cachedServerConfiguration];
@@ -427,7 +405,7 @@ typedef NS_ENUM(NSInteger, FBSDKLoginManagerState) {
       [self handleImplicitCancelOfLogIn];
     } else {
       if (!error) {
-        error = [NSError errorWithDomain:FBSDKLoginErrorDomain code:FBSDKLoginErrorUnknown userInfo:nil];
+        error = [NSError errorWithDomain:FBSDKLoginErrorDomain code:FBSDKLoginUnknownErrorCode userInfo:nil];
       }
       [self invokeHandler:nil error:error];
     }
@@ -508,7 +486,7 @@ typedef NS_ENUM(NSInteger, FBSDKLoginManagerState) {
       NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
       [FBSDKInternalUtility dictionary:userInfo setObject:error forKey:NSUnderlyingErrorKey];
       NSError *resultError = [NSError errorWithDomain:FBSDKLoginErrorDomain
-                                                 code:FBSDKLoginErrorUserMismatch
+                                                 code:FBSDKLoginUserMismatchErrorCode
                                              userInfo:userInfo];
        [self invokeHandler:nil error:resultError];
     }
@@ -596,7 +574,7 @@ typedef NS_ENUM(NSInteger, FBSDKLoginManagerState) {
       [[FBSDKApplicationDelegate sharedInstance] openURL:authURL sender:self handler:handlerWrapper];
     }
   } else {
-    error = error ?: [NSError fbErrorWithCode:FBSDKLoginErrorUnknown message:@"Failed to construct oauth browser url"];
+    error = error ?: [FBSDKError errorWithCode:FBSDKLoginUnknownErrorCode message:@"Failed to construct oauth browser url"];
     if (handler) {
       handler(NO, nil, error);
     }
@@ -746,12 +724,12 @@ typedef NS_ENUM(NSInteger, FBSDKLoginManagerState) {
      [self->_logger systemAuthDidShowDialog:didShowDialog isUnTOSedDevice:isUnTOSedDevice];
 
      if (accountStoreError && [FBSDKSystemAccountStoreAdapter sharedInstance].forceBlockingRenew) {
-       accountStoreError = [NSError fbErrorForSystemPasswordChange:accountStoreError];
+       accountStoreError = [FBSDKLoginError errorForSystemPasswordChange:accountStoreError];
      }
      if (!oauthToken && !accountStoreError) {
        // This means iOS did not give an error nor granted, even after a renew. In order to
        // surface this to users, stuff in our own error that can be inspected.
-       accountStoreError = [NSError fbErrorForFailedLoginWithCode:FBSDKLoginErrorSystemAccountAppDisabled];
+       accountStoreError = [FBSDKLoginError errorForFailedLoginWithCode:FBSDKLoginSystemAccountAppDisabledErrorCode];
      }
 
      FBSDKLoginManagerSystemAccountState *state = [[FBSDKLoginManagerSystemAccountState alloc] init];

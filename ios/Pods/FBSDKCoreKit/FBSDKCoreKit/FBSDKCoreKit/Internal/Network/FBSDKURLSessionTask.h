@@ -24,12 +24,9 @@ typedef void (^FBSDKURLSessionTaskHandler)(NSError *error,
 
 @interface FBSDKURLSessionTask : NSObject
 
-- (instancetype)init NS_UNAVAILABLE;
-+ (instancetype)new NS_UNAVAILABLE;
-
-- (instancetype)initWithRequest:(NSURLRequest *)request
-                    fromSession:(NSURLSession *)session
-              completionHandler:(FBSDKURLSessionTaskHandler)handler
+- (FBSDKURLSessionTask *)initWithRequest:(NSURLRequest *)request
+                             fromSession:(NSURLSession *)session
+                       completionHandler:(FBSDKURLSessionTaskHandler)handler
 NS_DESIGNATED_INITIALIZER;
 
 - (void)cancel;

@@ -20,19 +20,7 @@
 
 #import <FBSDKCoreKit/FBSDKCopying.h>
 #import <FBSDKCoreKit/FBSDKGraphRequestConnection.h>
-
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
-
-/**
-  Notification indicating that the `currentAccessToken` has changed.
-
- the userInfo dictionary of the notification will contain keys
- `FBSDKAccessTokenChangeOldKey` and
- `FBSDKAccessTokenChangeNewKey`.
- */
-FOUNDATION_EXPORT NSNotificationName const FBSDKAccessTokenDidChangeNotification;
-
-#else
+#import <FBSDKCoreKit/FBSDKMacros.h>
 
 /**
   Notification indicating that the `currentAccessToken` has changed.
@@ -41,9 +29,7 @@ FOUNDATION_EXPORT NSNotificationName const FBSDKAccessTokenDidChangeNotification
  `FBSDKAccessTokenChangeOldKey` and
  `FBSDKAccessTokenChangeNewKey`.
  */
-FOUNDATION_EXPORT NSString *const FBSDKAccessTokenDidChangeNotification;
-
-#endif
+FBSDK_EXTERN NSString *const FBSDKAccessTokenDidChangeNotification;
 
 /**
   A key in the notification's userInfo that will be set
@@ -58,27 +44,27 @@ FOUNDATION_EXPORT NSString *const FBSDKAccessTokenDidChangeNotification;
   of an access token, this key will also exist since the access token
   is moving from a null state (no user) to a non-null state (user).
  */
-FOUNDATION_EXPORT NSString *const FBSDKAccessTokenDidChangeUserID;
+FBSDK_EXTERN NSString *const FBSDKAccessTokenDidChangeUserID;
 
 /*
   key in notification's userInfo object for getting the old token.
 
  If there was no old token, the key will not be present.
  */
-FOUNDATION_EXPORT NSString *const FBSDKAccessTokenChangeOldKey;
+FBSDK_EXTERN NSString *const FBSDKAccessTokenChangeOldKey;
 
 /*
   key in notification's userInfo object for getting the new token.
 
  If there is no new token, the key will not be present.
  */
-FOUNDATION_EXPORT NSString *const FBSDKAccessTokenChangeNewKey;
+FBSDK_EXTERN NSString *const FBSDKAccessTokenChangeNewKey;
 
 /*
  A key in the notification's userInfo that will be set
  if and only if the token has expired.
  */
-FOUNDATION_EXPORT NSString *const FBSDKAccessTokenDidExpire;
+FBSDK_EXTERN NSString *const FBSDKAccessTokenDidExpire;
 
 
 /**

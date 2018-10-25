@@ -19,6 +19,7 @@
 #import <Foundation/Foundation.h>
 
 #import <FBSDKCoreKit/FBSDKCopying.h>
+#import <FBSDKCoreKit/FBSDKMacros.h>
 
 /**
  NS_ENUM(NSUInteger, FBSDKAppGroupPrivacy)
@@ -35,7 +36,7 @@ typedef NS_ENUM(NSUInteger, FBSDKAppGroupPrivacy)
 /**
   Converts an FBSDKAppGroupPrivacy to an NSString.
  */
-FOUNDATION_EXPORT NSString *NSStringFromFBSDKAppGroupPrivacy(FBSDKAppGroupPrivacy privacy);
+FBSDK_EXTERN NSString *NSStringFromFBSDKAppGroupPrivacy(FBSDKAppGroupPrivacy privacy);
 
 /**
   A model for creating an app group.

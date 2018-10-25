@@ -18,6 +18,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import <FBSDKCoreKit/FBSDKMacros.h>
+
 /**
  NS_ENUM(NSUInteger, FBSDKShareDialogMode)
   Modes for the FBSDKShareDialog.
@@ -60,4 +62,4 @@ typedef NS_ENUM(NSUInteger, FBSDKShareDialogMode)
 /**
   Converts an FBSDKShareDialogMode to an NSString.
  */
-FOUNDATION_EXPORT NSString *NSStringFromFBSDKShareDialogMode(FBSDKShareDialogMode dialogMode);
+FBSDK_EXTERN NSString *NSStringFromFBSDKShareDialogMode(FBSDKShareDialogMode dialogMode);

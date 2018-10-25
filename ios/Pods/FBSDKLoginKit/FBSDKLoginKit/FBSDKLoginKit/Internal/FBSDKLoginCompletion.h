@@ -70,8 +70,6 @@
  */
 @interface FBSDKLoginURLCompleter : NSObject <FBSDKLoginCompleting>
 
-- (instancetype)init NS_UNAVAILABLE;
-+ (instancetype)new NS_UNAVAILABLE;
 - (instancetype)initWithURLParameters:(NSDictionary *)parameters appID:(NSString *)appID NS_DESIGNATED_INITIALIZER;
 
 @end
@@ -84,8 +82,6 @@
  */
 @interface FBSDKLoginSystemAccountCompleter : NSObject <FBSDKLoginCompleting>
 
-- (instancetype)init NS_UNAVAILABLE;
-+ (instancetype)new NS_UNAVAILABLE;
 - (instancetype)initWithTokenString:(NSString *)tokenString appID:(NSString *)appID NS_DESIGNATED_INITIALIZER;
 
 @end
@@ -97,8 +93,6 @@
  */
 @interface FBSDKLoginSystemAccountErrorCompleter : NSObject <FBSDKLoginCompleting>
 
-- (instancetype)init NS_UNAVAILABLE;
-+ (instancetype)new NS_UNAVAILABLE;
 - (instancetype)initWithError:(NSError *)accountStoreError permissions:(NSSet *)permissions NS_DESIGNATED_INITIALIZER;
 
 @end

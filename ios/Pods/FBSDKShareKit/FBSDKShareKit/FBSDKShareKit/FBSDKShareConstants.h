@@ -18,68 +18,40 @@
 
 #import <Foundation/Foundation.h>
 
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
+#import <FBSDKCoreKit/FBSDKMacros.h>
 
 /**
- The error domain for all errors from FBSDKShareKit.
+  The error domain for all errors from FBSDKShareKit.
 
  Error codes from the SDK in the range 200-299 are reserved for this domain.
  */
-FOUNDATION_EXPORT NSErrorDomain const FBSDKShareErrorDomain;
-
-#else
+FBSDK_EXTERN NSString *const FBSDKShareErrorDomain;
 
 /**
- The error domain for all errors from FBSDKShareKit.
-
- Error codes from the SDK in the range 200-299 are reserved for this domain.
+ NS_ENUM(NSInteger, FBSDKShareErrorCode)
+  Error codes for FBSDKShareErrorDomain.
  */
-FOUNDATION_EXPORT NSString *const FBSDKShareErrorDomain;
-
-#endif
-
-#ifndef NS_ERROR_ENUM
-#define NS_ERROR_ENUM(_domain, _name) \
-enum _name: NSInteger _name; \
-enum __attribute__((ns_error_domain(_domain))) _name: NSInteger
-#endif
-
-/**
- FBSDKShareError
- Error codes for FBSDKShareErrorDomain.
- */
-typedef NS_ERROR_ENUM(FBSDKShareErrorDomain, FBSDKShareError)
+typedef NS_ENUM(NSInteger, FBSDKShareErrorCode)
 {
   /**
-   Reserved.
+    Reserved.
    */
-  FBSDKShareErrorReserved = 200,
+  FBSDKShareReservedErrorCode = 200,
 
   /**
-   The error code for errors from uploading open graph objects.
+    The error code for errors from uploading open graph objects.
    */
-  FBSDKShareErrorOpenGraph,
+  FBSDKShareOpenGraphErrorCode,
 
   /**
-   The error code for when a sharing dialog is not available.
+    The error code for when a sharing dialog is not available.
 
-   Use the canShare methods to check for this case before calling show.
+ Use the canShare methods to check for this case before calling show.
    */
-  FBSDKShareErrorDialogNotAvailable,
+  FBSDKShareDialogNotAvailableErrorCode,
 
   /**
    @The error code for unknown errors.
    */
-  FBSDKShareErrorUnknown,
+  FBSDKShareUnknownErrorCode,
 };
-
-/**
- Deprecated
- */
-typedef NS_ENUM(NSInteger, FBSDKShareErrorCode)
-{
-  FBSDKShareReservedErrorCode DEPRECATED_MSG_ATTRIBUTE("use FBSDKShareErrorReserved instead") = 200,
-  FBSDKShareOpenGraphErrorCode DEPRECATED_MSG_ATTRIBUTE("use FBSDKShareErrorOpenGraph instead"),
-  FBSDKShareDialogNotAvailableErrorCode DEPRECATED_MSG_ATTRIBUTE("use FBSDKShareErrorDialogNotAvailable instead"),
-  FBSDKShareUnknownErrorCode DEPRECATED_MSG_ATTRIBUTE("use FBSDKShareErrorUnknown instead"),
-} DEPRECATED_MSG_ATTRIBUTE("use FBSDKShareError instead");

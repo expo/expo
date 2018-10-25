@@ -20,6 +20,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import <FBSDKCoreKit/FBSDKMacros.h>
+
 #import "FBSDKApplicationDelegate+Internal.h"
 #import "FBSDKBase64.h"
 #import "FBSDKBridgeAPIRequest.h"
@@ -123,6 +125,12 @@ static const struct
   return self;
 }
 
+- (instancetype)init
+{
+  FBSDK_NOT_DESIGNATED_INITIALIZER(initWithAppScheme:);
+  return [self initWithAppScheme:nil];
+}
+
 #pragma mark - FBSDKBridgeAPIProtocol
 
 - (NSURL *)requestURLWithActionID:(NSString *)actionID
@@ -186,7 +194,7 @@ static const struct
   bridgeParameters = [FBSDKTypeUtility dictionaryValue:bridgeParameters];
   if (!bridgeParameters) {
     if (error && (errorRef != NULL)) {
-      *errorRef = [NSError fbInvalidArgumentErrorWithName:FBSDKBridgeAPIProtocolNativeV1InputKeys.bridgeArgs
+      *errorRef = [FBSDKError invalidArgumentErrorWithName:FBSDKBridgeAPIProtocolNativeV1InputKeys.bridgeArgs
                                                      value:bridgeParametersJSON
                                                    message:@"Invalid bridge_args."
                                            underlyingError:error];
@@ -211,7 +219,7 @@ static const struct
   NSDictionary *resultParameters = [FBSDKInternalUtility objectForJSONString:resultParametersJSON error:&error];
   if (!resultParameters) {
     if (errorRef != NULL) {
-      *errorRef = [NSError fbInvalidArgumentErrorWithName:FBSDKBridgeAPIProtocolNativeV1InputKeys.methodResults
+      *errorRef = [FBSDKError invalidArgumentErrorWithName:FBSDKBridgeAPIProtocolNativeV1InputKeys.methodResults
                                                      value:resultParametersJSON
                                                    message:@"Invalid method_results."
                                            underlyingError:error];
@@ -263,7 +271,7 @@ static const struct
   NSString *domain = [FBSDKTypeUtility stringValue:dictionary[FBSDKBridgeAPIProtocolNativeV1ErrorKeys.domain]] ?:
     FBSDKErrorDomain;
   NSInteger code = [FBSDKTypeUtility integerValue:dictionary[FBSDKBridgeAPIProtocolNativeV1ErrorKeys.code]] ?:
-    FBSDKErrorUnknown;
+    FBSDKUnknownErrorCode;
   NSDictionary *userInfo = [FBSDKTypeUtility dictionaryValue:dictionary[FBSDKBridgeAPIProtocolNativeV1ErrorKeys.userInfo]];
   return [NSError errorWithDomain:domain code:code userInfo:userInfo];
 }

@@ -20,6 +20,7 @@
 
 #import "FBSDKCoreKit+Internal.h"
 #import "FBSDKShareConstants.h"
+#import "FBSDKShareError.h"
 #import "FBSDKShareUtility.h"
 
 @interface FBSDKAppGroupAddDialog () <FBSDKWebDialogDelegate>
@@ -72,9 +73,8 @@
 {
   NSError *error;
   if (![self canShow]) {
-    error = [NSError fbErrorWithDomain:FBSDKShareErrorDomain
-                                  code:FBSDKShareErrorDialogNotAvailable
-                               message:@"App group create dialog is not available."];
+    error = [FBSDKShareError errorWithCode:FBSDKShareDialogNotAvailableErrorCode
+                                   message:@"App group create dialog is not available."];
     [_delegate appGroupAddDialog:self didFailWithError:error];
     return NO;
   }
@@ -102,25 +102,19 @@
   FBSDKAppGroupContent *content = self.content;
   if (!content) {
     if (errorRef != NULL) {
-      *errorRef = [NSError fbRequiredArgumentErrorWithDomain:FBSDKShareErrorDomain
-                                                        name:@"content"
-                                                     message:nil];
+      *errorRef = [FBSDKShareError requiredArgumentErrorWithName:@"content" message:nil];
     }
     return NO;
   }
   if (![content.name length]) {
     if (errorRef != NULL) {
-      *errorRef = [NSError fbRequiredArgumentErrorWithDomain:FBSDKShareErrorDomain
-                                                        name:@"name"
-                                                     message:nil];
+      *errorRef = [FBSDKShareError requiredArgumentErrorWithName:@"name" message:nil];
     }
     return NO;
   }
   if (![content.groupDescription length]) {
     if (errorRef != NULL) {
-      *errorRef = [NSError fbRequiredArgumentErrorWithDomain:FBSDKShareErrorDomain
-                                                        name:@"groupDescription"
-                                                     message:nil];
+      *errorRef = [FBSDKShareError requiredArgumentErrorWithName:@"groupDescription" message:nil];
     }
     return NO;
   }
@@ -137,8 +131,8 @@
   if (_webDialog != webDialog) {
     return;
   }
-  NSError *error = [NSError fbErrorWithCode:[FBSDKTypeUtility unsignedIntegerValue:results[@"error_code"]]
-                                    message:[FBSDKTypeUtility stringValue:results[@"error_message"]]];
+  NSError *error = [FBSDKShareError errorWithCode:[FBSDKTypeUtility unsignedIntegerValue:results[@"error_code"]]
+                                          message:[FBSDKTypeUtility stringValue:results[@"error_message"]]];
   [self _handleCompletionWithDialogResults:results error:error];
   [FBSDKInternalUtility unregisterTransientObject:self];
 }

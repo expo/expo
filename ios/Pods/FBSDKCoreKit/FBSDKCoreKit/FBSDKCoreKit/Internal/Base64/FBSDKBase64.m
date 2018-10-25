@@ -18,7 +18,12 @@
 
 #import "FBSDKBase64.h"
 
+#import "FBSDKMacros.h"
+
 @implementation FBSDKBase64
+{
+  BOOL _optionsEnabled;
+}
 
 static FBSDKBase64 *_decoder;
 static FBSDKBase64 *_encoder;
@@ -28,8 +33,11 @@ static FBSDKBase64 *_encoder;
 + (void)initialize
 {
   if (self == [FBSDKBase64 class]) {
-    _decoder = [[FBSDKBase64 alloc] init];
-    _encoder = [[FBSDKBase64 alloc] init];
+    BOOL optionsEnabled;
+    optionsEnabled = [NSData instancesRespondToSelector:@selector(initWithBase64EncodedString:options:)];
+    _decoder = [[FBSDKBase64 alloc] initWithOptionsEnabled:optionsEnabled];
+    optionsEnabled = [NSData instancesRespondToSelector:@selector(base64EncodedStringWithOptions:)];
+    _encoder = [[FBSDKBase64 alloc] initWithOptionsEnabled:optionsEnabled];
   }
 }
 
@@ -55,6 +63,20 @@ static FBSDKBase64 *_encoder;
 
 #pragma mark - Object Lifecycle
 
+- (instancetype)init
+{
+  FBSDK_NOT_DESIGNATED_INITIALIZER(initWithOptionsEnabled:);
+  return nil;
+}
+
+- (instancetype)initWithOptionsEnabled:(BOOL)optionsEnabled
+{
+  if ((self = [super init])) {
+    _optionsEnabled = optionsEnabled;
+  }
+  return self;
+}
+
 #pragma mark - Implementation Methods
 
 - (NSData *)decodeAsData:(NSString *)string
@@ -69,8 +91,14 @@ static FBSDKBase64 *_encoder;
     needPadding = 4 - needPadding;
     string = [string stringByPaddingToLength:string.length+needPadding withString:@"=" startingAtIndex:0];
   }
-
-  return [[NSData alloc] initWithBase64EncodedString:string options:NSDataBase64DecodingIgnoreUnknownCharacters];
+  if (_optionsEnabled) {
+    return [[NSData alloc] initWithBase64EncodedString:string options:NSDataBase64DecodingIgnoreUnknownCharacters];
+  } else {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    return [[NSData alloc] initWithBase64Encoding:string];
+#pragma clang diagnostic pop
+  }
 }
 
 - (NSString *)decodeAsString:(NSString *)string
@@ -87,8 +115,14 @@ static FBSDKBase64 *_encoder;
   if (!data) {
     return nil;
   }
-
-  return [data base64EncodedStringWithOptions:0];
+  if (_optionsEnabled) {
+    return [data base64EncodedStringWithOptions:0];
+  } else {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    return [data base64Encoding];
+#pragma clang diagnostic pop
+  }
 }
 
 - (NSString *)encodeString:(NSString *)string

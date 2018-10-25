@@ -20,6 +20,7 @@
 #import "FBSDKServerConfiguration+Internal.h"
 
 #import "FBSDKInternalUtility.h"
+#import "FBSDKMacros.h"
 
 #define FBSDK_SERVER_CONFIGURATION_ADVERTISING_ID_ENABLED_KEY @"advertisingIDEnabled"
 #define FBSDK_SERVER_CONFIGURATION_APP_ID_KEY @"appID"
@@ -77,6 +78,11 @@ const NSInteger FBSDKServerConfigurationVersion = 2;
 }
 
 #pragma mark - Object Lifecycle
+
+- (instancetype)init NS_UNAVAILABLE
+{
+  assert(0);
+}
 
 - (instancetype)initWithAppID:(NSString *)appID
                       appName:(NSString *)appName

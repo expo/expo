@@ -77,4 +77,10 @@
   return userID;
 }
 
+- (instancetype)init
+{
+  FBSDK_NO_DESIGNATED_INITIALIZER();
+  return nil;
+}
+
 @end

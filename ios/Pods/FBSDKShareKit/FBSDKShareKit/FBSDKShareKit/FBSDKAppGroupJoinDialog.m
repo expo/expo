@@ -20,6 +20,7 @@
 
 #import "FBSDKCoreKit+Internal.h"
 #import "FBSDKShareConstants.h"
+#import "FBSDKShareError.h"
 #import "FBSDKShareUtility.h"
 
 @interface FBSDKAppGroupJoinDialog () <FBSDKWebDialogDelegate>
@@ -72,9 +73,8 @@
 {
   NSError *error;
   if (![self canShow]) {
-    error = [NSError fbErrorWithDomain:FBSDKShareErrorDomain
-                                  code:FBSDKShareErrorDialogNotAvailable
-                               message:@"App group join dialog is not available."];
+    error = [FBSDKShareError errorWithCode:FBSDKShareDialogNotAvailableErrorCode
+                                   message:@"App group join dialog is not available."];
     [_delegate appGroupJoinDialog:self didFailWithError:error];
     return NO;
   }
@@ -96,9 +96,7 @@
 {
   if (![self.groupID length]) {
     if (errorRef != NULL) {
-      *errorRef = [NSError fbRequiredArgumentErrorWithDomain:FBSDKShareErrorDomain
-                                                        name:@"groupID"
-                                                     message:nil];
+      *errorRef = [FBSDKShareError requiredArgumentErrorWithName:@"groupID" message:nil];
     }
     return NO;
   }
@@ -115,8 +113,8 @@
   if (_webDialog != webDialog) {
     return;
   }
-  NSError *error = [NSError fbErrorWithCode:[FBSDKTypeUtility unsignedIntegerValue:results[@"error_code"]]
-                                    message:[FBSDKTypeUtility stringValue:results[@"error_message"]]];
+  NSError *error = [FBSDKShareError errorWithCode:[FBSDKTypeUtility unsignedIntegerValue:results[@"error_code"]]
+                                          message:[FBSDKTypeUtility stringValue:results[@"error_message"]]];
   [self _handleCompletionWithDialogResults:results error:error];
   [FBSDKInternalUtility unregisterTransientObject:self];
 }

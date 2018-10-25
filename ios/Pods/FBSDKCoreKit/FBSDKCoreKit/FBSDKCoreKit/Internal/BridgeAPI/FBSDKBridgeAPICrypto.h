@@ -22,9 +22,6 @@
 
 @interface FBSDKBridgeAPICrypto : NSObject
 
-- (instancetype)init NS_UNAVAILABLE;
-+ (instancetype)new NS_UNAVAILABLE;
-
 + (void)addCipherKeyToQueryParameters:(NSMutableDictionary *)queryParameters;
 + (NSDictionary *)decryptResponseForRequest:(FBSDKBridgeAPIRequest *)request
                             queryParameters:(NSDictionary *)queryParameters

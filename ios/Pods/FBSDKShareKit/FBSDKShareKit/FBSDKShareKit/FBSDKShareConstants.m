@@ -18,12 +18,7 @@
 
 #import "FBSDKShareConstants.h"
 
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
-
-NSErrorDomain const FBSDKShareErrorDomain = @"com.facebook.sdk.share";
-
-#else
-
 NSString *const FBSDKShareErrorDomain = @"com.facebook.sdk.share";
 
-#endif
+NSString *const FBSDKShareOpenGraphKeyErrorKey = @"key";
+NSString *const FBSDKShareOpenGraphValueErrorKey = @"value";

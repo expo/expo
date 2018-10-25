@@ -20,6 +20,7 @@
 
 #import "FBSDKInternalUtility.h"
 #import "FBSDKLogger.h"
+#import "FBSDKMacros.h"
 #import "FBSDKSettings.h"
 
 @interface FBSDKURLSessionTask ()
@@ -33,9 +34,9 @@
 
 @implementation FBSDKURLSessionTask
 
-- (instancetype)initWithRequest:(NSURLRequest *)request
-                    fromSession:(NSURLSession *)session
-              completionHandler:(FBSDKURLSessionTaskHandler)handler
+- (FBSDKURLSessionTask *)initWithRequest:(NSURLRequest *)request
+                             fromSession:(NSURLSession *)session
+                       completionHandler:(FBSDKURLSessionTaskHandler)handler
 {
   if ((self = [super init])) {
     _requestStartTime = [FBSDKInternalUtility currentTimeInMilliseconds];
@@ -52,6 +53,14 @@
                        }];
   }
   return self;
+}
+
+- (FBSDKURLSessionTask *)init
+{
+  FBSDK_NOT_DESIGNATED_INITIALIZER(initWithRequest:fromSession:completionHandler:);
+  return [self initWithRequest:nil
+                   fromSession:nil
+             completionHandler:NULL];
 }
 
 #pragma mark - Logging and Completion

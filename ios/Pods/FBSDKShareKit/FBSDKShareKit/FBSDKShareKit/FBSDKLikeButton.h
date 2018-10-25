@@ -32,7 +32,7 @@
  currentAccessToken has "publish_actions" permission and the object is an Open Graph object, then the like can happen
  seamlessly without the fast-app-switch.
  */
-DEPRECATED_MSG_ATTRIBUTE("This is no longer available")
+__attribute__ ((deprecated))
 @interface FBSDKLikeButton : FBSDKButton <FBSDKLiking>
 
 /**

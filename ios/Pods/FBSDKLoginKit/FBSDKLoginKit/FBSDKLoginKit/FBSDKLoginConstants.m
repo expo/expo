@@ -18,12 +18,4 @@
 
 #import "FBSDKLoginConstants.h"
 
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
-
-NSErrorDomain const FBSDKLoginErrorDomain = @"com.facebook.sdk.login";
-
-#else
-
 NSString *const FBSDKLoginErrorDomain = @"com.facebook.sdk.login";
-
-#endif

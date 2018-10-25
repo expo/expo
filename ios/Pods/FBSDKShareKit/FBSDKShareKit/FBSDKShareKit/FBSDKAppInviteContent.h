@@ -58,8 +58,7 @@ typedef NS_ENUM(NSUInteger, FBSDKAppInviteDestination)
 
 @warning Use `appInvitePreviewImageURL` instead.
  */
-@property (nonatomic, copy) NSURL *previewImageURL
-DEPRECATED_MSG_ATTRIBUTE("use appInvitePreviewImageURL instead");
+@property (nonatomic, copy) NSURL *previewImageURL __attribute__ ((deprecated("use appInvitePreviewImageURL instead")));
 
 /**
   Promotional code to be displayed while sending and receiving the invite.

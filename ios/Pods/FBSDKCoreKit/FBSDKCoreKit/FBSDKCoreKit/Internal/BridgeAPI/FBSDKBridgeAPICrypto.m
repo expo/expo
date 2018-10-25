@@ -23,6 +23,7 @@
 #import "FBSDKCrypto.h"
 #import "FBSDKError.h"
 #import "FBSDKInternalUtility.h"
+#import "FBSDKMacros.h"
 #import "FBSDKSettings.h"
 #import "FBSDKUtility.h"
 
@@ -57,7 +58,7 @@ static NSString *g_cipherKey = nil;
       NSDictionary *userInfo = @{
                                  FBSDKErrorArgumentValueKey: queryParameters,
                                  };
-      *errorRef = [NSError fbErrorWithCode:FBSDKErrorEncryption
+      *errorRef = [FBSDKError errorWithCode:FBSDKEncryptionErrorCode
                                    userInfo:userInfo
                                     message:@"Error decrypting incoming query parameters."
                             underlyingError:nil];
@@ -87,7 +88,7 @@ static NSString *g_cipherKey = nil;
                                      @"version": additionalSignedDataArray[4],
                                      },
                                  };
-      *errorRef = [NSError fbErrorWithCode:FBSDKErrorEncryption
+      *errorRef = [FBSDKError errorWithCode:FBSDKEncryptionErrorCode
                                    userInfo:userInfo
                                     message:@"Error decrypting incoming query parameters."
                             underlyingError:nil];
@@ -104,6 +105,14 @@ static NSString *g_cipherKey = nil;
 + (void)reset
 {
   [self _resetCipherKey];
+}
+
+#pragma mark - Object Lifecycle
+
+- (instancetype)init
+{
+  FBSDK_NO_DESIGNATED_INITIALIZER();
+  return nil;
 }
 
 #pragma mark - Helper Methods

@@ -76,23 +76,10 @@
 @property (nonatomic, copy, readonly) NSString *shareUUID;
 
 /**
- Adds content to an existing dictionary as key/value pairs and returns the
- updated dictionary
- @param existingParameters An immutable dictionary of existing values
- @param bridgeOptions The options for bridging
- @return A new dictionary with the modified contents
- */
-- (NSDictionary<NSString *, id> *)addParameters:(NSDictionary<NSString *, id> *)existingParameters
-                                  bridgeOptions:(FBSDKShareBridgeOptions)bridgeOptions;
-
-/**
  Adds content to a dictionary as key/value pairs.
- @param parameters A mutable dictionary that may be appended with key/value pairs of content.
- @param bridgeOptions The options for bridging
+ - Parameter parameters: A mutable dictionary that may be appended with key/value pairs of content.
  */
-
 - (void)addToParameters:(NSMutableDictionary<NSString *, id> *)parameters
-          bridgeOptions:(FBSDKShareBridgeOptions)bridgeOptions
-DEPRECATED_MSG_ATTRIBUTE("`addToParameters` is deprecated. Use `addParameters`");
+          bridgeOptions:(FBSDKShareBridgeOptions)bridgeOptions;
 
 @end

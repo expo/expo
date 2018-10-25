@@ -18,6 +18,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import <FBSDKCoreKit/FBSDKMacros.h>
+
 /**
  NS_ENUM (NSUInteger, FBSDKLikeObjectType)
   Specifies the type of object referenced by the objectID for likes.
@@ -35,4 +37,4 @@ typedef NS_ENUM(NSUInteger, FBSDKLikeObjectType)
 /**
   Converts an FBLikeControlObjectType to an NSString.
  */
-FOUNDATION_EXPORT NSString *NSStringFromFBSDKLikeObjectType(FBSDKLikeObjectType objectType);
+FBSDK_EXTERN NSString *NSStringFromFBSDKLikeObjectType(FBSDKLikeObjectType objectType);

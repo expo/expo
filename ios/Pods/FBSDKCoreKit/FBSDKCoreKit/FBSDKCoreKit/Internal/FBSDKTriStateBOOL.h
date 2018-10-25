@@ -18,6 +18,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import <FBSDKCoreKit/FBSDKMacros.h>
+
 typedef NS_ENUM(NSInteger, FBSDKTriStateBOOL)
 {
   FBSDKTriStateBOOLValueUnknown = -1,
@@ -25,6 +27,6 @@ typedef NS_ENUM(NSInteger, FBSDKTriStateBOOL)
   FBSDKTriStateBOOLValueYES = 1,
 };
 
-FOUNDATION_EXPORT FBSDKTriStateBOOL FBSDKTriStateBOOLFromBOOL(BOOL value);
-FOUNDATION_EXPORT FBSDKTriStateBOOL FBSDKTriStateBOOLFromNSNumber(NSNumber *value);
-FOUNDATION_EXPORT BOOL BOOLFromFBSDKTriStateBOOL(FBSDKTriStateBOOL value, BOOL defaultValue);
+FBSDK_EXTERN FBSDKTriStateBOOL FBSDKTriStateBOOLFromBOOL(BOOL value);
+FBSDK_EXTERN FBSDKTriStateBOOL FBSDKTriStateBOOLFromNSNumber(NSNumber *value);
+FBSDK_EXTERN BOOL BOOLFromFBSDKTriStateBOOL(FBSDKTriStateBOOL value, BOOL defaultValue);

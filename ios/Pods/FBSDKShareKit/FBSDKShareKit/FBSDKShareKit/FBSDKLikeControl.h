@@ -18,6 +18,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import <FBSDKCoreKit/FBSDKMacros.h>
+
 #import <FBSDKShareKit/FBSDKLikeObjectType.h>
 #import <FBSDKShareKit/FBSDKLiking.h>
 
@@ -39,7 +41,7 @@ typedef NS_ENUM(NSUInteger, FBSDKLikeControlAuxiliaryPosition)
 /**
   Converts an FBSDKLikeControlAuxiliaryPosition to an NSString.
  */
-FOUNDATION_EXPORT NSString *NSStringFromFBSDKLikeControlAuxiliaryPosition(FBSDKLikeControlAuxiliaryPosition auxiliaryPosition);
+FBSDK_EXTERN NSString *NSStringFromFBSDKLikeControlAuxiliaryPosition(FBSDKLikeControlAuxiliaryPosition auxiliaryPosition);
 
 /**
  NS_ENUM(NSUInteger, FBSDKLikeControlHorizontalAlignment)
@@ -60,7 +62,7 @@ typedef NS_ENUM(NSUInteger, FBSDKLikeControlHorizontalAlignment)
 /**
   Converts an FBSDKLikeControlHorizontalAlignment to an NSString.
  */
-FOUNDATION_EXPORT NSString *NSStringFromFBSDKLikeControlHorizontalAlignment(FBSDKLikeControlHorizontalAlignment horizontalAlignment);
+FBSDK_EXTERN NSString *NSStringFromFBSDKLikeControlHorizontalAlignment(FBSDKLikeControlHorizontalAlignment horizontalAlignment);
 
 /**
  NS_ENUM (NSUInteger, FBSDKLikeControlStyle)
@@ -78,7 +80,7 @@ typedef NS_ENUM(NSUInteger, FBSDKLikeControlStyle)
 /**
   Converts an FBSDKLikeControlStyle to an NSString.
  */
-FOUNDATION_EXPORT NSString *NSStringFromFBSDKLikeControlStyle(FBSDKLikeControlStyle style);
+FBSDK_EXTERN NSString *NSStringFromFBSDKLikeControlStyle(FBSDKLikeControlStyle style);
 
 /**
   Warning: This class is deprecated.
@@ -89,7 +91,7 @@ FOUNDATION_EXPORT NSString *NSStringFromFBSDKLikeControlStyle(FBSDKLikeControlSt
  fast-app-switch that allows the user to like the object.  Upon return to the calling app, the view will update
  with the new state and send actions for the UIControlEventValueChanged event.
  */
-DEPRECATED_MSG_ATTRIBUTE("This is no longer available")
+__attribute__ ((deprecated))
 @interface FBSDKLikeControl : UIControl <FBSDKLiking>
 
 /**

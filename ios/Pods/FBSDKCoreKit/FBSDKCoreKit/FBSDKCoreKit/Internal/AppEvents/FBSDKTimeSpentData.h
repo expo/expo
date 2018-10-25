@@ -18,7 +18,9 @@
 
 #import <Foundation/Foundation.h>
 
-FOUNDATION_EXPORT NSString *const FBSDKTimeSpentFilename;
+#import <FBSDKCoreKit/FBSDKMacros.h>
+
+FBSDK_EXTERN NSString *const FBSDKTimeSpentFilename;
 
 // Class to encapsulate persisting of time spent data collected by [FBSDKAppEvents activateApp].  The activate app App Event is
 // logged when restore: is called with sufficient time since the last deactivation.

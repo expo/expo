@@ -22,9 +22,6 @@
 
 @interface FBSDKDialogConfiguration : NSObject <FBSDKCopying, NSSecureCoding>
 
-- (instancetype)init NS_UNAVAILABLE;
-+ (instancetype)new NS_UNAVAILABLE;
-
 - (instancetype)initWithName:(NSString *)name
                          URL:(NSURL *)URL
                  appVersions:(NSArray *)appVersions

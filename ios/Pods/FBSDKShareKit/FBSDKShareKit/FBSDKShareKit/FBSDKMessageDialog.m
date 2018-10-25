@@ -22,6 +22,7 @@
 #import "FBSDKShareCameraEffectContent.h"
 #import "FBSDKShareConstants.h"
 #import "FBSDKShareDefines.h"
+#import "FBSDKShareError.h"
 #import "FBSDKShareMessengerGenericTemplateContent.h"
 #import "FBSDKShareMessengerMediaTemplateContent.h"
 #import "FBSDKShareMessengerOpenGraphMusicTemplateContent.h"
@@ -69,9 +70,8 @@
 {
   NSError *error;
   if (![self canShow]) {
-    error = [NSError fbErrorWithDomain:FBSDKShareErrorDomain
-                                  code:FBSDKShareErrorDialogNotAvailable
-                               message:@"Message dialog is not available."];
+    error = [FBSDKShareError errorWithCode:FBSDKShareDialogNotAvailableErrorCode
+                                   message:@"Message dialog is not available."];
     [self _invokeDelegateDidFailWithError:error];
     return NO;
   }
@@ -121,9 +121,8 @@
       if (errorRef != NULL) {
         NSString *message = [NSString stringWithFormat:@"Message dialog does not support %@.",
                                                        NSStringFromClass(self.shareContent.class)];
-        *errorRef = [NSError fbRequiredArgumentErrorWithDomain:FBSDKShareErrorDomain
-                                                          name:@"shareContent"
-                                                       message:message];
+        *errorRef = [FBSDKShareError requiredArgumentErrorWithName:@"shareContent"
+                                                           message:message];
       }
       return NO;
     }

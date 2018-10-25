@@ -24,6 +24,6 @@
 
 @interface FBSDKLikeButton () <FBSDKButtonImpressionTracking>
 
-@property (nonatomic, strong) FBSDKLikeActionController *likeActionController;
+@property (nonatomic, strong, readwrite) FBSDKLikeActionController *likeActionController;
 
 @end

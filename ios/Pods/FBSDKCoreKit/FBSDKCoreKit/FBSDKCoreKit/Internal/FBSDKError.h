@@ -18,76 +18,39 @@
 
 #import <Foundation/Foundation.h>
 
-@interface NSError (FBSDKError)
+@interface FBSDKError : NSObject
 
-+ (NSError *)fbErrorWithCode:(NSInteger)code message:(NSString *)message;
-+ (NSError *)fbErrorWithDomain:(NSErrorDomain)domain
-                          code:(NSInteger)code
-                       message:(NSString *)message;
++ (NSString *)errorDomain;
 
-+ (NSError *)fbErrorWithCode:(NSInteger)code
-                     message:(NSString *)message
-             underlyingError:(NSError *)underlyingError;
++ (BOOL)errorIsNetworkError:(NSError *)error;
 
-+ (NSError *)fbErrorWithDomain:(NSErrorDomain)domain
-                          code:(NSInteger)code
-                       message:(NSString *)message
-               underlyingError:(NSError *)underlyingError;
++ (NSError *)errorWithCode:(NSInteger)code message:(NSString *)message;
++ (NSError *)errorWithCode:(NSInteger)code message:(NSString *)message underlyingError:(NSError *)underlyingError;
++ (NSError *)errorWithCode:(NSInteger)code
+                  userInfo:(NSDictionary *)userInfo
+                   message:(NSString *)message
+           underlyingError:(NSError *)underlyingError;
 
-+ (NSError *)fbErrorWithCode:(NSInteger)code
-                    userInfo:(NSDictionary<NSErrorUserInfoKey, id> *)userInfo
-                     message:(NSString *)message
-             underlyingError:(NSError *)underlyingError;
-
-+ (NSError *)fbErrorWithDomain:(NSErrorDomain)domain
-                          code:(NSInteger)code
-                      userInfo:(NSDictionary<NSErrorUserInfoKey, id> *)userInfo
-                       message:(NSString *)message
-               underlyingError:(NSError *)underlyingError;
-
-+ (NSError *)fbInvalidArgumentErrorWithName:(NSString *)name
-                                      value:(id)value
++ (NSError *)invalidArgumentErrorWithName:(NSString *)name value:(id)value message:(NSString *)message;
++ (NSError *)invalidArgumentErrorWithName:(NSString *)name
+                                    value:(id)value
+                                  message:(NSString *)message
+                          underlyingError:(NSError *)underlyingError;
++ (NSError *)invalidCollectionErrorWithName:(NSString *)name
+                                 collection:(id<NSFastEnumeration>)collection
+                                       item:(id)item
                                     message:(NSString *)message;
-
-+ (NSError *)fbInvalidArgumentErrorWithDomain:(NSErrorDomain)domain
-                                         name:(NSString *)name
-                                        value:(id)value
-                                      message:(NSString *)message;
-
-+ (NSError *)fbInvalidArgumentErrorWithName:(NSString *)name
-                                      value:(id)value
++ (NSError *)invalidCollectionErrorWithName:(NSString *)name
+                                 collection:(id<NSFastEnumeration>)collection
+                                       item:(id)item
                                     message:(NSString *)message
                             underlyingError:(NSError *)underlyingError;
 
-+ (NSError *)fbInvalidArgumentErrorWithDomain:(NSErrorDomain)domain
-                                         name:(NSString *)name
-                                        value:(id)value
-                                      message:(NSString *)message
-                              underlyingError:(NSError *)underlyingError;
++ (NSError *)requiredArgumentErrorWithName:(NSString *)name message:(NSString *)message;
++ (NSError *)requiredArgumentErrorWithName:(NSString *)name
+                                   message:(NSString *)message
+                           underlyingError:(NSError *)underlyingError;
 
-+ (NSError *)fbInvalidCollectionErrorWithName:(NSString *)name
-                                   collection:(id<NSFastEnumeration>)collection
-                                         item:(id)item
-                                      message:(NSString *)message;
-
-+ (NSError *)fbInvalidCollectionErrorWithName:(NSString *)name
-                                   collection:(id<NSFastEnumeration>)collection
-                                         item:(id)item
-                                      message:(NSString *)message
-                              underlyingError:(NSError *)underlyingError;
-
-+ (NSError *)fbRequiredArgumentErrorWithName:(NSString *)name message:(NSString *)message;
-+ (NSError *)fbRequiredArgumentErrorWithDomain:(NSErrorDomain)domain
-                                          name:(NSString *)name
-                                       message:(NSString *)message;
-
-+ (NSError *)fbRequiredArgumentErrorWithName:(NSString *)name
-                                     message:(NSString *)message
-                             underlyingError:(NSError *)underlyingError;
-
-+ (NSError *)fbUnknownErrorWithMessage:(NSString *)message;
-
-@property (nonatomic, assign, readonly, getter=isNetworkError) BOOL networkError
-NS_SWIFT_NAME(isNetworkError);
++ (NSError *)unknownErrorWithMessage:(NSString *)message;
 
 @end

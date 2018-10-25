@@ -18,46 +18,45 @@
 
 #import <UIKit/UIKit.h>
 
+#import <FBSDKCoreKit/FBSDKMacros.h>
+
 /*
  * Constants defining logging behavior.  Use with <[FBSDKSettings setLoggingBehavior]>.
  */
 
 /** Include access token in logging. */
-FOUNDATION_EXPORT NSString *const FBSDKLoggingBehaviorAccessTokens;
+FBSDK_EXTERN NSString *const FBSDKLoggingBehaviorAccessTokens;
 
 /** Log performance characteristics */
-FOUNDATION_EXPORT NSString *const FBSDKLoggingBehaviorPerformanceCharacteristics;
+FBSDK_EXTERN NSString *const FBSDKLoggingBehaviorPerformanceCharacteristics;
 
 /** Log FBSDKAppEvents interactions */
-FOUNDATION_EXPORT NSString *const FBSDKLoggingBehaviorAppEvents;
+FBSDK_EXTERN NSString *const FBSDKLoggingBehaviorAppEvents;
 
 /** Log Informational occurrences */
-FOUNDATION_EXPORT NSString *const FBSDKLoggingBehaviorInformational;
+FBSDK_EXTERN NSString *const FBSDKLoggingBehaviorInformational;
 
 /** Log cache errors. */
-FOUNDATION_EXPORT NSString *const FBSDKLoggingBehaviorCacheErrors;
+FBSDK_EXTERN NSString *const FBSDKLoggingBehaviorCacheErrors;
 
 /** Log errors from SDK UI controls */
-FOUNDATION_EXPORT NSString *const FBSDKLoggingBehaviorUIControlErrors;
+FBSDK_EXTERN NSString *const FBSDKLoggingBehaviorUIControlErrors;
 
 /** Log debug warnings from API response, i.e. when friends fields requested, but user_friends permission isn't granted. */
-FOUNDATION_EXPORT NSString *const FBSDKLoggingBehaviorGraphAPIDebugWarning;
+FBSDK_EXTERN NSString *const FBSDKLoggingBehaviorGraphAPIDebugWarning;
 
 /** Log warnings from API response, i.e. when requested feature will be deprecated in next version of API.
  Info is the lowest level of severity, using it will result in logging all previously mentioned levels.
  */
-FOUNDATION_EXPORT NSString *const FBSDKLoggingBehaviorGraphAPIDebugInfo;
+FBSDK_EXTERN NSString *const FBSDKLoggingBehaviorGraphAPIDebugInfo;
 
 /** Log errors from SDK network requests */
-FOUNDATION_EXPORT NSString *const FBSDKLoggingBehaviorNetworkRequests;
+FBSDK_EXTERN NSString *const FBSDKLoggingBehaviorNetworkRequests;
 
 /** Log errors likely to be preventable by the developer. This is in the default set of enabled logging behaviors. */
-FOUNDATION_EXPORT NSString *const FBSDKLoggingBehaviorDeveloperErrors;
+FBSDK_EXTERN NSString *const FBSDKLoggingBehaviorDeveloperErrors;
 
 @interface FBSDKSettings : NSObject
-
-- (instancetype)init NS_UNAVAILABLE;
-+ (instancetype)new NS_UNAVAILABLE;
 
 /**
   Get the Facebook App ID used by the SDK.

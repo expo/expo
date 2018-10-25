@@ -29,9 +29,6 @@
 @property (nonatomic, copy) FBSDKGraphRequestHandler completionHandler;
 @property (nonatomic, copy) NSDictionary *batchParameters;
 
-- (instancetype)init NS_UNAVAILABLE;
-+ (instancetype)new NS_UNAVAILABLE;
-
 - (instancetype)initWithRequest:(FBSDKGraphRequest *)request
               completionHandler:(FBSDKGraphRequestHandler)handler
                 batchParameters:(NSDictionary *)batchParameters

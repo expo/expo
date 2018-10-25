@@ -66,14 +66,7 @@ static NSString *const kFBSDKShareCameraEffectContentUUIDKey = @"uuid";
 - (void)addToParameters:(NSMutableDictionary<NSString *, id> *)parameters
           bridgeOptions:(FBSDKShareBridgeOptions)bridgeOptions
 {
-  [parameters addEntriesFromDictionary:[self addParameters:parameters bridgeOptions:bridgeOptions]];
-}
-
-- (NSDictionary<NSString *, id> *)addParameters:(NSDictionary<NSString *, id> *)existingParameters
-                                  bridgeOptions:(FBSDKShareBridgeOptions)bridgeOptions
-{
-  NSMutableDictionary<NSString *, id> *updatedParameters = [NSMutableDictionary dictionaryWithDictionary:existingParameters];
-  [FBSDKInternalUtility dictionary:updatedParameters
+  [FBSDKInternalUtility dictionary:parameters
                          setObject:_effectID
                             forKey:@"effect_id"];
 
@@ -83,7 +76,7 @@ static NSString *const kFBSDKShareCameraEffectContentUUIDKey = @"uuid";
                                                               error:NULL
                                                invalidObjectHandler:NULL];
   }
-  [FBSDKInternalUtility dictionary:updatedParameters
+  [FBSDKInternalUtility dictionary:parameters
                          setObject:effectArgumentsJSON
                             forKey:@"effect_arguments"];
 
@@ -102,11 +95,9 @@ static NSString *const kFBSDKShareCameraEffectContentUUIDKey = @"uuid";
     }];
     effectTexturesData = [NSKeyedArchiver archivedDataWithRootObject:texturesDataDict];
   }
-  [FBSDKInternalUtility dictionary:updatedParameters
+  [FBSDKInternalUtility dictionary:parameters
                          setObject:effectTexturesData
                             forKey:@"effect_textures"];
-
-  return updatedParameters;
 }
 
 #pragma mark - FBSDKSharingScheme
@@ -130,9 +121,9 @@ static NSString *const kFBSDKShareCameraEffectContentUUIDKey = @"uuid";
     NSCharacterSet* nonDigitCharacters = [[NSCharacterSet decimalDigitCharacterSet] invertedSet];
     if ([_effectID rangeOfCharacterFromSet:nonDigitCharacters].location != NSNotFound) {
       if (errorRef != NULL) {
-        *errorRef = [NSError fbInvalidArgumentErrorWithName:@"effectID"
-                                                      value:_effectID
-                                                    message:@"Invalid value for effectID, effectID can contain only numerical characters."];
+        *errorRef = [FBSDKError invalidArgumentErrorWithName:@"effectID"
+                                                       value:_effectID
+                                                     message:@"Invalid value for effectID, effectID can contain only numerical characters."];
       }
       return NO;
     }

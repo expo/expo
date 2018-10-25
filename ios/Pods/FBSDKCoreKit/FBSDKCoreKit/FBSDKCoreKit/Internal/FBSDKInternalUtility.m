@@ -24,7 +24,7 @@
 
 #import "FBSDKCoreKit+Internal.h"
 #import "FBSDKError.h"
-#import "FBSDKSettings+Internal.h"
+#import "FBSDKMacros.h"
 #import "FBSDKSettings.h"
 #import "FBSDKUtility.h"
 
@@ -247,7 +247,7 @@ setJSONStringForObject:(id)object
   static dispatch_once_t getVersionOnce;
   dispatch_once(&getVersionOnce, ^{
     int32_t linkTimeVersion = NSVersionOfLinkTimeLibrary("UIKit");
-    linkTimeMajorVersion = [self getMajorVersionFromFullLibraryVersion:linkTimeVersion];
+    linkTimeMajorVersion = ((MAX(linkTimeVersion, 0) & FBSDKInternalUtilityMajorVersionMask) >> FBSDKInternalUtilityMajorVersionShift);
   });
   return (version <= linkTimeMajorVersion);
 }
@@ -258,22 +258,9 @@ setJSONStringForObject:(id)object
   static dispatch_once_t getVersionOnce;
   dispatch_once(&getVersionOnce, ^{
     int32_t runTimeVersion = NSVersionOfRunTimeLibrary("UIKit");
-    runTimeMajorVersion = [self getMajorVersionFromFullLibraryVersion:runTimeVersion];
+    runTimeMajorVersion = ((MAX(runTimeVersion, 0) & FBSDKInternalUtilityMajorVersionMask) >> FBSDKInternalUtilityMajorVersionShift);
   });
   return (version <= runTimeMajorVersion);
-}
-
-+ (int32_t)getMajorVersionFromFullLibraryVersion:(int32_t)version
-{
-  // Negative values returned by NSVersionOfRunTimeLibrary/NSVersionOfLinkTimeLibrary
-  // are still valid version numbers, as long as it's not -1.
-  // After bitshift by 16, the negatives become valid positive major version number.
-  // We ran into this first time with iOS 12.
-  if (version != -1) {
-    return ((version & FBSDKInternalUtilityMajorVersionMask) >> FBSDKInternalUtilityMajorVersionShift);
-  } else {
-    return 0;
-  }
 }
 
 + (NSString *)JSONStringForObject:(id)object
@@ -284,7 +271,7 @@ setJSONStringForObject:(id)object
     object = [self _convertObjectToJSONObject:object invalidObjectHandler:invalidObjectHandler stop:NULL];
     if (![NSJSONSerialization isValidJSONObject:object]) {
       if (errorRef != NULL) {
-        *errorRef = [NSError fbInvalidArgumentErrorWithName:@"object"
+        *errorRef = [FBSDKError invalidArgumentErrorWithName:@"object"
                                                        value:object
                                                      message:@"Invalid object for JSON serialization."];
       }
@@ -418,7 +405,7 @@ setJSONStringForObject:(id)object
                                                                                   error:&queryStringError]];
     if (!queryString) {
       if (errorRef != NULL) {
-        *errorRef = [NSError fbInvalidArgumentErrorWithName:@"queryParameters"
+        *errorRef = [FBSDKError invalidArgumentErrorWithName:@"queryParameters"
                                                        value:queryParameters
                                                      message:nil
                                              underlyingError:queryStringError];
@@ -437,7 +424,7 @@ setJSONStringForObject:(id)object
     if (URL) {
       *errorRef = nil;
     } else {
-      *errorRef = [NSError fbUnknownErrorWithMessage:@"Unknown error building URL."];
+      *errorRef = [FBSDKError unknownErrorWithMessage:@"Unknown error building URL."];
     }
   }
   return URL;
@@ -525,6 +512,14 @@ static NSMapTable *_transientObjects;
     [FBSDKInternalUtility checkRegisteredCanOpenURLScheme:FBSDK_CANOPENURL_MSQRD_PLAYER];
   });
   return [self _canOpenURLScheme:FBSDK_CANOPENURL_MSQRD_PLAYER];
+}
+
+#pragma mark - Object Lifecycle
+
+- (instancetype)init
+{
+  FBSDK_NO_DESIGNATED_INITIALIZER();
+  return nil;
 }
 
 #pragma mark - Helper Methods
@@ -775,15 +770,6 @@ static NSMapTable *_transientObjects;
   }
 
   return clazz;
-}
-
-+ (BOOL)isUnity
-{
-  NSString *userAgentSuffix = [FBSDKSettings userAgentSuffix];
-  if (userAgentSuffix != nil && [userAgentSuffix rangeOfString:@"Unity"].location != NSNotFound) {
-    return YES;
-  }
-  return NO;
 }
 
 @end

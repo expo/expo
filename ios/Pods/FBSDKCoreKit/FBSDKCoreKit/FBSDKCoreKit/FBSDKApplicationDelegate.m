@@ -29,7 +29,6 @@
 #import "FBSDKConstants.h"
 #import "FBSDKDynamicFrameworkLoader.h"
 #import "FBSDKError.h"
-#import "FBSDKGateKeeperManager.h"
 #import "FBSDKInternalUtility.h"
 #import "FBSDKLogger.h"
 #import "FBSDKServerConfiguration.h"
@@ -46,15 +45,7 @@
 #import "FBSDKProfile+Internal.h"
 #endif
 
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
-
-NSNotificationName const FBSDKApplicationDidBecomeActiveNotification = @"com.facebook.sdk.FBSDKApplicationDidBecomeActiveNotification";
-
-#else
-
 NSString *const FBSDKApplicationDidBecomeActiveNotification = @"com.facebook.sdk.FBSDKApplicationDidBecomeActiveNotification";
-
-#endif
 
 static NSString *const FBSDKAppLinkInboundEvent = @"fb_al_inbound";
 
@@ -104,6 +95,7 @@ static NSString *const FBSDKAppLinkInboundEvent = @"fb_al_inbound";
   [FBSDKTimeSpentData registerAutoResetSourceApplication];
 
   [FBSDKInternalUtility validateFacebookReservedURLSchemes];
+
   // Remove the observer
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
@@ -149,14 +141,10 @@ static NSString *const FBSDKAppLinkInboundEvent = @"fb_al_inbound";
             openURL:(NSURL *)url
             options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
 {
-  if (@available(iOS 9.0, *)) {
-    return [self application:application
-                     openURL:url
-           sourceApplication:options[UIApplicationOpenURLOptionsSourceApplicationKey]
-                  annotation:options[UIApplicationOpenURLOptionsAnnotationKey]];
-  }
-
-  return NO;
+  return [self application:application
+                   openURL:url
+         sourceApplication:options[UIApplicationOpenURLOptionsSourceApplicationKey]
+                annotation:options[UIApplicationOpenURLOptionsAnnotationKey]];
 }
 #endif
 
@@ -224,8 +212,6 @@ static NSString *const FBSDKAppLinkInboundEvent = @"fb_al_inbound";
   [FBSDKAccessToken setCurrentAccessToken:cachedToken];
   // fetch app settings
   [FBSDKServerConfigurationManager loadServerConfigurationWithCompletionBlock:NULL];
-  // fetch gate keepers
-  [FBSDKGateKeeperManager loadGateKeepers];
 
   if ([[FBSDKSettings autoLogAppEventsEnabled] boolValue]) {
     [self _logSDKInitialize];
@@ -302,11 +288,9 @@ static NSString *const FBSDKAppLinkInboundEvent = @"fb_al_inbound";
     // Dispatch openURL calls to prevent hangs if we're inside the current app delegate's openURL flow already
     NSOperatingSystemVersion iOS10Version = { .majorVersion = 10, .minorVersion = 0, .patchVersion = 0 };
     if ([FBSDKInternalUtility isOSRunTimeVersionAtLeast:iOS10Version]) {
-      if (@available(iOS 10.0, *)) {
-        [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:^(BOOL success) {
-          handler(success, nil);
-        }];
-      }
+      [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:^(BOOL success) {
+        handler(success, nil);
+      }];
     } else {
       BOOL opened = [[UIApplication sharedApplication] openURL:url];
 
@@ -348,10 +332,10 @@ static NSString *const FBSDKAppLinkInboundEvent = @"fb_al_inbound";
       self->_pendingRequestCompletionBlock = nil;
       NSError *openedURLError;
       if ([request.scheme hasPrefix:@"http"]) {
-        openedURLError = [NSError fbErrorWithCode:FBSDKErrorBrowserUnavailable
+        openedURLError = [FBSDKError errorWithCode:FBSDKBrowserUnavailableErrorCode
                                            message:@"the app switch failed because the browser is unavailable"];
       } else {
-        openedURLError = [NSError fbErrorWithCode:FBSDKErrorAppVersionUnsupported
+        openedURLError = [FBSDKError errorWithCode:FBSDKAppVersionUnsupportedErrorCode
                                            message:@"the app switch failed because the destination app is out of date"];
       }
       FBSDKBridgeAPIResponse *response = [FBSDKBridgeAPIResponse bridgeAPIResponseWithRequest:request

@@ -18,12 +18,14 @@
 
 #import <UIKit/UIKit.h>
 
+#import <FBSDKCoreKit/FBSDKMacros.h>
+
 #import "../FBSDKMath.h"
 
 /**
   Insets a CGSize with the insets in a UIEdgeInsets.
  */
-static inline CGSize FBSDKEdgeInsetsInsetSize(CGSize size, UIEdgeInsets insets)
+FBSDK_STATIC_INLINE CGSize FBSDKEdgeInsetsInsetSize(CGSize size, UIEdgeInsets insets)
 {
   CGRect rect = CGRectZero;
   rect.size = size;
@@ -33,7 +35,7 @@ static inline CGSize FBSDKEdgeInsetsInsetSize(CGSize size, UIEdgeInsets insets)
 /**
   Outsets a CGSize with the insets in a UIEdgeInsets.
  */
-static inline CGSize FBSDKEdgeInsetsOutsetSize(CGSize size, UIEdgeInsets insets)
+FBSDK_STATIC_INLINE CGSize FBSDKEdgeInsetsOutsetSize(CGSize size, UIEdgeInsets insets)
 {
   return CGSizeMake(insets.left + size.width + insets.right,
                     insets.top + size.height + insets.bottom);
@@ -47,17 +49,17 @@ static inline CGSize FBSDKEdgeInsetsOutsetSize(CGSize size, UIEdgeInsets insets)
  you may get back values of *.5 to correspond to pixels.
  */
 typedef float (*FBSDKLimitFunctionType)(float);
-static inline CGFloat FBSDKPointsForScreenPixels(FBSDKLimitFunctionType limitFunction,
-                                                 CGFloat screenScale,
-                                                 CGFloat pointValue)
+FBSDK_STATIC_INLINE CGFloat FBSDKPointsForScreenPixels(FBSDKLimitFunctionType limitFunction,
+                                                       CGFloat screenScale,
+                                                       CGFloat pointValue)
 {
   return limitFunction(pointValue * screenScale) / screenScale;
 }
 
-static inline CGSize FBSDKTextSize(NSString *text,
-                                   UIFont *font,
-                                   CGSize constrainedSize,
-                                   NSLineBreakMode lineBreakMode)
+FBSDK_STATIC_INLINE CGSize FBSDKTextSize(NSString *text,
+                                         UIFont *font,
+                                         CGSize constrainedSize,
+                                         NSLineBreakMode lineBreakMode)
 {
   if (!text) {
     return CGSizeZero;
