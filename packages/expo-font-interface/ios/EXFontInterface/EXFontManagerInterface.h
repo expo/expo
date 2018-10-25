@@ -3,6 +3,6 @@
 
 @protocol EXFontManagerInterface
 
-- (void)addFontProccessor:(id<EXFontProcessorInterface>)processor;
+- (void)addFontProcessor:(id<EXFontProcessorInterface>)processor;
 
 @end

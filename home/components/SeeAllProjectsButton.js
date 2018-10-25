@@ -35,11 +35,16 @@ export default class SeeAllProjectsButton extends React.Component {
         style={styles.container}>
         <Text style={styles.buttonText}>{this.props.label}</Text>
         <View style={styles.appIconContainer}>
-          {take(apps, maxIconCount).map((app, i) => (
-            <FadeIn key={i} placeholderColor="#eee">
-              <Image source={{ uri: app.iconUrl }} style={styles.appIcon} />
-            </FadeIn>
-          ))}
+          {take(apps, maxIconCount).map(
+            (app, i) =>
+              app.iconUrl ? (
+                <FadeIn key={i} placeholderColor="#eee">
+                  <Image source={{ uri: app.iconUrl }} style={styles.appIcon} />
+                </FadeIn>
+              ) : (
+                <View key={i} style={styles.appIconPlaceholder} />
+              )
+          )}
 
           {otherAppCount > 0 && (
             <View style={styles.projectsNumberContainer}>
@@ -91,6 +96,12 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     marginRight: 3,
+  },
+  appIconPlaceholder: {
+    width: 20,
+    height: 20,
+    marginRight: 3,
+    backgroundColor: '#eee',
   },
   projectsNumberText: {
     fontSize: 12,

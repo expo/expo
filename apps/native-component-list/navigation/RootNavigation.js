@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { createStackNavigator } from 'react-navigation';
+import { createAppContainer, createStackNavigator } from 'react-navigation';
 
 import MainTabNavigator from './MainTabNavigator';
 
@@ -17,7 +17,7 @@ const RootNavigation = createStackNavigator(
     headerMode: 'none',
     initialRouteName: 'MainTabs',
     cardStyle: styles.card,
-    navigationOptions: () => ({
+    defaultNavigationOptions: () => ({
       headerTitleStyle: {
         fontWeight: 'normal',
       },
@@ -25,4 +25,4 @@ const RootNavigation = createStackNavigator(
   }
 );
 
-export default RootNavigation;
+export default createAppContainer(RootNavigation);

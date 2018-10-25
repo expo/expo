@@ -1,7 +1,6 @@
 package versioned.host.exp.exponent.modules.api;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.net.Uri;
 import android.util.Base64;
@@ -51,6 +50,7 @@ public class ImageManipulatorModule extends ReactContextBaseJavaModule {
           new DisplayImageOptions.Builder()
               .cacheOnDisk(true)
               .imageScaleType(ImageScaleType.NONE)
+              .considerExifParams(true)
               .build());
     } catch (Throwable e) {}
     if (bmp == null) {
@@ -59,6 +59,7 @@ public class ImageManipulatorModule extends ReactContextBaseJavaModule {
             new DisplayImageOptions.Builder()
                 .cacheOnDisk(true)
                 .imageScaleType(ImageScaleType.NONE)
+                .considerExifParams(true)
                 .build());
       } catch (Throwable e) {}
     }

@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
 const StackConfig = {
   cardStyle: styles.card,
   // headerTransitionPreset: 'uikit',
-  navigationOptions: () => ({
+  defaultNavigationOptions: () => ({
     headerStyle: styles.header,
     headerTintColor: Colors.tintColor,
     headerTitleStyle: styles.headerTitle,
@@ -199,7 +199,7 @@ const MainTabNavigator = createTabNavigator(
     ReactNativeCore: { screen: ReactNativeCoreStackNavigator },
   },
   {
-    navigationOptions: ({ navigation }) => {
+    defaultNavigationOptions: ({ navigation }) => {
       let tabBarLabel;
       const { routeName } = navigation.state;
       if (routeName === 'ReactNativeCore') {

@@ -93,7 +93,7 @@ EX_REGISTER_MODULE();
 
 # pragma mark - EXFontManager
 
-- (void)addFontProccessor:(id<EXFontProcessorInterface>)processor
+- (void)addFontProcessor:(id<EXFontProcessorInterface>)processor
 {
   [_fontProcessors addObject:processor];
   [currentFontProcessors compact];
