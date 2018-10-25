@@ -5,9 +5,11 @@ import android.content.Context;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.Cap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.maps.model.RoundCap;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +24,7 @@ public class AirMapPolyline extends AirMapFeature {
   private float width;
   private boolean geodesic;
   private float zIndex;
+  private Cap lineCap = new RoundCap();
 
   public AirMapPolyline(Context context) {
     super(context);
@@ -67,6 +70,14 @@ public class AirMapPolyline extends AirMapFeature {
     }
   }
 
+  public void setLineCap(Cap cap) {
+    this.lineCap = cap;
+    if (polyline != null) {
+      polyline.setStartCap(cap);
+      polyline.setEndCap(cap);
+    }
+  }
+
   public PolylineOptions getPolylineOptions() {
     if (polylineOptions == null) {
       polylineOptions = createPolylineOptions();
@@ -81,6 +92,8 @@ public class AirMapPolyline extends AirMapFeature {
     options.width(width);
     options.geodesic(geodesic);
     options.zIndex(zIndex);
+    options.startCap(lineCap);
+    options.endCap(lineCap);
     return options;
   }
 

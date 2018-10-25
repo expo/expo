@@ -23,6 +23,7 @@ public class AirMapPolygon extends AirMapFeature {
   private int fillColor;
   private float strokeWidth;
   private boolean geodesic;
+  private boolean tappable;
   private float zIndex;
 
   public AirMapPolygon(Context context) {
@@ -95,6 +96,13 @@ public class AirMapPolygon extends AirMapFeature {
     }
   }
 
+  public void setTappable(boolean tapabble) {
+    this.tappable = tapabble;
+    if (polygon != null) {
+      polygon.setClickable(tappable);
+    }
+  }
+
   public void setGeodesic(boolean geodesic) {
     this.geodesic = geodesic;
     if (polygon != null) {
@@ -142,7 +150,7 @@ public class AirMapPolygon extends AirMapFeature {
   @Override
   public void addToMap(GoogleMap map) {
     polygon = map.addPolygon(getPolygonOptions());
-    polygon.setClickable(true);
+    polygon.setClickable(this.tappable);
   }
 
   @Override
