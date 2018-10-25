@@ -68,6 +68,11 @@ public class AirMapPolygonManager extends ViewGroupManager<AirMapPolygon> {
     view.setStrokeColor(color);
   }
 
+  @ReactProp(name = "tappable", defaultBoolean = false)
+  public void setTappable(AirMapPolygon view, boolean tapabble) {
+    view.setTappable(tapabble);
+  }
+
   @ReactProp(name = "geodesic", defaultBoolean = false)
   public void setGeodesic(AirMapPolygon view, boolean geodesic) {
     view.setGeodesic(geodesic);

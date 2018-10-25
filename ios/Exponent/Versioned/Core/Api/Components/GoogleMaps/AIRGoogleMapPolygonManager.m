@@ -3,6 +3,7 @@
 //
 //  Created by Nick Italiano on 10/22/16.
 //
+
 #import "AIRGoogleMapPolygonManager.h"
 
 #import <React/RCTBridge.h>

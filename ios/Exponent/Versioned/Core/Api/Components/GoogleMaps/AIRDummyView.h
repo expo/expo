@@ -1,5 +1,5 @@
 //
-//  DummyView.h
+//  AIRDummyView.h
 //  AirMapsExplorer
 //
 //  Created by Gil Birman on 10/4/16.
