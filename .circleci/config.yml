@@ -13,6 +13,7 @@ commands:
       - run: mkdir -p ~/.config/direnv
       - run: echo -e "[whitelist]\nprefix = [ \"$HOME\" ]" > ~/.config/direnv/config.toml
       - run: echo 'eval "$(direnv export bash)"' >> ~/.bash_profile
+      - run: echo '--frozen-lockfile true' >> ~/.yarnrc
       - checkout
   update_submodules:
     steps:
