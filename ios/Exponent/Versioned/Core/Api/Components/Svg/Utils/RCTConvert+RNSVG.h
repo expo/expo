@@ -9,21 +9,22 @@
 #import <QuartzCore/QuartzCore.h>
 #import <CoreText/CoreText.h>
 #import "RCTConvert+RNSVG.h"
-#import "RNSVGCGFloatArray.h"
 #import <React/RCTConvert.h>
 #import "RNSVGCGFCRule.h"
 #import "RNSVGVBMOS.h"
 #import "RNSVGUnits.h"
+#import "RNSVGLength.h"
 #import "RNSVGPathParser.h"
 
 @class RNSVGBrush;
 
 @interface RCTConvert (RNSVG)
 
++ (RNSVGLength*)RNSVGLength:(id)json;
++ (NSArray<RNSVGLength *>*)RNSVGLengthArray:(id)json;
 + (RNSVGCGFCRule)RNSVGCGFCRule:(id)json;
 + (RNSVGVBMOS)RNSVGVBMOS:(id)json;
 + (RNSVGUnits)RNSVGUnits:(id)json;
-+ (RNSVGCGFloatArray)RNSVGCGFloatArray:(id)json;
 + (RNSVGBrush *)RNSVGBrush:(id)json;
 + (RNSVGPathParser *)RNSVGCGPath:(NSString *)d;
 + (CGRect)RNSVGCGRect:(id)json offset:(NSUInteger)offset;

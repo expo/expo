@@ -144,8 +144,8 @@
 
 - (void)moveTo:(CGMutablePathRef)path x:(float)x y:(float)y
 {
-    _pivotX = _penX = x;
-    _pivotY = _penY = y;
+    _penDownX = _pivotX = _penX = x;
+    _penDownY = _pivotY = _penY = y;
     CGPathMoveToPoint(path, nil, x, y);
 }
 
@@ -253,7 +253,7 @@
     }
 
 
-    float rad = rotation * M_PI / 180;
+    float rad = rotation * (float)M_PI / 180;
     float cosed = cosf(rad);
     float sined = sinf(rad);
     x -= tX;
@@ -325,7 +325,7 @@
         arc -= M_PI * 2;
     }
 
-    int n = ceilf(fabsf(arc / ((float)M_PI / 2)));
+    int n = (int)ceilf(fabsf(arc / ((float)M_PI / 2)));
 
     float step = arc / n;
     float k = (4.0f / 3.0f) * tanf(step / 4);

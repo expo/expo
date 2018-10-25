@@ -28,6 +28,7 @@ RCT_EXPORT_VIEW_PROPERTY(vbWidth, CGFloat)
 RCT_EXPORT_VIEW_PROPERTY(vbHeight, CGFloat)
 RCT_EXPORT_VIEW_PROPERTY(align, NSString)
 RCT_EXPORT_VIEW_PROPERTY(meetOrSlice, RNSVGVBMOS)
+RCT_EXPORT_VIEW_PROPERTY(tintColor, UIColor)
 
 RCT_EXPORT_METHOD(toDataURL:(nonnull NSNumber *)reactTag callback:(RCTResponseSenderBlock)callback)
 {

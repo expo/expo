@@ -9,6 +9,9 @@
 
 package versioned.host.exp.exponent.modules.api.components.svg;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapShader;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.LinearGradient;
 import android.graphics.Matrix;
@@ -23,39 +26,42 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.ReactConstants;
 
 class Brush {
-    private BrushType mType = BrushType.LINEAR_GRADIENT;
-    private final ReadableArray mPoints;
+    private final BrushType mType;
+    private final SVGLength[] mPoints;
     private ReadableArray mColors;
     private final boolean mUseObjectBoundingBox;
+
+    // TODO implement pattern units
+    @SuppressWarnings({"FieldCanBeLocal", "unused"})
+    private boolean mUseContentObjectBoundingBox;
+
     private Matrix mMatrix;
     private Rect mUserSpaceBoundingBox;
+    private PatternView mPattern;
 
-    Brush(BrushType type, ReadableArray points, BrushUnits units) {
+    Brush(BrushType type, SVGLength[] points, BrushUnits units) {
         mType = type;
         mPoints = points;
         mUseObjectBoundingBox = units == BrushUnits.OBJECT_BOUNDING_BOX;
     }
 
-    enum BrushType {
-        LINEAR_GRADIENT(0),
-        RADIAL_GRADIENT(1),
-        @SuppressWarnings("unused")PATTERN(2);
-        BrushType(int ni) {
-            nativeInt = ni;
-        }
+    void setContentUnits(BrushUnits units) {
+        mUseContentObjectBoundingBox = units == BrushUnits.OBJECT_BOUNDING_BOX;
+    }
 
-        @SuppressWarnings("unused")
-        final int nativeInt;
+    void setPattern(PatternView pattern) {
+        mPattern = pattern;
+    }
+
+    enum BrushType {
+        LINEAR_GRADIENT,
+        RADIAL_GRADIENT,
+        PATTERN
     }
 
     enum BrushUnits {
-        OBJECT_BOUNDING_BOX(0),
-        USER_SPACE_ON_USE(1);
-        BrushUnits(int ni) {
-            nativeInt = ni;
-        }
-        @SuppressWarnings("unused")
-        final int nativeInt;
+        OBJECT_BOUNDING_BOX,
+        USER_SPACE_ON_USE
     }
 
     private static void parseGradientStops(ReadableArray value, int stopsCount, float[] stops, int[] stopsColors, float opacity) {
@@ -105,6 +111,36 @@ class Brush {
         float offsetX = rect.left;
         float offsetY = rect.top;
 
+        float textSize = paint.getTextSize();
+        if (mType == BrushType.PATTERN) {
+            double x = PropHelper.fromRelative(mPoints[0], width, offsetX, scale, textSize);
+            double y = PropHelper.fromRelative(mPoints[1], height, offsetY, scale, textSize);
+            double w = PropHelper.fromRelative(mPoints[2], width, offsetX, scale, textSize);
+            double h = PropHelper.fromRelative(mPoints[3], height, offsetY, scale, textSize);
+
+            RectF vbRect = mPattern.getViewBox();
+            RectF eRect = new RectF((float)x, (float)y, (float)w, (float)h);
+            Matrix mViewBoxMatrix = ViewBox.getTransform(vbRect, eRect, mPattern.mAlign, mPattern.mMeetOrSlice);
+
+            Bitmap bitmap = Bitmap.createBitmap(
+                    (int) w,
+                    (int) h,
+                    Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(bitmap);
+            canvas.concat(mViewBoxMatrix);
+            mPattern.draw(canvas, new Paint(), opacity);
+
+            Matrix patternMatrix = new Matrix();
+            if (mMatrix != null) {
+                patternMatrix.preConcat(mMatrix);
+            }
+
+            BitmapShader bitmapShader = new BitmapShader(bitmap, Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
+            bitmapShader.setLocalMatrix(patternMatrix);
+            paint.setShader(bitmapShader);
+            return;
+        }
+
         int stopsCount = mColors.size() / 5;
         int[] stopsColors = new int[stopsCount];
         float[] stops = new float[stopsCount];
@@ -122,10 +158,10 @@ class Brush {
         }
 
         if (mType == BrushType.LINEAR_GRADIENT) {
-            double x1 = PropHelper.fromRelative(mPoints.getString(0), width, offsetX, scale, paint.getTextSize());
-            double y1 = PropHelper.fromRelative(mPoints.getString(1), height, offsetY, scale, paint.getTextSize());
-            double x2 = PropHelper.fromRelative(mPoints.getString(2), width, offsetX, scale, paint.getTextSize());
-            double y2 = PropHelper.fromRelative(mPoints.getString(3), height, offsetY, scale, paint.getTextSize());
+            double x1 = PropHelper.fromRelative(mPoints[0], width, offsetX, scale, textSize);
+            double y1 = PropHelper.fromRelative(mPoints[1], height, offsetY, scale, textSize);
+            double x2 = PropHelper.fromRelative(mPoints[2], width, offsetX, scale, textSize);
+            double y2 = PropHelper.fromRelative(mPoints[3], height, offsetY, scale, textSize);
 
             Shader linearGradient = new LinearGradient(
                 (float) x1,
@@ -144,13 +180,13 @@ class Brush {
 
             paint.setShader(linearGradient);
         } else if (mType == BrushType.RADIAL_GRADIENT) {
-            double rx = PropHelper.fromRelative(mPoints.getString(2), width, 0f, scale, paint.getTextSize());
-            double ry = PropHelper.fromRelative(mPoints.getString(3), height, 0f, scale, paint.getTextSize());
-            double cx = PropHelper.fromRelative(mPoints.getString(4), width, offsetX, scale, paint.getTextSize());
-            double cy = PropHelper.fromRelative(mPoints.getString(5), height, offsetY, scale, paint.getTextSize()) / (ry / rx);
+            double rx = PropHelper.fromRelative(mPoints[2], width, 0f, scale, textSize);
+            double ry = PropHelper.fromRelative(mPoints[3], height, 0f, scale, textSize);
+            double cx = PropHelper.fromRelative(mPoints[4], width, offsetX, scale, textSize);
+            double cy = PropHelper.fromRelative(mPoints[5], height, offsetY, scale, textSize) / (ry / rx);
             // TODO: support focus point.
-            //double fx = PropHelper.fromRelative(mPoints.getString(0), width, offsetX, scale);
-            //double fy = PropHelper.fromRelative(mPoints.getString(1), height, offsetY, scale) / (ry / rx);
+            //double fx = PropHelper.fromRelative(mPoints[0], width, offsetX, scale);
+            //double fy = PropHelper.fromRelative(mPoints[1], height, offsetY, scale) / (ry / rx);
             Shader radialGradient = new RadialGradient(
                     (float) cx,
                     (float) cy,
@@ -170,12 +206,5 @@ class Brush {
             radialGradient.setLocalMatrix(radialMatrix);
             paint.setShader(radialGradient);
         }
-        // else {
-            // todo: pattern support
-
-            //Shader mShader1 = new BitmapShader(bitmap, Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
-            //paint.setShader(mShader1);
-            //bitmap.recycle();
-        // }
     }
 }

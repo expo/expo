@@ -6,7 +6,7 @@
 
 @interface RNSVGFontData : NSObject {
 @public
-    double fontSize;
+    CGFloat fontSize;
     NSString * fontSize_;
     NSString *fontFamily;
     enum RNSVGFontStyle fontStyle;
@@ -16,21 +16,19 @@
     enum RNSVGFontVariantLigatures fontVariantLigatures;
     enum RNSVGTextAnchor textAnchor;
     enum RNSVGTextDecoration textDecoration;
-    double kerning;
-    double wordSpacing;
-    double letterSpacing;
+    CGFloat kerning;
+    CGFloat wordSpacing;
+    CGFloat letterSpacing;
     bool manualKerning;
 }
 
 + (instancetype)Defaults;
 
-+ (double)toAbsoluteWithNSString:(NSString *)string
-                           scale:(double)scale
-                        fontSize:(double)fontSize;
++ (CGFloat)toAbsoluteWithNSString:(NSString *)string
+                        fontSize:(CGFloat)fontSize;
 
 + (instancetype)initWithNSDictionary:(NSDictionary *)font
-                              parent:(RNSVGFontData *)parent
-                               scale:(double)scale;
+                              parent:(RNSVGFontData *)parent;
 
 @end
 

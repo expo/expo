@@ -14,4 +14,6 @@
 
 @interface RNSVGClipPath : RNSVGGroup
 
+- (BOOL)isSimpleClipPath;
+
 @end
