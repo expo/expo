@@ -99,12 +99,6 @@ const ExploreStack = createStackNavigator(
   }
 );
 
-console.log('returned');
-console.log(ExploreStack.navigationOptions);
-console.log('--------------')
-console.log(ExploreStack.butts)
-console.log('--------------')
-
 const ProfileStack = createStackNavigator(
   {
     Profile: ProfileScreen,
