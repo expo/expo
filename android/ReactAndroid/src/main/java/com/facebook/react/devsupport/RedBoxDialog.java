@@ -29,7 +29,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.facebook.common.logging.FLog;
-import com.facebook.infer.annotation.Assertions;
+import expolib_v1.com.facebook.infer.annotation.Assertions;
 import com.facebook.react.R;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.ReactConstants;
