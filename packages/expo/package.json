@@ -121,6 +121,7 @@
     "react-native-reanimated": "1.0.0-alpha.10",
     "react-native-screens": "1.0.0-alpha.15",
     "react-native-svg": "8.0.8",
+    "react-native-view-shot": "2.5.0",
     "serialize-error": "^2.1.0",
     "uuid-js": "^0.7.5",
     "whatwg-fetch": "^2.0.4"
