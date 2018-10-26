@@ -85,9 +85,6 @@ public class Constants {
     // BEGIN_SDK_25
     abiVersions.add("25.0.0");
     // END_SDK_25
-    // BEGIN_SDK_24
-    abiVersions.add("24.0.0");
-    // END_SDK_24
     // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
 
     if (TEMPORARY_ABI_VERSION != null) {
