@@ -24,7 +24,8 @@ const LIB_NAMES = [
   'jschelpers',
   'packagerconnectionjnifb',
   'privatedata',
-  'yogafastmath'
+  'yogafastmath',
+  'fabricjscjni'
 ];
 
 function renameLib(lib, abiVersion) {
