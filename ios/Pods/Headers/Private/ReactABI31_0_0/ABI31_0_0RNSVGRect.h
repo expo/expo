@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI31_0_0/Expo/Core/Api/Components/Svg/Shapes/ABI31_0_0RNSVGRect.h
