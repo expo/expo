@@ -15,7 +15,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven'
 
 group = 'host.exp.exponent'
-version = '1.0.2'
+version = '1.1.0-rc.0'
 
 import de.undercouch.gradle.tasks.download.Download
 import org.apache.tools.ant.taskdefs.condition.Os
@@ -164,8 +164,8 @@ android {
     defaultConfig {
         minSdkVersion 21
         targetSdkVersion 26
-        versionCode 4
-        versionName "1.0.2"
+        versionCode 5
+        versionName "1.1.0-rc.0"
 
         ndk {
             abiFilters 'armeabi-v7a', 'x86'
