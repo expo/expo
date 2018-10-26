@@ -152,6 +152,7 @@ dependencies {
   }
   implementation 'com.android.support:exifinterface:27.1.1'
   implementation 'com.squareup.okio:okio:1.9.0'
+  implementation 'com.facebook.soloader:soloader:0.5.1'
 
   implementation 'com.google.android.exoplayer:exoplayer:2.6.1'
   implementation 'expolib_v1.com.google.android.exoplayer:expolib_v1-extension-okhttp:2.6.1@aar'
