@@ -12,7 +12,7 @@ import android.util.JsonToken;
 import android.util.JsonWriter;
 
 import com.facebook.common.logging.FLog;
-import com.facebook.infer.annotation.Assertions;
+import expolib_v1.com.facebook.infer.annotation.Assertions;
 import com.facebook.react.common.JavascriptException;
 
 import java.io.IOException;

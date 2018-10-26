@@ -11,7 +11,7 @@ import android.os.Build;
 
 import javax.annotation.Nullable;
 
-import com.facebook.infer.annotation.Assertions;
+import expolib_v1.com.facebook.infer.annotation.Assertions;
 
 /**
  * Spec for creating a ReactQueueConfiguration. This exists so that CatalystInstance is able to
