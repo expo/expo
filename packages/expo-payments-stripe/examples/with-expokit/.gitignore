@@ -10,3 +10,9 @@ android/.idea/caches/
 /*/out
 /*/*/build
 /*/*/production
+
+# Shell App bundle
+*/*/src/main/assets/shell-app-manifest.json
+*/*/src/main/assets/shell-app.bundle
+*/*/Supporting/shell-app-manifest.json
+*/*/Supporting/shell-app.bundle
