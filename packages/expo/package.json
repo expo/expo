@@ -14,11 +14,11 @@
     "AppEntry.js"
   ],
   "scripts": {
-    "build": "expo-module build",
+    "build": "EXPO_NONINTERACTIVE=1 expo-module build && expo-module babel --config-file ./babel.config.build.js --out-dir build build/Expo.js",
     "clean": "expo-module clean",
     "lint": "eslint tools",
     "test": "expo-module test",
-    "prepare": "expo-module prepare",
+    "prepare": "expo-module prepare && expo-module babel --config-file ./babel.config.build.js --out-dir build build/Expo.js",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
@@ -127,6 +127,7 @@
     "whatwg-fetch": "^2.0.4"
   },
   "devDependencies": {
+    "@babel/plugin-transform-modules-commonjs": "^7.1.0",
     "@types/jest": "^23.3.2",
     "@types/react": "^16.4.13",
     "@types/react-native": "^0.56.22",
