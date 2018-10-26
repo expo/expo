@@ -88,3 +88,9 @@ export async function logInAsync(config: LogInConfig): Promise<LogInResult> {
     return logInResult;
   }
 }
+
+export function signOut(): void {
+  if (Constants.appOwnership === 'standalone') {
+    Google.signOut();
+  }
+}

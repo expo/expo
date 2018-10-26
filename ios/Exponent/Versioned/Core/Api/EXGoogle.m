@@ -5,7 +5,7 @@
 #import "EXScopedModuleRegistry.h"
 
 #import <GoogleSignIn/GoogleSignIn.h>
-#import <AppAuth.h>
+#import <AppAuth/AppAuth.h>
 #import <React/RCTUtils.h>
 
 NSString *EXGoogleErrorCode = @"GOOGLE_ERROR";
@@ -35,6 +35,11 @@ EX_EXPORT_SCOPED_MODULE(ExponentGoogle, GoogleAuthManager);
 - (dispatch_queue_t)methodQueue
 {
   return dispatch_get_main_queue();
+}
+
+RCT_REMAP_METHOD(signOut)
+{
+  [[GIDSignIn sharedInstance] signOut];
 }
 
 RCT_REMAP_METHOD(logInAsync,
