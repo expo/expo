@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
 
+import host.exp.exponent.utils.ScopedContext;
 import versioned.host.exp.exponent.modules.api.viewshot.ViewShot.Formats;
 import versioned.host.exp.exponent.modules.api.viewshot.ViewShot.Results;
 
@@ -32,10 +33,12 @@ public class RNViewShotModule extends ReactContextBaseJavaModule {
     public static final String RNVIEW_SHOT = "RNViewShot";
 
     private final ReactApplicationContext reactContext;
+    private final ScopedContext mScopedContext;
 
-    public RNViewShotModule(ReactApplicationContext reactContext) {
+    public RNViewShotModule(ReactApplicationContext reactContext, ScopedContext scopedContext) {
         super(reactContext);
         this.reactContext = reactContext;
+        mScopedContext = scopedContext;
     }
 
     @Override
@@ -89,7 +92,7 @@ public class RNViewShotModule extends ReactContextBaseJavaModule {
         try {
             File outputFile = null;
             if (Results.TEMP_FILE.equals(resultStreamFormat)) {
-                outputFile = createTempFile(getReactApplicationContext(), extension);
+                outputFile = createTempFile(mScopedContext, extension);
             }
 
             final Activity activity = getCurrentActivity();
