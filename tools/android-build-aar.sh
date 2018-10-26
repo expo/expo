@@ -58,6 +58,7 @@ pushd expoview/libs/ReactAndroid-temp/annotations
 rm ../annotations.zip
 zip -r ../annotations.zip .
 rm -rf expoview/libs/ReactAndroid-temp/annotations
+popd
 
 # Fix packages that we don't want renamed
 rm -f jarjar-rules.txt
