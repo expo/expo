@@ -435,70 +435,6 @@ PODS:
     - React/Core
     - React/fishhook
     - React/RCTBlob
-  - ReactABI24_0_0/ABI24_0_0jschelpers (0.51.0):
-    - Folly (= 2016.10.31.00)
-    - ReactABI24_0_0/ABI24_0_0PrivateDatabase
-  - ReactABI24_0_0/ABI24_0_0PrivateDatabase (0.51.0)
-  - ReactABI24_0_0/ART (0.51.0):
-    - ReactABI24_0_0/Core
-  - ReactABI24_0_0/Core (0.51.0):
-    - yogaABI24_0_0 (= 0.51.0.React)
-  - ReactABI24_0_0/CxxBridge (0.51.0):
-    - Folly (= 2016.10.31.00)
-    - ReactABI24_0_0/Core
-    - ReactABI24_0_0/cxxReactABI24_0_0
-  - ReactABI24_0_0/cxxReactABI24_0_0 (0.51.0):
-    - boost-for-react-native (= 1.63.0)
-    - Folly (= 2016.10.31.00)
-    - ReactABI24_0_0/ABI24_0_0jschelpers
-  - ReactABI24_0_0/DevSupport (0.51.0):
-    - ReactABI24_0_0/Core
-    - ReactABI24_0_0/RCTWebSocket
-  - ReactABI24_0_0/Expo (0.51.0):
-    - Amplitude-iOS
-    - Analytics
-    - AppAuth
-    - Branch
-    - EXGL-CPP
-    - FBAudienceNetwork
-    - FBSDKCoreKit
-    - FBSDKLoginKit
-    - FBSDKShareKit
-    - Google-Mobile-Ads-SDK
-    - GoogleMaps
-    - GoogleSignIn
-    - JKBigInteger2
-    - lottie-ios
-    - ReactABI24_0_0/Core
-  - ReactABI24_0_0/ExpoOptional (0.51.0):
-    - GoogleMobileVision/FaceDetector
-    - GoogleMobileVision/MVDataOutput
-    - ReactABI24_0_0/Expo
-  - ReactABI24_0_0/fishhook (0.51.0)
-  - ReactABI24_0_0/RCTActionSheet (0.51.0):
-    - ReactABI24_0_0/Core
-  - ReactABI24_0_0/RCTAnimation (0.51.0):
-    - ReactABI24_0_0/Core
-  - ReactABI24_0_0/RCTBlob (0.51.0):
-    - ReactABI24_0_0/Core
-  - ReactABI24_0_0/RCTCameraRoll (0.51.0):
-    - React/RCTImage
-    - ReactABI24_0_0/Core
-  - ReactABI24_0_0/RCTGeolocation (0.51.0):
-    - ReactABI24_0_0/Core
-  - ReactABI24_0_0/RCTImage (0.51.0):
-    - ReactABI24_0_0/Core
-    - ReactABI24_0_0/RCTNetwork
-  - ReactABI24_0_0/RCTNetwork (0.51.0):
-    - ReactABI24_0_0/Core
-  - ReactABI24_0_0/RCTText (0.51.0):
-    - ReactABI24_0_0/Core
-  - ReactABI24_0_0/RCTVibration (0.51.0):
-    - ReactABI24_0_0/Core
-  - ReactABI24_0_0/RCTWebSocket (0.51.0):
-    - ReactABI24_0_0/Core
-    - ReactABI24_0_0/fishhook
-    - ReactABI24_0_0/RCTBlob
   - ReactABI25_0_0/ABI25_0_0jschelpers (0.52.0):
     - Folly (= 2016.10.31.00)
     - ReactABI25_0_0/ABI25_0_0PrivateDatabase
@@ -1042,7 +978,6 @@ PODS:
     - ReactABI31_0_0/fishhook
     - ReactABI31_0_0/RCTBlob
   - yoga (0.57.1.React)
-  - yogaABI24_0_0 (0.51.0.React)
   - yogaABI25_0_0 (0.52.0.React)
   - yogaABI26_0_0 (0.54.2.React)
   - yogaABI27_0_0 (0.55.2.React)
@@ -1188,21 +1123,6 @@ DEPENDENCIES:
   - React/RCTText (from `../react-native-lab/react-native`)
   - React/RCTVibration (from `../react-native-lab/react-native`)
   - React/RCTWebSocket (from `../react-native-lab/react-native`)
-  - ReactABI24_0_0/ART (from `./versioned-react-native/ABI24_0_0`)
-  - ReactABI24_0_0/Core (from `./versioned-react-native/ABI24_0_0`)
-  - ReactABI24_0_0/CxxBridge (from `./versioned-react-native/ABI24_0_0`)
-  - ReactABI24_0_0/DevSupport (from `./versioned-react-native/ABI24_0_0`)
-  - ReactABI24_0_0/Expo (from `./versioned-react-native/ABI24_0_0`)
-  - ReactABI24_0_0/ExpoOptional (from `./versioned-react-native/ABI24_0_0`)
-  - ReactABI24_0_0/RCTActionSheet (from `./versioned-react-native/ABI24_0_0`)
-  - ReactABI24_0_0/RCTAnimation (from `./versioned-react-native/ABI24_0_0`)
-  - ReactABI24_0_0/RCTCameraRoll (from `./versioned-react-native/ABI24_0_0`)
-  - ReactABI24_0_0/RCTGeolocation (from `./versioned-react-native/ABI24_0_0`)
-  - ReactABI24_0_0/RCTImage (from `./versioned-react-native/ABI24_0_0`)
-  - ReactABI24_0_0/RCTNetwork (from `./versioned-react-native/ABI24_0_0`)
-  - ReactABI24_0_0/RCTText (from `./versioned-react-native/ABI24_0_0`)
-  - ReactABI24_0_0/RCTVibration (from `./versioned-react-native/ABI24_0_0`)
-  - ReactABI24_0_0/RCTWebSocket (from `./versioned-react-native/ABI24_0_0`)
   - ReactABI25_0_0/ART (from `./versioned-react-native/ABI25_0_0`)
   - ReactABI25_0_0/Core (from `./versioned-react-native/ABI25_0_0`)
   - ReactABI25_0_0/CxxBridge (from `./versioned-react-native/ABI25_0_0`)
@@ -1309,7 +1229,6 @@ DEPENDENCIES:
   - ReactABI31_0_0/RCTVibration (from `./versioned-react-native/ABI31_0_0`)
   - ReactABI31_0_0/RCTWebSocket (from `./versioned-react-native/ABI31_0_0`)
   - yoga (from `../react-native-lab/react-native/ReactCommon/yoga`)
-  - yogaABI24_0_0 (from `./versioned-react-native/ABI24_0_0/ReactCommon/ABI24_0_0yoga`)
   - yogaABI25_0_0 (from `./versioned-react-native/ABI25_0_0/ReactCommon/ABI25_0_0yoga`)
   - yogaABI26_0_0 (from `./versioned-react-native/ABI26_0_0/ReactCommon/ABI26_0_0yoga`)
   - yogaABI27_0_0 (from `./versioned-react-native/ABI27_0_0/ReactCommon/ABI27_0_0yoga`)
@@ -1563,8 +1482,6 @@ EXTERNAL SOURCES:
     :podspec: "../react-native-lab/react-native/third-party-podspecs/glog.podspec"
   React:
     :path: "../react-native-lab/react-native"
-  ReactABI24_0_0:
-    :path: "./versioned-react-native/ABI24_0_0"
   ReactABI25_0_0:
     :path: "./versioned-react-native/ABI25_0_0"
   ReactABI26_0_0:
@@ -1581,8 +1498,6 @@ EXTERNAL SOURCES:
     :path: "./versioned-react-native/ABI31_0_0"
   yoga:
     :path: "../react-native-lab/react-native/ReactCommon/yoga"
-  yogaABI24_0_0:
-    :path: "./versioned-react-native/ABI24_0_0/ReactCommon/ABI24_0_0yoga"
   yogaABI25_0_0:
     :path: "./versioned-react-native/ABI25_0_0/ReactCommon/ABI25_0_0yoga"
   yogaABI26_0_0:
@@ -1733,7 +1648,6 @@ SPEC CHECKSUMS:
   JKBigInteger2: e91672035c42328c48b7dd015b66812ddf40ca9b
   lottie-ios: d699fdee68d7b63e721d949388b015fef1aaa4ac
   React: 1fe0eb13d90b625d94c3b117c274dcfd2e760e11
-  ReactABI24_0_0: ff3ee96b5ad38f3aa380dd1d68004f68aed00589
   ReactABI25_0_0: f99e2a66f3435216031b49793d65e46dbf6f11e3
   ReactABI26_0_0: 42bd2f67b539d66bdc63c57f4fe0f75d94605e36
   ReactABI27_0_0: c9a420256ec867ad158d6bec5087e0316cae1043
@@ -1742,7 +1656,6 @@ SPEC CHECKSUMS:
   ReactABI30_0_0: 3d1d194067363dcc0f0f8941b4cdac1fc7e268b8
   ReactABI31_0_0: 0cc61f9074e8495af6c3e1ec9e35576d5a2e0ce3
   yoga: b1ce48b6cf950b98deae82838f5173ea7cf89e85
-  yogaABI24_0_0: 73be953a3320aed6e4b4fcc3fe3d8c3dee538e8b
   yogaABI25_0_0: 166718f403275ee181e3ddb3d6e19c72be2f5cde
   yogaABI26_0_0: 3d0b9ddd940a22bab64f64291415846298cb263c
   yogaABI27_0_0: 15bb7f6d47c919692ddbfef84e1f69d935664fce
@@ -1751,6 +1664,6 @@ SPEC CHECKSUMS:
   yogaABI30_0_0: 4c86e39466368a6b018b8b78aeb654b6620512a1
   yogaABI31_0_0: 7978689ddccec43cffd5914889304cf3b7fd7c77
 
-PODFILE CHECKSUM: 17c2fb5925b79fc6426a74c43c91a1a7e447abf0
+PODFILE CHECKSUM: d7b56972cca31c8f90032925f31eefd16e3ad0d8
 
 COCOAPODS: 1.5.3
