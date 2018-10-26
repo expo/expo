@@ -4,6 +4,8 @@
 
 @protocol EXUtilitiesInterface
 
+- (nullable NSDictionary *)launchOptions;
+
 - (UIViewController *)currentViewController;
 
 @end
