@@ -131,6 +131,7 @@
     "@types/react": "^16.4.13",
     "@types/react-native": "^0.56.22",
     "@types/react-test-renderer": "^16.0.2",
+    "expo-module-scripts": "^1.0.0",
     "jest-expo": "^30.0.0",
     "react": "16.5.0",
     "react-native": "^0.57.1",
