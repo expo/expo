@@ -10,7 +10,7 @@ package com.facebook.react.devsupport;
 import android.util.Log;
 import android.util.Pair;
 import com.facebook.common.logging.FLog;
-import com.facebook.infer.annotation.Assertions;
+import expolib_v1.com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.NativeDeltaClient;
 import com.facebook.react.common.DebugServerException;
 import com.facebook.react.common.ReactConstants;

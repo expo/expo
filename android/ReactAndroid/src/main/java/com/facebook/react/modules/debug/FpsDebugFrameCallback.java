@@ -15,7 +15,7 @@ import java.util.TreeMap;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.modules.core.ChoreographerCompat;
 import com.facebook.react.uimanager.UIManagerModule;
-import com.facebook.infer.annotation.Assertions;
+import expolib_v1.com.facebook.infer.annotation.Assertions;
 
 /**
  * Each time a frame is drawn, records whether it should have expected any more callbacks since

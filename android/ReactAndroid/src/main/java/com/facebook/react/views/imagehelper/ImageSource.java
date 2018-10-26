@@ -12,7 +12,7 @@ import javax.annotation.Nullable;
 import android.content.Context;
 import android.net.Uri;
 
-import com.facebook.infer.annotation.Assertions;
+import expolib_v1.com.facebook.infer.annotation.Assertions;
 
 /**
  * Class describing an image source (network URI or resource) and size.
