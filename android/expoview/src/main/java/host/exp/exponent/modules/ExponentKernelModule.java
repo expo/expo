@@ -38,6 +38,7 @@ import expolib_v1.okhttp3.Call;
 import expolib_v1.okhttp3.Callback;
 import expolib_v1.okhttp3.Request;
 import expolib_v1.okhttp3.Response;
+import host.exp.expoview.Exponent;
 
 public class ExponentKernelModule extends ReactContextBaseJavaModule implements ExponentKernelModuleInterface {
 
@@ -112,13 +113,31 @@ public class ExponentKernelModule extends ReactContextBaseJavaModule implements 
   }
 
   @ReactMethod
-  public void setSessionSecret(String sessionSecret) {
-    ExponentUrls.setSessionSecret(sessionSecret);
+  public void getSessionAsync(Promise promise) {
+    String sessionSecret = mExponentSharedPreferences.getString(ExponentSharedPreferences.EXPO_AUTH_SESSION);
+    promise.resolve(sessionSecret);
   }
 
   @ReactMethod
-  public void removeSessionSecret() {
-    ExponentUrls.setSessionSecret(null);
+  public void setSessionAsync(String sessionSecret, Promise promise) {
+    try {
+      mExponentSharedPreferences.setString(ExponentSharedPreferences.EXPO_AUTH_SESSION, sessionSecret);
+      promise.resolve(null);
+    } catch (Exception e) {
+      promise.reject("ERR_SESSION_NOT_SAVED", "Could not save session secret", e);
+      EXL.e(TAG, e);
+    }
+  }
+
+  @ReactMethod
+  public void removeSessionAsync(Promise promise) {
+    try {
+      mExponentSharedPreferences.setString(ExponentSharedPreferences.EXPO_AUTH_SESSION, null);
+      promise.resolve(null);
+    } catch (Exception e) {
+      promise.reject("ERR_SESSION_NOT_REMOVED", "Could not remove session secret", e);
+      EXL.e(TAG, e);
+    }
   }
 
   @ReactMethod

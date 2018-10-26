@@ -49,7 +49,14 @@ async function updateSettingsAsync(updatedSettings) {
 }
 
 async function getSessionAsync() {
-  let results = await AsyncStorage.getItem(Keys.Session);
+  let results = await ExponentKernel.getSessionAsync();
+  if (!results) {
+    // try querying legacy location
+    results = await AsyncStorage.getItem(Keys.Session);
+    if (results) {
+      await AsyncStorage.removeItem(Keys.Session);
+    }
+  }
 
   try {
     let session = JSON.parse(results);
@@ -60,8 +67,7 @@ async function getSessionAsync() {
 }
 
 async function saveSessionAsync(session) {
-  ExponentKernel.setSessionSecret(session.sessionSecret);
-  return AsyncStorage.setItem(Keys.Session, JSON.stringify(session));
+  return ExponentKernel.setSessionAsync(JSON.stringify(session));
 }
 
 async function getHistoryAsync() {
@@ -89,8 +95,7 @@ async function removeAuthTokensAsync() {
 }
 
 async function removeSessionAsync() {
-  ExponentKernel.removeSessionSecret();
-  return AsyncStorage.removeItem(Keys.Session);
+  return ExponentKernel.removeSessionAsync();
 }
 
 async function clearAllAsync() {
