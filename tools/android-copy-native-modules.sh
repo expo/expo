@@ -36,7 +36,7 @@ SED_APPEND_COMMAND=" a$NEWLINE"
 sed -i '' "/ADD_NEW_SUPPORTED_ABIS_HERE/$SED_APPEND_COMMAND\ \ \ \ \"$ABI_VERSION\",$NEWLINE" settings.gradle
 
 # Copy all the versioned code
-cp -r expoview/src/main/java/versioned/* $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION
+cp -r expoview/src/main/java/versioned/* $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION/
 
 # Rename references to other packages previously under versioned.host.exp.exponent
 find $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION -iname '*.java' -type f -print0 | xargs -0 sed -i '' "s/import versioned\.host\.exp\.exponent/import $ABI_VERSION\.host\.exp\.exponent/g"
