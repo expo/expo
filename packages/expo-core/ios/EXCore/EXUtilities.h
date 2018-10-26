@@ -11,5 +11,6 @@
 + (CGFloat)screenScale;
 
 - (UIViewController *)currentViewController;
+- (nullable NSDictionary *)launchOptions;
 
 @end
