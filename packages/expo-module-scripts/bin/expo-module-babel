@@ -2,4 +2,6 @@
 
 set -eo pipefail
 
-npx babel "$@"
+script_dir="$(dirname "$0")"
+
+"$script_dir/npx" babel "$@"

@@ -2,4 +2,6 @@
 
 set -eo pipefail
 
-npx jest "$@"
+script_dir="$(dirname "$0")"
+
+"$script_dir/npx" jest "$@"
