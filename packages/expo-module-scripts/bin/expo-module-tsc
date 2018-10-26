@@ -2,4 +2,7 @@
 
 set -eo pipefail
 
-npx tsc "$@"
+script_dir="$(dirname "$0")"
+
+"$script_dir/npx" tsc --version
+"$script_dir/npx" tsc "$@"

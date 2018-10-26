@@ -2,6 +2,8 @@
 
 set -eo pipefail
 
+script_dir="$(dirname "$0")"
+
 export EXPO_NONINTERACTIVE=1
 
-npx proofread
+"$script_dir/npx" proofread
