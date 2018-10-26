@@ -41,7 +41,7 @@
     "react-native-deprecated-custom-components": "^0.1.0",
     "react-native-infinite-scroll-view": "^0.4.5",
     "react-navigation": "3.0.0-alpha.14",
-    "react-navigation-material-bottom-tabs": "^0.3.0",
+    "react-navigation-material-bottom-tabs": "1.0.0-alpha.2",
     "react-redux": "^5.0.1",
     "react-timer-mixin": "^0.13.3",
     "redux": "^3.5.1",
