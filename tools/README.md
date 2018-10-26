@@ -2,7 +2,7 @@
 
 ## Publishing packages
 
-To publish Expo packages to npm registry, it's recommended to use `./publish-packages.sh` script within `exponent/tools`.
+To publish Expo packages to npm registry, it's recommended to use `gulp publish-packages` script within `tools` folder.
 This script helps in doing a lot of publishing stuff like handling dependency versions in packages that depend on themselves,
 updating Android and iOS projects for Expo Client, committing changes that were made by the script and finally publishing.
 
@@ -24,19 +24,19 @@ updating Android and iOS projects for Expo Client, committing changes that were 
 If you're going to release a new release candidates, you might want to use something like:
 
 ```
-./publish-packages.sh --tag="next" --prerelease
+gulp publish-packages --tag="next" --prerelease
 ```
 ---
 If you want to publish just specific packages:
 
 ```
-./publish-packages.sh --scope="expo-gl,expo-gl-cpp"
+gulp publish-packages --scope="expo-gl,expo-gl-cpp"
 ```
 ---
 If you want to publish a package with specific version:
 
 ```
-./publish-packages.sh --version="1.2.3" --scope="expo-permissions"
+gulp publish-packages --version="1.2.3" --scope="expo-permissions"
 ```
 
 ## Versioning Android
