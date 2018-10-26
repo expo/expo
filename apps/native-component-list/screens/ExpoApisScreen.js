@@ -91,6 +91,7 @@ export default class ExpoApisScreen extends React.Component {
       'TextToSpeech',
       'Util',
       'WebBrowser',
+      'ViewShot',
     ];
   };
 }
