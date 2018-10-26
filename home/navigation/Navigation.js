@@ -176,14 +176,7 @@ export default createAppContainer(RootStack);
 function renderIcon(IconComponent: any, iconName: string, iconSize: number, isSelected: boolean) {
   let color = isSelected ? Colors.tabIconSelected : Colors.tabIconDefault;
 
-  return (
-    <IconComponent
-      name={iconName}
-      size={Platform.OS === 'ios' ? iconSize : iconSize + 4}
-      color={color}
-      style={styles.icon}
-    />
-  );
+  return <IconComponent name={iconName} size={iconSize} color={color} style={styles.icon} />;
 }
 
 const styles = StyleSheet.create({

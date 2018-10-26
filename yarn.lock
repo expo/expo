@@ -7017,6 +7017,15 @@ react-navigation-header-buttons@^1.2.1:
   dependencies:
     react-native-platform-touchable "^1.1.1"
 
+react-navigation-material-bottom-tabs@1.0.0-alpha.2:
+  version "1.0.0-alpha.2"
+  resolved "https://registry.yarnpkg.com/react-navigation-material-bottom-tabs/-/react-navigation-material-bottom-tabs-1.0.0-alpha.2.tgz#1d12992d9182871574420813f12d1c79dc769df1"
+  integrity sha512-UZlYJrbJbWCZmbg3+O+aN0Bkyev+gRp72LZSx7VyCWVUT9w4sAaS01dG5Iqp3Z8ns9W8qOvt01QOQNVRtBflYA==
+  dependencies:
+    hoist-non-react-statics "^2.5.0"
+    prop-types "^15.6.0"
+    react-navigation-tabs "1.0.0-alpha.4"
+
 react-navigation-material-bottom-tabs@^0.3.0:
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/react-navigation-material-bottom-tabs/-/react-navigation-material-bottom-tabs-0.3.0.tgz#7fae682a41c1c290f2584fe50879e36b41da5394"
