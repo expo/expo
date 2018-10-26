@@ -2,7 +2,7 @@
 
 ## Publishing packages
 
-To publish Expo packages to npm registry, it's recommended to use `gulp publish-packages` script within `expo/tools`.
+To publish Expo packages to npm registry, it's recommended to use `gulp publish-packages` script within `tools` folder.
 This script helps in doing a lot of publishing stuff like handling dependency versions in packages that depend on themselves,
 updating Android and iOS projects for Expo Client, committing changes that were made by the script and finally publishing.
 

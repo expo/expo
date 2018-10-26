@@ -35,7 +35,7 @@ const otherPackages = [
 ];
 
 // list of teams owning the packages - script will ensure all of these teams are owning published packages
-const teamsWithReadWriteAccess = [
+const TEAMS_WITH_RW_ACCESS = [
   'expo:developers',
   'expo:swm',
 ];
@@ -498,10 +498,10 @@ async function _publishAsync({ libName, tarball, shouldPublish, newVersion }, al
 }
 
 async function _addPackageOwnersAsync({ libName, published, maintainers }) {
-  if (published && teamsWithReadWriteAccess.length > 0) {
+  if (published && TEAMS_WITH_RW_ACCESS.length > 0) {
     console.log(`\nGranting ${chalk.green(libName)} read-write access to teams:`);
 
-    for (const teamToAdd of teamsWithReadWriteAccess) {
+    for (const teamToAdd of TEAMS_WITH_RW_ACCESS) {
       _runCommand(`npm access grant read-write ${teamToAdd}`);
       console.log(chalk.yellow('+'), chalk.blue(teamToAdd));
     }
