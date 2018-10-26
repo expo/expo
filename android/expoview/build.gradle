@@ -185,6 +185,9 @@ dependencies {
   // Versioned react native
   // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
   // THIS COMMENT IS USED BY android-build-aar.sh DO NOT MODIFY
+  // BEGIN_SDK_31
+  api 'host.exp:reactandroid-abi31_0_0:1.0.0'
+  // END_SDK_31
   // BEGIN_SDK_30
   api 'host.exp:reactandroid-abi30_0_0:1.0.0'
   // END_SDK_30
@@ -220,8 +223,8 @@ dependencies {
   api 'expolib_v1.com.squareup.okhttp3:okhttp:3.6.0'
   api 'expolib_v1.com.squareup.okhttp3:okhttp-urlconnection:3.6.0'
   api 'expolib_v1.com.squareup.okio:okio:1.13.0'
-  api 'org.webkit:android-jsc:r224109'
   api 'com.facebook.infer.annotation:infer-annotation:0.11.2'
+  api 'org.webkit:android-jsc:r224109'
   api 'javax.inject:javax.inject:1'
 
   // Our dependencies

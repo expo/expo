@@ -67,6 +67,9 @@ public class Constants {
     Set<String> abiVersions = new HashSet<>();
     // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
     // ADD ABI VERSIONS HERE DO NOT MODIFY
+    // BEGIN_SDK_31
+    abiVersions.add("31.0.0");
+    // END_SDK_31
     // BEGIN_SDK_30
     abiVersions.add("30.0.0");
     // END_SDK_30
