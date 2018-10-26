@@ -14,7 +14,7 @@ type SnapshotOptions = {
 
 export default async function takeSnapshotAsync(
   node: ReactNativeNodeHandle | React.Component,
-  options?: Object
+  options?: SnapshotOptions
 ): Promise<string> {
   return captureRef(node, options);
 }
