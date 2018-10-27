@@ -84,8 +84,6 @@ executors:
       LANG: en_US.UTF-8
 
 workflows:
-  version: 2
-
   # JavaScript packages that make up the SDK
   sdk:
     jobs:
