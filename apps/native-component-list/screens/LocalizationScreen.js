@@ -28,21 +28,18 @@ export default class LocalizationScreen extends React.Component {
   };
   constructor(p) {
     super(p);
-    this.state = { currentLocale: null, preferredLocales: [], isoCurrencyCodes: [] };
+    this.state = { currentLocale: Localization.locale, preferredLocales: [], isoCurrencyCodes: [] };
     this.localeStore = new Localization.LocaleStore(localization);
   }
-  async componentDidMount() {
-    const currentLocale = await Localization.getCurrentLocaleAsync();
-    this.setState(() => ({ currentLocale }));
-  }
+
   queryPreferredLocales = async () => {
-    const preferredLocales = await Localization.getPreferredLocalesAsync();
-    const currentLocale = await Localization.getCurrentLocaleAsync();
+    const preferredLocales = Localization.locales;
+    const currentLocale = Localization.locale;
     this.setState(() => ({ preferredLocales, currentLocale }));
   };
   queryCurrencyCodes = async () => {
     if (this.state.isoCurrencyCodes.length === 0) {
-      const isoCurrencyCodes = await Localization.getISOCurrencyCodesAsync();
+      const isoCurrencyCodes = Localization.isoCurrencyCodes;
       this.setState(() => ({ isoCurrencyCodes }));
     }
   };
@@ -73,18 +70,20 @@ export default class LocalizationScreen extends React.Component {
     this.localeStore.setLocale(locale, () => this.setState(() => ({ locale })));
 
   render() {
-    const preferredLocales = (this.state.preferredLocales && this.state.preferredLocales.length)
-          ? (<MonoText>{JSON.stringify(this.state.preferredLocales, null, 2)}</MonoText>)
-          : null;
-    const currencyCodes = (this.state.isoCurrencyCodes && this.state.isoCurrencyCodes.length)
-          ? (<MonoText>{this.prettyFormatCurrency()}</MonoText>)
-          : null;
+    const preferredLocales =
+      this.state.preferredLocales && this.state.preferredLocales.length ? (
+        <MonoText>{JSON.stringify(this.state.preferredLocales, null, 2)}</MonoText>
+      ) : null;
+    const currencyCodes =
+      this.state.isoCurrencyCodes && this.state.isoCurrencyCodes.length ? (
+        <MonoText>{this.prettyFormatCurrency()}</MonoText>
+      ) : null;
     return (
       <ScrollView>
         <View style={styles.container}>
           <HeadingText>Current Locale</HeadingText>
           <MonoText>{JSON.stringify(this.state.currentLocale, null, 2)}</MonoText>
-          
+
           <HeadingText>Locales in Preference Order</HeadingText>
           <ListButton title={'Show preferred Locales'} onPress={this.queryPreferredLocales} />
           {preferredLocales}
@@ -104,9 +103,9 @@ export default class LocalizationScreen extends React.Component {
               value={(Platform.OS === 'ios' && 'ru_US') || (Platform.OS === 'android' && 'ru_RU')}
             />
           </Picker>
-          
+
           <MonoText>{JSON.stringify(localization, null, 2)}</MonoText>
-          
+
           <View style={styles.languageBox}>
             <View style={styles.row}>
               <Text>Exists in Both: </Text>
