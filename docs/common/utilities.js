@@ -2,6 +2,8 @@ import GithubSlugger from 'github-slugger';
 
 const GithubSluggerInstance = GithubSlugger();
 
+GithubSluggerInstance.reset();
+
 // TODO(jim): Not sure what is the point of this.
 export const toString = node => {
   if (typeof node === 'string') {
