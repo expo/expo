@@ -13,6 +13,8 @@ public class NotificationConstants {
   public static final String NOTIFICATION_COLLAPSE_MODE = "collapse";
   public static final String NOTIFICATION_UNREAD_COUNT_KEY = "#{unread_notifications}";
   public static final String NOTIFICATION_REMOTE_KEY = "remote";
+  public static final String NOTIFICATION_ACTION_TYPE = "actionType";
+  public static final Object NOTIFICATION_INPUT_TEXT = "userText";
 
   public static final String NOTIFICATION_DEFAULT_CHANNEL_ID = "expo-default";
   public static final String NOTIFICATION_EXPERIENCE_CHANNEL_ID = "expo-experience";

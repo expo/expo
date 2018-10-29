@@ -1,6 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-package versioned.host.exp.exponent.modules.api;
+package versioned.host.exp.exponent.modules.api.notifications;
 
 import android.support.v4.app.NotificationManagerCompat;
 
@@ -9,6 +9,7 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.bridge.WritableMap;
@@ -26,6 +27,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.security.InvalidParameterException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -61,6 +63,34 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
   @Override
   public String getName() {
     return "ExponentNotifications";
+  }
+
+  @ReactMethod
+  public void createCategory(final String categoryIdParam, final ReadableArray actions, final Promise promise) {
+    String categoryId = getScopedIdIfNotDetached(categoryIdParam);
+    ArrayList<HashMap<String, Object>> scopedActions = new ArrayList<>();
+
+    for(Object actionObject : actions.toArrayList()) {
+      HashMap<String, Object> action = (HashMap<String, Object>)actionObject;
+      String oldActionId = (String)action.get("actionId");
+      action.put("actionId", getScopedIdIfNotDetached(oldActionId));
+      scopedActions.add(action);
+    }
+
+    NotificationActionCenter.put(categoryId, scopedActions, getReactApplicationContext());
+    promise.resolve(null);
+  }
+
+  private String getScopedIdIfNotDetached(String categoryId) {
+    if (!Constants.isDetached()) {
+      try {
+        String experienceId = mManifest.getString(ExponentManifest.MANIFEST_ID_KEY);
+        return ( experienceId + ":" + categoryId );
+      } catch (JSONException e) {
+        e.printStackTrace();
+      }
+    }
+    return categoryId;
   }
 
   @ReactMethod
@@ -193,7 +223,12 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
     HashMap<String, java.io.Serializable> details = new HashMap<>();
     String experienceId;
 
-    details.put("data", ((ReadableNativeMap) data).toHashMap());
+    HashMap<String, Object> hashMap = ((ReadableNativeMap) data).toHashMap();
+    if (hashMap.containsKey("categoryId")) {
+      hashMap.put("categoryId", getScopedIdIfNotDetached((String) hashMap.get("categoryId")));
+    }
+
+    details.put("data", hashMap);
 
     try {
       experienceId = mManifest.getString(ExponentManifest.MANIFEST_ID_KEY);
@@ -256,10 +291,15 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
 
     int notificationId = new Random().nextInt();
 
+    HashMap<String, Object> hashMap = ((ReadableNativeMap) data).toHashMap();
+    if (hashMap.containsKey("categoryId")) {
+      hashMap.put("categoryId", getScopedIdIfNotDetached((String)hashMap.get("categoryId")));
+    }
+
     NotificationHelper.scheduleLocalNotification(
         getReactApplicationContext(),
         notificationId,
-        ((ReadableNativeMap) data).toHashMap(),
+        hashMap,
         ((ReadableNativeMap) options).toHashMap(),
         mManifest,
         new NotificationHelper.Listener() {
