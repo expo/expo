@@ -49,45 +49,45 @@
     }];
 }
 
-- (void)setX:(NSString *)x
+- (void)setX:(RNSVGLength *)x
 {
-    if (x == _x) {
+    if ([x isEqualTo:_x]) {
         return;
     }
     [self invalidate];
     _x = x;
 }
 
-- (void)setY:(NSString *)y
+- (void)setY:(RNSVGLength *)y
 {
-    if (y == _y) {
+    if ([y isEqualTo:_y]) {
         return;
     }
     [self invalidate];
     _y = y;
 }
 
-- (void)setWidth:(NSString *)width
+- (void)setImagewidth:(RNSVGLength *)width
 {
-    if (width == _width) {
+    if ([width isEqualTo:_imagewidth]) {
         return;
     }
     [self invalidate];
-    _width = width;
+    _imagewidth = width;
 }
 
-- (void)setHeight:(NSString *)height
+- (void)setImageheight:(RNSVGLength *)height
 {
-    if (height == _height) {
+    if ([height isEqualTo:_imageheight]) {
         return;
     }
     [self invalidate];
-    _height = height;
+    _imageheight = height;
 }
 
 - (void)setAlign:(NSString *)align
 {
-    if (align == _align) {
+    if ([align isEqualToString:_align]) {
         return;
     }
     [self invalidate];
@@ -122,9 +122,9 @@
     CGRect imageBounds = CGRectMake(0, 0, _imageSize.width, _imageSize.height);
     CGAffineTransform viewbox = [RNSVGViewBox getTransform:imageBounds eRect:hitArea align:self.align meetOrSlice:self.meetOrSlice];
 
+    [self clip:context];
     CGContextTranslateCTM(context, 0, hitArea.size.height);
     CGContextScaleCTM(context, 1, -1);
-    [self clip:context];
     CGContextClipToRect(context, hitArea);
     CGContextConcatCTM(context, viewbox);
     CGContextDrawImage(context, imageBounds, _image);
@@ -134,9 +134,9 @@
 - (CGRect)getHitArea
 {
     CGFloat x = [self relativeOnWidth:self.x];
-    CGFloat y = [self relativeOnHeight:self.y];
-    CGFloat width = [self relativeOnWidth:self.width];
-    CGFloat height = [self relativeOnHeight:self.height];
+    CGFloat y = -1 * [self relativeOnHeight:self.y];
+    CGFloat width = [self relativeOnWidth:self.imagewidth];
+    CGFloat height = [self relativeOnHeight:self.imageheight];
     if (width == 0) {
         width = _imageSize.width;
     }

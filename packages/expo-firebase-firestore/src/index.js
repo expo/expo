@@ -3,20 +3,21 @@
  * Firestore representation wrapper
  */
 import { NativeModulesProxy } from 'expo-core';
-import { events, ModuleBase, utils, getNativeModule, registerModule } from 'expo-firebase-app';
+import { events, ModuleBase, registerModule, utils } from 'expo-firebase-app';
+
+import Blob from './Blob';
 import CollectionReference from './CollectionReference';
 import DocumentReference from './DocumentReference';
 import FieldPath from './FieldPath';
 import FieldValue from './FieldValue';
 import GeoPoint from './GeoPoint';
-import Blob from './Blob';
 import Path from './Path';
-import WriteBatch from './WriteBatch';
-import TransactionHandler from './TransactionHandler';
 import Transaction from './Transaction';
+import TransactionHandler from './TransactionHandler';
+import WriteBatch from './WriteBatch';
 
-import type DocumentSnapshot from './DocumentSnapshot';
 import type { App } from 'expo-firebase-app';
+import type DocumentSnapshot from './DocumentSnapshot';
 import type QuerySnapshot from './QuerySnapshot';
 
 type CollectionSyncEvent = {
@@ -46,9 +47,9 @@ const { getAppEventName, SharedEventEmitter } = events;
 const { isBoolean, isObject, isString, hop } = utils;
 
 const NATIVE_EVENTS = [
-  'firestore_transaction_event',
-  'firestore_document_sync_event',
-  'firestore_collection_sync_event',
+  'Expo.Firebase.firestore_transaction_event',
+  'Expo.Firebase.firestore_document_sync_event',
+  'Expo.Firebase.firestore_collection_sync_event',
 ];
 
 const LogLevels = ['debug', 'error', 'silent'];
@@ -93,8 +94,8 @@ export default class Firestore extends ModuleBase {
     super(app, {
       events: NATIVE_EVENTS,
       moduleName: MODULE_NAME,
-      multiApp: true,
-      hasShards: false,
+      hasMultiAppSupport: true,
+      hasCustomUrlSupport: false,
       namespace: NAMESPACE,
     });
 
@@ -104,14 +105,14 @@ export default class Firestore extends ModuleBase {
     SharedEventEmitter.addListener(
       // sub to internal native event - this fans out to
       // public event name: onCollectionSnapshot
-      getAppEventName(this, 'firestore_collection_sync_event'),
+      getAppEventName(this, 'Expo.Firebase.firestore_collection_sync_event'),
       this._onCollectionSyncEvent.bind(this)
     );
 
     SharedEventEmitter.addListener(
       // sub to internal native event - this fans out to
       // public event name: onDocumentSnapshot
-      getAppEventName(this, 'firestore_document_sync_event'),
+      getAppEventName(this, 'Expo.Firebase.firestore_document_sync_event'),
       this._onDocumentSyncEvent.bind(this)
     );
   }
@@ -147,7 +148,7 @@ export default class Firestore extends ModuleBase {
   }
 
   disableNetwork(): void {
-    return getNativeModule(this).disableNetwork();
+    return this.nativeModule.disableNetwork();
   }
 
   /**
@@ -166,7 +167,7 @@ export default class Firestore extends ModuleBase {
   }
 
   enableNetwork(): Promise<void> {
-    return getNativeModule(this).enableNetwork();
+    return this.nativeModule.enableNetwork();
   }
 
   /**
@@ -204,7 +205,7 @@ export default class Firestore extends ModuleBase {
         new Error('Firestore.settings failed: settings.timestampsInSnapshots must be boolean.')
       );
     }
-    return getNativeModule(this).settings(settings);
+    return this.nativeModule.settings(settings);
   }
 
   /**
@@ -236,7 +237,7 @@ export default class Firestore extends ModuleBase {
     if (event.error) {
       SharedEventEmitter.emit(
         getAppEventName(this, `onQuerySnapshotError:${event.listenerId}`),
-        event.error
+        event
       );
     } else {
       SharedEventEmitter.emit(
@@ -256,7 +257,7 @@ export default class Firestore extends ModuleBase {
     if (event.error) {
       SharedEventEmitter.emit(
         getAppEventName(this, `onDocumentSnapshotError:${event.listenerId}`),
-        event.error
+        event
       );
     } else {
       SharedEventEmitter.emit(

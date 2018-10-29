@@ -6,6 +6,7 @@ import static com.facebook.react.uimanager.ViewProps.FONT_FAMILY;
 import static com.facebook.react.uimanager.ViewProps.FONT_SIZE;
 import static com.facebook.react.uimanager.ViewProps.FONT_STYLE;
 import static com.facebook.react.uimanager.ViewProps.FONT_WEIGHT;
+import static versioned.host.exp.exponent.modules.api.components.svg.TextProperties.*;
 
 class FontData {
     static final double DEFAULT_FONT_SIZE = 12d;
@@ -32,7 +33,7 @@ class FontData {
     final FontVariantLigatures fontVariantLigatures;
 
     final TextAnchor textAnchor;
-    final TextDecoration textDecoration;
+    private final TextDecoration textDecoration;
 
     final double kerning;
     final double wordSpacing;

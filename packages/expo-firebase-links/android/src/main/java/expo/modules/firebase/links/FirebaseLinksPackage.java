@@ -8,10 +8,9 @@ import java.util.List;
 import expo.core.BasePackage;
 import expo.core.ExportedModule;
 
-@SuppressWarnings("unused")
 public class FirebaseLinksPackage extends BasePackage {
   @Override
   public List<ExportedModule> createExportedModules(Context context) {
-    return Collections.singletonList((ExportedModule) new FirebaseLinksModule(context));
+    return Collections.<ExportedModule>singletonList(new FirebaseLinksModule(context));
   }
 }

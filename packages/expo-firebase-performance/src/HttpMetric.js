@@ -1,8 +1,5 @@
-/**
- * @flow
- * Trace representation wrapper
- */
-import { getNativeModule } from 'expo-firebase-app';
+// @flow
+
 import type PerformanceMonitoring from '.';
 
 export default class HttpMetric {
@@ -19,15 +16,15 @@ export default class HttpMetric {
   }
 
   getAttribute(attribute: string): Promise<string | null> {
-    return getNativeModule(this._perf).getHttpMetricAttribute(this.url, this.httpMethod, attribute);
+    return this._perf.nativeModule.getHttpMetricAttribute(this.url, this.httpMethod, attribute);
   }
 
   getAttributes(): Promise<Object> {
-    return getNativeModule(this._perf).getHttpMetricAttributes(this.url, this.httpMethod);
+    return this._perf.nativeModule.getHttpMetricAttributes(this.url, this.httpMethod);
   }
 
   putAttribute(attribute: string, value: string): Promise<true | false> {
-    return getNativeModule(this._perf).putHttpMetricAttribute(
+    return this._perf.nativeModule.putHttpMetricAttribute(
       this.url,
       this.httpMethod,
       attribute,
@@ -36,19 +33,15 @@ export default class HttpMetric {
   }
 
   removeAttribute(attribute: string): Promise<null> {
-    return getNativeModule(this._perf).removeHttpMetricAttribute(
-      this.url,
-      this.httpMethod,
-      attribute
-    );
+    return this._perf.nativeModule.removeHttpMetricAttribute(this.url, this.httpMethod, attribute);
   }
 
   setHttpResponseCode(code: number): Promise<null> {
-    return getNativeModule(this._perf).setHttpMetricResponseCode(this.url, this.httpMethod, code);
+    return this._perf.nativeModule.setHttpMetricResponseCode(this.url, this.httpMethod, code);
   }
 
   setRequestPayloadSize(bytes: number): Promise<null> {
-    return getNativeModule(this._perf).setHttpMetricRequestPayloadSize(
+    return this._perf.nativeModule.setHttpMetricRequestPayloadSize(
       this.url,
       this.httpMethod,
       bytes
@@ -56,7 +49,7 @@ export default class HttpMetric {
   }
 
   setResponseContentType(type: string): Promise<null> {
-    return getNativeModule(this._perf).setHttpMetricResponseContentType(
+    return this._perf.nativeModule.setHttpMetricResponseContentType(
       this.url,
       this.httpMethod,
       type
@@ -64,7 +57,7 @@ export default class HttpMetric {
   }
 
   setResponsePayloadSize(bytes: number): Promise<null> {
-    return getNativeModule(this._perf).setHttpMetricResponsePayloadSize(
+    return this._perf.nativeModule.setHttpMetricResponsePayloadSize(
       this.url,
       this.httpMethod,
       bytes
@@ -72,10 +65,10 @@ export default class HttpMetric {
   }
 
   start(): Promise<null> {
-    return getNativeModule(this._perf).startHttpMetric(this.url, this.httpMethod);
+    return this._perf.nativeModule.startHttpMetric(this.url, this.httpMethod);
   }
 
   stop(): Promise<null> {
-    return getNativeModule(this._perf).stopHttpMetric(this.url, this.httpMethod);
+    return this._perf.nativeModule.stopHttpMetric(this.url, this.httpMethod);
   }
 }

@@ -3,10 +3,12 @@
 @import UserNotifications;
 
 #import <EXFirebaseMessaging/EXFirebaseMessaging.h>
-#import <EXFirebaseApp/EXFirebaseAppEvents.h>
 #import <EXFirebaseApp/EXFirebaseAppUtil.h>
 #import <FirebaseMessaging/FirebaseMessaging.h>
 #import <EXCore/EXUtilitiesInterface.h>
+
+static NSString *const MESSAGING_MESSAGE_RECEIVED = @"Expo.Firebase.messaging_message_received";
+static NSString *const MESSAGING_TOKEN_REFRESHED = @"Expo.Firebase.messaging_token_refreshed";
 
 @interface EXFirebaseMessaging ()
 
@@ -18,7 +20,7 @@
 @implementation EXFirebaseMessaging
 
 static EXFirebaseMessaging *shared = nil;
-static bool jsReady = FALSE;
+static bool jsReady = NO;
 static NSString* initialToken = nil;
 static NSMutableArray* pendingMessages = nil;
 
@@ -74,11 +76,6 @@ EX_EXPORT_MODULE(ExpoFirebaseMessaging)
   [self sendJSEvent:_eventEmitter name:MESSAGING_MESSAGE_RECEIVED body:message];
 }
 
-- (void)didRegisterUserNotificationSettings:(nonnull UIUserNotificationSettings *)notificationSettings
-{
-
-}
-
 // *******************************************************
 // ** Finish AppDelegate methods
 // *******************************************************
@@ -129,29 +126,29 @@ EX_EXPORT_METHOD_AS(sendMessage,
   [[FIRMessaging messaging] sendMessage:data to:to withMessageID:messageId timeToLive:[ttl intValue]];
   
   // TODO: Listen for send success / errors
-  resolve(nil);
+  resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(subscribeToTopic,
-                    subscribeToTopic:(NSString*)topic
+                    subscribeToTopic:(NSString *)topic
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
   [[FIRMessaging messaging] subscribeToTopic:topic];
-  resolve(nil);
+  resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(unsubscribeFromTopic,
-                    unsubscribeFromTopic:(NSString*)topic
+                    unsubscribeFromTopic:(NSString *)topic
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
   [[FIRMessaging messaging] unsubscribeFromTopic:topic];
-  resolve(nil);
+  resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(jsInitialised,
                     jsInitialised:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
-  jsReady = TRUE;
+  jsReady = YES;
   if (initialToken) {
     [self sendJSEvent:_eventEmitter name:MESSAGING_TOKEN_REFRESHED body:initialToken];
   }
@@ -161,7 +158,7 @@ EX_EXPORT_METHOD_AS(jsInitialised,
     }
     pendingMessages = nil;
   }
-  resolve(nil);
+  resolve([NSNull null]);
 }
 
 // ** Start internals **

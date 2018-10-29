@@ -1,5 +1,5 @@
 #import <EXCore/EXModuleRegistry.h>
 
-@interface EXFirebaseInstanceID : EXExportedModule
+@interface EXFirebaseInstanceID: EXExportedModule
 
 @end

@@ -44,6 +44,9 @@
   @**.expo.core.interfaces.ExpoMethod *;
 }
 
+-keep class * extends expo.core.ExportedModule { *; }
+-keep class * extends **.expo.core.ExportedModule { *; }
+
 ##### React Native #####
 -keep,allowobfuscation @interface **.facebook.proguard.annotations.DoNotStrip
 -keep,allowobfuscation @interface **.facebook.proguard.annotations.KeepGettersAndSetters

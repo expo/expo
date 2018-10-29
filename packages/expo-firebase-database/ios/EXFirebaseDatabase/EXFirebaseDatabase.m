@@ -1,11 +1,10 @@
-
-
 #import <EXFirebaseDatabase/EXFirebaseDatabase.h>
 #import <Firebase.h>
 #import <EXFirebaseDatabase/EXFirebaseDatabaseReference.h>
-#import <EXFirebaseApp/EXFirebaseAppEvents.h>
 #import <EXFirebaseApp/EXFirebaseAppUtil.h>
 #import <EXCore/EXUtilities.h>
+#import <EXFirebaseDatabase/EXFirebaseDatabaseEvents.h>
+
 @interface EXFirebaseDatabase ()
 
 @property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
@@ -56,7 +55,7 @@ EX_EXPORT_METHOD_AS(goOnline,
     return;
   }
   [database goOnline];
-  resolve(nil);
+  resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(goOffline,
@@ -70,13 +69,13 @@ EX_EXPORT_METHOD_AS(goOffline,
     return;
   }
   [database goOffline];
-  resolve(nil);
+  resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(setPersistence,
                     setPersistence:(NSString *)appDisplayName
                     dbURL:(NSString *)dbURL
-                    state:(BOOL)state
+                    state:(NSNumber *)state
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
   FIRDatabase *database = [EXFirebaseDatabase getDatabaseForApp:appDisplayName URL:dbURL];
@@ -84,14 +83,14 @@ EX_EXPORT_METHOD_AS(setPersistence,
     reject(@"E_FIREBASE_DATABASE", [NSString stringWithFormat:@"No database named %@", appDisplayName], nil);
     return;
   }
-  database.persistenceEnabled = state;
-  resolve(nil);
+  database.persistenceEnabled = [state boolValue];
+  resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(setPersistenceCacheSizeBytes,
                     setPersistenceCacheSizeBytes:(NSString *)appDisplayName
                     dbURL:(NSString *)dbURL
-                    size:(NSInteger *)size
+                    size:(NSNumber *)size
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
   FIRDatabase *database = [EXFirebaseDatabase getDatabaseForApp:appDisplayName URL:dbURL];
@@ -99,16 +98,16 @@ EX_EXPORT_METHOD_AS(setPersistenceCacheSizeBytes,
     reject(@"E_FIREBASE_DATABASE", [NSString stringWithFormat:@"No database named %@", appDisplayName], nil);
     return;
   }
-  database.persistenceCacheSizeBytes = (NSUInteger)size;
-  resolve(nil);
+  database.persistenceCacheSizeBytes = (NSUInteger)[size integerValue];
+  resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(enableLogging,
-                    enableLogging:(BOOL)enabled
+                    enableLogging:(NSNumber *)enabled
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
-  [FIRDatabase setLoggingEnabled:enabled];
-  resolve(nil);
+  [FIRDatabase setLoggingEnabled:[enabled boolValue]];
+  resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(keepSynced,
@@ -117,12 +116,12 @@ EX_EXPORT_METHOD_AS(keepSynced,
                     key:(NSString *)key
                     path:(NSString *)path
                     modifiers:(NSArray *)modifiers
-                    state:(BOOL)state
+                    state:(NSNumber *)state
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
   FIRDatabaseQuery *query = [self getInternalReferenceForApp:appDisplayName dbURL:dbURL key:key path:path modifiers:modifiers].query;
-  [query keepSynced:state];
-  resolve(nil);
+  [query keepSynced:[state boolValue]];
+  resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(transactionTryCommit,
@@ -155,7 +154,7 @@ EX_EXPORT_METHOD_AS(transactionTryCommit,
   }
   
   dispatch_semaphore_signal(sema);
-  resolve(nil);
+  resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(transactionStart,
@@ -163,7 +162,7 @@ EX_EXPORT_METHOD_AS(transactionStart,
                     dbURL:(NSString *)dbURL
                     path:(NSString *)path
                     transactionId:(nonnull NSNumber *)transactionId
-                    applyLocally:(BOOL)applyLocally
+                    applyLocally:(NSNumber *)applyLocally
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
   dispatch_async(_transactionQueue, ^{
@@ -206,9 +205,9 @@ EX_EXPORT_METHOD_AS(transactionStart,
     } andCompletionBlock:^(NSError *_Nullable databaseError, BOOL committed, FIRDataSnapshot *_Nullable snapshot) {
       NSDictionary *resultMap = [self createTransactionResultMap:appDisplayName dbURL:dbURL transactionId:transactionId error:databaseError committed:committed snapshot:snapshot];
       [EXFirebaseAppUtil sendJSEvent:self->_eventEmitter name:DATABASE_TRANSACTION_EVENT body:resultMap];
-    } withLocalEvents:applyLocally];
+    } withLocalEvents:[applyLocally boolValue]];
   });
-  resolve(nil);
+  resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(onDisconnectSet,
@@ -383,7 +382,7 @@ EX_EXPORT_METHOD_AS(on,
                     rejecter:(EXPromiseRejectBlock)reject) {
   EXFirebaseDatabaseReference *ref = [self getCachedInternalReferenceForApp:appDisplayName dbURL:dbURL props:props];
   [ref on:props[@"eventType"] registration:props[@"registration"]];
-  resolve(nil);
+  resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(off,
@@ -399,7 +398,7 @@ EX_EXPORT_METHOD_AS(off,
       [_dbReferences removeObjectForKey:key];
     }
   }
-  resolve(nil);
+  resolve([NSNull null]);
 }
 
 /*
@@ -410,7 +409,7 @@ EX_EXPORT_METHOD_AS(off,
     NSDictionary *jsError = [EXFirebaseDatabase getJSError:databaseError];
     reject([jsError valueForKey:@"code"], [jsError valueForKey:@"message"], databaseError);
   } else {
-    resolve(nil);
+    resolve([NSNull null]);
   }
 }
 

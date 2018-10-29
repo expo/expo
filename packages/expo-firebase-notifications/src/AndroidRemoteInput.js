@@ -1,7 +1,4 @@
-/**
- * @flow
- * AndroidRemoteInput representation wrapper
- */
+// @flow
 
 import type { AndroidAllowDataType, NativeAndroidRemoteInput } from './types';
 
@@ -88,9 +85,7 @@ export default class AndroidRemoteInput {
 
   build(): NativeAndroidRemoteInput {
     if (!this._resultKey) {
-      throw new Error(
-        'AndroidRemoteInput: Missing required `resultKey` property'
-      );
+      throw new Error('AndroidRemoteInput: Missing required `resultKey` property');
     }
 
     return {

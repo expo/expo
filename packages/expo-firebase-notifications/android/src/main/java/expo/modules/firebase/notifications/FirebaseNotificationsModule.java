@@ -40,7 +40,7 @@ public class FirebaseNotificationsModule extends ExportedModule
   private static final String BADGE_FILE = "BadgeCountFile";
   private static final String BADGE_KEY = "BadgeCount";
   protected static ModuleRegistry moduleRegistry;
-  private SharedPreferences sharedPreferences = null;
+  private SharedPreferences sharedPreferences;
 
   private FirebaseNotificationManager notificationManager;
 
@@ -48,20 +48,6 @@ public class FirebaseNotificationsModule extends ExportedModule
 
   public FirebaseNotificationsModule(Context context) {
     super(context);
-
-    notificationManager = new FirebaseNotificationManager(context, mModuleRegistry);
-    sharedPreferences = context.getSharedPreferences(BADGE_FILE, Context.MODE_PRIVATE);
-
-    LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(context);
-
-    // Subscribe to remote notification events
-    localBroadcastManager.registerReceiver(new RemoteNotificationReceiver(),
-        new IntentFilter(EXFirebaseMessagingService.REMOTE_NOTIFICATION_EVENT));
-
-    // Subscribe to scheduled notification events
-    localBroadcastManager.registerReceiver(new ScheduledNotificationReceiver(),
-        new IntentFilter(FirebaseNotificationManager.SCHEDULED_NOTIFICATION_EVENT));
-
   }
 
   @Override
@@ -78,13 +64,36 @@ public class FirebaseNotificationsModule extends ExportedModule
     }
 
     mModuleRegistry = moduleRegistry;
+
+    if (notificationManager == null) {
+      notificationManager = new FirebaseNotificationManager(getContext(), mModuleRegistry);
+    } else if (moduleRegistry != null) {
+      notificationManager.mModuleRegistry = mModuleRegistry;
+    } else {
+      notificationManager = null;
+    }
+
+    sharedPreferences = getContext().getSharedPreferences(BADGE_FILE, Context.MODE_PRIVATE);
     FirebaseNotificationsModule.moduleRegistry = moduleRegistry;
     
     if (mModuleRegistry != null) {
-      // TODO:Bacon: Remove React
+      //TODO: Bacon: Remove React
       if (getApplicationContext() instanceof ReactContext) {
         ((ReactContext) getApplicationContext()).addActivityEventListener(this);
       }
+
+      //TODO: Bacon: Unregister
+      LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(getContext());
+
+      // Subscribe to remote notification events
+      localBroadcastManager.registerReceiver(new RemoteNotificationReceiver(),
+              new IntentFilter(EXFirebaseMessagingService.REMOTE_NOTIFICATION_EVENT));
+
+      // Subscribe to scheduled notification events
+      localBroadcastManager.registerReceiver(new ScheduledNotificationReceiver(),
+              new IntentFilter(FirebaseNotificationManager.SCHEDULED_NOTIFICATION_EVENT));
+
+
     }
   }
 
@@ -226,7 +235,7 @@ public class FirebaseNotificationsModule extends ExportedModule
   public void onNewIntent(Intent intent) {
     Bundle notificationOpenMap = parseIntentForNotification(intent);
     if (notificationOpenMap != null) {
-      Utils.sendEvent(mModuleRegistry, "notifications_notification_opened", notificationOpenMap);
+      Utils.sendEvent(mModuleRegistry, "Expo.Firebase.notifications_notification_opened", notificationOpenMap);
     }
   }
 
@@ -369,7 +378,7 @@ public class FirebaseNotificationsModule extends ExportedModule
   private class RemoteNotificationReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-      // TODO:Bacon: Remove React Native
+      // TODO: Bacon: Remove React Native
       if (getApplicationContext() instanceof ReactContext) {
         if (((ReactContext) getApplicationContext()).hasActiveCatalystInstance()) {
           Log.d(TAG, "Received new remote notification");
@@ -377,7 +386,7 @@ public class FirebaseNotificationsModule extends ExportedModule
           RemoteMessage message = intent.getParcelableExtra("notification");
           Bundle messageMap = parseRemoteMessage(message);
 
-          Utils.sendEvent(mModuleRegistry, "notifications_notification_received", messageMap);
+          Utils.sendEvent(mModuleRegistry, "Expo.Firebase.notifications_notification_received", messageMap);
         }
       }
     }
@@ -394,7 +403,7 @@ public class FirebaseNotificationsModule extends ExportedModule
 
           Bundle notification = intent.getBundleExtra("notification");
 
-          Utils.sendEvent(mModuleRegistry, "notifications_notification_received", notification);
+          Utils.sendEvent(mModuleRegistry, "Expo.Firebase.notifications_notification_received", notification);
         }
       }
     }

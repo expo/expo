@@ -2,29 +2,29 @@
  * @flow
  * Auth representation wrapper
  */
-
-import User from './User';
+import { Platform } from 'expo-core';
 import {
-  internals as INTERNALS,
-  registerModule,
-  ModuleBase,
-  getNativeModule,
-  getLogger,
-  utils,
   events,
+  internals as INTERNALS,
+  ModuleBase,
+  registerModule,
+  utils,
 } from 'expo-firebase-app';
+
 import ConfirmationResult from './phone/ConfirmationResult';
 import PhoneAuthListener from './phone/PhoneAuthListener';
-
-// providers
-import OAuthProvider from './providers/OAuthProvider';
 import EmailAuthProvider from './providers/EmailAuthProvider';
-import PhoneAuthProvider from './providers/PhoneAuthProvider';
-import GoogleAuthProvider from './providers/GoogleAuthProvider';
-import GithubAuthProvider from './providers/GithubAuthProvider';
-import TwitterAuthProvider from './providers/TwitterAuthProvider';
 import FacebookAuthProvider from './providers/FacebookAuthProvider';
+import GithubAuthProvider from './providers/GithubAuthProvider';
+import GoogleAuthProvider from './providers/GoogleAuthProvider';
+import OAuthProvider from './providers/OAuthProvider';
+import PhoneAuthProvider from './providers/PhoneAuthProvider';
+import TwitterAuthProvider from './providers/TwitterAuthProvider';
+import User from './User';
+import AuthSettings from './AuthSettings';
 
+import type { App } from 'expo-firebase-app';
+// providers
 import type {
   ActionCodeInfo,
   ActionCodeSettings,
@@ -33,16 +33,21 @@ import type {
   NativeUserCredential,
   UserCredential,
 } from './types';
-import type { App } from 'expo-firebase-app';
 
-const { isAndroid, isBoolean } = utils;
+const isAndroid = Platform.OS === 'android';
+
+const { isBoolean } = utils;
 const { getAppEventName, SharedEventEmitter } = events;
 
 type AuthState = {
   user?: NativeUser,
 };
 
-const NATIVE_EVENTS = ['auth_state_changed', 'auth_id_token_changed', 'phone_auth_state_changed'];
+const NATIVE_EVENTS = [
+  'Expo.Firebase.auth_state_changed',
+  'Expo.Firebase.auth_id_token_changed',
+  'Expo.Firebase.phone_auth_state_changed',
+];
 
 export const MODULE_NAME = 'ExpoFirebaseAuth';
 export const NAMESPACE = 'auth';
@@ -75,20 +80,19 @@ export default class Auth extends ModuleBase {
       statics,
       events: NATIVE_EVENTS,
       moduleName: MODULE_NAME,
-      multiApp: true,
-      hasShards: false,
+      hasMultiAppSupport: true,
+      hasCustomUrlSupport: false,
       namespace: NAMESPACE,
     });
     this._user = null;
     this._authResult = false;
     this._languageCode =
-      getNativeModule(this).APP_LANGUAGE[app._name] ||
-      getNativeModule(this).APP_LANGUAGE['[DEFAULT]'];
+      this.nativeModule.APP_LANGUAGE[app._name] || this.nativeModule.APP_LANGUAGE['[DEFAULT]'];
 
     SharedEventEmitter.addListener(
       // sub to internal native event - this fans out to
       // public event name: onAuthStateChanged
-      getAppEventName(this, 'auth_state_changed'),
+      getAppEventName(this, 'Expo.Firebase.auth_state_changed'),
       (state: AuthState) => {
         this._setUser(state.user);
         SharedEventEmitter.emit(getAppEventName(this, 'onAuthStateChanged'), this._user);
@@ -98,7 +102,7 @@ export default class Auth extends ModuleBase {
     SharedEventEmitter.addListener(
       // sub to internal native event - this fans out to
       // public events based on event.type
-      getAppEventName(this, 'phone_auth_state_changed'),
+      getAppEventName(this, 'Expo.Firebase.phone_auth_state_changed'),
       (event: Object) => {
         const eventKey = `phone:auth:${event.requestKey}:${event.type}`;
         SharedEventEmitter.emit(eventKey, event.state);
@@ -108,15 +112,33 @@ export default class Auth extends ModuleBase {
     SharedEventEmitter.addListener(
       // sub to internal native event - this fans out to
       // public event name: onIdTokenChanged
-      getAppEventName(this, 'auth_id_token_changed'),
+      getAppEventName(this, 'Expo.Firebase.auth_id_token_changed'),
       (auth: AuthState) => {
         this._setUser(auth.user);
         SharedEventEmitter.emit(getAppEventName(this, 'onIdTokenChanged'), this._user);
       }
     );
 
-    getNativeModule(this).addAuthStateListener();
-    getNativeModule(this).addIdTokenListener();
+    this.nativeModule.addAuthStateListener();
+    this.nativeModule.addIdTokenListener();
+  }
+
+  _setUser(user: ?NativeUser): ?User {
+    this._user = user ? new User(this, user) : null;
+    this._authResult = true;
+    SharedEventEmitter.emit(getAppEventName(this, 'onUserChanged'), this._user);
+    return this._user;
+  }
+
+  _setUserCredential(userCredential: NativeUserCredential): UserCredential {
+    const user = new User(this, userCredential.user);
+    this._user = user;
+    this._authResult = true;
+    SharedEventEmitter.emit(getAppEventName(this, 'onUserChanged'), this._user);
+    return {
+      additionalUserInfo: userCredential.additionalUserInfo,
+      user,
+    };
   }
 
   _setUser(user: ?NativeUser): ?User {
@@ -146,12 +168,12 @@ export default class Auth extends ModuleBase {
    * @param listener
    */
   onAuthStateChanged(listener: Function) {
-    getLogger(this).info('Creating onAuthStateChanged listener');
+    this.logger.info('Creating onAuthStateChanged listener');
     SharedEventEmitter.addListener(getAppEventName(this, 'onAuthStateChanged'), listener);
     if (this._authResult) listener(this._user || null);
 
     return () => {
-      getLogger(this).info('Removing onAuthStateChanged listener');
+      this.logger.info('Removing onAuthStateChanged listener');
       SharedEventEmitter.removeListener(getAppEventName(this, 'onAuthStateChanged'), listener);
     };
   }
@@ -161,12 +183,12 @@ export default class Auth extends ModuleBase {
    * @param listener
    */
   onIdTokenChanged(listener: Function) {
-    getLogger(this).info('Creating onIdTokenChanged listener');
+    this.logger.info('Creating onIdTokenChanged listener');
     SharedEventEmitter.addListener(getAppEventName(this, 'onIdTokenChanged'), listener);
     if (this._authResult) listener(this._user || null);
 
     return () => {
-      getLogger(this).info('Removing onIdTokenChanged listener');
+      this.logger.info('Removing onIdTokenChanged listener');
       SharedEventEmitter.removeListener(getAppEventName(this, 'onIdTokenChanged'), listener);
     };
   }
@@ -176,12 +198,12 @@ export default class Auth extends ModuleBase {
    * @param listener
    */
   onUserChanged(listener: Function) {
-    getLogger(this).info('Creating onUserChanged listener');
+    this.logger.info('Creating onUserChanged listener');
     SharedEventEmitter.addListener(getAppEventName(this, 'onUserChanged'), listener);
     if (this._authResult) listener(this._user || null);
 
     return () => {
-      getLogger(this).info('Removing onUserChanged listener');
+      this.logger.info('Removing onUserChanged listener');
       SharedEventEmitter.removeListener(getAppEventName(this, 'onUserChanged'), listener);
     };
   }
@@ -191,55 +213,52 @@ export default class Auth extends ModuleBase {
    * @return {Promise}
    */
   signOut(): Promise<void> {
-    return getNativeModule(this)
-      .signOut()
-      .then(() => {
-        this._setUser();
-      });
+    return this.nativeModule.signOut().then(() => {
+      this._setUser();
+    });
   }
 
   /**
    * Sign a user in anonymously
-   * @deprecated Deprecated signInAnonymously in favor of signInAnonymouslyAndRetrieveData.
+   *
    * @return {Promise} A promise resolved upon completion
    */
-  signInAnonymously(): Promise<User> {
-    console.warn(
-      'Deprecated firebase.User.prototype.signInAnonymously in favor of firebase.User.prototype.signInAnonymouslyAndRetrieveData.'
-    );
-    return getNativeModule(this)
+  signInAnonymously(): Promise<UserCredential> {
+    return this.nativeModule
       .signInAnonymously()
-      .then(user => this._setUser(user));
+      .then(userCredential => this._setUserCredential(userCredential));
   }
 
   /**
    * Sign a user in anonymously
+   *
+   * @deprecated Deprecated signInAnonymouslyAndRetrieveData in favor of signInAnonymously.
    * @return {Promise} A promise resolved upon completion
    */
   signInAnonymouslyAndRetrieveData(): Promise<UserCredential> {
-    return getNativeModule(this)
-      .signInAnonymouslyAndRetrieveData()
+    console.warn('Deprecated signInAnonymouslyAndRetrieveData in favor of signInAnonymously.');
+    return this.nativeModule
+      .signInAnonymously()
       .then(userCredential => this._setUserCredential(userCredential));
   }
 
   /**
    * Create a user with the email/password functionality
-   * @deprecated Deprecated createUserWithEmailAndPassword in favor of createUserAndRetrieveDataWithEmailAndPassword.
+   *
    * @param  {string} email    The user's email
    * @param  {string} password The user's password
    * @return {Promise}         A promise indicating the completion
    */
-  createUserWithEmailAndPassword(email: string, password: string): Promise<User> {
-    console.warn(
-      'Deprecated firebase.User.prototype.createUserWithEmailAndPassword in favor of firebase.User.prototype.createUserAndRetrieveDataWithEmailAndPassword.'
-    );
-    return getNativeModule(this)
+  createUserWithEmailAndPassword(email: string, password: string): Promise<UserCredential> {
+    return this.nativeModule
       .createUserWithEmailAndPassword(email, password)
-      .then(user => this._setUser(user));
+      .then(userCredential => this._setUserCredential(userCredential));
   }
 
   /**
    * Create a user with the email/password functionality
+   *
+   * @deprecated Deprecated createUserAndRetrieveDataWithEmailAndPassword in favor of createUserWithEmailAndPassword.
    * @param  {string} email    The user's email
    * @param  {string} password The user's password
    * @return {Promise}         A promise indicating the completion
@@ -248,29 +267,31 @@ export default class Auth extends ModuleBase {
     email: string,
     password: string
   ): Promise<UserCredential> {
-    return getNativeModule(this)
-      .createUserAndRetrieveDataWithEmailAndPassword(email, password)
+    console.warn(
+      'Deprecated createUserAndRetrieveDataWithEmailAndPassword in favor of createUserWithEmailAndPassword.'
+    );
+    return this.nativeModule
+      .createUserWithEmailAndPassword(email, password)
       .then(userCredential => this._setUserCredential(userCredential));
   }
 
   /**
    * Sign a user in with email/password
-   * @deprecated Deprecated signInWithEmailAndPassword in favor of signInAndRetrieveDataWithEmailAndPassword
+   *
    * @param  {string} email    The user's email
    * @param  {string} password The user's password
    * @return {Promise}         A promise that is resolved upon completion
    */
-  signInWithEmailAndPassword(email: string, password: string): Promise<User> {
-    console.warn(
-      'Deprecated firebase.User.prototype.signInWithEmailAndPassword in favor of firebase.User.prototype.signInAndRetrieveDataWithEmailAndPassword.'
-    );
-    return getNativeModule(this)
+  signInWithEmailAndPassword(email: string, password: string): Promise<UserCredential> {
+    return this.nativeModule
       .signInWithEmailAndPassword(email, password)
-      .then(user => this._setUser(user));
+      .then(userCredential => this._setUserCredential(userCredential));
   }
 
   /**
    * Sign a user in with email/password
+   *
+   * @deprecated Deprecated signInAndRetrieveDataWithEmailAndPassword in favor of signInWithEmailAndPassword
    * @param  {string} email    The user's email
    * @param  {string} password The user's password
    * @return {Promise}         A promise that is resolved upon completion
@@ -279,62 +300,65 @@ export default class Auth extends ModuleBase {
     email: string,
     password: string
   ): Promise<UserCredential> {
-    return getNativeModule(this)
-      .signInAndRetrieveDataWithEmailAndPassword(email, password)
+    console.warn(
+      'Deprecated signInAndRetrieveDataWithEmailAndPassword in favor of signInWithEmailAndPassword.'
+    );
+    return this.nativeModule
+      .signInWithEmailAndPassword(email, password)
       .then(userCredential => this._setUserCredential(userCredential));
   }
 
   /**
    * Sign the user in with a custom auth token
-   * @deprecated Deprecated signInWithCustomToken in favor of signInAndRetrieveDataWithCustomToken
+   *
    * @param  {string} customToken  A self-signed custom auth token.
    * @return {Promise}             A promise resolved upon completion
    */
-  signInWithCustomToken(customToken: string): Promise<User> {
-    console.warn(
-      'Deprecated firebase.User.prototype.signInWithCustomToken in favor of firebase.User.prototype.signInAndRetrieveDataWithCustomToken.'
-    );
-    return getNativeModule(this)
+  signInWithCustomToken(customToken: string): Promise<UserCredential> {
+    return this.nativeModule
       .signInWithCustomToken(customToken)
-      .then(user => this._setUser(user));
+      .then(userCredential => this._setUserCredential(userCredential));
   }
 
   /**
    * Sign the user in with a custom auth token
+   *
+   * @deprecated Deprecated signInAndRetrieveDataWithCustomToken in favor of signInWithCustomToken
    * @param  {string} customToken  A self-signed custom auth token.
    * @return {Promise}             A promise resolved upon completion
    */
   signInAndRetrieveDataWithCustomToken(customToken: string): Promise<UserCredential> {
-    return getNativeModule(this)
-      .signInAndRetrieveDataWithCustomToken(customToken)
+    console.warn(
+      'Deprecated signInAndRetrieveDataWithCustomToken in favor of signInWithCustomToken.'
+    );
+    return this.nativeModule
+      .signInWithCustomToken(customToken)
       .then(userCredential => this._setUserCredential(userCredential));
   }
 
   /**
    * Sign the user in with a third-party authentication provider
-   * @deprecated Deprecated signInWithCredential in favor of signInAndRetrieveDataWithCredential.
+   *
    * @return {Promise}           A promise resolved upon completion
    */
-  signInWithCredential(credential: AuthCredential): Promise<User> {
-    console.warn(
-      'Deprecated firebase.User.prototype.signInWithCredential in favor of firebase.User.prototype.signInAndRetrieveDataWithCredential.'
-    );
-    return getNativeModule(this)
+  signInWithCredential(credential: AuthCredential): Promise<UserCredential> {
+    return this.nativeModule
       .signInWithCredential(credential.providerId, credential.token, credential.secret)
-      .then(user => this._setUser(user));
+      .then(userCredential => this._setUserCredential(userCredential));
   }
 
   /**
    * Sign the user in with a third-party authentication provider
+   *
+   * @deprecated Deprecated signInAndRetrieveDataWithCredential in favor of signInWithCredential.
    * @return {Promise}           A promise resolved upon completion
    */
   signInAndRetrieveDataWithCredential(credential: AuthCredential): Promise<UserCredential> {
-    return getNativeModule(this)
-      .signInAndRetrieveDataWithCredential(
-        credential.providerId,
-        credential.token,
-        credential.secret
-      )
+    console.warn(
+      'Deprecated signInAndRetrieveDataWithCredential in favor of signInWithCredential.'
+    );
+    return this.nativeModule
+      .signInWithCredential(credential.providerId, credential.token, credential.secret)
       .then(userCredential => this._setUserCredential(userCredential));
   }
 
@@ -344,12 +368,12 @@ export default class Auth extends ModuleBase {
    */
   signInWithPhoneNumber(phoneNumber: string, forceResend?: boolean): Promise<ConfirmationResult> {
     if (isAndroid) {
-      return getNativeModule(this)
+      return this.nativeModule
         .signInWithPhoneNumber(phoneNumber, forceResend || false)
         .then(result => new ConfirmationResult(this, result.verificationId));
     }
 
-    return getNativeModule(this)
+    return this.nativeModule
       .signInWithPhoneNumber(phoneNumber)
       .then(result => new ConfirmationResult(this, result.verificationId));
   }
@@ -387,7 +411,7 @@ export default class Auth extends ModuleBase {
    * @param actionCodeSettings
    */
   sendPasswordResetEmail(email: string, actionCodeSettings?: ActionCodeSettings): Promise<void> {
-    return getNativeModule(this).sendPasswordResetEmail(email, actionCodeSettings);
+    return this.nativeModule.sendPasswordResetEmail(email, actionCodeSettings);
   }
 
   /**
@@ -396,7 +420,7 @@ export default class Auth extends ModuleBase {
    * @param actionCodeSettings
    */
   sendSignInLinkToEmail(email: string, actionCodeSettings?: ActionCodeSettings): Promise<void> {
-    return getNativeModule(this).sendSignInLinkToEmail(email, actionCodeSettings);
+    return this.nativeModule.sendSignInLinkToEmail(email, actionCodeSettings);
   }
 
   /**
@@ -419,7 +443,7 @@ export default class Auth extends ModuleBase {
    * @return {Promise} A promise resolved upon completion
    */
   signInWithEmailLink(email: string, emailLink: string): Promise<UserCredential> {
-    return getNativeModule(this)
+    return this.nativeModule
       .signInWithEmailLink(email, emailLink)
       .then(userCredential => this._setUserCredential(userCredential));
   }
@@ -433,7 +457,7 @@ export default class Auth extends ModuleBase {
    * @return {Promise.<Null>}
    */
   confirmPasswordReset(code: string, newPassword: string): Promise<void> {
-    return getNativeModule(this).confirmPasswordReset(code, newPassword);
+    return this.nativeModule.confirmPasswordReset(code, newPassword);
   }
 
   /**
@@ -444,7 +468,7 @@ export default class Auth extends ModuleBase {
    * @return {Promise.<Null>}
    */
   applyActionCode(code: string): Promise<void> {
-    return getNativeModule(this).applyActionCode(code);
+    return this.nativeModule.applyActionCode(code);
   }
 
   /**
@@ -455,19 +479,7 @@ export default class Auth extends ModuleBase {
    * @return {Promise.<any>|Promise<ActionCodeInfo>}
    */
   checkActionCode(code: string): Promise<ActionCodeInfo> {
-    return getNativeModule(this).checkActionCode(code);
-  }
-
-  /**
-   * Returns a list of authentication providers that can be used to sign in a given user (identified by its main email address).
-   * @return {Promise}
-   * @Deprecated
-   */
-  fetchProvidersForEmail(email: string): Promise<string[]> {
-    console.warn(
-      'Deprecated firebase.auth().fetchProvidersForEmail in favor of firebase.auth().fetchSignInMethodsForEmail()'
-    );
-    return getNativeModule(this).fetchSignInMethodsForEmail(email);
+    return this.nativeModule.checkActionCode(code);
   }
 
   /**
@@ -475,21 +487,44 @@ export default class Auth extends ModuleBase {
    * @return {Promise}
    */
   fetchSignInMethodsForEmail(email: string): Promise<string[]> {
-    return getNativeModule(this).fetchSignInMethodsForEmail(email);
+    return this.nativeModule.fetchSignInMethodsForEmail(email);
   }
 
   verifyPasswordResetCode(code: string): Promise<string> {
-    return getNativeModule(this).verifyPasswordResetCode(code);
+    return this.nativeModule.verifyPasswordResetCode(code);
   }
 
   /**
-   * Sets the language for the auth module
+   * Sets the language for the auth module.
+   *
    * @param code
-   * @returns {*}
    */
   set languageCode(code: string) {
     this._languageCode = code;
-    getNativeModule(this).setLanguageCode(code);
+    this.nativeModule.setLanguageCode(code);
+  }
+
+  /**
+   * The language for the auth module.
+   *
+   * @return {string}
+   */
+  get languageCode(): string {
+    return this._languageCode;
+  }
+
+  /**
+   * The current Auth instance's settings. This is used to edit/read configuration
+   * related options like app verification mode for phone authentication.
+   *
+   * @return {AuthSettings}
+   */
+  get settings(): AuthSettings {
+    if (!this._settings) {
+      // lazy initialize
+      this._settings = new AuthSettings(this);
+    }
+    return this._settings;
   }
 
   /**
@@ -498,10 +533,6 @@ export default class Auth extends ModuleBase {
    */
   get currentUser(): User | null {
     return this._user;
-  }
-
-  get languageCode(): string {
-    return this._languageCode;
   }
 
   /**
@@ -533,3 +564,5 @@ export default class Auth extends ModuleBase {
 }
 
 registerModule(Auth);
+
+export { User, AuthSettings };

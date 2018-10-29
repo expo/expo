@@ -112,6 +112,16 @@ public class ExponentKernelModule extends ReactContextBaseJavaModule implements 
   }
 
   @ReactMethod
+  public void setSessionSecret(String sessionSecret) {
+    ExponentUrls.setSessionSecret(sessionSecret);
+  }
+
+  @ReactMethod
+  public void removeSessionSecret() {
+    ExponentUrls.setSessionSecret(null);
+  }
+
+  @ReactMethod
   public void createShortcutAsync(String manifestUrl, ReadableMap manifest, String bundleUrl, Promise promise) {
     mKernel.installShortcut(manifestUrl, manifest, bundleUrl);
 
@@ -175,25 +185,5 @@ public class ExponentKernelModule extends ReactContextBaseJavaModule implements 
       currentExperienceActivity.dismissNuxViewIfVisible(false);
     }
     promise.resolve(true);
-  }
-
-  @ReactMethod
-  public void preloadBundleUrlAsync(final String url, final Promise promise) {
-    preloadRequestAsync(ExponentUrls.addExponentHeadersToUrl(url, false, false).build(), promise);
-  }
-
-  private void preloadRequestAsync(final Request request, final Promise promise) {
-    mExponentNetwork.getClient().call(request, new ExpoHttpCallback() {
-      @Override
-      public void onFailure(IOException e) {
-        promise.reject(e);
-      }
-
-      @Override
-      public void onResponse(ExpoResponse response) throws IOException {
-        ExponentNetwork.flushResponse(response);
-        promise.resolve(true);
-      }
-    });
   }
 }

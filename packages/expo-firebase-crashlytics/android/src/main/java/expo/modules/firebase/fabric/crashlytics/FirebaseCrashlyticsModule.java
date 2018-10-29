@@ -15,8 +15,6 @@ public class FirebaseCrashlyticsModule extends ExportedModule implements ModuleR
 
   private static final String TAG = FirebaseCrashlyticsModule.class.getCanonicalName();
 
-  private ModuleRegistry mModuleRegistry;
-
   public FirebaseCrashlyticsModule(Context context) {
     super(context);
   }
@@ -28,7 +26,6 @@ public class FirebaseCrashlyticsModule extends ExportedModule implements ModuleR
 
   @Override
   public void setModuleRegistry(ModuleRegistry moduleRegistry) {
-    mModuleRegistry = moduleRegistry;
   }
 
   @ExpoMethod

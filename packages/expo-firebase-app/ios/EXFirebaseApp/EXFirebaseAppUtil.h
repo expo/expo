@@ -15,6 +15,7 @@ static NSString *const DEFAULT_APP_NAME = @"__FIRAPP_DEFAULT";
 
 @interface EXFirebaseAppUtil : NSObject
 
++ (NSString *)getISO8601String:(NSDate *)date;
 + (FIRApp *)getApp:(NSString *)appDisplayName;
 + (NSString *)getAppName:(NSString *)appDisplayName;
 + (NSString *)getAppDisplayName:(NSString *)appName;

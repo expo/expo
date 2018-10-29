@@ -181,7 +181,7 @@ public class FirebaseLinksModule extends ExportedModule
               String link = pendingDynamicLinkData.getLink().toString();
               Bundle linkPayload = new Bundle();
               linkPayload.putString("link", link);
-              Utils.sendEvent(mModuleRegistry, "links_link_received", linkPayload);
+              Utils.sendEvent(mModuleRegistry, "Expo.Firebase.links_link_received", linkPayload);
             }
           }
         });

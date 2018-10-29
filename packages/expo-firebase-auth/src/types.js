@@ -1,7 +1,17 @@
-/**
- * @flow
- */
+// @flow
+
 import type User from './User';
+
+export type IdTokenResult = {
+  token: string,
+  authTime: string,
+  issuedAtTime: string,
+  expirationTime: string,
+  signInProvider: null | string,
+  claims: {
+    [key: string]: any,
+  },
+};
 
 export type ActionCodeInfo = {
   data: {

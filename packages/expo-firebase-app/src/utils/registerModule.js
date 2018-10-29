@@ -11,5 +11,5 @@ export default function registerModule(InstanceType) {
   global.__Expo_Firebase_Modules = global.__Expo_Firebase_Modules || {};
   global.__Expo_Firebase_Modules[name] = InstanceType;
 
-  firebase[name] = APPS.moduleAndStatics(name);
+  firebase[name] = APPS.moduleAndStatics(name, InstanceType.statics, InstanceType.MODULE_NAME);
 }

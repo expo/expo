@@ -18,7 +18,6 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
 @property (nonatomic, strong) NSURL * _Nullable originalUrl;
 @property (nonatomic, strong) NSData *data;
 @property (nonatomic, assign) BOOL canBeWrittenToCache;
-@property (nonatomic, strong) NSString *resourceName;
 
 // cache this value so we only have to compute it once per instance
 @property (nonatomic, strong) NSNumber * _Nullable isUsingEmbeddedManifest;
@@ -32,25 +31,24 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
   _originalUrl = originalUrl;
   _canBeWrittenToCache = NO;
   
+  NSString *resourceName;
   if ([EXEnvironment sharedEnvironment].isDetached && [originalUrl.absoluteString isEqual:[EXEnvironment sharedEnvironment].standaloneManifestUrl]) {
-    _resourceName = kEXEmbeddedManifestResourceName;
+    resourceName = kEXEmbeddedManifestResourceName;
     if ([EXEnvironment sharedEnvironment].releaseChannel){
       self.releaseChannel = [EXEnvironment sharedEnvironment].releaseChannel;
     }
     NSLog(@"EXManifestResource: Standalone manifest remote url is %@ (%@)", url, originalUrl);
   } else {
-    _resourceName = [EXKernelLinkingManager linkingUriForExperienceUri:url useLegacy:YES];
+    resourceName = [EXKernelLinkingManager linkingUriForExperienceUri:url useLegacy:YES];
   }
 
-  if (self = [super initWithResourceName:_resourceName resourceType:@"json" remoteUrl:url cachePath:[[self class] cachePath]]) {
+  if (self = [super initWithResourceName:resourceName resourceType:@"json" remoteUrl:url cachePath:[[self class] cachePath]]) {
     self.shouldVersionCache = NO;
-    NSString *manifestLegacyPath = [self _getLegacyResourceCachePath:url];
-    self.legacyResourceCachePaths = [self.legacyResourceCachePaths arrayByAddingObject:manifestLegacyPath];
   }
   return self;
 }
 
-- (NSMutableDictionary *) _chooseManifest:(NSArray *)manifestArray {
+- (NSMutableDictionary * _Nullable) _chooseManifest:(NSArray *)manifestArray error:(NSError **)error {
   // Find supported sdk versions
   if (manifestArray) {
     for (id providedManifest in manifestArray) {
@@ -63,10 +61,13 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
     }
   }
   
-  return [self _formatError:[NSError errorWithDomain:EXNetworkErrorDomain code:0 userInfo:@{
-                                                                                            @"errorCode": @"NO_COMPATIBLE_EXPERIENCE_FOUND",
-                                                                                            NSLocalizedDescriptionKey: [NSString stringWithFormat:@"No compatible experience found at %@. Only %@ are supported.", self.originalUrl, [[EXVersions sharedInstance].versions[@"sdkVersions"] componentsJoinedByString:@","]]
-                                                                                            }]];
+  if (error) {
+    * error = [self _formatError:[NSError errorWithDomain:EXNetworkErrorDomain code:0 userInfo:@{
+                                                                                       @"errorCode": @"NO_COMPATIBLE_EXPERIENCE_FOUND",
+                                                                                       NSLocalizedDescriptionKey: [NSString stringWithFormat:@"No compatible experience found at %@. Only %@ are supported.", self.originalUrl, [[EXVersions sharedInstance].versions[@"sdkVersions"] componentsJoinedByString:@","]]
+                                                                                       }]];
+  }
+  return nil;
 }
 
 - (void)loadResourceWithBehavior:(EXCachedResourceBehavior)behavior
@@ -91,7 +92,12 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
     // Check if server sent an array of manifests (multi-manifests)
     if ([manifestObjOrArray isKindOfClass:[NSArray class]]) {
       NSArray *manifestArray = (NSArray *)manifestObjOrArray;
-      manifestObj = [self _chooseManifest:(NSArray *)manifestArray];
+      __block NSError *manifestError;
+      manifestObj = [self _chooseManifest:(NSArray *)manifestArray error:&manifestError];
+      if (!manifestObj) {
+        errorBlock(manifestError);
+        return;
+      }
     } else {
       manifestObj = manifestObjOrArray;
     }
@@ -169,27 +175,9 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
   }
 }
 
-// TODO: delete when SDK 29 is no longer supported
-// in SDK 29 and earlier, we used to cache by the httpUrl and append index.exp to it
-- (NSString *)_getLegacyResourceCachePath:(NSURL *)httpUrl
-{
-  NSURLComponents *components = [NSURLComponents componentsWithURL:httpUrl resolvingAgainstBaseURL:YES];
-  NSMutableString *path = [((components.path) ? components.path : @"") mutableCopy];
-  if (path.length == 0 || [path characterAtIndex:path.length - 1] != '/') {
-    [path appendString:@"/"];
-  }
-  [path appendString:@"index.exp"];
-  components.path = path;
-  NSURL *legacyUrl = [components URL];
-  NSString *resourceCacheFilename = [NSString stringWithFormat:@"%@-%lu", _resourceName, (unsigned long)[legacyUrl hash]];
-  NSString *versionedResourceFilename = [NSString stringWithFormat:@"%@.%@", resourceCacheFilename, @"json"];
-  NSString *cachePath = [[self class] cachePath];
-  return [cachePath stringByAppendingPathComponent:versionedResourceFilename];
-}
-
 - (NSString *)resourceCachePath
 {
-  NSString *resourceCacheFilename = [NSString stringWithFormat:@"%@-%lu", _resourceName, (unsigned long)[_originalUrl hash]];
+  NSString *resourceCacheFilename = [NSString stringWithFormat:@"%@-%lu", self.resourceName, (unsigned long)[_originalUrl hash]];
   NSString *versionedResourceFilename = [NSString stringWithFormat:@"%@.%@", resourceCacheFilename, @"json"];
   return [[[self class] cachePath] stringByAppendingPathComponent:versionedResourceFilename];
 }
@@ -443,6 +431,8 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
     formattedMessage = @"The experience you requested requires a newer version of the Expo Client app. Please download the latest version from the App Store.";
   } else if ([errorCode isEqualToString:@"NO_COMPATIBLE_EXPERIENCE_FOUND"]){
     formattedMessage = rawMessage; // No compatible experience found at ${originalUrl}. Only ${currentSdkVersions} are supported.
+  } else if ([errorCode isEqualToString:@"EXPERIENCE_NOT_VIEWABLE"]) {
+    formattedMessage = [NSString stringWithFormat:@"The experience you requested is not viewable by you. You will need to log in or ask the owner to grant you access."];
   } else if ([errorCode isEqualToString:@"USER_SNACK_NOT_FOUND"] || [errorCode isEqualToString:@"SNACK_NOT_FOUND"]) {
     formattedMessage = [NSString stringWithFormat:@"No snack found at %@.", self.originalUrl];
   } else if ([errorCode isEqualToString:@"SNACK_RUNTIME_NOT_RELEASE"]) {

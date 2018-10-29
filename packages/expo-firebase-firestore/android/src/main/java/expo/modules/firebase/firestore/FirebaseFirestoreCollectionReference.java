@@ -193,8 +193,7 @@ public class FirebaseFirestoreCollectionReference {
   }
 
   private Query applyOrders(Query query) {
-    List<Object> ordersList = Utils.recursivelyDeconstructReadableArray(orders);
-    for (Object o : ordersList) {
+    for (Object o : orders) {
       Map<String, Object> order = (Map) o;
       String direction = (String) order.get("direction");
       Map<String, Object> fieldPathMap = (Map) order.get("fieldPath");
@@ -257,7 +256,7 @@ public class FirebaseFirestoreCollectionReference {
     event.putString("listenerId", listenerId);
     event.putBundle("querySnapshot", data);
 
-    Utils.sendEvent(moduleRegistry, "firestore_collection_sync_event", event);
+    Utils.sendEvent(moduleRegistry, "Expo.Firebase.firestore_collection_sync_event", event);
   }
 
   /**
@@ -274,6 +273,6 @@ public class FirebaseFirestoreCollectionReference {
     event.putString("listenerId", listenerId);
     event.putBundle("error", FirebaseFirestoreModule.getJSError(exception));
 
-    Utils.sendEvent(moduleRegistry, "firestore_collection_sync_event", event);
+    Utils.sendEvent(moduleRegistry, "Expo.Firebase.firestore_collection_sync_event", event);
   }
 }

@@ -3,15 +3,8 @@
  * Messaging (FCM) representation wrapper
  */
 import { Platform } from 'expo-core';
-import {
-  events,
-  internals,
-  getLogger,
-  ModuleBase,
-  getNativeModule,
-  registerModule,
-  utils,
-} from 'expo-firebase-app';
+import { events, internals, ModuleBase, registerModule, utils } from 'expo-firebase-app';
+
 import RemoteMessage from './RemoteMessage';
 
 import type App from 'expo-firebase-app';
@@ -36,7 +29,10 @@ export type OnTokenRefreshObserver = {
   next: OnTokenRefresh,
 };
 
-const NATIVE_EVENTS = ['messaging_message_received', 'messaging_token_refreshed'];
+const NATIVE_EVENTS = [
+  'Expo.Firebase.messaging_message_received',
+  'Expo.Firebase.messaging_token_refreshed',
+];
 
 export const MODULE_NAME = 'ExpoFirebaseMessaging';
 export const NAMESPACE = 'messaging';
@@ -57,15 +53,15 @@ export default class Messaging extends ModuleBase {
     super(app, {
       events: NATIVE_EVENTS,
       moduleName: MODULE_NAME,
-      multiApp: false,
-      hasShards: false,
+      hasMultiAppSupport: false,
+      hasCustomUrlSupport: false,
       namespace: NAMESPACE,
     });
 
     SharedEventEmitter.addListener(
       // sub to internal native event - this fans out to
       // public event name: onMessage
-      'messaging_message_received',
+      'Expo.Firebase.messaging_message_received',
       (message: NativeInboundRemoteMessage) => {
         SharedEventEmitter.emit('onMessage', new RemoteMessage(message));
       }
@@ -74,7 +70,7 @@ export default class Messaging extends ModuleBase {
     SharedEventEmitter.addListener(
       // sub to internal native event - this fans out to
       // public event name: onMessage
-      'messaging_token_refreshed',
+      'Expo.Firebase.messaging_token_refreshed',
       ({ token }) => {
         SharedEventEmitter.emit('onTokenRefresh', token);
       }
@@ -82,7 +78,7 @@ export default class Messaging extends ModuleBase {
 
     // Tell the native module that we're ready to receive events
     if (Platform.OS === 'ios') {
-      getNativeModule(this).jsInitialised();
+      this.nativeModule.jsInitialised();
     }
   }
 
@@ -99,12 +95,12 @@ export default class Messaging extends ModuleBase {
       );
     }
 
-    getLogger(this).info('Creating onMessage listener');
+    this.logger.info('Creating onMessage listener');
 
     SharedEventEmitter.addListener('onMessage', listener);
 
     return () => {
-      getLogger(this).info('Removing onMessage listener');
+      this.logger.info('Removing onMessage listener');
       SharedEventEmitter.removeListener('onMessage', listener);
     };
   }
@@ -122,11 +118,11 @@ export default class Messaging extends ModuleBase {
       );
     }
 
-    getLogger(this).info('Creating onTokenRefresh listener');
+    this.logger.info('Creating onTokenRefresh listener');
     SharedEventEmitter.addListener('onTokenRefresh', listener);
 
     return () => {
-      getLogger(this).info('Removing onTokenRefresh listener');
+      this.logger.info('Removing onTokenRefresh listener');
       SharedEventEmitter.removeListener('onTokenRefresh', listener);
     };
   }
@@ -144,18 +140,18 @@ export default class Messaging extends ModuleBase {
       );
     }
     try {
-      return getNativeModule(this).sendMessage(remoteMessage.build());
+      return this.nativeModule.sendMessage(remoteMessage.build());
     } catch (error) {
       return Promise.reject(error);
     }
   }
 
   subscribeToTopic(topic: string): Promise<void> {
-    return getNativeModule(this).subscribeToTopic(topic);
+    return this.nativeModule.subscribeToTopic(topic);
   }
 
   unsubscribeFromTopic(topic: string): Promise<void> {
-    return getNativeModule(this).unsubscribeFromTopic(topic);
+    return this.nativeModule.unsubscribeFromTopic(topic);
   }
 
   /**

@@ -3,13 +3,13 @@
 import React from 'react';
 import {
   ActivityIndicator,
-  FlatList,
   Platform,
   TouchableOpacity,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
+import { FlatList } from 'react-navigation';
 import InfiniteScrollView from 'react-native-infinite-scroll-view';
 
 import dedent from 'dedent';

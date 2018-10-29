@@ -6,7 +6,12 @@ import DocumentChange from './DocumentChange';
 import DocumentSnapshot from './DocumentSnapshot';
 
 import type Firestore from './';
-import type { NativeDocumentChange, NativeDocumentSnapshot, SnapshotMetadata } from './types';
+import type {
+  NativeDocumentChange,
+  NativeDocumentSnapshot,
+  SnapshotOptions,
+  SnapshotMetadata,
+} from './firestoreTypes.flow';
 import type Query from './Query';
 
 type NativeQuerySnapshot = {
@@ -29,10 +34,8 @@ export default class QuerySnapshot {
     this._docs = nativeData.documents.map(doc => new DocumentSnapshot(firestore, doc));
     this._metadata = nativeData.metadata;
     this._query = query;
-  }
-
-  get docChanges(): DocumentChange[] {
-    return this._changes;
+    this.docChanges = this.docChanges.bind(this);
+    this.isEqual = this.isEqual.bind(this);
   }
 
   get docs(): DocumentSnapshot[] {
@@ -55,6 +58,13 @@ export default class QuerySnapshot {
     return this._docs.length;
   }
 
+  /*
+Returns an array of the document changes since the last snapshot. If this is the first snapshot, all documents will be in the list as "added" changes.
+  */
+  docChanges(options?: SnapshotOptions): DocumentChange[] {
+    return this._changes;
+  }
+
   forEach(callback: DocumentSnapshot => any) {
     // TODO: Validation
     // validate.isFunction('callback', callback);
@@ -63,4 +73,6 @@ export default class QuerySnapshot {
       callback(doc);
     });
   }
+
+  isEqual(other: QuerySnapshot): boolean {}
 }

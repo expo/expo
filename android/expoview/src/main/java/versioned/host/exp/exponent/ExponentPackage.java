@@ -66,7 +66,7 @@ import versioned.host.exp.exponent.modules.api.ImagePickerModule;
 import versioned.host.exp.exponent.modules.api.KeepAwakeModule;
 import versioned.host.exp.exponent.modules.api.KeyboardModule;
 import versioned.host.exp.exponent.modules.api.NotificationsModule;
-import versioned.host.exp.exponent.modules.api.RNViewShotModule;
+import versioned.host.exp.exponent.modules.api.viewshot.RNViewShotModule;
 import versioned.host.exp.exponent.modules.api.SQLiteModule;
 import versioned.host.exp.exponent.modules.api.ScreenOrientationModule;
 import versioned.host.exp.exponent.modules.api.screens.RNScreensPackage;
@@ -225,6 +225,9 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new CalendarModule(reactContext, experienceId));
         nativeModules.add(new ReanimatedModule(reactContext));
         nativeModules.add(new SplashScreenModule(reactContext, experienceId));
+
+        SvgPackage svgPackage = new SvgPackage();
+        nativeModules.addAll(svgPackage.createNativeModules(reactContext));
 
         // Call to create native modules has to be at the bottom --
         // -- ExpoModuleRegistryAdapter uses the list of native modules

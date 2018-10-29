@@ -1,5 +1,6 @@
 'use strict';
 
+const os = require('os');
 const path = require('path');
 const chalk = require('chalk');
 const fs = require('fs-extra');
@@ -20,21 +21,23 @@ const defaultOptions = {
   exclude: null,
 };
 
+const ROOT_DIR = path.dirname(__dirname);
+
+// sed command differs between platforms
+const SED = os.platform() === 'linux' ? 'sed' : 'gsed';
+
 // configs for other packages that are not unimodules
 const otherPackages = [
   {
     libName: 'expo',
-    dir: `${process.env.EXPO_UNIVERSE_DIR}/exponent/packages/expo`,
+    dir: `${ROOT_DIR}/packages/expo`,
   },
 ];
 
-// list of default package owners - script will ensure all of them are owners of the published packages
-const owners = [
-  'tsapeta',
-  'sjchmiela',
-  'terribleben',
-  'esamelson',
-  'jesseruder'
+// list of teams owning the packages - script will ensure all of these teams are owning published packages
+const TEAMS_WITH_RW_ACCESS = [
+  'expo:developers',
+  'expo:swm',
 ];
 
 const beforePublishPipeline = [
@@ -50,8 +53,8 @@ const publishPipeline = [
 ];
 
 function _trimExpoDirectory(dir) {
-  if (dir.startsWith(process.env.EXPO_UNIVERSE_DIR)) {
-    return dir.substring(process.env.EXPO_UNIVERSE_DIR.length).replace(/^\/+/, '');
+  if (dir.startsWith(ROOT_DIR)) {
+    return dir.substring(ROOT_DIR.length).replace(/^\/+/, '');
   }
   return dir;
 }
@@ -89,22 +92,37 @@ async function _getPackageViewFromRegistryAsync(packageName) {
   return null;
 }
 
+function _gitLogWithFormat(sinceDate, format, directory) {
+  const stdout = _runCommand(`git log --since="${sinceDate.toISOString()}" --pretty="format:${format}" --color ${directory}`);
+  const lines = stdout.split(/\n/g);
+
+  return {
+    stdout,
+    lines,
+    numberOfCommits: lines.length,
+  };
+}
+
+function _checkNativeChangesSince(date) {
+  const nativeDirsLog = _gitLogWithFormat(date, '%h', 'ios android');
+  return nativeDirsLog.numberOfCommits > 0;
+}
+
 function _listCommitsSince(date) {
   const format = '%C(yellow)>%Creset %C(green)%an%Creset, %C(cyan)%cr%Creset, (%C(yellow)%h%Creset) %C(blue)%s%Creset';
-  const stdout = _runCommand(`git log --since="${date.toISOString()}" --pretty="format:${format}" --color .`);
-  const rawOutput = _runCommand(`git log --since="${date.toISOString()}" --pretty="format:%h" .`);
+  const log =  _gitLogWithFormat(date, format, '.');
+  const rawLog = _gitLogWithFormat(date, '%h', '.');
 
-  if (!stdout) {
+  if (!log.stdout) {
     console.log(chalk.yellow('No new commits since last publish. 🤷‍♂️\n'));
     return 0;
   }
 
-  const lines = rawOutput.split(/\n/g);
-  const numberOfCommits = lines.length;
+  const { lines, numberOfCommits } = rawLog;
   const firstCommit = numberOfCommits > 0 ? lines[lines.length - 1] : null;
 
   console.log(chalk.gray('New commits since last publish:'));
-  console.log(stdout);
+  console.log(log.stdout);
   console.log();
 
   return { numberOfCommits, firstCommit };
@@ -128,11 +146,11 @@ function _findDefaultVersion(packageJson, packageView, options) {
 
 async function _checkGNUSed() {
   // this should crash on BSD sed - it means GNU sed was not installed properly.
-  const { stderr } = shell.exec('sed --version', { silent: true });
+  const { stderr } = shell.exec(`${SED} --version`, { silent: true });
 
   if (stderr) {
     console.error(
-      chalk.red(`GNU version of 'sed' is not installed. Make sure you run 'publish-modules.sh' script instead `)
+      chalk.red(`\nGNU version of 'sed' is required but not installed. On MacOS, run 'brew install gnu-sed' to install it.\n`),
     );
     process.exit(0);
   }
@@ -155,7 +173,7 @@ async function _authenticateNpm() {
   return profile;
 }
 
-async function _askForVersionAsync(libName, currentVersion, defaultVersion, options) {
+async function _askForVersionAsync(libName, currentVersion, defaultVersion, packageView, options) {
   if (options && options.version) {
     if (semver.valid(options.version) && (!currentVersion || semver.gt(options.version, currentVersion))) {
       return options.version;
@@ -163,6 +181,9 @@ async function _askForVersionAsync(libName, currentVersion, defaultVersion, opti
     console.log(
       `Version '${options.version}' is invalid or not greater than the published version.`
     );
+  }
+  if (packageView.publishedDate && _checkNativeChangesSince(packageView.publishedDate)) {
+    console.log(chalk.yellow(`Detected changes in native code! Consider bumping at least minor number.`));
   }
   const result = await inquirer.prompt([
     {
@@ -223,7 +244,7 @@ async function _publishPromptAsync(sinceCommit) {
     // show git diff for the package
 
     console.log();
-    _runCommand(`git diff --text --color ${sinceCommit} HEAD .`, false);
+    _runCommand(`git diff --text --color ${sinceCommit}^ HEAD .`, false);
     console.log();
 
     return _publishPromptAsync();
@@ -330,7 +351,7 @@ async function _preparePublishAsync({ libName, dir }, allConfigs, options) {
   }
 
   if (shouldPublish) {
-    const newVersion = await _askForVersionAsync(libName, currentVersion, defaultVersion, options);
+    const newVersion = await _askForVersionAsync(libName, currentVersion, defaultVersion, packageView, options);
 
     return {
       currentVersion,
@@ -366,49 +387,52 @@ async function _bumpVersionsAsync({ libName, dir, newVersion, shouldPublish, pac
       continue;
     }
 
-    const commands = [
-      // updates dependencies in package.json
-      `sed -i -- 's/"${config.libName}": "[^"]*"/"${config.libName}": "~${config.newVersion}"/g' package.json`,
-
-      // updates dependencies in yarn.lock
-      `sed -z -i -- 's/"${config.libName}@[^"]*"[:,]\\n  version "[^"]*"/"${config.libName}@~${config.newVersion}":\\n  version "${config.newVersion}"/' yarn.lock`,
-      `sed -z -i -- 's/${config.libName}@[^:,]*[:,]\\n  version "[^"]*"/${config.libName}@~${config.newVersion}:\\n  version "${config.newVersion}"/' yarn.lock`,
-      `sed -z -i -- 's/${config.libName} "[^"]*"/${config.libName} "~${config.newVersion}"/g' yarn.lock`,
-
-      // updates resolved links in yarn.lock
-      `sed -i -- 's/-\\/${config.libName}-[0-9].*\\.tgz#[^"]*"/-\\/${config.libName}-${config.newVersion}.tgz"/g' yarn.lock`,
-    ];
-
     console.log(
       `${chalk.yellow('>')} Dependency ${chalk.green(config.libName)} updated to ${chalk.red(
         config.newVersion
       )}`
     );
 
-    commands.map(_runCommand);
+    // updates dependencies in package.json
+    _runCommand(
+      `${SED} -i -- 's/"${config.libName}": "[^"]*"/"${config.libName}": "~${config.newVersion}"/g' package.json`,
+    );
+
+    if (fs.existsSync(path.join(dir, 'yarn.lock'))) {
+      const commands = [
+        // updates dependencies in yarn.lock
+        `${SED} -z -i -- 's/"${config.libName}@[^"]*"[:,]\\n  version "[^"]*"/"${config.libName}@~${config.newVersion}":\\n  version "${config.newVersion}"/' yarn.lock`,
+        `${SED} -z -i -- 's/${config.libName}@[^:,]*[:,]\\n  version "[^"]*"/${config.libName}@~${config.newVersion}:\\n  version "${config.newVersion}"/' yarn.lock`,
+        `${SED} -z -i -- 's/${config.libName} "[^"]*"/${config.libName} "~${config.newVersion}"/g' yarn.lock`,
+
+        // updates resolved links in yarn.lock
+        `${SED} -i -- 's/-\\/${config.libName}-[0-9].*\\.tgz#[^"]*"/-\\/${config.libName}-${config.newVersion}.tgz"/g' yarn.lock`,
+      ];
+      commands.map(_runCommand);
+    }
   }
 
   if (fs.existsSync(path.join(dir, 'android/build.gradle'))) {
     // update version and versionName in android/build.gradle
 
     _runCommand(
-      `sed -i -- "s/version\\s*=\\s*'[^']*'/version = '${newVersion}'/g" android/build.gradle`
+      `${SED} -i -- "s/version\\s*=\\s*'[^']*'/version = '${newVersion}'/g" android/build.gradle`
     );
     _runCommand(
-      `sed -i -- 's/versionName\\s*"[^"]*"/versionName "${newVersion}"/g' android/build.gradle`
+      `${SED} -i -- 's/versionName\\s*"[^"]*"/versionName "${newVersion}"/g' android/build.gradle`
     );
 
     console.log(chalk.yellow('>'), `Updated package version in ${chalk.magenta('android/build.gradle')}`);
 
     // find versionCode
-    const versionCodeLine = _runCommand(`sed -n '/versionCode \\d*/p' android/build.gradle`);
+    const versionCodeLine = _runCommand(`${SED} -n '/versionCode \\d*/p' android/build.gradle`);
 
     if (versionCodeLine) {
       const versionCodeInt = +versionCodeLine.replace(/\D+/g, '');
       const newVersionCode = 1 + versionCodeInt;
 
       _runCommand(
-        `sed -i -- 's/versionCode ${versionCodeInt}/versionCode ${newVersionCode}/' android/build.gradle`
+        `${SED} -i -- 's/versionCode ${versionCodeInt}/versionCode ${newVersionCode}/' android/build.gradle`
       );
 
       console.log(
@@ -473,15 +497,13 @@ async function _publishAsync({ libName, tarball, shouldPublish, newVersion }, al
   }
 }
 
-async function _addPackageOwnersAsync({ libName, published, maintainers }, allConfigs, options) {
-  const ownersToAdd = owners.filter(owner => !maintainers.includes(owner));
+async function _addPackageOwnersAsync({ libName, published, maintainers }) {
+  if (published && TEAMS_WITH_RW_ACCESS.length > 0) {
+    console.log(`\nGranting ${chalk.green(libName)} read-write access to teams:`);
 
-  if (published && ownersToAdd.length > 0) {
-    console.log(`\nAdding owners to ${chalk.green(libName)}:`);
-
-    for (const ownerToAdd of ownersToAdd) {
-      _runCommand(`npm owner add ${ownerToAdd} ${libName}`);
-      console.log(chalk.yellow('+'), chalk.blue(ownerToAdd));
+    for (const teamToAdd of TEAMS_WITH_RW_ACCESS) {
+      _runCommand(`npm access grant read-write ${teamToAdd}`);
+      console.log(chalk.yellow('+'), chalk.blue(teamToAdd));
     }
   }
 }
@@ -525,11 +547,11 @@ async function _gitCommitAsync(allConfigs) {
     ]);
 
     // Add some files from iOS project that are being touched by `pod update` command
-    _runCommand(`git add ${process.env.EXPO_UNIVERSE_DIR}/exponent/ios/Podfile.lock`);
-    _runCommand(`git add ${process.env.EXPO_UNIVERSE_DIR}/exponent/ios/Pods`);
+    _runCommand(`git add ${ROOT_DIR}/ios/Podfile.lock`);
+    _runCommand(`git add ${ROOT_DIR}/ios/Pods`);
 
     // Add expoview's build.gradle in which the dependencies were updated
-    _runCommand(`git add ${process.env.EXPO_UNIVERSE_DIR}/exponent/android/expoview/build.gradle`);
+    _runCommand(`git add ${ROOT_DIR}/android/expoview/build.gradle`);
 
     _runCommand(`git commit -m "${message}" -m "${description}"`);
   }
@@ -545,9 +567,9 @@ async function _updatePodsAsync(allConfigs) {
     // no native iOS pods to update
     return;
   }
-  if (await _promptAsync(`Do you want to update pods in ${chalk.magenta('universe/exponent/ios')}?`)) {
+  if (await _promptAsync(`Do you want to update pods in ${chalk.magenta('expo/ios')}?`)) {
     // Go to Expo Client iOS folder
-    shell.cd(`${process.env.EXPO_UNIVERSE_DIR}/exponent/ios`);
+    shell.cd(`${ROOT_DIR}/ios`);
 
     // Update all pods that have been published
     console.log(`\nUpdating pods: ${chalk.green(podNames)}`);
@@ -568,8 +590,8 @@ async function _updateAndroidDependenciesAsync(allConfigs) {
     return;
   }
 
-  if (await _promptAsync(`Do you want to update dependencies in ${chalk.magenta('universe/exponent/android/expoview/build.gradle')}?`)) {
-    shell.cd(`${process.env.EXPO_UNIVERSE_DIR}/exponent/android`);
+  if (await _promptAsync(`Do you want to update dependencies in ${chalk.magenta('expo/android/expoview/build.gradle')}?`)) {
+    shell.cd(`${ROOT_DIR}/android`);
 
     console.log(`\nUpdating dependencies in ${chalk.magenta('android/expoview/build.gradle')}... 🐘`);
 
@@ -578,14 +600,14 @@ async function _updateAndroidDependenciesAsync(allConfigs) {
 
       console.log(chalk.yellow('>'), `Updating ${chalk.green(dependencyName)} dependency`);
       _runCommand(
-        `sed -i -- "s/api\\s\\+'${dependencyName}:[^']*'/api '${dependencyName}:${newVersion}'/g" expoview/build.gradle`
+        `${SED} -i -- "s/api\\s\\+'${dependencyName}:[^']*'/api '${dependencyName}:${newVersion}'/g" expoview/build.gradle`
       );
     }
     console.log();
   }
 }
 
-(async function() {
+async function publishPackagesAsync() {
   await _checkGNUSed();
   const npmProfile = await _authenticateNpm();
 
@@ -614,7 +636,7 @@ async function _updateAndroidDependenciesAsync(allConfigs) {
   const modules = Modules.getPublishableModules().map(module => {
     return {
       ...module,
-      dir: `${process.env.EXPO_UNIVERSE_DIR}/exponent/packages/${module.libName}`,
+      dir: `${ROOT_DIR}/packages/${module.libName}`,
     };
   });
 
@@ -643,7 +665,6 @@ async function _updateAndroidDependenciesAsync(allConfigs) {
       console.log();
     });
 
-    process.exit(0);
     return;
   }
 
@@ -683,4 +704,8 @@ async function _updateAndroidDependenciesAsync(allConfigs) {
   }
 
   console.log();
-})();
+}
+
+module.exports = {
+  publishPackagesAsync
+};

@@ -27,7 +27,6 @@ public class FirebasePerformanceModule extends ExportedModule implements ModuleR
   private HashMap<String, Trace> traces = new HashMap<>();
   private HashMap<String, HttpMetric> httpMetrics = new HashMap<>();
 
-  private ModuleRegistry mModuleRegistry;
   private Context mContext;
 
   public FirebasePerformanceModule(Context context) {
@@ -43,16 +42,6 @@ public class FirebasePerformanceModule extends ExportedModule implements ModuleR
 
   @Override
   public void setModuleRegistry(ModuleRegistry moduleRegistry) {
-    mModuleRegistry = moduleRegistry;
-  }
-
-  protected final Context getApplicationContext() {
-    return getCurrentActivity().getApplicationContext();
-  }
-
-  final Activity getCurrentActivity() {
-    ActivityProvider activityProvider = mModuleRegistry.getModule(ActivityProvider.class);
-    return activityProvider.getCurrentActivity();
   }
 
   @ExpoMethod
@@ -60,7 +49,6 @@ public class FirebasePerformanceModule extends ExportedModule implements ModuleR
     FirebasePerformance.getInstance().setPerformanceCollectionEnabled(enabled);
     promise.resolve(null);
   }
-
 
   /**
    * Trace

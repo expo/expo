@@ -9,14 +9,22 @@
 #import "RCTConvert+RNSVG.h"
 #import "RNSVGBrushType.h"
 #import "RNSVGUnits.h"
+#import "RNSVGLength.h"
+
+@class RNSVGPattern;
 
 @interface RNSVGPainter : NSObject
 
-- (instancetype)initWithPointsArray:(NSArray<NSString *> *)pointsArray NS_DESIGNATED_INITIALIZER;
+@property (nonatomic, assign) RNSVGPattern* pattern;
+@property (nonatomic, assign) CGRect paintBounds;
 
-- (void)paint:(CGContextRef)context;
+- (instancetype)initWithPointsArray:(NSArray<RNSVGLength *> *)pointsArray NS_DESIGNATED_INITIALIZER;
+
+- (void)paint:(CGContextRef)context bounds:(CGRect)bounds;
 
 - (void)setUnits:(RNSVGUnits)unit;
+
+- (void)setContentUnits:(RNSVGUnits)unit;
 
 - (void)setUserSpaceBoundingBox:(CGRect)userSpaceBoundingBox;
 

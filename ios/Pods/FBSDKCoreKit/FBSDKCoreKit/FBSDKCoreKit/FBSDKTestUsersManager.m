@@ -149,7 +149,7 @@ static NSMutableDictionary *gInstancesDictionary;
       NSMutableDictionary *accountData = [NSMutableDictionary dictionaryWithCapacity:2];
       accountData[kAccountsDictionaryPermissionsKey] = [NSSet setWithSet:permissions];
       accountData[kAccountsDictionaryTokenKey] = result[@"access_token"];
-      _accounts[result[@"id"]] = accountData;
+      self->_accounts[result[@"id"]] = accountData;
 
       if (handler) {
         FBSDKAccessToken *token = [self tokenDataForTokenString:accountData[kAccountsDictionaryTokenKey]
@@ -216,7 +216,8 @@ static NSMutableDictionary *gInstancesDictionary;
                                                  appID:_appID
                                                 userID:userId
                                         expirationDate:nil
-                                           refreshDate:nil];
+                                           refreshDate:nil
+                                           dataAccessExpirationDate:nil];
 }
 
 - (NSArray *)userIdAndTokenOfExistingAccountWithPermissions:(NSSet *)permissions skip:(NSSet *)setToSkip {
@@ -264,15 +265,15 @@ static NSMutableDictionary *gInstancesDictionary;
         handler(error);
       }
       // on errors, clear out accounts since it may be in a bad state
-      [_accounts removeAllObjects];
+      [self->_accounts removeAllObjects];
       return;
     } else {
       for (NSDictionary *account in result[@"data"]) {
         NSString *userId = account[@"id"];
         NSString *token = account[@"access_token"];
         if (userId && token) {
-          _accounts[userId] = [NSMutableDictionary dictionaryWithCapacity:2];
-          _accounts[userId][kAccountsDictionaryTokenKey] = token;
+          self->_accounts[userId] = [NSMutableDictionary dictionaryWithCapacity:2];
+          self->_accounts[userId][kAccountsDictionaryTokenKey] = token;
           expectedTestAccounts++;
           [permissionConnection addRequest:[[FBSDKGraphRequest alloc] initWithGraphPath:[NSString stringWithFormat:@"%@?fields=permissions", userId]
                                                                              parameters:nil
@@ -280,7 +281,7 @@ static NSMutableDictionary *gInstancesDictionary;
                                                                                 version:nil
                                                                              HTTPMethod:nil]
                          completionHandler:^(FBSDKGraphRequestConnection *innerConnection2, id innerResult, NSError *innerError) {
-                           if (_accounts.count == 0) {
+                           if (self->_accounts.count == 0) {
                              // indicates an earlier error that was already passed to handler, so just short circuit.
                              return;
                            }
@@ -288,7 +289,7 @@ static NSMutableDictionary *gInstancesDictionary;
                              if (handler) {
                                handler(innerError);
                              }
-                             [_accounts removeAllObjects];
+                             [self->_accounts removeAllObjects];
                              return;
                            } else {
                              NSMutableSet *grantedPermissions = [NSMutableSet set];
@@ -298,7 +299,7 @@ static NSMutableDictionary *gInstancesDictionary;
                                  [grantedPermissions addObject:obj[@"permission"]];
                                }
                              }];
-                             _accounts[userId][kAccountsDictionaryPermissionsKey] = grantedPermissions;
+                             self->_accounts[userId][kAccountsDictionaryPermissionsKey] = grantedPermissions;
                            }
                            expectedTestAccounts--;
                            if (!expectedTestAccounts) {

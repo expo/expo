@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+set -eo pipefail
+
+script_dir="$(dirname "$0")"
+
+export EXPO_NONINTERACTIVE=1
+
+"$script_dir/expo-module-clean"
+"$script_dir/expo-module-build"

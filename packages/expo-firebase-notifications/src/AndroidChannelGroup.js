@@ -1,7 +1,4 @@
-/**
- * @flow
- * AndroidChannelGroup representation wrapper
- */
+// @flow
 
 type NativeAndroidChannelGroup = {|
   groupId: string,
@@ -28,9 +25,7 @@ export default class AndroidChannelGroup {
 
   build(): NativeAndroidChannelGroup {
     if (!this._groupId) {
-      throw new Error(
-        'AndroidChannelGroup: Missing required `groupId` property'
-      );
+      throw new Error('AndroidChannelGroup: Missing required `groupId` property');
     } else if (!this._name) {
       throw new Error('AndroidChannelGroup: Missing required `name` property');
     }

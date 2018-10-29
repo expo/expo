@@ -12,6 +12,10 @@ import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.annotations.ReactProp;
+import com.google.android.gms.maps.model.ButtCap;
+import com.google.android.gms.maps.model.Cap;
+import com.google.android.gms.maps.model.RoundCap;
+import com.google.android.gms.maps.model.SquareCap;
 
 import java.util.Map;
 
@@ -66,6 +70,26 @@ public class AirMapPolylineManager extends ViewGroupManager<AirMapPolyline> {
   @ReactProp(name = "zIndex", defaultFloat = 1.0f)
   public void setZIndex(AirMapPolyline view, float zIndex) {
     view.setZIndex(zIndex);
+  }
+
+  @ReactProp(name = "lineCap")
+  public void setlineCap(AirMapPolyline view, String lineCap) {
+    Cap cap = null;
+    switch (lineCap) {
+      case "butt":
+        cap = new ButtCap();
+        break;
+      case "round":
+        cap = new RoundCap();
+        break;
+      case "square":
+        cap = new SquareCap();
+        break;
+      default:
+        cap = new RoundCap();
+        break;
+    }
+    view.setLineCap(cap);
   }
 
   @Override

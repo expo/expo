@@ -19,14 +19,22 @@ RCT_EXPORT_MODULE()
 {
     RNSVGImage *svgImage = [RNSVGImage new];
     svgImage.bridge = self.bridge;
-    
+
     return svgImage;
 }
 
-RCT_EXPORT_VIEW_PROPERTY(x, NSString)
-RCT_EXPORT_VIEW_PROPERTY(y, NSString)
-RCT_EXPORT_VIEW_PROPERTY(width, NSString)
-RCT_EXPORT_VIEW_PROPERTY(height, NSString)
+RCT_EXPORT_VIEW_PROPERTY(x, RNSVGLength*)
+RCT_EXPORT_VIEW_PROPERTY(y, RNSVGLength*)
+RCT_EXPORT_VIEW_PROPERTY(imagewidth, RNSVGLength*)
+RCT_EXPORT_VIEW_PROPERTY(imageheight, RNSVGLength*)
+RCT_CUSTOM_VIEW_PROPERTY(width, id, RNSVGImage)
+{
+    view.imagewidth = [RCTConvert RNSVGLength:json];
+}
+RCT_CUSTOM_VIEW_PROPERTY(height, id, RNSVGImage)
+{
+    view.imageheight = [RCTConvert RNSVGLength:json];
+}
 RCT_EXPORT_VIEW_PROPERTY(src, id)
 RCT_EXPORT_VIEW_PROPERTY(align, NSString)
 RCT_EXPORT_VIEW_PROPERTY(meetOrSlice, RNSVGVBMOS)

@@ -344,7 +344,7 @@ public class FirebaseFirestoreModule extends ExportedModule implements ModuleReg
               @Override
               public void run() {
                 Bundle eventMap = transactionHandler.createEventMap(null, "update");
-                Utils.sendEvent(mModuleRegistry, "firestore_transaction_event", eventMap);
+                Utils.sendEvent(mModuleRegistry, "Expo.Firebase.firestore_transaction_event", eventMap);
               }
             });
 
@@ -415,7 +415,7 @@ public class FirebaseFirestoreModule extends ExportedModule implements ModuleReg
             if (!transactionHandler.aborted) {
               Log.d(TAG, "Transaction onSuccess!");
               Bundle eventMap = transactionHandler.createEventMap(null, "complete");
-              Utils.sendEvent(mModuleRegistry, "firestore_transaction_event", eventMap);
+              Utils.sendEvent(mModuleRegistry, "Expo.Firebase.firestore_transaction_event", eventMap);
             }
           }
         }).addOnFailureListener(new OnFailureListener() {
@@ -424,7 +424,7 @@ public class FirebaseFirestoreModule extends ExportedModule implements ModuleReg
             if (!transactionHandler.aborted) {
               Log.w(TAG, "Transaction onFailure.", e);
               Bundle eventMap = transactionHandler.createEventMap((FirebaseFirestoreException) e, "error");
-              Utils.sendEvent(mModuleRegistry, "firestore_transaction_event", eventMap);
+              Utils.sendEvent(mModuleRegistry, "Expo.Firebase.firestore_transaction_event", eventMap);
             }
           }
         });

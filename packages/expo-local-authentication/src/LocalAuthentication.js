@@ -8,8 +8,19 @@ const { ExpoLocalAuthentication: LocalAuthentication } = NativeModulesProxy;
 
 type LocalAuthenticationResult = { success: true } | { success: false, error: string };
 
+export const AuthenticationType = {
+  FINGERPRINT: 1,
+  FACIAL_RECOGNITION: 2,
+};
+
+type AuthenticationTypeType = $Keys<typeof AuthenticationType>;
+
 export async function hasHardwareAsync(): Promise<boolean> {
   return LocalAuthentication.hasHardwareAsync();
+}
+
+export async function supportedAuthenticationTypesAsync(): Promise<Array<AuthenticationTypeType>> {
+  return await LocalAuthentication.supportedAuthenticationTypesAsync();
 }
 
 export async function isEnrolledAsync(): Promise<boolean> {

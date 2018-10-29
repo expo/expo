@@ -657,17 +657,45 @@ FBSDK_EXTERN NSString *const FBSDKAppEventParameterNameOrderID;
                    Zip: zp
                    Country: country
  */
-+ (void) setUserData:(NSDictionary*)userData;
++ (void)setUserData:(NSDictionary *)userData
+  DEPRECATED_MSG_ATTRIBUTE("Renamed `setUserEmail:firstName: ...`");
 
+/*
+  Sets custom user data to associate with all app events. All user data are hashed
+  and used to match Facebook user from this instance of an application.
+
+  The user data will be persisted between application instances.
+
+ @param email user's email
+ @param firstName user's first name
+ @param lastName user's last name
+ @param phone user's phone
+ @param dateOfBirth user's date of birth
+ @param gender user's gender
+ @param city user's city
+ @param state user's state
+ @param zip user's zip
+ @param country user's country
+ */
++ (void)setUserEmail:(nullable NSString *)email
+           firstName:(nullable NSString *)firstName
+            lastName:(nullable NSString *)lastName
+               phone:(nullable NSString *)phone
+         dateOfBirth:(nullable NSString *)dateOfBirth
+              gender:(nullable NSString *)gender
+                city:(nullable NSString *)city
+               state:(nullable NSString *)state
+                 zip:(nullable NSString *)zip
+             country:(nullable NSString *)country;
 /*
   Returns the set user data else nil
 */
-+ (NSString*) getUserData;
++ (NSString *)getUserData;
 
 /*
   Clears the current user data
 */
-+ (void) clearUserData;
++ (void)clearUserData;
 
 /*
   Sends a request to update the properties for the current user, set by `setUserID:`

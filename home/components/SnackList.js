@@ -67,7 +67,7 @@ export default class ProjectList extends React.PureComponent {
   };
 
   _extractKey = item => {
-    return item.id;
+    return item.slug;
   };
 
   _handleLoadMoreAsync = async () => {

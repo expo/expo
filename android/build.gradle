@@ -7,7 +7,7 @@ buildscript {
   }
   dependencies {
     classpath 'com.android.tools.build:gradle:3.1.4'
-    classpath 'com.google.gms:google-services:3.2.0'
+    classpath 'com.google.gms:google-services:3.2.1'
     classpath 'de.undercouch:gradle-download-task:2.0.0'
   }
 }
@@ -26,13 +26,11 @@ allprojects {
       // We use a modified build of com.android.support.test:runner:1.0.1. Explanation in maven-test/README
       url "$rootDir/maven-test"
     }
-    maven {
-      url 'https://maven.google.com'
-    }
+    google()
     jcenter()
     maven {
       // Local Maven repo containing AARs with JSC built for Android
-      url "$rootDir/../home/node_modules/jsc-android/android"
+      url "$rootDir/../node_modules/jsc-android/dist"
     }
     flatDir {
       dirs 'libs'

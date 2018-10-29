@@ -2,7 +2,8 @@
  * @flow
  * OnDisconnect representation wrapper
  */
-import { utils, getNativeModule } from 'expo-firebase-app';
+import { utils } from 'expo-firebase-app';
+
 import type Database from './index';
 import type Reference from './Reference';
 
@@ -33,7 +34,7 @@ export default class OnDisconnect {
    * @returns {*}
    */
   set(value: string | Object): Promise<void> {
-    return getNativeModule(this._database).onDisconnectSet(this.path, {
+    return this._database.nativeModule.onDisconnectSet(this.path, {
       type: typeOf(value),
       value,
     });
@@ -45,7 +46,7 @@ export default class OnDisconnect {
    * @returns {*}
    */
   update(values: Object): Promise<void> {
-    return getNativeModule(this._database).onDisconnectUpdate(this.path, values);
+    return this._database.nativeModule.onDisconnectUpdate(this.path, values);
   }
 
   /**
@@ -53,7 +54,7 @@ export default class OnDisconnect {
    * @returns {*}
    */
   remove(): Promise<void> {
-    return getNativeModule(this._database).onDisconnectRemove(this.path);
+    return this._database.nativeModule.onDisconnectRemove(this.path);
   }
 
   /**
@@ -61,6 +62,6 @@ export default class OnDisconnect {
    * @returns {*}
    */
   cancel(): Promise<void> {
-    return getNativeModule(this._database).onDisconnectCancel(this.path);
+    return this._database.nativeModule.onDisconnectCancel(this.path);
   }
 }

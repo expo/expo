@@ -14,13 +14,13 @@
     "AppEntry.js"
   ],
   "scripts": {
-    "clean": "rm -rf build",
-    "jest": "jest",
+    "build": "EXPO_NONINTERACTIVE=1 expo-module build && expo-module babel --config-file ./babel.config.build.js --out-dir build build/Expo.js",
+    "clean": "expo-module clean",
     "lint": "eslint tools",
-    "prepare": "rm -rf build && tsc --project .",
-    "prepublishOnly": "proofread",
-    "test": "jest --watch",
-    "tsc": "tsc --project ."
+    "test": "expo-module test",
+    "prepare": "expo-module prepare && expo-module babel --config-file ./babel.config.build.js --out-dir build build/Expo.js",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
   },
   "jest": {
     "preset": "jest-expo",
@@ -45,8 +45,8 @@
     ],
     "globals": {
       "ts-jest": {
-        "tsConfigFile": "tsconfig.jest.json",
-        "useBabelrc": true
+        "tsConfig": "tsconfig.jest.json",
+        "babelConfig": true
       }
     }
   },
@@ -118,24 +118,26 @@
     "qs": "^6.5.0",
     "react-native-branch": "2.2.5",
     "react-native-gesture-handler": "1.0.8",
-    "react-native-maps": "0.21.0",
-    "react-native-reanimated": "1.0.0-alpha.9",
-    "react-native-screens": "^1.0.0-alpha.14",
-    "react-native-svg": "6.5.2",
+    "react-native-maps": "expo/react-native-maps#v0.22.0-exp.0",
+    "react-native-reanimated": "1.0.0-alpha.10",
+    "react-native-screens": "1.0.0-alpha.15",
+    "react-native-svg": "8.0.8",
+    "react-native-view-shot": "2.5.0",
     "serialize-error": "^2.1.0",
     "uuid-js": "^0.7.5",
     "whatwg-fetch": "^2.0.4"
   },
   "devDependencies": {
-    "@expo/npm-proofread": "^1.0.1",
+    "@babel/plugin-transform-modules-commonjs": "^7.1.0",
     "@types/jest": "^23.3.2",
     "@types/react": "^16.4.13",
     "@types/react-native": "^0.56.22",
     "@types/react-test-renderer": "^16.0.2",
+    "expo-module-scripts": "^1.0.0",
     "jest-expo": "^30.0.0",
     "react": "16.5.0",
     "react-native": "^0.57.1",
-    "react-test-renderer": "16.3.1",
-    "ts-jest": "23.0.1"
+    "react-test-renderer": "16.5.0",
+    "ts-jest": "~23.10.4"
   }
 }

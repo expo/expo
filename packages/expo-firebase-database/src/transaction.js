@@ -2,7 +2,8 @@
  * @flow
  * Database Transaction representation wrapper
  */
-import { events, getLogger, getNativeModule } from 'expo-firebase-app';
+import { events } from 'expo-firebase-app';
+
 import type Database from './index';
 
 const { getAppEventName, SharedEventEmitter } = events;
@@ -28,7 +29,7 @@ export default class TransactionHandler {
     this._database = database;
 
     SharedEventEmitter.addListener(
-      getAppEventName(this._database, 'database_transaction_event'),
+      getAppEventName(this._database, 'Expo.Firebase.database_transaction_event'),
       this._handleTransactionEvent.bind(this)
     );
   }
@@ -58,7 +59,7 @@ export default class TransactionHandler {
       started: true,
     };
 
-    getNativeModule(this._database).transactionStart(reference.path, id, applyLocally);
+    this._database.nativeModule.transactionStart(reference.path, id, applyLocally);
   }
 
   /**
@@ -80,7 +81,7 @@ export default class TransactionHandler {
       case 'complete':
         return this._handleComplete(event);
       default:
-        getLogger(this._database).warn(`Unknown transaction event type: '${event.type}'`, event);
+        this._database.logger.warn(`Unknown transaction event type: '${event.type}'`, event);
         return undefined;
     }
   }
@@ -106,7 +107,7 @@ export default class TransactionHandler {
         abort = true;
       }
 
-      getNativeModule(this._database).transactionTryCommit(id, {
+      this._database.nativeModule.transactionTryCommit(id, {
         value: newValue,
         abort,
       });

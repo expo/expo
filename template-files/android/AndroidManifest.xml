@@ -155,14 +155,30 @@
 
 
     <activity android:name="com.facebook.react.devsupport.DevSettingsActivity"/>
+    <!-- WHEN_PREPARING_SHELL_REMOVE_FROM_HERE -->
     <!-- ADD DEV SETTINGS HERE -->
+    <!-- BEGIN_SDK_30 -->
     <activity android:name="abi30_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
+    <!-- END_SDK_30 -->
+    <!-- BEGIN_SDK_29 -->
     <activity android:name="abi29_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
+    <!-- END_SDK_29 -->
+    <!-- BEGIN_SDK_28 -->
     <activity android:name="abi28_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
+    <!-- END_SDK_28 -->
+    <!-- BEGIN_SDK_27 -->
     <activity android:name="abi27_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
+    <!-- END_SDK_27 -->
+    <!-- BEGIN_SDK_26 -->
     <activity android:name="abi26_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
+    <!-- END_SDK_26 -->
+    <!-- BEGIN_SDK_25 -->
     <activity android:name="abi25_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
+    <!-- END_SDK_25 -->
+    <!-- BEGIN_SDK_24 -->
     <activity android:name="abi24_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
+    <!-- END_SDK_24 -->
+    <!-- WHEN_PREPARING_SHELL_REMOVE_TO_HERE -->
 
     <activity
       android:name=".ExponentDevActivity"

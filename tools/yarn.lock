@@ -38,7 +38,7 @@
     mv "~2"
     safe-json-stringify "~1"
 
-"@expo/json-file@^8.0.0":
+"@expo/json-file@^8.0.1":
   version "8.0.1"
   resolved "https://registry.yarnpkg.com/@expo/json-file/-/json-file-8.0.1.tgz#6109f0c1e18c0f84aa5e052406c861cd7ae347a8"
   integrity sha512-ojXbGO0cr0d3jGsPahy4egrcv+VVDL4KxeauGoGDeEotGBqbnLgjNvsxB8GJRJmKekAhPyGlVUBxpUPU+wVyGQ==
@@ -133,7 +133,7 @@
     request "^2.81.0"
     uuid "^3.0.0"
 
-"@expo/osascript@^1.8.0":
+"@expo/osascript@^1.8.2":
   version "1.8.2"
   resolved "https://registry.yarnpkg.com/@expo/osascript/-/osascript-1.8.2.tgz#4e7c9da0d947495df6cf170b9b51c635edd7529a"
   integrity sha512-OLqqHBiSWMnxxUqU+YgBfM7bFTy/00ARNUAB3UQHa/kWPW54VkT7rJDN1I24es1PZt4D45jTGnApCvXVo/tsnQ==
@@ -142,17 +142,16 @@
     babel-runtime "^6.23.0"
     exec-async "^2.2.0"
 
-"@expo/schemer@1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@expo/schemer/-/schemer-1.1.0.tgz#74e519233f82c8871d018475895043e4caef3e7e"
-  integrity sha512-3A9weL/nBXZ8sqPV8lP9g7qswmpzbGFRwvnIR8mF/CBZMwCx/JJ11QBS6mZwr7jm4kbU/C6D+HnDh3RjCHSSow==
+"@expo/schemer@^1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@expo/schemer/-/schemer-1.1.1.tgz#3c9d007a55ca30b369c80a6fde774e315343f717"
+  integrity sha512-Up4vlsQA7wRjLThtw43+tGcWcFmwIyXi2zP4N6jiBQRGYW5kJOnVHhzmd+ZcNsiDf+UY+jb2lm9MAsO95XHOuQ==
   dependencies:
     ajv "^5.2.2"
     babel-polyfill "^6.23.0"
     babel-preset-flow "^6.23.0"
     es6-error "^4.0.2"
     file-type "^5.2.0"
-    instapromise "^2.0.7"
     lodash "^4.17.4"
     probe-image-size "^3.1.0"
     read-chunk "^2.0.0"
@@ -896,6 +895,11 @@ combined-stream@~1.0.6:
   integrity sha512-brWl9y6vOB1xYPZcpZde3N9zDByXTosAeMDo4p1wzo6UMOX4vumB+TP1RZ76sfE6Md68Q0NJSrE/gbezd4Ul+w==
   dependencies:
     delayed-stream "~1.0.0"
+
+command-exists@^1.2.7:
+  version "1.2.7"
+  resolved "https://registry.yarnpkg.com/command-exists/-/command-exists-1.2.7.tgz#16828f0c3ff2b0c58805861ef211b64fc15692a8"
+  integrity sha512-doWDvhXCcW5LK0cIUWrOQ8oMFXJv3lEQCkJpGVjM8v9SV0uhqYXB943538tEA2CiaWqSyuYUGAm5ezDwEx9xlw==
 
 commander@^2.9.0:
   version "2.18.0"
@@ -2011,6 +2015,11 @@ hasbin@^1.2.3:
   dependencies:
     async "~1.5"
 
+hashids@^1.1.4:
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/hashids/-/hashids-1.2.2.tgz#28635c7f2f7360ba463686078eee837479e8eafb"
+  integrity sha512-dEHCG2LraR6PNvSGxosZHIRgxF5sNLOIBFEHbj8lfP9WWmu/PWPMzsip1drdVSOFi51N2pU7gZavrgn7sbGFuw==
+
 hoek@4.x.x:
   version "4.2.1"
   resolved "https://registry.yarnpkg.com/hoek/-/hoek-4.2.1.tgz#9634502aa12c445dd5a7c5734b572bb8738aacbb"
@@ -2144,11 +2153,6 @@ inquirer@^5.0.1:
     string-width "^2.1.0"
     strip-ansi "^4.0.0"
     through "^2.3.6"
-
-instapromise@^2.0.7:
-  version "2.0.7"
-  resolved "https://registry.yarnpkg.com/instapromise/-/instapromise-2.0.7.tgz#85e66b31021194da11214c865127ef04ec30167a"
-  integrity sha1-heZrMQIRlNoRIUyGUSfvBOwwFno=
 
 interpret@^1.0.0, interpret@^1.1.0:
   version "1.1.0"
@@ -4677,21 +4681,22 @@ write-file-atomic@^2.3.0:
     imurmurhash "^0.1.4"
     signal-exit "^3.0.2"
 
-xdl@^50.4.2:
-  version "50.9.0"
-  resolved "https://registry.yarnpkg.com/xdl/-/xdl-50.9.0.tgz#79e1db0ff399e50aaeff33d626ec259d60c98844"
-  integrity sha512-SvgShg4abiZyiiHKzR1tSxSGVdaiUXM2vWX5WJRQiDkDHuST98/xXGmLFC9ZktIymJAPDrRf80facLYGYwPWhQ==
+xdl@51.4.1-alpha.31+cdeadc8:
+  version "51.4.1-alpha.31"
+  resolved "https://registry.yarnpkg.com/xdl/-/xdl-51.4.1-alpha.31.tgz#051954fcc89f591a0b2f2fab415569eb59bbb3d9"
+  integrity sha512-ldoUfxNDV6zhTBc+ZO4TxUn5y4ZLP4O8RLjqzKCsbs3FL/+0bclGsuKu+2Sx6Ej0FreKwhZURWT2RcRelylgzA==
   dependencies:
     "@expo/bunyan" "3.0.2"
-    "@expo/json-file" "^8.0.0"
+    "@expo/json-file" "^8.0.1"
     "@expo/ngrok" "2.4.2"
-    "@expo/osascript" "^1.8.0"
-    "@expo/schemer" "1.1.0"
+    "@expo/osascript" "^1.8.2"
+    "@expo/schemer" "^1.1.1"
     "@expo/spawn-async" "^1.2.8"
     analytics-node "^2.1.0"
     axios "0.16.2"
     body-parser "^1.15.2"
     chalk "^2.4.1"
+    command-exists "^1.2.7"
     concat-stream "^1.6.0"
     decache "^4.1.0"
     delay-async "^1.0.0"
@@ -4708,6 +4713,7 @@ xdl@^50.4.2:
     glob-promise "^3.3.0"
     globby "^6.1.0"
     hasbin "^1.2.3"
+    hashids "^1.1.4"
     home-dir "^1.0.0"
     idx "^2.1.0"
     indent-string "^3.1.0"
@@ -4718,7 +4724,6 @@ xdl@^50.4.2:
     lodash "^4.14.1"
     md5hex "^1.0.0"
     minimatch "^3.0.4"
-    mkdirp "^0.5.1"
     mv "^2.1.1"
     ncp "^2.0.0"
     node-forge "^0.7.4"

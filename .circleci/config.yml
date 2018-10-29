@@ -13,6 +13,7 @@ commands:
       - run: mkdir -p ~/.config/direnv
       - run: echo -e "[whitelist]\nprefix = [ \"$HOME\" ]" > ~/.config/direnv/config.toml
       - run: echo 'eval "$(direnv export bash)"' >> ~/.bash_profile
+      - run: echo '--frozen-lockfile true' >> ~/.yarnrc
       - checkout
   update_submodules:
     steps:
@@ -39,7 +40,7 @@ commands:
       - save_cache:
           key: jars-v0-{{ checksum "android/build.gradle" }}-{{ checksum "android/app/build.gradle" }}
           paths:
-            - /.gradle
+            - ~/.gradle
   yarn:
     parameters:
       command:
@@ -83,8 +84,6 @@ executors:
       LANG: en_US.UTF-8
 
 workflows:
-  version: 2
-
   # JavaScript packages that make up the SDK
   sdk:
     jobs:
@@ -120,7 +119,7 @@ jobs:
       - save_yarn_cache
       # Add back linting once we get ESLint or TSLint set up
       - yarn:
-          command: jest --maxWorkers 1
+          command: test --maxWorkers 1
           working_directory: ~/expo/packages/expo
 
   babel_preset:
@@ -170,6 +169,8 @@ jobs:
     steps:
       - install_nix
       - setup
+      - yarn:
+          working_directory: ~/expo # need jsc-android dependency in expokit-npm-package
       - yarn:
           working_directory: ~/expo/tools-public
       - run: nix-env -f . -iA nodejs-8_x # For some reason `nix run` doesn't work

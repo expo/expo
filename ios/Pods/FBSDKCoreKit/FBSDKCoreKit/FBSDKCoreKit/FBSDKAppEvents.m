@@ -40,7 +40,6 @@
 #import "FBSDKUserDataStore.h"
 
 #if !TARGET_OS_TV
-#import "FBSDKAppEventsUninstall.h"
 #import "FBSDKEventBindingManager.h"
 #import "FBSDKHybridAppEventsScriptMessageHandler.h"
 #endif
@@ -270,7 +269,6 @@ NSString *const FBSDKAPPEventsWKWebViewMessagesProtocolKey = @"fbmq-0.1";
 
 #define NUM_LOG_EVENTS_TO_TRY_TO_FLUSH_AFTER 100
 #define FLUSH_PERIOD_IN_SECONDS 15
-#define APP_SUPPORTS_ATTRIBUTION_ID_RECHECK_PERIOD 60 * 60 * 24
 #define USER_ID_USER_DEFAULTS_KEY @"com.facebook.sdk.appevents.userid"
 
 static NSString *g_overrideAppID = nil;
@@ -284,7 +282,6 @@ static NSString *g_overrideAppID = nil;
 @property (nonatomic, copy) NSString *pushNotificationsDeviceTokenString;
 
 @property (nonatomic, strong) dispatch_source_t flushTimer;
-@property (nonatomic, strong) dispatch_source_t attributionIDRecheckTimer;
 
 @end
 
@@ -320,10 +317,6 @@ static NSString *g_overrideAppID = nil;
                                                           [weakSelf flushTimerFired:nil];
                                                         }];
 
-    self.attributionIDRecheckTimer = [FBSDKUtility startGCDTimerWithInterval:APP_SUPPORTS_ATTRIBUTION_ID_RECHECK_PERIOD
-                                                                       block:^{
-                                                                         [weakSelf appSettingsFetchStateResetTimerFired:nil];
-                                                                       }];
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     _userID = [defaults stringForKey:USER_ID_USER_DEFAULTS_KEY];
   }
@@ -355,7 +348,6 @@ static NSString *g_overrideAppID = nil;
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   [FBSDKUtility stopGCDTimer:self.flushTimer];
-  [FBSDKUtility stopGCDTimer:self.attributionIDRecheckTimer];
 }
 
 #pragma mark - Public Methods
@@ -671,16 +663,51 @@ static NSString *g_overrideAppID = nil;
   return [[self class] singleton]->_userID;
 }
 
-+ (void) setUserData:(NSDictionary*)userData{
++ (void)setUserData:(NSDictionary*)userData
+{
   [FBSDKUserDataStore setUserDataAndHash:userData];
 }
 
-+ (NSString*) getUserData{
++ (void)setUserEmail:(nullable NSString *)email
+           firstName:(nullable NSString *)firstName
+            lastName:(nullable NSString *)lastName
+               phone:(nullable NSString *)phone
+         dateOfBirth:(nullable NSString *)dateOfBirth
+              gender:(nullable NSString *)gender
+                city:(nullable NSString *)city
+               state:(nullable NSString *)state
+                 zip:(nullable NSString *)zip
+             country:(nullable NSString *)country
+{
+  [FBSDKUserDataStore setUserDataAndHash:email
+                               firstName:firstName
+                                lastName:lastName
+                                   phone:phone
+                             dateOfBirth:dateOfBirth
+                                  gender:gender
+                                    city:city
+                                   state:state
+                                     zip:zip
+                                 country:country];
+}
+
++ (NSString*)getUserData
+{
   return [FBSDKUserDataStore getHashedUserData];
 }
 
-+ (void) clearUserData{
-  [FBSDKUserDataStore setUserDataAndHash:nil];
++ (void)clearUserData
+{
+  [FBSDKUserDataStore setUserDataAndHash:nil
+                               firstName:nil
+                                lastName:nil
+                                   phone:nil
+                             dateOfBirth:nil
+                                  gender:nil
+                                    city:nil
+                                   state:nil
+                                     zip:nil
+                                 country:nil];
 }
 
 + (void)updateUserProperties:(NSDictionary *)properties handler:(FBSDKGraphRequestHandler)handler
@@ -822,7 +849,7 @@ static NSString *g_overrideAppID = nil;
   [self fetchServerConfiguration:^{
     NSDictionary *params = [FBSDKAppEventsUtility activityParametersDictionaryForEvent:@"MOBILE_APP_INSTALL"
                                                                     implicitEventsOnly:NO
-                                                             shouldAccessAdvertisingID:_serverConfiguration.isAdvertisingIDEnabled];
+                                                             shouldAccessAdvertisingID:self->_serverConfiguration.isAdvertisingIDEnabled];
     NSString *path = [NSString stringWithFormat:@"%@/activities", appID];
     FBSDKGraphRequest *request = [[FBSDKGraphRequest alloc] initWithGraphPath:path
                                                          parameters:params
@@ -857,31 +884,21 @@ static NSString *g_overrideAppID = nil;
 // app events can use a server configuration up to 24 hours old to minimize network traffic.
 - (void)fetchServerConfiguration:(void (^)(void))callback
 {
-  if (_serverConfiguration == nil) {
-    [FBSDKServerConfigurationManager loadServerConfigurationWithCompletionBlock:^(FBSDKServerConfiguration *serverConfiguration, NSError *error) {
-      _serverConfiguration = serverConfiguration;
+  [FBSDKServerConfigurationManager loadServerConfigurationWithCompletionBlock:^(FBSDKServerConfiguration *serverConfiguration, NSError *error) {
+    self->_serverConfiguration = serverConfiguration;
 
-      if (_serverConfiguration.implicitPurchaseLoggingEnabled) {
-        [FBSDKPaymentObserver startObservingTransactions];
-      } else {
-        [FBSDKPaymentObserver stopObservingTransactions];
-      }
+    if (self->_serverConfiguration.implicitPurchaseLoggingEnabled) {
+      [FBSDKPaymentObserver startObservingTransactions];
+    } else {
+      [FBSDKPaymentObserver stopObservingTransactions];
+    }
 #if !TARGET_OS_TV
-      [self enableCodelessEvents];
-      [FBSDKAppEventsUninstall setUninstallTrackingEnabled:_serverConfiguration.uninstallTrackingEnabled];
+    [self enableCodelessEvents];
 #endif
-      if (callback) {
-        callback();
-      }
-    }];
-    return;
-  }
-#if !TARGET_OS_TV
-  [self enableCodelessEvents];
-#endif
-  if (callback) {
-    callback();
-  }
+    if (callback) {
+      callback();
+    }
+  }];
 }
 
 - (void)instanceLogEvent:(NSString *)eventName
@@ -1038,7 +1055,7 @@ static NSString *g_overrideAppID = nil;
 
   [self fetchServerConfiguration:^(void) {
     NSString *receipt_data = [appEventsState extractReceiptData];
-    NSString *encodedEvents = [appEventsState JSONStringForEvents:_serverConfiguration.implicitLoggingEnabled];
+    NSString *encodedEvents = [appEventsState JSONStringForEvents:self->_serverConfiguration.implicitLoggingEnabled];
     if (!encodedEvents) {
       [FBSDKLogger singleShotLogEntry:FBSDKLoggingBehaviorAppEvents
                              logEntry:@"FBSDKAppEvents: Flushing skipped - no events after removing implicitly logged ones.\n"];
@@ -1047,7 +1064,7 @@ static NSString *g_overrideAppID = nil;
     NSMutableDictionary *postParameters = [FBSDKAppEventsUtility
                                            activityParametersDictionaryForEvent:@"CUSTOM_APP_EVENTS"
                                            implicitEventsOnly:appEventsState.areAllEventsImplicit
-                                           shouldAccessAdvertisingID:_serverConfiguration.advertisingIDEnabled];
+                                           shouldAccessAdvertisingID:self->_serverConfiguration.advertisingIDEnabled];
     NSInteger length = [receipt_data length];
     if (length > 0) {
       postParameters[@"receipt_data"] = receipt_data;
@@ -1161,11 +1178,6 @@ static NSString *g_overrideAppID = nil;
   if (self.flushBehavior != FBSDKAppEventsFlushBehaviorExplicitOnly && !self.disableTimer) {
     [self flushForReason:FBSDKAppEventsFlushReasonTimer];
   }
-}
-
-- (void)appSettingsFetchStateResetTimerFired:(id)arg
-{
-  _serverConfiguration = nil;
 }
 
 - (void)applicationDidBecomeActive

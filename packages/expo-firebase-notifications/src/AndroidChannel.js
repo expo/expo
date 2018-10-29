@@ -1,8 +1,6 @@
-/**
- * @flow
- * AndroidChannel representation wrapper
- */
+// @flow
 import { Importance, Visibility } from './types';
+
 import type { ImportanceType, VisibilityType } from './types';
 
 type NativeAndroidChannel = {|
@@ -174,9 +172,7 @@ export default class AndroidChannel {
    * @param lockScreenVisibility
    * @returns {AndroidChannel}
    */
-  setLockScreenVisibility(
-    lockScreenVisibility: VisibilityType
-  ): AndroidChannel {
+  setLockScreenVisibility(lockScreenVisibility: VisibilityType): AndroidChannel {
     if (!Object.values(Visibility).includes(lockScreenVisibility)) {
       throw new Error(
         `AndroidChannel:setLockScreenVisibility Invalid Visibility: ${lockScreenVisibility}`

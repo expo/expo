@@ -13,6 +13,32 @@
     BOOL _urlTemplateSet;
 }
 
+- (void)setShouldReplaceMapContent:(BOOL)shouldReplaceMapContent
+{
+  _shouldReplaceMapContent = shouldReplaceMapContent;
+  if(self.tileOverlay) {
+    self.tileOverlay.canReplaceMapContent = _shouldReplaceMapContent;
+  }
+  [self update];
+}
+
+- (void)setMaximumZ:(NSUInteger)maximumZ
+{
+  _maximumZ = maximumZ;
+  if(self.tileOverlay) {
+    self.tileOverlay.maximumZ = _maximumZ;
+  }
+  [self update];
+}
+
+- (void)setMinimumZ:(NSUInteger)minimumZ
+{
+  _minimumZ = minimumZ;
+  if(self.tileOverlay) {
+    self.tileOverlay.minimumZ = _minimumZ;
+  }
+  [self update];
+}
 
 - (void)setUrlTemplate:(NSString *)urlTemplate{
     _urlTemplate = urlTemplate;
@@ -25,7 +51,12 @@
 {
     if (!_urlTemplateSet) return;
     self.tileOverlay = [[MKTileOverlay alloc] initWithURLTemplate:self.urlTemplate];
-    self.tileOverlay.canReplaceMapContent = YES;
+
+    self.tileOverlay.canReplaceMapContent = self.shouldReplaceMapContent;
+
+    if(self.minimumZ) {
+        self.tileOverlay.minimumZ = self.minimumZ;
+    }
     if (self.maximumZ) {
         self.tileOverlay.maximumZ = self.maximumZ;
     }

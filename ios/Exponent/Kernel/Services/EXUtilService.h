@@ -7,4 +7,6 @@
 
 - (UIViewController *)currentViewController;
 
+- (nullable NSDictionary *)launchOptions;
+
 @end

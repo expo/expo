@@ -1,0 +1,29 @@
+{
+  "name": "expo-module-scripts",
+  "version": "1.0.0",
+  "description": "A private package for various tasks for Expo module packages like compiling and testing",
+  "main": "index.js",
+  "bin": {
+    "expo-module": "bin/expo-module.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/expo/expo.git"
+  },
+  "keywords": [
+    "babel-preset",
+    "expo"
+  ],
+  "author": "Expo",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-module-scripts#readme",
+  "dependencies": {
+    "@babel/cli": "^7.1.2",
+    "@expo/npm-proofread": "^1.0.1",
+    "commander": "^2.19.0",
+    "typescript": "^3.1.3"
+  }
+}
