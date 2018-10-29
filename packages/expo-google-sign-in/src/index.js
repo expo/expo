@@ -22,7 +22,9 @@ export type GoogleSignInOptions = {
   language: ?string,
   openIdRealm: ?string,
 };
-class AuthData {
+
+
+export class AuthData {
   constructor() {
     this.equals = this.equals.bind(this);
     this.toJSON = this.toJSON.bind(this);
@@ -37,7 +39,7 @@ class AuthData {
     return {};
   }
 }
-class Identity extends AuthData {
+export class Identity extends AuthData {
   uid: string;
   email: string;
   displayName: ?string;
@@ -82,7 +84,8 @@ class Identity extends AuthData {
     };
   }
 }
-class Authentication extends AuthData {
+
+export class Authentication extends AuthData {
   clientId: ?string;
   accessToken: ?string;
   accessTokenExpirationDate: ?number;
@@ -134,7 +137,7 @@ class Authentication extends AuthData {
     };
   }
 }
-class User extends Identity {
+export class User extends Identity {
   auth: ?Authentication;
   scopes: Array<string>;
   hostedDomain: ?string;
@@ -219,8 +222,9 @@ class User extends Identity {
   }
 }
 
-type GoogleSignInAuthResult = { type: 'success' | 'cancel', user: ?User };
-class GoogleSignIn {
+export type GoogleSignInAuthResult = { type: 'success' | 'cancel', user: ?User };
+
+export class GoogleSignIn {
   _initialization: Promise;
   _currentUser: User;
 

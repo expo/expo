@@ -126,11 +126,28 @@ export default class AuthScreen extends React.Component {
        * The client ID of the app from the Google APIs console.  Must set for sign-in to work.
        * This value must be defined in the google-services.json on Android, you can define your custom google-services.json 
        * in the app.json before creating a standalone app. 
+       * on Android:
        * {
        *  ...
        *  "android": {
        *    "googleServicesFile": "./google-services.json",
        *    ...
+       *   }
+       * }
+       * and on you will need to define a custom URI scheme for the returning value. 
+       * This can be done in the app.json, the value should be your `REVERSED_CLIENT_ID` iOS:
+       * {
+       *  ...
+       *  "ios": {
+       *    "infoPlist": {
+       *      "CFBundleURLTypes": {
+       *      "CFBundleTypeRole": "Editor",
+       *      "CFBundleURLName": "Google Auth",
+       *      "CFBundleURLSchemes": [
+       *        "firebase.reverse.id"
+       *         //ex: "com.googleusercontent.apps.603386649315-vp4revvrcgrcjme51ebuhbkbspl048l9"
+       *       ]
+       *     }
        *   }
        * }
        */
