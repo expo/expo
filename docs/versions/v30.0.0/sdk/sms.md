@@ -31,7 +31,7 @@ Opens default UI/app for sending SMS messages with prefilled addresses and messa
 
 #### Arguments
 
--  **addresses(_Array<string>|string_)** -- An array of addresses (_phone numbers_) or single address passed as strings. Those would appear as recipients of the prepared message. 
+-  **addresses(_Array<string>|string_)** -- An array of addresses (_phone numbers_) or single address passed as strings. Those would appear as recipients of the prepared message.
 
 -  **message(_string_)** -- Message to be sent
 
@@ -39,10 +39,10 @@ Opens default UI/app for sending SMS messages with prefilled addresses and messa
 
 Returns a `Promise` that resolves when SMS action is invoked by the user with corresponding result:
 
-- If the user cancelled the SMS sending process: `{ result: 'canceled' }`.
+- If the user cancelled the SMS sending process: `{ result: 'cancelled' }`.
 - If the user has sent/scheduled message for sending: `{ result: 'sent' }`.
 
-**_Note_**: The only feedback collected by this module is whether any message has been sent. That means we do not check actual content of messsage nor recipients list. 
+**_Note_**: The only feedback collected by this module is whether any message has been sent. That means we do not check actual content of message nor recipients list.
 
 
 #### Example
