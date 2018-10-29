@@ -10,6 +10,7 @@ import {
   FlatList,
   RefreshControl,
 } from 'react-native';
+import { NavigationEvents } from 'react-navigation';
 
 import Colors from '../../constants/Colors';
 import MediaLibraryCell from './MediaLibraryCell';
@@ -72,7 +73,7 @@ export default class MediaLibraryScreen extends React.Component {
 
   isLoadingAssets = false;
 
-  async componentDidMount() {
+  componentDidFocus = async () => {
     const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
     this.setState({ permission: status });
     this.loadMoreAssets();
@@ -80,7 +81,7 @@ export default class MediaLibraryScreen extends React.Component {
     this.libraryChangeSubscription = MediaLibrary.addListener(() => {
       this.loadMoreAssets([], null);
     });
-  }
+  };
 
   componentWillUnmount() {
     this.libraryChangeSubscription.remove();
@@ -223,6 +224,7 @@ export default class MediaLibraryScreen extends React.Component {
     if (permission !== 'granted') {
       return (
         <View style={styles.permissions}>
+          <NavigationEvents onDidFocus={this.componentDidFocus} />
           <Text>
             Missing CAMERA_ROLL permission. To continue, you'll need to allow media gallery access
             in Settings.
