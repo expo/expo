@@ -11,12 +11,12 @@ export type GoogleSignInOptions = {
   scopes: ?Array<string>,
   webClientId: ?string,
   hostedDomain: ?string,
+  accountName: ?string,
 
   // Android
   signInType: ?SignInType,
   isOfflineEnabled: ?boolean,
   isPromptEnabled: ?boolean,
-  accountName: ?string,
   // iOS
   clientId: ?string,
   language: ?string,
@@ -63,8 +63,8 @@ class Identity extends AuthData {
     return (
       this.displayName === other.displayName &&
       this.photoURL === other.photoURL &&
-      this.uid == other.uid &&
-      this.email == other.email &&
+      this.uid === other.uid &&
+      this.email === other.email &&
       this.firstName === other.firstName &&
       this.lastName === other.lastName
     );
@@ -199,8 +199,8 @@ class User extends Identity {
     return (
       this.auth.equals(other.auth) &&
       this.scopes === other.scopes &&
-      this.hostedDomain == other.hostedDomain &&
-      this.serverAuthCode == other.serverAuthCode
+      this.hostedDomain === other.hostedDomain &&
+      this.serverAuthCode === other.serverAuthCode
     );
   }
 

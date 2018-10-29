@@ -22,10 +22,10 @@ id nullIfNil(id input) {
   return @{
            @"scopes": nullIfNil([input scopes]),
            @"language": nullIfNil([input language]),
-           @"openIDRealm": nullIfNil([input openIDRealm]),
+           @"openIdRealm": nullIfNil([input openIDRealm]),
            @"accountName": nullIfNil([input loginHint]),
            @"hostedDomain": nullIfNil([input hostedDomain]),
-           @"serverClientID": nullIfNil([input serverClientID]),
+           @"webClientId": nullIfNil([input serverClientID]),
            @"shouldFetchBasicProfile": nullIfNil(@([input shouldFetchBasicProfile])),
            @"currentUser": nullIfNil([EXGoogleSignIn jsonFromGIDGoogleUser:input.currentUser]),
            @"hasAuthInKeychain": nullIfNil(@([input hasAuthInKeychain]))
