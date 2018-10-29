@@ -8,9 +8,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (instancetype)sharedInstance;
 
-- (NSString * _Nullable)getSession;
+- (NSDictionary * _Nullable)getSession;
 - (NSString * _Nullable)getSessionSecret;
-- (BOOL)saveSessionToKeychain:(NSString *)session error:(NSError **)error;
+- (BOOL)saveSessionToKeychain:(NSDictionary *)session error:(NSError **)error;
 - (BOOL)deleteSessionFromKeychainWithError:(NSError **)error;
 
 @end

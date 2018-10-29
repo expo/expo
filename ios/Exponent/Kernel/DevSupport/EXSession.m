@@ -8,7 +8,7 @@ NSString * const kEXSessionKeychainService = @"app";
 
 @interface EXSession ()
 
-@property (nonatomic, strong) NSString *session;
+@property (nonatomic, strong) NSDictionary *session;
 
 @end
 
@@ -26,7 +26,7 @@ NSString * const kEXSessionKeychainService = @"app";
   return theSession;
 }
 
-- (NSString * _Nullable)getSession
+- (NSDictionary * _Nullable)getSession
 {
   if (_session) {
     return _session;
@@ -42,37 +42,49 @@ NSString * const kEXSessionKeychainService = @"app";
 
   if (status == noErr) {
     NSData *result = (__bridge_transfer NSData *)foundDict;
-    NSString *value = [[NSString alloc] initWithData:result encoding:NSUTF8StringEncoding];
-    _session = value;
-    return value;
-  } else {
-    return nil;
-  }
-}
-
-- (NSString * _Nullable)getSessionSecret
-{
-  NSString *session = [self getSession];
-  if (!session) {
-    return nil;
-  }
-  
-  NSError *jsonError;
-  id sessionJson = [NSJSONSerialization JSONObjectWithData:[session dataUsingEncoding:NSUTF8StringEncoding]
-                                                   options:kNilOptions
-                                                     error:&jsonError];
-  if (!jsonError && [sessionJson isKindOfClass:[NSDictionary class]]) {
-    id sessionSecret = ((NSDictionary *)sessionJson)[@"sessionSecret"];
-    if (sessionSecret && [sessionSecret isKindOfClass:[NSString class]]) {
-      return (NSString *)sessionSecret;
+    NSError *jsonError;
+    id session = [NSJSONSerialization JSONObjectWithData:result
+                                                     options:kNilOptions
+                                                       error:&jsonError];
+    if (!jsonError && [session isKindOfClass:[NSDictionary class]]) {
+      return (NSDictionary *)session;
     }
   }
   return nil;
 }
 
-- (BOOL)saveSessionToKeychain:(NSString *)session error:(NSError **)error
+- (NSString * _Nullable)getSessionSecret
 {
-  NSData *encodedData = [session dataUsingEncoding:NSUTF8StringEncoding];
+  NSDictionary *session = [self getSession];
+  if (!session) {
+    return nil;
+  }
+  
+  id sessionSecret = session[@"sessionSecret"];
+  if (sessionSecret && [sessionSecret isKindOfClass:[NSString class]]) {
+    return (NSString *)sessionSecret;
+  }
+  return nil;
+}
+
+- (BOOL)saveSessionToKeychain:(NSDictionary *)session error:(NSError **)error
+{
+  NSError *jsonError;
+  NSData *encodedData = [NSJSONSerialization dataWithJSONObject:session
+                                                        options:kNilOptions
+                                                          error:&jsonError];
+  if (jsonError) {
+    if (error) {
+      * error = [NSError errorWithDomain:EX_UNVERSIONED(@"EXKernelErrorDomain")
+                                    code:-1
+                                userInfo:@{
+                                           NSLocalizedDescriptionKey: @"Could not serialize JSON to save session to keychain",
+                                           NSUnderlyingErrorKey: jsonError
+                                           }];
+    }
+    return NO;
+  }
+
   NSDictionary *searchQuery = [self _searchQuery];
   NSDictionary *updateQuery = @{ (__bridge id)kSecValueData:encodedData };
   NSMutableDictionary *addQuery = [NSMutableDictionary dictionaryWithDictionary:searchQuery];

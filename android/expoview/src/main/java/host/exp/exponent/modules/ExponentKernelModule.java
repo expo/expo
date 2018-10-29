@@ -14,6 +14,8 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -114,14 +116,17 @@ public class ExponentKernelModule extends ReactContextBaseJavaModule implements 
 
   @ReactMethod
   public void getSessionAsync(Promise promise) {
-    String sessionSecret = mExponentSharedPreferences.getString(ExponentSharedPreferences.EXPO_AUTH_SESSION);
-    promise.resolve(sessionSecret);
+    // there is not a great way in Java to convert a JSONObject into a ReadableMap
+    // so it's easier to just pass it as a string into JS and call JSON.stringify
+    String sessionString = mExponentSharedPreferences.getString(ExponentSharedPreferences.EXPO_AUTH_SESSION);
+    promise.resolve(sessionString);
   }
 
   @ReactMethod
-  public void setSessionAsync(String sessionSecret, Promise promise) {
+  public void setSessionAsync(ReadableMap session, Promise promise) {
     try {
-      mExponentSharedPreferences.setString(ExponentSharedPreferences.EXPO_AUTH_SESSION, sessionSecret);
+      JSONObject sessionJsonObject = new JSONObject(session.toHashMap());
+      mExponentSharedPreferences.updateSession(sessionJsonObject);
       promise.resolve(null);
     } catch (Exception e) {
       promise.reject("ERR_SESSION_NOT_SAVED", "Could not save session secret", e);
@@ -132,7 +137,7 @@ public class ExponentKernelModule extends ReactContextBaseJavaModule implements 
   @ReactMethod
   public void removeSessionAsync(Promise promise) {
     try {
-      mExponentSharedPreferences.setString(ExponentSharedPreferences.EXPO_AUTH_SESSION, null);
+      mExponentSharedPreferences.removeSession();
       promise.resolve(null);
     } catch (Exception e) {
       promise.reject("ERR_SESSION_NOT_REMOVED", "Could not remove session secret", e);

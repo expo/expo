@@ -175,12 +175,12 @@ RCT_REMAP_METHOD(getSessionAsync,
                  getSessionAsync:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
-  NSString *session = [[EXSession sharedInstance] getSession];
+  NSDictionary *session = [[EXSession sharedInstance] getSession];
   resolve(session);
 }
 
 RCT_REMAP_METHOD(setSessionAsync,
-                 setSessionAsync:(NSString *)session
+                 setSessionAsync:(NSDictionary *)session
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {

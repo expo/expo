@@ -50,24 +50,37 @@ async function updateSettingsAsync(updatedSettings) {
 
 async function getSessionAsync() {
   let results = await ExponentKernel.getSessionAsync();
+  let isFromLegacy = false;
   if (!results) {
-    // try querying legacy location
+    // NOTE(2018-10-29): we are migrating to storing all session keys
+    // using the Kernel module instead of AsyncStorage, but we need to
+    // continue to check the old location for a little while
+    // until all clients in use have migrated over
     results = await AsyncStorage.getItem(Keys.Session);
     if (results) {
+      isFromLegacy = true;
       await AsyncStorage.removeItem(Keys.Session);
     }
   }
 
-  try {
-    let session = JSON.parse(results);
-    return session;
-  } catch (e) {
-    return null;
+  // Java code passes us a string and we need to parse it here
+  if (typeof results === 'string') {
+    try {
+      let session = JSON.parse(results);
+      if (isFromLegacy) {
+        await saveSessionAsync(session);
+      }
+      return session;
+    } catch (e) {
+      return null;
+    }
   }
+
+  return results;
 }
 
 async function saveSessionAsync(session) {
-  return ExponentKernel.setSessionAsync(JSON.stringify(session));
+  return ExponentKernel.setSessionAsync(session);
 }
 
 async function getHistoryAsync() {

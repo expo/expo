@@ -138,6 +138,14 @@ public class ExponentSharedPreferences {
     return uuid;
   }
 
+  public void updateSession(JSONObject session) {
+    setString(EXPO_AUTH_SESSION, session.toString());
+  }
+
+  public void removeSession() {
+    setString(EXPO_AUTH_SESSION, null);
+  }
+
   public String getSessionSecret() {
     String sessionString = getString(EXPO_AUTH_SESSION);
     if (sessionString == null) {
