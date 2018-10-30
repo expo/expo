@@ -19,7 +19,7 @@
     "prop-types": "^15.6.2"
   },
   "devDependencies": {
-    "babel-preset-expo": "^4.0.0",
+    "babel-preset-expo": "^5.0.0-rc.0",
     "flow-bin": "^0.77.0"
   }
 }

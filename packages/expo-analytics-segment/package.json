@@ -17,6 +17,6 @@
     "expo-constants-interface": "~1.1.0-rc.0"
   },
   "devDependencies": {
-    "babel-preset-expo": "^4.0.0"
+    "babel-preset-expo": "^5.0.0-rc.0"
   }
 }
