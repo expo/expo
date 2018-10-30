@@ -35,6 +35,7 @@
     "victory-native": "^30.4.0"
   },
   "devDependencies": {
+    "babel-preset-expo": "^5.0.0-rc.0",
     "expo-yarn-workspaces": "^1.0.0"
   }
 }
