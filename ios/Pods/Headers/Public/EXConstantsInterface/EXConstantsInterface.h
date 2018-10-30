@@ -1,1 +1,0 @@
-../../../../../packages/expo-constants-interface/ios/EXConstantsInterface/EXConstantsInterface.h

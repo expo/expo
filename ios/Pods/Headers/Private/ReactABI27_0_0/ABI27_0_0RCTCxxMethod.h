@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI27_0_0/React/CxxModule/ABI27_0_0RCTCxxMethod.h

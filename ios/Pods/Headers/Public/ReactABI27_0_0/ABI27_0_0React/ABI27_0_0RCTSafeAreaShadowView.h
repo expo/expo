@@ -1,1 +1,0 @@
-../../../../../versioned-react-native/ABI27_0_0/React/Views/SafeAreaView/ABI27_0_0RCTSafeAreaShadowView.h

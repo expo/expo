@@ -1,1 +1,0 @@
-../../../../../packages/expo-font-interface/ios/EXFontInterface/EXFontScalerInterface.h

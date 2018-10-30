@@ -1,1 +1,0 @@
-../../../../../versioned-react-native/ABI30_0_0/React/Base/Surface/ABI30_0_0RCTSurfaceRootShadowView.h

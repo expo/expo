@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI29_0_0/Expo/Core/Api/Reanimated/ABI29_0_0REAModule.h

@@ -1,1 +1,0 @@
-../../../../../versioned-react-native/ABI30_0_0/React/Base/Surface/SurfaceHostingView/ABI30_0_0RCTSurfaceSizeMeasureMode.h

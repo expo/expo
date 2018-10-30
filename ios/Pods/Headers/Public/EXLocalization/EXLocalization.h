@@ -1,1 +1,0 @@
-../../../../../packages/expo-localization/ios/EXLocalization/EXLocalization.h
