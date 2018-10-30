@@ -1,6 +1,6 @@
 {
   "name": "expo-react-native-adapter",
-  "version": "1.2.0-rc.0",
+  "version": "1.2.0-rc.1",
   "description": "Expo React Native adapter for universal modules",
   "main": "index.js",
   "keywords": [
@@ -12,13 +12,13 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "peerDependencies": {
-    "expo-font-interface": "~1.1.0-rc.0",
+    "expo-font-interface": "~1.1.0-rc.1",
     "react-native": "^0.57.1"
   },
   "dependencies": {
-    "expo-core": "~1.2.0-rc.0",
-    "expo-image-loader-interface": "~1.1.0-rc.0",
-    "expo-permissions-interface": "~1.2.0-rc.0",
+    "expo-core": "~1.2.0-rc.1",
+    "expo-image-loader-interface": "~1.1.0-rc.1",
+    "expo-permissions-interface": "~1.2.0-rc.1",
     "lodash.omit": "^4.5.0",
     "lodash.pick": "^4.4.0",
     "prop-types": "^15.6.1"

@@ -1,6 +1,6 @@
 {
   "name": "expo-location",
-  "version": "1.1.0-rc.0",
+  "version": "1.1.0-rc.1",
   "description": "Expo Location standalone universal module",
   "main": "index.js",
   "keywords": [
@@ -17,8 +17,8 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "peerDependencies": {
-    "expo-core": "~1.2.0-rc.0",
-    "expo-permissions-interface": "~1.2.0-rc.0"
+    "expo-core": "~1.2.0-rc.1",
+    "expo-permissions-interface": "~1.2.0-rc.1"
   },
   "dependencies": {
     "invariant": "^2.2.4"
