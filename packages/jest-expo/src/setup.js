@@ -99,6 +99,16 @@ mockNativeModules.ExpoNativeModuleProxy.viewManagersNames.forEach(viewManagerNam
   });
 });
 
+// Needed for `react-native-gesture-handler` as of 10/29/2018
+// Otherwise the following line fails with "cannot read property directEventTypes of undefined"
+// https://github.com/kmagiera/react-native-gesture-handler/blob/master/GestureHandler.js#L46
+Object.defineProperty(mockNativeModules.UIManager, 'RCTView', {
+  get: () => ({
+    NativeProps: {},
+    directEventTypes: [],
+  }),
+});
+
 const modulesConstants = mockNativeModules.ExpoNativeModuleProxy.modulesConstants;
 
 Object.defineProperty(mockNativeModules.ExpoNativeModuleProxy, 'modulesConstants', {

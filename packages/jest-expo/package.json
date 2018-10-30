@@ -1,6 +1,6 @@
 {
   "name": "jest-expo",
-  "version": "30.0.0",
+  "version": "31.0.0-rc.1",
   "license": "MIT",
   "scripts": {
     "generate": "tools/generate-jest-preset.js"
