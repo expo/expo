@@ -5,7 +5,7 @@ apply plugin: 'com.jakewharton.butterknife'
 // WHEN_VERSIONING_REMOVE_FROM_HERE
 //maven repository info
 group = 'host.exp.exponent'
-version = '30.0.0'
+version = '31.0.0'
 
 //Upload android library to maven with javadoc and android sources
 configurations {
@@ -116,7 +116,7 @@ dependencies {
   // WHEN_VERSIONING_REMOVE_FROM_HERE
   // Current react native
   /* UNCOMMENT WHEN DISTRIBUTING
-  api 'com.facebook.react:react-native:30.0.0'
+  api 'com.facebook.react:react-native:31.0.0'
   api 'host.exp.exponent:expo-core:1.2.0-rc.1'
   api 'host.exp.exponent:expo-react-native-adapter:1.2.0-rc.1'
   api 'host.exp.exponent:expo-camera:1.2.0-rc.1'
