@@ -12,7 +12,8 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "peerDependencies": {
-    "expo-font-interface": "~1.1.0-rc.0"
+    "expo-font-interface": "~1.1.0-rc.0",
+    "react-native": "^0.57.1"
   },
   "dependencies": {
     "expo-core": "~1.2.0-rc.0",
