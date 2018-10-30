@@ -161,6 +161,7 @@ async function spawnAsyncPrintCommand(command, args = [], other) {
 exports.updateExpoViewAsync = async function updateExpoViewAsync(sdkVersion) {
   let androidRoot = path.join(process.cwd(), '..', 'android');
   let expoViewBuildGradle = path.join(androidRoot, 'expoview', 'build.gradle');
+  const constantsJava = path.join(androidRoot, 'expoview/src/main/java/host/exp/exponent/Constants.java');
   const multipleVersionReactNativeActivity = path.join(androidRoot, 'expoview/src/main/java/host/exp/exponent/experience/MultipleVersionReactNativeActivity.java');
 
   // Modify permanently
@@ -201,7 +202,19 @@ exports.updateExpoViewAsync = async function updateExpoViewAsync(sdkVersion) {
 
   await stashFileAsync(expoViewBuildGradle);
   await stashFileAsync(multipleVersionReactNativeActivity);
+  await stashFileAsync(constantsJava);
   // Modify temporarily
+  await regexFileAsync(constantsJava, /TEMPORARY_ABI_VERSION\s*=\s*null/, `TEMPORARY_ABI_VERSION = "${sdkVersion}"`);
+  await regexFileAsync(
+    constantsJava,
+    `// WHEN_DISTRIBUTING_REMOVE_FROM_HERE`,
+    '/* WHEN_DISTRIBUTING_REMOVE_FROM_HERE'
+  );
+  await regexFileAsync(
+    constantsJava,
+    `// WHEN_DISTRIBUTING_REMOVE_TO_HERE`,
+    'WHEN_DISTRIBUTING_REMOVE_TO_HERE */'
+  );
   await regexFileAsync(expoViewBuildGradle, '/* UNCOMMENT WHEN DISTRIBUTING', '');
   await regexFileAsync(expoViewBuildGradle, 'END UNCOMMENT WHEN DISTRIBUTING */', '');
   await regexFileAsync(
@@ -251,6 +264,7 @@ exports.updateExpoViewAsync = async function updateExpoViewAsync(sdkVersion) {
     });
   }
 
+  await restoreFileAsync(constantsJava);
   await restoreFileAsync(expoViewBuildGradle);
   await restoreFileAsync(multipleVersionReactNativeActivity);
 
@@ -286,7 +300,7 @@ exports.updateExpoViewAsync = async function updateExpoViewAsync(sdkVersion) {
   await spawnAsyncPrintCommand('rm', ['-rf', path.join(androidRoot, 'maven/org/webkit/')]);
   await spawnAsyncPrintCommand('cp', [
     '-r',
-    path.join(androidRoot, '../home/node_modules/jsc-android/android/org/webkit'),
+    path.join(androidRoot, '../node_modules/jsc-android/dist/org/webkit'),
     path.join(androidRoot, 'maven/org/webkit/'),
   ]);
 };
