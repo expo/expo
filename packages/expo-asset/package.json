@@ -1,6 +1,6 @@
 {
   "name": "expo-asset",
-  "version": "1.1.1-rc.1",
+  "version": "1.1.1",
   "description": "Expo Asset standalone universal module",
   "main": "index.js",
   "keywords": [
@@ -12,10 +12,10 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "peerDependencies": {
-    "expo-file-system": "~1.1.0-rc.1"
+    "expo-file-system": "~1.1.0"
   },
   "dependencies": {
-    "expo-core": "~1.2.0-rc.1",
+    "expo-core": "~1.2.0",
     "uri-parser": "^1.0.1",
     "url-join": "^4.0.0"
   },
