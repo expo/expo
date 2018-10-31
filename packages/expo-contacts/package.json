@@ -16,7 +16,7 @@
     "uuid-js": "^0.7.5"
   },
   "devDependencies": {
-    "babel-preset-expo": "^5.0.0-rc.0",
+    "babel-preset-expo": "^5.0.0",
     "flow-bin": "^0.77.0"
   }
 }

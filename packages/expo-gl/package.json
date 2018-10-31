@@ -20,6 +20,6 @@
     "expo-gl-cpp": "~1.1.0-rc.1"
   },
   "devDependencies": {
-    "babel-preset-expo": "^5.0.0-rc.0"
+    "babel-preset-expo": "^5.0.0"
   }
 }

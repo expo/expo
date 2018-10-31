@@ -20,6 +20,6 @@
     "url-join": "^4.0.0"
   },
   "devDependencies": {
-    "babel-preset-expo": "^5.0.0-rc.0"
+    "babel-preset-expo": "^5.0.0"
   }
 }

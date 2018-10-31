@@ -24,7 +24,7 @@
     "invariant": "^2.2.4"
   },
   "devDependencies": {
-    "babel-preset-expo": "^5.0.0-rc.0",
+    "babel-preset-expo": "^5.0.0",
     "flow-bin": "^0.79.1"
   }
 }
