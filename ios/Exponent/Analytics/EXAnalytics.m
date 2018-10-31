@@ -50,7 +50,11 @@
 
 + (BOOL)_isAnalyticsDisabled
 {
-  return [EXEnvironment sharedEnvironment].isDetached;
+#ifdef EX_DETACHED
+  return YES;
+#else
+  return NO;
+#endif
 }
 
 - (instancetype)init
