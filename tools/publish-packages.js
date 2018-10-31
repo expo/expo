@@ -99,7 +99,7 @@ function _gitLogWithFormat(sinceDate, format, directory) {
   return {
     stdout,
     lines,
-    numberOfCommits: lines.length,
+    numberOfCommits: lines.length - 1,
   };
 }
 
@@ -564,7 +564,7 @@ async function _gitCommitAsync(allConfigs) {
 
 async function _updatePodsAsync(allConfigs) {
   const podNames = [...allConfigs.values()]
-    .filter(config => config.podName && config.shouldPublish)
+    .filter(config => config.podName && config.shouldPublish && config.includeInExpoClient)
     .map(config => config.podName)
     .join(' ');
 
