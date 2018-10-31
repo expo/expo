@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI29_0_0/Libraries/Image/ABI29_0_0RCTImageEditingManager.h

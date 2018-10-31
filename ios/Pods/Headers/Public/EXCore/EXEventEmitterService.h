@@ -1,0 +1,1 @@
+../../../../../packages/expo-core/ios/EXCore/Protocols/EXEventEmitterService.h

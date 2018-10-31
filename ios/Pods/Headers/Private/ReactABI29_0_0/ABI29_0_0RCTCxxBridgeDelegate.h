@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI29_0_0/React/CxxBridge/ABI29_0_0RCTCxxBridgeDelegate.h

@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI25_0_0/Libraries/CameraRoll/ABI25_0_0RCTAssetsLibraryRequestHandler.h
