@@ -15,7 +15,7 @@
     "expo-permissions-interface": "~1.2.0-rc.1"
   },
   "devDependencies": {
-    "babel-preset-expo": "^5.0.0-rc.0",
+    "babel-preset-expo": "^5.0.0",
     "flow-bin": "^0.79.1"
   }
 }

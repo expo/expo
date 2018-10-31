@@ -29,7 +29,7 @@
     "js-base64": "^2.4.9"
   },
   "devDependencies": {
-    "babel-preset-expo": "^5.0.0-rc.0",
+    "babel-preset-expo": "^5.0.0",
     "flow-bin": "^0.77.0"
   }
 }
