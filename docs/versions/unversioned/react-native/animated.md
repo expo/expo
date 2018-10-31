@@ -232,7 +232,7 @@ Specifying stiffness/damping/mass as parameters makes `Animated.spring` use an a
 Other configuration options are as follows:
 
 * `velocity`: The initial velocity of the object attached to the spring. Default 0 (object is at rest).
-* `overshootClamping`: Boolean indiciating whether the spring should be clamped and not bounce. Default false.
+* `overshootClamping`: Boolean indicating whether the spring should be clamped and not bounce. Default false.
 * `restDisplacementThreshold`: The threshold of displacement from rest below which the spring should be considered at rest. Default 0.001.
 * `restSpeedThreshold`: The speed at which the spring should be considered at rest in pixels per second. Default 0.001.
 * `delay`: Start the animation after delay (milliseconds). Default 0.
@@ -459,13 +459,37 @@ static unforkEvent(event, listener)
 
 ## Properties
 
----
+### `Value`
+
+Standard value class for driving animations. Typically initialized with `new Animated.Value(0);`
 
 ---
 
----
+### `ValueXY`
+
+2D value class for driving 2D animations, such as pan gestures.
 
 ---
 
+### `Interpolation`
+
+Exported to use the Interpolation type in flow.
+
 ---
+
+### `Node`
+
+Exported for ease of type checking. All animated values derive from this class.
+
+---
+
+### `createAnimatedComponent`
+
+Make any React component Animatable. Used to create `Animated.View`, etc.
+
+---
+
+### `attachNativeEvent`
+
+Imperative API to attach an animated value to an event on a view. Prefer using `Animated.event` with `useNativeDrive: true` if possible.
 

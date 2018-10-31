@@ -7,7 +7,7 @@ Component to control the app status bar.
 
 ### Usage with Navigator
 
-It is possible to have multiple `StatusBar` components mounted at the same time. The props will be merged in the order the `StatusBar` components were mounted. One use case is to specify status bar styles per route using `Navigator`.
+It is possible to have multiple `StatusBar` components mounted at the same time. The props will be merged in the order the `StatusBar` components were mounted.
 
 
 ```javascript
@@ -17,15 +17,10 @@ It is possible to have multiple `StatusBar` components mounted at the same time.
      backgroundColor="blue"
      barStyle="light-content"
    />
-   <Navigator
-     initialRoute={{statusBarHidden: true}}
-     renderScene={(route, navigator) =>
-       <View>
-         <StatusBar hidden={route.statusBarHidden} />
-         ...
-       </View>
-     }
-   />
+   <View>
+     <StatusBar hidden={route.statusBarHidden} />
+     ...
+   </View>
  </View>
 
 ```

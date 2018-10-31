@@ -68,7 +68,7 @@ export default class BoldAndBeautiful extends Component {
   render() {
     return (
       <Text style={{fontWeight: 'bold'}}>
-        I am bold
+        I am bold 
         <Text style={{color: 'red'}}>
           and red
         </Text>
@@ -136,7 +136,10 @@ The `<Text>` element is special relative to layout: everything inside is no long
   <Text>First part and </Text>
   <Text>second part</Text>
 </Text>
-// Text container: all the text flows as if it was one
+// Text container: the text will be inline if the space allowed it
+// |First part and second part|
+
+// otherwise, the text will flow as if it was one
 // |First part |
 // |and second |
 // |part       |
@@ -146,6 +149,10 @@ The `<Text>` element is special relative to layout: everything inside is no long
   <Text>second part</Text>
 </View>
 // View container: each text is its own block
+// |First part and|
+// |second part   |
+
+// the will will flow in its own block
 // |First part |
 // |and        |
 // |second part|
@@ -248,6 +255,8 @@ We believe that this more constrained way to style text will yield better apps:
 ### Props
 
 * [`selectable`](text.md#selectable)
+* [`accessibilityHint`](text.md#accessibilityhint)
+* [`accessibilityLabel`](text.md#accessibilitylabel)
 * [`accessible`](text.md#accessible)
 * [`ellipsizeMode`](text.md#ellipsizemode)
 * [`nativeID`](text.md#nativeid)
@@ -279,6 +288,26 @@ Lets the user select text, to use the native copy and paste functionality.
 | Type | Required |
 | ---- | -------- |
 | bool | No       |
+
+---
+
+### `accessibilityHint`
+
+An accessibility hint helps users understand what will happen when they perform an action on the accessibility element when that result is not obvious from the accessibility label.
+
+| Type   | Required |
+| ------ | -------- |
+| string | No       |
+
+---
+
+### `accessibilityLabel`
+
+Overrides the text that's read by the screen reader when the user interacts with the element. By default, the label is constructed by traversing all the children and accumulating all the `Text` nodes separated by space.
+
+| Type | Required |
+| ---- | -------- |
+| node | No       |
 
 ---
 
@@ -445,7 +474,7 @@ Specifies whether fonts should scale to respect Text Size accessibility settings
 
 - **`textDecorationStyle`**: enum('solid', 'double', 'dotted', 'dashed') (_iOS_)
 
-- **`textTransform`**: enum('none', 'uppercase', 'lowercase', 'capitalize') (_iOS_)
+- **`textTransform`**: enum('none', 'uppercase', 'lowercase', 'capitalize')
 
 - **`writingDirection`**: enum('auto', 'ltr', 'rtl') (_iOS_)
 

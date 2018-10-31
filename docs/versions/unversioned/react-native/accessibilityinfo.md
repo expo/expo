@@ -20,7 +20,7 @@ class ScreenReaderStatusExample extends React.Component {
       'change',
       this._handleScreenReaderToggled
     );
-    AccessibilityInfo.fetch().done((isEnabled) => {
+    AccessibilityInfo.fetch().then((isEnabled) => {
       this.setState({
         screenReaderEnabled: isEnabled,
       });
@@ -112,7 +112,7 @@ static setAccessibilityFocus(reactTag)
 ```
 
 
-iOS-Only. Set accessibility focus to a react component.
+Set accessibility focus to a React component. On Android, this is equivalent to `UIManager.sendAccessibilityEvent(reactTag, UIManager.AccessibilityEventTypes.typeViewFocused);`.
 
 ---
 

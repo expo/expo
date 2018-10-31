@@ -131,3 +131,5 @@ const BigButton = require('./BigButton');
 
 React Native will automatically pick up the right file based on the running platform.
 
+If you share your React Native code with a website, you might as well use the `BigButton.native.js` so that both iOS and Android will use this file, while the website will use `BigButton.js`.
+

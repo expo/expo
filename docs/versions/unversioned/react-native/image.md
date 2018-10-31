@@ -89,17 +89,17 @@ You will need to add some optional modules in `android/app/build.gradle`, depend
 
 dependencies {
   // If your app supports Android versions before Ice Cream Sandwich (API level 14)
-  compile 'com.facebook.fresco:animated-base-support:1.8.1'
+  compile 'com.facebook.fresco:animated-base-support:1.10.0'
 
   // For animated GIF support
-  compile 'com.facebook.fresco:animated-gif:1.8.1'
+  compile 'com.facebook.fresco:animated-gif:1.10.0'
 
   // For WebP support, including animated WebP
-  compile 'com.facebook.fresco:animated-webp:1.8.1'
-  compile 'com.facebook.fresco:webpsupport:1.8.1'
+  compile 'com.facebook.fresco:animated-webp:1.10.0'
+  compile 'com.facebook.fresco:webpsupport:1.10.0'
 
   // For WebP support, without animations
-  compile 'com.facebook.fresco:webpsupport:1.8.1'
+  compile 'com.facebook.fresco:webpsupport:1.10.0'
 }
 
 ```
@@ -369,6 +369,7 @@ A static image to display while loading the image source.
 | Type           | Required | Platform |
 | -------------- | -------- | -------- |
 | object, number | No       | iOS      |
+| number         | No       | Android  |
 
 If passing an object, the general shape is `{uri: string, width: number, height: number, scale: number}`:
 
@@ -379,6 +380,8 @@ If passing an object, the general shape is `{uri: string, width: number, height:
 If passing a number:
 
 * `number` - Opaque type returned by something like `require('./image.jpg')`.
+
+ **Note:** On Android, the default source prop is ignored on debug builds.
 
 ---
 

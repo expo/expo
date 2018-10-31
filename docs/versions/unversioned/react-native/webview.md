@@ -25,7 +25,31 @@ class MyWeb extends Component {
 ```
 
 
+Minimal example with inline HTML:
+
+
+```javascript
+
+import React, { Component } from 'react';
+import { WebView } from 'react-native';
+
+class MyInlineWeb extends Component {
+  render() {
+    return (
+      <WebView
+        originWhitelist={['*']}
+        source={{ html: '<h1>Hello world</h1>' }}
+      />
+    );
+  }
+}
+
+```
+
+
 You can use this component to navigate back and forth in the web view's history and configure various properties for the web content.
+
+On iOS, the `useWebKit` prop can be used to opt into a WKWebView-backed implementation.
 
 > **Security Warning:** Currently, `onMessage` and `postMessage` do not allow specifying an origin. This can lead to cross-site scripting attacks if an unexpected document is loaded within a `WebView` instance. Please refer to the MDN documentation for [`Window.postMessage()`](https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage) for more details on the security implications of this.
 
@@ -49,7 +73,6 @@ You can use this component to navigate back and forth in the web view's history 
 - [`renderError`](webview.md#rendererror)
 - [`renderLoading`](webview.md#renderloading)
 - [`scalesPageToFit`](webview.md#scalespagetofit)
-- [`initialScale`](webview.md#initialScale)
 - [`onShouldStartLoadWithRequest`](webview.md#onshouldstartloadwithrequest)
 - [`startInLoadingState`](webview.md#startinloadingstate)
 - [`style`](webview.md#style)
@@ -60,12 +83,14 @@ You can use this component to navigate back and forth in the web view's history 
 - [`thirdPartyCookiesEnabled`](webview.md#thirdpartycookiesenabled)
 - [`userAgent`](webview.md#useragent)
 - [`allowsInlineMediaPlayback`](webview.md#allowsinlinemediaplayback)
+- [`allowFileAccess`](webview.md#allowFileAccess)
 - [`bounces`](webview.md#bounces)
 - [`contentInset`](webview.md#contentinset)
 - [`dataDetectorTypes`](webview.md#datadetectortypes)
 - [`scrollEnabled`](webview.md#scrollenabled)
 - [`geolocationEnabled`](webview.md#geolocationenabled)
 - [`allowUniversalAccessFromFileURLs`](webview.md#allowUniversalAccessFromFileURLs)
+- [`useWebKit`](webview.md#usewebkit)
 - [`url`](webview.md#url)
 - [`html`](webview.md#html)
 
@@ -85,11 +110,25 @@ You can use this component to navigate back and forth in the web view's history 
 
 ### `source`
 
-Loads static html or a uri (with optional headers) in the WebView.
+Loads static HTML or a URI (with optional headers) in the WebView. Note that static HTML will require setting [`originWhitelist`](webview.md#originwhitelist) to `["*"]`.
 
-| Type                                                                                                                | Required |
-| ------------------------------------------------------------------------------------------------------------------- | -------- |
-| object: ${"{"}uri: string,method: string,headers: object,body: string${"}"}, ,object: ${"{"}html: string,baseUrl: string${"}"}, ,number | No       |
+The object passed to `source` can have either of the following shapes:
+
+**Load uri**
+
+* `uri` (string) - The URI to load in the `WebView`. Can be a local or remote file.
+* `method` (string) - The HTTP Method to use. Defaults to GET if not specified. On Android, the only supported methods are GET and POST.
+* `headers` (object) - Additional HTTP headers to send with the request. On Android, this can only be used with GET requests.
+* `body` (string) - The HTTP body to send with the request. This must be a valid UTF-8 string, and will be sent exactly as specified, with no additional encoding (e.g. URL-escaping or base64) applied. On Android, this can only be used with POST requests.
+
+**Static HTML**
+
+* `html` (string) - A static HTML page to display in the WebView.
+* `baseUrl` (string) - The base URL to be used for any relative links in the HTML.
+
+| Type   | Required |
+| ------ | -------- |
+| object | No       |
 
 ---
 
@@ -137,9 +176,15 @@ Boolean that determines whether HTML5 audio and video requires the user to tap t
 
 Override the native component used to render the WebView. Enables a custom native WebView which uses the same JavaScript as the original WebView.
 
-| Type                                                       | Required |
-| ---------------------------------------------------------- | -------- |
-| object: ${"{"}component: any,props: object,viewManager: object${"}"} | No       |
+The `nativeConfig` prop expects an object with the following keys:
+
+* `component` (any)
+* `props` (object)
+* `viewManager` (object)
+
+| Type   | Required |
+| ------ | -------- |
+| object | No       |
 
 ---
 
@@ -239,19 +284,11 @@ Function that returns a loading indicator. The startInLoadingState prop must be 
 
 Boolean that controls whether the web content is scaled to fit the view and enables the user to change the scale. The default value is `true`.
 
+On iOS, when [`useWebKit=true`](webview.md#usewebkit), this prop will not work.
+
 | Type | Required |
 | ---- | -------- |
 | bool | No       |
-
----
-
-### `initialScale`
-
-Number that controls whether the initial scale percentage of the view. 50 is 50%, 100 is 100%, etc. Used only in Android.
-
-| Type   | Required | Platform |
-| ------ | -------- | -------- |
-| number | No       | Android  |
 
 ---
 
@@ -275,16 +312,6 @@ Boolean value that forces the `WebView` to show the loading view on the first lo
 
 ---
 
-### `style`
-
-The style to apply to the `WebView`.
-
-| Type       | Required |
-| ---------- | -------- |
-| View.style | No       |
-
----
-
 ### `decelerationRate`
 
 A floating-point number that determines how quickly the scroll view decelerates after the user lifts their finger. You may also use the string shortcuts `"normal"` and `"fast"` which match the underlying iOS settings for `UIScrollViewDecelerationRateNormal` and `UIScrollViewDecelerationRateFast` respectively:
@@ -292,9 +319,9 @@ A floating-point number that determines how quickly the scroll view decelerates 
 * normal: 0.998
 * fast: 0.99 (the default for iOS web view)
 
-| Type                                  | Required | Platform |
-| ------------------------------------- | -------- | -------- |
-| ScrollView.propTypes.decelerationRate | No       | iOS      |
+| Type   | Required | Platform |
+| ------ | -------- | -------- |
+| number | No       | iOS      |
 
 ---
 
@@ -324,13 +351,13 @@ Specifies the mixed content mode. i.e WebView will allow a secure origin to load
 
 Possible values for `mixedContentMode` are:
 
-* `'never'` (default) - WebView will not allow a secure origin to load content from an insecure origin.
-* `'always'` - WebView will allow a secure origin to load content from any other origin, even if that origin is insecure.
-* `'compatibility'` - WebView will attempt to be compatible with the approach of a modern web browser with regard to mixed content.
+* `never` (default) - WebView will not allow a secure origin to load content from an insecure origin.
+* `always` - WebView will allow a secure origin to load content from any other origin, even if that origin is insecure.
+* `compatibility` - WebView will attempt to be compatible with the approach of a modern web browser with regard to mixed content.
 
-| Type                                     | Required | Platform |
-| ---------------------------------------- | -------- | -------- |
-| enum('never', 'always', 'compatibility') | No       | Android  |
+| Type   | Required | Platform |
+| ------ | -------- | -------- |
+| string | No       | Android  |
 
 ---
 
@@ -358,7 +385,9 @@ Sets the user-agent for the `WebView`.
 
 Boolean that determines whether HTML5 videos play inline or use the native full-screen controller. The default value is `false`.
 
-**NOTE** : In order for video to play inline, not only does this property need to be set to `true`, but the video element in the HTML document must also include the `webkit-playsinline` attribute.
+> **NOTE**
+>
+> In order for video to play inline, not only does this property need to be set to `true`, but the video element in the HTML document must also include the `webkit-playsinline` attribute.
 
 | Type | Required | Platform |
 | ---- | -------- | -------- |
@@ -394,16 +423,22 @@ You can provide one type or an array of many types.
 
 Possible values for `dataDetectorTypes` are:
 
-* `'phoneNumber'`
-* `'link'`
-* `'address'`
-* `'calendarEvent'`
-* `'none'`
-* `'all'`
+* `phoneNumber`
+* `link`
+* `address`
+* `calendarEvent`
+* `none`
+* `all`
 
-| Type                                                                                                                                                     | Required | Platform |
-| -------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | -------- |
-| enum('phoneNumber', 'link', 'address', 'calendarEvent', 'none', 'all'), ,array of enum('phoneNumber', 'link', 'address', 'calendarEvent', 'none', 'all') | No       | iOS      |
+With the [new WebKit](webview.md#usewebkit) implementation, we have three new values:
+
+* `trackingNumber`
+* `flightNumber`
+* `lookupSuggestion`
+
+| Type             | Required | Platform |
+| ---------------- | -------- | -------- |
+| string, or array | No       | iOS      |
 
 ---
 
@@ -434,6 +469,26 @@ Boolean that sets whether JavaScript running in the context of a file scheme URL
 | Type | Required | Platform |
 | ---- | -------- | -------- |
 | bool | No       | Android  |
+
+---
+
+### `allowFileAccess`
+
+Boolean that sets whether the `WebView` has access to the file system. The default value is `false`.
+
+| Type | Required | Platform |
+| ---- | -------- | -------- |
+| bool | No       | Android  |
+
+---
+
+### `useWebKit`
+
+If true, use WKWebView instead of UIWebView.
+
+| Type    | Required | Platform |
+| ------- | -------- | -------- |
+| boolean | No       | iOS      |
 
 ---
 

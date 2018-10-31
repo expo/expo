@@ -27,7 +27,7 @@ class RefreshableList extends Component {
 
   render() {
     return (
-      <FlatList
+      <ScrollView
         refreshControl={
           <RefreshControl
             refreshing={this.state.refreshing}

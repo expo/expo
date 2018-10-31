@@ -111,7 +111,7 @@ Note that on Android performing text selection in input can change app's activit
 - [`caretHidden`](textinput.md#carethidden)
 - [`clearButtonMode`](textinput.md#clearbuttonmode)
 - [`clearTextOnFocus`](textinput.md#cleartextonfocus)
-- [`contextMenuHidden`](textinput.md#contextMenuHidden)
+- [`contextMenuHidden`](textinput.md#contextmenuhidden)
 - [`dataDetectorTypes`](textinput.md#datadetectortypes)
 - [`defaultValue`](textinput.md#defaultvalue)
 - [`disableFullscreenUI`](textinput.md#disablefullscreenui)
@@ -139,6 +139,7 @@ Note that on Android performing text selection in input can change app's activit
 - [`placeholderTextColor`](textinput.md#placeholdertextcolor)
 - [`returnKeyLabel`](textinput.md#returnkeylabel)
 - [`returnKeyType`](textinput.md#returnkeytype)
+- [`scrollEnabled`](textinput.md#scrollenabled)
 - [`secureTextEntry`](textinput.md#securetextentry)
 - [`selection`](textinput.md#selection)
 - [`selectionColor`](textinput.md#selectioncolor)
@@ -174,7 +175,7 @@ Specifies whether fonts should scale to respect Text Size accessibility settings
 
 ### `autoCapitalize`
 
-Can tell `TextInput` to automatically capitalize certain characters.
+Can tell `TextInput` to automatically capitalize certain characters. This property is not supported by some keyboard types such as `name-phone-pad`.
 
 * `characters`: all characters.
 * `words`: first letter of each word.
@@ -229,7 +230,7 @@ If `true`, caret is hidden. The default value is `false`.
 
 ### `clearButtonMode`
 
-When the clear button should appear on the right side of the text view. This property is supported only for single-line TextInput component.
+When the clear button should appear on the right side of the text view. This property is supported only for single-line TextInput component. The default value is `never`.
 
 | Type                                                       | Required | Platform |
 | ---------------------------------------------------------- | -------- | -------- |
@@ -365,6 +366,8 @@ Determines which keyboard to open, e.g.`numeric`.
 The following values work across platforms:
 
 * `default`
+* `number-pad`
+* `decimal-pad`
 * `numeric`
 * `email-address`
 * `phone-pad`
@@ -376,9 +379,7 @@ The following values work on iOS only:
 * `ascii-capable`
 * `numbers-and-punctuation`
 * `url`
-* `number-pad`
 * `name-phone-pad`
-* `decimal-pad`
 * `twitter`
 * `web-search`
 
@@ -604,9 +605,19 @@ The following values work on iOS only:
 
 ---
 
+### `scrollEnabled`
+
+If `false`, scrolling of the text view will be disabled. The default value is `true`. Only works with `multiline={true}`.
+
+| Type | Required | Platform |
+| ---- | -------- | -------- |
+| bool | No       | iOS      |
+
+---
+
 ### `secureTextEntry`
 
-If `true`, the text input obscures the text entered so that sensitive text like passwords stay secure. The default value is `false`. Does not work with 'multiline=${"{"}true${"}"}'.
+If `true`, the text input obscures the text entered so that sensitive text like passwords stay secure. The default value is `false`. Does not work with `multiline={true}`.
 
 | Type | Required |
 | ---- | -------- |
@@ -678,6 +689,8 @@ Give the keyboard and the system information about the expected semantic meaning
 
 For iOS 11+ you can set `textContentType` to `username` or `password` to enable autofill of login details from the device keychain.
 
+For iOS 12+ `newPassword` can be used to indicate a new password input the user may want to save in the keychain, and `oneTimeCode` can be used to indicate that a field can be autofilled by a code arriving in an SMS.
+
 To disable autofill, set `textContentType` to `none`.
 
 Possible values for `textContentType` are:
@@ -708,6 +721,8 @@ Possible values for `textContentType` are:
 * `telephoneNumber`
 * `username`
 * `password`
+* `newPassword`
+* `oneTimeCode`
 
 | Type                                                                                                                                                                                                                                                                                                                                                                                                       | Required | Platform |
 | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | -------- |

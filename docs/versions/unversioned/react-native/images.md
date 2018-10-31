@@ -82,7 +82,7 @@ Note that image sources required this way include size (width, height) info for 
 
 The `require` syntax described above can be used to statically include audio, video or document files in your project as well. Most common file types are supported including `.mp3`, `.wav`, `.mp4`, `.mov`, `.html` and `.pdf`. See [packager defaults](https://github.com/facebook/react-native/blob/master/local-cli/util/Config.js#L68) for the full list.
 
-You can add support for other types by creating a packager config file (see the [packager config file](https://github.com/facebook/metro/blob/master/packages/metro/src/defaults.js#L14-L44) for the full list of configuration options).
+You can add support for other types by creating a packager config file (see the [packager config file](https://github.com/facebook/metro/blob/master/packages/metro-config/src/defaults/defaults.js#L14-L44) for the full list of configuration options).
 
 A caveat is that videos must use absolute positioning instead of `flexGrow`, since size info is not currently passed for non-image assets. This limitation doesn't occur for videos that are linked directly into Xcode or the Assets folder for Android.
 
@@ -165,7 +165,7 @@ Sometimes, you might be getting encoded image data from a REST API call. You can
   style={{
     width: 51,
     height: 51,
-    resizeMode: Image.resizeMode.contain,
+    resizeMode: 'contain',
   }}
   source={{
     uri:

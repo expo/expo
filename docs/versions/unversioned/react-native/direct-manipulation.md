@@ -66,7 +66,7 @@ render() {
 
 This is computationally intensive compared to the original example - React needs to re-render the component hierarchy each time the opacity changes, even though other properties of the view and its children haven't changed. Usually this overhead isn't a concern but when performing continuous animations and responding to gestures, judiciously optimizing your components can improve your animations' fidelity.
 
-If you look at the implementation of `setNativeProps` in [NativeMethodsMixin.js](https://github.com/facebook/react/blob/master/src/renderers/native/NativeMethodsMixin.js) you will notice that it is a wrapper around `RCTUIManager.updateView` - this is the exact same function call that results from re-rendering - see [receiveComponent in ReactNativeBaseComponent.js](https://github.com/facebook/react/blob/master/src/renderers/native/ReactNativeBaseComponent.js).
+If you look at the implementation of `setNativeProps` in [NativeMethodsMixin](https://github.com/facebook/react-native/blob/master/Libraries/Renderer/oss/ReactNativeRenderer-prod.js) you will notice that it is a wrapper around `RCTUIManager.updateView` - this is the exact same function call that results from re-rendering - see [receiveComponent in ReactNativeBaseComponent.js](https://github.com/facebook/react/blob/master/src/renderers/native/ReactNativeBaseComponent.js).
 
 ## Composite components and setNativeProps
 

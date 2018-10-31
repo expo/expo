@@ -60,7 +60,7 @@ Many standards functions are also available on all the supported JavaScript runt
 
 Browser
 
-* [console.${"{"}log, warn, error, info, trace, table${"}"}](https://developer.chrome.com/devtools/docs/console-api)
+* [console.${"{"}log, warn, error, info, trace, table, group, groupEnd${"}"}](https://developer.chrome.com/devtools/docs/console-api)
 * [CommonJS require](https://nodejs.org/docs/latest/api/modules.html)
 * [XMLHttpRequest, fetch](network.md#content)
 * [${"{"}set, clear${"}"}${"{"}Timeout, Interval, Immediate${"}"}, ${"{"}request, cancel${"}"}AnimationFrame](timers.md#content)

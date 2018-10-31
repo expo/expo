@@ -175,9 +175,9 @@ Set to `false` to remove extra font padding intended to make space for certain a
 
 ### `textTransform`
 
-| Type                                                 | Required | Platform |
-| ---------------------------------------------------- | -------- | -------- |
-| enum('none', 'uppercase', 'lowercase', 'capitalize') | No       | iOS      |
+| Type                                                 | Required |
+| ---------------------------------------------------- | -------- |
+| enum('none', 'uppercase', 'lowercase', 'capitalize') | No       |
 
 ---
 

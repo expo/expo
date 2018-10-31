@@ -43,7 +43,9 @@ import { AppRegistry, Text, View } from 'react-native';
 class Greeting extends Component {
   render() {
     return (
-      <Text>Hello {this.props.name}!</Text>
+      <View style={{alignItems: 'center'}}>
+        <Text>Hello {this.props.name}!</Text>
+      </View>
     );
   }
 }

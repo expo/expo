@@ -188,7 +188,7 @@ For example, you may want to think about your `Animated.Value` as going from 0 t
 ```
 
 
-[`interpolate()`](animated.md#interpolate) supports multiple range segments as well, which is handy for defining dead zones and other handy tricks. For example, to get an negation relationship at -300 that goes to 0 at -100, then back up to 1 at 0, and then back down to zero at 100 followed by a dead-zone that remains at 0 for everything beyond that, you could do:
+[`interpolate()`](animated.md#interpolate) supports multiple range segments as well, which is handy for defining dead zones and other handy tricks. For example, to get a negation relationship at -300 that goes to 0 at -100, then back up to 1 at 0, and then back down to zero at 100 followed by a dead-zone that remains at 0 for everything beyond that, you could do:
 
 
 ```javascript
@@ -323,7 +323,7 @@ Animated.timing(this.state.animatedValue, {
 
 Animated values are only compatible with one driver so if you use native driver when starting an animation on a value, make sure every animation on that value also uses the native driver.
 
-The native driver also works with `Animated.event`. This is specially useful for animations that follow the scroll position as without the native driver, the animation will always run a frame behind the gesture due to the async nature of React Native.
+The native driver also works with `Animated.event`. This is especially useful for animations that follow the scroll position as without the native driver, the animation will always run a frame behind the gesture due to the async nature of React Native.
 
 
 ```javascript

@@ -15,15 +15,14 @@ In accordance with the ancient traditions of our people, we must first build an 
 ```javascript
 
 import React, { Component } from 'react';
-import { Text } from 'react-native';
+import { Text, View } from 'react-native';
 
 export default class HelloWorldApp extends Component {
   render() {
     return (
-    <View>
-      <Text>Hello world!</Text>
-    </View>
-
+      <View>
+        <Text>Hello world!</Text>
+      </View>
     );
   }
 }
