@@ -11,7 +11,7 @@
   ],
   "homepage": "https://docs.expo.io/",
   "author": "650 Industries, Inc.",
-  "license": "BSD",
+  "license": "MIT",
   "peerDependencies": {
     "expo-core": "~1.2.0-rc.1"
   },
