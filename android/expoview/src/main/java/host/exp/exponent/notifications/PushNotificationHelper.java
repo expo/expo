@@ -23,7 +23,6 @@ import javax.inject.Inject;
 import de.greenrobot.event.EventBus;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
-import host.exp.exponent.LauncherActivity;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.kernel.KernelConstants;
