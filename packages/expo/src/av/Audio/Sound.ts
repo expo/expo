@@ -1,5 +1,6 @@
 import { NativeEventEmitter, NativeModules } from 'react-native';
 
+import { throwIfAudioIsDisabled } from './AudioAvailability';
 import {
   Playback,
   PlaybackMixin,
@@ -10,7 +11,6 @@ import {
   getNativeSourceAndFullInitialStatusForLoadAsync,
   getUnloadedStatus,
 } from '../AV';
-import { _throwIfAudioIsDisabled } from '../Audio';
 
 export class Sound implements Playback {
   _loaded: boolean = false;
@@ -65,7 +65,7 @@ export class Sound implements Playback {
   async _performOperationAndHandleStatusAsync(
     operation: () => Promise<PlaybackStatus>
   ): Promise<PlaybackStatus> {
-    _throwIfAudioIsDisabled();
+    throwIfAudioIsDisabled();
     if (this._loaded) {
       const status = await operation();
       this._callOnPlaybackStatusUpdateForNewStatus(status);
@@ -133,7 +133,7 @@ export class Sound implements Playback {
     initialStatus: PlaybackStatusToSet = {},
     downloadFirst: boolean = true
   ): Promise<PlaybackStatus> {
-    _throwIfAudioIsDisabled();
+    throwIfAudioIsDisabled();
     if (this._loading) {
       throw new Error('The Sound is already loading.');
     }
