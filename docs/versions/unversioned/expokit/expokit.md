@@ -83,6 +83,8 @@ ExpoKit's release cycle follows the Expo SDK release cycle. When a new version o
 - Open up `ios/Podfile` in your project, and update the `ExpoKit` tag to point at the [release](https://github.com/expo/expo/releases) corresponding to your SDK version. Run `pod update` then `pod install`.
 - Open `ios/your-project/Supporting/EXSDKVersions.plist` in your project and change all the values to the new SDK version.
 
+If upgrading from SDK 30 or below, you'll also need to change `platform :ios, '9.0'` to `platform :ios, '10.0'` in `ios/Podfile`.
+
 ### Android
 
 - Go to https://expo.io/--/api/v2/versions and find the `expokitNpmPackage` key under `sdkVersions.[NEW SDK VERSION]`.
