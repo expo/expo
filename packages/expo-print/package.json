@@ -1,6 +1,6 @@
 {
   "name": "expo-print",
-  "version": "1.1.0-rc.1",
+  "version": "1.1.0",
   "description": "Expo universal module for printing",
   "main": "index.js",
   "keywords": [
@@ -11,7 +11,7 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "dependencies": {
-    "expo-core": "~1.2.0-rc.1",
+    "expo-core": "~1.2.0",
     "babel-preset-expo": "^5.0.0"
   }
 }

@@ -19,7 +19,7 @@ apply plugin: 'maven'
 apply plugin: "io.fabric"
 
 group = 'host.exp.exponent'
-version = '1.0.0-rc.3'
+version = '1.0.0'
 
 // Upload android library to maven with javadoc and android sources
 configurations {
@@ -52,8 +52,8 @@ android {
     defaultConfig {
         minSdkVersion 19
         targetSdkVersion 26
-        versionCode 2
-        versionName "1.0.0-rc.3"
+        versionCode 3
+        versionName "1.0.0"
     }
     lintOptions {
         abortOnError false

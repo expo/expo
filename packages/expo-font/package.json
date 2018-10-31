@@ -1,6 +1,6 @@
 {
   "name": "expo-font",
-  "version": "1.1.0-rc.1",
+  "version": "1.1.0",
   "description": "Expo Font standalone universal module",
   "main": "index.js",
   "keywords": [
@@ -11,12 +11,12 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "peerDependencies": {
-    "expo-asset": "~1.1.1-rc.1",
-    "expo-constants": "~1.1.0-rc.1"
+    "expo-asset": "~1.1.1",
+    "expo-constants": "~1.1.0"
   },
   "dependencies": {
-    "expo-core": "~1.2.0-rc.1",
-    "expo-font-interface": "~1.1.0-rc.1",
+    "expo-core": "~1.2.0",
+    "expo-font-interface": "~1.1.0",
     "invariant": "^2.2.2"
   },
   "devDependencies": {
