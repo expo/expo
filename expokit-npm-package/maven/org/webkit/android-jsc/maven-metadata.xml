@@ -3,10 +3,10 @@
   <groupId>org.webkit</groupId>
   <artifactId>android-jsc</artifactId>
   <versioning>
-    <release>r216113</release>
+    <release>r224109</release>
     <versions>
-      <version>r216113</version>
+      <version>r224109</version>
     </versions>
-    <lastUpdated>20171117084755</lastUpdated>
+    <lastUpdated>20180729134202</lastUpdated>
   </versioning>
 </metadata>
