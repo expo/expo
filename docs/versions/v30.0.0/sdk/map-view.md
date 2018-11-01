@@ -6,7 +6,7 @@ A Map component that uses Apple Maps or Google Maps on iOS and Google Maps on An
 
 Expo includes version 0.21.0 of react-native-maps (the latest as of the time of this writing).
 
-${<SnackEmbed snackId="rkw1m42B-" />}
+${<SnackEmbed snackId="@adamjnav/mapview-example" />}
 
 ## `Expo.MapView`
 
