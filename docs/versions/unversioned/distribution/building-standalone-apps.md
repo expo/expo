@@ -62,8 +62,13 @@ project, `exp` will start one for you.
 ### If you choose to build for Android
 
 The first time you build the project you will be asked whether you'd like to upload a keystore or
-have us handle it for you. If you don't know what a keystore is, just leave it to us. Otherwise,
+have us handle it for you. If you don't know what a keystore is, you can have us generate one for you. Otherwise,
 feel free to upload your own.
+
+If you choose to let Expo generate a keystore for you, we **strongly recommend** that you later run `expo fetch:android:keystore`
+and backup your keystore to a safe location. Once you submit an app to the Google Play Store, all future updates to that app **must**
+be signed with the same keystore to be accepted by Google. If, for any reason, you delete your project or clear your credentials
+in the future, you will not be able to submit any updates to your app if you have not backed up your keystore.
 
 ```bash
 [exp] No currently active or previous builds for this project.
