@@ -28,3 +28,6 @@ rm Gemfile.lock
 nix run -f $scriptdir bundler --command bundle install
 nix run -f $scriptdir bundix --command bundix
 popd
+
+# Update all yarn.lock files
+nix run -f . fd yarn parallel bash --command bash -c "fd -a yarn.lock | xargs -n 1 dirname | parallel 'cd {} && yarn install --force'"
