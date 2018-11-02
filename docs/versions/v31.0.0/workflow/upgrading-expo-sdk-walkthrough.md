@@ -6,6 +6,27 @@ If you are a couple of versions behind, upgrading your projects Expo SDK version
 
 Expo only provides support for the last 6 versions since the latest version.
 
+## SDK 31
+
+#### Upgrade from SDK 30
+
+- `app.json`, change `sdkVersion` to `"31.0.0"`,
+- In package.json, change these dependencies:
+
+```json
+{
+  "react-native": "https://github.com/expo/react-native/archive/sdk-31.0.0.tar.gz",
+  "expo": "^31.0.0",
+  "react": "16.5.0"
+}
+```
+
+- Delete your project’s node_modules directory and run npm install again
+
+#### Notes
+
+- There are several small breaking API changes with this release. See the [changelog](https://github.com/expo/expo/blob/master/CHANGELOG.md#3100-partial-changelog) for the full list.
+
 ## SDK 30
 
 #### Upgrade from SDK 29
