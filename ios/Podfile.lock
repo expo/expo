@@ -149,6 +149,9 @@ PODS:
   - EXAdsAdMob (1.0.0):
     - EXCore
     - Google-Mobile-Ads-SDK
+  - EXAppAuth (1.0.0):
+    - AppAuth
+    - EXCore
   - EXBarCodeScanner (1.0.0):
     - EXCore
   - EXBarCodeScannerInterface (1.0.0):
@@ -924,6 +927,7 @@ DEPENDENCIES:
   - Crashlytics (~> 3.8)
   - DoubleConversion (from `../react-native-lab/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - EXAdsAdMob (from `../packages/expo-ads-admob/ios`)
+  - EXAppAuth (from `../packages/expo-app-auth/ios`)
   - EXBarCodeScanner (from `../packages/expo-barcode-scanner/ios`)
   - EXBarCodeScannerInterface (from `../packages/expo-barcode-scanner-interface/ios`)
   - EXCamera (from `../packages/expo-camera/ios`)
@@ -1216,6 +1220,8 @@ EXTERNAL SOURCES:
     :podspec: "../react-native-lab/react-native/third-party-podspecs/DoubleConversion.podspec"
   EXAdsAdMob:
     :path: "../packages/expo-ads-admob/ios"
+  EXAppAuth:
+    :path: "../packages/expo-app-auth/ios"
   EXBarCodeScanner:
     :path: "../packages/expo-barcode-scanner/ios"
   EXBarCodeScannerInterface:
@@ -1366,6 +1372,7 @@ SPEC CHECKSUMS:
   Crashlytics: ccaac42660eb9351b9960c0d66106b0bcf99f4fa
   DoubleConversion: bb338842f62ab1d708ceb63ec3d999f0f3d98ecd
   EXAdsAdMob: 66a3c271540f54f4d964fa72f0c8a953faea5a03
+  EXAppAuth: df83ccf9fecfdfad741a930263524f4b75f8e962
   EXBarCodeScanner: 0ed39b41ccec72935521823eceed3d60c73fc43d
   EXBarCodeScannerInterface: 4453aa03ca1e0a1c9b320aaf4ce5b7d88064d192
   EXCamera: 00936f79aafe16125c6cdc7c7ea2bf2d2c976dfe

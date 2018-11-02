@@ -12,6 +12,11 @@
 #import "EXRootViewController.h"
 #import "EXConstants.h"
 
+#if __has_include(<EXAuth/EXAuth.h>)
+#import <EXAuth/EXAuth.h>
+#endif
+
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface ExpoKit (Crashlytics) <CrashlyticsDelegate>
@@ -40,6 +45,17 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 #pragma mark - Handling URLs
+
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
+{
+#if __has_include(<EXAuth/EXAuth.h>)
+  if ([[EXAuth instance] application:app openURL:url options:options]) {
+    return YES;
+  }
+#endif
+  
+  return NO;
+}
 
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(nullable NSString *)sourceApplication annotation:(id)annotation
 {

@@ -28,6 +28,7 @@ def includeUniversalModule = { name ->
 }
 
 [
+  'expo-app-auth',
   'expo-ads-admob',
   'expo-analytics-segment',
   'expo-barcode-scanner',
