@@ -15,5 +15,5 @@ in
       allowUnfree = true;
       android_sdk.accept_license = true;
     };
-    overlays = [ (import ./nix/all-packages.nix) ];
+    overlays = [ (import ./all-packages.nix) ];
   })
