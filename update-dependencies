@@ -1,8 +1,9 @@
 #!/usr/bin/env nix-shell
-#!nix-shell -i bash -I . --packages bash coreutils nix-prefetch-git
+#!nix-shell -i bash -I ./nix --packages bash coreutils nix-prefetch-git
 set -euo pipefail
 
-scriptdir=$(realpath $(dirname ${BASH_SOURCE[0]}))
+scriptdir="$(realpath $(dirname ${BASH_SOURCE[0]}))"
+nixdir="$scriptdir/nix"
 
 # "nixpkgs-channels" is a mirror of "nixpkgs" with branches that track release channels
 repo=https://github.com/NixOS/nixpkgs-channels.git
@@ -15,19 +16,19 @@ rev=${1:-refs/heads/nixos-unstable}
 newCommit=$(nix-prefetch-git --url $repo --rev $rev)
 
 # "default.nix" uses this file to pin exact dependencies
-echo "$newCommit" > nixpkgs.json
+echo "$newCommit" > nix/nixpkgs.json
 
 # Generate nix files for a node 8 project with the npm dependency expo
 pushd nix/nodepackages
-nix run -f $scriptdir nodePackages.node2nix --command node2nix -8 -i <(echo '["expo-cli"]')
+nix run -f $nixdir nodePackages.node2nix --command node2nix -8 -i <(echo '["expo-cli"]')
 popd
 
 # Generate nix files for the bundix ruby gem
 pushd nix/xcpretty
 rm Gemfile.lock
-nix run -f $scriptdir bundler --command bundle install
-nix run -f $scriptdir bundix --command bundix
+nix run -f $nixdir bundler --command bundle install
+nix run -f $nixdir bundix --command bundix
 popd
 
 # Update all yarn.lock files
-nix run -f . fd yarn parallel bash --command bash -c "fd -a yarn.lock | xargs -n 1 dirname | parallel 'cd {} && yarn install --force'"
+nix run -f $nixdir fd yarn parallel bash --command bash -c "fd -a yarn.lock $scriptdir | xargs -n 1 dirname | parallel 'cd {} && yarn install --force'"
