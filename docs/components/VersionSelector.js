@@ -15,7 +15,7 @@ const STYLES_SELECT = css`
   justify-content: center;
   margin: 0;
   height: 48px;
-  padding: 0 16px 0 16px;
+  padding: 5px 16px 0 16px;
   border-left: 1px solid ${Constants.colors.border};
 `;
 
