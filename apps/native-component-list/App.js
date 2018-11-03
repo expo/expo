@@ -11,10 +11,10 @@ import { useScreens } from 'react-native-screens';
 import Icons from './constants/Icons';
 import RootNavigation from './navigation/RootNavigation';
 
-useScreens();
 
 // workaround for large android status bar in react-nav beta.27
 if (Platform.OS === 'android') {
+  useScreens();
   SafeAreaView.setStatusBarHeight(0);
 }
 
@@ -32,7 +32,7 @@ export default class App extends React.Component {
       const iconRequires = Object.keys(Icons).map(key => Icons[key]);
       await Promise.all([
         Asset.loadAsync(iconRequires),
-        // Asset.loadAsync(StackAssets),
+        Asset.loadAsync(StackAssets),
         Font.loadAsync(Ionicons.font),
         Font.loadAsync({ 'space-mono': require('./assets/fonts/SpaceMono-Regular.ttf') })
       ]);
