@@ -2642,7 +2642,7 @@ deep-is@~0.1.3:
   resolved "https://registry.yarnpkg.com/deep-is/-/deep-is-0.1.3.tgz#b369d6fb5dbc13eecf524f91b070feedc357cf34"
   integrity sha1-s2nW+128E+7PUk+RsHD+7cNXzzQ=
 
-deepmerge@^2.1.0, deepmerge@^2.1.1:
+deepmerge@^2.1.1:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/deepmerge/-/deepmerge-2.2.1.tgz#5d3ff22a01c00f645405a2fbc17d0778a1801170"
   integrity sha512-R9hc1Xa/NOBi9WRVUWg19rl1UB7Tt4kuPd+thNJgFZoxXsTz7ncaPaeIm+40oSGuP33DfMb4sZt1QIGiJzC4EA==
@@ -7103,21 +7103,9 @@ react-native-maps@expo/react-native-maps#v0.22.0-exp.0:
     babel-plugin-module-resolver "^3.1.0"
     babel-preset-react-native "1.9.0"
 
-react-native-paper@2.0.0-alpha.4:
-  version "2.0.0-alpha.4"
-  resolved "https://registry.yarnpkg.com/react-native-paper/-/react-native-paper-2.0.0-alpha.4.tgz#2186fd85e3e5aee368a0861f6a302015e76f24d9"
-  integrity sha512-Patjrakc6VfVMuBaOx/clv3xm8I/Qf6091iq5YEth0j/KQ77TJ1r9IYOtwqK92/1AjAHoOk4N1VJdxxbypeHig==
-  dependencies:
-    color "^2.0.1"
-    create-react-context "^0.2.2"
-    deepmerge "^2.1.0"
-    hoist-non-react-statics "^2.5.0"
-    react-lifecycles-compat "^3.0.4"
-
-react-native-paper@^2.0.0-alpha.4:
+"react-native-paper@github:brentvatne/react-native-paper#@brent/fix-bottom-navigation-rn-57":
   version "2.1.3"
-  resolved "https://registry.yarnpkg.com/react-native-paper/-/react-native-paper-2.1.3.tgz#ae2efce3cf8ba7d8afa6f5d743768b2be110520f"
-  integrity sha512-f9CKazmEd8c38CsX5d5+/qxv2AzD8rI/k8xNPrXk5PHWS81RrQOUSVcHJApcEFyzRMQ+gIGbijtZ3mkn0V2lSg==
+  resolved "https://codeload.github.com/brentvatne/react-native-paper/tar.gz/c3d2a6637f2507bc0f6c0a16220aac4cacd5b6d7"
   dependencies:
     "@callstack/react-theme-provider" "^1.0.6"
     color "^2.0.1"
@@ -7139,13 +7127,6 @@ react-native-safe-area-view@^0.11.0:
   version "0.11.0"
   resolved "https://registry.yarnpkg.com/react-native-safe-area-view/-/react-native-safe-area-view-0.11.0.tgz#4f3dda43c2bace37965e7c6aef5fc83d4f19d174"
   integrity sha512-N3nElaahu1Me2ltnfc9acpgt1znm6pi8DSadKy79kvdzKwvVIzw0IXueA/Hjr51eCW1BsfNw7D1SgBT9U6qEkA==
-  dependencies:
-    hoist-non-react-statics "^2.3.1"
-
-react-native-safe-area-view@^0.7.0:
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/react-native-safe-area-view/-/react-native-safe-area-view-0.7.0.tgz#38f5ab9368d6ef9e5d18ab64212938af3ec39421"
-  integrity sha512-SjLdW/Th0WVMhyngH4O6yC21S+O4U4AAG3QxBr7fZ2ftgjXSpKbDHAhEpxBdFwei6HsnsC2h9oYMtPpaW9nfGg==
   dependencies:
     hoist-non-react-statics "^2.3.1"
 
@@ -7219,15 +7200,14 @@ react-navigation-material-bottom-tabs@1.0.0-alpha.2:
     prop-types "^15.6.0"
     react-navigation-tabs "1.0.0-alpha.4"
 
-react-navigation-material-bottom-tabs@^0.3.0:
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/react-navigation-material-bottom-tabs/-/react-navigation-material-bottom-tabs-0.3.0.tgz#7fae682a41c1c290f2584fe50879e36b41da5394"
-  integrity sha512-huMoVSci3r1uaP8nheZCXnMIl04xdwFyi+t8ij4520INuoqBaJy+seWuY80llcEjX5Vn7iWRAbGT5lmVZVjOxw==
+react-navigation-material-bottom-tabs@1.0.0-alpha.4:
+  version "1.0.0-alpha.4"
+  resolved "https://registry.yarnpkg.com/react-navigation-material-bottom-tabs/-/react-navigation-material-bottom-tabs-1.0.0-alpha.4.tgz#ca0986093332f7f9ae66b08c808031bae6ce8c15"
+  integrity sha512-5ubvuOzATt/Lc05QNA0TchusydRiRuXf4ttyrQRrNAlApPh7utvaDh9m9W7Gq7XlPtbpeL89bfaUwyO2EB3AXg==
   dependencies:
     hoist-non-react-statics "^2.5.0"
     prop-types "^15.6.0"
-    react-native-paper "2.0.0-alpha.4"
-    react-navigation-tabs "^0.4.0"
+    react-navigation-tabs "1.0.0-alpha.4"
 
 react-navigation-stack@1.0.0-alpha.31:
   version "1.0.0-alpha.31"
@@ -7252,17 +7232,6 @@ react-navigation-tabs@1.0.0-alpha.5:
     hoist-non-react-statics "^2.5.0"
     prop-types "^15.6.1"
     react-lifecycles-compat "^3.0.4"
-    react-native-tab-view "^1.0.0"
-
-react-navigation-tabs@^0.4.0:
-  version "0.4.1"
-  resolved "https://registry.yarnpkg.com/react-navigation-tabs/-/react-navigation-tabs-0.4.1.tgz#b367535c1b00fc2046341ae93cb8d3e8e0b96a11"
-  integrity sha512-GsHqeTNyhSJGDW5cbJnDMuqmd+R6wGTeB1uYUaiLS8aSMGPdx1DNO49OfJI9x4C2Z83HtLjPOaQSNWqf/sNFDA==
-  dependencies:
-    hoist-non-react-statics "^2.5.0"
-    prop-types "^15.6.1"
-    react-lifecycles-compat "^3.0.4"
-    react-native-safe-area-view "^0.7.0"
     react-native-tab-view "^1.0.0"
 
 react-navigation@3.0.0-rc.2:
