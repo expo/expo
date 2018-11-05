@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2015-present, Horcrux.
  * All rights reserved.
  *
@@ -9,32 +9,40 @@
 
 package versioned.host.exp.exponent.modules.api.components.svg;
 
+import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Point;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.facebook.react.ReactRootView;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.uimanager.ReactShadowNodeImpl;
 import com.facebook.react.uimanager.UIManagerModule;
+import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.TouchEvent;
 import com.facebook.react.uimanager.events.TouchEventCoalescingKeyHelper;
 import com.facebook.react.uimanager.events.TouchEventType;
-import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.views.view.ReactViewGroup;
 
 import javax.annotation.Nullable;
 
 /**
- * Custom {@link View} implementation that draws an RNSVGSvg React view and its \childrn.
+ * Custom {@link View} implementation that draws an RNSVGSvg React view and its children.
  */
-public class SvgView extends View {
+@SuppressLint("ViewConstructor")
+public class SvgView extends ViewGroup {
+    @SuppressWarnings("unused")
     public enum Events {
+        @SuppressWarnings("unused")
         EVENT_DATA_URL("onDataURL");
 
         private final String mName;
 
+        @SuppressWarnings({"unused", "SameParameterValue"})
         Events(final String name) {
             mName = name;
         }
@@ -46,7 +54,7 @@ public class SvgView extends View {
     }
 
     private @Nullable Bitmap mBitmap;
-    private EventDispatcher mEventDispatcher;
+    private final EventDispatcher mEventDispatcher;
     private long mGestureStartTime = TouchEvent.UNSET;
     private int mTargetTag;
 
@@ -62,6 +70,12 @@ public class SvgView extends View {
     public void setId(int id) {
         super.setId(id);
         SvgViewManager.setSvgView(this);
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        SvgViewManager.dropSvgView(this);
     }
 
     public void setBitmap(Bitmap bitmap) {
@@ -86,14 +100,41 @@ public class SvgView extends View {
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
-        mTargetTag = getShadowNode().hitTest(new Point((int) ev.getX(), (int) ev.getY()));
-
-        if (mTargetTag != -1) {
-            handleTouchEvent(ev);
-            return true;
+        SvgViewShadowNode node = getShadowNode();
+        if (node != null) {
+            mTargetTag = node.hitTest(new Point((int) ev.getX(), (int) ev.getY()));
+            if (mTargetTag != -1) {
+                handleTouchEvent(ev);
+                return true;
+            }
         }
 
         return super.dispatchTouchEvent(ev);
+    }
+
+    @Override
+    protected void onLayout(boolean changed, int l, int t, int r, int b) {
+        ReactShadowNodeImpl node = getShadowNode();
+        for (int i = 0; i < this.getChildCount(); i++) {
+            View child = this.getChildAt(i);
+            if (child instanceof ReactViewGroup) {
+                int id = child.getId();
+                for (int j = 0; j < node.getChildCount(); j++) {
+                    ReactShadowNodeImpl nodeChild = node.getChildAt(j);
+                    if (nodeChild.getReactTag() != id) {
+                        continue;
+                    }
+
+                    float x = nodeChild.getLayoutX();
+                    float y = nodeChild.getLayoutY();
+                    float nr = x + nodeChild.getLayoutWidth();
+                    float nb = y + nodeChild.getLayoutHeight();
+
+                    child.layout(Math.round(x), Math.round(y), Math.round(nr), Math.round(nb));
+                    break;
+                }
+            }
+        }
     }
 
     private int getAbsoluteLeft(View view) {
@@ -131,7 +172,7 @@ public class SvgView extends View {
                 mTouchEventCoalescingKeyHelper));
     }
 
-    public void handleTouchEvent(MotionEvent ev) {
+    private void handleTouchEvent(MotionEvent ev) {
         int action = ev.getAction() & MotionEvent.ACTION_MASK;
         if (action == MotionEvent.ACTION_DOWN) {
             mGestureStartTime = ev.getEventTime();
@@ -148,6 +189,7 @@ public class SvgView extends View {
             // this gesture.
             dispatch(ev, TouchEventType.END);
             mTargetTag = -1;
+            mGestureStartTime = TouchEvent.UNSET;
         } else if (action == MotionEvent.ACTION_MOVE) {
             // Update pointer position for current gesture
             dispatch(ev, TouchEventType.MOVE);
@@ -157,8 +199,6 @@ public class SvgView extends View {
         } else if (action == MotionEvent.ACTION_POINTER_UP) {
             // Exactly onw of the pointers goes up
             dispatch(ev, TouchEventType.END);
-            mTargetTag = -1;
-            mGestureStartTime = TouchEvent.UNSET;
         } else if (action == MotionEvent.ACTION_CANCEL) {
             dispatchCancelEvent(ev);
             mTargetTag = -1;

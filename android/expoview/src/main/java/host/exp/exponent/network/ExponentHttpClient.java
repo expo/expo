@@ -4,8 +4,6 @@ package host.exp.exponent.network;
 
 import android.content.Context;
 
-import com.amplitude.api.Amplitude;
-
 import org.apache.commons.io.IOUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,7 +15,6 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.charset.Charset;
 
 import host.exp.exponent.Constants;
 import host.exp.exponent.analytics.Analytics;
@@ -36,17 +33,14 @@ import expolib_v1.okio.Source;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 
 public class ExponentHttpClient {
-
-  private static final String USED_EMBEDDED_RESPONSE_KEY = "USED_EMBEDDED_RESPONSE_";
-
   ExponentSharedPreferences mExponentSharedPreferences;
 
   private static final String TAG = ExponentHttpClient.class.getSimpleName();
 
   public interface SafeCallback {
-    void onFailure(Call call, IOException e);
-    void onResponse(Call call, Response response);
-    void onCachedResponse(Call call, Response response, boolean isEmbedded);
+    void onFailure(IOException e);
+    void onResponse(ExpoResponse response);
+    void onCachedResponse(ExpoResponse response, boolean isEmbedded);
   }
 
   private Context mContext;
@@ -58,8 +52,18 @@ public class ExponentHttpClient {
     mExponentSharedPreferences = exponentSharedPreferences;
   }
 
-  public void call(final Request request, final Callback callback) {
-    mOkHttpClientFactory.getNewClient().newCall(request).enqueue(callback);
+  public void call(final Request request, final ExpoHttpCallback callback) {
+    mOkHttpClientFactory.getNewClient().newCall(request).enqueue(new Callback() {
+      @Override
+      public void onFailure(Call call, IOException e) {
+        callback.onFailure(e);
+      }
+
+      @Override
+      public void onResponse(Call call, Response response) throws IOException {
+        callback.onResponse(new OkHttpV1ExpoResponse(response));
+      }
+    });
   }
 
   public void callSafe(final Request request, final SafeCallback callback) {
@@ -74,7 +78,7 @@ public class ExponentHttpClient {
       @Override
       public void onResponse(Call call, Response response) throws IOException {
         if (response.isSuccessful()) {
-          callback.onResponse(call, response);
+          callback.onResponse(new OkHttpV1ExpoResponse(response));
         } else {
           tryForcedCachedResponse(uri, request, callback, response, null);
         }
@@ -88,35 +92,35 @@ public class ExponentHttpClient {
     tryForcedCachedResponse(uri, request, new SafeCallback() {
 
       @Override
-      public void onFailure(Call call, IOException e) {
-        call(request, new Callback() {
+      public void onFailure(IOException e) {
+        call(request, new ExpoHttpCallback() {
           @Override
-          public void onFailure(Call call, IOException e) {
-            callback.onFailure(call, e);
+          public void onFailure(IOException e) {
+            callback.onFailure(e);
           }
 
           @Override
-          public void onResponse(Call call, Response response) throws IOException {
-            callback.onResponse(call, response);
+          public void onResponse(ExpoResponse response) throws IOException {
+            callback.onResponse(response);
           }
         });
       }
 
       @Override
-      public void onResponse(Call call, Response response) {
-        callback.onResponse(call, response);
+      public void onResponse(ExpoResponse response) {
+        callback.onResponse(response);
       }
 
       @Override
-      public void onCachedResponse(Call call, Response response, boolean isEmbedded) {
-        callback.onCachedResponse(call, response, isEmbedded);
+      public void onCachedResponse(ExpoResponse response, boolean isEmbedded) {
+        callback.onCachedResponse(response, isEmbedded);
 
         // You are responsible for updating the cache!
       }
     }, null, null);
   }
 
-  private void tryForcedCachedResponse(final String uri, final Request request, final SafeCallback callback, final Response initialResponse, final IOException initialException) {
+  public void tryForcedCachedResponse(final String uri, final Request request, final SafeCallback callback, final Response initialResponse, final IOException initialException) {
     Request newRequest = request.newBuilder()
         .cacheControl(CacheControl.FORCE_CACHE)
         .header(ExponentNetwork.IGNORE_INTERCEPTORS_HEADER, "blah")
@@ -130,7 +134,7 @@ public class ExponentHttpClient {
       @Override
       public void onResponse(Call call, Response response) throws IOException {
         if (response.isSuccessful()) {
-          callback.onCachedResponse(call, response, false);
+          callback.onCachedResponse(new OkHttpV1ExpoResponse(response), false);
           logEventWithUri(Analytics.HTTP_USED_CACHE_RESPONSE, uri);
         } else {
           tryHardCodedResponse(uri, call, callback, initialResponse, initialException);
@@ -191,9 +195,7 @@ public class ExponentHttpClient {
         // where we have version 1 of a manifest saved as the embedded response, get version 2 saved
         // to the OkHttp cache, cache gets evicted, and we regress to version 1. Want to only use
         // monotonically increasing manifest versions.
-        String sharedPrefKey = USED_EMBEDDED_RESPONSE_KEY + normalizedUri;
-
-        if (normalizedUri.equals(normalizeUri(embeddedResponse.url)) && !mExponentSharedPreferences.getBoolean(sharedPrefKey, false)) {
+        if (normalizedUri.equals(normalizeUri(embeddedResponse.url))) {
           Response response = new Response.Builder()
               .request(call.request())
               .protocol(Protocol.HTTP_1_1)
@@ -201,10 +203,8 @@ public class ExponentHttpClient {
               .message("OK")
               .body(responseBodyForFile(embeddedResponse.responseFilePath, MediaType.parse(embeddedResponse.mediaType)))
               .build();
-          callback.onCachedResponse(call, response, true);
+          callback.onCachedResponse(new OkHttpV1ExpoResponse(response), true);
           logEventWithUri(Analytics.HTTP_USED_EMBEDDED_RESPONSE, uri);
-          mExponentSharedPreferences.setBoolean(sharedPrefKey, true);
-
           return;
         }
       }
@@ -213,11 +213,11 @@ public class ExponentHttpClient {
     }
 
     if (initialResponse != null) {
-      callback.onResponse(call, initialResponse);
+      callback.onResponse(new OkHttpV1ExpoResponse(initialResponse));
     } else if (initialException != null) {
-      callback.onFailure(call, initialException);
+      callback.onFailure(initialException);
     } else {
-      callback.onFailure(call, new IOException("No hard coded response found"));
+      callback.onFailure(new IOException("No hard coded response found"));
     }
   }
 
@@ -261,7 +261,7 @@ public class ExponentHttpClient {
     try {
       JSONObject eventProperties = new JSONObject();
       eventProperties.put("URI", uri);
-      Amplitude.getInstance().logEvent(event, eventProperties);
+      Analytics.logEvent(event, eventProperties);
     } catch (JSONException e) {
       EXL.e(TAG, e);
     }

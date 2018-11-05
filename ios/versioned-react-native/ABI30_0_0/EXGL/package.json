@@ -1,0 +1,30 @@
+{
+  "name": "expo-gl",
+  "version": "1.0.2-rc.0",
+  "description": "Expo GL standalone universal module",
+  "main": "index.js",
+  "keywords": [
+    "react-native",
+    "expo",
+    "gl",
+    "glview",
+    "webgl"
+  ],
+  "homepage": "https://docs.expo.io/",
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "peerDependencies": {
+    "prop-types": "^15.6.1",
+    "react": "^16.4.0",
+    "react-native": "^0.55.4"
+  },
+  "dependencies": {
+    "expo-core": "^1.1.0-rc.0",
+    "expo-camera-interface": "^1.0.2-rc.0",
+    "expo-file-system-interface": "^1.0.2-rc.0",
+    "expo-gl-cpp": "^1.0.2-rc.0"
+  },
+  "devDependencies": {
+    "babel-preset-expo": "^4.0.0"
+  }
+}

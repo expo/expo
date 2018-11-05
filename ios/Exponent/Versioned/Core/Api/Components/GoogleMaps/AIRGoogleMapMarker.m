@@ -36,6 +36,8 @@ CGRect unionRect(CGRect a, CGRect b) {
   if ((self = [super init])) {
     _realMarker = [[AIRGMSMarker alloc] init];
     _realMarker.fakeMarker = self;
+    _realMarker.tracksViewChanges = true;
+    _realMarker.tracksInfoWindowChanges = false;
   }
   return self;
 }
@@ -155,6 +157,14 @@ CGRect unionRect(CGRect a, CGRect b) {
 
 - (CLLocationCoordinate2D)coordinate {
   return _realMarker.position;
+}
+
+- (void)setRotation:(CLLocationDegrees)rotation {
+    _realMarker.rotation = rotation;
+}
+
+- (CLLocationDegrees)rotation {
+    return _realMarker.rotation;
 }
 
 - (void)setIdentifier:(NSString *)identifier {
@@ -285,6 +295,22 @@ CGRect unionRect(CGRect a, CGRect b) {
 
 - (BOOL)draggable {
   return _realMarker.draggable;
+}
+
+- (void)setTracksViewChanges:(BOOL)tracksViewChanges {
+  _realMarker.tracksViewChanges = tracksViewChanges;
+}
+
+- (BOOL)tracksViewChanges {
+  return _realMarker.tracksViewChanges;
+}
+
+- (void)setTracksInfoWindowChanges:(BOOL)tracksInfoWindowChanges {
+  _realMarker.tracksInfoWindowChanges = tracksInfoWindowChanges;
+}
+
+- (BOOL)tracksInfoWindowChanges {
+  return _realMarker.tracksInfoWindowChanges;
 }
 
 @end

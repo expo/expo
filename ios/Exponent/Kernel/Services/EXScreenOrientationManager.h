@@ -7,10 +7,6 @@
 - (void)setSupportInterfaceOrientations:(UIInterfaceOrientationMask)supportedInterfaceOrientations
                          forExperienceId:(NSString *)experienceId;
 
-/**
- *  Similar to UIViewController::supportedInterfaceOrientations, but the value can vary depending on
- *  which JS task is visible.
- */
-@property (nonatomic, assign) UIInterfaceOrientationMask supportedInterfaceOrientationsForForegroundExperience;
+@property (nonatomic, assign) UIInterfaceOrientationMask supportedInterfaceOrientationsForVisibleApp;
 
 @end

@@ -2,6 +2,7 @@
 
 #import "EXLinkingManager.h"
 #import "EXScopedModuleRegistry.h"
+#import "EXUtil.h"
 
 #import <React/RCTBridge.h>
 #import <React/RCTEventDispatcher.h>
@@ -68,7 +69,10 @@ RCT_EXPORT_METHOD(openURL:(NSURL *)URL
     [_kernelLinkingDelegate linkingModule:self didOpenUrl:URL.absoluteString];
     resolve(@YES);
   } else {
-    BOOL opened = [RCTSharedApplication() openURL:URL];
+    __block BOOL opened = NO;
+    [EXUtil performSynchronouslyOnMainThread:^{
+      opened = [RCTSharedApplication() openURL:URL];
+    }];
     if (opened) {
       resolve(nil);
     } else {
@@ -81,9 +85,11 @@ RCT_EXPORT_METHOD(canOpenURL:(NSURL *)URL
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(__unused RCTPromiseRejectBlock)reject)
 {
-  BOOL canOpen = [_kernelLinkingDelegate linkingModule:self shouldOpenExpoUrl:URL];
+  __block BOOL canOpen = [_kernelLinkingDelegate linkingModule:self shouldOpenExpoUrl:URL];
   if (!canOpen) {
-    canOpen = [RCTSharedApplication() canOpenURL:URL];
+    [EXUtil performSynchronouslyOnMainThread:^{
+      canOpen = [RCTSharedApplication() canOpenURL:URL];
+    }];
   }
   resolve(@(canOpen));
 }

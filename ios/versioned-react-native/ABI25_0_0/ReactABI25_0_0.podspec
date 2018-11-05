@@ -69,11 +69,27 @@ Pod::Spec.new do |s|
 
   s.subspec "Expo" do |ss|
     ss.dependency         "ReactABI25_0_0/Core"
+    ss.dependency 'Amplitude-iOS'
+    ss.dependency 'Analytics'
+    ss.dependency 'AppAuth'
+    ss.dependency 'FBAudienceNetwork'
+    ss.dependency 'FBSDKCoreKit'
+    ss.dependency 'FBSDKLoginKit'
+    ss.dependency 'FBSDKShareKit'
+    ss.dependency 'Google-Mobile-Ads-SDK'
+    ss.dependency 'GoogleSignIn'
+    ss.dependency 'GoogleMaps'
+    ss.dependency 'lottie-ios'
+    ss.dependency 'JKBigInteger2'
+    ss.dependency 'Branch'
+    ss.dependency 'EXGL-CPP'
     ss.source_files     = "Expo/Core/**/*.{h,m}"
   end
 
   s.subspec "ExpoOptional" do |ss|
     ss.dependency         "ReactABI25_0_0/Expo"
+    ss.dependency "GoogleMobileVision/FaceDetector"
+    ss.dependency "GoogleMobileVision/MVDataOutput"
     ss.source_files     = "Expo/Optional/**/*.{h,m}"
   end
 
@@ -84,7 +100,7 @@ Pod::Spec.new do |s|
   end
 
   s.subspec "CxxBridge" do |ss|
-    ss.dependency             "Folly", "2016.09.26.00"
+    ss.dependency             "Folly", "2016.10.31.00"
     ss.dependency             "ReactABI25_0_0/Core"
     ss.dependency             "ReactABI25_0_0/cxxReactABI25_0_0"
     ss.compiler_flags       = folly_compiler_flags
@@ -126,7 +142,7 @@ Pod::Spec.new do |s|
   end
 
   s.subspec "ABI25_0_0jschelpers" do |ss|
-    ss.dependency             "Folly", "2016.09.26.00"
+    ss.dependency             "Folly", "2016.10.31.00"
     ss.dependency             "ReactABI25_0_0/ABI25_0_0PrivateDatabase"
     ss.compiler_flags       = folly_compiler_flags
     ss.source_files         = "ReactCommon/ABI25_0_0jschelpers/*.{cpp,h}"
@@ -150,13 +166,13 @@ Pod::Spec.new do |s|
   s.subspec "cxxReactABI25_0_0" do |ss|
     ss.dependency             "ReactABI25_0_0/ABI25_0_0jschelpers"
     ss.dependency             "ReactABI25_0_0/ABI25_0_0jsinspector"
-    ss.dependency             "boost"
-    ss.dependency             "Folly", "2016.09.26.00"
+    ss.dependency             "boost-for-react-native", "1.63.0"
+    ss.dependency             "Folly", "2016.10.31.00"
     ss.compiler_flags       = folly_compiler_flags
     ss.source_files         = "ReactCommon/cxxReactABI25_0_0/*.{cpp,h}"
     ss.exclude_files        = "ReactCommon/cxxReactABI25_0_0/ABI25_0_0SampleCxxModule.*"
     ss.private_header_files = "ReactCommon/cxxReactABI25_0_0/*.h"
-    ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/Folly\"" }
+    ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/Folly\"" }
   end
 
   s.subspec "ART" do |ss|

@@ -1,15 +1,15 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 package com.facebook.react.uimanager;
 
+import android.annotation.TargetApi;
 import android.content.res.Resources;
-import android.util.Log;
+import android.os.Build;
+import com.facebook.common.logging.FLog;
 import android.util.SparseArray;
 import android.util.SparseBooleanArray;
 import android.view.Menu;
@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.widget.PopupMenu;
+import com.facebook.react.R;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.animation.Animation;
 import com.facebook.react.animation.AnimationListener;
@@ -30,6 +31,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.touch.JSResponderHandler;
+import com.facebook.react.uimanager.common.SizeMonitoringFrameLayout;
 import com.facebook.react.uimanager.layoutanimation.LayoutAnimationController;
 import com.facebook.react.uimanager.layoutanimation.LayoutAnimationListener;
 import com.facebook.systrace.Systrace;
@@ -82,6 +84,8 @@ public class NativeViewHierarchyManager {
 
     public boolean mLayoutAnimationEnabled;
 
+    public PopupMenu mPopupMenu;
+
     public NativeViewHierarchyManager(ViewManagerRegistry viewManagers) {
         this(viewManagers, new RootViewManager());
     }
@@ -119,6 +123,15 @@ public class NativeViewHierarchyManager {
         mLayoutAnimationEnabled = enabled;
     }
 
+    public synchronized void updateInstanceHandle(int tag, long instanceHandle) {
+        UiThreadUtil.assertOnUiThread();
+        try {
+            updateInstanceHandle(resolveView(tag), instanceHandle);
+        } catch (IllegalViewOperationException e) {
+            FLog.e(TAG, "Unable to update properties for view tag " + tag, e);
+        }
+    }
+
     public synchronized void updateProperties(int tag, ReactStylesDiffMap props) {
         try {
             {
@@ -126,9 +139,11 @@ public class NativeViewHierarchyManager {
                 try {
                     ViewManager viewManager = resolveViewManager(tag);
                     View viewToUpdate = resolveView(tag);
-                    viewManager.updateProperties(viewToUpdate, props);
+                    if (props != null) {
+                        viewManager.updateProperties(viewToUpdate, props);
+                    }
                 } catch (IllegalViewOperationException e) {
-                    Log.e(TAG, "Unable to update properties for view tag " + tag, e);
+                    FLog.e(TAG, "Unable to update properties for view tag " + tag, e);
                 }
             }
         } catch (Throwable expoException) {
@@ -188,6 +203,26 @@ public class NativeViewHierarchyManager {
         } finally {
             Systrace.endSection(Systrace.TRACE_TAG_REACT_VIEW);
         }
+    }
+
+    @TargetApi(Build.VERSION_CODES.DONUT)
+    private void updateInstanceHandle(View viewToUpdate, long instanceHandle) {
+        UiThreadUtil.assertOnUiThread();
+        viewToUpdate.setTag(R.id.view_tag_instance_handle, instanceHandle);
+    }
+
+    @Nullable
+    @TargetApi(Build.VERSION_CODES.DONUT)
+    public long getInstanceHandle(int reactTag) {
+        View view = mTagsToViews.get(reactTag);
+        if (view == null) {
+            throw new IllegalViewOperationException("Unable to find view for tag: " + reactTag);
+        }
+        Long instanceHandle = (Long) view.getTag(R.id.view_tag_instance_handle);
+        if (instanceHandle == null) {
+            throw new IllegalViewOperationException("Unable to find instanceHandle for tag: " + reactTag);
+        }
+        return instanceHandle;
     }
 
     private void updateLayout(View viewToUpdate, int x, int y, int width, int height) {
@@ -293,11 +328,11 @@ public class NativeViewHierarchyManager {
                 }
                 View viewToRemove = viewManager.getChildAt(viewToManage, indexToRemove);
                 if (mLayoutAnimationEnabled && mLayoutAnimator.shouldAnimateLayout(viewToRemove) && arrayContains(tagsToDelete, viewToRemove.getId())) {
-                // The view will be removed and dropped by the 'delete' layout animation
-                // instead, so do nothing
-                } else {
-                    viewManager.removeViewAt(viewToManage, indexToRemove);
+                    // Display the view in the parent after removal for the duration of the layout animation,
+                    // but pretend that it doesn't exist when calling other ViewGroup methods.
+                    viewManager.startViewTransition(viewToManage, viewToRemove);
                 }
+                viewManager.removeViewAt(viewToManage, indexToRemove);
                 lastIndexToRemove = indexToRemove;
             }
         }
@@ -323,7 +358,9 @@ public class NativeViewHierarchyManager {
 
                         @Override
                         public void onAnimationEnd() {
-                            viewManager.removeView(viewToManage, viewToDestroy);
+                            // Already removed from the ViewGroup, we can just end the transition here to
+                            // release the child.
+                            viewManager.endViewTransition(viewToManage, viewToDestroy);
                             dropView(viewToDestroy);
                         }
                     });
@@ -573,21 +610,31 @@ public class NativeViewHierarchyManager {
    * @param success will be called with the position of the selected item as the first argument, or
    *        no arguments if the menu is dismissed
    */
-    public synchronized void showPopupMenu(int reactTag, ReadableArray items, Callback success) {
+    public synchronized void showPopupMenu(int reactTag, ReadableArray items, Callback success, Callback error) {
         UiThreadUtil.assertOnUiThread();
         View anchor = mTagsToViews.get(reactTag);
         if (anchor == null) {
-            throw new JSApplicationIllegalArgumentException("Could not find view with tag " + reactTag);
+            error.invoke("Can't display popup. Could not find view with tag " + reactTag);
+            return;
         }
-        PopupMenu popupMenu = new PopupMenu(getReactContextForView(reactTag), anchor);
-        Menu menu = popupMenu.getMenu();
+        mPopupMenu = new PopupMenu(getReactContextForView(reactTag), anchor);
+        Menu menu = mPopupMenu.getMenu();
         for (int i = 0; i < items.size(); i++) {
             menu.add(Menu.NONE, Menu.NONE, i, items.getString(i));
         }
         PopupMenuCallbackHandler handler = new PopupMenuCallbackHandler(success);
-        popupMenu.setOnMenuItemClickListener(handler);
-        popupMenu.setOnDismissListener(handler);
-        popupMenu.show();
+        mPopupMenu.setOnMenuItemClickListener(handler);
+        mPopupMenu.setOnDismissListener(handler);
+        mPopupMenu.show();
+    }
+
+    /**
+   * Dismiss the last opened PopupMenu {@link PopupMenu}.
+   */
+    public void dismissPopupMenu() {
+        if (mPopupMenu != null) {
+            mPopupMenu.dismiss();
+        }
     }
 
     private static class PopupMenuCallbackHandler implements PopupMenu.OnMenuItemClickListener, PopupMenu.OnDismissListener {

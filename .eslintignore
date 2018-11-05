@@ -1,0 +1,17 @@
+# Ignore all node_modules
+
+**/node_modules/**
+
+# Git submodules
+
+/react-native-lab/react-native/**
+
+# Other
+
+/android/**
+/fastlane/**
+/ios/**
+
+# TODO: Lint tools too
+/tools/**
+/tools-public/**

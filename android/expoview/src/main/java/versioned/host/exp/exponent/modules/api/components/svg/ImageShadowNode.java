@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2015-present, Horcrux.
  * All rights reserved.
  *
@@ -14,7 +14,6 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Region;
 import android.net.Uri;
@@ -32,26 +31,39 @@ import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper;
+import com.facebook.react.views.imagehelper.ImageSource;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import com.facebook.react.bridge.ReadableArray;
+
 /**
  * Shadow node for virtual Image view
  */
-public class ImageShadowNode extends RenderableShadowNode {
+class ImageShadowNode extends RenderableShadowNode {
 
     private String mX;
     private String mY;
     private String mW;
     private String mH;
     private Uri mUri;
-    private float mImageRatio;
+    private String uriString;
+    private int mImageWidth;
+    private int mImageHeight;
     private String mAlign;
     private int mMeetOrSlice;
-    private AtomicBoolean mLoading = new AtomicBoolean(false);
+    private final AtomicBoolean mLoading = new AtomicBoolean(false);
+
+    private static final float[] sRawMatrix = new float[]{
+        1, 0, 0,
+        0, 1, 0,
+        0, 0, 1
+    };
+    private Matrix mMatrix = null;
 
     @ReactProp(name = "x")
     public void setX(String x) {
@@ -80,7 +92,7 @@ public class ImageShadowNode extends RenderableShadowNode {
     @ReactProp(name = "src")
     public void setSrc(@Nullable ReadableMap src) {
         if (src != null) {
-            String uriString = src.getString("uri");
+            uriString = src.getString("uri");
 
             if (uriString == null || uriString.isEmpty()) {
                 //TODO: give warning about this
@@ -88,11 +100,16 @@ public class ImageShadowNode extends RenderableShadowNode {
             }
 
             if (src.hasKey("width") && src.hasKey("height")) {
-                mImageRatio = (float)src.getInt("width") / (float)src.getInt("height");
+                mImageWidth = src.getInt("width");
+                mImageHeight = src.getInt("height");
             } else {
-                mImageRatio = 0f;
+                mImageWidth = 0;
+                mImageHeight = 0;
             }
             mUri = Uri.parse(uriString);
+            if (mUri.getScheme() == null) {
+                mUri = ResourceDrawableIdHelper.getInstance().getResourceDrawableUri(getThemedContext(), uriString);
+            }
         }
     }
 
@@ -109,14 +126,36 @@ public class ImageShadowNode extends RenderableShadowNode {
         markUpdated();
     }
 
+    @ReactProp(name = "matrix")
+    public void setMatrix(@Nullable ReadableArray matrixArray) {
+        if (matrixArray != null) {
+            int matrixSize = PropHelper.toMatrixData(matrixArray, sRawMatrix, mScale);
+            if (matrixSize == 6) {
+                if (mMatrix == null) {
+                    mMatrix = new Matrix();
+                }
+                mMatrix.setValues(sRawMatrix);
+            } else if (matrixSize != -1) {
+                FLog.w(ReactConstants.TAG, "RNSVG: Transform matrices must be of size 6");
+            }
+        } else {
+            mMatrix = null;
+        }
+
+        markUpdated();
+    }
+
+
     @Override
     public void draw(final Canvas canvas, final Paint paint, final float opacity) {
         if (!mLoading.get()) {
-            final ImageRequest request = ImageRequestBuilder.newBuilderWithSource(mUri).build();
+            final ImageSource imageSource = new ImageSource(getThemedContext(), uriString);
+
+            final ImageRequest request = ImageRequestBuilder.newBuilderWithSource(imageSource.getUri()).build();
             if (Fresco.getImagePipeline().isInBitmapMemoryCache(request)) {
                 tryRender(request, canvas, paint, opacity * mOpacity);
             } else {
-                loadBitmap(request);
+                loadBitmap(request, canvas, paint, opacity * mOpacity);
             }
         }
     }
@@ -124,20 +163,21 @@ public class ImageShadowNode extends RenderableShadowNode {
     @Override
     protected Path getPath(Canvas canvas, Paint paint) {
         Path path = new Path();
-        path.addRect(new RectF(getRect()), Path.Direction.CW);
+        path.addRect(getRect(), Path.Direction.CW);
         return path;
     }
 
-    private void loadBitmap(ImageRequest request) {
+    private void loadBitmap(ImageRequest request, final Canvas canvas, final Paint paint, final float opacity) {
         final DataSource<CloseableReference<CloseableImage>> dataSource
             = Fresco.getImagePipeline().fetchDecodedImage(request, getThemedContext());
-
         dataSource.subscribe(new BaseBitmapDataSubscriber() {
                                  @Override
                                  public void onNewResultImpl(Bitmap bitmap) {
                                      mLoading.set(false);
                                      SvgViewShadowNode shadowNode = getSvgShadowNode();
-                                     shadowNode.markUpdated();
+                                     if(shadowNode != null) {
+                                         shadowNode.markUpdated();
+                                     }
                                  }
 
                                  @Override
@@ -153,44 +193,37 @@ public class ImageShadowNode extends RenderableShadowNode {
     }
 
     @Nonnull
-    private Rect getRect() {
-        float x = relativeOnWidth(mX);
-        float y = relativeOnHeight(mY);
-        float w = relativeOnWidth(mW);
-        float h = relativeOnHeight(mH);
+    private RectF getRect() {
+        double x = relativeOnWidth(mX);
+        double y = relativeOnHeight(mY);
+        double w = relativeOnWidth(mW);
+        double h = relativeOnHeight(mH);
+        if (w == 0) {
+            w = mImageWidth * mScale;
+        }
+        if (h == 0) {
+            h = mImageHeight * mScale;
+        }
 
-        return new Rect((int) x, (int) y, (int) (x + w), (int) (y + h));
+        return new RectF((float)x, (float)y, (float)(x + w), (float)(y + h));
     }
 
     private void doRender(Canvas canvas, Paint paint, Bitmap bitmap, float opacity) {
-        // apply viewBox transform on Image render.
-        Rect rect = getRect();
-        float rectWidth = (float)rect.width();
-        float rectHeight = (float)rect.height();
-        float rectX = (float)rect.left;
-        float rectY = (float)rect.top;
-        float rectRatio = rectWidth / rectHeight;
-        RectF renderRect;
-
-        if (mImageRatio == 0f || mImageRatio == rectRatio) {
-            renderRect = new RectF(rect);
-        } else if (mImageRatio < rectRatio) {
-            renderRect = new RectF(0, 0, (int)(rectHeight * mImageRatio), (int)rectHeight);
-        } else {
-            renderRect = new RectF(0, 0, (int)rectWidth, (int)(rectWidth / mImageRatio));
+        if (mImageWidth == 0 || mImageHeight == 0) {
+            mImageWidth = bitmap.getWidth();
+            mImageHeight = bitmap.getHeight();
         }
 
-        RectF vbRect = new RectF(0, 0, renderRect.width() / mScale, renderRect.height() / mScale);
-        RectF eRect = new RectF(getCanvasLeft(), getCanvasTop(), rectWidth / mScale + getCanvasLeft(), rectHeight / mScale + getCanvasTop());
-        Matrix transform = ViewBox.getTransform(vbRect, eRect, mAlign, mMeetOrSlice, false);
+        RectF renderRect = getRect();
+        RectF vbRect = new RectF(0, 0, mImageWidth, mImageHeight);
+        Matrix transform = ViewBox.getTransform(vbRect, renderRect, mAlign, mMeetOrSlice);
+        transform.mapRect(vbRect);
 
-        transform.mapRect(renderRect);
-        Matrix translation = new Matrix();
-        translation.postTranslate(rectX, rectY);
-        translation.mapRect(renderRect);
+        if (mMatrix != null) {
+            mMatrix.mapRect(vbRect);
+        }
 
         Path clip = new Path();
-
         Path clipPath = getClipPath(canvas, paint);
         Path path = getPath(canvas, paint);
         if (clipPath != null) {
@@ -215,7 +248,7 @@ public class ImageShadowNode extends RenderableShadowNode {
 
         Paint alphaPaint = new Paint();
         alphaPaint.setAlpha((int) (opacity * 255));
-        canvas.drawBitmap(bitmap, null, renderRect, alphaPaint);
+        canvas.drawBitmap(bitmap, null, vbRect, alphaPaint);
     }
 
     private void tryRender(ImageRequest request, Canvas canvas, Paint paint, float opacity) {
@@ -243,6 +276,16 @@ public class ImageShadowNode extends RenderableShadowNode {
             throw new IllegalStateException(e);
         } finally {
             dataSource.close();
+        }
+    }
+
+    private void bitmapTryRender(Bitmap bitmap, Canvas canvas, Paint paint, float opacity) {
+        try {
+            if (bitmap != null) {
+                doRender(canvas, paint, bitmap, opacity);
+            }
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
         }
     }
 }

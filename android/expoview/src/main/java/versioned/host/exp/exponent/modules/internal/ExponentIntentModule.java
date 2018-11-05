@@ -12,16 +12,16 @@ import com.facebook.react.modules.intent.IntentModule;
 
 import java.util.Map;
 
-import host.exp.exponent.Constants;
-import host.exp.exponent.analytics.EXL;
+import javax.inject.Inject;
+
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.kernel.KernelConstants;
-import host.exp.exponent.kernel.KernelProvider;
+import host.exp.exponent.kernel.services.ExpoKernelServiceRegistry;
+import host.exp.exponent.kernel.services.linking.LinkingKernelService;
 
 public class ExponentIntentModule extends IntentModule {
-
-  private static final String TAG = ExponentIntentModule.class.getSimpleName();
-
+  @Inject
+  protected ExpoKernelServiceRegistry mKernelServiceRegistry;
   private Map<String, Object> mExperienceProperties;
 
   public ExponentIntentModule(ReactApplicationContext reactContext, Map<String, Object> experienceProperties) {
@@ -29,6 +29,10 @@ public class ExponentIntentModule extends IntentModule {
     NativeModuleDepsProvider.getInstance().inject(ExponentIntentModule.class, this);
 
     mExperienceProperties = experienceProperties;
+  }
+
+  private LinkingKernelService getKernelService() {
+    return mKernelServiceRegistry.getLinkingKernelService();
   }
 
   @Override
@@ -47,43 +51,40 @@ public class ExponentIntentModule extends IntentModule {
   }
 
   @ReactMethod
-  public void openURL(String url, Promise promise) {
+  public void openURL(String url, final Promise promise) {
     if (url == null || url.isEmpty()) {
       promise.reject(new JSApplicationIllegalArgumentException("Invalid URL: " + url));
       return;
     }
 
-    try {
-      Uri uri = Uri.parse(url);
-      String scheme = uri.getScheme();
-      if ("exp".equals(scheme) || "exps".equals(scheme)) {
-        handleExpUrl(url);
-        return;
-      }
+    final Uri uri = Uri.parse(url);
 
-      if (Constants.SHELL_APP_SCHEME != null && Constants.SHELL_APP_SCHEME.equals(scheme)) {
-        handleExpUrl(url);
-        return;
-      }
-
-      String host = uri.getHost();
-      if ("exp.host".equals(host) || host.endsWith("exp.direct")) {
-        handleExpUrl(url);
-        return;
-      }
-    } catch (Throwable e) {
-      EXL.e(TAG, e.toString());
+    if (getKernelService().canOpenURI(uri)) {
+      getReactApplicationContext().runOnUiQueueThread(new Runnable() {
+        @Override
+        public void run() {
+          getKernelService().openURI(uri);
+          promise.resolve(true);
+        }
+      });
+    } else {
+      super.openURL(url, promise);
     }
-
-    super.openURL(url, promise);
-  }
-
-  private void handleExpUrl(final String url) {
-    KernelProvider.getInstance().openExperience(new KernelConstants.ExperienceOptions(url, url, null));
   }
 
   @ReactMethod
   public void canOpenURL(String url, Promise promise) {
-    super.canOpenURL(url, promise);
+    if (url == null || url.isEmpty()) {
+      promise.reject(new JSApplicationIllegalArgumentException("Invalid URL: " + url));
+      return;
+    }
+
+    Uri uri = Uri.parse(url);
+
+    if (mKernelServiceRegistry.getLinkingKernelService().canOpenURI(uri)) {
+      promise.resolve(true);
+    } else {
+      super.canOpenURL(url, promise);
+    }
   }
 }

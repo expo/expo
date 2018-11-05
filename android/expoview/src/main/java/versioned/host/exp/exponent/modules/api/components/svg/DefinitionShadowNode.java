@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2015-present, Horcrux.
  * All rights reserved.
  *
@@ -15,12 +15,10 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
 
-import com.facebook.react.bridge.ReadableArray;
-
 /**
  * Shadow node for virtual Definition type views
  */
-public class DefinitionShadowNode extends VirtualNode {
+class DefinitionShadowNode extends VirtualNode {
 
     public void draw(Canvas canvas, Paint paint, float opacity) {}
 
@@ -35,7 +33,7 @@ public class DefinitionShadowNode extends VirtualNode {
     }
 
     @Override
-    public int hitTest(Point point, Matrix matrix) {
+    public int hitTest(float[] src) {
         return -1;
     }
 }

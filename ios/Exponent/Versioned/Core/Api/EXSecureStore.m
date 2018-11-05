@@ -279,7 +279,7 @@ RCT_EXPORT_METHOD(getValueWithKeyAsync:(NSString *)key
                                        error:&error];
     if (error) {
       if (error.code == errSecItemNotFound) {
-        resolve(nil);
+        resolve([NSNull null]);
       } else {
         reject(@"E_SECURESTORE_GETVALUEFAIL", nil, RCTErrorWithMessage([[self class] _messageForError:error]));
       }

@@ -7,11 +7,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.media.MediaRecorder;
 import android.os.Build;
-import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.net.Uri;
 
@@ -20,7 +18,6 @@ import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
@@ -38,16 +35,18 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.utils.ExpFileUtils;
 import host.exp.exponent.utils.ScopedContext;
+import host.exp.expoview.Exponent;
+import versioned.host.exp.exponent.modules.ExpoKernelServiceConsumerBaseModule;
 import versioned.host.exp.exponent.modules.api.av.player.PlayerData;
-import versioned.host.exp.exponent.modules.api.av.video.VideoTextureView;
 import versioned.host.exp.exponent.modules.api.av.video.VideoView;
 import versioned.host.exp.exponent.modules.api.av.video.VideoViewWrapper;
 
 import static android.media.MediaRecorder.MEDIA_RECORDER_INFO_MAX_FILESIZE_REACHED;
 
-public class AVModule extends ReactContextBaseJavaModule
+public class AVModule extends ExpoKernelServiceConsumerBaseModule
     implements LifecycleEventListener, AudioManager.OnAudioFocusChangeListener, MediaRecorder.OnInfoListener {
   private static final String AUDIO_MODE_SHOULD_DUCK_KEY = "shouldDuckAndroid";
   private static final String AUDIO_MODE_INTERRUPTION_MODE_KEY = "interruptionModeAndroid";
@@ -60,6 +59,9 @@ public class AVModule extends ReactContextBaseJavaModule
   private static final String RECORDING_OPTION_NUMBER_OF_CHANNELS_KEY = "numberOfChannels";
   private static final String RECORDING_OPTION_BIT_RATE_KEY = "bitRate";
   private static final String RECORDING_OPTION_MAX_FILE_SIZE_KEY = "maxFileSize";
+  private static final String AUDIO_MODE_PLAY_THROUGH_EARPIECE = "playThroughEarpieceAndroid";
+
+  private boolean mShouldRouteThroughEarpiece = false;
 
   private enum AudioInterruptionMode {
     DO_NOT_MIX,
@@ -90,7 +92,7 @@ public class AVModule extends ReactContextBaseJavaModule
   private int mSoundMapKeyCount = 0;
   // There will never be many PlayerData objects in the map, so HashMap is most efficient.
   private final Map<Integer, PlayerData> mSoundMap = new HashMap<>();
-  private final Set<AudioEventHandler> mVideoViewSet = new HashSet<>();
+  private final Set<VideoView> mVideoViewSet = new HashSet<>();
 
   private MediaRecorder mAudioRecorder = null;
   private String mAudioRecordingFilePath = null;
@@ -106,8 +108,9 @@ public class AVModule extends ReactContextBaseJavaModule
     return "ExponentAV";
   }
 
-  public AVModule(final ReactApplicationContext reactContext, final ScopedContext scopedContext) {
-    super(reactContext);
+  public AVModule(final ReactApplicationContext reactContext, final ScopedContext scopedContext,
+                  ExperienceId experienceId) {
+    super(reactContext, experienceId);
 
     mScopedContext = scopedContext;
     mReactApplicationContext = reactContext;
@@ -143,6 +146,9 @@ public class AVModule extends ReactContextBaseJavaModule
       for (final AudioEventHandler handler : getAllRegisteredAudioEventHandlers()) {
         handler.onResume();
       }
+      if (mShouldRouteThroughEarpiece) {
+        updatePlaySoundThroughEarpiece(true);
+      }
     }
   }
 
@@ -154,6 +160,10 @@ public class AVModule extends ReactContextBaseJavaModule
         handler.onPause();
       }
       abandonAudioFocus();
+
+      if (mShouldRouteThroughEarpiece) {
+        updatePlaySoundThroughEarpiece(false);
+      }
     }
   }
 
@@ -163,17 +173,21 @@ public class AVModule extends ReactContextBaseJavaModule
     for (final Integer key : mSoundMap.keySet()) {
       removeSoundForKey(key);
     }
+    for (final VideoView videoView : mVideoViewSet) {
+      videoView.unloadPlayerAndMediaController();
+    }
+
     removeAudioRecorder();
     abandonAudioFocus();
   }
 
   // Global audio state control API
 
-  public void registerVideoViewForAudioLifecycle(final AudioEventHandler videoView) {
+  public void registerVideoViewForAudioLifecycle(final VideoView videoView) {
     mVideoViewSet.add(videoView);
   }
 
-  public void unregisterVideoViewForAudioLifecycle(final AudioEventHandler videoView) {
+  public void unregisterVideoViewForAudioLifecycle(final VideoView videoView) {
     mVideoViewSet.remove(videoView);
   }
 
@@ -264,6 +278,11 @@ public class AVModule extends ReactContextBaseJavaModule
     }
   }
 
+  private void updatePlaySoundThroughEarpiece(boolean playThroughEarpiece) {
+    mAudioManager.setMode(playThroughEarpiece ? AudioManager.MODE_IN_COMMUNICATION : AudioManager.MODE_NORMAL);
+    mAudioManager.setSpeakerphoneOn(!playThroughEarpiece);
+  }
+
   @ReactMethod
   public void setAudioIsEnabled(final Boolean value, final Promise promise) {
     mEnabled = value;
@@ -279,6 +298,11 @@ public class AVModule extends ReactContextBaseJavaModule
     if (!mShouldDuckAudio) {
       mIsDuckingAudio = false;
       updateDuckStatusForAllPlayersPlaying();
+    }
+
+    if (map.hasKey(AUDIO_MODE_PLAY_THROUGH_EARPIECE)) {
+      mShouldRouteThroughEarpiece = map.getBoolean(AUDIO_MODE_PLAY_THROUGH_EARPIECE);
+      updatePlaySoundThroughEarpiece(mShouldRouteThroughEarpiece);
     }
 
     final int interruptionModeInt = map.getInt(AUDIO_MODE_INTERRUPTION_MODE_KEY);
@@ -314,7 +338,7 @@ public class AVModule extends ReactContextBaseJavaModule
   @ReactMethod
   public void loadForSound(final ReadableMap source, final ReadableMap status, final Callback loadSuccess, final Callback loadError) {
     final int key = mSoundMapKeyCount++;
-    final PlayerData data = PlayerData.createUnloadedPlayerData(this, source, status);
+    final PlayerData data = PlayerData.createUnloadedPlayerData(this, mReactApplicationContext, source, status);
     data.setErrorListener(new PlayerData.ErrorListener() {
       @Override
       public void onError(final String error) {
@@ -475,8 +499,7 @@ public class AVModule extends ReactContextBaseJavaModule
   // Recording API
 
   private boolean isMissingAudioRecordingPermissions() {
-    return Build.VERSION.SDK_INT >= 23 &&
-        ContextCompat.checkSelfPermission(getReactApplicationContext(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED;
+    return !Exponent.getInstance().getPermissions(Manifest.permission.RECORD_AUDIO, this.experienceId);
   }
 
   // Rejects the promise and returns false if the MediaRecorder is not found.

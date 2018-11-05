@@ -43,7 +43,7 @@ public class ExponentNetwork {
   private OkHttpClient mNoCacheClient;
 
   // This fixes OkHttp bug where if you don't read a response, it'll never cache that request in the future
-  public static void flushResponse(Response response) throws IOException {
+  public static void flushResponse(ExpoResponse response) throws IOException {
     response.body().bytes();
   }
 

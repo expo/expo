@@ -23,7 +23,8 @@
     return [RNGestureHandlerEventExtraData
             forPinch:recognizer.scale
             withFocalPoint:[recognizer locationInView:recognizer.view]
-            withVelocity:recognizer.velocity];
+            withVelocity:recognizer.velocity
+            withNumberOfTouches:recognizer.numberOfTouches];
 }
 
 @end

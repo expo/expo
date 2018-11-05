@@ -72,7 +72,7 @@
       }
     }
   }
-  if (version && version.length) {
+  if (version && version.length && ![version isEqualToString:@"UNVERSIONED"]) {
     return [[@"ABI" stringByAppendingString:version] stringByReplacingOccurrencesOfString:@"." withString:@"_"];
   }
   return @"";
@@ -119,14 +119,7 @@
   } else {
     _temporarySdkVersion = [EXBuildConstants sharedInstance].temporarySdkVersion;
   }
-  if (_temporarySdkVersion) {
-    if (mutableVersions[@"sdkVersions"]) {
-      NSArray *existingVersions = mutableVersions[@"sdkVersions"];
-      if ([existingVersions indexOfObject:_temporarySdkVersion] == NSNotFound) {
-        mutableVersions[@"sdkVersions"] = [[existingVersions mutableCopy] arrayByAddingObject:_temporarySdkVersion];
-      }
-    }
-  } else {
+  if (!_temporarySdkVersion) {
     // no temporary sdk version specified in any way, fall back to using the highest version
     NSArray *sdkVersions = mutableVersions[@"sdkVersions"];
     NSUInteger highestVersion = 0;
@@ -144,6 +137,10 @@
   NSAssert((mutableVersions[@"sdkVersions"] != nil), @"No SDK versions are specified for the Expo kernel. Is the project missing EXSDKVersions.plist?");
 
   _versions = mutableVersions;
+}
+
+- (BOOL)supportsVersion:(NSString *)sdkVersion {
+  return [_versions[@"sdkVersions"] containsObject:(NSString *) sdkVersion];
 }
 
 @end

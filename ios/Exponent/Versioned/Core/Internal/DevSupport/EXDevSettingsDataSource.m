@@ -68,7 +68,6 @@ NSString *const EXDevSettingIsDebuggingRemotely = @"isDebuggingRemotely";
 {
   // prohibit these settings if not serving the experience as a developer
   if (!_isDevelopment && [_settingsDisabledInProduction containsObject:key]) {
-    // TODO: this logic needs to change if we extend beyond boolean settings.
     return @NO;
   }
   return _settings[key];

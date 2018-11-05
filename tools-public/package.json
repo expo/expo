@@ -7,17 +7,15 @@
   "scripts": {
     "test": "jest"
   },
-  "powertools": {
-    "group": "client"
-  },
   "dependencies": {
     "@ccheever/crayon": "^5.0.0",
+    "@expo/bunyan": "^1.8.10",
+    "@expo/json-file": "^8.0.0",
     "@expo/mux": "^1.0.6",
-    "@exponent/json-file": "^5.2.0",
     "@exponent/spawn-async": "^1.2.4",
     "fs-extra": "^4.0.2",
     "globby": "^6.1.0",
-    "gulp": "github:gulpjs/gulp#4.0",
+    "gulp": "^4.0.0",
     "gulp-shell": "^0.5.2",
     "ip": "^1.1.5",
     "lodash": "^4.13.1",
@@ -27,13 +25,12 @@
     "request": "^2.72.0",
     "request-promise-native": "^1.0.5",
     "rimraf": "^2.6.2",
-    "sharp": "^0.18.4",
+    "sharp": "^0.20.4",
     "shelljs": "^0.7.0",
-    "username": "^2.2.2",
     "uuid": "^3.1.0",
-    "xdl": "^47.1.0"
+    "xdl": "51.4.1-alpha.31+cdeadc8"
   },
   "devDependencies": {
-    "jest": "21.2.0"
+    "jest": "^23.5.0"
   }
 }

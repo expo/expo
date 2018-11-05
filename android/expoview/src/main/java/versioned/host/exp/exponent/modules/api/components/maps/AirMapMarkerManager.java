@@ -11,6 +11,7 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.LatLng;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,6 +22,7 @@ public class AirMapMarkerManager extends ViewGroupManager<AirMapMarker> {
 
   private static final int SHOW_INFO_WINDOW = 1;
   private static final int HIDE_INFO_WINDOW = 2;
+  private static final int ANIMATE_MARKER_TO_COORDINATE = 3;
 
   public AirMapMarkerManager() {
   }
@@ -154,12 +156,18 @@ public class AirMapMarkerManager extends ViewGroupManager<AirMapMarker> {
   public Map<String, Integer> getCommandsMap() {
     return MapBuilder.of(
         "showCallout", SHOW_INFO_WINDOW,
-        "hideCallout", HIDE_INFO_WINDOW
+        "hideCallout", HIDE_INFO_WINDOW,
+        "animateMarkerToCoordinate",  ANIMATE_MARKER_TO_COORDINATE
     );
   }
 
   @Override
   public void receiveCommand(AirMapMarker view, int commandId, @Nullable ReadableArray args) {
+    Integer duration;
+    Double lat;
+    Double lng;
+    ReadableMap region;
+
     switch (commandId) {
       case SHOW_INFO_WINDOW:
         ((Marker) view.getFeature()).showInfoWindow();
@@ -167,6 +175,15 @@ public class AirMapMarkerManager extends ViewGroupManager<AirMapMarker> {
 
       case HIDE_INFO_WINDOW:
         ((Marker) view.getFeature()).hideInfoWindow();
+        break;
+      
+      case ANIMATE_MARKER_TO_COORDINATE:
+        region = args.getMap(0);
+        duration = args.getInt(1);
+
+        lng = region.getDouble("longitude");
+        lat = region.getDouble("latitude");
+        view.animateToCoodinate(new LatLng(lat, lng), duration);
         break;
     }
   }

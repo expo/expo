@@ -539,6 +539,7 @@ NSString *const ABI24_0_0EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"pl
         // If the player is looping, we would only like to advance to next item (which is handled by actionAtItemEnd)
         if (!strongSelf.isLooping) {
           [strongSelf.player pause];
+          strongSelf.shouldPlay = false;
           strongSelf.currentPosition = kCMTimeZero; // We keep track of _currentPosition to reset the AVPlayer in handleMediaServicesReset.
           [strongSelf.player seekToTime:kCMTimeZero completionHandler:^(BOOL finished) {
             [strongSelf.player advanceToNextItem];

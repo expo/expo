@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI29_0_0/EXCore/ABI29_0_0EXCore/Protocols/ABI29_0_0EXInternalModule.h

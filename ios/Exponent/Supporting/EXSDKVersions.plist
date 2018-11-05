@@ -4,13 +4,13 @@
 <dict>
 	<key>sdkVersions</key>
 	<array>
-		<string>19.0.0</string>
-		<string>20.0.0</string>
-		<string>21.0.0</string>
-		<string>22.0.0</string>
-		<string>23.0.0</string>
 		<string>24.0.0</string>
 		<string>25.0.0</string>
+		<string>26.0.0</string>
+		<string>27.0.0</string>
+		<string>28.0.0</string>
+		<string>29.0.0</string>
+		<string>30.0.0</string>
 	</array>
 </dict>
 </plist>

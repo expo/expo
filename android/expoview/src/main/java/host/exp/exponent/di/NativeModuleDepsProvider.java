@@ -4,6 +4,8 @@ package host.exp.exponent.di;
 
 import android.app.Application;
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -11,6 +13,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import host.exp.exponent.ExpoHandler;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.kernel.Crypto;
@@ -27,6 +30,9 @@ public class NativeModuleDepsProvider {
 
   @Inject
   Application mApplicationContext;
+
+  @Inject
+  ExpoHandler mExpoHandler;
 
   @Inject
   ExponentSharedPreferences mExponentSharedPreferences;
@@ -48,9 +54,10 @@ public class NativeModuleDepsProvider {
   public NativeModuleDepsProvider(Application application) {
     mContext = application;
     mApplicationContext = application;
+    mExpoHandler = new ExpoHandler(new Handler(Looper.getMainLooper()));
     mExponentSharedPreferences = new ExponentSharedPreferences(mContext);
     mExponentNetwork = new ExponentNetwork(mContext, mExponentSharedPreferences);
-    mKernelServiceRegistry = new ExpoKernelServiceRegistry(mContext);
+    mKernelServiceRegistry = new ExpoKernelServiceRegistry(mContext, mExponentSharedPreferences);
     mCrypto = new Crypto(mExponentNetwork);
     mExponentManifest = new ExponentManifest(mContext, mExponentNetwork, mCrypto, mExponentSharedPreferences);
 
@@ -66,9 +73,18 @@ public class NativeModuleDepsProvider {
   }
 
   private static NativeModuleDepsProvider sInstance = null;
+  private static boolean sUseTestInstance = false;
 
   public static void initialize(Application application) {
-    sInstance = new NativeModuleDepsProvider(application);
+    if (!sUseTestInstance) {
+      sInstance = new NativeModuleDepsProvider(application);
+    }
+  }
+
+  // Only for testing!
+  public static void setTestInstance(NativeModuleDepsProvider instance) {
+    sInstance = instance;
+    sUseTestInstance = true;
   }
 
   public static NativeModuleDepsProvider getInstance() {

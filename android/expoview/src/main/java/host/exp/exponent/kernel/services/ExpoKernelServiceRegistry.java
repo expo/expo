@@ -4,6 +4,7 @@ package host.exp.exponent.kernel.services;
 
 import android.content.Context;
 
+import host.exp.exponent.kernel.services.linking.LinkingKernelService;
 import host.exp.exponent.kernel.services.sensors.AccelerometerKernelService;
 import host.exp.exponent.kernel.services.sensors.GravitySensorKernelService;
 import host.exp.exponent.kernel.services.sensors.GyroscopeKernelService;
@@ -11,8 +12,10 @@ import host.exp.exponent.kernel.services.sensors.LinearAccelerationSensorKernelS
 import host.exp.exponent.kernel.services.sensors.MagnetometerKernelService;
 import host.exp.exponent.kernel.services.sensors.MagnetometerUncalibratedKernelService;
 import host.exp.exponent.kernel.services.sensors.RotationVectorSensorKernelService;
+import host.exp.exponent.storage.ExponentSharedPreferences;
 
 public class ExpoKernelServiceRegistry {
+  private LinkingKernelService mLinkingKernelService = null;
   private GyroscopeKernelService mGyroscopeKernelService = null;
   private MagnetometerKernelService mMagnetometerKernelService = null;
   private AccelerometerKernelService mAccelerometerKernelService = null;
@@ -20,8 +23,11 @@ public class ExpoKernelServiceRegistry {
   private RotationVectorSensorKernelService mRotationVectorSensorKernelService = null;
   private LinearAccelerationSensorKernelService mLinearAccelerationSensorKernelService = null;
   private MagnetometerUncalibratedKernelService mMagnetometerUncalibratedKernelService = null;
+  private PermissionsKernelService mPermissionsKernelService = null;
+  private SplashScreenKernelService mSplashScreenKernelService = null;
 
-  public ExpoKernelServiceRegistry(Context context) {
+  public ExpoKernelServiceRegistry(Context context, ExponentSharedPreferences exponentSharedPreferences) {
+    mLinkingKernelService = new LinkingKernelService();
     mGyroscopeKernelService = new GyroscopeKernelService(context);
     mMagnetometerKernelService = new MagnetometerKernelService(context);
     mAccelerometerKernelService = new AccelerometerKernelService(context);
@@ -29,6 +35,12 @@ public class ExpoKernelServiceRegistry {
     mRotationVectorSensorKernelService = new RotationVectorSensorKernelService(context);
     mLinearAccelerationSensorKernelService = new LinearAccelerationSensorKernelService(context);
     mMagnetometerUncalibratedKernelService = new MagnetometerUncalibratedKernelService(context);
+    mPermissionsKernelService = new PermissionsKernelService(context, exponentSharedPreferences);
+    mSplashScreenKernelService = new SplashScreenKernelService(context);
+  }
+
+  public LinkingKernelService getLinkingKernelService() {
+    return mLinkingKernelService;
   }
 
   public GyroscopeKernelService getGyroscopeKernelService() {
@@ -58,5 +70,13 @@ public class ExpoKernelServiceRegistry {
 
   public MagnetometerUncalibratedKernelService getMagnetometerUncalibratedKernelService() {
     return mMagnetometerUncalibratedKernelService;
+  }
+
+  public PermissionsKernelService getPermissionsKernelService() {
+    return mPermissionsKernelService;
+  }
+
+  public SplashScreenKernelService getSplashScreenKernelService() {
+    return mSplashScreenKernelService;
   }
 }

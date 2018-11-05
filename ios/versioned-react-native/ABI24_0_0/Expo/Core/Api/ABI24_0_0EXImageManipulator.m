@@ -164,7 +164,7 @@ ABI24_0_0RCT_EXPORT_METHOD(manipulate:(NSString *)uri
   response[@"uri"] = filePath;
   response[@"width"] = @(image.size.width);
   response[@"height"] = @(image.size.height);
-  if (saveOptions[@"base64"]) {
+  if (saveOptions[@"base64"] && [saveOptions[@"base64"] boolValue]) {
     response[@"base64"] = [imageData base64EncodedStringWithOptions:0];
   }
   resolve(response);

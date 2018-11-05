@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI27_0_0/Expo/Core/Api/Components/Svg/Utils/ABI27_0_0RCTConvert+RNSVG.h

@@ -45,14 +45,14 @@ ABI24_0_0EX_EXPORT_SCOPED_MODULE(ExponentAccelerometer, SensorManager);
 - (void)startObserving {
   [self setWatching:YES];
   __weak typeof(self) weakSelf = self;
-  [_kernelSensorServiceDelegate sensorModuleDidSubscribeForAccelerometerUpdates:self withHandler:^(NSDictionary *event) {
+  [_kernelSensorServiceDelegate sensorModuleDidSubscribeForAccelerometerUpdatesOfExperience:self.experienceId withHandler:^(NSDictionary *event) {
     [weakSelf sendEventWithName:@"accelerometerDidUpdate" body:event];
   }];
 }
 
 - (void)stopObserving {
   [self setWatching:NO];
-  [_kernelSensorServiceDelegate sensorModuleDidUnsubscribeForAccelerometerUpdates:self];
+  [_kernelSensorServiceDelegate sensorModuleDidUnsubscribeForAccelerometerUpdatesOfExperience:self.experienceId];
 }
 
 ABI24_0_0RCT_EXPORT_METHOD(setUpdateInterval:(nonnull NSNumber *)intervalMs) {
@@ -70,7 +70,7 @@ ABI24_0_0RCT_EXPORT_METHOD(setUpdateInterval:(nonnull NSNumber *)intervalMs) {
 - (void)bridgeDidBackground:(NSNotification *)notification
 {
   if ([self isWatching]) {
-    [_kernelSensorServiceDelegate sensorModuleDidUnsubscribeForAccelerometerUpdates:self];
+    [_kernelSensorServiceDelegate sensorModuleDidUnsubscribeForAccelerometerUpdatesOfExperience:self.experienceId];
   }
 }
 

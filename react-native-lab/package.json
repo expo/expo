@@ -1,0 +1,9 @@
+{
+  "name": "@expo/react-native-lab",
+  "version": "1.0.0",
+  "private": true,
+  "devDependencies": {
+    "babel-plugin-module-resolver": "^3.0.0",
+    "babel-preset-expo": "^4.0.0"
+  }
+}

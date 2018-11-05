@@ -24,10 +24,9 @@
   NSString *scope = @"none";
   
   CLAuthorizationStatus systemStatus;
-  NSString *alwaysUsageDescription = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationAlwaysUsageDescription"];
   NSString *whenInUseUsageDescription = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationWhenInUseUsageDescription"];
-  if (!(alwaysUsageDescription || whenInUseUsageDescription)) {
-    ABI24_0_0RCTFatal(ABI24_0_0RCTErrorWithMessage(@"This app is missing NSLocationAlwaysUsageDescription or NSLocationWhenInUseUsageDescription, so location services will fail. Add one of these keys to your bundle's Info.plist."));
+  if (!whenInUseUsageDescription) {
+    ABI24_0_0RCTFatal(ABI24_0_0RCTErrorWithMessage(@"This app is missing NSLocationWhenInUseUsageDescription, so location services will fail. Add one of these keys to your bundle's Info.plist."));
     systemStatus = kCLAuthorizationStatusDenied;
   } else {
     systemStatus = [CLLocationManager authorizationStatus];
@@ -71,7 +70,7 @@
     // just resolve with whatever existing permissions.
     resolve(existingPermissions);
     if (_delegate) {
-      [_delegate permissionRequesterDidFinish:self];
+      [_delegate permissionsRequester:self didFinishWithResult:existingPermissions];
     }
   } else {
     _resolve = resolve;
@@ -80,16 +79,13 @@
     _locMgr = [[CLLocationManager alloc] init];
     _locMgr.delegate = self;
 
-    if ([[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationAlwaysUsageDescription"] &&
-        [_locMgr respondsToSelector:@selector(requestAlwaysAuthorization)]) {
-        [_locMgr requestAlwaysAuthorization];
-    } else if ([[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationWhenInUseUsageDescription"] &&
+    if ([[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationWhenInUseUsageDescription"] &&
                [_locMgr respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
         [_locMgr requestWhenInUseAuthorization];
     } else {
-      _reject(@"E_LOCATION_INFO_PLIST", @"Either NSLocationWhenInUseUsageDescription or NSLocationAlwaysUsageDescription key must be present in Info.plist to use geolocation.", nil);
+      _reject(@"E_LOCATION_INFO_PLIST", @"NSLocationWhenInUseUsageDescription key must be present in Info.plist to use geolocation.", nil);
       if (_delegate) {
-        [_delegate permissionRequesterDidFinish:self];
+        [_delegate permissionsRequester:self didFinishWithResult:nil];
       }
     }
   }
@@ -110,7 +106,7 @@
     _reject = nil;
   }
   if (_delegate) {
-    [_delegate permissionRequesterDidFinish:self];
+    [_delegate permissionsRequester:self didFinishWithResult:nil];
   }
 }
 
@@ -122,13 +118,14 @@
     // http://stackoverflow.com/questions/30106341/swift-locationmanager-didchangeauthorizationstatus-always-called/30107511#30107511
     return;
   }
+  NSDictionary *result = [[self class] permissions];
   if (_resolve) {
-    _resolve([[self class] permissions]);
+    _resolve(result);
     _resolve = nil;
     _reject = nil;
   }
   if (_delegate) {
-    [_delegate permissionRequesterDidFinish:self];
+    [_delegate permissionsRequester:self didFinishWithResult:result];
   }
 }
 

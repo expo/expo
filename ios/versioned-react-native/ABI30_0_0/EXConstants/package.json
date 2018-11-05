@@ -1,0 +1,21 @@
+{
+  "name": "expo-constants",
+  "version": "1.0.2-rc.0",
+  "description": "Expo Constants standalone universal module",
+  "main": "index.js",
+  "keywords": [
+    "react-native",
+    "expo",
+    "constants"
+  ],
+  "homepage": "https://docs.expo.io/",
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "dependencies": {
+    "expo-core": "^1.1.0-rc.0",
+    "expo-constants-interface": "^1.0.2-rc.0"
+  },
+  "devDependencies": {
+    "babel-preset-expo": "^4.0.0"
+  }
+}

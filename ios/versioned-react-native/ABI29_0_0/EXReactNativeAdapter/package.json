@@ -1,0 +1,28 @@
+{
+  "name": "expo-react-native-adapter",
+  "version": "1.0.0-rc.2",
+  "description": "Expo React Native adapter for universal modules",
+  "main": "index.js",
+  "keywords": [
+    "react-native",
+    "expo"
+  ],
+  "homepage": "https://docs.expo.io/",
+  "author": "650 Industries, Inc.",
+  "license": "BSD",
+  "peerDependencies": {
+    "react": "^16.3.1",
+    "react-native": "^0.55.4"
+  },
+  "dependencies": {
+    "expo-core": "^1.0.0-rc.2",
+    "expo-permissions-interface": "^1.0.0-rc.2",
+    "lodash.omit": "^4.5.0",
+    "lodash.pick": "^4.4.0",
+    "prop-types": "^15.6.1",
+    "react": "^16.3"
+  },
+  "devDependencies": {
+    "babel-preset-expo": "^4.0.0"
+  }
+}

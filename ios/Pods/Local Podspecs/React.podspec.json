@@ -1,0 +1,528 @@
+{
+  "name": "React",
+  "version": "0.57.1",
+  "summary": "A framework for building native apps using React",
+  "description": "React Native apps are built using the React JS\nframework, and render directly to native UIKit\nelements using a fully asynchronous architecture.\nThere is no browser and no HTML. We have picked what\nwe think is the best set of features from these and\nother technologies to build what we hope to become\nthe best product development framework available,\nwith an emphasis on iteration speed, developer\ndelight, continuity of technology, and absolutely\nbeautiful and fast products with no compromises in\nquality or capability.",
+  "homepage": "http://facebook.github.io/react-native/",
+  "license": "MIT",
+  "authors": "Facebook",
+  "source": {
+    "git": "https://github.com/facebook/react-native.git",
+    "tag": "v0.57.1"
+  },
+  "default_subspecs": "Core",
+  "requires_arc": true,
+  "platforms": {
+    "ios": "9.0",
+    "tvos": "9.2"
+  },
+  "pod_target_xcconfig": {
+    "CLANG_CXX_LANGUAGE_STANDARD": "c++14"
+  },
+  "preserve_paths": [
+    "package.json",
+    "LICENSE",
+    "LICENSE-docs"
+  ],
+  "cocoapods_version": ">= 1.2.0",
+  "subspecs": [
+    {
+      "name": "Core",
+      "dependencies": {
+        "yoga": [
+          "0.57.1.React"
+        ]
+      },
+      "source_files": "React/**/*.{c,h,m,mm,S,cpp}",
+      "exclude_files": [
+        "**/__tests__/*",
+        "IntegrationTests/*",
+        "React/DevSupport/*",
+        "React/Inspector/*",
+        "ReactCommon/yoga/*",
+        "React/Cxx*/*",
+        "React/Fabric/**/*"
+      ],
+      "ios": {
+        "exclude_files": "React/**/RCTTV*.*"
+      },
+      "tvos": {
+        "exclude_files": [
+          "React/Modules/RCTClipboard*",
+          "React/Views/RCTDatePicker*",
+          "React/Views/RCTPicker*",
+          "React/Views/RCTRefreshControl*",
+          "React/Views/RCTSlider*",
+          "React/Views/RCTSwitch*",
+          "React/Views/RCTWebView*"
+        ]
+      },
+      "header_dir": "React",
+      "frameworks": "JavaScriptCore",
+      "libraries": "stdc++",
+      "pod_target_xcconfig": {
+        "HEADER_SEARCH_PATHS": "\"$(PODS_TARGET_SRCROOT)/ReactCommon\""
+      }
+    },
+    {
+      "name": "CxxBridge",
+      "dependencies": {
+        "Folly": [
+          "2016.10.31.00"
+        ],
+        "React/Core": [
+
+        ],
+        "React/cxxreact": [
+
+        ]
+      },
+      "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",
+      "private_header_files": "React/Cxx*/*.h",
+      "source_files": "React/Cxx*/*.{h,m,mm}"
+    },
+    {
+      "name": "DevSupport",
+      "dependencies": {
+        "React/Core": [
+
+        ],
+        "React/RCTWebSocket": [
+
+        ]
+      },
+      "source_files": [
+        "React/DevSupport/*",
+        "React/Inspector/*"
+      ]
+    },
+    {
+      "name": "RCTFabric",
+      "dependencies": {
+        "Folly": [
+          "2016.10.31.00"
+        ],
+        "React/Core": [
+
+        ],
+        "React/fabric": [
+
+        ]
+      },
+      "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",
+      "source_files": "React/Fabric/**/*.{c,h,m,mm,S,cpp}",
+      "exclude_files": "**/tests/*",
+      "header_dir": "React",
+      "frameworks": "JavaScriptCore",
+      "pod_target_xcconfig": {
+        "HEADER_SEARCH_PATHS": "\"$(PODS_TARGET_SRCROOT)/ReactCommon\""
+      }
+    },
+    {
+      "name": "tvOS",
+      "dependencies": {
+        "React/Core": [
+
+        ]
+      },
+      "source_files": "React/**/RCTTV*.{h,m}"
+    },
+    {
+      "name": "jschelpers",
+      "dependencies": {
+        "Folly": [
+          "2016.10.31.00"
+        ],
+        "React/PrivateDatabase": [
+
+        ]
+      },
+      "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",
+      "source_files": "ReactCommon/jschelpers/*.{cpp,h}",
+      "private_header_files": "ReactCommon/jschelpers/*.h",
+      "pod_target_xcconfig": {
+        "HEADER_SEARCH_PATHS": "\"$(PODS_TARGET_SRCROOT)/ReactCommon\""
+      },
+      "frameworks": "JavaScriptCore"
+    },
+    {
+      "name": "jsinspector",
+      "source_files": "ReactCommon/jsinspector/*.{cpp,h}",
+      "private_header_files": "ReactCommon/jsinspector/*.h",
+      "pod_target_xcconfig": {
+        "HEADER_SEARCH_PATHS": "\"$(PODS_TARGET_SRCROOT)/ReactCommon\""
+      }
+    },
+    {
+      "name": "PrivateDatabase",
+      "source_files": "ReactCommon/privatedata/*.{cpp,h}",
+      "private_header_files": "ReactCommon/privatedata/*.h",
+      "pod_target_xcconfig": {
+        "HEADER_SEARCH_PATHS": "\"$(PODS_TARGET_SRCROOT)/ReactCommon\""
+      }
+    },
+    {
+      "name": "cxxreact",
+      "dependencies": {
+        "React/jschelpers": [
+
+        ],
+        "React/jsinspector": [
+
+        ],
+        "boost-for-react-native": [
+          "1.63.0"
+        ],
+        "Folly": [
+          "2016.10.31.00"
+        ]
+      },
+      "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",
+      "source_files": "ReactCommon/cxxreact/*.{cpp,h}",
+      "exclude_files": "ReactCommon/cxxreact/SampleCxxModule.*",
+      "private_header_files": "ReactCommon/cxxreact/*.h",
+      "pod_target_xcconfig": {
+        "HEADER_SEARCH_PATHS": "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/Folly\""
+      }
+    },
+    {
+      "name": "fabric",
+      "subspecs": [
+        {
+          "name": "activityindicator",
+          "dependencies": {
+            "Folly": [
+              "2016.10.31.00"
+            ]
+          },
+          "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",
+          "source_files": "ReactCommon/fabric/activityindicator/**/*.{cpp,h}",
+          "exclude_files": "**/tests/*",
+          "header_dir": "fabric/activityindicator",
+          "pod_target_xcconfig": {
+            "HEADER_SEARCH_PATHS": "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/Folly\""
+          }
+        },
+        {
+          "name": "attributedstring",
+          "dependencies": {
+            "Folly": [
+              "2016.10.31.00"
+            ]
+          },
+          "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",
+          "source_files": "ReactCommon/fabric/attributedstring/**/*.{cpp,h}",
+          "exclude_files": "**/tests/*",
+          "header_dir": "fabric/attributedstring",
+          "pod_target_xcconfig": {
+            "HEADER_SEARCH_PATHS": "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/Folly\""
+          }
+        },
+        {
+          "name": "core",
+          "dependencies": {
+            "Folly": [
+              "2016.10.31.00"
+            ]
+          },
+          "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",
+          "source_files": "ReactCommon/fabric/core/**/*.{cpp,h}",
+          "exclude_files": "**/tests/*",
+          "header_dir": "fabric/core",
+          "pod_target_xcconfig": {
+            "HEADER_SEARCH_PATHS": "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/Folly\""
+          }
+        },
+        {
+          "name": "debug",
+          "dependencies": {
+            "Folly": [
+              "2016.10.31.00"
+            ]
+          },
+          "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",
+          "source_files": "ReactCommon/fabric/debug/**/*.{cpp,h}",
+          "exclude_files": "**/tests/*",
+          "header_dir": "fabric/debug",
+          "pod_target_xcconfig": {
+            "HEADER_SEARCH_PATHS": "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/Folly\""
+          }
+        },
+        {
+          "name": "graphics",
+          "dependencies": {
+            "Folly": [
+              "2016.10.31.00"
+            ]
+          },
+          "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",
+          "source_files": "ReactCommon/fabric/graphics/**/*.{cpp,h}",
+          "exclude_files": "**/tests/*",
+          "header_dir": "fabric/graphics",
+          "pod_target_xcconfig": {
+            "HEADER_SEARCH_PATHS": "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/Folly\""
+          }
+        },
+        {
+          "name": "scrollview",
+          "dependencies": {
+            "Folly": [
+              "2016.10.31.00"
+            ]
+          },
+          "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",
+          "source_files": "ReactCommon/fabric/scrollview/**/*.{cpp,h}",
+          "exclude_files": "**/tests/*",
+          "header_dir": "fabric/scrollview",
+          "pod_target_xcconfig": {
+            "HEADER_SEARCH_PATHS": "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/Folly\""
+          }
+        },
+        {
+          "name": "text",
+          "dependencies": {
+            "Folly": [
+              "2016.10.31.00"
+            ]
+          },
+          "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",
+          "source_files": "ReactCommon/fabric/text/**/*.{cpp,h}",
+          "exclude_files": "**/tests/*",
+          "header_dir": "fabric/text",
+          "pod_target_xcconfig": {
+            "HEADER_SEARCH_PATHS": "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/Folly\""
+          }
+        },
+        {
+          "name": "textlayoutmanager",
+          "dependencies": {
+            "Folly": [
+              "2016.10.31.00"
+            ]
+          },
+          "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",
+          "source_files": "ReactCommon/fabric/textlayoutmanager/**/*.{cpp,h,mm}",
+          "exclude_files": "**/tests/*",
+          "header_dir": "fabric/textlayoutmanager",
+          "pod_target_xcconfig": {
+            "HEADER_SEARCH_PATHS": "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/Folly\""
+          }
+        },
+        {
+          "name": "uimanager",
+          "dependencies": {
+            "Folly": [
+              "2016.10.31.00"
+            ]
+          },
+          "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",
+          "source_files": "ReactCommon/fabric/uimanager/**/*.{cpp,h}",
+          "exclude_files": "**/tests/*",
+          "header_dir": "fabric/uimanager",
+          "pod_target_xcconfig": {
+            "HEADER_SEARCH_PATHS": "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/Folly\""
+          }
+        },
+        {
+          "name": "view",
+          "dependencies": {
+            "Folly": [
+              "2016.10.31.00"
+            ],
+            "yoga": [
+
+            ]
+          },
+          "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",
+          "source_files": "ReactCommon/fabric/view/**/*.{cpp,h}",
+          "exclude_files": "**/tests/*",
+          "header_dir": "fabric/view",
+          "pod_target_xcconfig": {
+            "HEADER_SEARCH_PATHS": "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/Folly\""
+          }
+        }
+      ]
+    },
+    {
+      "name": "RCTFabricSample",
+      "dependencies": {
+        "Folly": [
+          "2016.10.31.00"
+        ]
+      },
+      "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",
+      "source_files": "ReactCommon/fabric/sample/**/*.{cpp,h}",
+      "exclude_files": "**/tests/*",
+      "header_dir": "fabric/sample",
+      "pod_target_xcconfig": {
+        "HEADER_SEARCH_PATHS": "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/Folly\""
+      }
+    },
+    {
+      "name": "ART",
+      "dependencies": {
+        "React/Core": [
+
+        ]
+      },
+      "source_files": "Libraries/ART/**/*.{h,m}"
+    },
+    {
+      "name": "RCTActionSheet",
+      "dependencies": {
+        "React/Core": [
+
+        ]
+      },
+      "source_files": "Libraries/ActionSheetIOS/*.{h,m}"
+    },
+    {
+      "name": "RCTAnimation",
+      "dependencies": {
+        "React/Core": [
+
+        ]
+      },
+      "source_files": "Libraries/NativeAnimation/{Drivers/*,Nodes/*,*}.{h,m}",
+      "header_dir": "RCTAnimation"
+    },
+    {
+      "name": "RCTBlob",
+      "dependencies": {
+        "React/Core": [
+
+        ]
+      },
+      "source_files": "Libraries/Blob/*.{h,m,mm}",
+      "preserve_paths": "Libraries/Blob/*.js"
+    },
+    {
+      "name": "RCTCameraRoll",
+      "dependencies": {
+        "React/Core": [
+
+        ],
+        "React/RCTImage": [
+
+        ]
+      },
+      "source_files": "Libraries/CameraRoll/*.{h,m}"
+    },
+    {
+      "name": "RCTGeolocation",
+      "dependencies": {
+        "React/Core": [
+
+        ]
+      },
+      "source_files": "Libraries/Geolocation/*.{h,m}"
+    },
+    {
+      "name": "RCTImage",
+      "dependencies": {
+        "React/Core": [
+
+        ],
+        "React/RCTNetwork": [
+
+        ]
+      },
+      "source_files": "Libraries/Image/*.{h,m}"
+    },
+    {
+      "name": "RCTNetwork",
+      "dependencies": {
+        "React/Core": [
+
+        ]
+      },
+      "source_files": "Libraries/Network/*.{h,m,mm}"
+    },
+    {
+      "name": "RCTPushNotification",
+      "dependencies": {
+        "React/Core": [
+
+        ]
+      },
+      "source_files": "Libraries/PushNotificationIOS/*.{h,m}"
+    },
+    {
+      "name": "RCTSettings",
+      "dependencies": {
+        "React/Core": [
+
+        ]
+      },
+      "source_files": "Libraries/Settings/*.{h,m}"
+    },
+    {
+      "name": "RCTText",
+      "dependencies": {
+        "React/Core": [
+
+        ]
+      },
+      "source_files": "Libraries/Text/**/*.{h,m}"
+    },
+    {
+      "name": "RCTVibration",
+      "dependencies": {
+        "React/Core": [
+
+        ]
+      },
+      "source_files": "Libraries/Vibration/*.{h,m}"
+    },
+    {
+      "name": "RCTWebSocket",
+      "dependencies": {
+        "React/Core": [
+
+        ],
+        "React/RCTBlob": [
+
+        ],
+        "React/fishhook": [
+
+        ]
+      },
+      "source_files": "Libraries/WebSocket/*.{h,m}"
+    },
+    {
+      "name": "fishhook",
+      "header_dir": "fishhook",
+      "source_files": "Libraries/fishhook/*.{h,c}"
+    },
+    {
+      "name": "RCTLinkingIOS",
+      "dependencies": {
+        "React/Core": [
+
+        ]
+      },
+      "source_files": "Libraries/LinkingIOS/*.{h,m}"
+    },
+    {
+      "name": "RCTTest",
+      "dependencies": {
+        "React/Core": [
+
+        ]
+      },
+      "source_files": "Libraries/RCTTest/**/*.{h,m}",
+      "frameworks": "XCTest"
+    },
+    {
+      "name": "_ignore_me_subspec_for_linting_",
+      "dependencies": {
+        "React/Core": [
+
+        ],
+        "React/CxxBridge": [
+
+        ]
+      }
+    }
+  ]
+}

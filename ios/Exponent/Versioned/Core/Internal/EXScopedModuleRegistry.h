@@ -12,9 +12,20 @@
  *         e.g. MyKernelService -> an instance of EXMyKernelService
  */
 #define EX_EXPORT_SCOPED_MODULE(js_name, kernel_service_class) \
-RCT_EXTERN void EXRegisterScopedModule(Class, NSString *); \
+RCT_EXTERN void EXRegisterScopedModule(Class, ...); \
 + (NSString *)moduleName { return @#js_name; } \
-+ (void)load { EXRegisterScopedModule(self, @#kernel_service_class); }
++ (void)load { EXRegisterScopedModule(self, @#kernel_service_class, nil); }
+
+/**
+ *  Use this in place of EX_EXPORT_SCOPED_MODULE() if the module requires more than one kernel service.
+ *  @param js_name same as RCT_EXPORT_MODULE(), the module name available in JS
+ *  @param ... strings representing names of kernel services to be passed to th emodule at runtime.
+ *         e.g. @"MyKernelService" -> an instance of EXMyKernelService
+ */
+#define EX_EXPORT_SCOPED_MULTISERVICE_MODULE(js_name, ...) \
+RCT_EXTERN void EXRegisterScopedModule(Class, ...); \
++ (NSString *)moduleName { return @#js_name; } \
++ (void)load { EXRegisterScopedModule(self, __VA_ARGS__, nil); }
 
 /**
  *  Provides a namespace/bottleneck through which scoped modules

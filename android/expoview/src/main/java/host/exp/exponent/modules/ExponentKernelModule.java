@@ -3,16 +3,13 @@
 package host.exp.exponent.modules;
 
 import android.app.Activity;
-import android.content.Context;
 import android.support.annotation.Nullable;
 
-import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
@@ -29,11 +26,12 @@ import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.experience.ErrorActivity;
 import host.exp.exponent.experience.ExperienceActivity;
-import host.exp.exponent.kernel.ExponentError;
 import host.exp.exponent.kernel.ExponentKernelModuleInterface;
 import host.exp.exponent.kernel.ExponentKernelModuleProvider;
 import host.exp.exponent.kernel.ExponentUrls;
 import host.exp.exponent.kernel.Kernel;
+import host.exp.exponent.network.ExpoHttpCallback;
+import host.exp.exponent.network.ExpoResponse;
 import host.exp.exponent.network.ExponentNetwork;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import expolib_v1.okhttp3.Call;
@@ -48,9 +46,6 @@ public class ExponentKernelModule extends ReactContextBaseJavaModule implements 
   private static ExponentKernelModule sInstance;
 
   @Inject
-  Context mContext;
-
-  @Inject
   Kernel mKernel;
 
   @Inject
@@ -60,7 +55,6 @@ public class ExponentKernelModule extends ReactContextBaseJavaModule implements 
   ExponentNetwork mExponentNetwork;
 
   private static Map<String, ExponentKernelModuleProvider.KernelEventCallback> sKernelEventCallbacks = new HashMap<>();
-  private boolean mIsLoaded = false;
 
   public ExponentKernelModule(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -78,25 +72,6 @@ public class ExponentKernelModule extends ReactContextBaseJavaModule implements 
     return constants;
   }
 
-  public static void addError(ExponentError error) {
-    WritableArray stackArray = null;
-    if (error.stack != null) {
-      stackArray = Arguments.fromArray(error.stack);
-    }
-
-    try {
-      WritableMap params = Arguments.createMap();
-      params.putString("errorMessage", error.errorMessage.developerErrorMessage());
-      params.putArray("stack", stackArray);
-      params.putInt("exceptionId", error.exceptionId);
-      params.putBoolean("isFatal", error.isFatal);
-
-      queueEvent("ExponentKernel.addError", params, null);
-    } catch (Throwable e) {
-      EXL.e(TAG, e);
-    }
-  }
-
   public static void queueEvent(String name, WritableMap data, ExponentKernelModuleProvider.KernelEventCallback callback) {
     queueEvent(new ExponentKernelModuleProvider.KernelEvent(name, data, callback));
   }
@@ -109,10 +84,6 @@ public class ExponentKernelModule extends ReactContextBaseJavaModule implements 
     }
   }
 
-  public static boolean isLoaded() {
-    return sInstance != null && sInstance.mIsLoaded;
-  }
-
   @Override
   public String getName() {
     return "ExponentKernel";
@@ -120,7 +91,7 @@ public class ExponentKernelModule extends ReactContextBaseJavaModule implements 
 
   @Override
   public void consumeEventQueue() {
-    if (!mIsLoaded || ExponentKernelModuleProvider.sEventQueue.size() == 0) {
+    if (ExponentKernelModuleProvider.sEventQueue.size() == 0) {
       return;
     }
 
@@ -137,12 +108,6 @@ public class ExponentKernelModule extends ReactContextBaseJavaModule implements 
         .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
         .emit(event.name, event.data);
 
-    consumeEventQueue();
-  }
-
-  @ReactMethod
-  public void onLoaded() {
-    mIsLoaded = true;
     consumeEventQueue();
   }
 
@@ -210,31 +175,5 @@ public class ExponentKernelModule extends ReactContextBaseJavaModule implements 
       currentExperienceActivity.dismissNuxViewIfVisible(false);
     }
     promise.resolve(true);
-  }
-
-  @ReactMethod
-  public void clearExperienceData(String experienceId, String manifestUrl) {
-    ClearExperienceData.clear(mContext, experienceId, manifestUrl);
-    mKernel.reloadVisibleExperience(manifestUrl);
-  }
-
-  @ReactMethod
-  public void preloadBundleUrlAsync(final String url, final Promise promise) {
-    preloadRequestAsync(ExponentUrls.addExponentHeadersToUrl(url, false, false).build(), promise);
-  }
-
-  private void preloadRequestAsync(final Request request, final Promise promise) {
-    mExponentNetwork.getClient().call(request, new Callback() {
-      @Override
-      public void onFailure(Call call, IOException e) {
-        promise.reject(e);
-      }
-
-      @Override
-      public void onResponse(Call call, Response response) throws IOException {
-        ExponentNetwork.flushResponse(response);
-        promise.resolve(true);
-      }
-    });
   }
 }

@@ -95,7 +95,7 @@ public class TestSuiteTests extends BaseTestClass {
 
     if (shouldAddDeepLink) {
       String deepLink = TestConfig.get().toString();
-      testSuiteUri = testSuiteUri + "+" + deepLink;
+      testSuiteUri = testSuiteUri + "/--/" + deepLink;
     }
 
     // Launch the app
@@ -146,32 +146,46 @@ public class TestSuiteTests extends BaseTestClass {
     runTestSuiteTest(ExponentBuildConstants.TEST_APP_URI, true);
   }
 
-  /*@Test
-  @ExpoTestSuiteTest
-  @ExpoSdkVersionTest("22.0.0")
-  public void sdk22TestSuite() {
-    runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-22-0-0", false);
-  }*/
-
   @Test
   @ExpoTestSuiteTest
-  @ExpoSdkVersionTest("21.0.0")
-  public void sdk21TestSuite() {
-    runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-21-0-0", false);
+  @ExpoSdkVersionTest("30.0.0")
+  public void sdk30TestSuite() {
+    runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-30-0-0", false);
   }
 
   @Test
   @ExpoTestSuiteTest
-  @ExpoSdkVersionTest("20.0.0")
-  public void sdk20TestSuite() {
-    runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-20-0-0", false);
+  @ExpoSdkVersionTest("28.0.0")
+  public void sdk28TestSuite() {
+    runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-28-0-0", false);
   }
 
   @Test
   @ExpoTestSuiteTest
-  @ExpoSdkVersionTest("19.0.0")
-  public void sdk19TestSuite() {
-    runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-19-0-0", false);
+  @ExpoSdkVersionTest("27.0.0")
+  public void sdk27TestSuite() {
+    runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-27-0-0", false);
+  }
+
+  @Test
+  @ExpoTestSuiteTest
+  @ExpoSdkVersionTest("26.0.0")
+  public void sdk26TestSuite() {
+    runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-26-0-0", false);
+  }
+
+  @Test
+  @ExpoTestSuiteTest
+  @ExpoSdkVersionTest("25.0.0")
+  public void sdk25TestSuite() {
+    runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-25-0-0", false);
+  }
+
+  @Test
+  @ExpoTestSuiteTest
+  @ExpoSdkVersionTest("24.0.0")
+  public void sdk24TestSuite() {
+    runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-24-0-0", false);
   }
 
   @Test

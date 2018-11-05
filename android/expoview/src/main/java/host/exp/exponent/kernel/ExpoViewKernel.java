@@ -83,7 +83,7 @@ public class ExpoViewKernel extends KernelInterface {
   }
 
   @Override
-  public boolean reloadVisibleExperience(String manifestUrl) {
+  public boolean reloadVisibleExperience(String manifestUrl, boolean forceCache) {
     return false;
   }
 }

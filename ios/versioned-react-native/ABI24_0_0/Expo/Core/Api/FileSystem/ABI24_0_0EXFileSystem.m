@@ -467,7 +467,7 @@ ABI24_0_0RCT_REMAP_METHOD(downloadResumablePauseAsync,
       if (downloadTask) {
         [downloadTask cancelByProducingResumeData:^(NSData * _Nullable resumeData) {
           NSString *data = [[NSString alloc] initWithData:resumeData encoding:NSUTF8StringEncoding];
-          resolve(@{@"resumeData":data});
+          resolve(@{@"resumeData": data ?: [NSNull null]});
         }];
       } else {
         reject(@"E_UNABLE_TO_PAUSE",

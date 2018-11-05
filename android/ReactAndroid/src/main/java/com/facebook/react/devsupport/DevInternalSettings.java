@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 package com.facebook.react.devsupport;
 
@@ -33,6 +31,8 @@ public class DevInternalSettings implements DeveloperSettings, SharedPreferences
 
     public static String PREFS_JS_BUNDLE_DELTAS_KEY = "js_bundle_deltas";
 
+    public static String PREFS_JS_BUNDLE_DELTAS_CPP_KEY = "js_bundle_deltas_cpp";
+
     public static String PREFS_ANIMATIONS_DEBUG_KEY = "animations_debug";
 
     public static String PREFS_RELOAD_ON_JS_CHANGE_KEY = "reload_on_js_change";
@@ -49,11 +49,22 @@ public class DevInternalSettings implements DeveloperSettings, SharedPreferences
 
     public final PackagerConnectionSettings mPackagerConnectionSettings;
 
+    public final boolean mSupportsNativeDeltaClients;
+
+    public static DevInternalSettings withoutNativeDeltaClient(Context applicationContext, Listener listener) {
+        return new DevInternalSettings(applicationContext, listener, false);
+    }
+
     public DevInternalSettings(Context applicationContext, Listener listener) {
+        this(applicationContext, listener, true);
+    }
+
+    private DevInternalSettings(Context applicationContext, Listener listener, boolean supportsNativeDeltaClients) {
         mListener = listener;
         mPreferences = PreferenceManager.getDefaultSharedPreferences(applicationContext);
         mPreferences.registerOnSharedPreferenceChangeListener(this);
         mPackagerConnectionSettings = new PackagerConnectionSettings(applicationContext);
+        mSupportsNativeDeltaClients = supportsNativeDeltaClients;
     }
 
     public PackagerConnectionSettings getPackagerConnectionSettings() {
@@ -86,7 +97,7 @@ public class DevInternalSettings implements DeveloperSettings, SharedPreferences
 
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         if (mListener != null) {
-            if (PREFS_FPS_DEBUG_KEY.equals(key) || PREFS_RELOAD_ON_JS_CHANGE_KEY.equals(key) || PREFS_JS_DEV_MODE_DEBUG_KEY.equals(key) || PREFS_JS_BUNDLE_DELTAS_KEY.equals(key) || PREFS_JS_MINIFY_DEBUG_KEY.equals(key)) {
+            if (PREFS_FPS_DEBUG_KEY.equals(key) || PREFS_RELOAD_ON_JS_CHANGE_KEY.equals(key) || PREFS_JS_DEV_MODE_DEBUG_KEY.equals(key) || PREFS_JS_BUNDLE_DELTAS_KEY.equals(key) || PREFS_JS_BUNDLE_DELTAS_CPP_KEY.equals(key) || PREFS_JS_MINIFY_DEBUG_KEY.equals(key)) {
                 mListener.onInternalSettingsChanged();
             }
         }
@@ -124,6 +135,16 @@ public class DevInternalSettings implements DeveloperSettings, SharedPreferences
     @SuppressLint("SharedPreferencesUse")
     public void setBundleDeltasEnabled(boolean enabled) {
         mPreferences.edit().putBoolean(PREFS_JS_BUNDLE_DELTAS_KEY, enabled).apply();
+    }
+
+    @SuppressLint("SharedPreferencesUse")
+    public boolean isBundleDeltasCppEnabled() {
+        return mSupportsNativeDeltaClients && mPreferences.getBoolean(PREFS_JS_BUNDLE_DELTAS_CPP_KEY, false);
+    }
+
+    @SuppressLint("SharedPreferencesUse")
+    public void setBundleDeltasCppEnabled(boolean enabled) {
+        mPreferences.edit().putBoolean(PREFS_JS_BUNDLE_DELTAS_CPP_KEY, enabled).apply();
     }
 
     @Override

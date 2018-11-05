@@ -1,3 +1,5 @@
+load("//ReactNative:DEFS.bzl", "cxx_library")
+
 cxx_library(
     name = "yoga",
     srcs = glob(["yoga/*.cpp"]),

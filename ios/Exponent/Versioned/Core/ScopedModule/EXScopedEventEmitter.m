@@ -10,7 +10,23 @@
   return @"ExponentScopedEventEmitter";
 }
 
++ (NSString *)getExperienceIdFromEventEmitter:(id)eventEmitter
+{
+  if (eventEmitter) {
+    return ((EXScopedEventEmitter *)eventEmitter).experienceId;
+  }
+  return nil;
+}
+
 - (instancetype)initWithExperienceId:(NSString *)experienceId kernelServiceDelegate:(id)kernelServiceInstance params:(NSDictionary *)params
+{
+  if (self = [super init]) {
+    _experienceId = experienceId;
+  }
+  return self;
+}
+
+- (instancetype)initWithExperienceId:(NSString *)experienceId kernelServiceDelegates:(NSDictionary *)kernelServiceInstances params:(NSDictionary *)params
 {
   if (self = [super init]) {
     _experienceId = experienceId;

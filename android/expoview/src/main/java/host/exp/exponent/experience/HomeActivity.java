@@ -11,10 +11,11 @@ import android.os.Debug;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 
-import com.amplitude.api.Amplitude;
 import com.squareup.leakcanary.LeakCanary;
 
 import de.greenrobot.event.EventBus;
+import host.exp.exponent.RNObject;
+import host.exp.exponent.analytics.Analytics;
 import host.exp.expoview.BuildConfig;
 import host.exp.exponent.Constants;
 import host.exp.exponent.kernel.Kernel;
@@ -27,6 +28,7 @@ public class HomeActivity extends BaseExperienceActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     mShouldDestroyRNInstanceOnExit = false;
+    mSDKVersion = RNObject.UNVERSIONED;
 
     EventBus.getDefault().registerSticky(this);
     mKernel.startJSKernel();
@@ -63,7 +65,7 @@ public class HomeActivity extends BaseExperienceActivity {
 
     SoLoader.init(this, false);
 
-    Amplitude.getInstance().logEvent("HOME_APPEARED");
+    Analytics.logEvent("HOME_APPEARED");
 
     registerForNotifications();
   }
@@ -73,6 +75,7 @@ public class HomeActivity extends BaseExperienceActivity {
     mReactRootView.assign(mKernel.getReactRootView());
     mReactInstanceManager.onHostResume(this, this);
     setView((View) mReactRootView.get());
+    checkForReactViews();
 
     if (Constants.DEBUG_COLD_START_METHOD_TRACING) {
       Debug.stopMethodTracing();

@@ -1,0 +1,33 @@
+{
+  "name": "expo-camera",
+  "version": "1.0.0-rc.2",
+  "description": "Expo Camera standalone universal module",
+  "main": "index.js",
+  "keywords": [
+    "react-native",
+    "expo"
+  ],
+  "homepage": "https://docs.expo.io/",
+  "author": "650 Industries, Inc.",
+  "license": "BSD",
+  "peerDependencies": {
+    "react-native": "^0.55.4"
+  },
+  "dependencies": {
+    "expo-core": "^1.0.0-rc.2",
+    "expo-camera-interface": "^1.0.0-rc.2",
+    "expo-file-system-interface": "^1.0.0-rc.2",
+    "expo-face-detector-interface": "^1.0.0-rc.2",
+    "expo-permissions-interface": "^1.0.0-rc.2",
+    "lodash.mapvalues": "^4.6.0",
+    "prop-types": "^15.6.0"
+  },
+  "devDependencies": {
+    "babel-preset-expo": "^4.0.0",
+    "eslint": "^4.18.1",
+    "eslint-config-universe": "^1.0.7",
+    "flow-bin": "^0.66.0",
+    "prettier": "^1.10.2",
+    "react": "^16.2.0"
+  }
+}

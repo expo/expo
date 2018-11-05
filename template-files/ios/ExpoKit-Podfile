@@ -3,6 +3,7 @@ platform :ios, '9.0'
 
 target '${TARGET_NAME}' do
 ${EXPOKIT_DEPENDENCY}
+${PODFILE_UNVERSIONED_EXPO_MODULES_DEPENDENCIES}
 ${PODFILE_UNVERSIONED_RN_DEPENDENCY}
 
   post_install do |installer|

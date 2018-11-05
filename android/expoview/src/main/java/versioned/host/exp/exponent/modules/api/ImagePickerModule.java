@@ -11,7 +11,6 @@ import android.support.media.ExifInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Base64;
 import android.webkit.MimeTypeMap;
@@ -24,11 +23,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.Objects;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -36,21 +35,26 @@ import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableMap;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.utils.IoUtils;
 import com.theartofdev.edmodo.cropper.CropImage;
 
 import host.exp.exponent.ActivityResultListener;
 import host.exp.exponent.analytics.EXL;
+import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.utils.ExpFileUtils;
 import host.exp.exponent.utils.ScopedContext;
 import host.exp.expoview.Exponent;
+import versioned.host.exp.exponent.modules.ExpoKernelServiceConsumerBaseModule;
 
-public class ImagePickerModule extends ReactContextBaseJavaModule implements ActivityResultListener {
+public class ImagePickerModule extends ExpoKernelServiceConsumerBaseModule implements ActivityResultListener {
 
   public static final String TAG = "ExponentImagePicker";
 
   static final int REQUEST_LAUNCH_CAMERA = 1;
   static final int REQUEST_LAUNCH_IMAGE_LIBRARY = 2;
+
+  private static final int DEFAULT_QUALITY = 100;
 
   private Uri mCameraCaptureURI;
   private Promise mPromise;
@@ -64,7 +68,7 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
   final String OPTION_BASE64 = "base64";
   final String OPTION_EXIF = "exif";
 
-  private int quality = 100;
+  private Integer quality = null;
   private Boolean allowsEditing = false;
   private ReadableArray forceAspect = null;
   private Boolean base64 = false;
@@ -73,8 +77,9 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
 
   private ScopedContext mScopedContext;
 
-  public ImagePickerModule(ReactApplicationContext reactContext, ScopedContext scopedContext) {
-    super(reactContext);
+  public ImagePickerModule(ReactApplicationContext reactContext, ScopedContext scopedContext,
+                           ExperienceId experienceId) {
+    super(reactContext, experienceId);
     mScopedContext = scopedContext;
     Exponent.getInstance().addActivityResultListener(this);
   }
@@ -88,9 +93,7 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
     if (options.hasKey(OPTION_QUALITY)) {
       quality = (int) (options.getDouble(OPTION_QUALITY) * 100);
     }
-    if (options.hasKey(OPTION_ALLOWS_EDITING)) {
-      allowsEditing = options.getBoolean(OPTION_ALLOWS_EDITING);
-    }
+    allowsEditing = options.hasKey(OPTION_ALLOWS_EDITING) && options.getBoolean(OPTION_ALLOWS_EDITING);
     if (options.hasKey(OPTION_MEDIA_TYPES)) {
       mediaTypes = options.getString(OPTION_MEDIA_TYPES);
     }
@@ -101,13 +104,11 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
         promise.reject(new IllegalArgumentException("'aspect option must be of form [Number, Number]"));
         return false;
       }
+    } else {
+      forceAspect = null;
     }
-    if (options.hasKey(OPTION_BASE64)) {
-      base64 = options.getBoolean(OPTION_BASE64);
-    }
-    if (options.hasKey(OPTION_EXIF)) {
-      exif = options.getBoolean(OPTION_EXIF);
-    }
+    base64 = options.hasKey(OPTION_BASE64) && options.getBoolean(OPTION_BASE64);
+    exif = options.hasKey(OPTION_EXIF) && options.getBoolean(OPTION_EXIF);
     return true;
   }
 
@@ -124,33 +125,28 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
       return;
     }
 
-    Exponent.getInstance().getPermissions(new Exponent.PermissionsListener() {
-      @Override
-      public void permissionsGranted() {
-        launchCameraWithPermissionsGranted(promise, cameraIntent);
-      }
-
-      @Override
-      public void permissionsDenied() {
-        promise.reject(new SecurityException("User rejected permissions"));
-      }
-    }, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA});
+    if (Exponent.getInstance().getPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE, this.experienceId) &&
+        Exponent.getInstance().getPermissions(Manifest.permission.CAMERA, this.experienceId)) {
+      launchCameraWithPermissionsGranted(promise, cameraIntent);
+    } else {
+      promise.reject(new SecurityException("User rejected permissions"));
+    }
   }
 
   private void launchCameraWithPermissionsGranted(Promise promise, Intent cameraIntent) {
     File imageFile;
     try {
-      imageFile = File.createTempFile("exponent_capture_", ".jpg",
-          Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES));
+      imageFile = new File(ExpFileUtils.generateOutputPath(mScopedContext.getCacheDir(),
+          "ImagePicker", ".jpg"));
     } catch (IOException e) {
       e.printStackTrace();
       return;
     }
     if (imageFile == null) {
-      promise.reject(new IOException("Could not create temporary image file."));
+      promise.reject(new IOException("Could not create image file."));
       return;
     }
-    mCameraCaptureURI = ExpFileUtils.contentUriFromFile(imageFile);
+    mCameraCaptureURI = ExpFileUtils.uriFromFile(imageFile);
 
     // fix for Permission Denial in Android < 21
     List<ResolveInfo> resolvedIntentActivities = Exponent.getInstance().getApplication()
@@ -165,7 +161,8 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
       );
     }
 
-    cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, mCameraCaptureURI);
+    // camera intent needs a content URI but we need a file one
+    cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, ExpFileUtils.contentUriFromFile(imageFile));
     mPromise = promise;
     Exponent.getInstance().getCurrentActivity().startActivityForResult(cameraIntent, REQUEST_LAUNCH_CAMERA);
   }
@@ -177,20 +174,6 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
       return;
     }
 
-    Exponent.getInstance().getPermissions(new Exponent.PermissionsListener() {
-      @Override
-      public void permissionsGranted() {
-        launchImageLibraryWithPermissionsGranted(promise);
-      }
-
-      @Override
-      public void permissionsDenied() {
-        promise.reject(new SecurityException("User rejected permissions."));
-      }
-    }, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE});
-  }
-
-  private void launchImageLibraryWithPermissionsGranted(Promise promise) {
     Intent libraryIntent = new Intent();
     if (mediaTypes != null) {
       if (mediaTypes.equals("Images")) {
@@ -230,33 +213,7 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
           return;
         }
 
-        CropImage.ActivityResult result = CropImage.getActivityResult(intent);
-        int width, height;
-        int rot = result.getRotation() % 360;
-        if (rot < 0) {
-          rot += 360;
-        }
-        if (rot == 0 || rot == 180) { // Rotation is right-angled only
-          width = result.getCropRect().width();
-          height = result.getCropRect().height();
-        } else {
-          width = result.getCropRect().height();
-          height = result.getCropRect().width();
-        }
-        ByteArrayOutputStream out = null;
-        if (base64) {
-          out = new ByteArrayOutputStream();
-          try {
-            // `CropImage` nullifies the `result.getBitmap()` after it writes out to a file, so
-            // we have to read back...
-            InputStream in = new FileInputStream(result.getUri().getPath());
-            IoUtils.copyStream(in, out, null);
-          } catch(IOException e) {
-            promise.reject(e);
-            return;
-          }
-        }
-        returnImageResult(exifData, result.getUri().toString(), width, height, out, promise);
+        handleCropperResult(intent, promise, exifData);
       }
       return;
     }
@@ -308,6 +265,13 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
               EXL.w(TAG, "Image type not supported. Falling back to JPEG instead.");
               extension = ".jpg";
             }
+
+            // if the image is created by camera intent we don't need a new path - it's been already saved
+            String path = requestCode == REQUEST_LAUNCH_CAMERA ?
+                uri.getPath() :
+                ExpFileUtils.generateOutputPath(mScopedContext.getCacheDir(), "ImagePicker", extension);
+            Uri fileUri = requestCode == REQUEST_LAUNCH_CAMERA ? uri : Uri.fromFile(new File(path));
+
             if (allowsEditing) {
               mLaunchedCropper = true;
               mPromise = promise; // Need promise again later
@@ -321,15 +285,9 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
                     .setInitialCropWindowPaddingRatio(0);
               }
               cropImage
-                  .setOutputUri(Uri.fromFile(
-                      new File(ExpFileUtils
-                          .generateOutputPath(
-                              mScopedContext.getCacheDir(),
-                              "ImagePicker",
-                              extension
-                          ))))
+                  .setOutputUri(fileUri)
                   .setOutputCompressFormat(compressFormat)
-                  .setOutputCompressQuality(quality)
+                  .setOutputCompressQuality(quality == null ? DEFAULT_QUALITY : quality)
                   .start(Exponent.getInstance().getCurrentActivity());
             } else {
               // On some devices this has worked without decoding the URI and on some it has worked
@@ -345,6 +303,7 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
                     new DisplayImageOptions.Builder()
                         .cacheOnDisk(true)
                         .considerExifParams(true)
+                        .imageScaleType(ImageScaleType.NONE)
                         .build());
               } catch (Throwable e) {}
               if (bmp == null) {
@@ -353,6 +312,7 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
                       new DisplayImageOptions.Builder()
                           .cacheOnDisk(true)
                           .considerExifParams(true)
+                          .imageScaleType(ImageScaleType.NONE)
                           .build());
                 } catch (Throwable e) {}
               }
@@ -363,16 +323,17 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
                 }
                 return;
               }
-              String path = writeImage(bmp, extension, compressFormat);
-
-              ByteArrayOutputStream out = null;
-              if (base64) {
-                out = new ByteArrayOutputStream();
-                bmp.compress(Bitmap.CompressFormat.JPEG, quality, out);
+              // create a cache file for an image picked from gallery
+              ByteArrayOutputStream out = base64 ? new ByteArrayOutputStream() : null;
+              File file = new File(path);
+              if (quality != null) {
+                saveImage(bmp, compressFormat, file, out);
+              } else {
+                // No modification requested
+                copyImage(uri, file, out);
               }
 
-              String fileUri = Uri.fromFile(new File(path)).toString();
-              returnImageResult(exifData, fileUri, bmp.getWidth(), bmp.getHeight(), out, promise);
+              returnImageResult(exifData, fileUri.toString(), bmp.getWidth(), bmp.getHeight(), out, promise);
             }
           } else {
             WritableMap response = Arguments.createMap();
@@ -399,6 +360,84 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
     });
   }
 
+  /**
+   * Compress and save the {@code bitmap} to {@code file}, optionally saving it in {@code out} if
+   * base64 is requested.
+   *
+   * @param bitmap bitmap to be saved
+   * @param compressFormat compression format to save the image in
+   * @param file file to save the image to
+   * @param out if not null, the stream to save the image to
+   */
+  private void saveImage(Bitmap bitmap, Bitmap.CompressFormat compressFormat, File file,
+                         ByteArrayOutputStream out) {
+    if (!file.exists()) {
+      writeImage(bitmap, file.getPath(), compressFormat);
+    }
+
+    if (base64) {
+      bitmap.compress(Bitmap.CompressFormat.JPEG, quality, out);
+    }
+  }
+
+  /**
+   * Copy the image file from {@code originalUri} to {@code file}, optionally saving it in
+   * {@code out} if base64 is requested.
+   *
+   * @param originalUri uri to the file to copy the data from
+   * @param file file to save the image to
+   * @param out if not null, the stream to save the image to
+   */
+  private void copyImage(Uri originalUri, File file, ByteArrayOutputStream out)
+      throws IOException {
+    InputStream is = Objects.requireNonNull(
+        mScopedContext.getApplicationContext().getContentResolver().openInputStream(originalUri));
+
+    if (out != null) {
+      IoUtils.copyStream(is, out, null);
+    }
+
+    if (!file.exists()) {
+      try (FileOutputStream fos = new FileOutputStream(file)) {
+        if (out != null) {
+          fos.write(out.toByteArray());
+        } else {
+          IoUtils.copyStream(is, fos, null);
+        }
+      }
+    }
+  }
+
+  private void handleCropperResult(Intent intent, Promise promise, WritableMap exifData) {
+    CropImage.ActivityResult result = CropImage.getActivityResult(intent);
+    int width, height;
+    int rot = result.getRotation() % 360;
+    if (rot < 0) {
+      rot += 360;
+    }
+    if (rot == 0 || rot == 180) { // Rotation is right-angled only
+      width = result.getCropRect().width();
+      height = result.getCropRect().height();
+    } else {
+      width = result.getCropRect().height();
+      height = result.getCropRect().width();
+    }
+    ByteArrayOutputStream out = null;
+    if (base64) {
+      out = new ByteArrayOutputStream();
+      try {
+        // `CropImage` nullifies the `result.getBitmap()` after it writes out to a file, so
+        // we have to read back...
+        InputStream in = new FileInputStream(result.getUri().getPath());
+        IoUtils.copyStream(in, out, null);
+      } catch(IOException e) {
+        promise.reject(e);
+        return;
+      }
+    }
+    returnImageResult(exifData, result.getUri().toString(), width, height, out, promise);
+  }
+
   private void returnImageResult(WritableMap exifData, String uri, int width, int height,
                                  ByteArrayOutputStream base64OutputStream, Promise promise) {
     WritableMap response = Arguments.createMap();
@@ -416,11 +455,9 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
     promise.resolve(response);
   }
 
-  private String writeImage(Bitmap image, String extension, Bitmap.CompressFormat compressFormat) {
+  private void writeImage(Bitmap image, String path, Bitmap.CompressFormat compressFormat) {
     FileOutputStream out = null;
-    String path = null;
     try {
-      path = ExpFileUtils.generateOutputPath(mScopedContext.getCacheDir(), "ImagePicker", extension);
       out = new FileOutputStream(path);
       image.compress(compressFormat, quality, out);
     } catch (Exception e) {
@@ -434,7 +471,6 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
         e.printStackTrace();
       }
     }
-    return path;
   }
 
   private String writeVideo(Uri uri) {

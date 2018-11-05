@@ -1,0 +1,20 @@
+{
+  "name": "expo-app-loader-provider",
+  "version": "1.0.0",
+  "description": "Expo module that provides application loaders",
+  "main": "index.js",
+  "keywords": [
+    "react-native",
+    "expo"
+  ],
+  "homepage": "https://docs.expo.io/",
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "dependencies": {
+    "expo-core": "~1.1.0"
+  },
+  "devDependencies": {
+    "babel-preset-expo": "^4.0.0",
+    "flow-bin": "^0.77.0"
+  }
+}

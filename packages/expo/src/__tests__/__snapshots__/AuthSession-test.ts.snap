@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`returns getRedirectUrl and calls a warning when getRedirectUri is called 1`] = `
+Array [
+  Array [
+    "Use AuthSession.getRedirectUrl rather than AuthSession.getRedirectUri (Url instead of Uri)",
+  ],
+]
+`;
+
+exports[`throws from AuthSession.startAsync if authUrl is falsy 1`] = `[Error: No authUrl provided to AuthSession.startAsync. An authUrl is required -- it points to the page where the user will be able to sign in.]`;
+
+exports[`warns if user is @anonymous in getRedirectUrl 1`] = `
+Array [
+  Array [
+    "You are not currently signed in to Expo on your development machine. As a result, the redirect URL for AuthSession will be \\"https://auth.expo.io/@anonymous/abc\\". If you are using an OAuth provider that requires whitelisting redirect URLs, we recommend that you do not whitelist this URL -- instead, you should sign in to Expo to acquired a unique redirect URL. Additionally, if you do decide to publish this app using Expo, you will need to register an account to do it.",
+  ],
+]
+`;

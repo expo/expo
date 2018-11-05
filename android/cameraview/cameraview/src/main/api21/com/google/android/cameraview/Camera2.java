@@ -20,6 +20,7 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.ImageFormat;
 import android.graphics.Rect;
+import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CameraCharacteristics;
@@ -37,6 +38,8 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.util.SparseIntArray;
 import android.view.Surface;
+import android.os.Handler;
+import android.os.Looper;
 
 import java.io.File;
 import java.io.IOException;
@@ -108,11 +111,12 @@ class Camera2 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
                 return;
             }
             mCaptureSession = session;
+            mInitialCropRegion = mPreviewRequestBuilder.get(CaptureRequest.SCALER_CROP_REGION);
             updateAutoFocus();
             updateFlash();
             updateFocusDepth();
             updateWhiteBalance();
-            updateZoom(mZoom);
+            updateZoom();
             try {
                 mCaptureSession.setRepeatingRequest(mPreviewRequestBuilder.build(),
                         mCaptureCallback, null);
@@ -166,23 +170,53 @@ class Camera2 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
         @Override
         public void onImageAvailable(ImageReader reader) {
             try (Image image = reader.acquireNextImage()) {
-                Image.Plane[] planes = image.getPlanes();
-                if (planes.length > 0) {
-                    ByteBuffer buffer = planes[0].getBuffer();
+                if (image.getFormat() == ImageFormat.JPEG) {
+                    ByteBuffer buffer = image.getPlanes()[0].getBuffer();
                     byte[] data = new byte[buffer.remaining()];
                     buffer.get(data);
-                    if (image.getFormat() == ImageFormat.JPEG) {
-                        mCallback.onPictureTaken(data);
-                    } else {
-                        mCallback.onFramePreview(data, image.getWidth(), image.getHeight(), mDisplayOrientation);
-                    }
-                    image.close();
+
+                    mCallback.onPictureTaken(data);
+                } else { // ImageFormat.YUV_420_888
+                    byte[] data = YUV_420_888toNV21(image);
+
+                    int w = image.getWidth();
+                    int h = image.getHeight();
+
+                    // this part fixes an issue when YUV to NV21 conversion doesn't work (Pixel 2)
+                    // properly so the result image is skewed and barcodes can't be detected
+                    // it appears there is a padding must be considered
+                    Image.Plane plane = image.getPlanes()[0];
+                    int ps = plane.getPixelStride();
+                    int rs = plane.getRowStride();
+                    int padding = rs - ps * w;
+                    int dw = padding / ps;
+
+                    mCallback.onFramePreview(data, w + dw, h, mDisplayOrientation);
                 }
             }
         }
 
     };
 
+    private static byte[] YUV_420_888toNV21(Image image) {
+        byte[] nv21;
+        ByteBuffer yBuffer = image.getPlanes()[0].getBuffer();
+        ByteBuffer uBuffer = image.getPlanes()[1].getBuffer();
+        ByteBuffer vBuffer = image.getPlanes()[2].getBuffer();
+
+        int ySize = yBuffer.remaining();
+        int uSize = uBuffer.remaining();
+        int vSize = vBuffer.remaining();
+
+        nv21 = new byte[ySize + uSize + vSize];
+
+        // U and V are swapped
+        yBuffer.get(nv21, 0, ySize);
+        vBuffer.get(nv21, ySize, vSize);
+        uBuffer.get(nv21, ySize + vSize, uSize);
+
+        return nv21;
+    }
 
     private String mCameraId;
 
@@ -212,6 +246,8 @@ class Camera2 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
 
     private final SizeMap mPictureSizes = new SizeMap();
 
+    private Size mPictureSize;
+
     private int mFacing;
 
     private AspectRatio mAspectRatio = Constants.DEFAULT_ASPECT_RATIO;
@@ -231,6 +267,10 @@ class Camera2 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
     private int mWhiteBalance;
 
     private boolean mIsScanning;
+
+    private Surface mPreviewSurface;
+
+    private Rect mInitialCropRegion;
 
     Camera2(Callback callback, PreviewImpl preview, Context context) {
         super(callback, preview);
@@ -333,8 +373,48 @@ class Camera2 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
     }
 
     @Override
+    int getCameraId() {
+        // We only use front/back-facing cameras, and according to CameraManager.getCameraIdList()
+        // docs, internal cameras (external cams are represented as another "facing") always
+        // use integers for their identifiers, so parseInt() should never fail.
+        return Integer.parseInt(mCameraId);
+    }
+
+    @Override
     Set<AspectRatio> getSupportedAspectRatios() {
         return mPreviewSizes.ratios();
+    }
+
+    @Override
+    SortedSet<Size> getAvailablePictureSizes(AspectRatio ratio) {
+        return mPictureSizes.sizes(ratio);
+    }
+
+    @Override
+    void setPictureSize(Size size) {
+        if (size == null) {
+          return;
+        }
+        if (mCaptureSession != null) {
+            try {
+                mCaptureSession.stopRepeating();
+            } catch (CameraAccessException e) {
+                e.printStackTrace();
+            }
+            mCaptureSession.close();
+            mCaptureSession = null;
+        }
+        if (mStillImageReader != null) {
+            mStillImageReader.close();
+        }
+        mPictureSize = size;
+        prepareStillImageReader();
+        startCaptureSession();
+    }
+
+    @Override
+    Size getPictureSize() {
+        return mPictureSize;
     }
 
     @Override
@@ -349,6 +429,7 @@ class Camera2 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
             return false;
         }
         mAspectRatio = ratio;
+        mPictureSize = mPictureSizes.sizes(mAspectRatio).last();
         prepareStillImageReader();
         prepareScanImageReader();
         if (mCaptureSession != null) {
@@ -436,7 +517,7 @@ class Camera2 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
 
                 Size size = chooseOptimalSize();
                 mPreview.setBufferSize(size.getWidth(), size.getHeight());
-                Surface surface = mPreview.getSurface();
+                Surface surface = getPreviewSurface();
                 Surface mMediaRecorderSurface = mMediaRecorder.getSurface();
 
                 mPreviewRequestBuilder = mCamera.createCaptureRequest(CameraDevice.TEMPLATE_RECORD);
@@ -499,7 +580,7 @@ class Camera2 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
       float saved = mZoom;
       mZoom = zoom;
       if (mCaptureSession != null) {
-          updateZoom(saved);
+          updateZoom();
           try {
               mCaptureSession.setRepeatingRequest(mPreviewRequestBuilder.build(),
                   mCaptureCallback, null);
@@ -645,6 +726,9 @@ class Camera2 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
         }
         mPictureSizes.clear();
         collectPictureSizes(mPictureSizes, map);
+        if (mPictureSize == null) {
+          mPictureSize = mPictureSizes.sizes(mAspectRatio).last();
+        }
         for (AspectRatio ratio : mPreviewSizes.ratios()) {
             if (!mPictureSizes.ratios().contains(ratio)) {
                 mPreviewSizes.remove(ratio);
@@ -666,8 +750,7 @@ class Camera2 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
         if (mStillImageReader != null) {
             mStillImageReader.close();
         }
-        Size largest = mPictureSizes.sizes(mAspectRatio).last();
-        mStillImageReader = ImageReader.newInstance(largest.getWidth(), largest.getHeight(),
+        mStillImageReader = ImageReader.newInstance(mPictureSize.getWidth(), mPictureSize.getHeight(),
                 ImageFormat.JPEG, 1);
         mStillImageReader.setOnImageAvailableListener(mOnImageAvailableListener, null);
     }
@@ -688,11 +771,7 @@ class Camera2 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
      */
     private void startOpeningCamera() {
         try {
-            if (mAvailableCameras.contains(String.valueOf(mCameraId))) {
-                mCameraManager.openCamera(mCameraId, mCameraDeviceCallback, null);
-            } else {
-                mCallback.onMountError();
-            }
+            mCameraManager.openCamera(mCameraId, mCameraDeviceCallback, null);
         } catch (CameraAccessException e) {
             throw new RuntimeException("Failed to open camera: " + mCameraId, e);
         }
@@ -709,10 +788,11 @@ class Camera2 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
         }
         Size previewSize = chooseOptimalSize();
         mPreview.setBufferSize(previewSize.getWidth(), previewSize.getHeight());
-        Surface surface = mPreview.getSurface();
+        Surface surface = getPreviewSurface();
         try {
             mPreviewRequestBuilder = mCamera.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
             mPreviewRequestBuilder.addTarget(surface);
+
             if (mIsScanning) {
                 mPreviewRequestBuilder.addTarget(mScanImageReader.getSurface());
             }
@@ -721,6 +801,55 @@ class Camera2 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
         } catch (CameraAccessException e) {
             mCallback.onMountError();
         }
+    }
+
+    @Override
+    public void resumePreview() {
+        startCaptureSession();
+    }
+
+    @Override
+    public void pausePreview() {
+      try {
+        mCaptureSession.stopRepeating();
+      } catch (CameraAccessException e) {
+        e.printStackTrace();
+      }
+    }
+
+    public Surface getPreviewSurface() {
+        if (mPreviewSurface != null) {
+            return mPreviewSurface;
+        }
+        return mPreview.getSurface();
+    }
+
+    @Override
+    public void setPreviewTexture(SurfaceTexture surfaceTexture) {
+        if (surfaceTexture != null) {
+            Surface previewSurface = new Surface(surfaceTexture);
+            mPreviewSurface = previewSurface;
+        } else {
+            mPreviewSurface = null;
+        }
+
+        // it may be called from another thread, so make sure we're in main looper
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (mCaptureSession != null) {
+                    mCaptureSession.close();
+                    mCaptureSession = null;
+                }
+                startCaptureSession();
+            }
+        });
+    }
+
+    @Override
+    public Size getPreviewSize() {
+        return new Size(mPreview.getWidth(), mPreview.getHeight());
     }
 
     /**
@@ -830,15 +959,15 @@ class Camera2 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
     /**
      * Updates the internal state of zoom to {@link #mZoom}.
      */
-    void updateZoom(float saved) {
+    void updateZoom() {
         float maxZoom = mCameraCharacteristics.get(CameraCharacteristics.SCALER_AVAILABLE_MAX_DIGITAL_ZOOM);
         float scaledZoom = mZoom * (maxZoom - 1.0f) + 1.0f;
         Rect currentPreview = mCameraCharacteristics.get(CameraCharacteristics.SENSOR_INFO_ACTIVE_ARRAY_SIZE);
         if (currentPreview != null) {
             int currentWidth = currentPreview.width();
             int currentHeight = currentPreview.height();
-            int zoomedWidth = (int) (currentWidth / scaledZoom / (saved * (maxZoom - 1.0f) + 1.0f));
-            int zoomedHeight = (int) (currentHeight / scaledZoom / (saved * (maxZoom - 1.0f) + 1.0f));
+            int zoomedWidth = (int) (currentWidth / scaledZoom);
+            int zoomedHeight = (int) (currentHeight / scaledZoom);
             int widthOffset = (currentWidth - zoomedWidth) / 2;
             int heightOffset = (currentHeight - zoomedHeight) / 2;
 
@@ -848,8 +977,13 @@ class Camera2 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
                 currentPreview.right - widthOffset,
                 currentPreview.bottom - heightOffset
             );
-            if (zoomedWidth != currentWidth && zoomedHeight != currentHeight) {
+
+            // ¯\_(ツ)_/¯ for some devices calculating the Rect for zoom=1 results in a bit different
+            // Rect that device claims as its no-zoom crop region and the preview freezes
+            if (scaledZoom != 1.0f) {
                 mPreviewRequestBuilder.set(CaptureRequest.SCALER_CROP_REGION, zoomedPreview);
+            } else {
+              mPreviewRequestBuilder.set(CaptureRequest.SCALER_CROP_REGION, mInitialCropRegion);
             }
         }
     }
@@ -941,6 +1075,7 @@ class Camera2 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
                     break;
             }
             captureRequestBuilder.set(CaptureRequest.JPEG_ORIENTATION, getOutputRotation());
+            captureRequestBuilder.set(CaptureRequest.SCALER_CROP_REGION, mPreviewRequestBuilder.get(CaptureRequest.SCALER_CROP_REGION));
             // Stop preview and capture a still picture.
             mCaptureSession.stopRepeating();
             mCaptureSession.capture(captureRequestBuilder.build(),
@@ -976,10 +1111,10 @@ class Camera2 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
         mMediaRecorder.setOutputFile(path);
         mVideoPath = path;
 
-        if (CamcorderProfile.hasProfile(Integer.parseInt(mCameraId), profile.quality)) {
+        if (CamcorderProfile.hasProfile(getCameraId(), profile.quality)) {
             setCamcorderProfile(profile, recordAudio);
         } else {
-            setCamcorderProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH), recordAudio);
+            setCamcorderProfile(CamcorderProfile.get(getCameraId(), CamcorderProfile.QUALITY_HIGH), recordAudio);
         }
 
         mMediaRecorder.setOrientationHint(getOutputRotation());

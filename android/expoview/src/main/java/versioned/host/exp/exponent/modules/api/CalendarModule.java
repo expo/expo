@@ -2,6 +2,7 @@
 
 package versioned.host.exp.exponent.modules.api;
 
+import android.Manifest;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -33,13 +34,17 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.TimeZone;
 
-public class CalendarModule extends ReactContextBaseJavaModule {
+import host.exp.exponent.kernel.ExperienceId;
+import host.exp.expoview.Exponent;
+import versioned.host.exp.exponent.modules.ExpoKernelServiceConsumerBaseModule;
+
+public class CalendarModule extends ExpoKernelServiceConsumerBaseModule {
   private static final String TAG = CalendarModule.class.getSimpleName();
 
   private ReactContext reactContext;
 
-  public CalendarModule(ReactApplicationContext reactContext) {
-    super(reactContext);
+  public CalendarModule(ReactApplicationContext reactContext, ExperienceId experienceId) {
+    super(reactContext, experienceId);
     this.reactContext = reactContext;
   }
 
@@ -50,6 +55,10 @@ public class CalendarModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void getCalendarsAsync(final String type, final Promise promise) {
+    if (isMissingPermissions()) {
+      promise.reject("E_CANNOT_GET_CALENDARS", "User rejected permissions required to get calendars.");
+      return;
+    }
     if (type != null && type.equals("reminder")) {
       promise.reject("E_CALENDARS_NOT_FOUND", "Calendars of type `reminder` are not supported on Android");
       return;
@@ -69,6 +78,10 @@ public class CalendarModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void saveCalendarAsync(final ReadableMap details, final Promise promise) {
+    if (isMissingPermissions()) {
+      promise.reject("E_CANNOT_SAVE_CALENDAR", "User rejected permissions required to save the calendar.");
+      return;
+    }
     try {
       AsyncTask.execute(new Runnable() {
         @Override
@@ -88,6 +101,10 @@ public class CalendarModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void deleteCalendarAsync(final String calendarID, final Promise promise) {
+    if (isMissingPermissions()) {
+      promise.reject("E_CANNOT_SAVE_CALENDAR", "User rejected permissions required to delete the calendar.");
+      return;
+    }
     try {
       AsyncTask.execute(new Runnable() {
         @Override
@@ -108,6 +125,10 @@ public class CalendarModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void getEventsAsync(final Dynamic startDate, final Dynamic endDate, final ReadableArray calendars, final Promise promise) {
+    if (isMissingPermissions()) {
+      promise.reject("E_CANNOT_SAVE_CALENDAR", "User rejected permissions required to get events.");
+      return;
+    }
     try {
       AsyncTask.execute(new Runnable() {
         @Override
@@ -124,6 +145,10 @@ public class CalendarModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void getEventByIdAsync(final String eventID, final Promise promise) {
+    if (isMissingPermissions()) {
+      promise.reject("E_CANNOT_SAVE_CALENDAR", "User rejected permissions required to get the event.");
+      return;
+    }
     try {
       AsyncTask.execute(new Runnable() {
         @Override
@@ -140,6 +165,10 @@ public class CalendarModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void saveEventAsync(final ReadableMap details, final ReadableMap options, final Promise promise) {
+    if (isMissingPermissions()) {
+      promise.reject("E_CANNOT_SAVE_CALENDAR", "User rejected permissions required to save the event.");
+      return;
+    }
     try {
       AsyncTask.execute(new Runnable() {
         @Override
@@ -159,6 +188,10 @@ public class CalendarModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void deleteEventAsync(final ReadableMap details, final ReadableMap options, final Promise promise) {
+    if (isMissingPermissions()) {
+      promise.reject("E_CANNOT_SAVE_CALENDAR", "User rejected permissions required to delete the event.");
+      return;
+    }
     try {
       AsyncTask.execute(new Runnable() {
         @Override
@@ -183,6 +216,10 @@ public class CalendarModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void getAttendeesForEventAsync(final String eventID, final Promise promise) {
+    if (isMissingPermissions()) {
+      promise.reject("E_CANNOT_SAVE_CALENDAR", "User rejected permissions required to get attendees.");
+      return;
+    }
     try {
       AsyncTask.execute(new Runnable() {
         @Override
@@ -199,6 +236,10 @@ public class CalendarModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void saveAttendeeForEventAsync(final ReadableMap details, final String eventID, final Promise promise) {
+    if (isMissingPermissions()) {
+      promise.reject("E_CANNOT_SAVE_CALENDAR", "User rejected permissions required to save the attendee.");
+      return;
+    }
     try {
       AsyncTask.execute(new Runnable() {
         @Override
@@ -218,6 +259,10 @@ public class CalendarModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void deleteAttendeeAsync(final String attendeeID, final Promise promise) {
+    if (isMissingPermissions()) {
+      promise.reject("E_CANNOT_SAVE_CALENDAR", "User rejected permissions required to delete the attendee.");
+      return;
+    }
     try {
       AsyncTask.execute(new Runnable() {
         @Override
@@ -761,7 +806,7 @@ public class CalendarModule extends ReactContextBaseJavaModule {
           startCal.setTime(sdf.parse(details.getString("instanceStartDate")));
           exceptionValues.put(CalendarContract.Events.ORIGINAL_INSTANCE_TIME, startCal.getTimeInMillis());
         } else if (type == ReadableType.Number) {
-          exceptionValues.put(CalendarContract.Events.ORIGINAL_INSTANCE_TIME, (long) details.getDouble("startDate"));
+          exceptionValues.put(CalendarContract.Events.ORIGINAL_INSTANCE_TIME, (long) details.getDouble("instanceStartDate"));
         }
       } catch (ParseException e) {
         Log.e(TAG, "error", e);
@@ -1203,7 +1248,7 @@ public class CalendarModule extends ReactContextBaseJavaModule {
       endDateUTC = sdf.format(foundEndDate.getTime());
     }
 
-    String rrule = cursor.getString(cursor.getColumnIndex(CalendarContract.Events.RRULE));
+    String rrule = optStringFromCursor(cursor, CalendarContract.Events.RRULE);
     if (rrule != null) {
       WritableNativeMap recurrenceRule = new WritableNativeMap();
       String[] recurrenceRules = rrule.split(";");
@@ -1234,23 +1279,23 @@ public class CalendarModule extends ReactContextBaseJavaModule {
 
     // may be CalendarContract.Instances.EVENT_ID or CalendarContract.Events._ID (which have different string values)
     event.putString("id", cursor.getString(0));
-    event.putString("calendarId", cursor.getString(cursor.getColumnIndex(CalendarContract.Events.CALENDAR_ID)));
-    event.putString("title", cursor.getString(cursor.getColumnIndex(CalendarContract.Events.TITLE)));
-    event.putString("notes", cursor.getString(cursor.getColumnIndex(CalendarContract.Events.DESCRIPTION)));
+    event.putString("calendarId", optStringFromCursor(cursor, CalendarContract.Events.CALENDAR_ID));
+    event.putString("title", optStringFromCursor(cursor, CalendarContract.Events.TITLE));
+    event.putString("notes", optStringFromCursor(cursor, CalendarContract.Events.DESCRIPTION));
     event.putString("startDate", startDateUTC);
     event.putString("endDate", endDateUTC);
-    event.putBoolean("allDay", cursor.getInt(cursor.getColumnIndex(CalendarContract.Events.ALL_DAY)) != 0);
-    event.putString("location", cursor.getString(cursor.getColumnIndex(CalendarContract.Events.EVENT_LOCATION)));
-    event.putString("availability", availabilityStringMatchingConstant(cursor.getInt(cursor.getColumnIndex(CalendarContract.Events.AVAILABILITY))));
+    event.putBoolean("allDay", optIntFromCursor(cursor, CalendarContract.Events.ALL_DAY) != 0);
+    event.putString("location", optStringFromCursor(cursor, CalendarContract.Events.EVENT_LOCATION));
+    event.putString("availability", availabilityStringMatchingConstant(optIntFromCursor(cursor, CalendarContract.Events.AVAILABILITY)));
     event.putArray("alarms", serializeAlarms(cursor.getLong(0)));
-    event.putString("organizerEmail", cursor.getString(cursor.getColumnIndex(CalendarContract.Events.ORGANIZER)));
-    event.putString("timeZone", cursor.getString(cursor.getColumnIndex(CalendarContract.Events.EVENT_TIMEZONE)));
-    event.putString("endTimeZone", cursor.getString(cursor.getColumnIndex(CalendarContract.Events.EVENT_END_TIMEZONE)));
-    event.putString("accessLevel", accessStringMatchingConstant(cursor.getInt(cursor.getColumnIndex(CalendarContract.Events.ACCESS_LEVEL))));
-    event.putBoolean("guestsCanModify", cursor.getInt(cursor.getColumnIndex(CalendarContract.Events.GUESTS_CAN_MODIFY)) != 0);
-    event.putBoolean("guestsCanInviteOthers", cursor.getInt(cursor.getColumnIndex(CalendarContract.Events.GUESTS_CAN_INVITE_OTHERS)) != 0);
-    event.putBoolean("guestsCanSeeGuests", cursor.getInt(cursor.getColumnIndex(CalendarContract.Events.GUESTS_CAN_SEE_GUESTS)) != 0);
-    event.putString("originalId", cursor.getString(cursor.getColumnIndex(CalendarContract.Events.ORIGINAL_ID)));
+    event.putString("organizerEmail", optStringFromCursor(cursor, CalendarContract.Events.ORGANIZER));
+    event.putString("timeZone", optStringFromCursor(cursor, CalendarContract.Events.EVENT_TIMEZONE));
+    event.putString("endTimeZone", optStringFromCursor(cursor, CalendarContract.Events.EVENT_END_TIMEZONE));
+    event.putString("accessLevel", accessStringMatchingConstant(optIntFromCursor(cursor, CalendarContract.Events.ACCESS_LEVEL)));
+    event.putBoolean("guestsCanModify", optIntFromCursor(cursor, CalendarContract.Events.GUESTS_CAN_MODIFY) != 0);
+    event.putBoolean("guestsCanInviteOthers", optIntFromCursor(cursor, CalendarContract.Events.GUESTS_CAN_INVITE_OTHERS) != 0);
+    event.putBoolean("guestsCanSeeGuests", optIntFromCursor(cursor, CalendarContract.Events.GUESTS_CAN_SEE_GUESTS) != 0);
+    event.putString("originalId", optStringFromCursor(cursor, CalendarContract.Events.ORIGINAL_ID));
 
     // unfortunately the string values of CalendarContract.Events._ID and CalendarContract.Instances._ID are equal
     // so we'll use the somewhat brittle column number from the query
@@ -1296,27 +1341,27 @@ public class CalendarModule extends ReactContextBaseJavaModule {
 
     WritableNativeMap calendar = new WritableNativeMap();
 
-    calendar.putString("id", cursor.getString(cursor.getColumnIndex(CalendarContract.Calendars._ID)));
-    calendar.putString("title", cursor.getString(cursor.getColumnIndex(CalendarContract.Calendars.CALENDAR_DISPLAY_NAME)));
-    calendar.putBoolean("isPrimary", cursor.getString(cursor.getColumnIndex(CalendarContract.Calendars.IS_PRIMARY)) == "1");
-    calendar.putArray("allowedAvailabilities", calendarAllowedAvailabilitiesFromDBString(cursor.getString(cursor.getColumnIndex(CalendarContract.Calendars.ALLOWED_AVAILABILITY))));
-    calendar.putString("name", cursor.getString(cursor.getColumnIndex(CalendarContract.Calendars.NAME)));
-    calendar.putString("color", String.format("#%06X", (0xFFFFFF & cursor.getInt(cursor.getColumnIndex(CalendarContract.Calendars.CALENDAR_COLOR)))));
-    calendar.putString("ownerAccount", cursor.getString(cursor.getColumnIndex(CalendarContract.Calendars.OWNER_ACCOUNT)));
-    calendar.putString("timeZone", cursor.getString(cursor.getColumnIndex(CalendarContract.Calendars.CALENDAR_TIME_ZONE)));
-    calendar.putArray("allowedReminders", calendarAllowedRemindersFromDBString(cursor.getString(cursor.getColumnIndex(CalendarContract.Calendars.ALLOWED_REMINDERS))));
-    calendar.putArray("allowedAttendeeTypes", calendarAllowedAttendeeTypesFromDBString(cursor.getString(cursor.getColumnIndex(CalendarContract.Calendars.ALLOWED_ATTENDEE_TYPES))));
-    calendar.putBoolean("isVisible", cursor.getInt(cursor.getColumnIndex(CalendarContract.Calendars.VISIBLE)) != 0);
-    calendar.putBoolean("isSynced", cursor.getInt(cursor.getColumnIndex(CalendarContract.Calendars.SYNC_EVENTS)) != 0);
+    calendar.putString("id", optStringFromCursor(cursor, CalendarContract.Calendars._ID));
+    calendar.putString("title", optStringFromCursor(cursor, CalendarContract.Calendars.CALENDAR_DISPLAY_NAME));
+    calendar.putBoolean("isPrimary", optStringFromCursor(cursor, CalendarContract.Calendars.IS_PRIMARY) == "1");
+    calendar.putArray("allowedAvailabilities", calendarAllowedAvailabilitiesFromDBString(optStringFromCursor(cursor, CalendarContract.Calendars.ALLOWED_AVAILABILITY)));
+    calendar.putString("name", optStringFromCursor(cursor, CalendarContract.Calendars.NAME));
+    calendar.putString("color", String.format("#%06X", (0xFFFFFF & optIntFromCursor(cursor, CalendarContract.Calendars.CALENDAR_COLOR))));
+    calendar.putString("ownerAccount", optStringFromCursor(cursor, CalendarContract.Calendars.OWNER_ACCOUNT));
+    calendar.putString("timeZone", optStringFromCursor(cursor, CalendarContract.Calendars.CALENDAR_TIME_ZONE));
+    calendar.putArray("allowedReminders", calendarAllowedRemindersFromDBString(optStringFromCursor(cursor, CalendarContract.Calendars.ALLOWED_REMINDERS)));
+    calendar.putArray("allowedAttendeeTypes", calendarAllowedAttendeeTypesFromDBString(optStringFromCursor(cursor, CalendarContract.Calendars.ALLOWED_ATTENDEE_TYPES)));
+    calendar.putBoolean("isVisible", optIntFromCursor(cursor, CalendarContract.Calendars.VISIBLE) != 0);
+    calendar.putBoolean("isSynced", optIntFromCursor(cursor, CalendarContract.Calendars.SYNC_EVENTS) != 0);
 
     WritableNativeMap source = new WritableNativeMap();
-    source.putString("name", cursor.getString(cursor.getColumnIndex(CalendarContract.Calendars.ACCOUNT_NAME)));
-    String type = cursor.getString(cursor.getColumnIndex(CalendarContract.Calendars.ACCOUNT_TYPE));
+    source.putString("name", optStringFromCursor(cursor, CalendarContract.Calendars.ACCOUNT_NAME));
+    String type = optStringFromCursor(cursor, CalendarContract.Calendars.ACCOUNT_TYPE);
     source.putString("type", type);
     source.putBoolean("isLocalAccount", type.equals(CalendarContract.ACCOUNT_TYPE_LOCAL));
     calendar.putMap("source", source);
 
-    int accessLevel = cursor.getInt(cursor.getColumnIndex(CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL));
+    int accessLevel = optIntFromCursor(cursor, CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL);
     calendar.putString("accessLevel", calAccessStringMatchingConstant(accessLevel));
 
     if (accessLevel == CalendarContract.Calendars.CAL_ACCESS_ROOT ||
@@ -1347,13 +1392,34 @@ public class CalendarModule extends ReactContextBaseJavaModule {
 
     WritableNativeMap attendee = new WritableNativeMap();
 
-    attendee.putString("id", cursor.getString(cursor.getColumnIndex(CalendarContract.Attendees._ID)));
-    attendee.putString("name", cursor.getString(cursor.getColumnIndex(CalendarContract.Attendees.ATTENDEE_NAME)));
-    attendee.putString("email", cursor.getString(cursor.getColumnIndex(CalendarContract.Attendees.ATTENDEE_EMAIL)));
-    attendee.putString("role", attendeeRelationshipStringMatchingConstant(cursor.getInt(cursor.getColumnIndex(CalendarContract.Attendees.ATTENDEE_RELATIONSHIP))));
-    attendee.putString("type", attendeeTypeStringMatchingConstant(cursor.getInt(cursor.getColumnIndex(CalendarContract.Attendees.ATTENDEE_TYPE))));
-    attendee.putString("status", attendeeStatusStringMatchingConstant(cursor.getInt(cursor.getColumnIndex(CalendarContract.Attendees.ATTENDEE_STATUS))));
+    attendee.putString("id", optStringFromCursor(cursor, CalendarContract.Attendees._ID));
+    attendee.putString("name", optStringFromCursor(cursor, CalendarContract.Attendees.ATTENDEE_NAME));
+    attendee.putString("email", optStringFromCursor(cursor, CalendarContract.Attendees.ATTENDEE_EMAIL));
+    attendee.putString("role", attendeeRelationshipStringMatchingConstant(optIntFromCursor(cursor, CalendarContract.Attendees.ATTENDEE_RELATIONSHIP)));
+    attendee.putString("type", attendeeTypeStringMatchingConstant(optIntFromCursor(cursor, CalendarContract.Attendees.ATTENDEE_TYPE)));
+    attendee.putString("status", attendeeStatusStringMatchingConstant(optIntFromCursor(cursor, CalendarContract.Attendees.ATTENDEE_STATUS)));
 
     return attendee;
+  }
+
+  private String optStringFromCursor(Cursor cursor, String columnName) {
+    int index = cursor.getColumnIndex(columnName);
+    if (index == -1) {
+      return null;
+    }
+    return cursor.getString(index);
+  }
+
+  private int optIntFromCursor(Cursor cursor, String columnName) {
+    int index = cursor.getColumnIndex(columnName);
+    if (index == -1) {
+      return 0;
+    }
+    return cursor.getInt(index);
+  }
+
+  private boolean isMissingPermissions() {
+    return !Exponent.getInstance().getPermissions(Manifest.permission.READ_CALENDAR, this.experienceId) &&
+        !Exponent.getInstance().getPermissions(Manifest.permission.WRITE_CALENDAR, this.experienceId);
   }
 }

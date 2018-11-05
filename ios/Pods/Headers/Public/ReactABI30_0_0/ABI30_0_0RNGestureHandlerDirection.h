@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI30_0_0/Expo/Core/Api/Components/GestureHandler/ABI30_0_0RNGestureHandlerDirection.h

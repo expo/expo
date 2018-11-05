@@ -19,8 +19,7 @@
     [[ExpoKit sharedInstance] application:application didFinishLaunchingWithOptions:launchOptions];
     _rootViewController = [ExpoKit sharedInstance].rootViewController;
     _window.rootViewController = _rootViewController;
-    
-    [_rootViewController loadReactApplication];
+
     [_window makeKeyAndVisible];
     
     return YES;
@@ -40,9 +39,29 @@
 
 #pragma mark - Notifications
 
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)token
+{
+    [[ExpoKit sharedInstance] application:application didRegisterForRemoteNotificationsWithDeviceToken:token];
+}
+
+- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)err
+{
+    [[ExpoKit sharedInstance] application:application didFailToRegisterForRemoteNotificationsWithError:err];
+}
+
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)notification
+{
+    [[ExpoKit sharedInstance] application:application didReceiveRemoteNotification:notification];
+}
+
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(nonnull UILocalNotification *)notification
 {
     [[ExpoKit sharedInstance] application:application didReceiveLocalNotification:notification];
+}
+
+- (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(nonnull UIUserNotificationSettings *)notificationSettings
+{
+    [[ExpoKit sharedInstance] application:application didRegisterUserNotificationSettings:notificationSettings];
 }
 
 @end

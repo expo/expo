@@ -1,7 +1,7 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
-#import <ReactABI24_0_0/ABI24_0_0RCTEventEmitter.h>
+#import "ABI24_0_0EXScopedEventEmitter.h"
 
-@interface ABI24_0_0EXLocation : ABI24_0_0RCTEventEmitter
+@interface ABI24_0_0EXLocation : ABI24_0_0EXScopedEventEmitter
 
 @end

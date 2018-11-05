@@ -9,6 +9,7 @@
 #import <React/UIView+React.h>
 #import "RNSVGCGFCRule.h"
 #import "RNSVGSvgView.h"
+@class RNSVGGroup;
 
 /**
  * RNSVG nodes are implemented as base UIViews. They should be implementation for all basic
@@ -17,24 +18,45 @@
 
 @interface RNSVGNode : UIView
 
+/*
+ N[1/Sqrt[2], 36]
+ The inverse of the square root of 2.
+ Provide enough digits for the 128-bit IEEE quad (36 significant digits).
+ */
+extern CGFloat const RNSVG_M_SQRT1_2l;
+extern CGFloat const RNSVG_DEFAULT_FONT_SIZE;
+
 @property (nonatomic, strong) NSString *name;
 @property (nonatomic, assign) CGFloat opacity;
 @property (nonatomic, assign) RNSVGCGFCRule clipRule;
 @property (nonatomic, strong) NSString *clipPath;
 @property (nonatomic, assign) BOOL responsible;
 @property (nonatomic, assign) CGAffineTransform matrix;
+@property (nonatomic, assign) CGAffineTransform invmatrix;
 @property (nonatomic, assign) BOOL active;
+@property (nonatomic, assign) CGPathRef path;
+@property (nonatomic, assign) CGRect clientRect;
+@property (nonatomic, copy) RCTDirectEventBlock onLayout;
+
+
+/**
+ * RNSVGSvgView which ownes current RNSVGNode
+ */
+@property (nonatomic, readonly, weak) RNSVGSvgView *svgView;
+@property (nonatomic, readonly, weak) RNSVGGroup *textRoot;
 
 - (void)invalidate;
 
-- (void)renderTo:(CGContextRef)context;
+- (RNSVGGroup *)getParentTextRoot;
+
+- (void)renderTo:(CGContextRef)context rect:(CGRect)rect;
 
 /**
  * renderTo will take opacity into account and draw renderLayerTo off-screen if there is opacity
  * specified, then composite that onto the context. renderLayerTo always draws at opacity=1.
  * @abstract
  */
-- (void)renderLayerTo:(CGContextRef)context;
+- (void)renderLayerTo:(CGContextRef)context rect:(CGRect)rect;
 
 /**
  * get clipPath from cache
@@ -56,19 +78,13 @@
  */
 - (CGPathRef)getPath:(CGContextRef) context;
 
-/**
- * run hitTest
- */
-- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event withTransform:(CGAffineTransform)transfrom;
-
-/**
- * get RNSVGSvgView which ownes current RNSVGNode
- */
-- (RNSVGSvgView *)getSvgView;
-
 - (CGFloat)relativeOnWidth:(NSString *)length;
 
 - (CGFloat)relativeOnHeight:(NSString *)length;
+
+- (CGFloat)relativeOnOther:(NSString *)length;
+
+- (CGFloat)getFontSizeFromContext;
 
 - (CGFloat)getContextWidth;
 
@@ -87,6 +103,6 @@
 
 - (void)endTransparencyLayer:(CGContextRef)context;
 
-- (void)traverseSubviews:(BOOL (^)(__kindof RNSVGNode *node))block;
+- (void)traverseSubviews:(BOOL (^)(__kindof UIView *node))block;
 
 @end

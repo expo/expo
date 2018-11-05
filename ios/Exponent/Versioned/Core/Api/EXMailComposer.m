@@ -7,10 +7,12 @@
 //
 
 #import "EXMailComposer.h"
-#import "EXFileSystem.h"
 #import <React/RCTConvert.h>
 #import <React/RCTLog.h>
 #import <MobileCoreServices/MobileCoreServices.h>
+
+#import <EXFileSystemInterface/EXFileSystemInterface.h>
+#import "EXModuleRegistryBinding.h"
 
 @interface EXMailComposer ()
 
@@ -76,7 +78,12 @@ RCT_EXPORT_METHOD(composeAsync:(NSDictionary *)options
     for (NSString *uri in options[@"attachments"]) {
       NSURL *url = [NSURL URLWithString:uri];
       NSString *path = [url.path stringByStandardizingPath];
-      if (!([self.bridge.scopedModules.fileSystem permissionsForURI:url] & EXFileSystemPermissionRead)) {
+      id<EXFileSystemInterface> fileSystem = [self.bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
+      if (!fileSystem) {
+        reject(@"E_MISSING_MODULE", @"No FileSystem module.", nil);
+        return;
+      }
+      if (!([fileSystem permissionsForURI:url] & EXFileSystemPermissionRead)) {
         reject(@"E_FILESYSTEM_PERMISSIONS", [NSString stringWithFormat:@"File '%@' isn't readable.", uri], nil);
         return;
       }

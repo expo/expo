@@ -5,6 +5,11 @@
 #import <AssetsLibrary/AssetsLibrary.h>
 
 #import "ABI24_0_0EXFileSystem.h"
+#import "ABI24_0_0EXCameraPermissionRequester.h"
+#import "ABI24_0_0EXCameraRollRequester.h"
+#import "ABI24_0_0EXPermissions.h"
+#import "ABI24_0_0EXScopedModuleRegistry.h"
+#import "ABI24_0_0EXUtil.h"
 
 @import MobileCoreServices;
 @import Photos;
@@ -15,6 +20,7 @@
 @property (nonatomic, strong) UIImagePickerController *picker;
 @property (nonatomic, strong) ABI24_0_0RCTPromiseResolveBlock resolve;
 @property (nonatomic, strong) ABI24_0_0RCTPromiseRejectBlock reject;
+@property (nonatomic, weak) id kernelPermissionsServiceDelegate;
 @property (nonatomic, strong) NSDictionary *defaultOptions;
 @property (nonatomic, retain) NSMutableDictionary *options;
 @property (nonatomic, strong) NSDictionary *customButtons;
@@ -23,7 +29,7 @@
 
 @implementation ABI24_0_0EXImagePicker
 
-ABI24_0_0RCT_EXPORT_MODULE(ExponentImagePicker);
+ABI24_0_0EX_EXPORT_SCOPED_MODULE(ExponentImagePicker, PermissionsManager);
 
 @synthesize bridge = _bridge;
 
@@ -32,9 +38,10 @@ ABI24_0_0RCT_EXPORT_MODULE(ExponentImagePicker);
   _bridge = bridge;
 }
 
-- (instancetype)init
+- (instancetype)initWithExperienceId:(NSString *)experienceId kernelServiceDelegate:(id)kernelServiceInstance params:(NSDictionary *)params
 {
-  if (self = [super init]) {
+  if (self = [super initWithExperienceId:experienceId kernelServiceDelegate:kernelServiceInstance params:params]) {
+    _kernelPermissionsServiceDelegate = kernelServiceInstance;
     self.defaultOptions = @{
       @"title": @"Select a Photo",
       @"cancelButtonTitle": @"Cancel",
@@ -52,6 +59,13 @@ ABI24_0_0RCT_EXPORT_METHOD(launchCameraAsync:(NSDictionary *)options
                   resolver:(ABI24_0_0RCTPromiseResolveBlock)resolve
                   rejecter:(ABI24_0_0RCTPromiseRejectBlock)reject)
 {
+  if ([ABI24_0_0EXPermissions statusForPermissions:[ABI24_0_0EXCameraRollRequester permissions]] != ABI24_0_0EXPermissionStatusGranted ||
+      ![_kernelPermissionsServiceDelegate hasGrantedPermission:@"cameraRoll" forExperience:self.experienceId] ||
+      [ABI24_0_0EXPermissions statusForPermissions:[ABI24_0_0EXCameraPermissionRequester permissions]] != ABI24_0_0EXPermissionStatusGranted ||
+      ![_kernelPermissionsServiceDelegate hasGrantedPermission:@"camera" forExperience:self.experienceId]) {
+    reject(@"E_MISSING_PERMISSION", @"Missing camera or camera roll permission.", nil);
+    return;
+  }
   self.resolve = resolve;
   self.reject = reject;
   [self launchImagePicker:ABI24_0_0RNImagePickerTargetCamera options:options];
@@ -61,6 +75,11 @@ ABI24_0_0RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
                   resolver:(ABI24_0_0RCTPromiseResolveBlock)resolve
                   rejecter:(ABI24_0_0RCTPromiseRejectBlock)reject)
 {
+  if ([ABI24_0_0EXPermissions statusForPermissions:[ABI24_0_0EXCameraRollRequester permissions]] != ABI24_0_0EXPermissionStatusGranted ||
+      ![_kernelPermissionsServiceDelegate hasGrantedPermission:@"cameraRoll" forExperience:self.experienceId]) {
+    reject(@"E_MISSING_PERMISSION", @"Missing camera roll permission.", nil);
+    return;
+  }
   self.resolve = resolve;
   self.reject = reject;
   [self launchImagePicker:ABI24_0_0RNImagePickerTargetLibrarySingleImage options:options];
@@ -113,15 +132,11 @@ ABI24_0_0RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
   if ([[self.options objectForKey:@"allowsEditing"] boolValue]) {
     self.picker.allowsEditing = true;
   }
-  self.picker.modalPresentationStyle = UIModalPresentationCurrentContext;
+  self.picker.modalPresentationStyle = UIModalPresentationOverFullScreen; // only fullscreen styles work well with modals
   self.picker.delegate = self;
 
   dispatch_async(dispatch_get_main_queue(), ^{
-    UIViewController *root = [[[[UIApplication sharedApplication] delegate] window] rootViewController];
-    while (root.presentedViewController != nil) {
-      root = root.presentedViewController;
-    }
-    [root presentViewController:self.picker animated:YES completion:nil];
+    [_bridge.scopedModules.util.currentViewController presentViewController:self.picker animated:YES completion:nil];
   });
 }
 

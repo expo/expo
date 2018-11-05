@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2015-present, Horcrux.
  * All rights reserved.
  *
@@ -16,7 +16,7 @@ import android.graphics.RectF;
 
 import com.facebook.react.uimanager.annotations.ReactProp;
 
-public class SymbolShadowNode extends GroupShadowNode {
+class SymbolShadowNode extends GroupShadowNode {
 
     private float mMinX;
     private float mMinY;
@@ -66,11 +66,11 @@ public class SymbolShadowNode extends GroupShadowNode {
         saveDefinition();
     }
 
-    public void drawSymbol(Canvas canvas, Paint paint, float opacity, float width, float height) {
+    void drawSymbol(Canvas canvas, Paint paint, float opacity, float width, float height) {
         if (mAlign != null) {
             RectF vbRect = new RectF(mMinX * mScale, mMinY * mScale, (mMinX + mVbWidth) * mScale, (mMinY + mVbHeight) * mScale);
             RectF eRect = new RectF(0, 0, width, height);
-            Matrix viewBoxMatrix = ViewBox.getTransform(vbRect, eRect, mAlign, mMeetOrSlice, false);
+            Matrix viewBoxMatrix = ViewBox.getTransform(vbRect, eRect, mAlign, mMeetOrSlice);
             canvas.concat(viewBoxMatrix);
             super.draw(canvas, paint, opacity);
         }

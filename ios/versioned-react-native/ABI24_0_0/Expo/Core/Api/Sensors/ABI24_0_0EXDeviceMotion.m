@@ -52,14 +52,14 @@ ABI24_0_0EX_EXPORT_SCOPED_MODULE(ExponentDeviceMotion, SensorManager);
 - (void)startObserving {
   [self setWatching:YES];
   __weak typeof(self) weakSelf = self;
-  [_kernelSensorServiceDelegate sensorModuleDidSubscribeForDeviceMotionUpdates:self withHandler:^(NSDictionary *event) {
+  [_kernelSensorServiceDelegate sensorModuleDidSubscribeForDeviceMotionUpdatesOfExperience:self.experienceId withHandler:^(NSDictionary *event) {
     [weakSelf sendEventWithName:@"deviceMotionDidUpdate" body:event];
   }];
 }
 
 - (void)stopObserving {
   [self setWatching:NO];
-  [_kernelSensorServiceDelegate sensorModuleDidUnsubscribeForDeviceMotionUpdates:self];
+  [_kernelSensorServiceDelegate sensorModuleDidUnsubscribeForDeviceMotionUpdatesOfExperience:self.experienceId];
 }
 
 ABI24_0_0RCT_EXPORT_METHOD(setUpdateInterval:(nonnull NSNumber *)intervalMs) {
@@ -76,7 +76,7 @@ ABI24_0_0RCT_EXPORT_METHOD(setUpdateInterval:(nonnull NSNumber *)intervalMs) {
 - (void)bridgeDidBackground:(NSNotification *)notification
 {
   if ([self isWatching]) {
-    [_kernelSensorServiceDelegate sensorModuleDidUnsubscribeForDeviceMotionUpdates:self];
+    [_kernelSensorServiceDelegate sensorModuleDidUnsubscribeForDeviceMotionUpdatesOfExperience:self.experienceId];
   }
 }
 

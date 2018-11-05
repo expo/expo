@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2015-present, Horcrux.
  * All rights reserved.
  *
@@ -20,7 +20,7 @@ import com.facebook.react.common.ReactConstants;
 /**
  * Shadow node for virtual ClipPath view
  */
-public class ClipPathShadowNode extends GroupShadowNode {
+class ClipPathShadowNode extends GroupShadowNode {
 
     @Override
     public void draw(Canvas canvas, Paint paint, float opacity) {
@@ -38,7 +38,7 @@ public class ClipPathShadowNode extends GroupShadowNode {
     }
 
     @Override
-    public int hitTest(Point point, Matrix matrix) {
+    public int hitTest(float[] src) {
         return -1;
     }
 

@@ -1,0 +1,92 @@
+/* Prompts a person to go to the URL listed to enter the confirmation code that is presented to them above the given string. */
+"DeviceLogin.LogInPrompt" = "请访问 %@ 并输入上方显示的验证码。";
+
+/* Prompts a person that the next thing they need to do to finish connecting their Smart TV and Facebook application is to navigate to their Facebook application on their mobile device and look through their notifications for a message about the connection being formed */
+"DeviceLogin.SmartLogInPrompt" = "要关联你的帐户，请在移动设备上打开 Facebook 应用，并查看通知。";
+
+/* Displayed as a separator between two options. First option is on a line above this, and second option is below */
+"DeviceLogin.SmartLogInOrLabel" = "- 或者 -";
+
+/* The title of the label to dismiss the alert when presenting user facing error messages */
+"ErrorRecovery.Alert.OK" = "确定";
+
+/* The title of the label to decline attempting error recovery */
+"ErrorRecovery.Cancel" = "取消";
+
+/* The fallback message to display to recover invalidated tokens */
+"ErrorRecovery.Login.Suggestion" = "请再次登录此应用，以便重新连接您的 Facebook 帐户。";
+
+/* The title of the label to start attempting error recovery */
+"ErrorRecovery.OK" = "确定";
+
+/* The fallback message to display to retry transient errors */
+"ErrorRecovery.Transient.Suggestion" = "服务器暂时繁忙，请重试。";
+
+/* The label for the FBSDKLikeButton when the object is not currently liked. */
+"LikeButton.Like" = "赞";
+
+/* The label for the FBSDKLikeButton when the object is currently liked. */
+"LikeButton.Liked" = "赞了";
+
+/* The label for the FBSDKLoginButton action sheet to cancel logging out */
+"LoginButton.CancelLogout" = "取消";
+
+/* The label for the FBSDKLoginButton action sheet to confirm logging out */
+"LoginButton.ConfirmLogOut" = "退出";
+
+/* The fallback string for the FBSDKLoginButton label when the user name is not available yet */
+"LoginButton.LoggedIn" = "已使用 Facebook 登录";
+
+/* The format string for the FBSDKLoginButton label when the user is logged in */
+"LoginButton.LoggedInAs" = "已以 %@ 身份登录";
+
+/* The short label for the FBSDKLoginButton when the user is currently logged out */
+"LoginButton.LogIn" = "登录";
+
+/* The long label for the FBSDKLoginButton when the user is currently logged out */
+"LoginButton.LogInContinue" = "继续使用 Facebook 登录";
+
+/* The long label for the FBSDKLoginButton when the user is currently logged out */
+"LoginButton.LogInLong" = "使用 Facebook 登录";
+
+/* The label for the FBSDKLoginButton when the user is currently logged in */
+"LoginButton.LogOut" = "退出";
+
+/* The user facing error message when the app slider has been disabled and login fails. */
+"LoginError.SystemAccount.Disabled" = "未授予该 Facebook 帐户访问权限。验证设备设置。";
+
+/* The user facing error message when the Accounts framework encounters a network error. */
+"LoginError.SystemAccount.Network" = "无法连接到 Facebook。检查网络连接并重试。";
+
+/* The user facing error message when the device Facebook account password is incorrect and login fails. */
+"LoginError.SystemAccount.PasswordChange" = "您的 Facebook 密码已更改。要确认密码，请打开设置 &gt; Facebook，并轻触您的姓名。";
+
+/* The user facing error message when the device Facebook account is unavailable and login fails. */
+"LoginError.SystemAccount.Unavailable" = "未在设备上配置 Facebook 帐户。";
+
+/* The user facing error message when the Facebook account signed in to the Accounts framework becomes unconfirmed. */
+"LoginError.SystemAccount.UnconfirmedUser" = "您的帐户未确认。请登录 www.facebook.com，并按照提供的说明操作。";
+
+/* The user facing error message when the Facebook account signed in to the Accounts framework has been checkpointed. */
+"LoginError.SystemAccount.UserCheckpointed" = "您此时不能登录应用。请登录 www.facebook.com，并按照提供的说明操作。";
+
+/* The message of the FBSDKLoginTooltipView */
+"LoginTooltip.Message" = "一切任您掌控 — 选择您想通过应用分享的信息。";
+
+/* Title of the web dialog that prompts the user to log in to Facebook. */
+"LoginWeb.LogInTitle" = "登录";
+
+/* The label for FBSDKSendButton */
+"SendButton.Send" = "发送";
+
+/* The label for FBSDKShareButton */
+"ShareButton.Share" = "分享";
+
+/* Prompts a person if this is their current account */
+"SmartLogin.NotYou" = "不是你？";
+
+/* Text on a button that a person presses to confirm that they are finished with the login experience */
+"SmartLogin.ConfirmationTitle" = "确认登录";
+
+/* Text on a button that lets a person continue with their name linked to a Facebook account (Name = %@) */
+"SmartLogin.Continue" = "以%@的身份继续";

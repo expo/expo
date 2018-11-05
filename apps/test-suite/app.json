@@ -1,0 +1,16 @@
+{
+  "expo": {
+    "name": "test-suite",
+    "description": "Test suite for the Exponent SDK",
+    "slug": "test-suite",
+    "version": "1.0.0",
+    "sdkVersion": "UNVERSIONED",
+    "packagerOpts": {
+      "assetExts": ["db"],
+      "config": "rn-cli.config.js"
+    },
+    "ios": {
+      "bundleIdentifier": "io.expo.testsuite"
+    }
+  }
+}

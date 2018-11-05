@@ -6,4 +6,8 @@ import android.support.annotation.Nullable;
 
 public interface DevBundleDownloadProgressListener {
   void onProgress(@Nullable String status, @Nullable Integer done, @Nullable Integer total);
+
+  void onSuccess();
+
+  void onFailure(Exception error);
 }

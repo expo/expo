@@ -1,5 +1,4 @@
-#import <Foundation/Foundation.h>
-#import <ReactABI24_0_0/ABI24_0_0RCTBridgeModule.h>
+#import "ABI24_0_0EXScopedBridgeModule.h"
 
 extern NSString * const ABI24_0_0RNBranchLinkOpenedNotification;
 extern NSString * const ABI24_0_0RNBranchLinkOpenedNotificationErrorKey;
@@ -8,7 +7,13 @@ extern NSString * const ABI24_0_0RNBranchLinkOpenedNotificationUriKey;
 extern NSString * const ABI24_0_0RNBranchLinkOpenedNotificationBranchUniversalObjectKey;
 extern NSString * const ABI24_0_0RNBranchLinkOpenedNotificationLinkPropertiesKey;
 
-@interface ABI24_0_0RNBranch : NSObject <ABI24_0_0RCTBridgeModule>
+@protocol ABI24_0_0EXBranchScopedModuleDelegate
+
+- (void)branchModuleDidInit:(id)branchModule;
+
+@end
+
+@interface ABI24_0_0RNBranch : ABI24_0_0EXScopedBridgeModule
 
 + (void)initSessionWithLaunchOptions:(NSDictionary *)launchOptions isReferrable:(BOOL)isReferrable;
 + (BOOL)handleDeepLink:(NSURL *)url;

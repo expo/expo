@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2015-present, Horcrux.
  * All rights reserved.
  *
@@ -18,7 +18,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 /**
  * Shadow node for virtual Rect view
  */
-public class RectShadowNode extends RenderableShadowNode {
+class RectShadowNode extends RenderableShadowNode {
 
     private String mX;
     private String mY;
@@ -69,12 +69,12 @@ public class RectShadowNode extends RenderableShadowNode {
     @Override
     protected Path getPath(Canvas canvas, Paint paint) {
         Path path = new Path();
-        float x = relativeOnWidth(mX);
-        float y = relativeOnHeight(mY);
-        float w = relativeOnWidth(mW);
-        float h = relativeOnHeight(mH);
-        float rx = relativeOnWidth(mRx);
-        float ry = relativeOnHeight(mRy);
+        double x = relativeOnWidth(mX);
+        double y = relativeOnHeight(mY);
+        double w = relativeOnWidth(mW);
+        double h = relativeOnHeight(mH);
+        double rx = relativeOnWidth(mRx);
+        double ry = relativeOnHeight(mRy);
 
         if (rx != 0 || ry != 0) {
             if (rx == 0) {
@@ -90,9 +90,9 @@ public class RectShadowNode extends RenderableShadowNode {
             if (ry > h / 2) {
                 ry = h / 2;
             }
-            path.addRoundRect(new RectF(x, y, x + w, y + h), rx, ry, Path.Direction.CW);
+            path.addRoundRect(new RectF((float) x, (float) y, (float) (x + w), (float) (y + h)), (float) rx, (float) ry, Path.Direction.CW);
         } else {
-            path.addRect(x, y, x + w, y + h, Path.Direction.CW);
+            path.addRect((float) x, (float) y, (float) (x + w), (float) (y + h), Path.Direction.CW);
         }
         return path;
     }

@@ -44,23 +44,28 @@ RCT_EXPORT_METHOD(openAuthSessionAsync:(NSString *)authURL
 
   if (@available(iOS 11, *)) {
     NSURL *url = [[NSURL alloc] initWithString: authURL];
+    __weak typeof(self) weakSelf = self;
+    void (^completionHandler)(NSURL * _Nullable, NSError *_Nullable) = ^(NSURL* _Nullable callbackURL, NSError* _Nullable error) {
+      __strong typeof(weakSelf) strongSelf = weakSelf;
+      if (strongSelf) {
+        if (!error) {
+          NSString *url = callbackURL.absoluteString;
+          strongSelf->_redirectResolve(@{
+                                         @"type" : @"success",
+                                         @"url" : url,
+                                         });
+        } else {
+          strongSelf->_redirectResolve(@{
+                                         @"type" : @"cancel",
+                                         });
+        }
+        [strongSelf flowDidFinish];
+      }
+    };
     _authSession = [[SFAuthenticationSession alloc]
-              initWithURL:url
-        callbackURLScheme:redirectURL
-        completionHandler:^(NSURL* _Nullable callbackURL, NSError* _Nullable error) {
-            if (!error) {
-                NSString *url = callbackURL.absoluteString;
-                _redirectResolve(@{
-                    @"type" : @"success",
-                    @"url" : url,
-                });
-            } else {
-                _redirectResolve(@{
-                    @"type" : @"cancel",
-                });
-            }
-            [self flowDidFinish];
-        }];
+                    initWithURL:url
+                    callbackURLScheme:redirectURL
+                    completionHandler:completionHandler];
     [_authSession start];
   } else {
       resolve(@{
@@ -104,7 +109,7 @@ RCT_EXPORT_METHOD(openBrowserAsync:(NSString *)authURL
       __strong typeof(self) strongSelf = weakSelf;
       if (strongSelf) {
         strongSelf.redirectResolve(@{
-                                     @"type": @"dismissed",
+                                     @"type": @"dismiss",
                                      });
         [strongSelf flowDidFinish];
       }
@@ -121,7 +126,7 @@ RCT_EXPORT_METHOD(dismissAuthSession) {
     [_authSession cancel];
     if (_redirectResolve) {
       _redirectResolve(@{
-        @"type": @"dismissed"
+        @"type": @"dismiss"
       });
 
       [self flowDidFinish];

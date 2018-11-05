@@ -1,16 +1,29 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
+#import <UIKit/UIKit.h>
 #import "EXScopedBridgeModule.h"
-
-@protocol EXUtilScopedModuleDelegate
-
-- (void)utilModuleDidSelectReload:(id)scopedUtilModule;
-
-@end
+#import "EXScopedModuleRegistry.h"
 
 @interface EXUtil : EXScopedBridgeModule
 
 + (NSString *)escapedResourceName:(NSString *)name;
 + (void)performSynchronouslyOnMainThread:(void (^)(void))block;
++ (NSString *)hexStringWithCGColor:(CGColorRef)color;
++ (UIColor *)colorWithRGB:(unsigned int)rgbValue;
+
+/**
+ *  Expects @"#ABCDEF"
+ */
++ (UIColor *)colorWithHexString:(NSString *)hexString;
+
+- (UIViewController *)currentViewController;
 
 @end
+
+@protocol EXUtilService
+
+- (UIViewController *)currentViewController;
+
+@end
+
+EX_DECLARE_SCOPED_MODULE_GETTER(EXUtil, util)

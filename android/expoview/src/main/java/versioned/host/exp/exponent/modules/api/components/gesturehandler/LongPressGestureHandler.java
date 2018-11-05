@@ -6,8 +6,8 @@ import android.view.MotionEvent;
 
 public class LongPressGestureHandler extends GestureHandler<LongPressGestureHandler> {
 
-  private static final long DEFAULT_MIN_DURATION_MS = 1000; // 1 sec
-  private static float DEFAULT_MAX_DIST_DP = 20; // 20dp
+  private static final long DEFAULT_MIN_DURATION_MS = 500; // 1 sec
+  private static float DEFAULT_MAX_DIST_DP = 10; // 20dp
 
   private long mMinDurationMs = DEFAULT_MIN_DURATION_MS;
   private float mMaxDistSq;

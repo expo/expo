@@ -1,0 +1,16 @@
+framework module GoogleMVDataOutput {
+
+  export *
+
+  umbrella header "GoogleMVDataOutput.h"
+
+  header "GMVDataOutput.h"
+  header "GMVFocusingDataOutput.h"
+  header "GMVLargestFaceFocusingDataOutput.h"
+  header "GMVMultiDataOutput.h"
+  header "GMVMultiDetectorDataOutput.h"
+  header "GMVOutputTrackerDelegate.h"
+
+  link framework "Foundation"
+  link framework "AVFoundation"
+}

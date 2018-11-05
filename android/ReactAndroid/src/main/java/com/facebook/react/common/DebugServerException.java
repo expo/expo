@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.common;
@@ -17,6 +15,7 @@ import android.text.TextUtils;
 
 import com.facebook.common.logging.FLog;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -65,8 +64,20 @@ public class DebugServerException extends RuntimeException {
     try {
       JSONObject jsonObject = new JSONObject(str);
       String fullFileName = jsonObject.getString("filename");
+
+      // NOTE(expo): Metro's error payload is inconsistently formatted and sometimes we need to
+      // retrieve the "description" field from the "errors" array
+      String description = null;
+      if (jsonObject.has("description")) {
+        description = jsonObject.getString("description");
+      } else {
+        JSONArray jsonErrors = jsonObject.getJSONArray("errors");
+        JSONObject jsonError = jsonErrors.getJSONObject(0);
+        description = jsonError.getString("description");
+      }
+
       return new DebugServerException(
-          jsonObject.getString("description"),
+          description,
           shortenFileName(fullFileName),
           jsonObject.getInt("lineNumber"),
           jsonObject.getInt("column"));

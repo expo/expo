@@ -1,6 +1,6 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
-#import <ReactABI25_0_0/ABI25_0_0RCTBridgeModule.h>
+#import "ABI25_0_0EXScopedBridgeModule.h"
 
 FOUNDATION_EXPORT NSString * const ABI25_0_0EXPermissionExpiresNever;
 
@@ -20,11 +20,18 @@ typedef enum ABI25_0_0EXPermissionStatus {
 
 @protocol ABI25_0_0EXPermissionRequesterDelegate <NSObject>
 
-- (void)permissionRequesterDidFinish: (NSObject<ABI25_0_0EXPermissionRequester> *)requester;
+- (void)permissionsRequester:(NSObject<ABI25_0_0EXPermissionRequester> *)requester didFinishWithResult:(NSDictionary *)requestResult;
 
 @end
 
-@interface ABI25_0_0EXPermissions : NSObject <ABI25_0_0RCTBridgeModule, ABI25_0_0EXPermissionRequesterDelegate>
+@protocol ABI25_0_0EXPermissionsScopedModuleDelegate
+
+- (BOOL)hasGrantedPermission:(NSString *)permission forExperience:(NSString *)experienceId;
+- (BOOL)savePermission:(NSDictionary *)permission ofType:(NSString *)type forExperience:(NSString *)experienceId;
+
+@end
+
+@interface ABI25_0_0EXPermissions : ABI25_0_0EXScopedBridgeModule <ABI25_0_0EXPermissionRequesterDelegate>
 
 + (NSString *)permissionStringForStatus:(ABI25_0_0EXPermissionStatus)status;
 

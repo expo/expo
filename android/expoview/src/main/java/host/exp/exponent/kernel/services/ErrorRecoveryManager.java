@@ -2,12 +2,17 @@
 
 package host.exp.exponent.kernel.services;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.inject.Inject;
+
+import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.kernel.ExperienceId;
+import host.exp.exponent.storage.ExponentSharedPreferences;
 
 public class ErrorRecoveryManager {
 
@@ -22,20 +27,29 @@ public class ErrorRecoveryManager {
 
   public static ErrorRecoveryManager getInstance(final ExperienceId experienceId) {
     if (!sExperienceIdToManager.containsKey(experienceId)) {
-      sExperienceIdToManager.put(experienceId, new ErrorRecoveryManager());
+      sExperienceIdToManager.put(experienceId, new ErrorRecoveryManager(experienceId));
     }
 
     return sExperienceIdToManager.get(experienceId);
   }
 
+  private ExperienceId mExperienceId;
   private long mTimeLastLoaded = 0;
   private boolean mErrored = false;
   private JSONObject mRecoveryProps;
 
+  @Inject
+  ExponentSharedPreferences mExponentSharedPreferences;
+
+  public ErrorRecoveryManager(ExperienceId experienceId) {
+    mExperienceId = experienceId;
+    NativeModuleDepsProvider.getInstance().inject(ErrorRecoveryManager.class, this);
+  }
+
   public void markExperienceLoaded() {
     mTimeLastLoaded = System.currentTimeMillis();
     sTimeAnyExperienceLoaded = mTimeLastLoaded;
-    mErrored = false;
+    markErrored(false);
   }
 
   public void setRecoveryProps(JSONObject props) {
@@ -47,13 +61,29 @@ public class ErrorRecoveryManager {
     if (mErrored) {
       sReloadBufferDepth++;
     }
-    mErrored = false;
+    markErrored(false);
     mRecoveryProps = null;
     return props;
   }
 
   public void markErrored() {
-    mErrored = true;
+    markErrored(true);
+  }
+
+  public void markErrored(boolean errored) {
+    mErrored = errored;
+    if (mExperienceId != null) {
+      JSONObject metadata = mExponentSharedPreferences.getExperienceMetadata(mExperienceId.get());
+      if (metadata == null) {
+        metadata = new JSONObject();
+      }
+      try {
+        metadata.put(ExponentSharedPreferences.EXPERIENCE_METADATA_LOADING_ERROR, errored);
+        mExponentSharedPreferences.updateExperienceMetadata(mExperienceId.get(), metadata);
+      } catch (JSONException e) {
+        e.printStackTrace();
+      }
+    }
   }
 
   public boolean shouldReloadOnError() {

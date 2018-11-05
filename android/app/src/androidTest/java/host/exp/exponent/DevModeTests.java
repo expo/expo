@@ -50,24 +50,6 @@ public class DevModeTests extends BaseTestClass {
   public GrantPermissionRule permissionRule = GrantPermissionRule.grant(Manifest.permission.SYSTEM_ALERT_WINDOW);
 
   @Test
-  @ExpoDevModeTest
-  public void sdk19LiveReload() throws Exception {
-    TestServerUtils.runFixtureTest(sUiDevice, "android-sdk19-live-reload");
-  }
-
-  @Test
-  @ExpoDevModeTest
-  public void sdk20LiveReload() throws Exception {
-    TestServerUtils.runFixtureTest(sUiDevice, "android-sdk20-live-reload");
-  }
-
-  @Test
-  @ExpoDevModeTest
-  public void sdk21LiveReload() throws Exception {
-    TestServerUtils.runFixtureTest(sUiDevice, "android-sdk21-live-reload");
-  }
-
-  @Test
   @ExpoAlwaysPassThroughFilter
   public void junitIsSillyAndWillFailIfThereIsntOneTestRunPerFile() {
 

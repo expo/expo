@@ -1,0 +1,22 @@
+{
+  "name": "expo-permissions",
+  "version": "1.1.0-rc.0",
+  "description": "Expo Permissions standalone universal module",
+  "main": "index.js",
+  "keywords": [
+    "react-native",
+    "expo",
+    "permissions"
+  ],
+  "homepage": "https://docs.expo.io/",
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "dependencies": {
+    "expo-core": "^1.1.0-rc.0",
+    "expo-permissions-interface": "^1.1.0-rc.0"
+  },
+  "devDependencies": {
+    "babel-preset-expo": "^4.0.0",
+    "flow-bin": "^0.77.0"
+  }
+}

@@ -14,7 +14,11 @@ public abstract class KernelInterface {
   public abstract void handleError(String errorMessage);
   public abstract void handleError(Exception exception);
   public abstract void openExperience(final KernelConstants.ExperienceOptions options);
-  public abstract boolean reloadVisibleExperience(String manifestUrl);
+  public abstract boolean reloadVisibleExperience(String manifestUrl, boolean forceCache);
+
+  public boolean reloadVisibleExperience(String manifestUrl) {
+    return reloadVisibleExperience(manifestUrl, false);
+  }
 
   private static final Map<String, Set<KernelConstants.ExperienceEvent>> mManifestUrlToEvents = new HashMap<>();
 

@@ -1,0 +1,2 @@
+android.print.PrintDocumentAdapterLayoutCallback
+android.print.PrintDocumentAdapterWriteCallback

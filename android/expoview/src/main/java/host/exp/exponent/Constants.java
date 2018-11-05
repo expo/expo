@@ -9,7 +9,9 @@ import android.text.TextUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import host.exp.exponent.analytics.EXL;
 
@@ -22,8 +24,12 @@ public class Constants {
     public String SHELL_APP_SCHEME;
     public String RELEASE_CHANNEL;
     public boolean SHOW_LOADING_VIEW_IN_SHELL_APP;
+    public boolean ARE_REMOTE_UPDATES_ENABLED;
     public List<Constants.EmbeddedResponse> EMBEDDED_RESPONSES;
     public int ANDROID_VERSION_CODE;
+    public boolean FCM_ENABLED;
+    // no longer used, but we need to leave this here so that people's old detached apps don't break
+    public boolean ANALYTICS_ENABLED;
   }
 
   private static final String TAG = Constants.class.getSimpleName();
@@ -43,7 +49,10 @@ public class Constants {
   public static boolean DISABLE_NUX = false;
   public static String RELEASE_CHANNEL = "default";
   public static boolean SHOW_LOADING_VIEW_IN_SHELL_APP = false;
+  public static boolean ARE_REMOTE_UPDATES_ENABLED = true;
   public static int ANDROID_VERSION_CODE;
+  public static boolean FCM_ENABLED;
+  public static boolean ANALYTICS_ENABLED;
 
   public static void setSdkVersions(List<String> sdkVersions) {
     ABI_VERSIONS = TextUtils.join(",", sdkVersions);
@@ -55,21 +64,37 @@ public class Constants {
   }
 
   static {
-    List<String> abiVersions = new ArrayList<>();
-    // THIS COMMENT IS USED BY android-build-aar.sh DO NOT MODIFY
+    Set<String> abiVersions = new HashSet<>();
+    // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
+    // ADD ABI VERSIONS HERE DO NOT MODIFY
+    // BEGIN_SDK_30
+    abiVersions.add("30.0.0");
+    // END_SDK_30
+    // BEGIN_SDK_29
+    abiVersions.add("29.0.0");
+    // END_SDK_29
+    // BEGIN_SDK_28
+    abiVersions.add("28.0.0");
+    // END_SDK_28
+    // BEGIN_SDK_27
+    abiVersions.add("27.0.0");
+    // END_SDK_27
+    // BEGIN_SDK_26
+    abiVersions.add("26.0.0");
+    // END_SDK_26
+    // BEGIN_SDK_25
     abiVersions.add("25.0.0");
+    // END_SDK_25
+    // BEGIN_SDK_24
     abiVersions.add("24.0.0");
-    abiVersions.add("23.0.0");
-    abiVersions.add("22.0.0");
-    abiVersions.add("21.0.0");
-    abiVersions.add("20.0.0");
-    abiVersions.add("19.0.0");
+    // END_SDK_24
+    // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
 
     if (TEMPORARY_ABI_VERSION != null) {
       abiVersions.add(TEMPORARY_ABI_VERSION);
     }
 
-    setSdkVersions(abiVersions);
+    setSdkVersions(new ArrayList<>(abiVersions));
 
     List<EmbeddedResponse> embeddedResponses = new ArrayList<>();
     embeddedResponses.add(new EmbeddedResponse("https://exp.host/@exponent/home/bundle", EMBEDDED_KERNEL_PATH, "application/javascript"));
@@ -87,7 +112,10 @@ public class Constants {
       SHELL_APP_SCHEME = appConstants.SHELL_APP_SCHEME;
       RELEASE_CHANNEL = appConstants.RELEASE_CHANNEL;
       SHOW_LOADING_VIEW_IN_SHELL_APP = appConstants.SHOW_LOADING_VIEW_IN_SHELL_APP;
+      ARE_REMOTE_UPDATES_ENABLED = appConstants.ARE_REMOTE_UPDATES_ENABLED;
       ANDROID_VERSION_CODE = appConstants.ANDROID_VERSION_CODE;
+      FCM_ENABLED = appConstants.FCM_ENABLED;
+      ANALYTICS_ENABLED = !isShellApp();
 
       embeddedResponses.addAll(appConstants.EMBEDDED_RESPONSES);
       EMBEDDED_RESPONSES = embeddedResponses;
@@ -142,5 +170,15 @@ public class Constants {
 
   public static boolean isDetached() {
     return IS_DETACHED;
+  }
+
+  private static boolean sIsTest = false;
+
+  public static void setInTest() {
+    sIsTest = true;
+  }
+
+  public static boolean isTest() {
+    return sIsTest;
   }
 }

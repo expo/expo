@@ -1,11 +1,12 @@
 package versioned.host.exp.exponent.modules.api.fbads;
 
+import android.content.Context;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.View;
 
 import com.facebook.ads.NativeAdsManager;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
@@ -14,59 +15,60 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 import java.util.Map;
 
 public class NativeAdViewManager extends ViewGroupManager<NativeAdView> {
-    ReactApplicationContext mReactContext;
+  private static String NAME = "CTKNativeAd";
 
-    public NativeAdViewManager(ReactApplicationContext reactContext) {
-        super();
-        mReactContext = reactContext;
+  @Override
+  public String getName() {
+    return NAME;
+  }
+
+  @Override
+  protected NativeAdView createViewInstance(ThemedReactContext reactContext) {
+    return new NativeAdView(reactContext);
+  }
+
+  @ReactProp(name = "adsManager")
+  public void setAdsManager(NativeAdView view, String adsManagerId) {
+    Context viewContext = view.getContext();
+    if (viewContext instanceof ReactContext) {
+      ReactContext reactContext = (ReactContext) viewContext;
+      NativeAdManager adManager = reactContext.getNativeModule(NativeAdManager.class);
+      NativeAdsManager adsManager = adManager.getFBAdsManager(adsManagerId);
+
+      view.setNativeAd(adsManager.nextNativeAd());
+    } else {
+      Log.e("E_NOT_RCT_CONTEXT", "View's context is not a ReactContext, so it's not possible to get NativeAdManager.");
     }
+  }
 
-    @Override
-    public String getName() {
-        return "CTKNativeAd";
-    }
+  @Override
+  @Nullable
+  public Map<String, Object> getExportedCustomDirectEventTypeConstants() {
+    return MapBuilder.<String, Object>of(
+        "onAdLoaded",
+        MapBuilder.of("registrationName", "onAdLoaded"),
+        "onAdFailed",
+        MapBuilder.of("registrationName", "onAdFailed")
+    );
+  }
 
-    @Override
-    protected NativeAdView createViewInstance(ThemedReactContext reactContext) {
-        return new NativeAdView(reactContext);
-    }
+  @Override
+  public void addView(NativeAdView parent, View child, int index) {
+    parent.addView(child, index);
+  }
 
-    @ReactProp(name = "adsManager")
-    public void setAdsManager(NativeAdView view, String adsManagerId) {
-        NativeAdManager adManager = mReactContext.getNativeModule(NativeAdManager.class);
-        NativeAdsManager adsManager = adManager.getFBAdsManager(adsManagerId);
+  @Override
+  public int getChildCount(NativeAdView parent) {
+    return parent.getChildCount();
+  }
 
-        view.setNativeAd(adsManager.nextNativeAd());
-    }
+  @Override
+  public View getChildAt(NativeAdView parent, int index) {
+    return parent.getChildAt(index);
+  }
 
-    @Override
-    @Nullable
-    public Map<String, Object> getExportedCustomDirectEventTypeConstants() {
-        return MapBuilder.<String, Object>of(
-            "onAdLoaded",
-            MapBuilder.of("registrationName", "onAdLoaded"),
-            "onAdFailed",
-            MapBuilder.of("registrationName", "onAdFailed")
-        );
-    }
-
-    @Override
-    public void addView(NativeAdView parent, View child, int index) {
-        parent.addView(child, index);
-    }
-
-    @Override
-    public int getChildCount(NativeAdView parent) {
-        return parent.getChildCount();
-    }
-
-    @Override
-    public View getChildAt(NativeAdView parent, int index) {
-        return parent.getChildAt(index);
-    }
-
-    @Override
-    public void removeViewAt(NativeAdView parent, int index) {
-        parent.removeViewAt(index);
-    }
+  @Override
+  public void removeViewAt(NativeAdView parent, int index) {
+    parent.removeViewAt(index);
+  }
 }

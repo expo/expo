@@ -46,7 +46,7 @@ public abstract class SubscribableSensorKernelService extends BaseSensorKernelSe
     if (listeners != null) {
       for(WeakReference<SensorKernelServiceSubscription> weakReference : listeners) {
         final SensorKernelServiceSubscription sensorKernelServiceSubscription = weakReference.get();
-        if (sensorKernelServiceSubscription != null) {
+        if (sensorKernelServiceSubscription != null && sensorKernelServiceSubscription.isEnabled()) {
           long lastUpdate = 0;
           if (mSensorEventListenerLastUpdateMap.containsKey(sensorKernelServiceSubscription)) {
             lastUpdate = mSensorEventListenerLastUpdateMap.get(sensorKernelServiceSubscription);
@@ -76,6 +76,26 @@ public abstract class SubscribableSensorKernelService extends BaseSensorKernelSe
     }
     mExperienceIdSubscriptionsMap.get(experienceId).add(new WeakReference<>(sensorKernelServiceSubscription));
     return sensorKernelServiceSubscription;
+  }
+
+  public void removeSubscription(SensorKernelServiceSubscription subscriptionToRemove) {
+    mSensorEventListenerLastUpdateMap.remove(subscriptionToRemove);
+    ExperienceId experienceId = subscriptionToRemove.getExperienceId();
+    if (mExperienceIdSubscriptionsMap.containsKey(experienceId)) {
+      List<WeakReference<SensorKernelServiceSubscription>> originalSubscriptions = mExperienceIdSubscriptionsMap.get(experienceId);
+      List<WeakReference<SensorKernelServiceSubscription>> leftSubscriptions = new ArrayList<>();
+      for (WeakReference<SensorKernelServiceSubscription> subscriptionWeakReference : originalSubscriptions) {
+        SensorKernelServiceSubscription subscription = subscriptionWeakReference.get();
+        if (subscription != null && subscription != subscriptionToRemove) {
+          leftSubscriptions.add(subscriptionWeakReference);
+        }
+      }
+      if (leftSubscriptions.size() > 0) {
+        mExperienceIdSubscriptionsMap.put(experienceId, leftSubscriptions);
+      } else {
+        mExperienceIdSubscriptionsMap.remove(experienceId);
+      }
+    }
   }
 
   // SensorKernelServiceSubscription API
@@ -116,8 +136,27 @@ public abstract class SubscribableSensorKernelService extends BaseSensorKernelSe
     return 0;
   }
 
+  private void cleanWeakSubscriptionsList(ExperienceId experienceId) {
+    List<WeakReference<SensorKernelServiceSubscription>> listeners = mExperienceIdSubscriptionsMap.get(experienceId);
+    List<WeakReference<SensorKernelServiceSubscription>> realListeners = new ArrayList<>();
+    if (listeners != null) {
+      for (WeakReference<SensorKernelServiceSubscription> subscriptionWeakReference : listeners) {
+        if (subscriptionWeakReference.get() != null) {
+          realListeners.add(subscriptionWeakReference);
+        }
+      }
+    }
+
+    if (realListeners.size() > 0) {
+      mExperienceIdSubscriptionsMap.put(experienceId, realListeners);
+    } else {
+      mExperienceIdSubscriptionsMap.remove(experienceId);
+    }
+  }
+
   private void updateObserving() {
     ExperienceId currentExperienceId = getCurrentExperienceId();
+    cleanWeakSubscriptionsList(currentExperienceId);
 
     // Start/stop observing according to the experience state
     if (getEnabledListenersForExperienceId(currentExperienceId) > 0) {

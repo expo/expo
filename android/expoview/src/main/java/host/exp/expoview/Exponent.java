@@ -2,12 +2,10 @@
 
 package host.exp.expoview;
 
-import android.Manifest;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
@@ -15,10 +13,8 @@ import android.os.Looper;
 import android.os.StrictMode;
 import android.os.UserManager;
 import android.provider.Settings;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
-import com.amplitude.api.Amplitude;
 import com.crashlytics.android.Crashlytics;
 import com.facebook.common.internal.ByteStreams;
 import com.facebook.drawee.backends.pipeline.Fresco;
@@ -35,7 +31,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.spongycastle.jce.provider.BouncyCastleProvider;
 
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -45,7 +40,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URLEncoder;
 import java.security.Provider;
 import java.security.Security;
@@ -56,6 +50,8 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import expo.core.interfaces.Package;
+import expo.core.interfaces.SingletonModule;
 import expolib_v1.okhttp3.CacheControl;
 import expolib_v1.okhttp3.Call;
 import expolib_v1.okhttp3.Callback;
@@ -64,18 +60,22 @@ import expolib_v1.okhttp3.Response;
 import host.exp.exponent.ABIVersion;
 import host.exp.exponent.ActivityResultListener;
 import host.exp.exponent.Constants;
+import host.exp.exponent.ExpoHandler;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.RNObject;
 import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.di.NativeModuleDepsProvider;
-import host.exp.exponent.generated.ExponentKeys;
+import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.kernel.ExponentUrls;
 import host.exp.exponent.kernel.KernelConstants;
-import host.exp.exponent.kernel.KernelProvider;
+import host.exp.exponent.network.ExpoHttpCallback;
+import host.exp.exponent.network.ExpoResponse;
 import host.exp.exponent.network.ExponentHttpClient;
 import host.exp.exponent.network.ExponentNetwork;
 import host.exp.exponent.storage.ExponentSharedPreferences;
+import host.exp.exponent.utils.PermissionsHelper;
+import versioned.host.exp.exponent.ExponentPackageDelegate;
 
 public class Exponent {
 
@@ -110,6 +110,9 @@ public class Exponent {
   @Inject
   ExponentSharedPreferences mExponentSharedPreferences;
 
+  @Inject
+  ExpoHandler mExpoHandler;
+
   public static void initialize(Context context, Application application) {
     if (sInstance == null) {
       new Exponent(context, application);
@@ -136,14 +139,14 @@ public class Exponent {
     // Verifying SSL certs is slow on Android, so send an HTTPS request to our server as early as possible.
     // This speeds up the manifest request in a shell app from ~500ms to ~250ms.
     try {
-      mExponentNetwork.getClient().call(new Request.Builder().url(Constants.API_HOST + "/status").build(), new Callback() {
+      mExponentNetwork.getClient().call(new Request.Builder().url(Constants.API_HOST + "/status").build(), new ExpoHttpCallback() {
         @Override
-        public void onFailure(Call call, IOException e) {
+        public void onFailure(IOException e) {
           EXL.d(TAG, e.toString());
         }
 
         @Override
-        public void onResponse(Call call, Response response) throws IOException {
+        public void onResponse(ExpoResponse response) throws IOException {
           ExponentNetwork.flushResponse(response);
           EXL.d(TAG, "Loaded exp.host status page.");
         }
@@ -156,32 +159,19 @@ public class Exponent {
     // Fixes Android memory leak
     try {
       UserManager.class.getMethod("get", Context.class).invoke(null, context);
-    } catch (IllegalAccessException e) {
-      e.printStackTrace();
-    } catch (InvocationTargetException e) {
-      e.printStackTrace();
-    } catch (NoSuchMethodException e) {
-      e.printStackTrace();
+    } catch (Throwable e) {
+      EXL.testError(e);
     }
-    Fresco.initialize(context);
+
+    try {
+      Fresco.initialize(context);
+    } catch (RuntimeException e) {
+      EXL.testError(e);
+    }
 
 
     // Amplitude
-    Analytics.resetAmplitudeDatabaseHelper();
-    Amplitude.getInstance().initialize(context, ExpoViewBuildConfig.DEBUG ? ExponentKeys.AMPLITUDE_DEV_KEY : ExponentKeys.AMPLITUDE_KEY);
-    if (application != null) {
-      Amplitude.getInstance().enableForegroundTracking(application);
-    }
-    try {
-      JSONObject amplitudeUserProperties = new JSONObject();
-      amplitudeUserProperties.put("INITIAL_URL", Constants.INITIAL_URL);
-      amplitudeUserProperties.put("ABI_VERSIONS", Constants.ABI_VERSIONS);
-      amplitudeUserProperties.put("TEMPORARY_ABI_VERSION", Constants.TEMPORARY_ABI_VERSION);
-      amplitudeUserProperties.put("IS_DETACHED", Constants.isDetached());
-      Amplitude.getInstance().setUserProperties(amplitudeUserProperties);
-    } catch (JSONException e) {
-      EXL.e(TAG, e);
-    }
+    Analytics.initializeAmplitude(context, application);
 
     // TODO: profile this
     FlowManager.init(context);
@@ -191,7 +181,11 @@ public class Exponent {
       Stetho.initializeWithDefaults(context);
     }
 
-    ImageLoader.getInstance().init(new ImageLoaderConfiguration.Builder(context).build());
+    try {
+      ImageLoader.getInstance().init(new ImageLoaderConfiguration.Builder(context).build());
+    } catch (RuntimeException e) {
+      EXL.testError(e);
+    }
 
     if (!ExpoViewBuildConfig.DEBUG) {
       // There are a few places in RN code that throw NetworkOnMainThreadException.
@@ -230,96 +224,36 @@ public class Exponent {
   }
 
 
-
-
   public interface PermissionsListener {
     void permissionsGranted();
 
     void permissionsDenied();
   }
 
-  private PermissionsListener mPermissionsListener;
-  private static final int EXPONENT_PERMISSIONS_REQUEST = 13;
   private List<ActivityResultListener> mActivityResultListeners = new ArrayList<>();
+  private PermissionsHelper mPermissionsHelper;
 
-  public boolean getPermissionToReadUserContacts(PermissionsListener listener) {
-    return getPermissions(listener, new String[]{Manifest.permission.READ_CONTACTS});
+  public boolean getPermissions(String permissions, ExperienceId experienceId) {
+    return new PermissionsHelper(experienceId).getPermissions(permissions);
   }
 
-  public boolean getPermissions(PermissionsListener listener, String[] permissions) {
-    if (mActivity == null) {
-      return false;
-    }
+  public boolean requestPermissions(PermissionsListener listener, String[] permissions,
+                                    ExperienceId experienceId, String experienceName) {
+    mPermissionsHelper = new PermissionsHelper(experienceId);
+    return mPermissionsHelper.requestPermissions(listener, permissions, experienceName);
+  }
 
-    // Compiler is dumb and shows error on M api calls if these two ifs are merged.
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-      listener.permissionsGranted();
-    }
-    // Dumb compiler.
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-      return true;
-    }
-
-    boolean isGranted = true;
-    List<String> permissionsToRequest = new ArrayList<>();
-    List<String> permissionsToExplain = new ArrayList<>();
-    for (String permission : permissions) {
-      if (ContextCompat.checkSelfPermission(mActivity, permission) != PackageManager.PERMISSION_GRANTED) {
-        isGranted = false;
-        permissionsToRequest.add(permission);
-
-        if (mActivity.shouldShowRequestPermissionRationale(permission)) {
-          permissionsToExplain.add(permission);
-        }
-      }
-    }
-
-    if (isGranted) {
-      listener.permissionsGranted();
-      return true;
-    }
-
-    // TODO: explain why this experience needs permissionsToExplain
-
-    mPermissionsListener = listener;
-    mActivity.requestPermissions(permissionsToRequest.toArray(new String[permissionsToRequest.size()]),
-        EXPONENT_PERMISSIONS_REQUEST);
-
-    return true;
+  public void requestExperiencePermissions(PermissionsListener listener, String[] permissions,
+                                           ExperienceId experienceId, String experienceName) {
+    new PermissionsHelper(experienceId).requestExperiencePermissions(listener, permissions, experienceName);
   }
 
   public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-    if (requestCode == EXPONENT_PERMISSIONS_REQUEST) {
-      if (mPermissionsListener == null) {
-        // sometimes onRequestPermissionsResult is called multiple times if the first permission
-        // is rejected...
-        return;
-      }
-
-      boolean isGranted = false;
-      if (grantResults.length > 0) {
-        isGranted = true;
-        for (int result : grantResults) {
-          if (result != PackageManager.PERMISSION_GRANTED) {
-            isGranted = false;
-            break;
-          }
-        }
-      }
-
-      if (isGranted) {
-        mPermissionsListener.permissionsGranted();
-      } else {
-        mPermissionsListener.permissionsDenied();
-      }
-      mPermissionsListener = null;
-    } else {
-      if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
-        mActivity.onRequestPermissionsResult(requestCode, permissions, grantResults);
-      }
+    if (permissions.length > 0 && grantResults.length > 0 && mPermissionsHelper != null) {
+      mPermissionsHelper.onRequestPermissionsResult(requestCode, permissions, grantResults);
+      mPermissionsHelper = null;
     }
   }
-
 
 
   public static class InstanceManagerBuilderProperties {
@@ -327,7 +261,10 @@ public class Exponent {
     public String jsBundlePath;
     public RNObject linkingPackage;
     public Map<String, Object> experienceProperties;
+    public List<Package> expoPackages;
+    public ExponentPackageDelegate exponentPackageDelegate;
     public JSONObject manifest;
+    public List<SingletonModule> singletonModules;
   }
 
 
@@ -397,6 +334,10 @@ public class Exponent {
   }
 
   public boolean loadJSBundle(JSONObject manifest, final String urlString, final String id, String abiVersion, final BundleListener bundleListener, boolean shouldForceNetwork) {
+    return loadJSBundle(manifest, urlString, id, abiVersion, bundleListener, shouldForceNetwork, false);
+  }
+
+  public boolean loadJSBundle(JSONObject manifest, final String urlString, final String id, String abiVersion, final BundleListener bundleListener, boolean shouldForceNetwork, boolean shouldForceCache) {
     if (!id.equals(KernelConstants.KERNEL_BUNDLE_ID)) {
       Analytics.markEvent(Analytics.TimedEvent.STARTED_FETCHING_BUNDLE);
     }
@@ -426,21 +367,23 @@ public class Exponent {
     }
 
     try {
-      Request.Builder requestBuilder = ExponentUrls.addExponentHeadersToUrl(urlString, false, KernelConstants.KERNEL_BUNDLE_ID.equals(id));
+      Request.Builder requestBuilder = KernelConstants.KERNEL_BUNDLE_ID.equals(id)
+          // TODO(eric): remove once home bundle is loaded normally
+          ? ExponentUrls.addExponentHeadersToUrl(urlString)
+          : new Request.Builder().url(urlString);
       if (shouldForceNetwork) {
         requestBuilder.cacheControl(CacheControl.FORCE_NETWORK);
       }
       Request request = requestBuilder.build();
       // Use OkHttpClient with long read timeout for dev bundles
-      final boolean finalShouldForceNetwork = shouldForceNetwork;
       ExponentHttpClient.SafeCallback callback = new ExponentHttpClient.SafeCallback() {
         @Override
-        public void onFailure(Call call, IOException e) {
+        public void onFailure(IOException e) {
           bundleListener.onError(e);
         }
 
         @Override
-        public void onResponse(Call call, Response response) {
+        public void onResponse(ExpoResponse response) {
           if (!response.isSuccessful()) {
             String body = "(could not render body)";
             try {
@@ -512,7 +455,7 @@ public class Exponent {
               printSourceFile(sourceFile.getAbsolutePath());
             }
 
-            new Handler(mContext.getMainLooper()).post(new Runnable() {
+            mExpoHandler.post(new Runnable() {
               @Override
               public void run() {
                 bundleListener.onBundleLoaded(sourceFile.getAbsolutePath());
@@ -524,13 +467,15 @@ public class Exponent {
         }
 
         @Override
-        public void onCachedResponse(Call call, Response response, boolean isEmbedded) {
+        public void onCachedResponse(ExpoResponse response, boolean isEmbedded) {
           EXL.d(TAG, "Using cached or embedded response.");
-          onResponse(call, response);
+          onResponse(response);
         }
       };
 
-      if (shouldForceNetwork) {
+      if (shouldForceCache) {
+        mExponentNetwork.getLongTimeoutClient().tryForcedCachedResponse(request.url().toString(), request, callback, null, null);
+      } else if (shouldForceNetwork) {
         mExponentNetwork.getLongTimeoutClient().callSafe(request, callback);
       } else {
         mExponentNetwork.getLongTimeoutClient().callDefaultCache(request, callback);
@@ -715,6 +660,7 @@ public class Exponent {
   public interface StartReactInstanceDelegate {
     boolean isDebugModeEnabled();
     boolean isInForeground();
+    ExponentPackageDelegate getExponentPackageDelegate();
     void handleUnreadNotifications(JSONArray unreadNotifications);
   }
 
@@ -729,24 +675,13 @@ public class Exponent {
 
   public void preloadManifestAndBundle(final String manifestUrl) {
     try {
-      String oldBundleUrl = null;
-      try {
-        JSONObject oldManifest = mExponentSharedPreferences.getManifest(manifestUrl).manifest;
-        oldBundleUrl = oldManifest.getString(ExponentManifest.MANIFEST_BUNDLE_URL_KEY);
-      } catch (Throwable e) {
-        EXL.e(TAG, "Couldn't get old manifest from shared preferences");
-      }
-      final String finalOldBundleUrl = oldBundleUrl;
-
       mExponentManifest.fetchManifest(manifestUrl, new ExponentManifest.ManifestListener() {
         @Override
         public void onCompleted(JSONObject manifest) {
           try {
             String bundleUrl = manifest.getString(ExponentManifest.MANIFEST_BUNDLE_URL_KEY);
-            boolean wasUpdated = !bundleUrl.equals(finalOldBundleUrl);
 
             preloadBundle(
-                wasUpdated,
                 manifest,
                 manifestUrl,
                 bundleUrl,
@@ -769,13 +704,13 @@ public class Exponent {
         public void onError(String e) {
           EXL.e(TAG, "Couldn't preload manifest: " + e);
         }
-      }, true);
+      });
     } catch (Throwable e) {
       EXL.e(TAG, "Couldn't preload manifest: " + e.toString());
     }
   }
 
-  private void preloadBundle(final boolean shouldNotifyUpdated, final JSONObject manifest, final String manifestUrl, final String bundleUrl, final String id, final String sdkVersion) {
+  private void preloadBundle(final JSONObject manifest, final String manifestUrl, final String bundleUrl, final String id, final String sdkVersion) {
     try {
       Exponent.getInstance().loadJSBundle(manifest, bundleUrl, Exponent.getInstance().encodeExperienceId(id), sdkVersion, new Exponent.BundleListener() {
         @Override
@@ -786,16 +721,6 @@ public class Exponent {
         @Override
         public void onBundleLoaded(String localBundlePath) {
           EXL.d(TAG, "Successfully preloaded manifest and bundle for " + manifestUrl + " " + bundleUrl);
-
-          if (shouldNotifyUpdated) {
-            try {
-              JSONObject newVersionAvailableEvent = new JSONObject();
-              newVersionAvailableEvent.put("manifest", manifest);
-              KernelProvider.getInstance().addEventForExperience(manifestUrl, new KernelConstants.ExperienceEvent("Exponent.newVersionAvailable", newVersionAvailableEvent.toString()));
-            } catch (Throwable e) {
-              EXL.e(TAG, "Couldn't serialize newVersionAvailable event");
-            }
-          }
         }
       }, true);
     } catch (UnsupportedEncodingException e) {

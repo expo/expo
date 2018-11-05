@@ -33,7 +33,11 @@ public class ExponentNotification {
 
     try {
       JSONObject object = new JSONObject(json);
-      return new ExponentNotification(object.getString(NotificationConstants.NOTIFICATION_EXPERIENCE_ID_KEY), object.getString(NotificationConstants.NOTIFICATION_MESSAGE_KEY), object.getInt(NotificationConstants.NOTIFICATION_ID_KEY), object.getBoolean(NotificationConstants.NOTIFICATION_IS_MULTIPLE_KEY), object.getBoolean(NotificationConstants.NOTIFICATION_REMOTE_KEY));
+      String body = object.optString(NotificationConstants.NOTIFICATION_DATA_KEY, null);
+      if (body == null) {
+        body = object.optString(NotificationConstants.NOTIFICATION_MESSAGE_KEY, null);
+      }
+      return new ExponentNotification(object.getString(NotificationConstants.NOTIFICATION_EXPERIENCE_ID_KEY), body, object.getInt(NotificationConstants.NOTIFICATION_ID_KEY), object.getBoolean(NotificationConstants.NOTIFICATION_IS_MULTIPLE_KEY), object.getBoolean(NotificationConstants.NOTIFICATION_REMOTE_KEY));
     } catch (JSONException e) {
       EXL.e(TAG, e.toString());
       return null;

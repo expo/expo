@@ -15,6 +15,14 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Map;
 
 import javax.annotation.Nullable;
@@ -22,6 +30,8 @@ import javax.annotation.Nullable;
 import host.exp.exponent.ActivityResultListener;
 import host.exp.exponent.Constants;
 import host.exp.exponent.kernel.KernelConstants;
+import host.exp.exponent.utils.ExpFileUtils;
+import host.exp.exponent.utils.ScopedContext;
 import host.exp.expoview.Exponent;
 
 
@@ -29,9 +39,13 @@ public class DocumentPickerModule extends ReactContextBaseJavaModule implements 
   private static int OPEN_DOCUMENT_CODE = 4137;
 
   private @Nullable Promise mPromise;
+  private ScopedContext mScopedContext;
 
-  public DocumentPickerModule(ReactApplicationContext reactContext) {
+  private boolean mCopyToCacheDirectory = true;
+
+  public DocumentPickerModule(ReactApplicationContext reactContext, ScopedContext scopedContext) {
     super(reactContext);
+    mScopedContext = scopedContext;
 
     Exponent.getInstance().addActivityResultListener(this);
   }
@@ -59,6 +73,12 @@ public class DocumentPickerModule extends ReactContextBaseJavaModule implements 
       intent.setType("*/*");
     }
 
+    if (options.hasKey("copyToCacheDirectory") && !options.getBoolean("copyToCacheDirectory")) {
+      mCopyToCacheDirectory = false;
+    } else {
+      mCopyToCacheDirectory = true;
+    }
+
     Activity activity = Exponent.getInstance().getCurrentActivity();
     activity.startActivityForResult(intent, OPEN_DOCUMENT_CODE);
   }
@@ -74,12 +94,16 @@ public class DocumentPickerModule extends ReactContextBaseJavaModule implements 
       if (resultCode == Activity.RESULT_OK) {
         result.putString("type", "success");
         Uri uri = data.getData();
-        result.putString("uri", uri.toString());
         ContentResolver contentResolver = getReactApplicationContext().getContentResolver();
         try (Cursor cursor = contentResolver.query(uri, null, null, null, null)) {
           if (cursor != null && cursor.moveToFirst()) {
             String displayName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
             result.putString("name", displayName);
+            if (mCopyToCacheDirectory) {
+              result.putString("uri", Uri.fromFile(new File(writeDocument(uri, contentResolver, displayName))).toString());
+            } else {
+              result.putString("uri", uri.toString());
+            }
 
             int sizeColumnIndex = cursor.getColumnIndex(OpenableColumns.SIZE);
             if (!cursor.isNull(sizeColumnIndex)) {
@@ -96,5 +120,33 @@ public class DocumentPickerModule extends ReactContextBaseJavaModule implements 
       mPromise.resolve(result);
       mPromise = null;
     }
+  }
+
+  private String writeDocument(Uri uri, ContentResolver contentResolver, String name) {
+    InputStream in;
+    OutputStream out = null;
+    String path = null;
+    try {
+      in = contentResolver.openInputStream(uri);
+      path = ExpFileUtils.generateOutputPath(
+          mScopedContext.getCacheDir(),
+          "DocumentPicker",
+          FilenameUtils.getExtension(name)
+      );
+      File file = new File(path);
+      out = new FileOutputStream(file);
+      IOUtils.copy(in, out);
+    } catch (IOException e) {
+      e.printStackTrace();
+    } finally {
+      if (out != null) {
+        try {
+          out.close();
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      }
+    }
+    return path;
   }
 }

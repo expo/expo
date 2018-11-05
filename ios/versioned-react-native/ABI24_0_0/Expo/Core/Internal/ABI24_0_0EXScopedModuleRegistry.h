@@ -6,15 +6,26 @@
 #import "ABI24_0_0EXScopedBridgeModule.h"
 
 /**
- *  Use this in place of ABI24_0_0RCT_EXPORT_MODULE() to auto-init an instance of your scoped module on ABI24_0_0RCTBridge instances.
- *  @param js_name same as ABI24_0_0RCT_EXPORT_MODULE(), the module name available in JS
+ *  Use this in place of RCT_EXPORT_MODULE() to auto-init an instance of your scoped module on RCTBridge instances.
+ *  @param js_name same as RCT_EXPORT_MODULE(), the module name available in JS
  *  @param kernel_service_class if specified, your module will be passed an unversioned instance of this kernel service at runtime.
- *         e.g. MyKernelService -> an instance of ABI24_0_0EXMyKernelService
+ *         e.g. MyKernelService -> an instance of EXMyKernelService
  */
 #define ABI24_0_0EX_EXPORT_SCOPED_MODULE(js_name, kernel_service_class) \
-ABI24_0_0RCT_EXTERN void ABI24_0_0EXRegisterScopedModule(Class, NSString *); \
+ABI24_0_0RCT_EXTERN void ABI24_0_0EXRegisterScopedModule(Class, ...); \
 + (NSString *)moduleName { return @#js_name; } \
-+ (void)load { ABI24_0_0EXRegisterScopedModule(self, @#kernel_service_class); }
++ (void)load { ABI24_0_0EXRegisterScopedModule(self, @#kernel_service_class, nil); }
+
+/**
+ *  Use this in place of EX_EXPORT_SCOPED_MODULE() if the module requires more than one kernel service.
+ *  @param js_name same as RCT_EXPORT_MODULE(), the module name available in JS
+ *  @param ... strings representing names of kernel services to be passed to th emodule at runtime.
+ *         e.g. @"MyKernelService" -> an instance of EXMyKernelService
+ */
+#define ABI24_0_0EX_EXPORT_SCOPED_MULTISERVICE_MODULE(js_name, ...) \
+ABI24_0_0RCT_EXTERN void ABI24_0_0EXRegisterScopedModule(Class, ...); \
++ (NSString *)moduleName { return @#js_name; } \
++ (void)load { ABI24_0_0EXRegisterScopedModule(self, __VA_ARGS__, nil); }
 
 /**
  *  Provides a namespace/bottleneck through which scoped modules

@@ -1,0 +1,1 @@
+../../../../../packages/expo-sensors-interface/ios/EXSensorsInterface/EXGyroscopeInterface.h

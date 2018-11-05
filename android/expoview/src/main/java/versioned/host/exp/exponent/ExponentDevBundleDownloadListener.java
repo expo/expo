@@ -1,5 +1,6 @@
 package versioned.host.exp.exponent;
 
+import com.facebook.react.bridge.NativeDeltaClient;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 
 import javax.annotation.Nullable;
@@ -18,8 +19,8 @@ public class ExponentDevBundleDownloadListener implements DevBundleDownloadListe
   }
 
   @Override
-  public void onSuccess() {
-
+  public void onSuccess(@Nullable NativeDeltaClient nativeDeltaClient) {
+    mListener.onSuccess();
   }
 
   @Override
@@ -29,6 +30,6 @@ public class ExponentDevBundleDownloadListener implements DevBundleDownloadListe
 
   @Override
   public void onFailure(Exception cause) {
-
+    mListener.onFailure(cause);
   }
 }

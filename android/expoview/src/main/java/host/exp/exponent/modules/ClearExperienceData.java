@@ -13,14 +13,13 @@ import java.net.URLEncoder;
 
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.utils.ScopedContext;
-import versioned.host.exp.exponent.modules.api.FileSystemModule;
 import versioned.host.exp.exponent.modules.internal.ExponentAsyncStorageModule;
 
 public class ClearExperienceData {
 
   private static final String TAG = ClearExperienceData.class.getSimpleName();
 
-  public static void clear(Context context, String experienceId, String manifestUrl) {
+  public static void clear(Context context, String experienceId) {
     try {
       String databaseName = ExponentAsyncStorageModule.experienceIdToDatabaseName(experienceId);
       ReactDatabaseSupplier supplier = new ReactDatabaseSupplier(context, databaseName);

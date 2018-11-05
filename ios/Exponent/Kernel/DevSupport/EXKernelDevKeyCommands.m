@@ -1,16 +1,17 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "EXFrameReactAppManager.h"
+#import "EXEnvironment.h"
 #import "EXKernelDevKeyCommands.h"
 #import "EXKernel.h"
-#import "EXKernelBridgeRegistry.h"
-#import "EXKernelReactAppManager.h"
-#import "EXShellManager.h"
+#import "EXKernelAppRegistry.h"
+#import "EXReactAppManager.h"
 
 #import <React/RCTDefines.h>
 #import <React/RCTUtils.h>
 
 #import <UIKit/UIKit.h>
+
+NSNotificationName kEXKernelDidChangeMenuBehaviorNotification = @"EXKernelDidChangeMenuBehaviorNotification";
 
 @interface EXKeyCommand : NSObject <NSCopying>
 
@@ -135,6 +136,25 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   return self;
 }
 
+- (void)setIsLegacyMenuBehaviorEnabled:(BOOL)isLegacyMenuBehaviorEnabled
+{
+  _isLegacyMenuBehaviorEnabled = isLegacyMenuBehaviorEnabled;
+  [[NSNotificationCenter defaultCenter] postNotificationName:kEXKernelDidChangeMenuBehaviorNotification object:nil];
+}
+
+- (BOOL)isLegacyMenuButtonAvailable
+{
+    BOOL isSimulator = NO;
+#if TARGET_OS_SIMULATOR
+    isSimulator = YES;
+#endif
+  return (
+    isSimulator
+    && _isLegacyMenuBehaviorEnabled
+    && [EXKernel sharedInstance].appRegistry.appEnumerator.allObjects.count > 0
+  );
+}
+
 #pragma mark - expo dev commands
 
 - (void)_addDevCommands
@@ -169,33 +189,32 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)_handleMenuCommand
 {
-  if ([EXShellManager sharedInstance].isDetached || _isLegacyMenuBehaviorEnabled) {
-    [[EXKernel sharedInstance].bridgeRegistry.lastKnownForegroundAppManager showDevMenu];
+  if ([EXEnvironment sharedEnvironment].isDetached || _isLegacyMenuBehaviorEnabled) {
+    [[EXKernel sharedInstance].visibleApp.appManager showDevMenu];
   } else {
-    [[EXKernel sharedInstance] dispatchKernelJSEvent:@"switchTasks" body:@{} onSuccess:nil onFailure:nil];
+    [[EXKernel sharedInstance] switchTasks];
   }
 }
 
 - (void)_handleRefreshCommand
 {
-  [[EXKernel sharedInstance].bridgeRegistry.lastKnownForegroundAppManager reloadBridge];
+  [[EXKernel sharedInstance].visibleApp.appManager reloadBridge];
 }
 
 - (void)_handleDisableDebuggingCommand
 {
-  [[EXKernel sharedInstance].bridgeRegistry.lastKnownForegroundAppManager disableRemoteDebugging];
+  [[EXKernel sharedInstance].visibleApp.appManager disableRemoteDebugging];
 }
 
 - (void)_handleToggleInspectorCommand
 {
-  [[EXKernel sharedInstance].bridgeRegistry.lastKnownForegroundAppManager toggleElementInspector];
+  [[EXKernel sharedInstance].visibleApp.appManager toggleElementInspector];
 }
 
 - (void)_handleKernelMenuCommand
 {
-  EXReactAppManager *foregroundAppManager = [EXKernel sharedInstance].bridgeRegistry.lastKnownForegroundAppManager;
-  if (foregroundAppManager == [EXKernel sharedInstance].bridgeRegistry.kernelAppManager) {
-    [foregroundAppManager showDevMenu];
+  if ([EXKernel sharedInstance].visibleApp == [EXKernel sharedInstance].appRegistry.homeAppRecord) {
+    [[EXKernel sharedInstance].appRegistry.homeAppRecord.appManager showDevMenu];
   }
 }
 

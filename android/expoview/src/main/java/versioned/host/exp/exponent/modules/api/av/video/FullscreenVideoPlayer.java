@@ -1,21 +1,62 @@
 package versioned.host.exp.exponent.modules.api.av.video;
 
 import android.app.Dialog;
+import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.uimanager.ThemedReactContext;
 
 import java.lang.ref.WeakReference;
 
+import versioned.host.exp.exponent.modules.api.KeepAwakeModule;
+import versioned.host.exp.exponent.modules.api.av.player.PlayerData;
+
 public class FullscreenVideoPlayer extends Dialog {
+  private static class KeepScreenOnUpdater implements Runnable {
+    private final static long UPDATE_KEEP_SCREEN_ON_FLAG_MS = 200;
+    private final WeakReference<FullscreenVideoPlayer> mFullscreenPlayer;
+
+    KeepScreenOnUpdater(FullscreenVideoPlayer player) {
+      mFullscreenPlayer = new WeakReference<>(player);
+    }
+
+    @Override
+    public void run() {
+      FullscreenVideoPlayer fullscreenVideoPlayer = mFullscreenPlayer.get();
+      if (fullscreenVideoPlayer != null) {
+        final Window window = fullscreenVideoPlayer.getWindow();
+        if (window != null) {
+          boolean isPlaying =
+              fullscreenVideoPlayer.mVideoView.getStatus().hasKey(PlayerData.STATUS_IS_PLAYING_KEY_PATH)
+                  && fullscreenVideoPlayer.mVideoView.getStatus().getBoolean(PlayerData.STATUS_IS_PLAYING_KEY_PATH);
+          KeepAwakeModule keepAwakeModule = fullscreenVideoPlayer.mReactContext.getNativeModule(KeepAwakeModule.class);
+          if (isPlaying || keepAwakeModule.isActivated()) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+          } else {
+            window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+          }
+        }
+        fullscreenVideoPlayer.mKeepScreenOnHandler.postDelayed(this, UPDATE_KEEP_SCREEN_ON_FLAG_MS);
+      }
+    }
+  }
+
+  private Handler mKeepScreenOnHandler;
+  private Runnable mKeepScreenOnUpdater;
+
   private FrameLayout mParent;
+  private ReactContext mReactContext;
   private final VideoView mVideoView;
   private final FrameLayout mContainerView;
   private WeakReference<FullscreenVideoPlayerPresentationChangeListener> mUpdateListener;
 
   FullscreenVideoPlayer(@NonNull ThemedReactContext context, VideoView videoView) {
     super(context, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
+    mReactContext = context;
 
     setCancelable(false);
 
@@ -23,6 +64,9 @@ public class FullscreenVideoPlayer extends Dialog {
 
     mContainerView = new FrameLayout(context);
     setContentView(mContainerView, generateDefaultLayoutParams());
+
+    mKeepScreenOnUpdater = new KeepScreenOnUpdater(this);
+    mKeepScreenOnHandler = new Handler();
   }
 
   @Override
@@ -74,6 +118,8 @@ public class FullscreenVideoPlayer extends Dialog {
     }
 
     mVideoView.setOverridingUseNativeControls(true);
+
+    mKeepScreenOnHandler.post(mKeepScreenOnUpdater);
   }
 
   void setUpdateListener(FullscreenVideoPlayerPresentationChangeListener listener) {
@@ -82,6 +128,7 @@ public class FullscreenVideoPlayer extends Dialog {
 
   @Override
   protected void onStop() {
+    mKeepScreenOnHandler.removeCallbacks(mKeepScreenOnUpdater);
     mContainerView.removeView(mVideoView);
     mParent.addView(mVideoView, generateDefaultLayoutParams());
 

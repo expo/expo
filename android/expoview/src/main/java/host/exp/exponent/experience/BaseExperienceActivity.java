@@ -14,16 +14,19 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
+import host.exp.exponent.Constants;
 import host.exp.exponent.di.NativeModuleDepsProvider;
-import host.exp.exponent.gcm.RegistrationIntentService;
+import host.exp.exponent.fcm.FcmRegistrationIntentService;
+import host.exp.exponent.gcm.GcmRegistrationIntentService;
 import host.exp.exponent.kernel.ExperienceId;
+import host.exp.exponent.kernel.KernelConstants;
+import host.exp.exponent.utils.AsyncCondition;
 import host.exp.expoview.BuildConfig;
 import host.exp.expoview.Exponent;
 import host.exp.exponent.RNObject;
 import host.exp.exponent.kernel.ExponentError;
 import host.exp.exponent.kernel.ExponentErrorMessage;
 import host.exp.exponent.kernel.Kernel;
-import host.exp.exponent.modules.ExponentKernelModule;
 
 public abstract class BaseExperienceActivity extends MultipleVersionReactNativeActivity {
   private static abstract class ExperienceEvent {
@@ -42,6 +45,9 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
   public static class ExperienceBackgroundedEvent extends ExperienceEvent {
     ExperienceBackgroundedEvent(ExperienceId experienceId) { super(experienceId); }
   }
+  public static class ExperienceContentLoaded extends ExperienceEvent {
+    public ExperienceContentLoaded(ExperienceId experienceId) { super(experienceId); }
+  }
 
   private static BaseExperienceActivity sVisibleActivity;
 
@@ -57,7 +63,7 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
       sVisibleActivity.consumeErrorQueue();
     } else if (ErrorActivity.getVisibleActivity() != null) {
       // If ErrorActivity is already started and we get another error from RN.
-      sendErrorsToJS();
+      sendErrorsToErrorActivity();
     }
 
     // Otherwise onResume will consumeErrorQueue
@@ -90,7 +96,17 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
     mIsInForeground = true;
 
     mOnResumeTime = System.currentTimeMillis();
-    EventBus.getDefault().post(new ExperienceForegroundedEvent(mExperienceId));
+    AsyncCondition.wait(KernelConstants.EXPERIENCE_ID_SET_FOR_ACTIVITY_KEY, new AsyncCondition.AsyncConditionListener() {
+      @Override
+      public boolean isReady() {
+        return mExperienceId != null || BaseExperienceActivity.this instanceof HomeActivity;
+      }
+
+      @Override
+      public void execute() {
+        EventBus.getDefault().post(new ExperienceForegroundedEvent(mExperienceId));
+      }
+    });
   }
 
   @Override
@@ -168,7 +184,7 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
           return;
         }
 
-        Pair<Boolean, ExponentErrorMessage> result = sendErrorsToJS();
+        Pair<Boolean, ExponentErrorMessage> result = sendErrorsToErrorActivity();
         boolean isFatal = result.first;
         ExponentErrorMessage errorMessage = result.second;
 
@@ -202,14 +218,14 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
     });
   }
 
-  private static Pair<Boolean, ExponentErrorMessage> sendErrorsToJS() {
+  private static Pair<Boolean, ExponentErrorMessage> sendErrorsToErrorActivity() {
     boolean isFatal = false;
     ExponentErrorMessage errorMessage = ExponentErrorMessage.developerErrorMessage("");
 
     synchronized (sErrorQueue) {
       while (!sErrorQueue.isEmpty()) {
         ExponentError error = sErrorQueue.remove();
-        ExponentKernelModule.addError(error);
+        ErrorActivity.addError(error);
         if (sVisibleActivity != null) {
           sVisibleActivity.onError(error);
         }
@@ -243,8 +259,10 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
   protected void registerForNotifications() {
     int googlePlayServicesCode = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this);
     if (googlePlayServicesCode == ConnectionResult.SUCCESS) {
-      Intent intent = new Intent(this, RegistrationIntentService.class);
-      startService(intent);
+      if (!Constants.FCM_ENABLED) {
+        Intent intent = new Intent(this, GcmRegistrationIntentService.class);
+        startService(intent);
+      }
     } else if (!BuildConfig.DEBUG) {
       // TODO: should we actually show an error or fail silently?
       // GoogleApiAvailability.getInstance().getErrorDialog(this, googlePlayServicesCode, 0).show();

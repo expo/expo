@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
+  <info organisation="host.exp.exponent" module="expoview" revision="30.0.0" status="integration" publication="20180904162008"/>
+  <configurations>
+    <conf name="androidTestAnnotationProcessor" visibility="private"/>
+    <conf name="androidTestApi" visibility="private" extends="androidTestCompile"/>
+    <conf name="androidTestCompile" visibility="private"/>
+    <conf name="androidTestCompileOnly" visibility="private" extends="androidTestProvided"/>
+    <conf name="androidTestDebugAnnotationProcessor" visibility="private"/>
+    <conf name="androidTestDebugApi" visibility="private" extends="androidTestDebugCompile"/>
+    <conf name="androidTestDebugCompile" visibility="private"/>
+    <conf name="androidTestDebugCompileOnly" visibility="private" extends="androidTestDebugProvided"/>
+    <conf name="androidTestDebugImplementation" visibility="private" extends="androidTestDebugApi"/>
+    <conf name="androidTestDebugProvided" visibility="private"/>
+    <conf name="androidTestDebugPublish" visibility="private"/>
+    <conf name="androidTestDebugRuntimeOnly" visibility="private" extends="androidTestDebugPublish"/>
+    <conf name="androidTestDebugWearApp" visibility="private"/>
+    <conf name="androidTestImplementation" visibility="private" extends="androidTestApi"/>
+    <conf name="androidTestProvided" visibility="private"/>
+    <conf name="androidTestPublish" visibility="private"/>
+    <conf name="androidTestRuntimeOnly" visibility="private" extends="androidTestPublish"/>
+    <conf name="androidTestUtil" visibility="private"/>
+    <conf name="androidTestWearApp" visibility="private"/>
+    <conf name="annotationProcessor" visibility="private"/>
+    <conf name="api" visibility="private" extends="compile"/>
+    <conf name="archives" visibility="public" extends="releaseRuntimeClasspath"/>
+    <conf name="compile" visibility="private"/>
+    <conf name="compileOnly" visibility="private" extends="provided"/>
+    <conf name="debugAndroidTestAnnotationProcessorClasspath" visibility="private" extends="androidTestAnnotationProcessor,androidTestDebugAnnotationProcessor"/>
+    <conf name="debugAndroidTestCompileClasspath" visibility="private" extends="androidTestCompileOnly,androidTestDebugCompileOnly,androidTestDebugImplementation,androidTestImplementation,debugImplementation,implementation"/>
+    <conf name="debugAndroidTestRuntimeClasspath" visibility="private" extends="androidTestDebugImplementation,androidTestDebugRuntimeOnly,androidTestImplementation,androidTestRuntimeOnly,debugImplementation,debugRuntimeOnly,implementation,runtimeOnly"/>
+    <conf name="debugAnnotationProcessor" visibility="private"/>
+    <conf name="debugAnnotationProcessorClasspath" visibility="private" extends="annotationProcessor,debugAnnotationProcessor"/>
+    <conf name="debugApi" visibility="private" extends="debugCompile"/>
+    <conf name="debugApiElements" visibility="public" extends="api,debugApi"/>
+    <conf name="debugCompile" visibility="private"/>
+    <conf name="debugCompileClasspath" visibility="private" extends="compileOnly,debugCompileOnly,debugImplementation,implementation"/>
+    <conf name="debugCompileOnly" visibility="private" extends="debugProvided"/>
+    <conf name="debugImplementation" visibility="private" extends="debugApi"/>
+    <conf name="debugProvided" visibility="private"/>
+    <conf name="debugPublish" visibility="private"/>
+    <conf name="debugRuntimeClasspath" visibility="private" extends="debugImplementation,debugRuntimeOnly,implementation,runtimeOnly"/>
+    <conf name="debugRuntimeElements" visibility="public" extends="debugRuntimeClasspath"/>
+    <conf name="debugRuntimeOnly" visibility="private" extends="debugPublish"/>
+    <conf name="debugUnitTestAnnotationProcessorClasspath" visibility="private" extends="testAnnotationProcessor,testDebugAnnotationProcessor"/>
+    <conf name="debugUnitTestCompileClasspath" visibility="private" extends="debugImplementation,implementation,testCompileOnly,testDebugCompileOnly,testDebugImplementation,testImplementation"/>
+    <conf name="debugUnitTestRuntimeClasspath" visibility="private" extends="debugImplementation,debugRuntimeOnly,implementation,runtimeOnly,testDebugImplementation,testDebugRuntimeOnly,testImplementation,testRuntimeOnly"/>
+    <conf name="debugWearApp" visibility="private"/>
+    <conf name="default" visibility="public"/>
+    <conf name="deployerJars" visibility="public"/>
+    <conf name="implementation" visibility="private" extends="api"/>
+    <conf name="lintChecks" visibility="private"/>
+    <conf name="lintClassPath" visibility="private"/>
+    <conf name="provided" visibility="private"/>
+    <conf name="publish" visibility="private"/>
+    <conf name="releaseAnnotationProcessor" visibility="private"/>
+    <conf name="releaseAnnotationProcessorClasspath" visibility="private" extends="annotationProcessor,releaseAnnotationProcessor"/>
+    <conf name="releaseApi" visibility="private" extends="releaseCompile"/>
+    <conf name="releaseApiElements" visibility="public" extends="api,releaseApi"/>
+    <conf name="releaseCompile" visibility="private"/>
+    <conf name="releaseCompileClasspath" visibility="private" extends="compileOnly,implementation,releaseCompileOnly,releaseImplementation"/>
+    <conf name="releaseCompileOnly" visibility="private" extends="releaseProvided"/>
+    <conf name="releaseImplementation" visibility="private" extends="releaseApi"/>
+    <conf name="releaseProvided" visibility="private"/>
+    <conf name="releasePublish" visibility="private"/>
+    <conf name="releaseRuntimeClasspath" visibility="private" extends="implementation,releaseImplementation,releaseRuntimeOnly,runtimeOnly"/>
+    <conf name="releaseRuntimeElements" visibility="public" extends="releaseRuntimeClasspath"/>
+    <conf name="releaseRuntimeOnly" visibility="private" extends="releasePublish"/>
+    <conf name="releaseUnitTestAnnotationProcessorClasspath" visibility="private" extends="testAnnotationProcessor,testReleaseAnnotationProcessor"/>
+    <conf name="releaseUnitTestCompileClasspath" visibility="private" extends="implementation,releaseImplementation,testCompileOnly,testImplementation,testReleaseCompileOnly,testReleaseImplementation"/>
+    <conf name="releaseUnitTestRuntimeClasspath" visibility="private" extends="implementation,releaseImplementation,releaseRuntimeOnly,runtimeOnly,testImplementation,testReleaseImplementation,testReleaseRuntimeOnly,testRuntimeOnly"/>
+    <conf name="releaseWearApp" visibility="private"/>
+    <conf name="runtimeOnly" visibility="private" extends="publish"/>
+    <conf name="testAnnotationProcessor" visibility="private"/>
+    <conf name="testApi" visibility="private" extends="testCompile"/>
+    <conf name="testCompile" visibility="private"/>
+    <conf name="testCompileOnly" visibility="private" extends="testProvided"/>
+    <conf name="testDebugAnnotationProcessor" visibility="private"/>
+    <conf name="testDebugApi" visibility="private" extends="testDebugCompile"/>
+    <conf name="testDebugCompile" visibility="private"/>
+    <conf name="testDebugCompileOnly" visibility="private" extends="testDebugProvided"/>
+    <conf name="testDebugImplementation" visibility="private" extends="testDebugApi"/>
+    <conf name="testDebugProvided" visibility="private"/>
+    <conf name="testDebugPublish" visibility="private"/>
+    <conf name="testDebugRuntimeOnly" visibility="private" extends="testDebugPublish"/>
+    <conf name="testDebugWearApp" visibility="private"/>
+    <conf name="testImplementation" visibility="private" extends="testApi"/>
+    <conf name="testProvided" visibility="private"/>
+    <conf name="testPublish" visibility="private"/>
+    <conf name="testReleaseAnnotationProcessor" visibility="private"/>
+    <conf name="testReleaseApi" visibility="private" extends="testReleaseCompile"/>
+    <conf name="testReleaseCompile" visibility="private"/>
+    <conf name="testReleaseCompileOnly" visibility="private" extends="testReleaseProvided"/>
+    <conf name="testReleaseImplementation" visibility="private" extends="testReleaseApi"/>
+    <conf name="testReleaseProvided" visibility="private"/>
+    <conf name="testReleasePublish" visibility="private"/>
+    <conf name="testReleaseRuntimeOnly" visibility="private" extends="testReleasePublish"/>
+    <conf name="testReleaseWearApp" visibility="private"/>
+    <conf name="testRuntimeOnly" visibility="private" extends="testPublish"/>
+    <conf name="testWearApp" visibility="private"/>
+    <conf name="wearApp" visibility="private"/>
+  </configurations>
+  <publications>
+    <artifact name="expoview" type="jar" ext="jar" conf="archives" m:classifier="sources"/>
+    <artifact name="expoview" type="aar" ext="aar" conf="archives,default"/>
+  </publications>
+  <dependencies>
+    <dependency org="com.raizlabs.android" name="DBFlow-Compiler" rev="2.2.1" conf="annotationProcessor-&gt;default"/>
+    <dependency org="com.jakewharton" name="butterknife-compiler" rev="8.8.1" conf="annotationProcessor-&gt;default"/>
+    <dependency org="com.android.support" name="multidex" rev="1.0.1" conf="api-&gt;default"/>
+    <dependency org="com.facebook.react" name="react-native" rev="30.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-core" rev="1.1.0-rc.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-react-native-adapter" rev="1.1.0-rc.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-camera" rev="1.1.0-rc.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-camera-interface" rev="1.0.2-rc.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-sensors" rev="1.0.2-rc.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-sensors-interface" rev="1.0.2-rc.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-face-detector" rev="1.0.2-rc.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-file-system" rev="1.0.2-rc.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-file-system-interface" rev="1.0.2-rc.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-payments-stripe" rev="1.0.0-rc.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-permissions" rev="1.1.0-rc.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-permissions-interface" rev="1.1.0-rc.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-constants" rev="1.0.2-rc.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-constants-interface" rev="1.0.2-rc.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-image-loader-interface" rev="1.0.0-rc.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-gl" rev="1.0.2-rc.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-gl-cpp" rev="1.0.2-rc.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-sms" rev="1.0.2-rc.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-print" rev="1.0.0-rc.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-media-library" rev="1.0.0-rc.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-analytics-segment" rev="1.0.0-rc.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-font" rev="1.0.0-rc.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-location" rev="1.0.0-rc.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-barcode-scanner-interface" rev="1.0.0-rc.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-barcode-scanner" rev="1.0.0-rc.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-contacts" rev="1.0.0-rc.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-ads-admob" rev="1.0.0-rc.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-local-authentication" rev="1.0.0-rc.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-sms-abi30_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-sensors-interface-abi30_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-sensors-abi30_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-analytics-segment-abi30_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-react-native-adapter-abi30_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-print-abi30_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-permissions-interface-abi30_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-permissions-abi30_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-payments-stripe-abi30_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-media-library-abi30_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-location-abi30_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-local-authentication-abi30_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-image-loader-interface-abi30_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-gl-abi30_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-font-interface-abi30_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-font-abi30_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-file-system-interface-abi30_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-file-system-abi30_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-face-detector-interface-abi30_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-face-detector-abi30_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-core-abi30_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-contacts-abi30_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-constants-interface-abi30_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-constants-abi30_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-camera-interface-abi30_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-camera-abi30_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-barcode-scanner-interface-abi30_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-barcode-scanner-abi30_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-ads-admob-abi30_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp" name="reactandroid-abi30_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-gl-abi29_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-face-detector-abi29_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-sms-abi29_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-face-detector-interface-abi29_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-permissions-interface-abi29_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-file-system-interface-abi29_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-react-native-adapter-abi29_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-constants-interface-abi29_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-sensors-interface-abi29_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-camera-interface-abi29_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-permissions-abi29_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-file-system-abi29_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-constants-abi29_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-sensors-abi29_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-camera-abi29_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-core-abi29_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp" name="reactandroid-abi28_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp" name="reactandroid-abi27_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp" name="reactandroid-abi26_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp" name="reactandroid-abi25_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp" name="reactandroid-abi24_0_0" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="com.android.support" name="recyclerview-v7" rev="27.1.1" conf="api-&gt;default"/>
+    <dependency org="com.facebook.fbui.textlayoutbuilder" name="textlayoutbuilder" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="com.facebook.fresco" name="fresco" rev="1.0.1" conf="api-&gt;default"/>
+    <dependency org="com.facebook.fresco" name="animated-gif" rev="1.0.1" conf="api-&gt;default"/>
+    <dependency org="com.facebook.fresco" name="animated-webp" rev="1.0.1" conf="api-&gt;default"/>
+    <dependency org="com.facebook.fresco" name="webpsupport" rev="1.0.1" conf="api-&gt;default"/>
+    <dependency org="expolib_v1.com.facebook.fresco" name="expolib_v1-imagepipeline-okhttp3" rev="1.0.1" conf="api-&gt;default"/>
+    <dependency org="com.facebook.stetho" name="stetho" rev="1.3.1" conf="api-&gt;default"/>
+    <dependency org="com.facebook.stetho" name="stetho-okhttp3" rev="1.3.1" conf="api-&gt;default"/>
+    <dependency org="com.facebook.soloader" name="soloader" rev="0.1.0" conf="api-&gt;default"/>
+    <dependency org="com.fasterxml.jackson.core" name="jackson-core" rev="2.2.3" conf="api-&gt;default"/>
+    <dependency org="com.google.code.findbugs" name="jsr305" rev="3.0.0" conf="api-&gt;default"/>
+    <dependency org="expolib_v1.com.squareup.okhttp3" name="okhttp" rev="3.6.0" conf="api-&gt;default"/>
+    <dependency org="expolib_v1.com.squareup.okhttp3" name="okhttp-urlconnection" rev="3.6.0" conf="api-&gt;default"/>
+    <dependency org="expolib_v1.com.squareup.okio" name="okio" rev="1.13.0" conf="api-&gt;default"/>
+    <dependency org="org.webkit" name="android-jsc" rev="r174650" conf="api-&gt;default"/>
+    <dependency org="com.android.support" name="appcompat-v7" rev="27.1.1" conf="api-&gt;default"/>
+    <dependency org="com.android.support" name="customtabs" rev="27.1.1" conf="api-&gt;default"/>
+    <dependency org="com.android.support" name="cardview-v7" rev="27.1.1" conf="api-&gt;default"/>
+    <dependency org="com.crashlytics.sdk.android" name="crashlytics" rev="2.5.5" conf="api-&gt;default">
+      <artifact name="crashlytics" type="aar" ext="aar" conf="api"/>
+    </dependency>
+    <dependency org="com.facebook.android" name="facebook-android-sdk" rev="4.34.0" conf="api-&gt;default"/>
+    <dependency org="com.facebook.android" name="audience-network-sdk" rev="4.99.0" conf="api-&gt;default">
+      <exclude org="*" module="play-services-ads" name="*" type="*" ext="*" conf="api" matcher="exact"/>
+    </dependency>
+    <dependency org="de.greenrobot" name="eventbus" rev="2.4.0" conf="api-&gt;default"/>
+    <dependency org="com.amplitude" name="android-sdk" rev="2.9.2" conf="api-&gt;default"/>
+    <dependency org="com.squareup.picasso" name="picasso" rev="2.5.2" conf="api-&gt;default"/>
+    <dependency org="com.google.android.gms" name="play-services-gcm" rev="15.0.1" conf="api-&gt;default"/>
+    <dependency org="com.google.android.gms" name="play-services-analytics" rev="16.0.1" conf="api-&gt;default"/>
+    <dependency org="com.google.android.gms" name="play-services-maps" rev="15.0.1" conf="api-&gt;default"/>
+    <dependency org="com.google.android.gms" name="play-services-auth" rev="15.0.1" conf="api-&gt;default"/>
+    <dependency org="com.google.android.gms" name="play-services-location" rev="15.0.1" conf="api-&gt;default"/>
+    <dependency org="com.google.android.gms" name="play-services-ads" rev="15.0.1" conf="api-&gt;default"/>
+    <dependency org="com.google.android.gms" name="play-services-fitness" rev="15.0.1" conf="api-&gt;default"/>
+    <dependency org="com.google.android.gms" name="play-services-vision" rev="15.0.2" conf="api-&gt;default"/>
+    <dependency org="com.google.android.gms" name="play-services-wallet" rev="15.0.1" conf="api-&gt;default"/>
+    <dependency org="com.stripe" name="stripe-android" rev="2.1.+" conf="api-&gt;default"/>
+    <dependency org="com.github.tipsi" name="CreditCardEntry" rev="1.4.8.10" conf="api-&gt;default"/>
+    <dependency org="com.raizlabs.android" name="DBFlow-Core" rev="2.2.1" conf="api-&gt;default"/>
+    <dependency org="com.raizlabs.android" name="DBFlow" rev="2.2.1" conf="api-&gt;default"/>
+    <dependency org="com.madgag.spongycastle" name="core" rev="1.53.0.0" conf="api-&gt;default"/>
+    <dependency org="com.madgag.spongycastle" name="prov" rev="1.53.0.0" conf="api-&gt;default"/>
+    <dependency org="com.facebook.device.yearclass" name="yearclass" rev="1.0.1" conf="api-&gt;default"/>
+    <dependency org="commons-io" name="commons-io" rev="1.3.2" conf="api-&gt;default"/>
+    <dependency org="com.google.android.exoplayer" name="exoplayer" rev="2.6.1" conf="api-&gt;default"/>
+    <dependency org="me.leolin" name="ShortcutBadger" rev="1.1.4" transitive="false" conf="api-&gt;default">
+      <artifact name="ShortcutBadger" type="aar" ext="aar" conf="api"/>
+    </dependency>
+    <dependency org="com.nostra13.universalimageloader" name="universal-image-loader" rev="1.9.5" conf="api-&gt;default"/>
+    <dependency org="com.theartofdev.edmodo" name="android-image-cropper" rev="2.4.7" conf="api-&gt;default"/>
+    <dependency org="com.yqritc" name="android-scalablevideoview" rev="1.0.1" conf="api-&gt;default"/>
+    <dependency org="commons-codec" name="commons-codec" rev="1.10" conf="api-&gt;default"/>
+    <dependency org="com.segment.analytics.android" name="analytics" rev="4.3.0" conf="api-&gt;default"/>
+    <dependency org="com.google.zxing" name="core" rev="3.3.2" conf="api-&gt;default"/>
+    <dependency org="net.openid" name="appauth" rev="0.4.1" conf="api-&gt;default"/>
+    <dependency org="com.airbnb.android" name="lottie" rev="2.5.5" conf="api-&gt;default">
+      <exclude org="com.android.support" module="appcompat-v7" name="*" type="*" ext="*" conf="api" matcher="exact"/>
+    </dependency>
+    <dependency org="io.branch.sdk.android" name="library" rev="2.17.1" conf="api-&gt;default"/>
+    <dependency org="io.nlopez.smartlocation" name="library" rev="3.2.11" transitive="false" conf="api-&gt;default"/>
+    <dependency org="com.android.support" name="exifinterface" rev="27.1.1" conf="api-&gt;default"/>
+    <dependency org="com.google.android" name="cameraview" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="com.google.firebase" name="firebase-core" rev="16.0.1" conf="api-&gt;default"/>
+    <dependency org="com.google.firebase" name="firebase-messaging" rev="17.1.0" conf="api-&gt;default"/>
+    <dependency org="com.google.maps.android" name="android-maps-utils" rev="0.5+" conf="api-&gt;default"/>
+    <dependency org="com.jakewharton" name="butterknife" rev="8.4.0" conf="api-&gt;default"/>
+    <dependency org="host.exp" name="reactandroid-abi29_0_0" rev="1.0.0" conf="compile-&gt;default"/>
+    <dependency org="org.glassfish" name="javax.annotation" rev="3.1.1" conf="compileOnly-&gt;default"/>
+    <dependency org="com.squareup.leakcanary" name="leakcanary-android-no-op" rev="1.4-beta1" conf="debugApi-&gt;default"/>
+    <dependency org="com.android.tools.lint" name="lint-gradle" rev="26.1.4" conf="lintClassPath-&gt;default"/>
+    <dependency org="com.squareup.leakcanary" name="leakcanary-android-no-op" rev="1.4-beta1" conf="releaseApi-&gt;default"/>
+  </dependencies>
+</ivy-module>

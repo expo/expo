@@ -2,8 +2,10 @@
 'use strict';
 
 const path = require('path');
-const JsonFile = require('@exponent/json-file');
+const JsonFile = require('@expo/json-file').default;
 const mux = require('@expo/mux');
+
+const EXPONENT_DIR = process.env.EXPONENT_DIR || path.join(__dirname, '..');
 
 function sdkVersionAsync(packageJsonFilePath) {
   return new JsonFile(packageJsonFilePath).getAsync('exp').then(exp => {
@@ -17,9 +19,8 @@ function sdkVersionAsync(packageJsonFilePath) {
 }
 
 function getProjectVersionsAsync() {
-  let exponentPath = path.join(__dirname, '..');
   return mux({
-    sdkVersion: sdkVersionAsync(path.join(exponentPath, 'package.json')),
+    sdkVersion: sdkVersionAsync(path.join(EXPONENT_DIR, 'package.json')),
   });
 }
 

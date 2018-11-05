@@ -5,8 +5,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class EXFrameReactAppManager;
-
 /**
  * Handles logic for Branch deep links and integration with the versioned
  * RN bindings. Based loosely on RNBranch.h but handles versionning and limit

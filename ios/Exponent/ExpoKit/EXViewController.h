@@ -1,26 +1,24 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "EXErrorView.h"
-#import "EXKernelReactAppManager.h"
+#import <UIKit/UIKit.h>
 
-#import <React/RCTBridge.h>
+@class EXViewController;
+@class EXKernelAppRecord;
 
-@import UIKit;
+@protocol EXViewControllerDelegate <NSObject>
 
-NS_ASSUME_NONNULL_BEGIN
-
-@interface EXViewController : UIViewController <EXReactAppManagerDelegate>
-
-- (instancetype)initWithLaunchOptions: (NSDictionary *)launchOptions;
-- (void)loadReactApplication;
-- (void)showErrorWithType:(EXFatalErrorType)type error: (nullable NSError *)error;
-- (NSDictionary *)launchOptions;
-
-// TODO: make private
-@property (nonatomic, assign) BOOL isLoading;
-@property (nonatomic, strong) UIView *contentView;
-@property (nonatomic, strong) EXKernelReactAppManager *appManager;
+- (void)viewController:(EXViewController *)vc didNavigateAppToVisible:(EXKernelAppRecord *)appRecord;
 
 @end
 
-NS_ASSUME_NONNULL_END
+@interface EXViewController : UIViewController
+
+/**
+ *  Invoked from `viewDidLoad`
+ */
+- (void)createRootAppAndMakeVisible;
+
+@property (nonatomic, strong) UIViewController *contentViewController;
+@property (nonatomic, weak) id<EXViewControllerDelegate> delegate;
+
+@end

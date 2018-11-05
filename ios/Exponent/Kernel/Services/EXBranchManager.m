@@ -4,10 +4,10 @@
 
 #import <Branch/Branch.h>
 
-#import "EXReactAppManager.h"
-#import "EXFrameReactAppManager.h"
+#import "EXEnvironment.h"
 #import "EXKernel.h"
-#import "EXShellManager.h"
+#import "EXKernelAppRecord.h"
+#import "RNBranch.h"
 
 // These constants need to stay in sync with the ones in RNBranch.
 NSString * const EXBranchLinkOpenedNotificationErrorKey = @"error";
@@ -19,12 +19,15 @@ NSString * const EXBranchLinkOpenedNotification = @"RNBranchLinkOpenedNotificati
 - (void)onInitSessionFinished:(NSNotification *)notification;
 @end
 
+@interface EXBranchManager () <EXBranchScopedModuleDelegate>
+
+@end
+
 @implementation EXBranchManager
 {
   NSDictionary *_launchOptions;
   BOOL _isInitialized;
   NSURL *_url;
-  EXReactAppManager *_appManager;
 }
 
 + (instancetype)sharedInstance
@@ -43,25 +46,6 @@ NSString * const EXBranchLinkOpenedNotification = @"RNBranchLinkOpenedNotificati
 {
   id branchKey = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"branch_key"];
   return (branchKey != nil);
-}
-
-#pragma mark - kernel service
-
-- (void)kernelDidRegisterBridgeWithRecord:(EXKernelBridgeRecord *)record
-{
-  // The first EXFrameReactAppManager will always be the standalone app one.
-  if (_appManager == nil &&
-      [EXShellManager sharedInstance].isShell) {
-    _appManager = record.appManager;
-    [self tryInitBranch];
-  }
-}
-
-- (void)kernelWillUnregisterBridgeWithRecord:(EXKernelBridgeRecord *)record
-{
-  if (record.appManager == _appManager) {
-    _appManager = nil;
-  }
 }
 
 #pragma mark - linking hooks
@@ -90,37 +74,42 @@ NSString * const EXBranchLinkOpenedNotification = @"RNBranchLinkOpenedNotificati
   return [[Branch getInstance] handleDeepLink:url];
 }
 
-- (void)tryInitBranch
+- (void)branchModuleDidInit:(id)versionedBranchModule
 {
-  if (_appManager == nil || _isInitialized) {
+  if (_isInitialized || ![[self class] isBranchEnabled]) {
     return;
   }
+  RNBranch *branchModule = (RNBranch *)versionedBranchModule;
+  EXKernelAppRecord *appForModule = [[EXKernel sharedInstance].appRegistry newestRecordWithExperienceId:branchModule.experienceId];
+  if (appForModule && appForModule == [EXKernel sharedInstance].appRegistry.standaloneAppRecord) {
+    _isInitialized = YES;
+    
+    // branch is going to retain the init callback
+    __block typeof(self) blockSelf = self;
 
-  _isInitialized = YES;
+    [[Branch getInstance] initSessionWithLaunchOptions:_launchOptions
+                                          isReferrable:YES
+                            andRegisterDeepLinkHandler:^(NSDictionary *params, NSError *error) {
+      NSMutableDictionary *result = [NSMutableDictionary dictionary];
+      if (error) {
+        result[EXBranchLinkOpenedNotificationErrorKey] = error;
+      }
+      if (params) {
+        result[EXBranchLinkOpenedNotificationParamsKey] = params;
+      }
+      if (blockSelf->_url) {
+        result[EXBranchLinkOpenedNotificationUriKey] = blockSelf->_url;
+      }
 
-  [[Branch getInstance] initSessionWithLaunchOptions:_launchOptions
-                                        isReferrable:YES
-                          andRegisterDeepLinkHandler:^(NSDictionary *params, NSError *error) {
-    NSMutableDictionary *result = [NSMutableDictionary dictionary];
-    if (error) {
-      result[EXBranchLinkOpenedNotificationErrorKey] = error;
-    }
-    if (params) {
-      result[EXBranchLinkOpenedNotificationParamsKey] = params;
-    }
-    if (_url) {
-      result[EXBranchLinkOpenedNotificationUriKey] = _url;
-    }
-
-    // We can't use RNBranch static methods directly because it uses event dispatch
-    // and every instance of the native module will register to it causing duplicate
-    // events (one for each bridge). As a workaround call the event listener manually
-    // on the native module of the standalone app.
-    NSNotification *notification =
-      [[NSNotification alloc] initWithName:EXBranchLinkOpenedNotification object:self userInfo:result];
-    id branchModule = [[EXKernel sharedInstance] nativeModuleForAppManager:_appManager named:@"RNBranch"];
-    [branchModule onInitSessionFinished:notification];
-  }];
+      // We can't use RNBranch static methods directly because it uses event dispatch
+      // and every instance of the native module will register to it causing duplicate
+      // events (one for each bridge). As a workaround call the event listener manually
+      // on the native module of the standalone app.
+      NSNotification *notification =
+        [[NSNotification alloc] initWithName:EXBranchLinkOpenedNotification object:self userInfo:result];
+      [versionedBranchModule onInitSessionFinished:notification];
+    }];
+  }
 }
 
 @end

@@ -4,10 +4,12 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
+	<key>CFBundleDisplayName</key>
+	<string>$(EX_BUNDLE_NAME)</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
-	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<string>host.exp.Exponent</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -15,7 +17,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>2.3.3</string>
+	<string>2.8.4</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleURLTypes</key>
@@ -42,6 +44,8 @@
 			</array>
 		</dict>
 	</array>
+	<key>CFBundleVersion</key>
+	<string>2.8.4</string>
 	<key>Fabric</key>
 	<dict>
 		<key>APIKey</key>
@@ -81,6 +85,10 @@
 	<string>Expo uses your camera to scan project QR codes. Expo experiences you open may use the camera with the Expo camera API.</string>
 	<key>NSContactsUsageDescription</key>
 	<string>Allow Expo experiences to access your contacts</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Allow Expo experiences to use your location</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Allow Expo experiences to use your location</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Allow Expo experiences to use your location</string>
 	<key>NSMicrophoneUsageDescription</key>
@@ -93,6 +101,13 @@
 	<string>Give Expo experiences permission to access your photos</string>
 	<key>NSRemindersUsageDescription</key>
 	<string>Allow Expo experiences to access your reminders</string>
+	<key>SupportsAppMultiplexing</key>
+	<true/>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>location</string>
+	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>

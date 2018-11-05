@@ -130,6 +130,13 @@
       <item name="android:layout_width">0dp</item>
       <item name="android:layout_weight">1.0</item>
   </style>
+
+  <style name="InfoToolbar" parent="Theme.AppCompat">
+      <item name="colorPrimary">@color/colorPrimary</item>
+      <item name="android:textColorPrimary">@color/white</item>
+      <item name="android:textColorSecondary">@color/white</item>
+      <item name="actionMenuTextColor">@color/white</item>      
+  </style>
   
   <style name="Header" parent="@android:style/Widget.TextView">
       <item name="android:layout_width">fill_parent</item>

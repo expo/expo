@@ -8,6 +8,7 @@
 #import <React/RCTUIManagerObserverCoordinator.h>
 
 #import "RNGestureHandlerState.h"
+#import "RNGestureHandlerDirection.h"
 #import "RNGestureHandler.h"
 #import "RNGestureHandlerManager.h"
 
@@ -25,6 +26,16 @@
 RCT_EXPORT_MODULE(RNGestureHandlerButton)
 
 RCT_EXPORT_VIEW_PROPERTY(enabled, BOOL)
+
+RCT_CUSTOM_VIEW_PROPERTY(hitSlop, UIEdgeInsets, RNGestureHandlerButton)
+{
+  if (json) {
+    UIEdgeInsets hitSlopInsets = [RCTConvert UIEdgeInsets:json];
+    view.hitTestEdgeInsets = UIEdgeInsetsMake(-hitSlopInsets.top, -hitSlopInsets.left, -hitSlopInsets.bottom, -hitSlopInsets.right);
+  } else {
+    view.hitTestEdgeInsets = defaultView.hitTestEdgeInsets;
+  }
+}
 
 - (UIView *)view
 {
@@ -130,6 +141,11 @@ RCT_EXPORT_METHOD(handleClearJSResponder)
 
 #pragma mark - RCTUIManagerObserver
 
+- (void)uiManagerWillFlushUIBlocks:(RCTUIManager *)uiManager
+{
+  [self uiManagerWillPerformMounting:uiManager];
+}
+
 - (void)uiManagerWillPerformMounting:(RCTUIManager *)uiManager
 {
     if (_operations.count == 0) {
@@ -164,6 +180,12 @@ RCT_EXPORT_METHOD(handleClearJSResponder)
                       @"CANCELLED": @(RNGestureHandlerStateCancelled),
                       @"FAILED": @(RNGestureHandlerStateFailed),
                       @"END": @(RNGestureHandlerStateEnd)
+                      },
+              @"Direction": @{
+                      @"RIGHT": @(RNGestureHandlerDirectionRight),
+                      @"LEFT": @(RNGestureHandlerDirectionLeft),
+                      @"UP": @(RNGestureHandlerDirectionUp),
+                      @"DOWN": @(RNGestureHandlerDirectionDown)
                       }
               };
 }

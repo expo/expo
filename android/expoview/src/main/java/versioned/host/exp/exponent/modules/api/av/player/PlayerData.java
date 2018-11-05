@@ -1,15 +1,18 @@
 package versioned.host.exp.exponent.modules.api.av.player;
 
 import android.net.Uri;
+import android.os.Handler;
 import android.util.Pair;
 import android.view.Surface;
-import android.widget.MediaController;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 
+import java.lang.ref.WeakReference;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -18,6 +21,7 @@ import versioned.host.exp.exponent.modules.api.av.AudioEventHandler;
 
 public abstract class PlayerData implements AudioEventHandler {
   static final String STATUS_ANDROID_IMPLEMENTATION_KEY_PATH = "androidImplementation";
+  static final String STATUS_HEADERS_KEY_PATH = "headers";
   static final String STATUS_IS_LOADED_KEY_PATH = "isLoaded";
   public static final String STATUS_URI_KEY_PATH = "uri";
   static final String STATUS_OVERRIDING_EXTENSION_KEY_PATH = "overridingExtension";
@@ -26,7 +30,7 @@ public abstract class PlayerData implements AudioEventHandler {
   static final String STATUS_POSITION_MILLIS_KEY_PATH = "positionMillis";
   static final String STATUS_PLAYABLE_DURATION_MILLIS_KEY_PATH = "playableDurationMillis";
   static final String STATUS_SHOULD_PLAY_KEY_PATH = "shouldPlay";
-  static final String STATUS_IS_PLAYING_KEY_PATH = "isPlaying";
+  public static final String STATUS_IS_PLAYING_KEY_PATH = "isPlaying";
   static final String STATUS_IS_BUFFERING_KEY_PATH = "isBuffering";
   static final String STATUS_RATE_KEY_PATH = "rate";
   static final String STATUS_SHOULD_CORRECT_PITCH_KEY_PATH = "shouldCorrectPitch";
@@ -72,8 +76,28 @@ public abstract class PlayerData implements AudioEventHandler {
 
   final AVModule mAVModule;
   final Uri mUri;
+  final Map<String, Object> mRequestHeaders;
 
-  private Timer mTimer = null;
+  private Handler mHandler = new Handler();
+  private Runnable mProgressUpdater = new ProgressUpdater(this);
+
+  private class ProgressUpdater implements Runnable {
+    private WeakReference<PlayerData> mPlayerDataWeakReference;
+
+    private ProgressUpdater(PlayerData playerData) {
+      mPlayerDataWeakReference = new WeakReference<>(playerData);
+    }
+
+    @Override
+    public void run() {
+      final PlayerData playerData = mPlayerDataWeakReference.get();
+      if (playerData != null) {
+        playerData.callStatusUpdateListener();
+        playerData.progressUpdateLoop();
+      }
+    }
+  }
+
   private FullscreenPresenter mFullscreenPresenter = null;
   private StatusUpdateListener mStatusUpdateListener = null;
   ErrorListener mErrorListener = null;
@@ -86,22 +110,27 @@ public abstract class PlayerData implements AudioEventHandler {
   float mVolume = 1.0f;
   boolean mIsMuted = false;
 
-  PlayerData(final AVModule avModule, final Uri uri) {
+  PlayerData(final AVModule avModule, final Uri uri, final Map<String, Object> requestHeaders) {
+    mRequestHeaders = requestHeaders;
     mAVModule = avModule;
     mUri = uri;
   }
 
-  public static PlayerData createUnloadedPlayerData(final AVModule avModule, final ReadableMap source, final ReadableMap status) {
+  public static PlayerData createUnloadedPlayerData(final AVModule avModule, final ReactContext context, final ReadableMap source, final ReadableMap status) {
     final String uriString = source.getString(STATUS_URI_KEY_PATH);
+    Map<String, Object> requestHeaders = null;
+    if (source.hasKey(STATUS_HEADERS_KEY_PATH)) {
+      requestHeaders = source.getMap(STATUS_HEADERS_KEY_PATH).toHashMap();
+    }
     final String uriOverridingExtension = source.hasKey(STATUS_OVERRIDING_EXTENSION_KEY_PATH) ? source.getString(STATUS_OVERRIDING_EXTENSION_KEY_PATH) : null;
     // uriString is guaranteed not to be null (both VideoView.setSource and Sound.loadAsync handle that case)
     final Uri uri = Uri.parse(uriString);
 
     if (status.hasKey(STATUS_ANDROID_IMPLEMENTATION_KEY_PATH)
         && status.getString(STATUS_ANDROID_IMPLEMENTATION_KEY_PATH).equals(MediaPlayerData.IMPLEMENTATION_NAME)) {
-      return new MediaPlayerData(avModule, uri);
+      return new MediaPlayerData(avModule, context, uri, requestHeaders);
     } else {
-      return new SimpleExoPlayerData(avModule, uri, uriOverridingExtension);
+      return new SimpleExoPlayerData(avModule, context, uri, uriOverridingExtension, requestHeaders);
     }
   }
 
@@ -134,32 +163,19 @@ public abstract class PlayerData implements AudioEventHandler {
   abstract boolean shouldContinueUpdatingProgress();
 
   final void stopUpdatingProgressIfNecessary() {
-    if (mTimer != null) {
-      final Timer timer = mTimer;
-      mTimer = null;
-      timer.cancel();
-    }
+    mHandler.removeCallbacks(mProgressUpdater);
   }
 
   private void progressUpdateLoop() {
-    if (shouldContinueUpdatingProgress()) {
-      mTimer = new Timer();
-      mTimer.schedule(new TimerTask() {
-        @Override
-        public void run() {
-          callStatusUpdateListener();
-          progressUpdateLoop();
-        }
-      }, mProgressUpdateIntervalMillis);
-    } else {
+    if (!shouldContinueUpdatingProgress()) {
       stopUpdatingProgressIfNecessary();
+    } else {
+      mHandler.postDelayed(mProgressUpdater, mProgressUpdateIntervalMillis);
     }
   }
 
   final void beginUpdatingProgressIfNecessary() {
-    if (mTimer == null) {
-      progressUpdateLoop();
-    }
+    mHandler.post(mProgressUpdater);
   }
 
   public final void setStatusUpdateListener(final StatusUpdateListener listener) {

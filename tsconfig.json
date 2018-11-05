@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "*": ["ts-declarations/*", "node_modules/*"]
+    }
+  }
+}

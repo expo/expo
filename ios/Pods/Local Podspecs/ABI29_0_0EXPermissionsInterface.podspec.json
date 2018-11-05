@@ -1,0 +1,23 @@
+{
+  "name": "ABI29_0_0EXPermissionsInterface",
+  "version": "1.0.0-rc.2",
+  "summary": "Expo Permissions interface package",
+  "description": "Expo Permissions interface package",
+  "license": "BSD",
+  "authors": "650 Industries, Inc.",
+  "homepage": "https://docs.expo.io/",
+  "platforms": {
+    "ios": "10.0"
+  },
+  "source": {
+    "git": "https://github.com/expo/expo.git"
+  },
+  "source_files": "ABI29_0_0EXPermissionsInterface/**/*.{h,m}",
+  "preserve_paths": "ABI29_0_0EXPermissionsInterface/**/*.{h,m}",
+  "requires_arc": true,
+  "dependencies": {
+    "ABI29_0_0EXCore": [
+
+    ]
+  }
+}

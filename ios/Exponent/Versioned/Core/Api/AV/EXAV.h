@@ -1,8 +1,10 @@
 // Copyright 2017-present 650 Industries. All rights reserved.
 
-#import <React/RCTBridgeModule.h>
-#import <React/RCTEventEmitter.h>
+#import <AVFoundation/AVFoundation.h>
 
+#import <React/RCTBridgeModule.h>
+
+#import "EXScopedEventEmitter.h"
 #import "EXAVObject.h"
 
 typedef NS_OPTIONS(NSUInteger, EXAudioInterruptionMode)
@@ -20,7 +22,20 @@ typedef NS_OPTIONS(NSUInteger, EXAudioRecordingOptionBitRateStrategy)
   EXAudioRecordingOptionBitRateStrategyVariable            = 3
 };
 
-@interface EXAV : RCTEventEmitter <RCTBridgeModule>
+@protocol EXAVScopedModuleDelegate
+
+- (void)scopedModuleDidBackground:(id)scopedModule;
+- (void)scopedModuleDidForeground:(id)scopedModule;
+- (void)scopedModuleWillDeallocate:(id)scopedModule;
+- (NSError *)setActive:(BOOL)active forScopedModule:(id)scopedModule;
+- (NSError *)setCategory:(NSString *)category withOptions:(AVAudioSessionCategoryOptions)options forScopedModule:(id)scopedModule;
+
+@end
+
+@interface EXAV : EXScopedEventEmitter <RCTBridgeModule>
+
+- (void)handleMediaServicesReset:(NSNotification *)notification;
+- (void)handleAudioSessionInterruption:(NSNotification *)notification;
 
 - (NSError *)promoteAudioSessionIfNecessary;
 

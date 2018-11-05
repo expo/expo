@@ -1,0 +1,1 @@
+../../../../../packages/expo-analytics-segment/ios/EXSegment/EXSegment.h

@@ -2,7 +2,10 @@
 
 #import "EXSQLite.h"
 
-#import "EXFileSystem.h"
+#import "EXModuleRegistryBinding.h"
+#import <EXFileSystemInterface/EXFileSystemInterface.h>
+
+#import <React/RCTLog.h>
 
 #import <sqlite3.h>
 
@@ -33,8 +36,13 @@ RCT_EXPORT_MODULE(ExponentSQLite)
 
 - (NSString *)pathForDatabaseName:(NSString *)name
 {
-  NSString *directory = [self.bridge.scopedModules.fileSystem.documentDirectory stringByAppendingPathComponent:@"SQLite"];
-  [EXFileSystem ensureDirExistsWithPath:directory];
+  id<EXFileSystemInterface> fileSystem = [self.bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
+  if (!fileSystem) {
+    RCTLogError(@"No FileSystem module.");
+    return nil;
+  }
+  NSString *directory = [fileSystem.documentDirectory stringByAppendingPathComponent:@"SQLite"];
+  [fileSystem ensureDirExistsWithPath:directory];
   return [directory stringByAppendingPathComponent:name];
 }
 
@@ -42,6 +50,9 @@ RCT_EXPORT_MODULE(ExponentSQLite)
 {
   NSValue *cachedDB = nil;
   NSString *path = [self pathForDatabaseName:dbName];
+  if (!path) {
+    return nil;
+  }
   if ([[NSFileManager defaultManager] fileExistsAtPath:path]) {
     cachedDB = [cachedDatabases objectForKey:dbName];
   }
@@ -78,6 +89,13 @@ RCT_EXPORT_METHOD(exec:(NSString *)dbName
       [sqlResults addObject:[self executeSql:sql withSqlArgs:sqlArgs withDb:db withReadOnly:readOnly]];
     }
     resolve(sqlResults);
+  }
+}
+
+RCT_EXPORT_METHOD(close:(NSString *)dbName)
+{
+  @synchronized(self) {
+    [cachedDatabases removeObjectForKey:dbName];
   }
 }
 

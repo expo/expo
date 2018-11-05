@@ -5,10 +5,10 @@ package host.exp.exponent.referrer;
 import android.content.Context;
 import android.content.Intent;
 
-import com.amplitude.api.Amplitude;
 import com.google.android.gms.analytics.CampaignTrackingReceiver;
 
 import host.exp.exponent.ExpoApplication;
+import host.exp.exponent.analytics.Analytics;
 import io.branch.referral.InstallListener;
 
 import org.json.JSONException;
@@ -57,7 +57,7 @@ public class InstallReferrerReceiver extends CampaignTrackingReceiver {
     } catch (JSONException e) {
       EXL.e(TAG, e.getMessage());
     }
-    Amplitude.getInstance().logEvent("INSTALL_REFERRER_RECEIVED", eventProperties);
+    Analytics.logEvent("INSTALL_REFERRER_RECEIVED", eventProperties);
 
     // Preload manifest + bundle if possible
     try {

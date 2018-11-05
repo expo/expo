@@ -6,10 +6,10 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
 
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -23,7 +23,6 @@ import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.fitness.Fitness;
-import com.google.android.gms.fitness.FitnessStatusCodes;
 import com.google.android.gms.fitness.data.Bucket;
 import com.google.android.gms.fitness.data.DataPoint;
 import com.google.android.gms.fitness.data.DataSet;
@@ -38,17 +37,24 @@ import com.google.android.gms.fitness.request.SensorRequest;
 import com.google.android.gms.fitness.result.DataReadResult;
 import com.google.android.gms.fitness.result.DataSourcesResult;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nullable;
 
-public class PedometerModule extends ReactContextBaseJavaModule {
+import host.exp.exponent.experience.ExperienceActivity;
+
+public class PedometerModule extends ReactContextBaseJavaModule implements LifecycleEventListener {
+  private static String TAG = "PedometerModule";
   private @Nullable GoogleApiClient mClient;
   private @Nullable OnDataPointListener mListener;
   private int mWatchTotalSteps = 0;
+  private static Map<String, GoogleApiClient> sInstanceMap = new HashMap<>();
 
   public PedometerModule(ReactApplicationContext context) {
     super(context);
+    context.addLifecycleEventListener(this);
   }
 
   @Override
@@ -58,6 +64,10 @@ public class PedometerModule extends ReactContextBaseJavaModule {
 
   public void assertApiClient() {
     if (mClient == null) {
+      if (sInstanceMap.get(getExperienceId()) != null) {
+        mClient = sInstanceMap.get(getExperienceId());
+        return;
+      }
       final FragmentActivity activity = (FragmentActivity) getCurrentActivity();
       mClient = new GoogleApiClient.Builder(getReactApplicationContext())
           .addApi(Fitness.HISTORY_API)
@@ -72,7 +82,6 @@ public class PedometerModule extends ReactContextBaseJavaModule {
 
                 @Override
                 public void onConnectionSuspended(int i) {
-
                 }
               }
           )
@@ -83,6 +92,8 @@ public class PedometerModule extends ReactContextBaseJavaModule {
             }
           })
           .build();
+
+      sInstanceMap.put(getExperienceId(), mClient);
 
       Fitness.RecordingApi.subscribe(mClient, DataType.TYPE_STEP_COUNT_DELTA)
           .setResultCallback(new ResultCallback<Status>() {
@@ -187,5 +198,24 @@ public class PedometerModule extends ReactContextBaseJavaModule {
             promise.resolve(false);
           }
         });
+  }
+
+  @Override
+  public void onHostResume() {
+
+  }
+
+  @Override
+  public void onHostPause() {
+
+  }
+
+  @Override
+  public void onHostDestroy() {
+    sInstanceMap.remove(getExperienceId());
+  }
+
+  private String getExperienceId() {
+    return ((ExperienceActivity)getCurrentActivity()).getExperienceId();
   }
 }

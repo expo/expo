@@ -18,8 +18,10 @@ package com.google.android.cameraview;
 
 import android.media.CamcorderProfile;
 import android.view.View;
+import android.graphics.SurfaceTexture;
 
 import java.util.Set;
+import java.util.SortedSet;
 
 abstract class CameraViewImpl {
 
@@ -49,7 +51,19 @@ abstract class CameraViewImpl {
 
     abstract int getFacing();
 
+    /**
+     * @return currently used camera ID (as an integer that can be used as a parameter to
+     * {@link CamcorderProfile#get(int, int)})
+     */
+    abstract int getCameraId();
+
     abstract Set<AspectRatio> getSupportedAspectRatios();
+
+    abstract SortedSet<Size> getAvailablePictureSizes(AspectRatio ratio);
+
+    abstract void setPictureSize(Size size);
+
+    abstract Size getPictureSize();
 
     /**
      * @return {@code true} if the aspect ratio was changed.
@@ -90,6 +104,14 @@ abstract class CameraViewImpl {
     abstract void setScanning(boolean isScanning);
 
     abstract boolean getScanning();
+
+    abstract public void resumePreview();
+
+    abstract public void pausePreview();
+
+    abstract public void setPreviewTexture(SurfaceTexture surfaceTexture);
+
+    abstract public Size getPreviewSize();
 
     interface Callback {
 

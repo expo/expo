@@ -1,12 +1,14 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
 #import "EXNotifications.h"
-#import "EXConstants.h"
+#import "EXModuleRegistryBinding.h"
 #import "EXUnversioned.h"
 #import "EXUtil.h"
 
 #import <React/RCTUtils.h>
 #import <React/RCTConvert.h>
+
+#import <EXConstantsInterface/EXConstantsInterface.h>
 
 @implementation RCTConvert (NSCalendarUnit)
 
@@ -55,7 +57,9 @@ RCT_REMAP_METHOD(getDevicePushTokenAsync,
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
-  if (![_bridge.scopedModules.constants.appOwnership isEqualToString:@"standalone"]) {
+  id<EXConstantsInterface> constants = [_bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXConstantsInterface)];
+  
+  if (![constants.appOwnership isEqualToString:@"standalone"]) {
     return reject(0, @"getDevicePushTokenAsync is only accessible within standalone applications", nil);
   }
   
@@ -71,18 +75,17 @@ RCT_REMAP_METHOD(getExponentPushTokenAsync,
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
   if (!self.experienceId) {
-    reject(0, @"Requires experience Id", nil);
+    reject(@"E_NOTIFICATIONS_INTERNAL_ERROR", @"The notifications module is missing the current project's ID", nil);
     return;
   }
-  void (^success)(NSDictionary *) = ^(NSDictionary *result) {
-    resolve([result objectForKey:@"exponentPushToken"]);
-  };
-  void (^failure)(NSString *) = ^(NSString *message) {
-    reject(0, message, nil);
-  };
-  [_kernelNotificationsDelegate getExpoPushTokenForScopedModule:self
-                                                        success:success
-                                                        failure:failure];
+
+  [_kernelNotificationsDelegate getExpoPushTokenForScopedModule:self completionHandler:^(NSString *pushToken, NSError *error) {
+    if (error) {
+      reject(@"E_NOTIFICATIONS_TOKEN_REGISTRATION_FAILED", error.localizedDescription, error);
+    } else {
+      resolve(pushToken);
+    }
+  }];
 }
 
 RCT_EXPORT_METHOD(presentLocalNotification:(NSDictionary *)payload

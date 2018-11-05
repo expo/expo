@@ -29,7 +29,6 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.LifecycleState;
-import com.facebook.react.modules.network.OkHttpClientProvider;
 import com.facebook.react.modules.network.ReactCookieJarContainer;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
@@ -40,23 +39,24 @@ import org.json.JSONObject;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
+import host.exp.exponent.AppLoader;
 import host.exp.exponent.ExponentDevActivity;
 import host.exp.exponent.LauncherActivity;
 import host.exp.exponent.ReactNativeStaticHelpers;
+import host.exp.exponent.experience.ErrorActivity;
 import host.exp.exponent.experience.ShellAppActivity;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.experience.BaseExperienceActivity;
 import host.exp.exponent.experience.ExperienceActivity;
 import host.exp.exponent.experience.HomeActivity;
+import host.exp.exponent.headless.HeadlessAppLoader;
 import host.exp.exponent.notifications.ExponentNotification;
 import host.exp.expoview.BuildConfig;
 import host.exp.exponent.Constants;
@@ -75,7 +75,6 @@ import expolib_v1.okhttp3.OkHttpClient;
 import versioned.host.exp.exponent.ExponentPackage;
 import versioned.host.exp.exponent.ReactUnthemedRootView;
 import versioned.host.exp.exponent.ReadableObjectUtils;
-import versioned.host.exp.exponent.modules.api.components.svg.Brush;
 
 // TOOD: need to figure out when we should reload the kernel js. Do we do it every time you visit
 // the home screen? only when the app gets kicked out of memory?
@@ -170,6 +169,10 @@ public class Kernel extends KernelInterface {
 
   // Don't call this until a loading screen is up, since it has to do some work on the main thread.
   public void startJSKernel() {
+    if (Constants.isShellApp()) {
+      return;
+    }
+
     SoLoader.init(mContext, false);
 
     synchronized (this) {
@@ -192,7 +195,7 @@ public class Kernel extends KernelInterface {
           public void run() {
             // Hack to make this show up for a while. Can't use an Alert because LauncherActivity has a transparent theme. This should only be seen by internal developers.
             for (int i = 0; i < 3; i++) {
-              Toast.makeText(mActivityContext, "Kernel manifest invalid. Make sure `expu start` is running inside of exponent/js and rebuild the app.", Toast.LENGTH_LONG).show();
+              Toast.makeText(mActivityContext, "Kernel manifest invalid. Make sure `expu start` is running inside of exponent/home and rebuild the app.", Toast.LENGTH_LONG).show();
             }
           }
         });
@@ -241,6 +244,9 @@ public class Kernel extends KernelInterface {
   }
 
   public void reloadJSBundle() {
+    if (Constants.isShellApp()) {
+      return;
+    }
     String bundleUrl = getBundleUrl();
     mHasError = false;
     Exponent.getInstance().loadJSBundle(null, bundleUrl, KernelConstants.KERNEL_BUNDLE_ID, RNObject.UNVERSIONED, kernelBundleListener(), true);
@@ -272,7 +278,7 @@ public class Kernel extends KernelInterface {
                 .setApplication(mApplicationContext)
                 .setJSBundleFile(localBundlePath)
                 .addPackage(new MainReactPackage())
-                .addPackage(ExponentPackage.kernelExponentPackage(mExponentManifest.getKernelManifest()))
+                .addPackage(ExponentPackage.kernelExponentPackage(mContext, mExponentManifest.getKernelManifest()))
                 .setInitialLifecycleState(LifecycleState.RESUMED);
 
             if (!KernelConfig.FORCE_NO_KERNEL_DEBUG_MODE && mExponentManifest.isDebugModeEnabled(mExponentManifest.getKernelManifest())) {
@@ -434,20 +440,29 @@ public class Kernel extends KernelInterface {
     mActivityContext.startActivity(intent);
   }
 
-  private void openShellAppActivity() {
+  private void openShellAppActivity(boolean forceCache) {
+    Class activityClass = ShellAppActivity.class;
+    if (Constants.isDetached()) {
+      try {
+        activityClass = Class.forName("host.exp.exponent.MainActivity");
+      } catch (Exception e) {
+        EXL.e(TAG, "Cannot find MainActivity, falling back to ShellAppActivity");
+      }
+    }
+
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       ActivityManager manager = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
       for (ActivityManager.AppTask task : manager.getAppTasks()) {
         Intent baseIntent = task.getTaskInfo().baseIntent;
 
-        if (ShellAppActivity.class.getName().equals(baseIntent.getComponent().getClassName())) {
+        if (activityClass.getName().equals(baseIntent.getComponent().getClassName())) {
           moveTaskToFront(task.getTaskInfo().id);
           return;
         }
       }
     }
 
-    Intent intent = new Intent(mActivityContext, ShellAppActivity.class);
+    Intent intent = new Intent(mActivityContext, activityClass);
     Kernel.addIntentDocumentFlags(intent);
 
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
@@ -455,6 +470,10 @@ public class Kernel extends KernelInterface {
       // ExperienceActivity - HomeActivity - ExperienceActivity
       // Want HomeActivity to be the root activity if it exists
       intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+    }
+
+    if (forceCache) {
+      intent.putExtra(KernelConstants.LOAD_FROM_CACHE_KEY, true);
     }
 
     mActivityContext.startActivity(intent);
@@ -544,22 +563,60 @@ public class Kernel extends KernelInterface {
     openManifestUrl(getManifestUrlFromFullUri(options.manifestUri), options, true);
   }
 
-  private String getManifestUrlFromFullUri(String uri) {
-    if (uri != null) {
-      int deepLinkPosition = uri.indexOf('+');
-      if (deepLinkPosition >= 0) {
-        uri = uri.substring(0, deepLinkPosition);
-      }
+  private String getManifestUrlFromFullUri(String uriString) {
+    if (uriString != null) {
+      Uri uri = Uri.parse(uriString);
+      Uri.Builder builder = uri.buildUpon();
+      int deepLinkPositionDashes = uriString.indexOf(ExponentManifest.DEEP_LINK_SEPARATOR_WITH_SLASH);
+      if (deepLinkPositionDashes >= 0) {
+        // do this safely so we preserve any query string
+        List<String> pathSegments = uri.getPathSegments();
+        builder.path(null);
 
-      // manifest url doesn't have a trailing slash
-      if (uri.length() > 0) {
-        char lastUrlChar = uri.charAt(uri.length() - 1);
-        if (lastUrlChar == '/') {
-          uri = uri.substring(0, uri.length() - 1);
+        for (String segment : pathSegments) {
+          if (ExponentManifest.DEEP_LINK_SEPARATOR.equals(segment)) {
+            break;
+          }
+          builder.appendEncodedPath(segment);
         }
       }
 
-      return uri;
+      // ignore any query param other than the release-channel
+      // as these will cause the client to treat this as a different experience
+      String releaseChannel = uri.getQueryParameter(ExponentManifest.QUERY_PARAM_KEY_RELEASE_CHANNEL);
+      builder.query(null);
+      if (releaseChannel != null) {
+        // release channels cannot contain the ' ' character, so if this is present,
+        // it must be an encoded form of '+' which indicated a deep link in SDK <27.
+        // therefore, nothing after this is part of the release channel name so we should strip it.
+        // TODO: remove this check once SDK 26 and below are no longer supported
+        int releaseChannelDeepLinkPosition = releaseChannel.indexOf(' ');
+        if (releaseChannelDeepLinkPosition > -1) {
+          releaseChannel = releaseChannel.substring(0, releaseChannelDeepLinkPosition);
+        }
+        builder.appendQueryParameter(ExponentManifest.QUERY_PARAM_KEY_RELEASE_CHANNEL, releaseChannel);
+      }
+
+      // ignore fragments as well (e.g. those added by auth-session)
+      builder.fragment(null);
+
+      uriString = builder.build().toString();
+
+      int deepLinkPositionPlus = uriString.indexOf('+');
+      if (deepLinkPositionPlus >= 0 && deepLinkPositionDashes < 0) {
+        // need to keep this for backwards compatibility
+        uriString = uriString.substring(0, deepLinkPositionPlus);
+      }
+
+      // manifest url doesn't have a trailing slash
+      if (uriString.length() > 0) {
+        char lastUrlChar = uriString.charAt(uriString.length() - 1);
+        if (lastUrlChar == '/') {
+          uriString = uriString.substring(0, uriString.length() - 1);
+        }
+      }
+
+      return uriString;
     }
     return null;
   }
@@ -568,7 +625,7 @@ public class Kernel extends KernelInterface {
     openManifestUrl(manifestUrl, options, isOptimistic, false);
   }
 
-  private void openManifestUrl(final String manifestUrl, final KernelConstants.ExperienceOptions options, final Boolean isOptimistic, final boolean forceNetwork) {
+  private void openManifestUrl(final String manifestUrl, final KernelConstants.ExperienceOptions options, final Boolean isOptimistic, boolean forceCache) {
     SoLoader.init(mContext, false);
 
     if (options == null) {
@@ -583,11 +640,11 @@ public class Kernel extends KernelInterface {
     }
 
     if (manifestUrl.equals(Constants.INITIAL_URL)) {
-      openShellAppActivity();
+      openShellAppActivity(forceCache);
       return;
     }
 
-    ExponentKernelModuleProvider.queueEvent("ExponentKernel.clearConsole", Arguments.createMap(), null);
+    ErrorActivity.clearErrorList();
 
     final List<ActivityManager.AppTask> tasks = getExperienceActivityTasks();
     ActivityManager.AppTask existingTask = null;
@@ -617,31 +674,59 @@ public class Kernel extends KernelInterface {
     }
 
     final ActivityManager.AppTask finalExistingTask = existingTask;
-    mExponentManifest.fetchManifest(manifestUrl, new ExponentManifest.ManifestListener() {
-      @Override
-      public void onCompleted(final JSONObject manifest) {
-        Exponent.getInstance().runOnUiThread(new Runnable() {
-          @Override
-          public void run() {
-            try {
-              openManifestUrlStep2(manifestUrl, manifest, finalExistingTask);
-            } catch (JSONException e) {
-              handleError(e);
+    if (existingTask == null) {
+      new AppLoader(manifestUrl, forceCache) {
+        @Override
+        public void onOptimisticManifest(final JSONObject optimisticManifest) {
+          Exponent.getInstance().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+              sendLoadingScreenManifestToExperienceActivity(optimisticManifest);
+            }
+          });
+        }
+
+        @Override
+        public void onManifestCompleted(final JSONObject manifest) {
+          Exponent.getInstance().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+              try {
+                openManifestUrlStep2(manifestUrl, manifest, finalExistingTask);
+              } catch (JSONException e) {
+                handleError(e);
+              }
+            }
+          });
+        }
+
+        @Override
+        public void onBundleCompleted(String localBundlePath) {
+          sendBundleToExperienceActivity(localBundlePath);
+        }
+
+        @Override
+        public void emitEvent(JSONObject params) {
+          ExperienceActivityTask task = sManifestUrlToExperienceActivityTask.get(manifestUrl);
+          if (task != null) {
+            ExperienceActivity experienceActivity = task.experienceActivity.get();
+            if (experienceActivity != null) {
+              experienceActivity.emitUpdatesEvent(params);
             }
           }
-        });
-      }
+        }
 
-      @Override
-      public void onError(Exception e) {
-        handleError(e);
-      }
+        @Override
+        public void onError(Exception e) {
+          handleError(e);
+        }
 
-      @Override
-      public void onError(String e) {
-        handleError(e);
-      }
-    }, forceNetwork);
+        @Override
+        public void onError(String e) {
+          handleError(e);
+        }
+      }.start();
+    }
   }
 
   private void openManifestUrlStep2(String manifestUrl, JSONObject manifest, ActivityManager.AppTask existingTask) throws JSONException {
@@ -660,7 +745,7 @@ public class Kernel extends KernelInterface {
     opts.put(KernelConstants.OPTION_LOAD_NUX_KEY, loadNux);
 
     if (existingTask == null) {
-      populateOptimisticExperienceActivity(manifestUrl, manifest, bundleUrl, opts);
+      sendManifestToExperienceActivity(manifestUrl, manifest, bundleUrl, opts);
     }
 
     if (loadNux) {
@@ -670,16 +755,15 @@ public class Kernel extends KernelInterface {
     WritableMap params = Arguments.createMap();
     params.putString("manifestUrl", manifestUrl);
     params.putString("manifestString", manifest.toString());
-    params.putString("bundleUrl", bundleUrl);
-    ExponentKernelModuleProvider.queueEvent("ExponentKernel.openManifestUrl", params, new ExponentKernelModuleProvider.KernelEventCallback() {
+    ExponentKernelModuleProvider.queueEvent("ExponentKernel.addHistoryItem", params, new ExponentKernelModuleProvider.KernelEventCallback() {
       @Override
       public void onEventSuccess(ReadableMap result) {
-        EXL.d(TAG, "Successfully called ExponentKernel.openManifestUrl in kernel JS.");
+        EXL.d(TAG, "Successfully called ExponentKernel.addHistoryItem in kernel JS.");
       }
 
       @Override
       public void onEventFailure(String errorMessage) {
-        EXL.e(TAG, "Error calling ExponentKernel.openManifestUrl in kernel JS: " + errorMessage);
+        EXL.e(TAG, "Error calling ExponentKernel.addHistoryItem in kernel JS: " + errorMessage);
       }
     });
 
@@ -687,6 +771,32 @@ public class Kernel extends KernelInterface {
   }
 
   // Called from DevServerHelper via ReactNativeStaticHelpers
+  @DoNotStrip
+  public static String getBundleUrlForActivityId(final int activityId, String host,
+                                                 String mainModuleId, String bundleTypeId,
+                                                 boolean devMode, boolean jsMinify) {
+    // NOTE: This current implementation doesn't look at the bundleTypeId (see RN's private
+    // BundleType enum for the possible values) but may need to
+
+    if (activityId == -1) {
+      // This is the kernel
+      return sInstance.getBundleUrl();
+    }
+
+    if (HeadlessAppLoader.hasBundleUrlForActivityId(activityId)) {
+      return HeadlessAppLoader.getBundleUrlForActivityId(activityId);
+    }
+
+    for (ExperienceActivityTask task : sManifestUrlToExperienceActivityTask.values()) {
+      if (task.activityId == activityId) {
+        return task.bundleUrl;
+      }
+    }
+
+    return null;
+  }
+
+  // <= SDK 25
   @DoNotStrip
   public static String getBundleUrlForActivityId(final int activityId, String host, String jsModulePath, boolean devMode, boolean jsMinify) {
     if (activityId == -1) {
@@ -756,10 +866,25 @@ public class Kernel extends KernelInterface {
     mOptimisticActivity = experienceActivity;
     mOptimisticTaskId = taskId;
 
+    AsyncCondition.notify(KernelConstants.OPEN_OPTIMISTIC_EXPERIENCE_ACTIVITY_KEY);
     AsyncCondition.notify(KernelConstants.OPEN_EXPERIENCE_ACTIVITY_KEY);
   }
 
-  public void populateOptimisticExperienceActivity(
+  public void sendLoadingScreenManifestToExperienceActivity(final JSONObject manifest) {
+    AsyncCondition.wait(KernelConstants.OPEN_OPTIMISTIC_EXPERIENCE_ACTIVITY_KEY, new AsyncCondition.AsyncConditionListener() {
+      @Override
+      public boolean isReady() {
+        return mOptimisticActivity != null && mOptimisticTaskId != null;
+      }
+
+      @Override
+      public void execute() {
+        mOptimisticActivity.setLoadingScreenManifest(manifest);
+      }
+    });
+  }
+
+  public void sendManifestToExperienceActivity(
       final String manifestUrl, final JSONObject manifest, final String bundleUrl, final JSONObject kernelOptions) {
     AsyncCondition.wait(KernelConstants.OPEN_EXPERIENCE_ACTIVITY_KEY, new AsyncCondition.AsyncConditionListener() {
       @Override
@@ -769,7 +894,22 @@ public class Kernel extends KernelInterface {
 
       @Override
       public void execute() {
-        mOptimisticActivity.loadExperience(manifestUrl, manifest, bundleUrl, kernelOptions);
+        mOptimisticActivity.setManifest(manifestUrl, manifest, bundleUrl, kernelOptions);
+        AsyncCondition.notify(KernelConstants.LOAD_BUNDLE_FOR_EXPERIENCE_ACTIVITY_KEY);
+      }
+    });
+  }
+
+  public void sendBundleToExperienceActivity(final String localBundlePath) {
+    AsyncCondition.wait(KernelConstants.LOAD_BUNDLE_FOR_EXPERIENCE_ACTIVITY_KEY, new AsyncCondition.AsyncConditionListener() {
+      @Override
+      public boolean isReady() {
+        return mOptimisticActivity != null && mOptimisticTaskId != null;
+      }
+
+      @Override
+      public void execute() {
+        mOptimisticActivity.setBundle(localBundlePath);
 
         mOptimisticActivity = null;
         mOptimisticTaskId = null;
@@ -877,7 +1017,7 @@ public class Kernel extends KernelInterface {
   }
 
   @Override
-  public boolean reloadVisibleExperience(String manifestUrl) {
+  public boolean reloadVisibleExperience(String manifestUrl, boolean forceCache) {
     if (manifestUrl == null) {
       return false;
     }
@@ -886,7 +1026,7 @@ public class Kernel extends KernelInterface {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
       // TODO: make debug mode work here
       openOptimisticExperienceActivity(manifestUrl);
-      openManifestUrl(manifestUrl, null, false, true);
+      openManifestUrl(manifestUrl, null, false, forceCache);
     } else {
       ExperienceActivity activity = null;
       for (final ExperienceActivityTask experienceActivityTask : sManifestUrlToExperienceActivityTask.values()) {
@@ -916,7 +1056,7 @@ public class Kernel extends KernelInterface {
       if (activity != null) {
         killActivityStack(activity);
       }
-      openManifestUrl(manifestUrl, null, true, true);
+      openManifestUrl(manifestUrl, null, true, forceCache);
     }
 
     return true;

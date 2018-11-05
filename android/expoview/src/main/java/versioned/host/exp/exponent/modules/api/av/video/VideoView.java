@@ -1,7 +1,6 @@
 package versioned.host.exp.exponent.modules.api.av.video;
 
 import android.annotation.SuppressLint;
-import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.util.Pair;
 import android.view.MotionEvent;
@@ -51,6 +50,7 @@ public class VideoView extends FrameLayout implements AudioEventHandler, Fullscr
   private boolean mUseNativeControls = false;
   private Boolean mOverridingUseNativeControls = null;
   private MediaController mMediaController = null;
+  private Pair<Integer, Integer> mVideoWidthHeight = null;
   private FullscreenVideoPlayerPresentationChangeProgressListener mFullscreenPlayerPresentationChangeProgressListener = null;
 
   private WritableMap mStatusToSet = Arguments.createMap();
@@ -83,7 +83,7 @@ public class VideoView extends FrameLayout implements AudioEventHandler, Fullscr
     maybeUpdateMediaControllerForUseNativeControls();
   }
 
-  private void unloadPlayerAndMediaController() {
+  public void unloadPlayerAndMediaController() {
     ensureFullscreenPlayerIsDismissed();
     if (mMediaController != null) {
       mMediaController.hide();
@@ -110,22 +110,24 @@ public class VideoView extends FrameLayout implements AudioEventHandler, Fullscr
   }
 
   private void callOnReadyForDisplay(final Pair<Integer, Integer> videoWidthHeight) {
-    final int width = videoWidthHeight.first;
-    final int height = videoWidthHeight.second;
+    if (videoWidthHeight != null && mIsLoaded) {
+      final int width = videoWidthHeight.first;
+      final int height = videoWidthHeight.second;
 
-    if (width == 0 || height == 0) {
-      return;
+      if (width == 0 || height == 0) {
+        return;
+      }
+
+      final WritableMap naturalSize = Arguments.createMap();
+      naturalSize.putInt("width", width);
+      naturalSize.putInt("height", height);
+      naturalSize.putString("orientation", width > height ? "landscape" : "portrait");
+
+      final WritableMap map = Arguments.createMap();
+      map.putMap("naturalSize", naturalSize);
+      map.putMap("status", mPlayerData.getStatus());
+      mEventEmitter.receiveEvent(getReactId(), VideoViewManager.Events.EVENT_READY_FOR_DISPLAY.toString(), map);
     }
-
-    final WritableMap naturalSize = Arguments.createMap();
-    naturalSize.putInt("width", width);
-    naturalSize.putInt("height", height);
-    naturalSize.putString("orientation", width > height ? "landscape" : "portrait");
-
-    final WritableMap map = Arguments.createMap();
-    map.putMap("naturalSize", naturalSize);
-    map.putMap("status", mPlayerData.getStatus());
-    mEventEmitter.receiveEvent(getReactId(), VideoViewManager.Events.EVENT_READY_FOR_DISPLAY.toString(), map);
   }
 
   public void maybeUpdateMediaControllerForUseNativeControls() {
@@ -324,7 +326,7 @@ public class VideoView extends FrameLayout implements AudioEventHandler, Fullscr
     statusToInitiallySet.merge(mStatusToSet);
     mStatusToSet = Arguments.createMap();
 
-    mPlayerData = PlayerData.createUnloadedPlayerData(mAVModule, source, statusToInitiallySet);
+    mPlayerData = PlayerData.createUnloadedPlayerData(mAVModule, (ThemedReactContext) getContext(), source, statusToInitiallySet);
 
     mPlayerData.setErrorListener(new PlayerData.ErrorListener() {
       @Override
@@ -337,6 +339,7 @@ public class VideoView extends FrameLayout implements AudioEventHandler, Fullscr
       @Override
       public void onVideoSizeUpdate(final Pair<Integer, Integer> videoWidthHeight) {
         mVideoTextureView.scaleVideoSize(videoWidthHeight, mResizeMode);
+        mVideoWidthHeight = videoWidthHeight;
         callOnReadyForDisplay(videoWidthHeight);
       }
     });
@@ -374,7 +377,7 @@ public class VideoView extends FrameLayout implements AudioEventHandler, Fullscr
             ensureFullscreenPlayerIsDismissed(listener);
           }
         }
-
+        callOnReadyForDisplay(mVideoWidthHeight);
       }
 
       @Override

@@ -45,10 +45,12 @@ public class ExponentSharedPreferences {
   public static final String HAS_SAVED_SHORTCUT_KEY = "has_saved_shortcut";
   public static final String UUID_KEY = "uuid";
   public static final String GCM_TOKEN_KEY = "gcm_token";
+  public static final String FCM_TOKEN_KEY = "fcm_token";
   public static final String REFERRER_KEY = "referrer";
   public static final String NUX_HAS_FINISHED_FIRST_RUN_KEY = "nux_has_finished_first_run";
   public static final String SHOULD_NOT_USE_KERNEL_CACHE = "should_not_use_kernel_cache";
   public static final String KERNEL_REVISION_ID = "kernel_revision_id";
+  public static final String SAFE_MANIFEST_KEY = "safe_manifest";
 
   // Metadata
   public static final String EXPERIENCE_METADATA_PREFIX = "experience_metadata_";
@@ -56,6 +58,9 @@ public class ExponentSharedPreferences {
   public static final String EXPERIENCE_METADATA_UNREAD_REMOTE_NOTIFICATIONS = "unreadNotifications";
   public static final String EXPERIENCE_METADATA_ALL_NOTIFICATION_IDS = "allNotificationIds";
   public static final String EXPERIENCE_METADATA_ALL_SCHEDULED_NOTIFICATION_IDS = "allScheduledNotificationIds";
+  public static final String EXPERIENCE_METADATA_LOADING_ERROR = "loadingError";
+  public static final String EXPERIENCE_METADATA_PERMISSIONS = "permissions";
+  public static final String EXPERIENCE_METADATA_NOTIFICATION_CHANNELS = "notificationChannels";
 
   private static final Map<String, Boolean> DEFAULT_VALUES = new HashMap<>();
 
@@ -68,10 +73,16 @@ public class ExponentSharedPreferences {
   }
 
   private SharedPreferences mSharedPreferences;
+  private Context mContext;
 
   @Inject
   public ExponentSharedPreferences(Context context) {
     mSharedPreferences = context.getSharedPreferences(context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+    mContext = context;
+  }
+
+  public Context getContext() {
+    return mContext;
   }
 
   public boolean getBoolean(String key) {
@@ -130,6 +141,7 @@ public class ExponentSharedPreferences {
       JSONObject parentObject = new JSONObject();
       parentObject.put(MANIFEST_KEY, manifest);
       parentObject.put(BUNDLE_URL_KEY, bundleUrl);
+      parentObject.put(SAFE_MANIFEST_KEY, manifest);
 
       mSharedPreferences.edit().putString(manifestUrl, parentObject.toString()).apply();
     } catch (JSONException e) {
@@ -149,6 +161,38 @@ public class ExponentSharedPreferences {
       String bundleUrl = json.getString(BUNDLE_URL_KEY);
 
       return new ManifestAndBundleUrl(manifest, bundleUrl);
+    } catch (JSONException e) {
+      EXL.e(TAG, e);
+      return null;
+    }
+  }
+
+  public void updateSafeManifest(String manifestUrl, JSONObject manifest) {
+    try {
+      JSONObject parentObject;
+      String jsonString = mSharedPreferences.getString(manifestUrl, null);
+      if (jsonString != null) {
+        parentObject = new JSONObject(jsonString);
+      } else {
+        parentObject = new JSONObject();
+      }
+      parentObject.put(SAFE_MANIFEST_KEY, manifest);
+
+      mSharedPreferences.edit().putString(manifestUrl, parentObject.toString()).apply();
+    } catch (JSONException e) {
+      EXL.e(TAG, e);
+    }
+  }
+
+  public JSONObject getSafeManifest(String manifestUrl) {
+    String jsonString = mSharedPreferences.getString(manifestUrl, null);
+    if (jsonString == null) {
+      return null;
+    }
+
+    try {
+      JSONObject json = new JSONObject(jsonString);
+      return json.getJSONObject(SAFE_MANIFEST_KEY);
     } catch (JSONException e) {
       EXL.e(TAG, e);
       return null;

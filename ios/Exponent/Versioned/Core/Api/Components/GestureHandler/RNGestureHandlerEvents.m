@@ -14,19 +14,22 @@
 
 + (RNGestureHandlerEventExtraData *)forPosition:(CGPoint)position
                            withAbsolutePosition:(CGPoint)absolutePosition
+                            withNumberOfTouches:(NSUInteger)numberOfTouches
 {
     return [[RNGestureHandlerEventExtraData alloc]
             initWithData:@{
                            @"x": @(position.x),
                            @"y": @(position.y),
                            @"absoluteX": @(absolutePosition.x),
-                           @"absoluteY": @(absolutePosition.y)}];
+                           @"absoluteY": @(absolutePosition.y),
+                           @"numberOfPointers": @(numberOfTouches)}];
 }
 
 + (RNGestureHandlerEventExtraData *)forPan:(CGPoint)position
                       withAbsolutePosition:(CGPoint)absolutePosition
                            withTranslation:(CGPoint)translation
                               withVelocity:(CGPoint)velocity
+                       withNumberOfTouches:(NSUInteger)numberOfTouches
 {
     return [[RNGestureHandlerEventExtraData alloc]
             initWithData:@{
@@ -37,35 +40,41 @@
                            @"translationX": @(translation.x),
                            @"translationY": @(translation.y),
                            @"velocityX": SAFE_VELOCITY(velocity.x),
-                           @"velocityY": SAFE_VELOCITY(velocity.y)}];
+                           @"velocityY": SAFE_VELOCITY(velocity.y),
+                           @"numberOfPointers": @(numberOfTouches)}];
 }
 
 + (RNGestureHandlerEventExtraData *)forPinch:(CGFloat)scale
                               withFocalPoint:(CGPoint)focalPoint
                                 withVelocity:(CGFloat)velocity
+                         withNumberOfTouches:(NSUInteger)numberOfTouches
 {
     return [[RNGestureHandlerEventExtraData alloc]
             initWithData:@{
                            @"scale": @(scale),
                            @"focalX": @(focalPoint.x),
                            @"focalY": @(focalPoint.y),
-                           @"velocity": SAFE_VELOCITY(velocity)}];
+                           @"velocity": SAFE_VELOCITY(velocity),
+                           @"numberOfPointers": @(numberOfTouches)}];
 }
 
 + (RNGestureHandlerEventExtraData *)forRotation:(CGFloat)rotation
                                 withAnchorPoint:(CGPoint)anchorPoint
                                    withVelocity:(CGFloat)velocity
+                            withNumberOfTouches:(NSUInteger)numberOfTouches
 {
     return [[RNGestureHandlerEventExtraData alloc]
             initWithData:@{@"rotation": @(rotation),
                            @"anchorX": @(anchorPoint.x),
                            @"anchorY": @(anchorPoint.y),
-                           @"velocity": SAFE_VELOCITY(velocity)}];
+                           @"velocity": SAFE_VELOCITY(velocity),
+                           @"numberOfPointers": @(numberOfTouches)}];
 }
 
-+ (RNGestureHandlerEventExtraData *)forPointerInside:(BOOL)pointerInside;
++ (RNGestureHandlerEventExtraData *)forPointerInside:(BOOL)pointerInside
 {
-    return [[RNGestureHandlerEventExtraData alloc] initWithData:@{@"pointerInside": @(pointerInside)}];
+    return [[RNGestureHandlerEventExtraData alloc]
+            initWithData:@{@"pointerInside": @(pointerInside)}];
 }
 
 @end
@@ -126,7 +135,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     [body setObject:_viewTag forKey:@"target"];
     [body setObject:_handlerTag forKey:@"handlerTag"];
     [body setObject:@(_state) forKey:@"state"];
-    return @[self.viewTag, @"topGestureHandlerEvent", body];
+    return @[self.viewTag, @"onGestureHandlerEvent", body];
 }
 
 @end
@@ -191,7 +200,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     [body setObject:_handlerTag forKey:@"handlerTag"];
     [body setObject:@(_state) forKey:@"state"];
     [body setObject:@(_prevState) forKey:@"oldState"];
-    return @[self.viewTag, @"topGestureHandlerStateChange", body];
+    return @[self.viewTag, @"onGestureHandlerStateChange", body];
 }
 
 @end

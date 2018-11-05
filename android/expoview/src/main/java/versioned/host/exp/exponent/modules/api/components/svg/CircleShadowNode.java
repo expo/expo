@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2015-present, Horcrux.
  * All rights reserved.
  *
@@ -18,7 +18,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 /**
  * Shadow node for virtual Circle view
  */
-public class CircleShadowNode extends RenderableShadowNode {
+class CircleShadowNode extends RenderableShadowNode {
 
     private String mCx;
     private String mCy;
@@ -46,20 +46,17 @@ public class CircleShadowNode extends RenderableShadowNode {
     protected Path getPath(Canvas canvas, Paint paint) {
         Path path = new Path();
 
-        float cx = relativeOnWidth(mCx);
-        float cy = relativeOnHeight(mCy);
+        double cx = relativeOnWidth(mCx);
+        double cy = relativeOnHeight(mCy);
 
-        float r;
+        double r;
         if (PropHelper.isPercentage(mR)) {
-            r = PropHelper.fromPercentageToFloat(mR, 1, 0, 1);
-            float powX = (float)Math.pow((getCanvasWidth() * r), 2);
-            float powY = (float)Math.pow((getCanvasHeight() * r), 2);
-            r = (float)Math.sqrt(powX + powY) / (float)Math.sqrt(2);
+            r = relativeOnOther(mR);
         } else {
-            r =  Float.parseFloat(mR) * mScale;
+            r = Double.parseDouble(mR) * mScale;
         }
 
-        path.addCircle(cx, cy, r, Path.Direction.CW);
+        path.addCircle((float) cx, (float) cy, (float) r, Path.Direction.CW);
         return path;
     }
 }

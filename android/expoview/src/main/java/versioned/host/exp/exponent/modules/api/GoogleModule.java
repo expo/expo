@@ -2,10 +2,12 @@
 
 package versioned.host.exp.exponent.modules.api;
 
+import android.accounts.Account;
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -21,6 +23,7 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
+import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -38,18 +41,24 @@ import net.openid.appauth.ResponseTypeValues;
 import java.util.Map;
 
 import de.greenrobot.event.EventBus;
+import expo.core.ModuleRegistry;
+import expo.core.interfaces.ModuleRegistryConsumer;
+import expo.interfaces.constants.ConstantsInterface;
 import host.exp.exponent.ActivityResultListener;
 import host.exp.exponent.oauth.OAuthResultActivity;
 import host.exp.exponent.kernel.KernelConstants;
 import host.exp.expoview.Exponent;
 
-public class GoogleModule extends ReactContextBaseJavaModule implements ActivityResultListener {
+public class GoogleModule extends ReactContextBaseJavaModule implements ActivityResultListener, ModuleRegistryConsumer {
   private final static int RC_LOG_IN = 1737;
   private final static String GOOGLE_ERROR = "GOOGLE_ERROR";
   private static final String TAG = GoogleModule.class.getSimpleName();
 
+  private ModuleRegistry mModuleRegistry;
   private @Nullable Promise mLogInPromise;
+  private boolean mIsLoggingIn = false;
   private final Map<String, Object> mExperienceProperties;
+  private String[] mScopes;
 
   public GoogleModule(ReactApplicationContext reactContext, Map<String, Object> experienceProperties) {
     super(reactContext);
@@ -64,8 +73,26 @@ public class GoogleModule extends ReactContextBaseJavaModule implements Activity
     return "ExponentGoogle";
   }
 
+  @Override
+  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+    mModuleRegistry = moduleRegistry;
+  }
+
   @ReactMethod
   public void logInAsync(final ReadableMap config, final Promise promise) {
+    final String behavior = config.getString("behavior");
+    ReadableArray scopesConfig = config.getArray("scopes");
+
+    mScopes = new String[scopesConfig.size()];
+    for (int i = 0; i < scopesConfig.size(); i++) {
+      mScopes[i] = scopesConfig.getString(i);
+    }
+
+    if (!behavior.equals("system") && !behavior.equals("web")) {
+      reject("Invalid behavior. Expected 'system' or 'web', got " + behavior, null);
+      return;
+    }
+
     UiThreadUtil.runOnUiThread(new Runnable() {
       @Override
       public void run() {
@@ -75,24 +102,16 @@ public class GoogleModule extends ReactContextBaseJavaModule implements Activity
         }
         mLogInPromise = promise;
 
-        String behavior = config.getString("behavior");
-        String androidClientId = config.getString("androidClientId");
-        String webClientId = config.hasKey("webClientId") ? config.getString("webClientId") : null;
-        ReadableArray scopesConfig = config.getArray("scopes");
         if ("system".equals(behavior)) {
-          Scope[] scopes = new Scope[scopesConfig.size()];
-          for (int i = 0; i < scopesConfig.size(); i++) {
-            scopes[i] = new Scope(scopesConfig.getString(i));
+          Scope[] scopes = new Scope[mScopes.length];
+          for (int i = 0; i < mScopes.length; i++) {
+            scopes[i] = new Scope(mScopes[i]);
           }
+          String webClientId = config.hasKey("webClientId") ? config.getString("webClientId") : null;
           systemLogIn(scopes, webClientId);
         } else if ("web".equals(behavior)) {
-          String[] scopes = new String[scopesConfig.size()];
-          for (int i = 0; i < scopesConfig.size(); i++) {
-            scopes[i] = scopesConfig.getString(i);
-          }
-          webLogIn(scopes, androidClientId);
-        } else {
-          reject("Invalid behavior. Expected 'system' or 'web', got " + behavior, null);
+          String androidClientId = config.getString("androidClientId");
+          webLogIn(mScopes, androidClientId);
         }
       }
     });
@@ -100,7 +119,8 @@ public class GoogleModule extends ReactContextBaseJavaModule implements Activity
 
   @Override
   public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-    if (requestCode == RC_LOG_IN) {
+    // checking mScopes prevents running this in other abi packages
+    if (mIsLoggingIn && mScopes != null && requestCode == RC_LOG_IN) {
       GoogleSignInResult logInResult = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
       handleLogInResult(logInResult);
     }
@@ -156,6 +176,7 @@ public class GoogleModule extends ReactContextBaseJavaModule implements Activity
         .build();
 
     Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(apiClient);
+    mIsLoggingIn = true;
     activity.startActivityForResult(signInIntent, RC_LOG_IN);
   }
 
@@ -184,7 +205,7 @@ public class GoogleModule extends ReactContextBaseJavaModule implements Activity
 
     // The auth intent gets started in the root task because it uses `singleTask` launch mode so if
     // we are not a standalone app we need to redirect back to the proper task when done.
-    if (!ConstantsModule.getAppOwnership(mExperienceProperties).equals("standalone")) {
+    if (!getAppOwnership().equals("standalone")) {
       postAuthIntent.putExtra(
           OAuthResultActivity.EXTRA_REDIRECT_EXPERIENCE_URL,
           (String) mExperienceProperties.get(KernelConstants.MANIFEST_URL_KEY));
@@ -195,6 +216,11 @@ public class GoogleModule extends ReactContextBaseJavaModule implements Activity
         request,
         PendingIntent.getActivity(activity, request.hashCode(), postAuthIntent, 0),
         PendingIntent.getActivity(activity, request.hashCode(), postAuthIntent, 0));
+  }
+
+  private String getAppOwnership() {
+    ConstantsInterface constantsService = mModuleRegistry.getModule(ConstantsInterface.class);
+    return constantsService.getAppOwnership();
   }
 
   public void onEvent(OAuthResultActivity.OAuthResultEvent event) {
@@ -236,7 +262,8 @@ public class GoogleModule extends ReactContextBaseJavaModule implements Activity
       user.putString("photoUrl", account.getPhotoUrl() != null ? account.getPhotoUrl().toString() : null);
       response.putMap("user", user);
 
-      resolve(response);
+      new RetrieveTokenTask().execute(response);
+
     } else if (logInResult.getStatus().isCanceled()) {
       response.putString("type", "cancel");
       resolve(response);
@@ -253,6 +280,7 @@ public class GoogleModule extends ReactContextBaseJavaModule implements Activity
 
     mLogInPromise.resolve(value);
     mLogInPromise = null;
+    mIsLoggingIn = false;
   }
 
   private void reject(String message, Throwable error) {
@@ -263,5 +291,36 @@ public class GoogleModule extends ReactContextBaseJavaModule implements Activity
 
     mLogInPromise.reject(GOOGLE_ERROR, message, error);
     mLogInPromise = null;
+    mIsLoggingIn = false;
+  }
+
+  private class RetrieveTokenTask extends AsyncTask<WritableMap, Void, WritableMap> {
+
+    @Override
+    protected WritableMap doInBackground(WritableMap... params) {
+      WritableMap result = params[0];
+      String mail = result.getMap("user").getString("email");
+      StringBuilder scopesBuilder = new StringBuilder("oauth2:");
+      for (String scope : mScopes) {
+        scopesBuilder.append(scope);
+        scopesBuilder.append(" ");
+      }
+      try {
+        String token = GoogleAuthUtil.getToken(getReactApplicationContext(), new Account(mail, "com.google"), scopesBuilder.toString());
+        result.putString("accessToken", token);
+        return result;
+      } catch (Exception e) {
+        reject("An error occurred while retrieving accessToken", e);
+        return null;
+      }
+    }
+
+    @Override
+    protected void onPostExecute(WritableMap result) {
+      super.onPostExecute(result);
+      if (result != null) {
+        resolve(result);
+      }
+    }
   }
 }

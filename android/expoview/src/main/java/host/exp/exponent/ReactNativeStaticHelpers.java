@@ -10,17 +10,21 @@ import com.facebook.react.common.JavascriptException;
 import com.facebook.react.modules.network.OkHttpClientProvider;
 import com.facebook.react.modules.network.ReactCookieJarContainer;
 
+import java.lang.reflect.Method;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nullable;
 
 import expolib_v1.okhttp3.CookieJar;
 import expolib_v1.okhttp3.OkHttpClient;
+import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.network.ExponentNetwork;
 import host.exp.expoview.Exponent;
 
 @DoNotStrip
 public class ReactNativeStaticHelpers {
+
+  private static String TAG = ReactNativeStaticHelpers.class.getSimpleName();
 
   private static String sBundleUrl = null;
 
@@ -28,6 +32,20 @@ public class ReactNativeStaticHelpers {
     sBundleUrl = bundleUrl;
   }
 
+  @DoNotStrip
+  public static String getBundleUrlForActivityId(final int activityId, String mainModuleId,
+                                                 String bundleTypeId, String host, boolean devMode,
+                                                 boolean jsMinify) {
+    try {
+      return (String) Class.forName("host.exp.exponent.kernel.Kernel")
+          .getMethod("getBundleUrlForActivityId", int.class, String.class, String.class, String.class, boolean.class, boolean.class)
+          .invoke(null, activityId, mainModuleId, bundleTypeId, host, devMode, jsMinify);
+    } catch (Exception e) {
+      return sBundleUrl;
+    }
+  }
+
+  // <= SDK 25
   @DoNotStrip
   public static String getBundleUrlForActivityId(final int activityId, String host, String jsModulePath, boolean devMode, boolean jsMinify) {
     try {
@@ -99,6 +117,22 @@ public class ReactNativeStaticHelpers {
         .cache(sExponentNetwork.getCache());
 
     sExponentNetwork.addInterceptors(client);
+
+    // pass the builder through MainApplication so that detached apps can customize it
+    try {
+      Method m = Class.forName("host.exp.exponent.MainApplication").getMethod("okHttpClientBuilder", OkHttpClient.Builder.class);
+      Object returnVal = m.invoke(null, client);
+      if (returnVal instanceof OkHttpClient.Builder) {
+        client = (OkHttpClient.Builder) returnVal;
+      } else {
+        throw new Exception("MainApplication.okHttpClientBuilder returned an object of type " + returnVal.getClass().getName());
+      }
+    } catch (NoSuchMethodException ex) {
+      // ignore this and fall back to previous client
+    } catch (Exception e) {
+      // just fall back to previous client
+      EXL.e(TAG, "Falling back to default OkHttpClient builder: " + e.getMessage());
+    }
     return OkHttpClientProvider.enableTls12OnPreLollipop(client).build();
   }
 }

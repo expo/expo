@@ -1,0 +1,34 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`loadAsync completes after loading a font 1`] = `
+Array [
+  "testsession-test-font",
+  "file:/test/test-font.ttf",
+]
+`;
+
+exports[`loadAsync throws if downloading a font fails 1`] = `[Error: Failed to download asset for font "test-font"]`;
+
+exports[`loadAsync throws if loading a downloaded font fails 1`] = `[Error: Intentional error from FontLoader mock]`;
+
+exports[`processFontFamily defaults missing fonts to the system font 1`] = `
+Array [
+  "fontFamily 'not-loaded' is not a system font and has not been loaded through Font.loadAsync.
+
+- If you intended to use a system font, make sure you typed the name correctly and that it is supported by your device operating system.
+
+- If this is a custom font, be sure to load it with Font.loadAsync.",
+]
+`;
+
+exports[`processFontFamily defaults still-loading fonts to the system font 1`] = `
+Array [
+  "You started loading 'loading', but used it before it finished loading
+
+- You need to wait for Font.loadAsync to complete before using the font.
+
+- We recommend loading all fonts before rendering the app, and rendering only Expo.AppLoading while waiting for loading to complete.",
+]
+`;
+
+exports[`processFontFamily scopes loaded names of loaded fonts 1`] = `"ExpoFont-testsession-test-font"`;

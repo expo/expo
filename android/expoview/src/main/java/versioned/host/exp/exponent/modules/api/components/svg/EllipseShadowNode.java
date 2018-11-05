@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2015-present, Horcrux.
  * All rights reserved.
  *
@@ -19,7 +19,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 /**
  * Shadow node for virtual Ellipse view
  */
-public class EllipseShadowNode extends RenderableShadowNode {
+class EllipseShadowNode extends RenderableShadowNode {
 
     private String mCx;
     private String mCy;
@@ -53,11 +53,11 @@ public class EllipseShadowNode extends RenderableShadowNode {
     @Override
     protected Path getPath(Canvas canvas, Paint paint) {
         Path path = new Path();
-        float cx = relativeOnWidth(mCx);
-        float cy = relativeOnHeight(mCy);
-        float rx = relativeOnWidth(mRx);
-        float ry = relativeOnHeight(mRy);
-        RectF oval = new RectF(cx - rx, cy - ry, cx + rx, cy + ry);
+        double cx = relativeOnWidth(mCx);
+        double cy = relativeOnHeight(mCy);
+        double rx = relativeOnWidth(mRx);
+        double ry = relativeOnHeight(mRy);
+        RectF oval = new RectF((float) (cx - rx), (float) (cy - ry), (float) (cx + rx), (float) (cy + ry));
         path.addOval(oval, Path.Direction.CW);
 
         return path;

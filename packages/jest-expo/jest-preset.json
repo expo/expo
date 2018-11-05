@@ -1,0 +1,32 @@
+{
+  "haste": {
+    "defaultPlatform": "ios",
+    "platforms": [
+      "android",
+      "ios",
+      "native"
+    ],
+    "hasteImplModulePath": "react-native/jest/hasteImpl.js",
+    "providesModuleNodeModules": [
+      "react-native"
+    ]
+  },
+  "moduleNameMapper": {
+    "^React$": "<rootDir>/node_modules/react"
+  },
+  "modulePathIgnorePatterns": [
+    "react-native/Libraries/react-native/"
+  ],
+  "transform": {
+    "^.+\\.js$": "babel-jest",
+    "^.+\\.(bmp|gif|jpg|jpeg|mp4|png|psd|svg|webp|ttf|otf|m4v|mov|mp4|mpeg|mpg|webm|aac|aiff|caf|m4a|mp3|wav|html|pdf|obj)$": "jest-expo/src/assetFileTransformer.js"
+  },
+  "transformIgnorePatterns": [
+    "node_modules/(?!((jest-)?react-native|react-clone-referenced-element|expo(nent)?|@expo(nent)?/.*|react-navigation|sentry-expo))"
+  ],
+  "setupFiles": [
+    "react-native/jest/setup.js",
+    "jest-expo/src/setup.js"
+  ],
+  "testEnvironment": "node"
+}

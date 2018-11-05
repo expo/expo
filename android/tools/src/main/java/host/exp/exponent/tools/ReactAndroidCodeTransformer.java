@@ -41,9 +41,9 @@ import java.util.Map;
 
 public class ReactAndroidCodeTransformer {
 
-  private static final String REACT_COMMON_SOURCE_ROOT = "../react-native-lab/react-native/ReactCommon";
+  private static final String REACT_COMMON_SOURCE_ROOT = "react-native-lab/react-native/ReactCommon";
   private static final String REACT_COMMON_DEST_ROOT = "android/ReactCommon";
-  private static final String REACT_ANDROID_SOURCE_ROOT = "../react-native-lab/react-native/ReactAndroid";
+  private static final String REACT_ANDROID_SOURCE_ROOT = "react-native-lab/react-native/ReactAndroid";
   private static final String REACT_ANDROID_DEST_ROOT = "android/ReactAndroid";
   private static final String SOURCE_PATH = "src/main/java/com/facebook/react/";
 
@@ -128,10 +128,17 @@ public class ReactAndroidCodeTransformer {
       public Node visit(String methodName, MethodDeclaration n) {
         switch (methodName) {
           case "createBundleURL":
+            // In RN 0.54 this method is overloaded; skip the convenience version
+            NodeList<Parameter> params = n.getParameters();
+            if (params.size() == 2 && params.get(0).getNameAsString().equals("mainModuleID") &&
+                params.get(1).getNameAsString().equals("type")) {
+              return n;
+            }
+
             BlockStmt stmt = JavaParser.parseBlock(getCallMethodReflectionBlock(
                 "host.exp.exponent.ReactNativeStaticHelpers",
-                "\"getBundleUrlForActivityId\", int.class, String.class, String.class, boolean.class, boolean.class",
-                "null, mSettings.exponentActivityId, host, jsModulePath, devMode, jsMinify",
+                "\"getBundleUrlForActivityId\", int.class, String.class, String.class, String.class, boolean.class, boolean.class",
+                "null, mSettings.exponentActivityId, mainModuleID, type.typeID(), host, getDevMode(), getJSMinifyMode()",
                 "return (String) ",
                 "return null;"));
             n.setBody(stmt);
@@ -263,7 +270,7 @@ public class ReactAndroidCodeTransformer {
 
   public static void main(final String[] args) throws IOException {
     String executionPath = ReactAndroidCodeTransformer.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-    String projectRoot = new File(executionPath + "../../../../../").getCanonicalPath() + '/';
+    String projectRoot = new File(executionPath + "../../../../../../").getCanonicalPath() + '/';
 
     // Get current SDK version
     File expoPackageJsonFile = new File(projectRoot + "package.json");

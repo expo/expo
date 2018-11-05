@@ -5,6 +5,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 FOUNDATION_EXPORT NSString * const EXAppDidRegisterForRemoteNotificationsNotification;
+FOUNDATION_EXPORT NSString * const EXAppDidRegisterUserNotificationSettingsNotification;
 
 @class EXViewController;
 
@@ -24,10 +25,19 @@ FOUNDATION_EXPORT NSString * const EXAppDidRegisterForRemoteNotificationsNotific
 - (EXViewController *)rootViewController;
 
 /**
+ *  The current view controller that is presented by Exponent app.
+ */
+- (UIViewController *)currentViewController;
+
+/**
  *  Keys to third-party integrations used inside ExpoKit.
  *  TODO: document this.
  */
 @property (nonatomic, strong) NSDictionary *applicationKeys;
+
+@property (nonatomic, readonly) NSDictionary *launchOptions;
+
+@property (nonatomic, weak) Class moduleRegistryDelegateClass;
 
 #pragma mark - remote JS loading hooks
 
@@ -39,7 +49,6 @@ FOUNDATION_EXPORT NSString * const EXAppDidRegisterForRemoteNotificationsNotific
 
 #pragma mark - misc AppDelegate hooks
 
-- (void)setLaunchOptions:(NSDictionary * _Nullable)launchOptions;
 - (void)application:(UIApplication *)application didFinishLaunchingWithOptions:(nullable NSDictionary *)launchOptions;
 
 #pragma mark - APNS hooks
@@ -48,6 +57,7 @@ FOUNDATION_EXPORT NSString * const EXAppDidRegisterForRemoteNotificationsNotific
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)notification;
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)token;
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)err;
+- (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(nonnull UIUserNotificationSettings *)notificationSettings;
 
 #pragma mark - deep linking hooks
 

@@ -1,0 +1,20 @@
+source 'https://github.com/CocoaPods/Specs.git'
+platform :ios, '9.0'
+
+target '${TARGET_NAME}' do
+${EXPOKIT_DEPENDENCY}
+${PODFILE_UNVERSIONED_EXPO_MODULES_DEPENDENCIES}
+${PODFILE_UNVERSIONED_RN_DEPENDENCY}
+${PODFILE_VERSIONED_RN_DEPENDENCIES}
+
+  post_install do |installer|
+    installer.pods_project.main_group.tab_width = '2';
+    installer.pods_project.main_group.indent_width = '2';
+
+    installer.pod_targets.each do |target|
+${PODFILE_DETACHED_SERVICE_POSTINSTALL}
+${PODFILE_VERSIONED_POSTINSTALLS}
+${PODFILE_UNVERSIONED_POSTINSTALL}
+    end
+  end
+end

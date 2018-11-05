@@ -18,6 +18,7 @@ import com.facebook.react.bridge.ReadableMap;
 
 import io.branch.referral.*;
 import io.branch.referral.Branch.BranchLinkCreateListener;
+import io.branch.referral.BuildConfig;
 import io.branch.referral.util.*;
 import io.branch.referral.Branch;
 import io.branch.indexing.*;
@@ -49,6 +50,26 @@ public class RNBranchModule extends ReactContextBaseJavaModule {
     private static final String REGISTER_VIEW_EVENT = "REGISTER_VIEW_EVENT";
     private static final String SHARE_COMPLETED_EVENT = "SHARE_COMPLETED_EVENT";
     private static final String SHARE_INITIATED_EVENT = "SHARE_INITIATED_EVENT";
+
+    private static final String STANDARD_EVENT_ADD_TO_CART = "STANDARD_EVENT_ADD_TO_CART";
+    private static final String STANDARD_EVENT_ADD_TO_WISHLIST = "STANDARD_EVENT_ADD_TO_WISHLIST";
+    private static final String STANDARD_EVENT_VIEW_CART = "STANDARD_EVENT_VIEW_CART";
+    private static final String STANDARD_EVENT_INITIATE_PURCHASE = "STANDARD_EVENT_INITIATE_PURCHASE";
+    private static final String STANDARD_EVENT_ADD_PAYMENT_INFO = "STANDARD_EVENT_ADD_PAYMENT_INFO";
+    private static final String STANDARD_EVENT_PURCHASE = "STANDARD_EVENT_PURCHASE";
+    private static final String STANDARD_EVENT_SPEND_CREDITS = "STANDARD_EVENT_SPEND_CREDITS";
+
+    private static final String STANDARD_EVENT_SEARCH = "STANDARD_EVENT_SEARCH";
+    private static final String STANDARD_EVENT_VIEW_ITEM = "STANDARD_EVENT_VIEW_ITEM";
+    private static final String STANDARD_EVENT_VIEW_ITEMS = "STANDARD_EVENT_VIEW_ITEMS";
+    private static final String STANDARD_EVENT_RATE = "STANDARD_EVENT_RATE";
+    private static final String STANDARD_EVENT_SHARE = "STANDARD_EVENT_SHARE";
+
+    private static final String STANDARD_EVENT_COMPLETE_REGISTRATION = "STANDARD_EVENT_COMPLETE_REGISTRATION";
+    private static final String STANDARD_EVENT_COMPLETE_TUTORIAL = "STANDARD_EVENT_COMPLETE_TUTORIAL";
+    private static final String STANDARD_EVENT_ACHIEVE_LEVEL = "STANDARD_EVENT_ACHIEVE_LEVEL";
+    private static final String STANDARD_EVENT_UNLOCK_ACHIEVEMENT = "STANDARD_EVENT_UNLOCK_ACHIEVEMENT";
+
     private static final String IDENT_FIELD_NAME = "ident";
     public static final String UNIVERSAL_OBJECT_NOT_FOUND_ERROR_CODE = "RNBranch::Error::BUONotFound";
     private static final long AGING_HASH_TTL = 3600000;
@@ -58,7 +79,9 @@ public class RNBranchModule extends ReactContextBaseJavaModule {
     private static WeakReference<Branch.BranchUniversalReferralInitListener> initListener = null;
 
     private static Activity mActivity = null;
-    private static Branch mBranch = null;
+    private static boolean mUseDebug = false;
+    private static boolean mInitialized = false;
+    private static JSONObject mRequestMetadata = new JSONObject();
 
     private AgingHash<String, BranchUniversalObject> mUniversalObjectMap = new AgingHash<>(AGING_HASH_TTL);
 
@@ -68,9 +91,10 @@ public class RNBranchModule extends ReactContextBaseJavaModule {
     }
 
     public static void initSession(final Uri uri, Activity reactActivity) {
-        mBranch = Branch.getInstance(reactActivity.getApplicationContext());
+        Branch branch = setupBranch(reactActivity.getApplicationContext());
+
         mActivity = reactActivity;
-        mBranch.initSession(new Branch.BranchReferralInitListener(){
+        branch.initSession(new Branch.BranchReferralInitListener(){
 
             private Activity mmActivity = null;
 
@@ -79,10 +103,40 @@ public class RNBranchModule extends ReactContextBaseJavaModule {
 
                 Log.d(REACT_CLASS, "onInitFinished");
                 JSONObject result = new JSONObject();
+                Uri referringUri = null;
                 try{
-                    result.put(NATIVE_INIT_SESSION_FINISHED_EVENT_PARAMS, referringParams != null && referringParams.has("~id") ? referringParams : JSONObject.NULL);
+                    boolean clickedBranchLink = false;
+                    // getXXX throws. It's OK for these to be missing.
+                    try {
+                        clickedBranchLink = referringParams.getBoolean("+clicked_branch_link");
+                    }
+                    catch (JSONException e) {
+
+                    }
+
+                    String referringLink = null;
+                    if (clickedBranchLink) {
+                        try {
+                            referringLink = referringParams.getString("~referring_link");
+                        }
+                        catch (JSONException e) {
+
+                        }
+                    }
+                    else {
+                        try {
+                            referringLink = referringParams.getString("+non_branch_link");
+                        }
+                        catch (JSONException e) {
+
+                        }
+                    }
+
+                    if (referringLink != null) referringUri = Uri.parse(referringLink);
+
+                    result.put(NATIVE_INIT_SESSION_FINISHED_EVENT_PARAMS, referringParams);
                     result.put(NATIVE_INIT_SESSION_FINISHED_EVENT_ERROR, error != null ? error.getMessage() : JSONObject.NULL);
-                    result.put(NATIVE_INIT_SESSION_FINISHED_EVENT_URI, uri != null ? uri.toString() : JSONObject.NULL);
+                    result.put(NATIVE_INIT_SESSION_FINISHED_EVENT_URI, referringLink != null ? referringLink : JSONObject.NULL);
                 } catch(JSONException ex) {
                     try {
                         result.put("error", "Failed to convert result to JSONObject: " + ex.getMessage());
@@ -97,7 +151,7 @@ public class RNBranchModule extends ReactContextBaseJavaModule {
                     Branch.BranchUniversalReferralInitListener listener = initListener.get();
                     if (listener != null) listener.onInitFinished(branchUniversalObject, linkProperties, error);
                 }
-                generateLocalBroadcast(referringParams, uri, branchUniversalObject, linkProperties, error);
+                generateLocalBroadcast(referringParams, referringUri, branchUniversalObject, linkProperties, error);
             }
 
             private Branch.BranchReferralInitListener init(Activity activity) {
@@ -137,6 +191,26 @@ public class RNBranchModule extends ReactContextBaseJavaModule {
         }.init(reactActivity), uri, reactActivity);
     }
 
+    public static void setDebug() {
+        mUseDebug = true;
+    }
+
+    public static void setRequestMetadata(String key, String val) {
+        if (key == null) {
+            return;
+        }
+
+        if (mRequestMetadata.has(key) && val == null) {
+            mRequestMetadata.remove(key);
+        }
+
+        try {
+            mRequestMetadata.put(key, val);
+        } catch (JSONException e) {
+            // no-op
+        }
+    }
+
     public RNBranchModule(ReactApplicationContext reactContext) {
         super(reactContext);
         forwardInitSessionFinishedEventToReactNative(reactContext);
@@ -147,9 +221,12 @@ public class RNBranchModule extends ReactContextBaseJavaModule {
     public Map<String, Object> getConstants() {
         final Map<String, Object> constants = new HashMap<>();
         // RN events transmitted to JS
+
         constants.put(INIT_SESSION_SUCCESS, RN_INIT_SESSION_SUCCESS_EVENT);
         constants.put(INIT_SESSION_ERROR, RN_INIT_SESSION_ERROR_EVENT);
-        // Constants for use with userCompletedAction
+
+        // Constants for use with userCompletedAction (deprecated)
+
         constants.put(ADD_TO_CART_EVENT, BranchEvent.ADD_TO_CART);
         constants.put(ADD_TO_WISHLIST_EVENT, BranchEvent.ADD_TO_WISH_LIST);
         constants.put(PURCHASED_EVENT, BranchEvent.PURCHASED);
@@ -157,6 +234,34 @@ public class RNBranchModule extends ReactContextBaseJavaModule {
         constants.put(REGISTER_VIEW_EVENT, BranchEvent.VIEW);
         constants.put(SHARE_COMPLETED_EVENT, BranchEvent.SHARE_COMPLETED);
         constants.put(SHARE_INITIATED_EVENT, BranchEvent.SHARE_STARTED);
+
+        // constants for use with BranchEvent
+
+        // Commerce events
+
+        constants.put(STANDARD_EVENT_ADD_TO_CART, BRANCH_STANDARD_EVENT.ADD_TO_CART.getName());
+        constants.put(STANDARD_EVENT_ADD_TO_WISHLIST, BRANCH_STANDARD_EVENT.ADD_TO_WISHLIST.getName());
+        constants.put(STANDARD_EVENT_VIEW_CART, BRANCH_STANDARD_EVENT.VIEW_CART.getName());
+        constants.put(STANDARD_EVENT_INITIATE_PURCHASE, BRANCH_STANDARD_EVENT.INITIATE_PURCHASE.getName());
+        constants.put(STANDARD_EVENT_ADD_PAYMENT_INFO, BRANCH_STANDARD_EVENT.ADD_PAYMENT_INFO.getName());
+        constants.put(STANDARD_EVENT_PURCHASE, BRANCH_STANDARD_EVENT.PURCHASE.getName());
+        constants.put(STANDARD_EVENT_SPEND_CREDITS, BRANCH_STANDARD_EVENT.SPEND_CREDITS.getName());
+
+        // Content Events
+
+        constants.put(STANDARD_EVENT_SEARCH, BRANCH_STANDARD_EVENT.SEARCH.getName());
+        constants.put(STANDARD_EVENT_VIEW_ITEM, BRANCH_STANDARD_EVENT.VIEW_ITEM.getName());
+        constants.put(STANDARD_EVENT_VIEW_ITEMS , BRANCH_STANDARD_EVENT.VIEW_ITEMS.getName());
+        constants.put(STANDARD_EVENT_RATE, BRANCH_STANDARD_EVENT.RATE.getName());
+        constants.put(STANDARD_EVENT_SHARE, BRANCH_STANDARD_EVENT.SHARE.getName());
+
+        // User Lifecycle Events
+
+        constants.put(STANDARD_EVENT_COMPLETE_REGISTRATION, BRANCH_STANDARD_EVENT.COMPLETE_REGISTRATION.getName());
+        constants.put(STANDARD_EVENT_COMPLETE_TUTORIAL , BRANCH_STANDARD_EVENT.COMPLETE_TUTORIAL.getName());
+        constants.put(STANDARD_EVENT_ACHIEVE_LEVEL, BRANCH_STANDARD_EVENT.ACHIEVE_LEVEL.getName());
+        constants.put(STANDARD_EVENT_UNLOCK_ACHIEVEMENT, BRANCH_STANDARD_EVENT.UNLOCK_ACHIEVEMENT.getName());
+
         return constants;
     }
 
@@ -166,7 +271,8 @@ public class RNBranchModule extends ReactContextBaseJavaModule {
 
             @Override
             public void onReceive(Context context, Intent intent) {
-                final String eventName = initSessionResult.has("error") ? RN_INIT_SESSION_ERROR_EVENT : RN_INIT_SESSION_SUCCESS_EVENT;
+                final boolean hasError = (initSessionResult.has("error") && !initSessionResult.isNull("error"));
+                final String eventName = hasError ? RN_INIT_SESSION_ERROR_EVENT : RN_INIT_SESSION_SUCCESS_EVENT;
                 mBranchModule.sendRNEvent(eventName, convertJsonToMap(initSessionResult));
             }
 
@@ -211,12 +317,6 @@ public class RNBranchModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void setDebug() {
-        Branch branch = Branch.getInstance();
-        branch.setDebug();
-    }
-
-    @ReactMethod
     public void getLatestReferringParams(Promise promise) {
         Branch branch = Branch.getInstance();
         promise.resolve(convertJsonToMap(branch.getLatestReferringParams()));
@@ -241,6 +341,22 @@ public class RNBranchModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
+    public void logEvent(ReadableArray contentItems, String eventName, ReadableMap params, Promise promise) {
+        List<BranchUniversalObject> buos = new ArrayList<>();
+        for (int i = 0; i < contentItems.size(); ++ i) {
+            String ident = contentItems.getString(i);
+            BranchUniversalObject universalObject = findUniversalObjectOrReject(ident, promise);
+            if (universalObject == null) return;
+            buos.add(universalObject);
+        }
+
+        BranchEvent event = createBranchEvent(eventName, params);
+        event.addContentItems(buos);
+        event.logEvent(mActivity);
+        promise.resolve(null);
+    }
+
+    @ReactMethod
     public void userCompletedAction(String event, ReadableMap appState) throws JSONException {
         Branch branch = Branch.getInstance();
         branch.userCompletedAction(event, convertMapToJson(appState));
@@ -252,6 +368,22 @@ public class RNBranchModule extends ReactContextBaseJavaModule {
         if (universalObject == null) return;
 
         universalObject.userCompletedAction(event, convertMapToParams(state));
+        promise.resolve(null);
+    }
+
+    @ReactMethod
+    public void sendCommerceEvent(String revenue, ReadableMap metadata, final Promise promise) throws JSONException {
+        Branch branch = Branch.getInstance();
+
+        CommerceEvent commerceEvent = new CommerceEvent();
+        commerceEvent.setRevenue(Double.parseDouble(revenue));
+
+        JSONObject jsonMetadata = null;
+        if (metadata != null) {
+            jsonMetadata = convertMapToJson(metadata);
+        }
+
+        branch.sendCommerceEvent(commerceEvent, jsonMetadata, null);
         promise.resolve(null);
     }
 
@@ -373,14 +505,82 @@ public class RNBranchModule extends ReactContextBaseJavaModule {
             @Override
             public void onLinkCreate(String url, BranchError error) {
                 Log.d(REACT_CLASS, "onLinkCreate " + url);
+                if (error != null) {
+                    if (error.getErrorCode() == BranchError.ERR_BRANCH_DUPLICATE_URL) {
+                        promise.reject("RNBranch::Error::DuplicateResourceError", error.getMessage());
+                    }
+                    else {
+                        promise.reject("RNBranch::Error", error.getMessage());
+                    }
+                    return;
+                }
+
                 WritableMap map = new WritableNativeMap();
                 map.putString("url", url);
-                if (error != null) {
-                    map.putString("error", error.toString());
-                }
                 promise.resolve(map);
             }
         });
+    }
+
+    @ReactMethod
+    public void openURL(String url, ReadableMap options) {
+        if (mActivity == null) {
+            // initSession is called before JS loads. This probably indicates failure to call initSession
+            // in an activity.
+            Log.e(REACT_CLASS, "Branch native Android SDK not initialized in openURL");
+            return;
+        }
+
+        Intent intent = new Intent(mActivity, mActivity.getClass());
+        intent.putExtra("branch", url);
+        intent.putExtra("branch_force_new_session", true);
+
+        if (options.hasKey("newActivity") && options.getBoolean("newActivity")) mActivity.finish();
+        mActivity.startActivity(intent);
+    }
+
+    public static BranchEvent createBranchEvent(String eventName, ReadableMap params) {
+        BranchEvent event;
+        try {
+            BRANCH_STANDARD_EVENT standardEvent = BRANCH_STANDARD_EVENT.valueOf(eventName);
+            // valueOf on BRANCH_STANDARD_EVENT Enum has succeeded, so this is a standard event.
+            event = new BranchEvent(standardEvent);
+        } catch (IllegalArgumentException e) {
+            // The event name is not found in standard events.
+            // So use custom event mode.
+            event = new BranchEvent(eventName);
+        }
+
+        if (params.hasKey("currency")) {
+            String currencyString = params.getString("currency");
+            CurrencyType currency = CurrencyType.getValue(currencyString);
+            if (currency != null) {
+                event.setCurrency(currency);
+            }
+            else {
+                Log.w(REACT_CLASS, "Invalid currency " + currencyString);
+            }
+        }
+
+        if (params.hasKey("transactionID")) event.setTransactionID(params.getString("transactionID"));
+        if (params.hasKey("revenue")) event.setRevenue(Double.parseDouble(params.getString("revenue")));
+        if (params.hasKey("shipping")) event.setShipping(Double.parseDouble(params.getString("shipping")));
+        if (params.hasKey("tax")) event.setTax(Double.parseDouble(params.getString("tax")));
+        if (params.hasKey("coupon")) event.setCoupon(params.getString("coupon"));
+        if (params.hasKey("affiliation")) event.setTransactionID(params.getString("affiliation"));
+        if (params.hasKey("description")) event.setTransactionID(params.getString("description"));
+        if (params.hasKey("searchQuery")) event.setTransactionID(params.getString("searchQuery"));
+
+        if (params.hasKey("customData")) {
+            ReadableMap customData = params.getMap("customData");
+            ReadableMapKeySetIterator it = customData.keySetIterator();
+            while (it.hasNextKey()) {
+                String key = it.nextKey();
+                event.addCustomDataProperty(key, customData.getString(key));
+            }
+        }
+
+        return event;
     }
 
     public static LinkProperties createLinkProperties(ReadableMap linkPropertiesMap, @Nullable ReadableMap controlParams){
@@ -411,6 +611,34 @@ public class RNBranchModule extends ReactContextBaseJavaModule {
         return linkProperties;
     }
 
+    private static Branch setupBranch(Context context) {
+        Branch branch = Branch.getInstance(context);
+
+        if (!mInitialized) {
+            Log.i(REACT_CLASS, "Initializing Branch SDK v. " + BuildConfig.VERSION_NAME);
+
+            RNBranchConfig config = new RNBranchConfig(context);
+
+            if (mUseDebug || config.getDebugMode()) branch.setDebug();
+
+            if (mRequestMetadata != null) {
+                Iterator keys = mRequestMetadata.keys();
+                while (keys.hasNext()) {
+                    String key = (String) keys.next();
+                    try {
+                        branch.setRequestMetadata(key, mRequestMetadata.getString(key));
+                    } catch (JSONException e) {
+                        // no-op
+                    }
+                }
+            }
+
+            mInitialized = true;
+        }
+
+        return branch;
+    }
+
     private BranchUniversalObject findUniversalObjectOrReject(final String ident, final Promise promise) {
         BranchUniversalObject universalObject = mUniversalObjectMap.get(ident);
 
@@ -422,6 +650,100 @@ public class RNBranchModule extends ReactContextBaseJavaModule {
         return universalObject;
     }
 
+    public ContentMetadata createContentMetadata(ReadableMap map) {
+        ContentMetadata metadata = new ContentMetadata();
+
+        if (map.hasKey("contentSchema")) {
+            BranchContentSchema schema = BranchContentSchema.valueOf(map.getString("contentSchema"));
+            metadata.setContentSchema(schema);
+        }
+
+        if (map.hasKey("quantity")) {
+            metadata.setQuantity(map.getDouble("quantity"));
+        }
+
+        if (map.hasKey("price")) {
+            double price = Double.parseDouble(map.getString("price"));
+            CurrencyType currency = null;
+            if (map.hasKey("currency")) currency = CurrencyType.valueOf(map.getString("currency"));
+            metadata.setPrice(price, currency);
+        }
+
+        if (map.hasKey("sku")) {
+            metadata.setSku(map.getString("sku"));
+        }
+
+        if (map.hasKey("productName")) {
+            metadata.setProductName(map.getString("productName"));
+        }
+
+        if (map.hasKey("productBrand")) {
+            metadata.setProductBrand(map.getString("productBrand"));
+        }
+
+        if (map.hasKey("productCategory")) {
+            ProductCategory category = getProductCategory(map.getString("productCategory"));
+            if (category != null) metadata.setProductCategory(category);
+        }
+
+        if (map.hasKey("productVariant")) {
+            metadata.setProductVariant(map.getString("productVariant"));
+        }
+
+        if (map.hasKey("condition")) {
+            ContentMetadata.CONDITION condition = ContentMetadata.CONDITION.valueOf(map.getString("condition"));
+            metadata.setProductCondition(condition);
+        }
+
+        if (map.hasKey("ratingAverage") || map.hasKey("ratingMax") || map.hasKey("ratingCount")) {
+            Double average = null, max = null;
+            Integer count = null;
+            if (map.hasKey("ratingAverage")) average = map.getDouble("ratingAverage");
+            if (map.hasKey("ratingCount")) count = map.getInt("ratingCount");
+            if (map.hasKey("ratingMax")) max = map.getDouble("ratingMax");
+            metadata.setRating(average, max, count);
+        }
+
+        if (map.hasKey("addressStreet") ||
+                map.hasKey("addressCity") ||
+                map.hasKey("addressRegion") ||
+                map.hasKey("addressCountry") ||
+                map.hasKey("addressPostalCode")) {
+            String street = null, city = null, region = null, country = null, postalCode = null;
+            if (map.hasKey("addressStreet")) street = map.getString("addressStreet");
+            if (map.hasKey("addressCity")) street = map.getString("addressCity");
+            if (map.hasKey("addressRegion")) street = map.getString("addressRegion");
+            if (map.hasKey("addressCountry")) street = map.getString("addressCountry");
+            if (map.hasKey("addressPostalCode")) street = map.getString("addressPostalCode");
+            metadata.setAddress(street, city, region, country, postalCode);
+        }
+
+        if (map.hasKey("latitude") || map.hasKey("longitude")) {
+            Double latitude = null, longitude = null;
+            if (map.hasKey("latitude")) latitude = map.getDouble("latitude");
+            if (map.hasKey("longitude")) longitude = map.getDouble("longitude");
+            metadata.setLocation(latitude, longitude);
+        }
+
+        if (map.hasKey("imageCaptions")) {
+            ReadableArray captions = map.getArray("imageCaptions");
+            for (int j=0; j < captions.size(); ++j) {
+                metadata.addImageCaptions(captions.getString(j));
+            }
+        }
+
+        if (map.hasKey("customMetadata")) {
+            ReadableMap customMetadata = map.getMap("customMetadata");
+            ReadableMapKeySetIterator it = customMetadata.keySetIterator();
+            while (it.hasNextKey()) {
+                String key = it.nextKey();
+                metadata.addCustomMetadata(key, customMetadata.getString(key));
+            }
+        }
+
+        return metadata;
+    }
+
     public BranchUniversalObject createBranchUniversalObject(ReadableMap branchUniversalObjectMap) {
         BranchUniversalObject branchUniversalObject = new BranchUniversalObject()
                 .setCanonicalIdentifier(branchUniversalObjectMap.getString("canonicalIdentifier"));
@@ -430,6 +752,25 @@ public class RNBranchModule extends ReactContextBaseJavaModule {
         if (branchUniversalObjectMap.hasKey("canonicalUrl")) branchUniversalObject.setCanonicalUrl(branchUniversalObjectMap.getString("canonicalUrl"));
         if (branchUniversalObjectMap.hasKey("contentDescription")) branchUniversalObject.setContentDescription(branchUniversalObjectMap.getString("contentDescription"));
         if (branchUniversalObjectMap.hasKey("contentImageUrl")) branchUniversalObject.setContentImageUrl(branchUniversalObjectMap.getString("contentImageUrl"));
+
+        if (branchUniversalObjectMap.hasKey("locallyIndex")) {
+            if (branchUniversalObjectMap.getBoolean("locallyIndex")) {
+                branchUniversalObject.setLocalIndexMode(BranchUniversalObject.CONTENT_INDEX_MODE.PUBLIC);
+            }
+            else {
+                branchUniversalObject.setLocalIndexMode(BranchUniversalObject.CONTENT_INDEX_MODE.PRIVATE);
+            }
+        }
+
+        if (branchUniversalObjectMap.hasKey("publiclyIndex")) {
+            if (branchUniversalObjectMap.getBoolean("publiclyIndex")) {
+                branchUniversalObject.setContentIndexingMode(BranchUniversalObject.CONTENT_INDEX_MODE.PUBLIC);
+            }
+            else {
+                branchUniversalObject.setContentIndexingMode(BranchUniversalObject.CONTENT_INDEX_MODE.PRIVATE);
+            }
+        }
+
         if (branchUniversalObjectMap.hasKey("contentIndexingMode")) {
             switch (branchUniversalObjectMap.getType("contentIndexingMode")) {
                 case String:
@@ -483,12 +824,29 @@ public class RNBranchModule extends ReactContextBaseJavaModule {
                 String metadataKey = iterator.nextKey();
                 Object metadataObject = getReadableMapObjectForKey(metadataMap, metadataKey);
                 branchUniversalObject.addContentMetadata(metadataKey, metadataObject.toString());
+                HashMap<String, String> metadata = branchUniversalObject.getMetadata();
             }
         }
 
         if (branchUniversalObjectMap.hasKey("type")) branchUniversalObject.setContentType(branchUniversalObjectMap.getString("type"));
 
+        if (branchUniversalObjectMap.hasKey("contentMetadata")) {
+            branchUniversalObject.setContentMetadata(createContentMetadata(branchUniversalObjectMap.getMap("contentMetadata")));
+        }
+
         return branchUniversalObject;
+    }
+
+    @Nullable
+    public ProductCategory getProductCategory(final String stringValue) {
+        ProductCategory[] possibleValues = ProductCategory.class.getEnumConstants();
+        for (ProductCategory value: possibleValues) {
+            if (stringValue.equals(value.getName())) {
+                return value;
+            }
+        }
+        Log.w(REACT_CLASS, "Could not find product category " + stringValue);
+        return null;
     }
 
     @ReactMethod
@@ -502,9 +860,9 @@ public class RNBranchModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void loadRewards(Promise promise)
+    public void loadRewards(String bucket, Promise promise)
     {
-        Branch.getInstance().loadRewards(new LoadRewardsListener(promise));
+        Branch.getInstance().loadRewards(new LoadRewardsListener(bucket, promise));
     }
 
     @ReactMethod
@@ -565,16 +923,23 @@ public class RNBranchModule extends ReactContextBaseJavaModule {
 
     protected class LoadRewardsListener implements Branch.BranchReferralStateChangedListener
     {
+        private String _bucket;
         private Promise _promise;
 
-        public LoadRewardsListener(Promise promise) {
+        public LoadRewardsListener(String bucket, Promise promise) {
+            this._bucket = bucket;
             this._promise = promise;
         }
 
         @Override
         public void onStateChanged(boolean changed, BranchError error) {
             if (error == null) {
-                int credits = Branch.getInstance().getCredits();
+                int credits = 0;
+                if (this._bucket == null) {
+                  credits = Branch.getInstance().getCredits();
+                } else {
+                  credits = Branch.getInstance().getCreditsForBucket(this._bucket);
+                }
                 WritableMap map = new WritableNativeMap();
                 map.putInt("credits", credits);
                 this._promise.resolve(map);

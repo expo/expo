@@ -2,8 +2,6 @@
 
 package host.exp.exponent.storage;
 
-import android.util.Log;
-
 import com.raizlabs.android.dbflow.annotation.Database;
 import com.raizlabs.android.dbflow.runtime.TransactionManager;
 import com.raizlabs.android.dbflow.runtime.transaction.BaseTransaction;

@@ -1,0 +1,2 @@
+rule okhttp3.** expolib_v1.okhttp3.@1
+rule okio.** expolib_v1.okio.@1

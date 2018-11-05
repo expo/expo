@@ -3,3 +3,64 @@ project(':expoview').projectDir = new File(rootDir, 'expoview')
 include ':tools'
 include ':ReactAndroid'
 project(':ReactAndroid').projectDir = new File(rootDir, 'ReactAndroid')
+
+[
+    // ADD_NEW_SUPPORTED_ABIS_HERE
+    "abi30_0_0",
+    "abi29_0_0",
+    "abi28_0_0",
+    "abi27_0_0",
+    "abi26_0_0",
+    "abi25_0_0",
+    "abi24_0_0",
+].forEach({ abiVariant ->
+  include ":expoview-$abiVariant"
+  project(":expoview-$abiVariant").projectDir = new File(rootDir, "versioned-abis/expoview-$abiVariant")
+})
+
+// Universal modules
+
+def modulesDir = new File(rootDir, "../packages")
+
+def includeUniversalModule = { name ->
+  include ":$name"
+  project(":$name").projectDir = new File(modulesDir, "$name/android")
+}
+
+[
+  'expo-ads-admob',
+  'expo-analytics-segment',
+  'expo-app-loader-provider',
+  'expo-background-fetch',
+  'expo-barcode-scanner',
+  'expo-barcode-scanner-interface',
+  'expo-camera',
+  'expo-camera-interface',
+  'expo-constants',
+  'expo-constants-interface',
+  'expo-contacts',
+  'expo-core',
+  'expo-face-detector',
+  'expo-face-detector-interface',
+  'expo-file-system',
+  'expo-file-system-interface',
+  'expo-font',
+  'expo-font-interface',
+  'expo-gl',
+  'expo-gl-cpp',
+  'expo-image-loader-interface',
+  'expo-local-authentication',
+  'expo-location',
+  'expo-localization',
+  'expo-media-library',
+  'expo-payments-stripe',
+  'expo-permissions',
+  'expo-permissions-interface',
+  'expo-print',
+  'expo-react-native-adapter',
+  'expo-sensors',
+  'expo-sensors-interface',
+  'expo-sms',
+  'expo-task-manager',
+  'expo-task-manager-interface'
+].forEach({ moduleName -> includeUniversalModule(moduleName) })

@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXCalendarConverter.h"
+#import "EXUtil.h"
 
 @implementation EXCalendarConverter
 
@@ -136,7 +137,7 @@
   }
 
   if (calendar.CGColor) {
-    serializedCalendar[@"color"] = [EXCalendarConverter _hexStringWithCGColor:calendar.CGColor];
+    serializedCalendar[@"color"] = [EXUtil hexStringWithCGColor:calendar.CGColor];
   }
 
   if (calendar.type) {
@@ -408,25 +409,6 @@
   }
 
   return formedAttendee;
-}
-
-// https://stackoverflow.com/questions/14051807/how-can-i-get-a-hex-string-from-uicolor-or-from-rgb
-+ (NSString *)_hexStringWithCGColor:(CGColorRef)color
-{
-  const CGFloat *components = CGColorGetComponents(color);
-  size_t count = CGColorGetNumberOfComponents(color);
-
-  if (count == 2) {
-    return [NSString stringWithFormat:@"#%02lX%02lX%02lX",
-            lroundf(components[0] * 255.0),
-            lroundf(components[0] * 255.0),
-            lroundf(components[0] * 255.0)];
-  } else {
-    return [NSString stringWithFormat:@"#%02lX%02lX%02lX",
-            lroundf(components[0] * 255.0),
-            lroundf(components[1] * 255.0),
-            lroundf(components[2] * 255.0)];
-  }
 }
 
 @end

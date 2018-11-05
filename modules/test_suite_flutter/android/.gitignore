@@ -1,0 +1,11 @@
+*.iml
+*.class
+.gradle
+/local.properties
+/.idea/workspace.xml
+/.idea/libraries
+.DS_Store
+/build
+/captures
+GeneratedPluginRegistrant.java
+.idea/caches/

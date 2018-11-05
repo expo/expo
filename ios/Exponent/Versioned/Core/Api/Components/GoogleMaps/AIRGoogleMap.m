@@ -7,13 +7,20 @@
 
 #import "AIRGoogleMap.h"
 #import "AIRGoogleMapMarker.h"
+#import "AIRGoogleMapMarkerManager.h"
 #import "AIRGoogleMapPolygon.h"
 #import "AIRGoogleMapPolyline.h"
 #import "AIRGoogleMapCircle.h"
 #import "AIRGoogleMapUrlTile.h"
+#import "AIRGoogleMapOverlay.h"
 #import <GoogleMaps/GoogleMaps.h>
+#import <Google-Maps-iOS-Utils/GMUKMLParser.h>
+#import <Google-Maps-iOS-Utils/GMUPlacemark.h>
+#import <Google-Maps-iOS-Utils/GMUPoint.h>
+#import <Google-Maps-iOS-Utils/GMUGeometryRenderer.h>
 #import <MapKit/MapKit.h>
 #import <React/UIView+React.h>
+#import <React/RCTBridge.h>
 #import "RCTConvert+AirMap.h"
 
 id regionAsJSON(MKCoordinateRegion region) {
@@ -34,7 +41,11 @@ id regionAsJSON(MKCoordinateRegion region) {
 @implementation AIRGoogleMap
 {
   NSMutableArray<UIView *> *_reactSubviews;
-  BOOL _initialRegionSet;
+  MKCoordinateRegion _initialRegion;
+  MKCoordinateRegion _region;
+  BOOL _initialRegionSetOnLoad;
+  BOOL _didCallOnMapReady;
+  BOOL _didMoveToWindow;
 }
 
 - (instancetype)init
@@ -46,10 +57,28 @@ id regionAsJSON(MKCoordinateRegion region) {
     _polylines = [NSMutableArray array];
     _circles = [NSMutableArray array];
     _tiles = [NSMutableArray array];
-    _initialRegionSet = false;
+    _overlays = [NSMutableArray array];
+    _initialRegion = MKCoordinateRegionMake(CLLocationCoordinate2DMake(0.0, 0.0), MKCoordinateSpanMake(0.0, 0.0));
+    _region = MKCoordinateRegionMake(CLLocationCoordinate2DMake(0.0, 0.0), MKCoordinateSpanMake(0.0, 0.0));
+    _initialRegionSetOnLoad = false;
+    _didCallOnMapReady = false;
+    _didMoveToWindow = false;
+
+    // Listen to the myLocation property of GMSMapView.
+    [self addObserver:self
+           forKeyPath:@"myLocation"
+              options:NSKeyValueObservingOptionNew
+              context:NULL];
   }
   return self;
 }
+
+- (void)dealloc {
+  [self removeObserver:self
+            forKeyPath:@"myLocation"
+               context:NULL];
+}
+
 - (id)eventFromCoordinate:(CLLocationCoordinate2D)coordinate {
 
   CGPoint touchPoint = [self.projection pointForCoordinate:coordinate];
@@ -91,6 +120,10 @@ id regionAsJSON(MKCoordinateRegion region) {
     AIRGoogleMapUrlTile *tile = (AIRGoogleMapUrlTile*)subview;
     tile.tileLayer.map = self;
     [self.tiles addObject:tile];
+  } else if ([subview isKindOfClass:[AIRGoogleMapOverlay class]]) {
+    AIRGoogleMapOverlay *overlay = (AIRGoogleMapOverlay*)subview;
+    overlay.overlay.map = self;
+    [self.overlays addObject:overlay];
   } else {
     NSArray<id<RCTComponent>> *childSubviews = [subview reactSubviews];
     for (int i = 0; i < childSubviews.count; i++) {
@@ -127,6 +160,10 @@ id regionAsJSON(MKCoordinateRegion region) {
     AIRGoogleMapUrlTile *tile = (AIRGoogleMapUrlTile*)subview;
     tile.tileLayer.map = nil;
     [self.tiles removeObject:tile];
+  } else if ([subview isKindOfClass:[AIRGoogleMapOverlay class]]) {
+    AIRGoogleMapOverlay *overlay = (AIRGoogleMapOverlay*)subview;
+    overlay.overlay.map = nil;
+    [self.overlays removeObject:overlay];
   } else {
     NSArray<id<RCTComponent>> *childSubviews = [subview reactSubviews];
     for (int i = 0; i < childSubviews.count; i++) {
@@ -144,15 +181,38 @@ id regionAsJSON(MKCoordinateRegion region) {
 }
 #pragma clang diagnostic pop
 
+- (void)didMoveToWindow {
+  if (_didMoveToWindow) return;
+  _didMoveToWindow = true;
+
+  if (_initialRegion.span.latitudeDelta != 0.0 &&
+      _initialRegion.span.longitudeDelta != 0.0) {
+    self.camera = [AIRGoogleMap makeGMSCameraPositionFromMap:self andMKCoordinateRegion:_initialRegion];
+  } else if (_region.span.latitudeDelta != 0.0 &&
+      _region.span.longitudeDelta != 0.0) {
+    self.camera = [AIRGoogleMap makeGMSCameraPositionFromMap:self andMKCoordinateRegion:_region];
+  }
+
+  [super didMoveToWindow];
+}
+
 - (void)setInitialRegion:(MKCoordinateRegion)initialRegion {
-  if (_initialRegionSet) return;
-  _initialRegionSet = true;
+  if (_initialRegionSetOnLoad) return;
+  _initialRegion = initialRegion;
+  _initialRegionSetOnLoad = _didMoveToWindow;
   self.camera = [AIRGoogleMap makeGMSCameraPositionFromMap:self andMKCoordinateRegion:initialRegion];
 }
 
 - (void)setRegion:(MKCoordinateRegion)region {
   // TODO: The JS component is repeatedly setting region unnecessarily. We might want to deal with that in here.
+  _region = region;
   self.camera = [AIRGoogleMap makeGMSCameraPositionFromMap:self  andMKCoordinateRegion:region];
+}
+
+- (void)didPrepareMap {
+  if (_didCallOnMapReady) return;
+  _didCallOnMapReady = true;
+  if (self.onMapReady) self.onMapReady(@{});
 }
 
 - (BOOL)didTapMarker:(GMSMarker *)marker {
@@ -160,7 +220,11 @@ id regionAsJSON(MKCoordinateRegion region) {
 
   id event = @{@"action": @"marker-press",
                @"id": airMarker.identifier ?: @"unknown",
-              };
+               @"coordinate": @{
+                   @"latitude": @(airMarker.position.latitude),
+                   @"longitude": @(airMarker.position.longitude)
+                   }
+               };
 
   if (airMarker.onPress) airMarker.onPress(event);
   if (self.onMarkerPress) self.onMarkerPress(event);
@@ -168,6 +232,16 @@ id regionAsJSON(MKCoordinateRegion region) {
   // TODO: not sure why this is necessary
   [self setSelectedMarker:marker];
   return NO;
+}
+
+- (void)didTapPolyline:(GMSOverlay *)polyline {
+  AIRGMSPolyline *airPolyline = (AIRGMSPolyline *)polyline;
+
+  id event = @{@"action": @"polyline-press",
+               @"id": airPolyline.identifier ?: @"unknown",
+               };
+
+   if (airPolyline.onPress) airPolyline.onPress(event);
 }
 
 - (void)didTapPolygon:(GMSOverlay *)polygon {
@@ -198,6 +272,20 @@ id regionAsJSON(MKCoordinateRegion region) {
   if (self.onChange) self.onChange(event);
 }
 
+- (void)didTapPOIWithPlaceID:(NSString *)placeID
+                        name:(NSString *)name
+                    location:(CLLocationCoordinate2D)location {
+  id event = @{@"placeId": placeID,
+               @"name": name,
+               @"coordinate": @{
+                   @"latitude": @(location.latitude),
+                   @"longitude": @(location.longitude)
+                   }
+               };
+
+  if (self.onPoiClick) self.onPoiClick(event);
+}
+
 - (void)idleAtCameraPosition:(GMSCameraPosition *)position {
   id event = @{@"continuous": @NO,
                @"region": regionAsJSON([AIRGoogleMap makeGMSCameraPositionFromMap:self andGMSCameraPosition:position]),
@@ -205,6 +293,13 @@ id regionAsJSON(MKCoordinateRegion region) {
   if (self.onChange) self.onChange(event);  // complete
 }
 
+- (void)setMapPadding:(UIEdgeInsets)mapPadding {
+  self.padding = mapPadding;
+}
+
+- (UIEdgeInsets)mapPadding {
+  return self.padding;
+}
 
 - (void)setScrollEnabled:(BOOL)scrollEnabled {
   self.settings.scrollGestures = scrollEnabled;
@@ -290,6 +385,21 @@ id regionAsJSON(MKCoordinateRegion region) {
   return self.settings.myLocationButton;
 }
 
+- (void)setMinZoomLevel:(CGFloat)minZoomLevel {
+  [self setMinZoom:minZoomLevel maxZoom:self.maxZoom ];
+}
+
+- (void)setMaxZoomLevel:(CGFloat)maxZoomLevel {
+  [self setMinZoom:self.minZoom maxZoom:maxZoomLevel ];
+}
+
+- (void)setShowsIndoorLevelPicker:(BOOL)showsIndoorLevelPicker {
+  self.settings.indoorPicker = showsIndoorLevelPicker;
+}
+
+- (BOOL)showsIndoorLevelPicker {
+  return self.settings.indoorPicker;
+}
 
 + (MKCoordinateRegion) makeGMSCameraPositionFromMap:(GMSMapView *)map andGMSCameraPosition:(GMSCameraPosition *)position {
   // solution from here: http://stackoverflow.com/a/16587735/1102215
@@ -324,6 +434,102 @@ id regionAsJSON(MKCoordinateRegion region) {
                                                         region.center.longitude - longitudeDelta);
   GMSCoordinateBounds *bounds = [[GMSCoordinateBounds alloc] initWithCoordinate:a coordinate:b];
   return [map cameraForBounds:bounds insets:UIEdgeInsetsZero];
+}
+
+#pragma mark - KVO updates
+
+- (void)observeValueForKeyPath:(NSString *)keyPath
+                      ofObject:(id)object
+                        change:(NSDictionary *)change
+                       context:(void *)context {
+  if ([keyPath isEqualToString:@"myLocation"]){
+    CLLocation *location = [object myLocation];
+
+    id event = @{@"coordinate": @{
+                    @"latitude": @(location.coordinate.latitude),
+                    @"longitude": @(location.coordinate.longitude),
+                    @"altitude": @(location.altitude),
+                    @"accuracy": @(location.horizontalAccuracy),
+                    @"altitudeAccuracy": @(location.verticalAccuracy),
+                    @"speed": @(location.speed),
+                    }
+                };
+
+  if (self.onUserLocationChange) self.onUserLocationChange(event);
+  } else {
+    // This message is not for me; pass it on to super.
+    [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+  }
+}
+
++ (NSString *)GetIconUrl:(GMUPlacemark *) marker parser:(GMUKMLParser *) parser {
+  if (marker.style.styleID != nil) {
+    for (GMUStyle *style in parser.styles) {
+      if (style.styleID == marker.style.styleID) {
+        return style.iconUrl;
+      }
+    }
+  }
+
+  return marker.style.iconUrl;
+}
+
+- (NSString *)KmlSrc {
+  return _kmlSrc;
+}
+
+- (void)setKmlSrc:(NSString *)kmlUrl {
+
+  _kmlSrc = kmlUrl;
+
+  NSURL *url = [NSURL URLWithString:kmlUrl];
+  NSData *urlData = nil;
+
+  if ([url isFileURL]) {
+    urlData = [NSData dataWithContentsOfURL:url];
+  } else {
+    urlData = [[NSFileManager defaultManager] contentsAtPath:kmlUrl];
+  }
+
+  GMUKMLParser *parser = [[GMUKMLParser alloc] initWithData:urlData];
+  [parser parse];
+
+  NSUInteger index = 0;
+  NSMutableArray *markers = [[NSMutableArray alloc]init];
+
+  for (GMUPlacemark *place in parser.placemarks) {
+
+    CLLocationCoordinate2D location =((GMUPoint *) place.geometry).coordinate;
+
+    AIRGoogleMapMarker *marker = (AIRGoogleMapMarker *)[[AIRGoogleMapMarkerManager alloc] view];
+    if (!marker.bridge) {
+      marker.bridge = _bridge;
+    }
+    marker.identifier = place.title;
+    marker.coordinate = location;
+    marker.title = place.title;
+    marker.subtitle = place.snippet;
+    marker.pinColor = place.style.fillColor;
+    marker.imageSrc = [AIRGoogleMap GetIconUrl:place parser:parser];
+    marker.layer.backgroundColor = [UIColor clearColor].CGColor;
+    marker.layer.position = CGPointZero;
+
+    [self insertReactSubview:(UIView *) marker atIndex:index];
+
+    [markers addObject:@{@"id": marker.identifier,
+                         @"title": marker.title,
+                         @"description": marker.subtitle,
+                         @"coordinate": @{
+                             @"latitude": @(location.latitude),
+                             @"longitude": @(location.longitude)
+                             }
+                         }];
+
+    index++;
+  }
+
+  id event = @{@"markers": markers};
+  if (self.onKmlReady) self.onKmlReady(event);
 }
 
 @end

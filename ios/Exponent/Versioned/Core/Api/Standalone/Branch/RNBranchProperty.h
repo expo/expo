@@ -18,7 +18,7 @@
 + (instancetype _Nonnull) propertyWithSetterSelector:(SEL _Nonnull)selector type:(Class _Nonnull)type;
 
 - (instancetype _Nonnull) initWithSetterSelector:(SEL _Nonnull)selector type:(Class _Nonnull)type NS_DESIGNATED_INITIALIZER;
-- (instancetype _Nullable)init NS_UNAVAILABLE;
+- (instancetype _Nonnull)init NS_UNAVAILABLE;
 
 - (BOOL)isEqual:(id _Nullable )object;
 

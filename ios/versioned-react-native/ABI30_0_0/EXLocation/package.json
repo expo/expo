@@ -1,0 +1,31 @@
+{
+  "name": "expo-location",
+  "version": "1.0.0-rc.0",
+  "description": "Expo Location standalone universal module",
+  "main": "index.js",
+  "keywords": [
+    "react-native",
+    "expo",
+    "location",
+    "geolocation",
+    "coords",
+    "geocoding",
+    "compass",
+    "heading"
+  ],
+  "homepage": "https://docs.expo.io/",
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "peerDependencies": {
+    "expo-core": "^1.1.0-rc.0",
+    "expo-permissions-interface": "^1.1.0-rc.0",
+    "react-native": "^0.55.4"
+  },
+  "dependencies": {
+    "invariant": "^2.2.4"
+  },
+  "devDependencies": {
+    "babel-preset-expo": "^4.0.0",
+    "flow-bin": "^0.79.1"
+  }
+}

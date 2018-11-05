@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 package com.facebook.react.devsupport;
 
@@ -18,6 +16,7 @@ import com.facebook.react.R;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.network.OkHttpCallUtil;
+import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
 import com.facebook.react.devsupport.interfaces.StackFrame;
 import com.facebook.react.modules.systeminfo.AndroidInfoHelpers;
@@ -30,6 +29,7 @@ import com.facebook.react.packagerconnection.RequestOnlyHandler;
 import com.facebook.react.packagerconnection.Responder;
 import java.io.File;
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Locale;
@@ -64,30 +64,6 @@ public class DevServerHelper {
 
     public static String RELOAD_APP_EXTRA_JS_PROXY = "jsproxy";
 
-    public static String RELOAD_APP_ACTION_SUFFIX = ".RELOAD_APP_ACTION";
-
-    public static String BUNDLE_URL_FORMAT = "http://%s/%s.%s?platform=android&dev=%s&minify=%s";
-
-    public static String RESOURCE_URL_FORMAT = "http://%s/%s";
-
-    public static String LAUNCH_JS_DEVTOOLS_COMMAND_URL_FORMAT = "http://%s/launch-js-devtools";
-
-    public static String ONCHANGE_ENDPOINT_URL_FORMAT = "http://%s/onchange";
-
-    public static String WEBSOCKET_PROXY_URL_FORMAT = "ws://%s/debugger-proxy?role=client";
-
-    public static String PACKAGER_STATUS_URL_FORMAT = "http://%s/status";
-
-    public static String HEAP_CAPTURE_UPLOAD_URL_FORMAT = "http://%s/jscheapcaptureupload";
-
-    public static String INSPECTOR_DEVICE_URL_FORMAT = "http://%s/inspector/device?name=%s&app=%s";
-
-    public static String INSPECTOR_ATTACH_URL_FORMAT = "http://%s/nuclide/attach-debugger-nuclide?title=%s&app=%s&device=%s";
-
-    public static String SYMBOLICATE_URL_FORMAT = "http://%s/symbolicate";
-
-    public static String OPEN_STACK_FRAME_URL_FORMAT = "http://%s/open-stack-frame";
-
     public static String PACKAGER_OK_STATUS = "packager-status:running";
 
     // 2 mins
@@ -116,12 +92,32 @@ public class DevServerHelper {
 
         void onCaptureHeapCommand(final Responder responder);
 
-        void onPokeSamplingProfilerCommand(final Responder responder);
+        // Allow apps to provide listeners for custom packager commands.
+        @Nullable
+        Map<String, RequestHandler> customCommandHandlers();
+    }
+
+    public interface PackagerCustomCommandProvider {
     }
 
     public interface SymbolicationListener {
 
         void onSymbolicationComplete(@Nullable Iterable<StackFrame> stackFrames);
+    }
+
+    private enum BundleType {
+
+        BUNDLE("bundle"), DELTA("delta"), MAP("map");
+
+        public final String mTypeID;
+
+        BundleType(String typeID) {
+            mTypeID = typeID;
+        }
+
+        public String typeID() {
+            return mTypeID;
+        }
     }
 
     public final DevInternalSettings mSettings;
@@ -148,8 +144,11 @@ public class DevServerHelper {
     @Nullable
     public OnServerContentChangeListener mOnServerContentChangeListener;
 
-    public DevServerHelper(DevInternalSettings settings, String packageName) {
+    public InspectorPackagerConnection.BundleStatusProvider mBundlerStatusProvider;
+
+    public DevServerHelper(DevInternalSettings settings, String packageName, InspectorPackagerConnection.BundleStatusProvider bundleStatusProvider) {
         mSettings = settings;
+        mBundlerStatusProvider = bundleStatusProvider;
         mClient = new OkHttpClient.Builder().connectTimeout(HTTP_CONNECT_TIMEOUT_MS, TimeUnit.MILLISECONDS).readTimeout(0, TimeUnit.MILLISECONDS).writeTimeout(0, TimeUnit.MILLISECONDS).build();
         mBundleDownloader = new BundleDownloader(mClient);
         mRestartOnChangePollingHandler = new Handler();
@@ -187,13 +186,10 @@ public class DevServerHelper {
                         commandListener.onCaptureHeapCommand(responder);
                     }
                 });
-                handlers.put("pokeSamplingProfiler", new RequestOnlyHandler() {
-
-                    @Override
-                    public void onRequest(@Nullable Object params, Responder responder) {
-                        commandListener.onPokeSamplingProfilerCommand(responder);
-                    }
-                });
+                Map<String, RequestHandler> customHandlers = commandListener.customCommandHandlers();
+                if (customHandlers != null) {
+                    handlers.putAll(customHandlers);
+                }
                 handlers.putAll(new FileIoHandler().handlers());
                 ConnectionCallback onPackagerConnectedCallback = new ConnectionCallback() {
 
@@ -237,17 +233,11 @@ public class DevServerHelper {
 
             @Override
             protected Void doInBackground(Void... params) {
-                mInspectorPackagerConnection = new InspectorPackagerConnection(getInspectorDeviceUrl(), mPackageName);
+                mInspectorPackagerConnection = new InspectorPackagerConnection(getInspectorDeviceUrl(), mPackageName, mBundlerStatusProvider);
                 mInspectorPackagerConnection.connect();
                 return null;
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-    }
-
-    public void sendEventToAllConnections(String event) {
-        if (mInspectorPackagerConnection != null) {
-            mInspectorPackagerConnection.sendEventToAllConnections(event);
-        }
     }
 
     public void disableDebugger() {
@@ -350,29 +340,34 @@ public class DevServerHelper {
         });
     }
 
-    /** Intent action for reloading the JS */
-    public static String getReloadAppAction(Context context) {
-        return context.getPackageName() + RELOAD_APP_ACTION_SUFFIX;
-    }
-
     public String getWebsocketProxyURL() {
-        return String.format(Locale.US, WEBSOCKET_PROXY_URL_FORMAT, mSettings.getPackagerConnectionSettings().getDebugServerHost());
+        return String.format(Locale.US, "ws://%s/debugger-proxy?role=client", mSettings.getPackagerConnectionSettings().getDebugServerHost());
     }
 
-    public String getHeapCaptureUploadUrl() {
-        return String.format(Locale.US, HEAP_CAPTURE_UPLOAD_URL_FORMAT, mSettings.getPackagerConnectionSettings().getDebugServerHost());
+    private String getInspectorDeviceUrl() {
+        return String.format(Locale.US, "http://%s/inspector/device?name=%s&app=%s", mSettings.getPackagerConnectionSettings().getInspectorServerHost(), AndroidInfoHelpers.getFriendlyDeviceName(), mPackageName);
     }
 
-    public String getInspectorDeviceUrl() {
-        return String.format(Locale.US, INSPECTOR_DEVICE_URL_FORMAT, mSettings.getPackagerConnectionSettings().getInspectorServerHost(), AndroidInfoHelpers.getFriendlyDeviceName(), mPackageName);
+    private String getInspectorAttachUrl(String title) {
+        return String.format(Locale.US, "http://%s/nuclide/attach-debugger-nuclide?title=%s&app=%s&device=%s", AndroidInfoHelpers.getServerHost(), title, mPackageName, AndroidInfoHelpers.getFriendlyDeviceName());
     }
 
-    public String getInspectorAttachUrl(String title) {
-        return String.format(Locale.US, INSPECTOR_ATTACH_URL_FORMAT, AndroidInfoHelpers.getServerHost(), title, mPackageName, AndroidInfoHelpers.getFriendlyDeviceName());
+    public void downloadBundleFromURL(DevBundleDownloadListener callback, File outputFile, String bundleURL, BundleDownloader.BundleInfo bundleInfo) {
+        mBundleDownloader.downloadBundleFromURL(callback, outputFile, bundleURL, bundleInfo, getDeltaClientType());
     }
 
-    public BundleDownloader getBundleDownloader() {
-        return mBundleDownloader;
+    public void downloadBundleFromURL(DevBundleDownloadListener callback, File outputFile, String bundleURL, BundleDownloader.BundleInfo bundleInfo, Request.Builder requestBuilder) {
+        mBundleDownloader.downloadBundleFromURL(callback, outputFile, bundleURL, bundleInfo, getDeltaClientType(), requestBuilder);
+    }
+
+    private BundleDeltaClient.ClientType getDeltaClientType() {
+        if (mSettings.isBundleDeltasCppEnabled()) {
+            return BundleDeltaClient.ClientType.NATIVE;
+        } else if (mSettings.isBundleDeltasEnabled()) {
+            return BundleDeltaClient.ClientType.DEV_SUPPORT;
+        } else {
+            return BundleDeltaClient.ClientType.NONE;
+        }
     }
 
     /**
@@ -403,29 +398,33 @@ public class DevServerHelper {
         return mSettings.isJSMinifyEnabled();
     }
 
-    private String createBundleURL(String host, String jsModulePath, boolean devMode, boolean jsMinify, boolean useDeltas) {
+    private String createBundleURL(String mainModuleID, BundleType type, String host) {
         try {
-            return (String) Class.forName("host.exp.exponent.ReactNativeStaticHelpers").getMethod("getBundleUrlForActivityId", int.class, String.class, String.class, boolean.class, boolean.class).invoke(null, mSettings.exponentActivityId, host, jsModulePath, devMode, jsMinify);
+            return (String) Class.forName("host.exp.exponent.ReactNativeStaticHelpers").getMethod("getBundleUrlForActivityId", int.class, String.class, String.class, String.class, boolean.class, boolean.class).invoke(null, mSettings.exponentActivityId, mainModuleID, type.typeID(), host, getDevMode(), getJSMinifyMode());
         } catch (Exception expoHandleErrorException) {
             expoHandleErrorException.printStackTrace();
             return null;
         }
     }
 
+    private String createBundleURL(String mainModuleID, BundleType type) {
+        return createBundleURL(mainModuleID, type, mSettings.getPackagerConnectionSettings().getDebugServerHost());
+    }
+
     private static String createResourceURL(String host, String resourcePath) {
-        return String.format(Locale.US, RESOURCE_URL_FORMAT, host, resourcePath);
+        return String.format(Locale.US, "http://%s/%s", host, resourcePath);
     }
 
     private static String createSymbolicateURL(String host) {
-        return String.format(Locale.US, SYMBOLICATE_URL_FORMAT, host);
+        return String.format(Locale.US, "http://%s/symbolicate", host);
     }
 
     private static String createOpenStackFrameURL(String host) {
-        return String.format(Locale.US, OPEN_STACK_FRAME_URL_FORMAT, host);
+        return String.format(Locale.US, "http://%s/open-stack-frame", host);
     }
 
     public String getDevServerBundleURL(final String jsModulePath) {
-        return createBundleURL(mSettings.getPackagerConnectionSettings().getDebugServerHost(), jsModulePath, getDevMode(), getJSMinifyMode(), mSettings.isBundleDeltasEnabled());
+        return createBundleURL(jsModulePath, mSettings.isBundleDeltasEnabled() ? BundleType.DELTA : BundleType.BUNDLE, mSettings.getPackagerConnectionSettings().getDebugServerHost());
     }
 
     public void isPackagerRunning(final PackagerStatusCallback callback) {
@@ -452,8 +451,10 @@ public class DevServerHelper {
                     callback.onPackagerStatusFetched(false);
                     return;
                 }
-                if (!PACKAGER_OK_STATUS.equals(body.string())) {
-                    FLog.e(ReactConstants.TAG, "Got unexpected response from packager when requesting status: " + body.string());
+                // cannot call body.string() twice, stored it into variable. https://github.com/square/okhttp/issues/1240#issuecomment-68142603
+                String bodyString = body.string();
+                if (!PACKAGER_OK_STATUS.equals(bodyString)) {
+                    FLog.e(ReactConstants.TAG, "Got unexpected response from packager when requesting status: " + bodyString);
                     callback.onPackagerStatusFetched(false);
                     return;
                 }
@@ -463,7 +464,7 @@ public class DevServerHelper {
     }
 
     private static String createPackagerStatusURL(String host) {
-        return String.format(Locale.US, PACKAGER_STATUS_URL_FORMAT, host);
+        return String.format(Locale.US, "http://%s/status", host);
     }
 
     public void stopPollingOnChangeEndpoint() {
@@ -483,7 +484,7 @@ public class DevServerHelper {
         }
         mOnChangePollingEnabled = true;
         mOnServerContentChangeListener = onServerContentChangeListener;
-        mOnChangePollingClient = new OkHttpClient.Builder().connectionPool(new ConnectionPool(1, LONG_POLL_KEEP_ALIVE_DURATION_MS, TimeUnit.MINUTES)).connectTimeout(HTTP_CONNECT_TIMEOUT_MS, TimeUnit.MILLISECONDS).build();
+        mOnChangePollingClient = new OkHttpClient.Builder().connectionPool(new ConnectionPool(1, LONG_POLL_KEEP_ALIVE_DURATION_MS, TimeUnit.MILLISECONDS)).connectTimeout(HTTP_CONNECT_TIMEOUT_MS, TimeUnit.MILLISECONDS).build();
         enqueueOnChangeEndpointLongPolling();
     }
 
@@ -515,13 +516,16 @@ public class DevServerHelper {
                     // of a failure, so that we don't flood network queue with frequent requests in case when
                     // dev server is down
                     FLog.d(ReactConstants.TAG, "Error while requesting /onchange endpoint", e);
+                    // NOTE(expo): in case our connection closed due to a timeout, we should just retry
+                    // immediately so that there isn't a disruption in listening to the onchange endpoint
+                    int delay = (e instanceof SocketTimeoutException) ? 0 : LONG_POLL_FAILURE_DELAY_MS;
                     mRestartOnChangePollingHandler.postDelayed(new Runnable() {
 
                         @Override
                         public void run() {
                             handleOnChangePollingResponse(false);
                         }
-                    }, LONG_POLL_FAILURE_DELAY_MS);
+                    }, delay);
                 }
             }
 
@@ -533,11 +537,11 @@ public class DevServerHelper {
     }
 
     private String createOnChangeEndpointUrl() {
-        return String.format(Locale.US, ONCHANGE_ENDPOINT_URL_FORMAT, mSettings.getPackagerConnectionSettings().getDebugServerHost());
+        return String.format(Locale.US, "http://%s/onchange", mSettings.getPackagerConnectionSettings().getDebugServerHost());
     }
 
     private String createLaunchJSDevtoolsCommandUrl() {
-        return String.format(Locale.US, LAUNCH_JS_DEVTOOLS_COMMAND_URL_FORMAT, mSettings.getPackagerConnectionSettings().getDebugServerHost());
+        return String.format(Locale.US, "http://%s/launch-js-devtools", mSettings.getPackagerConnectionSettings().getDebugServerHost());
     }
 
     public void launchJSDevtools() {
@@ -558,16 +562,16 @@ public class DevServerHelper {
     }
 
     public String getSourceMapUrl(String mainModuleName) {
-        return String.format(Locale.US, BUNDLE_URL_FORMAT, mSettings.getPackagerConnectionSettings().getDebugServerHost(), mainModuleName, "map", getDevMode(), getJSMinifyMode());
+        return createBundleURL(mainModuleName, BundleType.MAP);
     }
 
     public String getSourceUrl(String mainModuleName) {
-        return String.format(Locale.US, BUNDLE_URL_FORMAT, mSettings.getPackagerConnectionSettings().getDebugServerHost(), mainModuleName, mSettings.isBundleDeltasEnabled() ? "delta" : "bundle", getDevMode(), getJSMinifyMode());
+        return createBundleURL(mainModuleName, mSettings.isBundleDeltasEnabled() ? BundleType.DELTA : BundleType.BUNDLE);
     }
 
     public String getJSBundleURLForRemoteDebugging(String mainModuleName) {
         // host itself.
-        return createBundleURL(getHostForJSProxy(), mainModuleName, getDevMode(), getJSMinifyMode(), false);
+        return createBundleURL(mainModuleName, BundleType.BUNDLE, getHostForJSProxy());
     }
 
     /**
@@ -580,8 +584,7 @@ public class DevServerHelper {
     public File downloadBundleResourceFromUrlSync(final String resourcePath, final File outputFile) {
         final String resourceURL = createResourceURL(mSettings.getPackagerConnectionSettings().getDebugServerHost(), resourcePath);
         final Request request = new Request.Builder().url(resourceURL).build();
-        try {
-            Response response = mClient.newCall(request).execute();
+        try (Response response = mClient.newCall(request).execute()) {
             if (!response.isSuccessful()) {
                 return null;
             }

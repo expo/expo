@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>expolib_v1.com.google.android.exoplayer</groupId>
+  <artifactId>expolib_v1-extension-okhttp</artifactId>
+  <versioning>
+    <release>2.6.1</release>
+    <versions>
+      <version>2.6.1</version>
+    </versions>
+    <lastUpdated>20181011073837</lastUpdated>
+  </versioning>
+</metadata>

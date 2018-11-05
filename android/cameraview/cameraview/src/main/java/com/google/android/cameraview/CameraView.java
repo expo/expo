@@ -31,11 +31,13 @@ import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.graphics.SurfaceTexture;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Set;
+import java.util.SortedSet;
 
 public class CameraView extends FrameLayout {
 
@@ -77,36 +79,39 @@ public class CameraView extends FrameLayout {
 
     private boolean mAdjustViewBounds;
 
+    private Context mContext;
+
     private final DisplayOrientationDetector mDisplayOrientationDetector;
 
-    public CameraView(Context context) {
-        this(context, null);
+    public CameraView(Context context, boolean fallbackToOldApi) {
+        this(context, null, fallbackToOldApi);
     }
 
-    public CameraView(Context context, AttributeSet attrs) {
-        this(context, attrs, 0);
+    public CameraView(Context context, AttributeSet attrs, boolean fallbackToOldApi) {
+        this(context, attrs, 0, fallbackToOldApi);
     }
 
     @SuppressWarnings("WrongConstant")
-    public CameraView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public CameraView(Context context, AttributeSet attrs, int defStyleAttr, boolean fallbackToOldApi) {
         super(context, attrs, defStyleAttr);
         if (isInEditMode()){
             mCallbacks = null;
             mDisplayOrientationDetector = null;
             return;
         }
+        mAdjustViewBounds = true;
+        mContext = context;
+
         // Internal setup
         final PreviewImpl preview = createPreviewImpl(context);
         mCallbacks = new CallbackBridge();
-        if (Build.VERSION.SDK_INT < 21) {
+        if (fallbackToOldApi || Build.VERSION.SDK_INT < 21) {
             mImpl = new Camera1(mCallbacks, preview);
         } else if (Build.VERSION.SDK_INT < 23) {
             mImpl = new Camera2(mCallbacks, preview, context);
         } else {
             mImpl = new Camera2Api23(mCallbacks, preview, context);
         }
-
-        mAdjustViewBounds = true;
 
         // Display orientation detector
         mDisplayOrientationDetector = new DisplayOrientationDetector(context) {
@@ -215,6 +220,7 @@ public class CameraView extends FrameLayout {
         state.zoom = getZoom();
         state.whiteBalance = getWhiteBalance();
         state.scanning = getScanning();
+        state.pictureSize = getPictureSize();
         return state;
     }
 
@@ -234,6 +240,40 @@ public class CameraView extends FrameLayout {
         setZoom(ss.zoom);
         setWhiteBalance(ss.whiteBalance);
         setScanning(ss.scanning);
+        setPictureSize(ss.pictureSize);
+    }
+
+    public void setUsingCamera2Api(boolean useCamera2) {
+        if (Build.VERSION.SDK_INT < 21) {
+          return;
+        }
+
+        boolean wasOpened = isCameraOpened();
+        Parcelable state = onSaveInstanceState();
+
+        if (useCamera2) {
+            if (wasOpened) {
+                stop();
+            }
+            if (Build.VERSION.SDK_INT < 23) {
+                mImpl = new Camera2(mCallbacks, mImpl.mPreview, mContext);
+            } else {
+                mImpl = new Camera2Api23(mCallbacks, mImpl.mPreview, mContext);
+            }
+        } else {
+            if (mImpl instanceof Camera1) {
+              return;
+            }
+
+            if (wasOpened) {
+                stop();
+            }
+            mImpl = new Camera1(mCallbacks, mImpl.mPreview);
+        }
+        onRestoreInstanceState(state);
+        if (wasOpened) {
+            start();
+        }
     }
 
     /**
@@ -339,6 +379,16 @@ public class CameraView extends FrameLayout {
     }
 
     /**
+     * Gets the currently used camera ID (an integer that can be used as a parameter to
+     * {@link CamcorderProfile#get(int, int)})
+     *
+     * @return Currently used camera ID.
+     */
+    public int getCameraId() {
+        return mImpl.getCameraId();
+    }
+
+    /**
      * Gets all the aspect ratios supported by the current camera.
      */
     public Set<AspectRatio> getSupportedAspectRatios() {
@@ -364,6 +414,31 @@ public class CameraView extends FrameLayout {
     @Nullable
     public AspectRatio getAspectRatio() {
         return mImpl.getAspectRatio();
+    }
+
+    /**
+     * Gets all the picture sizes for particular ratio supported by the current camera.
+     *
+     * @param ratio {@link AspectRatio} for which the available image sizes will be returned.
+     */
+    public SortedSet<Size> getAvailablePictureSizes(@NonNull AspectRatio ratio) {
+        return mImpl.getAvailablePictureSizes(ratio);
+    }
+
+    /**
+     * Sets the size of taken pictures.
+     *
+     * @param size The {@link Size} to be set.
+     */
+    public void setPictureSize(@NonNull Size size) {
+        mImpl.setPictureSize(size);
+    }
+
+    /**
+     * Gets the size of pictures that will be taken.
+     */
+    public Size getPictureSize() {
+        return mImpl.getPictureSize();
     }
 
     /**
@@ -458,6 +533,22 @@ public class CameraView extends FrameLayout {
         mImpl.stopRecording();
     }
 
+    public void resumePreview() {
+        mImpl.resumePreview();
+    }
+
+    public void pausePreview() {
+        mImpl.pausePreview();
+    }
+
+    public void setPreviewTexture(SurfaceTexture surfaceTexture) {
+        mImpl.setPreviewTexture(surfaceTexture);
+    }
+
+    public Size getPreviewSize() {
+        return mImpl.getPreviewSize();
+    }
+
     private class CallbackBridge implements CameraViewImpl.Callback {
 
         private final ArrayList<Callback> mCallbacks = new ArrayList<>();
@@ -546,6 +637,8 @@ public class CameraView extends FrameLayout {
 
         boolean scanning;
 
+        Size pictureSize;
+
         @SuppressWarnings("WrongConstant")
         public SavedState(Parcel source, ClassLoader loader) {
             super(source);
@@ -557,6 +650,7 @@ public class CameraView extends FrameLayout {
             zoom = source.readFloat();
             whiteBalance = source.readInt();
             scanning = source.readByte() != 0;
+            pictureSize = source.readParcelable(loader);
         }
 
         public SavedState(Parcelable superState) {
@@ -574,6 +668,7 @@ public class CameraView extends FrameLayout {
             out.writeFloat(zoom);
             out.writeInt(whiteBalance);
             out.writeByte((byte) (scanning ? 1 : 0));
+            out.writeParcelable(pictureSize, flags);
         }
 
         public static final Creator<SavedState> CREATOR

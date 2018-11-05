@@ -1,37 +1,38 @@
-// This class contains any singleton kernel logic that needs to live in obj-c.
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <UIKit/UIKit.h>
 
-#import "EXKernelBridgeRegistry.h"
+#import "EXAppBrowserController.h"
+#import "EXKernelAppRegistry.h"
 #import "EXKernelServiceRegistry.h"
 #import "EXKernelUtil.h"
-
-@class EXViewController;
+#import "EXViewController.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-FOUNDATION_EXPORT NSNotificationName kEXKernelJSIsLoadedNotification;
-FOUNDATION_EXPORT NSNotificationName kEXKernelAppDidDisplay;
 FOUNDATION_EXPORT NSString *kEXKernelErrorDomain;
+FOUNDATION_EXPORT const NSUInteger kEXErrorCodeAppForbidden;
+
+typedef NS_ENUM(NSInteger, EXKernelErrorCode) {
+  EXKernelErrorCodeModuleDeallocated,
+};
 
 // this key is set to YES when crashlytics sends a crash report.
 FOUNDATION_EXPORT NSString * const kEXKernelClearJSCacheUserDefaultsKey;
 
-@interface EXKernel : NSObject
+@interface EXKernel : NSObject <EXViewControllerDelegate>
 
-@property (nonatomic, strong, readonly) EXKernelBridgeRegistry *bridgeRegistry;
+@property (nonatomic, strong, readonly) EXKernelAppRegistry *appRegistry;
 @property (nonatomic, strong, readonly) EXKernelServiceRegistry *serviceRegistry;
+@property (nonatomic, readonly) EXKernelAppRecord *visibleApp;
+@property (nonatomic, assign) id<EXAppBrowserController> browserController;
 
 + (instancetype)sharedInstance;
 
-/**
- *  Dispatch a JS event to the kernel bridge, with optional completion handlers.
- */
-- (void)dispatchKernelJSEvent: (NSString *)eventName
-                   body: (NSDictionary *)eventBody
-              onSuccess: (void (^_Nullable)(NSDictionary * _Nullable ))success
-              onFailure: (void (^_Nullable)(NSString * _Nullable ))failure;
+- (EXKernelAppRecord *)createNewAppWithUrl:(NSURL *)url initialProps:(nullable NSDictionary *)initialProps;
+- (void)switchTasks;
+- (void)reloadAppWithExperienceId:(NSString *)experienceId; // called by Updates.reload
+- (void)reloadAppFromCacheWithExperienceId:(NSString *)experienceId; // called by Updates.reloadFromCache
 
 /**
  *  Send a notification to a given experience id.
@@ -41,8 +42,10 @@ FOUNDATION_EXPORT NSString * const kEXKernelClearJSCacheUserDefaultsKey;
           fromBackground: (BOOL)isFromBackground
                 isRemote: (BOOL)isRemote;
 
-- (void)registerRootExponentViewController: (EXViewController *)exponentViewController;
-- (EXViewController *)rootViewController;
+/**
+ *  Initial props to pass to an app based on LaunchOptions from UIApplicationDelegate.
+ */
+- (NSDictionary *)initialAppPropsFromLaunchOptions:(NSDictionary *)launchOptions;
 
 /**
  *  Find and return the (potentially versioned) native module instance belonging to the
@@ -51,19 +54,16 @@ FOUNDATION_EXPORT NSString * const kEXKernelClearJSCacheUserDefaultsKey;
 - (id)nativeModuleForAppManager:(EXReactAppManager *)appManager named:(NSString *)moduleName;
 
 /**
- *  Send the given url to this app manager (via the Linking module) and foreground it.
+ *  Send the given url to this app (via the RN Linking module) and foreground it.
  */
-- (void)openUrl:(NSString *)url onAppManager:(EXReactAppManager *)appManager;
-
-/**
- *  Update state after a JS task switch.
- */
-- (void)handleJSTaskDidForegroundWithType:(NSInteger)type params:(NSDictionary *)params;
+- (void)sendUrl:(NSString *)url toAppRecord:(EXKernelAppRecord *)app;
 
 /**
  *  An id that uniquely identifies this installation of Exponent.
  */
 + (NSString *)deviceInstallUUID;
+
+- (void)logAnalyticsEvent:(NSString *)eventId forAppRecord:(EXKernelAppRecord *)appRecord;
 
 @end
 

@@ -13,13 +13,20 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
   private static int DEFAULT_MIN_POINTERS = 1;
   private static int DEFAULT_MAX_POINTERS = 10;
 
-  private float mMinOffsetX = MIN_VALUE_IGNORE;
-  private float mMinOffsetY = MIN_VALUE_IGNORE;
-  private float mMinDeltaX = MIN_VALUE_IGNORE;
-  private float mMinDeltaY = MIN_VALUE_IGNORE;
-  private float mMaxDeltaX = MAX_VALUE_IGNORE;
-  private float mMaxDeltaY = MAX_VALUE_IGNORE;
   private float mMinDistSq = MAX_VALUE_IGNORE;
+
+  private float mActiveOffsetXStart = MIN_VALUE_IGNORE;
+  private float mActiveOffsetXEnd = MAX_VALUE_IGNORE;
+
+  private float mFailOffsetXStart = MAX_VALUE_IGNORE;
+  private float mFailOffsetXEnd = MIN_VALUE_IGNORE;
+
+  private float mActiveOffsetYStart = MIN_VALUE_IGNORE;
+  private float mActiveOffsetYEnd = MAX_VALUE_IGNORE;
+
+  private float mFailOffsetYStart = MAX_VALUE_IGNORE;
+  private float mFailOffsetYEnd = MIN_VALUE_IGNORE;
+
   private float mMinVelocityX = MIN_VALUE_IGNORE;
   private float mMinVelocityY = MIN_VALUE_IGNORE;
   private float mMinVelocitySq = MIN_VALUE_IGNORE;
@@ -29,7 +36,6 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
   private float mStartX, mStartY;
   private float mOffsetX, mOffsetY;
   private float mLastX, mLastY;
-  private float mLastEventOffsetX, mLastEventOffsetY;
   private float mLastVelocityX, mLastVelocityY;
   private VelocityTracker mVelocityTracker;
 
@@ -47,88 +53,49 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
    * because each finger when treated separately will travel some distance, whereas the average
    * position of all the fingers will remain still while doing a rotation gesture.
    */
-  private static float getLastPointerX(MotionEvent event, boolean averageTouches) {
-    float offset = event.getRawX() - event.getX();
-    int excludeIndex = event.getActionMasked() == MotionEvent.ACTION_POINTER_UP ?
-            event.getActionIndex() : -1;
-
-    if (averageTouches) {
-      float sum = 0f;
-      int count = 0;
-      for (int i = 0, size = event.getPointerCount(); i < size; i++) {
-        if (i != excludeIndex) {
-          sum += event.getX(i) + offset;
-          count++;
-        }
-      }
-      return sum / count;
-    } else {
-      int lastPointerIdx = event.getPointerCount() - 1;
-      if (lastPointerIdx == excludeIndex) {
-        lastPointerIdx--;
-      }
-      return event.getX(lastPointerIdx) + offset;
-    }
-  }
-
-  private static float getLastPointerY(MotionEvent event, boolean averageTouches) {
-    float offset = event.getRawY() - event.getY();
-    int excludeIndex = event.getActionMasked() == MotionEvent.ACTION_POINTER_UP ?
-            event.getActionIndex() : -1;
-
-    if (averageTouches) {
-      float sum = 0f;
-      int count = 0;
-      for (int i = 0, size = event.getPointerCount(); i < size; i++) {
-        if (i != excludeIndex) {
-          sum += event.getY(i) + offset;
-          count++;
-        }
-      }
-      return sum / count;
-    } else {
-      int lastPointerIdx = event.getPointerCount() - 1;
-      if (lastPointerIdx == excludeIndex) {
-        lastPointerIdx -= 1;
-      }
-      return event.getY(lastPointerIdx) + offset;
-    }
-  }
-
-
   public PanGestureHandler(Context context) {
     ViewConfiguration vc = ViewConfiguration.get(context);
     int touchSlop = vc.getScaledTouchSlop();
     mMinDistSq = touchSlop * touchSlop;
   }
 
-  public PanGestureHandler setMinDx(float deltaX) {
-    mMinDeltaX = deltaX;
+  public PanGestureHandler setActiveOffsetXStart(float activeOffsetXStart) {
+    mActiveOffsetXStart = activeOffsetXStart;
     return this;
   }
 
-  public PanGestureHandler setMinDy(float deltaY) {
-    mMinDeltaY = deltaY;
+  public PanGestureHandler setActiveOffsetXEnd(float activeOffsetXEnd) {
+    mActiveOffsetXEnd = activeOffsetXEnd;
     return this;
   }
 
-  public PanGestureHandler setMaxDx(float deltaX) {
-    mMaxDeltaX = deltaX;
+  public PanGestureHandler setFailOffsetXStart(float failOffsetXStart) {
+    mFailOffsetXStart = failOffsetXStart;
     return this;
   }
 
-  public PanGestureHandler setMaxDy(float deltaY) {
-    mMaxDeltaY = deltaY;
+  public PanGestureHandler setFailOffsetXEnd(float failOffsetXEnd) {
+    mFailOffsetXEnd = failOffsetXEnd;
     return this;
   }
 
-  public PanGestureHandler setMinOffsetX(float offsetX) {
-    mMinOffsetX = offsetX;
+  public PanGestureHandler setActiveOffsetYStart(float activeOffsetYStart) {
+    mActiveOffsetYStart = activeOffsetYStart;
     return this;
   }
 
-  public PanGestureHandler setMinOffsetY(float offsetY) {
-    mMinOffsetY = offsetY;
+  public PanGestureHandler setActiveOffsetYEnd(float activeOffsetYEnd) {
+    mActiveOffsetYEnd = activeOffsetYEnd;
+    return this;
+  }
+
+  public PanGestureHandler setFailOffsetYStart(float failOffsetYStart) {
+    mFailOffsetYStart = failOffsetYStart;
+    return this;
+  }
+
+  public PanGestureHandler setFailOffsetYEnd(float failOffsetYEnd) {
+    mFailOffsetYEnd = failOffsetYEnd;
     return this;
   }
 
@@ -172,20 +139,20 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
 
   private boolean shouldActivate() {
     float dx = mLastX - mStartX + mOffsetX;
-    if (mMinDeltaX != MIN_VALUE_IGNORE && Math.abs(dx) >= mMinDeltaX) {
+    if (mActiveOffsetXStart != MIN_VALUE_IGNORE && dx <=  mActiveOffsetXStart) {
       return true;
     }
-    if (mMinOffsetX != MIN_VALUE_IGNORE &&
-            ((mMinOffsetX < 0 && dx <= mMinOffsetX) || (mMinOffsetX >= 0 && dx >= mMinOffsetX))) {
+
+    if (mActiveOffsetXEnd != MAX_VALUE_IGNORE && dx >=  mActiveOffsetXEnd) {
       return true;
     }
 
     float dy = mLastY - mStartY + mOffsetY;
-    if (mMinDeltaY != MIN_VALUE_IGNORE && Math.abs(dy) >= mMinDeltaY) {
+    if (mActiveOffsetYStart != MIN_VALUE_IGNORE && dy <=  mActiveOffsetYStart) {
       return true;
     }
-    if (mMinOffsetY != MIN_VALUE_IGNORE &&
-            ((mMinOffsetY < 0 && dy <= mMinOffsetY) || (mMinOffsetY >= 0 && dy >= mMinOffsetY))) {
+
+    if (mActiveOffsetYEnd != MAX_VALUE_IGNORE && dy >=  mActiveOffsetYEnd) {
       return true;
     }
 
@@ -216,12 +183,22 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
 
   private boolean shouldFail() {
     float dx = mLastX - mStartX + mOffsetX;
-    if (mMaxDeltaX != MAX_VALUE_IGNORE && Math.abs(dx) > mMaxDeltaX) {
+
+    if (mFailOffsetXStart != MAX_VALUE_IGNORE && dx <= mFailOffsetXStart) {
       return true;
     }
 
+    if (mFailOffsetXEnd != MIN_VALUE_IGNORE && dx >=  mFailOffsetXEnd) {
+      return true;
+    }
+
+
     float dy = mLastY - mStartY + mOffsetY;
-    if (mMaxDeltaY != MAX_VALUE_IGNORE && Math.abs(dy) > mMaxDeltaY) {
+    if (mFailOffsetYStart != MAX_VALUE_IGNORE && dy <=  mFailOffsetYStart) {
+      return true;
+    }
+
+    if (mFailOffsetYEnd != MIN_VALUE_IGNORE && dy >=  mFailOffsetYEnd) {
       return true;
     }
 
@@ -239,17 +216,13 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
       mOffsetY += mLastY - mStartY;
 
       // reset starting point
-      mLastX = getLastPointerX(event, mAverageTouches);
-      mLastY = getLastPointerY(event, mAverageTouches);
-      mLastEventOffsetX = event.getRawX() - event.getX();
-      mLastEventOffsetY = event.getRawY() - event.getY();
+      mLastX = GestureUtils.getLastPointerX(event, mAverageTouches);
+      mLastY = GestureUtils.getLastPointerY(event, mAverageTouches);
       mStartX = mLastX;
       mStartY = mLastY;
     } else {
-      mLastX = getLastPointerX(event, mAverageTouches);
-      mLastY = getLastPointerY(event, mAverageTouches);
-      mLastEventOffsetX = event.getRawX() - event.getX();
-      mLastEventOffsetY = event.getRawY() - event.getY();
+      mLastX = GestureUtils.getLastPointerX(event, mAverageTouches);
+      mLastY = GestureUtils.getLastPointerY(event, mAverageTouches);
     }
 
     if (state == STATE_UNDETERMINED && event.getPointerCount() >= mMinPointers) {
@@ -273,13 +246,19 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
       } else {
         fail();
       }
-    } else if ((action == MotionEvent.ACTION_POINTER_UP || action == MotionEvent.ACTION_POINTER_DOWN)
-            && (event.getPointerCount() < mMinPointers || event.getPointerCount() > mMaxPointers)) {
+    } else if (action == MotionEvent.ACTION_POINTER_DOWN && event.getPointerCount() > mMaxPointers) {
+      // When new finger is placed down (POINTER_DOWN) we check if MAX_POINTERS is not exceeded
       if (state == STATE_ACTIVE) {
         cancel();
       } else {
         fail();
       }
+    } else if (action == MotionEvent.ACTION_POINTER_UP && state == STATE_ACTIVE
+            && event.getPointerCount() < mMinPointers) {
+      // When finger is lifted up (POINTER_UP) and the number of pointers falls below MIN_POINTERS
+      // threshold, we only want to take an action when the handler has already activated. Otherwise
+      // we can still expect more fingers to be placed on screen and fulfill MIN_POINTERS criteria.
+      fail();
     } else if (state == STATE_BEGAN) {
       if (shouldFail()) {
         fail();
@@ -316,21 +295,6 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
     return mLastVelocityY;
   }
 
-  public float getLastAbsolutePositionX() {
-    return mLastX;
-  }
-
-  public float getLastAbsolutePositionY() {
-    return mLastY;
-  }
-
-  public float getLastRelativePositionX() {
-    return mLastX - mLastEventOffsetX;
-  }
-
-  public float getLastRelativePositionY() {
-    return mLastY - mLastEventOffsetY;
-  }
 
   /**
    * This method adds movement to {@class VelocityTracker} first resetting offset of the event so

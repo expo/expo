@@ -1,4 +1,5 @@
 #import "RNGestureHandlerState.h"
+#import "RNGestureHandlerDirection.h"
 #import "RNGestureHandlerEvents.h"
 
 #import <Foundation/Foundation.h>

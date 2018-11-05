@@ -1,10 +1,10 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXAmplitude.h"
-
-#import "EXConstants.h"
+#import "EXModuleRegistryBinding.h"
 #import "EXUtil.h"
 
+#import <EXConstantsInterface/EXConstantsInterface.h>
 #import <Amplitude.h>
 
 @interface EXAmplitude ()
@@ -21,8 +21,10 @@ RCT_EXPORT_MODULE(ExponentAmplitude);
 
 - (void)setBridge:(RCTBridge *)bridge
 {
+  id<EXConstantsInterface> constants = [bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXConstantsInterface)];
+  
   _bridge = bridge;
-  _escapedExperienceId = [EXUtil escapedResourceName:_bridge.scopedModules.constants.experienceId];
+  _escapedExperienceId = [EXUtil escapedResourceName:[constants experienceId]];
 }
 
 RCT_EXPORT_METHOD(initialize:(NSString *)apiKey)

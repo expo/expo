@@ -7,24 +7,29 @@ Pod::Spec.new do |s|
   s.summary = 'ExpoKit'
   s.description = 'ExpoKit allows native projects to integrate with the Expo SDK.'
   s.homepage = 'http://docs.expo.io'
-  s.license = 'BSD'
+  s.license = 'MIT'
   s.author = "650 Industries, Inc."
   s.requires_arc = true
-  s.platform = :ios, "9.0"
+  s.platform = :ios, "10.0"
   s.default_subspec = "Core"
   s.source = { :git => "http://github.com/expo/expo.git" }
 
   s.subspec "Core" do |ss|
     ss.source_files = "ios/Exponent/**/*.{h,m}", "template-files/keys.json"
     ss.preserve_paths = "ios/Exponent/**/*.{h,m}"
-    ss.exclude_files = "ios/Exponent/EXAppDelegate.*", "ios/Exponent/EXRootViewController.*", "ios/Exponent/Supporting/**", "ios/Exponent/Versioned/Optional/**/*.{h,m}"
+    ss.exclude_files = "ios/Exponent/Supporting/**", "ios/Exponent/Versioned/Optional/**/*.{h,m}"
 
 ${IOS_EXPOKIT_DEPS}
-  end
+    ss.dependency 'React' # explicit dependency required for CocoaPods >= 1.5.0
 
-  s.subspec "CPP" do |ss|
-    ss.dependency "ExpoKit/Core"
-    ss.source_files = 'cpp/*.{h,c,cpp,m,mm}', 'cpp/**/*.{h,c,cpp,m,mm}'
+    # Universal modules required by ExpoKit so the code compiles
+    ss.dependency 'EXCore'
+    ss.dependency 'EXReactNativeAdapter'
+    ss.dependency 'EXSensorsInterface'
+    ss.dependency 'EXFileSystemInterface'
+    ss.dependency 'EXPermissionsInterface'
+    ss.dependency 'EXCameraInterface'
+    ss.dependency 'EXConstantsInterface'
   end
 
   s.subspec "Payments" do |ss|
@@ -39,9 +44,6 @@ ${IOS_EXPOKIT_DEPS}
   end
 
   s.subspec "FaceDetector" do |ss|
-    ss.dependency "ExpoKit/Core"
-    ss.dependency "GoogleMobileVision/FaceDetector", '~> 1.1.0'
-    ss.dependency "GoogleMobileVision/MVDataOutput", '~> 1.1.0'
-    ss.source_files = 'ios/Exponent/Versioned/Optional/FaceDetector/**'
+    ss.dependency "EXFaceDetector"
   end
 end

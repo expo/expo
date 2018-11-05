@@ -6,9 +6,8 @@
 #import "EXDisabledDevMenu.h"
 #import "EXDisabledRedBox.h"
 #import "EXFileSystem.h"
-#import "EXFrameExceptionsManager.h"
-#import "EXKernelModule.h"
 #import "EXVersionManager.h"
+#import "EXScopedBridgeModule.h"
 #import "EXStatusBarManager.h"
 #import "EXUnversioned.h"
 #import "EXTest.h"
@@ -18,6 +17,7 @@
 #import <React/RCTBridge+Private.h>
 #import <React/RCTDevMenu.h>
 #import <React/RCTDevSettings.h>
+#import <React/RCTExceptionsManager.h>
 #import <React/RCTLog.h>
 #import <React/RCTModuleData.h>
 #import <React/RCTUtils.h>
@@ -26,7 +26,11 @@
 
 #import <objc/message.h>
 
-static NSNumber *EXVersionManagerIsFirstLoad;
+#import <EXCore/EXModuleRegistry.h>
+#import <EXCore/EXModuleRegistryDelegate.h>
+#import <EXReactNativeAdapter/EXNativeModulesProxy.h>
+#import "EXScopedModuleRegistryAdapter.h"
+#import "EXScopedModuleRegistryDelegate.h"
 
 // used for initializing scoped modules which don't tie in to any kernel service.
 #define EX_KERNEL_SERVICE_NONE @"EXKernelServiceNone"
@@ -40,26 +44,40 @@ static NSNumber *EXVersionManagerIsFirstLoad;
 
 @end
 
-static NSMutableDictionary<NSString *, NSString *> *EXScopedModuleClasses;
-void EXRegisterScopedModule(Class, NSString *);
-void EXRegisterScopedModule(Class moduleClass, NSString *kernelServiceClassName)
+static NSMutableDictionary<NSString *, NSDictionary *> *EXScopedModuleClasses;
+void EXRegisterScopedModule(Class, ...);
+void EXRegisterScopedModule(Class moduleClass, ...)
 {
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     EXScopedModuleClasses = [NSMutableDictionary dictionary];
   });
-  
-  NSString *unversionedKernelServiceClassName;
-  if ([kernelServiceClassName isEqualToString:@"nil"]) {
-    unversionedKernelServiceClassName = EX_KERNEL_SERVICE_NONE;
-  } else {
-    unversionedKernelServiceClassName = [EX_UNVERSIONED(@"EX") stringByAppendingString:kernelServiceClassName];
-  }
+
+  NSString *kernelServiceClassName;
+  va_list argumentList;
+  NSMutableDictionary *unversionedKernelServiceClassNames = [[NSMutableDictionary alloc] init];
+
+  va_start(argumentList, moduleClass);
+    while ((kernelServiceClassName = va_arg(argumentList, NSString*))) {
+      if ([kernelServiceClassName isEqualToString:@"nil"]) {
+        unversionedKernelServiceClassNames[kernelServiceClassName] = EX_KERNEL_SERVICE_NONE;
+      } else {
+        unversionedKernelServiceClassNames[kernelServiceClassName] = [EX_UNVERSIONED(@"EX") stringByAppendingString:kernelServiceClassName];
+      }
+    }
+  va_end(argumentList);
+
   NSString *moduleClassName = NSStringFromClass(moduleClass);
   if (moduleClassName) {
-    EXScopedModuleClasses[moduleClassName] = unversionedKernelServiceClassName;
+    EXScopedModuleClasses[moduleClassName] = unversionedKernelServiceClassNames;
   }
 }
+
+@interface RCTBridgeHack <NSObject>
+
+- (void)reload;
+
+@end
 
 @interface EXVersionManager ()
 
@@ -88,31 +106,6 @@ void EXRegisterScopedModule(Class moduleClass, NSString *kernelServiceClassName)
 }
 
 - (void)bridgeFinishedLoading
-{
-
-}
-
-- (void)bridgeDidForeground
-{
-  if (_isFirstLoad) {
-    _isFirstLoad = NO; // in case the same VersionManager instance is used between multiple bridge loads
-  } else {
-    // some state is shared between bridges, for example status bar
-    [self resetSharedState];
-  }
-}
-
-- (void)bridgeDidBackground
-{
-  [self saveSharedState];
-}
-
-- (void)saveSharedState
-{
-
-}
-
-- (void)resetSharedState
 {
 
 }
@@ -187,7 +180,9 @@ void EXRegisterScopedModule(Class moduleClass, NSString *kernelServiceClassName)
   RCTAssertMainQueue();
   RCTDevSettings *devSettings = [self _moduleInstanceForBridge:bridge named:@"DevSettings"];
   if ([key isEqualToString:@"dev-reload"]) {
-    [bridge reload];
+    // bridge could be an RCTBridge of any version and we need to cast it since ARC needs to know
+    // the return type
+    [(RCTBridgeHack *)bridge reload];
   } else if ([key isEqualToString:@"dev-remote-debug"]) {
     devSettings.isDebuggingRemotely = !devSettings.isDebuggingRemotely;
   } else if ([key isEqualToString:@"dev-live-reload"]) {
@@ -261,11 +256,6 @@ void EXRegisterScopedModule(Class moduleClass, NSString *kernelServiceClassName)
                          logFunction:(void (^)(NSInteger, NSInteger, NSString *, NSNumber *, NSString *))logFunction
                         logThreshold:(NSInteger)threshold
 {
-  if (EXVersionManagerIsFirstLoad == nil) {
-    // first time initializing this RN version at runtime
-    _isFirstLoad = YES;
-  }
-  EXVersionManagerIsFirstLoad = @(NO);
   RCTSetFatalHandler(fatalHandler);
   RCTSetLogThreshold(threshold);
   RCTSetLogFunction(logFunction);
@@ -285,9 +275,6 @@ void EXRegisterScopedModule(Class moduleClass, NSString *kernelServiceClassName)
  *    EXKernel *kernel
  *    NSArray *supportedSdkVersions
  *    id exceptionsManagerDelegate
- *
- * Frame-only:
- *    EXFrame *frame
  */
 - (NSArray *)extraModulesWithParams:(NSDictionary *)params
 {
@@ -296,31 +283,28 @@ void EXRegisterScopedModule(Class moduleClass, NSString *kernelServiceClassName)
   NSString *experienceId = manifest[@"id"];
   NSDictionary *services = params[@"services"];
   NSString *localStorageDirectory = [[EXFileSystem documentDirectoryForExperienceId:experienceId] stringByAppendingPathComponent:EX_UNVERSIONED(@"RCTAsyncLocalStorage")];
+  BOOL isOpeningHomeInProductionMode = params[@"browserModuleClass"] && !manifest[@"developer"];
 
   NSMutableArray *extraModules = [NSMutableArray arrayWithArray:
                                   @[
                                     [[EXAppState alloc] init],
-                                    [[EXDevSettings alloc] initWithExperienceId:experienceId isDevelopment:isDeveloper],
+                                    [[EXDevSettings alloc] initWithExperienceId:experienceId isDevelopment:(!isOpeningHomeInProductionMode && isDeveloper)],
                                     [[EXDisabledDevLoadingView alloc] init],
                                     [[EXStatusBarManager alloc] init],
                                     [[RCTAsyncLocalStorage alloc] initWithStorageDirectory:localStorageDirectory],
                                     ]];
-  
+
   // add scoped modules
   [extraModules addObjectsFromArray:[self _newScopedModulesWithExperienceId:experienceId services:services params:params]];
-  
-  if (params[@"frame"]) {
-    [extraModules addObject:[[EXFrameExceptionsManager alloc] initWithDelegate:params[@"frame"]]];
+
+  id exceptionsManagerDelegate = params[@"exceptionsManagerDelegate"];
+  if (exceptionsManagerDelegate) {
+    RCTExceptionsManager *exceptionsManager = [[RCTExceptionsManager alloc] initWithDelegate:exceptionsManagerDelegate];
+    [extraModules addObject:exceptionsManager];
   } else {
-    id exceptionsManagerDelegate = params[@"exceptionsManagerDelegate"];
-    if (exceptionsManagerDelegate) {
-      RCTExceptionsManager *exceptionsManager = [[RCTExceptionsManager alloc] initWithDelegate:exceptionsManagerDelegate];
-      [extraModules addObject:exceptionsManager];
-    } else {
-      RCTLogWarn(@"No exceptions manager provided when building extra modules for bridge.");
-    }
+    RCTLogWarn(@"No exceptions manager provided when building extra modules for bridge.");
   }
-  
+
   if (params[@"testEnvironment"]) {
     EXTestEnvironment testEnvironment = (EXTestEnvironment)[params[@"testEnvironment"] unsignedIntegerValue];
     if (testEnvironment != EXTestEnvironmentNone) {
@@ -328,12 +312,13 @@ void EXRegisterScopedModule(Class moduleClass, NSString *kernelServiceClassName)
       [extraModules addObject:testModule];
     }
   }
-  
-  if (params[@"kernel"]) {
-    EXKernelModule *kernel = [[EXKernelModule alloc] initWithExperienceId:experienceId
-                                                    kernelServiceDelegate:services[EX_UNVERSIONED(@"EXKernelModuleManager")]
+
+  if (params[@"browserModuleClass"]) {
+    Class browserModuleClass = params[@"browserModuleClass"];
+    id homeModule = [[browserModuleClass alloc] initWithExperienceId:experienceId
+                                                    kernelServiceDelegate:services[EX_UNVERSIONED(@"EXHomeModuleManager")]
                                                                    params:params];
-    [extraModules addObject:kernel];
+    [extraModules addObject:homeModule];
   }
 
   if ([params[@"isStandardDevMenuAllowed"] boolValue] && isDeveloper) {
@@ -347,6 +332,23 @@ void EXRegisterScopedModule(Class moduleClass, NSString *kernelServiceClassName)
     // additionally disable RCTRedBox
     [extraModules addObject:[[EXDisabledRedBox alloc] init]];
   }
+
+  EXModuleRegistryProvider *moduleRegistryProvider = [[EXModuleRegistryProvider alloc] initWithSingletonModules:params[@"singletonModules"]];
+
+  Class resolverClass = [EXScopedModuleRegistryDelegate class];
+  if (params[@"moduleRegistryDelegateClass"] && params[@"moduleRegistryDelegateClass"] != [NSNull null]) {
+    resolverClass = params[@"moduleRegistryDelegateClass"];
+  }
+
+  id<EXModuleRegistryDelegate> moduleRegistryDelegate = [[resolverClass alloc] initWithParams:params];
+  [moduleRegistryProvider setModuleRegistryDelegate:moduleRegistryDelegate];
+
+  EXScopedModuleRegistryAdapter *moduleRegistryAdapter = [[EXScopedModuleRegistryAdapter alloc] initWithModuleRegistryProvider:moduleRegistryProvider];
+
+  NSArray<id<RCTBridgeModule>> *expoModules = [moduleRegistryAdapter extraModulesForParams:params andExperience:experienceId withScopedModulesArray:extraModules withKernelServices:services];
+
+  [extraModules addObjectsFromArray:expoModules];
+
   return extraModules;
 }
 
@@ -354,10 +356,22 @@ void EXRegisterScopedModule(Class moduleClass, NSString *kernelServiceClassName)
 {
   NSMutableArray *result = [NSMutableArray array];
   if (EXScopedModuleClasses) {
-    [EXScopedModuleClasses enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull scopedModuleClassName, NSString * _Nonnull kernelServiceClassName, BOOL * _Nonnull stop) {
-      id service = ([kernelServiceClassName isEqualToString:EX_KERNEL_SERVICE_NONE]) ? nil : services[kernelServiceClassName];
+    [EXScopedModuleClasses enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull scopedModuleClassName, NSDictionary * _Nonnull kernelServiceClassNames, BOOL * _Nonnull stop) {
+      NSMutableDictionary *moduleServices = [[NSMutableDictionary alloc] init];
+      for (id kernelServiceClassName in kernelServiceClassNames) {
+        NSString *kernelSerivceName = kernelServiceClassNames[kernelServiceClassName];
+        id service = ([kernelSerivceName isEqualToString:EX_KERNEL_SERVICE_NONE]) ? [NSNull null] : services[kernelSerivceName];
+        moduleServices[kernelServiceClassName] = service;
+      }
+
+      id scopedModule;
       Class scopedModuleClass = NSClassFromString(scopedModuleClassName);
-      id scopedModule = [[scopedModuleClass alloc] initWithExperienceId:experienceId kernelServiceDelegate:service params:params];
+      if (moduleServices.count > 1) {
+        scopedModule = [[scopedModuleClass alloc] initWithExperienceId:experienceId kernelServiceDelegates:moduleServices params:params];
+      } else {
+        scopedModule = [[scopedModuleClass alloc] initWithExperienceId:experienceId kernelServiceDelegate:moduleServices[[moduleServices allKeys][0]] params:params];
+      }
+
       if (scopedModule) {
         [result addObject:scopedModule];
       }

@@ -2,13 +2,16 @@
 
 package host.exp.exponent.experience;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import host.exp.exponent.AppLoader;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
+import host.exp.exponent.RNObject;
 import host.exp.exponent.kernel.ExponentUrls;
 import host.exp.exponent.kernel.KernelConstants;
 import host.exp.expoview.Exponent;
@@ -19,9 +22,23 @@ public class ShellAppActivity extends ExperienceActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    mExponentManifest.fetchManifest(Constants.INITIAL_URL, new ExponentManifest.ManifestListener() {
+    boolean forceCache = getIntent().getBooleanExtra(KernelConstants.LOAD_FROM_CACHE_KEY, false);
+
+    mKernel.handleIntent(this, getIntent());
+
+    new AppLoader(Constants.INITIAL_URL, forceCache) {
       @Override
-      public void onCompleted(final JSONObject manifest) {
+      public void onOptimisticManifest(final JSONObject optimisticManifest) {
+        Exponent.getInstance().runOnUiThread(new Runnable() {
+          @Override
+          public void run() {
+            setLoadingScreenManifest(optimisticManifest);
+          }
+        });
+      }
+
+      @Override
+      public void onManifestCompleted(final JSONObject manifest) {
         Exponent.getInstance().runOnUiThread(new Runnable() {
           @Override
           public void run() {
@@ -30,12 +47,22 @@ public class ShellAppActivity extends ExperienceActivity {
               JSONObject opts = new JSONObject();
               opts.put(KernelConstants.OPTION_LOAD_NUX_KEY, false);
 
-              loadExperience(Constants.INITIAL_URL, manifest, bundleUrl, opts);
+              setManifest(Constants.INITIAL_URL, manifest, bundleUrl, opts);
             } catch (JSONException e) {
               mKernel.handleError(e);
             }
           }
         });
+      }
+
+      @Override
+      public void onBundleCompleted(String localBundlePath) {
+        setBundle(localBundlePath);
+      }
+
+      @Override
+      public void emitEvent(JSONObject params) {
+        emitUpdatesEvent(params);
       }
 
       @Override
@@ -47,7 +74,12 @@ public class ShellAppActivity extends ExperienceActivity {
       public void onError(String e) {
         mKernel.handleError(e);
       }
-    });
+    }.start();
+  }
+
+  @Override
+  public void onNewIntent(Intent intent) {
+    super.onNewIntent(intent);
+    mKernel.handleIntent(this, intent);
   }
 }
-

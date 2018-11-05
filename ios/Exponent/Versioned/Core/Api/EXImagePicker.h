@@ -1,4 +1,4 @@
-#import <React/RCTBridgeModule.h>
+#import "EXScopedBridgeModule.h"
 #import <UIKit/UIKit.h>
 
 typedef NS_ENUM(NSInteger, RNImagePickerTarget) {
@@ -6,6 +6,6 @@ typedef NS_ENUM(NSInteger, RNImagePickerTarget) {
   RNImagePickerTargetLibrarySingleImage,
 };
 
-@interface EXImagePicker : NSObject <RCTBridgeModule, UINavigationControllerDelegate, UIImagePickerControllerDelegate>
+@interface EXImagePicker : EXScopedBridgeModule <UINavigationControllerDelegate, UIImagePickerControllerDelegate>
 
 @end

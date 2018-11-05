@@ -103,6 +103,8 @@ public class ReadableObjectUtils {
         writableMap.putDouble(key, jsonObject.getDouble(key));
       } else if (value instanceof Number) {
         writableMap.putDouble(key, jsonObject.getLong(key));
+      } else if (value instanceof Boolean) {
+        writableMap.putBoolean(key, jsonObject.getBoolean(key));
       } else if (value instanceof String) {
         writableMap.putString(key, jsonObject.getString(key));
       } else if (value instanceof JSONObject) {
@@ -124,6 +126,8 @@ public class ReadableObjectUtils {
         writableArray.pushDouble(jsonArray.getDouble(i));
       } else if (value instanceof Number) {
         writableArray.pushDouble(jsonArray.getLong(i));
+      } else if (value instanceof Boolean) {
+        writableArray.pushBoolean(jsonArray.getBoolean(i));
       } else if (value instanceof String) {
         writableArray.pushString(jsonArray.getString(i));
       } else if (value instanceof JSONObject) {
