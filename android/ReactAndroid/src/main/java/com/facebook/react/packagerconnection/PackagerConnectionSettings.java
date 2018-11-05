@@ -15,7 +15,7 @@ import android.preference.PreferenceManager;
 import android.text.TextUtils;
 
 import com.facebook.common.logging.FLog;
-import com.facebook.infer.annotation.Assertions;
+import expolib_v1.com.facebook.infer.annotation.Assertions;
 import com.facebook.react.modules.systeminfo.AndroidInfoHelpers;
 
 public class PackagerConnectionSettings {

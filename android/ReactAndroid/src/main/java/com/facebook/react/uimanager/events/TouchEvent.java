@@ -12,7 +12,7 @@ import javax.annotation.Nullable;
 import android.support.v4.util.Pools;
 import android.view.MotionEvent;
 
-import com.facebook.infer.annotation.Assertions;
+import expolib_v1.com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.SoftAssertions;
 
 /**

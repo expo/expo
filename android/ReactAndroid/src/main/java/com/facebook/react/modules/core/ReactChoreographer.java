@@ -10,7 +10,7 @@ package com.facebook.react.modules.core;
 import java.util.ArrayDeque;
 
 import com.facebook.common.logging.FLog;
-import com.facebook.infer.annotation.Assertions;
+import expolib_v1.com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
 

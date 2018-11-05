@@ -11,7 +11,7 @@ import javax.annotation.Nullable;
 
 import android.view.View;
 
-import com.facebook.infer.annotation.Assertions;
+import expolib_v1.com.facebook.infer.annotation.Assertions;
 
 /**
  * Base class for various catalyst animation engines. Subclasses of this class should implement
