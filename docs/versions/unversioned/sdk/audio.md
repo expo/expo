@@ -82,7 +82,7 @@ try {
 
 A static convenience method to construct and load a sound is also provided:
 
--   `Expo.Audio.Sound.create(source, initialStatus = {}, onPlaybackStatusUpdate = null, downloadFirst = true)`
+-   `Expo.Audio.Sound.createAsync(source, initialStatus = {}, onPlaybackStatusUpdate = null, downloadFirst = true)`
 
     Creates and loads a sound from source, with optional `initialStatus`, `onPlaybackStatusUpdate`, and `downloadFirst`.
 
@@ -120,7 +120,7 @@ A static convenience method to construct and load a sound is also provided:
 
     ```javascript
     try {
-      const { sound: soundObject, status } = await Expo.Audio.Sound.create(
+      const { sound: soundObject, status } = await Expo.Audio.Sound.createAsync(
         require('./assets/sounds/hello.mp3'),
         { shouldPlay: true }
       );

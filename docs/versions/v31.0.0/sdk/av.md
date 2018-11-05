@@ -17,14 +17,14 @@ In this page, we reference operations on `playbackObject`s. Here is an example o
 ```javascript
 const playbackObject = new Expo.Audio.Sound();
 // OR
-const playbackObject = await Expo.Audio.Sound.create(
+const playbackObject = await Expo.Audio.Sound.createAsync(
   { uri: 'http://foo/bar.mp3' },
   { shouldPlay: true }
 );
 ...
 ```
 
-See the [audio documentation](audio.html) for further information on `Expo.Audio.Sound.create()`.
+See the [audio documentation](audio.html) for further information on `Expo.Audio.Sound.createAsync()`.
 
 #### Example: `Expo.Video`
 
@@ -63,7 +63,7 @@ On the `playbackObject` reference, the following API is provided:
     -   **source (_object_ / _number_ / _Asset_)** -- The source of the media. The following forms are supported:
 
         -   A dictionary of the form `{ uri: string, headers?: { [string]: string }, overrideFileExtensionAndroid?: string }` with a network URL pointing to a media file on the web, an optional headers object passed in a network request to the `uri` and an optional Android-specific `overrideFileExtensionAndroid` string overriding extension inferred from the URL.
-            
+
             The `overrideFileExtensionAndroid` property may come in handy if the player receives an URL like `example.com/play` which redirects to `example.com/player.m3u8`. Setting this property to `m3u8` would allow the Android player to properly infer the content type of the media and use proper media file reader.
 
         -   `require('path/to/file')` for a media file asset in the source code directory.
@@ -285,7 +285,7 @@ The default initial `PlaybackStatusToSet` of all `Expo.Audio.Sound` objects and 
 }
 ```
 
-This default initial status can be overwritten by setting the optional `initialStatus` in `loadAsync()` or `Expo.Audio.Sound.create()`.
+This default initial status can be overwritten by setting the optional `initialStatus` in `loadAsync()` or `Expo.Audio.Sound.createAsync()`.
 
 ### What is seek tolerance and why would I want to use it [iOS only]
 
