@@ -2,6 +2,12 @@
 
 This is the log of notable changes to the Expo client that are developer-facing.
 
+## master
+
+### 🐛 Bug fixes
+
+- decycle objects when sending logs to remote console by [@sjchmiela](https://github.com/sjchmiela) ([#2598](https://github.com/expo/expo/pull/2598))
+
 ## 31.0.0 (Partial Changelog)
 
 ### 🛠 Breaking changes
