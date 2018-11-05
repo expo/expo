@@ -88,7 +88,7 @@ Right now, the easiest way to do this is to use `expo init` (with Expo CLI) to m
 
 If you have similar native module dependencies to what is exposed through the Expo SDK, this process shouldn't take more than a few minutes (not including `npm install` time). Please feel free to ask us questions if you run into any issues.
 
-If you are using native libraries that aren't supported by Expo, you will either have to rewrite some parts of your application to use similar APIs that are part of Expo, or you just might not be able to get all parts of your app to work. Many things do though! 
+If you are using native libraries that aren't supported by Expo, you will either have to rewrite some parts of your application to use similar APIs that are part of Expo, or you just might not be able to get all parts of your app to work. Many things do though!
 
 _N.B. We used to maintain a tool `exp convert` but it is not currently working or maintained so the above method is the best way to get an existing React Native project working on Expo_
 
@@ -104,7 +104,7 @@ Exponent is the original name of the Expo project. You might occasionally run ac
 
 ## What version of Android and iOS are supported by Expo apps?
 
-Expo supports Android 4.4+ and iOS 9+.
+Expo supports Android 5+ and iOS 10+.
 
 ## Can I use Node.js packages with Expo?
 
