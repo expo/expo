@@ -10,6 +10,7 @@
     "rootDir": "./src",
     "outDir": "./build",
     "sourceMap": true,
+    "declaration": true,
     "inlineSources": true,
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
