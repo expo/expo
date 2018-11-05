@@ -1,6 +1,6 @@
 {
   "name": "expo-gl",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "Expo GL standalone universal module",
   "main": "index.js",
   "keywords": [
@@ -14,12 +14,12 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "dependencies": {
-    "expo-core": "~1.1.0",
-    "expo-camera-interface": "~1.0.2",
-    "expo-file-system-interface": "~1.0.2",
-    "expo-gl-cpp": "~1.0.2"
+    "expo-core": "~1.2.0",
+    "expo-camera-interface": "~1.1.0",
+    "expo-file-system-interface": "~1.1.0",
+    "expo-gl-cpp": "~1.1.0"
   },
   "devDependencies": {
-    "babel-preset-expo": "^4.0.0"
+    "babel-preset-expo": "^5.0.0"
   }
 }

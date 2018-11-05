@@ -15,10 +15,10 @@
   ],
   "readmeFilename": "README.md",
   "dependencies": {
-    "expo-core": "~1.1.0"
+    "expo-core": "~1.2.0"
   },
   "devDependencies": {
-    "babel-preset-expo": "^4.0.0",
+    "babel-preset-expo": "^5.0.0",
     "flow-bin": "^0.77.0"
   }
 }

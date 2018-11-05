@@ -9,10 +9,6 @@ export default class BranchScreen extends React.Component {
     title: 'Branch',
   };
 
-  componentDidMount() {
-    this._getOrCreateBranchObjectAsync();
-  }
-
   async _getOrCreateBranchObjectAsync() {
     if (this._branchUniversalObject) {
       return this._branchUniversalObject;

@@ -24,8 +24,8 @@ android {
     targetSdkVersion 26
     // ADD VERSIONS HERE
     // BEGIN VERSIONS
-    versionCode 95
-    versionName '2.8.1'
+    versionCode 96
+    versionName '2.9.0'
     // END VERSIONS
     ndk {
       abiFilters 'armeabi-v7a', 'x86'
@@ -152,6 +152,7 @@ dependencies {
   }
   implementation 'com.android.support:exifinterface:27.1.1'
   implementation 'com.squareup.okio:okio:1.9.0'
+  implementation 'com.facebook.soloader:soloader:0.5.1'
 
   implementation 'com.google.android.exoplayer:exoplayer:2.6.1'
   implementation 'expolib_v1.com.google.android.exoplayer:expolib_v1-extension-okhttp:2.6.1@aar'
@@ -176,7 +177,7 @@ dependencies {
   testImplementation 'com.android.support.test:rules:1.0.2-alpha1'
 
   /* UNCOMMENT WHEN DISTRIBUTING
-  implementation('host.exp.exponent:expoview:30.0.0@aar') {
+  implementation('host.exp.exponent:expoview:31.0.0@aar') {
     transitive = true
     exclude group: 'com.squareup.okhttp3', module: 'okhttp'
     exclude group: 'com.squareup.okhttp3', module: 'okhttp-urlconnection'
@@ -192,6 +193,10 @@ dependencies {
   // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
 
   // ADD_NEW_SDKS_HERE
+
+  // BEGIN_SDK_31
+  implementation(project(':expoview-abi31_0_0'))
+  // END_SDK_31
 
   // BEGIN_SDK_30
   implementation(project(':expoview-abi30_0_0'))
@@ -216,10 +221,6 @@ dependencies {
   // BEGIN_SDK_25
   implementation(project(':expoview-abi25_0_0'))
   // END_SDK_25
-
-  // BEGIN_SDK_24
-  implementation(project(':expoview-abi24_0_0'))
-  // END_SDK_24
 
   // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
   // WHEN_DISTRIBUTING_REMOVE_TO_HERE

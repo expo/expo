@@ -43,6 +43,11 @@ const LIBRARIES = [
     group: 'com.google.android.exoplayer',
     name: 'extension-okhttp',
     version: '2.6.1',
+  },
+  {
+    group: 'com.facebook.infer.annotation',
+    name: 'infer-annotation',
+    version: '0.11.2',
   }
 ];
 

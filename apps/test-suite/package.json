@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "async-retry": "^1.1.4",
-    "expo": "^30.0.0",
+    "expo": "^31.0.0-rc.0",
     "i18n-js": "^3.0.11",
     "immutable": "^3.8.1",
     "jasmine-core": "^2.4.1",

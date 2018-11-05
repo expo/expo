@@ -1,5 +1,5 @@
 import React from 'react';
-import { Platform, ScrollView, Text, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { Constants } from 'expo';
 import Colors from '../constants/Colors';
 import HeadingText from '../components/HeadingText';
@@ -62,10 +62,12 @@ export default class ConstantsScreen extends React.Component {
   render() {
     return (
       <ScrollView style={{ padding: 10, flex: 1, backgroundColor: Colors.greyBackground }}>
-        {Object.keys(Constants).map(key => {
-          if (typeof Constants[key] === 'function') return null;
-          return <ExpoConstant name={key} key={key} />;
-        })}
+        {Object.keys(Constants)
+          .sort()
+          .map(key => {
+            if (typeof Constants[key] === 'function') return null;
+            return <ExpoConstant name={key} key={key} />;
+          })}
         <ExpoConstant name="webViewUserAgent" value={() => Constants.getWebViewUserAgentAsync()} />
       </ScrollView>
     );

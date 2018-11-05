@@ -6411,10 +6411,10 @@ ws@^5.2.0:
   dependencies:
     async-limiter "~1.0.0"
 
-xdl@51.4.6:
-  version "51.4.6"
-  resolved "https://registry.yarnpkg.com/xdl/-/xdl-51.4.6.tgz#ade28e89ddd94de1f5cb3a9c958962321b202189"
-  integrity sha512-/M3+WURKVaM8nxK+uiBdQx2USUbyc7htIJgmdA+tRF7qQy9mf2/paKQQW5VaXevCwBU8RBiy2u0SEn+hT9P4Dw==
+xdl@51.4.7:
+  version "51.4.7"
+  resolved "https://registry.yarnpkg.com/xdl/-/xdl-51.4.7.tgz#0230aba24a8b508dfb07faf995f6172af2b5cbc3"
+  integrity sha512-FUuayqKcxuxS7hjvxx4ujPUIT19tmlLUOul+chCe5eOY66xBMaW4cVKEzlUfcQNxXFSF8KICaVjC7lt+9xc6Tw==
   dependencies:
     "@expo/bunyan" "3.0.2"
     "@expo/json-file" "^8.0.1"

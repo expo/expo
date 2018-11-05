@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI24_0_0/ReactCommon/ABI24_0_0yoga/yoga/ABI24_0_0Yoga.h

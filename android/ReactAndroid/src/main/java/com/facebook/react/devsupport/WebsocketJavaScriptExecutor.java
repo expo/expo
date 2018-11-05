@@ -9,7 +9,7 @@ package com.facebook.react.devsupport;
 
 import android.os.Handler;
 import android.os.Looper;
-import com.facebook.infer.annotation.Assertions;
+import expolib_v1.com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JavaJSExecutor;
 import java.util.HashMap;
 import java.util.concurrent.Semaphore;
