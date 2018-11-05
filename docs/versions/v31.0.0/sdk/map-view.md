@@ -4,7 +4,7 @@ title: MapView
 
 A Map component that uses Apple Maps or Google Maps on iOS and Google Maps on Android. Expo uses react-native-maps at [react-community/react-native-maps](https://github.com/react-community/react-native-maps). No setup required for use within the Expo app, or within a standalone app for iOS. See below for instructions on how to configure for deployment as a standalone app on Android.
 
-Expo includes version 0.21.0 of react-native-maps (the latest as of the time of this writing).
+Expo includes version 0.22.0 of react-native-maps (the latest as of the time of this writing).
 
 ${<SnackEmbed snackId="@adamjnav/mapview-example" />}
 
