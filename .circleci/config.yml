@@ -15,6 +15,9 @@ commands:
       - run: echo 'eval "$(direnv export bash)"' >> ~/.bash_profile
       - run: echo '--frozen-lockfile true' >> ~/.yarnrc
       - checkout
+  decrypt_secrets:
+    steps:
+      - run: nix run nixpkgs.git-crypt --command git crypt unlock <(echo $EXPO_GIT_CRYPT_KEY_BASE64 | base64 --decode)
   update_submodules:
     steps:
       - run: git submodule update --init
@@ -186,6 +189,7 @@ jobs:
       - yarn:
           working_directory: ~/expo/tools-public
       - restore_gradle_cache
+      - decrypt_secrets
       - run:
           working_directory: ~/expo/android
           command: nix-shell --run ./make-release.sh
