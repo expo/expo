@@ -1,20 +1,20 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXLinearGradient.h"
+#import "EXLinearGradientLayer.h"
 #import <React/RCTConvert.h>
 #import <UIKit/UIKit.h>
-#import <QuartzCore/QuartzCore.h>
 
 @implementation EXLinearGradient
 
 + (Class)layerClass
 {
-  return [CAGradientLayer class];
+  return [EXLinearGradientLayer class];
 }
 
-- (CAGradientLayer *)gradientLayer
+- (EXLinearGradientLayer *)gradientLayer
 {
-  return (CAGradientLayer *)self.layer;
+  return (EXLinearGradientLayer *)self.layer;
 }
 
 - (void)setColors:(NSArray *)colorStrings
@@ -23,7 +23,7 @@
   for (NSString *colorString in colorStrings) {
     UIColor *convertedColor = [RCTConvert UIColor:colorString];
     if (convertedColor) {
-      [colors addObject:(id)convertedColor.CGColor];
+      [colors addObject:convertedColor];
     }
   }
   self.gradientLayer.colors = colors;
