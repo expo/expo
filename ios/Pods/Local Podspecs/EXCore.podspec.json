@@ -1,6 +1,6 @@
 {
   "name": "EXCore",
-  "version": "1.2.0-rc.1",
+  "version": "1.2.0",
   "summary": "Expo Core standalone universal module",
   "description": "Expo Core standalone universal module",
   "license": "MIT",
