@@ -15,6 +15,7 @@ import FileSystemScreen from '../screens/FileSystemScreen';
 import FontScreen from '../screens/FontScreen';
 import GifScreen from '../screens/GifScreen';
 import CalendarsScreen from '../screens/CalendarsScreen';
+import CameraScreen from '../screens/Camera/CameraScreen';
 import ConstantsScreen from '../screens/ConstantsScreen';
 import ContactsScreen from '../screens/Contacts/ContactsScreen';
 import ContactDetailScreen from '../screens/Contacts/ContactDetailScreen';
@@ -101,6 +102,7 @@ const ExpoComponentsStackNavigator = createStackNavigator(
     BarCodeScanner: { screen: BarCodeScannerScreen },
     BlurView: { screen: BlurViewScreen },
     GL: { screen: GLScreen },
+    Camera: { screen: CameraScreen },
     ...GLScreens,
     GestureHandlerPinch: { screen: GestureHandlerPinchScreen },
     GestureHandlerList: { screen: GestureHandlerListScreen },

@@ -32,7 +32,8 @@
     "three": "^0.88.0",
     "url": "^0.11.0",
     "uuid": "^3.1.0",
-    "victory-native": "^30.4.0"
+    "victory-native": "^30.4.0",
+    "react-native-is-iphonex": "^1.0.1"
   },
   "devDependencies": {
     "babel-preset-expo": "^5.0.0"
