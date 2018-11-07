@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+set -eo pipefail
+
+script_dir="$(dirname "$0")"
+
+for template_file in "$script_dir"/../templates/*; do
+  output_file="$(basename "$template_file")"
+  if [ ! -f "$output_file" ] || grep --quiet "@generated" "$output_file"; then
+    rsync --checksum "$template_file" "$output_file"
+  fi
+done
