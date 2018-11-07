@@ -56,6 +56,15 @@ commands:
           name: yarn << parameters.command >> (<< parameters.working_directory >>)
           working_directory: << parameters.working_directory >>
           command: for i in {1..<< parameters.max_tries >>}; do ((i > 1)) && sleep 5; nix run nixpkgs.yarn -c yarn << parameters.command >> && break; done
+  yarn_install:
+    parameters:
+      working_directory:
+        type: string
+    steps:
+      - yarn:
+          command: 'install'
+          working_directory: << parameters.working_directory >>
+          max_tries: 5
 
 executors:
   # We add -l to all the shell commands to make it easier to use direnv
@@ -112,9 +121,8 @@ jobs:
       - setup
       - update_submodules
       - restore_yarn_cache
-      - yarn:
+      - yarn_install:
           working_directory: ~/expo
-          max_tries: 5
       - save_yarn_cache
       # Add back linting once we get ESLint or TSLint set up
       - yarn:
@@ -127,9 +135,8 @@ jobs:
       - setup
       - update_submodules
       - restore_yarn_cache
-      - yarn:
+      - yarn_install:
           working_directory: ~/expo
-          max_tries: 5
       - save_yarn_cache
       - yarn:
           command: lint --max-warnings 0
@@ -144,9 +151,8 @@ jobs:
       - setup
       - update_submodules
       - restore_yarn_cache
-      - yarn:
+      - yarn_install:
           working_directory: ~/expo
-          max_tries: 5
       - save_yarn_cache
       - yarn:
           command: jest --maxWorkers 1
@@ -160,9 +166,8 @@ jobs:
       - update_submodules
       - run: git lfs pull
       - fetch_cocoapods_specs
-      - yarn:
+      - yarn_install:
           working_directory: ~/project/tools-public
-          max_tries: 5
       - run: nix run nixpkgs.nodejs-8_x nixpkgs.fastlane -c fastlane ios create_simulator_build
       - store_artifacts:
           path: ~/Library/Logs/fastlane/
@@ -175,9 +180,8 @@ jobs:
       - update_submodules
       - run: git lfs pull
       - fetch_cocoapods_specs
-      - yarn:
+      - yarn_install:
           working_directory: ~/project/tools-public
-          max_tries: 5
       - run: nix run nixpkgs.nodejs-8_x -c ~/project/tools-public/generate-files-ios.sh
       - run:
           name: Build ios shell app simulator
@@ -189,12 +193,10 @@ jobs:
     executor: android
     steps:
       - setup
-      - yarn:
+      - yarn_install:
           working_directory: ~/expo # need jsc-android dependency in expokit-npm-package
-          max_tries: 5
-      - yarn:
+      - yarn_install:
           working_directory: ~/expo/tools-public
-          max_tries: 5
       - restore_gradle_cache
       - run:
           working_directory: ~/expo/android
