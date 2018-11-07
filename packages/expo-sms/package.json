@@ -1,22 +1,41 @@
 {
   "name": "expo-sms",
   "version": "1.1.0",
-  "description": "Expo SMS universal module",
-  "main": "index.js",
+  "description": "An Expo universal module to present the system UI for sending SMS messages",
+  "main": "build/SMS.js",
+  "types": "build/SMS.d.ts",
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "test": "expo-module test",
+    "postinstall": "expo-module postinstall",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
   "keywords": [
     "react-native",
     "expo",
     "sms"
   ],
-  "homepage": "https://docs.expo.io/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git"
+  },
   "author": "650 Industries, Inc.",
   "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-sms",
+  "jest": {
+    "preset": "expo-module-scripts"
+  },
   "dependencies": {
     "expo-core": "~1.2.0",
     "expo-permissions-interface": "~1.2.0"
   },
   "devDependencies": {
-    "babel-preset-expo": "^5.0.0",
-    "flow-bin": "^0.77.0"
+    "expo-module-scripts": "^1.0.0"
   }
 }
