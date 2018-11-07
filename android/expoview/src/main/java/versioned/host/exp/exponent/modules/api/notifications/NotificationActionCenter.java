@@ -20,11 +20,8 @@ import java.util.UUID;
 import host.exp.expoview.BuildConfig;
 
 public class NotificationActionCenter {
-
-  private static final String SHARED_PREFERENCES_FILE = "com.expo.notification.action" + BuildConfig.APPLICATION_ID;
+  
   public static final String KEY_TEXT_REPLY = "notification_remote_input";
-  private static ActionDatabase db;
-  private static final String DATABASE_NAME = "expo.notification.action";
 
   public synchronized static void put(String categoryId, ArrayList<HashMap<String, Object>> actions, Context context) {
     throwExceptionIfOnMainThread();
