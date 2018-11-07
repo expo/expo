@@ -1,6 +1,8 @@
 // @flow
 import { NativeModulesProxy } from 'expo-core';
 
+import User from './User';
+
 const { ExpoGoogleSignIn } = NativeModulesProxy;
 
 export const { ERRORS, SCOPES, TYPES } = ExpoGoogleSignIn;
@@ -14,7 +16,7 @@ export type GoogleSignInOptions = {
   accountName: ?string,
 
   // Android
-  signInType: ?SignInType,
+  signInType: ?GoogleSignInType,
   isOfflineEnabled: ?boolean,
   isPromptEnabled: ?boolean,
   // iOS
@@ -22,205 +24,6 @@ export type GoogleSignInOptions = {
   language: ?string,
   openIdRealm: ?string,
 };
-
-
-export class AuthData {
-  constructor() {
-    this.equals = this.equals.bind(this);
-    this.toJSON = this.toJSON.bind(this);
-  }
-
-  equals(other: ?any): boolean {
-    if (!other || !(other instanceof AuthData)) return false;
-    return true;
-  }
-
-  toJSON() {
-    return {};
-  }
-}
-export class Identity extends AuthData {
-  uid: string;
-  email: string;
-  displayName: ?string;
-  photoURL: ?string;
-  firstName: ?string;
-  lastName: ?string;
-
-  constructor(props) {
-    super(props);
-    const { uid, email, displayName, photoURL, firstName, lastName } = props;
-
-    this.uid = uid;
-    this.email = email;
-    this.displayName = displayName;
-    this.photoURL = photoURL;
-    this.firstName = firstName;
-    this.lastName = lastName;
-  }
-
-  equals(other: ?any): boolean {
-    if (!super.equals(other) || !(other instanceof Identity)) return false;
-
-    return (
-      this.displayName === other.displayName &&
-      this.photoURL === other.photoURL &&
-      this.uid === other.uid &&
-      this.email === other.email &&
-      this.firstName === other.firstName &&
-      this.lastName === other.lastName
-    );
-  }
-
-  toJSON() {
-    return {
-      ...super.toJSON(),
-      uid: this.uid,
-      email: this.email,
-      displayName: this.displayName,
-      photoURL: this.photoURL,
-      firstName: this.firstName,
-      lastName: this.lastName,
-    };
-  }
-}
-
-export class Authentication extends AuthData {
-  clientId: ?string;
-  accessToken: ?string;
-  accessTokenExpirationDate: ?number;
-  refreshToken: ?string;
-  idToken: ?string;
-  idTokenExpirationDate: ?number;
-
-  constructor(props) {
-    super(props);
-    const {
-      clientId,
-      accessToken,
-      accessTokenExpirationDate,
-      refreshToken,
-      idToken,
-      idTokenExpirationDate,
-    } = props;
-    this.clientId = clientId;
-    this.accessToken = accessToken;
-    this.accessTokenExpirationDate = accessTokenExpirationDate;
-    this.refreshToken = refreshToken;
-    this.idToken = idToken;
-    this.idTokenExpirationDate = idTokenExpirationDate;
-  }
-
-  equals(other: ?any): boolean {
-    if (!super.equals(other) || !(other instanceof Authentication)) {
-      return false;
-    }
-    return (
-      this.clientId === other.clientId &&
-      this.accessToken === other.accessToken &&
-      this.accessTokenExpirationDate === other.accessTokenExpirationDate &&
-      this.refreshToken === other.refreshToken &&
-      this.idToken === other.idToken &&
-      this.idTokenExpirationDate === other.idTokenExpirationDate
-    );
-  }
-
-  toJSON() {
-    return {
-      ...super.toJSON(),
-      clientId: this.clientId,
-      accessToken: this.accessToken,
-      accessTokenExpirationDate: this.accessTokenExpirationDate,
-      refreshToken: this.refreshToken,
-      idToken: this.idToken,
-      idTokenExpirationDate: this.idTokenExpirationDate,
-    };
-  }
-}
-export class User extends Identity {
-  auth: ?Authentication;
-  scopes: Array<string>;
-  hostedDomain: ?string;
-  serverAuthCode: ?string;
-
-  constructor(props) {
-    super(props);
-    const { auth, scopes, hostedDomain, serverAuthCode } = props;
-
-    this.auth = auth;
-    this.scopes = scopes;
-    this.hostedDomain = hostedDomain;
-    this.serverAuthCode = serverAuthCode;
-  }
-
-  clearCache = async () => {
-    if (!ExpoGoogleSignIn.clearCacheAsync) {
-      return;
-    }
-    if (!this.auth || !this.auth.accessToken) {
-      throw new Error('GoogleSignIn: User.clearCache(): Invalid accessToken');
-    }
-    return ExpoGoogleSignIn.clearCacheAsync({ token: this.auth.accessToken });
-  };
-
-  getHeaders = (): Promise<{ [string]: string }> => {
-    if (!this.auth.accessToken || this.auth.accessToken === '') {
-      throw new Error('GoogleSignIn: User.getHeaders(): Invalid accessToken');
-    }
-    return {
-      Authorization: `Bearer ${this.auth.accessToken}`,
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-    };
-  };
-
-  refreshAuthentication = async (): Promise<?Authentication> => {
-    const response: {
-      idToken: ?string,
-      accessToken: ?string,
-      auth: ?{ accessToken: ?string },
-    } = await ExpoGoogleSignIn.getTokensAsync({
-      email: this.email,
-      scopes: this.scopes,
-    });
-    if (response.idToken == null) {
-      response.idToken = this.auth.idToken;
-    }
-    if (!this.auth) {
-      this.auth = new Authentication(response);
-    } else {
-      this.auth.idToken = response.idToken;
-      this.auth.accessToken = response.accessToken;
-    }
-
-    return this.auth;
-  };
-
-  equals(other: ?any): boolean {
-    if (!super.equals(other) || !(other instanceof User)) return false;
-
-    return (
-      this.auth.equals(other.auth) &&
-      this.scopes === other.scopes &&
-      this.hostedDomain === other.hostedDomain &&
-      this.serverAuthCode === other.serverAuthCode
-    );
-  }
-
-  toJSON() {
-    let auth = this.auth;
-    if (this.auth && this.auth.toJSON) {
-      auth = this.auth.toJSON();
-    }
-    return {
-      ...super.toJSON(),
-      auth,
-      scopes: this.scopes,
-      hostedDomain: this.hostedDomain,
-      serverAuthCode: this.serverAuthCode,
-    };
-  }
-}
 
 export type GoogleSignInAuthResult = { type: 'success' | 'cancel', user: ?User };
 
@@ -243,10 +46,10 @@ export class GoogleSignIn {
 
   _validateOptions = (options: ?GoogleSignInOptions): GoogleSignInOptions => {
     if (!options || !Object.keys(options).length) {
-      throw new Error('GoogleSignIn: invalid configuration');
+      throw new Error('GoogleSignIn: you must provide a meaningful configuration, empty provided');
     }
     if (options.offlineAccess && !options.webClientId) {
-      throw new Error('GoogleSignIn: offline use requires server web ClientID');
+      throw new Error('GoogleSignIn: Offline access requires server `webClientId`');
     }
 
     const DEFAULT_SCOPES = [SCOPES.PROFILE, SCOPES.EMAIL];
@@ -256,16 +59,16 @@ export class GoogleSignIn {
     };
   };
 
-  askForPlayServicesAsync = () => this.hasPlayServicesAsync({ showPlayServicesUpdateDialog: true });
+  askForPlayServicesAsync = () => this.hasPlayServicesAsync({ shouldUpdate: true });
 
-  hasPlayServicesAsync = async (options = { showPlayServicesUpdateDialog: false }) => {
-    if (ExpoGoogleSignIn.playServicesAvailableAsync) {
-      if (options && options.showPlayServicesUpdateDialog === undefined) {
+  hasPlayServicesAsync = async (options = { shouldUpdate: false }) => {
+    if (ExpoGoogleSignIn.hasPlayServicesAsync) {
+      if (options && options.shouldUpdate === undefined) {
         throw new Error(
-          'ExpoGoogleSignIn: Missing property `showPlayServicesUpdateDialog` in options object for `hasPlayServices`'
+          'ExpoGoogleSignIn: Missing property `shouldUpdate` in options object for `shouldUpdate`'
         );
       }
-      return ExpoGoogleSignIn.playServicesAvailableAsync(options.showPlayServicesUpdateDialog);
+      return ExpoGoogleSignIn.hasPlayServicesAsync(options.shouldUpdate);
     } else {
       return true;
     }
@@ -274,21 +77,13 @@ export class GoogleSignIn {
   initAsync = async (options: ?GoogleSignInOptions): Promise<any> => {
     this.options = this._validateOptions(options || this.options);
 
-    if (!this.options) {
-      return false;
-    }
-
     const hasPlayServices = await this.hasPlayServicesAsync();
     if (!hasPlayServices) {
       return false;
     }
 
     if (this._initialization == null) {
-      try {
-        this._initialization = ExpoGoogleSignIn.initAsync(this.options);
-      } catch (e) {
-        this._initialization = null;
-      }
+      this._initialization = ExpoGoogleSignIn.initAsync(this.options);
     }
     return this._initialization;
   };
@@ -301,7 +96,6 @@ export class GoogleSignIn {
   };
 
   isSignedInAsync = async (): Promise<boolean> => {
-    await this.initAsync();
     return ExpoGoogleSignIn.isSignedInAsync();
   };
 
@@ -335,3 +129,8 @@ export class GoogleSignIn {
 }
 
 export default new GoogleSignIn();
+
+export { default as AuthData } from './AuthData';
+export { default as Authentication } from './Authentication';
+export { default as Identity } from './Identity';
+export { default as User } from './User';

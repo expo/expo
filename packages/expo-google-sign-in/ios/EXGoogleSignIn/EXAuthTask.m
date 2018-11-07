@@ -1,11 +1,6 @@
-//
-//  EXAuthTask.m
-//  EXGoogleSignIn
-//
-//  Created by Evan Bacon on 10/19/18.
-//
+// Copyright 2018-present 650 Industries. All rights reserved.
 
-#import "EXAuthTask.h"
+#import <EXGoogleSignIn/EXAuthTask.h>
 #import <EXGoogleSignIn/EXGoogleSignIn+Serialization.h>
 
 @interface EXAuthTask ()
@@ -28,20 +23,22 @@
     _rejecter = reject;
     return YES;
   } else {
-    reject(E_CONCURRENT_TASK_IN_PROGRESS, [NSString stringWithFormat:@"Failed to start %@ as a concurrent GoogleSignIn task is already running", tag], nil);
+    reject(EX_E_CONCURRENT_TASK_IN_PROGRESS, [NSString stringWithFormat:@"Failed to start %@ as a concurrent GoogleSignIn task is already running", tag], nil);
     return NO;
   }
 }
 
-- (void)resolve:(id)result {
+- (void)resolve:(id)result
+{
   if (!_resolver) return;
   _resolver(result);
   [self _clear];
 }
 
-- (void)reject:(NSString *)message error:(NSError *)error {
+- (void)reject:(NSString *)message error:(NSError *)error
+{
   if (!_resolver) return;
-  NSString *errorCode = [NSString stringWithFormat:@"%ld", error.code];
+  NSString *errorCode = [NSString stringWithFormat:@"%ld", (long) error.code];
   NSString *errorMessage = [NSString stringWithFormat:@"GoogleSignIn.%@: %@, %@, %@, %@", _tag, message, error.localizedDescription, error.localizedFailureReason, error.localizedRecoverySuggestion];
   _rejecter(errorCode, errorMessage, error);
   
@@ -54,11 +51,12 @@
     // Override this rejection to create parity with FBSDK
     [self reject:[EXGoogleSignIn jsonFromGIDSignInErrorCode:error.code] error:error];
   } else {
-    [self resolve:user];
+    [self resolve:EXNullIfNil(user)];
   }
 }
 
--(void)_clear {
+- (void)_clear
+{
   _resolver = nil;
   _rejecter = nil;
   _tag = nil;

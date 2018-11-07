@@ -1,34 +1,24 @@
-//
-//  EXGoogleSignIn+Serialization.m
-//  EXGoogleSignIn
-//
-//  Created by Evan Bacon on 10/19/18.
-//
+// Copyright 2018-present 650 Industries. All rights reserved.
 
-#import "EXGoogleSignIn+Serialization.h"
+#import <EXGoogleSignIn/EXGoogleSignIn+Serialization.h>
+#import <EXCore/EXUtilities.h>
 
 @implementation EXGoogleSignIn (Serialization)
 
-id nullIfNil(id input) {
-  if (!input || input == nil) {
-    return [NSNull null];
-  }
-  return input;
-}
-
 + (NSDictionary *)jsonFromGIDSignIn:(GIDSignIn *)input
 {
-  if (!input) return nullIfNil(nil);
+  if (!input) return nil;
+  
   return @{
-           @"scopes": nullIfNil([input scopes]),
-           @"language": nullIfNil([input language]),
-           @"openIdRealm": nullIfNil([input openIDRealm]),
-           @"accountName": nullIfNil([input loginHint]),
-           @"hostedDomain": nullIfNil([input hostedDomain]),
-           @"webClientId": nullIfNil([input serverClientID]),
-           @"shouldFetchBasicProfile": nullIfNil(@([input shouldFetchBasicProfile])),
-           @"currentUser": nullIfNil([EXGoogleSignIn jsonFromGIDGoogleUser:input.currentUser]),
-           @"hasAuthInKeychain": nullIfNil(@([input hasAuthInKeychain]))
+           @"scopes": EXNullIfNil([input scopes]),
+           @"language": EXNullIfNil([input language]),
+           @"openIdRealm": EXNullIfNil([input openIDRealm]),
+           @"accountName": EXNullIfNil([input loginHint]),
+           @"hostedDomain": EXNullIfNil([input hostedDomain]),
+           @"webClientId": EXNullIfNil([input serverClientID]),
+           @"shouldFetchBasicProfile": EXNullIfNil(@([input shouldFetchBasicProfile])),
+           @"currentUser": EXNullIfNil([EXGoogleSignIn jsonFromGIDGoogleUser:input.currentUser]),
+           @"hasAuthInKeychain": EXNullIfNil(@([input hasAuthInKeychain]))
            };
 }
 
@@ -37,15 +27,19 @@ id nullIfNil(id input) {
   if (!input) return nil;
   
   NSMutableDictionary *output = [[NSMutableDictionary alloc] initWithDictionary:@{
-                                                                                  @"uid": nullIfNil([input userID]),
-                                                                                  @"auth": nullIfNil([EXGoogleSignIn jsonFromGIDAuthentication:[input authentication]]),
-                                                                                  @"scopes": nullIfNil([input grantedScopes]),
-                                                                                  @"domain": nullIfNil([input hostedDomain]),
-                                                                                  @"serverAuthCode": nullIfNil([input serverAuthCode]),
+                                                                                  @"uid": EXNullIfNil([input userID]),
+                                                                                  @"auth": EXNullIfNil([EXGoogleSignIn jsonFromGIDAuthentication:[input authentication]]),
+                                                                                  @"scopes": EXNullIfNil([input grantedScopes]),
+                                                                                  @"domain": EXNullIfNil([input hostedDomain]),
+                                                                                  @"serverAuthCode": EXNullIfNil([input serverAuthCode]),
                                                                                   }];
   
   
-  [output addEntriesFromDictionary:[EXGoogleSignIn jsonFromGIDProfileData:[input profile]]];
+  NSDictionary *profileData = [EXGoogleSignIn jsonFromGIDProfileData:[input profile]];
+  if (profileData != nil) {
+    [output addEntriesFromDictionary:profileData];
+  }
+
   return output;
 }
 
@@ -59,12 +53,12 @@ id nullIfNil(id input) {
 {
   if (!input) return nil;
   return @{
-           @"clientId": nullIfNil([input clientID]),
-           @"accessToken": nullIfNil([input accessToken]),
-           @"accessTokenExpirationDate": nullIfNil([EXGoogleSignIn jsonFromNSDate:[input accessTokenExpirationDate]]),
-           @"refreshToken": nullIfNil([input refreshToken]),
-           @"idToken": nullIfNil([input idToken]),
-           @"idTokenExpirationDate": nullIfNil([EXGoogleSignIn jsonFromNSDate:[input idTokenExpirationDate]])
+           @"clientId": EXNullIfNil([input clientID]),
+           @"accessToken": EXNullIfNil([input accessToken]),
+           @"accessTokenExpirationDate": EXNullIfNil([EXGoogleSignIn jsonFromNSDate:[input accessTokenExpirationDate]]),
+           @"refreshToken": EXNullIfNil([input refreshToken]),
+           @"idToken": EXNullIfNil([input idToken]),
+           @"idTokenExpirationDate": EXNullIfNil([EXGoogleSignIn jsonFromNSDate:[input idTokenExpirationDate]])
            };
 }
 
@@ -73,10 +67,10 @@ id nullIfNil(id input) {
   if (!input) return nil;
   NSMutableDictionary *output =
   [NSMutableDictionary dictionaryWithDictionary:@{
-                                                  @"email": nullIfNil([input email]),
-                                                  @"displayName": nullIfNil([input name]),
-                                                  @"firstName": nullIfNil([input givenName]),
-                                                  @"lastName": nullIfNil([input familyName]),
+                                                  @"email": EXNullIfNil([input email]),
+                                                  @"displayName": EXNullIfNil([input name]),
+                                                  @"firstName": EXNullIfNil([input givenName]),
+                                                  @"lastName": EXNullIfNil([input familyName]),
                                                   }];
   if (input.hasImage) {
     NSURL *imageURL = [input imageURLWithDimension:128];
@@ -87,7 +81,6 @@ id nullIfNil(id input) {
 
 + (NSString *)jsonFromGIDSignInErrorCode:(GIDSignInErrorCode)input
 {
-  if (!input) return nullIfNil(nil);
   switch (input) {
     case kGIDSignInErrorCodeKeychain:
       return @"A problem reading or writing to the application keychain.";

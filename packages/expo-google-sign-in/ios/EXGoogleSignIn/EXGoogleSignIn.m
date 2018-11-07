@@ -10,7 +10,7 @@
 
 @property (nonatomic, weak) id<EXUtilitiesInterface> utilities;
 @property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
-@property (nonatomic) EXAuthTask *authTask;
+@property (nonatomic, strong) EXAuthTask *authTask;
 
 @end
 
@@ -21,7 +21,7 @@ EX_EXPORT_MODULE(ExpoGoogleSignIn);
 - (instancetype)init
 {
   if (self = [super init]) {
-    self.authTask = [[EXAuthTask alloc] init];
+    _authTask = [[EXAuthTask alloc] init];
   }
   return self;
 }
@@ -48,8 +48,8 @@ EX_EXPORT_MODULE(ExpoGoogleSignIn);
            @"ERRORS": @{
                @"SIGN_IN_CANCELLED": [@(kGIDSignInErrorCodeCanceled) stringValue],
                @"SIGN_IN_REQUIRED": [@(kGIDSignInErrorCodeHasNoAuthInKeychain) stringValue],
-               @"TASK_IN_PROGRESS": E_CONCURRENT_TASK_IN_PROGRESS,
-               @"SIGN_IN_EXCEPTION": E_EXCEPTION
+               @"TASK_IN_PROGRESS": EX_E_CONCURRENT_TASK_IN_PROGRESS,
+               @"SIGN_IN_EXCEPTION": EX_E_EXCEPTION
                },
            @"TYPES": @{},
            @"SCOPES": @{
@@ -94,13 +94,13 @@ EX_EXPORT_MODULE(ExpoGoogleSignIn);
   NSString *path = [[NSBundle mainBundle] pathForResource:@"GoogleService-Info" ofType:@"plist"];
   
   if (!path) {
-    reject(E_EXCEPTION, @"Missing GoogleService-Info.plist", nil);
+    reject(EX_E_EXCEPTION, @"Missing GoogleService-Info.plist", nil);
     return nil;
   }
   NSDictionary *plist = [[NSDictionary alloc] initWithContentsOfFile:path];
   NSString *clientId = plist[@"CLIENT_ID"];
   if (clientId != nil && ![clientId isEqualToString:@""]) return clientId;
-  reject(E_EXCEPTION, @"GoogleService-Info.plist `CLIENT_ID` is invalid", nil);
+  reject(EX_E_EXCEPTION, @"GoogleService-Info.plist `CLIENT_ID` is invalid", nil);
   return nil;
 }
 
@@ -187,7 +187,11 @@ EX_EXPORT_METHOD_AS(getCurrentUserAsync,
                     getCurrentUserAsync:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject)
 {
-  resolve([EXGoogleSignIn jsonFromGIDGoogleUser:[[GIDSignIn sharedInstance] currentUser]]);
+  GIDGoogleUser *currentUser = [self getCurrentUserOrReject:reject];
+  if (currentUser == nil) {
+    return;
+  }
+  resolve(EXNullIfNil([EXGoogleSignIn jsonFromGIDGoogleUser:currentUser]));
 }
 
 EX_EXPORT_METHOD_AS(getPhotoAsync,
@@ -195,9 +199,12 @@ EX_EXPORT_METHOD_AS(getPhotoAsync,
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject)
 {
-  GIDGoogleUser *user = [[GIDSignIn sharedInstance] currentUser];
-  if (user && user.profile.hasImage) {
-    NSURL *imageURL = [user.profile imageURLWithDimension:[size unsignedIntegerValue]];
+  GIDGoogleUser *currentUser = [self getCurrentUserOrReject:reject];
+  if (currentUser == nil) {
+    return;
+  }
+  if (currentUser.profile.hasImage) {
+    NSURL *imageURL = [currentUser.profile imageURLWithDimension:[size unsignedIntegerValue]];
     if (imageURL) {
       resolve([imageURL absoluteString]);
       return;
@@ -209,15 +216,27 @@ EX_EXPORT_METHOD_AS(getPhotoAsync,
 }
 
 
+- (GIDGoogleUser *)getCurrentUserOrReject:(EXPromiseRejectBlock)reject
+{
+  GIDGoogleUser *currentUser = [GIDSignIn sharedInstance].currentUser;
+  if (currentUser == nil) {
+    reject(EX_E_EXCEPTION, @"Attempting to read user data when no user is signed-in", nil);
+  }
+  return currentUser;
+}
+
 EX_EXPORT_METHOD_AS(getTokensAsync,
                     getTokensAsync:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject)
 {
-  GIDGoogleUser *currentUser = [GIDSignIn sharedInstance].currentUser;
+  GIDGoogleUser *currentUser = [self getCurrentUserOrReject:reject];
+  if (currentUser == nil) {
+    return;
+  }
   GIDAuthentication *auth = currentUser.authentication;
   [auth getTokensWithHandler:^void(GIDAuthentication *authentication, NSError *error) {
     if (error)
-      reject(E_EXCEPTION, error.localizedDescription, nil);
+      reject(EX_E_EXCEPTION, error.localizedDescription, nil);
     else
       resolve(@{
                 @"idToken" : authentication.idToken,
@@ -235,8 +254,15 @@ EX_EXPORT_METHOD_AS(getTokensAsync,
 }
 
 - (void)signIn:(GIDSignIn *)signIn presentViewController:(UIViewController *)viewController {
+  __weak EXGoogleSignIn *weakSelf = self;
+  
   [EXUtilities performSynchronouslyOnMainThread:^{
-    UIViewController *parent = self->_utilities.currentViewController;
+    __strong EXGoogleSignIn *strongSelf = weakSelf;
+    if (strongSelf == nil) {
+      return;
+    }
+    
+    UIViewController *parent = strongSelf.utilities.currentViewController;
     [parent presentViewController:viewController animated:true completion:nil];
   }];
 }

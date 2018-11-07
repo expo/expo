@@ -82,7 +82,7 @@ public class GoogleSignInModule extends ExportedModule implements ModuleRegistry
      * Subclasses can use this method to access catalyst context passed as a constructor
      */
     protected final Context getApplicationContext() {
-        return getCurrentActivity().getApplicationContext();
+        return getContext().getApplicationContext();
     }
 
     /**
@@ -161,7 +161,7 @@ public class GoogleSignInModule extends ExportedModule implements ModuleRegistry
     }
 
     @ExpoMethod
-    public void playServicesAvailableAsync(boolean shouldUpdate, Promise promise) {
+    public void hasPlayServicesAsync(boolean shouldUpdate, Promise promise) {
         Activity activity = getCurrentActivity();
 
         if (activity == null) {
@@ -207,7 +207,7 @@ public class GoogleSignInModule extends ExportedModule implements ModuleRegistry
 
     @ExpoMethod
     public void getTokensAsync(Promise promise) {
-        final GoogleSignInClient client = getGetClientOrReject(promise);
+        final GoogleSignInClient client = getClientOrReject(promise);
         if (client == null) {
             return;
         }
@@ -256,7 +256,7 @@ public class GoogleSignInModule extends ExportedModule implements ModuleRegistry
 
     @ExpoMethod
     public void signInSilentlyAsync(Promise promise) {
-        final GoogleSignInClient client = getGetClientOrReject(promise);
+        final GoogleSignInClient client = getClientOrReject(promise);
         if (client == null) {
             return;
         }
@@ -299,7 +299,7 @@ public class GoogleSignInModule extends ExportedModule implements ModuleRegistry
 
     @ExpoMethod
     public void signInAsync(Promise promise) {
-        final GoogleSignInClient client = getGetClientOrReject(promise);
+        final GoogleSignInClient client = getClientOrReject(promise);
         if (client == null) {
             return;
         }
@@ -337,7 +337,7 @@ public class GoogleSignInModule extends ExportedModule implements ModuleRegistry
 
     @ExpoMethod
     public void signOutAsync(final Promise promise) {
-        GoogleSignInClient client = getGetClientOrReject(promise);
+        GoogleSignInClient client = getClientOrReject(promise);
 
         if (client == null) {
             return;
@@ -353,7 +353,7 @@ public class GoogleSignInModule extends ExportedModule implements ModuleRegistry
 
     @ExpoMethod
     public void disconnectAsync(final Promise promise) {
-        GoogleSignInClient client = getGetClientOrReject(promise);
+        GoogleSignInClient client = getClientOrReject(promise);
         if (client == null) {
             return;
         }
@@ -391,7 +391,7 @@ public class GoogleSignInModule extends ExportedModule implements ModuleRegistry
         }
     }
 
-    private GoogleSignInClient getGetClientOrReject(Promise promise) {
+    private GoogleSignInClient getClientOrReject(Promise promise) {
         if (_apiClient == null) {
             promise.reject(ERROR_EXCEPTION, "apiClient is null - call configure first");
         }

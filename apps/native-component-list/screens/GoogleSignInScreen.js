@@ -16,7 +16,7 @@ export default class GoogleSignInScreen extends React.Component {
   }
 
   _configureAsync = async () => {
-    const language = Localization ? Localization.locale : 'en-US';
+    const language = Localization.locale;
     try {
       await GoogleSignIn.initAsync({
         isOfflineEnabled: true,

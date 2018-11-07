@@ -1,15 +1,10 @@
-//
-//  EXAuthTask.h
-//  EXGoogleSignIn
-//
-//  Created by Evan Bacon on 10/19/18.
-//
+// Copyright 2018-present 650 Industries. All rights reserved.
 
 #import <Foundation/Foundation.h>
 #import <EXCore/EXModuleRegistry.h>
 
-static NSString *const E_CONCURRENT_TASK_IN_PROGRESS = @"E_CONCURRENT_TASK_IN_PROGRESS";
-static NSString *const E_EXCEPTION = @"E_GOOGLE_SIGN_IN";
+static NSString *const EX_E_CONCURRENT_TASK_IN_PROGRESS = @"EX_E_CONCURRENT_TASK_IN_PROGRESS";
+static NSString *const EX_E_EXCEPTION = @"EX_E_GOOGLE_SIGN_IN";
 
 @interface EXAuthTask : NSObject
 - (BOOL)update:(NSString *)tag

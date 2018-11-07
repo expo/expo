@@ -6,8 +6,6 @@ export const name = 'GoogleSignIn';
 export async function test({ describe, it, jasmine, expect }) {
   describe('GoogleSignIn', () => {
     describe('has constants', () => {
-      expect(typeof customContactId).toBe('string');
-
       function validateConstants(constants) {
         expect(constants).toBeDefined();
         Object.values(constants).map(constant => {

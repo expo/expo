@@ -1,13 +1,7 @@
-//
-//  EXGoogleSignIn+Serialization.h
-//  EXGoogleSignIn
-//
-//  Created by Evan Bacon on 10/19/18.
-//
+// Copyright 2018-present 650 Industries. All rights reserved.
 
 #import <Foundation/Foundation.h>
 #import <GoogleSignIn/GoogleSignIn.h>
-#import <AppAuth/AppAuth.h>
 #import <EXGoogleSignIn/EXGoogleSignIn.h>
 
 @interface EXGoogleSignIn (Serialization)

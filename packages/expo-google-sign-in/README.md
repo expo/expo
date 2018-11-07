@@ -203,7 +203,7 @@ export default class AuthScreen extends React.Component {
 
   signInAsync = async () => {
     try {
-      await GoogleSignIn.hasPlayServicesAsync();
+      await GoogleSignIn.askForPlayServicesAsync();
       const { type, user } = await GoogleSignIn.signInAsync();
       console.log({ type, user });
       if (type === 'success') {
