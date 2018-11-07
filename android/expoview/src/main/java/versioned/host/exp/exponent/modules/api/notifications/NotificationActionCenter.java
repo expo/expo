@@ -2,19 +2,19 @@ package versioned.host.exp.exponent.modules.api.notifications;
 
 import android.app.Notification;
 import android.app.PendingIntent;
-import android.arch.persistence.room.Room;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Looper;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.RemoteInput;
 
+import com.raizlabs.android.dbflow.sql.builder.Condition;
+import com.raizlabs.android.dbflow.sql.language.Select;
+
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Set;
+import java.util.List;
 import java.util.TreeMap;
-import java.util.TreeSet;
 import java.util.UUID;
 
 import host.exp.expoview.BuildConfig;
@@ -28,23 +28,12 @@ public class NotificationActionCenter {
 
   public synchronized static void put(String categoryId, ArrayList<HashMap<String, Object>> actions, Context context) {
     throwExceptionIfOnMainThread();
-
-    SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_FILE, Context.MODE_PRIVATE);
-    SharedPreferences.Editor editor = sharedPreferences.edit();
-
-    TreeSet<String> actionIds = new TreeSet<>();
-
     for(HashMap<String, Object> action: actions) {
-      String actionId = (String)action.get("actionId");
-      actionIds.add(actionId);
-
+      action.put("categoryId", categoryId);
       ActionObject actionObject= new ActionObject();
       actionObject.populateObjectWithDataFromMap(action);
-      getDb(context).mActionObjectDao().insertActions(actionObject);
+      actionObject.save();
     }
-
-    editor.putStringSet(categoryId, actionIds);
-    editor.apply();
   }
 
   public synchronized static void setCategory(String categoryId, NotificationCompat.Builder builder, Context context, IntentProvider intentProvider) {
@@ -53,11 +42,11 @@ public class NotificationActionCenter {
     // Because expo have ongoing notification we have to change priority in order to show up buttons
     builder.setPriority(Notification.PRIORITY_MAX);
 
-    SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_FILE, Context.MODE_PRIVATE);
-    Set<String> actions = sharedPreferences.getStringSet(categoryId, null);
+    List<ActionObject> actions = new Select().from(ActionObject.class)
+                                     .where(Condition.column(ActionObject$Table.CATEGORYID).is(categoryId))
+                                     .queryList();
 
-    for(String actionId : actions) {
-      ActionObject actionObject = getDb(context).mActionObjectDao().findById(actionId);
+    for(ActionObject actionObject : actions) {
       addAction(builder, actionObject, intentProvider, context);
     }
   }
@@ -67,9 +56,6 @@ public class NotificationActionCenter {
     Intent intent = intentProvider.provide();
 
     String actionId = actionObject.getActionId();
-    if (actionId.contains(":")) {
-      actionId = actionId.split(":")[1];
-    }
 
     intent.putExtra("actionType", actionId);
     PendingIntent pendingIntent = PendingIntent.getActivity(context, UUID.randomUUID().hashCode(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -97,12 +83,4 @@ public class NotificationActionCenter {
       throw new RuntimeException("Do not use NotificationActionCenter class on main thread!");
     }
   }
-
-  private static ActionDatabase getDb(Context context) {
-    if (db == null) {
-      db = Room.databaseBuilder(context, ActionDatabase.class, DATABASE_NAME).build();
-    }
-    return db;
-  }
-
 }

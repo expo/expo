@@ -1,14 +1,11 @@
 package versioned.host.exp.exponent.modules.api.notifications;
 
-import android.arch.persistence.db.SupportSQLiteOpenHelper;
-import android.arch.persistence.room.Database;
-import android.arch.persistence.room.DatabaseConfiguration;
-import android.arch.persistence.room.InvalidationTracker;
-import android.arch.persistence.room.RoomDatabase;
-import android.support.annotation.NonNull;
+import com.raizlabs.android.dbflow.annotation.Database;
 
-@Database(entities = {ActionObject.class}, version = 1, exportSchema = false)
-public abstract class ActionDatabase extends RoomDatabase {
-  public abstract ActionObjectDao mActionObjectDao();
+@Database(name = ActionDatabase.NAME, version = ActionDatabase.VERSION)
+public class ActionDatabase {
+
+  public static final String NAME = "Colonies";
+
+  public static final int VERSION = 1;
 }
-

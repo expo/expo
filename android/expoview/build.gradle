@@ -106,7 +106,6 @@ configurations.all {
 }
 
 dependencies {
-  def room_version = "1.1.1"
   api fileTree(dir: 'libs', include: ['*.jar'])
   api 'com.android.support:multidex:1.0.3'
 
@@ -310,7 +309,4 @@ dependencies {
   // expo-file-system
   api 'com.squareup.okhttp3:okhttp:3.10.0'
   api 'com.squareup.okhttp3:okhttp-urlconnection:3.10.0'
-
-  api "android.arch.persistence.room:runtime:$room_version"
-  annotationProcessor "android.arch.persistence.room:compiler:$room_version"
 }

@@ -72,8 +72,6 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
 
     for(Object actionObject : actions.toArrayList()) {
       HashMap<String, Object> action = (HashMap<String, Object>)actionObject;
-      String oldActionId = (String)action.get("actionId");
-      action.put("actionId", getScopedIdIfNotDetached(oldActionId));
       scopedActions.add(action);
     }
 

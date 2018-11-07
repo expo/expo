@@ -1,39 +1,50 @@
 package versioned.host.exp.exponent.modules.api.notifications;
 
-import android.arch.persistence.room.ColumnInfo;
-import android.arch.persistence.room.Entity;
-import android.arch.persistence.room.PrimaryKey;
-import android.support.annotation.NonNull;
+
+import com.raizlabs.android.dbflow.annotation.Column;
+import com.raizlabs.android.dbflow.annotation.PrimaryKey;
+import com.raizlabs.android.dbflow.annotation.Table;
+import com.raizlabs.android.dbflow.structure.BaseModel;
 
 import java.util.HashMap;
 
-@Entity(tableName = "actions")
-public class ActionObject {
+@Table(databaseName = ActionDatabase.NAME)
+public class ActionObject extends BaseModel {
+  @Column
+  private String categoryId;
+
   @PrimaryKey
-  @NonNull
-  @ColumnInfo(name = "action_id")
+  @Column
   private String actionId;
 
-  @ColumnInfo(name = "button_title")
+  @Column
   private String buttonTitle;
 
-  @ColumnInfo(name = "is_destructive")
+  @Column
   private Boolean isDestructive = false;
 
-  @ColumnInfo(name = "is_authentication_required")
+  @Column
   private Boolean isAuthenticationRequired = false;
 
-  @ColumnInfo(name = "submit_button_title")
+  @Column
   private String submitButtonTitle = "go";
 
-  @ColumnInfo(name = "placeholder")
+  @Column
   private String placeholder = "...";
 
-  @ColumnInfo(name = "contain_text_input")
+  @Column
   private Boolean containTextInput = false;
   
   public Boolean getContainTextInput() {
     return containTextInput;
+  }
+
+  public String getActionId() {
+    return actionId;
+  }
+
+  public void setActionId(String actionId) {
+    this.actionId = actionId;
   }
 
   public void setContainTextInput(Boolean containTextInput) {
@@ -56,13 +67,12 @@ public class ActionObject {
     this.placeholder = placeholder;
   }
 
-  @NonNull
-  public String getActionId() {
-    return actionId;
+  public String getCategoryId() {
+    return categoryId;
   }
 
-  public void setActionId(@NonNull String actionId) {
-    this.actionId = actionId;
+  public void setCategoryId(String categoryId) {
+    this.categoryId = categoryId;
   }
 
   public String getButtonTitle() {
@@ -73,23 +83,24 @@ public class ActionObject {
     this.buttonTitle = buttonTitle;
   }
 
-  public Boolean isDestructive() {
+  public Boolean getIsDestructive() {
     return isDestructive;
   }
 
-  public void setDestructive(Boolean destructive) {
+  public void setIsDestructive(Boolean destructive) {
     isDestructive = destructive;
   }
 
-  public Boolean isAuthenticationRequired() {
+  public Boolean getIsAuthenticationRequired() {
     return isAuthenticationRequired;
   }
 
-  public void setAuthenticationRequired(Boolean authenticationRequired) {
+  public void setIsAuthenticationRequired(Boolean authenticationRequired) {
     isAuthenticationRequired = authenticationRequired;
   }
 
   public void populateObjectWithDataFromMap(HashMap<String, Object> map) {
+    this.categoryId = (String)map.get("categoryId");
     this.actionId = (String)map.get("actionId");
     this.buttonTitle = (String)map.get("buttonTitle");
     this.isDestructive = (Boolean)map.get("isDestructive");
