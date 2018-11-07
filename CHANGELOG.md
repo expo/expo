@@ -45,6 +45,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - Flow types have been removed as we begin to migrate to TypeScript over the next few SDK releases
 - Several Haptic enum types have been renamed: NotificationTypes → NotificationFeedbackType, ImpactStyles → ImpactFeedbackStyle
 - Several AR enum types have been renamed: BlendShapes → BlendShape, FaceAnchorProps → FaceAnchorProp, PlaneDetectionTypes → PlaneDetection, WorldAlignmentTypes → WorldAlignment, EventTypes → EventType, AnchorTypes → AnchorType, AnchorEventTypes → AnchorEventType, FrameAttributes → FrameAttribute, TrackingStates → TrackingState, TrackingStateReasons → TrackingStateReason, TrackingConfigurations → TrackingConfiguration
+- `Audio.Sound.create` has been renamed to `createAsync`
 
 ### 🎉 New features
 
