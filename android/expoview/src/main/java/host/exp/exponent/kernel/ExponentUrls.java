@@ -13,8 +13,6 @@ import expolib_v1.okhttp3.Request;
 
 public class ExponentUrls {
 
-  private static String sSessionSecret;
-
   private static final List<String> HTTPS_HOSTS = new ArrayList<>();
   static {
     HTTPS_HOSTS.add("exp.host");
@@ -29,10 +27,6 @@ public class ExponentUrls {
     }
 
     return false;
-  }
-
-  public static void setSessionSecret(String sessionSecret) {
-    sSessionSecret = sessionSecret;
   }
 
   public static String toHttp(final String rawUrl) {
@@ -59,7 +53,7 @@ public class ExponentUrls {
     return builder;
   }
 
-  public static Request.Builder addExponentHeadersToManifestUrl(String urlString, boolean isShellAppManifest) {
+  public static Request.Builder addExponentHeadersToManifestUrl(String urlString, boolean isShellAppManifest, String sessionSecret) {
     Request.Builder builder = addExponentHeadersToUrl(urlString)
         .header("Accept", "application/expo+json,application/json");
 
@@ -79,8 +73,8 @@ public class ExponentUrls {
 
     builder.header("Expo-Api-Version", "1")
         .header("Expo-Client-Environment", clientEnvironment);
-    if (sSessionSecret != null) {
-      builder.header("Expo-Session", sSessionSecret);
+    if (sessionSecret != null) {
+      builder.header("Expo-Session", sessionSecret);
     }
 
     return builder;

@@ -49,19 +49,29 @@ async function updateSettingsAsync(updatedSettings) {
 }
 
 async function getSessionAsync() {
-  let results = await AsyncStorage.getItem(Keys.Session);
-
-  try {
-    let session = JSON.parse(results);
-    return session;
-  } catch (e) {
-    return null;
+  let results = await ExponentKernel.getSessionAsync();
+  if (!results) {
+    // NOTE(2018-11-8): we are migrating to storing all session keys
+    // using the Kernel module instead of AsyncStorage, but we need to
+    // continue to check the old location for a little while
+    // until all clients in use have migrated over
+    results = await AsyncStorage.getItem(Keys.Session);
+    if (results) {
+      try {
+        results = JSON.parse(results);
+        await saveSessionAsync(results);
+        await AsyncStorage.removeItem(Keys.Session);
+      } catch (e) {
+        return null;
+      }
+    }
   }
+
+  return results;
 }
 
 async function saveSessionAsync(session) {
-  ExponentKernel.setSessionSecret(session.sessionSecret);
-  return AsyncStorage.setItem(Keys.Session, JSON.stringify(session));
+  return ExponentKernel.setSessionAsync(session);
 }
 
 async function getHistoryAsync() {
@@ -89,8 +99,7 @@ async function removeAuthTokensAsync() {
 }
 
 async function removeSessionAsync() {
-  ExponentKernel.removeSessionSecret();
-  return AsyncStorage.removeItem(Keys.Session);
+  return ExponentKernel.removeSessionAsync();
 }
 
 async function clearAllAsync() {

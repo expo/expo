@@ -5,6 +5,7 @@ package host.exp.exponent.modules;
 import android.app.Activity;
 import android.support.annotation.Nullable;
 
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -14,7 +15,8 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 
-import java.io.IOException;
+import org.json.JSONObject;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -28,16 +30,10 @@ import host.exp.exponent.experience.ErrorActivity;
 import host.exp.exponent.experience.ExperienceActivity;
 import host.exp.exponent.kernel.ExponentKernelModuleInterface;
 import host.exp.exponent.kernel.ExponentKernelModuleProvider;
-import host.exp.exponent.kernel.ExponentUrls;
 import host.exp.exponent.kernel.Kernel;
-import host.exp.exponent.network.ExpoHttpCallback;
-import host.exp.exponent.network.ExpoResponse;
 import host.exp.exponent.network.ExponentNetwork;
 import host.exp.exponent.storage.ExponentSharedPreferences;
-import expolib_v1.okhttp3.Call;
-import expolib_v1.okhttp3.Callback;
-import expolib_v1.okhttp3.Request;
-import expolib_v1.okhttp3.Response;
+import host.exp.exponent.utils.JSONBundleConverter;
 
 public class ExponentKernelModule extends ReactContextBaseJavaModule implements ExponentKernelModuleInterface {
 
@@ -112,13 +108,39 @@ public class ExponentKernelModule extends ReactContextBaseJavaModule implements 
   }
 
   @ReactMethod
-  public void setSessionSecret(String sessionSecret) {
-    ExponentUrls.setSessionSecret(sessionSecret);
+  public void getSessionAsync(Promise promise) {
+    String sessionString = mExponentSharedPreferences.getString(ExponentSharedPreferences.EXPO_AUTH_SESSION);
+    try {
+      JSONObject sessionJsonObject = new JSONObject(sessionString);
+      WritableMap session = Arguments.fromBundle(JSONBundleConverter.JSONToBundle(sessionJsonObject));
+      promise.resolve(session);
+    } catch (Exception e) {
+      promise.resolve(null);
+      EXL.e(TAG, e);
+    }
   }
 
   @ReactMethod
-  public void removeSessionSecret() {
-    ExponentUrls.setSessionSecret(null);
+  public void setSessionAsync(ReadableMap session, Promise promise) {
+    try {
+      JSONObject sessionJsonObject = new JSONObject(session.toHashMap());
+      mExponentSharedPreferences.updateSession(sessionJsonObject);
+      promise.resolve(null);
+    } catch (Exception e) {
+      promise.reject("ERR_SESSION_NOT_SAVED", "Could not save session secret", e);
+      EXL.e(TAG, e);
+    }
+  }
+
+  @ReactMethod
+  public void removeSessionAsync(Promise promise) {
+    try {
+      mExponentSharedPreferences.removeSession();
+      promise.resolve(null);
+    } catch (Exception e) {
+      promise.reject("ERR_SESSION_NOT_REMOVED", "Could not remove session secret", e);
+      EXL.e(TAG, e);
+    }
   }
 
   @ReactMethod
