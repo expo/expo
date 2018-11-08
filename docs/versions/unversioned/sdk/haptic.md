@@ -4,14 +4,14 @@ title: Haptic
 
 Provides haptic feedback for iOS 10+ devices using the Taptic Engine.
 
-> If this is used in Android the device will use `ReactNative.Vibrate` instead, it's best to just avoid this. 
+> If this is used in Android the device will use `ReactNative.Vibrate` instead, it's best to just avoid this.
 
 **The Taptic engine will do nothing given the following circumstances:**
 * Low Power Mode is enabled
   * [Feature Request](https://expo.canny.io/feature-requests/p/expose-low-power-mode-ios-battery-saver-android)
 * User disabled the Taptic Engine in settings
   * [Feature Request](https://expo.canny.io/feature-requests/p/react-native-settings)
-* Haptic engine generation is to low (less than 2nd gen) - Private API 
+* Haptic engine generation is to low (less than 2nd gen) - Private API
   * Using private API will get your app rejected: `[[UIDevice currentDevice] valueForKey: @"_feedbackSupportLevel"]` so this is not added in Expo
 * iOS version is less than 10 (iPhone 7 is the first phone to support this)
   * This could be found through: `Expo.Constants.platform.ios.systemVersion` or `Expo.Constants.platform.ios.platform`
@@ -36,7 +36,7 @@ Haptic.selection()
 #### Example
 
 ```js
-Haptic.notification(Haptic.NotificationTypes.Success)
+Haptic.notification(Haptic.NotificationFeedbackType.Success)
 ```
 
 ### `Haptic.impact(style: ImpactFeedbackStyle)`
@@ -48,7 +48,7 @@ Haptic.notification(Haptic.NotificationTypes.Success)
 #### Example
 
 ```js
-Haptic.impact(Haptic.ImpactStyles.Light)
+Haptic.impact(Haptic.ImpactFeedbackStyle.Light)
 ```
 
 ---
