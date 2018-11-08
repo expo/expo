@@ -3,8 +3,8 @@ import prettyFormat from 'pretty-format';
 import parseErrorStack, { StackFrame } from 'react-native/Libraries/Core/Devtools/parseErrorStack';
 import symbolicateStackTrace from 'react-native/Libraries/Core/Devtools/symbolicateStackTrace';
 
-import decycle from './decycle';
 import { LogData, LogLevel } from './RemoteLogging';
+import ReactNodeFormatter from './format/ReactNodeFormatter';
 
 type SerializedData = {
   body: LogData[];
@@ -73,7 +73,7 @@ function _stringifyLogData(data: unknown[]): string[] {
     if (typeof item === 'string') {
       return item;
     } else {
-      return prettyFormat(decycle(item));
+      return prettyFormat(item, { plugins: [ReactNodeFormatter] });
     }
   });
 }
