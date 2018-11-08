@@ -22,7 +22,7 @@ It notifies you of exceptions that your users run into while using your app and 
 - [Sign up for a Sentry account](https://sentry.io/signup/)
 - Once you have signed up, you will be prompted to create a project. Enter the name of your project and continue.
 - Copy your "Public DSN", you will need it shortly.
-- Go to the [Sentry API](https://sentry.io/api/) section and create an auth token. You can use the default configuration, this token will never be made available to users of your app. Copy your auth token and save it for later.
+- Go to the [Sentry API](https://sentry.io/api/) section and create an auth token. You can use the default configuration, this token will never be made available to users of your app. Ensure you have `project:write` selected under scopes. Copy your auth token and save it for later.
 - Go to your project dashboard by going to [sentry.io](https://sentry.io) and selecting your project. Next go to the settings tab and copy the name of your project, we will need this. The "legacy name" will not work for our purposes.
 - Go to your organization settings by going to [sentry.io](https://sentry.io), press the button in the top left of your screen with the arrow beside it and select "organization settings". Copy the name of your organization. The "legacy name" will not work for our purposes.
 
