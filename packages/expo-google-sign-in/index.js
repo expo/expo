@@ -1,5 +1,5 @@
 module.exports = {
   get GoogleSignIn() {
-    return require('./src/index').default;
+    return require('./src/GoogleSignIn').default;
   },
 };

@@ -1,11 +1,8 @@
 // @flow
 
-import { NativeModulesProxy } from 'expo-core';
-
+import ExpoGoogleSignIn from './ExpoGoogleSignIn';
 import Identity from './Identity';
 import Authentication from './Authentication';
-
-const { ExpoGoogleSignIn } = NativeModulesProxy;
 
 class User extends Identity {
   auth: ?Authentication;

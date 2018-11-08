@@ -1,9 +1,7 @@
 // @flow
-import { NativeModulesProxy } from 'expo-core';
 
 import User from './User';
-
-const { ExpoGoogleSignIn } = NativeModulesProxy;
+import ExpoGoogleSignIn from './ExpoGoogleSignIn';
 
 export const { ERRORS, SCOPES, TYPES } = ExpoGoogleSignIn;
 
