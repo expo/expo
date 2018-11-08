@@ -33,9 +33,6 @@
     },
     "testRegex": "/__tests__/.*\\.tsx?$",
     "testEnvironment": "node",
-    "setupFiles": [
-      "<rootDir>/test/setup.js"
-    ],
     "moduleFileExtensions": [
       "js",
       "json",
@@ -122,7 +119,7 @@
     "lottie-react-native": "2.5.0",
     "md5-file": "^3.2.3",
     "nullthrows": "^1.1.0",
-    "pretty-format": "^21.2.1",
+    "pretty-format": "^23.6.0",
     "prop-types": "^15.6.0",
     "qs": "^6.5.0",
     "react-native-branch": "2.2.5",
