@@ -28,6 +28,7 @@ import GoogleLoginScreen from '../screens/GoogleLoginScreen';
 import RemindersScreen from '../screens/RemindersScreen';
 import SensorScreen from '../screens/SensorScreen';
 import GeocodingScreen from '../screens/GeocodingScreen';
+import GLScreen from '../screens/GL/GLScreen';
 import GLScreens from '../screens/GL/GLScreens';
 import ImageManipulatorScreen from '../screens/ImageManipulatorScreen';
 import ImagePickerScreen from '../screens/ImagePickerScreen';
@@ -98,6 +99,7 @@ const ExpoComponentsStackNavigator = createStackNavigator(
     AdMob: { screen: AdMobScreen },
     BarCodeScanner: { screen: BarCodeScannerScreen },
     BlurView: { screen: BlurViewScreen },
+    GL: { screen: GLScreen },
     ...GLScreens,
     GestureHandlerPinch: { screen: GestureHandlerPinchScreen },
     GestureHandlerList: { screen: GestureHandlerListScreen },
