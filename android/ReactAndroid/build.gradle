@@ -296,7 +296,7 @@ android {
 }
 
 dependencies {
-    api 'com.facebook.infer.annotation:infer-annotation:0.11.2'
+    api 'expolib_v1.com.facebook.infer.annotation:infer-annotation:0.11.2'
     api 'javax.inject:javax.inject:1'
     api 'com.android.support:appcompat-v7:27.1.1'
     api "com.facebook.fresco:fresco:${FRESCO_VERSION}"

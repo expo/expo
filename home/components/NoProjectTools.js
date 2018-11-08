@@ -24,7 +24,7 @@ export default class QRCodeButton extends React.Component {
 
           <View style={styles.subtitleContainer}>
             <Text style={styles.subtitleText} ellipsizeMode="tail" numberOfLines={1}>
-              Run projects from Expo XDE, CLI, or Snack.
+              Run projects from expo-cli or Snack.
             </Text>
           </View>
         </View>

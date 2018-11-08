@@ -1,6 +1,6 @@
 import { LinearGradient } from 'expo';
 import React from 'react';
-import { Text, View } from 'react-native';
+import { Text, ScrollView, View, Image } from 'react-native';
 
 function incrementColor(color, step) {
   const intColor = parseInt(color.substr(1), 16);
@@ -35,11 +35,10 @@ export default class LinearGradientScreen extends React.Component {
 
   render() {
     return (
-      <View
-        style={{
-          flex: 1,
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{
           alignItems: 'center',
-          justifyContent: 'center',
           paddingVertical: 10,
         }}>
         <LinearGradient
@@ -48,7 +47,28 @@ export default class LinearGradientScreen extends React.Component {
         />
         <Text style={{ color: this.state.colorTop }}>{this.state.colorTop}</Text>
         <Text style={{ color: this.state.colorBottom }}>{this.state.colorBottom}</Text>
-      </View>
+
+        <View
+          style={{ flexDirection: 'row', alignSelf: 'stretch', justifyContent: 'space-evenly' }}>
+          <LinearGradient
+            colors={['white', 'red']}
+            start={[0.5, 0.5]}
+            end={[1, 1]}
+            style={{
+              width: 100,
+              height: 200,
+              borderWidth: 1,
+              marginVertical: 20,
+              borderColor: 'black',
+            }}
+          />
+          <Image
+            source={require('../assets/images/confusing_gradient.png')}
+            style={{ width: 100, height: 200, marginVertical: 20 }}
+          />
+        </View>
+        <Text style={{ marginHorizontal: 20 }}>The gradients above should look the same.</Text>
+      </ScrollView>
     );
   }
 }

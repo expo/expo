@@ -263,14 +263,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
 
   public void soloaderInit() {
     if (mDetachSdkVersion != null) {
-      try {
-        new RNObject("com.facebook.soloader.SoLoader")
-            .loadVersion(mDetachSdkVersion)
-            .callStatic("init", this, false);
-      } catch (Throwable e) {
-        // Starting with SDK 8, SoLoader moved out into a library, so it isn't versioned anymore
-        SoLoader.init(this, false);
-      }
+      SoLoader.init(this, false);
     }
   }
 

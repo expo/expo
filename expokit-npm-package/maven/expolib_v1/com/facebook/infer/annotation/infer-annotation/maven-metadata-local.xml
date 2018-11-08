@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>expolib_v1.com.facebook.infer.annotation</groupId>
+  <artifactId>infer-annotation</artifactId>
+  <versioning>
+    <release>0.11.2</release>
+    <versions>
+      <version>0.11.2</version>
+    </versions>
+    <lastUpdated>20181026214353</lastUpdated>
+  </versioning>
+</metadata>

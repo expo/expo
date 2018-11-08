@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI31_0_0/Expo/Core/Api/Components/Svg/Brushes/ABI31_0_0RNSVGSolidColorBrush.h

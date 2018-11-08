@@ -99,7 +99,7 @@ function _gitLogWithFormat(sinceDate, format, directory) {
   return {
     stdout,
     lines,
-    numberOfCommits: lines.length,
+    numberOfCommits: lines.length - 1,
   };
 }
 
@@ -128,20 +128,28 @@ function _listCommitsSince(date) {
   return { numberOfCommits, firstCommit };
 }
 
+function _isPrereleaseVersion(version) {
+  const prerelease = semver.prerelease(version);
+  return prerelease != null;
+}
+
 function _findDefaultVersion(packageJson, packageView, options) {
   // if packagejson.version is greater than the released version, then use this version as a default value
   // otherwise, increment the current version as patch release
 
-  if (packageView && packageView.version) {
-    if (options.prerelease) {
-      return semver.inc(packageView.currentVersion, 'prerelease', options.prerelease);
-    }
-    return semver.inc(packageView.currentVersion, options.release);
-  }
+  let defaultVersion = packageView ? packageView.currentVersion : packageJson.version;
+
   if (options.prerelease) {
-    return semver.inc(packageJson.version, 'prerelease', options.prerelease);
+    if (!packageView) {
+      return semver.inc(defaultVersion, 'prepatch', options.prerelease);
+    }
+    if (_isPrereleaseVersion(defaultVersion)) {
+      // options.release doesn't matter if the current version is also prerelease
+      return semver.inc(defaultVersion, 'prerelease', options.prerelease);
+    }
+    return semver.inc(defaultVersion, `pre${options.release}`, options.prerelease);
   }
-  return packageJson.version;
+  return packageView ? semver.inc(defaultVersion, options.release) : packageJson.version;
 }
 
 async function _checkGNUSed() {
@@ -182,7 +190,7 @@ async function _askForVersionAsync(libName, currentVersion, defaultVersion, pack
       `Version '${options.version}' is invalid or not greater than the published version.`
     );
   }
-  if (packageView.publishedDate && _checkNativeChangesSince(packageView.publishedDate)) {
+  if (packageView && packageView.publishedDate && _checkNativeChangesSince(packageView.publishedDate)) {
     console.log(chalk.yellow(`Detected changes in native code! Consider bumping at least minor number.`));
   }
   const result = await inquirer.prompt([
@@ -448,20 +456,17 @@ async function _bumpVersionsAsync({ libName, dir, newVersion, shouldPublish, pac
   _runCommand(`npm version ${newVersion} --allow-same-version`);
 }
 
-async function _prepackAsync({ libName, shouldPublish }) {
+async function _prepackAsync({ libName, newVersion, shouldPublish }) {
   if (!shouldPublish) {
     return;
   }
 
   console.log(`Packaging ${chalk.green(libName)}... 📦`);
-  const [pack] = await _runJSONCommand('npm pack --json');
+  const filename = `${libName}-v${newVersion}.tgz`;
+  await _runJSONCommand(`yarn pack --filename ${filename} --json`);
 
   return {
-    tarball: {
-      filename: pack.filename,
-      shasum: pack.shasum,
-      integrity: pack.integrity,
-    },
+    tarball: { filename },
   };
 }
 
@@ -474,7 +479,7 @@ async function _publishAsync({ libName, tarball, shouldPublish, newVersion }, al
   if (options.dry) {
     console.log(chalk.gray(`Publishing skipped because of --dry flag.`));
   } else {
-    _runCommand(`npm publish ${tarball.filename} --tag ${options.tag} --loglevel warn`);
+    _runCommand(`yarn publish ${tarball.filename} --tag ${options.tag} --new-version ${newVersion}`);
 
     // Unfortunately, `npm publish` doesn't provide --json flag, so the best way to check if it succeded
     // is to check if the new package view resolves current version to the new version we just tried publishing
@@ -559,7 +564,7 @@ async function _gitCommitAsync(allConfigs) {
 
 async function _updatePodsAsync(allConfigs) {
   const podNames = [...allConfigs.values()]
-    .filter(config => config.podName && config.shouldPublish)
+    .filter(config => config.podName && config.shouldPublish && config.includeInExpoClient)
     .map(config => config.podName)
     .join(' ');
 
