@@ -116,17 +116,22 @@ public class NotificationHelper {
       FcmRegistrationIntentService.getTokenAndRegister(exponentSharedPreferences.getContext());
     }
 
-    AsyncCondition.wait("devicePushToken", new AsyncCondition.AsyncConditionListener() {
+    AsyncCondition.wait(ExponentNotificationIntentService.DEVICE_PUSH_TOKEN_KEY, new AsyncCondition.AsyncConditionListener() {
       @Override
       public boolean isReady() {
-        return exponentSharedPreferences.getString(Constants.FCM_ENABLED ? ExponentSharedPreferences.FCM_TOKEN_KEY : ExponentSharedPreferences.GCM_TOKEN_KEY) != null;
+        return exponentSharedPreferences.getString(Constants.FCM_ENABLED ? ExponentSharedPreferences.FCM_TOKEN_KEY : ExponentSharedPreferences.GCM_TOKEN_KEY) != null
+            || ExponentNotificationIntentService.hasTokenError();
       }
 
       @Override
       public void execute() {
         String sharedPreferencesToken = exponentSharedPreferences.getString(Constants.FCM_ENABLED ? ExponentSharedPreferences.FCM_TOKEN_KEY : ExponentSharedPreferences.GCM_TOKEN_KEY);
         if (sharedPreferencesToken == null || sharedPreferencesToken.length() == 0) {
-          listener.onFailure(new Exception("No device token found"));
+          String message = "No device token found.";
+          if (!Constants.FCM_ENABLED) {
+            message += " Expo support for GCM is deprecated. Follow this guide to set up FCM for your standalone app: https://docs.expo.io/versions/latest/guides/using-fcm";
+          }
+          listener.onFailure(new Exception(message));
           return;
         }
 
