@@ -105,7 +105,7 @@ NSTimeInterval const EXFileDownloaderDefaultTimeoutInterval = 60;
   [request setValue:@"1" forHTTPHeaderField:@"Expo-Api-Version"];
   [request setValue:clientEnvironment forHTTPHeaderField:@"Expo-Client-Environment"];
 
-  NSString *sessionSecret = [[EXSession sharedInstance] getSessionSecret];
+  NSString *sessionSecret = [[EXSession sharedInstance] sessionSecret];
   if (sessionSecret) {
     [request setValue:sessionSecret forHTTPHeaderField:@"Expo-Session"];
   }

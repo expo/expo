@@ -26,7 +26,7 @@ NSString * const kEXSessionKeychainService = @"app";
   return theSession;
 }
 
-- (NSDictionary * _Nullable)getSession
+- (NSDictionary * _Nullable)session
 {
   if (_session) {
     return _session;
@@ -53,9 +53,9 @@ NSString * const kEXSessionKeychainService = @"app";
   return nil;
 }
 
-- (NSString * _Nullable)getSessionSecret
+- (NSString * _Nullable)sessionSecret
 {
-  NSDictionary *session = [self getSession];
+  NSDictionary *session = [self session];
   if (!session) {
     return nil;
   }
@@ -75,7 +75,7 @@ NSString * const kEXSessionKeychainService = @"app";
                                                           error:&jsonError];
   if (jsonError) {
     if (error) {
-      * error = [NSError errorWithDomain:EX_UNVERSIONED(@"EXKernelErrorDomain")
+      *error = [NSError errorWithDomain:EX_UNVERSIONED(@"EXKernelErrorDomain")
                                     code:-1
                                 userInfo:@{
                                            NSLocalizedDescriptionKey: @"Could not serialize JSON to save session to keychain",
@@ -101,7 +101,7 @@ NSString * const kEXSessionKeychainService = @"app";
     return YES;
   } else {
     if (error) {
-      * error = [NSError errorWithDomain:EX_UNVERSIONED(@"EXKernelErrorDomain")
+      *error = [NSError errorWithDomain:EX_UNVERSIONED(@"EXKernelErrorDomain")
                                     code:-1
                                 userInfo:@{ NSLocalizedDescriptionKey: @"Could not save session to keychain" }];
     }
@@ -118,7 +118,7 @@ NSString * const kEXSessionKeychainService = @"app";
     return YES;
   } else {
     if (error) {
-      * error = [NSError errorWithDomain:EX_UNVERSIONED(@"EXKernelErrorDomain")
+      *error = [NSError errorWithDomain:EX_UNVERSIONED(@"EXKernelErrorDomain")
                                     code:-1
                                 userInfo:@{ NSLocalizedDescriptionKey: @"Could not delete session from keychain" }];
     }

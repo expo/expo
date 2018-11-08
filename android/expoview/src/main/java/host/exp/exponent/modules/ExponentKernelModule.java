@@ -5,6 +5,7 @@ package host.exp.exponent.modules;
 import android.app.Activity;
 import android.support.annotation.Nullable;
 
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -16,7 +17,6 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -30,17 +30,10 @@ import host.exp.exponent.experience.ErrorActivity;
 import host.exp.exponent.experience.ExperienceActivity;
 import host.exp.exponent.kernel.ExponentKernelModuleInterface;
 import host.exp.exponent.kernel.ExponentKernelModuleProvider;
-import host.exp.exponent.kernel.ExponentUrls;
 import host.exp.exponent.kernel.Kernel;
-import host.exp.exponent.network.ExpoHttpCallback;
-import host.exp.exponent.network.ExpoResponse;
 import host.exp.exponent.network.ExponentNetwork;
 import host.exp.exponent.storage.ExponentSharedPreferences;
-import expolib_v1.okhttp3.Call;
-import expolib_v1.okhttp3.Callback;
-import expolib_v1.okhttp3.Request;
-import expolib_v1.okhttp3.Response;
-import host.exp.expoview.Exponent;
+import host.exp.exponent.utils.JSONBundleConverter;
 
 public class ExponentKernelModule extends ReactContextBaseJavaModule implements ExponentKernelModuleInterface {
 
@@ -116,10 +109,15 @@ public class ExponentKernelModule extends ReactContextBaseJavaModule implements 
 
   @ReactMethod
   public void getSessionAsync(Promise promise) {
-    // there is not a great way in Java to convert a JSONObject into a ReadableMap
-    // so it's easier to just pass it as a string into JS and call JSON.stringify
     String sessionString = mExponentSharedPreferences.getString(ExponentSharedPreferences.EXPO_AUTH_SESSION);
-    promise.resolve(sessionString);
+    try {
+      JSONObject sessionJsonObject = new JSONObject(sessionString);
+      WritableMap session = Arguments.fromBundle(JSONBundleConverter.JSONToBundle(sessionJsonObject));
+      promise.resolve(session);
+    } catch (Exception e) {
+      promise.resolve(null);
+      EXL.e(TAG, e);
+    }
   }
 
   @ReactMethod
