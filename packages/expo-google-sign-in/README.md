@@ -54,6 +54,89 @@ and run `pod install`.
     }
     ```
 
+## Methods
+
+### `askForPlayServicesAsync(): Promise<boolean>`
+
+### `arePlayServicesAvailableAsync(options: GoogleSignInPlayServicesOptions): Promise<boolean>`
+
+### `initAsync(options: ?GoogleSignInOptions): Promise<any>`
+
+### `isSignedInAsync(): Promise<boolean>`
+
+### `signInSilentlyAsync(): Promise<?GoogleSignInAuthResult>`
+
+### `signInAsync(): Promise<?GoogleSignInAuthResult>`
+
+### `signOutAsync(): Promise<?GoogleSignInAuthResult>`
+
+### `disconnectAsync(): Promise<?GoogleSignInAuthResult>`
+
+### `getCurrentUserAsync(): Promise<?GoogleSignInAuthResult>`
+
+### `getPhotoAsync(size: number = 128): Promise<?string>`
+
+
+## Types
+
+```js
+type GoogleSignInType = "default" | "games";
+```
+
+```js
+type GoogleSignInOptions = {
+  scopes: ?Array<string>,
+  webClientId: ?string,
+  hostedDomain: ?string,
+  accountName: ?string,
+
+  // Android
+  signInType: ?GoogleSignInType,
+  isOfflineEnabled: ?boolean,
+  isPromptEnabled: ?boolean,
+  // iOS
+  clientId: ?string,
+  language: ?string,
+  openIdRealm: ?string,
+};
+```
+
+```js
+type GoogleSignInAuthResultType = 'success' | 'cancel';
+```
+
+```js
+type GoogleSignInAuthResult = {
+  type: GoogleSignInAuthResultType,
+  user: ?User,
+};
+```
+
+```js
+type GoogleSignInPlayServicesOptions = {
+  shouldUpdate: boolean,
+};
+```
+
+## Classes 
+
+### `GoogleSignIn.AuthData`
+
+### `GoogleSignIn.User`
+
+### `GoogleSignIn.Authentication`
+
+### `GoogleSignIn.Identity`
+
+
+## Constants
+
+### `GoogleSignIn.ERRORS`
+
+### `GoogleSignIn.SCOPES`
+
+### `GoogleSignIn.TYPES`
+
 ## Usage
 
 ```javascript
@@ -219,3 +302,4 @@ export default class AuthScreen extends React.Component {
   }
 }
 ```
+

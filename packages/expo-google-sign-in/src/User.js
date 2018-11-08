@@ -3,7 +3,7 @@
 import { NativeModulesProxy } from 'expo-core';
 
 import Identity from './Identity';
-import { Authentication } from './Authentication';
+import Authentication from './Authentication';
 
 const { ExpoGoogleSignIn } = NativeModulesProxy;
 

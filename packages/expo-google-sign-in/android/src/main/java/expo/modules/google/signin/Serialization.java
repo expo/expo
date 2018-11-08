@@ -35,7 +35,7 @@ public class Serialization {
         Bundle auth = new Bundle();
         auth.putString("accessToken", null);
         auth.putString("accessTokenExpirationDate", null);
-        auth.putString("refreshToken", null); // TODO: Bacon:
+        auth.putString("refreshToken", null);
         auth.putString("idToken", acct.getIdToken());
         auth.putDouble("idTokenExpirationDate", acct.getExpirationTimeSecs());
 
@@ -50,7 +50,8 @@ public class Serialization {
         user.putString("serverAuthCode", acct.getServerAuthCode());
         user.putBundle("auth", auth);
         user.putString("serverAuthCode", acct.getServerAuthCode());
-        user.putString("domain", null); // TODO: Bacon
+         // TODO: Bacon: If google ever surfaces this value, we should add it for parity with iOS
+        user.putString("domain", null);
 
         ArrayList scopes = new ArrayList();
         for (Scope scope : acct.getGrantedScopes()) {
@@ -101,7 +102,6 @@ public class Serialization {
 //                optionsBuilder.addExtension(GoogleSignInOptionsExtension.FITNESS);
 //                break;
             default:
-                // TODO: Bacon: Reject
                 promise.reject("E_GOOGLE_SIGN_IN", "Invalid signInOption");
                 return null;
         }

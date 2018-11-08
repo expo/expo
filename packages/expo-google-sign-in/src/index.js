@@ -7,7 +7,7 @@ const { ExpoGoogleSignIn } = NativeModulesProxy;
 
 export const { ERRORS, SCOPES, TYPES } = ExpoGoogleSignIn;
 
-export type GoogleSignInType = TYPES.DEFAULT | TYPES.GAMES;
+export type GoogleSignInType = 'default' | 'games';
 
 export type GoogleSignInOptions = {
   scopes: ?Array<string>,
@@ -25,7 +25,16 @@ export type GoogleSignInOptions = {
   openIdRealm: ?string,
 };
 
-export type GoogleSignInAuthResult = { type: 'success' | 'cancel', user: ?User };
+export type GoogleSignInAuthResultType = 'success' | 'cancel';
+
+export type GoogleSignInAuthResult = {
+  type: GoogleSignInAuthResultType,
+  user: ?User,
+};
+
+export type GoogleSignInPlayServicesOptions = {
+  shouldUpdate: boolean,
+};
 
 export class GoogleSignIn {
   _initialization: Promise;
@@ -35,7 +44,7 @@ export class GoogleSignIn {
   SCOPES = SCOPES;
   TYPES = TYPES;
 
-  get currentUser(): User {
+  get currentUser(): ?User {
     return this._currentUser;
   }
 
@@ -59,16 +68,27 @@ export class GoogleSignIn {
     };
   };
 
-  askForPlayServicesAsync = () => this.hasPlayServicesAsync({ shouldUpdate: true });
+  _invokeAuthMethod = async (method: string): Promise<?GoogleSignInAuthResult> => {
+    await this.initAsync();
+    const payload = await ExpoGoogleSignIn[method]();
+    let account = payload != null ? new User(payload) : null;
+    return this._setCurrentUser(account);
+  };
 
-  hasPlayServicesAsync = async (options = { shouldUpdate: false }) => {
-    if (ExpoGoogleSignIn.hasPlayServicesAsync) {
+  askForPlayServicesAsync = (): Promise<boolean> => {
+    return this.arePlayServicesAvailableAsync({ shouldUpdate: true });
+  };
+
+  arePlayServicesAvailableAsync = async (
+    options: GoogleSignInPlayServicesOptions = { shouldUpdate: false }
+  ): Promise<boolean> => {
+    if (ExpoGoogleSignIn.arePlayServicesAvailableAsync) {
       if (options && options.shouldUpdate === undefined) {
         throw new Error(
           'ExpoGoogleSignIn: Missing property `shouldUpdate` in options object for `shouldUpdate`'
         );
       }
-      return ExpoGoogleSignIn.hasPlayServicesAsync(options.shouldUpdate);
+      return ExpoGoogleSignIn.arePlayServicesAvailableAsync(options.shouldUpdate);
     } else {
       return true;
     }
@@ -77,7 +97,7 @@ export class GoogleSignIn {
   initAsync = async (options: ?GoogleSignInOptions): Promise<any> => {
     this.options = this._validateOptions(options || this.options);
 
-    const hasPlayServices = await this.hasPlayServicesAsync();
+    const hasPlayServices = await this.arePlayServicesAvailableAsync();
     if (!hasPlayServices) {
       return false;
     }
@@ -86,13 +106,6 @@ export class GoogleSignIn {
       this._initialization = ExpoGoogleSignIn.initAsync(this.options);
     }
     return this._initialization;
-  };
-
-  _invokeAuthMethod = async (method: string): Promise<?GoogleSignInAuthResult> => {
-    await this.initAsync();
-    const payload = await ExpoGoogleSignIn[method]();
-    let account = payload != null ? new User(payload) : null;
-    return this._setCurrentUser(account);
   };
 
   isSignedInAsync = async (): Promise<boolean> => {

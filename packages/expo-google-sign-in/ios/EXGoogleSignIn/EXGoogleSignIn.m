@@ -187,8 +187,9 @@ EX_EXPORT_METHOD_AS(getCurrentUserAsync,
                     getCurrentUserAsync:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject)
 {
-  GIDGoogleUser *currentUser = [self getCurrentUserOrReject:reject];
+  GIDGoogleUser *currentUser = [GIDSignIn sharedInstance].currentUser;
   if (currentUser == nil) {
+    reject(EX_E_EXCEPTION, @"getCurrentUserAsync: Attempting to read user data when no user is signed-in", nil);
     return;
   }
   resolve(EXNullIfNil([EXGoogleSignIn jsonFromGIDGoogleUser:currentUser]));
@@ -199,10 +200,12 @@ EX_EXPORT_METHOD_AS(getPhotoAsync,
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject)
 {
-  GIDGoogleUser *currentUser = [self getCurrentUserOrReject:reject];
+  GIDGoogleUser *currentUser = [GIDSignIn sharedInstance].currentUser;
   if (currentUser == nil) {
+    reject(EX_E_EXCEPTION, @"getPhotoAsync: Attempting to read user data when no user is signed-in", nil);
     return;
   }
+
   if (currentUser.profile.hasImage) {
     NSURL *imageURL = [currentUser.profile imageURLWithDimension:[size unsignedIntegerValue]];
     if (imageURL) {
@@ -210,29 +213,19 @@ EX_EXPORT_METHOD_AS(getPhotoAsync,
       return;
     }
   }
-  // TODO: Bacon: should we error out?
-  //  reject(E_EXCEPTION, @"Could not get photoURL", nil);
   resolve([NSNull null]);
-}
-
-
-- (GIDGoogleUser *)getCurrentUserOrReject:(EXPromiseRejectBlock)reject
-{
-  GIDGoogleUser *currentUser = [GIDSignIn sharedInstance].currentUser;
-  if (currentUser == nil) {
-    reject(EX_E_EXCEPTION, @"Attempting to read user data when no user is signed-in", nil);
-  }
-  return currentUser;
 }
 
 EX_EXPORT_METHOD_AS(getTokensAsync,
                     getTokensAsync:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject)
 {
-  GIDGoogleUser *currentUser = [self getCurrentUserOrReject:reject];
+  GIDGoogleUser *currentUser = [GIDSignIn sharedInstance].currentUser;
   if (currentUser == nil) {
+    reject(EX_E_EXCEPTION, @"getTokensAsync: Attempting to read user data when no user is signed-in", nil);
     return;
   }
+
   GIDAuthentication *auth = currentUser.authentication;
   [auth getTokensWithHandler:^void(GIDAuthentication *authentication, NSError *error) {
     if (error)

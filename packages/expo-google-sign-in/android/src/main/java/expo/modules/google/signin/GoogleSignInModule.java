@@ -53,7 +53,7 @@ public class GoogleSignInModule extends ExportedModule implements ModuleRegistry
     public static final String MODULE_NAME = "ExpoGoogleSignIn";
     protected static final String ERROR_CONCURRENT_TASK_IN_PROGRESS = "E_CONCURRENT_TASK_IN_PROGRESS";
     protected static final String ERROR_EXCEPTION = "E_GOOGLE_SIGN_IN";
-    private final ActivityEventListener mActivityEventListener = new EXGoogleSigninActivityEventListener();
+    private final ActivityEventListener mActivityEventListener = new GoogleSignInActivityEventListener();
     private GoogleSignInClient _apiClient;
     private AuthTask authTask = new AuthTask();
     private ModuleRegistry mModuleRegistry;
@@ -161,7 +161,7 @@ public class GoogleSignInModule extends ExportedModule implements ModuleRegistry
     }
 
     @ExpoMethod
-    public void hasPlayServicesAsync(boolean shouldUpdate, Promise promise) {
+    public void arePlayServicesAvailableAsync(boolean shouldUpdate, Promise promise) {
         Activity activity = getCurrentActivity();
 
         if (activity == null) {
@@ -196,8 +196,7 @@ public class GoogleSignInModule extends ExportedModule implements ModuleRegistry
     public void getPhotoAsync(Number size, Promise promise) {
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
         if (account == null || account.getPhotoUrl() == null) {
-            // TODO: Bacon: Should we error out?
-//            promise.reject(ERROR_EXCEPTION, "Could not get photoURL");
+            // Could not get photoURL
             promise.resolve(null);
             return;
         }
@@ -262,7 +261,7 @@ public class GoogleSignInModule extends ExportedModule implements ModuleRegistry
         }
 
         if (authTask.update(promise, "signInSilentlyAsync")) {
-            Boolean success = addUIBlockOrReject(new Runnable() {
+            Boolean success = addUIThreadRunnableOrReject(new Runnable() {
                 @Override
                 public void run() {
                     Task<GoogleSignInAccount> result = client.silentSignIn();
@@ -305,7 +304,7 @@ public class GoogleSignInModule extends ExportedModule implements ModuleRegistry
         }
 
         if (authTask.update(promise, "signInAsync")) {
-            Boolean success = addUIBlockOrReject(new Runnable() {
+            Boolean success = addUIThreadRunnableOrReject(new Runnable() {
                 @Override
                 public void run() {
                     Intent signInIntent = client.getSignInIntent();
@@ -380,13 +379,13 @@ public class GoogleSignInModule extends ExportedModule implements ModuleRegistry
         }
     }
 
-    private boolean addUIBlockOrReject(Runnable block, Promise promise) {
+    private boolean addUIThreadRunnableOrReject(Runnable runnable, Promise promise) {
         UIManager manager = mModuleRegistry.getModule(UIManager.class);
         if (manager == null) {
             promise.reject(new IllegalStateException("Implementation of " + UIManager.class.getName() + " is null. Are you sure you've included a proper Expo adapter for your platform?"));
             return false;
         } else {
-            manager.runOnUiQueueThread(block);
+            manager.runOnUiQueueThread(runnable);
             return true;
         }
     }
@@ -437,7 +436,7 @@ public class GoogleSignInModule extends ExportedModule implements ModuleRegistry
         }
     }
 
-    private class EXGoogleSigninActivityEventListener implements ActivityEventListener {
+    private class GoogleSignInActivityEventListener implements ActivityEventListener {
         @Override
         public void onActivityResult(Activity activity, final int requestCode, final int resultCode, final Intent intent) {
             if (requestCode == RC_LOG_IN) {
