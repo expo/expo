@@ -24,6 +24,7 @@
   "dependencies": {
     "@babel/cli": "^7.1.2",
     "@expo/npm-proofread": "^1.0.1",
+    "babel-preset-expo": "^5.0.0",
     "commander": "^2.19.0",
     "jest-expo": "^31.0.0",
     "ts-jest": "~23.10.4",
