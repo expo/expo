@@ -3,55 +3,51 @@ const webpack = require('webpack');
 
 const appDirectory = path.resolve(__dirname, './');
 
-const moduleDirectory = path.resolve(__dirname, '../../');
+const moduleDirectory = path.resolve(__dirname, '../../node_modules/');
+const includeModule = module => path.resolve(moduleDirectory, module);
 
 // This is needed for webpack to compile JavaScript.
 // Many OSS React Native packages are not compiled to ES5 before being
 // published. If you depend on uncompiled packages they may cause webpack build
 // errors. To fix this webpack can be configured to compile to the necessary
 // `node_module`.
+
 const babelLoaderConfiguration = {
   test: /\.js$/,
   // Add every directory that needs to be compiled by Babel during the build.
   include: [
+    /// Project
     path.resolve(appDirectory, 'src/index.js'),
     path.resolve(appDirectory, 'src'),
-    path.resolve(moduleDirectory, 'node_modules/react-native-uncompiled'),
-    path.resolve(moduleDirectory, 'node_modules/react-navigation'),
-    path.resolve(moduleDirectory, 'node_modules/react-native-tab-view'),
-    path.resolve(moduleDirectory, 'node_modules/react-native-vector-icons'),
-    path.resolve(moduleDirectory, 'node_modules/react-native-safe-area-view'),
-    path.resolve(moduleDirectory, 'node_modules/@expo/samples'),
-    path.resolve(moduleDirectory, 'node_modules/@expo/vector-icons'),
-    path.resolve(moduleDirectory, 'node_modules/react-native-platform-touchable'),
+    path.resolve(appDirectory, 'node_modules/expo'),
 
-    path.resolve(moduleDirectory, 'node_modules/expo-constants'),
-    path.resolve(moduleDirectory, 'node_modules/expo-asset'),
-    path.resolve(moduleDirectory, 'node_modules/expo-font'),
+    /// Expo modules
+    includeModule('expo-core'),
+    includeModule('expo-react-native-adapter'),
+    includeModule('expo-constants'),
+    includeModule('expo-asset'),
+    includeModule('expo-font'),
+    includeModule('@expo/samples'),
+    includeModule('@expo/vector-icons'),
+
+    /// React Native
+    includeModule('react-native-uncompiled'),
+    includeModule('react-navigation'),
+    includeModule('react-native-tab-view'),
+    includeModule('react-native-vector-icons'),
+    includeModule('react-native-safe-area-view'),
+    includeModule('react-native-platform-touchable'),
   ],
   use: {
     loader: 'babel-loader',
     options: {
       // cacheDirectory: true,
       babelrc: false,
-      presets: ['module:metro-react-native-babel-preset'],
-
-      plugins: [
-        'react-native-web',
-        'transform-class-properties',
-        'transform-react-jsx',
-        // 'transform-object-rest-spread',
-        'transform-flow-strip-types',
-        [
-          '@babel/transform-runtime',
-          {
-            helpers: false,
-            regenerator: true,
-            // corejs: 2,
-            // useESModules: false,
-          },
-        ],
-      ],
+      /*
+       * babel-preset-* is inferred.
+       */
+      presets: ['expo'],
+      plugins: ['react-native-web', 'transform-flow-strip-types', '@babel/transform-runtime'],
     },
   },
 };
@@ -85,7 +81,7 @@ const ttfLoaderConfiguration = {
   ],
   include: [
     path.resolve(appDirectory, './src/assets/fonts'),
-    path.resolve(moduleDirectory, 'node_modules/react-native-vector-icons'),
+    includeModule('react-native-vector-icons'),
   ],
 };
 
@@ -101,7 +97,7 @@ module.exports = {
   output: {
     filename: 'bundle.js',
     publicPath: '/assets/',
-    path: path.resolve(appDirectory, './public/assets'),
+    path: path.resolve(appDirectory, 'public/assets'),
   },
 
   // ...the rest of your config

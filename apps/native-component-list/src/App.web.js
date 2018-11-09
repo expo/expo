@@ -1,6 +1,11 @@
 import * as React from 'react';
 import { Text, View, StyleSheet } from 'react-native';
+import { Constants } from 'expo-constants';
+
 class App extends React.Component {
+  componentDidMount() {
+    console.log(Constants);
+  }
   render() {
     return (
       <View style={styles.container}>
