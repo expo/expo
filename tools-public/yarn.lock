@@ -6431,20 +6431,19 @@ ws@^5.2.0:
   dependencies:
     async-limiter "~1.0.0"
 
-xdl@51.4.7:
-  version "51.4.7"
-  resolved "https://registry.yarnpkg.com/xdl/-/xdl-51.4.7.tgz#0230aba24a8b508dfb07faf995f6172af2b5cbc3"
-  integrity sha512-FUuayqKcxuxS7hjvxx4ujPUIT19tmlLUOul+chCe5eOY66xBMaW4cVKEzlUfcQNxXFSF8KICaVjC7lt+9xc6Tw==
+xdl@51.5.8:
+  version "51.5.8"
+  resolved "https://registry.yarnpkg.com/xdl/-/xdl-51.5.8.tgz#c60f52f3faa7ae89df7501bd3e5d31603857115a"
+  integrity sha512-noilRd2dlB2iTMVC7r9qXqzZTnD0EQwdLZgau0L6RwhCtcSIAs7vq5drjZ0C0i4l007RIzcUBZE1AR4bTvmgEQ==
   dependencies:
     "@expo/bunyan" "3.0.2"
-    "@expo/json-file" "^8.0.1"
+    "@expo/json-file" "^8.1.0"
     "@expo/ngrok" "2.4.2"
-    "@expo/osascript" "^1.8.2"
-    "@expo/schemer" "^1.1.1"
+    "@expo/osascript" "^1.9.0"
+    "@expo/schemer" "^1.2.1"
     "@expo/spawn-async" "^1.2.8"
     analytics-node "^2.1.0"
     axios v0.19.0-beta.1
-    body-parser "^1.15.2"
     chalk "^2.4.1"
     command-exists "^1.2.7"
     concat-stream "^1.6.0"
@@ -6452,7 +6451,7 @@ xdl@51.4.7:
     delay-async "^1.0.0"
     es6-error "^4.0.2"
     escape-string-regexp "^1.0.5"
-    express "^4.13.4"
+    express "4.16.4"
     file-type "^4.0.0"
     follow-redirects "^1.4.1"
     form-data "^2.1.4"
@@ -6469,8 +6468,8 @@ xdl@51.4.7:
     indent-string "^3.1.0"
     inquirer "^5.0.1"
     invariant "^2.2.4"
-    joi "^10.0.2"
-    jsonfile "^2.3.1"
+    joi "^14.0.4"
+    latest-version "^4.0.0"
     lodash "^4.14.1"
     md5hex "^1.0.0"
     minimatch "^3.0.4"
@@ -6478,6 +6477,7 @@ xdl@51.4.7:
     ncp "^2.0.0"
     node-forge "^0.7.4"
     opn "^4.0.2"
+    p-timeout "^2.0.1"
     plist "^2.1.0"
     prop-types "^15.5.10"
     querystring "^0.2.0"
