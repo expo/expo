@@ -9,7 +9,7 @@ commands:
     steps:
       # ssh: used in circleci checkout steps
       # direnv: used to configure environment with .envrc files
-      - run: nix-env -iA nixpkgs.openssh nixpkgs.direnv
+      - run: nix-env -iA nixpkgs.openssh nixpkgs.direnv nixpkgs.rsync
       - run: mkdir -p ~/.config/direnv
       - run: echo -e "[whitelist]\nprefix = [ \"$HOME\" ]" > ~/.config/direnv/config.toml
       - run: echo 'eval "$(direnv export bash)"' >> ~/.bash_profile

@@ -1,17 +1,5 @@
 import RemoteLogging, { LogEntryFields, LogLevel } from './RemoteLogging';
 
-type ReactConsole = typeof console;
-
-// error(message?: any, ...optionalParams: any[]): void;
-// info(message?: any, ...optionalParams: any[]): void;
-// log(message?: any, ...optionalParams: any[]): void;
-// warn(message?: any, ...optionalParams: any[]): void;
-// trace(message?: any, ...optionalParams: any[]): void;
-// debug(message?: any, ...optionalParams: any[]): void;
-// table(...data: any[]): void;
-// disableYellowBox: boolean;
-// ignoredYellowBox: string[];
-
 /**
  * Creates a console object that delegates calls to the specified underlying console and also sends
  * the messages to the development environment over a remote connection.

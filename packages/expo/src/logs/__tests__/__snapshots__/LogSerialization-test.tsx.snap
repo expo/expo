@@ -1,5 +1,13 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`serializes cyclic objects 1`] = `
+Array [
+  "Object {
+  \\"self\\": [Circular],
+}",
+]
+`;
+
 exports[`serializes nested objects 1`] = `
 Array [
   "Object {

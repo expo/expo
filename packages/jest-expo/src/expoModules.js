@@ -465,6 +465,11 @@ module.exports = {
     activate: { type: 'function', functionType: 'async' },
     deactivate: { type: 'function', functionType: 'async' },
   },
+  ExponentKernel: {
+    getSessionAsync: { type: 'function', functionType: 'async' },
+    removeSessionAsync: { type: 'function', functionType: 'async' },
+    setSessionAsync: { type: 'function', functionType: 'async' },
+  },
   ExponentLinearGradientManager: {},
   ExponentMailComposer: { composeAsync: { type: 'function', functionType: 'promise' } },
   ExponentNotifications: {

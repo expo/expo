@@ -432,7 +432,7 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
   } else if ([errorCode isEqualToString:@"NO_COMPATIBLE_EXPERIENCE_FOUND"]){
     formattedMessage = rawMessage; // No compatible experience found at ${originalUrl}. Only ${currentSdkVersions} are supported.
   } else if ([errorCode isEqualToString:@"EXPERIENCE_NOT_VIEWABLE"]) {
-    formattedMessage = [NSString stringWithFormat:@"The experience you requested is not viewable by you. You will need to log in or ask the owner to grant you access."];
+    formattedMessage = rawMessage; // From server: The experience you requested is not viewable by you. You will need to log in or ask the owner to grant you access.
   } else if ([errorCode isEqualToString:@"USER_SNACK_NOT_FOUND"] || [errorCode isEqualToString:@"SNACK_NOT_FOUND"]) {
     formattedMessage = [NSString stringWithFormat:@"No snack found at %@.", self.originalUrl];
   } else if ([errorCode isEqualToString:@"SNACK_RUNTIME_NOT_RELEASE"]) {
