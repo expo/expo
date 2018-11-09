@@ -37,7 +37,6 @@ const babelLoaderConfiguration = {
       presets: ['module:metro-react-native-babel-preset'],
 
       plugins: [
-        'expo-web',
         'react-native-web',
         'transform-class-properties',
         'transform-react-jsx',
@@ -87,7 +86,6 @@ const ttfLoaderConfiguration = {
   include: [
     path.resolve(appDirectory, './src/assets/fonts'),
     path.resolve(moduleDirectory, 'node_modules/react-native-vector-icons'),
-    path.resolve(moduleDirectory, 'node_modules/expo-web/node_modules/react-native-vector-icons'),
   ],
 };
 
@@ -136,8 +134,6 @@ module.exports = {
     alias: {
       './assets/images/expo-icon.png': './assets/images/expo-icon@2x.png',
       './assets/images/slack-icon.png': './assets/images/slack-icon@2x.png',
-      '@expo/vector-icons': 'expo-web',
-      expo: 'expo-web',
       'react-native': 'react-native-web',
     },
   },
