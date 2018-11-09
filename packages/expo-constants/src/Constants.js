@@ -1,6 +1,9 @@
 // @flow
+
+import { NativeModulesProxy } from 'expo-core';
+
 // On Android we pass the manifest in JSON form so this step is necessary
-import ExponentConstants from './ExponentConstants';
+const { ExponentConstants } = NativeModulesProxy;
 
 if (!ExponentConstants) {
   console.warn(
