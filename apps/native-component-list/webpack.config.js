@@ -1,57 +1,79 @@
-// web/webpack.config.js
 const path = require('path');
 const webpack = require('webpack');
+
 const appDirectory = path.resolve(__dirname, './');
+
+const moduleDirectory = path.resolve(__dirname, '../../');
+
+// This is needed for webpack to compile JavaScript.
 // Many OSS React Native packages are not compiled to ES5 before being
 // published. If you depend on uncompiled packages they may cause webpack build
 // errors. To fix this webpack can be configured to compile to the necessary
-// 'node_module'.
+// `node_module`.
 const babelLoaderConfiguration = {
   test: /\.js$/,
   // Add every directory that needs to be compiled by Babel during the build.
   include: [
+    path.resolve(appDirectory, 'src/index.js'),
     path.resolve(appDirectory, 'src'),
-    path.resolve(appDirectory, 'node_modules/react-navigation'),
-    path.resolve(appDirectory, 'node_modules/react-native-tab-view'),
-    path.resolve(appDirectory, 'node_modules/react-native-vector-icons'),
-    path.resolve(appDirectory, 'node_modules/react-native-safe-area-view'),
-    path.resolve(appDirectory, 'node_modules/@expo/samples'),
-    path.resolve(appDirectory, 'node_modules/@expo/vector-icons'),
-    path.resolve(appDirectory, 'node_modules/react-native-platform-touchable'),
+    path.resolve(moduleDirectory, 'node_modules/react-native-uncompiled'),
+    path.resolve(moduleDirectory, 'node_modules/react-navigation'),
+    path.resolve(moduleDirectory, 'node_modules/react-native-tab-view'),
+    path.resolve(moduleDirectory, 'node_modules/react-native-vector-icons'),
+    path.resolve(moduleDirectory, 'node_modules/react-native-safe-area-view'),
+    path.resolve(moduleDirectory, 'node_modules/@expo/samples'),
+    path.resolve(moduleDirectory, 'node_modules/@expo/vector-icons'),
+    path.resolve(moduleDirectory, 'node_modules/react-native-platform-touchable'),
+
+    path.resolve(moduleDirectory, 'node_modules/expo-constants'),
+    path.resolve(moduleDirectory, 'node_modules/expo-asset'),
+    path.resolve(moduleDirectory, 'node_modules/expo-font'),
   ],
   use: {
     loader: 'babel-loader',
     options: {
-      // cacheDirectory: false,
+      // cacheDirectory: true,
       babelrc: false,
-      // Babel configuration (or use .babelrc)
-      // This aliases 'react-native' to 'react-native-web' and includes only
-      // the modules needed by the app.
+      presets: ['module:metro-react-native-babel-preset'],
+
       plugins: [
         'expo-web',
         'react-native-web',
-        'transform-decorators-legacy',
-        ['transform-runtime', { helpers: false, polyfill: false, regenerator: true }],
+        'transform-class-properties',
+        'transform-react-jsx',
+        // 'transform-object-rest-spread',
+        'transform-flow-strip-types',
+        [
+          '@babel/transform-runtime',
+          {
+            helpers: false,
+            regenerator: true,
+            // corejs: 2,
+            // useESModules: false,
+          },
+        ],
       ],
-      // The 'react-native' preset is recommended to match React Native's packager
-      presets: ['react-native'],
     },
   },
 };
+
 // This is needed for loading css
 const cssLoaderConfiguration = {
   test: /\.css$/,
   use: ['style-loader', 'css-loader'],
 };
+
+// This is needed for webpack to import static images in JavaScript files.
 const imageLoaderConfiguration = {
   test: /\.(gif|jpe?g|png|svg)$/,
   use: {
-    loader: 'file-loader',
+    loader: 'url-loader',
     options: {
       name: '[name].[ext]',
     },
   },
 };
+
 const ttfLoaderConfiguration = {
   test: /\.ttf$/,
   use: [
@@ -64,19 +86,28 @@ const ttfLoaderConfiguration = {
   ],
   include: [
     path.resolve(appDirectory, './src/assets/fonts'),
-    path.resolve(appDirectory, 'node_modules/react-native-vector-icons'),
+    path.resolve(moduleDirectory, 'node_modules/react-native-vector-icons'),
+    path.resolve(moduleDirectory, 'node_modules/expo-web/node_modules/react-native-vector-icons'),
   ],
 };
+
 module.exports = {
-  // your web-specific entry file
-  entry: path.resolve(appDirectory, 'src/index.js'),
-  devtool: 'eval',
+  entry: [
+    // load any web API polyfills
+    // path.resolve(appDirectory, 'polyfills-web.js'),
+    // your web-specific entry file
+    path.resolve(appDirectory, 'src/index.js'),
+  ],
+
   // configures where the build ends up
   output: {
     filename: 'bundle.js',
     publicPath: '/assets/',
     path: path.resolve(appDirectory, './public/assets'),
   },
+
+  // ...the rest of your config
+
   module: {
     rules: [
       babelLoaderConfiguration,
@@ -85,6 +116,7 @@ module.exports = {
       ttfLoaderConfiguration,
     ],
   },
+
   plugins: [
     // process.env.NODE_ENV === 'production' must be true for production
     // builds to eliminate development checks and reduce build size. You may
@@ -94,6 +126,7 @@ module.exports = {
       __DEV__: process.env.NODE_ENV === 'production' || true,
     }),
   ],
+
   resolve: {
     // If you're working on a multi-platform React Native app, web-specific
     // module implementations should be written in files using the extension

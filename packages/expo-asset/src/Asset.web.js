@@ -1,10 +1,15 @@
 'use strict';
-import { NativeModules, PixelRatio, Platform } from 'react-native';
+import { PixelRatio, Platform } from 'react-native';
+import { getAssetByID, registerAsset } from 'react-native-web/dist/modules/AssetRegistry';
 import resolveAssetSource from 'react-native/Libraries/Image/resolveAssetSource';
 
-import { getAssetByID, registerAsset } from 'react-native-web/dist/modules/AssetRegistry';
+let FS, Constants;
 
-let Constants;
+try {
+  FS = require('expo-file-system').FileSystem;
+} catch (error) {
+  throw new Error('`expo-asset` requires `expo-file-system` package to be installed and linked.');
+}
 
 try {
   Constants = require('expo-constants').Constants;
@@ -17,7 +22,6 @@ const AssetRegistry = {
   registerAsset,
 };
 
-const FS = NativeModules.ExponentFileSystem;
 // Fast lookup check if assets are available in the local bundle.
 const bundledAssets = new Set((FS && FS.bundledAssets) || []);
 // Return { uri, hash } for an asset's file, picking the correct scale, based on its React Native
@@ -175,6 +179,7 @@ export default class Asset {
     }
   }
 }
+// TODO: Bacon: Invalid
 if (Platform.OS === 'ios' || Platform.OS === 'android') {
   // Override React Native's asset resolution for `Image` components
   resolveAssetSource.setCustomSourceTransformer(resolver => {
