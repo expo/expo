@@ -47,7 +47,7 @@ const babelLoaderConfiguration = {
        * babel-preset-* is inferred.
        */
       presets: ['expo'],
-      plugins: ['react-native-web', 'transform-flow-strip-types', '@babel/transform-runtime'],
+      plugins: ['react-native-web', '@babel/transform-runtime'],
     },
   },
 };

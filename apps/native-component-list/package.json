@@ -46,16 +46,12 @@
     "webpack-dev-server": "3.1.10"
   },
   "devDependencies": {
-    "@babel/plugin-transform-classes": "^7.1.0",
-    "@babel/plugin-transform-flow-strip-types": "^7.0.0",
     "babel-loader": "^8.0.4",
     "babel-preset-expo": "^5.0.0",
     "babel-plugin-react-native-web": "^0.9.6",
     "css-loader": "^1.0.1",
     "expo-yarn-workspaces": "^1.0.0",
     "file-loader": "^2.0.0",
-    "flow-bin": "^0.86.0",
-    "metro-react-native-babel-preset": "^0.49.0",
     "react-native-scripts": "^2.0.1",
     "style-loader": "^0.23.1",
     "webpack-cli": "^3.1.2"
