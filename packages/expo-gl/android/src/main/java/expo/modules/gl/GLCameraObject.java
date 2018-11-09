@@ -7,6 +7,7 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
 import expo.interfaces.camera.ExpoCameraViewInterface;
+import expo.modules.gl.context.GLContext;
 
 import static android.opengl.GLES11Ext.GL_TEXTURE_EXTERNAL_OES;
 import static android.opengl.GLES30.*;
@@ -57,7 +58,7 @@ public class GLCameraObject extends GLObject implements SurfaceTexture.OnFrameAv
 
   // Must be constructed on GL thread!
   GLCameraObject(final GLContext glContext, final ExpoCameraViewInterface cameraView) {
-    super(glContext.getContextId());
+    super(glContext.getEXGLContextId());
 
     mGLContext = glContext;
     mCameraView = cameraView;
@@ -165,7 +166,7 @@ public class GLCameraObject extends GLObject implements SurfaceTexture.OnFrameAv
           // bind destination texture to framebuffer
           glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mDestTexture, 0);
 
-          // initialize vertex array with vertex buffer
+          // initializeWithSurface vertex array with vertex buffer
           FloatBuffer vertexBuffer = setupVertexBuffer();
           glBindBuffer(GL_ARRAY_BUFFER, mVertexBuffer);
           glBufferData(GL_ARRAY_BUFFER, textureCoords.length * 4, vertexBuffer, GL_STATIC_DRAW);

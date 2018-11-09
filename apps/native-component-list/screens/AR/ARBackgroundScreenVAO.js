@@ -5,6 +5,32 @@ import { StyleSheet, View } from 'react-native';
 import { initShaderProgram, checkGLError } from './ARUtils';
 import { PermissionsRequester } from './components';
 
+const vertexShaderSource = `#version 300 es
+precision mediump float;
+
+in vec2 aVertexCoord;
+in vec2 aTextureCoord;
+out vec2 uv;
+
+void main() {
+  uv = aTextureCoord;
+  gl_Position = vec4(aVertexCoord, 0.0, 1.0);
+}
+`;
+
+const fragmentShaderSource = `#version 300 es
+precision mediump float;
+        
+uniform sampler2D uSampler;
+in vec2 uv;
+out vec4 fragColor;
+
+void main() {
+  // fragColor = vec4(1.0 - texture(uSampler, uv).rgb, 1.0); // inverted colors
+  fragColor = texture(uSampler, uv); // natural colors
+}
+`;
+
 export default class ARBackgroundScreenVAO extends React.Component {
   static title = 'AR Camera Preview Background (plain WebGL with VAO)';
 
@@ -24,35 +50,7 @@ export default class ARBackgroundScreenVAO extends React.Component {
   }
 
   createGLProgram = gl => {
-    const program = initShaderProgram(
-      gl,
-      `
-        #version 300 es
-        precision highp float;
-
-        in vec2 aVertexCoord;
-        in vec2 aTextureCoord;
-        out vec2 uv;
-
-        void main() {
-          uv = aTextureCoord;
-          gl_Position = vec4(aVertexCoord, 0.0, 1.0);
-        }
-      `,
-      `
-        #version 300 es
-        precision highp float;
-        
-        uniform sampler2D uSampler;
-        in vec2 uv;
-        out vec4 fragColor;
-
-        void main() {
-          // fragColor = vec4(1.0 - texture(uSampler, uv).rgb, 1.0); // inverted colors
-          fragColor = texture(uSampler, uv); // natural colors
-        }
-      `
-    );
+    const program = initShaderProgram(gl, vertexShaderSource, fragmentShaderSource);
 
     return {
       program,
@@ -137,7 +135,7 @@ export default class ARBackgroundScreenVAO extends React.Component {
     };
   };
 
-  onGLContextCreate = async ({ gl }) => {
+  onGLContextCreate = async gl => {
     this.gl = gl;
     this.cameraStream = await this.createCameraStream(this.gl);
   };

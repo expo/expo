@@ -21,29 +21,24 @@ export default class ARPointsScreen extends React.Component {
     );
   }
 
-  onContextCreate = async event => {
-    this.commonSetup(event);
-  };
-
-  commonSetup = ({ gl, scale, width, height }) => {
+  onContextCreate = async (gl, { width, height }) => {
     this.renderer = new ExpoTHREE.Renderer({
       gl,
-      pixelRatio: scale,
       width,
       height,
       clearColor: 0xffffff,
     });
     this.scene = new THREE.Scene();
     this.scene.background = new ExpoTHREE.AR.BackgroundTexture(this.renderer);
-    this.camera = new ExpoTHREE.AR.Camera(width, height, 0.01, 1000);
+    this.camera = new ExpoTHREE.AR.Camera(75, width / height, 0.01, 1000);
     this.points = new ExpoTHREE.AR.Points();
     this.scene.add(this.points);
   };
 
-  onResize = ({ scale, width, height }) => {
+  onResize = ({ pixelRatio, width, height }) => {
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
-    this.renderer.setPixelRatio(scale);
+    this.renderer.setPixelRatio(pixelRatio);
     this.renderer.setSize(width, height);
   };
 

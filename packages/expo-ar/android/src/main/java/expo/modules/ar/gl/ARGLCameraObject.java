@@ -3,7 +3,10 @@ package expo.modules.ar.gl;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
+import android.util.Log;
 import android.util.Size;
+import android.view.Surface;
+
 import com.google.ar.core.Frame;
 
 import java.nio.ByteBuffer;
@@ -11,13 +14,18 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
 import expo.modules.ar.R;
-import expo.modules.gl.GLContext;
 import expo.modules.gl.GLObject;
+import expo.modules.gl.context.GLSharedContext;
 
 import static android.opengl.GLES11Ext.GL_TEXTURE_EXTERNAL_OES;
 import static android.opengl.GLES30.*;
 import static expo.modules.gl.cpp.EXGL.EXGLContextMapObject;
 
+/**
+ * This class is responsible for rendering 'texture' (stored as texture_external_oes)
+ * that is obtained from camera device into normal OpenGL texture.
+ * All rendering and setup should be done in separate GL shared context.
+ */
 public class ARGLCameraObject extends GLObject {
   private final String TAG = ARGLCameraObject.class.getSimpleName();
   private final String ERROR_TAG = "E_CAMERA_OBJECT";
@@ -27,8 +35,6 @@ public class ARGLCameraObject extends GLObject {
   private static final int FLOAT_SIZE = 4;
 
   private final Context mContext;
-
-  private ARGLContextManager mARGLContextManager;
 
   private FloatBuffer mVerticesBuffer;
   private FloatBuffer mTextureCoordBuffer;
@@ -62,10 +68,9 @@ public class ARGLCameraObject extends GLObject {
           1.0f, 0.0f,
       };
 
-  public ARGLCameraObject(Context context, GLContext glContext) {
-    super(glContext.getContextId());
+  public ARGLCameraObject(Context context, GLSharedContext glContext) {
+    super(glContext.getEXGLContextId());
     mContext = context;
-    mARGLContextManager = new ARGLContextManager();
   }
 
   private void setupShaderProgram() {
@@ -98,10 +103,8 @@ public class ARGLCameraObject extends GLObject {
 
     // setup destination texture
     glBindTexture(GL_TEXTURE_2D, mDestinationTexture);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
     // connect framebuffer with mDestinationTexture -> rendering to this would be stored in this texture
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, mFramebuffer);
@@ -141,8 +144,12 @@ public class ARGLCameraObject extends GLObject {
     mTextureCoordBuffer.position(0);
   }
 
-  public void createOnGLThread() {
-    mARGLContextManager.saveGLContext();
+  public void initializeOnGLThread() {
+    // general setup
+    glDisable(GL_DEPTH_TEST);
+    glDepthMask(false);
+    glDisable(GL_CULL_FACE);
+
     // setup framebuffer that would be used for rendering to texture as substitute for default GL_DRAW_FRAMEBUFFER
     int[] framebuffers = new int[1];
     glGenFramebuffers(1, framebuffers, 0);
@@ -157,7 +164,6 @@ public class ARGLCameraObject extends GLObject {
     // prepare buffers with data for GL
     setupVertexBuffers();
     ARGLUtils.checkGLError(TAG, "CREATION");
-    mARGLContextManager.restoreGLContext();
   }
 
   public void destroy() {
@@ -175,40 +181,21 @@ public class ARGLCameraObject extends GLObject {
    * Renders available frame available in {@link this#mExternalOESTexture}
    * into {@link this#mDestinationTexture} that is available from JS
    * @param frame used to get correct orientation for {@link this#mDestinationTexture}
+   * @param rotation current device rotation Same as {@link android.view.Display#getRotation()}.
    * @param textureSize current size of texture stored in {@link this#mExternalOESTexture}; used to allocate space for {@link this#mDestinationTexture}
    */
-  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-  public void drawFrame(Frame frame, Size textureSize) {
-    // store previous context
-    mARGLContextManager.saveGLContext();
-
-    // no need for depth testing
-    glDisable(GL_DEPTH_TEST);
-    glDepthMask(false);
-
+  public void drawFrame(Frame frame, int rotation, Size textureSize) {
     // bindings used in rendering process
     glUseProgram(mProgram);
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, mFramebuffer);
+    glViewport(0, 0, mTextureWidth, mTextureHeight);
+    glClearColor(0, 0, 0, 0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
     ARGLUtils.checkGLError(TAG, "PROGRAM, DRAW_FRAMEBUFFER BINDINGS");
 
     // reallocate destination texture if preview has changed
-    if (mTextureWidth != textureSize.getWidth() || mTextureHeight != textureSize.getHeight()) {
-      mTextureWidth = textureSize.getWidth();
-      mTextureHeight = textureSize.getHeight();
-      glActiveTexture(GL_TEXTURE0);
-      glBindTexture(GL_TEXTURE_2D, mDestinationTexture);
-      glTexImage2D(
-          GL_TEXTURE_2D,
-          0,
-          GL_RGBA,
-          mTextureWidth,
-          mTextureHeight,
-          0,
-          GL_RGBA,
-          GL_UNSIGNED_BYTE,
-          null);
-      ARGLUtils.checkGLError(TAG, "TEX IMAGE 2D");
-    }
+    possiblyReallocateTexture(rotation, textureSize);
 
     // set the vertex positions
     // binding 0 to GL_ARRAY_BUFFER is important see https://www.khronos.org/registry/OpenGL-Refpages/es3.0/html/glVertexAttribPointer.xhtml pointer param description
@@ -229,6 +216,7 @@ public class ARGLCameraObject extends GLObject {
       // about orientation before obtaining Frame from Session (see invocation of this method and what's happening just before)
       // in other case mTextureCoordTransformedBuffer will be filled with NaN as it doesn't know it's orientation
       frame.transformDisplayUvCoords(mTextureCoordBuffer, mTextureCoordTransformedBuffer);
+
       // code below is useful for debugging purposes
 //      float[] plain = new float[8];
 //      float[] transformed = new float[8];
@@ -261,18 +249,51 @@ public class ARGLCameraObject extends GLObject {
     glEnableVertexAttribArray(mPositionHandler);
     ARGLUtils.checkGLError(TAG, "ENABLE VERTEX ATTRIB ARRAY");
 
-    glViewport(0, 0, mTextureWidth, mTextureHeight);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4); // 4 vertices -> 2 triangles using GL_TRIANGLE_STRIP
     ARGLUtils.checkGLError(TAG, "DRAW ARRAYS");
+    glFinish();
 
     // disable vertex arrays
     glDisableVertexAttribArray(mPositionHandler);
     glDisableVertexAttribArray(mTextureCoordHandler);
+  }
 
-    // restore the depth state for further drawing.
-    glDepthMask(true);
-    glEnable(GL_DEPTH_TEST);
+  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+  private void possiblyReallocateTexture(int rotation, Size textureSize) {
+    int width;
+    int height;
+    switch (rotation) {
+      case Surface.ROTATION_0:
+      case Surface.ROTATION_180:
+        width = textureSize.getWidth();
+        height = textureSize.getHeight();
+        break;
+      case Surface.ROTATION_90:
+      case Surface.ROTATION_270:
+        width = textureSize.getHeight();
+        height = textureSize.getWidth();
+        break;
+      default:
+        Log.e(ERROR_TAG + "_ROTATE", "Invalid rotation obtained from device: " + rotation);
+        return;
+    }
 
-    mARGLContextManager.restoreGLContext();
+    if (mTextureWidth != width || mTextureHeight != height) {
+      mTextureWidth = width;
+      mTextureHeight = height;
+      glActiveTexture(GL_TEXTURE0);
+      glBindTexture(GL_TEXTURE_2D, mDestinationTexture);
+      glTexImage2D(
+          GL_TEXTURE_2D,
+          0,
+          GL_RGBA,
+          mTextureWidth,
+          mTextureHeight,
+          0,
+          GL_RGBA,
+          GL_UNSIGNED_BYTE,
+          null);
+      ARGLUtils.checkGLError(TAG, "TEX IMAGE 2D");
+    }
   }
 }

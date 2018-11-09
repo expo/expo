@@ -22,7 +22,7 @@ export function renderer(props): Renderer {
 
 export function createTextureAsync({ asset }) {
   console.log(
-    'Warning: `ExpoTHREE.createTextureAsync({ asset })` is deprecated, use: `new ExpoTHREE.loadTextureAsync(asset, onLoad, onAssetRequested)`'
+    'Warning: `ExpoTHREE.createTextureAsync({ asset })` is deprecated, use: `ExpoTHREE.loadTextureAsync({ asset })`'
   );
   return loadTextureAsync({ asset });
 }

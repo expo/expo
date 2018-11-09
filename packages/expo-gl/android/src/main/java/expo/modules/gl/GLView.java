@@ -10,6 +10,7 @@ import java.util.List;
 
 import expo.core.ModuleRegistry;
 import expo.core.interfaces.services.EventEmitter;
+import expo.modules.gl.context.GLContext;
 
 public class GLView extends TextureView implements TextureView.SurfaceTextureListener {
   private boolean mOnSurfaceCreateCalled = false;
@@ -54,13 +55,13 @@ public class GLView extends TextureView implements TextureView.SurfaceTextureLis
       mWidth = width;
       mHeight = height;
       mSurfaceTexture = surface;
-      mGLContext.initialize(getContext(), surface, new Runnable() {
+      mGLContext.initializeWithSurface(surface, new Runnable() {
         @Override
         public void run() {
           final Bundle event = new Bundle();
           final EventEmitter eventEmitter = mModuleRegistry.getModule(EventEmitter.class);
 
-          event.putInt("exglCtxId", mGLContext.getContextId());
+          event.putInt("exglCtxId", mGLContext.getEXGLContextId());
 
           eventEmitter.emit(getId(), new EventEmitter.BaseEvent() {
             @Override
@@ -116,14 +117,6 @@ public class GLView extends TextureView implements TextureView.SurfaceTextureLis
     for (OnSurfaceTextureChangedListener listener: mOnSurfaceTextureChangedListeners) {
       listener.onSurfaceTextureUpdated(surface);
     }
-  }
-
-  public void flush() {
-    mGLContext.flush();
-  }
-
-  public int getEXGLCtxId() {
-    return mGLContext.getContextId();
   }
 
   public void registerOnSurfaceTextureUpdatedListener(OnSurfaceTextureChangedListener listener) {

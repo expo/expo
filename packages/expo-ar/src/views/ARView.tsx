@@ -38,19 +38,18 @@ interface Props {
   ARTrackingConfiguration: TrackingConfiguration;
   onShouldReloadContext?: () => void;
   onError: (message: string | Error) => void;
-  onResize: ({ x, y, width, height, scale }: {
+  onResize: ({ x, y, width, height, pixelRatio }: {
     x: number;
     y: number;
     width: number;
     height: number;
-    scale: number;
+    pixelRatio: number;
   }) => void;
   onRender: (delta: number) => void;
-  onContextCreate: ({ gl, width, height, scale, canvas }: {
-    gl: any;
+  onContextCreate: (gl: any, { width, height, pixelRatio, canvas }: {
     width: number;
     height: number;
-    scale: number;
+    pixelRatio: number;
     canvas: number | null;
   }) => void;
 }
@@ -158,9 +157,9 @@ export default class ARView extends React.Component<Props> {
     if (!this.gl) {
       return;
     }
-    const scale = PixelRatio.get();
+    const pixelRatio = PixelRatio.get();
     if (this.props.onResize) {
-      this.props.onResize({ x, y, width, height, scale });
+      this.props.onResize({ x, y, width, height, pixelRatio });
     }
   };
 
@@ -173,7 +172,7 @@ export default class ARView extends React.Component<Props> {
       onContextCreate,
       onRender,
     } = this.props;
-    const scale = PixelRatio.get();
+    const pixelRatio = PixelRatio.get();
 
     if (Platform.OS === 'ios' && isShadowsEnabled) {
       this.gl.createRenderbuffer = () => ({});
@@ -184,25 +183,25 @@ export default class ARView extends React.Component<Props> {
       await startAsync(this.nativeRef!, ARTrackingConfiguration);
     }
 
-    await onContextCreate({
+    await onContextCreate(
       gl,
-      width: gl.drawingBufferWidth / scale,
-      height: gl.drawingBufferHeight / scale,
-      scale,
-      canvas: null,
-    });
+      {
+        width: gl.drawingBufferWidth,
+        height: gl.drawingBufferHeight,
+        pixelRatio,
+        canvas: null,
+      });
 
     let lastFrameTime;
-    const render = () => {
+    const render = async () => {
       if (!this.gl) {
         return;
       }
       const now = 0.001 * global.nativePerformanceNow();
       const delta = lastFrameTime !== undefined ? now - lastFrameTime : 0.16666;
       lastFrameTime = now;
-      
       this.rafID = requestAnimationFrame(render);
-      onRender(delta);
+      await onRender(delta);
       // NOTE: At the end of each frame, notify `Expo.GLView` with the below
       gl.endFrameEXP();
     };

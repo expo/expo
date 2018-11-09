@@ -1,53 +1,69 @@
 import React from 'react';
 import { AR, Permissions } from 'expo';
-import { StyleSheet, View } from 'react-native';
-// import * as THREE from 'three';
-// import * as ExpoTHREE from 'expo-three';
+import { StyleSheet } from 'react-native';
+import * as THREE from 'three';
+import * as ExpoTHREE from 'expo-three';
 
 import { initShaderProgram, checkGLError } from './ARUtils';
 import { PermissionsRequester } from './components';
 
+const vertexShaderSource = `#version 300 es
+precision mediump float;
+
+in vec4 aVertexPosition;
+in vec2 aTextureCoord;
+
+out vec2 uv;
+
+void main() {
+  uv = aTextureCoord;
+  gl_Position = aVertexPosition;
+}
+`;
+
+const fragmentShaderSource = `#version 300 es
+precision mediump float;
+
+uniform sampler2D uSampler;
+in vec2 uv;
+out vec4 fragColor;
+
+void main() {
+  fragColor = texture(uSampler, uv);
+}
+`;
+
 export default class ARBackgrounScreenTHREE extends React.Component {
-  static title = 'AR Camera Preview Background (ExpoTHREE)';
+  static title = 'AR Camera Preview Background (ExpoTHREE) with little WebGL preview';
   drawn = false;
 
   render() {
     return (
       <PermissionsRequester permissionsTypes={[Permissions.CAMERA]}>
-        <View style={StyleSheet.absoluteFill}>
-          <AR.ARView
-            style={StyleSheet.absoluteFill}
-            onContextCreate={this.onContextCreate}
-            onRender={this.onRender}
-          />
-        </View>
+        <AR.ARView
+          style={StyleSheet.absoluteFill}
+          onContextCreate={this.onContextCreate}
+          onRender={this.onRender}
+        />
       </PermissionsRequester>
     );
   }
 
-  onContextCreate = async ({ gl, scale, width, height }) => {
+  onContextCreate = async (gl, { width, height }) => {
     this.gl = gl;
-    // this.renderer = new ExpoTHREE.Renderer({
-    //   gl,
-    //   pixelRatio: scale,
-    //   width,
-    //   height,
-    //   clearColor: 0xffffff,
-    // });
-    // this.scene = new THREE.Scene();
-    // this.scene.background = new ExpoTHREE.AR.BackgroundTexture(this.renderer);
-    // this.camera = new THREE.PerspectiveCamera(width, height, 0.01, 1000);
+
+    this.renderer = new ExpoTHREE.Renderer({ gl, width, height, clearColor: 0xffffff });
+    this.scene = new THREE.Scene();
+    this.scene.background = new ExpoTHREE.AR.BackgroundTexture(this.renderer);
+    this.camera = new ExpoTHREE.AR.Camera(75, width / height, 0.01, 1000);
+
     this.squareStream = await this.createSquareStream(gl);
   };
 
   onRender = () => {
-    // this.renderer.render(this.scene, this.camera);
-    this.gl.clearColor(0.2, 0.5, 0.5, 1);
-    this.gl.clearDepth(1.0);
-    this.gl.enable(this.gl.DEPTH_TEST);
-    this.gl.depthFunc(this.gl.LEQUAL);
-    this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+    this.renderer.render(this.scene, this.camera);
     this.squareStream.draw();
+    checkGLError(this.gl, 'AFTER RENDER');
   };
 
   createSquareStream = async gl => {
@@ -94,35 +110,7 @@ export default class ARBackgrounScreenTHREE extends React.Component {
   };
 
   createSquareGLProgram = gl => {
-    const program = initShaderProgram(
-      gl,
-      `
-        #version 300 es
-        precision highp float;
-        
-        in vec4 aVertexPosition;
-        in vec2 aTextureCoord;
-
-        out vec2 uv;
-
-        void main() {
-          uv = aTextureCoord;
-          gl_Position = aVertexPosition;
-        }
-      `,
-      `
-        #version 300 es
-        precision highp float;
-      
-        uniform sampler2D uSampler;
-        in vec2 uv;
-        out vec4 fragColor;
-
-        void main() {
-          fragColor = texture(uSampler, uv);
-        }
-      `
-    );
+    const program = initShaderProgram(gl, vertexShaderSource, fragmentShaderSource);
 
     return {
       program,

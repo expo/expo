@@ -1,9 +1,33 @@
 import React from 'react';
-import { AR, GLView, Permissions } from 'expo';
+import { AR, Permissions } from 'expo';
 import { StyleSheet, View } from 'react-native';
 
 import { initShaderProgram, checkGLError } from './ARUtils';
 import { PermissionsRequester } from './components';
+
+const vertexShaderSource = `#version 300 es
+precision mediump float;
+
+in vec2 aTextureCoord;
+out vec2 uv;
+
+void main() {
+  uv = aTextureCoord;
+  gl_Position = vec4(1.0 - 2.0 * aTextureCoord, 0.0, 1.0);
+}
+`;
+
+const fragmentShaderSource = `#version 300 es
+precision mediump float;
+
+uniform sampler2D uSampler;
+in vec2 uv;
+out vec4 fragColor;
+
+void main() {
+  fragColor = vec4(1.0 - texture(uSampler, 1.0 - uv).rgb, 1.0);
+}
+`;
 
 export default class ARBackgroundScreen extends React.Component {
   static title = 'AR Camera Preview Background (plain WebGL)';
@@ -23,33 +47,7 @@ export default class ARBackgroundScreen extends React.Component {
   }
 
   createBackgroundGLProgram = gl => {
-    const program = initShaderProgram(
-      gl,
-      `
-        #version 300 es
-        precision highp float;
-
-        in vec2 aTextureCoord;
-        out vec2 uv;
-
-        void main() {
-          uv = aTextureCoord;
-          gl_Position = vec4(1.0 - 2.0 * aTextureCoord, 0.0, 1.0);
-        }
-      `,
-      `
-        #version 300 es
-        precision highp float;
-        
-        uniform sampler2D uSampler;
-        in vec2 uv;
-        out vec4 fragColor;
-
-        void main() {
-          fragColor = vec4(1.0 - texture(uSampler, 1.0 - uv).rgb, 1.0);
-        }
-      `
-    );
+    const program = initShaderProgram(gl, vertexShaderSource, fragmentShaderSource);
 
     return {
       program,
@@ -126,7 +124,7 @@ export default class ARBackgroundScreen extends React.Component {
     };
   };
 
-  onGLContextCreate = async ({ gl }) => {
+  onGLContextCreate = async gl => {
     this.gl = gl;
     this.cameraStream = await this.createCameraStream(this.gl);
   };
@@ -139,9 +137,6 @@ export default class ARBackgroundScreen extends React.Component {
     // Clear
     this.gl.clearColor(0, 0.1, 0.2, 1);
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
-    if (!checkGLError(this.gl, 'CLEAR')) {
-      return;
-    }
 
     // Draw camera stream
     this.cameraStream.draw();

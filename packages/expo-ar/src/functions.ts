@@ -131,13 +131,13 @@ export async function startAsync(
   configuration: TrackingConfiguration
 ): Promise<{ capturedImageTexture: number }> {
   if (typeof node === 'number') {
-    return await ExpoAR.startAsync(node, configuration);
+    return ExpoAR.startAsync(node, configuration);
   } else {
     const handle = findNodeHandle(node);
     if (handle === null) {
       throw new Error(`Could not find the React node handle for the AR component: ${node}`);
     }
-    return await ExpoAR.startAsync(handle, configuration);
+    return ExpoAR.startAsync(handle, configuration);
   }
 }
 

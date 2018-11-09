@@ -1,5 +1,5 @@
 import React from 'react';
-import { AR, GLView, Permissions } from 'expo';
+import { AR, Permissions } from 'expo';
 import { StyleSheet, View } from 'react-native';
 import mat4 from 'gl-mat4';
 
@@ -235,7 +235,7 @@ export default class ARRotatingCubeScreen extends React.Component {
     };
   };
 
-  onGLContextCreate = async ({ gl }) => {
+  onGLContextCreate = async gl => {
     this.gl = gl;
     this.cubeStream = await this.createCubeStream(this.gl);
   };
@@ -250,7 +250,6 @@ export default class ARRotatingCubeScreen extends React.Component {
     this.gl.clearColor(0.2, 0.5, 0.5, 1);
     this.gl.clearDepth(1.0);
     this.gl.enable(this.gl.DEPTH_TEST);
-    this.gl.depthFunc(this.gl.LEQUAL);
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
     this.cubeStream.draw(deltaTime);

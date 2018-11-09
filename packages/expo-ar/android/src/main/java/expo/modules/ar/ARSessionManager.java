@@ -3,7 +3,6 @@
 package expo.modules.ar;
 
 import android.content.Context;
-import android.graphics.SurfaceTexture;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Size;
@@ -27,9 +26,11 @@ import expo.core.ModuleRegistry;
 import expo.core.Promise;
 import expo.core.interfaces.ActivityProvider;
 import expo.modules.ar.gl.ARGLCameraObject;
+import expo.modules.gl.context.GLContext;
+import expo.modules.gl.context.GLSharedContext;
 import expo.modules.gl.GLView;
 
-public class ARSessionManager implements GLView.OnSurfaceTextureChangedListener {
+public class ARSessionManager implements GLContext.GLContextChangeListener {
   private static final String ERROR_TAG = "E_AR";
   private static final String TAG = ARSessionManager.class.getSimpleName();
 
@@ -53,6 +54,7 @@ public class ARSessionManager implements GLView.OnSurfaceTextureChangedListener 
   private TrackingState trackingState = TrackingState.STOPPED;
 
   private Frame storedFrame;
+  private GLSharedContext mSharedGLContext;
 
   ARSessionManager(ModuleRegistry moduleRegistry) {
     mModuleRegistry = moduleRegistry;
@@ -65,19 +67,26 @@ public class ARSessionManager implements GLView.OnSurfaceTextureChangedListener 
 
   void startWithGLView(final GLView view, final Runnable completionHandler) throws IllegalStateException {
     mGLView = view;
-    mGLView.registerOnSurfaceTextureUpdatedListener(this);
+    mARDisplayRotationHelper.onSurfaceChanged(view.getWidth(), view.getHeight());
 
     // Ensure all AR conditions are met
     mARDependenciesHelper.ensureARCoreInstalled();
     mARDependenciesHelper.ensureCameraPermissionsGranted();
     createOrResumeARSession();
 
-    mGLView.runOnGLThread(new Runnable() {
+    mSharedGLContext = mGLView.getGLContext().createSharedGLContext();
+    mCameraObject = new ARGLCameraObject(mContext, mSharedGLContext);
+    mGLView.getGLContext().runAsync(new Runnable() {
       @Override
       public void run() {
-        mCameraObject = new ARGLCameraObject(mContext, mGLView.getGLContext());
-        mCameraObject.createOnGLThread();
-        completionHandler.run();
+        mSharedGLContext.initlizeOnGLThread();
+        mSharedGLContext.runAsync(new Runnable() {
+          @Override
+          public void run() {
+            mCameraObject.initializeOnGLThread();
+            completionHandler.run();
+          }
+        });
       }
     });
   }
@@ -92,6 +101,7 @@ public class ARSessionManager implements GLView.OnSurfaceTextureChangedListener 
       }
 
       mSession.resume();
+      mGLView.getGLContext().registerGLContextChangeListener(this);
     } catch (CameraNotAvailableException e) {
       throw new IllegalStateException("Camera not available on device.", e);
     } catch (UnavailableApkTooOldException e) {
@@ -122,11 +132,13 @@ public class ARSessionManager implements GLView.OnSurfaceTextureChangedListener 
   protected void pause() {
     if (mSession == null) return;
     storedFrame = null;
+    mGLView.getGLContext().unregisterGLContextChangeListener(this);
     mSession.pause();
   }
 
   protected void stop() {
     if (mSession != null) {
+      mGLView.getGLContext().unregisterGLContextChangeListener(this);
       mSession.setCameraTextureName(-1);
       mSession = null;
       if (mCameraObject != null) {
@@ -151,7 +163,6 @@ public class ARSessionManager implements GLView.OnSurfaceTextureChangedListener 
         @Override
         public void run() {
           try {
-
             Camera camera = mSession.update().getCamera();
             camera.getProjectionMatrix(projectionMatrix, 0, near, far);
             camera.getViewMatrix(viewMatrix, 0);
@@ -218,6 +229,7 @@ public class ARSessionManager implements GLView.OnSurfaceTextureChangedListener 
     promise.resolve(mCameraObject.getJSAvailableCameraTexture());
   }
 
+  // this one should be called on GL thread
   private void updateFrame() {
     mARDisplayRotationHelper.updateSessionIfNeeded(mSession);
 
@@ -229,7 +241,8 @@ public class ARSessionManager implements GLView.OnSurfaceTextureChangedListener 
       // UpdateMode.BLOCKING (it is by default), this will throttle the rendering to the camera framerate.
       Frame frame = mSession.update();
       Size previewSize = mSession.getCameraConfig().getTextureSize();
-      mCameraObject.drawFrame(frame, previewSize);
+      int rotation = mARDisplayRotationHelper.getRotation();
+      mCameraObject.drawFrame(frame, rotation, previewSize);
     } catch (CameraNotAvailableException e) {
       // Avoid crashing the application due to unhandled exceptions.
       Log.e(TAG, "Exception on the OpenGL thread", e);
@@ -237,28 +250,19 @@ public class ARSessionManager implements GLView.OnSurfaceTextureChangedListener 
   }
 
   @Override
-  public void onSurfaceTextureAvailable(SurfaceTexture surfaceTexture, int width, int height) {
-    mARDisplayRotationHelper.onSurfaceChanged(width, height);
+  public int getID() {
+    return 0;
   }
 
   @Override
-  public void onSurfaceTextureUpdated(final SurfaceTexture surfaceTexture) {
-    if (mCameraObject != null) {
-      mGLView.runOnGLThread(new Runnable() {
+  public void onGLContextUpdated() {
+    if (mCameraObject != null && mSession != null) {
+      mSharedGLContext.runAsync(new Runnable() {
         @Override
         public void run() {
           updateFrame();
         }
       });
     }
-  }
-
-  @Override
-  public void onSurfaceTextureSizeChanged(SurfaceTexture surfaceTexture, int width, int height) {
-    mARDisplayRotationHelper.onSurfaceChanged(width, height);
-  }
-
-  @Override
-  public void onSurfaceTextureDestroyed(SurfaceTexture surfaceTexture) {
   }
 }

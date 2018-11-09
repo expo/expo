@@ -116,6 +116,7 @@ public class ARModule extends ExportedModule implements ModuleRegistryConsumer, 
   // ---------------------------------------------------------------------------------------------
   //                                      Actions methods
   // ---------------------------------------------------------------------------------------------
+
   public void performHitTestAsync(Map<String, Number> point, ArrayList<String> types, Promise promise) {
     if (!sessionExistsOrReject(promise)) {
       return;
@@ -144,6 +145,7 @@ public class ARModule extends ExportedModule implements ModuleRegistryConsumer, 
   // ---------------------------------------------------------------------------------------------
   //                               ARSessionManagerDelegate methods
   // ---------------------------------------------------------------------------------------------
+
   @Override
   public void didUpdateWithEvent(String eventName, Bundle payload) {
 

@@ -5,7 +5,6 @@ package expo.modules.gl;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.SparseArray;
-import android.view.View;
 
 import java.util.Map;
 
@@ -16,6 +15,7 @@ import expo.core.interfaces.ExpoMethod;
 import expo.core.interfaces.ModuleRegistryConsumer;
 import expo.core.interfaces.services.UIManager;
 import expo.interfaces.camera.ExpoCameraViewInterface;
+import expo.modules.gl.context.GLContext;
 
 public class GLObjectManagerModule extends ExportedModule implements ModuleRegistryConsumer {
   private SparseArray<GLObject> mGLObjects = new SparseArray<>();
@@ -46,7 +46,7 @@ public class GLObjectManagerModule extends ExportedModule implements ModuleRegis
   }
 
   public void saveContext(final GLContext glContext) {
-    mGLContextMap.put(glContext.getContextId(), glContext);
+    mGLContextMap.put(glContext.getEXGLContextId(), glContext);
   }
 
   public void deleteContextWithId(final int exglCtxId) {
@@ -121,11 +121,11 @@ public class GLObjectManagerModule extends ExportedModule implements ModuleRegis
   public void createContextAsync(final Promise promise) {
     final GLContext glContext = new GLContext(this);
 
-    glContext.initialize(getContext(), null, new Runnable() {
+    glContext.initializeWithSurface(null, new Runnable() {
       @Override
       public void run() {
         Bundle results = new Bundle();
-        results.putInt("exglCtxId", glContext.getContextId());
+        results.putInt("exglCtxId", glContext.getEXGLContextId());
         promise.resolve(results);
       }
     });
