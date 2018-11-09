@@ -1,10 +1,15 @@
 const path = require('path');
 const webpack = require('webpack');
-
+const pckg = require('./package.json');
 const appDirectory = path.resolve(__dirname, './');
 
 const moduleDirectory = path.resolve(__dirname, '../../node_modules/');
 const includeModule = module => path.resolve(moduleDirectory, module);
+
+const expoPckg = require(`${includeModule('expo')}/package.json`);
+const expoDeps = Object.keys(expoPckg.dependencies)
+  .filter(moduleName => moduleName.includes('expo'))
+  .map(includeModule);
 
 // This is needed for webpack to compile JavaScript.
 // Many OSS React Native packages are not compiled to ES5 before being
@@ -14,21 +19,16 @@ const includeModule = module => path.resolve(moduleDirectory, module);
 
 const babelLoaderConfiguration = {
   test: /\.js$/,
+
   // Add every directory that needs to be compiled by Babel during the build.
   include: [
     /// Project
-    path.resolve(appDirectory, 'src/index.js'),
-    path.resolve(appDirectory, 'src'),
-    path.resolve(appDirectory, 'node_modules/expo'),
+    // TODO: Bacon: This makes compilation take a while
+    path.resolve(appDirectory, '.'),
+    // path.resolve(appDirectory, 'src/index.js'),
+    // path.resolve(appDirectory, 'node_modules/expo'),
 
-    /// Expo modules
-    includeModule('expo-core'),
-    includeModule('expo-react-native-adapter'),
-    includeModule('expo-constants'),
-    includeModule('expo-asset'),
-    includeModule('expo-font'),
-    includeModule('@expo/samples'),
-    includeModule('@expo/vector-icons'),
+    ...expoDeps,
 
     /// React Native
     includeModule('react-native-uncompiled'),
@@ -80,7 +80,7 @@ const ttfLoaderConfiguration = {
     },
   ],
   include: [
-    path.resolve(appDirectory, './src/assets/fonts'),
+    path.resolve(appDirectory, './assets/fonts'),
     includeModule('react-native-vector-icons'),
   ],
 };
@@ -90,7 +90,7 @@ module.exports = {
     // load any web API polyfills
     // path.resolve(appDirectory, 'polyfills-web.js'),
     // your web-specific entry file
-    path.resolve(appDirectory, 'src/index.js'),
+    path.resolve(appDirectory, pckg.main),
   ],
 
   // configures where the build ends up
