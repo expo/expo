@@ -8,7 +8,6 @@
   },
   "files": [
     "bin",
-    "src",
     "build",
     "tools",
     "AppEntry.js"
@@ -18,34 +17,13 @@
     "clean": "expo-module clean",
     "lint": "eslint tools",
     "test": "expo-module test",
+    "postinstall": "expo-module postinstall",
     "prepare": "expo-module prepare && expo-module babel --config-file ./babel.config.build.js --out-dir build build/Expo.js",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
   "jest": {
-    "preset": "jest-expo",
-    "clearMocks": true,
-    "roots": [
-      "<rootDir>/src"
-    ],
-    "transform": {
-      "^.+\\.tsx?$": "ts-jest"
-    },
-    "testRegex": "/__tests__/.*\\.tsx?$",
-    "testEnvironment": "node",
-    "moduleFileExtensions": [
-      "js",
-      "json",
-      "ts",
-      "tsx",
-      "node"
-    ],
-    "globals": {
-      "ts-jest": {
-        "tsConfig": "tsconfig.jest.json",
-        "babelConfig": true
-      }
-    }
+    "preset": "expo-module-scripts"
   },
   "eslintConfig": {
     "extends": "universe/native",
@@ -58,7 +36,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/expo/expo-sdk.git"
+    "url": "https://github.com/expo/expo.git"
   },
   "keywords": [
     "expo"
@@ -66,9 +44,9 @@
   "author": "Expo",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/expo/expo-sdk/issues"
+    "url": "https://github.com/expo/expo/issues"
   },
-  "homepage": "https://github.com/expo/expo-sdk",
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo",
   "dependencies": {
     "@babel/runtime": "^7.1.2",
     "@expo/vector-icons": "^8.0.0",
@@ -135,15 +113,12 @@
   },
   "devDependencies": {
     "@babel/plugin-transform-modules-commonjs": "^7.1.0",
-    "@types/jest": "^23.3.2",
     "@types/react": "^16.4.13",
     "@types/react-native": "^0.56.22",
     "@types/react-test-renderer": "^16.0.2",
     "expo-module-scripts": "^1.0.0",
-    "jest-expo": "^31.0.0-rc.0",
     "react": "16.5.0",
     "react-native": "^0.57.1",
-    "react-test-renderer": "16.5.0",
-    "ts-jest": "~23.10.4"
+    "react-test-renderer": "16.5.0"
   }
 }
