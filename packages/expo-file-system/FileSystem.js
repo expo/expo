@@ -1,8 +1,9 @@
 // @flow
 
-import { EventEmitter } from 'expo-core';
+import { NativeModulesProxy, EventEmitter } from 'expo-core';
 import UUID from 'uuid-js';
-import FS from './ExponentFileSystem';
+
+const FS = NativeModulesProxy.ExponentFileSystem;
 
 const normalizeEndingSlash = p => p.replace(/\/*$/, '') + '/';
 
@@ -14,9 +15,9 @@ export const cacheDirectory = FS.cacheDirectory;
 export const bundledAssets = FS.bundledAssets;
 export const bundleDirectory = FS.bundleDirectory;
 export const EncodingTypes = {
-  UTF8: 'utf8',
-  Base64: 'base64',
-};
+  UTF8: "utf8",
+  Base64: "base64",
+}
 
 type FileInfo =
   | {
@@ -31,16 +32,18 @@ type FileInfo =
       isDirectory: false,
     };
 
-export type EncodingType = typeof EncodingTypes.UTF8 | typeof EncodingTypes.Base64;
+export type EncodingType =
+  | typeof EncodingTypes.UTF8
+  | typeof EncodingTypes.Base64
 
 export type ReadingOptions = {
   encoding?: EncodingType,
   position?: number,
-  length?: number,
-};
+  length?: number
+}
 export type WritingOptions = {
   encoding?: EncodingType,
-};
+}
 
 export function getInfoAsync(fileUri: string, options: { md5?: boolean } = {}): Promise<FileInfo> {
   return FS.getInfoAsync(fileUri, options);
@@ -50,11 +53,7 @@ export function readAsStringAsync(fileUri: string, options?: ReadingOptions): Pr
   return FS.readAsStringAsync(fileUri, options || {});
 }
 
-export function writeAsStringAsync(
-  fileUri: string,
-  contents: string,
-  options?: WritingOptions
-): Promise<void> {
+export function writeAsStringAsync(fileUri: string, contents: string, options?: WritingOptions): Promise<void> {
   return FS.writeAsStringAsync(fileUri, contents, options || {});
 }
 
