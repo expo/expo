@@ -1,5 +1,6 @@
+// Copyright 2018-present 650 Industries. All rights reserved.
 
-#import <EXReactNativeUserNotificationCenterProxy.h>
+#import <EXPermissions/EXReactNativeUserNotificationCenterProxy.h>
 #import <EXCore/EXUtilities.h>
 
 @implementation EXReactNativeUserNotificationCenterProxy
@@ -22,6 +23,3 @@ EX_REGISTER_MODULE();
 }
 
 @end
-
-
-

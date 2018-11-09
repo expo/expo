@@ -7,6 +7,7 @@
 #import "EXKernelServiceRegistry.h"
 #import "EXKernelUtil.h"
 #import "EXViewController.h"
+#import "EXPendingNotification.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -35,14 +36,10 @@ FOUNDATION_EXPORT NSString * const kEXKernelClearJSCacheUserDefaultsKey;
 - (void)reloadAppFromCacheWithExperienceId:(NSString *)experienceId; // called by Updates.reloadFromCache
 
 /**
- *  Send a notification to a given experience id.
+ *  Send a given notification.
+ *  Returns whether the notification has been successfully sent to a running experience.
  */
-- (void)sendNotification: (NSDictionary *)notifBody
-      toExperienceWithId: (NSString *)experienceId
-          fromBackground: (BOOL)isFromBackground
-                isRemote: (BOOL)isRemote
-                actionId: (NSString *)actionId
-                userText: (NSString *)userText;
+- (BOOL)sendNotification:(EXPendingNotification *)notification;
 
 /**
  *  Initial props to pass to an app based on LaunchOptions from UIApplicationDelegate.
@@ -66,8 +63,6 @@ FOUNDATION_EXPORT NSString * const kEXKernelClearJSCacheUserDefaultsKey;
 + (NSString *)deviceInstallUUID;
 
 - (void)logAnalyticsEvent:(NSString *)eventId forAppRecord:(EXKernelAppRecord *)appRecord;
-
-- (void)flushPendingNotifications;
 
 @end
 

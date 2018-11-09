@@ -5,7 +5,8 @@
 
 @interface EXUserNotificationRequester : NSObject <EXPermissionRequester>
 
-+ (NSDictionary *)permissionsWithModuleRegistry:(EXModuleRegistry *) moduleRegistry;
-- (instancetype)initWithModuleRegistry: (EXModuleRegistry *) moduleRegistry;
+- (instancetype)initWithModuleRegistry: (EXModuleRegistry *)moduleRegistry;
+
++ (NSDictionary *)permissionsWithModuleRegistry:(EXModuleRegistry *)moduleRegistry;
 
 @end

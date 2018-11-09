@@ -4,84 +4,55 @@
 #import "EXKernel.h"
 #import "EXRemoteNotificationManager.h"
 #import "EXEnvironment.h"
-#import "EXNotificationScoper.h"
 
-@interface EXUserNotificationManager()
+@interface EXUserNotificationManager ()
+
+@property (nonatomic, strong) NSMutableDictionary<NSString *, EXPendingNotification *> *pendingNotifications;
+
 @end
 
 @implementation EXUserNotificationManager
 
-+ (instancetype)sharedInstance
+- (instancetype)init
 {
-  static EXUserNotificationManager *theManager;
-  static dispatch_once_t once;
-  dispatch_once(&once, ^{
-    if (!theManager) {
-      theManager = [EXUserNotificationManager new];
-    }
-  });
-  return theManager;
+  if (self = [super init]) {
+    _pendingNotifications = [NSMutableDictionary new];
+  }
+  return self;
 }
 
-- (void)userNotificationCenter:(UNUserNotificationCenter *)center
-didReceiveNotificationResponse:(UNNotificationResponse *)response
-         withCompletionHandler:(void (^)(void))completionHandler
+- (EXPendingNotification *)initialNotificationForExperience:(NSString *)experienceId
 {
-  BOOL isFromBackground = [UIApplication sharedApplication].applicationState != UIApplicationStateActive;
-  NSDictionary *payload = response.notification.request.content.userInfo;
-  if (payload) {
-    NSDictionary *body = payload[@"body"];
-    NSString *experienceId = payload[@"experienceId"];
-    NSString *userText = nil;
-    NSString *actionId = @"DEFAULT_ACTION";
-    
-    if ([response.actionIdentifier isEqualToString:UNNotificationDismissActionIdentifier]) {
-      actionId = @"DISMISS_ACTION";
-    } else if (![response.actionIdentifier isEqualToString:UNNotificationDefaultActionIdentifier]) {
-      actionId = response.actionIdentifier;
-      if (![EXEnvironment sharedEnvironment].isDetached) {
-        actionId = [EXNotificationScoper split:actionId][1];
-      }
-    }
-    
-    if ([response isKindOfClass:[UNTextInputNotificationResponse class]]) {
-      userText = ((UNTextInputNotificationResponse *) response).userText;
-    }
-    
-    BOOL isRemote = [response.notification.request.trigger isKindOfClass:[UNPushNotificationTrigger class]];
-    if (body && experienceId) {
-      [[EXKernel sharedInstance] sendNotification:body
-                               toExperienceWithId:experienceId
-                                   fromBackground:isFromBackground
-                                         isRemote:isRemote
-                                         actionId:actionId
-                                         userText:userText];
-    }
+  return _pendingNotifications[experienceId];
+}
+
+# pragma mark - UNUserNotificationCenterDelegate
+
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler
+{
+  EXPendingNotification *pendingNotification = [[EXPendingNotification alloc] initWithNotificationResponse:response];
+  if (pendingNotification && ![[EXKernel sharedInstance] sendNotification:pendingNotification]) {
+    _pendingNotifications[pendingNotification.experienceId] = pendingNotification;
   }
   completionHandler();
 }
 
-- (void)userNotificationCenter:(UNUserNotificationCenter *)center
-       willPresentNotification:(UNNotification *)notification
-         withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler
 {
-  NSDictionary *payload = notification.request.content.userInfo;
-  if (payload) {
-    NSDictionary *body = payload[@"body"];
-    NSString *experienceId = payload[@"experienceId"];
-    NSString *userText = nil;
-    
-    BOOL isRemote = [notification.request.trigger isKindOfClass:[UNPushNotificationTrigger class]];
-    if (body && experienceId) {
-      [[EXKernel sharedInstance] sendNotification:body
-                               toExperienceWithId:experienceId
-                                   fromBackground:NO
-                                         isRemote:isRemote
-                                         actionId:@"WILL_PRESENT_ACTION"
-                                         userText:userText];
-    }
+  // With UIUserNotifications framework, notifications were only shown while the app wasn't active.
+  // Let's stick to this behavior.
+  if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
+    completionHandler(UNNotificationPresentationOptionAlert + UNNotificationPresentationOptionSound);
+    return;
   }
-  completionHandler(UNNotificationPresentationOptionAlert + UNNotificationPresentationOptionSound);
+  // If the app is active we do not show the alert, but we deliver the notification to the experience.
+
+  EXPendingNotification *pendingNotification = [[EXPendingNotification alloc] initWithNotification:notification];
+  if (![[EXKernel sharedInstance] sendNotification:pendingNotification]) {
+    _pendingNotifications[pendingNotification.experienceId] = pendingNotification;
+  }
+
+  completionHandler(UNNotificationPresentationOptionNone);
 }
 
 @end

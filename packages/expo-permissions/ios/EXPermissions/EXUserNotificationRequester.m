@@ -1,9 +1,8 @@
 // Copyright © 2018 650 Industries. All rights reserved.
 
 #import <EXPermissions/EXUserNotificationRequester.h>
-
 #import <UIKit/UIKit.h>
-#import <EXReactNativeUserNotificationCenterProxy.h>
+#import <EXPermissionsInterface/EXUserNotificationCenterProxyInterface.h>
 
 @interface EXUserNotificationRequester ()
 
@@ -23,7 +22,7 @@
   return self;
 }
 
-+ (id<EXUserNotificationCenterProxyInterface>) getCenterWithModuleRegistry:(EXModuleRegistry *) moduleRegistry {
++ (id<EXUserNotificationCenterProxyInterface>)getCenterWithModuleRegistry:(EXModuleRegistry *) moduleRegistry {
   return [moduleRegistry getModuleImplementingProtocol:@protocol(EXUserNotificationCenterProxyInterface)];
 }
 
@@ -36,9 +35,9 @@
   __block EXPermissionStatus status;
 
   [[EXUserNotificationRequester getCenterWithModuleRegistry:moduleRegistry] getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings *settings) {
-    allowsSound = settings.soundSetting;
-    allowsAlert = settings.alertStyle;
-    allowsBadge = settings.badgeSetting;
+    allowsSound = settings.soundSetting == UNNotificationSettingEnabled;
+    allowsAlert = settings.alertSetting == UNNotificationSettingEnabled;
+    allowsBadge = settings.badgeSetting == UNNotificationSettingEnabled;
 
     status = EXPermissionStatusUndetermined;
 
@@ -80,12 +79,12 @@
 
   __weak EXUserNotificationRequester *weakSelf = self;
 
-  UNAuthorizationOptions options = UNAuthorizationOptionAlert + UNAuthorizationOptionSound;
-  [[EXUserNotificationRequester getCenterWithModuleRegistry:_moduleRegistry] requestAuthorizationWithOptions:options
-                                                           completionHandler:^(BOOL granted, NSError * _Nullable error) {
-                                                             dispatch_async(dispatch_get_main_queue(), ^{
-                                                               [weakSelf _consumeResolverWithCurrentPermissions];
-                                                             });
+  UNAuthorizationOptions options = UNAuthorizationOptionAlert + UNAuthorizationOptionSound + UNAuthorizationOptionBadge;
+  id<EXUserNotificationCenterProxyInterface> notificationCenter = [EXUserNotificationRequester getCenterWithModuleRegistry:_moduleRegistry];
+  [notificationCenter requestAuthorizationWithOptions:options completionHandler:^(BOOL granted, NSError * _Nullable error) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [weakSelf _consumeResolverWithCurrentPermissions];
+    });
   }];
 }
 

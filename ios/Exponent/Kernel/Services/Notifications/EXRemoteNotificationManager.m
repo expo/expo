@@ -6,6 +6,7 @@
 #import "EXProvisioningProfile.h"
 #import "EXRemoteNotificationManager.h"
 #import "NSData+EXRemoteNotifications.h"
+#import "EXUserNotificationCenter.h"
 
 #import <React/RCTUtils.h>
 
@@ -100,7 +101,6 @@ typedef void(^EXRemoteNotificationAPNSTokenHandler)(NSData * _Nullable apnsToken
 {
   __weak id weakScopedModule = scopedModule;
   dispatch_async(_queue, ^{
-
     [self _canRegisterForRemoteNotificationsWithCompletionHandler:^(BOOL can) {
       if (!can) {
         NSError *error = [NSError errorWithDomain:kEXRemoteNotificationErrorDomain

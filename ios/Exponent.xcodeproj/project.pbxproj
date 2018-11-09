@@ -27,12 +27,10 @@
 		2519CCFC216B292600FA7C80 /* EXUserNotificationCenter.m in Sources */ = {isa = PBXBuildFile; fileRef = 2519CCFB216B292600FA7C80 /* EXUserNotificationCenter.m */; };
 		2547422E20F4911E009F5FDA /* EXNativeMediaViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 2547422D20F4911E009F5FDA /* EXNativeMediaViewManager.m */; };
 		2547423120F4ABFF009F5FDA /* EXAdIconViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 2547423020F4ABFF009F5FDA /* EXAdIconViewManager.m */; };
-		310AC14421918CB800E9F37E /* EXLinearGradientLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 310AC14321918CB800E9F37E /* EXLinearGradientLayer.m */; };
-		255A630A2154FB89009FDFC6 /* EXSendNotificationParams.m in Sources */ = {isa = PBXBuildFile; fileRef = 255A63092154FB88009FDFC6 /* EXSendNotificationParams.m */; };
+		255A630A2154FB89009FDFC6 /* EXPendingNotification.m in Sources */ = {isa = PBXBuildFile; fileRef = 255A63092154FB88009FDFC6 /* EXPendingNotification.m */; };
 		25742BE72174B8BE003E7453 /* EXExpoUserNotificationCenterProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 25742BE62174B8BE003E7453 /* EXExpoUserNotificationCenterProxy.m */; };
-		25742BF021774212003E7453 /* EXCategoryAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 25742BED21774211003E7453 /* EXCategoryAction.m */; };
 		25742BF121774212003E7453 /* EXNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = 25742BEF21774212003E7453 /* EXNotifications.m */; };
-		25FFA99B2186F054008FBCD3 /* EXNotificationScoper.m in Sources */ = {isa = PBXBuildFile; fileRef = 25FFA99A2186F054008FBCD3 /* EXNotificationScoper.m */; };
+		310AC14421918CB800E9F37E /* EXLinearGradientLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 310AC14321918CB800E9F37E /* EXLinearGradientLayer.m */; };
 		313D418020C84E9000FC913D /* EXModuleRegistryBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = 313D417F20C84E9000FC913D /* EXModuleRegistryBinding.m */; };
 		3159BB0421806DAD002D2A81 /* RNSVGPainterBrush.m in Sources */ = {isa = PBXBuildFile; fileRef = 3159BAFC21806DAD002D2A81 /* RNSVGPainterBrush.m */; };
 		3159BB0521806DAD002D2A81 /* RNSVGBrush.m in Sources */ = {isa = PBXBuildFile; fileRef = 3159BB0021806DAD002D2A81 /* RNSVGBrush.m */; };
@@ -378,18 +376,14 @@
 		2547422D20F4911E009F5FDA /* EXNativeMediaViewManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXNativeMediaViewManager.m; sourceTree = "<group>"; };
 		2547422F20F4ABFF009F5FDA /* EXAdIconViewManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXAdIconViewManager.h; sourceTree = "<group>"; };
 		2547423020F4ABFF009F5FDA /* EXAdIconViewManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXAdIconViewManager.m; sourceTree = "<group>"; };
-		310AC14221918CB800E9F37E /* EXLinearGradientLayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXLinearGradientLayer.h; sourceTree = "<group>"; };
-		310AC14321918CB800E9F37E /* EXLinearGradientLayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXLinearGradientLayer.m; sourceTree = "<group>"; };
-		255A63082154FB88009FDFC6 /* EXSendNotificationParams.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXSendNotificationParams.h; sourceTree = "<group>"; };
-		255A63092154FB88009FDFC6 /* EXSendNotificationParams.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXSendNotificationParams.m; sourceTree = "<group>"; };
+		255A63082154FB88009FDFC6 /* EXPendingNotification.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXPendingNotification.h; sourceTree = "<group>"; };
+		255A63092154FB88009FDFC6 /* EXPendingNotification.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXPendingNotification.m; sourceTree = "<group>"; };
 		25742BE52174B8BE003E7453 /* EXExpoUserNotificationCenterProxy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXExpoUserNotificationCenterProxy.h; sourceTree = "<group>"; };
 		25742BE62174B8BE003E7453 /* EXExpoUserNotificationCenterProxy.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXExpoUserNotificationCenterProxy.m; sourceTree = "<group>"; };
 		25742BEC21774211003E7453 /* EXNotifications.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXNotifications.h; sourceTree = "<group>"; };
-		25742BED21774211003E7453 /* EXCategoryAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXCategoryAction.m; sourceTree = "<group>"; };
-		25742BEE21774211003E7453 /* EXCategoryAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXCategoryAction.h; sourceTree = "<group>"; };
 		25742BEF21774212003E7453 /* EXNotifications.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXNotifications.m; sourceTree = "<group>"; };
-		25FFA9992186F054008FBCD3 /* EXNotificationScoper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXNotificationScoper.h; sourceTree = "<group>"; };
-		25FFA99A2186F054008FBCD3 /* EXNotificationScoper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXNotificationScoper.m; sourceTree = "<group>"; };
+		310AC14221918CB800E9F37E /* EXLinearGradientLayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXLinearGradientLayer.h; sourceTree = "<group>"; };
+		310AC14321918CB800E9F37E /* EXLinearGradientLayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXLinearGradientLayer.m; sourceTree = "<group>"; };
 		313D417E20C84E8200FC913D /* EXModuleRegistryBinding.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXModuleRegistryBinding.h; sourceTree = "<group>"; };
 		313D417F20C84E9000FC913D /* EXModuleRegistryBinding.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXModuleRegistryBinding.m; sourceTree = "<group>"; };
 		3159BAFB21806DAD002D2A81 /* RNSVGBrush.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNSVGBrush.h; sourceTree = "<group>"; };
@@ -1013,24 +1007,13 @@
 			path = Exponent/Versioned/Core/Api/Calendar;
 			sourceTree = SOURCE_ROOT;
 		};
-		2519CCF8216B28D500FA7C80 /* ExpoNotificationCenter */ = {
+		2519CCF8216B28D500FA7C80 /* NotificationCenter */ = {
 			isa = PBXGroup;
 			children = (
 				2519CCFA216B292600FA7C80 /* EXUserNotificationCenter.h */,
 				2519CCFB216B292600FA7C80 /* EXUserNotificationCenter.m */,
 			);
-			path = ExpoNotificationCenter;
-			sourceTree = "<group>";
-		};
-		25742BEB2177409E003E7453 /* Notifications */ = {
-			isa = PBXGroup;
-			children = (
-				25742BEE21774211003E7453 /* EXCategoryAction.h */,
-				25742BED21774211003E7453 /* EXCategoryAction.m */,
-				25742BEC21774211003E7453 /* EXNotifications.h */,
-				25742BEF21774212003E7453 /* EXNotifications.m */,
-			);
-			path = Notifications;
+			path = NotificationCenter;
 			sourceTree = "<group>";
 		};
 		3050F5A98E56E9379C36ABD2 /* Frameworks */ = {
@@ -1284,10 +1267,10 @@
 		78CEE2C21ACD07D70095B124 /* Exponent */ = {
 			isa = PBXGroup;
 			children = (
-				2519CCF8216B28D500FA7C80 /* ExpoNotificationCenter */,
 				B53BB2851C7E6C1E00D52FBD /* Analytics */,
 				B526B5031E6A543500606CAB /* ExpoKit */,
 				B5AC398B1E95A90B00540AA7 /* Kernel */,
+				2519CCF8216B28D500FA7C80 /* NotificationCenter */,
 				B5E49B521D1346FA00AA6436 /* Supporting */,
 				B5812C331C9CD59200A10345 /* Versioned */,
 				78CEE2D01ACD07D70095B124 /* Images.xcassets */,
@@ -1317,8 +1300,6 @@
 				B5AC39A61E95A90B00540AA7 /* EXRemoteNotificationManager.m */,
 				78D8252C2051217F00CBD9D9 /* NSData+EXRemoteNotifications.h */,
 				78D8252D2051217F00CBD9D9 /* NSData+EXRemoteNotifications.m */,
-				25FFA9992186F054008FBCD3 /* EXNotificationScoper.h */,
-				25FFA99A2186F054008FBCD3 /* EXNotificationScoper.m */,
 			);
 			path = Notifications;
 			sourceTree = "<group>";
@@ -1541,6 +1522,8 @@
 				B52217D51F146658002241BA /* EXKernelServiceRegistry.m */,
 				B5AC39931E95A90B00540AA7 /* EXKernelUtil.h */,
 				B5E458EC204B59B300DC2B2E /* EXAppBrowserController.h */,
+				255A63082154FB88009FDFC6 /* EXPendingNotification.h */,
+				255A63092154FB88009FDFC6 /* EXPendingNotification.m */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -1608,8 +1591,6 @@
 				78D8252B2051213D00CBD9D9 /* Notifications */,
 				31E6D47C20B844FA0082B09F /* EXSensorManager.h */,
 				31E6D47D20B8451B0082B09F /* EXSensorManager.m */,
-				255A63082154FB88009FDFC6 /* EXSendNotificationParams.h */,
-				255A63092154FB88009FDFC6 /* EXSendNotificationParams.m */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -1730,7 +1711,8 @@
 				B5FB73911FF6DADB001C764B /* EXKeepAwake.m */,
 				3CEBDC3F1FFBC73C0025EF24 /* EXMailComposer.h */,
 				3CEBDC401FFBC73D0025EF24 /* EXMailComposer.m */,
-				25742BEB2177409E003E7453 /* Notifications */,
+				25742BEC21774211003E7453 /* EXNotifications.h */,
+				25742BEF21774212003E7453 /* EXNotifications.m */,
 				B5FB73961FF6DADB001C764B /* EXScreenOrientation.h */,
 				B5FB73971FF6DADB001C764B /* EXScreenOrientation.m */,
 				B5FB73981FF6DADB001C764B /* EXSecureStore.h */,
@@ -2529,7 +2511,6 @@
 				3159BB9921806E76002D2A81 /* RNSVGTextPathManager.m in Sources */,
 				3159BB2121806E0C002D2A81 /* RNSVGImage.m in Sources */,
 				B58FFAAC1F1016B700A51363 /* EXGoogleAuthManager.m in Sources */,
-				25FFA99B2186F054008FBCD3 /* EXNotificationScoper.m in Sources */,
 				B5FB74381FF6DADB001C764B /* EXBlurViewManager.m in Sources */,
 				B5FB74E51FF6DADC001C764B /* EXAppState.m in Sources */,
 				CDBF79FA20868287009B25D6 /* EXStoreReview.m in Sources */,
@@ -2653,7 +2634,7 @@
 				3159BB2421806E0C002D2A81 /* RNSVGMask.m in Sources */,
 				3159BB4B21806E3D002D2A81 /* RNSVGGlyphContext.m in Sources */,
 				B5A72C3020A0D1BF00974CCE /* EXAppFetcher.m in Sources */,
-				255A630A2154FB89009FDFC6 /* EXSendNotificationParams.m in Sources */,
+				255A630A2154FB89009FDFC6 /* EXPendingNotification.m in Sources */,
 				78343616205B8C5F00DD28C3 /* AIRMapCoordinate.m in Sources */,
 				B5FB74BB1FF6DADC001C764B /* EXInterstitialAdManager.m in Sources */,
 				B5AC39AA1E95A90B00540AA7 /* EXKernelDevKeyCommands.m in Sources */,
@@ -2677,7 +2658,6 @@
 				B5576085204A423B0041D9C8 /* EXHomeModuleManager.m in Sources */,
 				BB5BD31F20AEFCB4007E02FC /* READebugNode.m in Sources */,
 				B5FB74E01FF6DADC001C764B /* EXDevSettingsDataSource.m in Sources */,
-				25742BF021774212003E7453 /* EXCategoryAction.m in Sources */,
 				7834361A205B8C5F00DD28C3 /* AIRMapCircleManager.m in Sources */,
 				31DBC6AC20B5B4EC0049A476 /* EXFileSystemBinding.m in Sources */,
 				B5FB74F01FF6DADC001C764B /* EXScopedBridgeModule.m in Sources */,

@@ -12,7 +12,6 @@
 #import "EXKernelLinkingManager.h"
 #import "EXReactAppExceptionHandler.h"
 #import "EXRemoteNotificationManager.h"
-#import "EXUserNotificationManager.h"
 #import "EXBranchManager.h"
 
 #import <Crashlytics/Crashlytics.h>
@@ -113,7 +112,7 @@ NSString * const EXAppDidRegisterUserNotificationSettingsNotification = @"kEXApp
     }
   }
 
-  [UNUserNotificationCenter currentNotificationCenter].delegate = [EXUserNotificationManager sharedInstance];
+  [UNUserNotificationCenter currentNotificationCenter].delegate = [EXKernel sharedInstance].serviceRegistry.notificationsManager;
   // This is safe to call; if the app doesn't have permission to display user-facing notifications
   // then registering for a push token is a no-op
   [[EXKernel sharedInstance].serviceRegistry.remoteNotificationManager registerForRemoteNotifications];
@@ -151,7 +150,9 @@ NSString * const EXAppDidRegisterUserNotificationSettingsNotification = @"kEXApp
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
 fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler {
-  // ToDo add here background task execution
+
+  // Here background task execution should go.
+
   completionHandler(UIBackgroundFetchResultNoData);
 }
 

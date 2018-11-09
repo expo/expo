@@ -3,15 +3,10 @@
 #import <Foundation/Foundation.h>
 #import <UserNotifications/UserNotifications.h>
 #import "EXUserNotificationCenter.h"
+#import "EXPendingNotification.h"
 
 @interface EXUserNotificationManager : NSObject <UNUserNotificationCenterDelegate>
 
-+ (instancetype)sharedInstance;
-- (void)userNotificationCenter:(UNUserNotificationCenter *)center
-didReceiveNotificationResponse:(UNNotificationResponse *)response
-         withCompletionHandler:(void (^)(void))completionHandler;
-- (void)userNotificationCenter:(UNUserNotificationCenter *)center
-       willPresentNotification:(UNNotification *)notification
-         withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler;
+- (EXPendingNotification *)initialNotificationForExperience:(NSString *)experienceId;
 
 @end

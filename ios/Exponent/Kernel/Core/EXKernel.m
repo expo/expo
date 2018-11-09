@@ -9,7 +9,6 @@
 #import "EXKernelAppRecord.h"
 #import "EXKernelLinkingManager.h"
 #import "EXLinkingManager.h"
-#import "EXSendNotificationParams.h"
 #import "EXVersions.h"
 
 #import <React/RCTBridge+Private.h>
@@ -27,8 +26,6 @@ NSString * const kEXKernelClearJSCacheUserDefaultsKey = @"EXKernelClearJSCacheUs
 const NSUInteger kEXErrorCodeAppForbidden = 424242;
 
 @interface EXKernel () <EXKernelAppRegistryDelegate>
-
-@property (atomic, strong) EXSendNotificationParams * pendingNotificationParams;
 
 @end
 
@@ -142,23 +139,10 @@ const NSUInteger kEXErrorCodeAppForbidden = 424242;
   [self _moveAppToVisible:app];
 }
 
-- (void)flushPendingNotifications
-{
-  if (_pendingNotificationParams == nil) {
-    return;
-  }
-  [self sendNotification:_pendingNotificationParams.body
-       toExperienceWithId:_pendingNotificationParams.experienceId
-           fromBackground:_pendingNotificationParams.isFromBackground
-                 isRemote:_pendingNotificationParams.isRemote
-                 actionId:_pendingNotificationParams.actionId
-                 userText:_pendingNotificationParams.userText];
-  _pendingNotificationParams = nil;
-}
-
 - (id)nativeModuleForAppManager:(EXReactAppManager *)appManager named:(NSString *)moduleName
 {
   id destinationBridge = appManager.reactBridge;
+
   if ([destinationBridge respondsToSelector:@selector(batchedBridge)]) {
     id batchedBridge = [destinationBridge batchedBridge];
     id moduleData = [batchedBridge moduleDataForName:moduleName];
@@ -180,45 +164,34 @@ const NSUInteger kEXErrorCodeAppForbidden = 424242;
   return nil;
 }
 
-- (void)sendNotification:(NSDictionary *)notifBody
-      toExperienceWithId:(NSString *)destinationExperienceId
-          fromBackground:(BOOL)isFromBackground
-                isRemote:(BOOL)isRemote
-                actionId:(NSString *)actionId
-                userText:(NSString *)userText
+- (BOOL)sendNotification:(EXPendingNotification *)notification
 {
-  EXKernelAppRecord *destinationApp = [_appRegistry newestRecordWithExperienceId:destinationExperienceId];
-  NSDictionary *bodyWithOrigin = [self _notificationPropsWithBody:notifBody
-                                                 isFromBackground:isFromBackground
-                                                         isRemote:isRemote
-                                                         actionId:actionId
-                                                         userText:userText];
+  EXKernelAppRecord *destinationApp = [_appRegistry newestRecordWithExperienceId:notification.experienceId];
   if (destinationApp) {
     // send the body to the already-open experience
-    [self _dispatchJSEvent:@"Exponent.notification" body:bodyWithOrigin toApp:destinationApp];
+    [self _dispatchJSEvent:@"Exponent.notification" body:notification.properties toApp:destinationApp];
     [self _moveAppToVisible:destinationApp];
+    return YES;
   } else {
     // no app is currently running for this experience id.
     // if we're Expo Client, we can query Home for a past experience in the user's history, and route the notification there.
     if (_browserController) {
       __weak typeof(self) weakSelf = self;
-      [_browserController getHistoryUrlForExperienceId:destinationExperienceId completion:^(NSString *urlString) {
+      [_browserController getHistoryUrlForExperienceId:notification.experienceId completion:^(NSString *urlString) {
         if (urlString) {
           NSURL *url = [NSURL URLWithString:urlString];
           if (url) {
-            [weakSelf createNewAppWithUrl:url initialProps:@{ @"notification": bodyWithOrigin }];
+            // We returned NO from `-(BOOL)sendNotification:`, so the notification has been saved
+            // as pending in EXUserNotificationManager and it will be added by EXReactAppManager
+            // when constructing initial app props.
+            [weakSelf createNewAppWithUrl:url initialProps:nil];
           }
-        } else {
-          weakSelf.pendingNotificationParams = [[EXSendNotificationParams alloc] initWithExperienceId:destinationExperienceId
-                                                                           notificationBody:notifBody
-                                                                                   isRemote:@(isRemote)
-                                                                           isFromBackground:@(isFromBackground)
-                                                                                   actionId:actionId
-                                                                                   userText:userText];
         }
       }];
     }
   }
+
+  return NO;
 }
 
 /**
@@ -244,34 +217,7 @@ const NSUInteger kEXErrorCodeAppForbidden = 424242;
 
 - (NSDictionary *)initialAppPropsFromLaunchOptions:(NSDictionary *)launchOptions
 {
-  NSMutableDictionary *initialProps = [NSMutableDictionary dictionary];
-  return initialProps;
-}
-
-- (NSDictionary *)_notificationPropsWithBody:(NSDictionary *)notifBody
-                            isFromBackground:(BOOL)isFromBackground
-                                    isRemote:(BOOL)isRemote
-                                    actionId:(NSString *)actionId
-                                    userText:(NSString *)userText
-{
-  // if the notification came from the background, in most but not all cases, this means the user acted on an iOS notification
-  // and caused the app to launch.
-  // From SO:
-  // > Note that "App opened from Notification" will be a false positive if the notification is sent while the user is on a different
-  // > screen (for example, if they pull down the status bar and then receive a notification from your app).
-  if (!notifBody) {
-    notifBody = @{};
-  }
-  NSMutableDictionary *res = [@{
-                              @"origin": (isFromBackground) ? @"selected" : @"received",
-                              @"remote": @(isRemote),
-                              @"data": notifBody,
-                              @"actionId": actionId
-                              } mutableCopy];
-  if (userText) {
-    [res addEntriesFromDictionary:@{@"userText": userText}];
-  }
-  return res;
+  return nil;
 }
 
 #pragma mark - App State

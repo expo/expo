@@ -13,7 +13,7 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotificationName = @"kEXA
 @property (nonatomic, weak) id<EXPermissionRequesterDelegate> delegate;
 @property (nonatomic, assign) BOOL remoteNotificationsRegistrationIsPending;
 @property (nonatomic, strong) EXUserNotificationRequester *localNotificationRequester;
-@property (nonatomic, weak) EXModuleRegistry * moduleRegistry;
+@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
 
 @end
 

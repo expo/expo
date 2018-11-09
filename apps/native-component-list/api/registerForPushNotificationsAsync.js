@@ -1,4 +1,4 @@
-import { Permissions, Notifications } from 'expo';
+import { Constants, Notifications } from 'expo';
 
 // In this test app we contact the Expo push service directly. You *never*
 // should do this in a real app. You should always store the push tokens on your
@@ -15,6 +15,21 @@ export default async function registerForPushNotificationsAsync() {
   // Log it so we can easily copy it if we need to work with it
   console.log(`Got this device's push token: ${token}`);
 
+  await Notifications.createCategoryIOSAsync('welcome', [
+    {
+      actionId: 'tada',
+      buttonTitle: '🎉',
+      isDestructive: false,
+      isAuthenticationRequired: false,
+    },
+    {
+      actionId: 'heart_eyes',
+      buttonTitle: '😍',
+      isDestructive: false,
+      isAuthenticationRequired: true,
+    },
+  ]);
+
   // POST the token to the Expo push server
   let response = await fetch(PUSH_ENDPOINT, {
     method: 'POST',
@@ -28,7 +43,7 @@ export default async function registerForPushNotificationsAsync() {
         title: 'Welcome to Expo!',
         body: 'Native Component List is registered for push notifications.',
         data: { example: 'sample data' },
-        category: 'super-category',
+        category: `${Constants.manifest.id}:welcome`,
       },
     ]),
   });

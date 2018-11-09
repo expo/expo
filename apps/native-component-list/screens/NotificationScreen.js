@@ -24,6 +24,10 @@ export default class NotificationScreen extends React.Component {
           title="Schedule notification for 10 seconds from now"
         />
         <ListButton
+          onPress={this._scheduleLocalNotificationWithCategoryAsync}
+          title="Schedule notification for 10 seconds from now with a custom category (iOS)"
+        />
+        <ListButton
           onPress={Notifications.cancelAllScheduledNotificationsAsync}
           title="Cancel all scheduled notifications"
         />
@@ -92,6 +96,46 @@ export default class NotificationScreen extends React.Component {
         },
         ios: {
           sound: true,
+        },
+        android: {
+          vibrate: true,
+        },
+      },
+      {
+        time: new Date().getTime() + 10000,
+      }
+    );
+  };
+
+  _scheduleLocalNotificationWithCategoryAsync = async () => {
+    await this._obtainUserFacingNotifPermissionsAsync();
+
+    await Notifications.createCategoryIOSAsync('message', [
+      {
+        actionId: 'dismiss',
+        buttonTitle: 'Dismiss notification',
+        isDestructive: true,
+        isAuthenticationRequired: false,
+      },
+      {
+        actionId: 'respond',
+        buttonTitle: 'Respond',
+        isDestructive: false,
+        isAuthenticationRequired: true,
+        textInput: {
+          submitButtonTitle: 'Send',
+          placeholder: 'Response',
+        },
+      },
+    ]);
+
+    await Notifications.scheduleLocalNotificationAsync(
+      {
+        title: 'Expo sent you a message!',
+        body: 'Howdy, fella!',
+        ios: {
+          sound: true,
+          categoryId: 'message',
         },
         android: {
           vibrate: true,
