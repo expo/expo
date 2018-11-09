@@ -1,5 +1,8 @@
 // @flow
 
+import AuthData from './AuthData';
+import Authentication from './Authentication';
+import Identity from './Identity';
 import User from './User';
 import ExpoGoogleSignIn from './ExpoGoogleSignIn';
 
@@ -38,9 +41,28 @@ export class GoogleSignIn {
   _initialization: Promise;
   _currentUser: User;
 
-  ERRORS = ERRORS;
-  SCOPES = SCOPES;
-  TYPES = TYPES;
+  get ERRORS() {
+    return ERRORS;
+  }
+  get SCOPES() {
+    return SCOPES;
+  }
+  get TYPES() {
+    return TYPES;
+  }
+
+  get AuthData() {
+    return AuthData;
+  }
+  get Authentication() {
+    return Authentication;
+  }
+  get Identity() {
+    return Identity;
+  }
+  get User() {
+    return User;
+  }
 
   get currentUser(): ?User {
     return this._currentUser;
@@ -67,7 +89,7 @@ export class GoogleSignIn {
   };
 
   _invokeAuthMethod = async (method: string): Promise<?GoogleSignInAuthResult> => {
-    await this.initAsync();
+    await this._ensureGoogleIsInitializedAsync();
     const payload = await ExpoGoogleSignIn[method]();
     let account = payload != null ? new User(payload) : null;
     return this._setCurrentUser(account);
@@ -100,18 +122,37 @@ export class GoogleSignIn {
       return false;
     }
 
+    this._initialization = ExpoGoogleSignIn.initAsync(this.options);
+
+    return this._initialization;
+  };
+
+  /*
+  TODO: Bacon: Maybe we should throw an error: "attempting to ... before Google has been initialized"
+  */
+  _ensureGoogleIsInitializedAsync = async (options: ?GoogleSignInOptions): Promise<any> => {
     if (this._initialization == null) {
-      this._initialization = ExpoGoogleSignIn.initAsync(this.options);
+      return this.initAsync(options);
     }
     return this._initialization;
   };
 
   isSignedInAsync = async (): Promise<boolean> => {
-    return ExpoGoogleSignIn.isSignedInAsync();
+    const user = await this.getCurrentUserAsync();
+    return user != null;
   };
 
-  signInSilentlyAsync = (): Promise<?GoogleSignInAuthResult> =>
-    this._invokeAuthMethod('signInSilentlyAsync');
+  isConnectedAsync = async (): Promise<boolean> => {
+    return ExpoGoogleSignIn.isConnectedAsync();
+  };
+
+  signInSilentlyAsync = async (): Promise<?GoogleSignInAuthResult> => {
+    const isConnected = await this.isConnectedAsync();
+    if (isConnected) {
+      return this._invokeAuthMethod('signInSilentlyAsync');
+    }
+    return null;
+  };
 
   signInAsync = async (): Promise<?GoogleSignInAuthResult> => {
     try {
@@ -134,14 +175,9 @@ export class GoogleSignIn {
     this._invokeAuthMethod('getCurrentUserAsync');
 
   getPhotoAsync = async (size: number = 128): Promise<?string> => {
-    await this.initAsync();
+    await this._ensureGoogleIsInitializedAsync();
     return ExpoGoogleSignIn.getPhotoAsync(size);
   };
 }
 
 export default new GoogleSignIn();
-
-export { default as AuthData } from './AuthData';
-export { default as Authentication } from './Authentication';
-export { default as Identity } from './Identity';
-export { default as User } from './User';

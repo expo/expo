@@ -43,17 +43,14 @@ class User extends Identity {
     };
   };
 
-  refreshAuthentication = async (): Promise<?Authentication> => {
+  refreshAuth = async (): Promise<?Authentication> => {
     const response: {
       idToken: ?string,
       accessToken: ?string,
       auth: ?{
         accessToken: ?string,
       },
-    } = await ExpoGoogleSignIn.getTokensAsync({
-      email: this.email,
-      scopes: this.scopes,
-    });
+    } = await ExpoGoogleSignIn.getTokensAsync(false);
     if (response.idToken == null) {
       response.idToken = this.auth.idToken;
     }

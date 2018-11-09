@@ -22,6 +22,9 @@ EX_EXPORT_MODULE(ExpoGoogleSignIn);
 {
   if (self = [super init]) {
     _authTask = [[EXAuthTask alloc] init];
+    [GIDSignIn sharedInstance].delegate = self;
+    [GIDSignIn sharedInstance].uiDelegate = self;
+    [GIDSignIn sharedInstance].shouldFetchBasicProfile = YES;
   }
   return self;
 }
@@ -128,12 +131,7 @@ EX_EXPORT_METHOD_AS(initAsync,
   if (_clientId == nil || [_clientId isEqualToString:@""]) _clientId = [self _getNativeClientIdOrReject:reject];
   if (_clientId == nil) return;
   
-  // TODO: Bacon: move
-  [GIDSignIn sharedInstance].delegate = self;
-  [GIDSignIn sharedInstance].uiDelegate = self;
-  
   [GIDSignIn sharedInstance].clientID = _clientId;
-  [GIDSignIn sharedInstance].shouldFetchBasicProfile = YES;
   
   [self _configureWithScopes:options[@"scopes"]
                 hostedDomain:options[@"hostedDomain"]
@@ -176,8 +174,8 @@ EX_EXPORT_METHOD_AS(disconnectAsync,
     [[GIDSignIn sharedInstance] disconnect];
 }
 
-EX_EXPORT_METHOD_AS(isSignedInAsync,
-                    isSignedInAsync:(EXPromiseResolveBlock)resolve
+EX_EXPORT_METHOD_AS(isConnectedAsync,
+                    isConnectedAsync:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject)
 {
   resolve(@([[GIDSignIn sharedInstance] hasAuthInKeychain]));
@@ -188,10 +186,6 @@ EX_EXPORT_METHOD_AS(getCurrentUserAsync,
                     rejecter:(EXPromiseRejectBlock)reject)
 {
   GIDGoogleUser *currentUser = [GIDSignIn sharedInstance].currentUser;
-  if (currentUser == nil) {
-    reject(EX_E_EXCEPTION, @"getCurrentUserAsync: Attempting to read user data when no user is signed-in", nil);
-    return;
-  }
   resolve(EXNullIfNil([EXGoogleSignIn jsonFromGIDGoogleUser:currentUser]));
 }
 
@@ -201,41 +195,45 @@ EX_EXPORT_METHOD_AS(getPhotoAsync,
                     rejecter:(EXPromiseRejectBlock)reject)
 {
   GIDGoogleUser *currentUser = [GIDSignIn sharedInstance].currentUser;
-  if (currentUser == nil) {
-    reject(EX_E_EXCEPTION, @"getPhotoAsync: Attempting to read user data when no user is signed-in", nil);
+  if (currentUser == nil || currentUser.profile.hasImage == NO) {
+    resolve([NSNull null]);
     return;
   }
-
-  if (currentUser.profile.hasImage) {
-    NSURL *imageURL = [currentUser.profile imageURLWithDimension:[size unsignedIntegerValue]];
-    if (imageURL) {
-      resolve([imageURL absoluteString]);
-      return;
-    }
+  NSURL *imageURL = [currentUser.profile imageURLWithDimension:[size unsignedIntegerValue]];
+  if (imageURL) {
+    resolve([imageURL absoluteString]);
+    return;
   }
-  resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(getTokensAsync,
-                    getTokensAsync:(EXPromiseResolveBlock)resolve
+                    getTokensAsync:(NSNumber *)shouldRefresh
+                    resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject)
 {
   GIDGoogleUser *currentUser = [GIDSignIn sharedInstance].currentUser;
   if (currentUser == nil) {
-    reject(EX_E_EXCEPTION, @"getTokensAsync: Attempting to read user data when no user is signed-in", nil);
+    resolve([NSNull null]);
     return;
   }
 
-  GIDAuthentication *auth = currentUser.authentication;
-  [auth getTokensWithHandler:^void(GIDAuthentication *authentication, NSError *error) {
-    if (error)
+  GIDAuthenticationHandler handler = ^void(GIDAuthentication *authentication, NSError *error) {
+    if (error) {
       reject(EX_E_EXCEPTION, error.localizedDescription, nil);
-    else
+    } else {
       resolve(@{
                 @"idToken" : authentication.idToken,
                 @"accessToken" : authentication.accessToken,
                 });
-  }];
+    }
+  };
+  
+  GIDAuthentication *auth = currentUser.authentication;
+  if ([shouldRefresh boolValue] == YES) {
+    [auth refreshTokensWithHandler:handler];
+  } else {
+    [auth getTokensWithHandler:handler];
+  }
 }
 
 - (void)signIn:(GIDSignIn *)signIn didSignInForUser:(GIDGoogleUser *)user withError:(NSError *)error {

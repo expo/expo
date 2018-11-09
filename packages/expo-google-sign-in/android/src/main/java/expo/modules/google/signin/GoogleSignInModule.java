@@ -205,7 +205,7 @@ public class GoogleSignInModule extends ExportedModule implements ModuleRegistry
 
 
     @ExpoMethod
-    public void getTokensAsync(Promise promise) {
+    public void getTokensAsync(Boolean shouldRefresh, Promise promise) {
         final GoogleSignInClient client = getClientOrReject(promise);
         if (client == null) {
             return;
@@ -366,8 +366,12 @@ public class GoogleSignInModule extends ExportedModule implements ModuleRegistry
     }
 
     @ExpoMethod
-    public void isSignedInAsync(Promise promise) {
-        promise.resolve(GoogleSignIn.getLastSignedInAccount(getApplicationContext()) != null);
+    public void isConnectedAsync(final Promise promise) {
+        GoogleSignInClient client = getClientOrReject(promise);
+        if (client == null) {
+            return;
+        }
+        promise.resolve(client.isConnected());
     }
 
     private void handleSignOutOrRevokeAccessTask(@NonNull Task<Void> task, final Promise promise) {

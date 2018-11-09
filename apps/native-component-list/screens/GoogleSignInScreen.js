@@ -31,10 +31,13 @@ export default class GoogleSignInScreen extends React.Component {
   };
 
   _syncUserWithStateAsync = async () => {
-    const user = await GoogleSignIn.getCurrentUserAsync();
-    if (user) {
+    /*
+      const user = await GoogleSignIn.signInSilentlyAsync();
+      this.setState({ user });
+    */
+
+    if (await GoogleSignIn.signInSilentlyAsync()) {
       const photoURL = await GoogleSignIn.getPhotoAsync(256);
-      console.log({ photoURL });
       this.setState({
         user: {
           ...GoogleSignIn.currentUser.toJSON(),
@@ -47,7 +50,7 @@ export default class GoogleSignInScreen extends React.Component {
   };
 
   get buttonTitle() {
-    return this.props.user ? 'Sign-out of Google' : 'Sign-in with Google';
+    return this.state.user ? 'Sign-Out of Google' : 'Sign-In with Google';
   }
 
   render() {
@@ -61,7 +64,7 @@ export default class GoogleSignInScreen extends React.Component {
   }
 
   _toggleAuth = () => {
-    if (this.props.user) {
+    if (this.state.user) {
       this._signOutAsync();
     } else {
       this._signInAsync();
@@ -70,7 +73,7 @@ export default class GoogleSignInScreen extends React.Component {
 
   _signOutAsync = async () => {
     try {
-      await GoogleSignIn.disconnectAsync();
+      // await GoogleSignIn.disconnectAsync();
       await GoogleSignIn.signOutAsync();
       console.log('Log out successful');
     } catch ({ message }) {
@@ -82,7 +85,7 @@ export default class GoogleSignInScreen extends React.Component {
 
   _signInAsync = async () => {
     try {
-      await GoogleSignIn.hasPlayServicesAsync();
+      await GoogleSignIn.askForPlayServicesAsync();
       const { type, user } = await GoogleSignIn.signInAsync();
       console.log({ type, user });
       if (type === 'success') {

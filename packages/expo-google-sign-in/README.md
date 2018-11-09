@@ -70,6 +70,8 @@ and run `pod install`.
 
 ### `signOutAsync(): Promise<?GoogleSignInAuthResult>`
 
+### `isConnectedAsync(): Promise<boolean>`
+
 ### `disconnectAsync(): Promise<?GoogleSignInAuthResult>`
 
 ### `getCurrentUserAsync(): Promise<?GoogleSignInAuthResult>`
