@@ -37,7 +37,7 @@ public class Serialization {
         auth.putString("accessTokenExpirationDate", null);
         auth.putString("refreshToken", null);
         auth.putString("idToken", acct.getIdToken());
-        auth.putDouble("idTokenExpirationDate", acct.getExpirationTimeSecs());
+//        auth.putDouble("idTokenExpirationDate", acct.getExpirationTimeSecs());
 
         Uri photoUrl = acct.getPhotoUrl();
         Bundle user = new Bundle();

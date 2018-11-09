@@ -110,6 +110,8 @@ public class GoogleSignInModule extends ExportedModule implements ModuleRegistry
         errors.put("IN_PROGRESS", ERROR_CONCURRENT_TASK_IN_PROGRESS);
         errors.put("SIGN_IN_FAILED", String.valueOf(GoogleSignInStatusCodes.SIGN_IN_FAILED));
         errors.put("SIGN_IN_REQUIRED", String.valueOf(CommonStatusCodes.SIGN_IN_REQUIRED));
+        errors.put("INVALID_ACCOUNT", String.valueOf(CommonStatusCodes.INVALID_ACCOUNT));
+
         errors.put("SIGN_IN_NETWORK_ERROR", String.valueOf(CommonStatusCodes.NETWORK_ERROR));
         errors.put("SIGN_IN_EXCEPTION", ERROR_EXCEPTION);
 
@@ -126,7 +128,6 @@ public class GoogleSignInModule extends ExportedModule implements ModuleRegistry
         scopes.put("DRIVE_APPFOLDER", Scopes.DRIVE_APPFOLDER);
         scopes.put("DRIVE_FULL", Scopes.DRIVE_FULL);
         scopes.put("DRIVE_APPS", Scopes.DRIVE_APPS);
-        scopes.put("CONNECTIONS_READ", Scopes.CONNECTIONS_READ);
         scopes.put("FITNESS_ACTIVITY_READ", Scopes.FITNESS_ACTIVITY_READ);
         scopes.put("FITNESS_ACTIVITY_READ_WRITE", Scopes.FITNESS_ACTIVITY_READ_WRITE);
         scopes.put("FITNESS_LOCATION_READ", Scopes.FITNESS_LOCATION_READ);
@@ -145,8 +146,6 @@ public class GoogleSignInModule extends ExportedModule implements ModuleRegistry
         scopes.put("FITNESS_BODY_TEMPERATURE_READ_WRITE", Scopes.FITNESS_BODY_TEMPERATURE_READ_WRITE);
         scopes.put("FITNESS_REPRODUCTIVE_HEALTH_READ", Scopes.FITNESS_REPRODUCTIVE_HEALTH_READ);
         scopes.put("FITNESS_REPRODUCTIVE_HEALTH_READ_WRITE", Scopes.FITNESS_REPRODUCTIVE_HEALTH_READ_WRITE);
-        scopes.put("DISPLAY_ADS", Scopes.DISPLAY_ADS);
-        scopes.put("YOUTUBE_DATA_API", Scopes.YOUTUBE_DATA_API);
 
         final Map<String, Object> signInTypes = new HashMap<>();
         scopes.put("DEFAULT", "default");
@@ -367,16 +366,17 @@ public class GoogleSignInModule extends ExportedModule implements ModuleRegistry
 
     @ExpoMethod
     public void isConnectedAsync(final Promise promise) {
-        GoogleSignInClient client = getClientOrReject(promise);
-        if (client == null) {
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
+        if (account == null) {
+            promise.resolve(false);
             return;
         }
-        promise.resolve(client.isConnected());
+        promise.resolve(account != null);
     }
 
     private void handleSignOutOrRevokeAccessTask(@NonNull Task<Void> task, final Promise promise) {
         if (task.isSuccessful()) {
-            promise.resolve(true);
+            promise.resolve(null);
         } else {
             int code = getExceptionCode(task);
             promise.reject(String.valueOf(code), GoogleSignInStatusCodes.getStatusCodeString(code));
@@ -447,6 +447,11 @@ public class GoogleSignInModule extends ExportedModule implements ModuleRegistry
                 Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(intent);
                 handleSignInTaskResult(task);
             }
+        }
+
+        @Override
+        public void onNewIntent(Intent intent) {
+            // do nothing
         }
     }
 }

@@ -108,7 +108,7 @@ export async function test({
         await signInWithResult('cancel');
       });
 
-      xit(`Successfully signed-in`, async () => {
+      it(`Successfully signed-in`, async () => {
         await GoogleSignIn.signOutAsync();
         await signInWithResult('success');
       });
@@ -134,13 +134,19 @@ export async function test({
       });
 
       /*
-       * Cannot test
+       * Cannot test on iOS
        * Expect: You should see no change from the default sign-in.
        * 
        * > Maybe one day Google with throw an error if an account doesn't exist, we would want to test that.
        */
       it(`Attempt to sign-in with an account that doesn't exist.`, async () => {
-        await signInWithConfigAsync({ accountName: 'evanjbacon@gmail' });
+        try {
+          await signInWithConfigAsync({ accountName: 'evanjbacon@gmail' });
+        } catch ({ code }) {
+          if (Platform.OS === 'android') {
+            expect(code).toBe(GoogleSignIn.ERRORS.INVALID_ACCOUNT);
+          }
+        }
       });
 
       if (Platform.OS === 'ios') {
@@ -174,7 +180,7 @@ export async function test({
         expect(validUser instanceof GoogleSignIn.User).toBe(true);
       });
 
-      xit('GoogleSignIn.getCurrentUserAsync() returns a user when signed-in, and null when signed-out', async () => {
+      it('GoogleSignIn.getCurrentUserAsync() returns a user when signed-in, and null when signed-out', async () => {
         await GoogleSignIn.signOutAsync();
         const invalidUser = await GoogleSignIn.getCurrentUserAsync();
         expect(invalidUser).toBeDefined();
@@ -183,6 +189,21 @@ export async function test({
         const validUser = await GoogleSignIn.getCurrentUserAsync();
         expect(validUser).toBeDefined();
         expect(validUser instanceof GoogleSignIn.User).toBe(true);
+      });
+
+      xit(`GoogleSignIn.currentUser.refreshAuth()`, async () => {
+        await ensureAuthenticationAsync();
+
+        const { auth } = GoogleSignIn.currentUser;
+        console.log({ auth });
+        const nextAuth = await GoogleSignIn.currentUser.refreshAuth();
+        console.log({ nextAuth });
+      });
+
+      xit(`GoogleSignIn.currentUser.clearCache()`, async () => {
+        await ensureAuthenticationAsync();
+        const nextAuth = await GoogleSignIn.currentUser.clearCache();
+        console.log({ nextAuth });
       });
     });
 
@@ -211,26 +232,28 @@ export async function test({
         expect(typeof uri).toBe('string');
         expect(uri.length > 1).toBe(true);
       });
-      it('default image size is `128`', async () => {
-        await ensureAuthenticationAsync();
-        const uri = await GoogleSignIn.getPhotoAsync();
-        const { width, height } = await imageSizeAsync(uri);
-        const longest = Math.max(width, height);
-        expect(longest).toBe(128);
-      });
+      if (Platform.OS === 'ios') {
+        it('default image size is `128`', async () => {
+          await ensureAuthenticationAsync();
+          const uri = await GoogleSignIn.getPhotoAsync();
+          const { width, height } = await imageSizeAsync(uri);
+          const longest = Math.max(width, height);
+          expect(longest).toBe(128);
+        });
 
-      /*
+        /*
        * This function can sometimes be wrong if you go too far away from 128. 
        * Google will also not return an image passed the max original image size.
        */
-      const customImageSize = 64;
-      it(`custom image size is \`${customImageSize}\``, async () => {
-        await ensureAuthenticationAsync();
-        const uri = await GoogleSignIn.getPhotoAsync(customImageSize);
-        const { width, height } = await imageSizeAsync(uri);
-        const longest = Math.max(width, height);
-        expect(longest).toBe(customImageSize);
-      });
+        const customImageSize = 64;
+        it(`custom image size is \`${customImageSize}\``, async () => {
+          await ensureAuthenticationAsync();
+          const uri = await GoogleSignIn.getPhotoAsync(customImageSize);
+          const { width, height } = await imageSizeAsync(uri);
+          const longest = Math.max(width, height);
+          expect(longest).toBe(customImageSize);
+        });
+      }
     });
 
     describe('GoogleSignIn.signOutAsync()', async () => {
@@ -275,21 +298,6 @@ export async function test({
         isSignedIn = await GoogleSignIn.isSignedInAsync();
         expect(isSignedIn).toBe(false);
       });
-    });
-
-    xit(`GoogleSignIn.currentUser.refreshAuth()`, async () => {
-      await ensureAuthenticationAsync();
-
-      const { auth } = GoogleSignIn.currentUser;
-      console.log({ auth });
-      const nextAuth = await GoogleSignIn.currentUser.refreshAuth();
-      console.log({ nextAuth });
-    });
-
-    xit(`GoogleSignIn.currentUser.clearCache()`, async () => {
-      await ensureAuthenticationAsync();
-      const nextAuth = await GoogleSignIn.currentUser.clearCache();
-      console.log({ nextAuth });
     });
   });
 }

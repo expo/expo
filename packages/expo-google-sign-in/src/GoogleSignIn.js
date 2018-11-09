@@ -149,7 +149,16 @@ export class GoogleSignIn {
   signInSilentlyAsync = async (): Promise<?GoogleSignInAuthResult> => {
     const isConnected = await this.isConnectedAsync();
     if (isConnected) {
-      return this._invokeAuthMethod('signInSilentlyAsync');
+      try {
+        const auth = await this._invokeAuthMethod('signInSilentlyAsync');
+        return auth;
+      } catch (error) {
+        // Android parity
+        if (error.code === ERRORS.SIGN_IN_REQUIRED) {
+          return null;
+        }
+        throw error;
+      }
     }
     return null;
   };
