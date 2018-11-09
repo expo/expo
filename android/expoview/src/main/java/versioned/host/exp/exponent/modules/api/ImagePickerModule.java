@@ -332,7 +332,7 @@ public class ImagePickerModule extends ExpoKernelServiceConsumerBaseModule imple
                 // No modification requested
                 copyImage(uri, file, out);
               }
-
+              ImageLoader.getInstance().clearDiskCache();
               returnImageResult(exifData, fileUri.toString(), bmp.getWidth(), bmp.getHeight(), out, promise);
             }
           } else {
