@@ -22,7 +22,7 @@ console.warn = function warn(...args) {
   if (
     args.length > 0 &&
     typeof args[0] === 'string' &&
-    /^Require cycle: .*\/node_modules\//.test(args[0])
+    /^Require cycle: .*node_modules/.test(args[0])
   ) {
     return;
   }

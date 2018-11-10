@@ -1,6 +1,7 @@
 import React from 'react';
-import { Alert, ScrollView, View, Platform } from 'react-native';
-import { ImagePicker, Permissions } from 'expo';
+import { Alert, ScrollView, View, Platform, Image } from 'react-native';
+import { ImagePicker, Permissions, Video } from 'expo';
+import { NavigationEvents } from 'react-navigation';
 import ListButton from '../components/ListButton';
 import MonoText from '../components/MonoText';
 
@@ -12,7 +13,7 @@ export default class ImagePickerScreen extends React.Component {
     selection: null,
   };
 
-  async componentDidMount() {
+  async componentDidFocus() {
     await Permissions.askAsync(Permissions.CAMERA);
     await Permissions.askAsync(Permissions.CAMERA_ROLL);
   }
@@ -61,6 +62,7 @@ export default class ImagePickerScreen extends React.Component {
 
     return (
       <ScrollView style={{ padding: 10 }}>
+        <NavigationEvents onDidFocus={this.componentDidFocus} />
         <ListButton onPress={showCamera} title="Open camera" />
         <ListButton onPress={showPicker} title="Pick photo or video" />
         <ListButton onPress={showPickerWithEditing} title="Pick photo and edit" />

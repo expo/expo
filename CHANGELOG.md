@@ -2,7 +2,29 @@
 
 This is the log of notable changes to the Expo client that are developer-facing.
 
-## 31.0.0
+## master
+
+### 🐛 Bug fixes
+
+- decycle objects when sending logs to remote console by [@sjchmiela](https://github.com/sjchmiela) ([#2598](https://github.com/expo/expo/pull/2598))
+- unify linear gradient behavior across platforms by [@sjchmiela](https://github.com/sjchmiela) ([#2624](https://github.com/expo/expo/pull/2624))
+- use device orientation for recorded videos by [@flippinjoe](https://github.com/flippinjoe) ([expo-camera#2](https://github.com/expo/expo-camera/pull/2))
+
+## 31.0.3
+
+- fix filtering out warnings about `require` cycles in `node_modules` by [@serhiipalash](https://github.com/serhiipalash) ([`aaf72bf`](https://github.com/expo/expo/commit/aaf72bf42e197e5cc300a3f722103ad5cedc3a90))
+- fix `resizeMode` prop of `Video` component by [@ide](https://github.com/ide) ([`886b67d`](https://github.com/expo/expo/commit/886b67d0967c0f3d55a561fe7766e3df414c80bf))
+
+## 31.0.2
+
+- pass `undefined` through for `startPoint` and `endPoint` rather than `null` in `LinearGradient` by [@brentvatne](https://github.com/brentvatne) ([`643969`](https://github.com/expo/expo/commit/6439691431dbb9b443bb69d788129cf3ff25ae3b))
+- remove require cycle in AV by [@ide](https://github.com/ide) ([`18d54da`](https://github.com/expo/expo/commit/18d54daad814ae7e8e6e359daf274f80ece8352d))
+
+## 31.0.1
+
+- filter out warnings about `require` cycles in `node_modules` by [@ide](https://github.com/ide) ([`68d130d`](https://github.com/expo/expo/commit/68d130d4b0e58c8faa050bfe7bd7c56ffa05e2ef))
+
+## 31.0.0  (Partial Changelog)
 
 ### 🛠 Breaking changes
 
@@ -17,6 +39,13 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - upgrade underyling Facebook SDK native dependencies to `4.37.0` by [@sjchmiela](https://github.com/sjchmiela) ([#2508](https://github.com/expo/expo/pull/2508))
 - upgrade `react-native-view-shot` to `2.5.0` by [@sjchmiela](https://github.com/sjchmiela) ([#2518](https://github.com/expo/expo/pull/2518))
 - upgrade `react-native-maps` to `0.22.0` by [@tsapeta](https://github.com/tsapeta) ([#2496](https://github.com/expo/expo/pull/2496))
+- `FacebookAds.TriggerableView` is now `FacebookAds.AdTriggerView`
+- `FacebookAds.MediaView` is now `FacebookAds.AdMediaView`
+- The Speech API’s "onError" function is passed an `Error` instead of a string
+- Flow types have been removed as we begin to migrate to TypeScript over the next few SDK releases
+- Several Haptic enum types have been renamed: NotificationTypes → NotificationFeedbackType, ImpactStyles → ImpactFeedbackStyle
+- Several AR enum types have been renamed: BlendShapes → BlendShape, FaceAnchorProps → FaceAnchorProp, PlaneDetectionTypes → PlaneDetection, WorldAlignmentTypes → WorldAlignment, EventTypes → EventType, AnchorTypes → AnchorType, AnchorEventTypes → AnchorEventType, FrameAttributes → FrameAttribute, TrackingStates → TrackingState, TrackingStateReasons → TrackingStateReason, TrackingConfigurations → TrackingConfiguration
+- `Audio.Sound.create` has been renamed to `createAsync`
 
 ### 🎉 New features
 

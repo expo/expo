@@ -9,7 +9,7 @@ package com.facebook.react.common;
 
 import javax.annotation.Nullable;
 
-import com.facebook.infer.annotation.Assertions;
+import expolib_v1.com.facebook.infer.annotation.Assertions;
 
 /**
  * Simple class for asserting that operations only run on a single thread.

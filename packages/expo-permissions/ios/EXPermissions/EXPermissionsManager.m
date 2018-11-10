@@ -3,7 +3,7 @@
 #import <EXPermissions/EXPermissionsManager.h>
 #import <EXPermissions/EXPermissions.h>
 
-NSString * const kEXPermissionsKey = @"ExpoPermissions";
+NSString * const EXPermissionsKey = @"ExpoPermissions";
 
 @implementation EXPermissionsManager
 
@@ -17,7 +17,7 @@ EX_REGISTER_SINGLETON_MODULE(Permissions)
   }
   
   NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-  NSDictionary *expoPermissions = [userDefaults dictionaryForKey:kEXPermissionsKey];
+  NSDictionary *expoPermissions = [userDefaults dictionaryForKey:EXPermissionsKey];
   if (expoPermissions == nil) {
     return NO;
   }
@@ -37,10 +37,10 @@ EX_REGISTER_SINGLETON_MODULE(Permissions)
 {
   NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
   NSMutableDictionary *expoPermissions;
-  if ([userDefaults objectForKey:kEXPermissionsKey] == nil) {
+  if ([userDefaults objectForKey:EXPermissionsKey] == nil) {
     expoPermissions = [[NSMutableDictionary alloc] init];
   } else {
-    expoPermissions = [[NSMutableDictionary alloc] initWithDictionary:[userDefaults dictionaryForKey:kEXPermissionsKey]];
+    expoPermissions = [[NSMutableDictionary alloc] initWithDictionary:[userDefaults dictionaryForKey:EXPermissionsKey]];
   }
   
   NSString *experienceIdKey = [EXPermissionsManager escapedResourceName:experienceId];
@@ -53,7 +53,7 @@ EX_REGISTER_SINGLETON_MODULE(Permissions)
   
   experiencePermissions[type] = permission;
   expoPermissions[experienceIdKey] = experiencePermissions;
-  [userDefaults setObject:expoPermissions forKey:kEXPermissionsKey];
+  [userDefaults setObject:expoPermissions forKey:EXPermissionsKey];
   return [userDefaults synchronize];
 }
 

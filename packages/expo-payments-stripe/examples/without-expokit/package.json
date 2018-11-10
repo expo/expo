@@ -20,6 +20,6 @@
   },
   "devDependencies": {
     "babel-preset-react-native-stage-0": "^1.0.1",
-    "babel-preset-expo": "^4.0.0"
+    "babel-preset-expo": "^5.0.0"
   }
 }

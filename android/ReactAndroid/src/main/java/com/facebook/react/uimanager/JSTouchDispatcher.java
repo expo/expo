@@ -10,7 +10,7 @@ package com.facebook.react.uimanager;
 import android.view.MotionEvent;
 import android.view.ViewGroup;
 import com.facebook.common.logging.FLog;
-import com.facebook.infer.annotation.Assertions;
+import expolib_v1.com.facebook.infer.annotation.Assertions;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.TouchEvent;

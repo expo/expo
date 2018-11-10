@@ -1,0 +1,26 @@
+{
+  "name": "expo-font",
+  "version": "1.0.0",
+  "description": "Expo Font standalone universal module",
+  "main": "index.js",
+  "keywords": [
+    "react-native",
+    "expo"
+  ],
+  "homepage": "https://docs.expo.io/",
+  "author": "650 Industries, Inc.",
+  "license": "BSD",
+  "peerDependencies": {
+    "expo-asset": "~1.1.0",
+    "expo-constants": "~1.0.2"
+  },
+  "dependencies": {
+    "expo-core": "~1.1.0",
+    "expo-font-interface": "~1.0.0",
+    "invariant": "^2.2.2"
+  },
+  "devDependencies": {
+    "babel-preset-expo": "^4.0.0",
+    "flow-bin": "^0.77.0"
+  }
+}

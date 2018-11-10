@@ -1,6 +1,6 @@
 {
   "name": "expo-sensors",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "Expo Sensors universal module",
   "main": "index.js",
   "keywords": [
@@ -17,11 +17,11 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "dependencies": {
-    "expo-core": "~1.1.0",
-    "expo-sensors-interface": "~1.0.2",
+    "expo-core": "~1.2.0",
+    "expo-sensors-interface": "~1.1.0",
     "invariant": "^2.2.4"
   },
   "devDependencies": {
-    "babel-preset-expo": "^4.0.0"
+    "babel-preset-expo": "^5.0.0"
   }
 }

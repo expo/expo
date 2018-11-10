@@ -14,6 +14,7 @@
 		0779EE2620977C9E00C2D71B /* AIRGoogleMapOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = 0779EE2120977C9D00C2D71B /* AIRGoogleMapOverlay.m */; };
 		0779EE2720977C9E00C2D71B /* AIRGoogleMapOverlayManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0779EE2320977C9D00C2D71B /* AIRGoogleMapOverlayManager.m */; };
 		0779EE2820977C9E00C2D71B /* AIRDummyView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0779EE2420977C9E00C2D71B /* AIRDummyView.m */; };
+		0799CFDA21839B520039E97C /* EXSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 0799CFD921839B520039E97C /* EXSession.m */; };
 		07E26F301FFFFB55004667A1 /* EXCalendarConverter.m in Sources */ = {isa = PBXBuildFile; fileRef = 07E26F2D1FFFFB55004667A1 /* EXCalendarConverter.m */; };
 		07E26F311FFFFB55004667A1 /* EXCalendar.m in Sources */ = {isa = PBXBuildFile; fileRef = 07E26F2E1FFFFB55004667A1 /* EXCalendar.m */; };
 		08FCA2B1B8F4B2420E552303 /* libPods-Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FDC01B7874B93745E639DFA6 /* libPods-Tests.a */; };
@@ -25,6 +26,7 @@
 		19B2EF751FB25A1A003F2E1B /* EXCachedResourceManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 19B2EF741FB25A1A003F2E1B /* EXCachedResourceManager.m */; };
 		2547422E20F4911E009F5FDA /* EXNativeMediaViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 2547422D20F4911E009F5FDA /* EXNativeMediaViewManager.m */; };
 		2547423120F4ABFF009F5FDA /* EXAdIconViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 2547423020F4ABFF009F5FDA /* EXAdIconViewManager.m */; };
+		310AC14421918CB800E9F37E /* EXLinearGradientLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 310AC14321918CB800E9F37E /* EXLinearGradientLayer.m */; };
 		313D418020C84E9000FC913D /* EXModuleRegistryBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = 313D417F20C84E9000FC913D /* EXModuleRegistryBinding.m */; };
 		3159BB0421806DAD002D2A81 /* RNSVGPainterBrush.m in Sources */ = {isa = PBXBuildFile; fileRef = 3159BAFC21806DAD002D2A81 /* RNSVGPainterBrush.m */; };
 		3159BB0521806DAD002D2A81 /* RNSVGBrush.m in Sources */ = {isa = PBXBuildFile; fileRef = 3159BB0021806DAD002D2A81 /* RNSVGBrush.m */; };
@@ -346,6 +348,8 @@
 		0779EE2320977C9D00C2D71B /* AIRGoogleMapOverlayManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AIRGoogleMapOverlayManager.m; sourceTree = "<group>"; };
 		0779EE2420977C9E00C2D71B /* AIRDummyView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AIRDummyView.m; sourceTree = "<group>"; };
 		0779EE2520977C9E00C2D71B /* AIRGoogleMapOverlay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AIRGoogleMapOverlay.h; sourceTree = "<group>"; };
+		0799CFD821839B470039E97C /* EXSession.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXSession.h; sourceTree = "<group>"; };
+		0799CFD921839B520039E97C /* EXSession.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXSession.m; sourceTree = "<group>"; };
 		07E26F2C1FFFFB55004667A1 /* EXCalendar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXCalendar.h; sourceTree = "<group>"; };
 		07E26F2D1FFFFB55004667A1 /* EXCalendarConverter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXCalendarConverter.m; sourceTree = "<group>"; };
 		07E26F2E1FFFFB55004667A1 /* EXCalendar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXCalendar.m; sourceTree = "<group>"; };
@@ -367,6 +371,8 @@
 		2547422D20F4911E009F5FDA /* EXNativeMediaViewManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXNativeMediaViewManager.m; sourceTree = "<group>"; };
 		2547422F20F4ABFF009F5FDA /* EXAdIconViewManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXAdIconViewManager.h; sourceTree = "<group>"; };
 		2547423020F4ABFF009F5FDA /* EXAdIconViewManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXAdIconViewManager.m; sourceTree = "<group>"; };
+		310AC14221918CB800E9F37E /* EXLinearGradientLayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXLinearGradientLayer.h; sourceTree = "<group>"; };
+		310AC14321918CB800E9F37E /* EXLinearGradientLayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXLinearGradientLayer.m; sourceTree = "<group>"; };
 		313D417E20C84E8200FC913D /* EXModuleRegistryBinding.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXModuleRegistryBinding.h; sourceTree = "<group>"; };
 		313D417F20C84E9000FC913D /* EXModuleRegistryBinding.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXModuleRegistryBinding.m; sourceTree = "<group>"; };
 		3159BAFB21806DAD002D2A81 /* RNSVGBrush.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNSVGBrush.h; sourceTree = "<group>"; };
@@ -1003,6 +1009,19 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		310AC14521918CC500E9F37E /* LinearGradient */ = {
+			isa = PBXGroup;
+			children = (
+				B5FB729B1FF6DADB001C764B /* EXLinearGradient.h */,
+				B5FB729C1FF6DADB001C764B /* EXLinearGradient.m */,
+				310AC14221918CB800E9F37E /* EXLinearGradientLayer.h */,
+				310AC14321918CB800E9F37E /* EXLinearGradientLayer.m */,
+				B5FB729D1FF6DADB001C764B /* EXLinearGradientManager.h */,
+				B5FB729E1FF6DADB001C764B /* EXLinearGradientManager.m */,
+			);
+			path = LinearGradient;
+			sourceTree = "<group>";
+		};
 		31DBC6AA20B5B4C60049A476 /* UniversalModules */ = {
 			isa = PBXGroup;
 			children = (
@@ -1495,6 +1514,8 @@
 				B5AC39961E95A90B00540AA7 /* EXKernelDevKeyCommands.m */,
 				B5AC39991E95A90B00540AA7 /* EXKernelDevMotionHandler.h */,
 				B5AC399A1E95A90B00540AA7 /* EXKernelDevMotionHandler.m */,
+				0799CFD821839B470039E97C /* EXSession.h */,
+				0799CFD921839B520039E97C /* EXSession.m */,
 			);
 			path = DevSupport;
 			sourceTree = "<group>";
@@ -1726,10 +1747,7 @@
 				B5FB72961FF6DADB001C764B /* EXBlurView.m */,
 				B5FB72971FF6DADB001C764B /* EXBlurViewManager.h */,
 				B5FB72981FF6DADB001C764B /* EXBlurViewManager.m */,
-				B5FB729B1FF6DADB001C764B /* EXLinearGradient.h */,
-				B5FB729C1FF6DADB001C764B /* EXLinearGradient.m */,
-				B5FB729D1FF6DADB001C764B /* EXLinearGradientManager.h */,
-				B5FB729E1FF6DADB001C764B /* EXLinearGradientManager.m */,
+				310AC14521918CC500E9F37E /* LinearGradient */,
 				BB50E86820B9C0D3003C752D /* GestureHandler */,
 				B5FB72BC1FF6DADB001C764B /* GoogleMaps */,
 				B5FB72E11FF6DADB001C764B /* Lottie */,
@@ -2583,6 +2601,7 @@
 				783435DF205B8BEE00DD28C3 /* AIRGMSPolygon.m in Sources */,
 				B5FB74DB1FF6DADC001C764B /* RNBranchAgingItem.m in Sources */,
 				78D8252A204F826700CBD9D9 /* EXApiV2Result.m in Sources */,
+				310AC14421918CB800E9F37E /* EXLinearGradientLayer.m in Sources */,
 				B56C65CC204769F9002B2424 /* EXMenuViewController.m in Sources */,
 				B5AC39A71E95A90B00540AA7 /* EXKernel.m in Sources */,
 				783435DC205B8BEE00DD28C3 /* AIRGoogleMapCalloutManager.m in Sources */,
@@ -2597,6 +2616,7 @@
 				B5AC39AA1E95A90B00540AA7 /* EXKernelDevKeyCommands.m in Sources */,
 				B5FB74311FF6DADB001C764B /* EXVideoManager.m in Sources */,
 				BB50E88D20B9C0D3003C752D /* RNRootViewGestureRecognizer.m in Sources */,
+				0799CFDA21839B520039E97C /* EXSession.m in Sources */,
 				3159BB3621806E24002D2A81 /* RNSVGLine.m in Sources */,
 				BB5BD32920AEFCB4007E02FC /* REAOperatorNode.m in Sources */,
 				B54D2913205307380019411A /* EXAppLoadingCancelView.m in Sources */,
@@ -2638,7 +2658,6 @@
 				B5FB74BE1FF6DADC001C764B /* EXNativeAdView.m in Sources */,
 				B5A473DC204A66F70035C61C /* EXErrorView.m in Sources */,
 				B532EB672058431000569CF2 /* EXMenuGestureRecognizer.m in Sources */,
-				B5FB74A91FF6DADC001C764B /* EXGoogle.m in Sources */,
 				3159BB2A21806E0C002D2A81 /* RNSVGLinearGradient.m in Sources */,
 				78343620205B8C5F00DD28C3 /* AIRMapMarker.m in Sources */,
 				0726F05C2007E446004992E7 /* EXKernelAppRegistry.m in Sources */,

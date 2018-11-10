@@ -1,9 +1,9 @@
 {
   "name": "EXBarCodeScanner",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "summary": "Expo BarCode Scanner standalone universal module",
   "description": "Expo BarCode Scanner standalone universal module",
-  "license": "BSD",
+  "license": "MIT",
   "authors": "650 Industries, Inc.",
   "homepage": "https://docs.expo.io/",
   "platforms": {

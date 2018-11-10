@@ -2,6 +2,7 @@
 
 #import "EXEnvironment.h"
 #import "EXFileDownloader.h"
+#import "EXSession.h"
 #import "EXVersions.h"
 #import "EXKernelUtil.h"
 
@@ -104,7 +105,7 @@ NSTimeInterval const EXFileDownloaderDefaultTimeoutInterval = 60;
   [request setValue:@"1" forHTTPHeaderField:@"Expo-Api-Version"];
   [request setValue:clientEnvironment forHTTPHeaderField:@"Expo-Client-Environment"];
 
-  NSString *sessionSecret = [EXEnvironment sharedEnvironment].sessionSecret;
+  NSString *sessionSecret = [[EXSession sharedInstance] sessionSecret];
   if (sessionSecret) {
     [request setValue:sessionSecret forHTTPHeaderField:@"Expo-Session"];
   }

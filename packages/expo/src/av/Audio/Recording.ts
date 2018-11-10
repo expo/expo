@@ -6,7 +6,7 @@ import {
   PlaybackStatusToSet,
 } from '../AV';
 
-import { _isAudioEnabled, _throwIfAudioIsDisabled } from '../Audio';
+import { isAudioEnabled, throwIfAudioIsDisabled } from './AudioAvailability';
 
 import { Sound } from './Sound';
 
@@ -181,7 +181,7 @@ export class Recording {
   };
 
   _pollingLoop = async () => {
-    if (_isAudioEnabled() && this._canRecord && this._onRecordingStatusUpdate != null) {
+    if (isAudioEnabled() && this._canRecord && this._onRecordingStatusUpdate != null) {
       this._progressUpdateTimeoutVariable = setTimeout(
         this._pollingLoop,
         this._progressUpdateIntervalMillis
@@ -202,7 +202,7 @@ export class Recording {
   }
 
   _enablePollingIfNecessaryAndPossible() {
-    if (_isAudioEnabled() && this._canRecord && this._onRecordingStatusUpdate != null) {
+    if (isAudioEnabled() && this._canRecord && this._onRecordingStatusUpdate != null) {
       this._disablePolling();
       this._pollingLoop();
     }
@@ -217,7 +217,7 @@ export class Recording {
   async _performOperationAndHandleStatusAsync(
     operation: () => Promise<RecordingStatus>
   ): Promise<RecordingStatus> {
-    _throwIfAudioIsDisabled();
+    throwIfAudioIsDisabled();
     if (this._canRecord) {
       const status = await operation();
       this._callOnRecordingStatusUpdateForNewStatus(status);
@@ -268,7 +268,7 @@ export class Recording {
   async prepareToRecordAsync(
     options: RecordingOptions = RECORDING_OPTIONS_PRESET_LOW_QUALITY
   ): Promise<RecordingStatus> {
-    _throwIfAudioIsDisabled();
+    throwIfAudioIsDisabled();
 
     if (_recorderExists) {
       throw new Error('Only one Recording object can be prepared at a given time.');

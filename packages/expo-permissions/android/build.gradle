@@ -14,7 +14,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven'
 
 group = 'host.exp.exponent'
-version = '1.1.0'
+version = '1.2.0'
 
 //Upload android library to maven with javadoc and android sources
 configurations {
@@ -46,9 +46,9 @@ android {
 
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 26
-        versionCode 5
-        versionName "1.1.0"
+        targetSdkVersion 27
+        versionCode 8
+        versionName "1.2.0"
     }
     lintOptions {
         abortOnError false
@@ -72,5 +72,5 @@ if (new File(rootProject.projectDir.parentFile, 'pubspec.yaml').exists()) {
 dependencies {
     expendency 'expo-core'
     expendency 'expo-permissions-interface'
-    implementation 'com.android.support:appcompat-v7:26.1.0'
+    implementation 'com.android.support:appcompat-v7:27.1.1'
 }
