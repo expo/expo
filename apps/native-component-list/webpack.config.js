@@ -32,11 +32,16 @@ const babelLoaderConfiguration = {
 
     /// React Native
     includeModule('react-native-uncompiled'),
-    includeModule('react-navigation'),
     includeModule('react-native-tab-view'),
     includeModule('react-native-vector-icons'),
     includeModule('react-native-safe-area-view'),
     includeModule('react-native-platform-touchable'),
+
+    /// React Navigation
+    includeModule('react-navigation'),
+    includeModule('react-navigation-stack'),
+    includeModule('@react-navigation'),
+    includeModule('react-native-gesture-handler'),
   ],
   use: {
     loader: 'babel-loader',
@@ -131,6 +136,7 @@ module.exports = {
       './assets/images/expo-icon.png': './assets/images/expo-icon@2x.png',
       './assets/images/slack-icon.png': './assets/images/slack-icon@2x.png',
       'react-native': 'react-native-web',
+      'react-navigation': '@react-navigation/core',
     },
   },
 };
