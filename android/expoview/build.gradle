@@ -68,7 +68,7 @@ android {
     }
     // WHEN_VERSIONING_REMOVE_FROM_HERE
     manifestPlaceholders = [
-      'appAuthRedirectScheme': 'host.exp.exponent'
+        'appAuthRedirectScheme': 'host.exp.exponent'
     ]
     // WHEN_VERSIONING_REMOVE_TO_HERE
   }
@@ -192,7 +192,7 @@ dependencies {
   api 'host.exp:reactandroid-abi30_0_0:1.0.0'
   // END_SDK_30
   // BEGIN_SDK_29
-  api'host.exp:reactandroid-abi29_0_0:1.0.0'
+  api 'host.exp:reactandroid-abi29_0_0:1.0.0'
   // END_SDK_29
   // BEGIN_SDK_28
   api 'host.exp:reactandroid-abi28_0_0:1.0.0'
@@ -239,7 +239,10 @@ dependencies {
   }
   compileOnly 'org.glassfish:javax.annotation:3.1.1'
   api 'de.greenrobot:eventbus:2.4.0'
-  api 'com.amplitude:android-sdk:2.9.2' // Be careful when upgrading! Upgrading might break experience scoping. Check with Jesse. See Analytics.resetAmplitudeDatabaseHelper
+
+  // Be careful when upgrading! Upgrading might break experience scoping. Check with Jesse. See Analytics.resetAmplitudeDatabaseHelper
+  api 'com.amplitude:android-sdk:2.9.2'
+
   api 'com.squareup.picasso:picasso:2.5.2'
   api 'com.google.android.gms:play-services-gcm:15.0.1'
   api 'com.google.android.gms:play-services-analytics:16.0.1'
