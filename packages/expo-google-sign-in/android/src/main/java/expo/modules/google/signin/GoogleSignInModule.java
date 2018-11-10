@@ -107,7 +107,7 @@ public class GoogleSignInModule extends ExportedModule implements ModuleRegistry
         final Map<String, Object> errors = new HashMap<>();
 
         errors.put("SIGN_IN_CANCELLED", String.valueOf(GoogleSignInStatusCodes.SIGN_IN_CANCELLED));
-        errors.put("IN_PROGRESS", ERROR_CONCURRENT_TASK_IN_PROGRESS);
+        errors.put("TASK_IN_PROGRESS", ERROR_CONCURRENT_TASK_IN_PROGRESS);
         errors.put("SIGN_IN_FAILED", String.valueOf(GoogleSignInStatusCodes.SIGN_IN_FAILED));
         errors.put("SIGN_IN_REQUIRED", String.valueOf(CommonStatusCodes.SIGN_IN_REQUIRED));
         errors.put("INVALID_ACCOUNT", String.valueOf(CommonStatusCodes.INVALID_ACCOUNT));

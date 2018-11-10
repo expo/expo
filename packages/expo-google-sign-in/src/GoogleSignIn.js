@@ -100,7 +100,7 @@ export class GoogleSignIn {
   };
 
   arePlayServicesAvailableAsync = async (
-    options: GoogleSignInPlayServicesOptions = { shouldUpdate: false }
+    options?: GoogleSignInPlayServicesOptions = { shouldUpdate: false }
   ): Promise<boolean> => {
     if (ExpoGoogleSignIn.arePlayServicesAvailableAsync) {
       if (options && options.shouldUpdate === undefined) {
@@ -146,7 +146,7 @@ export class GoogleSignIn {
     return ExpoGoogleSignIn.isConnectedAsync();
   };
 
-  signInSilentlyAsync = async (): Promise<?GoogleSignInAuthResult> => {
+  signInSilentlyAsync = async (): Promise<?User> => {
     const isConnected = await this.isConnectedAsync();
     if (isConnected) {
       try {
@@ -175,13 +175,11 @@ export class GoogleSignIn {
     }
   };
 
-  signOutAsync = (): Promise<?GoogleSignInAuthResult> => this._invokeAuthMethod('signOutAsync');
+  signOutAsync = (): Promise => this._invokeAuthMethod('signOutAsync');
 
-  disconnectAsync = (): Promise<?GoogleSignInAuthResult> =>
-    this._invokeAuthMethod('disconnectAsync');
+  disconnectAsync = (): Promise => this._invokeAuthMethod('disconnectAsync');
 
-  getCurrentUserAsync = (): Promise<?GoogleSignInAuthResult> =>
-    this._invokeAuthMethod('getCurrentUserAsync');
+  getCurrentUserAsync = (): Promise<?User> => this._invokeAuthMethod('getCurrentUserAsync');
 
   getPhotoAsync = async (size: number = 128): Promise<?string> => {
     await this._ensureGoogleIsInitializedAsync();

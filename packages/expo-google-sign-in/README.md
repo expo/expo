@@ -1,6 +1,7 @@
 # expo-google-sign-in
 
-`expo-google-sign-in` enables native Google authentication features in your app!
+`expo-google-sign-in` enables native Google authentication features in your app! 
+This module can only be used in ExpoKit, or a Standalone Expo app.
 
 ## Installation
 
@@ -17,6 +18,28 @@ pod 'EXGoogleSignIn', path: '../node_modules/expo-google-sign-in/ios'
 ```
 
 and run `pod install`.
+
+The `clientId` of the app from the Google APIs (or Firebase) console, must be set in `GoogleSignIn.initAsync({ clientId: <CLIENT_ID> })` for sign-in to work. Normally this value would be defined at build time in the `GoogleService-info.plist`.
+
+You will also need to define a custom URL scheme for `Google Sign-In` to handle the returned data. 
+> If this step is skipped you should see an error: `"Exception 'Your app is missing support for the following URL schemes: com.googleusercontent.apps.{{CLIENT_ID}}' ... `
+
+This can be done in the app.json, the value should be your `REVERSED_CLIENT_ID` iOS:
+```js
+{
+ ...
+ "ios": {
+   "infoPlist": {
+     "CFBundleURLTypes": [{
+     "CFBundleTypeRole": "Editor",
+     "CFBundleURLName": "Google Auth",
+     "CFBundleURLSchemes": [
+       "firebase.reverse.id" // ex: "com.googleusercontent.apps.603386649315-vp4revvrcgrcjme51ebuhbkbspl048l9"
+      ]
+    }]
+  }
+}
+```
 
 #### Android
 
@@ -53,52 +76,166 @@ and run `pod install`.
         );
     }
     ```
+4. The client ID of the app from the Google APIs (or Firebase) console, must be set for sign-in to work. This value must be defined in the `google-services.json` on Android, you can define include your custom `google-services.json` in the `app.json` before creating a Standalone app like so: 
+   ```json
+   {
+    ...
+    "android": {
+      "googleServicesFile": "./google-services.json",
+      ...
+     }
+   }
+  ```
 
 ## Methods
 
+
+### `arePlayServicesAvailableAsync(options?: GoogleSignInPlayServicesOptions): Promise<boolean>`
+
+> Android Only, this method always returns true on iOS
+
+Use this method to determine if a user's device can utilize Google Sign-In functionality. 
+By default this method will assume the options `{ shouldUpdate: false }` and silently check the play services, whereas passing `{ shouldUpdate: true }` will present a modal if the Play Services aren't available.
+
 ### `askForPlayServicesAsync(): Promise<boolean>`
 
-### `arePlayServicesAvailableAsync(options: GoogleSignInPlayServicesOptions): Promise<boolean>`
+> Android Only, this method always returns true on iOS
 
-### `initAsync(options: ?GoogleSignInOptions): Promise<any>`
+A convenience wrapper for `arePlayServicesAvailableAsync({ shouldUpdate: true })`, this method will present a modal for the user to update Play Services if they aren't already up-to-date. 
+
+Returns true after the user successfully updates.
+
+### `initAsync(options: ?GoogleSignInOptions): Promise`
+
+Configures how the `GoogleSignIn` module will attempt to sign-in. You can call this method multiple times.
+
+See all the available options under the `GoogleSignInOptions` type.
 
 ### `isSignedInAsync(): Promise<boolean>`
 
-### `signInSilentlyAsync(): Promise<?GoogleSignInAuthResult>`
+Asynchronously returns a boolean representing the user's authentication status.
+
+### `signInSilentlyAsync(): Promise<?GoogleSignIn.User>`
+
+This method will attempt to reauthenticate the user without initializing the authentication flow. If the method is successful, the currently authenticated `GoogleSignIn.User` will be returned, otherwise the method will return `null`.
 
 ### `signInAsync(): Promise<?GoogleSignInAuthResult>`
 
-### `signOutAsync(): Promise<?GoogleSignInAuthResult>`
+Starts the native authentication flow with the information provided in `initAsync()`. 
+If a user cancels, the method will return `{ type: 'cancel', user: null }`. However if a user successfully finishes the authentication flow, the returned value will be: `{ type: 'success', user: GoogleSignIn }`.
+
+There are some errors that can be thrown while authenticating, check `GoogleSignIn.ERRORS` for available error codes.
+
+### `signOutAsync(): Promise`
+
+Signs-out the currently authenticated user. Unlike `disconnectAsync()`, this method will not revoke the access token. This means you can specifiy the `accountName` and reauthenticate without extra user approval.
 
 ### `isConnectedAsync(): Promise<boolean>`
 
-### `disconnectAsync(): Promise<?GoogleSignInAuthResult>`
+Returns true if a user is authenticated and the access token has not been invalidated.
 
-### `getCurrentUserAsync(): Promise<?GoogleSignInAuthResult>`
+### `disconnectAsync(): Promise`
+
+Signs-out the current user out and revokes the access tokens associated with the account. This will prevent reauthentication, whereas `signOutAsync()` will not.
+
+### `getCurrentUserAsync(): Promise<?GoogleSignIn.User>`
+
+If a user is authenticated, this method will return all the basic profile information in the form of a `GoogleSignIn.User`. This data can also be retrieved synchronously with `GoogleSignIn.currentUser`.
 
 ### `getPhotoAsync(size: number = 128): Promise<?string>`
 
+Returns an image URI for the currently authenticated user. This method will return `null` if no user is signed in, or if the current user doesn't have a profile image on Google. 
+The default size is `128px`, if the requested image size is larger than the original image size, the full sized image will be returned.
+
+You can also access this value with `GoogleSignIn.currentUser.identity.photoURL`.
 
 ## Types
 
 ```js
+/* Android Only */
 type GoogleSignInType = "default" | "games";
 ```
 
 ```js
 type GoogleSignInOptions = {
+  /*
+  * [iOS][Android][optional]: `accountName: ?string`
+  * [default]: `[GoogleSignIn.SCOPES.PROFILE, GoogleSignIn.SCOPES.EMAIL]`
+  * Pass the scopes you wish to have access to.
+  */
   scopes: ?Array<string>,
+
+  /*
+  * [iOS][Android][optional]: `webClientId: ?string`
+  * [default]: `undefined`
+  * The client ID of the home web server.  This will be returned as the |audience| property of the
+  * OpenID Connect ID token.  For more info on the ID token:
+  * https://developers.google.com/identity/sign-in/ios/backend-auth
+  */
   webClientId: ?string,
+
+  /* 
+  * [iOS][Android][optional]: `hostedDomain: ?string`
+  * [default]: `undefined`
+  * The hosted G Suite domain of the user. Provided only if the user belongs to a hosted domain
+  */
   hostedDomain: ?string,
+
+  /* 
+  * [iOS][Android][optional]: `accountName: ?string`
+  * [default]: `undefined`
+  * If you know the user's email address ahead of time, you can add it here and it will be the default option
+  * if the user has approved access for this app, the Auth will return instantly.  
+  */
   accountName: ?string,
 
-  // Android
+  /* 
+  * [Android][optional]: `signInType?: GoogleSignIn.TYPES.DEFAULT | GoogleSignIn.TYPES.GAMES`
+  * [default]: `undefined`
+  * The service you wish to sign-in to
+  * GoogleSignIn.TYPES.DEFAULT | GoogleSignIn.TYPES.GAMES
+  */
   signInType: ?GoogleSignInType,
+
+  /* 
+  * [Android][optional]: `isOfflineEnabled: ?boolean`
+  * [default]: `undefined`
+  * If true, the server will return refresh tokens that can be used to access data when the user has unauthenticated. 
+  * 1. Safely secure the refresh token as you can only get one during the initial auth flow.
+  * 2. There are only so many refresh tokens that are issued, limit per user/app, you can also get one for a single user across all clients in an app. If you requests too many tokens, older tokens will begin to be invalidated.
+  */
   isOfflineEnabled: ?boolean,
+
+  /* 
+  * [Android][optional]: `isPromptEnabled: ?boolean`
+  * [default]: false
+  * Forces the consent prompt to be shown everytime a user authenticates. Enable this only when necessary.
+  */
   isPromptEnabled: ?boolean,
-  // iOS
+  
+  /*
+  * [iOS][optional]: `clientId: ?string`
+  * [default]: Read from GoogleService-info.plist `CLIENT_ID` on iOS, and google-services.json `oauth_client.client_id` on Android.
+  * The client ID of the app from the Google APIs (or Firebase) console, this must be set for sign-in to work.
+  * This value must be defined in the google-services.json on Android, you can define your custom google-services.json 
+  */
   clientId: ?string,
+
+  /* 
+  * [iOS][optional]: `language: ?string`
+  * [default]: `undefined`
+  * The language for sign-in, in the form of ISO 639-1 language code optionally followed by a dash
+  * and ISO 3166-1 alpha-2 region code, such as |@"it"| or |@"pt-PT"|. Only set if different from
+  * system default.
+  */
   language: ?string,
+
+  /* 
+  * [iOS][optional]: `openIdRealm?: ?string`
+  * [default]: `undefined`
+  * The OpenID2 realm of the home web server. This allows Google to include the user's OpenID
+  * Identifier in the OpenID Connect ID token.. 
+  */
   openIdRealm: ?string,
 };
 ```
@@ -124,20 +261,105 @@ type GoogleSignInPlayServicesOptions = {
 
 ### `GoogleSignIn.AuthData`
 
-### `GoogleSignIn.User`
+The base class for `GoogleSignIn` authentication data. This method enables you to compare and serialize objects.
 
-### `GoogleSignIn.Authentication`
+**Methods:**
+* `equals(other: ?any): boolean`
+* `toJSON(): object`
 
 ### `GoogleSignIn.Identity`
 
+Extends `GoogleSignIn.AuthData`, core management of user data.
+
+**Variables:**
+* `uid: string;`
+* `email: string;`
+* `displayName: ?string;`
+* `photoURL: ?string;`
+* `firstName: ?string;`
+* `lastName: ?string;`
+
+### `GoogleSignIn.User`
+
+Extends `GoogleSignIn.Identity`, manaages all data regarding an authenticated user.
+
+**Variables:**
+* `auth: ?Authentication;`
+* `scopes: Array<string>;`
+* `hostedDomain: ?string;`
+* `serverAuthCode: ?string;`
+
+**Methods:**
+* `clearCache(): void`
+* `getHeaders(): Promise<{ [string]: string }>`
+* `refreshAuth(): Promise<?Authentication>`
+
+### `GoogleSignIn.Authentication`
+
+Extends `GoogleSignIn.AuthData`, manages the user tokens.
+
+**Variables:**
+* `clientId: ?string;`
+* `accessToken: ?string;`
+* `accessTokenExpirationDate: ?number;`
+* `refreshToken: ?string;`
+* `idToken: ?string;`
+* `idTokenExpirationDate: ?number;`
 
 ## Constants
 
 ### `GoogleSignIn.ERRORS`
 
+All of the available authentication error codes. 
+
+* `GoogleSignIn.ERRORS.SIGN_IN_CANCELLED` The user has cancelled the auth flow
+* `GoogleSignIn.ERRORS.SIGN_IN_REQUIRED` Attempting to access user data before any user has been authenticated
+* `GoogleSignIn.ERRORS.TASK_IN_PROGRESS` An existing auth task is already running.
+* `GoogleSignIn.ERRORS.SIGN_IN_EXCEPTION` A general error has occurred
+* `GoogleSignIn.ERRORS.SIGN_IN_FAILED` A Play Services error has occured (Android only)
+* `GoogleSignIn.ERRORS.INVALID_ACCOUNT` An invalid account has been provided with `accountName` (Android only)
+* `GoogleSignIn.ERRORS.SIGN_IN_NETWORK_ERROR` An issue with the internet connection has caused the auth task to fail (Android only)
+
 ### `GoogleSignIn.SCOPES`
 
+* `GoogleSignIn.SCOPES.PROFILE`
+* `GoogleSignIn.SCOPES.EMAIL`
+* `GoogleSignIn.SCOPES.OPEN_ID`
+* `GoogleSignIn.SCOPES.PLUS_ME`
+* `GoogleSignIn.SCOPES.GAMES`
+* `GoogleSignIn.SCOPES.GAMES_LITE`
+* `GoogleSignIn.SCOPES.CLOUD_SAVE`
+* `GoogleSignIn.SCOPES.APP_STATE`
+* `GoogleSignIn.SCOPES.DRIVE_FILE`
+* `GoogleSignIn.SCOPES.DRIVE_APPFOLDER`
+* `GoogleSignIn.SCOPES.DRIVE_FULL`
+* `GoogleSignIn.SCOPES.DRIVE_APPS`
+* `GoogleSignIn.SCOPES.FITNESS_ACTIVITY_READ`
+* `GoogleSignIn.SCOPES.FITNESS_ACTIVITY_READ_WRITE`
+* `GoogleSignIn.SCOPES.FITNESS_LOCATION_READ`
+* `GoogleSignIn.SCOPES.FITNESS_LOCATION_READ_WRITE`
+* `GoogleSignIn.SCOPES.FITNESS_BODY_READ`
+* `GoogleSignIn.SCOPES.FITNESS_BODY_READ_WRITE`
+* `GoogleSignIn.SCOPES.FITNESS_NUTRITION_READ`
+* `GoogleSignIn.SCOPES.FITNESS_NUTRITION_READ_WRITE`
+* `GoogleSignIn.SCOPES.FITNESS_BLOOD_PRESSURE_READ`
+* `GoogleSignIn.SCOPES.FITNESS_BLOOD_PRESSURE_READ_WRITE`
+* `GoogleSignIn.SCOPES.FITNESS_BLOOD_GLUCOSE_READ`
+* `GoogleSignIn.SCOPES.FITNESS_BLOOD_GLUCOSE_READ_WRITE`
+* `GoogleSignIn.SCOPES.FITNESS_OXYGEN_SATURATION_READ`
+* `GoogleSignIn.SCOPES.FITNESS_OXYGEN_SATURATION_READ_WRITE`
+* `GoogleSignIn.SCOPES.FITNESS_BODY_TEMPERATURE_READ`
+* `GoogleSignIn.SCOPES.FITNESS_BODY_TEMPERATURE_READ_WRITE`
+* `GoogleSignIn.SCOPES.FITNESS_REPRODUCTIVE_HEALTH_READ`
+* `GoogleSignIn.SCOPES.FITNESS_REPRODUCTIVE_HEALTH_READ_WRITE`
+
 ### `GoogleSignIn.TYPES`
+
+All of the available sign-in types. 
+
+* `GoogleSignIn.TYPES.DEFAULT` The standard login method.
+* `GoogleSignIn.TYPES.GAMES` Sign-in to Google Play Games (Android only)
+
 
 ## Usage
 
@@ -149,140 +371,18 @@ import { GoogleSignIn } from 'expo-google-sign-in';
 export default class AuthScreen extends React.Component {
   initAsync = async () => {
     await GoogleSignIn.initAsync({
-      /*
-       * [iOS][Android][optional]: `accountName: ?string`
-       * [default]: `[GoogleSignIn.SCOPES.PROFILE, GoogleSignIn.SCOPES.EMAIL]`
-       * Pass the scopes you wish to have access to.
-       */
-      scopes: [GoogleSignIn.SCOPES.PROFILE, GoogleSignIn.SCOPES.EMAIL],
-
-      /*
-       * [iOS][Android][optional]: `webClientId: ?string`
-       * [default]: `undefined`
-       * The client ID of the home web server.  This will be returned as the |audience| property of the
-       * OpenID Connect ID token.  For more info on the ID token:
-       * https://developers.google.com/identity/sign-in/ios/backend-auth
-       */
-      webClientId: '603386649315-9rbv8vmv2vvftetfbvlrbufcps1fajqf.apps.googleusercontent.com',
-
-      /* 
-       * [iOS][Android][optional]: `accountName: ?string`
-       * [default]: `undefined`
-       * If you know the user's email address ahead of time, you can add it here and it will be the default option
-       * if the user has approved access for this app, the Auth will return instantly.  
-       */
-      accountName: 'bacon@expo.io',
-
-      /* 
-       * [iOS][Android][optional]: `hostedDomain: ?string`
-       * [default]: `undefined`
-       * The Google Apps domain to which users must belong to sign in.  
-       * To verify, check |GIDGoogleUser|'s |hostedDomain| property.
-       */
-      hostedDomain: undefined,
-
-      /* 
-       * [Android][optional]: `signInType?: GoogleSignIn.TYPES.DEFAULT | GoogleSignIn.TYPES.GAMES`
-       * [default]: `undefined`
-       * The Google Apps domain to which users must belong to sign in.  
-       * To verify, check |GIDGoogleUser|'s |hostedDomain| property.
-       */
-      signInType: GoogleSignIn.TYPES.DEFAULT,
-
-      /* 
-       * [Android][optional]: `isOfflineEnabled: ?boolean`
-       * [default]: `undefined`
-       * The Google Apps domain to which users must belong to sign in.  
-       * To verify, check |GIDGoogleUser|'s |hostedDomain| property.
-       */
-      isOfflineEnabled: true,
-
-      /* 
-       * [Android][optional]: `isPromptEnabled: ?boolean`
-       * [default]: `undefined`
-       * The Google Apps domain to which users must belong to sign in.  
-       * To verify, check |GIDGoogleUser|'s |hostedDomain| property.
-       */
-      isPromptEnabled: true,
-
-      /*
-       * [iOS][optional]: `clientId: ?string`
-       * [default]: Read from GoogleService-info.plist `CLIENT_ID` on iOS, and google-services.json `oauth_client.client_id` on Android.
-       * The client ID of the app from the Google APIs console.  Must set for sign-in to work.
-       * This value must be defined in the google-services.json on Android, you can define your custom google-services.json 
-       * in the app.json before creating a standalone app. 
-       * on Android:
-       * {
-       *  ...
-       *  "android": {
-       *    "googleServicesFile": "./google-services.json",
-       *    ...
-       *   }
-       * }
-       * and on you will need to define a custom URI scheme for the returning value. 
-       * This can be done in the app.json, the value should be your `REVERSED_CLIENT_ID` iOS:
-       * {
-       *  ...
-       *  "ios": {
-       *    "infoPlist": {
-       *      "CFBundleURLTypes": {
-       *      "CFBundleTypeRole": "Editor",
-       *      "CFBundleURLName": "Google Auth",
-       *      "CFBundleURLSchemes": [
-       *        "firebase.reverse.id"
-       *         //ex: "com.googleusercontent.apps.603386649315-vp4revvrcgrcjme51ebuhbkbspl048l9"
-       *       ]
-       *     }
-       *   }
-       * }
-       */
       clientId: '603386649315-vp4revvrcgrcjme51ebuhbkbspl048l9.apps.googleusercontent.com',
-
-      /* 
-       * [iOS][optional]: `language: ?string`
-       * [default]: `undefined`
-       * The language for sign-in, in the form of ISO 639-1 language code optionally followed by a dash
-       * and ISO 3166-1 alpha-2 region code, such as |@"it"| or |@"pt-PT"|. Only set if different from
-       * system default.
-       */
-      language: 'en-US', // iSO language codes. ex: `Expo.Localization.locale`
-
-      /* 
-       * [iOS][optional]: `openIdRealm?: ?string`
-       * [default]: `undefined`
-       * The OpenID2 realm of the home web server. This allows Google to include the user's OpenID
-       * Identifier in the OpenID Connect ID token.. 
-       */
-      openIdRealm: null,
     });
     this._syncUserWithStateAsync();
   };
 
   _syncUserWithStateAsync = async () => {
-    const user = await GoogleSignIn.getCurrentUserAsync();
-    if (user) {
-      // Get the Google photo, on iOS you can define what size to get.
-      const photoURL = await GoogleSignIn.getPhotoAsync(256);
-      this.setState({
-        user: {
-          ...GoogleSignIn.currentUser.toJSON(),
-          photoURL: photoURL || GoogleSignIn.currentUser.photoURL,
-        },
-      });
-    } else {
-      this.setState({ user: null });
-    }
+    const user = await GoogleSignIn.signInSilentlyAsync();
+    this.setState({ user });
   };
 
   signOutAsync = async () => {
-    try {
-      await GoogleSignIn.disconnectAsync();
-      await GoogleSignIn.signOutAsync();
-      console.log('Log out successful');
-    } catch ({ message }) {
-      console.error('Demo: Error: logout: ' + message);
-    }
-
+    await GoogleSignIn.signOutAsync();
     this.setState({ user: null });
   };
 
@@ -290,7 +390,6 @@ export default class AuthScreen extends React.Component {
     try {
       await GoogleSignIn.askForPlayServicesAsync();
       const { type, user } = await GoogleSignIn.signInAsync();
-      console.log({ type, user });
       if (type === 'success') {
         this._syncUserWithStateAsync();
       }
