@@ -103,7 +103,7 @@ Accessibility Role tells a person using either VoiceOver on iOS or TalkBack on A
 * **header** Used when an element acts as a header for a content section (e.g. the title of a navigation bar).
 * **summary** Used when an element can be used to provide a quick summary of current conditions in the app when the app first launches.
 
-#### accessibilityState (iOS, Android)
+#### accessibilityStates (iOS, Android)
 
 > **Note:** > `accessibilityRole` and `accessibilityStates` are meant to be a cross-platform solution to replace `accessibilityTraits` and `accessibilityComponentType`, which will soon be deprecated. When possible, use `accessibilityRole` and `accessibilityStates` instead of `accessibilityTraits` and `accessibilityComponentType`.
 
@@ -112,7 +112,7 @@ Accessibility State tells a person using either VoiceOver on iOS or TalkBack on 
 * **selected** Used when the element is in a selected state. For example, a button is selected.
 * **disabled** Used when the element is disabled and cannot be interacted with.
 
-To use, set the `accessibilityState` to an array containing either `selected`, `disabled`, or both.
+To use, set the `accessibilityStates` to an array containing either `selected`, `disabled`, or both.
 
 #### accessibilityTraits (iOS)
 

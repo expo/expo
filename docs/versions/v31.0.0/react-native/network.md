@@ -74,7 +74,7 @@ You can also use the proposed ES2017 `async`/`await` syntax in a React Native ap
 async function getMoviesFromApi() {
   try {
     let response = await fetch(
-      'https://facebook.github.io/react-native/movies.json'
+      'https://facebook.github.io/react-native/movies.json',
     );
     let responseJson = await response.json();
     return responseJson.movies;

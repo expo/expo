@@ -49,9 +49,9 @@ _retrieveData = async () => {
       // We have data!!
       console.log(value);
     }
-   } catch (error) {
-     // Error retrieving data
-   }
+  } catch (error) {
+    // Error retrieving data
+  }
 }
 
 ```

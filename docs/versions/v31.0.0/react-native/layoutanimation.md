@@ -89,13 +89,59 @@ static checkConfig(config, location, name)
 
 ## Properties
 
----
+### Types
+
+An enumerate of animation types to be used in [`create`](layoutanimation.md#create) method.
+
+| Types         |
+| ------------- |
+| spring        |
+| linear        |
+| easeInEaseOut |
+| easeIn        |
+| easeOut       |
+| keyboard      |
 
 ---
 
----
+### Properties
+
+An enumerate of object property to be animated, used in [`create`](layoutanimation.md#create) method.
+
+| Properties |
+| ---------- |
+| opacity    |
+| scaleX     |
+| scaleY     |
+| scaleXY    |
 
 ---
 
+### Presets
+
+A set of predefined animation config.
+
+| Presets       | Value                                                                                                                                                                 |
+| ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| easeInEaseOut | `create(300, 'easeInEaseOut', 'opacity')`                                                                                                                             |
+| linear        | `create(500, 'linear', 'opacity')`                                                                                                                                    |
+| spring        | `{ duration: 700, create: { type: 'linear', property: 'opacity' }, update: { type: 'spring', springDamping: 0.4 }, delete: { type: 'linear', property: 'opacity' } }` |
+
 ---
+
+### easeInEaseOut
+
+Shortcut to bind `configureNext()` methods with `Presets.easeInEaseOut`.
+
+---
+
+### linear
+
+Shortcut to bind `configureNext()` methods with `Presets.linear`.
+
+---
+
+### spring
+
+Shortcut to bind `configureNext()` methods with `Presets.spring`.
 

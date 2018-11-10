@@ -97,9 +97,9 @@ title: Layout Props
 
 ### `aspectRatio`
 
-Aspect ratio control the size of the undefined dimension of a node. Aspect ratio is a non-standard property only available in react native and not CSS.
+Aspect ratio controls the size of the undefined dimension of a node. Aspect ratio is a non-standard property only available in React Native and not CSS.
 
-* On a node with a set width/height aspect ratio control the size of the unset dimension
+* On a node with a set width/height aspect ratio controls the size of the unset dimension
 * On a node with a set flex basis aspect ratio controls the size of the node in the cross axis if unset
 * On a node with a measure function aspect ratio works as though the measure function measures the flex basis
 * On a node with flex grow/shrink aspect ratio controls the size of the node in the cross axis if unset
@@ -189,9 +189,9 @@ It works similarly to `bottom` in CSS, but in React Native you must use points o
 
 See https://developer.mozilla.org/en-US/docs/Web/CSS/bottom for more details of how `bottom` affects layout.
 
-| Type            | Required |
-| --------------- | -------- |
-| number, ,string | No       |
+| Type           | Required |
+| -------------- | -------- |
+| number, string | No       |
 
 ---
 
@@ -223,9 +223,9 @@ When the direction is `ltr`, `end` is equivalent to `right`. When the direction 
 
 This style takes precedence over the `left` and `right` styles.
 
-| Type            | Required |
-| --------------- | -------- |
-| number, ,string | No       |
+| Type           | Required |
+| -------------- | -------- |
+| number, string | No       |
 
 ---
 
@@ -249,9 +249,9 @@ flexGrow, flexShrink, and flexBasis work the same as in CSS.
 
 ### `flexBasis`
 
-| Type            | Required |
-| --------------- | -------- |
-| number, ,string | No       |
+| Type           | Required |
+| -------------- | -------- |
+| number, string | No       |
 
 ---
 
@@ -297,9 +297,9 @@ flexGrow, flexShrink, and flexBasis work the same as in CSS.
 
 It works similarly to `height` in CSS, but in React Native you must use points or percentages. Ems and other units are not supported. See https://developer.mozilla.org/en-US/docs/Web/CSS/height for more details.
 
-| Type            | Required |
-| --------------- | -------- |
-| number, ,string | No       |
+| Type           | Required |
+| -------------- | -------- |
+| number, string | No       |
 
 ---
 
@@ -321,9 +321,9 @@ It works similarly to `left` in CSS, but in React Native you must use points or 
 
 See https://developer.mozilla.org/en-US/docs/Web/CSS/left for more details of how `left` affects layout.
 
-| Type            | Required |
-| --------------- | -------- |
-| number, ,string | No       |
+| Type           | Required |
+| -------------- | -------- |
+| number, string | No       |
 
 ---
 
@@ -331,9 +331,9 @@ See https://developer.mozilla.org/en-US/docs/Web/CSS/left for more details of ho
 
 Setting `margin` has the same effect as setting each of `marginTop`, `marginLeft`, `marginBottom`, and `marginRight`. See https://developer.mozilla.org/en-US/docs/Web/CSS/margin for more details.
 
-| Type            | Required |
-| --------------- | -------- |
-| number, ,string | No       |
+| Type           | Required |
+| -------------- | -------- |
+| number, string | No       |
 
 ---
 
@@ -341,9 +341,9 @@ Setting `margin` has the same effect as setting each of `marginTop`, `marginLeft
 
 `marginBottom` works like `margin-bottom` in CSS. See https://developer.mozilla.org/en-US/docs/Web/CSS/margin-bottom for more details.
 
-| Type            | Required |
-| --------------- | -------- |
-| number, ,string | No       |
+| Type           | Required |
+| -------------- | -------- |
+| number, string | No       |
 
 ---
 
@@ -351,9 +351,9 @@ Setting `margin` has the same effect as setting each of `marginTop`, `marginLeft
 
 When direction is `ltr`, `marginEnd` is equivalent to `marginRight`. When direction is `rtl`, `marginEnd` is equivalent to `marginLeft`.
 
-| Type            | Required |
-| --------------- | -------- |
-| number, ,string | No       |
+| Type           | Required |
+| -------------- | -------- |
+| number, string | No       |
 
 ---
 
@@ -361,9 +361,9 @@ When direction is `ltr`, `marginEnd` is equivalent to `marginRight`. When direct
 
 Setting `marginHorizontal` has the same effect as setting both `marginLeft` and `marginRight`.
 
-| Type            | Required |
-| --------------- | -------- |
-| number, ,string | No       |
+| Type           | Required |
+| -------------- | -------- |
+| number, string | No       |
 
 ---
 
@@ -371,9 +371,9 @@ Setting `marginHorizontal` has the same effect as setting both `marginLeft` and 
 
 `marginLeft` works like `margin-left` in CSS. See https://developer.mozilla.org/en-US/docs/Web/CSS/margin-left for more details.
 
-| Type            | Required |
-| --------------- | -------- |
-| number, ,string | No       |
+| Type           | Required |
+| -------------- | -------- |
+| number, string | No       |
 
 ---
 
@@ -381,9 +381,9 @@ Setting `marginHorizontal` has the same effect as setting both `marginLeft` and 
 
 `marginRight` works like `margin-right` in CSS. See https://developer.mozilla.org/en-US/docs/Web/CSS/margin-right for more details.
 
-| Type            | Required |
-| --------------- | -------- |
-| number, ,string | No       |
+| Type           | Required |
+| -------------- | -------- |
+| number, string | No       |
 
 ---
 
@@ -391,9 +391,9 @@ Setting `marginHorizontal` has the same effect as setting both `marginLeft` and 
 
 When direction is `ltr`, `marginStart` is equivalent to `marginLeft`. When direction is `rtl`, `marginStart` is equivalent to `marginRight`.
 
-| Type            | Required |
-| --------------- | -------- |
-| number, ,string | No       |
+| Type           | Required |
+| -------------- | -------- |
+| number, string | No       |
 
 ---
 
@@ -401,9 +401,9 @@ When direction is `ltr`, `marginStart` is equivalent to `marginLeft`. When direc
 
 `marginTop` works like `margin-top` in CSS. See https://developer.mozilla.org/en-US/docs/Web/CSS/margin-top for more details.
 
-| Type            | Required |
-| --------------- | -------- |
-| number, ,string | No       |
+| Type           | Required |
+| -------------- | -------- |
+| number, string | No       |
 
 ---
 
@@ -411,9 +411,9 @@ When direction is `ltr`, `marginStart` is equivalent to `marginLeft`. When direc
 
 Setting `marginVertical` has the same effect as setting both `marginTop` and `marginBottom`.
 
-| Type            | Required |
-| --------------- | -------- |
-| number, ,string | No       |
+| Type           | Required |
+| -------------- | -------- |
+| number, string | No       |
 
 ---
 
@@ -425,9 +425,9 @@ It works similarly to `max-height` in CSS, but in React Native you must use poin
 
 See https://developer.mozilla.org/en-US/docs/Web/CSS/max-height for more details.
 
-| Type            | Required |
-| --------------- | -------- |
-| number, ,string | No       |
+| Type           | Required |
+| -------------- | -------- |
+| number, string | No       |
 
 ---
 
@@ -439,9 +439,9 @@ It works similarly to `max-width` in CSS, but in React Native you must use point
 
 See https://developer.mozilla.org/en-US/docs/Web/CSS/max-width for more details.
 
-| Type            | Required |
-| --------------- | -------- |
-| number, ,string | No       |
+| Type           | Required |
+| -------------- | -------- |
+| number, string | No       |
 
 ---
 
@@ -453,9 +453,9 @@ It works similarly to `min-height` in CSS, but in React Native you must use poin
 
 See https://developer.mozilla.org/en-US/docs/Web/CSS/min-height for more details.
 
-| Type            | Required |
-| --------------- | -------- |
-| number, ,string | No       |
+| Type           | Required |
+| -------------- | -------- |
+| number, string | No       |
 
 ---
 
@@ -467,9 +467,9 @@ It works similarly to `min-width` in CSS, but in React Native you must use point
 
 See https://developer.mozilla.org/en-US/docs/Web/CSS/min-width for more details.
 
-| Type            | Required |
-| --------------- | -------- |
-| number, ,string | No       |
+| Type           | Required |
+| -------------- | -------- |
+| number, string | No       |
 
 ---
 
@@ -487,9 +487,9 @@ See https://developer.mozilla.org/en-US/docs/Web/CSS/min-width for more details.
 
 Setting `padding` has the same effect as setting each of `paddingTop`, `paddingBottom`, `paddingLeft`, and `paddingRight`. See https://developer.mozilla.org/en-US/docs/Web/CSS/padding for more details.
 
-| Type            | Required |
-| --------------- | -------- |
-| number, ,string | No       |
+| Type           | Required |
+| -------------- | -------- |
+| number, string | No       |
 
 ---
 
@@ -497,9 +497,9 @@ Setting `padding` has the same effect as setting each of `paddingTop`, `paddingB
 
 `paddingBottom` works like `padding-bottom` in CSS. See https://developer.mozilla.org/en-US/docs/Web/CSS/padding-bottom for more details.
 
-| Type            | Required |
-| --------------- | -------- |
-| number, ,string | No       |
+| Type           | Required |
+| -------------- | -------- |
+| number, string | No       |
 
 ---
 
@@ -507,9 +507,9 @@ Setting `padding` has the same effect as setting each of `paddingTop`, `paddingB
 
 When direction is `ltr`, `paddingEnd` is equivalent to `paddingRight`. When direction is `rtl`, `paddingEnd` is equivalent to `paddingLeft`.
 
-| Type            | Required |
-| --------------- | -------- |
-| number, ,string | No       |
+| Type           | Required |
+| -------------- | -------- |
+| number, string | No       |
 
 ---
 
@@ -517,9 +517,9 @@ When direction is `ltr`, `paddingEnd` is equivalent to `paddingRight`. When dire
 
 Setting `paddingHorizontal` is like setting both of `paddingLeft` and `paddingRight`.
 
-| Type            | Required |
-| --------------- | -------- |
-| number, ,string | No       |
+| Type           | Required |
+| -------------- | -------- |
+| number, string | No       |
 
 ---
 
@@ -527,9 +527,9 @@ Setting `paddingHorizontal` is like setting both of `paddingLeft` and `paddingRi
 
 `paddingLeft` works like `padding-left` in CSS. See https://developer.mozilla.org/en-US/docs/Web/CSS/padding-left for more details.
 
-| Type            | Required |
-| --------------- | -------- |
-| number, ,string | No       |
+| Type           | Required |
+| -------------- | -------- |
+| number, string | No       |
 
 ---
 
@@ -537,9 +537,9 @@ Setting `paddingHorizontal` is like setting both of `paddingLeft` and `paddingRi
 
 `paddingRight` works like `padding-right` in CSS. See https://developer.mozilla.org/en-US/docs/Web/CSS/padding-right for more details.
 
-| Type            | Required |
-| --------------- | -------- |
-| number, ,string | No       |
+| Type           | Required |
+| -------------- | -------- |
+| number, string | No       |
 
 ---
 
@@ -547,9 +547,9 @@ Setting `paddingHorizontal` is like setting both of `paddingLeft` and `paddingRi
 
 When direction is `ltr`, `paddingStart` is equivalent to `paddingLeft`. When direction is `rtl`, `paddingStart` is equivalent to `paddingRight`.
 
-| Type            | Required |
-| --------------- | -------- |
-| number, ,string | No       |
+| Type           | Required |
+| -------------- | -------- |
+| number, string | No       |
 
 ---
 
@@ -567,9 +567,9 @@ When direction is `ltr`, `paddingStart` is equivalent to `paddingLeft`. When dir
 
 Setting `paddingVertical` is like setting both of `paddingTop` and `paddingBottom`.
 
-| Type            | Required |
-| --------------- | -------- |
-| number, ,string | No       |
+| Type           | Required |
+| -------------- | -------- |
+| number, string | No       |
 
 ---
 
@@ -597,9 +597,9 @@ It works similarly to `right` in CSS, but in React Native you must use points or
 
 See https://developer.mozilla.org/en-US/docs/Web/CSS/right for more details of how `right` affects layout.
 
-| Type            | Required |
-| --------------- | -------- |
-| number, ,string | No       |
+| Type           | Required |
+| -------------- | -------- |
+| number, string | No       |
 
 ---
 
@@ -609,9 +609,9 @@ When the direction is `ltr`, `start` is equivalent to `left`. When the direction
 
 This style takes precedence over the `left`, `right`, and `end` styles.
 
-| Type            | Required |
-| --------------- | -------- |
-| number, ,string | No       |
+| Type           | Required |
+| -------------- | -------- |
+| number, string | No       |
 
 ---
 
@@ -623,9 +623,9 @@ It works similarly to `top` in CSS, but in React Native you must use points or p
 
 See https://developer.mozilla.org/en-US/docs/Web/CSS/top for more details of how `top` affects layout.
 
-| Type            | Required |
-| --------------- | -------- |
-| number, ,string | No       |
+| Type           | Required |
+| -------------- | -------- |
+| number, string | No       |
 
 ---
 
@@ -635,9 +635,9 @@ See https://developer.mozilla.org/en-US/docs/Web/CSS/top for more details of how
 
 It works similarly to `width` in CSS, but in React Native you must use points or percentages. Ems and other units are not supported. See https://developer.mozilla.org/en-US/docs/Web/CSS/width for more details.
 
-| Type            | Required |
-| --------------- | -------- |
-| number, ,string | No       |
+| Type           | Required |
+| -------------- | -------- |
+| number, string | No       |
 
 ---
 

@@ -90,7 +90,7 @@ AlertIOS.alert(
       text: 'Install',
       onPress: () => console.log('Install Pressed'),
     },
-  ]
+  ],
 );
 
 ```
@@ -140,7 +140,7 @@ AlertIOS.prompt(
       onPress: (password) => console.log('OK Pressed, password: ' + password),
     },
   ],
-  'secure-text'
+  'secure-text',
 );
 
 ```
@@ -158,7 +158,7 @@ AlertIOS.prompt(
   null,
   (text) => console.log('Your username is ' + text),
   null,
-  'default'
+  'default',
 );
 
 ```

@@ -292,7 +292,7 @@ A useful tool to visualize cubic bezier curves can be found at http://cubic-bezi
 
 ```javascript
 
-static in(easing)
+static in easing;
 
 ```
 

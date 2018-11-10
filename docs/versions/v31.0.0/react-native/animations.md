@@ -338,7 +338,7 @@ The native driver also works with `Animated.event`. This is especially useful fo
         },
       },
     ],
-    {useNativeDriver: true} // <-- Add this
+    {useNativeDriver: true}, // <-- Add this
   )}>
   {content}
 </Animated.ScrollView>

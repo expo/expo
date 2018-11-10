@@ -159,26 +159,32 @@ let mainAsync = async () => {
       if (basename === 'flatlist.md') {
         if (/Minimal /.test(l)) {
           l = l + '\n\n```javascript';
+          inCodeBlock = true;
         }
         if (/More complex, multi-select example/.test(l)) {
           l = '```\n\n' + l;
+          inCodeBlock = false;
         }
 
         if (/class MyListItem extends/.test(l)) {
           l = '```javascript\n' + l;
+          inCodeBlock = true;
         }
 
         if (/This is a convenience wrapper/.test(l)) {
           l = '```\n\n' + l;
+          inCodeBlock = false;
         }
       }
 
       if (basename === 'picker.md') {
         if (/    <Picker$/.test(l)) {
           l = '\n```javascript\n\n' + l;
+          inCodeBlock = true;
         }
         if (/    <\/Picker>/.test(l)) {
           l = l + '\n\n```\n';
+          inCodeBlock = false;
         }
       }
 

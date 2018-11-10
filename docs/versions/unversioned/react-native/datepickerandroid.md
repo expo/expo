@@ -60,7 +60,7 @@ The available keys for the `options` object are:
   * 'spinner': Show a date picker in spinner mode.
   * 'default': Show a default native date picker(spinner/calendar) based on android versions.
 
-Returns a Promise which will be invoked an object containing `action`, `year`, `month` (0-11), `day` if the user picked a date. If the user dismissed the dialog, the Promise will still be resolved with action being `DatePickerAndroid.dismissedAction` and all the other keys being undefined. **Always** check whether the `action` before reading the values.
+Returns a Promise which will be invoked an object containing `action`, `year`, `month` (0-11), `day` if the user picked a date. If the user dismissed the dialog, the Promise will still be resolved with action being `DatePickerAndroid.dismissedAction` and all the other keys being undefined. **Always** check whether the `action` is equal to `DatePickerAndroid.dateSetAction` before reading the values.
 
 Note the native date picker dialog has some UI glitches on Android 4 and lower when using the `minDate` and `maxDate` options.
 

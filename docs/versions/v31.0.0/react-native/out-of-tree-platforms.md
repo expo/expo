@@ -16,7 +16,15 @@ Right now the process of creating a React Native platform from scratch is not ve
 
 ### Bundling
 
-As of React Native 0.57 you can now register your React Native platform with React Native's JavaScript bundler, [Metro](https://facebook.github.io/metro/). This means you can pass `--platform example` to `react-native bundle`, and it will look for JavaScript files with the `.example.js` suffix. To register your platform with RNPM, your module's name must start with a `react-native-` suffix. You must also have an entry in your `package.json` like this:
+As of React Native 0.57 you can now register your React Native platform with React Native's JavaScript bundler, [Metro](https://facebook.github.io/metro/). This means you can pass `--platform example` to `react-native bundle`, and it will look for JavaScript files with the `.example.js` suffix.
+
+To register your platform with RNPM, your module's name must match one of these patterns:
+
+* `react-native-example` - It will search all top-level modules that start with `react-native-`
+* `@org/react-native-example` - It will search for modules that start with `react-native-` under any scope
+* `@react-native-example/module` - It will search in all modules under scopes with names starting with `@react-native-`
+
+You must also have an entry in your `package.json` like this:
 
 
 ```json

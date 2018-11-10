@@ -58,6 +58,13 @@ const generateJsPage = (filePath, filename) => {
   // generate HTML from the markdown tables, and inline that into the markdown
   markdown = replaceTables(markdown);
 
+  // NOTE(2018/11/10): react-native/layoutanimation.md has some particular 
+  // code span inside a table which breaks the compilation.
+  if (filename === 'layoutanimation') {
+    markdown = markdown.replace(/<td><code>/g, '`');
+    markdown = markdown.replace(/<\/code><\/td>/g, '`');
+  }
+
   // remove comments
   markdown = markdown.replace(/<!--(.|\n)*?-->/g, '');
 

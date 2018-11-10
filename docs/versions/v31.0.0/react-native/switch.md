@@ -9,16 +9,16 @@ This is a controlled component that requires an `onValueChange` callback that up
 
 ### Props
 
-- [View props...](view.md#props)
+* [View props...](view.md#props)
 
-* [`disabled`](switch.md#disabled)
-* [`trackColor`](switch.md#trackcolor)
-* [`ios_backgroundColor`](switch.md#ios-backgroundcolor)
-* [`onValueChange`](switch.md#onvaluechange)
-* [`testID`](switch.md#testid)
-* [`thumbColor`](switch.md#thumbcolor)
-* [`tintColor`](switch.md#tintcolor)
-* [`value`](switch.md#value)
+- [`disabled`](switch.md#disabled)
+- [`trackColor`](switch.md#trackcolor)
+- [`ios_backgroundColor`](switch.md#ios-backgroundcolor)
+- [`onValueChange`](switch.md#onvaluechange)
+- [`testID`](switch.md#testid)
+- [`thumbColor`](switch.md#thumbcolor)
+- [`tintColor`](switch.md#tintcolor)
+- [`value`](switch.md#value)
 
 ---
 
@@ -38,9 +38,9 @@ If true the user won't be able to toggle the switch. Default value is false.
 
 ### `trackColor`
 
-Custom colors for the switch track. `onTintColor` is now deprecated.
+Custom colors for the switch track.
 
-iOS: when the switch value is false, the track shrinks into the border. If you want to change the color of the background exposed by the shrunken track, use [`ios_backgroundColor`](switch.md#ios_backgroundColor).
+_iOS_: When the switch value is false, the track shrinks into the border. If you want to change the color of the background exposed by the shrunken track, use [`ios_backgroundColor`](switch.md#ios_backgroundColor).
 
 | Type                                                          | Required |
 | ------------------------------------------------------------- | -------- |
@@ -89,6 +89,8 @@ Color of the foreground switch grip. If this is set on iOS, the switch grip will
 ---
 
 ### `tintColor`
+
+`tintColor` is deprecated, use `trackColor` instead.
 
 Border color on iOS and background color on Android when the switch is turned off.
 

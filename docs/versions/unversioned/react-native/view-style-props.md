@@ -5,6 +5,9 @@ title: View Style Props
 
 ### Props
 
+* [Layout Props](layout-props.md#props)
+* [Shadow Props](shadow-props.md#props)
+* [Transforms](transforms.md#props)
 * [`borderRightColor`](view-style-props.md#borderrightcolor)
 * [`backfaceVisibility`](view-style-props.md#backfacevisibility)
 * [`borderBottomColor`](view-style-props.md#borderbottomcolor)
