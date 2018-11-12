@@ -1,10 +1,10 @@
 // @flow
 
-function isFunction(functionToCheck) {
+function isFunction(functionToCheck: ?any): boolean {
   return functionToCheck && {}.toString.call(functionToCheck) === '[object Function]';
 }
 
-function createWebStyle(fontFamily, resource) {
+function createWebStyle(fontFamily: string, resource) {
   const fontStyle = `@font-face {
     font-family: ${fontFamily};
     src: url(${resource});
@@ -21,11 +21,10 @@ function createWebStyle(fontFamily, resource) {
   return styleElement;
 }
 
-class ExpoFontLoader {
-  get name() {
+export default {
+  get name(): string {
     return 'ExpoFontLoader';
-  }
-
+  },
   loadAsync(fontFamilyName: string, resource: string): Promise {
     const canInjectStyle =
       document &&
@@ -40,7 +39,5 @@ class ExpoFontLoader {
     const style = createWebStyle(fontFamilyName, resource);
     document.head.appendChild(style);
     return Promise.resolve();
-  }
-}
-
-export default new ExpoFontLoader();
+  },
+};
