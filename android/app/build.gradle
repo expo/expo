@@ -24,8 +24,8 @@ android {
     targetSdkVersion 26
     // ADD VERSIONS HERE
     // BEGIN VERSIONS
-    versionCode 97
-    versionName '2.9.1'
+    versionCode 98
+    versionName '2.9.2'
     // END VERSIONS
     ndk {
       abiFilters 'armeabi-v7a', 'x86'
