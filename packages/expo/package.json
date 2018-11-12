@@ -102,7 +102,7 @@
     "qs": "^6.5.0",
     "react-native-branch": "2.2.5",
     "react-native-gesture-handler": "1.0.8",
-    "react-native-maps": "expo/react-native-maps#v0.22.0-exp.0",
+    "react-native-maps": "expo/react-native-maps#v0.22.1-exp.0",
     "react-native-reanimated": "1.0.0-alpha.10",
     "react-native-screens": "1.0.0-alpha.15",
     "react-native-svg": "8.0.8",
