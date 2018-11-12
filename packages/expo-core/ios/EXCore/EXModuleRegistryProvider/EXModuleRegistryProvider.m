@@ -36,7 +36,11 @@ static NSMutableSet<EXSingletonModule *> *EXSingletonModules;
 void (^EXinitializeGlobalSingletonModulesSet)(void) = ^{
   EXSingletonModules = [NSMutableSet set];
   for (Class singletonModuleClass in EXSingletonModuleClasses) {
-    [EXSingletonModules addObject:[[singletonModuleClass alloc] init]];
+    if ([singletonModuleClass respondsToSelector:@selector(sharedInstance)]) {
+      [EXSingletonModules addObject:[singletonModuleClass sharedInstance]];
+    } else {
+      [EXSingletonModules addObject:[[singletonModuleClass alloc] init]];
+    }
   }
 };
 
@@ -77,7 +81,7 @@ void (^EXinitializeGlobalSingletonModulesSet)(void) = ^{
   NSMutableSet<id<EXInternalModule>> *internalModules = [NSMutableSet set];
   NSMutableSet<EXExportedModule *> *exportedModules = [NSMutableSet set];
   NSMutableSet<EXViewManager *> *viewManagerModules = [NSMutableSet set];
-  
+
   for (Class klass in [self getModulesClasses]) {
     if (![klass conformsToProtocol:@protocol(EXInternalModule)]) {
       EXLogWarn(@"Registered class `%@` does not conform to the `EXModule` protocol.", [klass description]);
@@ -85,20 +89,20 @@ void (^EXinitializeGlobalSingletonModulesSet)(void) = ^{
     }
 
     id<EXInternalModule> instance = [self createModuleInstance:klass forExperienceWithId:experienceId];
-    
+
     if ([[instance class] exportedInterfaces] != nil && [[[instance class] exportedInterfaces] count] > 0) {
       [internalModules addObject:instance];
     }
-    
+
     if ([instance isKindOfClass:[EXExportedModule class]]) {
       [exportedModules addObject:(EXExportedModule *)instance];
     }
-    
+
     if ([instance isKindOfClass:[EXViewManager class]]) {
       [viewManagerModules addObject:(EXViewManager *)instance];
     }
   }
-  
+
   EXModuleRegistry *moduleRegistry = [[EXModuleRegistry alloc] initWithInternalModules:internalModules
                                                                        exportedModules:exportedModules
                                                                           viewManagers:viewManagerModules

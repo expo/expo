@@ -218,7 +218,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
   /* package */ void loadScriptFromFile(String fileName, String sourceURL, boolean loadSynchronously) {
     mSourceURL = sourceURL;
-
     try {
       final String contents = (String) Class.forName("host.exp.exponent.ReactNativeStaticHelpers")
           .getMethod("getBundleSourceForPath", String.class)

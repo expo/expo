@@ -1,7 +1,7 @@
 import React from 'react';
 import { ActivityIndicator, ScrollView, Switch, Text, View } from 'react-native';
 import { Location, Permissions } from 'expo';
-import ListButton from '../components/ListButton';
+import ListButton from '../../components/ListButton';
 
 export default class LocationScreen extends React.Component {
   static navigationOptions = {
@@ -140,6 +140,14 @@ export default class LocationScreen extends React.Component {
       providerStatus: status,
       checkingProviderStatus: false,
     });
+  };
+
+  _goToBackgroundLocationMap = () => {
+    this.props.navigation.navigate('BackgroundLocationMap');
+  };
+
+  _goToGeofencingMap = () => {
+    this.props.navigation.navigate('Geofencing');
   };
 
   _renderPolyfillSwitch = () => {
@@ -290,6 +298,15 @@ export default class LocationScreen extends React.Component {
     );
   };
 
+  renderLocationMapButton() {
+    return (
+      <View>
+        <ListButton onPress={this._goToBackgroundLocationMap} title="Background location map" />
+        <ListButton onPress={this._goToGeofencingMap} title="Geofencing map" />
+      </View>
+    );
+  }
+
   render() {
     return (
       <ScrollView style={{ padding: 10 }}>
@@ -299,6 +316,7 @@ export default class LocationScreen extends React.Component {
         {this.renderWatchLocation()}
         {this.renderSingleCompass()}
         {this.renderWatchCompass()}
+        {this.renderLocationMapButton()}
       </ScrollView>
     );
   }

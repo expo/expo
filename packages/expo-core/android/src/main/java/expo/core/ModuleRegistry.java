@@ -9,6 +9,7 @@ import java.util.Map;
 
 import expo.core.interfaces.InternalModule;
 import expo.core.interfaces.ModuleRegistryConsumer;
+import expo.core.interfaces.SingletonModule;
 
 public class ModuleRegistry {
   private volatile boolean mIsInitialized = false;
@@ -16,13 +17,15 @@ public class ModuleRegistry {
   private final Map<String, ViewManager> mViewManagersMap = new HashMap<>();
   private final Map<String, ExportedModule> mExportedModulesMap = new HashMap<>();
   private final Map<Class, ExportedModule> mExportedModulesByClassMap = new HashMap<>();
+  private final Map<String, SingletonModule> mSingletonModulesMap = new HashMap<>();
 
   private List<WeakReference<ModuleRegistryConsumer>> mRegistryConsumers = new ArrayList<>();
 
   public ModuleRegistry(
           Collection<InternalModule> internalModules,
           Collection<ExportedModule> exportedModules,
-          Collection<ViewManager> viewManagers) {
+          Collection<ViewManager> viewManagers,
+          Collection<SingletonModule> singletonModules) {
     for (InternalModule internalModule : internalModules) {
       registerInternalModule(internalModule);
     }
@@ -33,6 +36,10 @@ public class ModuleRegistry {
 
     for (ViewManager manager : viewManagers) {
       registerViewManager(manager);
+    }
+
+    for (SingletonModule singleton : singletonModules) {
+      registerSingletonModule(singleton);
     }
   }
 
@@ -61,6 +68,10 @@ public class ModuleRegistry {
 
   public Collection<ExportedModule> getAllExportedModules() {
     return mExportedModulesMap.values();
+  }
+
+  public <T> T getSingletonModule(String singletonName, Class<T> singletonClass) {
+    return (T) mSingletonModulesMap.get(singletonName);
   }
 
   /********************************************************
@@ -93,6 +104,12 @@ public class ModuleRegistry {
 
     mViewManagersMap.put(managerName, manager);
     maybeAddRegistryConsumer(manager);
+  }
+
+  public void registerSingletonModule(SingletonModule singleton) {
+    String singletonName = singleton.getName();
+
+    mSingletonModulesMap.put(singletonName, singleton);
   }
 
   /********************************************************

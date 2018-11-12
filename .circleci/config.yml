@@ -175,7 +175,7 @@ jobs:
           name: Build ios shell app simulator
           working_directory: ~/project/tools-public
           no_output_timeout: 30m
-          command: nix run nixpkgs.nodePackages.gulp-cli nixpkgs.cocoapods nixpkgs.xcpretty nixpkgs.expo-cli --command gulp ios-shell-app --action build --type simulator --verbose true --skipRepoUpdate
+          command: nix run nixpkgs.nodePackages.gulp-cli nixpkgs.cocoapods nixpkgs.xcpretty nixpkgs.expo-cli --command gulp ios-shell-app --action build --type simulator --verbose true --skipRepoUpdate --shellAppSdkVersion UNVERSIONED
 
   client_android:
     executor: android

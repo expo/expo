@@ -48,7 +48,7 @@ FOUNDATION_EXPORT NSString * const kEXEmbeddedManifestResourceName;
 @property (nonatomic, readonly, nonnull) NSArray *allManifestUrls;
 
 /**
- *  True by default in ExpoKit apps created with `exp detach`, because the owner of the app needs to
+ *  True by default in ExpoKit apps created with `expo eject`, because the owner of the app needs to
  *  manually modify their App Id to enable keychain sharing.
  */
 @property (nonatomic, readonly) BOOL isManifestVerificationBypassed;

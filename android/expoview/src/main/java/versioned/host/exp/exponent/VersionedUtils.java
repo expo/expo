@@ -2,6 +2,8 @@
 
 package versioned.host.exp.exponent;
 
+import android.util.Log;
+
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactInstanceManagerBuilder;
 import com.facebook.react.common.LifecycleState;
@@ -20,7 +22,8 @@ public class VersionedUtils {
                 instanceManagerBuilderProperties.manifest,
                 // When distributing change the following two arguments to nulls
                 instanceManagerBuilderProperties.expoPackages,
-                instanceManagerBuilderProperties.exponentPackageDelegate))
+                instanceManagerBuilderProperties.exponentPackageDelegate,
+                instanceManagerBuilderProperties.singletonModules))
         .setInitialLifecycleState(LifecycleState.RESUMED);
 
     if (instanceManagerBuilderProperties.jsBundlePath != null && instanceManagerBuilderProperties.jsBundlePath.length() > 0) {

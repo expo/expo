@@ -4,6 +4,7 @@ package host.exp.exponent;
 
 import android.os.Debug;
 import android.support.multidex.MultiDexApplication;
+import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.core.CrashlyticsCore;
@@ -13,6 +14,7 @@ import com.facebook.soloader.SoLoader;
 
 import javax.inject.Inject;
 
+import expo.loaders.provider.AppLoaderProvider;
 import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.branch.BranchManager;
@@ -24,6 +26,7 @@ import host.exp.exponent.kernel.Kernel;
 import host.exp.exponent.kernel.KernelConstants;
 import host.exp.exponent.kernel.KernelInterface;
 import host.exp.exponent.kernel.KernelProvider;
+import host.exp.exponent.headless.HeadlessAppLoader;
 import host.exp.exponent.modules.ExponentKernelModule;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.expoview.Exponent;
@@ -58,6 +61,7 @@ public abstract class ExpoApplication extends MultiDexApplication {
       KernelConstants.MAIN_ACTIVITY_CLASS = Constants.isShellApp() ? ShellAppActivity.class : LauncherActivity.class;
     }
 
+    AppLoaderProvider.registerLoader("react-native-experience", HeadlessAppLoader.class);
     KernelProvider.setFactory(new KernelProvider.KernelFactory() {
       @Override
       public KernelInterface create() {

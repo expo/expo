@@ -2,8 +2,11 @@
 
 import { Platform } from 'react-native';
 
-import { Location, Permissions, Constants } from 'expo';
+import { Location, Permissions, Constants, TaskManager } from 'expo';
 import * as TestUtils from '../TestUtils';
+
+const BACKGROUND_LOCATION_TASK = 'background-location-updates';
+const GEOFENCING_TASK = 'geofencing-task';
 
 export const name = 'Location';
 
@@ -239,5 +242,143 @@ export async function test(t) {
         t.expect(error instanceof TypeError).toBe(true);
       });
     });
+
+    t.describe('Location.hasServicesEnabledAsync()', () => {
+      t.it('checks if location services are enabled', async () => {
+        const result = await Location.hasServicesEnabledAsync();
+        t.expect(result).toBe(true);
+      });
+    });
+
+    describeWithPermissions('Location - background location updates', () => {
+      async function expectTaskAccuracyToBe(accuracy) {
+        const tasks = await TaskManager.getRegisteredTasksAsync();
+        const locationTask = tasks[BACKGROUND_LOCATION_TASK];
+
+        t.expect(locationTask).toBeDefined();
+        t.expect(locationTask.accuracy).toBe(accuracy);
+      }
+
+      t.it('starts location updates', async () => {
+        await Location.startLocationUpdatesAsync(BACKGROUND_LOCATION_TASK);
+      });
+
+      t.it('has started location updates', async () => {
+        const started = await Location.hasStartedLocationUpdatesAsync(BACKGROUND_LOCATION_TASK);
+        t.expect(started).toBe(true);
+      });
+
+      t.it('defaults to balanced accuracy', async () => {
+        await expectTaskAccuracyToBe(Location.Accuracy.Balanced);
+      });
+
+      t.it('can update existing task', async () => {
+        const newAccuracy = Location.Accuracy.Highest;
+        await Location.startLocationUpdatesAsync(BACKGROUND_LOCATION_TASK, {
+          accuracy: newAccuracy,
+        });
+        expectTaskAccuracyToBe(newAccuracy);
+      });
+
+      t.it('stops location updates', async () => {
+        await Location.stopLocationUpdatesAsync(BACKGROUND_LOCATION_TASK);
+      });
+
+      t.it('has stopped location updates', async () => {
+        const started = await Location.hasStartedLocationUpdatesAsync(BACKGROUND_LOCATION_TASK);
+        t.expect(started).toBe(false);
+      });
+    });
+
+    describeWithPermissions('Location - geofencing', () => {
+      const regions = [
+        {
+          identifier: 'Kraków, Poland',
+          radius: 8000,
+          latitude: 50.0468548,
+          longitude: 19.9348341,
+          notifyOnEntry: true,
+          notifyOnExit: true,
+        },
+        {
+          identifier: 'Apple',
+          radius: 1000,
+          latitude: 37.3270145,
+          longitude: -122.0310273,
+          notifyOnEntry: true,
+          notifyOnExit: true,
+        },
+      ];
+
+      async function expectTaskRegionsToBeLike(regions) {
+        const tasks = await TaskManager.getRegisteredTasksAsync();
+        const geofencingTask = tasks[GEOFENCING_TASK];
+
+        t.expect(geofencingTask).toBeDefined();
+        t.expect(geofencingTask.regions).toBeDefined();
+        t.expect(geofencingTask.regions.length).toBe(regions.length);
+
+        for (let i = 0; i < regions.length; i++) {
+          t.expect(geofencingTask.regions[i].identifier).toBe(regions[i].identifier);
+          t.expect(geofencingTask.regions[i].radius).toBe(regions[i].radius);
+          t.expect(geofencingTask.regions[i].latitude).toBe(regions[i].latitude);
+          t.expect(geofencingTask.regions[i].longitude).toBe(regions[i].longitude);
+        }
+      }
+
+      t.it('starts geofencing', async () => {
+        await Location.startGeofencingAsync(GEOFENCING_TASK, regions);
+      });
+
+      t.it('has started geofencing', async () => {
+        const started = await Location.hasStartedGeofencingAsync(GEOFENCING_TASK);
+        t.expect(started).toBe(true);
+      });
+
+      t.it('is monitoring correct regions', async () => {
+        expectTaskRegionsToBeLike(regions);
+      });
+
+      t.it('can update geofencing regions', async () => {
+        const newRegions = regions.slice(1);
+        await Location.startGeofencingAsync(GEOFENCING_TASK, newRegions);
+        expectTaskRegionsToBeLike(newRegions);
+      });
+
+      t.it('stops geofencing', async () => {
+        await Location.stopGeofencingAsync(GEOFENCING_TASK);
+      });
+
+      t.it('has stopped geofencing', async () => {
+        const started = await Location.hasStartedGeofencingAsync(GEOFENCING_TASK);
+        t.expect(started).toBe(false);
+      });
+
+      t.it('throws when starting geofencing with incorrect regions', async () => {
+        await (async () => {
+          let error;
+          try {
+            await Location.startGeofencingAsync(GEOFENCING_TASK, []);
+          } catch (e) {
+            error = e;
+          }
+          t.expect(error instanceof Error).toBe(true);
+        })();
+
+        await (async () => {
+          let error;
+          try {
+            await Location.startGeofencingAsync(GEOFENCING_TASK, [{ longitude: 'not a number' }]);
+          } catch (e) {
+            error = e;
+          }
+          t.expect(error instanceof TypeError).toBe(true);
+        })();
+      });
+    });
   });
 }
+
+// Define empty tasks, otherwise tasks might automatically unregister themselves if no task is defined.
+TaskManager.defineTask(BACKGROUND_LOCATION_TASK, () => {});
+TaskManager.defineTask(GEOFENCING_TASK, () => {});

@@ -52,11 +52,11 @@ void EXRegisterScopedModule(Class moduleClass, ...)
   dispatch_once(&onceToken, ^{
     EXScopedModuleClasses = [NSMutableDictionary dictionary];
   });
-  
+
   NSString *kernelServiceClassName;
   va_list argumentList;
   NSMutableDictionary *unversionedKernelServiceClassNames = [[NSMutableDictionary alloc] init];
-  
+
   va_start(argumentList, moduleClass);
     while ((kernelServiceClassName = va_arg(argumentList, NSString*))) {
       if ([kernelServiceClassName isEqualToString:@"nil"]) {
@@ -66,7 +66,7 @@ void EXRegisterScopedModule(Class moduleClass, ...)
       }
     }
   va_end(argumentList);
-  
+
   NSString *moduleClassName = NSStringFromClass(moduleClass);
   if (moduleClassName) {
     EXScopedModuleClasses[moduleClassName] = unversionedKernelServiceClassNames;
@@ -293,7 +293,7 @@ void EXRegisterScopedModule(Class moduleClass, ...)
                                     [[EXStatusBarManager alloc] init],
                                     [[RCTAsyncLocalStorage alloc] initWithStorageDirectory:localStorageDirectory],
                                     ]];
-  
+
   // add scoped modules
   [extraModules addObjectsFromArray:[self _newScopedModulesWithExperienceId:experienceId services:services params:params]];
 
@@ -304,7 +304,7 @@ void EXRegisterScopedModule(Class moduleClass, ...)
   } else {
     RCTLogWarn(@"No exceptions manager provided when building extra modules for bridge.");
   }
-  
+
   if (params[@"testEnvironment"]) {
     EXTestEnvironment testEnvironment = (EXTestEnvironment)[params[@"testEnvironment"] unsignedIntegerValue];
     if (testEnvironment != EXTestEnvironmentNone) {
@@ -312,7 +312,7 @@ void EXRegisterScopedModule(Class moduleClass, ...)
       [extraModules addObject:testModule];
     }
   }
-  
+
   if (params[@"browserModuleClass"]) {
     Class browserModuleClass = params[@"browserModuleClass"];
     id homeModule = [[browserModuleClass alloc] initWithExperienceId:experienceId
@@ -363,7 +363,7 @@ void EXRegisterScopedModule(Class moduleClass, ...)
         id service = ([kernelSerivceName isEqualToString:EX_KERNEL_SERVICE_NONE]) ? [NSNull null] : services[kernelSerivceName];
         moduleServices[kernelServiceClassName] = service;
       }
-      
+
       id scopedModule;
       Class scopedModuleClass = NSClassFromString(scopedModuleClassName);
       if (moduleServices.count > 1) {
@@ -371,7 +371,7 @@ void EXRegisterScopedModule(Class moduleClass, ...)
       } else {
         scopedModule = [[scopedModuleClass alloc] initWithExperienceId:experienceId kernelServiceDelegate:moduleServices[[moduleServices allKeys][0]] params:params];
       }
-      
+
       if (scopedModule) {
         [result addObject:scopedModule];
       }

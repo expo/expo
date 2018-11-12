@@ -51,6 +51,7 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import expo.core.interfaces.Package;
+import expo.core.interfaces.SingletonModule;
 import expolib_v1.okhttp3.CacheControl;
 import expolib_v1.okhttp3.Call;
 import expolib_v1.okhttp3.Callback;
@@ -263,6 +264,7 @@ public class Exponent {
     public List<Package> expoPackages;
     public ExponentPackageDelegate exponentPackageDelegate;
     public JSONObject manifest;
+    public List<SingletonModule> singletonModules;
   }
 
 

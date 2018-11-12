@@ -68,6 +68,11 @@ public class ConstantsService implements InternalModule, ConstantsInterface {
     return constants;
   }
 
+  public String getAppId() {
+    // Use just package name on non-expo apps.
+    return mContext.getPackageName();
+  }
+
   public String getAppOwnership() {
     return "guest";
   }

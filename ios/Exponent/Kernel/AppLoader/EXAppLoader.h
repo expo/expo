@@ -40,6 +40,7 @@ typedef enum EXAppLoaderStatus {
 
 @property (nonatomic, weak) id<EXAppLoaderDelegate> delegate;
 @property (nonatomic, weak) id<EXAppFetcherDataSource> dataSource;
+@property (nonatomic, assign) NSTimeInterval fetchTimeout;
 
 - (instancetype)initWithManifestUrl:(NSURL *)url;
 - (instancetype)initWithLocalManifest:(NSDictionary * _Nonnull)manifest;

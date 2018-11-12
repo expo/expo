@@ -29,7 +29,6 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.LifecycleState;
-import com.facebook.react.modules.network.OkHttpClientProvider;
 import com.facebook.react.modules.network.ReactCookieJarContainer;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
@@ -40,10 +39,8 @@ import org.json.JSONObject;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -59,6 +56,7 @@ import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.experience.BaseExperienceActivity;
 import host.exp.exponent.experience.ExperienceActivity;
 import host.exp.exponent.experience.HomeActivity;
+import host.exp.exponent.headless.HeadlessAppLoader;
 import host.exp.exponent.notifications.ExponentNotification;
 import host.exp.expoview.BuildConfig;
 import host.exp.exponent.Constants;
@@ -280,7 +278,7 @@ public class Kernel extends KernelInterface {
                 .setApplication(mApplicationContext)
                 .setJSBundleFile(localBundlePath)
                 .addPackage(new MainReactPackage())
-                .addPackage(ExponentPackage.kernelExponentPackage(mExponentManifest.getKernelManifest()))
+                .addPackage(ExponentPackage.kernelExponentPackage(mContext, mExponentManifest.getKernelManifest()))
                 .setInitialLifecycleState(LifecycleState.RESUMED);
 
             if (!KernelConfig.FORCE_NO_KERNEL_DEBUG_MODE && mExponentManifest.isDebugModeEnabled(mExponentManifest.getKernelManifest())) {
@@ -783,6 +781,10 @@ public class Kernel extends KernelInterface {
     if (activityId == -1) {
       // This is the kernel
       return sInstance.getBundleUrl();
+    }
+
+    if (HeadlessAppLoader.hasBundleUrlForActivityId(activityId)) {
+      return HeadlessAppLoader.getBundleUrlForActivityId(activityId);
     }
 
     for (ExperienceActivityTask task : sManifestUrlToExperienceActivityTask.values()) {

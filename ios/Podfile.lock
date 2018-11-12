@@ -232,6 +232,10 @@ PODS:
   - EXAdsAdMob (1.1.0):
     - EXCore
     - Google-Mobile-Ads-SDK
+  - EXAppLoaderProvider (1.0.0)
+  - EXBackgroundFetch (1.0.0):
+    - EXCore
+    - EXTaskManagerInterface
   - EXBarCodeScanner (1.1.0):
     - EXCore
   - EXBarCodeScannerInterface (1.1.0):
@@ -314,6 +318,12 @@ PODS:
   - EXSensorsInterface (1.1.0):
     - EXCore
   - EXSMS (1.1.0):
+    - EXCore
+  - EXTaskManager (1.0.0):
+    - EXConstantsInterface
+    - EXCore
+    - EXTaskManagerInterface
+  - EXTaskManagerInterface (1.0.0):
     - EXCore
   - Fabric (1.7.11)
   - FBAudienceNetwork (4.99.0)
@@ -1068,6 +1078,8 @@ DEPENDENCIES:
   - Crashlytics (~> 3.8)
   - DoubleConversion (from `../react-native-lab/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - EXAdsAdMob (from `../packages/expo-ads-admob/ios`)
+  - EXAppLoaderProvider (from `../packages/expo-app-loader-provider/ios`)
+  - EXBackgroundFetch (from `../packages/expo-background-fetch/ios`)
   - EXBarCodeScanner (from `../packages/expo-barcode-scanner/ios`)
   - EXBarCodeScannerInterface (from `../packages/expo-barcode-scanner-interface/ios`)
   - EXCamera (from `../packages/expo-camera/ios`)
@@ -1097,6 +1109,8 @@ DEPENDENCIES:
   - EXSensors (from `../packages/expo-sensors/ios`)
   - EXSensorsInterface (from `../packages/expo-sensors-interface/ios`)
   - EXSMS (from `../packages/expo-sms/ios`)
+  - EXTaskManager (from `../packages/expo-task-manager/ios`)
+  - EXTaskManagerInterface (from `../packages/expo-task-manager-interface/ios`)
   - Fabric (~> 1.6)
   - FBAudienceNetwork (= 4.99.0)
   - FBSDKCoreKit (= 4.37.0)
@@ -1418,6 +1432,10 @@ EXTERNAL SOURCES:
     :podspec: "../react-native-lab/react-native/third-party-podspecs/DoubleConversion.podspec"
   EXAdsAdMob:
     :path: "../packages/expo-ads-admob/ios"
+  EXAppLoaderProvider:
+    :path: "../packages/expo-app-loader-provider/ios"
+  EXBackgroundFetch:
+    :path: "../packages/expo-background-fetch/ios"
   EXBarCodeScanner:
     :path: "../packages/expo-barcode-scanner/ios"
   EXBarCodeScannerInterface:
@@ -1476,6 +1494,10 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-sensors-interface/ios"
   EXSMS:
     :path: "../packages/expo-sms/ios"
+  EXTaskManager:
+    :path: "../packages/expo-task-manager/ios"
+  EXTaskManagerInterface:
+    :path: "../packages/expo-task-manager-interface/ios"
   Folly:
     :podspec: "../react-native-lab/react-native/third-party-podspecs/Folly.podspec"
   glog:
@@ -1597,6 +1619,8 @@ SPEC CHECKSUMS:
   Crashlytics: ccaac42660eb9351b9960c0d66106b0bcf99f4fa
   DoubleConversion: bb338842f62ab1d708ceb63ec3d999f0f3d98ecd
   EXAdsAdMob: 66a3c271540f54f4d964fa72f0c8a953faea5a03
+  EXAppLoaderProvider: 568d6ea8176c1cb7d6821bdbf6517453fe74d914
+  EXBackgroundFetch: 3639f45d1d3929ec6ed6b93f45f9c98ca04a4e12
   EXBarCodeScanner: 0ed39b41ccec72935521823eceed3d60c73fc43d
   EXBarCodeScannerInterface: 4453aa03ca1e0a1c9b320aaf4ce5b7d88064d192
   EXCamera: 00936f79aafe16125c6cdc7c7ea2bf2d2c976dfe
@@ -1616,7 +1640,7 @@ SPEC CHECKSUMS:
   EXImageLoaderInterface: 3f460f6ff344ba6c4e00621806c0d1d76249cd8f
   EXLocalAuthentication: b70696613cb24d726d3c98a1818c22c481a46b01
   EXLocalization: 1243adc132eaad4793dd7e5b497135ad5d803441
-  EXLocation: c686b2b139bea46c653a96f62dc49e47c9b08fe5
+  EXLocation: 1a888966a807786562adc3dc8a03e59282609c82
   EXMediaLibrary: f91c4f6ff2c9be8102e06d0a4d08987231a7e286
   EXPermissions: dd31cb432c078eed1f4c1e290bc32649d5280bd3
   EXPermissionsInterface: 76f80a0dcd16afde36498e3d3aa168cb43999558
@@ -1626,6 +1650,8 @@ SPEC CHECKSUMS:
   EXSensors: 6aa3b3b9906beb0b574a88943d171ebc226b0fe5
   EXSensorsInterface: 9e845bc03ad23a846fa6bcd4e2a60f1d0b1a6906
   EXSMS: 2a2f1abfb2f37b686e892261678c70f39c9b7fa8
+  EXTaskManager: d74f8100d25d52eed4367b8726e98f547ae5980b
+  EXTaskManagerInterface: cc735a1d9dc9a8dde27d4ed779eec6ce96f0a0ab
   Fabric: f233c9492b3bbc1f04e3882986740f7988a58edb
   FBAudienceNetwork: 80275c0a28574ff5ce820abdc251d05e07e6ae7a
   FBSDKCoreKit: fe5f3474499a81963e11e3f3a5c753d0a95ca2b4
@@ -1664,6 +1690,6 @@ SPEC CHECKSUMS:
   yogaABI30_0_0: 4c86e39466368a6b018b8b78aeb654b6620512a1
   yogaABI31_0_0: 7978689ddccec43cffd5914889304cf3b7fd7c77
 
-PODFILE CHECKSUM: d7b56972cca31c8f90032925f31eefd16e3ad0d8
+PODFILE CHECKSUM: 1bbd44846e0e5df15af826567028a2cc7f389ce1
 
 COCOAPODS: 1.5.3

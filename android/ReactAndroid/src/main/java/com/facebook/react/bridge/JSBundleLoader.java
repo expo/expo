@@ -8,6 +8,8 @@
 package com.facebook.react.bridge;
 
 import android.content.Context;
+import android.util.Log;
+
 import com.facebook.react.bridge.NativeDeltaClient;
 import com.facebook.react.common.DebugServerException;
 
