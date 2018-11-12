@@ -25,13 +25,13 @@ export default {
     return global.location.href.split('?')[0].split('#')[0];
   },
   get expoRuntimeVersion(): ?string {
-    throw new Error(`ExponentConstants.expoRuntimeVersion: is unimplemented on this platform.`);
+    return null;
   },
   get deviceName(): ?string {
-    throw new Error(`ExponentConstants.deviceName: is unimplemented on this platform.`);
+    return null;
   },
   get systemFonts(): ?Array<string> {
-    throw new Error(`ExponentConstants.systemFonts: is unimplemented on this platform.`);
+    return [];
   },
   get statusBarHeight(): number {
     return 0;
