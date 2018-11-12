@@ -9,7 +9,7 @@ import { FirebaseNamespaces } from './constants';
 import type { FirebaseOptions } from './types';
 
 // TODO: Evan: Read Firebase version.
-const VERSION = '4.3.8';
+const VERSION = '5.0.0';
 
 const { ExpoFirebaseApp } = NativeModulesProxy;
 

@@ -1,11 +1,9 @@
-
-
 #import <FirebaseDynamicLinks/FirebaseDynamicLinks.h>
 #import <EXCore/EXModuleRegistry.h>
 #import <EXCore/EXModuleRegistryConsumer.h>
 #import <EXCore/EXEventEmitter.h>
 
-@interface EXFirebaseLinks : EXExportedModule <EXModuleRegistryConsumer, EXEventEmitter>
+@interface EXFirebaseLinks : EXExportedModule <EXModuleRegistryConsumer>
 
 + (_Nonnull instancetype)instance;
 

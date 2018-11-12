@@ -6,7 +6,7 @@
 #import <EXCore/EXEventEmitter.h>
 #import <EXCore/EXEventEmitterService.h>
 
-@interface EXFirebaseMessaging : EXExportedModule <EXModuleRegistryConsumer, EXEventEmitter, FIRMessagingDelegate>
+@interface EXFirebaseMessaging : EXExportedModule <EXModuleRegistryConsumer, FIRMessagingDelegate>
 
 + (_Nonnull instancetype)instance;
 

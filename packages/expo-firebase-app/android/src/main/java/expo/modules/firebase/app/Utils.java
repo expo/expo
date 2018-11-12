@@ -25,7 +25,6 @@ import expo.core.interfaces.services.EventEmitter;
 public class Utils {
   private static final String TAG = "Utils";
 
-
   public static String timestampToUTC(long timestamp) {
     Calendar calendar = Calendar.getInstance();
     Date date = new Date((timestamp + calendar.getTimeZone().getOffset(timestamp)) * 1000);
@@ -34,19 +33,20 @@ public class Utils {
     return format.format(date);
   }
 
-
   /**
    * send a JS event
    **/
   public static void sendEvent(final ModuleRegistry mModuleRegistry, final String eventName, Bundle body) {
-    EventEmitter eventEmitter = mModuleRegistry.getModule(EventEmitter.class);
-    if (eventEmitter != null) {
-      eventEmitter.emit(eventName, body);
-    } else {
-      String errorMessage = "Could not emit " + eventName + " event, no event emitter present.";
-      Log.e(TAG, errorMessage);
-      // throw new NullPointerException(errorMessage); 
-    }
+    if (mModuleRegistry != null ) {
+      EventEmitter eventEmitter = mModuleRegistry.getModule(EventEmitter.class);
+      if (eventEmitter != null) {
+        eventEmitter.emit(eventName, body);
+        return;
+      }
+    } 
+    String errorMessage = "Could not emit " + eventName + " event, no event emitter or module registry present.";
+    Log.e(TAG, errorMessage);
+    // throw new NullPointerException(errorMessage); 
   }
 
   /**

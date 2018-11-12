@@ -3,9 +3,13 @@ import { Platform } from 'expo-core';
 import { BackgroundFetchResultValue } from './IOSNotifications';
 
 import type Notification from './Notification';
-import type { IOSAttachment, IOSAttachmentOptions, NativeIOSNotification } from './types';
+import type {
+  Notifications,
+  IOSAttachment,
+  IOSAttachmentOptions,
+  NativeIOSNotification,
+} from './types';
 // import type Notifications from '.';
-type Notifications = Object;
 
 type CompletionHandler = BackgroundFetchResultValue => void;
 

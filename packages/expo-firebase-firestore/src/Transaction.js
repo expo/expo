@@ -7,8 +7,10 @@ import { parseUpdateArgs } from './utils';
 import { buildNativeMap } from './utils/serialize';
 
 import type Firestore from './';
-import type { TransactionMeta } from './TransactionHandler';
+//import type { TransactionMeta } from './TransactionHandler';
 import type DocumentReference from './DocumentReference';
+
+type TransactionMeta = object;
 type Command = {
   type: 'set' | 'update' | 'delete',
   path: string,

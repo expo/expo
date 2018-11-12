@@ -2,8 +2,8 @@
 import { Platform } from 'expo-core';
 import { events, utils } from 'expo-firebase-app';
 
-import type Auth from '../';
-
+// import type Auth from '../';
+type Auth = object;
 const { SharedEventEmitter } = events;
 const { generatePushID, isFunction, isString, nativeToJSError } = utils;
 

@@ -70,5 +70,4 @@ dependencies {
     expendency "expo-firebase-app"
     expendency "expo-firebase-links"
     compileOnly "com.google.android.gms:play-services-base:15.0.1"
-    compileOnly "com.facebook.react:react-native:+"  // From node_modules
 }

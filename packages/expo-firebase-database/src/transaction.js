@@ -4,8 +4,8 @@
  */
 import { events } from 'expo-firebase-app';
 
-import type Database from './index';
-
+// import type Database from './index';
+type Database = object;
 const { getAppEventName, SharedEventEmitter } = events;
 
 let transactionId = 0;

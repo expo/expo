@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 
-//TODO:Bacon: Remove React Native
+// TODO: Bacon: Remove React Native, replace with https://github.com/expo/expo/pull/2338
 import com.facebook.react.HeadlessJsTaskService;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.jstasks.HeadlessJsTaskConfig;

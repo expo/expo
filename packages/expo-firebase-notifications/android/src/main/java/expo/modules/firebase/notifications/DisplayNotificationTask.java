@@ -326,9 +326,7 @@ public class DisplayNotificationTask extends AsyncTask<Void, Void, Void> {
       Notification builtNotification = nb.build();
       notificationManager.notify(tag, notificationId.hashCode(), builtNotification);
 
-      if (mModuleRegistry != null) {
-        Utils.sendEvent(mModuleRegistry, "Expo.Firebase.notifications_notification_displayed", notification);
-      }
+      Utils.sendEvent(mModuleRegistry, "Expo.Firebase.notifications_notification_displayed", notification);
 
       if (promise != null) {
         promise.resolve(null);

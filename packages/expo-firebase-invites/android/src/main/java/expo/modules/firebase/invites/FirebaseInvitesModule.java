@@ -8,8 +8,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.facebook.react.bridge.ActivityEventListener;
-import com.facebook.react.bridge.ReactContext;
 import com.google.android.gms.appinvite.AppInviteInvitation;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -25,6 +23,7 @@ import java.util.Map;
 import expo.core.ExportedModule;
 import expo.core.ModuleRegistry;
 import expo.core.Promise;
+import expo.core.interfaces.ActivityEventListener;
 import expo.core.interfaces.ActivityProvider;
 import expo.core.interfaces.ExpoMethod;
 import expo.core.interfaces.LifecycleEventListener;
@@ -33,7 +32,7 @@ import expo.core.interfaces.services.UIManager;
 import expo.modules.firebase.app.Utils;
 
 public class FirebaseInvitesModule extends ExportedModule
-    implements ModuleRegistryConsumer, LifecycleEventListener, ActivityEventListener {
+        implements ModuleRegistryConsumer, LifecycleEventListener, ActivityEventListener {
 
   private static final String TAG = FirebaseInvitesModule.class.getCanonicalName();
 
@@ -55,14 +54,47 @@ public class FirebaseInvitesModule extends ExportedModule
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
-    // Unregister from old UIManager
-
-    if (mModuleRegistry != null) {
-      if (getApplicationContext() instanceof ReactContext) {
-        ((ReactContext) getApplicationContext()).removeActivityEventListener(this);
+  public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
+    if (requestCode == REQUEST_INVITE) {
+      if (resultCode == Activity.RESULT_OK) {
+        String[] ids = AppInviteInvitation.getInvitationIds(resultCode, data);
+        mPromise.resolve(Arrays.asList(ids));
+      } else if (resultCode == Activity.RESULT_CANCELED) {
+        mPromise.reject("invites/invitation-cancelled", "Invitation cancelled");
+      } else {
+        mPromise.reject("invites/invitation-error", "Invitation failed to send");
       }
+      // Clear the promise
+      mPromise = null;
+    }
+  }
 
+  @Override
+  public void onNewIntent(Intent intent) {
+    FirebaseDynamicLinks.getInstance().getDynamicLink(intent)
+            .addOnSuccessListener(new OnSuccessListener<PendingDynamicLinkData>() {
+              @Override
+              public void onSuccess(PendingDynamicLinkData pendingDynamicLinkData) {
+                if (pendingDynamicLinkData != null) {
+                  FirebaseAppInvite invite = FirebaseAppInvite.getInvitation(pendingDynamicLinkData);
+                  if (invite == null) {
+                    // this is a dynamic link, not an invitation
+                    return;
+                  }
+
+                  String deepLink = pendingDynamicLinkData.getLink().toString();
+                  String invitationId = invite.getInvitationId();
+                  Bundle invitationMap = buildInvitationMap(deepLink, invitationId);
+                  Utils.sendEvent(mModuleRegistry, "Expo.Firebase.invites_invitation_received", invitationMap);
+                }
+              }
+            });
+  }
+
+  @Override
+  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+    if (mModuleRegistry != null) {
+      // Unregister from old UIManager
       if (mModuleRegistry.getModule(UIManager.class) != null) {
         mModuleRegistry.getModule(UIManager.class).unregisterLifecycleEventListener(this);
       }
@@ -71,14 +103,10 @@ public class FirebaseInvitesModule extends ExportedModule
     mModuleRegistry = moduleRegistry;
 
     if (mModuleRegistry != null) {
-      // TODO:Bacon: Remove React
-      if (getApplicationContext() instanceof ReactContext) {
-        ((ReactContext) getApplicationContext()).addActivityEventListener(this);
-      }
-
       // Register to new UIManager
       if (mModuleRegistry.getModule(UIManager.class) != null) {
         mModuleRegistry.getModule(UIManager.class).registerLifecycleEventListener(this);
+        mModuleRegistry.getModule(UIManager.class).registerActivityEventListener(this);
       }
     }
   }
@@ -103,31 +131,31 @@ public class FirebaseInvitesModule extends ExportedModule
     } else {
       if (getCurrentActivity() != null) {
         FirebaseDynamicLinks.getInstance().getDynamicLink(getCurrentActivity().getIntent())
-            .addOnSuccessListener(new OnSuccessListener<PendingDynamicLinkData>() {
-              @Override
-              public void onSuccess(PendingDynamicLinkData pendingDynamicLinkData) {
-                if (pendingDynamicLinkData != null) {
-                  FirebaseAppInvite invite = FirebaseAppInvite.getInvitation(pendingDynamicLinkData);
-                  if (invite == null) {
-                    promise.resolve(null);
-                    return;
-                  }
+                .addOnSuccessListener(new OnSuccessListener<PendingDynamicLinkData>() {
+                  @Override
+                  public void onSuccess(PendingDynamicLinkData pendingDynamicLinkData) {
+                    if (pendingDynamicLinkData != null) {
+                      FirebaseAppInvite invite = FirebaseAppInvite.getInvitation(pendingDynamicLinkData);
+                      if (invite == null) {
+                        promise.resolve(null);
+                        return;
+                      }
 
-                  mInitialDeepLink = pendingDynamicLinkData.getLink().toString();
-                  mInitialInvitationId = invite.getInvitationId();
-                  promise.resolve(buildInvitationMap(mInitialDeepLink, mInitialInvitationId));
-                } else {
-                  promise.resolve(null);
-                }
-                mInitialInvitationInitialized = true;
-              }
-            }).addOnFailureListener(new OnFailureListener() {
-              @Override
-              public void onFailure(@NonNull Exception e) {
-                Log.e(TAG, "getInitialInvitation: failed to resolve invitation", e);
-                promise.reject("invites/initial-invitation-error", e.getMessage(), e);
-              }
-            });
+                      mInitialDeepLink = pendingDynamicLinkData.getLink().toString();
+                      mInitialInvitationId = invite.getInvitationId();
+                      promise.resolve(buildInvitationMap(mInitialDeepLink, mInitialInvitationId));
+                    } else {
+                      promise.resolve(null);
+                    }
+                    mInitialInvitationInitialized = true;
+                  }
+                }).addOnFailureListener(new OnFailureListener() {
+          @Override
+          public void onFailure(@NonNull Exception e) {
+            Log.e(TAG, "getInitialInvitation: failed to resolve invitation", e);
+            promise.reject("invites/initial-invitation-error", e.getMessage(), e);
+          }
+        });
       } else {
         Log.d(TAG, "getInitialInvitation: activity is null");
         promise.resolve(null);
@@ -162,7 +190,7 @@ public class FirebaseInvitesModule extends ExportedModule
     }
     if (invitationMap.containsKey("iosClientId")) {
       ib = ib.setOtherPlatformsTargetApplication(AppInviteInvitation.IntentBuilder.PlatformMode.PROJECT_PLATFORM_IOS,
-          (String) invitationMap.get("iosClientId"));
+              (String) invitationMap.get("iosClientId"));
     }
     ib = ib.setMessage((CharSequence) invitationMap.get("message"));
 
@@ -199,53 +227,6 @@ public class FirebaseInvitesModule extends ExportedModule
     this.getCurrentActivity().startActivityForResult(invitationIntent, REQUEST_INVITE);
   }
 
-  //////////////////////////////////////////////////////////////////////
-  // Start ActivityEventListener methods
-  //////////////////////////////////////////////////////////////////////
-  @Override
-  public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
-    if (requestCode == REQUEST_INVITE) {
-      if (resultCode == Activity.RESULT_OK) {
-        String[] ids = AppInviteInvitation.getInvitationIds(resultCode, data);
-        mPromise.resolve(Arrays.asList(ids));
-      } else if (resultCode == Activity.RESULT_CANCELED) {
-        mPromise.reject("invites/invitation-cancelled", "Invitation cancelled");
-      } else {
-        mPromise.reject("invites/invitation-error", "Invitation failed to send");
-      }
-      // Clear the promise
-      mPromise = null;
-    }
-  }
-
-  @Override
-  public void onNewIntent(Intent intent) {
-    FirebaseDynamicLinks.getInstance().getDynamicLink(intent)
-        .addOnSuccessListener(new OnSuccessListener<PendingDynamicLinkData>() {
-          @Override
-          public void onSuccess(PendingDynamicLinkData pendingDynamicLinkData) {
-            if (pendingDynamicLinkData != null) {
-              FirebaseAppInvite invite = FirebaseAppInvite.getInvitation(pendingDynamicLinkData);
-              if (invite == null) {
-                // this is a dynamic link, not an invitation
-                return;
-              }
-
-              String deepLink = pendingDynamicLinkData.getLink().toString();
-              String invitationId = invite.getInvitationId();
-              Bundle invitationMap = buildInvitationMap(deepLink, invitationId);
-              Utils.sendEvent(mModuleRegistry, "Expo.Firebase.invites_invitation_received", invitationMap);
-            }
-          }
-        });
-  }
-  //////////////////////////////////////////////////////////////////////
-  // End ActivityEventListener methods
-  //////////////////////////////////////////////////////////////////////
-
-  //////////////////////////////////////////////////////////////////////
-  // Start LifecycleEventListener methods
-  //////////////////////////////////////////////////////////////////////
   @Override
   public void onHostResume() {
     // Not required for this module
@@ -262,9 +243,6 @@ public class FirebaseInvitesModule extends ExportedModule
     mInitialInvitationId = null;
     mInitialInvitationInitialized = false;
   }
-  //////////////////////////////////////////////////////////////////////
-  // End LifecycleEventListener methods
-  //////////////////////////////////////////////////////////////////////
 
   private Bundle buildInvitationMap(String deepLink, String invitationId) {
     Bundle invitationMap = new Bundle();

@@ -5,9 +5,9 @@
 import { Platform } from 'expo-core';
 import { events, ModuleBase, registerModule } from 'expo-firebase-app';
 
+import type App from 'expo-firebase-app';
 import Invitation from './Invitation';
 
-import type App from 'expo-firebase-app';
 const { SharedEventEmitter } = events;
 
 export const MODULE_NAME = 'ExpoFirebaseInvites';

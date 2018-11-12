@@ -1,12 +1,13 @@
 /**
  * @flow
  */
-import { NativeModulesProxy, EventEmitter } from 'expo-core';
+import { EventEmitter, NativeModulesProxy } from 'expo-core';
 import { events, utils } from 'expo-firebase-app';
 
-const { SharedEventEmitter } = events;
 import DataSnapshot from './DataSnapshot';
 import DatabaseReference from './Reference';
+
+const { SharedEventEmitter } = events;
 const { isString, nativeToJSError } = utils;
 
 type Listener = DataSnapshot => any;

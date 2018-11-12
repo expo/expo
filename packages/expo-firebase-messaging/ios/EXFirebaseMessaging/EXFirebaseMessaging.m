@@ -1,5 +1,3 @@
-
-
 @import UserNotifications;
 
 #import <EXFirebaseMessaging/EXFirebaseMessaging.h>
@@ -7,8 +5,8 @@
 #import <FirebaseMessaging/FirebaseMessaging.h>
 #import <EXCore/EXUtilitiesInterface.h>
 
-static NSString *const MESSAGING_MESSAGE_RECEIVED = @"Expo.Firebase.messaging_message_received";
-static NSString *const MESSAGING_TOKEN_REFRESHED = @"Expo.Firebase.messaging_token_refreshed";
+static NSString * const MESSAGING_MESSAGE_RECEIVED = @"Expo.Firebase.messaging_message_received";
+static NSString * const MESSAGING_TOKEN_REFRESHED = @"Expo.Firebase.messaging_token_refreshed";
 
 @interface EXFirebaseMessaging ()
 
@@ -21,8 +19,8 @@ static NSString *const MESSAGING_TOKEN_REFRESHED = @"Expo.Firebase.messaging_tok
 
 static EXFirebaseMessaging *shared = nil;
 static bool jsReady = NO;
-static NSString* initialToken = nil;
-static NSMutableArray* pendingMessages = nil;
+static NSString *initialToken = nil;
+static NSMutableArray *pendingMessages = nil;
 
 + (nonnull instancetype)instance {
   return shared;
@@ -33,7 +31,6 @@ EX_EXPORT_MODULE(ExpoFirebaseMessaging)
 - (id)init {
   self = [super init];
   if (self != nil) {
-    NSLog(@"Setting up EXFirebaseMessaging instance");
     [self configure];
   }
   return self;
@@ -43,15 +40,6 @@ EX_EXPORT_MODULE(ExpoFirebaseMessaging)
 {
   _moduleRegistry = moduleRegistry;
   _eventEmitter = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXEventEmitterService)];
-}
-
-- (void)startObserving {
-  
-}
-
-- (void)stopObserving
-{
-  
 }
 
 - (void)configure {

@@ -16,6 +16,7 @@ export const FirebaseNamespaces = {
   perf: 'perf',
   storage: 'storage',
   utils: 'utils',
+  vision: 'vision',
 };
 
 export const FirebaseModuleNames = {
@@ -36,4 +37,5 @@ export const FirebaseModuleNames = {
   ExpoFirebasePerformance: 'ExpoFirebasePerformance',
   ExpoFirebaseStorage: 'ExpoFirebaseStorage',
   ExpoFirebaseUtils: 'ExpoFirebaseUtils',
+  ExpoFirebaseVision: 'ExpoFirebaseVision',
 };

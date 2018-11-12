@@ -84,6 +84,9 @@ export type PriorityType = $Values<typeof Priority>;
 export type SemanticActionType = $Values<typeof SemanticAction>;
 export type VisibilityType = $Values<typeof Visibility>;
 
+export type Notification = object;
+export type Notifications = Object;
+
 export type BigPicture = {|
   contentTitle?: string,
   largeIcon?: string,

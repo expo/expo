@@ -49,21 +49,15 @@ Add the following to the `didFinishLaunchingWithOptions:(NSDictionary *)launchOp
 [EXFirebaseNotifications configure];
 ```
 
-Add the following method to your `ios/[App Name]/AppDelegate.m`:
-
-```objective-c
-- (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
-  [[EXFirebaseNotifications instance] didReceiveLocalNotification:notification];
-}
-```
-
 [Based on the RNFirebase iOS setup](https://rnfirebase.io/docs/master/notifications/ios)
 
 **Remote Notifications (Optional)**
 
 If you would like to support Remote Notifications via FCM, also add the following import to the top of your `ios/[App Name]/AppDelegate.m:`
 
-#import <EXFirebaseMessaging/EXFirebaseMessaging.h>
+```objective-c
+import <EXFirebaseMessaging/EXFirebaseMessaging.h>
+```
 
 Then add the following methods to your `ios/[App Name]/AppDelegate.m`:
 

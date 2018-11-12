@@ -9,7 +9,8 @@ import OnDisconnect from './OnDisconnect';
 import Query from './Query';
 import SyncTree from './SyncTree';
 
-import type Database from './index';
+type Database = obejct;
+// import type Database from './index';
 import type { DatabaseModifier, FirebaseError } from './firestoreTypes.flow';
 
 const {

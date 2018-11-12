@@ -4,15 +4,11 @@
  */
 import { Platform } from 'expo-core';
 import { events, internals, ModuleBase, registerModule, utils } from 'expo-firebase-app';
-
+import invariant from 'invariant';
+import type App from 'expo-firebase-app';
 import RemoteMessage from './RemoteMessage';
 
-import type App from 'expo-firebase-app';
-import type {
-  NativeInboundRemoteMessage,
-  NativeOutboundRemoteMessage,
-  Notification,
-} from './types';
+import type { NativeInboundRemoteMessage } from './types';
 
 const { SharedEventEmitter } = events;
 const { isFunction, isObject } = utils;
@@ -132,13 +128,10 @@ export default class Messaging extends ModuleBase {
    */
 
   sendMessage(remoteMessage: RemoteMessage): Promise<void> {
-    if (!(remoteMessage instanceof RemoteMessage)) {
-      return Promise.reject(
-        new Error(
-          `Messaging:sendMessage expects a 'RemoteMessage' but got type ${typeof remoteMessage}`
-        )
-      );
-    }
+    invariant(
+      remoteMessage instanceof RemoteMessage,
+      `Messaging:sendMessage expects a 'RemoteMessage' but got type ${typeof remoteMessage}`
+    );
     try {
       return this.nativeModule.sendMessage(remoteMessage.build());
     } catch (error) {

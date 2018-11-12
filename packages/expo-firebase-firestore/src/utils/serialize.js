@@ -1,15 +1,16 @@
 // @flow
+import { utils } from 'expo-firebase-app';
 
-import DocumentReference from '../DocumentReference';
 import Blob from '../Blob';
+import DocumentReference from '../DocumentReference';
 import { DOCUMENT_ID } from '../FieldPath';
 import { DELETE_FIELD_VALUE, SERVER_TIMESTAMP_FIELD_VALUE } from '../FieldValue';
 import GeoPoint from '../GeoPoint';
 import Path from '../Path';
-import { utils } from 'expo-firebase-app';
-
-import type Firestore from '../';
+// import type Firestore from '../';
 import type { NativeTypeMap } from '../firestoreTypes.flow';
+
+type Firestore = object;
 
 const { typeOf } = utils;
 

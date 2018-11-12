@@ -1,8 +1,10 @@
 // @flow
+import invariant from 'invariant';
 
 import { Platform } from 'expo-core';
 import { events, ModuleBase, registerModule, utils } from 'expo-firebase-app';
 
+import type App from 'expo-firebase-app';
 import AndroidAction from './AndroidAction';
 import AndroidChannel from './AndroidChannel';
 import AndroidChannelGroup from './AndroidChannelGroup';
@@ -21,7 +23,6 @@ import {
   Visibility,
 } from './types';
 
-import type App from 'expo-firebase-app';
 import type { NotificationOpen } from './Notification';
 import type { NativeNotification, NativeNotificationOpen, Schedule } from './types';
 const { SharedEventEmitter } = events;
@@ -160,11 +161,7 @@ export default class Notifications extends ModuleBase {
    * @param notificationId
    */
   cancelNotification(notificationId: string): Promise<void> {
-    if (!notificationId) {
-      return Promise.reject(
-        new Error('Notifications: cancelNotification expects a `notificationId`')
-      );
-    }
+    invariant(notificationId, 'Notifications: cancelNotification expects a `notificationId`');
     return this.nativeModule.cancelNotification(notificationId);
   }
 
@@ -174,13 +171,11 @@ export default class Notifications extends ModuleBase {
    * @returns {*}
    */
   displayNotification(notification: Notification): Promise<void> {
-    if (!(notification instanceof Notification)) {
-      return Promise.reject(
-        new Error(
-          `Notifications:displayNotification expects a 'Notification' but got type ${typeof notification}`
-        )
-      );
-    }
+    invariant(
+      notification instanceof Notification,
+      `Notifications:displayNotification expects a 'Notification' but got type ${typeof notification}`
+    );
+
     try {
       return this.nativeModule.displayNotification(notification.build());
     } catch (error) {
@@ -292,11 +287,10 @@ export default class Notifications extends ModuleBase {
    * @param notificationId
    */
   removeDeliveredNotification(notificationId: string): Promise<void> {
-    if (!notificationId) {
-      return Promise.reject(
-        new Error('Notifications: removeDeliveredNotification expects a `notificationId`')
-      );
-    }
+    invariant(
+      notificationId,
+      'Notifications: removeDeliveredNotification expects a `notificationId`'
+    );
     return this.nativeModule.removeDeliveredNotification(notificationId);
   }
 
@@ -306,13 +300,10 @@ export default class Notifications extends ModuleBase {
    * @returns {*}
    */
   scheduleNotification(notification: Notification, schedule: Schedule): Promise<void> {
-    if (!(notification instanceof Notification)) {
-      return Promise.reject(
-        new Error(
-          `Notifications:scheduleNotification expects a 'Notification' but got type ${typeof notification}`
-        )
-      );
-    }
+    invariant(
+      notification instanceof Notification,
+      `Notifications:scheduleNotification expects a 'Notification' but got type ${typeof notification}`
+    );
     try {
       const nativeNotification = notification.build();
       nativeNotification.schedule = schedule;

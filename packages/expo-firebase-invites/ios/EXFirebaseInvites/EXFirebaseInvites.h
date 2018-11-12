@@ -1,11 +1,9 @@
-
-
 #import <FirebaseInvites/FirebaseInvites.h>
 #import <EXCore/EXModuleRegistry.h>
 #import <EXCore/EXModuleRegistryConsumer.h>
 #import <EXCore/EXEventEmitter.h>
 
-@interface EXFirebaseInvites : EXExportedModule <EXModuleRegistryConsumer, EXEventEmitter, FIRInviteDelegate>
+@interface EXFirebaseInvites : EXExportedModule <EXModuleRegistryConsumer, FIRInviteDelegate>
 
 + (_Nonnull instancetype)instance;
 

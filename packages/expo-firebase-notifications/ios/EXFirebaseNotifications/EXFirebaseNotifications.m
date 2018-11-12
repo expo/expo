@@ -1,20 +1,16 @@
+@import UserNotifications;
+
 #import <EXFirebaseNotifications/EXFirebaseNotifications.h>
 #import <EXFirebaseApp/EXFirebaseAppUtil.h>
 #import <EXFirebaseMessaging/EXFirebaseMessaging.h>
 #import <EXCore/EXUtilitiesInterface.h>
+#import <EXCore/EXUtilities.h>
 
 static NSString *const NOTIFICATIONS_NOTIFICATION_DISPLAYED = @"Expo.Firebase.notifications_notification_displayed";
 static NSString *const NOTIFICATIONS_NOTIFICATION_OPENED = @"Expo.Firebase.notifications_notification_opened";
 static NSString *const NOTIFICATIONS_NOTIFICATION_RECEIVED = @"Expo.Firebase.notifications_notification_received";
 
-// For iOS 10 we need to implement UNUserNotificationCenterDelegate to receive display
-// notifications via APNS
-#if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
-@import UserNotifications;
 @interface EXFirebaseNotifications () <UNUserNotificationCenterDelegate>
-#else
-@interface EXFirebaseNotifications ()
-#endif
 @property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
 @property (nonatomic, weak) id<EXEventEmitterService> eventEmitter;
 @property (nonatomic, weak) id<EXUtilitiesInterface> utils;
@@ -25,7 +21,7 @@ static NSString *const NOTIFICATIONS_NOTIFICATION_RECEIVED = @"Expo.Firebase.not
   NSMutableDictionary<NSString *, void (^)(UIBackgroundFetchResult)> *completionHandlers;
 }
 
-static EXFirebaseNotifications *theEXFirebaseNotifications = nil;
+static EXFirebaseNotifications *shared = nil;
 // PRE-BRIDGE-EVENTS: Consider enabling this to allow events built up before the bridge is built to be sent to the JS side
 // static NSMutableArray *pendingEvents = nil;
 static NSDictionary *initialNotification = nil;
@@ -33,13 +29,13 @@ static bool jsReady = NO;
 static NSString *const DEFAULT_ACTION = @"com.apple.UNNotificationDefaultActionIdentifier";
 
 + (nonnull instancetype)instance {
-  return theEXFirebaseNotifications;
+  return shared;
 }
 
 + (void)configure {
   // PRE-BRIDGE-EVENTS: Consider enabling this to allow events built up before the bridge is built to be sent to the JS side
   // pendingEvents = [[NSMutableArray alloc] init];
-  theEXFirebaseNotifications = [[EXFirebaseNotifications alloc] init];
+  shared = [[EXFirebaseNotifications alloc] init];
 }
 
 EX_EXPORT_MODULE(ExpoFirebaseNotifications);
@@ -54,24 +50,11 @@ EX_EXPORT_MODULE(ExpoFirebaseNotifications);
 }
 
 - (void)initialise {
-  // If we're on iOS 10 then we need to set this as a delegate for the UNUserNotificationCenter
-  if (@available(iOS 10.0, *)) {
-    [UNUserNotificationCenter currentNotificationCenter].delegate = self;
-  }
+  [UNUserNotificationCenter currentNotificationCenter].delegate = self;
   
   // Set static instance for use from AppDelegate
-  theEXFirebaseNotifications = self;
+  shared = self;
   completionHandlers = [[NSMutableDictionary alloc] init];
-
-}
-
-- (void)startObserving {
-  
-}
-
-- (void)stopObserving
-{
-  
 }
 
 - (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
@@ -88,37 +71,11 @@ EX_EXPORT_MODULE(ExpoFirebaseNotifications);
  [super setValue:value forKey:key];
  if ([key isEqualToString:@"bridge"] && value) {
  for (NSDictionary* event in pendingEvents) {
- [EXFirebaseUtil sendJSEvent:self name:event[@"name"] body:event[@"body"]];
+ [EXFirebaseUtil sendJSEvent:_eventEmitter name:event[@"name"] body:event[@"body"]];
  }
  [pendingEvents removeAllObjects];
  }
  } */
-
-// *******************************************************
-// ** Start AppDelegate methods
-// ** iOS 8/9 Only
-// *******************************************************
-- (void)didReceiveLocalNotification:(nonnull UILocalNotification *)localNotification {
-  if ([self isIOS89]) {
-    NSString *event;
-    if (EXSharedApplication().applicationState == UIApplicationStateBackground) {
-      event = NOTIFICATIONS_NOTIFICATION_DISPLAYED;
-    } else if (EXSharedApplication().applicationState == UIApplicationStateInactive) {
-      event = NOTIFICATIONS_NOTIFICATION_OPENED;
-    } else {
-      event = NOTIFICATIONS_NOTIFICATION_RECEIVED;
-    }
-    
-    NSDictionary *notification = [self parseUILocalNotification:localNotification];
-    if (event == NOTIFICATIONS_NOTIFICATION_OPENED) {
-      notification = @{
-                       @"action": DEFAULT_ACTION,
-                       @"notification": notification
-                       };
-    }
-    [self sendJSEvent:_eventEmitter name:event body:notification];
-  }
-}
 
 // Listen for background messages
 - (void)didReceiveRemoteNotification:(NSDictionary *)userInfo
@@ -134,16 +91,9 @@ EX_EXPORT_MODULE(ExpoFirebaseNotifications);
   NSDictionary *notification = [self parseUserInfo:userInfo];
   NSString *handlerKey = notification[@"notificationId"];
 
-  
   NSString *event;
   if (EXSharedApplication().applicationState == UIApplicationStateBackground) {
     event = NOTIFICATIONS_NOTIFICATION_DISPLAYED;
-  } else if ([self isIOS89]) {
-    if (EXSharedApplication().applicationState == UIApplicationStateInactive) {
-      event = NOTIFICATIONS_NOTIFICATION_OPENED;
-    } else {
-      event = NOTIFICATIONS_NOTIFICATION_RECEIVED;
-    }
   } else {
     // On IOS 10:
     // - foreground notifications also go through willPresentNotification
@@ -204,11 +154,10 @@ EX_EXPORT_METHOD_AS(complete,
   return UIBackgroundFetchResultNoData;
 }
 
-#if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
 // Handle incoming notification messages while app is in the foreground.
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center
        willPresentNotification:(UNNotification *)notification
-         withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler NS_AVAILABLE_IOS(10_0) {
+         withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler {
   UNNotificationTrigger *trigger = notification.request.trigger;
   BOOL isFcm = trigger && [notification.request.trigger class] == [UNPushNotificationTrigger class];
   BOOL isScheduled = trigger && [notification.request.trigger class] == [UNCalendarNotificationTrigger class];
@@ -243,13 +192,22 @@ EX_EXPORT_METHOD_AS(complete,
   completionHandler(options);
 }
 
+// TODO: Bacon: I don't think this is ever nil
+- (UNUserNotificationCenter *)getNotificationCenterOrReject:(EXPromiseRejectBlock)reject
+{
+  UNUserNotificationCenter *notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
+  if (notificationCenter == nil) {
+    reject(@"notifications/error", @"Notification Center hasn't been created yet.", nil);
+  }
+  return notificationCenter;
+}
 
 #if defined(__IPHONE_11_0)
 
 // Handle notification messages after display notification is tapped by the user.
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center
 didReceiveNotificationResponse:(UNNotificationResponse *)response
-         withCompletionHandler:(void(^)(void))completionHandler NS_AVAILABLE_IOS(10_0) {
+         withCompletionHandler:(void(^)(void))completionHandler {
   NSDictionary *message = [self parseUNNotificationResponse:response];
   [self sendJSEvent:_eventEmitter name:NOTIFICATIONS_NOTIFICATION_OPENED body:message];
   completionHandler();
@@ -258,9 +216,9 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 // Handle notification messages after display notification is tapped by the user.
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center
 didReceiveNotificationResponse:(UNNotificationResponse *)response
-         withCompletionHandler:(void(^)())completionHandler NS_AVAILABLE_IOS(10_0) {
+         withCompletionHandler:(void(^)())completionHandler {
   NSDictionary *message = [self parseUNNotificationResponse:response];
-  [self sendJSEvent:self name:NOTIFICATIONS_NOTIFICATION_OPENED body:message];
+  [self sendJSEvent:_eventEmitter name:NOTIFICATIONS_NOTIFICATION_OPENED body:message];
   completionHandler();
 }
 #endif
@@ -272,16 +230,11 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 EX_EXPORT_METHOD_AS(cancelAllNotifications,
                     cancelAllNotifications:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
-  if ([self isIOS89]) {
-    [EXSharedApplication() cancelAllLocalNotifications];
-  } else {
-    if (@available(iOS 10.0, *)) {
-      UNUserNotificationCenter *notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
-      if (notificationCenter != nil) {
-        [[UNUserNotificationCenter currentNotificationCenter] removeAllPendingNotificationRequests];
-      }
-    }
+  UNUserNotificationCenter *notificationCenter = [self getNotificationCenterOrReject:reject];
+  if (notificationCenter == nil) {
+    return;
   }
+  [[UNUserNotificationCenter currentNotificationCenter] removeAllPendingNotificationRequests];
   resolve([NSNull null]);
 }
 
@@ -289,21 +242,11 @@ EX_EXPORT_METHOD_AS(cancelNotification,
                     cancelNotification:(NSString *)notificationId
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
-  if ([self isIOS89]) {
-    for (UILocalNotification *notification in EXSharedApplication().scheduledLocalNotifications) {
-      NSDictionary *notificationInfo = notification.userInfo;
-      if ([notificationId isEqualToString:[notificationInfo valueForKey:@"notificationId"]]) {
-        [EXSharedApplication() cancelLocalNotification:notification];
-      }
-    }
-  } else {
-    if (@available(iOS 10.0, *)) {
-      UNUserNotificationCenter *notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
-      if (notificationCenter != nil) {
-        [[UNUserNotificationCenter currentNotificationCenter] removePendingNotificationRequestsWithIdentifiers:@[notificationId]];
-      }
-    }
+  UNUserNotificationCenter *notificationCenter = [self getNotificationCenterOrReject:reject];
+  if (notificationCenter == nil) {
+    return;
   }
+  [[UNUserNotificationCenter currentNotificationCenter] removePendingNotificationRequestsWithIdentifiers:@[notificationId]];
   resolve([NSNull null]);
 }
 
@@ -311,27 +254,25 @@ EX_EXPORT_METHOD_AS(displayNotification,
                     displayNotification:(NSDictionary *)notification
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
-  if ([self isIOS89]) {
-    UILocalNotification* notif = [self buildUILocalNotification:notification withSchedule:false];
-    [EXSharedApplication() presentLocalNotificationNow:notif];
-    resolve([NSNull null]);
-  } else {
-    if (@available(iOS 10.0, *)) {
-      UNNotificationRequest* request = [self buildUNNotificationRequest:notification withSchedule:false];
-      [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:request withCompletionHandler:^(NSError * _Nullable error) {
-        if (!error) {
-          resolve([NSNull null]);
-        } else{
-          reject(@"notifications/display_notification_error", @"Failed to display notificaton", error);
-        }
-      }];
-    }
+  UNUserNotificationCenter *notificationCenter = [self getNotificationCenterOrReject:reject];
+  if (notificationCenter == nil) {
+    return;
   }
+  
+  UNNotificationRequest* request = [self buildUNNotificationRequest:notification withSchedule:false];
+  [notificationCenter addNotificationRequest:request withCompletionHandler:^(NSError * _Nullable error) {
+    if (!error) {
+      resolve([NSNull null]);
+    } else{
+      reject(@"notifications/display_notification_error", @"Failed to display notificaton", error);
+    }
+  }];
 }
 
 EX_EXPORT_METHOD_AS(getBadge,
                     getBadge:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
+  // TODO: Bacon: use Expo util for preventing deadlock
   dispatch_async(dispatch_get_main_queue(), ^{
     resolve(@([EXSharedApplication() applicationIconBadgeNumber]));
   });
@@ -343,20 +284,9 @@ EX_EXPORT_METHOD_AS(getInitialNotification,
   // Check if we've cached an initial notification as this will contain the accurate action
   if (initialNotification) {
       resolve(initialNotification);
-    
   } else {
-      NSDictionary *launchOptions = nil; //[_utils launchOptions];
-      if (!launchOptions) {
-          reject(@"E_NO_LAUNCH_OPTIONS", @"The application's launch options couldn't be retrieved.", nil);
-          return;
-      }
-      if (launchOptions[UIApplicationLaunchOptionsLocalNotificationKey]) {
-          UILocalNotification *localNotification = launchOptions[UIApplicationLaunchOptionsLocalNotificationKey];
-          resolve(@{
-                    @"action": DEFAULT_ACTION,
-                    @"notification": [self parseUILocalNotification:localNotification]
-                    });
-      } else if (launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey]) {
+      NSDictionary *launchOptions = _utils.launchOptions;
+      if (launchOptions != nil && launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey]) {
           NSDictionary *remoteNotification = launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];
           resolve(@{
                     @"action": DEFAULT_ACTION,
@@ -371,40 +301,29 @@ EX_EXPORT_METHOD_AS(getInitialNotification,
 EX_EXPORT_METHOD_AS(getScheduledNotifications,
                     getScheduledNotifications:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
-    if ([self isIOS89]) {
-        NSMutableArray* notifications = [[NSMutableArray alloc] init];
-        for (UILocalNotification *notif in [EXSharedApplication() scheduledLocalNotifications]){
-              NSDictionary *notification = [self parseUILocalNotification:notif];
-              [notifications addObject:notification];
-        }
-        resolve(notifications);
-    } else {
-        if (@available(iOS 10.0, *)) {
-            [[UNUserNotificationCenter currentNotificationCenter] getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> * _Nonnull requests) {
-                NSMutableArray* notifications = [[NSMutableArray alloc] init];
-                for (UNNotificationRequest *notif in requests){
-                    NSDictionary *notification = [self parseUNNotificationRequest:notif];
-                    [notifications addObject:notification];
-                }
-                resolve(notifications);
-            }];
-        }
-    }
+  UNUserNotificationCenter *notificationCenter = [self getNotificationCenterOrReject:reject];
+  if (notificationCenter == nil) {
+    return;
+  }
+
+  [notificationCenter getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> * _Nonnull requests) {
+      NSMutableArray* notifications = [[NSMutableArray alloc] init];
+      for (UNNotificationRequest *notif in requests){
+          NSDictionary *notification = [self parseUNNotificationRequest:notif];
+          [notifications addObject:notification];
+      }
+      resolve(notifications);
+  }];
 }
 
 EX_EXPORT_METHOD_AS(removeAllDeliveredNotifications,
                     removeAllDeliveredNotifications:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
-  if ([self isIOS89]) {
-    // No such functionality on iOS 8/9
-  } else {
-    if (@available(iOS 10.0, *)) {
-      UNUserNotificationCenter *notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
-      if (notificationCenter != nil) {
-        [[UNUserNotificationCenter currentNotificationCenter] removeAllDeliveredNotifications];
-      }
-    }
+  UNUserNotificationCenter *notificationCenter = [self getNotificationCenterOrReject:reject];
+  if (notificationCenter == nil) {
+    return;
   }
+  [[UNUserNotificationCenter currentNotificationCenter] removeAllDeliveredNotifications];
   resolve([NSNull null]);
 }
 
@@ -412,16 +331,11 @@ EX_EXPORT_METHOD_AS(removeDeliveredNotification,
                     removeDeliveredNotification:(NSString *)notificationId
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
-  if ([self isIOS89]) {
-    // No such functionality on iOS 8/9
-  } else {
-    if (@available(iOS 10.0, *)) {
-      UNUserNotificationCenter *notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
-      if (notificationCenter != nil) {
-        [[UNUserNotificationCenter currentNotificationCenter] removeDeliveredNotificationsWithIdentifiers:@[notificationId]];
-      }
-    }
+  UNUserNotificationCenter *notificationCenter = [self getNotificationCenterOrReject:reject];
+  if (notificationCenter == nil) {
+    return;
   }
+  [[UNUserNotificationCenter currentNotificationCenter] removeDeliveredNotificationsWithIdentifiers:@[notificationId]];
   resolve([NSNull null]);
 }
 
@@ -429,22 +343,20 @@ EX_EXPORT_METHOD_AS(scheduleNotification,
                     scheduleNotification:(NSDictionary *)notification
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
-  if ([self isIOS89]) {
-    UILocalNotification* notif = [self buildUILocalNotification:notification withSchedule:true];
-    [EXSharedApplication() scheduleLocalNotification:notif];
-    resolve([NSNull null]);
-  } else {
-    if (@available(iOS 10.0, *)) {
-      UNNotificationRequest* request = [self buildUNNotificationRequest:notification withSchedule:true];
-      [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:request withCompletionHandler:^(NSError * _Nullable error) {
-        if (!error) {
-          resolve([NSNull null]);
-        } else{
-          reject(@"notification/schedule_notification_error", @"Failed to schedule notificaton", error);
-        }
-      }];
-    }
+  UNUserNotificationCenter *notificationCenter = [self getNotificationCenterOrReject:reject];
+  if (notificationCenter == nil) {
+    return;
   }
+
+  UNNotificationRequest* request = [self buildUNNotificationRequest:notification withSchedule:true];
+  [notificationCenter
+   addNotificationRequest:request withCompletionHandler:^(NSError * _Nullable error) {
+    if (error) {
+      reject(@"notification/schedule_notification_error", @"Failed to schedule notificaton", error);
+    } else{
+      resolve([NSNull null]);
+    }
+  }];
 }
 
 EX_EXPORT_METHOD_AS(setBadge,
@@ -481,10 +393,6 @@ EX_EXPORT_METHOD_AS(jsInitialised,
   }
 }
 
-- (BOOL)isIOS89 {
-  return floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max;
-}
-
 - (UILocalNotification *)buildUILocalNotification:(NSDictionary *)notification
                                      withSchedule:(BOOL)withSchedule
 {
@@ -506,15 +414,15 @@ EX_EXPORT_METHOD_AS(jsInitialised,
     if (ios[@"alertAction"]) {
       localNotification.alertAction = ios[@"alertAction"];
     }
-    if (ios[@"badge"]) {
+    if (ios[@"badge"] && [ios[@"badge"] integerValue]) {
       NSNumber *badge = ios[@"badge"];
-      localNotification.applicationIconBadgeNumber = badge.integerValue;
+      localNotification.applicationIconBadgeNumber = [badge integerValue];
     }
     if (ios[@"category"]) {
       localNotification.category = ios[@"category"];
     }
-    if (ios[@"hasAction"]) {
-      localNotification.hasAction = ios[@"hasAction"];
+    if (ios[@"hasAction"] && [ios[@"hasAction"] boolValue]) {
+      localNotification.hasAction = [ios[@"hasAction"] boolValue];
     }
     if (ios[@"launchImage"]) {
       localNotification.alertLaunchImage = ios[@"launchImage"];
@@ -545,7 +453,7 @@ EX_EXPORT_METHOD_AS(jsInitialised,
 }
 
 - (UNNotificationRequest *)buildUNNotificationRequest:(NSDictionary *)notification
-                                         withSchedule:(BOOL)withSchedule NS_AVAILABLE_IOS(10_0) {
+                                         withSchedule:(BOOL)withSchedule {
   UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
   if (notification[@"body"]) {
     content.body = notification[@"body"];
@@ -647,118 +555,119 @@ EX_EXPORT_METHOD_AS(jsInitialised,
   }
 }
 
-- (NSDictionary*) parseUILocalNotification:(UILocalNotification *) localNotification {
+- (NSDictionary *)parseUILocalNotification:(UILocalNotification *)localNotification {
   NSMutableDictionary *notification = [[NSMutableDictionary alloc] init];
   
-  if (localNotification.alertBody) {
-    notification[@"body"] = localNotification.alertBody;
+  if ([localNotification alertBody]) {
+    notification[@"body"] = [localNotification alertBody];
   }
-  if (localNotification.userInfo) {
-    notification[@"data"] = localNotification.userInfo;
+  if ([localNotification userInfo]) {
+    notification[@"data"] = [localNotification userInfo];
   }
-  if (localNotification.soundName) {
-    notification[@"sound"] = localNotification.soundName;
+  if ([localNotification soundName]) {
+    notification[@"sound"] = [localNotification soundName];
   }
-  if (localNotification.alertTitle) {
-    notification[@"title"] = localNotification.alertTitle;
+  if ([localNotification alertTitle]) {
+    notification[@"title"] = [localNotification alertTitle];
   }
   
   NSMutableDictionary *ios = [[NSMutableDictionary alloc] init];
-  if (localNotification.alertAction) {
-    ios[@"alertAction"] = localNotification.alertAction;
+  if ([localNotification alertAction]) {
+    ios[@"alertAction"] = [localNotification alertAction];
   }
-  if (localNotification.applicationIconBadgeNumber) {
-    ios[@"badge"] = @(localNotification.applicationIconBadgeNumber);
+  if ([localNotification applicationIconBadgeNumber]) {
+    ios[@"badge"] = @([localNotification applicationIconBadgeNumber]);
   }
-  if (localNotification.category) {
-    ios[@"category"] = localNotification.category;
+  if ([localNotification category]) {
+    ios[@"category"] = [localNotification category];
   }
-  if (localNotification.hasAction) {
-    ios[@"hasAction"] = @(localNotification.hasAction);
+  if ([localNotification hasAction]) {
+    ios[@"hasAction"] = @([localNotification hasAction]);
   }
-  if (localNotification.alertLaunchImage) {
-    ios[@"launchImage"] = localNotification.alertLaunchImage;
+  if ([localNotification alertLaunchImage]) {
+    ios[@"launchImage"] = [localNotification alertLaunchImage];
   }
   notification[@"ios"] = ios;
   
   return notification;
 }
 
-- (NSDictionary*)parseUNNotificationResponse:(UNNotificationResponse *)response NS_AVAILABLE_IOS(10_0) {
+- (NSDictionary*)parseUNNotificationResponse:(UNNotificationResponse *)response {
   NSMutableDictionary *notificationResponse = [[NSMutableDictionary alloc] init];
-  NSDictionary *notification = [self parseUNNotification:response.notification];
+  NSDictionary *notification = [self parseUNNotification:[response notification]];
   notificationResponse[@"notification"] = notification;
-  notificationResponse[@"action"] = response.actionIdentifier;
+  notificationResponse[@"action"] = [response actionIdentifier];
   
   return notificationResponse;
 }
 
-- (NSDictionary*)parseUNNotification:(UNNotification *)notification NS_AVAILABLE_IOS(10_0) {
-  return [self parseUNNotificationRequest:notification.request];
+- (NSDictionary *)parseUNNotification:(UNNotification *)notification {
+  return [self parseUNNotificationRequest:[notification request]];
 }
 
-- (NSDictionary*) parseUNNotificationRequest:(UNNotificationRequest *) notificationRequest NS_AVAILABLE_IOS(10_0) {
+- (NSDictionary *)parseUNNotificationRequest:(UNNotificationRequest *)notificationRequest {
   NSMutableDictionary *notification = [[NSMutableDictionary alloc] init];
   
-  notification[@"notificationId"] = notificationRequest.identifier;
+  notification[@"notificationId"] = [notificationRequest identifier];
   
-  if (notificationRequest.content.body) {
-    notification[@"body"] = notificationRequest.content.body;
+  UNNotificationContent *content = [notificationRequest content];
+  if ([content body]) {
+    notification[@"body"] = [content body];
   }
-  if (notificationRequest.content.userInfo) {
+  if (content.userInfo) {
     NSMutableDictionary *data = [[NSMutableDictionary alloc] init];
-    for (id k in notificationRequest.content.userInfo) {
+    for (id k in [content userInfo]) {
       if ([k isEqualToString:@"aps"]
           || [k isEqualToString:@"gcm.message_id"]) {
         // ignore as these are handled by the OS
       } else {
-        data[k] = notificationRequest.content.userInfo[k];
+        data[k] = content.userInfo[k];
       }
     }
     notification[@"data"] = data;
   }
-  if (notificationRequest.content.sound) {
-    notification[@"sound"] = notificationRequest.content.sound;
+  if ([content sound]) {
+    notification[@"sound"] = [content sound];
   }
-  if (notificationRequest.content.subtitle) {
-    notification[@"subtitle"] = notificationRequest.content.subtitle;
+  if ([content subtitle]) {
+    notification[@"subtitle"] = [content subtitle];
   }
-  if (notificationRequest.content.title) {
-    notification[@"title"] = notificationRequest.content.title;
+  if ([content title]) {
+    notification[@"title"] = [content title];
   }
   
   NSMutableDictionary *ios = [[NSMutableDictionary alloc] init];
   
-  if (notificationRequest.content.attachments) {
+  if ([content attachments]) {
     NSMutableArray *attachments = [[NSMutableArray alloc] init];
-    for (UNNotificationAttachment *a in notificationRequest.content.attachments) {
+    for (UNNotificationAttachment *a in [content attachments]) {
       NSMutableDictionary *attachment = [[NSMutableDictionary alloc] init];
-      attachment[@"identifier"] = a.identifier;
-      attachment[@"type"] = a.type;
-      attachment[@"url"] = [a.URL absoluteString];
+      attachment[@"identifier"] = [a identifier];
+      attachment[@"type"] = [a type];
+      attachment[@"url"] = [[a URL] absoluteString];
       [attachments addObject:attachment];
     }
     ios[@"attachments"] = attachments;
   }
   
-  if (notificationRequest.content.badge) {
-    ios[@"badge"] = notificationRequest.content.badge;
+  if ([content badge]) {
+    ios[@"badge"] = [content badge];
   }
-  if (notificationRequest.content.categoryIdentifier) {
-    ios[@"category"] = notificationRequest.content.categoryIdentifier;
+  if ([content categoryIdentifier]) {
+    ios[@"category"] = [content categoryIdentifier];
   }
-  if (notificationRequest.content.launchImageName) {
-    ios[@"launchImage"] = notificationRequest.content.launchImageName;
+  if ([content launchImageName]) {
+    ios[@"launchImage"] = [content launchImageName];
   }
-  if (notificationRequest.content.threadIdentifier) {
-    ios[@"threadIdentifier"] = notificationRequest.content.threadIdentifier;
+  if ([content threadIdentifier]) {
+    ios[@"threadIdentifier"] = [content threadIdentifier];
   }
   notification[@"ios"] = ios;
   
   return notification;
 }
 
-- (NSDictionary*)parseUserInfo:(NSDictionary *)userInfo {
+- (NSDictionary *)parseUserInfo:(NSDictionary *)userInfo {
   
   NSMutableDictionary *notification = [[NSMutableDictionary alloc] init];
   NSMutableDictionary *data = [[NSMutableDictionary alloc] init];
@@ -826,15 +735,10 @@ EX_EXPORT_METHOD_AS(jsInitialised,
 - (NSArray<NSString *> *)supportedEvents {
   return @[NOTIFICATIONS_NOTIFICATION_DISPLAYED, NOTIFICATIONS_NOTIFICATION_OPENED, NOTIFICATIONS_NOTIFICATION_RECEIVED];
 }
-
+//TODO: Bacon: Is this relavant in Unimodule?
 + (BOOL)requiresMainQueueSetup
 {
   return YES;
 }
 
 @end
-
-#else
-@implementation EXFirebaseNotifications
-@end
-#endif
