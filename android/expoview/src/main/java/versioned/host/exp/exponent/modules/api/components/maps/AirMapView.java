@@ -542,6 +542,13 @@ public class AirMapView extends MapView implements GoogleMap.InfoWindowAdapter,
       int visibility = annotation.getVisibility();
       annotation.setVisibility(INVISIBLE);
 
+      // Remove from a view group if already present, prevent "specified child
+      // already had a parent" error.
+      ViewGroup annotationParent = (ViewGroup)annotation.getParent();
+      if (annotationParent != null) {
+        annotationParent.removeView(annotation);
+      }
+
       // Add to the parent group
       attacherGroup.addView(annotation);
 
