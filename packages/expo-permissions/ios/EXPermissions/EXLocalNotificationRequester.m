@@ -1,7 +1,7 @@
 // Copyright © 2018 650 Industries. All rights reserved.
 
 #import <EXPermissions/EXLocalNotificationRequester.h>
-//#import "EXUnversioned.h"
+#import <EXCore/EXUtilities.h>
 
 #import <UIKit/UIKit.h>
 
@@ -17,9 +17,14 @@
 
 + (NSDictionary *)permissions
 {
-  BOOL allowsSound = [EXLocalNotificationRequester notificationTypeIsAllowed:UIUserNotificationTypeSound];
-  BOOL allowsAlert = [EXLocalNotificationRequester notificationTypeIsAllowed:UIUserNotificationTypeAlert];
-  BOOL allowsBadge = [EXLocalNotificationRequester notificationTypeIsAllowed:UIUserNotificationTypeBadge];
+  __block BOOL allowsSound;
+  __block BOOL allowsAlert;
+  __block BOOL allowsBadge;
+  [EXUtilities performSynchronouslyOnMainThread:^{
+    allowsSound = [EXLocalNotificationRequester notificationTypeIsAllowed:UIUserNotificationTypeSound];
+    allowsAlert = [EXLocalNotificationRequester notificationTypeIsAllowed:UIUserNotificationTypeAlert];
+    allowsBadge = [EXLocalNotificationRequester notificationTypeIsAllowed:UIUserNotificationTypeBadge];
+  }];
   
   EXPermissionStatus status = EXPermissionStatusUndetermined;
   
@@ -55,8 +60,14 @@
 
   _resolve = resolve;
   _reject = reject;
-  
-  if ([EXLocalNotificationRequester notificationTypeIsAllowed:UIUserNotificationTypeAlert]) {
+
+  __block BOOL alertIsAllowed;
+
+  [EXUtilities performSynchronouslyOnMainThread:^{
+    alertIsAllowed = [EXLocalNotificationRequester notificationTypeIsAllowed:UIUserNotificationTypeAlert];
+  }];
+
+  if (alertIsAllowed) {
     // resolve immediately if already allowed
     [self _consumeResolverWithCurrentPermissions];
   } else {
@@ -65,7 +76,9 @@
                                                  name:@"kEXAppDidRegisterUserNotificationSettingsNotification"
                                                object:nil];
     UIUserNotificationType types = UIUserNotificationTypeBadge | UIUserNotificationTypeSound | UIUserNotificationTypeAlert;
-    [EXSharedApplication() registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:types categories:nil]];
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [EXSharedApplication() registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:types categories:nil]];
+    });
   }
 }
 
