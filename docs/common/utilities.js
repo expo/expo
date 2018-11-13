@@ -1,7 +1,3 @@
-import GithubSlugger from 'github-slugger';
-
-const GithubSluggerInstance = GithubSlugger();
-
 // TODO(jim): Not sure what is the point of this.
 export const toString = node => {
   if (typeof node === 'string') {
@@ -15,16 +11,14 @@ export const toString = node => {
   }
 };
 
-export const generateSlug = (node, length = 7) => {
-  GithubSluggerInstance.reset();
-
+export const generateSlug = (slugger, node, length = 7) => {
   const stringToSlug = toString(node)
     .split(' ')
     .splice(0, length)
     .join('-');
 
   // NOTE(jim): This will strip out commas from stringToSlug
-  const slug = GithubSluggerInstance.slug(stringToSlug);
+  const slug = slugger.slug(stringToSlug);
 
   return slug;
 };

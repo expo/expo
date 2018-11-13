@@ -5,6 +5,7 @@ import * as Utilities from '~/common/utilities';
 
 import PermalinkIcon from '~/components/icons/Permalink';
 import BulletIcon from '~/components/icons/Bullet';
+import withSlugger from '~/components/page-higher-order/withSlugger';
 
 const attributes = {
   'data-text': true,
@@ -95,9 +96,9 @@ const STYLES_LIST_ITEM_BODY = css`
   line-height: 1.8rem;
 `;
 
-export const LI = ({ id, children }) => {
+export const LI = withSlugger(({ id, children, slugger }) => {
   if (id == null) {
-    id = Utilities.generateSlug(children);
+    id = Utilities.generateSlug(slugger, children);
   }
 
   return (
@@ -110,4 +111,4 @@ export const LI = ({ id, children }) => {
       <div className={STYLES_LIST_ITEM_BODY}>{children}</div>
     </li>
   );
-};
+});

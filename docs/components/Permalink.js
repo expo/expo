@@ -5,6 +5,7 @@ import * as Constants from '~/common/constants';
 import * as Utilities from '~/common/utilities';
 
 import PermalinkIcon from '~/components/icons/Permalink';
+import withSlugger from '~/components/page-higher-order/withSlugger';
 
 class Permalink extends React.Component {
   render() {
@@ -54,7 +55,7 @@ const STYLES_CONTAINER_TARGET = css`
   visibility: hidden;
 `;
 
-export default props => {
+export default withSlugger(props => {
   // NOTE(jim): Not the greatest way to generate permalinks.
   // for now I've shortened the length of permalinks.
   const component = props.children;
@@ -63,7 +64,7 @@ export default props => {
   let permalinkKey = props.id;
 
   if (!permalinkKey) {
-    permalinkKey = Utilities.generateSlug(children);
+    permalinkKey = Utilities.generateSlug(props.slugger, children);
   }
 
   return (
@@ -77,4 +78,4 @@ export default props => {
       </div>
     </Permalink>
   );
-};
+});
