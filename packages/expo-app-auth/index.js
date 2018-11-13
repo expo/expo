@@ -1,6 +1,6 @@
 // @flow
 module.exports = {
   get AppAuth() {
-    return require('./src/AppAuth').default;
+    return require('./src/AppAuth');
   },
 };

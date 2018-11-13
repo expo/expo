@@ -122,10 +122,4 @@ export async function revokeAsync(
   });
 }
 
-export default {
-  authorizeAsync,
-  revokeAsync,
-  refreshAsync,
-  OAuthRedirect: ExpoAppAuth.OAuthRedirect,
-  URLSchemes: ExpoAppAuth.URLSchemes,
-};
+export const { OAuthRedirect, URLSchemes } = ExpoAppAuth;
