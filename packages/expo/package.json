@@ -84,7 +84,7 @@
     "expo-payments-stripe": "~1.1.0",
     "expo-permissions": "~1.2.0",
     "expo-permissions-interface": "~1.2.0",
-    "expo-print": "~1.1.0",
+    "expo-print": "~2.0.0-alpha.0",
     "expo-react-native-adapter": "~1.2.0",
     "expo-sensors": "~1.1.0",
     "expo-sensors-interface": "~1.1.0",
