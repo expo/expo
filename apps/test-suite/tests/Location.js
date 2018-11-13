@@ -109,19 +109,19 @@ export async function test(t) {
       t.it(
         'gets a result of the correct shape (without high accuracy), or ' +
           'throws error if no permission or disabled',
-        testShapeOrUnauthorized({ enableHighAccuracy: false }),
+        testShapeOrUnauthorized({ accuracy: Location.Accuracy.Balanced }),
         timeout
       );
       t.it(
         'gets a result of the correct shape (without high accuracy), or ' +
           'throws error if no permission or disabled (when trying again immediately)',
-        testShapeOrUnauthorized({ enableHighAccuracy: false }),
+        testShapeOrUnauthorized({ accuracy: Location.Accuracy.Balanced }),
         timeout
       );
       t.it(
         'gets a result of the correct shape (with high accuracy), or ' +
           'throws error if no permission or disabled (when trying again immediately)',
-        testShapeOrUnauthorized({ enableHighAccuracy: true }),
+        testShapeOrUnauthorized({ accuracy: Location.Accuracy.Highest }),
         timeout
       );
 
@@ -130,7 +130,7 @@ export async function test(t) {
           'throws error if no permission or disabled (when trying again after 1 second)',
         async () => {
           await new Promise(resolve => setTimeout(resolve, 1000));
-          await testShapeOrUnauthorized({ enableHighAccuracy: false })();
+          await testShapeOrUnauthorized({ accuracy: Location.Accuracy.Balanced })();
         },
         timeout + second
       );
@@ -140,7 +140,7 @@ export async function test(t) {
           'throws error if no permission or disabled (when trying again after 1 second)',
         async () => {
           await new Promise(resolve => setTimeout(resolve, 1000));
-          await testShapeOrUnauthorized({ enableHighAccuracy: true })();
+          await testShapeOrUnauthorized({ accuracy: Location.Accuracy.Highest })();
         },
         timeout + second
       );

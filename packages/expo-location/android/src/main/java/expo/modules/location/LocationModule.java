@@ -163,9 +163,8 @@ public class LocationModule extends ExportedModule implements ModuleRegistryCons
   public void getCurrentPositionAsync(final Map<String, Object> options, final Promise promise) {
     // Read options
     final Long timeout = options.containsKey("timeout") ? ((Double) options.get("timeout")).longValue() : null;
-    boolean highAccuracy = options.containsKey("enableHighAccuracy") && (boolean) options.get("enableHighAccuracy");
+    final LocationParams locationParams = mapOptionsToLocationParams(options);
 
-    final LocationParams locationParams = highAccuracy ? LocationParams.NAVIGATION : LocationParams.BEST_EFFORT;
     // LocationControl has an internal map from Context -> LocationProvider, so each experience
     // will only have one instance of a LocationProvider.
     SmartLocation.LocationControl locationControl = SmartLocation.with(mContext).location().oneFix().config(locationParams);
