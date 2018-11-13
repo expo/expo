@@ -74,6 +74,7 @@
 -keep class **.facebook.** { *; }
 -keep class abi** { *; }
 -keep class versioned** { *; }
+-keep class expo.modules** { *; }
 
 ##### Butterknife #####
 -keep class butterknife.** { *; }
