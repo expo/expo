@@ -5,13 +5,13 @@ import net.openid.appauth.AuthorizationException;
 import expo.core.Promise;
 
 public class AuthTask {
-    private Promise _promise;
-    private String _tag;
+    private Promise mPromise;
+    private String mTag;
 
     public boolean update(Promise promise, String tag) {
-        if (_promise == null) {
-            _promise = promise;
-            _tag = tag;
+        if (mPromise == null) {
+            mPromise = promise;
+            mTag = tag;
             return true;
         } else {
             promise.reject("E_APP_AUTH", "cannot set promise - some async operation is still in progress");
@@ -20,8 +20,8 @@ public class AuthTask {
     }
 
     public void resolve(Object value) {
-        if (_promise == null) return;
-        _promise.resolve(value);
+        if (mPromise == null) return;
+        mPromise.resolve(value);
         clear();
     }
 
@@ -35,13 +35,13 @@ public class AuthTask {
     }
 
     public void reject(String code, String message) {
-        if (_promise == null) return;
-        _promise.reject(code, "ExpoAppAuth." + _tag + ": " + message);
+        if (mPromise == null) return;
+        mPromise.reject(code, "ExpoAppAuth." + mTag + ": " + message);
         clear();
     }
 
     private void clear() {
-        _promise = null;
-        _tag = null;
+        mPromise = null;
+        mTag = null;
     }
 }
