@@ -1,8 +1,7 @@
 // @flow
 
 import invariant from 'invariant';
-import { NativeModulesProxy } from 'expo-core';
-const { ExpoFontLoader } = NativeModulesProxy;
+import ExpoFontLoader from './ExpoFontLoader';
 
 const { Asset } = requireAsset();
 const { Constants } = requireConstants();
