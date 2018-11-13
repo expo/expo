@@ -7,6 +7,7 @@ import { events, internals, ModuleBase, registerModule, utils } from 'expo-fireb
 import invariant from 'invariant';
 import type App from 'expo-firebase-app';
 import RemoteMessage from './RemoteMessage';
+import IOSMessaging from './IOSMessaging';
 
 import type { NativeInboundRemoteMessage } from './types';
 
@@ -44,6 +45,7 @@ export default class Messaging extends ModuleBase {
   static moduleName = MODULE_NAME;
   static namespace = NAMESPACE;
   static statics = statics;
+  _ios: IOSMessaging;
 
   constructor(app: App) {
     super(app, {
@@ -53,6 +55,7 @@ export default class Messaging extends ModuleBase {
       hasCustomUrlSupport: false,
       namespace: NAMESPACE,
     });
+    this._ios = new IOSMessaging(this);
 
     SharedEventEmitter.addListener(
       // sub to internal native event - this fans out to
@@ -76,6 +79,10 @@ export default class Messaging extends ModuleBase {
     if (Platform.OS === 'ios') {
       this.nativeModule.jsInitialised();
     }
+  }
+
+  get ios(): IOSMessaging {
+    return this._ios;
   }
 
   onMessage(nextOrObserver: OnMessage | OnMessageObserver): () => any {
@@ -110,7 +117,7 @@ export default class Messaging extends ModuleBase {
       listener = nextOrObserver.next;
     } else {
       throw new Error(
-        'Messaging.OnTokenRefresh failed: First argument must be a function or observer object with a `next` function.'
+        'Messaging.onTokenRefresh failed: First argument must be a function or observer object with a `next` function.'
       );
     }
 

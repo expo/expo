@@ -164,7 +164,7 @@ public class FirebaseNotificationManager {
     }
 
     if (Utils.isAppInForeground(context)) {
-      // If the app is in the foregound, broadcast the notification to the RN
+      // If the app is in the foregound, broadcast the notification to the Expo
       // Application
       // It is up to the JS to decide whether to display the notification
       Intent scheduledNotificationEvent = new Intent(SCHEDULED_NOTIFICATION_EVENT);

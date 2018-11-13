@@ -38,6 +38,12 @@ public class FirebaseFirestoreDocumentReference {
     this.moduleRegistry = moduleRegistry;
     this.ref = FirebaseFirestoreModule.getFirestoreForApp(appName).document(path);
   }
+  public static void offSnapshot(final String listenerId) {
+    ListenerRegistration listenerRegistration = documentSnapshotListeners.remove(listenerId);
+    if (listenerRegistration != null) {
+      listenerRegistration.remove();
+    }
+  }
 
   public void delete(final Promise promise) {
     this.ref.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -68,33 +74,44 @@ public class FirebaseFirestoreDocumentReference {
     } else {
       source = Source.DEFAULT;
     }
+
+    @SuppressLint("StaticFieldLeak") final DocumentSnapshotSerializeAsyncTask serializeAsyncTask = new DocumentSnapshotSerializeAsyncTask(
+      reactContext, this
+    ) {
+      @Override
+      protected void onPostExecute(WritableMap writableMap) {
+        promise.resolve(writableMap);
+      }
+    };
+
+
+
     this.ref.get(source).addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
       @Override
       public void onComplete(@NonNull Task<DocumentSnapshot> task) {
         if (task.isSuccessful()) {
           Log.d(TAG, "get:onComplete:success");
-          Bundle data = FirestoreSerialize.documentSnapshotToBundle(task.getResult());
-          promise.resolve(data);
+          serializeAsyncTask.execute(task.getResult());
         } else {
           Log.e(TAG, "get:onComplete:failure", task.getException());
-          FirebaseFirestoreModule.promiseRejectException(promise, (FirebaseFirestoreException) task.getException());
+          RNFirebaseFirestore.promiseRejectException(
+            promise,
+            (FirebaseFirestoreException) task.getException()
+          );
         }
       }
     });
   }
 
-  public static void offSnapshot(final String listenerId) {
-    ListenerRegistration listenerRegistration = documentSnapshotListeners.remove(listenerId);
-    if (listenerRegistration != null) {
-      listenerRegistration.remove();
-    }
-  }
 
   public void onSnapshot(final String listenerId, final Map<String, Object> docListenOptions) {
     if (!documentSnapshotListeners.containsKey(listenerId)) {
       final EventListener<DocumentSnapshot> listener = new EventListener<DocumentSnapshot>() {
         @Override
-        public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException exception) {
+        public void onEvent(
+          DocumentSnapshot documentSnapshot, 
+          FirebaseFirestoreException exception
+          ) {
           if (exception == null) {
             handleDocumentSnapshotEvent(listenerId, documentSnapshot);
           } else {
@@ -107,7 +124,8 @@ public class FirebaseFirestoreDocumentReference {
         }
       };
       MetadataChanges metadataChanges;
-      if (docListenOptions != null && docListenOptions.containsKey("includeMetadataChanges")
+      if (docListenOptions != null 
+          && docListenOptions.containsKey("includeMetadataChanges")
           && (boolean) docListenOptions.get("includeMetadataChanges")) {
         metadataChanges = MetadataChanges.INCLUDE;
       } else {
@@ -119,8 +137,13 @@ public class FirebaseFirestoreDocumentReference {
   }
 
   public void set(final Map<String, Object> data, final Map<String, Object> options, final Promise promise) {
-    Map<String, Object> map = FirestoreSerialize.parseReadableMap(FirebaseFirestoreModule.getFirestoreForApp(appName), data);
     Task<Void> task;
+
+    Map<String, Object> map = FirestoreSerialize.parseReadableMap(
+      FirebaseFirestore.getFirestoreForApp(appName),
+      data
+    );
+
     if (options != null && options.containsKey("merge") && (boolean) options.get("merge")) {
       task = this.ref.set(map, SetOptions.merge());
     } else {
@@ -175,15 +198,25 @@ public class FirebaseFirestoreDocumentReference {
    * @param documentSnapshot
    */
   private void handleDocumentSnapshotEvent(String listenerId, DocumentSnapshot documentSnapshot) {
-    Bundle event = new Bundle();
-    Bundle data = FirestoreSerialize.documentSnapshotToBundle(documentSnapshot);
 
-    event.putString("appName", appName);
-    event.putString("path", path);
-    event.putString("listenerId", listenerId);
-    event.putBundle("documentSnapshot", data);
+    @SuppressLint("StaticFieldLeak") final DocumentSnapshotSerializeAsyncTask serializeAsyncTask = new DocumentSnapshotSerializeAsyncTask(
+      reactContext, this
+    ) {
+      @Override
+      protected void onPostExecute(WritableMap data) {      
+        Bundle event = new Bundle();
+        // Bundle data = FirestoreSerialize.documentSnapshotToBundle(documentSnapshot);
+  
+        event.putString("path", path);
+        event.putString("appName", appName);
+        event.putString("listenerId", listenerId);
+        event.putBundle("documentSnapshot", data);
+    
+        Utils.sendEvent(moduleRegistry, "Expo.Firebase.firestore_document_sync_event", event);
+      }
+    };
 
-    Utils.sendEvent(moduleRegistry, "Expo.Firebase.firestore_document_sync_event", event);
+    serializeAsyncTask.execute(documentSnapshot);
   }
 
   /**
@@ -195,8 +228,8 @@ public class FirebaseFirestoreDocumentReference {
   private void handleDocumentSnapshotError(String listenerId, FirebaseFirestoreException exception) {
     Bundle event = new Bundle();
 
-    event.putString("appName", appName);
     event.putString("path", path);
+    event.putString("appName", appName);
     event.putString("listenerId", listenerId);
     event.putBundle("error", FirebaseFirestoreModule.getJSError(exception));
 

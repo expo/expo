@@ -19,6 +19,7 @@ static NSString *const keyDisplayName = @"displayName";
 static NSString *const keyPackageName = @"packageName";
 static NSString *const keyMinVersion = @"minimumVersion";
 static NSString *const constAppLanguage = @"APP_LANGUAGE";
+static NSString *const constAppUser = @"APP_USER";
 static NSString *const keyHandleCodeInApp = @"handleCodeInApp";
 static NSString *const keyAdditionalUserInfo = @"additionalUserInfo";
 
@@ -27,6 +28,9 @@ static NSString *const AUTH_ID_TOKEN_CHANGED_EVENT = @"Expo.Firebase.auth_id_tok
 static NSString *const PHONE_AUTH_STATE_CHANGED_EVENT = @"Expo.Firebase.phone_auth_state_changed";
 
 typedef void (^EXFirebaseAuthCallback)(NSError *_Nullable error);
+
+static NSMutableDictionary *authStateHandlers;
+static NSMutableDictionary *idTokenHandlers;
 
 @interface EXFirebaseAuth()
 
@@ -42,11 +46,31 @@ EX_EXPORT_MODULE(ExpoFirebaseAuth);
 - (instancetype)initWithExperienceId:(NSString *)experienceId
 {
   self = [super init];
-  if (self != nil) {
-    _authStateHandlers = [[NSMutableDictionary alloc] init];
-    _idTokenHandlers = [[NSMutableDictionary alloc] init];
-  }
+
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    authStateHandlers = [[NSMutableDictionary alloc] init];
+    idTokenHandlers = [[NSMutableDictionary alloc] init];
+    NSLog(@"EXFirebaseAuth:instance-created");
+  });
+  
   return self;
+}
+
+- (void)dealloc {
+  NSLog(@"EXFirebaseAuth:instance-destroyed");
+  
+  for(NSString* key in authStateHandlers) {
+    FIRApp *firApp = [EXFirebaseUtil getApp:key];
+    [[FIRAuth authWithApp:firApp] removeAuthStateDidChangeListener:[authStateHandlers valueForKey:key]];
+    [authStateHandlers removeObjectForKey:key];
+  }
+  
+  for(NSString* key in idTokenHandlers) {
+    FIRApp *firApp = [EXFirebaseUtil getApp:key];
+    [[FIRAuth authWithApp:firApp] removeIDTokenDidChangeListener:[idTokenHandlers valueForKey:key]];
+    [idTokenHandlers removeObjectForKey:key];
+  }
 }
 
 - (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
@@ -65,7 +89,7 @@ EX_EXPORT_METHOD_AS(addAuthStateListener,
                     rejecter:(EXPromiseRejectBlock)reject) {
   FIRApp *firApp = [EXFirebaseAppUtil getApp:appDisplayName];
   
-  if (![_authStateHandlers valueForKey:firApp.name]) {
+  if (![authStateHandlers valueForKey:firApp.name]) {
     FIRAuthStateDidChangeListenerHandle newListenerHandle = [[FIRAuth authWithApp:firApp] addAuthStateDidChangeListener:^(FIRAuth *_Nonnull auth, FIRUser *_Nullable user) {
       if (user != nil) {
         [EXFirebaseAppUtil sendJSEventWithAppName:self.eventEmitter app:firApp name:AUTH_STATE_CHANGED_EVENT body:@{@"user": [self firebaseUserToDict:user]}];
@@ -74,7 +98,7 @@ EX_EXPORT_METHOD_AS(addAuthStateListener,
       }
     }];
     
-    _authStateHandlers[firApp.name] = [NSValue valueWithNonretainedObject:newListenerHandle];
+    authStateHandlers[firApp.name] = [NSValue valueWithNonretainedObject:newListenerHandle];
   }
   resolve([NSNull null]);
 }
@@ -89,9 +113,9 @@ EX_EXPORT_METHOD_AS(removeAuthStateListener,
                     rejecter:(EXPromiseRejectBlock)reject) {
   FIRApp *firApp = [EXFirebaseAppUtil getApp:appDisplayName];
   
-  if ([_authStateHandlers valueForKey:firApp.name]) {
-    [[FIRAuth authWithApp:firApp] removeAuthStateDidChangeListener:[_authStateHandlers valueForKey:firApp.name]];
-    [_authStateHandlers removeObjectForKey:firApp.name];
+  if ([authStateHandlers valueForKey:firApp.name]) {
+    [[FIRAuth authWithApp:firApp] removeAuthStateDidChangeListener:[authStateHandlers valueForKey:firApp.name]];
+    [authStateHandlers removeObjectForKey:firApp.name];
   }
   resolve([NSNull null]);
 }
@@ -106,7 +130,7 @@ EX_EXPORT_METHOD_AS(addIdTokenListener,
                     rejecter:(EXPromiseRejectBlock)reject) {
   FIRApp *firApp = [EXFirebaseAppUtil getApp:appDisplayName];
   
-  if (![_idTokenHandlers valueForKey:firApp.name]) {
+  if (![idTokenHandlers valueForKey:firApp.name]) {
     FIRIDTokenDidChangeListenerHandle newListenerHandle = [[FIRAuth authWithApp:firApp] addIDTokenDidChangeListener:^(FIRAuth * _Nonnull auth, FIRUser * _Nullable user) {
       if (user != nil) {
         [EXFirebaseAppUtil sendJSEventWithAppName:self.eventEmitter app:firApp name:AUTH_ID_TOKEN_CHANGED_EVENT body:@{@"user": [self firebaseUserToDict:user]}];
@@ -115,7 +139,7 @@ EX_EXPORT_METHOD_AS(addIdTokenListener,
       }
     }];
     
-    _idTokenHandlers[firApp.name] = [NSValue valueWithNonretainedObject:newListenerHandle];
+    idTokenHandlers[firApp.name] = [NSValue valueWithNonretainedObject:newListenerHandle];
   }
   resolve([NSNull null]);
 }
@@ -130,9 +154,9 @@ EX_EXPORT_METHOD_AS(removeIdTokenListener,
                     rejecter:(EXPromiseRejectBlock)reject) {
   FIRApp *firApp = [EXFirebaseAppUtil getApp:appDisplayName];
   
-  if ([_idTokenHandlers valueForKey:firApp.name]) {
-    [[FIRAuth authWithApp:firApp] removeIDTokenDidChangeListener:[_idTokenHandlers valueForKey:firApp.name]];
-    [_idTokenHandlers removeObjectForKey:firApp.name];
+  if ([idTokenHandlers valueForKey:firApp.name]) {
+    [[FIRAuth authWithApp:firApp] removeIDTokenDidChangeListener:[idTokenHandlers valueForKey:firApp.name]];
+    [idTokenHandlers removeObjectForKey:firApp.name];
   }
   resolve([NSNull null]);
 }
@@ -1044,124 +1068,79 @@ EX_EXPORT_METHOD_AS(verifyPasswordResetCode,
  @param error NSError
  */
 - (NSDictionary *)getJSError:(NSError *)error {
-  NSString *code = @"auth/unknown";
+  NSString *code = AuthErrorCode_toJSErrorCode[error.code];
   NSString *message = [error localizedDescription];
   NSString *nativeErrorMessage = [error localizedDescription];
   
+  if (code == nil) code =  @"auth/unknown";
+  
+  // TODO: Salakar: replace these with a AuthErrorCode_toJSErrorMessage map (like codes now does)
   switch (error.code) {
     case FIRAuthErrorCodeInvalidCustomToken:
-      code = @"auth/invalid-custom-token";
       message = @"The custom token format is incorrect. Please check the documentation.";
       break;
     case FIRAuthErrorCodeCustomTokenMismatch:
-      code = @"auth/custom-token-mismatch";
       message = @"The custom token corresponds to a different audience.";
       break;
     case FIRAuthErrorCodeInvalidCredential:
-      code = @"auth/invalid-credential";
       message = @"The supplied auth credential is malformed or has expired.";
       break;
     case FIRAuthErrorCodeInvalidEmail:
-      code = @"auth/invalid-email";
       message = @"The email address is badly formatted.";
       break;
     case FIRAuthErrorCodeWrongPassword:
-      code = @"auth/wrong-password";
       message = @"The password is invalid or the user does not have a password.";
       break;
     case FIRAuthErrorCodeUserMismatch:
-      code = @"auth/user-mismatch";
       message = @"The supplied credentials do not correspond to the previously signed in user.";
       break;
     case FIRAuthErrorCodeRequiresRecentLogin:
-      code = @"auth/requires-recent-login";
-      message = @"This operation is sensitive and requires recent authentication. Log in again before retrying this request.";
+      message =
+          @"This operation is sensitive and requires recent authentication. Log in again before retrying this request.";
       break;
     case FIRAuthErrorCodeAccountExistsWithDifferentCredential:
-      code = @"auth/account-exists-with-different-credential";
-      message = @"An account already exists with the same email address but different sign-in credentials. Sign in using a provider associated with this email address.";
+      message =
+          @"An account already exists with the same email address but different sign-in credentials. Sign in using a provider associated with this email address.";
       break;
     case FIRAuthErrorCodeEmailAlreadyInUse:
-      code = @"auth/email-already-in-use";
       message = @"The email address is already in use by another account.";
       break;
     case FIRAuthErrorCodeCredentialAlreadyInUse:
-      code = @"auth/credential-already-in-use";
       message = @"This credential is already associated with a different user account.";
       break;
     case FIRAuthErrorCodeUserDisabled:
-      code = @"auth/user-disabled";
       message = @"The user account has been disabled by an administrator.";
       break;
     case FIRAuthErrorCodeUserTokenExpired:
-      code = @"auth/user-token-expired";
       message = @"The user's credential is no longer valid. The user must sign in again.";
       break;
     case FIRAuthErrorCodeUserNotFound:
-      code = @"auth/user-not-found";
       message = @"There is no user record corresponding to this identifier. The user may have been deleted.";
       break;
     case FIRAuthErrorCodeInvalidUserToken:
-      code = @"auth/invalid-user-token";
       message = @"The user's credential is no longer valid. The user must sign in again.";
       break;
     case FIRAuthErrorCodeWeakPassword:
-      code = @"auth/weak-password";
       message = @"The given password is invalid.";
       break;
     case FIRAuthErrorCodeOperationNotAllowed:
-      code = @"auth/operation-not-allowed";
       message = @"This operation is not allowed. You must enable this service in the console.";
       break;
     case FIRAuthErrorCodeNetworkError:
-      code = @"auth/network-error";
       message = @"A network error has occurred, please try again.";
       break;
     case FIRAuthErrorCodeInternalError:
-      code = @"auth/internal-error";
       message = @"An internal error has occurred, please try again.";
-      break;
-      
-      // unsure of the below codes so leaving them as the default error message
-    case FIRAuthErrorCodeTooManyRequests:
-      code = @"auth/too-many-requests";
-      break;
-    case FIRAuthErrorCodeProviderAlreadyLinked:
-      code = @"auth/provider-already-linked";
-      break;
-    case FIRAuthErrorCodeNoSuchProvider:
-      code = @"auth/no-such-provider";
-      break;
-    case FIRAuthErrorCodeInvalidAPIKey:
-      code = @"auth/invalid-api-key";
-      break;
-    case FIRAuthErrorCodeAppNotAuthorized:
-      code = @"auth/app-not-authorised";
-      break;
-    case FIRAuthErrorCodeExpiredActionCode:
-      code = @"auth/expired-action-code";
-      break;
-    case FIRAuthErrorCodeInvalidMessagePayload:
-      code = @"auth/invalid-message-payload";
-      break;
-    case FIRAuthErrorCodeInvalidSender:
-      code = @"auth/invalid-sender";
-      break;
-    case FIRAuthErrorCodeInvalidRecipientEmail:
-      code = @"auth/invalid-recipient-email";
-      break;
-    case FIRAuthErrorCodeKeychainError:
-      code = @"auth/keychain-error";
       break;
     default:
       break;
   }
-  
+
   return @{
-           @"code": code,
-           @"message": message,
-           @"nativeErrorMessage": nativeErrorMessage,
-           };
+      @"code": code,
+      @"message": message,
+      @"nativeErrorMessage": nativeErrorMessage,
+  };
 }
 
 
@@ -1283,13 +1262,26 @@ EX_EXPORT_METHOD_AS(verifyPasswordResetCode,
   NSDictionary *firApps = [FIRApp allApps];
   NSMutableDictionary *constants = [NSMutableDictionary new];
   NSMutableDictionary *appLanguage = [NSMutableDictionary new];
+  NSMutableDictionary *appUser = [NSMutableDictionary new];
   
   for (id key in firApps) {
     FIRApp *firApp = firApps[key];
+    NSString *appName = firApp.name;
+    FIRUser *user = [FIRAuth authWithApp:firApp].currentUser;
+    
+    if ([appName isEqualToString:@"__FIRAPP_DEFAULT"]) {
+      appName = @"[DEFAULT]";
+    }
+
     appLanguage[firApp.name] = [FIRAuth authWithApp:firApp].languageCode;
+    
+    if (user != nil) {
+      appUser[appName] = [self firebaseUserToDict: user];
+    }
   }
   
-  constants[@"APP_LANGUAGE"] = appLanguage;
+  constants[constAppLanguage] = appLanguage;
+  constants[constAppUser] = appUser;
   return constants;
 }
 
@@ -1359,14 +1351,6 @@ EX_EXPORT_METHOD_AS(verifyPasswordResetCode,
 
 - (NSArray<NSString *> *)supportedEvents {
   return @[AUTH_STATE_CHANGED_EVENT, AUTH_ID_TOKEN_CHANGED_EVENT, PHONE_AUTH_STATE_CHANGED_EVENT];
-}
-
-- (void)startObserving {
-  
-}
-
-- (void)stopObserving {
-  
 }
 
 - (FIRUserProfileChangeCallback)getUserProfileChangeCallback:(FIRAuth *)auth

@@ -11,6 +11,7 @@ import {
   utils,
 } from 'expo-firebase-app';
 
+import type { App } from 'expo-firebase-app';
 import ConfirmationResult from './phone/ConfirmationResult';
 import PhoneAuthListener from './phone/PhoneAuthListener';
 import EmailAuthProvider from './providers/EmailAuthProvider';
@@ -23,7 +24,6 @@ import TwitterAuthProvider from './providers/TwitterAuthProvider';
 import User from './User';
 import AuthSettings from './AuthSettings';
 
-import type { App } from 'expo-firebase-app';
 // providers
 import type {
   ActionCodeInfo,
@@ -37,7 +37,7 @@ import type {
 const isAndroid = Platform.OS === 'android';
 
 const { isBoolean } = utils;
-const { getAppEventName, SharedEventEmitter } = events;
+const { SharedEventEmitter } = events;
 
 type AuthState = {
   user?: NativeUser,
@@ -92,17 +92,17 @@ export default class Auth extends ModuleBase {
     SharedEventEmitter.addListener(
       // sub to internal native event - this fans out to
       // public event name: onAuthStateChanged
-      getAppEventName(this, 'Expo.Firebase.auth_state_changed'),
+      this.getAppEventName('Expo.Firebase.auth_state_changed'),
       (state: AuthState) => {
         this._setUser(state.user);
-        SharedEventEmitter.emit(getAppEventName(this, 'onAuthStateChanged'), this._user);
+        SharedEventEmitter.emit(this.getAppEventName('onAuthStateChanged'), this._user);
       }
     );
 
     SharedEventEmitter.addListener(
       // sub to internal native event - this fans out to
       // public events based on event.type
-      getAppEventName(this, 'Expo.Firebase.phone_auth_state_changed'),
+      this.getAppEventName('Expo.Firebase.phone_auth_state_changed'),
       (event: Object) => {
         const eventKey = `phone:auth:${event.requestKey}:${event.type}`;
         SharedEventEmitter.emit(eventKey, event.state);
@@ -112,10 +112,10 @@ export default class Auth extends ModuleBase {
     SharedEventEmitter.addListener(
       // sub to internal native event - this fans out to
       // public event name: onIdTokenChanged
-      getAppEventName(this, 'Expo.Firebase.auth_id_token_changed'),
+      this.getAppEventName('Expo.Firebase.auth_id_token_changed'),
       (auth: AuthState) => {
         this._setUser(auth.user);
-        SharedEventEmitter.emit(getAppEventName(this, 'onIdTokenChanged'), this._user);
+        SharedEventEmitter.emit(this.getAppEventName('onIdTokenChanged'), this._user);
       }
     );
 
@@ -126,7 +126,7 @@ export default class Auth extends ModuleBase {
   _setUser(user: ?NativeUser): ?User {
     this._user = user ? new User(this, user) : null;
     this._authResult = true;
-    SharedEventEmitter.emit(getAppEventName(this, 'onUserChanged'), this._user);
+    SharedEventEmitter.emit(this.getAppEventName('onUserChanged'), this._user);
     return this._user;
   }
 
@@ -134,25 +134,7 @@ export default class Auth extends ModuleBase {
     const user = new User(this, userCredential.user);
     this._user = user;
     this._authResult = true;
-    SharedEventEmitter.emit(getAppEventName(this, 'onUserChanged'), this._user);
-    return {
-      additionalUserInfo: userCredential.additionalUserInfo,
-      user,
-    };
-  }
-
-  _setUser(user: ?NativeUser): ?User {
-    this._user = user ? new User(this, user) : null;
-    this._authResult = true;
-    SharedEventEmitter.emit(getAppEventName(this, 'onUserChanged'), this._user);
-    return this._user;
-  }
-
-  _setUserCredential(userCredential: NativeUserCredential): UserCredential {
-    const user = new User(this, userCredential.user);
-    this._user = user;
-    this._authResult = true;
-    SharedEventEmitter.emit(getAppEventName(this, 'onUserChanged'), this._user);
+    SharedEventEmitter.emit(this.getAppEventName('onUserChanged'), this._user);
     return {
       additionalUserInfo: userCredential.additionalUserInfo,
       user,
@@ -169,12 +151,12 @@ export default class Auth extends ModuleBase {
    */
   onAuthStateChanged(listener: Function) {
     this.logger.info('Creating onAuthStateChanged listener');
-    SharedEventEmitter.addListener(getAppEventName(this, 'onAuthStateChanged'), listener);
+    SharedEventEmitter.addListener(this.getAppEventName('onAuthStateChanged'), listener);
     if (this._authResult) listener(this._user || null);
 
     return () => {
       this.logger.info('Removing onAuthStateChanged listener');
-      SharedEventEmitter.removeListener(getAppEventName(this, 'onAuthStateChanged'), listener);
+      SharedEventEmitter.removeListener(this.getAppEventName('onAuthStateChanged'), listener);
     };
   }
 
@@ -184,12 +166,12 @@ export default class Auth extends ModuleBase {
    */
   onIdTokenChanged(listener: Function) {
     this.logger.info('Creating onIdTokenChanged listener');
-    SharedEventEmitter.addListener(getAppEventName(this, 'onIdTokenChanged'), listener);
+    SharedEventEmitter.addListener(this.getAppEventName('onIdTokenChanged'), listener);
     if (this._authResult) listener(this._user || null);
 
     return () => {
       this.logger.info('Removing onIdTokenChanged listener');
-      SharedEventEmitter.removeListener(getAppEventName(this, 'onIdTokenChanged'), listener);
+      SharedEventEmitter.removeListener(this.getAppEventName('onIdTokenChanged'), listener);
     };
   }
 
@@ -199,12 +181,12 @@ export default class Auth extends ModuleBase {
    */
   onUserChanged(listener: Function) {
     this.logger.info('Creating onUserChanged listener');
-    SharedEventEmitter.addListener(getAppEventName(this, 'onUserChanged'), listener);
+    SharedEventEmitter.addListener(this.getAppEventName('onUserChanged'), listener);
     if (this._authResult) listener(this._user || null);
 
     return () => {
       this.logger.info('Removing onUserChanged listener');
-      SharedEventEmitter.removeListener(getAppEventName(this, 'onUserChanged'), listener);
+      SharedEventEmitter.removeListener(this.getAppEventName('onUserChanged'), listener);
     };
   }
 

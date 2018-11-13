@@ -201,6 +201,29 @@ public class DisplayNotificationTask extends AsyncTask<Void, Void, Void> {
         }
       }
 
+       // https://developer.android.com/reference/android/app/Notification.InboxStyle
+      if (android.containsKey("inboxStyle")) {
+        Bundle inboxStyle = android.getBundle("inboxStyle");
+         if (inboxStyle != null) {
+          NotificationCompat.InboxStyle is = new NotificationCompat.InboxStyle();
+          if (inboxStyle.containsKey("contentTitle")) {
+            is = is.setBigContentTitle(inboxStyle.getString("contentTitle"));
+          }
+          if (inboxStyle.containsKey("summaryText")) {
+            is = is.setSummaryText(inboxStyle.getString("summaryText"));
+          }
+          if (inboxStyle.containsKey("lines")) {
+            ArrayList<String> linesArray = inboxStyle.getStringArrayList("lines");
+            if (linesArray != null) {
+              for (String line : linesArray) {
+                is = is.addLine(line);
+              }
+            }
+          }
+          nb = nb.setStyle(is);
+        }
+      }
+      
       if (android.containsKey("lights")) {
         Bundle lights = android.getBundle("lights");
         Double argb = lights.getDouble("argb");

@@ -11,6 +11,7 @@ import type {
   CategoryType,
   DefaultsType,
   GroupAlertType,
+  InboxStyle,
   Lights,
   NativeAndroidNotification,
   PriorityType,
@@ -49,6 +50,8 @@ export default class AndroidNotification {
   _groupAlertBehaviour: GroupAlertType | void;
 
   _groupSummary: boolean | void;
+
+  _inboxStyle: InboxStyle | void;
 
   _largeIcon: string | void;
 
@@ -127,6 +130,7 @@ export default class AndroidNotification {
       this._group = data.group;
       this._groupAlertBehaviour = data.groupAlertBehaviour;
       this._groupSummary = data.groupSummary;
+      this._inboxStyle = data.inboxStyle;
       this._largeIcon = data.largeIcon;
       this._lights = data.lights;
       this._localOnly = data.localOnly;
@@ -159,6 +163,9 @@ export default class AndroidNotification {
     };
   }
 
+  get inboxStyle(): ?InboxStyle {
+    return this._inboxStyle;
+  }
   get actions(): AndroidAction[] {
     return this._actions;
   }
@@ -301,6 +308,22 @@ export default class AndroidNotification {
 
   get when(): ?number {
     return this._when;
+  }
+
+  /**
+   *
+   * @param lines
+   * @param contentTitle
+   * @param summaryText
+   * @returns {Notification}
+   */
+  setInboxStyle(lines: string[], contentTitle?: string, summaryText?: string): Notification {
+    this._inboxStyle = {
+      contentTitle,
+      summaryText,
+      lines,
+    };
+    return this._notification;
   }
 
   /**
@@ -736,6 +759,7 @@ export default class AndroidNotification {
       group: this._group,
       groupAlertBehaviour: this._groupAlertBehaviour,
       groupSummary: this._groupSummary,
+      inboxStyle: this._inboxStyle,
       largeIcon: this._largeIcon,
       lights: this._lights,
       localOnly: this._localOnly,

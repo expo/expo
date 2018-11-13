@@ -7,8 +7,8 @@ import { utils } from 'expo-firebase-app';
 import DocumentReference from './DocumentReference';
 import Query from './Query';
 
-import type Firestore from '.';
 import type {
+  Firestore,
   GetOptions,
   MetadataChanges,
   QueryDirection,

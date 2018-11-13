@@ -133,6 +133,24 @@ EX_EXPORT_METHOD_AS(unsubscribeFromTopic,
   resolve([NSNull null]);
 }
 
+EX_EXPORT_METHOD_AS(getAPNSToken,
+                    getAPNSToken:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject) {
+
+    NSData *apnsToken = [FIRMessaging messaging].APNSToken;
+    if (apnsToken) {
+        const char *data = [apnsToken bytes];
+        NSMutableString *token = [NSMutableString string];
+        for (NSInteger i = 0; i < apnsToken.length; i++) {
+            [token appendFormat:@"%02.2hhX", data[i]];
+        }
+        resolve([token copy]);
+    } else {
+        resolve([NSNull null]);
+    }
+}
+
+
 EX_EXPORT_METHOD_AS(jsInitialised,
                     jsInitialised:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {

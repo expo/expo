@@ -5,10 +5,9 @@
 #import <EXCore/EXEventEmitter.h>
 #import <FirebaseFirestore/FirebaseFirestore.h>
 
-@interface EXFirebaseFirestore : EXExportedModule <EXModuleRegistryConsumer, EXEventEmitter>
+@interface EXFirebaseFirestore : EXExportedModule <EXModuleRegistryConsumer>
 
 @property NSMutableDictionary *transactions;
-@property dispatch_queue_t transactionQueue;
 
 + (void)promiseRejectException:(EXPromiseRejectBlock)reject error:(NSError *)error;
 

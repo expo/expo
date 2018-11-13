@@ -6,7 +6,7 @@ import { events } from 'expo-firebase-app';
 
 // import type Database from './index';
 type Database = object;
-const { getAppEventName, SharedEventEmitter } = events;
+const { SharedEventEmitter } = events;
 
 let transactionId = 0;
 
@@ -29,7 +29,7 @@ export default class TransactionHandler {
     this._database = database;
 
     SharedEventEmitter.addListener(
-      getAppEventName(this._database, 'Expo.Firebase.database_transaction_event'),
+      this._database.getAppEventName('Expo.Firebase.database_transaction_event'),
       this._handleTransactionEvent.bind(this)
     );
   }

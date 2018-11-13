@@ -4,7 +4,8 @@
  */
 import { NativeModulesProxy } from 'expo-core';
 import { events, ModuleBase, registerModule, utils } from 'expo-firebase-app';
-
+import invariant from 'invariant';
+import type { App } from 'expo-firebase-app';
 import Blob from './Blob';
 import CollectionReference from './CollectionReference';
 import DocumentReference from './DocumentReference';
@@ -16,7 +17,6 @@ import Transaction from './Transaction';
 import TransactionHandler from './TransactionHandler';
 import WriteBatch from './WriteBatch';
 
-import type { App } from 'expo-firebase-app';
 import type DocumentSnapshot from './DocumentSnapshot';
 import type QuerySnapshot from './QuerySnapshot';
 
@@ -43,7 +43,7 @@ type Settings = {
   timestampsInSnapshots?: boolean,
 };
 
-const { getAppEventName, SharedEventEmitter } = events;
+const { SharedEventEmitter } = events;
 const { isBoolean, isObject, isString, hop } = utils;
 
 const NATIVE_EVENTS = [
@@ -105,14 +105,14 @@ export default class Firestore extends ModuleBase {
     SharedEventEmitter.addListener(
       // sub to internal native event - this fans out to
       // public event name: onCollectionSnapshot
-      getAppEventName(this, 'Expo.Firebase.firestore_collection_sync_event'),
+      this.getAppEventName('Expo.Firebase.firestore_collection_sync_event'),
       this._onCollectionSyncEvent.bind(this)
     );
 
     SharedEventEmitter.addListener(
       // sub to internal native event - this fans out to
       // public event name: onDocumentSnapshot
-      getAppEventName(this, 'Expo.Firebase.firestore_document_sync_event'),
+      this.getAppEventName('Expo.Firebase.firestore_document_sync_event'),
       this._onDocumentSyncEvent.bind(this)
     );
   }
@@ -140,9 +140,7 @@ export default class Firestore extends ModuleBase {
    */
   collection(collectionPath: string): CollectionReference {
     const path = this._referencePath.child(collectionPath);
-    if (!path.isCollection) {
-      throw new Error('Argument "collectionPath" must point to a collection.');
-    }
+    invariant(path.isCollection, 'Argument "collectionPath" must point to a collection.');
 
     return new CollectionReference(this, path);
   }
@@ -159,9 +157,7 @@ export default class Firestore extends ModuleBase {
    */
   doc(documentPath: string): DocumentReference {
     const path = this._referencePath.child(documentPath);
-    if (!path.isDocument) {
-      throw new Error('Argument "documentPath" must point to a document.');
-    }
+    invariant(path.isDocument, 'Argument "documentPath" must point to a document.');
 
     return new DocumentReference(this, path);
   }
@@ -236,12 +232,12 @@ export default class Firestore extends ModuleBase {
   _onCollectionSyncEvent(event: CollectionSyncEvent) {
     if (event.error) {
       SharedEventEmitter.emit(
-        getAppEventName(this, `onQuerySnapshotError:${event.listenerId}`),
+        this.getAppEventName(`onQuerySnapshotError:${event.listenerId}`),
         event
       );
     } else {
       SharedEventEmitter.emit(
-        getAppEventName(this, `onQuerySnapshot:${event.listenerId}`),
+        this.getAppEventName(`onQuerySnapshot:${event.listenerId}`),
         event.querySnapshot
       );
     }
@@ -256,12 +252,12 @@ export default class Firestore extends ModuleBase {
   _onDocumentSyncEvent(event: DocumentSyncEvent) {
     if (event.error) {
       SharedEventEmitter.emit(
-        getAppEventName(this, `onDocumentSnapshotError:${event.listenerId}`),
+        this.getAppEventName(`onDocumentSnapshotError:${event.listenerId}`),
         event
       );
     } else {
       SharedEventEmitter.emit(
-        getAppEventName(this, `onDocumentSnapshot:${event.listenerId}`),
+        this.getAppEventName(`onDocumentSnapshot:${event.listenerId}`),
         event.documentSnapshot
       );
     }

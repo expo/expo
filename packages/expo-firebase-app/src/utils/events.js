@@ -12,9 +12,6 @@ const NATIVE_SUBSCRIPTIONS: { [string]: boolean } = {};
 
 export const SharedEventEmitter = new EventEmitter();
 
-export const getAppEventName = (module: ModuleBase, eventName: string): string =>
-  `${module.app.name}-${eventName}`;
-
 const getNativeEmitter = (
   moduleName: FirebaseModuleName,
   module: ModuleBase

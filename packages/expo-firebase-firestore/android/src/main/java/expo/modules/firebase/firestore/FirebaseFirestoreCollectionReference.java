@@ -49,7 +49,14 @@ public class FirebaseFirestoreCollectionReference {
     this.query = buildQuery();
     this.moduleRegistry = moduleRegistry;
   }
-
+  
+  public static void offSnapshot(final String listenerId) {
+    ListenerRegistration listenerRegistration = collectionSnapshotListeners.remove(listenerId);
+    if (listenerRegistration != null) {
+      listenerRegistration.remove();
+    }
+  }
+  
   void get(Map<String, Object> getOptions, final Promise promise) {
     Source source;
     if (getOptions != null && getOptions.containsKey("source")) {
@@ -64,27 +71,51 @@ public class FirebaseFirestoreCollectionReference {
     } else {
       source = Source.DEFAULT;
     }
-    query.get(source).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+
+    @SuppressLint("StaticFieldLeak") final QuerySnapshotSerializeAsyncTask serializeAsyncTask = new QuerySnapshotSerializeAsyncTask(
+      reactContext, this
+    ) {
       @Override
-      public void onComplete(@NonNull Task<QuerySnapshot> task) {
-        if (task.isSuccessful()) {
-          Log.d(TAG, "get:onComplete:success");
-          Bundle data = FirestoreSerialize.querySnapshotToBundle(task.getResult());
-          promise.resolve(data);
-        } else {
-          Log.e(TAG, "get:onComplete:failure", task.getException());
-          FirebaseFirestoreModule.promiseRejectException(promise, (FirebaseFirestoreException) task.getException());
-        }
+      protected void onPostExecute(WritableMap writableMap) {
+        promise.resolve(writableMap);
       }
-    });
+    };
+
+    query
+      .get(source)
+      .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        @Override
+        public void onComplete(@Nonnull Task<QuerySnapshot> task) {
+          if (task.isSuccessful()) {
+            Log.d(TAG, "get:onComplete:success");
+            serializeAsyncTask.execute(task.getResult());
+          } else {
+            Log.e(TAG, "get:onComplete:failure", task.getException());
+            FirebaseFirestoreModule.promiseRejectException(
+              promise,
+              (FirebaseFirestoreException) task.getException()
+            );
+          }
+        }
+      });
+
+
+
+    // query.get(source).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+    //   @Override
+    //   public void onComplete(@NonNull Task<QuerySnapshot> task) {
+    //     if (task.isSuccessful()) {
+    //       Log.d(TAG, "get:onComplete:success");
+    //       Bundle data = FirestoreSerialize.querySnapshotToBundle(task.getResult());
+    //       promise.resolve(data);
+    //     } else {
+    //       Log.e(TAG, "get:onComplete:failure", task.getException());
+    //       FirebaseFirestoreModule.promiseRejectException(promise, (FirebaseFirestoreException) task.getException());
+    //     }
+    //   }
+    // });
   }
 
-  public static void offSnapshot(final String listenerId) {
-    ListenerRegistration listenerRegistration = collectionSnapshotListeners.remove(listenerId);
-    if (listenerRegistration != null) {
-      listenerRegistration.remove();
-    }
-  }
 
   public void onSnapshot(final String listenerId, final Map<String, Object> queryListenOptions) {
     if (!collectionSnapshotListeners.containsKey(listenerId)) {
@@ -162,6 +193,9 @@ public class FirebaseFirestoreCollectionReference {
         case "LESS_THAN_OR_EQUAL":
           query = query.whereLessThanOrEqualTo(fieldPath, value);
           break;
+        case "ARRAY_CONTAINS":
+          query = query.whereArrayContains(fieldPath, value);
+          break;
         }
       } else {
         ArrayList fieldPathElements = (ArrayList) fieldPathMap.get("elements");
@@ -185,6 +219,9 @@ public class FirebaseFirestoreCollectionReference {
           break;
         case "LESS_THAN_OR_EQUAL":
           query = query.whereLessThanOrEqualTo(fieldPath, value);
+          break;
+        case "ARRAY_CONTAINS":
+          query = query.whereArrayContains(fieldPath, value);
           break;
         }
       }
@@ -224,12 +261,12 @@ public class FirebaseFirestoreCollectionReference {
       int limit = ((Number) options.get("limit")).intValue();
       query = query.limit(limit);
     }
-    if (options.containsKey("offset")) {
+    // if (options.containsKey("offset")) {
       // Android doesn't support offset
-    }
-    if (options.containsKey("selectFields")) {
+    // }
+    // if (options.containsKey("selectFields")) {
       // Android doesn't support selectFields
-    }
+    // }
     if (options.containsKey("startAfter")) {
       List<Object> startAfterList = FirestoreSerialize.parseReadableArray(firestore, (List) options.get("startAfter"));
       query = query.startAfter(startAfterList.toArray());
@@ -248,15 +285,32 @@ public class FirebaseFirestoreCollectionReference {
    * @param querySnapshot
    */
   private void handleQuerySnapshotEvent(String listenerId, QuerySnapshot querySnapshot) {
-    Bundle event = new Bundle();
-    Bundle data = FirestoreSerialize.querySnapshotToBundle(querySnapshot);
 
-    event.putString("appName", appName);
-    event.putString("path", path);
-    event.putString("listenerId", listenerId);
-    event.putBundle("querySnapshot", data);
+    @SuppressLint("StaticFieldLeak") final QuerySnapshotSerializeAsyncTask serializeAsyncTask = new QuerySnapshotSerializeAsyncTask(
+      reactContext, this
+    ) {
+      @Override
+      protected void onPostExecute(WritableMap data) {
+        // WritableMap event = Arguments.createMap();
+        // event.putString("path", path);
+        // event.putString("appName", appName);
+        // event.putString("listenerId", listenerId);
+        // event.putMap("querySnapshot", writableMap);
+        // Utils.sendEvent(reactContext, "firestore_collection_sync_event", event);
+        
+        Bundle event = new Bundle();
+        // Bundle data = FirestoreSerialize.querySnapshotToBundle(querySnapshot);
+    
+        event.putString("appName", appName);
+        event.putString("path", path);
+        event.putString("listenerId", listenerId);
+        event.putBundle("querySnapshot", data);
+    
+        Utils.sendEvent(moduleRegistry, "Expo.Firebase.firestore_collection_sync_event", event);
+      }
+    };
 
-    Utils.sendEvent(moduleRegistry, "Expo.Firebase.firestore_collection_sync_event", event);
+    serializeAsyncTask.execute(querySnapshot);
   }
 
   /**

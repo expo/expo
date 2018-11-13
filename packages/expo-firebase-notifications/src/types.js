@@ -156,6 +156,7 @@ export type NativeAndroidNotification = {|
   group?: string,
   groupAlertBehaviour?: GroupAlertType,
   groupSummary?: boolean,
+  inboxStyle?: InboxStyle,
   largeIcon?: string,
   lights?: Lights,
   localOnly?: boolean,
@@ -207,6 +208,12 @@ export type NativeIOSNotification = {|
   hasAction?: boolean,
   launchImage?: string,
   threadIdentifier?: string,
+|};
+
+export type InboxStyle = {|
+  contentTitle?: string,
+  summaryText?: string,
+  lines: string[],
 |};
 
 export type Schedule = {|

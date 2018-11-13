@@ -1,14 +1,11 @@
 /**
  * @flow
  */
+import invariant from 'invariant';
 import { initialiseLogger, getLogger } from './log';
 import { initialiseNativeModule, getNativeModule } from './native';
-
-import firebase from '../index';
-
 import type App from '../app';
 import type { FirebaseModuleConfig, FirebaseNamespace } from '../types';
-
 export default class ModuleBase {
   _app: App;
 
@@ -22,20 +19,24 @@ export default class ModuleBase {
    * @param config
    */
   constructor(app: App, config: FirebaseModuleConfig, customUrlOrRegion: ?string) {
-    if (!config.moduleName) {
-      throw new Error('Missing module name');
-    }
-    if (!config.namespace) {
-      throw new Error('Missing namespace');
-    }
+    invariant(config.moduleName, 'Error: expo-firebase-app: ModuleBase() Missing module name');
+    invariant(config.namespace, 'Error: expo-firebase-app: ModuleBase() Missing namespace');
     const { moduleName } = config;
     this._app = app;
     this._customUrlOrRegion = customUrlOrRegion;
     this.namespace = config.namespace;
-
+    this.getAppEventName = this.getAppEventName.bind(this);
     // check if native module exists as all native
     initialiseNativeModule(this, config, customUrlOrRegion);
     initialiseLogger(this, `${app.name}:${moduleName.replace('ExpoFirebase', '')}`);
+  }
+
+  getAppEventName(eventName: ?string): string {
+    invariant(
+      eventName,
+      'Error: expo-firebase-app: ModuleBase.getAppEventName() requires a valid eventName'
+    );
+    return `${this.app.name}-${eventName}`;
   }
 
   /**

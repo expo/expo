@@ -198,37 +198,65 @@ public class FirebaseNotificationsModule extends ExportedModule
   //////////////////////////////////////////////////////////////////////
   @ExpoMethod
   public void createChannel(Map<String, Object> channelMap, Promise promise) {
-    notificationManager.createChannel(channelMap);
+    try {
+      notificationManager.createChannel(channelMap);
+    } catch (Throwable t) {
+      // do nothing - most likely a NoSuchMethodError for < v4 support lib
+    }
     promise.resolve(null);
   }
 
   @ExpoMethod
   public void createChannelGroup(Map<String, Object> channelGroupMap, Promise promise) {
-    notificationManager.createChannelGroup(channelGroupMap);
+    try {
+      notificationManager.createChannelGroup(channelGroupMap);
+    } catch (Throwable t) {
+      // do nothing - most likely a NoSuchMethodError for < v4 support lib
+    }
     promise.resolve(null);
   }
 
   @ExpoMethod
   public void createChannelGroups(List channelGroupsArray, Promise promise) {
+    try {
     notificationManager.createChannelGroups(channelGroupsArray);
+  } catch (Throwable t) {
+    // do nothing - most likely a NoSuchMethodError for < v4 support lib
+  }
     promise.resolve(null);
   }
 
   @ExpoMethod
   public void createChannels(List channelsArray, Promise promise) {
+    try {
+
     notificationManager.createChannels(channelsArray);
+  } catch (Throwable t) {
+    // do nothing - most likely a NoSuchMethodError for < v4 support lib
+  }
     promise.resolve(null);
   }
 
   @ExpoMethod
   public void deleteChannelGroup(String channelId, Promise promise) {
-    notificationManager.deleteChannelGroup(channelId);
-    promise.resolve(null);
+    try {
+      notificationManager.deleteChannelGroup(channelId);
+      promise.resolve(null);
+    } catch (NullPointerException e) {
+      promise.reject(
+        "notifications/channel-group-not-found",
+        "The requested NotificationChannelGroup does not exist, have you created it?"
+      );
+    }
   }
 
   @ExpoMethod
   public void deleteChannel(String channelId, Promise promise) {
+    try {
     notificationManager.deleteChannel(channelId);
+  } catch (Throwable t) {
+    // do nothing - most likely a NoSuchMethodError for < v4 support lib
+  }
     promise.resolve(null);
   }
   //////////////////////////////////////////////////////////////////////

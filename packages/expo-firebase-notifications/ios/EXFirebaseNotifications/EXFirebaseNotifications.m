@@ -541,6 +541,8 @@ EX_EXPORT_METHOD_AS(jsInitialised,
         calendarUnit = NSCalendarUnitHour | NSCalendarUnitMinute | NSCalendarUnitSecond;
       } else if ([interval isEqualToString:@"week"]) {
         calendarUnit = NSCalendarUnitWeekday | NSCalendarUnitHour | NSCalendarUnitMinute | NSCalendarUnitSecond;
+      } else {
+        calendarUnit = NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay | NSCalendarUnitHour | NSCalendarUnitMinute | NSCalendarUnitSecond;
       }
     } else {
       // Needs to match exactly to the secpmd

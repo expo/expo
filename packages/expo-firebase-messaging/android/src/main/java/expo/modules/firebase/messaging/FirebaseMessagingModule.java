@@ -98,7 +98,9 @@ public class FirebaseMessagingModule extends ExportedModule implements ModuleReg
         }
         if (messageMap.containsKey("ttl")) {
             // TODO: Bacon: this is broken - should be Double
-            mb = mb.setTtl(((Number) messageMap.get("ttl")));
+            /// https://github.com/expo/expo/issues/2641
+            Number mTTL = (Number) messageMap.get("ttl");
+            mb = mb.setTtl(mTTL.intValue());
         }
         if (messageMap.containsKey("data")) {
             Map<String, Object> dataMap = (Map<String, Object>) messageMap.get("data");

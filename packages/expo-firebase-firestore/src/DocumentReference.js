@@ -9,8 +9,8 @@ import DocumentSnapshot from './DocumentSnapshot';
 import { parseUpdateArgs } from './utils';
 import { buildNativeMap } from './utils/serialize';
 
-import type Firestore from './';
 import type {
+  Firestore,
   GetOptions,
   MetadataChanges,
   NativeDocumentSnapshot,
@@ -26,7 +26,7 @@ type Observer = {
   next: ObserverOnNext,
 };
 
-const { getAppEventName, SharedEventEmitter } = events;
+const { SharedEventEmitter } = events;
 const { firestoreAutoId, isFunction, isObject } = utils;
 
 /**
@@ -191,14 +191,14 @@ export default class DocumentReference {
 
     // Listen to snapshot events
     SharedEventEmitter.addListener(
-      getAppEventName(this._firestore, `onDocumentSnapshot:${listenerId}`),
+      this._firestore.getAppEventName(`onDocumentSnapshot:${listenerId}`),
       listener
     );
 
     // Listen for snapshot error events
     if (observer.error) {
       SharedEventEmitter.addListener(
-        getAppEventName(this._firestore, `onDocumentSnapshotError:${listenerId}`),
+        this._firestore.getAppEventName(`onDocumentSnapshotError:${listenerId}`),
         observer.error
       );
     }
@@ -232,11 +232,11 @@ export default class DocumentReference {
   _offDocumentSnapshot(listenerId: string, listener: Function) {
     this._firestore.logger.info('Removing onDocumentSnapshot listener');
     SharedEventEmitter.removeListener(
-      getAppEventName(this._firestore, `onDocumentSnapshot:${listenerId}`),
+      this._firestore.getAppEventName(`onDocumentSnapshot:${listenerId}`),
       listener
     );
     SharedEventEmitter.removeListener(
-      getAppEventName(this._firestore, `onDocumentSnapshotError:${listenerId}`),
+      this._firestore.getAppEventName(`onDocumentSnapshotError:${listenerId}`),
       listener
     );
     this._firestore.nativeModule.documentOffSnapshot(this.path, listenerId);

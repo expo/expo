@@ -5,10 +5,10 @@
 import { NativeModulesProxy } from 'expo-core';
 import { events, ModuleBase, registerModule, utils } from 'expo-firebase-app';
 
+import type { App } from 'expo-firebase-app';
 import StorageRef from './reference';
 
-import type { App } from 'expo-firebase-app';
-const { getAppEventName, SharedEventEmitter } = events;
+const { SharedEventEmitter } = events;
 const { stripTrailingSlash } = utils;
 
 const NATIVE_EVENTS = ['Expo.Firebase.storage_event', 'Expo.Firebase.storage_error'];
@@ -66,12 +66,12 @@ export default class Storage extends ModuleBase {
     });
 
     SharedEventEmitter.addListener(
-      getAppEventName(this, 'Expo.Firebase.storage_event'),
+      this.getAppEventName('Expo.Firebase.storage_event'),
       this._handleStorageEvent.bind(this)
     );
 
     SharedEventEmitter.addListener(
-      getAppEventName(this, 'Expo.Firebase.storage_error'),
+      this.getAppEventName('Expo.Firebase.storage_error'),
       this._handleStorageEvent.bind(this)
     );
   }
@@ -128,7 +128,7 @@ export default class Storage extends ModuleBase {
    * INTERNALS
    */
   _getSubEventName(path: string, eventName: string) {
-    return getAppEventName(this, `${path}-${eventName}`);
+    return this.getAppEventName(`${path}-${eventName}`);
   }
 
   _handleStorageEvent(event: Object) {
