@@ -9,7 +9,6 @@
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "eject": "expo eject",
     "web": "webpack-dev-server -d --config ./webpack.config.js  --inline --hot --colors --content-base public/",
     "build": "NODE_ENV=production webpack -p --config ./webpack.config.js",
     "postinstall": "expo-yarn-workspaces postinstall"
@@ -41,9 +40,7 @@
     "three": "^0.88.0",
     "url": "^0.11.0",
     "uuid": "^3.1.0",
-    "victory-native": "^30.4.0",
-    "webpack": "^4.24.0",
-    "webpack-dev-server": "3.1.10"
+    "victory-native": "^30.4.0"
   },
   "devDependencies": {
     "babel-loader": "^8.0.4",
@@ -54,6 +51,8 @@
     "file-loader": "^2.0.0",
     "react-native-scripts": "^2.0.1",
     "style-loader": "^0.23.1",
+    "webpack": "^4.24.0",
+    "webpack-dev-server": "3.1.10",
     "webpack-cli": "^3.1.2"
   }
 }

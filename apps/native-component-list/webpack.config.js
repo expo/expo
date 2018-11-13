@@ -18,20 +18,19 @@ const expoDeps = Object.keys(expoPckg.dependencies)
 // `node_module`.
 
 const babelLoaderConfiguration = {
-  test: /\.js$/,
+  test: /\.jsx?$/,
 
   // Add every directory that needs to be compiled by Babel during the build.
   include: [
     /// Project
     // TODO: Bacon: This makes compilation take a while
-    path.resolve(appDirectory, '.'),
+    path.resolve(appDirectory, './'),
     // path.resolve(appDirectory, 'src/index.js'),
     // path.resolve(appDirectory, 'node_modules/expo'),
 
     ...expoDeps,
 
     /// React Native
-    includeModule('react-native-uncompiled'),
     includeModule('react-native-tab-view'),
     includeModule('react-native-vector-icons'),
     includeModule('react-native-safe-area-view'),
@@ -51,8 +50,8 @@ const babelLoaderConfiguration = {
       /*
        * babel-preset-* is inferred.
        */
-      presets: ['expo'],
-      plugins: ['react-native-web', '@babel/transform-runtime'],
+      presets: ['babel-preset-expo'],
+      plugins: ['babel-plugin-react-native-web', '@babel/plugin-transform-runtime'],
     },
   },
 };
@@ -122,7 +121,7 @@ module.exports = {
     // wish to include additional optimizations.
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
-      __DEV__: process.env.NODE_ENV === 'production' || true,
+      __DEV__: process.env.NODE_ENV !== 'production',
     }),
   ],
 
@@ -131,7 +130,7 @@ module.exports = {
     // module implementations should be written in files using the extension
     // '.web.js'.
     symlinks: false,
-    extensions: ['.web.js', '.js'],
+    extensions: ['.web.js', '.js', '.jsx'],
     alias: {
       './assets/images/expo-icon.png': './assets/images/expo-icon@2x.png',
       './assets/images/slack-icon.png': './assets/images/slack-icon@2x.png',
