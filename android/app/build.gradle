@@ -34,7 +34,7 @@ android {
     testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     // Deprecated. Used by net.openid:appauth
     manifestPlaceholders = [
-      'appAuthRedirectScheme': 'host.exp.exponent'
+        'appAuthRedirectScheme': 'host.exp.exponent'
     ]
   }
   dexOptions {
@@ -117,7 +117,10 @@ dependencies {
   compileOnly 'org.glassfish:javax.annotation:3.1.1'
   implementation 'com.jakewharton:butterknife:8.4.0'
   implementation 'de.greenrobot:eventbus:2.4.0'
-  implementation 'com.amplitude:android-sdk:2.9.2' // Be careful when upgrading! Upgrading might break experience scoping. Check with Jesse. See Analytics.resetAmplitudeDatabaseHelper
+
+  // Be careful when upgrading! Upgrading might break experience scoping. Check with Jesse. See Analytics.resetAmplitudeDatabaseHelper
+  implementation 'com.amplitude:android-sdk:2.9.2'
+
   implementation 'com.squareup.picasso:picasso:2.5.2'
   implementation 'com.google.android.gms:play-services-gcm:15.0.1'
   implementation 'com.google.android.gms:play-services-analytics:16.0.1'
@@ -143,8 +146,8 @@ dependencies {
   implementation 'com.segment.analytics.android:analytics:4.3.0'
   implementation 'com.google.zxing:core:3.2.1'
   implementation 'net.openid:appauth:0.4.1'
-  implementation('com.airbnb.android:lottie:2.5.5')  {
-      exclude group: 'com.android.support', module: 'appcompat-v7'
+  implementation('com.airbnb.android:lottie:2.5.5') {
+    exclude group: 'com.android.support', module: 'appcompat-v7'
   }
   implementation 'io.branch.sdk.android:library:2.17.1'
   implementation('io.nlopez.smartlocation:library:3.2.11') {
