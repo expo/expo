@@ -1,11 +1,17 @@
 // @flow
 
-import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
 import uuidv4 from 'uuid/v4';
-import parser from 'ua-parser-js';
+import UAParser from 'ua-parser-js';
+import ExpoPackageJson from 'expo/package.json';
 
 export default {
   _sessionId: uuidv4(),
+  get appOwnership() {
+    return 'expo';
+  },
+  get deviceId() {
+    throw new Error(`ExponentConstants.deviceId: is unimplemented on this platform.`);
+  },
   get name(): string {
     return 'ExponentConstants';
   },
@@ -13,19 +19,19 @@ export default {
     return this._sessionId;
   },
   get platform(): object {
-    return { web: parser(navigator.userAgent) };
+    return { web: UAParser(navigator.userAgent) };
   },
   get isDevice(): boolean {
     return true;
   },
   get expoVersion(): string {
-    return '32';
+    return ExpoPackageJson.version;
   },
   get linkingUri(): string {
-    return global.location.href.split('?')[0].split('#')[0];
+    return location.origin + location.pathname;
   },
   get expoRuntimeVersion(): ?string {
-    return null;
+    throw new Error(`ExponentConstants.expoRuntimeVersion: is unimplemented on this platform.`);
   },
   get deviceName(): ?string {
     return null;
@@ -40,7 +46,6 @@ export default {
     throw new Error(`ExponentConstants.deviceYearClass: is unimplemented on this platform.`);
   },
   getWebViewUserAgentAsync(): Promise {
-    const { navigator = {} } = global;
-    return canUseDOM ? navigator.userAgent : null;
+    return navigator.userAgent || null;
   },
 };
