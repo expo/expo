@@ -99,7 +99,7 @@ RCT_EXPORT_METHOD(presentLocalNotification:(NSDictionary *)payload
     return;
   }
   UNMutableNotificationContent *content = [self _localNotificationFromPayload:payload];
-  UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:[self scopedIdForIdentifier:content.userInfo[@"id"]]
+  UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:[self internalIdForIdentifier:content.userInfo[@"id"]]
                                                                         content:content
                                                                         trigger:nil];
 
@@ -123,7 +123,7 @@ RCT_EXPORT_METHOD(scheduleLocalNotification:(NSDictionary *)payload
   }
   UNCalendarNotificationTrigger *notificationTrigger = [self notificationTriggerFor:options[@"time"] repeatingEvery:options[@"repeat"]];
   UNMutableNotificationContent *content = [self _localNotificationFromPayload:payload];
-  UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:[self scopedIdForIdentifier:content.userInfo[@"id"]]
+  UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:[self internalIdForIdentifier:content.userInfo[@"id"]]
                                                                         content:content
                                                                         trigger:notificationTrigger];
   [[EXUserNotificationCenter sharedInstance] addNotificationRequest:request withCompletionHandler:^(NSError * _Nullable error) {
@@ -137,7 +137,7 @@ RCT_EXPORT_METHOD(scheduleLocalNotification:(NSDictionary *)payload
 
 RCT_EXPORT_METHOD(cancelScheduledNotification:(NSString *)uniqueId)
 {
-  [[EXUserNotificationCenter sharedInstance] removePendingNotificationRequestsWithIdentifiers:@[[self scopedIdForIdentifier:uniqueId]]];
+  [[EXUserNotificationCenter sharedInstance] removePendingNotificationRequestsWithIdentifiers:@[[self internalIdForIdentifier:uniqueId]]];
 }
 
 RCT_REMAP_METHOD(cancelAllScheduledNotificationsAsync,
@@ -148,7 +148,7 @@ RCT_REMAP_METHOD(cancelAllScheduledNotificationsAsync,
     NSMutableArray<NSString *> *requestsToCancelIdentifiers = [NSMutableArray new];
     for (UNNotificationRequest *request in requests) {
       if ([request.content.userInfo[@"experienceId"] isEqualToString:self.experienceId]) {
-        NSString *scopedId = [self scopedIdForIdentifier:request.content.userInfo[@"id"]];
+        NSString *scopedId = [self internalIdForIdentifier:request.content.userInfo[@"id"]];
         [requestsToCancelIdentifiers addObject:scopedId];
       }
     }
@@ -195,7 +195,7 @@ RCT_REMAP_METHOD(createCategoryAsync,
     [actionsArray addObject:[self parseNotificationActionFromParams:actionParams]];
   }
 
-  UNNotificationCategory *newCategory = [UNNotificationCategory categoryWithIdentifier:[self scopedIdForIdentifier:categoryId]
+  UNNotificationCategory *newCategory = [UNNotificationCategory categoryWithIdentifier:[self internalIdForIdentifier:categoryId]
                                                                                actions:actionsArray
                                                                      intentIdentifiers:@[]
                                                                                options:UNNotificationCategoryOptionNone];
@@ -234,7 +234,7 @@ RCT_REMAP_METHOD(createCategoryAsync,
   }
 
   if ([payload[@"categoryId"] isKindOfClass:[NSString class]]) {
-    content.categoryIdentifier = [self scopedIdForIdentifier:payload[@"categoryId"]];
+    content.categoryIdentifier = [self internalIdForIdentifier:payload[@"categoryId"]];
   }
 
   content.userInfo = @{
@@ -246,7 +246,10 @@ RCT_REMAP_METHOD(createCategoryAsync,
   return content;
 }
 
-- (NSString *)scopedIdForIdentifier:(NSString *)identifier {
+- (NSString *)internalIdForIdentifier:(NSString *)identifier {
+  if ([EXEnvironment sharedEnvironment].isDetached) {
+    return identifier;
+  }
   return [NSString stringWithFormat:@"%@:%@", self.experienceId, identifier];
 }
 
