@@ -31,7 +31,7 @@
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler
 {
   EXPendingNotification *pendingNotification = [[EXPendingNotification alloc] initWithNotificationResponse:response];
-  if (pendingNotification && ![[EXKernel sharedInstance] sendNotification:pendingNotification]) {
+  if (pendingNotification && ![[EXKernel sharedInstance] sendNotification:pendingNotification] && [EXEnvironment sharedEnvironment].isDetached) {
     _pendingNotifications[pendingNotification.experienceId] = pendingNotification;
   }
   completionHandler();
@@ -48,7 +48,7 @@
   // If the app is active we do not show the alert, but we deliver the notification to the experience.
 
   EXPendingNotification *pendingNotification = [[EXPendingNotification alloc] initWithNotification:notification];
-  if (![[EXKernel sharedInstance] sendNotification:pendingNotification]) {
+  if (![[EXKernel sharedInstance] sendNotification:pendingNotification] && [EXEnvironment sharedEnvironment].isDetached) {
     _pendingNotifications[pendingNotification.experienceId] = pendingNotification;
   }
 
