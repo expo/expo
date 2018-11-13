@@ -3216,14 +3216,6 @@ expo-asset-utils@^0.0.3:
   resolved "https://registry.yarnpkg.com/expo-asset-utils/-/expo-asset-utils-0.0.3.tgz#6331b24de181d65f548dea5a21debc589b35947d"
   integrity sha512-HHqtcOs6ShLR6+sfGTZufRp2TFAZUGb3ithcERIzo61P4gZkMLSi/va4MxxYOEVuVgsvzyvcT5Zzil9QR4Bw/Q==
 
-expo-print@~1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/expo-print/-/expo-print-1.1.0.tgz#75a3563098b9af5c79c0507725015f1d1870476e"
-  integrity sha512-fVi2RHn6rpZb+Fl4hCxPZt1EJ6/lCul52uNBCIzKiWeifJLTtyiDg+SHehC/6Foj9VkGeaEy4nYCQ7rLwBANsA==
-  dependencies:
-    babel-preset-expo "^5.0.0"
-    expo-core "~1.2.0"
-
 expo-processing@1.0.3:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/expo-processing/-/expo-processing-1.0.3.tgz#782f495e6f1cabed3bb3aad0f0a83a4b7ec456b1"
