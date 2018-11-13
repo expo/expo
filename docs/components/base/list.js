@@ -3,7 +3,6 @@ import styled, { keyframes, css } from 'react-emotion';
 import * as React from 'react';
 import * as Utilities from '~/common/utilities';
 
-import PermalinkIcon from '~/components/icons/Permalink';
 import BulletIcon from '~/components/icons/Bullet';
 import withSlugger from '~/components/page-higher-order/withSlugger';
 
@@ -51,44 +50,14 @@ export const OL = ({ children }) => (
 const STYLES_LIST_ITEM = css`
   position: relative;
   margin-bottom: 16px;
-
-  .bullet-icon {
-    visibility: visible;
-  }
-
-  .anchor-icon {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 16px;
-    height: 16px;
-    visibility: hidden;
-  }
-
-  :hover {
-    .bullet-icon {
-      visibility: hidden;
-    }
-
-    .anchor-icon {
-      visibility: visible;
-    }
-  }
 `;
 
-const STYLES_LIST_ITEM_ANCHOR = css`
+const STYLES_LIST_ITEM_BULLET = css`
   position: absolute;
   top: 4px;
   left: -20px;
   width: 20px;
   height: 20px;
-`;
-
-const STYLES_LIST_ITEM_TARGET = css`
-  display: block;
-  position: absolute
-  top: -100px;
-  visibility: hidden;
 `;
 
 const STYLES_LIST_ITEM_BODY = css`
@@ -103,11 +72,9 @@ export const LI = withSlugger(({ id, children, slugger }) => {
 
   return (
     <li className={`${STYLES_LIST_ITEM} docs-list-item`}>
-      <span id={id} className={STYLES_LIST_ITEM_TARGET} />
-      <a href={'#' + id} className={`${STYLES_LIST_ITEM_ANCHOR} anchor`}>
+      <div className={STYLES_LIST_ITEM_BULLET}>
         <BulletIcon />
-        <PermalinkIcon />
-      </a>
+      </div>
       <div className={STYLES_LIST_ITEM_BODY}>{children}</div>
     </li>
   );
