@@ -2,6 +2,7 @@
 
 #import <EXPermissions/EXUserNotificationRequester.h>
 #import <UIKit/UIKit.h>
+#import <EXPermissions/EXPermissions.h>
 #import <EXPermissionsInterface/EXUserNotificationCenterProxyInterface.h>
 
 @interface EXUserNotificationRequester ()
@@ -9,13 +10,13 @@
 @property (nonatomic, strong) EXPromiseResolveBlock resolve;
 @property (nonatomic, strong) EXPromiseRejectBlock reject;
 @property (nonatomic, weak) id<EXPermissionRequesterDelegate> delegate;
-@property (nonatomic, weak) EXModuleRegistry * moduleRegistry;
+@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
 
 @end
 
 @implementation EXUserNotificationRequester
 
-- (instancetype)initWithModuleRegistry: (EXModuleRegistry *) moduleRegistry {
+- (instancetype)initWithModuleRegistry:(EXModuleRegistry *)moduleRegistry {
   if (self = [super init]) {
     _moduleRegistry = moduleRegistry;
   }
@@ -28,6 +29,7 @@
 
 + (NSDictionary *)permissionsWithModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
+  dispatch_assert_queue_not(dispatch_get_main_queue());
   dispatch_semaphore_t sem = dispatch_semaphore_create(0);
   __block BOOL allowsSound;
   __block BOOL allowsAlert;
@@ -82,7 +84,9 @@
   UNAuthorizationOptions options = UNAuthorizationOptionAlert + UNAuthorizationOptionSound + UNAuthorizationOptionBadge;
   id<EXUserNotificationCenterProxyInterface> notificationCenter = [EXUserNotificationRequester getCenterWithModuleRegistry:_moduleRegistry];
   [notificationCenter requestAuthorizationWithOptions:options completionHandler:^(BOOL granted, NSError * _Nullable error) {
-    dispatch_async(dispatch_get_main_queue(), ^{
+    id<EXPermissionsModule> permissionsModule = [weakSelf.moduleRegistry getModuleImplementingProtocol:@protocol(EXPermissionsModule)];
+    NSAssert(permissionsModule, @"Permissions module is required to properly consume result.");
+    dispatch_async(permissionsModule.methodQueue, ^{
       [weakSelf _consumeResolverWithCurrentPermissions];
     });
   }];

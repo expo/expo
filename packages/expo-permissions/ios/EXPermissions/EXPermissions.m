@@ -31,7 +31,7 @@ EX_EXPORT_MODULE(ExpoPermissions);
 
 + (const NSArray<Protocol *> *)exportedInterfaces
 {
-  return @[@protocol(EXPermissionsInterface)];
+  return @[@protocol(EXPermissionsInterface), @protocol(EXPermissionsModule)];
 }
 
 - (NSDictionary *)constantsToExport
