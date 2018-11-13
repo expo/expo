@@ -6,7 +6,7 @@ import Identity from './Identity';
 import User from './User';
 import ExpoGoogleSignIn from './ExpoGoogleSignIn';
 
-export const { ERRORS, SCOPES, TYPES } = ExpoGoogleSignIn;
+const { ERRORS, SCOPES, TYPES } = ExpoGoogleSignIn;
 
 export type GoogleSignInType = 'default' | 'games';
 
