@@ -121,6 +121,7 @@ workflows:
       - expotools
       - client_android
       - client_ios
+      - test_suite_publish
       - shell_app_sim_base_ios
       - client_android_approve_google_play:
           type: approval
@@ -137,7 +138,6 @@ workflows:
   #         requires:
   #           - shell_app_sim_base_ios
   #           - test_suite_publish
-  #     - test_suite_publish # universe/tools/powertools
   #     - client_android_tests:
   #         requires:
   #           - test_suite_publish
@@ -277,3 +277,13 @@ jobs:
           name: Upload APK to Google Play and release to production
           working_directory: ~/expo
           command: nix run expo.fastlane --command fastlane android prod_release
+
+  test_suite_publish:
+    executor: nix
+    steps:
+      - setup
+      - update_submodules
+      - decrypt_secrets_if_possible
+      - run:
+          working_directory: ~/expo/apps/test-suite
+          command: ./publish.sh
