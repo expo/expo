@@ -5,7 +5,7 @@ export default class GifScreen extends React.Component {
   static navigationOptions = {
     title: 'Cat',
   };
-  
+
   render() {
     return (
       <View
@@ -18,7 +18,7 @@ export default class GifScreen extends React.Component {
         <Image
           source={{ uri: 'http://d23dyxeqlo5psv.cloudfront.net/cat.gif' }}
           style={{ height: 140, width: 200 }}
-          />
+        />
       </View>
     );
   }

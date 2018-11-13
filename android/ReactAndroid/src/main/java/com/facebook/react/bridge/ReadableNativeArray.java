@@ -12,7 +12,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import com.facebook.infer.annotation.Assertions;
+import expolib_v1.com.facebook.infer.annotation.Assertions;
 import javax.annotation.Nullable;
 
 /**

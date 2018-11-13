@@ -11,17 +11,15 @@ export default class GLScreen extends React.Component {
 
   render() {
     return (
-      <ScrollView style={{ flex: 1 }}>
-        {Object.keys(GLScreens)
-          .filter(n => n !== 'GL')
-          .map(screenName => (
-            <View key={screenName} style={{ padding: 10 }}>
-              <ListButton
-                onPress={() => this.props.navigation.navigate(screenName)}
-                title={GLScreens[screenName].screen.title}
-              />
-            </View>
-          ))}
+      <ScrollView style={styles.container}>
+        {Object.keys(GLScreens).map(screenName => (
+          <View key={screenName} style={{ padding: 10 }}>
+            <ListButton
+              onPress={() => this.props.navigation.navigate(screenName)}
+              title={GLScreens[screenName].screen.title}
+            />
+          </View>
+        ))}
       </ScrollView>
     );
   }
@@ -29,7 +27,6 @@ export default class GLScreen extends React.Component {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 30,
     flex: 1,
   },
 });

@@ -1,4 +1,5 @@
 import React from 'react';
+import { NavigationEvents } from 'react-navigation';
 import { Button, Platform, StyleSheet, Text, View } from 'react-native';
 
 import { BarCodeScanner, Permissions } from 'expo';
@@ -15,15 +16,16 @@ export default class BarcodeScannerExample extends React.Component {
     type: BarCodeScanner.Constants.Type.back,
   };
 
-  async componentDidMount() {
-    let { status } = await Permissions.askAsync(Permissions.CAMERA);
-    this.setState({ isPermissionsGranted: (status === 'granted') });
-  }
+  componentDidFocus = async () => {
+    const { status } = await Permissions.askAsync(Permissions.CAMERA);
+    this.setState({ isPermissionsGranted: status === 'granted' });
+  };
 
   render() {
     if (!this.state.isPermissionsGranted) {
       return (
         <View style={styles.container}>
+          <NavigationEvents onDidFocus={this.componentDidFocus} />
           <Text>You have not granted permission to use the camera on this device!</Text>
         </View>
       );

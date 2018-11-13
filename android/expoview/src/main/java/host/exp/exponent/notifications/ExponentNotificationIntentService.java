@@ -13,12 +13,9 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 
-import expolib_v1.okhttp3.Call;
-import expolib_v1.okhttp3.Callback;
 import expolib_v1.okhttp3.MediaType;
 import expolib_v1.okhttp3.Request;
 import expolib_v1.okhttp3.RequestBody;
-import expolib_v1.okhttp3.Response;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.kernel.ExponentUrls;
@@ -31,6 +28,9 @@ import host.exp.exponent.utils.AsyncCondition;
 public abstract class ExponentNotificationIntentService extends IntentService {
 
   private static final String TAG = ExponentNotificationIntentService.class.getSimpleName();
+
+  public static final String DEVICE_PUSH_TOKEN_KEY = "devicePushToken";
+  private static boolean sTokenError = false;
 
   abstract public String getToken() throws IOException;
   abstract public String getSharedPrefsKey();
@@ -62,6 +62,12 @@ public abstract class ExponentNotificationIntentService extends IntentService {
     initialize();
   }
 
+  /*
+   *  This function MUST set AsyncCondition.notify(DEVICE_PUSH_TOKEN_KEY);
+   *  eventually. Otherwise it's possible for us to get in a state where
+   *  the AsyncCondition listeners are never called (and the promise from
+   *  getExpoPushTokenAsync never resolves).
+   */
   @Override
   protected void onHandleIntent(Intent intent) {
     initialize();
@@ -72,19 +78,16 @@ public abstract class ExponentNotificationIntentService extends IntentService {
     try {
       final String token = getToken();
 
-      AsyncCondition.notify("devicePushToken");
-
       if (token == null) {
-        EXL.e(TAG, "Device push token is null");
+        setTokenError("Device push token is null");
         return;
       }
 
       String sharedPreferencesToken = mExponentSharedPreferences.getString(getSharedPrefsKey());
       if (sharedPreferencesToken != null && sharedPreferencesToken.equals(token)) {
         // Server already has this token, don't need to send it again.
-
-        // TODO: uncomment this when we're more confident everything is working consistently
-        // return;
+        AsyncCondition.notify(DEVICE_PUSH_TOKEN_KEY);
+        return;
       }
 
       // Needed for Arguments.createMap
@@ -108,25 +111,45 @@ public abstract class ExponentNotificationIntentService extends IntentService {
         mExponentNetwork.getClient().call(request, new ExpoHttpCallback() {
           @Override
           public void onFailure(IOException e) {
-            // Don't do anything here. We'll retry next time.
+            setTokenError(e);
           }
 
           @Override
           public void onResponse(ExpoResponse response) throws IOException {
-            if (response.isSuccessful()) {
-              mExponentSharedPreferences.setString(getSharedPrefsKey(), token);
+            if (!response.isSuccessful()) {
+              setTokenError("Failed to update the native device token with the Expo push notification service");
+              return;
             }
+            mExponentSharedPreferences.setString(getSharedPrefsKey(), token);
+            sTokenError = false;
+            AsyncCondition.notify(DEVICE_PUSH_TOKEN_KEY);
           }
         });
 
         Log.i(TAG, getServerType() + " Registration Token: " + token);
       } catch (JSONException e) {
-        EXL.e(TAG, e);
+        setTokenError(e);
       }
     } catch (SecurityException e) {
-      EXL.e(TAG, "Are you running in Genymotion? Follow this guide https://inthecheesefactory.com/blog/how-to-install-google-services-on-genymotion/en to install Google Play Services");
+      setTokenError("Are you running in Genymotion? Follow this guide https://inthecheesefactory.com/blog/how-to-install-google-services-on-genymotion/en to install Google Play Services");
     } catch (IOException e) {
-      EXL.e(TAG, e);
+      setTokenError(e);
     }
+  }
+
+  public static boolean hasTokenError() {
+    return sTokenError;
+  }
+
+  private void setTokenError(Exception e) {
+    sTokenError = true;
+    AsyncCondition.notify(DEVICE_PUSH_TOKEN_KEY);
+    EXL.e(TAG, e);
+  }
+
+  private void setTokenError(String message) {
+    sTokenError = true;
+    AsyncCondition.notify(DEVICE_PUSH_TOKEN_KEY);
+    EXL.e(TAG, message);
   }
 }

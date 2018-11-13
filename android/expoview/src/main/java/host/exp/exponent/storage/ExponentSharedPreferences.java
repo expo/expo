@@ -51,6 +51,8 @@ public class ExponentSharedPreferences {
   public static final String SHOULD_NOT_USE_KERNEL_CACHE = "should_not_use_kernel_cache";
   public static final String KERNEL_REVISION_ID = "kernel_revision_id";
   public static final String SAFE_MANIFEST_KEY = "safe_manifest";
+  public static final String EXPO_AUTH_SESSION = "expo_auth_session";
+  public static final String EXPO_AUTH_SESSION_SECRET_KEY = "sessionSecret";
 
   // Metadata
   public static final String EXPERIENCE_METADATA_PREFIX = "experience_metadata_";
@@ -134,6 +136,28 @@ public class ExponentSharedPreferences {
     uuid = UUID.randomUUID().toString();
     setString(UUID_KEY, uuid);
     return uuid;
+  }
+
+  public void updateSession(JSONObject session) {
+    setString(EXPO_AUTH_SESSION, session.toString());
+  }
+
+  public void removeSession() {
+    setString(EXPO_AUTH_SESSION, null);
+  }
+
+  public String getSessionSecret() {
+    String sessionString = getString(EXPO_AUTH_SESSION);
+    if (sessionString == null) {
+      return null;
+    }
+    try {
+      JSONObject session = new JSONObject(sessionString);
+      return session.getString(EXPO_AUTH_SESSION_SECRET_KEY);
+    } catch (Exception e) {
+      EXL.e(TAG, e);
+      return null;
+    }
   }
 
   public void updateManifest(String manifestUrl, JSONObject manifest, String bundleUrl) {

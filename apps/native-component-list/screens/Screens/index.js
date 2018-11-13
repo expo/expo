@@ -8,12 +8,10 @@ import {
 } from 'react-native';
 import { createStackNavigator, createSwitchNavigator } from 'react-navigation';
 
-import Stack from './stack';
 import Container from './container';
 import Navigation from './navigation';
 
 const SCREENS = {
-  Stack: { screen: Stack, title: 'ScreenStack example' },
   Container: { screen: Container, title: 'ScreenContainer example' },
   Navigation: { screen: Navigation, title: 'React Navigation example' },
 };

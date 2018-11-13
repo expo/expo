@@ -21,6 +21,7 @@ For scripts that need to run as part of the npm lifecycle, you'd invoke the comm
 ```json
 {
   "scripts": {
+    "postinstall": "expo-module postinstall",
     "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
   }
@@ -28,6 +29,10 @@ For scripts that need to run as part of the npm lifecycle, you'd invoke the comm
 ```
 
 These are the commands:
+
+### configure
+
+This generates common configuration files like `tsonfig.json` for the package. These auto-generated files are meant to be read-only and committed to Git.
 
 ### typecheck
 

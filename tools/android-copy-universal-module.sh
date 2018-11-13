@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Usage: ./android-copy-universal-module 4.0.0 universal-module/.../android
 
 ABI_VERSION=`echo $1 | sed 's/\./_/g'`

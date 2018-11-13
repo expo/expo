@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI31_0_0/EXCameraInterface/ABI31_0_0EXCameraInterface/ABI31_0_0EXCameraInterface.h

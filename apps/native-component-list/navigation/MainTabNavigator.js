@@ -29,6 +29,7 @@ import GoogleLoginScreen from '../screens/GoogleLoginScreen';
 import RemindersScreen from '../screens/RemindersScreen';
 import SensorScreen from '../screens/SensorScreen';
 import GeocodingScreen from '../screens/GeocodingScreen';
+import GLScreen from '../screens/GL/GLScreen';
 import GLScreens from '../screens/GL/GLScreens';
 import ImageManipulatorScreen from '../screens/ImageManipulatorScreen';
 import ImagePickerScreen from '../screens/ImagePickerScreen';
@@ -70,15 +71,6 @@ import ViewShotScreen from '../screens/ViewShotScreen';
 const styles = StyleSheet.create({
   tabBar: {
     backgroundColor: '#fff',
-    paddingTop: 5,
-    paddingBottom: 1,
-    paddingHorizontal: 28,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: Colors.tabIconDefault,
-  },
-  tabBarLabel: {
-    fontSize: 10,
-    letterSpacing: 0,
   },
   header: {
     backgroundColor: '#fff',
@@ -93,7 +85,7 @@ const styles = StyleSheet.create({
 
 const StackConfig = {
   cardStyle: styles.card,
-  // headerTransitionPreset: 'uikit',
+  headerTransitionPreset: 'uikit',
   defaultNavigationOptions: () => ({
     headerStyle: styles.header,
     headerTintColor: Colors.tintColor,
@@ -108,6 +100,7 @@ const ExpoComponentsStackNavigator = createStackNavigator(
     AdMob: { screen: AdMobScreen },
     BarCodeScanner: { screen: BarCodeScannerScreen },
     BlurView: { screen: BlurViewScreen },
+    GL: { screen: GLScreen },
     ...GLScreens,
     GestureHandlerPinch: { screen: GestureHandlerPinchScreen },
     GestureHandlerList: { screen: GestureHandlerListScreen },
@@ -180,9 +173,9 @@ const ReactNativeCoreStackNavigator = createStackNavigator(
   StackConfig
 );
 
-class TabIcon extends React.Component {
+class TabIcon extends React.PureComponent {
   render() {
-    let baseSize = this.props.size || 26;
+    let baseSize = this.props.size || 27;
     return (
       <MaterialIcons
         name={this.props.name}
@@ -198,9 +191,9 @@ const createTabNavigator =
 
 const MainTabNavigator = createTabNavigator(
   {
-    ExpoApis: { screen: ExpoApisStackNavigator },
-    ExpoComponents: { screen: ExpoComponentsStackNavigator },
-    ReactNativeCore: { screen: ReactNativeCoreStackNavigator },
+    ExpoApis: ExpoApisStackNavigator,
+    ExpoComponents: ExpoComponentsStackNavigator,
+    ReactNativeCore: ReactNativeCoreStackNavigator,
   },
   {
     defaultNavigationOptions: ({ navigation }) => {
