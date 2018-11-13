@@ -16,6 +16,9 @@
 #import <EXAuth/EXAuth.h>
 #endif
 
+#if __has_include(<GoogleSignIn/GoogleSignIn.h>)
+#import <GoogleSignIn/GoogleSignIn.h>
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -48,18 +51,21 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
 {
+  id annotation = options[UIApplicationOpenURLOptionsAnnotationKey];
+  NSString *sourceApplication = options[UIApplicationOpenURLOptionsSourceApplicationKey];
+#if __has_include(<GoogleSignIn/GoogleSignIn.h>)
+  if ([[GIDSignIn sharedInstance] handleURL:url
+                          sourceApplication:sourceApplication
+                                 annotation:annotation]) {
+    return YES;
+  }
+#endif
 #if __has_include(<EXAuth/EXAuth.h>)
   if ([[EXAuth instance] application:app openURL:url options:options]) {
     return YES;
   }
 #endif
-  
-  return NO;
-}
-
-- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(nullable NSString *)sourceApplication annotation:(id)annotation
-{
-  return [[ExpoKit sharedInstance] application:application openURL:url sourceApplication:sourceApplication annotation:annotation];
+  return [[ExpoKit sharedInstance] application:app openURL:url sourceApplication:sourceApplication annotation:annotation];
 }
 
 - (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray<id<UIUserActivityRestoring>> * _Nullable))restorationHandler
