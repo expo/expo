@@ -184,7 +184,7 @@ export default {
   },
 
   // User passes set of actions titles.
-  createCategoryIOSAsync(categoryId: string, actions: Array<ActionType>): Promise<void> {
+  createCategoryIOSAsync(categoryId: string, actions: ActionType[]): Promise<void> {
     if (Platform.OS === 'android') {
       console.warn('createCategoryAsync(...) has no effect on Android');
       return Promise.resolve();

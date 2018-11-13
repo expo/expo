@@ -43,7 +43,7 @@ export default async function registerForPushNotificationsAsync() {
         title: 'Welcome to Expo!',
         body: 'Native Component List is registered for push notifications.',
         data: { example: 'sample data' },
-        category: `${Constants.manifest.id}:welcome`,
+        _category: `${Constants.manifest.id}:welcome`,
       },
     ]),
   });
