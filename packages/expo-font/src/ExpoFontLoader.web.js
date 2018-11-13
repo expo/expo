@@ -12,7 +12,9 @@ export default {
         active: resolve,
         inactive() {
           reject(
-            new Error('ExpoFontLoader.loadAsync(): The browser does not support linked fonts')
+            new Error(
+              `ExpoFontLoader.loadAsync(): The browser does not support linked fonts or the font ${fontFamilyName} could not be loaded from: ${fontUri}`
+            )
           );
         },
         custom: {
