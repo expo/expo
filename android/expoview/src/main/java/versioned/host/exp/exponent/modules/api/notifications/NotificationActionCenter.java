@@ -25,7 +25,7 @@ public class NotificationActionCenter {
 
   public synchronized static void put(String categoryId, ArrayList<HashMap<String, Object>> actions, Context context) {
     throwExceptionIfOnMainThread();
-    for(HashMap<String, Object> action: actions) {
+    for (HashMap<String, Object> action: actions) {
       action.put("categoryId", categoryId);
       ActionObject actionObject= new ActionObject();
       actionObject.populateObjectWithDataFromMap(action);
@@ -43,7 +43,7 @@ public class NotificationActionCenter {
                                      .where(Condition.column(ActionObject$Table.CATEGORYID).is(categoryId))
                                      .queryList();
 
-    for(ActionObject actionObject : actions) {
+    for (ActionObject actionObject : actions) {
       addAction(builder, actionObject, intentProvider, context);
     }
   }
@@ -77,7 +77,7 @@ public class NotificationActionCenter {
 
   private static void throwExceptionIfOnMainThread() {
     if (Looper.myLooper() == Looper.getMainLooper()) {
-      throw new RuntimeException("Do not use NotificationActionCenter class on main thread!");
+      throw new RuntimeException("Do not use NotificationActionCenter class on the main thread!");
     }
   }
 }

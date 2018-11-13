@@ -66,16 +66,16 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void createCategory(final String categoryIdParam, final ReadableArray actions, final Promise promise) {
+  public void createCategoryAsync(final String categoryIdParam, final ReadableArray actions, final Promise promise) {
     String categoryId = getScopedIdIfNotDetached(categoryIdParam);
-    ArrayList<HashMap<String, Object>> scopedActions = new ArrayList<>();
+    ArrayList<HashMap<String, Object>> newActions = new ArrayList<>();
 
-    for(Object actionObject : actions.toArrayList()) {
+    for (Object actionObject : actions.toArrayList()) {
       HashMap<String, Object> action = (HashMap<String, Object>)actionObject;
-      scopedActions.add(action);
+      newActions.add(action);
     }
 
-    NotificationActionCenter.put(categoryId, scopedActions, getReactApplicationContext());
+    NotificationActionCenter.put(categoryId, newActions, getReactApplicationContext());
     promise.resolve(null);
   }
 
@@ -83,7 +83,7 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
     if (!Constants.isDetached()) {
       try {
         String experienceId = mManifest.getString(ExponentManifest.MANIFEST_ID_KEY);
-        return ( experienceId + ":" + categoryId );
+        return experienceId + ":" + categoryId;
       } catch (JSONException e) {
         e.printStackTrace();
       }

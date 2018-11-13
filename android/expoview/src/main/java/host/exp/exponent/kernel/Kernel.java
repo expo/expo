@@ -485,7 +485,7 @@ public class Kernel extends KernelInterface {
       String notification = bundle.getString(KernelConstants.NOTIFICATION_KEY); // deprecated
       String notificationObject = bundle.getString(KernelConstants.NOTIFICATION_OBJECT_KEY);
       String notificationManifestUrl = bundle.getString(KernelConstants.NOTIFICATION_MANIFEST_URL_KEY);
-      String actionType = "DEFAULT_ACTION";
+      String actionType = null;
       String inputText = null;
 
       if (bundle.containsKey("actionType")) {
@@ -502,7 +502,7 @@ public class Kernel extends KernelInterface {
         exponentNotification.addActionType(actionType);
         if (bundle.containsKey("actionType")) {
           ExponentNotificationManager manager = new ExponentNotificationManager(mContext);
-          manager.cancel( exponentNotification.experienceId, exponentNotification.notificationId);
+          manager.cancel(exponentNotification.experienceId, exponentNotification.notificationId);
         }
         if (inputText != null) {
           exponentNotification.addInputText(inputText);
