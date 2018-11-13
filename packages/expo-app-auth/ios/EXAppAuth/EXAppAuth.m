@@ -4,12 +4,14 @@
 #import <AppAuth/AppAuth.h>
 #import <EXCore/EXUtilitiesInterface.h>
 #import <EXCore/EXUtilities.h>
+#import <EXAppAuth/EXAppAuth+JSON.h>
 
-static NSString *const EXAppAuthError = @"E_APP_AUTH";
+static NSString *const EXAppAuthError = @"ERR_APP_AUTH";
 
 @interface EXAppAuth() {
   id<OIDExternalUserAgentSession> session;
 }
+
 @property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
 @property (nonatomic, weak) id<EXUtilitiesInterface> utilities;
 
@@ -19,11 +21,6 @@ static NSString *const EXAppAuthError = @"E_APP_AUTH";
 
 static EXAppAuth *shared = nil;
 
-- (dispatch_queue_t)methodQueue
-{
-  return dispatch_get_main_queue();
-}
-
 + (nonnull instancetype)instance {
   return shared;
 }
@@ -31,32 +28,24 @@ static EXAppAuth *shared = nil;
 - (id)init {
   self = [super init];
   if (self != nil) {
-    // Set static instance for use from AppDelegate
     shared = self;
   }
   return self;
 }
 
+#pragma mark - Expo
+
 EX_EXPORT_MODULE(ExpoAppAuth);
+
+- (dispatch_queue_t)methodQueue
+{
+  return dispatch_get_main_queue();
+}
 
 - (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
   _utilities = [moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)];
-}
-
-- (NSArray *)_getOAuthRedirect
-{
-  // Get the Google redirect scheme from Info.plist.
-  NSArray *urlTypes = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleURLTypes"];
-  __block NSArray *urlSchemes;
-  [urlTypes enumerateObjectsUsingBlock:^(id _Nonnull urlType, NSUInteger idx,  BOOL * _Nonnull stop) {
-    if ([[urlType objectForKey:@"CFBundleURLName"] isEqualToString:@"OAuthRedirect"]) {
-      urlSchemes = [(NSDictionary *)urlType objectForKey:@"CFBundleURLSchemes"];
-      *stop = YES;
-    }
-  }];
-  return urlSchemes;
 }
 
 - (NSDictionary *)constantsToExport
@@ -73,24 +62,38 @@ EX_EXPORT_METHOD_AS(executeAsync,
                     reject:(EXPromiseRejectBlock)reject)
 {
   BOOL isRefresh = [options[@"isRefresh"] boolValue];
-  // TODO: Bacon: Checks...
   NSDictionary *serviceConfiguration = options[@"serviceConfiguration"];
   if (serviceConfiguration) {
-    OIDServiceConfiguration *service = [self createServiceConfiguration:serviceConfiguration];
+    OIDServiceConfiguration *service = [self _createServiceConfiguration:serviceConfiguration];
     if (isRefresh) {
-      [self refreshWithConfiguration:service options:options resolve:resolve reject:reject];
+      [self _refreshWithConfiguration:service options:options resolve:resolve reject:reject];
     } else {
-      [self authorizeWithConfiguration:service options:options resolve:resolve reject:reject];
+      [self _authorizeWithConfiguration:service options:options resolve:resolve reject:reject];
     }
   } else {
-    // TODO: Bacon: Checks / Errors
     NSString *issuer = options[@"issuer"];
-    OIDDiscoveryCallback callback = [self getCallback:options isRefresh:isRefresh resolver:resolve rejecter:reject];
+    OIDDiscoveryCallback callback = [self _getCallback:options isRefresh:isRefresh resolver:resolve rejecter:reject];
     [OIDAuthorizationService discoverServiceConfigurationForIssuer:[NSURL URLWithString:issuer] completion:callback];
   }
 }
 
-- (OIDServiceConfiguration *)createServiceConfiguration:(NSDictionary *)serviceConfiguration {
+#pragma mark - Private
+
+- (NSArray *)_getOAuthRedirect
+{
+  // Get the Google redirect scheme from Info.plist.
+  NSArray *urlTypes = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleURLTypes"];
+  __block NSArray *urlSchemes;
+  [urlTypes enumerateObjectsUsingBlock:^(id _Nonnull urlType, NSUInteger idx,  BOOL * _Nonnull stop) {
+    if ([[urlType objectForKey:@"CFBundleURLName"] isEqualToString:@"OAuthRedirect"]) {
+      urlSchemes = [(NSDictionary *)urlType objectForKey:@"CFBundleURLSchemes"];
+      *stop = YES;
+    }
+  }];
+  return urlSchemes;
+}
+
+- (OIDServiceConfiguration *)_createServiceConfiguration:(NSDictionary *)serviceConfiguration {
   NSURL *authorizationEndpoint = [NSURL URLWithString:[serviceConfiguration objectForKey:@"authorizationEndpoint"]];
   NSURL *tokenEndpoint = [NSURL URLWithString:[serviceConfiguration objectForKey:@"tokenEndpoint"]];
   NSURL *registrationEndpoint = [NSURL URLWithString:[serviceConfiguration objectForKey:@"registrationEndpoint"]];
@@ -104,45 +107,65 @@ EX_EXPORT_METHOD_AS(executeAsync,
   return configuration;
 }
 
-- (void)authorizeWithConfiguration:(OIDServiceConfiguration *)configuration
-                           options:(NSDictionary *)options
-                           resolve:(EXPromiseResolveBlock)resolve
-                            reject:(EXPromiseRejectBlock)reject
+- (void)_authorizeWithConfiguration:(OIDServiceConfiguration *)configuration
+                            options:(NSDictionary *)options
+                            resolve:(EXPromiseResolveBlock)resolve
+                             reject:(EXPromiseRejectBlock)reject
 {
   NSArray *scopes = options[@"scopes"];
   NSDictionary *additionalParameters = options[@"additionalParameters"];
-  
+  NSURL *redirectURL = [NSURL URLWithString:options[@"redirectUrl"]];
   OIDAuthorizationRequest *request =
   [[OIDAuthorizationRequest alloc] initWithConfiguration:configuration
                                                 clientId:options[@"clientId"]
                                             clientSecret:options[@"clientSecret"]
                                                   scopes:scopes
-                                             redirectURL:[NSURL URLWithString:options[@"redirectUrl"]]
+                                             redirectURL:redirectURL
                                             responseType:OIDResponseTypeCode
                                     additionalParameters:additionalParameters];
 
   [EXUtilities performSynchronouslyOnMainThread:^{
     __weak typeof(self) weakSelf = self;
+    
+    OIDAuthStateAuthorizationCallback callback = ^(OIDAuthState *_Nullable authState, NSError *_Nullable error) {
+      typeof(self) strongSelf = weakSelf;
+      if (strongSelf != nil) {
+        // Destroy the current session
+        strongSelf->session = nil;
+      }
+      if (authState) {
+        NSDictionary *tokenResponse = [EXAppAuth _tokenResponseNativeToJSON:authState.lastTokenResponse request:options];
+        resolve(tokenResponse);
+      } else {
+        rejectWithError(reject, error);
+      }
+    };
+    
     UIViewController *presentingViewController = self->_utilities.currentViewController;
     self->session = [OIDAuthState authStateByPresentingAuthorizationRequest:request
-                                                           presentingViewController:presentingViewController
-                                                                           callback:^(OIDAuthState *_Nullable authState, NSError *_Nullable error) {
-                                                                             typeof(self) strongSelf = weakSelf;
-                                                                             strongSelf->session = nil;
-                                                                             if (authState) {
-                                                                               resolve([[self class] jsonFromOIDTokenResponse:authState.lastTokenResponse request:options]);
-                                                                             } else {
-                                                                               rejectWithError(reject, error);
-                                                                             }
-                                                                           }];
+                                                   presentingViewController:presentingViewController
+                                                                   callback:callback];
   }];
 }
 
-- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<NSString *, id> *)options {
-  return [session resumeExternalUserAgentFlowWithURL:url];
++ (NSDictionary *)_tokenResponseNativeToJSON:(OIDTokenResponse *)input request:(NSDictionary *)request
+{
+  NSDictionary *tokenResponse = [EXAppAuth tokenResponseNativeToJSON:input];
+  NSMutableDictionary *output = [NSMutableDictionary dictionaryWithDictionary:tokenResponse];
+  
+  NSString *refreshToken;
+  if (!input.refreshToken) {
+    refreshToken = request[@"refreshToken"];
+  } else {
+    refreshToken = input.accessToken;
+  }
+  
+  [output setValue:@"refreshToken" forKey:nullIfEmpty(refreshToken)];
+  
+  return output;
 }
 
-- (void)refreshWithConfiguration:(OIDServiceConfiguration *)configuration
+- (void)_refreshWithConfiguration:(OIDServiceConfiguration *)configuration
                          options:(NSDictionary *)options
                          resolve:(EXPromiseResolveBlock)resolve
                           reject:(EXPromiseRejectBlock)reject {
@@ -161,31 +184,40 @@ EX_EXPORT_METHOD_AS(executeAsync,
                                     codeVerifier:nil
                             additionalParameters:additionalParameters];
   
+  OIDTokenCallback callback = ^(OIDTokenResponse *_Nullable response, NSError *_Nullable error) {
+    if (response) {
+      NSDictionary *tokenResponse = [EXAppAuth _tokenResponseNativeToJSON:response request:options];
+      resolve(tokenResponse);
+    } else {
+      rejectWithError(reject, error);
+    }
+  };
   [OIDAuthorizationService performTokenRequest:tokenRefreshRequest
-                                      callback:^(OIDTokenResponse *_Nullable response,
-                                                 NSError *_Nullable error) {
-                                        if (response) {
-                                          resolve([[self class] jsonFromOIDTokenResponse:response request:options]);
-                                        } else {
-                                          rejectWithError(reject, error);
-                                        }
-                                      }];
+                                      callback:callback];
 }
 
-- (OIDDiscoveryCallback)getCallback:(NSDictionary *)options
+- (OIDDiscoveryCallback)_getCallback:(NSDictionary *)options
                           isRefresh:(BOOL)isRefresh
                            resolver:(EXPromiseResolveBlock)resolve
                            rejecter:(EXPromiseRejectBlock)reject
 {
   return ^(OIDServiceConfiguration *_Nullable configuration, NSError *_Nullable error) {
     if (configuration) {
-      if (isRefresh) [self refreshWithConfiguration:configuration options:options resolve:resolve reject:reject];
-      else [self authorizeWithConfiguration:configuration options:options resolve:resolve reject:reject];
+      if (isRefresh) [self _refreshWithConfiguration:configuration options:options resolve:resolve reject:reject];
+      else [self _authorizeWithConfiguration:configuration options:options resolve:resolve reject:reject];
     } else {
       rejectWithError(reject, error);
     }
   };
 }
+
+#pragma mark - Public
+
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<NSString *, id> *)options {
+  return [session resumeExternalUserAgentFlowWithURL:url];
+}
+
+#pragma mark - Static
 
 void rejectWithError(EXPromiseRejectBlock reject, NSError *error) {
   NSString *errorMessage = [NSString stringWithFormat:@"%@: %@", EXAppAuthError, error.localizedDescription];
@@ -194,54 +226,6 @@ void rejectWithError(EXPromiseRejectBlock reject, NSError *error) {
   
   NSString *errorCode = [NSString stringWithFormat:@"%ld", error.code];
   reject(errorCode, errorMessage, error);
-}
-
-// TODO: Bacon: Move to Serialization extension.
-
-id nullIfEmpty(NSString *input) {
-  if (!input || input == nil || [input isEqualToString:@""]) {
-    return [NSNull null];
-  }
-  return input;
-}
-
-id nullIfNil(id input) {
-  if (!input || input == nil) {
-    return [NSNull null];
-  }
-  return input;
-}
-
-+ (NSString *)jsonFromNSDate:(NSDate *)input
-{
-  if (!input) return nil;
-  NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-  NSTimeZone *timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
-  [dateFormatter setTimeZone:timeZone];
-  [dateFormatter setLocale:[NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"]];
-  [dateFormatter setDateFormat: @"yyyy-MM-dd'T'HH:mm:ss.SSS'Z"];
-  return [dateFormatter stringFromDate:input];
-}
-
-+ (NSDictionary *)jsonFromOIDTokenResponse:(OIDTokenResponse *)response request:(NSDictionary *)request
-{
-  if (!response) return nil;
-  
-  NSString *refreshToken;
-  if (!response.refreshToken) {
-    refreshToken = request[@"refreshToken"];
-  } else {
-    refreshToken = response.accessToken;
-  }
-  
-  return @{
-           @"accessToken": nullIfEmpty(response.accessToken),
-           @"accessTokenExpirationDate": nullIfNil([[self class] jsonFromNSDate:response.accessTokenExpirationDate]),
-           @"additionalParameters": nullIfNil(response.additionalParameters),
-           @"idToken": nullIfEmpty(response.idToken),
-           @"refreshToken": nullIfEmpty(refreshToken),
-           @"tokenType": nullIfEmpty(response.tokenType),
-           };
 }
 
 @end

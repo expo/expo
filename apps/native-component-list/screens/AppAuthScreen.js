@@ -70,7 +70,7 @@ export default class AuthSessionScreen extends React.Component {
     this._getAuthAsync();
   }
 
-  _getAuth = async () => {
+  _getAuthAsync = async () => {
     try {
       const authState = await getCachedAuthAsync();
       this.setState({ authState });
@@ -79,7 +79,7 @@ export default class AuthSessionScreen extends React.Component {
     }
   };
 
-  _testGoogleLogin = async () => {
+  _testGoogleLoginAsync = async () => {
     try {
       const result = await Google.logInAsync({
         behavior: 'web',
@@ -107,12 +107,12 @@ export default class AuthSessionScreen extends React.Component {
           ]);
         }, 1000);
       }
-    } catch (e) {
-      Alert.alert('Error! ' + e.message, [{ text: 'OK :(', onPress: () => {} }]);
+    } catch ({ message }) {
+      Alert.alert('Error! ' + message);
     }
   };
 
-  toggleAuth = async () => {
+  _toggleAuthAsync = async () => {
     try {
       if (this.state.authState) {
         await signOutAsync(this.state.authState);
@@ -133,12 +133,14 @@ export default class AuthSessionScreen extends React.Component {
     const title = this.hasAuth ? 'Sign out' : 'Sign in';
     return (
       <View style={styles.container}>
-        <Button title={title} onPress={this.toggleAuth} />
-        {this.hasAuth ? (
-          <Text style={styles.text}>Result: {JSON.stringify(this.state.authState)}</Text>
-        ) : null}
+        <Button title={title} onPress={this._toggleAuthAsync} />
+        <Button title={'Google'} onPress={this._testGoogleLoginAsync} />
 
-        <Button title={'Google'} onPress={this._testGoogleLogin} />
+        {this.hasAuth ? (
+          <Text style={styles.text}>
+            Result: {JSON.stringify(this.state.authState).slice(0, 50)}
+          </Text>
+        ) : null}
       </View>
     );
   }
