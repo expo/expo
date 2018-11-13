@@ -1,6 +1,8 @@
 import * as React from 'react';
+import GithubSlugger from 'github-slugger';
 
 import DocumentationPage from '~/components/DocumentationPage';
+import { SluggerContext } from '~/components/page-higher-order/withSlugger';
 
 export default options => {
   return content => {
@@ -12,7 +14,9 @@ export default options => {
       render() {
         return (
           <DocumentationPage title={options.title} url={this.props.url} asPath={this.props.asPath}>
-            {content}
+            <SluggerContext.Provider value={new GithubSlugger()}>
+              {content}
+            </SluggerContext.Provider>
           </DocumentationPage>
         );
       }
