@@ -170,6 +170,7 @@ dependencies {
   api project(':expo-image-loader-interface')
   api project(':expo-gl')
   api project(':expo-gl-cpp')
+  api project(':expo-google-sign-in')
   api project(':expo-sms')
   api project(':expo-print')
   api project(':expo-media-library')
