@@ -181,13 +181,17 @@ const NSUInteger kEXErrorCodeAppForbidden = 424242;
         if (urlString) {
           NSURL *url = [NSURL URLWithString:urlString];
           if (url) {
-            // We returned NO from `-(BOOL)sendNotification:`, so the notification has been saved
-            // as pending in EXUserNotificationManager and it will be added by EXReactAppManager
-            // when constructing initial app props.
-            [weakSelf createNewAppWithUrl:url initialProps:nil];
+            [weakSelf createNewAppWithUrl:url initialProps:@{ @"notification": notification.properties }];
           }
         }
       }];
+      // If we're here, there's no active app in appRegistry matching notification.experienceId
+      // and we are in Expo Client, since _browserController is not nil.
+      // If so, we can return YES (meaning "notification has been successfully dispatched")
+      // because we pass the notification as initialProps in completion handler
+      // of getHistoryUrlForExperienceId:. If urlString passed to completion handler is empty,
+      // the notification is forgotten (this is the expected behavior).
+      return YES;
     }
   }
 
