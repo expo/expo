@@ -154,7 +154,7 @@ executors:
       - image: dsokal/expo-turtle-android
     working_directory: ~/expo-project
     environment:
-      TURTLE_VERSION: 0.3.1
+      TURTLE_VERSION: 0.3.3
       PLATFORM: android
       YARN_CACHE_FOLDER: ~/yarn_cache
 
@@ -163,7 +163,7 @@ executors:
       xcode: 9.4.1
     working_directory: ~/expo-project
     environment:
-      TURTLE_VERSION: 0.3.1
+      TURTLE_VERSION: 0.3.3
       PLATFORM: ios
       YARN_CACHE_FOLDER: /Users/distiller/yarn_cache
       HOMEBREW_NO_AUTO_UPDATE: 1
@@ -370,7 +370,7 @@ branches:
 env:
   global:
     - EXPO_SDK_VERSION="30.0.0"
-    - TURTLE_VERSION="0.3.1"
+    - TURTLE_VERSION="0.3.3"
     - YARN_VERSION="1.10.1"
 
 jobs:
