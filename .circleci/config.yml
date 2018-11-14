@@ -107,6 +107,13 @@ workflows:
       - client_android
       - client_ios
       - shell_app_sim_base_ios
+      - client_android_approve_google_play:
+          type: approval
+          requires:
+            - client_android
+      - client_android_release_google_play:
+          requires:
+            - client_android_approve_google_play
   #     - shell_app_ios_tests:
   #         requires:
   #           - shell_app_sim_base_ios
@@ -206,7 +213,30 @@ jobs:
           working_directory: ~/expo/android
           command: nix-shell --run ./make-release.sh
       - save_gradle_cache
+      - save_cache:
+          key: client-android-apk-{{ .Revision }}
+          paths:
+            - ~/expo/android/exponent-release.apk
       - store_artifacts:
           path: ~/expo/android/exponent-release.apk
       - store_artifacts: # daemon logs for debugging crashes
           path: ~/.gradle/daemon/4.4
+
+  client_android_release_google_play:
+    executor: js
+    steps:
+      - setup
+      - yarn_install:
+          working_directory: ~/expo/tools
+      - yarn_install:
+          working_directory: ~/expo/tools-public
+      - restore_cache:
+          key: client-android-apk-{{ .Revision }}
+      - run:
+          name: Validate Supply metadata
+          working_directory: ~/expo/tools
+          command: nix run nixpkgs.nodePackages.gulp-cli --command gulp supply-validate
+      - run:
+          name: Upload APK to Google Play and release to production
+          working_directory: ~/expo/fastlane/android
+          command: nix run nixpkgs.fastlane --command fastlane supply --package_name=host.exp.exponent --apk ~/expo/android/exponent-release.apk --track production --skip_upload_images=true --skip_upload_screenshots=true
