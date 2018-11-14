@@ -49,9 +49,9 @@ public class AppAuthModule extends ExportedModule implements ModuleRegistryConsu
     private static final String MANIFEST_URL_KEY = "experienceUrl";
 
     private AuthTask authTask = new AuthTask();
-    private Boolean canMakeInsecureRequests;
-    private Map<String, String> additionalParametersMap;
-    private String clientSecret;
+    private Boolean mCanMakeInsecureRequests;
+    private Map<String, String> mAdditionalParametersMap;
+    private String mClientSecret;
 
     public AppAuthModule(Context context) {
         super(context);
@@ -85,7 +85,7 @@ public class AppAuthModule extends ExportedModule implements ModuleRegistryConsu
 
     private void refreshAsync(
         String issuer,
-        final String _clientSecret,
+        final String clientSecret,
         final String redirectUrl,
         final ArrayList scopes,
         final String clientId,
@@ -95,7 +95,7 @@ public class AppAuthModule extends ExportedModule implements ModuleRegistryConsu
 
         final ConnectionBuilder builder = createConnectionBuilder();
         final AppAuthConfiguration appAuthConfiguration = createAppAuthConfiguration(builder);
-        final Map<String, String> finalAdditionalParametersMap = additionalParametersMap;
+        final Map<String, String> finalAdditionalParametersMap = mAdditionalParametersMap;
 
         if (serviceConfiguration != null) {
             try {
@@ -107,7 +107,7 @@ public class AppAuthModule extends ExportedModule implements ModuleRegistryConsu
                         scopes,
                         redirectUrl,
                         finalAdditionalParametersMap,
-                        _clientSecret
+                        clientSecret
                 );
             } catch (Exception e) {
                 // Refresh token failed
@@ -138,7 +138,7 @@ public class AppAuthModule extends ExportedModule implements ModuleRegistryConsu
                                     scopes,
                                     redirectUrl,
                                     finalAdditionalParametersMap,
-                                    _clientSecret
+                                    clientSecret
                             );
                         }
                     },
@@ -149,9 +149,9 @@ public class AppAuthModule extends ExportedModule implements ModuleRegistryConsu
     }
 
     private void authAsync(
-        Map<String, String> _additionalParametersMap,
+        Map<String, String> additionalParametersMap,
         String issuer,
-        String _clientSecret,
+        String clientSecret,
         final String redirectUrl,
         final ArrayList scopes,
         final String clientId,
@@ -160,7 +160,7 @@ public class AppAuthModule extends ExportedModule implements ModuleRegistryConsu
             
             final ConnectionBuilder builder = createConnectionBuilder();
             final AppAuthConfiguration appAuthConfiguration = createAppAuthConfiguration(builder);
-            clientSecret = _clientSecret;
+            mClientSecret = clientSecret;
 
             if (serviceConfiguration != null) {
                     try {
@@ -170,7 +170,7 @@ public class AppAuthModule extends ExportedModule implements ModuleRegistryConsu
                                 clientId,
                                 scopes,
                                 redirectUrl,
-                                _additionalParametersMap
+                                additionalParametersMap
                         );
                     } catch (Exception e) {
                         // Auth failed
@@ -223,17 +223,17 @@ public class AppAuthModule extends ExportedModule implements ModuleRegistryConsu
                 final String issuer = (String) options.get("issuer");
                 final String redirectUrl = (String) options.get("redirectUrl");
                 final String clientId = (String) options.get("clientId");
-                final String _clientSecret = (String) options.get("clientSecret");
+                final String clientSecret = (String) options.get("clientSecret");
                 final String refreshToken = (String) options.get("refreshToken");
 
-                final Boolean _canMakeInsecureRequests = options.containsKey("canMakeInsecureRequests") ? (Boolean) options.get("canMakeInsecureRequests") : false;
+                final Boolean canMakeInsecureRequests = options.containsKey("canMakeInsecureRequests") ? (Boolean) options.get("canMakeInsecureRequests") : false;
                 final Boolean isRefresh = options.containsKey("isRefresh") ? (Boolean) options.get("isRefresh") : false;
 
                 final ArrayList scopes = (ArrayList) options.get("scopes");
 
-                Map<String, String> _additionalParametersMap = new HashMap<>();
+                Map<String, String> additionalParametersMap = new HashMap<>();
                 if (options.containsKey("additionalParameters") && options.get("additionalParameters") instanceof Map) {
-                    _additionalParametersMap = castObjectsToStrings((Map<String, Object>) options.get("additionalParameters"));
+                    additionalParametersMap = castObjectsToStrings((Map<String, Object>) options.get("additionalParameters"));
                 }
 
                 Map<String, String> serviceConfiguration = null;
@@ -241,19 +241,19 @@ public class AppAuthModule extends ExportedModule implements ModuleRegistryConsu
                     serviceConfiguration = castObjectsToStrings((Map<String, Object>) options.get("serviceConfiguration"));
                 }
 
-                if (_clientSecret != null) {
-                    _additionalParametersMap.put("client_secret", _clientSecret);
+                if (clientSecret != null) {
+                    additionalParametersMap.put("client_secret", clientSecret);
                 }
 
-                additionalParametersMap = _additionalParametersMap;
-                canMakeInsecureRequests = _canMakeInsecureRequests;
+                mAdditionalParametersMap = additionalParametersMap;
+                mCanMakeInsecureRequests = canMakeInsecureRequests;
 
                 authTask.update(promise, "Get Auth");
 
                 if (isRefresh.equals(true)) {
-                    refreshAsync(issuer, _clientSecret, redirectUrl, scopes, clientId, refreshToken, serviceConfiguration);
+                    refreshAsync(issuer, clientSecret, redirectUrl, scopes, clientId, refreshToken, serviceConfiguration);
                 } else {
-                    authAsync(_additionalParametersMap, issuer, _clientSecret, redirectUrl, scopes, clientId, serviceConfiguration);
+                    authAsync(additionalParametersMap, issuer, clientSecret, redirectUrl, scopes, clientId, serviceConfiguration);
                 }
             }
         });
@@ -348,8 +348,8 @@ public class AppAuthModule extends ExportedModule implements ModuleRegistryConsu
         }
 
         AppAuthConfiguration configuration = createAppAuthConfiguration(createConnectionBuilder());
-        TokenRequest tokenRequest = event.response.createTokenExchangeRequest(additionalParametersMap);
-        performTokenRequest(tokenRequest, configuration, clientSecret);
+        TokenRequest tokenRequest = event.response.createTokenExchangeRequest(mAdditionalParametersMap);
+        performTokenRequest(tokenRequest, configuration, mClientSecret);
     }
 
     private void refreshWithConfiguration(
@@ -453,7 +453,7 @@ public class AppAuthModule extends ExportedModule implements ModuleRegistryConsu
     }
 
     private ConnectionBuilder createConnectionBuilder() {
-        return canMakeInsecureRequests.equals(true) ? UnsafeConnectionBuilder.INSTANCE : DefaultConnectionBuilder.INSTANCE;
+        return mCanMakeInsecureRequests.equals(true) ? UnsafeConnectionBuilder.INSTANCE : DefaultConnectionBuilder.INSTANCE;
     }
 
     private AuthorizationServiceConfiguration createAuthorizationServiceConfiguration(Map<String, String> serviceConfiguration) throws Exception {
