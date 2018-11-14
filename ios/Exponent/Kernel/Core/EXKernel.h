@@ -44,7 +44,7 @@ FOUNDATION_EXPORT NSString * const kEXKernelClearJSCacheUserDefaultsKey;
 /**
  *  Initial props to pass to an app based on LaunchOptions from UIApplicationDelegate.
  */
-- (NSDictionary *)initialAppPropsFromLaunchOptions:(NSDictionary *)launchOptions;
+- (nullable NSDictionary *)initialAppPropsFromLaunchOptions:(NSDictionary *)launchOptions;
 
 /**
  *  Find and return the (potentially versioned) native module instance belonging to the

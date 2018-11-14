@@ -104,7 +104,7 @@ RCT_EXPORT_METHOD(presentLocalNotification:(NSDictionary *)payload
                                                                         trigger:nil];
 
   [[EXUserNotificationCenter sharedInstance] addNotificationRequest:request withCompletionHandler:^(NSError * _Nullable error) {
-    if (error != nil) {
+    if (error) {
       reject(@"E_NOTIF", [NSString stringWithFormat:@"Could not add a notification request: %@", error.localizedDescription], error);
     } else {
       resolve(content.userInfo[@"id"]);

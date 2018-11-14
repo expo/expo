@@ -215,7 +215,7 @@ const NSUInteger kEXErrorCodeAppForbidden = 424242;
 
 #pragma mark - App props
 
-- (NSDictionary *)initialAppPropsFromLaunchOptions:(NSDictionary *)launchOptions
+- (nullable NSDictionary *)initialAppPropsFromLaunchOptions:(NSDictionary *)launchOptions
 {
   return nil;
 }

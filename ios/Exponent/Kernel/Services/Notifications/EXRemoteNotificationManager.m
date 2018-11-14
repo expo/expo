@@ -204,7 +204,7 @@ typedef void(^EXRemoteNotificationAPNSTokenHandler)(NSData * _Nullable apnsToken
   // invoke the delegate methods and registering for remote notifications will never complete
   [[EXUserNotificationCenter sharedInstance] getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings * _Nonnull settings) {
     bool canRegister = settings.authorizationStatus == UNAuthorizationStatusAuthorized;
-    if (@available(iOS 12,  *)) {
+    if (@available(iOS 12, *)) {
       canRegister |= (settings.authorizationStatus == UNAuthorizationStatusProvisional);
     }
     handler(canRegister);
