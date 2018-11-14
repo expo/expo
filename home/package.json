@@ -51,7 +51,6 @@
   },
   "devDependencies": {
     "@babel/plugin-transform-runtime": "^7.1.0",
-    "expo-yarn-workspaces": "^1.0.0",
     "hashids": "^1.1.1",
     "jest-expo": "^31.0.0",
     "node-fetch": "^2.0.0",
