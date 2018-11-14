@@ -503,9 +503,10 @@ module.exports = {
   ExponentLinearGradientManager: {},
   ExponentMailComposer: { composeAsync: { type: 'function', functionType: 'promise' } },
   ExponentNotifications: {
-    cancelAllScheduledNotifications: { type: 'function', functionType: 'promise' },
     cancelAllScheduledNotificationsAsync: { type: 'function', functionType: 'promise' },
     cancelScheduledNotification: { type: 'function', functionType: 'async' },
+    createCategoryAsync: { type: 'function', functionType: 'promise' },
+    deleteCategoryAsync: { type: 'function', functionType: 'promise' },
     getBadgeNumberAsync: { type: 'function', functionType: 'promise' },
     getDevicePushTokenAsync: { type: 'function', functionType: 'promise' },
     getExponentPushTokenAsync: { type: 'function', functionType: 'promise' },
