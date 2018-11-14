@@ -2,10 +2,11 @@
  * @flow
  * Analytics representation wrapper
  */
-import { ModuleBase, registerModule, utils } from 'expo-firebase-app';
+import { ModuleBase, utils } from 'expo-firebase-app';
+
+import type { App } from 'expo-firebase-app';
 
 const { isString, isObject } = utils;
-import type { App } from 'expo-firebase-app';
 
 const AlphaNumericUnderscore = /^[a-zA-Z0-9_]+$/;
 
@@ -162,5 +163,3 @@ export default class Analytics extends ModuleBase {
     }
   }
 }
-
-registerModule(Analytics);

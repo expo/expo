@@ -3,7 +3,7 @@
  * Invites representation wrapper
  */
 import { Platform } from 'expo-core';
-import { events, ModuleBase, registerModule } from 'expo-firebase-app';
+import { events, ModuleBase } from 'expo-firebase-app';
 
 import type App from 'expo-firebase-app';
 import Invitation from './Invitation';
@@ -93,5 +93,3 @@ export default class Invites extends ModuleBase {
 }
 
 export { default as Invitation } from './Invitation';
-
-registerModule(Invites);

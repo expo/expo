@@ -3,7 +3,7 @@
  * Firestore representation wrapper
  */
 import { NativeModulesProxy } from 'expo-core';
-import { events, ModuleBase, registerModule, utils } from 'expo-firebase-app';
+import { events, ModuleBase, utils } from 'expo-firebase-app';
 import invariant from 'invariant';
 import type { App } from 'expo-firebase-app';
 import Blob from './Blob';
@@ -263,8 +263,6 @@ export default class Firestore extends ModuleBase {
     }
   }
 }
-
-registerModule(Firestore);
 
 export {
   CollectionReference,

@@ -3,13 +3,7 @@
  * Auth representation wrapper
  */
 import { Platform } from 'expo-core';
-import {
-  events,
-  internals as INTERNALS,
-  ModuleBase,
-  registerModule,
-  utils,
-} from 'expo-firebase-app';
+import { events, internals as INTERNALS, ModuleBase, utils } from 'expo-firebase-app';
 
 import type { App } from 'expo-firebase-app';
 import ConfirmationResult from './phone/ConfirmationResult';
@@ -544,7 +538,5 @@ export default class Auth extends ModuleBase {
     throw new Error(INTERNALS.STRINGS.ERROR_UNSUPPORTED_MODULE_METHOD('auth', 'useDeviceLanguage'));
   }
 }
-
-registerModule(Auth);
 
 export { User, AuthSettings };

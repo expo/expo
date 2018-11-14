@@ -7,21 +7,6 @@ import { Platform, RefreshControl, StyleSheet, Text, View } from 'react-native';
 import HeaderButtons from 'react-navigation-header-buttons';
 
 import firebase from 'expo-firebase-app';
-// import 'expo-firebase-analytics';
-// import 'expo-firebase-auth';
-// import 'expo-firebase-crashlytics';
-// import 'expo-firebase-database';
-// import 'expo-firebase-firestore';
-// import 'expo-firebase-functions';
-// import 'expo-firebase-instance-id';
-// import 'expo-firebase-invites';
-// import 'expo-firebase-links';
-// import 'expo-firebase-messaging';
-// import 'expo-firebase-notifications';
-// import 'expo-firebase-performance';
-// import 'expo-firebase-remote-config';
-// import 'expo-firebase-storage';
-// import 'expo-firebase-vision';
 
 // import ContactsList from './ContactsList';
 // import * as ContactUtils from './ContactUtils';
@@ -76,6 +61,12 @@ export default class ContactsScreen extends React.Component {
       throw new Error('ERR: Need permission for notifications');
     }
 
+    setTimeout(() => {
+      console.log('demo module', firebase.analytics());
+      firebase.analytics().logEvent('something', { foo: 'bar' });
+    }, 200);
+
+    return;
     this.notificationDisplayedListener = firebase
       .notifications()
       .onNotificationDisplayed(notification => {
@@ -123,10 +114,10 @@ export default class ContactsScreen extends React.Component {
     }
   };
   componentWillUnmount() {
-    this.notificationDisplayedListener();
-    this.notificationListener();
-    this.notificationOpenedListener();
-    this.messageListener();
+    // this.notificationDisplayedListener();
+    // this.notificationListener();
+    // this.notificationOpenedListener();
+    // this.messageListener();
   }
 
   async componentDidMount() {
@@ -175,14 +166,14 @@ export default class ContactsScreen extends React.Component {
   };
 
   doIt = async detector => {
-    await Permissions.askAsync(Permissions.CAMERA_ROLL);
-    await Permissions.askAsync(Permissions.CAMERA);
-    //launchImageLibraryAsync
-    const { cancelled, ...image } = await ImagePicker.launchImageLibraryAsync(); //launchCameraAsync();
-    if (!cancelled) {
-      const results = await firebase.vision()[detector](image.uri);
-      console.log({ results });
-    }
+    // await Permissions.askAsync(Permissions.CAMERA_ROLL);
+    // await Permissions.askAsync(Permissions.CAMERA);
+    // //launchImageLibraryAsync
+    // const { cancelled, ...image } = await ImagePicker.launchImageLibraryAsync(); //launchCameraAsync();
+    // if (!cancelled) {
+    //   // const results = await firebase.vision()[detector](image.uri);
+    //   // console.log({ results });
+    // }
   };
 
   render() {

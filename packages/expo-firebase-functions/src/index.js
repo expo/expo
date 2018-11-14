@@ -4,7 +4,7 @@
  */
 import type { App } from 'expo-firebase-app';
 
-import firebase, { ModuleBase, registerModule, utils } from 'expo-firebase-app';
+import firebase, { ModuleBase, utils } from 'expo-firebase-app';
 import HttpsError from './HttpsError';
 import type { HttpsCallable, HttpsErrorCode, HttpsCallablePromise } from './types.flow';
 
@@ -109,5 +109,3 @@ export default class Functions extends ModuleBase {
     return this.nativeModule.useFunctionsEmulator(origin);
   }
 }
-
-registerModule(Functions);

@@ -3,12 +3,12 @@
  * Database representation wrapper
  */
 import { NativeModulesProxy } from 'expo-core';
-import firebase, { ModuleBase, registerModule } from 'expo-firebase-app';
+import firebase, { ModuleBase } from 'expo-firebase-app';
 
+import type { App } from 'expo-firebase-app';
 import Reference from './Reference';
 import TransactionHandler from './transaction';
 
-import type { App } from 'expo-firebase-app';
 
 const NATIVE_EVENTS = [
   'Expo.Firebase.database_transaction_event',
@@ -132,5 +132,3 @@ export default class Database extends ModuleBase {
     return this._databaseURL;
   }
 }
-
-registerModule(Database);

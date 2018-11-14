@@ -25,6 +25,9 @@ export type FirebaseModuleConfig = {
   namespace: FirebaseNamespace,
 };
 
+// TODO: Bacon: Add this
+export type App = object;
+
 export type FirebaseModuleName =
   | 'ExpoFirebaseAdMob'
   | 'ExpoFirebaseAnalytics'

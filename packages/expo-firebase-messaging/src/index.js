@@ -3,7 +3,7 @@
  * Messaging (FCM) representation wrapper
  */
 import { Platform } from 'expo-core';
-import { events, internals, ModuleBase, registerModule, utils } from 'expo-firebase-app';
+import { events, internals, ModuleBase, utils } from 'expo-firebase-app';
 import invariant from 'invariant';
 import type App from 'expo-firebase-app';
 import RemoteMessage from './RemoteMessage';
@@ -190,8 +190,6 @@ export default class Messaging extends ModuleBase {
     );
   }
 }
-
-registerModule(Messaging);
 
 export type {
   NativeInboundRemoteMessage,

@@ -3,11 +3,10 @@
  * Dynamic Links representation wrapper
  */
 import { Platform } from 'expo-core';
-import { events, ModuleBase, registerModule } from 'expo-firebase-app';
+import { events, ModuleBase } from 'expo-firebase-app';
+import type App from 'expo-firebase-app';
 
 import DynamicLink from './DynamicLink';
-
-import type App from 'expo-firebase-app';
 
 const { SharedEventEmitter } = events;
 const NATIVE_EVENTS = ['Expo.Firebase.links_link_received'];
@@ -121,5 +120,3 @@ export { default as IOSParameters } from './IOSParameters';
 export { default as ITunesParameters } from './ITunesParameters';
 export { default as NavigationParameters } from './NavigationParameters';
 export { default as SocialParameters } from './SocialParameters';
-
-registerModule(Links);

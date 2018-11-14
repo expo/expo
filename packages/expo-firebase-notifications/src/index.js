@@ -2,7 +2,7 @@
 import invariant from 'invariant';
 
 import { Platform } from 'expo-core';
-import { events, ModuleBase, registerModule, utils } from 'expo-firebase-app';
+import { events, ModuleBase, utils } from 'expo-firebase-app';
 
 import type App from 'expo-firebase-app';
 import AndroidAction from './AndroidAction';
@@ -317,8 +317,6 @@ export default class Notifications extends ModuleBase {
     return this.nativeModule.setBadge(badge);
   }
 }
-
-registerModule(Notifications);
 
 export {
   AndroidAction,

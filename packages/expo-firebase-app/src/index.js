@@ -15,7 +15,6 @@ import './utils/UtilsModule';
 
 export { default as ModuleBase } from './utils/ModuleBase';
 export { default as ReferenceBase } from './utils/ReferenceBase';
-export { default as registerModule } from './utils/registerModule';
 export { events, utils, log, native, internals, App, parseConfig, configUtils, NativeError };
 
 export default Firebase;

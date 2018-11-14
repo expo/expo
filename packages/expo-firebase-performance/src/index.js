@@ -1,5 +1,5 @@
 // @flow
-import { ModuleBase, registerModule } from 'expo-firebase-app';
+import { ModuleBase } from 'expo-firebase-app';
 import invariant from 'invariant';
 import type { App } from 'expo-firebase-app';
 import HttpMetric from './HttpMetric';
@@ -93,8 +93,6 @@ export default class PerformanceMonitoring extends ModuleBase {
     return new HttpMetric(this, url, httpMethod);
   }
 }
-
-registerModule(PerformanceMonitoring);
 
 export { Trace, HttpMetric, HTTP_METHODS };
 

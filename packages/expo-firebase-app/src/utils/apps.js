@@ -1,13 +1,16 @@
 /**
  * @flow
  */
-import { NativeModulesProxy, Platform } from 'expo-core';
-import { FirebasePackages } from '../constants';
+import { NativeModulesProxy } from 'expo-core';
+
+import invariant from 'invariant';
 import App from '../app';
+import { DEFAULT_APP_NAME } from '../constants';
 import { isObject, isString } from './';
+import { APP_STORE, CUSTOM_URL_OR_REGION_NAMESPACES } from './appStore';
+import getModuleInstance from './getModuleInstance';
 import INTERNALS from './internals';
 import parseConfig from './parseConfig';
-
 import type {
   FirebaseModule,
   FirebaseModuleAndStatics,
@@ -17,117 +20,28 @@ import type {
   FirebaseStatics,
 } from '../types';
 
-const isAndroid = Platform.OS === 'android';
-
 const { ExpoFirebaseApp: FirebaseCoreModule } = NativeModulesProxy;
 
-const APPS: { [string]: App } = {};
-const DEFAULT_APP_NAME = '[DEFAULT]';
-const APP_MODULES: { [string]: { [string]: FirebaseModule } } = {};
-const CUSTOM_URL_OR_REGION_NAMESPACES = {
-  database: true,
-  functions: true,
-  storage: false, // TODO true once multi-bucket support added.
-  // for flow:
-  admob: false,
-  analytics: false,
-  auth: false,
-  config: false,
-  crashlytics: false,
-  firestore: false,
-  iid: false,
-  invites: false,
-  links: false,
-  messaging: false,
-  notifications: false,
-  perf: false,
-  utils: false,
-};
-
-function _getModule(name) {
-  //TODO: Fix this - no globals
-  global.__Expo_Firebase_Modules = global.__Expo_Firebase_Modules || {};
-  if (name in global.__Expo_Firebase_Modules) {
-    return global.__Expo_Firebase_Modules[name];
-  } else {
-    try {
-      if (name in FirebasePackages) {
-        FirebasePackages[name]();
-        if (name in global.__Expo_Firebase_Modules) {
-          return global.__Expo_Firebase_Modules[name];
-        }
-      }
-    } catch (error) {}
-    throw new Error(INTERNALS.STRINGS.ERROR_MISSING_IMPORT(name));
-  }
-}
-
 export default {
-  DEFAULT_APP_NAME,
-
   app(name?: string): App {
     const _name = name ? name.toUpperCase() : DEFAULT_APP_NAME;
-    const app = APPS[_name];
-    if (!app) throw new Error(INTERNALS.STRINGS.ERROR_APP_NOT_INIT(_name));
+    const app = APP_STORE[_name];
+    invariant(app, INTERNALS.STRINGS.ERROR_APP_NOT_INIT(_name));
     return app;
   },
 
   apps(): Array<App> {
     // $FlowExpectedError: Object.values always returns mixed type: https://github.com/facebook/flow/issues/2221
-    return Object.values(APPS);
-  },
-
-  /**
-   *
-   * @param app
-   * @param namespace
-   * @param InstanceClass
-   * @return {function()}
-   * @private
-   */
-  appModule<M: FirebaseModule>(
-    app: App,
-    namespace: FirebaseNamespace,
-    InstanceClass: Class<M>
-  ): () => FirebaseModule {
-    return (customUrlOrRegion: ?string = null): M => {
-      if (customUrlOrRegion && !CUSTOM_URL_OR_REGION_NAMESPACES[namespace]) {
-        throw new Error(INTERNALS.STRINGS.ERROR_INIT_SERVICE_URL_UNSUPPORTED(namespace));
-      }
-
-      const appInstanceIdentifier = `${app.name}${customUrlOrRegion || ''}`;
-
-      if (!APP_MODULES[appInstanceIdentifier]) {
-        APP_MODULES[appInstanceIdentifier] = {};
-      }
-
-      if (isAndroid && namespace !== 'utils' && !INTERNALS.FLAGS.checkedPlayServices) {
-        INTERNALS.FLAGS.checkedPlayServices = true;
-        app.utils().checkPlayServicesAvailability();
-      }
-
-      if (!APP_MODULES[appInstanceIdentifier][namespace]) {
-        if (!InstanceClass) {
-          try {
-            InstanceClass = _getModule(namespace);
-          } catch ({ message }) {
-            console.error(message);
-          }
-        }
-        APP_MODULES[appInstanceIdentifier][namespace] = new InstanceClass(app, customUrlOrRegion);
-      }
-
-      return APP_MODULES[appInstanceIdentifier][namespace];
-    };
+    return Object.values(APP_STORE);
   },
 
   deleteApp(name: string): Promise<boolean> {
-    const app = APPS[name];
+    const app = APP_STORE[name];
     if (!app) return Promise.resolve(true);
 
     // https://firebase.google.com/docs/reference/js/firebase.app.App#delete
     return app.delete().then(() => {
-      delete APPS[name];
+      delete APP_STORE[name];
       return true;
     });
   },
@@ -148,46 +62,26 @@ export default {
 
     const isDefault = _name === DEFAULT_APP_NAME;
     // return an existing app if found
-    if (APPS[_name] && !isDefault) {
-      return APPS[_name];
+    if (APP_STORE[_name] && !isDefault) {
+      return APP_STORE[_name];
     }
 
     // only validate if app doesn't already exist
     // to allow apps already initialized natively
     // to still go through init without erroring (backwards compatibility)
-    if (!isObject(options)) {
-      throw new Error(INTERNALS.STRINGS.ERROR_INIT_OBJECT);
-    }
+    invariant(isObject(options), INTERNALS.STRINGS.ERROR_INIT_OBJECT);
 
     options = parseConfig(options);
 
-    if (!options.apiKey) {
-      throw new Error(INTERNALS.STRINGS.ERROR_MISSING_OPT('apiKey'));
-    }
+    ['apiKey', 'appId', 'databaseURL', 'messagingSenderId', 'projectId', 'storageBucket'].forEach(
+      prop => {
+        invariant(options[prop], INTERNALS.STRINGS.ERROR_MISSING_OPT(prop));
+      }
+    );
 
-    if (!options.appId) {
-      throw new Error(INTERNALS.STRINGS.ERROR_MISSING_OPT('appId'));
-    }
+    APP_STORE[_name] = new App(_name, options);
 
-    if (!options.databaseURL) {
-      throw new Error(INTERNALS.STRINGS.ERROR_MISSING_OPT('databaseURL'));
-    }
-
-    if (!options.messagingSenderId) {
-      throw new Error(INTERNALS.STRINGS.ERROR_MISSING_OPT('messagingSenderId'));
-    }
-
-    if (!options.projectId) {
-      throw new Error(INTERNALS.STRINGS.ERROR_MISSING_OPT('projectId'));
-    }
-
-    if (!options.storageBucket) {
-      throw new Error(INTERNALS.STRINGS.ERROR_MISSING_OPT('storageBucket'));
-    }
-
-    APPS[_name] = new App(_name, options);
-
-    return APPS[_name];
+    return APP_STORE[_name];
   },
 
   /**
@@ -198,11 +92,11 @@ export default {
       const app = FirebaseCoreModule.apps[i];
       const options = Object.assign({}, app);
       delete options.name;
-      APPS[app.name] = new App(app.name, options, true);
+      APP_STORE[app.name] = new App(app.name, options, true);
     }
   },
   getModule(namespace: FirebaseNamespace): any {
-    return _getModule(namespace);
+    return getModuleInstance(namespace);
   },
 
   /**
@@ -217,7 +111,6 @@ export default {
     statics: S,
     moduleName: FirebaseModuleName
   ): FirebaseModuleAndStatics<M, S> {
-    const module = _getModule(namespace);
     const getModule = (
       appOrUrlOrRegion?: App | string,
       customUrlOrRegion?: string
