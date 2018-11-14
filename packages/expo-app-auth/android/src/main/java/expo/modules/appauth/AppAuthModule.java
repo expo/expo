@@ -44,7 +44,7 @@ import expo.interfaces.constants.ConstantsInterface;
 
 public class AppAuthModule extends ExportedModule implements ModuleRegistryConsumer {
     private static final String TAG = "ExpoAppAuth";
-    private static final String ERROR_TAG = "E_APP_AUTH";
+    private static final String ERROR_TAG = "ERR_APP_AUTH";
     private ModuleRegistry mModuleRegistry;
     private static final String MANIFEST_URL_KEY = "experienceUrl";
 
@@ -83,6 +83,133 @@ public class AppAuthModule extends ExportedModule implements ModuleRegistryConsu
         return newMap;
     }
 
+    private void refreshAsync(
+        String issuer,
+        final String _clientSecret,
+        final String redirectUrl,
+        final ArrayList scopes,
+        final String clientId,
+        final String refreshToken,
+        Map<String, String> serviceConfiguration
+        ) {
+
+        final ConnectionBuilder builder = createConnectionBuilder();
+        final AppAuthConfiguration appAuthConfiguration = createAppAuthConfiguration(builder);
+        final Map<String, String> finalAdditionalParametersMap = additionalParametersMap;
+
+        if (serviceConfiguration != null) {
+            try {
+                refreshWithConfiguration(
+                        createAuthorizationServiceConfiguration(serviceConfiguration),
+                        appAuthConfiguration,
+                        refreshToken,
+                        clientId,
+                        scopes,
+                        redirectUrl,
+                        finalAdditionalParametersMap,
+                        _clientSecret
+                );
+            } catch (Exception e) {
+                // Refresh token failed
+                authTask.reject(e);
+            }
+        } else {
+            final Uri issuerUri = Uri.parse(issuer);
+            Uri configurationUri = issuerUri.buildUpon().appendPath(AuthorizationServiceConfiguration.WELL_KNOWN_PATH).appendPath(AuthorizationServiceConfiguration.OPENID_CONFIGURATION_RESOURCE).build();
+
+
+            AuthorizationServiceConfiguration.fetchFromUrl(
+                    configurationUri,
+                    new AuthorizationServiceConfiguration.RetrieveConfigurationCallback() {
+                        public void onFetchConfigurationCompleted(
+                                @Nullable AuthorizationServiceConfiguration fetchedConfiguration,
+                                @Nullable AuthorizationException ex) {
+                            if (ex != null) {
+                                // config fetch failed
+                                authTask.reject(ex);
+                                return;
+                            }
+
+                            refreshWithConfiguration(
+                                    fetchedConfiguration,
+                                    appAuthConfiguration,
+                                    refreshToken,
+                                    clientId,
+                                    scopes,
+                                    redirectUrl,
+                                    finalAdditionalParametersMap,
+                                    _clientSecret
+                            );
+                        }
+                    },
+                    builder
+            );
+
+        }
+    }
+
+    private void authAsync(
+        Map<String, String> _additionalParametersMap,
+        String issuer,
+        String _clientSecret,
+        final String redirectUrl,
+        final ArrayList scopes,
+        final String clientId,
+        Map<String, String> serviceConfiguration
+        ) {
+            
+            final ConnectionBuilder builder = createConnectionBuilder();
+            final AppAuthConfiguration appAuthConfiguration = createAppAuthConfiguration(builder);
+            clientSecret = _clientSecret;
+
+            if (serviceConfiguration != null) {
+                    try {
+                        authorizeWithConfiguration(
+                                createAuthorizationServiceConfiguration(serviceConfiguration),
+                                appAuthConfiguration,
+                                clientId,
+                                scopes,
+                                redirectUrl,
+                                _additionalParametersMap
+                        );
+                    } catch (Exception e) {
+                        // Auth failed
+                        authTask.reject(e);
+                    }
+            } else {
+
+                final Uri issuerUri = Uri.parse(issuer);
+                Uri configurationUri = issuerUri.buildUpon().appendPath(AuthorizationServiceConfiguration.WELL_KNOWN_PATH).appendPath(AuthorizationServiceConfiguration.OPENID_CONFIGURATION_RESOURCE).build();
+
+                final Map<String, String> finalAdditionalParametersMap = additionalParametersMap;
+
+                AuthorizationServiceConfiguration.fetchFromUrl(
+                        configurationUri,
+                        new AuthorizationServiceConfiguration.RetrieveConfigurationCallback() {
+                            public void onFetchConfigurationCompleted(
+                                    @Nullable AuthorizationServiceConfiguration fetchedConfiguration,
+                                    @Nullable AuthorizationException ex) {
+                                if (ex != null) {
+                                    // config fetch failed
+                                    authTask.reject(ex);
+                                    return;
+                                }
+
+                                authorizeWithConfiguration(
+                                        fetchedConfiguration,
+                                        appAuthConfiguration,
+                                        clientId,
+                                        scopes,
+                                        redirectUrl,
+                                        finalAdditionalParametersMap
+                                );
+                            }
+                        },
+                        builder
+                );
+            }
+    }
+
     @ExpoMethod
     public void executeAsync(
             final Map<String, Object> options,
@@ -114,8 +241,6 @@ public class AppAuthModule extends ExportedModule implements ModuleRegistryConsu
                     serviceConfiguration = castObjectsToStrings((Map<String, Object>) options.get("serviceConfiguration"));
                 }
 
-
-
                 if (_clientSecret != null) {
                     _additionalParametersMap.put("client_secret", _clientSecret);
                 }
@@ -123,99 +248,16 @@ public class AppAuthModule extends ExportedModule implements ModuleRegistryConsu
                 additionalParametersMap = _additionalParametersMap;
                 canMakeInsecureRequests = _canMakeInsecureRequests;
 
-                final ConnectionBuilder builder = createConnectionBuilder();
-                final AppAuthConfiguration appAuthConfiguration = createAppAuthConfiguration(builder);
-
                 authTask.update(promise, "Get Auth");
 
-                if (isRefresh.equals(false)) {
-                    clientSecret = _clientSecret;
-                }
-
-                if (serviceConfiguration != null) {
-                    if (isRefresh.equals(true)) {
-                        try {
-                            refreshWithConfiguration(
-                                    createAuthorizationServiceConfiguration(serviceConfiguration),
-                                    appAuthConfiguration,
-                                    refreshToken,
-                                    clientId,
-                                    scopes,
-                                    redirectUrl,
-                                    _additionalParametersMap,
-                                    _clientSecret
-                            );
-                        } catch (Exception e) {
-                            // Refresh token failed
-                            authTask.reject(e);
-                        }
-                    } else {
-                        try {
-                            authorizeWithConfiguration(
-                                    createAuthorizationServiceConfiguration(serviceConfiguration),
-                                    appAuthConfiguration,
-                                    clientId,
-                                    scopes,
-                                    redirectUrl,
-                                    _additionalParametersMap
-                            );
-                        } catch (Exception e) {
-                            // Auth failed
-                            authTask.reject(e);
-                        }
-                    }
-
+                if (isRefresh.equals(true)) {
+                    refreshAsync(issuer, _clientSecret, redirectUrl, scopes, clientId, refreshToken, serviceConfiguration);
                 } else {
-
-                    final Uri issuerUri = Uri.parse(issuer);
-                    Uri configurationUri = issuerUri.buildUpon().appendPath(AuthorizationServiceConfiguration.WELL_KNOWN_PATH).appendPath(AuthorizationServiceConfiguration.OPENID_CONFIGURATION_RESOURCE).build();
-
-                    final Map<String, String> finalAdditionalParametersMap = additionalParametersMap;
-
-
-                    AuthorizationServiceConfiguration.fetchFromUrl(
-                            configurationUri,
-                            new AuthorizationServiceConfiguration.RetrieveConfigurationCallback() {
-                                public void onFetchConfigurationCompleted(
-                                        @Nullable AuthorizationServiceConfiguration fetchedConfiguration,
-                                        @Nullable AuthorizationException ex) {
-                                    if (ex != null) {
-                                        // config fetch failed
-                                        authTask.reject(ex);
-                                        return;
-                                    }
-
-                                    if (isRefresh.equals(true)) {
-                                        refreshWithConfiguration(
-                                                fetchedConfiguration,
-                                                appAuthConfiguration,
-                                                refreshToken,
-                                                clientId,
-                                                scopes,
-                                                redirectUrl,
-                                                finalAdditionalParametersMap,
-                                                _clientSecret
-                                        );
-                                    } else {
-                                        authorizeWithConfiguration(
-                                                fetchedConfiguration,
-                                                appAuthConfiguration,
-                                                clientId,
-                                                scopes,
-                                                redirectUrl,
-                                                finalAdditionalParametersMap
-                                        );
-                                    }
-
-                                }
-                            },
-                            builder
-                    );
+                    authAsync(_additionalParametersMap, issuer, _clientSecret, redirectUrl, scopes, clientId, serviceConfiguration);
                 }
             }
         });
     }
-
 
     @Override
     public Map<String, Object> getConstants() {
