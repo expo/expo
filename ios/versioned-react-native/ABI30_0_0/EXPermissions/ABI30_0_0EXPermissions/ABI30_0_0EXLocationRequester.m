@@ -77,12 +77,9 @@
     _locMgr = [[CLLocationManager alloc] init];
     _locMgr.delegate = self;
 
-    NSBundle *bundle = [NSBundle mainBundle];
-
-    if ([bundle objectForInfoDictionaryKey:@"NSLocationAlwaysUsageDescription"] && [_locMgr respondsToSelector:@selector(requestAlwaysAuthorization)]) {
-      [_locMgr requestAlwaysAuthorization];
-    } else if ([bundle objectForInfoDictionaryKey:@"NSLocationWhenInUseUsageDescription"] && [_locMgr respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
-      [_locMgr requestWhenInUseAuthorization];
+    if ([[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationWhenInUseUsageDescription"] &&
+               [_locMgr respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
+        [_locMgr requestWhenInUseAuthorization];
     } else {
       _reject(@"E_LOCATION_INFO_PLIST", @"Either NSLocationWhenInUseUsageDescription key must be present in Info.plist to use geolocation.", nil);
       if (_delegate) {
