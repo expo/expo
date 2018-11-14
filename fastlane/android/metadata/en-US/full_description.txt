@@ -1,0 +1,7 @@
+Quickly get and use apps that are specially made for Expo.
+
+Developers:
+
+Start writing rich experiences with just your Android device and your computer. Expo is a developer tool for creating experiences with JavaScript and React Native. Bring your projects to life with interactive gestures and graphics, and try out React Native.
+
+To learn more visit https://expo.io.
