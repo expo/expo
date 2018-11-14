@@ -24,8 +24,8 @@ export default class NotificationScreen extends React.Component {
           title="Schedule notification for 10 seconds from now"
         />
         <ListButton
-          onPress={this._scheduleLocalNotificationWithCategoryAsync}
-          title="Schedule notification for 10 seconds from now with a custom category (iOS)"
+          onPress={this._scheduleLocalNotificationAndCancelAsync}
+          title="Schedule notification for 10 seconds from now and then cancel it immediately"
         />
         <ListButton
           onPress={Notifications.cancelAllScheduledNotificationsAsync}
@@ -34,6 +34,20 @@ export default class NotificationScreen extends React.Component {
 
         <HeadingText>Push Notifications</HeadingText>
         <ListButton onPress={this._sendNotificationAsync} title="Send me a push notification" />
+
+        <HeadingText>Custom notification categories (iOS)</HeadingText>
+        <ListButton
+          onPress={this._createCategoryAsync}
+          title="Create a custom 'message' category"
+        />
+        <ListButton
+          onPress={this._scheduleLocalNotificationWithCategoryAsync}
+          title="Schedule notification for 10 seconds from now with a 'message' category (iOS)"
+        />
+        <ListButton
+          onPress={this._deleteCategoryAsync}
+          title="Delete the custom 'message' category"
+        />
 
         <HeadingText>Badge Number</HeadingText>
         <ListButton
@@ -107,10 +121,8 @@ export default class NotificationScreen extends React.Component {
     );
   };
 
-  _scheduleLocalNotificationWithCategoryAsync = async () => {
-    await this._obtainUserFacingNotifPermissionsAsync();
-
-    await Notifications.createCategoryIOSAsync('message', [
+  _createCategoryAsync = () =>
+    Notifications.createCategoryIOSAsync('message', [
       {
         actionId: 'dismiss',
         buttonTitle: 'Dismiss notification',
@@ -129,6 +141,11 @@ export default class NotificationScreen extends React.Component {
       },
     ]);
 
+  _deleteCategoryAsync = () => Notifications.deleteCategoryIOSAsync('message');
+
+  _scheduleLocalNotificationWithCategoryAsync = async () => {
+    await this._obtainUserFacingNotifPermissionsAsync();
+
     await Notifications.scheduleLocalNotificationAsync(
       {
         title: 'Expo sent you a message!',
@@ -145,6 +162,26 @@ export default class NotificationScreen extends React.Component {
         time: new Date().getTime() + 10000,
       }
     );
+  };
+
+  _scheduleLocalNotificationAndCancelAsync = async () => {
+    await this._obtainUserFacingNotifPermissionsAsync();
+    const notificationId = await Notifications.scheduleLocalNotificationAsync(
+      {
+        title: 'This notification should not appear',
+        body: 'It should have been cancelled. :(',
+        ios: {
+          sound: true,
+        },
+        android: {
+          vibrate: true,
+        },
+      },
+      {
+        time: new Date().getTime() + 10000,
+      }
+    );
+    await Notifications.cancelScheduledNotificationAsync(notificationId);
   };
 
   _incrementIconBadgeNumberAsync = async () => {

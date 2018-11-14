@@ -214,6 +214,25 @@ RCT_REMAP_METHOD(createCategoryAsync,
   }];
 }
 
+RCT_REMAP_METHOD(deleteCategoryAsync,
+                 deleteCategoryWithCategoryId:(NSString *)categoryId
+                 resolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(__unused RCTPromiseRejectBlock)reject)
+{
+  NSString *internalCategoryId = [self internalIdForIdentifier:categoryId];
+  [[EXUserNotificationCenter sharedInstance] getNotificationCategoriesWithCompletionHandler:^(NSSet<UNNotificationCategory *> *categories) {
+    NSMutableSet<UNNotificationCategory *> *newCategories = [categories mutableCopy];
+    for (UNNotificationCategory *category in newCategories) {
+      if ([category.identifier isEqualToString:internalCategoryId]) {
+        [newCategories removeObject:category];
+        break;
+      }
+    }
+    [[EXUserNotificationCenter sharedInstance] setNotificationCategories:newCategories];
+    resolve(nil);
+  }];
+}
+
 #pragma mark - internal
 
 - (UNMutableNotificationContent *)_localNotificationFromPayload:(NSDictionary *)payload

@@ -192,6 +192,14 @@ export default {
     return ExponentNotifications.createCategoryAsync(categoryId, actions);
   },
 
+  deleteCategoryIOSAsync(categoryId: string): Promise<void> {
+    if (Platform.OS === 'android') {
+      console.warn('deleteCategoryAsync(...) has no effect on Android');
+      return Promise.resolve();
+    }
+    return ExponentNotifications.deleteCategoryAsync(categoryId);
+  },
+
   /* Re-export */
   getExpoPushTokenAsync(): Promise<string> {
     return ExponentNotifications.getExponentPushTokenAsync();
