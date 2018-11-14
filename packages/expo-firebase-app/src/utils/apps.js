@@ -2,13 +2,11 @@
  * @flow
  */
 import { NativeModulesProxy, Platform } from 'expo-core';
-
+import { FirebasePackages } from '../constants';
 import App from '../app';
 import { isObject, isString } from './';
 import INTERNALS from './internals';
 import parseConfig from './parseConfig';
-
-const isAndroid = Platform.OS === 'android';
 
 import type {
   FirebaseModule,
@@ -18,6 +16,8 @@ import type {
   FirebaseOptions,
   FirebaseStatics,
 } from '../types';
+
+const isAndroid = Platform.OS === 'android';
 
 const { ExpoFirebaseApp: FirebaseCoreModule } = NativeModulesProxy;
 
@@ -50,6 +50,14 @@ function _getModule(name) {
   if (name in global.__Expo_Firebase_Modules) {
     return global.__Expo_Firebase_Modules[name];
   } else {
+    try {
+      if (name in FirebasePackages) {
+        FirebasePackages[name]();
+        if (name in global.__Expo_Firebase_Modules) {
+          return global.__Expo_Firebase_Modules[name];
+        }
+      }
+    } catch (error) {}
     throw new Error(INTERNALS.STRINGS.ERROR_MISSING_IMPORT(name));
   }
 }

@@ -35,7 +35,6 @@ static NSMutableDictionary* initialisedApps;
   if (self != nil) {
     initialisedApps = [[NSMutableDictionary alloc] init];
     _transactions = [[NSMutableDictionary alloc] init];
-    _transactionQueue = dispatch_queue_create("expo.modules.firebase.firestore.transactions", DISPATCH_QUEUE_CONCURRENT);
   }
   return self;
 }
@@ -224,8 +223,7 @@ EX_EXPORT_METHOD_AS(transactionBegin,
 
         [self->_transactions removeObjectForKey:[transactionId stringValue]];
       }
-    }];
-  });
+  }];
   resolve([NSNull null]);
 }
 

@@ -4,9 +4,10 @@
 #import <EXCore/EXModuleRegistryConsumer.h>
 #import <EXCore/EXEventEmitter.h>
 
-@interface EXFirebaseAuth: EXExportedModule <EXModuleRegistryConsumer, EXEventEmitter>
+@interface EXFirebaseAuth: EXExportedModule <EXModuleRegistryConsumer>
 
-extern NSString * const AuthErrorCode_toJSErrorCode[];
+@end
+
 NSString * const AuthErrorCode_toJSErrorCode[] = {
   [FIRAuthErrorCodeInvalidCustomToken] = @"auth/invalid-custom-token",
   [FIRAuthErrorCodeCustomTokenMismatch] = @"auth/custom-token-mismatch",
@@ -67,4 +68,3 @@ NSString * const AuthErrorCode_toJSErrorCode[] = {
   [FIRAuthErrorCodeMalformedJWT] = @"auth/malformed-jwt"
 };
 
-@end
