@@ -4,9 +4,14 @@
   "description": "Expo Location standalone universal module",
   "main": "build/index.js",
   "scripts": {
-    "tsc": "tsc --project .",
-    "clean": "rm -rf build",
-    "prepare": "rm -rf build && tsc --project ."
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "test": "expo-module test",
+    "postinstall": "expo-module postinstall",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
   },
   "keywords": [
     "react-native",
@@ -30,6 +35,6 @@
     "invariant": "^2.2.4"
   },
   "devDependencies": {
-    "typescript": "^3.1.1"
+    "expo-module-scripts": "^1.0.0"
   }
 }

@@ -3,6 +3,8 @@ import './environment/logging';
 
 // load expo-asset immediately to set a custom `source` transformer in React Native
 import 'expo-asset/src/Asset';
+// polyfill navigator.geolocation
+import 'expo-location/src/Location';
 
 import { Constants } from 'expo-constants';
 import { NativeModules, Platform } from 'react-native';
@@ -25,7 +27,7 @@ export { Font } from 'expo-font';
 export { GLView } from 'expo-gl';
 export { LocalAuthentication } from 'expo-local-authentication';
 export { Localization } from 'expo-localization';
-export { Location } from 'expo-location'; // polyfills navigator.geolocation
+export { Location } from 'expo-location';
 export { MediaLibrary } from 'expo-media-library';
 export { Permissions } from 'expo-permissions';
 export { Print } from 'expo-print';

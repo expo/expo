@@ -4,9 +4,14 @@
   "description": "Expo module that provides support for tasks that can run in the background.",
   "main": "build/index.js",
   "scripts": {
-    "tsc": "tsc --project .",
-    "clean": "rm -rf build",
-    "prepare": "rm -rf build && tsc --project ."
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "test": "expo-module test",
+    "postinstall": "expo-module postinstall",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
   },
   "keywords": [
     "expo",
@@ -23,6 +28,6 @@
     "expo-task-manager-interface": "~1.0.0"
   },
   "devDependencies": {
-    "typescript": "^3.1.1"
+    "expo-module-scripts": "^1.0.0"
   }
 }

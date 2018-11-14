@@ -6,9 +6,6 @@
   "private": true,
   "main": "__generated__/AppEntry.js",
   "scripts": {
-    "tsc": "tsc --project .",
-    "clean": "rm -rf build",
-    "prepare": "rm -rf build && tsc --project .",
     "postinstall": "expo-yarn-workspaces postinstall"
   },
   "powertools": {
@@ -40,8 +37,6 @@
   },
   "devDependencies": {
     "babel-preset-expo": "^5.0.0",
-    "expo-yarn-workspaces": "^1.0.0",
-    "react-native-typescript-transformer": "^1.2.10",
-    "typescript": "^3.1.2"
+    "expo-yarn-workspaces": "^1.0.0"
   }
 }
