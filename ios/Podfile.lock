@@ -301,7 +301,7 @@ PODS:
     - EXPermissionsInterface
   - EXPermissionsInterface (1.2.0):
     - EXCore
-  - EXPrint (1.2.0):
+  - EXPrint (2.0.0-alpha.0):
     - EXCore
   - EXReactNativeAdapter (1.2.0):
     - EXCore
