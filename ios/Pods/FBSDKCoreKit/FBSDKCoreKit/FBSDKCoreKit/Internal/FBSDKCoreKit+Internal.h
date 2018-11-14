@@ -23,6 +23,7 @@
 #if !TARGET_OS_TV
 #import "AppEvents/Codeless/FBSDKViewHierarchy.h"
 #import "AppEvents/Codeless/FBSDKCodelessMacros.h"
+#import "AppEvents/Codeless/FBSDKCodelessIndexer.h"
 #import "BridgeAPI/FBSDKBridgeAPIProtocol.h"
 #import "BridgeAPI/FBSDKBridgeAPIProtocolType.h"
 #import "BridgeAPI/FBSDKBridgeAPIRequest.h"

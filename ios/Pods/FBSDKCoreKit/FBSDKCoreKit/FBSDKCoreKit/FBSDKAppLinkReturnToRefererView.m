@@ -89,11 +89,7 @@ static const CGFloat FBSDKCloseButtonHeight = 12.0;
         _labelView.font = [UIFont systemFontOfSize:[UIFont smallSystemFontSize]];
         _labelView.textColor = [UIColor whiteColor];
         _labelView.backgroundColor = [UIColor clearColor];
-#ifdef __IPHONE_6_0
         _labelView.textAlignment = NSTextAlignmentCenter;
-#else
-        _labelView.textAlignment = UITextAlignmentCenter;
-#endif
         _labelView.clipsToBounds = YES;
         [self updateLabelText];
         [self addSubview:_labelView];

@@ -26,6 +26,8 @@
 @property (readonly, copy) NSString *tokenString;
 @property (readonly, copy) NSString *appID;
 
+- (instancetype)init NS_UNAVAILABLE;
++ (instancetype)new NS_UNAVAILABLE;
 - (instancetype)initWithToken:(NSString *)tokenString appID:(NSString *)appID NS_DESIGNATED_INITIALIZER;
 
 - (void)addEvent:(NSDictionary *)eventDictionary isImplicit:(BOOL)isImplicit;

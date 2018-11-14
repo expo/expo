@@ -24,7 +24,6 @@
 #import "FBSDKBridgeAPIRequest.h"
 #import "FBSDKError.h"
 #import "FBSDKInternalUtility.h"
-#import "FBSDKMacros.h"
 #import "FBSDKSettings.h"
 #import "FBSDKTypeUtility.h"
 
@@ -82,7 +81,7 @@
     }
     default:{
       if (errorRef != NULL) {
-        *errorRef = [FBSDKError errorWithCode:errorCode
+        *errorRef = [NSError fbErrorWithCode:errorCode
                                       message:[FBSDKTypeUtility stringValue:queryParameters[@"error_message"]]];
       }
       return nil;
@@ -95,7 +94,7 @@
   NSDictionary *bridgeParameters = [FBSDKInternalUtility objectForJSONString:bridgeParametersJSON error:&error];
   if (!bridgeParameters) {
     if (error && (errorRef != NULL)) {
-      *errorRef = [FBSDKError invalidArgumentErrorWithName:FBSDK_BRIDGE_API_PROTOCOL_WEB_V1_BRIDGE_ARGS_KEY
+      *errorRef = [NSError fbInvalidArgumentErrorWithName:FBSDK_BRIDGE_API_PROTOCOL_WEB_V1_BRIDGE_ARGS_KEY
                                                      value:bridgeParametersJSON
                                                    message:nil
                                            underlyingError:error];
