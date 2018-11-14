@@ -10,7 +10,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.PersistableBundle;
-import android.util.ArraySet;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -23,7 +22,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
@@ -104,8 +102,9 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
   @Override
   public void registerTask(String taskName, String appId, String appUrl, Class consumerClass, Map<String, Object> options) throws Exception {
     TaskInterface task = getTask(taskName, appId);
+    Class unversionedConsumerClass = unversionedClassForClass(consumerClass);
 
-    if (task != null && consumerClass.isInstance(task.getConsumer())) {
+    if (task != null && unversionedConsumerClass != null && unversionedConsumerClass.isInstance(task.getConsumer())) {
       // Task already exists. Let's just update its options.
       task.setOptions(options);
       task.getConsumer().setOptions(options);
@@ -118,6 +117,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
   @Override
   public void unregisterTask(String taskName, String appId, Class consumerClass) throws Exception {
     TaskInterface task = getTask(taskName, appId);
+    Class unversionedConsumerClass = unversionedClassForClass(consumerClass);
 
     // Task not found.
     if (task == null) {
@@ -125,7 +125,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     }
 
     // Check if the consumer is an instance of given consumer class.
-    if (consumerClass != null && !consumerClass.isInstance(task.getConsumer())) {
+    if (unversionedConsumerClass != null && !unversionedConsumerClass.isInstance(task.getConsumer())) {
       throw new Exception("Cannot unregister task with name '" + taskName + "' because it is associated with different consumer class.");
     }
 
@@ -160,7 +160,8 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
   @Override
   public boolean taskHasConsumerOfClass(String taskName, String appId, Class consumerClass) {
     TaskInterface task = getTask(taskName, appId);
-    return task != null && consumerClass.isInstance(task.getConsumer());
+    Class unversionedConsumerClass = unversionedClassForClass(consumerClass);
+    return task != null && unversionedConsumerClass.isInstance(task.getConsumer());
   }
 
   @Override
@@ -522,9 +523,10 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
 
   private Map<String, Object> exportTaskToHashmap(TaskInterface task) {
     Map<String, Object> map = new HashMap<>();
+    String consumerClassName = unversionedClassNameForClass(task.getConsumer().getClass());
 
     map.put("name", task.getName());
-    map.put("consumerClass", task.getConsumer().getClass().getName());
+    map.put("consumerClass", consumerClassName);
     map.put("options", task.getOptions());
 
     return map;
@@ -654,6 +656,33 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
       return jsonToList((JSONArray) json, recursive);
     }
     return json;
+  }
+
+  /**
+   *  Method that unversions class names, so we can always use unversioned task consumer classes.
+   */
+  private static String unversionedClassNameForClass(Class versionedClass) {
+    String className = versionedClass.getName();
+    return className.replaceFirst("\\^abi\\d+_\\d+_\\d+\\.", "");
+  }
+
+  /**
+   *  Returns unversioned class from versioned one.
+   */
+  private static Class unversionedClassForClass(Class versionedClass) {
+    if (versionedClass == null) {
+      return null;
+    }
+
+    String unversionedClassName = unversionedClassNameForClass(versionedClass);
+
+    try {
+      return Class.forName(unversionedClassName);
+    } catch (ClassNotFoundException e) {
+      Log.e(TAG, "Class with name '" + unversionedClassName + "' not found.");
+      e.printStackTrace();
+      return null;
+    }
   }
 
   //endregion
