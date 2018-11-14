@@ -90,8 +90,10 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
                consumerClass:(Class)consumerClass
                      options:(NSDictionary *)options
 {
+  Class unversionedConsumerClass = [self _unversionedClassFromClass:consumerClass];
+
   // Given consumer class doesn't conform to EXTaskConsumerInterface protocol
-  if (![consumerClass conformsToProtocol:@protocol(EXTaskConsumerInterface)]) {
+  if (![unversionedConsumerClass conformsToProtocol:@protocol(EXTaskConsumerInterface)]) {
     NSString *reason = @"Invalid `consumer` argument. It must be a class that conforms to EXTaskConsumerInterface protocol.";
     @throw [NSException exceptionWithName:@"E_INVALID_TASK_CONSUMER" reason:reason userInfo:nil];
   }
@@ -124,7 +126,7 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
 {
   EXTask *task = (EXTask *)[self getTaskWithName:taskName forAppId:appId];
 
-  if (consumerClass != nil && ![task.consumer isMemberOfClass:consumerClass]) {
+  if (consumerClass != nil && ![task.consumer isMemberOfClass:[self _unversionedClassFromClass:consumerClass]]) {
     NSString *reason = [NSString stringWithFormat:@"Cannot unregister task with name '%@' because it is associated with different consumer class.", taskName];
     @throw [NSException exceptionWithName:@"E_INVALID_TASK_CONSUMER" reason:reason userInfo:nil];
   }
@@ -174,7 +176,8 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
   hasConsumerOfClass:(Class)consumerClass
 {
   id<EXTaskInterface> task = [self getTaskWithName:taskName forAppId:appId];
-  return task ? [task.consumer isMemberOfClass:consumerClass] : NO;
+  Class unversionedConsumerClass = [self _unversionedClassFromClass:consumerClass];
+  return task ? [task.consumer isMemberOfClass:unversionedConsumerClass] : NO;
 }
 
 - (id<EXTaskInterface>)getTaskWithName:(NSString *)taskName
@@ -465,11 +468,11 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
 /**
  *  Returns NSDictionary representing single task.
  */
-- (nullable NSDictionary *)_dictionaryFromTask:(EXTask *)task
+- (nullable NSDictionary *)_dictionaryFromTask:(id<EXTaskInterface>)task
 {
   return @{
            @"name": task.name,
-           @"consumerClass": NSStringFromClass([task.consumer class]),
+           @"consumerClass": [self _unversionedClassNameFromClass:task.consumer.class],
            @"options": EXNullIfNil([task options]),
            };
 }
@@ -514,6 +517,7 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
 
     appRecord = [appLoader loadAppWithUrl:appUrl options:options callback:^(BOOL success, NSError *error) {
       if (!success) {
+        NSLog(@"EXTaskService: Loading app '%@' from url '%@' failed. Error description: %@", appId, appUrl, error.description);
         [self->_events removeObjectForKey:appId];
         [self->_eventsQueues removeObjectForKey:appId];
         [self->_appRecords removeObjectForKey:appId];
@@ -658,6 +662,29 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
     case UIApplicationStateBackground:
       return @"background";
   }
+}
+
+/**
+ *  Method that unversions class names, so we can always use unversioned task consumer classes.
+ */
+- (NSString *)_unversionedClassNameFromClass:(Class)versionedClass
+{
+  NSString *versionedClassName = NSStringFromClass(versionedClass);
+  NSRegularExpression *regexp = [NSRegularExpression regularExpressionWithPattern:@"^ABI\\d+_\\d+_\\d+" options:0 error:nil];
+
+  return [regexp stringByReplacingMatchesInString:versionedClassName
+                                          options:0
+                                            range:NSMakeRange(0, versionedClassName.length)
+                                     withTemplate:@""];
+}
+
+/**
+ *  Returns unversioned class from versioned one.
+ */
+- (Class)_unversionedClassFromClass:(Class)versionedClass
+{
+  NSString *unversionedClassName = [self _unversionedClassNameFromClass:versionedClass];
+  return NSClassFromString(unversionedClassName);
 }
 
 @end
