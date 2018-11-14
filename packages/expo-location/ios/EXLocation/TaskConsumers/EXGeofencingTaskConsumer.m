@@ -57,18 +57,18 @@
   _regionStates = [NSMutableDictionary new];
 
   NSDictionary *options = [task options];
-  NSArray *regions = [options objectForKey:@"regions"];
+  NSArray *regions = options[@"regions"];
 
   _locationManager.delegate = self;
   _locationManager.allowsBackgroundLocationUpdates = YES;
   _locationManager.pausesLocationUpdatesAutomatically = NO;
 
   for (NSDictionary *regionDict in regions) {
-    NSString *identifier = [regionDict objectForKey:@"identifier"] ?: [[NSUUID UUID] UUIDString];
-    CLLocationDistance radius = [[regionDict objectForKey:@"radius"] doubleValue];
+    NSString *identifier = regionDict[@"identifier"] ?: [[NSUUID UUID] UUIDString];
+    CLLocationDistance radius = [regionDict[@"radius"] doubleValue];
     CLLocationCoordinate2D center = [self.class coordinateFromDictionary:regionDict];
-    BOOL notifyOnEntry = [self.class boolValueFrom:[regionDict objectForKey:@"notifyOnEntry"] defaultValue:YES];
-    BOOL notifyOnExit = [self.class boolValueFrom:[regionDict objectForKey:@"notifyOnExit"] defaultValue:YES];
+    BOOL notifyOnEntry = [self.class boolValueFrom:regionDict[@"notifyOnEntry"] defaultValue:YES];
+    BOOL notifyOnExit = [self.class boolValueFrom:regionDict[@"notifyOnExit"] defaultValue:YES];
 
     CLCircularRegion *region = [[CLCircularRegion alloc] initWithCenter:center radius:radius identifier:identifier];
 
@@ -132,7 +132,7 @@
 
 - (CLRegionState)regionStateForIdentifier:(NSString *)identifier
 {
-  return [[_regionStates objectForKey:identifier] integerValue];
+  return [_regionStates[identifier] integerValue];
 }
 
 - (void)setRegionState:(CLRegionState)regionState forIdentifier:(NSString *)identifier
@@ -167,8 +167,8 @@
 
 + (CLLocationCoordinate2D)coordinateFromDictionary:(nonnull NSDictionary *)dict
 {
-  CLLocationDegrees latitude = [[dict objectForKey:@"latitude"] doubleValue];
-  CLLocationDegrees longitude = [[dict objectForKey:@"longitude"] doubleValue];
+  CLLocationDegrees latitude = [dict[@"latitude"] doubleValue];
+  CLLocationDegrees longitude = [dict[@"longitude"] doubleValue];
   return CLLocationCoordinate2DMake(latitude, longitude);
 }
 

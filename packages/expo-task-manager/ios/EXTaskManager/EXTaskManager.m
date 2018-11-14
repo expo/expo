@@ -111,7 +111,7 @@ EX_EXPORT_METHOD_AS(getRegisteredTasksAsync,
   NSMutableDictionary *results = [NSMutableDictionary new];
 
   for (NSString *taskName in tasks) {
-    EXTask *task = [tasks objectForKey:taskName];
+    EXTask *task = tasks[taskName];
 
     if (task != nil) {
       [results setObject:task.options forKey:taskName];
@@ -186,7 +186,7 @@ EX_EXPORT_METHOD_AS(unregisterAllTasksAsync,
 
 - (BOOL)isRunningInHeadlessMode
 {
-  return [[[_constantsService constants] objectForKey:@"isHeadless"] boolValue];
+  return [[_constantsService constants][@"isHeadless"] boolValue];
 }
 
 # pragma mark - internals
@@ -194,7 +194,7 @@ EX_EXPORT_METHOD_AS(unregisterAllTasksAsync,
 - (NSString *)_findAppUrl
 {
   // TODO(@tsapeta): find app url for vanilla RN apps
-  return [[_constantsService constants] objectForKey:@"experienceUrl"];
+  return [_constantsService constants][@"experienceUrl"];
 }
 
 @end

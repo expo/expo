@@ -48,7 +48,7 @@
   _locationManager.distanceFilter = [options[@"distanceInterval"] doubleValue] ?: kCLDistanceFilterNone;
 
   if (@available(iOS 11.0, *)) {
-    _locationManager.showsBackgroundLocationIndicator = [[options objectForKey:@"showsBackgroundLocationIndicator"] boolValue];
+    _locationManager.showsBackgroundLocationIndicator = [options[@"showsBackgroundLocationIndicator"] boolValue];
   }
 
   [_locationManager startUpdatingLocation];

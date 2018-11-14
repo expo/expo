@@ -152,7 +152,7 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
  */
 - (void)unregisterAllTasksForAppId:(NSString *)appId
 {
-  NSDictionary *appTasks = [_tasks objectForKey:appId];
+  NSDictionary *appTasks = _tasks[appId];
 
   if (appTasks) {
     // Call `didUnregister` on task consumers
@@ -180,12 +180,12 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
 - (id<EXTaskInterface>)getTaskWithName:(NSString *)taskName
                               forAppId:(NSString *)appId
 {
-  return [[self getTasksForAppId:appId] objectForKey:taskName];
+  return [self getTasksForAppId:appId][taskName];
 }
 
 - (NSDictionary *)getTasksForAppId:(NSString *)appId
 {
-  return [_tasks objectForKey:appId];
+  return _tasks[appId];
 }
 
 - (void)notifyTaskWithName:(NSString *)taskName
@@ -193,8 +193,8 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
      didFinishWithResponse:(NSDictionary *)response
 {
   id<EXTaskInterface> task = [self getTaskWithName:taskName forAppId:appId];
-  NSString *eventId = [response objectForKey:@"eventId"];
-  id result = [response objectForKey:@"result"];
+  NSString *eventId = response[@"eventId"];
+  id result = response[@"result"];
 
   if ([task.consumer respondsToSelector:@selector(normalizeTaskResult:)]) {
     result = [task.consumer normalizeTaskResult:result];
@@ -211,7 +211,7 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
   }
 
   // Remove event and maybe invalidate related app record
-  NSMutableArray *appEvents = [_events objectForKey:appId];
+  NSMutableArray *appEvents = _events[appId];
 
   if (appEvents) {
     [appEvents removeObject:eventId];
@@ -221,7 +221,7 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
 
       // Invalidate app record but after 1 seconds delay so we can still take batched events.
       dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        if (![self->_events objectForKey:appId]) {
+        if (!self->_events[appId]) {
           [self _invalidateAppWithId:appId];
         }
       });
@@ -243,7 +243,7 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
   [taskManagersTable setObject:taskManager forKey:appId];
 
   // Execute events waiting for the task manager.
-  NSMutableArray *appEventQueue = [_eventsQueues objectForKey:appId];
+  NSMutableArray *appEventQueue = _eventsQueues[appId];
 
   if (appEventQueue) {
     for (NSDictionary *body in appEventQueue) {
@@ -277,7 +277,7 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
   NSLog(@"EXTaskService: Executing task '%@' for app '%@'.", task.name, task.appId);
 
   // Save an event so we can keep tracking events for this app
-  NSMutableArray *appEvents = [_events objectForKey:task.appId] ?: [NSMutableArray new];
+  NSMutableArray *appEvents = _events[task.appId] ?: [NSMutableArray new];
   [appEvents addObject:executionInfo[@"eventId"]];
   [_events setObject:appEvents forKey:task.appId];
 
@@ -287,14 +287,14 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
     return;
   }
 
-  if ([_appRecords objectForKey:task.appId] == nil) {
+  if (_appRecords[task.appId] == nil) {
     // No app record yet - let's spin it up!
     [self _loadAppWithId:task.appId appUrl:task.appUrl];
   }
 
   // App record for that app exists, but it's not fully loaded as its task manager is not there yet.
   // We need to add event's body to the queue from which events will be executed once the task manager is ready.
-  NSMutableArray *appEventsQueue = [_eventsQueues objectForKey:task.appId] ?: [NSMutableArray new];
+  NSMutableArray *appEventsQueue = _eventsQueues[task.appId] ?: [NSMutableArray new];
   [appEventsQueue addObject:body];
   [_eventsQueues setObject:appEventsQueue forKey:task.appId];
   return;
@@ -304,7 +304,7 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
 
 + (BOOL)hasBackgroundModeEnabled:(nonnull NSString *)backgroundMode
 {
-  NSArray *backgroundModes = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"UIBackgroundModes"];
+  NSArray *backgroundModes = [[NSBundle mainBundle] infoDictionary][@"UIBackgroundModes"];
   return backgroundModes != nil && [backgroundModes containsObject:backgroundMode];
 }
 
@@ -376,8 +376,8 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
 - (void)_addTaskToConfig:(nonnull id<EXTaskInterface>)task
 {
   NSMutableDictionary *dict = [[self _dictionaryWithRegisteredTasks] mutableCopy] ?: [NSMutableDictionary new];
-  NSMutableDictionary *appDict = [[dict objectForKey:task.appId] mutableCopy] ?: [NSMutableDictionary new];
-  NSMutableDictionary *tasks = [[appDict objectForKey:@"tasks"] mutableCopy] ?: [NSMutableDictionary new];
+  NSMutableDictionary *appDict = [dict[task.appId] mutableCopy] ?: [NSMutableDictionary new];
+  NSMutableDictionary *tasks = [appDict[@"tasks"] mutableCopy] ?: [NSMutableDictionary new];
   NSDictionary *taskDict = [self _dictionaryFromTask:task];
 
   [tasks setObject:taskDict forKey:task.name];
@@ -393,8 +393,8 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
 - (void)_removeTaskFromConfig:(nonnull EXTask *)task
 {
   NSMutableDictionary *dict = [[self _dictionaryWithRegisteredTasks] mutableCopy];
-  NSMutableDictionary *appDict = [[dict objectForKey:task.appId] mutableCopy];
-  NSMutableDictionary *tasks = [[appDict objectForKey:@"tasks"] mutableCopy];
+  NSMutableDictionary *appDict = [dict[task.appId] mutableCopy];
+  NSMutableDictionary *tasks = [appDict[@"tasks"] mutableCopy];
 
   if (tasks != nil) {
     [tasks removeObjectForKey:task.name];
@@ -413,7 +413,7 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
 {
   NSMutableDictionary *dict = [[self _dictionaryWithRegisteredTasks] mutableCopy];
 
-  if ([dict objectForKey:appId]) {
+  if (dict[appId]) {
     [dict removeObjectForKey:appId];
     [self _saveConfigWithDictionary:dict];
   }
@@ -541,11 +541,11 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
                   forAppId:(NSString *)appId
 {
   NSMutableDictionary *dict = [[self _dictionaryWithRegisteredTasks] mutableCopy];
-  NSMutableDictionary *appDict = [[dict objectForKey:appId] mutableCopy];
+  NSMutableDictionary *appDict = [dict[appId] mutableCopy];
 
-  if (appDict != nil && ![[appDict objectForKey:@"appUrl"] isEqualToString:appUrl]) {
-    [appDict setObject:appUrl forKey:@"appUrl"];
-    [dict setObject:appDict forKey:appId];
+  if (appDict != nil && ![appDict[@"appUrl"] isEqualToString:appUrl]) {
+    appDict[@"appUrl"] = appUrl;
+    dict[appId] = appDict;
     [self _saveConfigWithDictionary:dict];
   }
 }
@@ -559,14 +559,14 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
     NSLog(@"EXTaskService: Restoring tasks configuration: %@", config.description);
 
     for (NSString *appId in config) {
-      NSDictionary *appConfig = [config objectForKey:appId];
-      NSDictionary *tasksConfig = [appConfig objectForKey:@"tasks"];
-      NSString *appUrl = [appConfig objectForKey:@"appUrl"];
+      NSDictionary *appConfig = config[appId];
+      NSDictionary *tasksConfig = appConfig[@"tasks"];
+      NSString *appUrl = appConfig[@"appUrl"];
 
       for (NSString *taskName in tasksConfig) {
-        NSDictionary *taskConfig = [tasksConfig objectForKey:taskName];
-        NSDictionary *options = [taskConfig objectForKey:@"options"];
-        Class consumerClass = NSClassFromString([taskConfig objectForKey:@"consumerClass"]);
+        NSDictionary *taskConfig = tasksConfig[taskName];
+        NSDictionary *options = taskConfig[@"options"];
+        Class consumerClass = NSClassFromString(taskConfig[@"consumerClass"]);
 
         if (consumerClass != nil) {
           [self _internalRegisterTaskWithName:taskName
@@ -605,7 +605,7 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
 
 - (void)_invalidateAppWithId:(NSString *)appId
 {
-  id<EXAppRecordInterface> appRecord = [_appRecords objectForKey:appId];
+  id<EXAppRecordInterface> appRecord = _appRecords[appId];
 
   if (appRecord) {
     [appRecord invalidate];
