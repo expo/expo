@@ -31,7 +31,7 @@
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler
 {
   EXPendingNotification *pendingNotification = [[EXPendingNotification alloc] initWithNotificationResponse:response];
-  if (pendingNotification && ![[EXKernel sharedInstance] sendNotification:pendingNotification] && [EXEnvironment sharedEnvironment].isDetached) {
+  if (![[EXKernel sharedInstance] sendNotification:pendingNotification] && [EXEnvironment sharedEnvironment].isDetached) {
     _pendingNotifications[pendingNotification.experienceId] = pendingNotification;
   }
   completionHandler();
