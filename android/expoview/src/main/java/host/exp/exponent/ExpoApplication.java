@@ -4,7 +4,6 @@ package host.exp.exponent;
 
 import android.os.Debug;
 import android.support.multidex.MultiDexApplication;
-import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.core.CrashlyticsCore;

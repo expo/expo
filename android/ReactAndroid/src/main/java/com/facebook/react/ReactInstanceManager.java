@@ -849,7 +849,7 @@ public class ReactInstanceManager {
 
   @ThreadConfined(UI)
   private void onJSBundleLoadedFromServer(@Nullable NativeDeltaClient nativeDeltaClient) {
-    Log.d(ReactConstants.TAG, "ReactInstanceManager.onJSBundleLoadedFromServer():" + (nativeDeltaClient == null));
+    Log.d(ReactConstants.TAG, "ReactInstanceManager.onJSBundleLoadedFromServer()");
 
     JSBundleLoader bundleLoader = nativeDeltaClient == null
         ? JSBundleLoader.createCachedBundleFromNetworkLoader(
@@ -906,7 +906,7 @@ public class ReactInstanceManager {
                 }
                 // As destroy() may have run and set this to false, ensure that it is true before we create
                 mHasStartedCreatingInitialContext = true;
-Log.i(TAG, "hasStartedCreatingInitialContext");
+
                 try {
                   Process.setThreadPriority(Process.THREAD_PRIORITY_DISPLAY);
                   final ReactApplicationContext reactApplicationContext =
@@ -937,7 +937,7 @@ Log.i(TAG, "hasStartedCreatingInitialContext");
                           }
                         }
                       };
-Log.i(TAG, "before runOnNativeModulesQueueThread");
+
                   reactApplicationContext.runOnNativeModulesQueueThread(setupReactContextRunnable);
                   UiThreadUtil.runOnUiThread(maybeRecreateReactContextRunnable);
                 } catch (Exception e) {
@@ -947,7 +947,6 @@ Log.i(TAG, "before runOnNativeModulesQueueThread");
             });
     ReactMarker.logMarker(REACT_CONTEXT_THREAD_START);
     mCreateReactContextThread.start();
-    Log.i(TAG, "react context thread started!");
   }
 
   private void setupReactContext(final ReactApplicationContext reactContext) {
@@ -1112,7 +1111,6 @@ Log.i(TAG, "before runOnNativeModulesQueueThread");
       catalystInstance.setGlobalVariable("__RCTProfileIsProfiling", "true");
     }
     ReactMarker.logMarker(ReactMarkerConstants.PRE_RUN_JS_BUNDLE_START);
-    Log.i(TAG, "will run JS bundle");
     catalystInstance.runJSBundle();
     reactContext.initializeWithInstance(catalystInstance);
 
