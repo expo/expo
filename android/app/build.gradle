@@ -20,6 +20,7 @@ android {
 
   defaultConfig {
     applicationId 'host.exp.exponent'
+    minSdkVersion 21
     targetSdkVersion 26
     // ADD VERSIONS HERE
     // BEGIN VERSIONS
@@ -40,24 +41,13 @@ android {
     javaMaxHeapSize System.getenv("DISABLE_DEX_MAX_HEAP") ? null : "8g"
   }
 
-  flavorDimensions 'minSdk', 'remoteKernel'
+  flavorDimensions 'remoteKernel'
   productFlavors {
     devKernel {
       dimension 'remoteKernel'
     }
     prodKernel {
       dimension 'remoteKernel'
-    }
-    devMinSdk {
-      dimension 'minSdk'
-      // dev utilizes minSDKVersion = 21 to allow the Android gradle plugin
-      // to pre-dex each module and produce an APK that can be tested on
-      // Android Lollipop without time consuming dex merging processes.
-      minSdkVersion 21
-    }
-    prodMinSdk {
-      dimension 'minSdk'
-      minSdkVersion 21
     }
   }
   buildTypes {
