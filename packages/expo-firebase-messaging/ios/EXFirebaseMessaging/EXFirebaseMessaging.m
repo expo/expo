@@ -1,3 +1,5 @@
+// Copyright 2018-present 650 Industries. All rights reserved.
+
 @import UserNotifications;
 
 #import <EXFirebaseMessaging/EXFirebaseMessaging.h>
@@ -239,13 +241,19 @@ EX_EXPORT_METHOD_AS(jsInitialised,
   return message;
 }
 
+#pragma mark - EXEventEmitter
+
 - (NSArray<NSString *> *)supportedEvents {
   return @[MESSAGING_MESSAGE_RECEIVED, MESSAGING_TOKEN_REFRESHED];
 }
 
-+ (BOOL)requiresMainQueueSetup
+- (void)startObserving {
+  
+}
+
+- (void)stopObserving
 {
-  return YES;
+  
 }
 
 @end

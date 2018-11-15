@@ -1,3 +1,5 @@
+// Copyright 2018-present 650 Industries. All rights reserved.
+
 #import <EXFirebaseApp/EXFirebaseAppUtil.h>
 #import <EXFirebaseAuth/EXFirebaseAuth.h>
 
@@ -167,10 +169,10 @@ EX_EXPORT_METHOD_AS(removeIdTokenListener,
  * @return
  */
 EX_EXPORT_METHOD_AS(setAppVerificationDisabledForTesting,
-                  setAppVerificationDisabledForTesting:(NSString *)appDisplayName
-                  disabled:(NSNumber *)disabled
-                  resolver:(EXPromiseResolveBlock)resolve
-                  rejecter:(EXPromiseRejectBlock)reject) {
+                    setAppVerificationDisabledForTesting:(NSString *)appDisplayName
+                    disabled:(NSNumber *)disabled
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject) {
   [EXFirebaseAuth getAuth:appDisplayName].settings.appVerificationDisabledForTesting = [disabled boolValue];
   resolve([NSNull null]);
 }
@@ -539,7 +541,7 @@ EX_EXPORT_METHOD_AS(getIdTokenResult,
   
   if (user) {
     [user getIDTokenResultForcingRefresh:[forceRefresh boolValue] completion:^(FIRAuthTokenResult *_Nullable tokenResult,
-                                                                          NSError *_Nullable error) {
+                                                                               NSError *_Nullable error) {
       if (error) {
         [self promiseRejectAuthException:reject error:error];
       } else {
@@ -583,7 +585,7 @@ EX_EXPORT_METHOD_AS(signInWithCredential,
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
   FIRAuthCredential *credential = [self getCredentialForProvider:provider token:authToken secret:authSecret];
-
+  
   if (credential == nil) {
     return reject(@"auth/invalid-credential",
                   @"The supplied auth credential is malformed, has expired or is not currently supported.",
@@ -642,7 +644,7 @@ EX_EXPORT_METHOD_AS(checkActionCode,
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
   [[EXFirebaseAuth getAuth:appDisplayName] checkActionCode:code completion:^(FIRActionCodeInfo *_Nullable info,
-                                                                  NSError *_Nullable error) {
+                                                                             NSError *_Nullable error) {
     if (error) {
       [self promiseRejectAuthException:reject error:error];
     } else {
@@ -698,7 +700,7 @@ EX_EXPORT_METHOD_AS(sendPasswordResetEmail,
   FIRAuth *auth = [EXFirebaseAuth getAuth:appDisplayName];
   
   id handler = [self getNoUserProfileChangeCallback:resolve rejecter:reject];
-
+  
   if (actionCodeSettings) {
     FIRActionCodeSettings *settings = [self buildActionCodeSettings:actionCodeSettings];
     [auth sendPasswordResetWithEmail:email actionCodeSettings:settings completion:handler];
@@ -754,10 +756,10 @@ EX_EXPORT_METHOD_AS(signInWithPhoneNumber,
                     phoneNumber:(NSString *)phoneNumber
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
-    // This will only work in Standalone
+  // This will only work in Standalone
   [[FIRPhoneAuthProvider providerWithAuth:[EXFirebaseAuth getAuth:appDisplayName]] verifyPhoneNumber:phoneNumber UIDelegate:nil completion:^(
-                                                                                                                                  NSString *_Nullable verificationID,
-                                                                                                                                  NSError *_Nullable error) {
+                                                                                                                                             NSString *_Nullable verificationID,
+                                                                                                                                             NSError *_Nullable error) {
     if (error) {
       [self promiseRejectAuthException:reject error:error];
     } else {
@@ -933,7 +935,7 @@ EX_EXPORT_METHOD_AS(fetchSignInMethodsForEmail,
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
   [[EXFirebaseAuth getAuth:appDisplayName] fetchSignInMethodsForEmail:email completion:^(NSArray<NSString *> *_Nullable providers,
-                                                                              NSError *_Nullable error) {
+                                                                                         NSError *_Nullable error) {
     if (error) {
       [self promiseRejectAuthException:reject error:error];
     } else if (!providers) {
@@ -1096,11 +1098,11 @@ EX_EXPORT_METHOD_AS(verifyPasswordResetCode,
       break;
     case FIRAuthErrorCodeRequiresRecentLogin:
       message =
-          @"This operation is sensitive and requires recent authentication. Log in again before retrying this request.";
+      @"This operation is sensitive and requires recent authentication. Log in again before retrying this request.";
       break;
     case FIRAuthErrorCodeAccountExistsWithDifferentCredential:
       message =
-          @"An account already exists with the same email address but different sign-in credentials. Sign in using a provider associated with this email address.";
+      @"An account already exists with the same email address but different sign-in credentials. Sign in using a provider associated with this email address.";
       break;
     case FIRAuthErrorCodeEmailAlreadyInUse:
       message = @"The email address is already in use by another account.";
@@ -1135,12 +1137,12 @@ EX_EXPORT_METHOD_AS(verifyPasswordResetCode,
     default:
       break;
   }
-
+  
   return @{
-      @"code": code,
-      @"message": message,
-      @"nativeErrorMessage": nativeErrorMessage,
-  };
+           @"code": code,
+           @"message": message,
+           @"nativeErrorMessage": nativeErrorMessage,
+           };
 }
 
 
@@ -1272,7 +1274,7 @@ EX_EXPORT_METHOD_AS(verifyPasswordResetCode,
     if ([appName isEqualToString:@"__FIRAPP_DEFAULT"]) {
       appName = @"[DEFAULT]";
     }
-
+    
     appLanguage[firApp.name] = [FIRAuth authWithApp:firApp].languageCode;
     
     if (user != nil) {
@@ -1349,8 +1351,18 @@ EX_EXPORT_METHOD_AS(verifyPasswordResetCode,
   return settings;
 }
 
+#pragma mark - EXEventEmitter
+
 - (NSArray<NSString *> *)supportedEvents {
   return @[AUTH_STATE_CHANGED_EVENT, AUTH_ID_TOKEN_CHANGED_EVENT, PHONE_AUTH_STATE_CHANGED_EVENT];
+}
+
+- (void)startObserving {
+  
+}
+
+- (void)stopObserving {
+  
 }
 
 - (FIRUserProfileChangeCallback)getUserProfileChangeCallback:(FIRAuth *)auth
@@ -1395,5 +1407,6 @@ EX_EXPORT_METHOD_AS(verifyPasswordResetCode,
   FIRApp *firApp = [EXFirebaseAppUtil getApp:appName];
   return [FIRAuth authWithApp:firApp];
 }
+
 
 @end

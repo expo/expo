@@ -1,9 +1,11 @@
+// Copyright 2018-present 650 Industries. All rights reserved.
+
 #import <FirebaseInvites/FirebaseInvites.h>
 #import <EXCore/EXModuleRegistry.h>
 #import <EXCore/EXModuleRegistryConsumer.h>
 #import <EXCore/EXEventEmitter.h>
 
-@interface EXFirebaseInvites : EXExportedModule <EXModuleRegistryConsumer, FIRInviteDelegate>
+@interface EXFirebaseInvites : EXExportedModule <EXModuleRegistryConsumer, FIRInviteDelegate, EXEventEmitter>
 
 + (_Nonnull instancetype)instance;
 

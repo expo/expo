@@ -9,11 +9,11 @@ import type { App } from 'expo-firebase-app';
 import Reference from './Reference';
 import TransactionHandler from './transaction';
 
-
-const NATIVE_EVENTS = [
-  'Expo.Firebase.database_transaction_event',
+const NATIVE_EVENTS = {
+  databaseTransactionEvent: 'Expo.Firebase.database_transaction_event',
+  // 'Expo.Firebase.database_sync_event'
   // 'database_server_offset', // TODO
-];
+};
 
 export const MODULE_NAME = 'ExpoFirebaseDatabase';
 export const NAMESPACE = 'database';
@@ -64,7 +64,7 @@ export default class Database extends ModuleBase {
     super(
       app,
       {
-        events: NATIVE_EVENTS,
+        events: Object.values(NATIVE_EVENTS),
         moduleName: MODULE_NAME,
         hasMultiAppSupport: true,
         hasCustomUrlSupport: true,

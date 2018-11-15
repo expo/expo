@@ -3,7 +3,7 @@
  */
 import { NativeModulesProxy } from 'expo-core';
 
-import { SharedEventEmitter } from './utils/events';
+import SharedEventEmitter from './utils/SharedEventEmitter';
 import INTERNALS from './utils/internals';
 
 import { isObject } from './utils';

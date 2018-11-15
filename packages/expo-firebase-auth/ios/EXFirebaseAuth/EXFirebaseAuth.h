@@ -1,10 +1,12 @@
+// Copyright 2018-present 650 Industries. All rights reserved.
+
 #import <Foundation/Foundation.h>
 #import <Firebase.h>
 #import <EXCore/EXModuleRegistry.h>
 #import <EXCore/EXModuleRegistryConsumer.h>
 #import <EXCore/EXEventEmitter.h>
 
-@interface EXFirebaseAuth: EXExportedModule <EXModuleRegistryConsumer>
+@interface EXFirebaseAuth: EXExportedModule <EXModuleRegistryConsumer, EXEventEmitter>
 
 @end
 

@@ -3,7 +3,7 @@
  * Auth representation wrapper
  */
 import { Platform } from 'expo-core';
-import { events, internals as INTERNALS, ModuleBase, utils } from 'expo-firebase-app';
+import { SharedEventEmitter, INTERNALS, ModuleBase, utils } from 'expo-firebase-app';
 
 import type { App } from 'expo-firebase-app';
 import ConfirmationResult from './phone/ConfirmationResult';
@@ -31,17 +31,16 @@ import type {
 const isAndroid = Platform.OS === 'android';
 
 const { isBoolean } = utils;
-const { SharedEventEmitter } = events;
 
 type AuthState = {
   user?: NativeUser,
 };
 
-const NATIVE_EVENTS = [
-  'Expo.Firebase.auth_state_changed',
-  'Expo.Firebase.auth_id_token_changed',
-  'Expo.Firebase.phone_auth_state_changed',
-];
+const NATIVE_EVENTS = {
+  authStateChanged: 'Expo.Firebase.auth_state_changed',
+  authIdTokenChanged: 'Expo.Firebase.auth_id_token_changed',
+  phoneAuthStateChanged: 'Expo.Firebase.phone_auth_state_changed',
+};
 
 export const MODULE_NAME = 'ExpoFirebaseAuth';
 export const NAMESPACE = 'auth';
@@ -72,7 +71,7 @@ export default class Auth extends ModuleBase {
   constructor(app: App) {
     super(app, {
       statics,
-      events: NATIVE_EVENTS,
+      events: Object.values(NATIVE_EVENTS),
       moduleName: MODULE_NAME,
       hasMultiAppSupport: true,
       hasCustomUrlSupport: false,
@@ -86,7 +85,7 @@ export default class Auth extends ModuleBase {
     SharedEventEmitter.addListener(
       // sub to internal native event - this fans out to
       // public event name: onAuthStateChanged
-      this.getAppEventName('Expo.Firebase.auth_state_changed'),
+      this.getAppEventName(NATIVE_EVENTS.authStateChanged),
       (state: AuthState) => {
         this._setUser(state.user);
         SharedEventEmitter.emit(this.getAppEventName('onAuthStateChanged'), this._user);
@@ -96,7 +95,7 @@ export default class Auth extends ModuleBase {
     SharedEventEmitter.addListener(
       // sub to internal native event - this fans out to
       // public events based on event.type
-      this.getAppEventName('Expo.Firebase.phone_auth_state_changed'),
+      this.getAppEventName(NATIVE_EVENTS.phoneAuthStateChanged),
       (event: Object) => {
         const eventKey = `phone:auth:${event.requestKey}:${event.type}`;
         SharedEventEmitter.emit(eventKey, event.state);
@@ -106,7 +105,7 @@ export default class Auth extends ModuleBase {
     SharedEventEmitter.addListener(
       // sub to internal native event - this fans out to
       // public event name: onIdTokenChanged
-      this.getAppEventName('Expo.Firebase.auth_id_token_changed'),
+      this.getAppEventName(NATIVE_EVENTS.authIdTokenChanged),
       (auth: AuthState) => {
         this._setUser(auth.user);
         SharedEventEmitter.emit(this.getAppEventName('onIdTokenChanged'), this._user);

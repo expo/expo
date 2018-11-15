@@ -1,3 +1,5 @@
+// Copyright 2018-present 650 Industries. All rights reserved.
+
 #import <EXFirebaseFirestore/EXFirebaseFirestoreDocumentReference.h>
 #import <EXFirebaseFirestore/EXFirebaseFirestoreCollectionReference.h>
 #import <EXFirebaseFirestore/EXFirebaseFirestore.h>
@@ -577,8 +579,20 @@ EX_EXPORT_METHOD_AS(settings,
   return errorMap;
 }
 
+#pragma mark - EXEventEmitter
+
 - (NSArray<NSString *> *)supportedEvents {
   return @[FIRESTORE_COLLECTION_SYNC_EVENT, FIRESTORE_DOCUMENT_SYNC_EVENT, FIRESTORE_TRANSACTION_EVENT];
 }
+
+- (void)startObserving {
+  
+}
+
+- (void)stopObserving
+{
+  
+}
+
 
 @end

@@ -2,7 +2,8 @@
  * @flow
  * DocumentReference representation wrapper
  */
-import { events, utils } from 'expo-firebase-app';
+import { SharedEventEmitter, utils } from 'expo-firebase-app';
+import invariant from 'invariant';
 
 import CollectionReference from './CollectionReference';
 import DocumentSnapshot from './DocumentSnapshot';
@@ -26,7 +27,6 @@ type Observer = {
   next: ObserverOnNext,
 };
 
-const { SharedEventEmitter } = events;
 const { firestoreAutoId, isFunction, isObject } = utils;
 
 /**
@@ -61,9 +61,7 @@ export default class DocumentReference {
 
   collection(collectionPath: string): CollectionReference {
     const path = this._documentPath.child(collectionPath);
-    if (!path.isCollection) {
-      throw new Error('Argument "collectionPath" must point to a collection.');
-    }
+    invariant(path.isCollection, 'Argument "collectionPath" must point to a collection.');
 
     return new CollectionReference(this._firestore, path);
   }

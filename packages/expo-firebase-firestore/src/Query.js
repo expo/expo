@@ -2,7 +2,7 @@
  * @flow
  * Query representation wrapper
  */
-import { events, utils } from 'expo-firebase-app';
+import { SharedEventEmitter, utils } from 'expo-firebase-app';
 
 import type { NativeErrorResponse } from 'expo-firebase-app';
 import DocumentSnapshot from './DocumentSnapshot';
@@ -19,7 +19,6 @@ import type {
   QueryOperator,
 } from './firestoreTypes.flow';
 
-const { SharedEventEmitter } = events;
 const { firestoreAutoId, isFunction, isObject } = utils;
 
 const DIRECTIONS: { [QueryDirection]: string } = {

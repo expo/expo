@@ -1,3 +1,5 @@
+// Copyright 2018-present 650 Industries. All rights reserved.
+
 @import UserNotifications;
 
 #import <EXFirebaseNotifications/EXFirebaseNotifications.h>
@@ -734,13 +736,20 @@ EX_EXPORT_METHOD_AS(jsInitialised,
   return notification;
 }
 
+#pragma mark - EXEventEmitter
+
 - (NSArray<NSString *> *)supportedEvents {
   return @[NOTIFICATIONS_NOTIFICATION_DISPLAYED, NOTIFICATIONS_NOTIFICATION_OPENED, NOTIFICATIONS_NOTIFICATION_RECEIVED];
 }
-//TODO: Bacon: Is this relavant in Unimodule?
-+ (BOOL)requiresMainQueueSetup
-{
-  return YES;
+
+- (void)startObserving {
+  
 }
+
+- (void)stopObserving
+{
+  
+}
+
 
 @end

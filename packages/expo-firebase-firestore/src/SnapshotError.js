@@ -1,3 +1,5 @@
+// @flow
+
 import { NativeError } from 'expo-firebase-app';
 import type { NativeErrorResponse } from 'expo-firebase-app';
 import type { SnapshotErrorInterface } from './firestoreTypes.flow';

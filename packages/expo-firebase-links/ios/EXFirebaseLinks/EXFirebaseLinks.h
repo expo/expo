@@ -1,9 +1,11 @@
+// Copyright 2018-present 650 Industries. All rights reserved.
+
 #import <FirebaseDynamicLinks/FirebaseDynamicLinks.h>
 #import <EXCore/EXModuleRegistry.h>
 #import <EXCore/EXModuleRegistryConsumer.h>
 #import <EXCore/EXEventEmitter.h>
 
-@interface EXFirebaseLinks : EXExportedModule <EXModuleRegistryConsumer>
+@interface EXFirebaseLinks : EXExportedModule <EXModuleRegistryConsumer, EXEventEmitter>
 
 + (_Nonnull instancetype)instance;
 

@@ -1,6 +1,7 @@
+// Copyright 2018-present 650 Industries. All rights reserved.
+
 #import <EXFirebaseFirestore/EXFirebaseFirestoreCollectionReference.h>
 #import <EXFirebaseFirestore/EXFirebaseFirestoreEvents.h>
-//#import <FirebaseFirestore/FIRQuery.mm>
 
 @implementation EXFirebaseFirestoreCollectionReference
 

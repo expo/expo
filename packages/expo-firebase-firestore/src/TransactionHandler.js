@@ -2,13 +2,11 @@
  * @flow
  * Firestore Transaction representation wrapper
  */
-import { events } from 'expo-firebase-app';
+import { SharedEventEmitter } from 'expo-firebase-app';
 
 import Transaction from './Transaction';
 
 import type { Firestore } from './firestoreTypes.flow';
-
-const { SharedEventEmitter } = events;
 
 let transactionId = 0;
 

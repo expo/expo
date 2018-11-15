@@ -1,3 +1,5 @@
+// Copyright 2018-present 650 Industries. All rights reserved.
+
 #import <EXFirebaseLinks/EXFirebaseLinks.h>
 
 #import <Firebase.h>
@@ -325,8 +327,20 @@ EX_EXPORT_METHOD_AS(jsInitialised,
   components.socialMetaTagParameters = socialParams;
 }
 
+#pragma mark - EXEventEmitter
+
 - (NSArray<NSString *> *)supportedEvents {
   return @[LINKS_LINK_RECEIVED];
 }
+
+- (void)startObserving {
+  
+}
+
+- (void)stopObserving
+{
+  
+}
+
 
 @end

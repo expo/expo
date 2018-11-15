@@ -1,8 +1,10 @@
+// Copyright 2018-present 650 Industries. All rights reserved.
+
 #import <EXCore/EXModuleRegistry.h>
 #import <EXCore/EXModuleRegistryConsumer.h>
 #import <EXCore/EXEventEmitter.h>
 
-@interface EXFirebaseNotifications : EXExportedModule <EXModuleRegistryConsumer>
+@interface EXFirebaseNotifications : EXExportedModule <EXModuleRegistryConsumer, EXEventEmitter>
 + (void)configure;
 + (_Nonnull instancetype)instance;
 

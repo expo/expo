@@ -3,7 +3,7 @@
  * CollectionReference representation wrapper
  */
 import { utils } from 'expo-firebase-app';
-
+import invariant from 'invariant';
 import DocumentReference from './DocumentReference';
 import Query from './Query';
 
@@ -58,10 +58,7 @@ export default class CollectionReference {
     const newPath = documentPath || firestoreAutoId();
 
     const path = this._collectionPath.child(newPath);
-    if (!path.isDocument) {
-      throw new Error('Argument "documentPath" must point to a document.');
-    }
-
+    invariant(path.isDocument, 'Argument "documentPath" must point to a document.');
     return new DocumentReference(this._firestore, path);
   }
 

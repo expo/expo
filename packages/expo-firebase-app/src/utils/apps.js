@@ -8,7 +8,6 @@ import App from '../app';
 import { DEFAULT_APP_NAME } from '../constants';
 import { isObject, isString } from './';
 import { APP_STORE, CUSTOM_URL_OR_REGION_NAMESPACES } from './appStore';
-import getModuleInstance from './getModuleInstance';
 import INTERNALS from './internals';
 import parseConfig from './parseConfig';
 import type {
@@ -54,9 +53,7 @@ export default {
    * @return {*}
    */
   initializeApp(options: FirebaseOptions, name: string): App {
-    if (name && !isString(name)) {
-      throw new Error(INTERNALS.STRINGS.ERROR_INIT_STRING_NAME);
-    }
+    invariant(!name || isString(name), INTERNALS.STRINGS.ERROR_INIT_STRING_NAME);
 
     const _name = (name || DEFAULT_APP_NAME).toUpperCase();
 
@@ -95,10 +92,6 @@ export default {
       APP_STORE[app.name] = new App(app.name, options, true);
     }
   },
-  getModule(namespace: FirebaseNamespace): any {
-    return getModuleInstance(namespace);
-  },
-
   /**
    *
    * @param namespace
@@ -124,12 +117,14 @@ export default {
       }
 
       // throw an error if it's not a valid app instance
-      if (_app && !(_app instanceof App))
-        throw new Error(INTERNALS.STRINGS.ERROR_NOT_APP(namespace));
-      else if (!_app)
+      if (_app) {
+        invariant(_app instanceof App, INTERNALS.STRINGS.ERROR_NOT_APP(namespace));
+      } else {
         // default to the 'DEFAULT' app if no arg provided - will throw an error
         // if default app not initialized
         _app = this.app(DEFAULT_APP_NAME);
+      }
+
       // $FlowExpectedError: Flow doesn't support indexable signatures on classes: https://github.com/facebook/flow/issues/1323
       const module = _app[namespace];
       return module(_customUrlOrRegion);

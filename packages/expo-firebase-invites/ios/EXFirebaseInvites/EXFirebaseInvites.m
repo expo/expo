@@ -1,3 +1,5 @@
+// Copyright 2018-present 650 Industries. All rights reserved.
+
 #import <EXFirebaseInvites/EXFirebaseInvites.h>
 #import <EXFirebaseLinks/EXFirebaseLinks.h>
 #import <EXFirebaseApp/EXFirebaseAppUtil.h>
@@ -207,8 +209,20 @@ EX_EXPORT_METHOD_AS(jsInitialised,
   }
 }
 
+#pragma mark - EXEventEmitter
+
 - (NSArray<NSString *> *)supportedEvents {
   return @[INVITES_INVITATION_RECEIVED];
 }
+
+- (void)startObserving {
+  
+}
+
+- (void)stopObserving
+{
+  
+}
+
 
 @end

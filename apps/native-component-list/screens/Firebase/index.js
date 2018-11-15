@@ -61,12 +61,13 @@ export default class ContactsScreen extends React.Component {
       throw new Error('ERR: Need permission for notifications');
     }
 
-    setTimeout(() => {
-      console.log('demo module', firebase.analytics());
-      firebase.analytics().logEvent('something', { foo: 'bar' });
-    }, 200);
+    // setTimeout(() => {
+    //   console.log('demo module', firebase.analytics());
+    //   firebase.analytics().logEvent('something', { foo: 'bar' });
+    // }, 200);
 
-    return;
+    // return;
+
     this.notificationDisplayedListener = firebase
       .notifications()
       .onNotificationDisplayed(notification => {
@@ -88,14 +89,14 @@ export default class ContactsScreen extends React.Component {
         console.log('onNotificationOpened', notificationOpen);
       });
 
-    // this.messageListener = firebase.messaging().onMessage(message => {
-    //   // Process your message as required
-    //   console.log('onMessage', message);
-    // });
-    // this.onTokenRefreshListener = firebase.messaging().onTokenRefresh(fcmToken => {
-    //   console.log('onTokenRefresh', fcmToken);
-    //   // Process your token as required
-    // });
+    this.messageListener = firebase.messaging().onMessage(message => {
+      // Process your message as required
+      console.log('onMessage', message);
+    });
+    this.onTokenRefreshListener = firebase.messaging().onTokenRefresh(fcmToken => {
+      console.log('onTokenRefresh', fcmToken);
+      // Process your token as required
+    });
 
     try {
       const notificationOpen: NotificationOpen = await firebase
@@ -114,10 +115,10 @@ export default class ContactsScreen extends React.Component {
     }
   };
   componentWillUnmount() {
-    // this.notificationDisplayedListener();
-    // this.notificationListener();
-    // this.notificationOpenedListener();
-    // this.messageListener();
+    this.notificationDisplayedListener();
+    this.notificationListener();
+    this.notificationOpenedListener();
+    this.messageListener();
   }
 
   async componentDidMount() {
@@ -166,6 +167,18 @@ export default class ContactsScreen extends React.Component {
   };
 
   doIt = async detector => {
+    const notification = new firebase.notifications.Notification()
+      .setNotificationId('notificationId')
+      .setTitle('My notification title')
+      .setBody('My notification body')
+      .setData({
+        key1: 'value1',
+        key2: 'value2',
+      })
+      .ios.setBadge(3);
+
+    firebase.notifications().displayNotification(notification);
+
     // await Permissions.askAsync(Permissions.CAMERA_ROLL);
     // await Permissions.askAsync(Permissions.CAMERA);
     // //launchImageLibraryAsync

@@ -1,5 +1,5 @@
 // @flow
-import { internals as INTERNALS } from 'expo-firebase-app';
+import { INTERNALS } from 'expo-firebase-app';
 // import type Auth from './';
 import type {
   ActionCodeSettings,

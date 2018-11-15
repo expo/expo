@@ -25,7 +25,7 @@ function createDefaultModule(instance, namespace) {
     const InstanceType = getModuleInstance(namespace);
     const module = APPS.moduleAndStatics(namespace, InstanceType.statics, InstanceType.MODULE_NAME);
     instance[namespace] = module;
-    return module;
+    return module();
   };
 }
 
