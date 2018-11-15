@@ -1,0 +1,4 @@
+# Compiled TypeScript
+/build/
+
+bin/.et-current-hash
