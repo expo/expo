@@ -281,3 +281,4 @@ export { default as DocumentSnapshot } from './DocumentSnapshot';
 export { default as DocumentChange } from './DocumentChange';
 export { default as Query } from './Query';
 export { default as QuerySnapshot } from './QuerySnapshot';
+export { default as SnapshotError } from './SnapshotError';

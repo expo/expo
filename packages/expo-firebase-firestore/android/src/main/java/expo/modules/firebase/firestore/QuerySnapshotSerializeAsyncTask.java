@@ -1,36 +1,37 @@
 package expo.modules.firebase.firestore;
 
 import android.os.AsyncTask;
+import android.os.Bundle;
 
-import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.bridge.WritableMap;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.lang.ref.WeakReference;
 
-class QuerySnapshotSerializeAsyncTask extends AsyncTask<Object, Void, WritableMap> {
-  private WeakReference<ReactContext> reactContextWeakReference;
-  private WeakReference<RNFirebaseFirestoreCollectionReference> referenceWeakReference;
+import expo.core.ModuleRegistry;
+
+public class QuerySnapshotSerializeAsyncTask extends AsyncTask<Object, Void, Bundle> {
+  private WeakReference<ModuleRegistry> reactContextWeakReference;
+  private WeakReference<FirebaseFirestoreCollectionReference> referenceWeakReference;
 
   QuerySnapshotSerializeAsyncTask(
-    ReactContext context,
-    RNFirebaseFirestoreCollectionReference reference
+    ModuleRegistry context,
+    FirebaseFirestoreCollectionReference reference
   ) {
     referenceWeakReference = new WeakReference<>(reference);
     reactContextWeakReference = new WeakReference<>(context);
   }
 
   @Override
-  protected final WritableMap doInBackground(Object... params) {
+  protected final Bundle doInBackground(Object... params) {
     QuerySnapshot querySnapshot = (QuerySnapshot) params[0];
 
     try {
-      return FirestoreSerialize.snapshotToWritableMap(querySnapshot);
+      return FirestoreSerialize.snapshotToBundle(querySnapshot);
     } catch (RuntimeException e) {
       if (isAvailable()) {
-        reactContextWeakReference
-          .get()
-          .handleException(e);
+//        reactContextWeakReference
+//          .get()
+//          .handleException(e);
       } else {
         throw e;
       }
@@ -39,7 +40,7 @@ class QuerySnapshotSerializeAsyncTask extends AsyncTask<Object, Void, WritableMa
   }
 
   @Override
-  protected void onPostExecute(WritableMap writableMap) {
+  protected void onPostExecute(Bundle bundle) {
     // do nothing as overridden on usage
   }
 

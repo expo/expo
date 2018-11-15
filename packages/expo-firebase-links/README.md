@@ -1,5 +1,7 @@
 # expo-firebase-links
 
+> expo-firebase is still in RC and therefore subject to breaking changings. Be sure to run `yarn upgrade` and `cd ios; pod install` when upgrading.
+
 `expo-firebase-links` exposes the native Firebase Dynamic Linking API. You can create and share links for both iOS and Android.
 
 [**Full documentation**](https://rnfirebase.io/docs/master/links/reference/links)

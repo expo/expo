@@ -1,5 +1,7 @@
 # expo-firebase-functions
 
+> expo-firebase is still in RC and therefore subject to breaking changings. Be sure to run `yarn upgrade` and `cd ios; pod install` when upgrading.
+
 `expo-firebase-functions`
 
 [**Full documentation**](https://rnfirebase.io/docs/master/functions/reference/functions)

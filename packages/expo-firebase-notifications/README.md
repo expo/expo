@@ -1,5 +1,7 @@
 # expo-firebase-notifications
 
+> expo-firebase is still in RC and therefore subject to breaking changings. Be sure to run `yarn upgrade` and `cd ios; pod install` when upgrading.
+
 `expo-firebase-notifications` enables support for both remote (FCM) and local notifications.
 
 [**Full documentation**](https://rnfirebase.io/docs/master/notifications/introduction)

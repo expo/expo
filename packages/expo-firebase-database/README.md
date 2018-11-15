@@ -1,5 +1,7 @@
 # expo-firebase-database
 
+> expo-firebase is still in RC and therefore subject to breaking changings. Be sure to run `yarn upgrade` and `cd ios; pod install` when upgrading.
+
 `expo-firebase-database` provides a json based cloud data store that is synchronized in real-time.
 
 [**Full documentation**](https://rnfirebase.io/docs/master/database/reference/database)

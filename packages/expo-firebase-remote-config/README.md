@@ -1,5 +1,7 @@
 # expo-firebase-remote-config
 
+> expo-firebase is still in RC and therefore subject to breaking changings. Be sure to run `yarn upgrade` and `cd ios; pod install` when upgrading.
+
 `expo-firebase-remote-config` enables you to configure your app based on user segmentation.
 
 [**Full documentation**](https://rnfirebase.io/docs/master/config/reference/config)

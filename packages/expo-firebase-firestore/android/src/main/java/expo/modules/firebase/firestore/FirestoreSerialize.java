@@ -14,6 +14,7 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.SnapshotMetadata;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -84,7 +85,7 @@ public class FirestoreSerialize {
     // build metadata
     metadata.putBoolean(KEY_META_FROM_CACHE, snapshotMetadata.isFromCache());
     metadata.putBoolean(KEY_META_HAS_PENDING_WRITES, snapshotMetadata.hasPendingWrites());
-    documentMap.putMap(KEY_META, metadata);
+    documentMap.putBundle(KEY_META, metadata);
     documentMap.putString(KEY_PATH, documentSnapshot.getReference().getPath());
     if (documentSnapshot.exists()) {
       documentMap.putBundle(KEY_DATA, objectMapToBundle(documentSnapshot.getData()));
@@ -98,10 +99,10 @@ public class FirestoreSerialize {
    * @param querySnapshot QuerySnapshot
    * @return WritableMap
    */
-  static WritableMap snapshotToBundle(QuerySnapshot querySnapshot) {
-    WritableMap metadata = Arguments.createMap();
-    WritableMap writableMap = Arguments.createMap();
-    WritableArray documents = Arguments.createArray();
+  static Bundle snapshotToBundle(QuerySnapshot querySnapshot) {
+    Bundle metadata = new Bundle();
+    Bundle writableMap = new Bundle();
+    ArrayList documents = new ArrayList();
 
     SnapshotMetadata snapshotMetadata = querySnapshot.getMetadata();
     List<DocumentSnapshot> documentSnapshots = querySnapshot.getDocuments();
@@ -109,7 +110,7 @@ public class FirestoreSerialize {
 
     // convert documents documents
     for (DocumentSnapshot documentSnapshot : documentSnapshots) {
-      documents.pushMap(snapshotToWritableMap(documentSnapshot));
+      documents.add(snapshotToBundle(documentSnapshot));
     }
 
     // build metadata
@@ -117,18 +118,41 @@ public class FirestoreSerialize {
     metadata.putBoolean(KEY_META_HAS_PENDING_WRITES, snapshotMetadata.hasPendingWrites());
 
     // set metadata
-    writableMap.putMap(KEY_META, metadata);
+    writableMap.putBundle(KEY_META, metadata);
 
     // set documents
-    writableMap.putArray(KEY_DOCUMENTS, documents);
+    writableMap.putParcelableArrayList(KEY_DOCUMENTS, documents);
 
     // set document changes
-    writableMap.putArray(
+    writableMap.putParcelableArrayList(
       KEY_CHANGES,
-      documentChangesToWritableArray(documentChanges)
+      documentChangesToArray(documentChanges)
     );
 
     return writableMap;
+  }
+
+  /**
+   * Convert a DocumentSnapshot instance into a React Native WritableMap
+   *
+   * @param documentSnapshot DocumentSnapshot
+   * @return WritableMap
+   */
+  static Bundle snapshotToBundle(DocumentSnapshot documentSnapshot) {
+    Bundle metadata = new Bundle();
+    Bundle documentMap = new Bundle();
+    SnapshotMetadata snapshotMetadata = documentSnapshot.getMetadata();
+
+    // build metadata
+    metadata.putBoolean(KEY_META_FROM_CACHE, snapshotMetadata.isFromCache());
+    metadata.putBoolean(KEY_META_HAS_PENDING_WRITES, snapshotMetadata.hasPendingWrites());
+
+    documentMap.putBundle(KEY_META, metadata);
+    documentMap.putString(KEY_PATH, documentSnapshot.getReference().getPath());
+    if (documentSnapshot.exists())
+      documentMap.putBundle(KEY_DATA, objectMapToBundle(documentSnapshot.getData()));
+
+    return documentMap;
   }
 
   /**
@@ -137,60 +161,13 @@ public class FirestoreSerialize {
    * @param documentChanges List<DocumentChange>
    * @return WritableArray
    */
-  private static WritableArray documentChangesToWritableArray(List<DocumentChange> documentChanges) {
-    WritableArray documentChangesWritable = Arguments.createArray();
-
-    for (DocumentChange documentChange : documentChanges) {
-      documentChangesWritable.pushMap(documentChangeToWritableMap(documentChange));
-    }
-
-    return documentChangesWritable;
-  }
-
-
-  /**
-   * Convert a DocumentChange instance into a React Native WritableMap
-   *
-   * @param documentChange DocumentChange
-   * @return WritableMap
-   */
-  private static WritableMap documentChangeToWritableMap(DocumentChange documentChange) {
-    WritableMap documentChangeMap = Arguments.createMap();
-
-    switch (documentChange.getType()) {
-      case ADDED:
-        documentChangeMap.putString(KEY_DOC_CHANGE_TYPE, CHANGE_ADDED);
-        break;
-      case MODIFIED:
-        documentChangeMap.putString(KEY_DOC_CHANGE_TYPE, CHANGE_MODIFIED);
-        break;
-      case REMOVED:
-        documentChangeMap.putString(KEY_DOC_CHANGE_TYPE, CHANGE_REMOVED);
-        break;
-    }
-
-    documentChangeMap.putMap(
-      KEY_DOC_CHANGE_DOCUMENT,
-      snapshotToWritableMap(documentChange.getDocument())
-    );
-
-    documentChangeMap.putInt(KEY_DOC_CHANGE_NEW_INDEX, documentChange.getNewIndex());
-    documentChangeMap.putInt(KEY_DOC_CHANGE_OLD_INDEX, documentChange.getOldIndex());
-
-    return documentChangeMap;
-  }
-
-  /**
-   * Convert a List of DocumentChange instances into a ArrayList
-   *
-   * @param documentChanges List<DocumentChange>
-   * @return ArrayList
-   */
-  static ArrayList documentChangesToList(List<DocumentChange> documentChanges) {
+  private static ArrayList documentChangesToArray(List<DocumentChange> documentChanges) {
     ArrayList documentChangesWritable = new ArrayList();
+
     for (DocumentChange documentChange : documentChanges) {
       documentChangesWritable.add(documentChangeToBundle(documentChange));
     }
+
     return documentChangesWritable;
   }
 
@@ -265,7 +242,7 @@ public class FirestoreSerialize {
    
     if (value == null) {
       typeMap.putString(TYPE, TYPE_NULL);
-      typeMap.putNull(VALUE);
+      typeMap.remove(VALUE);
       return typeMap;
     }
 
@@ -325,15 +302,15 @@ public class FirestoreSerialize {
 
     if (Map.class.isAssignableFrom(value.getClass())) {
       typeMap.putString(TYPE, TYPE_OBJECT);
-      typeMap.putMap(VALUE, objectMapToWritable((Map<String, Object>) value));
+      typeMap.putBundle(VALUE, objectMapToBundle((Map<String, Object>) value));
       return typeMap;
     }
 
     if (List.class.isAssignableFrom(value.getClass())) {
       typeMap.putString(TYPE, TYPE_ARRAY);
-      List<Object> list = (List<Object>) value;
+      ArrayList<Object> list = (ArrayList<Object>) value;
       Object[] array = list.toArray(new Object[list.size()]);
-      typeMap.putArray(VALUE, objectArrayToWritable(array));
+      typeMap.putParcelableArrayList(VALUE, (ArrayList<? extends Parcelable>) objectArrayToList(array));
       return typeMap;
     }
 
@@ -344,12 +321,12 @@ public class FirestoreSerialize {
     }
 
     if (value instanceof GeoPoint) {
-      WritableMap geoPoint = Arguments.createMap();
+      Bundle geoPoint = new Bundle();
 
       geoPoint.putDouble(KEY_LATITUDE, ((GeoPoint) value).getLatitude());
       geoPoint.putDouble(KEY_LONGITUDE, ((GeoPoint) value).getLongitude());
 
-      typeMap.putMap(VALUE, geoPoint);
+      typeMap.putBundle(VALUE, geoPoint);
       typeMap.putString(TYPE, TYPE_GEOPOINT);
 
       return typeMap;
@@ -363,7 +340,7 @@ public class FirestoreSerialize {
 
     Log.w(TAG, "Unknown object of type " + value.getClass());
     typeMap.putString(TYPE, TYPE_NULL);
-    typeMap.putNull(VALUE);
+    typeMap.remove(VALUE);
     return typeMap;
   }
 
@@ -399,7 +376,7 @@ public class FirestoreSerialize {
     }
 
     if (TYPE_BOOLEAN.equals(type)) {
-      return typeMap.getBoolean(VALUE);
+      return typeMap.get(VALUE);
     }
 
     if (TYPE_NAN.equals(type)) {
@@ -407,7 +384,7 @@ public class FirestoreSerialize {
     }
 
     if (TYPE_NUMBER.equals(type)) {
-      return typeMap.getDouble(VALUE);
+      return typeMap.get(VALUE);
     }
 
     if (TYPE_INFINITY.equals(type)) {
@@ -415,7 +392,7 @@ public class FirestoreSerialize {
     }
 
     if (TYPE_STRING.equals(type)) {
-      return typeMap.getString(VALUE);
+      return typeMap.get(VALUE);
     }
 
     if (TYPE_ARRAY.equals(type)) {
@@ -427,7 +404,7 @@ public class FirestoreSerialize {
     }
 
     if (TYPE_DATE.equals(type)) {
-      Double time = typeMap.getDouble(VALUE);
+      Double time = (Double) typeMap.get(VALUE);
       return new Date(time.longValue());
     }
 
@@ -440,23 +417,23 @@ public class FirestoreSerialize {
     }
 
     if (TYPE_GEOPOINT.equals(type)) {
-      ReadableMap geoPoint = typeMap.getMap(VALUE);
-      return new GeoPoint(geoPoint.getDouble(KEY_LATITUDE), geoPoint.getDouble(KEY_LONGITUDE));
+      Map<String, Object> geoPoint = (Map<String, Object>) typeMap.get(VALUE);
+      return new GeoPoint((Double)geoPoint.get(KEY_LATITUDE), (Double)geoPoint.get(KEY_LONGITUDE));
     }
 
     if (TYPE_BLOB.equals(type)) {
-      String base64String = typeMap.getString(VALUE);
+      String base64String = (String) typeMap.get(VALUE);
       return Blob.fromBytes(Base64.decode(base64String, Base64.NO_WRAP));
     }
 
     if (TYPE_REFERENCE.equals(type)) {
-      String path = typeMap.getString(VALUE);
+      String path = (String) typeMap.get(VALUE);
       return firestore.document(path);
     }
 
     if (TYPE_FIELDVALUE.equals(type)) {
-      ReadableMap fieldValueMap = typeMap.getMap(VALUE);
-      String fieldValueType = fieldValueMap.getString(TYPE_FIELDVALUE_TYPE);
+      Map<String, Object> fieldValueMap = (Map<String, Object>) typeMap.get(VALUE);
+      String fieldValueType = (String) fieldValueMap.get(TYPE_FIELDVALUE_TYPE);
 
 
       if (TYPE_FIELDVALUE_TIMESTAMP.equals(fieldValueType)) {
@@ -468,13 +445,13 @@ public class FirestoreSerialize {
       }
 
       if (TYPE_FIELDVALUE_UNION.equals(fieldValueType)) {
-        ReadableArray elements = fieldValueMap.getArray(TYPE_FIELDVALUE_ELEMENTS);
-        return FieldValue.arrayUnion(elements.toArrayList().toArray());
+        ArrayList elements = (ArrayList) fieldValueMap.get(TYPE_FIELDVALUE_ELEMENTS);
+        return FieldValue.arrayUnion(elements.toArray());
       }
 
       if (TYPE_FIELDVALUE_REMOVE.equals(fieldValueType)) {
-        ReadableArray elements = fieldValueMap.getArray(TYPE_FIELDVALUE_ELEMENTS);
-        return FieldValue.arrayRemove(elements.toArrayList().toArray());
+        ArrayList elements = (ArrayList) fieldValueMap.get(TYPE_FIELDVALUE_ELEMENTS);
+        return FieldValue.arrayRemove(elements.toArray());
       }
 
       Log.w(TAG, "Unknown FieldValue type: " + fieldValueType);

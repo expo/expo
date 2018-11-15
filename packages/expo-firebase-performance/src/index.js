@@ -90,7 +90,7 @@ export default class PerformanceMonitoring extends ModuleBase {
       )}`
     );
 
-    return new HttpMetric(this, url, httpMethod);
+    return new HttpMetric(this.nativeModule, url, httpMethod);
   }
 }
 

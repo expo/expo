@@ -1,5 +1,8 @@
 # expo-firebase-app
 
+> expo-firebase is still in RC and therefore subject to breaking changings. Be sure to run `yarn upgrade` and `cd ios; pod install` when upgrading.
+
+
 `expo-firebase-app` provides the base library for interfacing with native Firebase.
 
 [**Full documentation**](https://rnfirebase.io/docs/master/core/reference/core)

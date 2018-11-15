@@ -1,5 +1,7 @@
 # expo-firebase-invites
 
+> expo-firebase is still in RC and therefore subject to breaking changings. Be sure to run `yarn upgrade` and `cd ios; pod install` when upgrading.
+
 `expo-firebase-invites` provides a built-in solution for app referrals and sharing via email or SMS.
 
 [**Full documentation**](https://rnfirebase.io/docs/master/invites/reference/invites)

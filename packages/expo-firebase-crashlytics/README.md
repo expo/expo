@@ -1,5 +1,7 @@
 # expo-firebase-crashlytics
 
+> expo-firebase is still in RC and therefore subject to breaking changings. Be sure to run `yarn upgrade` and `cd ios; pod install` when upgrading.
+
 `expo-firebase-crashlytics` allows you to monitor native and non-fatal crashes.
 
 [**Full documentation**](https://rnfirebase.io/docs/master/crashlytics/reference/crashlytics)

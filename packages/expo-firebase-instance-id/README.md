@@ -1,5 +1,8 @@
 # expo-firebase-instance-id
 
+> expo-firebase is still in RC and therefore subject to breaking changings. Be sure to run `yarn upgrade` and `cd ios; pod install` when upgrading.
+
+
 `expo-firebase-instance-id` provides access to the instance ID, and Push Token.
 
 [**Full documentation**](https://rnfirebase.io/docs/master/iid/reference/iid)

@@ -277,7 +277,7 @@ public class FirebaseFirestoreModule extends ExportedModule implements ModuleReg
    */
   public void onInstanceDestroy() {
     for (int i = 0, size = transactionHandlers.size(); i < size; i++) {
-      RNFirebaseFirestoreTransactionHandler transactionHandler = transactionHandlers.get(i);
+      FirebaseFirestoreTransactionHandler transactionHandler = transactionHandlers.get(i);
       if (transactionHandler != null) {
         transactionHandler.abort();
       }
@@ -475,7 +475,7 @@ public class FirebaseFirestoreModule extends ExportedModule implements ModuleReg
    * @param exception Exception Exception normally from a task result.
    * @param promise   Promise expo promise
    */
-  static void promiseRejectException(Promise promise, FirebaseFirestoreException exception) {
+  public static void promiseRejectException(Promise promise, FirebaseFirestoreException exception) {
     Bundle jsError = getJSError(exception);
     promise.reject(
       jsError.getString("code"), 

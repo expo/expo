@@ -1,5 +1,6 @@
 package expo.modules.firebase.firestore;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -10,6 +11,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.MetadataChanges;
@@ -76,10 +78,10 @@ public class FirebaseFirestoreDocumentReference {
     }
 
     @SuppressLint("StaticFieldLeak") final DocumentSnapshotSerializeAsyncTask serializeAsyncTask = new DocumentSnapshotSerializeAsyncTask(
-      reactContext, this
+      moduleRegistry, this
     ) {
       @Override
-      protected void onPostExecute(WritableMap writableMap) {
+      protected void onPostExecute(Bundle writableMap) {
         promise.resolve(writableMap);
       }
     };
@@ -94,7 +96,7 @@ public class FirebaseFirestoreDocumentReference {
           serializeAsyncTask.execute(task.getResult());
         } else {
           Log.e(TAG, "get:onComplete:failure", task.getException());
-          RNFirebaseFirestore.promiseRejectException(
+          FirebaseFirestoreModule.promiseRejectException(
             promise,
             (FirebaseFirestoreException) task.getException()
           );
@@ -140,7 +142,7 @@ public class FirebaseFirestoreDocumentReference {
     Task<Void> task;
 
     Map<String, Object> map = FirestoreSerialize.parseReadableMap(
-      FirebaseFirestore.getFirestoreForApp(appName),
+      FirebaseFirestoreModule.getFirestoreForApp(appName),
       data
     );
 
@@ -197,13 +199,13 @@ public class FirebaseFirestoreDocumentReference {
    * @param listenerId
    * @param documentSnapshot
    */
-  private void handleDocumentSnapshotEvent(String listenerId, DocumentSnapshot documentSnapshot) {
+  private void handleDocumentSnapshotEvent(final String listenerId, DocumentSnapshot documentSnapshot) {
 
     @SuppressLint("StaticFieldLeak") final DocumentSnapshotSerializeAsyncTask serializeAsyncTask = new DocumentSnapshotSerializeAsyncTask(
-      reactContext, this
+      moduleRegistry, this
     ) {
       @Override
-      protected void onPostExecute(WritableMap data) {      
+      protected void onPostExecute(Bundle data) {
         Bundle event = new Bundle();
         // Bundle data = FirestoreSerialize.documentSnapshotToBundle(documentSnapshot);
   

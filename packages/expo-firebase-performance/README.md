@@ -1,5 +1,7 @@
 # expo-firebase-performance
 
+> expo-firebase is still in RC and therefore subject to breaking changings. Be sure to run `yarn upgrade` and `cd ios; pod install` when upgrading.
+
 `expo-firebase-performance` captures a number of traces automatically, such as all outbound HTTP requests, app boot time and more.
 
 [**Full documentation**](https://rnfirebase.io/docs/master/perf-mon/reference/perf-mon)

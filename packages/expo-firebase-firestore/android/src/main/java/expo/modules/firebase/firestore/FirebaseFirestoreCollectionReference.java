@@ -1,5 +1,6 @@
 package expo.modules.firebase.firestore;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -21,6 +22,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.annotation.Nonnull;
 
 import expo.core.ModuleRegistry;
 import expo.core.Promise;
@@ -73,10 +76,10 @@ public class FirebaseFirestoreCollectionReference {
     }
 
     @SuppressLint("StaticFieldLeak") final QuerySnapshotSerializeAsyncTask serializeAsyncTask = new QuerySnapshotSerializeAsyncTask(
-      reactContext, this
+      moduleRegistry, this
     ) {
       @Override
-      protected void onPostExecute(WritableMap writableMap) {
+      protected void onPostExecute(Bundle writableMap) {
         promise.resolve(writableMap);
       }
     };
@@ -284,13 +287,13 @@ public class FirebaseFirestoreCollectionReference {
    * @param listenerId
    * @param querySnapshot
    */
-  private void handleQuerySnapshotEvent(String listenerId, QuerySnapshot querySnapshot) {
+  private void handleQuerySnapshotEvent(final String listenerId, QuerySnapshot querySnapshot) {
 
     @SuppressLint("StaticFieldLeak") final QuerySnapshotSerializeAsyncTask serializeAsyncTask = new QuerySnapshotSerializeAsyncTask(
-      reactContext, this
+      moduleRegistry, this
     ) {
       @Override
-      protected void onPostExecute(WritableMap data) {
+      protected void onPostExecute(Bundle data) {
         // WritableMap event = Arguments.createMap();
         // event.putString("path", path);
         // event.putString("appName", appName);
