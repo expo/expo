@@ -99,7 +99,7 @@ RCT_EXPORT_METHOD(presentLocalNotification:(NSDictionary *)payload
     return;
   }
   UNMutableNotificationContent *content = [self _localNotificationFromPayload:payload];
-  UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:[self internalIdForIdentifier:content.userInfo[@"id"]]
+  UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:content.userInfo[@"id"]
                                                                         content:content
                                                                         trigger:nil];
 
@@ -123,7 +123,7 @@ RCT_EXPORT_METHOD(scheduleLocalNotification:(NSDictionary *)payload
   }
   UNCalendarNotificationTrigger *notificationTrigger = [self notificationTriggerFor:options[@"time"] repeatingEvery:options[@"repeat"]];
   UNMutableNotificationContent *content = [self _localNotificationFromPayload:payload];
-  UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:[self internalIdForIdentifier:content.userInfo[@"id"]]
+  UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:content.userInfo[@"id"]
                                                                         content:content
                                                                         trigger:notificationTrigger];
   [[EXUserNotificationCenter sharedInstance] addNotificationRequest:request withCompletionHandler:^(NSError * _Nullable error) {
@@ -137,7 +137,7 @@ RCT_EXPORT_METHOD(scheduleLocalNotification:(NSDictionary *)payload
 
 RCT_EXPORT_METHOD(cancelScheduledNotification:(NSString *)uniqueId)
 {
-  [[EXUserNotificationCenter sharedInstance] removePendingNotificationRequestsWithIdentifiers:@[[self internalIdForIdentifier:uniqueId]]];
+  [[EXUserNotificationCenter sharedInstance] removePendingNotificationRequestsWithIdentifiers:@[uniqueId]];
 }
 
 RCT_REMAP_METHOD(cancelAllScheduledNotificationsAsync,
@@ -148,8 +148,7 @@ RCT_REMAP_METHOD(cancelAllScheduledNotificationsAsync,
     NSMutableArray<NSString *> *requestsToCancelIdentifiers = [NSMutableArray new];
     for (UNNotificationRequest *request in requests) {
       if ([request.content.userInfo[@"experienceId"] isEqualToString:self.experienceId]) {
-        NSString *scopedId = [self internalIdForIdentifier:request.content.userInfo[@"id"]];
-        [requestsToCancelIdentifiers addObject:scopedId];
+        [requestsToCancelIdentifiers addObject:request.identifier];
       }
     }
     [[EXUserNotificationCenter sharedInstance] removePendingNotificationRequestsWithIdentifiers:requestsToCancelIdentifiers];
