@@ -111,7 +111,7 @@ export default class PermissionsScreen extends React.Component {
                 ...[
                   Permissions.CAMERA,
                   Permissions.AUDIO_RECORDING,
-                  (Platform.OS !== 'ios' || this.state.permissionsFunction !== 'askAsync') && Permissions.LOCATION, // TODO: Permissions.LOCATION issue (search by this phrase)
+                  Permissions.LOCATION,
                   Permissions.USER_FACING_NOTIFICATIONS,
                   Permissions.NOTIFICATIONS,
                   Permissions.CONTACTS,
@@ -123,8 +123,7 @@ export default class PermissionsScreen extends React.Component {
                 ].filter(n => n && typeof n !== 'boolean')
               )}
               title={'Ask for Permissions: '
-                + 'CAMERA, AUDIO_RECORDING, '
-                + `${Platform.OS !== 'ios' || this.state.permissionsFunction !== 'askAsync' ? 'LOCATION, ' : ''}`
+                + 'CAMERA, AUDIO_RECORDING, LOCATION,'
                 + 'USER_FACING_NOTIFICATIONS, NOTIFICATIONS, CONTACTS, SYSTEM_BRIGHTNESS, CAMERA_ROLL, CALENDAR, REMINDERS, SMS'
               }
             />

@@ -23,7 +23,7 @@
     "react-native": "^0.55.4"
   },
   "dependencies": {
-    "expo-core": "~1.1.0"
+    "expo-core": "~1.2.0"
   },
   "devDependencies": {
     "babel-preset-expo": "^5.0.0",

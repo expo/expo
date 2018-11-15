@@ -17,6 +17,7 @@ const updateVendoredNativeModule = require('./update-vendored-native-module');
 const AndroidExpolib = require('./android-versioning/android-expolib');
 const androidVersionLibraries = require('./android-versioning/android-version-libraries');
 const { publishPackagesAsync } = require('./publish-packages');
+const supplyValidate = require('./supply-validate');
 
 function updateExpoViewWithArguments() {
   if (!argv.abi) {
@@ -353,3 +354,6 @@ gulp.task(GENERATE_LIBRARY_WRAPPERS, async () =>
 
 // Publish packages
 gulp.task(`publish-packages`, publishPackagesAsync);
+
+// Supply (Android Fastlane)
+gulp.task('supply-validate', supplyValidate);
