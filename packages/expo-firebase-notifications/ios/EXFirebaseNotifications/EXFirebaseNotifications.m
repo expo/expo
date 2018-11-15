@@ -7,6 +7,7 @@
 #import <EXFirebaseMessaging/EXFirebaseMessaging.h>
 #import <EXCore/EXUtilitiesInterface.h>
 #import <EXCore/EXUtilities.h>
+#import <CoreLocation/CoreLocation.h>
 
 static NSString *const NOTIFICATIONS_NOTIFICATION_DISPLAYED = @"Expo.Firebase.notifications_notification_displayed";
 static NSString *const NOTIFICATIONS_NOTIFICATION_OPENED = @"Expo.Firebase.notifications_notification_opened";
@@ -144,7 +145,28 @@ EX_EXPORT_METHOD_AS(complete,
       completionHandler([EXFirebaseNotifications decodeUIBackgroundFetchResult:fetchResult]);
     }
   }
+  resolve([NSNull null]);
 }
+
+EX_EXPORT_METHOD_AS(setCategories,
+                    setCategories:(NSArray<NSDictionary *> *)categories
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject) {
+  UNUserNotificationCenter *notificationCenter = [self getNotificationCenterOrReject:reject];
+  if (notificationCenter == nil) {
+    return;
+  }
+
+  NSMutableArray *nativeCategories = [NSMutableArray new];
+  for (NSDictionary *category in categories) {
+    [nativeCategories addObject:[EXFirebaseNotifications notificationCategoryJSONtoNative:category]];
+  }
+  
+  [notificationCenter setNotificationCategories:[NSSet setWithArray:nativeCategories]];
+  
+  resolve([NSNull null]);
+}
+
 
 + (UIBackgroundFetchResult)decodeUIBackgroundFetchResult:(NSString *)fetchResult
 {
@@ -236,7 +258,7 @@ EX_EXPORT_METHOD_AS(cancelAllNotifications,
   if (notificationCenter == nil) {
     return;
   }
-  [[UNUserNotificationCenter currentNotificationCenter] removeAllPendingNotificationRequests];
+  [notificationCenter removeAllPendingNotificationRequests];
   resolve([NSNull null]);
 }
 
@@ -248,7 +270,7 @@ EX_EXPORT_METHOD_AS(cancelNotification,
   if (notificationCenter == nil) {
     return;
   }
-  [[UNUserNotificationCenter currentNotificationCenter] removePendingNotificationRequestsWithIdentifiers:@[notificationId]];
+  [notificationCenter removePendingNotificationRequestsWithIdentifiers:@[notificationId]];
   resolve([NSNull null]);
 }
 
@@ -325,7 +347,7 @@ EX_EXPORT_METHOD_AS(removeAllDeliveredNotifications,
   if (notificationCenter == nil) {
     return;
   }
-  [[UNUserNotificationCenter currentNotificationCenter] removeAllDeliveredNotifications];
+  [notificationCenter removeAllDeliveredNotifications];
   resolve([NSNull null]);
 }
 
@@ -337,7 +359,7 @@ EX_EXPORT_METHOD_AS(removeDeliveredNotification,
   if (notificationCenter == nil) {
     return;
   }
-  [[UNUserNotificationCenter currentNotificationCenter] removeDeliveredNotificationsWithIdentifiers:@[notificationId]];
+  [notificationCenter removeDeliveredNotificationsWithIdentifiers:@[notificationId]];
   resolve([NSNull null]);
 }
 
@@ -395,63 +417,50 @@ EX_EXPORT_METHOD_AS(jsInitialised,
   }
 }
 
-- (UILocalNotification *)buildUILocalNotification:(NSDictionary *)notification
-                                     withSchedule:(BOOL)withSchedule
++ (CLLocationCoordinate2D)coordinateJSONtoNative:(NSDictionary *)input
 {
-  UILocalNotification *localNotification = [[UILocalNotification alloc] init];
-  if (notification[@"body"]) {
-    localNotification.alertBody = notification[@"body"];
-  }
-  if (notification[@"data"]) {
-    localNotification.userInfo = notification[@"data"];
-  }
-  if (notification[@"sound"]) {
-    localNotification.soundName = notification[@"sound"];
-  }
-  if (notification[@"title"]) {
-    localNotification.alertTitle = notification[@"title"];
-  }
-  if (notification[@"ios"]) {
-    NSDictionary *ios = notification[@"ios"];
-    if (ios[@"alertAction"]) {
-      localNotification.alertAction = ios[@"alertAction"];
-    }
-    if (ios[@"badge"] && [ios[@"badge"] integerValue]) {
-      NSNumber *badge = ios[@"badge"];
-      localNotification.applicationIconBadgeNumber = [badge integerValue];
-    }
-    if (ios[@"category"]) {
-      localNotification.category = ios[@"category"];
-    }
-    if (ios[@"hasAction"] && [ios[@"hasAction"] boolValue]) {
-      localNotification.hasAction = [ios[@"hasAction"] boolValue];
-    }
-    if (ios[@"launchImage"]) {
-      localNotification.alertLaunchImage = ios[@"launchImage"];
-    }
-  }
-  if (withSchedule) {
-    NSDictionary *schedule = notification[@"schedule"];
-    NSNumber *fireDateNumber = schedule[@"fireDate"];
-    NSDate *fireDate = [NSDate dateWithTimeIntervalSince1970:([fireDateNumber doubleValue] / 1000.0)];
-    localNotification.fireDate = fireDate;
-    
-    NSString *interval = schedule[@"repeatInterval"];
-    if (interval) {
-      if ([interval isEqualToString:@"minute"]) {
-        localNotification.repeatInterval = NSCalendarUnitMinute;
-      } else if ([interval isEqualToString:@"hour"]) {
-        localNotification.repeatInterval = NSCalendarUnitHour;
-      } else if ([interval isEqualToString:@"day"]) {
-        localNotification.repeatInterval = NSCalendarUnitDay;
-      } else if ([interval isEqualToString:@"week"]) {
-        localNotification.repeatInterval = NSCalendarUnitWeekday;
-      }
-    }
-    
-  }
+  return CLLocationCoordinate2DMake([input[@"lat"] doubleValue], [input[@"lon"] doubleValue]);
+}
+
+/*
+ uuid: string
+ id: string
+ major: number
+ minor: number
+*/
+
++ (CLBeaconRegion *)beaconRegionJSONtoNative:(NSDictionary *)input
+{
+  // uint16_t
+  CLBeaconMajorValue major = [input[@"major"] unsignedShortValue];
+  CLBeaconMinorValue minor = [input[@"minor"] unsignedShortValue];
+  NSString *identifier = input[@"id"];
+  NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:input[@"uuid"]];
+  CLBeaconRegion *output = [[CLBeaconRegion alloc] initWithProximityUUID:uuid major:major minor:minor identifier:identifier];
+  return output;
+}
+
+/*
+ center: { lat: number, lon: number },
+ radius: number,
+ id: string,
+ */
+
++ (CLCircularRegion *)circularRegionJSONtoNative:(NSDictionary *)input
+{
+  NSDictionary *coordinate = input[@"center"];
+  CLLocationCoordinate2D center = [EXFirebaseNotifications coordinateJSONtoNative:coordinate];
+  CLLocationDistance radius = [input[@"radius"] doubleValue];
+  NSString *identifier = input[@"id"];
+  CLCircularRegion *output = [[CLCircularRegion alloc] initWithCenter:center radius:radius identifier:identifier];
+  return output;
+}
+
++ (UNMutableNotificationContent *)notificationContentJSONtoNative:(NSDictionary *)input
+{
+  UNMutableNotificationContent *output = [[UNMutableNotificationContent alloc] init];
   
-  return localNotification;
+  return output;
 }
 
 - (UNNotificationRequest *)buildUNNotificationRequest:(NSDictionary *)notification
@@ -463,13 +472,44 @@ EX_EXPORT_METHOD_AS(jsInitialised,
   if (notification[@"data"]) {
     content.userInfo = notification[@"data"];
   }
-  if (notification[@"sound"]) {
-    if ([@"default" isEqualToString:notification[@"sound"]]) {
-      content.sound = [UNNotificationSound defaultSound];
-    } else {
-      content.sound = [UNNotificationSound soundNamed:notification[@"sound"]];
+  
+  /*
+   * sound: local uri to audio file or "default";
+   * isCritical: bool ios 12
+   * volume: float ios 12
+   */
+  
+    if (notification[@"sound"]) {
+      if ([@"default" isEqualToString:notification[@"sound"]]) {
+        content.sound = [UNNotificationSound defaultSound];
+      } else {
+        content.sound = [UNNotificationSound soundNamed:notification[@"sound"]];
+      }
+  }
+  if (@available(iOS 12.0, *)) {
+    BOOL isCritical = notification[@"isCritical"];
+    if (isCritical) {
+      float volume = 1;
+      if (notification[@"volume"]) {
+        volume = [notification[@"volume"] floatValue];
+      }
+      if (notification[@"sound"]) {
+        content.sound = [UNNotificationSound criticalSoundNamed:notification[@"sound"] withAudioVolume:volume];
+      } else {
+        content.sound = [UNNotificationSound defaultCriticalSoundWithAudioVolume:volume];
+      }
     }
   }
+  
+  if (@available(iOS 12.0, *)) {
+    if (notification[@"summaryArgumentCount"]) {
+      content.summaryArgumentCount = [notification[@"summaryArgumentCount"] integerValue];
+    }
+    if (notification[@"summaryArgument"]) {
+      content.summaryArgument = notification[@"summaryArgument"];
+    }
+  }
+  
   if (notification[@"subtitle"]) {
     content.subtitle = notification[@"subtitle"];
   }
@@ -527,6 +567,8 @@ EX_EXPORT_METHOD_AS(jsInitialised,
     }
   }
   
+  NSString *notificationId = notification[@"notificationId"];
+  UNNotificationTrigger *trigger = nil;
   if (withSchedule) {
     NSDictionary *schedule = notification[@"schedule"];
     NSNumber *fireDateNumber = schedule[@"fireDate"];
@@ -552,51 +594,153 @@ EX_EXPORT_METHOD_AS(jsInitialised,
     }
     
     NSDateComponents *components = [[NSCalendar currentCalendar] components:calendarUnit fromDate:fireDate];
-    UNCalendarNotificationTrigger *trigger = [UNCalendarNotificationTrigger triggerWithDateMatchingComponents:components repeats:interval];
-    return [UNNotificationRequest requestWithIdentifier:notification[@"notificationId"] content:content trigger:trigger];
+    trigger = [UNCalendarNotificationTrigger triggerWithDateMatchingComponents:components repeats:interval];
+  } else if (notification[@"location"]) {
+    BOOL repeats = [notification[@"repeats"] boolValue];
+    trigger = [UNLocationNotificationTrigger triggerWithRegion:[EXFirebaseNotifications circularRegionJSONtoNative:notification[@"location"]] repeats:repeats];
+  } else if (notification[@"beacon"]) {
+    BOOL repeats = [notification[@"repeats"] boolValue];
+    trigger = [UNLocationNotificationTrigger triggerWithRegion:[EXFirebaseNotifications beaconRegionJSONtoNative:notification[@"beacon"]] repeats:repeats];
+  }
+  
+  return [UNNotificationRequest requestWithIdentifier:notificationId content:content trigger:trigger];
+  
+}
+
+/* Action
+ 
+ id: string,
+ title: string
+ options: ActionOptions,
+ inputButtonTitle: string,
+ inputPlaceholder: string
+ 
+ 
+ ActionOptions
+ authenticationRequired
+ destructive
+ foreground
+ 
+ */
+
++ (UNNotificationAction *)notificationActionJSONtoNative:(NSDictionary *)input
+{
+  UNNotificationActionOptions options = 0;
+  if (input[@"options"]) {
+    options = [EXFirebaseNotifications notificationActionOptionsJSONtoNative:input[@"options"]];
+  }
+
+  NSString *identifier = input[@"id"];
+  NSString *title = input[@"title"];
+  NSString *textInputButtonTitle = input[@"inputButtonTitle"];
+  NSString *textInputPlaceholder = input[@"inputPlaceholder"];
+  
+  NSString *type = input[@"type"];
+  if ([type isEqualToString:@"input"]) {
+    return [UNTextInputNotificationAction actionWithIdentifier:identifier title:title options:options textInputButtonTitle:textInputButtonTitle textInputPlaceholder:textInputPlaceholder];
+  }
+  return [UNNotificationAction actionWithIdentifier:identifier title:title options:options];
+}
+
+/*
+ authenticationRequired
+ destructive
+ foreground
+ */
++ (UNNotificationActionOptions)notificationActionOptionsJSONtoNative:(NSString *)input
+{
+  if ([input isEqualToString:@"authenticationRequired"]) {
+    // Whether this action should require unlocking before being performed.
+    return UNNotificationActionOptionAuthenticationRequired;
+  } else if ([input isEqualToString:@"destructive"]) {
+    // Whether this action should require unlocking before being performed.
+    return UNNotificationActionOptionDestructive;
+  } else if ([input isEqualToString:@"foreground"]) {
+    // Whether this action should require unlocking before being performed.
+    return UNNotificationActionOptionForeground;
   } else {
-    return [UNNotificationRequest requestWithIdentifier:notification[@"notificationId"] content:content trigger:nil];
+    // TODO: Bacon: This shouldn't be default?
+    return UNNotificationActionOptionForeground;
   }
 }
 
-- (NSDictionary *)parseUILocalNotification:(UILocalNotification *)localNotification {
-  NSMutableDictionary *notification = [[NSMutableDictionary alloc] init];
-  
-  if ([localNotification alertBody]) {
-    notification[@"body"] = [localNotification alertBody];
+/*
+ CategoryOption:
+ 
+ hiddenPreviewsShowTitle
+ hiddenPreviewsShowSubtitle
+ customDismissAction
+ allowInCarPlay
+ */
++ (UNNotificationCategoryOptions)notificationCategoryOptionsJSONtoNative:(NSString *)input
+{
+  if (@available(iOS 11.0, *)) {
+    if ([input isEqualToString:@"hiddenPreviewsShowTitle"]) {
+      return UNNotificationCategoryOptionHiddenPreviewsShowTitle;
+    } else if ([input isEqualToString:@"hiddenPreviewsShowSubtitle"]) {
+      return UNNotificationCategoryOptionHiddenPreviewsShowSubtitle;
+    }
   }
-  if ([localNotification userInfo]) {
-    notification[@"data"] = [localNotification userInfo];
+  if ([input isEqualToString:@"customDismissAction"]) {
+    return UNNotificationCategoryOptionCustomDismissAction;
+  } else if ([input isEqualToString:@"allowInCarPlay"]) {
+    return UNNotificationCategoryOptionAllowInCarPlay;
+  } else {
+    // TODO: Bacon: This shouldn't be default?
+    return UNNotificationCategoryOptionCustomDismissAction;
   }
-  if ([localNotification soundName]) {
-    notification[@"sound"] = [localNotification soundName];
-  }
-  if ([localNotification alertTitle]) {
-    notification[@"title"] = [localNotification alertTitle];
-  }
-  
-  NSMutableDictionary *ios = [[NSMutableDictionary alloc] init];
-  if ([localNotification alertAction]) {
-    ios[@"alertAction"] = [localNotification alertAction];
-  }
-  if ([localNotification applicationIconBadgeNumber]) {
-    ios[@"badge"] = @([localNotification applicationIconBadgeNumber]);
-  }
-  if ([localNotification category]) {
-    ios[@"category"] = [localNotification category];
-  }
-  if ([localNotification hasAction]) {
-    ios[@"hasAction"] = @([localNotification hasAction]);
-  }
-  if ([localNotification alertLaunchImage]) {
-    ios[@"launchImage"] = [localNotification alertLaunchImage];
-  }
-  notification[@"ios"] = ios;
-  
-  return notification;
 }
 
-- (NSDictionary*)parseUNNotificationResponse:(UNNotificationResponse *)response {
+
+/*
+ id: string
+ actions: Action[]
+ intents: string[]
+ options: CategoryOption
+ placeholder: string
+ format: string
+ */
++ (UNNotificationCategory *)notificationCategoryJSONtoNative:(NSMutableDictionary *)input
+{
+  NSString *identifier = input[@"id"];
+  NSMutableArray *actions = [NSMutableArray new];
+  if (input[@"actions"]) {
+    for (NSDictionary *action in input[@"actions"]) {
+      [actions addObject:[EXFirebaseNotifications notificationActionJSONtoNative:action]];
+    }
+  }
+  //INIntentIdentifiers
+  NSArray<NSString *> *intents = input[@"intents"];
+  UNNotificationCategoryOptions options = [EXFirebaseNotifications notificationCategoryOptionsJSONtoNative:input[@"options"]];
+
+  if (@available(iOS 11.0, *)) {
+    NSString *placeholder = input[@"placeholder"];
+    if (@available(iOS 12.0, *)) {
+    NSString *format = input[@"format"];
+    return [UNNotificationCategory categoryWithIdentifier:identifier
+                                                  actions:actions
+                                        intentIdentifiers:intents
+                            hiddenPreviewsBodyPlaceholder:placeholder
+                                    categorySummaryFormat:format
+                                                  options:options
+            ];
+    }
+    return [UNNotificationCategory categoryWithIdentifier:identifier
+                                                  actions:actions
+                                        intentIdentifiers:intents
+                            hiddenPreviewsBodyPlaceholder:placeholder
+                                                  options:options
+            ];
+  } else
+  return [UNNotificationCategory categoryWithIdentifier:identifier
+                                                actions:actions
+                                      intentIdentifiers:intents
+                                                options:options
+          ];
+  
+}
+
+- (NSDictionary *)parseUNNotificationResponse:(UNNotificationResponse *)response {
   NSMutableDictionary *notificationResponse = [[NSMutableDictionary alloc] init];
   NSDictionary *notification = [self parseUNNotification:[response notification]];
   notificationResponse[@"notification"] = notification;
