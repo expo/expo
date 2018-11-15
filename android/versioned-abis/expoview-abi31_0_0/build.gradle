@@ -144,5 +144,5 @@ dependencies {
 
   // expo-payments-stripe
   api 'com.stripe:stripe-android:2.1.+'
-  api 'com.github.tipsi:CreditCardEntry:1.4.8.10'
+  api 'com.github.tipsi:CreditCardEntry:1.5.0'
 }

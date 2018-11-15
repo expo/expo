@@ -69,6 +69,6 @@ dependencies {
   api 'com.google.android.gms:play-services-wallet:15.0.1'
   api 'com.google.firebase:firebase-core:16.0.1'
   api 'com.stripe:stripe-android:6.0.0'
-  implementation 'com.github.tipsi:CreditCardEntry:1.4.8.10'
+  implementation 'com.github.tipsi:CreditCardEntry:1.5.0'
   implementation 'com.android.support:design:27.1.0'
 }
