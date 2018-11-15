@@ -1,9 +1,4 @@
-//
-//  EXAppAuth+JSON.h
-//  EXAppAuth
-//
-//  Created by Evan Bacon on 11/13/18.
-//
+// Copyright 2018-present 650 Industries. All rights reserved.
 
 #import <EXAppAuth/EXAppAuth.h>
 #import <AppAuth/AppAuth.h>

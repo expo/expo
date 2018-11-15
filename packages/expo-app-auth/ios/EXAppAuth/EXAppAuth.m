@@ -123,7 +123,7 @@ EX_EXPORT_METHOD_AS(executeAsync,
                                              redirectURL:redirectURL
                                             responseType:OIDResponseTypeCode
                                     additionalParameters:additionalParameters];
-
+  
   [EXUtilities performSynchronouslyOnMainThread:^{
     __weak typeof(self) weakSelf = self;
     
@@ -166,9 +166,9 @@ EX_EXPORT_METHOD_AS(executeAsync,
 }
 
 - (void)_refreshWithConfiguration:(OIDServiceConfiguration *)configuration
-                         options:(NSDictionary *)options
-                         resolve:(EXPromiseResolveBlock)resolve
-                          reject:(EXPromiseRejectBlock)reject {
+                          options:(NSDictionary *)options
+                          resolve:(EXPromiseResolveBlock)resolve
+                           reject:(EXPromiseRejectBlock)reject {
   NSArray *scopes = options[@"scopes"];
   NSDictionary *additionalParameters = options[@"additionalParameters"];
   
@@ -197,9 +197,9 @@ EX_EXPORT_METHOD_AS(executeAsync,
 }
 
 - (OIDDiscoveryCallback)_getCallback:(NSDictionary *)options
-                          isRefresh:(BOOL)isRefresh
-                           resolver:(EXPromiseResolveBlock)resolve
-                           rejecter:(EXPromiseRejectBlock)reject
+                           isRefresh:(BOOL)isRefresh
+                            resolver:(EXPromiseResolveBlock)resolve
+                            rejecter:(EXPromiseRejectBlock)reject
 {
   return ^(OIDServiceConfiguration *_Nullable configuration, NSError *_Nullable error) {
     if (configuration) {

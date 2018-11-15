@@ -1,9 +1,4 @@
-//
-//  EXAppAuth+JSON.m
-//  EXAppAuth
-//
-//  Created by Evan Bacon on 11/13/18.
-//
+// Copyright 2018-present 650 Industries. All rights reserved.
 
 #import <EXAppAuth/EXAppAuth+JSON.h>
 #import <EXCore/EXUtilities.h>
@@ -25,7 +20,7 @@
 {
   if (!input) return nil;
   
-  return @{ 
+  return @{
            @"accessToken": nullIfEmpty([input accessToken]),
            @"accessTokenExpirationDate": EXNullIfNil([[self class] dateNativeToJSON:[input accessTokenExpirationDate]]),
            @"additionalParameters": EXNullIfNil([input additionalParameters]),

@@ -7,8 +7,6 @@ import java.util.List;
 
 import expo.core.BasePackage;
 import expo.core.ExportedModule;
-import expo.core.ViewManager;
-import expo.core.interfaces.InternalModule;
 
 public class AppAuthPackage extends BasePackage {
   @Override
