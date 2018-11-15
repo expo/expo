@@ -21,7 +21,7 @@
     "nullthrows": "^1.0.0",
     "shelljs": "^0.7.0",
     "tmp": "^0.0.33",
-    "xdl": "51.4.1-alpha.31+cdeadc8",
+    "xdl": "51.6.0",
     "xml2js": "^0.4.17",
     "yesno": "0.0.1"
   }

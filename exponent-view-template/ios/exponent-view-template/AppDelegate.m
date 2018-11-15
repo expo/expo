@@ -4,6 +4,10 @@
 #import "ExpoKit.h"
 #import "EXViewController.h"
 
+#if __has_include(<GoogleSignIn/GoogleSignIn.h>)
+#import <GoogleSignIn/GoogleSignIn.h>
+#endif
+
 @interface AppDelegate ()
 
 @property (nonatomic, strong) EXViewController *rootViewController;
@@ -27,9 +31,18 @@
 
 #pragma mark - Handling URLs
 
-- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(nullable NSString *)sourceApplication annotation:(id)annotation
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
 {
-    return [[ExpoKit sharedInstance] application:application openURL:url sourceApplication:sourceApplication annotation:annotation];
+  id annotation = options[UIApplicationOpenURLOptionsAnnotationKey];
+  NSString *sourceApplication = options[UIApplicationOpenURLOptionsSourceApplicationKey];
+#if __has_include(<GoogleSignIn/GoogleSignIn.h>)
+  if ([[GIDSignIn sharedInstance] handleURL:url
+                          sourceApplication:sourceApplication
+                                 annotation:annotation]) {
+    return YES;
+  }
+#endif
+  return [[ExpoKit sharedInstance] application:app openURL:url sourceApplication:sourceApplication annotation:annotation];
 }
 
 - (BOOL)application:(UIApplication *)application continueUserActivity:(nonnull NSUserActivity *)userActivity restorationHandler:(nonnull void (^)(NSArray * _Nullable))restorationHandler

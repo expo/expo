@@ -24,6 +24,7 @@ export { FaceDetector } from 'expo-face-detector';
 export { FileSystem } from 'expo-file-system';
 export { Font } from 'expo-font';
 export { GLView } from 'expo-gl';
+export { GoogleSignIn } from 'expo-google-sign-in';
 export { LocalAuthentication } from 'expo-local-authentication';
 export { Localization } from 'expo-localization';
 export { Location } from 'expo-location';
