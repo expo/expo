@@ -18,8 +18,8 @@ Pod::Spec.new do |s|
 
   s.dependency 'EXCore'
   s.dependency 'EXFaceDetectorInterface'
-  s.dependency 'GoogleMobileVision/FaceDetector'
-  s.dependency 'GoogleMobileVision/MVDataOutput'
+  s.dependency 'GoogleMobileVision/FaceDetector', '~> 1.1.0'
+  s.dependency 'GoogleMobileVision/MVDataOutput', '~> 1.1.0'
 
 end
 
