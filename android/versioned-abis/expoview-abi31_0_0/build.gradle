@@ -134,6 +134,13 @@ dependencies {
   annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
   // Remember to update DetachAppTemplate build.gradle if you add any excludes or transitive = false here!
 
+  // expo-analytics-segment
+  implementation 'com.segment.analytics.android:analytics:4.3.0'
+
+  // expo-camera
+  implementation 'com.google.android:cameraview:1.0.0'
+  implementation 'com.google.android.gms:play-services-vision:15.0.2'
+
   // expo-file-system
   api 'com.squareup.okhttp3:okhttp:3.10.0'
   api 'com.squareup.okhttp3:okhttp-urlconnection:3.10.0'
