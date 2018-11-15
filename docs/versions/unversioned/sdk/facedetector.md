@@ -36,8 +36,8 @@ import { FaceDetector } from 'expo';
   onFacesDetected={this.handleFacesDetected}
   faceDetectorSettings={{
     mode: FaceDetector.Constants.Mode.fast,
-    detectLandmarks: FaceDetector.Constants.Mode.none,
-    runClassifications: FaceDetector.Constants.Mode.none,
+    detectLandmarks: FaceDetector.Constants.Landmarks.none,
+    runClassifications: FaceDetector.Constants.Classifications.none,
   }}
 />
 ```
