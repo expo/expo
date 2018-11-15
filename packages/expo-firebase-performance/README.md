@@ -91,8 +91,7 @@ You could also choose install this module manually.
 import React from 'react';
 import { Button } from 'react-native';
 import firebase from 'expo-firebase-app';
-// Include the module before using it.
-import 'expo-firebase-performance';
+
 // API can be accessed with: firebase.perf();
 
 export default class DemoView extends React.Component {

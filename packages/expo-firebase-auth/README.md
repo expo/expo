@@ -88,8 +88,7 @@ import React from 'react';
 import { Text, View } from 'react-native';
 import firebase from 'expo-firebase-app';
 import { Facebook } from 'expo';
-// Include the module before using it.
-import 'expo-firebase-auth';
+
 // API can be accessed with: firebase.auth();
 
 // IMPORTANT: Remember to enable the facebook auth in the firebase console!

@@ -6,8 +6,6 @@ import { utils } from 'expo-firebase-app';
 import invariant from 'invariant';
 import { statics as StorageStatics } from '.';
 
-// import type Storage from './index';
-// import type StorageReference from './reference';
 type Storage = object;
 type StorageReference = object;
 

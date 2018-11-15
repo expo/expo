@@ -87,8 +87,7 @@ You could also choose install this module manually.
 import React from 'react';
 import { View } from 'react-native';
 import firebase from 'expo-firebase-app';
-// Include the module before using it.
-import 'expo-firebase-storage';
+
 // API can be accessed with: firebase.storage();
 
 export default class WishboneView extends React.Component {

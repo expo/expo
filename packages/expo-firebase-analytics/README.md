@@ -104,8 +104,7 @@ To enable the AdSupport framework:
 import React from 'react';
 import { View } from 'react-native';
 import firebase from 'expo-firebase-app';
-// Include the module before using it.
-import 'expo-firebase-analytics';
+
 // API can be accessed with: firebase.analytics();
 
 export default class DemoView extends React.Component {
@@ -131,7 +130,6 @@ import React from 'react';
 import { createBottomTabNavigator } from 'react-navigation';
 // Import Firebase
 import firebase from 'expo-firebase-app';
-import 'expo-firebase-analytics';
 // Import some screens
 import HomeScreen from '../screens/HomeScreen';
 import ProfileScreen from '../screens/ProfileScreen';

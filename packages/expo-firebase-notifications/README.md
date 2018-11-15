@@ -189,11 +189,6 @@ import { Text, View } from 'react-native';
 import firebase from 'expo-firebase-app';
 import { Permissions } from 'expo-permissions';
 
-// Include the module before using it.
-import 'expo-firebase-instance-id';
-import 'expo-firebase-messaging';
-import 'expo-firebase-notifications';
-
 import type { Notification } from 'expo-firebase-notifications';
 
 // API can be accessed with: firebase.notifications();

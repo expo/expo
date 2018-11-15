@@ -101,6 +101,8 @@ That's all! 💙
 
 ### Caveats
 
+Google Sign-In will crash automatically if used in the client, as it now requires the `REVERSE_CLIENT_ID` to be located in the `info.plist`
+
 When using a native Firebase app in a dynamic way, you will need to consider that `offline persistence`, and `Auth Tokens` may not behave as expected.
 
 Offline persistence will store data relative to the Firebase app. If you were to change the app in reload then this can corrupt or erase the data.

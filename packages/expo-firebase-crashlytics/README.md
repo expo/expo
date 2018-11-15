@@ -107,8 +107,7 @@ RNFirebase [**crashlytics build script**](https://rnfirebase.io/docs/master/cras
 import React from 'react';
 import { View } from 'react-native';
 import firebase from 'expo-firebase-app';
-// Include the module before using it.
-import 'expo-firebase-crashlytics';
+
 // API can be accessed with: firebase.crashlytics();
 
 export default class DemoView extends React.Component {

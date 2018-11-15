@@ -137,8 +137,7 @@ if that is the case you can perform check below
 import React from 'react';
 import { View } from 'react-native';
 import firebase from 'expo-firebase-app';
-// Include the module before using it.
-import 'expo-firebase-links';
+
 // API can be accessed with: firebase.links();
 
 export default class DemoView extends React.Component {
