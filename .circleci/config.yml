@@ -238,5 +238,5 @@ jobs:
           command: nix run nixpkgs.nodePackages.gulp-cli --command gulp supply-validate
       - run:
           name: Upload APK to Google Play and release to production
-          working_directory: ~/expo/fastlane/android
-          command: nix run nixpkgs.fastlane --command fastlane supply --package_name=host.exp.exponent --apk ~/expo/android/exponent-release.apk --track production --skip_upload_images=true --skip_upload_screenshots=true
+          working_directory: ~/expo
+          command: nix run nixpkgs.fastlane --command fastlane android prod_release
