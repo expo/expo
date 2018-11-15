@@ -510,6 +510,7 @@ module.exports = {
     getBadgeNumberAsync: { type: 'function', functionType: 'promise' },
     getDevicePushTokenAsync: { type: 'function', functionType: 'promise' },
     getExponentPushTokenAsync: { type: 'function', functionType: 'promise' },
+    legacyScheduleLocalRepeatingNotification: { type: 'function', functionType: 'promise' },
     presentLocalNotification: { type: 'function', functionType: 'promise' },
     scheduleLocalNotification: { type: 'function', functionType: 'promise' },
     setBadgeNumberAsync: { type: 'function', functionType: 'promise' },

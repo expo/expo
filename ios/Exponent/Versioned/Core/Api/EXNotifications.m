@@ -40,6 +40,7 @@ RCT_ENUM_CONVERTER(NSCalendarUnit,
 EX_EXPORT_SCOPED_MODULE(ExponentNotifications, RemoteNotificationManager);
 
 @synthesize bridge = _bridge;
+@synthesize methodQueue = _methodQueue;
 
 - (void)setBridge:(RCTBridge *)bridge
 {
@@ -133,6 +134,48 @@ RCT_EXPORT_METHOD(scheduleLocalNotification:(NSDictionary *)payload
       resolve(content.userInfo[@"id"]);
     }
   }];
+}
+
+RCT_EXPORT_METHOD(legacyScheduleLocalRepeatingNotification:(NSDictionary *)payload
+                  withOptions:(NSDictionary *)options
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+{
+  #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+  if (!payload[@"data"]) {
+    reject(@"E_NOTIF_NO_DATA", @"Attempted to send a local notification with no `data` property.", nil);
+    return;
+  }
+  UILocalNotification *localNotification = [UILocalNotification new];
+  NSString *uniqueId = [[NSUUID new] UUIDString];
+  localNotification.alertTitle = payload[@"title"];
+  localNotification.alertBody = payload[@"body"];
+  if ([payload[@"sound"] boolValue]) {
+    localNotification.soundName = UILocalNotificationDefaultSoundName;
+  }
+  if ([payload[@"categoryId"] isKindOfClass:[NSString class]]) {
+    localNotification.category = [self internalIdForIdentifier:payload[@"categoryId"]];
+  }
+  localNotification.applicationIconBadgeNumber = [RCTConvert NSInteger:payload[@"count"]] ?: 0;
+  localNotification.userInfo = @{
+                                 @"body": payload[@"data"],
+                                 @"experienceId": self.experienceId,
+                                 @"id": uniqueId
+                                 };
+  localNotification.fireDate = [RCTConvert NSDate:options[@"time"]] ?: [NSDate new];
+  localNotification.repeatInterval = [RCTConvert NSCalendarUnit:options[@"repeat"]] ?: 0;
+
+  __weak typeof(self) weakSelf = self;
+  [EXUtil performSynchronouslyOnMainThread:^{
+    [RCTSharedApplication() scheduleLocalNotification:localNotification];
+    dispatch_queue_t methodQueue = weakSelf.methodQueue;
+    if (methodQueue) {
+      dispatch_async(methodQueue, ^{
+        resolve(uniqueId);
+      });
+    }
+  }];
+  #pragma GCC diagnostic warning "-Wdeprecated-declarations"
 }
 
 RCT_REMAP_METHOD(cancelScheduledNotificationAsync,

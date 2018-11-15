@@ -108,16 +108,12 @@ describe('Notifications', () => {
     mockPlatformIOS();
     NativeModules.ExponentNotifications.scheduleLocalNotification = jest.fn();
 
-    try {
-      await Notifications.scheduleLocalNotificationAsync(mockedScheduledNotifIOS, {
-        time: new Date(),
-        repeat: 'minute',
-      });
-    } catch (e) {
-      expect(e).toMatchSnapshot();
-    }
+    await Notifications.scheduleLocalNotificationAsync(mockedScheduledNotifIOS, {
+      time: new Date(),
+      repeat: 'minute',
+    });
 
-    expect(NativeModules.ExponentNotifications.scheduleLocalNotification).not.toBeCalled();
+    expect(NativeModules.ExponentNotifications.legacyScheduleLocalRepeatingNotification).toHaveBeenCalledTimes(1);
   });
 
   it('properly schedules notification when options are correct (time passed as date obj, repeated, Android)', async () => {
@@ -136,16 +132,12 @@ describe('Notifications', () => {
     mockPlatformIOS();
     NativeModules.ExponentNotifications.scheduleLocalNotification = jest.fn();
 
-    try {
-      await Notifications.scheduleLocalNotificationAsync(mockedScheduledNotifIOS, {
-        time: new Date().getTime() + 1000,
-        repeat: 'minute',
-      });
-    } catch (e) {
-      expect(e).toMatchSnapshot();
-    }
+    await Notifications.scheduleLocalNotificationAsync(mockedScheduledNotifIOS, {
+      time: new Date().getTime() + 1000,
+      repeat: 'minute',
+    });
 
-    expect(NativeModules.ExponentNotifications.scheduleLocalNotification).not.toHaveBeenCalled();
+    expect(NativeModules.ExponentNotifications.legacyScheduleLocalRepeatingNotification).toHaveBeenCalledTimes(1);
   });
 
   it('properly schedules notification when options are correct (time passed as number, repeated, Android)', async () => {
