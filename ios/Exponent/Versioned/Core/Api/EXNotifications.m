@@ -121,7 +121,7 @@ RCT_EXPORT_METHOD(scheduleLocalNotification:(NSDictionary *)payload
     reject(@"E_NOTIF_NO_DATA", @"Attempted to send a local notification with no `data` property.", nil);
     return;
   }
-  UNCalendarNotificationTrigger *notificationTrigger = [self notificationTriggerFor:options[@"time"] repeatingEvery:options[@"repeat"]];
+  UNCalendarNotificationTrigger *notificationTrigger = [self notificationTriggerFor:options[@"time"]];
   UNMutableNotificationContent *content = [self _localNotificationFromPayload:payload];
   UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:content.userInfo[@"id"]
                                                                         content:content
@@ -282,15 +282,9 @@ RCT_REMAP_METHOD(deleteCategoryAsync,
   return [NSString stringWithFormat:@"%@:%@", self.experienceId, identifier];
 }
 
-- (UNCalendarNotificationTrigger *)notificationTriggerFor:(NSNumber * _Nullable)unixTime repeatingEvery:(NSString * _Nullable)timePeriod
+- (UNCalendarNotificationTrigger *)notificationTriggerFor:(NSNumber * _Nullable)unixTime
 {
   NSDateComponents *dateComponents = [self dateComponentsFrom:unixTime];
-  if (timePeriod) {
-    NSCalendarUnit timePeriodToRepeat = [RCTConvert NSCalendarUnit:timePeriod];
-    [self mutateDateComponents:dateComponents toRepeatEvery:timePeriodToRepeat];
-    return [UNCalendarNotificationTrigger triggerWithDateMatchingComponents:dateComponents repeats:YES];
-  }
-
   return [UNCalendarNotificationTrigger triggerWithDateMatchingComponents:dateComponents repeats:NO];
 }
 
@@ -299,28 +293,6 @@ RCT_REMAP_METHOD(deleteCategoryAsync,
   NSDate *triggerDate = [RCTConvert NSDate:unixTime] ?: [NSDate new];
   NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
   return [calendar components:unitFlags fromDate:triggerDate];
-}
-
-- (void)mutateDateComponents:(NSDateComponents *)dateComponents toRepeatEvery:(NSCalendarUnit)timePeriod
-{
-  switch (timePeriod) {
-    case NSCalendarUnitMinute:
-      dateComponents.minute = NSDateComponentUndefined;
-    case NSCalendarUnitHour:
-      dateComponents.hour = NSDateComponentUndefined;
-    case NSCalendarUnitDay:
-      dateComponents.day = NSDateComponentUndefined;
-    case NSCalendarUnitWeekOfYear:
-      dateComponents.weekOfYear = NSDateComponentUndefined;
-    case NSCalendarUnitMonth:
-      dateComponents.month = NSDateComponentUndefined;
-    case NSCalendarUnitYear:
-      dateComponents.year = NSDateComponentUndefined;
-    default:
-      return;
-  }
-
-  return [self mutateDateComponents:dateComponents toRepeatEvery:timePeriod - 1];
 }
 
 - (UNNotificationAction *)parseNotificationActionFromParams:(NSDictionary *)params

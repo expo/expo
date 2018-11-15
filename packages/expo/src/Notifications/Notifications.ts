@@ -355,6 +355,10 @@ export default {
     }
 
     if (Platform.OS === 'ios') {
+      if (options.repeat) {
+        throw new Error("Ability to schedule an automatically repeated notification has been removed on iOS in SDK31.");
+      }
+
       return ExponentNotifications.scheduleLocalNotification(nativeNotification, options);
     } else {
       let _channel;
