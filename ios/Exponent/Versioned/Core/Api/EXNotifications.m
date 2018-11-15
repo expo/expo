@@ -135,9 +135,20 @@ RCT_EXPORT_METHOD(scheduleLocalNotification:(NSDictionary *)payload
   }];
 }
 
-RCT_EXPORT_METHOD(cancelScheduledNotification:(NSString *)uniqueId)
+RCT_REMAP_METHOD(cancelScheduledNotificationAsync,
+                 cancelScheduledNotificationAsync:(NSString *)uniqueId
+                 withResolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject)
 {
-  [[EXUserNotificationCenter sharedInstance] removePendingNotificationRequestsWithIdentifiers:@[uniqueId]];
+  [[EXUserNotificationCenter sharedInstance] getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> * _Nonnull requests) {
+    for (UNNotificationRequest *request in requests) {
+      if ([request.content.userInfo[@"id"] isEqualToString:uniqueId]) {
+        [[EXUserNotificationCenter sharedInstance] removePendingNotificationRequestsWithIdentifiers:@[request.identifier]];
+        return resolve(nil);
+      }
+    }
+    reject(@"E_NO_NOTIF", [NSString stringWithFormat:@"Could not find pending notification request to cancel with id = %@", uniqueId], nil);
+  }];
 }
 
 RCT_REMAP_METHOD(cancelAllScheduledNotificationsAsync,

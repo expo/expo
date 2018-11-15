@@ -403,7 +403,7 @@ export default {
 
   /* Cancel scheduled notification notification with ID */
   cancelScheduledNotificationAsync(notificationId: LocalNotificationId): Promise<void> {
-    return ExponentNotifications.cancelScheduledNotification(notificationId);
+    return ExponentNotifications.cancelScheduledNotificationAsync(notificationId);
   },
 
   /* Cancel all scheduled notifications */

@@ -504,7 +504,7 @@ module.exports = {
   ExponentMailComposer: { composeAsync: { type: 'function', functionType: 'promise' } },
   ExponentNotifications: {
     cancelAllScheduledNotificationsAsync: { type: 'function', functionType: 'promise' },
-    cancelScheduledNotification: { type: 'function', functionType: 'async' },
+    cancelScheduledNotificationAsync: { type: 'function', functionType: 'promise' },
     createCategoryAsync: { type: 'function', functionType: 'promise' },
     deleteCategoryAsync: { type: 'function', functionType: 'promise' },
     getBadgeNumberAsync: { type: 'function', functionType: 'promise' },
