@@ -3,7 +3,7 @@
 fastlane_require 'fileutils'
 fastlane_require 'shellwords'
 
-fastlane_version "1.30.0"
+fastlane_version "2.105.2"
 default_platform :ios
 
 # path relative to Fastfile
@@ -106,6 +106,21 @@ platform :ios do
     #   message: exception.message,
     #   success: false
     # )
+  end
+
+  platform :android do
+
+    lane :prod_release do
+      supply(
+        package_name: "host.exp.exponent",
+        metadata_path: "./fastlane/android/metadata",
+        apk: "./android/exponent-release.apk",
+        track: "production",
+        skip_upload_images: true,
+        skip_upload_screenshots: true
+      )
+    end
+
   end
 
 end
