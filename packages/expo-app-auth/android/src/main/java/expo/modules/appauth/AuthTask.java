@@ -14,7 +14,7 @@ public class AuthTask {
       mTag = tag;
       return true;
     } else {
-      promise.reject("E_APP_AUTH", "cannot set promise - some async operation is still in progress");
+      promise.reject("ERR_APP_AUTH", "cannot set promise - some async operation is still in progress");
       return false;
     }
   }
@@ -30,7 +30,7 @@ public class AuthTask {
       AuthorizationException authorizationException = (AuthorizationException) e;
       this.reject(String.valueOf(authorizationException.code), authorizationException.getLocalizedMessage());
     } else {
-      this.reject("E_APP_AUTH", e.getLocalizedMessage());
+      this.reject("ERR_APP_AUTH", e.getLocalizedMessage());
     }
   }
 
