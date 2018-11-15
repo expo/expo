@@ -89,7 +89,12 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotificationName = @"kEXA
 - (void)_handleDidRegisterForRemoteNotifications:(__unused NSNotification *)notif
 {
   [self _clearObserver];
-  [self _maybeConsumeResolverWithCurrentPermissions];
+  id<EXPermissionsModule> permissionsModule = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXPermissionsModule)];
+  NSAssert(permissionsModule, @"Permissions module is required to properly consume result.");
+  __weak typeof(self) weakSelf = self;
+  dispatch_async(permissionsModule.methodQueue, ^{
+    [weakSelf _maybeConsumeResolverWithCurrentPermissions];
+  });
 }
 
 - (void)_clearObserver
