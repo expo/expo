@@ -640,7 +640,7 @@ static GLfloat imagePlaneVerts[6] = { -2.0f, 0.0f, 0.0f, -2.0f, 2.0f, 2.0f };
     
     ARFrame *frame = self.session.currentFrame;
     
-    [output setValue: [NSNumber numberWithDouble: frame.timestamp] forKey:@"timestamp"];
+    [output setValue:[NSNumber numberWithDouble:frame.timestamp] forKey:@"timestamp"];
     
     if (attributes[@"anchors"] != nil) {
       id props = attributes[@"anchors"];

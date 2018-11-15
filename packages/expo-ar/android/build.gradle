@@ -73,5 +73,5 @@ dependencies {
   expendency "expo-gl"
   expendency "expo-gl-cpp"
   expendency "expo-permissions-interface"
-  api 'com.google.ar:core:1.4.0'
+  api 'com.google.ar:core:1.5.0'
 }

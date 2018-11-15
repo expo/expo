@@ -5,6 +5,8 @@ import * as THREE from 'three';
 
 import { PermissionsRequester } from './components';
 
+ExpoTHREE.suppressExpoWarnings();
+
 export default class ARPointsScreen extends React.Component {
   static title = 'AR Points';
 
@@ -12,7 +14,6 @@ export default class ARPointsScreen extends React.Component {
     return (
       <PermissionsRequester permissionsTypes={[Permissions.CAMERA]}>
         <AR.ARView
-          style={{ flex: 1 }}
           onContextCreate={this.onContextCreate}
           onRender={this.onRender}
           onResize={this.onResize}

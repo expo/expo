@@ -102,26 +102,11 @@ export function removeAllListeners(eventType?: EventType): void {
   AREventEmitter.removeAllListeners(eventType as any);
 }
 
-// TODO: support multiple types (take an array or bit flags)
-export async function performHitTest(point: Vector2, types: HitTestResultType): Promise<HitTest[]> {
-  return ExpoAR.performHitTest(point, types);
-}
-
-export async function setDetectionImagesAsync(images: { [name: string]: DetectionImage }): Promise<void> {
-  return ExpoAR.setDetectionImagesAsync(images);
-}
-
-export async function getCurrentFrameAsync(attributes?: ARFrameRequest): Promise<ARFrame> {
-  return ExpoAR.getCurrentFrameAsync(attributes);
-}
-
-export async function getMatricesAsync(near: number, far: number): Promise<ARMatrices> {
-  return ExpoAR.getMatricesAsync(near, far);
-}
-
-export async function stopAsync(): Promise<void> {
-  return ExpoAR.stopAsync();
-}
+/*
+ ****************************************************
+ *                LIFECYCLE FUNCTIONS               *
+ ****************************************************
+ */
 
 /**
  * Start AR session
@@ -141,17 +126,50 @@ export async function startAsync(
   }
 }
 
-export function reset() {
-  ExpoAR.reset();
+export async function pauseAsync(): Promise<void> {
+  return ExpoAR.pause();
 }
 
-export function resume() {
-  ExpoAR.resume();
+export async function resumeAsync(): Promise<void> {
+  return ExpoAR.resume();
 }
 
-export function pause() {
-  ExpoAR.pause();
+export async function resetAsync(): Promise<void> {
+  return ExpoAR.reset();
 }
+
+export async function stopAsync(): Promise<void> {
+  return ExpoAR.stopAsync();
+}
+
+/*
+ ****************************************************
+ *                FEATURES FUNCTIONS                *
+ ****************************************************
+ */
+
+export async function getCurrentFrameAsync(attributes?: ARFrameRequest): Promise<ARFrame> {
+  return ExpoAR.getCurrentFrameAsync(attributes);
+}
+
+// TODO: support multiple types (take an array or bit flags)
+export async function performHitTest(point: Vector2, types: HitTestResultType): Promise<HitTest[]> {
+  return ExpoAR.performHitTest(point, types);
+}
+
+export async function setDetectionImagesAsync(images: { [name: string]: DetectionImage }): Promise<void> {
+  return ExpoAR.setDetectionImagesAsync(images);
+}
+
+export async function getMatricesAsync(near: number, far: number): Promise<ARMatrices> {
+  return ExpoAR.getMatricesAsync(near, far);
+}
+
+/*
+ ****************************************************
+ *              CONFIGURATION FUNCTIONS             *
+ ****************************************************
+ */
 
 export async function setConfigurationAsync(configuration: TrackingConfiguration): Promise<void> {
   await ExpoAR.setConfigurationAsync(configuration);

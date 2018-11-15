@@ -20,7 +20,6 @@ import com.google.ar.core.exceptions.UnavailableSdkTooOldException;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import expo.core.ModuleRegistry;
 import expo.core.Promise;
@@ -41,20 +40,21 @@ public class ARSessionManager implements GLContext.GLContextChangeListener {
   private final ARSerializer mARSerializer;
   private final Context mContext;
 
+  private boolean mIsReady = false;
+
   public ARSessionManagerDelegate delegate;
 
   private ARGLCameraObject mCameraObject;
   private Session mSession;
   private GLView mGLView;
-  private boolean isReady = false;
 
   private float[] viewMatrix = new float[16];
   private float[] projectionMatrix = new float[16];
 
   private TrackingState trackingState = TrackingState.STOPPED;
 
-  private Frame storedFrame;
   private GLSharedContext mSharedGLContext;
+  private Frame mCurrentFrame;
 
   ARSessionManager(ModuleRegistry moduleRegistry) {
     mModuleRegistry = moduleRegistry;
@@ -113,25 +113,10 @@ public class ARSessionManager implements GLContext.GLContextChangeListener {
     }
   }
 
-  private Frame getCurrentFrame() {
-    Frame frame = null;
-    if (mSession != null) {
-      try {
-        if (storedFrame == null) {
-          frame = mSession.update();
-        } else {
-          frame = storedFrame;
-        }
-      } catch (Exception e) {
-        //TODO:Bacon: Throw
-      }
-    }
-    return frame;
-  }
-
   protected void pause() {
-    if (mSession == null) return;
-    storedFrame = null;
+    if (mSession == null) {
+      return;
+    }
     mGLView.getGLContext().unregisterGLContextChangeListener(this);
     mSession.pause();
   }
@@ -147,69 +132,61 @@ public class ARSessionManager implements GLContext.GLContextChangeListener {
     }
   }
 
-  public boolean isInitialized() {
-    return isReady;
-  }
-
   public boolean isTracking() {
     return trackingState == TrackingState.TRACKING;
   }
 
-  public void getProjectionMatrix(final float near, final float far, final Promise promise) {
-    final Bundle map = new Bundle();
-
-    if (isReady) {
-      mGLView.runOnGLThread(new Runnable() {
-        @Override
-        public void run() {
-          try {
-            Camera camera = mSession.update().getCamera();
-            camera.getProjectionMatrix(projectionMatrix, 0, near, far);
-            camera.getViewMatrix(viewMatrix, 0);
-            map.putFloatArray("viewMatrix", viewMatrix);
-            map.putFloatArray("projectionMatrix", projectionMatrix);
-            promise.resolve(map);
-          } catch (CameraNotAvailableException e) {
-            promise.reject(ERROR_TAG + "_CAMERA_UNAVAILABLE", e.getLocalizedMessage());
-          }
-        }});
-    } else {
-//      promise.reject(E_CAMERA_NOT_AVAILABLE, "Session not ready yet");
-      map.putFloatArray("viewMatrix", viewMatrix);
-      map.putFloatArray("projectionMatrix", projectionMatrix);
-      promise.resolve(map);
+  void getProjectionMatrix(final float near, final float far, final Promise promise) {
+    if (mSession == null || !mIsReady) {
+      promise.resolve(null);
+      return;
     }
-  }
-
-  protected void getCurrentFrameAsync(final Map<String, Object> attributes, final Promise promise) {
     mGLView.runOnGLThread(new Runnable() {
       @Override
       public void run() {
-        Frame currentFrame = getCurrentFrame();
-        if (currentFrame != null) {
-          Bundle frame = mARSerializer.serializeFrame(currentFrame, attributes);
-          promise.resolve(frame);
-        } else {
-          promise.resolve(null);
-        }
-
+        // Camera instance is long-lived so the same instance is returned
+        // regardless of the frame object this method was called on.
+        Camera camera = mCurrentFrame.getCamera();
+        camera.getProjectionMatrix(projectionMatrix, 0, near, far);
+        camera.getViewMatrix(viewMatrix, 0);
+        Bundle result = new Bundle();
+        result.putFloatArray("viewMatrix", viewMatrix);
+        result.putFloatArray("projectionMatrix", projectionMatrix);
+        promise.resolve(result);
       }
     });
   }
 
-  public void performHitTestAsync(final float x, final float y, ArrayList<String> types, final Promise promise) {
+  void getCurrentFrameAsync(final ARFrameSerializationAttributes attributes, final Promise promise) {
+    if (mSession == null || !mIsReady) {
+      promise.resolve(null);
+      return;
+    }
     mGLView.runOnGLThread(new Runnable() {
       @Override
       public void run() {
-        Frame frame = getCurrentFrame();
-        if (frame == null) {
-          promise.reject(ERROR_TAG + "_INVALID_FRAME", "Cannot obtain frame from AR session");
-          return;
-        }
+        Bundle serializedFrame = mARSerializer.serializeAcquiredFrame(attributes);
+        promise.resolve(serializedFrame);
+      }
+    });
+  }
 
-        List<HitResult> hitResults = frame.hitTest(x, y);
-        List<Bundle> result = mARSerializer.serializeHitResults(hitResults);
-        promise.resolve(result);
+  void performHitTestAsync(final float x, final float y, ArrayList<String> types, final Promise promise) {
+    if (mSession == null || !mIsReady) {
+      promise.resolve(null);
+      return;
+    }
+    mGLView.runOnGLThread(new Runnable() {
+      @Override
+      public void run() {
+        try {
+          List<HitResult> hitResults = mSession.update().hitTest(x, y);
+          List<Bundle> result = mARSerializer.serializeHitResults(hitResults);
+          promise.resolve(result);
+        } catch (CameraNotAvailableException e) {
+          e.printStackTrace();
+          promise.reject(ERROR_TAG, "No camera available");
+        }
       }
     });
   }
@@ -236,18 +213,30 @@ public class ARSessionManager implements GLContext.GLContextChangeListener {
     try {
       // Instruct ARCore session to use texture provided by CameraObject
       mSession.setCameraTextureName(mCameraObject.getCameraTexture());
+      mIsReady = true;
 
       // Obtain the current frame from ARSession. When the configuration is set to
       // UpdateMode.BLOCKING (it is by default), this will throttle the rendering to the camera framerate.
-      Frame frame = mSession.update();
+      mCurrentFrame = mSession.update();
       Size previewSize = mSession.getCameraConfig().getTextureSize();
       int rotation = mARDisplayRotationHelper.getRotation();
-      mCameraObject.drawFrame(frame, rotation, previewSize);
+      mCameraObject.drawFrame(mCurrentFrame, rotation, previewSize);
+
+      handleCurrentFrame(mCurrentFrame);
+
     } catch (CameraNotAvailableException e) {
       // Avoid crashing the application due to unhandled exceptions.
       Log.e(TAG, "Exception on the OpenGL thread", e);
     }
   }
+
+  private void handleCurrentFrame(Frame currentFrame) {
+    mARSerializer.storeFrameData(currentFrame);
+  }
+
+// -------------------------------------------------------
+//           GLContext.GLContextChangeListener
+// -------------------------------------------------------
 
   @Override
   public int getID() {
@@ -256,13 +245,14 @@ public class ARSessionManager implements GLContext.GLContextChangeListener {
 
   @Override
   public void onGLContextUpdated() {
-    if (mCameraObject != null && mSession != null) {
-      mSharedGLContext.runAsync(new Runnable() {
-        @Override
-        public void run() {
-          updateFrame();
-        }
-      });
+    if (mSession == null || mCameraObject == null) {
+      return;
     }
+    mSharedGLContext.runAsync(new Runnable() {
+      @Override
+      public void run() {
+        updateFrame();
+      }
+    });
   }
 }

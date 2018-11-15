@@ -1,46 +1,54 @@
 import { AR } from 'expo-ar';
 import * as THREE from 'three';
 
-class Points extends THREE.Object3D {
-  common = {};
-  _data = {};
-  material = new THREE.PointsMaterial({ size: 5, sizeAttenuation: false });
+export default class Points extends THREE.Object3D {
+  storedPoints = {};
+  pointsData = [];
+  material = new THREE.PointsMaterial({
+    size: 20,
+    sizeAttenuation: false,
+    color: 0xff00ff,
+  });
 
-  get data() {
-    return this._data;
+  get points() {
+    return this.pointsData;
   }
 
-  set data(points) {
-    this._data = points;
-    let nextPoints = {};
+  set points(newPointsData) {
+    this.pointsData = newPointsData;
+    const newPoints = {};
 
-    for (let point of points) {
-      const { x, y, z, id } = point;
-      let object = this.common[id];
-      nextPoints[id] = object;
-      this.common[id] = null;
-      if (!object) {
+    newPointsData.forEach(({ x, y, z, id }) => {
+      let pointObject = this.storedPoints[id];
+      if (pointObject) {
+        // point already exists
+        delete this.storedPoints[id]; // remove point from orginal container
+      } else {
+        // no such point - create one
         const geometry = new THREE.Geometry();
         geometry.vertices.push(new THREE.Vector3(0, 0, 0));
-        object = new THREE.Points(geometry, this.material);
-        nextPoints[id] = object;
-        this.add(object);
+        pointObject = new THREE.Points(geometry, this.material);
+        this.add(pointObject);
       }
-      object.position.set(x, y, z);
-    }
+      // store point
+      newPoints[id] = pointObject;
+      // update position of pointObject
+      pointObject.position.set(x, y, z);
+    });
 
-    for (let key in this.common) {
-      this.remove(this.common[key]);
-    }
-    this.common = nextPoints;
+    // remove old points from THREE
+    Object.entries(this.storedPoints).forEach(([_, point]) =>
+      this.remove(point)
+    );
+    this.storedPoints = newPoints;
   }
 
   update = async () => {
-    const { rawFeaturePoints } = await AR.getCurrentFrameAsync({
+    const {
+      [AR.FrameAttribute.RawFeaturePoints]: points,
+    } = await AR.getCurrentFrameAsync({
       [AR.FrameAttribute.RawFeaturePoints]: true,
     });
-    this.data = rawFeaturePoints;
+    this.points = points;
   };
 }
-
-export default Points;

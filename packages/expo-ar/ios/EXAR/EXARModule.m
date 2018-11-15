@@ -145,6 +145,9 @@ EX_EXPORT_MODULE(ExpoAR);
   return false;
 }
 
+
+#pragma mark - Lifecycle methods
+
 EX_EXPORT_METHOD_AS(startAsync,
                     startAsync:(nonnull NSNumber *)viewTag
                     trackingConfiguration:(NSString *)trackingConfiguration
@@ -228,6 +231,9 @@ EX_EXPORT_METHOD_AS(resetAsync,
   [_arSessionManager reset];
   resolve(nil);
 }
+
+
+#pragma mark - Configuration methods
 
 EX_EXPORT_METHOD_AS(enableAudioDataAsync,
                     enableAudioDataAsync:(NSNumber *)providesAudioData
@@ -316,6 +322,20 @@ EX_EXPORT_METHOD_AS(setWorldAlignmentAsync,
   resolve(nil);
 }
 
+
+#pragma mark - Features methods
+
+EX_EXPORT_METHOD_AS(getCurrentFrameAsync,
+                    getCurrentFrameAsync:(NSDictionary *)attributes
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
+{
+  if (![self sessionExistsOrReject:reject]) {
+    return;
+  }
+  resolve([_arSessionManager getCurrentFrameWithAttributes:attributes]);
+}
+
 EX_EXPORT_METHOD_AS(performHitTestAsync,
                     performHitTestAsync:(NSDictionary *)point
                     types:(NSArray<NSString *> *)types
@@ -340,15 +360,6 @@ EX_EXPORT_METHOD_AS(getWorldAlignmentAsync,
   if (![self sessionExistsOrReject:reject]) return;
   NSArray *items = @[@"gravity", @"gravityAndHeading", @"alignmentCamera"];
   resolve([items objectAtIndex:[_arSessionManager worldAlignment]]);
-}
-
-EX_EXPORT_METHOD_AS(getCurrentFrameAsync,
-                    getCurrentFrameAsync:(NSDictionary *)attributes
-                    resolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
-{
-  if (![self sessionExistsOrReject:reject]) return;
-  resolve([_arSessionManager getCurrentFrameWithAttributes:attributes]);
 }
 
 EX_EXPORT_METHOD_AS(getMatricesAsync,

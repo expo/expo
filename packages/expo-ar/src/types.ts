@@ -3,6 +3,7 @@ import {
   BlendShape,
   DepthDataQuality,
   DepthDataAccuracy,
+  FrameAttribute,
 } from './enums';
 
 export type Size = {
@@ -73,10 +74,10 @@ export type ARFrameAnchorRequest = {
 };
 
 export type ARFrameRequest = {
-  anchors?: ARFrameAnchorRequest;
-  rawFeaturePoints?: boolean;
-  lightEstimation?: boolean;
-  capturedDepthData?: boolean;
+  [FrameAttribute.Anchors]?: ARFrameAnchorRequest;
+  [FrameAttribute.RawFeaturePoints]?: boolean;
+  [FrameAttribute.LightEstimation]?: boolean;
+  [FrameAttribute.CapturedDepthData]?: boolean;
 };
 
 export type LightEstimation = {
@@ -113,10 +114,10 @@ export type CapturedDepthData = {
 
 export type ARFrame = {
   timestamp: number;
-  anchors?: Anchor[] | null;
-  rawFeaturePoints?: RawFeaturePoint[] | null;
-  lightEstimation?: LightEstimation | null;
-  capturedDepthData?: CapturedDepthData | null;
+  [FrameAttribute.Anchors]?: Anchor[] | null;
+  [FrameAttribute.RawFeaturePoints]?: RawFeaturePoint[] | null;
+  [FrameAttribute.LightEstimation]?: LightEstimation | null;
+  [FrameAttribute.CapturedDepthData]?: CapturedDepthData | null;
 };
 
 export type ARMatrices = {

@@ -113,9 +113,30 @@ public class ARModule extends ExportedModule implements ModuleRegistryConsumer, 
     }
   }
 
+  @ExpoMethod
+  public void resetAsync(Promise promise) {
+    promise.resolve(null);
+  }
+
   // ---------------------------------------------------------------------------------------------
-  //                                      Actions methods
+  //                                      Features methods
   // ---------------------------------------------------------------------------------------------
+
+  @ExpoMethod
+  public void getCurrentFrameAsync(Map<String, Object> attributes, Promise promise) {
+    if (!sessionExistsOrReject(promise)) {
+      return;
+    }
+    mARSessionManager.getCurrentFrameAsync(ARFrameSerializationAttributes.fromMap(attributes), promise);
+  }
+
+  @ExpoMethod
+  public void getMatricesAsync(Number zNear, Number zFar, Promise promise) {
+    if (!sessionExistsOrReject(promise)) {
+      return;
+    }
+    mARSessionManager.getProjectionMatrix(zNear.floatValue(), zFar.floatValue(), promise);
+  }
 
   public void performHitTestAsync(Map<String, Number> point, ArrayList<String> types, Promise promise) {
     if (!sessionExistsOrReject(promise)) {
@@ -128,12 +149,6 @@ public class ARModule extends ExportedModule implements ModuleRegistryConsumer, 
       promise.reject("", "");
     }
 
-  }
-
-  @ExpoMethod
-  public void getMatricesAsync(Number zNear, Number zFar, Promise promise) {
-    if (!sessionExistsOrReject(promise)) return;
-    mARSessionManager.getProjectionMatrix(zNear.floatValue(), zFar.floatValue(), promise);
   }
 
   @ExpoMethod
