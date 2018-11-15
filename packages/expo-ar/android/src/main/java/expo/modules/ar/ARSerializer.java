@@ -15,33 +15,42 @@ import com.google.ar.core.Pose;
 import com.google.ar.core.Trackable;
 import com.google.ar.core.TrackingState;
 
+import java.lang.reflect.Array;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import expo.modules.ar.arguments.ARFrameAttribute;
+import expo.modules.ar.arguments.ARFrameSerializationAttributes;
+
 class ARSerializer {
   private long mFrameTimestamp;
   private ArrayList<Bundle> mRawFeaturePoints;
   private Bundle mAnchors;
   private Bundle mLightEstimate;
+  private ArrayList<Bundle> mPlanes;
 
   Bundle serializeAcquiredFrame(ARFrameSerializationAttributes attributes) {
     Bundle output = new Bundle();
 
     output.putDouble("timestamp", mFrameTimestamp);
 
-    if (attributes.serializeAnchors()) {
-      output.putBundle("anchors", mAnchors);
+    if (attributes.shouldSerializeAnchors()) {
+      output.putBundle(ARFrameAttribute.ANCHORS.toString(), mAnchors);
     }
 
-    if (attributes.serializeRawFeaturePoints()) {
-      output.putParcelableArrayList("rawFeaturePoints", mRawFeaturePoints);
+    if (attributes.shouldSerializeRawFeaturePoints()) {
+      output.putParcelableArrayList(ARFrameAttribute.RAW_FEATURES_POINT.toString(), mRawFeaturePoints);
     }
 
-    if (attributes.serializeLightEstimation()) {
-      output.putBundle("lightEstimation", mLightEstimate);
+    if (attributes.shouldSerializeLightEstimation()) {
+      output.putBundle(ARFrameAttribute.LIGHT_ESTIMATION.toString(), mLightEstimate);
+    }
+
+    if (attributes.shouldSerializePlanes()) {
+      output.putParcelableArrayList(ARFrameAttribute.PLANES.toString(), mPlanes);
     }
 
     return output;
@@ -55,6 +64,8 @@ class ARSerializer {
     pointCloud.release();
 
     mAnchors = serializeAnchorsWithTrackables(frame);
+
+    mPlanes = serializePlanes(frame);
 
     mLightEstimate = serializeLightEstimation(frame);
   }
@@ -139,9 +150,7 @@ class ARSerializer {
     output.putInt("id", trackable.hashCode());
     output.putString("state", serializeTrackingState(trackable.getTrackingState()));
 
-    if (trackable instanceof Plane) {
-      return serializePlane((Plane)trackable, output);
-    } else if (trackable instanceof AugmentedImage) {
+   if (trackable instanceof AugmentedImage) {
       return serializeImage((AugmentedImage) trackable, output);
     } else if (trackable instanceof Point) {
       return serializePoint((Point) trackable, output);
@@ -166,14 +175,13 @@ class ARSerializer {
   private ArrayList<Bundle> serializeAnchors(Collection<Anchor> anchors) {
     ArrayList<Bundle> output = new ArrayList<>();
     for (Anchor anchor : anchors) {
-      output.add(serializeAnchor(anchor, new Bundle()));
+      output.add(serializeAnchor(anchor));
     }
-    if (output.size() > 0)
-      return output;
-    return null;
+    return output.size() > 0 ? output : null;
   }
 
-  private Bundle serializeAnchor(Anchor anchor, Bundle output) {
+  private Bundle serializeAnchor(Anchor anchor) {
+    Bundle output = new Bundle();
     Anchor.CloudAnchorState state = anchor.getCloudAnchorState();
     TrackingState trackingState = anchor.getTrackingState();
 
@@ -227,6 +235,53 @@ class ARSerializer {
     return matrix;
   }
 
+  // ---------------------------------------------------------------------------------------------
+  //                                       Planes
+  // ---------------------------------------------------------------------------------------------
+
+  private ArrayList<Bundle> serializePlanes(Frame frame) {
+    ArrayList<Bundle> output = new ArrayList<>();
+    Collection<Plane> planes = frame.getUpdatedTrackables(Plane.class);
+    for (Plane plane : planes) {
+      output.add(serializePlane(plane));
+    }
+    return output;
+  }
+
+  private Bundle serializePlane(Plane plane) {
+    Bundle output = new Bundle();
+    output.putFloatArray("transform", serializePose(plane.getCenterPose()));
+    output.putParcelable("center", encodeVec3(plane.getCenterPose().getTranslation()));
+
+    Bundle extent = new Bundle();
+    extent.putFloat("width", plane.getExtentX());
+    extent.putFloat("length", plane.getExtentZ());
+    output.putBundle("extent", extent);
+
+    Plane parent = plane.getSubsumedBy();
+    if (parent != null) {
+      output.putBundle("parent", serializePlane(parent));
+    }
+
+    output.putString("planeType", serializePlaneType(plane.getType()));
+    ArrayList anchors = serializeAnchors(plane.getAnchors());
+    if (anchors != null) {
+      output.putParcelableArrayList("anchors", anchors);
+    }
+
+    output.putInt("id", plane.hashCode());
+
+    return output;
+  }
+
+  private Bundle encodeVec3(float[] vec3) {
+    Bundle output = new Bundle();
+    output.putFloat("x", vec3[0]);
+    output.putFloat("y", vec3[1]);
+    output.putFloat("z", vec3[2]);
+    return output;
+  }
+
   private String serializePlaneType(Plane.Type type) {
     switch (type) {
       case VERTICAL:
@@ -240,29 +295,9 @@ class ARSerializer {
     }
   }
 
-  private Bundle serializePlane(Plane plane, Bundle output) {
-    output.putFloatArray("transform", serializePose(plane.getCenterPose()));
-
-    Bundle extent = new Bundle();
-    extent.putFloat("x", plane.getExtentX());
-    extent.putFloat("z", plane.getExtentZ());
-    output.putBundle("extent", extent);
-
-    Plane parent = plane.getSubsumedBy();
-    if (parent != null) {
-      output.putBundle("parent", serializePlane(parent, new Bundle()));
-    }
-
-    output.putString("type", "plane");
-    output.putString("planeType", serializePlaneType(plane.getType()));
-    ArrayList anchors = serializeAnchors(plane.getAnchors());
-    if (anchors != null) output.putParcelableArrayList("anchors", anchors);
-
-    output.putInt("id", plane.hashCode());
-    //TODO:Bacon: should we add this?
-//    plane.getPolygon();
-    return output;
-  }
+  // ---------------------------------------------------------------------------------------------
+  //                          Point Cloud / Raw Features Points
+  // ---------------------------------------------------------------------------------------------
 
   private ArrayList<Bundle> serializePointCloud(PointCloud pointCloud) {
     FloatBuffer pointsBuffer = pointCloud.getPoints();
@@ -285,17 +320,17 @@ class ARSerializer {
     return rawFeaturePoints;
   }
 
+  // ---------------------------------------------------------------------------------------------
+  //                                     Anchors
+  // ---------------------------------------------------------------------------------------------
+
   private Bundle serializeAnchorsWithTrackables(Frame frame) {
     Bundle anchorsBundle = new Bundle();
     Collection<Anchor> anchors = frame.getUpdatedAnchors();
-    Collection<Plane> planes = frame.getUpdatedTrackables(Plane.class);
     Collection<AugmentedImage> images = frame.getUpdatedTrackables(AugmentedImage.class);
     Collection<Point> points = frame.getUpdatedTrackables(Point.class);
     if (anchors.size() > 0) {
       anchorsBundle.putParcelableArrayList("anchors", serializeAnchors(anchors));
-    }
-    if (planes.size() > 0) {
-      anchorsBundle.putParcelableArrayList("planes", serializeTrackables(planes));
     }
     if (images.size() > 0) {
       anchorsBundle.putParcelableArrayList("images", serializeTrackables(images));

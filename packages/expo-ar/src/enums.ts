@@ -99,6 +99,9 @@ export enum FaceAnchorProp {
  * Plane Detection
  * Options for whether and how ARKit detects flat surfaces in captured images.
  * https://developer.apple.com/documentation/arkit/arplanedetection
+ * 
+ * ARCore
+ * https://developers.google.com/ar/reference/java/com/google/ar/core/Config.PlaneFindingMode
  */
 export enum PlaneDetection {
   /**
@@ -110,9 +113,14 @@ export enum PlaneDetection {
    */
   Horizontal = 'horizontal',
   /**
-   * Plane detection determines horizontal planes in the scene
+   * Plane detection determines vertical planes in the scene
    */
   Vertical = 'vertical',
+  /**
+   * Detection both horizontal and vertical planes
+   * @Android only
+   */
+  HorizontalAndVertical = 'horizontal_and_vertical',
 }
 
 /**
@@ -194,6 +202,7 @@ export enum AnchorEventType {
 
 export enum FrameAttribute {
   Anchors = 'anchors',
+  Planes = 'planes',
   RawFeaturePoints = 'rawFeaturePoints',
   LightEstimation = 'lightEstimation',
   CapturedDepthData = 'capturedDepthData',

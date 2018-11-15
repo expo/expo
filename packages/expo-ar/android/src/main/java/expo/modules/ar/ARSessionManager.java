@@ -24,6 +24,9 @@ import java.util.List;
 import expo.core.ModuleRegistry;
 import expo.core.Promise;
 import expo.core.interfaces.ActivityProvider;
+import expo.modules.ar.arguments.ARFrameAttribute;
+import expo.modules.ar.arguments.ARFrameSerializationAttributes;
+import expo.modules.ar.arguments.ARPlaneDetection;
 import expo.modules.ar.gl.ARGLCameraObject;
 import expo.modules.gl.context.GLContext;
 import expo.modules.gl.context.GLSharedContext;
@@ -55,6 +58,7 @@ public class ARSessionManager implements GLContext.GLContextChangeListener {
 
   private GLSharedContext mSharedGLContext;
   private Frame mCurrentFrame;
+  private Config mConfig;
 
   ARSessionManager(ModuleRegistry moduleRegistry) {
     mModuleRegistry = moduleRegistry;
@@ -64,6 +68,10 @@ public class ARSessionManager implements GLContext.GLContextChangeListener {
     mARDisplayRotationHelper = new ARDisplayRotationHelper(mContext);
     mARSerializer = new ARSerializer();
   }
+
+  // ---------------------------------------------------------------------------------------------
+  //                                       Lifecycle methods
+  // ---------------------------------------------------------------------------------------------
 
   void startWithGLView(final GLView view, final Runnable completionHandler) throws IllegalStateException {
     mGLView = view;
@@ -95,9 +103,9 @@ public class ARSessionManager implements GLContext.GLContextChangeListener {
     try {
       if (mSession == null) {
         mSession = new Session(mContext);
-        Config config = new Config(mSession);
-        config.setUpdateMode(Config.UpdateMode.BLOCKING);
-        mSession.configure(config);
+        mConfig = new Config(mSession);
+        mConfig.setUpdateMode(Config.UpdateMode.BLOCKING);
+        mSession.configure(mConfig);
       }
 
       mSession.resume();
@@ -132,9 +140,41 @@ public class ARSessionManager implements GLContext.GLContextChangeListener {
     }
   }
 
+  // this one should be called on GL thread
+  private void updateFrame() {
+    mARDisplayRotationHelper.updateSessionIfNeeded(mSession);
+
+    try {
+      // Instruct ARCore session to use texture provided by CameraObject
+      mSession.setCameraTextureName(mCameraObject.getCameraTexture());
+      mIsReady = true;
+
+      // Obtain the current frame from ARSession. When the configuration is set to
+      // UpdateMode.BLOCKING (it is by default), this will throttle the rendering to the camera framerate.
+      mCurrentFrame = mSession.update();
+      Size previewSize = mSession.getCameraConfig().getTextureSize();
+      int rotation = mARDisplayRotationHelper.getRotation();
+      mCameraObject.drawFrame(mCurrentFrame, rotation, previewSize);
+
+      handleCurrentFrame(mCurrentFrame);
+
+    } catch (CameraNotAvailableException e) {
+      // Avoid crashing the application due to unhandled exceptions.
+      Log.e(TAG, "Exception on the OpenGL thread", e);
+    }
+  }
+
+  private void handleCurrentFrame(Frame currentFrame) {
+    mARSerializer.storeFrameData(currentFrame);
+  }
+
   public boolean isTracking() {
     return trackingState == TrackingState.TRACKING;
   }
+
+  // ---------------------------------------------------------------------------------------------
+  //                                       Features methods
+  // ---------------------------------------------------------------------------------------------
 
   void getProjectionMatrix(final float near, final float far, final Promise promise) {
     if (mSession == null || !mIsReady) {
@@ -165,8 +205,7 @@ public class ARSessionManager implements GLContext.GLContextChangeListener {
     mGLView.runOnGLThread(new Runnable() {
       @Override
       public void run() {
-        Bundle serializedFrame = mARSerializer.serializeAcquiredFrame(attributes);
-        promise.resolve(serializedFrame);
+        promise.resolve(mARSerializer.serializeAcquiredFrame(attributes));
       }
     });
   }
@@ -191,12 +230,13 @@ public class ARSessionManager implements GLContext.GLContextChangeListener {
     });
   }
 
-  private boolean cameraExistsOrReject(Promise promise) {
-    if (mCameraObject != null) {
-      return true;
-    }
-    promise.reject("E_NO_SESSION", "AR Camera is not initialized");
-    return false;
+  // ---------------------------------------------------------------------------------------------
+  //                                      Configuration methods
+  // ---------------------------------------------------------------------------------------------
+
+  public void setPlaneDetection(ARPlaneDetection arPlaneDetection) {
+    mConfig.setPlaneFindingMode(arPlaneDetection.getPlaneFindingMode());
+    mSession.configure(mConfig);
   }
 
   void getCameraTextureAsync(Promise promise) {
@@ -206,37 +246,9 @@ public class ARSessionManager implements GLContext.GLContextChangeListener {
     promise.resolve(mCameraObject.getJSAvailableCameraTexture());
   }
 
-  // this one should be called on GL thread
-  private void updateFrame() {
-    mARDisplayRotationHelper.updateSessionIfNeeded(mSession);
-
-    try {
-      // Instruct ARCore session to use texture provided by CameraObject
-      mSession.setCameraTextureName(mCameraObject.getCameraTexture());
-      mIsReady = true;
-
-      // Obtain the current frame from ARSession. When the configuration is set to
-      // UpdateMode.BLOCKING (it is by default), this will throttle the rendering to the camera framerate.
-      mCurrentFrame = mSession.update();
-      Size previewSize = mSession.getCameraConfig().getTextureSize();
-      int rotation = mARDisplayRotationHelper.getRotation();
-      mCameraObject.drawFrame(mCurrentFrame, rotation, previewSize);
-
-      handleCurrentFrame(mCurrentFrame);
-
-    } catch (CameraNotAvailableException e) {
-      // Avoid crashing the application due to unhandled exceptions.
-      Log.e(TAG, "Exception on the OpenGL thread", e);
-    }
-  }
-
-  private void handleCurrentFrame(Frame currentFrame) {
-    mARSerializer.storeFrameData(currentFrame);
-  }
-
-// -------------------------------------------------------
-//           GLContext.GLContextChangeListener
-// -------------------------------------------------------
+  // ---------------------------------------------------------------------------------------------
+  //                               GLContext.GLContextChangeListener
+  // ---------------------------------------------------------------------------------------------
 
   @Override
   public int getID() {
@@ -254,5 +266,17 @@ public class ARSessionManager implements GLContext.GLContextChangeListener {
         updateFrame();
       }
     });
+  }
+
+  // ---------------------------------------------------------------------------------------------
+  //                                         Helpers
+  // ---------------------------------------------------------------------------------------------
+
+  private boolean cameraExistsOrReject(Promise promise) {
+    if (mCameraObject != null) {
+      return true;
+    }
+    promise.reject(ERROR_TAG + "_NO_SESSION", "AR Camera is not initialized");
+    return false;
   }
 }

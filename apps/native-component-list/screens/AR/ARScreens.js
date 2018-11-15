@@ -11,7 +11,7 @@ export default {
   ARBackgroundVAO: { screen: ARBackgroundScreenVAO },
   ARBackgroundScreenTHREE: { screen: ARBackgroundScreenTHREE },
   ARRotatingCube: { screen: ARRotatingCubeScreen },
-  // ARPlanes: { screen: ARPlanesScreen },
   ARPoints: { screen: ARPointsScreen },
+  ARPlanes: { screen: ARPlanesScreen },
   // ARHitTest: { screen: ARHitTestScreen },
 };

@@ -27,9 +27,11 @@ class Light extends THREE.PointLight {
     this.color = new THREE.Color(red / 255.0, green / 255.0, blue / 255.0);
   }
 
-  update = () => {
-    const { lightEstimation } = AR.getCurrentFrame({
-      [AR.FrameAttributes.LightEstimation]: true,
+  update = async () => {
+    const {
+      [AR.FrameAttribute.LightEstimation]: lightEstimation,
+    } = await AR.getCurrentFrameAsync({
+      [AR.FrameAttribute.LightEstimation]: true,
     });
     this.data = lightEstimation;
   };

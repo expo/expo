@@ -14,6 +14,9 @@ import expo.core.Promise;
 import expo.core.interfaces.ExpoMethod;
 import expo.core.interfaces.ModuleRegistryConsumer;
 import expo.core.interfaces.services.UIManager;
+import expo.modules.ar.arguments.ARFrameAttribute;
+import expo.modules.ar.arguments.ARFrameSerializationAttributes;
+import expo.modules.ar.arguments.ARPlaneDetection;
 import expo.modules.gl.GLView;
 
 public class ARModule extends ExportedModule implements ModuleRegistryConsumer, ARSessionManagerDelegate {
@@ -127,7 +130,12 @@ public class ARModule extends ExportedModule implements ModuleRegistryConsumer, 
     if (!sessionExistsOrReject(promise)) {
       return;
     }
-    mARSessionManager.getCurrentFrameAsync(ARFrameSerializationAttributes.fromMap(attributes), promise);
+    ARFrameSerializationAttributes arFrameSerializationAttributes = ARFrameSerializationAttributes.fromMap(attributes);
+    if (arFrameSerializationAttributes == null) {
+      promise.reject(ERROR_TAG + "_INVALID_ARGS", "AR#getCurrentFrameAsync 'attributes' argument does not provide any valid truthy value.");
+      return;
+    }
+    mARSessionManager.getCurrentFrameAsync(arFrameSerializationAttributes, promise);
   }
 
   @ExpoMethod
@@ -148,14 +156,34 @@ public class ARModule extends ExportedModule implements ModuleRegistryConsumer, 
     } else {
       promise.reject("", "");
     }
-
   }
 
   @ExpoMethod
   public void getCameraTextureAsync(Promise promise) {
-    if (!sessionExistsOrReject(promise)) return;
+    if (!sessionExistsOrReject(promise)) {
+      return;
+    }
     mARSessionManager.getCameraTextureAsync(promise);
   }
+
+  // ---------------------------------------------------------------------------------------------
+  //                                     Configuration methods
+  // ---------------------------------------------------------------------------------------------
+
+  @ExpoMethod
+  public void setPlaneDetectionAsync(String planeDetection, Promise promise) {
+    if (!sessionExistsOrReject(promise)) {
+      return;
+    }
+    ARPlaneDetection arPlaneDetection = ARPlaneDetection.fromString(planeDetection);
+    if (planeDetection == null) {
+      promise.reject(ERROR_TAG + "_INVALID_ARGS", "AR#setPlaneDetectionAsync 'planeDetection' argument have invalid value.");
+      return;
+    }
+    mARSessionManager.setPlaneDetection(arPlaneDetection);
+    promise.resolve(null);
+  }
+
 
   // ---------------------------------------------------------------------------------------------
   //                               ARSessionManagerDelegate methods
@@ -174,7 +202,7 @@ public class ARModule extends ExportedModule implements ModuleRegistryConsumer, 
     if (mARSessionManager != null) {
       return true;
     }
-    promise.reject("E_NO_SESSION", "AR Session is not initialized");
+    promise.reject(ERROR_TAG +"_NO_SESSION", "AR Session is not initialized.");
     return false;
   }
 }

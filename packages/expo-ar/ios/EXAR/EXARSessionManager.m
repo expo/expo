@@ -268,7 +268,8 @@ static GLfloat imagePlaneVerts[6] = { -2.0f, 0.0f, 0.0f, -2.0f, 2.0f, 2.0f };
   }
 }
 
-- (ARPlaneDetection)planeDetection {
+- (ARPlaneDetection)planeDetection
+{
   if (self.configuration && [self.configuration isKindOfClass:ARWorldTrackingConfiguration.class]) {
     ARWorldTrackingConfiguration *configuration = (ARWorldTrackingConfiguration *) self.configuration;
     return configuration.planeDetection;
@@ -276,7 +277,8 @@ static GLfloat imagePlaneVerts[6] = { -2.0f, 0.0f, 0.0f, -2.0f, 2.0f, 2.0f };
   return ARPlaneDetectionNone;
 }
 
-- (void)setPlaneDetection:(ARPlaneDetection)planeDetection {
+- (void)setPlaneDetection:(ARPlaneDetection)planeDetection
+{
   if (self.configuration && [self.configuration isKindOfClass:ARWorldTrackingConfiguration.class]) {
     ARWorldTrackingConfiguration *configuration = (ARWorldTrackingConfiguration *) self.configuration;
     [configuration setPlaneDetection:planeDetection];
@@ -300,7 +302,7 @@ static GLfloat imagePlaneVerts[6] = { -2.0f, 0.0f, 0.0f, -2.0f, 2.0f, 2.0f };
   return self.configuration.lightEstimationEnabled;
 }
 
-- (void)setLightEstimationEnabled:(BOOL)lightEstimationEnabled {
+- (void)setLightEstimationEnabled:(BOOL)lightEstimationEnabled{
   [self.configuration setLightEstimationEnabled:lightEstimationEnabled];
   [self _reload];
 }
@@ -829,7 +831,8 @@ static GLfloat imagePlaneVerts[6] = { -2.0f, 0.0f, 0.0f, -2.0f, 2.0f, 2.0f };
                           @"anchors": [[EXARModule class] encodeARAnchors:anchors props:@{}]
                           };
   
-  [_delegate didUpdateWithEvent:EXAREventNameAnchorsDidUpdate payload:event];
+  // TODO Bartek: something breaks here ... :(
+//  [_delegate didUpdateWithEvent:EXAREventNameAnchorsDidUpdate payload:event];
 }
 
 - (void)session:(ARSession *)session didAddAnchors:(NSArray<ARAnchor *> *)anchors
