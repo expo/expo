@@ -511,6 +511,8 @@ Configuration for how and when the app should request OTA JavaScript updates
       
       Note: these do not require privacy policy when uploading to Google Play Store.
       
+      Note for ejected projects: To change permissions after ejecting, edit AndroidManifest.xml manually
+      
     */
     "permissions": [
       "ACCESS_COARSE_LOCATION",
