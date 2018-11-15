@@ -31,6 +31,14 @@ export default class NotificationScreen extends React.Component {
           onPress={Notifications.cancelAllScheduledNotificationsAsync}
           title="Cancel all scheduled notifications"
         />
+        <ListButton
+          onPress={this._scheduleLegacyNotificationAsync}
+          title="Schedule a notification with both `time` and `repeat` (deprecated on iOS)"
+        />
+        <ListButton
+          onPress={this._scheduleAndCancelLegacyNotificationAsync}
+          title="Schedule and immediately cancel notification with both `time` and `repeat` (deprecated on iOS)"
+        />
 
         <HeadingText>Push Notifications</HeadingText>
         <ListButton onPress={this._sendNotificationAsync} title="Send me a push notification" />
@@ -181,6 +189,36 @@ export default class NotificationScreen extends React.Component {
         time: new Date().getTime() + 10000,
       }
     );
+    await Notifications.cancelScheduledNotificationAsync(notificationId);
+  };
+
+  _scheduleLegacyNotificationAsync = async () => {
+    await this._obtainRemoteNotifPermissionsAsync();
+    return await Notifications.scheduleLocalNotificationAsync(
+      {
+        title: 'Repeating notification',
+        body: `I repeat every minute starting from ${new Date().toLocaleTimeString()}`,
+        data: {
+          repeatingEvery: "minute",
+          scheduledAt: new Date().toLocaleTimeString(),
+        },
+        ios: {
+          sound: true,
+          categoryId: 'message',
+        },
+        android: {
+          vibrate: true,
+        },
+      },
+      {
+        time: new Date().getTime() + 2000,
+        repeat: 'minute',
+      }
+    );
+  };
+
+  _scheduleAndCancelLegacyNotificationAsync = async () => {
+    const notificationId = await this._scheduleLegacyNotificationAsync();
     await Notifications.cancelScheduledNotificationAsync(notificationId);
   };
 
