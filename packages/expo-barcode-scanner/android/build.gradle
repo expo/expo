@@ -68,6 +68,6 @@ dependencies {
   expendency "expo-core"
   expendency "expo-barcode-scanner-interface"
   expendency "expo-image-loader-interface"
-  compile 'com.google.android.gms:play-services-vision:15.0.2'
+  implementation 'com.google.android.gms:play-services-vision:15.0.2'
   implementation 'com.google.zxing:core:3.3.3'
 }

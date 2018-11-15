@@ -61,6 +61,6 @@ dependencies {
   expendency 'expo-font-interface'
   expendency 'expo-permissions-interface'
   expendency 'expo-image-loader-interface'
-  provided 'com.facebook.react:react-native:+'
+  compileOnly 'com.facebook.react:react-native:+'
 }
   

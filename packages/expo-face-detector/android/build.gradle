@@ -72,7 +72,7 @@ dependencies {
   expendency 'expo-core'
   expendency 'expo-face-detector-interface'
   expendency 'expo-file-system-interface'
-  compile 'com.android.support:exifinterface:26.0.1'
-  compile 'com.google.android.gms:play-services-vision:15.0.2'
+  implementation 'com.android.support:exifinterface:26.0.1'
+  implementation 'com.google.android.gms:play-services-vision:15.0.2'
 }
   

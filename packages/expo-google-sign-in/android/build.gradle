@@ -71,5 +71,5 @@ if (new File(rootProject.projectDir.parentFile, 'pubspec.yaml').exists()) {
 dependencies {
     expendency "expo-core"
     api 'com.google.android.gms:play-services-auth:16.0.1'
-    compile project(path: ':expo-constants-interface')
+    implementation project(path: ':expo-constants-interface')
 }
