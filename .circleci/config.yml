@@ -91,12 +91,12 @@ executors:
     # Symlink to the readline-enabled bash which is the default command of the container
     shell: /run/current-system/sw/bin/bash -leo pipefail
     working_directory: ~/expo
-    resource_class: small
   android:
     <<: *nix
     resource_class: xlarge
   js:
     <<: *nix
+    resource_class: small
   mac:
     macos: # https://circleci.com/docs/2.0/testing-ios/#supported-xcode-versions
       xcode: "10.1.0"
