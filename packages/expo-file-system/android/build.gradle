@@ -71,9 +71,9 @@ if (new File(rootProject.projectDir.parentFile, 'pubspec.yaml').exists()) {
 dependencies {
   expendency 'expo-core'
   expendency 'expo-file-system-interface'
-  compile 'commons-codec:commons-codec:1.10'
-  compile 'commons-io:commons-io:1.4'
-  compile 'com.squareup.okhttp3:okhttp:3.10.0'
-  compile 'com.squareup.okhttp3:okhttp-urlconnection:3.10.0'
+  implementation 'commons-codec:commons-codec:1.10'
+  implementation 'commons-io:commons-io:1.4'
+  implementation 'com.squareup.okhttp3:okhttp:3.10.0'
+  implementation 'com.squareup.okhttp3:okhttp-urlconnection:3.10.0'
 }
   
