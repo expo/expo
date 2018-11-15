@@ -1,6 +1,6 @@
-–-
+---
 title: Segment
-–-
+---
 
 Provides access to <https://segment.com/> mobile analytics. Wraps Segment's [iOS](https://segment.com/docs/sources/mobile/ios/) and [Android](https://segment.com/docs/sources/mobile/android/) sources.
 
