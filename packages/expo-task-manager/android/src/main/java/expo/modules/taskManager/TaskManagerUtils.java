@@ -81,6 +81,8 @@ public class TaskManagerUtils implements TaskManagerUtilsInterface {
         bundle.putInt(key, ((Integer) value).intValue());
       } else if (value instanceof String) {
         bundle.putString(key, (String) value);
+      } else if (value instanceof Boolean) {
+        bundle.putBoolean(key, (Boolean) value);
       } else if (value instanceof List) {
         List<Object> list = (List<Object>) value;
         Object first = list.get(0);
