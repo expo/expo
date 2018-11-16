@@ -76,6 +76,7 @@
     "expo-font": "~1.1.0",
     "expo-font-interface": "~1.1.0",
     "expo-gl": "~1.1.0",
+    "expo-google-sign-in": "^1.0.0",
     "expo-image-loader-interface": "~1.1.0",
     "expo-local-authentication": "~1.1.0",
     "expo-localization": "~1.0.0",

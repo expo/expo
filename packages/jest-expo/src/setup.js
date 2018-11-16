@@ -31,7 +31,12 @@ const mockImageLoader = {
 Object.defineProperty(mockNativeModules, 'ImageLoader', mockImageLoader);
 Object.defineProperty(mockNativeModules, 'ImageViewManager', mockImageLoader);
 
-const expoModules = require('./expoModules');
+const publicExpoModules = require('./expoModules');
+const internalExpoModules = require('./internalExpoModules');
+const expoModules = {
+  ...publicExpoModules,
+  ...internalExpoModules,
+};
 
 function mock(property, customMock) {
   const propertyType = property.type;
