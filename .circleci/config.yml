@@ -208,7 +208,6 @@ jobs:
       - yarn_install:
           working_directory: ~/expo/tools-public
       - restore_gradle_cache
-      - run: nix build nixpkgs.stdenv.cc.libc --no-link && ln -s $(nix path-info nixpkgs.stdenv.cc.libc)/lib64 /lib64 # otherwise build fails on alpine machines which are used by nix images, see https://github.com/expo/expo/pull/2716#issuecomment-439181457
       - decrypt_secrets
       - run:
           working_directory: ~/expo/android
