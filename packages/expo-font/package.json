@@ -17,8 +17,7 @@
   "dependencies": {
     "expo-core": "~1.2.0",
     "expo-font-interface": "~1.1.0",
-    "invariant": "^2.2.2",
-    "webfontloader": "^1.6.28"
+    "invariant": "^2.2.2"
   },
   "devDependencies": {
     "babel-preset-expo": "^5.0.0",
