@@ -1,7 +1,5 @@
 // @flow
-import { NativeModulesProxy } from 'expo-core';
-
-const { ExpoLocalization } = NativeModulesProxy;
+import ExpoLocalization from './PlatformModule';
 
 type Localization = {
   locale: string,
