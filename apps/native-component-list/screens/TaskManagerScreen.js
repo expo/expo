@@ -101,7 +101,7 @@ export default class TaskManagerScreen extends React.Component {
 
   render() {
     return (
-      <View>
+      <View style={styles.screen}>
         <NavigationEvents onDidFocus={this.updateRegisteredTasks} />
         {this.renderContent()}
       </View>
@@ -110,6 +110,9 @@ export default class TaskManagerScreen extends React.Component {
 }
 
 const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+  },
   container: {
     padding: 10,
   },

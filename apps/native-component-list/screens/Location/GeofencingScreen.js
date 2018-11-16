@@ -144,11 +144,13 @@ async function getSavedRegions() {
 }
 
 TaskManager.defineTask(GEOFENCING_TASK, async ({ data: { region } }) => {
-  console.log(`${region.state} region ${region.identifier}`);
+  const stateString = Location.Accuracy[region.state].toLowerCase();
+
+  console.log(`${stateString} region ${region.identifier}`);
 
   await Notifications.presentLocalNotificationAsync({
     title: 'Expo Geofencing',
-    body: `You're ${Location.Accuracy[region.state].toLowerCase()} a region ${region.identifier}`,
+    body: `You're ${stateString} a region ${region.identifier}`,
     data: region,
   });
 });
