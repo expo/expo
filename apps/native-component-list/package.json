@@ -4,7 +4,7 @@
   "description": "A list of the various APIs you can use with the Expo client",
   "author": "Expo",
   "private": true,
-  "main": "__generated__/AppEntry",
+  "main": "__generated__/AppEntry.js",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",

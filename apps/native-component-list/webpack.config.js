@@ -35,6 +35,11 @@ const babelLoaderConfiguration = {
     includeModule('react-native-vector-icons'),
     includeModule('react-native-safe-area-view'),
     includeModule('react-native-platform-touchable'),
+    includeModule('react-native-view-shot'),
+    includeModule('react-native-svg'),
+    includeModule('react-native-reanimated'),
+    includeModule('react-native-branch'),
+    includeModule('react-native-maps'),
 
     /// React Navigation
     includeModule('react-navigation'),
