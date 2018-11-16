@@ -393,7 +393,7 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
     }
   }
 
-  public RNObject startReactInstance(final Exponent.StartReactInstanceDelegate delegate, final String mIntentUri, final RNObject mLinkingPackage,
+  public RNObject startReactInstance(final Exponent.StartReactInstanceDelegate delegate, final String mIntentUri,
                                      final String mSDKVersion, final ExponentNotification mNotification, final boolean mIsShellApp,
                                      final List<? extends Object> extraNativeModules, final List<Package> extraExpoPackages, DevBundleDownloadProgressListener progressListener) {
 
@@ -414,7 +414,6 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
     Exponent.InstanceManagerBuilderProperties instanceManagerBuilderProperties = new Exponent.InstanceManagerBuilderProperties();
     instanceManagerBuilderProperties.application = getApplication();
     instanceManagerBuilderProperties.jsBundlePath = mJSBundlePath;
-    instanceManagerBuilderProperties.linkingPackage = mLinkingPackage;
     instanceManagerBuilderProperties.experienceProperties = experienceProperties;
     instanceManagerBuilderProperties.expoPackages = extraExpoPackages;
     instanceManagerBuilderProperties.exponentPackageDelegate = delegate.getExponentPackageDelegate();
