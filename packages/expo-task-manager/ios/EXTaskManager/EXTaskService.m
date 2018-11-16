@@ -75,7 +75,7 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
  */
 - (BOOL)hasRegisteredTaskWithName:(nonnull NSString *)taskName forAppId:(nonnull NSString *)appId
 {
-  id<EXTaskInterface> task = [self getTaskWithName:taskName forAppId:appId];
+  id<EXTaskInterface> task = [self _getTaskWithName:taskName forAppId:appId];
   return task != nil;
 }
 
@@ -98,7 +98,7 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
     @throw [NSException exceptionWithName:@"E_INVALID_TASK_CONSUMER" reason:reason userInfo:nil];
   }
 
-  id<EXTaskInterface> task = [self getTaskWithName:taskName forAppId:appId];
+  id<EXTaskInterface> task = [self _getTaskWithName:taskName forAppId:appId];
 
   if (task && [task.consumer isMemberOfClass:consumerClass]) {
     // Task already exists. Let's just update its options.
@@ -124,7 +124,7 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
                       forAppId:(NSString *)appId
                ofConsumerClass:(Class)consumerClass
 {
-  EXTask *task = (EXTask *)[self getTaskWithName:taskName forAppId:appId];
+  EXTask *task = (EXTask *)[self _getTaskWithName:taskName forAppId:appId];
 
   if (consumerClass != nil && ![task.consumer isMemberOfClass:[self _unversionedClassFromClass:consumerClass]]) {
     NSString *reason = [NSString stringWithFormat:@"Cannot unregister task with name '%@' because it is associated with different consumer class.", taskName];
@@ -132,7 +132,7 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
   }
 
   if (task) {
-    NSMutableDictionary *appTasks = [[self getTasksForAppId:appId] mutableCopy];
+    NSMutableDictionary *appTasks = [[self _getTasksForAppId:appId] mutableCopy];
 
     [appTasks removeObjectForKey:taskName];
 
@@ -175,27 +175,38 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
             forAppId:(NSString *)appId
   hasConsumerOfClass:(Class)consumerClass
 {
-  id<EXTaskInterface> task = [self getTaskWithName:taskName forAppId:appId];
+  id<EXTaskInterface> task = [self _getTaskWithName:taskName forAppId:appId];
   Class unversionedConsumerClass = [self _unversionedClassFromClass:consumerClass];
   return task ? [task.consumer isMemberOfClass:unversionedConsumerClass] : NO;
 }
 
-- (id<EXTaskInterface>)getTaskWithName:(NSString *)taskName
-                              forAppId:(NSString *)appId
+- (NSDictionary *)getOptionsForTaskName:(NSString *)taskName
+                               forAppId:(NSString *)appId
 {
-  return [self getTasksForAppId:appId][taskName];
+  id<EXTaskInterface> task = [self _getTaskWithName:taskName forAppId:appId];
+  return task.options;
 }
 
-- (NSDictionary *)getTasksForAppId:(NSString *)appId
+- (NSDictionary *)getRegisteredTasksOptionsForAppId:(NSString *)appId
 {
-  return _tasks[appId];
+  NSDictionary<NSString *, id<EXTaskInterface>> *tasks = [self _getTasksForAppId:appId];
+  NSMutableDictionary *results = [NSMutableDictionary new];
+
+  for (NSString *taskName in tasks) {
+    id<EXTaskInterface> task = tasks[taskName];
+
+    if (task != nil) {
+      results[taskName] = task.options;
+    }
+  }
+  return results;
 }
 
 - (void)notifyTaskWithName:(NSString *)taskName
                   forAppId:(NSString *)appId
      didFinishWithResponse:(NSDictionary *)response
 {
-  id<EXTaskInterface> task = [self getTaskWithName:taskName forAppId:appId];
+  id<EXTaskInterface> task = [self _getTaskWithName:taskName forAppId:appId];
   NSString *eventId = response[@"eventId"];
   id result = response[@"result"];
 
@@ -350,6 +361,25 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
 
 # pragma mark - internals
 
+
+/**
+ *  Returns the task object for given name and appId.
+ */
+- (id<EXTaskInterface>)_getTaskWithName:(NSString *)taskName
+                               forAppId:(NSString *)appId
+{
+  return [self _getTasksForAppId:appId][taskName];
+}
+
+/**
+ *  Returns dictionary of tasks for given appId. Dictionary in which the keys are the names for tasks,
+ *  while the values are the task objects.
+ */
+- (NSDictionary<NSString *, EXTask *> *)_getTasksForAppId:(NSString *)appId
+{
+  return _tasks[appId];
+}
+
 /**
  *  Internal method that creates a task and registers it. It doesn't save anything to user defaults!
  */
@@ -359,7 +389,7 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
                             consumerClass:(Class)consumerClass
                                   options:(nullable NSDictionary *)options
 {
-  NSMutableDictionary *appTasks = [[self getTasksForAppId:appId] mutableCopy] ?: [NSMutableDictionary new];
+  NSMutableDictionary *appTasks = [[self _getTasksForAppId:appId] mutableCopy] ?: [NSMutableDictionary new];
   EXTask *task = [[EXTask alloc] initWithName:taskName
                                         appId:appId
                                        appUrl:appUrl
@@ -435,10 +465,10 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
 - (void)_iterateTasksUsingBlock:(void(^)(id<EXTaskInterface> task))block
 {
   for (NSString *appId in _tasks) {
-    NSDictionary *appTasks = [self getTasksForAppId:appId];
+    NSDictionary *appTasks = [self _getTasksForAppId:appId];
 
     for (NSString *taskName in appTasks) {
-      id<EXTaskInterface> task = [self getTaskWithName:taskName forAppId:appId];
+      id<EXTaskInterface> task = [self _getTaskWithName:taskName forAppId:appId];
       block(task);
     }
   }

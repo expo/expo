@@ -38,6 +38,11 @@ public interface TaskServiceInterface extends SingletonModule {
   boolean taskHasConsumerOfClass(String taskName, String appId, Class consumerClass);
 
   /**
+   *  Returns options associated with the task with given name and appId or nil if task not found.
+   */
+  Bundle getTaskOptions(String taskName, String appId);
+
+  /**
    *  Returns bundle of tasks for given appId. Bundle in which the keys are the names for tasks,
    *  while the values are the task configs.
    */

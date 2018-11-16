@@ -52,6 +52,11 @@ export async function isTaskRegisteredAsync(taskName: string): Promise<boolean> 
   return TaskManager.isTaskRegisteredAsync(taskName);
 }
 
+export async function getTaskOptionsAsync(taskName: string): Promise<object> {
+  _validateTaskName(taskName);
+  return TaskManager.getTaskOptionsAsync(taskName);
+}
+
 export async function getRegisteredTasksAsync(): Promise<object> {
   return TaskManager.getRegisteredTasksAsync();
 }

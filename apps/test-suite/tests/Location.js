@@ -252,8 +252,7 @@ export async function test(t) {
 
     describeWithPermissions('Location - background location updates', () => {
       async function expectTaskAccuracyToBe(accuracy) {
-        const tasks = await TaskManager.getRegisteredTasksAsync();
-        const locationTask = tasks[BACKGROUND_LOCATION_TASK];
+        const locationTask = await TaskManager.getTaskOptionsAsync(BACKGROUND_LOCATION_TASK);
 
         t.expect(locationTask).toBeDefined();
         t.expect(locationTask.accuracy).toBe(accuracy);
@@ -311,8 +310,7 @@ export async function test(t) {
       ];
 
       async function expectTaskRegionsToBeLike(regions) {
-        const tasks = await TaskManager.getRegisteredTasksAsync();
-        const geofencingTask = tasks[GEOFENCING_TASK];
+        const geofencingTask = await TaskManager.getTaskOptionsAsync(GEOFENCING_TASK);
 
         t.expect(geofencingTask).toBeDefined();
         t.expect(geofencingTask.regions).toBeDefined();

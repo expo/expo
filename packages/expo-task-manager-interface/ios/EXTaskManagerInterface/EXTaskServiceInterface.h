@@ -40,10 +40,15 @@
   hasConsumerOfClass:(Class)consumerClass;
 
 /**
- *  Returns dictionary of tasks for given appId. Dictionary in which the keys are the names for tasks,
- *  while the values are the task objects.
+ *  Returns options associated with the task with given name and appId or nil if task not found.
  */
-- (nonnull NSDictionary *)getTasksForAppId:(nonnull NSString *)appId;
+- (nullable NSDictionary *)getOptionsForTaskName:(nonnull NSString *)taskName
+                                        forAppId:(nonnull NSString *)appId;
+
+/**
+ *  Returns a dictionary of registered tasks for given appId, where the keys are the task names while the values are the task options.
+ */
+- (NSDictionary *)getRegisteredTasksOptionsForAppId:(NSString *)appId;
 
 /**
  *  Notifies the service that a task has just finished.

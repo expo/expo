@@ -6,10 +6,8 @@
 
 #import <EXConstantsInterface/EXConstantsInterface.h>
 
-#import <EXTaskManager/EXTask.h>
 #import <EXTaskManager/EXTaskManager.h>
 #import <EXTaskManager/EXTaskService.h>
-#import <EXTaskManagerInterface/EXTaskConsumerInterface.h>
 #import <EXTaskManagerInterface/EXTaskServiceInterface.h>
 
 NSString * const EXTaskManagerEventName = @"TaskManager.executeTask";
@@ -107,17 +105,15 @@ EX_EXPORT_METHOD_AS(getRegisteredTasksAsync,
                     getRegisteredTasks:(EXPromiseResolveBlock)resolve
                     reject:(EXPromiseRejectBlock)reject)
 {
-  NSDictionary<NSString *, EXTask *> *tasks = [_taskService getTasksForAppId:_appId];
-  NSMutableDictionary *results = [NSMutableDictionary new];
+  resolve([_taskService getRegisteredTasksOptionsForAppId:_appId]);
+}
 
-  for (NSString *taskName in tasks) {
-    EXTask *task = tasks[taskName];
-
-    if (task != nil) {
-      [results setObject:task.options forKey:taskName];
-    }
-  }
-  resolve(results);
+EX_EXPORT_METHOD_AS(getTaskOptionsAsync,
+                    getConfigurationForTaskName:(nonnull NSString *)taskName
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
+{
+  resolve(EXNullIfNil([_taskService getOptionsForTaskName:taskName forAppId:_appId]));
 }
 
 EX_EXPORT_METHOD_AS(unregisterTaskAsync,

@@ -1,9 +1,7 @@
 package expo.modules.taskManager;
 
 import android.content.Context;
-import android.os.AsyncTask;
 import android.os.Handler;
-import android.util.Log;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -62,6 +60,14 @@ public class TaskManagerModule extends ExportedModule implements ModuleRegistryC
       return;
     }
     promise.resolve(mTaskService.hasRegisteredTask(taskName, getAppId()));
+  }
+
+  @ExpoMethod
+  public void getTaskOptionsAsync(String taskName, final Promise promise) {
+    if (!checkTaskService(promise)) {
+      return;
+    }
+    promise.resolve(mTaskService.getTaskOptions(taskName, getAppId()));
   }
 
   @ExpoMethod
