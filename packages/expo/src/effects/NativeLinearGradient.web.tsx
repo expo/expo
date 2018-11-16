@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 
 type Props = {
   colors: number[];
@@ -42,13 +42,17 @@ export default class NativeLinearGradient extends React.PureComponent<Props, Sta
   }
 
   get colors(): string {
-    return this.props.colors
+    const { colors = [] } = this.props;
+    return colors
       .map((color, index) => {
+        const colorStr = `${color.toString(16)}`;
+        const hex = `#${colorStr.substring(2, colorStr.length)}`;
+
         const location = this.props.locations && this.props.locations[index];
         if (location) {
-          return `${color} ${location * 100}%`;
+          return `${hex} ${location * 100}%`;
         }
-        return color;
+        return hex;
       })
       .join(',');
   }
@@ -58,10 +62,10 @@ export default class NativeLinearGradient extends React.PureComponent<Props, Sta
   }
 
   render() {
-    const { colors, locations, startPoint, endPoint, onLayout, style, ...props } = this.props;
+    const { colors, locations, startPoint, endPoint, onLayout, style = {}, ...props } = this.props;
     const { backgroundImage } = this;
-    let viewStyle = style || {};
-    viewStyle['backgroundImage'] = backgroundImage;
-    return <View style={viewStyle} onLayout={this.onLayout} {...props} />;
+    const computedStyle = StyleSheet.flatten([style]);
+    computedStyle['backgroundImage'] = backgroundImage;
+    return <View style={computedStyle} onLayout={this.onLayout} {...props} />;
   }
 }
