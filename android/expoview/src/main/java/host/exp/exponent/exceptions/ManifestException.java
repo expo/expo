@@ -63,7 +63,7 @@ public class ManifestException extends ExponentException {
               formattedMessage = "This experience requires a newer version of the Expo client - please download the latest version from the Play Store.";
               break;
             case "EXPERIENCE_NOT_VIEWABLE":
-              formattedMessage = "The experience you requested is not viewable by you. You will need to log in or ask the owner to grant you access.";
+              formattedMessage = rawMessage; // From server: The experience you requested is not viewable by you. You will need to log in or ask the owner to grant you access.
               break;
             case "USER_SNACK_NOT_FOUND":
             case "SNACK_NOT_FOUND":

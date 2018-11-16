@@ -286,7 +286,9 @@ public class AirMapMarker extends AirMapFeature {
       hasViewChanges = false;
     }
 
-    marker.setIcon(getIcon());
+    if (marker != null) {
+      marker.setIcon(getIcon());
+    }
   }
 
   public LatLng interpolate(float fraction, LatLng a, LatLng b) {

@@ -9,12 +9,15 @@ commands:
     steps:
       # ssh: used in circleci checkout steps
       # direnv: used to configure environment with .envrc files
-      - run: nix-env -iA nixpkgs.openssh nixpkgs.direnv
+      - run: nix-env -iA nixpkgs.openssh nixpkgs.direnv nixpkgs.rsync
       - run: mkdir -p ~/.config/direnv
       - run: echo -e "[whitelist]\nprefix = [ \"$HOME\" ]" > ~/.config/direnv/config.toml
       - run: echo 'eval "$(direnv export bash)"' >> ~/.bash_profile
       - run: echo '--frozen-lockfile true' >> ~/.yarnrc
       - checkout
+  decrypt_secrets:
+    steps:
+      - run: nix run nixpkgs.git-crypt --command git crypt unlock <(echo $EXPO_GIT_CRYPT_KEY_BASE64 | base64 --decode)
   update_submodules:
     steps:
       - run: git submodule update --init
@@ -48,11 +51,23 @@ commands:
         default: install
       working_directory:
         type: string
+      max_tries:
+        type: integer
+        default: 1
     steps:
       - run:
           name: yarn << parameters.command >> (<< parameters.working_directory >>)
           working_directory: << parameters.working_directory >>
-          command: for i in {1..5}; do nix run nixpkgs.yarn -c yarn << parameters.command >> && break || sleep 5; done
+          command: for i in {1..<< parameters.max_tries >>}; do ((i > 1)) && sleep 5; nix run nixpkgs.yarn -c yarn << parameters.command >> && break; done
+  yarn_install:
+    parameters:
+      working_directory:
+        type: string
+    steps:
+      - yarn:
+          command: 'install'
+          working_directory: << parameters.working_directory >>
+          max_tries: 5
 
 executors:
   # We add -l to all the shell commands to make it easier to use direnv
@@ -70,7 +85,7 @@ executors:
     <<: *nix
   mac:
     macos: # https://circleci.com/docs/2.0/testing-ios/#supported-xcode-versions
-      xcode: "10.0.0"
+      xcode: "10.1.0"
     working_directory: /Users/distiller/project
     shell: /bin/bash -leo pipefail
     environment:
@@ -92,6 +107,13 @@ workflows:
       - client_android
       - client_ios
       - shell_app_sim_base_ios
+      - client_android_approve_google_play:
+          type: approval
+          requires:
+            - client_android
+      - client_android_release_google_play:
+          requires:
+            - client_android_approve_google_play
   #     - shell_app_ios_tests:
   #         requires:
   #           - shell_app_sim_base_ios
@@ -109,7 +131,7 @@ jobs:
       - setup
       - update_submodules
       - restore_yarn_cache
-      - yarn:
+      - yarn_install:
           working_directory: ~/expo
       - save_yarn_cache
       # Add back linting once we get ESLint or TSLint set up
@@ -123,7 +145,7 @@ jobs:
       - setup
       - update_submodules
       - restore_yarn_cache
-      - yarn:
+      - yarn_install:
           working_directory: ~/expo
       - save_yarn_cache
       - yarn:
@@ -139,7 +161,7 @@ jobs:
       - setup
       - update_submodules
       - restore_yarn_cache
-      - yarn:
+      - yarn_install:
           working_directory: ~/expo
       - save_yarn_cache
       - yarn:
@@ -154,7 +176,7 @@ jobs:
       - update_submodules
       - run: git lfs pull
       - fetch_cocoapods_specs
-      - yarn:
+      - yarn_install:
           working_directory: ~/project/tools-public
       - run: nix run nixpkgs.nodejs-8_x nixpkgs.fastlane -c fastlane ios create_simulator_build
       - store_artifacts:
@@ -168,7 +190,7 @@ jobs:
       - update_submodules
       - run: git lfs pull
       - fetch_cocoapods_specs
-      - yarn:
+      - yarn_install:
           working_directory: ~/project/tools-public
       - run: nix run nixpkgs.nodejs-8_x -c ~/project/tools-public/generate-files-ios.sh
       - run:
@@ -181,16 +203,40 @@ jobs:
     executor: android
     steps:
       - setup
-      - yarn:
+      - yarn_install:
           working_directory: ~/expo # need jsc-android dependency in expokit-npm-package
-      - yarn:
+      - yarn_install:
           working_directory: ~/expo/tools-public
       - restore_gradle_cache
+      - decrypt_secrets
       - run:
           working_directory: ~/expo/android
           command: nix-shell --run ./make-release.sh
       - save_gradle_cache
+      - save_cache:
+          key: client-android-apk-{{ .Revision }}
+          paths:
+            - ~/expo/android/exponent-release.apk
       - store_artifacts:
           path: ~/expo/android/exponent-release.apk
       - store_artifacts: # daemon logs for debugging crashes
           path: ~/.gradle/daemon/4.4
+
+  client_android_release_google_play:
+    executor: js
+    steps:
+      - setup
+      - yarn_install:
+          working_directory: ~/expo/tools
+      - yarn_install:
+          working_directory: ~/expo/tools-public
+      - restore_cache:
+          key: client-android-apk-{{ .Revision }}
+      - run:
+          name: Validate Supply metadata
+          working_directory: ~/expo/tools
+          command: nix run nixpkgs.nodePackages.gulp-cli --command gulp supply-validate
+      - run:
+          name: Upload APK to Google Play and release to production
+          working_directory: ~/expo
+          command: nix run nixpkgs.fastlane --command fastlane android prod_release

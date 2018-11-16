@@ -3,9 +3,7 @@ import ApiV2Error from '../ApiV2Error';
 
 jest.mock('react-native', () => {
   const ReactNative = require.requireActual('react-native');
-  ReactNative.NativeModules.ExponentKernel = {
-    sdkVersions: '12.0.0,11.0.0',
-  };
+  ReactNative.NativeModules.ExponentKernel.sdkVersions = '12.0.0,11.0.0';
   return ReactNative;
 });
 
@@ -66,15 +64,15 @@ it(`supports slashes in method names`, async () => {
   expect(global.fetch.mock.calls[0][0]).toMatch(/\/api\/v2\/prefix\/method$/);
 });
 
-it(`sets custom Exponent headers`, async () => {
+it(`sets custom Expo headers`, async () => {
   _setFakeHttpResponse('{"data": {"test":"yes"}}');
 
   let client = new ApiV2HttpClient();
   await client.getAsync('example');
 
   let headers = global.fetch.mock.calls[0][1].headers;
-  expect(headers['Exponent-SDK-Version']).toBe('12.0.0,11.0.0');
-  expect(headers['Exponent-Platform']).toBe('ios');
+  expect(headers['Expo-SDK-Version']).toBe('12.0.0,11.0.0');
+  expect(headers['Expo-Platform']).toBe('ios');
 });
 
 it(`handles API errors`, async () => {

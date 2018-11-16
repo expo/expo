@@ -32,6 +32,7 @@ async function getTestModulesAsync() {
     require('./tests/Constants'),
     require('./tests/Contacts'),
     require('./tests/FileSystem'),
+    require('./tests/GoogleSignIn'),
     require('./tests/Localization'),
     require('./tests/Location'),
     require('./tests/Linking'),

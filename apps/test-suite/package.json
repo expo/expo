@@ -21,8 +21,5 @@
     "lodash": "^4.17.4",
     "react": "16.5.0",
     "react-native": "^0.57.1"
-  },
-  "devDependencies": {
-    "expo-yarn-workspaces": "^1.0.0"
   }
 }

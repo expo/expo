@@ -14,8 +14,8 @@
   if (fetchResult.count > 0) {
     PHAsset *asset = fetchResult[0];
     NSMutableDictionary *result = [NSMutableDictionary dictionary];
-    result[@"exists"] = @(true);
-    result[@"isDirectory"] = @(false);
+    result[@"exists"] = @(YES);
+    result[@"isDirectory"] = @(NO);
     result[@"uri"] = fileUri;
     result[@"modificationTime"] = @(asset.modificationDate.timeIntervalSince1970);
     if (options[@"md5"] || options[@"size"]) {
@@ -30,7 +30,7 @@
       resolve(result);
     }
   } else {
-    resolve(@{@"exists": @(false), @"isDirectory": @(false)});
+    resolve(@{@"exists": @(NO), @"isDirectory": @(NO)});
   }
 }
 

@@ -36,6 +36,7 @@ import expo.modules.contacts.ContactsPackage;
 import expo.modules.facedetector.FaceDetectorPackage;
 import expo.modules.filesystem.FileSystemPackage;
 import expo.modules.gl.GLPackage;
+import expo.modules.google.signin.GoogleSignInPackage;
 import expo.modules.location.LocationPackage;
 import expo.modules.medialibrary.MediaLibraryPackage;
 import expo.modules.permissions.PermissionsPackage;
@@ -114,6 +115,7 @@ public class ExponentPackage implements ReactPackage {
       new FaceDetectorPackage(),
       new ConstantsPackage(),
       new GLPackage(),
+      new GoogleSignInPackage(),
       new PermissionsPackage(),
       new SMSPackage(),
       new PrintPackage(),

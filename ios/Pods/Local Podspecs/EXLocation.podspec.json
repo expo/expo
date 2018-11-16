@@ -21,6 +21,9 @@
     ],
     "EXPermissionsInterface": [
 
+    ],
+    "EXTaskManagerInterface": [
+
     ]
   }
 }

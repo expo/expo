@@ -1,6 +1,7 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
 #import <EXPermissions/EXLocationRequester.h>
+#import <EXCore/EXUtilities.h>
 
 #import <objc/message.h>
 #import <CoreLocation/CLLocationManager.h>
@@ -83,8 +84,11 @@ static SEL whenInUseAuthorizationSelector;
     _resolve = resolve;
     _reject = reject;
 
-    _locMgr = [[CLLocationManager alloc] init];
-    _locMgr.delegate = self;
+    __weak typeof(self) weakSelf = self;
+    [EXUtilities performSynchronouslyOnMainThread:^{
+      weakSelf.locMgr = [[CLLocationManager alloc] init];
+      weakSelf.locMgr.delegate = weakSelf;
+    }];
 
     // 1. Why do we call CLLocationManager methods by those dynamically created selectors?
     //

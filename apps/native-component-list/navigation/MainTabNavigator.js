@@ -24,10 +24,12 @@ import FacebookLoginScreen from '../screens/FacebookLoginScreen';
 import GestureHandlerPinchScreen from '../screens/GestureHandlerPinchScreen';
 import GestureHandlerListScreen from '../screens/GestureHandlerListScreen';
 import GestureHandlerSwipeableScreen from '../screens/GestureHandlerSwipeableScreen';
-import GoogleLoginScreen from '../screens/GoogleLoginScreen';
+import GoogleScreen from '../screens/GoogleScreen';
+import GoogleSignInScreen from '../screens/GoogleSignInScreen';
 import RemindersScreen from '../screens/RemindersScreen';
 import SensorScreen from '../screens/SensorScreen';
 import GeocodingScreen from '../screens/GeocodingScreen';
+import GLScreen from '../screens/GL/GLScreen';
 import GLScreens from '../screens/GL/GLScreens';
 import ImageManipulatorScreen from '../screens/ImageManipulatorScreen';
 import ImagePickerScreen from '../screens/ImagePickerScreen';
@@ -99,6 +101,7 @@ const ExpoComponentsStackNavigator = createStackNavigator(
     AdMob: { screen: AdMobScreen },
     BarCodeScanner: { screen: BarCodeScannerScreen },
     BlurView: { screen: BlurViewScreen },
+    GL: { screen: GLScreen },
     ...GLScreens,
     GestureHandlerPinch: { screen: GestureHandlerPinchScreen },
     GestureHandlerList: { screen: GestureHandlerListScreen },
@@ -127,7 +130,8 @@ const ExpoApisStackNavigator = createStackNavigator(
     FacebookLogin: { screen: FacebookLoginScreen },
     FileSystem: { screen: FileSystemScreen },
     Font: { screen: FontScreen },
-    GoogleLogin: { screen: GoogleLoginScreen },
+    Google: GoogleScreen,
+    GoogleSignIn: GoogleSignInScreen,
     Haptic: { screen: HapticScreen },
     Calendars: { screen: CalendarsScreen },
     Constants: { screen: ConstantsScreen },

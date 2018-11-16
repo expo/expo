@@ -284,6 +284,9 @@ PODS:
   - EXGL-CPP (1.1.0):
     - EXGL-CPP/UEXGL (= 1.1.0)
   - EXGL-CPP/UEXGL (1.1.0)
+  - EXGoogleSignIn (1.0.0):
+    - EXCore
+    - GoogleSignIn
   - EXImageLoaderInterface (1.1.0):
     - EXCore
   - EXLocalAuthentication (1.1.0):
@@ -294,6 +297,7 @@ PODS:
   - EXLocation (1.1.0):
     - EXCore
     - EXPermissionsInterface
+    - EXTaskManagerInterface
   - EXMediaLibrary (1.1.0):
     - EXCore
     - EXPermissionsInterface
@@ -302,7 +306,7 @@ PODS:
     - EXPermissionsInterface
   - EXPermissionsInterface (1.2.0):
     - EXCore
-  - EXPrint (1.2.0):
+  - EXPrint (2.0.0-alpha.0):
     - EXCore
   - EXReactNativeAdapter (1.2.0):
     - EXCore
@@ -1096,6 +1100,7 @@ DEPENDENCIES:
   - EXFontInterface (from `../packages/expo-font-interface/ios`)
   - EXGL (from `../packages/expo-gl/ios`)
   - EXGL-CPP (from `../packages/expo-gl-cpp/cpp`)
+  - EXGoogleSignIn (from `../packages/expo-google-sign-in/ios`)
   - EXImageLoaderInterface (from `../packages/expo-image-loader-interface/ios`)
   - EXLocalAuthentication (from `../packages/expo-local-authentication/ios`)
   - EXLocalization (from `../packages/expo-localization/ios`)
@@ -1468,6 +1473,8 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-gl/ios"
   EXGL-CPP:
     :path: "../packages/expo-gl-cpp/cpp"
+  EXGoogleSignIn:
+    :path: "../packages/expo-google-sign-in/ios"
   EXImageLoaderInterface:
     :path: "../packages/expo-image-loader-interface/ios"
   EXLocalAuthentication:
@@ -1637,10 +1644,11 @@ SPEC CHECKSUMS:
   EXFontInterface: 06126ec4f6a67415426074c3383a82b241f087c1
   EXGL: 9a5dd454a7ed9660b25b71d82d8009ac9bd6f85a
   EXGL-CPP: 46b589a3ed0c59ae2e7f9434897b66cd8dd2e70c
+  EXGoogleSignIn: 62f3cf04db88d7628c73ae5850d65c407965d77d
   EXImageLoaderInterface: 3f460f6ff344ba6c4e00621806c0d1d76249cd8f
   EXLocalAuthentication: b70696613cb24d726d3c98a1818c22c481a46b01
   EXLocalization: 1243adc132eaad4793dd7e5b497135ad5d803441
-  EXLocation: 1a888966a807786562adc3dc8a03e59282609c82
+  EXLocation: 54f562edcc410be18699a364e80fcabcf97228f0
   EXMediaLibrary: f91c4f6ff2c9be8102e06d0a4d08987231a7e286
   EXPermissions: dd31cb432c078eed1f4c1e290bc32649d5280bd3
   EXPermissionsInterface: 76f80a0dcd16afde36498e3d3aa168cb43999558
@@ -1690,6 +1698,6 @@ SPEC CHECKSUMS:
   yogaABI30_0_0: 4c86e39466368a6b018b8b78aeb654b6620512a1
   yogaABI31_0_0: 7978689ddccec43cffd5914889304cf3b7fd7c77
 
-PODFILE CHECKSUM: 1bbd44846e0e5df15af826567028a2cc7f389ce1
+PODFILE CHECKSUM: 59fd4bf3820287a9db3a7c450e0639ce50b14975
 
 COCOAPODS: 1.5.3

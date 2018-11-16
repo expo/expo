@@ -26,6 +26,7 @@ import host.exp.exponent.network.ExponentHttpClient;
 import host.exp.exponent.network.ExponentNetwork;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponent.utils.ColorParser;
+import host.exp.expoview.Exponent;
 import host.exp.expoview.R;
 import expolib_v1.okhttp3.Request;
 
@@ -209,7 +210,11 @@ public class ExponentManifest {
     String httpManifestUrl = uriBuilder.build().toString();
 
     // Fetch manifest
-    Request.Builder requestBuilder = ExponentUrls.addExponentHeadersToManifestUrl(httpManifestUrl, manifestUrl.equals(Constants.INITIAL_URL));
+    Request.Builder requestBuilder = ExponentUrls.addExponentHeadersToManifestUrl(
+        httpManifestUrl,
+        manifestUrl.equals(Constants.INITIAL_URL),
+        mExponentSharedPreferences.getSessionSecret()
+    );
     requestBuilder.header("Exponent-Accept-Signature", "true");
     requestBuilder.header("Expo-JSON-Error", "true");
     requestBuilder.cacheControl(CacheControl.FORCE_NETWORK);
@@ -290,7 +295,11 @@ public class ExponentManifest {
     }
 
     // Fetch manifest
-    Request.Builder requestBuilder = ExponentUrls.addExponentHeadersToManifestUrl(httpManifestUrl, manifestUrl.equals(Constants.INITIAL_URL));
+    Request.Builder requestBuilder = ExponentUrls.addExponentHeadersToManifestUrl(
+        httpManifestUrl,
+        manifestUrl.equals(Constants.INITIAL_URL),
+        mExponentSharedPreferences.getSessionSecret()
+    );
     requestBuilder.header("Exponent-Accept-Signature", "true");
     requestBuilder.header("Expo-JSON-Error", "true");
 
@@ -404,7 +413,11 @@ public class ExponentManifest {
   public void fetchEmbeddedManifest(final String manifestUrl, final ManifestListener listener) {
     String httpManifestUrl = httpManifestUrlBuilder(manifestUrl).build().toString();
 
-    Request.Builder requestBuilder = ExponentUrls.addExponentHeadersToManifestUrl(httpManifestUrl, manifestUrl.equals(Constants.INITIAL_URL));
+    Request.Builder requestBuilder = ExponentUrls.addExponentHeadersToManifestUrl(
+        httpManifestUrl,
+        manifestUrl.equals(Constants.INITIAL_URL),
+        mExponentSharedPreferences.getSessionSecret()
+    );
     requestBuilder.header("Exponent-Accept-Signature", "true");
     requestBuilder.header("Expo-JSON-Error", "true");
     String finalUri = requestBuilder.build().url().toString();

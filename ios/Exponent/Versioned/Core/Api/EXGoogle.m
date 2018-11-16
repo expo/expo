@@ -145,13 +145,13 @@ RCT_REMAP_METHOD(logInAsync,
 
 -(void)signIn:(GIDSignIn *)signIn didSignInForUser:(GIDGoogleUser *)user withError:(NSError *)error
 {
-  if (error != nil) {
+  if (_logInResolve != nil && error != nil) {
     if (error.code == kGIDSignInErrorCodeCanceled) {
       _logInResolve(@{@"type": @"cancel"});
     } else {
       _logInReject(EXGoogleErrorCode, @"Google sign in error", error);
     }
-  } else {
+  } else if (_logInResolve != nil) {
     _logInResolve(@{
       @"type": @"success",
       @"accessToken": RCTNullIfNil(user.authentication.accessToken),

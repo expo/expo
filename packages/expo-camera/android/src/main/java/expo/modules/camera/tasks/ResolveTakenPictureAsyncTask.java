@@ -42,6 +42,8 @@ public class ResolveTakenPictureAsyncTask extends AsyncTask<Void, Void, Bundle> 
   private static final String URI_KEY = "uri";
   private static final String ID_KEY = "id";
 
+  private static final int DEFAULT_QUALITY = 1;
+
   private Promise mPromise;
   private byte[] mImageData;
   private Bitmap mBitmap;
@@ -66,7 +68,12 @@ public class ResolveTakenPictureAsyncTask extends AsyncTask<Void, Void, Bundle> 
   }
 
   private int getQuality() {
-    return ((Number) mOptions.get(QUALITY_KEY)).intValue() * 100;
+    if (mOptions.get(QUALITY_KEY) instanceof Number) {
+      double requestedQuality = ((Number) mOptions.get(QUALITY_KEY)).doubleValue();
+      return (int)(requestedQuality * 100);
+    }
+
+    return DEFAULT_QUALITY * 100;
   }
 
   @Override
