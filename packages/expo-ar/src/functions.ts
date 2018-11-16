@@ -34,6 +34,7 @@ import {
   VideoFormat,
   Vector2,
 } from './types';
+import { array } from 'prop-types';
 
 const ExpoAR = NativeModulesProxy.ExpoAR;
 const AREventEmitter = new EventEmitter(ExpoAR);
@@ -152,9 +153,19 @@ export async function getCurrentFrameAsync(attributes?: ARFrameRequest): Promise
   return ExpoAR.getCurrentFrameAsync(attributes);
 }
 
-// TODO: support multiple types (take an array or bit flags)
-export async function performHitTest(point: Vector2, types: HitTestResultType): Promise<HitTest[]> {
-  return ExpoAR.performHitTest(point, types);
+/**
+ * Performs a ray cast from the user's device in the direction of given location
+ * https://developers.google.com/ar/reference/java/com/google/ar/core/Frame#hitTest(float,%20float)
+ * https://developer.apple.com/documentation/arkit/arframe/2875718-hittest
+ * 
+ * @param point Vector2 (x, y). A point in normalized screen coordinate space.
+ * (The point (0,0) represents the top left corner of the screen, and the point (1,1) represents the bottom right corner.)
+ * @param types iOS only, types of hit-test result to search for
+ * 
+ * @returns a promise resolving to list of results, sorted from nearest to farthest
+ */
+export async function performHitTestAsync(point: Vector2, types: Array<HitTestResultType>): Promise<HitTest[]> {
+  return ExpoAR.performHitTestAsync(point.x, point.y, Array.isArray(types) ? types : [types]);
 }
 
 export async function setDetectionImagesAsync(images: { [name: string]: DetectionImage }): Promise<void> {

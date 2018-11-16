@@ -6,12 +6,20 @@ import ARPlanesScreen from './ARPlanesScreen';
 import ARPointsScreen from './ARPointsScreen';
 import ARHitTestScreen from './ARHitTestScreen';
 
-export default {
-  ARBackground: { screen: ARBackgroundScreen },
-  ARBackgroundVAO: { screen: ARBackgroundScreenVAO },
-  ARBackgroundScreenTHREE: { screen: ARBackgroundScreenTHREE },
-  ARRotatingCube: { screen: ARRotatingCubeScreen },
-  ARPoints: { screen: ARPointsScreen },
-  ARPlanes: { screen: ARPlanesScreen },
-  // ARHitTest: { screen: ARHitTestScreen },
+const screens = {
+  ARBackgroundScreen,
+  ARBackgroundScreenVAO,
+  ARBackgroundScreenTHREE,
+  ARRotatingCubeScreen,
+  ARPointsScreen,
+  ARPlanesScreen,
+  ARHitTestScreen,
 };
+
+export default Object.entries(screens).reduce(
+  (acc, [screenKey, screen]) => ({
+    ...acc,
+    [screenKey]: { screen },
+  }),
+  {}
+);

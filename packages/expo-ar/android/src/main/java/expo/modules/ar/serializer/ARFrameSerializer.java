@@ -1,4 +1,4 @@
-package expo.modules.ar;
+package expo.modules.ar.serializer;
 
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -25,14 +25,14 @@ import java.util.List;
 import expo.modules.ar.arguments.ARFrameAttribute;
 import expo.modules.ar.arguments.ARFrameSerializationAttributes;
 
-class ARSerializer {
+public class ARFrameSerializer {
   private long mFrameTimestamp;
   private ArrayList<Bundle> mRawFeaturePoints;
   private Bundle mAnchors;
   private Bundle mLightEstimate;
   private ArrayList<Bundle> mPlanes;
 
-  Bundle serializeAcquiredFrame(ARFrameSerializationAttributes attributes) {
+  public Bundle serializeAcquiredFrame(ARFrameSerializationAttributes attributes) {
     Bundle output = new Bundle();
 
     output.putDouble("timestamp", mFrameTimestamp);
@@ -56,7 +56,7 @@ class ARSerializer {
     return output;
   }
 
-  void storeFrameData(Frame frame) {
+  public void storeFrameData(Frame frame) {
     mFrameTimestamp = frame.getTimestamp();
 
     PointCloud pointCloud = frame.acquirePointCloud();
@@ -70,31 +70,9 @@ class ARSerializer {
     mLightEstimate = serializeLightEstimation(frame);
   }
 
-  List<Bundle> serializeHitResults(List<HitResult> hitResults) {
-    List<Bundle> results = new ArrayList<>();
-    for (HitResult hitResult : hitResults) {
-      Bundle result = new Bundle();
-      // common with iOS
-      result.putBundle("anchor", serializeTrackable(hitResult.getTrackable()));
-      result.putFloat("distance", hitResult.getDistance());
-
-      // Android-specific
-      result.putInt("id", hitResult.hashCode());
-      result.putFloatArray("transform", serializePose(hitResult.getHitPose()));
-
-      results.add(result);
-    }
-    return results;
-  }
-
-  private String serializeLightEstimationState(LightEstimate.State state) {
-    switch (state) {
-      case VALID:
-        return "valid";
-      default:
-        return "invalid";
-    }
-  }
+  // ---------------------------------------------------------------------------------------------
+  //                                     Light estimation
+  // ---------------------------------------------------------------------------------------------
 
   private Bundle serializeLightEstimation(Frame frame) {
     LightEstimate lightEstimate = frame.getLightEstimate();
@@ -108,135 +86,17 @@ class ARSerializer {
     return result;
   }
 
-  private String serializeCloudAnchorState(Anchor.CloudAnchorState state) {
+  private String serializeLightEstimationState(LightEstimate.State state) {
     switch (state) {
-      case TASK_IN_PROGRESS:
-        return "taskInProgress";
-      case SUCCESS:
-        return "success";
-      case ERROR_INTERNAL:
-        return "errorInternal";
-      case ERROR_NOT_AUTHORIZED:
-        return "errorNotAuthorized";
-      case ERROR_SERVICE_UNAVAILABLE:
-        return "errorServiceUnavailable";
-      case ERROR_RESOURCE_EXHAUSTED:
-        return "errorResourceExhausted";
-      case ERROR_HOSTING_DATASET_PROCESSING_FAILED:
-        return "errorHostingDatasetProcessingFailed";
-      case ERROR_CLOUD_ID_NOT_FOUND:
-        return "errorCloudIdNotFound";
-      case ERROR_RESOLVING_LOCALIZATION_NO_MATCH:
-        return "errorResolvingLocalizationNoMatch";
-      case ERROR_RESOLVING_SDK_VERSION_TOO_OLD:
-        return "errorResolvingSdkVersionTooOld";
-      case ERROR_RESOLVING_SDK_VERSION_TOO_NEW:
-        return "errorResolvingSdkVersionTooNew";
+      case VALID:
+        return "valid";
       default:
-        return "none";
+        return "invalid";
     }
-  }
-
-  private ArrayList<? extends Parcelable> serializeTrackables(Collection<? extends Trackable> trackables) {
-    ArrayList<Bundle> output = new ArrayList<>();
-    for (Trackable trackable : trackables) {
-      output.add(serializeTrackable(trackable));
-    }
-    return output;
-  }
-
-  private Bundle serializeTrackable(Trackable trackable) {
-    Bundle output = new Bundle();
-    output.putInt("id", trackable.hashCode());
-    output.putString("state", serializeTrackingState(trackable.getTrackingState()));
-
-   if (trackable instanceof AugmentedImage) {
-      return serializeImage((AugmentedImage) trackable, output);
-    } else if (trackable instanceof Point) {
-      return serializePoint((Point) trackable, output);
-    }
-    output.putString("type", "trackable");
-    return output;
-  }
-
-  private String serializeTrackingState(TrackingState trackingState) {
-    switch (trackingState) {
-      case PAUSED:
-        return "paused";
-      case TRACKING:
-        return "tracking";
-      case STOPPED:
-        return "stopped";
-      default:
-        return "none";
-    }
-  }
-
-  private ArrayList<Bundle> serializeAnchors(Collection<Anchor> anchors) {
-    ArrayList<Bundle> output = new ArrayList<>();
-    for (Anchor anchor : anchors) {
-      output.add(serializeAnchor(anchor));
-    }
-    return output.size() > 0 ? output : null;
-  }
-
-  private Bundle serializeAnchor(Anchor anchor) {
-    Bundle output = new Bundle();
-    Anchor.CloudAnchorState state = anchor.getCloudAnchorState();
-    TrackingState trackingState = anchor.getTrackingState();
-
-    Pose pose = anchor.getPose();
-
-    output.putInt("id", anchor.hashCode());
-    output.putString("type", "anchor");
-    output.putFloatArray("transform", serializePose(pose)); //TODO:Bacon: Prolly not right
-    output.putString("cloudId", anchor.getCloudAnchorId());
-    output.putString("cloudState", serializeCloudAnchorState(state));
-    output.putString("state", serializeTrackingState(trackingState));
-    return output;
-  }
-
-  private String serializeOrientationMode(Point.OrientationMode orientation) {
-    switch (orientation) {
-      case ESTIMATED_SURFACE_NORMAL:
-        return "estimatedSurfaceNormal";
-      case INITIALIZED_TO_IDENTITY:
-        return "initializedToIdentity";
-      default:
-        return null;
-    }
-  }
-
-  private Bundle serializePoint(Point point, Bundle output) {
-    output.putString("type", "point");
-    output.putString("mode", serializeOrientationMode(point.getOrientationMode()));
-    ArrayList anchors = serializeAnchors(point.getAnchors());
-    if (anchors != null) output.putParcelableArrayList("anchors", anchors);
-    return output;
-  }
-
-  private Bundle serializeImage(AugmentedImage image, Bundle output) {
-    output.putString("type", "image");
-    output.putFloatArray("transform", serializePose(image.getCenterPose()));
-    Bundle extent = new Bundle();
-    extent.putFloat("x", image.getExtentX());
-    extent.putFloat("z", image.getExtentZ());
-    output.putBundle("extent", extent);
-    output.putInt("index", image.getIndex());
-    output.putString("name", image.getName());
-    ArrayList anchors = serializeAnchors(image.getAnchors());
-    if (anchors != null) output.putParcelableArrayList("anchors", anchors);
-    return output;
-  }
-
-  private float[] serializePose(Pose pose) {
-    float[] matrix = new float[16];
-    pose.toMatrix(matrix, 0);
-    return matrix;
   }
 
   // ---------------------------------------------------------------------------------------------
-  //                                       Planes
+  //                                          Planes
   // ---------------------------------------------------------------------------------------------
 
   private ArrayList<Bundle> serializePlanes(Frame frame) {
@@ -250,7 +110,7 @@ class ARSerializer {
 
   private Bundle serializePlane(Plane plane) {
     Bundle output = new Bundle();
-    output.putFloatArray("transform", serializePose(plane.getCenterPose()));
+    output.putFloatArray("transform", ARSerializer.serializePose(plane.getCenterPose()));
     output.putParcelable("center", encodeVec3(plane.getCenterPose().getTranslation()));
 
     Bundle extent = new Bundle();
@@ -264,7 +124,7 @@ class ARSerializer {
     }
 
     output.putString("planeType", serializePlaneType(plane.getType()));
-    ArrayList anchors = serializeAnchors(plane.getAnchors());
+    ArrayList anchors = ARSerializer.serializeAnchors(plane.getAnchors());
     if (anchors != null) {
       output.putParcelableArrayList("anchors", anchors);
     }
@@ -296,7 +156,7 @@ class ARSerializer {
   }
 
   // ---------------------------------------------------------------------------------------------
-  //                          Point Cloud / Raw Features Points
+  //                            Point Cloud / Raw Features Points
   // ---------------------------------------------------------------------------------------------
 
   private ArrayList<Bundle> serializePointCloud(PointCloud pointCloud) {
@@ -321,7 +181,7 @@ class ARSerializer {
   }
 
   // ---------------------------------------------------------------------------------------------
-  //                                     Anchors
+  //                                   Anchors / Trackables
   // ---------------------------------------------------------------------------------------------
 
   private Bundle serializeAnchorsWithTrackables(Frame frame) {
@@ -330,7 +190,7 @@ class ARSerializer {
     Collection<AugmentedImage> images = frame.getUpdatedTrackables(AugmentedImage.class);
     Collection<Point> points = frame.getUpdatedTrackables(Point.class);
     if (anchors.size() > 0) {
-      anchorsBundle.putParcelableArrayList("anchors", serializeAnchors(anchors));
+      anchorsBundle.putParcelableArrayList("anchors", ARSerializer.serializeAnchors(anchors));
     }
     if (images.size() > 0) {
       anchorsBundle.putParcelableArrayList("images", serializeTrackables(images));
@@ -340,4 +200,13 @@ class ARSerializer {
     }
     return anchorsBundle;
   }
+
+  private ArrayList<? extends Parcelable> serializeTrackables(Collection<? extends Trackable> trackables) {
+    ArrayList<Bundle> output = new ArrayList<>();
+    for (Trackable trackable : trackables) {
+      output.add(ARSerializer.serializeTrackable(trackable));
+    }
+    return output;
+  }
+
 }

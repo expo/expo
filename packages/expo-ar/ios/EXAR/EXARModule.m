@@ -337,16 +337,16 @@ EX_EXPORT_METHOD_AS(getCurrentFrameAsync,
 }
 
 EX_EXPORT_METHOD_AS(performHitTestAsync,
-                    performHitTestAsync:(NSDictionary *)point
+                    performHitTestAsync:(NSNumber *)x
+                    y:(NSNumber *)y
                     types:(NSArray<NSString *> *)types
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject)
-API_AVAILABLE(ios(11.0))
 {
   if (![self sessionExistsOrReject:reject] || ![self V2OrReject:reject]) {
     return;
   }
-  CGPoint requestedPoint = CGPointMake([point[@"x"] doubleValue], [point[@"y"] doubleValue]);
+  CGPoint requestedPoint = CGPointMake([x floatValue], [y floatValue]);
   // TODO: bbarthec handle multiple types
   ARHitTestResultType requestedTypes = [[self class] decodeARHitTestResultType:types[0]];
   NSDictionary *result = [_arSessionManager performHitTest:requestedPoint types:requestedTypes];
@@ -368,7 +368,9 @@ EX_EXPORT_METHOD_AS(getMatricesAsync,
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject)
 {
-  if (![self sessionExistsOrReject:reject]) return;
+  if (![self sessionExistsOrReject:reject]) {
+    return;
+  }
   resolve([_arSessionManager arMatricesWithZNear:[zNear floatValue] zFar:[zFar floatValue]]);
 }
 

@@ -127,6 +127,8 @@ export enum PlaneDetection {
  * Hit-Test Result Types
  * Possible types for specifying a hit-test search, or for the result of a hit-test search.
  * https://developer.apple.com/documentation/arkit/arhittestresulttype
+ * 
+ * @iOS only
  */
 export enum HitTestResultType {
   /**

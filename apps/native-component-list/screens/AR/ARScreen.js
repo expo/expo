@@ -10,11 +10,11 @@ export default class ARScreen extends React.Component {
   render() {
     return (
       <ScrollView style={styles.container}>
-        {Object.keys(ARScreens).map(screenName => (
-          <View key={screenName} style={styles.element}>
+        {Object.entries(ARScreens).map(([screenKey, { screen }]) => (
+          <View key={screen.title} style={styles.element}>
             <ListButton
-              onPress={() => this.props.navigation.navigate(screenName)}
-              title={ARScreens[screenName].screen.title}
+              onPress={() => this.props.navigation.navigate(screenKey)}
+              title={screen.title}
             />
           </View>
         ))}

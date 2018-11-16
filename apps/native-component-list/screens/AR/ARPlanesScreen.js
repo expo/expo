@@ -5,6 +5,8 @@ import * as THREE from 'three';
 
 import { PermissionsRequester } from './components';
 
+ExpoTHREE.suppressExpoWarnings();
+
 export default class App extends React.Component {
   static title = 'AR Planes';
 

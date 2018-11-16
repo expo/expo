@@ -8,23 +8,23 @@ export default class TouchableView extends React.Component {
     onTouchesMoved: PropTypes.func.isRequired,
     onTouchesEnded: PropTypes.func.isRequired,
     onTouchesCancelled: PropTypes.func.isRequired,
-    onStartShouldSetPanResponderCapture: PropTypes.func.isRequired,
   };
   static defaultProps = {
     onTouchesBegan: () => {},
     onTouchesMoved: () => {},
     onTouchesEnded: () => {},
     onTouchesCancelled: () => {},
-    onStartShouldSetPanResponderCapture: () => true,
   };
 
-  buildGestures = () =>
+  constructor(props) {
+    super(props);
+    this.panResponder = this.buildPanResponder();
+  }
+
+  buildPanResponder = () =>
     PanResponder.create({
-      // onResponderTerminate
-      // onStartShouldSetResponder
-      onResponderTerminationRequest: this.props.onResponderTerminationRequest,
-      onStartShouldSetPanResponderCapture: this.props.onStartShouldSetPanResponderCapture,
-      // onMoveShouldSetPanResponder:
+      onStartShouldSetResponder: (evt, gestureState) => true,
+      onStartShouldSetPanResponderCapture: (evt, gestureState) => true,
       onPanResponderGrant: ({ nativeEvent }, gestureState) => {
         const event = this.transformEvent({ ...nativeEvent, gestureState });
         this.emit('touchstart', event);
@@ -45,16 +45,12 @@ export default class TouchableView extends React.Component {
         this.emit('touchcancel', event);
 
         if (this.props.onTouchesCancelled) {
-          this.props.onTouchesCancelled(event)
+          this.props.onTouchesCancelled(event);
         } else {
           this.props.onTouchesEnded(event);
         }
       },
     });
-
-  componentWillMount() {
-    this.panResponder = this.buildGestures();
-  }
 
   emit = (type, props) => {
     if (window.document && window.document.emitter) {
@@ -65,13 +61,28 @@ export default class TouchableView extends React.Component {
   transformEvent = event => {
     event.preventDefault = event.preventDefault || (() => {});
     event.stopPropagation = event.stopPropagation || (() => {});
+    if (this.width && this.height) {
+      event.normalizedLocationX = event.locationX / this.width;
+      event.normalizedLocationY = event.locationY / this.height;
+      event.viewWidth = this.width;
+      event.viewHeight = this.height;
+    }
     return event;
+  };
+
+  onLayout = ({
+    nativeEvent: {
+      layout: { width, height },
+    },
+  }) => {
+    this.width = width;
+    this.height = height;
   };
 
   render() {
     const { children, style, ...props } = this.props;
     return (
-      <View {...props} style={[style]} {...this.panResponder.panHandlers}>
+      <View {...props} style={[style]} {...this.panResponder.panHandlers} onLayout={this.onLayout}>
         {children}
       </View>
     );

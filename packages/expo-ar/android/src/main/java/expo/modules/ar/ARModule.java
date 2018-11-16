@@ -146,16 +146,12 @@ public class ARModule extends ExportedModule implements ModuleRegistryConsumer, 
     mARSessionManager.getProjectionMatrix(zNear.floatValue(), zFar.floatValue(), promise);
   }
 
-  public void performHitTestAsync(Map<String, Number> point, ArrayList<String> types, Promise promise) {
+  @ExpoMethod
+  public void performHitTestAsync(Number x, Number y, ArrayList<String> types, Promise promise) {
     if (!sessionExistsOrReject(promise)) {
       return;
     }
-
-    if (point.containsKey("x") && point.containsKey("y")) {
-      mARSessionManager.performHitTestAsync(point.get("x").floatValue(), point.get("y").floatValue(), types, promise);
-    } else {
-      promise.reject("", "");
-    }
+    mARSessionManager.performHitTestAsync(x.floatValue(), y.floatValue(), types, promise);
   }
 
   @ExpoMethod

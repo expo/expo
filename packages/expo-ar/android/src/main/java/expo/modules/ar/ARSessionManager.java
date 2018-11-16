@@ -24,10 +24,11 @@ import java.util.List;
 import expo.core.ModuleRegistry;
 import expo.core.Promise;
 import expo.core.interfaces.ActivityProvider;
-import expo.modules.ar.arguments.ARFrameAttribute;
 import expo.modules.ar.arguments.ARFrameSerializationAttributes;
 import expo.modules.ar.arguments.ARPlaneDetection;
 import expo.modules.ar.gl.ARGLCameraObject;
+import expo.modules.ar.serializer.ARFrameSerializer;
+import expo.modules.ar.serializer.ARHitPointSerializer;
 import expo.modules.gl.context.GLContext;
 import expo.modules.gl.context.GLSharedContext;
 import expo.modules.gl.GLView;
@@ -40,10 +41,8 @@ public class ARSessionManager implements GLContext.GLContextChangeListener {
   private final ActivityProvider mActivityProvider;
   private final ARDependenciesHelper mARDependenciesHelper;
   private final ARDisplayRotationHelper mARDisplayRotationHelper;
-  private final ARSerializer mARSerializer;
+  private final ARFrameSerializer mARFrameSerializer;
   private final Context mContext;
-
-  private boolean mIsReady = false;
 
   public ARSessionManagerDelegate delegate;
 
@@ -66,7 +65,7 @@ public class ARSessionManager implements GLContext.GLContextChangeListener {
     mContext = mActivityProvider.getCurrentActivity().getApplicationContext();
     mARDependenciesHelper = new ARDependenciesHelper(mModuleRegistry);
     mARDisplayRotationHelper = new ARDisplayRotationHelper(mContext);
-    mARSerializer = new ARSerializer();
+    mARFrameSerializer = new ARFrameSerializer();
   }
 
   // ---------------------------------------------------------------------------------------------
@@ -147,11 +146,11 @@ public class ARSessionManager implements GLContext.GLContextChangeListener {
     try {
       // Instruct ARCore session to use texture provided by CameraObject
       mSession.setCameraTextureName(mCameraObject.getCameraTexture());
-      mIsReady = true;
 
       // Obtain the current frame from ARSession. When the configuration is set to
       // UpdateMode.BLOCKING (it is by default), this will throttle the rendering to the camera framerate.
       mCurrentFrame = mSession.update();
+
       Size previewSize = mSession.getCameraConfig().getTextureSize();
       int rotation = mARDisplayRotationHelper.getRotation();
       mCameraObject.drawFrame(mCurrentFrame, rotation, previewSize);
@@ -165,7 +164,7 @@ public class ARSessionManager implements GLContext.GLContextChangeListener {
   }
 
   private void handleCurrentFrame(Frame currentFrame) {
-    mARSerializer.storeFrameData(currentFrame);
+    mARFrameSerializer.storeFrameData(currentFrame);
   }
 
   public boolean isTracking() {
@@ -177,7 +176,7 @@ public class ARSessionManager implements GLContext.GLContextChangeListener {
   // ---------------------------------------------------------------------------------------------
 
   void getProjectionMatrix(final float near, final float far, final Promise promise) {
-    if (mSession == null || !mIsReady) {
+    if (mSession == null || mCurrentFrame == null) {
       promise.resolve(null);
       return;
     }
@@ -198,34 +197,29 @@ public class ARSessionManager implements GLContext.GLContextChangeListener {
   }
 
   void getCurrentFrameAsync(final ARFrameSerializationAttributes attributes, final Promise promise) {
-    if (mSession == null || !mIsReady) {
+    if (mSession == null || mCurrentFrame == null) {
       promise.resolve(null);
       return;
     }
     mGLView.runOnGLThread(new Runnable() {
       @Override
       public void run() {
-        promise.resolve(mARSerializer.serializeAcquiredFrame(attributes));
+        promise.resolve(mARFrameSerializer.serializeAcquiredFrame(attributes));
       }
     });
   }
 
   void performHitTestAsync(final float x, final float y, ArrayList<String> types, final Promise promise) {
-    if (mSession == null || !mIsReady) {
+    if (mSession == null || mCurrentFrame == null) {
       promise.resolve(null);
       return;
     }
     mGLView.runOnGLThread(new Runnable() {
       @Override
       public void run() {
-        try {
-          List<HitResult> hitResults = mSession.update().hitTest(x, y);
-          List<Bundle> result = mARSerializer.serializeHitResults(hitResults);
-          promise.resolve(result);
-        } catch (CameraNotAvailableException e) {
-          e.printStackTrace();
-          promise.reject(ERROR_TAG, "No camera available");
-        }
+        List<HitResult> hitResults = mCurrentFrame.hitTest(x, y);
+        List<Bundle> result = ARHitPointSerializer.serializeHitResults(hitResults);
+        promise.resolve(result);
       }
     });
   }
