@@ -108,19 +108,39 @@ platform :ios do
     # )
   end
 
-  platform :android do
 
-    lane :prod_release do
-      supply(
-        package_name: "host.exp.exponent",
-        metadata_path: "./fastlane/android/metadata",
-        apk: "./android/exponent-release.apk",
-        track: "production",
-        skip_upload_images: true,
-        skip_upload_screenshots: true
-      )
+end
+
+platform :android do
+
+  private_lane :verify_changelog_exists do |version_code: |
+    changelog_path = "android/metadata/en-US/changelogs/#{version_code}.txt"
+    UI.user_error!("Missing changelog file at #{changelog_path}") unless File.exist?(changelog_path)
+    UI.message("Changelog exists for version code #{version_code}")
+  end
+
+  private_lane :verify_upload_to_staging do |version_name: |
+    staging_version = JSON.parse(open("https://staging.expo.io/--/api/v2/versions").read)["androidVersion"]
+    unless staging_version == version_name
+      UI.user_error!("APK version #{version_name} is not yet uploaded to staging. Please download from the client_android CI job, test and upload manually.")
     end
+    UI.message "APK version #{version_name} has been uploaded to staging"
+  end
 
+  lane :prod_release do
+    build_gradle = File.read("../android/app/build.gradle")
+
+    verify_changelog_exists(version_code: build_gradle.match(/versionCode (\d+)/)[1])
+    verify_upload_to_staging(version_name: build_gradle.match(/versionName '([\d\.]+)'/)[1])
+
+    supply(
+      package_name: "host.exp.exponent",
+      metadata_path: "./fastlane/android/metadata",
+      apk: "./android/exponent-release.apk",
+      track: "production",
+      skip_upload_images: true,
+      skip_upload_screenshots: true
+    )
   end
 
 end

@@ -227,16 +227,8 @@ jobs:
     executor: js
     steps:
       - setup
-      - yarn_install:
-          working_directory: ~/expo/tools
-      - yarn_install:
-          working_directory: ~/expo/tools-public
       - restore_cache:
           key: client-android-apk-{{ .Revision }}
-      - run:
-          name: Validate Supply metadata
-          working_directory: ~/expo/tools
-          command: nix run nixpkgs.nodePackages.gulp-cli --command gulp supply-validate
       - run:
           name: Upload APK to Google Play and release to production
           working_directory: ~/expo
