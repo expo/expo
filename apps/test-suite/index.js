@@ -51,6 +51,7 @@ async function getTestModulesAsync() {
     require('./tests/Notifications'),
     require('./tests/FBNativeAd'),
     require('./tests/FBBannerAd'),
+    require('./tests/TaskManager'),
   ];
   if (Constants.isDevice) {
     modules = modules.concat([require('./tests/Brightness')]);
