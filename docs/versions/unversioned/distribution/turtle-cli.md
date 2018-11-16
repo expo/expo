@@ -15,9 +15,9 @@ If you prefer to not rely on our builders stability and you don't like waiting i
 
 ### Prerequisites
 
-You'll need to have:
-- an Expo account
-- Node.js (version 8 or newer) installed on your computer - [download the latest version of Node.js](https://nodejs.org/en/).
+You'll need to have these things installed:
+- bash
+- Node.js (version 8 or newer) - [download the latest version of Node.js](https://nodejs.org/en/).
 
 #### For Android builds
 
@@ -154,7 +154,7 @@ executors:
       - image: dsokal/expo-turtle-android
     working_directory: ~/expo-project
     environment:
-      TURTLE_VERSION: 0.3.3
+      TURTLE_VERSION: 0.3.5
       PLATFORM: android
       YARN_CACHE_FOLDER: ~/yarn_cache
 
@@ -163,7 +163,7 @@ executors:
       xcode: 9.4.1
     working_directory: ~/expo-project
     environment:
-      TURTLE_VERSION: 0.3.3
+      TURTLE_VERSION: 0.3.5
       PLATFORM: ios
       YARN_CACHE_FOLDER: /Users/distiller/yarn_cache
       HOMEBREW_NO_AUTO_UPDATE: 1
@@ -370,7 +370,7 @@ branches:
 env:
   global:
     - EXPO_SDK_VERSION="30.0.0"
-    - TURTLE_VERSION="0.3.3"
+    - TURTLE_VERSION="0.3.5"
     - YARN_VERSION="1.10.1"
 
 jobs:
