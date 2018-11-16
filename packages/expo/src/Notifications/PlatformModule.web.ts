@@ -1,0 +1,16 @@
+export default {
+  getExponentPushTokenAsync() {},
+  getDevicePushTokenAsync(config: Object) {},
+  createChannel(channelId: string, channel: string) {},
+  deleteChannel(channelId: string) {},
+  presentLocalNotification(notification: Object) {},
+  presentLocalNotificationWithChannel(notification: Object, channelId: string) {},
+  scheduleLocalNotification(notification: Object, options: Object) {},
+  scheduleLocalNotificationWithChannel(notification: Object, options: Object, channelId: string) {},
+  dismissNotification(notificationId: string) {},
+  dismissAllNotifications() {},
+  cancelScheduledNotification(notificationId: string) {},
+  cancelAllScheduledNotifications() {},
+  //   getBadgeNumberAsync() {},
+  //   setBadgeNumberAsync(badgeNumber: number) {},
+};

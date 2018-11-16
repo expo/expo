@@ -67,7 +67,7 @@ export { default as KeepAwake } from './KeepAwake';
 export { default as Linking } from './Linking';
 import * as MailComposer from './MailComposer';
 export { MailComposer };
-export { default as Notifications } from './Notifications';
+export { default as Notifications } from './Notifications/Notifications';
 export { default as SQLite } from './SQLite';
 import * as ScreenOrientation from './ScreenOrientation';
 export { ScreenOrientation };
