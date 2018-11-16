@@ -86,6 +86,7 @@ const ttfLoaderConfiguration = {
   include: [
     path.resolve(appDirectory, './assets/fonts'),
     includeModule('react-native-vector-icons'),
+    includeModule('@expo/vector-icons'),
   ],
 };
 
