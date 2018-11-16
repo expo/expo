@@ -2,17 +2,6 @@ with (import ../nix {});
 
 let
 
-  sdk = androidenv.androidsdk {
-     platformVersions = [ "26" "27" ];
-     buildToolsVersions = [ "27.0.3" ];
-     abiVersions = [ "x86" "x86_64" ];
-     useGoogleAPIs = true;
-     useExtraSupportLibs = true;
-     useGooglePlayServices = true;
-     useInstantApps = true;
-   };
-   sdk_root = "${sdk}/libexec";
-
    ndk = androidenv.androidndk_17c.override { fullNDK = true; };
    ndk_root = "${ndk}/libexec/${ndk.name}";
 
@@ -22,16 +11,26 @@ mkShell {
 
   LANG="en_US.UTF-8";
   JAVA_HOME=openjdk8;
-  ANDROID_SDK_ROOT=sdk_root;
-  ANDROID_NDK_ROOT=ndk_root;
-  # Deprecated variables, currently used by React Native
-  ANDROID_HOME=sdk_root;
-  ANDROID_NDK_HOME=ndk_root;
 
   nativeBuildInputs = [
     nodejs-8_x
     openjdk8
-    sdk
   ];
-  passthru = { inherit sdk ndk; };
+
+  passthru = { inherit ndk ndk_root; };
+
+  shellHook = ''
+    ./install-ndk-17c.sh
+    yes | ${androidenv.androidsdk_9_0}/bin/sdkmanager --licenses --sdk_root="$ANDROID_SDK_ROOT"
+    ${lib.optionalString stdenv.isLinux ''
+      for dep in lib lib64; do
+        if [ -L /$dep ] || [ ! -e /$dep ]; then
+          echo "Creating /$dep"
+          ln -s ${stdenv.cc.libc}/$dep /$dep
+        else
+          echo "Using existing /$dep"
+        fi
+      done
+    ''}
+  '';
 }
