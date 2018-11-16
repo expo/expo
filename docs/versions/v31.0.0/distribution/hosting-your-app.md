@@ -23,9 +23,20 @@ First, you’ll need to export all the static files of your app so they can be s
 
 ## Hosting your static files
 
-Once you've exported your app's static files, you can host the contents on your own server. For example, in your `dist` output directory, an easy way to host your own files is to push the contents to Github. You can enable [Github Pages](https://pages.github.com/) to make your app available at a base URL like https://username.github.io/project-name.
+Once you've exported your app's static files, you can host the contents on your own server. For example, in your `dist` output directory, an easy way to host your own files is to push the contents to Github. You can enable [Github Pages](https://pages.github.com/) to make your app available at a base URL like https://username.github.io/project-name. To host your files on Github, you'd do something like this:
 
-To host your files locally, follow the instructions below in the 'Loading QR Code/URL in Development' section on setting up a local HTTP server.
+```
+# run this from your project directory
+expo export --public-url https://quinlanj.github.io/self-host
+
+# commit output directory contents to your repo
+cd dist
+git init && git remote add origin git@github.com:quinlanj/self-host.git
+git add * && git commit -m "Update my app with this JS bundle"
+git push origin master
+```
+
+To setup a QR code to view your hosted app, or if you want to host your files locally, follow the instructions below in the 'Loading QR Code/URL in Development' section.
 
 ## Build standalone app
 
