@@ -551,6 +551,9 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
         [self->_events removeObjectForKey:appId];
         [self->_eventsQueues removeObjectForKey:appId];
         [self->_appRecords removeObjectForKey:appId];
+
+        // Host unreachable? Unregister all tasks for that app.
+        [self unregisterAllTasksForAppId:appId];
       }
     }];
 
