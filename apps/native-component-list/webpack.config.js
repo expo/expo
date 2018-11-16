@@ -1,51 +1,32 @@
 const path = require('path');
 const webpack = require('webpack');
 const pckg = require('./package.json');
-const appDirectory = path.resolve(__dirname, './');
 
-const moduleDirectory = path.resolve(__dirname, '../../node_modules/');
-const includeModule = module => path.resolve(moduleDirectory, module);
+const relativePath = location => path.resolve(__dirname, location);
 
-const expoPckg = require(`${includeModule('expo')}/package.json`);
-const expoDeps = Object.keys(expoPckg.dependencies)
-  .filter(moduleName => moduleName.includes('expo'))
-  .map(includeModule);
+const locations = {
+  // Shouldn't change
+  root: relativePath('./'),
+  // TODO: Bacon: We should consider how we want to deploy.
+  output: relativePath('public/assets'),
+  // TODO: Bacon: Only use this in expo/apps/
+  modules: relativePath('../../node_modules/'),
+};
 
-// This is needed for webpack to compile JavaScript.
-// Many OSS React Native packages are not compiled to ES5 before being
-// published. If you depend on uncompiled packages they may cause webpack build
-// errors. To fix this webpack can be configured to compile to the necessary
-// `node_module`.
+const environment = process.env.NODE_ENV || 'development';
+const __DEV__ = environment !== 'production';
+
+const includeModule = module => {
+  return path.resolve(locations.modules, module);
+};
 
 const babelLoaderConfiguration = {
   test: /\.jsx?$/,
-
   // Add every directory that needs to be compiled by Babel during the build.
   include: [
-    /// Project
     // TODO: Bacon: This makes compilation take a while
-    path.resolve(appDirectory, './'),
-    // path.resolve(appDirectory, 'src/index.js'),
-    // path.resolve(appDirectory, 'node_modules/expo'),
-
-    ...expoDeps,
-
-    /// React Native
-    includeModule('react-native-tab-view'),
-    includeModule('react-native-vector-icons'),
-    includeModule('react-native-safe-area-view'),
-    includeModule('react-native-platform-touchable'),
-    includeModule('react-native-view-shot'),
-    includeModule('react-native-svg'),
-    includeModule('react-native-reanimated'),
-    includeModule('react-native-branch'),
-    includeModule('react-native-maps'),
-
-    /// React Navigation
-    includeModule('react-navigation'),
-    includeModule('react-navigation-stack'),
-    includeModule('@react-navigation'),
-    includeModule('react-native-gesture-handler'),
+    locations.root,
+    locations.modules,
   ],
   use: {
     loader: 'babel-loader',
@@ -59,12 +40,6 @@ const babelLoaderConfiguration = {
       plugins: ['babel-plugin-react-native-web', '@babel/plugin-transform-runtime'],
     },
   },
-};
-
-// This is needed for loading css
-const cssLoaderConfiguration = {
-  test: /\.css$/,
-  use: ['style-loader', 'css-loader'],
 };
 
 // This is needed for webpack to import static images in JavaScript files.
@@ -89,29 +64,26 @@ const ttfLoaderConfiguration = {
     },
   ],
   include: [
-    path.resolve(appDirectory, './assets/fonts'),
+    locations.root,
     includeModule('react-native-vector-icons'),
     includeModule('@expo/vector-icons'),
   ],
 };
 
-module.exports = {
-  entry: [
-    // load any web API polyfills
-    // path.resolve(appDirectory, 'polyfills-web.js'),
-    // your web-specific entry file
-    path.resolve(appDirectory, pckg.main),
-  ],
+// This is needed for loading css
+const cssLoaderConfiguration = {
+  test: /\.css$/,
+  use: ['style-loader', 'css-loader'],
+};
 
+module.exports = {
+  entry: path.resolve(locations.root, pckg.main),
   // configures where the build ends up
   output: {
     filename: 'bundle.js',
     publicPath: '/assets/',
-    path: path.resolve(appDirectory, 'public/assets'),
+    path: locations.output,
   },
-
-  // ...the rest of your config
-
   module: {
     rules: [
       babelLoaderConfiguration,
@@ -120,26 +92,16 @@ module.exports = {
       ttfLoaderConfiguration,
     ],
   },
-
   plugins: [
-    // process.env.NODE_ENV === 'production' must be true for production
-    // builds to eliminate development checks and reduce build size. You may
-    // wish to include additional optimizations.
     new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
-      __DEV__: process.env.NODE_ENV !== 'production',
+      'process.env.NODE_ENV': JSON.stringify(environment),
+      __DEV__,
     }),
   ],
-
   resolve: {
-    // If you're working on a multi-platform React Native app, web-specific
-    // module implementations should be written in files using the extension
-    // '.web.js'.
     symlinks: false,
     extensions: ['.web.js', '.js', '.jsx'],
     alias: {
-      './assets/images/expo-icon.png': './assets/images/expo-icon@2x.png',
-      './assets/images/slack-icon.png': './assets/images/slack-icon@2x.png',
       'react-native': 'react-native-web',
       'react-navigation': '@react-navigation/core',
     },
