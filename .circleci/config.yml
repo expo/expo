@@ -221,7 +221,7 @@ jobs:
       - store_artifacts:
           path: ~/expo/android/app/build/outputs/apk
       - store_artifacts: # daemon logs for debugging crashes
-          path: ~/.gradle/daemon/4.10.2
+          path: ~/.gradle/daemon
 
   client_android_release_google_play:
     executor: js
