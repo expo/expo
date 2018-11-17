@@ -50,6 +50,17 @@ android {
       dimension 'remoteKernel'
     }
   }
+  signingConfigs {
+    debug {
+      storeFile file('../debug.keystore')
+    }
+    release {
+      storeFile file("release-key.jks")
+      storePassword System.getenv("ANDROID_KEYSTORE_PASSWORD")
+      keyAlias System.getenv("ANDROID_KEY_ALIAS")
+      keyPassword System.getenv("ANDROID_KEY_PASSWORD")
+    }
+  }
   buildTypes {
     debug {
       debuggable true
@@ -58,12 +69,7 @@ android {
     release {
       minifyEnabled true
       proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-      zipAlignEnabled true
-    }
-  }
-  signingConfigs {
-    debug {
-      storeFile file('../debug.keystore')
+      signingConfig signingConfigs.release
     }
   }
   lintOptions {

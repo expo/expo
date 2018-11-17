@@ -108,7 +108,6 @@ platform :ios do
     # )
   end
 
-
 end
 
 platform :android do
@@ -136,7 +135,7 @@ platform :android do
     supply(
       package_name: "host.exp.exponent",
       metadata_path: "./fastlane/android/metadata",
-      apk: "./android/exponent-release.apk",
+      apk: "./android/app/build/outputs/apk/prodKernel/release/app-prodKernel-release.apk",
       track: "production",
       skip_upload_images: true,
       skip_upload_screenshots: true
