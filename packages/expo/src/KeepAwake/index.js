@@ -1,7 +1,5 @@
 import React from 'react';
-import { NativeModules } from 'react-native';
-
-const { ExponentKeepAwake } = NativeModules;
+import ExponentKeepAwake from './ExponentKeepAwake';
 
 export default class KeepAwake extends React.PureComponent {
   static activate = activate;
