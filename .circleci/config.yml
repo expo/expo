@@ -217,9 +217,9 @@ jobs:
       - save_cache:
           key: client-android-apk-{{ .Revision }}
           paths:
-            - ~/expo/android/exponent-release.apk
+            - ~/expo/android/app/build/outputs/apk
       - store_artifacts:
-          path: ~/expo/android/exponent-release.apk
+          path: ~/expo/android/app/build/outputs/apk
       - store_artifacts: # daemon logs for debugging crashes
           path: ~/.gradle/daemon/4.10.2
 
