@@ -80,7 +80,7 @@ executors:
     resource_class: small
   android:
     <<: *nix
-    resource_class: large
+    resource_class: xlarge
   js:
     <<: *nix
   mac:
