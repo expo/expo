@@ -2,7 +2,7 @@
 
 import invariant from 'invariant';
 import { Platform } from 'expo-core';
-import ExpoFontLoader from './PlatformModule';
+import ExpoFontLoader from './ExpoFontLoader';
 
 const isWeb = Platform.OS === 'web';
 const { Asset } = requireAsset();

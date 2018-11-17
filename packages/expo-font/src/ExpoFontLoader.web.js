@@ -1,7 +1,7 @@
 // @flow
 
-function isFunction(functionToCheck) {
-  return functionToCheck && {}.toString.call(functionToCheck) === '[object Function]';
+function isFunction(method) {
+  return method && typeof method === 'function';
 }
 
 function createWebStyle(fontFamily, resource) {
