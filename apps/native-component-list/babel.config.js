@@ -1,7 +1,7 @@
-module.exports = function(api) {
+module.exports = function (api) {
   api.cache(true);
   return {
-    presets: ['expo'],
-    plugins: ['@babel/transform-runtime'],
+    presets: ['babel-preset-expo'],
+    plugins: ['@babel/plugin-transform-runtime'],
   };
 };
