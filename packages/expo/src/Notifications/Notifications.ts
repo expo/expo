@@ -2,7 +2,7 @@ import { EventEmitter, EventSubscription } from 'fbemitter';
 import warning from 'fbjs/lib/warning';
 import invariant from 'invariant';
 import { AsyncStorage, DeviceEventEmitter, Platform } from 'react-native';
-import ExponentNotifications from './PlatformModule';
+import ExponentNotifications from './ExponentNotifications';
 
 type Notification = {
   origin: 'selected' | 'received';
