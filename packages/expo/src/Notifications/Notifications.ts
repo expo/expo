@@ -183,8 +183,8 @@ export default {
     ExponentNotifications.getDevicePushTokenAsync(config || {}),
 
   createChannelAndroidAsync(id: string, channel: Channel): Promise<void> {
-    if (Platform.OS === 'ios') {
-      console.warn('createChannelAndroidAsync(...) has no effect on iOS');
+    if (Platform.OS !== 'android') {
+      console.warn(`createChannelAndroidAsync(...) has no effect on ${Platform.OS}`);
       return Promise.resolve();
     }
     // This codepath will never be triggered in SDK 28 and above
