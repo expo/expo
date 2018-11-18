@@ -31,12 +31,11 @@ Please use Node 8+ and npm 4. We recommend installing Node using [nvm](https://g
 - Make sure you have latest non-beta Xcode installed.
 - Install [Cocoapods](https://cocoapods.org/): `gem install cocoapods --no-ri --no-rdoc`
 - Run `git lfs pull`.
-- Run `./generate-files-ios.sh` in the `tools-public` directory.
+- Run `./generate-files-ios.js` in the `tools-public` directory.
 - Open and run `ios/Exponent.xcworkspace` in Xcode.
 
 #### Android
 - Make sure you have Android Studio 3 and the [Android NDK](https://facebook.github.io/react-native/docs/building-from-source.html#download-links-for-android-ndk) version `r10e` installed.
-- Run `./generate-dynamic-macros-android.sh` in the `tools-public` directory.
 - Build and install Android with `cd android; ./run.sh; cd ..`. It might fail the first time. If so just run `./run.sh` again.
 
 ## Running on a Device
