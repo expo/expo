@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# This is used by AndroidShellApp.js
+# This file is currently used by https://github.com/expo/expo-cli/blob/master/packages/xdl/src/detach/AndroidShellApp.js
 set -eo pipefail
 
 scriptdir=$(dirname ${BASH_SOURCE[0]})

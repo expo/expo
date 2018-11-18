@@ -215,7 +215,7 @@ jobs:
       - fetch_cocoapods_specs
       - yarn_install:
           working_directory: ~/project/tools-public
-      - run: nix run nixpkgs.nodejs-8_x -c ~/project/tools-public/generate-files-ios.sh
+      - run: nix run nixpkgs.nodejs-8_x -c ~/project/tools-public/generate-files-ios.js
       - run:
           name: Build ios shell app simulator
           working_directory: ~/project/tools-public
