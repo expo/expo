@@ -2,17 +2,16 @@
  * @flow
  * Invites representation wrapper
  */
-import { Platform } from 'expo-core';
-import { events, ModuleBase, registerModule } from 'expo-firebase-app';
-
-import Invitation from './Invitation';
+import { SharedEventEmitter, ModuleBase } from 'expo-firebase-app';
 
 import type App from 'expo-firebase-app';
-const { SharedEventEmitter } = events;
+import Invitation from './Invitation';
 
 export const MODULE_NAME = 'ExpoFirebaseInvites';
 export const NAMESPACE = 'invites';
-const NATIVE_EVENTS = ['Expo.Firebase.invites_invitation_received'];
+const NATIVE_EVENTS = {
+  invitesInvitationReceived: 'Expo.Firebase.invites_invitation_received',
+};
 
 export const statics = {
   Invitation,
@@ -30,7 +29,7 @@ export default class Invites extends ModuleBase {
 
   constructor(app: App) {
     super(app, {
-      events: NATIVE_EVENTS,
+      events: Object.values(NATIVE_EVENTS),
       hasCustomUrlSupport: false,
       moduleName: MODULE_NAME,
       hasMultiAppSupport: false,
@@ -40,14 +39,14 @@ export default class Invites extends ModuleBase {
     SharedEventEmitter.addListener(
       // sub to internal native event - this fans out to
       // public event name: onMessage
-      'Expo.Firebase.invites_invitation_received',
+      NATIVE_EVENTS.invitesInvitationReceived,
       (invitation: InvitationOpen) => {
         SharedEventEmitter.emit('onInvitation', invitation);
       }
     );
 
     // Tell the native module that we're ready to receive events
-    if (Platform.OS === 'ios') {
+    if (this.nativeModule.jsInitialised) {
       this.nativeModule.jsInitialised();
     }
   }
@@ -93,5 +92,3 @@ export default class Invites extends ModuleBase {
 }
 
 export { default as Invitation } from './Invitation';
-
-registerModule(Invites);

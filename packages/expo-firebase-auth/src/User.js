@@ -1,7 +1,6 @@
 // @flow
-import { internals as INTERNALS } from 'expo-firebase-app';
-
-import type Auth from './';
+import { INTERNALS } from 'expo-firebase-app';
+// import type Auth from './';
 import type {
   ActionCodeSettings,
   AuthCredential,
@@ -11,6 +10,8 @@ import type {
   UserMetadata,
   IdTokenResult,
 } from './types';
+
+type Auth = object;
 
 type UpdateProfile = {
   displayName?: string,

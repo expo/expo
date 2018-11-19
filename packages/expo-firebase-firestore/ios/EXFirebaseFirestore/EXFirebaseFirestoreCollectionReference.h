@@ -1,3 +1,5 @@
+// Copyright 2018-present 650 Industries. All rights reserved.
+
 #import <FirebaseFirestore/FirebaseFirestore.h>
 #import <EXCore/EXEventEmitterService.h>
 #import <EXFirebaseFirestore/EXFirebaseFirestore.h>

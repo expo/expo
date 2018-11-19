@@ -1,10 +1,10 @@
 // @flow
+import invariant from 'invariant';
 import { Platform } from 'expo-core';
-import { events, utils } from 'expo-firebase-app';
+import { SharedEventEmitter, utils, INTERNALS } from 'expo-firebase-app';
 
-import type Auth from '../';
-
-const { SharedEventEmitter } = events;
+// import type Auth from '../';
+type Auth = object;
 const { generatePushID, isFunction, isString, nativeToJSError } = utils;
 
 const isIOS = Platform.OS === 'ios';
@@ -281,17 +281,15 @@ export default class PhoneAuthListener {
     errorCb?: PhoneAuthError => void,
     successCb?: PhoneAuthSnapshot => void
   ): this {
-    if (!isString(event)) {
-      throw new Error(INTERNALS.STRINGS.ERROR_MISSING_ARG_NAMED('event', 'string', 'on'));
-    }
-
-    if (event !== 'state_changed') {
-      throw new Error(INTERNALS.STRINGS.ERROR_ARG_INVALID_VALUE('event', 'state_changed', event));
-    }
-
-    if (!isFunction(observer)) {
-      throw new Error(INTERNALS.STRINGS.ERROR_MISSING_ARG_NAMED('observer', 'function', 'on'));
-    }
+    invariant(isString(event), INTERNALS.STRINGS.ERROR_MISSING_ARG_NAMED('event', 'string', 'on'));
+    invariant(
+      event === 'state_changed',
+      INTERNALS.STRINGS.ERROR_ARG_INVALID_VALUE('event', 'state_changed', event)
+    );
+    invariant(
+      isFunction(observer),
+      INTERNALS.STRINGS.ERROR_MISSING_ARG_NAMED('observer', 'function', 'on')
+    );
 
     this._addUserObserver(observer);
 

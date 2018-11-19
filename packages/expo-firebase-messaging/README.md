@@ -1,5 +1,7 @@
 # expo-firebase-messaging
 
+> expo-firebase is still in RC and therefore subject to breaking changings. Be sure to run `yarn upgrade` and `cd ios; pod install` when upgrading.
+
 `expo-firebase-messaging` enables cloud messaging (FCM) in your app.
 
 [**Full documentation**](https://rnfirebase.io/docs/master/messaging/introduction)
@@ -89,7 +91,6 @@ PEM: /Users/you/Documents/yourapp/ios/production_com.company.yourapp.pem
     ```
 4.  Include the module in your expo packages: `./android/app/src/main/java/host/exp/exponent/MainActivity.java`
 
-
     ```java
     /*
     * At the top of the file.
@@ -118,9 +119,6 @@ import { Text, View } from 'react-native';
 import firebase from 'expo-firebase-app';
 import { Permissions } from 'expo-permissions';
 
-// Include the module before using it.
-import 'expo-firebase-instance-id';
-import 'expo-firebase-messaging';
 import type { RemoteMessage } from 'expo-firebase-messaging';
 
 // API can be accessed with: firebase.messaging();
@@ -150,6 +148,14 @@ export default class DemoView extends React.Component {
   }
 }
 ```
+
+You can test sending messagings to your app by executing the following command in a terminal:
+```sh
+curl -X POST --header "Authorization: key=FIREBASE_SERVER_KEY" --Header "Content-Type: application/json" https://fcm.googleapis.com/fcm/send -d "{\"to\":\"DEVICE_TOKEN_ID\",\"message\":{\"body\":\"Test\"}}"
+```
+
+Just be sure to populate the command with your firebase server key and the device token ID from `firebase.iid().getToken()`
+
 
 ### [Listen for FCM messages in the background](https://rnfirebase.io/docs/v5.x.x/messaging/receiving-messages#4)-(Optional)(Android-only)-Listen-for-FCM-messages-in-the-background)
 

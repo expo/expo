@@ -1,5 +1,7 @@
 # expo-firebase-firestore
 
+> expo-firebase is still in RC and therefore subject to breaking changings. Be sure to run `yarn upgrade` and `cd ios; pod install` when upgrading.
+
 `expo-firebase-firestore` provides a json based cloud data store that is synchronized in real-time.
 
 [**Full documentation**](https://rnfirebase.io/docs/master/firestore/reference/firestore)
@@ -87,8 +89,7 @@ You could also choose install this module manually.
 import React from 'react';
 import { Text, FlatList } from 'react-native';
 import firebase from 'expo-firebase-app';
-// Include the module before using it.
-import 'expo-firebase-firestore';
+
 // API can be accessed with: firebase.firestore();
 
 export default class WheatView extends React.Component {

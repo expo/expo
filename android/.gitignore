@@ -4,9 +4,11 @@ ReactAndroid/.project
 ReactAndroid/bin/
 app/bin/
 expoview/bin/
+expoview/.idea/
 tools/bin/
 app/mockFsDirectory/
 
+expoview/gradlew*
 
 # Created by https://www.gitignore.io/api/java,android,eclipse,intellij,androidstudio
 
@@ -188,6 +190,7 @@ fabric.properties
 ### AndroidStudio Patch ###
 
 !/gradle/wrapper/gradle-wrapper.jar
+expoview/gradle/wrapper/gradle-wrapper.properties
 
 ### Eclipse ###
 

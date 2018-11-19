@@ -1,8 +1,10 @@
 // @flow
+import invariant from 'invariant';
 
 import { Platform } from 'expo-core';
-import { events, ModuleBase, registerModule, utils } from 'expo-firebase-app';
+import { SharedEventEmitter, ModuleBase, utils } from 'expo-firebase-app';
 
+import type App from 'expo-firebase-app';
 import AndroidAction from './AndroidAction';
 import AndroidChannel from './AndroidChannel';
 import AndroidChannelGroup from './AndroidChannelGroup';
@@ -21,10 +23,8 @@ import {
   Visibility,
 } from './types';
 
-import type App from 'expo-firebase-app';
 import type { NotificationOpen } from './Notification';
 import type { NativeNotification, NativeNotificationOpen, Schedule } from './types';
-const { SharedEventEmitter } = events;
 const { isFunction, isObject } = utils;
 
 type OnNotification = Notification => any;
@@ -39,11 +39,11 @@ type OnNotificationOpenedObserver = {
   next: NotificationOpen,
 };
 
-const NATIVE_EVENTS = [
-  'Expo.Firebase.notifications_notification_displayed',
-  'Expo.Firebase.notifications_notification_opened',
-  'Expo.Firebase.notifications_notification_received',
-];
+const NATIVE_EVENTS = {
+  notificationDisplayed: 'Expo.Firebase.notifications_notification_displayed',
+  notificationOpened: 'Expo.Firebase.notifications_notification_opened',
+  notificationReceived: 'Expo.Firebase.notifications_notification_received',
+};
 
 export const MODULE_NAME = 'ExpoFirebaseNotifications';
 export const NAMESPACE = 'notifications';
@@ -94,7 +94,7 @@ export default class Notifications extends ModuleBase {
 
   constructor(app: App) {
     super(app, {
-      events: NATIVE_EVENTS,
+      events: Object.values(NATIVE_EVENTS),
       hasCustomUrlSupport: false,
       moduleName: MODULE_NAME,
       hasMultiAppSupport: false,
@@ -106,7 +106,7 @@ export default class Notifications extends ModuleBase {
     SharedEventEmitter.addListener(
       // sub to internal native event - this fans out to
       // public event name: onNotificationDisplayed
-      'Expo.Firebase.notifications_notification_displayed',
+      NATIVE_EVENTS.notificationDisplayed,
       (notification: NativeNotification) => {
         SharedEventEmitter.emit('onNotificationDisplayed', new Notification(notification, this));
       }
@@ -115,7 +115,7 @@ export default class Notifications extends ModuleBase {
     SharedEventEmitter.addListener(
       // sub to internal native event - this fans out to
       // public event name: onNotificationOpened
-      'Expo.Firebase.notifications_notification_opened',
+      NATIVE_EVENTS.notificationOpened,
       (notificationOpen: NativeNotificationOpen) => {
         SharedEventEmitter.emit('onNotificationOpened', {
           action: notificationOpen.action,
@@ -128,14 +128,14 @@ export default class Notifications extends ModuleBase {
     SharedEventEmitter.addListener(
       // sub to internal native event - this fans out to
       // public event name: onNotification
-      'Expo.Firebase.notifications_notification_received',
+      NATIVE_EVENTS.notificationReceived,
       (notification: NativeNotification) => {
         SharedEventEmitter.emit('onNotification', new Notification(notification, this));
       }
     );
 
     // Tell the native module that we're ready to receive events
-    if (Platform.OS === 'ios') {
+    if (this.nativeModule.jsInitialised) {
       this.nativeModule.jsInitialised();
     }
   }
@@ -160,11 +160,7 @@ export default class Notifications extends ModuleBase {
    * @param notificationId
    */
   cancelNotification(notificationId: string): Promise<void> {
-    if (!notificationId) {
-      return Promise.reject(
-        new Error('Notifications: cancelNotification expects a `notificationId`')
-      );
-    }
+    invariant(notificationId, 'Notifications: cancelNotification expects a `notificationId`');
     return this.nativeModule.cancelNotification(notificationId);
   }
 
@@ -174,13 +170,11 @@ export default class Notifications extends ModuleBase {
    * @returns {*}
    */
   displayNotification(notification: Notification): Promise<void> {
-    if (!(notification instanceof Notification)) {
-      return Promise.reject(
-        new Error(
-          `Notifications:displayNotification expects a 'Notification' but got type ${typeof notification}`
-        )
-      );
-    }
+    invariant(
+      notification instanceof Notification,
+      `Notifications:displayNotification expects a 'Notification' but got type ${typeof notification}`
+    );
+
     try {
       return this.nativeModule.displayNotification(notification.build());
     } catch (error) {
@@ -292,11 +286,10 @@ export default class Notifications extends ModuleBase {
    * @param notificationId
    */
   removeDeliveredNotification(notificationId: string): Promise<void> {
-    if (!notificationId) {
-      return Promise.reject(
-        new Error('Notifications: removeDeliveredNotification expects a `notificationId`')
-      );
-    }
+    invariant(
+      notificationId,
+      'Notifications: removeDeliveredNotification expects a `notificationId`'
+    );
     return this.nativeModule.removeDeliveredNotification(notificationId);
   }
 
@@ -306,13 +299,10 @@ export default class Notifications extends ModuleBase {
    * @returns {*}
    */
   scheduleNotification(notification: Notification, schedule: Schedule): Promise<void> {
-    if (!(notification instanceof Notification)) {
-      return Promise.reject(
-        new Error(
-          `Notifications:scheduleNotification expects a 'Notification' but got type ${typeof notification}`
-        )
-      );
-    }
+    invariant(
+      notification instanceof Notification,
+      `Notifications:scheduleNotification expects a 'Notification' but got type ${typeof notification}`
+    );
     try {
       const nativeNotification = notification.build();
       nativeNotification.schedule = schedule;
@@ -326,8 +316,6 @@ export default class Notifications extends ModuleBase {
     return this.nativeModule.setBadge(badge);
   }
 }
-
-registerModule(Notifications);
 
 export {
   AndroidAction,

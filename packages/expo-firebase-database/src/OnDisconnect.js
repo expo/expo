@@ -4,8 +4,11 @@
  */
 import { utils } from 'expo-firebase-app';
 
-import type Database from './index';
-import type Reference from './Reference';
+// import type Database from './index';
+// import type Reference from './Reference';
+
+type Database = object;
+type Reference = object;
 
 const { typeOf } = utils;
 

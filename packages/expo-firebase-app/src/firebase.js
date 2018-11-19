@@ -2,28 +2,41 @@
  * @flow
  */
 import { NativeModulesProxy } from 'expo-core';
+import invariant from 'invariant';
 import APPS from './utils/apps';
 import INTERNALS from './utils/internals';
 import type App from './app';
 import { FirebaseNamespaces } from './constants';
 import type { FirebaseOptions } from './types';
 
+import getModuleInstance from './utils/getModuleInstance';
+
 // TODO: Evan: Read Firebase version.
-const VERSION = '4.3.8';
+const VERSION = '5.0.0';
 
 const { ExpoFirebaseApp } = NativeModulesProxy;
 
+function createDefaultModule(instance, namespace) {
+  return function() {
+    invariant(
+      namespace in FirebaseNamespaces,
+      `FirebaseApp: Internal: ${namespace} is not a valid namespace.`
+    );
+    const InstanceType = getModuleInstance(namespace);
+    const module = APPS.moduleAndStatics(namespace, InstanceType.statics, InstanceType.MODULE_NAME);
+    instance[namespace] = module;
+    return module();
+  };
+}
+
 class Firebase {
   constructor() {
-    if (!ExpoFirebaseApp) {
-      throw new Error(INTERNALS.STRINGS.ERROR_MISSING_CORE);
-    }
+    invariant(ExpoFirebaseApp, INTERNALS.STRINGS.ERROR_MISSING_CORE);
+
     APPS.initializeNativeApps();
 
     Object.keys(FirebaseNamespaces).map(namespace => {
-      this[namespace] = function() {
-        throw new Error(INTERNALS.STRINGS.ERROR_MISSING_IMPORT(namespace));
-      };
+      this[namespace] = createDefaultModule(this, namespace);
     });
   }
 

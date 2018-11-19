@@ -2,18 +2,23 @@
  * @flow
  * Query representation wrapper
  */
-import { events, utils } from 'expo-firebase-app';
+import { SharedEventEmitter, utils } from 'expo-firebase-app';
 
+import type { NativeErrorResponse } from 'expo-firebase-app';
 import DocumentSnapshot from './DocumentSnapshot';
 import FieldPath from './FieldPath';
 import QuerySnapshot from './QuerySnapshot';
+import SnapshotError from './SnapshotError';
 import { buildNativeArray, buildTypeMap } from './utils/serialize';
 
-import type Firestore from './index';
 import type Path from './Path';
-import type { MetadataChanges, QueryDirection, QueryOperator } from './firestoreTypes.flow';
+import type {
+  Firestore,
+  MetadataChanges,
+  QueryDirection,
+  QueryOperator,
+} from './firestoreTypes.flow';
 
-const { getAppEventName, SharedEventEmitter } = events;
 const { firestoreAutoId, isFunction, isObject } = utils;
 
 const DIRECTIONS: { [QueryDirection]: string } = {
@@ -30,6 +35,7 @@ const OPERATORS: { [QueryOperator]: string } = {
   '>=': 'GREATER_THAN_OR_EQUAL',
   '<': 'LESS_THAN',
   '<=': 'LESS_THAN_OR_EQUAL',
+  'array-contains': 'ARRAY_CONTAINS',
 };
 
 type NativeFieldPath = {|
@@ -56,7 +62,7 @@ type QueryOptions = {
   startAt?: any[],
 };
 
-export type ObserverOnError = Object => void;
+export type ObserverOnError = SnapshotError => void;
 export type ObserverOnNext = QuerySnapshot => void;
 
 export type Observer = {
@@ -262,19 +268,24 @@ export default class Query {
       observer.next(querySnapshot);
     };
 
+    let unsubscribe: () => void;
+
     // Listen to snapshot events
-    SharedEventEmitter.addListener(
-      getAppEventName(this._firestore, `onQuerySnapshot:${listenerId}`),
+    const snapshotSubscription = SharedEventEmitter.addListener(
+      this._firestore.getAppEventName(`onQuerySnapshot:${listenerId}`),
       listener
     );
 
-    // Listen for snapshot error events
-    if (observer.error) {
-      SharedEventEmitter.addListener(
-        getAppEventName(this._firestore, `onQuerySnapshotError:${listenerId}`),
-        observer.error
-      );
-    }
+    // listen for snapshot error events
+    const errorSubscription = SharedEventEmitter.addListener(
+      this._firestore.getAppEventName(`onQuerySnapshotError:${listenerId}`),
+      (e: NativeErrorResponse) => {
+        if (unsubscribe) unsubscribe();
+        const error = new SnapshotError(e);
+        if (observer.error) observer.error(error);
+        else this.firestore.log.error(error);
+      }
+    );
 
     // Add the native listener
     this._firestore.nativeModule.collectionOnSnapshot(
@@ -286,8 +297,21 @@ export default class Query {
       metadataChanges
     );
 
-    // Return an unsubscribe method
-    return this._offCollectionSnapshot.bind(this, listenerId, listener);
+    // return an unsubscribe method
+    unsubscribe = () => {
+      snapshotSubscription.remove();
+      errorSubscription.remove();
+      // cancel native listener
+      this._firestore.nativeModule.collectionOffSnapshot(
+        this._referencePath.relativeName,
+        this._fieldFilters,
+        this._fieldOrders,
+        this._queryOptions,
+        listenerId
+      );
+    };
+
+    return unsubscribe;
   }
 
   orderBy(fieldPath: string | FieldPath, directionStr?: QueryDirection = 'asc'): Query {
@@ -385,8 +409,8 @@ export default class Query {
         const fieldOrder = this._fieldOrders[i];
         if (fieldOrder.fieldPath.type === 'string' && fieldOrder.fieldPath.string) {
           values.push(docSnapshot.get(fieldOrder.fieldPath.string));
-        } else if (fieldOrder.fieldPath.fieldpath) {
-          const fieldPath = new FieldPath(...fieldOrder.fieldPath.fieldpath);
+        } else if (fieldOrder.fieldPath.elements) {
+          const fieldPath = new FieldPath(...fieldOrder.fieldPath.elements);
           values.push(docSnapshot.get(fieldPath));
         }
       }
@@ -395,28 +419,5 @@ export default class Query {
     }
 
     return buildNativeArray(values);
-  }
-
-  /**
-   * Remove query snapshot listener
-   * @param listener
-   */
-  _offCollectionSnapshot(listenerId: string, listener: Function) {
-    this._firestore.logger.info('Removing onQuerySnapshot listener');
-    SharedEventEmitter.removeListener(
-      getAppEventName(this._firestore, `onQuerySnapshot:${listenerId}`),
-      listener
-    );
-    SharedEventEmitter.removeListener(
-      getAppEventName(this._firestore, `onQuerySnapshotError:${listenerId}`),
-      listener
-    );
-    this._firestore.nativeModule.collectionOffSnapshot(
-      this._referencePath.relativeName,
-      this._fieldFilters,
-      this._fieldOrders,
-      this._queryOptions,
-      listenerId
-    );
   }
 }

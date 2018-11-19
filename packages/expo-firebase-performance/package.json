@@ -1,6 +1,6 @@
 {
   "name": "expo-firebase-performance",
-  "version": "1.0.0",
+  "version": "1.0.0-rc.3",
   "description": "Expo Unimodule for interfacing with Firebase Performance Monitor",
   "main": "src/index.js",
   "keywords": [

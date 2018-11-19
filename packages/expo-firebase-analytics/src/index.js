@@ -2,10 +2,11 @@
  * @flow
  * Analytics representation wrapper
  */
-import { ModuleBase, registerModule, utils } from 'expo-firebase-app';
+import { ModuleBase, utils } from 'expo-firebase-app';
+
+import type { App } from 'expo-firebase-app';
 
 const { isString, isObject } = utils;
-import type { App } from 'expo-firebase-app';
 
 const AlphaNumericUnderscore = /^[a-zA-Z0-9_]+$/;
 
@@ -49,7 +50,7 @@ export default class Analytics extends ModuleBase {
    * @param params
    * @return {Promise}
    */
-  logEvent(name: string, params: Object = {}): void {
+  logEvent(name: string, params: Object = {}): Promise {
     if (!isString(name)) {
       throw new Error(
         `analytics.logEvent(): First argument 'name' is required and must be a string value.`
@@ -85,15 +86,15 @@ export default class Analytics extends ModuleBase {
     // types are supported. String parameter values can be up to 36 characters long. The "firebase_"
     // prefix is reserved and should not be used for parameter names.
 
-    this.nativeModule.logEvent(name, params);
+    return this.nativeModule.logEvent(name, params);
   }
 
   /**
    * Sets whether analytics collection is enabled for this app on this device.
    * @param enabled
    */
-  setAnalyticsCollectionEnabled(enabled: boolean): void {
-    this.nativeModule.setAnalyticsCollectionEnabled(enabled);
+  setAnalyticsCollectionEnabled(enabled: boolean): Promise {
+    return this.nativeModule.setAnalyticsCollectionEnabled(enabled);
   }
 
   /**
@@ -101,35 +102,35 @@ export default class Analytics extends ModuleBase {
    * @param screenName
    * @param screenClassOverride
    */
-  setCurrentScreen(screenName: string, screenClassOverride: string): void {
-    this.nativeModule.setCurrentScreen(screenName, screenClassOverride);
+  setCurrentScreen(screenName: string, screenClassOverride?: string): Promise {
+    return this.nativeModule.setCurrentScreen(screenName, screenClassOverride);
   }
 
   /**
    * Sets the minimum engagement time required before starting a session. The default value is 10000 (10 seconds).
    * @param milliseconds
    */
-  setMinimumSessionDuration(milliseconds: number = 10000): void {
-    this.nativeModule.setMinimumSessionDuration(milliseconds);
+  setMinimumSessionDuration(milliseconds: number = 10000): Promise {
+    return this.nativeModule.setMinimumSessionDuration(milliseconds);
   }
 
   /**
    * Sets the duration of inactivity that terminates the current session. The default value is 1800000 (30 minutes).
    * @param milliseconds
    */
-  setSessionTimeoutDuration(milliseconds: number = 1800000): void {
-    this.nativeModule.setSessionTimeoutDuration(milliseconds);
+  setSessionTimeoutDuration(milliseconds: number = 1800000): Promise {
+    return this.nativeModule.setSessionTimeoutDuration(milliseconds);
   }
 
   /**
    * Sets the user ID property.
    * @param id
    */
-  setUserId(id: string | null): void {
+  setUserId(id: string | null): Promise {
     if (id !== null && !isString(id)) {
       throw new Error('analytics.setUserId(): The supplied userId must be a string value or null.');
     }
-    this.nativeModule.setUserId(id);
+    return this.nativeModule.setUserId(id);
   }
 
   /**
@@ -137,20 +138,21 @@ export default class Analytics extends ModuleBase {
    * @param name
    * @param value
    */
-  setUserProperty(name: string, value: string | null): void {
+  setUserProperty(name: string, value: string | null): Promise {
     if (value !== null && !isString(value)) {
       throw new Error(
         'analytics.setUserProperty(): The supplied property must be a string value or null.'
       );
     }
-    this.nativeModule.setUserProperty(name, value);
+    return this.nativeModule.setUserProperty(name, value);
   }
 
   /**
    * Sets multiple user properties to the supplied values.
    * @param object
    */
-  setUserProperties(object: Object): void {
+  setUserProperties(object: Object): Promise {
+    let tasks = [];
     for (const entry of Object.entries(object)) {
       const [property, value] = entry;
       if (value !== null && !isString(value)) {
@@ -158,9 +160,8 @@ export default class Analytics extends ModuleBase {
           `analytics.setUserProperties(): The property with name '${property}' must be a string value or null.`
         );
       }
-      this.nativeModule.setUserProperty(property, value);
+      tasks.push(this.nativeModule.setUserProperty(property, value));
     }
+    return Promise.all(tasks);
   }
 }
-
-registerModule(Analytics);

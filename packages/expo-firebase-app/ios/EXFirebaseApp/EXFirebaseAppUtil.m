@@ -1,10 +1,4 @@
-//
-//  EXFirebaseAppUtil.m
-//  EXFirebaseApp
-//
-//  Created by Evan Bacon on 8/6/18.
-//  Copyright © 2018 650 Industries. All rights reserved.
-//
+// Copyright 2018-present 650 Industries. All rights reserved.
 
 #import <EXFirebaseApp/EXFirebaseAppUtil.h>
 

@@ -2,8 +2,8 @@
  * @flow
  * AndroidParameters representation wrapper
  */
-import type DynamicLink from './DynamicLink';
-import type { NativeAndroidParameters } from './types';
+// import type DynamicLink from './DynamicLink';
+import type { DynamicLink, NativeAndroidParameters } from './types';
 
 export default class AndroidParameters {
   _fallbackUrl: string | void;
@@ -50,9 +50,7 @@ export default class AndroidParameters {
 
   build(): NativeAndroidParameters {
     if ((this._fallbackUrl || this._minimumVersion) && !this._packageName) {
-      throw new Error(
-        'AndroidParameters: Missing required `packageName` property'
-      );
+      throw new Error('AndroidParameters: Missing required `packageName` property');
     }
     return {
       fallbackUrl: this._fallbackUrl,

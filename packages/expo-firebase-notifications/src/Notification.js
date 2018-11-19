@@ -1,12 +1,12 @@
 // @flow
+import invariant from 'invariant';
+
 import { Platform } from 'expo-core';
 import { utils } from 'expo-firebase-app';
 import AndroidNotification from './AndroidNotification';
 import IOSNotification from './IOSNotification';
-import type { NativeNotification } from './types';
+import type { Notifications, NativeNotification } from './types';
 const { generatePushID, isObject } = utils;
-
-type Notifications = Object;
 
 export type NotificationOpen = {|
   action: string,
@@ -107,9 +107,10 @@ export default class Notification {
    * @returns {Notification}
    */
   setData(data: Object = {}): Notification {
-    if (!isObject(data)) {
-      throw new Error(`Notification:withData expects an object but got type '${typeof data}'.`);
-    }
+    invariant(
+      isObject(data),
+      `Notification:withData expects an object but got type '${typeof data}'.`
+    );
     this._data = data;
     return this;
   }
@@ -155,9 +156,7 @@ export default class Notification {
   }
 
   build(): NativeNotification {
-    if (!this._notificationId) {
-      throw new Error('Notification: Missing required `notificationId` property');
-    }
+    invariant(this._notificationId, 'Notification: Missing required `notificationId` property');
 
     return {
       android: Platform.OS === 'android' ? this._android.build() : undefined,
