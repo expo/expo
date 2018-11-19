@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 type Props = {
   colors: number[];
@@ -13,6 +13,7 @@ type State = {
   width?: number;
   height?: number;
 };
+
 type Point = [number, number];
 
 export default class NativeLinearGradient extends React.PureComponent<Props, State> {

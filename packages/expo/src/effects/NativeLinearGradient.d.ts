@@ -6,9 +6,9 @@ import NativeLinearGradientWeb from './NativeLinearGradient.web';
 
 type Narrow<T1, T2> = T1 extends T2 ? T1 : (T2 extends T1 ? T2 : never);
 type CommonNativeLinearGradient = Narrow<
-  NativeLinearGradientIOS,
-  NativeLinearGradientAndroid,
+  Narrow<NativeLinearGradientIOS, NativeLinearGradientAndroid>,
   NativeLinearGradientWeb
 >;
-
-export default class NativeLinearGradient extends React.Component<ElementProps<CommonNativeLinearGradient>> {}
+export default class NativeLinearGradient extends React.Component<
+  ElementProps<CommonNativeLinearGradient>
+> {}
