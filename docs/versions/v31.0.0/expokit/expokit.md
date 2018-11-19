@@ -92,6 +92,13 @@ If upgrading from SDK 30 or below, you'll also need to change `platform :ios, '9
 - Go to `MainActivity.java` and replace `Arrays.asList("[OLD SDK VERSION]")` with `Arrays.asList("[NEW SDK VERSION]")`.
 - Go to `android/app/build.gradle` and replace `compile('host.exp.exponent:expoview:[OLD SDK VERSION]@aar') {` with `compile('host.exp.exponent:expoview:[NEW SDK VERSION]@aar') {`.
 
+If upgrading from SDK 30 or below, remove the following lines from `android/app/build.gradle`:
+```groovy
+implementation 'com.squareup.okhttp3:okhttp:3.4.1'
+implementation 'com.squareup.okhttp3:okhttp-urlconnection:3.4.1'
+implementation 'com.squareup.okhttp3:okhttp-ws:3.4.1'
+```
+
 If upgrading from SDK 28 or below, you'll also need to follow these instructions:
 
 - Change all instances of `android\\detach-scripts` and `android/detach-scripts` to `node_modules\\expokit\\detach-scripts` and `node_modules/expokit/detach-scripts` respectively in `android/app/expo.gradle`.
