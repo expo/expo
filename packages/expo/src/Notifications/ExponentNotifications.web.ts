@@ -1,16 +1,23 @@
 export default {
-  getExponentPushTokenAsync() {},
-  getDevicePushTokenAsync(config: Object) {},
-  createChannel(channelId: string, channel: string) {},
-  deleteChannel(channelId: string) {},
-  presentLocalNotification(notification: Object) {},
-  presentLocalNotificationWithChannel(notification: Object, channelId: string) {},
-  scheduleLocalNotification(notification: Object, options: Object) {},
-  scheduleLocalNotificationWithChannel(notification: Object, options: Object, channelId: string) {},
-  dismissNotification(notificationId: string) {},
-  dismissAllNotifications() {},
-  cancelScheduledNotification(notificationId: string) {},
-  cancelAllScheduledNotifications() {},
-  //   getBadgeNumberAsync() {},
-  //   setBadgeNumberAsync(badgeNumber: number) {},
+  async getExponentPushTokenAsync(): Promise<void> {},
+  async getDevicePushTokenAsync(config: { [key: string]: any }): Promise<void> {},
+  async createChannel(channelId: string, channel: string): Promise<void> {},
+  async deleteChannel(channelId: string): Promise<void> {},
+  async presentLocalNotification(notification: any): Promise<void> {},
+  async presentLocalNotificationWithChannel(notification: any, channelId: string): Promise<void> {},
+  async scheduleLocalNotification(
+    notification: any,
+    options: { [key: string]: any }
+  ): Promise<void> {},
+  async scheduleLocalNotificationWithChannel(
+    notification: any,
+    options: { [key: string]: any },
+    channelId: string
+  ): Promise<void> {},
+  async dismissNotification(notificationId: string): Promise<void> {},
+  async dismissAllNotifications(): Promise<void> {},
+  async cancelScheduledNotification(notificationId: string): Promise<void> {},
+  async cancelAllScheduledNotifications(): Promise<void> {},
+  //   getBadgeNumberAsync(): Promise<void> {},
+  //   setBadgeNumberAsync(badgeNumber: number): Promise<void> {},
 };
