@@ -1,14 +1,10 @@
 import { createElement } from 'react';
-import PropTypes from 'prop-types';
 
-function generate(name, type) {
+function generate(componentName, tagName) {
   function SvgElement(props) {
-    return createElement(type, props, props.children);
+    return createElement(tagName, props, props.children);
   }
-
-  SvgElement.propTypes = { children: PropTypes.node };
-  SvgElement.defaultProps = {};
-  SvgElement.displayName = name;
+  SvgElement.displayName = componentName;
   return SvgElement;
 }
 
