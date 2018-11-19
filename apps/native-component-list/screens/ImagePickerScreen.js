@@ -28,6 +28,15 @@ export default class ImagePickerScreen extends React.Component {
       }
     };
 
+    const showCameraWithEditing = async () => {
+      let result = await ImagePicker.launchCameraAsync({ allowsEditing: true });
+      if (result.cancelled) {
+        this.setState({ selection: null });
+      } else {
+        this.setState({ selection: result });
+      }
+    };
+
     const showPicker = async () => {
       if (Platform.OS === 'ios') {
         let permission = await Permissions.getAsync(Permissions.CAMERA_ROLL);
@@ -64,6 +73,7 @@ export default class ImagePickerScreen extends React.Component {
       <ScrollView style={{ padding: 10 }}>
         <NavigationEvents onDidFocus={this.componentDidFocus} />
         <ListButton onPress={showCamera} title="Open camera" />
+        <ListButton onPress={showCameraWithEditing} title="Open camera and edit" />
         <ListButton onPress={showPicker} title="Pick photo or video" />
         <ListButton onPress={showPickerWithEditing} title="Pick photo and edit" />
 
