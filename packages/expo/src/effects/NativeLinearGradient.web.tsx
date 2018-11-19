@@ -69,13 +69,13 @@ export default class NativeLinearGradient extends React.PureComponent<Props, Sta
   }
 
   render() {
-    const { colors, locations, startPoint, endPoint, onLayout, style = {}, ...props } = this.props;
-    const computedStyle = StyleSheet.flatten([style]);
+    const { colors, locations, startPoint, endPoint, onLayout, style, ...props } = this.props;
+    let flatStyle = StyleSheet.flatten(style) || {};
 
     // @ts-ignore: [ts] Property 'backgroundImage' does not exist on type 'ViewStyle'.
-    computedStyle.backgroundImage = getBackgroundImage();
+    flatStyle.backgroundImage = this.getBackgroundImage();
 
     // TODO: Bacon: In the future we could consider adding `backgroundRepeat: "no-repeat"`. For more browser support.
-    return <View style={computedStyle} onLayout={this.onLayout} {...props} />;
+    return <View style={flatStyle} onLayout={this.onLayout} {...props} />;
   }
 }
