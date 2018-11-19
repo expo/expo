@@ -1,17 +1,15 @@
-import { NativeModules, Platform } from 'react-native';
+import { NativeModules } from 'react-native';
 
 const { ExponentSplashScreen: SplashScreen = {} } = NativeModules;
 
-const isWeb = Platform.OS === 'web';
-
 export function preventAutoHide() {
-  if (!isWeb) {
+  if (SplashScreen.preventAutoHide) {
     SplashScreen.preventAutoHide();
   }
 }
 
 export function hide() {
-  if (!isWeb) {
+  if (SplashScreen.hide) {
     SplashScreen.hide();
   }
 }
