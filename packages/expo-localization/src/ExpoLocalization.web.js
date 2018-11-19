@@ -1,7 +1,5 @@
 // @flow
 import * as rtlDetect from 'rtl-detect';
-import moment from 'moment';
-import 'moment-timezone';
 
 export default {
   get isRTL(): boolean {
@@ -24,6 +22,8 @@ export default {
     return navigator.languages;
   },
   get timezone(): string {
+    const moment = require('moment');
+    require('moment-timezone');
     return moment.tz.guess();
   },
   get isoCurrencyCodes(): Array<string> {
