@@ -10,15 +10,15 @@ type Props = {
 } & React.ElementProps<View>;
 
 type State = {
-  width: number;
-  height: number;
+  width?: number;
+  height?: number;
 };
 type Point = [number, number];
 
 export default class NativeLinearGradient extends React.PureComponent<Props, State> {
   state = {
-    width: 0.5,
-    height: 0.5,
+    width: undefined,
+    height: undefined,
   };
 
   onLayout = event => {
@@ -31,18 +31,21 @@ export default class NativeLinearGradient extends React.PureComponent<Props, Sta
     }
   };
 
-  get angle(): string {
-    const startPoint = this.props.startPoint ? this.props.startPoint : [0, 0];
-    const endPoint = this.props.endPoint ? this.props.endPoint : [1, 1];
-    const { width, height } = this.state;
-    const x = height * (endPoint[0] - startPoint[0]);
-    const y = width * (endPoint[1] - startPoint[1]);
-    const angle = Math.atan2(y, x) + Math.PI / 2;
+  getAngle(): string {
+    const startPoint = this.props.startPoint ? this.props.startPoint : [0.5, 0.0];
+    const endPoint = this.props.endPoint ? this.props.endPoint : [0.5, 1.0];
+    const { width = 0, height = 0 } = this.state;
+    let angle = 0;
+
+    const gradientWidth = height * (endPoint[0] - startPoint[0]);
+    const gradientHeight = width * (endPoint[1] - startPoint[1]);
+    angle = Math.atan2(gradientHeight, gradientWidth) + Math.PI / 2;
+
     return `${angle}rad`;
   }
 
-  get colors(): string {
-    const { colors = [] } = this.props;
+  getColors(): string {
+    const { colors } = this.props;
     return colors
       .map((color, index) => {
         const colorStr = `${color.toString(16)}`;
@@ -57,15 +60,22 @@ export default class NativeLinearGradient extends React.PureComponent<Props, Sta
       .join(',');
   }
 
-  get backgroundImage(): string {
-    return `linear-gradient(${this.angle},${this.colors})`;
+  getBackgroundImage(): string | null {
+    if (this.state.width && this.state.height) {
+      return `linear-gradient(${this.getAngle()},${this.getColors()})`;
+    } else {
+      return 'transparent';
+    }
   }
 
   render() {
     const { colors, locations, startPoint, endPoint, onLayout, style = {}, ...props } = this.props;
-    const { backgroundImage } = this;
     const computedStyle = StyleSheet.flatten([style]);
-    computedStyle['backgroundImage'] = backgroundImage;
+
+    // @ts-ignore: [ts] Property 'backgroundImage' does not exist on type 'ViewStyle'.
+    computedStyle.backgroundImage = getBackgroundImage();
+
+    // TODO: Bacon: In the future we could consider adding `backgroundRepeat: "no-repeat"`. For more browser support.
     return <View style={computedStyle} onLayout={this.onLayout} {...props} />;
   }
 }
