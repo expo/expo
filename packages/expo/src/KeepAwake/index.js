@@ -1,4 +1,5 @@
 import React from 'react';
+
 import ExponentKeepAwake from './ExponentKeepAwake';
 
 export default class KeepAwake extends React.PureComponent {
@@ -18,10 +19,10 @@ export default class KeepAwake extends React.PureComponent {
   }
 }
 
-export function activate(): void {
+export function activate() {
   ExponentKeepAwake.activate();
 }
 
-export function deactivate(): void {
+export function deactivate() {
   ExponentKeepAwake.deactivate();
 }
