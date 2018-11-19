@@ -333,7 +333,7 @@ public class ImagePickerModule extends ExpoKernelServiceConsumerBaseModule imple
                 copyImage(uri, file, out);
               }
 
-              returnImageResult(exifData, fileUri.toString(), bmp.getWidth(), bmp.getHeight(), out, promise);
+              returnImageResult(exifData, file.toURI().toString(), bmp.getWidth(), bmp.getHeight(), out, promise);
             }
           } else {
             WritableMap response = Arguments.createMap();
@@ -371,9 +371,7 @@ public class ImagePickerModule extends ExpoKernelServiceConsumerBaseModule imple
    */
   private void saveImage(Bitmap bitmap, Bitmap.CompressFormat compressFormat, File file,
                          ByteArrayOutputStream out) {
-    if (!file.exists()) {
-      writeImage(bitmap, file.getPath(), compressFormat);
-    }
+    writeImage(bitmap, file.getPath(), compressFormat);
 
     if (base64) {
       bitmap.compress(Bitmap.CompressFormat.JPEG, quality, out);
@@ -397,13 +395,11 @@ public class ImagePickerModule extends ExpoKernelServiceConsumerBaseModule imple
       IoUtils.copyStream(is, out, null);
     }
 
-    if (!file.exists()) {
-      try (FileOutputStream fos = new FileOutputStream(file)) {
-        if (out != null) {
-          fos.write(out.toByteArray());
-        } else {
-          IoUtils.copyStream(is, fos, null);
-        }
+    try (FileOutputStream fos = new FileOutputStream(file)) {
+      if (out != null) {
+        fos.write(out.toByteArray());
+      } else {
+        IoUtils.copyStream(is, fos, null);
       }
     }
   }
