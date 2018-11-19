@@ -1,11 +1,9 @@
 // @flow
-
-import { ModuleBase, registerModule } from 'expo-firebase-app';
-
+import { ModuleBase } from 'expo-firebase-app';
+import invariant from 'invariant';
+import type { App } from 'expo-firebase-app';
 import HttpMetric from './HttpMetric';
 import Trace from './Trace';
-
-import type { App } from 'expo-firebase-app';
 
 export const MODULE_NAME = 'ExpoFirebasePerformance';
 export const NAMESPACE = 'perf';
@@ -54,9 +52,10 @@ export default class PerformanceMonitoring extends ModuleBase {
    * @returns {*}
    */
   setPerformanceCollectionEnabled(enabled: boolean): Promise {
-    if (typeof enabled !== 'boolean') {
-      throw new Error('firebase.perf().setPerformanceCollectionEnabled() requires a boolean value');
-    }
+    invariant(
+      typeof enabled === 'boolean',
+      'firebase.perf().setPerformanceCollectionEnabled() requires a boolean value'
+    );
     return this.nativeModule.setPerformanceCollectionEnabled(enabled);
   }
 
@@ -65,10 +64,8 @@ export default class PerformanceMonitoring extends ModuleBase {
    * @param trace
    */
   newTrace(trace: string): ?Trace {
-    if (typeof trace !== 'string') {
-      throw new Error('firebase.perf().newTrace() requires a string value');
-    }
-    return new Trace(this, trace);
+    invariant(typeof trace === 'string', 'firebase.perf().newTrace() requires a string value');
+    return new Trace(this.nativeModule, trace);
   }
 
   /**
@@ -78,23 +75,24 @@ export default class PerformanceMonitoring extends ModuleBase {
    * @returns {HttpMetric}
    */
   newHttpMetric(url: string, httpMethod: HttpMethod): HttpMetric {
-    if (typeof url !== 'string' || typeof httpMethod !== 'string') {
-      throw new Error('firebase.perf().newHttpMetric() requires url and httpMethod string values');
-    }
+    invariant(
+      typeof url === 'string',
+      'firebase.perf().newHttpMetric() requires url to be a string value'
+    );
+    invariant(
+      typeof httpMethod === 'string',
+      'firebase.perf().newHttpMetric() requires httpMethod to be a string value'
+    );
+    invariant(
+      HTTP_METHODS[httpMethod],
+      `firebase.perf().newHttpMetric() httpMethod should be one of ${Object.keys(HTTP_METHODS).join(
+        ', '
+      )}`
+    );
 
-    if (!HTTP_METHODS[httpMethod]) {
-      throw new Error(
-        `firebase.perf().newHttpMetric() httpMethod should be one of ${Object.keys(
-          HTTP_METHODS
-        ).join(', ')}`
-      );
-    }
-
-    return new HttpMetric(this, url, httpMethod);
+    return new HttpMetric(this.nativeModule, url, httpMethod);
   }
 }
-
-registerModule(PerformanceMonitoring);
 
 export { Trace, HttpMetric, HTTP_METHODS };
 

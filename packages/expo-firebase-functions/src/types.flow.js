@@ -1,3 +1,4 @@
+// @flow
 export type HttpsCallableResult = {
   data: Object,
 };

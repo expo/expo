@@ -84,7 +84,9 @@ public class FirebaseFirestoreModule extends ExportedModule implements ModuleReg
 
   @ExpoMethod
   public void disableNetwork(String appName, final Promise promise) {
-    getFirestoreForApp(appName).disableNetwork().addOnCompleteListener(new OnCompleteListener<Void>() {
+    getFirestoreForApp(appName)
+      .disableNetwork()
+      .addOnCompleteListener(new OnCompleteListener<Void>() {
       @Override
       public void onComplete(@NonNull Task<Void> task) {
         if (task.isSuccessful()) {
@@ -211,16 +213,26 @@ public class FirebaseFirestoreModule extends ExportedModule implements ModuleReg
   }
 
   @ExpoMethod
-  public void documentOnSnapshot(String appName, String path, String listenerId, Map<String, Object> docListenOptions,
-      Promise promise) {
+  public void documentOnSnapshot(
+    String appName, 
+    String path, 
+    String listenerId, 
+    Map<String, Object> docListenOptions,
+    Promise promise
+  ) {
     FirebaseFirestoreDocumentReference ref = getDocumentForAppPath(appName, path);
     ref.onSnapshot(listenerId, docListenOptions);
     promise.resolve(null);
   }
 
   @ExpoMethod
-  public void documentSet(String appName, String path, Map<String, Object> data, Map<String, Object> options,
-      final Promise promise) {
+  public void documentSet(
+    String appName, 
+    String path, 
+    Map<String, Object> data, 
+    Map<String, Object> options,
+    final Promise promise
+  ) {
     FirebaseFirestoreDocumentReference ref = getDocumentForAppPath(appName, path);
     ref.set(data, options, promise);
   }
@@ -250,13 +262,31 @@ public class FirebaseFirestoreModule extends ExportedModule implements ModuleReg
     } else {
       firestoreSettings.setSslEnabled(firestore.getFirestoreSettings().isSslEnabled());
     }
-    if (settings.containsKey("timestampsInSnapshots")) {
+    // if (settings.containsKey("timestampsInSnapshots")) {
       // TODO: Not supported on Android yet
-    }
+    // }
 
     firestore.setFirestoreSettings(firestoreSettings.build());
     promise.resolve(null);
   }
+
+
+  /**
+   * Try clean up previous transactions on reload
+   * TODO: Bacon: Use this (onCatalystInstanceDestroy)
+   */
+  public void onInstanceDestroy() {
+    for (int i = 0, size = transactionHandlers.size(); i < size; i++) {
+      FirebaseFirestoreTransactionHandler transactionHandler = transactionHandlers.get(i);
+      if (transactionHandler != null) {
+        transactionHandler.abort();
+      }
+    }
+
+    transactionHandlers.clear();
+  }
+
+
 
   /*
    * Transaction Methods
@@ -333,7 +363,8 @@ public class FirebaseFirestoreModule extends ExportedModule implements ModuleReg
     AsyncTask.execute(new Runnable() {
       @Override
       public void run() {
-        getFirestoreForApp(appName).runTransaction(new Transaction.Function<Void>() {
+        getFirestoreForApp(appName)
+          .runTransaction(new Transaction.Function<Void>() {
           @Override
           public Void apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
             transactionHandler.resetState(transaction);
@@ -444,9 +475,13 @@ public class FirebaseFirestoreModule extends ExportedModule implements ModuleReg
    * @param exception Exception Exception normally from a task result.
    * @param promise   Promise expo promise
    */
-  static void promiseRejectException(Promise promise, FirebaseFirestoreException exception) {
+  public static void promiseRejectException(Promise promise, FirebaseFirestoreException exception) {
     Bundle jsError = getJSError(exception);
-    promise.reject(jsError.getString("code"), jsError.getString("message"), exception);
+    promise.reject(
+      jsError.getString("code"), 
+      jsError.getString("message"), 
+      exception
+    );
   }
 
   /**

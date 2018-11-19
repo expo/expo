@@ -1,6 +1,6 @@
 {
   "name": "expo-firebase-notifications",
-  "version": "1.0.0",
+  "version": "1.0.0-rc.4",
   "description": "Expo Unimodule for interfacing with Firebase Remote Notifications",
   "main": "src/index.js",
   "keywords": [

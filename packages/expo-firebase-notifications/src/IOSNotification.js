@@ -3,9 +3,12 @@ import { Platform } from 'expo-core';
 import { BackgroundFetchResultValue } from './IOSNotifications';
 
 import type Notification from './Notification';
-import type { IOSAttachment, IOSAttachmentOptions, NativeIOSNotification } from './types';
-// import type Notifications from '.';
-type Notifications = Object;
+import type {
+  Notifications,
+  IOSAttachment,
+  IOSAttachmentOptions,
+  NativeIOSNotification,
+} from './types';
 
 type CompletionHandler = BackgroundFetchResultValue => void;
 
@@ -46,6 +49,7 @@ export default class IOSNotification {
       this._attachments = data.attachments;
       this._badge = data.badge;
       this._category = data.category;
+      this._location = data.location;
       this._hasAction = data.hasAction;
       this._launchImage = data.launchImage;
       this._threadIdentifier = data.threadIdentifier;
@@ -85,6 +89,10 @@ export default class IOSNotification {
 
   get category(): ?string {
     return this._category;
+  }
+
+  get location(): ?string {
+    return this._location;
   }
 
   get hasAction(): ?boolean {
@@ -149,6 +157,11 @@ export default class IOSNotification {
     return this._notification;
   }
 
+  setLocation(location): Notification {
+    this._location = location;
+    return this._notification;
+  }
+
   /**
    *
    * @param hasAction
@@ -183,10 +196,15 @@ export default class IOSNotification {
     // TODO: Validation of required fields
 
     return {
+      summaryArgumentCount: this._summaryArgumentCount,
+      summaryArgument: this._summaryArgument,
+      volume: this._volume,
+      isCritical: this._isCritical,
       alertAction: this._alertAction,
       attachments: this._attachments,
       badge: this._badge,
       category: this._category,
+      location: this._location,
       hasAction: this._hasAction,
       launchImage: this._launchImage,
       threadIdentifier: this._threadIdentifier,

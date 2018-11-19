@@ -2,13 +2,11 @@
  * @flow
  * Firestore Transaction representation wrapper
  */
-import { events } from 'expo-firebase-app';
+import { SharedEventEmitter } from 'expo-firebase-app';
 
 import Transaction from './Transaction';
 
-import type Firestore from './';
-
-const { getAppEventName, SharedEventEmitter } = events;
+import type { Firestore } from './firestoreTypes.flow';
 
 let transactionId = 0;
 
@@ -50,7 +48,7 @@ export default class TransactionHandler {
     this._pending = {};
     this._firestore = firestore;
     SharedEventEmitter.addListener(
-      getAppEventName(this._firestore, 'Expo.Firebase.firestore_transaction_event'),
+      this._firestore.getAppEventName('Expo.Firebase.firestore_transaction_event'),
       this._handleTransactionEvent.bind(this)
     );
   }

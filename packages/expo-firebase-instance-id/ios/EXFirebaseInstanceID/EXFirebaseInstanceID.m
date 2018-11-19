@@ -1,3 +1,5 @@
+// Copyright 2018-present 650 Industries. All rights reserved.
+
 #import <EXFirebaseInstanceID/EXFirebaseInstanceID.h>
 #import <FirebaseMessaging/FirebaseMessaging.h>
 #import <FirebaseInstanceID/FIRInstanceID.h>

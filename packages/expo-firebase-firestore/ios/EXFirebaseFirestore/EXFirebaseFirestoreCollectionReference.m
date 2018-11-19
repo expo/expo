@@ -1,6 +1,7 @@
+// Copyright 2018-present 650 Industries. All rights reserved.
+
 #import <EXFirebaseFirestore/EXFirebaseFirestoreCollectionReference.h>
 #import <EXFirebaseFirestore/EXFirebaseFirestoreEvents.h>
-//#import <FirebaseFirestore/FIRQuery.mm>
 
 @implementation EXFirebaseFirestoreCollectionReference
 
@@ -126,7 +127,7 @@ static NSMutableDictionary *_listeners;
       } else if ([operator isEqualToString:@"LESS_THAN_OR_EQUAL"]) {
         query = [query queryWhereField:fieldPath isLessThanOrEqualTo:value];
       } else if ([operator isEqualToString:@"ARRAY_CONTAINS"]) {
-//        query = [query queryWhereField:fieldPath arrayContains:value];
+       query = [query queryWhereField:fieldPath arrayContains:value];
       }
     } else {
       NSArray *fieldPathElements = fieldPathDictionary[@"elements"];
@@ -142,7 +143,7 @@ static NSMutableDictionary *_listeners;
       } else if ([operator isEqualToString:@"LESS_THAN_OR_EQUAL"]) {
         query = [query queryWhereFieldPath:fieldPath isLessThanOrEqualTo:value];
       } else if ([operator isEqualToString:@"ARRAY_CONTAINS"]) {
-//        query = [query queryWhereFieldPath:fieldPath arrayContains:value];
+       query = [query queryWhereFieldPath:fieldPath arrayContains:value];
       }
     }
   }

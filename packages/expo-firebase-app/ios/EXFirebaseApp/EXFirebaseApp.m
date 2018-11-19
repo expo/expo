@@ -1,3 +1,5 @@
+// Copyright 2018-present 650 Industries. All rights reserved.
+
 #import <FirebaseCore/FirebaseCore.h>
 #import <EXCore/EXUtilities.h>
 #import <EXFirebaseApp/EXFirebaseApp.h>

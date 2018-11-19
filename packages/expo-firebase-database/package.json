@@ -1,6 +1,6 @@
 {
   "name": "expo-firebase-database",
-  "version": "1.0.0",
+  "version": "1.0.0-rc.3",
   "description": "Expo Unimodule for interfacing with Firebase Database",
   "main": "src/index.js",
   "keywords": [

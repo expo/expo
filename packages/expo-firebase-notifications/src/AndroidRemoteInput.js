@@ -1,5 +1,6 @@
 // @flow
 
+import invariant from 'invariant';
 import type { AndroidAllowDataType, NativeAndroidRemoteInput } from './types';
 
 export default class AndroidRemoteInput {
@@ -84,10 +85,7 @@ export default class AndroidRemoteInput {
   }
 
   build(): NativeAndroidRemoteInput {
-    if (!this._resultKey) {
-      throw new Error('AndroidRemoteInput: Missing required `resultKey` property');
-    }
-
+    invariant(this._resultKey, 'AndroidRemoteInput: Missing required `resultKey` property');
     return {
       allowedDataTypes: this._allowedDataTypes,
       allowFreeFormInput: this._allowFreeFormInput,

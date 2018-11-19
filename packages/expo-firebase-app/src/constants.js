@@ -1,5 +1,5 @@
 export const FirebaseNamespaces = {
-  admob: 'admob',
+  // admob: 'admob',
   analytics: 'analytics',
   auth: 'auth',
   config: 'config',
@@ -16,6 +16,7 @@ export const FirebaseNamespaces = {
   perf: 'perf',
   storage: 'storage',
   utils: 'utils',
+  // vision: 'vision',
 };
 
 export const FirebaseModuleNames = {
@@ -36,4 +37,7 @@ export const FirebaseModuleNames = {
   ExpoFirebasePerformance: 'ExpoFirebasePerformance',
   ExpoFirebaseStorage: 'ExpoFirebaseStorage',
   ExpoFirebaseUtils: 'ExpoFirebaseUtils',
+  ExpoFirebaseVision: 'ExpoFirebaseVision',
 };
+
+export const DEFAULT_APP_NAME = '[DEFAULT]';

@@ -1,4 +1,4 @@
-
+// Copyright 2018-present 650 Industries. All rights reserved.
 
 #import <EXFirebaseLinks/EXFirebaseLinks.h>
 
@@ -18,7 +18,7 @@ static NSString *const LINKS_LINK_RECEIVED = @"Expo.Firebase.links_link_received
 
 @implementation EXFirebaseLinks
 
-static EXFirebaseLinks *theEXFirebaseLinks = nil;
+static EXFirebaseLinks *shared = nil;
 static NSString *initialLink = nil;
 static bool jsReady = NO;
 
@@ -26,10 +26,10 @@ static bool jsReady = NO;
     // If an event comes in before the bridge has initialised the native module
     // then we create a temporary instance which handles events until the bridge
     // and JS side are ready
-    if (theEXFirebaseLinks == nil) {
-        theEXFirebaseLinks = [[EXFirebaseLinks alloc] init];
+    if (shared == nil) {
+        shared = [[EXFirebaseLinks alloc] init];
     }
-    return theEXFirebaseLinks;
+    return shared;
 }
 
 EX_EXPORT_MODULE(ExpoFirebaseLinks);
@@ -47,11 +47,12 @@ EX_EXPORT_MODULE(ExpoFirebaseLinks);
     if (self != nil) {
         NSLog(@"Setting up EXFirebaseLinks instance");
         // Set static instance for use from AppDelegate
-        theEXFirebaseLinks = self;
+        shared = self;
     }
     return self;
 }
 
+// TODO: Bacon: Does this get called?
 - (void)dealloc {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
@@ -66,7 +67,7 @@ EX_EXPORT_MODULE(ExpoFirebaseLinks);
 FIRDynamicLink *dynamicLink = [[FIRDynamicLinks dynamicLinks] dynamicLinkFromCustomSchemeURL:url];
   if (dynamicLink && dynamicLink.url) {
     NSURL* url = dynamicLink.url;
-    [self sendJSEvent:self.eventEmitter name:LINKS_LINK_RECEIVED body:url.absoluteString];
+    [self sendJSEvent:_eventEmitter name:LINKS_LINK_RECEIVED body:url.absoluteString];
     return YES;
   }
   return NO;
@@ -78,10 +79,10 @@ continueUserActivity:(NSUserActivity *)userActivity
   if ([userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
     return [[FIRDynamicLinks dynamicLinks]
             handleUniversalLink:userActivity.webpageURL
-            completion:^(FIRDynamicLink * _Nullable dynamicLink, NSError * _Nullable error) {
+            completion:^(FIRDynamicLink *_Nullable dynamicLink, NSError *_Nullable error) {
               if (dynamicLink && dynamicLink.url && error == nil) {
-                NSURL* url = dynamicLink.url;
-                [self sendJSEvent:self.eventEmitter name:LINKS_LINK_RECEIVED body:url.absoluteString];
+                NSURL *url = dynamicLink.url;
+                [self sendJSEvent:_eventEmitter name:LINKS_LINK_RECEIVED body:url.absoluteString];
               } else {
                 NSLog(@"Failed to handle universal link: %@", userActivity.webpageURL);
               }
@@ -94,7 +95,7 @@ continueUserActivity:(NSUserActivity *)userActivity
 // *******************************************************
 
 - (void)sendLink:(NSString *)link {
-  [self sendJSEvent:self.eventEmitter name:LINKS_LINK_RECEIVED body:link];
+  [self sendJSEvent:_eventEmitter name:LINKS_LINK_RECEIVED body:link];
 }
 
 // ** Start methods **
@@ -156,7 +157,7 @@ EX_EXPORT_METHOD_AS(getInitialLink,
                     getInitialLink:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
 
-  NSDictionary *launchOptions = [self launchOptions];
+  NSDictionary *launchOptions = [_utils launchOptions];
 
   if (launchOptions[UIApplicationLaunchOptionsURLKey]) {
     NSURL *url = (NSURL*)launchOptions[UIApplicationLaunchOptionsURLKey];
@@ -192,12 +193,6 @@ EX_EXPORT_METHOD_AS(jsInitialised,
 
 // ** Start internals **
 
-- (NSDictionary *)launchOptions
-{
-  //_utils.launchOptions
-  return @{};
-}
-
 // Because of the time delay between the app starting and the bridge being initialised
 // we catch any events that are received before the JS is ready to receive them
 - (void)sendJSEvent:(id<EXEventEmitterService>)emitter name:(NSString *)name body:(id)body {
@@ -224,7 +219,7 @@ EX_EXPORT_METHOD_AS(jsInitialised,
     
     return components;
   }
-  @catch(NSException * e) {
+  @catch(NSException *e) {
     NSLog(@"error while building componets from meta data %@", e);
     @throw;
   }
@@ -332,6 +327,8 @@ EX_EXPORT_METHOD_AS(jsInitialised,
   components.socialMetaTagParameters = socialParams;
 }
 
+#pragma mark - EXEventEmitter
+
 - (NSArray<NSString *> *)supportedEvents {
   return @[LINKS_LINK_RECEIVED];
 }
@@ -340,8 +337,10 @@ EX_EXPORT_METHOD_AS(jsInitialised,
   
 }
 
-- (void)stopObserving {
+- (void)stopObserving
+{
   
 }
+
 
 @end
