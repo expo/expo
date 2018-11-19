@@ -54,9 +54,33 @@ To upload your Android app to Google Play, run `expo upload:android`. You can se
 
 ## 2.2. If you choose to upload your iOS app to TestFlight
 
+### Using expo-cli
+
 To upload your iOS app to TestFlight, run `expo upload:ios`. You can set following options when uploading an iOS standalone app:
 - `--apple-id <apple-id>` **(required)** - your Apple ID login. Alternatively you can set the `EXPO_APPLE_ID` environment variable.
 - `--apple-id-password <apple-id-password>` **(required)** - your Apple ID password. Alternatively you can set the `EXPO_APPLE_ID_PASSWORD` environment variable.
 - `--app-name <app-name>` - your app display name, will be used to name an app on App Store Connect
 - `--sku <sku>` - a unique ID for your app that is not visible on the App Store, will be generated unless provided
 - `--language <language>` - primary language (e.g. English, German; run `expo upload:ios --help` to see the list of available languages) (default: English)
+
+### Manually uploading your app
+
+In order to see your app on Testflight, you will first need to submit your .IPA file to Apple using Application loader. In order to do this, there are a few prequisite steps which you may not have followed previously if this is your first app submission to Apple:
+
+1. Make sure you have logged into iTunes connect at least once with your Apple ID and accepted the terms.
+2. Login to https://appleid.apple.com
+3. Generate an app specific password by going to Accounts > Manage > Generate App Specific Password. Make a note of this password as it will be needed later.
+4. Start XCode but do not load any project
+5. From the XCode menu in the menu bar, select 'Open Developer Tool' and then 'Application Loader'
+6. Once Application Loader launches, login with your Apple ID and the app specific password generated in step 3
+7. Follow the steps to agree to the necessary terms.
+8. Once you have agreed to all terms, double-click on the light-grey panel in the center (above the words 'Deliver Your App').
+9. Follow the steps to upload your IPA to Apple.
+
+You can check the status of your app submission to TestFlight in App Store Connect (http://appstoreconnect.apple.com):
+
+1. Login to http://appstoreconnect.apple.com with your Apple ID and regular password (NOT your app specific password)
+2. Select 'My Apps' and you should see your app listed.
+3. Click 'TestFlight' from the menu bar at the top.
+4. This will show your current app builds that are available for testing.
+5. In order to test the app on your device, you will need to install the TestFlight iOS app from the App Store, and sign in using your Apple ID.
