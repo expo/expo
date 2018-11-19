@@ -2,6 +2,7 @@
 
 import invariant from 'invariant';
 import { Platform } from 'expo-core';
+
 import ExpoFontLoader from './ExpoFontLoader';
 
 const isWeb = Platform.OS === 'web';
@@ -143,6 +144,8 @@ async function _loadSingleFontAsync(name: string, asset: Asset): Promise<void> {
 }
 
 function _getNativeFontName(name: string): string {
-  if (isWeb) return name;
+  if (isWeb) {
+    return name;
+  }
   return `${Constants.sessionId}-${name}`;
 }

@@ -26,12 +26,7 @@ export default {
     return 'ExpoFontLoader';
   },
   loadAsync(fontFamilyName: string, resource: string): Promise {
-    const canInjectStyle =
-      document &&
-      document.head &&
-      isFunction(document.head.appendChild) &&
-      isFunction(document.createElement) &&
-      isFunction(document.createTextNode);
+    const canInjectStyle = isFunction(document.head.appendChild);
 
     if (!canInjectStyle) {
       throw new Error('E_FONT_CREATION_FAILED : document element cannot support injecting fonts');
