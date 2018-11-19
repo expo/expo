@@ -158,9 +158,7 @@ On Android ask for this permission individually.
 
 ## Android: permissions equivalents inside `app.json`
 
-If you specified `android.permissions` inside your `app.json` ([read more about configuration](../workflow/configuration.html#android))  you have to use values corresponding to their `Expo.Permissions` equivalents.
-
-> **Note:** If you haven't specified `android.permissions` inside your `app.json` your standalone Android app will require the permissions listed below by default.
+In order to request permissions in a standalone Android app, you need to specify the corresponding native permission types in the `android.permissions` key inside `app.json` ([read more about configuration](../workflow/configuration.html#android)). The mapping between `Expo.Permissions` values and native permission types is as follows:
 
 | Expo            | Android                                           |
 | --------------- | --------------------------------------------------|
@@ -171,3 +169,7 @@ If you specified `android.permissions` inside your `app.json` ([read more about 
 | CAMERA_ROLL     | READ\_EXTERNAL\_STORAGE, WRITE\_EXTERNAL\_STORAGE |
 | CALENDAR        | READ\_CALENDAR, WRITE\_CALENDAR                   |
 | SMS             | READ_SMS                                          |
+
+For example, if your app asks for `AUDIO_RECORDING` permission at runtime but no other permissions, you should set `android.permissions` to `["RECORD_AUDIO"]` in `app.json`.
+
+> **Note:** If you don't specify `android.permissions` inside your `app.json`, by default your standalone Android app will require the all of the permissions listed above.

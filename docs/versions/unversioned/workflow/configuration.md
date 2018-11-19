@@ -490,12 +490,14 @@ Configuration for how and when the app should request OTA JavaScript updates
     "playStoreUrl": STRING,
 
     /*
-      List of additional permissions the standalone app will request upon installation.
-      Along with the minimum necessary for an expo app to function.  
+      List of additional permissions the standalone app will request upon installation,
+      along with the minimum necessary for an Expo app to function.
 
-      Don't use "permissions" to use the default list.
+      To use ALL permissions supported by Expo, do not specify the "permissions" key.
 
-      Set "permissions" to [] to use ONLY the following MINIMUM necessary permissions:
+      To use ONLY the following minimum necessary permissions and none of the extras supported
+      by Expo, set "permissions" to []. The minimum necessary permissions do not require a
+      Privacy Policy when uploading to Google Play Store and are:
       
       •	receive data from Internet
       •	view network connections
@@ -503,13 +505,11 @@ Configuration for how and when the app should request OTA JavaScript updates
       •	change your audio settings
       •	draw over other apps
       •	prevent device from sleeping
-      •	view network connections
-      •	full network access
-      •	change your audio settings
-      •	draw over other apps
-      •	prevent device from sleeping
-      
-      Note: these do not require privacy policy when uploading to Google Play Store.
+
+      To use the minimum necessary permissions ALONG with certain additional permissions,
+      specify those extras in "permissions", e.g.
+
+      ["CAMERA", "RECORD_AUDIO"]
       
       Note for ejected projects: To change permissions after ejecting, edit AndroidManifest.xml manually      
     */
