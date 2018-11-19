@@ -3,7 +3,7 @@ set -euo pipefail
 
 ./build.sh
 
-zipalign -f -v -p 4 app/build/outputs/apk/prodMinSdkProdKernel/release/app-prodMinSdk-prodKernel-release-unsigned.apk app-prod-release-unsigned-aligned.apk
+zipalign -f -v -p 4 app/build/outputs/apk/prodKernel/release/app-prodKernel-release-unsigned.apk app-prod-release-unsigned-aligned.apk
 
 apksigner sign \
   --ks <(echo $ANDROID_KEYSTORE_B64 | base64 -d) \

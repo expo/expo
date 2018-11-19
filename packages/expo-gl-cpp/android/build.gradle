@@ -5,7 +5,7 @@ buildscript {
   }
 
   dependencies {
-    classpath 'com.android.tools.build:gradle:3.1.3'
+    classpath 'com.android.tools.build:gradle:3.2.1'
     classpath 'de.undercouch:gradle-download-task:2.0.0'
   }
 }
@@ -198,7 +198,7 @@ if (new File(rootProject.projectDir.parentFile, 'pubspec.yaml').exists()) {
 dependencies {
   expendency 'expo-core'
 
-  provided 'com.facebook.soloader:soloader:0.5.1'
+  compileOnly 'com.facebook.soloader:soloader:0.5.1'
 
   // it must be `compile` instead of `implementation` or `api`
   // cause the later dependencies are not accessible by configurations.compile or similar :(

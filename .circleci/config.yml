@@ -208,6 +208,7 @@ jobs:
       - yarn_install:
           working_directory: ~/expo/tools-public
       - restore_gradle_cache
+      - run: nix build nixpkgs.stdenv.cc.libc --no-link && ln -s $(nix path-info nixpkgs.stdenv.cc.libc)/lib64 /lib64 # otherwise build fails on alpine machines which are used by nix images, see https://github.com/expo/expo/pull/2716#issuecomment-439181457
       - decrypt_secrets
       - run:
           working_directory: ~/expo/android
@@ -220,22 +221,14 @@ jobs:
       - store_artifacts:
           path: ~/expo/android/exponent-release.apk
       - store_artifacts: # daemon logs for debugging crashes
-          path: ~/.gradle/daemon/4.4
+          path: ~/.gradle/daemon/4.10.2
 
   client_android_release_google_play:
     executor: js
     steps:
       - setup
-      - yarn_install:
-          working_directory: ~/expo/tools
-      - yarn_install:
-          working_directory: ~/expo/tools-public
       - restore_cache:
           key: client-android-apk-{{ .Revision }}
-      - run:
-          name: Validate Supply metadata
-          working_directory: ~/expo/tools
-          command: nix run nixpkgs.nodePackages.gulp-cli --command gulp supply-validate
       - run:
           name: Upload APK to Google Play and release to production
           working_directory: ~/expo
