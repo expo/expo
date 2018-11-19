@@ -276,11 +276,8 @@ public class StripeModule extends ExportedModule implements ModuleRegistryConsum
             Math.round((Double)options.get("amount")),
             (String)options.get("name"),
             (String)options.get("returnURL"),
-            getStringOrNull(options, "statementDescriptor"));
-        break;
-      case "bitcoin":
-        sourceParams = SourceParams.createBitcoinParams(
-            Math.round((Double)options.get("amount")), (String)options.get("currency"), (String)options.get("email"));
+            getStringOrNull(options, "statementDescriptor"),
+            (String)options.get("preferredLanguage"));
         break;
       case "giropay":
         sourceParams = SourceParams.createGiropayParams(
