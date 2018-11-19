@@ -402,7 +402,6 @@ public class ImagePickerModule extends ExpoKernelServiceConsumerBaseModule imple
         IoUtils.copyStream(is, fos, null);
       }
     }
-
   }
 
   private void handleCropperResult(Intent intent, Promise promise, WritableMap exifData) {
