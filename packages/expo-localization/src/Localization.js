@@ -1,7 +1,5 @@
 // @flow
-import { NativeModulesProxy } from 'expo-core';
-
-const { ExpoLocalization } = NativeModulesProxy;
+import ExpoLocalization from './ExpoLocalization';
 
 type Localization = {
   locale: string,
@@ -12,32 +10,21 @@ type Localization = {
   isRTL: boolean,
 };
 
-class LocalizationModule {
-  locale: string;
-  locales: Array<string>;
-  timezone: string;
-  isoCurrencyCodes: ?Array<string>;
-  country: ?string;
-  isRTL: boolean;
-
-  constructor() {
-    this._syncLocals(ExpoLocalization);
-  }
-
-  _syncLocals = ({ locale, locales, timezone, isoCurrencyCodes, country, isRTL }: Localization) => {
-    this.locale = locale;
-    this.locales = locales;
-    this.timezone = timezone;
-    this.isoCurrencyCodes = isoCurrencyCodes;
-    this.country = country;
-    this.isRTL = isRTL;
-  };
-
-  getLocalizationAsync = async (): Promise<Localization> => {
+export default {
+  locale: ExpoLocalization.locale,
+  locales: ExpoLocalization.locales,
+  timezone: ExpoLocalization.timezone,
+  isoCurrencyCodes: ExpoLocalization.isoCurrencyCodes,
+  country: ExpoLocalization.country,
+  isRTL: ExpoLocalization.isRTL,
+  async getLocalizationAsync(): Promise<Localization> {
     const localization = await ExpoLocalization.getLocalizationAsync();
-    this._syncLocals(localization);
+    this.locale = ExpoLocalization.locale;
+    this.locales = ExpoLocalization.locales;
+    this.timezone = ExpoLocalization.timezone;
+    this.isoCurrencyCodes = ExpoLocalization.isoCurrencyCodes;
+    this.country = ExpoLocalization.country;
+    this.isRTL = ExpoLocalization.isRTL;
     return localization;
-  };
-}
-
-export default new LocalizationModule();
+  },
+};
