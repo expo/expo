@@ -130,7 +130,7 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
   }
 
   private EnumSet<Permission> permissionsForPath(String path) {
-    return mModuleRegistry.getModule(FilePermissionWielderInterface.class).getInfo(getContext(), path);
+    return mModuleRegistry.getModule(FilePermissionWielderInterface.class).getPathPermissions(getContext(), path);
   }
 
   private EnumSet<Permission> permissionsForUri(Uri uri) {

@@ -4,6 +4,6 @@ import android.content.Context;
 import java.util.EnumSet;
 
 public interface FilePermissionWielderInterface {
-  EnumSet<Permission> getInfo(Context context, String path);
+  EnumSet<Permission> getPathPermissions(Context context, String path);
 }
 
