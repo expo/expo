@@ -31,13 +31,14 @@ RCT_ENUM_CONVERTER(NSCalendarUnit,
 @interface EXNotifications ()
 
 // unversioned EXRemoteNotificationManager instance
-@property (nonatomic, weak) id <EXNotificationsScopedModuleDelegate> kernelNotificationsDelegate;
+@property (nonatomic, weak) id <EXNotificationsScopedModuleDelegate> remoteNotificationsDelegate;
+@property (nonatomic, weak) id <EXNotificationsIdentifiersManager> notificationsIdentifiersManager;
 
 @end
 
 @implementation EXNotifications
 
-EX_EXPORT_SCOPED_MODULE(ExponentNotifications, RemoteNotificationManager);
+EX_EXPORT_SCOPED_MULTISERVICE_MODULE(ExponentNotifications, @"RemoteNotificationManager", @"UserNotificationManager");
 
 @synthesize bridge = _bridge;
 @synthesize methodQueue = _methodQueue;
@@ -47,10 +48,11 @@ EX_EXPORT_SCOPED_MODULE(ExponentNotifications, RemoteNotificationManager);
   _bridge = bridge;
 }
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId kernelServiceDelegate:(id)kernelServiceInstance params:(NSDictionary *)params
+- (instancetype)initWithExperienceId:(NSString *)experienceId kernelServiceDelegates:(NSDictionary *)kernelServiceInstances params:(NSDictionary *)params
 {
-  if (self = [super initWithExperienceId:experienceId kernelServiceDelegate:kernelServiceInstance params:params]) {
-    _kernelNotificationsDelegate = kernelServiceInstance;
+  if (self = [super initWithExperienceId:experienceId kernelServiceDelegates:kernelServiceInstances params:params]) {
+    _remoteNotificationsDelegate = kernelServiceInstances[@"RemoteNotificationManager"];
+    _notificationsIdentifiersManager = kernelServiceInstances[@"UserNotificationManager"];
   }
   return self;
 }
@@ -66,7 +68,7 @@ RCT_REMAP_METHOD(getDevicePushTokenAsync,
     return reject(0, @"getDevicePushTokenAsync is only accessible within standalone applications", nil);
   }
 
-  NSString *token = [_kernelNotificationsDelegate apnsTokenStringForScopedModule:self];
+  NSString *token = [_remoteNotificationsDelegate apnsTokenStringForScopedModule:self];
   if (!token) {
     return reject(0, @"APNS token has not been set", nil);
   }
@@ -82,7 +84,7 @@ RCT_REMAP_METHOD(getExponentPushTokenAsync,
     return;
   }
 
-  [_kernelNotificationsDelegate getExpoPushTokenForScopedModule:self completionHandler:^(NSString *pushToken, NSError *error) {
+  [_remoteNotificationsDelegate getExpoPushTokenForScopedModule:self completionHandler:^(NSString *pushToken, NSError *error) {
     if (error) {
       reject(@"E_NOTIFICATIONS_TOKEN_REGISTRATION_FAILED", error.localizedDescription, error);
     } else {
