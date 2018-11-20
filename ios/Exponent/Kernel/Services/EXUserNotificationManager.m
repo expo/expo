@@ -5,6 +5,8 @@
 #import "EXRemoteNotificationManager.h"
 #import "EXEnvironment.h"
 
+static NSString * const scopedIdentifierSeparator = @":";
+
 @interface EXUserNotificationManager ()
 
 @property (nonatomic, strong) NSMutableDictionary<NSString *, EXPendingNotification *> *pendingNotifications;
@@ -24,6 +26,25 @@
 - (EXPendingNotification *)initialNotificationForExperience:(NSString *)experienceId
 {
   return _pendingNotifications[experienceId];
+}
+
+# pragma mark - EXNotificationsIdentifiersManager
+
+- (NSString *)internalIdForIdentifier:(NSString *)identifier experienceId:(nonnull NSString *)experienceId
+{
+  if ([EXEnvironment sharedEnvironment].isDetached) {
+    return identifier;
+  }
+  return [NSString stringWithFormat:@"%@%@%@", experienceId, scopedIdentifierSeparator, identifier];
+}
+
+- (NSString *)exportedIdForInternalIdentifier:(NSString *)identifier
+{
+  if ([EXEnvironment sharedEnvironment].isDetached) {
+    return identifier;
+  }
+  NSArray<NSString *> *components = [identifier componentsSeparatedByString:scopedIdentifierSeparator];
+  return [[components subarrayWithRange:NSMakeRange(1, components.count - 1)] componentsJoinedByString:scopedIdentifierSeparator];
 }
 
 # pragma mark - UNUserNotificationCenterDelegate

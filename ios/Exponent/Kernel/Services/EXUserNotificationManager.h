@@ -4,8 +4,9 @@
 #import <UserNotifications/UserNotifications.h>
 #import "EXUserNotificationCenter.h"
 #import "EXPendingNotification.h"
+#import "EXNotifications.h"
 
-@interface EXUserNotificationManager : NSObject <UNUserNotificationCenterDelegate>
+@interface EXUserNotificationManager : NSObject <UNUserNotificationCenterDelegate, EXNotificationsIdentifiersManager>
 
 - (EXPendingNotification *)initialNotificationForExperience:(NSString *)experienceId;
 
