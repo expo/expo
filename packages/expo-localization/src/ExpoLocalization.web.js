@@ -1,5 +1,12 @@
 // @flow
 import * as rtlDetect from 'rtl-detect';
+import moment from 'moment';
+import 'moment-timezone';
+
+/*
+ * TODO: Bacon: We only use moment for guessing the current timezone. 
+ * We should find a more cost-effective approach.
+ */
 
 export default {
   get isRTL(): boolean {
@@ -11,19 +18,15 @@ export default {
       navigator.language ||
       navigator.systemLanguage ||
       navigator.browserLanguage ||
-      navigator.userLanguage;
-    if (!locale && navigator.languages && navigator.languages.length) {
-      locale = navigator.languages[0];
-    }
+      navigator.userLanguage ||
+      this.locales[0];
     return locale;
   },
   get locales(): Array<string> {
     const { navigator = {} } = global;
-    return navigator.languages;
+    return navigator.languages || [];
   },
   get timezone(): string {
-    const moment = require('moment');
-    require('moment-timezone');
     return moment.tz.guess();
   },
   get isoCurrencyCodes(): Array<string> {
@@ -32,17 +35,15 @@ export default {
      */
     return [];
   },
-  get country(): string {
-    return this.locale;
+  get country(): string | null {
+    const { locale } = this;
+    if (typeof locale === 'string' && locale.length) {
+      const isoCountryCode = locale.substring(locale.lastIndexOf('-') + 1);
+      return isoCountryCode.toUpperCase();
+    }
+    return null;
   },
-  async getLocalizationAsync(): Promise<Object> {
-    /*
-     * TODO: Bacon: This seems dangerous. 
-     * On Android this method only returns new values when you go to settings and change the language.
-     * So maybe it doesn't matter that we can actually refresh.
-     */
-    // window.location.reload(true);
-
+  async getLocalizationAsync(): Promise<{ [string]: any }> {
     const { country, isoCurrencyCodes, timezone, locales, locale, isRTL } = this;
     return {
       country,
