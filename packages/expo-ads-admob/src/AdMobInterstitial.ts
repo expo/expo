@@ -1,7 +1,7 @@
 import { NativeModulesProxy, EventEmitter } from 'expo-core';
 import { Platform, EmitterSubscription } from 'react-native';
 
-const AdMobInterstitialManager: { [name: string]: any } = NativeModulesProxy.ExpoAdsAdMobInterstitialManager;
+const AdMobInterstitialManager: any = NativeModulesProxy.ExpoAdsAdMobInterstitialManager;
 
 const adMobInterstitialEmitter = new EventEmitter(AdMobInterstitialManager);
 

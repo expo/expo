@@ -39,12 +39,12 @@ type PropsType = React.ElementProps<View> & {
    * AdMob iOS library events
    */
   onAdViewDidReceiveAd?: () => void,
-  onDidFailToReceiveAdWithError?: (string) => void,
+  onDidFailToReceiveAdWithError?: (error: string) => void,
   onAdViewWillPresentScreen?: () => void,
   onAdViewWillDismissScreen?: () => void,
   onAdViewDidDismissScreen?: () => void,
   onAdViewWillLeaveApplication?: () => void,
-  onAdMobDispatchAppEvent?: (AppEvent) => void,
+  onAdMobDispatchAppEvent?: (event: AppEvent) => void,
 };
 
 type StateType = {
