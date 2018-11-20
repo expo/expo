@@ -64,19 +64,15 @@ function isImageType(type) {
 }
 
 function getExtension(url) {
-  return url
-    .split('.')
-    .pop()
-    .split('?')[0]
-    .split('#')[0]
-    .toLowerCase();
+  const filename = filenameFromUrl(url);
+  const dotIndex = filename.lastIndexOf('.');
+  // Ignore leading dots for hidden files
+  return dotIndex > 0 ? filename.substring(dotIndex) : '';
 }
 
 function filenameFromUrl(url) {
-  return url
-    .substring(url.lastIndexOf('/') + 1)
-    .split('?')[0]
-    .split('#')[0];
+  const urlComponents = parser.parse(this.uri);
+  return urlComponents.file;
 }
 
 // Return { uri, hash } for an asset's file, picking the correct scale, based on its React Native
@@ -165,9 +161,9 @@ function getImageInfoAsync(src) {
     const img = new Image();
     img.onerror = reject;
     img.onload = () => {
-      console.log({ img });
+      const name = img.name || img.title || img.localName;
       resolve({
-        name: img.name || img.title || img.localName,
+        name,
         width: img.naturalWidth,
         height: img.naturalHeight,
       });
@@ -177,6 +173,7 @@ function getImageInfoAsync(src) {
 }
 export default class Asset {
   static byHash = {};
+  static byUri = {};
 
   constructor({ name, type, hash, uri, width, height }) {
     this.name = name;
@@ -233,9 +230,8 @@ export default class Asset {
   }
 
   static fromURI(uri) {
-    const metaHash = uri;
-    if (Asset.byHash[metaHash]) {
-      return Asset.byHash[metaHash];
+    if (Asset.byUri[uri]) {
+      return Asset.byUri[uri];
     }
 
     let type = '';
@@ -245,17 +241,12 @@ export default class Asset {
       type = getExtension(uri);
     }
 
-    // const { width, height, name } = await getImageInfoAsync(uri);
     const asset = new Asset({
       type,
-      hash: metaHash,
       uri,
-      // name,
-      // width,
-      // height,
     });
 
-    Asset.byHash[metaHash] = asset;
+    Asset.byUri[uri] = asset;
 
     return asset;
   }
