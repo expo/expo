@@ -36,7 +36,7 @@ Please use Node 8+ and npm 4. We recommend installing Node using [nvm](https://g
 
 #### Android
 - Make sure you have Android Studio 3 and the [Android NDK](https://facebook.github.io/react-native/docs/building-from-source.html#download-links-for-android-ndk) version `r10e` installed.
-- Build and install Android with `cd android; ./run.sh; cd ..`. It might fail the first time. If so just run `./run.sh` again.
+- See "Running on a Device"
 
 ## Running on a Device
 
@@ -52,7 +52,7 @@ Please use Node 8+ and npm 4. We recommend installing Node using [nvm](https://g
 ### Android
 - If the Play Store version of the Expo Client App is installed on your test device, uninstall it.
 - Connect your test device to your computer with a USB cable.
-- Run `cd android; ./run.sh`, or alternately open the `android` directory in Android Studio, start it, and in the **Select Deployment Target** dialog, select your device.
+- Run `fastlane android start`, or alternately open the `android` directory in Android Studio, start it, and in the **Select Deployment Target** dialog, select your device.
 
 ## Standalone Apps
 
