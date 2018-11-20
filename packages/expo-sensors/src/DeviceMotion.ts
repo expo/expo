@@ -1,5 +1,3 @@
-// @flow
-
 import { NativeModulesProxy } from 'expo-core';
 
 import DeviceSensor from './DeviceSensor';
