@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { requireNativeViewManager } from 'expo-core';
 import { View, ViewPropTypes } from 'react-native';
 
-type AppEvent = { [eventName: string]: Object };
+type AppEvent = { [eventName: string]: any };
 
 type PropsType = React.ElementProps<View> & {
   /**
