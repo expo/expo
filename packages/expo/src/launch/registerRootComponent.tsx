@@ -2,7 +2,7 @@ import { Font } from 'expo-font';
 import * as React from 'react';
 import { AppRegistry, StyleSheet } from 'react-native';
 
-import Notifications from '../Notifications';
+import Notifications from '../Notifications/Notifications';
 import RootErrorBoundary from './RootErrorBoundary';
 
 type InitialProps = {

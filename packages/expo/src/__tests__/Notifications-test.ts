@@ -1,6 +1,6 @@
 import warning from 'fbjs/lib/warning';
 import { NativeModules } from 'react-native';
-import Notifications from '../Notifications';
+import Notifications from '../Notifications/Notifications';
 import { mockPlatformIOS, mockPlatformAndroid } from '../../test/mocking';
 
 const mockNotificationObject = { origin: 'selected', data: {} } as any;
