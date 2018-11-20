@@ -1,4 +1,4 @@
-package main;
+package expo.interfaces.filesystem;
 
 public enum Permission {
   READ, WRITE,

@@ -38,8 +38,8 @@ import expo.core.ModuleRegistry;
 import expo.core.interfaces.ModuleRegistryConsumer;
 import expo.core.Promise;
 import expo.core.interfaces.services.EventEmitter;
-import main.FilePermissionChecker;
-import main.Permission;
+import expo.interfaces.filesystem.FilePermissionWielderInterface;
+import expo.interfaces.filesystem.Permission;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Headers;
@@ -130,7 +130,7 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
   }
 
   private EnumSet<Permission> permissionsForPath(String path) {
-    return mModuleRegistry.getModule(FilePermissionChecker.class).getInfo(getContext(), path);
+    return mModuleRegistry.getModule(FilePermissionWielderInterface.class).getInfo(getContext(), path);
   }
 
   private EnumSet<Permission> permissionsForUri(Uri uri) {

@@ -17,7 +17,6 @@ import expo.adapters.react.ReactModuleRegistryProvider;
 import expo.core.ModuleRegistry;
 import expo.core.interfaces.InternalModule;
 import expo.core.interfaces.ModuleRegistryConsumer;
-import expo.modules.filesystem.ExpokitFilePermissionChecker;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.utils.ScopedContext;
@@ -55,7 +54,7 @@ public class ExpoModuleRegistryAdapter extends ModuleRegistryAdapter implements 
     moduleRegistry.registerInternalModule(new ConstantsBinding(scopedContext, experienceProperties, manifest));
 
     // Overriding expo-file-system FilePermissionChecker
-    moduleRegistry.registerInternalModule(new ExpoClientFilePermissionChecker());
+    moduleRegistry.registerInternalModule(new ScopedFilePermissionWielder());
 
     // ReactAdapterPackage requires ReactContext
     ReactApplicationContext reactContext = (ReactApplicationContext) scopedContext.getContext();
