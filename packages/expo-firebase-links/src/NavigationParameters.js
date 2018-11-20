@@ -2,8 +2,7 @@
  * @flow
  * NavigationParameters representation wrapper
  */
-import type DynamicLink from './DynamicLink';
-import type { NativeNavigationParameters } from './types';
+import type { DynamicLink, NativeNavigationParameters } from './types';
 
 export default class NavigationParameters {
   _forcedRedirectEnabled: boolean | void;

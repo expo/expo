@@ -141,9 +141,9 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: "libs", include: ["*.jar"])
-    compile "com.android.support:appcompat-v7:26.0.1"
-    compile "com.facebook.react:react-native:+"  // From node_modules
+    implementation fileTree(dir: "libs", include: ["*.jar"])
+    implementation "com.android.support:appcompat-v7:26.0.1"
+    implementation "com.facebook.react:react-native:+"  // From node_modules
 
     implementation project(':expo-permissions')
     implementation project(':expo-permissions-interface')

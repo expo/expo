@@ -9,6 +9,7 @@ commands:
     steps:
       # ssh: used in circleci checkout steps
       # direnv: used to configure environment with .envrc files
+      # rsync: used by expo-module-scripts to copy template files
       - run: nix-env -iA nixpkgs.openssh nixpkgs.direnv nixpkgs.rsync
       - run: mkdir -p ~/.config/direnv
       - run: echo -e "[whitelist]\nprefix = [ \"$HOME\" ]" > ~/.config/direnv/config.toml
@@ -25,13 +26,21 @@ commands:
     steps:
       - run: curl https://cocoapods-specs.circleci.com/fetch-cocoapods-repo-from-s3.sh | bash -s cf
   restore_yarn_cache:
+    parameters:
+      working_directory:
+        type: string
+        default: .
     steps:
       - restore_cache:
-          key: yarn-v1-{{ checksum "yarn.lock" }}
+          key: yarn-v1-{{ checksum "<< parameters.working_directory >>/yarn.lock" }}
   save_yarn_cache:
+    parameters:
+      working_directory:
+        type: string
+        default: .
     steps:
       - save_cache:
-          key: yarn-v1-{{ checksum "yarn.lock" }}
+          key: yarn-v1-{{ checksum "<< parameters.working_directory >>/yarn.lock" }}
           paths:
             - ~/.cache/yarn  # `yarn cache dir`
   restore_gradle_cache:
@@ -80,7 +89,7 @@ executors:
     resource_class: small
   android:
     <<: *nix
-    resource_class: large
+    resource_class: xlarge
   js:
     <<: *nix
   mac:
@@ -104,6 +113,7 @@ workflows:
   client:
     jobs:
       - home
+      - expotools
       - client_android
       - client_ios
       - shell_app_sim_base_ios
@@ -168,6 +178,20 @@ jobs:
           command: jest --maxWorkers 1
           working_directory: ~/expo/home
 
+  expotools:
+    executor: js
+    steps:
+      - setup
+      - restore_yarn_cache:
+          working_directory: ~/expo/tools/expotools
+      - yarn_install:
+          working_directory: ~/expo/tools/expotools
+      - save_yarn_cache:
+          working_directory: ~/expo/tools/expotools
+      - yarn:
+          command: tsc
+          working_directory: ~/expo/tools/expotools
+
   client_ios:
     executor: mac
     steps:
@@ -216,26 +240,18 @@ jobs:
       - save_cache:
           key: client-android-apk-{{ .Revision }}
           paths:
-            - ~/expo/android/exponent-release.apk
+            - ~/expo/android/app/build/outputs/apk
       - store_artifacts:
-          path: ~/expo/android/exponent-release.apk
+          path: ~/expo/android/app/build/outputs/apk
       - store_artifacts: # daemon logs for debugging crashes
-          path: ~/.gradle/daemon/4.4
+          path: ~/.gradle/daemon
 
   client_android_release_google_play:
     executor: js
     steps:
       - setup
-      - yarn_install:
-          working_directory: ~/expo/tools
-      - yarn_install:
-          working_directory: ~/expo/tools-public
       - restore_cache:
           key: client-android-apk-{{ .Revision }}
-      - run:
-          name: Validate Supply metadata
-          working_directory: ~/expo/tools
-          command: nix run nixpkgs.nodePackages.gulp-cli --command gulp supply-validate
       - run:
           name: Upload APK to Google Play and release to production
           working_directory: ~/expo

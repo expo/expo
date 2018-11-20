@@ -1,5 +1,5 @@
 import { Base64 } from 'js-base64';
-
+import invariant from 'invariant';
 export default class Blob {
   _binaryString: string;
 
@@ -14,11 +14,10 @@ export default class Blob {
    * @param base64 string
    */
   static fromBase64String(base64: string): Blob {
-    if (typeof base64 !== 'string' || base64.length < 1) {
-      throw new Error(
-        'firestore.Blob.fromBase64String expects a string of at least 1 character in length'
-      );
-    }
+    invariant(
+      base64 === 'string' && base64.length > 0,
+      'firestore.Blob.fromBase64String expects a string of at least 1 character in length'
+    );
 
     return new Blob(Base64.atob(base64));
   }
@@ -30,9 +29,10 @@ export default class Blob {
    * @param array Array
    */
   static fromUint8Array(array: Uint8Array): Blob {
-    if (!(array instanceof Uint8Array)) {
-      throw new Error('firestore.Blob.fromUint8Array expects an instance of Uint8Array');
-    }
+    invariant(
+      array instanceof Uint8Array,
+      'firestore.Blob.fromUint8Array expects an instance of Uint8Array'
+    );
 
     return new Blob(
       Array.prototype.map.call(array, (char: number) => String.fromCharCode(char)).join('')
@@ -46,9 +46,7 @@ export default class Blob {
    * @returns boolean 'true' if this Blob is equal to the provided one.
    */
   isEqual(blob: Blob): boolean {
-    if (!(blob instanceof Blob)) {
-      throw new Error('firestore.Blob.isEqual expects an instance of Blob');
-    }
+    invariant(blob instanceof Blob, 'firestore.Blob.isEqual expects an instance of Blob');
 
     return this._binaryString === blob._binaryString;
   }

@@ -2,11 +2,10 @@
  * @flow
  * Database Transaction representation wrapper
  */
-import { events } from 'expo-firebase-app';
+import { SharedEventEmitter } from 'expo-firebase-app';
 
-import type Database from './index';
-
-const { getAppEventName, SharedEventEmitter } = events;
+// import type Database from './index';
+type Database = object;
 
 let transactionId = 0;
 
@@ -29,7 +28,7 @@ export default class TransactionHandler {
     this._database = database;
 
     SharedEventEmitter.addListener(
-      getAppEventName(this._database, 'Expo.Firebase.database_transaction_event'),
+      this._database.getAppEventName('Expo.Firebase.database_transaction_event'),
       this._handleTransactionEvent.bind(this)
     );
   }

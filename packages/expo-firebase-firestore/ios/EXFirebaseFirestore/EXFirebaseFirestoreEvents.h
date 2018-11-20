@@ -1,9 +1,4 @@
-//
-//  EXFirebaseFirestoreEvents.h
-//  EXFirebaseFirestore
-//
-//  Created by Evan Bacon on 10/6/18.
-//
+// Copyright 2018-present 650 Industries. All rights reserved.
 
 #ifndef EXFirebaseFirestoreEvents_h
 #define EXFirebaseFirestoreEvents_h

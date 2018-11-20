@@ -1,15 +1,16 @@
 // @flow
-
-import DocumentReference from '../DocumentReference';
-import Blob from '../Blob';
-import { DOCUMENT_ID } from '../FieldPath';
-import { DELETE_FIELD_VALUE, SERVER_TIMESTAMP_FIELD_VALUE } from '../FieldValue';
-import GeoPoint from '../GeoPoint';
-import Path from '../Path';
 import { utils } from 'expo-firebase-app';
 
-import type Firestore from '../';
+import Blob from '../Blob';
+import DocumentReference from '../DocumentReference';
+import { DOCUMENT_ID } from '../FieldPath';
+import FieldValue from '../FieldValue';
+import GeoPoint from '../GeoPoint';
+import Path from '../Path';
+// import type Firestore from '../';
 import type { NativeTypeMap } from '../firestoreTypes.flow';
+
+type Firestore = object;
 
 const { typeOf } = utils;
 
@@ -69,20 +70,6 @@ export const buildTypeMap = (value: any): NativeTypeMap | null => {
     };
   }
 
-  if (value === DELETE_FIELD_VALUE) {
-    return {
-      type: 'fieldvalue',
-      value: 'delete',
-    };
-  }
-
-  if (value === SERVER_TIMESTAMP_FIELD_VALUE) {
-    return {
-      type: 'fieldvalue',
-      value: 'timestamp',
-    };
-  }
-
   if (value === DOCUMENT_ID) {
     return {
       type: 'documentid',
@@ -133,6 +120,16 @@ export const buildTypeMap = (value: any): NativeTypeMap | null => {
       return {
         type: 'blob',
         value: value.toBase64(),
+      };
+    }
+
+    if (value instanceof FieldValue) {
+      return {
+        type: 'fieldvalue',
+        value: {
+          elements: value.elements,
+          type: value.type,
+        },
       };
     }
 

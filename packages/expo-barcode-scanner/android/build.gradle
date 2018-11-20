@@ -5,7 +5,7 @@ buildscript {
   }
 
   dependencies {
-    classpath 'com.android.tools.build:gradle:3.1.3'
+    classpath 'com.android.tools.build:gradle:3.2.1'
   }
 }
 
@@ -68,6 +68,6 @@ dependencies {
   expendency "expo-core"
   expendency "expo-barcode-scanner-interface"
   expendency "expo-image-loader-interface"
-  compile 'com.google.android.gms:play-services-vision:15.0.2'
-  compile 'com.google.zxing:core:3.3.2'
+  implementation 'com.google.android.gms:play-services-vision:15.0.2'
+  implementation 'com.google.zxing:core:3.3.3'
 }

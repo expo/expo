@@ -6,6 +6,9 @@
 /**
  * @class Path
  */
+
+import invariant from 'invariant';
+
 export default class Path {
   _parts: string[];
 
@@ -30,6 +33,7 @@ export default class Path {
   }
 
   child(relativePath: string): Path {
+    invariant(relativePath, 'Firestore.Path.child: expected relativePath to be a valid string');
     return new Path(this._parts.concat(relativePath.split('/')));
   }
 

@@ -1,8 +1,10 @@
 /**
  * @flow
  */
-import FieldPath from '../FieldPath';
 import { utils } from 'expo-firebase-app';
+
+import FieldPath from '../FieldPath';
+
 const { isObject, isString } = utils;
 
 const buildFieldPathData = (segments: string[], value: any): Object => {

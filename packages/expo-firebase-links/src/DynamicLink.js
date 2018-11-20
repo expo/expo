@@ -2,13 +2,13 @@
  * @flow
  * DynamicLink representation wrapper
  */
+import invariant from 'invariant';
 import AnalyticsParameters from './AnalyticsParameters';
 import AndroidParameters from './AndroidParameters';
 import IOSParameters from './IOSParameters';
 import ITunesParameters from './ITunesParameters';
 import NavigationParameters from './NavigationParameters';
 import SocialParameters from './SocialParameters';
-
 import type { NativeDynamicLink } from './types';
 
 export default class DynamicLink {
@@ -64,13 +64,11 @@ export default class DynamicLink {
   }
 
   build(): NativeDynamicLink {
-    if (!this._link) {
-      throw new Error('DynamicLink: Missing required `link` property');
-    } else if (!this._dynamicLinkDomain) {
-      throw new Error(
-        'DynamicLink: Missing required `dynamicLinkDomain` property'
-      );
-    }
+    invariant(this._link, 'DynamicLink: Missing required `link` property');
+    invariant(
+      this._dynamicLinkDomain,
+      'DynamicLink: Missing required `dynamicLinkDomain` property'
+    );
 
     return {
       analytics: this._analytics.build(),

@@ -6,9 +6,11 @@ import DocumentSnapshot from './DocumentSnapshot';
 import { parseUpdateArgs } from './utils';
 import { buildNativeMap } from './utils/serialize';
 
-import type Firestore from './';
-import type { TransactionMeta } from './TransactionHandler';
+import type { Firestore } from './firestoreTypes.flow';
+//import type { TransactionMeta } from './TransactionHandler';
 import type DocumentReference from './DocumentReference';
+
+type TransactionMeta = object;
 type Command = {
   type: 'set' | 'update' | 'delete',
   path: string,

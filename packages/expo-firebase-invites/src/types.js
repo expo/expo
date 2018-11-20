@@ -19,3 +19,5 @@ export type NativeInvitation = {|
   message: string,
   title: string,
 |};
+
+export type Invitation = object;

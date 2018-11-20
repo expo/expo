@@ -1,14 +1,17 @@
 // @flow
+import invariant from 'invariant';
+
 import AndroidAction, { fromNativeAndroidAction } from './AndroidAction';
 import { BadgeIconType, Category, GroupAlert, Priority } from './types';
-import type Notification from './Notification';
 import type {
+  Notification,
   BadgeIconTypeType,
   BigPicture,
   BigText,
   CategoryType,
   DefaultsType,
   GroupAlertType,
+  InboxStyle,
   Lights,
   NativeAndroidNotification,
   PriorityType,
@@ -47,6 +50,8 @@ export default class AndroidNotification {
   _groupAlertBehaviour: GroupAlertType | void;
 
   _groupSummary: boolean | void;
+
+  _inboxStyle: InboxStyle | void;
 
   _largeIcon: string | void;
 
@@ -125,6 +130,7 @@ export default class AndroidNotification {
       this._group = data.group;
       this._groupAlertBehaviour = data.groupAlertBehaviour;
       this._groupSummary = data.groupSummary;
+      this._inboxStyle = data.inboxStyle;
       this._largeIcon = data.largeIcon;
       this._lights = data.lights;
       this._localOnly = data.localOnly;
@@ -157,6 +163,9 @@ export default class AndroidNotification {
     };
   }
 
+  get inboxStyle(): ?InboxStyle {
+    return this._inboxStyle;
+  }
   get actions(): AndroidAction[] {
     return this._actions;
   }
@@ -303,15 +312,30 @@ export default class AndroidNotification {
 
   /**
    *
+   * @param lines
+   * @param contentTitle
+   * @param summaryText
+   * @returns {Notification}
+   */
+  setInboxStyle(lines: string[], contentTitle?: string, summaryText?: string): Notification {
+    this._inboxStyle = {
+      contentTitle,
+      summaryText,
+      lines,
+    };
+    return this._notification;
+  }
+
+  /**
+   *
    * @param action
    * @returns {Notification}
    */
   addAction(action: AndroidAction): Notification {
-    if (!(action instanceof AndroidAction)) {
-      throw new Error(
-        `AndroidNotification:addAction expects an 'AndroidAction' but got type ${typeof action}`
-      );
-    }
+    invariant(
+      action instanceof AndroidAction,
+      `AndroidNotification:addAction expects an 'AndroidAction' but got type ${typeof action}`
+    );
     this._actions.push(action);
     return this._notification;
   }
@@ -342,11 +366,10 @@ export default class AndroidNotification {
    * @returns {Notification}
    */
   setBadgeIconType(badgeIconType: BadgeIconTypeType): Notification {
-    if (!Object.values(BadgeIconType).includes(badgeIconType)) {
-      throw new Error(
-        `AndroidNotification:setBadgeIconType Invalid BadgeIconType: ${badgeIconType}`
-      );
-    }
+    invariant(
+      Object.values(BadgeIconType).includes(badgeIconType),
+      `AndroidNotification:setBadgeIconType Invalid BadgeIconType: ${badgeIconType}`
+    );
     this._badgeIconType = badgeIconType;
     return this._notification;
   }
@@ -381,9 +404,10 @@ export default class AndroidNotification {
    * @returns {Notification}
    */
   setCategory(category: CategoryType): Notification {
-    if (!Object.values(Category).includes(category)) {
-      throw new Error(`AndroidNotification:setCategory Invalid Category: ${category}`);
-    }
+    invariant(
+      Object.values(Category).includes(category),
+      `AndroidNotification:setCategory Invalid Category: ${category}`
+    );
     this._category = category;
     return this._notification;
   }
@@ -464,11 +488,11 @@ export default class AndroidNotification {
    * @returns {Notification}
    */
   setGroupAlertBehaviour(groupAlertBehaviour: GroupAlertType): Notification {
-    if (!Object.values(GroupAlert).includes(groupAlertBehaviour)) {
-      throw new Error(
-        `AndroidNotification:setGroupAlertBehaviour Invalid GroupAlert: ${groupAlertBehaviour}`
-      );
-    }
+    invariant(
+      Object.values(GroupAlert).includes(groupAlertBehaviour),
+      `AndroidNotification:setGroupAlertBehaviour Invalid GroupAlert: ${groupAlertBehaviour}`
+    );
+
     this._groupAlertBehaviour = groupAlertBehaviour;
     return this._notification;
   }
@@ -555,9 +579,11 @@ export default class AndroidNotification {
    * @returns {Notification}
    */
   setPriority(priority: PriorityType): Notification {
-    if (!Object.values(Priority).includes(priority)) {
-      throw new Error(`AndroidNotification:setPriority Invalid Priority: ${priority}`);
-    }
+    invariant(
+      Object.values(Priority).includes(priority),
+      `AndroidNotification:setPriority Invalid Priority: ${priority}`
+    );
+
     this._priority = priority;
     return this._notification;
   }
@@ -714,11 +740,8 @@ export default class AndroidNotification {
 
   build(): NativeAndroidNotification {
     // TODO: Validation of required fields
-    if (!this._channelId) {
-      throw new Error('AndroidNotification: Missing required `channelId` property');
-    } else if (!this._smallIcon) {
-      throw new Error('AndroidNotification: Missing required `smallIcon` property');
-    }
+    invariant(this._channelId, 'AndroidNotification: Missing required `channelId` property');
+    invariant(this._smallIcon, 'AndroidNotification: Missing required `smallIcon` property');
 
     return {
       actions: this._actions.map(action => action.build()),
@@ -736,6 +759,7 @@ export default class AndroidNotification {
       group: this._group,
       groupAlertBehaviour: this._groupAlertBehaviour,
       groupSummary: this._groupSummary,
+      inboxStyle: this._inboxStyle,
       largeIcon: this._largeIcon,
       lights: this._lights,
       localOnly: this._localOnly,

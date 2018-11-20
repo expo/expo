@@ -126,16 +126,10 @@ public class FirebaseAppModule extends ExportedModule implements ModuleRegistryC
   public void deleteApp(String appName, Promise promise) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
 
-    firebaseApp.delete();
-    if (firebaseApp == null) {
-      promise.resolve(null);
-    } else {
-      // todo ? not implemented on firebase sdk
-      promise.reject(
-        "app/delete-app-failed",
-        "Failed to delete app. The android Firebase SDK currently does not support this functionality"
-      );
+    if (firebaseApp != null) {
+      firebaseApp.delete();
     }
+    promise.resolve(null);
   }
 
   /**

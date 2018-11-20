@@ -1,27 +1,38 @@
 // @flow
 
-import WebFont from 'webfontloader';
+function isFunction(method) {
+  return method && typeof method === 'function';
+}
+
+function createWebStyle(fontFamily, resource) {
+  const fontStyle = `@font-face {
+    font-family: ${fontFamily};
+    src: url(${resource});
+  }`;
+
+  const styleElement = document.createElement('style');
+  styleElement.type = 'text/css';
+  if (styleElement.styleSheet) {
+    styleElement.styleSheet.cssText = fontStyle;
+  } else {
+    const textNode = document.createTextNode(fontStyle);
+    styleElement.appendChild(textNode);
+  }
+  return styleElement;
+}
 
 export default {
   get name(): string {
     return 'ExpoFontLoader';
   },
-  loadAsync(fontFamilyName: string, fontUri: string): Promise {
-    return new Promise((resolve, reject) => {
-      WebFont.load({
-        active: resolve,
-        inactive() {
-          reject(
-            new Error(
-              `ExpoFontLoader.loadAsync(): The browser does not support linked fonts or the font ${fontFamilyName} could not be loaded from: ${fontUri}`
-            )
-          );
-        },
-        custom: {
-          families: [fontFamilyName],
-          urls: [fontUri],
-        },
-      });
-    });
+  loadAsync(fontFamilyName: string, resource: string): Promise {
+    const canInjectStyle = isFunction(document.head.appendChild);
+
+    if (!canInjectStyle) {
+      throw new Error('E_FONT_CREATION_FAILED : document element cannot support injecting fonts');
+    }
+    const style = createWebStyle(fontFamilyName, resource);
+    document.head.appendChild(style);
+    return Promise.resolve();
   },
 };

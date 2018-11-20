@@ -3,14 +3,16 @@
  * Database Reference representation wrapper
  */
 import { ReferenceBase, utils } from 'expo-firebase-app';
+import invariant from 'invariant';
 
 import DataSnapshot from './DataSnapshot';
 import OnDisconnect from './OnDisconnect';
 import Query from './Query';
 import SyncTree from './SyncTree';
-
-import type Database from './index';
+// import type Database from './index';
 import type { DatabaseModifier, FirebaseError } from './firestoreTypes.flow';
+
+type Database = obejct;
 
 const {
   promiseOrCallback,
@@ -652,9 +654,7 @@ export default class Reference extends ReferenceBase {
     cancelCallbackOrContext?: Object => any | Object,
     context?: Object
   ): Function {
-    if (!eventType) {
-      throw new Error('Query.on failed: Function called with 0 arguments. Expects at least 2.');
-    }
+    invariant(eventType, 'Query.on failed: Function called with 0 arguments. Expects at least 2.');
 
     if (!isString(eventType) || !ReferenceEventTypes[eventType]) {
       throw new Error(
@@ -664,13 +664,8 @@ export default class Reference extends ReferenceBase {
       );
     }
 
-    if (!callback) {
-      throw new Error('Query.on failed: Function called with 1 argument. Expects at least 2.');
-    }
-
-    if (!isFunction(callback)) {
-      throw new Error('Query.on failed: Second argument must be a valid function.');
-    }
+    invariant(callback, 'Query.on failed: Function called with 1 argument. Expects at least 2.');
+    invariant(isFunction(callback), 'Query.on failed: Second argument must be a valid function.');
 
     if (
       cancelCallbackOrContext &&

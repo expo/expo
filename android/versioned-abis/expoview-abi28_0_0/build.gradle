@@ -7,7 +7,7 @@ buildscript {
   }
 
   dependencies {
-    classpath 'com.android.tools.build:gradle:3.1.4'
+    classpath 'com.android.tools.build:gradle:3.2.1'
     classpath 'com.jakewharton:butterknife-gradle-plugin:8.4.0'
   }
 }
@@ -18,7 +18,6 @@ apply plugin: 'com.jakewharton.butterknife'
 
 android {
   compileSdkVersion 27
-  buildToolsVersion "27.0.3"
 
   defaultConfig {
     minSdkVersion 19
@@ -104,7 +103,7 @@ dependencies {
   api 'com.google.android.gms:play-services-vision:15.0.2'
   api 'com.google.android.gms:play-services-wallet:15.0.1' //may need 10.+
   api 'com.stripe:stripe-android:2.1.+'
-  api 'com.github.tipsi:CreditCardEntry:1.4.8.10'
+  api 'com.github.tipsi:CreditCardEntry:1.5.0'
   annotationProcessor 'com.raizlabs.android:DBFlow-Compiler:2.2.1'
   api "com.raizlabs.android:DBFlow-Core:2.2.1"
   api "com.raizlabs.android:DBFlow:2.2.1"
@@ -113,8 +112,8 @@ dependencies {
   debugApi 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta1'
   // debugApi 'com.squareup.leakcanary:leakcanary-android:1.4-beta1'
   releaseApi 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta1'
-  api 'com.facebook.device.yearclass:yearclass:1.0.1'
-  api 'commons-io:commons-io:1.3.2'
+  api 'com.facebook.device.yearclass:yearclass:2.1.0'
+  api 'commons-io:commons-io:1.4'
   // Newer version introduces dependency versions conflict
   // on 'com.android.support:support-annotations'
   api 'com.google.android.exoplayer:exoplayer:2.6.1'
@@ -124,7 +123,7 @@ dependencies {
   api 'com.yqritc:android-scalablevideoview:1.0.1'
   api 'commons-codec:commons-codec:1.10'
   api 'com.segment.analytics.android:analytics:4.3.0'
-  api 'com.google.zxing:core:3.3.2'
+  api 'com.google.zxing:core:3.3.3'
   api 'net.openid:appauth:0.4.1'
   api('com.airbnb.android:lottie:2.5.5') {
     exclude group: 'com.android.support', module: 'appcompat-v7'

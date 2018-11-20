@@ -2,7 +2,7 @@
  * @flow
  * Crash Reporting representation wrapper
  */
-import { ModuleBase, registerModule } from 'expo-firebase-app';
+import { ModuleBase } from 'expo-firebase-app';
 
 import type App from 'expo-firebase-app';
 
@@ -84,5 +84,3 @@ export default class Crashlytics extends ModuleBase {
     this.nativeModule.setUserIdentifier(userId);
   }
 }
-
-registerModule(Crashlytics);
