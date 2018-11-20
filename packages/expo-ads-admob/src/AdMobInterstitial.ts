@@ -1,12 +1,7 @@
-// @flow
-
-'use strict';
-
 import { NativeModulesProxy, EventEmitter } from 'expo-core';
-import { Platform } from 'react-native';
-import type { EmitterSubscription } from 'react-native';
+import { Platform, EmitterSubscription } from 'react-native';
 
-const AdMobInterstitialManager: Object = NativeModulesProxy.ExpoAdsAdMobInterstitialManager;
+const AdMobInterstitialManager: any = NativeModulesProxy.ExpoAdsAdMobInterstitialManager;
 
 const adMobInterstitialEmitter = new EventEmitter(AdMobInterstitialManager);
 
@@ -25,14 +20,14 @@ type EventNameType =
   | 'interstitialDidClose'
   | 'interstitialWillLeaveApplication';
 
-const eventHandlers: { [EventNameType]: Map<Function, EmitterSubscription> } = {};
+const eventHandlers: { [eventName: string]: Map<Function, EmitterSubscription> } = {};
 
 eventNames.forEach(eventName => {
   eventHandlers[eventName] = new Map();
 });
 
 const addEventListener = (type: EventNameType, handler: Function) => {
-  if (eventNames.includes((type: EventNameType))) {
+  if (eventNames.includes(type)) {
     eventHandlers[type].set(handler, adMobInterstitialEmitter.addListener(type, handler));
   } else {
     console.log(`Event with type ${type} does not exist.`);
@@ -51,7 +46,7 @@ const removeEventListener = (type: EventNameType, handler: Function) => {
 const removeAllListeners = () =>
   eventNames.forEach(eventName => adMobInterstitialEmitter.removeAllListeners(eventName));
 
-module.exports = {
+export default {
   setAdUnitID: (id: string): Promise<void> => AdMobInterstitialManager.setAdUnitID(id),
   setTestDeviceID: (id: string): Promise<void> => AdMobInterstitialManager.setTestDeviceID(id),
   requestAdAsync: (): Promise<void> => AdMobInterstitialManager.requestAd(),

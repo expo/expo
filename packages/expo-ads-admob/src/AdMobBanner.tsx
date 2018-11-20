@@ -1,11 +1,9 @@
-// @flow
-
-import React from 'react';
+import * as React from 'react';
 import PropTypes from 'prop-types';
-import { requireNativeViewManager } from 'expo-core';
 import { View, ViewPropTypes } from 'react-native';
+import { requireNativeViewManager } from 'expo-core';
 
-export type PropsType = ViewPropTypes & {
+type PropsType = React.ElementProps<View> & {
   /**
    * AdMob iOS library banner size constants
    * (https://developers.google.com/admob/ios/banner)
@@ -30,18 +28,18 @@ export type PropsType = ViewPropTypes & {
   /**
    * AdMob ad unit ID
    */
-  adUnitID: ?string,
+  adUnitID?: string,
 
   /**
    * Test device ID
    */
-  testDeviceID: ?string,
+  testDeviceID?: string,
 
   /**
    * AdMob iOS library events
    */
   onAdViewDidReceiveAd?: () => void,
-  onDidFailToReceiveAdWithError?: string => void,
+  onDidFailToReceiveAdWithError?: (string) => void,
   onAdViewWillPresentScreen?: () => void,
   onAdViewWillDismissScreen?: () => void,
   onAdViewDidDismissScreen?: () => void,
