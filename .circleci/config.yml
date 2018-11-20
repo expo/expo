@@ -9,6 +9,7 @@ commands:
     steps:
       # ssh: used in circleci checkout steps
       # direnv: used to configure environment with .envrc files
+      # rsync: used by expo-module-scripts to copy template files
       - run: nix-env -iA nixpkgs.openssh nixpkgs.direnv nixpkgs.rsync
       - run: mkdir -p ~/.config/direnv
       - run: echo -e "[whitelist]\nprefix = [ \"$HOME\" ]" > ~/.config/direnv/config.toml
@@ -176,7 +177,7 @@ jobs:
       - yarn:
           command: jest --maxWorkers 1
           working_directory: ~/expo/home
-  
+
   expotools:
     executor: js
     steps:
