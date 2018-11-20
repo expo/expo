@@ -13,6 +13,7 @@ mkShell {
   JAVA_HOME=openjdk8;
 
   nativeBuildInputs = [
+    fastlane
     nodejs-8_x
     openjdk8
   ];

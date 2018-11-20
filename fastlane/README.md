@@ -35,6 +35,11 @@ fastlane ios release
 ----
 
 ## Android
+### android start
+```
+fastlane android start
+```
+
 ### android prod_release
 ```
 fastlane android prod_release

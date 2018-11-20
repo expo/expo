@@ -126,6 +126,16 @@ platform :android do
     UI.message "APK version #{version_name} has been uploaded to staging"
   end
 
+  lane :start do
+    gradle(
+      project_dir: "android",
+      task: "install",
+      flavor: "DevKernel",
+      build_type: "Debug",
+    )
+    adb(command: "shell am start -n host.exp.exponent/host.exp.exponent.LauncherActivity")
+  end
+
   lane :prod_release do
     build_gradle = File.read("../android/app/build.gradle")
 
