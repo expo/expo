@@ -51,7 +51,7 @@ static NSString * const scopedIdentifierSeparator = @":";
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler
 {
-  EXPendingNotification *pendingNotification = [[EXPendingNotification alloc] initWithNotificationResponse:response];
+  EXPendingNotification *pendingNotification = [[EXPendingNotification alloc] initWithNotificationResponse:response identifiersManager:self];
   if (![[EXKernel sharedInstance] sendNotification:pendingNotification] && [EXEnvironment sharedEnvironment].isDetached) {
     _pendingNotifications[pendingNotification.experienceId] = pendingNotification;
   }

@@ -27,12 +27,12 @@
                            userText:nil];
 }
 
-- (instancetype)initWithNotificationResponse:(UNNotificationResponse *)notificationResponse
+- (instancetype)initWithNotificationResponse:(UNNotificationResponse *)notificationResponse identifiersManager:(id<EXNotificationsIdentifiersManager>)manager
 {
   if (self = [self initWithNotification:notificationResponse.notification]) {
     _isFromBackground = [UIApplication sharedApplication].applicationState != UIApplicationStateActive;
     if (![notificationResponse.actionIdentifier isEqualToString:UNNotificationDefaultActionIdentifier]) {
-      _actionId = notificationResponse.actionIdentifier;
+      _actionId = [manager exportedIdForInternalIdentifier:notificationResponse.actionIdentifier];
     }
     if ([notificationResponse isKindOfClass:[UNTextInputNotificationResponse class]]) {
       _userText = ((UNTextInputNotificationResponse *) notificationResponse).userText;

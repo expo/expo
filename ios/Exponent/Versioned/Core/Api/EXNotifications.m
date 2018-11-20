@@ -321,10 +321,7 @@ RCT_REMAP_METHOD(deleteCategoryAsync,
 }
 
 - (NSString *)internalIdForIdentifier:(NSString *)identifier {
-  if ([EXEnvironment sharedEnvironment].isDetached) {
-    return identifier;
-  }
-  return [NSString stringWithFormat:@"%@:%@", self.experienceId, identifier];
+  return [_notificationsIdentifiersManager internalIdForIdentifier:identifier experienceId:self.experienceId];
 }
 
 - (UNCalendarNotificationTrigger *)notificationTriggerFor:(NSNumber * _Nullable)unixTime
@@ -342,7 +339,7 @@ RCT_REMAP_METHOD(deleteCategoryAsync,
 
 - (UNNotificationAction *)parseNotificationActionFromParams:(NSDictionary *)params
 {
-  NSString *actionId = params[@"actionId"];
+  NSString *actionId = [self internalIdForIdentifier:params[@"actionId"]];
   NSString *buttonTitle = params[@"buttonTitle"];
 
   UNNotificationActionOptions options = UNNotificationActionOptionForeground;
