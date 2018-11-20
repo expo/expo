@@ -1,9 +1,9 @@
-package main;
+package expo.interfaces.filesystem;
 
 import android.content.Context;
 import java.util.EnumSet;
 
-public interface FilePermissionChecker {
+public interface FilePermissionWielderInterface {
   EnumSet<Permission> getInfo(Context context, String path);
 }
 
