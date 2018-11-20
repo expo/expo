@@ -187,7 +187,8 @@
                                   self.screenOrientationManager,
                                   self.sensorManager,
                                   self.updatesManager,
-                                  self.audioSessionManager
+                                  self.audioSessionManager,
+                                  self.notificationsManager
                                   ];
     NSArray *allServices = [registryServices arrayByAddingObjectsFromArray:[[EXModuleRegistryProvider singletonModules] allObjects]];
     for (id service in allServices) {
