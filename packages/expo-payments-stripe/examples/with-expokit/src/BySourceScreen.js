@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View, Platform } from 'react-native';
+import { Linking } from 'expo';
 import { PaymentsStripe as Stripe } from 'expo-payments-stripe';
 import Button from './Button';
 
@@ -28,7 +29,7 @@ export default class BySourceScreen extends React.Component {
         type: 'alipay',
         amount: 50,
         currency: 'EUR',
-        returnURL: '',
+        returnURL: Linking.makeUrl('source'),
       });
       this.setState({ loading: false, source });
     } catch (error) {
