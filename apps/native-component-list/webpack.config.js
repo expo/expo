@@ -76,6 +76,20 @@ const cssLoaderConfiguration = {
   use: ['style-loader', 'css-loader'],
 };
 
+function getWebModule(moduleName) {
+  return function(res) {
+    if (res.context.indexOf('node_modules/react-native') === -1) return;
+    res.request = includeModule('react-native-web/dist/exports/' + moduleName);
+  };
+}
+
+function useWebModules(...modules) {
+  return modules.map(
+    moduleName =>
+      new webpack.NormalModuleReplacementPlugin(new RegExp(moduleName), getWebModule(moduleName))
+  );
+}
+
 module.exports = {
   entry: path.resolve(locations.root, pckg.main),
   // configures where the build ends up
@@ -97,13 +111,14 @@ module.exports = {
       'process.env.NODE_ENV': JSON.stringify(environment),
       __DEV__,
     }),
+    ...useWebModules('Platform', 'DeviceInfo', 'Dimensions'),
   ],
   resolve: {
     symlinks: false,
     extensions: ['.web.js', '.js', '.jsx'],
     alias: {
-      'react-native': 'react-native-web',
       'react-navigation': '@react-navigation/core',
+      'react-native$': 'react-native-web',
     },
   },
 };
