@@ -256,13 +256,13 @@ let
         sha512 = "6Ghf+j3cQLCIvjXd2dJrLw+16HZbWbwmB1qlTc41BviB2hv+rK1nJr17Y9dWK0UD4p3i9Hfddx3tthpMKrueHg==";
       };
     };
-    "apollo-utilities-1.0.25" = {
+    "apollo-utilities-1.0.26" = {
       name = "apollo-utilities";
       packageName = "apollo-utilities";
-      version = "1.0.25";
+      version = "1.0.26";
       src = fetchurl {
-        url = "https://registry.npmjs.org/apollo-utilities/-/apollo-utilities-1.0.25.tgz";
-        sha512 = "AXvqkhni3Ir1ffm4SA1QzXn8k8I5BBl4PVKEyak734i4jFdp+xgfUyi2VCqF64TJlFTA/B73TRDUvO2D+tKtZg==";
+        url = "https://registry.npmjs.org/apollo-utilities/-/apollo-utilities-1.0.26.tgz";
+        sha512 = "URw7o3phymliqYCYatcird2YRPUU2eWCNvip64U9gQrX56mEfK4m99yBIDCMTpmcvOFsKLii1sIEZsHIs/bvnw==";
       };
     };
     "array-flatten-1.1.1" = {
@@ -3800,7 +3800,7 @@ in
       sources."ansi-styles-3.2.1"
       sources."any-promise-1.3.0"
       sources."apollo-link-1.2.1"
-      sources."apollo-utilities-1.0.25"
+      sources."apollo-utilities-1.0.26"
       sources."array-flatten-1.1.1"
       sources."array-union-1.0.2"
       sources."array-uniq-1.0.3"
