@@ -9,6 +9,8 @@ self: super:
     gemdir = ./xcpretty;
   };
 
+  nodejs = super.nodejs-10_x;
+
   yarn2nix-src = super.fetchFromGitHub {
     owner = "moretea";
     repo = "yarn2nix";
