@@ -76,105 +76,6 @@ let
         sha512 = "VzL67ybSvSYhFJxwBm19VMEHAcgg6bDhE9p8HKDOXL2tdHIzqYtqAYxOyhv2mS263WYqdomtoAChSOb449of+g==";
       };
     };
-    "@expo/ngrok-bin-darwin-ia32-2.2.8" = {
-      name = "_at_expo_slash_ngrok-bin-darwin-ia32";
-      packageName = "@expo/ngrok-bin-darwin-ia32";
-      version = "2.2.8";
-      src = fetchurl {
-        url = "http://registry.npmjs.org/@expo/ngrok-bin-darwin-ia32/-/ngrok-bin-darwin-ia32-2.2.8.tgz";
-        sha512 = "Mgept4WvXobcNQbxV0f8Nqrukl4HsAM4ExfFOC5BJ1PinlZisb1lQYp+PGu/3DuOYAinAspbL/3m77JkhT5Oow==";
-      };
-    };
-    "@expo/ngrok-bin-darwin-x64-2.2.8" = {
-      name = "_at_expo_slash_ngrok-bin-darwin-x64";
-      packageName = "@expo/ngrok-bin-darwin-x64";
-      version = "2.2.8";
-      src = fetchurl {
-        url = "http://registry.npmjs.org/@expo/ngrok-bin-darwin-x64/-/ngrok-bin-darwin-x64-2.2.8.tgz";
-        sha512 = "hEVxBAKTT9G+jCy+2NOjgFrPrrzmdxljLhz3cQIb4izjooQXGCbTFvnEntB0odgsf6Dpa2jWNNt18H6t2nneOQ==";
-      };
-    };
-    "@expo/ngrok-bin-freebsd-ia32-2.2.8" = {
-      name = "_at_expo_slash_ngrok-bin-freebsd-ia32";
-      packageName = "@expo/ngrok-bin-freebsd-ia32";
-      version = "2.2.8";
-      src = fetchurl {
-        url = "http://registry.npmjs.org/@expo/ngrok-bin-freebsd-ia32/-/ngrok-bin-freebsd-ia32-2.2.8.tgz";
-        sha512 = "yGdq06wUxreCPxXnhqlL3GzvLtArJ6eDOQinv4SiDK+ftQPY4TloEMQr/rwohvtx63O+bT9jAtgJW44jlfIQ2Q==";
-      };
-    };
-    "@expo/ngrok-bin-freebsd-x64-2.2.8" = {
-      name = "_at_expo_slash_ngrok-bin-freebsd-x64";
-      packageName = "@expo/ngrok-bin-freebsd-x64";
-      version = "2.2.8";
-      src = fetchurl {
-        url = "http://registry.npmjs.org/@expo/ngrok-bin-freebsd-x64/-/ngrok-bin-freebsd-x64-2.2.8.tgz";
-        sha512 = "1uSZRastddaUIrK/2B5MANhV7LDKJ8/4cSQxn+E2+U296VKkU6n1ZfZ207a7hA1ctQeBcvwkRx9biFxDa99How==";
-      };
-    };
-    "@expo/ngrok-bin-linux-arm-2.2.8" = {
-      name = "_at_expo_slash_ngrok-bin-linux-arm";
-      packageName = "@expo/ngrok-bin-linux-arm";
-      version = "2.2.8";
-      src = fetchurl {
-        url = "http://registry.npmjs.org/@expo/ngrok-bin-linux-arm/-/ngrok-bin-linux-arm-2.2.8.tgz";
-        sha512 = "qruRsoEuFvaVsSSlhNtHR8uWgF7aA6jdRtCuVKO4pMW32lTZfGS+U/y6hB0YBxXv4xhEn8o1x/15oLU7cNUxEA==";
-      };
-    };
-    "@expo/ngrok-bin-linux-arm64-2.2.8" = {
-      name = "_at_expo_slash_ngrok-bin-linux-arm64";
-      packageName = "@expo/ngrok-bin-linux-arm64";
-      version = "2.2.8";
-      src = fetchurl {
-        url = "http://registry.npmjs.org/@expo/ngrok-bin-linux-arm64/-/ngrok-bin-linux-arm64-2.2.8.tgz";
-        sha512 = "9iXr88LlzBCp7+NwfPDsSg2sIy5GfWFXrhU8+vGLnFvZ5MO6ZoRmXbw2VRPFm7ekMa0Losddny4aiLDJkr9hXw==";
-      };
-    };
-    "@expo/ngrok-bin-linux-ia32-2.2.8" = {
-      name = "_at_expo_slash_ngrok-bin-linux-ia32";
-      packageName = "@expo/ngrok-bin-linux-ia32";
-      version = "2.2.8";
-      src = fetchurl {
-        url = "http://registry.npmjs.org/@expo/ngrok-bin-linux-ia32/-/ngrok-bin-linux-ia32-2.2.8.tgz";
-        sha512 = "Cm3BH4nv55A6KF+XjrK8oLe1Ktn4WrUabd6TcErQRM6/2454A+vh1r6CEKWOVWy4bg7ceTbjgHhCdj9WMv8WTg==";
-      };
-    };
-    "@expo/ngrok-bin-linux-x64-2.2.8" = {
-      name = "_at_expo_slash_ngrok-bin-linux-x64";
-      packageName = "@expo/ngrok-bin-linux-x64";
-      version = "2.2.8";
-      src = fetchurl {
-        url = "http://registry.npmjs.org/@expo/ngrok-bin-linux-x64/-/ngrok-bin-linux-x64-2.2.8.tgz";
-        sha512 = "jNhnnfMR/yAgUV1LnAheq/WWB/Tkdgm5sxZhN0fjN00CeiYTVyNuCsii2tdjXJCGrxdpb6RzvOxjLGstIT0mUQ==";
-      };
-    };
-    "@expo/ngrok-bin-sunos-x64-2.2.8" = {
-      name = "_at_expo_slash_ngrok-bin-sunos-x64";
-      packageName = "@expo/ngrok-bin-sunos-x64";
-      version = "2.2.8";
-      src = fetchurl {
-        url = "http://registry.npmjs.org/@expo/ngrok-bin-sunos-x64/-/ngrok-bin-sunos-x64-2.2.8.tgz";
-        sha512 = "Ogcn/6jNN2PMMaZ1PJu7JBiZz92Yowa119cclI2E2RKyIqQaOYol2g72oHzm8SQ49KfzEJMGDmQA4Xh29cKmrQ==";
-      };
-    };
-    "@expo/ngrok-bin-win32-ia32-2.2.8-beta.1" = {
-      name = "_at_expo_slash_ngrok-bin-win32-ia32";
-      packageName = "@expo/ngrok-bin-win32-ia32";
-      version = "2.2.8-beta.1";
-      src = fetchurl {
-        url = "http://registry.npmjs.org/@expo/ngrok-bin-win32-ia32/-/ngrok-bin-win32-ia32-2.2.8-beta.1.tgz";
-        sha512 = "Pva9ZNjUieD2/RVav7LYGAXZ1O6MVXlvOnJmHSmjP4rhreek7/Ez7b5HsCEN3YLjZIcPHH8SV8Duix1NO2zB5A==";
-      };
-    };
-    "@expo/ngrok-bin-win32-x64-2.2.8-beta.1" = {
-      name = "_at_expo_slash_ngrok-bin-win32-x64";
-      packageName = "@expo/ngrok-bin-win32-x64";
-      version = "2.2.8-beta.1";
-      src = fetchurl {
-        url = "http://registry.npmjs.org/@expo/ngrok-bin-win32-x64/-/ngrok-bin-win32-x64-2.2.8-beta.1.tgz";
-        sha512 = "tVn0jkRC7cbDL502FU7iVI4jbaEKcbTER7pYo2xdUZgM02n4u0AS+FFuzUN+irDiRYZQIFdmDIhxDGl+SHkzbA==";
-      };
-    };
     "@expo/osascript-1.9.0" = {
       name = "_at_expo_slash_osascript";
       packageName = "@expo/osascript";
@@ -202,31 +103,13 @@ let
         sha1 = "b31447de60e5102837a4edf702839fcc8f7f31f3";
       };
     };
-    "@expo/spawn-async-1.3.0" = {
+    "@expo/spawn-async-1.4.0" = {
       name = "_at_expo_slash_spawn-async";
       packageName = "@expo/spawn-async";
-      version = "1.3.0";
+      version = "1.4.0";
       src = fetchurl {
-        url = "https://registry.npmjs.org/@expo/spawn-async/-/spawn-async-1.3.0.tgz";
-        sha1 = "01b8a4f6bba10b792663f9272df66c7e90166dad";
-      };
-    };
-    "@expo/traveling-fastlane-darwin-1.6.0" = {
-      name = "_at_expo_slash_traveling-fastlane-darwin";
-      packageName = "@expo/traveling-fastlane-darwin";
-      version = "1.6.0";
-      src = fetchurl {
-        url = "https://registry.npmjs.org/@expo/traveling-fastlane-darwin/-/traveling-fastlane-darwin-1.6.0.tgz";
-        sha512 = "pVFiJfCgG0sw6s3G83FGu2Bk1C6jOSXfsPrEYXDLggNBmWYHESK2dMPxg+XvIe8fPFKBPATj3CIF96IpOyix0w==";
-      };
-    };
-    "@expo/traveling-fastlane-linux-1.6.0" = {
-      name = "_at_expo_slash_traveling-fastlane-linux";
-      packageName = "@expo/traveling-fastlane-linux";
-      version = "1.6.0";
-      src = fetchurl {
-        url = "https://registry.npmjs.org/@expo/traveling-fastlane-linux/-/traveling-fastlane-linux-1.6.0.tgz";
-        sha512 = "Qw0vUVIjE7rX4AtupUDYH56O5qLOhh4o3/dqRNsFd2QS/DAxQTCug61o3KE/zKJ51kxbqpkKdFiqDpG8BhFtLw==";
+        url = "https://registry.npmjs.org/@expo/spawn-async/-/spawn-async-1.4.0.tgz";
+        sha512 = "jE9zSZ14eOfKxXs+WJZofweKtsAeuQiOpntsb+zp8Ti9/wk+9ZjKkffdld7UfANr8asmzuJYnEoVyL+hMy3SWw==";
       };
     };
     "@segment/loosely-validate-event-1.1.2" = {
@@ -245,6 +128,15 @@ let
       src = fetchurl {
         url = "https://registry.npmjs.org/@sindresorhus/is/-/is-0.7.0.tgz";
         sha512 = "ONhaKPIufzzrlNbqtWFFd+jlnemX6lJAgq9ZeiZtS7I1PIf/la7CW4m83rTXRnVnsMbW2k56pGYu7AUFJD9Pow==";
+      };
+    };
+    "@types/cross-spawn-6.0.0" = {
+      name = "_at_types_slash_cross-spawn";
+      packageName = "@types/cross-spawn";
+      version = "6.0.0";
+      src = fetchurl {
+        url = "https://registry.npmjs.org/@types/cross-spawn/-/cross-spawn-6.0.0.tgz";
+        sha512 = "evp2ZGsFw9YKprDbg8ySgC9NA15g3YgiI8ANkGmKKvvi0P2aDGYLPxQIC5qfeKNUOe3TjABVGuah6omPRpIYhg==";
       };
     };
     "@types/events-1.2.0" = {
@@ -931,13 +823,13 @@ let
         sha1 = "06be7abef947a3f14a30fd610671d401bca8b7b6";
       };
     };
-    "cross-spawn-5.1.0" = {
+    "cross-spawn-6.0.5" = {
       name = "cross-spawn";
       packageName = "cross-spawn";
-      version = "5.1.0";
+      version = "6.0.5";
       src = fetchurl {
-        url = "https://registry.npmjs.org/cross-spawn/-/cross-spawn-5.1.0.tgz";
-        sha1 = "e8bd0efee58fcff6f8f94510a0a554bbfa235449";
+        url = "https://registry.npmjs.org/cross-spawn/-/cross-spawn-6.0.5.tgz";
+        sha512 = "eTVLrBSt7fjbDygz805pMnstIs2VTBNkRm0qxZd+M7A5XDdxVRWO5MxGBXZhjY4cqLYLdtrGqRf8mBPmzwSpWQ==";
       };
     };
     "crypt-0.0.2" = {
@@ -2236,15 +2128,6 @@ let
         sha512 = "G2Lj61tXDnVFFOi8VZds+SoQjtQC3dgokKdDG2mTm1tx4m50NUHBOZSBwQQHyy0V12A0JTG4icfZQH+xPyh8VA==";
       };
     };
-    "lru-cache-4.1.4" = {
-      name = "lru-cache";
-      packageName = "lru-cache";
-      version = "4.1.4";
-      src = fetchurl {
-        url = "https://registry.npmjs.org/lru-cache/-/lru-cache-4.1.4.tgz";
-        sha512 = "EPstzZ23znHUVLKj+lcXO1KvZkrlw+ZirdwvOmnAnA/1PB4ggyXJ77LRkCqkff+ShQ+cqoxCxLQOh4cKITO5iA==";
-      };
-    };
     "match-require-2.1.0" = {
       name = "match-require";
       packageName = "match-require";
@@ -2398,15 +2281,6 @@ let
         sha1 = "30057438eac6cf7f8c4767f38648d6697d75c903";
       };
     };
-    "moment-2.22.2" = {
-      name = "moment";
-      packageName = "moment";
-      version = "2.22.2";
-      src = fetchurl {
-        url = "https://registry.npmjs.org/moment/-/moment-2.22.2.tgz";
-        sha1 = "3c257f9839fc0e93ff53149632239eb90783ff66";
-      };
-    };
     "ms-2.0.0" = {
       name = "ms";
       packageName = "ms";
@@ -2477,6 +2351,15 @@ let
       src = fetchurl {
         url = "http://registry.npmjs.org/next-tick/-/next-tick-1.0.0.tgz";
         sha1 = "ca86d1fe8828169b0120208e3dc8424b9db8342c";
+      };
+    };
+    "nice-try-1.0.5" = {
+      name = "nice-try";
+      packageName = "nice-try";
+      version = "1.0.5";
+      src = fetchurl {
+        url = "https://registry.npmjs.org/nice-try/-/nice-try-1.0.5.tgz";
+        sha512 = "1nh45deeb5olNY7eX82BkPO7SSxR5SSYJiPTrTdFUVYwAl8CKMA5N9PjTYkHiRjisVcxcQ1HXdLhx2qxxJzLNQ==";
       };
     };
     "node-forge-0.7.6" = {
@@ -2650,6 +2533,15 @@ let
         sha1 = "174b9268735534ffbc7ace6bf53a5a9e1b5c5f5f";
       };
     };
+    "path-key-2.0.1" = {
+      name = "path-key";
+      packageName = "path-key";
+      version = "2.0.1";
+      src = fetchurl {
+        url = "https://registry.npmjs.org/path-key/-/path-key-2.0.1.tgz";
+        sha1 = "411cadb574c5a140d3a4b1910d40d80cc9f40b40";
+      };
+    };
     "path-to-regexp-0.1.7" = {
       name = "path-to-regexp";
       packageName = "path-to-regexp";
@@ -2774,15 +2666,6 @@ let
       src = fetchurl {
         url = "https://registry.npmjs.org/proxy-addr/-/proxy-addr-2.0.4.tgz";
         sha512 = "5erio2h9jp5CHGwcybmxmVqHmnCBZeewlfJ0pex+UW7Qny7OOZXTtH56TGNyBizkgiOwhJtMKrVzDTeKcySZwA==";
-      };
-    };
-    "pseudomap-1.0.2" = {
-      name = "pseudomap";
-      packageName = "pseudomap";
-      version = "1.0.2";
-      src = fetchurl {
-        url = "https://registry.npmjs.org/pseudomap/-/pseudomap-1.0.2.tgz";
-        sha1 = "f052a28da70e618917ef0a8ac34c1ae5a68286b3";
       };
     };
     "psl-1.1.29" = {
@@ -3134,15 +3017,6 @@ let
       src = fetchurl {
         url = "https://registry.npmjs.org/safe-buffer/-/safe-buffer-5.1.2.tgz";
         sha512 = "Gd2UZBJDkXlY7GbJxfsE8/nvKkUEU1G38c1siN6QP6a9PT9MmHB8GnpscSmMJSoF8LOIrt8ud/wPtojys4G6+g==";
-      };
-    };
-    "safe-json-stringify-1.2.0" = {
-      name = "safe-json-stringify";
-      packageName = "safe-json-stringify";
-      version = "1.2.0";
-      src = fetchurl {
-        url = "https://registry.npmjs.org/safe-json-stringify/-/safe-json-stringify-1.2.0.tgz";
-        sha512 = "gH8eh2nZudPQO6TytOvbxnuhYBOvDBBLW52tz5q6X58lJcd/tkmqFR+5Z9adS8aJtURSXWThWy/xJtJwixErvg==";
       };
     };
     "safer-buffer-2.1.2" = {
@@ -3865,13 +3739,13 @@ let
         sha512 = "N3xXQVr4L61rZvGMpWe8XoCGX8vhU35dPyQ4fm5CY/KDlG0F75un14hjbckPXTDuKUY6V0dqR2giT6xN8Y4GEQ==";
       };
     };
-    "zen-observable-ts-0.8.10" = {
+    "zen-observable-ts-0.8.11" = {
       name = "zen-observable-ts";
       packageName = "zen-observable-ts";
-      version = "0.8.10";
+      version = "0.8.11";
       src = fetchurl {
-        url = "https://registry.npmjs.org/zen-observable-ts/-/zen-observable-ts-0.8.10.tgz";
-        sha512 = "5vqMtRggU/2GhePC9OU4sYEWOdvmayp2k3gjPf4F0mXwB3CSbbNznfDUvDJx9O2ZTa1EIXdJhPchQveFKwNXPQ==";
+        url = "https://registry.npmjs.org/zen-observable-ts/-/zen-observable-ts-0.8.11.tgz";
+        sha512 = "8bs7rgGV4kz5iTb9isudkuQjtWwPnQ8lXq6/T76vrepYZVMsDEv6BXaEA+DHdJSK3KVLduagi9jSpSAJ5NgKHw==";
       };
     };
   };
@@ -3902,17 +3776,6 @@ in
       sources."@expo/json-file-8.1.0"
       sources."@expo/ngrok-2.4.2"
       sources."@expo/ngrok-bin-2.2.8-beta.3"
-      sources."@expo/ngrok-bin-darwin-ia32-2.2.8"
-      sources."@expo/ngrok-bin-darwin-x64-2.2.8"
-      sources."@expo/ngrok-bin-freebsd-ia32-2.2.8"
-      sources."@expo/ngrok-bin-freebsd-x64-2.2.8"
-      sources."@expo/ngrok-bin-linux-arm-2.2.8"
-      sources."@expo/ngrok-bin-linux-arm64-2.2.8"
-      sources."@expo/ngrok-bin-linux-ia32-2.2.8"
-      sources."@expo/ngrok-bin-linux-x64-2.2.8"
-      sources."@expo/ngrok-bin-sunos-x64-2.2.8"
-      sources."@expo/ngrok-bin-win32-ia32-2.2.8-beta.1"
-      sources."@expo/ngrok-bin-win32-x64-2.2.8-beta.1"
       sources."@expo/osascript-1.9.0"
       (sources."@expo/schemer-1.2.1" // {
         dependencies = [
@@ -3921,11 +3784,10 @@ in
         ];
       })
       sources."@expo/simple-spinner-1.0.2"
-      sources."@expo/spawn-async-1.3.0"
-      sources."@expo/traveling-fastlane-darwin-1.6.0"
-      sources."@expo/traveling-fastlane-linux-1.6.0"
+      sources."@expo/spawn-async-1.4.0"
       sources."@segment/loosely-validate-event-1.1.2"
       sources."@sindresorhus/is-0.7.0"
+      sources."@types/cross-spawn-6.0.0"
       sources."@types/events-1.2.0"
       sources."@types/glob-7.1.1"
       sources."@types/minimatch-3.0.3"
@@ -4008,7 +3870,7 @@ in
       sources."core-js-2.5.7"
       sources."core-util-is-1.0.2"
       sources."create-error-class-3.0.2"
-      sources."cross-spawn-5.1.0"
+      sources."cross-spawn-6.0.5"
       sources."crypt-0.0.2"
       sources."crypto-token-1.0.1"
       sources."dashdash-1.14.1"
@@ -4140,11 +4002,7 @@ in
       sources."json-schema-0.2.3"
       sources."json-schema-traverse-0.3.1"
       sources."json-stringify-safe-5.0.1"
-      (sources."json5-1.0.1" // {
-        dependencies = [
-          sources."minimist-1.2.0"
-        ];
-      })
+      sources."json5-1.0.1"
       sources."jsonfile-4.0.0"
       sources."jsprim-1.4.1"
       sources."keyv-3.0.0"
@@ -4164,7 +4022,6 @@ in
       })
       sources."loose-envify-1.4.0"
       sources."lowercase-keys-1.0.1"
-      sources."lru-cache-4.1.4"
       sources."match-require-2.1.0"
       (sources."md5-2.2.1" // {
         dependencies = [
@@ -4181,11 +4038,14 @@ in
       sources."mimic-fn-1.2.0"
       sources."mimic-response-1.0.1"
       sources."minimatch-3.0.4"
-      sources."minimist-0.0.8"
+      sources."minimist-1.2.0"
       sources."minipass-2.3.5"
       sources."minizlib-1.1.1"
-      sources."mkdirp-0.5.1"
-      sources."moment-2.22.2"
+      (sources."mkdirp-0.5.1" // {
+        dependencies = [
+          sources."minimist-0.0.8"
+        ];
+      })
       sources."ms-2.0.0"
       sources."mute-stream-0.0.7"
       sources."mv-2.1.1"
@@ -4193,6 +4053,7 @@ in
       sources."ncp-2.0.0"
       sources."negotiator-0.6.1"
       sources."next-tick-1.0.0"
+      sources."nice-try-1.0.5"
       sources."node-forge-0.7.6"
       (sources."normalize-url-2.0.1" // {
         dependencies = [
@@ -4223,6 +4084,7 @@ in
       })
       sources."parseurl-1.3.2"
       sources."path-is-absolute-1.0.1"
+      sources."path-key-2.0.1"
       sources."path-to-regexp-0.1.7"
       sources."performance-now-2.1.0"
       sources."pify-2.3.0"
@@ -4235,7 +4097,6 @@ in
       sources."progress-2.0.1"
       sources."prop-types-15.6.2"
       sources."proxy-addr-2.0.4"
-      sources."pseudomap-1.0.2"
       sources."psl-1.1.29"
       sources."pump-1.0.3"
       sources."punycode-2.1.1"
@@ -4247,11 +4108,7 @@ in
       sources."raven-2.6.4"
       sources."raven-js-3.27.0"
       sources."raw-body-2.3.3"
-      (sources."rc-1.2.8" // {
-        dependencies = [
-          sources."minimist-1.2.0"
-        ];
-      })
+      sources."rc-1.2.8"
       sources."react-16.6.3"
       sources."react-is-16.6.3"
       sources."react-lifecycles-compat-3.0.4"
@@ -4287,7 +4144,6 @@ in
         ];
       })
       sources."safe-buffer-5.1.2"
-      sources."safe-json-stringify-1.2.0"
       sources."safer-buffer-2.1.2"
       sources."scheduler-0.11.2"
       sources."semver-5.6.0"
@@ -4385,7 +4241,7 @@ in
       sources."xtend-4.0.1"
       sources."yallist-3.0.2"
       sources."zen-observable-0.8.11"
-      sources."zen-observable-ts-0.8.10"
+      sources."zen-observable-ts-0.8.11"
     ];
     buildInputs = globalBuildInputs;
     meta = {
