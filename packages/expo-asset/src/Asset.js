@@ -1,9 +1,9 @@
 import uriparser from 'uri-parser';
 import urljoin from 'url-join';
 import { PixelRatio, Platform } from 'react-native';
-import AssetSourceResolver from './AssetSourceResolver';
-import resolveAssetSource from './resolveAssetSource';
-import AssetRegistry from './AssetRegistry';
+import AssetSourceResolver from 'react-native/Libraries/Image/AssetSourceResolver';
+import resolveAssetSource from 'react-native/Libraries/Image/resolveAssetSource';
+import AssetRegistry from 'react-native/Libraries/Image/AssetRegistry';
 
 let FS, Constants;
 
