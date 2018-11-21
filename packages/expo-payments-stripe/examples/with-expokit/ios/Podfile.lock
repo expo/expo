@@ -78,9 +78,9 @@ PODS:
   - EXMediaLibrary (1.0.0):
     - EXCore
     - EXPermissionsInterface
-  - EXPaymentsStripe (1.0.1):
+  - EXPaymentsStripe (1.1.0):
     - EXCore
-    - Stripe (~> 13.0.3)
+    - Stripe (~> 13.2.0)
   - EXPermissions (1.1.0):
     - EXCore
     - EXPermissionsInterface
@@ -228,7 +228,7 @@ PODS:
     - React/Core
     - React/fishhook
     - React/RCTBlob
-  - Stripe (13.0.3)
+  - Stripe (13.2.0)
   - yoga (0.55.4.React)
 
 DEPENDENCIES:
@@ -416,7 +416,7 @@ SPEC CHECKSUMS:
   EXLocalAuthentication: 9b6263750716482fd5e176093c5b00fd22d4a1ff
   EXLocation: d3826ac9100a338192c9913af353ced1e6fa9a51
   EXMediaLibrary: 1410f21ff08dbc3ee783003b27fcf72ad20bb9c2
-  EXPaymentsStripe: 7b9a230a1ceadd3ef955fca88b5e30d2f35edf6a
+  EXPaymentsStripe: 2201b77ad9cff57f2a63996d4a9d260b3258b56d
   EXPermissions: 1c524493270ba64f494f805b6e0e75d4b498ecb5
   EXPermissionsInterface: 814a15d3259873c39646ed3cfe58bb49160445c1
   ExpoKit: 8e3d34ef65f7c88233b3e1d73a202a0d6e89c736
@@ -445,7 +445,7 @@ SPEC CHECKSUMS:
   JKBigInteger2: e91672035c42328c48b7dd015b66812ddf40ca9b
   lottie-ios: d699fdee68d7b63e721d949388b015fef1aaa4ac
   React: aa2040dbb6f317b95314968021bd2888816e03d5
-  Stripe: 76c203e21555089b708e6cbe972a3e3baf1ab4d8
+  Stripe: 2c69e216061d54d9c538204bb4f58bd597ddfc5b
   yoga: a23273df0088bf7f2bb7e5d7b00044ea57a2a54a
 
 PODFILE CHECKSUM: 26795d7910bc1bb225da1b985cbc2c0fe1dddce8

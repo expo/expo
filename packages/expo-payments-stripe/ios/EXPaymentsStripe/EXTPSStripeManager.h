@@ -16,4 +16,6 @@
 
 @interface EXTPSStripeManager : EXExportedModule <PKPaymentAuthorizationViewControllerDelegate, STPAddCardViewControllerDelegate, EXModuleRegistryConsumer>
 
+@property (nonatomic) STPRedirectContext *redirectContext;
+
 @end

@@ -134,8 +134,7 @@ export default class ApplePayScreen extends React.Component {
           onPress={this.handleApplePayPress}
           {...testID('applePayButton')}
         />
-        <Text style={styles.instruction}>Complete the operation on token</Text>Complete the
-        operation on token
+        <Text style={styles.instruction}>Complete the operation on token</Text>
         <Switch
           style={styles.switch}
           value={complete}
@@ -162,8 +161,7 @@ export default class ApplePayScreen extends React.Component {
             onPress={this.handleSetupApplePayPress}
             {...testID('setupApplePayButton')}
           />
-          <Text style={styles.hint}>Setup Pay works only on real device</Text>Setup Pay works only
-          on real deviceiew style={styles.statusContainer}>
+          <Text style={styles.hint}>Setup Pay works only on real device</Text>
           <Text style={styles.status} {...testID('deviceSupportsApplePayStatus')}>
             Device {allowed ? 'supports' : "doesn't support"} Pay
           </Text>

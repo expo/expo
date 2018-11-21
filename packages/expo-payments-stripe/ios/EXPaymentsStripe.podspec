@@ -17,6 +17,6 @@ Pod::Spec.new do |s|
   s.requires_arc   = true
 
   s.dependency 'EXCore'
-  s.dependency 'Stripe', '~> 13.0.3'
+  s.dependency 'Stripe', '~> 13.2.0'
 
 end

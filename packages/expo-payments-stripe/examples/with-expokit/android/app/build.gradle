@@ -176,6 +176,8 @@ dependencies {
     exclude group: 'com.squareup.okhttp3', module: 'okhttp'
     exclude group: 'com.squareup.okhttp3', module: 'okhttp-urlconnection'
   }
+
+  implementation "host.exp.exponent:expo-payments-stripe:1.1.0@aar"
   
   /* REMOVED_WHEN_DISTRIBUTING_FROM_HERE
   implementation(project(path: ':expoview')) {

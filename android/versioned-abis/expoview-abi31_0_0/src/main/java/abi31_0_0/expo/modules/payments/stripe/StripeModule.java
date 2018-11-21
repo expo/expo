@@ -276,12 +276,12 @@ public class StripeModule extends ExportedModule implements ModuleRegistryConsum
             Math.round((Double)options.get("amount")),
             (String)options.get("name"),
             (String)options.get("returnURL"),
-            getStringOrNull(options, "statementDescriptor"));
+            getStringOrNull(options, "statementDescriptor"),
+            null);
         break;
       case "bitcoin":
-        sourceParams = SourceParams.createBitcoinParams(
-            Math.round((Double)options.get("amount")), (String)options.get("currency"), (String)options.get("email"));
-        break;
+        promise.reject("E_UNSUPPORTED", "Bitcoin source has been removed in SDK32 and the removal had to be backported to SDK31 too. Sorry for the inconvenience.");
+        return;
       case "giropay":
         sourceParams = SourceParams.createGiropayParams(
             Math.round((Double)options.get("amount")),

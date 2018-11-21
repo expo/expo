@@ -12,6 +12,13 @@ public abstract class ArgCheck {
     return t;
   }
 
+  public static <T> T nonNull(T t, String message) {
+    if (t == null) {
+      throw new NullPointerException(message);
+    }
+    return t;
+  }
+
   public static String notEmptyString(String string) {
     if (TextUtils.isEmpty(string)) {
       throw new IllegalArgumentException();
@@ -32,4 +39,9 @@ public abstract class ArgCheck {
     }
   }
 
+  public static void isTrue(boolean shouldBeTrue, String message) {
+    if (!shouldBeTrue) {
+      throw new IllegalArgumentException(message);
+    }
+  }
 }
