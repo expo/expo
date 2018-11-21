@@ -1,10 +1,14 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-nix build --file shell.nix ndk --no-link
+scriptdir="$(dirname ${BASH_SOURCE[0]})"
+shellnix="$scriptdir/shell.nix"
+
+ndk=${1:-$(nix-build "$shellnix" -A ndk --no-out-link)}
+ndkRoot=${2:-$(nix eval --file "$shellnix" --raw ndk_root)}
 
 mkdir -p "$ANDROID_NDK_ROOT" # Create full path if necessary
 
 # Replace any existing link or directory with link
 rm -r "$ANDROID_NDK_ROOT"
-ln -sn "$(nix eval --file shell.nix --raw ndk_root)" "$ANDROID_NDK_ROOT"
+ln -sn "$ndkRoot" "$ANDROID_NDK_ROOT"
