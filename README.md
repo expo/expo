@@ -35,7 +35,8 @@ Please use Node 8+ and npm 4. We recommend installing Node using [nvm](https://g
 - Open and run `ios/Exponent.xcworkspace` in Xcode.
 
 #### Android
-- Make sure you have Android Studio 3 and the [Android NDK](https://facebook.github.io/react-native/docs/building-from-source.html#download-links-for-android-ndk) version `r10e` installed.
+- Make sure you have Android Studio 3 installed
+- Run `android/install-ndk-17c.sh` to get the required version of the Android NDK.
 - See "Running on a Device"
 
 ## Running on a Device
