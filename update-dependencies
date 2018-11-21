@@ -23,7 +23,7 @@ pushd nix/nodepackages
 nix run -f $nixdir nodePackages.node2nix --command \
   node2nix \
   --strip-optional-dependencies \
-  --nodejs-8 \
+  --nodejs-10 \
   --input <(echo '["expo-cli"]')
 popd
 
