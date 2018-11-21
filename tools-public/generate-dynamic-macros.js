@@ -554,7 +554,9 @@ exports.generateDynamicMacrosAsync = async function generateDynamicMacrosAsync(a
     await copyTemplateFilesAsync(platform, args, templateSubstitutions);
   } catch (error) {
     console.error(
-      `There was an error while generating Expo template files, which could lead to unexpected behavior at runtime:\n${error.stack}`
+      `There was an error while generating Expo template files, which could lead to unexpected behavior at runtime:\n${
+        error.stack
+      }`
     );
     process.exit(1);
   }

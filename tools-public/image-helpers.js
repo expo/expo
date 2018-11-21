@@ -20,7 +20,7 @@ async function getImageDimensionsWithSharpAsync(basename, dirname) {
   try {
     let meta = await sharp(filename).metadata();
     return [meta.width, meta.height];
-  } catch(e) {
+  } catch (e) {
     return null;
   }
 }
