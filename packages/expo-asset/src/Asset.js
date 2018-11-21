@@ -198,11 +198,11 @@ export default class Asset {
     return Promise.all(moduleIds.map(m => Asset.fromModule(m).downloadAsync()));
   }
 
-  static fromModule(moduleId) {
-    if (typeof moduleId === 'string') {
-      return Asset.fromURI(moduleId);
+  static fromModule(virtualAssetModule) {
+    if (typeof virtualAssetModule === 'string') {
+      return Asset.fromURI(virtualAssetModule);
     } else {
-      const meta = AssetRegistry.getAssetByID(moduleId);
+      const meta = AssetRegistry.getAssetByID(virtualAssetModule);
       return Asset.fromMetadata(meta);
     }
   }
@@ -230,6 +230,7 @@ export default class Asset {
   }
 
   static fromURI(uri) {
+    // Possibly Base64
     if (Asset.byUri[uri]) {
       return Asset.byUri[uri];
     }
