@@ -9,22 +9,22 @@ const {
   cleanupDynamicMacrosAsync,
 } = require('./generate-dynamic-macros');
 
-const expoKitPath = path.join(__dirname, '..')
-const supportingDir = path.join(expoKitPath, 'ios', 'Exponent', 'Supporting')
+const expoKitPath = path.join(__dirname, '..');
+const supportingDir = path.join(expoKitPath, 'ios', 'Exponent', 'Supporting');
 
 const run = async () => {
   await generateDynamicMacrosAsync({
     buildConstantsPath: path.join(supportingDir, 'EXBuildConstants.plist'),
-    platform: "ios",
+    platform: 'ios',
     infoPlistPath: supportingDir,
     expoKitPath: expoKitPath,
     templateFilesPath: path.join(expoKitPath, 'template-files'),
-  })
+  });
   await cleanupDynamicMacrosAsync({
-    platform: "ios",
+    platform: 'ios',
     infoPlistPath: supportingDir,
     expoKitPath: expoKitPath,
-  })
-}
+  });
+};
 
-run()
+run();

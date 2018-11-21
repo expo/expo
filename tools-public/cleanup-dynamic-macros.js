@@ -15,4 +15,4 @@ if (argv.platform === 'ios' && !argv.infoPlistPath) {
   throw new Error('iOS must run with `--infoPlistPath INFO_PLIST_PATH`');
 }
 
-cleanupDynamicMacrosAsync(argv)
+cleanupDynamicMacrosAsync(argv);
