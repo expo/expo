@@ -136,6 +136,15 @@ platform :android do
     adb(command: "shell am start -n host.exp.exponent/host.exp.exponent.LauncherActivity")
   end
 
+  lane :build do |build_type: "Debug"|
+    gradle(
+      project_dir: "android",
+      task: "app:assemble",
+      flavor: "ProdKernel",
+      build_type: "Debug",
+    )
+  end
+
   lane :prod_release do
     build_gradle = File.read("../android/app/build.gradle")
 

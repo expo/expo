@@ -21,7 +21,7 @@ mkShell {
   passthru = { inherit ndk ndk_root; };
 
   shellHook = ''
-    ./install-ndk-17c.sh
+    ${./install-ndk-17c.sh} ${ndk} ${ndk_root}
     yes | ${androidenv.androidsdk_9_0}/bin/sdkmanager --licenses --sdk_root="$ANDROID_SDK_ROOT"
     ${lib.optionalString stdenv.isLinux ''
       for dep in lib lib64; do
