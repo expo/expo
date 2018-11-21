@@ -18,8 +18,31 @@ self: super:
 
   yarn2nix = import self.yarn2nix-src { pkgs = self; };
 
-  inherit
-    (super.callPackage ./nodepackages { pkgs = self; })
+  externalNodePackages =
+    let
+      generatedNodePackages = super.callPackage ./nodepackages { pkgs = self; };
+    in
+      generatedNodePackages // {
+        expo-cli = generatedNodePackages.expo-cli.override {
+          buildInputs = with self; [
+            cocoapods
+            fastlane
+            xcpretty
+          ];
+          preFixup = ''
+            detach="$out/lib/node_modules/expo-cli/node_modules/xdl/build/detach"
+            substituteInPlace "$detach/IosShellApp.js" \
+              --replace xcpretty ${self.xcpretty}/bin/xcpretty \
+              --replace "pod " "${self.cocoapods}/bin/pod "
+            for f in Ios{CodeSigning,Keychain}.js; do
+              substituteInPlace "$detach/$f" \
+                --replace "'fastlane'" "'${self.fastlane}/bin/fastlane'"
+            done
+         '';
+        };
+      };
+
+  inherit (self.externalNodePackages)
     expo-cli
     ;
   
