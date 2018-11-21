@@ -4,13 +4,21 @@ let
 
    ndk = androidenv.androidndk_17c.override { fullNDK = true; };
    ndk_root = "${ndk}/libexec/${ndk.name}";
+   sdk_path = if stdenv.isDarwin
+     then "/Library/Android/sdk"
+     else "/Android/Sdk"; # intentional Capital S
 
 in
 
-mkShell {
+mkShell rec {
 
   LANG="en_US.UTF-8";
   JAVA_HOME=openjdk8;
+
+  ANDROID_SDK_ROOT=builtins.getEnv("HOME") + sdk_path;
+  ANDROID_NDK_ROOT="${ANDROID_SDK_ROOT}/ndk-bundle";
+  ANDROID_HOME=ANDROID_SDK_ROOT;
+  ANDROID_NDK=ANDROID_NDK_ROOT;
 
   nativeBuildInputs = [
     fastlane
@@ -18,7 +26,7 @@ mkShell {
     openjdk8
   ];
 
-  passthru = { inherit ndk ndk_root; };
+  passthru = { inherit ndk; };
 
   shellHook = ''
     ${./install-ndk-17c.sh} ${ndk} ${ndk_root}
