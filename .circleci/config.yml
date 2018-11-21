@@ -121,6 +121,10 @@ workflows:
           type: approval
           requires:
             - client_android
+          filters:
+            branches:
+              only:
+                - /^sdk-\d+$/
       - client_android_release_google_play:
           requires:
             - client_android_approve_google_play
