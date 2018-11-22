@@ -33,8 +33,18 @@ public class GMVBarCodeScanner extends ExpoBarCodeScanner {
 
   @Override
   public BarCodeScannerResult scan(byte[] data, int width, int height, int rotation) {
-    List<BarCodeScannerResult> results = scan(FrameFactory.buildFrame(data, width, height, rotation).getFrame());
-    return results.size() > 0 ? results.get(0) : null;
+    try {
+      List<BarCodeScannerResult> results = scan(FrameFactory.buildFrame(data, width, height, rotation).getFrame());
+      return results.size() > 0 ? results.get(0) : null;
+    } catch (Exception e) {
+      // Sometimes data has different size than width and height would suggest:
+      // ByteBuffer.wrap(data).capacity() < width * height.
+      // When given such arguments, Frame cannot be built and IllegalArgumentException is thrown.
+      // See https://github.com/expo/expo/issues/2422.
+      // In such case we can't do anything about it but ignore the frame.
+      Log.e(TAG, "Failed to detect barcode: " + e.getMessage());
+      return null;
+    }
   }
 
   @Override
