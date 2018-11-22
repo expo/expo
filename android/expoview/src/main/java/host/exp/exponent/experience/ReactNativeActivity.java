@@ -382,6 +382,10 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
 
     Exponent.getInstance().onActivityResult(requestCode, resultCode, data);
 
+    if (mReactInstanceManager != null && mReactInstanceManager.isNotNull() && !mIsCrashed) {
+      mReactInstanceManager.call("onActivityResult", this, requestCode, resultCode, data);
+    }
+
     // Have permission to draw over other apps. Resume loading.
     if (requestCode == KernelConstants.OVERLAY_PERMISSION_REQUEST_CODE) {
       // startReactInstance() checks isInForeground and onActivityResult is called before onResume,
