@@ -117,11 +117,7 @@ public class PrintPDFRenderTask {
 
     @Override
     public void onPageFinished(WebView view, String url) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        mDocument = mWebView.createPrintDocumentAdapter("Document");
-      } else {
-        mDocument = mWebView.createPrintDocumentAdapter();
-      }
+      mDocument = mWebView.createPrintDocumentAdapter("Document");
 
       // layout the document with appropriate print attributes
       mDocument.onLayout(null, mPrintAttributes, null, new PrintDocumentAdapterLayoutCallback() {}, null);

@@ -1,6 +1,8 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+#import "EXEnvironment.h"
 #import "EXHomeModule.h"
+#import "EXSession.h"
 #import "EXUnversioned.h"
 
 #import <React/RCTEventDispatcher.h>
@@ -166,6 +168,41 @@ RCT_EXPORT_METHOD(selectQRReader)
 {
   if (_delegate) {
     [_delegate homeModuleDidSelectQRReader:self];
+  }
+}
+
+RCT_REMAP_METHOD(getSessionAsync,
+                 getSessionAsync:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject)
+{
+  NSDictionary *session = [[EXSession sharedInstance] session];
+  resolve(session);
+}
+
+RCT_REMAP_METHOD(setSessionAsync,
+                 setSessionAsync:(NSDictionary *)session
+                 resolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject)
+{
+  NSError *error;
+  BOOL success = [[EXSession sharedInstance] saveSessionToKeychain:session error:&error];
+  if (success) {
+    resolve(nil);
+  } else {
+    reject(@"ERR_SESSION_NOT_SAVED", @"Could not save session", error);
+  }
+}
+
+RCT_REMAP_METHOD(removeSessionAsync,
+                 removeSessionAsync:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject)
+{
+  NSError *error;
+  BOOL success = [[EXSession sharedInstance] deleteSessionFromKeychainWithError:&error];
+  if (success) {
+    resolve(nil);
+  } else {
+    reject(@"ERR_SESSION_NOT_REMOVED", @"Could not remove session", error);
   }
 }
 

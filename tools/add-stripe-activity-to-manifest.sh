@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # example of use
 # ./add-stripe-activity-to-manifest.sh AndroidManifest.xml abi30_0_0
 MANIFEST_PATH=$1

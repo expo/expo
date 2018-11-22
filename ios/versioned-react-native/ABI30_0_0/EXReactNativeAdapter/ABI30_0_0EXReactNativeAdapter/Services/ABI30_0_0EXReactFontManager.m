@@ -93,7 +93,7 @@ ABI30_0_0EX_REGISTER_MODULE();
 
 # pragma mark - ABI30_0_0EXFontManager
 
-- (void)addFontProccessor:(id<ABI30_0_0EXFontProcessorInterface>)processor
+- (void)addFontProcessor:(id<ABI30_0_0EXFontProcessorInterface>)processor
 {
   [_fontProcessors addObject:processor];
   [currentFontProcessors compact];

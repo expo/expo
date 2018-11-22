@@ -13,7 +13,7 @@
   if ([[NSFileManager defaultManager] fileExistsAtPath:path isDirectory:&isDirectory]) {
     NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:path error:nil];
     NSMutableDictionary *result = [NSMutableDictionary dictionary];
-    result[@"exists"] = @(true);
+    result[@"exists"] = @(YES);
     result[@"isDirectory"] = @(isDirectory);
     result[@"uri"] = [NSURL fileURLWithPath:path].absoluteString;
     if (options[@"md5"]) {
@@ -23,7 +23,7 @@
     result[@"modificationTime"] = @(attributes.fileModificationDate.timeIntervalSince1970);
     resolve(result);
   } else {
-    resolve(@{@"exists": @(false), @"isDirectory": @(false)});
+    resolve(@{@"exists": @(NO), @"isDirectory": @(NO)});
   }
 }
 

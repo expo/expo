@@ -111,7 +111,12 @@ FBSDK_STATIC_INLINE void FBSDKShareDialogValidateShareExtensionSchemeRegisteredF
 
 - (BOOL)canShow
 {
-  if (!self.shareContent) {
+  if (self.shareContent) {
+    // Validate this content
+    NSError *error = nil;
+    return [self _validateWithError:&error];
+  } else {
+    // Launch an empty dialog for sharing a status message.
     switch (self.mode) {
       case FBSDKShareDialogModeAutomatic:
       case FBSDKShareDialogModeBrowser:
@@ -127,9 +132,6 @@ FBSDK_STATIC_INLINE void FBSDKShareDialogValidateShareExtensionSchemeRegisteredF
         return [self _canShowShareSheet];
       }
     }
-  } else {
-    NSError *error = nil;
-    return [self _validateWithError:&error];
   }
 }
 

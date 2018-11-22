@@ -1,7 +1,7 @@
 // @flow
 
 import * as THREE from 'three';
-import { AR } from 'expo-ar';
+import * as AR from 'expo-ar';
 
 export default class BackgroundTexture extends THREE.Texture {
   constructor(renderer: THREE.WebGLRenderer) {

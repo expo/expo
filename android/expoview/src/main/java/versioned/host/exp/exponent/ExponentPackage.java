@@ -33,6 +33,7 @@ import expo.modules.contacts.ContactsPackage;
 import expo.modules.facedetector.FaceDetectorPackage;
 import expo.modules.filesystem.FileSystemPackage;
 import expo.modules.gl.GLPackage;
+import expo.modules.google.signin.GoogleSignInPackage;
 import expo.modules.location.LocationPackage;
 import expo.modules.medialibrary.MediaLibraryPackage;
 import expo.modules.permissions.PermissionsPackage;
@@ -66,7 +67,7 @@ import versioned.host.exp.exponent.modules.api.ImagePickerModule;
 import versioned.host.exp.exponent.modules.api.KeepAwakeModule;
 import versioned.host.exp.exponent.modules.api.KeyboardModule;
 import versioned.host.exp.exponent.modules.api.NotificationsModule;
-import versioned.host.exp.exponent.modules.api.RNViewShotModule;
+import versioned.host.exp.exponent.modules.api.viewshot.RNViewShotModule;
 import versioned.host.exp.exponent.modules.api.SQLiteModule;
 import versioned.host.exp.exponent.modules.api.ScreenOrientationModule;
 import versioned.host.exp.exponent.modules.api.screens.RNScreensPackage;
@@ -109,6 +110,7 @@ public class ExponentPackage implements ReactPackage {
       new FaceDetectorPackage(),
       new ConstantsPackage(),
       new GLPackage(),
+      new GoogleSignInPackage(),
       new PermissionsPackage(),
       new SMSPackage(),
       new PrintPackage(),
@@ -225,6 +227,9 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new CalendarModule(reactContext, experienceId));
         nativeModules.add(new ReanimatedModule(reactContext));
         nativeModules.add(new SplashScreenModule(reactContext, experienceId));
+
+        SvgPackage svgPackage = new SvgPackage();
+        nativeModules.addAll(svgPackage.createNativeModules(reactContext));
 
         // Call to create native modules has to be at the bottom --
         // -- ExpoModuleRegistryAdapter uses the list of native modules

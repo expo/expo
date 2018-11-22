@@ -1,21 +1,27 @@
-//
-//  EXFirebaseAppUtil.m
-//  EXFirebaseApp
-//
-//  Created by Evan Bacon on 8/6/18.
-//  Copyright © 2018 650 Industries. All rights reserved.
-//
+// Copyright 2018-present 650 Industries. All rights reserved.
 
 #import <EXFirebaseApp/EXFirebaseAppUtil.h>
 
 @implementation EXFirebaseAppUtil
 
++ (NSString *)getISO8601String:(NSDate *)date {
+  static NSDateFormatter *formatter = nil;
+  
+  if (!formatter) {
+    formatter = [[NSDateFormatter alloc] init];
+    [formatter setLocale:[NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"]];
+    formatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
+    [formatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss"];
+  }
+  
+  NSString *iso8601String = [formatter stringFromDate:date];
+  
+  return [iso8601String stringByAppendingString:@"Z"];
+}
+
 + (FIRApp *)getApp:(NSString *)appDisplayName {
-    NSString *appName = [EXFirebaseAppUtil getAppName:appDisplayName];
-    if (appDisplayName == nil) {
-      return [FIRApp defaultApp];
-    }
-    return [FIRApp appNamed:appName];
+  NSString *appName = [EXFirebaseAppUtil getAppName:appDisplayName];
+  return [FIRApp appNamed:appName];
 }
 
 + (NSString *)getAppName:(NSString *)appDisplayName {

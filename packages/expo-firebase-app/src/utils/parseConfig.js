@@ -1,7 +1,11 @@
 /*
  * @flow
  */
-import { isAndroid, isObject, isString } from './';
+import { Platform } from 'expo-core';
+
+import { isObject, isString } from './';
+
+const isAndroid = Platform.OS === 'android';
 
 function isValidString(str: ?string): string {
   return isString(str) && str !== '';

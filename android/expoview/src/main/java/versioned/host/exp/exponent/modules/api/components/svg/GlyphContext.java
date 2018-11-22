@@ -9,7 +9,6 @@
 
 package versioned.host.exp.exponent.modules.api.components.svg;
 
-import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 
 import java.util.ArrayList;
@@ -23,10 +22,10 @@ class GlyphContext {
     private final ArrayList<FontData> mFontContext = new ArrayList<>();
 
     // Unique input attribute lists (only added if node sets a value)
-    private final ArrayList<String[]> mXsContext = new ArrayList<>();
-    private final ArrayList<String[]> mYsContext = new ArrayList<>();
-    private final ArrayList<String[]> mDXsContext = new ArrayList<>();
-    private final ArrayList<String[]> mDYsContext = new ArrayList<>();
+    private final ArrayList<SVGLength[]> mXsContext = new ArrayList<>();
+    private final ArrayList<SVGLength[]> mYsContext = new ArrayList<>();
+    private final ArrayList<SVGLength[]> mDXsContext = new ArrayList<>();
+    private final ArrayList<SVGLength[]> mDYsContext = new ArrayList<>();
     private final ArrayList<double[]> mRsContext = new ArrayList<>();
 
     // Unique index into attribute list (one per unique list)
@@ -62,19 +61,19 @@ class GlyphContext {
     // https://www.w3.org/TR/SVG/types.html#DataTypeCoordinates
 
     // https://www.w3.org/TR/SVG/text.html#TSpanElementXAttribute
-    private String[] mXs = new String[]{};
+    private SVGLength[] mXs = new SVGLength[]{};
 
     // https://www.w3.org/TR/SVG/text.html#TSpanElementYAttribute
-    private String[] mYs = new String[]{};
+    private SVGLength[] mYs = new SVGLength[]{};
 
     // Current <list-of-lengths> SVGLengthList
     // https://www.w3.org/TR/SVG/types.html#DataTypeLengths
 
     // https://www.w3.org/TR/SVG/text.html#TSpanElementDXAttribute
-    private String[] mDXs = new String[]{};
+    private SVGLength[] mDXs = new SVGLength[]{};
 
     // https://www.w3.org/TR/SVG/text.html#TSpanElementDYAttribute
-    private String[] mDYs = new String[]{};
+    private SVGLength[] mDYs = new SVGLength[]{};
 
     // Current <list-of-numbers> SVGLengthList
     // https://www.w3.org/TR/SVG/types.html#DataTypeNumbers
@@ -144,11 +143,11 @@ class GlyphContext {
         return topFont;
     }
 
-    private FontData getTopOrParentFont(GroupShadowNode child) {
+    private FontData getTopOrParentFont(GroupView child) {
         if (mTop > 0) {
             return topFont;
         } else {
-            GroupShadowNode parentRoot = child.getParentTextRoot();
+            GroupView parentRoot = child.getParentTextRoot();
 
             while (parentRoot != null) {
                 FontData map = parentRoot.getGlyphContext().getFont();
@@ -162,7 +161,7 @@ class GlyphContext {
         }
     }
 
-    private void pushNodeAndFont(GroupShadowNode node, @Nullable ReadableMap font) {
+    private void pushNodeAndFont(GroupView node, @Nullable ReadableMap font) {
         FontData parent = getTopOrParentFont(node);
         mTop++;
 
@@ -178,39 +177,39 @@ class GlyphContext {
 
     }
 
-    void pushContext(GroupShadowNode node, @Nullable ReadableMap font) {
+    void pushContext(GroupView node, @Nullable ReadableMap font) {
         pushNodeAndFont(node, font);
         pushIndices();
     }
 
-    private String[] getStringArrayFromReadableArray(ReadableArray readableArray) {
+    private SVGLength[] getStringArrayFromReadableArray(ArrayList<SVGLength> readableArray) {
         int size = readableArray.size();
-        String[] strings = new String[size];
+        SVGLength[] strings = new SVGLength[size];
         for (int i = 0; i < size; i++) {
-            strings[i] = readableArray.getString(i);
+            strings[i] = readableArray.get(i);
         }
         return strings;
     }
 
-    private double[] getDoubleArrayFromReadableArray(ReadableArray readableArray) {
+    private double[] getDoubleArrayFromReadableArray(ArrayList<SVGLength> readableArray) {
         int size = readableArray.size();
         double[] doubles = new double[size];
         for (int i = 0; i < size; i++) {
-            String string = readableArray.getString(i);
-            doubles[i] = Double.valueOf(string);
+            SVGLength length = readableArray.get(i);
+            doubles[i] = length.value;
         }
         return doubles;
     }
 
     void pushContext(
-        boolean reset,
-        TextShadowNode node,
-        @Nullable ReadableMap font,
-        @Nullable ReadableArray x,
-        @Nullable ReadableArray y,
-        @Nullable ReadableArray deltaX,
-        @Nullable ReadableArray deltaY,
-        @Nullable ReadableArray rotate
+            boolean reset,
+            TextView node,
+            @Nullable ReadableMap font,
+            @Nullable ArrayList<SVGLength> x,
+            @Nullable ArrayList<SVGLength> y,
+            @Nullable ArrayList<SVGLength> deltaX,
+            @Nullable ArrayList<SVGLength> deltaY,
+            @Nullable ArrayList<SVGLength> rotate
     ) {
         if (reset) {
             this.reset();
@@ -360,7 +359,7 @@ class GlyphContext {
         if (nextIndex < mXs.length) {
             mDX = 0;
             mXIndex = nextIndex;
-            String string = mXs[nextIndex];
+            SVGLength string = mXs[nextIndex];
             mX = PropHelper.fromRelative(string, mWidth, 0, mScale, mFontSize);
         }
 
@@ -376,7 +375,7 @@ class GlyphContext {
         if (nextIndex < mYs.length) {
             mDY = 0;
             mYIndex = nextIndex;
-            String string = mYs[nextIndex];
+            SVGLength string = mYs[nextIndex];
             mY = PropHelper.fromRelative(string, mHeight, 0, mScale, mFontSize);
         }
 
@@ -389,7 +388,7 @@ class GlyphContext {
         int nextIndex = mDXIndex + 1;
         if (nextIndex < mDXs.length) {
             mDXIndex = nextIndex;
-            String string = mDXs[nextIndex];
+            SVGLength string = mDXs[nextIndex];
             double val = PropHelper.fromRelative(string, mWidth, 0, mScale, mFontSize);
             mDX += val;
         }
@@ -403,7 +402,7 @@ class GlyphContext {
         int nextIndex = mDYIndex + 1;
         if (nextIndex < mDYs.length) {
             mDYIndex = nextIndex;
-            String string = mDYs[nextIndex];
+            SVGLength string = mDYs[nextIndex];
             double val = PropHelper.fromRelative(string, mHeight, 0, mScale, mFontSize);
             mDY += val;
         }

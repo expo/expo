@@ -2,7 +2,7 @@
  * @flow
  * Crash Reporting representation wrapper
  */
-import { ModuleBase, getNativeModule, registerModule } from 'expo-firebase-app';
+import { ModuleBase } from 'expo-firebase-app';
 
 import type App from 'expo-firebase-app';
 
@@ -19,8 +19,8 @@ export default class Crashlytics extends ModuleBase {
   constructor(app: App) {
     super(app, {
       moduleName: MODULE_NAME,
-      multiApp: false,
-      hasShards: false,
+      hasMultiAppSupport: false,
+      hasCustomUrlSupport: false,
       namespace: NAMESPACE,
     });
   }
@@ -29,7 +29,7 @@ export default class Crashlytics extends ModuleBase {
    * Forces a crash. Useful for testing your application is set up correctly.
    */
   crash(): void {
-    getNativeModule(this).crash();
+    this.nativeModule.crash();
   }
 
   /**
@@ -37,7 +37,7 @@ export default class Crashlytics extends ModuleBase {
    * @param {string} message
    */
   log(message: string): void {
-    getNativeModule(this).log(message);
+    this.nativeModule.log(message);
   }
 
   /**
@@ -46,43 +46,41 @@ export default class Crashlytics extends ModuleBase {
    * @param {string} message
    */
   recordError(code: number, message: string): void {
-    getNativeModule(this).recordError(code, message);
+    this.nativeModule.recordError(code, message);
   }
 
   /**
    * Set a boolean value to show alongside any subsequent crash reports.
    */
   setBoolValue(key: string, value: boolean): void {
-    getNativeModule(this).setBoolValue(key, value);
+    this.nativeModule.setBoolValue(key, value);
   }
 
   /**
    * Set a float value to show alongside any subsequent crash reports.
    */
   setFloatValue(key: string, value: number): void {
-    getNativeModule(this).setFloatValue(key, value);
+    this.nativeModule.setFloatValue(key, value);
   }
 
   /**
    * Set an integer value to show alongside any subsequent crash reports.
    */
   setIntValue(key: string, value: number): void {
-    getNativeModule(this).setIntValue(key, value);
+    this.nativeModule.setIntValue(key, value);
   }
 
   /**
    * Set a string value to show alongside any subsequent crash reports.
    */
   setStringValue(key: string, value: string): void {
-    getNativeModule(this).setStringValue(key, value);
+    this.nativeModule.setStringValue(key, value);
   }
 
   /**
    * Set the user ID to show alongside any subsequent crash reports.
    */
   setUserIdentifier(userId: string): void {
-    getNativeModule(this).setUserIdentifier(userId);
+    this.nativeModule.setUserIdentifier(userId);
   }
 }
-
-registerModule(Crashlytics);

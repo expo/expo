@@ -3,7 +3,7 @@ package expo.modules.firebase.notifications;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-// TODO:Bacon: Remove React Native
+// TODO: Bacon: Remove React Native https://github.com/expo/expo/pull/2338
 import com.facebook.react.HeadlessJsTaskService;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
@@ -26,7 +26,7 @@ public class FirebaseBackgroundNotificationActionsService extends HeadlessJsTask
     if (isBackgroundNotficationIntent(intent)) {
       WritableMap notificationOpenMap = toNotificationOpenMap(intent);
 
-      return new HeadlessJsTaskConfig("EXFirebaseBackgroundNotificationAction", notificationOpenMap, 60000, true);
+      return new HeadlessJsTaskConfig("FirebaseBackgroundNotificationAction", notificationOpenMap, 60000, true);
     }
     return null;
   }

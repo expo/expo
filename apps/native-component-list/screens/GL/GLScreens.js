@@ -1,13 +1,17 @@
-import { Dimensions } from 'react-native';
-import * as Expo from 'expo';
+import './BeforePIXI';
 
-import GLScreen from './GLScreen';
+import * as Expo from 'expo';
+import * as ExpoTHREE from 'expo-three';
+import * as PIXI from 'pixi.js';
+import { Dimensions } from 'react-native';
+
 import GLWrap from './GLWrap';
 import GLCameraScreen from './GLCameraScreen';
 import GLSnapshotsScreen from './GLSnapshotsScreen';
 import GLHeadlessRenderingScreen from './GLHeadlessRenderingScreen';
 import GLRotatingCubeWithCameraScreen from './GLRotatingCubeWithCameraScreen';
 import GLTHREEWithCameraTextureScreen from './GLTHREEWithCameraTextureScreen';
+import ProcessingWrap from './ProcessingWrap';
 
 const THREE = require('three');
 global.THREE = THREE;
@@ -19,16 +23,8 @@ require('three/examples/js/postprocessing/RenderPass');
 require('three/examples/js/postprocessing/ShaderPass');
 require('three/examples/js/postprocessing/GlitchPass');
 require('three/examples/js/postprocessing/FilmPass');
-import * as ExpoTHREE from 'expo-three';
-
-import ProcessingWrap from './ProcessingWrap';
-
-import './BeforePIXI';
-import * as PIXI from 'pixi.js';
 
 export default {
-  GL: { screen: GLScreen },
-
   ClearToBlue: {
     screen: GLWrap('Clear to blue', gl => {
       gl.clearColor(0, 0, 1, 1);

@@ -53,7 +53,7 @@ function generateJestPreset() {
     'node_modules/(?!(jest-)?react-native|react-clone-referenced-element)',
   ]);
   expoJestPreset.transformIgnorePatterns = [
-    'node_modules/(?!((jest-)?react-native|react-clone-referenced-element|expo(nent)?|@expo(nent)?/.*|react-navigation|sentry-expo))',
+    'node_modules/(?!((jest-)?react-native|react-clone-referenced-element|expo(nent)?|@expo(nent)?/.*|react-navigation|sentry-expo|native-base))',
   ];
 
   if (!expoJestPreset.setupFiles) {

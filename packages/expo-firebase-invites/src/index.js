@@ -2,15 +2,16 @@
  * @flow
  * Invites representation wrapper
  */
-import { events, getLogger, ModuleBase, getNativeModule, registerModule } from 'expo-firebase-app';
-import { Platform } from 'expo-core';
+import { SharedEventEmitter, ModuleBase } from 'expo-firebase-app';
+
 import type App from 'expo-firebase-app';
-const { SharedEventEmitter } = events;
 import Invitation from './Invitation';
 
 export const MODULE_NAME = 'ExpoFirebaseInvites';
 export const NAMESPACE = 'invites';
-const NATIVE_EVENTS = ['invites_invitation_received'];
+const NATIVE_EVENTS = {
+  invitesInvitationReceived: 'Expo.Firebase.invites_invitation_received',
+};
 
 export const statics = {
   Invitation,
@@ -28,25 +29,25 @@ export default class Invites extends ModuleBase {
 
   constructor(app: App) {
     super(app, {
-      events: NATIVE_EVENTS,
-      hasShards: false,
+      events: Object.values(NATIVE_EVENTS),
+      hasCustomUrlSupport: false,
       moduleName: MODULE_NAME,
-      multiApp: false,
+      hasMultiAppSupport: false,
       namespace: NAMESPACE,
     });
 
     SharedEventEmitter.addListener(
       // sub to internal native event - this fans out to
       // public event name: onMessage
-      'invites_invitation_received',
+      NATIVE_EVENTS.invitesInvitationReceived,
       (invitation: InvitationOpen) => {
         SharedEventEmitter.emit('onInvitation', invitation);
       }
     );
 
     // Tell the native module that we're ready to receive events
-    if (Platform.OS === 'ios') {
-      getNativeModule(this).jsInitialised();
+    if (this.nativeModule.jsInitialised) {
+      this.nativeModule.jsInitialised();
     }
   }
 
@@ -55,7 +56,7 @@ export default class Invites extends ModuleBase {
    * @returns {Promise.<InvitationOpen>}
    */
   getInitialInvitation(): Promise<?InvitationOpen> {
-    return getNativeModule(this).getInitialInvitation();
+    return this.nativeModule.getInitialInvitation();
   }
 
   /**
@@ -64,12 +65,12 @@ export default class Invites extends ModuleBase {
    * @returns {Function}
    */
   onInvitation(listener: InvitationOpen => any) {
-    getLogger(this).info('Creating onInvitation listener');
+    this.logger.info('Creating onInvitation listener');
 
     SharedEventEmitter.addListener('onInvitation', listener);
 
     return () => {
-      getLogger(this).info('Removing onInvitation listener');
+      this.logger.info('Removing onInvitation listener');
       SharedEventEmitter.removeListener('onInvitation', listener);
     };
   }
@@ -83,7 +84,7 @@ export default class Invites extends ModuleBase {
       );
     }
     try {
-      return getNativeModule(this).sendInvitation(invitation.build());
+      return this.nativeModule.sendInvitation(invitation.build());
     } catch (error) {
       return Promise.reject(error);
     }
@@ -91,5 +92,3 @@ export default class Invites extends ModuleBase {
 }
 
 export { default as Invitation } from './Invitation';
-
-registerModule(Invites);

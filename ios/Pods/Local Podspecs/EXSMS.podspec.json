@@ -1,11 +1,11 @@
 {
   "name": "EXSMS",
-  "version": "1.0.2",
-  "summary": "Expo SMS universal module",
-  "description": "Expo SMS universal module",
+  "version": "1.1.0",
+  "summary": "An Expo universal module to present the system UI for sending SMS messages",
+  "description": "An Expo universal module to present the system UI for sending SMS messages",
   "license": "MIT",
   "authors": "650 Industries, Inc.",
-  "homepage": "https://docs.expo.io/",
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-sms",
   "platforms": {
     "ios": "10.0"
   },

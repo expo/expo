@@ -1,3 +1,5 @@
+// Copyright 2018-present 650 Industries. All rights reserved.
+
 #import <EXFirebaseInstanceID/EXFirebaseInstanceID.h>
 #import <FirebaseMessaging/FirebaseMessaging.h>
 #import <FirebaseInstanceID/FIRInstanceID.h>
@@ -12,7 +14,7 @@ EX_EXPORT_METHOD_AS(delete,
     if (error) {
       reject(@"instance_id_error", @"Failed to delete instance id", error);
     } else {
-      resolve(nil);
+      resolve([NSNull null]);
     }
   }];
 }
@@ -35,9 +37,6 @@ EX_EXPORT_METHOD_AS(getToken,
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
   NSDictionary * options = nil;
-  //    if ([FIRMessaging messaging].APNSToken) {
-  //        options = @{@"apns_token": [FIRMessaging messaging].APNSToken};
-  //    }
   [[FIRInstanceID instanceID] tokenWithAuthorizedEntity:authorizedEntity scope:scope options:options handler:^(NSString * _Nullable identity, NSError * _Nullable error) {
     if (error) {
       reject(@"instance_id_error", @"Failed to getToken", error);
@@ -56,7 +55,7 @@ EX_EXPORT_METHOD_AS(deleteToken,
     if (error) {
       reject(@"instance_id_error", @"Failed to deleteToken", error);
     } else {
-      resolve(nil);
+      resolve([NSNull null]);
     }
   }];
 }

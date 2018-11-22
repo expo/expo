@@ -3,6 +3,7 @@
 package host.exp.exponent.kernel;
 
 import android.net.Uri;
+import android.os.Build;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,25 +39,42 @@ public class ExponentUrls {
     return uri.buildUpon().scheme(useHttps ? "https" : "http").build().toString();
   }
 
-  public static Request.Builder addExponentHeadersToUrl(String urlString, boolean isShellAppManifest, boolean isKernel) {
+  public static Request.Builder addExponentHeadersToUrl(String urlString) {
     // TODO: set user agent
-    String sdkVersions = Constants.SDK_VERSIONS;
-    // !isKernel is important for when FORCE_UNVERSIONED_PUBLISHED_EXPERIENCES is set to true
-    if (KernelConfig.FORCE_UNVERSIONED_PUBLISHED_EXPERIENCES && !isKernel) {
-      sdkVersions = "UNVERSIONED";
-    }
     Request.Builder builder = new Request.Builder()
         .url(urlString)
-        .header("Exponent-SDK-Version", sdkVersions)
-        .header("Exponent-Platform", "android")
-        .header("Accept", "application/expo+json,application/json");
-
-    if (isShellAppManifest) {
-      builder.header("Expo-Release-Channel", Constants.RELEASE_CHANNEL);
-    }
+        .header("Exponent-SDK-Version", Constants.SDK_VERSIONS)
+        .header("Exponent-Platform", "android");
 
     if (ExpoViewKernel.getInstance().getVersionName() != null) {
-      builder = builder.header("Exponent-Version", ExpoViewKernel.getInstance().getVersionName());
+      builder.header("Exponent-Version", ExpoViewKernel.getInstance().getVersionName());
+    }
+
+    return builder;
+  }
+
+  public static Request.Builder addExponentHeadersToManifestUrl(String urlString, boolean isShellAppManifest, String sessionSecret) {
+    Request.Builder builder = addExponentHeadersToUrl(urlString)
+        .header("Accept", "application/expo+json,application/json");
+
+    if (KernelConfig.FORCE_UNVERSIONED_PUBLISHED_EXPERIENCES) {
+      builder.header("Exponent-SDK-Version", "UNVERSIONED");
+    }
+
+    String clientEnvironment;
+    if (isShellAppManifest) {
+      builder.header("Expo-Release-Channel", Constants.RELEASE_CHANNEL);
+      clientEnvironment = "STANDALONE";
+    } else {
+      clientEnvironment = (Build.FINGERPRINT.contains("vbox") || Build.FINGERPRINT.contains("generic"))
+          ? "EXPO_SIMULATOR"
+          : "EXPO_DEVICE";
+    }
+
+    builder.header("Expo-Api-Version", "1")
+        .header("Expo-Client-Environment", clientEnvironment);
+    if (sessionSecret != null) {
+      builder.header("Expo-Session", sessionSecret);
     }
 
     return builder;

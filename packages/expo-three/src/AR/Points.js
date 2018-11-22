@@ -1,4 +1,4 @@
-import { AR } from 'expo-ar';
+import * as AR from 'expo-ar';
 import * as THREE from 'three';
 
 export default class Points extends THREE.Object3D {

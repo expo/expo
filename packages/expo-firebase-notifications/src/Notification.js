@@ -1,14 +1,12 @@
-/**
- * @flow
- * Notification representation wrapper
- */
+// @flow
+import invariant from 'invariant';
+
 import { Platform } from 'expo-core';
+import { utils } from 'expo-firebase-app';
 import AndroidNotification from './AndroidNotification';
 import IOSNotification from './IOSNotification';
-import { utils } from 'expo-firebase-app';
+import type { Notifications, NativeNotification } from './types';
 const { generatePushID, isObject } = utils;
-
-import type { NativeNotification } from './types';
 
 export type NotificationOpen = {|
   action: string,
@@ -38,18 +36,22 @@ export default class Notification {
   // N/A | subtitle | subText
   _title: string; // alertTitle | title | contentTitle
 
-  constructor(data?: NativeNotification) {
-    this._android = new AndroidNotification(this, data && data.android);
-    this._ios = new IOSNotification(this, data && data.ios);
-
-    if (data) {
-      this._body = data.body;
-      this._data = data.data;
-      this._notificationId = data.notificationId;
-      this._sound = data.sound;
-      this._subtitle = data.subtitle;
-      this._title = data.title;
+  constructor(nativeNotification?: NativeNotification, notifications: Notifications) {
+    if (nativeNotification) {
+      this._body = nativeNotification.body;
+      this._data = nativeNotification.data;
+      this._notificationId = nativeNotification.notificationId;
+      this._sound = nativeNotification.sound;
+      this._subtitle = nativeNotification.subtitle;
+      this._title = nativeNotification.title;
     }
+
+    this._android = new AndroidNotification(this, nativeNotification && nativeNotification.android);
+    this._ios = new IOSNotification(
+      this,
+      notifications,
+      nativeNotification && nativeNotification.ios
+    );
 
     // Defaults
     this._data = this._data || {};
@@ -105,9 +107,10 @@ export default class Notification {
    * @returns {Notification}
    */
   setData(data: Object = {}): Notification {
-    if (!isObject(data)) {
-      throw new Error(`Notification:withData expects an object but got type '${typeof data}'.`);
-    }
+    invariant(
+      isObject(data),
+      `Notification:withData expects an object but got type '${typeof data}'.`
+    );
     this._data = data;
     return this;
   }
@@ -153,9 +156,7 @@ export default class Notification {
   }
 
   build(): NativeNotification {
-    if (!this._notificationId) {
-      throw new Error('Notification: Missing required `notificationId` property');
-    }
+    invariant(this._notificationId, 'Notification: Missing required `notificationId` property');
 
     return {
       android: Platform.OS === 'android' ? this._android.build() : undefined,

@@ -42,6 +42,15 @@ it(`serializes nested objects`, async () => {
   expect(result.includesStack).toBeFalsy();
 });
 
+it(`serializes cyclic objects`, async () => {
+  let object: { [key: string]: any } = {};
+  object.self = object;
+  let result = await LogSerialization.serializeLogDataAsync([object], 'info');
+  expect(result.body).toMatchSnapshot();
+  expect(result.body[0]).toMatch('Circular');
+  expect(result.includesStack).toBeFalsy();
+});
+
 it(`serializes functions`, async () => {
   let result = await LogSerialization.serializeLogDataAsync([function test() {}, () => {}], 'info');
   expect(result.body).toEqual(['[Function test]', '[Function anonymous]']);
@@ -70,7 +79,7 @@ it(`serializes promises`, async () => {
 
 it(`serializes React elements`, async () => {
   class TestComponent extends React.Component {
-    render () {
+    render() {
       return <TestComponent />;
     }
   }

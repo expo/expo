@@ -1,4 +1,4 @@
-import { AR } from 'expo-ar';
+import * as AR from 'expo-ar';
 import * as THREE from 'three';
 import ct from 'color-temperature';
 

@@ -1,10 +1,7 @@
-/**
- * @flow
- * AndroidAction representation wrapper
- */
-import RemoteInput, {
-  fromNativeAndroidRemoteInput,
-} from './AndroidRemoteInput';
+// @flow
+
+import invariant from 'invariant';
+import RemoteInput, { fromNativeAndroidRemoteInput } from './AndroidRemoteInput';
 import { SemanticAction } from './types';
 import type { NativeAndroidAction, SemanticActionType } from './types';
 
@@ -65,11 +62,10 @@ export default class AndroidAction {
    * @returns {AndroidAction}
    */
   addRemoteInput(remoteInput: RemoteInput): AndroidAction {
-    if (!(remoteInput instanceof RemoteInput)) {
-      throw new Error(
-        `AndroidAction:addRemoteInput expects an 'RemoteInput' but got type ${typeof remoteInput}`
-      );
-    }
+    invariant(
+      remoteInput instanceof RemoteInput,
+      `AndroidAction:addRemoteInput expects an 'RemoteInput' but got type ${typeof remoteInput}`
+    );
     this._remoteInputs.push(remoteInput);
     return this;
   }
@@ -90,11 +86,10 @@ export default class AndroidAction {
    * @returns {AndroidAction}
    */
   setSemanticAction(semanticAction: SemanticActionType): AndroidAction {
-    if (!Object.values(SemanticAction).includes(semanticAction)) {
-      throw new Error(
-        `AndroidAction:setSemanticAction Invalid Semantic Action: ${semanticAction}`
-      );
-    }
+    invariant(
+      Object.values(SemanticAction).includes(semanticAction),
+      `AndroidAction:setSemanticAction Invalid Semantic Action: ${semanticAction}`
+    );
     this._semanticAction = semanticAction;
     return this;
   }
@@ -110,14 +105,9 @@ export default class AndroidAction {
   }
 
   build(): NativeAndroidAction {
-    if (!this._action) {
-      throw new Error('AndroidAction: Missing required `action` property');
-    } else if (!this._icon) {
-      throw new Error('AndroidAction: Missing required `icon` property');
-    } else if (!this._title) {
-      throw new Error('AndroidAction: Missing required `title` property');
-    }
-
+    invariant(this._action, 'AndroidAction: Missing required `action` property');
+    invariant(this._icon, 'AndroidAction: Missing required `icon` property');
+    invariant(this._title, 'AndroidAction: Missing required `title` property');
     return {
       action: this._action,
       allowGeneratedReplies: this._allowGeneratedReplies,
@@ -130,14 +120,8 @@ export default class AndroidAction {
   }
 }
 
-export const fromNativeAndroidAction = (
-  nativeAction: NativeAndroidAction
-): AndroidAction => {
-  const action = new AndroidAction(
-    nativeAction.action,
-    nativeAction.icon,
-    nativeAction.title
-  );
+export const fromNativeAndroidAction = (nativeAction: NativeAndroidAction): AndroidAction => {
+  const action = new AndroidAction(nativeAction.action, nativeAction.icon, nativeAction.title);
   if (nativeAction.allowGeneratedReplies) {
     action.setAllowGenerateReplies(nativeAction.allowGeneratedReplies);
   }

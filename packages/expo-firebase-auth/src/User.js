@@ -1,11 +1,6 @@
-/**
- * @flow
- * User representation wrapper
- */
-import { native, internals as INTERNALS } from 'expo-firebase-app';
-const { getNativeModule } = native;
-
-import type Auth from './';
+// @flow
+import { INTERNALS } from 'expo-firebase-app';
+// import type Auth from './';
 import type {
   ActionCodeSettings,
   AuthCredential,
@@ -13,7 +8,10 @@ import type {
   UserCredential,
   UserInfo,
   UserMetadata,
+  IdTokenResult,
 } from './types';
+
+type Auth = object;
 
 type UpdateProfile = {
   displayName?: string,
@@ -22,6 +20,7 @@ type UpdateProfile = {
 
 export default class User {
   _auth: Auth;
+
   _user: NativeUser;
 
   /**
@@ -87,53 +86,49 @@ export default class User {
    * @return {Promise}
    */
   delete(): Promise<void> {
-    return getNativeModule(this._auth)
-      .delete()
-      .then(() => {
-        this._auth._setUser();
-      });
+    return this._auth.nativeModule.delete().then(() => {
+      this._auth._setUser();
+    });
   }
 
   /**
-   * get the token of current user
-   * @return {Promise}
+   * Returns a JWT token used to identify the user to a Firebase service.
+   *
+   * @param forceRefresh boolean Force refresh regardless of token expiration.
+   * @return {Promise<string>}
    */
   getIdToken(forceRefresh: boolean = false): Promise<string> {
-    return getNativeModule(this._auth).getToken(forceRefresh);
+    return this._auth.nativeModule.getIdToken(forceRefresh);
   }
 
   /**
-   * get the token of current user
-   * @deprecated Deprecated getToken in favor of getIdToken.
-   * @return {Promise}
+   * Returns a IdTokenResult object which contains the ID token JWT string and other properties for getting
+   * data associated with the token and all the decoded payload claims.
+   *
+   * @param forceRefresh boolean Force refresh regardless of token expiration.
+   * @return {Promise<IdTokenResult>}
    */
-  getToken(forceRefresh: boolean = false): Promise<Object> {
-    console.warn(
-      'Deprecated firebase.User.prototype.getToken in favor of firebase.User.prototype.getIdToken.'
-    );
-    return getNativeModule(this._auth).getToken(forceRefresh);
+  getIdTokenResult(forceRefresh: boolean = false): Promise<IdTokenResult> {
+    return this._auth.nativeModule.getIdTokenResult(forceRefresh);
   }
 
   /**
-   * @deprecated Deprecated linkWithCredential in favor of linkAndRetrieveDataWithCredential.
    * @param credential
    */
-  linkWithCredential(credential: AuthCredential): Promise<User> {
-    console.warn(
-      'Deprecated firebase.User.prototype.linkWithCredential in favor of firebase.User.prototype.linkAndRetrieveDataWithCredential.'
-    );
-    return getNativeModule(this._auth)
+  linkWithCredential(credential: AuthCredential): Promise<UserCredential> {
+    return this._auth.nativeModule
       .linkWithCredential(credential.providerId, credential.token, credential.secret)
-      .then(user => this._auth._setUser(user));
+      .then(userCredential => this._auth._setUserCredential(userCredential));
   }
 
   /**
-   *
+   * @deprecated Deprecated linkAndRetrieveDataWithCredential in favor of linkWithCredential.
    * @param credential
    */
   linkAndRetrieveDataWithCredential(credential: AuthCredential): Promise<UserCredential> {
-    return getNativeModule(this._auth)
-      .linkAndRetrieveDataWithCredential(credential.providerId, credential.token, credential.secret)
+    console.warn('Deprecated linkAndRetrieveDataWithCredential in favor of linkWithCredential.');
+    return this._auth.nativeModule
+      .linkWithCredential(credential.providerId, credential.token, credential.secret)
       .then(userCredential => this._auth._setUserCredential(userCredential));
   }
 
@@ -141,28 +136,24 @@ export default class User {
    * Re-authenticate a user with a third-party authentication provider
    * @return {Promise}         A promise resolved upon completion
    */
-  reauthenticateWithCredential(credential: AuthCredential): Promise<void> {
-    console.warn(
-      'Deprecated firebase.User.prototype.reauthenticateWithCredential in favor of firebase.User.prototype.reauthenticateAndRetrieveDataWithCredential.'
-    );
-    return getNativeModule(this._auth)
+  reauthenticateWithCredential(credential: AuthCredential): Promise<UserCredential> {
+    return this._auth.nativeModule
       .reauthenticateWithCredential(credential.providerId, credential.token, credential.secret)
-      .then(user => {
-        this._auth._setUser(user);
-      });
+      .then(userCredential => this._auth._setUserCredential(userCredential));
   }
 
   /**
    * Re-authenticate a user with a third-party authentication provider
+   *
+   * @deprecated Deprecated reauthenticateAndRetrieveDataWithCredential in favor of reauthenticateWithCredential.
    * @return {Promise}         A promise resolved upon completion
    */
   reauthenticateAndRetrieveDataWithCredential(credential: AuthCredential): Promise<UserCredential> {
-    return getNativeModule(this._auth)
-      .reauthenticateAndRetrieveDataWithCredential(
-        credential.providerId,
-        credential.token,
-        credential.secret
-      )
+    console.warn(
+      'Deprecated reauthenticateAndRetrieveDataWithCredential in favor of reauthenticateWithCredential.'
+    );
+    return this._auth.nativeModule
+      .reauthenticateWithCredential(credential.providerId, credential.token, credential.secret)
       .then(userCredential => this._auth._setUserCredential(userCredential));
   }
 
@@ -171,22 +162,18 @@ export default class User {
    * @return {Promise}
    */
   reload(): Promise<void> {
-    return getNativeModule(this._auth)
-      .reload()
-      .then(user => {
-        this._auth._setUser(user);
-      });
+    return this._auth.nativeModule.reload().then(user => {
+      this._auth._setUser(user);
+    });
   }
 
   /**
    * Send verification email to current user.
    */
   sendEmailVerification(actionCodeSettings?: ActionCodeSettings): Promise<void> {
-    return getNativeModule(this._auth)
-      .sendEmailVerification(actionCodeSettings)
-      .then(user => {
-        this._auth._setUser(user);
-      });
+    return this._auth.nativeModule.sendEmailVerification(actionCodeSettings).then(user => {
+      this._auth._setUser(user);
+    });
   }
 
   toJSON(): Object {
@@ -199,9 +186,7 @@ export default class User {
    * @return {Promise.<TResult>|*}
    */
   unlink(providerId: string): Promise<User> {
-    return getNativeModule(this._auth)
-      .unlink(providerId)
-      .then(user => this._auth._setUser(user));
+    return this._auth.nativeModule.unlink(providerId).then(user => this._auth._setUser(user));
   }
 
   /**
@@ -211,11 +196,9 @@ export default class User {
    * @return {Promise}       A promise resolved upon completion
    */
   updateEmail(email: string): Promise<void> {
-    return getNativeModule(this._auth)
-      .updateEmail(email)
-      .then(user => {
-        this._auth._setUser(user);
-      });
+    return this._auth.nativeModule.updateEmail(email).then(user => {
+      this._auth._setUser(user);
+    });
   }
 
   /**
@@ -224,8 +207,20 @@ export default class User {
    * @return {Promise}
    */
   updatePassword(password: string): Promise<void> {
-    return getNativeModule(this._auth)
-      .updatePassword(password)
+    return this._auth.nativeModule.updatePassword(password).then(user => {
+      this._auth._setUser(user);
+    });
+  }
+
+  /**
+   * Update the current user's phone number
+   *
+   * @param  {AuthCredential} credential Auth credential with the _new_ phone number
+   * @return {Promise}
+   */
+  updatePhoneNumber(credential: AuthCredential): Promise<void> {
+    return this._auth.nativeModule
+      .updatePhoneNumber(credential.providerId, credential.token, credential.secret)
       .then(user => {
         this._auth._setUser(user);
       });
@@ -237,11 +232,9 @@ export default class User {
    * @return {Promise}
    */
   updateProfile(updates: UpdateProfile = {}): Promise<void> {
-    return getNativeModule(this._auth)
-      .updateProfile(updates)
-      .then(user => {
-        this._auth._setUser(user);
-      });
+    return this._auth.nativeModule.updateProfile(updates).then(user => {
+      this._auth._setUser(user);
+    });
   }
 
   /**
@@ -278,10 +271,6 @@ export default class User {
     throw new Error(
       INTERNALS.STRINGS.ERROR_UNSUPPORTED_CLASS_METHOD('User', 'reauthenticateWithRedirect')
     );
-  }
-
-  updatePhoneNumber() {
-    throw new Error(INTERNALS.STRINGS.ERROR_UNSUPPORTED_CLASS_METHOD('User', 'updatePhoneNumber'));
   }
 
   get refreshToken(): string {

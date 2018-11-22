@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { AR } from 'expo-ar';
+import * as AR from 'expo-ar';
 
 export default class Camera extends THREE.PerspectiveCamera {
   updateProjectionMatrix = this.updateMatrixWorld;

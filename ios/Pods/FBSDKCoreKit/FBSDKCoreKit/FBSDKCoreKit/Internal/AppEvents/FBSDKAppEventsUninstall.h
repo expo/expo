@@ -21,8 +21,4 @@
 
 @interface FBSDKAppEventsUninstall : NSObject
 
-+ (BOOL)initiated;
-+ (void)setUninstallTrackingEnabled:(BOOL)_uninstallTrackingEnabled;
-+ (void)installSwizzler;
-+ (void)updateAndUploadToken:(NSString*)tokenString;
 @end

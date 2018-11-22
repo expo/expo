@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Usage: ./android-build-module-aar expo-core 2.0.0 builds expo-core and packages it into an aar
 # with packages renamed.
 

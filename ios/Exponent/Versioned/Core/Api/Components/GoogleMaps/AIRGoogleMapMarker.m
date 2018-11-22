@@ -113,6 +113,26 @@ CGRect unionRect(CGRect a, CGRect b) {
   [_realMarker.map setSelectedMarker:Nil];
 }
 
+- (void)redraw {
+  if (!_realMarker.iconView) return;
+
+  BOOL oldValue = _realMarker.tracksViewChanges;
+
+  if (oldValue == YES)
+  {
+    // Immediate refresh, like right now. Not waiting for next frame.
+    UIView *view = _realMarker.iconView;
+    _realMarker.iconView = nil;
+    _realMarker.iconView = view;
+  }
+  else
+  {
+    // Refresh according to docs
+    _realMarker.tracksViewChanges = YES;
+    _realMarker.tracksViewChanges = NO;
+  }
+}
+
 - (UIView *)markerInfoContents {
   if (self.calloutView && !self.calloutView.tooltip) {
     return self.calloutView;
@@ -224,7 +244,7 @@ CGRect unionRect(CGRect a, CGRect b) {
                                                                  dispatch_async(dispatch_get_main_queue(), ^{
 
                                                                    // TODO(gil): This way allows different image sizes
-                                                                   if (_iconImageView) [_iconImageView removeFromSuperview];
+                                                                   if (self->_iconImageView) [self->_iconImageView removeFromSuperview];
 
                                                                    // ... but this way is more efficient?
 //                                                                   if (_iconImageView) {
@@ -250,7 +270,7 @@ CGRect unionRect(CGRect a, CGRect b) {
                                                                    CGRect selfBounds = unionRect(bounds, self.bounds);
                                                                    [self setFrame:selfBounds];
 
-                                                                   _iconImageView = imageView;
+                                                                   self->_iconImageView = imageView;
                                                                    [self iconViewInsertSubview:imageView atIndex:0];
                                                                  });
                                                                }];
@@ -280,6 +300,11 @@ CGRect unionRect(CGRect a, CGRect b) {
 - (void)setAnchor:(CGPoint)anchor {
   _anchor = anchor;
   _realMarker.groundAnchor = anchor;
+}
+
+- (void)setCalloutAnchor:(CGPoint)calloutAnchor {
+  _calloutAnchor = calloutAnchor;
+  _realMarker.infoWindowAnchor = calloutAnchor;
 }
 
 

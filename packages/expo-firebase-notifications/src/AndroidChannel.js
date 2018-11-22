@@ -1,8 +1,8 @@
-/**
- * @flow
- * AndroidChannel representation wrapper
- */
+// @flow
+import invariant from 'invariant';
+
 import { Importance, Visibility } from './types';
+
 import type { ImportanceType, VisibilityType } from './types';
 
 type NativeAndroidChannel = {|
@@ -49,9 +49,10 @@ export default class AndroidChannel {
   _vibrationPattern: number[] | void;
 
   constructor(channelId: string, name: string, importance: ImportanceType) {
-    if (!Object.values(Importance).includes(importance)) {
-      throw new Error(`AndroidChannel() Invalid Importance: ${importance}`);
-    }
+    invariant(
+      Object.values(Importance).includes(importance),
+      `AndroidChannel() Invalid Importance: ${importance}`
+    );
     this._channelId = channelId;
     this._name = name;
     this._importance = importance;
@@ -174,14 +175,11 @@ export default class AndroidChannel {
    * @param lockScreenVisibility
    * @returns {AndroidChannel}
    */
-  setLockScreenVisibility(
-    lockScreenVisibility: VisibilityType
-  ): AndroidChannel {
-    if (!Object.values(Visibility).includes(lockScreenVisibility)) {
-      throw new Error(
-        `AndroidChannel:setLockScreenVisibility Invalid Visibility: ${lockScreenVisibility}`
-      );
-    }
+  setLockScreenVisibility(lockScreenVisibility: VisibilityType): AndroidChannel {
+    invariant(
+      Object.values(Visibility).includes(lockScreenVisibility),
+      `AndroidChannel:setLockScreenVisibility Invalid Visibility: ${lockScreenVisibility}`
+    );
     this._lockScreenVisibility = lockScreenVisibility;
     return this;
   }
@@ -217,13 +215,9 @@ export default class AndroidChannel {
   }
 
   build(): NativeAndroidChannel {
-    if (!this._channelId) {
-      throw new Error('AndroidChannel: Missing required `channelId` property');
-    } else if (!this._importance) {
-      throw new Error('AndroidChannel: Missing required `importance` property');
-    } else if (!this._name) {
-      throw new Error('AndroidChannel: Missing required `name` property');
-    }
+    invariant(this._channelId, 'AndroidChannel: Missing required `channelId` property');
+    invariant(this._importance, 'AndroidChannel: Missing required `importance` property');
+    invariant(this._name, 'AndroidChannel: Missing required `name` property');
 
     return {
       bypassDnd: this._bypassDnd,

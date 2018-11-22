@@ -168,7 +168,7 @@ static void fb_dispatch_on_default_thread(dispatch_block_t block) {
 
           if ([eventName isEqualToString:ReactNativeTouchEndEventName]
               && nil != viewTag) {
-            FBSDKEventBinding *eventBinding = [reactBindings objectForKey:viewTag];
+            FBSDKEventBinding *eventBinding = [self->reactBindings objectForKey:viewTag];
             if (eventBinding) {
               [eventBinding trackEvent:nil];
             }
@@ -272,7 +272,7 @@ static void fb_dispatch_on_default_thread(dispatch_block_t block) {
     fb_dispatch_on_default_thread(^{
       if ([view isKindOfClass:[UIControl class]]) {
         UIControl *control = (UIControl *)view;
-        for (FBSDKEventBinding *binding in eventBindings) {
+        for (FBSDKEventBinding *binding in self->eventBindings) {
           if ([FBSDKEventBinding isPath:binding.path matchViewPath:path]) {
             fb_dispatch_on_main_thread(^{
               [control addTarget:binding
@@ -282,14 +282,14 @@ static void fb_dispatch_on_default_thread(dispatch_block_t block) {
             break;
           }
         }
-      } else if (hasReactNative
+      } else if (self->hasReactNative
                  && [view respondsToSelector:@selector(reactTag)]) {
         NSNumber *reactTag = [view performSelector:@selector(reactTag)];
-        for (FBSDKEventBinding *binding in eventBindings) {
+        for (FBSDKEventBinding *binding in self->eventBindings) {
           if ([FBSDKEventBinding isPath:binding.path matchViewPath:path]) {
             fb_dispatch_on_main_thread(^{
               if (reactTag && [reactTag isKindOfClass:[NSNumber class]]) {
-                [reactBindings setObject:binding forKey:reactTag];
+                [self->reactBindings setObject:binding forKey:reactTag];
               }
             });
             break;
@@ -299,7 +299,7 @@ static void fb_dispatch_on_default_thread(dispatch_block_t block) {
                  && [delegate conformsToProtocol:@protocol(UITableViewDelegate)]) {
         fb_dispatch_on_default_thread(^{
           NSMutableSet *matchedBindings = [NSMutableSet set];
-          for (FBSDKEventBinding *binding in eventBindings) {
+          for (FBSDKEventBinding *binding in self->eventBindings) {
             if (binding.path.count > 1) {
               NSArray *shortPath = [binding.path
                                     subarrayWithRange:NSMakeRange(0, binding.path.count - 1)];
@@ -333,7 +333,7 @@ static void fb_dispatch_on_default_thread(dispatch_block_t block) {
                  && [delegate conformsToProtocol:@protocol(UICollectionViewDelegate)]) {
         fb_dispatch_on_default_thread(^{
           NSMutableSet *matchedBindings = [NSMutableSet set];
-          for (FBSDKEventBinding *binding in eventBindings) {
+          for (FBSDKEventBinding *binding in self->eventBindings) {
             if (binding.path.count > 1) {
               NSArray *shortPath = [binding.path
                                     subarrayWithRange:NSMakeRange(0, binding.path.count - 1)];

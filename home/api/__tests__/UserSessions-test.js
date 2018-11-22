@@ -9,9 +9,7 @@ import SessionActions from '../../redux/SessionActions';
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
 jest.mock('react-native', () => {
   const ReactNative = require.requireActual('react-native');
-  ReactNative.NativeModules.ExponentKernel = {
-    sdkVersions: '12.0.0,11.0.0',
-  };
+  ReactNative.NativeModules.ExponentKernel.sdkVersions = '12.0.0,11.0.0';
   ReactNative.AsyncStorage.setItem = () => {};
   return ReactNative;
 });

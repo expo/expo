@@ -1,5 +1,7 @@
 # expo-firebase-crashlytics
 
+> expo-firebase is still in RC and therefore subject to breaking changings. Be sure to run `yarn upgrade` and `cd ios; pod install` when upgrading.
+
 `expo-firebase-crashlytics` allows you to monitor native and non-fatal crashes.
 
 [**Full documentation**](https://rnfirebase.io/docs/master/crashlytics/reference/crashlytics)
@@ -10,7 +12,9 @@ Now, you need to install the package from `npm` registry.
 
 `npm install expo-firebase-crashlytics` or `yarn add expo-firebase-crashlytics`
 
-#### iOS
+### iOS
+
+#### Cocoapods
 
 If you're using Cocoapods, add the dependency to your `Podfile`:
 
@@ -19,6 +23,17 @@ pod 'EXFirebaseCrashlytics', path: '../node_modules/expo-firebase-crashlytics/io
 ```
 
 and run `pod install`.
+
+#### Manually
+
+You could also choose install this module manually.
+
+1.  In XCode, in the project navigator, right click `Libraries` ➜ `Add Files to [your project's name]`
+2.  Go to `node_modules` ➜ `expo-firebase-crashlytics` and add `EXFirebaseCrashlytics.xcodeproj`
+3.  In XCode, in the project navigator, select your project. Add `libEXFirebaseCrashlytics.a` to your project's `Build Phases` ➜ `Link Binary With Libraries`
+4.  Run your project (`Cmd+R`).
+
+#### Common Setup
 
 **Add the Crashlytics run script**
 
@@ -29,17 +44,16 @@ RNFirebase [**crashlytics build script**](https://rnfirebase.io/docs/master/cras
 3.  Click `+` Add a new build phase, and select `New Run Script Phase`.
 4.  Add the following line to the `Type a script...` text box:
 
-```rb
-"${PODS_ROOT}/Fabric/run" <FABRIC API KEY> <FABRIC BUILD SECRECT>
-```
+    ```rb
+    "${PODS_ROOT}/Fabric/run"
+    ```
 
-5.  [XCode 10 only] Add your app's built Info.plist location to the Build Phase's Input Files field:
+5.  **XCode 10 only:** Add your app's built `Info.plist` location to the Build Phase's Input Files field:
+    ```rb
+    $(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)
+    ```
 
-```rb
-$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)
-```
-
-#### Android
+### Android
 
 1.  Append the following lines to `android/settings.gradle`:
 
@@ -67,22 +81,27 @@ $(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)
     api project(':expo-core')
     api project(':expo-firebase-app')
     ```
+3.  Include the module in your expo packages: `./android/app/src/main/java/host/exp/exponent/MainActivity.java`
 
-Some Unimodules are not included in the default `ExpoKit` suite, these modules will needed to be added manually.
-If your Android build cannot find the Native Modules, you can add them like this:
+    ```java
+    /*
+    * At the top of the file.
+    * This is automatically imported with Android Studio, but if you are in any other editor you will need to manually import the module.
+    */
+    import expo.modules.firebase.app.FirebaseAppPackage; // This should be here for all Expo Firebase features.
+    import expo.modules.firebase.fabric.crashlytics.FirebaseCrashlyticsPackage;
 
-`./android/app/src/main/java/host/exp/exponent/MainActivity.java`
+    // Later in the file...
 
-```java
-@Override
-public List<Package> expoPackages() {
-  // Here you can add your own packages.
-  return Arrays.<Package>asList(
-    new FirebaseAppPackage(), // This should be here for all Expo Firebase features.
-    new FirebaseCrashlyticsPackage() // Include this.
-  );
-}
-```
+    @Override
+    public List<Package> expoPackages() {
+      // Here you can add your own packages.
+      return Arrays.<Package>asList(
+        new FirebaseAppPackage(), // This should be here for all Expo Firebase features.
+        new FirebaseCrashlyticsPackage() // Include this.
+      );
+    }
+    ```
 
 ## Usage
 
@@ -90,8 +109,7 @@ public List<Package> expoPackages() {
 import React from 'react';
 import { View } from 'react-native';
 import firebase from 'expo-firebase-app';
-// Include the module before using it.
-import 'expo-firebase-crashlytics';
+
 // API can be accessed with: firebase.crashlytics();
 
 export default class DemoView extends React.Component {

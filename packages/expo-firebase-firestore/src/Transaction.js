@@ -2,16 +2,15 @@
  * @flow
  * Firestore Transaction representation wrapper
  */
-
-import { getNativeModule } from 'expo-firebase-app';
+import DocumentSnapshot from './DocumentSnapshot';
 import { parseUpdateArgs } from './utils';
 import { buildNativeMap } from './utils/serialize';
 
-import type Firestore from './';
-import type { TransactionMeta } from './TransactionHandler';
+import type { Firestore } from './firestoreTypes.flow';
+//import type { TransactionMeta } from './TransactionHandler';
 import type DocumentReference from './DocumentReference';
-import DocumentSnapshot from './DocumentSnapshot';
 
+type TransactionMeta = object;
 type Command = {
   type: 'set' | 'update' | 'delete',
   path: string,
@@ -74,7 +73,7 @@ export default class Transaction {
    */
   get(documentRef: DocumentReference): Promise<DocumentSnapshot> {
     // todo validate doc ref
-    return getNativeModule(this._firestore)
+    return this._firestore.nativeModule
       .transactionGetDocument(this._meta.id, documentRef.path)
       .then(result => new DocumentSnapshot(this._firestore, result));
   }

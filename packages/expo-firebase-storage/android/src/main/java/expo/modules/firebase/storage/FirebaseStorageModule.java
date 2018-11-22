@@ -58,12 +58,12 @@ public class FirebaseStorageModule extends ExportedModule implements ModuleRegis
   private static final String FileTypeRegular = "FILETYPE_REGULAR";
   private static final String FileTypeDirectory = "FILETYPE_DIRECTORY";
 
-  private static final String STORAGE_EVENT = "storage_event";
-  private static final String STORAGE_STATE_CHANGED = "state_changed";
-  private static final String STORAGE_UPLOAD_SUCCESS = "upload_success";
-  private static final String STORAGE_UPLOAD_FAILURE = "upload_failure";
-  private static final String STORAGE_DOWNLOAD_SUCCESS = "download_success";
-  private static final String STORAGE_DOWNLOAD_FAILURE = "download_failure";
+  private static final String STORAGE_EVENT = "Expo.Firebase.storage_event";
+  private static final String STORAGE_STATE_CHANGED = "Expo.Firebase.state_changed";
+  private static final String STORAGE_UPLOAD_SUCCESS = "Expo.Firebase.upload_success";
+  private static final String STORAGE_UPLOAD_FAILURE = "Expo.Firebase.upload_failure";
+  private static final String STORAGE_DOWNLOAD_SUCCESS = "Expo.Firebase.download_success";
+  private static final String STORAGE_DOWNLOAD_FAILURE = "Expo.Firebase.download_failure";
 
   private ModuleRegistry mModuleRegistry;
 
@@ -75,7 +75,6 @@ public class FirebaseStorageModule extends ExportedModule implements ModuleRegis
   public String getName() {
     return "ExpoFirebaseStorage";
   }
-
 
   @Override
   public void setModuleRegistry(ModuleRegistry moduleRegistry) {

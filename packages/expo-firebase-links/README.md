@@ -1,5 +1,7 @@
 # expo-firebase-links
 
+> expo-firebase is still in RC and therefore subject to breaking changings. Be sure to run `yarn upgrade` and `cd ios; pod install` when upgrading.
+
 `expo-firebase-links` exposes the native Firebase Dynamic Linking API. You can create and share links for both iOS and Android.
 
 [**Full documentation**](https://rnfirebase.io/docs/master/links/reference/links)
@@ -10,7 +12,9 @@ Firstly, you need to install the package from `npm` registry.
 
 `npm install expo-firebase-links` or `yarn add expo-firebase-links`
 
-#### iOS
+### iOS
+
+#### Cocoapods
 
 If you're using Cocoapods, add the dependency to your `Podfile`:
 
@@ -19,6 +23,17 @@ pod 'EXFirebaseLinks', path: '../node_modules/expo-firebase-links/ios'
 ```
 
 and run `pod install`.
+
+#### Manually
+
+You could also choose install this module manually.
+
+1.  In XCode, in the project navigator, right click `Libraries` ➜ `Add Files to [your project's name]`
+2.  Go to `node_modules` ➜ `expo-firebase-links` and add `EXFirebaseLinks.xcodeproj`
+3.  In XCode, in the project navigator, select your project. Add `libEXFirebaseLinks.a` to your project's `Build Phases` ➜ `Link Binary With Libraries`
+4.  Run your project (`Cmd+R`).
+
+#### Common Setup
 
 [Now follow the setup instructions in the docs.](https://rnfirebase.io/docs/master/links/ios#Configure-XCode)
 
@@ -36,7 +51,7 @@ Add the following to the didFinishLaunchingWithOptions method before `[FIRApp Co
 [FIROptions defaultOptions].deepLinkURLScheme = CUSTOM_URL_SCHEME;
 ```
 
-> ^-- where `CUSTOM_URL_SCHEME` is the custom URL scheme you defined in your Xcode project.
+> where `CUSTOM_URL_SCHEME` is the custom URL scheme you defined in your Xcode project.
 
 Add the following inside the `@implementation AppDelegate` annotation:
 
@@ -66,7 +81,7 @@ if that is the case you can perform check below
 }
 ```
 
-#### Android
+### Android
 
 1.  Append the following lines to `android/settings.gradle`:
 
@@ -96,21 +111,27 @@ if that is the case you can perform check below
     ```
 3.  [Now follow the configuration instructions in the docs.](https://rnfirebase.io/docs/master/links/android#Configure-Android-Project)
 
-Some Unimodules are not included in the default `ExpoKit` suite, these modules will needed to be added manually.
-If your Android build cannot find the Native Modules, you can add them like this:
+4.  Include the module in your expo packages: `./android/app/src/main/java/host/exp/exponent/MainActivity.java`
 
-`./android/app/src/main/java/host/exp/exponent/MainActivity.java`
+    ```java
+    /*
+    * At the top of the file.
+    * This is automatically imported with Android Studio, but if you are in any other editor you will need to manually import the module.
+    */
+    import expo.modules.firebase.app.FirebaseAppPackage; // This should be here for all Expo Firebase features.
+    import expo.modules.firebase.links.FirebaseLinksPackage;
 
-```java
-@Override
-public List<Package> expoPackages() {
-  // Here you can add your own packages.
-  return Arrays.<Package>asList(
-    new FirebaseAppPackage(), // This should be here for all Expo Firebase features.
-    new FirebaseLinksPackage() // Include this.
-  );
-}
-```
+    // Later in the file...
+
+    @Override
+    public List<Package> expoPackages() {
+      // Here you can add your own packages.
+      return Arrays.<Package>asList(
+        new FirebaseAppPackage(), // This should be here for all Expo Firebase features.
+        new FirebaseLinksPackage() // Include this.
+      );
+    }
+    ```
 
 ## Usage
 
@@ -118,8 +139,7 @@ public List<Package> expoPackages() {
 import React from 'react';
 import { View } from 'react-native';
 import firebase from 'expo-firebase-app';
-// Include the module before using it.
-import 'expo-firebase-links';
+
 // API can be accessed with: firebase.links();
 
 export default class DemoView extends React.Component {

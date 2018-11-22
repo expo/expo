@@ -255,7 +255,7 @@ static const CGFloat kPaddingBetweenLogoTitle = 8.0;
       UIAlertAction *logout = [UIAlertAction actionWithTitle:logOutTitle
                                                        style:UIAlertActionStyleDestructive
                                                      handler:^(UIAlertAction * _Nonnull action) {
-                                                       [_loginManager logOut];
+                                                       [self->_loginManager logOut];
                                                        [self.delegate loginButtonDidLogOut:self];
                                                      }];
       [alertController addAction:cancel];
@@ -348,8 +348,8 @@ static const CGFloat kPaddingBetweenLogoTitle = 8.0;
       [request startWithCompletionHandler:^(FBSDKGraphRequestConnection *connection, id result, NSError *error) {
         NSString *userID = [FBSDKTypeUtility stringValue:result[@"id"]];
         if (!error && [[FBSDKAccessToken currentAccessToken].userID isEqualToString:userID]) {
-          _userName = [FBSDKTypeUtility stringValue:result[@"name"]];
-          _userID = userID;
+          self->_userName = [FBSDKTypeUtility stringValue:result[@"name"]];
+          self->_userID = userID;
         }
       }];
     }

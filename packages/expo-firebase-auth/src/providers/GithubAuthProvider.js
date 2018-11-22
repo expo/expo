@@ -2,6 +2,7 @@
  * @flow
  * GithubAuthProvider representation wrapper
  */
+import invariant from 'invariant';
 import type { AuthCredential } from '../types';
 
 const providerId = 'github.com';
@@ -16,9 +17,7 @@ export default class GithubAuthProvider {
   }
 
   static credential(token: string): AuthCredential {
-    if (!token) {
-      throw new Error('credential failed: expected 1 argument (the OAuth access token).')
-    }
+    invariant(token, 'credential failed: expected 1 argument (the OAuth access token).');
     return {
       token,
       secret: '',

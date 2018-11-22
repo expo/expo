@@ -1,8 +1,9 @@
+// Copyright 2018-present 650 Industries. All rights reserved.
+
 #import <Foundation/Foundation.h>
 #import <FirebaseFirestore/FirebaseFirestore.h>
 #import <EXCore/EXEventEmitterService.h>
 #import <EXFirebaseFirestore/EXFirebaseFirestore.h>
-#import <EXFirebaseApp/EXFirebaseAppEvents.h>
 #import <EXFirebaseApp/EXFirebaseAppUtil.h>
 
 @interface EXFirebaseFirestoreDocumentReference : NSObject

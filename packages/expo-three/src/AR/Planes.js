@@ -1,4 +1,4 @@
-import { AR } from 'expo-ar';
+import * as AR from 'expo-ar';
 import * as THREE from 'three';
 
 export default class Planes extends THREE.Object3D {
@@ -21,7 +21,7 @@ export default class Planes extends THREE.Object3D {
     const newPlanes = {};
 
     newPlanesData.forEach(
-      ({ center: { x, z }, extent: { width, length }, transform, id }) => {
+      ({ extent: { width, length }, transformWorld, id }) => {
         let planeObject = this.storedPlanes[id];
         if (planeObject) {
           // plane already exists
@@ -46,14 +46,10 @@ export default class Planes extends THREE.Object3D {
         // store plane
         newPlanes[id] = planeObject;
 
-        // update plane properties
-        planeObject.planeMesh.position.x = x;
-        planeObject.planeMesh.position.z = z;
-
         planeObject.planeMesh.geometry.width = width;
         planeObject.planeMesh.geometry.height = length;
 
-        planeObject.matrix.fromArray(transform);
+        planeObject.matrix.fromArray(transformWorld);
         planeObject.matrix.decompose(
           planeObject.position,
           planeObject.quaternion,

@@ -51,17 +51,14 @@ public class SegmentModule extends ExportedModule implements ModuleRegistryConsu
 
   private static Traits readableMapToTraits(Map<String, Object> properties) {
     Traits traits = new Traits();
-    JSONObject json = new JSONObject(properties);
-    Iterator<String> iterator = json.keys();
-    while (iterator.hasNext()) {
-      String key = iterator.next();
-      try {
-        traits.put(key, json.get(key));
-      } catch (JSONException e) {
-        Log.e(TAG, e.getMessage());
+    for (String key : properties.keySet()) {
+      Object value = properties.get(key);
+      if (value instanceof Map) {
+        traits.put(key, coalesceAnonymousMapToJsonObject((Map) value));
+      } else {
+        traits.put(key, value);
       }
     }
-
     return traits;
   }
 
@@ -69,7 +66,12 @@ public class SegmentModule extends ExportedModule implements ModuleRegistryConsu
     Map<String, Object> validObject = new HashMap<>();
     for (Object key : map.keySet()) {
       if (key instanceof String) {
-        validObject.put((String) key, map.get(key));
+        Object value = map.get(key);
+        if (value instanceof Map) {
+          validObject.put((String) key, coalesceAnonymousMapToJsonObject((Map) value));
+        } else {
+          validObject.put((String) key, value);
+        }
       }
     }
     return validObject;
@@ -98,17 +100,14 @@ public class SegmentModule extends ExportedModule implements ModuleRegistryConsu
 
   private static Properties readableMapToProperties(Map<String, Object> properties) {
     Properties result = new Properties();
-    JSONObject json = new JSONObject(properties);
-    Iterator<String> iterator = json.keys();
-    while (iterator.hasNext()) {
-      String key = iterator.next();
-      try {
-        result.put(key, json.get(key));
-      } catch (JSONException e) {
-        Log.e(TAG, e.getMessage());
+    for (String key : properties.keySet()) {
+      Object value = properties.get(key);
+      if (value instanceof Map) {
+        result.put(key, coalesceAnonymousMapToJsonObject((Map) value));
+      } else {
+        result.put(key, value);
       }
     }
-
     return result;
   }
 

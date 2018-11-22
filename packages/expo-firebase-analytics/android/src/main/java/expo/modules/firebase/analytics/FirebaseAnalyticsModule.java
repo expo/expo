@@ -18,6 +18,7 @@ import expo.core.Promise;
 import expo.core.interfaces.ActivityProvider;
 import expo.core.interfaces.ExpoMethod;
 import expo.core.interfaces.ModuleRegistryConsumer;
+import expo.core.interfaces.services.UIManager;
 import expo.modules.firebase.app.Utils;
 
 @SuppressLint("MissingPermission")
@@ -41,23 +42,50 @@ public class FirebaseAnalyticsModule extends ExportedModule implements ModuleReg
     mModuleRegistry = moduleRegistry;
   }
 
-  protected final Context getApplicationContext() {
-    return getCurrentActivity().getApplicationContext();
+  private final Context getApplicationContext() {
+    Activity activity = getCurrentActivity();
+    if (activity != null) {
+      return activity.getApplicationContext();
+    }
+    return null;
   }
 
-  final Activity getCurrentActivity() {
-    ActivityProvider activityProvider = mModuleRegistry.getModule(ActivityProvider.class);
-    return activityProvider.getCurrentActivity();
+  private final UIManager getUIManager() {
+    if (mModuleRegistry != null && mModuleRegistry.getModule(UIManager.class) != null) {
+      UIManager mUIManager = mModuleRegistry.getModule(UIManager.class);
+      return mUIManager;
+    }
+    return null;
+  }
+
+  private final Activity getCurrentActivity() {
+    if (mModuleRegistry != null && mModuleRegistry.getModule(ActivityProvider.class) != null) {
+      ActivityProvider activityProvider = mModuleRegistry.getModule(ActivityProvider.class);
+      return activityProvider.getCurrentActivity();
+    }
+    return null;
+  }
+
+  private Context getApplicationContextOrReject(Promise promise) {
+    Context context = getApplicationContext();
+    if (context == null) {
+      promise.reject("E_EXPO_FIREBASE_ANALYTICS", "Module registry is not initialized, or ActivityProvider is not available.");
+    }
+    return context;
   }
 
   @ExpoMethod
   public void logEvent(final String name, @Nullable Map<String, Object> params, Promise promise) {
+    Context context = getApplicationContextOrReject(promise);
+    if (context == null) {
+      return;
+    } 
 
     Bundle bundleParams = new Bundle();
     if (params != null) {
-      bundleParams = Utils.readableMapToWritableMap(params);
+      bundleParams = Utils.bundleToMap(params);
     }
-    FirebaseAnalytics.getInstance(getApplicationContext()).logEvent(name, bundleParams);
+    FirebaseAnalytics.getInstance(context).logEvent(name, bundleParams);
     promise.resolve(null);
   }
 
@@ -66,7 +94,12 @@ public class FirebaseAnalyticsModule extends ExportedModule implements ModuleReg
    */
   @ExpoMethod
   public void setAnalyticsCollectionEnabled(final Boolean enabled, Promise promise) {
-    FirebaseAnalytics.getInstance(getApplicationContext()).setAnalyticsCollectionEnabled(enabled);
+    Context context = getApplicationContextOrReject(promise);
+    if (context == null) {
+      return;
+    } 
+
+    FirebaseAnalytics.getInstance(context).setAnalyticsCollectionEnabled(enabled);
     promise.resolve(null);
   }
 
@@ -76,6 +109,11 @@ public class FirebaseAnalyticsModule extends ExportedModule implements ModuleReg
    */
   @ExpoMethod
   public void setCurrentScreen(final String screenName, final String screenClassOverride, Promise promise) {
+    Context context = getApplicationContextOrReject(promise);
+    if (context == null) {
+      return;
+    }
+
     final Activity activity = getCurrentActivity();
     if (activity != null) {
       // needs to be run on main thread
@@ -95,7 +133,12 @@ public class FirebaseAnalyticsModule extends ExportedModule implements ModuleReg
    */
   @ExpoMethod
   public void setMinimumSessionDuration(final double milliseconds, Promise promise) {
-    FirebaseAnalytics.getInstance(getApplicationContext()).setMinimumSessionDuration((long) milliseconds);
+    Context context = getApplicationContextOrReject(promise);
+    if (context == null) {
+      return;
+    } 
+
+    FirebaseAnalytics.getInstance(context).setMinimumSessionDuration((long) milliseconds);
     promise.resolve(null);
   }
 
@@ -104,7 +147,12 @@ public class FirebaseAnalyticsModule extends ExportedModule implements ModuleReg
    */
   @ExpoMethod
   public void setSessionTimeoutDuration(final double milliseconds, Promise promise) {
-    FirebaseAnalytics.getInstance(getApplicationContext()).setSessionTimeoutDuration((long) milliseconds);
+    Context context = getApplicationContextOrReject(promise);
+    if (context == null) {
+      return;
+    } 
+
+    FirebaseAnalytics.getInstance(context).setSessionTimeoutDuration((long) milliseconds);
     promise.resolve(null);
   }
 
@@ -113,7 +161,12 @@ public class FirebaseAnalyticsModule extends ExportedModule implements ModuleReg
    */
   @ExpoMethod
   public void setUserId(final String id, Promise promise) {
-    FirebaseAnalytics.getInstance(getApplicationContext()).setUserId(id);
+    Context context = getApplicationContextOrReject(promise);
+    if (context == null) {
+      return;
+    } 
+
+    FirebaseAnalytics.getInstance(context).setUserId(id);
     promise.resolve(null);
   }
 
@@ -123,7 +176,12 @@ public class FirebaseAnalyticsModule extends ExportedModule implements ModuleReg
    */
   @ExpoMethod
   public void setUserProperty(final String name, final String value, Promise promise) {
-    FirebaseAnalytics.getInstance(getApplicationContext()).setUserProperty(name, value);
+    Context context = getApplicationContextOrReject(promise);
+    if (context == null) {
+      return;
+    } 
+
+    FirebaseAnalytics.getInstance(context).setUserProperty(name, value);
     promise.resolve(null);
   }
 }

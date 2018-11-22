@@ -2,26 +2,15 @@
  * @flow
  * Messaging (FCM) representation wrapper
  */
-import { Platform } from 'expo-core';
-import {
-  events,
-  internals,
-  getLogger,
-  ModuleBase,
-  getNativeModule,
-  registerModule,
-  utils,
-} from 'expo-firebase-app';
+import { INTERNALS, ModuleBase, SharedEventEmitter, utils } from 'expo-firebase-app';
+import invariant from 'invariant';
+import type App from 'expo-firebase-app';
+
+import IOSMessaging from './IOSMessaging';
 import RemoteMessage from './RemoteMessage';
 
-import type App from 'expo-firebase-app';
-import type {
-  NativeInboundRemoteMessage,
-  NativeOutboundRemoteMessage,
-  Notification,
-} from './types';
+import type { NativeInboundRemoteMessage } from './types';
 
-const { SharedEventEmitter } = events;
 const { isFunction, isObject } = utils;
 
 export type OnMessage = RemoteMessage => any;
@@ -36,7 +25,10 @@ export type OnTokenRefreshObserver = {
   next: OnTokenRefresh,
 };
 
-const NATIVE_EVENTS = ['messaging_message_received', 'messaging_token_refreshed'];
+const NATIVE_EVENTS = {
+  messageReceived: 'Expo.Firebase.messaging_message_received',
+  tokenRefreshed: 'Expo.Firebase.messaging_token_refreshed',
+};
 
 export const MODULE_NAME = 'ExpoFirebaseMessaging';
 export const NAMESPACE = 'messaging';
@@ -52,20 +44,22 @@ export default class Messaging extends ModuleBase {
   static moduleName = MODULE_NAME;
   static namespace = NAMESPACE;
   static statics = statics;
+  _ios: IOSMessaging;
 
   constructor(app: App) {
     super(app, {
-      events: NATIVE_EVENTS,
+      events: Object.values(NATIVE_EVENTS),
       moduleName: MODULE_NAME,
-      multiApp: false,
-      hasShards: false,
+      hasMultiAppSupport: false,
+      hasCustomUrlSupport: false,
       namespace: NAMESPACE,
     });
+    this._ios = new IOSMessaging(this);
 
     SharedEventEmitter.addListener(
       // sub to internal native event - this fans out to
       // public event name: onMessage
-      'messaging_message_received',
+      NATIVE_EVENTS.messageReceived,
       (message: NativeInboundRemoteMessage) => {
         SharedEventEmitter.emit('onMessage', new RemoteMessage(message));
       }
@@ -74,16 +68,20 @@ export default class Messaging extends ModuleBase {
     SharedEventEmitter.addListener(
       // sub to internal native event - this fans out to
       // public event name: onMessage
-      'messaging_token_refreshed',
+      NATIVE_EVENTS.tokenRefreshed,
       ({ token }) => {
         SharedEventEmitter.emit('onTokenRefresh', token);
       }
     );
 
     // Tell the native module that we're ready to receive events
-    if (Platform.OS === 'ios') {
-      getNativeModule(this).jsInitialised();
+    if (this.nativeModule.jsInitialised) {
+      this.nativeModule.jsInitialised();
     }
+  }
+
+  get ios(): IOSMessaging {
+    return this._ios;
   }
 
   onMessage(nextOrObserver: OnMessage | OnMessageObserver): () => any {
@@ -99,12 +97,12 @@ export default class Messaging extends ModuleBase {
       );
     }
 
-    getLogger(this).info('Creating onMessage listener');
+    this.logger.info('Creating onMessage listener');
 
     SharedEventEmitter.addListener('onMessage', listener);
 
     return () => {
-      getLogger(this).info('Removing onMessage listener');
+      this.logger.info('Removing onMessage listener');
       SharedEventEmitter.removeListener('onMessage', listener);
     };
   }
@@ -118,15 +116,15 @@ export default class Messaging extends ModuleBase {
       listener = nextOrObserver.next;
     } else {
       throw new Error(
-        'Messaging.OnTokenRefresh failed: First argument must be a function or observer object with a `next` function.'
+        'Messaging.onTokenRefresh failed: First argument must be a function or observer object with a `next` function.'
       );
     }
 
-    getLogger(this).info('Creating onTokenRefresh listener');
+    this.logger.info('Creating onTokenRefresh listener');
     SharedEventEmitter.addListener('onTokenRefresh', listener);
 
     return () => {
-      getLogger(this).info('Removing onTokenRefresh listener');
+      this.logger.info('Removing onTokenRefresh listener');
       SharedEventEmitter.removeListener('onTokenRefresh', listener);
     };
   }
@@ -136,26 +134,23 @@ export default class Messaging extends ModuleBase {
    */
 
   sendMessage(remoteMessage: RemoteMessage): Promise<void> {
-    if (!(remoteMessage instanceof RemoteMessage)) {
-      return Promise.reject(
-        new Error(
-          `Messaging:sendMessage expects a 'RemoteMessage' but got type ${typeof remoteMessage}`
-        )
-      );
-    }
+    invariant(
+      remoteMessage instanceof RemoteMessage,
+      `Messaging:sendMessage expects a 'RemoteMessage' but got type ${typeof remoteMessage}`
+    );
     try {
-      return getNativeModule(this).sendMessage(remoteMessage.build());
+      return this.nativeModule.sendMessage(remoteMessage.build());
     } catch (error) {
       return Promise.reject(error);
     }
   }
 
   subscribeToTopic(topic: string): Promise<void> {
-    return getNativeModule(this).subscribeToTopic(topic);
+    return this.nativeModule.subscribeToTopic(topic);
   }
 
   unsubscribeFromTopic(topic: string): Promise<void> {
-    return getNativeModule(this).unsubscribeFromTopic(topic);
+    return this.nativeModule.unsubscribeFromTopic(topic);
   }
 
   /**
@@ -163,39 +158,37 @@ export default class Messaging extends ModuleBase {
    */
 
   getToken(): Promise<string> {
-    throw new Error(internals.STRINGS.ERROR_UNSUPPORTED_MODULE_METHOD('messaging', 'getToken'));
+    throw new Error(INTERNALS.STRINGS.ERROR_UNSUPPORTED_MODULE_METHOD('messaging', 'getToken'));
   }
 
   requestPermission(): Promise<void> {
     throw new Error(
-      internals.STRINGS.ERROR_UNSUPPORTED_MODULE_METHOD('messaging', 'requestPermission')
+      INTERNALS.STRINGS.ERROR_UNSUPPORTED_MODULE_METHOD('messaging', 'requestPermission')
     );
   }
 
   hasPermission(): Promise<boolean> {
     throw new Error(
-      internals.STRINGS.ERROR_UNSUPPORTED_MODULE_METHOD('messaging', 'hasPermission')
+      INTERNALS.STRINGS.ERROR_UNSUPPORTED_MODULE_METHOD('messaging', 'hasPermission')
     );
   }
 
   deleteToken() {
-    throw new Error(internals.STRINGS.ERROR_UNSUPPORTED_MODULE_METHOD('messaging', 'deleteToken'));
+    throw new Error(INTERNALS.STRINGS.ERROR_UNSUPPORTED_MODULE_METHOD('messaging', 'deleteToken'));
   }
 
   setBackgroundMessageHandler() {
     throw new Error(
-      internals.STRINGS.ERROR_UNSUPPORTED_MODULE_METHOD('messaging', 'setBackgroundMessageHandler')
+      INTERNALS.STRINGS.ERROR_UNSUPPORTED_MODULE_METHOD('messaging', 'setBackgroundMessageHandler')
     );
   }
 
   useServiceWorker() {
     throw new Error(
-      internals.STRINGS.ERROR_UNSUPPORTED_MODULE_METHOD('messaging', 'useServiceWorker')
+      INTERNALS.STRINGS.ERROR_UNSUPPORTED_MODULE_METHOD('messaging', 'useServiceWorker')
     );
   }
 }
-
-registerModule(Messaging);
 
 export type {
   NativeInboundRemoteMessage,

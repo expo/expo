@@ -3,20 +3,21 @@
  * Firestore representation wrapper
  */
 import { NativeModulesProxy } from 'expo-core';
-import { events, ModuleBase, utils, getNativeModule, registerModule } from 'expo-firebase-app';
+import { SharedEventEmitter, ModuleBase, utils } from 'expo-firebase-app';
+import invariant from 'invariant';
+import type { App } from 'expo-firebase-app';
+import Blob from './Blob';
 import CollectionReference from './CollectionReference';
 import DocumentReference from './DocumentReference';
 import FieldPath from './FieldPath';
 import FieldValue from './FieldValue';
 import GeoPoint from './GeoPoint';
-import Blob from './Blob';
 import Path from './Path';
-import WriteBatch from './WriteBatch';
-import TransactionHandler from './TransactionHandler';
 import Transaction from './Transaction';
+import TransactionHandler from './TransactionHandler';
+import WriteBatch from './WriteBatch';
 
 import type DocumentSnapshot from './DocumentSnapshot';
-import type { App } from 'expo-firebase-app';
 import type QuerySnapshot from './QuerySnapshot';
 
 type CollectionSyncEvent = {
@@ -42,14 +43,13 @@ type Settings = {
   timestampsInSnapshots?: boolean,
 };
 
-const { getAppEventName, SharedEventEmitter } = events;
 const { isBoolean, isObject, isString, hop } = utils;
 
-const NATIVE_EVENTS = [
-  'firestore_transaction_event',
-  'firestore_document_sync_event',
-  'firestore_collection_sync_event',
-];
+const NATIVE_EVENTS = {
+  firestoreTransactionEvent: 'Expo.Firebase.firestore_transaction_event',
+  firestoreDocumentSyncEvent: 'Expo.Firebase.firestore_document_sync_event',
+  firestoreCollectionSyncEvent: 'Expo.Firebase.firestore_collection_sync_event',
+};
 
 const LogLevels = ['debug', 'error', 'silent'];
 
@@ -69,9 +69,11 @@ export const statics = {
     this.setLogLevel(enabled ? 'debug' : 'silent');
   },
   setLogLevel(logLevel: 'debug' | 'error' | 'silent'): void {
-    if (LogLevels.indexOf(logLevel) === -1) {
-      throw new Error('Argument `logLevel` must be one of: `debug`, `error`, `silent`');
-    }
+    invariant(
+      LogLevels.includes(logLevel),
+      'Argument `logLevel` must be one of: `debug`, `error`, `silent`'
+    );
+
     if (NativeModulesProxy[MODULE_NAME]) {
       NativeModulesProxy[MODULE_NAME].setLogLevel(logLevel);
     }
@@ -91,10 +93,10 @@ export default class Firestore extends ModuleBase {
 
   constructor(app: App) {
     super(app, {
-      events: NATIVE_EVENTS,
+      events: Object.values(NATIVE_EVENTS),
       moduleName: MODULE_NAME,
-      multiApp: true,
-      hasShards: false,
+      hasMultiAppSupport: true,
+      hasCustomUrlSupport: false,
       namespace: NAMESPACE,
     });
 
@@ -104,14 +106,14 @@ export default class Firestore extends ModuleBase {
     SharedEventEmitter.addListener(
       // sub to internal native event - this fans out to
       // public event name: onCollectionSnapshot
-      getAppEventName(this, 'firestore_collection_sync_event'),
+      this.getAppEventName(NATIVE_EVENTS.firestoreCollectionSyncEvent),
       this._onCollectionSyncEvent.bind(this)
     );
 
     SharedEventEmitter.addListener(
       // sub to internal native event - this fans out to
       // public event name: onDocumentSnapshot
-      getAppEventName(this, 'firestore_document_sync_event'),
+      this.getAppEventName(NATIVE_EVENTS.firestoreDocumentSyncEvent),
       this._onDocumentSyncEvent.bind(this)
     );
   }
@@ -139,15 +141,13 @@ export default class Firestore extends ModuleBase {
    */
   collection(collectionPath: string): CollectionReference {
     const path = this._referencePath.child(collectionPath);
-    if (!path.isCollection) {
-      throw new Error('Argument "collectionPath" must point to a collection.');
-    }
+    invariant(path.isCollection, 'Argument "collectionPath" must point to a collection.');
 
     return new CollectionReference(this, path);
   }
 
   disableNetwork(): void {
-    return getNativeModule(this).disableNetwork();
+    return this.nativeModule.disableNetwork();
   }
 
   /**
@@ -158,15 +158,13 @@ export default class Firestore extends ModuleBase {
    */
   doc(documentPath: string): DocumentReference {
     const path = this._referencePath.child(documentPath);
-    if (!path.isDocument) {
-      throw new Error('Argument "documentPath" must point to a document.');
-    }
+    invariant(path.isDocument, 'Argument "documentPath" must point to a document.');
 
     return new DocumentReference(this, path);
   }
 
   enableNetwork(): Promise<void> {
-    return getNativeModule(this).enableNetwork();
+    return this.nativeModule.enableNetwork();
   }
 
   /**
@@ -204,7 +202,7 @@ export default class Firestore extends ModuleBase {
         new Error('Firestore.settings failed: settings.timestampsInSnapshots must be boolean.')
       );
     }
-    return getNativeModule(this).settings(settings);
+    return this.nativeModule.settings(settings);
   }
 
   /**
@@ -235,12 +233,12 @@ export default class Firestore extends ModuleBase {
   _onCollectionSyncEvent(event: CollectionSyncEvent) {
     if (event.error) {
       SharedEventEmitter.emit(
-        getAppEventName(this, `onQuerySnapshotError:${event.listenerId}`),
-        event.error
+        this.getAppEventName(`onQuerySnapshotError:${event.listenerId}`),
+        event
       );
     } else {
       SharedEventEmitter.emit(
-        getAppEventName(this, `onQuerySnapshot:${event.listenerId}`),
+        this.getAppEventName(`onQuerySnapshot:${event.listenerId}`),
         event.querySnapshot
       );
     }
@@ -255,19 +253,17 @@ export default class Firestore extends ModuleBase {
   _onDocumentSyncEvent(event: DocumentSyncEvent) {
     if (event.error) {
       SharedEventEmitter.emit(
-        getAppEventName(this, `onDocumentSnapshotError:${event.listenerId}`),
-        event.error
+        this.getAppEventName(`onDocumentSnapshotError:${event.listenerId}`),
+        event
       );
     } else {
       SharedEventEmitter.emit(
-        getAppEventName(this, `onDocumentSnapshot:${event.listenerId}`),
+        this.getAppEventName(`onDocumentSnapshot:${event.listenerId}`),
         event.documentSnapshot
       );
     }
   }
 }
-
-registerModule(Firestore);
 
 export {
   CollectionReference,
@@ -285,3 +281,4 @@ export { default as DocumentSnapshot } from './DocumentSnapshot';
 export { default as DocumentChange } from './DocumentChange';
 export { default as Query } from './Query';
 export { default as QuerySnapshot } from './QuerySnapshot';
+export { default as SnapshotError } from './SnapshotError';

@@ -2,6 +2,7 @@ import { NativeModules } from 'react-native';
 
 export * from './Audio/Recording';
 export * from './Audio/Sound';
+export { setIsEnabledAsync } from './Audio/AudioAvailability';
 
 export type AudioMode = {
   allowsRecordingIOS: boolean;
@@ -19,9 +20,6 @@ export const INTERRUPTION_MODE_IOS_DUCK_OTHERS = 2;
 export const INTERRUPTION_MODE_ANDROID_DO_NOT_MIX = 1;
 export const INTERRUPTION_MODE_ANDROID_DUCK_OTHERS = 2;
 
-let _enabled: boolean = true;
-const _DISABLED_ERROR: Error = new Error('Cannot complete operation because audio is not enabled.');
-
 // Returns true if value is in validValues, and false if not.
 const _isValueValid = (value: any, validValues: any[]): boolean => {
   return validValues.filter(validValue => validValue === value).length > 0;
@@ -31,25 +29,6 @@ const _isValueValid = (value: any, validValues: any[]): boolean => {
 const _findMissingKeys = (object: Object, requiredKeys: any[]): any[] => {
   return requiredKeys.filter(requiredKey => !(requiredKey in object));
 };
-
-export function _isAudioEnabled(): boolean {
-  return _enabled;
-}
-
-export function _throwIfAudioIsDisabled(): void {
-  if (!_enabled) {
-    throw _DISABLED_ERROR;
-  }
-}
-
-export async function setIsEnabledAsync(value: boolean): Promise<void> {
-  _enabled = value;
-  await NativeModules.ExponentAV.setAudioIsEnabled(value);
-  // TODO : We immediately pause all players when disabled, but we do not resume all shouldPlay
-  // players when enabled. Perhaps for completeness we should allow this; the design of the
-  // enabling API is for people to enable / disable this audio library, but I think that it should
-  // intuitively also double as a global pause/resume.
-}
 
 export async function setAudioModeAsync(mode: AudioMode): Promise<void> {
   const missingKeys = _findMissingKeys(mode, [

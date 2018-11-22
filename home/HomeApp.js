@@ -4,6 +4,7 @@ import { ActivityIndicator, Linking, Platform, StatusBar, StyleSheet, View } fro
 import url from 'url';
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { Assets as StackAssets } from 'react-navigation-stack';
 
 import jwtDecode from 'jwt-decode';
 import Navigation from './navigation/Navigation';
@@ -20,6 +21,9 @@ import getViewerUsernameAsync from './utils/getViewerUsernameAsync';
 function cacheImages(images) {
   return images.map(image => Asset.fromModule(image).downloadAsync());
 }
+
+// Download and cache stack assets, don't block loading on this though
+Asset.loadAsync(StackAssets);
 
 export default class App extends React.Component {
   state = {

@@ -652,6 +652,10 @@ static GLfloat imagePlaneVerts[6] = { -2.0f, 0.0f, 0.0f, -2.0f, 2.0f, 2.0f };
     if (attributes[@"rawFeaturePoints"] != nil) {
       [output setValue:[self _rawFeaturePoints] forKey:@"rawFeaturePoints"];
     }
+    if (attributes[@"planes"] != nil) {
+      // TODO: bbarthec, fill it with actual data
+      [output setValue:@[] forKey:@"planes"];
+    }
     if (attributes[@"lightEstimation"] != nil) {
       [output setValue:[self _arLightEstimation] forKey:@"lightEstimation"];
     }

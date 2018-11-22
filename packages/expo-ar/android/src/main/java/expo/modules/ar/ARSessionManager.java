@@ -6,6 +6,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Size;
+import android.view.Surface;
 
 import com.google.ar.core.Camera;
 import com.google.ar.core.Config;
@@ -28,7 +29,7 @@ import expo.modules.ar.arguments.ARFrameSerializationAttributes;
 import expo.modules.ar.arguments.ARPlaneDetection;
 import expo.modules.ar.gl.ARGLCameraObject;
 import expo.modules.ar.serializer.ARFrameSerializer;
-import expo.modules.ar.serializer.ARHitPointSerializer;
+import expo.modules.ar.serializer.ARHitTestSerializer;
 import expo.modules.gl.context.GLContext;
 import expo.modules.gl.context.GLSharedContext;
 import expo.modules.gl.GLView;
@@ -152,8 +153,8 @@ public class ARSessionManager implements GLContext.GLContextChangeListener {
       mCurrentFrame = mSession.update();
 
       Size previewSize = mSession.getCameraConfig().getTextureSize();
-      int rotation = mARDisplayRotationHelper.getRotation();
-      mCameraObject.drawFrame(mCurrentFrame, rotation, previewSize);
+      Size adjustedTextureSize = adjustTextureSizeOnRotation(previewSize, mARDisplayRotationHelper.getRotation());
+      mCameraObject.drawFrame(mCurrentFrame, adjustedTextureSize);
 
       handleCurrentFrame(mCurrentFrame);
 
@@ -209,7 +210,7 @@ public class ARSessionManager implements GLContext.GLContextChangeListener {
     });
   }
 
-  void performHitTestAsync(final float x, final float y, ArrayList<String> types, final Promise promise) {
+  void performHitTestAsync(final float x, final float y, /* iOS param */ ArrayList<String> types, final Promise promise) {
     if (mSession == null || mCurrentFrame == null) {
       promise.resolve(null);
       return;
@@ -217,8 +218,14 @@ public class ARSessionManager implements GLContext.GLContextChangeListener {
     mGLView.runOnGLThread(new Runnable() {
       @Override
       public void run() {
-        List<HitResult> hitResults = mCurrentFrame.hitTest(x, y);
-        List<Bundle> result = ARHitPointSerializer.serializeHitResults(hitResults);
+        Size adjustedSize = adjustTextureSizeOnRotation(mSession.getCameraConfig().getTextureSize(), mARDisplayRotationHelper.getRotation());
+
+        // TODO: bbarthec invetigate width / height as it's currently broken and these values are swapped
+        // TODO: as for now I assume height is larger than width (but this is valid only with phones)
+        float width = (adjustedSize.getHeight() > adjustedSize.getWidth() ? adjustedSize.getWidth() : adjustedSize.getHeight()) * x;
+        float height = (adjustedSize.getHeight() > adjustedSize.getWidth() ? adjustedSize.getHeight() : adjustedSize.getWidth()) * y;
+        List<HitResult> hitResults = mCurrentFrame.hitTest(width, height);
+        List<Bundle> result = ARHitTestSerializer.serializeHitResults(hitResults);
         promise.resolve(result);
       }
     });
@@ -272,5 +279,26 @@ public class ARSessionManager implements GLContext.GLContextChangeListener {
     }
     promise.reject(ERROR_TAG + "_NO_SESSION", "AR Camera is not initialized");
     return false;
+  }
+
+  /**
+   * Swaps width / height of given size based on given rotation
+   * @param possiblyRotatedSize raw size with possibly swapped width / height
+   * @param rotation rotation that determines whether size needs adjustments
+   * @return correctly adjusted swapped width / height values
+   */
+  private Size adjustTextureSizeOnRotation(Size possiblyRotatedSize, int rotation) {
+    switch (rotation) {
+      case Surface.ROTATION_0:
+      case Surface.ROTATION_180:
+        // no rotation needed
+        return possiblyRotatedSize;
+      case Surface.ROTATION_90:
+      case Surface.ROTATION_270:
+        return new Size(possiblyRotatedSize.getHeight(), possiblyRotatedSize.getWidth());
+      default:
+        Log.e(ERROR_TAG + "_ROTATE", "Invalid rotation obtained from device: " + rotation + " . Returning original size");
+        return possiblyRotatedSize;
+    }
   }
 }

@@ -6,6 +6,35 @@ import mat4 from 'gl-mat4';
 import { initShaderProgram, checkGLError } from './ARUtils';
 import { PermissionsRequester } from './components';
 
+const vertexShaderSource = `#version 300 es
+precision highp float;
+
+in vec4 aVertexPosition;
+in vec2 aTextureCoord;
+
+uniform mat4 uModelViewMatrix;
+uniform mat4 uProjectionMatrix;
+
+out vec2 uv;
+
+void main() {
+  uv = aTextureCoord;
+  gl_Position = uProjectionMatrix * uModelViewMatrix * aVertexPosition;
+}
+`;
+
+const fragmentShaderSource = `#version 300 es
+precision highp float;
+
+uniform sampler2D uSampler;
+in vec2 uv;
+out vec4 fragColor;
+
+void main() {
+  fragColor = texture(uSampler, uv);
+}
+`;
+
 export default class ARRotatingCubeScreen extends React.Component {
   static title = 'AR Rotating Cube with Camera Preview texture (plain WebGL)';
 
@@ -25,38 +54,7 @@ export default class ARRotatingCubeScreen extends React.Component {
   }
 
   createCubeGLProgram = gl => {
-    const program = initShaderProgram(
-      gl,
-      `
-        #version 300 es
-        precision highp float;
-        
-        in vec4 aVertexPosition;
-        in vec2 aTextureCoord;
-
-        uniform mat4 uModelViewMatrix;
-        uniform mat4 uProjectionMatrix;
-
-        out vec2 uv;
-
-        void main() {
-          uv = aTextureCoord;
-          gl_Position = uProjectionMatrix * uModelViewMatrix * aVertexPosition;
-        }
-      `,
-      `
-        #version 300 es
-        precision highp float;
-      
-        uniform sampler2D uSampler;
-        in vec2 uv;
-        out vec4 fragColor;
-
-        void main() {
-          fragColor = texture(uSampler, uv);
-        }
-      `
-    );
+    const program = initShaderProgram(gl, vertexShaderSource, fragmentShaderSource);
 
     return {
       program,

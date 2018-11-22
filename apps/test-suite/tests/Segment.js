@@ -51,7 +51,12 @@ export function test(t) {
     });
 
     t.it('trackWithProperties(event, properties)', () => {
-      t.expect(Segment.trackWithProperties('event', { some: 'properties' })).toBe(undefined);
+      t.expect(
+        Segment.trackWithProperties('event', {
+          some: 'properties',
+          nested: { object: { purposeOfLife: 42 } },
+        })
+      ).toBe(undefined);
     });
 
     t.it('screen(screenName)', () => {

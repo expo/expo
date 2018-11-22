@@ -3,9 +3,7 @@ package expo.modules.ar.gl;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
-import android.util.Log;
 import android.util.Size;
-import android.view.Surface;
 
 import com.google.ar.core.Frame;
 
@@ -181,10 +179,9 @@ public class ARGLCameraObject extends GLObject {
    * Renders available frame available in {@link this#mExternalOESTexture}
    * into {@link this#mDestinationTexture} that is available from JS
    * @param frame used to get correct orientation for {@link this#mDestinationTexture}
-   * @param rotation current device rotation Same as {@link android.view.Display#getRotation()}.
    * @param textureSize current size of texture stored in {@link this#mExternalOESTexture}; used to allocate space for {@link this#mDestinationTexture}
    */
-  public void drawFrame(Frame frame, int rotation, Size textureSize) {
+  public void drawFrame(Frame frame, Size textureSize) {
     // bindings used in rendering process
     glUseProgram(mProgram);
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, mFramebuffer);
@@ -195,7 +192,7 @@ public class ARGLCameraObject extends GLObject {
     ARGLUtils.checkGLError(TAG, "PROGRAM, DRAW_FRAMEBUFFER BINDINGS");
 
     // reallocate destination texture if preview has changed
-    possiblyReallocateTexture(rotation, textureSize);
+    possiblyReallocateTexture(textureSize);
 
     // set the vertex positions
     // binding 0 to GL_ARRAY_BUFFER is important see https://www.khronos.org/registry/OpenGL-Refpages/es3.0/html/glVertexAttribPointer.xhtml pointer param description
@@ -259,24 +256,9 @@ public class ARGLCameraObject extends GLObject {
   }
 
   @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-  private void possiblyReallocateTexture(int rotation, Size textureSize) {
-    int width;
-    int height;
-    switch (rotation) {
-      case Surface.ROTATION_0:
-      case Surface.ROTATION_180:
-        width = textureSize.getWidth();
-        height = textureSize.getHeight();
-        break;
-      case Surface.ROTATION_90:
-      case Surface.ROTATION_270:
-        width = textureSize.getHeight();
-        height = textureSize.getWidth();
-        break;
-      default:
-        Log.e(ERROR_TAG + "_ROTATE", "Invalid rotation obtained from device: " + rotation);
-        return;
-    }
+  private void possiblyReallocateTexture(Size textureSize) {
+    int width = textureSize.getWidth();
+    int height = textureSize.getHeight();
 
     if (mTextureWidth != width || mTextureHeight != height) {
       mTextureWidth = width;

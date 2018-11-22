@@ -68,7 +68,8 @@ export default class ExpoApisScreen extends React.Component {
       'FileSystem',
       'Font',
       'Geocoding',
-      'GoogleLogin',
+      'Google',
+      'GoogleSignIn',
       'Haptic',
       'ImagePicker',
       'ImageManipulator',
@@ -92,6 +93,7 @@ export default class ExpoApisScreen extends React.Component {
       'TextToSpeech',
       'Util',
       'WebBrowser',
+      'ViewShot',
     ];
   };
 }

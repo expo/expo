@@ -51,3 +51,5 @@ export type NativeDynamicLink = {|
   navigation: NativeNavigationParameters,
   social: NativeSocialParameters,
 |};
+
+export type DynamicLink = object;

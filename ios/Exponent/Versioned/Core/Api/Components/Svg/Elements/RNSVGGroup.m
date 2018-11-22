@@ -7,6 +7,7 @@
  */
 
 #import "RNSVGGroup.h"
+#import "RNSVGClipPath.h"
 
 @implementation RNSVGGroup
 {
@@ -33,7 +34,7 @@
 - (void)renderGroupTo:(CGContextRef)context rect:(CGRect)rect
 {
     [self pushGlyphContext];
-    
+
     __block CGRect groupRect = CGRectNull;
 
     [self traverseSubviews:^(UIView *node) {
@@ -48,7 +49,7 @@
             }
 
             [svgNode renderTo:context rect:rect];
-            
+
             CGRect nodeRect = svgNode.clientRect;
             if (!CGRectIsEmpty(nodeRect)) {
                 groupRect = CGRectUnion(groupRect, nodeRect);
@@ -59,9 +60,11 @@
             }
         } else if ([node isKindOfClass:[RNSVGSvgView class]]) {
             RNSVGSvgView* svgView = (RNSVGSvgView*)node;
-            CGRect rect = CGRectMake(0, 0, [svgView.bbWidth floatValue], [svgView.bbHeight floatValue]);
+            CGFloat width = [self relativeOnWidthString:svgView.bbWidth];
+            CGFloat height = [self relativeOnHeightString:svgView.bbHeight];
+            CGRect rect = CGRectMake(0, 0, width, height);
             CGContextClipToRect(context, rect);
-            [svgView drawToContext:context withRect:(CGRect)rect];
+            [svgView drawToContext:context withRect:rect];
         } else {
             [node drawRect:rect];
         }
@@ -70,6 +73,7 @@
     }];
     [self setHitArea:[self getPath:context]];
     self.clientRect = groupRect;
+    self.bounds = groupRect;
     [self popGlyphContext];
 }
 
@@ -77,11 +81,12 @@
 {
     CGRect clipBounds = CGContextGetClipBoundingBox(context);
     clipBounds = CGRectApplyAffineTransform(clipBounds, self.matrix);
+    clipBounds = CGRectApplyAffineTransform(clipBounds, self.transform);
     CGFloat width = CGRectGetWidth(clipBounds);
     CGFloat height = CGRectGetHeight(clipBounds);
 
-    _glyphContext = [[RNSVGGlyphContext alloc] initWithScale:1 width:width
-                                                   height:height];
+    _glyphContext = [[RNSVGGlyphContext alloc] initWithWidth:width
+                                                      height:height];
 }
 
 - (RNSVGGlyphContext *)getGlyphContext
@@ -122,12 +127,23 @@
 - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
 {
     CGPoint transformed = CGPointApplyAffineTransform(point, self.invmatrix);
-    
-    CGPathRef clip = [self getClipPath];
-    if (clip && !CGPathContainsPoint(clip, nil, transformed, self.clipRule == kRNSVGCGFCRuleEvenodd)) {
-        return nil;
+    transformed = CGPointApplyAffineTransform(transformed, self.invTransform);
+
+    if (self.clipPath) {
+        RNSVGClipPath *clipNode = (RNSVGClipPath*)[self.svgView getDefinedClipPath:self.clipPath];
+        if ([clipNode isSimpleClipPath]) {
+            CGPathRef clipPath = [self getClipPath];
+            if (clipPath && !CGPathContainsPoint(clipPath, nil, transformed, clipNode.clipRule == kRNSVGCGFCRuleEvenodd)) {
+                return nil;
+            }
+        } else {
+            RNSVGRenderable *clipGroup = (RNSVGRenderable*)clipNode;
+            if (![clipGroup hitTest:transformed withEvent:event]) {
+                return nil;
+            }
+        }
     }
-    
+
     if (!event) {
         NSPredicate *const anyActive = [NSPredicate predicateWithFormat:@"active == TRUE"];
         NSArray *const filtered = [self.subviews filteredArrayUsingPredicate:anyActive];
@@ -154,12 +170,12 @@
             return (node.responsible || (node != hitChild)) ? hitChild : self;
         }
     }
-    
+
     UIView *hitSelf = [super hitTest:transformed withEvent:event];
     if (hitSelf) {
         return hitSelf;
     }
-    
+
     return nil;
 }
 

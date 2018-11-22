@@ -1,6 +1,6 @@
 package expo.modules.firebase.messaging;
 
-// TODO: Evan: Remove React Native - Bundle = WritableMap.
+// TODO: Bacon: Remove React Native - Bundle = WritableMap. https://github.com/expo/expo/pull/2338
 import android.os.Bundle;
 
 import com.facebook.react.bridge.Arguments;

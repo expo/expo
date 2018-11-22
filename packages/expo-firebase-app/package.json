@@ -1,6 +1,6 @@
 {
   "name": "expo-firebase-app",
-  "version": "1.0.0-rc.1",
+  "version": "1.0.0-rc.3",
   "description": "Expo Unimodule for interfacing with Firebase Core",
   "main": "src/index.js",
   "keywords": [
@@ -20,14 +20,14 @@
   "readmeFilename": "README.md",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/expo/expo-firebase-app.git"
+    "url": "git+https://github.com/expo/expo.git"
   },
-  "bugs": "https://github.com/expo/expo-firebase-app/issues",
+  "bugs": "https://github.com/expo/expo/issues",
   "dependencies": {
-    "expo-core": "^1.0.0"
+    "expo-core": "~1.2.0"
   },
   "devDependencies": {
-    "babel-preset-expo": "^4.0.0",
+    "babel-preset-expo": "^5.0.0",
     "flow-bin": "^0.77.0"
   }
 }

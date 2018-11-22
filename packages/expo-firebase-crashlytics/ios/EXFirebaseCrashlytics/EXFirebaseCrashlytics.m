@@ -1,4 +1,4 @@
-
+// Copyright 2018-present 650 Industries. All rights reserved.
 
 #import <EXFirebaseCrashlytics/EXFirebaseCrashlytics.h>
 #import <Crashlytics/Crashlytics.h>
@@ -22,7 +22,7 @@ EX_EXPORT_METHOD_AS(crash,
                     crash:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
     [[Crashlytics sharedInstance] crash];
-    resolve(nil);
+    resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(log,
@@ -30,7 +30,7 @@ EX_EXPORT_METHOD_AS(log,
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
     CLS_LOG(@"%@", message);
-    resolve(nil);
+    resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(recordError,
@@ -40,16 +40,16 @@ EX_EXPORT_METHOD_AS(recordError,
                     rejecter:(EXPromiseRejectBlock)reject) {
     NSError *error = [NSError errorWithDomain:domain code:[code integerValue] userInfo:nil];
     [CrashlyticsKit recordError:error];
-    resolve(nil);
+    resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(setBoolValue,
                     setBoolValue:(NSString *)key
-                    boolValue:(BOOL *)boolValue
+                    boolValue:(NSNumber *)value
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
-    [CrashlyticsKit setBoolValue:boolValue forKey:key];
-    resolve(nil);
+    [CrashlyticsKit setBoolValue:[value boolValue] forKey:key];
+    resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(setFloatValue,
@@ -58,7 +58,7 @@ EX_EXPORT_METHOD_AS(setFloatValue,
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
     [CrashlyticsKit setFloatValue:[floatValue floatValue] forKey:key];
-    resolve(nil);
+    resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(setIntValue,
@@ -67,7 +67,7 @@ EX_EXPORT_METHOD_AS(setIntValue,
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
     [CrashlyticsKit setIntValue:[intValue integerValue] forKey:key];
-    resolve(nil);
+    resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(setStringValue,
@@ -76,7 +76,7 @@ EX_EXPORT_METHOD_AS(setStringValue,
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
     [CrashlyticsKit setObjectValue:stringValue forKey:key];
-    resolve(nil);
+    resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(setUserIdentifier,
@@ -84,7 +84,7 @@ EX_EXPORT_METHOD_AS(setUserIdentifier,
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
     [CrashlyticsKit setUserIdentifier:userId];
-    resolve(nil);
+    resolve([NSNull null]);
 }
 
 @end

@@ -43,8 +43,8 @@ export default class ApiV2HttpClient {
     let fetchOptions: any = {
       method: options.httpMethod,
       headers: {
-        'Exponent-SDK-Version': ExponentKernel.sdkVersions,
-        'Exponent-Platform': Platform.OS,
+        'Expo-SDK-Version': ExponentKernel.sdkVersions,
+        'Expo-Platform': Platform.OS,
       },
     };
     if (options.body) {

@@ -18,12 +18,15 @@
 
 #import <Foundation/Foundation.h>
 
+#import "FBSDKAppLinkResolving.h"
+
 @class BFTask;
+
 
 // Check if Bolts.framework is available for import
 #if __has_include(<Bolts/BFAppLinkResolving.h>)
 // Import it if it's available
-# import <Bolts/BFAppLinkResolving.h>
+#import <Bolts/BFAppLinkResolving.h>
 #else
 // Otherwise - redeclare BFAppLinkResolving protocol to resolve the problem of missing symbols
 // Please note: Bolts.framework is still required for AppLink resolving to work,
@@ -34,6 +37,7 @@
  App Links that may include pre-fetching, caching, or querying for App Link
  data from an index provided by a service provider.
  */
+DEPRECATED_MSG_ATTRIBUTE("Use `FBSDKAppLinkResolving`")
 @protocol BFAppLinkResolving <NSObject>
 
 /**
@@ -42,7 +46,8 @@
  @param url The URL to resolve into an App Link.
  @return A BFTask that will return a BFAppLink for the given URL.
  */
-- (BFTask *)appLinkFromURLInBackground:(NSURL *)url;
+- (BFTask *)appLinkFromURLInBackground:(NSURL *)url
+DEPRECATED_MSG_ATTRIBUTE("Use `appLinkFromURL:handler:`");
 
 @end
 
@@ -59,7 +64,10 @@
  Usage of this type requires a client token. See `[FBSDKSettings setClientToken:]` and linking
  Bolts.framework
  */
-@interface FBSDKAppLinkResolver : NSObject<BFAppLinkResolving>
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+@interface FBSDKAppLinkResolver : NSObject<FBSDKAppLinkResolving, BFAppLinkResolving>
+#pragma clang diagnostic pop
 
 /**
   Asynchronously resolves App Link data for multiple URLs.
@@ -68,11 +76,28 @@
  @return A BFTask that will return dictionary mapping input NSURLs to their
   corresponding BFAppLink.
 
-
-
  You should set the client token before making this call. See `[FBSDKSettings setClientToken:]`
  */
-- (BFTask *)appLinksFromURLsInBackground:(NSArray *)urls;
+- (BFTask *)appLinksFromURLsInBackground:(NSArray<NSURL *> *)urls
+DEPRECATED_MSG_ATTRIBUTE("Use `appLinkFromURLs:handler:`");
+
+/**
+ Asynchronously resolves App Link data for a given URL.
+
+ @param url The URL to resolve into an App Link.
+ @return A BFTask that will return a BFAppLink for the given URL.
+ */
+- (BFTask *)appLinkFromURLInBackground:(NSURL *)url
+DEPRECATED_MSG_ATTRIBUTE("Use `appLinkFromURL:handler:`");
+
+/**
+ Asynchronously resolves App Link data for a given array of URLs.
+
+ @param urls The URLs to resolve into an App Link.
+ @param handler The completion block that will return an App Link for the given URL.
+ */
+- (void)appLinksFromURLs:(NSArray<NSURL *> *)urls handler:(FBSDKAppLinksFromURLArrayHandler)handler
+NS_EXTENSION_UNAVAILABLE_IOS("Not available in app extension");
 
 /**
   Allocates and initializes a new instance of FBSDKAppLinkResolver.

@@ -43,11 +43,10 @@
   },
   "devDependencies": {
     "babel-jest": "^23.0.1",
-    "babel-preset-expo": "^4.0.0",
+    "babel-preset-expo": "^5.0.0",
     "babel-preset-react-native": "^4.0.0",
     "eslint": "^4.19.1",
     "eslint-config-react-native-prettier": "^1.0.1",
-    "expo": "^30.0.0",
     "expo-ar": "^1.0.0",
     "flow-bin": "^0.26.0",
     "jest": "^23.1.0",

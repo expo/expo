@@ -8,6 +8,7 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
+import { NavigationEvents } from 'react-navigation';
 import Touchable from 'react-native-platform-touchable';
 
 import { Permissions, Location } from 'expo';
@@ -32,7 +33,7 @@ export default class GeocodingScreen extends React.Component {
     inProgress: false,
   };
 
-  componentDidMount() {
+  componentDidFocus() {
     Permissions.askAsync(Permissions.LOCATION);
   }
 
@@ -41,6 +42,7 @@ export default class GeocodingScreen extends React.Component {
 
     return (
       <ScrollView style={styles.container}>
+        <NavigationEvents onDidFocus={this.componentDidFocus} />
         <View style={styles.headerContainer}>
           <Text style={styles.headerText}>Select a location</Text>
         </View>

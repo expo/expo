@@ -1,36 +1,45 @@
 {
   "name": "expo-ar",
   "version": "1.0.0",
-  "description": "Expo Module Template standalone module",
-  "main": "build/index.js",
+  "description": "An Expo universal module to operate on underlying AR frameworks: ARKit on iOS or ARCore on Android",
+  "main": "build/AR.js",
+  "types": "build/AR.d.ts",
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "test": "expo-module test",
+    "postinstall": "expo-module postinstall",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
   "keywords": [
     "react-native",
-    "expo"
+    "expo",
+    "ar",
+    "arkit",
+    "arcore"
   ],
-  "homepage": "https://docs.expo.io/",
-  "author": "650 Industries, Inc.",
-  "license": "0BSD",
-  "scripts": {
-    "clean": "rm -rf build",
-    "lint": "./node_modules/.bin/eslint src",
-    "prepare": "yarn clean && yarn tsc",
-    "tsc": "./node_modules/.bin/tsc"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git"
   },
-  "peerDependencies": {
-    "react-native": "^0.55.4"
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-ar",
+  "jest": {
+    "preset": "expo-module-scripts"
   },
   "dependencies": {
-    "expo-constants": "^1.0.2",
-    "expo-core": "^1.0.0",
-    "expo-gl": "^1.0.2",
+    "expo-constants": "~1.1.0",
+    "expo-core": "~1.2.0",
+    "expo-gl": "~1.1.0",
     "uuid": "^3.3.2"
   },
   "devDependencies": {
-    "@types/react": "^16.4.14",
-    "@types/react-native": "^0.56.24",
-    "@types/uuid": "^3.4.4",
-    "babel-preset-expo": "^4.0.0",
-    "flow-bin": "^0.77.0",
-    "typescript": "^3.0.3"
+    "expo-module-scripts": "^1.0.0"
   }
 }

@@ -3,21 +3,17 @@
  * Storage representation wrapper
  */
 import { NativeModulesProxy } from 'expo-core';
-import {
-  events,
-  getLogger,
-  utils,
-  ModuleBase,
-  getNativeModule,
-  registerModule,
-} from 'expo-firebase-app';
-import StorageRef from './reference';
-import type { App } from 'expo-firebase-app';
+import { SharedEventEmitter, ModuleBase, utils } from 'expo-firebase-app';
 
-const { getAppEventName, SharedEventEmitter } = events;
+import type { App } from 'expo-firebase-app';
+import StorageRef from './reference';
+
 const { stripTrailingSlash } = utils;
 
-const NATIVE_EVENTS = ['storage_event', 'storage_error'];
+const NATIVE_EVENTS = {
+  storageEvent: 'Expo.Firebase.storage_event',
+  storageError: 'Expo.Firebase.storage_error',
+};
 
 export const MODULE_NAME = 'ExpoFirebaseStorage';
 export const NAMESPACE = 'storage';
@@ -64,20 +60,20 @@ export default class Storage extends ModuleBase {
    */
   constructor(app: App) {
     super(app, {
-      events: NATIVE_EVENTS,
+      events: Object.values(NATIVE_EVENTS),
       moduleName: MODULE_NAME,
-      multiApp: true,
-      hasShards: false,
+      hasMultiAppSupport: true,
+      hasCustomUrlSupport: false,
       namespace: NAMESPACE,
     });
 
     SharedEventEmitter.addListener(
-      getAppEventName(this, 'storage_event'),
+      this.getAppEventName(NATIVE_EVENTS.storageEvent),
       this._handleStorageEvent.bind(this)
     );
 
     SharedEventEmitter.addListener(
-      getAppEventName(this, 'storage_error'),
+      this.getAppEventName(NATIVE_EVENTS.storageError),
       this._handleStorageEvent.bind(this)
     );
   }
@@ -109,7 +105,7 @@ export default class Storage extends ModuleBase {
    * @param time The new maximum operation retry time in milliseconds.
    */
   setMaxOperationRetryTime(time: number): void {
-    getNativeModule(this).setMaxOperationRetryTime(time);
+    this.nativeModule.setMaxOperationRetryTime(time);
   }
 
   /**
@@ -118,7 +114,7 @@ export default class Storage extends ModuleBase {
    * @param time The new maximum upload retry time in milliseconds.
    */
   setMaxUploadRetryTime(time: number): void {
-    getNativeModule(this).setMaxUploadRetryTime(time);
+    this.nativeModule.setMaxUploadRetryTime(time);
   }
 
   /**
@@ -127,21 +123,21 @@ export default class Storage extends ModuleBase {
    * @param time The new maximum download retry time in milliseconds.
    */
   setMaxDownloadRetryTime(time: number): void {
-    getNativeModule(this).setMaxDownloadRetryTime(time);
+    this.nativeModule.setMaxDownloadRetryTime(time);
   }
 
   /**
    * INTERNALS
    */
   _getSubEventName(path: string, eventName: string) {
-    return getAppEventName(this, `${path}-${eventName}`);
+    return this.getAppEventName(`${path}-${eventName}`);
   }
 
   _handleStorageEvent(event: Object) {
     const { path, eventName } = event;
     const body = event.body || {};
 
-    getLogger(this).debug('_handleStorageEvent: ', path, eventName, body);
+    this.logger.debug('_handleStorageEvent: ', path, eventName, body);
     SharedEventEmitter.emit(this._getSubEventName(path, eventName), body);
   }
 
@@ -149,7 +145,7 @@ export default class Storage extends ModuleBase {
     const { path, eventName } = err;
     const body = err.body || {};
 
-    getLogger(this).debug('_handleStorageError ->', err);
+    this.logger.debug('_handleStorageError ->', err);
     SharedEventEmitter.emit(this._getSubEventName(path, eventName), body);
   }
 
@@ -162,10 +158,5 @@ export default class Storage extends ModuleBase {
   }
 }
 
-registerModule(Storage);
-
-
 export { default as StorageReference } from './reference';
-export {
-  StorageRef,
-}
+export { StorageRef };

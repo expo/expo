@@ -1,4 +1,4 @@
-
+// Copyright 2018-present 650 Industries. All rights reserved.
 
 #import <Foundation/Foundation.h>
 
@@ -10,7 +10,6 @@
 @interface EXFirebaseFirestore : EXExportedModule <EXModuleRegistryConsumer, EXEventEmitter>
 
 @property NSMutableDictionary *transactions;
-@property dispatch_queue_t transactionQueue;
 
 + (void)promiseRejectException:(EXPromiseRejectBlock)reject error:(NSError *)error;
 

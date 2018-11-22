@@ -2,6 +2,8 @@
 
 #import <Foundation/Foundation.h>
 
+static const char *EXFontAssocKey = "EXFont";
+
 @interface EXFont : NSObject
 
 - (instancetype)initWithCGFont:(CGFontRef)cgFont;

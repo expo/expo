@@ -6,21 +6,16 @@ import android.os.Parcelable;
 import com.google.ar.core.Anchor;
 import com.google.ar.core.AugmentedImage;
 import com.google.ar.core.Frame;
-import com.google.ar.core.HitResult;
 import com.google.ar.core.LightEstimate;
 import com.google.ar.core.Plane;
 import com.google.ar.core.Point;
 import com.google.ar.core.PointCloud;
-import com.google.ar.core.Pose;
 import com.google.ar.core.Trackable;
-import com.google.ar.core.TrackingState;
 
-import java.lang.reflect.Array;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import expo.modules.ar.arguments.ARFrameAttribute;
 import expo.modules.ar.arguments.ARFrameSerializationAttributes;
@@ -45,12 +40,12 @@ public class ARFrameSerializer {
       output.putParcelableArrayList(ARFrameAttribute.RAW_FEATURES_POINT.toString(), mRawFeaturePoints);
     }
 
-    if (attributes.shouldSerializeLightEstimation()) {
-      output.putBundle(ARFrameAttribute.LIGHT_ESTIMATION.toString(), mLightEstimate);
-    }
-
     if (attributes.shouldSerializePlanes()) {
       output.putParcelableArrayList(ARFrameAttribute.PLANES.toString(), mPlanes);
+    }
+
+    if (attributes.shouldSerializeLightEstimation()) {
+      output.putBundle(ARFrameAttribute.LIGHT_ESTIMATION.toString(), mLightEstimate);
     }
 
     return output;
@@ -110,7 +105,10 @@ public class ARFrameSerializer {
 
   private Bundle serializePlane(Plane plane) {
     Bundle output = new Bundle();
-    output.putFloatArray("transform", ARSerializer.serializePose(plane.getCenterPose()));
+
+    output.putInt("id", plane.hashCode());
+    output.putFloatArray("transformWorld", ARSerializerCommons.serializePose(plane.getCenterPose()));
+
     output.putParcelable("center", encodeVec3(plane.getCenterPose().getTranslation()));
 
     Bundle extent = new Bundle();
@@ -124,12 +122,10 @@ public class ARFrameSerializer {
     }
 
     output.putString("planeType", serializePlaneType(plane.getType()));
-    ArrayList anchors = ARSerializer.serializeAnchors(plane.getAnchors());
+    ArrayList anchors = ARSerializerCommons.serializeAnchors(plane.getAnchors());
     if (anchors != null) {
       output.putParcelableArrayList("anchors", anchors);
     }
-
-    output.putInt("id", plane.hashCode());
 
     return output;
   }
@@ -147,9 +143,9 @@ public class ARFrameSerializer {
       case VERTICAL:
         return "vertical";
       case HORIZONTAL_UPWARD_FACING:
-        return "horizontalUpward";
+        return "horizontalUpwardFacing";
       case HORIZONTAL_DOWNWARD_FACING:
-        return "horizontalDownward";
+        return "horizontalDownwardFacing";
       default:
         return null;
     }
@@ -190,7 +186,7 @@ public class ARFrameSerializer {
     Collection<AugmentedImage> images = frame.getUpdatedTrackables(AugmentedImage.class);
     Collection<Point> points = frame.getUpdatedTrackables(Point.class);
     if (anchors.size() > 0) {
-      anchorsBundle.putParcelableArrayList("anchors", ARSerializer.serializeAnchors(anchors));
+      anchorsBundle.putParcelableArrayList("anchors", ARSerializerCommons.serializeAnchors(anchors));
     }
     if (images.size() > 0) {
       anchorsBundle.putParcelableArrayList("images", serializeTrackables(images));
@@ -204,7 +200,7 @@ public class ARFrameSerializer {
   private ArrayList<? extends Parcelable> serializeTrackables(Collection<? extends Trackable> trackables) {
     ArrayList<Bundle> output = new ArrayList<>();
     for (Trackable trackable : trackables) {
-      output.add(ARSerializer.serializeTrackable(trackable));
+      output.add(ARSerializerCommons.serializeTrackable(trackable));
     }
     return output;
   }

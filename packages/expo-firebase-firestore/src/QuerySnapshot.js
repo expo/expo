@@ -5,8 +5,16 @@
 import DocumentChange from './DocumentChange';
 import DocumentSnapshot from './DocumentSnapshot';
 
-import type Firestore from './';
-import type { NativeDocumentChange, NativeDocumentSnapshot, SnapshotMetadata } from './types';
+import type {
+  Firestore,
+  NativeDocumentChange,
+  NativeDocumentSnapshot,
+  SnapshotMetadata,
+} from './firestoreTypes.flow';
+
+/**
+ * @class QuerySnapshot
+ */
 import type Query from './Query';
 
 type NativeQuerySnapshot = {
@@ -20,8 +28,11 @@ type NativeQuerySnapshot = {
  */
 export default class QuerySnapshot {
   _changes: DocumentChange[];
+
   _docs: DocumentSnapshot[];
+
   _metadata: SnapshotMetadata;
+
   _query: Query;
 
   constructor(firestore: Firestore, query: Query, nativeData: NativeQuerySnapshot) {

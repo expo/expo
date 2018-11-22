@@ -1,3 +1,5 @@
+nix/nodepackages/** -diff linguist-generated=true
+nix/**/gemset.nix -diff linguist-generated=true
 ios/Pods/GoogleInterchangeUtilities/Frameworks/frameworks/GoogleInterchangeUtilities.framework/GoogleInterchangeUtilities filter=lfs diff=lfs merge=lfs -text
 ios/Pods/GoogleMobileVision/Detector/Frameworks/frameworks/GoogleMobileVision.framework/GoogleMobileVision filter=lfs diff=lfs merge=lfs -text
 ios/Pods/GoogleMobileVision/FaceDetector/Frameworks/frameworks/FaceDetector.framework/FaceDetector filter=lfs diff=lfs merge=lfs -text

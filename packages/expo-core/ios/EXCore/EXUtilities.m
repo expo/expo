@@ -13,6 +13,8 @@
 
 - (UIViewController *)currentViewController;
 
+- (nullable NSDictionary *)launchOptions;
+
 @end
 
 @implementation EXUtilities
@@ -27,6 +29,18 @@ EX_REGISTER_MODULE();
 - (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
+}
+
+- (nullable NSDictionary *)launchOptions
+{
+  id<EXUtilService> utilService = [_moduleRegistry getSingletonModuleForName:@"Util"];
+  
+  if (utilService != nil) {
+    // Uses launchOptions from EXUtilService that is a part of ExpoKit
+    return [utilService launchOptions];
+  }
+
+  return nil;
 }
 
 - (UIViewController *)currentViewController

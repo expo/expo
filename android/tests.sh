@@ -1,14 +1,14 @@
-#!/bin/bash
-# ./gradlew :app:connectedDevMinSdkDevKernelDebugAndroidTest runs test differently than Android Studio.
+#!/usr/bin/env bash
+# ./gradlew :app:connectedDevKernelDebugAndroidTest runs test differently than Android Studio.
 # This script runs the same commands as Android Studio and seems to behave more predictably.
 
 adb uninstall host.exp.exponent.test
 # Clear logs
 adb logcat -c
 
-./gradlew :app:assembleDevMinSdkDevKernelDebugAndroidTest
+./gradlew :app:assembleDevKernelDebugAndroidTest
 
-adb push app/build/outputs/apk/androidTest/devMinSdkDevKernel/debug/app-devMinSdk-devKernel-debug-androidTest.apk /data/local/tmp/host.exp.exponent.test
+adb push app/build/outputs/apk/androidTest/devKernel/debug/app-devKernel-debug-androidTest.apk /data/local/tmp/host.exp.exponent.test
 adb shell pm install -r "/data/local/tmp/host.exp.exponent.test"
 
 adb shell pm revoke "host.exp.exponent" android.permission.READ_CONTACTS

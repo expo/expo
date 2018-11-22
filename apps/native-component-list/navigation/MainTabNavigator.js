@@ -26,10 +26,12 @@ import FacebookLoginScreen from '../screens/FacebookLoginScreen';
 import GestureHandlerPinchScreen from '../screens/GestureHandlerPinchScreen';
 import GestureHandlerListScreen from '../screens/GestureHandlerListScreen';
 import GestureHandlerSwipeableScreen from '../screens/GestureHandlerSwipeableScreen';
-import GoogleLoginScreen from '../screens/GoogleLoginScreen';
+import GoogleScreen from '../screens/GoogleScreen';
+import GoogleSignInScreen from '../screens/GoogleSignInScreen';
 import RemindersScreen from '../screens/RemindersScreen';
 import SensorScreen from '../screens/SensorScreen';
 import GeocodingScreen from '../screens/GeocodingScreen';
+import GLScreen from '../screens/GL/GLScreen';
 import GLScreens from '../screens/GL/GLScreens';
 import ImageManipulatorScreen from '../screens/ImageManipulatorScreen';
 import ImagePickerScreen from '../screens/ImagePickerScreen';
@@ -44,7 +46,8 @@ import ReactNativeCoreScreen from '../screens/ReactNativeCoreScreen';
 import TextToSpeechScreen from '../screens/TextToSpeechScreen';
 import ScreenOrientationScreen from '../screens/ScreenOrientationScreen';
 import SecureStoreScreen from '../screens/SecureStoreScreen';
-import SVGScreen from '../screens/SVGScreen';
+import SVGScreen from '../screens/SVG/SVGScreen';
+import SVGExampleScreen from '../screens/SVG/SVGExampleScreen';
 import LocationScreen from '../screens/LocationScreen';
 import LottieScreen from '../screens/LottieScreen';
 import MapsScreen from '../screens/MapsScreen';
@@ -65,19 +68,11 @@ import BranchScreen from '../screens/BranchScreen';
 import SMSScreen from '../screens/SMSScreen';
 import ScreensScreen from '../screens/Screens';
 import PermissionsScreen from '../screens/PermissionsScreen';
+import ViewShotScreen from '../screens/ViewShotScreen';
 
 const styles = StyleSheet.create({
   tabBar: {
     backgroundColor: '#fff',
-    paddingTop: 5,
-    paddingBottom: 1,
-    paddingHorizontal: 28,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: Colors.tabIconDefault,
-  },
-  tabBarLabel: {
-    fontSize: 10,
-    letterSpacing: 0,
   },
   header: {
     backgroundColor: '#fff',
@@ -92,8 +87,8 @@ const styles = StyleSheet.create({
 
 const StackConfig = {
   cardStyle: styles.card,
-  // headerTransitionPreset: 'uikit',
-  navigationOptions: () => ({
+  headerTransitionPreset: 'uikit',
+  defaultNavigationOptions: () => ({
     headerStyle: styles.header,
     headerTintColor: Colors.tintColor,
     headerTitleStyle: styles.headerTitle,
@@ -107,6 +102,7 @@ const ExpoComponentsStackNavigator = createStackNavigator(
     AdMob: { screen: AdMobScreen },
     BarCodeScanner: { screen: BarCodeScannerScreen },
     BlurView: { screen: BlurViewScreen },
+    GL: { screen: GLScreen },
     ...GLScreens,
     GestureHandlerPinch: { screen: GestureHandlerPinchScreen },
     GestureHandlerList: { screen: GestureHandlerListScreen },
@@ -115,6 +111,7 @@ const ExpoComponentsStackNavigator = createStackNavigator(
     Gif: { screen: GifScreen },
     FacebookAds: { screen: FacebookAdsScreen },
     SVG: { screen: SVGScreen },
+    SVGExample: { screen: SVGExampleScreen },
     LinearGradient: { screen: LinearGradientScreen },
     Lottie: { screen: LottieScreen },
     Maps: { screen: MapsScreen },
@@ -136,7 +133,8 @@ const ExpoApisStackNavigator = createStackNavigator(
     FacebookLogin: { screen: FacebookLoginScreen },
     FileSystem: { screen: FileSystemScreen },
     Font: { screen: FontScreen },
-    GoogleLogin: { screen: GoogleLoginScreen },
+    Google: GoogleScreen,
+    GoogleSignIn: GoogleSignInScreen,
     Haptic: { screen: HapticScreen },
     Calendars: { screen: CalendarsScreen },
     Constants: { screen: ConstantsScreen },
@@ -165,6 +163,7 @@ const ExpoApisStackNavigator = createStackNavigator(
     TextToSpeech: { screen: TextToSpeechScreen },
     Util: { screen: UtilScreen },
     WebBrowser: { screen: WebBrowserScreen },
+    ViewShot: { screen: ViewShotScreen },
   },
   StackConfig
 );
@@ -178,9 +177,9 @@ const ReactNativeCoreStackNavigator = createStackNavigator(
   StackConfig
 );
 
-class TabIcon extends React.Component {
+class TabIcon extends React.PureComponent {
   render() {
-    let baseSize = this.props.size || 26;
+    let baseSize = this.props.size || 27;
     return (
       <MaterialIcons
         name={this.props.name}
@@ -196,12 +195,12 @@ const createTabNavigator =
 
 const MainTabNavigator = createTabNavigator(
   {
-    ExpoApis: { screen: ExpoApisStackNavigator },
-    ExpoComponents: { screen: ExpoComponentsStackNavigator },
-    ReactNativeCore: { screen: ReactNativeCoreStackNavigator },
+    ExpoApis: ExpoApisStackNavigator,
+    ExpoComponents: ExpoComponentsStackNavigator,
+    ReactNativeCore: ReactNativeCoreStackNavigator,
   },
   {
-    navigationOptions: ({ navigation }) => {
+    defaultNavigationOptions: ({ navigation }) => {
       let tabBarLabel;
       const { routeName } = navigation.state;
       if (routeName === 'ReactNativeCore') {

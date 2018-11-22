@@ -1,10 +1,14 @@
 // @flow
-import { internals as INTERNALS } from 'expo-firebase-app';
-import { events, getNativeModule, utils } from 'expo-firebase-app';
-import type Auth from '../';
+import invariant from 'invariant';
+import { Platform } from 'expo-core';
+import { SharedEventEmitter, utils, INTERNALS } from 'expo-firebase-app';
 
-const { SharedEventEmitter } = events;
-const { generatePushID, isFunction, isAndroid, isIOS, isString, nativeToJSError } = utils;
+// import type Auth from '../';
+type Auth = object;
+const { generatePushID, isFunction, isString, nativeToJSError } = utils;
+
+const isIOS = Platform.OS === 'ios';
+const isAndroid = Platform.OS === 'android';
 
 type PhoneAuthSnapshot = {
   state: 'sent' | 'timeout' | 'verified' | 'error',
@@ -54,8 +58,9 @@ export default class PhoneAuthListener {
       codeSent: `phone:auth:${this._phoneAuthRequestKey}:onCodeSent`,
       verificationFailed: `phone:auth:${this._phoneAuthRequestKey}:onVerificationFailed`,
       verificationComplete: `phone:auth:${this._phoneAuthRequestKey}:onVerificationComplete`,
-      codeAutoRetrievalTimeout: `phone:auth:${this
-        ._phoneAuthRequestKey}:onCodeAutoRetrievalTimeout`,
+      codeAutoRetrievalTimeout: `phone:auth:${
+        this._phoneAuthRequestKey
+      }:onCodeAutoRetrievalTimeout`,
     };
 
     // user observer events
@@ -73,7 +78,7 @@ export default class PhoneAuthListener {
 
     // start verification flow natively
     if (isAndroid) {
-      getNativeModule(this._auth).verifyPhoneNumber(
+      this._auth.nativeModule.verifyPhoneNumber(
         phoneNumber,
         this._phoneAuthRequestKey,
         this._timeout,
@@ -82,7 +87,7 @@ export default class PhoneAuthListener {
     }
 
     if (isIOS) {
-      getNativeModule(this._auth).verifyPhoneNumber(phoneNumber, this._phoneAuthRequestKey);
+      this._auth.nativeModule.verifyPhoneNumber(phoneNumber, this._phoneAuthRequestKey);
     }
   }
 
@@ -276,17 +281,15 @@ export default class PhoneAuthListener {
     errorCb?: PhoneAuthError => void,
     successCb?: PhoneAuthSnapshot => void
   ): this {
-    if (!isString(event)) {
-      throw new Error(INTERNALS.STRINGS.ERROR_MISSING_ARG_NAMED('event', 'string', 'on'));
-    }
-
-    if (event !== 'state_changed') {
-      throw new Error(INTERNALS.STRINGS.ERROR_ARG_INVALID_VALUE('event', 'state_changed', event));
-    }
-
-    if (!isFunction(observer)) {
-      throw new Error(INTERNALS.STRINGS.ERROR_MISSING_ARG_NAMED('observer', 'function', 'on'));
-    }
+    invariant(isString(event), INTERNALS.STRINGS.ERROR_MISSING_ARG_NAMED('event', 'string', 'on'));
+    invariant(
+      event === 'state_changed',
+      INTERNALS.STRINGS.ERROR_ARG_INVALID_VALUE('event', 'state_changed', event)
+    );
+    invariant(
+      isFunction(observer),
+      INTERNALS.STRINGS.ERROR_MISSING_ARG_NAMED('observer', 'function', 'on')
+    );
 
     this._addUserObserver(observer);
 

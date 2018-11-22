@@ -1,0 +1,24 @@
+{
+  "name": "expo-localization",
+  "version": "1.0.0",
+  "description": "Expo Unimodule for interfacing with the native localization APIs",
+  "main": "index.js",
+  "keywords": [
+    "react-native",
+    "expo"
+  ],
+  "homepage": "https://docs.expo.io/",
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "contributors": [
+    "Evan Bacon <bacon@expo.io> (https://github.com/evanbacon)"
+  ],
+  "readmeFilename": "README.md",
+  "dependencies": {
+    "expo-core": "~1.1.0"
+  },
+  "devDependencies": {
+    "babel-preset-expo": "^4.0.0",
+    "flow-bin": "^0.77.0"
+  }
+}

@@ -1,12 +1,14 @@
-
+// Copyright 2018-present 650 Industries. All rights reserved.
 
 @import UserNotifications;
 
 #import <EXFirebaseMessaging/EXFirebaseMessaging.h>
-#import <EXFirebaseApp/EXFirebaseAppEvents.h>
 #import <EXFirebaseApp/EXFirebaseAppUtil.h>
 #import <FirebaseMessaging/FirebaseMessaging.h>
 #import <EXCore/EXUtilitiesInterface.h>
+
+static NSString * const MESSAGING_MESSAGE_RECEIVED = @"Expo.Firebase.messaging_message_received";
+static NSString * const MESSAGING_TOKEN_REFRESHED = @"Expo.Firebase.messaging_token_refreshed";
 
 @interface EXFirebaseMessaging ()
 
@@ -18,9 +20,9 @@
 @implementation EXFirebaseMessaging
 
 static EXFirebaseMessaging *shared = nil;
-static bool jsReady = FALSE;
-static NSString* initialToken = nil;
-static NSMutableArray* pendingMessages = nil;
+static bool jsReady = NO;
+static NSString *initialToken = nil;
+static NSMutableArray *pendingMessages = nil;
 
 + (nonnull instancetype)instance {
   return shared;
@@ -31,7 +33,6 @@ EX_EXPORT_MODULE(ExpoFirebaseMessaging)
 - (id)init {
   self = [super init];
   if (self != nil) {
-    NSLog(@"Setting up EXFirebaseMessaging instance");
     [self configure];
   }
   return self;
@@ -41,15 +42,6 @@ EX_EXPORT_MODULE(ExpoFirebaseMessaging)
 {
   _moduleRegistry = moduleRegistry;
   _eventEmitter = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXEventEmitterService)];
-}
-
-- (void)startObserving {
-  
-}
-
-- (void)stopObserving
-{
-  
 }
 
 - (void)configure {
@@ -72,11 +64,6 @@ EX_EXPORT_MODULE(ExpoFirebaseMessaging)
 - (void)didReceiveRemoteNotification:(nonnull NSDictionary *)userInfo {
   NSDictionary *message = [self parseUserInfo:userInfo];
   [self sendJSEvent:_eventEmitter name:MESSAGING_MESSAGE_RECEIVED body:message];
-}
-
-- (void)didRegisterUserNotificationSettings:(nonnull UIUserNotificationSettings *)notificationSettings
-{
-
 }
 
 // *******************************************************
@@ -129,29 +116,47 @@ EX_EXPORT_METHOD_AS(sendMessage,
   [[FIRMessaging messaging] sendMessage:data to:to withMessageID:messageId timeToLive:[ttl intValue]];
   
   // TODO: Listen for send success / errors
-  resolve(nil);
+  resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(subscribeToTopic,
-                    subscribeToTopic:(NSString*)topic
+                    subscribeToTopic:(NSString *)topic
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
   [[FIRMessaging messaging] subscribeToTopic:topic];
-  resolve(nil);
+  resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(unsubscribeFromTopic,
-                    unsubscribeFromTopic:(NSString*)topic
+                    unsubscribeFromTopic:(NSString *)topic
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
   [[FIRMessaging messaging] unsubscribeFromTopic:topic];
-  resolve(nil);
+  resolve([NSNull null]);
 }
+
+EX_EXPORT_METHOD_AS(getAPNSToken,
+                    getAPNSToken:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject) {
+
+    NSData *apnsToken = [FIRMessaging messaging].APNSToken;
+    if (apnsToken) {
+        const char *data = [apnsToken bytes];
+        NSMutableString *token = [NSMutableString string];
+        for (NSInteger i = 0; i < apnsToken.length; i++) {
+            [token appendFormat:@"%02.2hhX", data[i]];
+        }
+        resolve([token copy]);
+    } else {
+        resolve([NSNull null]);
+    }
+}
+
 
 EX_EXPORT_METHOD_AS(jsInitialised,
                     jsInitialised:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
-  jsReady = TRUE;
+  jsReady = YES;
   if (initialToken) {
     [self sendJSEvent:_eventEmitter name:MESSAGING_TOKEN_REFRESHED body:initialToken];
   }
@@ -161,7 +166,7 @@ EX_EXPORT_METHOD_AS(jsInitialised,
     }
     pendingMessages = nil;
   }
-  resolve(nil);
+  resolve([NSNull null]);
 }
 
 // ** Start internals **
@@ -236,13 +241,19 @@ EX_EXPORT_METHOD_AS(jsInitialised,
   return message;
 }
 
+#pragma mark - EXEventEmitter
+
 - (NSArray<NSString *> *)supportedEvents {
   return @[MESSAGING_MESSAGE_RECEIVED, MESSAGING_TOKEN_REFRESHED];
 }
 
-+ (BOOL)requiresMainQueueSetup
+- (void)startObserving {
+  
+}
+
+- (void)stopObserving
 {
-  return YES;
+  
 }
 
 @end

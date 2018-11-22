@@ -41,7 +41,24 @@ done < $TOOLS_DIR/android-packages-to-rename.txt
 
 # Rename packages in jars
 java -jar $TOOLS_DIR/jarjar-1.4.jar process jarjar-rules.txt expoview/libs/ReactAndroid-temp/classes.jar expoview/libs/ReactAndroid-temp/classes.jar
-java -jar $TOOLS_DIR/jarjar-1.4.jar process jarjar-rules.txt expoview/libs/ReactAndroid-temp/libs/infer-annotations-4.0.jar expoview/libs/ReactAndroid-temp/libs/infer-annotations-4.0.jar
+
+# fix annotations
+unzip expoview/libs/ReactAndroid-temp/annotations.zip -d expoview/libs/ReactAndroid-temp/annotations
+mv expoview/libs/ReactAndroid-temp/annotations/com expoview/libs/ReactAndroid-temp/annotations/$ABI_VERSION
+find expoview/libs/ReactAndroid-temp/annotations -type f > annotations_xmls
+while read FILE
+do
+  while read PACKAGE
+  do
+    sed -i '' "s/$PACKAGE/$ABI_VERSION.$PACKAGE/g" $FILE
+  done < $TOOLS_DIR/android-packages-to-rename.txt
+done < annotations_xmls
+rm annotations_xmls
+pushd expoview/libs/ReactAndroid-temp/annotations
+rm ../annotations.zip
+zip -r ../annotations.zip .
+rm -rf expoview/libs/ReactAndroid-temp/annotations
+popd
 
 # Fix packages that we don't want renamed
 rm -f jarjar-rules.txt

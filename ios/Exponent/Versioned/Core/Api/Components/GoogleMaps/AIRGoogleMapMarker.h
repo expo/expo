@@ -28,6 +28,7 @@
 @property (nonatomic, copy) NSString *subtitle;
 @property (nonatomic, strong) UIColor *pinColor;
 @property (nonatomic, assign) CGPoint anchor;
+@property (nonatomic, assign) CGPoint calloutAnchor;
 @property (nonatomic, assign) NSInteger zIndex;
 @property (nonatomic, assign) double opacity;
 @property (nonatomic, assign) BOOL draggable;
@@ -36,6 +37,7 @@
 
 - (void)showCalloutView;
 - (void)hideCalloutView;
+- (void)redraw;
 - (UIView *)markerInfoContents;
 - (UIView *)markerInfoWindow;
 - (void)didTapInfoWindowOfMarker:(AIRGMSMarker *)marker;

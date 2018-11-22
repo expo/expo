@@ -93,7 +93,7 @@
     if (!error) {
       NSArray *items = [FBSDKTypeUtility arrayValue:result[@"data"]];
       NSArray *recipientIDs = [items valueForKey:@"recipient_id"];
-      _recipientIDs = [[NSSet alloc] initWithArray:recipientIDs];
+      self->_recipientIDs = [[NSSet alloc] initWithArray:recipientIDs];
     }
   }];
 }

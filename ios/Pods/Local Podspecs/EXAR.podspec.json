@@ -1,11 +1,11 @@
 {
   "name": "EXAR",
   "version": "1.0.0",
-  "summary": "Expo Module Template standalone module",
-  "description": "Expo Module Template standalone module",
-  "license": "0BSD",
+  "summary": "An Expo universal module to operate on underlying AR frameworks: ARKit on iOS or ARCore on Android",
+  "description": "An Expo universal module to operate on underlying AR frameworks: ARKit on iOS or ARCore on Android",
+  "license": "MIT",
   "authors": "650 Industries, Inc.",
-  "homepage": "https://docs.expo.io/",
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-ar",
   "platforms": {
     "ios": "10.0"
   },

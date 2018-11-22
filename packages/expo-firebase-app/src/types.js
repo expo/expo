@@ -19,10 +19,14 @@ export type FirebaseModule = $Subtype<ModuleBase>;
 export type FirebaseModuleConfig = {
   events?: string[],
   moduleName: FirebaseModuleName,
-  multiApp: boolean,
-  hasShards: boolean,
+  hasMultiAppSupport: boolean,
+  hasCustomUrlSupport?: boolean,
+  hasRegionsSupport?: boolean,
   namespace: FirebaseNamespace,
 };
+
+// TODO: Bacon: Add this
+export type App = object;
 
 export type FirebaseModuleName =
   | 'ExpoFirebaseAdMob'
@@ -44,11 +48,9 @@ export type FirebaseModuleName =
   | 'ExpoFirebaseUtils';
 
 export type FirebaseNamespace =
-  | 'admob'
   | 'analytics'
   | 'auth'
   | 'config'
-  | 'crash'
   | 'crashlytics'
   | 'database'
   | 'firestore'
@@ -84,3 +86,23 @@ export type UtilsModule = {
   (): Utils,
   nativeModuleExists: boolean,
 } & UtilsStatics;
+
+export type NativeErrorObject = {
+  code: string,
+  message: string,
+  nativeErrorCode: string | number,
+  nativeErrorMessage: string,
+};
+
+export type NativeErrorResponse = {
+  error: NativeErrorObject,
+  // everything else
+  [key: string]: ?any,
+};
+
+export interface NativeErrorInterface extends Error {
+  +code: string;
+  +message: string;
+  +nativeErrorCode: string | number;
+  +nativeErrorMessage: string;
+}

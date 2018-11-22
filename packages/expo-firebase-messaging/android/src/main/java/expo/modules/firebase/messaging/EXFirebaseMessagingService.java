@@ -14,6 +14,18 @@ public class EXFirebaseMessagingService extends FirebaseMessagingService {
   private static final String TAG = EXFirebaseMessagingService.class.getCanonicalName();
   public static final String MESSAGE_EVENT = "messaging-message";
   public static final String REMOTE_NOTIFICATION_EVENT = "notifications-remote-notification";
+  public static final String TOKEN_REFRESH_EVENT = "messaging-token-refresh";
+
+  @Override
+  public void onNewToken(String token) {
+    Log.d(TAG, "onTokenRefresh event received");
+
+    // Build an Intent to pass the token to the RN Application
+    Intent tokenRefreshEvent = new Intent(TOKEN_REFRESH_EVENT);
+
+    // Broadcast it so it is only available to the RN Application
+    LocalBroadcastManager.getInstance(this).sendBroadcast(tokenRefreshEvent);
+  }
 
   @Override
   public void onMessageReceived(RemoteMessage message) {

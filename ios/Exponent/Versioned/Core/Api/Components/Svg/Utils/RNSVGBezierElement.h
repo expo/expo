@@ -21,5 +21,5 @@
 + (instancetype) elementWithPathElement: (CGPathElement) element;
 + (NSArray *) elementsFromCGPath:(CGPathRef)path;
 
-@end;
+@end
 

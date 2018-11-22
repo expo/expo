@@ -34,7 +34,7 @@ export default class ImageManipulatorScreen extends React.Component {
         <View style={{ padding: 10 }}>
           <View style={styles.actionsButtons}>
             <Button style={styles.button} onPress={() => this._rotate(90)}>
-              <Ionicons name="ios-refresh-outline" size={16} color="#ffffff" /> 90
+              <Ionicons name="ios-refresh" size={16} color="#ffffff" /> 90
             </Button>
             <Button style={styles.button} onPress={() => this._rotate(45)}>
               45
@@ -153,7 +153,7 @@ export default class ImageManipulatorScreen extends React.Component {
   };
 
   _manipulate = async (actions, saveOptions) => {
-    const manipResult = await ImageManipulator.manipulate(
+    const manipResult = await ImageManipulator.manipulateAsync(
       this.state.image.localUri || this.state.image.uri,
       actions,
       saveOptions

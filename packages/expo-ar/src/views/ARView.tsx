@@ -1,29 +1,19 @@
-declare global {
-  namespace NodeJS {
-    interface Global {
-      nativePerformanceNow(): number;
-    }
-  }
+declare namespace global {
+  function nativePerformanceNow(): number;
 }
 
 import * as React from 'react';
 import {
   AppState,
-  findNodeHandle,
   PixelRatio,
   Platform,
 } from 'react-native';
 import uuidv4 from 'uuid/v4';
 import { GLView } from 'expo-gl';
 
-import {
-  TrackingConfiguration,
-} from '../enums';
-import {
-  startAsync,
-  isAvailable,
-  stopAsync,
-} from '../functions';
+import { TrackingConfiguration } from '../commons';
+import { startAsync, stopAsync } from '../lifecycle';
+import { isAvailable } from '../availibility';
 
 interface Props {
   style: any;

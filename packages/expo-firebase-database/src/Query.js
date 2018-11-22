@@ -3,9 +3,10 @@
  * Query representation wrapper
  */
 import { utils } from 'expo-firebase-app';
-import type { DatabaseModifier } from './types';
-import type Reference from './Reference';
-
+// import type { DatabaseModifier } from './types';
+// import type Reference from './Reference';
+type DatabaseModifier = object;
+type Reference = object;
 const { objectToUniqueId } = utils;
 
 // todo doc methods

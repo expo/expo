@@ -1,15 +1,14 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Contacts, Permissions } from 'expo';
 import React from 'react';
-import { Platform, RefreshControl, StyleSheet, Text, View } from 'react-native';
+import { RefreshControl, StyleSheet, Text, View } from 'react-native';
+import { NavigationEvents } from 'react-navigation';
 import HeaderButtons from 'react-navigation-header-buttons';
 
 import ContactsList from './ContactsList';
 import * as ContactUtils from './ContactUtils';
 
 const CONTACT_PAGE_SIZE = 500;
-
-const isIos = Platform.OS === 'ios';
 
 export default class ContactsScreen extends React.Component {
   static navigationOptions = () => {
@@ -49,10 +48,10 @@ export default class ContactsScreen extends React.Component {
     refreshing: false,
   };
 
-  async componentDidMount() {
+  componentDidFocus = async () => {
     await this.checkPermissionAsync();
     await this.loadAsync();
-  }
+  };
 
   checkPermissionAsync = async () => {
     const { status } = await Permissions.askAsync(Permissions.CONTACTS);
@@ -98,12 +97,14 @@ export default class ContactsScreen extends React.Component {
     if (!permission) {
       return (
         <View style={styles.permissionContainer}>
+          <NavigationEvents onDidFocus={this.componentDidFocus} />
           <Text>No Contact Permission</Text>
         </View>
       );
     }
     return (
       <View style={styles.container}>
+        <NavigationEvents onDidFocus={this.componentDidFocus} />
         <ContactsList
           onEndReachedThreshold={-1.5}
           refreshControl={

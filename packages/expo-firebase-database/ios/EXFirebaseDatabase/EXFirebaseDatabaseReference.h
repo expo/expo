@@ -1,8 +1,9 @@
+// Copyright 2018-present 650 Industries. All rights reserved.
+
 #import <Foundation/Foundation.h>
 #import <FirebaseDatabase/FIRDatabase.h>
 #import <EXCore/EXEventEmitter.h>
 #import <EXCore/EXEventEmitterService.h>
-#import <EXFirebaseApp/EXFirebaseAppEvents.h>
 #import <EXFirebaseApp/EXFirebaseAppUtil.h>
 #import <EXFirebaseDatabase/EXFirebaseDatabase.h>
 

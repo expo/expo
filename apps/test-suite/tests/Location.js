@@ -152,7 +152,6 @@ export async function test(t) {
           });
           if (status === 'granted') {
             const heading = await Location.getHeadingAsync();
-            console.log(heading);
             t.expect(typeof heading.magHeading === 'number').toBe(true);
             t.expect(typeof heading.trueHeading === 'number').toBe(true);
             t.expect(typeof heading.accuracy === 'number').toBe(true);

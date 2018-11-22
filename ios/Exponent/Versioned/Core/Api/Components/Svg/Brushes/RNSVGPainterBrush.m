@@ -21,22 +21,22 @@
                         self.class, NSStringFromSelector(_cmd), array);
             return nil;
         }
-        
+
         self.brushRef = [array objectAtIndex:1];
     }
     return self;
 }
 
-- (void)paint:(CGContextRef)context opacity:(CGFloat)opacity painter:(RNSVGPainter *)painter
+- (void)paint:(CGContextRef)context opacity:(CGFloat)opacity painter:(RNSVGPainter *)painter bounds:(CGRect)bounds
 {
     BOOL transparency = opacity < 1;
     if (transparency) {
         CGContextSetAlpha(context, opacity);
         CGContextBeginTransparencyLayer(context, NULL);
     }
-    
-    [painter paint:context];
-    
+
+    [painter paint:context bounds:bounds];
+
     if (transparency) {
         CGContextEndTransparencyLayer(context);
     }

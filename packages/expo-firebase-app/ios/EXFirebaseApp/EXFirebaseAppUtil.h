@@ -1,10 +1,4 @@
-//
-//  EXFirebaseAppUtil.h
-//  EXFirebaseApp
-//
-//  Created by Evan Bacon on 8/6/18.
-//  Copyright © 2018 650 Industries. All rights reserved.
-//
+// Copyright 2018-present 650 Industries. All rights reserved.
 
 #import <Foundation/Foundation.h>
 #import <Firebase.h>
@@ -15,6 +9,7 @@ static NSString *const DEFAULT_APP_NAME = @"__FIRAPP_DEFAULT";
 
 @interface EXFirebaseAppUtil : NSObject
 
++ (NSString *)getISO8601String:(NSDate *)date;
 + (FIRApp *)getApp:(NSString *)appDisplayName;
 + (NSString *)getAppName:(NSString *)appDisplayName;
 + (NSString *)getAppDisplayName:(NSString *)appName;

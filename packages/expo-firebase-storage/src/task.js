@@ -2,10 +2,12 @@
  * @flow
  * UploadTask representation wrapper
  */
-import { statics as StorageStatics } from './index';
 import { utils } from 'expo-firebase-app';
-import type Storage from './index';
-import type StorageReference from './reference';
+import invariant from 'invariant';
+import { statics as StorageStatics } from '.';
+
+type Storage = object;
+type StorageReference = object;
 
 export const UPLOAD_TASK = 'upload';
 export const DOWNLOAD_TASK = 'download';
@@ -157,16 +159,13 @@ export default class StorageTask {
     error: FuncErrorType,
     complete: FuncSnapshotType
   ): Function {
-    if (!event) {
-      throw new Error("StorageTask.on listener is missing required string argument 'event'.");
-    }
-
-    if (event !== StorageStatics.TaskEvent.STATE_CHANGED) {
-      throw new Error(
-        `StorageTask.on event argument must be a string with a value of '${StorageStatics.TaskEvent
-          .STATE_CHANGED}'`
-      );
-    }
+    invariant(event, "StorageTask.on listener is missing required string argument 'event'.");
+    invariant(
+      event === StorageStatics.TaskEvent.STATE_CHANGED,
+      `StorageTask.on event argument must be a string with a value of '${
+        StorageStatics.TaskEvent.STATE_CHANGED
+      }'`
+    );
 
     // if only event provided return the subscriber function
     if (!nextOrObserver && !error && !complete) {

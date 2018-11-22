@@ -14,7 +14,6 @@ import expo.core.Promise;
 import expo.core.interfaces.ExpoMethod;
 import expo.core.interfaces.ModuleRegistryConsumer;
 import expo.core.interfaces.services.UIManager;
-import expo.modules.ar.arguments.ARFrameAttribute;
 import expo.modules.ar.arguments.ARFrameSerializationAttributes;
 import expo.modules.ar.arguments.ARPlaneDetection;
 import expo.modules.gl.GLView;
@@ -26,7 +25,7 @@ public class ARModule extends ExportedModule implements ModuleRegistryConsumer, 
   private GLView mGLView;
   private ARSessionManager mARSessionManager;
   private ModuleRegistry mModuleRegistry;
-  private UIManager mUImanager;
+  private UIManager mUIManager;
 
   ARModule(Context context) {
     super(context);
@@ -40,7 +39,7 @@ public class ARModule extends ExportedModule implements ModuleRegistryConsumer, 
   @Override
   public void setModuleRegistry(ModuleRegistry moduleRegistry) {
     mModuleRegistry = moduleRegistry;
-    mUImanager = mModuleRegistry.getModule(UIManager.class);
+    mUIManager = mModuleRegistry.getModule(UIManager.class);
   }
 
   // ---------------------------------------------------------------------------------------------
@@ -53,7 +52,7 @@ public class ARModule extends ExportedModule implements ModuleRegistryConsumer, 
 
   @ExpoMethod
   public void startAsync(final int glViewTag, final String configuration, final Promise promise) {
-    if (mUImanager == null) {
+    if (mUIManager == null) {
       promise.reject(ERROR_TAG + "_UI_MANAGER_NOT_FOUND", "UIManager not found in module registry.");
       return;
     }
@@ -64,7 +63,7 @@ public class ARModule extends ExportedModule implements ModuleRegistryConsumer, 
     }
     mARSessionManager = new ARSessionManager(mModuleRegistry);
 
-    mUImanager.addUIBlock(glViewTag, new UIManager.UIBlock<GLView>() {
+    mUIManager.addUIBlock(glViewTag, new UIManager.UIBlock<GLView>() {
       @Override
       public void resolve(GLView view) {
         mGLView = view;

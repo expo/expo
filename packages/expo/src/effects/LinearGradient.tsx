@@ -41,22 +41,12 @@ export default class LinearGradient extends React.Component<Props> {
         {...props}
         colors={colors.map(processColor)}
         locations={locations}
-        startPoint={start ? _normalizePoint(start) : null}
-        endPoint={end ? _normalizePoint(end) : null}
+        startPoint={start ? _normalizePoint(start) : undefined}
+        endPoint={end ? _normalizePoint(end) : undefined}
       />
     );
   }
 }
-
-const NativeLinearGradient = requireNativeComponent('ExponentLinearGradient', {
-  propTypes: {
-    ...ViewPropTypes,
-    colors: PropTypes.arrayOf(PropTypes.number),
-    locations: LinearGradient.propTypes.locations,
-    startPoint: PropTypes.arrayOf(PropTypes.number),
-    endPoint: PropTypes.arrayOf(PropTypes.number),
-  },
-});
 
 function _normalizePoint(point: Point): [number, number] {
   return Array.isArray(point) ? point : [point.x, point.y];

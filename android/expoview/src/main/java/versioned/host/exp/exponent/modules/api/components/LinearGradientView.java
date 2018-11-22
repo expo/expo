@@ -88,7 +88,7 @@ public class LinearGradientView extends View {
             mEndPos[1] * mSize[1],
             mColors,
             mLocations,
-            Shader.TileMode.MIRROR);
+            Shader.TileMode.CLAMP);
         mPaint.setShader(mShader);
         invalidate();
     }

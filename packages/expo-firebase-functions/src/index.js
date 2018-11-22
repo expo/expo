@@ -2,15 +2,13 @@
  * @flow
  * Functions representation wrapper
  */
-import { ModuleBase, utils, getNativeModule, registerModule } from 'expo-firebase-app';
-const { isObject } = utils;
-
-import HttpsError from './HttpsError';
-
-import type { HttpsCallable, HttpsErrorCode, HttpsCallablePromise } from './types.flow';
-
 import type { App } from 'expo-firebase-app';
 
+import firebase, { ModuleBase, utils } from 'expo-firebase-app';
+import HttpsError from './HttpsError';
+import type { HttpsCallable, HttpsErrorCode, HttpsCallablePromise } from './types.flow';
+
+const { isObject } = utils;
 export const NAMESPACE = 'functions';
 export const MODULE_NAME = 'ExpoFirebaseFunctions';
 export const statics: { HttpsErrorCode: HttpsErrorCode } = {
@@ -59,13 +57,26 @@ export default class Functions extends ModuleBase {
   static moduleName = MODULE_NAME;
   static namespace = NAMESPACE;
   static statics = statics;
-  constructor(app: App) {
-    super(app, {
-      multiApp: false,
-      hasShards: false,
-      namespace: NAMESPACE,
-      moduleName: MODULE_NAME,
-    });
+  constructor(appOrRegion: App, region?: string) {
+    let _app = appOrRegion;
+    let _region = region || 'us-central1';
+
+    if (typeof _app === 'string') {
+      _region = _app;
+      _app = firebase.app();
+    }
+
+    super(
+      _app,
+      {
+        hasMultiAppSupport: true,
+        hasCustomUrlSupport: false,
+        hasRegionsSupport: true,
+        namespace: NAMESPACE,
+        moduleName: MODULE_NAME,
+      },
+      _region
+    );
   }
 
   /**
@@ -80,10 +91,21 @@ export default class Functions extends ModuleBase {
    */
   httpsCallable(name: string): HttpsCallable {
     return (data?: any): HttpsCallablePromise => {
-      const promise = getNativeModule(this).httpsCallable(name, { data });
+      const promise = this.nativeModule.httpsCallable(name, { data });
       return promise.then(errorOrResult);
     };
   }
-}
 
-registerModule(Functions);
+  /**
+   * Changes this instance to point to a Cloud Functions emulator running
+   * locally.
+   *
+   * See https://firebase.google.com/docs/functions/local-emulator
+   *
+   * @param origin the origin string of the local emulator started via firebase tools
+   * "http://10.0.0.8:1337".
+   */
+  useFunctionsEmulator(origin: string): Promise<null> {
+    return this.nativeModule.useFunctionsEmulator(origin);
+  }
+}

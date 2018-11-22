@@ -1,4 +1,4 @@
-
+// Copyright 2018-present 650 Industries. All rights reserved.
 
 #import <EXFirebasePerformance/EXFirebasePerformance.h>
 #import <FirebasePerformance/FIRPerformance.h>
@@ -56,10 +56,10 @@ EX_EXPORT_MODULE(ExpoFirebasePerformance);
 }
 
 EX_EXPORT_METHOD_AS(setPerformanceCollectionEnabled,
-                    setPerformanceCollectionEnabled:(BOOL *)enabled
+                    setPerformanceCollectionEnabled:(NSNumber *)enabled
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
-  [FIRPerformance sharedInstance].dataCollectionEnabled = (BOOL)enabled;
+  [FIRPerformance sharedInstance].dataCollectionEnabled = [enabled boolValue];
   resolve(@([FIRPerformance sharedInstance].dataCollectionEnabled));
 }
 
@@ -68,7 +68,7 @@ EX_EXPORT_METHOD_AS(startTrace,
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
   [[self getOrCreateTrace:identifier] start];
-  resolve(nil);
+  resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(stopTrace,
@@ -77,7 +77,7 @@ EX_EXPORT_METHOD_AS(stopTrace,
                     rejecter:(EXPromiseRejectBlock)reject) {
   [[self getOrCreateTrace:identifier] stop];
   [_traces removeObjectForKey:identifier];
-  resolve(nil);
+  resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(getTraceAttribute,
@@ -113,7 +113,7 @@ EX_EXPORT_METHOD_AS(incrementTraceMetric,
                     rejecter:(EXPromiseRejectBlock)reject) {
   int64_t byInt = [incrementBy intValue];
   [[self getOrCreateTrace:identifier] incrementMetric:metricName byInt:byInt];
-  resolve(nil);
+  resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(putTraceAttribute,
@@ -140,7 +140,7 @@ EX_EXPORT_METHOD_AS(putTraceMetric,
                     rejecter:(EXPromiseRejectBlock)reject) {
   int64_t byInt = [value intValue];
   [[self getOrCreateTrace:identifier] setIntValue:byInt forMetric:attribute];
-  resolve(nil);
+  resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(removeTraceAttribute,
@@ -149,7 +149,7 @@ EX_EXPORT_METHOD_AS(removeTraceAttribute,
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
   [[self getOrCreateTrace:identifier] removeAttribute:attribute];
-  resolve(nil);
+  resolve([NSNull null]);
 }
 
 /**
@@ -162,7 +162,7 @@ EX_EXPORT_METHOD_AS(startHttpMetric,
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
   [[self getOrCreateHttpMetric:url httpMethod:httpMethod] start];
-  resolve(nil);
+  resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(stopHttpMetric,
@@ -172,7 +172,7 @@ EX_EXPORT_METHOD_AS(stopHttpMetric,
                     rejecter:(EXPromiseRejectBlock)reject) {
   [[self getOrCreateHttpMetric:url httpMethod:httpMethod] stop];
   [_httpMetrics removeObjectForKey:[NSString stringWithFormat:@"%@%@", url, httpMethod]];
-  resolve(nil);
+  resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(getHttpMetricAttribute,
@@ -217,7 +217,7 @@ EX_EXPORT_METHOD_AS(removeHttpMetricAttribute,
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
   [[self getOrCreateHttpMetric:url httpMethod:httpMethod] removeAttribute:attribute];
-  resolve(nil);
+  resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(setHttpMetricResponseCode,
@@ -227,7 +227,7 @@ EX_EXPORT_METHOD_AS(setHttpMetricResponseCode,
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
   [[self getOrCreateHttpMetric:url httpMethod:httpMethod] setResponseCode:[code integerValue]];
-  resolve(nil);
+  resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(setHttpMetricRequestPayloadSize,
@@ -237,7 +237,7 @@ EX_EXPORT_METHOD_AS(setHttpMetricRequestPayloadSize,
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
   [[self getOrCreateHttpMetric:url httpMethod:httpMethod] setRequestPayloadSize:[bytes longLongValue]];
-  resolve(nil);
+  resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(setHttpMetricResponseContentType,
@@ -247,7 +247,7 @@ EX_EXPORT_METHOD_AS(setHttpMetricResponseContentType,
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
   [[self getOrCreateHttpMetric:url httpMethod:httpMethod] setResponseContentType:type];
-  resolve(nil);
+  resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(setHttpMetricResponsePayloadSize,
@@ -257,12 +257,7 @@ EX_EXPORT_METHOD_AS(setHttpMetricResponsePayloadSize,
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
   [[self getOrCreateHttpMetric:url httpMethod:httpMethod] setResponsePayloadSize:[bytes longLongValue]];
-  resolve(nil);
-}
-
-+ (BOOL)requiresMainQueueSetup
-{
-  return YES;
+  resolve([NSNull null]);
 }
 
 

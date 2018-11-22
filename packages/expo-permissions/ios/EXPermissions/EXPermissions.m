@@ -38,11 +38,6 @@ EX_EXPORT_MODULE(ExpoPermissions);
   return nil;
 }
 
-- (dispatch_queue_t)methodQueue
-{
-  return dispatch_get_main_queue();
-}
-
 - (instancetype)init
 {
   if (self = [super init]) {
@@ -325,11 +320,7 @@ EX_EXPORT_METHOD_AS(askAsync,
   NSMutableArray<NSString *> *scopedPermissionsToBeAsked = [NSMutableArray new];
   NSMutableArray<NSString *> *globalPermissionsToBeAsked = [NSMutableArray new];
   NSMutableDictionary *permissions = [NSMutableDictionary new];
-  
-  if ([permissionsTypes count] != 1 && [permissionsTypes containsObject:@"location"]) {
-    return reject (@"E_PERMISSIONS_INVALID", @"iOS platform requires you to ask for Permissions.LOCATION separately.", nil);
-  }
-  
+
   for (NSString *permissionType in permissionsTypes) {
     NSMutableDictionary *permission = [[self getPermissionsForResource:permissionType] mutableCopy];
     

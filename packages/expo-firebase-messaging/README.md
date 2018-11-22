@@ -1,5 +1,7 @@
 # expo-firebase-messaging
 
+> expo-firebase is still in RC and therefore subject to breaking changings. Be sure to run `yarn upgrade` and `cd ios; pod install` when upgrading.
+
 `expo-firebase-messaging` enables cloud messaging (FCM) in your app.
 
 [**Full documentation**](https://rnfirebase.io/docs/master/messaging/introduction)
@@ -10,7 +12,9 @@ First, you need to install the package from `npm` registry.
 
 `npm install expo-firebase-messaging` or `yarn add expo-firebase-messaging`
 
-#### iOS
+### iOS
+
+#### Cocoapods
 
 If you're using Cocoapods, add the dependency to your `Podfile`:
 
@@ -20,21 +24,34 @@ pod 'EXFirebaseMessaging', path: '../node_modules/expo-firebase-messaging/ios'
 
 and run `pod install`.
 
-1. [**Setup Certificates**](https://rnfirebase.io/docs/master/messaging/ios#Setup-Certificates)
-2. [**Enable Capabilities**](https://rnfirebase.io/docs/master/messaging/ios#Enable-Capabilities)
+#### Manually
 
-You can reliably produce a `.p12` file with fastlane. 
+You could also choose install this module manually.
+
+1.  In XCode, in the project navigator, right click `Libraries` ➜ `Add Files to [your project's name]`
+2.  Go to `node_modules` ➜ `expo-firebase-messaging` and add `EXFirebaseMessaging.xcodeproj`
+3.  In XCode, in the project navigator, select your project. Add `libEXFirebaseMessaging.a` to your project's `Build Phases` ➜ `Link Binary With Libraries`
+4.  Run your project (`Cmd+R`).
+
+#### Common Setup
+
+[**Enable Capabilities in XCode**](https://rnfirebase.io/docs/master/messaging/ios#Enable-Capabilities)
+
+**Upload certs to Firebase**
+
+You can reliably produce a `.p12` file with fastlane.
 
 1. In `ios/` run `fastlane produce` - This will create an entry in the App Store. This method can cut down on reserved bundle ID errors.
 2. While still in `ios/` run `fastlane pem` - This will generate the `.p12` file and provide you with a local path to the file.
 3. You should see something like this - copy the middle file to your Firebase project's settings. You can use it as a development key if needed.
+
 ```sh
 Private key: /Users/you/Documents/yourapp/ios/production_com.company.yourapp.pkey
 p12 certificate: /Users/you/Documents/yourapp/ios/production_com.company.yourapp.p12
 PEM: /Users/you/Documents/yourapp/ios/production_com.company.yourapp.pem
 ```
 
-#### Android
+### Android
 
 1.  Append the following lines to `android/settings.gradle`:
 
@@ -63,35 +80,36 @@ PEM: /Users/you/Documents/yourapp/ios/production_com.company.yourapp.pem
     api project(':expo-firebase-app')
     ```
 3.  Update the manifest (`android/app/src/main/AndroidManifest.xml`):
-      ```xml
-      <service android:name="expo.modules.firebase.messaging.EXFirebaseMessagingService">
-          <intent-filter>
-              <action android:name="com.google.firebase.MESSAGING_EVENT" />
-          </intent-filter>
-      </service>
-      <service android:name="expo.modules.firebase.messaging.EXFirebaseInstanceIdService">
-          <intent-filter>
-              <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
-          </intent-filter>
-      </service>
-      <!--Inlcude this for Background Messages-->
-      <service android:name="expo.modules.firebase.messaging.FirebaseBackgroundMessagingService" />
-      ```
+    ```xml
+    <service android:name="expo.modules.firebase.messaging.EXFirebaseMessagingService">
+        <intent-filter>
+            <action android:name="com.google.firebase.MESSAGING_EVENT" />
+        </intent-filter>
+    </service>
+    <!--Inlcude this for Background Messages-->
+    <service android:name="expo.modules.firebase.messaging.FirebaseBackgroundMessagingService" />
+    ```
+4.  Include the module in your expo packages: `./android/app/src/main/java/host/exp/exponent/MainActivity.java`
 
-Some Unimodules are not included in the default `ExpoKit` suite, these modules will needed to be added manually.
-If your Android build cannot find the Native Modules, you can add them like this:
+    ```java
+    /*
+    * At the top of the file.
+    * This is automatically imported with Android Studio, but if you are in any other editor you will need to manually import the module.
+    */
+    import expo.modules.firebase.app.FirebaseAppPackage; // This should be here for all Expo Firebase features.
+    import expo.modules.firebase.messaging.FirebaseMessagingPackage;
 
-`./android/app/src/main/java/host/exp/exponent/MainActivity.java`
-```java
-@Override
-public List<Package> expoPackages() {
-  // Here you can add your own packages.
-  return Arrays.<Package>asList(
-    new FirebaseAppPackage(), // This should be here for all Expo Firebase features.
-    new FirebaseMessagingPackage() // Include this.
-  );
-}
-```
+    // Later in the file...
+
+    @Override
+    public List<Package> expoPackages() {
+      // Here you can add your own packages.
+      return Arrays.<Package>asList(
+        new FirebaseAppPackage(), // This should be here for all Expo Firebase features.
+        new FirebaseMessagingPackage() // Include this.
+      );
+    }
+    ```
 
 ## Usage
 
@@ -101,9 +119,6 @@ import { Text, View } from 'react-native';
 import firebase from 'expo-firebase-app';
 import { Permissions } from 'expo-permissions';
 
-// Include the module before using it.
-import 'expo-firebase-instance-id';
-import 'expo-firebase-messaging';
 import type { RemoteMessage } from 'expo-firebase-messaging';
 
 // API can be accessed with: firebase.messaging();
@@ -133,3 +148,48 @@ export default class DemoView extends React.Component {
   }
 }
 ```
+
+You can test sending messagings to your app by executing the following command in a terminal:
+```sh
+curl -X POST --header "Authorization: key=FIREBASE_SERVER_KEY" --Header "Content-Type: application/json" https://fcm.googleapis.com/fcm/send -d "{\"to\":\"DEVICE_TOKEN_ID\",\"message\":{\"body\":\"Test\"}}"
+```
+
+Just be sure to populate the command with your firebase server key and the device token ID from `firebase.iid().getToken()`
+
+
+### [Listen for FCM messages in the background](https://rnfirebase.io/docs/v5.x.x/messaging/receiving-messages#4)-(Optional)(Android-only)-Listen-for-FCM-messages-in-the-background)
+
+Android allows you to act on data-only messages when your application is closed or running in the background. This is particularly useful if you'd like to be able to show heads-up notifications to your user.
+
+1.  Ensure your manifest has the following service registered (`android/app/src/main/AndroidManifest.xml`):
+    ```xml
+    <!--Inlcude this for Background Messages-->
+    <service android:name="expo.modules.firebase.messaging.FirebaseBackgroundMessagingService" />
+    ```
+2.  Create a task handler
+
+    ```js
+    // @flow
+    import firebase from 'expo-firebase-app';
+    // Optional flow type
+    import type { RemoteMessage } from 'expo-firebase-messaging';
+
+    export default async (message: RemoteMessage) => {
+      // handle your message
+
+      return Promise.resolve();
+    };
+    ```
+
+    > This handler method must return a promise and resolve within 60 seconds.
+
+3.  Register the background handler in your Expo app (`App.js`)
+
+    ```js
+    import { AppRegistry } from 'react-native';
+    import messageTask from './messageTask';
+
+    AppRegistry.registerHeadlessTask('FirebaseBackgroundMessage', () => messageTask);
+    ```
+
+    > The name **`"FirebaseBackgroundMessage"`** is very important.

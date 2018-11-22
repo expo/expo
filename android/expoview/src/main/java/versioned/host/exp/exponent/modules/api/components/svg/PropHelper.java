@@ -56,8 +56,6 @@ class PropHelper {
         return inputMatrixDataSize;
     }
 
-    static private final Pattern percentageRegExp = Pattern.compile("^(-?\\d+(?:\\.\\d+)?)%$");
-
     /**
      * Converts length string into px / user units
      * in the current user coordinate system
@@ -152,16 +150,79 @@ class PropHelper {
             }
         }
     }
-
     /**
-     * Matches if the `string` is percentage-like.
+     * Converts SVGLength into px / user units
+     * in the current user coordinate system
      *
-     * @param string percentage string
-     * @return if `string` is percentage-like.
+     * @param length     length string
+     * @param relative   relative size for percentages
+     * @param offset     offset for all units
+     * @param scale      scaling parameter
+     * @param fontSize   current font size
+     * @return value in the current user coordinate system
      */
+    static double fromRelative(SVGLength length, double relative, double offset, double scale, double fontSize) {
+        /*
+            TODO list
 
-    static boolean isPercentage(String string) {
-        return percentageRegExp.matcher(string).matches();
+            unit  relative to
+            em    font size of the element
+            ex    x-height of the element’s font
+            ch    width of the "0" (ZERO, U+0030) glyph in the element’s font
+            rem   font size of the root element
+            vw    1% of viewport’s width
+            vh    1% of viewport’s height
+            vmin  1% of viewport’s smaller dimension
+            vmax  1% of viewport’s larger dimension
+
+            relative-size [ larger | smaller ]
+            absolute-size: [ xx-small | x-small | small | medium | large | x-large | xx-large ]
+
+            https://www.w3.org/TR/css3-values/#relative-lengths
+            https://www.w3.org/TR/css3-values/#absolute-lengths
+            https://drafts.csswg.org/css-cascade-4/#computed-value
+            https://drafts.csswg.org/css-fonts-3/#propdef-font-size
+            https://drafts.csswg.org/css2/fonts.html#propdef-font-size
+        */
+        SVGLengthUnitType unitType = length.unit;
+        double value = length.value;
+        double unit = 1;
+        switch (unitType) {
+            case SVG_LENGTHTYPE_NUMBER:
+            case SVG_LENGTHTYPE_PX:
+                break;
+
+            case SVG_LENGTHTYPE_PERCENTAGE:
+                return value / 100 * relative + offset;
+
+            case SVG_LENGTHTYPE_EMS:
+                unit = fontSize;
+                break;
+            case SVG_LENGTHTYPE_EXS:
+                unit = fontSize / 2;
+                break;
+
+            case SVG_LENGTHTYPE_CM:
+                unit = 35.43307;
+                break;
+            case SVG_LENGTHTYPE_MM:
+                unit = 3.543307;
+                break;
+            case SVG_LENGTHTYPE_IN:
+                unit = 90;
+                break;
+            case SVG_LENGTHTYPE_PT:
+                unit = 1.25;
+                break;
+            case SVG_LENGTHTYPE_PC:
+                unit = 15;
+                break;
+
+            default:
+            case SVG_LENGTHTYPE_UNKNOWN:
+                return value * scale + offset;
+        }
+        return value * unit * scale + offset;
     }
 
     static class PathParser {
@@ -177,7 +238,7 @@ class PropHelper {
         private float mPenDownY;
         private float mPivotX = 0f;
         private float mPivotY = 0f;
-        private float mScale = 1f;
+        private final float mScale;
         private boolean mValid = true;
         private boolean mPendDownSet = false;
 
@@ -285,7 +346,7 @@ class PropHelper {
             }
         }
 
-        public Path getPath() {
+        Path getPath() {
             mPath = new Path();
             mBezierCurves = Arguments.createArray();
             mMatcher = PATH_REG_EXP.matcher(DECIMAL_REG_EXP.matcher(mString).replaceAll("$1,"));
@@ -338,8 +399,8 @@ class PropHelper {
         }
 
         private void moveTo(float x, float y) {
-            mPivotX = mPenX = x;
-            mPivotY = mPenY = y;
+            mPenDownX = mPivotX = mPenX = x;
+            mPenDownY = mPivotY = mPenY = y;
             mPath.moveTo(x * mScale, y * mScale);
 
             mLastStartPoint = getPointMap(x ,y);
@@ -562,7 +623,7 @@ class PropHelper {
                 arc -= Math.PI * 2;
             }
 
-            int n = (int) Math.ceil(Math.abs(round(arc / (Math.PI / 2), 4)));
+            int n = (int) Math.ceil(Math.abs(round(arc / (Math.PI / 2))));
 
             float step = arc / n;
             float k = (float) ((4 / 3.0) * Math.tan(step / 4));
@@ -600,8 +661,8 @@ class PropHelper {
             }
         }
 
-        private double round(double val, int sigDig) {
-            double multiplier = Math.pow(10, sigDig);
+        private double round(double val) {
+            double multiplier = Math.pow(10, 4);
             return Math.round(val * multiplier) / multiplier;
         }
     }

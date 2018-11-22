@@ -91,4 +91,9 @@ EX_EXPORT_SCOPED_MODULE(ExponentUtil, UtilService);
   return [_kernelUtilService currentViewController];
 }
 
+- (nullable NSDictionary *)launchOptions
+{
+  return [_kernelUtilService launchOptions];
+}
+
 @end

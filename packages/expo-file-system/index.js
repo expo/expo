@@ -1,5 +1,5 @@
 module.exports = {
   get FileSystem() {
-    return require('./FileSystem');
+    return require('./src/FileSystem');
   },
 };

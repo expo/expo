@@ -32,7 +32,11 @@ export type NaturalSize = {
   orientation: 'portrait' | 'landscape';
 };
 
-type ResizeMode = 'contain' | 'cover' | 'stretch';
+enum ResizeMode {
+  CONTAIN = 'contain',
+  COVER = 'cover',
+  STRETCH = 'stretch',
+}
 
 type ReadyForDisplayEvent = {
   naturalSize: NaturalSize;
@@ -60,7 +64,9 @@ type Props = {
 
   // UI stuff
   useNativeControls?: boolean;
-  resizeMode?: ResizeMode;
+  // NOTE(ide): This should just be ResizeMode. We have the explicit strings for now since we don't
+  // currently export the ResizeMode enum.
+  resizeMode?: ResizeMode | 'stretch' | 'cover' | 'contain';
   usePoster?: boolean;
 
   // Playback API
@@ -134,9 +140,9 @@ const ExpoVideoManagerConstants = NativeModules.UIManager.ExponentVideo
   : NativeModules.ExponentVideoManager;
 
 export default class Video extends React.Component<Props, State> implements Playback {
-  static RESIZE_MODE_CONTAIN = 'contain';
-  static RESIZE_MODE_COVER = 'cover';
-  static RESIZE_MODE_STRETCH = 'stretch';
+  static RESIZE_MODE_CONTAIN = ResizeMode.CONTAIN;
+  static RESIZE_MODE_COVER = ResizeMode.COVER;
+  static RESIZE_MODE_STRETCH = ResizeMode.STRETCH;
 
   static IOS_FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT = IOS_FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT;
   static IOS_FULLSCREEN_UPDATE_PLAYER_DID_PRESENT = IOS_FULLSCREEN_UPDATE_PLAYER_DID_PRESENT;
@@ -430,12 +436,12 @@ export default class Video extends React.Component<Props, State> implements Play
 
     let nativeResizeMode = ExpoVideoManagerConstants.ScaleNone;
     if (this.props.resizeMode) {
-      let resizeMode: ResizeMode = this.props.resizeMode;
-      if (resizeMode === Video.RESIZE_MODE_STRETCH) {
+      let resizeMode = this.props.resizeMode;
+      if (resizeMode === ResizeMode.STRETCH) {
         nativeResizeMode = ExpoVideoManagerConstants.ScaleToFill;
-      } else if (resizeMode === Video.RESIZE_MODE_CONTAIN) {
+      } else if (resizeMode === ResizeMode.CONTAIN) {
         nativeResizeMode = ExpoVideoManagerConstants.ScaleAspectFit;
-      } else if (resizeMode === Video.RESIZE_MODE_COVER) {
+      } else if (resizeMode === ResizeMode.COVER) {
         nativeResizeMode = ExpoVideoManagerConstants.ScaleAspectFill;
       }
     }

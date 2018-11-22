@@ -1,11 +1,13 @@
-
+// Copyright 2018-present 650 Industries. All rights reserved.
 
 #import <EXFirebaseInvites/EXFirebaseInvites.h>
-#import <EXFirebaseApp/EXFirebaseAppEvents.h>
 #import <EXFirebaseLinks/EXFirebaseLinks.h>
 #import <EXFirebaseApp/EXFirebaseAppUtil.h>
 #import <FirebaseInvites/FirebaseInvites.h>
 #import <EXCore/EXUtilitiesInterface.h>
+#import <EXCore/EXUtilities.h>
+
+static NSString *const INVITES_INVITATION_RECEIVED = @"Expo.Firebase.invites_invitation_received";
 
 @interface EXFirebaseInvites ()
 
@@ -15,21 +17,20 @@
 
 @end
 
-
 @implementation EXFirebaseInvites
 
-static EXFirebaseInvites *theEXFirebaseInvites = nil;
+static EXFirebaseInvites *shared = nil;
 static NSString *initialInvite = nil;
-static bool jsReady = FALSE;
+static bool jsReady = NO;
 
 + (nonnull instancetype)instance {
     // If an event comes in before the bridge has initialised the native module
     // then we create a temporary instance which handles events until the bridge
     // and JS side are ready
-    if (theEXFirebaseInvites == nil) {
-        theEXFirebaseInvites = [[EXFirebaseInvites alloc] init];
+    if (shared == nil) {
+        shared = [[EXFirebaseInvites alloc] init];
     }
-    return theEXFirebaseInvites;
+    return shared;
 }
 
 EX_EXPORT_MODULE(ExpoFirebaseInvites)
@@ -44,9 +45,8 @@ EX_EXPORT_MODULE(ExpoFirebaseInvites)
 - (id)init {
     self = [super init];
     if (self != nil) {
-        NSLog(@"Setting up EXFirebaseInvites instance");
         // Set static instance for use from AppDelegate
-        theEXFirebaseInvites = self;
+        shared = self;
     }
     return self;
 }
@@ -57,13 +57,11 @@ EX_EXPORT_MODULE(ExpoFirebaseInvites)
 
 - (BOOL)application:(UIApplication *)app
             openURL:(NSURL *)url
-            options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
+            options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options {
   return [self handleUrl:url];
 }
 
-- (BOOL)application:(UIApplication *)application
-continueUserActivity:(NSUserActivity *)userActivity
- restorationHandler:(void (^)(NSArray *))restorationHandler {
+- (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray *))restorationHandler {
   if ([userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
     return [self handleUrl:userActivity.webpageURL];
   }
@@ -102,11 +100,12 @@ continueUserActivity:(NSUserActivity *)userActivity
 EX_EXPORT_METHOD_AS(getInitialInvitation,
                     getInitialInvitation:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
-  NSURL* url = nil;
-  if (_utils.launchOptions[UIApplicationLaunchOptionsURLKey]) {
-    url = (NSURL*)_utils.launchOptions[UIApplicationLaunchOptionsURLKey];
-  } else if (_utils.launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey]) {
-    NSDictionary *dictionary = _utils.launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey];
+  NSDictionary *launchOptions = [_utils launchOptions];
+  NSURL *url = nil;
+  if (launchOptions[UIApplicationLaunchOptionsURLKey]) {
+    url = (NSURL*)launchOptions[UIApplicationLaunchOptionsURLKey];
+  } else if (launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey]) {
+    NSDictionary *dictionary = launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey];
     if ([dictionary[UIApplicationLaunchOptionsUserActivityTypeKey] isEqual:NSUserActivityTypeBrowsingWeb]) {
       NSUserActivity* userActivity = (NSUserActivity*) dictionary[@"UIApplicationLaunchOptionsUserActivityKey"];
       url = userActivity.webpageURL;
@@ -133,9 +132,9 @@ EX_EXPORT_METHOD_AS(getInitialInvitation,
 }
 
 EX_EXPORT_METHOD_AS(sendInvitation,
-                 sendInvitation:(NSDictionary *)invitation
-                 resolve:(EXPromiseResolveBlock)resolve
-                 reject:(EXPromiseRejectBlock)reject) {
+                    sendInvitation:(NSDictionary *)invitation
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject) {
   if (!invitation[@"message"]) {
     reject(@"invites/invalid-invitation", @"The supplied invitation is missing a 'message' field", nil);
   }
@@ -143,7 +142,7 @@ EX_EXPORT_METHOD_AS(sendInvitation,
     reject(@"invites/invalid-invitation", @"The supplied invitation is missing a 'title' field", nil);
   }
   id<FIRInviteBuilder> inviteDialog = [FIRInvites inviteDialog];
-  [inviteDialog setInviteDelegate: self];
+  [inviteDialog setInviteDelegate:self];
   [inviteDialog setMessage:invitation[@"message"]];
   [inviteDialog setTitle:invitation[@"title"]];
   
@@ -170,28 +169,28 @@ EX_EXPORT_METHOD_AS(sendInvitation,
   _invitationsResolver = resolve;
   
   // Open the invitation dialog
-  dispatch_async(dispatch_get_main_queue(), ^{
+  [EXUtilities performSynchronouslyOnMainThread:^{
     [inviteDialog open];
-  });
+  }];
 }
 
 EX_EXPORT_METHOD_AS(jsInitialised,
-                 jsInitialised:(EXPromiseResolveBlock)resolve
-                 rejecter:(EXPromiseRejectBlock)reject) {
-  jsReady = TRUE;
-  resolve(nil);
+                    jsInitialised:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject) {
+  jsReady = YES;
+  resolve([NSNull null]);
 }
 
 // ** Start internals **
 - (BOOL)handleUrl:(NSURL *)url {
-  return [FIRInvites handleUniversalLink:url completion:^(FIRReceivedInvite * _Nullable receivedInvite, NSError * _Nullable error) {
+  return [FIRInvites handleUniversalLink:url completion:^(FIRReceivedInvite *_Nullable receivedInvite, NSError *_Nullable error) {
     if (error) {
       NSLog(@"Failed to handle invitation: %@", [error localizedDescription]);
     } else if (receivedInvite && receivedInvite.inviteId) {
-      [self sendJSEvent:self.eventEmitter name:INVITES_INVITATION_RECEIVED body:@{
-                                                                                  @"deepLink": receivedInvite.deepLink,
-                                                                                  @"invitationId": receivedInvite.inviteId,
-                                                                                  }];
+      [self sendJSEvent:_eventEmitter name:INVITES_INVITATION_RECEIVED body:@{
+                                                                              @"deepLink": receivedInvite.deepLink,
+                                                                              @"invitationId": receivedInvite.inviteId,
+                                                                              }];
     } else {
       [[EXFirebaseLinks instance] sendLink:receivedInvite.deepLink];
     }
@@ -210,6 +209,8 @@ EX_EXPORT_METHOD_AS(jsInitialised,
   }
 }
 
+#pragma mark - EXEventEmitter
+
 - (NSArray<NSString *> *)supportedEvents {
   return @[INVITES_INVITATION_RECEIVED];
 }
@@ -218,13 +219,10 @@ EX_EXPORT_METHOD_AS(jsInitialised,
   
 }
 
-- (void)stopObserving {
-
-}
-
-+ (BOOL)requiresMainQueueSetup
+- (void)stopObserving
 {
-  return YES;
+  
 }
+
 
 @end

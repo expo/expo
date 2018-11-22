@@ -11,27 +11,27 @@
 
 @implementation RNSVGCircle
 
-- (void)setCx:(NSString *)cx
+- (void)setCx:(RNSVGLength *)cx
 {
-    if (cx == _cx) {
+    if ([cx isEqualTo:_cx]) {
         return;
     }
     [self invalidate];
     _cx = cx;
 }
 
-- (void)setCy:(NSString *)cy
+- (void)setCy:(RNSVGLength *)cy
 {
-    if (cy == _cy) {
+    if ([cy isEqualTo:_cy]) {
         return;
     }
     [self invalidate];
     _cy = cy;
 }
 
-- (void)setR:(NSString *)r
+- (void)setR:(RNSVGLength *)r
 {
-    if (r == _r) {
+    if ([r isEqualTo:_r]) {
         return;
     }
     [self invalidate];
@@ -44,7 +44,7 @@
     CGFloat cx = [self relativeOnWidth:self.cx];
     CGFloat cy = [self relativeOnHeight:self.cy];
     CGFloat r = [self relativeOnOther:self.r];
-    CGPathAddArc(path, nil, cx, cy, r, 0, 2 * M_PI, NO);
+    CGPathAddArc(path, nil, cx, cy, r, 0, 2 * (CGFloat)M_PI, NO);
     return (CGPathRef)CFAutorelease(path);
 }
 

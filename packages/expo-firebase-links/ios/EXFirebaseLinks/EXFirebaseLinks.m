@@ -1,11 +1,12 @@
-
+// Copyright 2018-present 650 Industries. All rights reserved.
 
 #import <EXFirebaseLinks/EXFirebaseLinks.h>
 
 #import <Firebase.h>
-#import <EXFirebaseApp/EXFirebaseAppEvents.h>
 #import <EXFirebaseApp/EXFirebaseAppUtil.h>
 #import <EXCore/EXUtilitiesInterface.h>
+
+static NSString *const LINKS_LINK_RECEIVED = @"Expo.Firebase.links_link_received";
 
 @interface EXFirebaseLinks ()
 
@@ -17,18 +18,18 @@
 
 @implementation EXFirebaseLinks
 
-static EXFirebaseLinks *theEXFirebaseLinks = nil;
+static EXFirebaseLinks *shared = nil;
 static NSString *initialLink = nil;
-static bool jsReady = FALSE;
+static bool jsReady = NO;
 
 + (nonnull instancetype)instance {
     // If an event comes in before the bridge has initialised the native module
     // then we create a temporary instance which handles events until the bridge
     // and JS side are ready
-    if (theEXFirebaseLinks == nil) {
-        theEXFirebaseLinks = [[EXFirebaseLinks alloc] init];
+    if (shared == nil) {
+        shared = [[EXFirebaseLinks alloc] init];
     }
-    return theEXFirebaseLinks;
+    return shared;
 }
 
 EX_EXPORT_MODULE(ExpoFirebaseLinks);
@@ -46,11 +47,12 @@ EX_EXPORT_MODULE(ExpoFirebaseLinks);
     if (self != nil) {
         NSLog(@"Setting up EXFirebaseLinks instance");
         // Set static instance for use from AppDelegate
-        theEXFirebaseLinks = self;
+        shared = self;
     }
     return self;
 }
 
+// TODO: Bacon: Does this get called?
 - (void)dealloc {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
@@ -65,7 +67,7 @@ EX_EXPORT_MODULE(ExpoFirebaseLinks);
 FIRDynamicLink *dynamicLink = [[FIRDynamicLinks dynamicLinks] dynamicLinkFromCustomSchemeURL:url];
   if (dynamicLink && dynamicLink.url) {
     NSURL* url = dynamicLink.url;
-    [self sendJSEvent:self.eventEmitter name:LINKS_LINK_RECEIVED body:url.absoluteString];
+    [self sendJSEvent:_eventEmitter name:LINKS_LINK_RECEIVED body:url.absoluteString];
     return YES;
   }
   return NO;
@@ -77,10 +79,10 @@ continueUserActivity:(NSUserActivity *)userActivity
   if ([userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
     return [[FIRDynamicLinks dynamicLinks]
             handleUniversalLink:userActivity.webpageURL
-            completion:^(FIRDynamicLink * _Nullable dynamicLink, NSError * _Nullable error) {
+            completion:^(FIRDynamicLink *_Nullable dynamicLink, NSError *_Nullable error) {
               if (dynamicLink && dynamicLink.url && error == nil) {
-                NSURL* url = dynamicLink.url;
-                [self sendJSEvent:self.eventEmitter name:LINKS_LINK_RECEIVED body:url.absoluteString];
+                NSURL *url = dynamicLink.url;
+                [self sendJSEvent:_eventEmitter name:LINKS_LINK_RECEIVED body:url.absoluteString];
               } else {
                 NSLog(@"Failed to handle universal link: %@", userActivity.webpageURL);
               }
@@ -93,7 +95,7 @@ continueUserActivity:(NSUserActivity *)userActivity
 // *******************************************************
 
 - (void)sendLink:(NSString *)link {
-  [self sendJSEvent:self.eventEmitter name:LINKS_LINK_RECEIVED body:link];
+  [self sendJSEvent:_eventEmitter name:LINKS_LINK_RECEIVED body:link];
 }
 
 // ** Start methods **
@@ -154,36 +156,39 @@ EX_EXPORT_METHOD_AS(createShortDynamicLink,
 EX_EXPORT_METHOD_AS(getInitialLink,
                     getInitialLink:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
-  // if (_utils.launchOptions[UIApplicationLaunchOptionsURLKey]) {
-  //   NSURL* url = (NSURL*)_utils.launchOptions[UIApplicationLaunchOptionsURLKey];
-  //   FIRDynamicLink *dynamicLink = [[FIRDynamicLinks dynamicLinks] dynamicLinkFromCustomSchemeURL:url];
-  //   resolve(dynamicLink ? dynamicLink.url.absoluteString : initialLink);
-  // } else if (_utils.launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey]
-  //            && [_utils.launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey][UIApplicationLaunchOptionsUserActivityTypeKey] isEqualToString:NSUserActivityTypeBrowsingWeb]) {
-  //   NSDictionary *dictionary = _utils.launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey];
-  //   NSUserActivity* userActivity = (NSUserActivity*) dictionary[@"UIApplicationLaunchOptionsUserActivityKey"];
-  //   [[FIRDynamicLinks dynamicLinks] handleUniversalLink:userActivity.webpageURL
-  //                                            completion:^(FIRDynamicLink * _Nullable dynamicLink, NSError * _Nullable error) {
-  //                                              if (error != nil){
-  //                                                NSLog(@"Failed to handle universal link: %@", [error localizedDescription]);
-  //                                                reject(@"links/failure", @"Failed to handle universal link", error);
-  //                                              } else {
-  //                                                NSString* urlString = dynamicLink ? dynamicLink.url.absoluteString : userActivity.webpageURL.absoluteString;
-  //                                                NSLog(@"initial link is: %@", urlString);
-  //                                                resolve(urlString);
-  //                                              }
-  //                                            }];
-  // } else {
-  //   resolve(initialLink);
-  // }
+
+  NSDictionary *launchOptions = [_utils launchOptions];
+
+  if (launchOptions[UIApplicationLaunchOptionsURLKey]) {
+    NSURL *url = (NSURL*)launchOptions[UIApplicationLaunchOptionsURLKey];
+    FIRDynamicLink *dynamicLink = [[FIRDynamicLinks dynamicLinks] dynamicLinkFromCustomSchemeURL:url];
+    resolve(dynamicLink ? dynamicLink.url.absoluteString : initialLink);
+  } else if (launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey]
+             && [launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey][UIApplicationLaunchOptionsUserActivityTypeKey] isEqualToString:NSUserActivityTypeBrowsingWeb]) {
+    NSDictionary *dictionary = launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey];
+    NSUserActivity *userActivity = (NSUserActivity *) dictionary[@"UIApplicationLaunchOptionsUserActivityKey"];
+    [[FIRDynamicLinks dynamicLinks] handleUniversalLink:userActivity.webpageURL
+                                             completion:^(FIRDynamicLink * _Nullable dynamicLink, NSError * _Nullable error) {
+                                               if (error != nil){
+                                                 NSLog(@"Failed to handle universal link: %@", [error localizedDescription]);
+                                                 reject(@"links/failure", @"Failed to handle universal link", error);
+                                               } else {
+                                                 NSString* urlString = dynamicLink ? dynamicLink.url.absoluteString : userActivity.webpageURL.absoluteString;
+                                                 NSLog(@"initial link is: %@", urlString);
+                                                 resolve(urlString);
+                                               }
+                                             }];
+  } else {
+    resolve(initialLink);
+  }
   reject(@"links/failure", @"getInitialLink is not implemented in Expo-Firebase yet", nil);
 }
 
 EX_EXPORT_METHOD_AS(jsInitialised,
                     jsInitialised:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
-  jsReady = TRUE;
-  resolve(nil);
+  jsReady = YES;
+  resolve([NSNull null]);
 }
 
 // ** Start internals **
@@ -214,7 +219,7 @@ EX_EXPORT_METHOD_AS(jsInitialised,
     
     return components;
   }
-  @catch(NSException * e) {
+  @catch(NSException *e) {
     NSLog(@"error while building componets from meta data %@", e);
     @throw;
   }
@@ -322,6 +327,8 @@ EX_EXPORT_METHOD_AS(jsInitialised,
   components.socialMetaTagParameters = socialParams;
 }
 
+#pragma mark - EXEventEmitter
+
 - (NSArray<NSString *> *)supportedEvents {
   return @[LINKS_LINK_RECEIVED];
 }
@@ -330,12 +337,9 @@ EX_EXPORT_METHOD_AS(jsInitialised,
   
 }
 
-- (void)stopObserving {
+- (void)stopObserving
+{
   
-}
-
-+ (BOOL)requiresMainQueueSetup {
-  return YES;
 }
 
 

@@ -16,7 +16,7 @@ export default class EmptyProjectsNotice extends React.Component {
         <Text style={SharedStyles.noticeTitleText}>Nothing to see here, yet</Text>
 
         <Text style={SharedStyles.noticeDescriptionText}>
-          This screen is where you’ll be able to open any project you have running in your Expo XDE.
+          This screen is where you’ll be able to open any project you have running in expo-cli.
           You’ll also find your recently opened projects here.
         </Text>
 

@@ -1,13 +1,20 @@
-
+// Copyright 2018-present 650 Industries. All rights reserved.
 
 #import <EXFirebaseStorage/EXFirebaseStorage.h>
-
-#import <EXFirebaseApp/EXFirebaseAppEvents.h>
 #import <EXFirebaseApp/EXFirebaseAppUtil.h>
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <Photos/Photos.h>
 #import <Firebase.h>
 #import <EXCore/EXUtilities.h>
+
+static NSString *const STORAGE_EVENT = @"Expo.Firebase.storage_event";
+static NSString *const STORAGE_ERROR = @"Expo.Firebase.storage_error";
+
+static NSString *const STORAGE_STATE_CHANGED = @"Expo.Firebase.state_changed";
+static NSString *const STORAGE_UPLOAD_SUCCESS = @"Expo.Firebase.upload_success";
+static NSString *const STORAGE_UPLOAD_FAILURE = @"Expo.Firebase.upload_failure";
+static NSString *const STORAGE_DOWNLOAD_SUCCESS = @"Expo.Firebase.download_success";
+static NSString *const STORAGE_DOWNLOAD_FAILURE = @"Expo.Firebase.download_failure";
 
 @interface EXFirebaseStorage ()
 
@@ -25,15 +32,6 @@ EX_EXPORT_MODULE(ExpoFirebaseStorage);
 {
   _moduleRegistry = moduleRegistry;
   _eventEmitter = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXEventEmitterService)];
-}
-
-- (void)startObserving {
-  
-}
-
-- (void)stopObserving
-{
-  
 }
 
 // Run on a different thread
@@ -58,7 +56,7 @@ EX_EXPORT_METHOD_AS(delete,
     if (error != nil) {
       [self promiseRejectStorageException:reject error:error];
     } else {
-      resolve(nil);
+      resolve([NSNull null]);
     }
   }];
 }
@@ -489,10 +487,6 @@ EX_EXPORT_METHOD_AS(putFile,
            };
 }
 
-- (NSArray<NSString *> *)supportedEvents {
-  return @[STORAGE_EVENT, STORAGE_ERROR];
-}
-
 - (void)sendJSError:(NSString *)appDisplayName error:(NSError *)error path:(NSString *)path {
   NSDictionary *evt = @{@"path": path, @"message": [error debugDescription]};
   [self sendJSEvent:appDisplayName type:STORAGE_ERROR path:path title:STORAGE_ERROR props:evt];
@@ -578,9 +572,19 @@ EX_EXPORT_METHOD_AS(putFile,
   }
 }
 
-+ (BOOL)requiresMainQueueSetup
+#pragma mark - EXEventEmitter
+
+- (NSArray<NSString *> *)supportedEvents {
+  return @[STORAGE_EVENT, STORAGE_ERROR];
+}
+
+- (void)startObserving {
+  
+}
+
+- (void)stopObserving
 {
-  return YES;
+  
 }
 
 @end

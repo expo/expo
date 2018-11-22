@@ -2,12 +2,11 @@
  * @flow
  * Firestore Transaction representation wrapper
  */
+import { SharedEventEmitter } from 'expo-firebase-app';
 
-import { getNativeModule, events } from 'expo-firebase-app';
 import Transaction from './Transaction';
-import type Firestore from './';
 
-const { getAppEventName, SharedEventEmitter } = events;
+import type { Firestore } from './firestoreTypes.flow';
 
 let transactionId = 0;
 
@@ -49,7 +48,7 @@ export default class TransactionHandler {
     this._pending = {};
     this._firestore = firestore;
     SharedEventEmitter.addListener(
-      getAppEventName(this._firestore, 'firestore_transaction_event'),
+      this._firestore.getAppEventName('Expo.Firebase.firestore_transaction_event'),
       this._handleTransactionEvent.bind(this)
     );
   }
@@ -83,7 +82,7 @@ export default class TransactionHandler {
 
     // deferred promise
     return new Promise((resolve, reject) => {
-      getNativeModule(this._firestore).transactionBegin(id);
+      this._firestore.nativeModule.transactionBegin(id);
       meta.resolve = r => {
         resolve(r);
         this._remove(id);
@@ -102,7 +101,7 @@ export default class TransactionHandler {
    * @private
    */
   _remove(id) {
-    getNativeModule(this._firestore).transactionDispose(id);
+    this._firestore.nativeModule.transactionDispose(id);
     delete this._pending[id];
   }
 
@@ -190,7 +189,7 @@ export default class TransactionHandler {
     transaction._pendingResult = pendingResult;
 
     // send the buffered update/set/delete commands for native to process
-    return getNativeModule(this._firestore).transactionApplyBuffer(id, transaction._commandBuffer);
+    return this._firestore.nativeModule.transactionApplyBuffer(id, transaction._commandBuffer);
   }
 
   /**
