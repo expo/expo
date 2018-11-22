@@ -141,7 +141,7 @@ platform :android do
       project_dir: "android",
       task: "app:assemble",
       flavor: "ProdKernel",
-      build_type: "Debug",
+      build_type: build_type,
     )
   end
 
