@@ -1,8 +1,7 @@
 // @flow
 
 import { Platform } from 'react-native';
-import { NativeModulesProxy } from 'expo-core';
-const { ExponentPrint } = NativeModulesProxy;
+import ExponentPrint from './ExponentPrint';
 
 type PrintOptions = {
   uri: string,
@@ -41,6 +40,9 @@ type FilePrintResult = {
 export const Orientation: OrientationConstant = ExponentPrint.Orientation;
 
 export async function printAsync(options: PrintOptions): Promise<void> {
+  if (Platform.OS === 'web') {
+    return ExponentPrint.print(options);
+  }
   if (!options.uri && !options.html && (Platform.OS === 'ios' && !options.markupFormatterIOS)) {
     throw new Error('Must provide either `html` or `uri` to print');
   }
@@ -51,11 +53,11 @@ export async function printAsync(options: PrintOptions): Promise<void> {
 }
 
 export async function selectPrinterAsync(): Promise<SelectResult> {
-  if (Platform.OS === 'ios') {
+  if (ExponentPrint.selectPrinter) {
     return ExponentPrint.selectPrinter();
-  } else {
-    throw new Error('Selecting the printer in advance is not available on Android.');
   }
+
+  throw new Error(`Selecting the printer in advance is not available on ${Platform.OS}`);
 }
 
 export async function printToFileAsync(options: FilePrintOptions = {}): Promise<FilePrintResult> {
