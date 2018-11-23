@@ -1,50 +1,55 @@
 import { Constants } from 'expo-constants';
-import { NativeModules, Platform } from 'react-native';
+import { NativeModules } from 'react-native';
+import UnsupportedError from './UnsupportedError';
 
-const Google = NativeModules.ExponentGoogle;
+const {
+  ExponentGoogle: Google = {
+    get name() {
+      return 'ExponentGoogle';
+    },
+  },
+} = NativeModules;
 
 type LogInConfig = {
-  androidClientId?: string,
-  androidStandaloneAppClientId?: string,
-  iosClientId?: string,
-  iosStandaloneAppClientId?: string,
-  webClientId?: string,
-  clientId?: string,
-  behavior?: 'system' | 'web',
-  scopes?: string[],
+  androidClientId?: string;
+  androidStandaloneAppClientId?: string;
+  iosClientId?: string;
+  iosStandaloneAppClientId?: string;
+  webClientId?: string;
+  clientId?: string;
+  behavior?: 'system' | 'web';
+  scopes?: string[];
 };
 
 type LogInResult =
   | {
-      type: 'cancel',
+      type: 'cancel';
     }
   | {
-      type: 'success',
-      accessToken?: string,
-      idToken: string | null,
-      refreshToken: string | null,
-      serverAuthCode: string | null,
+      type: 'success';
+      accessToken?: string;
+      idToken: string | null;
+      refreshToken: string | null;
+      serverAuthCode: string | null;
       user: {
-        id?: string,
-        name?: string,
-        givenName?: string,
-        familyName?: string,
-        photoUrl?: string,
-        email?: string,
-      },
+        id?: string;
+        name?: string;
+        givenName?: string;
+        familyName?: string;
+        photoUrl?: string;
+        email?: string;
+      };
     };
 
 export async function logInAsync(config: LogInConfig): Promise<LogInResult> {
+  if (!Google.logInAsync) {
+    throw new UnsupportedError('Google', 'logInAsync');
+  }
   let behavior = config.behavior;
-  if (!behavior) {
-    behavior = 'system';
-  }
-
   // Only standalone apps can use system login.
-  if (Constants.appOwnership !== 'standalone' && (behavior === 'system' && Platform.OS === "android") ) {
-      behavior = 'web';
+  if (Constants.appOwnership !== 'standalone' || !behavior) {
+    behavior = 'web';
   }
-  
 
   let scopes = config.scopes;
   if (!scopes) {
