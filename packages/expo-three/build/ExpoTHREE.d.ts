@@ -1,0 +1,12 @@
+import '@expo/browser-polyfill';
+export declare const AR: any;
+export declare const Nodes: any;
+export declare const utils: any;
+export * from './ExpoTHREE.legacy';
+export * from './loaders';
+export { default as WebGLTexture } from './WebGLTexture';
+export { default as CubeTexture } from './CubeTexture';
+export { default as Renderer } from './Renderer';
+export { default as parseAsync } from './parseAsync';
+export { default as suppressExpoWarnings } from './suppressWarnings';
+export { default as loadCubeTextureAsync } from './loadCubeTextureAsync';

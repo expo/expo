@@ -1,5 +1,5 @@
 import { Matrix4x4 } from '../commons';
-declare type ARMatrices = {
+export declare type ARMatrices = {
     viewMatrix: Matrix4x4;
     projectionMatrix: Matrix4x4;
     /**
@@ -16,4 +16,3 @@ declare type ARMatrices = {
  * @returns A promise resolving to {@link ARMatrices} (matrices describing device perspective)
  */
 export declare function getMatricesAsync(near: number, far: number): Promise<ARMatrices>;
-export {};

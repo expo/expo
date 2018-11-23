@@ -1,5 +1,5 @@
 import { Vector2, Anchor, Matrix4x4 } from '../commons';
-declare type HitTest = {
+export declare type HitTest = {
     /**
      * The position and orientation of the hit test result relative to the world coordinate system.
      */
@@ -76,4 +76,3 @@ export declare enum HitTestType {
  * @returns a promise resolving to list of results, sorted from nearest to farthest
  */
 export declare function performHitTestAsync(point: Vector2, types?: Array<HitTestType>): Promise<HitTest[]>;
-export {};

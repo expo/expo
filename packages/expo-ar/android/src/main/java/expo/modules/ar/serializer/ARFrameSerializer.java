@@ -107,7 +107,7 @@ public class ARFrameSerializer {
     Bundle output = new Bundle();
 
     output.putInt("id", plane.hashCode());
-    output.putFloatArray("transformWorld", ARSerializerCommons.serializePose(plane.getCenterPose()));
+    output.putFloatArray("worldTransform", ARSerializerCommons.serializePose(plane.getCenterPose()));
 
     output.putParcelable("center", encodeVec3(plane.getCenterPose().getTranslation()));
 

@@ -1,59 +1,59 @@
 {
   "name": "expo-three",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Utilities for using THREE.js on Expo",
+  "main": "build/ExpoTHREE.js",
+  "types": "build/AR.d.ts",
   "files": [
-    "src"
+    "src",
+    "build"
   ],
-  "homepage": "https://github.com/expo/expo-three#readme",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/expo/expo-three.git"
-  },
-  "bugs": {
-    "url": "https://github.com/expo/expo-three/issues"
-  },
-  "main": "src/ExpoTHREE.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint .",
-    "prettier": "eslint . --fix"
-  },
-  "directories": {
-    "src": "src"
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "test": "expo-module test",
+    "postinstall": "expo-module postinstall",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
   },
   "keywords": [
+    "react-native",
     "expo",
     "three.js",
     "graphics",
     "opengl",
     "gl",
-    "arkit"
+    "ar",
+    "arkit",
+    "arcore"
   ],
-  "author": "Nikhilesh Sigatapu",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/expo/expo-three.git"
+  },
+  "author": "650 Industries, Inc.",
   "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/expo/expo-three/issues"
+  },
+  "homepage": "https://github.com/expo/expo-three#readme",
+  "jest": {
+    "preset": "expo-module-scripts"
+  },
+  "peerDependencies": {
+    "expo-ar": "~1.0.0",
+    "react": "16.5.0",
+    "react-native": "^0.57.1",
+    "three": "0.98.0"
+  },
   "dependencies": {
-    "@expo/browser-polyfill": "^0.0.0-alpha.4",
     "color-temperature": "0.2.7",
     "expo-asset-utils": "^0.0.4-alpha.2"
   },
-  "peerDependencies": {
-    "react-native": "*",
-    "three": "0.96.0"
-  },
   "devDependencies": {
-    "babel-jest": "^23.0.1",
-    "babel-preset-expo": "^5.0.0",
-    "babel-preset-react-native": "^4.0.0",
-    "eslint": "^4.19.1",
-    "eslint-config-react-native-prettier": "^1.0.1",
-    "expo-ar": "^1.0.0",
-    "flow-bin": "^0.26.0",
-    "jest": "^23.1.0",
-    "prettier": "^1.13.5",
-    "three": "0.96.0"
-  },
-  "eslintConfig": {
-    "extends": "expo"
+    "@types/three": "^0.93.10",
+    "expo-module-scripts": "^1.0.0",
+    "three": "^0.98.0"
   }
 }

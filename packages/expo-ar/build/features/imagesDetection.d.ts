@@ -1,4 +1,4 @@
-declare type DetectionImage = {
+export declare type DetectionImage = {
     uri: string;
     width: number;
     name?: string;
@@ -10,4 +10,3 @@ declare type DetectionImage = {
 export declare function setDetectionImagesAsync(images: {
     [name: string]: DetectionImage;
 }): Promise<void>;
-export {};

@@ -1,6 +1,6 @@
 import { NativeAR } from '../NativeAR';
 
-type DetectionImage = {
+export type DetectionImage = {
   uri: string;
   width: number;
   name?: string;

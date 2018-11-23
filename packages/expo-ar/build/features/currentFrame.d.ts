@@ -10,7 +10,7 @@ export declare enum FrameAttribute {
     LightEstimation = "lightEstimation",
     CapturedDepthData = "capturedDepthData"
 }
-declare type ARFrameAttributes = {
+export declare type ARFrameAttributes = {
     [FrameAttribute.Anchors]?: {
         ARFaceTrackingConfiguration?: {
             geometry?: boolean;
@@ -18,16 +18,17 @@ declare type ARFrameAttributes = {
         };
     };
     [FrameAttribute.RawFeaturePoints]?: boolean;
+    [FrameAttribute.Planes]?: boolean;
     [FrameAttribute.LightEstimation]?: boolean;
     [FrameAttribute.CapturedDepthData]?: boolean;
 };
-declare type RawFeaturePoint = {
+export declare type RawFeaturePoint = {
     x: number;
     y: number;
     z: number;
     id: string;
 };
-declare type LightEstimation = {
+export declare type LightEstimation = {
     ambientIntensity: number;
     ambientColorTemperature: number;
     primaryLightDirection?: Vector3;
@@ -50,7 +51,7 @@ export declare type CameraCalibrationData = {
     inverseLensDistortionLookupTable: any;
     lensDistortionCenter: Vector3;
 };
-declare type CapturedDepthData = {
+export declare type CapturedDepthData = {
     timestamp: number;
     depthDataQuality: DepthDataQuality;
     depthDataAccuracy: DepthDataAccuracy;
@@ -62,10 +63,10 @@ export declare enum PlaneType {
     HORIZONTAL_UPWARD_FACING = "horizontalUpwardFacing",
     HORIZONTAL_DOWNWARD_FACING = "horizontalDownwardFacing"
 }
-declare type Plane = {
+export declare type Plane = {
     id: number;
-    transformWorld: Matrix4x4;
-    extend: {
+    worldTransform: Matrix4x4;
+    extent: {
         width: number;
         length: number;
     };
@@ -78,7 +79,7 @@ declare type Plane = {
     planeType: PlaneType;
     anchors?: Anchor[];
 };
-declare type ARFrame = {
+export declare type ARFrame = {
     timestamp: number;
     [FrameAttribute.Anchors]?: Anchor[] | null;
     [FrameAttribute.RawFeaturePoints]?: RawFeaturePoint[] | null;
@@ -91,4 +92,3 @@ declare type ARFrame = {
  * @param attributes Specification which data to query from frame.
  */
 export declare function getCurrentFrameAsync(attributes: ARFrameAttributes): Promise<ARFrame>;
-export {};

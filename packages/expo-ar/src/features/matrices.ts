@@ -1,7 +1,7 @@
 import { NativeAR } from '../NativeAR';
 import { Matrix4x4 } from '../commons';
 
-type ARMatrices = {
+export type ARMatrices = {
   viewMatrix: Matrix4x4,
   projectionMatrix: Matrix4x4,
 

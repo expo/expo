@@ -1,7 +1,7 @@
 import { NativeAR } from '../NativeAR';
 import { Vector2, Anchor, Matrix4x4 } from '../commons';
 
-type HitTest = {
+export type HitTest = {
   /**
    * The position and orientation of the hit test result relative to the world coordinate system.
    */

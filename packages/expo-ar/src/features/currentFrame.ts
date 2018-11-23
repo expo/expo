@@ -19,7 +19,7 @@ export enum FrameAttribute {
   CapturedDepthData = 'capturedDepthData',
 }
 
-type ARFrameAttributes = {
+export type ARFrameAttributes = {
   [FrameAttribute.Anchors]?: {
     ARFaceTrackingConfiguration?: {
       geometry?: boolean;
@@ -27,18 +27,19 @@ type ARFrameAttributes = {
     };
   };
   [FrameAttribute.RawFeaturePoints]?: boolean;
+  [FrameAttribute.Planes]?: boolean;
   [FrameAttribute.LightEstimation]?: boolean;
   [FrameAttribute.CapturedDepthData]?: boolean;
 };
 
-type RawFeaturePoint = {
+export type RawFeaturePoint = {
   x: number;
   y: number;
   z: number;
   id: string;
 };
 
-type LightEstimation = {
+export type LightEstimation = {
   ambientIntensity: number;
   ambientColorTemperature: number;
   primaryLightDirection?: Vector3;
@@ -65,7 +66,7 @@ export type CameraCalibrationData = {
   lensDistortionCenter: Vector3;
 };
 
-type CapturedDepthData = {
+export type CapturedDepthData = {
   timestamp: number;
   depthDataQuality: DepthDataQuality;
   depthDataAccuracy: DepthDataAccuracy;
@@ -79,10 +80,10 @@ export enum PlaneType {
   HORIZONTAL_DOWNWARD_FACING = 'horizontalDownwardFacing'
 };
 
-type Plane = {
+export type Plane = {
   id: number;
-  transformWorld: Matrix4x4;
-  extend: {
+  worldTransform: Matrix4x4;
+  extent: {
     width: number;
     length: number;
   };
@@ -96,7 +97,7 @@ type Plane = {
   anchors?: Anchor[];
 };
 
-type ARFrame = {
+export type ARFrame = {
   timestamp: number;
   [FrameAttribute.Anchors]?: Anchor[] | null;
   [FrameAttribute.RawFeaturePoints]?: RawFeaturePoint[] | null;
