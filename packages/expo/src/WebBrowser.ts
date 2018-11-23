@@ -1,6 +1,13 @@
 import { Linking, NativeModules, Platform } from 'react-native';
+import UnsupportedError from './UnsupportedError';
 
-const { ExponentWebBrowser } = NativeModules;
+const {
+  ExponentWebBrowser = {
+    get name() {
+      return 'ExponentWebBrowser';
+    },
+  },
+} = NativeModules;
 
 type RedirectEvent = {
   url: string;
@@ -18,15 +25,24 @@ type RedirectResult = {
 };
 
 async function openBrowserAsync(url: string): Promise<BrowserResult> {
+  if (!ExponentWebBrowser.openBrowserAsync) {
+    throw new UnsupportedError('WebBrowser', 'openBrowserAsync');
+  }
   return ExponentWebBrowser.openBrowserAsync(url);
 }
 
 function dismissBrowser(): void {
+  if (!ExponentWebBrowser.dismissBrowser) {
+    throw new UnsupportedError('WebBrowser', 'dismissBrowser');
+  }
   ExponentWebBrowser.dismissBrowser();
 }
 
 async function openAuthSessionAsync(url: string, redirectUrl: string): Promise<AuthSessionResult> {
   if (_authSessionIsNativelySupported()) {
+    if (!ExponentWebBrowser.openAuthSessionAsync) {
+      throw new UnsupportedError('WebBrowser', 'openAuthSessionAsync');
+    }
     return ExponentWebBrowser.openAuthSessionAsync(url, redirectUrl);
   } else {
     return _openAuthSessionPolyfillAsync(url, redirectUrl);
@@ -35,8 +51,14 @@ async function openAuthSessionAsync(url: string, redirectUrl: string): Promise<A
 
 function dismissAuthSession(): void {
   if (_authSessionIsNativelySupported()) {
+    if (!ExponentWebBrowser.dismissAuthSession) {
+      throw new UnsupportedError('WebBrowser', 'dismissAuthSession');
+    }
     ExponentWebBrowser.dismissAuthSession();
   } else {
+    if (!ExponentWebBrowser.dismissBrowser) {
+      throw new UnsupportedError('WebBrowser', 'dismissAuthSession');
+    }
     ExponentWebBrowser.dismissBrowser();
   }
 }
