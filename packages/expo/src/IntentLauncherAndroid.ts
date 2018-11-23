@@ -1,5 +1,13 @@
 import { NativeModules, Platform } from 'react-native';
+import UnsupportedError from './UnsupportedError';
 
+const {
+  ExponentIntentLauncher = {
+    get name() {
+      return 'ExponentIntentLauncher';
+    },
+  },
+} = NativeModules;
 /**
  * Constants are from the source code of Settings:
  * https://developer.android.com/reference/android/provider/Settings.html
@@ -106,9 +114,8 @@ export function startActivityAsync(
   data: { [key: string]: any } | null = null,
   uri: string | null = null
 ): Promise<boolean> {
-  if (Platform.OS === 'android') {
-    return NativeModules.ExponentIntentLauncher.startActivity(activity, data, uri);
-  } else {
-    return Promise.reject(new Error('Unsupported platform'));
+  if (!ExponentIntentLauncher.startActivity) {
+    throw new UnsupportedError('IntentLauncherAndroid', 'startActivityAsync');
   }
+  return ExponentIntentLauncher.startActivity(activity, data, uri);
 }
