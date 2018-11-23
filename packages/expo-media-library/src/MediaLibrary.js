@@ -1,9 +1,9 @@
 // @flow
 
 import { Platform } from 'react-native';
-import { NativeModulesProxy, EventEmitter } from 'expo-core';
+import { EventEmitter } from 'expo-core';
 
-const MediaLibrary = NativeModulesProxy.ExponentMediaLibrary;
+import MediaLibrary from './ExponentMediaLibrary';
 const eventEmitter = new EventEmitter(MediaLibrary);
 
 type MediaTypeValue = 'audio' | 'photo' | 'video' | 'unknown';
@@ -249,7 +249,10 @@ export async function createAlbumAsync(
   return MediaLibrary.createAlbumAsync(albumName, assetId, !!copyAsset);
 }
 
-export async function deleteAlbumsAsync(albums: Array<AlbumRef> | AlbumRef, assetRemove: boolean = false) {
+export async function deleteAlbumsAsync(
+  albums: Array<AlbumRef> | AlbumRef,
+  assetRemove: boolean = false
+) {
   const albumIds = arrayize(albums).map(getId);
 
   checkAlbumIds(albumIds);
@@ -302,8 +305,9 @@ export function removeAllListeners(): void {
 
 // iOS only
 export async function getMomentsAsync() {
-  if (Platform.OS === 'android') {
-    throw new Error('MediaLibrary.getMomentsAsync is not supported on Android!');
+  if (MediaLibrary.getMomentsAsync) {
+    return MediaLibrary.getMomentsAsync();
   }
-  return MediaLibrary.getMomentsAsync();
+
+  throw new Error(`MediaLibrary.getMomentsAsync is not supported on ${Platform.OS}`);
 }
