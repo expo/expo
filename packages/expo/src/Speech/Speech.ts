@@ -1,6 +1,7 @@
-import { NativeModules, NativeEventEmitter, Platform } from 'react-native';
+import { NativeEventEmitter, Platform } from 'react-native';
 
-const { ExponentSpeech } = NativeModules;
+import ExponentSpeech from './ExponentSpeech';
+
 const SpeechEventEmitter = new NativeEventEmitter(ExponentSpeech);
 
 type Options = {
@@ -70,27 +71,29 @@ export function speak(text: string, options: Options = {}) {
 }
 
 export async function isSpeakingAsync(): Promise<boolean> {
-  return await ExponentSpeech.isSpeaking();
+  return ExponentSpeech.isSpeaking();
 }
 
-export function stop() {
-  ExponentSpeech.stop();
+export function stop(): Promise<void> {
+  return ExponentSpeech.stop();
 }
 
-export function pause() {
-  if (Platform.OS === 'ios') {
-    ExponentSpeech.pause();
-  } else {
-    throw new Error('Speech.pause is not available on Android');
+export function pause(): Promise<void> {
+  if (ExponentSpeech.pause) {
+    return ExponentSpeech.pause();
   }
+
+  // TODO: Bacon: use UnsupportedError
+  throw new Error(`Speech.pause is not available on ${Platform.OS}`);
 }
 
-export function resume() {
-  if (Platform.OS === 'ios') {
-    ExponentSpeech.resume();
-  } else {
-    throw new Error('Speech.resume is not available on Android');
+export function resume(): Promise<void> {
+  if (ExponentSpeech.resume) {
+    return ExponentSpeech.resume();
   }
+
+  // TODO: Bacon: use UnsupportedError
+  throw new Error(`Speech.resume is not available on ${Platform.OS}`);
 }
 
 function setSpeakingListener(eventName, callback) {
