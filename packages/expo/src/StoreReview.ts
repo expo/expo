@@ -1,13 +1,20 @@
 import { NativeModules, Platform, Linking } from 'react-native';
 import { Constants } from 'expo-constants';
 
+const {
+  ExponentStoreReview = {
+    get name() {
+      return 'ExponentStoreReview';
+    },
+  },
+} = NativeModules;
 /*
     * Platform must be iOS
     * iOS 10.3 or greater
     * `SKStoreReviewController` class is available
 */
 export function isSupported() {
-  return Platform.OS === 'ios' && NativeModules.ExponentStoreReview.isSupported;
+  return ExponentStoreReview.isSupported && ExponentStoreReview.requestReview;
 }
 
 /*
@@ -15,7 +22,7 @@ export function isSupported() {
 */
 export function requestReview() {
   if (isSupported()) {
-    NativeModules.ExponentStoreReview.requestReview();
+    ExponentStoreReview.requestReview();
   } else {
     /*
        If StoreReview is unavailable then get the store URL from the `app.json` and open to the store.
@@ -26,7 +33,6 @@ export function requestReview() {
         .then(supported => {
           if (!supported) {
             console.log("Expo.StoreReview.requestReview(): Can't open store url: ", url);
-            return;
           } else {
             return Linking.openURL(url);
           }
