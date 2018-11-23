@@ -1,6 +1,13 @@
 import { NativeModules } from 'react-native';
-
-const { ExponentSecureStore } = NativeModules;
+import invariant from 'invariant';
+import UnsupportedError from './UnsupportedError';
+const {
+  ExponentSecureStore = {
+    get name() {
+      return 'ExponentSecureStore';
+    },
+  },
+} = NativeModules;
 
 export type KeychainAccessibilityConstant = number;
 
@@ -26,6 +33,10 @@ export async function deleteItemAsync(
   key: string,
   options: SecureStoreOptions = {}
 ): Promise<void> {
+  if (!ExponentSecureStore.deleteValueWithKeyAsync) {
+    throw new UnsupportedError('SecureStore', 'deleteItemAsync');
+  }
+
   _ensureValidKey(key);
   await ExponentSecureStore.deleteValueWithKeyAsync(key, options);
 }
@@ -34,6 +45,9 @@ export async function getItemAsync(
   key: string,
   options: SecureStoreOptions = {}
 ): Promise<string | null> {
+  if (!ExponentSecureStore.getValueWithKeyAsync) {
+    throw new UnsupportedError('SecureStore', 'getItemAsync');
+  }
   _ensureValidKey(key);
   return await ExponentSecureStore.getValueWithKeyAsync(key, options);
 }
@@ -43,6 +57,9 @@ export async function setItemAsync(
   value: string,
   options: SecureStoreOptions = {}
 ): Promise<void> {
+  if (!ExponentSecureStore.setValueWithKeyAsync) {
+    throw new UnsupportedError('SecureStore', 'setItemAsync');
+  }
   _ensureValidKey(key);
   if (!_isValidValue(value)) {
     throw new Error(
@@ -53,11 +70,10 @@ export async function setItemAsync(
 }
 
 function _ensureValidKey(key: string) {
-  if (!_isValidKey(key)) {
-    throw new Error(
-      `Invalid key provided to SecureStore. Keys must not be empty and contain only alphanumeric characters, ".", "-", and "_".`
-    );
-  }
+  invariant(
+    _isValidKey(key),
+    `Invalid key provided to SecureStore. Keys must not be empty and contain only alphanumeric characters, ".", "-", and "_".`
+  );
 }
 
 function _isValidKey(key: string) {
