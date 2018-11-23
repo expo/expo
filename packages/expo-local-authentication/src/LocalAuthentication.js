@@ -1,10 +1,8 @@
 // @flow
-
 import invariant from 'invariant';
 import { Platform } from 'react-native';
-import { NativeModulesProxy } from 'expo-core';
 
-const { ExpoLocalAuthentication: LocalAuthentication } = NativeModulesProxy;
+import LocalAuthentication from './ExpoLocalAuthentication';
 
 type LocalAuthenticationResult = { success: true } | { success: false, error: string };
 
@@ -20,7 +18,7 @@ export async function hasHardwareAsync(): Promise<boolean> {
 }
 
 export async function supportedAuthenticationTypesAsync(): Promise<Array<AuthenticationTypeType>> {
-  return await LocalAuthentication.supportedAuthenticationTypesAsync();
+  return LocalAuthentication.supportedAuthenticationTypesAsync();
 }
 
 export async function isEnrolledAsync(): Promise<boolean> {
@@ -47,6 +45,6 @@ export async function authenticateAsync(
   }
 }
 
-export function cancelAuthenticate(): void {
-  LocalAuthentication.cancelAuthenticate();
+export function cancelAuthenticate(): Promise<void> {
+  return LocalAuthentication.cancelAuthenticate();
 }
