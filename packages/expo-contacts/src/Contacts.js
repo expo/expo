@@ -2,10 +2,9 @@
 
 //TODO:Bacon: No React Native
 import { Share } from 'react-native';
-import { NativeModulesProxy, Platform } from 'expo-core';
+import { Platform } from 'expo-core';
 import UUID from 'uuid-js';
-
-const { ExpoContacts } = NativeModulesProxy;
+import ExpoContacts from './ExpoContacts';
 
 type CalendarFormatType =
   | typeof CalendarFormats.Gregorian
@@ -235,14 +234,14 @@ type Container = {
   type: ContainerType,
 };
 
-const isIos = Platform.OS === 'ios';
+const isIOS = Platform.OS === 'ios';
 
 export async function shareContactAsync(
   contactId: string,
   message: string,
   shareOptions: Object = {}
 ): Promise<any> {
-  if (isIos) {
+  if (isIOS) {
     const url = await writeContactToFileAsync({
       id: contactId,
     });
@@ -314,7 +313,7 @@ export function presentFormAsync(
   contact: ?Contact,
   formOptions: FormOptions = {}
 ): Promise<any> {
-  if (isIos) {
+  if (isIOS) {
     let adjustedOptions = formOptions;
 
     if (contactId) {
@@ -342,78 +341,76 @@ export function addExistingGroupToContainerAsync(
   groupId: string,
   containerId: string
 ): Promise<any> {
-  if (isIos) {
+  if (ExpoContacts.addExistingGroupToContainerAsync) {
     return ExpoContacts.addExistingGroupToContainerAsync(groupId, containerId);
-  } else {
-    throw new Error('Error: Contacts.addExistingGroupToContainerAsync: iOS Only');
   }
+
+  throw new Error(`Contacts.addExistingGroupToContainerAsync is not supported on ${Platform.OS}`);
 }
 
 export async function createGroupAsync(name: ?string, containerId: ?string): Promise<string> {
-  if (isIos) {
+  if (ExpoContacts.createGroupAsync) {
     name = name || UUID.create().toString();
     if (!containerId) containerId = await getDefaultContainerIdAsync();
 
     return ExpoContacts.createGroupAsync(name, containerId);
-  } else {
-    throw new Error('Error: Contacts.createGroupAsync: iOS Only');
   }
+
+  throw new Error(`Contacts.createGroupAsync is not supported on ${Platform.OS}`);
 }
 
 export function updateGroupNameAsync(groupName: string, groupId: string): Promise<any> {
-  if (isIos) {
+  if (ExpoContacts.updateGroupNameAsync) {
     return ExpoContacts.updateGroupNameAsync(groupName, groupId);
-  } else {
-    throw new Error('Error: Contacts.updateGroupNameAsync: iOS Only');
   }
+  throw new Error(`Contacts.updateGroupNameAsync is not supported on ${Platform.OS}`);
 }
 
 export function removeGroupAsync(groupId: string): Promise<any> {
-  if (isIos) {
+  if (ExpoContacts.removeGroupAsync) {
     return ExpoContacts.removeGroupAsync(groupId);
-  } else {
-    throw new Error('Error: Contacts.removeGroupAsync: iOS Only');
   }
+
+  throw new Error(`Contacts.removeGroupAsync is not supported on ${Platform.OS}`);
 }
 
 export function addExistingContactToGroupAsync(contactId: string, groupId: string): Promise<any> {
-  if (isIos) {
+  if (ExpoContacts.addExistingContactToGroupAsync) {
     return ExpoContacts.addExistingContactToGroupAsync(contactId, groupId);
-  } else {
-    throw new Error('Error: Contacts.addExistingContactToGroupAsync: iOS Only');
   }
+
+  throw new Error(`Contacts.addExistingContactToGroupAsync is not supported on ${Platform.OS}`);
 }
 
 export function removeContactFromGroupAsync(contactId: string, groupId: string): Promise<any> {
-  if (isIos) {
+  if (ExpoContacts.removeContactFromGroupAsync) {
     return ExpoContacts.removeContactFromGroupAsync(contactId, groupId);
-  } else {
-    throw new Error('Error: Contacts.removeContactFromGroupAsync: iOS Only');
   }
+
+  throw new Error(`Contacts.removeContactFromGroupAsync is not supported on ${Platform.OS}`);
 }
 
 export function getGroupsAsync(groupQuery: GroupQuery): Promise<Group[]> {
-  if (isIos) {
+  if (ExpoContacts.getGroupsAsync) {
     return ExpoContacts.getGroupsAsync(groupQuery);
-  } else {
-    throw new Error('Error: Contacts.getGroupsAsync: iOS Only');
   }
+  throw new Error(`Contacts.getGroupsAsync is not supported on ${Platform.OS}`);
 }
 
 export function getDefaultContainerIdAsync(): Promise<string> {
-  if (isIos) {
+  if (ExpoContacts.getDefaultContainerIdentifierAsync) {
     return ExpoContacts.getDefaultContainerIdentifierAsync();
-  } else {
-    throw new Error('Error: Contacts.getDefaultContainerIdAsync: iOS Only');
   }
+
+  throw new Error(`Contacts.getDefaultContainerIdAsync is not supported on ${Platform.OS}`);
 }
 
 export function getContainersAsync(containerQuery: ContainerQuery): Promise<Container[]> {
-  if (isIos) {
+  if (ExpoContacts.getContainersAsync) {
     return ExpoContacts.getContainersAsync(containerQuery);
-  } else {
-    throw new Error('Error: Contacts.getContainersAsync: iOS Only');
   }
+
+  throw new Error(`Contacts.getContainersAsync is not supported on ${Platform.OS}`);
 }
 
 // Legacy
