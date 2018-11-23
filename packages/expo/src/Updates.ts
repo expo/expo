@@ -1,17 +1,35 @@
 import { EventEmitter, EventSubscription } from 'fbemitter';
 import { DeviceEventEmitter, NativeModules } from 'react-native';
+import UnsupportedError from './UnsupportedError';
 
-const { ExponentUpdates } = NativeModules;
+const {
+  ExponentUpdates = {
+    get name() {
+      return 'ExponentUpdates';
+    },
+  },
+} = NativeModules;
 
 export function reload(): void {
+  if (!ExponentUpdates.reload) {
+    throw new UnsupportedError('Updates', 'reload');
+  }
+
   ExponentUpdates.reload();
 }
 
 export function reloadFromCache(): void {
+  if (!ExponentUpdates.reloadFromCache) {
+    throw new UnsupportedError('Updates', 'reloadFromCache');
+  }
+
   ExponentUpdates.reloadFromCache();
 }
 
 export async function checkForUpdateAsync(): Promise<Object> {
+  if (!ExponentUpdates.checkForUpdateAsync) {
+    throw new UnsupportedError('Updates', 'checkForUpdateAsync');
+  }
   const result = await ExponentUpdates.checkForUpdateAsync();
   let returnObj: any = {
     isAvailable: !!result,
@@ -23,6 +41,9 @@ export async function checkForUpdateAsync(): Promise<Object> {
 }
 
 export async function fetchUpdateAsync({ eventListener }: any = {}): Promise<Object> {
+  if (!ExponentUpdates.fetchUpdateAsync) {
+    throw new UnsupportedError('Updates', 'fetchUpdateAsync');
+  }
   let subscription;
   let result;
   if (eventListener && typeof eventListener === 'function') {
