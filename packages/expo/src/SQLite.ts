@@ -3,8 +3,15 @@ import './timer/polyfillNextTick';
 import zipObject from 'lodash.zipobject';
 import { NativeModules, Platform } from 'react-native';
 import customOpenDatabase from '@expo/websql/custom';
+import UnsupportedError from './UnsupportedError';
 
-const { ExponentSQLite } = NativeModules;
+const {
+  ExponentSQLite = {
+    get name() {
+      return 'ExponentSQLite';
+    },
+  },
+} = NativeModules;
 
 type InternalQuery = { sql: string; args: unknown[] };
 
@@ -27,6 +34,9 @@ class SQLiteDatabase {
   }
 
   exec(queries: InternalQuery[], readOnly: boolean, callback: SQLiteCallback): void {
+    if (!ExponentSQLite.exec) {
+      throw new UnsupportedError('SQLite', 'exec');
+    }
     if (this._closed) {
       throw new Error(`The SQLite database is closed`);
     }
@@ -43,6 +53,9 @@ class SQLiteDatabase {
   }
 
   close() {
+    if (!ExponentSQLite.close) {
+      throw new UnsupportedError('SQLite', 'close');
+    }
     this._closed = true;
     ExponentSQLite.close(this._name);
   }
