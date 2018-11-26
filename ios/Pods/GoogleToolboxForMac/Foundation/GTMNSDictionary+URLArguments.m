@@ -26,6 +26,9 @@
 __attribute__((visibility("default")))
     char GTMNSDictionaryURLArgumentsExportToSuppressLibToolWarning = 0;
 
+#pragma clang diagnostic push
+// Ignore all of the deprecation warnings for GTMNSString+URLArguments
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 
 @implementation NSDictionary (GTMNSDictionaryURLArgumentsAdditions)
 
@@ -75,3 +78,5 @@ GTM_METHOD_CHECK(NSString, gtm_stringByUnescapingFromURLArgument);
 }
 
 @end
+
+#pragma clang diagnostic pop

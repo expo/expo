@@ -13,6 +13,8 @@
 
 #import <EXFileSystemInterface/EXFileSystemInterface.h>
 #import <EXFileSystemInterface/EXFileSystemManagerInterface.h>
+#import <EXFileSystemInterface/EXFilePermissionModuleInterface.h>
+
 
 #import <EXCore/EXEventEmitterService.h>
 
@@ -718,24 +720,10 @@ EX_EXPORT_METHOD_AS(downloadResumablePauseAsync,
 
 - (EXFileSystemPermissionFlags)_permissionsForPath:(NSString *)path
 {
-  path = [path stringByStandardizingPath];
-  if ([path hasPrefix:[_documentDirectory stringByAppendingString:@"/"]]) {
-    return EXFileSystemPermissionRead | EXFileSystemPermissionWrite;
-  }
-  if ([path isEqualToString:_documentDirectory])  {
-    return EXFileSystemPermissionRead | EXFileSystemPermissionWrite;
-  }
-  if ([path hasPrefix:[_cachesDirectory stringByAppendingString:@"/"]]) {
-    return EXFileSystemPermissionRead | EXFileSystemPermissionWrite;
-  }
-  if ([path isEqualToString:_cachesDirectory])  {
-    return EXFileSystemPermissionRead | EXFileSystemPermissionWrite;
-  }
-  NSString *bundleDirectory = [_fileSystemManager bundleDirectoryForExperienceId:_moduleRegistry.experienceId];
-  if (bundleDirectory != nil && [path hasPrefix:[bundleDirectory stringByAppendingString:@"/"]]) {
-    return EXFileSystemPermissionRead;
-  }
-  return EXFileSystemPermissionNone;
+  return [[_moduleRegistry getModuleImplementingProtocol:@protocol(EXFilePermissionModuleInterface)]
+          getPathPermissions:(NSString *)path
+          scopedDirs:@[_documentDirectory, _cachesDirectory]
+          bundleDirectory:[_fileSystemManager bundleDirectoryForExperienceId:_moduleRegistry.experienceId]];
 }
 
 - (void)sendEventWithName:(NSString *)eventName body:(id)body
