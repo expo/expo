@@ -115,6 +115,10 @@ workflows:
       - home
       - expotools
       - client_android
+          filters:
+            branches:
+              only:
+                - master
       - client_ios
       - shell_app_sim_base_ios
       - client_android_approve_google_play:
