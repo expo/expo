@@ -33,8 +33,8 @@ export default class GeofencingScreen extends React.Component {
       initialRegion: {
         latitude: coords.latitude,
         longitude: coords.longitude,
-        latitudeDelta: 0.002,
-        longitudeDelta: 0.001,
+        latitudeDelta: 0.004,
+        longitudeDelta: 0.002,
       },
     });
   };
@@ -57,8 +57,8 @@ export default class GeofencingScreen extends React.Component {
       mapView.animateToRegion({
         latitude: coords.latitude,
         longitude: coords.longitude,
-        latitudeDelta: 0.002,
-        longitudeDelta: 0.001,
+        latitudeDelta: 0.004,
+        longitudeDelta: 0.002,
       });
     }
   };
