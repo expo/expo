@@ -19,27 +19,6 @@ import java.util.Map;
 
 import expo.adapters.react.ReactModuleRegistryProvider;
 import expo.core.interfaces.Package;
-import expo.modules.ads.admob.AdMobPackage;
-import expo.modules.appauth.AppAuthPackage;
-import expo.modules.font.FontLoaderPackage;
-import expo.modules.localauthentication.LocalAuthenticationPackage;
-import expo.modules.payments.stripe.StripePackage;
-import expo.modules.print.PrintPackage;
-import expo.modules.analytics.segment.SegmentPackage;
-import expo.modules.barcodescanner.BarCodeScannerPackage;
-import expo.modules.camera.CameraPackage;
-import expo.modules.constants.ConstantsPackage;
-import expo.modules.contacts.ContactsPackage;
-import expo.modules.facedetector.FaceDetectorPackage;
-import expo.modules.filesystem.FileSystemPackage;
-import expo.modules.gl.GLPackage;
-import expo.modules.google.signin.GoogleSignInPackage;
-import expo.modules.location.LocationPackage;
-import expo.modules.medialibrary.MediaLibraryPackage;
-import expo.modules.permissions.PermissionsPackage;
-import expo.modules.sensors.SensorsPackage;
-import expo.modules.sms.SMSPackage;
-import expo.modules.localization.LocalizationPackage;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.kernel.ExperienceId;
@@ -103,30 +82,6 @@ import versioned.host.exp.exponent.modules.universal.ScopedModuleRegistryAdapter
 import static host.exp.exponent.kernel.KernelConstants.LINKING_URI_KEY;
 
 public class ExponentPackage implements ReactPackage {
-  private static final List<Package> EXPO_MODULES_PACKAGES = Arrays.<Package>asList(
-      new CameraPackage(),
-      new AppAuthPackage(),
-      new SensorsPackage(),
-      new FileSystemPackage(),
-      new FaceDetectorPackage(),
-      new ConstantsPackage(),
-      new GLPackage(),
-      new GoogleSignInPackage(),
-      new PermissionsPackage(),
-      new SMSPackage(),
-      new PrintPackage(),
-      new MediaLibraryPackage(),
-      new SegmentPackage(),
-      new FontLoaderPackage(),
-      new LocationPackage(),
-      new ContactsPackage(),
-      new BarCodeScannerPackage(),
-      new AdMobPackage(),
-      new StripePackage(),
-      new LocalAuthenticationPackage(),
-      new LocalizationPackage()
-  );
-
   private static final String TAG = ExponentPackage.class.getSimpleName();
 
   private final boolean mIsKernel;
@@ -135,11 +90,11 @@ public class ExponentPackage implements ReactPackage {
 
   private final ScopedModuleRegistryAdapter mModuleRegistryAdapter;
 
-  private ExponentPackage(boolean isKernel, Map<String, Object> experienceProperties, JSONObject manifest) {
+  private ExponentPackage(boolean isKernel, Map<String, Object> experienceProperties, JSONObject manifest, List<Package> expoPackages) {
     mIsKernel = isKernel;
     mExperienceProperties = experienceProperties;
     mManifest = manifest;
-    mModuleRegistryAdapter = createDefaultModuleRegistryAdapterForPackages(EXPO_MODULES_PACKAGES);
+    mModuleRegistryAdapter = createDefaultModuleRegistryAdapterForPackages(expoPackages);
   }
 
   public ExponentPackage(Map<String, Object> experienceProperties, JSONObject manifest, List<Package> expoPackages, ExponentPackageDelegate delegate) {
@@ -147,9 +102,9 @@ public class ExponentPackage implements ReactPackage {
     mExperienceProperties = experienceProperties;
     mManifest = manifest;
 
-    List<Package> packages = new ArrayList<>(EXPO_MODULES_PACKAGES);
-    if (expoPackages != null) {
-      packages.addAll(expoPackages);
+    List<Package> packages = expoPackages;
+    if (packages == null) {
+       packages = ExperiencePackagePicker.packages(manifest);
     }
     // Delegate may not be null only when the app is detached
     if (delegate != null) {
@@ -159,10 +114,10 @@ public class ExponentPackage implements ReactPackage {
     }
   }
 
-  public static ExponentPackage kernelExponentPackage(JSONObject manifest) {
+  public static ExponentPackage kernelExponentPackage(JSONObject manifest, List<Package> expoPackages) {
     Map<String, Object> kernelExperienceProperties = new HashMap<>();
     kernelExperienceProperties.put(LINKING_URI_KEY, "exp://");
-    return new ExponentPackage(true, kernelExperienceProperties, manifest);
+    return new ExponentPackage(true, kernelExperienceProperties, manifest, expoPackages);
   }
 
 

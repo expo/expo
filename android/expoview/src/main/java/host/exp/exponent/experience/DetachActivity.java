@@ -31,6 +31,7 @@ public abstract class DetachActivity extends ExperienceActivity implements Expon
   public abstract String developmentUrl();
   public abstract List<String> sdkVersions();
   public abstract List<ReactPackage> reactPackages();
+  public abstract List<Package> expoPackages();
   public abstract boolean isDebug();
 
   @Override
@@ -115,12 +116,6 @@ public abstract class DetachActivity extends ExperienceActivity implements Expon
   @Override
   public boolean forceUnversioned() {
     return true;
-  }
-
-  @Override
-  public List<Package> expoPackages() {
-    // Override to add your own packages.
-    return Collections.emptyList();
   }
 
   @Override

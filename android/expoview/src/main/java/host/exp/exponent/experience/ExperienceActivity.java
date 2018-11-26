@@ -31,7 +31,6 @@ import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
-import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.Nullable;
@@ -74,12 +73,12 @@ import static host.exp.exponent.kernel.KernelConstants.MANIFEST_URL_KEY;
 
 public class ExperienceActivity extends BaseExperienceActivity implements Exponent.StartReactInstanceDelegate {
 
-  // Override
-  public List<ReactPackage> reactPackages() {
+  public List<Package> expoPackages() {
+    // Experience must pick its own modules in ExponentPackage
     return null;
   }
-  public List<Package> expoPackages() {
-    return Collections.emptyList();
+  public List<ReactPackage> reactPackages() {
+    return null;
   }
 
   @Override

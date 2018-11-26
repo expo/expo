@@ -280,7 +280,7 @@ public class Kernel extends KernelInterface {
                 .setApplication(mApplicationContext)
                 .setJSBundleFile(localBundlePath)
                 .addPackage(new MainReactPackage())
-                .addPackage(ExponentPackage.kernelExponentPackage(mExponentManifest.getKernelManifest()))
+                .addPackage(ExponentPackage.kernelExponentPackage(mExponentManifest.getKernelManifest(), HomeActivity.homeExpoPackages()))
                 .setInitialLifecycleState(LifecycleState.RESUMED);
 
             if (!KernelConfig.FORCE_NO_KERNEL_DEBUG_MODE && mExponentManifest.isDebugModeEnabled(mExponentManifest.getKernelManifest())) {
