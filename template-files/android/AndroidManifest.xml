@@ -116,7 +116,7 @@
     </activity>
 
     <activity
-      android:name=".experience.ShellAppActivity"
+      android:name=".ShellAppActivity"
       android:launchMode="singleTask"
       android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
       android:theme="@style/Theme.Exponent.Splash"

@@ -29,7 +29,6 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.LifecycleState;
-import com.facebook.react.modules.network.OkHttpClientProvider;
 import com.facebook.react.modules.network.ReactCookieJarContainer;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
@@ -40,10 +39,8 @@ import org.json.JSONObject;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -54,7 +51,6 @@ import host.exp.exponent.ExponentDevActivity;
 import host.exp.exponent.LauncherActivity;
 import host.exp.exponent.ReactNativeStaticHelpers;
 import host.exp.exponent.experience.ErrorActivity;
-import host.exp.exponent.experience.ShellAppActivity;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.experience.BaseExperienceActivity;
 import host.exp.exponent.experience.ExperienceActivity;
@@ -443,13 +439,29 @@ public class Kernel extends KernelInterface {
   }
 
   private void openShellAppActivity(boolean forceCache) {
-    Class activityClass = ShellAppActivity.class;
+    Class activityClass = null;
+    Class mainActivityClass = null;
+    Class shellAppActivityClass = null;
+    try {
+      shellAppActivityClass = Class.forName("host.exp.exponent.ShellAppActivity");
+    } catch (ClassNotFoundException e) {
+      // do nothing
+    }
+    try {
+      mainActivityClass = Class.forName("host.exp.exponent.MainActivity");
+    } catch (ClassNotFoundException e) {
+      // do nothing
+    }
+    activityClass = shellAppActivityClass;
     if (Constants.isDetached()) {
-      try {
-        activityClass = Class.forName("host.exp.exponent.MainActivity");
-      } catch (Exception e) {
+      if (mainActivityClass != null) {
+        activityClass = mainActivityClass;
+      } else {
         EXL.e(TAG, "Cannot find MainActivity, falling back to ShellAppActivity");
       }
+    }
+    if (activityClass == null) {
+      throw new IllegalStateException("Could not find activity to open (neither MainActivity nor ShellAppActivity is present).");
     }
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {

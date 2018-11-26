@@ -8,6 +8,9 @@ import android.os.Bundle;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.List;
+
+import expo.core.interfaces.Package;
 import host.exp.exponent.AppLoader;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
@@ -16,7 +19,9 @@ import host.exp.exponent.kernel.ExponentUrls;
 import host.exp.exponent.kernel.KernelConstants;
 import host.exp.expoview.Exponent;
 
-public class ShellAppActivity extends ExperienceActivity {
+public abstract class BaseShellAppActivity extends ExperienceActivity {
+
+  public abstract List<Package> expoPackages();
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
