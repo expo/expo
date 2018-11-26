@@ -30,11 +30,7 @@
     [_appManager setIsHeadless:YES];
     [_appManager setDelegate:self];
 
-    _appLoader = [[EXAppLoader alloc] initWithManifestUrl:manifestUrl];
-
-    if (fetchTimeout != nil) {
-      [_appLoader setFetchTimeout:[fetchTimeout doubleValue]];
-    }
+    _appLoader = [[EXAppLoader alloc] initWithManifestUrl:manifestUrl defaultTimeout:[fetchTimeout doubleValue]];
 
     [_appLoader setDelegate:self];
     [_appLoader requestFromCache];

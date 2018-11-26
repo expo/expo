@@ -37,6 +37,7 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 
 @property (nonatomic, assign) BOOL hasFinished;
 @property (nonatomic, assign) BOOL shouldUseCacheOnly;
+@property (nonatomic, assign) NSTimeInterval fetchTimeout;
 
 @end
 
@@ -48,6 +49,14 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
     _manifestUrl = url;
     _httpManifestUrl = [EXAppLoader _httpUrlFromManifestUrl:_manifestUrl];
     _fetchTimeout = kEXAppLoaderDefaultTimeout;
+  }
+  return self;
+}
+
+- (instancetype)initWithManifestUrl:(NSURL *)url defaultTimeout:(NSTimeInterval)defaultTimeout
+{
+  if ((self = [self initWithManifestUrl:url]) && defaultTimeout) {
+    _fetchTimeout = defaultTimeout;
   }
   return self;
 }
