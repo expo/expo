@@ -10,14 +10,14 @@ import java.util.EnumSet;
 import java.util.List;
 
 import expo.core.interfaces.InternalModule;
-import expo.interfaces.filesystem.FilePermissionWielderInterface;
+import expo.interfaces.filesystem.FilePermissionModuleInterface;
 import expo.interfaces.filesystem.Permission;
 
-public class FilePermissionWielder implements FilePermissionWielderInterface, InternalModule {
+public class FilePermissionModule implements FilePermissionModuleInterface, InternalModule {
 
   @Override
   public List<Class> getExportedInterfaces() {
-    return Collections.<Class>singletonList(FilePermissionWielderInterface.class);
+    return Collections.<Class>singletonList(FilePermissionModuleInterface.class);
   }
 
   @Override

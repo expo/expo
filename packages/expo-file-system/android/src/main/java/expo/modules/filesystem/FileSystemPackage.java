@@ -13,7 +13,7 @@ import expo.core.interfaces.InternalModule;
 public class FileSystemPackage extends BasePackage {
   @Override
   public List<InternalModule> createInternalModules(Context context) {
-    return Collections.<InternalModule>singletonList(new FilePermissionWielder());
+    return Collections.<InternalModule>singletonList(new FilePermissionModule());
   }
 
   @Override
