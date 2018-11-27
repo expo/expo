@@ -16,9 +16,14 @@ commands:
       - run: echo 'eval "$(direnv export bash)"' >> ~/.bash_profile
       - run: echo '--frozen-lockfile true' >> ~/.yarnrc
       - checkout
-  decrypt_secrets:
+  decrypt_secrets_if_possible:
     steps:
-      - run: nix run expo.git-crypt --command git crypt unlock <(echo $EXPO_GIT_CRYPT_KEY_BASE64 | base64 --decode)
+      - run: |
+          nix run expo.git-crypt --command bash -c "
+            if ! [ -v EXPO_GIT_CRYPT_KEY_BASE64 ]; then
+              echo 'git-crypt key not present in environment' && exit 0
+            fi
+            git crypt unlock <(echo $EXPO_GIT_CRYPT_KEY_BASE64 | base64 --decode)"
   update_submodules:
     steps:
       - run: git submodule update --init
@@ -244,7 +249,7 @@ jobs:
       - yarn_install:
           working_directory: ~/expo/tools-public
       - restore_gradle_cache
-      - decrypt_secrets
+      - decrypt_secrets_if_possible
       - run: echo $ANDROID_KEYSTORE_B64 | base64 -d > android/app/release-key.jks
       - run: |
           nix-shell android/shell.nix --pure \
