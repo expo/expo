@@ -114,7 +114,7 @@ workflows:
     jobs:
       - home
       - expotools
-      - client_android
+      - client_android:
           filters:
             branches:
               only:
