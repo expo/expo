@@ -1,0 +1,9 @@
+*.jks
+*.key
+*.mobileprovision
+*.p12
+.expo
+.npmignore
+.vscode
+package-lock.json
+yarn.lock
