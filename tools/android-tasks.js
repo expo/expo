@@ -182,21 +182,6 @@ exports.updateExpoViewAsync = async function updateExpoViewAsync(sdkVersion) {
     /host.exp.exponent:expoview:[\d\.]+/,
     `host.exp.exponent:expoview:${sdkVersion}`
   );
-  await regexFileAsync(
-    path.join(
-      androidRoot,
-      'app',
-      'src',
-      'main',
-      'java',
-      'host',
-      'exp',
-      'exponent',
-      'MainActivity.java'
-    ),
-    /Arrays\.asList\(\"[\d\.]+\"\)/,
-    `Arrays.asList("${sdkVersion}")`
-  );
 
   // getDetachableModulesForPlatform was breaking on face detector
   const detachableUniversalModules = Modules.getAllNativeForExpoClientOnPlatform('android');

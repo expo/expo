@@ -57,7 +57,7 @@ public abstract class ExpoApplication extends MultiDexApplication {
       KernelConstants.MAIN_ACTIVITY_CLASS = LauncherActivity.class;
       if (Constants.isShellApp()) {
         try {
-          KernelConstants.MAIN_ACTIVITY_CLASS = Class.forName("host.exp.exponent.ShellAppActivity");
+          KernelConstants.MAIN_ACTIVITY_CLASS = Class.forName("host.exp.exponent.MainActivity");
         } catch (ClassNotFoundException e)  {
           // we can't do anything
         }

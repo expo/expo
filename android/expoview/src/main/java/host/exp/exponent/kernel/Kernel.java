@@ -439,58 +439,38 @@ public class Kernel extends KernelInterface {
   }
 
   private void openShellAppActivity(boolean forceCache) {
-    Class activityClass = null;
-    Class mainActivityClass = null;
-    Class shellAppActivityClass = null;
     try {
-      shellAppActivityClass = Class.forName("host.exp.exponent.ShellAppActivity");
-    } catch (ClassNotFoundException e) {
-      // do nothing
-    }
-    try {
-      mainActivityClass = Class.forName("host.exp.exponent.MainActivity");
-    } catch (ClassNotFoundException e) {
-      // do nothing
-    }
-    activityClass = shellAppActivityClass;
-    if (Constants.isDetached()) {
-      if (mainActivityClass != null) {
-        activityClass = mainActivityClass;
-      } else {
-        EXL.e(TAG, "Cannot find MainActivity, falling back to ShellAppActivity");
-      }
-    }
-    if (activityClass == null) {
-      throw new IllegalStateException("Could not find activity to open (neither MainActivity nor ShellAppActivity is present).");
-    }
+      Class activityClass = Class.forName("host.exp.exponent.MainActivity");
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        ActivityManager manager = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.AppTask task : manager.getAppTasks()) {
+          Intent baseIntent = task.getTaskInfo().baseIntent;
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      ActivityManager manager = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
-      for (ActivityManager.AppTask task : manager.getAppTasks()) {
-        Intent baseIntent = task.getTaskInfo().baseIntent;
-
-        if (activityClass.getName().equals(baseIntent.getComponent().getClassName())) {
-          moveTaskToFront(task.getTaskInfo().id);
-          return;
+          if (activityClass.getName().equals(baseIntent.getComponent().getClassName())) {
+            moveTaskToFront(task.getTaskInfo().id);
+            return;
+          }
         }
       }
+
+      Intent intent = new Intent(mActivityContext, activityClass);
+      Kernel.addIntentDocumentFlags(intent);
+
+      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+        // Don't want to end up in state where we have
+        // ExperienceActivity - HomeActivity - ExperienceActivity
+        // Want HomeActivity to be the root activity if it exists
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+      }
+
+      if (forceCache) {
+        intent.putExtra(KernelConstants.LOAD_FROM_CACHE_KEY, true);
+      }
+
+      mActivityContext.startActivity(intent);
+    } catch (ClassNotFoundException e) {
+      throw new IllegalStateException("Could not find activity to open (MainActivity is not present).");
     }
-
-    Intent intent = new Intent(mActivityContext, activityClass);
-    Kernel.addIntentDocumentFlags(intent);
-
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-      // Don't want to end up in state where we have
-      // ExperienceActivity - HomeActivity - ExperienceActivity
-      // Want HomeActivity to be the root activity if it exists
-      intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-    }
-
-    if (forceCache) {
-      intent.putExtra(KernelConstants.LOAD_FROM_CACHE_KEY, true);
-    }
-
-    mActivityContext.startActivity(intent);
   }
 
   /*

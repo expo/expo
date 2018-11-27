@@ -233,7 +233,7 @@ dependencies {
   api 'host.exp.exponent:expo-react-native-adapter:1.2.0'
 
   // Optional universal modules, could be removed
-  // along with references in MainActivity and ShellAppActivity
+  // along with references in MainActivity
   api 'host.exp.exponent:expo-ads-admob:1.1.0'
   api 'host.exp.exponent:expo-app-auth:1.0.0'
   api 'host.exp.exponent:expo-analytics-segment:1.1.0'

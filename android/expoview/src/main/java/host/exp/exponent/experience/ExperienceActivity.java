@@ -86,10 +86,6 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     return null;
   }
 
-  public boolean forceUnversioned() {
-    return false;
-  }
-
   private static final String TAG = ExperienceActivity.class.getSimpleName();
 
   private static final String KERNEL_STARTED_RUNNING_KEY = "experienceActivityKernelDidLoad";
@@ -394,7 +390,8 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     if (Constants.TEMPORARY_ABI_VERSION != null && Constants.TEMPORARY_ABI_VERSION.equals(mSDKVersion)) {
       mSDKVersion = RNObject.UNVERSIONED;
     }
-    mDetachSdkVersion = forceUnversioned() ? RNObject.UNVERSIONED : mSDKVersion;
+    // In detach/shell, since SDK31 we always use UNVERSIONED as the ABI.
+    mDetachSdkVersion = RNObject.UNVERSIONED;
 
     if (!RNObject.UNVERSIONED.equals(mSDKVersion)) {
       boolean isValidVersion = false;

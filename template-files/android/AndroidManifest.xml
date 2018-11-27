@@ -116,17 +116,6 @@
     </activity>
 
     <activity
-      android:name=".ShellAppActivity"
-      android:launchMode="singleTask"
-      android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-      android:theme="@style/Theme.Exponent.Splash"
-      android:windowSoftInputMode="adjustResize">
-      <!-- ADD SHELL INTENT FILTERS HERE -->
-      <!-- ADD SHELL SCHEME HERE -->
-      <!-- ADD SHELL APP SPECIFIC INTENT FILTERS -->
-    </activity>
-
-    <activity
       android:name=".experience.HomeActivity"
       android:label="@string/app_name"
       android:launchMode="singleTask"

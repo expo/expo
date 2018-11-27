@@ -29,7 +29,6 @@ public abstract class DetachActivity extends ExperienceActivity implements Expon
   // Override me!
   public abstract String publishedUrl();
   public abstract String developmentUrl();
-  public abstract List<String> sdkVersions();
   public abstract List<ReactPackage> reactPackages();
   public abstract List<Package> expoPackages();
   public abstract boolean isDebug();
@@ -39,13 +38,12 @@ public abstract class DetachActivity extends ExperienceActivity implements Expon
     super.onCreate(savedInstanceState);
 
     ExpoViewBuildConfig.DEBUG = isDebug();
-    Constants.setSdkVersions(sdkVersions());
-    String defaultUrl = isDebug() ? developmentUrl() : publishedUrl();
-    Constants.INITIAL_URL = defaultUrl;
+    Constants.INITIAL_URL = isDebug() ? developmentUrl() : publishedUrl();
+    boolean forceCache = getIntent().getBooleanExtra(KernelConstants.LOAD_FROM_CACHE_KEY, false);
 
     mKernel.handleIntent(this, getIntent());
 
-    new AppLoader(Constants.INITIAL_URL) {
+    new AppLoader(Constants.INITIAL_URL, forceCache) {
       @Override
       public void onOptimisticManifest(final JSONObject optimisticManifest) {
         Exponent.getInstance().runOnUiThread(new Runnable() {
@@ -111,11 +109,6 @@ public abstract class DetachActivity extends ExperienceActivity implements Expon
       // also check publishedUrl since this can get set before Constants.INITIAL_URL is set to developmentUrl
       handleOptions(mKernel.popOptionsForManifestUrl(publishedUrl()));
     }
-  }
-
-  @Override
-  public boolean forceUnversioned() {
-    return true;
   }
 
   @Override
