@@ -12,9 +12,13 @@ type SnapshotOptions = {
   result: "tmpfile" | "base64" | "data-uri" | "zip-base64";
 };
 
-export default async function takeSnapshotAsync(
-  node: ReactNativeNodeHandle | React.Component,
+export default async function takeSnapshotAsync<T>(
+  node: ReactNativeNodeHandle | React.Component | React.RefObject<T>,
   options?: SnapshotOptions
 ): Promise<string> {
+  if (typeof node === "object" && "current" in node && node.current) { // React.RefObject
+    return captureRef(node.current, options);
+  }
+
   return captureRef(node, options);
 }
