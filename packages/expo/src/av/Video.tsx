@@ -86,7 +86,7 @@ type Props = {
   translateX?: number;
   translateY?: number;
   rotation?: number;
-} & React.ElementProps<View>;
+} & React.ComponentProps<typeof View>;
 
 type NativeProps = {
   source: PlaybackNativeSource | null;
@@ -96,7 +96,7 @@ type NativeProps = {
   onReadyForDisplayNative?: (event: Object) => void;
   onFullscreenUpdateNative?: (event: Object) => void;
   useNativeControls?: boolean;
-} & React.ElementProps<View>;
+} & React.ComponentProps<typeof View>;
 
 type State = {
   showPoster: boolean;
