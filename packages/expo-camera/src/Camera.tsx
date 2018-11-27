@@ -1,5 +1,5 @@
-// @flow
 import React from 'react';
+import { View } from 'react-native'
 import PropTypes from 'prop-types';
 import mapValues from 'lodash.mapvalues';
 import { NativeModulesProxy, requireNativeViewManager } from 'expo-core';
@@ -16,7 +16,7 @@ type PictureOptions = {
   fastMode?: boolean,
 };
 
-type RecordingOptions = {
+type RecordingOptions  ={
   maxDuration?: number,
   maxFileSize?: number,
   quality?: number | string,
@@ -27,7 +27,7 @@ type CapturedPicture = {
   height: number,
   uri: string,
   base64?: string,
-  exif?: Object,
+  exif?: any,
 };
 
 type RecordingResult = {
@@ -35,7 +35,7 @@ type RecordingResult = {
 };
 
 type EventCallbackArgumentsType = {
-  nativeEvent: Object,
+  nativeEvent: any,
 };
 
 type MountErrorNativeEventType = {
@@ -47,7 +47,24 @@ type PictureSavedNativeEventType = {
   id: number,
 };
 
-type PropsType = ViewPropTypes & {
+type OnBarCodeScannedParam = {
+  type: string,
+  data: string
+};
+
+type FacesParam = {
+  faces: any[],
+};
+
+type StringPair = {
+  [s: string]: string,
+};
+
+type DatePair = {
+  [s: string]: Date,
+};
+
+type PropsType = React.ElementProps<View> & {
   zoom?: number,
   ratio?: string,
   focusDepth?: number,
@@ -59,14 +76,14 @@ type PropsType = ViewPropTypes & {
   autoFocus?: string | boolean | number,
   pictureSize?: string,
   videoStabilizationMode?: number,
-  onMountError?: MountErrorNativeEventType => void,
+  onMountError?: (MountErrorNativeEventType) => void,
   barCodeScannerSettings?: {},
-  onBarCodeScanned?: ({ type: string, data: string }) => void,
+  onBarCodeScanned?: (OnBarCodeScannedParam) => void,
   faceDetectorSettings?: {},
-  onFacesDetected?: ({ faces: Array<*> }) => void,
+  onFacesDetected?: (FacesParam) => void,
 };
 
-const CameraManager: Object =
+const CameraManager: any =
   NativeModulesProxy.ExponentCameraManager || NativeModulesProxy.ExponentCameraModule;
 
 const EventThrottleMs = 500;
@@ -113,7 +130,7 @@ export default class Camera extends React.Component<PropsType> {
     autoFocus: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.bool]),
   };
 
-  static defaultProps: Object = {
+  static defaultProps: any = {
     zoom: 0,
     ratio: '4:3',
     focusDepth: 0,
@@ -124,10 +141,10 @@ export default class Camera extends React.Component<PropsType> {
     whiteBalance: CameraManager.WhiteBalance.auto,
   };
 
-  _cameraRef: ?Object;
-  _cameraHandle: ?number;
-  _lastEvents: { [string]: string };
-  _lastEventsTimes: { [string]: Date };
+  _cameraRef?: any;
+  _cameraHandle?: number | null;
+  _lastEvents: StringPair;
+  _lastEventsTimes: DatePair;
 
   constructor(props: PropsType) {
     super(props);
@@ -204,13 +221,13 @@ export default class Camera extends React.Component<PropsType> {
     }
   };
 
-  _onObjectDetected = (callback: ?Function) => ({ nativeEvent }: EventCallbackArgumentsType) => {
+  _onObjectDetected = (callback?: Function) => ({ nativeEvent }: EventCallbackArgumentsType) => {
     const { type } = nativeEvent;
     if (
       this._lastEvents[type] &&
       this._lastEventsTimes[type] &&
       JSON.stringify(nativeEvent) === this._lastEvents[type] &&
-      new Date() - this._lastEventsTimes[type] < EventThrottleMs
+      ( new Date().getTime() - this._lastEventsTimes[type].getTime() ) < EventThrottleMs
     ) {
       return;
     }
@@ -222,7 +239,7 @@ export default class Camera extends React.Component<PropsType> {
     }
   };
 
-  _setReference = (ref: ?Object) => {
+  _setReference = (ref?: any) => {
     if (ref) {
       this._cameraRef = ref;
       this._cameraHandle = findNodeHandle(ref);
@@ -230,14 +247,6 @@ export default class Camera extends React.Component<PropsType> {
       this._cameraRef = null;
       this._cameraHandle = null;
     }
-  };
-
-  _onBarCodeScanned = () => {
-    const onBarCodeRead = this.props.onBarCodeRead && ((data) => {
-      console.warn("'onBarCodeRead' is deprecated in favour of 'onBarCodeScanned'");
-      return this.props.onBarCodeRead(data);
-    });
-    return this.props.onBarCodeScanned || onBarCodeRead;
   };
 
   render() {
@@ -250,7 +259,7 @@ export default class Camera extends React.Component<PropsType> {
         onCameraReady={this._onCameraReady}
         onMountError={this._onMountError}
         onPictureSaved={this._onPictureSaved}
-        onBarCodeScanned={this._onObjectDetected(this._onBarCodeScanned())}
+        onBarCodeScanned={this._onObjectDetected(this.props.onBarCodeScanned)}
         onFacesDetected={this._onObjectDetected(this.props.onFacesDetected)}
       />
     );
@@ -266,7 +275,7 @@ export default class Camera extends React.Component<PropsType> {
       };
     }
 
-    if (props.onBarCodeScanned || props.onBarCodeRead) { // onBarCodeRead is deprecated
+    if (props.onBarCodeScanned) { // onBarCodeRead is deprecated
       newProps.barCodeScannerEnabled = true;
     }
 
@@ -282,7 +291,7 @@ export default class Camera extends React.Component<PropsType> {
     return newProps;
   }
 
-  _convertProp(value: *, key: string): * {
+  _convertProp(value: any, key: string): any {
     if (typeof value === 'string' && Camera.ConversionTables[key]) {
       return Camera.ConversionTables[key][value];
     }
