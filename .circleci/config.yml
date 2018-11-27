@@ -156,6 +156,10 @@ jobs:
       - yarn:
           command: test --maxWorkers 1
           working_directory: ~/expo/packages/expo
+      - yarn:
+          command: test --maxWorkers 1
+          working_directory: ~/expo/packages/expo-sms
+
 
   babel_preset:
     executor: js
