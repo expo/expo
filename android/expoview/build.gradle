@@ -130,6 +130,7 @@ dependencies {
   api 'host.exp.exponent:expo-constants:1.1.0'
   api 'host.exp.exponent:expo-constants-interface:1.1.0'
   api 'host.exp.exponent:expo-image-loader-interface:1.1.0'
+  api 'host.exp.exponent:expo-google-sign-in:1.0.0'
   api 'host.exp.exponent:expo-gl:1.1.0'
   api 'host.exp.exponent:expo-gl-cpp:1.1.0'
   api 'host.exp.exponent:expo-sms:1.1.0'
