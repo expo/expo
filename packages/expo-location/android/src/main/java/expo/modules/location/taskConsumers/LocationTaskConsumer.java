@@ -1,9 +1,7 @@
 package expo.modules.location.taskConsumers;
 
 import android.app.PendingIntent;
-import android.app.job.JobInfo;
 import android.app.job.JobParameters;
-import android.app.job.JobScheduler;
 import android.app.job.JobService;
 import android.content.Context;
 import android.content.Intent;
@@ -26,6 +24,7 @@ import expo.interfaces.taskManager.TaskExecutionCallback;
 import expo.interfaces.taskManager.TaskManagerUtilsInterface;
 import expo.interfaces.taskManager.TaskConsumerInterface;
 import expo.interfaces.taskManager.TaskInterface;
+import expo.modules.location.LocationHelpers;
 import expo.modules.location.LocationModule;
 import io.nlopez.smartlocation.location.config.LocationParams;
 
@@ -55,7 +54,7 @@ public class LocationTaskConsumer extends TaskConsumer implements TaskConsumerIn
       Log.w(TAG, "The context has been abandoned.");
       return;
     }
-    if (!LocationModule.isAnyProviderAvailable(context)) {
+    if (!LocationHelpers.isAnyProviderAvailable(context)) {
       Log.w(TAG, "There is no location provider available.");
       return;
     }
@@ -157,8 +156,8 @@ public class LocationTaskConsumer extends TaskConsumer implements TaskConsumerIn
 
   private LocationRequest prepareLocationRequest() {
     Map<String, Object> options = mTask.getOptions();
-    LocationParams locationParams = LocationModule.mapOptionsToLocationParams(options);
-    int accuracy = LocationModule.getAccuracyFromOptions(options);
+    LocationParams locationParams = LocationHelpers.mapOptionsToLocationParams(options);
+    int accuracy = LocationHelpers.getAccuracyFromOptions(options);
 
     return new LocationRequest()
         .setFastestInterval(locationParams.getInterval())

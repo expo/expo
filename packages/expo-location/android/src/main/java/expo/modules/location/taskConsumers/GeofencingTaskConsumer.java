@@ -5,7 +5,6 @@ import android.app.job.JobParameters;
 import android.app.job.JobService;
 import android.content.Context;
 import android.content.Intent;
-import android.os.BaseBundle;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.util.Log;
@@ -27,6 +26,7 @@ import expo.interfaces.taskManager.TaskConsumer;
 import expo.interfaces.taskManager.TaskManagerUtilsInterface;
 import expo.interfaces.taskManager.TaskConsumerInterface;
 import expo.interfaces.taskManager.TaskInterface;
+import expo.modules.location.LocationHelpers;
 import expo.modules.location.LocationModule;
 
 public class GeofencingTaskConsumer extends TaskConsumer implements TaskConsumerInterface {
@@ -58,7 +58,7 @@ public class GeofencingTaskConsumer extends TaskConsumer implements TaskConsumer
       Log.w(TAG, "The context has been abandoned.");
       return;
     }
-    if (!LocationModule.isAnyProviderAvailable(context)) {
+    if (!LocationHelpers.isAnyProviderAvailable(context)) {
       Log.w(TAG, "There is no location provider available.");
       return;
     }

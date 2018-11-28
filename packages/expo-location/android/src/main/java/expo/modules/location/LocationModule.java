@@ -13,13 +13,11 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.location.LocationManager;
 import android.os.BaseBundle;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -41,7 +39,6 @@ import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.OnReverseGeocodingListener;
 import io.nlopez.smartlocation.SmartLocation;
 import io.nlopez.smartlocation.geocoding.utils.LocationAddress;
-import io.nlopez.smartlocation.location.config.LocationAccuracy;
 import io.nlopez.smartlocation.location.config.LocationParams;
 import io.nlopez.smartlocation.location.utils.LocationState;
 
@@ -163,7 +160,7 @@ public class LocationModule extends ExportedModule implements ModuleRegistryCons
   public void getCurrentPositionAsync(final Map<String, Object> options, final Promise promise) {
     // Read options
     final Long timeout = options.containsKey("timeout") ? ((Double) options.get("timeout")).longValue() : null;
-    final LocationParams locationParams = mapOptionsToLocationParams(options);
+    final LocationParams locationParams = LocationHelpers.mapOptionsToLocationParams(options);
 
     // LocationControl has an internal map from Context -> LocationProvider, so each experience
     // will only have one instance of a LocationProvider.
@@ -397,7 +394,7 @@ public class LocationModule extends ExportedModule implements ModuleRegistryCons
       return;
     }
 
-    mLocationParams = mapOptionsToLocationParams(options);
+    mLocationParams = LocationHelpers.mapOptionsToLocationParams(options);
     mOnLocationUpdatedListener = new OnLocationUpdatedListener() {
       @Override
       public void onLocationUpdated(Location location) {
@@ -542,7 +539,7 @@ public class LocationModule extends ExportedModule implements ModuleRegistryCons
 
   @ExpoMethod
   public void hasServicesEnabledAsync(final Promise promise) {
-    boolean servicesEnabled = isAnyProviderAvailable(getContext());
+    boolean servicesEnabled = LocationHelpers.isAnyProviderAvailable(getContext());
     promise.resolve(servicesEnabled);
   }
 
@@ -624,82 +621,4 @@ public class LocationModule extends ExportedModule implements ModuleRegistryCons
   }
 
   //endregion
-  //region static helpers
-
-  public static boolean isAnyProviderAvailable(Context context) {
-    if (context == null) {
-      return false;
-    }
-    LocationManager locationManager = (LocationManager)context.getSystemService(Context.LOCATION_SERVICE);
-    return locationManager.isProviderEnabled("gps") || locationManager.isProviderEnabled("network");
-  }
-
-  public static LocationParams.Builder buildLocationParamsForAccuracy(int accuracy) {
-    switch (accuracy) {
-      case ACCURACY_LOWEST:
-        return new LocationParams.Builder()
-            .setAccuracy(LocationAccuracy.LOWEST)
-            .setDistance(3000)
-            .setInterval(10000);
-      case ACCURACY_LOW:
-        return new LocationParams.Builder()
-            .setAccuracy(LocationAccuracy.LOW)
-            .setDistance(1000)
-            .setInterval(5000);
-      case ACCURACY_BALANCED:
-      default:
-        return new LocationParams.Builder()
-            .setAccuracy(LocationAccuracy.MEDIUM)
-            .setDistance(100)
-            .setInterval(3000);
-      case ACCURACY_HIGH:
-        return new LocationParams.Builder()
-            .setAccuracy(LocationAccuracy.HIGH)
-            .setDistance(50)
-            .setInterval(2000);
-      case ACCURACY_HIGHEST:
-        return new LocationParams.Builder()
-            .setAccuracy(LocationAccuracy.HIGH)
-            .setDistance(25)
-            .setInterval(1000);
-      case ACCURACY_BEST_FOR_NAVIGATION:
-        return new LocationParams.Builder()
-            .setAccuracy(LocationAccuracy.HIGH)
-            .setDistance(0)
-            .setInterval(500);
-    }
-  }
-
-  public static LocationParams mapOptionsToLocationParams(Map<String, Object> options) {
-    int accuracy = getAccuracyFromOptions(options);
-
-    LocationParams.Builder locationParamsBuilder = buildLocationParamsForAccuracy(accuracy);
-
-    if (options.containsKey("timeInterval")) {
-      locationParamsBuilder.setInterval((long) options.get("timeInterval"));
-    }
-    if (options.containsKey("distanceInterval")) {
-      locationParamsBuilder.setDistance((float) options.get("distanceInterval"));
-    }
-    return locationParamsBuilder.build();
-  }
-
-  public static int getAccuracyFromOptions(Map<String, Object> options) {
-    // `enableHighAccuracy` is deprecated - use `accuracy` instead
-    boolean highAccuracy = options.containsKey("enableHighAccuracy") && (Boolean) options.get("enableHighAccuracy");
-    int accuracy = options.containsKey("accuracy")
-        ? convertAccuracy(options.get("accuracy"))
-        : highAccuracy ? ACCURACY_HIGH : ACCURACY_BALANCED;
-
-    return accuracy;
-  }
-
-  private static int convertAccuracy(Object accuracy) {
-    // Looks like the accuracy can be an integer when restoring tasks from shared preferences.
-    // So let's make sure which type it is and then cast to int value.
-    if (accuracy instanceof Double) {
-      return ((Double) accuracy).intValue();
-    }
-    return (Integer) accuracy;
-  }
 }
