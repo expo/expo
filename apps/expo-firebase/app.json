@@ -34,6 +34,7 @@
     },
     "scheme": "exp200e65211c99498cb326675b130ca194",
     "android": {
+      "googleServicesFile": "./google-services.json",
       "package": "host.exp.firebase",
       "publishBundlePath": "android/app/src/main/assets/shell-app.bundle",
       "publishManifestPath": "android/app/src/main/assets/shell-app-manifest.json"
