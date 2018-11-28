@@ -8,7 +8,6 @@ function checkValue(value?: Array<string> | string): string | undefined {
   }
 
   const arr = Array.isArray(value) ? value : [value];
-
   return arr.join(',');
 }
 
@@ -17,15 +16,12 @@ export default {
     return 'ExponentMailComposer';
   },
   async composeAsync(options: ComposeOptions): Promise<ComposeResult> {
-    const email = filter(
-      {
-        cc: checkValue(options.ccRecipients),
-        bcc: checkValue(options.bccRecipients),
-        subject: options.subject,
-        body: options.body,
-      },
-      Boolean
-    );
+    const email = filter({
+      cc: checkValue(options.ccRecipients),
+      bcc: checkValue(options.bccRecipients),
+      subject: options.subject,
+      body: options.body,
+    });
 
     const query = qs.stringify(email);
     const queryComponent = query ? '?' + query : '';
