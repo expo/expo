@@ -16,7 +16,7 @@ export function isSupported() {
  * Use the iOS `SKStoreReviewController` API to prompt a user rating without leaving the app.
  */
 export async function requestReview() {
-  if (isSupported()) {
+  if (ExponentStoreReview.requestReview) {
     ExponentStoreReview.requestReview();
   } else {
     /*
