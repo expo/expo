@@ -1,9 +1,9 @@
-import uriparser from 'uri-parser';
-import urljoin from 'url-join';
 import { PixelRatio, Platform } from 'react-native';
+import AssetRegistry from 'react-native/Libraries/Image/AssetRegistry';
 import AssetSourceResolver from 'react-native/Libraries/Image/AssetSourceResolver';
 import resolveAssetSource from 'react-native/Libraries/Image/resolveAssetSource';
-import AssetRegistry from 'react-native/Libraries/Image/AssetRegistry';
+import uriparser from 'uri-parser';
+import urljoin from 'url-join';
 
 let FS, Constants;
 
@@ -60,7 +60,7 @@ const resolveIfRelative = uri => {
 };
 
 function isImageType(type) {
-  return type.match(/(jpeg|jpg|gif|png|bmp)$/) != null;
+  return /^(jpeg|jpg|gif|png|bmp)$/i.test(type);
 }
 
 function getExtension(url) {
