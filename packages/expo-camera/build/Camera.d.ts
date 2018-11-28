@@ -41,7 +41,7 @@ declare type StringPair = {
 declare type DatePair = {
     [s: string]: Date;
 };
-declare type PropsType = React.ElementProps<View> & {
+declare type PropsType = React.ComponentProps<typeof View> & {
     zoom?: number;
     ratio?: string;
     focusDepth?: number;
@@ -123,13 +123,17 @@ export default class Camera extends React.Component<PropsType> {
         onTouchEndCapture: PropTypes.Validator<((event: import("react-native").GestureResponderEvent) => void) | undefined>;
         accessible: PropTypes.Validator<boolean | undefined>;
         accessibilityLabel: PropTypes.Validator<string | undefined>;
-        accessibilityComponentType: PropTypes.Validator<"none" | "button" | "radiobutton_checked" | "radiobutton_unchecked" | undefined>;
+        accessibilityRole: PropTypes.Validator<"button" | "header" | "link" | "summary" | "image" | "text" | "none" | "search" | "keyboardkey" | "adjustable" | "imagebutton" | undefined>;
+        accessibilityStates: PropTypes.Validator<import("react-native").AccessibilityState[] | undefined>;
+        accessibilityHint: PropTypes.Validator<string | undefined>;
+        accessibilityComponentType: PropTypes.Validator<"button" | "none" | "radiobutton_checked" | "radiobutton_unchecked" | undefined>;
         accessibilityLiveRegion: PropTypes.Validator<"none" | "polite" | "assertive" | undefined>;
         importantForAccessibility: PropTypes.Validator<"auto" | "yes" | "no" | "no-hide-descendants" | undefined>;
         accessibilityElementsHidden: PropTypes.Validator<boolean | undefined>;
-        accessibilityTraits: PropTypes.Validator<"none" | "button" | "link" | "header" | "search" | "image" | "selected" | "plays" | "key" | "text" | "summary" | "disabled" | "frequentUpdates" | "startsMedia" | "adjustable" | "allowsDirectInteraction" | "pageTurn" | import("react-native").AccessibilityTrait[] | undefined>;
+        accessibilityTraits: PropTypes.Validator<"button" | "header" | "link" | "summary" | "image" | "text" | "none" | "search" | "adjustable" | "selected" | "disabled" | "plays" | "key" | "frequentUpdates" | "startsMedia" | "allowsDirectInteraction" | "pageTurn" | import("react-native").AccessibilityTrait[] | undefined>;
         onAccessibilityTap: PropTypes.Validator<(() => void) | undefined>;
         onMagicTap: PropTypes.Validator<(() => void) | undefined>;
+        accessibilityIgnoresInvertColors: PropTypes.Validator<boolean | undefined>;
     };
     static defaultProps: any;
     _cameraRef?: any;

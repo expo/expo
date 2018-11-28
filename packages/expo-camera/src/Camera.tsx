@@ -64,7 +64,7 @@ type DatePair = {
   [s: string]: Date,
 };
 
-type PropsType = React.ElementProps<View> & {
+type PropsType = React.ComponentProps<typeof View> & {
   zoom?: number,
   ratio?: string,
   focusDepth?: number,
