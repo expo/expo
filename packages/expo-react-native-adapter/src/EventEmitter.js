@@ -1,6 +1,7 @@
 // @flow
 
-import { NativeEventEmitter, Platform } from 'react-native';
+import { Platform } from 'react-native';
+import NativeEventEmitter from 'react-native/Libraries/EventEmitter/NativeEventEmitter';
 
 type NativeModule = {
   startObserving: ?() => void,

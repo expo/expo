@@ -1,10 +1,9 @@
 // @flow
-
+import { EventEmitter, Platform } from 'expo-core';
 import invariant from 'invariant';
-import { NativeModulesProxy, EventEmitter } from 'expo-core';
-import { Platform } from 'react-native';
 
-const { ExpoLocation: Location } = NativeModulesProxy;
+import Location from './ExpoLocation';
+
 const LocationEventEmitter = new EventEmitter(Location);
 
 type ProviderStatus = {
@@ -179,6 +178,9 @@ function _maybeInitializeEmitterSubscription() {
 }
 
 async function geocodeAsync(address: string) {
+  if (!Location.geocodeAsync) {
+    throw new Error(`Location.geocodeAsync is not supported on ${Platform.OS}`);
+  }
   return Location.geocodeAsync(address).catch(error => {
     if (Platform.OS === 'android' && error.code === 'E_NO_GEOCODER') {
       if (!googleApiKey) {
@@ -191,6 +193,9 @@ async function geocodeAsync(address: string) {
 }
 
 async function reverseGeocodeAsync(location: { latitude: number, longitude: number }) {
+  if (!Location.reverseGeocodeAsync) {
+    throw new Error(`Location.reverseGeocodeAsync is not supported on ${Platform.OS}`);
+  }
   if (typeof location.latitude !== 'number' || typeof location.longitude !== 'number') {
     throw new TypeError(
       'Location should be an object with number properties `latitude` and `longitude`.'
@@ -342,17 +347,19 @@ async function _getCurrentPositionAsyncWrapper(
   }
 }
 
-// Polyfill navigator.geolocation for interop with the core react-native and web API approach to
-// geolocation
-window.navigator.geolocation = {
-  getCurrentPosition,
-  watchPosition,
-  clearWatch,
+if (Platform.OS !== 'web') {
+  // Polyfill navigator.geolocation for interop with the core react-native and web API approach to
+  // geolocation
+  window.navigator.geolocation = {
+    getCurrentPosition,
+    watchPosition,
+    clearWatch,
 
-  // We don't polyfill stopObserving, this is an internal method that probably should not even exist
-  // in react-native docs
-  stopObserving: () => {},
-};
+    // We don't polyfill stopObserving, this is an internal method that probably should not even exist
+    // in react-native docs
+    stopObserving: () => {},
+  };
+}
 
 export default {
   getProviderStatusAsync,
