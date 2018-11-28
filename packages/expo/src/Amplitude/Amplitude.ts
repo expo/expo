@@ -1,13 +1,5 @@
-import { NativeModules } from 'react-native';
-import UnsupportedError from './UnsupportedError';
-
-const {
-  ExponentAmplitude = {
-    get name() {
-      return 'ExponentAmplitude';
-    },
-  },
-} = NativeModules;
+import UnsupportedError from '../UnsupportedError';
+import ExponentAmplitude from './ExponentAmplitude';
 
 export default {
   initialize(apiKey: string): void {
