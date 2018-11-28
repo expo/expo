@@ -25,6 +25,15 @@ import java.io.OutputStream;
 import java.util.List;
 import java.util.Objects;
 
+import com.facebook.common.executors.CallerThreadExecutor;
+import com.facebook.common.references.CloseableReference;
+import com.facebook.datasource.DataSource;
+import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.imagepipeline.common.RotationOptions;
+import com.facebook.imagepipeline.datasource.BaseBitmapDataSubscriber;
+import com.facebook.imagepipeline.image.CloseableImage;
+import com.facebook.imagepipeline.request.ImageRequest;
+import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -33,11 +42,11 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableMap;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.ImageScaleType;
-import com.nostra13.universalimageloader.utils.IoUtils;
 import com.theartofdev.edmodo.cropper.CropImage;
+
+import org.apache.commons.io.IOUtils;
+
+import javax.annotation.Nullable;
 
 import host.exp.exponent.ActivityResultListener;
 import host.exp.exponent.analytics.EXL;
@@ -241,8 +250,8 @@ public class ImagePickerModule extends ExpoKernelServiceConsumerBaseModule imple
       @Override
       public void run() {
         try {
-          Uri uri = requestCode == REQUEST_LAUNCH_CAMERA ? mCameraCaptureURI : intent.getData();
-          WritableMap exifData = exif ? readExif(uri) : null;
+          final Uri uri = requestCode == REQUEST_LAUNCH_CAMERA ? mCameraCaptureURI : intent.getData();
+          final WritableMap exifData = exif ? readExif(uri) : null;
           String type = getReactApplicationContext().getContentResolver().getType(uri);
 
           // previous method sometimes returns null
@@ -267,7 +276,7 @@ public class ImagePickerModule extends ExpoKernelServiceConsumerBaseModule imple
             }
 
             // if the image is created by camera intent we don't need a new path - it's been already saved
-            String path = requestCode == REQUEST_LAUNCH_CAMERA ?
+            final String path = requestCode == REQUEST_LAUNCH_CAMERA ?
                 uri.getPath() :
                 ExpFileUtils.generateOutputPath(mScopedContext.getCacheDir(), "ImagePicker", extension);
             Uri fileUri = requestCode == REQUEST_LAUNCH_CAMERA ? uri : Uri.fromFile(new File(path));
@@ -290,50 +299,46 @@ public class ImagePickerModule extends ExpoKernelServiceConsumerBaseModule imple
                   .setOutputCompressQuality(quality == null ? DEFAULT_QUALITY : quality)
                   .start(Exponent.getInstance().getCurrentActivity());
             } else {
-              // On some devices this has worked without decoding the URI and on some it has worked
-              // with decoding, so we try both...
-              // The `.cacheOnDisk(true)` and `.considerExifParams(true)` is to reflect EXIF rotation
-              // metadata.
-              // See https://github.com/nostra13/Android-Universal-Image-Loader/issues/630#issuecomment-204338289
-              String beforeDecode = uri.toString();
-              String afterDecode = Uri.decode(beforeDecode);
-              Bitmap bmp = null;
-              try {
-                bmp = ImageLoader.getInstance().loadImageSync(afterDecode,
-                    new DisplayImageOptions.Builder()
-                        .cacheOnDisk(true)
-                        .considerExifParams(true)
-                        .imageScaleType(ImageScaleType.NONE)
-                        .build());
-              } catch (Throwable e) {}
-              if (bmp == null) {
-                try {
-                  bmp = ImageLoader.getInstance().loadImageSync(beforeDecode,
-                      new DisplayImageOptions.Builder()
-                          .cacheOnDisk(true)
-                          .considerExifParams(true)
-                          .imageScaleType(ImageScaleType.NONE)
-                          .build());
-                } catch (Throwable e) {}
-              }
-              if (bmp == null) {
-                promise.reject(new IllegalStateException("Image decoding failed."));
-                if (requestCode == REQUEST_LAUNCH_CAMERA) {
-                  revokeUriPermissionForCamera();
+              ImageRequest imageRequest =
+                  ImageRequestBuilder
+                      .newBuilderWithSource(uri)
+                      .setRotationOptions(RotationOptions.autoRotate())
+                      .build();
+              final DataSource<CloseableReference<CloseableImage>> dataSource
+                  = Fresco.getImagePipeline().fetchDecodedImage(imageRequest, getReactApplicationContext());
+              final Bitmap.CompressFormat finalCompressFormat = compressFormat;
+              dataSource.subscribe(new BaseBitmapDataSubscriber() {
+                @Override
+                protected void onNewResultImpl(@Nullable Bitmap bitmap) {
+                  if (bitmap == null) {
+                    onFailureImpl(dataSource);
+                  } else {
+                    // create a cache file for an image picked from gallery
+                    ByteArrayOutputStream out = base64 ? new ByteArrayOutputStream() : null;
+                    File file = new File(path);
+                    if (quality != null) {
+                      saveImage(bitmap, finalCompressFormat, file, out);
+                      returnImageResult(exifData, file.toURI().toString(), bitmap.getWidth(), bitmap.getHeight(), out, promise);
+                    } else {
+                      // No modification requested
+                      try {
+                        copyImage(uri, file, out);
+                        returnImageResult(exifData, file.toURI().toString(), bitmap.getWidth(), bitmap.getHeight(), out, promise);
+                      } catch (IOException e) {
+                        promise.reject("E_COPY_ERR", "Could not copy image from " + uri + ": " + e.getMessage(), e);
+                      }
+                    }
+                  }
                 }
-                return;
-              }
-              // create a cache file for an image picked from gallery
-              ByteArrayOutputStream out = base64 ? new ByteArrayOutputStream() : null;
-              File file = new File(path);
-              if (quality != null) {
-                saveImage(bmp, compressFormat, file, out);
-              } else {
-                // No modification requested
-                copyImage(uri, file, out);
-              }
 
-              returnImageResult(exifData, file.toURI().toString(), bmp.getWidth(), bmp.getHeight(), out, promise);
+                @Override
+                protected void onFailureImpl(DataSource<CloseableReference<CloseableImage>> dataSource) {
+                  promise.reject(new IllegalStateException("Image decoding failed."));
+                  if (requestCode == REQUEST_LAUNCH_CAMERA) {
+                    revokeUriPermissionForCamera();
+                  }
+                }
+              }, CallerThreadExecutor.getInstance());
             }
           } else {
             WritableMap response = Arguments.createMap();
@@ -392,14 +397,16 @@ public class ImagePickerModule extends ExpoKernelServiceConsumerBaseModule imple
         mScopedContext.getApplicationContext().getContentResolver().openInputStream(originalUri));
 
     if (out != null) {
-      IoUtils.copyStream(is, out, null);
+      IOUtils.copy(is, out);
     }
 
-    try (FileOutputStream fos = new FileOutputStream(file)) {
-      if (out != null) {
-        fos.write(out.toByteArray());
-      } else {
-        IoUtils.copyStream(is, fos, null);
+    if (originalUri.compareTo(Uri.fromFile(file)) != 0) { // do not copy file over the same file
+      try (FileOutputStream fos = new FileOutputStream(file)) {
+        if (out != null) {
+          fos.write(out.toByteArray());
+        } else {
+          IOUtils.copy(is, fos);
+        }
       }
     }
   }
@@ -425,7 +432,7 @@ public class ImagePickerModule extends ExpoKernelServiceConsumerBaseModule imple
         // `CropImage` nullifies the `result.getBitmap()` after it writes out to a file, so
         // we have to read back...
         InputStream in = new FileInputStream(result.getUri().getPath());
-        IoUtils.copyStream(in, out, null);
+        IOUtils.copy(in, out);
       } catch(IOException e) {
         promise.reject(e);
         return;
