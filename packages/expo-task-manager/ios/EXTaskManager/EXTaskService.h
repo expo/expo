@@ -8,7 +8,6 @@
 
 @interface EXTaskService : EXSingletonModule <EXTaskServiceInterface, EXTaskDelegate>
 
-+ (nonnull instancetype)sharedInstance;
 + (BOOL)hasBackgroundModeEnabled:(nonnull NSString *)backgroundMode;
 
 // AppDelegate handlers

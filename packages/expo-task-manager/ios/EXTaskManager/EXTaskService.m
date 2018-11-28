@@ -55,19 +55,6 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
   return self;
 }
 
-+ (nonnull instancetype)sharedInstance
-{
-  static EXTaskService *service = nil;
-  static dispatch_once_t once;
-
-  dispatch_once(&once, ^{
-    if (service == nil) {
-      service = [[EXTaskService alloc] init];
-    }
-  });
-  return service;
-}
-
 # pragma mark - EXTaskServiceInterface
 
 /**

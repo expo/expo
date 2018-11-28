@@ -8,6 +8,7 @@
 #import <Crashlytics/Crashlytics.h>
 #import <Fabric/Fabric.h>
 #import <EXTaskManager/EXTaskService.h>
+#import <EXCore/EXModuleRegistryProvider.h>
 
 #import "ExpoKit.h"
 #import "EXRootViewController.h"
@@ -35,7 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
     // App launched in foreground
     [self _setupUserInterfaceForApplication:application withLaunchOptions:launchOptions];
   }
-  [[EXTaskService sharedInstance] applicationDidFinishLaunchingWithOptions:launchOptions];
+  [(EXTaskService *)[EXModuleRegistryProvider getSingletonModuleForClass:EXTaskService.class] applicationDidFinishLaunchingWithOptions:launchOptions];
   return YES;
 }
 
@@ -63,7 +64,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)application:(UIApplication *)application performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
 {
-  [[EXTaskService sharedInstance] runTasksWithReason:EXTaskLaunchReasonBackgroundFetch userInfo:nil completionHandler:completionHandler];
+  [(EXTaskService *)[EXModuleRegistryProvider getSingletonModuleForClass:EXTaskService.class] runTasksWithReason:EXTaskLaunchReasonBackgroundFetch userInfo:nil completionHandler:completionHandler];
 }
 
 #pragma mark - Handling URLs
@@ -91,7 +92,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
 {
-  [[EXTaskService sharedInstance] runTasksWithReason:EXTaskLaunchReasonRemoteNotification userInfo:userInfo completionHandler:completionHandler];
+  [(EXTaskService *)[EXModuleRegistryProvider getSingletonModuleForClass:EXTaskService.class] runTasksWithReason:EXTaskLaunchReasonRemoteNotification userInfo:userInfo completionHandler:completionHandler];
 }
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)token

@@ -36,11 +36,7 @@ static NSMutableSet<EXSingletonModule *> *EXSingletonModules;
 void (^EXinitializeGlobalSingletonModulesSet)(void) = ^{
   EXSingletonModules = [NSMutableSet set];
   for (Class singletonModuleClass in EXSingletonModuleClasses) {
-    if ([singletonModuleClass respondsToSelector:@selector(sharedInstance)]) {
-      [EXSingletonModules addObject:[singletonModuleClass sharedInstance]];
-    } else {
-      [EXSingletonModules addObject:[[singletonModuleClass alloc] init]];
-    }
+    [EXSingletonModules addObject:[[singletonModuleClass alloc] init]];
   }
 };
 
@@ -74,6 +70,18 @@ void (^EXinitializeGlobalSingletonModulesSet)(void) = ^{
 {
   dispatch_once(&onceSingletonModulesToken, EXinitializeGlobalSingletonModulesSet);
   return EXSingletonModules;
+}
+
++ (EXSingletonModule *)getSingletonModuleForClass:(Class)singletonClass
+{
+  NSSet<EXSingletonModule *> *singletonModules = [self singletonModules];
+
+  for (EXSingletonModule *singleton in singletonModules) {
+    if ([[singleton class] isKindOfClass:singletonClass]) {
+      return singleton;
+    }
+  }
+  return nil;
 }
 
 - (EXModuleRegistry *)moduleRegistryForExperienceId:(NSString *)experienceId
