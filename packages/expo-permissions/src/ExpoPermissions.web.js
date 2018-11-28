@@ -69,10 +69,9 @@ async function askForCameraPermissionAsync() {
 async function askForLocationPermissionAsync() {
   return new Promise(resolve => {
     navigator.geolocation.getCurrentPosition(
-      function() {
-        resolve({ status: Status.granted });
-      },
-      function({ code }) {
+      () => resolve({ status: Status.granted }),
+      ({ code }: PositionError) => {
+        // https://developer.mozilla.org/en-US/docs/Web/API/PositionError/code
         if (code === 1) {
           resolve({ status: Status.denied });
         } else {
@@ -94,7 +93,7 @@ async function getPermissionAsync(permission, shouldAsk) {
           if (shouldAsk) {
             status = await Notification.requestPermission();
           }
-          if (!status || !status.length || status === 'default') {
+          if (!status || status === 'default') {
             return { status: Status.undetermined };
           }
           return { status };
