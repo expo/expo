@@ -178,11 +178,9 @@ function _maybeInitializeEmitterSubscription() {
 }
 
 async function geocodeAsync(address: string) {
-  if (!Location.geocodeAsync) {
-    throw new Error(`Location.geocodeAsync is not supported on ${Platform.OS}`);
-  }
   return Location.geocodeAsync(address).catch(error => {
-    if (Platform.OS === 'android' && error.code === 'E_NO_GEOCODER') {
+    const platformUsesGoogleMaps = Platform.OS === 'android' || Platform.OS === 'web';
+    if (platformUsesGoogleMaps && error.code === 'E_NO_GEOCODER') {
       if (!googleApiKey) {
         throw new Error(error.message + ' Please set a Google API Key to use geocoding.');
       }
@@ -193,16 +191,15 @@ async function geocodeAsync(address: string) {
 }
 
 async function reverseGeocodeAsync(location: { latitude: number, longitude: number }) {
-  if (!Location.reverseGeocodeAsync) {
-    throw new Error(`Location.reverseGeocodeAsync is not supported on ${Platform.OS}`);
-  }
   if (typeof location.latitude !== 'number' || typeof location.longitude !== 'number') {
     throw new TypeError(
       'Location should be an object with number properties `latitude` and `longitude`.'
     );
   }
   return Location.reverseGeocodeAsync(location).catch(error => {
-    if (Platform.OS === 'android' && error.code === 'E_NO_GEOCODER') {
+    const platformUsesGoogleMaps = Platform.OS === 'android' || Platform.OS === 'web';
+
+    if (platformUsesGoogleMaps && error.code === 'E_NO_GEOCODER') {
       if (!googleApiKey) {
         throw new Error(error.message + ' Please set a Google API Key to use geocoding.');
       }

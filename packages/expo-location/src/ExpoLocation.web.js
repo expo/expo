@@ -22,6 +22,13 @@ function positionToJSON(position): Object {
   };
 }
 
+class GeocoderError extends Error {
+  constructor() {
+    super('Geocoder service is not available for this device.');
+    this.code = 'E_NO_GEOCODER';
+  }
+}
+
 export default {
   get name(): string {
     return 'ExpoLocation';
@@ -41,6 +48,12 @@ export default {
   },
   async watchDeviceHeading(headingId): Promise<void> {
     console.warn('Location.watchDeviceHeading: is not supported on web');
+  },
+  async geocodeAsync(): Promise<Array> {
+    throw new GeocoderError();
+  },
+  async reverseGeocodeAsync(): Promise<Array> {
+    throw new GeocoderError();
   },
   async watchPositionImplAsync(watchId: string, options: Object): Promise<any> {
     return new Promise((res, rej) => {
