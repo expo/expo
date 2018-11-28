@@ -53,6 +53,12 @@ const imageLoaderConfiguration = {
   },
 };
 
+// This is needed for loading css
+const cssLoaderConfiguration = {
+  test: /\.css$/,
+  use: ['style-loader', 'css-loader'],
+};
+
 const ttfLoaderConfiguration = {
   test: /\.ttf$/,
   use: [
@@ -70,23 +76,38 @@ const ttfLoaderConfiguration = {
   ],
 };
 
-// This is needed for loading css
-const cssLoaderConfiguration = {
-  test: /\.css$/,
-  use: ['style-loader', 'css-loader'],
+const htmlLoaderConfiguration = {
+  test: /\.html$/,
+  use: ['html-loader'],
+  include: [relativePath('./assets')],
 };
 
-function getWebModule(moduleName) {
+const videoLoaderConfiguration = {
+  test: /\.(mov|mp4)$/,
+  use: [
+    {
+      loader: 'file-loader',
+      options: {
+        name: '[path][name].[ext]',
+      },
+    },
+  ],
+};
+
+function getWebModule(moduleName, initialRoot) {
   return function(res) {
-    if (res.context.indexOf('node_modules/react-native') === -1) return;
-    res.request = includeModule('react-native-web/dist/exports/' + moduleName);
+    if (res.context.indexOf('node_modules/react-native/') === -1) return;
+    res.request = includeModule(initialRoot + moduleName);
   };
 }
 
-function useWebModules(...modules) {
+function useWebModules(modules, initialRoot = 'react-native-web/dist/exports/') {
   return modules.map(
     moduleName =>
-      new webpack.NormalModuleReplacementPlugin(new RegExp(moduleName), getWebModule(moduleName))
+      new webpack.NormalModuleReplacementPlugin(
+        new RegExp(moduleName),
+        getWebModule(moduleName, initialRoot)
+      )
   );
 }
 
@@ -100,10 +121,12 @@ module.exports = {
   },
   module: {
     rules: [
+      htmlLoaderConfiguration,
       babelLoaderConfiguration,
       cssLoaderConfiguration,
       imageLoaderConfiguration,
       ttfLoaderConfiguration,
+      videoLoaderConfiguration,
     ],
   },
   plugins: [
@@ -111,13 +134,12 @@ module.exports = {
       'process.env.NODE_ENV': JSON.stringify(environment),
       __DEV__,
     }),
-    ...useWebModules('Platform', 'DeviceInfo', 'Dimensions'),
+    ...useWebModules(['Platform', 'DeviceInfo', 'Dimensions', 'Linking', 'Image', 'Share', 'Text']),
   ],
   resolve: {
     symlinks: false,
     extensions: ['.web.js', '.js', '.jsx'],
     alias: {
-      'react-navigation': '@react-navigation/core',
       'react-native$': 'react-native-web',
     },
   },
