@@ -1,1 +1,27 @@
 include ':app'
+
+def modulesDir = new File(rootDir, "../../../packages")
+
+def includeUniversalModule = { name ->
+  include ":$name"
+  project(":$name").projectDir = new File(modulesDir, "$name/android")
+}
+
+[
+    'expo-core',
+    'expo-firebase-app',
+    'expo-firebase-analytics',
+    'expo-firebase-auth',
+    'expo-firebase-crashlytics',
+    'expo-firebase-database',
+    'expo-firebase-firestore',
+    'expo-firebase-functions',
+    'expo-firebase-instance-id',
+    'expo-firebase-invites',
+    'expo-firebase-links',
+    'expo-firebase-messaging',
+    'expo-firebase-notifications',
+    'expo-firebase-performance',
+    'expo-firebase-remote-config',
+    'expo-firebase-storage'  ,
+].forEach({ moduleName -> includeUniversalModule(moduleName) })

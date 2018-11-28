@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/android.iml" filepath="$PROJECT_DIR$/android.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../../packages/expo-core/android/expo-core.iml" filepath="$PROJECT_DIR$/../../../packages/expo-core/android/expo-core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../../packages/expo-firebase-analytics/android/expo-firebase-analytics.iml" filepath="$PROJECT_DIR$/../../../packages/expo-firebase-analytics/android/expo-firebase-analytics.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../../packages/expo-firebase-app/android/expo-firebase-app.iml" filepath="$PROJECT_DIR$/../../../packages/expo-firebase-app/android/expo-firebase-app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../../packages/expo-firebase-auth/android/expo-firebase-auth.iml" filepath="$PROJECT_DIR$/../../../packages/expo-firebase-auth/android/expo-firebase-auth.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../../packages/expo-firebase-crashlytics/android/expo-firebase-crashlytics.iml" filepath="$PROJECT_DIR$/../../../packages/expo-firebase-crashlytics/android/expo-firebase-crashlytics.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../../packages/expo-firebase-database/android/expo-firebase-database.iml" filepath="$PROJECT_DIR$/../../../packages/expo-firebase-database/android/expo-firebase-database.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../../packages/expo-firebase-firestore/android/expo-firebase-firestore.iml" filepath="$PROJECT_DIR$/../../../packages/expo-firebase-firestore/android/expo-firebase-firestore.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../../packages/expo-firebase-functions/android/expo-firebase-functions.iml" filepath="$PROJECT_DIR$/../../../packages/expo-firebase-functions/android/expo-firebase-functions.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../../packages/expo-firebase-instance-id/android/expo-firebase-instance-id.iml" filepath="$PROJECT_DIR$/../../../packages/expo-firebase-instance-id/android/expo-firebase-instance-id.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../../packages/expo-firebase-invites/android/expo-firebase-invites.iml" filepath="$PROJECT_DIR$/../../../packages/expo-firebase-invites/android/expo-firebase-invites.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../../packages/expo-firebase-links/android/expo-firebase-links.iml" filepath="$PROJECT_DIR$/../../../packages/expo-firebase-links/android/expo-firebase-links.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../../packages/expo-firebase-messaging/android/expo-firebase-messaging.iml" filepath="$PROJECT_DIR$/../../../packages/expo-firebase-messaging/android/expo-firebase-messaging.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../../packages/expo-firebase-notifications/android/expo-firebase-notifications.iml" filepath="$PROJECT_DIR$/../../../packages/expo-firebase-notifications/android/expo-firebase-notifications.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../../packages/expo-firebase-performance/android/expo-firebase-performance.iml" filepath="$PROJECT_DIR$/../../../packages/expo-firebase-performance/android/expo-firebase-performance.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../../packages/expo-firebase-remote-config/android/expo-firebase-remote-config.iml" filepath="$PROJECT_DIR$/../../../packages/expo-firebase-remote-config/android/expo-firebase-remote-config.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../../packages/expo-firebase-storage/android/expo-firebase-storage.iml" filepath="$PROJECT_DIR$/../../../packages/expo-firebase-storage/android/expo-firebase-storage.iml" />
+    </modules>
+  </component>
+</project>

@@ -302,7 +302,7 @@
 
     <!-- FCM -->
     <service
-      android:name=".fcm.ExpoFcmMessagingService">
+      android:name="expo.modules.firebase.messaging.EXFirebaseMessagingService">
       <intent-filter>
         <action android:name="com.google.firebase.MESSAGING_EVENT"/>
       </intent-filter>
@@ -317,6 +317,15 @@
       android:name=".fcm.FcmRegistrationIntentService"
       android:exported="false">
     </service>
+
+    <!-- Expo Firebase Instance ID -->
+    <service android:name="expo.modules.firebase.messaging.EXFirebaseInstanceIdService">
+        <intent-filter>
+            <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+        </intent-filter>
+    </service>
+    <!-- Expo Firebase Background Messages -->
+    <service android:name="expo.modules.firebase.messaging.FirebaseBackgroundMessagingService" />
 
     <!-- ImagePicker native module -->
     <activity

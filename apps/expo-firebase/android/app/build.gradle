@@ -180,6 +180,22 @@ dependencies {
     exclude group: 'com.squareup.okhttp3', module: 'okhttp-urlconnection'
   }
   
+  api project(':expo-core')
+  api project(':expo-firebase-analytics')
+  api project(':expo-firebase-app')
+  api project(':expo-firebase-auth')
+  api project(':expo-firebase-crashlytics')
+  api project(':expo-firebase-database')
+  api project(':expo-firebase-firestore')
+  api project(':expo-firebase-functions')
+  api project(':expo-firebase-instance-id')
+  api project(':expo-firebase-invites')
+  api project(':expo-firebase-links')
+  api project(':expo-firebase-messaging')
+  api project(':expo-firebase-notifications')
+  api project(':expo-firebase-performance')
+  api project(':expo-firebase-remote-config')
+  api project(':expo-firebase-storage')
 
 }
 
