@@ -16,7 +16,7 @@ export type InitialProps = {
   [key: string]: any;
 };
 
-function wrapWithExpoRoot<P extends InitialProps>(
+export default function withExpoRoot<P extends InitialProps>(
   AppRootComponent: React.ComponentClass<P>
 ): React.ComponentClass<P> {
   return class ExpoRootComponent extends React.Component<P> {
@@ -27,7 +27,7 @@ function wrapWithExpoRoot<P extends InitialProps>(
       }
 
       // TODO: Bacon: Pass this in for web
-      const { exp = {} } = this.props;
+      const { exp } = this.props;
       if (exp.notification) {
         Notifications._setInitialNotification(exp.notification);
       }
@@ -46,5 +46,3 @@ function wrapWithExpoRoot<P extends InitialProps>(
     }
   };
 }
-
-export default wrapWithExpoRoot;

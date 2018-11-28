@@ -1,10 +1,8 @@
-import { createElement } from 'react';
+import * as React from 'react';
 import ReactDOM from 'react-dom';
-import wrapWithExpoRoot from './wrapWithExpoRoot';
+import withExpoRoot from './withExpoRoot';
 
 export default function registerRootComponent(component) {
-  const App = wrapWithExpoRoot(component);
-  // TODO: Bacon: Add this to AppRegistry?
-  ReactDOM.render(createElement(App), global.document.getElementById('main'));
-  //   AppRegistry.registerComponent('main', () => wrapWithExpoRoot(component));
+  const App = withExpoRoot(component);
+  ReactDOM.render(<App exp={{}} />, global.document.getElementById('main'));
 }
