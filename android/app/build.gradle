@@ -90,9 +90,11 @@ configurations.all {
   }
 }
 
+// WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
 /* UNCOMMENT WHEN DISTRIBUTING
 apply from: 'expo.gradle'
 END UNCOMMENT WHEN DISTRIBUTING */
+// WHEN_PREPARING_SHELL_REMOVE_TO_HERE
 
 dependencies {
   implementation fileTree(dir: 'libs', include: ['*.jar'])
