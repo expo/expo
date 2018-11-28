@@ -1,6 +1,6 @@
 // @flow
 import invariant from 'invariant';
-import { Platform } from 'react-native';
+import { Platform } from 'expo-core';
 
 import LocalAuthentication from './ExpoLocalAuthentication';
 
@@ -14,15 +14,15 @@ export const AuthenticationType = {
 type AuthenticationTypeType = $Keys<typeof AuthenticationType>;
 
 export async function hasHardwareAsync(): Promise<boolean> {
-  return LocalAuthentication.hasHardwareAsync();
+  return await LocalAuthentication.hasHardwareAsync();
 }
 
 export async function supportedAuthenticationTypesAsync(): Promise<Array<AuthenticationTypeType>> {
-  return LocalAuthentication.supportedAuthenticationTypesAsync();
+  return await LocalAuthentication.supportedAuthenticationTypesAsync();
 }
 
 export async function isEnrolledAsync(): Promise<boolean> {
-  return LocalAuthentication.isEnrolledAsync();
+  return await LocalAuthentication.isEnrolledAsync();
 }
 
 export async function authenticateAsync(
@@ -41,10 +41,13 @@ export async function authenticateAsync(
     }
     return result;
   } else {
-    return LocalAuthentication.authenticateAsync();
+    return await LocalAuthentication.authenticateAsync();
   }
 }
 
-export function cancelAuthenticate(): Promise<void> {
-  return LocalAuthentication.cancelAuthenticate();
+export async function cancelAuthenticate(): Promise<void> {
+  if (!LocalAuthentication.cancelAuthenticate) {
+    throw new Error(`LocalAuthentication.cancelAuthenticate is not supported on ${Platform.OS}`);
+  }
+  return await LocalAuthentication.cancelAuthenticate();
 }
