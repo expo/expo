@@ -17,7 +17,8 @@
   "dependencies": {
     "expo-core": "~1.2.0",
     "uri-parser": "^1.0.1",
-    "url-join": "^4.0.0"
+    "url-join": "^4.0.0",
+    "url-loader": "^1.1.2"
   },
   "devDependencies": {
     "babel-preset-expo": "^5.0.0"

@@ -20,7 +20,11 @@ echo "$newCommit" > nix/nixpkgs.json
 
 # Generate nix files for a node 8 project with the npm dependency expo
 pushd nix/nodepackages
-nix run -f $nixdir nodePackages.node2nix --command node2nix -8 -i <(echo '["expo-cli"]')
+nix run -f $nixdir nodePackages.node2nix --command \
+  node2nix \
+  --strip-optional-dependencies \
+  --nodejs-10 \
+  --input <(echo '["expo-cli"]')
 popd
 
 # Generate nix files for the bundix ruby gem
@@ -31,4 +35,4 @@ nix run -f $nixdir bundix --command bundix
 popd
 
 # Update all yarn.lock files
-nix run -f $nixdir fd yarn parallel bash --command bash -c "fd -a yarn.lock $scriptdir | xargs -n 1 dirname | parallel 'cd {} && yarn install --force'"
+nix run -f $nixdir fd yarn parallel bash --command bash -c "fd -a yarn.lock $scriptdir | xargs -n 1 dirname | parallel -j 1 'cd {} && echo {} && yarn install --force'"
