@@ -511,7 +511,7 @@ PODS:
   - yoga (0.57.1.React)
 
 DEPENDENCIES:
-  - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
+  - DoubleConversion (from `../../../react-native-lab/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - EXAdsAdMob (from `../../../packages/expo-ads-admob/ios`)
   - EXBarCodeScanner (from `../../../packages/expo-barcode-scanner/ios`)
   - EXBarCodeScannerInterface (from `../../../packages/expo-barcode-scanner-interface/ios`)
@@ -558,22 +558,22 @@ DEPENDENCIES:
   - EXSensors (from `../../../packages/expo-sensors/ios`)
   - EXSensorsInterface (from `../../../packages/expo-sensors-interface/ios`)
   - EXSMS (from `../../../packages/expo-sms/ios`)
-  - Folly (from `../node_modules/react-native/third-party-podspecs/Folly.podspec`)
-  - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
-  - React/ART (from `../node_modules/react-native`)
-  - React/Core (from `../node_modules/react-native`)
-  - React/CxxBridge (from `../node_modules/react-native`)
-  - React/DevSupport (from `../node_modules/react-native`)
-  - React/RCTActionSheet (from `../node_modules/react-native`)
-  - React/RCTAnimation (from `../node_modules/react-native`)
-  - React/RCTCameraRoll (from `../node_modules/react-native`)
-  - React/RCTGeolocation (from `../node_modules/react-native`)
-  - React/RCTImage (from `../node_modules/react-native`)
-  - React/RCTNetwork (from `../node_modules/react-native`)
-  - React/RCTText (from `../node_modules/react-native`)
-  - React/RCTVibration (from `../node_modules/react-native`)
-  - React/RCTWebSocket (from `../node_modules/react-native`)
-  - yoga (from `../node_modules/react-native/ReactCommon/yoga`)
+  - Folly (from `../../../react-native-lab/react-native/third-party-podspecs/Folly.podspec`)
+  - glog (from `../../../react-native-lab/react-native/third-party-podspecs/glog.podspec`)
+  - React/ART (from `../../../react-native-lab/react-native`)
+  - React/Core (from `../../../react-native-lab/react-native`)
+  - React/CxxBridge (from `../../../react-native-lab/react-native`)
+  - React/DevSupport (from `../../../react-native-lab/react-native`)
+  - React/RCTActionSheet (from `../../../react-native-lab/react-native`)
+  - React/RCTAnimation (from `../../../react-native-lab/react-native`)
+  - React/RCTCameraRoll (from `../../../react-native-lab/react-native`)
+  - React/RCTGeolocation (from `../../../react-native-lab/react-native`)
+  - React/RCTImage (from `../../../react-native-lab/react-native`)
+  - React/RCTNetwork (from `../../../react-native-lab/react-native`)
+  - React/RCTText (from `../../../react-native-lab/react-native`)
+  - React/RCTVibration (from `../../../react-native-lab/react-native`)
+  - React/RCTWebSocket (from `../../../react-native-lab/react-native`)
+  - yoga (from `../../../react-native-lab/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
@@ -632,7 +632,7 @@ SPEC REPOS:
 
 EXTERNAL SOURCES:
   DoubleConversion:
-    :podspec: "../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec"
+    :podspec: "../../../react-native-lab/react-native/third-party-podspecs/DoubleConversion.podspec"
   EXAdsAdMob:
     :path: "../../../packages/expo-ads-admob/ios"
   EXBarCodeScanner:
@@ -727,13 +727,13 @@ EXTERNAL SOURCES:
   EXSMS:
     :path: "../../../packages/expo-sms/ios"
   Folly:
-    :podspec: "../node_modules/react-native/third-party-podspecs/Folly.podspec"
+    :podspec: "../../../react-native-lab/react-native/third-party-podspecs/Folly.podspec"
   glog:
-    :podspec: "../node_modules/react-native/third-party-podspecs/glog.podspec"
+    :podspec: "../../../react-native-lab/react-native/third-party-podspecs/glog.podspec"
   React:
-    :path: "../node_modules/react-native"
+    :path: "../../../react-native-lab/react-native"
   yoga:
-    :path: "../node_modules/react-native/ReactCommon/yoga"
+    :path: "../../../react-native-lab/react-native/ReactCommon/yoga"
 
 CHECKOUT OPTIONS:
   ExpoKit:
@@ -845,6 +845,6 @@ SPEC CHECKSUMS:
   Stripe: 2c69e216061d54d9c538204bb4f58bd597ddfc5b
   yoga: b1ce48b6cf950b98deae82838f5173ea7cf89e85
 
-PODFILE CHECKSUM: ddf9faa7c0ac6465da375973a9fa0a523ea8a3bb
+PODFILE CHECKSUM: 37987175312d8ba6225961c67f7332308230c9fc
 
 COCOAPODS: 1.5.3
