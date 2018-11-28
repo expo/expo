@@ -1,8 +1,8 @@
 export default {
-  get name() {
+  get name(): string {
     return 'ExpoSMS';
   },
-  async isAvailableAsync(options) {
+  async isAvailableAsync(): Promise<boolean> {
     return false;
   },
 };
