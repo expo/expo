@@ -1,0 +1,850 @@
+PODS:
+  - Amplitude-iOS (3.14.1)
+  - Analytics (3.6.9)
+  - AppAuth (0.95.0)
+  - Bolts (1.9.0):
+    - Bolts/AppLinks (= 1.9.0)
+    - Bolts/Tasks (= 1.9.0)
+  - Bolts/AppLinks (1.9.0):
+    - Bolts/Tasks
+  - Bolts/Tasks (1.9.0)
+  - boost-for-react-native (1.63.0)
+  - BoringSSL (10.0.6):
+    - BoringSSL/Implementation (= 10.0.6)
+    - BoringSSL/Interface (= 10.0.6)
+  - BoringSSL/Implementation (10.0.6):
+    - BoringSSL/Interface (= 10.0.6)
+  - BoringSSL/Interface (10.0.6)
+  - Branch (0.24.2):
+    - Branch/Core (= 0.24.2)
+  - Branch/Core (0.24.2)
+  - CocoaLumberjack (3.2.1):
+    - CocoaLumberjack/Default (= 3.2.1)
+    - CocoaLumberjack/Extensions (= 3.2.1)
+  - CocoaLumberjack/Default (3.2.1)
+  - CocoaLumberjack/Extensions (3.2.1):
+    - CocoaLumberjack/Default
+  - Crashlytics (3.11.1):
+    - Fabric (~> 1.8.1)
+  - DoubleConversion (1.1.6)
+  - EXAdsAdMob (1.1.0):
+    - EXCore
+    - Google-Mobile-Ads-SDK
+  - EXBarCodeScanner (1.1.0):
+    - EXCore
+  - EXBarCodeScannerInterface (1.1.0):
+    - EXCore
+  - EXCamera (1.2.0):
+    - EXBarCodeScannerInterface
+    - EXCore
+    - EXFaceDetectorInterface
+    - EXFileSystemInterface
+    - EXImageLoaderInterface
+    - EXPermissionsInterface
+  - EXCameraInterface (1.1.0):
+    - EXCore
+  - EXConstants (1.1.0):
+    - EXConstantsInterface
+    - EXCore
+  - EXConstantsInterface (1.1.0):
+    - EXCore
+  - EXContacts (1.1.0):
+    - EXCore
+    - EXFileSystemInterface
+    - EXPermissionsInterface
+  - EXCore (1.2.0)
+  - EXFaceDetectorInterface (1.1.0):
+    - EXCore
+  - EXFileSystem (1.1.0):
+    - EXCore
+    - EXFileSystemInterface
+  - EXFileSystemInterface (1.1.0):
+    - EXCore
+  - EXFirebaseAnalytics (1.0.0-rc.3):
+    - EXCore
+    - Firebase/Analytics
+  - EXFirebaseApp (1.0.0-rc.3):
+    - EXCore
+    - Firebase/Core
+  - EXFirebaseAuth (1.0.0-rc.3):
+    - EXCore
+    - EXFirebaseApp
+    - Firebase/Auth
+  - EXFirebaseCrashlytics (1.0.0-rc.3):
+    - Crashlytics
+    - EXCore
+    - EXFirebaseApp
+    - Fabric
+  - EXFirebaseDatabase (1.0.0-rc.3):
+    - EXCore
+    - EXFirebaseApp
+    - Firebase/Database
+  - EXFirebaseFirestore (1.0.0-rc.3):
+    - EXCore
+    - EXFirebaseApp
+    - Firebase/Firestore
+  - EXFirebaseFunctions (1.0.0-rc.3):
+    - EXCore
+    - Firebase/Functions
+  - EXFirebaseInstanceID (1.0.0-rc.3):
+    - EXCore
+    - Firebase/Messaging
+  - EXFirebaseInvites (1.0.0-rc.3):
+    - EXCore
+    - EXFirebaseLinks
+    - Firebase/Invites
+  - EXFirebaseLinks (1.0.0-rc.3):
+    - EXCore
+    - EXFirebaseApp
+    - Firebase/DynamicLinks
+  - EXFirebaseMessaging (1.0.0-rc.3):
+    - EXCore
+    - EXFirebaseApp
+    - Firebase/Messaging
+  - EXFirebaseNotifications (1.0.0-rc.4):
+    - EXCore
+    - EXFirebaseMessaging
+  - EXFirebasePerformance (1.0.0-rc.3):
+    - EXCore
+    - Firebase/Performance
+  - EXFirebaseRemoteConfig (1.0.0-rc.3):
+    - EXCore
+    - Firebase/RemoteConfig
+  - EXFirebaseStorage (1.0.0-rc.3):
+    - EXCore
+    - EXFirebaseApp
+    - Firebase/Storage
+  - EXFont (1.1.0):
+    - EXCore
+    - EXFontInterface
+  - EXFontInterface (1.1.0):
+    - EXCore
+  - EXGL (1.1.0):
+    - EXCameraInterface
+    - EXCore
+    - EXFileSystemInterface
+    - EXGL-CPP
+  - EXGL-CPP (1.1.0):
+    - EXGL-CPP/UEXGL (= 1.1.0)
+  - EXGL-CPP/UEXGL (1.1.0)
+  - EXImageLoaderInterface (1.1.0):
+    - EXCore
+  - EXLocalAuthentication (1.1.0):
+    - EXConstantsInterface
+    - EXCore
+  - EXLocalization (1.0.0):
+    - EXCore
+  - EXLocation (1.1.0):
+    - EXCore
+    - EXPermissionsInterface
+  - EXMediaLibrary (1.1.0):
+    - EXCore
+    - EXPermissionsInterface
+  - EXPaymentsStripe (1.1.0):
+    - EXCore
+    - Stripe (~> 13.2.0)
+  - EXPermissions (1.2.0):
+    - EXCore
+    - EXPermissionsInterface
+  - EXPermissionsInterface (1.2.0):
+    - EXCore
+  - ExpoKit/Core (2.9.0):
+    - Amplitude-iOS (~> 3.8)
+    - Analytics (~> 3.5)
+    - AppAuth (~> 0.4)
+    - Branch (~> 0.24.2)
+    - CocoaLumberjack (~> 3.2.1)
+    - Crashlytics (~> 3.8)
+    - EXCameraInterface
+    - EXConstantsInterface
+    - EXCore
+    - EXFileSystemInterface
+    - EXPermissionsInterface
+    - EXReactNativeAdapter
+    - EXSensorsInterface
+    - Fabric (~> 1.6)
+    - FBAudienceNetwork (= 4.99.0)
+    - FBSDKCoreKit (= 4.37.0)
+    - FBSDKLoginKit (= 4.37.0)
+    - FBSDKShareKit (= 4.37.0)
+    - Google-Maps-iOS-Utils (~> 2.1.0)
+    - Google-Mobile-Ads-SDK (~> 7.22.0)
+    - GoogleMaps (~> 2.5.0)
+    - GoogleSignIn (~> 4.1)
+    - JKBigInteger2 (= 0.0.5)
+    - lottie-ios (~> 2.5.0)
+    - React
+  - EXPrint (2.0.0-alpha.0):
+    - EXCore
+  - EXReactNativeAdapter (1.2.0):
+    - EXCore
+    - EXFontInterface
+    - React
+  - EXSegment (1.1.0):
+    - Analytics (~> 3.5)
+    - EXConstantsInterface
+    - EXCore
+  - EXSensors (1.1.0):
+    - EXCore
+    - EXSensorsInterface
+  - EXSensorsInterface (1.1.0):
+    - EXCore
+  - EXSMS (1.1.0):
+    - EXCore
+  - Fabric (1.8.2)
+  - FBAudienceNetwork (4.99.0)
+  - FBSDKCoreKit (4.37.0):
+    - Bolts (~> 1.7)
+  - FBSDKLoginKit (4.37.0):
+    - FBSDKCoreKit
+  - FBSDKShareKit (4.37.0):
+    - FBSDKCoreKit (~> 4.37.0)
+  - Firebase/Analytics (5.12.0):
+    - Firebase/Core
+  - Firebase/Auth (5.12.0):
+    - Firebase/CoreOnly
+    - FirebaseAuth (= 5.0.5)
+  - Firebase/Core (5.12.0):
+    - Firebase/CoreOnly
+    - FirebaseAnalytics (= 5.3.0)
+  - Firebase/CoreOnly (5.12.0):
+    - FirebaseCore (= 5.1.7)
+  - Firebase/Database (5.12.0):
+    - Firebase/CoreOnly
+    - FirebaseDatabase (= 5.0.3)
+  - Firebase/DynamicLinks (5.12.0):
+    - Firebase/CoreOnly
+    - FirebaseDynamicLinks (= 3.1.1)
+  - Firebase/Firestore (5.12.0):
+    - Firebase/CoreOnly
+    - FirebaseFirestore (= 0.14.0)
+  - Firebase/Functions (5.12.0):
+    - Firebase/CoreOnly
+    - FirebaseFunctions (= 2.1.1)
+  - Firebase/Invites (5.12.0):
+    - Firebase/CoreOnly
+    - FirebaseInvites (= 3.0.1)
+  - Firebase/Messaging (5.12.0):
+    - Firebase/CoreOnly
+    - FirebaseMessaging (= 3.2.1)
+  - Firebase/Performance (5.12.0):
+    - Firebase/Core
+    - FirebasePerformance (= 2.2.1)
+  - Firebase/RemoteConfig (5.12.0):
+    - Firebase/Core
+    - FirebaseRemoteConfig (= 3.1.0)
+  - Firebase/Storage (5.12.0):
+    - Firebase/CoreOnly
+    - FirebaseStorage (= 3.0.3)
+  - FirebaseABTesting (2.0.0):
+    - FirebaseCore (~> 5.0)
+    - Protobuf (~> 3.5)
+  - FirebaseAnalytics (5.3.0):
+    - FirebaseCore (~> 5.1)
+    - FirebaseInstanceID (~> 3.3)
+    - GoogleAppMeasurement (~> 5.3)
+    - GoogleUtilities/AppDelegateSwizzler (~> 5.2)
+    - GoogleUtilities/MethodSwizzler (~> 5.2)
+    - GoogleUtilities/Network (~> 5.2)
+    - "GoogleUtilities/NSData+zlib (~> 5.2)"
+    - nanopb (~> 0.3)
+  - FirebaseAnalyticsInterop (1.1.0)
+  - FirebaseAuth (5.0.5):
+    - FirebaseAuthInterop (~> 1.0)
+    - FirebaseCore (~> 5.1)
+    - GoogleUtilities/Environment (~> 5.2)
+    - GTMSessionFetcher/Core (~> 1.1)
+  - FirebaseAuthInterop (1.0.0)
+  - FirebaseCore (5.1.7):
+    - GoogleUtilities/Logger (~> 5.2)
+  - FirebaseDatabase (5.0.3):
+    - FirebaseCore (~> 5.0)
+    - leveldb-library (~> 1.18)
+  - FirebaseDynamicLinks (3.1.1):
+    - FirebaseAnalytics (~> 5.1)
+    - FirebaseAnalyticsInterop (~> 1.0)
+    - FirebaseCore (~> 5.1)
+  - FirebaseFirestore (0.14.0):
+    - FirebaseAuthInterop (~> 1.0)
+    - FirebaseCore (~> 5.1)
+    - FirebaseFirestore/abseil-cpp (= 0.14.0)
+    - "gRPC-C++ (~> 0.0.3)"
+    - gRPC-ProtoRPC (~> 1.0)
+    - leveldb-library (~> 1.20)
+    - nanopb (~> 0.3.8)
+    - Protobuf (~> 3.1)
+  - FirebaseFirestore/abseil-cpp (0.14.0):
+    - FirebaseAuthInterop (~> 1.0)
+    - FirebaseCore (~> 5.1)
+    - "gRPC-C++ (~> 0.0.3)"
+    - gRPC-ProtoRPC (~> 1.0)
+    - leveldb-library (~> 1.20)
+    - nanopb (~> 0.3.8)
+    - Protobuf (~> 3.1)
+  - FirebaseFunctions (2.1.1):
+    - FirebaseCore (~> 5.0)
+    - GTMSessionFetcher/Core (~> 1.1)
+  - FirebaseInstanceID (3.3.0):
+    - FirebaseCore (~> 5.1)
+    - GoogleUtilities/Environment (~> 5.3)
+    - GoogleUtilities/UserDefaults (~> 5.3)
+  - FirebaseInvites (3.0.1):
+    - FirebaseAnalytics (~> 5.1)
+    - FirebaseDynamicLinks (~> 3.0)
+    - GoogleAPIClientForREST (~> 1.0)
+    - GoogleSignIn (~> 4.2)
+    - GoogleToolboxForMac/Logger (~> 2.1)
+    - "GoogleToolboxForMac/NSDictionary+URLArguments (~> 2.1)"
+    - "GoogleToolboxForMac/NSString+URLArguments (~> 2.1)"
+    - GoogleToolboxForMac/StringEncoding (~> 2.1)
+    - GoogleToolboxForMac/URLBuilder (~> 2.1)
+    - GTMOAuth2 (~> 1.0)
+    - GTMSessionFetcher/Core (~> 1.1)
+    - GTMSessionFetcher/Full (~> 1.1)
+    - Protobuf (~> 3.5)
+  - FirebaseMessaging (3.2.1):
+    - FirebaseAnalyticsInterop (~> 1.1)
+    - FirebaseCore (~> 5.1)
+    - FirebaseInstanceID (~> 3.0)
+    - GoogleUtilities/Environment (~> 5.2)
+    - GoogleUtilities/Reachability (~> 5.2)
+    - Protobuf (~> 3.1)
+  - FirebasePerformance (2.2.1):
+    - FirebaseAnalytics (~> 5.3)
+    - FirebaseInstanceID (~> 3.3)
+    - FirebaseRemoteConfig (~> 3.1)
+    - GoogleToolboxForMac/Logger (~> 2.1)
+    - "GoogleToolboxForMac/NSData+zlib (~> 2.1)"
+    - GoogleUtilities/ISASwizzler (~> 5.2)
+    - GoogleUtilities/MethodSwizzler (~> 5.2)
+    - GTMSessionFetcher/Core (~> 1.1)
+    - Protobuf (~> 3.5)
+  - FirebaseRemoteConfig (3.1.0):
+    - FirebaseABTesting (~> 2.0)
+    - FirebaseAnalytics (~> 5.3)
+    - FirebaseCore (~> 5.1)
+    - FirebaseInstanceID (~> 3.3)
+    - GoogleUtilities/Environment (~> 5.2)
+    - "GoogleUtilities/NSData+zlib (~> 5.2)"
+    - Protobuf (~> 3.5)
+  - FirebaseStorage (3.0.3):
+    - FirebaseAuthInterop (~> 1.0)
+    - FirebaseCore (~> 5.1)
+    - GTMSessionFetcher/Core (~> 1.1)
+  - Folly (2016.10.31.00):
+    - boost-for-react-native
+    - DoubleConversion
+    - glog
+  - glog (0.3.5)
+  - Google-Maps-iOS-Utils (2.1.0):
+    - Google-Maps-iOS-Utils/Clustering (= 2.1.0)
+    - Google-Maps-iOS-Utils/Geometry (= 2.1.0)
+    - Google-Maps-iOS-Utils/Heatmap (= 2.1.0)
+    - Google-Maps-iOS-Utils/QuadTree (= 2.1.0)
+    - GoogleMaps
+  - Google-Maps-iOS-Utils/Clustering (2.1.0):
+    - Google-Maps-iOS-Utils/QuadTree
+    - GoogleMaps
+  - Google-Maps-iOS-Utils/Geometry (2.1.0):
+    - GoogleMaps
+  - Google-Maps-iOS-Utils/Heatmap (2.1.0):
+    - Google-Maps-iOS-Utils/QuadTree
+    - GoogleMaps
+  - Google-Maps-iOS-Utils/QuadTree (2.1.0):
+    - GoogleMaps
+  - Google-Mobile-Ads-SDK (7.22.0)
+  - GoogleAPIClientForREST (1.3.7):
+    - GoogleAPIClientForREST/Core (= 1.3.7)
+    - GTMSessionFetcher (>= 1.1.7)
+  - GoogleAPIClientForREST/Core (1.3.7):
+    - GTMSessionFetcher (>= 1.1.7)
+  - GoogleAppMeasurement (5.3.0):
+    - GoogleUtilities/AppDelegateSwizzler (~> 5.2)
+    - GoogleUtilities/MethodSwizzler (~> 5.2)
+    - GoogleUtilities/Network (~> 5.2)
+    - "GoogleUtilities/NSData+zlib (~> 5.2)"
+    - nanopb (~> 0.3)
+  - GoogleMaps (2.5.0):
+    - GoogleMaps/Maps (= 2.5.0)
+  - GoogleMaps/Base (2.5.0)
+  - GoogleMaps/Maps (2.5.0):
+    - GoogleMaps/Base
+  - GoogleSignIn (4.3.0):
+    - "GoogleToolboxForMac/NSDictionary+URLArguments (~> 2.1)"
+    - "GoogleToolboxForMac/NSString+URLArguments (~> 2.1)"
+    - GTMOAuth2 (~> 1.0)
+    - GTMSessionFetcher/Core (~> 1.1)
+  - GoogleToolboxForMac/Core (2.1.4):
+    - GoogleToolboxForMac/Defines (= 2.1.4)
+  - GoogleToolboxForMac/DebugUtils (2.1.4):
+    - GoogleToolboxForMac/Defines (= 2.1.4)
+  - GoogleToolboxForMac/Defines (2.1.4)
+  - GoogleToolboxForMac/Logger (2.1.4):
+    - GoogleToolboxForMac/Defines (= 2.1.4)
+  - "GoogleToolboxForMac/NSData+zlib (2.1.4)":
+    - GoogleToolboxForMac/Defines (= 2.1.4)
+  - "GoogleToolboxForMac/NSDictionary+URLArguments (2.1.4)":
+    - GoogleToolboxForMac/DebugUtils (= 2.1.4)
+    - GoogleToolboxForMac/Defines (= 2.1.4)
+    - "GoogleToolboxForMac/NSString+URLArguments (= 2.1.4)"
+  - "GoogleToolboxForMac/NSString+URLArguments (2.1.4)"
+  - GoogleToolboxForMac/StringEncoding (2.1.4):
+    - GoogleToolboxForMac/Defines (= 2.1.4)
+  - GoogleToolboxForMac/URLBuilder (2.1.4):
+    - GoogleToolboxForMac/Core (= 2.1.4)
+    - GoogleToolboxForMac/Defines (= 2.1.4)
+    - "GoogleToolboxForMac/NSDictionary+URLArguments (= 2.1.4)"
+    - "GoogleToolboxForMac/NSString+URLArguments (= 2.1.4)"
+  - GoogleUtilities/AppDelegateSwizzler (5.3.6):
+    - GoogleUtilities/Environment
+    - GoogleUtilities/Logger
+    - GoogleUtilities/Network
+  - GoogleUtilities/Environment (5.3.6)
+  - GoogleUtilities/ISASwizzler (5.3.6)
+  - GoogleUtilities/Logger (5.3.6):
+    - GoogleUtilities/Environment
+  - GoogleUtilities/MethodSwizzler (5.3.6):
+    - GoogleUtilities/Logger
+  - GoogleUtilities/Network (5.3.6):
+    - GoogleUtilities/Logger
+    - "GoogleUtilities/NSData+zlib"
+    - GoogleUtilities/Reachability
+  - "GoogleUtilities/NSData+zlib (5.3.6)"
+  - GoogleUtilities/Reachability (5.3.6):
+    - GoogleUtilities/Logger
+  - GoogleUtilities/UserDefaults (5.3.6):
+    - GoogleUtilities/Logger
+  - gRPC (1.14.0):
+    - gRPC-RxLibrary (= 1.14.0)
+    - gRPC/Main (= 1.14.0)
+  - "gRPC-C++ (0.0.3)":
+    - "gRPC-C++/Implementation (= 0.0.3)"
+    - "gRPC-C++/Interface (= 0.0.3)"
+  - "gRPC-C++/Implementation (0.0.3)":
+    - "gRPC-C++/Interface (= 0.0.3)"
+    - gRPC-Core (= 1.14.0)
+    - nanopb (~> 0.3)
+  - "gRPC-C++/Interface (0.0.3)"
+  - gRPC-Core (1.14.0):
+    - gRPC-Core/Implementation (= 1.14.0)
+    - gRPC-Core/Interface (= 1.14.0)
+  - gRPC-Core/Implementation (1.14.0):
+    - BoringSSL (~> 10.0)
+    - gRPC-Core/Interface (= 1.14.0)
+    - nanopb (~> 0.3)
+  - gRPC-Core/Interface (1.14.0)
+  - gRPC-ProtoRPC (1.14.0):
+    - gRPC-ProtoRPC/Main (= 1.14.0)
+  - gRPC-ProtoRPC/Main (1.14.0):
+    - gRPC (= 1.14.0)
+    - gRPC-RxLibrary (= 1.14.0)
+    - Protobuf (~> 3.0)
+  - gRPC-RxLibrary (1.14.0)
+  - gRPC/Main (1.14.0):
+    - gRPC-Core (= 1.14.0)
+    - gRPC-RxLibrary (= 1.14.0)
+  - GTMOAuth2 (1.1.6):
+    - GTMSessionFetcher (~> 1.1)
+  - GTMSessionFetcher (1.2.1):
+    - GTMSessionFetcher/Full (= 1.2.1)
+  - GTMSessionFetcher/Core (1.2.1)
+  - GTMSessionFetcher/Full (1.2.1):
+    - GTMSessionFetcher/Core (= 1.2.1)
+  - JKBigInteger2 (0.0.5)
+  - leveldb-library (1.20)
+  - lottie-ios (2.5.2)
+  - nanopb (0.3.901):
+    - nanopb/decode (= 0.3.901)
+    - nanopb/encode (= 0.3.901)
+  - nanopb/decode (0.3.901)
+  - nanopb/encode (0.3.901)
+  - Protobuf (3.6.1)
+  - React (0.57.1):
+    - React/Core (= 0.57.1)
+  - React/ART (0.57.1):
+    - React/Core
+  - React/Core (0.57.1):
+    - yoga (= 0.57.1.React)
+  - React/CxxBridge (0.57.1):
+    - Folly (= 2016.10.31.00)
+    - React/Core
+    - React/cxxreact
+  - React/cxxreact (0.57.1):
+    - boost-for-react-native (= 1.63.0)
+    - Folly (= 2016.10.31.00)
+    - React/jschelpers
+    - React/jsinspector
+  - React/DevSupport (0.57.1):
+    - React/Core
+    - React/RCTWebSocket
+  - React/fishhook (0.57.1)
+  - React/jschelpers (0.57.1):
+    - Folly (= 2016.10.31.00)
+    - React/PrivateDatabase
+  - React/jsinspector (0.57.1)
+  - React/PrivateDatabase (0.57.1)
+  - React/RCTActionSheet (0.57.1):
+    - React/Core
+  - React/RCTAnimation (0.57.1):
+    - React/Core
+  - React/RCTBlob (0.57.1):
+    - React/Core
+  - React/RCTCameraRoll (0.57.1):
+    - React/Core
+    - React/RCTImage
+  - React/RCTGeolocation (0.57.1):
+    - React/Core
+  - React/RCTImage (0.57.1):
+    - React/Core
+    - React/RCTNetwork
+  - React/RCTNetwork (0.57.1):
+    - React/Core
+  - React/RCTText (0.57.1):
+    - React/Core
+  - React/RCTVibration (0.57.1):
+    - React/Core
+  - React/RCTWebSocket (0.57.1):
+    - React/Core
+    - React/fishhook
+    - React/RCTBlob
+  - Stripe (13.2.0)
+  - yoga (0.57.1.React)
+
+DEPENDENCIES:
+  - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
+  - EXAdsAdMob (from `../../../packages/expo-ads-admob/ios`)
+  - EXBarCodeScanner (from `../../../packages/expo-barcode-scanner/ios`)
+  - EXBarCodeScannerInterface (from `../../../packages/expo-barcode-scanner-interface/ios`)
+  - EXCamera (from `../../../packages/expo-camera/ios`)
+  - EXCameraInterface (from `../../../packages/expo-camera-interface/ios`)
+  - EXConstants (from `../../../packages/expo-constants/ios`)
+  - EXConstantsInterface (from `../../../packages/expo-constants-interface/ios`)
+  - EXContacts (from `../../../packages/expo-contacts/ios`)
+  - EXCore (from `../../../packages/expo-core/ios`)
+  - EXFaceDetectorInterface (from `../../../packages/expo-face-detector-interface/ios`)
+  - EXFileSystem (from `../../../packages/expo-file-system/ios`)
+  - EXFileSystemInterface (from `../../../packages/expo-file-system-interface/ios`)
+  - EXFirebaseAnalytics (from `../../../packages/expo-firebase-analytics/ios`)
+  - EXFirebaseApp (from `../../../packages/expo-firebase-app/ios`)
+  - EXFirebaseAuth (from `../../../packages/expo-firebase-auth/ios`)
+  - EXFirebaseCrashlytics (from `../../../packages/expo-firebase-crashlytics/ios`)
+  - EXFirebaseDatabase (from `../../../packages/expo-firebase-database/ios`)
+  - EXFirebaseFirestore (from `../../../packages/expo-firebase-firestore/ios`)
+  - EXFirebaseFunctions (from `../../../packages/expo-firebase-functions/ios`)
+  - EXFirebaseInstanceID (from `../../../packages/expo-firebase-instance-id/ios`)
+  - EXFirebaseInvites (from `../../../packages/expo-firebase-invites/ios`)
+  - EXFirebaseLinks (from `../../../packages/expo-firebase-links/ios`)
+  - EXFirebaseMessaging (from `../../../packages/expo-firebase-messaging/ios`)
+  - EXFirebaseNotifications (from `../../../packages/expo-firebase-notifications/ios`)
+  - EXFirebasePerformance (from `../../../packages/expo-firebase-performance/ios`)
+  - EXFirebaseRemoteConfig (from `../../../packages/expo-firebase-remote-config/ios`)
+  - EXFirebaseStorage (from `../../../packages/expo-firebase-storage/ios`)
+  - EXFont (from `../../../packages/expo-font/ios`)
+  - EXFontInterface (from `../../../packages/expo-font-interface/ios`)
+  - EXGL (from `../../../packages/expo-gl/ios`)
+  - EXGL-CPP (from `../../../packages/expo-gl-cpp/cpp`)
+  - EXImageLoaderInterface (from `../../../packages/expo-image-loader-interface/ios`)
+  - EXLocalAuthentication (from `../../../packages/expo-local-authentication/ios`)
+  - EXLocalization (from `../../../packages/expo-localization/ios`)
+  - EXLocation (from `../../../packages/expo-location/ios`)
+  - EXMediaLibrary (from `../../../packages/expo-media-library/ios`)
+  - EXPaymentsStripe (from `../../../packages/expo-payments-stripe/ios`)
+  - EXPermissions (from `../../../packages/expo-permissions/ios`)
+  - EXPermissionsInterface (from `../../../packages/expo-permissions-interface/ios`)
+  - ExpoKit/Core (from `http://github.com/expo/expo.git`, tag `ios/2.9.0`)
+  - EXPrint (from `../../../packages/expo-print/ios`)
+  - EXReactNativeAdapter (from `../../../packages/expo-react-native-adapter/ios`)
+  - EXSegment (from `../../../packages/expo-analytics-segment/ios`)
+  - EXSensors (from `../../../packages/expo-sensors/ios`)
+  - EXSensorsInterface (from `../../../packages/expo-sensors-interface/ios`)
+  - EXSMS (from `../../../packages/expo-sms/ios`)
+  - Folly (from `../node_modules/react-native/third-party-podspecs/Folly.podspec`)
+  - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
+  - React/ART (from `../node_modules/react-native`)
+  - React/Core (from `../node_modules/react-native`)
+  - React/CxxBridge (from `../node_modules/react-native`)
+  - React/DevSupport (from `../node_modules/react-native`)
+  - React/RCTActionSheet (from `../node_modules/react-native`)
+  - React/RCTAnimation (from `../node_modules/react-native`)
+  - React/RCTCameraRoll (from `../node_modules/react-native`)
+  - React/RCTGeolocation (from `../node_modules/react-native`)
+  - React/RCTImage (from `../node_modules/react-native`)
+  - React/RCTNetwork (from `../node_modules/react-native`)
+  - React/RCTText (from `../node_modules/react-native`)
+  - React/RCTVibration (from `../node_modules/react-native`)
+  - React/RCTWebSocket (from `../node_modules/react-native`)
+  - yoga (from `../node_modules/react-native/ReactCommon/yoga`)
+
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - Amplitude-iOS
+    - Analytics
+    - AppAuth
+    - Bolts
+    - boost-for-react-native
+    - BoringSSL
+    - Branch
+    - CocoaLumberjack
+    - Crashlytics
+    - Fabric
+    - FBAudienceNetwork
+    - FBSDKCoreKit
+    - FBSDKLoginKit
+    - FBSDKShareKit
+    - Firebase
+    - FirebaseABTesting
+    - FirebaseAnalytics
+    - FirebaseAnalyticsInterop
+    - FirebaseAuth
+    - FirebaseAuthInterop
+    - FirebaseCore
+    - FirebaseDatabase
+    - FirebaseDynamicLinks
+    - FirebaseFirestore
+    - FirebaseFunctions
+    - FirebaseInstanceID
+    - FirebaseInvites
+    - FirebaseMessaging
+    - FirebasePerformance
+    - FirebaseRemoteConfig
+    - FirebaseStorage
+    - Google-Maps-iOS-Utils
+    - Google-Mobile-Ads-SDK
+    - GoogleAPIClientForREST
+    - GoogleAppMeasurement
+    - GoogleMaps
+    - GoogleSignIn
+    - GoogleToolboxForMac
+    - GoogleUtilities
+    - gRPC
+    - "gRPC-C++"
+    - gRPC-Core
+    - gRPC-ProtoRPC
+    - gRPC-RxLibrary
+    - GTMOAuth2
+    - GTMSessionFetcher
+    - JKBigInteger2
+    - leveldb-library
+    - lottie-ios
+    - nanopb
+    - Protobuf
+    - Stripe
+
+EXTERNAL SOURCES:
+  DoubleConversion:
+    :podspec: "../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec"
+  EXAdsAdMob:
+    :path: "../../../packages/expo-ads-admob/ios"
+  EXBarCodeScanner:
+    :path: "../../../packages/expo-barcode-scanner/ios"
+  EXBarCodeScannerInterface:
+    :path: "../../../packages/expo-barcode-scanner-interface/ios"
+  EXCamera:
+    :path: "../../../packages/expo-camera/ios"
+  EXCameraInterface:
+    :path: "../../../packages/expo-camera-interface/ios"
+  EXConstants:
+    :path: "../../../packages/expo-constants/ios"
+  EXConstantsInterface:
+    :path: "../../../packages/expo-constants-interface/ios"
+  EXContacts:
+    :path: "../../../packages/expo-contacts/ios"
+  EXCore:
+    :path: "../../../packages/expo-core/ios"
+  EXFaceDetectorInterface:
+    :path: "../../../packages/expo-face-detector-interface/ios"
+  EXFileSystem:
+    :path: "../../../packages/expo-file-system/ios"
+  EXFileSystemInterface:
+    :path: "../../../packages/expo-file-system-interface/ios"
+  EXFirebaseAnalytics:
+    :path: "../../../packages/expo-firebase-analytics/ios"
+  EXFirebaseApp:
+    :path: "../../../packages/expo-firebase-app/ios"
+  EXFirebaseAuth:
+    :path: "../../../packages/expo-firebase-auth/ios"
+  EXFirebaseCrashlytics:
+    :path: "../../../packages/expo-firebase-crashlytics/ios"
+  EXFirebaseDatabase:
+    :path: "../../../packages/expo-firebase-database/ios"
+  EXFirebaseFirestore:
+    :path: "../../../packages/expo-firebase-firestore/ios"
+  EXFirebaseFunctions:
+    :path: "../../../packages/expo-firebase-functions/ios"
+  EXFirebaseInstanceID:
+    :path: "../../../packages/expo-firebase-instance-id/ios"
+  EXFirebaseInvites:
+    :path: "../../../packages/expo-firebase-invites/ios"
+  EXFirebaseLinks:
+    :path: "../../../packages/expo-firebase-links/ios"
+  EXFirebaseMessaging:
+    :path: "../../../packages/expo-firebase-messaging/ios"
+  EXFirebaseNotifications:
+    :path: "../../../packages/expo-firebase-notifications/ios"
+  EXFirebasePerformance:
+    :path: "../../../packages/expo-firebase-performance/ios"
+  EXFirebaseRemoteConfig:
+    :path: "../../../packages/expo-firebase-remote-config/ios"
+  EXFirebaseStorage:
+    :path: "../../../packages/expo-firebase-storage/ios"
+  EXFont:
+    :path: "../../../packages/expo-font/ios"
+  EXFontInterface:
+    :path: "../../../packages/expo-font-interface/ios"
+  EXGL:
+    :path: "../../../packages/expo-gl/ios"
+  EXGL-CPP:
+    :path: "../../../packages/expo-gl-cpp/cpp"
+  EXImageLoaderInterface:
+    :path: "../../../packages/expo-image-loader-interface/ios"
+  EXLocalAuthentication:
+    :path: "../../../packages/expo-local-authentication/ios"
+  EXLocalization:
+    :path: "../../../packages/expo-localization/ios"
+  EXLocation:
+    :path: "../../../packages/expo-location/ios"
+  EXMediaLibrary:
+    :path: "../../../packages/expo-media-library/ios"
+  EXPaymentsStripe:
+    :path: "../../../packages/expo-payments-stripe/ios"
+  EXPermissions:
+    :path: "../../../packages/expo-permissions/ios"
+  EXPermissionsInterface:
+    :path: "../../../packages/expo-permissions-interface/ios"
+  ExpoKit:
+    :git: http://github.com/expo/expo.git
+    :tag: ios/2.9.0
+  EXPrint:
+    :path: "../../../packages/expo-print/ios"
+  EXReactNativeAdapter:
+    :path: "../../../packages/expo-react-native-adapter/ios"
+  EXSegment:
+    :path: "../../../packages/expo-analytics-segment/ios"
+  EXSensors:
+    :path: "../../../packages/expo-sensors/ios"
+  EXSensorsInterface:
+    :path: "../../../packages/expo-sensors-interface/ios"
+  EXSMS:
+    :path: "../../../packages/expo-sms/ios"
+  Folly:
+    :podspec: "../node_modules/react-native/third-party-podspecs/Folly.podspec"
+  glog:
+    :podspec: "../node_modules/react-native/third-party-podspecs/glog.podspec"
+  React:
+    :path: "../node_modules/react-native"
+  yoga:
+    :path: "../node_modules/react-native/ReactCommon/yoga"
+
+CHECKOUT OPTIONS:
+  ExpoKit:
+    :git: http://github.com/expo/expo.git
+    :tag: ios/2.9.0
+
+SPEC CHECKSUMS:
+  Amplitude-iOS: 4a3c8807b2ea5369dc11e87e23825bff01e5a922
+  Analytics: 6541ce337e99d9f7a2240a8b3953940a7be5f998
+  AppAuth: 137f6bb6fc9dfbaf2cf9f6fcff1d336ff0163bc6
+  Bolts: ac6567323eac61e203f6a9763667d0f711be34c8
+  boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
+  BoringSSL: e10f92a27043805c01071fe815a5cd98ae8212e7
+  Branch: 0d98d22745a9b68bcb4fa6dc1c6a92b64d4fdd7b
+  CocoaLumberjack: 2800c03334042fe80589423c8d80e582dcaec482
+  Crashlytics: ca7ab4bc304aa216bdc2e4c1a96389ee77252203
+  DoubleConversion: bb338842f62ab1d708ceb63ec3d999f0f3d98ecd
+  EXAdsAdMob: 66a3c271540f54f4d964fa72f0c8a953faea5a03
+  EXBarCodeScanner: 0ed39b41ccec72935521823eceed3d60c73fc43d
+  EXBarCodeScannerInterface: 4453aa03ca1e0a1c9b320aaf4ce5b7d88064d192
+  EXCamera: 00936f79aafe16125c6cdc7c7ea2bf2d2c976dfe
+  EXCameraInterface: 6d990173e3f6355e575f44b38dcf61d0c90bc47e
+  EXConstants: 4ab8da18840ebae518e15541164fbaf7907e58c2
+  EXConstantsInterface: c60c068f94b78c8805bfeb35bd2bbaf859293de5
+  EXContacts: 50843152d15328802c57b0382759595848959371
+  EXCore: 81304a0284b7f2e0f691b8a6bc642854e730f5e2
+  EXFaceDetectorInterface: 8727fe51fbd189a94ccd70152a25cdef913a0ae5
+  EXFileSystem: 0872826fd9ebc7d842a5e389b088c93f5b9fab88
+  EXFileSystemInterface: 8e1225e4e1776ea7abf997a7ded593b4b8e86863
+  EXFirebaseAnalytics: 2b9d8cca675a56e817dd723969cca15d0b4a559e
+  EXFirebaseApp: b95170bf27798e784619ff585bbe17e155e8826b
+  EXFirebaseAuth: 5b8f8c2e2b67d843bdef538dac6a6c0f5ceb0972
+  EXFirebaseCrashlytics: cbc3c505c3547083ad5849ec40d0061d18429b4d
+  EXFirebaseDatabase: 81eb972895713aead73b9121987efa47f83fa1f7
+  EXFirebaseFirestore: 7403fae7d7d220711db7272f3e436555268a4faa
+  EXFirebaseFunctions: f34dd12e1e8a46166ce5b02850412c13d62b4603
+  EXFirebaseInstanceID: 633ce0a14e76d6e3285d6933b147c2587932fea6
+  EXFirebaseInvites: 4ff1b6032ccf19b1802b7ea4b93b067f6c069dab
+  EXFirebaseLinks: 2fc893d7d58c98e4db98c2f244368bc805431ef2
+  EXFirebaseMessaging: 9b4bb05396958b34c88ad3f7fa0c54cf556fa5c7
+  EXFirebaseNotifications: 8536e080d9b8ab72bb46cb445996fc57ba8594d9
+  EXFirebasePerformance: 51c1583aff3a77eaf0140574deddb9d1b237dcd0
+  EXFirebaseRemoteConfig: 5b5574b4856331a3af2521b25af2b05690a5458d
+  EXFirebaseStorage: f6fde130bea0b292f7fb84c3b89ba6cf9c99a4ce
+  EXFont: 5c0220788732ef1c4bfe0f5079a003b4c64add95
+  EXFontInterface: 06126ec4f6a67415426074c3383a82b241f087c1
+  EXGL: 9a5dd454a7ed9660b25b71d82d8009ac9bd6f85a
+  EXGL-CPP: 46b589a3ed0c59ae2e7f9434897b66cd8dd2e70c
+  EXImageLoaderInterface: 3f460f6ff344ba6c4e00621806c0d1d76249cd8f
+  EXLocalAuthentication: b70696613cb24d726d3c98a1818c22c481a46b01
+  EXLocalization: 1243adc132eaad4793dd7e5b497135ad5d803441
+  EXLocation: c686b2b139bea46c653a96f62dc49e47c9b08fe5
+  EXMediaLibrary: f91c4f6ff2c9be8102e06d0a4d08987231a7e286
+  EXPaymentsStripe: 2201b77ad9cff57f2a63996d4a9d260b3258b56d
+  EXPermissions: dd31cb432c078eed1f4c1e290bc32649d5280bd3
+  EXPermissionsInterface: 76f80a0dcd16afde36498e3d3aa168cb43999558
+  ExpoKit: 56c02da01a88a33dcbac95a375b1fe503a9245a1
+  EXPrint: b6aab9715518cf67954ae260b71e28afd843353e
+  EXReactNativeAdapter: 253efa069b53a6c8be7c3f2afd49ef6b4e97e902
+  EXSegment: cfe9aed31dbd7f1455724afe89a4920e5dad0049
+  EXSensors: 6aa3b3b9906beb0b574a88943d171ebc226b0fe5
+  EXSensorsInterface: 9e845bc03ad23a846fa6bcd4e2a60f1d0b1a6906
+  EXSMS: 2a2f1abfb2f37b686e892261678c70f39c9b7fa8
+  Fabric: d2b22f443ba195d8a7cc204da230977c72733b40
+  FBAudienceNetwork: 80275c0a28574ff5ce820abdc251d05e07e6ae7a
+  FBSDKCoreKit: fe5f3474499a81963e11e3f3a5c753d0a95ca2b4
+  FBSDKLoginKit: 2f7249686d1e30ce8a5ef5400eedf50b3e3df332
+  FBSDKShareKit: 52e0083222c38e930eb6878007478326599195c3
+  Firebase: 9190018e296139d938b99521cde0c15a6e8d2946
+  FirebaseABTesting: 1f50b8d50f5e3469eea54e7463a7b7fe221d1f5e
+  FirebaseAnalytics: 63202d2665de4e6adcbdce189135255d8b5962ba
+  FirebaseAnalyticsInterop: e5f21be9af6548372e2f0815834ff909bff395a2
+  FirebaseAuth: 9299ab178271bec7426967b05b2718bb6fc31f17
+  FirebaseAuthInterop: 0ffa57668be100582bb7643d4fcb7615496c41fc
+  FirebaseCore: 027d350adc039aa5483357c6f56556f117c5170e
+  FirebaseDatabase: e2bcbc106adc4b11a2da3ec2eb63c0c4a44f2f54
+  FirebaseDynamicLinks: 000130a3fc3d81ac7322731b895009f3199ef584
+  FirebaseFirestore: 6dc97a9685c421767cc96bf644fc963166cddbe7
+  FirebaseFunctions: 6c03d7c5d62520be4678dc3fb7957654aab82b4f
+  FirebaseInstanceID: e2fa4cb35ef5558c200f7f0ad8a53e212215f93e
+  FirebaseInvites: da663c2436b88c2f56d13f38ea71e9055dc4c53d
+  FirebaseMessaging: 0f14a264b0d7f867e8eff5d3556bc5d0d4e57888
+  FirebasePerformance: 071ef097e7fb2d4f2f27fac1d4ed72ae3dd737d7
+  FirebaseRemoteConfig: 7e11c65f0769c09bff6947997c209515058c5318
+  FirebaseStorage: 3d22c041370593e639fba013d1eb698a8dae2881
+  Folly: c89ac2d5c6ab169cd7397ef27485c44f35f742c7
+  glog: e8acf0ebbf99759d3ff18c86c292a5898282dcde
+  Google-Maps-iOS-Utils: c32891ff472eaaa1fca032beedafa1a013af7875
+  Google-Mobile-Ads-SDK: 1bdf1a4244d0553b1840239874c209c01aef055f
+  GoogleAPIClientForREST: 825503f12cb5824601cf526cf06d81a1cea4afd9
+  GoogleAppMeasurement: 5029d78f2b438bd30ffb44e6c558b57c21622727
+  GoogleMaps: c087b8e5dfe87ca6ebf59adb9b4894a4146bec4f
+  GoogleSignIn: 11183592dc63e105475c7305a325045ff95e02b7
+  GoogleToolboxForMac: 91c824d21e85b31c2aae9bb011c5027c9b4e738f
+  GoogleUtilities: 95996bea7c7d9b8fb811b7507669a4a8762f80c7
+  gRPC: 9d4c549f37c7cef22478634bac7a0405b6e3dbfb
+  "gRPC-C++": ee0b01db3122f0b6c2be28b5b11039f62fa15fe6
+  gRPC-Core: f4836515817c0eb479aeeb9cc27c91c4ba62a9f6
+  gRPC-ProtoRPC: 76f6053639a842e1fb45fa82aa598bf3f4d9f66f
+  gRPC-RxLibrary: 3c305f32155024b116b780f389323c73a28197e6
+  GTMOAuth2: c77fe325e4acd453837e72d91e3b5f13116857b2
+  GTMSessionFetcher: 32aeca0aa144acea523e1c8e053089dec2cb98ca
+  JKBigInteger2: e91672035c42328c48b7dd015b66812ddf40ca9b
+  leveldb-library: 08cba283675b7ed2d99629a4bc5fd052cd2bb6a5
+  lottie-ios: 3fef45d3fabe63e3c7c2eb603dd64ddfffc73062
+  nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
+  Protobuf: 1eb9700044745f00181c136ef21b8ff3ad5a0fd5
+  React: 1fe0eb13d90b625d94c3b117c274dcfd2e760e11
+  Stripe: 2c69e216061d54d9c538204bb4f58bd597ddfc5b
+  yoga: b1ce48b6cf950b98deae82838f5173ea7cf89e85
+
+PODFILE CHECKSUM: ddf9faa7c0ac6465da375973a9fa0a523ea8a3bb
+
+COCOAPODS: 1.5.3

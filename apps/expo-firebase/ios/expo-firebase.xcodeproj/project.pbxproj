@@ -128,7 +128,6 @@
 				B563863D1DB9693800A0598C /* Sources */,
 				B563863E1DB9693800A0598C /* Frameworks */,
 				B563863F1DB9693800A0598C /* Resources */,
-				8D34C7FE3D99F20E5EA1B18A /* [CP] Embed Pods Frameworks */,
 				AA38385B7D8D0854176B72FC /* [CP] Copy Pods Resources */,
 				19D233B7204FDD7D0087ED51 /* Bundle Expo Assets */,
 			);
@@ -215,28 +214,16 @@
 			files = (
 			);
 			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
 			);
 			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-expo-firebase-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
-			showEnvVarsInLog = 0;
-		};
-		8D34C7FE3D99F20E5EA1B18A /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-expo-firebase/Pods-expo-firebase-frameworks.sh\"\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
 		AA38385B7D8D0854176B72FC /* [CP] Copy Pods Resources */ = {
@@ -245,9 +232,34 @@
 			files = (
 			);
 			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-expo-firebase/Pods-expo-firebase-resources.sh",
+				"${PODS_ROOT}/Amplitude-iOS/Amplitude/api.amplitude.com.der",
+				"${PODS_ROOT}/Amplitude-iOS/Amplitude/ComodoCaLimitedRsaCertificationAuthority.der",
+				"${PODS_ROOT}/Amplitude-iOS/Amplitude/ComodoRsaCA.der",
+				"${PODS_ROOT}/Amplitude-iOS/Amplitude/ComodoRsaDomainValidationCA.der",
+				"${PODS_ROOT}/FBSDKCoreKit/FacebookSDKStrings.bundle",
+				"${PODS_ROOT}/FirebaseInvites/Resources/GINInviteResources.bundle",
+				"${PODS_ROOT}/FirebaseInvites/Resources/GPPACLPickerResources.bundle",
+				"${PODS_ROOT}/GTMOAuth2/Source/Touch/GTMOAuth2ViewTouch.xib",
+				"${PODS_ROOT}/GoogleMaps/Maps/Frameworks/GoogleMaps.framework/Resources/GoogleMaps.bundle",
+				"${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/Stripe/Stripe.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/gRPC/gRPCCertificates.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/api.amplitude.com.der",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ComodoCaLimitedRsaCertificationAuthority.der",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ComodoRsaCA.der",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ComodoRsaDomainValidationCA.der",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FacebookSDKStrings.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GINInviteResources.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GPPACLPickerResources.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GTMOAuth2ViewTouch.nib",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleMaps.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleSignIn.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Stripe.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/gRPCCertificates.bundle",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -393,7 +405,7 @@
 				DEVELOPMENT_TEAM = C8D8QTF339;
 				INFOPLIST_FILE = "$(SRCROOT)/expo-firebase/Supporting/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "host.exp.firebase";
+				PRODUCT_BUNDLE_IDENTIFIER = host.exp.firebase;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -407,7 +419,7 @@
 				DEVELOPMENT_TEAM = C8D8QTF339;
 				INFOPLIST_FILE = "$(SRCROOT)/expo-firebase/Supporting/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "host.exp.firebase";
+				PRODUCT_BUNDLE_IDENTIFIER = host.exp.firebase;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

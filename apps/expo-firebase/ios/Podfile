@@ -1,6 +1,8 @@
 source 'https://github.com/CocoaPods/Specs.git'
 platform :ios, '10.0'
 
+MODULES_DIR = '../../../packages'
+
 target 'expo-firebase' do
   pod 'ExpoKit',
     :git => "http://github.com/expo/expo.git",
@@ -9,67 +11,57 @@ target 'expo-firebase' do
       "Core"
     ],
     :inhibit_warnings => true
-  pod 'EXAdsAdMob',
-    :path => "../node_modules/expo-ads-admob/ios"
-  pod 'EXBarCodeScanner',
-    :path => "../node_modules/expo-barcode-scanner/ios"
-  pod 'EXBarCodeScannerInterface',
-    :path => "../node_modules/expo-barcode-scanner-interface/ios"
-  pod 'EXCamera',
-    :path => "../node_modules/expo-camera/ios"
-  pod 'EXCameraInterface',
-    :path => "../node_modules/expo-camera-interface/ios"
-  pod 'EXConstants',
-    :path => "../node_modules/expo-constants/ios"
-  pod 'EXConstantsInterface',
-    :path => "../node_modules/expo-constants-interface/ios"
-  pod 'EXContacts',
-    :path => "../node_modules/expo-contacts/ios"
-  pod 'EXCore',
-    :path => "../node_modules/expo-core/ios"
-  pod 'EXFaceDetectorInterface',
-    :path => "../node_modules/expo-face-detector-interface/ios"
-  pod 'EXFileSystem',
-    :path => "../node_modules/expo-file-system/ios"
-  pod 'EXFileSystemInterface',
-    :path => "../node_modules/expo-file-system-interface/ios"
-  pod 'EXFont',
-    :path => "../node_modules/expo-font/ios"
-  pod 'EXFontInterface',
-    :path => "../node_modules/expo-font-interface/ios"
-  pod 'EXGL',
-    :path => "../node_modules/expo-gl/ios"
-  pod 'EXGL-CPP',
-    :path => "../node_modules/expo-gl-cpp/cpp"
-  pod 'EXImageLoaderInterface',
-    :path => "../node_modules/expo-image-loader-interface/ios"
-  pod 'EXLocalAuthentication',
-    :path => "../node_modules/expo-local-authentication/ios"
-  pod 'EXLocalization',
-    :path => "../node_modules/expo-localization/ios"
-  pod 'EXLocation',
-    :path => "../node_modules/expo-location/ios"
-  pod 'EXMediaLibrary',
-    :path => "../node_modules/expo-media-library/ios"
-  pod 'EXPaymentsStripe',
-    :path => "../node_modules/expo-payments-stripe/ios"
-  pod 'EXPermissions',
-    :path => "../node_modules/expo-permissions/ios"
-  pod 'EXPermissionsInterface',
-    :path => "../node_modules/expo-permissions-interface/ios"
-  pod 'EXPrint',
-    :path => "../node_modules/expo-print/ios"
-  pod 'EXReactNativeAdapter',
-    :path => "../node_modules/expo-react-native-adapter/ios"
-  pod 'EXSegment',
-    :path => "../node_modules/expo-analytics-segment/ios"
-  pod 'EXSensors',
-    :path => "../node_modules/expo-sensors/ios"
-  pod 'EXSensorsInterface',
-    :path => "../node_modules/expo-sensors-interface/ios"
-  pod 'EXSMS',
-    :path => "../node_modules/expo-sms/ios"
-
+  
+  pod 'EXAdsAdMob', :path => [MODULES_DIR, 'expo-ads-admob', 'ios'] * '/'
+  pod 'EXBarCodeScanner', :path => [MODULES_DIR, 'expo-barcode-scanner', 'ios' ] * '/'
+  pod 'EXBarCodeScannerInterface', :path => [MODULES_DIR, 'expo-barcode-scanner-interface', 'ios' ] * '/'
+  pod 'EXCamera', :path => [MODULES_DIR, 'expo-camera', 'ios' ] * '/'
+  pod 'EXCameraInterface', :path => [MODULES_DIR, 'expo-camera-interface', 'ios' ] * '/'
+  pod 'EXConstants', :path => [MODULES_DIR, 'expo-constants', 'ios' ] * '/'
+  pod 'EXConstantsInterface', :path => [MODULES_DIR, 'expo-constants-interface', 'ios' ] * '/'
+  pod 'EXContacts', :path => [MODULES_DIR, 'expo-contacts', 'ios' ] * '/'
+  pod 'EXCore', :path => [MODULES_DIR, 'expo-core', 'ios' ] * '/'
+  pod 'EXFaceDetectorInterface', :path => [MODULES_DIR, 'expo-face-detector-interface', 'ios' ] * '/'
+  pod 'EXFileSystem', :path => [MODULES_DIR, 'expo-file-system', 'ios' ] * '/'
+  pod 'EXFileSystemInterface', :path => [MODULES_DIR, 'expo-file-system-interface', 'ios' ] * '/'
+  pod 'EXFont', :path => [MODULES_DIR, 'expo-font', 'ios' ] * '/'
+  pod 'EXFontInterface', :path => [MODULES_DIR, 'expo-font-interface', 'ios' ] * '/'
+  pod 'EXGL', :path => [MODULES_DIR, 'expo-gl', 'ios' ] * '/'
+  pod 'EXImageLoaderInterface', :path => [MODULES_DIR, 'expo-image-loader-interface', 'ios' ] * '/'
+  pod 'EXLocalAuthentication', :path => [MODULES_DIR, 'expo-local-authentication', 'ios' ] * '/'
+  pod 'EXLocalization', :path => [MODULES_DIR, 'expo-localization', 'ios' ] * '/'
+  pod 'EXLocation', :path => [MODULES_DIR, 'expo-location', 'ios' ] * '/'
+  pod 'EXMediaLibrary', :path => [MODULES_DIR, 'expo-media-library', 'ios' ] * '/'
+  pod 'EXPaymentsStripe', :path => [MODULES_DIR, 'expo-payments-stripe', 'ios' ] * '/'
+  pod 'EXPermissions', :path => [MODULES_DIR, 'expo-permissions', 'ios' ] * '/'
+  pod 'EXPermissionsInterface', :path => [MODULES_DIR, 'expo-permissions-interface', 'ios' ] * '/'
+  pod 'EXPrint', :path => [MODULES_DIR, 'expo-print', 'ios' ] * '/'
+  pod 'EXReactNativeAdapter', :path => [MODULES_DIR, 'expo-react-native-adapter', 'ios' ] * '/'
+  pod 'EXSegment', :path => [MODULES_DIR, 'expo-analytics-segment', 'ios' ] * '/'
+  pod 'EXSensors', :path => [MODULES_DIR, 'expo-sensors', 'ios' ] * '/'
+  pod 'EXSensorsInterface', :path => [MODULES_DIR, 'expo-sensors-interface', 'ios' ] * '/'
+  pod 'EXSMS', :path => [MODULES_DIR, 'expo-sms', 'ios' ] * '/'
+  
+  # Start Firebase 
+  pod 'EXFirebaseApp', :path => [MODULES_DIR, 'expo-firebase-app', 'ios'] * '/'
+  pod 'EXFirebaseAnalytics', :path => [MODULES_DIR, 'expo-firebase-analytics', 'ios'] * '/'
+  pod 'EXFirebaseAuth', :path => [MODULES_DIR, 'expo-firebase-auth', 'ios'] * '/'
+  pod 'EXFirebaseCrashlytics', :path => [MODULES_DIR, 'expo-firebase-crashlytics', 'ios'] * '/'
+  pod 'EXFirebaseDatabase', :path => [MODULES_DIR, 'expo-firebase-database', 'ios'] * '/'
+  pod 'EXFirebaseFirestore', :path => [MODULES_DIR, 'expo-firebase-firestore', 'ios'] * '/'
+  pod 'EXFirebaseFunctions', :path => [MODULES_DIR, 'expo-firebase-functions', 'ios'] * '/'
+  pod 'EXFirebaseInstanceID', :path => [MODULES_DIR, 'expo-firebase-instance-id', 'ios'] * '/'
+  pod 'EXFirebaseLinks', :path => [MODULES_DIR, 'expo-firebase-links', 'ios'] * '/'
+  pod 'EXFirebaseInvites', :path => [MODULES_DIR, 'expo-firebase-invites', 'ios'] * '/'
+  pod 'EXFirebaseMessaging', :path => [MODULES_DIR, 'expo-firebase-messaging', 'ios'] * '/'
+  pod 'EXFirebaseNotifications', :path => [MODULES_DIR, 'expo-firebase-notifications', 'ios'] * '/'
+  pod 'EXFirebasePerformance', :path => [MODULES_DIR, 'expo-firebase-performance', 'ios'] * '/'
+  pod 'EXFirebaseRemoteConfig', :path => [MODULES_DIR, 'expo-firebase-remote-config', 'ios'] * '/'
+  pod 'EXFirebaseStorage', :path => [MODULES_DIR, 'expo-firebase-storage', 'ios'] * '/'
+  # End Firebase
+  
+  pod 'EXGL-CPP', :path => [MODULES_DIR, 'expo-gl-cpp', 'cpp' ] * '/'
+  
   pod 'React',
     :path => "../node_modules/react-native",
     :inhibit_warnings => true,
