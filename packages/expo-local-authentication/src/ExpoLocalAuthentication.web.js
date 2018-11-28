@@ -1,20 +1,22 @@
+// @flow
+
 export default {
-  get name() {
+  get name(): string {
     return 'ExpoLocalAuthentication';
   },
-  async hasHardwareAsync() {
+  async hasHardwareAsync(): Promise<boolean> {
     return false;
   },
-  async cancelAuthenticate() {
+  async cancelAuthenticate(): Promise<void> {
     // TODO: Bacon: Add this
   },
-  async authenticateAsync() {
+  async authenticateAsync(): Promise<void> {
     // TODO: Bacon: Add this
   },
-  async isEnrolledAsync() {
+  async isEnrolledAsync(): Promise<boolean> {
     return false;
   },
-  async supportedAuthenticationTypesAsync() {
+  async supportedAuthenticationTypesAsync(): Promise<void> {
     // TODO: Bacon: Add this
   },
 };
