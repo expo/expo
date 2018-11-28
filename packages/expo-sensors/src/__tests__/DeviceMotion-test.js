@@ -1,6 +1,6 @@
-import { NativeModules } from 'react-native';
+import { NativeModulesProxy } from 'expo-core';
 
-import { mockPlatformIOS } from '../../../test/mocking';
+import { mockPlatformIOS } from '../../test/mocking';
 import DeviceMotion, { Gravity } from '../DeviceMotion';
 
 afterEach(() => {
@@ -9,7 +9,7 @@ afterEach(() => {
 
 it(`adds an "deviceMotionDidUpdate" listener on iOS`, () => {
   mockPlatformIOS();
-  const NativeDeviceMotion = NativeModules.ExponentDeviceMotion;
+  const NativeDeviceMotion = NativeModulesProxy.ExponentDeviceMotion;
 
   const mockListener = jest.fn();
   const subscription = DeviceMotion.addListener(mockListener);
@@ -24,7 +24,6 @@ it(`adds an "deviceMotionDidUpdate" listener on iOS`, () => {
 
 it(`notifies listeners`, () => {
   mockPlatformIOS();
-
   const mockListener = jest.fn();
   DeviceMotion.addListener(mockListener);
 
@@ -34,7 +33,7 @@ it(`notifies listeners`, () => {
 });
 
 it(`sets the update interval`, async () => {
-  const NativeDeviceMotion = NativeModules.ExponentDeviceMotion;
+  const NativeDeviceMotion = NativeModulesProxy.ExponentDeviceMotion;
   await DeviceMotion.setUpdateInterval(1234);
   expect(NativeDeviceMotion.setUpdateInterval).toHaveBeenCalledTimes(1);
   expect(NativeDeviceMotion.setUpdateInterval).toHaveBeenCalledWith(1234);

@@ -1,12 +1,12 @@
-import { NativeModules } from 'react-native';
+import { NativeModulesProxy } from 'expo-core';
 
-import { mockPlatformIOS } from '../../../test/mocking';
+import { mockPlatformIOS } from '../../test/mocking';
 import Magnetometer from '../Magnetometer';
 import MagnetometerUncalibrated from '../MagnetometerUncalibrated';
 
 describe(
   'Magnetometer',
-  declareMagnetometerSpecs(Magnetometer, NativeModules.ExponentMagnetometer, {
+  declareMagnetometerSpecs(Magnetometer, NativeModulesProxy.ExponentMagnetometer, {
     magnetometerDidUpdate: 'magnetometerDidUpdate',
   })
 );
@@ -15,7 +15,7 @@ describe(
   'MagnetometerUncalibrated',
   declareMagnetometerSpecs(
     MagnetometerUncalibrated,
-    NativeModules.ExponentMagnetometerUncalibrated,
+    NativeModulesProxy.ExponentMagnetometerUncalibrated,
     { magnetometerDidUpdate: 'magnetometerUncalibratedDidUpdate' }
   )
 );
@@ -28,7 +28,6 @@ function declareMagnetometerSpecs(Magnetometer, NativeMagnetometer, eventNames) 
 
     it(`adds an magnetometer update listener on iOS`, () => {
       mockPlatformIOS();
-
       const mockListener = jest.fn();
       const subscription = Magnetometer.addListener(mockListener);
 
@@ -42,7 +41,6 @@ function declareMagnetometerSpecs(Magnetometer, NativeMagnetometer, eventNames) 
 
     it(`notifies listeners`, () => {
       mockPlatformIOS();
-
       const mockListener = jest.fn();
       Magnetometer.addListener(mockListener);
 

@@ -1,5 +1,3 @@
-// @flow
-
 import { EventEmitter, NativeModulesProxy } from 'expo-core';
 import invariant from 'invariant';
 

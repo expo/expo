@@ -1,6 +1,6 @@
-import { NativeModules } from 'react-native';
+import { NativeModulesProxy } from 'expo-core';
 
-import { mockPlatformIOS } from '../../../test/mocking';
+import { mockPlatformAndroid, mockPlatformIOS } from '../../test/mocking';
 import Gyroscope from '../Gyroscope';
 
 afterEach(() => {
@@ -9,7 +9,7 @@ afterEach(() => {
 
 it(`adds an "gyroscopeDidUpdate" listener on iOS`, () => {
   mockPlatformIOS();
-  const NativeGyroscope = NativeModules.ExponentGyroscope;
+  const NativeGyroscope = NativeModulesProxy.ExponentGyroscope;
 
   const mockListener = jest.fn();
   const subscription = Gyroscope.addListener(mockListener);
@@ -24,7 +24,6 @@ it(`adds an "gyroscopeDidUpdate" listener on iOS`, () => {
 
 it(`notifies listeners`, () => {
   mockPlatformIOS();
-
   const mockListener = jest.fn();
   Gyroscope.addListener(mockListener);
 
@@ -34,7 +33,7 @@ it(`notifies listeners`, () => {
 });
 
 it(`sets the update interval`, async () => {
-  const NativeGyroscope = NativeModules.ExponentGyroscope;
+  const NativeGyroscope = NativeModulesProxy.ExponentGyroscope;
   await Gyroscope.setUpdateInterval(1234);
   expect(NativeGyroscope.setUpdateInterval).toHaveBeenCalledTimes(1);
   expect(NativeGyroscope.setUpdateInterval).toHaveBeenCalledWith(1234);

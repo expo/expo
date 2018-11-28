@@ -1,4 +1,4 @@
-import { mockPlatformAndroid, mockPlatformIOS } from '../../../test/mocking';
+import { mockPlatformAndroid, mockPlatformIOS } from '../../test/mocking';
 import DeviceSensor from '../DeviceSensor';
 
 it(`counts the number of listeners`, () => {

@@ -1,6 +1,6 @@
-import { NativeModules } from 'react-native';
+import { NativeModulesProxy } from 'expo-core';
 
-import { mockPlatformIOS } from '../../../test/mocking';
+import { mockPlatformIOS } from '../../test/mocking';
 import Accelerometer from '../Accelerometer';
 
 afterEach(() => {
@@ -9,7 +9,7 @@ afterEach(() => {
 
 it(`adds an "accelerometerDidUpdate" listener on iOS`, () => {
   mockPlatformIOS();
-  const NativeAccelerometer = NativeModules.ExponentAccelerometer;
+  const NativeAccelerometer = NativeModulesProxy.ExponentAccelerometer;
 
   const mockListener = jest.fn();
   const subscription = Accelerometer.addListener(mockListener);
@@ -24,7 +24,6 @@ it(`adds an "accelerometerDidUpdate" listener on iOS`, () => {
 
 it(`notifies listeners`, () => {
   mockPlatformIOS();
-
   const mockListener = jest.fn();
   Accelerometer.addListener(mockListener);
 
@@ -34,7 +33,7 @@ it(`notifies listeners`, () => {
 });
 
 it(`sets the update interval`, async () => {
-  const NativeAccelerometer = NativeModules.ExponentAccelerometer;
+  const NativeAccelerometer = NativeModulesProxy.ExponentAccelerometer;
   await Accelerometer.setUpdateInterval(1234);
   expect(NativeAccelerometer.setUpdateInterval).toHaveBeenCalledTimes(1);
   expect(NativeAccelerometer.setUpdateInterval).toHaveBeenCalledWith(1234);
