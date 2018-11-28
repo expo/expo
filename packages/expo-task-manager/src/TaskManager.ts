@@ -9,6 +9,12 @@ interface TaskBody {
   },
 }
 
+interface RegisteredTask {
+  taskName: string,
+  taskType: string,
+  options: object,
+}
+
 type Task = (body: TaskBody) => void;
 
 const { ExpoTaskManager: TaskManager } = NativeModulesProxy;
@@ -57,7 +63,7 @@ export async function getTaskOptionsAsync(taskName: string): Promise<object> {
   return TaskManager.getTaskOptionsAsync(taskName);
 }
 
-export async function getRegisteredTasksAsync(): Promise<object> {
+export async function getRegisteredTasksAsync(): Promise<Array<RegisteredTask>> {
   return TaskManager.getRegisteredTasksAsync();
 }
 

@@ -46,9 +46,9 @@
                                         forAppId:(nonnull NSString *)appId;
 
 /**
- *  Returns a dictionary of registered tasks for given appId, where the keys are the task names while the values are the task options.
+ *  Returns an array of registered tasks for given appId.
  */
-- (NSDictionary *)getRegisteredTasksOptionsForAppId:(NSString *)appId;
+- (nonnull NSArray *)getRegisteredTasksForAppId:(NSString *)appId;
 
 /**
  *  Notifies the service that a task has just finished.

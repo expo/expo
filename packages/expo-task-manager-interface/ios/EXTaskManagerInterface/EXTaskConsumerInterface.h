@@ -13,6 +13,11 @@
 @required
 
 /**
+ *  The type of the task, like "location" or "geofencing".
+ */
+- (nonnull NSString *)taskType;
+
+/**
  *  Called by EXTaskService when the task is created and associated with the consumer.
  */
 - (void)didRegisterTask:(id<EXTaskInterface>)task;

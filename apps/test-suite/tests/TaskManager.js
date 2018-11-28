@@ -65,20 +65,25 @@ export async function test(t) {
     describeWithPermissions('getRegisteredTasksAsync()', async () => {
       let registeredTasks;
 
-      t.it('returns empty object if there are no tasks', async () => {
+      t.it('returns empty array if there are no tasks', async () => {
         registeredTasks = await TaskManager.getRegisteredTasksAsync();
         t.expect(registeredTasks).toBeDefined();
-        t.expect(registeredTasks[DEFINED_TASK_NAME]).toBeUndefined();
+        t.expect(registeredTasks.length).toBe(0);
       });
 
-      t.it('returns correct object after registering the task', async () => {
+      t.it('returns correct array after registering the task', async () => {
         await Location.startLocationUpdatesAsync(DEFINED_TASK_NAME, locationOptions);
 
         registeredTasks = await TaskManager.getRegisteredTasksAsync();
 
         t.expect(registeredTasks).toBeDefined();
-        t.expect(registeredTasks[DEFINED_TASK_NAME]).toEqual(
-          t.jasmine.objectContaining(locationOptions)
+        t.expect(registeredTasks.length).toBe(1);
+        t.expect(registeredTasks.find(task => task.taskName === DEFINED_TASK_NAME)).toEqual(
+          t.jasmine.objectContaining({
+            taskName: DEFINED_TASK_NAME,
+            taskType: 'location',
+            options: locationOptions,
+          })
         );
       });
 
@@ -93,6 +98,7 @@ export async function test(t) {
         await TaskManager.unregisterAllTasksAsync();
 
         t.expect(await TaskManager.isTaskRegisteredAsync(DEFINED_TASK_NAME)).toBe(false);
+        t.expect((await TaskManager.getRegisteredTasksAsync()).length).toBe(0);
         t.expect(await Location.hasStartedLocationUpdatesAsync(DEFINED_TASK_NAME)).toBe(false);
       });
     });

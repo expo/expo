@@ -105,7 +105,7 @@ EX_EXPORT_METHOD_AS(getRegisteredTasksAsync,
                     getRegisteredTasks:(EXPromiseResolveBlock)resolve
                     reject:(EXPromiseRejectBlock)reject)
 {
-  resolve([_taskService getRegisteredTasksOptionsForAppId:_appId]);
+  resolve([_taskService getRegisteredTasksForAppId:_appId]);
 }
 
 EX_EXPORT_METHOD_AS(getTaskOptionsAsync,

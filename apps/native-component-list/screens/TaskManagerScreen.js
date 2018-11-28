@@ -37,8 +37,7 @@ export default class TaskManagerScreen extends React.Component {
 
   renderButtons() {
     const { tasks } = this.state;
-    const taskNames = Object.keys(tasks);
-    const buttons = taskNames.map(taskName => {
+    const buttons = tasks.map(({ taskName }) => {
       return (
         <Button
           key={taskName}
@@ -52,7 +51,7 @@ export default class TaskManagerScreen extends React.Component {
     return (
       <View style={styles.buttons}>
         {buttons}
-        { taskNames.length > 0 &&
+        { tasks.length > 0 &&
           <Button
             style={styles.button}
             buttonStyle={{ backgroundColor: 'red' }}

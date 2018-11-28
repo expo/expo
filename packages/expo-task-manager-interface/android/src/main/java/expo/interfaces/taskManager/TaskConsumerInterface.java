@@ -7,8 +7,19 @@ import android.content.Intent;
 import java.util.Map;
 
 public interface TaskConsumerInterface {
+  /**
+   * Returns the type of the task, eg. "location" or "geofencing".
+   */
+  String taskType();
+
+  /**
+   * Called once the task has been registered by the task service.
+   */
   void didRegister(TaskInterface task);
 
+  /**
+   * Executed once the task associated with the consumer has been unregistered by the task service.
+   */
   void didUnregister();
 
   /**

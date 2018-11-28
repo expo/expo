@@ -44,6 +44,10 @@ public class LocationTaskConsumer extends TaskConsumer implements TaskConsumerIn
 
   //region TaskConsumerInterface
 
+  public String taskType() {
+    return "location";
+  }
+
   public void didRegister(TaskInterface task) {
     Context context = getContext();
 

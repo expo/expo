@@ -5,6 +5,7 @@ import android.app.job.JobService;
 import android.content.Intent;
 import android.os.Bundle;
 
+import java.util.List;
 import java.util.Map;
 
 import expo.core.interfaces.SingletonModule;
@@ -43,10 +44,9 @@ public interface TaskServiceInterface extends SingletonModule {
   Bundle getTaskOptions(String taskName, String appId);
 
   /**
-   *  Returns bundle of tasks for given appId. Bundle in which the keys are the names for tasks,
-   *  while the values are the task configs.
+   *  Returns a list of task bundles for given appId.
    */
-  Bundle getTasksForAppId(String appId);
+  List<Bundle> getTasksForAppId(String appId);
 
   /**
    *  Notifies the service that a task has just finished.

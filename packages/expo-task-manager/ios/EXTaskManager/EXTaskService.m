@@ -187,16 +187,20 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
   return task.options;
 }
 
-- (NSDictionary *)getRegisteredTasksOptionsForAppId:(NSString *)appId
+- (NSArray *)getRegisteredTasksForAppId:(NSString *)appId
 {
   NSDictionary<NSString *, id<EXTaskInterface>> *tasks = [self _getTasksForAppId:appId];
-  NSMutableDictionary *results = [NSMutableDictionary new];
+  NSMutableArray *results = [NSMutableArray new];
 
   for (NSString *taskName in tasks) {
     id<EXTaskInterface> task = tasks[taskName];
 
     if (task != nil) {
-      results[taskName] = task.options;
+      [results addObject:@{
+                           @"taskName": taskName,
+                           @"taskType": task.consumer.taskType,
+                           @"options": task.options,
+                           }];
     }
   }
   return results;

@@ -140,7 +140,8 @@ export default class GeofencingScreen extends React.Component {
 
 async function getSavedRegions() {
   const tasks = await TaskManager.getRegisteredTasksAsync();
-  return tasks[GEOFENCING_TASK] ? tasks[GEOFENCING_TASK].regions : [];
+  const task = tasks.find(({ taskName }) => taskName === GEOFENCING_TASK);
+  return task ? task.options.regions : [];
 }
 
 TaskManager.defineTask(GEOFENCING_TASK, async ({ data: { region } }) => {

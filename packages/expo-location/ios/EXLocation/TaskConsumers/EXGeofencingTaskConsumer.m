@@ -25,6 +25,11 @@
 
 # pragma mark - EXTaskConsumerInterface
 
+- (NSString *)taskType
+{
+  return @"geofencing";
+}
+
 - (void)setOptions:(nonnull NSDictionary *)options
 {
   [self stopMonitoringAllRegions];

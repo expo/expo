@@ -174,16 +174,22 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
   }
 
   @Override
-  public Bundle getTasksForAppId(String appId) {
+  public List<Bundle> getTasksForAppId(String appId) {
     Map<String, TaskInterface> appTasks = sTasksTable.get(appId);
-    Bundle resultBundle = new Bundle();
+    List<Bundle> tasks = new ArrayList<>();
 
     if (appTasks != null) {
       for (TaskInterface task : appTasks.values()) {
-        resultBundle.putBundle(task.getName(), task.getOptionsBundle());
+        Bundle taskBundle = new Bundle();
+
+        taskBundle.putString("taskName", task.getName());
+        taskBundle.putString("taskType", task.getConsumer().taskType());
+        taskBundle.putBundle("options", task.getOptionsBundle());
+
+        tasks.add(taskBundle);
       }
     }
-    return resultBundle;
+    return tasks;
   }
 
   @Override

@@ -45,6 +45,10 @@ public class GeofencingTaskConsumer extends TaskConsumer implements TaskConsumer
 
   //region TaskConsumerInterface
 
+  public String taskType() {
+    return "geofencing";
+  }
+
   @Override
   @SuppressWarnings("unchecked")
   public void didRegister(TaskInterface task) {

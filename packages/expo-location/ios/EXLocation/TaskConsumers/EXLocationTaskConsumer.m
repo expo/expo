@@ -22,6 +22,11 @@
 
 # pragma mark - EXTaskConsumerInterface
 
+- (NSString *)taskType
+{
+  return @"location";
+}
+
 - (void)didRegisterTask:(id<EXTaskInterface>)task
 {
   _task = task;

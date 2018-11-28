@@ -11,6 +11,11 @@
   return launchReason == EXTaskLaunchReasonBackgroundFetch;
 }
 
+- (NSString *)taskType
+{
+  return @"backgroundFetch";
+}
+
 // Associating task to the consumer.
 - (void)didRegisterTask:(id<EXTaskInterface>)task
 {
