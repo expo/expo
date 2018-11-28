@@ -2,9 +2,9 @@ import filter from 'lodash.filter';
 import qs from 'query-string';
 import { ComposeOptions, ComposeResult } from './MailComposer.types';
 
-function checkValue(value?: Array<string> | string): string | undefined {
+function checkValue(value?: string[] | string): string | null {
   if (!value) {
-    return undefined;
+    return null;
   }
 
   const arr = Array.isArray(value) ? value : [value];
