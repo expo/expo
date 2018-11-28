@@ -19,113 +19,129 @@ title: Configuration with app.json
 
 Most configuration from `app.json` is accessible at runtime from your JavaScript code via [`Expo.Constants.manifest`](../sdk/constants.html#expoconstantsmanifest). Sensitive information such as secret keys are removed. See the `"extra"` key below for information about how to pass arbitrary configuration data to your app.
 
+## ExpoKit
+
+While some of the properties defined in `app.json` can be applied at runtime, others require modifying native build configuration files. For ExpoKit projects, we only apply these settings once, at the time the native projects are generated (i.e. when you run `expo eject`).
+
+This means that for existing ExpoKit projects, **changing certain properties in `app.json` will not have the desired effect**. Instead, you must modify the corresponding native configuration files. In most cases, we've provided here a brief description of the files or settings that need to be changed, but you can also refer to the Apple and Android documentation for more information.
+
+## Properties
+
 The following is a list of properties that are available for you under the `"expo"` key in `app.json`:
 
-## "name"
+### `"name"`
 
 **Required**. The name of your app as it appears both within Expo and on your home screen as a standalone app.
 
-## "description"
+> **ExpoKit**: To change the name of your app, edit the "Display Name" field in Xcode and the `app_name` string in `android/app/src/main/res/values/strings.xml`.
+
+### `"description"`
 
 A short description of what your app is and why it is great.
 
-## "slug"
+### `"slug"`
 
 **Required**. The friendly url name for publishing. eg: `my-app-name` will refer to the `expo.io/@your-username/my-app-name` project.
 
-## "privacy"
+### `"privacy"`
 
 Either `public` or `unlisted`. If not provided, defaults to `unlisted`. In the future `private` will be supported. `unlisted` hides the experience from search results.
  Valid values: `public`, `unlisted`
 
-## "sdkVersion"
+### `"sdkVersion"`
 
 **Required**. The Expo sdkVersion to run the project on. This should line up with the version specified in your package.json.
 
-## "version"
+### `"version"`
 
-Your app version, use whatever versioning scheme that you like.
+Your app version; use whatever versioning scheme that you like.
 
-## "platforms"
+> **ExpoKit**: To change your app version, edit the "Version" field in Xcode and the `versionName` string in `android/app/build.gradle`.
+
+### `"platforms"`
 
 Platforms that your project explicitly supports. If not specified, it defaults to `["ios", "android"]`.
 
-## "githubUrl"
+### `"githubUrl"`
 
 If you would like to share the source code of your app on Github, enter the URL for the repository here and it will be linked to from your Expo project page.
 
-## "orientation"
+### `"orientation"`
 
 Lock your app to a specific orientation with `portrait` or `landscape`. Defaults to no lock.
  Valid values: 'default', 'portrait', 'landscape'
 
-## "primaryColor"
+### `"primaryColor"`
 
 On Android, this will determine the color of your app in the multitasker. Currently this is not used on iOS, but it may be used for other purposes in the future.
 
 6 character long hex color string, eg: "#000000"
 
-## "icon"
+### `"icon"`
 
 Local path or remote url to an image to use for your app's icon. We recommend that you use a 1024x1024 png file. This icon will appear on the home screen and within the Expo app.
 
-## "loading"
+> **ExpoKit**: To change your app's icon, edit or replace the files in `ios/<PROJECT-NAME>/Assets.xcassets/AppIcon.appiconset` (we recommend using Xcode), and `android/app/src/main/res/mipmap-<RESOLUTION>`. Be sure to follow the guidelines for each platform ([iOS](https://developer.apple.com/design/human-interface-guidelines/ios/icons-and-images/app-icon/), [Android 7.1 and below](https://material.io/design/iconography/#icon-treatments), and [Android 8+](https://developer.android.com/guide/practices/ui_guidelines/icon_design_adaptive)) and to provide your new icon in each existing size.
 
-DEPRECATED: Use `splash` instead.
-
-## "appKey"
+### `"appKey"`
 
 By default, Expo looks for the application registered with the AppRegistry as `main`. If you would like to change this, you can specify the name in this property.
 
-## "androidShowExponentNotificationInShellApp"
+### `"androidShowExponentNotificationInShellApp"`
 
 Adds a notification to your standalone app with refresh button and debug info.
 
-## "scheme"
+### `"scheme"`
 
 **Standalone Apps Only**. URL scheme to link into your app. For example, if we set this to `'demo'`, then demo:// URLs would open your app when tapped. String beginning with a letter followed by any combination of letters, digits, "+", "." or "-"
 
-## "entryPoint"
+> **ExpoKit**: To change your app's scheme, replace all occurrences of the old scheme in `Info.plist`, `AndroidManifest.xml`, and `android/app/src/main/java/host/exp/exponent/generated/AppConstants.java`.
+
+### `"entryPoint"`
 
 The relative path to your main JavaScript file.
 
-## "extra"
+### `"extra"`
 
 Any extra fields you want to pass to your experience. Values are accessible via `Expo.Constants.manifest.extra` ([read more](../sdk/constants.html#expoconstantsmanifest))
 
-## "rnCliPath"
+### `"rnCliPath"`
 
-## "packagerOpts"
+### `"packagerOpts"`
 
-## "ignoreNodeModulesValidation"
+### `"ignoreNodeModulesValidation"`
 
-## "nodeModulesPath"
+### `"nodeModulesPath"`
 
-## "facebookAppId"
+### `"facebookAppId"`
 
 Used for all Facebook libraries. Set up your Facebook App ID at https://developers.facebook.com.
 
-## "facebookDisplayName"
+> **ExpoKit**: To change this field, edit `Info.plist`.
+
+### `"facebookDisplayName"`
 
 Used for native Facebook login.
 
-## "facebookScheme"
+> **ExpoKit**: To change this field, edit `Info.plist`.
+
+### `"facebookScheme"`
 
 Used for Facebook native login. Starts with 'fb' and followed by a string of digits, like 'fb1234567890'. You can find your scheme at https://developers.facebook.com/docs/facebook-login/ios in the 'Configuring Your info.plist' section.
 
-## "locales"
+> **ExpoKit**: To change this field, edit `Info.plist`.
 
-Provide overrides by locale for System Dialog prompts like Permissions Boxes
+### `"locales"`
 
-## "assetBundlePatterns"
+Provide overrides by locale for System Dialog prompts like Permissions alerts
+
+> **ExpoKit**: To add or change language and localization information in your iOS app, you need to use Xcode.
+
+### `"assetBundlePatterns"`
 
 An array of file glob strings which point to assets that will be bundled within your standalone app binary. Read more in the [Offline Support guide](https://docs.expo.io/versions/latest/guides/offline-support.html)
 
-## "androidStatusBarColor"
-
-DEPRECATED. Use `androidStatusBar` instead.
-
-## "androidStatusBar"
+### `"androidStatusBar"`
 
 Configuration for android statusbar.
 
@@ -147,7 +163,7 @@ Configuration for android statusbar.
 }
 ```
 
-## "splash"
+### `"splash"`
 
 Configuration for loading and splash screen for standalone apps.
 
@@ -178,7 +194,9 @@ Configuration for loading and splash screen for standalone apps.
 
 ```
 
-## "notification"
+> **ExpoKit**: To change your iOS app's splash screen, use Xcode to edit `LaunchScreen.xib`. For Android, edit or replace the files in `android/app/src/main/res/drawable-<RESOLUTION>`; to change the background color, edit `android/app/src/main/res/values/colors.xml`; and to change the resizeMode, set `SHOW_LOADING_VIEW_IN_SHELL_APP` in `android/app/src/main/java/host/exp/exponent/generated/AppConstants.java` (`true` for `"cover"`, `false` for `"contain"`).
+
+### `"notification"`
 
 Configuration for remote (push) notifications.
 
@@ -212,7 +230,9 @@ Configuration for remote (push) notifications.
 }
 ```
 
-## "hooks"
+> **ExpoKit**: To change the notification icon, edit or replace the `shell_notification_icon.png` files in `android/app/src/main/res/mipmap-<RESOLUTION>`. On iOS, notification icons are the same as the app icon. All other properties are set at runtime.
+
+### `"hooks"`
 
 Configuration for scripts to run to hook into the publish process
 
@@ -224,7 +244,7 @@ Configuration for scripts to run to hook into the publish process
 }
 ```
 
-## "updates"
+### `"updates"`
 
 Configuration for how and when the app should request OTA JavaScript updates
 
@@ -260,7 +280,9 @@ Configuration for how and when the app should request OTA JavaScript updates
 
 ```
 
-## "ios"
+> **ExpoKit**: To change the value of `enabled`, edit `ios/<PROJECT-NAME>/Supporting/EXShell.plist` and `android/app/src/main/java/host/exp/exponent/generated/AppConstants.java`. All other properties are set at runtime.
+
+### `"ios"`
 
 **Standalone Apps Only**. iOS standalone app specific configuration
 
@@ -276,6 +298,8 @@ Configuration for how and when the app should request OTA JavaScript updates
       iOS bundle identifier notation unique name for your app. 
       For example, host.exp.exponent, where exp.host is our domain 
       and Expo is our app.
+
+      ExpoKit: use Xcode to set this.
     */
     "bundleIdentifier": STRING,
 
@@ -284,6 +308,8 @@ Configuration for how and when the app should request OTA JavaScript updates
       that matches Apple's format for CFBundleVersion.
 
       developer.apple.com/library/content/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html#//apple_ref/doc/uid/20001431-102364.
+
+      ExpoKit: use Xcode to set this.
     */
     "buildNumber": STRING,
 
@@ -299,11 +325,6 @@ Configuration for how and when the app should request OTA JavaScript updates
     "icon": STRING,
 
     /*
-      Merchant ID for use with Apple Pay in your standalone app.
-    */
-    "merchantId": STRING,
-
-    /*
       URL to your app on the Apple App Store, if you have deployed it there. 
       This is used to link to your store page from your Expo project page if your app is public.
     */
@@ -312,12 +333,16 @@ Configuration for how and when the app should request OTA JavaScript updates
     /*
       Whether your standalone iOS app supports tablet screen sizes. 
       Defaults to `false`.
+
+      ExpoKit: use Xcode to set this.
     */
     "supportsTablet": BOOLEAN,
 
     /*
       If true, indicates that your standalone iOS app does not support handsets.
       Your app will only support tablets.
+
+      ExpoKit: use Xcode to set this.
     */
     "isTabletOnly": BOOLEAN,
 
@@ -330,15 +355,24 @@ Configuration for how and when the app should request OTA JavaScript updates
 
     /*
       An array that contains Associated Domains for the standalone app.
+
+      ExpoKit: use Xcode to set this.
     */
     "associatedDomains": ARRAY,
 
     /*
       A boolean indicating if the app uses iCloud Storage for DocumentPicker. 
       See DocumentPicker docs for details.
+
+      ExpoKit: use Xcode to set this.
     */
     "usesIcloudStorage": BOOLEAN,
 
+    /*
+      Extra module configuration to be added to your app's native Info.plist.
+
+      For ExpoKit apps, just add these to the Info.plist file directly.
+    */
     "config": {
       /*
         Branch (https://branch.io/) key to hook up Branch linking services.
@@ -402,17 +436,13 @@ Configuration for how and when the app should request OTA JavaScript updates
         Must be a .png.
       */
       "tabletImage": STRING
-    },
-
-    "isRemoteJSEnabled": DEPRECATED,
-
-    "loadJSInBackgroundExperimental": DEPRECATED,
+    }
   }
 }
 
 ```
 
-## "android"
+### `"android"`
 
 **Standalone Apps Only**. Android standalone app specific configuration
 
@@ -427,6 +457,9 @@ Configuration for how and when the app should request OTA JavaScript updates
 
       Reverse DNS notation unique name for your app. 
       For example, host.exp.exponent, where exp.host is our domain and Expo is our app.
+
+      ExpoKit: this is set in `android/app/build.gradle` as well as your
+      AndroidManifest.xml file (multiple places).
     */
     "package": STRING,
 
@@ -435,6 +468,8 @@ Configuration for how and when the app should request OTA JavaScript updates
       Increment by one for each release. 
       Must be an integer. 
       developer.android.com/studio/publish/versioning.html
+
+      ExpoKit: this is set in `android/app/build.gradle`.
     */
     "versionCode": NUMBER,
 
@@ -451,6 +486,9 @@ Configuration for how and when the app should request OTA JavaScript updates
     /*
       Settings for an Adaptive Launcher Icon on Android.
       https://developer.android.com/guide/practices/ui_guidelines/icon_design_adaptive
+
+      ExpoKit: icons are saved in `android/app/src/main/res/mipmap-<RESOLUTION>-v26`
+      and the "backgroundColor" is set in `android/app/src/main/res/values/colors.xml`.
     */
     "adaptiveIcon": {
       /*
@@ -511,7 +549,10 @@ Configuration for how and when the app should request OTA JavaScript updates
 
       ["CAMERA", "RECORD_AUDIO"]
       
-      Note for ejected projects: To change permissions after ejecting, edit AndroidManifest.xml manually      
+      ExpoKit: to change the permissions your app requests, you'll need to edit
+      AndroidManifest.xml manually. To prevent your app from requesting one of the
+      permissions listed below, you'll need to explicitly add it to `AndroidManifest.xml`
+      along with a `tools:node="remove"` tag.
     */
     "permissions": [
       "ACCESS_COARSE_LOCATION",
@@ -541,6 +582,21 @@ Configuration for how and when the app should request OTA JavaScript updates
       "com.sonyericsson.home.permission.BROADCAST_BADGE"
     ],
 
+    /*
+      Location of the google-services.json file for configuring Firebase. Including this
+      key automatically enables FCM in your standalone app.
+
+      For ExpoKit apps, add or edit the file directly at `android/app/google-services.json`.
+      To enable FCM, edit the value of `FCM_ENABLED` in
+      `android/app/src/main/java/host/exp/exponent/generated/AppConstants.java`.
+    */
+    "googleServicesFile": STRING,
+
+    /*
+      Extra module configuration to be added to your app's native AndroidManifest.xml.
+
+      For ExpoKit apps, just add these to the AndroidManifest.xml file directly.
+    */
     "config": {
       /*
         Branch (https://branch.io/) key to hook up Branch linking services.
@@ -637,7 +693,8 @@ Configuration for how and when the app should request OTA JavaScript updates
       dialog asking whether the link should be handled by your app or by
       the web browser.
 
-      The data attribute may either be an object or an array of objects. The object may have the following keys to specify attributes of URLs matched by the filter:
+      The data attribute may either be an object or an array of objects.
+      The object may have the following keys to specify attributes of URLs matched by the filter:
 
       - scheme (string): the scheme of the URL, e.g. "https"
       - host (string): the host, e.g. "myapp.io"
@@ -658,6 +715,8 @@ Configuration for how and when the app should request OTA JavaScript updates
       domain. See Android's documentation for details:
 
       developer.android.com/training/app-links
+
+      To add or edit intent filters in an ExpoKit project, edit AndroidManifest.xml directly.
     */
     "intentFilters": [
       {
