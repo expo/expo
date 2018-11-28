@@ -1,2 +1,2 @@
-export const { openDatabase } = window;
+export const { openDatabase } = global;
 export default { openDatabase };
