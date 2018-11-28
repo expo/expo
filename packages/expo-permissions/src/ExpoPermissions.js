@@ -1,2 +1,2 @@
 import { NativeModulesProxy } from 'expo-core';
-return NativeModulesProxy.ExpoPermissions;
+export default NativeModulesProxy.ExpoPermissions;

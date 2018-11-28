@@ -1,37 +1,7 @@
 // @flow
 import Permissions from './ExpoPermissions';
 
-type PermissionType =
-  | 'audioRecording'
-  | 'calendar'
-  | 'camera'
-  | 'cameraRoll'
-  | 'contacts'
-  | 'location'
-  | 'notifications'
-  | 'reminders'
-  | 'systemBrightness'
-  | 'userFacingNotifications'
-  | 'SMS';
-type PermissionStatus = 'undetermined' | 'granted' | 'denied';
-type PermissionExpires = 'never';
-type PermissionDetailsLocationIOS = {
-  scope: 'whenInUse' | 'always',
-};
-type PermissionDetailsLocationAndroid = {
-  scope: 'fine' | 'coarse' | 'none',
-};
-type SimpleResponse = {
-  status: PermissionStatus,
-  expires: PermissionExpires,
-  ios?: PermissionDetailsLocationIOS,
-  android?: PermissionDetailsLocationAndroid,
-};
-type PermissionsResponse = {
-  status: PermissionStatus,
-  expires: PermissionExpires,
-  permissions: { [key: PermissionType]: SimpleResponse },
-};
+import { PermissionType, PermissionsResponse, SimpleResponse } from './Permissions.types';
 
 async function handlePermissionsRequest(
   types: Array<PermissionType>,

@@ -1,4 +1,6 @@
 // @flow
+import { PermissionType, SimpleResponse } from './Permissions.types';
+
 
 /*
  * TODO: Bacon: https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia#Permissions
@@ -7,7 +9,7 @@
 
 // https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia#Using_the_new_API_in_older_browsers
 // Older browsers might not implement mediaDevices at all, so we set an empty object first
-function _getUserMedia(constraints) {
+function _getUserMedia(constraints: MediaStreamConstraints) {
   if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
     return navigator.mediaDevices.getUserMedia(constraints);
   }
@@ -39,7 +41,7 @@ const Status = {
   denied: 'denied',
 };
 
-async function askForMediaPermissionAsync(options) {
+async function askForMediaPermissionAsync(options: MediaStreamConstraints): Promise<SimpleResponse> {
   try {
     await _getUserMedia(options);
     return { status: Status.granted };
@@ -58,15 +60,15 @@ async function askForMediaPermissionAsync(options) {
   }
 }
 
-async function askForMicrophonePermissionAsync() {
+async function askForMicrophonePermissionAsync(): Promise<SimpleResponse> {
   return await askForMediaPermissionAsync({ audio: true });
 }
 
-async function askForCameraPermissionAsync() {
+async function askForCameraPermissionAsync(): Promise<SimpleResponse> {
   return await askForMediaPermissionAsync({ video: true });
 }
 
-async function askForLocationPermissionAsync() {
+async function askForLocationPermissionAsync(): Promise<SimpleResponse> {
   return new Promise(resolve => {
     navigator.geolocation.getCurrentPosition(
       () => resolve({ status: Status.granted }),
@@ -82,7 +84,7 @@ async function askForLocationPermissionAsync() {
   });
 }
 
-async function getPermissionAsync(permission, shouldAsk) {
+async function getPermissionAsync(permission: PermissionType, shouldAsk: boolean): Promise<SimpleResponse> {
   switch (permission) {
     case 'userFacingNotifications':
     case 'notifications':
@@ -140,21 +142,21 @@ async function getPermissionAsync(permission, shouldAsk) {
 }
 
 export default {
-  get name() {
+  get name(): string {
     return 'ExpoPermissions';
   },
-  async getAsync(permissionsTypes: Array<string>) {
+  async getAsync(permissionsTypes: Array<string>): Promise<Array<SimpleResponse>> {
     const permissions = [...new Set(permissionsTypes)];
-    let permissionResults = [];
+    let permissionResults: Array<SimpleResponse> = [];
     for (let permission of permissions) {
       const result = await getPermissionAsync(permission, false);
       permissionResults.push(result);
     }
     return permissionResults;
   },
-  async askAsync(permissionsTypes: Array<string>) {
+  async askAsync(permissionsTypes: Array<string>): Promise<Array<SimpleResponse>> {
     const permissions = [...new Set(permissionsTypes)];
-    let permissionResults = [];
+    let permissionResults: Array<SimpleResponse> = [];
     for (let permission of permissions) {
       const result = await getPermissionAsync(permission, true);
       permissionResults.push(result);
