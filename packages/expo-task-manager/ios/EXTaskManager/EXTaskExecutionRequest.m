@@ -45,13 +45,13 @@
 - (void)maybeEvaluate
 {
   if ([_tasks count] == 0) {
-    [self _maybeCallCallback];
+    [self _maybeExecuteCallback];
   }
 }
 
 # pragma mark - helpers
 
-- (void)_maybeCallCallback
+- (void)_maybeExecuteCallback
 {
   if (_callback != nil) {
     _callback(_results);

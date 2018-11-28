@@ -46,7 +46,7 @@
   }
 }
 
-- (void)maybeCallCallbackWithSuccess:(BOOL)success error:(nullable NSError *)error
+- (void)maybeExecuteCallbackWithSuccess:(BOOL)success error:(nullable NSError *)error
 {
   if (_callback != nil) {
     _callback(success, error);
@@ -67,12 +67,12 @@
 
 - (void)reactAppManager:(EXReactAppManager *)appManager failedToLoadJavaScriptWithError:(NSError *)error
 {
-  [self maybeCallCallbackWithSuccess:NO error:error];
+  [self maybeExecuteCallbackWithSuccess:NO error:error];
 }
 
 - (void)reactAppManagerIsReadyForLoad:(EXReactAppManager *)appManager
 {
-  [self maybeCallCallbackWithSuccess:YES error:nil];
+  [self maybeExecuteCallbackWithSuccess:YES error:nil];
 }
 
 - (void)reactAppManagerDidInvalidate:(EXReactAppManager *)appManager {}
@@ -103,7 +103,7 @@
   if (_appManager.status == kEXReactAppManagerStatusBridgeLoading) {
     [_appManager appLoaderFailedWithError:error];
   }
-  [self maybeCallCallbackWithSuccess:NO error:error];
+  [self maybeExecuteCallbackWithSuccess:NO error:error];
 }
 
 - (void)appLoader:(EXAppLoader *)appLoader didLoadBundleWithProgress:(EXLoadingProgress *)progress {}

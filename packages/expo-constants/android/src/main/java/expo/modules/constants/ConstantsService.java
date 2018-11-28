@@ -69,7 +69,7 @@ public class ConstantsService implements InternalModule, ConstantsInterface {
   }
 
   public String getAppId() {
-    // Use just package name on non-expo apps.
+    // Just use package name in vanilla React Native apps.
     return mContext.getPackageName();
   }
 

@@ -12,7 +12,7 @@ extern void EXRegisterAppLoader(NSString *loaderName, Class loaderClass)
     if (!providedAppLoaderClasses) {
       providedAppLoaderClasses = [NSMutableDictionary new];
     }
-    [providedAppLoaderClasses setObject:loaderClass forKey:loaderName];
+    providedAppLoaderClasses[loaderName] = loaderClass;
   } else {
     NSLog(@"EXAppLoader class (%@) doesn't conform to EXAppLoaderInterface protocol.", NSStringFromClass(loaderClass));
   }
@@ -34,9 +34,7 @@ extern void EXRegisterAppLoader(NSString *loaderName, Class loaderClass)
   static dispatch_once_t once;
 
   dispatch_once(&once, ^{
-    if (loaderProvider == nil) {
-      loaderProvider = [[EXAppLoaderProvider alloc] init];
-    }
+    loaderProvider = [[EXAppLoaderProvider alloc] init];
   });
   return loaderProvider;
 }
