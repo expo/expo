@@ -1,5 +1,6 @@
 {
-  "name": "empty-project-template",
+  "name": "firebase-demo",
+  "version": "1.0.0",
   "main": "node_modules/expo/AppEntry.js",
   "private": true,
   "scripts": {
@@ -10,6 +11,21 @@
   },
   "dependencies": {
     "expo": "^31.0.2",
+    "expo-firebase-analytics": "^1.0.0",
+    "expo-firebase-app": "^1.0.0",
+    "expo-firebase-auth": "^1.0.0",
+    "expo-firebase-crashlytics": "^1.0.0",
+    "expo-firebase-database": "^1.0.0",
+    "expo-firebase-firestore": "^1.0.0",
+    "expo-firebase-functions": "^1.0.0",
+    "expo-firebase-instance-id": "^1.0.0",
+    "expo-firebase-invites": "^1.0.0",
+    "expo-firebase-links": "^1.0.0",
+    "expo-firebase-messaging": "^1.0.0",
+    "expo-firebase-notifications": "^1.0.0",
+    "expo-firebase-performance": "^1.0.0",
+    "expo-firebase-remote-config": "^1.0.0",
+    "expo-firebase-storage": "^1.0.0",
     "react": "16.5.0",
     "react-native": "https://github.com/expo/react-native/archive/sdk-31.0.0.tar.gz"
   },
