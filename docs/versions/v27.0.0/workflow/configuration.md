@@ -307,7 +307,7 @@ Configuration for how and when the app should request OTA JavaScript updates
       URL to your app on the Apple App Store, if you have deployed it there. 
       This is used to link to your store page from your Expo project page if your app is public.
     */
-    appStoreUrl: STRING,
+    "appStoreUrl": STRING,
 
     /*
       Whether your standalone iOS app supports tablet screen sizes. 
@@ -367,13 +367,13 @@ Configuration for how and when the app should request OTA JavaScript updates
 
         developers.google.com/identity/sign-in/ios/start-integrating
       */
-      "googleSignIn": STRING,
-
-      /*
-        The reserved client ID URL scheme. 
-        Can be found in GoogeService-Info.plist.
-      */
-      "reservedClientId": STRING
+      "googleSignIn": {
+        /*
+          The reserved client ID URL scheme.
+          Can be found in GoogeService-Info.plist.
+        */
+        "reservedClientId": STRING
+      }
     },
 
     "splash": {
