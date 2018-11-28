@@ -18,7 +18,7 @@ async function _rewriteAppJsFileAsync(projectDir, text) {
 async function action(options) {
   console.log('Starting project...');
   let projectDir = path.join(Directories.getExpoRepositoryRootDir(), 'apps', 'dev-mode-test');
-  await spawnAsync('yarn', {
+  await spawnAsync('yarn', [], {
     cwd: projectDir,
   });
   _rewriteAppJsFileAsync(projectDir, 'INITIAL_STATE');

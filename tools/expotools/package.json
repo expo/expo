@@ -23,7 +23,7 @@
   "license": "MIT",
   "dependencies": {
     "@expo/json-file": "^8.0.0",
-    "@expo/spawn-async": "^1.3.0",
+    "@expo/spawn-async": "^1.4.0",
     "@types/base-64": "^0.1.2",
     "@types/concat-stream": "^1.6.0",
     "@types/connect": "^3.4.32",

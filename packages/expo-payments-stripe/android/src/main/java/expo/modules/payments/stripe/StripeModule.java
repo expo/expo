@@ -41,7 +41,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import expo.core.ExportedModule;
 
-import static expo.modules.payments.stripe.PayFlow.NO_CURRENT_ACTIVITY_MSG;
+import static expo.modules.payments.stripe.Errors.getDescription;
+import static expo.modules.payments.stripe.Errors.getErrorCode;
+import static expo.modules.payments.stripe.Errors.toErrorCode;
 import static expo.modules.payments.stripe.util.Converters.convertSourceToWritableMap;
 import static expo.modules.payments.stripe.util.Converters.convertTokenToWritableMap;
 import static expo.modules.payments.stripe.util.Converters.createBankAccount;
@@ -55,7 +57,6 @@ import static expo.modules.payments.stripe.util.InitializationOptions.ANDROID_PA
 public class StripeModule extends ExportedModule implements ModuleRegistryConsumer {
   private static final String META_DATA_SCHEME_KEY = "standaloneStripeScheme";
   private static final String MODULE_NAME = StripeModule.class.getSimpleName();
-  private static final String TAG = "### " + MODULE_NAME + ": ";
   private static HashMap<Integer, WeakReference<StripeModule>> sMapOfInstances = new HashMap<>();
 
   private Context mContext;
@@ -86,6 +87,7 @@ public class StripeModule extends ExportedModule implements ModuleRegistryConsum
   private String mPublicKey;
   private Stripe mStripe;
   private PayFlow mPayFlow;
+  private Map<String, Object> mErrorCodes;
 
   private int mTag = 0;
   private static final AtomicInteger sCounter = new AtomicInteger(0);
@@ -117,7 +119,7 @@ public class StripeModule extends ExportedModule implements ModuleRegistryConsum
   }
 
   @ExpoMethod
-  public void init(@NonNull Map<String, Object> options, Promise promise) {
+  public void init(@NonNull Map<String, Object> options, @NonNull Map<String, Object> errorCodes, Promise promise) {
     ArgCheck.nonNull(options);
 
     String newPubKey = Converters.getStringOrNull(options, PUBLISHABLE_KEY);
@@ -135,6 +137,11 @@ public class StripeModule extends ExportedModule implements ModuleRegistryConsum
       ArgCheck.isTrue(ANDROID_PAY_MODE_TEST.equals(newAndroidPayMode) || ANDROID_PAY_MODE_PRODUCTION.equals(newAndroidPayMode));
 
       getPayFlow().setEnvironment(androidPayModeToEnvironment(newAndroidPayMode));
+    }
+
+    if (mErrorCodes == null) {
+      mErrorCodes = errorCodes;
+      getPayFlow().setErrorCodes(errorCodes);
     }
 
     promise.resolve(null);
@@ -186,11 +193,11 @@ public class StripeModule extends ExportedModule implements ModuleRegistryConsum
           }
           public void onError(Exception error) {
             error.printStackTrace();
-            promise.reject(TAG, error.getMessage());
+            promise.reject(toErrorCode(error), error.getMessage());
           }
         });
     } catch (Exception e) {
-      promise.reject(TAG, e.getMessage());
+      promise.reject(toErrorCode(e), e.getMessage());
     }
   }
 
@@ -210,26 +217,34 @@ public class StripeModule extends ExportedModule implements ModuleRegistryConsum
           }
           public void onError(Exception error) {
             error.printStackTrace();
-            promise.reject(TAG, error.getMessage());
+            promise.reject(toErrorCode(error), error.getMessage());
           }
         });
     } catch (Exception e) {
-      promise.reject(TAG, e.getMessage());
+      promise.reject(toErrorCode(e), e.getMessage());
     }
   }
 
   @ExpoMethod
-  public void paymentRequestWithCardForm(Map<String, Object> unused, final Promise promise) {
+  public void paymentRequestWithCardForm(Map<String, Object> params, final Promise promise) {
     Activity currentActivity = getCurrentActivity();
     try {
       ArgCheck.nonNull(currentActivity);
       ArgCheck.notEmptyString(mPublicKey);
 
-      final AddCardDialogFragment cardDialog = AddCardDialogFragment.newInstance(mPublicKey, mTag);
+      boolean createCardSource = params.get("createCardSource") instanceof Boolean ? (Boolean) params.get("createCardSource") : false;
+
+      final AddCardDialogFragment cardDialog = AddCardDialogFragment.newInstance(
+          mPublicKey,
+          getErrorCode(mErrorCodes, "cancelled"),
+          getDescription(mErrorCodes, "cancelled"),
+          createCardSource,
+          mTag
+      );
       cardDialog.setPromise(promise);
       cardDialog.show(currentActivity.getFragmentManager(), "AddNewCard");
     } catch (Exception e) {
-      promise.reject(TAG, e.getMessage());
+      promise.reject(toErrorCode(e), e.getMessage());
     }
   }
 
@@ -276,11 +291,8 @@ public class StripeModule extends ExportedModule implements ModuleRegistryConsum
             Math.round((Double)options.get("amount")),
             (String)options.get("name"),
             (String)options.get("returnURL"),
-            getStringOrNull(options, "statementDescriptor"));
-        break;
-      case "bitcoin":
-        sourceParams = SourceParams.createBitcoinParams(
-            Math.round((Double)options.get("amount")), (String)options.get("currency"), (String)options.get("email"));
+            getStringOrNull(options, "statementDescriptor"),
+            (String)options.get("preferredLanguage"));
         break;
       case "giropay":
         sourceParams = SourceParams.createGiropayParams(
@@ -327,7 +339,7 @@ public class StripeModule extends ExportedModule implements ModuleRegistryConsum
     mStripe.createSource(sourceParams, new SourceCallback() {
       @Override
       public void onError(Exception error) {
-        promise.reject(error);
+        promise.reject(toErrorCode(error), error);
       }
 
       @Override
@@ -335,7 +347,10 @@ public class StripeModule extends ExportedModule implements ModuleRegistryConsum
         if (Source.REDIRECT.equals(source.getFlow())) {
           Activity currentActivity = getCurrentActivity();
           if (currentActivity == null) {
-            promise.reject(TAG, NO_CURRENT_ACTIVITY_MSG);
+            promise.reject(
+              getErrorCode(mErrorCodes, "activityUnavailable"),
+              getDescription(mErrorCodes, "activityUnavailable")
+            );
           } else {
             mCreateSourcePromise = promise;
             mCreatedSource = source;
@@ -372,7 +387,10 @@ public class StripeModule extends ExportedModule implements ModuleRegistryConsum
 
     if (redirectData == null) {
 
-      mCreateSourcePromise.reject(TAG, "Cancelled");
+      mCreateSourcePromise.reject(
+        getErrorCode(mErrorCodes, "redirectCancelled"),
+        getDescription(mErrorCodes, "redirectCancelled")
+      );
       mCreatedSource = null;
       mCreateSourcePromise = null;
       return;
@@ -380,7 +398,10 @@ public class StripeModule extends ExportedModule implements ModuleRegistryConsum
 
     final String clientSecret = redirectData.getQueryParameter("client_secret");
     if (!mCreatedSource.getClientSecret().equals(clientSecret)) {
-      mCreateSourcePromise.reject(TAG, "Received redirect uri but there is no source to process");
+      mCreateSourcePromise.reject(
+        getErrorCode(mErrorCodes, "redirectNoSource"),
+        getDescription(mErrorCodes, "redirectNoSource")
+      );
       mCreatedSource = null;
       mCreateSourcePromise = null;
       return;
@@ -388,7 +409,10 @@ public class StripeModule extends ExportedModule implements ModuleRegistryConsum
 
     final String sourceId = redirectData.getQueryParameter("source");
     if (!mCreatedSource.getId().equals(sourceId)) {
-      mCreateSourcePromise.reject(TAG, "Received wrong source id in redirect uri");
+      mCreateSourcePromise.reject(
+        getErrorCode(mErrorCodes, "redirectWrongSourceId"),
+        getDescription(mErrorCodes, "redirectWrongSourceId")
+      );
       mCreatedSource = null;
       mCreateSourcePromise = null;
       return;
@@ -417,12 +441,18 @@ public class StripeModule extends ExportedModule implements ModuleRegistryConsum
             promise.resolve(convertSourceToWritableMap(source));
             break;
           case Source.CANCELED:
-            promise.reject(TAG, "User cancelled source redirect");
+            promise.reject(
+              getErrorCode(mErrorCodes, "redirectCancelled"),
+              getDescription(mErrorCodes, "redirectCancelled")
+            );
             break;
           case Source.PENDING:
           case Source.FAILED:
           case Source.UNKNOWN:
-            promise.reject(TAG, "Source redirect failed");
+            promise.reject(
+              getErrorCode(mErrorCodes, "redirectFailed"),
+              getDescription(mErrorCodes, "redirectFailed")
+            );
         }
         return null;
       }

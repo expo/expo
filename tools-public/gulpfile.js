@@ -18,11 +18,6 @@ const {
 } = require('xdl');
 
 const { startReactNativeServer } = require('./react-native-tasks');
-const {
-  generateDynamicMacrosAsync,
-  cleanupDynamicMacrosAsync,
-  runFabricIOSAsync,
-} = require('./generate-dynamic-macros');
 const logger = require('./logger');
 
 const ptool = './ptool';
@@ -42,38 +37,6 @@ function pathsFromProjectsFile(projectsFile) {
     projectPaths.push(match[1]);
   }
   return projectPaths;
-}
-
-function generateDynamicMacrosWithArguments() {
-  if (!argv.buildConstantsPath) {
-    throw new Error('Must run with `--buildConstantsPath BUILD_CONSTANTS_PATH`');
-  }
-
-  if (!argv.platform) {
-    throw new Error('Must run with `--platform PLATFORM`');
-  }
-
-  if (argv.platform === 'ios' && !argv.infoPlistPath) {
-    throw new Error('iOS must run with `--infoPlistPath INFO_PLIST_PATH`');
-  }
-
-  return generateDynamicMacrosAsync(argv);
-}
-
-function cleanupDynamicMacrosWithArguments() {
-  if (argv.platform === 'ios' && !argv.infoPlistPath) {
-    throw new Error('iOS must run with `--infoPlistPath INFO_PLIST_PATH`');
-  }
-
-  return cleanupDynamicMacrosAsync(argv);
-}
-
-function runFabricIOSWithArguments() {
-  if (!argv.fabricPath || !argv.iosPath) {
-    throw new Error('Must run with `--fabricPath` and `--iosPath`');
-  }
-
-  return runFabricIOSAsync(argv);
 }
 
 function createAndroidShellAppWithArguments() {
@@ -224,7 +187,3 @@ gulp.task('ptool:watch', gulp.series('ptool', 'watch'));
 gulp.task('ptool:pause-watch', gulp.series('watch:stop', 'ptool', 'watch'));
 
 gulp.task('react-native-server', startReactNativeServer);
-
-gulp.task('generate-dynamic-macros', generateDynamicMacrosWithArguments);
-gulp.task('cleanup-dynamic-macros', cleanupDynamicMacrosWithArguments);
-gulp.task('run-fabric-ios', runFabricIOSWithArguments);

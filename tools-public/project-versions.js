@@ -10,9 +10,7 @@ const EXPONENT_DIR = process.env.EXPONENT_DIR || path.join(__dirname, '..');
 function sdkVersionAsync(packageJsonFilePath) {
   return new JsonFile(packageJsonFilePath).getAsync('exp').then(exp => {
     if (!exp.hasOwnProperty('sdkVersion')) {
-      throw new Error(
-        `SDK version is missing from the project's package.json file`
-      );
+      throw new Error(`SDK version is missing from the project's package.json file`);
     }
     return exp.sdkVersion;
   });

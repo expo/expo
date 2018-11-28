@@ -1,4 +1,5 @@
 import aws from 'aws-sdk';
+import { SpawnOptions } from 'child_process';
 import fse from 'fs-extra';
 import os from 'os';
 import path from 'path';
@@ -171,7 +172,7 @@ export async function uploadDirectoriesAsync(
   let dirname = await fse.mkdtemp(path.join(os.tmpdir(), '-pt-upload'));
   const tmpDir = path.join(dirname, 'upload-directories-tmp');
   const tmpTarGz = path.join(dirname, 'upload-directories-tmp-targz.tar.gz');
-  let spawnOptions = {
+  let spawnOptions: SpawnOptions = {
     stdio: 'inherit',
     cwd: dirname,
   };

@@ -31,13 +31,13 @@ Please use Node 8+ and npm 4. We recommend installing Node using [nvm](https://g
 - Make sure you have latest non-beta Xcode installed.
 - Install [Cocoapods](https://cocoapods.org/): `gem install cocoapods --no-ri --no-rdoc`
 - Run `git lfs pull`.
-- Run `./generate-files-ios.sh` in the `tools-public` directory.
+- Run `./generate-files-ios.js` in the `tools-public` directory.
 - Open and run `ios/Exponent.xcworkspace` in Xcode.
 
 #### Android
-- Make sure you have Android Studio 3 and the [Android NDK](https://facebook.github.io/react-native/docs/building-from-source.html#download-links-for-android-ndk) version `r10e` installed.
-- Run `./generate-dynamic-macros-android.sh` in the `tools-public` directory.
-- Build and install Android with `cd android; ./run.sh; cd ..`. It might fail the first time. If so just run `./run.sh` again.
+- Make sure you have Android Studio 3 installed
+- Run `android/install-ndk-17c.sh` to get the required version of the Android NDK.
+- See "Running on a Device"
 
 ## Running on a Device
 
@@ -53,7 +53,7 @@ Please use Node 8+ and npm 4. We recommend installing Node using [nvm](https://g
 ### Android
 - If the Play Store version of the Expo Client App is installed on your test device, uninstall it.
 - Connect your test device to your computer with a USB cable.
-- Run `cd android; ./run.sh`, or alternately open the `android` directory in Android Studio, start it, and in the **Select Deployment Target** dialog, select your device.
+- Run `fastlane android start`, or alternately open the `android` directory in Android Studio, start it, and in the **Select Deployment Target** dialog, select your device.
 
 ## Standalone Apps
 

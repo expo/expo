@@ -442,7 +442,7 @@ async function writeIOSTemplatesAsync(
   );
 
   if (args.expoKitPath) {
-    let expoKitPath = path.join(process.cwd(), args.expoKitPath);
+    let expoKitPath = args.expoKitPath;
     await renderExpoKitPodspecAsync(
       path.join(templateFilesPath, platform, 'ExpoKit.podspec'),
       path.join(expoKitPath, 'ExpoKit.podspec'),
@@ -467,7 +467,7 @@ async function writeIOSTemplatesAsync(
 }
 
 async function copyTemplateFilesAsync(platform, args, templateSubstitutions) {
-  let templateFilesPath = path.join(EXPONENT_DIR, 'template-files');
+  let templateFilesPath = args.templateFilesPath || path.join(EXPONENT_DIR, 'template-files');
   let templatePaths = await new JsonFile(
     path.join(templateFilesPath, `${platform}-paths.json`)
   ).readAsync();
@@ -554,7 +554,9 @@ exports.generateDynamicMacrosAsync = async function generateDynamicMacrosAsync(a
     await copyTemplateFilesAsync(platform, args, templateSubstitutions);
   } catch (error) {
     console.error(
-      `There was an error while generating Expo template files, which could lead to unexpected behavior at runtime:\n${error.stack}`
+      `There was an error while generating Expo template files, which could lead to unexpected behavior at runtime:\n${
+        error.stack
+      }`
     );
     process.exit(1);
   }
