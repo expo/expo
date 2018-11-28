@@ -112,8 +112,7 @@ public class ScreenOrientationModule extends ReactContextBaseJavaModule implemen
     }
 
     try {
-      int orientationAttr = getScreenOrientation(activity);
-      promise.resolve(convertToOrientation(orientationAttr));
+      promise.resolve(getScreenOrientation(activity));
     } catch (IllegalStateException e) {
       // We don't know what the screen orientation is from surface rotation
       promise.resolve(UNKNOWN);
@@ -147,14 +146,14 @@ public class ScreenOrientationModule extends ReactContextBaseJavaModule implemen
 
   // https://stackoverflow.com/questions/10380989/how-do-i-get-the-current-orientation-activityinfo-screen-orientation-of-an-a
   // Will not work in all cases as surface rotation is not standardized across android devices, but this is best effort
-  private int getScreenOrientation(Activity activity) throws IllegalStateException {
+  private String getScreenOrientation(Activity activity) throws IllegalStateException {
     WindowManager windowManager = activity.getWindowManager();
     int rotation = windowManager.getDefaultDisplay().getRotation();
     DisplayMetrics dm = new DisplayMetrics();
     windowManager.getDefaultDisplay().getMetrics(dm);
     int width = dm.widthPixels;
     int height = dm.heightPixels;
-    int orientationAttr;
+    String orientation;
     // if the device's natural orientation is portrait:
     if ((rotation == Surface.ROTATION_0
         || rotation == Surface.ROTATION_180) && height > width ||
@@ -162,18 +161,16 @@ public class ScreenOrientationModule extends ReactContextBaseJavaModule implemen
             || rotation == Surface.ROTATION_270) && width > height) {
       switch (rotation) {
         case Surface.ROTATION_0:
-          orientationAttr = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+          orientation = PORTRAIT_UP;
           break;
         case Surface.ROTATION_90:
-          orientationAttr = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+          orientation = LANDSCAPE_LEFT;
           break;
         case Surface.ROTATION_180:
-          orientationAttr =
-              ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT;
+          orientation = PORTRAIT_DOWN;
           break;
         case Surface.ROTATION_270:
-          orientationAttr =
-              ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
+          orientation = LANDSCAPE_RIGHT;
           break;
         default:
           throw new IllegalStateException("Unknown screen orientation.");
@@ -185,25 +182,23 @@ public class ScreenOrientationModule extends ReactContextBaseJavaModule implemen
     else {
       switch (rotation) {
         case Surface.ROTATION_0:
-          orientationAttr = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+          orientation = LANDSCAPE_LEFT;
           break;
         case Surface.ROTATION_90:
-          orientationAttr = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+          orientation = PORTRAIT_UP;
           break;
         case Surface.ROTATION_180:
-          orientationAttr =
-              ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
+          orientation = LANDSCAPE_RIGHT;
           break;
         case Surface.ROTATION_270:
-          orientationAttr =
-              ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT;
+          orientation = LANDSCAPE_RIGHT;
           break;
         default:
           throw new IllegalStateException("Unknown screen orientation.");
       }
     }
 
-    return orientationAttr;
+    return orientation;
   }
 
   // TODO: is there a shared place to put these things
@@ -225,21 +220,6 @@ public class ScreenOrientationModule extends ReactContextBaseJavaModule implemen
   static final String LANDSCAPE_LEFT = "LANDSCAPE_LEFT";
   static final String LANDSCAPE_RIGHT = "LANDSCAPE_RIGHT";
   static final String OTHER = "OTHER";
-
-  private String convertToOrientation(int orientationAttr) {
-    switch (orientationAttr) {
-      case ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE:
-        return LANDSCAPE_LEFT;
-      case ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE:
-        return LANDSCAPE_RIGHT;
-      case ActivityInfo.SCREEN_ORIENTATION_PORTRAIT:
-        return PORTRAIT_UP;
-      case ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT:
-        return PORTRAIT_DOWN;
-      default:
-        return UNKNOWN;
-    }
-  }
 
   private String convertToOrientationLock(int orientationAttr) {
     switch (orientationAttr) {
