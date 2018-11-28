@@ -19,8 +19,6 @@ import com.crashlytics.android.Crashlytics;
 import com.facebook.common.internal.ByteStreams;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.stetho.Stetho;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.raizlabs.android.dbflow.config.FlowManager;
 
 import org.apache.commons.io.IOUtils;
@@ -178,12 +176,6 @@ public class Exponent {
 
     if (ExpoViewBuildConfig.DEBUG) {
       Stetho.initializeWithDefaults(context);
-    }
-
-    try {
-      ImageLoader.getInstance().init(new ImageLoaderConfiguration.Builder(context).build());
-    } catch (RuntimeException e) {
-      EXL.testError(e);
     }
 
     if (!ExpoViewBuildConfig.DEBUG) {
