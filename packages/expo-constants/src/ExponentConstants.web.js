@@ -10,8 +10,7 @@ export default {
     return 'expo';
   },
   get deviceId() {
-    console.warn(`ExponentConstants.deviceId: is unimplemented on this platform.`);
-    return null;
+    throw new Error(`ExponentConstants.deviceId: is unimplemented on this platform.`);
   },
   get name(): string {
     return 'ExponentConstants';
@@ -32,8 +31,7 @@ export default {
     return location.origin + location.pathname;
   },
   get expoRuntimeVersion(): ?string {
-    console.warn(`ExponentConstants.expoRuntimeVersion: is unimplemented on this platform.`);
-    return null;
+    throw new Error(`ExponentConstants.expoRuntimeVersion: is unimplemented on this platform.`);
   },
   get deviceName(): ?string {
     return null;
@@ -45,8 +43,7 @@ export default {
     return 0;
   },
   get deviceYearClass(): ?string {
-    console.warn(`ExponentConstants.deviceYearClass: is unimplemented on this platform.`);
-    return null;
+    throw new Error(`ExponentConstants.deviceYearClass: is unimplemented on this platform.`);
   },
   getWebViewUserAgentAsync(): Promise {
     return navigator.userAgent || null;
