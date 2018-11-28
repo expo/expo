@@ -2,6 +2,9 @@ package versioned.host.exp.exponent.modules.api;
 
 import android.app.Activity;
 import android.content.pm.ActivityInfo;
+import android.util.DisplayMetrics;
+import android.view.Surface;
+import android.view.WindowManager;
 
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.LifecycleEventListener;
@@ -13,7 +16,8 @@ import com.facebook.react.bridge.ReactMethod;
 import javax.annotation.Nullable;
 
 public class ScreenOrientationModule extends ReactContextBaseJavaModule implements LifecycleEventListener {
-  private @Nullable Integer mInitialOrientation = null;
+  private @Nullable
+  Integer mInitialOrientation = null;
 
   public ScreenOrientationModule(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -23,9 +27,10 @@ public class ScreenOrientationModule extends ReactContextBaseJavaModule implemen
 
   @Override
   public String getName() {
-    return "ExponentScreenOrientation";
+    return "ExpoScreenOrientation";
   }
 
+  //TODO: think abt this
   @Override
   public void onHostResume() {
     Activity activity = getCurrentActivity();
@@ -55,47 +60,232 @@ public class ScreenOrientationModule extends ReactContextBaseJavaModule implemen
   }
 
   @ReactMethod
-  public void allowAsync(String orientation, Promise promise) {
+  public void lockAsync(String orientationLock, Promise promise) {
     Activity activity = getCurrentActivity();
     if (activity == null) {
+      promise.reject(ANDROID_NO_ACTIVITY, ANDROID_NO_ACTIVITY_MSG);
       return;
     }
 
-    activity.setRequestedOrientation(convertToOrientationEnum(orientation));
+    try {
+      int orientationAttr = convertToOrientationAttr(orientationLock);
+      activity.setRequestedOrientation(orientationAttr);
+    } catch (JSApplicationIllegalArgumentException e) {
+      promise.reject(ERR_SCREEN_ORIENTATION_INVALID_ORIENTATION_LOCK, ERR_SCREEN_ORIENTATION_INVALID_ORIENTATION_LOCK_MSG);
+      return;
+    } catch (Exception e) {
+      promise.reject(GENERIC_ANDROID_ERROR, e.toString());
+      return;
+    }
     promise.resolve(null);
   }
 
   @ReactMethod
-  public void doesSupportAsync(String orientation, Promise promise) {
-    try {
-      convertToOrientationEnum(orientation);
-    } catch (JSApplicationIllegalArgumentException exception) {
-      promise.reject(exception);
+  public void lockPlatformAsync(int orientationAttr, Promise promise) {
+    Activity activity = getCurrentActivity();
+    if (activity == null) {
+      promise.reject(ANDROID_NO_ACTIVITY, ANDROID_NO_ACTIVITY_MSG);
       return;
     }
-    promise.resolve(true);
+
+    try {
+      activity.setRequestedOrientation(orientationAttr);
+    } catch (Exception e) {
+      promise.reject(GENERIC_ANDROID_ERROR, e.toString());
+      return;
+    }
+    promise.resolve(null);
+
   }
 
-  private int convertToOrientationEnum(String orientation) throws JSApplicationIllegalArgumentException {
-    switch (orientation) {
-      case "ALL":
+  @ReactMethod
+  public void unlockAsync(Promise promise) {
+    lockAsync(DEFAULT, promise);
+  }
+
+  @ReactMethod
+  public void getOrientationAsync(Promise promise) {
+    Activity activity = getCurrentActivity();
+    if (activity == null) {
+      promise.reject(ANDROID_NO_ACTIVITY, ANDROID_NO_ACTIVITY_MSG);
+      return;
+    }
+
+    try {
+      int orientationAttr = getScreenOrientation(activity);
+      promise.resolve(convertToOrientation(orientationAttr));
+    } catch (IllegalStateException e) {
+      // We don't know what the screen orientation is from surface rotation
+      promise.resolve(UNKNOWN);
+    } catch (Exception e) {
+      promise.reject(GENERIC_ANDROID_ERROR, e.toString());
+    }
+  }
+
+  @ReactMethod
+  public void getOrientationLockAsync(Promise promise) {
+    Activity activity = getCurrentActivity();
+    if (activity == null) {
+      promise.reject(ANDROID_NO_ACTIVITY, ANDROID_NO_ACTIVITY_MSG);
+      return;
+    }
+
+    int orientationAttr = activity.getRequestedOrientation();
+    promise.resolve(convertToOrientationLock(orientationAttr));
+  }
+
+  @ReactMethod
+  public void getOrientationLockPlatformAsync(Promise promise) {
+    Activity activity = getCurrentActivity();
+    if (activity == null) {
+      promise.reject(ANDROID_NO_ACTIVITY, ANDROID_NO_ACTIVITY_MSG);
+      return;
+    }
+
+    promise.resolve(activity.getRequestedOrientation());
+  }
+
+  // https://stackoverflow.com/questions/10380989/how-do-i-get-the-current-orientation-activityinfo-screen-orientation-of-an-a
+  // Will not work in all cases as surface rotation is not standardized across android devices, but this is best effort
+  private int getScreenOrientation(Activity activity) throws IllegalStateException {
+    WindowManager windowManager = activity.getWindowManager();
+    int rotation = windowManager.getDefaultDisplay().getRotation();
+    DisplayMetrics dm = new DisplayMetrics();
+    windowManager.getDefaultDisplay().getMetrics(dm);
+    int width = dm.widthPixels;
+    int height = dm.heightPixels;
+    int orientationAttr;
+    // if the device's natural orientation is portrait:
+    if ((rotation == Surface.ROTATION_0
+        || rotation == Surface.ROTATION_180) && height > width ||
+        (rotation == Surface.ROTATION_90
+            || rotation == Surface.ROTATION_270) && width > height) {
+      switch (rotation) {
+        case Surface.ROTATION_0:
+          orientationAttr = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+          break;
+        case Surface.ROTATION_90:
+          orientationAttr = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+          break;
+        case Surface.ROTATION_180:
+          orientationAttr =
+              ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT;
+          break;
+        case Surface.ROTATION_270:
+          orientationAttr =
+              ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
+          break;
+        default:
+          throw new IllegalStateException("Unknown screen orientation.");
+      }
+    }
+
+    // if the device's natural orientation is landscape or if the device
+    // is square:
+    else {
+      switch (rotation) {
+        case Surface.ROTATION_0:
+          orientationAttr = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+          break;
+        case Surface.ROTATION_90:
+          orientationAttr = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+          break;
+        case Surface.ROTATION_180:
+          orientationAttr =
+              ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
+          break;
+        case Surface.ROTATION_270:
+          orientationAttr =
+              ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT;
+          break;
+        default:
+          throw new IllegalStateException("Unknown screen orientation.");
+      }
+    }
+
+    return orientationAttr;
+  }
+
+  // TODO: is there a shared place to put these things
+  static final String ANDROID_NO_ACTIVITY = "ANDROID_NO_ACTIVITY";
+  static final String ANDROID_NO_ACTIVITY_MSG = "There is no current activity available.";
+  static final String GENERIC_ANDROID_ERROR = "GENERIC_ANDROID_ERROR";
+
+  static final String ERR_SCREEN_ORIENTATION_INVALID_ORIENTATION_LOCK = "ERR_SCREEN_ORIENTATION_INVALID_ORIENTATION_LOCK";
+  static final String ERR_SCREEN_ORIENTATION_INVALID_ORIENTATION_LOCK_MSG = "an invalid OrientationLock was passed in";
+
+  static final String UNKNOWN = "UNKNOWN";
+  static final String DEFAULT = "DEFAULT";
+  static final String ALL = "ALL";
+  static final String ALL_BUT_UPSIDE_DOWN = "ALL_BUT_UPSIDE_DOWN";
+  static final String PORTRAIT = "PORTRAIT";
+  static final String PORTRAIT_UP = "PORTRAIT_UP";
+  static final String PORTRAIT_DOWN = "PORTRAIT_DOWN";
+  static final String LANDSCAPE = "LANDSCAPE";
+  static final String LANDSCAPE_LEFT = "LANDSCAPE_LEFT";
+  static final String LANDSCAPE_RIGHT = "LANDSCAPE_RIGHT";
+  static final String OTHER = "OTHER";
+
+  private String convertToOrientation(int orientationAttr) {
+    switch (orientationAttr) {
+      case ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE:
+        return LANDSCAPE_LEFT;
+      case ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE:
+        return LANDSCAPE_RIGHT;
+      case ActivityInfo.SCREEN_ORIENTATION_PORTRAIT:
+        return PORTRAIT_UP;
+      case ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT:
+        return PORTRAIT_DOWN;
+      default:
+        return UNKNOWN;
+    }
+  }
+
+  private String convertToOrientationLock(int orientationAttr) {
+    switch (orientationAttr) {
+      case ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED:
+        return DEFAULT;
+      case ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR:
+        return ALL;
+      case ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT:
+        return PORTRAIT;
+      case ActivityInfo.SCREEN_ORIENTATION_PORTRAIT:
+        return PORTRAIT_UP;
+      case ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT:
+        return PORTRAIT_DOWN;
+      case ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE:
+        return LANDSCAPE;
+      case ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE:
+        return LANDSCAPE_LEFT;
+      case ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE:
+        return LANDSCAPE_RIGHT;
+      default:
+        return OTHER;
+    }
+  }
+
+  private int convertToOrientationAttr(String orientationLock) throws JSApplicationIllegalArgumentException {
+    switch (orientationLock) {
+      case DEFAULT:
+        return ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
+      case ALL:
         return ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR;
-      case "ALL_BUT_UPSIDE_DOWN":
+      case ALL_BUT_UPSIDE_DOWN:
         return ActivityInfo.SCREEN_ORIENTATION_SENSOR;
-      case "PORTRAIT":
+      case PORTRAIT:
         return ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT;
-      case "PORTRAIT_UP":
+      case PORTRAIT_UP:
         return ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
-      case "PORTRAIT_DOWN":
+      case PORTRAIT_DOWN:
         return ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT;
-      case "LANDSCAPE":
+      case LANDSCAPE:
         return ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE;
-      case "LANDSCAPE_LEFT":
+      case LANDSCAPE_LEFT:
         return ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
-      case "LANDSCAPE_RIGHT":
+      case LANDSCAPE_RIGHT:
         return ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
       default:
-        throw new JSApplicationIllegalArgumentException("Invalid screen orientation " + orientation);
+        throw new JSApplicationIllegalArgumentException("Invalid screen orientation " + orientationLock);
     }
   }
 }
