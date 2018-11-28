@@ -15,22 +15,22 @@ function _getUserMedia(constraints) {
   // Some browsers partially implement mediaDevices. We can't just assign an object
   // with getUserMedia as it would overwrite existing properties.
   // Here, we will just add the getUserMedia property if it's missing.
-  return function(constraints) {
-    // First get ahold of the legacy getUserMedia, if present
-    var getUserMedia =
-      navigator.webkitGetUserMedia ||
-      navigator.mozGetUserMedia ||
-      function() {
-        const err = new Error('Permission unimplemented');
-        err.code = 0;
-        err.name = 'NotAllowedError';
-        throw err;
-      };
 
-    return new Promise(function(resolve, reject) {
-      getUserMedia.call(navigator, constraints, resolve, reject);
-    });
-  };
+  // First get ahold of the legacy getUserMedia, if present
+  const getUserMedia =
+    navigator.getUserMedia ||
+    navigator.webkitGetUserMedia ||
+    navigator.mozGetUserMedia ||
+    function() {
+      const err = new Error('Permission unimplemented');
+      err.code = 0;
+      err.name = 'NotAllowedError';
+      throw err;
+    };
+
+  return new Promise(function(resolve, reject) {
+    getUserMedia.call(navigator, constraints, resolve, reject);
+  });
 }
 
 const Status = {
@@ -50,7 +50,7 @@ async function askForMediaPermissionAsync(options) {
       // message: Permission dismissed
       return { status: Status.undetermined };
     } else {
-      // TODO: Bacon: The system could deny access to chrome.
+      // TODO: Bacon: [OSX] The system could deny access to chrome.
       // TODO: Bacon: add: { status: 'unimplemented' }
       // message: Permission denied
       return { status: Status.denied };
@@ -59,24 +59,24 @@ async function askForMediaPermissionAsync(options) {
 }
 
 async function askForMicrophonePermissionAsync() {
-  return askForMediaPermissionAsync({ audio: true });
+  return await askForMediaPermissionAsync({ audio: true });
 }
 
 async function askForCameraPermissionAsync() {
-  return askForMediaPermissionAsync({ video: true });
+  return await askForMediaPermissionAsync({ video: true });
 }
 
 async function askForLocationPermissionAsync() {
-  return new Promise((res, rej) => {
+  return new Promise(resolve => {
     navigator.geolocation.getCurrentPosition(
       function() {
-        res({ status: Status.granted });
+        resolve({ status: Status.granted });
       },
       function({ code }) {
         if (code === 1) {
-          res({ status: Status.denied });
+          resolve({ status: Status.denied });
         } else {
-          res({ status: Status.undetermined });
+          resolve({ status: Status.undetermined });
         }
       }
     );
@@ -108,7 +108,7 @@ async function getPermissionAsync(permission, shouldAsk) {
           const { state } = await navigator.permissions.query({ name: 'geolocation' });
           if (state !== Status.granted && state !== Status.denied) {
             if (shouldAsk) {
-              return askForLocationPermissionAsync();
+              return await askForLocationPermissionAsync();
             }
             return { status: Status.undetermined };
           }
@@ -116,20 +116,20 @@ async function getPermissionAsync(permission, shouldAsk) {
           return { status: state };
         } else if (shouldAsk) {
           // TODO: Bacon: should this function as ask async when not in chrome?
-          return askForLocationPermissionAsync();
+          return await askForLocationPermissionAsync();
         }
       }
       break;
     case 'audioRecording':
       if (shouldAsk) {
-        return askForMicrophonePermissionAsync();
+        return await askForMicrophonePermissionAsync();
       } else {
         //TODO: Bacon: Is it possible to get this permission?
       }
       break;
     case 'camera':
       if (shouldAsk) {
-        return askForCameraPermissionAsync();
+        return await askForCameraPermissionAsync();
       } else {
         //TODO: Bacon: Is it possible to get this permission?
       }
