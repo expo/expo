@@ -275,11 +275,10 @@ export default class Asset {
         this.localUri = this.uri;
       } else {
         const localUri = `${FS.cacheDirectory}ExponentAsset-${this.hash}.${this.type}`;
-        let exists, md5;
-        ({ exists, md5 } = await FS.getInfoAsync(localUri, {
+        let { exists, md5 } = await FS.getInfoAsync(localUri, {
           cache: true,
           md5: true,
-        }));
+        });
         if (!exists || md5 !== this.hash) {
           ({ md5 } = await FS.downloadAsync(this.uri, localUri, {
             cache: true,
