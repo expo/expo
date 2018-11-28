@@ -168,13 +168,13 @@ public class ExponentPackage implements ReactPackage {
 
   public static ExponentPackage kernelExponentPackage(Context context, JSONObject manifest) {
     Map<String, Object> kernelExperienceProperties = new HashMap<>();
-    List<SingletonModule> singletonModules = ExponentPackage.createSingletonModules(context);
+    List<SingletonModule> singletonModules = ExponentPackage.getOrCreateSingletonModules(context);
     kernelExperienceProperties.put(LINKING_URI_KEY, "exp://");
     kernelExperienceProperties.put(IS_HEADLESS_KEY, false);
     return new ExponentPackage(true, kernelExperienceProperties, manifest, singletonModules);
   }
 
-  public static List<SingletonModule> createSingletonModules(Context context) {
+  public static List<SingletonModule> getOrCreateSingletonModules(Context context) {
     if (sSingletonModules == null) {
       sSingletonModules = new ArrayList<>();
 

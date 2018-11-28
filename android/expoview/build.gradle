@@ -190,7 +190,6 @@ dependencies {
   api project(':expo-task-manager-interface')
   api project(':expo-background-fetch')
   api project(':expo-app-loader-provider')
-  // WHEN_DISTRIBUTING_REMOVE_TO_HERE
 
   // Versioned react native
   // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
