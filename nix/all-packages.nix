@@ -26,19 +26,12 @@ self: super:
     in
       generatedNodePackages // {
         expo-cli = generatedNodePackages.expo-cli.override {
-          buildInputs = with self; [
-            cocoapods
-            fastlane
-            xcpretty
-          ];
-          preFixup = ''
+          preFixup = super.lib.optionalString super.stdenv.isDarwin ''
             detach="$out/lib/node_modules/expo-cli/node_modules/xdl/build/detach"
-            substituteInPlace "$detach/IosShellApp.js" \
-              --replace xcpretty ${self.xcpretty}/bin/xcpretty \
-              --replace "pod " "${self.cocoapods}/bin/pod "
+            substituteInPlace "$detach/IosShellApp.js" --replace xcpretty ${self.xcpretty}/bin/xcpretty
+            substituteInPlace "$detach/IosShellApp.js" --replace "'pod'" "'${self.cocoapods}/bin/pod'"
             for f in Ios{CodeSigning,Keychain}.js; do
-              substituteInPlace "$detach/$f" \
-                --replace "'fastlane'" "'${self.fastlane}/bin/fastlane'"
+              substituteInPlace "$detach/$f" --replace "'fastlane'" "'${self.fastlane}/bin/fastlane'"
             done
          '';
         };
