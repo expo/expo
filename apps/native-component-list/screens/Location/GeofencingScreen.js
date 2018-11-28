@@ -125,7 +125,7 @@ export default class GeofencingScreen extends React.Component {
         <View style={styles.buttons}>
           <View style={styles.leftButtons}>
             <Button
-              disabled={this.state.geofencingRegions.length === 0}
+              disabled={!this.state.isGeofencing && this.state.geofencingRegions.length === 0}
               buttonStyle={styles.button}
               title={this.state.isGeofencing ? 'Stop geofencing' : 'Start geofencing'}
               onPress={this.toggleGeofencing}
@@ -145,7 +145,7 @@ async function getSavedRegions() {
 }
 
 TaskManager.defineTask(GEOFENCING_TASK, async ({ data: { region } }) => {
-  const stateString = Location.Accuracy[region.state].toLowerCase();
+  const stateString = Location.GeofencingRegionState[region.state].toLowerCase();
 
   console.log(`${stateString} region ${region.identifier}`);
 
