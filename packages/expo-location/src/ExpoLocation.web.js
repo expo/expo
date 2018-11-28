@@ -2,9 +2,31 @@
 
 import { EventEmitter } from 'expo-core';
 
+type Coordinates = {
+  latitude: number,
+  longitude: number,
+  altitude?: number,
+  accuracy?: number,
+  altitudeAccuracy?: number,
+  heading?: number,
+  speed?: number,
+};
+
+type Position = {
+  coords: Coordinates,
+  timestamp: number,
+};
+
+class GeocoderError extends Error {
+  constructor() {
+    super('Geocoder service is not available for this device.');
+    this.code = 'E_NO_GEOCODER';
+  }
+}
+
 const emitter = new EventEmitter();
 
-function positionToJSON(position): Object {
+function positionToJSON(position: ?any): ?Position {
   if (!position) return null;
 
   const { coords = {}, timestamp } = position;
@@ -22,13 +44,6 @@ function positionToJSON(position): Object {
   };
 }
 
-class GeocoderError extends Error {
-  constructor() {
-    super('Geocoder service is not available for this device.');
-    this.code = 'E_NO_GEOCODER';
-  }
-}
-
 export default {
   get name(): string {
     return 'ExpoLocation';
@@ -38,9 +53,13 @@ export default {
       locationServicesEnabled: 'geolocation' in navigator,
     };
   },
-  async getCurrentPositionAsync(options: Object): Promise {
+  async getCurrentPositionAsync(options: Object): Promise<?Position> {
     return new Promise((res, rej) =>
-      navigator.geolocation.getCurrentPosition(props => res(positionToJSON(props)), rej, options)
+      navigator.geolocation.getCurrentPosition(
+        position => res(positionToJSON(position)),
+        rej,
+        options
+      )
     );
   },
   async removeWatchAsync(watchId): Promise<void> {
@@ -55,7 +74,7 @@ export default {
   async reverseGeocodeAsync(): Promise<Array> {
     throw new GeocoderError();
   },
-  async watchPositionImplAsync(watchId: string, options: Object): Promise<any> {
+  async watchPositionImplAsync(watchId: string, options: Object): Promise<string> {
     return new Promise((res, rej) => {
       watchId = global.navigator.geolocation.watchPosition(
         location => {
