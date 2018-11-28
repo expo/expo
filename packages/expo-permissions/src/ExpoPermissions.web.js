@@ -7,15 +7,15 @@
 
 // https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia#Using_the_new_API_in_older_browsers
 // Older browsers might not implement mediaDevices at all, so we set an empty object first
-if (navigator.mediaDevices === undefined) {
-  navigator.mediaDevices = {};
-}
+function _getUserMedia(constraints) {
+  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    return navigator.mediaDevices.getUserMedia(constraints);
+  }
 
-// Some browsers partially implement mediaDevices. We can't just assign an object
-// with getUserMedia as it would overwrite existing properties.
-// Here, we will just add the getUserMedia property if it's missing.
-if (navigator.mediaDevices.getUserMedia === undefined) {
-  navigator.mediaDevices.getUserMedia = function(constraints) {
+  // Some browsers partially implement mediaDevices. We can't just assign an object
+  // with getUserMedia as it would overwrite existing properties.
+  // Here, we will just add the getUserMedia property if it's missing.
+  return function(constraints) {
     // First get ahold of the legacy getUserMedia, if present
     var getUserMedia =
       navigator.webkitGetUserMedia ||
@@ -41,7 +41,7 @@ const Status = {
 
 async function askForMediaPermissionAsync(options) {
   try {
-    await navigator.mediaDevices.getUserMedia(options);
+    await _getUserMedia(options);
     return { status: Status.granted };
   } catch ({ message }) {
     // name: NotAllowedError
