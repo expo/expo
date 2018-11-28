@@ -1,12 +1,10 @@
 self: super:
 
 {
-  # TODO: delete after upstream update
-  # https://github.com/NixOS/nixpkgs/pull/48494
-  xcpretty = self.bundlerEnv {
-    inherit (self) ruby;
+  xcpretty = assert !(builtins.hasAttr "xcpretty" super); super.bundlerApp {
     pname = "xcpretty";
     gemdir = ./xcpretty;
+    exes = [ "xcpretty" ];
   };
 
   nodejs = super.nodejs-10_x;
