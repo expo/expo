@@ -29,9 +29,11 @@ import com.facebook.common.executors.CallerThreadExecutor;
 import com.facebook.common.references.CloseableReference;
 import com.facebook.datasource.DataSource;
 import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.imagepipeline.common.RotationOptions;
 import com.facebook.imagepipeline.datasource.BaseBitmapDataSubscriber;
 import com.facebook.imagepipeline.image.CloseableImage;
 import com.facebook.imagepipeline.request.ImageRequest;
+import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -297,7 +299,11 @@ public class ImagePickerModule extends ExpoKernelServiceConsumerBaseModule imple
                   .setOutputCompressQuality(quality == null ? DEFAULT_QUALITY : quality)
                   .start(Exponent.getInstance().getCurrentActivity());
             } else {
-              ImageRequest imageRequest = ImageRequest.fromUri(uri);
+              ImageRequest imageRequest =
+                  ImageRequestBuilder
+                      .newBuilderWithSource(uri)
+                      .setRotationOptions(RotationOptions.autoRotate())
+                      .build();
               final DataSource<CloseableReference<CloseableImage>> dataSource
                   = Fresco.getImagePipeline().fetchDecodedImage(imageRequest, getReactApplicationContext());
               final Bitmap.CompressFormat finalCompressFormat = compressFormat;

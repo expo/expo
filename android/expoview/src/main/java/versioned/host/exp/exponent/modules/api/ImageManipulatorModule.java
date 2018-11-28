@@ -10,9 +10,11 @@ import com.facebook.common.executors.UiThreadImmediateExecutorService;
 import com.facebook.common.references.CloseableReference;
 import com.facebook.datasource.DataSource;
 import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.imagepipeline.common.RotationOptions;
 import com.facebook.imagepipeline.datasource.BaseBitmapDataSubscriber;
 import com.facebook.imagepipeline.image.CloseableImage;
 import com.facebook.imagepipeline.request.ImageRequest;
+import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -33,6 +35,7 @@ import host.exp.exponent.utils.ScopedContext;
 
 public class ImageManipulatorModule extends ReactContextBaseJavaModule {
   private static final String DECODE_ERROR_TAG = "E_DECODE_ERR";
+  private static final String ARGS_ERROR_TAG = "E_ARGS_ERR";
   private static final String TAG = "ExpoImageManipulator";
   private ScopedContext mScopedContext;
 
@@ -47,8 +50,16 @@ public class ImageManipulatorModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void manipulate(final String uri, final ReadableArray actions, final ReadableMap saveOptions, final Promise promise) {
-    ImageRequest imageRequest = ImageRequest.fromUri(uri);
+  public void manipulate(final String uriString, final ReadableArray actions, final ReadableMap saveOptions, final Promise promise) {
+    if (uriString == null || uriString.length() == 0) {
+      promise.reject(ARGS_ERROR_TAG, "Uri passed to ImageManipulator cannot be empty!");
+      return;
+    }
+    ImageRequest imageRequest =
+        ImageRequestBuilder
+            .newBuilderWithSource(Uri.parse(uriString))
+            .setRotationOptions(RotationOptions.autoRotate())
+            .build();
     final DataSource<CloseableReference<CloseableImage>> dataSource
         = Fresco.getImagePipeline().fetchDecodedImage(imageRequest, getReactApplicationContext());
     dataSource.subscribe(new BaseBitmapDataSubscriber() {
@@ -64,7 +75,7 @@ public class ImageManipulatorModule extends ReactContextBaseJavaModule {
                            @Override
                            public void onFailureImpl(DataSource dataSource) {
                              // No cleanup required here.
-                             String basicMessage = "Could not get decoded bitmap of " + uri;
+                             String basicMessage = "Could not get decoded bitmap of " + uriString;
                              if (dataSource.getFailureCause() != null) {
                                promise.reject(DECODE_ERROR_TAG,
                                    basicMessage + ": " + dataSource.getFailureCause().toString(), dataSource.getFailureCause());
