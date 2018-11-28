@@ -267,7 +267,6 @@ dependencies {
   // created with tools/android-versioning and distributed in expokit-npm-package.
   api 'expolib_v1.com.google.android.exoplayer:expolib_v1-extension-okhttp:2.6.1@aar'
   api 'me.leolin:ShortcutBadger:1.1.4@aar'
-  api 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
   api 'com.theartofdev.edmodo:android-image-cropper:2.4.7'
   api 'com.yqritc:android-scalablevideoview:1.0.1'
   api 'commons-codec:commons-codec:1.10'
