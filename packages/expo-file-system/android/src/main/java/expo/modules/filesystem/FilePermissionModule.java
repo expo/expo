@@ -22,17 +22,19 @@ public class FilePermissionModule implements FilePermissionModuleInterface, Inte
 
   @Override
   public EnumSet<Permission> getPathPermissions(Context context, final String path) {
-    EnumSet<Permission> permissions = getPermissionsIfPathIsInternal(path, context);
+    EnumSet<Permission> permissions = getInternalPathPermissions(path, context);
     if (permissions == null) {
-      permissions = getPermissionsIfPathIsExternal(path);
+      permissions = getExternalPathPermissions(path);
     }
+
+    // getExternalPathPermissions guarantees not to return null
     return permissions;
   }
 
-  protected  EnumSet<Permission> getPermissionsIfPathIsInternal(final String path, Context context) {
+  protected EnumSet<Permission> getInternalPathPermissions(final String path, Context context) {
     try {
       String canonicalPath = new File(path).getCanonicalPath();
-      for(String dir : getInternalPaths(context)) {
+      for (String dir : getInternalPaths(context)) {
         if (canonicalPath.startsWith(dir + "/") || dir.equals(canonicalPath)) {
           return EnumSet.of(Permission.READ, Permission.WRITE);
         }
@@ -43,7 +45,7 @@ public class FilePermissionModule implements FilePermissionModuleInterface, Inte
     return null;
   }
 
-  protected EnumSet<Permission> getPermissionsIfPathIsExternal(final String path) {
+  protected EnumSet<Permission> getExternalPathPermissions(final String path) {
     File file = new File(path);
     if (file.canWrite() && file.canRead()) {
       return EnumSet.of(Permission.READ, Permission.WRITE);
@@ -58,9 +60,9 @@ public class FilePermissionModule implements FilePermissionModuleInterface, Inte
   }
 
   protected List<String> getInternalPaths(Context context) throws IOException {
-    String filesDir = context.getFilesDir().getCanonicalPath();
-    String cacheDir = context.getCacheDir().getCanonicalPath();
-    return Arrays.asList(filesDir, cacheDir);
+    return Arrays.asList(
+        context.getFilesDir().getCanonicalPath(),
+        context.getCacheDir().getCanonicalPath()
+    );
   }
-
 }
