@@ -29,7 +29,6 @@ export default {
     const recipientComponent = to || '';
     const mailto = `mailto:${recipientComponent}${queryComponent}`;
 
-    const { window } = global;
     window.open(mailto);
 
     return { status: 'undetermined' };
