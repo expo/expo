@@ -3377,6 +3377,13 @@ expo-three@^2.0.3:
     text-encoding "^0.6.4"
     xmldom-qsa "^1.0.3"
 
+expokit@31.0.2:
+  version "31.0.2"
+  resolved "https://registry.yarnpkg.com/expokit/-/expokit-31.0.2.tgz#8a331eb4e890d912402ccd660f37cff8639604a0"
+  integrity sha512-Xbc9QTBVohXmVlHk/EUa0uVl4IRNwdHNEJIxuafAixxklE8f6CeZv6w0Cc1InuvqJISWtLxI8/M8+YFhLv7NTw==
+  dependencies:
+    jsc-android "^224109.1.0"
+
 extend-shallow@^1.1.2:
   version "1.1.4"
   resolved "https://registry.yarnpkg.com/extend-shallow/-/extend-shallow-1.1.4.tgz#19d6bf94dfc09d76ba711f39b872d21ff4dd9071"
