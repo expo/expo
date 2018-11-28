@@ -92,6 +92,7 @@
     "expo-sms": "~1.1.0",
     "fbemitter": "^2.1.1",
     "invariant": "^2.2.2",
+    "lodash.filter": "^4.6.0",
     "lodash.map": "^4.6.0",
     "lodash.omit": "^4.5.0",
     "lodash.zipobject": "^4.1.3",

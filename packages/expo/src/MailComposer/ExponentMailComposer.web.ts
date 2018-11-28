@@ -1,33 +1,41 @@
-import array from 'cast-array';
-import filter from 'object-filter';
+import filter from 'lodash.filter';
 import qs from 'query-string';
+import { ComposeOptions, ComposeResult } from './MailComposer.types';
+
+function checkValue(value?: Array<string> | string): string | undefined {
+  if (!value) {
+    return undefined;
+  }
+
+  const arr = Array.isArray(value) ? value : [value];
+
+  return arr.join(',');
+}
 
 export default {
-  get name() {
+  get name(): string {
     return 'ExponentMailComposer';
   },
-  async composeAsync(options) {
-    const check = value => (value ? array(value).join(',') : undefined);
-
-    const to = check(options.recipients);
-    let email = filter(
+  async composeAsync(options: ComposeOptions): Promise<ComposeResult> {
+    const email = filter(
       {
-        to,
-        cc: check(options.ccRecipients),
-        bcc: check(options.bccRecipients),
+        cc: checkValue(options.ccRecipients),
+        bcc: checkValue(options.bccRecipients),
         subject: options.subject,
         body: options.body,
       },
       Boolean
     );
 
-    delete email.to;
-
     const query = qs.stringify(email);
     const queryComponent = query ? '?' + query : '';
+    const to = checkValue(options.recipients);
     const recipientComponent = to || '';
     const mailto = `mailto:${recipientComponent}${queryComponent}`;
 
-    global.open(mailto);
+    const { window } = global;
+    window.open(mailto);
+
+    return { status: 'undetermined' };
   },
 };
