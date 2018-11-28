@@ -2,15 +2,15 @@ const path = require('path');
 const webpack = require('webpack');
 const pckg = require('./package.json');
 
-const relativePath = location => path.resolve(__dirname, location);
+const absolutePath = location => path.resolve(__dirname, location);
 
 const locations = {
   // Shouldn't change
-  root: relativePath('./'),
+  root: absolutePath('./'),
   // TODO: Bacon: We should consider how we want to deploy.
-  output: relativePath('public/assets'),
+  output: absolutePath('public/assets'),
   // TODO: Bacon: Only use this in expo/apps/
-  modules: relativePath('../../node_modules/'),
+  modules: absolutePath('../../node_modules/'),
 };
 
 const environment = process.env.NODE_ENV || 'development';
@@ -79,7 +79,7 @@ const ttfLoaderConfiguration = {
 const htmlLoaderConfiguration = {
   test: /\.html$/,
   use: ['html-loader'],
-  include: [relativePath('./assets')],
+  include: [absolutePath('./assets')],
 };
 
 const videoLoaderConfiguration = {
@@ -138,7 +138,7 @@ module.exports = {
   ],
   resolve: {
     symlinks: false,
-    extensions: ['.web.js', '.js', '.jsx'],
+    extensions: ['.web.js', '.js', '.jsx', '.json'],
     alias: {
       'react-native$': 'react-native-web',
     },
