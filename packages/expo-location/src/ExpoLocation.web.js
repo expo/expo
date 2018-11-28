@@ -54,10 +54,10 @@ export default {
     };
   },
   async getCurrentPositionAsync(options: Object): Promise<?Position> {
-    return new Promise((res, rej) =>
+    return new Promise((resolve, reject) =>
       navigator.geolocation.getCurrentPosition(
-        position => res(positionToJSON(position)),
-        rej,
+        position => resolve(positionToJSON(position)),
+        reject,
         options
       )
     );
@@ -75,26 +75,26 @@ export default {
     throw new GeocoderError();
   },
   async watchPositionImplAsync(watchId: string, options: Object): Promise<string> {
-    return new Promise((res, rej) => {
+    return new Promise((resolve, reject) => {
       watchId = global.navigator.geolocation.watchPosition(
         location => {
           emitter.emit('Exponent.locationChanged', { watchId, location: positionToJSON(location) });
         },
-        rej,
+        null,
         options
       );
-      res(watchId);
+      resolve(watchId);
     });
   },
   async requestPermissionsAsync(): Promise<{ status: string }> {
-    return new Promise((res, rej) => {
+    return new Promise((resolve, reject) => {
       navigator.geolocation.getCurrentPosition(
-        () => res({ status: 'granted' }),
+        () => resolve({ status: 'granted' }),
         ({ code }) => {
-          if (code === 1) {
-            res({ status: 'denied' });
+          if (code === 1 /* PERMISSION_DENIED */) {
+            resolve({ status: 'denied' });
           } else {
-            res({ status: 'undetermined' });
+            resolve({ status: 'undetermined' });
           }
         }
       );
