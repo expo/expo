@@ -47,41 +47,29 @@ public class LocationTaskConsumer extends TaskConsumer implements TaskConsumerIn
     return "location";
   }
 
+  @Override
   public void didRegister(TaskInterface task) {
-    Context context = getContext();
-
-    if (context == null) {
-      Log.w(TAG, "The context has been abandoned.");
-      return;
-    }
-    if (!LocationHelpers.isAnyProviderAvailable(context)) {
-      Log.w(TAG, "There is no location provider available.");
-      return;
-    }
-
     mTask = task;
-    mLocationRequest = prepareLocationRequest();
-    mPendingIntent = preparePendingIntent();
-
-    try {
-      mLocationClient = LocationServices.getFusedLocationProviderClient(context);
-      mLocationClient.requestLocationUpdates(mLocationRequest, mPendingIntent);
-    } catch (SecurityException e) {
-      Log.w(TAG, "Location request has been rejected.", e);
-    }
+    startLocationUpdates();
   }
 
+  @Override
   public void didUnregister() {
-    if (mLocationClient != null && mPendingIntent != null) {
-      mLocationClient.removeLocationUpdates(mPendingIntent);
-      mPendingIntent.cancel();
-    }
+    stopLocationUpdates();
     mTask = null;
     mPendingIntent = null;
     mLocationRequest = null;
     mLocationClient = null;
   }
 
+  @Override
+  public void setOptions(Map<String, Object> options) {
+    super.setOptions(options);
+    stopLocationUpdates();
+    startLocationUpdates();
+  }
+
+  @Override
   public void didReceiveBroadcast(Intent intent) {
     if (mTask == null) {
       return;
@@ -153,6 +141,36 @@ public class LocationTaskConsumer extends TaskConsumer implements TaskConsumerIn
   }
 
   //region private
+
+  private void startLocationUpdates() {
+    Context context = getContext();
+
+    if (context == null) {
+      Log.w(TAG, "The context has been abandoned.");
+      return;
+    }
+    if (!LocationHelpers.isAnyProviderAvailable(context)) {
+      Log.w(TAG, "There is no location provider available.");
+      return;
+    }
+
+    mLocationRequest = prepareLocationRequest();
+    mPendingIntent = preparePendingIntent();
+
+    try {
+      mLocationClient = LocationServices.getFusedLocationProviderClient(context);
+      mLocationClient.requestLocationUpdates(mLocationRequest, mPendingIntent);
+    } catch (SecurityException e) {
+      Log.w(TAG, "Location request has been rejected.", e);
+    }
+  }
+
+  private void stopLocationUpdates() {
+    if (mLocationClient != null && mPendingIntent != null) {
+      mLocationClient.removeLocationUpdates(mPendingIntent);
+      mPendingIntent.cancel();
+    }
+  }
 
   private LocationRequest prepareLocationRequest() {
     Map<String, Object> options = mTask.getOptions();

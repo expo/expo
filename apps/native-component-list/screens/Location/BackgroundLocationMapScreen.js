@@ -33,11 +33,11 @@ export default class BackgroundLocationMapScreen extends React.Component {
 
     const { coords } = await Location.getCurrentPositionAsync();
     const isWatching = await Location.hasStartedLocationUpdatesAsync(LOCATION_UPDATES_TASK);
-    const tasks = await TaskManager.getRegisteredTasksAsync();
+    const task = (await TaskManager.getRegisteredTasksAsync()).find(
+      ({ taskName }) => taskName === LOCATION_UPDATES_TASK
+    );
     const savedLocations = await getSavedLocations();
-    const accuracy = tasks[LOCATION_UPDATES_TASK]
-      ? tasks[LOCATION_UPDATES_TASK].accuracy
-      : this.state.accuracy;
+    const accuracy = (task && task.options.accuracy) || this.state.accuracy;
 
     this.eventSubscription = locationEventsEmitter.addListener('update', locations => {
       this.setState({ savedLocations: locations });

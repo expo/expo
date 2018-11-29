@@ -52,62 +52,25 @@ public class GeofencingTaskConsumer extends TaskConsumer implements TaskConsumer
   @Override
   @SuppressWarnings("unchecked")
   public void didRegister(TaskInterface task) {
-    Context context = getContext();
-
-    if (context == null) {
-      Log.w(TAG, "The context has been abandoned.");
-      return;
-    }
-    if (!LocationHelpers.isAnyProviderAvailable(context)) {
-      Log.w(TAG, "There is no location provider available.");
-      return;
-    }
-
     mTask = task;
-    mRegions = new HashMap<>();
-    mGeofencingList = new ArrayList<>();
-
-    // Create geofences from task options.
-    Map<String, Object> options = task.getOptions();
-    List<HashMap<String, Object>> regions = (ArrayList<HashMap<String, Object>>) options.get("regions");
-
-    for (Map<String, Object> region : regions) {
-      Geofence geofence = geofenceFromRegion(region);
-
-      if (geofence != null) {
-        String regionIdentifier = geofence.getRequestId();
-
-        // Make a bundle for the region to remember its attributes. Only request ID is public in Geofence object.
-        mRegions.put(regionIdentifier, bundleFromRegion(regionIdentifier, region));
-
-        // Add geofence to the list of observed regions.
-        mGeofencingList.add(geofence);
-      }
-    }
-
-    // Prepare pending intent, geofencing request and client.
-    mPendingIntent = preparePendingIntent();
-    mGeofencingRequest = prepareGeofencingRequest(mGeofencingList);
-    mGeofencingClient = LocationServices.getGeofencingClient(getContext());
-
-    try {
-      mGeofencingClient.addGeofences(mGeofencingRequest, mPendingIntent);
-    } catch (SecurityException e) {
-      Log.w(TAG, "Geofencing request has been rejected.", e);
-    }
+    startGeofencing();
   }
 
   @Override
   public void didUnregister() {
-    if (mGeofencingClient != null && mPendingIntent != null) {
-      mGeofencingClient.removeGeofences(mPendingIntent);
-      mPendingIntent.cancel();
-    }
+    stopGeofencing();
     mTask = null;
     mPendingIntent = null;
     mGeofencingClient = null;
     mGeofencingRequest = null;
     mGeofencingList = null;
+  }
+
+  @Override
+  public void setOptions(Map<String, Object> options) {
+    super.setOptions(options);
+    stopGeofencing();
+    startGeofencing();
   }
 
   @Override
@@ -163,6 +126,55 @@ public class GeofencingTaskConsumer extends TaskConsumer implements TaskConsumer
 
   //endregion
   //region helpers
+
+  private void startGeofencing() {
+    Context context = getContext();
+
+    if (context == null) {
+      Log.w(TAG, "The context has been abandoned.");
+      return;
+    }
+    if (!LocationHelpers.isAnyProviderAvailable(context)) {
+      Log.w(TAG, "There is no location provider available.");
+      return;
+    }
+
+    mRegions = new HashMap<>();
+    mGeofencingList = new ArrayList<>();
+
+    // Create geofences from task options.
+    Map<String, Object> options = mTask.getOptions();
+    List<HashMap<String, Object>> regions = (ArrayList<HashMap<String, Object>>) options.get("regions");
+
+    for (Map<String, Object> region : regions) {
+      Geofence geofence = geofenceFromRegion(region);
+      String regionIdentifier = geofence.getRequestId();
+
+      // Make a bundle for the region to remember its attributes. Only request ID is public in Geofence object.
+      mRegions.put(regionIdentifier, bundleFromRegion(regionIdentifier, region));
+
+      // Add geofence to the list of observed regions.
+      mGeofencingList.add(geofence);
+    }
+
+    // Prepare pending intent, geofencing request and client.
+    mPendingIntent = preparePendingIntent();
+    mGeofencingRequest = prepareGeofencingRequest(mGeofencingList);
+    mGeofencingClient = LocationServices.getGeofencingClient(getContext());
+
+    try {
+      mGeofencingClient.addGeofences(mGeofencingRequest, mPendingIntent);
+    } catch (SecurityException e) {
+      Log.w(TAG, "Geofencing request has been rejected.", e);
+    }
+  }
+
+  private void stopGeofencing() {
+    if (mGeofencingClient != null && mPendingIntent != null) {
+      mGeofencingClient.removeGeofences(mPendingIntent);
+      mPendingIntent.cancel();
+    }
+  }
 
   private GeofencingRequest prepareGeofencingRequest(List<Geofence> geofences) {
     return new GeofencingRequest.Builder()
