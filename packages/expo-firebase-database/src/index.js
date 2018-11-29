@@ -3,17 +3,17 @@
  * Database representation wrapper
  */
 import { NativeModulesProxy } from 'expo-core';
-import firebase, { ModuleBase, registerModule } from 'expo-firebase-app';
+import firebase, { ModuleBase } from 'expo-firebase-app';
 
+import type { App } from 'expo-firebase-app';
 import Reference from './Reference';
 import TransactionHandler from './transaction';
 
-import type { App } from 'expo-firebase-app';
-
-const NATIVE_EVENTS = [
-  'Expo.Firebase.database_transaction_event',
+const NATIVE_EVENTS = {
+  databaseTransactionEvent: 'Expo.Firebase.database_transaction_event',
+  // 'Expo.Firebase.database_sync_event'
   // 'database_server_offset', // TODO
-];
+};
 
 export const MODULE_NAME = 'ExpoFirebaseDatabase';
 export const NAMESPACE = 'database';
@@ -64,7 +64,7 @@ export default class Database extends ModuleBase {
     super(
       app,
       {
-        events: NATIVE_EVENTS,
+        events: Object.values(NATIVE_EVENTS),
         moduleName: MODULE_NAME,
         hasMultiAppSupport: true,
         hasCustomUrlSupport: true,
@@ -132,5 +132,3 @@ export default class Database extends ModuleBase {
     return this._databaseURL;
   }
 }
-
-registerModule(Database);

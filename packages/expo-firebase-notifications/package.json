@@ -1,6 +1,6 @@
 {
   "name": "expo-firebase-notifications",
-  "version": "1.0.0",
+  "version": "1.0.0-rc.5",
   "description": "Expo Unimodule for interfacing with Firebase Remote Notifications",
   "main": "src/index.js",
   "keywords": [
@@ -25,10 +25,9 @@
   "bugs": "https://github.com/expo/expo/issues",
   "dependencies": {
     "expo-core": "~1.2.0",
-    "expo-firebase-app": "~1.0.0"
+    "expo-firebase-app": "~1.0.0-rc.5"
   },
   "devDependencies": {
-    "babel-preset-expo": "^5.0.0",
     "flow-bin": "^0.77.0"
   }
 }

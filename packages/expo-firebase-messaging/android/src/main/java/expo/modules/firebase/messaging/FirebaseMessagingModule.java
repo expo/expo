@@ -73,7 +73,8 @@ public class FirebaseMessagingModule extends ExportedModule implements ModuleReg
 
             mMessageReceiver = new MessageReceiver();
             // Subscribe to message events
-            localBroadcastManager.registerReceiver(mMessageReceiver, new IntentFilter(EXFirebaseMessagingService.MESSAGE_EVENT));
+            localBroadcastManager.registerReceiver(mMessageReceiver,
+                    new IntentFilter(EXFirebaseMessagingService.MESSAGE_EVENT));
         }
     }
 
@@ -96,7 +97,10 @@ public class FirebaseMessagingModule extends ExportedModule implements ModuleReg
             mb = mb.setMessageType((String) messageMap.get("messageType"));
         }
         if (messageMap.containsKey("ttl")) {
-            mb = mb.setTtl((Integer) messageMap.get("ttl"));
+            // TODO: Bacon: this is broken - should be Double
+            /// https://github.com/expo/expo/issues/2641
+            Number mTTL = (Number) messageMap.get("ttl");
+            mb = mb.setTtl(mTTL.intValue());
         }
         if (messageMap.containsKey("data")) {
             Map<String, Object> dataMap = (Map<String, Object>) messageMap.get("data");
@@ -131,19 +135,20 @@ public class FirebaseMessagingModule extends ExportedModule implements ModuleReg
 
     @ExpoMethod
     public void unsubscribeFromTopic(String topic, final Promise promise) {
-        FirebaseMessaging.getInstance().unsubscribeFromTopic(topic).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if (task.isSuccessful()) {
-                    Log.d(TAG, "unsubscribeFromTopic:onComplete:success");
-                    promise.resolve(null);
-                } else {
-                    Exception exception = task.getException();
-                    Log.e(TAG, "unsubscribeFromTopic:onComplete:failure", exception);
-                    promise.reject(exception);
-                }
-            }
-        });
+        FirebaseMessaging.getInstance().unsubscribeFromTopic(topic)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Log.d(TAG, "unsubscribeFromTopic:onComplete:success");
+                            promise.resolve(null);
+                        } else {
+                            Exception exception = task.getException();
+                            Log.e(TAG, "unsubscribeFromTopic:onComplete:failure", exception);
+                            promise.reject(exception);
+                        }
+                    }
+                });
     }
 
     @Override
@@ -165,7 +170,6 @@ public class FirebaseMessagingModule extends ExportedModule implements ModuleReg
         @Override
         public void onReceive(Context context, Intent intent) {
             if (!isDestroyed) {
-
                 if (intent.hasExtra("message")) {
                     RemoteMessage message = intent.getParcelableExtra("message");
                     Log.d(TAG, "Received new message");

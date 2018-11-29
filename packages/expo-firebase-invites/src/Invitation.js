@@ -3,6 +3,7 @@
  * Invitation representation wrapper
  */
 import { Platform } from 'expo-core';
+import invariant from 'invariant';
 import AndroidInvitation from './AndroidInvitation';
 
 import type { NativeInvitation } from './types';
@@ -97,11 +98,8 @@ export default class Invitation {
   }
 
   build(): NativeInvitation {
-    if (!this._message) {
-      throw new Error('Invitation: Missing required `message` property');
-    } else if (!this._title) {
-      throw new Error('Invitation: Missing required `title` property');
-    }
+    invariant(this._message, 'Invitation: Missing required `message` property');
+    invariant(this._title, 'Invitation: Missing required `title` property');
 
     return {
       android: Platform.OS === 'android' ? this._android.build() : undefined,

@@ -1,3 +1,4 @@
+// Copyright 2018-present 650 Industries. All rights reserved.
 
 #import <Foundation/Foundation.h>
 #import <FirebaseStorage/FIRStorage.h>

@@ -532,7 +532,7 @@ public class FirebaseDatabaseModule extends ExportedModule implements ModuleRegi
   }
 
   public void handleException(Exception e) {
-    //TODO: Bacon: Handle
+    // TODO: Bacon: Handle
   }
 
   /**
@@ -617,7 +617,7 @@ public class FirebaseDatabaseModule extends ExportedModule implements ModuleRegi
         modifiers);
   }
 
-  //TODO: Bacon: Invoke this
+  // TODO: Bacon: Invoke this
   private void onDestroy() {
     instance = null;
     Iterator refIterator = references.entrySet().iterator();

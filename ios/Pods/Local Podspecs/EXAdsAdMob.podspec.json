@@ -5,7 +5,7 @@
   "description": "Expo ads AdMob standalone module",
   "license": "MIT",
   "authors": "650 Industries, Inc.",
-  "homepage": "https://docs.expo.io/",
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-ads-admob",
   "platforms": {
     "ios": "10.0"
   },

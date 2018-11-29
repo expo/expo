@@ -1,3 +1,5 @@
+// Copyright 2018-present 650 Industries. All rights reserved.
+
 #import <EXCore/EXModuleRegistry.h>
 #import <EXCore/EXModuleRegistryConsumer.h>
 #import <EXCore/EXEventEmitter.h>
@@ -7,7 +9,6 @@
 + (_Nonnull instancetype)instance;
 
 #if !TARGET_OS_TV
-- (void)didReceiveLocalNotification:(nonnull UILocalNotification *)notification;
 - (void)didReceiveRemoteNotification:(nonnull NSDictionary *)userInfo fetchCompletionHandler:(void (^_Nonnull)(UIBackgroundFetchResult))completionHandler;
 #endif
 

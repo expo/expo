@@ -1,9 +1,10 @@
+import { ComponentProps } from 'react';
+
 import BlurViewAndroid from './BlurView.android';
 import BlurViewIOS from './BlurView.ios';
-
-import { ElementProps } from 'react';
+import BlurViewWeb from './BlurView.web';
 
 type Narrow<T1, T2> = T1 extends T2 ? T1 : (T2 extends T1 ? T2 : never);
-type CommonBlurView = Narrow<BlurViewIOS, BlurViewAndroid>;
+type CommonBlurView = Narrow<Narrow<BlurViewIOS, BlurViewAndroid>, BlurViewWeb>;
 
-export default class BlurView extends React.Component<ElementProps<CommonBlurView>> {}
+export default class BlurView extends React.Component<ComponentProps<typeof CommonBlurView>> {}

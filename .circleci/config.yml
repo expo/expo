@@ -9,15 +9,21 @@ commands:
     steps:
       # ssh: used in circleci checkout steps
       # direnv: used to configure environment with .envrc files
+      # rsync: used by expo-module-scripts to copy template files
       - run: nix-env -iA nixpkgs.openssh nixpkgs.direnv nixpkgs.rsync
       - run: mkdir -p ~/.config/direnv
       - run: echo -e "[whitelist]\nprefix = [ \"$HOME\" ]" > ~/.config/direnv/config.toml
       - run: echo 'eval "$(direnv export bash)"' >> ~/.bash_profile
       - run: echo '--frozen-lockfile true' >> ~/.yarnrc
       - checkout
-  decrypt_secrets:
+  decrypt_secrets_if_possible:
     steps:
-      - run: nix run nixpkgs.git-crypt --command git crypt unlock <(echo $EXPO_GIT_CRYPT_KEY_BASE64 | base64 --decode)
+      - run: |
+          nix run expo.git-crypt --command bash -c "
+            if ! [ -v EXPO_GIT_CRYPT_KEY_BASE64 ]; then
+              echo 'git-crypt key not present in environment' && exit 0
+            fi
+            git crypt unlock <(echo $EXPO_GIT_CRYPT_KEY_BASE64 | base64 --decode)"
   update_submodules:
     steps:
       - run: git submodule update --init
@@ -25,13 +31,21 @@ commands:
     steps:
       - run: curl https://cocoapods-specs.circleci.com/fetch-cocoapods-repo-from-s3.sh | bash -s cf
   restore_yarn_cache:
+    parameters:
+      working_directory:
+        type: string
+        default: .
     steps:
       - restore_cache:
-          key: yarn-v1-{{ checksum "yarn.lock" }}
+          key: yarn-v1-{{ checksum "<< parameters.working_directory >>/yarn.lock" }}
   save_yarn_cache:
+    parameters:
+      working_directory:
+        type: string
+        default: .
     steps:
       - save_cache:
-          key: yarn-v1-{{ checksum "yarn.lock" }}
+          key: yarn-v1-{{ checksum "<< parameters.working_directory >>/yarn.lock" }}
           paths:
             - ~/.cache/yarn  # `yarn cache dir`
   restore_gradle_cache:
@@ -58,7 +72,7 @@ commands:
       - run:
           name: yarn << parameters.command >> (<< parameters.working_directory >>)
           working_directory: << parameters.working_directory >>
-          command: for i in {1..<< parameters.max_tries >>}; do ((i > 1)) && sleep 5; nix run nixpkgs.yarn -c yarn << parameters.command >> && break; done
+          command: for i in {1..<< parameters.max_tries >>}; do ((i > 1)) && sleep 5; nix run expo.yarn -c yarn << parameters.command >> && break; done
   yarn_install:
     parameters:
       working_directory:
@@ -77,12 +91,12 @@ executors:
     # Symlink to the readline-enabled bash which is the default command of the container
     shell: /run/current-system/sw/bin/bash -leo pipefail
     working_directory: ~/expo
-    resource_class: small
   android:
     <<: *nix
-    resource_class: large
+    resource_class: xlarge
   js:
     <<: *nix
+    resource_class: small
   mac:
     macos: # https://circleci.com/docs/2.0/testing-ios/#supported-xcode-versions
       xcode: "10.1.0"
@@ -104,13 +118,19 @@ workflows:
   client:
     jobs:
       - home
+      - expotools
       - client_android
       - client_ios
+      - test_suite_publish
       - shell_app_sim_base_ios
       - client_android_approve_google_play:
           type: approval
           requires:
             - client_android
+          filters:
+            branches:
+              only:
+                - /^sdk-\d+$/
       - client_android_release_google_play:
           requires:
             - client_android_approve_google_play
@@ -118,7 +138,6 @@ workflows:
   #         requires:
   #           - shell_app_sim_base_ios
   #           - test_suite_publish
-  #     - test_suite_publish # universe/tools/powertools
   #     - client_android_tests:
   #         requires:
   #           - test_suite_publish
@@ -138,6 +157,13 @@ jobs:
       - yarn:
           command: test --maxWorkers 1
           working_directory: ~/expo/packages/expo
+      - yarn:
+          command: test --maxWorkers 1
+          working_directory: ~/expo/packages/expo-sensors
+      - yarn:
+          command: test --maxWorkers 1
+          working_directory: ~/expo/packages/expo-sms
+
 
   babel_preset:
     executor: js
@@ -168,6 +194,20 @@ jobs:
           command: jest --maxWorkers 1
           working_directory: ~/expo/home
 
+  expotools:
+    executor: js
+    steps:
+      - setup
+      - restore_yarn_cache:
+          working_directory: ~/expo/tools/expotools
+      - yarn_install:
+          working_directory: ~/expo/tools/expotools
+      - save_yarn_cache:
+          working_directory: ~/expo/tools/expotools
+      - yarn:
+          command: tsc
+          working_directory: ~/expo/tools/expotools
+
   client_ios:
     executor: mac
     steps:
@@ -178,7 +218,7 @@ jobs:
       - fetch_cocoapods_specs
       - yarn_install:
           working_directory: ~/project/tools-public
-      - run: nix run nixpkgs.nodejs-8_x nixpkgs.fastlane -c fastlane ios create_simulator_build
+      - run: nix run expo.nodejs expo.fastlane -c fastlane ios create_simulator_build
       - store_artifacts:
           path: ~/Library/Logs/fastlane/
 
@@ -192,12 +232,12 @@ jobs:
       - fetch_cocoapods_specs
       - yarn_install:
           working_directory: ~/project/tools-public
-      - run: nix run nixpkgs.nodejs-8_x -c ~/project/tools-public/generate-files-ios.sh
+      - run: nix run expo.nodejs -c ~/project/tools-public/generate-files-ios.js
       - run:
           name: Build ios shell app simulator
           working_directory: ~/project/tools-public
           no_output_timeout: 30m
-          command: nix run nixpkgs.nodePackages.gulp-cli nixpkgs.cocoapods nixpkgs.xcpretty nixpkgs.expo-cli --command gulp ios-shell-app --action build --type simulator --verbose true --skipRepoUpdate --shellAppSdkVersion UNVERSIONED
+          command: nix run expo.nodePackages.gulp-cli expo.cocoapods expo.xcpretty expo.expo-cli --command gulp ios-shell-app --action build --type simulator --verbose true --skipRepoUpdate --shellAppSdkVersion UNVERSIONED
 
   client_android:
     executor: android
@@ -208,35 +248,42 @@ jobs:
       - yarn_install:
           working_directory: ~/expo/tools-public
       - restore_gradle_cache
-      - decrypt_secrets
-      - run:
-          working_directory: ~/expo/android
-          command: nix-shell --run ./make-release.sh
+      - decrypt_secrets_if_possible
+      - run: echo $ANDROID_KEYSTORE_B64 | base64 -d > android/app/release-key.jks
+      - run: |
+          nix-shell android/shell.nix --pure \
+            --keep ANDROID_KEYSTORE_PASSWORD \
+            --keep ANDROID_KEY_ALIAS \
+            --keep ANDROID_KEY_PASSWORD \
+            --run "fastlane android build build_type:Release"
       - save_gradle_cache
       - save_cache:
           key: client-android-apk-{{ .Revision }}
           paths:
-            - ~/expo/android/exponent-release.apk
+            - ~/expo/android/app/build/outputs/apk
       - store_artifacts:
-          path: ~/expo/android/exponent-release.apk
+          path: ~/expo/android/app/build/outputs/apk
       - store_artifacts: # daemon logs for debugging crashes
-          path: ~/.gradle/daemon/4.4
+          path: ~/.gradle/daemon
 
   client_android_release_google_play:
     executor: js
     steps:
       - setup
-      - yarn_install:
-          working_directory: ~/expo/tools
-      - yarn_install:
-          working_directory: ~/expo/tools-public
       - restore_cache:
           key: client-android-apk-{{ .Revision }}
-      - run:
-          name: Validate Supply metadata
-          working_directory: ~/expo/tools
-          command: nix run nixpkgs.nodePackages.gulp-cli --command gulp supply-validate
+      - run: echo $ANDROID_KEYSTORE_B64 | base64 -d > android/app/release-key.jks
       - run:
           name: Upload APK to Google Play and release to production
           working_directory: ~/expo
-          command: nix run nixpkgs.fastlane --command fastlane android prod_release
+          command: nix run expo.fastlane --command fastlane android prod_release
+
+  test_suite_publish:
+    executor: nix
+    steps:
+      - setup
+      - update_submodules
+      - decrypt_secrets_if_possible
+      - run:
+          working_directory: ~/expo/apps/test-suite
+          command: ./publish.sh

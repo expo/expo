@@ -1,8 +1,13 @@
 # expo-firebase-analytics
 
-`expo-firebase-analytics`
+> expo-firebase is still in RC and therefore subject to breaking changings. Be sure to run `yarn upgrade` and `cd ios; pod install` when upgrading.
 
-[**Full documentation**](https://rnfirebase.io/docs/master/analytics/reference/analytics)
+`expo-firebase-analytics` enables the use of native Google Analytics for Firebase.
+
+Google Analytics for Firebase is a free app measurement solution that provides insight on app usage and user engagement.
+Learn more in the offical [Firebase Docs](https://firebase.google.com/docs/analytics/)
+
+This library is based on RNFirebase, see the docs here: [**RNFirebase docs**](https://rnfirebase.io/docs/master/analytics/reference/analytics)
 
 ## Installation
 
@@ -98,30 +103,207 @@ To enable the AdSupport framework:
     }
     ```
 
-## Usage
+# Docs
 
-```javascript
-import React from 'react';
-import { View } from 'react-native';
+Once installed natively, the module can be accessed with:
+
+```js
 import firebase from 'expo-firebase-app';
-// Include the module before using it.
-import 'expo-firebase-analytics';
-// API can be accessed with: firebase.analytics();
 
-export default class DemoView extends React.Component {
-  async componentDidMount() {
-    firebase.analytics().logEvent('component_mounted', { foo: 'bar' });
-  }
+firebase.analytics();
+```
 
-  render() {
-    return <View />;
-  }
+## Methods
+
+### logEvent
+
+```js
+logEvent(name: string, params: Object = {}): Promise
+```
+
+Log a custom event with optional params.
+
+#### Parameters
+
+| Name       | Type   | Description                                                      |
+| ---------- | ------ | ---------------------------------------------------------------- |
+| screenName | string | Defines the name of a custom event                               |
+| params     | Object | key/value pair of event properties, max length of 100 characters |
+
+#### Example
+
+```js
+await firebase.analytics().logEvent('ButtonTapped', {
+  name: 'settings',
+  screen: 'profile',
+  purpose: 'Opens the internal settings',
+});
+```
+
+### setCurrentScreen
+
+```js
+setCurrentScreen(screenName: string, screenClassOverride?: string): Promise
+```
+
+Sets the current screen name, which specifies the current visual context in your app.
+
+#### Parameters
+
+| Name       | Type   | Description                            |
+| ---------- | ------ | -------------------------------------- |
+| screenName | string | Defines the name of the current screen |
+
+#### Example
+
+```js
+await firebase.analytics().setCurrentScreen('GiveGithubStarsScreen');
+```
+
+### setMinimumSessionDuration
+
+```js
+setMinimumSessionDuration(milliseconds: number = 10000): Promise
+```
+
+Sets the minimum engagement time required before starting a session.
+
+#### Parameters
+
+| Name         | Type   | Description                             | Default |
+| ------------ | ------ | --------------------------------------- | ------- |
+| milliseconds | number | minimum engagement time in milliseconds | 10000   |
+
+#### Example
+
+```js
+await firebase.analytics().setMinimumSessionDuration(500);
+```
+
+### setSessionTimeoutDuration
+
+```js
+setSessionTimeoutDuration(milliseconds: number = 1800000): Promise
+```
+
+Sets the duration of inactivity that terminates the current session. The default value is 30 minutes.
+
+#### Parameters
+
+| Name         | Type   | Description                         | Default |
+| ------------ | ------ | ----------------------------------- | ------- |
+| milliseconds | number | inactivity duration in milliseconds | 1800000 |
+
+#### Example
+
+```js
+// 15 mins
+await firebase.analytics().setSessionTimeoutDuration(900000);
+```
+
+### setUserId
+
+```js
+setUserId(id: string | null): Promise
+```
+
+Sets the user ID property.
+
+#### Parameters
+
+| Name | Type           | Description |
+| ---- | -------------- | ----------- |
+| id   | string \| null | user ID     |
+
+#### Example
+
+```js
+await firebase.analytics().setUserId('bacon_boi_uid');
+```
+
+### setUserProperty
+
+```js
+setUserProperty(name: string, value: string | null): Promise
+```
+
+Sets a user property to a given value.
+
+#### Parameters
+
+| Name  | Type           | Description    |
+| ----- | -------------- | -------------- |
+| name  | string         | property name  |
+| value | string \| null | property value |
+
+#### Example
+
+```js
+await firebase.analytics().setUserProperty('favorite_batmobile', '1989 Burton-mobile');
+```
+
+### setUserProperties
+
+```js
+setUserProperties(object: Object): Promise
+```
+
+Sets multiple user properties to the supplied values.
+
+#### Parameters
+
+| Name   | Type   | Description                      |
+| ------ | ------ | -------------------------------- |
+| object | object | key/value set of user properties |
+
+#### Example
+
+```js
+await firebase.analytics().setUserProperties({
+  least_favorite_thing: 'instagram poser-programmers',
+  knows_fortnite_dances: false,
+  is_a_soyboy: 'true',
+});
+```
+
+# Examples
+
+## How do people use my app?
+
+You can gain deeper insight into what works and what doesn't by using the `logEvent` property. Also it's just a lot of fun to see that people actually use the features you work hard on! 😍
+
+```js
+/*
+ * Say we are in a tinder clone, and a user presses the card to view more
+ * information on a user. We should track this event so we can see if people * are even using it.
+ *
+ * If lots of users are opening the card then swiping through photos, just
+ * to dismiss again, then we should consider making it possible to look
+ * through photos without having to enter the profile.
+ */
+onPressProfileButton = (uid) => {
+  await firebase.analytics().logEvent('ExpandProfile', {
+    /*
+     * We want to know if the user came from from the swipe card as
+     * opposed to from chat or a deep link.
+     */
+    sender: "card",
+    /*
+     * This may be too specific and not very useful, but maybe down the line * we could investigate why a certain user is more popular than others.
+     */
+    user: uid,
+    /*
+     * We can use this information later to compare against other events.
+     */
+    screen: 'profile',
+    purpose: "Viewing more info on a user",
+  });
 }
 ```
 
-### React Navigation
+## React Navigation
 
-You can track the screens your users are interacting with by integrating the popular navigation library `react-navigation`.
+You can track the screens your users are interacting with by integrating the best navigation library: `react-navigation`
 
 [Read more about how this works](https://reactnavigation.org/docs/en/screen-tracking.html)
 
@@ -131,7 +313,6 @@ import React from 'react';
 import { createBottomTabNavigator } from 'react-navigation';
 // Import Firebase
 import firebase from 'expo-firebase-app';
-import 'expo-firebase-analytics';
 // Import some screens
 import HomeScreen from '../screens/HomeScreen';
 import ProfileScreen from '../screens/ProfileScreen';
@@ -162,4 +343,22 @@ export default () => (
     }}
   />
 );
+```
+
+## Variable Data
+
+Ensure your data is Firebase compliant.
+
+```js
+function ensureFormat(input) {
+  if (input != null) {
+    return input.toString().replace(/\W/g, '');
+  } else {
+    return '';
+  }
+}
+
+const eventName = ensureFormat(someWackyValue);
+
+firebase.analytics().logEvent(eventName);
 ```

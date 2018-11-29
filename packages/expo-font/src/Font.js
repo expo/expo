@@ -1,8 +1,11 @@
 // @flow
 
 import invariant from 'invariant';
+import { Platform } from 'expo-core';
+
 import ExpoFontLoader from './ExpoFontLoader';
 
+const isWeb = Platform.OS === 'web';
 const { Asset } = requireAsset();
 const { Constants } = requireConstants();
 
@@ -117,7 +120,7 @@ export async function loadAsync(
 }
 
 function _getAssetForSource(uriOrModuleOrAsset: FontSource): Asset {
-  if (typeof uriOrModuleOrAsset === 'string') {
+  if (!isWeb && typeof uriOrModuleOrAsset === 'string') {
     // TODO(nikki): need to implement Asset.fromUri(...)
     // asset = Asset.fromUri(uriOrModuleOrAsset);
     throw new Error(
@@ -125,7 +128,7 @@ function _getAssetForSource(uriOrModuleOrAsset: FontSource): Asset {
     );
   }
 
-  if (typeof uriOrModuleOrAsset === 'number') {
+  if (isWeb || typeof uriOrModuleOrAsset === 'number') {
     return Asset.fromModule(uriOrModuleOrAsset);
   }
 
@@ -141,5 +144,8 @@ async function _loadSingleFontAsync(name: string, asset: Asset): Promise<void> {
 }
 
 function _getNativeFontName(name: string): string {
+  if (isWeb) {
+    return name;
+  }
   return `${Constants.sessionId}-${name}`;
 }

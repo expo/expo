@@ -3,6 +3,8 @@
  * RemoteMessage representation wrapper
  */
 
+import invariant from 'invariant';
+
 import { utils } from 'expo-firebase-app';
 import type { NativeInboundRemoteMessage, NativeOutboundRemoteMessage } from './types';
 
@@ -82,9 +84,10 @@ export default class RemoteMessage {
    * @returns {RemoteMessage}
    */
   setData(data: { [string]: string } = {}) {
-    if (!isObject(data)) {
-      throw new Error(`RemoteMessage:setData expects an object but got type '${typeof data}'.`);
-    }
+    invariant(
+      isObject(data),
+      `RemoteMessage:setData expects an object but got type '${typeof data}'.`
+    );
     this._data = data;
     return this;
   }
@@ -130,15 +133,10 @@ export default class RemoteMessage {
   }
 
   build(): NativeOutboundRemoteMessage {
-    if (!this._data) {
-      throw new Error('RemoteMessage: Missing required `data` property');
-    } else if (!this._messageId) {
-      throw new Error('RemoteMessage: Missing required `messageId` property');
-    } else if (!this._to) {
-      throw new Error('RemoteMessage: Missing required `to` property');
-    } else if (!this._ttl) {
-      throw new Error('RemoteMessage: Missing required `ttl` property');
-    }
+    invariant(this._data, 'RemoteMessage: Missing required `data` property');
+    invariant(this._messageId, 'RemoteMessage: Missing required `messageId` property');
+    invariant(this._to, 'RemoteMessage: Missing required `to` property');
+    invariant(this._ttl, 'RemoteMessage: Missing required `ttl` property');
 
     return {
       collapseKey: this._collapseKey,

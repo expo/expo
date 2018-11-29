@@ -1,3 +1,5 @@
+// Copyright 2018-present 650 Industries. All rights reserved.
+
 #import <EXFirebaseDatabase/EXFirebaseDatabase.h>
 #import <Firebase.h>
 #import <EXFirebaseDatabase/EXFirebaseDatabaseReference.h>
@@ -34,14 +36,6 @@ EX_EXPORT_MODULE(ExpoFirebaseDatabase);
 {
   _moduleRegistry = moduleRegistry;
   _eventEmitter = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXEventEmitterService)];
-}
-
-- (void)startObserving {
-  
-}
-
-- (void)stopObserving {
-  
 }
 
 EX_EXPORT_METHOD_AS(goOnline,
@@ -579,12 +573,19 @@ EX_EXPORT_METHOD_AS(off,
   return resultMap;
 }
 
+#pragma mark - EXEventEmitter
+
 - (NSArray<NSString *> *)supportedEvents {
   return @[DATABASE_SYNC_EVENT, DATABASE_TRANSACTION_EVENT];
 }
 
-+ (BOOL)requiresMainQueueSetup {
-  return NO;
+- (void)startObserving {
+  
+}
+
+- (void)stopObserving
+{
+  
 }
 
 @end

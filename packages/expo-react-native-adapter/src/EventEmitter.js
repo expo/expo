@@ -1,6 +1,11 @@
 // @flow
 
-import { NativeEventEmitter, Platform } from 'react-native';
+import { Platform } from 'react-native';
+/* 
+ * Importing this directly will circumvent the webpack alias `react-native$`
+ * This will enable us to use NativeEventEmitter from React Native and not from RNWeb.
+ */
+import NativeEventEmitter from 'react-native/Libraries/EventEmitter/NativeEventEmitter';
 
 type NativeModule = {
   startObserving: ?() => void,
