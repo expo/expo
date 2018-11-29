@@ -4,7 +4,13 @@
 set -eo pipefail
 
 branch="$(git rev-parse --abbrev-ref HEAD)"
-channel=${1:-$branch}
+# replace all the uppercase letters with lowercased equivalents
+lowercased_branch="$(tr '[:upper:]' '[:lower:]' <<< $branch)"
+# replace all the invalid characters with _
+escaped_branch="$(sed s/[^a-z\d_.-]/_/g <<< $lowercased_branch)"
+# strip non-letters and non-digits from the beginning of the string
+validated_branch="$(sed s/^[^a-z\d]*// <<< $escaped_branch)"
+channel=${1:-$validated_branch}
 
 # Run yarn install in root, so linked dependencies are built
 pushd ../..
