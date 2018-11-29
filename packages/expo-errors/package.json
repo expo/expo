@@ -1,0 +1,20 @@
+{
+  "name": "expo-errors",
+  "version": "0.0.1",
+  "description": "Error classes and helpers for Expo modules",
+  "main": "index.js",
+  "keywords": [
+    "react-native",
+    "expo"
+  ],
+  "homepage": "https://docs.expo.io/",
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "dependencies": {
+    "expo-core": "~1.2.0"
+  },
+  "devDependencies": {
+    "babel-preset-expo": "^5.0.0",
+    "flow-bin": "^0.77.0"
+  }
+}

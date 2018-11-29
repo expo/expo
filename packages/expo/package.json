@@ -12,11 +12,7 @@
     "tools",
     "AppEntry.js"
   ],
-  "scripts": {
-    "build": "EXPO_NONINTERACTIVE=1 expo-module build && expo-module babel --config-file ./babel.config.build.js --out-dir build build/Expo.js",
-    "clean": "expo-module clean",
-    "lint": "eslint tools",
-    "test": "expo-module test",
+  "scripts": { "build": "EXPO_NONINTERACTIVE=1 expo-module build && expo-module babel --config-file ./babel.config.build.js --out-dir build build/Expo.js", "clean": "expo-module clean", "lint": "eslint tools", "test": "expo-module test",
     "postinstall": "expo-module postinstall",
     "prepare": "expo-module prepare && expo-module babel --config-file ./babel.config.build.js --out-dir build build/Expo.js",
     "prepublishOnly": "expo-module prepublishOnly",
@@ -71,6 +67,7 @@
     "expo-constants-interface": "~1.1.0",
     "expo-contacts": "~1.1.0",
     "expo-core": "~1.2.0",
+    "expo-errors": "^0.0.1",
     "expo-face-detector": "~1.1.0",
     "expo-face-detector-interface": "~1.1.0",
     "expo-file-system": "~1.1.0",
