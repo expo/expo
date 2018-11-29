@@ -8,7 +8,7 @@ const locations = {
   // Shouldn't change
   root: absolutePath('./'),
   // TODO: Bacon: We should consider how we want to deploy.
-  output: absolutePath('public/assets'),
+  output: absolutePath('web/assets'),
   // TODO: Bacon: Only use this in expo/apps/
   modules: absolutePath('../../node_modules/'),
 };
@@ -22,7 +22,6 @@ const includeModule = module => {
 
 const babelLoaderConfiguration = {
   test: /\.jsx?$/,
-  // Add every directory that needs to be compiled by Babel during the build.
   include: [
     // TODO: Bacon: This makes compilation take a while
     locations.root,
@@ -31,13 +30,7 @@ const babelLoaderConfiguration = {
   use: {
     loader: 'babel-loader',
     options: {
-      // cacheDirectory: true,
       babelrc: false,
-      /*
-       * babel-preset-* is inferred.
-       */
-      presets: ['babel-preset-expo'],
-      plugins: ['babel-plugin-react-native-web', '@babel/plugin-transform-runtime'],
     },
   },
 };
@@ -135,6 +128,7 @@ module.exports = {
       __DEV__,
     }),
     ...useWebModules(['Platform', 'DeviceInfo', 'Dimensions', 'Linking', 'Image', 'Share', 'Text']),
+    ...useWebModules(['Performance/Systrace'], 'expo/build/web/'),
   ],
   resolve: {
     symlinks: false,

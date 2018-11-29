@@ -9,7 +9,7 @@
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "webpack-dev-server -d --config ./webpack.config.js  --inline --hot --colors --content-base public/",
+    "web": "webpack-dev-server -d --config ./webpack.config.js  --inline --hot --colors --content-base web/",
     "build": "NODE_ENV=production webpack -p --config ./webpack.config.js",
     "postinstall": "expo-yarn-workspaces postinstall"
   },

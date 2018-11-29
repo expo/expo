@@ -3,4 +3,4 @@ node_modules/**/*
 jsconfig.json
 
 /build/
-/public/assets/
+/web/assets/
