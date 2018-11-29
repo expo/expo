@@ -65,7 +65,7 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void getDevicePushTokenAsync(final ReadableMap config, final Promise promise) {
-    if (!Constants.isShellApp()) {
+    if (!Constants.isStandaloneApp()) {
       promise.reject("getDevicePushTokenAsync is only accessible within standalone applications");
     }
     try {

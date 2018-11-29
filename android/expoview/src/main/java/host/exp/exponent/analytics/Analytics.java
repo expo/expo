@@ -107,7 +107,7 @@ public class Analytics {
   }
 
   public static void logEventWithManifestUrlSdkVersion(String eventType, String manifestUrl, String sdkVersion) {
-    if (!Constants.isShellApp() && (!eventType.equals(LOAD_EXPERIENCE))) {
+    if (!Constants.isStandaloneApp() && (!eventType.equals(LOAD_EXPERIENCE))) {
       return;
     }
     try {

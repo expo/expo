@@ -167,7 +167,7 @@ public class Kernel extends KernelInterface {
 
   // Don't call this until a loading screen is up, since it has to do some work on the main thread.
   public void startJSKernel() {
-    if (Constants.isShellApp()) {
+    if (Constants.isStandaloneApp()) {
       return;
     }
 
@@ -242,7 +242,7 @@ public class Kernel extends KernelInterface {
   }
 
   public void reloadJSBundle() {
-    if (Constants.isShellApp()) {
+    if (Constants.isStandaloneApp()) {
       return;
     }
     String bundleUrl = getBundleUrl();
@@ -733,7 +733,7 @@ public class Kernel extends KernelInterface {
 
     // TODO: shouldShowNux used to be set to `!manifestUrl.equals(Constants.INITIAL_URL);`.
     // This caused nux to show up in RNPlay. What's the right behavior here?
-    boolean shouldShowNux = !Constants.isShellApp() && !KernelConfig.HIDE_NUX;
+    boolean shouldShowNux = !Constants.isStandaloneApp() && !KernelConfig.HIDE_NUX;
     boolean loadNux = shouldShowNux && !isFirstRunFinished;
     JSONObject opts = new JSONObject();
     opts.put(KernelConstants.OPTION_LOAD_NUX_KEY, loadNux);
