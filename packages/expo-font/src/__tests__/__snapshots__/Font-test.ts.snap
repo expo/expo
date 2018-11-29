@@ -13,7 +13,7 @@ exports[`loadAsync throws if loading a downloaded font fails 1`] = `[Error: Inte
 
 exports[`processFontFamily defaults missing fonts to the system font 1`] = `
 Array [
-  "fontFamily 'not-loaded' is not a system font and has not been loaded through Font.loadAsync.
+  "fontFamily \\"not-loaded\\" is not a system font and has not been loaded through Font.loadAsync.
 
 - If you intended to use a system font, make sure you typed the name correctly and that it is supported by your device operating system.
 
@@ -23,7 +23,7 @@ Array [
 
 exports[`processFontFamily defaults still-loading fonts to the system font 1`] = `
 Array [
-  "You started loading 'loading', but used it before it finished loading
+  "You started loading the font \\"loading\\", but used it before it finished loading.
 
 - You need to wait for Font.loadAsync to complete before using the font.
 

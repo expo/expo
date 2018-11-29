@@ -1,37 +1,21 @@
-// @flow
-
-import invariant from 'invariant';
+import { Asset } from 'expo-asset';
+import { Constants } from 'expo-constants';
 import { Platform } from 'expo-core';
+import invariant from 'invariant';
 
 import ExpoFontLoader from './ExpoFontLoader';
 
-const isWeb = Platform.OS === 'web';
-const { Asset } = requireAsset();
-const { Constants } = requireConstants();
-
-function requireAsset() {
-  try {
-    return require('expo-asset');
-  } catch (error) {
-    throw new Error('expo-font needs expo-asset to be installed');
-  }
-}
-
-function requireConstants() {
-  try {
-    return require('expo-constants');
-  } catch (error) {
-    throw new Error('expo-font needs expo-constants to be installed');
-  }
-}
-
+/**
+ * A font source can be a URI, a module ID, or an Expo Asset.
+ */
 type FontSource = string | number | Asset;
 
+const isWeb = Platform.OS === 'web';
 const loaded: { [name: string]: boolean } = {};
 const loadPromises: { [name: string]: Promise<void> } = {};
 
-export function processFontFamily(name: ?string): ?string {
-  if (!name || Constants.systemFonts.includes(name) || name === 'System') {
+export function processFontFamily(name: string | null): string | null {
+  if (typeof name !== 'string' || Constants.systemFonts.includes(name) || name === 'System') {
     return name;
   }
 
@@ -40,21 +24,21 @@ export function processFontFamily(name: ?string): ?string {
   }
 
   if (!isLoaded(name)) {
+    // @ts-ignore: TypeScript doesn't know this is running in Expo and that React Native compiles
+    // out this variable. Remove this ts-ignore after expo-core and expo-react-native-adapter have
+    // been converted to TypeScript.
     if (__DEV__) {
       if (isLoading(name)) {
         console.error(
-          `You started loading '${name}', but used it before it finished loading\n\n` +
-            `- You need to wait for Font.loadAsync to complete before using the font.\n\n` +
-            `- We recommend loading all fonts before rendering the app, and rendering only ` +
-            `Expo.AppLoading while waiting for loading to complete.`
+`You started loading the font "${name}", but used it before it finished loading.\n
+- You need to wait for Font.loadAsync to complete before using the font.\n
+- We recommend loading all fonts before rendering the app, and rendering only Expo.AppLoading while waiting for loading to complete.`
         );
       } else {
         console.error(
-          `fontFamily '${name}' is not a system font and has not been loaded through ` +
-            `Font.loadAsync.\n\n` +
-            `- If you intended to use a system font, make sure you typed the name ` +
-            `correctly and that it is supported by your device operating system.\n\n` +
-            `- If this is a custom font, be sure to load it with Font.loadAsync.`
+`fontFamily "${name}" is not a system font and has not been loaded through Font.loadAsync.\n
+- If you intended to use a system font, make sure you typed the name correctly and that it is supported by your device operating system.\n
+- If this is a custom font, be sure to load it with Font.loadAsync.`
         );
       }
     }
@@ -74,8 +58,8 @@ export function isLoading(name: string): boolean {
 }
 
 export async function loadAsync(
-  nameOrMap: string | { [string]: FontSource },
-  uriOrModuleOrAsset?: FontSource
+  nameOrMap: string | { [name: string]: FontSource },
+  source?: FontSource
 ): Promise<void> {
   if (typeof nameOrMap === 'object') {
     const fontMap = nameOrMap;
@@ -99,8 +83,8 @@ export async function loadAsync(
   // promise in the program, we need to create the promise synchronously without yielding the event
   // loop from this point.
 
-  invariant(uriOrModuleOrAsset, `No source from which to load font "${name}"`);
-  const asset = _getAssetForSource(uriOrModuleOrAsset);
+  invariant(source, `No source from which to load font "${name}"`);
+  const asset = _getAssetForSource(source);
   loadPromises[name] = (async () => {
     try {
       await _loadSingleFontAsync(name, asset);
@@ -113,8 +97,8 @@ export async function loadAsync(
   await loadPromises[name];
 }
 
-function _getAssetForSource(uriOrModuleOrAsset: FontSource): Asset {
-  if (!isWeb && typeof uriOrModuleOrAsset === 'string') {
+function _getAssetForSource(source: FontSource): Asset {
+  if (!isWeb && typeof source === 'string') {
     // TODO(nikki): need to implement Asset.fromUri(...)
     // asset = Asset.fromUri(uriOrModuleOrAsset);
     throw new Error(
@@ -122,11 +106,11 @@ function _getAssetForSource(uriOrModuleOrAsset: FontSource): Asset {
     );
   }
 
-  if (isWeb || typeof uriOrModuleOrAsset === 'number') {
-    return Asset.fromModule(uriOrModuleOrAsset);
+  if (isWeb || typeof source === 'number') {
+    return Asset.fromModule(source);
   }
 
-  return uriOrModuleOrAsset;
+  return source;
 }
 
 async function _loadSingleFontAsync(name: string, asset: Asset): Promise<void> {
