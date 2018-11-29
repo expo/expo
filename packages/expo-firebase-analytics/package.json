@@ -1,6 +1,6 @@
 {
   "name": "expo-firebase-analytics",
-  "version": "1.0.0-rc.3",
+  "version": "1.0.0-rc.5",
   "description": "Expo Unimodule for interfacing with Firebase Analytics",
   "main": "src/index.js",
   "keywords": [
