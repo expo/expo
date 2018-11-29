@@ -99,7 +99,9 @@ public class Constants {
     setSdkVersions(new ArrayList<>(abiVersions));
 
     List<EmbeddedResponse> embeddedResponses = new ArrayList<>();
+    // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
     embeddedResponses.add(new EmbeddedResponse("https://exp.host/@exponent/home/bundle", EMBEDDED_KERNEL_PATH, "application/javascript"));
+    // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
 
     // ADD EMBEDDED RESPONSES HERE
     // START EMBEDDED RESPONSES
