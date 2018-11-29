@@ -74,16 +74,10 @@ export function isLoading(name: string): boolean {
 }
 
 export async function loadAsync(
-  nameOrMap: string | { [string]: FontSource } | Array<{ [string]: FontSource }>,
+  nameOrMap: string | { [string]: FontSource },
   uriOrModuleOrAsset?: FontSource
 ): Promise<void> {
-  if (Array.isArray(nameOrMap)) {
-    console.warn(
-      `Passing in an array to Font.loadAsync like Font.loadAsync([fontMap1, fontMap2, fontMap3]) is deprecated and will be removed in SDK 25. Instead, pass in a single font map. The object spread syntax may help with this: Font.loadAsync({ ...fontMap1, ...fontMap2, ...fontMap3 })`
-    );
-    await Promise.all(nameOrMap.map(loadAsync));
-    return;
-  } else if (typeof nameOrMap === 'object') {
+  if (typeof nameOrMap === 'object') {
     const fontMap = nameOrMap;
     const names = Object.keys(fontMap);
     await Promise.all(names.map(name => loadAsync(name, fontMap[name])));
