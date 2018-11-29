@@ -28,14 +28,13 @@
   },
   "bugs": "https://github.com/expo/expo/issues",
   "peerDependencies": {
-    "react-native": "^0.55.4"
+    "invariant": "^2.2.2"
   },
   "dependencies": {
-    "expo-core": "~1.1.0",
-    "expo-constants-interface": "~1.0.2"
+    "expo-core": "~1.2.0",
+    "expo-constants-interface": "~1.1.0"
   },
   "devDependencies": {
-    "babel-preset-expo": "^4.0.0",
-    "flow-bin": "^0.77.0"
+    "babel-preset-expo": "^5.0.0"
   }
 }
