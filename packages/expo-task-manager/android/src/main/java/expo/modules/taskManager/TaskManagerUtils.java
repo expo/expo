@@ -51,12 +51,16 @@ public class TaskManagerUtils implements TaskManagerUtilsInterface {
 
     int jobId = jobInfo.getId();
 
-    // Cancel jobs with the same ID to let them be rescheduled.
-    jobScheduler.cancel(jobId);
+    if (jobScheduler != null) {
+      // Cancel jobs with the same ID to let them be rescheduled.
+      jobScheduler.cancel(jobId);
 
-    // Schedule a job.
-    jobScheduler.schedule(jobInfo);
-    addToPendingJobs(jobId);
+      // Schedule a job.
+      jobScheduler.schedule(jobInfo);
+      addToPendingJobs(jobId);
+    } else {
+      Log.e(this.getClass().getName(), "Job scheduler not found!");
+    }
   }
 
   public void scheduleJob(Context context, TaskInterface task, PersistableBundle data) {
@@ -76,9 +80,9 @@ public class TaskManagerUtils implements TaskManagerUtilsInterface {
       String key = entry.getKey();
 
       if (value instanceof Double) {
-        bundle.putDouble(key, ((Double) value).doubleValue());
+        bundle.putDouble(key, (Double) value);
       } else if (value instanceof Integer) {
-        bundle.putInt(key, ((Integer) value).intValue());
+        bundle.putInt(key, (Integer) value);
       } else if (value instanceof String) {
         bundle.putString(key, (String) value);
       } else if (value instanceof Boolean) {
@@ -107,22 +111,22 @@ public class TaskManagerUtils implements TaskManagerUtilsInterface {
   public static double[] listToDoubleArray(List<Object> list) {
     double[] doubles = new double[list.size()];
     for (int i = 0; i < list.size(); i++) {
-      doubles[i] = ((Double) list.get(i)).doubleValue();
+      doubles[i] = (Double) list.get(i);
     }
     return doubles;
   }
 
   @SuppressWarnings("unchecked")
-  public static int[] listToIntArray(List<Object> list) {
+  private static int[] listToIntArray(List<Object> list) {
     int[] integers = new int[list.size()];
     for (int i = 0; i < list.size(); i++) {
-      integers[i] = ((Integer) list.get(i)).intValue();
+      integers[i] = (Integer) list.get(i);
     }
     return integers;
   }
 
   @SuppressWarnings("unchecked")
-  public static String[] listToStringArray(List<Object> list) {
+  private static String[] listToStringArray(List<Object> list) {
     String[] strings = new String[list.size()];
     for (int i = 0; i < list.size(); i++) {
       strings[i] = list.get(i).toString();
@@ -131,7 +135,7 @@ public class TaskManagerUtils implements TaskManagerUtilsInterface {
   }
 
   @SuppressWarnings("unchecked")
-  public static ArrayList<Parcelable> listToParcelableArrayList(List<Object> list) {
+  private static ArrayList<Parcelable> listToParcelableArrayList(List<Object> list) {
     ArrayList<Parcelable> arrayList = new ArrayList<>();
 
     for (Object item : list) {
@@ -141,7 +145,7 @@ public class TaskManagerUtils implements TaskManagerUtilsInterface {
     return arrayList;
   }
 
-  public static void addToPendingJobs(int jobId) {
+  private static void addToPendingJobs(int jobId) {
     if (!sPendingJobIds.contains(jobId)) {
       sPendingJobIds.add(jobId);
     }

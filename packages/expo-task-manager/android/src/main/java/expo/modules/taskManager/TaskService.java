@@ -17,6 +17,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -36,14 +37,16 @@ import expo.interfaces.taskManager.TaskManagerInterface;
 import expo.loaders.provider.interfaces.AppLoaderInterface;
 import expo.loaders.provider.AppLoaderProvider;
 import expo.loaders.provider.interfaces.AppRecordInterface;
+import expo.modules.taskManager.exceptions.InvalidConsumerClassException;
+import expo.modules.taskManager.exceptions.TaskRegisteringFailedException;
+import expo.modules.taskManager.exceptions.TaskNotFoundException;
 
 public class TaskService implements SingletonModule, TaskServiceInterface {
   private static final String TAG = "TaskService";
   private static final String SHARED_PREFERENCES_NAME = "TaskManagerModule";
   private static final int MAX_TASK_EXECUTION_TIME_MS = 15000; // 15 seconds
-  private static TaskService sInstance;
 
-  private Context mContext;
+  private WeakReference<Context> mContextRef;
 
   // { "<appId>": { "<taskName>": TaskInterface } }
   private static Map<String, Map<String, TaskInterface>> sTasksTable = null;
@@ -51,7 +54,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
   // Map with task managers of running (foregrounded) apps. { "<appId>": WeakReference(TaskManagerInterface) }
   private static final Map<String, WeakReference<TaskManagerInterface>> sTaskManagers = new HashMap<>();
 
-  // Same as above buf for headless (backgrounded) apps.
+  // Same as above but for headless (backgrounded) apps.
   private static final Map<String, WeakReference<TaskManagerInterface>> sHeadlessTaskManagers = new HashMap<>();
 
   // { "<appId>": List(eventIds...) }
@@ -68,11 +71,10 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
 
   public TaskService(Context context) {
     super();
-    mContext = context;
+    mContextRef = new WeakReference<>(context);
 
     if (sTasksTable == null) {
       sTasksTable = new HashMap<>();
-      sInstance = this;
       restoreTasks();
     }
   }
@@ -81,16 +83,6 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     return "TaskService";
   }
 
-  //region statics
-
-  public static TaskService getInstance(Context context) {
-    if (sInstance == null) {
-      sInstance = new TaskService(context);
-    }
-    return sInstance;
-  }
-
-  //endregion
   //region TaskServiceInterface
 
   @Override
@@ -100,7 +92,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
   }
 
   @Override
-  public void registerTask(String taskName, String appId, String appUrl, Class consumerClass, Map<String, Object> options) throws Exception {
+  public void registerTask(String taskName, String appId, String appUrl, Class consumerClass, Map<String, Object> options) throws TaskRegisteringFailedException {
     TaskInterface task = getTask(taskName, appId);
     Class unversionedConsumerClass = unversionedClassForClass(consumerClass);
 
@@ -115,18 +107,18 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
   }
 
   @Override
-  public void unregisterTask(String taskName, String appId, Class consumerClass) throws Exception {
+  public void unregisterTask(String taskName, String appId, Class consumerClass) throws TaskNotFoundException, InvalidConsumerClassException {
     TaskInterface task = getTask(taskName, appId);
     Class unversionedConsumerClass = unversionedClassForClass(consumerClass);
 
     // Task not found.
     if (task == null) {
-      throw new Exception("Task '" + taskName + "' not found for app ID '" + appId + "'.");
+      throw new TaskNotFoundException(taskName, appId);
     }
 
     // Check if the consumer is an instance of given consumer class.
     if (unversionedConsumerClass != null && !unversionedConsumerClass.isInstance(task.getConsumer())) {
-      throw new Exception("Cannot unregister task with name '" + taskName + "' because it is associated with different consumer class.");
+      throw new InvalidConsumerClassException(taskName);
     }
 
     Map<String, TaskInterface> appTasks = sTasksTable.get(appId);
@@ -259,7 +251,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     String action = intent.getAction();
     Uri dataUri = intent.getData();
 
-    if (!action.equals(TaskBroadcastReceiver.INTENT_ACTION)) {
+    if (!action.equals(TaskBroadcastReceiver.INTENT_ACTION) || dataUri == null) {
       return;
     }
 
@@ -275,8 +267,11 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
 
       // Cancel pending intent.
       Integer intentId = Integer.valueOf(dataUri.getQueryParameter("intentId"));
-      PendingIntent.getBroadcast(mContext, intentId, intent, PendingIntent.FLAG_UPDATE_CURRENT).cancel();
+      Context context = mContextRef.get();
 
+      if (context != null) {
+        PendingIntent.getBroadcast(context, intentId, intent, PendingIntent.FLAG_UPDATE_CURRENT).cancel();
+      }
       return;
     }
 
@@ -335,7 +330,14 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
   public void executeTask(TaskInterface task, Bundle data, Error error, TaskExecutionCallback callback) {
     TaskManagerInterface taskManager = getTaskManager(task.getAppId());
     Bundle body = createExecutionEventBody(task, data, error);
-    String eventId = body.getBundle("executionInfo").getString("eventId");
+    Bundle executionInfo = body.getBundle("executionInfo");
+
+    if (executionInfo == null) {
+      // it should never happen, just to suppress warnings :)
+      return;
+    }
+
+    String eventId = executionInfo.getString("eventId");
     String appId = task.getAppId();
     List<String> appEvents = sEvents.get(appId);
 
@@ -375,7 +377,6 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
         }
         appEvents.remove(eventId);
         sEventsQueues.remove(appId);
-        return;
       }
     }
   }
@@ -383,9 +384,23 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
   //endregion
   //region helpers
 
-  private TaskInterface internalRegisterTask(String taskName, String appId, String appUrl, Class consumerClass, Map<String, Object> options) throws Exception {
+  private void internalRegisterTask(String taskName, String appId, String appUrl, Class<TaskConsumerInterface> consumerClass, Map<String, Object> options) throws TaskRegisteringFailedException {
     TaskManagerUtilsInterface taskManagerUtils = new TaskManagerUtils();
-    TaskConsumerInterface consumer = (TaskConsumerInterface) consumerClass.getDeclaredConstructor(Context.class, TaskManagerUtilsInterface.class).newInstance(mContext, taskManagerUtils);
+    Constructor<?> consumerConstructor;
+    TaskConsumerInterface consumer;
+    Context context = mContextRef.get();
+
+    if (context == null) {
+      return;
+    }
+
+    try {
+      consumerConstructor = consumerClass.getDeclaredConstructor(Context.class, TaskManagerUtilsInterface.class);
+      consumer = (TaskConsumerInterface) consumerConstructor.newInstance(context, taskManagerUtils);
+    } catch (Exception e) {
+      throw new TaskRegisteringFailedException(consumerClass, e);
+    }
+
     Task task = new Task(taskName, appId, appUrl, consumer, options, this);
 
     Map<String, TaskInterface> appTasks = sTasksTable.containsKey(appId) ? sTasksTable.get(appId) : new HashMap<String, TaskInterface>();
@@ -395,8 +410,6 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     Log.i(TAG, "Registered task with name '" + taskName + "' for app with ID '" + appId + "'.");
 
     consumer.didRegister(task);
-
-    return task;
   }
 
   private Bundle createExecutionEventBody(TaskInterface task, Bundle data, Error error) {
@@ -434,17 +447,17 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
       return null;
     }
     TaskInterface task = getTask(taskName, appId);
-    TaskConsumerInterface consumer = task != null ? task.getConsumer() : null;
-    return consumer;
+    return task != null ? task.getConsumer() : null;
   }
 
   private SharedPreferences getSharedPreferences() {
-    return mContext.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+    Context context = mContextRef.get();
+    return context != null ? context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE) : null;
   }
 
   private void maybeUpdateAppUrlForAppId(String appUrl, String appId) {
     SharedPreferences preferences = getSharedPreferences();
-    Map<String, Object> appConfig = jsonToMap(preferences.getString(appId, ""), true);
+    Map<String, Object> appConfig = preferences != null ? jsonToMap(preferences.getString(appId, ""), true) : null;
 
     if (appConfig != null && appConfig.size() > 0) {
       String oldAppUrl = (String) appConfig.get("appUrl");
@@ -549,7 +562,8 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
 
   private AppLoaderInterface createAppLoader() {
     // for now only react-native apps in Expo are supported
-    return AppLoaderProvider.createLoader("react-native-experience", mContext);
+    Context context = mContextRef.get();
+    return context != null ? AppLoaderProvider.createLoader("react-native-experience", context) : null;
   }
 
   private boolean loadApp(final String appId, String appUrl) {
@@ -650,9 +664,9 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
 
         if (recursive) {
           if (value instanceof JSONArray) {
-            value = jsonToList((JSONArray) value, recursive);
+            value = jsonToList((JSONArray) value, true);
           } else if (value instanceof JSONObject) {
-            value = jsonToMap((JSONObject) value, recursive);
+            value = jsonToMap((JSONObject) value, true);
           }
         }
         list.add(value);

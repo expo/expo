@@ -10,6 +10,8 @@ public class TaskBroadcastReceiver extends BroadcastReceiver {
   @Override
   public void onReceive(Context context, Intent intent) {
     Context appContext = context.getApplicationContext();
-    TaskService.getInstance(appContext).handleIntent(intent);
+    TaskService taskService = new TaskService(appContext);
+
+    taskService.handleIntent(intent);
   }
 }
