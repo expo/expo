@@ -15,11 +15,11 @@ public class LocationHelpers {
     if (context == null) {
       return false;
     }
-    LocationManager locationManager = (LocationManager)context.getSystemService(Context.LOCATION_SERVICE);
-    return locationManager.isProviderEnabled("gps") || locationManager.isProviderEnabled("network");
+    LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+    return locationManager != null && (locationManager.isProviderEnabled("gps") || locationManager.isProviderEnabled("network"));
   }
 
-  public static LocationParams.Builder buildLocationParamsForAccuracy(int accuracy) {
+  private static LocationParams.Builder buildLocationParamsForAccuracy(int accuracy) {
     switch (accuracy) {
       case ACCURACY_LOWEST:
         return new LocationParams.Builder()
@@ -72,11 +72,10 @@ public class LocationHelpers {
   public static int getAccuracyFromOptions(Map<String, Object> options) {
     // `enableHighAccuracy` is deprecated - use `accuracy` instead
     boolean highAccuracy = options.containsKey("enableHighAccuracy") && (Boolean) options.get("enableHighAccuracy");
-    int accuracy = options.containsKey("accuracy")
+
+    return options.containsKey("accuracy")
         ? convertAccuracy(options.get("accuracy"))
         : highAccuracy ? ACCURACY_HIGH : ACCURACY_BALANCED;
-
-    return accuracy;
   }
 
   private static int convertAccuracy(Object accuracy) {
