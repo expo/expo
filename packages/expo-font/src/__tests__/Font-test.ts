@@ -1,4 +1,4 @@
-import { mockProperty } from '../../test/mocking';
+import { NativeModulesProxy } from 'expo-core';
 
 jest.mock('expo-constants', () => ({
   Constants: {
@@ -8,18 +8,11 @@ jest.mock('expo-constants', () => ({
   },
 }));
 
-let NativeModulesProxy;
 let Font;
 
-function applyMocks() {
-  mockProperty(NativeModulesProxy.ExpoFontLoader, 'loadAsync', jest.fn(async () => {}));
-}
-
 beforeEach(() => {
-  NativeModulesProxy = require('expo-core').NativeModulesProxy;
-  Font = require('expo-font').Font;
-
-  applyMocks();
+  NativeModulesProxy.ExpoFontLoader.loadAsync.mockImplementation(async () => {});
+  Font = require('expo-font');
 });
 
 afterEach(() => {
@@ -228,16 +221,16 @@ describe('processFontFamily', () => {
   let originalConsole;
 
   beforeEach(() => {
-    originalConsole = global.console;
+    originalConsole = console;
   });
 
   afterEach(() => {
-    global.console = originalConsole;
+    console = originalConsole;
   });
 
   it(`handles empty values`, () => {
     expect(Font.processFontFamily(null)).toBeNull();
-    expect(Font.processFontFamily(undefined)).toBeUndefined();
+    expect(Font.processFontFamily(undefined as any)).toBeUndefined();
   });
 
   it(`handles the system font`, () => {
