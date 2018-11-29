@@ -12,7 +12,7 @@ const config = {
 const StorageKey = '@Storage:Key';
 
 async function signInAsync() {
-  const authState = await AppAuth.authorizeAsync(config);
+  const authState = await AppAuth.authAsync(config);
   await cacheAuthAsync(authState);
   console.log('signInAsync', authState);
   return authState;
