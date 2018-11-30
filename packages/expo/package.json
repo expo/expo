@@ -58,6 +58,7 @@
     "@types/uuid-js": "^0.7.1",
     "@types/websql": "^0.0.27",
     "babel-preset-expo": "^5.0.0",
+    "cross-spawn": "^6.0.5",
     "expo-ads-admob": "~1.1.0",
     "expo-analytics-segment": "~1.1.0",
     "expo-app-auth": "^1.0.0",
