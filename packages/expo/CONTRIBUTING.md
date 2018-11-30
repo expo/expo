@@ -1,5 +1,3 @@
-**IMPORTANT:** Submit all issues and PRs to the main Expo repository: https://github.com/expo/expo/tree/master/packages/expo. The `expo-sdk` repository is deprecated and will be removed fall 2018.
-
 We've set up Expo SDK to help us keep it reliable and clean and be confident in the changes we're making to it.
 
 ## Getting Started
@@ -13,11 +11,7 @@ yarn tsc
 
 ## Testing in an App
 
-The React Native packager doesn't support symlinks, so `npm link` doesn't work.
-You can use the `./install-to-directory.sh` script to test instead. Run
-`./install-to-directory.sh PATH_TO_APP` copy the expo-sdk code into that app's
-node_modules. You will have to run that command every time you make a change that
-you want copied into the app.
+The Expo repository is carefully configured so changes to the `expo` package show up when running one of the development apps under `apps` like `native-component-list`. Be sure to compile the TypeScript to JavaScript in order to test your code.
 
 ## Unit tests
 
