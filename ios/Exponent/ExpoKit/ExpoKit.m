@@ -6,7 +6,6 @@
 #import "EXBuildConstants.h"
 #import "EXEnvironment.h"
 #import "EXFacebook.h"
-#import "EXGoogleAuthManager.h"
 #import "EXKernel.h"
 #import "EXKernelUtil.h"
 #import "EXKernelLinkingManager.h"
@@ -169,11 +168,6 @@ NSString * const EXAppDidRegisterUserNotificationSettingsNotification = @"kEXApp
 
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(nullable NSString *)sourceApplication annotation:(id)annotation
 {
-  if ([[EXKernel sharedInstance].serviceRegistry.googleAuthManager
-       application:application openURL:url sourceApplication:sourceApplication annotation:annotation]) {
-    return YES;
-  }
-
   if ([EXFacebook facebookAppIdFromNSBundle]) {
     if ([[FBSDKApplicationDelegate sharedInstance] application:application
                                                        openURL:url

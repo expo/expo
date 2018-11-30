@@ -1,5 +1,7 @@
 # expo-app-auth
 
+> This library is a part of Expo v32+
+
 This module provides access to the native OAuth library AppAuth by [OpenID](https://github.com/openid).
 
 ## Installation
@@ -27,6 +29,26 @@ and run `pod install`.
 2. Go to `node_modules` ➜ `expo-app-auth` and add `EXContacts.xcodeproj`
 3. In XCode, in the project navigator, select your project. Add `libEXContacts.a` to your project's `Build Phases` ➜ `Link Binary With Libraries`
 4. Run your project (`Cmd+R`).
+
+#### iOS Common
+
+You will need to add the following to your `AppDelegate.m`:
+
+```objc
+// Import the lib at the top of the file
+
+#import <EXAppAuth/EXAppAuth.h>
+
+// ...
+
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
+  // ...
+  if ([[EXAppAuth instance] application:app openURL:url options:options]) {
+    return YES;
+  }
+  // ...
+}
+```
 
 ### Android
 

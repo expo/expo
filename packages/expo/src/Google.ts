@@ -1,6 +1,6 @@
 import { AppAuth } from 'expo-app-auth';
 import { Constants } from 'expo-constants';
-import { Platform } from 'expo-core';
+import { Platform } from 'react-native';
 
 type LogInConfig = {
   androidClientId?: string;
@@ -74,29 +74,38 @@ export async function logInAsync(config: LogInConfig): Promise<LogInResult> {
       web: config.clientId,
     });
 
-  const logInResult = await AppAuth.authAsync({
-    issuer: 'https://accounts.google.com',
-    scopes,
-    clientId,
-  });
+  try {
+    const logInResult = await AppAuth.authAsync({
+      issuer: 'https://accounts.google.com',
+      scopes,
+      clientId,
+    });
 
-  // Web login only returns an accessToken so use it to fetch the same info as the native login
-  // does.
-  const userInfoResponse = await fetch('https://www.googleapis.com/userinfo/v2/me', {
-    headers: { Authorization: `Bearer ${logInResult.accessToken}` },
-  });
-  const userInfo = await userInfoResponse.json();
-  return {
-    ...logInResult,
-    user: {
-      id: userInfo.id,
-      name: userInfo.name,
-      givenName: userInfo.given_name,
-      familyName: userInfo.family_name,
-      photoUrl: userInfo.picture,
-      email: userInfo.email,
-    },
-  };
+    // Web login only returns an accessToken so use it to fetch the same info as the native login
+    // does.
+    const userInfoResponse = await fetch('https://www.googleapis.com/userinfo/v2/me', {
+      headers: { Authorization: `Bearer ${logInResult.accessToken}` },
+    });
+    const userInfo = await userInfoResponse.json();
+    console.log('EXGoogle: ', logInResult, userInfo);
+    return {
+      type: 'success',
+      ...logInResult,
+      user: {
+        id: userInfo.id,
+        name: userInfo.name,
+        givenName: userInfo.given_name,
+        familyName: userInfo.family_name,
+        photoUrl: userInfo.picture,
+        email: userInfo.email,
+      },
+    };
+  } catch (error) {
+    if (error.message.toLowerCase().indexOf('user cancelled') > -1) {
+      return { type: 'cancel' };
+    }
+    throw error;
+  }
 }
 
 export async function logOutAsync({ accessToken, clientId }): Promise<any> {
