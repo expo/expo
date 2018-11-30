@@ -53,15 +53,8 @@ public abstract class ExpoApplication extends MultiDexApplication {
       Debug.waitForDebugger();
     }
 
-    if (!Constants.IS_DETACHED) {
+    if (!Constants.isStandaloneApp()) {
       KernelConstants.MAIN_ACTIVITY_CLASS = LauncherActivity.class;
-      if (Constants.isStandaloneApp()) {
-        try {
-          KernelConstants.MAIN_ACTIVITY_CLASS = Class.forName("host.exp.exponent.MainActivity");
-        } catch (ClassNotFoundException e)  {
-          // we can't do anything
-        }
-      }
     }
 
     KernelProvider.setFactory(new KernelProvider.KernelFactory() {
