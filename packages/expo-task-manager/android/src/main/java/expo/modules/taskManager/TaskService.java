@@ -39,6 +39,11 @@ import expo.modules.taskManager.exceptions.InvalidConsumerClassException;
 import expo.modules.taskManager.exceptions.TaskRegisteringFailedException;
 import expo.modules.taskManager.exceptions.TaskNotFoundException;
 
+// @tsapeta: TaskService is a funny kind of singleton module... because it's actually not a singleton :D
+// Since it would make too much troubles in order to get the singleton instance (from ModuleRegistryProvider)
+// in classes like TaskJobService and TaskBroadcastReceiver, almost all properties of TaskService are static.
+// Thanks to that, we can instantiate new TaskService in those classes, that has just its own context and all other resources are shared.
+
 public class TaskService implements SingletonModule, TaskServiceInterface {
   private static final String TAG = "TaskService";
   private static final String SHARED_PREFERENCES_NAME = "TaskManagerModule";
