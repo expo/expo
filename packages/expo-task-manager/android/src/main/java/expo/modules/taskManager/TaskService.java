@@ -23,8 +23,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.UUID;
 
 import expo.core.interfaces.SingletonModule;
@@ -197,7 +195,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
       if (appEvents.size() == 0) {
         sEvents.remove(appId);
 
-        // Invalidate app record but after 1 seconds delay so we can still take batched events.
+        // Invalidate app record but after 2 seconds delay so we can still take batched events.
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
           @Override
@@ -251,7 +249,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     String action = intent.getAction();
     Uri dataUri = intent.getData();
 
-    if (!action.equals(TaskBroadcastReceiver.INTENT_ACTION) || dataUri == null) {
+    if (!TaskBroadcastReceiver.INTENT_ACTION.equals(action) || dataUri == null) {
       return;
     }
 
@@ -457,7 +455,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
 
   private void maybeUpdateAppUrlForAppId(String appUrl, String appId) {
     SharedPreferences preferences = getSharedPreferences();
-    Map<String, Object> appConfig = preferences != null ? jsonToMap(preferences.getString(appId, ""), true) : null;
+    Map<String, Object> appConfig = preferences != null ? jsonToMap(preferences.getString(appId, "")) : null;
 
     if (appConfig != null && appConfig.size() > 0) {
       String oldAppUrl = (String) appConfig.get("appUrl");
@@ -479,7 +477,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     Map<String, ?> config = preferences.getAll();
 
     for (Map.Entry<String, ?> entry : config.entrySet()) {
-      Map<String, Object> appConfig = jsonToMap(entry.getValue().toString(), true);
+      Map<String, Object> appConfig = jsonToMap(entry.getValue().toString());
       Map<String, Object> tasksConfig = (HashMap<String, Object>) appConfig.get("tasks");
       String appUrl = (String) appConfig.get("appUrl");
 
@@ -508,6 +506,9 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     SharedPreferences preferences = getSharedPreferences();
     Map<String, TaskInterface> appRow = sTasksTable.get(appId);
 
+    if (preferences == null) {
+      return;
+    }
     if (appRow == null || appRow.size() == 0) {
       preferences.edit().remove(appId).apply();
       return;
@@ -518,7 +519,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     String appUrl = null;
 
     for (TaskInterface task : appRow.values()) {
-      Map<String, Object> taskConfig = exportTaskToHashmap(task);
+      Map<String, Object> taskConfig = exportTaskToMap(task);
       tasks.put(task.getName(), taskConfig);
       appUrl = task.getAppUrl();
     }
@@ -549,7 +550,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     return weakRef == null ? null : weakRef.get();
   }
 
-  private Map<String, Object> exportTaskToHashmap(TaskInterface task) {
+  private Map<String, Object> exportTaskToMap(TaskInterface task) {
     Map<String, Object> map = new HashMap<>();
     String consumerClassName = unversionedClassNameForClass(task.getConsumer().getClass());
 
@@ -574,7 +575,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
       return false;
     }
     if (appUrl == null) {
-      Log.e(TAG, "Cannot execute background task because application URL is invalid: " + appUrl);
+      Log.e(TAG, "Cannot execute background task because application URL is invalid");
       return false;
     }
 
@@ -617,7 +618,8 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
   }
 
   private void finishJobAfterTimeout(final JobService jobService, final JobParameters params, long timeout) {
-    new Timer().schedule(new TimerTask() {
+    Handler handler = new Handler();
+    handler.postDelayed(new Runnable() {
       @Override
       public void run() {
         jobService.jobFinished(params, false);
@@ -625,15 +627,15 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     }, timeout);
   }
 
-  public static Map<String, Object> jsonToMap(String jsonStr, boolean recursive) {
+  private static Map<String, Object> jsonToMap(String jsonStr) {
     try {
-      return jsonToMap(new JSONObject(jsonStr), recursive);
+      return jsonToMap(new JSONObject(jsonStr));
     } catch (JSONException e) {
       return new HashMap<>();
     }
   }
 
-  private static Map<String, Object> jsonToMap(JSONObject json, boolean recursive) {
+  private static Map<String, Object> jsonToMap(JSONObject json) {
     Map<String, Object> map = new HashMap<>();
 
     try {
@@ -641,11 +643,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
 
       while (keys.hasNext()) {
         String key = (String) keys.next();
-        Object value = json.get(key);
-
-        if (recursive) {
-          value = jsonObjectToObject(value, recursive);
-        }
+        Object value = jsonObjectToObject(json.get(key));
 
         map.put(key, value);
       }
@@ -655,19 +653,17 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     return map;
   }
 
-  private static List<Object> jsonToList(JSONArray json, boolean recursive) {
+  private static List<Object> jsonToList(JSONArray json) {
     List<Object> list = new ArrayList<>();
 
     try {
       for (int i = 0; i < json.length(); i++) {
         Object value = json.get(i);
 
-        if (recursive) {
-          if (value instanceof JSONArray) {
-            value = jsonToList((JSONArray) value, true);
-          } else if (value instanceof JSONObject) {
-            value = jsonToMap((JSONObject) value, true);
-          }
+        if (value instanceof JSONArray) {
+          value = jsonToList((JSONArray) value);
+        } else if (value instanceof JSONObject) {
+          value = jsonToMap((JSONObject) value);
         }
         list.add(value);
       }
@@ -677,12 +673,12 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     return list;
   }
 
-  private static Object jsonObjectToObject(Object json, boolean recursive) {
+  private static Object jsonObjectToObject(Object json) {
     if (json instanceof JSONObject) {
-      return jsonToMap((JSONObject) json, recursive);
+      return jsonToMap((JSONObject) json);
     }
     if (json instanceof JSONArray) {
-      return jsonToList((JSONArray) json, recursive);
+      return jsonToList((JSONArray) json);
     }
     return json;
   }

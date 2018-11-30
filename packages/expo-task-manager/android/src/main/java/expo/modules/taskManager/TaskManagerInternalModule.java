@@ -132,9 +132,9 @@ public class TaskManagerInternalModule implements InternalModule, ModuleRegistry
     return null;
   }
 
-  private void checkTaskService() throws Exception {
+  private void checkTaskService() throws IllegalStateException {
     if (mTaskService == null) {
-      throw new Exception("Unable to find TaskService singleton module in module registry.");
+      throw new IllegalStateException("Unable to find TaskService singleton module in module registry.");
     }
   }
 

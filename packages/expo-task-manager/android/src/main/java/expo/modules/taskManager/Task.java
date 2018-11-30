@@ -2,9 +2,6 @@ package expo.modules.taskManager;
 
 import android.os.Bundle;
 
-import org.json.JSONObject;
-
-import java.util.HashMap;
 import java.util.Map;
 
 import expo.interfaces.taskManager.TaskExecutionCallback;
@@ -51,13 +48,6 @@ public class Task implements TaskInterface {
 
   public Bundle getOptionsBundle() {
     return TaskManagerUtils.mapToBundle(mOptions);
-  }
-
-  public String getActionConfig() {
-    Map<String, String> data = new HashMap<>();
-    data.put("appId", "appId");
-    data.put("taskName", mName);
-    return new JSONObject(data).toString();
   }
 
   public void execute(Bundle data, Error error) {
