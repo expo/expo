@@ -2,31 +2,25 @@ import React from 'react';
 import * as ExpoTHREE from 'expo-three';
 import * as THREE from 'three';
 import { AR, Permissions } from 'expo';
-import { Animated, Slider, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Slider, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { TouchableView, PermissionsRequester } from './components';
+import { TouchableView, PermissionsRequester, Toast } from './components';
 
 ExpoTHREE.suppressExpoWarnings();
 
-const TOAST_FADE_DURATION = 1000;
-const TOAST_VISIBLE_DURATION = 2000;
-
 export default class App extends React.Component {
   static title = 'AR hit test screen (cube change position upon tap)';
-
-  componentWillUnmount() {
-    if (this.toastTimer) {
-      clearTimeout(this.toastTimer);
-    }
-  }
 
   state = {
     rotationSpeed: 0.01,
     cubeScale: 1.0,
     showPoints: false,
-    showToast: false,
-    toastOpacity: new Animated.Value(1.0),
   };
+
+  constructor(props) {
+    super(props);
+    this.toastRef = React.createRef();
+  }
 
   render() {
     return (
@@ -42,40 +36,15 @@ export default class App extends React.Component {
           />
         </TouchableView>
         {this.renderOptions()}
-        {this.renderToast()}
+        <Toast ref={this.toastRef} />
       </PermissionsRequester>
     );
   }
 
-  renderToast = () =>
-    this.state.showToast && (
-      <View style={styles.toastWrapper}>
-        <Animated.View style={[styles.toast, { opacity: this.state.opacityValue }]}>
-          <Text style={styles.toastText}>No points detected</Text>
-        </Animated.View>
-      </View>
-    );
-
   showNoPointsToast = () => {
-    if (!this.state.showToast) {
-      this.setState({ showToast: true });
+    if (this.toastRef.current) {
+      this.toastRef.current.show();
     }
-    Animated.timing(this.state.toastOpacity, {
-      toValue: 1.0,
-      duration: TOAST_FADE_DURATION,
-    }).start(() => this.hideToast());
-  };
-
-  hideToast = () => {
-    if (this.toastTimer) {
-      clearTimeout(this.toastTimer);
-    }
-    this.toastTimer = setTimeout(() => {
-      Animated.timing(this.state.toastOpacity, {
-        toValue: 0.0,
-        duration: TOAST_FADE_DURATION,
-      }).start(() => this.setState({ showToast: false }));
-    }, TOAST_VISIBLE_DURATION);
   };
 
   renderOptions = () => {
@@ -285,25 +254,5 @@ const styles = StyleSheet.create({
   buttonWrapper: {
     justifyContent: 'center',
     flexDirection: 'column',
-  },
-  toastWrapper: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    top: 0,
-    elevation: 999,
-    alignItems: 'center',
-    zIndex: 10000,
-    marginTop: 20,
-  },
-  toast: {
-    backgroundColor: 'white',
-    borderColor: 'black',
-    borderWidth: 2,
-    borderRadius: 20,
-  },
-  toastText: {
-    color: 'black',
-    padding: 10,
   },
 });

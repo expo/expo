@@ -1,4 +1,3 @@
-import '@expo/browser-polyfill';
 export declare const AR: any;
 export declare const Nodes: any;
 export declare const utils: any;

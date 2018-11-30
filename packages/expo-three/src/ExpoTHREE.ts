@@ -1,4 +1,3 @@
-import '@expo/browser-polyfill';
 
 export const AR = require('./AR');
 export const Nodes = require('./Nodes');

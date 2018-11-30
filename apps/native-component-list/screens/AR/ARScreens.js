@@ -5,6 +5,7 @@ import ARBackgroundScreenTHREE from './ARBackgroundScreenTHREE';
 import ARPlanesScreen from './ARPlanesScreen';
 import ARPointsScreen from './ARPointsScreen';
 import ARHitTestScreen from './ARHitTestScreen';
+import ARModelScreen from './ARModelScreen';
 
 const screens = {
   ARBackgroundScreen,
@@ -14,6 +15,7 @@ const screens = {
   ARPointsScreen,
   ARPlanesScreen,
   ARHitTestScreen,
+  ARModelScreen,
 };
 
 export default Object.entries(screens).reduce(

@@ -20,7 +20,10 @@
       "image": "./assets/icons/loadingIcon.png"
     },
     "packagerOpts": {
-      "config": "rn-cli.config.js"
+      "config": "rn-cli.config.js",
+      "assetExts": [
+        "dae"
+      ]
     },
     "facebookScheme": "fb1201211719949057",
     "facebookAppId": "1201211719949057",

@@ -19,7 +19,8 @@ async function parseBinAsync({ json, assetProvider }) {
     const assets = await resolveAsset(bin);
     const binLocalUrl = await stringFromAsset(assets[0]);
     const arrayBuffer = await loadBinAsync(binLocalUrl);
-    require('three/examples/js/loaders/BinaryLoader');
+    // TODO: bbarthec BinaryLoader is no longer available
+    // require('three/examples/js/loaders/BinaryLoader');
     const loader = new THREE.BinaryLoader();
     loader.setPath && loader.setPath(assetProvider);
     return new Promise((res, rej) => loader.parse(arrayBuffer, geometry => res({ geometry, materials }), '', //This is probs wrong

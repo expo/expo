@@ -26,7 +26,7 @@ export default class Planes extends THREE.Object3D {
     set planes(newPlanesData) {
         this.planesData = newPlanesData;
         const newPlanes = {};
-        newPlanesData.forEach(({ extent: { width, length }, transformWorld, id }) => {
+        newPlanesData.forEach(({ extent: { width, length }, worldTransform, id }) => {
             let planeObject = this.storedPlanes[id];
             if (planeObject) {
                 // plane already exists
@@ -49,7 +49,7 @@ export default class Planes extends THREE.Object3D {
             planeObject.planeMesh.geometry.width = width;
             // @ts-ignore
             planeObject.planeMesh.geometry.height = length;
-            planeObject.matrix.fromArray(transformWorld);
+            planeObject.matrix.fromArray(worldTransform);
             planeObject.matrix.decompose(planeObject.position, planeObject.quaternion, planeObject.scale);
         });
         // remove old planes from THREE

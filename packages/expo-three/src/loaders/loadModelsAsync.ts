@@ -17,7 +17,7 @@ function provideBundlingExtensionErrorMessage({ extension, funcName }) {
       }`;
 }
 
-async function loadFileAsync({ asset, extension, funcName }) {
+async function loadFileAsync({ asset, extension, funcName }: { asset?: string, extension: string, funcName: string }): Promise<string | undefined> {
   if (!asset) {
     console.error(`ExpoTHREE.${funcName}: Cannot parse a null asset`);
     return;
@@ -31,8 +31,6 @@ async function loadFileAsync({ asset, extension, funcName }) {
       funcName,
     });
     console.error(customErrorMessage, message);
-  } finally {
-    return uri;
   }
   if (uri == null || typeof uri !== 'string' || uri === '') {
     console.error(
@@ -45,7 +43,7 @@ async function loadFileAsync({ asset, extension, funcName }) {
       `ExpoTHREE.${funcName}: the \`asset\` provided doesn't have the correct extension of: .${extension}. URI: ${uri}`
     );
   }
-  return null;
+  return;
 }
 
 export async function loadTextureAsync({ asset }) {
@@ -129,7 +127,9 @@ export async function loadDaeAsync({ asset, onAssetRequested, onProgress }) {
     extension: 'dae',
     funcName: 'loadDaeAsync',
   });
-  if (!uri) return;
+  if (!uri) {
+    return;
+  }
 
   if (THREE.ColladaLoader == null) {
     require('three/examples/js/loaders/ColladaLoader');
@@ -137,7 +137,7 @@ export async function loadDaeAsync({ asset, onAssetRequested, onProgress }) {
 
   return new Promise((res, rej) =>
     new THREE.FileLoader().load(
-      uri,
+      uri!,
       text => {
         const loader = new THREE.ColladaLoader();
         // @ts-ignore

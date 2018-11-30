@@ -31,16 +31,13 @@ async function loadFileAsync({ asset, extension, funcName }) {
         });
         console.error(customErrorMessage, message);
     }
-    finally {
-        return uri;
-    }
     if (uri == null || typeof uri !== 'string' || uri === '') {
         console.error(`ExpoTHREE.${funcName}: Invalid \`localUri\` was retrieved from \`asset\` prop:`, uri);
     }
     if (!uri.match(`/\.${extension}$/i`)) {
         console.error(`ExpoTHREE.${funcName}: the \`asset\` provided doesn't have the correct extension of: .${extension}. URI: ${uri}`);
     }
-    return null;
+    return;
 }
 export async function loadTextureAsync({ asset }) {
     if (!asset) {
@@ -110,8 +107,9 @@ export async function loadDaeAsync({ asset, onAssetRequested, onProgress }) {
         extension: 'dae',
         funcName: 'loadDaeAsync',
     });
-    if (!uri)
+    if (!uri) {
         return;
+    }
     if (THREE.ColladaLoader == null) {
         require('three/examples/js/loaders/ColladaLoader');
     }

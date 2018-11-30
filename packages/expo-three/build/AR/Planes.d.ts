@@ -5,7 +5,7 @@ interface PlaneData {
         width: number;
         length: number;
     };
-    transformWorld: Matrix4x4;
+    worldTransform: Matrix4x4;
     id: number;
 }
 interface PlanesContainer {

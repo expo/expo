@@ -569,66 +569,65 @@ static GLfloat imagePlaneVerts[6] = { -2.0f, 0.0f, 0.0f, -2.0f, 2.0f, 2.0f };
   }
 }
 
-//- (NSString *)_depthDataQuality
-//{
-//  switch (self.session.currentFrame.capturedDepthData.depthDataQuality) {
-//    case AVDepthDataQualityLow:
-//      return @"AVDepthDataQualityLow";
-//    case AVDepthDataQualityHigh:
-//      return @"AVDepthDataQualityHigh";
-//    default:
-//      return @"";
-//  }
-//}
+- (NSString *)_depthDataQuality
+{
+  switch (self.session.currentFrame.capturedDepthData.depthDataQuality) {
+    case AVDepthDataQualityLow:
+      return @"AVDepthDataQualityLow";
+    case AVDepthDataQualityHigh:
+      return @"AVDepthDataQualityHigh";
+    default:
+      return @"";
+  }
+}
 
-//- (NSString *)_depthDataAccuracy
-//{
-//  switch (self.session.currentFrame.capturedDepthData.depthDataAccuracy) {
-//    case AVDepthDataAccuracyAbsolute:
-//      return @"AVDepthDataAccuracyAbsolute";
-//    case AVDepthDataAccuracyRelative:
-//      return @"AVDepthDataAccuracyRelative";
-//    default:
-//      return @"";
-//  }
-//}
+- (NSString *)_depthDataAccuracy
+{
+  switch (self.session.currentFrame.capturedDepthData.depthDataAccuracy) {
+    case AVDepthDataAccuracyAbsolute:
+      return @"AVDepthDataAccuracyAbsolute";
+    case AVDepthDataAccuracyRelative:
+      return @"AVDepthDataAccuracyRelative";
+    default:
+      return @"";
+  }
+}
 
-//- (NSDictionary *)_cameraCalibrationData
-//{
-//  if (@available(iOS 11.0, *)) {
-//    AVCameraCalibrationData *cameraCalibrationData = self.session.currentFrame.capturedDepthData.cameraCalibrationData;
-//
-//    if (cameraCalibrationData) {
-//      return @{
-//               @"intrinsicMatrix": [[EXAR class] encodeMatrixFloat3x3:cameraCalibrationData.intrinsicMatrix],
-//               @"intrinsicMatrixReferenceDimensions": [EXARSessionManager nsDictionaryForSize:cameraCalibrationData.intrinsicMatrixReferenceDimensions],
-//               @"extrinsicMatrix": [[EXAR class] encodeMatrixFloat4x3:cameraCalibrationData.extrinsicMatrix],
-//               @"pixelSize": [NSNumber numberWithFloat:cameraCalibrationData.pixelSize],
-//               @"lensDistortionLookupTable": cameraCalibrationData.lensDistortionLookupTable,
-//               @"inverseLensDistortionLookupTable": cameraCalibrationData.inverseLensDistortionLookupTable,
-//               @"lensDistortionCenter": [EXARSessionManager nsDictionaryForPoint:cameraCalibrationData.lensDistortionCenter]
-//               };
-//    }
-//  }
-//
-//  return @{};
-//}
+- (NSDictionary *)_cameraCalibrationData
+{
+  if (@available(iOS 11.0, *)) {
+    AVCameraCalibrationData *cameraCalibrationData = self.session.currentFrame.capturedDepthData.cameraCalibrationData;
+
+    if (cameraCalibrationData) {
+      return @{
+               @"intrinsicMatrix": [[EXARModule class] encodeMatrixFloat3x3:cameraCalibrationData.intrinsicMatrix],
+               @"intrinsicMatrixReferenceDimensions": [[EXARModule class] encodeCGSize:cameraCalibrationData.intrinsicMatrixReferenceDimensions],
+               @"extrinsicMatrix": [[EXARModule class] encodeMatrixFloat4x3:cameraCalibrationData.extrinsicMatrix],
+               @"pixelSize": [NSNumber numberWithFloat:cameraCalibrationData.pixelSize],
+               @"lensDistortionLookupTable": cameraCalibrationData.lensDistortionLookupTable,
+               @"inverseLensDistortionLookupTable": cameraCalibrationData.inverseLensDistortionLookupTable,
+               @"lensDistortionCenter": [[EXARModule class] encodeCGPoint:cameraCalibrationData.lensDistortionCenter]
+               };
+    }
+  }
+
+  return @{};
+}
 
 - (NSDictionary *)_capturedDepthData
 {
   if (@available(iOS 11.0, *)) {
-    return @{};
-    //    AVDepthData *capturedDepthData = self.session.currentFrame.capturedDepthData;
-    //    return @{
-    //             @"timestamp": [NSNumber numberWithDouble: self.session.currentFrame.capturedDepthDataTimestamp],
-    //             @"depthDataQuality": [self _depthDataQuality],
-    //             @"depthDataAccuracy": [self _depthDataAccuracy],
-    //             @"depthDataFiltered": @(capturedDepthData.depthDataFiltered),
-    //             @"cameraCalibrationData": [self _cameraCalibrationData]
-    //             };
-  } else {
-    return @{};
+    AVDepthData *capturedDepthData = self.session.currentFrame.capturedDepthData;
+    return @{
+             @"timestamp": [NSNumber numberWithDouble: self.session.currentFrame.capturedDepthDataTimestamp],
+             @"depthDataQuality": [self _depthDataQuality],
+             @"depthDataAccuracy": [self _depthDataAccuracy],
+             @"depthDataFiltered": @(capturedDepthData.depthDataFiltered),
+             @"cameraCalibrationData": [self _cameraCalibrationData]
+             };
   }
+  
+  return @{};
 }
 
 - (NSDictionary *)getCurrentFrameWithAttributes:(NSDictionary *)attributes

@@ -30,7 +30,8 @@ async function parseBinAsync({ json, assetProvider }) {
   const binLocalUrl = await stringFromAsset(assets[0]);
   const arrayBuffer = await loadBinAsync(binLocalUrl);
 
-  require('three/examples/js/loaders/BinaryLoader');
+  // TODO: bbarthec BinaryLoader is no longer available
+  // require('three/examples/js/loaders/BinaryLoader');
   const loader = new THREE.BinaryLoader() as any;
   loader.setPath && loader.setPath(assetProvider);
   return new Promise((res, rej) =>
