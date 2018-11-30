@@ -6,7 +6,7 @@ import GoogleSignInButton from '../components/GoogleSignInButton';
 
 export default class GoogleSignInScreen extends React.Component {
   static navigationOptions = {
-    title: 'Google Sign-In',
+    title: 'Native Google Sign-In',
   };
 
   state = { user: null };

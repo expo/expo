@@ -50,7 +50,7 @@ export async function logInAsync(config: LogInConfig): Promise<LogInResult> {
   if (behavior !== 'web') {
     if (Constants.appOwnership === 'expo') {
       console.warn(
-        'Native Google Sign-In is only available in ExpoKit projects! Falling back to `web` behavior'
+        'Native Google Sign-In is only available in ExpoKit projects. Falling back to `web` behavior'
       );
     } else {
       console.warn(

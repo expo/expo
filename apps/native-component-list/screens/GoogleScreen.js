@@ -1,6 +1,7 @@
-import React from 'react';
-import { Alert, ScrollView, View } from 'react-native';
 import { Google } from 'expo';
+import React from 'react';
+import { Alert, View } from 'react-native';
+
 import Button from '../components/Button';
 
 export default class GoogleLoginScreen extends React.Component {
@@ -19,13 +20,7 @@ export default class GoogleLoginScreen extends React.Component {
   _testGoogleLogin = async () => {
     try {
       const result = await Google.logInAsync({
-        androidStandaloneAppClientId:
-          '603386649315-87mbvgc739sec2gjtptl701ha62pi98p.apps.googleusercontent.com',
-        androidClientId: '603386649315-9rbv8vmv2vvftetfbvlrbufcps1fajqf.apps.googleusercontent.com',
-        iosStandaloneAppClientId:
-          '603386649315-1b2o2gole94qc6h4prj6lvoiueq83se4.apps.googleusercontent.com',
-        iosClientId: '603386649315-vp4revvrcgrcjme51ebuhbkbspl048l9.apps.googleusercontent.com',
-        scopes: ['profile', 'email'],
+        clientId: '603386649315-vp4revvrcgrcjme51ebuhbkbspl048l9.apps.googleusercontent.com',
       });
 
       const { type } = result;
