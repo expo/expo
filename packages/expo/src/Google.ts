@@ -29,21 +29,6 @@ type LogInResult =
       };
     };
 
-/*
- * In the past, this module enabled a user to authenticate with either `native` or `web` behaviors.
- * Because of recent changes with the offical GoogleSignIn library, we can no longer use it in a sandboxed enviroment.
- * Specifically, the lib will throw a native error if the URL Schemes do not contain a scheme that matches the Firebase `REVERSE_CLIENT_ID`.
- *
- * Technically you could add this via the app.json.
- * We recommend you use the new `expo-google-sign-in` module for native authentication, in standalone or ExpoKit.
- *
- * The web behavior of Google Sign-In is pretty sophisticated and should be enough for a good UX.
- *
- * We've also extracted Native OAuth into a lib expo-app-auth.
- * Expo.Google is just a simple wrapper around it.
- * For more control like refreshing tokens, we recommend you extend AppAuth yourself.
- */
-
 export async function logInAsync(config: LogInConfig): Promise<LogInResult> {
   const { behavior = 'web' } = config;
 
