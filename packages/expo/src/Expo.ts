@@ -76,7 +76,7 @@ import * as SecureStore from './SecureStore';
 export { SecureStore };
 import * as Speech from './Speech';
 export { Speech };
-import * as StoreReview from './StoreReview';
+import * as StoreReview from './StoreReview/StoreReview';
 export { StoreReview };
 export { default as Svg } from './Svg';
 import * as Updates from './Updates';
