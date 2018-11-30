@@ -28,6 +28,20 @@ interface HeadingData {
     magHeading: number;
     accuracy: number;
 }
+interface GeocodedLocation {
+    latitude: number;
+    longitude: number;
+    altitude?: number;
+    accuracy?: number;
+}
+interface Address {
+    city: string;
+    street: string;
+    region: string;
+    country: string;
+    postalCode: string;
+    name: string;
+}
 interface LocationTaskOptions {
     accuracy?: Accuracy;
     showsBackgroundLocationIndicator?: boolean;
@@ -64,18 +78,18 @@ export declare function getProviderStatusAsync(): Promise<ProviderStatus>;
 export declare function getCurrentPositionAsync(options?: LocationOptions): Promise<LocationData>;
 export declare function getHeadingAsync(): Promise<HeadingData>;
 export declare function watchHeadingAsync(callback: HeadingCallback): Promise<object>;
-export declare function geocodeAsync(address: string): Promise<any>;
+export declare function geocodeAsync(address: string): Promise<Array<GeocodedLocation>>;
 export declare function reverseGeocodeAsync(location: {
     latitude: number;
     longitude: number;
-}): Promise<any>;
+}): Promise<Array<Address>>;
 export declare function setApiKey(apiKey: string): void;
 export declare function watchPositionAsync(options: LocationOptions, callback: LocationCallback): Promise<{
     remove(): void;
 }>;
-export declare function requestPermissionsAsync(): Promise<any>;
+export declare function requestPermissionsAsync(): Promise<null>;
 export declare function hasServicesEnabledAsync(): Promise<boolean>;
-export declare function startLocationUpdatesAsync(taskName: string, options?: LocationTaskOptions): Promise<void>;
+export declare function startLocationUpdatesAsync(taskName: string, options?: LocationTaskOptions): Promise<null>;
 export declare function stopLocationUpdatesAsync(taskName: string): Promise<null>;
 export declare function hasStartedLocationUpdatesAsync(taskName: string): Promise<null>;
 export declare function startGeofencingAsync(taskName: string, regions?: Array<Region>): Promise<null>;

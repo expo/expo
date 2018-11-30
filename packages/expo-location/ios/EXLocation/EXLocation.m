@@ -319,7 +319,7 @@ EX_EXPORT_METHOD_AS(requestPermissionsAsync,
                         if (!result) {
                           return reject(@"E_LOCATION_UNAUTHORIZED", @"Not authorized to use location services", nil);
                         }
-                        resolve(nil);
+                        resolve([NSNull null]);
                       }
                     withRejecter:reject];
 }

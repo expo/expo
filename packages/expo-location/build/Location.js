@@ -9,6 +9,7 @@ const LocationEventEmitter = new EventEmitter(Location);
 ;
 ;
 ;
+;
 export var Accuracy;
 (function (Accuracy) {
     Accuracy[Accuracy["Lowest"] = 1] = "Lowest";

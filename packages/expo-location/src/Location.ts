@@ -38,6 +38,13 @@ interface HeadingData {
   accuracy: number,
 };
 
+interface GeocodedLocation {
+  latitude: number,
+  longitude: number,
+  altitude?: number,
+  accuracy?: number,
+};
+
 interface Address {
   city: string,
   street: string,
@@ -216,7 +223,7 @@ function _maybeInitializeEmitterSubscription() {
   }
 }
 
-export async function geocodeAsync(address: string) {
+export async function geocodeAsync(address: string): Promise<Array<GeocodedLocation>> {
   return Location.geocodeAsync(address).catch(error => {
     const platformUsesGoogleMaps = Platform.OS === 'android' || Platform.OS === 'web';
 
@@ -230,7 +237,7 @@ export async function geocodeAsync(address: string) {
   });
 }
 
-export async function reverseGeocodeAsync(location: { latitude: number, longitude: number }) {
+export async function reverseGeocodeAsync(location: { latitude: number, longitude: number }): Promise<Array<Address>> {
   if (typeof location.latitude !== 'number' || typeof location.longitude !== 'number') {
     throw new TypeError(
       'Location should be an object with number properties `latitude` and `longitude`.'
@@ -253,7 +260,7 @@ export function setApiKey(apiKey: string) {
   googleApiKey = apiKey;
 }
 
-async function _googleGeocodeAsync(address: string) {
+async function _googleGeocodeAsync(address: string): Promise<Array<GeocodedLocation>> {
   const result = await fetch(`${googleApiUrl}?key=${googleApiKey}&address=${encodeURI(address)}`);
   const resultObject = await result.json();
 
@@ -270,7 +277,7 @@ async function _googleGeocodeAsync(address: string) {
   });
 }
 
-async function _googleReverseGeocodeAsync(options: { latitude: number, longitude: number }) {
+async function _googleReverseGeocodeAsync(options: { latitude: number, longitude: number }): Promise<Array<Address>> {
   const result = await fetch(
     `${googleApiUrl}?key=${googleApiKey}&latlng=${options.latitude},${options.longitude}`
   );
@@ -385,7 +392,7 @@ async function _getCurrentPositionAsyncWrapper(
   }
 }
 
-export async function requestPermissionsAsync() {
+export async function requestPermissionsAsync(): Promise<null> {
   return await Location.requestPermissionsAsync();
 }
 
@@ -404,7 +411,7 @@ function _validateTaskName(taskName: string) {
 export async function startLocationUpdatesAsync(
   taskName: string,
   options: LocationTaskOptions = { accuracy: Accuracy.Balanced }
-): Promise<void> {
+): Promise<null> {
   _validateTaskName(taskName);
   return Location.startLocationUpdatesAsync(taskName, options);
 }
