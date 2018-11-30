@@ -1,5 +1,3 @@
-// @flow
-
 import { Platform } from 'react-native';
 import { NativeModulesProxy } from 'expo-core';
 const { ExponentPrint } = NativeModulesProxy;
@@ -38,9 +36,9 @@ type FilePrintResult = {
   numberOfPages: number,
 };
 
-export const Orientation: OrientationConstant = ExponentPrint.Orientation;
+const Orientation: OrientationConstant = ExponentPrint.Orientation
 
-export async function printAsync(options: PrintOptions): Promise<void> {
+async function printAsync(options: PrintOptions): Promise<void> {
   if (!options.uri && !options.html && (Platform.OS === 'ios' && !options.markupFormatterIOS)) {
     throw new Error('Must provide either `html` or `uri` to print');
   }
@@ -50,7 +48,7 @@ export async function printAsync(options: PrintOptions): Promise<void> {
   return ExponentPrint.print(options);
 }
 
-export async function selectPrinterAsync(): Promise<SelectResult> {
+async function selectPrinterAsync(): Promise<SelectResult> {
   if (Platform.OS === 'ios') {
     return ExponentPrint.selectPrinter();
   } else {
@@ -58,6 +56,13 @@ export async function selectPrinterAsync(): Promise<SelectResult> {
   }
 }
 
-export async function printToFileAsync(options: FilePrintOptions = {}): Promise<FilePrintResult> {
+async function printToFileAsync(options: FilePrintOptions = {}): Promise<FilePrintResult> {
   return ExponentPrint.printToFileAsync(options);
 }
+
+export default {
+  Orientation,
+  printAsync,
+  selectPrinterAsync,
+  printToFileAsync,
+};
