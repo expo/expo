@@ -4,6 +4,10 @@
 #import "ExpoKit.h"
 #import "EXViewController.h"
 
+#if __has_include(<EXAuth/EXAuth.h>)
+#import <EXAuth/EXAuth.h>
+#endif
+
 #if __has_include(<GoogleSignIn/GoogleSignIn.h>)
 #import <GoogleSignIn/GoogleSignIn.h>
 #endif
@@ -39,6 +43,11 @@
   if ([[GIDSignIn sharedInstance] handleURL:url
                           sourceApplication:sourceApplication
                                  annotation:annotation]) {
+    return YES;
+  }
+#endif
+#if __has_include(<EXAuth/EXAuth.h>)
+  if ([[EXAuth instance] application:app openURL:url options:options]) {
     return YES;
   }
 #endif

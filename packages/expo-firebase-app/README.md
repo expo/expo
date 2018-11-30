@@ -1,5 +1,8 @@
 # expo-firebase-app
 
+> expo-firebase is still in RC and therefore subject to breaking changings. Be sure to run `yarn upgrade` and `cd ios; pod install` when upgrading.
+
+
 `expo-firebase-app` provides the base library for interfacing with native Firebase.
 
 [**Full documentation**](https://rnfirebase.io/docs/master/core/reference/core)
@@ -100,6 +103,8 @@ Expo Firebase is very similar to the Firebase Web SDK.
 That's all! 💙
 
 ### Caveats
+
+Google Sign-In will crash automatically if used in the client, as it now requires the `REVERSE_CLIENT_ID` to be located in the `info.plist`
 
 When using a native Firebase app in a dynamic way, you will need to consider that `offline persistence`, and `Auth Tokens` may not behave as expected.
 

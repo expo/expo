@@ -5,7 +5,7 @@ buildscript {
   }
 
   dependencies {
-    classpath 'com.android.tools.build:gradle:3.1.2'
+    classpath 'com.android.tools.build:gradle:3.2.1'
   }
 }
 
@@ -61,6 +61,6 @@ dependencies {
   expendency 'expo-font-interface'
   expendency 'expo-permissions-interface'
   expendency 'expo-image-loader-interface'
-  provided 'com.facebook.react:react-native:+'
+  compileOnly 'com.facebook.react:react-native:+'
 }
   

@@ -1,9 +1,4 @@
-//
-//  EXFirebaseDatabaseEvents.h
-//  EXFirebaseDatabase
-//
-//  Created by Evan Bacon on 10/6/18.
-//
+// Copyright 2018-present 650 Industries. All rights reserved.
 
 #ifndef EXFirebaseDatabaseEvents_h
 #define EXFirebaseDatabaseEvents_h

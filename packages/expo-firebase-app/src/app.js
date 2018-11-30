@@ -3,18 +3,17 @@
  */
 import { NativeModulesProxy } from 'expo-core';
 
-import APPS from './utils/apps';
-import { SharedEventEmitter } from './utils/events';
+import SharedEventEmitter from './utils/SharedEventEmitter';
 import INTERNALS from './utils/internals';
-import { isObject } from './utils/index';
 
-import Utils, { NAMESPACE as UtilsNamespace } from './utils';
+import { isObject } from './utils';
 
 import type { FirebaseOptions } from './types';
+import { createAppModule } from './utils/createAppModule';
+
+import { FirebaseNamespaces, DEFAULT_APP_NAME } from './constants';
 
 const { ExpoFirebaseApp: FirebaseCoreModule } = NativeModulesProxy;
-
-import { FirebaseNamespaces } from './constants';
 export default class App {
   _extendedProps: { [string]: boolean };
   _initialized: boolean = false;
@@ -37,7 +36,7 @@ export default class App {
     }
 
     Object.keys(FirebaseNamespaces).map(namespace => {
-      this[namespace] = APPS.appModule(this, namespace);
+      this[namespace] = createAppModule(this, namespace);
     });
 
     this._extendedProps = {};
@@ -92,9 +91,9 @@ export default class App {
    * @return {Promise}
    */
   delete() {
-    if (this._name === APPS.DEFAULT_APP_NAME && this._nativeInitialized) {
+    if (this._name === DEFAULT_APP_NAME && this._nativeInitialized) {
       return Promise.reject(
-        new Error('Unable to delete the default native firebase app instance.'),
+        new Error('Unable to delete the default native firebase app instance.')
       );
     }
 

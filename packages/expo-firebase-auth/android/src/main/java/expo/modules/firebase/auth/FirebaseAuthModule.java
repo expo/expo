@@ -40,6 +40,7 @@ import com.google.firebase.auth.UserProfileChangeRequest;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -63,8 +64,8 @@ class FirebaseAuthModule extends ExportedModule implements ModuleRegistryConsume
   private String mLastPhoneNumber;
   private PhoneAuthProvider.ForceResendingToken mForceResendingToken;
   private PhoneAuthCredential mCredential;
-  private HashMap<String, FirebaseAuth.AuthStateListener> mAuthListeners = new HashMap<>();
-  private HashMap<String, FirebaseAuth.IdTokenListener> mIdTokenListeners = new HashMap<>();
+  private static HashMap<String, FirebaseAuth.AuthStateListener> mAuthListeners = new HashMap<>();
+  private static HashMap<String, FirebaseAuth.IdTokenListener> mIdTokenListeners = new HashMap<>();
 
   private ModuleRegistry mModuleRegistry;
 
@@ -1778,6 +1779,35 @@ class FirebaseAuthModule extends ExportedModule implements ModuleRegistryConsume
     return output;
   }
 
+  // TODO: Bacon: Implemenet this (onCatalystInstanceDestroy)
+  public void onInstanceDestroy() {
+    Log.d(TAG, "instance-destroyed");
+     Iterator authListenerIterator = mAuthListeners
+      .entrySet()
+      .iterator();
+     while (authListenerIterator.hasNext()) {
+      Map.Entry pair = (Map.Entry) authListenerIterator.next();
+      String appName = (String) pair.getKey();
+      FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+      FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+      FirebaseAuth.AuthStateListener mAuthListener = (FirebaseAuth.AuthStateListener) pair.getValue();
+      firebaseAuth.removeAuthStateListener(mAuthListener);
+      authListenerIterator.remove();
+    }
+     Iterator idTokenListenerIterator = mIdTokenListeners
+      .entrySet()
+      .iterator();
+     while (idTokenListenerIterator.hasNext()) {
+      Map.Entry pair = (Map.Entry) idTokenListenerIterator.next();
+      String appName = (String) pair.getKey();
+      FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+      FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+      FirebaseAuth.IdTokenListener mAuthListener = (FirebaseAuth.IdTokenListener) pair.getValue();
+      firebaseAuth.removeIdTokenListener(mAuthListener);
+      idTokenListenerIterator.remove();
+    }
+  }
+
   /**
    * firebaseUserToMap
    *
@@ -1887,17 +1917,25 @@ class FirebaseAuthModule extends ExportedModule implements ModuleRegistryConsume
 
     List<FirebaseApp> firebaseAppList = FirebaseApp.getApps(getApplicationContext());
     final Map<String, Object> appLanguage = new HashMap<>();
+    final Map<String, Object> appUser = new HashMap<>();
 
     for (FirebaseApp app : firebaseAppList) {
       String appName = app.getName();
 
       FirebaseApp instance = FirebaseApp.getInstance(appName);
       FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(instance);
+      FirebaseUser user = firebaseAuth.getCurrentUser();
 
       appLanguage.put(appName, firebaseAuth.getLanguageCode());
+
+      if (user != null) {
+        appUser.put(appName, firebaseUserToMap(user));
+      }
     }
 
     constants.put("APP_LANGUAGE", appLanguage);
+    constants.put("APP_USER", appUser);
+
     return constants;
   }
 }

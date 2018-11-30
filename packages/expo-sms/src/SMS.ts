@@ -1,9 +1,8 @@
-import { NativeModulesProxy } from 'expo-core';
-
-const ExpoSMS = NativeModulesProxy.ExpoSMS;
+import { Platform } from 'expo-core';
+import ExpoSMS from './ExpoSMS';
 
 type SMSResponse = {
-  result: 'sent' | 'cancelled',
+  result: 'sent' | 'cancelled';
 };
 
 export async function sendSMSAsync(
@@ -11,6 +10,9 @@ export async function sendSMSAsync(
   message: string
 ): Promise<SMSResponse> {
   const finalAddresses = Array.isArray(addresses) ? addresses : [addresses];
+  if (!ExpoSMS.sendSMSAsync) {
+    throw new Error(`SMS.sendSMSAsync is not supported on ${Platform.OS}`);
+  }
   return ExpoSMS.sendSMSAsync(finalAddresses, message);
 }
 

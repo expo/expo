@@ -37,13 +37,8 @@ class FirebaseRemoteConfigModule extends ExportedModule implements ModuleRegistr
   private static final String NUMBER_VALUE = "numberValue";
   private static final String SOURCE = "source";
 
-  private Context mContext;
-
   FirebaseRemoteConfigModule(Context context) {
     super(context);
-    //TODO: Bacon: Can't we get this some other way?
-    mContext = context;
-    Log.d(TAG, "New instance");
   }
 
   @Override

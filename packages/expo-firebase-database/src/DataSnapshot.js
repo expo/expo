@@ -3,7 +3,8 @@
  * DataSnapshot representation wrapper
  */
 import { utils } from 'expo-firebase-app';
-import type Reference from './Reference';
+// import type Reference from './Reference';
+type Reference = object;
 const { isObject, deepGet, deepExists } = utils;
 
 /**

@@ -1,5 +1,7 @@
 # expo-firebase-remote-config
 
+> expo-firebase is still in RC and therefore subject to breaking changings. Be sure to run `yarn upgrade` and `cd ios; pod install` when upgrading.
+
 `expo-firebase-remote-config` enables you to configure your app based on user segmentation.
 
 [**Full documentation**](https://rnfirebase.io/docs/master/config/reference/config)
@@ -91,8 +93,7 @@ You could also choose install this module manually.
 import React from 'react';
 import { View } from 'react-native';
 import firebase from 'expo-firebase-app';
-// Include the module before using it.
-import 'expo-firebase-remote-config';
+
 // API can be accessed with: firebase.config();
 
 export default class DemoView extends React.Component {

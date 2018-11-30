@@ -9,6 +9,7 @@ import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
 import expo.adapters.react.ModuleRegistryAdapter;
 import expo.adapters.react.ReactAdapterPackage;
+import expo.adapters.react.ReactModuleRegistryProvider;
 import expo.core.ModuleRegistryProvider;
 import expo.core.interfaces.Package;
 import expo.modules.payments.stripe.StripePackage;
@@ -18,7 +19,7 @@ import java.util.List;
 
 public class MainApplication extends Application implements ReactApplication {
 
-    private final ModuleRegistryProvider mModuleRegistryProvider = new ModuleRegistryProvider(Arrays.<Package>asList(
+    private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(Arrays.<Package>asList(
             new ReactAdapterPackage(),
             new StripePackage()
     ));

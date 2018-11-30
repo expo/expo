@@ -1,4 +1,5 @@
 // @flow
+import invariant from 'invariant';
 
 type NativeAndroidChannelGroup = {|
   groupId: string,
@@ -24,11 +25,8 @@ export default class AndroidChannelGroup {
   }
 
   build(): NativeAndroidChannelGroup {
-    if (!this._groupId) {
-      throw new Error('AndroidChannelGroup: Missing required `groupId` property');
-    } else if (!this._name) {
-      throw new Error('AndroidChannelGroup: Missing required `name` property');
-    }
+    invariant(this._groupId, 'AndroidChannelGroup: Missing required `groupId` property');
+    invariant(this._name, 'AndroidChannelGroup: Missing required `name` property');
 
     return {
       groupId: this._groupId,

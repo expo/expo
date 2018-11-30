@@ -1,12 +1,12 @@
 // @flow
 import { NativeModulesProxy, Platform } from 'expo-core';
+
 import INTERNALS from './internals';
 import ModuleBase from './ModuleBase';
-import registerModule from './registerModule';
-
-const isIOS = Platform.OS === 'ios';
 
 import type App from '../app';
+
+const isIOS = Platform.OS === 'ios';
 
 const { ExpoFirebaseApp } = NativeModulesProxy;
 
@@ -23,7 +23,7 @@ export const NAMESPACE = 'utils';
 
 export const statics = {};
 
-export default class ExpoFirebaseUtils extends ModuleBase {
+export class ExpoFirebaseUtils extends ModuleBase {
   static namespace = NAMESPACE;
   static moduleName = MODULE_NAME;
   static statics = statics;
@@ -66,7 +66,7 @@ export default class ExpoFirebaseUtils extends ModuleBase {
 
   getPlayServicesStatus(): Promise<GoogleApiAvailabilityType | null> {
     if (isIOS) return Promise.resolve(null);
-    return FirebaseCoreModule.getPlayServicesStatus();
+    return ExpoFirebaseApp.getPlayServicesStatus();
   }
 
   promptForPlayServices() {
@@ -126,4 +126,4 @@ export default class ExpoFirebaseUtils extends ModuleBase {
   }
 }
 
-registerModule(ExpoFirebaseUtils);
+export default ExpoFirebaseUtils;

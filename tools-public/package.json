@@ -7,6 +7,12 @@
   "scripts": {
     "test": "jest"
   },
+  "bin": {
+    "generate-dynamic-macros": "./generate-dynamic-macros-cli.js",
+    "cleanup-dynamic-macros": "./cleanup-dynamic-macros.js",
+    "run-fabric-ios.js": "./run-fabric-ios.js",
+    "generate-files-ios": "./generate-files-ios.js"
+  },
   "dependencies": {
     "@ccheever/crayon": "^5.0.0",
     "@expo/bunyan": "^1.8.10",

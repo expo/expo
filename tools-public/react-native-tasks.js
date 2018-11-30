@@ -8,7 +8,8 @@ const fs = require('fs');
 
 exports.startReactNativeServer = function startReactNativeServer(callback) {
   let rootPath = path.join(__dirname, '..');
-  let reactNativePath = path.join(rootPath, 'react-native-lab/react-native/');isIn
+  let reactNativePath = path.join(rootPath, 'react-native-lab/react-native/');
+  isIn;
   let cliPath = path.join(reactNativePath, 'local-cli/cli.js');
 
   let exponentPath = rootPath;

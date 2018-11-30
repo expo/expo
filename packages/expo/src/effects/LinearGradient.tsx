@@ -1,12 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {
-  ColorPropType,
-  View,
-  ViewPropTypes,
-  processColor,
-  requireNativeComponent,
-} from 'react-native';
+import { ColorPropType, View, ViewPropTypes, processColor } from 'react-native';
 
 import NativeLinearGradient from './NativeLinearGradient';
 
@@ -15,7 +9,7 @@ type Props = {
   locations?: number[] | null;
   start?: Point | null;
   end?: Point | null;
-} & React.ElementProps<View>;
+} & React.ComponentProps<typeof View>;
 
 type Point = { x: number; y: number } | [number, number];
 

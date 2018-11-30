@@ -1,8 +1,11 @@
 // @flow
 
 import invariant from 'invariant';
+import { Platform } from 'expo-core';
+
 import ExpoFontLoader from './ExpoFontLoader';
 
+const isWeb = Platform.OS === 'web';
 const { Asset } = requireAsset();
 const { Constants } = requireConstants();
 
@@ -71,16 +74,10 @@ export function isLoading(name: string): boolean {
 }
 
 export async function loadAsync(
-  nameOrMap: string | { [string]: FontSource } | Array<{ [string]: FontSource }>,
+  nameOrMap: string | { [string]: FontSource },
   uriOrModuleOrAsset?: FontSource
 ): Promise<void> {
-  if (Array.isArray(nameOrMap)) {
-    console.warn(
-      `Passing in an array to Font.loadAsync like Font.loadAsync([fontMap1, fontMap2, fontMap3]) is deprecated and will be removed in SDK 25. Instead, pass in a single font map. The object spread syntax may help with this: Font.loadAsync({ ...fontMap1, ...fontMap2, ...fontMap3 })`
-    );
-    await Promise.all(nameOrMap.map(loadAsync));
-    return;
-  } else if (typeof nameOrMap === 'object') {
+  if (typeof nameOrMap === 'object') {
     const fontMap = nameOrMap;
     const names = Object.keys(fontMap);
     await Promise.all(names.map(name => loadAsync(name, fontMap[name])));
@@ -117,7 +114,7 @@ export async function loadAsync(
 }
 
 function _getAssetForSource(uriOrModuleOrAsset: FontSource): Asset {
-  if (typeof uriOrModuleOrAsset === 'string') {
+  if (!isWeb && typeof uriOrModuleOrAsset === 'string') {
     // TODO(nikki): need to implement Asset.fromUri(...)
     // asset = Asset.fromUri(uriOrModuleOrAsset);
     throw new Error(
@@ -125,7 +122,7 @@ function _getAssetForSource(uriOrModuleOrAsset: FontSource): Asset {
     );
   }
 
-  if (typeof uriOrModuleOrAsset === 'number') {
+  if (isWeb || typeof uriOrModuleOrAsset === 'number') {
     return Asset.fromModule(uriOrModuleOrAsset);
   }
 
@@ -141,5 +138,8 @@ async function _loadSingleFontAsync(name: string, asset: Asset): Promise<void> {
 }
 
 function _getNativeFontName(name: string): string {
+  if (isWeb) {
+    return name;
+  }
   return `${Constants.sessionId}-${name}`;
 }

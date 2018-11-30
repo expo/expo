@@ -2,7 +2,7 @@ import { Font } from 'expo-font';
 import * as React from 'react';
 import { AppRegistry, StyleSheet } from 'react-native';
 
-import Notifications from '../Notifications';
+import Notifications from '../Notifications/Notifications';
 import RootErrorBoundary from './RootErrorBoundary';
 
 type InitialProps = {
@@ -45,5 +45,6 @@ function wrapWithExpoRoot<P extends InitialProps>(
 export default function registerRootComponent<P extends InitialProps>(
   component: React.ComponentClass<P>
 ): void {
+  // @ts-ignore: TypeScript says ComponentClass<P> does not satisfy ComponentClass<any>
   AppRegistry.registerComponent('main', () => wrapWithExpoRoot(component));
 }

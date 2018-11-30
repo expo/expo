@@ -18,6 +18,7 @@ if (typeof Constants.manifest.env === 'object') {
 export { AdMobBanner, AdMobInterstitial, AdMobRewarded, PublisherBanner } from 'expo-ads-admob';
 export { Segment } from 'expo-analytics-segment';
 export { Asset } from 'expo-asset';
+export { AppAuth } from 'expo-app-auth';
 export { BackgroundFetch } from 'expo-background-fetch';
 export { BarCodeScanner } from 'expo-barcode-scanner';
 export { Camera } from 'expo-camera';
@@ -69,9 +70,9 @@ import * as IntentLauncherAndroid from './IntentLauncherAndroid';
 export { IntentLauncherAndroid };
 export { default as KeepAwake } from './KeepAwake';
 export { default as Linking } from './Linking';
-import * as MailComposer from './MailComposer';
+import * as MailComposer from './MailComposer/MailComposer';
 export { MailComposer };
-export { default as Notifications } from './Notifications';
+export { default as Notifications } from './Notifications/Notifications';
 export { default as SQLite } from './SQLite';
 import * as ScreenOrientation from './ScreenOrientation';
 export { ScreenOrientation };
@@ -79,7 +80,7 @@ import * as SecureStore from './SecureStore';
 export { SecureStore };
 import * as Speech from './Speech';
 export { Speech };
-import * as StoreReview from './StoreReview';
+import * as StoreReview from './StoreReview/StoreReview';
 export { StoreReview };
 export { default as Svg } from './Svg';
 import * as Updates from './Updates';
@@ -145,17 +146,6 @@ Object.defineProperties(exports, {
       );
       return NativeModules.ExponentImageCropper;
     },
-  },
-});
-
-// @ts-ignore print a warning when the default export is imported
-Object.defineProperty(exports, 'default', {
-  get() {
-    console.warn(
-      `The syntax "import Expo from 'expo'" has been deprecated in favor of "import { A, B, C } from 'expo'" or "import * as Expo from 'expo'". This sets us up to support static analysis tools like TypeScript and dead-import elimination better in the future. The deprecated import syntax will be removed in SDK 32.`
-    );
-    // @ts-ignore
-    return exports;
   },
 });
 

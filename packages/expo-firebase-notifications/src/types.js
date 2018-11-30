@@ -84,6 +84,9 @@ export type PriorityType = $Values<typeof Priority>;
 export type SemanticActionType = $Values<typeof SemanticAction>;
 export type VisibilityType = $Values<typeof Visibility>;
 
+export type Notification = object;
+export type Notifications = Object;
+
 export type BigPicture = {|
   contentTitle?: string,
   largeIcon?: string,
@@ -153,6 +156,7 @@ export type NativeAndroidNotification = {|
   group?: string,
   groupAlertBehaviour?: GroupAlertType,
   groupSummary?: boolean,
+  inboxStyle?: InboxStyle,
   largeIcon?: string,
   lights?: Lights,
   localOnly?: boolean,
@@ -204,6 +208,12 @@ export type NativeIOSNotification = {|
   hasAction?: boolean,
   launchImage?: string,
   threadIdentifier?: string,
+|};
+
+export type InboxStyle = {|
+  contentTitle?: string,
+  summaryText?: string,
+  lines: string[],
 |};
 
 export type Schedule = {|

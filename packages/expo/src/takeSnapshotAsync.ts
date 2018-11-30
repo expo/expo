@@ -9,12 +9,19 @@ type SnapshotOptions = {
   format: 'png' | 'jpg' | 'raw' | 'webm';
   quality: number;
   snapshotContentContainer: boolean;
-  result: "tmpfile" | "base64" | "data-uri" | "zip-base64";
+  result: 'tmpfile' | 'base64' | 'data-uri' | 'zip-base64';
 };
 
-export default async function takeSnapshotAsync(
-  node: ReactNativeNodeHandle | React.Component,
+export default async function takeSnapshotAsync<T>(
+  node: ReactNativeNodeHandle | React.Component | React.RefObject<T>,
   options?: SnapshotOptions
 ): Promise<string> {
+  if (typeof node === 'object' && 'current' in node && node.current) {
+    // React.RefObject
+    // @ts-ignore: captureRef's type doesn't include node handles
+    return captureRef(node.current, options);
+  }
+
+  // @ts-ignore: captureRef's type doesn't include node handles
   return captureRef(node, options);
 }

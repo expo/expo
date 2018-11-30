@@ -23,6 +23,7 @@ import expo.adapters.react.ReactModuleRegistryProvider;
 import expo.core.interfaces.Package;
 import expo.core.interfaces.SingletonModule;
 import expo.modules.ads.admob.AdMobPackage;
+import expo.modules.appauth.AppAuthPackage;
 import expo.modules.backgroundfetch.BackgroundFetchPackage;
 import expo.modules.font.FontLoaderPackage;
 import expo.modules.localauthentication.LocalAuthenticationPackage;
@@ -110,6 +111,7 @@ import static host.exp.exponent.kernel.KernelConstants.LINKING_URI_KEY;
 public class ExponentPackage implements ReactPackage {
   private static final List<Package> EXPO_MODULES_PACKAGES = Arrays.<Package>asList(
       new CameraPackage(),
+      new AppAuthPackage(),
       new SensorsPackage(),
       new FileSystemPackage(),
       new FaceDetectorPackage(),

@@ -135,7 +135,7 @@ export default {
       return `Property '${name}' is protected and can not be overridden by extendApp.`;
     },
     ERROR_MISSING_IMPORT(name: string) {
-      return `Expo.Firebase: Module ${name} not included! Please include it with: import "expo-firebase-${name}";`;
+      return `Expo.Firebase: Module ${name} not included! Ensure it's installed with: yarn add expo-firebase-${name}`;
     },
 
     /**
@@ -225,9 +225,11 @@ export default {
 
       // eslint-disable-next-line prefer-template
       return (
-        `${`${start}\r\n\r\n-------------------------\r\n`}${knownError
-          ? `${knownError.code}: ${knownError.message} (code ${statusCode})`
-          : `A specific play store availability reason reason was not available (unknown code: ${statusCode})`}\r\n-------------------------` +
+        `${`${start}\r\n\r\n-------------------------\r\n`}${
+          knownError
+            ? `${knownError.code}: ${knownError.message} (code ${statusCode})`
+            : `A specific play store availability reason reason was not available (unknown code: ${statusCode})`
+        }\r\n-------------------------` +
         `\r\n\r\n` +
         `For more information on how to resolve this issue, configure Play Services checks or for guides on how to validate Play Services on your users devices see the link below:` +
         `\r\n\r\nhttp://invertase.link/play-services`

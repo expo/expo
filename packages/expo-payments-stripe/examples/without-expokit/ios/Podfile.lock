@@ -1,80 +1,80 @@
 PODS:
   - boost-for-react-native (1.63.0)
-  - DoubleConversion (1.1.5)
-  - EXCore (1.1.0)
-  - EXFontInterface (1.0.0):
+  - DoubleConversion (1.1.6)
+  - EXCore (1.2.0)
+  - EXFontInterface (1.1.0):
     - EXCore
-  - EXImageLoaderInterface (1.0.0):
+  - EXImageLoaderInterface (1.1.0):
     - EXCore
-  - EXPaymentsStripe (1.0.1):
+  - EXPaymentsStripe (1.1.0):
     - EXCore
-    - Stripe (~> 13.0.3)
-  - EXPermissions (1.1.0):
+    - Stripe (~> 13.2.0)
+  - EXPermissions (1.2.0):
     - EXCore
     - EXPermissionsInterface
-  - EXPermissionsInterface (1.1.0):
+  - EXPermissionsInterface (1.2.0):
     - EXCore
-  - EXReactNativeAdapter (1.1.1):
+  - EXReactNativeAdapter (1.2.0):
     - EXCore
     - EXFontInterface
     - React
-  - Folly (2016.09.26.00):
+  - Folly (2016.10.31.00):
     - boost-for-react-native
     - DoubleConversion
     - glog
-  - glog (0.3.4)
-  - React (0.55.4):
-    - React/Core (= 0.55.4)
-  - React/ART (0.55.4):
+  - glog (0.3.5)
+  - React (0.57.5):
+    - React/Core (= 0.57.5)
+  - React/ART (0.57.5):
     - React/Core
-  - React/Core (0.55.4):
-    - yoga (= 0.55.4.React)
-  - React/CxxBridge (0.55.4):
-    - Folly (= 2016.09.26.00)
+  - React/Core (0.57.5):
+    - yoga (= 0.57.5.React)
+  - React/CxxBridge (0.57.5):
+    - Folly (= 2016.10.31.00)
     - React/Core
     - React/cxxreact
-  - React/cxxreact (0.55.4):
+  - React/cxxreact (0.57.5):
     - boost-for-react-native (= 1.63.0)
-    - Folly (= 2016.09.26.00)
+    - Folly (= 2016.10.31.00)
     - React/jschelpers
     - React/jsinspector
-  - React/DevSupport (0.55.4):
+  - React/DevSupport (0.57.5):
     - React/Core
     - React/RCTWebSocket
-  - React/fishhook (0.55.4)
-  - React/jschelpers (0.55.4):
-    - Folly (= 2016.09.26.00)
+  - React/fishhook (0.57.5)
+  - React/jschelpers (0.57.5):
+    - Folly (= 2016.10.31.00)
     - React/PrivateDatabase
-  - React/jsinspector (0.55.4)
-  - React/PrivateDatabase (0.55.4)
-  - React/RCTActionSheet (0.55.4):
+  - React/jsinspector (0.57.5)
+  - React/PrivateDatabase (0.57.5)
+  - React/RCTActionSheet (0.57.5):
     - React/Core
-  - React/RCTAnimation (0.55.4):
+  - React/RCTAnimation (0.57.5):
     - React/Core
-  - React/RCTBlob (0.55.4):
+  - React/RCTBlob (0.57.5):
     - React/Core
-  - React/RCTCameraRoll (0.55.4):
+  - React/RCTCameraRoll (0.57.5):
     - React/Core
     - React/RCTImage
-  - React/RCTGeolocation (0.55.4):
+  - React/RCTGeolocation (0.57.5):
     - React/Core
-  - React/RCTImage (0.55.4):
+  - React/RCTImage (0.57.5):
     - React/Core
     - React/RCTNetwork
-  - React/RCTLinkingIOS (0.55.4):
+  - React/RCTLinkingIOS (0.57.5):
     - React/Core
-  - React/RCTNetwork (0.55.4):
+  - React/RCTNetwork (0.57.5):
     - React/Core
-  - React/RCTText (0.55.4):
+  - React/RCTText (0.57.5):
     - React/Core
-  - React/RCTVibration (0.55.4):
+  - React/RCTVibration (0.57.5):
     - React/Core
-  - React/RCTWebSocket (0.55.4):
+  - React/RCTWebSocket (0.57.5):
     - React/Core
     - React/fishhook
     - React/RCTBlob
-  - Stripe (13.0.3)
-  - yoga (0.55.4.React)
+  - Stripe (13.2.0)
+  - yoga (0.57.5.React)
 
 DEPENDENCIES:
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
@@ -136,20 +136,20 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
-  DoubleConversion: e22e0762848812a87afd67ffda3998d9ef29170c
-  EXCore: 70e5cb8627048c5373820d6372faa54cbefb3b12
-  EXFontInterface: c4dd21f001a9a4117c68f2d4e4d98d5e9a716852
-  EXImageLoaderInterface: e6aa5b14ab3376c4771b18b798aaa6b696d66001
-  EXPaymentsStripe: 7b9a230a1ceadd3ef955fca88b5e30d2f35edf6a
-  EXPermissions: 1c524493270ba64f494f805b6e0e75d4b498ecb5
-  EXPermissionsInterface: 814a15d3259873c39646ed3cfe58bb49160445c1
-  EXReactNativeAdapter: 93f6b26a2bb583e653e5fab04377704840e1a0e8
-  Folly: 211775e49d8da0ca658aebc8eab89d642935755c
-  glog: 1de0bb937dccdc981596d3b5825ebfb765017ded
-  React: aa2040dbb6f317b95314968021bd2888816e03d5
-  Stripe: 76c203e21555089b708e6cbe972a3e3baf1ab4d8
-  yoga: a23273df0088bf7f2bb7e5d7b00044ea57a2a54a
+  DoubleConversion: bb338842f62ab1d708ceb63ec3d999f0f3d98ecd
+  EXCore: 81304a0284b7f2e0f691b8a6bc642854e730f5e2
+  EXFontInterface: 06126ec4f6a67415426074c3383a82b241f087c1
+  EXImageLoaderInterface: 3f460f6ff344ba6c4e00621806c0d1d76249cd8f
+  EXPaymentsStripe: 2201b77ad9cff57f2a63996d4a9d260b3258b56d
+  EXPermissions: dd31cb432c078eed1f4c1e290bc32649d5280bd3
+  EXPermissionsInterface: 76f80a0dcd16afde36498e3d3aa168cb43999558
+  EXReactNativeAdapter: 253efa069b53a6c8be7c3f2afd49ef6b4e97e902
+  Folly: c89ac2d5c6ab169cd7397ef27485c44f35f742c7
+  glog: e8acf0ebbf99759d3ff18c86c292a5898282dcde
+  React: 1fe0eb13d90b625d94c3b117c274dcfd2e760e11
+  Stripe: 2c69e216061d54d9c538204bb4f58bd597ddfc5b
+  yoga: b1ce48b6cf950b98deae82838f5173ea7cf89e85
 
-PODFILE CHECKSUM: eb2edfb000d16b0d6a5c28ee3f1365aabb700242
+PODFILE CHECKSUM: 486dbf66f7f2e779ddf4a1afbf8eec1fd1a9870b
 
 COCOAPODS: 1.5.3

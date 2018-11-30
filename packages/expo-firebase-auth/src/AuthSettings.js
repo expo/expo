@@ -3,8 +3,8 @@ import { Platform } from 'expo-core';
 const isIOS = Platform.OS === 'ios';
 const isAndroid = Platform.OS === 'android';
 
-import type Auth from '.';
-
+// import type Auth from '.';
+type Auth = object;
 export default class AuthSettings {
   _auth: Auth;
 

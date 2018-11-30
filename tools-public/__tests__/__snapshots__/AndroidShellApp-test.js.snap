@@ -143,7 +143,7 @@ dependencies {
   compile 'com.yqritc:android-scalablevideoview:1.0.1'
   compile 'commons-codec:commons-codec:1.10'
   compile 'com.segment.analytics.android:analytics:4.+'
-  compile 'com.google.zxing:core:3.2.1'
+  compile 'com.google.zxing:core:3.3.3'
   compile 'net.openid:appauth:0.4.1'
   compile 'com.airbnb.android:lottie:2.2.0'
   compile 'io.branch.sdk.android:library:2.6.1'
@@ -703,11 +703,9 @@ task generateDynamicMacros(type: Exec) {
   if (Os.isFamily(Os.FAMILY_WINDOWS)) {
     // This gets run from the 'app' directory
     workingDir '../../tools-public'
-    def command = 'gulp generate-dynamic-macros --buildConstantsPath ../android/expoview/src/main/java/host/exp/exponent/generated/ExponentBuildConstants.java --platform android'
-    commandLine 'cmd.exe', '/c', command
+    commandLine 'cmd.exe', '/c', 'generate-dynamic-macros-cli.js --buildConstantsPath ./src/main/java/host/exp/exponent/generated/ExponentBuildConstants.java --platform android'
   } else {
-    commandLine '../../tools-public/generate-dynamic-macros-android.sh'
-  }
+    commandLine '../../tools-public/generate-dynamic-macros-cli.js', '--buildConstantsPath', './src/main/java/host/exp/exponent/generated/ExponentBuildConstants.java', '--platform', 'android'
 }
 
 
@@ -783,7 +781,7 @@ dependencies {
   compile 'com.yqritc:android-scalablevideoview:1.0.1'
   compile 'commons-codec:commons-codec:1.10'
   compile 'com.segment.analytics.android:analytics:4.+'
-  compile 'com.google.zxing:core:3.2.1'
+  compile 'com.google.zxing:core:3.3.3'
   compile 'net.openid:appauth:0.4.1'
   compile 'com.airbnb.android:lottie:2.2.0'
   compile 'io.branch.sdk.android:library:2.6.1'

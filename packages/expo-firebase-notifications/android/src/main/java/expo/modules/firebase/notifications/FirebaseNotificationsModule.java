@@ -11,12 +11,9 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.RemoteInput;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
-
-import com.facebook.react.bridge.ActivityEventListener;
-import com.facebook.react.bridge.ReactContext;
-import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -24,9 +21,11 @@ import java.util.Map;
 import expo.core.ExportedModule;
 import expo.core.ModuleRegistry;
 import expo.core.Promise;
+import expo.core.interfaces.ActivityEventListener;
 import expo.core.interfaces.ActivityProvider;
 import expo.core.interfaces.ExpoMethod;
 import expo.core.interfaces.ModuleRegistryConsumer;
+import expo.core.interfaces.services.UIManager;
 import expo.modules.firebase.app.Utils;
 import expo.modules.firebase.messaging.EXFirebaseMessagingService;
 import me.leolin.shortcutbadger.ShortcutBadger;
@@ -44,7 +43,7 @@ public class FirebaseNotificationsModule extends ExportedModule
 
   private FirebaseNotificationManager notificationManager;
 
-  private ModuleRegistry mModuleRegistry;
+  private WeakReference<ModuleRegistry> mModuleRegistry;
 
   public FirebaseNotificationsModule(Context context) {
     super(context);
@@ -56,19 +55,28 @@ public class FirebaseNotificationsModule extends ExportedModule
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
-    if (mModuleRegistry != null) {
-      if (getApplicationContext() instanceof ReactContext) {
-        ((ReactContext) getApplicationContext()).removeActivityEventListener(this);
-      }
+  public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
+    // FCM functionality does not need this function
+  }
+
+  @Override
+  public void onNewIntent(Intent intent) {
+    Bundle notificationOpenMap = parseIntentForNotification(intent);
+    if (notificationOpenMap != null) {
+      Utils.sendEvent(mModuleRegistry.get(), "Expo.Firebase.notifications_notification_opened", notificationOpenMap);
     }
+  }
 
-    mModuleRegistry = moduleRegistry;
+  @Override
+  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+    mModuleRegistry = new WeakReference<>(moduleRegistry);
 
-    if (notificationManager == null) {
-      notificationManager = new FirebaseNotificationManager(getContext(), mModuleRegistry);
-    } else if (moduleRegistry != null) {
-      notificationManager.mModuleRegistry = mModuleRegistry;
+    if (moduleRegistry != null) {
+      if (notificationManager == null) {
+        notificationManager = new FirebaseNotificationManager(getContext(), moduleRegistry);
+      } else {
+        notificationManager.mModuleRegistry = moduleRegistry;
+      }
     } else {
       notificationManager = null;
     }
@@ -76,12 +84,10 @@ public class FirebaseNotificationsModule extends ExportedModule
     sharedPreferences = getContext().getSharedPreferences(BADGE_FILE, Context.MODE_PRIVATE);
     FirebaseNotificationsModule.moduleRegistry = moduleRegistry;
     
-    if (mModuleRegistry != null) {
-      //TODO: Bacon: Remove React
-      if (getApplicationContext() instanceof ReactContext) {
-        ((ReactContext) getApplicationContext()).addActivityEventListener(this);
+    if (moduleRegistry != null) {
+      if (moduleRegistry.getModule(UIManager.class) != null) {
+        moduleRegistry.getModule(UIManager.class).registerActivityEventListener(this);
       }
-
       //TODO: Bacon: Unregister
       LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(getContext());
 
@@ -92,18 +98,24 @@ public class FirebaseNotificationsModule extends ExportedModule
       // Subscribe to scheduled notification events
       localBroadcastManager.registerReceiver(new ScheduledNotificationReceiver(),
               new IntentFilter(FirebaseNotificationManager.SCHEDULED_NOTIFICATION_EVENT));
-
-
     }
   }
 
   protected final Context getApplicationContext() {
-    return getCurrentActivity().getApplicationContext();
+    Activity activity = getCurrentActivity();
+    if (activity != null) {
+      return activity.getApplicationContext();
+    }
+    return null;
   }
 
   protected final Activity getCurrentActivity() {
-    ActivityProvider activityProvider = mModuleRegistry.getModule(ActivityProvider.class);
-    return activityProvider.getCurrentActivity();
+    ModuleRegistry moduleRegistry = mModuleRegistry.get();
+    if (moduleRegistry != null) {
+      ActivityProvider activityProvider = moduleRegistry.getModule(ActivityProvider.class);
+      return activityProvider.getCurrentActivity();
+    }
+    return null;
   }
 
   @ExpoMethod
@@ -186,61 +198,69 @@ public class FirebaseNotificationsModule extends ExportedModule
   //////////////////////////////////////////////////////////////////////
   @ExpoMethod
   public void createChannel(Map<String, Object> channelMap, Promise promise) {
-    notificationManager.createChannel(channelMap);
+    try {
+      notificationManager.createChannel(channelMap);
+    } catch (Throwable t) {
+      // do nothing - most likely a NoSuchMethodError for < v4 support lib
+    }
     promise.resolve(null);
   }
 
   @ExpoMethod
   public void createChannelGroup(Map<String, Object> channelGroupMap, Promise promise) {
-    notificationManager.createChannelGroup(channelGroupMap);
+    try {
+      notificationManager.createChannelGroup(channelGroupMap);
+    } catch (Throwable t) {
+      // do nothing - most likely a NoSuchMethodError for < v4 support lib
+    }
     promise.resolve(null);
   }
 
   @ExpoMethod
   public void createChannelGroups(List channelGroupsArray, Promise promise) {
+    try {
     notificationManager.createChannelGroups(channelGroupsArray);
+  } catch (Throwable t) {
+    // do nothing - most likely a NoSuchMethodError for < v4 support lib
+  }
     promise.resolve(null);
   }
 
   @ExpoMethod
   public void createChannels(List channelsArray, Promise promise) {
+    try {
+
     notificationManager.createChannels(channelsArray);
+  } catch (Throwable t) {
+    // do nothing - most likely a NoSuchMethodError for < v4 support lib
+  }
     promise.resolve(null);
   }
 
   @ExpoMethod
   public void deleteChannelGroup(String channelId, Promise promise) {
-    notificationManager.deleteChannelGroup(channelId);
-    promise.resolve(null);
+    try {
+      notificationManager.deleteChannelGroup(channelId);
+      promise.resolve(null);
+    } catch (NullPointerException e) {
+      promise.reject(
+        "notifications/channel-group-not-found",
+        "The requested NotificationChannelGroup does not exist, have you created it?"
+      );
+    }
   }
 
   @ExpoMethod
   public void deleteChannel(String channelId, Promise promise) {
+    try {
     notificationManager.deleteChannel(channelId);
+  } catch (Throwable t) {
+    // do nothing - most likely a NoSuchMethodError for < v4 support lib
+  }
     promise.resolve(null);
   }
   //////////////////////////////////////////////////////////////////////
   // End Android specific methods
-  //////////////////////////////////////////////////////////////////////
-
-  //////////////////////////////////////////////////////////////////////
-  // Start ActivityEventListener methods
-  //////////////////////////////////////////////////////////////////////
-  @Override
-  public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
-    // FCM functionality does not need this function
-  }
-
-  @Override
-  public void onNewIntent(Intent intent) {
-    Bundle notificationOpenMap = parseIntentForNotification(intent);
-    if (notificationOpenMap != null) {
-      Utils.sendEvent(mModuleRegistry, "Expo.Firebase.notifications_notification_opened", notificationOpenMap);
-    }
-  }
-
-  //////////////////////////////////////////////////////////////////////
-  // End ActivityEventListener methods
   //////////////////////////////////////////////////////////////////////
 
   private Bundle parseIntentForNotification(Intent intent) {
@@ -378,34 +398,23 @@ public class FirebaseNotificationsModule extends ExportedModule
   private class RemoteNotificationReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-      // TODO: Bacon: Remove React Native
-      if (getApplicationContext() instanceof ReactContext) {
-        if (((ReactContext) getApplicationContext()).hasActiveCatalystInstance()) {
-          Log.d(TAG, "Received new remote notification");
+      Log.d(TAG, "Received new remote notification");
 
-          RemoteMessage message = intent.getParcelableExtra("notification");
-          Bundle messageMap = parseRemoteMessage(message);
+      RemoteMessage message = intent.getParcelableExtra("notification");
+      Bundle messageMap = parseRemoteMessage(message);
 
-          Utils.sendEvent(mModuleRegistry, "Expo.Firebase.notifications_notification_received", messageMap);
-        }
-      }
+      Utils.sendEvent(mModuleRegistry.get(), "Expo.Firebase.notifications_notification_received", messageMap);
     }
   }
 
   private class ScheduledNotificationReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-      // TODO:Bacon: Remove React Native
-      if (getApplicationContext() instanceof ReactContext) {
-        if (((ReactContext) getApplicationContext()).hasActiveCatalystInstance()) {
+      Log.d(TAG, "Received new scheduled notification");
 
-          Log.d(TAG, "Received new scheduled notification");
+      Bundle notification = intent.getBundleExtra("notification");
 
-          Bundle notification = intent.getBundleExtra("notification");
-
-          Utils.sendEvent(mModuleRegistry, "Expo.Firebase.notifications_notification_received", notification);
-        }
-      }
+      Utils.sendEvent(mModuleRegistry.get(), "Expo.Firebase.notifications_notification_received", notification);
     }
   }
 }

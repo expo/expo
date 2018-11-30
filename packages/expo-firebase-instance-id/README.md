@@ -1,5 +1,8 @@
 # expo-firebase-instance-id
 
+> expo-firebase is still in RC and therefore subject to breaking changings. Be sure to run `yarn upgrade` and `cd ios; pod install` when upgrading.
+
+
 `expo-firebase-instance-id` provides access to the instance ID, and Push Token.
 
 [**Full documentation**](https://rnfirebase.io/docs/master/iid/reference/iid)
@@ -87,8 +90,7 @@ You could also choose install this module manually.
 import React from 'react';
 import { View } from 'react-native';
 import firebase from 'expo-firebase-app';
-// Include the module before using it.
-import 'expo-firebase-instance-id';
+
 // API can be accessed with: firebase.iid();
 
 export default class DemoView extends React.Component {

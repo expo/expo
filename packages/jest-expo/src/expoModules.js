@@ -96,6 +96,7 @@ module.exports = {
           { key: 4, argumentsCount: 1, name: 'setAdUnitID' },
           { key: 5, argumentsCount: 0, name: 'getIsReady' },
         ],
+        ExpoAppAuth: [{ key: 0, argumentsCount: 1, name: 'executeAsync' }],
         ExpoBackgroundFetch: [
           { key: 0, argumentsCount: 1, name: 'unregisterTaskAsync' },
           { key: 1, argumentsCount: 1, name: 'setMinimumIntervalAsync' },
@@ -257,6 +258,13 @@ module.exports = {
     modulesConstants: {
       type: 'mock',
       mockDefinition: {
+        ExpoAppAuth: {
+          OAuthRedirect: { type: 'array' },
+          URLSchemes: { type: 'array' },
+          addListener: { type: 'function' },
+          executeAsync: { type: 'function' },
+          removeListeners: { type: 'function' },
+        },
         ExpoBackgroundFetch: {
           Result: { type: 'object' },
           Status: { type: 'object' },

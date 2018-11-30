@@ -1,4 +1,4 @@
-
+// Copyright 2018-present 650 Industries. All rights reserved.
 
 #import <EXFirebasePerformance/EXFirebasePerformance.h>
 #import <FirebasePerformance/FIRPerformance.h>
@@ -258,11 +258,6 @@ EX_EXPORT_METHOD_AS(setHttpMetricResponsePayloadSize,
                     rejecter:(EXPromiseRejectBlock)reject) {
   [[self getOrCreateHttpMetric:url httpMethod:httpMethod] setResponsePayloadSize:[bytes longLongValue]];
   resolve([NSNull null]);
-}
-
-+ (BOOL)requiresMainQueueSetup
-{
-  return YES;
 }
 
 
