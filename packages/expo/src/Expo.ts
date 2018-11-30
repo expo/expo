@@ -145,17 +145,6 @@ Object.defineProperties(exports, {
   },
 });
 
-// @ts-ignore print a warning when the default export is imported
-Object.defineProperty(exports, 'default', {
-  get() {
-    console.warn(
-      `The syntax "import Expo from 'expo'" has been deprecated in favor of "import { A, B, C } from 'expo'" or "import * as Expo from 'expo'". This sets us up to support static analysis tools like TypeScript and dead-import elimination better in the future. The deprecated import syntax will be removed in SDK 32.`
-    );
-    // @ts-ignore
-    return exports;
-  },
-});
-
 if (global) {
   // @ts-ignore
   global.__exponent = module.exports;
