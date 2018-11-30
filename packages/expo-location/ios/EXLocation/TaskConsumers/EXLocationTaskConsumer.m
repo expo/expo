@@ -2,6 +2,7 @@
 
 #import <CoreLocation/CLLocationManager.h>
 
+#import <EXCore/EXUtilities.h>
 #import <EXLocation/EXLocation.h>
 #import <EXLocation/EXLocationTaskConsumer.h>
 #import <EXTaskManagerInterface/EXTaskInterface.h>
@@ -9,7 +10,6 @@
 @interface EXLocationTaskConsumer ()
 
 @property (nonatomic, strong) CLLocationManager *locationManager;
-@property (nonatomic, strong) NSDictionary *options;
 
 @end
 
@@ -29,15 +29,19 @@
 
 - (void)didRegisterTask:(id<EXTaskInterface>)task
 {
-  _task = task;
-  _locationManager = [CLLocationManager new];
+  [EXUtilities performSynchronouslyOnMainThread:^{
+    CLLocationManager *locationManager = [CLLocationManager new];
 
-  _locationManager.delegate = self;
-  _locationManager.allowsBackgroundLocationUpdates = YES;
-  _locationManager.pausesLocationUpdatesAutomatically = NO;
+    self->_task = task;
+    self->_locationManager = locationManager;
 
-  // Set options-specific things in location manager.
-  [self setOptions:task.options];
+    locationManager.delegate = self;
+    locationManager.allowsBackgroundLocationUpdates = YES;
+    locationManager.pausesLocationUpdatesAutomatically = NO;
+
+    // Set options-specific things in location manager.
+    [self setOptions:task.options];
+  }];
 }
 
 - (void)didUnregister
@@ -47,24 +51,27 @@
 
 - (void)setOptions:(NSDictionary *)options
 {
-  EXLocationAccuracy accuracy = [options[@"accuracy"] unsignedIntegerValue] ?: EXLocationAccuracyBalanced;
+  [EXUtilities performSynchronouslyOnMainThread:^{
+    CLLocationManager *locationManager = self->_locationManager;
+    EXLocationAccuracy accuracy = [options[@"accuracy"] unsignedIntegerValue] ?: EXLocationAccuracyBalanced;
 
-  _locationManager.desiredAccuracy = [EXLocation CLLocationAccuracyFromOption:accuracy];
-  _locationManager.distanceFilter = [options[@"distanceInterval"] doubleValue] ?: kCLDistanceFilterNone;
+    locationManager.desiredAccuracy = [EXLocation CLLocationAccuracyFromOption:accuracy];
+    locationManager.distanceFilter = [options[@"distanceInterval"] doubleValue] ?: kCLDistanceFilterNone;
 
-  if (@available(iOS 11.0, *)) {
-    _locationManager.showsBackgroundLocationIndicator = [options[@"showsBackgroundLocationIndicator"] boolValue];
-  }
+    if (@available(iOS 11.0, *)) {
+      locationManager.showsBackgroundLocationIndicator = [options[@"showsBackgroundLocationIndicator"] boolValue];
+    }
 
-  [_locationManager startUpdatingLocation];
-  [_locationManager startMonitoringSignificantLocationChanges];
+    [locationManager startUpdatingLocation];
+    [locationManager startMonitoringSignificantLocationChanges];
+  }];
 }
 
 # pragma mark - CLLocationManagerDelegate
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray<CLLocation *> *)locations
 {
-  if (_task != nil) {
+  if (_task != nil && locations.count > 0) {
     NSDictionary *data = @{
                            @"locations": [EXLocationTaskConsumer _exportLocations:locations],
                            };
@@ -81,10 +88,12 @@
 
 - (void)reset
 {
-  [_locationManager stopUpdatingLocation];
-  [_locationManager stopMonitoringSignificantLocationChanges];
-  _locationManager = nil;
-  _task = nil;
+  [EXUtilities performSynchronouslyOnMainThread:^{
+    [self->_locationManager stopUpdatingLocation];
+    [self->_locationManager stopMonitoringSignificantLocationChanges];
+    self->_locationManager = nil;
+    self->_task = nil;
+  }];
 }
 
 + (NSArray<NSDictionary *> *)_exportLocations:(NSArray<CLLocation *> *)locations

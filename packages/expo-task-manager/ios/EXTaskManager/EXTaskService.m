@@ -275,7 +275,7 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
   NSDictionary *executionInfo = [self _executionInfoForTask:task];
   NSDictionary *body = @{
                          @"executionInfo": executionInfo,
-                         @"data": EXNullIfNil(data),
+                         @"data": data ?: @{},
                          @"error": EXNullIfNil([self _exportError:error]),
                          };
 

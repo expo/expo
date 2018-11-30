@@ -10,7 +10,6 @@
 @interface EXGeofencingTaskConsumer ()
 
 @property (nonatomic, strong) CLLocationManager *locationManager;
-@property (nonatomic, strong) NSDictionary *options;
 @property (nonatomic, strong) NSMutableDictionary<NSString *, NSNumber *> *regionStates;
 @property (nonatomic, assign) BOOL backgroundOnly;
 

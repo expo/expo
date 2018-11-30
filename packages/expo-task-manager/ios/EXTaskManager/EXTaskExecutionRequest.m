@@ -25,9 +25,7 @@
 
 - (void)addTask:(nonnull id<EXTaskInterface>)task
 {
-  if (task != nil) {
-    [_tasks addObject:task];
-  }
+  [_tasks addObject:task];
 }
 
 - (void)task:(nonnull id<EXTaskInterface>)task didFinishWithResult:(id)result
@@ -39,7 +37,7 @@
 
 - (BOOL)isIncludingTask:(nullable id<EXTaskInterface>)task
 {
-  return task != nil && [_tasks containsObject:task];
+  return task && [_tasks containsObject:task];
 }
 
 - (void)maybeEvaluate
@@ -53,7 +51,7 @@
 
 - (void)_maybeExecuteCallback
 {
-  if (_callback != nil) {
+  if (_callback) {
     _callback(_results);
     _callback = nil;
     _tasks = nil;

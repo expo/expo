@@ -77,7 +77,7 @@ void (^EXinitializeGlobalSingletonModulesSet)(void) = ^{
   NSSet<EXSingletonModule *> *singletonModules = [self singletonModules];
 
   for (EXSingletonModule *singleton in singletonModules) {
-    if ([[singleton class] isKindOfClass:singletonClass]) {
+    if ([singleton isKindOfClass:singletonClass]) {
       return singleton;
     }
   }
