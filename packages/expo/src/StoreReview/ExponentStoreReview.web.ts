@@ -3,6 +3,6 @@ export default {
     return 'ExponentStoreReview';
   },
   get isSupported(): boolean {
-      return false;
+    return false;
   }
 };
