@@ -96,6 +96,7 @@ module.exports = {
           { key: 4, argumentsCount: 1, name: 'setAdUnitID' },
           { key: 5, argumentsCount: 0, name: 'getIsReady' },
         ],
+        ExpoAppAuth: [{ key: 0, argumentsCount: 1, name: 'executeAsync' }],
         ExpoBarCodeScannerModule: [{ key: 0, argumentsCount: 2, name: 'scanFromURLAsync' }],
         ExpoBarCodeScannerView: [],
         ExpoContacts: [
@@ -236,6 +237,13 @@ module.exports = {
     modulesConstants: {
       type: 'mock',
       mockDefinition: {
+        ExpoAppAuth: {
+          OAuthRedirect: { type: 'array' },
+          URLSchemes: { type: 'array' },
+          addListener: { type: 'function' },
+          executeAsync: { type: 'function' },
+          removeListeners: { type: 'function' },
+        },
         ExpoBarCodeScannerModule: {
           BarCodeType: { type: 'object' },
           Type: { type: 'object' },

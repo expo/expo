@@ -152,6 +152,7 @@ dependencies {
 
   // Universal modules
   api project(':expo-react-native-adapter')
+  api project(':expo-app-auth')
   api project(':expo-core')
   api project(':expo-camera')
   api project(':expo-camera-interface')
