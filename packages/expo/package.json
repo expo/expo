@@ -60,6 +60,7 @@
     "babel-preset-expo": "^5.0.0",
     "expo-ads-admob": "~1.1.0",
     "expo-analytics-segment": "~1.1.0",
+    "expo-app-auth": "^1.0.0",
     "expo-asset": "~1.1.1",
     "expo-barcode-scanner": "~1.1.0",
     "expo-barcode-scanner-interface": "~1.1.0",

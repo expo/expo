@@ -12,6 +12,10 @@
 #import "EXRootViewController.h"
 #import "EXConstants.h"
 
+#if __has_include(<EXAuth/EXAuth.h>)
+#import <EXAuth/EXAuth.h>
+#endif
+
 #if __has_include(<GoogleSignIn/GoogleSignIn.h>)
 #import <GoogleSignIn/GoogleSignIn.h>
 #endif
@@ -53,6 +57,11 @@ NS_ASSUME_NONNULL_BEGIN
   if ([[GIDSignIn sharedInstance] handleURL:url
                           sourceApplication:sourceApplication
                                  annotation:annotation]) {
+    return YES;
+  }
+#endif
+#if __has_include(<EXAuth/EXAuth.h>)
+  if ([[EXAuth instance] application:app openURL:url options:options]) {
     return YES;
   }
 #endif
