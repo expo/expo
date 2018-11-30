@@ -1,7 +1,6 @@
+import { EventEmitter, Platform } from 'expo-core';
 import invariant from 'invariant';
-import { NativeModulesProxy, EventEmitter } from 'expo-core';
-import { Platform } from 'react-native';
-const { ExpoLocation: Location } = NativeModulesProxy;
+import Location from './ExpoLocation';
 const LocationEventEmitter = new EventEmitter(Location);
 ;
 ;
@@ -147,7 +146,8 @@ function _maybeInitializeEmitterSubscription() {
 }
 export async function geocodeAsync(address) {
     return Location.geocodeAsync(address).catch(error => {
-        if (Platform.OS === 'android' && error.code === 'E_NO_GEOCODER') {
+        const platformUsesGoogleMaps = Platform.OS === 'android' || Platform.OS === 'web';
+        if (platformUsesGoogleMaps && error.code === 'E_NO_GEOCODER') {
             if (!googleApiKey) {
                 throw new Error(error.message + ' Please set a Google API Key to use geocoding.');
             }
@@ -161,7 +161,8 @@ export async function reverseGeocodeAsync(location) {
         throw new TypeError('Location should be an object with number properties `latitude` and `longitude`.');
     }
     return Location.reverseGeocodeAsync(location).catch(error => {
-        if (Platform.OS === 'android' && error.code === 'E_NO_GEOCODER') {
+        const platformUsesGoogleMaps = Platform.OS === 'android' || Platform.OS === 'web';
+        if (platformUsesGoogleMaps && error.code === 'E_NO_GEOCODER') {
             if (!googleApiKey) {
                 throw new Error(error.message + ' Please set a Google API Key to use geocoding.');
             }
@@ -326,17 +327,19 @@ export async function hasStartedGeofencingAsync(taskName) {
     _validateTaskName(taskName);
     return Location.hasStartedGeofencingAsync(taskName);
 }
-// Polyfill navigator.geolocation for interop with the core react-native and web API approach to
-// geolocation
-// @ts-ignore
-window.navigator.geolocation = {
-    getCurrentPosition,
-    watchPosition,
-    clearWatch,
-    // We don't polyfill stopObserving, this is an internal method that probably should not even exist
-    // in react-native docs
-    stopObserving: () => { },
-};
+if (Platform.OS !== 'web') {
+    // Polyfill navigator.geolocation for interop with the core react-native and web API approach to
+    // geolocation
+    // @ts-ignore
+    window.navigator.geolocation = {
+        getCurrentPosition,
+        watchPosition,
+        clearWatch,
+        // We don't polyfill stopObserving, this is an internal method that probably should not even exist
+        // in react-native docs
+        stopObserving: () => { },
+    };
+}
 export { 
 // For internal purposes
 LocationEventEmitter as EventEmitter, _getCurrentWatchId, };
