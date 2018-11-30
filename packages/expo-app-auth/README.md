@@ -149,7 +149,11 @@ const config = {
 const tokenResponse = await AppAuth.refreshAsync(config, refreshToken);
 ```
 
-## `AppAuth.revokeAsync(props: OAuthBaseProps, options: OAuthRevokeOptions): Promise<any>`
+### `revokeAsync`
+
+```js
+AppAuth.revokeAsync(props: OAuthBaseProps, options: OAuthRevokeOptions): Promise<any>
+```
 
 A fully JS function which revokes the provided access token or refresh token.
 Use this method for signing-out. Returns a fetch request.
