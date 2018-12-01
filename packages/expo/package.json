@@ -71,6 +71,7 @@
     "expo-constants-interface": "~1.1.0",
     "expo-contacts": "~1.1.0",
     "expo-core": "~1.2.0",
+    "expo-errors": "^0.0.1",
     "expo-face-detector": "~1.1.0",
     "expo-face-detector-interface": "~1.1.0",
     "expo-file-system": "~1.1.0",
