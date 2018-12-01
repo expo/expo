@@ -24,9 +24,6 @@ export function processFontFamily(name: string | null): string | null {
   }
 
   if (!isLoaded(name)) {
-    // @ts-ignore: TypeScript doesn't know this is running in Expo and that React Native compiles
-    // out this variable. Remove this ts-ignore after expo-core and expo-react-native-adapter have
-    // been converted to TypeScript.
     if (__DEV__) {
       if (isLoading(name)) {
         console.error(
