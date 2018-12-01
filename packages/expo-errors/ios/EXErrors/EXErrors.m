@@ -2,7 +2,7 @@
 
 #import <EXErrors/EXErrors.h>
 
-void EXRejectInvalidArgument(NSString *message, EXPromiseRejectBlock rejecter)
+void EXRejectInvalidArgument(EXPromiseRejectBlock rejecter, NSString *message)
 {
   rejecter(@"ERR_INVALID_ARGUMENT", message, nil);
 }

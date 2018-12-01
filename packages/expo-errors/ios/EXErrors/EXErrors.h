@@ -6,6 +6,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-void EXRejectInvalidArgument(NSString *message, EXPromiseRejectBlock rejecter);
+void EXRejectInvalidArgument(EXPromiseRejectBlock rejecter, NSString *message);
 
 NS_ASSUME_NONNULL_END
