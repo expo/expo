@@ -127,3 +127,16 @@ function _getNativeFontName(name: string): string {
   }
   return `${Constants.sessionId}-${name}`;
 }
+
+// @ts-ignore: Temporarily define an export named "Font" for legacy compatibility
+Object.defineProperty(exports, 'Font', {
+  get() {
+    console.warn(`The syntax "import { Font } from 'expo-font'" is deprecated. Use "import * as Font from 'expo-font'" or import named exports instead. Support for the old syntax will be removed in SDK 33.`);
+    return {
+      processFontFamily,
+      isLoaded,
+      isLoading,
+      loadAsync,
+    }
+  }
+})
