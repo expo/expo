@@ -3,6 +3,7 @@
   "version": "1.2.0",
   "description": "Expo React Native adapter for universal modules",
   "main": "index.js",
+  "types": "index.d.ts",
   "keywords": [
     "react-native",
     "expo",
