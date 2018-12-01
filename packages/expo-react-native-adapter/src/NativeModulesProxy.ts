@@ -1,10 +1,10 @@
 import { NativeModules } from 'react-native';
 
 const NativeProxy = NativeModules.ExpoNativeModuleProxy;
-const modulesConstantsKey = "modulesConstants";
-const exportedMethodsKey = "exportedMethods";
+const modulesConstantsKey = 'modulesConstants';
+const exportedMethodsKey = 'exportedMethods';
 
-const NativeModulesProxy = {};
+const NativeModulesProxy: { [moduleName: string]: any } = {};
 
 if (NativeProxy) {
   Object.keys(NativeProxy[exportedMethodsKey]).forEach(moduleName => {
@@ -13,7 +13,11 @@ if (NativeProxy) {
       NativeModulesProxy[moduleName][methodInfo.name] = async (...args) => {
         const { key, argumentsCount } = methodInfo;
         if (argumentsCount !== args.length) {
-          throw new Error(`Arguments count mismatch, ${args.length} provided, ${argumentsCount} have been expected.`);
+          throw new Error(
+            `Arguments count mismatch, ${
+              args.length
+            } provided, ${argumentsCount} have been expected.`
+          );
         }
         return await NativeProxy.callMethod(moduleName, key, args);
       };
@@ -35,4 +39,4 @@ if (NativeProxy) {
   );
 }
 
-module.exports = NativeModulesProxy;
+export default NativeModulesProxy;

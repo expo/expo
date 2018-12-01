@@ -22,6 +22,7 @@ const getViewManagerAdapterNameForViewName = name => `ViewManagerAdapter_${name}
 
 const createNativeComponentClass = name => {
   class NativeComponent extends React.Component {
+    static displayName = name;
     static propTypes = { ...ViewPropTypes, proxiedProperties: PropTypes.object };
     render() {
       return <UnderlyingNativeComponent {...this.props} />;
@@ -37,7 +38,6 @@ const createNativeComponentClass = name => {
     ),
   });
 
-  NativeComponent.displayName = name;
   return NativeComponent;
 };
 
@@ -59,13 +59,12 @@ export const requireNativeViewManager = (name, component) => {
     ...Object.keys(UIManager[getViewManagerAdapterNameForViewName(name)].NativeProps),
     ...Object.keys(UIManager[getViewManagerAdapterNameForViewName(name)].directEventTypes),
   ];
-  class NativeComponentWrapper extends React.Component {
+  return class NativeComponentWrapper extends React.Component {
+    static displayName = `ViewWrapper<${name}>`;
     render() {
       const nativeProps = pick(this.props, PropTypesKeys);
       const proxiedProps = omit(this.props, PropTypesKeys);
       return <NativeComponent proxiedProperties={proxiedProps} {...nativeProps} />;
     }
   }
-  NativeComponentWrapper.displayName = `ViewWrapper<${name}>`;
-  return NativeComponentWrapper;
 };

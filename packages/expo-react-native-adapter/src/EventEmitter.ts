@@ -1,5 +1,3 @@
-// @flow
-
 import { Platform } from 'react-native';
 /* 
  * Importing this directly will circumvent the webpack alias `react-native$`
@@ -8,15 +6,15 @@ import { Platform } from 'react-native';
 import NativeEventEmitter from 'react-native/Libraries/EventEmitter/NativeEventEmitter';
 
 type NativeModule = {
-  startObserving: ?() => void,
-  stopObserving: ?() => void,
+  startObserving?: () => void,
+  stopObserving?: () => void,
 };
 
 type Subscription = {
   remove: () => void,
 };
 
-class EventEmitter {
+export default class EventEmitter {
   _listenersCount = 0;
   _nativeModule: NativeModule;
   _eventEmitter: NativeEventEmitter;
@@ -26,7 +24,7 @@ class EventEmitter {
     this._eventEmitter = new NativeEventEmitter(nativeModule);
   }
 
-  addListener<T>(eventName: string, listener: T => void): Subscription {
+  addListener<T>(eventName: string, listener: (event: T) => void): Subscription {
     this._listenersCount += 1;
     if (Platform.OS === 'android' && this._nativeModule.startObserving) {
       if (this._listenersCount === 1) {
@@ -62,9 +60,7 @@ class EventEmitter {
     this._eventEmitter.removeSubscription(subscription);
   }
 
-  emit(eventType: string, ...params: Array<*>) {
+  emit(eventType: string, ...params: any[]): void {
     this._eventEmitter.emit(eventType, ...params);
   }
 }
-
-module.exports = EventEmitter;
