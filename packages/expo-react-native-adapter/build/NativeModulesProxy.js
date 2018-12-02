@@ -10,7 +10,7 @@ if (NativeProxy) {
             NativeModulesProxy[moduleName][methodInfo.name] = async (...args) => {
                 const { key, argumentsCount } = methodInfo;
                 if (argumentsCount !== args.length) {
-                    throw new Error(`Arguments count mismatch, ${args.length} provided, ${argumentsCount} have been expected.`);
+                    throw new Error(`Native method ${moduleName}.${methodInfo.name} expects ${argumentsCount} ${argumentsCount === 1 ? 'argument' : 'arguments'} but received ${args.length}`);
                 }
                 return await NativeProxy.callMethod(moduleName, key, args);
             };
@@ -25,7 +25,7 @@ if (NativeProxy) {
     });
 }
 else {
-    console.warn("No native NativeModulesProxy found among NativeModules, are you sure the expo-react-native-adapter's modules are linked properly?");
+    console.warn(`The "ExpoNativeModulesProxy" native module is not exported through NativeModules; verify that expo-react-native-adapter's native code is linked properly`);
 }
 export default NativeModulesProxy;
 //# sourceMappingURL=NativeModulesProxy.js.map
