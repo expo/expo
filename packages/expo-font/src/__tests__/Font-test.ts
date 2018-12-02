@@ -1,5 +1,3 @@
-import { NativeModulesProxy } from 'expo-core';
-
 jest.mock('expo-constants', () => ({
   Constants: {
     manifest: {},
@@ -9,8 +7,10 @@ jest.mock('expo-constants', () => ({
 }));
 
 let Font;
+let NativeModulesProxy;
 
 beforeEach(() => {
+  ({ NativeModulesProxy } = require('expo-core'));
   NativeModulesProxy.ExpoFontLoader.loadAsync.mockImplementation(async () => {});
   Font = require('expo-font');
 });
