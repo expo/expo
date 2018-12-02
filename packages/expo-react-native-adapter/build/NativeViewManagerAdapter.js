@@ -1,59 +1,54 @@
-import React from 'react';
 import omit from 'lodash.omit';
 import pick from 'lodash.pick';
-import PropTypes from 'prop-types';
-import { requireNativeComponent, ViewPropTypes, UIManager, NativeModules } from 'react-native';
-// We'd like to make the transition from react-native's
-// requireNativeComponent to expo-core's requireNativeViewManager
-// as easy as possible, so an obvious requirement will be to be able
-// to just replace the requireNativeComponent with requireNativeViewManager
-// call. If that's so, we have to wrap a native component in two middleware
-// components - the bottom one, near the requireNativeComponent call has to
-// define a propType for proxiedProperties (so that doesn't complain),
-// and the "top" one has to accept all the properties, split them into
-// props passed to react-native's View (like style, testID, etc.)
-// and custom view properties. For that we use
-// {omit,pick}(props, Object.keys(ViewPropTypes))
+import React from 'react';
+import { NativeModules, UIManager, ViewPropTypes, requireNativeComponent } from 'react-native';
+// To make the transition from React Native's `requireNativeComponent` to Expo's
+// `requireNativeViewManager` as easy as possible, `requireNativeViewManager` is a drop-in
+// replacement for `requireNativeComponent`.
+//
+// For each view manager, we create a wrapper component that accepts all of the props available to
+// the author of the universal module. This wrapper component splits the props into two sets: props
+// passed to React Native's View (ex: style, testID) and custom view props, which are passed to the
+// adapter view component in a prop called `proxiedProperties`.
+// NOTE: React Native is moving away from runtime PropTypes and may remove ViewPropTypes, in which
+// case we will need another way to separate standard React Native view props from other props,
+// which we proxy through the adapter
 const ViewPropTypesKeys = Object.keys(ViewPropTypes);
-const getViewManagerAdapterNameForViewName = name => `ViewManagerAdapter_${name}`;
-const createNativeComponentClass = name => {
-    class NativeComponent extends React.Component {
-        render() {
-            return <UnderlyingNativeComponent {...this.props}/>;
+/**
+ * A drop-in replacement for `requireNativeComponent`.
+ */
+export function requireNativeViewManager(viewName) {
+    if (__DEV__) {
+        const { ExpoNativeModuleProxy } = NativeModules;
+        if (!ExpoNativeModuleProxy.viewManagersNames.includes(viewName)) {
+            const exportedViewManagerNames = ExpoNativeModuleProxy.viewManagersNames.join(', ');
+            console.warn(`The native view manager required by name (${viewName}) from NativeViewManagerAdapter isn't exported by expo-react-native-adapter. Views of this type may not render correctly. Exported view managers: [${exportedViewManagerNames}].`);
         }
     }
-    NativeComponent.displayName = name;
-    NativeComponent.propTypes = { ...ViewPropTypes, proxiedProperties: PropTypes.object };
-    const nativeComponentName = getViewManagerAdapterNameForViewName(name);
-    const UnderlyingNativeComponent = requireNativeComponent(nativeComponentName, NativeComponent, {
-        nativeOnly: Object.keys(UIManager[nativeComponentName].NativeProps).reduce((acc, key) => ({ ...acc, [key]: true }), {}),
-    });
-    return NativeComponent;
-};
-export const requireNativeViewManager = (name, component) => {
-    var _a;
-    if (!NativeModules.ExpoNativeModuleProxy.viewManagersNames.includes(name)) {
-        console.warn("It seems the native view manager which you're trying to require by name" +
-            "from NativeViewManagerAdapter isn't exported by expo-react-native-adapter." +
-            ' Things may not work properly. Exported view managers: [' +
-            NativeModules.ExpoNativeModuleProxy.viewManagersNames.join(', ') +
-            `], and you required "${name}".`);
-    }
-    const NativeComponent = createNativeComponentClass(name);
-    const PropTypesKeys = [
+    // Set up the React Native native component, which is an adapter to the universal module's view
+    // manager
+    const reactNativeViewName = `ViewManagerAdapter_${viewName}`;
+    const ReactNativeComponent = requireNativeComponent(reactNativeViewName);
+    const reactNativeUIConfiguration = UIManager[reactNativeViewName] || {
+        NativeProps: {},
+        directEventTypes: {},
+    };
+    const reactNativeComponentPropNames = [
         'children',
         ...ViewPropTypesKeys,
-        ...Object.keys(UIManager[getViewManagerAdapterNameForViewName(name)].NativeProps),
-        ...Object.keys(UIManager[getViewManagerAdapterNameForViewName(name)].directEventTypes),
+        ...Object.keys(reactNativeUIConfiguration.NativeProps),
+        ...Object.keys(reactNativeUIConfiguration.directEventTypes),
     ];
-    return _a = class NativeComponentWrapper extends React.Component {
-            render() {
-                const nativeProps = pick(this.props, PropTypesKeys);
-                const proxiedProps = omit(this.props, PropTypesKeys);
-                return <NativeComponent proxiedProperties={proxiedProps} {...nativeProps}/>;
-            }
-        },
-        _a.displayName = `ViewWrapper<${name}>`,
-        _a;
-};
+    // Define a component for universal-module authors to access their native view manager
+    function NativeComponentAdapter(props) {
+        // TODO: `omit` may incur a meaningful performance cost across many native components rendered
+        // in the same update. Profile this and write out a partition function if this is a bottleneck.
+        const nativeProps = pick(props, reactNativeComponentPropNames);
+        const proxiedProps = omit(props, reactNativeComponentPropNames);
+        // @ts-ignore: Update @types/react-native for a newer definition of requireNativeComponent
+        return <ReactNativeComponent {...nativeProps} proxiedProperties={proxiedProps}/>;
+    }
+    NativeComponentAdapter.displayName = `Adapter<${viewName}>`;
+    return NativeComponentAdapter;
+}
 //# sourceMappingURL=NativeViewManagerAdapter.js.map
