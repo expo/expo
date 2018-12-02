@@ -4,19 +4,23 @@ const NativeProxy = NativeModules.ExpoNativeModuleProxy;
 const modulesConstantsKey = 'modulesConstants';
 const exportedMethodsKey = 'exportedMethods';
 
-const NativeModulesProxy: { [moduleName: string]: any } = {};
+type ProxyNativeModule = {
+  [propertyName: string]: any;
+};
+
+const NativeModulesProxy: { [moduleName: string]: ProxyNativeModule } = {};
 
 if (NativeProxy) {
   Object.keys(NativeProxy[exportedMethodsKey]).forEach(moduleName => {
     NativeModulesProxy[moduleName] = NativeProxy[modulesConstantsKey][moduleName] || {};
     NativeProxy[exportedMethodsKey][moduleName].forEach(methodInfo => {
-      NativeModulesProxy[moduleName][methodInfo.name] = async (...args) => {
+      NativeModulesProxy[moduleName][methodInfo.name] = async (...args: unknown[]): Promise<any> => {
         const { key, argumentsCount } = methodInfo;
         if (argumentsCount !== args.length) {
           throw new Error(
-            `Arguments count mismatch, ${
-              args.length
-            } provided, ${argumentsCount} have been expected.`
+            `Native method ${moduleName}.${methodInfo.name} expects ${argumentsCount} ${
+              argumentsCount === 1 ? 'argument' : 'arguments'
+            } but received ${args.length}`
           );
         }
         return await NativeProxy.callMethod(moduleName, key, args);
@@ -35,7 +39,7 @@ if (NativeProxy) {
   });
 } else {
   console.warn(
-    "No native NativeModulesProxy found among NativeModules, are you sure the expo-react-native-adapter's modules are linked properly?"
+    `The "ExpoNativeModulesProxy" native module is not exported through NativeModules; verify that expo-react-native-adapter's native code is linked properly`
   );
 }
 
