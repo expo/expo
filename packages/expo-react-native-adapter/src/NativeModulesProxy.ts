@@ -6,6 +6,8 @@ const exportedMethodsKey = 'exportedMethods';
 
 type ProxyNativeModule = {
   [propertyName: string]: any;
+  addListener: (eventName: string) => void;
+  removeListeners: (count: number) => void;
 };
 
 const NativeModulesProxy: { [moduleName: string]: ProxyNativeModule } = {};
