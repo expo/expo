@@ -722,8 +722,7 @@ EX_EXPORT_METHOD_AS(downloadResumablePauseAsync,
 {
   return [[_moduleRegistry getModuleImplementingProtocol:@protocol(EXFilePermissionModuleInterface)]
           getPathPermissions:(NSString *)path
-          scopedDirs:@[_documentDirectory, _cachesDirectory]
-          bundleDirectory:[_fileSystemManager bundleDirectoryForExperienceId:_moduleRegistry.experienceId]];
+          scopedDirs:@[_documentDirectory, _cachesDirectory]];
 }
 
 - (void)sendEventWithName:(NSString *)eventName body:(id)body

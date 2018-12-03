@@ -1,12 +1,8 @@
-#ifndef FilePermissionWielderInterface_h
-#define FilePermissionWielderInterface_h
-
+// Copyright 2018-present 650 Industries. All rights reserved.
 @protocol EXFilePermissionModuleInterface
 
 - (EXFileSystemPermissionFlags)getPathPermissions:(NSString *)path
-                                       scopedDirs:(NSArray<NSString *> *)scopedDirs
-                                  bundleDirectory:(NSString *)bundleDirectory;
+                                       scopedDirs:(NSArray<NSString *> *)scopedDirs;
 
 @end
 
-#endif /* FilePermissionWielderInterface_h */
