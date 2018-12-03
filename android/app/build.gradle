@@ -90,9 +90,11 @@ configurations.all {
   }
 }
 
+// WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
 /* UNCOMMENT WHEN DISTRIBUTING
 apply from: 'expo.gradle'
 END UNCOMMENT WHEN DISTRIBUTING */
+// WHEN_PREPARING_SHELL_REMOVE_TO_HERE
 
 dependencies {
   implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -221,6 +223,45 @@ dependencies {
 
   // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
   // WHEN_DISTRIBUTING_REMOVE_TO_HERE
+
+  /* UNCOMMENT WHEN DISTRIBUTING
+  api 'com.facebook.react:react-native:31.0.0'
+  api 'host.exp.exponent:expo-core:1.2.0'
+  api 'host.exp.exponent:expo-constants-interface:1.1.0'
+  api 'host.exp.exponent:expo-constants:1.1.0'
+  api 'host.exp.exponent:expo-errors:0.0.1'
+  api 'host.exp.exponent:expo-permissions:1.2.0'
+  api 'host.exp.exponent:expo-sensors-interface:1.1.0'
+  api 'host.exp.exponent:expo-react-native-adapter:1.2.0'
+
+  // Optional universal modules, could be removed
+  // along with references in MainActivity
+  api 'host.exp.exponent:expo-ads-admob:1.1.0'
+  api 'host.exp.exponent:expo-app-auth:1.0.0'
+  api 'host.exp.exponent:expo-analytics-segment:1.1.0'
+  api 'host.exp.exponent:expo-barcode-scanner-interface:1.1.0'
+  api 'host.exp.exponent:expo-barcode-scanner:1.1.0'
+  api 'host.exp.exponent:expo-camera-interface:1.1.0'
+  api 'host.exp.exponent:expo-camera:1.2.0'
+  api 'host.exp.exponent:expo-contacts:1.1.0'
+  api 'host.exp.exponent:expo-face-detector:1.1.0'
+  api 'host.exp.exponent:expo-file-system-interface:1.1.0'
+  api 'host.exp.exponent:expo-file-system:1.1.0'
+  api 'host.exp.exponent:expo-font:1.1.0'
+  api 'host.exp.exponent:expo-gl-cpp:1.1.0'
+  api 'host.exp.exponent:expo-gl:1.1.0'
+  api 'host.exp.exponent:expo-google-sign-in:1.0.0'
+  api 'host.exp.exponent:expo-image-loader-interface:1.1.0'
+  api 'host.exp.exponent:expo-local-authentication:1.1.0'
+  api 'host.exp.exponent:expo-localization:1.0.0'
+  api 'host.exp.exponent:expo-location:1.1.0'
+  api 'host.exp.exponent:expo-media-library:1.1.0'
+  api 'host.exp.exponent:expo-payments-stripe:1.1.0'
+  api 'host.exp.exponent:expo-permissions-interface:1.2.0'
+  api 'host.exp.exponent:expo-print:1.1.0'
+  api 'host.exp.exponent:expo-sensors:1.1.0'
+  api 'host.exp.exponent:expo-sms:1.1.0'
+  END UNCOMMENT WHEN DISTRIBUTING */
 }
 
 // This has to be down here for some reason
