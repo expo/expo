@@ -391,7 +391,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
       mSDKVersion = RNObject.UNVERSIONED;
     }
     // In detach/shell, since SDK31 we always use UNVERSIONED as the ABI.
-    mDetachSdkVersion = RNObject.UNVERSIONED;
+    mDetachSdkVersion = Constants.isStandaloneApp() ? RNObject.UNVERSIONED : mSDKVersion;
 
     if (!RNObject.UNVERSIONED.equals(mSDKVersion)) {
       boolean isValidVersion = false;
