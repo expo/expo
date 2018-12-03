@@ -155,7 +155,7 @@ public class HeadlessAppLoader implements AppLoaderInterface, Exponent.StartReac
       mSDKVersion = RNObject.UNVERSIONED;
     }
 
-    mDetachSdkVersion = Constants.IS_DETACHED ? RNObject.UNVERSIONED : mSDKVersion;
+    mDetachSdkVersion = Constants.isStandaloneApp() ? RNObject.UNVERSIONED : mSDKVersion;
 
     if (!RNObject.UNVERSIONED.equals(mSDKVersion)) {
       boolean isValidVersion = false;
@@ -305,7 +305,7 @@ public class HeadlessAppLoader implements AppLoaderInterface, Exponent.StartReac
     instanceManagerBuilderProperties.expoPackages = extraExpoPackages;
     instanceManagerBuilderProperties.exponentPackageDelegate = delegate.getExponentPackageDelegate();
     instanceManagerBuilderProperties.manifest = mManifest;
-    instanceManagerBuilderProperties.singletonModules = ExponentPackage.getOrCreateSingletonModules(mContext);
+    instanceManagerBuilderProperties.singletonModules = ExponentPackage.getOrCreateSingletonModules(mContext, extraExpoPackages);
 
     RNObject versionedUtils = new RNObject("host.exp.exponent.VersionedUtils").loadVersion(mSDKVersion);
     RNObject builder = versionedUtils.callRecursive("getReactInstanceManagerBuilder", instanceManagerBuilderProperties);

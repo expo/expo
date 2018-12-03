@@ -11,6 +11,7 @@ import expo.core.interfaces.Package;
 import expo.modules.ads.admob.AdMobPackage;
 import expo.modules.analytics.segment.SegmentPackage;
 import expo.modules.appauth.AppAuthPackage;
+import expo.modules.backgroundfetch.BackgroundFetchPackage;
 import expo.modules.barcodescanner.BarCodeScannerPackage;
 import expo.modules.camera.CameraPackage;
 import expo.modules.constants.ConstantsPackage;
@@ -29,6 +30,7 @@ import expo.modules.permissions.PermissionsPackage;
 import expo.modules.print.PrintPackage;
 import expo.modules.sensors.SensorsPackage;
 import expo.modules.sms.SMSPackage;
+import expo.modules.taskManager.TaskManagerPackage;
 import host.exp.exponent.generated.DetachBuildConstants;
 import host.exp.exponent.experience.DetachActivity;
 
@@ -73,7 +75,9 @@ public class MainActivity extends DetachActivity {
         new StripePackage(),
         new LocalAuthenticationPackage(),
         new LocalizationPackage(),
-        new AppAuthPackage()
+        new AppAuthPackage(),
+        new TaskManagerPackage(),
+        new BackgroundFetchPackage()
     );
   }
 
