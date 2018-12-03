@@ -22,7 +22,7 @@
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
   },
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-sms",
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-errors",
   "jest": {
     "preset": "expo-module-scripts"
   },

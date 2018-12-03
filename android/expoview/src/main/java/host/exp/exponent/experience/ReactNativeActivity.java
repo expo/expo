@@ -147,7 +147,7 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
     mContainer = new FrameLayout(this);
     mLayout.addView(mContainer);
     mLoadingView = new LoadingView(this);
-    if (!Constants.isShellApp() || Constants.SHOW_LOADING_VIEW_IN_SHELL_APP) {
+    if (!Constants.isStandaloneApp() || Constants.SHOW_LOADING_VIEW_IN_SHELL_APP) {
       mContainer.setBackgroundColor(ContextCompat.getColor(this, R.color.white));
       mLayout.addView(mLoadingView);
     }
@@ -164,7 +164,7 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
 
   protected void setView(final View view) {
     mContainer.removeAllViews();
-    if (Constants.isShellApp() && Constants.SHOW_LOADING_VIEW_IN_SHELL_APP) {
+    if (Constants.isStandaloneApp() && Constants.SHOW_LOADING_VIEW_IN_SHELL_APP) {
       ViewGroup.LayoutParams layoutParams = mContainer.getLayoutParams();
       layoutParams.height = 0;
       mContainer.setLayoutParams(layoutParams);
@@ -245,7 +245,7 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
   }
 
   private void hideLoadingScreen() {
-    if (Constants.isShellApp() && Constants.SHOW_LOADING_VIEW_IN_SHELL_APP) {
+    if (Constants.isStandaloneApp() && Constants.SHOW_LOADING_VIEW_IN_SHELL_APP) {
       ViewGroup.LayoutParams layoutParams = mContainer.getLayoutParams();
       layoutParams.height = mLayout.getHeight();
       mContainer.setLayoutParams(layoutParams);

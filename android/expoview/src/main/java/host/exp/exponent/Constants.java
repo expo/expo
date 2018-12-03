@@ -20,7 +20,6 @@ public class Constants {
   public static class ExpoViewAppConstants {
     public String VERSION_NAME;
     public String INITIAL_URL;
-    public boolean IS_DETACHED;
     public String SHELL_APP_SCHEME;
     public String RELEASE_CHANNEL;
     public boolean SHOW_LOADING_VIEW_IN_SHELL_APP;
@@ -30,13 +29,14 @@ public class Constants {
     public boolean FCM_ENABLED;
     // no longer used, but we need to leave this here so that people's old detached apps don't break
     public boolean ANALYTICS_ENABLED;
+    // same but since SDK32
+    public boolean IS_DETACHED;
   }
 
   private static final String TAG = Constants.class.getSimpleName();
 
   public static String VERSION_NAME = null;
   public static String INITIAL_URL = null;
-  public static boolean IS_DETACHED = false;
   public static String SHELL_APP_SCHEME = null;
   public static final String SHELL_APP_EMBEDDED_MANIFEST_PATH = "shell-app-manifest.json";
   public static final String API_HOST = "https://exp.host";
@@ -112,14 +112,13 @@ public class Constants {
       ExpoViewAppConstants appConstants = (ExpoViewAppConstants) appConstantsClass.getMethod("get").invoke(null);
       VERSION_NAME = appConstants.VERSION_NAME;
       INITIAL_URL = appConstants.INITIAL_URL;
-      IS_DETACHED = appConstants.IS_DETACHED;
       SHELL_APP_SCHEME = appConstants.SHELL_APP_SCHEME;
       RELEASE_CHANNEL = appConstants.RELEASE_CHANNEL;
       SHOW_LOADING_VIEW_IN_SHELL_APP = appConstants.SHOW_LOADING_VIEW_IN_SHELL_APP;
       ARE_REMOTE_UPDATES_ENABLED = appConstants.ARE_REMOTE_UPDATES_ENABLED;
       ANDROID_VERSION_CODE = appConstants.ANDROID_VERSION_CODE;
       FCM_ENABLED = appConstants.FCM_ENABLED;
-      ANALYTICS_ENABLED = !isShellApp();
+      ANALYTICS_ENABLED = !isStandaloneApp();
 
       embeddedResponses.addAll(appConstants.EMBEDDED_RESPONSES);
       EMBEDDED_RESPONSES = embeddedResponses;
@@ -141,7 +140,7 @@ public class Constants {
   public static final boolean WRITE_BUNDLE_TO_LOG = false;
   public static final boolean WAIT_FOR_DEBUGGER = false;
 
-  public static boolean isShellApp() {
+  public static boolean isStandaloneApp() {
     return INITIAL_URL != null;
   }
 
@@ -170,10 +169,6 @@ public class Constants {
         return "";
       }
     }
-  }
-
-  public static boolean isDetached() {
-    return IS_DETACHED;
   }
 
   private static boolean sIsTest = false;
