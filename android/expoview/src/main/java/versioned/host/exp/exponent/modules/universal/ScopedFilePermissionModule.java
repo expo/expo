@@ -29,7 +29,9 @@ public class ScopedFilePermissionModule extends FilePermissionModule implements 
       Context context = mScopedContext.getContext();
       String dataDirCanonicalPath = new File(context.getApplicationInfo().dataDir).getCanonicalPath();
       String canonicalPath = new File(path).getCanonicalPath();
-      if (shouldForbidAccessToDataDirectory() && canonicalPath.startsWith(dataDirCanonicalPath)) {
+      boolean isInDataDir = canonicalPath.startsWith(dataDirCanonicalPath + "/");
+      isInDataDir |= canonicalPath.equals(dataDirCanonicalPath);
+      if (shouldForbidAccessToDataDirectory() && isInDataDir) {
         return EnumSet.noneOf(Permission.class);
       }
     } catch (IOException e) {
