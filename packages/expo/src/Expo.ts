@@ -102,15 +102,6 @@ export { default as Logs } from './logs/Logs';
 
 // @ts-ignore
 Object.defineProperties(exports, {
-  Fingerprint: {
-    enumerable: true,
-    get() {
-      console.warn(
-        'Expo.Fingerprint has been renamed to Expo.LocalAuthentication. The old name is deprecated and will be removed in SDK 32.'
-      );
-      return this.LocalAuthentication;
-    },
-  },
   // TODO: Unify the Pedometer module across platforms so we can export it normally
   Pedometer: {
     enumerable: true,
