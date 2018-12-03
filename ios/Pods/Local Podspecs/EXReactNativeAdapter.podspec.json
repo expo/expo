@@ -1,11 +1,11 @@
 {
   "name": "EXReactNativeAdapter",
   "version": "1.2.0",
-  "summary": "Expo React Native adapter for universal modules",
-  "description": "Expo React Native adapter for universal modules",
+  "summary": "The adapter to use Expo universal modules with the React Native bridge",
+  "description": "The adapter to use Expo universal modules with the React Native bridge",
   "license": "MIT",
   "authors": "650 Industries, Inc.",
-  "homepage": "https://docs.expo.io/",
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-core",
   "platforms": {
     "ios": "10.0"
   },

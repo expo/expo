@@ -149,6 +149,7 @@ dependencies {
   api 'host.exp.exponent:expo-task-manager-interface:1.0.0'
   api 'host.exp.exponent:expo-background-fetch:1.0.0'
   api 'host.exp.exponent:expo-app-loader-provider:1.0.0'
+  api 'host.exp.exponent:expo-errors:0.0.1'
   END UNCOMMENT WHEN DISTRIBUTING */
 
   // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
@@ -190,6 +191,7 @@ dependencies {
   api project(':expo-task-manager-interface')
   api project(':expo-background-fetch')
   api project(':expo-app-loader-provider')
+  api project(':expo-errors')
 
   // Versioned react native
   // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE

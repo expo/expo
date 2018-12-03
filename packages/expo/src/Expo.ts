@@ -26,7 +26,8 @@ export { Constants } from 'expo-constants';
 export { Contacts } from 'expo-contacts';
 export { FaceDetector } from 'expo-face-detector';
 export { FileSystem } from 'expo-file-system';
-export { Font } from 'expo-font';
+import * as Font from 'expo-font';
+export { Font };
 export { GLView } from 'expo-gl';
 export { GoogleSignIn } from 'expo-google-sign-in';
 export { LocalAuthentication } from 'expo-local-authentication';
@@ -105,15 +106,6 @@ export { default as Logs } from './logs/Logs';
 
 // @ts-ignore
 Object.defineProperties(exports, {
-  Fingerprint: {
-    enumerable: true,
-    get() {
-      console.warn(
-        'Expo.Fingerprint has been renamed to Expo.LocalAuthentication. The old name is deprecated and will be removed in SDK 32.'
-      );
-      return this.LocalAuthentication;
-    },
-  },
   // TODO: Unify the Pedometer module across platforms so we can export it normally
   Pedometer: {
     enumerable: true,
