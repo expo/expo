@@ -113,28 +113,6 @@ Object.defineProperties(exports, {
       }
     },
   },
-
-  // Directly exposed modules that we need to revisit or drop
-  Crypto: {
-    get() {
-      console.warn(`Expo.Crypto is not part of the public API and will be removed in SDK 32.`);
-      return NativeModules.ExponentCrypto;
-    },
-  },
-  Fabric: {
-    get() {
-      console.warn(`Expo.Fabric is not part of the public API and will be removed in SDK 32.`);
-      return NativeModules.ExponentFabric;
-    },
-  },
-  ImageCropper: {
-    get() {
-      console.warn(
-        `Expo.ImageCropper is not part of the public API and will be removed in SDK 32.`
-      );
-      return NativeModules.ExponentImageCropper;
-    },
-  },
 });
 
 if (global) {
