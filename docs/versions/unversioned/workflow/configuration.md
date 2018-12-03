@@ -457,6 +457,9 @@ Configuration for how and when the app should request OTA JavaScript updates
 
       Reverse DNS notation unique name for your app. 
       For example, host.exp.exponent, where exp.host is our domain and Expo is our app.
+      The name may only contain lowercase and uppercase letters (a-z, A-Z),
+      numbers (0-9) and underscores (_). Each component of the name should start
+      with a lowercase letter.
 
       ExpoKit: this is set in `android/app/build.gradle` as well as your
       AndroidManifest.xml file (multiple places).
