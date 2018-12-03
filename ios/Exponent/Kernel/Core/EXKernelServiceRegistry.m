@@ -15,6 +15,7 @@
 #import "EXSensorManager.h"
 #import "EXAudioSessionManager.h"
 #import "EXUpdatesManager.h"
+#import "EXUserNotificationManager.h"
 
 #import <EXCore/EXModuleRegistryProvider.h>
 
@@ -32,6 +33,7 @@
 @property (nonatomic, strong) EXSensorManager *sensorManager;
 @property (nonatomic, strong) EXAudioSessionManager *audioSessionManager;
 @property (nonatomic, strong) EXUpdatesManager *updatesManager;
+@property (nonatomic, strong) EXUserNotificationManager *notificationsManager;
 @property (nonatomic, strong) NSDictionary<NSString *, id> *allServices;
 
 @end
@@ -54,6 +56,7 @@
     [self fileSystemManager];
     [self audioSessionManager];
     [self updatesManager];
+    [self notificationsManager];
   }
   return self;
 }
@@ -154,6 +157,14 @@
   return _updatesManager;
 }
 
+- (EXUserNotificationManager *)notificationsManager
+{
+  if (!_notificationsManager) {
+    _notificationsManager = [[EXUserNotificationManager alloc] init];
+  }
+  return _notificationsManager;
+}
+
 - (NSDictionary *)allServices
 {
   if (!_allServices) {
@@ -176,7 +187,8 @@
                                   self.screenOrientationManager,
                                   self.sensorManager,
                                   self.updatesManager,
-                                  self.audioSessionManager
+                                  self.audioSessionManager,
+                                  self.notificationsManager
                                   ];
     NSArray *allServices = [registryServices arrayByAddingObjectsFromArray:[[EXModuleRegistryProvider singletonModules] allObjects]];
     for (id service in allServices) {

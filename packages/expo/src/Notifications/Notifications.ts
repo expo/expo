@@ -41,6 +41,17 @@ type Channel = {
   badge?: boolean;
 };
 
+type ActionType = {
+  actionId: string;
+  buttonTitle: string;
+  isDestructive?: boolean;
+  isAuthenticationRequired?: boolean;
+  textInput?: {
+    submitButtonTitle: string;
+    placeholder: string;
+  };
+};
+
 // Android assigns unique number to each notification natively.
 // Since that's not supported on iOS, we generate an unique string.
 type LocalNotificationId = string | number;
@@ -170,6 +181,23 @@ export default {
   /* Only used internally to initialize the notification from top level props */
   _setInitialNotification(notification: Notification) {
     _initialNotification = notification;
+  },
+
+  // User passes set of actions titles.
+  createCategoryIOSAsync(categoryId: string, actions: ActionType[]): Promise<void> {
+    if (Platform.OS === 'android') {
+      console.warn('createCategoryAsync(...) has no effect on Android');
+      return Promise.resolve();
+    }
+    return ExponentNotifications.createCategoryAsync(categoryId, actions);
+  },
+
+  deleteCategoryIOSAsync(categoryId: string): Promise<void> {
+    if (Platform.OS === 'android') {
+      console.warn('deleteCategoryAsync(...) has no effect on Android');
+      return Promise.resolve();
+    }
+    return ExponentNotifications.deleteCategoryAsync(categoryId);
   },
 
   /* Re-export */
@@ -327,6 +355,11 @@ export default {
     }
 
     if (Platform.OS === 'ios') {
+      if (options.repeat) {
+        console.warn('Ability to schedule an automatically repeated notification is deprecated on iOS and will be removed in the next SDK release.');
+        return ExponentNotifications.legacyScheduleLocalRepeatingNotification(nativeNotification, options);
+      }
+
       return ExponentNotifications.scheduleLocalNotification(nativeNotification, options);
     } else {
       let _channel;
@@ -375,12 +408,12 @@ export default {
 
   /* Cancel scheduled notification notification with ID */
   cancelScheduledNotificationAsync(notificationId: LocalNotificationId): Promise<void> {
-    return ExponentNotifications.cancelScheduledNotification(notificationId);
+    return ExponentNotifications.cancelScheduledNotificationAsync(notificationId);
   },
 
   /* Cancel all scheduled notifications */
   cancelAllScheduledNotificationsAsync(): Promise<void> {
-    return ExponentNotifications.cancelAllScheduledNotifications();
+    return ExponentNotifications.cancelAllScheduledNotificationsAsync();
   },
 
   /* Primary public api */
