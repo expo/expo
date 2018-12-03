@@ -21,6 +21,8 @@ This is the log of notable changes to the Expo client that are developer-facing.
 
 - fix app cache size blowing up when using `ImagePicker` by [@sjchmiela](https://github.com/sjchmiela) ([#2750](https://github.com/expo/expo/pull/2750))
 - fix compression in ImagePicker by [@Szymon20000](https://github.com/Szymon20000) ([#2746](https://github.com/expo/expo/pull/2746))
+- fix `FileSystem` forbidding access to external directories by [@Szymon20000](https://github.com/Szymon20000)
+([#2748](https://github.com/expo/expo/pull/2748))
 - decycle objects when sending logs to remote console by [@sjchmiela](https://github.com/sjchmiela) ([#2598](https://github.com/expo/expo/pull/2598))
 - unify linear gradient behavior across platforms by [@sjchmiela](https://github.com/sjchmiela) ([#2624](https://github.com/expo/expo/pull/2624))
 - use device orientation for recorded videos by [@flippinjoe](https://github.com/flippinjoe) ([expo-camera#2](https://github.com/expo/expo-camera/pull/2))
