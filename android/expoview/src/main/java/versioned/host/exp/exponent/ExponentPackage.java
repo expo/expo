@@ -35,13 +35,10 @@ import versioned.host.exp.exponent.modules.api.fbads.AdIconViewManager;
 import versioned.host.exp.exponent.modules.api.fbads.MediaViewManager;
 import versioned.host.exp.exponent.modules.api.AmplitudeModule;
 import versioned.host.exp.exponent.modules.api.CalendarModule;
-import versioned.host.exp.exponent.modules.api.CryptoModule;
 import versioned.host.exp.exponent.modules.api.DocumentPickerModule;
 import versioned.host.exp.exponent.modules.api.ErrorRecoveryModule;
-import versioned.host.exp.exponent.modules.api.FabricModule;
 import versioned.host.exp.exponent.modules.api.FacebookModule;
 import versioned.host.exp.exponent.modules.api.GoogleModule;
-import versioned.host.exp.exponent.modules.api.ImageCropperModule;
 import versioned.host.exp.exponent.modules.api.ImagePickerModule;
 import versioned.host.exp.exponent.modules.api.KeepAwakeModule;
 import versioned.host.exp.exponent.modules.api.KeyboardModule;
@@ -141,8 +138,6 @@ public class ExponentPackage implements ReactPackage {
       nativeModules.add((NativeModule) ExponentKernelModuleProvider.newInstance(reactContext));
     }
 
-    nativeModules.add(new ImageCropperModule(reactContext));
-
     if (isVerified) {
       try {
         ExperienceId experienceId = ExperienceId.create(mManifest.getString(ExponentManifest.MANIFEST_ID_KEY));
@@ -150,11 +145,9 @@ public class ExponentPackage implements ReactPackage {
 
         nativeModules.add(new ExponentAsyncStorageModule(reactContext, mManifest));
         nativeModules.add(new NotificationsModule(reactContext, mManifest, mExperienceProperties));
-        nativeModules.add(new CryptoModule(reactContext));
         nativeModules.add(new ImagePickerModule(reactContext, scopedContext, experienceId));
         nativeModules.add(new ImageManipulatorModule(reactContext, scopedContext));
         nativeModules.add(new FacebookModule(reactContext));
-        nativeModules.add(new FabricModule(reactContext, mExperienceProperties));
         nativeModules.add(new GoogleModule(reactContext, mExperienceProperties));
         nativeModules.add(new AmplitudeModule(reactContext, scopedContext));
         nativeModules.add(new RNViewShotModule(reactContext, scopedContext));
