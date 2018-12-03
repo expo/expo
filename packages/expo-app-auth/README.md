@@ -40,7 +40,7 @@ and run `pod install`.
    and if not already included
 
    ```gradle
-      include ':expo-constants-interface'
+   include ':expo-constants-interface'
    project(':expo-constants-interface').projectDir = new File(rootProject.projectDir, '../node_modules/expo-constants-interface/android')
    ```
 
@@ -57,7 +57,8 @@ and run `pod install`.
    ```java
    /*
    * At the top of the file.
-   * This is automatically imported with Android Studio, but if you are in any other editor you will need to manually import the module.
+   * This is automatically imported with Android Studio, but if 
+   * you are in any other editor you will need to manually import the module.
    */
    import expo.modules.appauth.AppAuthPackage;
    // Later in the file...
