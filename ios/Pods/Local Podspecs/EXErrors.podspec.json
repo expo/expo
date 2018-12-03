@@ -5,7 +5,7 @@
   "description": "Error classes and helpers for Expo modules",
   "license": "MIT",
   "authors": "650 Industries, Inc.",
-  "homepage": "https://docs.expo.io/",
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-errors",
   "platforms": {
     "ios": "10.0"
   },
