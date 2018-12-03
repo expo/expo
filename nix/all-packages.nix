@@ -24,6 +24,12 @@ self: super:
     in
       generatedNodePackages // {
         expo-cli = generatedNodePackages.expo-cli.override {
+          nativeBuildInputs = [ self.makeWrapper ];
+          postInstall = ''
+            for p in $out/bin/expo{,-cli}; do
+              wrapProgram $p --prefix PATH : ${self.procps}/bin
+            done
+          '';
           preFixup = super.lib.optionalString super.stdenv.isDarwin ''
             detach="$out/lib/node_modules/expo-cli/node_modules/xdl/build/detach"
             substituteInPlace "$detach/IosShellApp.js" --replace xcpretty ${self.xcpretty}/bin/xcpretty
