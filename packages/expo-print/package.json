@@ -25,6 +25,7 @@
   "license": "MIT",
   "dependencies": {
     "expo-core": "~1.2.0",
+    "expo-errors": "^0.0.1",
     "babel-preset-expo": "^5.0.0"
   },
   "devDependencies": {
