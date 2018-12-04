@@ -1,8 +1,5 @@
-import { NativeModules } from 'react-native';
-
-import UnsupportedError from './UnsupportedError';
-
-const { ExponentHaptic = {} } = NativeModules;
+import { UnavailabilityError } from 'expo-errors';
+import ExponentHaptic from './ExponentHaptic';
 
 /**
  * Notification Feedback Type
@@ -49,7 +46,7 @@ export enum ImpactFeedbackStyle {
  */
 export function notification(type: NotificationFeedbackType = NotificationFeedbackType.Success) {
   if (!ExponentHaptic.notification) {
-    throw new UnsupportedError('Haptic', 'notification');
+    throw new UnavailabilityError('Haptic', 'notification');
   }
 
   return ExponentHaptic.notification(type);
@@ -60,7 +57,7 @@ export function notification(type: NotificationFeedbackType = NotificationFeedba
  */
 export function impact(style: ImpactFeedbackStyle = ImpactFeedbackStyle.Medium) {
   if (!ExponentHaptic.impact) {
-    throw new UnsupportedError('Haptic', 'impact');
+    throw new UnavailabilityError('Haptic', 'impact');
   }
 
   return ExponentHaptic.impact(style);
@@ -71,7 +68,7 @@ export function impact(style: ImpactFeedbackStyle = ImpactFeedbackStyle.Medium) 
  */
 export function selection() {
   if (!ExponentHaptic.selection) {
-    throw new UnsupportedError('Haptic', 'selection');
+    throw new UnavailabilityError('Haptic', 'selection');
   }
 
   return ExponentHaptic.selection();
