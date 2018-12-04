@@ -71,7 +71,7 @@ import * as MailComposer from './MailComposer/MailComposer';
 export { MailComposer };
 export { default as Notifications } from './Notifications/Notifications';
 export { default as SQLite } from './SQLite';
-import * as ScreenOrientation from './ScreenOrientation';
+import * as ScreenOrientation from './ScreenOrientation/ScreenOrientation';
 export { ScreenOrientation };
 import * as SecureStore from './SecureStore';
 export { SecureStore };
