@@ -32,7 +32,7 @@ describe('requireNativeViewManager', () => {
     );
     let testInstance = testRenderer.root;
     // NOTE: update this test if the naming scheme of the native adapter components changes
-    let testNativeComponent = testInstance.findByType('ViewManagerAdapter_ExpoTestView');
+    let testNativeComponent = testInstance.findByType('ViewManagerAdapter_ExpoTestView' as any);
     expect(testNativeComponent).toBeDefined();
 
     // React Native props

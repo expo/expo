@@ -26,4 +26,4 @@ export default class BlurView extends React.Component<Props> {
   }
 }
 
-const NativeBlurView = requireNativeComponent('ExponentBlurView', BlurView);
+const NativeBlurView = requireNativeComponent('ExponentBlurView');

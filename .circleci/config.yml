@@ -158,6 +158,9 @@ jobs:
           command: test --maxWorkers 1
           working_directory: ~/expo/packages/expo
       - yarn:
+          command: build
+          working_directory: ~/expo/packages/expo-ads-admob
+      - yarn:
           command: test --maxWorkers 1
           working_directory: ~/expo/packages/expo-font
       - yarn:
