@@ -1,10 +1,10 @@
-import { Options } from './Speech.types';
+import { SpeechOptions } from './Speech.types';
 
 export default {
   get name(): string {
     return 'ExponentSpeech';
   },
-  async speak(id: string, text: string, options: Options): Promise<SpeechSynthesisUtterance> {
+  async speak(id: string, text: string, options: SpeechOptions): Promise<SpeechSynthesisUtterance> {
     const { SpeechSynthesisUtterance } = global;
 
     const message = new SpeechSynthesisUtterance();
@@ -21,9 +21,9 @@ export default {
     if ('volume' in options) {
       message.volume = options.volume;
     }
-    if ('voiceIndex' in options && options.voiceIndex) {
+    if ('_voiceIndex' in options && options._voiceIndex) {
       const voices = window.speechSynthesis.getVoices();
-      message.voice = voices[Math.min(voices.length - 1, Math.max(0, options.voiceIndex))];
+      message.voice = voices[Math.min(voices.length - 1, Math.max(0, options._voiceIndex))];
     }
     if ('onStart' in options) {
       message.onstart = options.onStart;
@@ -51,7 +51,7 @@ export default {
 
     return message;
   },
-  async isSpeaking(): Promise<boolean> {
+  async isSpeaking(): Promise<Boolean> {
     return window.speechSynthesis.speaking;
   },
   async stop(): Promise<void> {

@@ -1,8 +1,8 @@
 import { NativeEventEmitter, Platform } from 'react-native';
-
+import { UnavailabilityError } from 'expo-errors';
 import ExponentSpeech from './ExponentSpeech';
 
-import { Options } from './Speech.types';
+import { SpeechOptions } from './Speech.types';
 
 const SpeechEventEmitter = new NativeEventEmitter(ExponentSpeech);
 
@@ -55,7 +55,7 @@ function _registerListenersIfNeeded() {
   });
 }
 
-export function speak(text: string, options: Options = {}) {
+export function speak(text: string, options: SpeechOptions = {}) {
   const id = _nextCallbackId++;
   _CALLBACKS[id] = options;
   _registerListenersIfNeeded();
@@ -71,21 +71,19 @@ export function stop(): Promise<void> {
 }
 
 export function pause(): Promise<void> {
-  if (ExponentSpeech.pause) {
-    return ExponentSpeech.pause();
+  if (!ExponentSpeech.pause) {
+    throw new UnavailabilityError('Speech', 'pause');
   }
 
-  // TODO: Bacon: use UnsupportedError
-  throw new Error(`Speech.pause is not available on ${Platform.OS}`);
+  return ExponentSpeech.pause();
 }
 
 export function resume(): Promise<void> {
-  if (ExponentSpeech.resume) {
-    return ExponentSpeech.resume();
+  if (!ExponentSpeech.resume) {
+    throw new UnavailabilityError('Speech', 'resume');
   }
 
-  // TODO: Bacon: use UnsupportedError
-  throw new Error(`Speech.resume is not available on ${Platform.OS}`);
+  return ExponentSpeech.resume();
 }
 
 function setSpeakingListener(eventName, callback) {
