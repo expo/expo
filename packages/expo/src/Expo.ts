@@ -63,7 +63,7 @@ import * as ImageManipulator from './ImageManipulator';
 export { ImageManipulator };
 import * as ImagePicker from './ImagePicker/ImagePicker';
 export { ImagePicker };
-import * as IntentLauncherAndroid from './IntentLauncherAndroid';
+import * as IntentLauncherAndroid from './IntentLauncherAndroid/IntentLauncherAndroid';
 export { IntentLauncherAndroid };
 export { default as KeepAwake } from './KeepAwake';
 export { default as Linking } from './Linking';
