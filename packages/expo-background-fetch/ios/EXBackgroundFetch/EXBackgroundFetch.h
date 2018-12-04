@@ -3,7 +3,19 @@
 #import <EXCore/EXExportedModule.h>
 #import <EXCore/EXModuleRegistryConsumer.h>
 
-NSString *const EXBackgroundFetchResultFailed;
+// Background fetch result (equivalents to UIBackgroundFetchResult)
+typedef NS_ENUM(NSUInteger, EXBackgroundFetchResult) {
+  EXBackgroundFetchResultNoData = 1,
+  EXBackgroundFetchResultNewData = 2,
+  EXBackgroundFetchResultFailed = 3,
+};
+
+// Background fetch status (equivalents to UIBackgroundRefreshStatus)
+typedef NS_ENUM(NSUInteger, EXBackgroundFetchStatus) {
+  EXBackgroundFetchStatusDenied = 1,
+  EXBackgroundFetchStatusRestricted = 2,
+  EXBackgroundFetchStatusAvailable = 3,
+};
 
 @interface EXBackgroundFetch : EXExportedModule <EXModuleRegistryConsumer>
 

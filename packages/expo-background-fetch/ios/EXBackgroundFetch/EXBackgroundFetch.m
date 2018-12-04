@@ -2,19 +2,8 @@
 
 #import <EXCore/EXDefines.h>
 #import <EXBackgroundFetch/EXBackgroundFetch.h>
-#import <EXBackgroundFetch/EXBackgroundFetchConstants.h>
 #import <EXBackgroundFetch/EXBackgroundFetchTaskConsumer.h>
 #import <EXTaskManagerInterface/EXTaskManagerInterface.h>
-
-// Background Fetch statuses (equivalents to UIBackgroundRefreshStatus)
-NSString *const EXBackgroundFetchStatusRestricted = @"restricted";
-NSString *const EXBackgroundFetchStatusDenied = @"denied";
-NSString *const EXBackgroundFetchStatusAvailable = @"available";
-
-// Possible results (equivalents to UIBackgroundFetchResult)
-NSString *const EXBackgroundFetchResultNoData = @"no-data";
-NSString *const EXBackgroundFetchResultNewData = @"new-data";
-NSString *const EXBackgroundFetchResultFailed = @"failed";
 
 @interface EXBackgroundFetch ()
 
@@ -26,22 +15,6 @@ NSString *const EXBackgroundFetchResultFailed = @"failed";
 
 EX_EXPORT_MODULE(ExpoBackgroundFetch);
 
-- (NSDictionary *)constantsToExport
-{
-  return @{
-           @"Status": @{
-               @"RESTRICTED": EXBackgroundFetchStatusRestricted,
-               @"DENIED": EXBackgroundFetchStatusDenied,
-               @"AVAILABLE": EXBackgroundFetchStatusAvailable,
-               },
-           @"Result": @{
-               @"NO_DATA": EXBackgroundFetchResultNoData,
-               @"NEW_DATA": EXBackgroundFetchResultNewData,
-               @"FAILED": EXBackgroundFetchResultFailed,
-               }
-           };
-}
-
 - (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _taskManager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXTaskManagerInterface)];
@@ -51,7 +24,9 @@ EX_EXPORT_METHOD_AS(getStatusAsync,
                     getStatus:(EXPromiseResolveBlock)resolve
                     reject:(EXPromiseRejectBlock)reject)
 {
-  resolve([self _getStatus]);
+  dispatch_async(dispatch_get_main_queue(), ^{
+    resolve(@([self _getStatus]));
+  });
 }
 
 EX_EXPORT_METHOD_AS(setMinimumIntervalAsync,
@@ -59,9 +34,11 @@ EX_EXPORT_METHOD_AS(setMinimumIntervalAsync,
                     resolve:(EXPromiseResolveBlock)resolve
                     reject:(EXPromiseRejectBlock)reject)
 {
-  NSTimeInterval timeInterval = [minimumInterval doubleValue];
-  [[UIApplication sharedApplication] setMinimumBackgroundFetchInterval:timeInterval];
-  resolve([NSNull null]);
+  dispatch_async(dispatch_get_main_queue(), ^{
+    NSTimeInterval timeInterval = [minimumInterval doubleValue];
+    [[UIApplication sharedApplication] setMinimumBackgroundFetchInterval:timeInterval];
+    resolve([NSNull null]);
+  });
 }
 
 EX_EXPORT_METHOD_AS(registerTaskAsync,
@@ -103,7 +80,7 @@ EX_EXPORT_METHOD_AS(unregisterTaskAsync,
 
 # pragma mark - helpers
 
-- (nonnull NSString *)_getStatus
+- (EXBackgroundFetchStatus)_getStatus
 {
   UIBackgroundRefreshStatus refreshStatus = [[UIApplication sharedApplication] backgroundRefreshStatus];
 

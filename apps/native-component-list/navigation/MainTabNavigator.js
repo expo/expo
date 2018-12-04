@@ -7,6 +7,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { Colors, Layout } from '../constants';
 
 import AppAuthScreen from '../screens/AppAuthScreen';
+import BackgroundFetchScreen from '../screens/BackgroundFetchScreen';
 import BarCodeScannerScreen from '../screens/BarCodeScannerScreen';
 import BlurViewScreen from '../screens/BlurViewScreen';
 import DocumentPickerScreen from '../screens/DocumentPickerScreen';
@@ -126,6 +127,7 @@ const ExpoApisStackNavigator = createStackNavigator(
     ExpoApis: { screen: ExpoApisScreen },
     AppAuth: AppAuthScreen,
     AuthSession: { screen: AuthSessionScreen },
+    BackgroundFetch: { screen: BackgroundFetchScreen },
     Branch: { screen: BranchScreen },
     DocumentPicker: { screen: DocumentPickerScreen },
     Localization: { screen: LocalizationScreen },

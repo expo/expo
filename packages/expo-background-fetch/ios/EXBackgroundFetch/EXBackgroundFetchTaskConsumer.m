@@ -1,6 +1,6 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#import <EXBackgroundFetch/EXBackgroundFetchConstants.h>
+#import <EXBackgroundFetch/EXBackgroundFetch.h>
 #import <EXBackgroundFetch/EXBackgroundFetchTaskConsumer.h>
 #import <EXTaskManagerInterface/EXTaskInterface.h>
 
@@ -32,15 +32,20 @@
 }
 
 // Translate result received from JS to another (native) type that is then used for example as an argument in completion callbacks.
-- (NSNumber *)normalizeTaskResult:(NSString *)result
+- (id)normalizeTaskResult:(id)result
 {
-  if ([result isEqualToString:EXBackgroundFetchResultFailed]) {
-    return @(UIBackgroundFetchResultFailed);
+  if (!result || result == [NSNull null]) {
+    return @(UIBackgroundFetchResultNoData);
   }
-  if ([result isEqualToString:EXBackgroundFetchResultNewData]) {
-    return @(UIBackgroundFetchResultNewData);
+  switch ([result unsignedIntegerValue]) {
+    case EXBackgroundFetchResultNewData:
+      return @(UIBackgroundFetchResultNewData);
+    case EXBackgroundFetchResultFailed:
+      return @(UIBackgroundFetchResultFailed);
+    case EXBackgroundFetchResultNoData:
+    default:
+      return @(UIBackgroundFetchResultNoData);
   }
-  return @(UIBackgroundFetchResultNoData);
 }
 
 @end

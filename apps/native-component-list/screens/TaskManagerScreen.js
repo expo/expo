@@ -79,6 +79,12 @@ export default class TaskManagerScreen extends React.Component {
           title="Go to geofencing screen"
           onPress={() => this.props.navigation.navigate('Geofencing')}
         />
+        <Button
+          style={styles.button}
+          buttonStyle={{ backgroundColor: 'green' }}
+          title="Go to background fetch screen"
+          onPress={() => this.props.navigation.navigate('BackgroundFetch')}
+        />
       </View>
     );
   }
