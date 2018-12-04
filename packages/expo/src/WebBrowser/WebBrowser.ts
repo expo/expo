@@ -1,13 +1,6 @@
-import { Linking, NativeModules, Platform } from 'react-native';
-import UnsupportedError from './UnsupportedError';
-
-const {
-  ExponentWebBrowser = {
-    get name() {
-      return 'ExponentWebBrowser';
-    },
-  },
-} = NativeModules;
+import { Linking, Platform } from 'react-native';
+import { UnavailabilityError } from 'expo-errors';
+import ExponentWebBrowser from './ExponentWebBrowser';
 
 type RedirectEvent = {
   url: string;
@@ -26,14 +19,14 @@ type RedirectResult = {
 
 async function openBrowserAsync(url: string): Promise<BrowserResult> {
   if (!ExponentWebBrowser.openBrowserAsync) {
-    throw new UnsupportedError('WebBrowser', 'openBrowserAsync');
+    throw new UnavailabilityError('WebBrowser', 'openBrowserAsync');
   }
   return ExponentWebBrowser.openBrowserAsync(url);
 }
 
 function dismissBrowser(): void {
   if (!ExponentWebBrowser.dismissBrowser) {
-    throw new UnsupportedError('WebBrowser', 'dismissBrowser');
+    throw new UnavailabilityError('WebBrowser', 'dismissBrowser');
   }
   ExponentWebBrowser.dismissBrowser();
 }
@@ -41,7 +34,7 @@ function dismissBrowser(): void {
 async function openAuthSessionAsync(url: string, redirectUrl: string): Promise<AuthSessionResult> {
   if (_authSessionIsNativelySupported()) {
     if (!ExponentWebBrowser.openAuthSessionAsync) {
-      throw new UnsupportedError('WebBrowser', 'openAuthSessionAsync');
+      throw new UnavailabilityError('WebBrowser', 'openAuthSessionAsync');
     }
     return ExponentWebBrowser.openAuthSessionAsync(url, redirectUrl);
   } else {
@@ -52,12 +45,12 @@ async function openAuthSessionAsync(url: string, redirectUrl: string): Promise<A
 function dismissAuthSession(): void {
   if (_authSessionIsNativelySupported()) {
     if (!ExponentWebBrowser.dismissAuthSession) {
-      throw new UnsupportedError('WebBrowser', 'dismissAuthSession');
+      throw new UnavailabilityError('WebBrowser', 'dismissAuthSession');
     }
     ExponentWebBrowser.dismissAuthSession();
   } else {
     if (!ExponentWebBrowser.dismissBrowser) {
-      throw new UnsupportedError('WebBrowser', 'dismissAuthSession');
+      throw new UnavailabilityError('WebBrowser', 'dismissAuthSession');
     }
     ExponentWebBrowser.dismissBrowser();
   }

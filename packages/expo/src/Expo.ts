@@ -84,7 +84,7 @@ import * as Updates from './Updates';
 export { Updates };
 import * as Util from './Util';
 export { Util };
-export { default as WebBrowser } from './WebBrowser';
+export { default as WebBrowser } from './WebBrowser/WebBrowser';
 export { default as apisAreAvailable } from './apisAreAvailable';
 export { default as takeSnapshotAsync } from './takeSnapshotAsync';
 import * as Audio from './av/Audio';
