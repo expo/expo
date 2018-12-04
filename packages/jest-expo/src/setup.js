@@ -115,16 +115,13 @@ Object.defineProperty(mockNativeModules.UIManager, 'RCTView', {
 });
 
 const modulesConstants = mockNativeModules.ExpoNativeModuleProxy.modulesConstants;
-
-Object.defineProperty(mockNativeModules.ExpoNativeModuleProxy, 'modulesConstants', {
-  get: () => ({
-    ...modulesConstants,
-    ExponentConstants: {
-      ...modulesConstants.ExponentConstants,
-      ...createMockConstants(),
-    },
-  }),
-});
+mockNativeModules.ExpoNativeModuleProxy.modulesConstants = {
+  ...modulesConstants,
+  ExponentConstants: {
+    ...modulesConstants.ExponentConstants,
+    ...createMockConstants(),
+  },
+};
 
 jest.mock('expo-file-system', () => ({
   FileSystem: {
@@ -160,23 +157,25 @@ jest.mock('react-native/Libraries/Image/AssetRegistry', () => ({
 
 jest.doMock('react-native/Libraries/BatchedBridge/NativeModules', () => mockNativeModules);
 
-// After NativeModules mock is set up we can mock NativeModulesProxy's functions that should call
-// native side by proxy. We're not really interested in checking whether the underlying method
-// is called, just that the proxy method is called (we believe the adapter is working properly).
+jest.mock('expo-react-native-adapter', () => {
+  const ExpoReactNativeAdapter = require.requireActual('expo-react-native-adapter');
+  const { NativeModulesProxy } = ExpoReactNativeAdapter;
 
-const ExpoReactNativeAdapter = require('expo-react-native-adapter'); // eslint-disable-line import/order
-
-const NativeModulesProxy = ExpoReactNativeAdapter.NativeModulesProxy;
-
-for (let moduleName of Object.keys(NativeModulesProxy)) {
-  for (let propName of Object.keys(NativeModulesProxy[moduleName])) {
-    if (NativeModulesProxy[moduleName][propName] instanceof Function) {
-      NativeModulesProxy[moduleName][propName] = jest.fn(() => new Promise(resolve => resolve()));
+  // After the NativeModules mock is set up, we can mock NativeModuleProxy's functions that call
+  // into the native proxy module. We're not really interested in checking whether the underlying
+  // method is called, just that the proxy method is called, since we have unit tests for the
+  // adapter and believe it works correctly.
+  //
+  // NOTE: The adapter validates the number of arguments, which we don't do in the mocked functions.
+  // This means the mock functions will not throw validation errors the way they would in an app.
+  for (const moduleName of Object.keys(NativeModulesProxy)) {
+    const nativeModule = NativeModulesProxy[moduleName];
+    for (const propertyName of Object.keys(nativeModule)) {
+      if (typeof nativeModule[propertyName] === 'function') {
+        nativeModule[propertyName] = jest.fn(async () => {});
+      }
     }
   }
-}
 
-jest.doMock('expo-react-native-adapter', () => ({
-  ...ExpoReactNativeAdapter,
-  NativeModulesProxy,
-}));
+  return ExpoReactNativeAdapter;
+});

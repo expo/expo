@@ -38,6 +38,8 @@ import expo.core.ModuleRegistry;
 import expo.core.interfaces.ModuleRegistryConsumer;
 import expo.core.Promise;
 import expo.core.interfaces.services.EventEmitter;
+import expo.interfaces.filesystem.FilePermissionModuleInterface;
+import expo.interfaces.filesystem.Permission;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Headers;
@@ -99,10 +101,6 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
     return constants;
   }
 
-  private enum Permission {
-    READ, WRITE,
-  }
-
   private List<String> getBundledAssets() {
 //    // Fastpath, only standalone apps support bundled assets.
 //    if (!ConstantsModule.getAppOwnership(mExperienceProperties).equals("standalone")) {
@@ -132,26 +130,7 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
   }
 
   private EnumSet<Permission> permissionsForPath(String path) {
-    try {
-      path = new File(path).getCanonicalPath();
-      String filesDir = getContext().getFilesDir().getCanonicalPath();
-      if (path.startsWith(filesDir + "/")) {
-        return EnumSet.of(Permission.READ, Permission.WRITE);
-      }
-      if (filesDir.equals(path)) {
-        return EnumSet.of(Permission.READ, Permission.WRITE);
-      }
-      String cacheDir = getContext().getCacheDir().getCanonicalPath();
-      if (path.startsWith(cacheDir + "/")) {
-        return EnumSet.of(Permission.READ, Permission.WRITE);
-      }
-      if (cacheDir.equals(path)) {
-        return EnumSet.of(Permission.READ, Permission.WRITE);
-      }
-    } catch (IOException e) {
-      return EnumSet.noneOf(Permission.class);
-    }
-    return EnumSet.noneOf(Permission.class);
+    return mModuleRegistry.getModule(FilePermissionModuleInterface.class).getPathPermissions(getContext(), path);
   }
 
   private EnumSet<Permission> permissionsForUri(Uri uri) {

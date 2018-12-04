@@ -4,7 +4,12 @@ import { EventEmitter } from 'expo-core';
 import UUID from 'uuid-js';
 import FS from './ExponentFileSystem';
 
-const normalizeEndingSlash = p => p.replace(/\/*$/, '') + '/';
+const normalizeEndingSlash = p => {
+  if (p != null) {
+    return p.replace(/\/*$/, '') + '/';
+  }
+  return null;
+};
 
 FS.documentDirectory = normalizeEndingSlash(FS.documentDirectory);
 FS.cacheDirectory = normalizeEndingSlash(FS.cacheDirectory);
