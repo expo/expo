@@ -1,4 +1,4 @@
-import { NativeModulesProxy, EventEmitter, Platform } from 'expo-core';
+import { EventEmitter, NativeModulesProxy, Platform, Subscription } from 'expo-core';
 
 const AdMobInterstitialManager: any = NativeModulesProxy.ExpoAdsAdMobInterstitialManager;
 
@@ -20,11 +20,6 @@ type EventNameType =
   | 'interstitialWillLeaveApplication';
 
 type EventListener = (...args: any[]) => void;
-
-// TODO: import this from expo-core
-type Subscription = {
-  remove: () => void,
-};
 
 const eventHandlers: { [eventName: string]: Map<EventListener, Subscription> } = {};
 
