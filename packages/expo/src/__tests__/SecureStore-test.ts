@@ -1,5 +1,5 @@
-import { NativeModules } from 'react-native';
-import * as SecureStore from '../SecureStore';
+import * as SecureStore from '../SecureStore/SecureStore';
+import ExponentSecureStore from '../SecureStore/ExponentSecureStore';
 
 import { mockPlatformIOS } from '../../test/mocking';
 
@@ -9,8 +9,8 @@ it(`sets values`, async () => {
   const options = { keychainService: 'test' };
   await SecureStore.setItemAsync(testKey, testValue, options);
 
-  expect(NativeModules.ExponentSecureStore.setValueWithKeyAsync).toHaveBeenCalledTimes(1);
-  expect(NativeModules.ExponentSecureStore.setValueWithKeyAsync).toHaveBeenCalledWith(
+  expect(ExponentSecureStore.setValueWithKeyAsync).toHaveBeenCalledTimes(1);
+  expect(ExponentSecureStore.setValueWithKeyAsync).toHaveBeenCalledWith(
     testValue,
     testKey,
     options
@@ -19,38 +19,26 @@ it(`sets values`, async () => {
 
 it(`provides default options when setting values`, async () => {
   await SecureStore.setItemAsync('key', 'value');
-  expect(NativeModules.ExponentSecureStore.setValueWithKeyAsync).toHaveBeenCalledWith(
-    'value',
-    'key',
-    {}
-  );
+  expect(ExponentSecureStore.setValueWithKeyAsync).toHaveBeenCalledWith('value', 'key', {});
 });
 
 it(`gets values`, async () => {
-  (NativeModules.ExponentSecureStore.getValueWithKeyAsync as jest.Mock).mockImplementation(
-    async () => 'value'
-  );
+  (ExponentSecureStore.getValueWithKeyAsync as jest.Mock).mockImplementation(async () => 'value');
 
   const options = { keychainService: 'test' };
   const result = await SecureStore.getItemAsync('key', options);
   expect(result).toBe('value');
-  expect(NativeModules.ExponentSecureStore.getValueWithKeyAsync).toHaveBeenCalledWith(
-    'key',
-    options
-  );
+  expect(ExponentSecureStore.getValueWithKeyAsync).toHaveBeenCalledWith('key', options);
 });
 
 it(`deletes values`, async () => {
   const options = { keychainService: 'test' };
   await SecureStore.deleteItemAsync('key', options);
-  expect(NativeModules.ExponentSecureStore.deleteValueWithKeyAsync).toHaveBeenCalledWith(
-    'key',
-    options
-  );
+  expect(ExponentSecureStore.deleteValueWithKeyAsync).toHaveBeenCalledWith('key', options);
 });
 
 it(`checks for invalid keys`, async () => {
-  (NativeModules.ExponentSecureStore.getValueWithKeyAsync as jest.Mock).mockImplementation(
+  (ExponentSecureStore.getValueWithKeyAsync as jest.Mock).mockImplementation(
     async () => `unexpected value`
   );
 
@@ -60,7 +48,7 @@ it(`checks for invalid keys`, async () => {
   await expect(SecureStore.getItemAsync((() => {}) as any)).rejects.toMatchSnapshot();
   await expect(SecureStore.getItemAsync('@')).rejects.toMatchSnapshot();
 
-  expect(NativeModules.ExponentSecureStore.getValueWithKeyAsync).not.toHaveBeenCalled();
+  expect(ExponentSecureStore.getValueWithKeyAsync).not.toHaveBeenCalled();
 });
 
 it(`checks for invalid values`, async () => {
@@ -69,7 +57,7 @@ it(`checks for invalid values`, async () => {
   await expect(SecureStore.setItemAsync('key', {} as any)).rejects.toMatchSnapshot();
   await expect(SecureStore.setItemAsync('key', (() => {}) as any)).rejects.toMatchSnapshot();
 
-  expect(NativeModules.ExponentSecureStore.setValueWithKeyAsync).not.toHaveBeenCalled();
+  expect(ExponentSecureStore.setValueWithKeyAsync).not.toHaveBeenCalled();
 });
 
 it(`exports accessibility options on iOS`, () => {

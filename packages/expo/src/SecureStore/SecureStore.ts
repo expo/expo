@@ -1,13 +1,6 @@
-import { NativeModules } from 'react-native';
 import invariant from 'invariant';
-import UnsupportedError from './UnsupportedError';
-const {
-  ExponentSecureStore = {
-    get name() {
-      return 'ExponentSecureStore';
-    },
-  },
-} = NativeModules;
+import { UnavailabilityError } from 'expo-errors';
+import ExponentSecureStore from './ExponentSecureStore';
 
 export type KeychainAccessibilityConstant = number;
 
@@ -34,7 +27,7 @@ export async function deleteItemAsync(
   options: SecureStoreOptions = {}
 ): Promise<void> {
   if (!ExponentSecureStore.deleteValueWithKeyAsync) {
-    throw new UnsupportedError('SecureStore', 'deleteItemAsync');
+    throw new UnavailabilityError('SecureStore', 'deleteItemAsync');
   }
 
   _ensureValidKey(key);
@@ -46,7 +39,7 @@ export async function getItemAsync(
   options: SecureStoreOptions = {}
 ): Promise<string | null> {
   if (!ExponentSecureStore.getValueWithKeyAsync) {
-    throw new UnsupportedError('SecureStore', 'getItemAsync');
+    throw new UnavailabilityError('SecureStore', 'getItemAsync');
   }
   _ensureValidKey(key);
   return await ExponentSecureStore.getValueWithKeyAsync(key, options);
@@ -58,7 +51,7 @@ export async function setItemAsync(
   options: SecureStoreOptions = {}
 ): Promise<void> {
   if (!ExponentSecureStore.setValueWithKeyAsync) {
-    throw new UnsupportedError('SecureStore', 'setItemAsync');
+    throw new UnavailabilityError('SecureStore', 'setItemAsync');
   }
   _ensureValidKey(key);
   if (!_isValidValue(value)) {
