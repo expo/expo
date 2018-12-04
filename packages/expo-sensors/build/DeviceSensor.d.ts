@@ -1,8 +1,5 @@
-import { EventEmitter } from 'expo-core';
+import { EventEmitter, Subscription } from 'expo-core';
 declare type Listener<E> = (event: E) => void;
-declare type Subscription = {
-    remove: () => void;
-};
 declare type NativeSensorModule = any;
 /**
  * A base class for subscribable sensors. The events emitted by this class are measurements

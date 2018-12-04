@@ -1,10 +1,6 @@
-import { EventEmitter, Platform } from 'expo-core';
+import { EventEmitter, Subscription } from 'expo-core';
 
 type Listener<E> = (event: E) => void;
-
-type Subscription = {
-  remove: () => void,
-};
 
 type NativeSensorModule = any;
 

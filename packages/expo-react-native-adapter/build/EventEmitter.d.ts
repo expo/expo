@@ -5,10 +5,10 @@ declare type NativeModule = {
     addListener: (eventName: string) => void;
     removeListeners: (count: number) => void;
 };
-declare type Subscription = {
+export declare type Subscription = {
     remove: () => void;
 };
-export default class EventEmitter {
+export declare class EventEmitter {
     _listenerCount: number;
     _nativeModule: NativeModule;
     _eventEmitter: NativeEventEmitter;

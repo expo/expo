@@ -3,7 +3,7 @@ import { Platform } from 'react-native';
 let EventEmitter;
 
 beforeEach(() => {
-  EventEmitter = require('../EventEmitter').default;
+  ({ EventEmitter } = require('../EventEmitter'));
 });
 
 afterEach(() => {
@@ -141,8 +141,7 @@ describe('Android', () => {
     expect(mockNativeModule.stopObserving).toHaveBeenCalledTimes(1);
   });
 
-  // NOTE: This test is currently broken and reveals a bug. Un-skip this test when the bug is fixed.
-  it.skip(`notifies the native module to stop observing when a subscription removes itself`, () => {
+  it(`notifies the native module to stop observing when a subscription removes itself`, () => {
     let mockNativeModule = _createMockNativeModule();
     let emitter = new EventEmitter(mockNativeModule);
 
