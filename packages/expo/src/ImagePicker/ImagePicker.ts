@@ -1,13 +1,6 @@
 import { NativeModules } from 'react-native';
-import UnsupportedError from './UnsupportedError';
-
-const {
-  ExponentImagePicker = {
-    get name() {
-      return 'ExponentImagePicker';
-    },
-  },
-} = NativeModules;
+import { UnsupportedError } from 'expo-errors';
+import ExponentImagePicker from './ExponentImagePicker';
 
 const MEDIA_TYPE_OPTIONS = {
   All: 'All',
