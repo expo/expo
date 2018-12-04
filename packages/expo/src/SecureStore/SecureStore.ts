@@ -26,11 +26,11 @@ export async function deleteItemAsync(
   key: string,
   options: SecureStoreOptions = {}
 ): Promise<void> {
+  _ensureValidKey(key);
+
   if (!ExponentSecureStore.deleteValueWithKeyAsync) {
     throw new UnavailabilityError('SecureStore', 'deleteItemAsync');
   }
-
-  _ensureValidKey(key);
   await ExponentSecureStore.deleteValueWithKeyAsync(key, options);
 }
 
@@ -38,9 +38,6 @@ export async function getItemAsync(
   key: string,
   options: SecureStoreOptions = {}
 ): Promise<string | null> {
-  if (!ExponentSecureStore.getValueWithKeyAsync) {
-    throw new UnavailabilityError('SecureStore', 'getItemAsync');
-  }
   _ensureValidKey(key);
   return await ExponentSecureStore.getValueWithKeyAsync(key, options);
 }
@@ -50,14 +47,14 @@ export async function setItemAsync(
   value: string,
   options: SecureStoreOptions = {}
 ): Promise<void> {
-  if (!ExponentSecureStore.setValueWithKeyAsync) {
-    throw new UnavailabilityError('SecureStore', 'setItemAsync');
-  }
   _ensureValidKey(key);
   if (!_isValidValue(value)) {
     throw new Error(
       `Invalid value provided to SecureStore. Values must be strings; consider JSON-encoding your values if they are serializable.`
     );
+  }
+  if (!ExponentSecureStore.setValueWithKeyAsync) {
+    throw new UnavailabilityError('SecureStore', 'setItemAsync');
   }
   await ExponentSecureStore.setValueWithKeyAsync(value, key, options);
 }
