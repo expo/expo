@@ -1,5 +1,5 @@
-import invariant from 'invariant';
 import { UnavailabilityError } from 'expo-errors';
+import invariant from 'invariant';
 import ExponentSecureStore from './ExponentSecureStore';
 
 export type KeychainAccessibilityConstant = number;
