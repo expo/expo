@@ -21,7 +21,6 @@
     "rtl-detect": "^1.0.2"
   },
   "devDependencies": {
-    "babel-preset-expo": "^5.0.0",
     "flow-bin": "^0.77.0"
   }
 }
