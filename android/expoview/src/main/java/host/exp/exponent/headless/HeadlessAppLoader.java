@@ -14,7 +14,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +23,7 @@ import javax.inject.Inject;
 import expo.core.interfaces.Package;
 import expo.loaders.provider.AppLoaderProvider;
 import expo.loaders.provider.interfaces.AppLoaderInterface;
+import expo.loaders.provider.interfaces.AppLoaderPackagesProviderInterface;
 import expo.loaders.provider.interfaces.AppRecordInterface;
 import host.exp.exponent.ABIVersion;
 import host.exp.exponent.AppLoader;
@@ -244,13 +244,33 @@ public class HeadlessAppLoader implements AppLoaderInterface, Exponent.StartReac
   }
 
   // Override
-  public List<ReactPackage> reactPackages() {
-    return null;
+  @SuppressWarnings("unchecked")
+  private List<ReactPackage> reactPackages() {
+    if (!Constants.isStandaloneApp()) {
+      // Pass null if it's on Expo Client. In that case packages from ExperiencePackagePicker will be used instead.
+      return null;
+    }
+    try {
+      return ((AppLoaderPackagesProviderInterface<ReactPackage>) mContext.getApplicationContext()).getPackages();
+    } catch (ClassCastException e) {
+      e.printStackTrace();
+      return null;
+    }
   }
 
   // Override
+  @SuppressWarnings("unchecked")
   public List<Package> expoPackages() {
-    return Collections.emptyList();
+    if (!Constants.isStandaloneApp()) {
+      // Pass null if it's on Expo Client. In that case packages from ExperiencePackagePicker will be used instead.
+      return null;
+    }
+    try {
+      return ((AppLoaderPackagesProviderInterface) mContext.getApplicationContext()).getExpoPackages();
+    } catch (ClassCastException e) {
+      e.printStackTrace();
+      return null;
+    }
   }
 
   //region StartReactInstanceDelegate
@@ -305,7 +325,7 @@ public class HeadlessAppLoader implements AppLoaderInterface, Exponent.StartReac
     instanceManagerBuilderProperties.expoPackages = extraExpoPackages;
     instanceManagerBuilderProperties.exponentPackageDelegate = delegate.getExponentPackageDelegate();
     instanceManagerBuilderProperties.manifest = mManifest;
-    instanceManagerBuilderProperties.singletonModules = ExponentPackage.getOrCreateSingletonModules(mContext, extraExpoPackages);
+    instanceManagerBuilderProperties.singletonModules = ExponentPackage.getOrCreateSingletonModules(mContext);
 
     RNObject versionedUtils = new RNObject("host.exp.exponent.VersionedUtils").loadVersion(mSDKVersion);
     RNObject builder = versionedUtils.callRecursive("getReactInstanceManagerBuilder", instanceManagerBuilderProperties);

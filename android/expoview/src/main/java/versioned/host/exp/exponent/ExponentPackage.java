@@ -121,15 +121,16 @@ public class ExponentPackage implements ReactPackage {
 
   public static ExponentPackage kernelExponentPackage(Context context, JSONObject manifest, List<Package> expoPackages) {
     Map<String, Object> kernelExperienceProperties = new HashMap<>();
-    List<SingletonModule> singletonModules = ExponentPackage.getOrCreateSingletonModules(context, expoPackages);
+    List<SingletonModule> singletonModules = ExponentPackage.getOrCreateSingletonModules(context);
     kernelExperienceProperties.put(LINKING_URI_KEY, "exp://");
     kernelExperienceProperties.put(IS_HEADLESS_KEY, false);
     return new ExponentPackage(true, kernelExperienceProperties, manifest, expoPackages, singletonModules);
   }
 
-  public static List<SingletonModule> getOrCreateSingletonModules(Context context, List<Package> expoPackages) {
+  public static List<SingletonModule> getOrCreateSingletonModules(Context context) {
     if (sSingletonModules == null) {
       sSingletonModules = new ArrayList<>();
+      List<Package> expoPackages = ExperiencePackagePicker.packages();
 
       for (Package expoPackage : expoPackages) {
         sSingletonModules.addAll(expoPackage.createSingletonModules(context));

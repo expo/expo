@@ -57,6 +57,17 @@ public class ExperiencePackagePicker {
       new BackgroundFetchPackage()
   );
 
+  /**
+   * Returns all available packages.
+   */
+  static List<Package> packages() {
+    return EXPO_MODULES_PACKAGES;
+  }
+
+  /**
+   * Returns packages filtered based on the app's manifest.
+   * For now, filtering is not applied but it is on the todo list.
+   */
   static List<Package> packages(JSONObject manifest) {
     return EXPO_MODULES_PACKAGES;
   }
