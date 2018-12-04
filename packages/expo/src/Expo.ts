@@ -51,7 +51,7 @@ export { Calendar };
 export { default as DangerZone } from './DangerZone';
 import * as DocumentPicker from './DocumentPicker';
 export { DocumentPicker };
-export { default as ErrorRecovery } from './ErrorRecovery';
+export { default as ErrorRecovery } from './ErrorRecovery/ErrorRecovery';
 import * as Facebook from './Facebook';
 export { Facebook };
 import * as Google from './Google/Google';
