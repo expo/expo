@@ -65,7 +65,7 @@ If you're still here, make sure to follow the [Configure app.json](https://docs.
 The Android standalone app script creates a new directory `android-shell-app` with the modified Android project in it. It then compiles that new directory giving you a signed or unsigned `.apk` depending on whether you provide a keystore and the necessary passwords. If there are issues with the app you can open the `android-shell-app` project in Android Studio to debug.
 
 Here are the steps to build a standalone Android app:
-- Publish your experience from `XDE` or `exp`. Note the published url.
+- Publish your experience with Expo CLI. Note the published URL.
 - `cd tools-public`.
 - If you want a signed `.apk`, run `gulp android-shell-app --url [the published experience url] --sdkVersion [sdk version of your experience] --keystore [path to keystore] --alias [keystore alias] --keystorePassword [keystore password] --keyPassword [key password] --workingDir=../`.
 - If you don't want a signed `.apk`, run `gulp android-shell-app --url [the published experience url] --sdkVersion [sdk version of your experience] --workingDir=../`.
@@ -77,7 +77,7 @@ Here are the steps to build a standalone Android app:
 The iOS standalone app script has two actions, `build` and `configure`. `build` creates an archive or a simulator build of the Expo iOS workspace. `configure` accepts a path to an existing archive and modifies all its configuration files so that it will run as a standalone Expo experience rather than as the Expo client app.
 
 Here are the steps to build a standalone iOS app:
-- Publish your experience from `XDE` or `exp`. Note the published url.
+- Publish your experience with Expo CLI. Note the published URL.
 - `cd tools-public`.
 - `gulp ios-shell-app --action build --type [simulator or archive] --configuration [Debug or Release]`
 - The resulting archive will be created at `../shellAppBase-[type]`.

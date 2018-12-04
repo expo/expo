@@ -16,9 +16,14 @@ commands:
       - run: echo 'eval "$(direnv export bash)"' >> ~/.bash_profile
       - run: echo '--frozen-lockfile true' >> ~/.yarnrc
       - checkout
-  decrypt_secrets:
+  decrypt_secrets_if_possible:
     steps:
-      - run: nix run nixpkgs.git-crypt --command git crypt unlock <(echo $EXPO_GIT_CRYPT_KEY_BASE64 | base64 --decode)
+      - run: |
+          nix run expo.git-crypt --command bash -c "
+            if ! [ -v EXPO_GIT_CRYPT_KEY_BASE64 ]; then
+              echo 'git-crypt key not present in environment' && exit 0
+            fi
+            git crypt unlock <(echo $EXPO_GIT_CRYPT_KEY_BASE64 | base64 --decode)"
   update_submodules:
     steps:
       - run: git submodule update --init
@@ -67,7 +72,7 @@ commands:
       - run:
           name: yarn << parameters.command >> (<< parameters.working_directory >>)
           working_directory: << parameters.working_directory >>
-          command: for i in {1..<< parameters.max_tries >>}; do ((i > 1)) && sleep 5; nix run nixpkgs.yarn -c yarn << parameters.command >> && break; done
+          command: for i in {1..<< parameters.max_tries >>}; do ((i > 1)) && sleep 5; nix run expo.yarn -c yarn << parameters.command >> && break; done
   yarn_install:
     parameters:
       working_directory:
@@ -86,12 +91,12 @@ executors:
     # Symlink to the readline-enabled bash which is the default command of the container
     shell: /run/current-system/sw/bin/bash -leo pipefail
     working_directory: ~/expo
-    resource_class: small
   android:
     <<: *nix
     resource_class: xlarge
   js:
     <<: *nix
+    resource_class: small
   mac:
     macos: # https://circleci.com/docs/2.0/testing-ios/#supported-xcode-versions
       xcode: "10.1.0"
@@ -116,11 +121,16 @@ workflows:
       - expotools
       - client_android
       - client_ios
+      - test_suite_publish
       - shell_app_sim_base_ios
       - client_android_approve_google_play:
           type: approval
           requires:
             - client_android
+          filters:
+            branches:
+              only:
+                - /^sdk-\d+$/
       - client_android_release_google_play:
           requires:
             - client_android_approve_google_play
@@ -128,7 +138,6 @@ workflows:
   #         requires:
   #           - shell_app_sim_base_ios
   #           - test_suite_publish
-  #     - test_suite_publish # universe/tools/powertools
   #     - client_android_tests:
   #         requires:
   #           - test_suite_publish
@@ -148,6 +157,19 @@ jobs:
       - yarn:
           command: test --maxWorkers 1
           working_directory: ~/expo/packages/expo
+      - yarn:
+          command: test --maxWorkers 1
+          working_directory: ~/expo/packages/expo-font
+      - yarn:
+          command: test --maxWorkers 1
+          working_directory: ~/expo/packages/expo-react-native-adapter
+      - yarn:
+          command: test --maxWorkers 1
+          working_directory: ~/expo/packages/expo-sensors
+      - yarn:
+          command: test --maxWorkers 1
+          working_directory: ~/expo/packages/expo-sms
+
 
   babel_preset:
     executor: js
@@ -202,7 +224,7 @@ jobs:
       - fetch_cocoapods_specs
       - yarn_install:
           working_directory: ~/project/tools-public
-      - run: nix run nixpkgs.nodejs-8_x nixpkgs.fastlane -c fastlane ios create_simulator_build
+      - run: nix run expo.nodejs expo.fastlane -c fastlane ios create_simulator_build
       - store_artifacts:
           path: ~/Library/Logs/fastlane/
 
@@ -216,12 +238,12 @@ jobs:
       - fetch_cocoapods_specs
       - yarn_install:
           working_directory: ~/project/tools-public
-      - run: nix run nixpkgs.nodejs-8_x -c ~/project/tools-public/generate-files-ios.js
+      - run: nix run expo.nodejs -c ~/project/tools-public/generate-files-ios.js
       - run:
           name: Build ios shell app simulator
           working_directory: ~/project/tools-public
           no_output_timeout: 30m
-          command: nix run nixpkgs.nodePackages.gulp-cli nixpkgs.cocoapods nixpkgs.xcpretty nixpkgs.expo-cli --command gulp ios-shell-app --action build --type simulator --verbose true --skipRepoUpdate --shellAppSdkVersion UNVERSIONED
+          command: nix run expo.nodePackages.gulp-cli expo.cocoapods expo.xcpretty expo.expo-cli --command gulp ios-shell-app --action build --type simulator --verbose true --skipRepoUpdate --shellAppSdkVersion UNVERSIONED
 
   client_android:
     executor: android
@@ -232,7 +254,7 @@ jobs:
       - yarn_install:
           working_directory: ~/expo/tools-public
       - restore_gradle_cache
-      - decrypt_secrets
+      - decrypt_secrets_if_possible
       - run: echo $ANDROID_KEYSTORE_B64 | base64 -d > android/app/release-key.jks
       - run: |
           nix-shell android/shell.nix --pure \
@@ -260,4 +282,14 @@ jobs:
       - run:
           name: Upload APK to Google Play and release to production
           working_directory: ~/expo
-          command: nix run nixpkgs.fastlane --command fastlane android prod_release
+          command: nix run expo.fastlane --command fastlane android prod_release
+
+  test_suite_publish:
+    executor: nix
+    steps:
+      - setup
+      - update_submodules
+      - decrypt_secrets_if_possible
+      - run:
+          working_directory: ~/expo/apps/test-suite
+          command: ./publish.sh

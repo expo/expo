@@ -26,7 +26,6 @@ import host.exp.exponent.network.ExponentHttpClient;
 import host.exp.exponent.network.ExponentNetwork;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponent.utils.ColorParser;
-import host.exp.expoview.Exponent;
 import host.exp.expoview.R;
 import expolib_v1.okhttp3.Request;
 
@@ -281,7 +280,7 @@ public class ExponentManifest {
 
     if (uri.getHost() == null) {
       String message = "Could not load manifest.";
-      if (Constants.isShellApp()) {
+      if (Constants.isStandaloneApp()) {
         message += " Are you sure this experience has been published?";
       } else {
         message += " Are you sure this is a valid URL?";
@@ -533,7 +532,7 @@ public class ExponentManifest {
         // Sandbox third party apps and consider them verified
         // for https urls, sandboxed id is of form quinlanj.github.io/myProj-myApp
         // for http urls, sandboxed id is of form UNVERIFIED-quinlanj.github.io/myProj-myApp
-        if (!Constants.isShellApp()){
+        if (!Constants.isStandaloneApp()){
           String protocol = parsedManifestUrl.getScheme();
           String securityPrefix = protocol.equals("https") || protocol.equals("exps") ? "" : "UNVERIFIED-";
           String path = parsedManifestUrl.getPath() != null ? parsedManifestUrl.getPath() : "";

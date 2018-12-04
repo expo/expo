@@ -4,7 +4,7 @@
 #import "EXModuleRegistryBinding.h"
 #import "EXScopedModuleRegistry.h"
 
-#import <EXCore/EXAppLifeCycleService.h>
+#import <EXCore/EXAppLifecycleService.h>
 #import <React/RCTAssert.h>
 #import <React/RCTBridge.h>
 #import <React/RCTEventDispatcher.h>

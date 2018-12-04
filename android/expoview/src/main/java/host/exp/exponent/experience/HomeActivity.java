@@ -14,6 +14,11 @@ import android.view.View;
 import com.squareup.leakcanary.LeakCanary;
 
 import de.greenrobot.event.EventBus;
+import expo.core.interfaces.Package;
+import expo.modules.barcodescanner.BarCodeScannerPackage;
+import expo.modules.constants.ConstantsPackage;
+import expo.modules.filesystem.FileSystemPackage;
+import expo.modules.permissions.PermissionsPackage;
 import host.exp.exponent.RNObject;
 import host.exp.exponent.analytics.Analytics;
 import host.exp.expoview.BuildConfig;
@@ -21,6 +26,9 @@ import host.exp.exponent.Constants;
 import host.exp.exponent.kernel.Kernel;
 
 import com.facebook.soloader.SoLoader;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class HomeActivity extends BaseExperienceActivity {
 
@@ -86,5 +94,14 @@ public class HomeActivity extends BaseExperienceActivity {
   protected void onError(final Intent intent) {
     intent.putExtra(ErrorActivity.IS_HOME_KEY, true);
     mKernel.setHasError();
+  }
+
+  public static List<Package> homeExpoPackages() {
+    return Arrays.<Package>asList(
+        new ConstantsPackage(),
+        new PermissionsPackage(),
+        new FileSystemPackage(),
+        new BarCodeScannerPackage()
+    );
   }
 }
