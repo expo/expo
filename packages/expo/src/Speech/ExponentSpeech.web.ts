@@ -1,68 +1,66 @@
+import { Options } from './Speech.types';
+
 export default {
-  get name() {
+  get name(): string {
     return 'ExponentSpeech';
   },
-  async speak(id: string, text: string, options: any): Promise<void> {
-    const { speechSynthesis = {}, SpeechSynthesisUtterance } = global;
-    const msg = new SpeechSynthesisUtterance();
+  async speak(id: string, text: string, options: Options): Promise<SpeechSynthesisUtterance> {
+    const { SpeechSynthesisUtterance } = global;
+
+    const message = new SpeechSynthesisUtterance();
 
     if ('rate' in options) {
-      msg.rate = options.rate;
+      message.rate = options.rate;
     }
     if ('pitch' in options) {
-      msg.pitch = options.pitch;
+      message.pitch = options.pitch;
     }
     if ('language' in options) {
-      msg.lang = options.language;
+      message.lang = options.language;
     }
     if ('volume' in options) {
-      msg.lang = options.volume;
+      message.volume = options.volume;
     }
-    if ('voice' in options) {
-      const voices = speechSynthesis.getVoices();
-      msg.voice = voices[Math.min(voices.length - 1, Math.max(0, options.voice))];
+    if ('voiceIndex' in options && options.voiceIndex) {
+      const voices = window.speechSynthesis.getVoices();
+      message.voice = voices[Math.min(voices.length - 1, Math.max(0, options.voiceIndex))];
     }
     if ('onStart' in options) {
-      msg.onstart = options.onStart;
+      message.onstart = options.onStart;
     }
     if ('onDone' in options) {
-      msg.onend = options.onDone;
-    }
-    if ('onStart' in options) {
-      msg.onstart = options.onStart;
+      message.onend = options.onDone;
     }
     if ('onError' in options) {
-      msg.onerror = options.onError;
+      message.onerror = options.onError;
     }
     if ('onPause' in options) {
-      msg.onpause = options.onPause;
+      message.onpause = options.onPause;
     }
     if ('onResume' in options) {
-      msg.onresume = options.onResume;
+      message.onresume = options.onResume;
     }
     if ('onMark' in options) {
-      msg.onmark = options.onMark;
+      message.onmark = options.onMark;
     }
     if ('onBoundary' in options) {
-      msg.onboundary = options.onBoundary;
+      message.onboundary = options.onBoundary;
     }
-    msg.text = text;
-    speechSynthesis.speak(msg);
+    message.text = text;
+    window.speechSynthesis.speak(message);
+
+    return message;
   },
   async isSpeaking(): Promise<boolean> {
-    const { speechSynthesis = {} } = global;
-    return speechSynthesis.speaking;
+    return window.speechSynthesis.speaking;
   },
   async stop(): Promise<void> {
-    const { speechSynthesis = {} } = global;
-    return speechSynthesis.cancel();
+    return window.speechSynthesis.cancel();
   },
   async pause(): Promise<void> {
-    const { speechSynthesis = {} } = global;
-    return speechSynthesis.pause();
+    return window.speechSynthesis.pause();
   },
   async resume(): Promise<void> {
-    const { speechSynthesis = {} } = global;
-    return speechSynthesis.resume();
+    return window.speechSynthesis.resume();
   },
 };

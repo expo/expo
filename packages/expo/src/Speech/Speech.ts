@@ -2,17 +2,9 @@ import { NativeEventEmitter, Platform } from 'react-native';
 
 import ExponentSpeech from './ExponentSpeech';
 
-const SpeechEventEmitter = new NativeEventEmitter(ExponentSpeech);
+import { Options } from './Speech.types';
 
-type Options = {
-  language?: string;
-  pitch?: number;
-  rate?: number;
-  onStart?: () => void;
-  onStopped?: () => void;
-  onDone?: () => void;
-  onError?: (error: Error) => void;
-};
+const SpeechEventEmitter = new NativeEventEmitter(ExponentSpeech);
 
 const _CALLBACKS = {};
 let _nextCallbackId = 1;
