@@ -17,7 +17,6 @@ import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.branch.BranchManager;
 import host.exp.exponent.di.NativeModuleDepsProvider;
-import host.exp.exponent.experience.ShellAppActivity;
 import host.exp.exponent.kernel.ExponentKernelModuleInterface;
 import host.exp.exponent.kernel.ExponentKernelModuleProvider;
 import host.exp.exponent.kernel.Kernel;
@@ -54,8 +53,8 @@ public abstract class ExpoApplication extends MultiDexApplication {
       Debug.waitForDebugger();
     }
 
-    if (!Constants.IS_DETACHED) {
-      KernelConstants.MAIN_ACTIVITY_CLASS = Constants.isShellApp() ? ShellAppActivity.class : LauncherActivity.class;
+    if (!Constants.isStandaloneApp()) {
+      KernelConstants.MAIN_ACTIVITY_CLASS = LauncherActivity.class;
     }
 
     KernelProvider.setFactory(new KernelProvider.KernelFactory() {

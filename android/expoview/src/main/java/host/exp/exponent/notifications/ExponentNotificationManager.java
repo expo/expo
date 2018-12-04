@@ -47,7 +47,7 @@ public class ExponentNotificationManager {
   }
 
   public static String getScopedChannelId(String experienceId, String channelId) {
-    if (Constants.isShellApp()) {
+    if (Constants.isStandaloneApp()) {
       return channelId;
     } else {
       return experienceId + "/" + channelId;
@@ -55,7 +55,7 @@ public class ExponentNotificationManager {
   }
 
   public void maybeCreateNotificationChannelGroup(JSONObject manifest) {
-    if (Constants.isShellApp()) {
+    if (Constants.isStandaloneApp()) {
       // currently we only support groups in the client, with one group per experience
       return;
     }
@@ -91,7 +91,7 @@ public class ExponentNotificationManager {
       channel.setSound(null, null);
       channel.setDescription(mContext.getString(R.string.persistent_notification_channel_desc));
 
-      if (!Constants.isShellApp()) {
+      if (!Constants.isStandaloneApp()) {
         NotificationChannelGroup group = new NotificationChannelGroup(
             NotificationConstants.NOTIFICATION_EXPERIENCE_CHANNEL_GROUP_ID,
             mContext.getString(R.string.persistent_notification_channel_group));
@@ -106,7 +106,7 @@ public class ExponentNotificationManager {
 
   public void createNotificationChannel(String experienceId, NotificationChannel channel) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      if (!Constants.isShellApp()) {
+      if (!Constants.isStandaloneApp()) {
         channel.setGroup(experienceId);
       }
       mContext.getSystemService(NotificationManager.class).createNotificationChannel(channel);
