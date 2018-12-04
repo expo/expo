@@ -1,13 +1,6 @@
-import { NativeModules, Platform } from 'react-native';
-import UnsupportedError from './UnsupportedError';
+import { UnavailabilityError } from 'expo-errors';
+import ExponentIntentLauncher from './ExponentIntentLauncher';
 
-const {
-  ExponentIntentLauncher = {
-    get name() {
-      return 'ExponentIntentLauncher';
-    },
-  },
-} = NativeModules;
 /**
  * Constants are from the source code of Settings:
  * https://developer.android.com/reference/android/provider/Settings.html
@@ -115,7 +108,7 @@ export function startActivityAsync(
   uri: string | null = null
 ): Promise<boolean> {
   if (!ExponentIntentLauncher.startActivity) {
-    throw new UnsupportedError('IntentLauncherAndroid', 'startActivityAsync');
+    throw new UnavailabilityError('IntentLauncherAndroid', 'startActivityAsync');
   }
   return ExponentIntentLauncher.startActivity(activity, data, uri);
 }
