@@ -4,7 +4,7 @@ import { View, ViewPropTypes, requireNativeComponent } from 'react-native';
 
 import { AdIconViewContext, AdIconViewContextValue } from './withNativeAd';
 
-type Props = React.ElementProps<View>;
+type Props = React.ComponentProps<typeof View>;
 
 export default class AdIconView extends React.Component<Props> {
   render() {

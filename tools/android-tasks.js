@@ -160,6 +160,7 @@ async function spawnAsyncPrintCommand(command, args = [], other) {
 
 exports.updateExpoViewAsync = async function updateExpoViewAsync(sdkVersion) {
   let androidRoot = path.join(process.cwd(), '..', 'android');
+  let appBuildGradle = path.join(androidRoot, 'app', 'build.gradle');
   let expoViewBuildGradle = path.join(androidRoot, 'expoview', 'build.gradle');
   const constantsJava = path.join(androidRoot, 'expoview/src/main/java/host/exp/exponent/Constants.java');
   const multipleVersionReactNativeActivity = path.join(androidRoot, 'expoview/src/main/java/host/exp/exponent/experience/MultipleVersionReactNativeActivity.java');
@@ -181,21 +182,6 @@ exports.updateExpoViewAsync = async function updateExpoViewAsync(sdkVersion) {
     /host.exp.exponent:expoview:[\d\.]+/,
     `host.exp.exponent:expoview:${sdkVersion}`
   );
-  await regexFileAsync(
-    path.join(
-      androidRoot,
-      'app',
-      'src',
-      'main',
-      'java',
-      'host',
-      'exp',
-      'exponent',
-      'MainActivity.java'
-    ),
-    /Arrays\.asList\(\"[\d\.]+\"\)/,
-    `Arrays.asList("${sdkVersion}")`
-  );
 
   // getDetachableModulesForPlatform was breaking on face detector
   const detachableUniversalModules = Modules.getAllNativeForExpoClientOnPlatform('android');
@@ -215,6 +201,8 @@ exports.updateExpoViewAsync = async function updateExpoViewAsync(sdkVersion) {
     `// WHEN_DISTRIBUTING_REMOVE_TO_HERE`,
     'WHEN_DISTRIBUTING_REMOVE_TO_HERE */'
   );
+  await regexFileAsync(appBuildGradle, '/* UNCOMMENT WHEN DISTRIBUTING', '');
+  await regexFileAsync(appBuildGradle, 'END UNCOMMENT WHEN DISTRIBUTING */', '');
   await regexFileAsync(expoViewBuildGradle, '/* UNCOMMENT WHEN DISTRIBUTING', '');
   await regexFileAsync(expoViewBuildGradle, 'END UNCOMMENT WHEN DISTRIBUTING */', '');
   await regexFileAsync(

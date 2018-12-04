@@ -2,7 +2,17 @@
   "name": "expo-sensors",
   "version": "1.1.0",
   "description": "Expo Sensors universal module",
-  "main": "index.js",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "test": "expo-module test",
+    "postinstall": "expo-module postinstall",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
   "keywords": [
     "react-native",
     "expo",
@@ -13,12 +23,24 @@
     "magnetometer",
     "pedometer"
   ],
-  "homepage": "https://docs.expo.io/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git"
+  },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "dependencies": {
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-sensors",
+  "jest": {
+    "preset": "expo-module-scripts"
+  },
+  "peerDependencies": {
     "expo-core": "~1.2.0",
-    "expo-sensors-interface": "~1.1.0",
+    "expo-sensors-interface": "~1.1.0"
+  },
+  "dependencies": {
     "invariant": "^2.2.4"
   },
   "devDependencies": {
