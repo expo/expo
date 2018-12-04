@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { View, ViewPropTypes } from 'react-native';
 import { requireNativeViewManager } from 'expo-core';
 
-type PropsType = React.ElementProps<View> & {
+type PropsType = React.ComponentProps<typeof View> & {
   /**
    * AdMob iOS library banner size constants
    * (https://developers.google.com/admob/ios/banner)

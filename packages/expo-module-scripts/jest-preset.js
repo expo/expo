@@ -63,7 +63,10 @@ function _createTypeScriptConfiguration() {
   // temporary directory would not work, for example)
   let jestTsConfigPath = path.join('.expo', 'tsconfig.jest.json');
 
-  fs.mkdirSync(path.dirname(jestTsConfigPath), { recursive: true });
+  // NOTE: remove this existsSync call once we require Node 10.12+
+  if (!fs.existsSync(jestTsConfigPath)) {
+    fs.mkdirSync(path.dirname(jestTsConfigPath), { recursive: true });
+  }
   fs.writeFileSync(jestTsConfigPath, jestTsConfigJson);
   return jestTsConfigPath;
 }

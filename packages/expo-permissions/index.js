@@ -1,5 +1,5 @@
 module.exports = {
   get Permissions() {
-    return require('./Permissions');
+    return require('./src/Permissions');
   },
 };
