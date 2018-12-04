@@ -61,7 +61,7 @@ export { Haptic };
 export { default as Icon } from './Icon';
 import * as ImageManipulator from './ImageManipulator';
 export { ImageManipulator };
-import * as ImagePicker from './ImagePicker';
+import * as ImagePicker from './ImagePicker/ImagePicker';
 export { ImagePicker };
 import * as IntentLauncherAndroid from './IntentLauncherAndroid';
 export { IntentLauncherAndroid };
