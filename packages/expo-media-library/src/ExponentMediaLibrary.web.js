@@ -1,13 +1,13 @@
 // @flow
 
 export default {
-  get name() {
+  get name(): string {
     return 'ExponentMediaLibrary';
   },
-  get CHANGE_LISTENER_NAME() {
+  get CHANGE_LISTENER_NAME(): string {
     return 'mediaLibraryDidChange';
   },
-  get MediaType() {
+  get MediaType(): { [string]: string } {
     return {
       audio: 'audio',
       photo: 'photo',
@@ -15,7 +15,7 @@ export default {
       unknown: 'unknown',
     };
   },
-  get SortBy() {
+  get SortBy(): { [string]: string } {
     return {
       default: 'default',
       id: 'id',
@@ -27,13 +27,4 @@ export default {
       duration: 'duration',
     };
   },
-  async createAssetAsync(localUri) {},
-  async addAssetsToAlbumAsync(assetIds, albumId) {},
-  async removeAssetsFromAlbumAsync(assetIds, albumId) {},
-  async deleteAssetsAsync(assetIds) {},
-  async getAssetInfoAsync(assetId) {},
-  async getAlbumsAsync() {},
-  async getAlbumAsync(title) {},
-  async deleteAlbumsAsync(albumIds) {},
-  async getAssetsAsync(options) {},
 };
