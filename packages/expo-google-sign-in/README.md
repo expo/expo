@@ -85,10 +85,10 @@ This can be done in the app.json, the value should be your `REVERSED_CLIENT_ID` 
       ...
      }
    }
-  ```
+   ```
+
 
 ## Methods
-
 
 ### `arePlayServicesAvailableAsync(options?: GoogleSignInPlayServicesOptions): Promise<boolean>`
 

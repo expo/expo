@@ -13,6 +13,7 @@
   "license": "MIT",
   "dependencies": {
     "expo-core": "~1.2.0",
+    "expo-errors": "^0.0.1",
     "uuid-js": "^0.7.5"
   },
   "devDependencies": {

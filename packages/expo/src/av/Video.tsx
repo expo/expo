@@ -90,11 +90,14 @@ type Props = {
 
 type NativeProps = {
   source: PlaybackNativeSource | null;
-  nativeResizeMode?: Object;
+  nativeResizeMode?: unknown;
   status?: PlaybackStatusToSet;
-  onStatusUpdateNative?: (event: Object) => void;
-  onReadyForDisplayNative?: (event: Object) => void;
-  onFullscreenUpdateNative?: (event: Object) => void;
+  onLoadStartNative?: () => void;
+  onLoadNative?: (event: { nativeEvent: PlaybackStatus }) => void;
+  onErrorNative?: (event: { nativeEvent: { error: string } }) => void;
+  onStatusUpdateNative?: (event: { nativeEvent: PlaybackStatus }) => void;
+  onReadyForDisplayNative?: (event: { nativeEvent: ReadyForDisplayEvent }) => void;
+  onFullscreenUpdateNative?: (event: { nativeEvent: FullscreenUpdateEvent }) => void;
   useNativeControls?: boolean;
 } & React.ComponentProps<typeof View>;
 
@@ -464,6 +467,7 @@ export default class Video extends React.Component<Props, State> implements Play
     });
 
     // Replace selected native props
+    // @ts-ignore: TypeScript thinks "children" is not in the list of props
     const nativeProps: NativeProps = {
       style: _STYLES.base,
       ...omit(this.props, 'source'),
