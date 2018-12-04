@@ -54,7 +54,7 @@ export { DocumentPicker };
 export { default as ErrorRecovery } from './ErrorRecovery';
 import * as Facebook from './Facebook';
 export { Facebook };
-import * as Google from './Google';
+import * as Google from './Google/Google';
 export { Google };
 import * as Haptic from './Haptic';
 export { Haptic };

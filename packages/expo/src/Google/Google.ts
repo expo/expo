@@ -1,14 +1,6 @@
 import { Constants } from 'expo-constants';
-import { NativeModules } from 'react-native';
-import UnsupportedError from './UnsupportedError';
-
-const {
-  ExponentGoogle: Google = {
-    get name() {
-      return 'ExponentGoogle';
-    },
-  },
-} = NativeModules;
+import { UnavailabilityError } from 'expo-errors';
+import Google from './ExponentGoogle';
 
 type LogInConfig = {
   androidClientId?: string;
@@ -43,7 +35,7 @@ type LogInResult =
 
 export async function logInAsync(config: LogInConfig): Promise<LogInResult> {
   if (!Google.logInAsync) {
-    throw new UnsupportedError('Google', 'logInAsync');
+    throw new UnavailabilityError('Google', 'logInAsync');
   }
   let behavior = config.behavior;
   // Only standalone apps can use system login.
