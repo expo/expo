@@ -21,7 +21,7 @@ export default {
     if ('volume' in options) {
       message.volume = options.volume;
     }
-    if ('_voiceIndex' in options && options._voiceIndex) {
+    if ('_voiceIndex' in options && options._voiceIndex != null) {
       const voices = window.speechSynthesis.getVoices();
       message.voice = voices[Math.min(voices.length - 1, Math.max(0, options._voiceIndex))];
     }
