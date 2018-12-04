@@ -52,7 +52,7 @@ export { default as DangerZone } from './DangerZone';
 import * as DocumentPicker from './DocumentPicker';
 export { DocumentPicker };
 export { default as ErrorRecovery } from './ErrorRecovery';
-import * as Facebook from './Facebook';
+import * as Facebook from './Facebook/Facebook';
 export { Facebook };
 import * as Google from './Google';
 export { Google };
