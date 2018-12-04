@@ -189,10 +189,10 @@ public class GLContext {
         String format = options.containsKey("format") ? (String) options.get("format") : null;
         int compressionQuality = options.containsKey("compress") ? (int) (100.0 * (Double) options.get("compress")) : 100;
 
-        int x = (Integer) rect.get("x");
-        int y = (Integer) rect.get("y");
-        int width = (Integer) rect.get("width");
-        int height = (Integer) rect.get("height");
+        int x = castNumberToInt(rect.get("x"));
+        int y = castNumberToInt(rect.get("y"));
+        int width = castNumberToInt(rect.get("width"));
+        int height = castNumberToInt(rect.get("height"));
 
         // Save surrounding framebuffer
         int[] prevFramebuffer = new int[1];
@@ -203,7 +203,8 @@ public class GLContext {
         Map<String, Object> framebufferMap = options.containsKey("framebuffer") ? (Map<String, Object>) options.get("framebuffer") : null;
 
         if (framebufferMap != null && framebufferMap.containsKey("id")) {
-          sourceFramebuffer = EXGLContextGetObject(mEXGLCtxId, (Integer) framebufferMap.get("id"));
+          Integer framebufferId = castNumberToInt(framebufferMap.get("id"));
+          sourceFramebuffer = EXGLContextGetObject(mEXGLCtxId, framebufferId);
         }
 
         // Bind source framebuffer
@@ -435,5 +436,13 @@ public class GLContext {
         Log.e("EXGL", "EGL error = 0x" + Integer.toHexString(error));
       }
     }
+  }
+
+  // Solves number casting problem as number values can come as Integer or Double.
+  private int castNumberToInt(Object value) {
+    if (value instanceof Double) {
+      return ((Double) value).intValue();
+    }
+    return (Integer) value;
   }
 }
