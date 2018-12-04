@@ -2,7 +2,9 @@
 
 #import <CoreLocation/CLCircularRegion.h>
 #import <CoreLocation/CLLocationManager.h>
+#import <CoreLocation/CLErrorDomain.h>
 
+#import <EXCore/EXUtilities.h>
 #import <EXLocation/EXLocation.h>
 #import <EXLocation/EXGeofencingTaskConsumer.h>
 #import <EXTaskManagerInterface/EXTaskInterface.h>
@@ -50,45 +52,54 @@
 - (void)reset
 {
   [self stopMonitoringAllRegions];
-  _locationManager = nil;
-  _task = nil;
+  [EXUtilities performSynchronouslyOnMainThread:^{
+    self->_locationManager = nil;
+    self->_task = nil;
+  }];
 }
 
 - (void)startMonitoringRegionsForTask:(id<EXTaskInterface>)task
 {
-  _task = task;
-  _locationManager = [CLLocationManager new];
-  _regionStates = [NSMutableDictionary new];
+  [EXUtilities performSynchronouslyOnMainThread:^{
+    CLLocationManager *locationManager = [CLLocationManager new];
+    NSMutableDictionary *regionStates = [NSMutableDictionary new];
+    NSDictionary *options = [task options];
+    NSArray *regions = options[@"regions"];
 
-  NSDictionary *options = [task options];
-  NSArray *regions = options[@"regions"];
+    self->_task = task;
+    self->_locationManager = locationManager;
+    self->_regionStates = regionStates;
 
-  _locationManager.delegate = self;
-  _locationManager.allowsBackgroundLocationUpdates = YES;
-  _locationManager.pausesLocationUpdatesAutomatically = NO;
+    locationManager.delegate = self;
+    locationManager.allowsBackgroundLocationUpdates = YES;
+    locationManager.pausesLocationUpdatesAutomatically = NO;
 
-  for (NSDictionary *regionDict in regions) {
-    NSString *identifier = regionDict[@"identifier"] ?: [[NSUUID UUID] UUIDString];
-    CLLocationDistance radius = [regionDict[@"radius"] doubleValue];
-    CLLocationCoordinate2D center = [self.class coordinateFromDictionary:regionDict];
-    BOOL notifyOnEntry = [self.class boolValueFrom:regionDict[@"notifyOnEntry"] defaultValue:YES];
-    BOOL notifyOnExit = [self.class boolValueFrom:regionDict[@"notifyOnExit"] defaultValue:YES];
+    for (NSDictionary *regionDict in regions) {
+      NSString *identifier = regionDict[@"identifier"] ?: [[NSUUID UUID] UUIDString];
+      CLLocationDistance radius = [regionDict[@"radius"] doubleValue];
+      CLLocationCoordinate2D center = [self.class coordinateFromDictionary:regionDict];
+      BOOL notifyOnEntry = [self.class boolValueFrom:regionDict[@"notifyOnEntry"] defaultValue:YES];
+      BOOL notifyOnExit = [self.class boolValueFrom:regionDict[@"notifyOnExit"] defaultValue:YES];
 
-    CLCircularRegion *region = [[CLCircularRegion alloc] initWithCenter:center radius:radius identifier:identifier];
+      CLCircularRegion *region = [[CLCircularRegion alloc] initWithCenter:center radius:radius identifier:identifier];
 
-    [region setNotifyOnEntry:notifyOnEntry];
-    [region setNotifyOnExit:notifyOnExit];
+      region.notifyOnEntry = notifyOnEntry;
+      region.notifyOnExit = notifyOnExit;
 
-    [_regionStates setObject:@(CLRegionStateUnknown) forKey:identifier];
-    [_locationManager startMonitoringForRegion:region];
-  }
+      [regionStates setObject:@(CLRegionStateUnknown) forKey:identifier];
+      [locationManager startMonitoringForRegion:region];
+      [locationManager requestStateForRegion:region];
+    }
+  }];
 }
 
 - (void)stopMonitoringAllRegions
 {
-  for (CLRegion *region in _locationManager.monitoredRegions) {
-    [_locationManager stopMonitoringForRegion:region];
-  }
+  [EXUtilities performSynchronouslyOnMainThread:^{
+    for (CLRegion *region in self->_locationManager.monitoredRegions) {
+      [self->_locationManager stopMonitoringForRegion:region];
+    }
+  }];
 }
 
 - (void)executeTaskWithRegion:(nonnull CLRegion *)region eventType:(EXGeofencingEventType)eventType
@@ -130,6 +141,26 @@
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error
 {
   [_task executeWithData:nil withError:error];
+}
+
+- (void)locationManager:(CLLocationManager *)manager monitoringDidFailForRegion:(CLRegion *)region withError:(NSError *)error
+{
+  if (error && error.domain == kCLErrorDomain) {
+    // This error might happen when the device is not able to find out the location. Try to restart monitoring this region.
+    [_locationManager stopMonitoringForRegion:region];
+    [_locationManager startMonitoringForRegion:region];
+    [_locationManager requestStateForRegion:region];
+  }
+}
+
+- (void)locationManager:(CLLocationManager *)manager didDetermineState:(CLRegionState)state forRegion:(CLRegion *)region
+{
+  if ([self regionStateForIdentifier:region.identifier] != state) {
+    EXGeofencingEventType eventType = state == CLRegionStateInside ? EXGeofencingEventTypeEnter : EXGeofencingEventTypeExit;
+
+    [self setRegionState:state forIdentifier:region.identifier];
+    [self executeTaskWithRegion:region eventType:eventType];
+  }
 }
 
 # pragma mark - helpers
