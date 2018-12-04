@@ -1,5 +1,5 @@
 import { NativeModules } from 'react-native';
-import Amplitude from '../Amplitude';
+import Amplitude from '../Amplitude/Amplitude';
 
 import { describeCrossPlatform } from '../../test/mocking';
 

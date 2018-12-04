@@ -42,7 +42,7 @@ export { default as MapView } from 'react-native-maps';
 
 import * as AR from './AR';
 export { AR };
-export { default as Amplitude } from './Amplitude';
+export { default as Amplitude } from './Amplitude/Amplitude';
 export { default as AuthSession } from './AuthSession';
 import * as Brightness from './Brightness';
 export { Brightness };
