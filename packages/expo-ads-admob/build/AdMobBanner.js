@@ -40,5 +40,5 @@ AdMobBanner.propTypes = {
     ...ViewPropTypes,
 };
 AdMobBanner.defaultProps = { bannerSize: 'smartBannerPortrait' };
-const ExpoBannerView = requireNativeViewManager('ExpoAdsAdMobBannerView', AdMobBanner);
+const ExpoBannerView = requireNativeViewManager('ExpoAdsAdMobBannerView');
 //# sourceMappingURL=AdMobBanner.js.map
