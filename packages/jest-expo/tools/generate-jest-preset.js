@@ -40,6 +40,13 @@ function generateJestPreset() {
     expoJestPreset.transform = {};
   }
 
+  const defaultBabelPattern = '^.+\\.js$';
+  assert(expoJestPreset.transform.hasOwnProperty(defaultBabelPattern));
+  delete expoJestPreset.transform[defaultBabelPattern];
+
+  const babelTsPattern = '^.+\\.(js|ts|tsx)$';
+  expoJestPreset.transform[babelTsPattern] = 'babel-jest';
+
   const defaultAssetNamePattern = '^.+\\.(bmp|gif|jpg|jpeg|mp4|png|psd|svg|webp)$';
   assert(expoJestPreset.transform.hasOwnProperty(defaultAssetNamePattern));
   delete expoJestPreset.transform[defaultAssetNamePattern];
@@ -55,6 +62,10 @@ function generateJestPreset() {
   expoJestPreset.transformIgnorePatterns = [
     'node_modules/(?!((jest-)?react-native|react-clone-referenced-element|expo(nent)?|@expo(nent)?/.*|react-navigation|sentry-expo|native-base))',
   ];
+
+  expoJestPreset.moduleFileExtensions = ['js', 'json', 'jsx', 'node', 'ts', 'tsx'];
+
+  expoJestPreset.testMatch = ['**/__tests__/**/*.(js|ts|tsx)', '**/?(*.)+(spec|test).(js|ts|tsx)'];
 
   if (!expoJestPreset.setupFiles) {
     expoJestPreset.setupFiles = [];

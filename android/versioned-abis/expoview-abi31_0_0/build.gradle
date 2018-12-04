@@ -137,6 +137,9 @@ dependencies {
   // expo-analytics-segment
   implementation 'com.segment.analytics.android:analytics:4.3.0'
 
+  // expo-ads-admob
+  implementation 'com.google.android.gms:play-services-ads:15.0.1'
+
   // expo-camera
   implementation 'com.google.android:cameraview:1.0.0'
   implementation 'com.google.android.gms:play-services-vision:15.0.2'
@@ -149,6 +152,11 @@ dependencies {
   implementation 'com.facebook.device.yearclass:yearclass:2.1.0'
 
   // expo-payments-stripe
-  api 'com.stripe:stripe-android:2.1.+'
-  api 'com.github.tipsi:CreditCardEntry:1.5.0'
+  implementation 'com.stripe:stripe-android:8.1.0'
+  implementation 'com.github.tipsi:CreditCardEntry:1.5.0'
+  implementation project(':expo-gl-cpp')
+  implementation project(':expo-print')
+  implementation('io.nlopez.smartlocation:library:3.2.11') {
+    transitive = false
+  }
 }

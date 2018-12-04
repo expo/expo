@@ -9,7 +9,7 @@ type Props = {
   locations?: number[] | null;
   start?: Point | null;
   end?: Point | null;
-} & React.ElementProps<View>;
+} & React.ComponentProps<typeof View>;
 
 type Point = { x: number; y: number } | [number, number];
 

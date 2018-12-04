@@ -71,7 +71,7 @@ public class PermissionsKernelService extends BaseKernelService {
 
   public boolean hasGrantedPermissions(String permission, ExperienceId experienceId) {
     // we don't want to worry about per-experience permissions for shell apps
-    if (Constants.isShellApp()) {
+    if (Constants.isStandaloneApp()) {
       return true;
     }
     JSONObject metadata = mExponentSharedPreferences.getExperienceMetadata(experienceId.get());
