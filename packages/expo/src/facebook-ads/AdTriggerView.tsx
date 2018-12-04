@@ -13,7 +13,7 @@ type AdTriggerViewProps<P> = {
 } & P;
 
 export default class AdTriggerView<
-  P extends TouchableProps = React.ElementProps<TouchableOpacity>
+  P extends TouchableProps = React.ComponentProps<typeof TouchableOpacity>
 > extends React.Component<AdTriggerViewProps<P>> {
   _trigger: React.Component<P> | null = null;
 
