@@ -1,17 +1,5 @@
-import { NativeModules } from 'react-native';
-
-const {
-  ExponentScreenOrientation = {
-    async allowAsync() {},
-    async doesSupportAsync() {
-      return true;
-    },
-    get name() {
-      return 'ExponentScreenOrientation';
-    },
-  },
-} = NativeModules;
-
+import ExponentScreenOrientation from './ExponentScreenOrientation';
+import { UnavailabilityError } from 'expo-errors';
 export enum Orientation {
   ALL = 'ALL',
   ALL_BUT_UPSIDE_DOWN = 'ALL_BUT_UPSIDE_DOWN',
@@ -31,6 +19,9 @@ export function allow(orientation: Orientation): void {
 }
 
 export function allowAsync(orientation: Orientation): Promise<void> {
+  if (!ExponentScreenOrientation.allowAsync) {
+    throw new UnavailabilityError('ScreenOrientation', 'allowAsync');
+  }
   return ExponentScreenOrientation.allowAsync(orientation);
 }
 
