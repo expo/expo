@@ -81,11 +81,7 @@ describe('Location', () => {
         (error as any).code = 'E_NO_GEOCODER';
         throw error;
       });
-      return expect(Location.geocodeAsync('Googleplex')).rejects.toEqual(
-        expect.objectContaining({
-          message: expect.stringContaining('Please set a Google API Key'),
-        })
-      );
+      return expect(Location.geocodeAsync('Googleplex')).rejects.toMatchObject({ code: 'E_NO_GEOCODER' });
     });
   });
 

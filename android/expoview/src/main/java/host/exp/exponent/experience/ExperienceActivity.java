@@ -31,7 +31,6 @@ import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
-import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.Nullable;
@@ -74,21 +73,17 @@ import static host.exp.exponent.kernel.KernelConstants.MANIFEST_URL_KEY;
 
 public class ExperienceActivity extends BaseExperienceActivity implements Exponent.StartReactInstanceDelegate {
 
-  // Override
-  public List<ReactPackage> reactPackages() {
+  public List<Package> expoPackages() {
+    // Experience must pick its own modules in ExponentPackage
     return null;
   }
-  public List<Package> expoPackages() {
-    return Collections.emptyList();
+  public List<ReactPackage> reactPackages() {
+    return null;
   }
 
   @Override
   public ExponentPackageDelegate getExponentPackageDelegate() {
     return null;
-  }
-
-  public boolean forceUnversioned() {
-    return false;
   }
 
   private static final String TAG = ExperienceActivity.class.getSimpleName();
@@ -395,7 +390,8 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     if (Constants.TEMPORARY_ABI_VERSION != null && Constants.TEMPORARY_ABI_VERSION.equals(mSDKVersion)) {
       mSDKVersion = RNObject.UNVERSIONED;
     }
-    mDetachSdkVersion = forceUnversioned() ? RNObject.UNVERSIONED : mSDKVersion;
+    // In detach/shell, since SDK31 we always use UNVERSIONED as the ABI.
+    mDetachSdkVersion = Constants.isStandaloneApp() ? RNObject.UNVERSIONED : mSDKVersion;
 
     if (!RNObject.UNVERSIONED.equals(mSDKVersion)) {
       boolean isValidVersion = false;

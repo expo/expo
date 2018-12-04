@@ -81,7 +81,6 @@ public class Analytics {
       amplitudeUserProperties.put("INITIAL_URL", Constants.INITIAL_URL);
       amplitudeUserProperties.put("ABI_VERSIONS", Constants.ABI_VERSIONS);
       amplitudeUserProperties.put("TEMPORARY_ABI_VERSION", Constants.TEMPORARY_ABI_VERSION);
-      amplitudeUserProperties.put("IS_DETACHED", Constants.isDetached());
       Amplitude.getInstance().setUserProperties(amplitudeUserProperties);
     } catch (JSONException e) {
       EXL.e(TAG, e);
@@ -107,7 +106,7 @@ public class Analytics {
   }
 
   public static void logEventWithManifestUrlSdkVersion(String eventType, String manifestUrl, String sdkVersion) {
-    if (!Constants.isShellApp() && (!eventType.equals(LOAD_EXPERIENCE))) {
+    if (!Constants.isStandaloneApp() && (!eventType.equals(LOAD_EXPERIENCE))) {
       return;
     }
     try {

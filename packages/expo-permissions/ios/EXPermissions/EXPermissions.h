@@ -33,7 +33,13 @@ typedef enum EXPermissionStatus {
 
 @end
 
-@interface EXPermissions : EXExportedModule <EXPermissionRequesterDelegate, EXPermissionsInterface, EXModuleRegistryConsumer>
+@protocol EXPermissionsModule
+
+- (dispatch_queue_t)methodQueue;
+
+@end
+
+@interface EXPermissions : EXExportedModule <EXPermissionRequesterDelegate, EXPermissionsInterface, EXModuleRegistryConsumer, EXPermissionsModule>
 
 - (NSDictionary *)getPermissionsForResource:(NSString *)resource;
 

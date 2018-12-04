@@ -28,6 +28,7 @@ def includeUniversalModule = { name ->
 }
 
 [
+  'expo-app-auth',
   'expo-ads-admob',
   'expo-analytics-segment',
   'expo-barcode-scanner',
@@ -38,6 +39,7 @@ def includeUniversalModule = { name ->
   'expo-constants-interface',
   'expo-contacts',
   'expo-core',
+  'expo-errors',
   'expo-face-detector',
   'expo-face-detector-interface',
   'expo-file-system',

@@ -1,6 +1,6 @@
 import React from 'react';
 import { ScrollView, StyleSheet, TouchableOpacity, Text, View, Image } from 'react-native';
-import { Asset, ImageManipulator, MediaLibrary, Permissions } from 'expo';
+import { Asset, ImageManipulator, Permissions, ImagePicker } from 'expo';
 import { Ionicons } from '@expo/vector-icons';
 
 import Colors from '../constants/Colors';
@@ -68,7 +68,7 @@ export default class ImageManipulatorScreen extends React.Component {
           {this.state.ready && this._renderImage()}
           <View style={styles.footerButtons}>
             <Button style={styles.button} onPress={this._pickPhoto}>
-              Pick MediaLibrary&apos;s photo
+              Pick a photo
             </Button>
             <Button style={styles.button} onPress={this._reset}>
               Reset photo
@@ -96,12 +96,12 @@ export default class ImageManipulatorScreen extends React.Component {
       alert('Permission to CAMERA_ROLL not granted!');
       return;
     }
-    const { assets } = await MediaLibrary.getAssetsAsync({ first: 1, mediaType: MediaLibrary.MediaType.photo });
-    if (!assets.length) {
-      alert('No image in MediaLibrary!');
-    } else {
-      this.setState({ image: assets[0] });
+    const result = await ImagePicker.launchImageLibraryAsync({ allowsEditing: false });
+    if (result.cancelled) {
+      alert('No image selected!');
+      return;
     }
+    this.setState({ image: result });
   }
 
   _rotate = async deg => {

@@ -5,6 +5,16 @@ import android.graphics.Matrix;
 import android.net.Uri;
 import android.util.Base64;
 
+import com.facebook.common.executors.CallerThreadExecutor;
+import com.facebook.common.executors.UiThreadImmediateExecutorService;
+import com.facebook.common.references.CloseableReference;
+import com.facebook.datasource.DataSource;
+import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.imagepipeline.common.RotationOptions;
+import com.facebook.imagepipeline.datasource.BaseBitmapDataSubscriber;
+import com.facebook.imagepipeline.image.CloseableImage;
+import com.facebook.imagepipeline.request.ImageRequest;
+import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -13,9 +23,6 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -27,7 +34,8 @@ import host.exp.exponent.utils.ExpFileUtils;
 import host.exp.exponent.utils.ScopedContext;
 
 public class ImageManipulatorModule extends ReactContextBaseJavaModule {
-
+  private static final String DECODE_ERROR_TAG = "E_DECODE_ERR";
+  private static final String ARGS_ERROR_TAG = "E_ARGS_ERR";
   private static final String TAG = "ExpoImageManipulator";
   private ScopedContext mScopedContext;
 
@@ -42,32 +50,45 @@ public class ImageManipulatorModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void manipulate(String uri, ReadableArray actions, ReadableMap saveOptions, Promise promise) {
-    String decoded = Uri.decode(uri);
-    Bitmap bmp = null;
-    try {
-      bmp = ImageLoader.getInstance().loadImageSync(decoded,
-          new DisplayImageOptions.Builder()
-              .cacheOnDisk(true)
-              .imageScaleType(ImageScaleType.NONE)
-              .considerExifParams(true)
-              .build());
-    } catch (Throwable e) {}
-    if (bmp == null) {
-      try {
-        bmp = ImageLoader.getInstance().loadImageSync(uri,
-            new DisplayImageOptions.Builder()
-                .cacheOnDisk(true)
-                .imageScaleType(ImageScaleType.NONE)
-                .considerExifParams(true)
-                .build());
-      } catch (Throwable e) {}
-    }
-    if (bmp == null) {
-      promise.reject(new IllegalStateException("Opening the image failed."));
+  public void manipulate(final String uriString, final ReadableArray actions, final ReadableMap saveOptions, final Promise promise) {
+    if (uriString == null || uriString.length() == 0) {
+      promise.reject(ARGS_ERROR_TAG, "Uri passed to ImageManipulator cannot be empty!");
       return;
     }
+    ImageRequest imageRequest =
+        ImageRequestBuilder
+            .newBuilderWithSource(Uri.parse(uriString))
+            .setRotationOptions(RotationOptions.autoRotate())
+            .build();
+    final DataSource<CloseableReference<CloseableImage>> dataSource
+        = Fresco.getImagePipeline().fetchDecodedImage(imageRequest, getReactApplicationContext());
+    dataSource.subscribe(new BaseBitmapDataSubscriber() {
+                           @Override
+                           public void onNewResultImpl(Bitmap bitmap) {
+                             if (bitmap != null) {
+                               processBitmapWithActions(bitmap, actions, saveOptions, promise);
+                             } else {
+                               onFailureImpl(dataSource);
+                             }
+                           }
 
+                           @Override
+                           public void onFailureImpl(DataSource dataSource) {
+                             // No cleanup required here.
+                             String basicMessage = "Could not get decoded bitmap of " + uriString;
+                             if (dataSource.getFailureCause() != null) {
+                               promise.reject(DECODE_ERROR_TAG,
+                                   basicMessage + ": " + dataSource.getFailureCause().toString(), dataSource.getFailureCause());
+                             } else {
+                               promise.reject(DECODE_ERROR_TAG, basicMessage + ".");
+                             }
+                           }
+                         },
+        CallerThreadExecutor.getInstance()
+    );
+  }
+
+  private void processBitmapWithActions(Bitmap bmp, ReadableArray actions, ReadableMap saveOptions, Promise promise) {
     int imageWidth, imageHeight;
 
     for (int idx = 0; idx < actions.size(); idx ++) {
