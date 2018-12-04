@@ -4,7 +4,7 @@ import { View, ViewPropTypes } from 'react-native';
 
 type Props = {
   tint: BlurTint;
-} & React.ElementProps<View>;
+} & React.ComponentProps<typeof View>;
 type BlurTint = 'light' | 'dark' | 'default';
 
 export default class BlurView extends React.Component<Props> {

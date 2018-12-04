@@ -1,6 +1,6 @@
 {
   "name": "expo-firebase-invites",
-  "version": "1.0.0-rc.3",
+  "version": "1.0.0-rc.5",
   "description": "Expo Unimodule for interfacing with Firebase Invites",
   "main": "src/index.js",
   "keywords": [
@@ -28,7 +28,6 @@
     "expo-firebase-app": "~1.0.0-rc.3"
   },
   "devDependencies": {
-    "babel-preset-expo": "^5.0.0",
     "flow-bin": "^0.77.0"
   }
 }

@@ -12,6 +12,10 @@
 #import "EXRootViewController.h"
 #import "EXConstants.h"
 
+#if __has_include(<EXAuth/EXAuth.h>)
+#import <EXAuth/EXAuth.h>
+#endif
+
 #if __has_include(<GoogleSignIn/GoogleSignIn.h>)
 #import <GoogleSignIn/GoogleSignIn.h>
 #endif
@@ -56,6 +60,11 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
   }
 #endif
+#if __has_include(<EXAuth/EXAuth.h>)
+  if ([[EXAuth instance] application:app openURL:url options:options]) {
+    return YES;
+  }
+#endif
   return [[ExpoKit sharedInstance] application:app openURL:url sourceApplication:sourceApplication annotation:annotation];
 }
 
@@ -76,19 +85,8 @@ NS_ASSUME_NONNULL_BEGIN
   [[ExpoKit sharedInstance] application:application didFailToRegisterForRemoteNotificationsWithError:err];
 }
 
-- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)notification
-{
-  [[ExpoKit sharedInstance] application:application didReceiveRemoteNotification:notification];
-}
-
-- (void)application:(UIApplication *)application didReceiveLocalNotification:(nonnull UILocalNotification *)notification
-{
-  [[ExpoKit sharedInstance] application:application didReceiveLocalNotification:notification];
-}
-
-- (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(nonnull UIUserNotificationSettings *)notificationSettings
-{
-  [[ExpoKit sharedInstance] application:application didRegisterUserNotificationSettings:notificationSettings];
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler {
+  [[ExpoKit sharedInstance] application:application didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
 }
 
 @end
