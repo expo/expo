@@ -1,34 +1,20 @@
 import { EventEmitter, EventSubscription } from 'fbemitter';
-import { DeviceEventEmitter, NativeModules } from 'react-native';
-import UnsupportedError from './UnsupportedError';
+import { DeviceEventEmitter } from 'react-native';
+import { UnavailabilityError } from 'expo-errors';
 
-const {
-  ExponentUpdates = {
-    get name() {
-      return 'ExponentUpdates';
-    },
-  },
-} = NativeModules;
+import ExponentUpdates from './ExponentUpdates';
 
-export function reload(): void {
-  if (!ExponentUpdates.reload) {
-    throw new UnsupportedError('Updates', 'reload');
-  }
-
-  ExponentUpdates.reload();
+export async function reload(): Promise<void> {
+  await ExponentUpdates.reload();
 }
 
-export function reloadFromCache(): void {
-  if (!ExponentUpdates.reloadFromCache) {
-    throw new UnsupportedError('Updates', 'reloadFromCache');
-  }
-
-  ExponentUpdates.reloadFromCache();
+export async function reloadFromCache(): Promise<void> {
+  await ExponentUpdates.reloadFromCache();
 }
 
 export async function checkForUpdateAsync(): Promise<Object> {
   if (!ExponentUpdates.checkForUpdateAsync) {
-    throw new UnsupportedError('Updates', 'checkForUpdateAsync');
+    throw new UnavailabilityError('Updates', 'checkForUpdateAsync');
   }
   const result = await ExponentUpdates.checkForUpdateAsync();
   let returnObj: any = {
@@ -42,7 +28,7 @@ export async function checkForUpdateAsync(): Promise<Object> {
 
 export async function fetchUpdateAsync({ eventListener }: any = {}): Promise<Object> {
   if (!ExponentUpdates.fetchUpdateAsync) {
-    throw new UnsupportedError('Updates', 'fetchUpdateAsync');
+    throw new UnavailabilityError('Updates', 'fetchUpdateAsync');
   }
   let subscription;
   let result;

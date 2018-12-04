@@ -80,7 +80,7 @@ export { Speech };
 import * as StoreReview from './StoreReview/StoreReview';
 export { StoreReview };
 export { default as Svg } from './Svg';
-import * as Updates from './Updates';
+import * as Updates from './Updates/Updates';
 export { Updates };
 import * as Util from './Util';
 export { Util };
