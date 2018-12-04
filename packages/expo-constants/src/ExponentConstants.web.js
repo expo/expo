@@ -48,6 +48,9 @@ export default {
     console.warn(`ExponentConstants.deviceYearClass: is unimplemented on this platform.`);
     return null;
   },
+  get manifest(): { [string]: any } {
+    return {};
+  },
   getWebViewUserAgentAsync(): Promise {
     return navigator.userAgent || null;
   },
