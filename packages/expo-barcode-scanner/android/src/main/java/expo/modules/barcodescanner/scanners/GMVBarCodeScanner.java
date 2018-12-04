@@ -2,6 +2,7 @@ package expo.modules.barcodescanner.scanners;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.SparseArray;
@@ -11,6 +12,7 @@ import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -53,13 +55,24 @@ public class GMVBarCodeScanner extends ExpoBarCodeScanner {
   }
 
   private List<BarCodeScannerResult> scan(Frame frame) {
+
     try {
       SparseArray<Barcode> result = mBarcodeDetector.detect(frame);
       List<BarCodeScannerResult> results = new ArrayList<>();
 
+      int width = frame.getMetadata().getWidth();
+      int height = frame.getMetadata().getHeight();
+
       for (int i = 0; i < result.size(); i++) {
         Barcode barcode = result.get(result.keyAt(i));
-        results.add(new BarCodeScannerResult(barcode.format, barcode.rawValue));
+        List<Integer> cornerPoints = new ArrayList<>();
+        for (Point point : barcode.cornerPoints) {
+          Integer x =  Integer.valueOf(point.x);
+          Integer y = Integer.valueOf(height-point.y);
+          // swap of coordinates ToDo check with different orientations
+          cornerPoints.addAll(Arrays.asList(y,x));
+        }
+        results.add(new BarCodeScannerResult(barcode.format, barcode.rawValue, cornerPoints, width, height));
       }
 
       return results;

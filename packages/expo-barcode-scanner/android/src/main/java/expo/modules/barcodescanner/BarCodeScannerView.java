@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 
+import java.util.List;
 import java.util.Map;
 
 import expo.core.ModuleRegistry;
@@ -20,6 +21,8 @@ public class BarCodeScannerView extends ViewGroup {
   private final Context mContext;
   private BarCodeScannerViewFinder mViewFinder = null;
   private int mActualDeviceOrientation = -1;
+  private int mLeftPadding = 0;
+  private int mTopPadding = 0;
 
   public BarCodeScannerView(final Context context, ModuleRegistry moduleRegistry) {
     super(context);
@@ -60,8 +63,32 @@ public class BarCodeScannerView extends ViewGroup {
 
   public void onBarCodeScanned(BarCodeScannerResult barCode) {
     EventEmitter emitter = mModuleRegistry.getModule(EventEmitter.class);
-    BarCodeScannedEvent event = BarCodeScannedEvent.obtain(this.getId(), barCode);
+    convertResult(barCode);
+    BarCodeScannedEvent event = BarCodeScannedEvent.obtain(this.getId(), barCode, barCode.getHeight(), barCode.getWidth());
     emitter.emit(this.getId(), event);
+  }
+
+  private void convertResult(BarCodeScannerResult barCode) {
+    List<Integer> cornerPoints = barCode.getCornerPoints();
+
+    int previewWidth = this.getWidth() - mLeftPadding*2;
+    int previewHeight = this.getHeight() - mTopPadding*2;
+
+
+    for(int i = 0; i < cornerPoints.size(); i += 2) { // convert x-coordinate
+      int convertedCoordinate = Math.round(cornerPoints.get(i) * previewWidth/(float)barCode.getWidth() + mLeftPadding);
+      cornerPoints.set(i, convertedCoordinate);
+    }
+
+    for(int i = 1; i < cornerPoints.size(); i += 2) { // convert y-coordinate
+      int convertedCoordinate = Math.round(cornerPoints.get(i) * previewHeight/(float)barCode.getHeight() + mTopPadding);
+      cornerPoints.set(i, convertedCoordinate);
+    }
+
+    barCode.setHeight(this.getHeight());
+    barCode.setWidth(this.getWidth());
+
+    barCode.setCornerPoints(cornerPoints);
   }
 
   public void setCameraType(final int type) {
@@ -110,15 +137,18 @@ public class BarCodeScannerView extends ViewGroup {
 
     // Just fill the given space
     if (ratio * height < width) {
-      viewfinderHeight = (int) (width / ratio);
-      viewfinderWidth = (int) width;
-    } else {
       viewfinderWidth = (int) (ratio * height);
       viewfinderHeight = (int) height;
+    } else {
+      viewfinderHeight = (int) (width / ratio);
+      viewfinderWidth = (int) width;
     }
 
     int viewFinderPaddingX = (int) ((width - viewfinderWidth) / 2);
     int viewFinderPaddingY = (int) ((height - viewfinderHeight) / 2);
+
+    mLeftPadding = viewFinderPaddingX;
+    mTopPadding = viewFinderPaddingY;
 
     this.mViewFinder.layout(viewFinderPaddingX, viewFinderPaddingY, viewFinderPaddingX + viewfinderWidth, viewFinderPaddingY + viewfinderHeight);
     this.postInvalidate(this.getLeft(), this.getTop(), this.getRight(), this.getBottom());

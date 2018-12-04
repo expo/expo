@@ -20,9 +20,9 @@ class BarCodeScannerViewFinder extends TextureView implements TextureView.Surfac
   private final ModuleRegistry mModuleRegistry;
   private int mCameraType;
   private SurfaceTexture mSurfaceTexture;
-  private boolean mIsStarting;
-  private boolean mIsStopping;
-  private boolean mIsChanging;
+  private volatile boolean mIsStarting;
+  private volatile boolean mIsStopping;
+  private volatile boolean mIsChanging;
   private BarCodeScannerView mBarCodeScannerView;
   private Camera mCamera;
 
