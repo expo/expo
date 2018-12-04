@@ -191,7 +191,7 @@ public class PushNotificationHelper {
           }
 
           notificationBuilder = new NotificationCompat.Builder(context, scopedChannelId)
-              .setSmallIcon(Constants.isShellApp() ? R.drawable.shell_notification_icon : R.drawable.notification_icon)
+              .setSmallIcon(Constants.isStandaloneApp() ? R.drawable.shell_notification_icon : R.drawable.notification_icon)
               .setContentTitle(collapsedTitle)
               .setColor(color)
               .setContentText(name)
@@ -204,11 +204,11 @@ public class PushNotificationHelper {
           if (title == null) {
             contentTitle = name;
           } else {
-            contentTitle = Constants.isShellApp() ? title : name + " - " + title;
+            contentTitle = Constants.isStandaloneApp() ? title : name + " - " + title;
           }
 
           notificationBuilder = new NotificationCompat.Builder(context, scopedChannelId)
-              .setSmallIcon(Constants.isShellApp() ? R.drawable.shell_notification_icon : R.drawable.notification_icon)
+              .setSmallIcon(Constants.isStandaloneApp() ? R.drawable.shell_notification_icon : R.drawable.notification_icon)
               .setContentTitle(contentTitle)
               .setColor(color)
               .setContentText(message)

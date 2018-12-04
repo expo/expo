@@ -183,7 +183,7 @@ public class LoadingView extends RelativeLayout {
       mBackgroundImageView.setScaleType(scaleType);
     }
 
-    if (Constants.isShellApp()) {
+    if (Constants.isStandaloneApp()) {
       revealView(mBackgroundImageView);
       return;
     }
