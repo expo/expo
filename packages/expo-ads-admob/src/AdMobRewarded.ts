@@ -1,4 +1,4 @@
-import { NativeModulesProxy, EventEmitter, Platform } from 'expo-core';
+import { EventEmitter, NativeModulesProxy, Platform, Subscription } from 'expo-core';
 
 const AdMobRewardedVideoAdManager: any = NativeModulesProxy.ExpoAdsAdMobRewardedVideoAdManager;
 
@@ -24,11 +24,6 @@ type EventNameType =
   | 'rewardedVideoWillLeaveApplication';
 
 type EventListener = (...args: any[]) => void;
-
-// TODO: import this from expo-core
-type Subscription = {
-  remove: () => void,
-};
 
 const eventHandlers: { [eventName: string]: Map<EventListener, Subscription> } = {};
 
