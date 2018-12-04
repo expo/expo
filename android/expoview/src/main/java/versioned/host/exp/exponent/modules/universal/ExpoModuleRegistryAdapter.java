@@ -53,6 +53,9 @@ public class ExpoModuleRegistryAdapter extends ModuleRegistryAdapter implements 
     // Overriding expo-constants/ConstantsService -- binding provides manifest and other expo-related constants
     moduleRegistry.registerInternalModule(new ConstantsBinding(scopedContext, experienceProperties, manifest));
 
+    // Overriding expo-file-system FilePermissionModule
+    moduleRegistry.registerInternalModule(new ScopedFilePermissionModule(scopedContext));
+
     // ReactAdapterPackage requires ReactContext
     ReactApplicationContext reactContext = (ReactApplicationContext) scopedContext.getContext();
     for (InternalModule internalModule : mReactAdapterPackage.createInternalModules(reactContext)) {

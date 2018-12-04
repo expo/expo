@@ -1,4 +1,4 @@
-import { Font } from 'expo-font';
+import * as Font from 'expo-font';
 import * as React from 'react';
 import { AppRegistry, StyleSheet } from 'react-native';
 
@@ -45,5 +45,6 @@ function wrapWithExpoRoot<P extends InitialProps>(
 export default function registerRootComponent<P extends InitialProps>(
   component: React.ComponentClass<P>
 ): void {
+  // @ts-ignore: TypeScript says ComponentClass<P> does not satisfy ComponentClass<any>
   AppRegistry.registerComponent('main', () => wrapWithExpoRoot(component));
 }

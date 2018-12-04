@@ -8,7 +8,7 @@
 #import <EXPermissions/EXContactsRequester.h>
 #import <EXPermissions/EXLocationRequester.h>
 #import <EXPermissions/EXPermissions.h>
-#import <EXPermissions/EXLocalNotificationRequester.h>
+#import <EXPermissions/EXUserNotificationRequester.h>
 #import <EXPermissions/EXRemindersRequester.h>
 #import <EXPermissions/EXRemoteNotificationRequester.h>
 #import <EXPermissions/EXCameraRollRequester.h>
@@ -21,6 +21,7 @@ NSString * const EXPermissionExpiresNever = @"never";
 @property (nonatomic, weak) id<EXPermissionsServiceInterface> permissionsService;
 @property (nonatomic, weak) id<EXUtilitiesInterface> utils;
 @property (nonatomic, assign) NSString *experienceId;
+@property (nonatomic, weak) EXModuleRegistry * moduleRegistry;
 
 @end
 
@@ -30,7 +31,7 @@ EX_EXPORT_MODULE(ExpoPermissions);
 
 + (const NSArray<Protocol *> *)exportedInterfaces
 {
-  return @[@protocol(EXPermissionsInterface)];
+  return @[@protocol(EXPermissionsInterface), @protocol(EXPermissionsModule)];
 }
 
 - (NSDictionary *)constantsToExport
@@ -58,6 +59,7 @@ EX_EXPORT_MODULE(ExpoPermissions);
 {
   _permissionsService = [moduleRegistry getSingletonModuleForName:@"Permissions"];
   _utils = [moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)];
+  _moduleRegistry = moduleRegistry;
 }
 
 # pragma mark - Expo exported methods
@@ -128,7 +130,7 @@ EX_EXPORT_METHOD_AS(askAsync,
     permissionType = [permissionsToBeAsked anyObject];
     [permissionsToBeAsked removeObject:permissionType];
     
-    id<EXPermissionRequester> requester = [[self class] getPermissionRequesterForType:permissionType];
+    id<EXPermissionRequester> requester = [self getPermissionRequesterForType:permissionType];
     
     if (requester == nil) {
       // TODO: other types of permission requesters, e.g. facebook
@@ -252,9 +254,9 @@ EX_EXPORT_METHOD_AS(askAsync,
 - (NSDictionary *)getPermissionsForResource:(NSString *)type
 {
   if ([type isEqualToString:@"notifications"]) {
-    return [EXRemoteNotificationRequester permissions];
+    return [EXRemoteNotificationRequester permissionsWithModuleRegistry:_moduleRegistry];
   } else if ([type isEqualToString:@"userFacingNotifications"]) {
-    return [EXLocalNotificationRequester permissions];
+    return [EXUserNotificationRequester permissionsWithModuleRegistry:_moduleRegistry];
   } else if ([type isEqualToString:@"location"]) {
     return [EXLocationRequester permissions];
   } else if ([type isEqualToString:@"camera"]) {
@@ -367,12 +369,12 @@ EX_EXPORT_METHOD_AS(askAsync,
   [self askForScopedPermissions:scopedPermissionsToBeAsked withResolver:scopedPermissionResolver withRejecter:reject];
 }
 
-+ (id<EXPermissionRequester>)getPermissionRequesterForType:(NSString *)type
+- (id<EXPermissionRequester>)getPermissionRequesterForType:(NSString *)type
 {
   if ([type isEqualToString:@"notifications"]) {
-    return [[EXRemoteNotificationRequester alloc] init];
+    return [[EXRemoteNotificationRequester alloc] initWithModuleRegistry:_moduleRegistry];
   } else if ([type isEqualToString:@"userFacingNotifications"]) {
-    return [[EXLocalNotificationRequester alloc] init];
+    return [[EXUserNotificationRequester alloc] initWithModuleRegistry:_moduleRegistry];
   } else if ([type isEqualToString:@"location"]) {
     return [[EXLocationRequester alloc] init];
   } else if ([type isEqualToString:@"camera"]) {
