@@ -16,6 +16,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+@protocol EXNotificationsIdentifiersManager
+
+- (NSString *)internalIdForIdentifier:(NSString *)identifier experienceId:(NSString *)experienceId;
+- (NSString *)exportedIdForInternalIdentifier:(NSString *)identifier;
+
+@end
+
 @interface EXNotifications : EXScopedBridgeModule
 
 @end

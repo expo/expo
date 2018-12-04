@@ -4,6 +4,8 @@
 #import "EXModuleRegistryBinding.h"
 #import "EXUnversioned.h"
 #import "EXUtil.h"
+#import "EXEnvironment.h"
+#import "EXUserNotificationCenter.h"
 
 #import <React/RCTUtils.h>
 #import <React/RCTConvert.h>
@@ -29,25 +31,28 @@ RCT_ENUM_CONVERTER(NSCalendarUnit,
 @interface EXNotifications ()
 
 // unversioned EXRemoteNotificationManager instance
-@property (nonatomic, weak) id <EXNotificationsScopedModuleDelegate> kernelNotificationsDelegate;
+@property (nonatomic, weak) id <EXNotificationsScopedModuleDelegate> remoteNotificationsDelegate;
+@property (nonatomic, weak) id <EXNotificationsIdentifiersManager> notificationsIdentifiersManager;
 
 @end
 
 @implementation EXNotifications
 
-EX_EXPORT_SCOPED_MODULE(ExponentNotifications, RemoteNotificationManager);
+EX_EXPORT_SCOPED_MULTISERVICE_MODULE(ExponentNotifications, @"RemoteNotificationManager", @"UserNotificationManager");
 
 @synthesize bridge = _bridge;
+@synthesize methodQueue = _methodQueue;
 
 - (void)setBridge:(RCTBridge *)bridge
 {
   _bridge = bridge;
 }
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId kernelServiceDelegate:(id)kernelServiceInstance params:(NSDictionary *)params
+- (instancetype)initWithExperienceId:(NSString *)experienceId kernelServiceDelegates:(NSDictionary *)kernelServiceInstances params:(NSDictionary *)params
 {
-  if (self = [super initWithExperienceId:experienceId kernelServiceDelegate:kernelServiceInstance params:params]) {
-    _kernelNotificationsDelegate = kernelServiceInstance;
+  if (self = [super initWithExperienceId:experienceId kernelServiceDelegates:kernelServiceInstances params:params]) {
+    _remoteNotificationsDelegate = kernelServiceInstances[@"RemoteNotificationManager"];
+    _notificationsIdentifiersManager = kernelServiceInstances[@"UserNotificationManager"];
   }
   return self;
 }
@@ -58,12 +63,12 @@ RCT_REMAP_METHOD(getDevicePushTokenAsync,
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
   id<EXConstantsInterface> constants = [_bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXConstantsInterface)];
-  
+
   if (![constants.appOwnership isEqualToString:@"standalone"]) {
     return reject(0, @"getDevicePushTokenAsync is only accessible within standalone applications", nil);
   }
-  
-  NSString *token = [_kernelNotificationsDelegate apnsTokenStringForScopedModule:self];
+
+  NSString *token = [_remoteNotificationsDelegate apnsTokenStringForScopedModule:self];
   if (!token) {
     return reject(0, @"APNS token has not been set", nil);
   }
@@ -79,7 +84,7 @@ RCT_REMAP_METHOD(getExponentPushTokenAsync,
     return;
   }
 
-  [_kernelNotificationsDelegate getExpoPushTokenForScopedModule:self completionHandler:^(NSString *pushToken, NSError *error) {
+  [_remoteNotificationsDelegate getExpoPushTokenForScopedModule:self completionHandler:^(NSString *pushToken, NSError *error) {
     if (error) {
       reject(@"E_NOTIFICATIONS_TOKEN_REGISTRATION_FAILED", error.localizedDescription, error);
     } else {
@@ -92,63 +97,119 @@ RCT_EXPORT_METHOD(presentLocalNotification:(NSDictionary *)payload
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(__unused RCTPromiseRejectBlock)reject)
 {
-  UILocalNotification *notification = [self _localNotificationFromPayload:payload];
+  if (!payload[@"data"]) {
+    reject(@"E_NOTIF_NO_DATA", @"Attempted to send a local notification with no `data` property.", nil);
+    return;
+  }
+  UNMutableNotificationContent *content = [self _localNotificationFromPayload:payload];
+  UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:content.userInfo[@"id"]
+                                                                        content:content
+                                                                        trigger:nil];
 
-  [EXUtil performSynchronouslyOnMainThread:^{
-    [RCTSharedApplication() presentLocalNotificationNow:notification];
+  [[EXUserNotificationCenter sharedInstance] addNotificationRequest:request withCompletionHandler:^(NSError * _Nullable error) {
+    if (error) {
+      reject(@"E_NOTIF", [NSString stringWithFormat:@"Could not add a notification request: %@", error.localizedDescription], error);
+    } else {
+      resolve(content.userInfo[@"id"]);
+    }
   }];
-
-  resolve(notification.userInfo[@"id"]);
 }
 
 RCT_EXPORT_METHOD(scheduleLocalNotification:(NSDictionary *)payload
                   withOptions:(NSDictionary *)options
                   resolver:(RCTPromiseResolveBlock)resolve
-                  rejecter:(__unused RCTPromiseRejectBlock)reject)
+                  rejecter:(RCTPromiseRejectBlock)reject)
 {
-  UILocalNotification *notification = [self _localNotificationFromPayload:payload];
-
-  notification.fireDate = [RCTConvert NSDate:options[@"time"]] ?: [NSDate new];
-  notification.repeatInterval = [RCTConvert NSCalendarUnit:options[@"repeat"]] ?: 0;
-
-  [EXUtil performSynchronouslyOnMainThread:^{
-    [RCTSharedApplication() scheduleLocalNotification:notification];
-  }];
-
-  resolve(notification.userInfo[@"id"]);
-}
-
-RCT_EXPORT_METHOD(cancelScheduledNotification:(NSString *)uniqueId)
-{
-  [EXUtil performSynchronouslyOnMainThread:^{
-    for (UILocalNotification *notification in [RCTSharedApplication() scheduledLocalNotifications]) {
-      if ([notification.userInfo[@"id"] isEqualToString:uniqueId]) {
-        [RCTSharedApplication() cancelLocalNotification:notification];
-        break;
-      }
+  if (!payload[@"data"]) {
+    reject(@"E_NOTIF_NO_DATA", @"Attempted to send a local notification with no `data` property.", nil);
+    return;
+  }
+  UNCalendarNotificationTrigger *notificationTrigger = [self notificationTriggerFor:options[@"time"]];
+  UNMutableNotificationContent *content = [self _localNotificationFromPayload:payload];
+  UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:content.userInfo[@"id"]
+                                                                        content:content
+                                                                        trigger:notificationTrigger];
+  [[EXUserNotificationCenter sharedInstance] addNotificationRequest:request withCompletionHandler:^(NSError * _Nullable error) {
+    if (error) {
+      reject(@"E_NOTIF_REQ", error.localizedDescription, error);
+    } else {
+      resolve(content.userInfo[@"id"]);
     }
   }];
 }
 
-RCT_REMAP_METHOD(cancelAllScheduledNotifications,
-                 cancelAllScheduledNotificationsWithResolver:(RCTPromiseResolveBlock)resolve
+RCT_EXPORT_METHOD(legacyScheduleLocalRepeatingNotification:(NSDictionary *)payload
+                  withOptions:(NSDictionary *)options
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+{
+  #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+  if (!payload[@"data"]) {
+    reject(@"E_NOTIF_NO_DATA", @"Attempted to send a local notification with no `data` property.", nil);
+    return;
+  }
+  UILocalNotification *localNotification = [UILocalNotification new];
+  NSString *uniqueId = [[NSUUID new] UUIDString];
+  localNotification.alertTitle = payload[@"title"];
+  localNotification.alertBody = payload[@"body"];
+  if ([payload[@"sound"] boolValue]) {
+    localNotification.soundName = UILocalNotificationDefaultSoundName;
+  }
+  if ([payload[@"categoryId"] isKindOfClass:[NSString class]]) {
+    localNotification.category = [self internalIdForIdentifier:payload[@"categoryId"]];
+  }
+  localNotification.applicationIconBadgeNumber = [RCTConvert NSInteger:payload[@"count"]] ?: 0;
+  localNotification.userInfo = @{
+                                 @"body": payload[@"data"],
+                                 @"experienceId": self.experienceId,
+                                 @"id": uniqueId
+                                 };
+  localNotification.fireDate = [RCTConvert NSDate:options[@"time"]] ?: [NSDate new];
+  localNotification.repeatInterval = [RCTConvert NSCalendarUnit:options[@"repeat"]] ?: 0;
+
+  __weak typeof(self) weakSelf = self;
+  [EXUtil performSynchronouslyOnMainThread:^{
+    [RCTSharedApplication() scheduleLocalNotification:localNotification];
+    dispatch_queue_t methodQueue = weakSelf.methodQueue;
+    if (methodQueue) {
+      dispatch_async(methodQueue, ^{
+        resolve(uniqueId);
+      });
+    }
+  }];
+  #pragma GCC diagnostic warning "-Wdeprecated-declarations"
+}
+
+RCT_REMAP_METHOD(cancelScheduledNotificationAsync,
+                 cancelScheduledNotificationAsync:(NSString *)uniqueId
+                 withResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
-  [self cancelAllScheduledNotificationsAsyncWithResolver:resolve rejecter:reject];
+  [[EXUserNotificationCenter sharedInstance] getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> * _Nonnull requests) {
+    for (UNNotificationRequest *request in requests) {
+      if ([request.content.userInfo[@"id"] isEqualToString:uniqueId]) {
+        [[EXUserNotificationCenter sharedInstance] removePendingNotificationRequestsWithIdentifiers:@[request.identifier]];
+        return resolve(nil);
+      }
+    }
+    reject(@"E_NO_NOTIF", [NSString stringWithFormat:@"Could not find pending notification request to cancel with id = %@", uniqueId], nil);
+  }];
 }
 
 RCT_REMAP_METHOD(cancelAllScheduledNotificationsAsync,
                  cancelAllScheduledNotificationsAsyncWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(__unused RCTPromiseRejectBlock)reject)
 {
-  [EXUtil performSynchronouslyOnMainThread:^{
-    for (UILocalNotification *notification in [RCTSharedApplication() scheduledLocalNotifications]) {
-      if ([notification.userInfo[@"experienceId"] isEqualToString:self.experienceId]) {
-        [RCTSharedApplication() cancelLocalNotification:notification];
+  [[EXUserNotificationCenter sharedInstance] getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> * _Nonnull requests) {
+    NSMutableArray<NSString *> *requestsToCancelIdentifiers = [NSMutableArray new];
+    for (UNNotificationRequest *request in requests) {
+      if ([request.content.userInfo[@"experienceId"] isEqualToString:self.experienceId]) {
+        [requestsToCancelIdentifiers addObject:request.identifier];
       }
     }
+    [[EXUserNotificationCenter sharedInstance] removePendingNotificationRequestsWithIdentifiers:requestsToCancelIdentifiers];
+    resolve(nil);
   }];
-  resolve(nil);
 }
 
 #pragma mark - Badges
@@ -157,7 +218,7 @@ RCT_REMAP_METHOD(cancelAllScheduledNotificationsAsync,
 
 RCT_REMAP_METHOD(getBadgeNumberAsync,
                  getBadgeNumberAsyncWithResolver:(RCTPromiseResolveBlock)resolve
-                 rejecter:(__unused RCTPromiseRejectBlock)reject)
+                 rejecter:(RCTPromiseRejectBlock)reject)
 {
   __block NSInteger badgeNumber;
   [EXUtil performSynchronouslyOnMainThread:^{
@@ -176,31 +237,128 @@ RCT_EXPORT_METHOD(setBadgeNumberAsync:(nonnull NSNumber *)number
   resolve(nil);
 }
 
+# pragma mark - Categories
+
+RCT_REMAP_METHOD(createCategoryAsync,
+                 createCategoryWithCategoryId:(NSString *)categoryId
+                 actions:(NSArray *)actions
+                 resolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(__unused RCTPromiseRejectBlock)reject)
+{
+  NSMutableArray<UNNotificationAction *> *actionsArray = [[NSMutableArray alloc] init];
+  for (NSDictionary<NSString *, id> *actionParams in actions) {
+    [actionsArray addObject:[self parseNotificationActionFromParams:actionParams]];
+  }
+
+  UNNotificationCategory *newCategory = [UNNotificationCategory categoryWithIdentifier:[self internalIdForIdentifier:categoryId]
+                                                                               actions:actionsArray
+                                                                     intentIdentifiers:@[]
+                                                                               options:UNNotificationCategoryOptionNone];
+
+  [[EXUserNotificationCenter sharedInstance] getNotificationCategoriesWithCompletionHandler:^(NSSet<UNNotificationCategory *> *categories) {
+    NSMutableSet<UNNotificationCategory *> *newCategories = [categories mutableCopy];
+    for (UNNotificationCategory *category in newCategories) {
+      if ([category.identifier isEqualToString:newCategory.identifier]) {
+        [newCategories removeObject:category];
+        break;
+      }
+    }
+    [newCategories addObject:newCategory];
+    [[EXUserNotificationCenter sharedInstance] setNotificationCategories:newCategories];
+    resolve(nil);
+  }];
+}
+
+RCT_REMAP_METHOD(deleteCategoryAsync,
+                 deleteCategoryWithCategoryId:(NSString *)categoryId
+                 resolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(__unused RCTPromiseRejectBlock)reject)
+{
+  NSString *internalCategoryId = [self internalIdForIdentifier:categoryId];
+  [[EXUserNotificationCenter sharedInstance] getNotificationCategoriesWithCompletionHandler:^(NSSet<UNNotificationCategory *> *categories) {
+    NSMutableSet<UNNotificationCategory *> *newCategories = [categories mutableCopy];
+    for (UNNotificationCategory *category in newCategories) {
+      if ([category.identifier isEqualToString:internalCategoryId]) {
+        [newCategories removeObject:category];
+        break;
+      }
+    }
+    [[EXUserNotificationCenter sharedInstance] setNotificationCategories:newCategories];
+    resolve(nil);
+  }];
+}
+
 #pragma mark - internal
 
-- (UILocalNotification *)_localNotificationFromPayload:(NSDictionary *)payload
+- (UNMutableNotificationContent *)_localNotificationFromPayload:(NSDictionary *)payload
 {
-  RCTAssert((payload[@"data"] != nil), @"Attempted to send a local notification with no `data` property.");
-  UILocalNotification *localNotification = [UILocalNotification new];
+  UNMutableNotificationContent *content = [UNMutableNotificationContent new];
 
   NSString *uniqueId = [[NSUUID new] UUIDString];
 
-  localNotification.alertTitle = payload[@"title"];
-  localNotification.alertBody = payload[@"body"];
-  
+  content.title = payload[@"title"];
+  content.body = payload[@"body"];
+
   if ([payload[@"sound"] boolValue]) {
-    localNotification.soundName = UILocalNotificationDefaultSoundName;
+    content.sound = [UNNotificationSound defaultSound];
   }
-  
-  localNotification.applicationIconBadgeNumber = [RCTConvert NSInteger:payload[@"count"]] ?: 0;
 
-  localNotification.userInfo = @{
-                                 @"body": payload[@"data"],
-                                 @"experienceId": self.experienceId,
-                                 @"id": uniqueId,
-                                 };
+  if ([payload[@"count"] isKindOfClass:[NSNumber class]]) {
+    content.badge = (NSNumber *)payload[@"count"];
+  }
 
-  return localNotification;
+  if ([payload[@"categoryId"] isKindOfClass:[NSString class]]) {
+    content.categoryIdentifier = [self internalIdForIdentifier:payload[@"categoryId"]];
+  }
+
+  content.userInfo = @{
+                       @"body": payload[@"data"],
+                       @"experienceId": self.experienceId,
+                       @"id": uniqueId
+                       };
+
+  return content;
+}
+
+- (NSString *)internalIdForIdentifier:(NSString *)identifier {
+  return [_notificationsIdentifiersManager internalIdForIdentifier:identifier experienceId:self.experienceId];
+}
+
+- (UNCalendarNotificationTrigger *)notificationTriggerFor:(NSNumber * _Nullable)unixTime
+{
+  NSDateComponents *dateComponents = [self dateComponentsFrom:unixTime];
+  return [UNCalendarNotificationTrigger triggerWithDateMatchingComponents:dateComponents repeats:NO];
+}
+
+- (NSDateComponents *)dateComponentsFrom:(NSNumber * _Nullable)unixTime {
+  static unsigned unitFlags = NSCalendarUnitSecond | NSCalendarUnitMinute | NSCalendarUnitHour | NSCalendarUnitDay | NSCalendarUnitMonth |  NSCalendarUnitYear;
+  NSDate *triggerDate = [RCTConvert NSDate:unixTime] ?: [NSDate new];
+  NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+  return [calendar components:unitFlags fromDate:triggerDate];
+}
+
+- (UNNotificationAction *)parseNotificationActionFromParams:(NSDictionary *)params
+{
+  NSString *actionId = [self internalIdForIdentifier:params[@"actionId"]];
+  NSString *buttonTitle = params[@"buttonTitle"];
+
+  UNNotificationActionOptions options = UNNotificationActionOptionForeground;
+  if ([params[@"isDestructive"] boolValue]) {
+    options += UNNotificationActionOptionDestructive;
+  }
+  if ([params[@"isAuthenticationRequired"] boolValue]) {
+    options += UNNotificationActionOptionAuthenticationRequired;
+  }
+
+  if ([params[@"textInput"] isKindOfClass:[NSDictionary class]]) {
+    return [UNTextInputNotificationAction actionWithIdentifier:actionId
+                                                         title:buttonTitle
+                                                       options:options
+                                          textInputButtonTitle:params[@"textInput"][@"submitButtonTitle"]
+                                          textInputPlaceholder:params[@"textInput"][@"placeholder"]];
+  }
+
+  return [UNNotificationAction actionWithIdentifier:actionId title:buttonTitle options:options];
 }
 
 @end

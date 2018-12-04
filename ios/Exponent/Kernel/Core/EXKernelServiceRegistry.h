@@ -11,6 +11,7 @@
 @class EXRemoteNotificationManager;
 @class EXScreenOrientationManager;
 @class EXUpdatesManager;
+@class EXUserNotificationManager;
 
 @interface EXKernelServiceRegistry : NSObject <EXKernelAppRegistryDelegate>
 
@@ -24,6 +25,7 @@
 @property (nonatomic, readonly) EXRemoteNotificationManager *remoteNotificationManager;
 @property (nonatomic, readonly) EXScreenOrientationManager *screenOrientationManager;
 @property (nonatomic, readonly) EXUpdatesManager *updatesManager;
+@property (nonatomic, readonly) EXUserNotificationManager *notificationsManager;
 
 @property (nonatomic, readonly) NSDictionary<NSString *, id> *allServices;
 

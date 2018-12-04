@@ -5,7 +5,7 @@ import { View, ViewPropTypes } from 'react-native';
 
 type AppEvent = { [eventName: string]: any };
 
-type PropsType = React.ElementProps<View> & {
+type PropsType = React.ComponentProps<typeof View> & {
   /**
    * AdMob iOS library banner size constants
    * (https://developers.google.com/admob/ios/banner)

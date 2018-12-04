@@ -123,7 +123,7 @@ public abstract class AppLoader {
           onError(e);
         }
 
-        if (Constants.isShellApp() || Constants.isDetached()) {
+        if (Constants.isStandaloneApp()) {
           // in shell/detached apps with SDK <26, we should default to 0 timeout to not introduce a breaking change
           if (manifestSdkVersion != null) {
             if (ABIVersion.toNumber(manifestSdkVersion) < ABIVersion.toNumber("26.0.0")) {

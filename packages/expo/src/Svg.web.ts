@@ -1,6 +1,6 @@
 import { createElement } from 'react';
 
-function generate(componentName, tagName) {
+function generate(componentName, tagName): any {
   function SvgElement(props) {
     return createElement(tagName, props, props.children);
   }
@@ -8,46 +8,52 @@ function generate(componentName, tagName) {
   return SvgElement;
 }
 
-export const Circle = generate('Circle', 'circle');
-export const ClipPath = generate('ClipPath', 'clipPath');
-export const Defs = generate('Defs', 'defs');
-export const Ellipse = generate('Ellipse', 'ellipse');
-export const G = generate('G', 'g');
-export const Image = generate('Image', 'image');
-export const Line = generate('Line', 'line');
-export const LinearGradient = generate('LinearGradient', 'linearGradient');
-export const Path = generate('Path', 'path');
-export const Polygon = generate('Polygon', 'polygon');
-export const Polyline = generate('Polyline', 'polyline');
-export const RadialGradient = generate('RadialGradient', 'radialGradient');
-export const Rect = generate('Rect', 'rect');
-export const Stop = generate('Stop', 'stop');
-export const Svg = generate('Svg', 'svg');
-export const Symbol = generate('Symbol', 'symbol');
-export const Text = generate('Text', 'text');
-export const TextPath = generate('TextPath', 'textPath');
-export const TSpan = generate('TSpan', 'tspan');
-export const Use = generate('Use', 'use');
-
-export default {
-  Circle,
-  ClipPath,
-  Defs,
-  Ellipse,
-  G,
-  Image,
-  Line,
-  LinearGradient,
-  Path,
-  Polygon,
-  Polyline,
-  RadialGradient,
-  Rect,
-  Stop,
-  Svg,
-  Symbol,
-  Text,
-  TextPath,
-  TSpan,
-  Use,
+const types = {
+  Circle: 'circle',
+  ClipPath: 'clipPath',
+  Defs: 'defs',
+  Ellipse: 'ellipse',
+  G: 'g',
+  Image: 'image',
+  Line: 'line',
+  LinearGradient: 'linearGradient',
+  Path: 'path',
+  Polygon: 'polygon',
+  Polyline: 'polyline',
+  RadialGradient: 'radialGradient',
+  Rect: 'rect',
+  Stop: 'stop',
+  Symbol: 'symbol',
+  Text: 'text',
+  TextPath: 'textPath',
+  TSpan: 'tspan',
+  Use: 'use',
 };
+
+export const Svg = generate('Svg', 'svg');
+
+for (const [componentName, tagName] of Object.entries(types)) {
+  Svg[componentName] = generate(componentName, tagName);
+}
+
+export const Circle = Svg.Circle;
+export const ClipPath = Svg.ClipPath;
+export const Defs = Svg.Defs;
+export const Ellipse = Svg.Ellipse;
+export const G = Svg.G;
+export const Image = Svg.Image;
+export const Line = Svg.Line;
+export const LinearGradient = Svg.LinearGradient;
+export const Path = Svg.Path;
+export const Polygon = Svg.Polygon;
+export const Polyline = Svg.Polyline;
+export const RadialGradient = Svg.RadialGradient;
+export const Rect = Svg.Rect;
+export const Stop = Svg.Stop;
+export const Symbol = Svg.Symbol;
+export const Text = Svg.Text;
+export const TextPath = Svg.TextPath;
+export const TSpan = Svg.TSpan;
+export const Use = Svg.Use;
+
+export default Svg;

@@ -193,7 +193,7 @@ export default function withNativeAd<P>(
 type NativeAdViewProps = {
   adsManager: string;
   onAdLoaded?: (event: { nativeEvent: NativeAd }) => void;
-} & React.ElementProps<View>;
+} & React.ComponentProps<typeof View>;
 
 type NativeAdView = React.Component<NativeAdViewProps>;
 
