@@ -1,10 +1,11 @@
 // @flow
 
-//TODO:Bacon: No React Native
+// TODO: Bacon: No React Native
 import { Share } from 'react-native';
 import { Platform } from 'expo-core';
 import UUID from 'uuid-js';
 import ExpoContacts from './ExpoContacts';
+import { UnavailabilityError } from 'expo-errors';
 
 type CalendarFormatType =
   | typeof CalendarFormats.Gregorian
@@ -241,6 +242,9 @@ export async function shareContactAsync(
   message: string,
   shareOptions: Object = {}
 ): Promise<any> {
+  if (!ExpoContacts.shareContactAsync) {
+    throw new UnavailabilityError('Contacts', 'shareContactAsync');
+  }
   if (isIOS) {
     const url = await writeContactToFileAsync({
       id: contactId,
@@ -253,28 +257,37 @@ export async function shareContactAsync(
       shareOptions
     );
   } else {
-    return ExpoContacts.shareContactAsync(contactId, message);
+    return await ExpoContacts.shareContactAsync(contactId, message);
   }
 }
 
-export function getContactsAsync(contactQuery: ContactQuery = {}): Promise<ContactResponse> {
-  return ExpoContacts.getContactsAsync(contactQuery);
+export async function getContactsAsync(contactQuery: ContactQuery = {}): Promise<ContactResponse> {
+  if (!ExpoContacts.getContactsAsync) {
+    throw new UnavailabilityError('Contacts', 'getContactsAsync');
+  }
+  return await ExpoContacts.getContactsAsync(contactQuery);
 }
 
-export function getPagedContactsAsync(contactQuery: ContactQuery = {}): Promise<ContactResponse> {
+export async function getPagedContactsAsync(
+  contactQuery: ContactQuery = {}
+): Promise<ContactResponse> {
   const { pageSize, ...nOptions } = contactQuery;
 
   if (pageSize && pageSize <= 0) {
     throw new Error('Error: Contacts.getPagedContactsAsync: `pageSize` must be greater than 0');
   }
 
-  return getContactsAsync({
+  return await getContactsAsync({
     ...nOptions,
     pageSize,
   });
 }
 
 export async function getContactByIdAsync(id: string, fields?: FieldType): Promise<?Contact> {
+  if (!ExpoContacts.getContactsAsync) {
+    throw new UnavailabilityError('Contacts', 'getContactsAsync');
+  }
+
   if (id == null) {
     throw new Error('Error: Contacts.getContactByIdAsync: Please pass an ID as a parameter');
   } else {
@@ -291,28 +304,43 @@ export async function getContactByIdAsync(id: string, fields?: FieldType): Promi
   }
 }
 
-export function addContactAsync(contact: Contact, containerId: string): Promise<string> {
-  return ExpoContacts.addContactAsync(contact, containerId);
+export async function addContactAsync(contact: Contact, containerId: string): Promise<string> {
+  if (!ExpoContacts.addContactAsync) {
+    throw new UnavailabilityError('Contacts', 'addContactAsync');
+  }
+  return await ExpoContacts.addContactAsync(contact, containerId);
 }
 
-export function updateContactAsync(contact: Contact): Promise<string> {
-  return ExpoContacts.updateContactAsync(contact);
+export async function updateContactAsync(contact: Contact): Promise<string> {
+  if (!ExpoContacts.updateContactAsync) {
+    throw new UnavailabilityError('Contacts', 'updateContactAsync');
+  }
+  return await ExpoContacts.updateContactAsync(contact);
 }
 
-export function removeContactAsync(contactId: string): Promise<any> {
-  return ExpoContacts.removeContactAsync(contactId);
+export async function removeContactAsync(contactId: string): Promise<any> {
+  if (!ExpoContacts.removeContactAsync) {
+    throw new UnavailabilityError('Contacts', 'removeContactAsync');
+  }
+  return await ExpoContacts.removeContactAsync(contactId);
 }
 
-export function writeContactToFileAsync(contactQuery: ContactQuery = {}): Promise<?string> {
-  return ExpoContacts.writeContactToFileAsync(contactQuery);
+export async function writeContactToFileAsync(contactQuery: ContactQuery = {}): Promise<?string> {
+  if (!ExpoContacts.writeContactToFileAsync) {
+    throw new UnavailabilityError('Contacts', 'writeContactToFileAsync');
+  }
+  return await ExpoContacts.writeContactToFileAsync(contactQuery);
 }
 
 // TODO: Evan: Test
-export function presentFormAsync(
+export async function presentFormAsync(
   contactId: ?string,
   contact: ?Contact,
   formOptions: FormOptions = {}
 ): Promise<any> {
+  if (!ExpoContacts.presentFormAsync) {
+    throw new UnavailabilityError('Contacts', 'presentFormAsync');
+  }
   if (isIOS) {
     let adjustedOptions = formOptions;
 
@@ -329,88 +357,96 @@ export function presentFormAsync(
         );
       }
     }
-    return ExpoContacts.presentFormAsync(contactId, contact, adjustedOptions);
+    return await ExpoContacts.presentFormAsync(contactId, contact, adjustedOptions);
   } else {
-    return ExpoContacts.presentFormAsync(contactId, contact, formOptions);
+    return await ExpoContacts.presentFormAsync(contactId, contact, formOptions);
   }
 }
 
 // iOS Only
 
-export function addExistingGroupToContainerAsync(
+export async function addExistingGroupToContainerAsync(
   groupId: string,
   containerId: string
 ): Promise<any> {
-  if (ExpoContacts.addExistingGroupToContainerAsync) {
-    return ExpoContacts.addExistingGroupToContainerAsync(groupId, containerId);
+  if (!ExpoContacts.addExistingGroupToContainerAsync) {
+    throw new UnavailabilityError('Contacts', 'addExistingGroupToContainerAsync');
   }
 
-  throw new Error(`Contacts.addExistingGroupToContainerAsync is not supported on ${Platform.OS}`);
+  return await ExpoContacts.addExistingGroupToContainerAsync(groupId, containerId);
 }
 
 export async function createGroupAsync(name: ?string, containerId: ?string): Promise<string> {
-  if (ExpoContacts.createGroupAsync) {
-    name = name || UUID.create().toString();
-    if (!containerId) containerId = await getDefaultContainerIdAsync();
-
-    return ExpoContacts.createGroupAsync(name, containerId);
+  if (!ExpoContacts.createGroupAsync) {
+    throw new UnavailabilityError('Contacts', 'createGroupAsync');
   }
 
-  throw new Error(`Contacts.createGroupAsync is not supported on ${Platform.OS}`);
+  name = name || UUID.create().toString();
+  if (!containerId) containerId = await getDefaultContainerIdAsync();
+
+  return await ExpoContacts.createGroupAsync(name, containerId);
 }
 
-export function updateGroupNameAsync(groupName: string, groupId: string): Promise<any> {
-  if (ExpoContacts.updateGroupNameAsync) {
-    return ExpoContacts.updateGroupNameAsync(groupName, groupId);
+export async function updateGroupNameAsync(groupName: string, groupId: string): Promise<any> {
+  if (!ExpoContacts.updateGroupNameAsync) {
+    throw new UnavailabilityError('Contacts', 'updateGroupNameAsync');
   }
-  throw new Error(`Contacts.updateGroupNameAsync is not supported on ${Platform.OS}`);
+
+  return await ExpoContacts.updateGroupNameAsync(groupName, groupId);
 }
 
-export function removeGroupAsync(groupId: string): Promise<any> {
-  if (ExpoContacts.removeGroupAsync) {
-    return ExpoContacts.removeGroupAsync(groupId);
+export async function removeGroupAsync(groupId: string): Promise<any> {
+  if (!ExpoContacts.removeGroupAsync) {
+    throw new UnavailabilityError('Contacts', 'removeGroupAsync');
   }
 
-  throw new Error(`Contacts.removeGroupAsync is not supported on ${Platform.OS}`);
+  return await ExpoContacts.removeGroupAsync(groupId);
 }
 
-export function addExistingContactToGroupAsync(contactId: string, groupId: string): Promise<any> {
-  if (ExpoContacts.addExistingContactToGroupAsync) {
-    return ExpoContacts.addExistingContactToGroupAsync(contactId, groupId);
+export async function addExistingContactToGroupAsync(
+  contactId: string,
+  groupId: string
+): Promise<any> {
+  if (!ExpoContacts.addExistingContactToGroupAsync) {
+    throw new UnavailabilityError('Contacts', 'addExistingContactToGroupAsync');
   }
 
-  throw new Error(`Contacts.addExistingContactToGroupAsync is not supported on ${Platform.OS}`);
+  return await ExpoContacts.addExistingContactToGroupAsync(contactId, groupId);
 }
 
-export function removeContactFromGroupAsync(contactId: string, groupId: string): Promise<any> {
-  if (ExpoContacts.removeContactFromGroupAsync) {
-    return ExpoContacts.removeContactFromGroupAsync(contactId, groupId);
+export async function removeContactFromGroupAsync(
+  contactId: string,
+  groupId: string
+): Promise<any> {
+  if (!ExpoContacts.removeContactFromGroupAsync) {
+    throw new UnavailabilityError('Contacts', 'removeContactFromGroupAsync');
   }
 
-  throw new Error(`Contacts.removeContactFromGroupAsync is not supported on ${Platform.OS}`);
+  return await ExpoContacts.removeContactFromGroupAsync(contactId, groupId);
 }
 
-export function getGroupsAsync(groupQuery: GroupQuery): Promise<Group[]> {
-  if (ExpoContacts.getGroupsAsync) {
-    return ExpoContacts.getGroupsAsync(groupQuery);
+export async function getGroupsAsync(groupQuery: GroupQuery): Promise<Group[]> {
+  if (!ExpoContacts.getGroupsAsync) {
+    throw new UnavailabilityError('Contacts', 'getGroupsAsync');
   }
-  throw new Error(`Contacts.getGroupsAsync is not supported on ${Platform.OS}`);
+
+  return await ExpoContacts.getGroupsAsync(groupQuery);
 }
 
-export function getDefaultContainerIdAsync(): Promise<string> {
-  if (ExpoContacts.getDefaultContainerIdentifierAsync) {
-    return ExpoContacts.getDefaultContainerIdentifierAsync();
+export async function getDefaultContainerIdAsync(): Promise<string> {
+  if (!ExpoContacts.getDefaultContainerIdentifierAsync) {
+    throw new UnavailabilityError('Contacts', 'getDefaultContainerIdentifierAsync');
   }
 
-  throw new Error(`Contacts.getDefaultContainerIdAsync is not supported on ${Platform.OS}`);
+  return await ExpoContacts.getDefaultContainerIdentifierAsync();
 }
 
-export function getContainersAsync(containerQuery: ContainerQuery): Promise<Container[]> {
-  if (ExpoContacts.getContainersAsync) {
-    return ExpoContacts.getContainersAsync(containerQuery);
+export async function getContainersAsync(containerQuery: ContainerQuery): Promise<Container[]> {
+  if (!ExpoContacts.getContainersAsync) {
+    throw new UnavailabilityError('Contacts', 'getContainersAsync');
   }
 
-  throw new Error(`Contacts.getContainersAsync is not supported on ${Platform.OS}`);
+  return await ExpoContacts.getContainersAsync(containerQuery);
 }
 
 // Legacy
