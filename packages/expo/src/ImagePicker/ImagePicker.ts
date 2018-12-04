@@ -1,5 +1,4 @@
-import { NativeModules } from 'react-native';
-import { UnsupportedError } from 'expo-errors';
+import { UnavailabilityError } from 'expo-errors';
 import ExponentImagePicker from './ExponentImagePicker';
 
 const MEDIA_TYPE_OPTIONS = {
@@ -27,7 +26,7 @@ export async function launchImageLibraryAsync(
   options: ImageLibraryOptions = {}
 ): Promise<ImageResult> {
   if (!ExponentImagePicker.launchImageLibraryAsync) {
-    throw new UnsupportedError('ImagePicker', 'launchImageLibraryAsync');
+    throw new UnavailabilityError('ImagePicker', 'launchImageLibraryAsync');
   }
   return ExponentImagePicker.launchImageLibraryAsync(options);
 }
@@ -40,7 +39,7 @@ type CameraOptions = {
 
 export async function launchCameraAsync(options: CameraOptions = {}): Promise<ImageResult> {
   if (!ExponentImagePicker.launchCameraAsync) {
-    throw new UnsupportedError('ImagePicker', 'launchCameraAsync');
+    throw new UnavailabilityError('ImagePicker', 'launchCameraAsync');
   }
   return ExponentImagePicker.launchCameraAsync(options);
 }
