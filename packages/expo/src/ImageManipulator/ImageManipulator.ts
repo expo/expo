@@ -1,13 +1,5 @@
-import { NativeModules } from 'react-native';
-import UnsupportedError from './UnsupportedError';
-
-const {
-  ExponentImageManipulator = {
-    get name() {
-      return 'ExponentImageManipulator';
-    },
-  },
-} = NativeModules;
+import ExponentImageManipulator from './ExponentImageManipulator';
+import { UnavailabilityError } from 'expo-errors';
 
 type ImageResult = {
   uri: string;
@@ -41,11 +33,11 @@ export async function manipulateAsync(
   actions: ImageManipulationActions[] = [],
   saveOptions: SaveOptions = {}
 ): Promise<ImageResult> {
-  if (!ExponentImageManipulator.manipulate) {
-    throw new UnsupportedError('ImageManipulator', 'manipulateAsync');
-  }
   if (!(typeof uri === 'string')) {
     throw new TypeError(`The "uri" argument must be a string`);
   }
-  return ExponentImageManipulator.manipulate(uri, actions, saveOptions);
+  if (!ExponentImageManipulator.manipulate) {
+    throw new UnavailabilityError('ImageManipulator', 'manipulateAsync');
+  }
+  return await ExponentImageManipulator.manipulate(uri, actions, saveOptions);
 }
