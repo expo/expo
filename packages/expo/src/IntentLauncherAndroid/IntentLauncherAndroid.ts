@@ -1,4 +1,5 @@
-import { NativeModules, Platform } from 'react-native';
+import { UnavailabilityError } from 'expo-errors';
+import ExponentIntentLauncher from './ExponentIntentLauncher';
 
 /**
  * Constants are from the source code of Settings:
@@ -106,9 +107,8 @@ export function startActivityAsync(
   data: { [key: string]: any } | null = null,
   uri: string | null = null
 ): Promise<boolean> {
-  if (Platform.OS === 'android') {
-    return NativeModules.ExponentIntentLauncher.startActivity(activity, data, uri);
-  } else {
-    return Promise.reject(new Error('Unsupported platform'));
+  if (!ExponentIntentLauncher.startActivity) {
+    throw new UnavailabilityError('IntentLauncherAndroid', 'startActivityAsync');
   }
+  return ExponentIntentLauncher.startActivity(activity, data, uri);
 }

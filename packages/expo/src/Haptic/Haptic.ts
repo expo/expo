@@ -1,6 +1,5 @@
-import { NativeModules, Platform, Vibration } from 'react-native';
-
-const VIBRATION_DURATION_MS = 100;
+import { UnavailabilityError } from 'expo-errors';
+import ExponentHaptic from './ExponentHaptic';
 
 /**
  * Notification Feedback Type
@@ -46,34 +45,31 @@ export enum ImpactFeedbackStyle {
  * Triggers notification feedback.
  */
 export function notification(type: NotificationFeedbackType = NotificationFeedbackType.Success) {
-  if (Platform.OS === 'ios') {
-    NativeModules.ExponentHaptic.notification(type);
-  } else {
-    console.warn('`Expo.Haptic` is only available on iOS');
-    Vibration.vibrate(VIBRATION_DURATION_MS, false);
+  if (!ExponentHaptic.notification) {
+    throw new UnavailabilityError('Haptic', 'notification');
   }
+
+  return ExponentHaptic.notification(type);
 }
 
 /**
  * Triggers impact feedback.
  */
 export function impact(style: ImpactFeedbackStyle = ImpactFeedbackStyle.Medium) {
-  if (Platform.OS === 'ios') {
-    NativeModules.ExponentHaptic.impact(style);
-  } else {
-    console.warn('`Expo.Haptic` is only available on iOS');
-    Vibration.vibrate(VIBRATION_DURATION_MS, false);
+  if (!ExponentHaptic.impact) {
+    throw new UnavailabilityError('Haptic', 'impact');
   }
+
+  return ExponentHaptic.impact(style);
 }
 
 /**
  * Triggers selection feedback.
  */
 export function selection() {
-  if (Platform.OS === 'ios') {
-    NativeModules.ExponentHaptic.selection();
-  } else {
-    console.warn('`Expo.Haptic` is only available on iOS');
-    Vibration.vibrate(VIBRATION_DURATION_MS, false);
+  if (!ExponentHaptic.selection) {
+    throw new UnavailabilityError('Haptic', 'selection');
   }
+
+  return ExponentHaptic.selection();
 }

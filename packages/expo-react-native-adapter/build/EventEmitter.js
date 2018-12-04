@@ -1,46 +1,51 @@
+import invariant from 'invariant';
 import { Platform } from 'react-native';
-/*
- * Importing this directly will circumvent the webpack alias `react-native$`
- * This will enable us to use NativeEventEmitter from React Native and not from RNWeb.
- */
+// Importing this directly will circumvent the webpack alias `react-native$`. This will enable us to
+// use NativeEventEmitter from React Native and not from RNWeb.
 import NativeEventEmitter from 'react-native/Libraries/EventEmitter/NativeEventEmitter';
-export default class EventEmitter {
+const nativeEmitterSubscriptionKey = '@@nativeEmitterSubscription@@';
+export class EventEmitter {
     constructor(nativeModule) {
-        this._listenersCount = 0;
+        this._listenerCount = 0;
         this._nativeModule = nativeModule;
         this._eventEmitter = new NativeEventEmitter(nativeModule);
     }
     addListener(eventName, listener) {
-        this._listenersCount += 1;
-        if (Platform.OS === 'android' && this._nativeModule.startObserving) {
-            if (this._listenersCount === 1) {
-                // We're not awaiting start of updates
-                // they should start shortly.
-                this._nativeModule.startObserving();
-            }
+        if (!this._listenerCount && Platform.OS === 'android' && this._nativeModule.startObserving) {
+            this._nativeModule.startObserving();
         }
-        return this._eventEmitter.addListener(eventName, listener);
+        this._listenerCount++;
+        const nativeEmitterSubscription = this._eventEmitter.addListener(eventName, listener);
+        const subscription = {
+            [nativeEmitterSubscriptionKey]: nativeEmitterSubscription,
+            remove: () => {
+                this.removeSubscription(subscription);
+            },
+        };
+        return subscription;
     }
     removeAllListeners(eventName) {
-        const listenersToRemoveCount = this._eventEmitter.listeners(eventName).length;
-        const newListenersCount = Math.max(0, this._listenersCount - listenersToRemoveCount);
-        if (Platform.OS === 'android' && this._nativeModule.stopObserving && newListenersCount === 0) {
+        const removedListenerCount = this._eventEmitter.listeners(eventName).length;
+        this._eventEmitter.removeAllListeners(eventName);
+        this._listenerCount -= removedListenerCount;
+        invariant(this._listenerCount >= 0, `EventEmitter must have a non-negative number of listeners`);
+        if (!this._listenerCount && Platform.OS === 'android' && this._nativeModule.stopObserving) {
             this._nativeModule.stopObserving();
         }
-        this._eventEmitter.removeAllListeners(eventName);
-        this._listenersCount = newListenersCount;
     }
     removeSubscription(subscription) {
-        this._listenersCount -= 1;
-        if (Platform.OS === 'android' && this._nativeModule.stopObserving) {
-            if (this._listenersCount === 0) {
-                this._nativeModule.stopObserving();
-            }
+        const nativeEmitterSubscription = subscription[nativeEmitterSubscriptionKey];
+        if (!nativeEmitterSubscription) {
+            return;
         }
-        this._eventEmitter.removeSubscription(subscription);
+        this._eventEmitter.removeSubscription(nativeEmitterSubscription);
+        this._listenerCount--;
+        if (!this._listenerCount && Platform.OS === 'android' && this._nativeModule.stopObserving) {
+            this._nativeModule.stopObserving();
+        }
     }
-    emit(eventType, ...params) {
-        this._eventEmitter.emit(eventType, ...params);
+    emit(eventName, ...params) {
+        this._eventEmitter.emit(eventName, ...params);
     }
 }
 //# sourceMappingURL=EventEmitter.js.map

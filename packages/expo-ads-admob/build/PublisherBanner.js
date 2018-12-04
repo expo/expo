@@ -41,5 +41,5 @@ PublisherBanner.propTypes = {
     ...ViewPropTypes,
 };
 PublisherBanner.defaultProps = { bannerSize: 'smartBannerPortrait' };
-const ExpoBannerView = requireNativeViewManager('ExpoAdsPublisherBannerView', PublisherBanner);
+const ExpoBannerView = requireNativeViewManager('ExpoAdsPublisherBannerView');
 //# sourceMappingURL=PublisherBanner.js.map

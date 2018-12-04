@@ -1,5 +1,4 @@
-import { NativeModulesProxy, EventEmitter } from 'expo-core';
-import { Platform } from 'react-native';
+import { EventEmitter, NativeModulesProxy, Platform, Subscription } from 'expo-core';
 
 const AdMobRewardedVideoAdManager: any = NativeModulesProxy.ExpoAdsAdMobRewardedVideoAdManager;
 
@@ -24,17 +23,15 @@ type EventNameType =
   | 'rewardedVideoDidClose'
   | 'rewardedVideoWillLeaveApplication';
 
-type Subscription = {
-  remove: () => void,
-};
+type EventListener = (...args: any[]) => void;
 
-const eventHandlers: { [eventName: string]: Map<Function, Subscription> } = {};
+const eventHandlers: { [eventName: string]: Map<EventListener, Subscription> } = {};
 
 eventNames.forEach(eventName => {
   eventHandlers[eventName] = new Map();
 });
 
-const addEventListener = (type: EventNameType, handler: Function) => {
+const addEventListener = (type: EventNameType, handler: EventListener) => {
   if (eventNames.includes(type)) {
     eventHandlers[type].set(handler, adMobRewardedEventEmitter.addListener(type, handler));
   } else {
@@ -42,7 +39,7 @@ const addEventListener = (type: EventNameType, handler: Function) => {
   }
 };
 
-const removeEventListener = (type: EventNameType, handler: Function) => {
+const removeEventListener = (type: EventNameType, handler: EventListener) => {
   const eventSubscription = eventHandlers[type].get(handler);
   if (!eventHandlers[type].has(handler) || !eventSubscription) {
     return;

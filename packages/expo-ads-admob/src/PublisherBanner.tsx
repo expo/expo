@@ -109,4 +109,4 @@ export default class PublisherBanner extends React.Component<PropsType, StateTyp
   }
 }
 
-const ExpoBannerView = requireNativeViewManager('ExpoAdsPublisherBannerView', PublisherBanner);
+const ExpoBannerView = requireNativeViewManager('ExpoAdsPublisherBannerView');

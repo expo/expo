@@ -2,18 +2,20 @@ import NativeEventEmitter from 'react-native/Libraries/EventEmitter/NativeEventE
 declare type NativeModule = {
     startObserving?: () => void;
     stopObserving?: () => void;
+    addListener: (eventName: string) => void;
+    removeListeners: (count: number) => void;
 };
-declare type Subscription = {
+export declare type Subscription = {
     remove: () => void;
 };
-export default class EventEmitter {
-    _listenersCount: number;
+export declare class EventEmitter {
+    _listenerCount: number;
     _nativeModule: NativeModule;
     _eventEmitter: NativeEventEmitter;
     constructor(nativeModule: NativeModule);
     addListener<T>(eventName: string, listener: (event: T) => void): Subscription;
     removeAllListeners(eventName: string): void;
     removeSubscription(subscription: Subscription): void;
-    emit(eventType: string, ...params: any[]): void;
+    emit(eventName: string, ...params: any[]): void;
 }
 export {};

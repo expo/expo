@@ -1,5 +1,5 @@
 import { NativeModules } from 'react-native';
-import WebBrowser from '../WebBrowser';
+import WebBrowser from '../WebBrowser/WebBrowser';
 
 import { mockProperty, unmockAllProperties, describeCrossPlatform } from '../../test/mocking';
 
