@@ -1,6 +1,6 @@
+import { UnavailabilityError } from 'expo-errors';
 import { EventEmitter, EventSubscription } from 'fbemitter';
 import { DeviceEventEmitter } from 'react-native';
-import { UnavailabilityError } from 'expo-errors';
 
 import ExponentUpdates from './ExponentUpdates';
 
