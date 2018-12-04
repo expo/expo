@@ -232,6 +232,9 @@ PODS:
   - EXAdsAdMob (1.1.0):
     - EXCore
     - Google-Mobile-Ads-SDK
+  - EXAppAuth (1.0.0):
+    - AppAuth
+    - EXCore
   - EXBarCodeScanner (1.1.0):
     - EXCore
   - EXBarCodeScannerInterface (1.1.0):
@@ -255,6 +258,8 @@ PODS:
     - EXFileSystemInterface
     - EXPermissionsInterface
   - EXCore (1.2.0)
+  - EXErrors (0.0.1):
+    - EXCore
   - EXFaceDetector (1.1.0):
     - EXCore
     - EXFaceDetectorInterface
@@ -1071,6 +1076,7 @@ DEPENDENCIES:
   - Crashlytics (~> 3.8)
   - DoubleConversion (from `../react-native-lab/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - EXAdsAdMob (from `../packages/expo-ads-admob/ios`)
+  - EXAppAuth (from `../packages/expo-app-auth/ios`)
   - EXBarCodeScanner (from `../packages/expo-barcode-scanner/ios`)
   - EXBarCodeScannerInterface (from `../packages/expo-barcode-scanner-interface/ios`)
   - EXCamera (from `../packages/expo-camera/ios`)
@@ -1079,6 +1085,7 @@ DEPENDENCIES:
   - EXConstantsInterface (from `../packages/expo-constants-interface/ios`)
   - EXContacts (from `../packages/expo-contacts/ios`)
   - EXCore (from `../packages/expo-core/ios`)
+  - EXErrors (from `../packages/expo-errors/ios`)
   - EXFaceDetector (from `../packages/expo-face-detector/ios`)
   - EXFaceDetectorInterface (from `../packages/expo-face-detector-interface/ios`)
   - EXFileSystem (from `../packages/expo-file-system/ios`)
@@ -1422,6 +1429,8 @@ EXTERNAL SOURCES:
     :podspec: "../react-native-lab/react-native/third-party-podspecs/DoubleConversion.podspec"
   EXAdsAdMob:
     :path: "../packages/expo-ads-admob/ios"
+  EXAppAuth:
+    :path: "../packages/expo-app-auth/ios"
   EXBarCodeScanner:
     :path: "../packages/expo-barcode-scanner/ios"
   EXBarCodeScannerInterface:
@@ -1438,6 +1447,8 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-contacts/ios"
   EXCore:
     :path: "../packages/expo-core/ios"
+  EXErrors:
+    :path: "../packages/expo-errors/ios"
   EXFaceDetector:
     :path: "../packages/expo-face-detector/ios"
   EXFaceDetectorInterface:
@@ -1603,6 +1614,7 @@ SPEC CHECKSUMS:
   Crashlytics: ccaac42660eb9351b9960c0d66106b0bcf99f4fa
   DoubleConversion: bb338842f62ab1d708ceb63ec3d999f0f3d98ecd
   EXAdsAdMob: 66a3c271540f54f4d964fa72f0c8a953faea5a03
+  EXAppAuth: df83ccf9fecfdfad741a930263524f4b75f8e962
   EXBarCodeScanner: 0ed39b41ccec72935521823eceed3d60c73fc43d
   EXBarCodeScannerInterface: 4453aa03ca1e0a1c9b320aaf4ce5b7d88064d192
   EXCamera: 00936f79aafe16125c6cdc7c7ea2bf2d2c976dfe
@@ -1611,6 +1623,7 @@ SPEC CHECKSUMS:
   EXConstantsInterface: c60c068f94b78c8805bfeb35bd2bbaf859293de5
   EXContacts: 50843152d15328802c57b0382759595848959371
   EXCore: 81304a0284b7f2e0f691b8a6bc642854e730f5e2
+  EXErrors: 4f9a7181ac46a4acb5f11ff7d6035cd8ae36821e
   EXFaceDetector: 06f1ea23a1252b82eb06af3472b9fcf44aab74e6
   EXFaceDetectorInterface: 8727fe51fbd189a94ccd70152a25cdef913a0ae5
   EXFileSystem: 0872826fd9ebc7d842a5e389b088c93f5b9fab88
@@ -1671,6 +1684,6 @@ SPEC CHECKSUMS:
   yogaABI30_0_0: 4c86e39466368a6b018b8b78aeb654b6620512a1
   yogaABI31_0_0: 7978689ddccec43cffd5914889304cf3b7fd7c77
 
-PODFILE CHECKSUM: f976f1913ee3e3825829e9322e995671b5298c62
+PODFILE CHECKSUM: 2b29421cdf712ed2bdeba522121db0f9149764eb
 
 COCOAPODS: 1.5.3
