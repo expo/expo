@@ -22,7 +22,7 @@ mkShell rec {
 
   nativeBuildInputs = [
     fastlane
-    nodejs-8_x
+    nodejs
     openjdk8
   ];
 

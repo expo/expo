@@ -164,32 +164,38 @@ const NSUInteger kEXErrorCodeAppForbidden = 424242;
   return nil;
 }
 
-- (void)sendNotification:(NSDictionary *)notifBody
-      toExperienceWithId:(NSString *)destinationExperienceId
-          fromBackground:(BOOL)isFromBackground
-                isRemote:(BOOL)isRemote
+- (BOOL)sendNotification:(EXPendingNotification *)notification
 {
-  EXKernelAppRecord *destinationApp = [_appRegistry newestRecordWithExperienceId:destinationExperienceId];
-  NSDictionary *bodyWithOrigin = [self _notificationPropsWithBody:notifBody isFromBackground:isFromBackground isRemote:isRemote];
+  EXKernelAppRecord *destinationApp = [_appRegistry newestRecordWithExperienceId:notification.experienceId];
   if (destinationApp) {
     // send the body to the already-open experience
-    [self _dispatchJSEvent:@"Exponent.notification" body:bodyWithOrigin toApp:destinationApp];
+    [self _dispatchJSEvent:@"Exponent.notification" body:notification.properties toApp:destinationApp];
     [self _moveAppToVisible:destinationApp];
+    return YES;
   } else {
     // no app is currently running for this experience id.
     // if we're Expo Client, we can query Home for a past experience in the user's history, and route the notification there.
     if (_browserController) {
       __weak typeof(self) weakSelf = self;
-      [_browserController getHistoryUrlForExperienceId:destinationExperienceId completion:^(NSString *urlString) {
+      [_browserController getHistoryUrlForExperienceId:notification.experienceId completion:^(NSString *urlString) {
         if (urlString) {
           NSURL *url = [NSURL URLWithString:urlString];
           if (url) {
-            [weakSelf createNewAppWithUrl:url initialProps:@{ @"notification": bodyWithOrigin }];
+            [weakSelf createNewAppWithUrl:url initialProps:@{ @"notification": notification.properties }];
           }
         }
       }];
+      // If we're here, there's no active app in appRegistry matching notification.experienceId
+      // and we are in Expo Client, since _browserController is not nil.
+      // If so, we can return YES (meaning "notification has been successfully dispatched")
+      // because we pass the notification as initialProps in completion handler
+      // of getHistoryUrlForExperienceId:. If urlString passed to completion handler is empty,
+      // the notification is forgotten (this is the expected behavior).
+      return YES;
     }
   }
+
+  return NO;
 }
 
 /**
@@ -213,36 +219,9 @@ const NSUInteger kEXErrorCodeAppForbidden = 424242;
 
 #pragma mark - App props
 
-- (NSDictionary *)initialAppPropsFromLaunchOptions:(NSDictionary *)launchOptions
+- (nullable NSDictionary *)initialAppPropsFromLaunchOptions:(NSDictionary *)launchOptions
 {
-  NSMutableDictionary *initialProps = [NSMutableDictionary dictionary];
-  
-  NSDictionary *remoteNotification = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
-  if (remoteNotification) {
-    initialProps[@"notification"] = [self _notificationPropsWithBody:remoteNotification[@"body"] isFromBackground:YES isRemote:YES];
-  }
-  UILocalNotification *localNotification = [launchOptions objectForKey:UIApplicationLaunchOptionsLocalNotificationKey];
-  if (localNotification) {
-    initialProps[@"notification"] = [self _notificationPropsWithBody:localNotification.userInfo[@"body"] isFromBackground:YES isRemote:NO];
-  }
-  return initialProps;
-}
-
-- (NSDictionary *)_notificationPropsWithBody:(NSDictionary *)notifBody isFromBackground:(BOOL)isFromBackground isRemote:(BOOL)isRemote
-{
-  // if the notification came from the background, in most but not all cases, this means the user acted on an iOS notification
-  // and caused the app to launch.
-  // From SO:
-  // > Note that "App opened from Notification" will be a false positive if the notification is sent while the user is on a different
-  // > screen (for example, if they pull down the status bar and then receive a notification from your app).
-  if (!notifBody) {
-    notifBody = @{};
-  }
-  return @{
-    @"origin": (isFromBackground) ? @"selected" : @"received",
-    @"remote": @(isRemote),
-    @"data": notifBody,
-  };
+  return nil;
 }
 
 #pragma mark - App State

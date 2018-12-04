@@ -7,7 +7,7 @@ type Props = {
   type: BannerAdType;
   onPress?: () => void;
   onError?: (error: Error) => void;
-} & React.ElementProps<View>;
+} & React.ComponentProps<typeof View>;
 
 type BannerAdType = 'large' | 'rectangle' | 'standard';
 

@@ -69,11 +69,15 @@ RCT_EXPORT_MODULE(ExponentSpeech)
     AVSpeechUtterance *utterance = [[EXSpeechUtteranceWithId alloc] initWithString:text utteranceId:utteranceId];
     
     NSString *language = options[@"language"];
+    NSString *voice = options[@"voiceIOS"];
     NSNumber *pitch = options[@"pitch"];
     NSNumber *rate = options[@"rate"];
     
     if (language != nil) {
       utterance.voice = [AVSpeechSynthesisVoice voiceWithLanguage:language];
+    }
+    if (voice != nil) {
+      utterance.voice = [AVSpeechSynthesisVoice voiceWithIdentifier:voice];
     }
     if (pitch != nil) {
       utterance.pitchMultiplier = [pitch floatValue];

@@ -168,4 +168,5 @@ dependencies {
   api 'com.google.maps.android:android-maps-utils:0.5+'
   api 'com.jakewharton:butterknife:8.4.0'
   annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+  implementation project(':expo-gl-cpp')
 }
