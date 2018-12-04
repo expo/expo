@@ -56,7 +56,7 @@ import * as Facebook from './Facebook';
 export { Facebook };
 import * as Google from './Google/Google';
 export { Google };
-import * as Haptic from './Haptic';
+import * as Haptic from './Haptic/Haptic';
 export { Haptic };
 export { default as Icon } from './Icon';
 import * as ImageManipulator from './ImageManipulator';
