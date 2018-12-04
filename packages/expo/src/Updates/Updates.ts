@@ -1,17 +1,21 @@
+import { UnavailabilityError } from 'expo-errors';
 import { EventEmitter, EventSubscription } from 'fbemitter';
-import { DeviceEventEmitter, NativeModules } from 'react-native';
+import { DeviceEventEmitter } from 'react-native';
 
-const { ExponentUpdates } = NativeModules;
+import ExponentUpdates from './ExponentUpdates';
 
-export function reload(): void {
-  ExponentUpdates.reload();
+export async function reload(): Promise<void> {
+  await ExponentUpdates.reload();
 }
 
-export function reloadFromCache(): void {
-  ExponentUpdates.reloadFromCache();
+export async function reloadFromCache(): Promise<void> {
+  await ExponentUpdates.reloadFromCache();
 }
 
 export async function checkForUpdateAsync(): Promise<Object> {
+  if (!ExponentUpdates.checkForUpdateAsync) {
+    throw new UnavailabilityError('Updates', 'checkForUpdateAsync');
+  }
   const result = await ExponentUpdates.checkForUpdateAsync();
   let returnObj: any = {
     isAvailable: !!result,
@@ -23,6 +27,9 @@ export async function checkForUpdateAsync(): Promise<Object> {
 }
 
 export async function fetchUpdateAsync({ eventListener }: any = {}): Promise<Object> {
+  if (!ExponentUpdates.fetchUpdateAsync) {
+    throw new UnavailabilityError('Updates', 'fetchUpdateAsync');
+  }
   let subscription;
   let result;
   if (eventListener && typeof eventListener === 'function') {
