@@ -1,2 +1,4 @@
-declare const _default: any;
+declare const _default: {
+    [propertyName: string]: any;
+};
 export default _default;
