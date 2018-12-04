@@ -1,7 +1,6 @@
 import * as AR from 'expo-ar';
 import * as THREE from 'three';
 ;
-;
 export default class Planes extends THREE.Object3D {
     constructor() {
         super(...arguments);

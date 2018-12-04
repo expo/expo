@@ -280,7 +280,7 @@ export function rayIntersectionWithHorizontalPlane(
   return rayOrigin.clone().add(direction);
 }
 
-export function convertTransformArray(transform: AR.Matrix4x4): THREE.Matrix4 {
+export function convertTransformArray(transform: AR.Matrix4): THREE.Matrix4 {
   const matrix = new THREE.Matrix4();
   matrix.fromArray(transform);
   return matrix;

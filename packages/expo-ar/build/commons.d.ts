@@ -11,7 +11,7 @@ export declare type Size = {
     width: number;
     height: number;
 };
-export declare type Matrix4x4 = [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number];
+export declare type Matrix4 = [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number];
 export declare enum AnchorType {
     Face = "ARFaceAnchor",
     Image = "ARImageAnchor",
@@ -85,7 +85,7 @@ export declare enum BlendShape {
 }
 export declare type Anchor = {
     type: AnchorType;
-    transformWorld: Matrix4x4;
+    transformWorld: Matrix4;
     id: string;
     center?: Vector3;
     extent?: {

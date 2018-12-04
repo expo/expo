@@ -71,13 +71,15 @@ public class ARFrameSerializer {
 
   private Bundle serializeLightEstimation(Frame frame) {
     LightEstimate lightEstimate = frame.getLightEstimate();
-    float[] matrix = new float[16];
+    float[] matrix = new float[4]; // r, g, b and last one is pixelIntensity
     lightEstimate.getColorCorrection(matrix, 0);
 
     Bundle result = new Bundle();
     result.putString("state", serializeLightEstimationState(lightEstimate.getState()));
-    result.putDouble("intensity", lightEstimate.getPixelIntensity());
-    result.putFloatArray("color", matrix);
+    result.putDouble("pixelIntensity", lightEstimate.getPixelIntensity());
+    result.putFloat("red", matrix[0]);
+    result.putFloat("green", matrix[1]);
+    result.putFloat("blue", matrix[2]);
     return result;
   }
 
@@ -85,9 +87,10 @@ public class ARFrameSerializer {
     switch (state) {
       case VALID:
         return "valid";
-      default:
+      case NOT_VALID:
         return "invalid";
     }
+    throw new RuntimeException("Invalid LightEstimate.State: '" + state + "'");
   }
 
   // ---------------------------------------------------------------------------------------------

@@ -14,7 +14,7 @@ export type Size = {
   height: number;
 };
 
-export type Matrix4x4 = [
+export type Matrix4 = [
   number, number, number, number,
   number, number, number, number,
   number, number, number, number,
@@ -98,7 +98,7 @@ export enum BlendShape {
 
 export type Anchor = {
   type: AnchorType;
-  transformWorld: Matrix4x4;
+  transformWorld: Matrix4;
   id: string;
   center?: Vector3;
   extent?: { width: number; length: number };

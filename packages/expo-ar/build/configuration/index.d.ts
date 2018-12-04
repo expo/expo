@@ -3,7 +3,7 @@ declare global {
         constructor(textureID: number);
     }
 }
-import { TrackingConfiguration, Matrix4x4, Size } from '../commons';
+import { TrackingConfiguration, Matrix4, Size } from '../commons';
 /**
  * Get WebGLTexture that camera device is rendering it's preview to.
  */
@@ -72,7 +72,7 @@ export declare function getPlaneDetection(): Promise<PlaneDetection>;
  *
  * @param matrix 4x4 float matrix that defines world origin
  */
-export declare function setWorldOriginAsync(matrix: Matrix4x4): Promise<void>;
+export declare function setWorldOriginAsync(matrix: Matrix4): Promise<void>;
 /**
  * @only iOS
  *

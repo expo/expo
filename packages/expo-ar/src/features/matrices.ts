@@ -1,14 +1,14 @@
 import { NativeAR } from '../NativeAR';
-import { Matrix4x4 } from '../commons';
+import { Matrix4 } from '../commons';
 
 export type ARMatrices = {
-  viewMatrix: Matrix4x4,
-  projectionMatrix: Matrix4x4,
+  viewMatrix: Matrix4,
+  projectionMatrix: Matrix4,
 
   /**
    * @only iOS
    */
-  transform?: Matrix4x4,
+  transform?: Matrix4,
 };
 
 /**

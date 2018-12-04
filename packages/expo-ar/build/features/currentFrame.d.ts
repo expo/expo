@@ -1,4 +1,4 @@
-import { Anchor, BlendShape, Size, Vector3, Matrix4x4 } from '../commons';
+import { Anchor, BlendShape, Size, Vector3, Matrix4 } from '../commons';
 /**
  * Attributes that are available to be queried from current frame.
  * See {@link getCurrentFrameAsync}
@@ -27,12 +27,6 @@ export declare type RawFeaturePoint = {
     y: number;
     z: number;
     id: string;
-};
-export declare type LightEstimation = {
-    ambientIntensity: number;
-    ambientColorTemperature: number;
-    primaryLightDirection?: Vector3;
-    primaryLightIntensity?: number;
 };
 export declare enum DepthDataQuality {
     Low = "AVDepthDataQualityLow",
@@ -65,7 +59,7 @@ export declare enum PlaneType {
 }
 export declare type Plane = {
     id: number;
-    worldTransform: Matrix4x4;
+    worldTransform: Matrix4;
     extent: {
         width: number;
         length: number;
@@ -79,12 +73,36 @@ export declare type Plane = {
     planeType: PlaneType;
     anchors?: Anchor[];
 };
+export declare type LightEstimation = {
+    red: number;
+    green: number;
+    blue: number;
+    pixelIntensity?: number;
+    ambientIntensity?: number;
+    iOS?: LightEstimationIOS;
+    android?: LightEstimationAndroid;
+};
+declare enum LightEstimationAndroidState {
+    VALID = "valid",
+    INVALID = "invalid"
+}
+declare type LightEstimationAndroid = {
+    red: number;
+    green: number;
+    blue: number;
+    pixelIntensity: number;
+    state: LightEstimationAndroidState;
+};
+declare type LightEstimationIOS = {
+    ambientIntensity: number;
+    ambientColorTemperature: number;
+};
 export declare type ARFrame = {
     timestamp: number;
-    [FrameAttribute.Anchors]?: Anchor[] | null;
-    [FrameAttribute.RawFeaturePoints]?: RawFeaturePoint[] | null;
-    [FrameAttribute.Planes]?: Plane[] | null;
-    [FrameAttribute.LightEstimation]?: LightEstimation | null;
+    [FrameAttribute.Anchors]?: Anchor[];
+    [FrameAttribute.RawFeaturePoints]?: RawFeaturePoint[];
+    [FrameAttribute.Planes]?: Plane[];
+    [FrameAttribute.LightEstimation]?: LightEstimation;
     [FrameAttribute.CapturedDepthData]?: CapturedDepthData | null;
 };
 /**
@@ -92,3 +110,4 @@ export declare type ARFrame = {
  * @param attributes Specification which data to query from frame.
  */
 export declare function getCurrentFrameAsync(attributes: ARFrameAttributes): Promise<ARFrame>;
+export {};

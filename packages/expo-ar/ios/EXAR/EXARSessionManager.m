@@ -537,9 +537,9 @@ static GLfloat imagePlaneVerts[6] = { -2.0f, 0.0f, 0.0f, -2.0f, 2.0f, 2.0f };
     //      [output addEntriesFromDictionary:directionalOutput];
     //    }
     return output;
-  } else {
-    return nil;
   }
+  
+  return nil;
 }
 
 - (NSArray *)_rawFeaturePoints

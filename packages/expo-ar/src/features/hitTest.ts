@@ -1,11 +1,11 @@
 import { NativeAR } from '../NativeAR';
-import { Vector2, Anchor, Matrix4x4 } from '../commons';
+import { Vector2, Anchor, Matrix4 } from '../commons';
 
 export type HitTest = {
   /**
    * The position and orientation of the hit test result relative to the world coordinate system.
    */
-  worldTransform: Matrix4x4;
+  worldTransform: Matrix4;
   
   /**
    * Distance from the camera to the hit location, in meters.
@@ -29,7 +29,7 @@ export type HitTest = {
    * @only iOS
    * The position and orientation of the hit test result relative to the nearest anchor or feature point.
    */
-  localTransform?: Matrix4x4;
+  localTransform?: Matrix4;
 
   /**
    * @only Android

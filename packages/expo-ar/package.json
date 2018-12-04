@@ -37,6 +37,7 @@
     "expo-three": "~3.0.1"
   },
   "dependencies": {
+    "color-temperature": "^0.2.7",
     "expo-constants": "~1.1.0",
     "expo-core": "~1.2.0",
     "expo-gl": "~1.1.0",

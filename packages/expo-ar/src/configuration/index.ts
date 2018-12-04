@@ -7,7 +7,7 @@ declare global {
 import { Dimensions, Platform } from 'react-native';
 
 import { NativeAR } from '../NativeAR';
-import { TrackingConfiguration, Matrix4x4, Size } from '../commons';
+import { TrackingConfiguration, Matrix4, Size } from '../commons';
 
 /**
  * Get WebGLTexture that camera device is rendering it's preview to.
@@ -109,7 +109,7 @@ export function getPlaneDetection(): Promise<PlaneDetection> {
  * 
  * @param matrix 4x4 float matrix that defines world origin
  */
-export async function setWorldOriginAsync(matrix: Matrix4x4): Promise<void> {
+export async function setWorldOriginAsync(matrix: Matrix4): Promise<void> {
   return await NativeAR.setWorldOriginAsync(matrix);
 }
 

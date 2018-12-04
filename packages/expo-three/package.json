@@ -48,7 +48,6 @@
     "three": "0.98.0"
   },
   "dependencies": {
-    "color-temperature": "0.2.7",
     "expo-asset-utils": "^0.0.4-alpha.2"
   },
   "devDependencies": {

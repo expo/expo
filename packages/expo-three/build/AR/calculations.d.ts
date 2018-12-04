@@ -18,7 +18,7 @@ export declare function hitTestRayFromScreenPos(camera: THREE.Camera, point: THR
 export declare function hitTestFromOrigin(origin: THREE.Vector3, direction: THREE.Vector3, rawFeaturePoints?: AR.RawFeaturePoint[]): Promise<FeatureHitTestResult | null>;
 export declare function hitTestWithInfiniteHorizontalPlane(camera: THREE.Camera, point: THREE.Vector2, pointOnPlane: THREE.Vector3): THREE.Vector3 | null;
 export declare function rayIntersectionWithHorizontalPlane(rayOrigin: THREE.Vector3, direction: THREE.Vector3, planeY: number): THREE.Vector3 | null;
-export declare function convertTransformArray(transform: AR.Matrix4x4): THREE.Matrix4;
+export declare function convertTransformArray(transform: AR.Matrix4): THREE.Matrix4;
 export declare function positionFromTransform(transform: THREE.Matrix4): THREE.Vector3;
 export declare function worldPositionFromScreenPosition(camera: THREE.Camera, position: THREE.Vector2, objectPos: THREE.Vector3, infinitePlane?: boolean, dragOnInfinitePlanesEnabled?: boolean, rawFeaturePoints?: AR.RawFeaturePoint[]): Promise<{
     worldPosition: THREE.Vector3;

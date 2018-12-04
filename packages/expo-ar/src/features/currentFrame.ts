@@ -1,10 +1,11 @@
+import { colorTemperature2rgb } from 'color-temperature';
 import { NativeAR } from '../NativeAR';
 import {
   Anchor,
   BlendShape,
   Size,
   Vector3,
-  Matrix4x4,
+  Matrix4,
 } from '../commons';
 
 /**
@@ -37,13 +38,6 @@ export type RawFeaturePoint = {
   y: number;
   z: number;
   id: string;
-};
-
-export type LightEstimation = {
-  ambientIntensity: number;
-  ambientColorTemperature: number;
-  primaryLightDirection?: Vector3;
-  primaryLightIntensity?: number;
 };
 
 export enum DepthDataQuality {
@@ -82,7 +76,7 @@ export enum PlaneType {
 
 export type Plane = {
   id: number;
-  worldTransform: Matrix4x4;
+  worldTransform: Matrix4;
   extent: {
     width: number;
     length: number;
@@ -97,12 +91,78 @@ export type Plane = {
   anchors?: Anchor[];
 };
 
+export type LightEstimation = {
+  red: number;
+  green: number;
+  blue: number;
+  
+  // @only Android: value is between (0.0, 1.0), with zero being black and one being white.
+  pixelIntensity?: number;
+  
+  // @only iOS: ambient intensity, in lumens, of ambient light throughout the scene. A value of 1000 represents "neutral" lighting.
+  // see: https://en.wikipedia.org/wiki/Shading#Ambient_lighting
+  ambientIntensity?: number;
+
+  iOS?: LightEstimationIOS;
+  android?: LightEstimationAndroid;
+};
+
+enum LightEstimationAndroidState {
+  VALID = 'valid',
+  INVALID = 'invalid'
+}
+
+type LightEstimationAndroid = {
+  red: number;
+  green: number;
+  blue: number;
+  pixelIntensity: number; // see LightEstimation.pixelIntensity
+  state: LightEstimationAndroidState;
+}
+
+type LightEstimationIOS = {
+  ambientIntensity: number; // see LightEstimation.ambientIntensity
+  
+  // The estimated color temperature, in degrees Kelvin
+  // A value of 6500 represents neutral (pure white) lighting; lower values indicate a "warmer" yellow or orange tint, and higher values indicate a "cooler" blue tint.
+  ambientColorTemperature: number;
+}
+
+function isLightEstimationIOS(lightEstimation: LightEstimationAndroid | LightEstimationIOS): lightEstimation is LightEstimationIOS {
+  return !!(lightEstimation as LightEstimationIOS).ambientIntensity;
+}
+
+function isLightEstimationAndroid(lightEstimation: LightEstimationAndroid | LightEstimationIOS): lightEstimation is LightEstimationAndroid {
+  return !!(lightEstimation as LightEstimationAndroid).pixelIntensity;
+}
+
+function handleLightEstimationInconsistencies(lightEstimation: LightEstimationAndroid | LightEstimationIOS): LightEstimation {
+  if (isLightEstimationIOS(lightEstimation)) {
+    const { ambientColorTemperature, ambientIntensity } = lightEstimation;
+    const { red, green, blue } = colorTemperature2rgb(ambientColorTemperature);
+    return {
+      red,
+      green,
+      blue,
+      ambientIntensity,
+      iOS: lightEstimation,
+    };
+  }
+  if (isLightEstimationAndroid(lightEstimation)) {
+    return {
+      ...lightEstimation,
+      android: lightEstimation,
+    };
+  }
+  throw new Error(`getCurrentFrameAsync#LightEstimation returned unknown results: ${JSON.stringify(lightEstimation)}`);
+}
+
 export type ARFrame = {
   timestamp: number;
-  [FrameAttribute.Anchors]?: Anchor[] | null;
-  [FrameAttribute.RawFeaturePoints]?: RawFeaturePoint[] | null;
-  [FrameAttribute.Planes]?: Plane[] | null;
-  [FrameAttribute.LightEstimation]?: LightEstimation | null;
+  [FrameAttribute.Anchors]?: Anchor[];
+  [FrameAttribute.RawFeaturePoints]?: RawFeaturePoint[];
+  [FrameAttribute.Planes]?: Plane[];
+  [FrameAttribute.LightEstimation]?: LightEstimation;
   [FrameAttribute.CapturedDepthData]?: CapturedDepthData | null;
 };
 
@@ -111,5 +171,9 @@ export type ARFrame = {
  * @param attributes Specification which data to query from frame.
  */
 export async function getCurrentFrameAsync(attributes: ARFrameAttributes): Promise<ARFrame> {
-  return NativeAR.getCurrentFrameAsync(attributes);
+  const frame = await NativeAR.getCurrentFrameAsync(attributes);
+  if (attributes[FrameAttribute.LightEstimation]) {
+    frame.lightEstimation = handleLightEstimationInconsistencies(frame.lightEstimation);
+  }
+  return frame;
 }
