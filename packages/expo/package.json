@@ -94,6 +94,7 @@
     "expo-sensors-interface": "~1.1.0",
     "expo-sms": "~1.1.0",
     "fbemitter": "^2.1.1",
+    "fbjs": "^1.0.0",
     "invariant": "^2.2.2",
     "lodash.filter": "^4.6.0",
     "lodash.map": "^4.6.0",
