@@ -49,6 +49,8 @@ export default {
     return null;
   },
   get manifest(): { [string]: any } {
+    /* TODO: Bacon: Populate */
+
     return {};
   },
   getWebViewUserAgentAsync(): Promise {
