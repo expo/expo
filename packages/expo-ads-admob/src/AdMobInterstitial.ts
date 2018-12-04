@@ -1,5 +1,4 @@
-import { NativeModulesProxy, EventEmitter } from 'expo-core';
-import { Platform, EmitterSubscription } from 'react-native';
+import { NativeModulesProxy, EventEmitter, Platform } from 'expo-core';
 
 const AdMobInterstitialManager: any = NativeModulesProxy.ExpoAdsAdMobInterstitialManager;
 
@@ -20,13 +19,20 @@ type EventNameType =
   | 'interstitialDidClose'
   | 'interstitialWillLeaveApplication';
 
-const eventHandlers: { [eventName: string]: Map<Function, EmitterSubscription> } = {};
+type EventListener = (...args: any[]) => void;
+
+// TODO: import this from expo-core
+type Subscription = {
+  remove: () => void,
+};
+
+const eventHandlers: { [eventName: string]: Map<EventListener, Subscription> } = {};
 
 eventNames.forEach(eventName => {
   eventHandlers[eventName] = new Map();
 });
 
-const addEventListener = (type: EventNameType, handler: Function) => {
+const addEventListener = (type: EventNameType, handler: EventListener) => {
   if (eventNames.includes(type)) {
     eventHandlers[type].set(handler, adMobInterstitialEmitter.addListener(type, handler));
   } else {
@@ -34,7 +40,7 @@ const addEventListener = (type: EventNameType, handler: Function) => {
   }
 };
 
-const removeEventListener = (type: EventNameType, handler: Function) => {
+const removeEventListener = (type: EventNameType, handler: EventListener) => {
   const eventSubscription = eventHandlers[type].get(handler);
   if (!eventHandlers[type].has(handler) || !eventSubscription) {
     return;

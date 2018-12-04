@@ -1,5 +1,4 @@
-import { NativeModulesProxy, EventEmitter } from 'expo-core';
-import { Platform } from 'react-native';
+import { NativeModulesProxy, EventEmitter, Platform } from 'expo-core';
 const AdMobRewardedVideoAdManager = NativeModulesProxy.ExpoAdsAdMobRewardedVideoAdManager;
 const adMobRewardedEventEmitter = new EventEmitter(AdMobRewardedVideoAdManager);
 const eventNames = [

@@ -494,15 +494,4 @@ export default class Video extends React.Component<Props, State> implements Play
 Object.assign(Video.prototype, PlaybackMixin);
 
 type ExponentVideo = React.ComponentClass<NativeProps>;
-const ExponentVideo = requireNativeComponent('ExponentVideo', Video, {
-  nativeOnly: {
-    source: true,
-    nativeResizeMode: true,
-    onStatusUpdateNative: true,
-    onLoadStartNative: true,
-    onLoadNative: true,
-    onErrorNative: true,
-    onReadyForDisplayNative: true,
-    onFullscreenUpdateNative: true,
-  },
-});
+const ExponentVideo = requireNativeComponent('ExponentVideo');
