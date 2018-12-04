@@ -1,7 +1,10 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import { View } from 'react-native';
-declare type PropsType = React.ElementProps<View> & {
+declare type AppEvent = {
+    [eventName: string]: any;
+};
+declare type PropsType = React.ComponentProps<typeof View> & {
     /**
      * AdMob iOS library banner size constants
      * (https://developers.google.com/admob/ios/banner)
@@ -28,12 +31,12 @@ declare type PropsType = React.ElementProps<View> & {
      * AdMob iOS library events
      */
     onAdViewDidReceiveAd?: () => void;
-    onDidFailToReceiveAdWithError?: (string: any) => void;
+    onDidFailToReceiveAdWithError?: (error: string) => void;
     onAdViewWillPresentScreen?: () => void;
     onAdViewWillDismissScreen?: () => void;
     onAdViewDidDismissScreen?: () => void;
     onAdViewWillLeaveApplication?: () => void;
-    onAdMobDispatchAppEvent?: (AppEvent: any) => void;
+    onAdMobDispatchAppEvent?: (event: AppEvent) => void;
 };
 declare type StateType = {
     style: {
@@ -75,13 +78,17 @@ export default class PublisherBanner extends React.Component<PropsType, StateTyp
         onTouchEndCapture: PropTypes.Validator<((event: import("react-native").GestureResponderEvent) => void) | undefined>;
         accessible: PropTypes.Validator<boolean | undefined>;
         accessibilityLabel: PropTypes.Validator<string | undefined>;
-        accessibilityComponentType: PropTypes.Validator<"none" | "button" | "radiobutton_checked" | "radiobutton_unchecked" | undefined>;
+        accessibilityRole: PropTypes.Validator<"button" | "header" | "link" | "summary" | "image" | "text" | "none" | "search" | "keyboardkey" | "adjustable" | "imagebutton" | undefined>;
+        accessibilityStates: PropTypes.Validator<import("react-native").AccessibilityState[] | undefined>;
+        accessibilityHint: PropTypes.Validator<string | undefined>;
+        accessibilityComponentType: PropTypes.Validator<"button" | "none" | "radiobutton_checked" | "radiobutton_unchecked" | undefined>;
         accessibilityLiveRegion: PropTypes.Validator<"none" | "polite" | "assertive" | undefined>;
         importantForAccessibility: PropTypes.Validator<"auto" | "yes" | "no" | "no-hide-descendants" | undefined>;
         accessibilityElementsHidden: PropTypes.Validator<boolean | undefined>;
-        accessibilityTraits: PropTypes.Validator<"none" | "button" | "link" | "header" | "search" | "image" | "selected" | "plays" | "key" | "text" | "summary" | "disabled" | "frequentUpdates" | "startsMedia" | "adjustable" | "allowsDirectInteraction" | "pageTurn" | import("react-native").AccessibilityTrait[] | undefined>;
+        accessibilityTraits: PropTypes.Validator<"button" | "header" | "link" | "summary" | "image" | "text" | "none" | "search" | "adjustable" | "selected" | "disabled" | "plays" | "key" | "frequentUpdates" | "startsMedia" | "allowsDirectInteraction" | "pageTurn" | import("react-native").AccessibilityTrait[] | undefined>;
         onAccessibilityTap: PropTypes.Validator<(() => void) | undefined>;
         onMagicTap: PropTypes.Validator<(() => void) | undefined>;
+        accessibilityIgnoresInvertColors: PropTypes.Validator<boolean | undefined>;
         bannerSize: PropTypes.Requireable<string>;
         adUnitID: PropTypes.Requireable<string>;
         testDeviceID: PropTypes.Requireable<string>;

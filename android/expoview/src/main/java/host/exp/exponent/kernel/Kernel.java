@@ -29,7 +29,6 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.LifecycleState;
-import com.facebook.react.modules.network.OkHttpClientProvider;
 import com.facebook.react.modules.network.ReactCookieJarContainer;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
@@ -40,10 +39,8 @@ import org.json.JSONObject;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -54,7 +51,6 @@ import host.exp.exponent.ExponentDevActivity;
 import host.exp.exponent.LauncherActivity;
 import host.exp.exponent.ReactNativeStaticHelpers;
 import host.exp.exponent.experience.ErrorActivity;
-import host.exp.exponent.experience.ShellAppActivity;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.experience.BaseExperienceActivity;
 import host.exp.exponent.experience.ExperienceActivity;
@@ -171,7 +167,7 @@ public class Kernel extends KernelInterface {
 
   // Don't call this until a loading screen is up, since it has to do some work on the main thread.
   public void startJSKernel() {
-    if (Constants.isShellApp()) {
+    if (Constants.isStandaloneApp()) {
       return;
     }
 
@@ -246,7 +242,7 @@ public class Kernel extends KernelInterface {
   }
 
   public void reloadJSBundle() {
-    if (Constants.isShellApp()) {
+    if (Constants.isStandaloneApp()) {
       return;
     }
     String bundleUrl = getBundleUrl();
@@ -280,7 +276,7 @@ public class Kernel extends KernelInterface {
                 .setApplication(mApplicationContext)
                 .setJSBundleFile(localBundlePath)
                 .addPackage(new MainReactPackage())
-                .addPackage(ExponentPackage.kernelExponentPackage(mExponentManifest.getKernelManifest()))
+                .addPackage(ExponentPackage.kernelExponentPackage(mExponentManifest.getKernelManifest(), HomeActivity.homeExpoPackages()))
                 .setInitialLifecycleState(LifecycleState.RESUMED);
 
             if (!KernelConfig.FORCE_NO_KERNEL_DEBUG_MODE && mExponentManifest.isDebugModeEnabled(mExponentManifest.getKernelManifest())) {
@@ -443,42 +439,38 @@ public class Kernel extends KernelInterface {
   }
 
   private void openShellAppActivity(boolean forceCache) {
-    Class activityClass = ShellAppActivity.class;
-    if (Constants.isDetached()) {
-      try {
-        activityClass = Class.forName("host.exp.exponent.MainActivity");
-      } catch (Exception e) {
-        EXL.e(TAG, "Cannot find MainActivity, falling back to ShellAppActivity");
-      }
-    }
+    try {
+      Class activityClass = Class.forName("host.exp.exponent.MainActivity");
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        ActivityManager manager = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.AppTask task : manager.getAppTasks()) {
+          Intent baseIntent = task.getTaskInfo().baseIntent;
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      ActivityManager manager = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
-      for (ActivityManager.AppTask task : manager.getAppTasks()) {
-        Intent baseIntent = task.getTaskInfo().baseIntent;
-
-        if (activityClass.getName().equals(baseIntent.getComponent().getClassName())) {
-          moveTaskToFront(task.getTaskInfo().id);
-          return;
+          if (activityClass.getName().equals(baseIntent.getComponent().getClassName())) {
+            moveTaskToFront(task.getTaskInfo().id);
+            return;
+          }
         }
       }
+
+      Intent intent = new Intent(mActivityContext, activityClass);
+      Kernel.addIntentDocumentFlags(intent);
+
+      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+        // Don't want to end up in state where we have
+        // ExperienceActivity - HomeActivity - ExperienceActivity
+        // Want HomeActivity to be the root activity if it exists
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+      }
+
+      if (forceCache) {
+        intent.putExtra(KernelConstants.LOAD_FROM_CACHE_KEY, true);
+      }
+
+      mActivityContext.startActivity(intent);
+    } catch (ClassNotFoundException e) {
+      throw new IllegalStateException("Could not find activity to open (MainActivity is not present).");
     }
-
-    Intent intent = new Intent(mActivityContext, activityClass);
-    Kernel.addIntentDocumentFlags(intent);
-
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-      // Don't want to end up in state where we have
-      // ExperienceActivity - HomeActivity - ExperienceActivity
-      // Want HomeActivity to be the root activity if it exists
-      intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-    }
-
-    if (forceCache) {
-      intent.putExtra(KernelConstants.LOAD_FROM_CACHE_KEY, true);
-    }
-
-    mActivityContext.startActivity(intent);
   }
 
   /*
@@ -741,7 +733,7 @@ public class Kernel extends KernelInterface {
 
     // TODO: shouldShowNux used to be set to `!manifestUrl.equals(Constants.INITIAL_URL);`.
     // This caused nux to show up in RNPlay. What's the right behavior here?
-    boolean shouldShowNux = !Constants.isShellApp() && !KernelConfig.HIDE_NUX;
+    boolean shouldShowNux = !Constants.isStandaloneApp() && !KernelConfig.HIDE_NUX;
     boolean loadNux = shouldShowNux && !isFirstRunFinished;
     JSONObject opts = new JSONObject();
     opts.put(KernelConstants.OPTION_LOAD_NUX_KEY, loadNux);
