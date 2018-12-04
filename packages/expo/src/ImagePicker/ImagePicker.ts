@@ -1,6 +1,5 @@
-import { NativeModules } from 'react-native';
-
-const { ExponentImagePicker } = NativeModules;
+import { UnavailabilityError } from 'expo-errors';
+import ExponentImagePicker from './ExponentImagePicker';
 
 const MEDIA_TYPE_OPTIONS = {
   All: 'All',
@@ -9,33 +8,39 @@ const MEDIA_TYPE_OPTIONS = {
 };
 
 type ImageInfo = {
-  uri: string,
-  width: number,
-  height: number,
+  uri: string;
+  width: number;
+  height: number;
 };
 
 type ImageResult = { cancelled: true } | ({ cancelled: false } & ImageInfo);
 
 type ImageLibraryOptions = {
-  allowsEditing?: boolean,
-  aspect?: [number, number],
-  quality?: number,
-  mediaTypes?: keyof (typeof MEDIA_TYPE_OPTIONS),
+  allowsEditing?: boolean;
+  aspect?: [number, number];
+  quality?: number;
+  mediaTypes?: keyof (typeof MEDIA_TYPE_OPTIONS);
 };
 
 export async function launchImageLibraryAsync(
   options: ImageLibraryOptions = {}
 ): Promise<ImageResult> {
+  if (!ExponentImagePicker.launchImageLibraryAsync) {
+    throw new UnavailabilityError('ImagePicker', 'launchImageLibraryAsync');
+  }
   return ExponentImagePicker.launchImageLibraryAsync(options);
 }
 
 type CameraOptions = {
-  allowsEditing?: boolean,
-  aspect?: [number, number],
-  quality?: number,
+  allowsEditing?: boolean;
+  aspect?: [number, number];
+  quality?: number;
 };
 
 export async function launchCameraAsync(options: CameraOptions = {}): Promise<ImageResult> {
+  if (!ExponentImagePicker.launchCameraAsync) {
+    throw new UnavailabilityError('ImagePicker', 'launchCameraAsync');
+  }
   return ExponentImagePicker.launchCameraAsync(options);
 }
 
