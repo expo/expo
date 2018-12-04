@@ -59,7 +59,7 @@ export { Google };
 import * as Haptic from './Haptic/Haptic';
 export { Haptic };
 export { default as Icon } from './Icon';
-import * as ImageManipulator from './ImageManipulator';
+import * as ImageManipulator from './ImageManipulator/ImageManipulator';
 export { ImageManipulator };
 import * as ImagePicker from './ImagePicker/ImagePicker';
 export { ImagePicker };
