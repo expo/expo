@@ -1,6 +1,6 @@
 import { StackFrame } from 'react-native/Libraries/Core/Devtools/parseErrorStack';
 
-async function symbolicateStackTrace(): Promise<Array<StackFrame> | null> {
+export default async function symbolicateStackTrace(): Promise<StackFrame[] | null> {
   return null;
 }
 
