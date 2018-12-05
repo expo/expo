@@ -1,30 +1,26 @@
 import { UnavailabilityError } from 'expo-errors';
 
-function unavailable(name: string) {
-  throw new UnavailabilityError('FacebookAds', name);
+export function withNativeAd() {
+  throw new UnavailabilityError('FacebookAds', 'withNativeAd');
 }
-
-export const withNativeAd = function() {
-  unavailable('withNativeAd');
-};
-export const AdMediaView = function() {
-  unavailable('AdMediaView');
-};
-export const AdIconView = function() {
-  unavailable('AdIconView');
-};
-export const AdTriggerView = function() {
-  unavailable('AdTriggerView');
-};
-export const AdSettings = function() {
-  unavailable('AdSettings');
-};
-export const NativeAdsManager = function() {
-  unavailable('NativeAdsManager');
-};
-export const InterstitialAdManager = function() {
-  unavailable('InterstitialAdManager');
-};
-export const BannerAd = function() {
-  unavailable('BannerAd');
-};
+export function AdMediaView() {
+  throw new UnavailabilityError('FacebookAds', 'AdMediaView');
+}
+export function AdIconView() {
+  throw new UnavailabilityError('FacebookAds', 'AdIconView');
+}
+export function AdTriggerView() {
+  throw new UnavailabilityError('FacebookAds', 'AdTriggerView');
+}
+export function AdSettings() {
+  throw new UnavailabilityError('FacebookAds', 'AdSettings');
+}
+export function NativeAdsManager() {
+  throw new UnavailabilityError('FacebookAds', 'NativeAdsManager');
+}
+export function InterstitialAdManager() {
+  throw new UnavailabilityError('FacebookAds', 'InterstitialAdManager');
+}
+export function BannerAd() {
+  throw new UnavailabilityError('FacebookAds', 'BannerAd');
+}
