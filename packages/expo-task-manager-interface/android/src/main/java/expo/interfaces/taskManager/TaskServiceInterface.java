@@ -51,7 +51,7 @@ public interface TaskServiceInterface extends SingletonModule {
   /**
    *  Notifies the service that a task has just finished.
    */
-  void notifyTaskDidFinish(String taskName, String appId, Map<String, Object> response);
+  void notifyTaskFinished(String taskName, String appId, Map<String, Object> response);
 
   /**
    *  Passes a reference of task manager for given appId and appUrl to the service.

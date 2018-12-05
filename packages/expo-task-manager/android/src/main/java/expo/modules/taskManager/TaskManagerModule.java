@@ -46,11 +46,11 @@ public class TaskManagerModule extends ExportedModule implements ModuleRegistryC
   //region Expo methods
 
   @ExpoMethod
-  public void notifyTaskDidFinish(String taskName, Map<String, Object> response, final Promise promise) {
+  public void notifyTaskFinishedAsync(String taskName, Map<String, Object> response, final Promise promise) {
     if (!checkTaskService(promise)) {
       return;
     }
-    mTaskService.notifyTaskDidFinish(taskName, getAppId(), response);
+    mTaskService.notifyTaskFinished(taskName, getAppId(), response);
     promise.resolve(null);
   }
 

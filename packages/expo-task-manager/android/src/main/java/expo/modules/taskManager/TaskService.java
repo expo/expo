@@ -188,7 +188,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
   }
 
   @Override
-  public void notifyTaskDidFinish(String taskName, final String appId, Map<String, Object> response) {
+  public void notifyTaskFinished(String taskName, final String appId, Map<String, Object> response) {
     String eventId = (String) response.get("eventId");
     List<String> appEvents = sEvents.get(appId);
 

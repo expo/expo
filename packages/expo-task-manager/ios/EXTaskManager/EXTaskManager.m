@@ -83,8 +83,8 @@ EX_EXPORT_MODULE(ExpoTaskManager);
 
 # pragma mark - Exported methods
 
-EX_EXPORT_METHOD_AS(notifyTaskDidFinish,
-                    notifyTaskDidFinish:(nonnull NSString *)taskName
+EX_EXPORT_METHOD_AS(notifyTaskFinishedAsync,
+                    notifyTaskFinished:(nonnull NSString *)taskName
                     withResponse:(nonnull NSDictionary *)response
                     resolve:(EXPromiseResolveBlock)resolve
                     reject:(EXPromiseRejectBlock)reject)
