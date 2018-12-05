@@ -26,7 +26,6 @@ export default class BackgroundFetchScreen extends React.Component {
   async getLastFetchDateAsync() {
     const lastFetchDateStr = await AsyncStorage.getItem(LAST_FETCH_DATE_KEY);
 
-    console.log(lastFetchDateStr);
     if (lastFetchDateStr) {
       this.setState({ fetchDate: new Date(+lastFetchDateStr) });
     }
