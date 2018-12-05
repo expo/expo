@@ -48,9 +48,6 @@ export default class BackgroundFetchScreen extends React.Component {
   };
 
   renderText() {
-    if (Platform.OS !== 'ios') {
-      return <Text>BackgroundFetch API is not supported on platform: {Platform.OS}</Text>;
-    }
     if (!this.state.fetchDate) {
       return <Text>There was no BackgroundFetch call yet.</Text>;
     }
@@ -63,6 +60,19 @@ export default class BackgroundFetchScreen extends React.Component {
   }
 
   render() {
+    if (Platform.OS !== 'ios') {
+      return (
+        <View style={styles.screen}>
+          <View style={styles.textContainer}>
+            <Text>
+              BackgroundFetch API is not supported on platform:{' '}
+              <Text style={styles.boldText}>{Platform.OS}</Text>
+            </Text>
+          </View>
+        </View>
+      );
+    }
+
     return (
       <View style={styles.screen}>
         <View style={styles.textContainer}>
