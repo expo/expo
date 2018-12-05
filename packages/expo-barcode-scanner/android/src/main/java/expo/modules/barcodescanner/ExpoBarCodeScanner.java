@@ -2,6 +2,7 @@ package expo.modules.barcodescanner;
 
 import android.hardware.Camera;
 import android.util.Log;
+import android.view.Surface;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -18,8 +19,9 @@ public class ExpoBarCodeScanner {
   private final HashMap<Integer, Integer> mCameraTypeToIndex;
   private final Set<Number> mCameras;
   private Camera mCamera = null;
+  private int mCameraType = 0;
   private int mActualDeviceOrientation = 0;
-  private int mAdjustedDeviceOrientation = 0;
+  public int rotation = 0;
 
   public static ExpoBarCodeScanner getInstance() {
     return ourInstance;
@@ -30,6 +32,7 @@ public class ExpoBarCodeScanner {
   }
 
   public Camera acquireCameraInstance(int type) {
+    mCameraType = type;
     if (mCamera == null && mCameras.contains(type) && null != mCameraTypeToIndex.get(type)) {
       try {
         mCamera = Camera.open(mCameraTypeToIndex.get(type));
@@ -91,13 +94,9 @@ public class ExpoBarCodeScanner {
     return mActualDeviceOrientation;
   }
 
-  public void setAdjustedDeviceOrientation(int orientation) {
-    mAdjustedDeviceOrientation = orientation;
-  }
   public void setActualDeviceOrientation(int actualDeviceOrientation) {
     mActualDeviceOrientation = actualDeviceOrientation;
-    adjustPreviewLayout(CAMERA_TYPE_FRONT);
-    adjustPreviewLayout(CAMERA_TYPE_BACK);
+    adjustPreviewLayout(mCameraType);
   }
 
   public void adjustPreviewLayout(int type) {
@@ -110,23 +109,43 @@ public class ExpoBarCodeScanner {
       return;
     }
 
-    int displayRotation;
-    int rotation;
-    int orientation = cameraInfo.info.orientation;
-    if (cameraInfo.info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-      rotation = (orientation + mActualDeviceOrientation * 90) % 360;
-      displayRotation = (720 - orientation - mActualDeviceOrientation * 90) % 360;
-    } else {
-      rotation = (orientation - mActualDeviceOrientation * 90 + 360) % 360;
-      displayRotation = rotation;
-    }
-    cameraInfo.rotation = rotation;
+    // https://www.captechconsulting.com/blogs/android-camera-orientation-made-simple
 
-    setAdjustedDeviceOrientation(rotation);
-    mCamera.setDisplayOrientation(displayRotation);
+    int degrees = 0;
+
+    switch(mActualDeviceOrientation){
+      case Surface.ROTATION_0:
+        degrees = 0;
+        break;
+
+      case Surface.ROTATION_90:
+        degrees = 90;
+        break;
+
+      case Surface.ROTATION_180:
+        degrees = 180;
+        break;
+
+      case Surface.ROTATION_270:
+        degrees = 270;
+        break;
+
+    }
+
+    int result;
+    if(cameraInfo.info.facing==Camera.CameraInfo.CAMERA_FACING_FRONT){
+      result = (cameraInfo.info.orientation + degrees) % 360;
+      result = (360 - result) % 360;
+    }else{
+      result = (cameraInfo.info.orientation - degrees + 360) % 360;
+    }
+
+    rotation = result;
+
+    mCamera.setDisplayOrientation(result);
 
     Camera.Parameters parameters = mCamera.getParameters();
-    parameters.setRotation(cameraInfo.rotation);
+    parameters.setRotation(result);
 
     // set preview size
     // defaults to highest resolution available
@@ -141,12 +160,11 @@ public class ExpoBarCodeScanner {
       e.printStackTrace();
     }
 
-    if (cameraInfo.rotation == 0 || cameraInfo.rotation == 180) {
-      cameraInfo.previewWidth = width;
-      cameraInfo.previewHeight = height;
-    } else {
-      cameraInfo.previewWidth = height;
+    cameraInfo.previewHeight = height;
+    cameraInfo.previewWidth = width;
+    if (mActualDeviceOrientation == Surface.ROTATION_0 || mActualDeviceOrientation ==  Surface.ROTATION_180) {
       cameraInfo.previewHeight = width;
+      cameraInfo.previewWidth = height;
     }
   }
 

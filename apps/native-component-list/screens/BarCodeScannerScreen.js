@@ -1,8 +1,8 @@
 import React from 'react';
 import { NavigationEvents } from 'react-navigation';
-import { Button, Platform, StyleSheet, Text, View } from 'react-native';
+import { Button, Platform, StyleSheet, Text, View, ScrollView } from 'react-native';
 
-import { BarCodeScanner, Permissions, Svg } from 'expo';
+import { BarCodeScanner, Permissions, Svg, ScreenOrientation } from 'expo';
 
 const BUTTON_COLOR = Platform.OS === 'ios' ? '#fff' : '#666';
 
@@ -19,6 +19,14 @@ export default class BarcodeScannerExample extends React.Component {
     type: BarCodeScanner.Constants.Type.back,
     cornerPoints: null,
   };
+
+  temp = 1;
+
+  componentDidMount() {
+    if (this.temp) {
+      ScreenOrientation.allowAsync(ScreenOrientation.Orientation.ALL); this.temp--;
+    }
+  }
 
   componentDidFocus = async () => {
     const { status } = await Permissions.askAsync(Permissions.CAMERA);
@@ -57,7 +65,7 @@ export default class BarcodeScannerExample extends React.Component {
       }
     }
     return (
-      <View style={styles.container}>
+      <ScrollView style={styles.container}>
         <View  height={CANVAS_HEIGHT} width={CANVAS_WIDTH} >
           <BarCodeScanner
             height={CANVAS_HEIGHT}
@@ -66,6 +74,7 @@ export default class BarcodeScannerExample extends React.Component {
             barCodeTypes={[
               BarCodeScanner.Constants.BarCodeType.qr,
               BarCodeScanner.Constants.BarCodeType.pdf417,
+              BarCodeScanner.Constants.BarCodeType.code128,
             ]}
             type={this.state.type}
             style={styles.preview}
@@ -80,7 +89,7 @@ export default class BarcodeScannerExample extends React.Component {
         <View style={styles.toolbar}>
           <Button color={BUTTON_COLOR} title="Toggle Direction" onPress={this.toggleType} />
         </View>
-      </View>
+      </ScrollView>
     );
   }
 

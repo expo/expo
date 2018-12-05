@@ -199,9 +199,10 @@ class BarCodeScannerViewFinder extends TextureView implements TextureView.Surfac
         int width = size.width;
         int height = size.height;
 
+        int properRotation = ExpoBarCodeScanner.getInstance().rotation;
 
         final BarCodeScannerResult result = mBarCodeScanner.scan(mImageData, width,
-            height, ExpoBarCodeScanner.getInstance().getActualDeviceOrientation());
+            height, properRotation);
 
         if (result != null) {
           new Handler(Looper.getMainLooper()).post(new Runnable() {
