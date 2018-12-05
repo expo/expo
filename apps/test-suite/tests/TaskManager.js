@@ -92,7 +92,7 @@ export async function test(t) {
       });
     });
 
-    describeWithPermissions('unregisterAllTasksAsync()', async () => {
+    describeWithPermissions('unregisterAllTasksAsync()', () => {
       t.it('unregisters tasks correctly', async () => {
         await Location.startLocationUpdatesAsync(DEFINED_TASK_NAME, locationOptions);
         await TaskManager.unregisterAllTasksAsync();
@@ -100,6 +100,23 @@ export async function test(t) {
         t.expect(await TaskManager.isTaskRegisteredAsync(DEFINED_TASK_NAME)).toBe(false);
         t.expect((await TaskManager.getRegisteredTasksAsync()).length).toBe(0);
         t.expect(await Location.hasStartedLocationUpdatesAsync(DEFINED_TASK_NAME)).toBe(false);
+      });
+    });
+
+    describeWithPermissions('rejections', () => {
+      t.it('should reject when trying to unregister task with different consumer', async () => {
+        await Location.startLocationUpdatesAsync(DEFINED_TASK_NAME, locationOptions);
+
+        let error;
+        try {
+          await Location.stopGeofencingAsync(DEFINED_TASK_NAME, locationOptions);
+        } catch (e) {
+          error = e;
+        }
+        t.expect(error).toBeDefined();
+        t.expect(error.message).toMatch(/Invalid task consumer/);
+
+        await Location.stopLocationUpdatesAsync(DEFINED_TASK_NAME);
       });
     });
   });

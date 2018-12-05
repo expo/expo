@@ -112,7 +112,7 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
   EXTask *task = (EXTask *)[self _getTaskWithName:taskName forAppId:appId];
 
   if (consumerClass != nil && ![task.consumer isMemberOfClass:[self _unversionedClassFromClass:consumerClass]]) {
-    NSString *reason = [NSString stringWithFormat:@"Cannot unregister task with name '%@' because it is associated with different consumer class.", taskName];
+    NSString *reason = [NSString stringWithFormat:@"Invalid task consumer. Cannot unregister task with name '%@' because it is associated with different consumer class.", taskName];
     @throw [NSException exceptionWithName:@"E_INVALID_TASK_CONSUMER" reason:reason userInfo:nil];
   }
 
