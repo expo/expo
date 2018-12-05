@@ -1,6 +1,6 @@
-import { NativeModules } from 'react-native';
-
-const { ExponentSecureStore } = NativeModules;
+import { UnavailabilityError } from 'expo-errors';
+import invariant from 'invariant';
+import ExponentSecureStore from './ExponentSecureStore';
 
 export type KeychainAccessibilityConstant = number;
 
@@ -27,6 +27,10 @@ export async function deleteItemAsync(
   options: SecureStoreOptions = {}
 ): Promise<void> {
   _ensureValidKey(key);
+
+  if (!ExponentSecureStore.deleteValueWithKeyAsync) {
+    throw new UnavailabilityError('SecureStore', 'deleteItemAsync');
+  }
   await ExponentSecureStore.deleteValueWithKeyAsync(key, options);
 }
 
@@ -49,15 +53,17 @@ export async function setItemAsync(
       `Invalid value provided to SecureStore. Values must be strings; consider JSON-encoding your values if they are serializable.`
     );
   }
+  if (!ExponentSecureStore.setValueWithKeyAsync) {
+    throw new UnavailabilityError('SecureStore', 'setItemAsync');
+  }
   await ExponentSecureStore.setValueWithKeyAsync(value, key, options);
 }
 
 function _ensureValidKey(key: string) {
-  if (!_isValidKey(key)) {
-    throw new Error(
-      `Invalid key provided to SecureStore. Keys must not be empty and contain only alphanumeric characters, ".", "-", and "_".`
-    );
-  }
+  invariant(
+    _isValidKey(key),
+    `Invalid key provided to SecureStore. Keys must not be empty and contain only alphanumeric characters, ".", "-", and "_".`
+  );
 }
 
 function _isValidKey(key: string) {
