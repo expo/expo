@@ -37,7 +37,7 @@ EX_EXPORT_METHOD_AS(setMinimumIntervalAsync,
   dispatch_async(dispatch_get_main_queue(), ^{
     NSTimeInterval timeInterval = [minimumInterval doubleValue];
     [[UIApplication sharedApplication] setMinimumBackgroundFetchInterval:timeInterval];
-    resolve([NSNull null]);
+    resolve(nil);
   });
 }
 
@@ -62,7 +62,7 @@ EX_EXPORT_METHOD_AS(registerTaskAsync,
   @catch (NSException *e) {
     return reject(e.name, e.reason, nil);
   }
-  resolve([NSNull null]);
+  resolve(nil);
 }
 
 EX_EXPORT_METHOD_AS(unregisterTaskAsync,
@@ -75,7 +75,7 @@ EX_EXPORT_METHOD_AS(unregisterTaskAsync,
   } @catch (NSException *e) {
     return reject(e.name, e.reason, nil);
   }
-  resolve([NSNull null]);
+  resolve(nil);
 }
 
 # pragma mark - helpers

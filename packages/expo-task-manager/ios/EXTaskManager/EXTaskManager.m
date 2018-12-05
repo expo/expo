@@ -90,7 +90,7 @@ EX_EXPORT_METHOD_AS(notifyTaskFinishedAsync,
                     reject:(EXPromiseRejectBlock)reject)
 {
   [_taskService notifyTaskWithName:taskName forAppId:_appId didFinishWithResponse:response];
-  resolve([NSNull null]);
+  resolve(nil);
 }
 
 EX_EXPORT_METHOD_AS(isTaskRegisteredAsync,
@@ -122,7 +122,7 @@ EX_EXPORT_METHOD_AS(unregisterTaskAsync,
                     reject:(EXPromiseRejectBlock)reject)
 {
   [self unregisterTaskWithName:taskName consumerClass:nil];
-  resolve([NSNull null]);
+  resolve(nil);
 }
 
 EX_EXPORT_METHOD_AS(unregisterAllTasksAsync,
@@ -130,7 +130,7 @@ EX_EXPORT_METHOD_AS(unregisterAllTasksAsync,
                     reject:(EXPromiseRejectBlock)reject)
 {
   [_taskService unregisterAllTasksForAppId:_appId];
-  resolve([NSNull null]);
+  resolve(nil);
 }
 
 # pragma mark - EXTaskManagerInterface

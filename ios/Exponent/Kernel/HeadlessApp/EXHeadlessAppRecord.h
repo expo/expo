@@ -11,8 +11,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface EXHeadlessAppRecord : EXKernelAppRecord <EXAppRecordInterface, EXReactAppManagerUIDelegate, EXAppLoaderDelegate>
 
 - (nonnull instancetype)initWithManifestUrl:(NSURL *)manifestUrl
-                               initialProps:(NSDictionary *)initialProps
-                               fetchTimeout:(NSNumber *)fetchTimeout
                                    callback:(void(^)(BOOL success, NSError * _Nullable error))callback;
 
 @end

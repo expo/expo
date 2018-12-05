@@ -319,7 +319,7 @@ EX_EXPORT_METHOD_AS(requestPermissionsAsync,
                         if (!result) {
                           return reject(@"E_LOCATION_UNAUTHORIZED", @"Not authorized to use location services", nil);
                         }
-                        resolve([NSNull null]);
+                        resolve(nil);
                       }
                     withRejecter:reject];
 }
@@ -353,7 +353,7 @@ EX_EXPORT_METHOD_AS(startLocationUpdatesAsync,
   @catch (NSException *e) {
     return reject(e.name, e.reason, nil);
   }
-  resolve([NSNull null]);
+  resolve(nil);
 }
 
 EX_EXPORT_METHOD_AS(stopLocationUpdatesAsync,
@@ -366,7 +366,7 @@ EX_EXPORT_METHOD_AS(stopLocationUpdatesAsync,
   } @catch (NSException *e) {
     return reject(e.name, e.reason, nil);
   }
-  resolve([NSNull null]);
+  resolve(nil);
 }
 
 EX_EXPORT_METHOD_AS(hasStartedLocationUpdatesAsync,
@@ -397,7 +397,7 @@ EX_EXPORT_METHOD_AS(startGeofencingAsync,
   } @catch (NSException *e) {
     return reject(e.name, e.reason, nil);
   }
-  resolve([NSNull null]);
+  resolve(nil);
 }
 
 EX_EXPORT_METHOD_AS(stopGeofencingAsync,
@@ -414,7 +414,7 @@ EX_EXPORT_METHOD_AS(stopGeofencingAsync,
   } @catch (NSException *e) {
     return reject(e.name, e.reason, nil);
   }
-  resolve([NSNull null]);
+  resolve(nil);
 }
 
 EX_EXPORT_METHOD_AS(hasStartedGeofencingAsync,

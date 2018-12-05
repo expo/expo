@@ -9,8 +9,6 @@
 #import <EXAppLoaderProvider/EXAppLoaderProvider.h>
 #import <EXAppLoaderProvider/EXAppRecordInterface.h>
 
-NSTimeInterval const EXAppLoaderDefaultTimeout = 10;
-
 @interface EXTaskService ()
 
 // Array of task requests that are being executed.
@@ -532,11 +530,10 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
 
   if (appLoader != nil && appUrl != nil) {
     __block id<EXAppRecordInterface> appRecord;
-    NSDictionary *options = @{ @"timeout": @(EXAppLoaderDefaultTimeout) };
 
     NSLog(@"EXTaskService: Loading headless app '%@' with url '%@'.", appId, appUrl);
 
-    appRecord = [appLoader loadAppWithUrl:appUrl options:options callback:^(BOOL success, NSError *error) {
+    appRecord = [appLoader loadAppWithUrl:appUrl options:nil callback:^(BOOL success, NSError *error) {
       if (!success) {
         NSLog(@"EXTaskService: Loading app '%@' from url '%@' failed. Error description: %@", appId, appUrl, error.description);
         [self->_events removeObjectForKey:appId];

@@ -37,7 +37,6 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 
 @property (nonatomic, assign) BOOL hasFinished;
 @property (nonatomic, assign) BOOL shouldUseCacheOnly;
-@property (nonatomic, assign) NSTimeInterval fetchTimeout;
 
 @end
 
@@ -48,15 +47,6 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
   if (self = [super init]) {
     _manifestUrl = url;
     _httpManifestUrl = [EXAppLoader _httpUrlFromManifestUrl:_manifestUrl];
-    _fetchTimeout = kEXAppLoaderDefaultTimeout;
-  }
-  return self;
-}
-
-- (instancetype)initWithManifestUrl:(NSURL *)url defaultTimeout:(NSTimeInterval)defaultTimeout
-{
-  if ((self = [self initWithManifestUrl:url]) && defaultTimeout) {
-    _fetchTimeout = defaultTimeout;
   }
   return self;
 }
@@ -65,7 +55,6 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 {
   if (self = [super init]) {
     _localManifest = manifest;
-    _fetchTimeout = kEXAppLoaderDefaultTimeout;
   }
   return self;
 }
@@ -212,14 +201,14 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
     self.cachedManifest = cachedManifest;
     [self _fetchBundleWithManifest:cachedManifest];
   } failure:^(NSError * error) {
-    [self _startAppFetcher:[[EXAppFetcherWithTimeout alloc] initWithAppLoader:self timeout:_fetchTimeout]];
+    [self _startAppFetcher:[[EXAppFetcherWithTimeout alloc] initWithAppLoader:self timeout:kEXAppLoaderDefaultTimeout]];
   }];
 }
 
 - (void)_fetchBundleWithManifest:(NSDictionary *)manifest
 {
   BOOL shouldCheckForUpdate = YES;
-  NSTimeInterval fallbackToCacheTimeout = _fetchTimeout;
+  NSTimeInterval fallbackToCacheTimeout = kEXAppLoaderDefaultTimeout;
 
   // in case check for dev mode failed before, check again
   if ([EXAppFetcher areDevToolsEnabledWithManifest:manifest]) {

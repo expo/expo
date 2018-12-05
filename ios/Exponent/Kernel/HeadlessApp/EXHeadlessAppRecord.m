@@ -18,19 +18,17 @@
 @synthesize appLoader = _appLoader;
 
 - (nonnull instancetype)initWithManifestUrl:(NSURL *)manifestUrl
-                               initialProps:(NSDictionary *)initialProps
-                               fetchTimeout:(NSNumber *)fetchTimeout
                                    callback:(void(^)(BOOL success, NSError * _Nullable error))callback
 {
   if (self = [super init]) {
     _callback = callback;
     _isBridgeAlreadyLoading = NO;
 
-    _appManager = [[EXReactAppManager alloc] initWithAppRecord:self initialProps:initialProps];
+    _appManager = [[EXReactAppManager alloc] initWithAppRecord:self initialProps:nil];
     [_appManager setIsHeadless:YES];
     [_appManager setDelegate:self];
 
-    _appLoader = [[EXAppLoader alloc] initWithManifestUrl:manifestUrl defaultTimeout:[fetchTimeout doubleValue]];
+    _appLoader = [[EXAppLoader alloc] initWithManifestUrl:manifestUrl];
 
     [_appLoader setDelegate:self];
     [_appLoader requestFromCache];

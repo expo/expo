@@ -54,7 +54,7 @@ import static host.exp.exponent.kernel.KernelConstants.MANIFEST_URL_KEY;
 // so I decided to go with a copy until we refactor these activity classes.
 
 public class HeadlessAppLoader implements AppLoaderInterface, Exponent.StartReactInstanceDelegate {
-  private static String READY_FOR_BUNDLE = "readyForBundle";
+  private static String READY_FOR_BUNDLE = "headlessReadyForBundle";
 
   private static final Map<Integer, String> sActivityIdToBundleUrl = new HashMap<>();
   private static int currentActivityId = -2; // start from -2 because -1 is used by kernel
@@ -63,7 +63,6 @@ public class HeadlessAppLoader implements AppLoaderInterface, Exponent.StartReac
   private String mManifestUrl;
   private String mSDKVersion;
   private String mDetachSdkVersion;
-  private boolean mIsShellApp;
   private String mExperienceIdString;
   private ExperienceId mExperienceId;
   private RNObject mReactInstanceManager = new RNObject("com.facebook.react.ReactInstanceManager");
@@ -100,7 +99,7 @@ public class HeadlessAppLoader implements AppLoaderInterface, Exponent.StartReac
     mCallback = callback;
     mActivityId = currentActivityId--;
 
-    new AppLoader(mManifestUrl) {
+    new AppLoader(mManifestUrl, true) {
       @Override
       public void onOptimisticManifest(final JSONObject optimisticManifest) {}
 
@@ -147,7 +146,6 @@ public class HeadlessAppLoader implements AppLoaderInterface, Exponent.StartReac
     mManifestUrl = manifestUrl;
     mManifest = manifest;
     mSDKVersion = manifest.optString(ExponentManifest.MANIFEST_SDK_VERSION_KEY);
-    mIsShellApp = manifestUrl.equals(Constants.INITIAL_URL);
 
     // Sometime we want to release a new version without adding a new .aar. Use TEMPORARY_ABI_VERSION
     // to point to the unversioned code in ReactAndroid.
@@ -296,7 +294,7 @@ public class HeadlessAppLoader implements AppLoaderInterface, Exponent.StartReac
     Exponent.getInstance().testPackagerStatus(isDebugModeEnabled(), mManifest, new Exponent.PackagerStatusCallback() {
       @Override
       public void onSuccess() {
-        mReactInstanceManager = startReactInstance(HeadlessAppLoader.this, mIntentUri, null, mDetachSdkVersion, null, mIsShellApp, reactPackages(), expoPackages());
+        mReactInstanceManager = startReactInstance(HeadlessAppLoader.this, mIntentUri, mDetachSdkVersion, reactPackages(), expoPackages());
       }
 
       @Override
@@ -306,9 +304,8 @@ public class HeadlessAppLoader implements AppLoaderInterface, Exponent.StartReac
     });
   }
 
-  private RNObject startReactInstance(final Exponent.StartReactInstanceDelegate delegate, final String mIntentUri, final RNObject mLinkingPackage,
-                                     final String mSDKVersion, final ExponentNotification mNotification, final boolean mIsShellApp,
-                                     final List<? extends Object> extraNativeModules, final List<Package> extraExpoPackages) {
+  private RNObject startReactInstance(final Exponent.StartReactInstanceDelegate delegate, final String mIntentUri, final String mSDKVersion,
+                                      final List<? extends Object> extraNativeModules, final List<Package> extraExpoPackages) {
     String linkingUri = getLinkingUri();
     Map<String, Object> experienceProperties = MapBuilder.<String, Object>of(
         MANIFEST_URL_KEY, mManifestUrl,
@@ -320,7 +317,6 @@ public class HeadlessAppLoader implements AppLoaderInterface, Exponent.StartReac
     Exponent.InstanceManagerBuilderProperties instanceManagerBuilderProperties = new Exponent.InstanceManagerBuilderProperties();
     instanceManagerBuilderProperties.application = (Application) mContext;
     instanceManagerBuilderProperties.jsBundlePath = mJSBundlePath;
-    instanceManagerBuilderProperties.linkingPackage = mLinkingPackage;
     instanceManagerBuilderProperties.experienceProperties = experienceProperties;
     instanceManagerBuilderProperties.expoPackages = extraExpoPackages;
     instanceManagerBuilderProperties.exponentPackageDelegate = delegate.getExponentPackageDelegate();
@@ -341,64 +337,6 @@ public class HeadlessAppLoader implements AppLoaderInterface, Exponent.StartReac
       String mainModuleName = mManifest.optString(ExponentManifest.MANIFEST_MAIN_MODULE_NAME_KEY);
       Exponent.enableDeveloperSupport(mSDKVersion, debuggerHost, mainModuleName, builder);
     }
-
-    Bundle bundle = new Bundle();
-    JSONObject exponentProps = new JSONObject();
-    if (mNotification != null) {
-      bundle.putString("notification", mNotification.body); // Deprecated
-      try {
-        if (ABIVersion.toNumber(mSDKVersion) < ABIVersion.toNumber("10.0.0")) {
-          exponentProps.put("notification", mNotification.body);
-        } else {
-          exponentProps.put("notification", mNotification.toJSONObject("selected"));
-        }
-      } catch (JSONException e) {
-        e.printStackTrace();
-      }
-    }
-
-    try {
-      exponentProps.put("manifest", mManifest);
-      exponentProps.put("shell", mIsShellApp);
-      exponentProps.put("initialUri", mIntentUri == null ? null : mIntentUri.toString());
-      exponentProps.put("errorRecovery", ErrorRecoveryManager.getInstance(mExperienceId).popRecoveryProps());
-    } catch (JSONException e) {
-      Log.e("Expo", "JSON exception occurred while putting expo props: " + e.getMessage());
-    }
-
-    JSONObject metadata = mExponentSharedPreferences.getExperienceMetadata(mExperienceIdString);
-    if (metadata != null) {
-      if (metadata.has(ExponentSharedPreferences.EXPERIENCE_METADATA_LAST_ERRORS)) {
-        try {
-          exponentProps.put(ExponentSharedPreferences.EXPERIENCE_METADATA_LAST_ERRORS,
-              metadata.getJSONArray(ExponentSharedPreferences.EXPERIENCE_METADATA_LAST_ERRORS));
-        } catch (JSONException e) {
-          e.printStackTrace();
-        }
-
-        metadata.remove(ExponentSharedPreferences.EXPERIENCE_METADATA_LAST_ERRORS);
-      }
-
-      // TODO: fix this. this is the only place that EXPERIENCE_METADATA_UNREAD_REMOTE_NOTIFICATIONS is sent to the experience,
-      // we need to sent them with the standard notification events so that you can get all the unread notification through an event
-      // Copy unreadNotifications into exponentProps
-      if (metadata.has(ExponentSharedPreferences.EXPERIENCE_METADATA_UNREAD_REMOTE_NOTIFICATIONS)) {
-        try {
-          JSONArray unreadNotifications = metadata.getJSONArray(ExponentSharedPreferences.EXPERIENCE_METADATA_UNREAD_REMOTE_NOTIFICATIONS);
-          exponentProps.put(ExponentSharedPreferences.EXPERIENCE_METADATA_UNREAD_REMOTE_NOTIFICATIONS, unreadNotifications);
-
-          delegate.handleUnreadNotifications(unreadNotifications);
-        } catch (JSONException e) {
-          e.printStackTrace();
-        }
-
-        metadata.remove(ExponentSharedPreferences.EXPERIENCE_METADATA_UNREAD_REMOTE_NOTIFICATIONS);
-      }
-
-      mExponentSharedPreferences.updateExperienceMetadata(mExperienceIdString, metadata);
-    }
-
-    bundle.putBundle("exp", JSONBundleConverter.JSONToBundle(exponentProps));
 
     RNObject reactInstanceManager = builder.callRecursive("build");
     RNObject devSettings = reactInstanceManager.callRecursive("getDevSupportManager").callRecursive("getDevSettings");
