@@ -73,7 +73,7 @@ export { default as Notifications } from './Notifications/Notifications';
 export { default as SQLite } from './SQLite';
 import * as ScreenOrientation from './ScreenOrientation/ScreenOrientation';
 export { ScreenOrientation };
-import * as SecureStore from './SecureStore';
+import * as SecureStore from './SecureStore/SecureStore';
 export { SecureStore };
 import * as Speech from './Speech';
 export { Speech };
