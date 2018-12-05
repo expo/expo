@@ -106,4 +106,4 @@ export default class AdMobBanner extends React.Component<PropsType, StateType> {
   }
 }
 
-const ExpoBannerView = requireNativeViewManager('ExpoAdsAdMobBannerView', AdMobBanner);
+const ExpoBannerView = requireNativeViewManager('ExpoAdsAdMobBannerView');

@@ -1,8 +1,16 @@
 import { Platform } from 'react-native';
 
-import EventEmitter from '../EventEmitter';
+let EventEmitter;
 
-it(`emits events to subscribers`, () => {
+beforeEach(() => {
+  ({ EventEmitter } = require('../EventEmitter'));
+});
+
+afterEach(() => {
+  jest.resetModules();
+});
+
+it(`emits events to listeners`, () => {
   let mockNativeModule = _createMockNativeModule();
   let emitter = new EventEmitter(mockNativeModule);
 
@@ -42,6 +50,37 @@ it(`removes a single event subscription`, () => {
   expect(mockListener).not.toHaveBeenCalled();
 });
 
+// NOTE: this test currently fails because of NativeEventEmitter's design
+it.skip(`doesn't emit events to other emitters' listeners`, () => {
+  let mockNativeModule1 = _createMockNativeModule();
+  let emitter1 = new EventEmitter(mockNativeModule1);
+
+  let mockNativeModule2 = _createMockNativeModule();
+  let emitter2 = new EventEmitter(mockNativeModule2);
+
+  let mockListener1 = jest.fn();
+  emitter1.addListener('test', mockListener1);
+  emitter2.emit('test');
+
+  expect(mockListener1).not.toHaveBeenCalled();
+});
+
+// NOTE: this test currently fails because of NativeEventEmitter's design
+it.skip(`doesn't remove other emitters' listeners`, () => {
+  let mockNativeModule1 = _createMockNativeModule();
+  let emitter1 = new EventEmitter(mockNativeModule1);
+
+  let mockNativeModule2 = _createMockNativeModule();
+  let emitter2 = new EventEmitter(mockNativeModule2);
+
+  let mockListener1 = jest.fn();
+  emitter1.addListener('test', mockListener1);
+  emitter2.removeAllListeners('test');
+
+  emitter1.emit('test');
+  expect(mockListener1).toHaveBeenCalled();
+});
+
 describe('subscriptions', () => {
   it(`removes itself`, () => {
     let mockNativeModule = _createMockNativeModule();
@@ -61,6 +100,9 @@ describe('Android', () => {
 
   beforeAll(() => {
     originalOS = Platform.OS;
+  });
+
+  beforeEach(() => {
     Platform.OS = 'android';
   });
 
@@ -99,8 +141,7 @@ describe('Android', () => {
     expect(mockNativeModule.stopObserving).toHaveBeenCalledTimes(1);
   });
 
-  // NOTE: This test is currently broken and reveals a bug. Un-skip this test when the bug is fixed.
-  it.skip(`notifies the native module to stop observing when a subscription removes itself`, () => {
+  it(`notifies the native module to stop observing when a subscription removes itself`, () => {
     let mockNativeModule = _createMockNativeModule();
     let emitter = new EventEmitter(mockNativeModule);
 

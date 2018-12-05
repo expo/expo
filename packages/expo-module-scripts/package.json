@@ -29,6 +29,6 @@
     "commander": "^2.19.0",
     "jest-expo": "^31.0.0",
     "ts-jest": "~23.10.4",
-    "typescript": "^3.1.6"
+    "typescript": "^3.2.1"
   }
 }
