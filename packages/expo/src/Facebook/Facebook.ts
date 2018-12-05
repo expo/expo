@@ -1,6 +1,6 @@
-import { NativeModules } from 'react-native';
+import { UnavailabilityError } from 'expo-errors';
 
-const { ExponentFacebook } = NativeModules;
+import ExponentFacebook from './ExponentFacebook';
 
 type FacebookLoginResult = {
   type: string;
@@ -17,6 +17,9 @@ export async function logInWithReadPermissionsAsync(
   appId: string,
   options?: FacebookOptions
 ): Promise<FacebookLoginResult> {
+  if (!ExponentFacebook.logInWithReadPermissionsAsync) {
+    throw new UnavailabilityError('Facebook', 'logInWithReadPermissionsAsync');
+  }
   if (typeof appId !== 'string') {
     console.warn(
       `logInWithReadPermissionsAsync: parameter 'appId' must be a string, was '${typeof appId}''.`
