@@ -122,6 +122,7 @@ class BarCodeScannerViewFinder extends TextureView implements TextureView.Surfac
         mCamera.startPreview();
         // send previews to `onPreviewFrame`
         mCamera.setPreviewCallback(this);
+        mBarCodeScannerView.layoutViewFinder();
       } catch (NullPointerException e) {
         e.printStackTrace();
       } catch (Exception e) {

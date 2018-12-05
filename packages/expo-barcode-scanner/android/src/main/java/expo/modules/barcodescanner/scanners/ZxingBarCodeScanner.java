@@ -81,12 +81,7 @@ public class ZxingBarCodeScanner extends ExpoBarCodeScanner {
     if (bitmap == null || barcode == null){
       return null;
     }
-    ArrayList<Integer> cornerPoints = new ArrayList();
-    for (ResultPoint resultPoint : barcode.getResultPoints()) {
-      Integer x = Math.round(resultPoint.getX());
-      Integer y = Math.round(resultPoint.getY());
-      cornerPoints.addAll(Arrays.asList(x,y));
-    }
+    ArrayList<Integer> cornerPoints = new ArrayList(); // empty list
 
     return new BarCodeScannerResult(GMV_FROM_ZXING.get(barcode.getBarcodeFormat()), barcode.getText(), cornerPoints, bitmap.getHeight(), bitmap.getWidth());
   }

@@ -162,7 +162,7 @@ public class ExpoBarCodeScanner {
 
     cameraInfo.previewHeight = height;
     cameraInfo.previewWidth = width;
-    if (mActualDeviceOrientation == Surface.ROTATION_0 || mActualDeviceOrientation ==  Surface.ROTATION_180) {
+    if (result == 90 || result ==  270) {
       cameraInfo.previewHeight = width;
       cameraInfo.previewWidth = height;
     }

@@ -99,6 +99,7 @@ public class BarCodeScannerView extends ViewGroup {
       mViewFinder = new BarCodeScannerViewFinder(mContext, type, this, mModuleRegistry);
       addView(mViewFinder);
     }
+
   }
 
   public void setBarCodeScannerSettings(BarCodeScannerSettings settings) {
@@ -121,7 +122,7 @@ public class BarCodeScannerView extends ViewGroup {
     return ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getRotation();
   }
 
-  private void layoutViewFinder() {
+  public void layoutViewFinder() {
     layoutViewFinder(this.getLeft(), this.getTop(), this.getRight(), this.getBottom());
   }
 
@@ -136,7 +137,7 @@ public class BarCodeScannerView extends ViewGroup {
     double ratio = this.mViewFinder.getRatio();
 
     // Just fill the given space
-    if (ratio * height < width) {
+    if (ratio * height < width + 1e-5) {
       viewfinderWidth = (int) (ratio * height);
       viewfinderHeight = (int) height;
     } else {
