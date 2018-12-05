@@ -23,6 +23,7 @@ public class BarCodeScannerView extends ViewGroup {
   private int mActualDeviceOrientation = -1;
   private int mLeftPadding = 0;
   private int mTopPadding = 0;
+  private int mType = 0;
 
   public BarCodeScannerView(final Context context, ModuleRegistry moduleRegistry) {
     super(context);
@@ -74,6 +75,20 @@ public class BarCodeScannerView extends ViewGroup {
     int previewWidth = this.getWidth() - mLeftPadding*2;
     int previewHeight = this.getHeight() - mTopPadding*2;
 
+    // fix for problem with rotation when front camera is in use [this code is not tested well]
+    if (mType == ExpoBarCodeScanner.CAMERA_TYPE_FRONT && ((getDeviceOrientation(mContext) % 2) == 0)) {
+      for(int i = 1; i < cornerPoints.size(); i += 2) { // convert y-coordinate
+        int convertedCoordinate = barCode.getHeight()-cornerPoints.get(i);
+        cornerPoints.set(i, convertedCoordinate);
+      }
+    }
+    if (mType == ExpoBarCodeScanner.CAMERA_TYPE_FRONT && ((getDeviceOrientation(mContext) % 2) != 0)) {
+      for(int i = 0; i < cornerPoints.size(); i += 2) { // convert y-coordinate
+        int convertedCoordinate = barCode.getWidth()-cornerPoints.get(i);
+        cornerPoints.set(i, convertedCoordinate);
+      }
+    }
+    // end of fix
 
     for(int i = 0; i < cornerPoints.size(); i += 2) { // convert x-coordinate
       int convertedCoordinate = Math.round(cornerPoints.get(i) * previewWidth/(float)barCode.getWidth() + mLeftPadding);
@@ -92,6 +107,7 @@ public class BarCodeScannerView extends ViewGroup {
   }
 
   public void setCameraType(final int type) {
+    mType = type;
     if (null != this.mViewFinder) {
       this.mViewFinder.setCameraType(type);
       ExpoBarCodeScanner.getInstance().adjustPreviewLayout(type);
@@ -99,7 +115,6 @@ public class BarCodeScannerView extends ViewGroup {
       mViewFinder = new BarCodeScannerViewFinder(mContext, type, this, mModuleRegistry);
       addView(mViewFinder);
     }
-
   }
 
   public void setBarCodeScannerSettings(BarCodeScannerSettings settings) {

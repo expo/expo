@@ -53,14 +53,7 @@ export default class BarcodeScannerExample extends React.Component {
         let y = this.state.cornerPoints[i * 2 + 1]/this.state.height*CANVAS_HEIGHT;
       //  console.log("zrobilem ", x, " ", y);
         circles.push(
-          <Svg.Circle
-            cx={x}
-            cy={y}
-            r={2}
-            strokeWidth={2.5}
-            stroke="#e74c3c"
-            fill="#f1c40f"
-          />
+          <Svg.Circle cx={x} cy={y} r={2} strokeWidth={0.1} stroke="gray" fill="green" />
         );
       }
     }
