@@ -75,7 +75,7 @@ import * as ScreenOrientation from './ScreenOrientation/ScreenOrientation';
 export { ScreenOrientation };
 import * as SecureStore from './SecureStore/SecureStore';
 export { SecureStore };
-import * as Speech from './Speech';
+import * as Speech from './Speech/Speech';
 export { Speech };
 import * as StoreReview from './StoreReview/StoreReview';
 export { StoreReview };
