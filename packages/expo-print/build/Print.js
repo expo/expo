@@ -1,26 +1,27 @@
 import { Platform } from 'react-native';
-import { NativeModulesProxy } from 'expo-core';
-const { ExponentPrint } = NativeModulesProxy;
+import ExponentPrint from './ExponentPrint';
+import { UnavailabilityError } from 'expo-errors';
 const Orientation = ExponentPrint.Orientation;
 async function printAsync(options) {
+    if (Platform.OS === 'web') {
+        return await ExponentPrint.print(options);
+    }
     if (!options.uri && !options.html && (Platform.OS === 'ios' && !options.markupFormatterIOS)) {
         throw new Error('Must provide either `html` or `uri` to print');
     }
     if (options.uri && options.html) {
         throw new Error('Must provide exactly one of `html` and `uri` but both were specified');
     }
-    return ExponentPrint.print(options);
+    return await ExponentPrint.print(options);
 }
 async function selectPrinterAsync() {
-    if (Platform.OS === 'ios') {
-        return ExponentPrint.selectPrinter();
+    if (ExponentPrint.selectPrinter) {
+        return await ExponentPrint.selectPrinter();
     }
-    else {
-        throw new Error('Selecting the printer in advance is not available on Android.');
-    }
+    throw new UnavailabilityError('Print', 'selectPrinterAsync');
 }
 async function printToFileAsync(options = {}) {
-    return ExponentPrint.printToFileAsync(options);
+    return await ExponentPrint.printToFileAsync(options);
 }
 export default {
     Orientation,

@@ -7,10 +7,28 @@ commands:
       - run: echo ". ~/.nix-profile/etc/profile.d/nix.sh" >> ~/.bash_profile
   setup:
     steps:
-      # ssh: used in circleci checkout steps
-      # direnv: used to configure environment with .envrc files
-      # rsync: used by expo-module-scripts to copy template files
-      - run: nix-env -iA nixpkgs.openssh nixpkgs.direnv nixpkgs.rsync
+      - run:
+          name: Install common packages
+          # direnv: configures environment with .envrc files
+          # findutils (where, find, etc): expo-module test
+          # git: circleci checkout steps
+          # gnugrep: used in .envrc
+          # gnutar: used by nix commands which download channels
+          # gzip: used by nix commands which download channels
+          # openssh: circleci checkout steps
+          # rsync: expo-module-scripts uses to copy template files
+          # xz: circleci checkout steps
+          command: |
+            nix-env -iA \
+              nixpkgs.direnv \
+              nixpkgs.findutils \
+              nixpkgs.git \
+              nixpkgs.gnugrep \
+              nixpkgs.gnutar \
+              nixpkgs.gzip \
+              nixpkgs.openssh \
+              nixpkgs.rsync \
+              nixpkgs.xz
       - run: mkdir -p ~/.config/direnv
       - run: echo -e "[whitelist]\nprefix = [ \"$HOME\" ]" > ~/.config/direnv/config.toml
       - run: echo 'eval "$(direnv export bash)"' >> ~/.bash_profile
@@ -87,7 +105,7 @@ executors:
   # We add -l to all the shell commands to make it easier to use direnv
   nix: &nix
     docker:
-      - image: lnl7/nix:latest # only latest includes common utils we want
+      - image: lnl7/nix:2.1.2
     # Symlink to the readline-enabled bash which is the default command of the container
     shell: /run/current-system/sw/bin/bash -leo pipefail
     working_directory: ~/expo
@@ -157,6 +175,9 @@ jobs:
       - yarn:
           command: test --maxWorkers 1
           working_directory: ~/expo/packages/expo
+      - yarn:
+          command: build
+          working_directory: ~/expo/packages/expo-ads-admob
       - yarn:
           command: test --maxWorkers 1
           working_directory: ~/expo/packages/expo-font
