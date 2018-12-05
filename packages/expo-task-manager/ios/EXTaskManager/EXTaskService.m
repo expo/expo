@@ -109,7 +109,7 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
  */
 - (void)unregisterTaskWithName:(NSString *)taskName
                       forAppId:(NSString *)appId
-               ofConsumerClass:(Class)consumerClass
+                 consumerClass:(Class)consumerClass
 {
   EXTask *task = (EXTask *)[self _getTaskWithName:taskName forAppId:appId];
 

@@ -25,7 +25,7 @@
  */
 - (void)unregisterTaskWithName:(nonnull NSString *)taskName
                       forAppId:(nonnull NSString *)appId
-               ofConsumerClass:(Class)consumerClass;
+                 consumerClass:(Class)consumerClass;
 
 /**
  *  Unregisters all tasks registered for the app with given appId.

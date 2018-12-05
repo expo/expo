@@ -121,7 +121,7 @@ EX_EXPORT_METHOD_AS(unregisterTaskAsync,
                     resolve:(EXPromiseResolveBlock)resolve
                     reject:(EXPromiseRejectBlock)reject)
 {
-  [self unregisterTaskWithName:taskName ofConsumerClass:nil];
+  [self unregisterTaskWithName:taskName consumerClass:nil];
   resolve([NSNull null]);
 }
 
@@ -159,9 +159,9 @@ EX_EXPORT_METHOD_AS(unregisterAllTasksAsync,
 }
 
 - (void)unregisterTaskWithName:(nonnull NSString *)taskName
-               ofConsumerClass:(Class)consumerClass
+                 consumerClass:(Class)consumerClass
 {
-  [_taskService unregisterTaskWithName:taskName forAppId:_appId ofConsumerClass:consumerClass];
+  [_taskService unregisterTaskWithName:taskName forAppId:_appId consumerClass:consumerClass];
 }
 
 - (BOOL)hasBackgroundModeEnabled:(nonnull NSString *)backgroundMode

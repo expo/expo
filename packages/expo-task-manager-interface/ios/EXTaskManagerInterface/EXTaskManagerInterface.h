@@ -30,7 +30,7 @@
  *  Can throw an exception if the consumer class mismatches.
  */
 - (void)unregisterTaskWithName:(nonnull NSString *)taskName
-               ofConsumerClass:(Class)consumerClass;
+                 consumerClass:(Class)consumerClass;
 
 /**
  *  Returns boolean value whether the application contains

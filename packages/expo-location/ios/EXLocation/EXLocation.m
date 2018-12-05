@@ -362,7 +362,7 @@ EX_EXPORT_METHOD_AS(stopLocationUpdatesAsync,
                     reject:(EXPromiseRejectBlock)reject)
 {
   @try {
-    [_tasksManager unregisterTaskWithName:taskName ofConsumerClass:[EXLocationTaskConsumer class]];
+    [_tasksManager unregisterTaskWithName:taskName consumerClass:[EXLocationTaskConsumer class]];
   } @catch (NSException *e) {
     return reject(e.name, e.reason, nil);
   }
@@ -410,7 +410,7 @@ EX_EXPORT_METHOD_AS(stopGeofencingAsync,
   }
 
   @try {
-    [_tasksManager unregisterTaskWithName:taskName ofConsumerClass:[EXGeofencingTaskConsumer class]];
+    [_tasksManager unregisterTaskWithName:taskName consumerClass:[EXGeofencingTaskConsumer class]];
   } @catch (NSException *e) {
     return reject(e.name, e.reason, nil);
   }

@@ -71,7 +71,7 @@ EX_EXPORT_METHOD_AS(unregisterTaskAsync,
                     reject:(EXPromiseRejectBlock)reject)
 {
   @try {
-    [_taskManager unregisterTaskWithName:taskName ofConsumerClass:[EXBackgroundFetchTaskConsumer class]];
+    [_taskManager unregisterTaskWithName:taskName consumerClass:[EXBackgroundFetchTaskConsumer class]];
   } @catch (NSException *e) {
     return reject(e.name, e.reason, nil);
   }
