@@ -1,4 +1,5 @@
-declare const LocationEventEmitter: any;
+import { EventEmitter } from 'expo-core';
+declare const LocationEventEmitter: EventEmitter;
 interface ProviderStatus {
     locationServicesEnabled: boolean;
     gpsAvailable?: boolean;

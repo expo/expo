@@ -58,17 +58,17 @@ eventEmitter.addListener(TaskManager.EVENT_NAME, async ({ data, error, execution
             result = await task({ data, error, executionInfo });
         }
         catch (error) {
-            console.error(`Background task '${taskName}' failed:`, error);
+            console.error(`TaskManager: Task '${taskName}' failed:`, error);
         }
         finally {
             // Notify manager the task is finished.
-            await TaskManager.notifyTaskDidFinish(taskName, { eventId, result });
+            await TaskManager.notifyTaskFinishedAsync(taskName, { eventId, result });
         }
     }
     else {
-        console.log(`TaskManager: task ${taskName} not found :(`);
+        console.warn(`TaskManager: Task '${taskName}' has been executed but looks like it is not defined. Please make sure that 'TaskManager.defineTask' is called in the global (top-level) scope.`);
         // No tasks defined -> we need to notify about finish anyway.
-        await TaskManager.notifyTaskDidFinish(taskName, { eventId, result });
+        await TaskManager.notifyTaskFinishedAsync(taskName, { eventId, result });
         // We should also unregister such tasks automatically as the task might have been removed
         // from the app or just renamed - in that case it needs to be registered again (with the new name).
         await TaskManager.unregisterTaskAsync(taskName);

@@ -1,8 +1,13 @@
 import { NativeModulesProxy, EventEmitter } from 'expo-core';
 
+interface TaskError {
+  code: string | number,
+  message: string,
+}
+
 interface TaskBody {
   data: object,
-  error: Error | null,
+  error: TaskError | null,
   executionInfo: {
     eventId: string,
     taskName: string,
@@ -76,7 +81,7 @@ export async function unregisterAllTasksAsync(): Promise<null> {
   return TaskManager.unregisterAllTasksAsync();
 }
 
-eventEmitter.addListener(TaskManager.EVENT_NAME, async ({ data, error, executionInfo }) => {
+eventEmitter.addListener<TaskBody>(TaskManager.EVENT_NAME, async ({ data, error, executionInfo }) => {
   const { eventId, taskName } = executionInfo;
   const task = tasks.get(taskName);
   let result: any = null;
@@ -86,13 +91,13 @@ eventEmitter.addListener(TaskManager.EVENT_NAME, async ({ data, error, execution
       // Execute JS task
       result = await task({ data, error, executionInfo });
     } catch (error) {
-      console.error(`Background task '${taskName}' failed:`, error);
+      console.error(`TaskManager: Task '${taskName}' failed:`, error);
     } finally {
       // Notify manager the task is finished.
       await TaskManager.notifyTaskFinishedAsync(taskName, { eventId, result });
     }
   } else {
-    console.log(`TaskManager: task ${taskName} not found :(`);
+    console.warn(`TaskManager: Task '${taskName}' has been executed but looks like it is not defined. Please make sure that 'TaskManager.defineTask' is called in the global (top-level) scope.`);
     // No tasks defined -> we need to notify about finish anyway.
     await TaskManager.notifyTaskFinishedAsync(taskName, { eventId, result });
     // We should also unregister such tasks automatically as the task might have been removed

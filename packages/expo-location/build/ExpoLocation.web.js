@@ -8,7 +8,7 @@ class GeocoderError extends Error {
         this.code = 'E_NO_GEOCODER';
     }
 }
-const emitter = new EventEmitter();
+const emitter = new EventEmitter({});
 function positionToJSON(position) {
     if (!position)
         return null;

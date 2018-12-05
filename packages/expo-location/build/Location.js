@@ -128,8 +128,10 @@ function _removeHeadingWatcher(watchId) {
     }
     delete watchCallbacks[watchId];
     Location.removeWatchAsync(watchId);
-    LocationEventEmitter.removeSubscription(headingEventSub);
-    headingEventSub = null;
+    if (headingEventSub) {
+        LocationEventEmitter.removeSubscription(headingEventSub);
+        headingEventSub = null;
+    }
 }
 // End Compass Module
 function _maybeInitializeEmitterSubscription() {
@@ -253,7 +255,7 @@ function _removeWatcher(watchId) {
     }
     Location.removeWatchAsync(watchId);
     delete watchCallbacks[watchId];
-    if (Object.keys(watchCallbacks).length === 0) {
+    if (Object.keys(watchCallbacks).length === 0 && deviceEventSubscription) {
         LocationEventEmitter.removeSubscription(deviceEventSubscription);
         deviceEventSubscription = null;
     }

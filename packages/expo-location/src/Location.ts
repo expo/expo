@@ -68,6 +68,9 @@ interface Region {
   notifyOnExit?: boolean,
 };
 
+type Subscription = {
+  remove: () => void,
+};
 type LocationCallback = (data: LocationData) => any;
 type HeadingCallback = (data: HeadingData) => any;
 
@@ -105,8 +108,8 @@ let watchCallbacks: {
   [watchId: number]: LocationCallback | HeadingCallback,
 } = {};
 
-let deviceEventSubscription: Function | null;
-let headingEventSub: Function | null;
+let deviceEventSubscription: Subscription | null;
+let headingEventSub: Subscription | null;
 let googleApiKey;
 const googleApiUrl = 'https://maps.googleapis.com/maps/api/geocode/json';
 
@@ -202,8 +205,10 @@ function _removeHeadingWatcher(watchId) {
   }
   delete watchCallbacks[watchId];
   Location.removeWatchAsync(watchId);
-  LocationEventEmitter.removeSubscription(headingEventSub);
-  headingEventSub = null;
+  if (headingEventSub) {
+    LocationEventEmitter.removeSubscription(headingEventSub);
+    headingEventSub = null;
+  }
 }
 // End Compass Module
 
@@ -355,7 +360,7 @@ function _removeWatcher(watchId) {
 
   Location.removeWatchAsync(watchId);
   delete watchCallbacks[watchId];
-  if (Object.keys(watchCallbacks).length === 0) {
+  if (Object.keys(watchCallbacks).length === 0 && deviceEventSubscription) {
     LocationEventEmitter.removeSubscription(deviceEventSubscription);
     deviceEventSubscription = null;
   }

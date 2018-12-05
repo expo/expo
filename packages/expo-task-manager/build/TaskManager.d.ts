@@ -1,6 +1,10 @@
+interface TaskError {
+    code: string | number;
+    message: string;
+}
 interface TaskBody {
     data: object;
-    error: Error | null;
+    error: TaskError | null;
     executionInfo: {
         eventId: string;
         taskName: string;
