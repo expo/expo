@@ -1,2 +1,1 @@
-const GestureHandler = {};
-export default GestureHandler;
+export const GestureHandler = {};
