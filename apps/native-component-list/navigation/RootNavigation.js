@@ -1,7 +1,5 @@
-import { createAppContainer } from 'react-navigation';
-import { createBrowserApp } from '@react-navigation/web';
-import { Platform } from 'expo-core';
-import MainTabNavigator from './MainTabNavigator.web';
+import { StyleSheet } from 'react-native';
+ import { createAppContainer } from 'react-navigation';
 
-const createContainer = Platform.OS === 'web' ? createBrowserApp : createAppContainer;
-export default createContainer(MainTabNavigator);
+import MainTabNavigator from './MainTabNavigator';
+export default createAppContainer(MainTabNavigator);
