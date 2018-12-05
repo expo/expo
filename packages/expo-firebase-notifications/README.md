@@ -28,12 +28,7 @@ and run `pod install`.
 
 #### Manually
 
-You could also choose install this module manually.
-
-1.  In XCode, in the project navigator, right click `Libraries` ➜ `Add Files to [your project's name]`
-2.  Go to `node_modules` ➜ `expo-firebase-notifications` and add `EXFirebaseNotifications.xcodeproj`
-3.  In XCode, in the project navigator, select your project. Add `libEXFirebaseNotifications.a` to your project's `Build Phases` ➜ `Link Binary With Libraries`
-4.  Run your project (`Cmd+R`).
+Due to the way we develop and use universal modules at Expo (with Cocoapods), we don't support the `xcodeproj` way to install the module in iOS projects. Sorry for the inconvenience!
 
 #### Common Setup
 
