@@ -1,5 +1,6 @@
 import uuidv4 from 'uuid/v4';
 import UAParser from 'ua-parser-js';
+
 const ExpoPackageJson = require('expo/package.json');
 
 export default {
@@ -36,7 +37,7 @@ export default {
   get deviceName(): string | null {
     return null;
   },
-  get systemFonts(): Array<string> {
+  get systemFonts(): string[] {
     return [];
   },
   get statusBarHeight(): number {
