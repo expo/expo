@@ -30,6 +30,10 @@ function applyMocks() {
 }
 
 describe('Location', () => {
+  beforeAll(() => {
+    Location.installWebGeolocationPolyfill();
+  });
+
   beforeEach(() => {
     applyMocks();
   });
