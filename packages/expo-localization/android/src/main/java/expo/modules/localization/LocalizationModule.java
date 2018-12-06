@@ -131,19 +131,7 @@ public class LocalizationModule extends ExportedModule implements ModuleRegistry
     }
 
     private String toLocaleTag(Locale locale) {
-        String localeTag;
-
-        if (SDK_INT >= LOLLIPOP) {
-            localeTag = locale.toLanguageTag();
-        } else {
-            StringBuilder builder = new StringBuilder();
-            builder.append(locale.getLanguage());
-            if (locale.getCountry() != null) {
-                builder.append("-");
-                builder.append(locale.getCountry());
-            }
-            localeTag = builder.toString();
-        }
+        String localeTag = locale.toLanguageTag();
 
         if (localeTag.matches("^(iw|in|ji).*")) {
             localeTag = localeTag

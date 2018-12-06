@@ -304,16 +304,9 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
   public void onNewIntent(Intent intent) {
     super.onNewIntent(intent);
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      Uri uri = intent.getData();
-      if (uri != null) {
-        handleUri(uri.toString());
-      }
-    } else {
-      // Always just restart this activity. Don't call Activity.recreate() because that uses
-      // the old savedInstanceState.
-      finish();
-      startActivity(intent);
+    Uri uri = intent.getData();
+    if (uri != null) {
+      handleUri(uri.toString());
     }
   }
 
@@ -684,9 +677,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
         .setOngoing(true)
         .setPriority(Notification.PRIORITY_MAX);
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      mNotificationBuilder.setColor(ContextCompat.getColor(this, R.color.colorPrimary));
-    }
+    mNotificationBuilder.setColor(ContextCompat.getColor(this, R.color.colorPrimary));
     notificationManager.notify(NOTIFICATION_ID, mNotificationBuilder.build());
   }
 
