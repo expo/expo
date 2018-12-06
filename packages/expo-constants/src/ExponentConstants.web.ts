@@ -52,7 +52,7 @@ export default {
 
     return {};
   },
-  getWebViewUserAgentAsync(): Promise<string | null> {
-    return new Promise(resolve => navigator.userAgent || null);
-  },
+  async getWebViewUserAgentAsync(): Promise<string> {
+    return navigator.userAgent;
+  }
 };
