@@ -1,5 +1,4 @@
 import { EventEmitter, EventSubscription } from 'fbemitter';
-import warning from 'fbjs/lib/warning';
 import invariant from 'invariant';
 import { AsyncStorage, DeviceEventEmitter, Platform } from 'react-native';
 import ExponentNotifications from './ExponentNotifications';
@@ -309,10 +308,11 @@ export default {
 
       // If someone passes in a value that is too small, say, by an order of 1000 (it's common to
       // accidently pass seconds instead of ms), display a warning.
-      warning(
-        timeAsDateObj.getTime() >= now,
-        `Provided value for "time" is before the current date. Did you possibly pass number of seconds since Unix Epoch instead of number of milliseconds?`
-      );
+      if (timeAsDateObj.getTime() < now) {
+        console.warn(
+          `Provided value for "time" is before the current date. Did you possibly pass number of seconds since Unix Epoch instead of number of milliseconds?`
+        );
+      }
 
       // If iOS, pass time as milliseconds
       if (Platform.OS === 'ios') {

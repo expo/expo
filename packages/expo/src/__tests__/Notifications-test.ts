@@ -1,4 +1,3 @@
-import warning from 'fbjs/lib/warning';
 import { NativeModules } from 'react-native';
 import Notifications from '../Notifications/Notifications';
 import { mockPlatformIOS, mockPlatformAndroid } from '../../test/mocking';
@@ -6,7 +5,6 @@ import { mockPlatformIOS, mockPlatformAndroid } from '../../test/mocking';
 const mockNotificationObject = { origin: 'selected', data: {} } as any;
 const mockNotificationString = JSON.stringify({ origin: 'received', data: {} });
 
-jest.mock('fbjs/lib/warning');
 jest.mock('react-native/Libraries/EventEmitter/RCTDeviceEventEmitter', () => {
   const { EventEmitter } = require('fbemitter');
   return new EventEmitter();
@@ -296,15 +294,18 @@ a number representing Unix Epoch time in milliseconds, or a valid date object.`
   it('properly warns when time value prior to now is used in scheduled notification options', async () => {
     NativeModules.ExponentNotifications.scheduleLocalNotification = jest.fn();
 
+    const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => null);
+
     await Notifications.scheduleLocalNotificationAsync(mockedScheduledNotifIOS, {
       time: new Date().getTime() / 1000, // accidently pass seconds instead of milliseconds
     });
 
-    expect(warning).toBeCalledWith(
-      false,
+    expect(consoleWarnSpy).toBeCalledWith(
       `Provided value for "time" is before the current date. Did you possibly \
 pass number of seconds since Unix Epoch instead of number of milliseconds?`
     );
+
+    consoleWarnSpy.mockRestore();
 
     expect(NativeModules.ExponentNotifications.scheduleLocalNotification).toHaveBeenCalledTimes(1);
   });
