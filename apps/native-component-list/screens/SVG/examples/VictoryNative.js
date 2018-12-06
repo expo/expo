@@ -1,10 +1,9 @@
+import { Font, Svg } from 'expo';
 import React, { Component } from 'react';
-import { View, Dimensions, Text } from 'react-native';
-import Svg, { Text as RNSVGText } from 'react-native-svg';
+import { Dimensions, Text, View } from 'react-native';
+import { VictoryArea, VictoryChart, VictoryStack } from 'victory-native';
 
-import { Font } from 'expo';
-
-import { VictoryChart, VictoryStack, VictoryArea } from 'victory-native';
+const { Text: RNSVGText } = Svg;
 
 class VictoryChartExample extends Component {
   static title = 'VictoryChart';
