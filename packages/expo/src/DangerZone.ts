@@ -14,7 +14,7 @@ export default {
     console.warn(
       'GestureHandler is no longer in DangerZone, you can now import it directly from the expo package.'
     );
-    return require('react-native-gesture-handler');
+    return require('./GestureHandler').GestureHandler;
   },
   get Localization() {
     return require('./Localization').default;
