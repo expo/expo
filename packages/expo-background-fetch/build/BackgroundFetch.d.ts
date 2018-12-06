@@ -1,14 +1,23 @@
-export declare enum Result {
+declare enum Result {
     NoData = 1,
     NewData = 2,
     Failed = 3
 }
-export declare enum Status {
+declare enum Status {
     Denied = 1,
     Restricted = 2,
     Available = 3
 }
-export declare function getStatusAsync(): Promise<Status | null>;
-export declare function setMinimumIntervalAsync(minimumInterval: number): Promise<null>;
-export declare function registerTaskAsync(taskName: string): Promise<null>;
-export declare function unregisterTaskAsync(taskName: string): Promise<null>;
+declare function getStatusAsync(): Promise<Status | void>;
+declare function setMinimumIntervalAsync(minimumInterval: number): Promise<void>;
+declare function registerTaskAsync(taskName: string): Promise<void>;
+declare function unregisterTaskAsync(taskName: string): Promise<void>;
+export declare const BackgroundFetch: {
+    Result: typeof Result;
+    Status: typeof Status;
+    getStatusAsync: typeof getStatusAsync;
+    setMinimumIntervalAsync: typeof setMinimumIntervalAsync;
+    registerTaskAsync: typeof registerTaskAsync;
+    unregisterTaskAsync: typeof unregisterTaskAsync;
+};
+export {};

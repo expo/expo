@@ -49,7 +49,7 @@ EX_EXPORT_METHOD_AS(registerTaskAsync,
   if (![_taskManager hasBackgroundModeEnabled:@"fetch"]) {
     return reject(
                   @"E_BACKGROUND_FETCH_DISABLED",
-                  @"Background Fetch has not been configured. To enable it, add `fetch` to `UIBackgroundModes` in Info.plist file.",
+                  @"Background Fetch has not been configured. To enable it, add `fetch` to `UIBackgroundModes` in the application's Info.plist file.",
                   nil
                   );
   }

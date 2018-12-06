@@ -1,16 +1,16 @@
 import { NativeModulesProxy, EventEmitter } from 'expo-core';
-const { ExpoTaskManager: TaskManager } = NativeModulesProxy;
-const eventEmitter = new EventEmitter(TaskManager);
+const { ExpoTaskManager } = NativeModulesProxy;
+const eventEmitter = new EventEmitter(ExpoTaskManager);
 const tasks = new Map();
-let isRunningInGlobalScope = true;
+let isRunningDuringInitialization = true;
 function _validateTaskName(taskName) {
     if (!taskName || typeof taskName !== 'string') {
         throw new TypeError('`taskName` must be a non-empty string.');
     }
 }
-export function defineTask(taskName, task) {
-    if (!isRunningInGlobalScope) {
-        console.error(`TaskManager.defineTask must be called in the global scope!`);
+function defineTask(taskName, task) {
+    if (!isRunningDuringInitialization) {
+        console.error(`TaskManager.defineTask must be called during initialization phase!`);
         return;
     }
     if (!taskName || typeof taskName !== 'string') {
@@ -27,28 +27,28 @@ export function defineTask(taskName, task) {
     }
     tasks.set(taskName, task);
 }
-export function isTaskDefined(taskName) {
+function isTaskDefined(taskName) {
     return tasks.has(taskName);
 }
-export async function isTaskRegisteredAsync(taskName) {
+async function isTaskRegisteredAsync(taskName) {
     _validateTaskName(taskName);
-    return TaskManager.isTaskRegisteredAsync(taskName);
+    return ExpoTaskManager.isTaskRegisteredAsync(taskName);
 }
-export async function getTaskOptionsAsync(taskName) {
+async function getTaskOptionsAsync(taskName) {
     _validateTaskName(taskName);
-    return TaskManager.getTaskOptionsAsync(taskName);
+    return ExpoTaskManager.getTaskOptionsAsync(taskName);
 }
-export async function getRegisteredTasksAsync() {
-    return TaskManager.getRegisteredTasksAsync();
+async function getRegisteredTasksAsync() {
+    return ExpoTaskManager.getRegisteredTasksAsync();
 }
-export async function unregisterTaskAsync(taskName) {
+async function unregisterTaskAsync(taskName) {
     _validateTaskName(taskName);
-    return TaskManager.unregisterTaskAsync(taskName);
+    await ExpoTaskManager.unregisterTaskAsync(taskName);
 }
-export async function unregisterAllTasksAsync() {
-    return TaskManager.unregisterAllTasksAsync();
+async function unregisterAllTasksAsync() {
+    await ExpoTaskManager.unregisterAllTasksAsync();
 }
-eventEmitter.addListener(TaskManager.EVENT_NAME, async ({ data, error, executionInfo }) => {
+eventEmitter.addListener(ExpoTaskManager.EVENT_NAME, async ({ data, error, executionInfo }) => {
     const { eventId, taskName } = executionInfo;
     const task = tasks.get(taskName);
     let result = null;
@@ -58,25 +58,34 @@ eventEmitter.addListener(TaskManager.EVENT_NAME, async ({ data, error, execution
             result = await task({ data, error, executionInfo });
         }
         catch (error) {
-            console.error(`TaskManager: Task '${taskName}' failed:`, error);
+            console.error(`TaskManager: Task "${taskName}" failed:`, error);
         }
         finally {
             // Notify manager the task is finished.
-            await TaskManager.notifyTaskFinishedAsync(taskName, { eventId, result });
+            await ExpoTaskManager.notifyTaskFinishedAsync(taskName, { eventId, result });
         }
     }
     else {
-        console.warn(`TaskManager: Task '${taskName}' has been executed but looks like it is not defined. Please make sure that 'TaskManager.defineTask' is called in the global (top-level) scope.`);
+        console.warn(`TaskManager: Task "${taskName}" has been executed but looks like it is not defined. Please make sure that "TaskManager.defineTask" is called during initialization phase.`);
         // No tasks defined -> we need to notify about finish anyway.
-        await TaskManager.notifyTaskFinishedAsync(taskName, { eventId, result });
+        await ExpoTaskManager.notifyTaskFinishedAsync(taskName, { eventId, result });
         // We should also unregister such tasks automatically as the task might have been removed
         // from the app or just renamed - in that case it needs to be registered again (with the new name).
-        await TaskManager.unregisterTaskAsync(taskName);
+        await ExpoTaskManager.unregisterTaskAsync(taskName);
     }
 });
-// @tsapeta: Turn off `defineTask` function right after the global scope has been executed.
+// @tsapeta: Turn off `defineTask` function right after the initialization phase.
 // Promise.resolve() ensures that it will be called as a microtask just after the first event loop.
 Promise.resolve().then(() => {
-    isRunningInGlobalScope = false;
+    isRunningDuringInitialization = false;
 });
+export const TaskManager = {
+    defineTask,
+    isTaskDefined,
+    isTaskRegisteredAsync,
+    getTaskOptionsAsync,
+    getRegisteredTasksAsync,
+    unregisterTaskAsync,
+    unregisterAllTasksAsync,
+};
 //# sourceMappingURL=TaskManager.js.map

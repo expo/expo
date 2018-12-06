@@ -28,7 +28,7 @@ class GeocoderError extends Error {
   }
 }
 
-const emitter = new EventEmitter({});
+const emitter = new EventEmitter({} as any);
 
 function positionToJSON(position: any): Position | null {
   if (!position) return null;

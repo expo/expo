@@ -118,7 +118,7 @@
 
 # pragma mark - CLLocationManagerDelegate
 
-// There is a bug in iOS that causes didEnterRegion and didExitRegion be called multiple times.
+// There is a bug in iOS that causes didEnterRegion and didExitRegion to be called multiple times.
 // https://stackoverflow.com/questions/36807060/region-monitoring-method-getting-called-multiple-times-in-geo-fencing
 // To prevent this behavior, we execute tasks only when the state has changed.
 

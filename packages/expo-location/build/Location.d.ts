@@ -1,5 +1,4 @@
 import { EventEmitter } from 'expo-core';
-declare const LocationEventEmitter: EventEmitter;
 interface ProviderStatus {
     locationServicesEnabled: boolean;
     gpsAvailable?: boolean;
@@ -57,7 +56,7 @@ interface Region {
 }
 declare type LocationCallback = (data: LocationData) => any;
 declare type HeadingCallback = (data: HeadingData) => any;
-export declare enum Accuracy {
+declare enum Accuracy {
     Lowest = 1,
     Low = 2,
     Balanced = 3,
@@ -65,35 +64,60 @@ export declare enum Accuracy {
     Highest = 5,
     BestForNavigation = 6
 }
-export declare enum GeofencingEventType {
+declare enum GeofencingEventType {
     Enter = 1,
     Exit = 2
 }
-export declare enum GeofencingRegionState {
+declare enum GeofencingRegionState {
     Unknown = 0,
     Inside = 1,
     Outside = 2
 }
 declare function _getCurrentWatchId(): number;
-export declare function getProviderStatusAsync(): Promise<ProviderStatus>;
-export declare function getCurrentPositionAsync(options?: LocationOptions): Promise<LocationData>;
-export declare function getHeadingAsync(): Promise<HeadingData>;
-export declare function watchHeadingAsync(callback: HeadingCallback): Promise<object>;
-export declare function geocodeAsync(address: string): Promise<Array<GeocodedLocation>>;
-export declare function reverseGeocodeAsync(location: {
+declare function getProviderStatusAsync(): Promise<ProviderStatus>;
+declare function getCurrentPositionAsync(options?: LocationOptions): Promise<LocationData>;
+declare function getHeadingAsync(): Promise<HeadingData>;
+declare function watchHeadingAsync(callback: HeadingCallback): Promise<object>;
+declare function geocodeAsync(address: string): Promise<Array<GeocodedLocation>>;
+declare function reverseGeocodeAsync(location: {
     latitude: number;
     longitude: number;
-}): Promise<Array<Address>>;
-export declare function setApiKey(apiKey: string): void;
-export declare function watchPositionAsync(options: LocationOptions, callback: LocationCallback): Promise<{
+}): Promise<Address[]>;
+declare function setApiKey(apiKey: string): void;
+declare function watchPositionAsync(options: LocationOptions, callback: LocationCallback): Promise<{
     remove(): void;
 }>;
-export declare function requestPermissionsAsync(): Promise<null>;
-export declare function hasServicesEnabledAsync(): Promise<boolean>;
-export declare function startLocationUpdatesAsync(taskName: string, options?: LocationTaskOptions): Promise<null>;
-export declare function stopLocationUpdatesAsync(taskName: string): Promise<null>;
-export declare function hasStartedLocationUpdatesAsync(taskName: string): Promise<null>;
-export declare function startGeofencingAsync(taskName: string, regions?: Array<Region>): Promise<null>;
-export declare function stopGeofencingAsync(taskName: string): Promise<null>;
-export declare function hasStartedGeofencingAsync(taskName: string): Promise<null>;
-export { LocationEventEmitter as EventEmitter, _getCurrentWatchId, };
+declare function requestPermissionsAsync(): Promise<void>;
+declare function hasServicesEnabledAsync(): Promise<boolean>;
+declare function startLocationUpdatesAsync(taskName: string, options?: LocationTaskOptions): Promise<void>;
+declare function stopLocationUpdatesAsync(taskName: string): Promise<void>;
+declare function hasStartedLocationUpdatesAsync(taskName: string): Promise<boolean>;
+declare function startGeofencingAsync(taskName: string, regions?: Array<Region>): Promise<void>;
+declare function stopGeofencingAsync(taskName: string): Promise<void>;
+declare function hasStartedGeofencingAsync(taskName: string): Promise<boolean>;
+declare function installWebGeolocationPolyfill(): void;
+export declare const Location: {
+    EventEmitter: EventEmitter;
+    _getCurrentWatchId: typeof _getCurrentWatchId;
+    Accuracy: typeof Accuracy;
+    GeofencingEventType: typeof GeofencingEventType;
+    GeofencingRegionState: typeof GeofencingRegionState;
+    getProviderStatusAsync: typeof getProviderStatusAsync;
+    getCurrentPositionAsync: typeof getCurrentPositionAsync;
+    getHeadingAsync: typeof getHeadingAsync;
+    watchHeadingAsync: typeof watchHeadingAsync;
+    geocodeAsync: typeof geocodeAsync;
+    reverseGeocodeAsync: typeof reverseGeocodeAsync;
+    setApiKey: typeof setApiKey;
+    watchPositionAsync: typeof watchPositionAsync;
+    requestPermissionsAsync: typeof requestPermissionsAsync;
+    hasServicesEnabledAsync: typeof hasServicesEnabledAsync;
+    startLocationUpdatesAsync: typeof startLocationUpdatesAsync;
+    stopLocationUpdatesAsync: typeof stopLocationUpdatesAsync;
+    hasStartedLocationUpdatesAsync: typeof hasStartedLocationUpdatesAsync;
+    startGeofencingAsync: typeof startGeofencingAsync;
+    stopGeofencingAsync: typeof stopGeofencingAsync;
+    hasStartedGeofencingAsync: typeof hasStartedGeofencingAsync;
+    installWebGeolocationPolyfill: typeof installWebGeolocationPolyfill;
+};
+export {};

@@ -2,7 +2,8 @@
   "name": "expo-task-manager",
   "version": "1.0.0",
   "description": "Expo module that provides support for tasks that can run in the background.",
-  "main": "build/index.js",
+  "main": "build/TaskManager.js",
+  "types": "build/TaskManager.d.ts",
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",

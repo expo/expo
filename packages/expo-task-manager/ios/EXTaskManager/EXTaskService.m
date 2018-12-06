@@ -111,27 +111,30 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
 {
   EXTask *task = (EXTask *)[self _getTaskWithName:taskName forAppId:appId];
 
+  if (!task) {
+    NSString *reason = [NSString stringWithFormat:@"Task '%@' not found for app ID '%@'.", taskName, appId];
+    @throw [NSException exceptionWithName:@"E_TASK_NOT_FOUND" reason:reason userInfo:nil];
+  }
+
   if (consumerClass != nil && ![task.consumer isMemberOfClass:[self _unversionedClassFromClass:consumerClass]]) {
     NSString *reason = [NSString stringWithFormat:@"Invalid task consumer. Cannot unregister task with name '%@' because it is associated with different consumer class.", taskName];
     @throw [NSException exceptionWithName:@"E_INVALID_TASK_CONSUMER" reason:reason userInfo:nil];
   }
 
-  if (task) {
-    NSMutableDictionary *appTasks = [[self _getTasksForAppId:appId] mutableCopy];
+  NSMutableDictionary *appTasks = [[self _getTasksForAppId:appId] mutableCopy];
 
-    [appTasks removeObjectForKey:taskName];
+  [appTasks removeObjectForKey:taskName];
 
-    if (appTasks.count == 0) {
-      [_tasks removeObjectForKey:appId];
-    } else {
-      [_tasks setObject:appTasks forKey:appId];
-    }
-
-    if ([task.consumer respondsToSelector:@selector(didUnregister)]) {
-      [task.consumer didUnregister];
-    }
-    [self _removeTaskFromConfig:task];
+  if (appTasks.count == 0) {
+    [_tasks removeObjectForKey:appId];
+  } else {
+    [_tasks setObject:appTasks forKey:appId];
   }
+
+  if ([task.consumer respondsToSelector:@selector(didUnregister)]) {
+    [task.consumer didUnregister];
+  }
+  [self _removeTaskFromConfig:task];
 }
 
 /**

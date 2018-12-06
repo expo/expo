@@ -2,8 +2,8 @@
   "name": "expo-location",
   "version": "1.1.0",
   "description": "Expo Location standalone universal module",
-  "main": "build/index.js",
-  "types": "build/index.d.ts",
+  "main": "build/Location.js",
+  "types": "build/Location.d.ts",
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",

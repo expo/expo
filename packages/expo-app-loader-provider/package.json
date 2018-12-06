@@ -2,7 +2,6 @@
   "name": "expo-app-loader-provider",
   "version": "1.0.0",
   "description": "Expo module that provides application loaders",
-  "main": "index.js",
   "keywords": [
     "react-native",
     "expo"

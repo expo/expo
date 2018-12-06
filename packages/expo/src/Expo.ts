@@ -6,7 +6,7 @@ import 'expo-asset/src/Asset';
 
 // polyfill navigator.geolocation
 import { Location } from 'expo-location';
-Location;
+Location.installWebGeolocationPolyfill();
 
 import { Constants } from 'expo-constants';
 import { NativeModules, Platform } from 'react-native';

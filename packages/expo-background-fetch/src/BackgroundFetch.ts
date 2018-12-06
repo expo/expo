@@ -1,52 +1,64 @@
 import { Platform, NativeModulesProxy } from 'expo-core';
 import { TaskManager } from 'expo-task-manager';
 
-const { ExpoBackgroundFetch: BackgroundFetch } = NativeModulesProxy;
+const { ExpoBackgroundFetch } = NativeModulesProxy;
 
-export enum Result {
+enum Result {
   NoData = 1,
   NewData = 2,
   Failed = 3,
 }
 
-export enum Status {
+enum Status {
   Denied = 1,
   Restricted = 2,
   Available = 3,
 }
 
-export async function getStatusAsync(): Promise<Status | null> {
+async function getStatusAsync(): Promise<Status | void> {
   if (Platform.OS !== 'ios') {
-    return Promise.resolve(null);
+    return Promise.resolve();
   }
-  return BackgroundFetch.getStatusAsync();
+  return ExpoBackgroundFetch.getStatusAsync();
 }
 
-export async function setMinimumIntervalAsync(minimumInterval: number): Promise<null> {
+async function setMinimumIntervalAsync(minimumInterval: number): Promise<void> {
   if (Platform.OS !== 'ios') {
-    console.warn('expo-background-fetch is not yet available on Android platform.');
-    return null;
+    console.warn(`expo-background-fetch is currently available only on iOS`);
+    return;
   }
-  return BackgroundFetch.setMinimumIntervalAsync(minimumInterval);
+  await ExpoBackgroundFetch.setMinimumIntervalAsync(minimumInterval);
 }
 
-export async function registerTaskAsync(taskName: string): Promise<null> {
+async function registerTaskAsync(taskName: string): Promise<void> {
   if (Platform.OS !== 'ios') {
-    console.warn('expo-background-fetch is not yet available on Android platform.');
-    return null;
+    console.warn(`expo-background-fetch is currently available only on iOS`);
+    return;
   }
   if (!TaskManager.isTaskDefined(taskName)) {
     throw new Error(
       `Task '${taskName}' is not defined. You must define a task using TaskManager.defineTask before registering.`
     );
   }
-  return BackgroundFetch.registerTaskAsync(taskName);
+  await ExpoBackgroundFetch.registerTaskAsync(taskName);
 }
 
-export async function unregisterTaskAsync(taskName: string): Promise<null> {
+async function unregisterTaskAsync(taskName: string): Promise<void> {
   if (Platform.OS !== 'ios') {
-    console.warn('expo-background-fetch is not yet available on Android platform.');
-    return null;
+    console.warn(`expo-background-fetch is currently available only on iOS`);
+    return;
   }
-  return BackgroundFetch.unregisterTaskAsync(taskName);
+  await ExpoBackgroundFetch.unregisterTaskAsync(taskName);
 }
+
+export const BackgroundFetch = {
+  // enums
+  Result,
+  Status,
+
+  // methods
+  getStatusAsync,
+  setMinimumIntervalAsync,
+  registerTaskAsync,
+  unregisterTaskAsync,
+};

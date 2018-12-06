@@ -121,7 +121,11 @@ EX_EXPORT_METHOD_AS(unregisterTaskAsync,
                     resolve:(EXPromiseResolveBlock)resolve
                     reject:(EXPromiseRejectBlock)reject)
 {
-  [self unregisterTaskWithName:taskName consumerClass:nil];
+  @try {
+    [self unregisterTaskWithName:taskName consumerClass:nil];
+  } @catch (NSException *e) {
+    return reject(e.name, e.reason, nil);
+  }
   resolve(nil);
 }
 

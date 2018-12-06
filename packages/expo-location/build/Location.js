@@ -1,7 +1,7 @@
 import { EventEmitter, Platform } from 'expo-core';
 import invariant from 'invariant';
-import Location from './ExpoLocation';
-const LocationEventEmitter = new EventEmitter(Location);
+import ExpoLocation from './ExpoLocation';
+const LocationEventEmitter = new EventEmitter(ExpoLocation);
 ;
 ;
 ;
@@ -10,7 +10,7 @@ const LocationEventEmitter = new EventEmitter(Location);
 ;
 ;
 ;
-export var Accuracy;
+var Accuracy;
 (function (Accuracy) {
     Accuracy[Accuracy["Lowest"] = 1] = "Lowest";
     Accuracy[Accuracy["Low"] = 2] = "Low";
@@ -19,12 +19,12 @@ export var Accuracy;
     Accuracy[Accuracy["Highest"] = 5] = "Highest";
     Accuracy[Accuracy["BestForNavigation"] = 6] = "BestForNavigation";
 })(Accuracy || (Accuracy = {}));
-export var GeofencingEventType;
+var GeofencingEventType;
 (function (GeofencingEventType) {
     GeofencingEventType[GeofencingEventType["Enter"] = 1] = "Enter";
     GeofencingEventType[GeofencingEventType["Exit"] = 2] = "Exit";
 })(GeofencingEventType || (GeofencingEventType = {}));
-export var GeofencingRegionState;
+var GeofencingRegionState;
 (function (GeofencingRegionState) {
     GeofencingRegionState[GeofencingRegionState["Unknown"] = 0] = "Unknown";
     GeofencingRegionState[GeofencingRegionState["Inside"] = 1] = "Inside";
@@ -44,16 +44,16 @@ let deviceEventSubscription;
 let headingEventSub;
 let googleApiKey;
 const googleApiUrl = 'https://maps.googleapis.com/maps/api/geocode/json';
-export async function getProviderStatusAsync() {
-    return Location.getProviderStatusAsync();
+async function getProviderStatusAsync() {
+    return ExpoLocation.getProviderStatusAsync();
 }
-export async function getCurrentPositionAsync(options = {}) {
-    return Location.getCurrentPositionAsync(options);
+async function getCurrentPositionAsync(options = {}) {
+    return ExpoLocation.getCurrentPositionAsync(options);
 }
 // Start Compass Module
 // To simplify, we will call watchHeadingAsync and wait for one update To ensure accuracy, we wait
 // for a couple of watch updates if the data has low accuracy
-export async function getHeadingAsync() {
+async function getHeadingAsync() {
     return new Promise(async (resolve, reject) => {
         try {
             // If there is already a compass active (would be a watch)
@@ -98,7 +98,7 @@ export async function getHeadingAsync() {
         }
     });
 }
-export async function watchHeadingAsync(callback) {
+async function watchHeadingAsync(callback) {
     // Check if there is already a compass event watch.
     if (headingEventSub) {
         _removeHeadingWatcher(headingId);
@@ -109,12 +109,12 @@ export async function watchHeadingAsync(callback) {
             callback(heading);
         }
         else {
-            Location.removeWatchAsync(watchId);
+            ExpoLocation.removeWatchAsync(watchId);
         }
     });
     headingId = _getNextWatchId();
     watchCallbacks[headingId] = callback;
-    await Location.watchDeviceHeading(headingId);
+    await ExpoLocation.watchDeviceHeading(headingId);
     return {
         remove() {
             _removeHeadingWatcher(headingId);
@@ -127,7 +127,7 @@ function _removeHeadingWatcher(watchId) {
         return;
     }
     delete watchCallbacks[watchId];
-    Location.removeWatchAsync(watchId);
+    ExpoLocation.removeWatchAsync(watchId);
     if (headingEventSub) {
         LocationEventEmitter.removeSubscription(headingEventSub);
         headingEventSub = null;
@@ -142,13 +142,13 @@ function _maybeInitializeEmitterSubscription() {
                 callback(location);
             }
             else {
-                Location.removeWatchAsync(watchId);
+                ExpoLocation.removeWatchAsync(watchId);
             }
         });
     }
 }
-export async function geocodeAsync(address) {
-    return Location.geocodeAsync(address).catch(error => {
+async function geocodeAsync(address) {
+    return ExpoLocation.geocodeAsync(address).catch(error => {
         const platformUsesGoogleMaps = Platform.OS === 'android' || Platform.OS === 'web';
         if (platformUsesGoogleMaps && error.code === 'E_NO_GEOCODER') {
             if (!googleApiKey) {
@@ -159,11 +159,11 @@ export async function geocodeAsync(address) {
         throw error;
     });
 }
-export async function reverseGeocodeAsync(location) {
+async function reverseGeocodeAsync(location) {
     if (typeof location.latitude !== 'number' || typeof location.longitude !== 'number') {
         throw new TypeError('Location should be an object with number properties `latitude` and `longitude`.');
     }
-    return Location.reverseGeocodeAsync(location).catch(error => {
+    return ExpoLocation.reverseGeocodeAsync(location).catch(error => {
         const platformUsesGoogleMaps = Platform.OS === 'android' || Platform.OS === 'web';
         if (platformUsesGoogleMaps && error.code === 'E_NO_GEOCODER') {
             if (!googleApiKey) {
@@ -174,7 +174,7 @@ export async function reverseGeocodeAsync(location) {
         throw error;
     });
 }
-export function setApiKey(apiKey) {
+function setApiKey(apiKey) {
     googleApiKey = apiKey;
 }
 async function _googleGeocodeAsync(address) {
@@ -227,17 +227,17 @@ function watchPosition(success, error, options) {
     _maybeInitializeEmitterSubscription();
     const watchId = _getNextWatchId();
     watchCallbacks[watchId] = success;
-    Location.watchPositionImplAsync(watchId, options).catch(err => {
+    ExpoLocation.watchPositionImplAsync(watchId, options).catch(err => {
         _removeWatcher(watchId);
         error({ watchId, message: err.message, code: err.code });
     });
     return watchId;
 }
-export async function watchPositionAsync(options, callback) {
+async function watchPositionAsync(options, callback) {
     _maybeInitializeEmitterSubscription();
     const watchId = _getNextWatchId();
     watchCallbacks[watchId] = callback;
-    await Location.watchPositionImplAsync(watchId, options);
+    await ExpoLocation.watchPositionImplAsync(watchId, options);
     return {
         remove() {
             _removeWatcher(watchId);
@@ -253,7 +253,7 @@ function _removeWatcher(watchId) {
     if (!watchCallbacks[watchId]) {
         return;
     }
-    Location.removeWatchAsync(watchId);
+    ExpoLocation.removeWatchAsync(watchId);
     delete watchCallbacks[watchId];
     if (Object.keys(watchCallbacks).length === 0 && deviceEventSubscription) {
         LocationEventEmitter.removeSubscription(deviceEventSubscription);
@@ -269,7 +269,7 @@ function getCurrentPosition(success, error = () => { }, options = {}) {
 // using async/await for the internal implementation of it
 async function _getCurrentPositionAsyncWrapper(success, error, options) {
     try {
-        await Location.requestPermissionsAsync();
+        await ExpoLocation.requestPermissionsAsync();
         const result = await getCurrentPositionAsync(options);
         success(result);
     }
@@ -277,28 +277,28 @@ async function _getCurrentPositionAsyncWrapper(success, error, options) {
         error(e);
     }
 }
-export async function requestPermissionsAsync() {
-    return await Location.requestPermissionsAsync();
+async function requestPermissionsAsync() {
+    await ExpoLocation.requestPermissionsAsync();
 }
 // --- Location service
-export async function hasServicesEnabledAsync() {
-    return await Location.hasServicesEnabledAsync();
+async function hasServicesEnabledAsync() {
+    return await ExpoLocation.hasServicesEnabledAsync();
 }
 // --- Background location updates
 function _validateTaskName(taskName) {
     invariant(taskName && typeof taskName === 'string', '`taskName` must be a non-empty string.');
 }
-export async function startLocationUpdatesAsync(taskName, options = { accuracy: Accuracy.Balanced }) {
+async function startLocationUpdatesAsync(taskName, options = { accuracy: Accuracy.Balanced }) {
     _validateTaskName(taskName);
-    return Location.startLocationUpdatesAsync(taskName, options);
+    await ExpoLocation.startLocationUpdatesAsync(taskName, options);
 }
-export async function stopLocationUpdatesAsync(taskName) {
+async function stopLocationUpdatesAsync(taskName) {
     _validateTaskName(taskName);
-    return Location.stopLocationUpdatesAsync(taskName);
+    await ExpoLocation.stopLocationUpdatesAsync(taskName);
 }
-export async function hasStartedLocationUpdatesAsync(taskName) {
+async function hasStartedLocationUpdatesAsync(taskName) {
     _validateTaskName(taskName);
-    return Location.hasStartedLocationUpdatesAsync(taskName);
+    return ExpoLocation.hasStartedLocationUpdatesAsync(taskName);
 }
 // --- Geofencing
 function _validateRegions(regions) {
@@ -317,33 +317,59 @@ function _validateRegions(regions) {
         }
     }
 }
-export async function startGeofencingAsync(taskName, regions = []) {
+async function startGeofencingAsync(taskName, regions = []) {
     _validateTaskName(taskName);
     _validateRegions(regions);
-    return Location.startGeofencingAsync(taskName, { regions });
+    await ExpoLocation.startGeofencingAsync(taskName, { regions });
 }
-export async function stopGeofencingAsync(taskName) {
+async function stopGeofencingAsync(taskName) {
     _validateTaskName(taskName);
-    return Location.stopGeofencingAsync(taskName);
+    await ExpoLocation.stopGeofencingAsync(taskName);
 }
-export async function hasStartedGeofencingAsync(taskName) {
+async function hasStartedGeofencingAsync(taskName) {
     _validateTaskName(taskName);
-    return Location.hasStartedGeofencingAsync(taskName);
+    return ExpoLocation.hasStartedGeofencingAsync(taskName);
 }
-if (Platform.OS !== 'web') {
-    // Polyfill navigator.geolocation for interop with the core react-native and web API approach to
-    // geolocation
-    // @ts-ignore
-    window.navigator.geolocation = {
-        getCurrentPosition,
-        watchPosition,
-        clearWatch,
-        // We don't polyfill stopObserving, this is an internal method that probably should not even exist
-        // in react-native docs
-        stopObserving: () => { },
-    };
+function installWebGeolocationPolyfill() {
+    if (Platform.OS !== 'web') {
+        // Polyfill navigator.geolocation for interop with the core react-native and web API approach to
+        // geolocation
+        // @ts-ignore
+        window.navigator.geolocation = {
+            getCurrentPosition,
+            watchPosition,
+            clearWatch,
+            // We don't polyfill stopObserving, this is an internal method that probably should not even exist
+            // in react-native docs
+            stopObserving: () => { },
+        };
+    }
 }
-export { 
-// For internal purposes
-LocationEventEmitter as EventEmitter, _getCurrentWatchId, };
+export const Location = {
+    // For internal purposes
+    EventEmitter: LocationEventEmitter,
+    _getCurrentWatchId,
+    // enums
+    Accuracy,
+    GeofencingEventType,
+    GeofencingRegionState,
+    // methods
+    getProviderStatusAsync,
+    getCurrentPositionAsync,
+    getHeadingAsync,
+    watchHeadingAsync,
+    geocodeAsync,
+    reverseGeocodeAsync,
+    setApiKey,
+    watchPositionAsync,
+    requestPermissionsAsync,
+    hasServicesEnabledAsync,
+    startLocationUpdatesAsync,
+    stopLocationUpdatesAsync,
+    hasStartedLocationUpdatesAsync,
+    startGeofencingAsync,
+    stopGeofencingAsync,
+    hasStartedGeofencingAsync,
+    installWebGeolocationPolyfill,
+};
 //# sourceMappingURL=Location.js.map
