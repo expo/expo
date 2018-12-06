@@ -5,7 +5,7 @@ import { createMaterialBottomTabNavigator } from 'react-navigation-material-bott
 
 import TabIcon from '../components/TabIcon';
 import { Colors, Layout } from '../constants';
-import ExpoApiStackNavigator from './ExpoApiStackNavigator';
+import ExpoApisStackNavigator from './ExpoApisStackNavigator';
 import ExpoComponentsStackNavigator from './ExpoComponentsStackNavigator';
 import ReactNativeCoreStackNavigator from './ReactNativeCoreStackNavigator';
 
@@ -22,7 +22,7 @@ const createTabNavigator = Platform.select({
 
 const MainTabNavigator = createTabNavigator(
   {
-    ExpoApis: ExpoApiStackNavigator,
+    ExpoApis: ExpoApisStackNavigator,
     ExpoComponents: ExpoComponentsStackNavigator,
     ReactNativeCore: ReactNativeCoreStackNavigator,
   },

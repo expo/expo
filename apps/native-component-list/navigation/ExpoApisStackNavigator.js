@@ -42,7 +42,7 @@ import ViewShot from '../screens/ViewShotScreen';
 import WebBrowser from '../screens/WebBrowserScreen';
 import StackConfig from './StackConfig';
 
-const ExpoApiStackNavigator = createStackNavigator(
+const ExpoApisStackNavigator = createStackNavigator(
   {
     ExpoApis,
     AppAuth,
@@ -88,4 +88,4 @@ const ExpoApiStackNavigator = createStackNavigator(
   StackConfig
 );
 
-export default ExpoApiStackNavigator;
+export default ExpoApisStackNavigator;
