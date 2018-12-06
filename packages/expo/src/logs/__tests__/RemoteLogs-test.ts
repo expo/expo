@@ -5,9 +5,7 @@ jest.mock('react-native/Libraries/Core/Devtools/symbolicateStackTrace', () =>
   jest.fn(async stack => stack)
 );
 
-jest.mock('expo-constants', () => ({
-  Constants: require('../../__mocks__/Constants-development'),
-}));
+jest.mock('expo-constants', () => require('../../__mocks__/Constants-development'));
 
 let originalFetch;
 

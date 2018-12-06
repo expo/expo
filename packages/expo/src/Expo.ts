@@ -6,7 +6,7 @@ import 'expo-asset/src/Asset';
 // polyfill navigator.geolocation
 import 'expo-location/src/Location';
 
-import { Constants } from 'expo-constants';
+import Constants from 'expo-constants';
 import { NativeModules, Platform } from 'react-native';
 
 if (typeof Constants.manifest.env === 'object') {
@@ -19,7 +19,7 @@ export { Asset } from 'expo-asset';
 export { AppAuth } from 'expo-app-auth';
 export { BarCodeScanner } from 'expo-barcode-scanner';
 export { Camera } from 'expo-camera';
-export { Constants } from 'expo-constants';
+export { Constants };
 export { Contacts } from 'expo-contacts';
 export { FaceDetector } from 'expo-face-detector';
 export { FileSystem } from 'expo-file-system';

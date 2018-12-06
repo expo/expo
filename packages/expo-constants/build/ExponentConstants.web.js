@@ -49,8 +49,8 @@ export default {
         /* TODO: Bacon: Populate */
         return {};
     },
-    getWebViewUserAgentAsync() {
-        return new Promise(resolve => navigator.userAgent || null);
-    },
+    async getWebViewUserAgentAsync() {
+        return navigator.userAgent;
+    }
 };
 //# sourceMappingURL=ExponentConstants.web.js.map

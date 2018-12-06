@@ -2,8 +2,8 @@
   "name": "expo-constants",
   "version": "1.1.0",
   "description": "Expo Constants standalone universal module",
-  "main": "build/index.js",
-  "types": "build/index.d.ts",
+  "main": "build/Constants.js",
+  "types": "build/Constants.d.ts",
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",

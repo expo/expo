@@ -1,4 +1,4 @@
-import { Constants } from 'expo-constants';
+import Constants from 'expo-constants';
 import qs from 'qs';
 
 import Linking from './Linking';

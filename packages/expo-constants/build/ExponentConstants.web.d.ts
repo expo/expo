@@ -16,6 +16,6 @@ declare const _default: {
     readonly manifest: {
         [manifestKey: string]: any;
     };
-    getWebViewUserAgentAsync(): Promise<string | null>;
+    getWebViewUserAgentAsync(): Promise<string>;
 };
 export default _default;
