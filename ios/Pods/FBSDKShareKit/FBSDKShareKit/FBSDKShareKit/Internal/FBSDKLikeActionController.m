@@ -27,9 +27,20 @@
 #import "FBSDKLikeButtonPopWAV.h"
 #import "FBSDKLikeDialog.h"
 
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
+
+NSNotificationName const FBSDKLikeActionControllerDidDisableNotification = @"FBSDKLikeActionControllerDidDisableNotification";
+NSNotificationName const FBSDKLikeActionControllerDidResetNotification = @"FBSDKLikeActionControllerDidResetNotification";
+NSNotificationName const FBSDKLikeActionControllerDidUpdateNotification = @"FBSDKLikeActionControllerDidUpdateNotification";
+
+#else
+
 NSString *const FBSDKLikeActionControllerDidDisableNotification = @"FBSDKLikeActionControllerDidDisableNotification";
 NSString *const FBSDKLikeActionControllerDidResetNotification = @"FBSDKLikeActionControllerDidResetNotification";
 NSString *const FBSDKLikeActionControllerDidUpdateNotification = @"FBSDKLikeActionControllerDidUpdateNotification";
+
+#endif
+
 NSString *const FBSDKLikeActionControllerAnimatedKey = @"animated";
 
 #define FBSDK_LIKE_ACTION_CONTROLLER_ANIMATION_DELAY 0.5
@@ -458,7 +469,7 @@ static void FBSDKLikeActionControllerLogError(NSString *currentAction,
                                @"current_action": currentAction,
                                @"error": [error description] ?: @"",
                                };
-  NSString *eventName = ([FBSDKError errorIsNetworkError:error] ?
+  NSString *eventName = (error.isNetworkError ?
                          FBSDKAppEventNameFBSDKLikeControlNetworkUnavailable :
                          FBSDKAppEventNameFBSDKLikeControlError);
   [FBSDKAppEvents logImplicitEvent:eventName

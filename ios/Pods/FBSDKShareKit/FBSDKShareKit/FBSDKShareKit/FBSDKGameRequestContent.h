@@ -124,7 +124,8 @@ typedef NS_ENUM(NSUInteger, FBSDKGameRequestFilter)
 
 @warning Use `recipientSuggestions` instead.
 */
-@property (nonatomic, copy) NSArray *suggestions __attribute__ ((deprecated("use recipientSuggestions instead")));
+@property (nonatomic, copy) NSArray *suggestions
+DEPRECATED_MSG_ATTRIBUTE("use recipientSuggestions instead");
 
 /**
   The title for the dialog.
@@ -135,6 +136,7 @@ typedef NS_ENUM(NSUInteger, FBSDKGameRequestFilter)
 
 @warning Use `recipients` instead.
  */
-@property (nonatomic, copy) NSArray *to __attribute__ ((deprecated("use recipients instead")));
+@property (nonatomic, copy) NSArray *to
+DEPRECATED_MSG_ATTRIBUTE("use recipients instead");
 
 @end

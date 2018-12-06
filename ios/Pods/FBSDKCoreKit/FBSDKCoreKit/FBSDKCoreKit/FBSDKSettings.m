@@ -173,14 +173,6 @@ FBSDKSETTINGS_PLIST_CONFIGURATION_SETTING_IMPL(NSNumber, FacebookCodelessDebugLo
   return FBSDK_VERSION_STRING;
 }
 
-#pragma mark - Object Lifecycle
-
-- (instancetype)init
-{
-  FBSDK_NO_DESIGNATED_INITIALIZER();
-  return nil;
-}
-
 #pragma mark - Internal
 
 + (NSObject<FBSDKAccessTokenCaching> *)accessTokenCache

@@ -37,12 +37,49 @@
 #define CODELESS_MAPPING_HINT_KEY               @"hint"
 #define CODELESS_MAPPING_PARAMETERS_KEY         @"parameters"
 #define CODELESS_MAPPING_PARAMETER_NAME_KEY     @"name"
-#define CODELESS_MAPPING_PARAMETER_VALUE_KEY     @"value"
+#define CODELESS_MAPPING_PARAMETER_VALUE_KEY    @"value"
 
 #define CODELESS_MAPPING_PARENT_CLASS_NAME      @".."
 #define CODELESS_MAPPING_CURRENT_CLASS_NAME     @"."
 
-#define ReactNativeClassRCTView       @"RCTView"
-#define ReactNativeClassRCTRootView       @"RCTRootView"
+#define ReactNativeClassRCTView       "RCTView"
+#define ReactNativeClassRCTRootView   "RCTRootView"
+
+#define CODELESS_INDEXING_UPLOAD_INTERVAL_IN_SECONDS  1
+#define CODELESS_INDEXING_STATUS_KEY            @"is_app_indexing_enabled"
+#define CODELESS_INDEXING_SESSION_ID_KEY        @"device_session_id"
+#define CODELESS_INDEXING_APP_VERSION_KEY       @"app_version"
+#define CODELESS_INDEXING_SDK_VERSION_KEY       @"sdk_version"
+#define CODELESS_INDEXING_PLATFORM_KEY          @"platform"
+#define CODELESS_INDEXING_TREE_KEY              @"tree"
+#define CODELESS_INDEXING_SCREENSHOT_KEY        @"screenshot"
+#define CODELESS_INDEXING_EXT_INFO_KEY          @"extinfo"
+
+#define CODELESS_INDEXING_ENDPOINT              @"app_indexing"
+#define CODELESS_INDEXING_SESSION_ENDPOINT      @"app_indexing_session"
+
+//  keys for view tree
+#define CODELESS_VIEW_TREE_CLASS_NAME_KEY       @"classname"
+#define CODELESS_VIEW_TREE_CLASS_TYPE_BIT_MASK_KEY  @"classtypebitmask"
+#define CODELESS_VIEW_TREE_TEXT_KEY             @"text"
+#define CODELESS_VIEW_TREE_DESC_KEY             @"description"
+#define CODELESS_VIEW_TREE_DIMENSION_KEY        @"dimension"
+#define CODELESS_VIEW_TREE_TAG_KEY              @"tag"
+#define CODELESS_VIEW_TREE_CHILDREN_KEY         @"childviews"
+#define CODELESS_VIEW_TREE_HINT_KEY             @"hint"
+#define CODELESS_VIEW_TREE_ACTIONS_KEY          @"actions"
+
+#define CODELESS_VIEW_TREE_TOP_KEY              @"top"
+#define CODELESS_VIEW_TREE_LEFT_KEY             @"left"
+#define CODELESS_VIEW_TREE_WIDTH_KEY            @"width"
+#define CODELESS_VIEW_TREE_HEIGHT_KEY           @"height"
+#define CODELESS_VIEW_TREE_OFFSET_X_KEY         @"scrollx"
+#define CODELESS_VIEW_TREE_OFFSET_Y_KEY         @"scrolly"
+#define CODELESS_VIEW_TREE_VISIBILITY_KEY       @"visibility"
+
+#define CODELESS_VIEW_TREE_TEXT_STYLE_KEY       @"text_style"
+#define CODELESS_VIEW_TREE_TEXT_IS_BOLD_KEY     @"is_bold"
+#define CODELESS_VIEW_TREE_TEXT_IS_ITALIC_KEY   @"is_italic"
+#define CODELESS_VIEW_TREE_TEXT_SIZE_KEY        @"font_size"
 
 #endif /* FBSDKCodelessMacros_h */

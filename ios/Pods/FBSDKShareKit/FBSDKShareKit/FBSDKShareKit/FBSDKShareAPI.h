@@ -27,8 +27,8 @@
   A utility class for sharing through the graph API.  Using this class requires an access token that
  has been granted the "publish_actions" permission.
 
- FBSDKShareAPI network requests are scheduled on the current run loop in the default run loop mode
- (like NSURLConnection). If you want to use FBSDKShareAPI in a background thread, you must manage the run loop
+ FBSDKShareAPI network requests are scheduled on the current run loop in the default run loop mode.
+ If you want to use FBSDKShareAPI in a background thread, you must manage the run loop
  yourself.
  */
 @interface FBSDKShareAPI : NSObject <FBSDKSharing>

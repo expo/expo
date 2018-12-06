@@ -18,8 +18,6 @@
 
 #import <Foundation/Foundation.h>
 
-#import <FBSDKCoreKit/FBSDKMacros.h>
-
 @interface FBSDKUserDataStore : NSObject
 
 + (void)initStore;

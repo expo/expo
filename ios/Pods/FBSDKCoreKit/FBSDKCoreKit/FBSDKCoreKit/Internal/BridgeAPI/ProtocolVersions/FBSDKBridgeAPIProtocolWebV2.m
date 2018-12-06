@@ -83,7 +83,7 @@
   FBSDKDialogConfiguration *dialogConfiguration = [serverConfiguration dialogConfigurationForDialogName:methodName];
   if (!dialogConfiguration) {
     if (errorRef != NULL) {
-      *errorRef = [FBSDKError errorWithCode:FBSDKDialogUnavailableErrorCode message:nil];
+      *errorRef = [NSError fbErrorWithCode:FBSDKErrorDialogUnavailable message:nil];
     }
     return nil;
   }
