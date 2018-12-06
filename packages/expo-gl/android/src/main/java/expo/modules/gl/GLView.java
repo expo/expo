@@ -10,6 +10,7 @@ import expo.core.interfaces.services.EventEmitter;
 
 public class GLView extends TextureView implements TextureView.SurfaceTextureListener {
   private boolean mOnSurfaceCreateCalled = false;
+  private boolean mOnSurfaceTextureCreatedWithZeroSize = false;
 
   private GLContext mGLContext;
   private ModuleRegistry mModuleRegistry;
@@ -43,29 +44,18 @@ public class GLView extends TextureView implements TextureView.SurfaceTextureLis
   // `TextureView.SurfaceTextureListener` events
 
   @Override
-  public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
+  synchronized public void onSurfaceTextureAvailable(SurfaceTexture surfaceTexture, int width, int height) {
     if (!mOnSurfaceCreateCalled) {
-      mGLContext.initialize(getContext(), surface, new Runnable() {
-        @Override
-        public void run() {
-          final Bundle event = new Bundle();
-          final EventEmitter eventEmitter = mModuleRegistry.getModule(EventEmitter.class);
+      // onSurfaceTextureAvailable is sometimes called with 0 size texture
+      // and immediately followed by onSurfaceTextureSizeChanged with actual size
+      if (width == 0 || height == 0) {
+        mOnSurfaceTextureCreatedWithZeroSize = true;
+      }
 
-          event.putInt("exglCtxId", mGLContext.getContextId());
+      if (!mOnSurfaceTextureCreatedWithZeroSize) {
+        initializeSurfaceInGLContext(surfaceTexture);
+      }
 
-          eventEmitter.emit(getId(), new EventEmitter.BaseEvent() {
-            @Override
-            public String getEventName() {
-              return "onSurfaceCreate";
-            }
-
-            @Override
-            public Bundle getEventBody() {
-              return event;
-            }
-          });
-        }
-      });
       mOnSurfaceCreateCalled = true;
     }
   }
@@ -81,7 +71,11 @@ public class GLView extends TextureView implements TextureView.SurfaceTextureLis
   }
 
   @Override
-  public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
+  synchronized public void onSurfaceTextureSizeChanged(SurfaceTexture surfaceTexture, int width, int height) {
+    if (mOnSurfaceTextureCreatedWithZeroSize && width != 0 && height != 0) {
+      initializeSurfaceInGLContext(surfaceTexture);
+      mOnSurfaceTextureCreatedWithZeroSize = false;
+    }
   }
 
   @Override
@@ -94,6 +88,30 @@ public class GLView extends TextureView implements TextureView.SurfaceTextureLis
 
   public int getEXGLCtxId() {
     return mGLContext.getContextId();
+  }
+
+  private void initializeSurfaceInGLContext(SurfaceTexture surfaceTexture) {
+    mGLContext.initialize(surfaceTexture, new Runnable() {
+      @Override
+      public void run() {
+        final Bundle event = new Bundle();
+        final EventEmitter eventEmitter = mModuleRegistry.getModule(EventEmitter.class);
+
+        event.putInt("exglCtxId", mGLContext.getContextId());
+
+        eventEmitter.emit(getId(), new EventEmitter.BaseEvent() {
+          @Override
+          public String getEventName() {
+            return "onSurfaceCreate";
+          }
+
+          @Override
+          public Bundle getEventBody() {
+            return event;
+          }
+        });
+      }
+    });
   }
 }
 
