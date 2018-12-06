@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "postinstall": "expo-yarn-workspaces postinstall",
-    "test": "cd Runner && yarn && cd .. && node Runner/index.js ."
+    "test": "cd runner && yarn && cd .. && node runner/index.js ."
   },
   "author": "",
   "license": "MIT",
