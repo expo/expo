@@ -44,11 +44,6 @@ public class ExperienceActivityUtils {
   }
 
   public static void setWindowTransparency(final String sdkVersion, final JSONObject manifest, final Activity activity) {
-    // For 5.0.0 and below everything has transparent status
-    if (ABIVersion.toNumber(sdkVersion) <= ABIVersion.toNumber("5.0.0")) {
-      return;
-    }
-
     JSONObject statusBarOptions = manifest.optJSONObject(ExponentManifest.MANIFEST_STATUS_BAR_KEY);
 
     String statusBarColor;

@@ -453,13 +453,6 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
 
     final ExponentNotification finalNotificationObject = notificationObject;
 
-    // TODO: deprecated
-    // LinkingPackage was removed after ABI 5.0.0
-    if (ABIVersion.toNumber(mDetachSdkVersion) <= ABIVersion.toNumber("5.0.0")) {
-      mLinkingPackage = new RNObject("host.exp.exponent.modules.external.linking.LinkingPackage");
-      mLinkingPackage.loadVersion(mDetachSdkVersion).construct(this, mIntentUri);
-    }
-
     BranchManager.handleLink(this, mIntentUri, mDetachSdkVersion);
 
     runOnUiThread(new Runnable() {
@@ -474,12 +467,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
           mReactInstanceManager.assign(null);
         }
 
-        // ReactUnthemedRootView was moved after ABI 5.0.0 as part of a refactor
-        if (ABIVersion.toNumber(mDetachSdkVersion) <= ABIVersion.toNumber("5.0.0")) {
-          mReactRootView = new RNObject("host.exp.exponent.views.ReactUnthemedRootView");
-        } else {
-          mReactRootView = new RNObject("host.exp.exponent.ReactUnthemedRootView");
-        }
+        mReactRootView = new RNObject("host.exp.exponent.ReactUnthemedRootView");
         mReactRootView.loadVersion(mDetachSdkVersion).construct(ExperienceActivity.this);
         setView((View) mReactRootView.get());
 
@@ -536,10 +524,6 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
   }
 
   public void onEventMainThread(ReceivedNotificationEvent event) {
-    if (ABIVersion.toNumber(mDetachSdkVersion) < ABIVersion.toNumber("8.0.0")) {
-      return;
-    }
-
     if (event.experienceId.equals(mExperienceIdString)) {
       try {
         RNObject rctDeviceEventEmitter = new RNObject("com.facebook.react.modules.core.DeviceEventManagerModule$RCTDeviceEventEmitter");
@@ -573,22 +557,12 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
       }
 
       if ((options.notification != null || options.notificationObject != null) && mDetachSdkVersion != null) {
-        if (ABIVersion.toNumber(mDetachSdkVersion) < ABIVersion.toNumber("8.0.0")) {
-          // TODO: kill
-          RNObject rctDeviceEventEmitter = new RNObject("com.facebook.react.modules.core.DeviceEventManagerModule$RCTDeviceEventEmitter");
-          rctDeviceEventEmitter.loadVersion(mDetachSdkVersion);
+        RNObject rctDeviceEventEmitter = new RNObject("com.facebook.react.modules.core.DeviceEventManagerModule$RCTDeviceEventEmitter");
+        rctDeviceEventEmitter.loadVersion(mDetachSdkVersion);
 
-          mReactInstanceManager.callRecursive("getCurrentReactContext")
-              .callRecursive("getJSModule", rctDeviceEventEmitter.rnClass())
-              .call("emit", "Exponent.notification", options.notification);
-        } else {
-          RNObject rctDeviceEventEmitter = new RNObject("com.facebook.react.modules.core.DeviceEventManagerModule$RCTDeviceEventEmitter");
-          rctDeviceEventEmitter.loadVersion(mDetachSdkVersion);
-
-          mReactInstanceManager.callRecursive("getCurrentReactContext")
-              .callRecursive("getJSModule", rctDeviceEventEmitter.rnClass())
-              .call("emit", "Exponent.notification", options.notificationObject.toWriteableMap(mDetachSdkVersion, "selected"));
-        }
+        mReactInstanceManager.callRecursive("getCurrentReactContext")
+            .callRecursive("getJSModule", rctDeviceEventEmitter.rnClass())
+            .call("emit", "Exponent.notification", options.notificationObject.toWriteableMap(mDetachSdkVersion, "selected"));
       }
     } catch (Throwable e) {
       EXL.e(TAG, e);

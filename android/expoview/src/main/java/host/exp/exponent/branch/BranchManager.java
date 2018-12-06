@@ -35,9 +35,6 @@ public class BranchManager {
   }
 
   public static void handleLink(Activity activity, String uri, String sdkVersion) {
-    if (!isEnabled(activity) || ABIVersion.toNumber(sdkVersion) < ABIVersion.toNumber("17.0.0")) {
-      return;
-    }
     RNObject branchModule = new RNObject("host.exp.exponent.modules.api.standalone.branch.RNBranchModule");
     branchModule.loadVersion(sdkVersion);
     branchModule.callStatic("initSession", Uri.parse(uri), activity);

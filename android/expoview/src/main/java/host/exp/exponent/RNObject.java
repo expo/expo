@@ -307,26 +307,14 @@ public class RNObject {
   }
 
   public void onHostResume(Object one, Object two) {
-    if (ABIVersion.toNumber(version()) <= ABIVersion.toNumber("4.0.0")) {
-      this.call("onResume", one, two);
-    } else {
-      this.call("onHostResume", one, two);
-    }
+    this.call("onHostResume", one, two);
   }
 
   public void onHostPause() {
-    if (ABIVersion.toNumber(version()) <= ABIVersion.toNumber("4.0.0")) {
-      this.call("onPause");
-    } else {
-      this.call("onHostPause");
-    }
+    this.call("onHostPause");
   }
 
   public void onHostDestroy() {
-    if (ABIVersion.toNumber(version()) <= ABIVersion.toNumber("4.0.0")) {
-      this.call("onDestroy");
-    } else {
-      this.call("onHostDestroy");
-    }
+    this.call("onHostDestroy");
   }
 }
