@@ -13,11 +13,14 @@
   "homepage": "https://docs.expo.io/",
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "dependencies": {
+  "peerDependencies": {
     "expo-core": "~1.2.0",
     "expo-camera-interface": "~1.1.0",
     "expo-file-system-interface": "~1.1.0",
     "expo-gl-cpp": "~1.1.0"
+  },
+  "dependencies": {
+    "prop-types": "^15.6.2"
   },
   "devDependencies": {
     "babel-preset-expo": "^5.0.0"
