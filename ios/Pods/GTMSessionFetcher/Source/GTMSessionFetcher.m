@@ -302,15 +302,6 @@ static GTMSessionFetcherTestBlock GTM_NULLABLE_TYPE gGlobalTestBlock;
                   configuration:(GTM_NULLABLE NSURLSessionConfiguration *)configuration {
   self = [super init];
   if (self) {
-    if (![NSURLSession class]) {
-      Class oldFetcherClass = NSClassFromString(@"GTMHTTPFetcher");
-      if (oldFetcherClass && request) {
-        self = [[oldFetcherClass alloc] initWithRequest:(NSURLRequest *)request];
-      } else {
-        self = nil;
-      }
-      return self;
-    }
 #if GTM_BACKGROUND_TASK_FETCHING
     _backgroundTaskIdentifier = UIBackgroundTaskInvalid;
 #endif
@@ -2060,28 +2051,9 @@ willPerformHTTPRedirection:(NSHTTPURLResponse *)redirectResponse
     NSURLRequest *originalRequest = self.request;
     NSMutableURLRequest *newRequest = [originalRequest mutableCopy];
 
-    // Disallow scheme changes (say, from https to http).
-    NSURL *originalRequestURL = originalRequest.URL;
-    NSURL *redirectRequestURL = redirectRequest.URL;
-
-    NSString *originalScheme = originalRequestURL.scheme;
-    NSString *redirectScheme = redirectRequestURL.scheme;
-
-    if (originalScheme != nil
-        && [originalScheme caseInsensitiveCompare:@"http"] == NSOrderedSame
-        && redirectScheme != nil
-        && [redirectScheme caseInsensitiveCompare:@"https"] == NSOrderedSame) {
-      // Allow the change from http to https.
-    } else {
-      // Disallow any other scheme changes.
-      redirectScheme = originalScheme;
-    }
     // The new requests's URL overrides the original's URL.
-    NSURLComponents *components = [NSURLComponents componentsWithURL:redirectRequestURL
-                                             resolvingAgainstBaseURL:NO];
-    components.scheme = redirectScheme;
-    NSURL *newURL = components.URL;
-    [newRequest setURL:newURL];
+    [newRequest setURL:[GTMSessionFetcher redirectURLWithOriginalRequestURL:originalRequest.URL
+                                                         redirectRequestURL:redirectRequest.URL]];
 
     // Any headers in the redirect override headers in the original.
     NSDictionary *redirectHeaders = redirectRequest.allHTTPHeaderFields;
@@ -2283,6 +2255,38 @@ didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge
       handler(NSURLSessionAuthChallengeCancelAuthenticationChallenge, nil);
     }
   }  // @synchronized(self)
+}
+
+// Return redirect URL based on the original request URL and redirect request URL.
+//
+// Method disallows any scheme changes between the original request URL and redirect request URL
+// aside from "http" to "https". If a change in scheme is detected the redirect URL inherits the
+// scheme from the original request URL.
++ (GTM_NULLABLE NSURL *)redirectURLWithOriginalRequestURL:(GTM_NULLABLE NSURL *)originalRequestURL
+                                       redirectRequestURL:(GTM_NULLABLE NSURL *)redirectRequestURL {
+  // In the case of an NSURLSession redirect, neither URL should ever be nil; as a sanity check
+  // if either is nil return the other URL.
+  if (!redirectRequestURL) return originalRequestURL;
+  if (!originalRequestURL) return redirectRequestURL;
+
+  NSString *originalScheme = originalRequestURL.scheme;
+  NSString *redirectScheme = redirectRequestURL.scheme;
+  BOOL insecureToSecureRedirect =
+      (originalScheme != nil && [originalScheme caseInsensitiveCompare:@"http"] == NSOrderedSame &&
+       redirectScheme != nil && [redirectScheme caseInsensitiveCompare:@"https"] == NSOrderedSame);
+
+  // Check for changes to the scheme and disallow any changes except for http to https.
+  if (!insecureToSecureRedirect &&
+      (redirectScheme.length != originalScheme.length ||
+       [redirectScheme caseInsensitiveCompare:originalScheme] != NSOrderedSame)) {
+    NSURLComponents *components =
+        [NSURLComponents componentsWithURL:(NSURL * _Nonnull)redirectRequestURL
+                   resolvingAgainstBaseURL:NO];
+    components.scheme = originalScheme;
+    return components.URL;
+  }
+
+  return redirectRequestURL;
 }
 
 // Validate the certificate chain.
@@ -3435,26 +3439,6 @@ static NSMutableDictionary *gSystemCompletionHandlers = nil;
   return _request;
 }
 
-- (GTM_NULLABLE NSMutableURLRequest *)mutableRequest {
-  @synchronized(self) {
-    GTMSessionMonitorSynchronized(self);
-
-    GTMSESSION_LOG_DEBUG(@"[GTMSessionFetcher mutableRequest] is deprecated; use -request or"
-                         @" -setRequestValue:forHTTPHeaderField:");
-
-    return _request;
-  }  // @synchronized(self)
-}
-
-- (void)setMutableRequest:(GTM_NULLABLE NSMutableURLRequest *)request {
-  GTMSESSION_LOG_DEBUG(@"[GTMSessionFetcher setMutableRequest:] is deprecated; use -request or"
-                       @" -setRequestValue:forHTTPHeaderField:");
-
-  GTMSESSION_ASSERT_DEBUG(![self isFetching],
-                          @"mutableRequest should not change after beginFetch has been invoked");
-  [self updateMutableRequest:request];
-}
-
 // Internal method for updating the request property such as on redirects.
 - (void)updateMutableRequest:(GTM_NULLABLE NSMutableURLRequest *)request {
   @synchronized(self) {
@@ -4521,7 +4505,7 @@ NSString *GTMFetcherApplicationIdentifier(NSBundle * GTM_NULLABLE_TYPE bundle) {
   }
 }
 
-#if DEBUG
+#if DEBUG && (!defined(NS_BLOCK_ASSERTIONS) || GTMSESSION_ASSERT_AS_LOG)
 @implementation GTMSessionSyncMonitorInternal {
   NSValue *_objectKey;        // The synchronize target object.
   const char *_functionName;  // The function containing the monitored sync block.
@@ -4591,5 +4575,5 @@ NSString *GTMFetcherApplicationIdentifier(NSBundle * GTM_NULLABLE_TYPE bundle) {
   return functionNamesCounter.count > 0 ? functionNamesCounter.allObjects : nil;
 }
 @end
-#endif  // DEBUG
+#endif  // DEBUG && (!defined(NS_BLOCK_ASSERTIONS) || GTMSESSION_ASSERT_AS_LOG)
 GTM_ASSUME_NONNULL_END
