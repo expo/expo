@@ -1,6 +1,7 @@
+import { Svg } from 'expo';
 import React, { Component } from 'react';
 
-import Svg, { Line } from 'react-native-svg';
+const { Line } = Svg;
 
 class LineExample extends Component {
   static title = 'Line';

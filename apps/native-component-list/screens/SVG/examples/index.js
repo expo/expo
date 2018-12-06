@@ -1,20 +1,20 @@
-import * as Svg from './Svg';
-import * as Rect from './Rect';
 import * as Circle from './Circle';
+import * as Clipping from './Clipping';
 import * as Ellipse from './Ellipse';
+import * as G from './G';
+import * as Gradients from './Gradients';
+import * as Image from './Image';
 import * as Line from './Line';
+import * as PanResponder from './PanResponder';
+import * as Path from './Path';
 import * as Polygon from './Polygon';
 import * as Polyline from './Polyline';
-import * as Path from './Path';
-import * as Text from './Text';
-import * as G from './G';
-import * as Stroking from './Stroking';
-import * as Gradients from './Gradients';
-import * as Clipping from './Clipping';
-import * as Image from './Image';
+import * as Rect from './Rect';
 import * as Reusable from './Reusable';
+import * as Stroking from './Stroking';
+import * as Svg from './Svg';
+import * as Text from './Text';
 import * as TouchEvents from './TouchEvents';
-import * as PanResponder from './PanResponder';
 import * as VictoryNative from './VictoryNative';
 
 export {

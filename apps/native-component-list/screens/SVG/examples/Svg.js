@@ -1,8 +1,8 @@
-import { StyleSheet, View, Image } from 'react-native';
-
+import { Svg } from 'expo';
 import React, { Component } from 'react';
+import { Image, StyleSheet, View } from 'react-native';
 
-import Svg, { Circle, Rect, Path, Line, G } from 'react-native-svg';
+const { Circle, Rect, Path, Line, G } = Svg;
 
 const styles = StyleSheet.create({
   container: {
