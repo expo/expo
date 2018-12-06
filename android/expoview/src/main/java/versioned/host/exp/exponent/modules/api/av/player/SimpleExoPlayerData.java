@@ -303,7 +303,16 @@ class SimpleExoPlayerData extends PlayerData
 
   @Override
   public void onPositionDiscontinuity(int reason) {
-
+    // According to the documentation:
+    // > A period defines a single logical piece of media, for example a media file.
+    // > It may also define groups of ads inserted into the media,
+    // > along with information about whether those ads have been loaded and played.
+    // Source: https://google.github.io/ExoPlayer/doc/reference/com/google/android/exoplayer2/Timeline.Period.html
+    // So I guess it's safe to say that when a period transition happens,
+    // media file transition happens, so we just finished playing one.
+    if (reason == Player.DISCONTINUITY_REASON_PERIOD_TRANSITION) {
+      callStatusUpdateListenerWithDidJustFinish();
+    }
   }
 
 
