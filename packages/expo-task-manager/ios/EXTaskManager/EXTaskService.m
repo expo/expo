@@ -203,7 +203,7 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
   id result = response[@"result"];
 
   if ([task.consumer respondsToSelector:@selector(normalizeTaskResult:)]) {
-    result = [task.consumer normalizeTaskResult:result];
+    result = @([task.consumer normalizeTaskResult:result]);
   }
   if ([task.consumer respondsToSelector:@selector(didFinish)]) {
     [task.consumer didFinish];

@@ -52,6 +52,6 @@
 /**
  *  Method used to normalize task result that comes from JS app.
  */
-- (id)normalizeTaskResult:(id)result;
+- (NSUInteger)normalizeTaskResult:(id)result;
 
 @end

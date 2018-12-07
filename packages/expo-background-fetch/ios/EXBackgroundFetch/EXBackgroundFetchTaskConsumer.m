@@ -32,19 +32,19 @@
 }
 
 // Translate result received from JS to another (native) type that is then used for example as an argument in completion callbacks.
-- (id)normalizeTaskResult:(id)result
+- (NSUInteger)normalizeTaskResult:(id)result
 {
   if (!result || result == [NSNull null]) {
-    return @(UIBackgroundFetchResultNoData);
+    return UIBackgroundFetchResultNoData;
   }
   switch ([result unsignedIntegerValue]) {
     case EXBackgroundFetchResultNewData:
-      return @(UIBackgroundFetchResultNewData);
+      return UIBackgroundFetchResultNewData;
     case EXBackgroundFetchResultFailed:
-      return @(UIBackgroundFetchResultFailed);
+      return UIBackgroundFetchResultFailed;
     case EXBackgroundFetchResultNoData:
     default:
-      return @(UIBackgroundFetchResultNoData);
+      return UIBackgroundFetchResultNoData;
   }
 }
 
