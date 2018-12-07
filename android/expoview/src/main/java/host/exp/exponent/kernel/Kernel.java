@@ -251,14 +251,10 @@ public class Kernel extends KernelInterface {
   }
 
   public static void addIntentDocumentFlags(Intent intent) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-      intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
-      intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
-    } else {
-      intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-    }
+    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
+    intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
   }
 
   private Exponent.BundleListener kernelBundleListener() {
@@ -413,27 +409,18 @@ public class Kernel extends KernelInterface {
   }
 
   private void openHomeActivity() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      ActivityManager manager = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
-      for (ActivityManager.AppTask task : manager.getAppTasks()) {
-        Intent baseIntent = task.getTaskInfo().baseIntent;
+    ActivityManager manager = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
+    for (ActivityManager.AppTask task : manager.getAppTasks()) {
+      Intent baseIntent = task.getTaskInfo().baseIntent;
 
-        if (HomeActivity.class.getName().equals(baseIntent.getComponent().getClassName())) {
-          task.moveToFront();
-          return;
-        }
+      if (HomeActivity.class.getName().equals(baseIntent.getComponent().getClassName())) {
+        task.moveToFront();
+        return;
       }
     }
 
     Intent intent = new Intent(mActivityContext, HomeActivity.class);
     Kernel.addIntentDocumentFlags(intent);
-
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-      // Don't want to end up in state where we have
-      // ExperienceActivity - HomeActivity - ExperienceActivity
-      // Want HomeActivity to be the root activity if it exists
-      intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-    }
 
     mActivityContext.startActivity(intent);
   }
@@ -441,27 +428,18 @@ public class Kernel extends KernelInterface {
   private void openShellAppActivity(boolean forceCache) {
     try {
       Class activityClass = Class.forName("host.exp.exponent.MainActivity");
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        ActivityManager manager = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
-        for (ActivityManager.AppTask task : manager.getAppTasks()) {
-          Intent baseIntent = task.getTaskInfo().baseIntent;
+      ActivityManager manager = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
+      for (ActivityManager.AppTask task : manager.getAppTasks()) {
+        Intent baseIntent = task.getTaskInfo().baseIntent;
 
-          if (activityClass.getName().equals(baseIntent.getComponent().getClassName())) {
-            moveTaskToFront(task.getTaskInfo().id);
-            return;
-          }
+        if (activityClass.getName().equals(baseIntent.getComponent().getClassName())) {
+          moveTaskToFront(task.getTaskInfo().id);
+          return;
         }
       }
 
       Intent intent = new Intent(mActivityContext, activityClass);
       Kernel.addIntentDocumentFlags(intent);
-
-      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-        // Don't want to end up in state where we have
-        // ExperienceActivity - HomeActivity - ExperienceActivity
-        // Want HomeActivity to be the root activity if it exists
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-      }
 
       if (forceCache) {
         intent.putExtra(KernelConstants.LOAD_FROM_CACHE_KEY, true);
@@ -536,15 +514,13 @@ public class Kernel extends KernelInterface {
   }
 
   private void openDevActivity(Activity activity) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      ActivityManager manager = (ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE);
-      for (ActivityManager.AppTask task : manager.getAppTasks()) {
-        Intent baseIntent = task.getTaskInfo().baseIntent;
+    ActivityManager manager = (ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE);
+    for (ActivityManager.AppTask task : manager.getAppTasks()) {
+      Intent baseIntent = task.getTaskInfo().baseIntent;
 
-        if (ExponentDevActivity.class.getName().equals(baseIntent.getComponent().getClassName())) {
-          task.moveToFront();
-          return;
-        }
+      if (ExponentDevActivity.class.getName().equals(baseIntent.getComponent().getClassName())) {
+        task.moveToFront();
+        return;
       }
     }
 
@@ -914,22 +890,13 @@ public class Kernel extends KernelInterface {
    */
 
   public List<ActivityManager.AppTask> getTasks() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      ActivityManager manager = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
-      return manager.getAppTasks();
-    } else {
-      EXL.e(TAG, "Got to getTasks on pre-Lollipop device");
-      return null;
-    }
+    ActivityManager manager = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
+    return manager.getAppTasks();
   }
 
   // Get list of tasks in our format.
   public List<ActivityManager.AppTask> getExperienceActivityTasks() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      return getTasks();
-    } else {
-      return null;
-    }
+    return getTasks();
   }
 
   // Sometimes LauncherActivity.finish() doesn't close the activity and task. Not sure why exactly.
@@ -939,53 +906,47 @@ public class Kernel extends KernelInterface {
   // the ExperienceActivity. killOrphanedLauncherActivities solves this but would be nice to figure out
   // the root cause.
   private void killOrphanedLauncherActivities() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      try {
-        // Crash with NoSuchFieldException instead of hard crashing at taskInfo.numActivities
-        ActivityManager.RecentTaskInfo.class.getDeclaredField("numActivities");
+    try {
+      // Crash with NoSuchFieldException instead of hard crashing at taskInfo.numActivities
+      ActivityManager.RecentTaskInfo.class.getDeclaredField("numActivities");
 
-        for (ActivityManager.AppTask task : getTasks()) {
-          ActivityManager.RecentTaskInfo taskInfo = task.getTaskInfo();
-          if (taskInfo.numActivities == 0 && taskInfo.baseIntent.getAction().equals(Intent.ACTION_MAIN)) {
+      for (ActivityManager.AppTask task : getTasks()) {
+        ActivityManager.RecentTaskInfo taskInfo = task.getTaskInfo();
+        if (taskInfo.numActivities == 0 && taskInfo.baseIntent.getAction().equals(Intent.ACTION_MAIN)) {
+          task.finishAndRemoveTask();
+          return;
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+          if (taskInfo.numActivities == 1 && taskInfo.topActivity.getClassName().equals(LauncherActivity.class.getName())) {
             task.finishAndRemoveTask();
             return;
           }
-
-          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (taskInfo.numActivities == 1 && taskInfo.topActivity.getClassName().equals(LauncherActivity.class.getName())) {
-              task.finishAndRemoveTask();
-              return;
-            }
-          }
         }
-      } catch (NoSuchFieldException e) {
-        // Don't EXL here because this isn't actually a problem
-        Log.e(TAG, e.toString());
-      } catch (Throwable e) {
-        EXL.e(TAG, e);
       }
+    } catch (NoSuchFieldException e) {
+      // Don't EXL here because this isn't actually a problem
+      Log.e(TAG, e.toString());
+    } catch (Throwable e) {
+      EXL.e(TAG, e);
     }
   }
 
   public void moveTaskToFront(int taskId) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      for (ActivityManager.AppTask task : getTasks()) {
-        if (task.getTaskInfo().id == taskId) {
-          // If we have the task in memory, tell the ExperienceActivity to check for new options.
-          // Otherwise options will be added in initialProps when the Experience starts.
-          ExperienceActivityTask exponentTask = experienceActivityTaskForTaskId(taskId);
-          if (exponentTask != null) {
-            ExperienceActivity experienceActivity = exponentTask.experienceActivity.get();
-            if (experienceActivity != null) {
-              experienceActivity.shouldCheckOptions();
-            }
+    for (ActivityManager.AppTask task : getTasks()) {
+      if (task.getTaskInfo().id == taskId) {
+        // If we have the task in memory, tell the ExperienceActivity to check for new options.
+        // Otherwise options will be added in initialProps when the Experience starts.
+        ExperienceActivityTask exponentTask = experienceActivityTaskForTaskId(taskId);
+        if (exponentTask != null) {
+          ExperienceActivity experienceActivity = exponentTask.experienceActivity.get();
+          if (experienceActivity != null) {
+            experienceActivity.shouldCheckOptions();
           }
-
-          task.moveToFront();
         }
+
+        task.moveToFront();
       }
-    } else {
-      EXL.e(TAG, "Got to moveTaskToFront on pre-Lollipop device");
     }
   }
 
@@ -995,13 +956,11 @@ public class Kernel extends KernelInterface {
       removeExperienceActivityTask(exponentTask.manifestUrl);
     }
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      // Kill the current task.
-      ActivityManager manager = (ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE);
-      for (ActivityManager.AppTask task : manager.getAppTasks()) {
-        if (task.getTaskInfo().id == activity.getTaskId()) {
-          task.finishAndRemoveTask();
-        }
+    // Kill the current task.
+    ActivityManager manager = (ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE);
+    for (ActivityManager.AppTask task : manager.getAppTasks()) {
+      if (task.getTaskInfo().id == activity.getTaskId()) {
+        task.finishAndRemoveTask();
       }
     }
   }
@@ -1012,42 +971,35 @@ public class Kernel extends KernelInterface {
       return false;
     }
 
-    // Pre Lollipop we always just open a new activity.
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-      // TODO: make debug mode work here
-      openOptimisticExperienceActivity(manifestUrl);
-      openManifestUrl(manifestUrl, null, false, forceCache);
-    } else {
-      ExperienceActivity activity = null;
-      for (final ExperienceActivityTask experienceActivityTask : sManifestUrlToExperienceActivityTask.values()) {
-        if (manifestUrl.equals(experienceActivityTask.manifestUrl)) {
-          final ExperienceActivity weakActivity = experienceActivityTask.experienceActivity == null ? null : experienceActivityTask.experienceActivity.get();
-          activity = weakActivity;
-          if (activity == null) {
-            // No activity, just force a reload
-            break;
-          }
+    ExperienceActivity activity = null;
+    for (final ExperienceActivityTask experienceActivityTask : sManifestUrlToExperienceActivityTask.values()) {
+      if (manifestUrl.equals(experienceActivityTask.manifestUrl)) {
+        final ExperienceActivity weakActivity = experienceActivityTask.experienceActivity == null ? null : experienceActivityTask.experienceActivity.get();
+        activity = weakActivity;
+        if (activity == null) {
+          // No activity, just force a reload
+          break;
+        }
 
-          if (weakActivity.isLoading()) {
-            // Already loading. Don't need to do anything.
-            return true;
-          } else {
-            Exponent.getInstance().runOnUiThread(new Runnable() {
-              @Override
-              public void run() {
-                weakActivity.showLoadingScreen(null);
-              }
-            });
-            break;
-          }
+        if (weakActivity.isLoading()) {
+          // Already loading. Don't need to do anything.
+          return true;
+        } else {
+          Exponent.getInstance().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+              weakActivity.showLoadingScreen(null);
+            }
+          });
+          break;
         }
       }
-
-      if (activity != null) {
-        killActivityStack(activity);
-      }
-      openManifestUrl(manifestUrl, null, true, forceCache);
     }
+
+    if (activity != null) {
+      killActivityStack(activity);
+    }
+    openManifestUrl(manifestUrl, null, true, forceCache);
 
     return true;
   }
