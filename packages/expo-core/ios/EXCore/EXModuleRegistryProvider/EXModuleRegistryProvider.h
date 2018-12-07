@@ -9,7 +9,7 @@
 @property (nonatomic, weak) id<EXModuleRegistryDelegate> moduleRegistryDelegate;
 
 + (NSSet *)singletonModules;
-+ (EXSingletonModule *)getSingletonModuleForClass:(Class)singletonClass;
++ (nullable EXSingletonModule *)getSingletonModuleForClass:(Class)singletonClass;
 
 - (instancetype)initWithSingletonModules:(NSSet *)modules;
 - (EXModuleRegistry *)moduleRegistryForExperienceId:(NSString *)experienceId;

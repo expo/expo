@@ -9,10 +9,6 @@ import host.exp.exponent.RNObject;
 public class HeadlessAppRecord implements AppRecordInterface {
   private RNObject mReactInstanceManager;
 
-  public HeadlessAppRecord() {
-    super();
-  }
-
   public void setReactInstanceManager(RNObject reactInstanceManager) {
     mReactInstanceManager = reactInstanceManager;
   }
@@ -20,6 +16,7 @@ public class HeadlessAppRecord implements AppRecordInterface {
   public void invalidate() {
     if (mReactInstanceManager != null) {
       final RNObject reactInstanceManager = mReactInstanceManager;
+      mReactInstanceManager = null;
 
       // `destroy` must be called on UI thread.
       new Handler(Looper.getMainLooper()).post(new Runnable() {
@@ -30,8 +27,6 @@ public class HeadlessAppRecord implements AppRecordInterface {
           }
         }
       });
-
-      mReactInstanceManager = null;
     }
   }
 }

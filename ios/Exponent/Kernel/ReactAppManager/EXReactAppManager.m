@@ -116,7 +116,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 
     if (!_isHeadless) {
       // We don't want to run the whole JS app if app launches in the background,
-      // so we're omitting creation of RCTRootView that triggers runApplication and setups React view hierarchy.
+      // so we're omitting creation of RCTRootView that triggers runApplication and sets up React view hierarchy.
       _reactRootView = [[rootViewClass alloc] initWithBridge:_reactBridge
                                                   moduleName:[self applicationKeyForRootView]
                                            initialProperties:[self initialPropertiesForRootView]];

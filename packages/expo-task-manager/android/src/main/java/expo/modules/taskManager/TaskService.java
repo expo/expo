@@ -609,10 +609,10 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
 
     AppRecordInterface appRecord = appLoader.loadApp(appUrl, options, new AppLoaderProvider.Callback() {
       @Override
-      public void onComplete(boolean success, Error error) {
-        if (error != null) {
-          error.printStackTrace();
-          Log.e(TAG, error.getMessage());
+      public void onComplete(boolean success, Exception exception) {
+        if (exception != null) {
+          exception.printStackTrace();
+          Log.e(TAG, exception.getMessage());
         }
         if (!success) {
           sEvents.remove(appId);

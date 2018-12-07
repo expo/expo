@@ -16,6 +16,7 @@ import android.hardware.SensorManager;
 import android.os.BaseBundle;
 import android.os.Bundle;
 import android.os.PersistableBundle;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +44,7 @@ import io.nlopez.smartlocation.location.config.LocationParams;
 import io.nlopez.smartlocation.location.utils.LocationState;
 
 public class LocationModule extends ExportedModule implements ModuleRegistryConsumer, LifecycleEventListener, SensorEventListener {
+  private static final String TAG = LocationModule.class.getSimpleName();
 
   public static final int ACCURACY_LOWEST = 1;
   public static final int ACCURACY_LOW = 2;
@@ -129,7 +131,7 @@ public class LocationModule extends ExportedModule implements ModuleRegistryCons
 
       return map;
     } catch (IllegalAccessException | InstantiationException e) {
-      e.printStackTrace();
+      Log.e(TAG, "Unexpected exception was thrown when converting location to the bundle: " + e.toString());
       return null;
     }
   }

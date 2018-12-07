@@ -14,7 +14,7 @@ extern void EXRegisterAppLoader(NSString *loaderName, Class loaderClass)
     }
     providedAppLoaderClasses[loaderName] = loaderClass;
   } else {
-    NSLog(@"EXAppLoader class (%@) doesn't conform to EXAppLoaderInterface protocol.", NSStringFromClass(loaderClass));
+    NSLog(@"EXAppLoader class (%@) doesn't conform to the EXAppLoaderInterface protocol.", NSStringFromClass(loaderClass));
   }
 }
 
@@ -22,7 +22,7 @@ extern void EXRegisterAppLoader(NSString *loaderName, Class loaderClass)
 
 - (nullable id<EXAppLoaderInterface>)createAppLoader:(NSString *)loaderName
 {
-  Class loaderClass = [providedAppLoaderClasses objectForKey:loaderName];
+  Class loaderClass = providedAppLoaderClasses[loaderName];
   return [loaderClass new];
 }
 
@@ -30,7 +30,7 @@ extern void EXRegisterAppLoader(NSString *loaderName, Class loaderClass)
 
 + (nonnull instancetype)sharedInstance
 {
-  static EXAppLoaderProvider *loaderProvider = nil;
+  static EXAppLoaderProvider *loaderProvider;
   static dispatch_once_t once;
 
   dispatch_once(&once, ^{

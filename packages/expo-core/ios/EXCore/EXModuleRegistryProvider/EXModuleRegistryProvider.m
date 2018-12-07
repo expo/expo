@@ -72,7 +72,7 @@ void (^EXinitializeGlobalSingletonModulesSet)(void) = ^{
   return EXSingletonModules;
 }
 
-+ (EXSingletonModule *)getSingletonModuleForClass:(Class)singletonClass
++ (nullable EXSingletonModule *)getSingletonModuleForClass:(Class)singletonClass
 {
   NSSet<EXSingletonModule *> *singletonModules = [self singletonModules];
 

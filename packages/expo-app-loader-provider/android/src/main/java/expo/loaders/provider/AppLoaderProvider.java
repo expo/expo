@@ -26,7 +26,7 @@ public class AppLoaderProvider {
   }
 
   public static abstract class Callback {
-    public void onComplete(boolean success, Error error) {
+    public void onComplete(boolean success, Exception exception) {
       // nothing
     }
   }

@@ -38,7 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
 
   if ([application applicationState] != UIApplicationStateBackground) {
     // App launched in foreground
-    [self _setupUserInterfaceForApplication:application withLaunchOptions:launchOptions];
+    [self _setUpUserInterfaceForApplication:application withLaunchOptions:launchOptions];
   }
   [(EXTaskService *)[EXModuleRegistryProvider getSingletonModuleForClass:EXTaskService.class] applicationDidFinishLaunchingWithOptions:launchOptions];
   return YES;
@@ -46,10 +46,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {
-  [self _setupUserInterfaceForApplication:application withLaunchOptions:nil];
+  [self _setUpUserInterfaceForApplication:application withLaunchOptions:nil];
 }
 
-- (void)_setupUserInterfaceForApplication:(UIApplication *)application withLaunchOptions:(nullable NSDictionary *)launchOptions
+- (void)_setUpUserInterfaceForApplication:(UIApplication *)application withLaunchOptions:(nullable NSDictionary *)launchOptions
 {
   if (_window == nil) {
     [[ExpoKit sharedInstance] registerRootViewControllerClass:[EXRootViewController class]];

@@ -70,7 +70,7 @@ public class LocationHelpers {
   }
 
   public static int getAccuracyFromOptions(Map<String, Object> options) {
-    // `enableHighAccuracy` is deprecated - use `accuracy` instead
+    // (2018-12): `enableHighAccuracy` is deprecated - use `accuracy` instead
     boolean highAccuracy = options.containsKey("enableHighAccuracy") && (Boolean) options.get("enableHighAccuracy");
 
     return options.containsKey("accuracy")

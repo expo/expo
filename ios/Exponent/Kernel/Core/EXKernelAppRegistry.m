@@ -54,11 +54,9 @@
 
 - (void)unregisterAppWithRecord:(nullable EXKernelAppRecord *)appRecord
 {
-  for (NSString *recordId in _appRegistry) {
-    if ([_appRegistry objectForKey:recordId] == appRecord) {
-      [self unregisterAppWithRecordId:recordId];
-      break;
-    }
+  NSArray *recordIds = [_appRegistry allKeysForObject:appRecord];
+  if (recordIds.count > 0) {
+    [self unregisterAppWithRecordId:recordIds[0]];
   }
 }
 

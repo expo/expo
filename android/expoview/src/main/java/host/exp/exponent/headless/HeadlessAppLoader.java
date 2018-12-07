@@ -3,8 +3,6 @@ package host.exp.exponent.headless;
 import android.app.Application;
 import android.content.Context;
 import android.net.Uri;
-import android.os.Bundle;
-import android.util.Log;
 
 import com.facebook.react.ReactPackage;
 import com.facebook.react.common.MapBuilder;
@@ -25,19 +23,14 @@ import expo.loaders.provider.AppLoaderProvider;
 import expo.loaders.provider.interfaces.AppLoaderInterface;
 import expo.loaders.provider.interfaces.AppLoaderPackagesProviderInterface;
 import expo.loaders.provider.interfaces.AppRecordInterface;
-import host.exp.exponent.ABIVersion;
 import host.exp.exponent.AppLoader;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.RNObject;
 import host.exp.exponent.di.NativeModuleDepsProvider;
-import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.kernel.ExponentUrls;
-import host.exp.exponent.kernel.services.ErrorRecoveryManager;
-import host.exp.exponent.notifications.ExponentNotification;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponent.utils.AsyncCondition;
-import host.exp.exponent.utils.JSONBundleConverter;
 import host.exp.expoview.Exponent;
 import versioned.host.exp.exponent.ExponentPackage;
 import versioned.host.exp.exponent.ExponentPackageDelegate;
@@ -54,17 +47,15 @@ import static host.exp.exponent.kernel.KernelConstants.MANIFEST_URL_KEY;
 // so I decided to go with a copy until we refactor these activity classes.
 
 public class HeadlessAppLoader implements AppLoaderInterface, Exponent.StartReactInstanceDelegate {
-  private static String READY_FOR_BUNDLE = "headlessReadyForBundle";
+  private static String READY_FOR_BUNDLE = "headlessAppReadyForBundle";
 
   private static final Map<Integer, String> sActivityIdToBundleUrl = new HashMap<>();
   private static int currentActivityId = -2; // start from -2 because -1 is used by kernel
 
   private JSONObject mManifest;
   private String mManifestUrl;
-  private String mSDKVersion;
+  private String mSdkVersion;
   private String mDetachSdkVersion;
-  private String mExperienceIdString;
-  private ExperienceId mExperienceId;
   private RNObject mReactInstanceManager = new RNObject("com.facebook.react.ReactInstanceManager");
   private Context mContext;
   private String mIntentUri;
@@ -78,8 +69,6 @@ public class HeadlessAppLoader implements AppLoaderInterface, Exponent.StartReac
   private ExponentSharedPreferences mExponentSharedPreferences;
 
   public HeadlessAppLoader(Context context) {
-    super();
-
     mContext = context;
     NativeModuleDepsProvider.getInstance().inject(HeadlessAppLoader.class, this);
   }
@@ -114,7 +103,7 @@ public class HeadlessAppLoader implements AppLoaderInterface, Exponent.StartReac
               sActivityIdToBundleUrl.put(mActivityId, bundleUrl);
               setManifest(mManifestUrl, manifest, bundleUrl, null);
             } catch (JSONException e) {
-              mCallback.onComplete(false, new Error(e.getMessage()));
+              mCallback.onComplete(false, new Exception(e.getMessage()));
             }
           }
         });
@@ -130,12 +119,12 @@ public class HeadlessAppLoader implements AppLoaderInterface, Exponent.StartReac
 
       @Override
       public void onError(Exception e) {
-        mCallback.onComplete(false, new Error(e.getMessage()));
+        mCallback.onComplete(false, new Exception(e.getMessage()));
       }
 
       @Override
       public void onError(String e) {
-        mCallback.onComplete(false, new Error(e));
+        mCallback.onComplete(false, new Exception(e));
       }
     }.start();
 
@@ -145,40 +134,32 @@ public class HeadlessAppLoader implements AppLoaderInterface, Exponent.StartReac
   public void setManifest(String manifestUrl, final JSONObject manifest, final String bundleUrl, final JSONObject kernelOptions) {
     mManifestUrl = manifestUrl;
     mManifest = manifest;
-    mSDKVersion = manifest.optString(ExponentManifest.MANIFEST_SDK_VERSION_KEY);
+    mSdkVersion = manifest.optString(ExponentManifest.MANIFEST_SDK_VERSION_KEY);
 
     // Sometime we want to release a new version without adding a new .aar. Use TEMPORARY_ABI_VERSION
     // to point to the unversioned code in ReactAndroid.
-    if (Constants.TEMPORARY_ABI_VERSION != null && Constants.TEMPORARY_ABI_VERSION.equals(mSDKVersion)) {
-      mSDKVersion = RNObject.UNVERSIONED;
+    if (Constants.TEMPORARY_ABI_VERSION != null && Constants.TEMPORARY_ABI_VERSION.equals(mSdkVersion)) {
+      mSdkVersion = RNObject.UNVERSIONED;
     }
 
-    mDetachSdkVersion = Constants.isStandaloneApp() ? RNObject.UNVERSIONED : mSDKVersion;
+    mDetachSdkVersion = Constants.isStandaloneApp() ? RNObject.UNVERSIONED : mSdkVersion;
 
-    if (!RNObject.UNVERSIONED.equals(mSDKVersion)) {
+    if (!RNObject.UNVERSIONED.equals(mSdkVersion)) {
       boolean isValidVersion = false;
       for (final String version : Constants.SDK_VERSIONS_LIST) {
-        if (version.equals(mSDKVersion)) {
+        if (version.equals(mSdkVersion)) {
           isValidVersion = true;
           break;
         }
       }
 
       if (!isValidVersion) {
-        mCallback.onComplete(false, new Error(mSDKVersion + " is not a valid SDK version."));
+        mCallback.onComplete(false, new Exception(mSdkVersion + " is not a valid SDK version."));
         return;
       }
     }
 
     soloaderInit();
-
-    try {
-      mExperienceIdString = manifest.getString(ExponentManifest.MANIFEST_ID_KEY);
-      mExperienceId = ExperienceId.create(mExperienceIdString);
-    } catch (JSONException e) {
-      mCallback.onComplete(false, new Error(e.getMessage()));
-      return;
-    }
 
     // if we have an embedded initial url, we never need any part of this in the initial url
     // passed to the JS, so we check for that and filter it out here.
@@ -299,7 +280,7 @@ public class HeadlessAppLoader implements AppLoaderInterface, Exponent.StartReac
 
       @Override
       public void onFailure(final String errorMessage) {
-        mCallback.onComplete(false, new Error(errorMessage));
+        mCallback.onComplete(false, new Exception(errorMessage));
       }
     });
   }
@@ -359,10 +340,6 @@ public class HeadlessAppLoader implements AppLoaderInterface, Exponent.StartReac
     if (Constants.SHELL_APP_SCHEME != null) {
       return Constants.SHELL_APP_SCHEME + "://";
     } else {
-      if (ABIVersion.toNumber(mSDKVersion) < ABIVersion.toNumber("27.0.0")) {
-        // keep old behavior on old projects to not introduce breaking changes
-        return mManifestUrl + "/+";
-      }
       Uri uri = Uri.parse(mManifestUrl);
       String host = uri.getHost();
       if (host != null && (host.equals("exp.host") || host.equals("expo.io") || host.equals("exp.direct") || host.equals("expo.test") ||
