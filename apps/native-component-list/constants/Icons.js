@@ -31,6 +31,7 @@ export default {
   TextToSpeech: require('../assets/icons/api/Speech.png'),
   Video: require('../assets/icons/api/Video.png'),
   WebBrowser: require('../assets/icons/api/WebBrowser.png'),
+  Camera: require('../assets/icons/api/Camera.png'),
 
   Default: require('../assets/icons/api/Placeholder.png'),
 };

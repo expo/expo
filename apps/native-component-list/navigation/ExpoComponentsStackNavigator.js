@@ -3,6 +3,7 @@ import { createStackNavigator } from 'react-navigation';
 import AdMob from '../screens/AdMobScreen';
 import BarCodeScanner from '../screens/BarCodeScannerScreen';
 import BlurView from '../screens/BlurViewScreen';
+import Camera from '../screens/Camera/CameraScreen';
 import ExpoComponents from '../screens/ExpoComponentsScreen';
 import FacebookAds from '../screens/FacebookAdsScreen';
 import GestureHandlerList from '../screens/GestureHandlerListScreen';
@@ -27,6 +28,7 @@ const ExpoComponentsStackNavigator = createStackNavigator(
     AdMob,
     BarCodeScanner,
     BlurView,
+    Camera,
     GL,
     ...GLScreens,
     GestureHandlerPinch,
