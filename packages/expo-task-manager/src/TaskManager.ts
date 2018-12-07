@@ -34,7 +34,7 @@ function _validateTaskName(taskName) {
   }
 }
 
-function defineTask(taskName: string, task: Task) {
+export function defineTask(taskName: string, task: Task) {
   if (!isRunningDuringInitialization) {
     console.error(`TaskManager.defineTask must be called during initialization phase!`);
     return;
@@ -54,30 +54,30 @@ function defineTask(taskName: string, task: Task) {
   tasks.set(taskName, task);
 }
 
-function isTaskDefined(taskName: string): boolean {
+export function isTaskDefined(taskName: string): boolean {
   return tasks.has(taskName);
 }
 
-async function isTaskRegisteredAsync(taskName: string): Promise<boolean> {
+export async function isTaskRegisteredAsync(taskName: string): Promise<boolean> {
   _validateTaskName(taskName);
   return ExpoTaskManager.isTaskRegisteredAsync(taskName);
 }
 
-async function getTaskOptionsAsync<TaskOptions>(taskName: string): Promise<TaskOptions> {
+export async function getTaskOptionsAsync<TaskOptions>(taskName: string): Promise<TaskOptions> {
   _validateTaskName(taskName);
   return ExpoTaskManager.getTaskOptionsAsync(taskName);
 }
 
-async function getRegisteredTasksAsync(): Promise<RegisteredTask[]> {
+export async function getRegisteredTasksAsync(): Promise<RegisteredTask[]> {
   return ExpoTaskManager.getRegisteredTasksAsync();
 }
 
-async function unregisterTaskAsync(taskName: string): Promise<void> {
+export async function unregisterTaskAsync(taskName: string): Promise<void> {
   _validateTaskName(taskName);
   await ExpoTaskManager.unregisterTaskAsync(taskName);
 }
 
-async function unregisterAllTasksAsync(): Promise<void> {
+export async function unregisterAllTasksAsync(): Promise<void> {
   await ExpoTaskManager.unregisterAllTasksAsync();
 }
 
@@ -111,13 +111,3 @@ eventEmitter.addListener<TaskBody>(ExpoTaskManager.EVENT_NAME, async ({ data, er
 Promise.resolve().then(() => {
   isRunningDuringInitialization = false;
 });
-
-export const TaskManager = {
-  defineTask,
-  isTaskDefined,
-  isTaskRegisteredAsync,
-  getTaskOptionsAsync,
-  getRegisteredTasksAsync,
-  unregisterTaskAsync,
-  unregisterAllTasksAsync,
-};

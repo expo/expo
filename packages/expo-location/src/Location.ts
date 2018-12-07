@@ -13,7 +13,7 @@ interface ProviderStatus {
 };
 
 interface LocationOptions {
-  accuracy?: Accuracy,
+  accuracy?: LocationAccuracy,
   enableHighAccuracy?: boolean,
   timeInterval?: number,
   distanceInterval?: number,
@@ -55,7 +55,7 @@ interface Address {
 };
 
 interface LocationTaskOptions {
-  accuracy?: Accuracy,
+  accuracy?: LocationAccuracy,
   showsBackgroundLocationIndicator?: boolean,
 };
 
@@ -74,7 +74,7 @@ type Subscription = {
 type LocationCallback = (data: LocationData) => any;
 type HeadingCallback = (data: HeadingData) => any;
 
-enum Accuracy {
+enum LocationAccuracy {
   Lowest = 1,
   Low = 2,
   Balanced = 3,
@@ -82,13 +82,14 @@ enum Accuracy {
   Highest = 5,
   BestForNavigation = 6,
 }
+export { LocationAccuracy as Accuracy };
 
-enum GeofencingEventType {
+export enum GeofencingEventType {
   Enter = 1,
   Exit = 2,
 }
 
-enum GeofencingRegionState {
+export enum GeofencingRegionState {
   Unknown = 0,
   Inside = 1,
   Outside = 2,
@@ -113,11 +114,11 @@ let headingEventSub: Subscription | null;
 let googleApiKey;
 const googleApiUrl = 'https://maps.googleapis.com/maps/api/geocode/json';
 
-async function getProviderStatusAsync(): Promise<ProviderStatus> {
+export async function getProviderStatusAsync(): Promise<ProviderStatus> {
   return ExpoLocation.getProviderStatusAsync();
 }
 
-async function getCurrentPositionAsync(options: LocationOptions = {}): Promise<LocationData> {
+export async function getCurrentPositionAsync(options: LocationOptions = {}): Promise<LocationData> {
   return ExpoLocation.getCurrentPositionAsync(options);
 }
 
@@ -125,7 +126,7 @@ async function getCurrentPositionAsync(options: LocationOptions = {}): Promise<L
 
 // To simplify, we will call watchHeadingAsync and wait for one update To ensure accuracy, we wait
 // for a couple of watch updates if the data has low accuracy
-async function getHeadingAsync(): Promise<HeadingData> {
+export async function getHeadingAsync(): Promise<HeadingData> {
   return new Promise<HeadingData>(async (resolve, reject) => {
     try {
       // If there is already a compass active (would be a watch)
@@ -170,7 +171,7 @@ async function getHeadingAsync(): Promise<HeadingData> {
   });
 }
 
-async function watchHeadingAsync(callback: HeadingCallback): Promise<object> {
+export async function watchHeadingAsync(callback: HeadingCallback): Promise<object> {
   // Check if there is already a compass event watch.
   if (headingEventSub) {
     _removeHeadingWatcher(headingId);
@@ -228,7 +229,7 @@ function _maybeInitializeEmitterSubscription() {
   }
 }
 
-async function geocodeAsync(address: string): Promise<Array<GeocodedLocation>> {
+export async function geocodeAsync(address: string): Promise<Array<GeocodedLocation>> {
   return ExpoLocation.geocodeAsync(address).catch(error => {
     const platformUsesGoogleMaps = Platform.OS === 'android' || Platform.OS === 'web';
 
@@ -242,7 +243,7 @@ async function geocodeAsync(address: string): Promise<Array<GeocodedLocation>> {
   });
 }
 
-async function reverseGeocodeAsync(location: { latitude: number, longitude: number }): Promise<Address[]> {
+export async function reverseGeocodeAsync(location: { latitude: number, longitude: number }): Promise<Address[]> {
   if (typeof location.latitude !== 'number' || typeof location.longitude !== 'number') {
     throw new TypeError(
       'Location should be an object with number properties `latitude` and `longitude`.'
@@ -333,7 +334,7 @@ function watchPosition(
   return watchId;
 }
 
-async function watchPositionAsync(options: LocationOptions, callback: LocationCallback) {
+export async function watchPositionAsync(options: LocationOptions, callback: LocationCallback) {
   _maybeInitializeEmitterSubscription();
 
   const watchId = _getNextWatchId();
@@ -397,13 +398,13 @@ async function _getCurrentPositionAsyncWrapper(
   }
 }
 
-async function requestPermissionsAsync(): Promise<void> {
+export async function requestPermissionsAsync(): Promise<void> {
   await ExpoLocation.requestPermissionsAsync();
 }
 
 // --- Location service
 
-async function hasServicesEnabledAsync(): Promise<boolean> {
+export async function hasServicesEnabledAsync(): Promise<boolean> {
   return await ExpoLocation.hasServicesEnabledAsync();
 }
 
@@ -413,20 +414,20 @@ function _validateTaskName(taskName: string) {
   invariant(taskName && typeof taskName === 'string', '`taskName` must be a non-empty string.');
 }
 
-async function startLocationUpdatesAsync(
+export async function startLocationUpdatesAsync(
   taskName: string,
-  options: LocationTaskOptions = { accuracy: Accuracy.Balanced }
+  options: LocationTaskOptions = { accuracy: LocationAccuracy.Balanced }
 ): Promise<void> {
   _validateTaskName(taskName);
   await ExpoLocation.startLocationUpdatesAsync(taskName, options);
 }
 
-async function stopLocationUpdatesAsync(taskName: string): Promise<void> {
+export async function stopLocationUpdatesAsync(taskName: string): Promise<void> {
   _validateTaskName(taskName);
   await ExpoLocation.stopLocationUpdatesAsync(taskName);
 }
 
-async function hasStartedLocationUpdatesAsync(taskName: string): Promise<boolean> {
+export async function hasStartedLocationUpdatesAsync(taskName: string): Promise<boolean> {
   _validateTaskName(taskName);
   return ExpoLocation.hasStartedLocationUpdatesAsync(taskName);
 }
@@ -450,23 +451,23 @@ function _validateRegions(regions: Array<Region>) {
   }
 }
 
-async function startGeofencingAsync(taskName: string, regions: Array<Region> = []): Promise<void> {
+export async function startGeofencingAsync(taskName: string, regions: Array<Region> = []): Promise<void> {
   _validateTaskName(taskName);
   _validateRegions(regions);
   await ExpoLocation.startGeofencingAsync(taskName, { regions });
 }
 
-async function stopGeofencingAsync(taskName: string): Promise<void> {
+export async function stopGeofencingAsync(taskName: string): Promise<void> {
   _validateTaskName(taskName);
   await ExpoLocation.stopGeofencingAsync(taskName);
 }
 
-async function hasStartedGeofencingAsync(taskName: string): Promise<boolean> {
+export async function hasStartedGeofencingAsync(taskName: string): Promise<boolean> {
   _validateTaskName(taskName);
   return ExpoLocation.hasStartedGeofencingAsync(taskName);
 }
 
-function installWebGeolocationPolyfill(): void {
+export function installWebGeolocationPolyfill(): void {
   if (Platform.OS !== 'web') {
     // Polyfill navigator.geolocation for interop with the core react-native and web API approach to
     // geolocation
@@ -483,32 +484,8 @@ function installWebGeolocationPolyfill(): void {
   }
 }
 
-export const Location = {
+export {
   // For internal purposes
-  EventEmitter: LocationEventEmitter,
+  LocationEventEmitter as EventEmitter,
   _getCurrentWatchId,
-
-  // enums
-  Accuracy,
-  GeofencingEventType,
-  GeofencingRegionState,
-
-  // methods
-  getProviderStatusAsync,
-  getCurrentPositionAsync,
-  getHeadingAsync,
-  watchHeadingAsync,
-  geocodeAsync,
-  reverseGeocodeAsync,
-  setApiKey,
-  watchPositionAsync,
-  requestPermissionsAsync,
-  hasServicesEnabledAsync,
-  startLocationUpdatesAsync,
-  stopLocationUpdatesAsync,
-  hasStartedLocationUpdatesAsync,
-  startGeofencingAsync,
-  stopGeofencingAsync,
-  hasStartedGeofencingAsync,
-  installWebGeolocationPolyfill,
 };

@@ -4,10 +4,6 @@ import './environment/logging';
 // load expo-asset immediately to set a custom `source` transformer in React Native
 import 'expo-asset/src/Asset';
 
-// polyfill navigator.geolocation
-import { Location } from 'expo-location';
-Location.installWebGeolocationPolyfill();
-
 import { Constants } from 'expo-constants';
 import { NativeModules, Platform } from 'react-native';
 
@@ -19,7 +15,8 @@ export { AdMobBanner, AdMobInterstitial, AdMobRewarded, PublisherBanner } from '
 export { Segment } from 'expo-analytics-segment';
 export { Asset } from 'expo-asset';
 export { AppAuth } from 'expo-app-auth';
-export { BackgroundFetch } from 'expo-background-fetch';
+import * as BackgroundFetch from 'expo-background-fetch';
+export { BackgroundFetch };
 export { BarCodeScanner } from 'expo-barcode-scanner';
 export { Camera } from 'expo-camera';
 export { Constants } from 'expo-constants';
@@ -32,14 +29,16 @@ export { GLView } from 'expo-gl';
 export { GoogleSignIn } from 'expo-google-sign-in';
 export { LocalAuthentication } from 'expo-local-authentication';
 export { Localization } from 'expo-localization';
-export { Location } from 'expo-location';
+import * as Location from 'expo-location';
+export { Location };
 export { MediaLibrary } from 'expo-media-library';
 export { Permissions } from 'expo-permissions';
 export { Print } from 'expo-print';
 export { Accelerometer, Gyroscope, Magnetometer, MagnetometerUncalibrated } from 'expo-sensors';
 import * as SMS from 'expo-sms';
 export { SMS };
-export { TaskManager } from 'expo-task-manager';
+import * as TaskManager from 'expo-task-manager';
+export { TaskManager }
 import * as GestureHandler from 'react-native-gesture-handler';
 export { GestureHandler };
 export { default as MapView } from 'react-native-maps';
@@ -103,6 +102,9 @@ import * as SplashScreen from './launch/SplashScreen';
 export { SplashScreen };
 export { default as registerRootComponent } from './launch/registerRootComponent';
 export { default as Logs } from './logs/Logs';
+
+// polyfill navigator.geolocation
+Location.installWebGeolocationPolyfill();
 
 // @ts-ignore
 Object.defineProperties(exports, {

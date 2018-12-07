@@ -1,28 +1,28 @@
 import { Platform, NativeModulesProxy } from 'expo-core';
-import { TaskManager } from 'expo-task-manager';
+import * as TaskManager from 'expo-task-manager';
 
 const { ExpoBackgroundFetch } = NativeModulesProxy;
 
-enum Result {
+enum BackgroundFetchResult {
   NoData = 1,
   NewData = 2,
   Failed = 3,
 }
 
-enum Status {
+enum BackgroundFetchStatus {
   Denied = 1,
   Restricted = 2,
   Available = 3,
 }
 
-async function getStatusAsync(): Promise<Status | void> {
+export async function getStatusAsync(): Promise<BackgroundFetchStatus | void> {
   if (Platform.OS !== 'ios') {
     return Promise.resolve();
   }
   return ExpoBackgroundFetch.getStatusAsync();
 }
 
-async function setMinimumIntervalAsync(minimumInterval: number): Promise<void> {
+export async function setMinimumIntervalAsync(minimumInterval: number): Promise<void> {
   if (Platform.OS !== 'ios') {
     console.warn(`expo-background-fetch is currently available only on iOS`);
     return;
@@ -30,7 +30,7 @@ async function setMinimumIntervalAsync(minimumInterval: number): Promise<void> {
   await ExpoBackgroundFetch.setMinimumIntervalAsync(minimumInterval);
 }
 
-async function registerTaskAsync(taskName: string): Promise<void> {
+export async function registerTaskAsync(taskName: string): Promise<void> {
   if (Platform.OS !== 'ios') {
     console.warn(`expo-background-fetch is currently available only on iOS`);
     return;
@@ -43,7 +43,7 @@ async function registerTaskAsync(taskName: string): Promise<void> {
   await ExpoBackgroundFetch.registerTaskAsync(taskName);
 }
 
-async function unregisterTaskAsync(taskName: string): Promise<void> {
+export async function unregisterTaskAsync(taskName: string): Promise<void> {
   if (Platform.OS !== 'ios') {
     console.warn(`expo-background-fetch is currently available only on iOS`);
     return;
@@ -51,14 +51,7 @@ async function unregisterTaskAsync(taskName: string): Promise<void> {
   await ExpoBackgroundFetch.unregisterTaskAsync(taskName);
 }
 
-export const BackgroundFetch = {
-  // enums
-  Result,
-  Status,
-
-  // methods
-  getStatusAsync,
-  setMinimumIntervalAsync,
-  registerTaskAsync,
-  unregisterTaskAsync,
+export {
+  BackgroundFetchResult as Result,
+  BackgroundFetchStatus as Status,
 };

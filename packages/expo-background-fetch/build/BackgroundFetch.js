@@ -1,32 +1,32 @@
 import { Platform, NativeModulesProxy } from 'expo-core';
-import { TaskManager } from 'expo-task-manager';
+import * as TaskManager from 'expo-task-manager';
 const { ExpoBackgroundFetch } = NativeModulesProxy;
-var Result;
-(function (Result) {
-    Result[Result["NoData"] = 1] = "NoData";
-    Result[Result["NewData"] = 2] = "NewData";
-    Result[Result["Failed"] = 3] = "Failed";
-})(Result || (Result = {}));
-var Status;
-(function (Status) {
-    Status[Status["Denied"] = 1] = "Denied";
-    Status[Status["Restricted"] = 2] = "Restricted";
-    Status[Status["Available"] = 3] = "Available";
-})(Status || (Status = {}));
-async function getStatusAsync() {
+var BackgroundFetchResult;
+(function (BackgroundFetchResult) {
+    BackgroundFetchResult[BackgroundFetchResult["NoData"] = 1] = "NoData";
+    BackgroundFetchResult[BackgroundFetchResult["NewData"] = 2] = "NewData";
+    BackgroundFetchResult[BackgroundFetchResult["Failed"] = 3] = "Failed";
+})(BackgroundFetchResult || (BackgroundFetchResult = {}));
+var BackgroundFetchStatus;
+(function (BackgroundFetchStatus) {
+    BackgroundFetchStatus[BackgroundFetchStatus["Denied"] = 1] = "Denied";
+    BackgroundFetchStatus[BackgroundFetchStatus["Restricted"] = 2] = "Restricted";
+    BackgroundFetchStatus[BackgroundFetchStatus["Available"] = 3] = "Available";
+})(BackgroundFetchStatus || (BackgroundFetchStatus = {}));
+export async function getStatusAsync() {
     if (Platform.OS !== 'ios') {
         return Promise.resolve();
     }
     return ExpoBackgroundFetch.getStatusAsync();
 }
-async function setMinimumIntervalAsync(minimumInterval) {
+export async function setMinimumIntervalAsync(minimumInterval) {
     if (Platform.OS !== 'ios') {
         console.warn(`expo-background-fetch is currently available only on iOS`);
         return;
     }
     await ExpoBackgroundFetch.setMinimumIntervalAsync(minimumInterval);
 }
-async function registerTaskAsync(taskName) {
+export async function registerTaskAsync(taskName) {
     if (Platform.OS !== 'ios') {
         console.warn(`expo-background-fetch is currently available only on iOS`);
         return;
@@ -36,21 +36,12 @@ async function registerTaskAsync(taskName) {
     }
     await ExpoBackgroundFetch.registerTaskAsync(taskName);
 }
-async function unregisterTaskAsync(taskName) {
+export async function unregisterTaskAsync(taskName) {
     if (Platform.OS !== 'ios') {
         console.warn(`expo-background-fetch is currently available only on iOS`);
         return;
     }
     await ExpoBackgroundFetch.unregisterTaskAsync(taskName);
 }
-export const BackgroundFetch = {
-    // enums
-    Result,
-    Status,
-    // methods
-    getStatusAsync,
-    setMinimumIntervalAsync,
-    registerTaskAsync,
-    unregisterTaskAsync,
-};
+export { BackgroundFetchResult as Result, BackgroundFetchStatus as Status, };
 //# sourceMappingURL=BackgroundFetch.js.map

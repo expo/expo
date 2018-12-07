@@ -8,7 +8,7 @@ function _validateTaskName(taskName) {
         throw new TypeError('`taskName` must be a non-empty string.');
     }
 }
-function defineTask(taskName, task) {
+export function defineTask(taskName, task) {
     if (!isRunningDuringInitialization) {
         console.error(`TaskManager.defineTask must be called during initialization phase!`);
         return;
@@ -27,25 +27,25 @@ function defineTask(taskName, task) {
     }
     tasks.set(taskName, task);
 }
-function isTaskDefined(taskName) {
+export function isTaskDefined(taskName) {
     return tasks.has(taskName);
 }
-async function isTaskRegisteredAsync(taskName) {
+export async function isTaskRegisteredAsync(taskName) {
     _validateTaskName(taskName);
     return ExpoTaskManager.isTaskRegisteredAsync(taskName);
 }
-async function getTaskOptionsAsync(taskName) {
+export async function getTaskOptionsAsync(taskName) {
     _validateTaskName(taskName);
     return ExpoTaskManager.getTaskOptionsAsync(taskName);
 }
-async function getRegisteredTasksAsync() {
+export async function getRegisteredTasksAsync() {
     return ExpoTaskManager.getRegisteredTasksAsync();
 }
-async function unregisterTaskAsync(taskName) {
+export async function unregisterTaskAsync(taskName) {
     _validateTaskName(taskName);
     await ExpoTaskManager.unregisterTaskAsync(taskName);
 }
-async function unregisterAllTasksAsync() {
+export async function unregisterAllTasksAsync() {
     await ExpoTaskManager.unregisterAllTasksAsync();
 }
 eventEmitter.addListener(ExpoTaskManager.EVENT_NAME, async ({ data, error, executionInfo }) => {
@@ -79,13 +79,4 @@ eventEmitter.addListener(ExpoTaskManager.EVENT_NAME, async ({ data, error, execu
 Promise.resolve().then(() => {
     isRunningDuringInitialization = false;
 });
-export const TaskManager = {
-    defineTask,
-    isTaskDefined,
-    isTaskRegisteredAsync,
-    getTaskOptionsAsync,
-    getRegisteredTasksAsync,
-    unregisterTaskAsync,
-    unregisterAllTasksAsync,
-};
 //# sourceMappingURL=TaskManager.js.map

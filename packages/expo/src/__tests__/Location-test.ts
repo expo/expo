@@ -1,4 +1,4 @@
-import { Location } from 'expo-location';
+import * as Location from 'expo-location';
 import { NativeModulesProxy } from 'expo-core';
 
 import {

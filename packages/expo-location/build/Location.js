@@ -10,21 +10,22 @@ const LocationEventEmitter = new EventEmitter(ExpoLocation);
 ;
 ;
 ;
-var Accuracy;
-(function (Accuracy) {
-    Accuracy[Accuracy["Lowest"] = 1] = "Lowest";
-    Accuracy[Accuracy["Low"] = 2] = "Low";
-    Accuracy[Accuracy["Balanced"] = 3] = "Balanced";
-    Accuracy[Accuracy["High"] = 4] = "High";
-    Accuracy[Accuracy["Highest"] = 5] = "Highest";
-    Accuracy[Accuracy["BestForNavigation"] = 6] = "BestForNavigation";
-})(Accuracy || (Accuracy = {}));
-var GeofencingEventType;
+var LocationAccuracy;
+(function (LocationAccuracy) {
+    LocationAccuracy[LocationAccuracy["Lowest"] = 1] = "Lowest";
+    LocationAccuracy[LocationAccuracy["Low"] = 2] = "Low";
+    LocationAccuracy[LocationAccuracy["Balanced"] = 3] = "Balanced";
+    LocationAccuracy[LocationAccuracy["High"] = 4] = "High";
+    LocationAccuracy[LocationAccuracy["Highest"] = 5] = "Highest";
+    LocationAccuracy[LocationAccuracy["BestForNavigation"] = 6] = "BestForNavigation";
+})(LocationAccuracy || (LocationAccuracy = {}));
+export { LocationAccuracy as Accuracy };
+export var GeofencingEventType;
 (function (GeofencingEventType) {
     GeofencingEventType[GeofencingEventType["Enter"] = 1] = "Enter";
     GeofencingEventType[GeofencingEventType["Exit"] = 2] = "Exit";
 })(GeofencingEventType || (GeofencingEventType = {}));
-var GeofencingRegionState;
+export var GeofencingRegionState;
 (function (GeofencingRegionState) {
     GeofencingRegionState[GeofencingRegionState["Unknown"] = 0] = "Unknown";
     GeofencingRegionState[GeofencingRegionState["Inside"] = 1] = "Inside";
@@ -44,16 +45,16 @@ let deviceEventSubscription;
 let headingEventSub;
 let googleApiKey;
 const googleApiUrl = 'https://maps.googleapis.com/maps/api/geocode/json';
-async function getProviderStatusAsync() {
+export async function getProviderStatusAsync() {
     return ExpoLocation.getProviderStatusAsync();
 }
-async function getCurrentPositionAsync(options = {}) {
+export async function getCurrentPositionAsync(options = {}) {
     return ExpoLocation.getCurrentPositionAsync(options);
 }
 // Start Compass Module
 // To simplify, we will call watchHeadingAsync and wait for one update To ensure accuracy, we wait
 // for a couple of watch updates if the data has low accuracy
-async function getHeadingAsync() {
+export async function getHeadingAsync() {
     return new Promise(async (resolve, reject) => {
         try {
             // If there is already a compass active (would be a watch)
@@ -98,7 +99,7 @@ async function getHeadingAsync() {
         }
     });
 }
-async function watchHeadingAsync(callback) {
+export async function watchHeadingAsync(callback) {
     // Check if there is already a compass event watch.
     if (headingEventSub) {
         _removeHeadingWatcher(headingId);
@@ -147,7 +148,7 @@ function _maybeInitializeEmitterSubscription() {
         });
     }
 }
-async function geocodeAsync(address) {
+export async function geocodeAsync(address) {
     return ExpoLocation.geocodeAsync(address).catch(error => {
         const platformUsesGoogleMaps = Platform.OS === 'android' || Platform.OS === 'web';
         if (platformUsesGoogleMaps && error.code === 'E_NO_GEOCODER') {
@@ -159,7 +160,7 @@ async function geocodeAsync(address) {
         throw error;
     });
 }
-async function reverseGeocodeAsync(location) {
+export async function reverseGeocodeAsync(location) {
     if (typeof location.latitude !== 'number' || typeof location.longitude !== 'number') {
         throw new TypeError('Location should be an object with number properties `latitude` and `longitude`.');
     }
@@ -233,7 +234,7 @@ function watchPosition(success, error, options) {
     });
     return watchId;
 }
-async function watchPositionAsync(options, callback) {
+export async function watchPositionAsync(options, callback) {
     _maybeInitializeEmitterSubscription();
     const watchId = _getNextWatchId();
     watchCallbacks[watchId] = callback;
@@ -277,26 +278,26 @@ async function _getCurrentPositionAsyncWrapper(success, error, options) {
         error(e);
     }
 }
-async function requestPermissionsAsync() {
+export async function requestPermissionsAsync() {
     await ExpoLocation.requestPermissionsAsync();
 }
 // --- Location service
-async function hasServicesEnabledAsync() {
+export async function hasServicesEnabledAsync() {
     return await ExpoLocation.hasServicesEnabledAsync();
 }
 // --- Background location updates
 function _validateTaskName(taskName) {
     invariant(taskName && typeof taskName === 'string', '`taskName` must be a non-empty string.');
 }
-async function startLocationUpdatesAsync(taskName, options = { accuracy: Accuracy.Balanced }) {
+export async function startLocationUpdatesAsync(taskName, options = { accuracy: LocationAccuracy.Balanced }) {
     _validateTaskName(taskName);
     await ExpoLocation.startLocationUpdatesAsync(taskName, options);
 }
-async function stopLocationUpdatesAsync(taskName) {
+export async function stopLocationUpdatesAsync(taskName) {
     _validateTaskName(taskName);
     await ExpoLocation.stopLocationUpdatesAsync(taskName);
 }
-async function hasStartedLocationUpdatesAsync(taskName) {
+export async function hasStartedLocationUpdatesAsync(taskName) {
     _validateTaskName(taskName);
     return ExpoLocation.hasStartedLocationUpdatesAsync(taskName);
 }
@@ -317,20 +318,20 @@ function _validateRegions(regions) {
         }
     }
 }
-async function startGeofencingAsync(taskName, regions = []) {
+export async function startGeofencingAsync(taskName, regions = []) {
     _validateTaskName(taskName);
     _validateRegions(regions);
     await ExpoLocation.startGeofencingAsync(taskName, { regions });
 }
-async function stopGeofencingAsync(taskName) {
+export async function stopGeofencingAsync(taskName) {
     _validateTaskName(taskName);
     await ExpoLocation.stopGeofencingAsync(taskName);
 }
-async function hasStartedGeofencingAsync(taskName) {
+export async function hasStartedGeofencingAsync(taskName) {
     _validateTaskName(taskName);
     return ExpoLocation.hasStartedGeofencingAsync(taskName);
 }
-function installWebGeolocationPolyfill() {
+export function installWebGeolocationPolyfill() {
     if (Platform.OS !== 'web') {
         // Polyfill navigator.geolocation for interop with the core react-native and web API approach to
         // geolocation
@@ -345,31 +346,7 @@ function installWebGeolocationPolyfill() {
         };
     }
 }
-export const Location = {
-    // For internal purposes
-    EventEmitter: LocationEventEmitter,
-    _getCurrentWatchId,
-    // enums
-    Accuracy,
-    GeofencingEventType,
-    GeofencingRegionState,
-    // methods
-    getProviderStatusAsync,
-    getCurrentPositionAsync,
-    getHeadingAsync,
-    watchHeadingAsync,
-    geocodeAsync,
-    reverseGeocodeAsync,
-    setApiKey,
-    watchPositionAsync,
-    requestPermissionsAsync,
-    hasServicesEnabledAsync,
-    startLocationUpdatesAsync,
-    stopLocationUpdatesAsync,
-    hasStartedLocationUpdatesAsync,
-    startGeofencingAsync,
-    stopGeofencingAsync,
-    hasStartedGeofencingAsync,
-    installWebGeolocationPolyfill,
-};
+export { 
+// For internal purposes
+LocationEventEmitter as EventEmitter, _getCurrentWatchId, };
 //# sourceMappingURL=Location.js.map
