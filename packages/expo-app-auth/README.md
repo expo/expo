@@ -21,10 +21,6 @@ If you're using Cocoapods, add the dependency to your `Podfile`:
 
 and run `pod install`.
 
-### iOS (no Cocoapods)
-
-Due to the way we develop and use universal modules at Expo (with Cocoapods), we don't support the `xcodeproj` way to install the module in iOS projects. Sorry for the inconvenience!
-
 ### Android
 
 1. Append the following lines to `android/settings.gradle`:

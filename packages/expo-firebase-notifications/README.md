@@ -26,10 +26,6 @@ pod 'EXFirebaseNotifications', path: '../node_modules/expo-firebase-notification
 
 and run `pod install`.
 
-#### Manually
-
-Due to the way we develop and use universal modules at Expo (with Cocoapods), we don't support the `xcodeproj` way to install the module in iOS projects. Sorry for the inconvenience!
-
 #### Common Setup
 
 **Update `AppDelegate.m`**

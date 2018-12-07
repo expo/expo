@@ -24,10 +24,6 @@ pod 'EXFirebaseRemoteConfig', path: '../node_modules/expo-firebase-remote-config
 
 and run `pod install`.
 
-#### Manually
-
-Due to the way we develop and use universal modules at Expo (with Cocoapods), we don't support the `xcodeproj` way to install the module in iOS projects. Sorry for the inconvenience!
-
 ### Android
 
 1.  Append the following lines to `android/settings.gradle`:

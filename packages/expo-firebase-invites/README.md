@@ -26,10 +26,6 @@ pod 'EXFirebaseInvites', path: '../node_modules/expo-firebase-invites/ios'
 
 and run `pod install`.
 
-#### Manually
-
-Due to the way we develop and use universal modules at Expo (with Cocoapods), we don't support the `xcodeproj` way to install the module in iOS projects. Sorry for the inconvenience!
-
 #### Common Setup
 
 [Now follow the setup instructions in the docs.](https://rnfirebase.io/docs/master/invites/ios#Update-%3Ccode%3EAppDelegate.m%3C/code%3E)

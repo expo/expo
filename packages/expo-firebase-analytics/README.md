@@ -27,10 +27,6 @@ pod 'EXFirebaseAnalytics', path: '../node_modules/expo-firebase-analytics/ios'
 
 and run `pod install`.
 
-#### Manually
-
-Due to the way we develop and use universal modules at Expo (with Cocoapods), we don't support the `xcodeproj` way to install the module in iOS projects. Sorry for the inconvenience!
-
 #### Common Setup
 
 **Optional: Enable AdSupport**

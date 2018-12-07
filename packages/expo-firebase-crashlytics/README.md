@@ -24,10 +24,6 @@ pod 'EXFirebaseCrashlytics', path: '../node_modules/expo-firebase-crashlytics/io
 
 and run `pod install`.
 
-#### Manually
-
-Due to the way we develop and use universal modules at Expo (with Cocoapods), we don't support the `xcodeproj` way to install the module in iOS projects. Sorry for the inconvenience!
-
 #### Common Setup
 
 **Add the Crashlytics run script**
