@@ -10,7 +10,7 @@ Pod::Spec.new do |s|
   s.license        = package['license']
   s.author         = package['author']
   s.homepage       = package['homepage']
-  s.platform       = :ios, '9.0'
+  s.platform       = :ios, '10.0'
   s.source         = { git: 'https://github.com/expo/expo-task-manager-interface.git' }
   s.source_files   = 'EXTaskManagerInterface/**/*.{h,m}'
   s.preserve_paths = 'EXTaskManagerInterface/**/*.{h,m}'
