@@ -31,7 +31,7 @@
     _appLoader = [[EXAppLoader alloc] initWithManifestUrl:manifestUrl];
 
     [_appLoader setDelegate:self];
-    [_appLoader requestFromCache];
+    [_appLoader request];
   }
   return self;
 }
