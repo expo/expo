@@ -30,6 +30,12 @@
 + (BOOL)supportsLaunchReason:(EXTaskLaunchReason)launchReason;
 
 /**
+ *  Version of the consumer. Increase returned number in case of any breaking changes made to the task consumer,
+ *  so the existing tasks will be automatically unregistered when the native code gets upgraded.
+ */
++ (NSUInteger)taskConsumerVersion;
+
+/**
  *  Sets options for the task.
  */
 - (void)setOptions:(nonnull NSDictionary *)options;

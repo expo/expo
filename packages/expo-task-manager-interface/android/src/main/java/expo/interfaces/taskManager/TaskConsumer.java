@@ -8,7 +8,16 @@ import android.content.Intent;
 import java.lang.ref.WeakReference;
 import java.util.Map;
 
+import expo.core.interfaces.DoNotStrip;
+
 public abstract class TaskConsumer implements TaskConsumerInterface {
+  /**
+   *  Version of the consumer. Increase this number in case of any breaking changes made to the task consumer,
+   *  so the existing tasks will be automatically unregistered when the native code gets upgraded.
+   */
+  @DoNotStrip
+  public static int VERSION = 0;
+
   private WeakReference<Context> mContextRef;
   private TaskManagerUtilsInterface mTaskManagerUtils;
 

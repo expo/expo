@@ -18,6 +18,7 @@ import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -489,21 +490,36 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
       if (appUrl != null && tasksConfig != null && tasksConfig.size() > 0) {
         for (String taskName : tasksConfig.keySet()) {
           Map<String, Object> taskConfig = (HashMap<String, Object>) tasksConfig.get(taskName);
-          Map<String, Object> options = (HashMap<String, Object>) taskConfig.get("options");
           String consumerClassString = (String) taskConfig.get("consumerClass");
 
           try {
             Class consumerClass = Class.forName(consumerClassString);
+            int currentConsumerVersion = getConsumerVersion(consumerClass);
+            int previousConsumerVersion = (Integer) taskConfig.get("consumerVersion");
 
-            // register the task using internal method which doesn't change shared preferences.
-            internalRegisterTask(taskName, entry.getKey(), appUrl, consumerClass, options);
-          } catch (Exception e) {
+            // Check whether the current consumer class is compatible with the saved version
+            if (currentConsumerVersion == previousConsumerVersion) {
+              Map<String, Object> options = (HashMap<String, Object>) taskConfig.get("options");
+
+              try {
+                // register the task using internal method which doesn't change shared preferences.
+                internalRegisterTask(taskName, entry.getKey(), appUrl, consumerClass, options);
+              } catch (TaskRegisteringFailedException e) {
+                Log.e(TAG, e.getMessage());
+              }
+            } else {
+              Log.w(TAG, "Task consumer '" + consumerClassString + "' has version '" + currentConsumerVersion + "' that is not compatible with the saved version '" + previousConsumerVersion + "'.");
+            }
+          } catch (ClassNotFoundException e) {
             Log.e(TAG, e.getMessage());
             e.printStackTrace();
             // nothing, just skip it.
           }
         }
       }
+
+      // Update tasks for the app to unregister tasks that couldn't be restored.
+      saveTasksForAppWithId(entry.getKey());
     }
   }
 
@@ -557,10 +573,12 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
 
   private Map<String, Object> exportTaskToMap(TaskInterface task) {
     Map<String, Object> map = new HashMap<>();
-    String consumerClassName = unversionedClassNameForClass(task.getConsumer().getClass());
+    Class consumerClass = task.getConsumer().getClass();
+    String consumerClassName = unversionedClassNameForClass(consumerClass);
 
     map.put("name", task.getName());
     map.put("consumerClass", consumerClassName);
+    map.put("consumerVersion", getConsumerVersion(consumerClass));
     map.put("options", task.getOptions());
 
     return map;
@@ -686,6 +704,18 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
       return jsonToList((JSONArray) json);
     }
     return json;
+  }
+
+  /**
+   *  Returns task consumer's version. Defaults to 0 if `VERSION` static field is not implemented.
+   */
+  private static int getConsumerVersion(Class consumerClass) {
+    try {
+      Field versionField = consumerClass.getDeclaredField("VERSION");
+      return (Integer) versionField.get(null);
+    } catch (NoSuchFieldException | IllegalAccessException e) {
+      return 0;
+    }
   }
 
   /**

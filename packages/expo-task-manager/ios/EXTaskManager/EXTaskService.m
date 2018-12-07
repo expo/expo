@@ -134,7 +134,7 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
   if ([task.consumer respondsToSelector:@selector(didUnregister)]) {
     [task.consumer didUnregister];
   }
-  [self _removeTaskFromConfig:task];
+  [self _removeTaskFromConfig:task.name appId:task.appId];
 }
 
 /**
@@ -415,20 +415,20 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
 /**
  *  Removes given task from the config of registered tasks.
  */
-- (void)_removeTaskFromConfig:(nonnull EXTask *)task
+- (void)_removeTaskFromConfig:(NSString *)taskName appId:(NSString *)appId
 {
   NSMutableDictionary *dict = [[self _dictionaryWithRegisteredTasks] mutableCopy];
-  NSMutableDictionary *appDict = [dict[task.appId] mutableCopy];
+  NSMutableDictionary *appDict = [dict[appId] mutableCopy];
   NSMutableDictionary *tasks = [appDict[@"tasks"] mutableCopy];
 
   if (tasks != nil) {
-    [tasks removeObjectForKey:task.name];
+    [tasks removeObjectForKey:taskName];
 
     if ([tasks count] > 0) {
       [appDict setObject:tasks forKey:@"tasks"];
-      [dict setObject:appDict forKey:task.appId];
+      [dict setObject:appDict forKey:appId];
     } else {
-      [dict removeObjectForKey:task.appId];
+      [dict removeObjectForKey:appId];
     }
     [self _saveConfigWithDictionary:dict];
   }
@@ -475,6 +475,7 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
  *        "<taskName>": {
  *          "name": "task's name",
  *          "consumerClass": "name of consumer class, e.g. EXLocationTaskConsumer",
+ *          "consumerVersion": 1,
  *          "options": {},
  *        },
  *      }
@@ -495,6 +496,7 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
   return @{
            @"name": task.name,
            @"consumerClass": [self _unversionedClassNameFromClass:task.consumer.class],
+           @"consumerVersion": @([self _consumerVersion:task.consumer.class]),
            @"options": EXNullIfNil([task options]),
            };
 }
@@ -593,17 +595,32 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
 
       for (NSString *taskName in tasksConfig) {
         NSDictionary *taskConfig = tasksConfig[taskName];
-        NSDictionary *options = taskConfig[@"options"];
-        Class consumerClass = NSClassFromString(taskConfig[@"consumerClass"]);
+        NSString *consumerClassName = taskConfig[@"consumerClass"];
+        Class consumerClass = NSClassFromString(consumerClassName);
 
         if (consumerClass != nil) {
-          [self _internalRegisterTaskWithName:taskName
-                                        appId:appId
-                                       appUrl:appUrl
-                                consumerClass:consumerClass
-                                      options:options];
+          NSUInteger currentConsumerVersion = [self _consumerVersion:consumerClass];
+          NSUInteger previousConsumerVersion = [taskConfig[@"consumerVersion"] unsignedIntegerValue];
+
+          // Check whether the current consumer class is compatible with the saved version
+          if (currentConsumerVersion == previousConsumerVersion) {
+            [self _internalRegisterTaskWithName:taskName
+                                          appId:appId
+                                         appUrl:appUrl
+                                  consumerClass:consumerClass
+                                        options:taskConfig[@"options"]];
+          } else {
+            EXLogWarn(
+                      @"EXTaskService: Task consumer '%@' has version '%d' that is not compatible with the saved version '%d'.",
+                      consumerClassName,
+                      currentConsumerVersion,
+                      previousConsumerVersion
+                      );
+            [self _removeTaskFromConfig:taskName appId:appId];
+          }
         } else {
-          EXLogWarn(@"EXTaskManager: Cannot restore task '%@' because consumer class doesn't exist.", taskName);
+          EXLogWarn(@"EXTaskService: Cannot restore task '%@' because consumer class doesn't exist.", taskName);
+          [self _removeTaskFromConfig:taskName appId:appId];
         }
       }
     }
@@ -686,6 +703,17 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
     case UIApplicationStateBackground:
       return @"background";
   }
+}
+
+/**
+ *  Returns task consumer's version. Defaults to 0 if `taskConsumerVersion` is not implemented.
+ */
+- (NSUInteger)_consumerVersion:(Class)consumerClass
+{
+  if (consumerClass && [consumerClass respondsToSelector:@selector(taskConsumerVersion)]) {
+    return [consumerClass taskConsumerVersion];
+  }
+  return 0;
 }
 
 /**
