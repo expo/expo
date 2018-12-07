@@ -1,4 +1,3 @@
-import warning from 'fbjs/lib/warning';
 import { NativeModules } from 'react-native';
 import Notifications from '../Notifications/Notifications';
 import { mockPlatformIOS, mockPlatformAndroid } from '../../test/mocking';
@@ -6,7 +5,6 @@ import { mockPlatformIOS, mockPlatformAndroid } from '../../test/mocking';
 const mockNotificationObject = { origin: 'selected', data: {} } as any;
 const mockNotificationString = JSON.stringify({ origin: 'received', data: {} });
 
-jest.mock('fbjs/lib/warning');
 jest.mock('react-native/Libraries/EventEmitter/RCTDeviceEventEmitter', () => {
   const { EventEmitter } = require('fbemitter');
   return new EventEmitter();
@@ -104,7 +102,20 @@ describe('Notifications', () => {
     expect(NativeModules.ExponentNotifications.scheduleLocalNotification).toHaveBeenCalledTimes(1);
   });
 
-  it('properly schedules notification when options are correct (time passed as date obj)', async () => {
+  it('properly schedules notification when options are correct (time passed as date obj, repeated, iOS)', async () => {
+    mockPlatformIOS();
+    NativeModules.ExponentNotifications.scheduleLocalNotification = jest.fn();
+
+    await Notifications.scheduleLocalNotificationAsync(mockedScheduledNotifIOS, {
+      time: new Date(),
+      repeat: 'minute',
+    });
+
+    expect(NativeModules.ExponentNotifications.legacyScheduleLocalRepeatingNotification).toHaveBeenCalledTimes(1);
+  });
+
+  it('properly schedules notification when options are correct (time passed as date obj, repeated, Android)', async () => {
+    mockPlatformAndroid();
     NativeModules.ExponentNotifications.scheduleLocalNotification = jest.fn();
 
     await Notifications.scheduleLocalNotificationAsync(mockedScheduledNotifIOS, {
@@ -115,12 +126,69 @@ describe('Notifications', () => {
     expect(NativeModules.ExponentNotifications.scheduleLocalNotification).toHaveBeenCalledTimes(1);
   });
 
-  it('properly schedules notification when options are correct (time passed as number)', async () => {
+  it('properly schedules notification when options are correct (time passed as number, repeated, iOS)', async () => {
+    mockPlatformIOS();
     NativeModules.ExponentNotifications.scheduleLocalNotification = jest.fn();
 
     await Notifications.scheduleLocalNotificationAsync(mockedScheduledNotifIOS, {
       time: new Date().getTime() + 1000,
       repeat: 'minute',
+    });
+
+    expect(NativeModules.ExponentNotifications.legacyScheduleLocalRepeatingNotification).toHaveBeenCalledTimes(1);
+  });
+
+  it('properly schedules notification when options are correct (time passed as number, repeated, Android)', async () => {
+    mockPlatformAndroid();
+    NativeModules.ExponentNotifications.scheduleLocalNotification = jest.fn();
+
+    await Notifications.scheduleLocalNotificationAsync(mockedScheduledNotifIOS, {
+      time: new Date().getTime() + 1000,
+      repeat: 'minute',
+    });
+
+    expect(NativeModules.ExponentNotifications.scheduleLocalNotification).toHaveBeenCalledTimes(1);
+  });
+
+  it('properly schedules notification when options are correct (time passed as date obj, not repeated, iOS)', async () => {
+    mockPlatformIOS();
+    NativeModules.ExponentNotifications.scheduleLocalNotification = jest.fn();
+
+    await Notifications.scheduleLocalNotificationAsync(mockedScheduledNotifIOS, {
+      time: new Date(),
+    });
+
+    expect(NativeModules.ExponentNotifications.scheduleLocalNotification).toHaveBeenCalledTimes(1);
+  });
+
+  it('properly schedules notification when options are correct (time passed as date obj, not repeated, Android)', async () => {
+    mockPlatformAndroid();
+    NativeModules.ExponentNotifications.scheduleLocalNotification = jest.fn();
+
+    await Notifications.scheduleLocalNotificationAsync(mockedScheduledNotifIOS, {
+      time: new Date(),
+    });
+
+    expect(NativeModules.ExponentNotifications.scheduleLocalNotification).toHaveBeenCalledTimes(1);
+  });
+
+  it('properly schedules notification when options are correct (time passed as number, not repeated, iOS)', async () => {
+    mockPlatformIOS();
+    NativeModules.ExponentNotifications.scheduleLocalNotification = jest.fn();
+
+    await Notifications.scheduleLocalNotificationAsync(mockedScheduledNotifIOS, {
+      time: new Date().getTime() + 1000,
+    });
+
+    expect(NativeModules.ExponentNotifications.scheduleLocalNotification).toHaveBeenCalledTimes(1);
+  });
+
+  it('properly schedules notification when options are correct (time passed as number, not repeated, Android)', async () => {
+    mockPlatformAndroid();
+    NativeModules.ExponentNotifications.scheduleLocalNotification = jest.fn();
+
+    await Notifications.scheduleLocalNotificationAsync(mockedScheduledNotifIOS, {
+      time: new Date().getTime() + 1000,
     });
 
     expect(NativeModules.ExponentNotifications.scheduleLocalNotification).toHaveBeenCalledTimes(1);
@@ -135,14 +203,13 @@ describe('Notifications', () => {
     await Notifications.scheduleLocalNotificationAsync(mockedScheduledNotifIOS, {
       // we pass time as date obj, but below it should be passed as number
       time: notifDate,
-      repeat: 'minute',
     });
 
     expect(spy).toHaveBeenCalledTimes(1);
 
     expect(spy).toHaveBeenCalledWith(
       { data: {}, ...mockedScheduledNotifIOS },
-      { repeat: 'minute', time: notifDate.getTime() }
+      { time: notifDate.getTime() }
     );
   });
 
@@ -227,15 +294,18 @@ a number representing Unix Epoch time in milliseconds, or a valid date object.`
   it('properly warns when time value prior to now is used in scheduled notification options', async () => {
     NativeModules.ExponentNotifications.scheduleLocalNotification = jest.fn();
 
+    const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => null);
+
     await Notifications.scheduleLocalNotificationAsync(mockedScheduledNotifIOS, {
       time: new Date().getTime() / 1000, // accidently pass seconds instead of milliseconds
     });
 
-    expect(warning).toBeCalledWith(
-      false,
+    expect(consoleWarnSpy).toBeCalledWith(
       `Provided value for "time" is before the current date. Did you possibly \
 pass number of seconds since Unix Epoch instead of number of milliseconds?`
     );
+
+    consoleWarnSpy.mockRestore();
 
     expect(NativeModules.ExponentNotifications.scheduleLocalNotification).toHaveBeenCalledTimes(1);
   });

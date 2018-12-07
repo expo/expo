@@ -1,10 +1,10 @@
 import nullthrows from 'nullthrows';
 import React from 'react';
-import { View, ViewPropTypes, requireNativeComponent } from 'react-native';
+import { View, requireNativeComponent } from 'react-native';
 
 import { AdIconViewContext, AdIconViewContextValue } from './withNativeAd';
 
-type Props = React.ElementProps<View>;
+type Props = React.ComponentProps<typeof View>;
 
 export default class AdIconView extends React.Component<Props> {
   render() {
@@ -21,6 +21,4 @@ export default class AdIconView extends React.Component<Props> {
 
 // The native AdIconView has the same props as regular View
 export type NativeAdIconView = React.Component<Props>;
-export const NativeAdIconView = requireNativeComponent<Props>('AdIconView', {
-  propTypes: ViewPropTypes,
-});
+export const NativeAdIconView = requireNativeComponent('AdIconView');

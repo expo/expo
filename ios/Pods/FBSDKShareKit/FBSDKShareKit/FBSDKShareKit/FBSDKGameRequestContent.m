@@ -19,7 +19,7 @@
 #import "FBSDKGameRequestContent.h"
 
 #import "FBSDKCoreKit+Internal.h"
-#import "FBSDKShareError.h"
+#import "FBSDKShareConstants.h"
 #import "FBSDKShareUtility.h"
 
 #define FBSDK_APP_REQUEST_CONTENT_TO_KEY @"to"
@@ -84,7 +84,9 @@
   if (mustHaveobjectID ^ hasobjectID) {
     if (errorRef != NULL) {
       NSString *message = @"The objectID is required when the actionType is either send or askfor.";
-      *errorRef = [FBSDKShareError requiredArgumentErrorWithName:@"objectID" message:message];
+      *errorRef = [NSError fbRequiredArgumentErrorWithDomain:FBSDKShareErrorDomain
+                                                        name:@"objectID"
+                                                     message:message];
     }
     return NO;
   }
@@ -94,14 +96,20 @@
   if (hasTo && hasFilters) {
     if (errorRef != NULL) {
       NSString *message = @"Cannot specify to and filters at the same time.";
-      *errorRef = [FBSDKShareError invalidArgumentErrorWithName:@"recipients" value:_recipients message:message];
+      *errorRef = [NSError fbInvalidArgumentErrorWithDomain:FBSDKShareErrorDomain
+                                                       name:@"recipients"
+                                                      value:_recipients
+                                                    message:message];
     }
     return NO;
   }
   if (hasTo && hasSuggestions) {
     if (errorRef != NULL) {
       NSString *message = @"Cannot specify to and suggestions at the same time.";
-      *errorRef = [FBSDKShareError invalidArgumentErrorWithName:@"recipients" value:_recipients message:message];
+      *errorRef = [NSError fbInvalidArgumentErrorWithDomain:FBSDKShareErrorDomain
+                                                       name:@"recipients"
+                                                      value:_recipients
+                                                    message:message];
     }
     return NO;
   }
@@ -109,7 +117,10 @@
   if (hasFilters && hasSuggestions) {
     if (errorRef != NULL) {
       NSString *message = @"Cannot specify filters and suggestions at the same time.";
-      *errorRef = [FBSDKShareError invalidArgumentErrorWithName:@"recipientSuggestions" value:_recipientSuggestions message:message];
+      *errorRef = [NSError fbInvalidArgumentErrorWithDomain:FBSDKShareErrorDomain
+                                                       name:@"recipientSuggestions"
+                                                      value:_recipientSuggestions
+                                                    message:message];
     }
     return NO;
   }
@@ -117,7 +128,10 @@
   if ([_data length] > 255) {
     if (errorRef != NULL) {
       NSString *message = @"The data cannot be longer than 255 characters";
-      *errorRef = [FBSDKShareError invalidArgumentErrorWithName:@"data" value:_data message:message];
+      *errorRef = [NSError fbInvalidArgumentErrorWithDomain:FBSDKShareErrorDomain
+                                                       name:@"data"
+                                                      value:_data
+                                                    message:message];
     }
     return NO;
   }

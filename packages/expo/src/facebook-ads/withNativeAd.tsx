@@ -1,14 +1,7 @@
 import { EventSubscription } from 'fbemitter';
 import nullthrows from 'nullthrows';
-import PropTypes from 'prop-types';
 import React from 'react';
-import {
-  Platform,
-  View,
-  ViewPropTypes,
-  findNodeHandle,
-  requireNativeComponent,
-} from 'react-native';
+import { Platform, View, findNodeHandle, requireNativeComponent } from 'react-native';
 
 import { NativeAdIconView } from './AdIconView';
 import { NativeAdMediaView } from './AdMediaView';
@@ -193,17 +186,11 @@ export default function withNativeAd<P>(
 type NativeAdViewProps = {
   adsManager: string;
   onAdLoaded?: (event: { nativeEvent: NativeAd }) => void;
-} & React.ElementProps<View>;
+} & React.ComponentProps<typeof View>;
 
 type NativeAdView = React.Component<NativeAdViewProps>;
 
-const NativeAdView = requireNativeComponent('CTKNativeAd', {
-  propTypes: {
-    ...ViewPropTypes,
-    adsManager: PropTypes.string.isRequired,
-    onAdLoaded: PropTypes.func,
-  },
-});
+const NativeAdView = requireNativeComponent('CTKNativeAd');
 
 // React contexts for ad views that need to register with the ad container
 export type AdIconViewContextValue = {

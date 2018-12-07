@@ -131,14 +131,14 @@ typedef NS_ENUM(NSUInteger, FBSDKLoginBehavior)
 @warning use logInWithReadPermissions:fromViewController:handler: instead
  */
 - (void)logInWithReadPermissions:(NSArray *)permissions handler:(FBSDKLoginManagerRequestTokenHandler)handler
-__attribute__ ((deprecated("use logInWithReadPermissions:fromViewController:handler: instead")));
+DEPRECATED_MSG_ATTRIBUTE("use logInWithReadPermissions:fromViewController:handler: instead");
 
 /**
 
 @warning use logInWithPublishPermissions:fromViewController:handler: instead
  */
 - (void)logInWithPublishPermissions:(NSArray *)permissions handler:(FBSDKLoginManagerRequestTokenHandler)handler
-__attribute__ ((deprecated("use logInWithPublishPermissions:fromViewController:handler: instead")));
+DEPRECATED_MSG_ATTRIBUTE("use logInWithPublishPermissions:fromViewController:handler: instead");
 
 /**
   Logs the user in or authorizes additional permissions.
@@ -182,6 +182,21 @@ __attribute__ ((deprecated("use logInWithPublishPermissions:fromViewController:h
  */
 - (void)logInWithPublishPermissions:(NSArray *)permissions
                  fromViewController:(UIViewController *)fromViewController
+                            handler:(FBSDKLoginManagerRequestTokenHandler)handler;
+
+
+/**
+  Requests user's permission to reathorize application's data access, after it has expired due to inactivity.
+ @param fromViewController the view controller to present from. If nil, the topmost view controller will be
+ automatically determined as best as possible.
+ @param handler the callback.
+ Use this method when you need to reathorize your app's access to user data via Graph API, after such an access has expired.
+ You should provide as much context to the user as possible as to why you need to reauthorize the access, the scope of
+ access being reathorized, and what added value your app provides when the access is reathorized.
+ You can inspect the result.declinedPermissions to also provide more information to the user if they decline permissions.
+ This method will present UI the user. You typically should call this if `[FBSDKAccessToken isDataAccessExpired]` returns true.
+ */
+- (void)reauthorizeDataAccess:(UIViewController *)fromViewController
                             handler:(FBSDKLoginManagerRequestTokenHandler)handler;
 
 /**

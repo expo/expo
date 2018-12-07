@@ -66,7 +66,7 @@ typedef void (^FBSDKDeferredAppInviteHandler)(NSURL *url);
 @warning This method is no longer available and will always return NO.
  */
 + (BOOL)fetchDeferredAppInvite:(FBSDKDeferredAppInviteHandler)handler
-__attribute__((deprecated("This method is no longer available.")));;
+DEPRECATED_MSG_ATTRIBUTE("This method is no longer available.");
 
 /*
   Call this method to fetch promotion code from the url, if it's present. This function

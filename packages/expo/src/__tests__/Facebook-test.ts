@@ -1,5 +1,5 @@
 import { NativeModules } from 'react-native';
-import * as Facebook from '../Facebook';
+import * as Facebook from '../Facebook/Facebook';
 
 import { describeCrossPlatform, mockProperty, unmockAllProperties } from '../../test/mocking';
 

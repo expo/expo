@@ -121,7 +121,7 @@ public class GLObjectManagerModule extends ExportedModule implements ModuleRegis
   public void createContextAsync(final Promise promise) {
     final GLContext glContext = new GLContext(this);
 
-    glContext.initialize(getContext(), null, new Runnable() {
+    glContext.initialize(null, new Runnable() {
       @Override
       public void run() {
         Bundle results = new Bundle();

@@ -18,6 +18,16 @@
 
 #import "FBSDKMeasurementEvent_Internal.h"
 
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
+
+NSNotificationName const FBSDKMeasurementEventNotification = @"com.facebook.facebook-objc-sdk.measurement_event";
+
+#else
+
+NSString *const FBSDKMeasurementEventNotification = @"com.facebook.facebook-objc-sdk.measurement_event";
+
+#endif
+
 NSString *const FBSDKMeasurementEventNotificationName = @"com.facebook.facebook-objc-sdk.measurement_event";
 
 NSString *const FBSDKMeasurementEventNameKey = @"event_name";
@@ -46,7 +56,7 @@ NSString *const FBSDKAppLinkNavigateBackToReferrerEventName = @"al_ref_back_out"
     NSDictionary<NSString *, id> *userInfo = @{FBSDKMeasurementEventNameKey : _name,
                                                FBSDKMeasurementEventArgsKey : _args};
 
-    [center postNotificationName:FBSDKMeasurementEventNotificationName
+    [center postNotificationName:FBSDKMeasurementEventNotification
                           object:self
                         userInfo:userInfo];
 }
