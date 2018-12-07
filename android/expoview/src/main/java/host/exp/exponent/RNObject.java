@@ -105,9 +105,7 @@ public class RNObject {
       mInstance = getConstructorWithTypes(mClazz, objectsToClasses(args)).newInstance(args);
     } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
       EXL.e(TAG, e);
-      e.printStackTrace();
     }
-
     return this;
   }
 
