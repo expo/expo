@@ -2,6 +2,7 @@ package expo.modules.barcodescanner;
 
 import android.content.Context;
 import android.hardware.SensorManager;
+import android.util.DisplayMetrics;
 import android.view.OrientationEventListener;
 import android.view.View;
 import android.view.ViewGroup;
@@ -65,8 +66,13 @@ public class BarCodeScannerView extends ViewGroup {
   public void onBarCodeScanned(BarCodeScannerResult barCode) {
     EventEmitter emitter = mModuleRegistry.getModule(EventEmitter.class);
     convertResult(barCode);
-    BarCodeScannedEvent event = BarCodeScannedEvent.obtain(this.getId(), barCode, barCode.getHeight(), barCode.getWidth());
+    BarCodeScannedEvent event = BarCodeScannedEvent.obtain(this.getId(), barCode, getReactNativePointDensity());
     emitter.emit(this.getId(), event);
+  }
+
+  // returns number of pixels in one React Native Point
+  public float getReactNativePointDensity() {
+    return this.getResources().getDisplayMetrics().density;
   }
 
   private void convertResult(BarCodeScannerResult barCode) {

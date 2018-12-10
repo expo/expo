@@ -2,7 +2,9 @@ package expo.modules.barcodescanner;
 
 import android.graphics.Point;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.util.Pools;
+import android.util.Pair;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,6 +12,7 @@ import java.util.List;
 
 import expo.core.interfaces.services.EventEmitter;
 import expo.interfaces.barcodescanner.BarCodeScannerResult;
+import expo.modules.barcodescanner.utils.Helper;
 
 public class BarCodeScannedEvent extends EventEmitter.BaseEvent {
   private static final Pools.SynchronizedPool<BarCodeScannedEvent> EVENTS_POOL =
@@ -17,27 +20,26 @@ public class BarCodeScannedEvent extends EventEmitter.BaseEvent {
 
   private BarCodeScannerResult mBarCode;
   private int mViewTag;
-  private List<Integer> mCornerPoints;
-  private int mHeight;
-  private int mWidth;
+  private List<Bundle> mCornerPoints;
+  private Bundle mBoundingBox;
 
   private BarCodeScannedEvent() {}
 
-  public static BarCodeScannedEvent obtain(int viewTag, BarCodeScannerResult barCode, int height, int width) {
+  public static BarCodeScannedEvent obtain(int viewTag, BarCodeScannerResult barCode, float density) {
     BarCodeScannedEvent event = EVENTS_POOL.acquire();
     if (event == null) {
       event = new BarCodeScannedEvent();
     }
-    event.init(viewTag, barCode, height, width);
+    event.init(viewTag, barCode, density);
     return event;
   }
 
-  private void init(int viewTag, BarCodeScannerResult barCode, int height, int width) {
+  private void init(int viewTag, BarCodeScannerResult barCode, float density) {
     mViewTag = viewTag;
     mBarCode = barCode;
-    mHeight = height;
-    mWidth = width;
-    mCornerPoints = barCode.getCornerPoints();
+    Pair<List<Bundle>, Bundle> bundles = Helper.getCornerPointsAndBoundingBox(barCode.getCornerPoints(), density);
+    mCornerPoints = bundles.first;
+    mBoundingBox = bundles.second;
   }
 
   /**
@@ -65,10 +67,11 @@ public class BarCodeScannedEvent extends EventEmitter.BaseEvent {
     event.putString("data", mBarCode.getValue());
     event.putInt("type", mBarCode.getType());
     if (!mCornerPoints.isEmpty()) {
-      event.putIntegerArrayList("bounds", (ArrayList<Integer>) mCornerPoints);
-      event.putInt("width", mWidth);
-      event.putInt("height", mHeight);
+      Bundle cornerPoints[] = new Bundle[mCornerPoints.size()];
+      event.putParcelableArray("cornerPoints", mCornerPoints.toArray(cornerPoints));
+      event.putBundle("bounds", mBoundingBox);
     }
+
     return event;
   }
 }

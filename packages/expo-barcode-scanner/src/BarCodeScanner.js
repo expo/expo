@@ -125,33 +125,6 @@ export default class BarCodeScanner extends React.Component<Props> {
     }
 
     if (callback) {
-      if (Platform.OS === 'android' && nativeEvent.bounds) {
-        // convert corner points to user friendly format
-        let maxX = -1,
-            maxY = -1,
-            minX = 1e9,
-            minY = 1e9;
-        nativeEvent.cornerPoints = [];
-        for (let i = 0; i < 4; ++i) {
-          let x = (nativeEvent.bounds[i * 2] / nativeEvent.width) * this.width;
-          let y = (nativeEvent.bounds[i * 2 + 1] / nativeEvent.height) * this.height;
-          maxX = Math.max(maxX, x);
-          minX = Math.min(minX, x);
-          maxY = Math.max(maxY, y);
-          minY = Math.min(minY, y);
-          nativeEvent.cornerPoints.push({ x, y });
-        }
-        delete nativeEvent.bounds;
-        delete nativeEvent.width;
-        delete nativeEvent.height;
-
-        // creating bounding-box
-        nativeEvent.bounds = {
-          origin: { x: minX, y: minY },
-          size: { width: maxX - minX, height: maxY - minY },
-        };
-      }
-
       callback(nativeEvent);
       this.lastEventsTimes[type] = new Date();
       this.lastEvents[type] = JSON.stringify(nativeEvent);
