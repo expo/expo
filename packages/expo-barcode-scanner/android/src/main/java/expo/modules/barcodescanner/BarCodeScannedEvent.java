@@ -64,9 +64,11 @@ public class BarCodeScannedEvent extends EventEmitter.BaseEvent {
     event.putInt("target", mViewTag);
     event.putString("data", mBarCode.getValue());
     event.putInt("type", mBarCode.getType());
-    event.putIntegerArrayList("bounds", (ArrayList<Integer>) mCornerPoints);
-    event.putInt("width", mWidth);
-    event.putInt("height", mHeight);
+    if (!mCornerPoints.isEmpty()) {
+      event.putIntegerArrayList("bounds", (ArrayList<Integer>) mCornerPoints);
+      event.putInt("width", mWidth);
+      event.putInt("height", mHeight);
+    }
     return event;
   }
 }

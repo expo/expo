@@ -125,7 +125,7 @@ export default class BarCodeScanner extends React.Component<Props> {
     }
 
     if (callback) {
-      if (Platform.OS === 'android') {
+      if (Platform.OS === 'android' && nativeEvent.bounds) {
         // convert corner points to user friendly format
         let maxX = -1,
             maxY = -1,

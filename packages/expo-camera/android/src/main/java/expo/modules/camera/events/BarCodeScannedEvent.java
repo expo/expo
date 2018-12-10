@@ -18,7 +18,6 @@ public class BarCodeScannedEvent extends EventEmitter.BaseEvent {
 
   private BarCodeScannerResult mBarCode;
   private int mViewTag;
-  private List<Integer> mCornerPoints;
 
   private BarCodeScannedEvent() {}
 
@@ -34,7 +33,6 @@ public class BarCodeScannedEvent extends EventEmitter.BaseEvent {
   private void init(int viewTag, BarCodeScannerResult barCode) {
     mViewTag = viewTag;
     mBarCode = barCode;
-    mCornerPoints = barCode.getCornerPoints();
   }
 
   /**
@@ -61,7 +59,6 @@ public class BarCodeScannedEvent extends EventEmitter.BaseEvent {
     event.putInt("target", mViewTag);
     event.putString("data", mBarCode.getValue());
     event.putInt("type", mBarCode.getType());
-    event.putIntegerArrayList("bounds", (ArrayList<Integer>) mCornerPoints);
     return event;
   }
 }
