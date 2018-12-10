@@ -63,6 +63,7 @@ import host.exp.exponent.notifications.ReceivedNotificationEvent;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponent.utils.AsyncCondition;
 import host.exp.exponent.utils.ExperienceActivityUtils;
+import host.exp.exponent.utils.ExpoActivityIds;
 import host.exp.expoview.Exponent;
 import host.exp.expoview.R;
 import versioned.host.exp.exponent.ExponentPackageDelegate;
@@ -159,7 +160,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     NativeModuleDepsProvider.getInstance().inject(ExperienceActivity.class, this);
     EventBus.getDefault().registerSticky(this);
 
-    mActivityId = Exponent.getActivityId();
+    mActivityId = ExpoActivityIds.getNextAppActivityId();
 
     // TODO: audit this now that kernel logic is in Java
     boolean shouldOpenImmediately = true;

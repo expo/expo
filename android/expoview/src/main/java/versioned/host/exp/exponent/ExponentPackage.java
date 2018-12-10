@@ -3,6 +3,7 @@
 package versioned.host.exp.exponent;
 
 import android.content.Context;
+import android.os.Looper;
 
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.NativeModule;
@@ -125,6 +126,9 @@ public class ExponentPackage implements ReactPackage {
   }
 
   public static List<SingletonModule> getOrCreateSingletonModules(Context context) {
+    if (Looper.getMainLooper() != Looper.myLooper()) {
+      throw new RuntimeException("Singleton modules must be created on the main thread.");
+    }
     if (sSingletonModules == null) {
       sSingletonModules = new ArrayList<>();
       List<Package> expoPackages = ExperiencePackagePicker.packages();

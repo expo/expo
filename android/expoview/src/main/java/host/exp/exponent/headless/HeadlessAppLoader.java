@@ -16,8 +16,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 import expo.core.interfaces.Package;
 import expo.loaders.provider.AppLoaderProvider;
 import expo.loaders.provider.interfaces.AppLoaderInterface;
@@ -27,10 +25,9 @@ import host.exp.exponent.AppLoader;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.RNObject;
-import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.kernel.ExponentUrls;
-import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponent.utils.AsyncCondition;
+import host.exp.exponent.utils.ExpoActivityIds;
 import host.exp.expoview.Exponent;
 import versioned.host.exp.exponent.ExponentPackage;
 import versioned.host.exp.exponent.ExponentPackageDelegate;
@@ -50,7 +47,6 @@ public class HeadlessAppLoader implements AppLoaderInterface, Exponent.StartReac
   private static String READY_FOR_BUNDLE = "headlessAppReadyForBundle";
 
   private static final Map<Integer, String> sActivityIdToBundleUrl = new HashMap<>();
-  private static int currentActivityId = -2; // start from -2 because -1 is used by kernel
 
   private JSONObject mManifest;
   private String mManifestUrl;
@@ -65,12 +61,8 @@ public class HeadlessAppLoader implements AppLoaderInterface, Exponent.StartReac
   private AppLoaderProvider.Callback mCallback;
   private int mActivityId;
 
-  @Inject
-  private ExponentSharedPreferences mExponentSharedPreferences;
-
   public HeadlessAppLoader(Context context) {
     mContext = context;
-    NativeModuleDepsProvider.getInstance().inject(HeadlessAppLoader.class, this);
   }
 
   public static boolean hasBundleUrlForActivityId(int activityId) {
@@ -86,7 +78,7 @@ public class HeadlessAppLoader implements AppLoaderInterface, Exponent.StartReac
     mManifestUrl = appUrl;
     mAppRecord = new HeadlessAppRecord();
     mCallback = callback;
-    mActivityId = currentActivityId--;
+    mActivityId = ExpoActivityIds.getNextHeadlessActivityId();
 
     new AppLoader(mManifestUrl, true) {
       @Override
@@ -101,7 +93,7 @@ public class HeadlessAppLoader implements AppLoaderInterface, Exponent.StartReac
               String bundleUrl = ExponentUrls.toHttp(manifest.getString("bundleUrl"));
 
               sActivityIdToBundleUrl.put(mActivityId, bundleUrl);
-              setManifest(mManifestUrl, manifest, bundleUrl, null);
+              setManifest(mManifestUrl, manifest, bundleUrl);
             } catch (JSONException e) {
               mCallback.onComplete(false, new Exception(e.getMessage()));
             }
@@ -131,7 +123,7 @@ public class HeadlessAppLoader implements AppLoaderInterface, Exponent.StartReac
     return mAppRecord;
   }
 
-  public void setManifest(String manifestUrl, final JSONObject manifest, final String bundleUrl, final JSONObject kernelOptions) {
+  public void setManifest(String manifestUrl, final JSONObject manifest, final String bundleUrl) {
     mManifestUrl = manifestUrl;
     mManifest = manifest;
     mSdkVersion = manifest.optString(ExponentManifest.MANIFEST_SDK_VERSION_KEY);
@@ -194,12 +186,10 @@ public class HeadlessAppLoader implements AppLoaderInterface, Exponent.StartReac
 
   public void setBundle(final String localBundlePath) {
     if (!isDebugModeEnabled()) {
-      final boolean finalIsReadyForBundle = mIsReadyForBundle;
-
       AsyncCondition.wait(READY_FOR_BUNDLE, new AsyncCondition.AsyncConditionListener() {
         @Override
         public boolean isReady() {
-          return finalIsReadyForBundle;
+          return mIsReadyForBundle;
         }
 
         @Override

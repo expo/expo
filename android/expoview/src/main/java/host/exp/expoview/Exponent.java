@@ -656,11 +656,6 @@ public class Exponent {
     void handleUnreadNotifications(JSONArray unreadNotifications);
   }
 
-  private static int currentActivityId = 0;
-  public static int getActivityId() {
-    return currentActivityId++;
-  }
-
   public boolean shouldRequestDrawOverOtherAppsPermission() {
     return (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(mContext));
   }
