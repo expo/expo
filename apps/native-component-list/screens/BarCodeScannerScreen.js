@@ -6,9 +6,6 @@ import { BarCodeScanner, Permissions, Svg, ScreenOrientation } from 'expo';
 
 const BUTTON_COLOR = Platform.OS === 'ios' ? '#fff' : '#666';
 
-const CANVAS_WIDTH = 300;
-const CANVAS_HEIGHT = 400;
-
 export default class BarcodeScannerExample extends React.Component {
   static navigationOptions = {
     title: '<BarCodeScanner />',
@@ -33,6 +30,14 @@ export default class BarcodeScannerExample extends React.Component {
     this.setState({ isPermissionsGranted: status === 'granted' });
   };
 
+  setCanvasDimentions = e => {
+    this.setState({
+      canvasWidth: e.nativeEvent.layout.width,
+      canvasHeight: e.nativeEvent.layout.height,
+      haveDimentions: true
+    });
+  }
+
   render() {
     if (!this.state.isPermissionsGranted) {
       return (
@@ -49,40 +54,47 @@ export default class BarcodeScannerExample extends React.Component {
       //console.log(this.state.cornerPoints);
       //console.log('width, height ', this.state.width, this.state.height);
       for (let i = 0; i < 4; ++i) {
-        let x = this.state.cornerPoints[i * 2]/this.state.width*CANVAS_WIDTH
-        let y = this.state.cornerPoints[i * 2 + 1]/this.state.height*CANVAS_HEIGHT;
+        let x = (this.state.cornerPoints[i * 2] / this.state.width) * this.state.canvasWidth;
+        let y = (this.state.cornerPoints[i * 2 + 1] / this.state.height) * this.state.canvasHeight;
       //  console.log("zrobilem ", x, " ", y);
         circles.push(
           <Svg.Circle cx={x} cy={y} r={2} strokeWidth={0.1} stroke="gray" fill="green" />
         );
       }
     }
-    return (
-      <ScrollView style={styles.container}>
-        <View  height={CANVAS_HEIGHT} width={CANVAS_WIDTH} >
-          <BarCodeScanner
-            height={CANVAS_HEIGHT}
-            width={CANVAS_WIDTH}
-            onBarCodeScanned={this.handleBarCodeScanned}
-            barCodeTypes={[
-              BarCodeScanner.Constants.BarCodeType.qr,
-              BarCodeScanner.Constants.BarCodeType.pdf417,
-              BarCodeScanner.Constants.BarCodeType.code128,
-            ]}
-            type={this.state.type}
-            style={styles.preview}
-          />
 
-          <Svg height={CANVAS_HEIGHT} width={CANVAS_WIDTH} style={styles.svg}>
-            <Svg.Circle cx={150} cy={200} r={2} strokeWidth={2.5} stroke="#e74c3c" fill="#f1c40f" />
+    return (
+      <View style={styles.container}>
+        <BarCodeScanner
+          onLayout={this.setCanvasDimentions}
+          onBarCodeScanned={this.handleBarCodeScanned}
+          barCodeTypes={[
+            BarCodeScanner.Constants.BarCodeType.qr,
+            BarCodeScanner.Constants.BarCodeType.pdf417,
+            BarCodeScanner.Constants.BarCodeType.code128,
+          ]}
+          type={this.state.type}
+          style={styles.preview}
+        />
+
+        {this.state.haveDimentions && (
+          <Svg height={this.state.canvasHeight} width={this.state.canvasWidth} style={styles.svg}>
+            <Svg.Circle
+              cx={this.state.canvasWidth / 2}
+              cy={this.state.canvasHeight / 2}
+              r={2}
+              strokeWidth={2.5}
+              stroke="#e74c3c"
+              fill="#f1c40f"
+            />
             {circles}
           </Svg>
-        </View>
+        )}
 
         <View style={styles.toolbar}>
           <Button color={BUTTON_COLOR} title="Toggle Direction" onPress={this.toggleType} />
         </View>
-      </ScrollView>
+      </View>
     );
   }
 
@@ -105,11 +117,9 @@ export default class BarcodeScannerExample extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    left: 20,
-    top: 40,
   },
   preview: {
-    position: 'absolute',
+    ...StyleSheet.absoluteFillObject,
     backgroundColor: 'black',
   },
   toolbar: {
@@ -117,6 +127,8 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
+    paddingVertical: 10,
+    paddingHorizontal: 10,
     flexDirection: 'row',
     justifyContent: 'space-between',
     backgroundColor: 'rgba(255,255,255,0.2)',

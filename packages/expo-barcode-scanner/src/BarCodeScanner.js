@@ -79,7 +79,7 @@ export default class BarCodeScanner extends React.Component<Props> {
         {...nativeProps}
         ref={this.setReference}
         onBarCodeScanned={this.onObjectDetected(onBarCodeScanned || onBarCodeRead)} // onBarCodeRead is deprecated
-      /> 
+      />
     );
   }
 
@@ -104,6 +104,7 @@ export default class BarCodeScanner extends React.Component<Props> {
     }
 
     if (callback) {
+      
       callback(nativeEvent);
       this.lastEventsTimes[type] = new Date();
       this.lastEvents[type] = JSON.stringify(nativeEvent);

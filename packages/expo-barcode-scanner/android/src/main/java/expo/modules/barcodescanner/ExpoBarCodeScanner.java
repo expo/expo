@@ -21,7 +21,7 @@ public class ExpoBarCodeScanner {
   private Camera mCamera = null;
   private int mCameraType = 0;
   private int mActualDeviceOrientation = 0;
-  public int rotation = 0;
+  private int mRotation = 0;
 
   public static ExpoBarCodeScanner getInstance() {
     return ourInstance;
@@ -99,6 +99,7 @@ public class ExpoBarCodeScanner {
     adjustPreviewLayout(mCameraType);
   }
 
+  @SuppressWarnings("SuspiciousNameCombination")
   public void adjustPreviewLayout(int type) {
     if (null == mCamera) {
       return;
@@ -113,7 +114,7 @@ public class ExpoBarCodeScanner {
 
     int degrees = 0;
 
-    switch(mActualDeviceOrientation){
+    switch (mActualDeviceOrientation) {
       case Surface.ROTATION_0:
         degrees = 0;
         break;
@@ -132,20 +133,19 @@ public class ExpoBarCodeScanner {
 
     }
 
-    int result;
-    if(cameraInfo.info.facing==Camera.CameraInfo.CAMERA_FACING_FRONT){
-      result = (cameraInfo.info.orientation + degrees) % 360;
-      result = (360 - result) % 360;
-    }else{
-      result = (cameraInfo.info.orientation - degrees + 360) % 360;
+    if (cameraInfo.info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+      mRotation = (cameraInfo.info.orientation + degrees) % 360;
+      mRotation = (360 - mRotation) % 360;
+    } else {
+      mRotation = (cameraInfo.info.orientation - degrees + 360) % 360;
     }
 
-    rotation = result;
+    mRotation = mRotation;
 
-    mCamera.setDisplayOrientation(result);
+    mCamera.setDisplayOrientation(mRotation);
 
     Camera.Parameters parameters = mCamera.getParameters();
-    parameters.setRotation(result);
+    parameters.setRotation(mRotation);
 
     // set preview size
     // defaults to highest resolution available
@@ -162,7 +162,7 @@ public class ExpoBarCodeScanner {
 
     cameraInfo.previewHeight = height;
     cameraInfo.previewWidth = width;
-    if (result == 90 || result ==  270) {
+    if (mRotation == 90 || mRotation == 270) {
       cameraInfo.previewHeight = width;
       cameraInfo.previewWidth = height;
     }
@@ -189,6 +189,10 @@ public class ExpoBarCodeScanner {
         mCameras.add(CAMERA_TYPE_BACK);
       }
     }
+  }
+
+  public int getRotation() {
+    return mRotation;
   }
 
   private class CameraInfoWrapper {

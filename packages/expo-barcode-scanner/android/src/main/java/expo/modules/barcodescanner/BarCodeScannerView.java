@@ -152,7 +152,7 @@ public class BarCodeScannerView extends ViewGroup {
     double ratio = this.mViewFinder.getRatio();
 
     // Just fill the given space
-    if (ratio * height < width + 1e-5) {
+    if (ratio * height < width) {
       viewfinderWidth = (int) (ratio * height);
       viewfinderHeight = (int) height;
     } else {
