@@ -151,6 +151,7 @@ Although there are server-side SDKs in several languages to help you send push n
 Send a POST request to `https://exp.host/--/api/v2/push/send` with the following HTTP headers:
 
 ```
+host: exp.host
 accept: application/json
 accept-encoding: gzip, deflate
 content-type: application/json
