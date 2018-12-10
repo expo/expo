@@ -21,7 +21,8 @@ export default class BarcodeScannerExample extends React.Component {
 
   componentDidMount() {
     if (this.temp) {
-      ScreenOrientation.allowAsync(ScreenOrientation.Orientation.ALL); this.temp--;
+      ScreenOrientation.allowAsync(ScreenOrientation.Orientation.ALL);
+      this.temp--;
     }
   }
 
@@ -30,13 +31,13 @@ export default class BarcodeScannerExample extends React.Component {
     this.setState({ isPermissionsGranted: status === 'granted' });
   };
 
-  setCanvasDimentions = e => {
+  setCanvasDimensions = e => {
     this.setState({
       canvasWidth: e.nativeEvent.layout.width,
       canvasHeight: e.nativeEvent.layout.height,
-      haveDimentions: true
+      haveDimensions: true,
     });
-  }
+  };
 
   render() {
     if (!this.state.isPermissionsGranted) {
@@ -51,14 +52,16 @@ export default class BarcodeScannerExample extends React.Component {
     let circles = [];
 
     if (this.state.cornerPoints != null) {
-      //console.log(this.state.cornerPoints);
-      //console.log('width, height ', this.state.width, this.state.height);
-      for (let i = 0; i < 4; ++i) {
-        let x = (this.state.cornerPoints[i * 2] / this.state.width) * this.state.canvasWidth;
-        let y = (this.state.cornerPoints[i * 2 + 1] / this.state.height) * this.state.canvasHeight;
-      //  console.log("zrobilem ", x, " ", y);
+      for (let point of this.state.cornerPoints) {
         circles.push(
-          <Svg.Circle cx={x} cy={y} r={2} strokeWidth={0.1} stroke="gray" fill="green" />
+          <Svg.Circle
+            cx={point.x}
+            cy={point.y}
+            r={2}
+            strokeWidth={0.1}
+            stroke="gray"
+            fill="green"
+          />
         );
       }
     }
@@ -66,7 +69,7 @@ export default class BarcodeScannerExample extends React.Component {
     return (
       <View style={styles.container}>
         <BarCodeScanner
-          onLayout={this.setCanvasDimentions}
+          onLayout={this.setCanvasDimensions}
           onBarCodeScanned={this.handleBarCodeScanned}
           barCodeTypes={[
             BarCodeScanner.Constants.BarCodeType.qr,
@@ -77,7 +80,7 @@ export default class BarcodeScannerExample extends React.Component {
           style={styles.preview}
         />
 
-        {this.state.haveDimentions && (
+        {this.state.haveDimensions && (
           <Svg height={this.state.canvasHeight} width={this.state.canvasWidth} style={styles.svg}>
             <Svg.Circle
               cx={this.state.canvasWidth / 2}
@@ -87,6 +90,17 @@ export default class BarcodeScannerExample extends React.Component {
               stroke="#e74c3c"
               fill="#f1c40f"
             />
+            {this.state.boundingBox && (
+              <Svg.Rect
+                x={this.state.boundingBox.origin.x}
+                y={this.state.boundingBox.origin.y}
+                width={this.state.boundingBox.size.width}
+                height={this.state.boundingBox.size.height}
+                strokeWidth={2}
+                stroke="#9b59b6"
+                fill="none"
+              />
+            )}
             {circles}
           </Svg>
         )}
@@ -110,7 +124,7 @@ export default class BarcodeScannerExample extends React.Component {
     //requestAnimationFrame(() => {
     //  alert(JSON.stringify(data));
   //  });
-    this.setState({ cornerPoints: data.bounds, width: data.width, height: data.height});
+    this.setState({ cornerPoints: data.cornerPoints, boundingBox: data.bounds});
   };
 }
 

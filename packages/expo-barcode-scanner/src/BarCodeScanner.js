@@ -24,6 +24,8 @@ export default class BarCodeScanner extends React.Component<Props> {
   lastEventsTimes: Object;
   barCodeScannerRef: ?Object;
   barCodeScannerHandle: ?number;
+  width: ?number;
+  height: ?number;
 
   static Constants = {
     BarCodeType: ExpoBarCodeScannerModule.BarCodeType,
@@ -52,24 +54,41 @@ export default class BarCodeScanner extends React.Component<Props> {
     this.lastEventsTimes = {};
   }
 
-  static async scanFromURLAsync(url: string, barCodeTypes: Array<BarCodeScanner.Constants.BarCodeType>) {
+  static async scanFromURLAsync(
+    url: string,
+    barCodeTypes: Array<BarCodeScanner.Constants.BarCodeType>
+  ) {
     if (Array.isArray(barCodeTypes) && barCodeTypes.length === 0) {
       throw new Error('No barCodeTypes requested, provide at least one barCodeType for scanner');
     }
 
     if (Platform.OS === 'ios') {
-      if (Array.isArray(barCodeTypes) && !barCodeTypes.includes(BarCodeScanner.Constants.BarCodeType.qr)) {
+      if (
+        Array.isArray(barCodeTypes) &&
+        !barCodeTypes.includes(BarCodeScanner.Constants.BarCodeType.qr)
+      ) {
         // Only QR type is supported on iOS, fail if one tries to use other types
         throw new Error('Only QR type is supported by scanFromURLAsync() on iOS');
       }
       // on iOS use only supported QR type
-      return ExpoBarCodeScannerModule.scanFromURLAsync(url, [BarCodeScanner.Constants.BarCodeType.qr]);
+      return ExpoBarCodeScannerModule.scanFromURLAsync(url, [
+        BarCodeScanner.Constants.BarCodeType.qr,
+      ]);
     }
 
     // on Android if barCodeTypes not provided use all available types
-    const effectiveBarCodeTypes = barCodeTypes || Object.values(ExpoBarCodeScannerModule.BarCodeType);
+    const effectiveBarCodeTypes =
+      barCodeTypes || Object.values(ExpoBarCodeScannerModule.BarCodeType);
     return ExpoBarCodeScannerModule.scanFromURLAsync(url, effectiveBarCodeTypes);
   }
+
+  getDimensions = e => {
+    this.height = e.nativeEvent.layout.height;
+    this.width = e.nativeEvent.layout.width;
+    if (this.props.onLayout != null) {
+      this.props.onLayout(e);
+    }
+  };
 
   render() {
     const nativeProps = this.convertNativeProps(this.props);
@@ -77,6 +96,7 @@ export default class BarCodeScanner extends React.Component<Props> {
     return (
       <ExpoBarCodeScannerView
         {...nativeProps}
+        onLayout={this.getDimensions}
         ref={this.setReference}
         onBarCodeScanned={this.onObjectDetected(onBarCodeScanned || onBarCodeRead)} // onBarCodeRead is deprecated
       />
@@ -95,7 +115,8 @@ export default class BarCodeScanner extends React.Component<Props> {
 
   onObjectDetected = (callback: ?Function) => ({ nativeEvent }: EventCallbackArgumentsType) => {
     const { type } = nativeEvent;
-    if (this.lastEvents[type] &&
+    if (
+      this.lastEvents[type] &&
       this.lastEventsTimes[type] &&
       JSON.stringify(nativeEvent) === this.lastEvents[type] &&
       new Date() - this.lastEventsTimes[type] < EVENT_THROTTLE_MS
@@ -104,7 +125,33 @@ export default class BarCodeScanner extends React.Component<Props> {
     }
 
     if (callback) {
-      
+      if (Platform.OS === 'android') {
+        // convert corner points to user friendly format
+        let maxX = -1,
+            maxY = -1,
+            minX = 1e9,
+            minY = 1e9;
+        nativeEvent.cornerPoints = [];
+        for (let i = 0; i < 4; ++i) {
+          let x = (nativeEvent.bounds[i * 2] / nativeEvent.width) * this.width;
+          let y = (nativeEvent.bounds[i * 2 + 1] / nativeEvent.height) * this.height;
+          maxX = Math.max(maxX, x);
+          minX = Math.min(minX, x);
+          maxY = Math.max(maxY, y);
+          minY = Math.min(minY, y);
+          nativeEvent.cornerPoints.push({ x, y });
+        }
+        delete nativeEvent.bounds;
+        delete nativeEvent.width;
+        delete nativeEvent.height;
+
+        // creating bounding-box
+        nativeEvent.bounds = {
+          origin: { x: minX, y: minY },
+          size: { width: maxX - minX, height: maxY - minY },
+        };
+      }
+
       callback(nativeEvent);
       this.lastEventsTimes[type] = new Date();
       this.lastEvents[type] = JSON.stringify(nativeEvent);

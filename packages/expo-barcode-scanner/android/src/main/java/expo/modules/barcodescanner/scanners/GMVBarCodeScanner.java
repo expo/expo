@@ -22,8 +22,6 @@ import expo.interfaces.barcodescanner.BarCodeScannerResult;
 import expo.interfaces.barcodescanner.BarCodeScannerSettings;
 import expo.modules.barcodescanner.utils.FrameFactory;
 
-import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
-
 public class GMVBarCodeScanner extends ExpoBarCodeScanner {
 
   private String TAG = GMVBarCodeScanner.class.getSimpleName();
