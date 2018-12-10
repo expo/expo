@@ -32,10 +32,10 @@ public class ExpoBarCodeScanner {
   }
 
   public Camera acquireCameraInstance(int type) {
-    mCameraType = type;
     if (mCamera == null && mCameras.contains(type) && null != mCameraTypeToIndex.get(type)) {
       try {
         mCamera = Camera.open(mCameraTypeToIndex.get(type));
+        mCameraType = type;
         adjustPreviewLayout(type);
       } catch (Exception e) {
         Log.e("ExpoBarCodeScanner", "acquireCameraInstance failed", e);
@@ -139,8 +139,6 @@ public class ExpoBarCodeScanner {
     } else {
       mRotation = (cameraInfo.info.orientation - degrees + 360) % 360;
     }
-
-    mRotation = mRotation;
 
     mCamera.setDisplayOrientation(mRotation);
 
