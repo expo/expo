@@ -81,30 +81,30 @@ public class BarCodeScannerView extends ViewGroup {
     // fix for problem with rotation when front camera is in use
     if (mType == ExpoBarCodeScanner.CAMERA_TYPE_FRONT && ((getDeviceOrientation(mContext) % 2) == 0)) {
       for (int i = 1; i < cornerPoints.size(); i += 2) { // convert y-coordinate
-        int convertedCoordinate = barCode.getHeight() - cornerPoints.get(i);
+        int convertedCoordinate = barCode.getReferenceImageHeight() - cornerPoints.get(i);
         cornerPoints.set(i, convertedCoordinate);
       }
     }
     if (mType == ExpoBarCodeScanner.CAMERA_TYPE_FRONT && ((getDeviceOrientation(mContext) % 2) != 0)) {
       for (int i = 0; i < cornerPoints.size(); i += 2) { // convert y-coordinate
-        int convertedCoordinate = barCode.getWidth() - cornerPoints.get(i);
+        int convertedCoordinate = barCode.getReferenceImageWidth() - cornerPoints.get(i);
         cornerPoints.set(i, convertedCoordinate);
       }
     }
     // end of fix
 
     for (int i = 0; i < cornerPoints.size(); i += 2) { // convert x-coordinate
-      int convertedCoordinate = Math.round(cornerPoints.get(i) * previewWidth / (float) barCode.getWidth() + mLeftPadding);
+      int convertedCoordinate = Math.round(cornerPoints.get(i) * previewWidth / (float) barCode.getReferenceImageWidth() + mLeftPadding);
       cornerPoints.set(i, convertedCoordinate);
     }
 
     for (int i = 1; i < cornerPoints.size(); i += 2) { // convert y-coordinate
-      int convertedCoordinate = Math.round(cornerPoints.get(i) * previewHeight / (float) barCode.getHeight() + mTopPadding);
+      int convertedCoordinate = Math.round(cornerPoints.get(i) * previewHeight / (float) barCode.getReferenceImageHeight() + mTopPadding);
       cornerPoints.set(i, convertedCoordinate);
     }
 
-    barCode.setHeight(this.getHeight());
-    barCode.setWidth(this.getWidth());
+    barCode.setReferenceImageHeight(this.getHeight());
+    barCode.setReferenceImageWidth(this.getWidth());
 
     barCode.setCornerPoints(cornerPoints);
   }

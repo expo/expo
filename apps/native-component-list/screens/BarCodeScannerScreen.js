@@ -114,7 +114,9 @@ export default class BarcodeScannerExample extends React.Component {
         )}
 
         <View style={styles.toolbar}>
-          <Button color={BUTTON_COLOR} title="Toggle Direction" onPress={this.toggleType} />
+          <Button color={BUTTON_COLOR} title="Direction" onPress={this.toggleType} />
+          <Button color={BUTTON_COLOR} title="Orientation" onPress={this.toggleScreenOrientationState} />
+          <Button color={BUTTON_COLOR} title="Alerting" onPress={this.toggleAlertingAboutResult} />
         </View>
       </View>
     );

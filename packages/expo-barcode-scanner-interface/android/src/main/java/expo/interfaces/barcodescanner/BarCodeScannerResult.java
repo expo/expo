@@ -5,8 +5,8 @@ import android.graphics.Point;
 import java.util.List;
 
 public class BarCodeScannerResult {
-  private int mWidth;
-  private int mHeight;
+  private int mReferenceImageWidth;
+  private int mReferenceImageHeight;
   private int mType;
   private String mValue;
   private List<Integer> mCornerPoints;
@@ -16,8 +16,8 @@ public class BarCodeScannerResult {
     mType = type;
     mValue = value;
     mCornerPoints = cornerPoints;
-    mHeight = height;
-    mWidth = width;
+    mReferenceImageHeight = height;
+    mReferenceImageWidth = width;
   }
 
   public int getType() {
@@ -34,19 +34,19 @@ public class BarCodeScannerResult {
     mCornerPoints = points;
   }
 
-  public int getHeight() {
-    return mHeight;
+  public int getReferenceImageHeight() {
+    return mReferenceImageHeight;
   }
 
-  public void setHeight(int height) {
-    mHeight = height;
+  public void setReferenceImageHeight(int height) {
+    mReferenceImageHeight = height;
   }
 
-  public int getWidth() {
-    return mWidth;
+  public int getReferenceImageWidth() {
+    return mReferenceImageWidth;
   }
 
-  public void setWidth(int width) {
-    mWidth = width;
+  public void setReferenceImageWidth(int width) {
+    mReferenceImageWidth = width;
   }
 }

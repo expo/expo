@@ -1,4 +1,4 @@
-package expo.interfaces.barcodescanner;
+package expo.modules.barcodescanner.utils;
 
 import android.os.Bundle;
 import android.util.Pair;

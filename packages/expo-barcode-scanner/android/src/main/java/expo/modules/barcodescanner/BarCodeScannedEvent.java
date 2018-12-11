@@ -8,7 +8,7 @@ import java.util.List;
 
 import expo.core.interfaces.services.EventEmitter;
 import expo.interfaces.barcodescanner.BarCodeScannerResult;
-import expo.interfaces.barcodescanner.BarCodeScannerEventHelper;
+import expo.modules.barcodescanner.utils.BarCodeScannerEventHelper;
 
 public class BarCodeScannedEvent extends EventEmitter.BaseEvent {
   private static final Pools.SynchronizedPool<BarCodeScannedEvent> EVENTS_POOL =
