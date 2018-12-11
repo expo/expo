@@ -101,7 +101,7 @@ export default class BackgroundFetchScreen extends React.Component {
 TaskManager.defineTask(BACKGROUND_FETCH_TASK, async () => {
   const now = Date.now();
 
-  console.log(`Got background fetch call at date: ${now.toISOString()}`);
+  console.log(`Got background fetch call at date: ${new Date(now).toISOString()}`);
   await AsyncStorage.setItem(LAST_FETCH_DATE_KEY, now.toString());
 
   return BackgroundFetch.Result.NewData;
