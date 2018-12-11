@@ -7,13 +7,14 @@
 
 - (EXFileSystemPermissionFlags)getExternalPathPermissions:(NSString *)path
 {
-  if ([self notExpoClient] || (![path containsString:@"ExponentExperienceData"])) {
+  // may block access to external paths which contain "ExponentExperienceData" 
+  if ([self shouldNotForbidAccessToExternalDirectories] || (![path containsString:@"ExponentExperienceData"])) {
     return [super getExternalPathPermissions:path];
   }
   return EXFileSystemPermissionNone;
 }
 
-- (bool)notExpoClient {
+- (BOOL)shouldNotForbidAccessToExternalDirectories {
   id<EXConstantsInterface> constantsModule = [[self moduleRegistry] getModuleImplementingProtocol:@protocol(EXConstantsInterface)];
   return ( constantsModule == nil || ( ![@"expo" isEqualToString:constantsModule.appOwnership] ) );
 }
