@@ -21,9 +21,9 @@ describe('requireNativeViewManager', () => {
   it(`sets the "displayName" of the native component`, () => {
     // USING REACT INTERNALS HERE!
     // `getComponentName()` isn't exported from React, so we can't test
-    // the resulting component name the way React will definietely calculate it.
+    // the resulting component name the way React will definitely calculate it.
     // For now, let's use the fact that we know that TestView will be a ForwardRef
-    // which store the underlying function under `render` key and that's how the component name
+    // which stores the underlying render function under the `render` property and that's how the component name
     // is calculated.
     // https://github.com/facebook/react/blob/769b1f270e1251d9dbdce0fcbd9e92e502d059b8/packages/shared/getComponentName.js#L81
     const TestView: any = requireNativeViewManager('ExpoTestView');
