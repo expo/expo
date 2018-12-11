@@ -26,7 +26,8 @@
 // The authentication object for the user.
 @property(nonatomic, readonly) GIDAuthentication *authentication;
 
-// The API scopes requested by the app in an array of |NSString|s.
+// The API scopes requested by the app in an array of |NSString|s. Deprecated.
+// Use |grantedScopes| instead.
 @property(nonatomic, readonly) NSArray *accessibleScopes
     __attribute__((deprecated("Use grantedScopes instead.")));
 
