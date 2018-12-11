@@ -1,17 +1,10 @@
-import { NativeModules, NativeEventEmitter, Platform } from 'react-native';
+import { NativeEventEmitter, Platform } from 'react-native';
+import { UnavailabilityError } from 'expo-errors';
+import ExponentSpeech from './ExponentSpeech';
 
-const { ExponentSpeech } = NativeModules;
+import { SpeechOptions } from './Speech.types';
+
 const SpeechEventEmitter = new NativeEventEmitter(ExponentSpeech);
-
-type Options = {
-  language?: string;
-  pitch?: number;
-  rate?: number;
-  onStart?: () => void;
-  onStopped?: () => void;
-  onDone?: () => void;
-  onError?: (error: Error) => void;
-};
 
 const _CALLBACKS = {};
 let _nextCallbackId = 1;
@@ -62,7 +55,7 @@ function _registerListenersIfNeeded() {
   });
 }
 
-export function speak(text: string, options: Options = {}) {
+export function speak(text: string, options: SpeechOptions = {}) {
   const id = _nextCallbackId++;
   _CALLBACKS[id] = options;
   _registerListenersIfNeeded();
@@ -70,27 +63,27 @@ export function speak(text: string, options: Options = {}) {
 }
 
 export async function isSpeakingAsync(): Promise<boolean> {
-  return await ExponentSpeech.isSpeaking();
+  return ExponentSpeech.isSpeaking();
 }
 
-export function stop() {
-  ExponentSpeech.stop();
+export function stop(): Promise<void> {
+  return ExponentSpeech.stop();
 }
 
-export function pause() {
-  if (Platform.OS === 'ios') {
-    ExponentSpeech.pause();
-  } else {
-    throw new Error('Speech.pause is not available on Android');
+export function pause(): Promise<void> {
+  if (!ExponentSpeech.pause) {
+    throw new UnavailabilityError('Speech', 'pause');
   }
+
+  return ExponentSpeech.pause();
 }
 
-export function resume() {
-  if (Platform.OS === 'ios') {
-    ExponentSpeech.resume();
-  } else {
-    throw new Error('Speech.resume is not available on Android');
+export function resume(): Promise<void> {
+  if (!ExponentSpeech.resume) {
+    throw new UnavailabilityError('Speech', 'resume');
   }
+
+  return ExponentSpeech.resume();
 }
 
 function setSpeakingListener(eventName, callback) {

@@ -506,9 +506,6 @@ public class ImagePickerModule extends ExpoKernelServiceConsumerBaseModule imple
 
   private WritableMap readExif(Uri uri) throws IOException {
     InputStream in = getReactApplicationContext().getContentResolver().openInputStream(uri);
-    if (Build.VERSION.SDK_INT < 21) {
-      return null;
-    }
 
     ExifInterface exifInterface = new ExifInterface(in);
     WritableMap exifMap = Arguments.createMap();

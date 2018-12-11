@@ -1,8 +1,8 @@
+import { Svg } from 'expo';
 import React, { Component } from 'react';
-
 import { PanResponder } from 'react-native';
 
-import Svg, { Path, Text, G, Line, Polyline } from 'react-native-svg';
+const { Path, Text, G, Line, Polyline } = Svg;
 
 class PanExample extends Component {
   static title = 'Bind PanResponder on the SVG Shape';

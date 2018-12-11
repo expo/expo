@@ -1,6 +1,7 @@
+import { Svg } from 'expo';
 import React, { Component } from 'react';
 
-import Svg, {
+const {
   ClipPath,
   Defs,
   RadialGradient,
@@ -13,7 +14,7 @@ import Svg, {
   Path,
   Circle,
   Use,
-} from 'react-native-svg';
+} = Svg;
 
 class ClipPathElement extends Component {
   static title = 'Clip by set clip-path with a path data';

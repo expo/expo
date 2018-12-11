@@ -39,8 +39,7 @@ import * as SMS from 'expo-sms';
 export { SMS };
 import * as TaskManager from 'expo-task-manager';
 export { TaskManager }
-import * as GestureHandler from 'react-native-gesture-handler';
-export { GestureHandler };
+export { GestureHandler } from './GestureHandler';
 export { default as MapView } from 'react-native-maps';
 
 import * as AR from './AR';
@@ -78,7 +77,7 @@ import * as ScreenOrientation from './ScreenOrientation/ScreenOrientation';
 export { ScreenOrientation };
 import * as SecureStore from './SecureStore/SecureStore';
 export { SecureStore };
-import * as Speech from './Speech';
+import * as Speech from './Speech/Speech';
 export { Speech };
 import * as StoreReview from './StoreReview/StoreReview';
 export { StoreReview };

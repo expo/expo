@@ -12,10 +12,11 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "peerDependencies": {
+    "expo-constants": "~1.1.0",
+    "expo-core": "~1.2.0",
     "expo-file-system": "~1.1.0"
   },
   "dependencies": {
-    "expo-core": "~1.2.0",
     "uri-parser": "^1.0.1",
     "url-join": "^4.0.0",
     "url-loader": "^1.1.2"

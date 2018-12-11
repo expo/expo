@@ -1638,8 +1638,8 @@ SPEC CHECKSUMS:
   DoubleConversion: bb338842f62ab1d708ceb63ec3d999f0f3d98ecd
   EXAdsAdMob: 66a3c271540f54f4d964fa72f0c8a953faea5a03
   EXAppAuth: df83ccf9fecfdfad741a930263524f4b75f8e962
-  EXAppLoaderProvider: 568d6ea8176c1cb7d6821bdbf6517453fe74d914
-  EXBackgroundFetch: 3639f45d1d3929ec6ed6b93f45f9c98ca04a4e12
+  EXAppLoaderProvider: 2638ca3d779c8baae37e63352c785e5e2dad70d5
+  EXBackgroundFetch: 1b5444a094fc71e0361c80720482946c4388c9b7
   EXBarCodeScanner: 0ed39b41ccec72935521823eceed3d60c73fc43d
   EXBarCodeScannerInterface: 4453aa03ca1e0a1c9b320aaf4ce5b7d88064d192
   EXCamera: 00936f79aafe16125c6cdc7c7ea2bf2d2c976dfe
@@ -1671,8 +1671,8 @@ SPEC CHECKSUMS:
   EXSensors: 6aa3b3b9906beb0b574a88943d171ebc226b0fe5
   EXSensorsInterface: 9e845bc03ad23a846fa6bcd4e2a60f1d0b1a6906
   EXSMS: 2a2f1abfb2f37b686e892261678c70f39c9b7fa8
-  EXTaskManager: d74f8100d25d52eed4367b8726e98f547ae5980b
-  EXTaskManagerInterface: cc735a1d9dc9a8dde27d4ed779eec6ce96f0a0ab
+  EXTaskManager: c4b3dd6936b827b040899a33e9788b42b17d5c25
+  EXTaskManagerInterface: f9869b0f902ba7ccead16e0768c6dd75603163e0
   Fabric: f233c9492b3bbc1f04e3882986740f7988a58edb
   FBAudienceNetwork: 80275c0a28574ff5ce820abdc251d05e07e6ae7a
   FBSDKCoreKit: fe5f3474499a81963e11e3f3a5c753d0a95ca2b4
@@ -1690,7 +1690,7 @@ SPEC CHECKSUMS:
   GoogleSymbolUtilities: 631ee17048aa5e9ab133470d768ea997a5ef9b96
   GoogleToolboxForMac: 91c824d21e85b31c2aae9bb011c5027c9b4e738f
   GoogleUtilities: 8bbc733218aad26306f9d4a253823986110e3358
-  GTMOAuth2: c77fe325e4acd453837e72d91e3b5f13116857b2
+  GTMOAuth2: e8b6512c896235149df975c41d9a36c868ab7fba
   GTMSessionFetcher: 0c4baf0a73acd0041bf9f71ea018deedab5ea84e
   JKBigInteger2: e91672035c42328c48b7dd015b66812ddf40ca9b
   lottie-ios: d699fdee68d7b63e721d949388b015fef1aaa4ac
