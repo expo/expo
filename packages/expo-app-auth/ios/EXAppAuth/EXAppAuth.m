@@ -51,8 +51,8 @@ EX_EXPORT_MODULE(ExpoAppAuth);
 - (NSDictionary *)constantsToExport
 {
   return @{
-           @"OAuthRedirect": [self _getOAuthRedirect],
-           @"URLSchemes": [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleURLTypes"]
+           @"OAuthRedirect": EXNullIfNil([self _getOAuthRedirect]),
+           @"URLSchemes": EXNullIfNil([[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleURLTypes"]),
            };
 }
 
