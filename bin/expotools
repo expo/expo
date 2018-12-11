@@ -4,7 +4,7 @@ set -euo pipefail
 
 script_dir=$(dirname "$0")
 
-repository_root="${script_dir}/../.."
+repository_root="${script_dir}/.."
 nix_dir="${repository_root}/nix"
 target="${script_dir}/expotools-built"
 up_to_date_package="$(nix path-info -f "${nix_dir}" expotools 2>/dev/null || true)"
