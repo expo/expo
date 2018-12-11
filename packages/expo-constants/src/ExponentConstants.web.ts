@@ -1,8 +1,7 @@
-// @flow
-
 import uuidv4 from 'uuid/v4';
 import UAParser from 'ua-parser-js';
-import ExpoPackageJson from 'expo/package.json';
+
+const ExpoPackageJson = require('expo/package.json');
 
 export default {
   _sessionId: uuidv4(),
@@ -31,29 +30,29 @@ export default {
   get linkingUri(): string {
     return location.origin + location.pathname;
   },
-  get expoRuntimeVersion(): ?string {
+  get expoRuntimeVersion(): string | null {
     console.warn(`ExponentConstants.expoRuntimeVersion: is unimplemented on this platform.`);
     return null;
   },
-  get deviceName(): ?string {
+  get deviceName(): string | null {
     return null;
   },
-  get systemFonts(): ?Array<string> {
+  get systemFonts(): string[] {
     return [];
   },
   get statusBarHeight(): number {
     return 0;
   },
-  get deviceYearClass(): ?string {
+  get deviceYearClass(): string | null {
     console.warn(`ExponentConstants.deviceYearClass: is unimplemented on this platform.`);
     return null;
   },
-  get manifest(): { [string]: any } {
+  get manifest(): { [manifestKey: string]: any } {
     /* TODO: Bacon: Populate */
 
     return {};
   },
-  getWebViewUserAgentAsync(): Promise {
-    return navigator.userAgent || null;
-  },
+  async getWebViewUserAgentAsync(): Promise<string> {
+    return navigator.userAgent;
+  }
 };

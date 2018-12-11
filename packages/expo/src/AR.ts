@@ -1,4 +1,4 @@
-import { Constants } from 'expo-constants';
+import Constants from 'expo-constants';
 import * as React from 'react';
 import {
   Dimensions,
