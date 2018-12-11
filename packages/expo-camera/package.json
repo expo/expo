@@ -12,12 +12,13 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "dependencies": {
-    "expo-core": "~1.2.0",
-    "expo-camera-interface": "~1.1.0",
     "expo-barcode-scanner-interface": "~1.1.0",
-    "expo-file-system-interface": "~1.1.0",
+    "expo-camera-interface": "~1.1.0",
+    "expo-core": "~1.2.0",
     "expo-face-detector-interface": "~1.1.0",
+    "expo-file-system-interface": "~1.1.0",
     "expo-permissions-interface": "~1.2.0",
+    "jslib-html5-camera-photo": "^3.0.2-beta.0",
     "lodash.mapvalues": "^4.6.0",
     "prop-types": "^15.6.0"
   }

@@ -1,73 +1,24 @@
 // @flow
-import React from 'react';
-import PropTypes from 'prop-types';
+import { requireNativeViewManager } from 'expo-core';
+import { UnavailabilityError } from 'expo-errors';
+import LibCameraPhoto from 'jslib-html5-camera-photo';
 import mapValues from 'lodash.mapvalues';
-import { NativeModulesProxy, requireNativeViewManager } from 'expo-core';
-import { findNodeHandle, ViewPropTypes, Platform } from 'react-native';
+import PropTypes from 'prop-types';
+import React from 'react';
+import { findNodeHandle, Platform, StyleSheet, ViewPropTypes } from 'react-native';
 
-type PictureOptions = {
-  quality?: number,
-  base64?: boolean,
-  exif?: boolean,
-  skipProcessing?: boolean,
-  onPictureSaved?: Function,
-  // internal
-  id?: number,
-  fastMode?: boolean,
-};
+import CameraManager from './ExponentCameraManager';
 
-type RecordingOptions = {
-  maxDuration?: number,
-  maxFileSize?: number,
-  quality?: number | string,
-};
-
-type CapturedPicture = {
-  width: number,
-  height: number,
-  uri: string,
-  base64?: string,
-  exif?: Object,
-};
-
-type RecordingResult = {
-  uri: string,
-};
-
-type EventCallbackArgumentsType = {
-  nativeEvent: Object,
-};
-
-type MountErrorNativeEventType = {
-  message: string,
-};
-
-type PictureSavedNativeEventType = {
-  data: CapturedPicture,
-  id: number,
-};
-
-type PropsType = ViewPropTypes & {
-  zoom?: number,
-  ratio?: string,
-  focusDepth?: number,
-  type?: number | string,
-  onCameraReady?: Function,
-  useCamera2Api?: boolean,
-  flashMode?: number | string,
-  whiteBalance?: number | string,
-  autoFocus?: string | boolean | number,
-  pictureSize?: string,
-  videoStabilizationMode?: number,
-  onMountError?: MountErrorNativeEventType => void,
-  barCodeScannerSettings?: {},
-  onBarCodeScanned?: ({ type: string, data: string }) => void,
-  faceDetectorSettings?: {},
-  onFacesDetected?: ({ faces: Array<*> }) => void,
-};
-
-const CameraManager: Object =
-  NativeModulesProxy.ExponentCameraManager || NativeModulesProxy.ExponentCameraModule;
+import type {
+  PictureOptions,
+  RecordingOptions,
+  CapturedPicture,
+  RecordingResult,
+  EventCallbackArgumentsType,
+  MountErrorNativeEventType,
+  PictureSavedNativeEventType,
+  PropsType,
+} from './Camera.types';
 
 const EventThrottleMs = 500;
 
@@ -81,8 +32,7 @@ export default class Camera extends React.Component<PropsType> {
     AutoFocus: CameraManager.AutoFocus,
     WhiteBalance: CameraManager.WhiteBalance,
     VideoQuality: CameraManager.VideoQuality,
-    VideoStabilization: CameraManager.VideoStabilization || {}
-
+    VideoStabilization: CameraManager.VideoStabilization || {},
   };
 
   // Values under keys from this object will be transformed to native options
@@ -152,18 +102,25 @@ export default class Camera extends React.Component<PropsType> {
   }
 
   async getSupportedRatiosAsync(): Promise<Array<string>> {
-    if (Platform.OS === 'android') {
-      return await CameraManager.getSupportedRatios(this._cameraHandle);
-    } else {
-      throw new Error('Ratio is not supported on iOS');
+    if (!CameraManager.getSupportedRatios) {
+      throw new UnavailabilityError('Camera', 'getSupportedRatiosAsync');
     }
+
+    return await CameraManager.getSupportedRatios(this._cameraHandle);
   }
 
   async getAvailablePictureSizesAsync(ratio?: string): Promise<Array<string>> {
+    if (!CameraManager.getAvailablePictureSizes) {
+      throw new UnavailabilityError('Camera', 'getAvailablePictureSizesAsync');
+    }
     return await CameraManager.getAvailablePictureSizes(ratio, this._cameraHandle);
   }
 
   async recordAsync(options?: RecordingOptions): Promise<RecordingResult> {
+    if (!CameraManager.record) {
+      throw new UnavailabilityError('Camera', 'recordAsync');
+    }
+
     if (!options || typeof options !== 'object') {
       options = {};
     } else if (typeof options.quality === 'string') {
@@ -173,14 +130,26 @@ export default class Camera extends React.Component<PropsType> {
   }
 
   stopRecording() {
+    if (!CameraManager.stopRecording) {
+      throw new UnavailabilityError('Camera', 'stopRecording');
+    }
+
     CameraManager.stopRecording(this._cameraHandle);
   }
 
   pausePreview() {
+    if (!CameraManager.pausePreview) {
+      throw new UnavailabilityError('Camera', 'pausePreview');
+    }
+
     CameraManager.pausePreview(this._cameraHandle);
   }
 
   resumePreview() {
+    if (!CameraManager.resumePreview) {
+      throw new UnavailabilityError('Camera', 'resumePreview');
+    }
+
     CameraManager.resumePreview(this._cameraHandle);
   }
 
@@ -225,7 +194,12 @@ export default class Camera extends React.Component<PropsType> {
   _setReference = (ref: ?Object) => {
     if (ref) {
       this._cameraRef = ref;
-      this._cameraHandle = findNodeHandle(ref);
+      if (Platform.OS === 'web') {
+        this._cameraHandle = new LibCameraPhoto(this._cameraRef);
+        this.resumePreview();
+      } else {
+        this._cameraHandle = findNodeHandle(ref);
+      }
     } else {
       this._cameraRef = null;
       this._cameraHandle = null;
@@ -233,40 +207,59 @@ export default class Camera extends React.Component<PropsType> {
   };
 
   _onBarCodeScanned = () => {
-    const onBarCodeRead = this.props.onBarCodeRead && ((data) => {
-      console.warn("'onBarCodeRead' is deprecated in favour of 'onBarCodeScanned'");
-      return this.props.onBarCodeRead(data);
-    });
+    const onBarCodeRead =
+      this.props.onBarCodeRead &&
+      (data => {
+        console.warn("'onBarCodeRead' is deprecated in favour of 'onBarCodeScanned'");
+        return this.props.onBarCodeRead(data);
+      });
     return this.props.onBarCodeScanned || onBarCodeRead;
   };
 
   render() {
     const nativeProps = this._convertNativeProps(this.props);
 
-    return (
-      <ExponentCamera
-        {...nativeProps}
-        ref={this._setReference}
-        onCameraReady={this._onCameraReady}
-        onMountError={this._onMountError}
-        onPictureSaved={this._onPictureSaved}
-        onBarCodeScanned={this._onObjectDetected(this._onBarCodeScanned())}
-        onFacesDetected={this._onObjectDetected(this.props.onFacesDetected)}
-      />
-    );
+    if (Platform.OS === 'web') {
+      return (
+        <video
+          style={StyleSheet.flatten([
+            nativeProps.style,
+            { objectFit: 'cover' },
+            flipCameraStyle(this.props.type !== CameraManager.Type.back),
+          ])}
+          ref={this._setReference}
+          autoPlay
+          playsInline
+        />
+      );
+    } else {
+      return (
+        <ExponentCamera
+          {...nativeProps}
+          ref={this._setReference}
+          onCameraReady={this._onCameraReady}
+          onMountError={this._onMountError}
+          onPictureSaved={this._onPictureSaved}
+          onBarCodeScanned={this._onObjectDetected(this._onBarCodeScanned())}
+          onFacesDetected={this._onObjectDetected(this.props.onFacesDetected)}
+        />
+      );
+    }
   }
 
   _convertNativeProps(props: PropsType) {
     const newProps = mapValues(props, this._convertProp);
 
     const propsKeys = Object.keys(newProps);
-    if (!propsKeys.includes("barCodeScannerSettings") && propsKeys.includes("barCodeTypes")) { // barCodeTypes is deprecated
+    if (!propsKeys.includes('barCodeScannerSettings') && propsKeys.includes('barCodeTypes')) {
+      // barCodeTypes is deprecated
       newProps.barCodeScannerSettings = {
         barCodeTypes: newProps.barCodeTypes,
       };
     }
 
-    if (props.onBarCodeScanned || props.onBarCodeRead) { // onBarCodeRead is deprecated
+    if (props.onBarCodeScanned || props.onBarCodeRead) {
+      // onBarCodeRead is deprecated
       newProps.barCodeScannerEnabled = true;
     }
 
@@ -291,6 +284,16 @@ export default class Camera extends React.Component<PropsType> {
   }
 }
 
-export const Constants = Camera.Constants;
+function flipCameraStyle(shouldFlip) {
+  if (shouldFlip) {
+    return { transform: 'rotateY(180deg)' };
+  }
+  return { transform: 'none' };
+}
 
-const ExponentCamera = requireNativeViewManager('ExponentCamera', Camera);
+let ExponentCamera = null;
+if (Platform.OS !== 'web') {
+  ExponentCamera = requireNativeViewManager('ExponentCamera', Camera);
+}
+
+export const Constants = Camera.Constants;
