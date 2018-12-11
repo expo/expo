@@ -51,17 +51,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)_setUpUserInterfaceForApplication:(UIApplication *)application withLaunchOptions:(nullable NSDictionary *)launchOptions
 {
-  if (_window == nil) {
-    [[ExpoKit sharedInstance] registerRootViewControllerClass:[EXRootViewController class]];
-    [[ExpoKit sharedInstance] application:application didFinishLaunchingWithOptions:nil];
-
-    _window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-    _window.backgroundColor = [UIColor whiteColor];
-    _rootViewController = (EXRootViewController *)[ExpoKit sharedInstance].rootViewController;
-    _window.rootViewController = _rootViewController;
-
-    [_window makeKeyAndVisible];
+  if (_window) {
+    return;
   }
+  [[ExpoKit sharedInstance] registerRootViewControllerClass:[EXRootViewController class]];
+  [[ExpoKit sharedInstance] application:application didFinishLaunchingWithOptions:launchOptions];
+
+  _window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+  _window.backgroundColor = [UIColor whiteColor];
+  _rootViewController = (EXRootViewController *)[ExpoKit sharedInstance].rootViewController;
+  _window.rootViewController = _rootViewController;
+
+  [_window makeKeyAndVisible];
 }
 
 #pragma mark - Background Fetch
