@@ -3,14 +3,14 @@ import nullthrows from 'nullthrows';
 import PropTypes from 'prop-types';
 import * as React from 'react';
 import {
+  findNodeHandle,
   Image,
+  NativeComponent,
   NativeModules,
   StyleSheet,
   View,
+  Platform,
   ViewPropTypes,
-  findNodeHandle,
-  requireNativeComponent,
-  NativeComponent,
 } from 'react-native';
 
 import {
@@ -20,11 +20,14 @@ import {
   getUnloadedStatus,
   Playback,
   PlaybackMixin,
-  PlaybackSource,
   PlaybackNativeSource,
+  PlaybackSource,
   PlaybackStatus,
   PlaybackStatusToSet,
 } from './AV';
+import ExponentAV from './ExponentAV';
+import ExponentVideo from './ExponentVideo';
+import ExponentVideoManager from './ExponentVideoManager';
 
 export type NaturalSize = {
   width: number;
@@ -140,8 +143,24 @@ const _STYLES = StyleSheet.create({
 // we have to use the provided native module mock to access constants
 const ExpoVideoManagerConstants = NativeModules.UIManager.ExponentVideo
   ? NativeModules.UIManager.ExponentVideo.Constants
-  : NativeModules.ExponentVideoManager;
+  : ExponentVideoManager;
 
+const assetPropType = PropTypes.shape({
+  uri: PropTypes.string,
+  overrideFileExtensionAndroid: PropTypes.string,
+}); // remote URI like { uri: 'http://foo/bar.mp4' }
+
+const sourcePropTypes = Platform.select({
+  default: [
+    assetPropType,
+    PropTypes.number, // asset module like require('./foo/bar.mp4')
+  ],
+  web: [
+    assetPropType,
+    PropTypes.number, // asset module like require('./foo/bar.mp4')
+    PropTypes.string, // Web: asset module like require('./foo/bar.mp4')
+  ],
+});
 export default class Video extends React.Component<Props, State> implements Playback {
   static RESIZE_MODE_CONTAIN = ResizeMode.CONTAIN;
   static RESIZE_MODE_COVER = ResizeMode.COVER;
@@ -159,13 +178,7 @@ export default class Video extends React.Component<Props, State> implements Play
 
   static propTypes = {
     // Source stuff
-    source: PropTypes.oneOfType([
-      PropTypes.shape({
-        uri: PropTypes.string,
-        overrideFileExtensionAndroid: PropTypes.string,
-      }), // remote URI like { uri: 'http://foo/bar.mp4' }
-      PropTypes.number, // asset module like require('./foo/bar.mp4')
-    ]),
+    source: PropTypes.oneOfType(sourcePropTypes),
     posterSource: PropTypes.oneOfType([
       PropTypes.shape({
         uri: PropTypes.string,
@@ -266,7 +279,7 @@ export default class Video extends React.Component<Props, State> implements Play
 
   _setFullscreen = async (value: boolean) => {
     return this._performOperationAndHandleStatusAsync((tag: number) =>
-      NativeModules.ExponentVideoManager.setFullscreen(tag, value)
+      ExponentVideoManager.setFullscreen(tag, value)
     );
   };
 
@@ -283,7 +296,7 @@ export default class Video extends React.Component<Props, State> implements Play
 
   presentFullscreenPlayerAsync = () =>
     this._performOperationAndHandleStatusAsync((tag: number) =>
-      NativeModules.ExponentAV.presentFullscreenPlayer(tag)
+      ExponentAV.presentFullscreenPlayer(tag)
     );
 
   dismissFullscreenPlayer = async () => {
@@ -304,7 +317,7 @@ export default class Video extends React.Component<Props, State> implements Play
 
   getStatusAsync = async (): Promise<PlaybackStatus> => {
     return this._performOperationAndHandleStatusAsync((tag: number) =>
-      NativeModules.ExponentAV.getStatusForVideo(tag)
+      ExponentAV.getStatusForVideo(tag)
     );
   };
 
@@ -320,14 +333,14 @@ export default class Video extends React.Component<Props, State> implements Play
       fullInitialStatus,
     } = await getNativeSourceAndFullInitialStatusForLoadAsync(source, initialStatus, downloadFirst);
     return this._performOperationAndHandleStatusAsync((tag: number) =>
-      NativeModules.ExponentAV.loadForVideo(tag, nativeSource, fullInitialStatus)
+      ExponentAV.loadForVideo(tag, nativeSource, fullInitialStatus)
     );
   };
 
   // Equivalent to setting URI to null.
   unloadAsync = async (): Promise<PlaybackStatus> => {
     return this._performOperationAndHandleStatusAsync((tag: number) =>
-      NativeModules.ExponentAV.unloadForVideo(tag)
+      ExponentAV.unloadForVideo(tag)
     );
   };
 
@@ -336,7 +349,7 @@ export default class Video extends React.Component<Props, State> implements Play
   setStatusAsync = async (status: PlaybackStatusToSet): Promise<PlaybackStatus> => {
     assertStatusValuesInBounds(status);
     return this._performOperationAndHandleStatusAsync((tag: number) =>
-      NativeModules.ExponentAV.setStatusForVideo(tag, status)
+      ExponentAV.setStatusForVideo(tag, status)
     );
   };
 
@@ -346,7 +359,7 @@ export default class Video extends React.Component<Props, State> implements Play
     }
 
     return this._performOperationAndHandleStatusAsync((tag: number) =>
-      NativeModules.ExponentAV.replayVideo(tag, {
+      ExponentAV.replayVideo(tag, {
         ...status,
         positionMillis: 0,
         shouldPlay: true,
@@ -494,4 +507,3 @@ export default class Video extends React.Component<Props, State> implements Play
 Object.assign(Video.prototype, PlaybackMixin);
 
 type ExponentVideo = React.ComponentClass<NativeProps>;
-const ExponentVideo = requireNativeComponent('ExponentVideo');

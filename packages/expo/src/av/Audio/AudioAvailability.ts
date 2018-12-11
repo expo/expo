@@ -1,6 +1,4 @@
-import { NativeModules } from 'react-native';
-
-const { ExponentAV } = NativeModules;
+import ExponentAV from '../ExponentAV';
 
 let _enabled = true;
 
