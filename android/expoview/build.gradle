@@ -123,6 +123,8 @@ dependencies {
   api 'host.exp.exponent:expo-sensors-interface:1.1.0'
   api 'host.exp.exponent:expo-permissions-interface:1.2.0'
   api 'host.exp.exponent:expo-react-native-adapter:1.2.0'
+  api 'host.exp.exponent:expo-file-system:1.1.0'
+  api 'host.exp.exponent:expo-file-system-interface:1.1.0'
 
   // Optional universal modules
   compileOnly 'host.exp.exponent:expo-app-auth:1.0.0'
@@ -148,8 +150,6 @@ dependencies {
   compileOnly 'host.exp.exponent:expo-sensors:1.1.0'
   compileOnly 'host.exp.exponent:expo-sensors-interface:1.1.0'
   compileOnly 'host.exp.exponent:expo-face-detector:1.1.0'
-  compileOnly 'host.exp.exponent:expo-file-system:1.1.0'
-  compileOnly 'host.exp.exponent:expo-file-system-interface:1.1.0'
   compileOnly 'host.exp.exponent:expo-payments-stripe:1.1.0'
   compileOnly 'host.exp.exponent:expo-permissions:1.2.0'
   compileOnly 'host.exp.exponent:expo-permissions-interface:1.2.0'
