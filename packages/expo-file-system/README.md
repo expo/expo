@@ -33,6 +33,7 @@ and run `pod install`.
     compile project(':expo-file-system')
     compile project(':expo-file-system-interface')
     ```
+3.  Add `new FileSystemPackage()` to your module registry provider in `MainApplication.java`.
 
 ## Introduction
 
