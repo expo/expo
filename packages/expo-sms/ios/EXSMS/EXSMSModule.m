@@ -90,7 +90,7 @@ EX_EXPORT_METHOD_AS(sendSMSAsync,
   EX_WEAKIFY(self);
   [controller dismissViewControllerAnimated:YES completion:^{
     EX_ENSURE_STRONGIFY(self);
-    if (rejectMessage != nil) {
+    if (rejectMessage) {
       self->_reject(@"E_SMS_SENDING_FAILED", rejectMessage, nil);
     } else {
       self->_resolve(resolveData);
