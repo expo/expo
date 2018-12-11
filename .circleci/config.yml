@@ -37,11 +37,10 @@ commands:
   decrypt_secrets_if_possible:
     steps:
       - run: |
-          nix run expo.git-crypt --command bash -c "
-            if ! [ -v EXPO_GIT_CRYPT_KEY_BASE64 ]; then
-              echo 'git-crypt key not present in environment' && exit 0
-            fi
-            git crypt unlock <(echo $EXPO_GIT_CRYPT_KEY_BASE64 | base64 --decode)"
+          if ! [ -v EXPO_GIT_CRYPT_KEY_BASE64 ]; then
+            echo 'git-crypt key not present in environment' && exit 0
+          fi
+          git crypt unlock <(echo $EXPO_GIT_CRYPT_KEY_BASE64 | base64 --decode)
   update_submodules:
     steps:
       - run: git submodule update --init
@@ -90,7 +89,7 @@ commands:
       - run:
           name: yarn << parameters.command >> (<< parameters.working_directory >>)
           working_directory: << parameters.working_directory >>
-          command: for i in {1..<< parameters.max_tries >>}; do ((i > 1)) && sleep 5; nix run expo.yarn -c yarn << parameters.command >> && break; done
+          command: for i in {1..<< parameters.max_tries >>}; do ((i > 1)) && sleep 5; yarn << parameters.command >> && break; done
   yarn_install:
     parameters:
       working_directory:
@@ -245,7 +244,7 @@ jobs:
       - fetch_cocoapods_specs
       - yarn_install:
           working_directory: ~/project/tools-public
-      - run: nix run expo.nodejs expo.fastlane -c fastlane ios create_simulator_build
+      - run: fastlane ios create_simulator_build
       - store_artifacts:
           path: ~/Library/Logs/fastlane/
 
@@ -259,12 +258,12 @@ jobs:
       - fetch_cocoapods_specs
       - yarn_install:
           working_directory: ~/project/tools-public
-      - run: nix run expo.nodejs -c ~/project/tools-public/generate-files-ios.js
+      - run: ~/project/tools-public/generate-files-ios.js
       - run:
           name: Build ios shell app simulator
           working_directory: ~/project/tools-public
           no_output_timeout: 30m
-          command: nix run expo.nodePackages.gulp-cli expo.cocoapods expo.xcpretty expo.expo-cli --command gulp ios-shell-app --action build --type simulator --verbose true --skipRepoUpdate --shellAppSdkVersion UNVERSIONED
+          command: gulp ios-shell-app --action build --type simulator --verbose true --skipRepoUpdate --shellAppSdkVersion UNVERSIONED
 
   client_android:
     executor: android
@@ -303,7 +302,7 @@ jobs:
       - run:
           name: Upload APK to Google Play and release to production
           working_directory: ~/expo
-          command: nix run expo.fastlane --command fastlane android prod_release
+          command: fastlane android prod_release
 
   test_suite_publish:
     executor: nix
