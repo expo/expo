@@ -1,12 +1,7 @@
 package expo.modules.camera.events;
 
-import android.graphics.Point;
 import android.os.Bundle;
 import android.support.v4.util.Pools;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import expo.core.interfaces.services.EventEmitter;
 import expo.interfaces.barcodescanner.BarCodeScannerResult;

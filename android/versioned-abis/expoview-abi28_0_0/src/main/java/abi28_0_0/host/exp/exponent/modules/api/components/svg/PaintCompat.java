@@ -21,7 +21,7 @@ import android.graphics.Rect;
 import android.os.Build;
 
 /**
- * Helper for accessing features in {@link Paint}.
+ * BarCodeScannerEventHelper for accessing features in {@link Paint}.
  */
 final class PaintCompat {
     // U+DFFFD which is very end of unassigned plane.

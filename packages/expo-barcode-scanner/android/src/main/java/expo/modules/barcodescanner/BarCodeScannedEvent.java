@@ -1,18 +1,14 @@
 package expo.modules.barcodescanner;
 
-import android.graphics.Point;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.v4.util.Pools;
 import android.util.Pair;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import expo.core.interfaces.services.EventEmitter;
 import expo.interfaces.barcodescanner.BarCodeScannerResult;
-import expo.modules.barcodescanner.utils.Helper;
+import expo.interfaces.barcodescanner.BarCodeScannerEventHelper;
 
 public class BarCodeScannedEvent extends EventEmitter.BaseEvent {
   private static final Pools.SynchronizedPool<BarCodeScannedEvent> EVENTS_POOL =
@@ -37,7 +33,7 @@ public class BarCodeScannedEvent extends EventEmitter.BaseEvent {
   private void init(int viewTag, BarCodeScannerResult barCode, float density) {
     mViewTag = viewTag;
     mBarCode = barCode;
-    Pair<List<Bundle>, Bundle> bundles = Helper.getCornerPointsAndBoundingBox(barCode.getCornerPoints(), density);
+    Pair<List<Bundle>, Bundle> bundles = BarCodeScannerEventHelper.getCornerPointsAndBoundingBox(barCode.getCornerPoints(), density);
     mCornerPoints = bundles.first;
     mBoundingBox = bundles.second;
   }

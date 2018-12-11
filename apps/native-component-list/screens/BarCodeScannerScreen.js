@@ -11,24 +11,31 @@ export default class BarcodeScannerExample extends React.Component {
     title: '<BarCodeScanner />',
   };
 
+  canChangeOrientation = false;
+
   state = {
     isPermissionsGranted: false,
     type: BarCodeScanner.Constants.Type.back,
     cornerPoints: null,
+    alerting: false,
   };
-
-  temp = 1;
-
-  componentDidMount() {
-    if (this.temp) {
-      ScreenOrientation.allowAsync(ScreenOrientation.Orientation.ALL);
-      this.temp--;
-    }
-  }
 
   componentDidFocus = async () => {
     const { status } = await Permissions.askAsync(Permissions.CAMERA);
     this.setState({ isPermissionsGranted: status === 'granted' });
+  };
+
+  toggleAlertingAboutResult = () => {
+    this.setState({ alerting: !this.state.aleting });
+  };
+
+  toggleScreenOrientationState = () => {
+    if (this.canChangeOrientation) {
+      ScreenOrientation.allowAsync(ScreenOrientation.Orientation.PORTRAIT_UP);
+    } else {
+      ScreenOrientation.allowAsync(ScreenOrientation.Orientation.ALL);
+    }
+    this.canChangeOrientation = !this.canChangeOrientation;
   };
 
   setCanvasDimensions = e => {
@@ -36,6 +43,7 @@ export default class BarcodeScannerExample extends React.Component {
       canvasWidth: e.nativeEvent.layout.width,
       canvasHeight: e.nativeEvent.layout.height,
       haveDimensions: true,
+      verbose: false,
     });
   };
 
@@ -119,11 +127,11 @@ export default class BarcodeScannerExample extends React.Component {
     });
 
   handleBarCodeScanned = data => {
-    //this.props.navigation.goBack();
-
-    //requestAnimationFrame(() => {
-    //  alert(JSON.stringify(data));
-  //  });
+    if (this.state.alerting) {
+      requestAnimationFrame(() => {
+        alert(JSON.stringify(data));
+      });
+    }
     this.setState({ cornerPoints: data.cornerPoints, boundingBox: data.bounds});
   };
 }

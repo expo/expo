@@ -2,14 +2,12 @@ package expo.modules.barcodescanner;
 
 import android.content.Context;
 import android.hardware.SensorManager;
-import android.util.DisplayMetrics;
 import android.view.OrientationEventListener;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 
 import java.util.List;
-import java.util.Map;
 
 import expo.core.ModuleRegistry;
 import expo.core.interfaces.services.EventEmitter;
@@ -65,23 +63,22 @@ public class BarCodeScannerView extends ViewGroup {
 
   public void onBarCodeScanned(BarCodeScannerResult barCode) {
     EventEmitter emitter = mModuleRegistry.getModule(EventEmitter.class);
-    convertResult(barCode);
-    BarCodeScannedEvent event = BarCodeScannedEvent.obtain(this.getId(), barCode, getReactNativePointDensity());
+    transformBarCodeScannerResultToViewCoordinates(barCode);
+    BarCodeScannedEvent event = BarCodeScannedEvent.obtain(this.getId(), barCode, getDisplayDensity());
     emitter.emit(this.getId(), event);
   }
 
-  // returns number of pixels in one React Native Point
-  public float getReactNativePointDensity() {
+  public float getDisplayDensity() {
     return this.getResources().getDisplayMetrics().density;
   }
 
-  private void convertResult(BarCodeScannerResult barCode) {
+  private void transformBarCodeScannerResultToViewCoordinates(BarCodeScannerResult barCode) {
     List<Integer> cornerPoints = barCode.getCornerPoints();
 
     int previewWidth = this.getWidth() - mLeftPadding * 2;
     int previewHeight = this.getHeight() - mTopPadding * 2;
 
-    // fix for problem with rotation when front camera is in use [this code is not tested well]
+    // fix for problem with rotation when front camera is in use
     if (mType == ExpoBarCodeScanner.CAMERA_TYPE_FRONT && ((getDeviceOrientation(mContext) % 2) == 0)) {
       for (int i = 1; i < cornerPoints.size(); i += 2) { // convert y-coordinate
         int convertedCoordinate = barCode.getHeight() - cornerPoints.get(i);

@@ -24,8 +24,6 @@ export default class BarCodeScanner extends React.Component<Props> {
   lastEventsTimes: Object;
   barCodeScannerRef: ?Object;
   barCodeScannerHandle: ?number;
-  width: ?number;
-  height: ?number;
 
   static Constants = {
     BarCodeType: ExpoBarCodeScannerModule.BarCodeType,
@@ -54,41 +52,24 @@ export default class BarCodeScanner extends React.Component<Props> {
     this.lastEventsTimes = {};
   }
 
-  static async scanFromURLAsync(
-    url: string,
-    barCodeTypes: Array<BarCodeScanner.Constants.BarCodeType>
-  ) {
+  static async scanFromURLAsync(url: string, barCodeTypes: Array<BarCodeScanner.Constants.BarCodeType>) {
     if (Array.isArray(barCodeTypes) && barCodeTypes.length === 0) {
       throw new Error('No barCodeTypes requested, provide at least one barCodeType for scanner');
     }
 
     if (Platform.OS === 'ios') {
-      if (
-        Array.isArray(barCodeTypes) &&
-        !barCodeTypes.includes(BarCodeScanner.Constants.BarCodeType.qr)
-      ) {
+      if (Array.isArray(barCodeTypes) && !barCodeTypes.includes(BarCodeScanner.Constants.BarCodeType.qr)) {
         // Only QR type is supported on iOS, fail if one tries to use other types
         throw new Error('Only QR type is supported by scanFromURLAsync() on iOS');
       }
       // on iOS use only supported QR type
-      return ExpoBarCodeScannerModule.scanFromURLAsync(url, [
-        BarCodeScanner.Constants.BarCodeType.qr,
-      ]);
+      return ExpoBarCodeScannerModule.scanFromURLAsync(url, [BarCodeScanner.Constants.BarCodeType.qr]);
     }
 
     // on Android if barCodeTypes not provided use all available types
-    const effectiveBarCodeTypes =
-      barCodeTypes || Object.values(ExpoBarCodeScannerModule.BarCodeType);
+    const effectiveBarCodeTypes = barCodeTypes || Object.values(ExpoBarCodeScannerModule.BarCodeType);
     return ExpoBarCodeScannerModule.scanFromURLAsync(url, effectiveBarCodeTypes);
   }
-
-  getDimensions = e => {
-    this.height = e.nativeEvent.layout.height;
-    this.width = e.nativeEvent.layout.width;
-    if (this.props.onLayout != null) {
-      this.props.onLayout(e);
-    }
-  };
 
   render() {
     const nativeProps = this.convertNativeProps(this.props);
@@ -96,7 +77,6 @@ export default class BarCodeScanner extends React.Component<Props> {
     return (
       <ExpoBarCodeScannerView
         {...nativeProps}
-        onLayout={this.getDimensions}
         ref={this.setReference}
         onBarCodeScanned={this.onObjectDetected(onBarCodeScanned || onBarCodeRead)} // onBarCodeRead is deprecated
       />
@@ -113,10 +93,11 @@ export default class BarCodeScanner extends React.Component<Props> {
     }
   };
 
+  // coordinates of cornerPoints and boundingBox are represented in DP (Display-Indepent Points) unit
+  // React Native is using the same unit
   onObjectDetected = (callback: ?Function) => ({ nativeEvent }: EventCallbackArgumentsType) => {
     const { type } = nativeEvent;
-    if (
-      this.lastEvents[type] &&
+    if (this.lastEvents[type] &&
       this.lastEventsTimes[type] &&
       JSON.stringify(nativeEvent) === this.lastEvents[type] &&
       new Date() - this.lastEventsTimes[type] < EVENT_THROTTLE_MS

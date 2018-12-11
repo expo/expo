@@ -72,8 +72,6 @@ public class GMVBarCodeScanner extends ExpoBarCodeScanner {
         for (Point point : barcode.cornerPoints) {
           Integer x =  Integer.valueOf(point.x);
           Integer y = Integer.valueOf(point.y);
-
-          // swap of coordinates ToDo check with different orientations
           cornerPoints.addAll(Arrays.asList(x,y));
         }
         results.add(new BarCodeScannerResult(barcode.format, barcode.rawValue, cornerPoints, height, width));

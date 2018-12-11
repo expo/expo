@@ -70,5 +70,4 @@ dependencies {
   expendency "expo-image-loader-interface"
   implementation 'com.google.android.gms:play-services-vision:15.0.2'
   implementation 'com.google.zxing:core:3.3.3'
-  compile project(path: ':ReactAndroid')
 }
