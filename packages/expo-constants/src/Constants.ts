@@ -1,5 +1,3 @@
-// @flow
-// On Android we pass the manifest in JSON form so this step is necessary
 import ExponentConstants from './ExponentConstants';
 
 if (!ExponentConstants) {
@@ -8,6 +6,7 @@ if (!ExponentConstants) {
   );
 }
 
+// On Android we pass the manifest in JSON form so this step is necessary
 let manifest = null;
 if (ExponentConstants && ExponentConstants.manifest) {
   manifest = ExponentConstants.manifest;
