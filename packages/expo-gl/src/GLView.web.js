@@ -1,8 +1,9 @@
 // @flow
-
 import PropTypes from 'prop-types';
 import * as React from 'react';
-import { StyleSheet } from 'react-native';
+import { Dimensions, StyleSheet } from 'react-native';
+import type { SurfaceCreateEvent, SnapshotOptions } from './GLView.types';
+import { UnavailabilityError } from 'expo-errors';
 
 type Props = {
   /**
@@ -15,6 +16,7 @@ type Props = {
 /**
  * A component that acts as an OpenGL render target
  */
+let contextCache = {};
 export default class GLView extends React.Component<Props> {
   static propTypes = {
     onContextCreate: PropTypes.func,
@@ -26,6 +28,29 @@ export default class GLView extends React.Component<Props> {
   };
 
   nativeRef: ?HTMLCanvasElement;
+
+  static async createContextAsync() {
+    const { width, height, scale } = Dimensions.get('window');
+    const canvas = document.createElement('canvas');
+    canvas.width = width * scale;
+    canvas.height = height * scale;
+    return canvas.getContext('webgl');
+  }
+
+  static async destroyContextAsync(exgl: WebGLRenderingContext | ?number) {
+    const exglCtxId = getContextId(exgl);
+    if (exglCtxId in contextCache) {
+      document.removeChild(contextCache[exglCtxId]);
+      contextCache[exglCtxId] = undefined;
+    }
+  }
+
+  static async takeSnapshotAsync(
+    exgl: WebGLRenderingContext | ?number,
+    options: SnapshotOptions = {}
+  ) {
+    throw new UnavailabilityError('GLView', 'takeSnapshotAsync');
+  }
 
   componentDidMount() {
     this._isMounted = true;
@@ -122,14 +147,23 @@ export default class GLView extends React.Component<Props> {
   };
 
   startARSessionAsync() {
-    throw new Error('GLView.startARSessionAsync: Not Implemented');
+    throw new UnavailabilityError('GLView', 'startARSessionAsync');
   }
 
   async createCameraTextureAsync() {
-    throw new Error('GLView.createCameraTextureAsync: Not Implemented');
+    throw new UnavailabilityError('GLView', 'createCameraTextureAsync');
   }
 
   destroyObjectAsync(glObject: WebGLObject) {
-    throw new Error('GLView.destroyObjectAsync: Not Implemented');
+    throw new UnavailabilityError('GLView', 'destroyObjectAsync');
   }
 }
+
+const getContextId = (exgl: WebGLRenderingContext | ?number) => {
+  const exglCtxId = exgl && typeof exgl === 'object' ? exgl.__exglCtxId : exgl;
+
+  if (!exglCtxId || typeof exglCtxId !== 'number') {
+    throw new Error(`Invalid EXGLContext id: ${String(exglCtxId)}`);
+  }
+  return exglCtxId;
+};

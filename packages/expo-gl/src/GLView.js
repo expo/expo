@@ -7,6 +7,8 @@ import { Platform, View, ViewPropTypes, findNodeHandle } from 'react-native';
 
 import packageJSON from '../package.json';
 
+import type { SurfaceCreateEvent, SnapshotOptions } from './GLView.types';
+
 type Props = {
   /**
    * Called when the OpenGL context is created, with the context object as a parameter. The context
@@ -24,25 +26,6 @@ type Props = {
    */
   nativeRef_EXPERIMENTAL: (React.ElementRef<typeof GLView.NativeView> | null) => void,
 } & React.ElementProps<typeof View>;
-
-type SurfaceCreateEvent = {
-  nativeEvent: {
-    exglCtxId: number,
-  },
-};
-
-type SnapshotOptions = {
-  flip?: boolean,
-  framebuffer?: WebGLFramebuffer,
-  rect?: {
-    x: number,
-    y: number,
-    width: number,
-    height: number,
-  },
-  format?: 'jpeg' | 'png',
-  compress?: number,
-};
 
 const { ExponentGLObjectManager, ExponentGLViewManager } = NativeModulesProxy;
 
@@ -71,7 +54,10 @@ export default class GLView extends React.Component<Props> {
     return ExponentGLObjectManager.destroyContextAsync(exglCtxId);
   }
 
-  static async takeSnapshotAsync(exgl: WebGLRenderingContext | ?number, options: SnapshotOptions = {}) {
+  static async takeSnapshotAsync(
+    exgl: WebGLRenderingContext | ?number,
+    options: SnapshotOptions = {}
+  ) {
     const exglCtxId = getContextId(exgl);
     return ExponentGLObjectManager.takeSnapshotAsync(exglCtxId, options);
   }
@@ -132,7 +118,7 @@ export default class GLView extends React.Component<Props> {
     const { exglCtxId } = this;
 
     if (!exglCtxId) {
-      throw new Error('GLView\'s surface is not created yet!');
+      throw new Error("GLView's surface is not created yet!");
     }
 
     const cameraTag = findNodeHandle(cameraRef);
