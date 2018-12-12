@@ -7,9 +7,9 @@ import {
   Image,
   NativeComponent,
   NativeModules,
+  Platform,
   StyleSheet,
   View,
-  Platform,
   ViewPropTypes,
 } from 'react-native';
 

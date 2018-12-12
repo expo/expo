@@ -1,5 +1,6 @@
-import { Platform } from 'expo-core';
 import { Asset } from 'expo-asset';
+import { Platform } from 'expo-core';
+
 // TODO add:
 //  disableFocusOnAndroid
 //  audio routes (at least did become noisy on android)

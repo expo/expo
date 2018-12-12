@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { createElement, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { PlaybackNativeSource, PlaybackStatusToSet } from './AV';
 
@@ -38,34 +38,17 @@ export const IOS_FULLSCREEN_UPDATE_PLAYER_DID_DISMISS = FULLSCREEN_UPDATE_PLAYER
 
 export default class ExponentVideo extends React.Component<ExponentVideoProps> {
   render() {
-    const {
-      source: sourceProp,
-      nativeResizeMode,
-      status: statusProp,
-      onStatusUpdateNative,
-      onReadyForDisplayNative,
-      onFullscreenUpdateNative,
-      useNativeControls: controls,
-      style,
-      ...props
-    } = this.props;
+    const { source, status = {}, useNativeControls: controls, style } = this.props;
 
-    let source = sourceProp || { uri: undefined };
-    let status = statusProp || {};
-    const finalSource = source.uri || source;
-    const srcKey = typeof finalSource === 'string' ? 'src' : 'srcObject';
-
-    return createElement('video', {
-      'object-fit': 'initial',
-      [srcKey]: finalSource,
-      muted: status.isMuted,
-      loop: status.isLooping,
-      playing: `${status.shouldPlay}`,
-      volume: status.volume,
-      controls,
-      currenttime: status.positionMillis,
-      playbackrate: status.rate,
-      style,
-    });
+    return (
+      <video
+        src={(source || { uri: undefined }).uri}
+        muted={status.isMuted}
+        loop={status.isLooping}
+        autoPlay={status.shouldPlay}
+        controls={controls}
+        style={StyleSheet.flatten(style) as any}
+      />
+    );
   }
 }
