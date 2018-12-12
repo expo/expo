@@ -14,7 +14,7 @@
   return EXFileSystemPermissionNone;
 }
 
-- (BOOL)shouldNotForbidAccessToExternalDirectories {
+- (BOOL)shouldForbidAccessToExternalDirectories {
   id<EXConstantsInterface> constantsModule = [[self moduleRegistry] getModuleImplementingProtocol:@protocol(EXConstantsInterface)];
   return ( constantsModule == nil || ( ![@"expo" isEqualToString:constantsModule.appOwnership] ) );
 }
