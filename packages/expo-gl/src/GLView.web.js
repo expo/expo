@@ -2,8 +2,8 @@
 import PropTypes from 'prop-types';
 import * as React from 'react';
 import { Dimensions, StyleSheet } from 'react-native';
-import type { SurfaceCreateEvent, SnapshotOptions } from './GLView.types';
 import { UnavailabilityError } from 'expo-errors';
+import type { SurfaceCreateEvent, SnapshotOptions } from './GLView.types';
 
 type Props = {
   /**
@@ -17,6 +17,39 @@ type Props = {
  * A component that acts as an OpenGL render target
  */
 let contextCache = {};
+
+function expoContext(gl: WebGLRenderingContext) {
+  gl.endFrameEXP = gl.endFrameEXP || function() {};
+  if (!gl.__expo_texImage2D) {
+    gl.__expo_texImage2D = gl.texImage2D;
+    gl.texImage2D = function(...props) {
+      let lastProp = props.pop();
+      if (typeof lastProp === 'object' && lastProp !== null && lastProp.downloadAsync) {
+        const uri = lastProp.localUri || lastProp.uri;
+        const img = new Image();
+        img.crossOrigin = '';
+        img.src = uri;
+        lastProp = img;
+      }
+      return gl.__expo_texImage2D(...props, lastProp);
+    };
+
+    gl.__expo_texSubImage2D = gl.texSubImage2D;
+    gl.texSubImage2D = function(...props) {
+      let lastProp = props.pop();
+      if (typeof lastProp === 'object' && lastProp !== null && lastProp.downloadAsync) {
+        const uri = lastProp.localUri || lastProp.uri;
+        const img = new Image();
+        img.crossOrigin = '';
+        img.src = uri;
+        lastProp = img;
+      }
+      return gl.__expo_texSubImage2D(...props, lastProp);
+    };
+  }
+  // TODO: Bacon: texImage2d asset
+  return gl;
+}
 export default class GLView extends React.Component<Props> {
   static propTypes = {
     onContextCreate: PropTypes.func,
@@ -34,7 +67,7 @@ export default class GLView extends React.Component<Props> {
     const canvas = document.createElement('canvas');
     canvas.width = width * scale;
     canvas.height = height * scale;
-    return canvas.getContext('webgl');
+    return expoContext(canvas.getContext('webgl'));
   }
 
   static async destroyContextAsync(exgl: WebGLRenderingContext | ?number) {
@@ -101,14 +134,8 @@ export default class GLView extends React.Component<Props> {
     const { onContextCreate } = this.props;
 
     if (onContextCreate) {
-      const gl = this.nativeRef.getContext('webgl');
-      onContextCreate({
-        gl,
-        canvas: this.nativeRef,
-        width: this.width,
-        height: this.height,
-        scale: this.scale,
-      });
+      const gl = expoContext(this.nativeRef.getContext('webgl'));
+      onContextCreate(gl);
     }
   };
 
