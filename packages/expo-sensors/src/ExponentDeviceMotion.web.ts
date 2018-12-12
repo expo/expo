@@ -6,7 +6,7 @@ class ExponentDeviceMotion extends PlatformModule {
   }
 
   get Gravity() {
-    return 9;
+    return 9.81;
   }
 }
 
