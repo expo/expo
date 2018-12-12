@@ -8,7 +8,7 @@
 - (EXFileSystemPermissionFlags)getExternalPathPermissions:(NSString *)path
 {
   // may block access to external paths which contain "ExponentExperienceData" 
-  if ([self shouldNotForbidAccessToExternalDirectories] || (![path containsString:@"ExponentExperienceData"])) {
+  if (![self shouldForbidAccessToExternalDirectories] || (![path containsString:@"ExponentExperienceData"])) {
     return [super getExternalPathPermissions:path];
   }
   return EXFileSystemPermissionNone;
