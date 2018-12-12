@@ -421,7 +421,7 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
     if ([EXEnvironment sharedEnvironment].isDetached && error &&
         (error.code == 404 || error.domain == EXNetworkErrorDomain)) {
       NSString *message = error.localizedDescription;
-      message = [NSString stringWithFormat:@"Make sure you are serving your project from XDE or exp (%@)", message];
+      message = [NSString stringWithFormat:@"Make sure you are serving your project with Expo CLI (%@)", message];
       error = [NSError errorWithDomain:error.domain code:error.code userInfo:@{ NSLocalizedDescriptionKey: message }];
     }
 #endif
