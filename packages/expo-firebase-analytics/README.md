@@ -27,15 +27,6 @@ pod 'EXFirebaseAnalytics', path: '../node_modules/expo-firebase-analytics/ios'
 
 and run `pod install`.
 
-#### Manually
-
-You could also choose install this module manually.
-
-1.  In XCode, in the project navigator, right click `Libraries` ➜ `Add Files to [your project's name]`
-2.  Go to `node_modules` ➜ `expo-firebase-analytics` and add `EXFirebaseAnalytics.xcodeproj`
-3.  In XCode, in the project navigator, select your project. Add `libEXFirebaseAnalytics.a` to your project's `Build Phases` ➜ `Link Binary With Libraries`
-4.  Run your project (`Cmd+R`).
-
 #### Common Setup
 
 **Optional: Enable AdSupport**
