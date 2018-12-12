@@ -33,6 +33,15 @@ public class NotificationActionCenter {
     }
   }
 
+  public synchronized static void remove(String categoryId) {
+    List<ActionObject> actions = new Select().from(ActionObject.class)
+        .where(Condition.column(ActionObject$Table.CATEGORYID).is(categoryId))
+        .queryList();
+    for (ActionObject actionObject: actions) {
+      actionObject.delete();
+    }
+  }
+
   public synchronized static void setCategory(String categoryId, NotificationCompat.Builder builder, Context context, IntentProvider intentProvider) {
     throwExceptionIfOnMainThread();
 

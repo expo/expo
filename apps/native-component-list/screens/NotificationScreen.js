@@ -130,7 +130,7 @@ export default class NotificationScreen extends React.Component {
   };
 
   _createCategoryAsync = () =>
-    Notifications.createCategoryIOSAsync('message', [
+    Notifications.createCategoryAsync('message', [
       {
         actionId: 'dismiss',
         buttonTitle: 'Dismiss notification',
@@ -149,7 +149,7 @@ export default class NotificationScreen extends React.Component {
       },
     ]);
 
-  _deleteCategoryAsync = () => Notifications.deleteCategoryIOSAsync('message');
+  _deleteCategoryAsync = () => Notifications.deleteCategoryAsync('message');
 
   _scheduleLocalNotificationWithCategoryAsync = async () => {
     await this._obtainUserFacingNotifPermissionsAsync();
@@ -160,11 +160,11 @@ export default class NotificationScreen extends React.Component {
         body: 'Howdy, fella!',
         ios: {
           sound: true,
-          categoryId: 'message',
         },
         android: {
           vibrate: true,
         },
+        categoryId: 'message',
       },
       {
         time: new Date().getTime() + 10000,

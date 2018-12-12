@@ -79,8 +79,15 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
     promise.resolve(null);
   }
 
+  @ReactMethod
+  public void deleteCategoryAsync(final String categoryIdParam, final Promise promise) {
+    String categoryId = getScopedIdIfNotDetached(categoryIdParam);
+    NotificationActionCenter.remove(categoryId);
+    promise.resolve(null);
+  }
+
   private String getScopedIdIfNotDetached(String categoryId) {
-    if (!Constants.isDetached()) {
+    if (!Constants.isStandaloneApp()) {
       try {
         String experienceId = mManifest.getString(ExponentManifest.MANIFEST_ID_KEY);
         return experienceId + ":" + categoryId;
