@@ -102,10 +102,8 @@ static Class g_BFTaskClass;
         appLinks[url] = self.cachedFBSDKAppLinks[url];
       } else {
         [toFind addObject:url];
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-        NSString *toFindString = [url.absoluteString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-#pragma clang diagnostic pop
+        NSCharacterSet *urlAllowedSet = [NSCharacterSet URLQueryAllowedCharacterSet];
+        NSString *toFindString = [url.absoluteString stringByAddingPercentEncodingWithAllowedCharacters:urlAllowedSet];
         if (toFindString) {
           [toFindStrings addObject:toFindString];
         }
@@ -198,10 +196,8 @@ static Class g_BFTaskClass;
         appLinks[url] = self.cachedBFAppLinks[url];
       } else {
         [toFind addObject:url];
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-        [toFindStrings addObject:[url.absoluteString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
-#pragma clang diagnostic pop
+        NSCharacterSet *urlAllowedSet = [NSCharacterSet URLQueryAllowedCharacterSet];
+        [toFindStrings addObject:[url.absoluteString stringByAddingPercentEncodingWithAllowedCharacters:urlAllowedSet]];
       }
     }
   }

@@ -162,7 +162,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
       NSInteger errorCode = [FBSDKTypeUtility integerValue:parameters[@"error_code"]];
       if (errorCode) {
         NSString *errorMessage = [FBSDKTypeUtility stringValue:parameters[@"error_msg"]];
-        NSError *error = [FBSDKError errorWithCode:errorCode message:errorMessage];
+        NSError *error = [NSError fbErrorWithCode:errorCode message:errorMessage];
         [_delegate webDialogView:self didFailWithError:error];
       } else {
         [_delegate webDialogViewDidCancel:self];

@@ -4,7 +4,7 @@ import './environment/logging';
 // load expo-asset immediately to set a custom `source` transformer in React Native
 import 'expo-asset/src/Asset';
 
-import { Constants } from 'expo-constants';
+import Constants from 'expo-constants';
 import { NativeModules, Platform } from 'react-native';
 
 if (typeof Constants.manifest.env === 'object') {
@@ -19,7 +19,7 @@ import * as BackgroundFetch from 'expo-background-fetch';
 export { BackgroundFetch };
 export { BarCodeScanner } from 'expo-barcode-scanner';
 export { Camera } from 'expo-camera';
-export { Constants } from 'expo-constants';
+export { Constants };
 export { Contacts } from 'expo-contacts';
 export { FaceDetector } from 'expo-face-detector';
 export { FileSystem } from 'expo-file-system';

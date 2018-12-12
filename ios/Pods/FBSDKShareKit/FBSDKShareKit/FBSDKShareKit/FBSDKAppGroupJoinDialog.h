@@ -24,7 +24,7 @@
 
 @warning App and game groups are being deprecated. See https://developers.facebook.com/docs/games/services/game-groups for more information.
  */
-__attribute__ ((deprecated))
+DEPRECATED_MSG_ATTRIBUTE("App and game groups are being deprecated")
 @interface FBSDKAppGroupJoinDialog : NSObject
 
 /**
@@ -32,35 +32,35 @@ __attribute__ ((deprecated))
 @warning App and game groups are being deprecated. See https://developers.facebook.com/docs/games/services/game-groups for more information.
  */
 + (instancetype)showWithGroupID:(NSString *)groupID
-                       delegate:(id<FBSDKAppGroupJoinDialogDelegate>)delegate __attribute__ ((deprecated));
+                       delegate:(id<FBSDKAppGroupJoinDialogDelegate>)delegate DEPRECATED_ATTRIBUTE;
 
 /**
 
 @warning App and game groups are being deprecated. See https://developers.facebook.com/docs/games/services/game-groups for more information. */
-@property (nonatomic, weak) id<FBSDKAppGroupJoinDialogDelegate> delegate __attribute__ ((deprecated));
+@property (nonatomic, weak) id<FBSDKAppGroupJoinDialogDelegate> delegate DEPRECATED_ATTRIBUTE;
 
 /**
 
 @warning App and game groups are being deprecated. See https://developers.facebook.com/docs/games/services/game-groups for more information. */
-@property (nonatomic, copy) NSString *groupID __attribute__ ((deprecated));
+@property (nonatomic, copy) NSString *groupID DEPRECATED_ATTRIBUTE;
 
 /**
 
 @warning App and game groups are being deprecated. See https://developers.facebook.com/docs/games/services/game-groups for more information.
  */
-- (BOOL)canShow __attribute__ ((deprecated));
+- (BOOL)canShow DEPRECATED_ATTRIBUTE;
 
 /**
 
 @warning App and game groups are being deprecated. See https://developers.facebook.com/docs/games/services/game-groups for more information.
  */
-- (BOOL)show __attribute__ ((deprecated));
+- (BOOL)show DEPRECATED_ATTRIBUTE;
 
 /**
 
 @warning App and game groups are being deprecated. See https://developers.facebook.com/docs/games/services/game-groups for more information.
  */
-- (BOOL)validateWithError:(NSError *__autoreleasing *)errorRef __attribute__ ((deprecated));
+- (BOOL)validateWithError:(NSError *__autoreleasing *)errorRef DEPRECATED_ATTRIBUTE;
 
 @end
 
@@ -68,25 +68,25 @@ __attribute__ ((deprecated))
 
 @warning App and game groups are being deprecated. See https://developers.facebook.com/docs/games/services/game-groups for more information.
  */
-__attribute__ ((deprecated))
+DEPRECATED_MSG_ATTRIBUTE("App and game groups are being deprecated")
 @protocol FBSDKAppGroupJoinDialogDelegate <NSObject>
 
 /**
 
 @warning App and game groups are being deprecated. See https://developers.facebook.com/docs/games/services/game-groups for more information.
  */
-- (void)appGroupJoinDialog:(FBSDKAppGroupJoinDialog *)appGroupJoinDialog didCompleteWithResults:(NSDictionary *)results __attribute__ ((deprecated));
+- (void)appGroupJoinDialog:(FBSDKAppGroupJoinDialog *)appGroupJoinDialog didCompleteWithResults:(NSDictionary *)results DEPRECATED_ATTRIBUTE;
 
 /**
 
 @warning App and game groups are being deprecated. See https://developers.facebook.com/docs/games/services/game-groups for more information.
  */
-- (void)appGroupJoinDialog:(FBSDKAppGroupJoinDialog *)appGroupJoinDialog didFailWithError:(NSError *)error __attribute__ ((deprecated));
+- (void)appGroupJoinDialog:(FBSDKAppGroupJoinDialog *)appGroupJoinDialog didFailWithError:(NSError *)error DEPRECATED_ATTRIBUTE;
 
 /**
 
 @warning App and game groups are being deprecated. See https://developers.facebook.com/docs/games/services/game-groups for more information.
  */
-- (void)appGroupJoinDialogDidCancel:(FBSDKAppGroupJoinDialog *)appGroupJoinDialog __attribute__ ((deprecated));
+- (void)appGroupJoinDialogDidCancel:(FBSDKAppGroupJoinDialog *)appGroupJoinDialog DEPRECATED_ATTRIBUTE;
 
 @end

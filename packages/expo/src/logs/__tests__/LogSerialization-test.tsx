@@ -1,4 +1,4 @@
-import { Constants } from 'expo-constants';
+import Constants from 'expo-constants';
 import React from 'react';
 import symbolicateStackTrace from 'react-native/Libraries/Core/Devtools/symbolicateStackTrace';
 import TestRenderer from 'react-test-renderer';
@@ -15,11 +15,9 @@ jest.mock('react-native/Libraries/Core/Devtools/symbolicateStackTrace', () =>
 );
 
 jest.mock('expo-constants', () => ({
-  Constants: {
-    manifest: {
-      developer: {
-        projectRoot: '/home/test/project',
-      },
+  manifest: {
+    developer: {
+      projectRoot: '/home/test/project',
     },
   },
 }));

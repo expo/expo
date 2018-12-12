@@ -47,10 +47,10 @@
     mv "~2"
     safe-json-stringify "~1"
 
-"@expo/json-file@^8.0.0":
-  version "8.0.1"
-  resolved "https://registry.yarnpkg.com/@expo/json-file/-/json-file-8.0.1.tgz#6109f0c1e18c0f84aa5e052406c861cd7ae347a8"
-  integrity sha512-ojXbGO0cr0d3jGsPahy4egrcv+VVDL4KxeauGoGDeEotGBqbnLgjNvsxB8GJRJmKekAhPyGlVUBxpUPU+wVyGQ==
+"@expo/json-file@8.1.0":
+  version "8.1.0"
+  resolved "https://registry.yarnpkg.com/@expo/json-file/-/json-file-8.1.0.tgz#adcbadb20b9ac4e945a354b879b5b307c19df91f"
+  integrity sha512-L2Z3Sod/TDeHNIsixMwiRKgdISJpjA81SknFArFUiD3E0eVYhgPEx++kU23KRD2f8FqwTI6tWJSM5msyxAEldg==
   dependencies:
     "@babel/code-frame" "^7.0.0-beta.44"
     json5 "^1.0.1"
@@ -58,10 +58,10 @@
     util.promisify "^1.0.0"
     write-file-atomic "^2.3.0"
 
-"@expo/json-file@^8.1.0":
-  version "8.1.0"
-  resolved "https://registry.yarnpkg.com/@expo/json-file/-/json-file-8.1.0.tgz#adcbadb20b9ac4e945a354b879b5b307c19df91f"
-  integrity sha512-L2Z3Sod/TDeHNIsixMwiRKgdISJpjA81SknFArFUiD3E0eVYhgPEx++kU23KRD2f8FqwTI6tWJSM5msyxAEldg==
+"@expo/json-file@^8.0.0":
+  version "8.0.1"
+  resolved "https://registry.yarnpkg.com/@expo/json-file/-/json-file-8.0.1.tgz#6109f0c1e18c0f84aa5e052406c861cd7ae347a8"
+  integrity sha512-ojXbGO0cr0d3jGsPahy4egrcv+VVDL4KxeauGoGDeEotGBqbnLgjNvsxB8GJRJmKekAhPyGlVUBxpUPU+wVyGQ==
   dependencies:
     "@babel/code-frame" "^7.0.0-beta.44"
     json5 "^1.0.1"

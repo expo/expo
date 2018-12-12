@@ -1,4 +1,4 @@
-import { Constants } from 'expo-constants';
+import Constants from 'expo-constants';
 import { Linking, Platform } from 'react-native';
 
 import ExponentStoreReview from './ExponentStoreReview';

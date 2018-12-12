@@ -17,23 +17,3 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #import <Foundation/Foundation.h>
-
-#ifdef __cplusplus
-#define FBSDK_EXTERN extern "C" __attribute__((visibility ("default")))
-#else
-#define FBSDK_EXTERN extern __attribute__((visibility ("default")))
-#endif
-
-#define FBSDK_STATIC_INLINE static inline
-
-#define FBSDK_NO_DESIGNATED_INITIALIZER() \
-@throw [NSException exceptionWithName:NSInvalidArgumentException \
-                               reason:[NSString stringWithFormat:@"unrecognized selector sent to instance %p", self] \
-                             userInfo:nil]
-
-#define FBSDK_NOT_DESIGNATED_INITIALIZER(DESIGNATED_INITIALIZER) \
-@throw [NSException exceptionWithName:NSInvalidArgumentException \
-                               reason:[NSString stringWithFormat:@"Please use the designated initializer [%p %@]", \
-                                       self, \
-                                       NSStringFromSelector(@selector(DESIGNATED_INITIALIZER))] \
-                             userInfo:nil]

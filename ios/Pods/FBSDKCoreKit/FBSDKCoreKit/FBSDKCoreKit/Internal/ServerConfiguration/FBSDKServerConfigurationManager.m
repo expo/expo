@@ -286,13 +286,11 @@ typedef NS_OPTIONS(NSUInteger, FBSDKServerConfigurationManagerAppEventsFeatures)
 #endif
                       ];
   NSDictionary *parameters = @{ @"fields": [fields componentsJoinedByString:@","] };
-  if (objc_lookUpClass("FBSDKAutoLog") != nil) {
-    NSString *advertiserID = [FBSDKAppEventsUtility advertiserID];
+  NSString *advertiserID = [FBSDKAppEventsUtility advertiserID];
 
-    if (advertiserID) {
-      parameters = @{ @"fields": [fields componentsJoinedByString:@","],
-                      @"advertiser_id": advertiserID };
-    }
+  if (advertiserID) {
+    parameters = @{ @"fields": [fields componentsJoinedByString:@","],
+                    @"advertiser_id": advertiserID };
   }
 
   FBSDKGraphRequest *request = [[FBSDKGraphRequest alloc] initWithGraphPath:appID

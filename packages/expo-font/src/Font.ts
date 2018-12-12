@@ -1,5 +1,5 @@
 import { Asset } from 'expo-asset';
-import { Constants } from 'expo-constants';
+import Constants from 'expo-constants';
 import { Platform } from 'expo-core';
 import invariant from 'invariant';
 

@@ -20,17 +20,13 @@
 #import "FBSDKCoreKit+Internal.h"
 #import "FBSDKErrorRecoveryAttempter.h"
 
-@interface FBSDKGraphErrorRecoveryProcessor()<UIAlertViewDelegate>
+@interface FBSDKGraphErrorRecoveryProcessor()
 {
   FBSDKErrorRecoveryAttempter *_recoveryAttempter;
   NSError *_error;
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  UIAlertView *_alertView;
-#pragma clang diagnostic pop
 }
 
-@property (nonatomic, strong, readwrite) id<FBSDKGraphErrorRecoveryProcessorDelegate>delegate;
+@property (nonatomic, strong) id<FBSDKGraphErrorRecoveryProcessorDelegate>delegate;
 
 @end
 
@@ -38,9 +34,7 @@
 
 - (void)dealloc
 {
-  if (_alertView) {
-    _alertView.delegate = nil;
-  }
+
 }
 
 - (BOOL)processError:(NSError *)error request:(FBSDKGraphRequest *)request delegate:(id<FBSDKGraphErrorRecoveryProcessorDelegate>) delegate
@@ -52,13 +46,13 @@
     }
   }
 
-  FBSDKGraphRequestErrorCategory errorCategory = [error.userInfo[FBSDKGraphRequestErrorCategoryKey] unsignedIntegerValue];
+  FBSDKGraphRequestError errorCategory = [error.userInfo[FBSDKGraphRequestErrorKey] unsignedIntegerValue];
   switch (errorCategory) {
-    case FBSDKGraphRequestErrorCategoryTransient :
+    case FBSDKGraphRequestErrorTransient :
       [self.delegate processorDidAttemptRecovery:self didRecover:YES error:nil];
       self.delegate = nil;
       return YES;
-    case FBSDKGraphRequestErrorCategoryRecoverable :
+    case FBSDKGraphRequestErrorRecoverable :
       if ([request.tokenString isEqualToString:[FBSDKAccessToken currentAccessToken].tokenString]) {
         _recoveryAttempter = error.recoveryAttempter;
         BOOL isLoginRecoveryAttempter = [_recoveryAttempter isKindOfClass:NSClassFromString(@"_FBSDKLoginRecoveryAttempter")];
@@ -101,7 +95,7 @@
         return standardRecoveryWork();
       }
       return NO;
-    case FBSDKGraphRequestErrorCategoryOther :
+    case FBSDKGraphRequestErrorOther :
       if ([request.tokenString isEqualToString:[FBSDKAccessToken currentAccessToken].tokenString]) {
         NSString *message = error.userInfo[FBSDKErrorLocalizedDescriptionKey];
         NSString *title = error.userInfo[FBSDKErrorLocalizedTitleKey];
@@ -120,92 +114,52 @@
   return NO;
 }
 
-#pragma mark - UIAlertView and UIAlertController support
+#pragma mark - UIAlertController support
 
 - (void)displayAlertWithRecoverySuggestion:(NSString *)recoverySuggestion recoveryOptionsTitles:(NSArray<NSString *> *)recoveryOptionsTitles
 {
-  if ([UIAlertController class]) {
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil
-                                                                             message:recoverySuggestion
-                                                                      preferredStyle:UIAlertControllerStyleAlert];
-    for (NSUInteger i = 0; i < recoveryOptionsTitles.count; i++) {
-      NSString *title = recoveryOptionsTitles[i];
-      UIAlertAction *option = [UIAlertAction actionWithTitle:title
-                                                       style:UIAlertActionStyleDefault
-                                                     handler:^(UIAlertAction * _Nonnull action) {
-                                                       [self->_recoveryAttempter attemptRecoveryFromError:self->_error
-                                                                                        optionIndex:i
-                                                                                           delegate:self
-                                                                                 didRecoverSelector:@selector(didPresentErrorWithRecovery:contextInfo:)
-                                                                                        contextInfo:nil];
-                                                     }];
-      [alertController addAction:option];
-    }
-    UIViewController *topMostViewController = [FBSDKInternalUtility topMostViewController];
-    [topMostViewController presentViewController:alertController
-                                        animated:YES
-                                      completion:nil];
-  } else {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    _alertView = [[UIAlertView alloc] initWithTitle:nil
-                                            message:recoverySuggestion
-                                           delegate:self
-                                  cancelButtonTitle:nil
-                                  otherButtonTitles:nil];
-#pragma clang diagnostic pop
-    for (NSString *option in recoveryOptionsTitles) {
-      [_alertView addButtonWithTitle:option];
-    }
-    [_alertView show];
+  UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil
+                                                                           message:recoverySuggestion
+                                                                    preferredStyle:UIAlertControllerStyleAlert];
+  for (NSUInteger i = 0; i < recoveryOptionsTitles.count; i++) {
+    NSString *title = recoveryOptionsTitles[i];
+    UIAlertAction *option = [UIAlertAction actionWithTitle:title
+                                                     style:UIAlertActionStyleDefault
+                                                   handler:^(UIAlertAction * _Nonnull action) {
+                                                     [self->_recoveryAttempter attemptRecoveryFromError:self->_error
+                                                                                            optionIndex:i
+                                                                                               delegate:self
+                                                                                     didRecoverSelector:@selector(didPresentErrorWithRecovery:contextInfo:)
+                                                                                            contextInfo:nil];
+                                                   }];
+    [alertController addAction:option];
   }
+  UIViewController *topMostViewController = [FBSDKInternalUtility topMostViewController];
+  [topMostViewController presentViewController:alertController
+                                      animated:YES
+                                    completion:nil];
 }
 
 - (void)displayAlertWithTitle:(NSString *)title message:(NSString *)message cancelButtonTitle:(NSString *)localizedOK
 {
-  if ([UIAlertController class]) {
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil
-                                                                             message:message
-                                                                      preferredStyle:UIAlertControllerStyleAlert];
-    UIAlertAction *OKAction = [UIAlertAction actionWithTitle:localizedOK
-                                                       style:UIAlertActionStyleCancel
-                                                     handler:^(UIAlertAction * _Nonnull action) {
-                                                       [self->_recoveryAttempter attemptRecoveryFromError:self->_error
-                                                                                        optionIndex:0
-                                                                                           delegate:self
-                                                                                 didRecoverSelector:@selector(didPresentErrorWithRecovery:contextInfo:)
-                                                                                        contextInfo:nil];
-                                                     }];
-    [alertController addAction:OKAction];
-    UIViewController *topMostViewController = [FBSDKInternalUtility topMostViewController];
-    [topMostViewController presentViewController:alertController
-                                        animated:YES
-                                      completion:nil];
-  } else {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [[[UIAlertView alloc] initWithTitle:title
-                                message:message
-                               delegate:nil
-                      cancelButtonTitle:localizedOK
-                      otherButtonTitles:nil] show];
-#pragma clang diagnostic pop
-  }
+  UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil
+                                                                           message:message
+                                                                    preferredStyle:UIAlertControllerStyleAlert];
+  UIAlertAction *OKAction = [UIAlertAction actionWithTitle:localizedOK
+                                                     style:UIAlertActionStyleCancel
+                                                   handler:^(UIAlertAction * _Nonnull action) {
+                                                     [self->_recoveryAttempter attemptRecoveryFromError:self->_error
+                                                                                            optionIndex:0
+                                                                                               delegate:self
+                                                                                     didRecoverSelector:@selector(didPresentErrorWithRecovery:contextInfo:)
+                                                                                            contextInfo:nil];
+                                                   }];
+  [alertController addAction:OKAction];
+  UIViewController *topMostViewController = [FBSDKInternalUtility topMostViewController];
+  [topMostViewController presentViewController:alertController
+                                      animated:YES
+                                    completion:nil];
 }
-
-#pragma mark - UIAlertViewDelegate
-
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-- (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
-{
-  [_recoveryAttempter attemptRecoveryFromError:_error optionIndex:buttonIndex delegate:self didRecoverSelector:@selector(didPresentErrorWithRecovery:contextInfo:) contextInfo:nil];
-  if (_alertView) {
-    _alertView.delegate = nil;
-    _alertView = nil;
-  }
-}
-#pragma clang diagnostic pop
 
 #pragma mark - FBSDKErrorRecoveryAttempting "delegate"
 

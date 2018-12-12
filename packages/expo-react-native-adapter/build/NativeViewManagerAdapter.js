@@ -40,14 +40,14 @@ export function requireNativeViewManager(viewName) {
         ...Object.keys(reactNativeUIConfiguration.directEventTypes),
     ];
     // Define a component for universal-module authors to access their native view manager
-    function NativeComponentAdapter(props) {
+    function NativeComponentAdapter(props, ref) {
         // TODO: `omit` may incur a meaningful performance cost across many native components rendered
         // in the same update. Profile this and write out a partition function if this is a bottleneck.
         const nativeProps = pick(props, reactNativeComponentPropNames);
         const proxiedProps = omit(props, reactNativeComponentPropNames);
-        return <ReactNativeComponent {...nativeProps} proxiedProperties={proxiedProps}/>;
+        return <ReactNativeComponent {...nativeProps} proxiedProperties={proxiedProps} ref={ref}/>;
     }
     NativeComponentAdapter.displayName = `Adapter<${viewName}>`;
-    return NativeComponentAdapter;
+    return React.forwardRef(NativeComponentAdapter);
 }
 //# sourceMappingURL=NativeViewManagerAdapter.js.map

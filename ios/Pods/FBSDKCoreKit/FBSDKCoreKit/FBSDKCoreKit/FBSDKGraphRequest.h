@@ -43,6 +43,9 @@
  */
 @interface FBSDKGraphRequest : NSObject
 
+- (instancetype)init NS_UNAVAILABLE;
++ (instancetype)new NS_UNAVAILABLE;
+
 /**
   Initializes a new instance that use use `[FBSDKAccessToken currentAccessToken]`.
  @param graphPath the graph path (e.g., @"me").

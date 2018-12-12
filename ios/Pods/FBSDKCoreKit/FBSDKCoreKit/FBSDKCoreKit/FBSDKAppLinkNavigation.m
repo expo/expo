@@ -37,9 +37,9 @@ static id<FBSDKAppLinkResolving> defaultResolver;
 
 @interface FBSDKAppLinkNavigation ()
 
-@property (nonatomic, copy, readwrite) NSDictionary<NSString *, id> *extras;
-@property (nonatomic, copy, readwrite) NSDictionary<NSString *, id> *appLinkData;
-@property (nonatomic, strong, readwrite) FBSDKAppLink *appLink;
+@property (nonatomic, copy) NSDictionary<NSString *, id> *extras;
+@property (nonatomic, copy) NSDictionary<NSString *, id> *appLinkData;
+@property (nonatomic, strong) FBSDKAppLink *appLink;
 
 @end
 
@@ -61,15 +61,7 @@ static id<FBSDKAppLinkResolving> defaultResolver;
 }
 
 - (NSString *)stringByEscapingQueryString:(NSString *)string {
-#if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_7_0 || __MAC_OS_X_VERSION_MIN_REQUIRED >= __MAC_10_9
     return [string stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
-#else
-    return (NSString *)CFBridgingRelease(CFURLCreateStringByAddingPercentEscapes(NULL,
-                                                                                 (CFStringRef)string,
-                                                                                 NULL,
-                                                                                 (CFStringRef) @":/?#[]@!$&'()*+,;=",
-                                                                                 kCFStringEncodingUTF8));
-#endif
 }
 
 - (NSURL *)appLinkURLWithTargetURL:(NSURL *)targetUrl error:(NSError **)error {
