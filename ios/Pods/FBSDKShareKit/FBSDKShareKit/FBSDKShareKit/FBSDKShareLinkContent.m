@@ -82,21 +82,31 @@
 - (void)addToParameters:(NSMutableDictionary<NSString *, id> *)parameters
           bridgeOptions:(FBSDKShareBridgeOptions)bridgeOptions
 {
-  [FBSDKInternalUtility dictionary:parameters setObject:_contentURL forKey:@"link"];
+  [parameters addEntriesFromDictionary:[self addParameters:parameters bridgeOptions:bridgeOptions]];
+}
+
+- (NSDictionary<NSString *, id> *)addParameters:(NSDictionary<NSString *, id> *)existingParameters
+                                  bridgeOptions:(FBSDKShareBridgeOptions)bridgeOptions
+{
+  NSMutableDictionary<NSString *, id> *updatedParameters = [NSMutableDictionary dictionaryWithDictionary:existingParameters];
+
+  [FBSDKInternalUtility dictionary:updatedParameters setObject:_contentURL forKey:@"link"];
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  [FBSDKInternalUtility dictionary:parameters setObject:_contentTitle forKey:@"name"];
-  [FBSDKInternalUtility dictionary:parameters setObject:_contentDescription forKey:@"description"];
-  [FBSDKInternalUtility dictionary:parameters setObject:_imageURL forKey:@"picture"];
+  [FBSDKInternalUtility dictionary:updatedParameters setObject:_contentTitle forKey:@"name"];
+  [FBSDKInternalUtility dictionary:updatedParameters setObject:_contentDescription forKey:@"description"];
+  [FBSDKInternalUtility dictionary:updatedParameters setObject:_imageURL forKey:@"picture"];
 #pragma clang diagnostic pop
-  [FBSDKInternalUtility dictionary:parameters setObject:_quote forKey:@"quote"];
+  [FBSDKInternalUtility dictionary:updatedParameters setObject:_quote forKey:@"quote"];
 
   /**
    Pass link parameter as "messenger_link" due to versioning requirements for message dialog flow.
    We will only use the new share flow we developed if messenger_link is present, not link.
    */
-  [FBSDKInternalUtility dictionary:parameters setObject:_contentURL forKey:@"messenger_link"];
+  [FBSDKInternalUtility dictionary:updatedParameters setObject:_contentURL forKey:@"messenger_link"];
+
+  return updatedParameters;
 }
 
 #pragma mark - FBSDKSharingValidation

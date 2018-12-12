@@ -1,21 +1,21 @@
-import { Constants } from 'expo-constants';
+import Constants from 'expo-constants';
 import qs from 'qs';
 
 import Linking from './Linking';
-import WebBrowser from './WebBrowser';
+import WebBrowser from './WebBrowser/WebBrowser';
 
 type AuthSessionOptions = {
-  authUrl: string,
-  returnUrl?: string,
+  authUrl: string;
+  returnUrl?: string;
 };
 
 type AuthSessionResult =
   | { type: 'cancel' | 'dismiss' | 'locked' }
   | {
-      type: 'error' | 'success',
-      errorCode: string | null,
-      params: Object,
-      url: string,
+      type: 'error' | 'success';
+      errorCode: string | null;
+      params: Object;
+      url: string;
     };
 
 const BASE_URL = `https://auth.expo.io`;
@@ -113,7 +113,7 @@ function getDefaultReturnUrl(): string {
   return Linking.makeUrl('expo-auth-session');
 }
 
-function parseUrl(url: string): { errorCode: string | null, params: Object } {
+function parseUrl(url: string): { errorCode: string | null; params: Object } {
   let parts = url.split('#');
   let hash = parts[1];
   let partsWithoutHash = parts[0].split('?');

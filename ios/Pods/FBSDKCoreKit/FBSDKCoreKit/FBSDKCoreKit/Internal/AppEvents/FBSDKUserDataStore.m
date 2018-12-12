@@ -18,10 +18,9 @@
 
 #import "FBSDKUserDataStore.h"
 
-#import <FBSDKSettings.h>
-
 #import "FBSDKAppEventsUtility.h"
 #import "FBSDKLogger.h"
+#import "FBSDKSettings.h"
 #import "FBSDKUtility.h"
 
 #define USER_DATA_KEY @"com.facebook.appevents.UserDataStore.userData"

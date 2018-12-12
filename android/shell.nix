@@ -21,8 +21,11 @@ mkShell rec {
   ANDROID_NDK=ANDROID_NDK_ROOT;
 
   nativeBuildInputs = [
+    awscli
+    curl
     fastlane
-    nodejs-8_x
+    git
+    nodejs
     openjdk8
   ];
 

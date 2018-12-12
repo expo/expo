@@ -184,14 +184,6 @@ _fbsdkdfl_handle_get_impl_(Security)
   _fbsdkdfl_Security_get_and_return_k(kSecClass);
 }
 
-#pragma mark - Object Lifecycle
-
-- (instancetype)init
-{
-  FBSDK_NO_DESIGNATED_INITIALIZER();
-  return nil;
-}
-
 @end
 
 #pragma mark - Security APIs

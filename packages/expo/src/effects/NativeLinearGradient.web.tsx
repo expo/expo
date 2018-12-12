@@ -7,7 +7,7 @@ type Props = {
   startPoint?: Point | null;
   endPoint?: Point | null;
   onLayout?: Function;
-} & React.ElementProps<View>;
+} & React.ComponentProps<typeof View>;
 
 type State = {
   width?: number;

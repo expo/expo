@@ -12,10 +12,10 @@
   "license": "MIT",
   "dependencies": {
     "expo-core": "~1.2.0",
+    "expo-errors": "^0.0.1",
     "expo-permissions-interface": "~1.2.0"
   },
   "devDependencies": {
-    "babel-preset-expo": "^5.0.0",
     "flow-bin": "^0.79.1"
   }
 }

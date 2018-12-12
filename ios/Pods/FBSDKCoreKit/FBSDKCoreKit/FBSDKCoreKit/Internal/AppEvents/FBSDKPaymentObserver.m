@@ -22,6 +22,7 @@
 
 #import "FBSDKAppEvents+Internal.h"
 #import "FBSDKDynamicFrameworkLoader.h"
+#import "FBSDKGateKeeperManager.h"
 #import "FBSDKLogger.h"
 #import "FBSDKSettings.h"
 
@@ -240,6 +241,9 @@ static NSMutableArray *g_pendingRequestors;
     if (@available(iOS 11.2, *)) {
       BOOL isSubscription = (product.subscriptionPeriod != nil) && ((unsigned long)product.subscriptionPeriod.numberOfUnits > 0);
       if (isSubscription) {
+        if ([FBSDKGateKeeperManager boolForKey:@"app_events_if_auto_log_subs" appID:[FBSDKSettings appID] defaultValue:true]) {
+          eventName = FBSDKAppEventNameSubscribe;
+        }
         // subs inapp
         SKProductSubscriptionPeriod *period = product.subscriptionPeriod;
         NSString *unit = nil;

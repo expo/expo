@@ -1,9 +1,9 @@
-import uriparser from 'uri-parser';
-import urljoin from 'url-join';
 import { PixelRatio, Platform } from 'react-native';
 import AssetRegistry from 'react-native/Libraries/Image/AssetRegistry';
 import AssetSourceResolver from 'react-native/Libraries/Image/AssetSourceResolver';
 import resolveAssetSource from 'react-native/Libraries/Image/resolveAssetSource';
+import uriparser from 'uri-parser';
+import urljoin from 'url-join';
 
 let FS, Constants;
 
@@ -14,7 +14,7 @@ try {
 }
 
 try {
-  Constants = require('expo-constants').Constants;
+  Constants = require('expo-constants').default;
 } catch (error) {
   throw new Error('`expo-asset` requires `expo-constants` package to be installed and linked.');
 }
@@ -58,6 +58,22 @@ const resolveIfRelative = uri => {
     return uri;
   }
 };
+
+function isImageType(type) {
+  return /^(jpeg|jpg|gif|png|bmp)$/i.test(type);
+}
+
+function getExtension(url) {
+  const filename = filenameFromUrl(url);
+  const dotIndex = filename.lastIndexOf('.');
+  // Ignore leading dots for hidden files
+  return dotIndex > 0 ? filename.substring(dotIndex) : '';
+}
+
+function filenameFromUrl(url) {
+  const urlComponents = parser.parse(this.uri);
+  return urlComponents.file;
+}
 
 // Return { uri, hash } for an asset's file, picking the correct scale, based on its React Native
 // metadata. If the asset isn't an image just picks the first file.
@@ -140,8 +156,24 @@ const getUriInBundle = (hash, type) => {
   return `${FS.bundleDirectory}${assetName}`;
 };
 
+function getImageInfoAsync(src) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onerror = reject;
+    img.onload = () => {
+      const name = img.name || img.title || img.localName;
+      resolve({
+        name,
+        width: img.naturalWidth,
+        height: img.naturalHeight,
+      });
+    };
+    img.src = src;
+  });
+}
 export default class Asset {
   static byHash = {};
+  static byUri = {};
 
   constructor({ name, type, hash, uri, width, height }) {
     this.name = name;
@@ -166,9 +198,13 @@ export default class Asset {
     return Promise.all(moduleIds.map(m => Asset.fromModule(m).downloadAsync()));
   }
 
-  static fromModule(moduleId) {
-    const meta = AssetRegistry.getAssetByID(moduleId);
-    return Asset.fromMetadata(meta);
+  static fromModule(virtualAssetModule) {
+    if (typeof virtualAssetModule === 'string') {
+      return Asset.fromURI(virtualAssetModule);
+    } else {
+      const meta = AssetRegistry.getAssetByID(virtualAssetModule);
+      return Asset.fromMetadata(meta);
+    }
   }
 
   static fromMetadata(meta) {
@@ -193,6 +229,29 @@ export default class Asset {
     return asset;
   }
 
+  static fromURI(uri) {
+    // Possibly Base64
+    if (Asset.byUri[uri]) {
+      return Asset.byUri[uri];
+    }
+
+    let type = '';
+    if (uri.indexOf(';base64') > -1) {
+      type = uri.split(';')[0].split('/')[1];
+    } else {
+      type = getExtension(uri);
+    }
+
+    const asset = new Asset({
+      type,
+      uri,
+    });
+
+    Asset.byUri[uri] = asset;
+
+    return asset;
+  }
+
   async downloadAsync() {
     if (this.downloaded) {
       return;
@@ -202,28 +261,40 @@ export default class Asset {
       return;
     }
     this.downloading = true;
+
     try {
-      const localUri = `${FS.cacheDirectory}ExponentAsset-${this.hash}.${this.type}`;
-      let exists, md5;
-      ({ exists, md5 } = await FS.getInfoAsync(localUri, {
-        cache: true,
-        md5: true,
-      }));
-      if (!exists || md5 !== this.hash) {
-        ({ md5 } = await FS.downloadAsync(this.uri, localUri, {
+      if (Platform.OS === 'web') {
+        if (isImageType(this.type)) {
+          const { width, height, name } = await getImageInfoAsync(this.uri);
+          this.width = width;
+          this.height = height;
+          this.name = name;
+        } else {
+          this.name = filenameFromUrl(this.uri);
+        }
+        this.localUri = this.uri;
+      } else {
+        const localUri = `${FS.cacheDirectory}ExponentAsset-${this.hash}.${this.type}`;
+        let { exists, md5 } = await FS.getInfoAsync(localUri, {
           cache: true,
           md5: true,
-        }));
-        if (md5 !== this.hash) {
-          throw new Error(
-            `Downloaded file for asset '${this.name}.${this.type}' ` +
-              `Located at ${this.uri} ` +
-              `failed MD5 integrity check`
-          );
+        });
+        if (!exists || md5 !== this.hash) {
+          ({ md5 } = await FS.downloadAsync(this.uri, localUri, {
+            cache: true,
+            md5: true,
+          }));
+          if (md5 !== this.hash) {
+            throw new Error(
+              `Downloaded file for asset '${this.name}.${this.type}' ` +
+                `Located at ${this.uri} ` +
+                `failed MD5 integrity check`
+            );
+          }
         }
-      }
 
-      this.localUri = localUri;
+        this.localUri = localUri;
+      }
       this.downloaded = true;
       this.downloadCallbacks.forEach(({ resolve }) => resolve());
     } catch (e) {

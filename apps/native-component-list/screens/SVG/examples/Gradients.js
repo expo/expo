@@ -1,16 +1,8 @@
+import { Svg } from 'expo';
 import React, { Component } from 'react';
 import { View } from 'react-native';
-import Svg, {
-  Defs,
-  LinearGradient,
-  RadialGradient,
-  Stop,
-  Ellipse,
-  Circle,
-  Text,
-  Rect,
-  G,
-} from 'react-native-svg';
+
+const { Defs, LinearGradient, RadialGradient, Stop, Ellipse, Circle, Text, Rect, G } = Svg;
 
 class LinearGradientHorizontal extends Component {
   static title = 'Define an ellipse with a horizontal linear gradient from yellow to red';

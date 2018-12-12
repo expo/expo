@@ -1,9 +1,9 @@
 // @flow
 
 import { Platform } from 'react-native';
-import { NativeModulesProxy, EventEmitter } from 'expo-core';
-
-const MediaLibrary = NativeModulesProxy.ExponentMediaLibrary;
+import { EventEmitter } from 'expo-core';
+import { UnavailabilityError } from 'expo-errors';
+import MediaLibrary from './ExponentMediaLibrary';
 const eventEmitter = new EventEmitter(MediaLibrary);
 
 type MediaTypeValue = 'audio' | 'photo' | 'video' | 'unknown';
@@ -152,6 +152,10 @@ export const MediaType: MediaTypeObject = MediaLibrary.MediaType;
 export const SortBy: SortByObject = MediaLibrary.SortBy;
 
 export async function createAssetAsync(localUri: string): Promise<Asset> {
+  if (!MediaLibrary.createAssetAsync) {
+    throw new UnavailabilityError('MediaLibrary', 'createAssetAsync');
+  }
+
   if (!localUri || typeof localUri !== 'string') {
     throw new Error('Invalid argument "localUri". It must be a string!');
   }
@@ -169,6 +173,10 @@ export async function addAssetsToAlbumAsync(
   album: AlbumRef,
   copy: boolean = true
 ) {
+  if (!MediaLibrary.addAssetsToAlbumAsync) {
+    throw new UnavailabilityError('MediaLibrary', 'addAssetsToAlbumAsync');
+  }
+
   const assetIds = arrayize(assets).map(getId);
   const albumId = getId(album);
 
@@ -188,6 +196,10 @@ export async function removeAssetsFromAlbumAsync(
   assets: Array<AssetRef> | AssetRef,
   album: AlbumRef
 ) {
+  if (!MediaLibrary.removeAssetsFromAlbumAsync) {
+    throw new UnavailabilityError('MediaLibrary', 'removeAssetsFromAlbumAsync');
+  }
+
   const assetIds = arrayize(assets).map(getId);
   const albumId = getId(album);
 
@@ -196,6 +208,10 @@ export async function removeAssetsFromAlbumAsync(
 }
 
 export async function deleteAssetsAsync(assets: Array<AssetRef> | AssetRef) {
+  if (!MediaLibrary.deleteAssetsAsync) {
+    throw new UnavailabilityError('MediaLibrary', 'deleteAssetsAsync');
+  }
+
   const assetIds = arrayize(assets).map(getId);
 
   checkAssetIds(assetIds);
@@ -203,6 +219,10 @@ export async function deleteAssetsAsync(assets: Array<AssetRef> | AssetRef) {
 }
 
 export async function getAssetInfoAsync(asset: AssetRef): Promise<AssetInfo> {
+  if (!MediaLibrary.getAssetInfoAsync) {
+    throw new UnavailabilityError('MediaLibrary', 'getAssetInfoAsync');
+  }
+
   const assetId = getId(asset);
 
   checkAssetIds([assetId]);
@@ -217,10 +237,16 @@ export async function getAssetInfoAsync(asset: AssetRef): Promise<AssetInfo> {
 }
 
 export async function getAlbumsAsync(): Promise<Array<Album>> {
+  if (!MediaLibrary.getAlbumsAsync) {
+    throw new UnavailabilityError('MediaLibrary', 'getAlbumsAsync');
+  }
   return MediaLibrary.getAlbumsAsync();
 }
 
 export async function getAlbumAsync(title: string): Promise<Album> {
+  if (!MediaLibrary.getAlbumAsync) {
+    throw new UnavailabilityError('MediaLibrary', 'getAlbumAsync');
+  }
   if (typeof title !== 'string') {
     throw new Error('Album title must be a string!');
   }
@@ -232,6 +258,10 @@ export async function createAlbumAsync(
   asset?: AssetRef,
   copyAsset?: boolean = true
 ): Promise<Album> {
+  if (!MediaLibrary.createAlbumAsync) {
+    throw new UnavailabilityError('MediaLibrary', 'createAlbumAsync');
+  }
+
   const assetId = getId(asset);
 
   if (Platform.OS === 'android' && (typeof assetId !== 'string' || assetId.length === 0)) {
@@ -249,7 +279,14 @@ export async function createAlbumAsync(
   return MediaLibrary.createAlbumAsync(albumName, assetId, !!copyAsset);
 }
 
-export async function deleteAlbumsAsync(albums: Array<AlbumRef> | AlbumRef, assetRemove: boolean = false) {
+export async function deleteAlbumsAsync(
+  albums: Array<AlbumRef> | AlbumRef,
+  assetRemove: boolean = false
+) {
+  if (!MediaLibrary.deleteAlbumsAsync) {
+    throw new UnavailabilityError('MediaLibrary', 'deleteAlbumsAsync');
+  }
+
   const albumIds = arrayize(albums).map(getId);
 
   checkAlbumIds(albumIds);
@@ -260,6 +297,10 @@ export async function deleteAlbumsAsync(albums: Array<AlbumRef> | AlbumRef, asse
 }
 
 export async function getAssetsAsync(assetsOptions: AssetsOptions = {}): Promise<PagedInfo<Asset>> {
+  if (!MediaLibrary.getAssetsAsync) {
+    throw new UnavailabilityError('MediaLibrary', 'getAssetsAsync');
+  }
+
   const { first, after, album, sortBy, mediaType } = assetsOptions;
 
   const options = {
@@ -302,8 +343,9 @@ export function removeAllListeners(): void {
 
 // iOS only
 export async function getMomentsAsync() {
-  if (Platform.OS === 'android') {
-    throw new Error('MediaLibrary.getMomentsAsync is not supported on Android!');
+  if (!MediaLibrary.getMomentsAsync) {
+    throw new UnavailabilityError('MediaLibrary', 'getMomentsAsync');
   }
+
   return MediaLibrary.getMomentsAsync();
 }

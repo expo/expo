@@ -135,20 +135,14 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
   public void onBackPressed() {
     if (mReactInstanceManager != null && mReactInstanceManager.isNotNull() && !mIsCrashed) {
       mReactInstanceManager.call("onBackPressed");
-    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      moveTaskToBack(true);
     } else {
-      invokeDefaultOnBackPressed();
+      moveTaskToBack(true);
     }
   }
 
   @Override
   public void invokeDefaultOnBackPressed() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      moveTaskToBack(true);
-    } else {
-      super.invokeDefaultOnBackPressed();
-    }
+    moveTaskToBack(true);
   }
 
   @Override

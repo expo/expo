@@ -86,17 +86,20 @@ type Props = {
   translateX?: number;
   translateY?: number;
   rotation?: number;
-} & React.ElementProps<View>;
+} & React.ComponentProps<typeof View>;
 
 type NativeProps = {
   source: PlaybackNativeSource | null;
-  nativeResizeMode?: Object;
+  nativeResizeMode?: unknown;
   status?: PlaybackStatusToSet;
-  onStatusUpdateNative?: (event: Object) => void;
-  onReadyForDisplayNative?: (event: Object) => void;
-  onFullscreenUpdateNative?: (event: Object) => void;
+  onLoadStartNative?: () => void;
+  onLoadNative?: (event: { nativeEvent: PlaybackStatus }) => void;
+  onErrorNative?: (event: { nativeEvent: { error: string } }) => void;
+  onStatusUpdateNative?: (event: { nativeEvent: PlaybackStatus }) => void;
+  onReadyForDisplayNative?: (event: { nativeEvent: ReadyForDisplayEvent }) => void;
+  onFullscreenUpdateNative?: (event: { nativeEvent: FullscreenUpdateEvent }) => void;
   useNativeControls?: boolean;
-} & React.ElementProps<View>;
+} & React.ComponentProps<typeof View>;
 
 type State = {
   showPoster: boolean;
@@ -464,6 +467,7 @@ export default class Video extends React.Component<Props, State> implements Play
     });
 
     // Replace selected native props
+    // @ts-ignore: TypeScript thinks "children" is not in the list of props
     const nativeProps: NativeProps = {
       style: _STYLES.base,
       ...omit(this.props, 'source'),
@@ -490,15 +494,4 @@ export default class Video extends React.Component<Props, State> implements Play
 Object.assign(Video.prototype, PlaybackMixin);
 
 type ExponentVideo = React.ComponentClass<NativeProps>;
-const ExponentVideo = requireNativeComponent('ExponentVideo', Video, {
-  nativeOnly: {
-    source: true,
-    nativeResizeMode: true,
-    onStatusUpdateNative: true,
-    onLoadStartNative: true,
-    onLoadNative: true,
-    onErrorNative: true,
-    onReadyForDisplayNative: true,
-    onFullscreenUpdateNative: true,
-  },
-});
+const ExponentVideo = requireNativeComponent('ExponentVideo');

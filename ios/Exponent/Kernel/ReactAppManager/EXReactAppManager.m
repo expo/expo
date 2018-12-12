@@ -2,6 +2,7 @@
 #import "EXBuildConstants.h"
 #import "EXEnvironment.h"
 #import "EXErrorRecoveryManager.h"
+#import "EXUserNotificationManager.h"
 #import "EXKernel.h"
 #import "EXAppLoader.h"
 #import "EXKernelDevKeyCommands.h"
@@ -582,7 +583,11 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   if (_initialProps) {
     [expProps addEntriesFromDictionary:_initialProps];
   }
-  
+  EXPendingNotification *initialNotification = [[EXKernel sharedInstance].serviceRegistry.notificationsManager initialNotificationForExperience:_appRecord.experienceId];
+  if (initialNotification) {
+    expProps[@"notification"] = initialNotification.properties;
+  }
+
   expProps[@"manifest"] = _appRecord.appLoader.manifest;
   if (_appRecord.appLoader.manifestUrl) {
     expProps[@"initialUri"] = [_appRecord.appLoader.manifestUrl absoluteString];

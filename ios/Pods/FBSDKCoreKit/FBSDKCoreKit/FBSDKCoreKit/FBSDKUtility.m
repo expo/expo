@@ -21,7 +21,6 @@
 #import <CommonCrypto/CommonDigest.h>
 
 #import "FBSDKInternalUtility.h"
-#import "FBSDKMacros.h"
 
 @implementation FBSDKUtility
 
@@ -63,25 +62,16 @@
 
 + (NSString *)URLDecode:(NSString *)value
 {
-  value = [value stringByReplacingOccurrencesOfString:@"+" withString:@" "];
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  value = [value stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-#pragma clang diagnostic pop
-  return value;
+  return [value
+          stringByReplacingOccurrencesOfString:@"+"
+          withString:@" "].stringByRemovingPercentEncoding;
 }
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 + (NSString *)URLEncode:(NSString *)value
 {
-  return (__bridge_transfer NSString *)CFURLCreateStringByAddingPercentEscapes(NULL,
-                                                                               (CFStringRef)value,
-                                                                               NULL, // characters to leave unescaped
-                                                                               CFSTR(":!*();@/&?+$,='"),
-                                                                               kCFStringEncodingUTF8);
+  NSCharacterSet *urlAllowedSet = [NSCharacterSet URLFragmentAllowedCharacterSet];
+  return [value stringByAddingPercentEncodingWithAllowedCharacters:urlAllowedSet];
 }
-#pragma clang diagnostic pop
 
 + (dispatch_source_t)startGCDTimerWithInterval:(double)interval block:(dispatch_block_t)block
 {
@@ -131,12 +121,6 @@
   }
 
   return encryptedStuff;
-}
-
-- (instancetype)init
-{
-  FBSDK_NO_DESIGNATED_INITIALIZER();
-  return nil;
 }
 
 @end

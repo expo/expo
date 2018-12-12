@@ -1,4 +1,4 @@
-import { Constants } from 'expo-constants';
+import Constants from 'expo-constants';
 
 import AuthSession from '../AuthSession';
 import { WebBrowser } from '../Expo';

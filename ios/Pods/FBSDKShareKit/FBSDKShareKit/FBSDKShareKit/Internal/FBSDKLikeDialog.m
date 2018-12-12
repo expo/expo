@@ -21,7 +21,6 @@
 #import "FBSDKCoreKit+Internal.h"
 #import "FBSDKShareConstants.h"
 #import "FBSDKShareDefines.h"
-#import "FBSDKShareError.h"
 
 @implementation FBSDKLikeDialog
 
@@ -62,8 +61,9 @@
 {
   NSError *error;
   if (![self canLike]) {
-    error = [FBSDKShareError errorWithCode:FBSDKShareDialogNotAvailableErrorCode
-                                   message:@"Like dialog is not available."];
+    error = [NSError fbErrorWithDomain:FBSDKShareErrorDomain
+                                  code:FBSDKShareErrorDialogNotAvailable
+                               message:@"Like dialog is not available."];
     [_delegate likeDialog:self didFailWithError:error];
     return NO;
   }
@@ -97,7 +97,7 @@
                                                                                         parameters:parameters
                                                                                           userInfo:nil];
     void (^networkCompletionBlock)(FBSDKBridgeAPIResponse *) = ^(FBSDKBridgeAPIResponse *response) {
-      if (response.error.code == FBSDKAppVersionUnsupportedErrorCode) {
+      if (response.error.code == FBSDKErrorAppVersionUnsupported) {
         [[FBSDKApplicationDelegate sharedInstance] openBridgeAPIRequest:webRequest
                                                 useSafariViewController:useSafariViewController
                                                      fromViewController:self.fromViewController
@@ -124,7 +124,9 @@
 {
   if (![self.objectID length]) {
     if (errorRef != NULL) {
-      *errorRef = [FBSDKShareError requiredArgumentErrorWithName:@"objectID" message:nil];
+      *errorRef = [NSError fbRequiredArgumentErrorWithDomain:FBSDKShareErrorDomain
+                                                        name:@"objectID"
+                                                     message:nil];
     }
     return NO;
   }

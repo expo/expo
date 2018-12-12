@@ -28,7 +28,7 @@
 static const uint8_t kFBSDK_CRYPTO_CURRENT_VERSION = 1;
 static const uint8_t kFBSDK_CRYPTO_CURRENT_MASTER_KEY_LENGTH = 16;
 
-FBSDK_STATIC_INLINE void FBSDKCryptoWriteIntBigEndian(uint8_t *buffer, uint32_t value)
+static inline void FBSDKCryptoWriteIntBigEndian(uint8_t *buffer, uint32_t value)
 {
   buffer[3] = (uint8_t)(value & 0xff);
   buffer[2] = (uint8_t)((value >> 8) & 0xff);
@@ -36,7 +36,7 @@ FBSDK_STATIC_INLINE void FBSDKCryptoWriteIntBigEndian(uint8_t *buffer, uint32_t 
   buffer[0] = (uint8_t)((value >> 24) & 0xff);
 }
 
-FBSDK_STATIC_INLINE void FBSDKCryptoBlankData(NSData *data)
+static inline void FBSDKCryptoBlankData(NSData *data)
 {
   if (!data) {
     return;
@@ -45,7 +45,7 @@ FBSDK_STATIC_INLINE void FBSDKCryptoBlankData(NSData *data)
 }
 
 // Note: the following simple derivation function is NOT suitable for passwords or weak keys
-FBSDK_STATIC_INLINE NSData *FBSDKCryptoMakeSubKey(uint8_t *key, size_t len, uint32_t idx)
+static inline NSData *FBSDKCryptoMakeSubKey(uint8_t *key, size_t len, uint32_t idx)
 {
   if (!key || len < 10) {
     return nil;

@@ -1,5 +1,5 @@
 import { NativeModules } from 'react-native';
-import * as SecureStore from '../SecureStore';
+import * as SecureStore from '../SecureStore/SecureStore';
 
 import { mockPlatformIOS } from '../../test/mocking';
 

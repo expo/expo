@@ -115,7 +115,24 @@ public abstract class ExportedModule {
     }
 
     mExportedMethods = new HashMap<>();
-    Method[] declaredMethodsArray = getClass().getDeclaredMethods();
+    Class klass = getClass();
+    while (klass != null && ExportedModule.class.isAssignableFrom(klass)) {
+      Map<String, Method> exportedMethods = getExportedMethods(klass);
+      for (Map.Entry<String, Method> methodEntry : exportedMethods.entrySet()) {
+        // Do not overwrite methods from subclasses with methods from superclasses
+        // (We're iterating from the furthest subclass to ExportedModule.)
+        if (!mExportedMethods.containsKey(methodEntry.getKey())) {
+          mExportedMethods.put(methodEntry.getKey(), methodEntry.getValue());
+        }
+      }
+      klass = klass.getSuperclass();
+    }
+    return mExportedMethods;
+  }
+
+  protected Map<String, Method> getExportedMethods(Class klass) {
+    Map<String, Method> exportedMethods = new HashMap<>();
+    Method[] declaredMethodsArray = klass.getDeclaredMethods();
 
     for (Method method : declaredMethodsArray) {
       if (method.getAnnotation(ExpoMethod.class) != null) {
@@ -123,7 +140,7 @@ public abstract class ExportedModule {
         Class<?>[] methodParameterTypes = method.getParameterTypes();
         if (methodParameterTypes.length < 1) {
           throw new IllegalArgumentException(
-                  "Method " + methodName + " of Java Module " + getName() + " does not define any arguments - minimum argument set is a Promise"
+              "Method " + methodName + " of Java Module " + getName() + " does not define any arguments - minimum argument set is a Promise"
           );
         }
 
@@ -131,20 +148,20 @@ public abstract class ExportedModule {
 
         if (lastParameterClass != expo.core.Promise.class) {
           throw new IllegalArgumentException(
-                  "Last argument of method " + methodName + " of Java Module " + getName() + " does not expect a Promise"
+              "Last argument of method " + methodName + " of Java Module " + getName() + " does not expect a Promise"
           );
         }
 
-        if (mExportedMethods.containsKey(methodName)) {
+        if (exportedMethods.containsKey(methodName)) {
           throw new IllegalArgumentException(
-                  "Java Module " + getName() + " method name already registered: " + methodName + "."
+              "Java Module " + getName() + " method name already registered: " + methodName + "."
           );
         }
 
-        mExportedMethods.put(methodName, method);
+        exportedMethods.put(methodName, method);
       }
     }
 
-    return mExportedMethods;
+    return exportedMethods;
   }
 }

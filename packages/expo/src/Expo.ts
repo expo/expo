@@ -6,7 +6,7 @@ import 'expo-asset/src/Asset';
 // polyfill navigator.geolocation
 import 'expo-location/src/Location';
 
-import { Constants } from 'expo-constants';
+import Constants from 'expo-constants';
 import { NativeModules, Platform } from 'react-native';
 
 if (typeof Constants.manifest.env === 'object') {
@@ -16,13 +16,15 @@ if (typeof Constants.manifest.env === 'object') {
 export { AdMobBanner, AdMobInterstitial, AdMobRewarded, PublisherBanner } from 'expo-ads-admob';
 export { Segment } from 'expo-analytics-segment';
 export { Asset } from 'expo-asset';
+export { AppAuth } from 'expo-app-auth';
 export { BarCodeScanner } from 'expo-barcode-scanner';
 export { Camera } from 'expo-camera';
-export { Constants } from 'expo-constants';
+export { Constants };
 export { Contacts } from 'expo-contacts';
 export { FaceDetector } from 'expo-face-detector';
 export { FileSystem } from 'expo-file-system';
-export { Font } from 'expo-font';
+import * as Font from 'expo-font';
+export { Font };
 export { GLView } from 'expo-gl';
 export { GoogleSignIn } from 'expo-google-sign-in';
 export { LocalAuthentication } from 'expo-local-authentication';
@@ -34,13 +36,12 @@ export { Print } from 'expo-print';
 export { Accelerometer, Gyroscope, Magnetometer, MagnetometerUncalibrated } from 'expo-sensors';
 import * as SMS from 'expo-sms';
 export { SMS };
-import * as GestureHandler from 'react-native-gesture-handler';
-export { GestureHandler };
+export { GestureHandler } from './GestureHandler';
 export { default as MapView } from 'react-native-maps';
 
 import * as AR from './AR';
 export { AR };
-export { default as Amplitude } from './Amplitude';
+export { default as Amplitude } from './Amplitude/Amplitude';
 export { default as AuthSession } from './AuthSession';
 import * as Brightness from './Brightness';
 export { Brightness };
@@ -49,40 +50,40 @@ export { Calendar };
 export { default as DangerZone } from './DangerZone';
 import * as DocumentPicker from './DocumentPicker';
 export { DocumentPicker };
-export { default as ErrorRecovery } from './ErrorRecovery';
-import * as Facebook from './Facebook';
+export { default as ErrorRecovery } from './ErrorRecovery/ErrorRecovery';
+import * as Facebook from './Facebook/Facebook';
 export { Facebook };
-import * as Google from './Google';
+import * as Google from './Google/Google';
 export { Google };
-import * as Haptic from './Haptic';
+import * as Haptic from './Haptic/Haptic';
 export { Haptic };
 export { default as Icon } from './Icon';
-import * as ImageManipulator from './ImageManipulator';
+import * as ImageManipulator from './ImageManipulator/ImageManipulator';
 export { ImageManipulator };
-import * as ImagePicker from './ImagePicker';
+import * as ImagePicker from './ImagePicker/ImagePicker';
 export { ImagePicker };
-import * as IntentLauncherAndroid from './IntentLauncherAndroid';
+import * as IntentLauncherAndroid from './IntentLauncherAndroid/IntentLauncherAndroid';
 export { IntentLauncherAndroid };
 export { default as KeepAwake } from './KeepAwake';
 export { default as Linking } from './Linking';
-import * as MailComposer from './MailComposer';
+import * as MailComposer from './MailComposer/MailComposer';
 export { MailComposer };
 export { default as Notifications } from './Notifications/Notifications';
 export { default as SQLite } from './SQLite';
-import * as ScreenOrientation from './ScreenOrientation';
+import * as ScreenOrientation from './ScreenOrientation/ScreenOrientation';
 export { ScreenOrientation };
-import * as SecureStore from './SecureStore';
+import * as SecureStore from './SecureStore/SecureStore';
 export { SecureStore };
-import * as Speech from './Speech';
+import * as Speech from './Speech/Speech';
 export { Speech };
-import * as StoreReview from './StoreReview';
+import * as StoreReview from './StoreReview/StoreReview';
 export { StoreReview };
 export { default as Svg } from './Svg';
-import * as Updates from './Updates';
+import * as Updates from './Updates/Updates';
 export { Updates };
 import * as Util from './Util';
 export { Util };
-export { default as WebBrowser } from './WebBrowser';
+export { default as WebBrowser } from './WebBrowser/WebBrowser';
 export { default as apisAreAvailable } from './apisAreAvailable';
 export { default as takeSnapshotAsync } from './takeSnapshotAsync';
 import * as Audio from './av/Audio';
@@ -100,15 +101,6 @@ export { default as Logs } from './logs/Logs';
 
 // @ts-ignore
 Object.defineProperties(exports, {
-  Fingerprint: {
-    enumerable: true,
-    get() {
-      console.warn(
-        'Expo.Fingerprint has been renamed to Expo.LocalAuthentication. The old name is deprecated and will be removed in SDK 32.'
-      );
-      return this.LocalAuthentication;
-    },
-  },
   // TODO: Unify the Pedometer module across platforms so we can export it normally
   Pedometer: {
     enumerable: true,
@@ -119,39 +111,6 @@ Object.defineProperties(exports, {
         return require('expo-sensors').Pedometer;
       }
     },
-  },
-
-  // Directly exposed modules that we need to revisit or drop
-  Crypto: {
-    get() {
-      console.warn(`Expo.Crypto is not part of the public API and will be removed in SDK 32.`);
-      return NativeModules.ExponentCrypto;
-    },
-  },
-  Fabric: {
-    get() {
-      console.warn(`Expo.Fabric is not part of the public API and will be removed in SDK 32.`);
-      return NativeModules.ExponentFabric;
-    },
-  },
-  ImageCropper: {
-    get() {
-      console.warn(
-        `Expo.ImageCropper is not part of the public API and will be removed in SDK 32.`
-      );
-      return NativeModules.ExponentImageCropper;
-    },
-  },
-});
-
-// @ts-ignore print a warning when the default export is imported
-Object.defineProperty(exports, 'default', {
-  get() {
-    console.warn(
-      `The syntax "import Expo from 'expo'" has been deprecated in favor of "import { A, B, C } from 'expo'" or "import * as Expo from 'expo'". This sets us up to support static analysis tools like TypeScript and dead-import elimination better in the future. The deprecated import syntax will be removed in SDK 32.`
-    );
-    // @ts-ignore
-    return exports;
   },
 });
 

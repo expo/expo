@@ -1,13 +1,12 @@
-import PropTypes from 'prop-types';
 import React from 'react';
-import { StyleSheet, View, ViewPropTypes, requireNativeComponent } from 'react-native';
+import { StyleSheet, View, requireNativeComponent } from 'react-native';
 
 type Props = {
   colors: number[];
   locations?: number[] | null;
   startPoint?: Point | null;
   endPoint?: Point | null;
-} & React.ElementProps<View>;
+} & React.ComponentProps<typeof View>;
 
 type Point = [number, number];
 
@@ -49,13 +48,4 @@ export default class NativeLinearGradient extends React.Component<Props> {
   }
 }
 
-const BaseNativeLinearGradient = requireNativeComponent('ExponentLinearGradient', {
-  propTypes: {
-    ...ViewPropTypes,
-    colors: PropTypes.arrayOf(PropTypes.number),
-    locations: PropTypes.arrayOf(PropTypes.number),
-    startPoint: PropTypes.arrayOf(PropTypes.number),
-    endPoint: PropTypes.arrayOf(PropTypes.number),
-    borderRadii: PropTypes.arrayOf(PropTypes.number),
-  },
-});
+const BaseNativeLinearGradient = requireNativeComponent('ExponentLinearGradient');

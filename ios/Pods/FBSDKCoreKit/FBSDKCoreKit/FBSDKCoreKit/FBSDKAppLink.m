@@ -30,11 +30,11 @@ NSString *const FBSDKAppLinkVersion = @"1.0";
 
 @interface FBSDKAppLink ()
 
-@property (nonatomic, strong, readwrite) NSURL *sourceURL;
-@property (nonatomic, copy, readwrite) NSArray<FBSDKAppLinkTarget *> *targets;
-@property (nonatomic, strong, readwrite) NSURL *webURL;
+@property (nonatomic, strong) NSURL *sourceURL;
+@property (nonatomic, copy) NSArray<FBSDKAppLinkTarget *> *targets;
+@property (nonatomic, strong) NSURL *webURL;
 
-@property (nonatomic, assign, readwrite, getter=isBackToReferrer) BOOL backToReferrer;
+@property (nonatomic, assign, getter=isBackToReferrer) BOOL backToReferrer;
 
 @end
 

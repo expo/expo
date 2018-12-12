@@ -1,4 +1,4 @@
-import { Constants } from 'expo-constants';
+import Constants from 'expo-constants';
 import { Linking } from 'react-native';
 import qs from 'qs';
 

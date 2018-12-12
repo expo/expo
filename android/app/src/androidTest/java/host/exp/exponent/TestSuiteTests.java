@@ -18,6 +18,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
@@ -90,17 +91,19 @@ public class TestSuiteTests extends BaseTestClass {
     return !ExponentBuildConstants.TEST_APP_URI.equals("");
   }
 
-  private void runTestSuiteTest(String testSuiteUri, boolean shouldAddDeepLink) {
+  private void runTestSuiteTest(String testSuiteUriString, boolean shouldAddDeepLink) {
+    Uri testSuiteUri = Uri.parse(testSuiteUriString);
+
     ensureContactsAdded();
 
     if (shouldAddDeepLink) {
       String deepLink = TestConfig.get().toString();
-      testSuiteUri = testSuiteUri + "/--/" + deepLink;
+      testSuiteUri = Uri.withAppendedPath(testSuiteUri, "/--/" + deepLink);
     }
 
     // Launch the app
     Context context = InstrumentationRegistry.getContext();
-    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(testSuiteUri));
+    Intent intent = new Intent(Intent.ACTION_VIEW, testSuiteUri);
     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     context.startActivity(intent);
 
@@ -146,6 +149,7 @@ public class TestSuiteTests extends BaseTestClass {
     runTestSuiteTest(ExponentBuildConstants.TEST_APP_URI, true);
   }
 
+  @Ignore
   @Test
   @ExpoTestSuiteTest
   @ExpoSdkVersionTest("31.0.0")
@@ -153,6 +157,7 @@ public class TestSuiteTests extends BaseTestClass {
     runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-31-0-0", false);
   }
 
+  @Ignore
   @Test
   @ExpoTestSuiteTest
   @ExpoSdkVersionTest("30.0.0")
@@ -160,6 +165,7 @@ public class TestSuiteTests extends BaseTestClass {
     runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-30-0-0", false);
   }
 
+  @Ignore
   @Test
   @ExpoTestSuiteTest
   @ExpoSdkVersionTest("28.0.0")
@@ -167,6 +173,7 @@ public class TestSuiteTests extends BaseTestClass {
     runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-28-0-0", false);
   }
 
+  @Ignore
   @Test
   @ExpoTestSuiteTest
   @ExpoSdkVersionTest("27.0.0")
@@ -174,6 +181,7 @@ public class TestSuiteTests extends BaseTestClass {
     runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-27-0-0", false);
   }
 
+  @Ignore
   @Test
   @ExpoTestSuiteTest
   @ExpoSdkVersionTest("26.0.0")
@@ -181,6 +189,7 @@ public class TestSuiteTests extends BaseTestClass {
     runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-26-0-0", false);
   }
 
+  @Ignore
   @Test
   @ExpoTestSuiteTest
   @ExpoSdkVersionTest("25.0.0")

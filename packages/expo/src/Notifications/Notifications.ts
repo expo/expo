@@ -1,5 +1,4 @@
 import { EventEmitter, EventSubscription } from 'fbemitter';
-import warning from 'fbjs/lib/warning';
 import invariant from 'invariant';
 import { AsyncStorage, DeviceEventEmitter, Platform } from 'react-native';
 import ExponentNotifications from './ExponentNotifications';
@@ -39,6 +38,17 @@ type Channel = {
   sound?: boolean;
   vibrate?: boolean | number[];
   badge?: boolean;
+};
+
+type ActionType = {
+  actionId: string;
+  buttonTitle: string;
+  isDestructive?: boolean;
+  isAuthenticationRequired?: boolean;
+  textInput?: {
+    submitButtonTitle: string;
+    placeholder: string;
+  };
 };
 
 // Android assigns unique number to each notification natively.
@@ -172,6 +182,23 @@ export default {
     _initialNotification = notification;
   },
 
+  // User passes set of actions titles.
+  createCategoryIOSAsync(categoryId: string, actions: ActionType[]): Promise<void> {
+    if (Platform.OS === 'android') {
+      console.warn('createCategoryAsync(...) has no effect on Android');
+      return Promise.resolve();
+    }
+    return ExponentNotifications.createCategoryAsync(categoryId, actions);
+  },
+
+  deleteCategoryIOSAsync(categoryId: string): Promise<void> {
+    if (Platform.OS === 'android') {
+      console.warn('deleteCategoryAsync(...) has no effect on Android');
+      return Promise.resolve();
+    }
+    return ExponentNotifications.deleteCategoryAsync(categoryId);
+  },
+
   /* Re-export */
   getExpoPushTokenAsync(): Promise<string> {
     return ExponentNotifications.getExponentPushTokenAsync();
@@ -281,10 +308,11 @@ export default {
 
       // If someone passes in a value that is too small, say, by an order of 1000 (it's common to
       // accidently pass seconds instead of ms), display a warning.
-      warning(
-        timeAsDateObj.getTime() >= now,
-        `Provided value for "time" is before the current date. Did you possibly pass number of seconds since Unix Epoch instead of number of milliseconds?`
-      );
+      if (timeAsDateObj.getTime() < now) {
+        console.warn(
+          `Provided value for "time" is before the current date. Did you possibly pass number of seconds since Unix Epoch instead of number of milliseconds?`
+        );
+      }
 
       // If iOS, pass time as milliseconds
       if (Platform.OS === 'ios') {
@@ -327,6 +355,11 @@ export default {
     }
 
     if (Platform.OS === 'ios') {
+      if (options.repeat) {
+        console.warn('Ability to schedule an automatically repeated notification is deprecated on iOS and will be removed in the next SDK release.');
+        return ExponentNotifications.legacyScheduleLocalRepeatingNotification(nativeNotification, options);
+      }
+
       return ExponentNotifications.scheduleLocalNotification(nativeNotification, options);
     } else {
       let _channel;
@@ -375,12 +408,12 @@ export default {
 
   /* Cancel scheduled notification notification with ID */
   cancelScheduledNotificationAsync(notificationId: LocalNotificationId): Promise<void> {
-    return ExponentNotifications.cancelScheduledNotification(notificationId);
+    return ExponentNotifications.cancelScheduledNotificationAsync(notificationId);
   },
 
   /* Cancel all scheduled notifications */
   cancelAllScheduledNotificationsAsync(): Promise<void> {
-    return ExponentNotifications.cancelAllScheduledNotifications();
+    return ExponentNotifications.cancelAllScheduledNotificationsAsync();
   },
 
   /* Primary public api */

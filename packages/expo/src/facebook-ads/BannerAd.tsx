@@ -1,13 +1,12 @@
-import PropTypes from 'prop-types';
 import React from 'react';
-import { View, ViewPropTypes, requireNativeComponent } from 'react-native';
+import { View, requireNativeComponent } from 'react-native';
 
 type Props = {
   placementId: string;
   type: BannerAdType;
   onPress?: () => void;
   onError?: (error: Error) => void;
-} & React.ElementProps<View>;
+} & React.ComponentProps<typeof View>;
 
 type BannerAdType = 'large' | 'rectangle' | 'standard';
 
@@ -33,12 +32,4 @@ function _getSizeForAdType(type: BannerAdType): number {
   return sizes.hasOwnProperty(type) ? sizes[type] : sizes.standard;
 }
 
-const NativeBannerView = requireNativeComponent('CTKBannerView', {
-  propTypes: {
-    ...ViewPropTypes,
-    placementId: PropTypes.string.isRequired,
-    size: PropTypes.number.isRequired,
-    onAdPress: PropTypes.func,
-    onAdError: PropTypes.func,
-  },
-});
+const NativeBannerView = requireNativeComponent('CTKBannerView');

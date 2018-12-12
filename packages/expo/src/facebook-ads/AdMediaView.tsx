@@ -1,10 +1,10 @@
 import nullthrows from 'nullthrows';
 import React from 'react';
-import { View, ViewPropTypes, requireNativeComponent } from 'react-native';
+import { View, requireNativeComponent } from 'react-native';
 
 import { AdMediaViewContext, AdMediaViewContextValue } from './withNativeAd';
 
-type Props = React.ElementProps<View>;
+type Props = React.ComponentProps<typeof View>;
 
 export default class AdMediaView extends React.Component<Props> {
   render() {
@@ -21,6 +21,4 @@ export default class AdMediaView extends React.Component<Props> {
 
 // The native AdMediaView has the same props as regular View
 export type NativeAdMediaView = React.Component<Props>;
-export const NativeAdMediaView = requireNativeComponent<Props>('MediaView', {
-  propTypes: ViewPropTypes,
-});
+export const NativeAdMediaView = requireNativeComponent('MediaView');

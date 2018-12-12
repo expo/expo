@@ -1,6 +1,7 @@
+import { Svg } from 'expo';
 import React, { Component } from 'react';
 
-import Svg, { Rect } from 'react-native-svg';
+const { Rect } = Svg;
 
 class RectExample extends Component {
   static title = 'Rect';

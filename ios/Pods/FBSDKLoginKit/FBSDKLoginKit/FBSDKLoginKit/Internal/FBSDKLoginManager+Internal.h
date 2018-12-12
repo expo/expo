@@ -26,7 +26,7 @@
 @class FBSDKLoginCompletionParameters;
 
 @interface FBSDKLoginManagerSystemAccountState : NSObject
-@property (nonatomic) BOOL didShowDialog;
+@property (nonatomic, assign) BOOL didShowDialog;
 @property (nonatomic, getter=isReauthorize) BOOL reauthorize;
 @property (nonatomic, getter=isUnTOSedDevice) BOOL unTOSedDevice;
 @end
