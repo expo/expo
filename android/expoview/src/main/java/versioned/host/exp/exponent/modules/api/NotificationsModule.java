@@ -130,12 +130,6 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void cancelNotification(final int notificationId) {
-    NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getReactApplicationContext());
-    notificationManager.cancel(notificationId);
-  }
-
-  @ReactMethod
   public void createChannel(String channelId, final ReadableMap data, final Promise promise) {
     String experienceId;
     String channelName;
@@ -304,22 +298,22 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void cancelScheduledNotification(final int notificationId, final Promise promise) {
+  public void cancelScheduledNotificationAsync(final int notificationId, final Promise promise) {
     try {
       ExponentNotificationManager manager = new ExponentNotificationManager(getReactApplicationContext());
       manager.cancelScheduled(mManifest.getString(ExponentManifest.MANIFEST_ID_KEY), notificationId);
-      promise.resolve(true);
+      promise.resolve(null);
     } catch (Exception e) {
       promise.reject(e);
     }
   }
 
   @ReactMethod
-  public void cancelAllScheduledNotifications(final Promise promise) {
+  public void cancelAllScheduledNotificationsAsync(final Promise promise) {
     try {
       ExponentNotificationManager manager = new ExponentNotificationManager(getReactApplicationContext());
       manager.cancelAllScheduled(mManifest.getString(ExponentManifest.MANIFEST_ID_KEY));
-      promise.resolve(true);
+      promise.resolve(null);
     } catch (Exception e) {
       promise.reject(e);
     }
