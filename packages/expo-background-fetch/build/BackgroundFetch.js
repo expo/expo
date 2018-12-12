@@ -15,7 +15,7 @@ var BackgroundFetchStatus;
 })(BackgroundFetchStatus || (BackgroundFetchStatus = {}));
 export async function getStatusAsync() {
     if (Platform.OS !== 'ios') {
-        return Promise.resolve();
+        return Promise.resolve(null);
     }
     return ExpoBackgroundFetch.getStatusAsync();
 }

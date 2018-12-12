@@ -15,9 +15,9 @@ enum BackgroundFetchStatus {
   Available = 3,
 }
 
-export async function getStatusAsync(): Promise<BackgroundFetchStatus | void> {
+export async function getStatusAsync(): Promise<BackgroundFetchStatus | null> {
   if (Platform.OS !== 'ios') {
-    return Promise.resolve();
+    return Promise.resolve(null);
   }
   return ExpoBackgroundFetch.getStatusAsync();
 }
