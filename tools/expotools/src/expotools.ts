@@ -1,5 +1,4 @@
 // TODO: rewrite this to export directly after https://github.com/Microsoft/TypeScript/issues/4813
-import * as DeviceFarm from './DeviceFarm';
 import * as Directories from './Directories';
 import * as ExpoKit from './ExpoKit';
 import * as FirebaseTestLab from './FirebaseTestLab';
@@ -14,7 +13,6 @@ import * as TestSuite from './TestSuite';
 import * as XDL from './XDL';
 
 export {
-  DeviceFarm,
   Directories,
   ExpoKit,
   FirebaseTestLab,

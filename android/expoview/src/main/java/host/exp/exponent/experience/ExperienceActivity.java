@@ -31,7 +31,6 @@ import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
-import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.Nullable;
@@ -64,6 +63,7 @@ import host.exp.exponent.notifications.ReceivedNotificationEvent;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponent.utils.AsyncCondition;
 import host.exp.exponent.utils.ExperienceActivityUtils;
+import host.exp.exponent.utils.ExpoActivityIds;
 import host.exp.expoview.Exponent;
 import host.exp.expoview.R;
 import versioned.host.exp.exponent.ExponentPackageDelegate;
@@ -74,21 +74,17 @@ import static host.exp.exponent.kernel.KernelConstants.MANIFEST_URL_KEY;
 
 public class ExperienceActivity extends BaseExperienceActivity implements Exponent.StartReactInstanceDelegate {
 
-  // Override
-  public List<ReactPackage> reactPackages() {
+  public List<Package> expoPackages() {
+    // Experience must pick its own modules in ExponentPackage
     return null;
   }
-  public List<Package> expoPackages() {
-    return Collections.emptyList();
+  public List<ReactPackage> reactPackages() {
+    return null;
   }
 
   @Override
   public ExponentPackageDelegate getExponentPackageDelegate() {
     return null;
-  }
-
-  public boolean forceUnversioned() {
-    return false;
   }
 
   private static final String TAG = ExperienceActivity.class.getSimpleName();
@@ -98,7 +94,6 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
   private static final int NOTIFICATION_ID = 10101;
   private static String READY_FOR_BUNDLE = "readyForBundle";
 
-  private RNObject mLinkingPackage = null;
   private ReactUnthemedRootView mNuxOverlayView;
   private ExponentNotification mNotification;
   private ExponentNotification mTempNotification;
@@ -165,7 +160,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     NativeModuleDepsProvider.getInstance().inject(ExperienceActivity.class, this);
     EventBus.getDefault().registerSticky(this);
 
-    mActivityId = Exponent.getActivityId();
+    mActivityId = ExpoActivityIds.getNextAppActivityId();
 
     // TODO: audit this now that kernel logic is in Java
     boolean shouldOpenImmediately = true;
@@ -309,16 +304,9 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
   public void onNewIntent(Intent intent) {
     super.onNewIntent(intent);
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      Uri uri = intent.getData();
-      if (uri != null) {
-        handleUri(uri.toString());
-      }
-    } else {
-      // Always just restart this activity. Don't call Activity.recreate() because that uses
-      // the old savedInstanceState.
-      finish();
-      startActivity(intent);
+    Uri uri = intent.getData();
+    if (uri != null) {
+      handleUri(uri.toString());
     }
   }
 
@@ -395,7 +383,8 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     if (Constants.TEMPORARY_ABI_VERSION != null && Constants.TEMPORARY_ABI_VERSION.equals(mSDKVersion)) {
       mSDKVersion = RNObject.UNVERSIONED;
     }
-    mDetachSdkVersion = forceUnversioned() ? RNObject.UNVERSIONED : mSDKVersion;
+    // In detach/shell, since SDK31 we always use UNVERSIONED as the ABI.
+    mDetachSdkVersion = Constants.isStandaloneApp() ? RNObject.UNVERSIONED : mSDKVersion;
 
     if (!RNObject.UNVERSIONED.equals(mSDKVersion)) {
       boolean isValidVersion = false;
@@ -457,13 +446,6 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
 
     final ExponentNotification finalNotificationObject = notificationObject;
 
-    // TODO: deprecated
-    // LinkingPackage was removed after ABI 5.0.0
-    if (ABIVersion.toNumber(mDetachSdkVersion) <= ABIVersion.toNumber("5.0.0")) {
-      mLinkingPackage = new RNObject("host.exp.exponent.modules.external.linking.LinkingPackage");
-      mLinkingPackage.loadVersion(mDetachSdkVersion).construct(this, mIntentUri);
-    }
-
     BranchManager.handleLink(this, mIntentUri, mDetachSdkVersion);
 
     runOnUiThread(new Runnable() {
@@ -478,12 +460,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
           mReactInstanceManager.assign(null);
         }
 
-        // ReactUnthemedRootView was moved after ABI 5.0.0 as part of a refactor
-        if (ABIVersion.toNumber(mDetachSdkVersion) <= ABIVersion.toNumber("5.0.0")) {
-          mReactRootView = new RNObject("host.exp.exponent.views.ReactUnthemedRootView");
-        } else {
-          mReactRootView = new RNObject("host.exp.exponent.ReactUnthemedRootView");
-        }
+        mReactRootView = new RNObject("host.exp.exponent.ReactUnthemedRootView");
         mReactRootView.loadVersion(mDetachSdkVersion).construct(ExperienceActivity.this);
         setView((View) mReactRootView.get());
 
@@ -540,10 +517,6 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
   }
 
   public void onEventMainThread(ReceivedNotificationEvent event) {
-    if (ABIVersion.toNumber(mDetachSdkVersion) < ABIVersion.toNumber("8.0.0")) {
-      return;
-    }
-
     if (event.experienceId.equals(mExperienceIdString)) {
       try {
         RNObject rctDeviceEventEmitter = new RNObject("com.facebook.react.modules.core.DeviceEventManagerModule$RCTDeviceEventEmitter");
@@ -577,22 +550,12 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
       }
 
       if ((options.notification != null || options.notificationObject != null) && mDetachSdkVersion != null) {
-        if (ABIVersion.toNumber(mDetachSdkVersion) < ABIVersion.toNumber("8.0.0")) {
-          // TODO: kill
-          RNObject rctDeviceEventEmitter = new RNObject("com.facebook.react.modules.core.DeviceEventManagerModule$RCTDeviceEventEmitter");
-          rctDeviceEventEmitter.loadVersion(mDetachSdkVersion);
+        RNObject rctDeviceEventEmitter = new RNObject("com.facebook.react.modules.core.DeviceEventManagerModule$RCTDeviceEventEmitter");
+        rctDeviceEventEmitter.loadVersion(mDetachSdkVersion);
 
-          mReactInstanceManager.callRecursive("getCurrentReactContext")
-              .callRecursive("getJSModule", rctDeviceEventEmitter.rnClass())
-              .call("emit", "Exponent.notification", options.notification);
-        } else {
-          RNObject rctDeviceEventEmitter = new RNObject("com.facebook.react.modules.core.DeviceEventManagerModule$RCTDeviceEventEmitter");
-          rctDeviceEventEmitter.loadVersion(mDetachSdkVersion);
-
-          mReactInstanceManager.callRecursive("getCurrentReactContext")
-              .callRecursive("getJSModule", rctDeviceEventEmitter.rnClass())
-              .call("emit", "Exponent.notification", options.notificationObject.toWriteableMap(mDetachSdkVersion, "selected"));
-        }
+        mReactInstanceManager.callRecursive("getCurrentReactContext")
+            .callRecursive("getJSModule", rctDeviceEventEmitter.rnClass())
+            .call("emit", "Exponent.notification", options.notificationObject.toWriteableMap(mDetachSdkVersion, "selected"));
       }
     } catch (Throwable e) {
       EXL.e(TAG, e);
@@ -600,10 +563,6 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
   }
 
   private void handleUri(String uri) {
-    if (mLinkingPackage != null && mLinkingPackage.isNotNull()) {
-      mLinkingPackage.call("onNewUri", uri);
-    }
-
     // Emits a "url" event to the Linking event emitter
     Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
     super.onNewIntent(intent);
@@ -623,7 +582,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     Exponent.getInstance().testPackagerStatus(isDebugModeEnabled(), mManifest, new Exponent.PackagerStatusCallback() {
       @Override
       public void onSuccess() {
-        mReactInstanceManager = startReactInstance(ExperienceActivity.this, mIntentUri, mLinkingPackage, mDetachSdkVersion, mNotification, mIsShellApp, reactPackages(), expoPackages(), mDevBundleDownloadProgressListener);
+        mReactInstanceManager = startReactInstance(ExperienceActivity.this, mIntentUri, mDetachSdkVersion, mNotification, mIsShellApp, reactPackages(), expoPackages(), mDevBundleDownloadProgressListener);
       }
 
       @Override
@@ -714,9 +673,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
         .setOngoing(true)
         .setPriority(Notification.PRIORITY_MAX);
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      mNotificationBuilder.setColor(ContextCompat.getColor(this, R.color.colorPrimary));
-    }
+    mNotificationBuilder.setColor(ContextCompat.getColor(this, R.color.colorPrimary));
     notificationManager.notify(NOTIFICATION_ID, mNotificationBuilder.build());
   }
 

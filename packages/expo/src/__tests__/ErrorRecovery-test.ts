@@ -1,5 +1,5 @@
 import { NativeModules } from 'react-native';
-import ErrorRecovery from '../ErrorRecovery';
+import ErrorRecovery from '../ErrorRecovery/ErrorRecovery';
 
 import { describeCrossPlatform } from '../../test/mocking';
 

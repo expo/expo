@@ -55,8 +55,10 @@ import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponent.utils.JSONBundleConverter;
 import host.exp.expoview.Exponent;
 import host.exp.expoview.R;
+import versioned.host.exp.exponent.ExponentPackage;
 
 import static host.exp.exponent.kernel.KernelConstants.INTENT_URI_KEY;
+import static host.exp.exponent.kernel.KernelConstants.IS_HEADLESS_KEY;
 import static host.exp.exponent.kernel.KernelConstants.LINKING_URI_KEY;
 import static host.exp.exponent.kernel.KernelConstants.MANIFEST_URL_KEY;
 
@@ -145,7 +147,7 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
     mContainer = new FrameLayout(this);
     mLayout.addView(mContainer);
     mLoadingView = new LoadingView(this);
-    if (!Constants.isShellApp() || Constants.SHOW_LOADING_VIEW_IN_SHELL_APP) {
+    if (!Constants.isStandaloneApp() || Constants.SHOW_LOADING_VIEW_IN_SHELL_APP) {
       mContainer.setBackgroundColor(ContextCompat.getColor(this, R.color.white));
       mLayout.addView(mLoadingView);
     }
@@ -162,7 +164,7 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
 
   protected void setView(final View view) {
     mContainer.removeAllViews();
-    if (Constants.isShellApp() && Constants.SHOW_LOADING_VIEW_IN_SHELL_APP) {
+    if (Constants.isStandaloneApp() && Constants.SHOW_LOADING_VIEW_IN_SHELL_APP) {
       ViewGroup.LayoutParams layoutParams = mContainer.getLayoutParams();
       layoutParams.height = 0;
       mContainer.setLayoutParams(layoutParams);
@@ -190,6 +192,9 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
   }
 
   protected void updateLoadingProgress(String status, Integer done, Integer total) {
+    if (!mIsLoading) {
+      showLoadingScreen(mManifest);
+    }
     mLoadingView.updateProgress(status, done, total);
   }
 
@@ -243,7 +248,7 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
   }
 
   private void hideLoadingScreen() {
-    if (Constants.isShellApp() && Constants.SHOW_LOADING_VIEW_IN_SHELL_APP) {
+    if (Constants.isStandaloneApp() && Constants.SHOW_LOADING_VIEW_IN_SHELL_APP) {
       ViewGroup.LayoutParams layoutParams = mContainer.getLayoutParams();
       layoutParams.height = mLayout.getHeight();
       mContainer.setLayoutParams(layoutParams);
@@ -395,7 +400,7 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
     }
   }
 
-  public RNObject startReactInstance(final Exponent.StartReactInstanceDelegate delegate, final String mIntentUri, final RNObject mLinkingPackage,
+  public RNObject startReactInstance(final Exponent.StartReactInstanceDelegate delegate, final String mIntentUri,
                                      final String mSDKVersion, final ExponentNotification mNotification, final boolean mIsShellApp,
                                      final List<? extends Object> extraNativeModules, final List<Package> extraExpoPackages, DevBundleDownloadProgressListener progressListener) {
 
@@ -409,17 +414,18 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
     Map<String, Object> experienceProperties = MapBuilder.<String, Object>of(
         MANIFEST_URL_KEY, mManifestUrl,
         LINKING_URI_KEY, linkingUri,
-        INTENT_URI_KEY, mIntentUri
+        INTENT_URI_KEY, mIntentUri,
+        IS_HEADLESS_KEY, false
     );
 
     Exponent.InstanceManagerBuilderProperties instanceManagerBuilderProperties = new Exponent.InstanceManagerBuilderProperties();
     instanceManagerBuilderProperties.application = getApplication();
     instanceManagerBuilderProperties.jsBundlePath = mJSBundlePath;
-    instanceManagerBuilderProperties.linkingPackage = mLinkingPackage;
     instanceManagerBuilderProperties.experienceProperties = experienceProperties;
     instanceManagerBuilderProperties.expoPackages = extraExpoPackages;
     instanceManagerBuilderProperties.exponentPackageDelegate = delegate.getExponentPackageDelegate();
     instanceManagerBuilderProperties.manifest = mManifest;
+    instanceManagerBuilderProperties.singletonModules = ExponentPackage.getOrCreateSingletonModules(getApplicationContext());
 
     RNObject versionedUtils = new RNObject("host.exp.exponent.VersionedUtils").loadVersion(mSDKVersion);
     RNObject builder = versionedUtils.callRecursive("getReactInstanceManagerBuilder", instanceManagerBuilderProperties);
@@ -435,15 +441,13 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
       String mainModuleName = mManifest.optString(ExponentManifest.MANIFEST_MAIN_MODULE_NAME_KEY);
       Exponent.enableDeveloperSupport(mSDKVersion, debuggerHost, mainModuleName, builder);
 
-      if (ABIVersion.toNumber(mSDKVersion) >= ABIVersion.toNumber("20.0.0")) {
-        RNObject devLoadingView = new RNObject("com.facebook.react.devsupport.DevLoadingViewController").loadVersion(mSDKVersion);
-        devLoadingView.callRecursive("setDevLoadingEnabled", false);
+      RNObject devLoadingView = new RNObject("com.facebook.react.devsupport.DevLoadingViewController").loadVersion(mSDKVersion);
+      devLoadingView.callRecursive("setDevLoadingEnabled", false);
 
-        RNObject devBundleDownloadListener = new RNObject("host.exp.exponent.ExponentDevBundleDownloadListener")
-            .loadVersion(mSDKVersion)
-            .construct(progressListener);
-        builder.callRecursive("setDevBundleDownloadListener", devBundleDownloadListener.get());
-      }
+      RNObject devBundleDownloadListener = new RNObject("host.exp.exponent.ExponentDevBundleDownloadListener")
+          .loadVersion(mSDKVersion)
+          .construct(progressListener);
+      builder.callRecursive("setDevBundleDownloadListener", devBundleDownloadListener.get());
 
       // checkForReactViews() is normally called in dev mode by devBundleDownloadListener.onSuccess()
       // so that AppLoading will continue to show the splash screen correctly. However, the
@@ -461,11 +465,7 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
     if (mNotification != null) {
       bundle.putString("notification", mNotification.body); // Deprecated
       try {
-        if (ABIVersion.toNumber(mSDKVersion) < ABIVersion.toNumber("10.0.0")) {
-          exponentProps.put("notification", mNotification.body);
-        } else {
-          exponentProps.put("notification", mNotification.toJSONObject("selected"));
-        }
+        exponentProps.put("notification", mNotification.toJSONObject("selected"));
       } catch (JSONException e) {
         e.printStackTrace();
       }

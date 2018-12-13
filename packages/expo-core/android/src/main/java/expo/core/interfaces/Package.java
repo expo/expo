@@ -18,4 +18,6 @@ public interface Package {
    *                reference to the context in view managers makes it leak.
    */
   List<ViewManager> createViewManagers(Context context);
+
+  List<SingletonModule> createSingletonModules(Context context);
 }

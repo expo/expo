@@ -23,7 +23,7 @@ export default class ExpoApisScreen extends React.Component {
   }
 
   _handleNotification = notification => {
-    let { data, origin, remote } = notification;
+    let { data, origin, remote, actionId, userText } = notification;
     if (typeof data === 'string') {
       data = JSON.parse(data);
     }
@@ -35,14 +35,20 @@ export default class ExpoApisScreen extends React.Component {
      */
 
     let message;
-    if (Platform.OS === 'android') {
-      message = `Notification ${origin} with data: ${JSON.stringify(data)}`;
+    if (remote) {
+      message = `Push notification ${
+        actionId ? `"${actionId}"` : origin
+      } with data: ${JSON.stringify(data)}`;
     } else {
-      if (remote) {
-        message = `Push notification ${origin} with data: ${JSON.stringify(data)}`;
-      } else {
-        message = `Local notification ${origin} with data: ${JSON.stringify(data)}`;
-      }
+      message = `Local notification ${
+        actionId ? `"${actionId}"` : origin
+      } with data: ${JSON.stringify(data)}`;
+    }
+
+    if (userText) {
+      message += `\nUser provided text: ${userText}.`;
+    } else {
+      message += `\nNo text provided.`;
     }
 
     // Calling alert(message) immediately fails to show the alert on Android
@@ -59,6 +65,7 @@ export default class ExpoApisScreen extends React.Component {
     return [
       'AppAuth',
       'AuthSession',
+      'BackgroundFetch',
       'Branch',
       'Calendars',
       'Constants',
@@ -90,6 +97,7 @@ export default class ExpoApisScreen extends React.Component {
       'SecureStore',
       'SMS',
       'StoreReview',
+      'TaskManager',
       'TextToSpeech',
       'Util',
       'WebBrowser',

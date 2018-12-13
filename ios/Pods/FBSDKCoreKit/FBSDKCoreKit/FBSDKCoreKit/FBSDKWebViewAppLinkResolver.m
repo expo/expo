@@ -139,14 +139,10 @@ static NSString *const FBSDKWebViewAppLinkResolverShouldFallbackKey = @"should_f
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
   [request setValue:FBSDKWebViewAppLinkResolverMetaTagPrefix forHTTPHeaderField:FBSDKWebViewAppLinkResolverPreferHeader];
 
-#if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_7_0 || __MAC_OS_X_VERSION_MIN_REQUIRED >= __MAC_10_9
   NSURLSession *session = [NSURLSession sharedSession];
   [[session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
     completion(response, data, error);
   }] resume];
-#else
-  [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:completion];
-#endif
 }
 
 - (void)appLinkFromURL:(NSURL *)url handler:(FBSDKAppLinkFromURLHandler)handler

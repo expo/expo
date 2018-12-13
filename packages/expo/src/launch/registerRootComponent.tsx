@@ -1,4 +1,4 @@
-import { Font } from 'expo-font';
+import * as Font from 'expo-font';
 import * as React from 'react';
 import { AppRegistry, StyleSheet } from 'react-native';
 

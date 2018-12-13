@@ -20,9 +20,9 @@
 
 @interface FBSDKAppLinkTarget ()
 
-@property (nonatomic, strong, readwrite) NSURL *URL;
-@property (nonatomic, copy, readwrite) NSString *appStoreId;
-@property (nonatomic, copy, readwrite) NSString *appName;
+@property (nonatomic, strong) NSURL *URL;
+@property (nonatomic, copy) NSString *appStoreId;
+@property (nonatomic, copy) NSString *appName;
 
 @end
 

@@ -12,7 +12,7 @@ const { Constants } = requireConstants();
 
 function requireConstants() {
   try {
-    return require('expo-constants');
+    return require('expo-constants').default;
   } catch (error) {
     throw new Error('expo-google-sign-in needs expo-constants to be installed');
   }

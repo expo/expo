@@ -11,13 +11,6 @@ If you're using Cocoapods, add the dependency to your `Podfile`:
 
 and run `pod install`.
 
-### iOS (no Cocoapods)
-
-1.  In XCode, in the project navigator, right click `Libraries` ➜ `Add Files to [your project's name]`
-2.  Go to `node_modules` ➜ `expo-file-system` and add `EXFileSystem.xcodeproj`
-3.  In XCode, in the project navigator, select your project. Add `libEXFileSystem.a` to your project's `Build Phases` ➜ `Link Binary With Libraries`
-4.  Run your project (`Cmd+R`).
-
 ### Android
 
 1.  Append the following lines to `android/settings.gradle`:
@@ -33,6 +26,7 @@ and run `pod install`.
     compile project(':expo-file-system')
     compile project(':expo-file-system-interface')
     ```
+3.  Add `new FileSystemPackage()` to your module registry provider in `MainApplication.java`.
 
 ## Introduction
 

@@ -18,8 +18,6 @@
 
 #import <Foundation/Foundation.h>
 
-#import <FBSDKCoreKit/FBSDKMacros.h>
-
 @class FBSDKGraphRequest;
 @class FBSDKGraphRequestConnection;
 
@@ -118,7 +116,7 @@ typedef void (^FBSDKGraphRequestHandler)(FBSDKGraphRequestConnection *connection
 
  The byte count arguments refer to the aggregated <FBSDKGraphRequest> objects, not a particular <FBSDKGraphRequest>.
 
- Like `NSURLConnection`, the values may change in unexpected ways if data needs to be resent.
+ Like `NSURLSession`, the values may change in unexpected ways if data needs to be resent.
 
  @param connection                The request connection transmitting data to a remote host
  @param bytesWritten              The number of bytes sent in the last transmission
@@ -153,7 +151,7 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite;
 /**
   Gets or sets the timeout interval to wait for a response before giving up.
  */
-@property (nonatomic) NSTimeInterval timeout;
+@property (nonatomic, assign) NSTimeInterval timeout;
 
 /**
   The raw response that was returned from the server.  (readonly)
@@ -289,8 +287,6 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite;
 
  By default, a connection is scheduled on the current thread in the default mode when it is created.
  You cannot reschedule a connection after it has started.
-
- This is very similar to `[NSURLConnection setDelegateQueue:]`.
  */
 - (void)setDelegateQueue:(NSOperationQueue *)queue;
 
@@ -320,4 +316,4 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite;
  will be wrapped into a dictionary using this const as the key. This only applies for very few Graph API
  prior to v2.1.
  */
-FBSDK_EXTERN NSString *const FBSDKNonJSONResponseProperty;
+FOUNDATION_EXPORT NSString *const FBSDKNonJSONResponseProperty;

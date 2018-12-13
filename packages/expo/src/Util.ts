@@ -1,13 +1,6 @@
 import { EventEmitter, EventSubscription } from 'fbemitter';
 import { DeviceEventEmitter } from 'react-native';
 
-import * as Updates from './Updates';
-
-export function reload(): void {
-  console.warn('Util.reload is deprecated and will be removed in SDK 31, use Updates.reload instead');
-  return Updates.reload();
-}
-
 let _emitter: EventEmitter | null;
 
 function _getEmitter(): EventEmitter {

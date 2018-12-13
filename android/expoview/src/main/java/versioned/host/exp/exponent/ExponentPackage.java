@@ -2,6 +2,9 @@
 
 package versioned.host.exp.exponent;
 
+import android.content.Context;
+import android.os.Looper;
+
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -19,27 +22,7 @@ import java.util.Map;
 
 import expo.adapters.react.ReactModuleRegistryProvider;
 import expo.core.interfaces.Package;
-import expo.modules.ads.admob.AdMobPackage;
-import expo.modules.appauth.AppAuthPackage;
-import expo.modules.font.FontLoaderPackage;
-import expo.modules.localauthentication.LocalAuthenticationPackage;
-import expo.modules.payments.stripe.StripePackage;
-import expo.modules.print.PrintPackage;
-import expo.modules.analytics.segment.SegmentPackage;
-import expo.modules.barcodescanner.BarCodeScannerPackage;
-import expo.modules.camera.CameraPackage;
-import expo.modules.constants.ConstantsPackage;
-import expo.modules.contacts.ContactsPackage;
-import expo.modules.facedetector.FaceDetectorPackage;
-import expo.modules.filesystem.FileSystemPackage;
-import expo.modules.gl.GLPackage;
-import expo.modules.google.signin.GoogleSignInPackage;
-import expo.modules.location.LocationPackage;
-import expo.modules.medialibrary.MediaLibraryPackage;
-import expo.modules.permissions.PermissionsPackage;
-import expo.modules.sensors.SensorsPackage;
-import expo.modules.sms.SMSPackage;
-import expo.modules.localization.LocalizationPackage;
+import expo.core.interfaces.SingletonModule;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.kernel.ExperienceId;
@@ -56,16 +39,13 @@ import versioned.host.exp.exponent.modules.api.fbads.AdIconViewManager;
 import versioned.host.exp.exponent.modules.api.fbads.MediaViewManager;
 import versioned.host.exp.exponent.modules.api.AmplitudeModule;
 import versioned.host.exp.exponent.modules.api.CalendarModule;
-import versioned.host.exp.exponent.modules.api.CryptoModule;
 import versioned.host.exp.exponent.modules.api.DocumentPickerModule;
 import versioned.host.exp.exponent.modules.api.ErrorRecoveryModule;
-import versioned.host.exp.exponent.modules.api.FabricModule;
 import versioned.host.exp.exponent.modules.api.FacebookModule;
-import versioned.host.exp.exponent.modules.api.ImageCropperModule;
 import versioned.host.exp.exponent.modules.api.ImagePickerModule;
 import versioned.host.exp.exponent.modules.api.KeepAwakeModule;
 import versioned.host.exp.exponent.modules.api.KeyboardModule;
-import versioned.host.exp.exponent.modules.api.NotificationsModule;
+import versioned.host.exp.exponent.modules.api.notifications.NotificationsModule;
 import versioned.host.exp.exponent.modules.api.viewshot.RNViewShotModule;
 import versioned.host.exp.exponent.modules.api.SQLiteModule;
 import versioned.host.exp.exponent.modules.api.ScreenOrientationModule;
@@ -99,34 +79,12 @@ import versioned.host.exp.exponent.modules.test.ExponentTestNativeModule;
 import versioned.host.exp.exponent.modules.universal.ExpoModuleRegistryAdapter;
 import versioned.host.exp.exponent.modules.universal.ScopedModuleRegistryAdapter;
 
+import static host.exp.exponent.kernel.KernelConstants.IS_HEADLESS_KEY;
 import static host.exp.exponent.kernel.KernelConstants.LINKING_URI_KEY;
 
 public class ExponentPackage implements ReactPackage {
-  private static final List<Package> EXPO_MODULES_PACKAGES = Arrays.<Package>asList(
-      new CameraPackage(),
-      new AppAuthPackage(),
-      new SensorsPackage(),
-      new FileSystemPackage(),
-      new FaceDetectorPackage(),
-      new ConstantsPackage(),
-      new GLPackage(),
-      new GoogleSignInPackage(),
-      new PermissionsPackage(),
-      new SMSPackage(),
-      new PrintPackage(),
-      new MediaLibraryPackage(),
-      new SegmentPackage(),
-      new FontLoaderPackage(),
-      new LocationPackage(),
-      new ContactsPackage(),
-      new BarCodeScannerPackage(),
-      new AdMobPackage(),
-      new StripePackage(),
-      new LocalAuthenticationPackage(),
-      new LocalizationPackage()
-  );
-
   private static final String TAG = ExponentPackage.class.getSimpleName();
+  private static List<SingletonModule> sSingletonModules;
 
   private final boolean mIsKernel;
   private final Map<String, Object> mExperienceProperties;
@@ -134,36 +92,52 @@ public class ExponentPackage implements ReactPackage {
 
   private final ScopedModuleRegistryAdapter mModuleRegistryAdapter;
 
-  private ExponentPackage(boolean isKernel, Map<String, Object> experienceProperties, JSONObject manifest) {
+  private ExponentPackage(boolean isKernel, Map<String, Object> experienceProperties, JSONObject manifest, List<Package> expoPackages, List<SingletonModule> singletonModules) {
     mIsKernel = isKernel;
     mExperienceProperties = experienceProperties;
     mManifest = manifest;
-    mModuleRegistryAdapter = createDefaultModuleRegistryAdapterForPackages(EXPO_MODULES_PACKAGES);
+    mModuleRegistryAdapter = createDefaultModuleRegistryAdapterForPackages(expoPackages, singletonModules);
   }
 
-  public ExponentPackage(Map<String, Object> experienceProperties, JSONObject manifest, List<Package> expoPackages, ExponentPackageDelegate delegate) {
+  public ExponentPackage(Map<String, Object> experienceProperties, JSONObject manifest, List<Package> expoPackages, ExponentPackageDelegate delegate, List<SingletonModule> singletonModules) {
     mIsKernel = false;
     mExperienceProperties = experienceProperties;
     mManifest = manifest;
 
-    List<Package> packages = new ArrayList<>(EXPO_MODULES_PACKAGES);
-    if (expoPackages != null) {
-      packages.addAll(expoPackages);
+    List<Package> packages = expoPackages;
+    if (packages == null) {
+       packages = ExperiencePackagePicker.packages(manifest);
     }
     // Delegate may not be null only when the app is detached
     if (delegate != null) {
-      mModuleRegistryAdapter = delegate.getScopedModuleRegistryAdapterForPackages(packages);
+      mModuleRegistryAdapter = delegate.getScopedModuleRegistryAdapterForPackages(packages, singletonModules);
     } else {
-      mModuleRegistryAdapter = createDefaultModuleRegistryAdapterForPackages(packages);
+      mModuleRegistryAdapter = createDefaultModuleRegistryAdapterForPackages(packages, singletonModules);
     }
   }
 
-  public static ExponentPackage kernelExponentPackage(JSONObject manifest) {
+  public static ExponentPackage kernelExponentPackage(Context context, JSONObject manifest, List<Package> expoPackages) {
     Map<String, Object> kernelExperienceProperties = new HashMap<>();
+    List<SingletonModule> singletonModules = ExponentPackage.getOrCreateSingletonModules(context);
     kernelExperienceProperties.put(LINKING_URI_KEY, "exp://");
-    return new ExponentPackage(true, kernelExperienceProperties, manifest);
+    kernelExperienceProperties.put(IS_HEADLESS_KEY, false);
+    return new ExponentPackage(true, kernelExperienceProperties, manifest, expoPackages, singletonModules);
   }
 
+  public static List<SingletonModule> getOrCreateSingletonModules(Context context) {
+    if (Looper.getMainLooper() != Looper.myLooper()) {
+      throw new RuntimeException("Singleton modules must be created on the main thread.");
+    }
+    if (sSingletonModules == null) {
+      sSingletonModules = new ArrayList<>();
+      List<Package> expoPackages = ExperiencePackagePicker.packages();
+
+      for (Package expoPackage : expoPackages) {
+        sSingletonModules.addAll(expoPackage.createSingletonModules(context));
+      }
+    }
+    return sSingletonModules;
+  }
 
   @Override
   public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
@@ -185,8 +159,6 @@ public class ExponentPackage implements ReactPackage {
       nativeModules.add((NativeModule) ExponentKernelModuleProvider.newInstance(reactContext));
     }
 
-    nativeModules.add(new ImageCropperModule(reactContext));
-
     if (isVerified) {
       try {
         ExperienceId experienceId = ExperienceId.create(mManifest.getString(ExponentManifest.MANIFEST_ID_KEY));
@@ -194,11 +166,9 @@ public class ExponentPackage implements ReactPackage {
 
         nativeModules.add(new ExponentAsyncStorageModule(reactContext, mManifest));
         nativeModules.add(new NotificationsModule(reactContext, mManifest, mExperienceProperties));
-        nativeModules.add(new CryptoModule(reactContext));
         nativeModules.add(new ImagePickerModule(reactContext, scopedContext, experienceId));
         nativeModules.add(new ImageManipulatorModule(reactContext, scopedContext));
         nativeModules.add(new FacebookModule(reactContext));
-        nativeModules.add(new FabricModule(reactContext, mExperienceProperties));
         nativeModules.add(new AmplitudeModule(reactContext, scopedContext));
         nativeModules.add(new RNViewShotModule(reactContext, scopedContext));
         nativeModules.add(new KeepAwakeModule(reactContext));
@@ -276,7 +246,7 @@ public class ExponentPackage implements ReactPackage {
     }
   }
 
-  private ExpoModuleRegistryAdapter createDefaultModuleRegistryAdapterForPackages(List<Package> packages) {
-    return new ExpoModuleRegistryAdapter(new ReactModuleRegistryProvider(packages));
+  private ExpoModuleRegistryAdapter createDefaultModuleRegistryAdapterForPackages(List<Package> packages, List<SingletonModule> singletonModules) {
+    return new ExpoModuleRegistryAdapter(new ReactModuleRegistryProvider(packages, singletonModules));
   }
 }

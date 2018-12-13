@@ -6,7 +6,11 @@
     "moduleResolution": "node",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "types": ["jest"],
+    "types": ["jest", "jest-require"],
+    "typeRoots": [
+      "./ts-declarations",
+      "node_modules/@types"
+    ],
     "sourceMap": true,
     "declaration": true,
     "inlineSources": true,

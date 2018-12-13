@@ -24,17 +24,17 @@
 #import "FBSDKErrorConfiguration.h"
 
 // login kit
-extern NSString *const FBSDKDialogConfigurationNameLogin;
+FOUNDATION_EXPORT NSString *const FBSDKDialogConfigurationNameLogin;
 
 // share kit
-extern NSString *const FBSDKDialogConfigurationNameAppInvite;
-extern NSString *const FBSDKDialogConfigurationNameGameRequest;
-extern NSString *const FBSDKDialogConfigurationNameGroup;
-extern NSString *const FBSDKDialogConfigurationNameLike;
-extern NSString *const FBSDKDialogConfigurationNameMessage;
-extern NSString *const FBSDKDialogConfigurationNameShare;
+FOUNDATION_EXPORT NSString *const FBSDKDialogConfigurationNameAppInvite;
+FOUNDATION_EXPORT NSString *const FBSDKDialogConfigurationNameGameRequest;
+FOUNDATION_EXPORT NSString *const FBSDKDialogConfigurationNameGroup;
+FOUNDATION_EXPORT NSString *const FBSDKDialogConfigurationNameLike;
+FOUNDATION_EXPORT NSString *const FBSDKDialogConfigurationNameMessage;
+FOUNDATION_EXPORT NSString *const FBSDKDialogConfigurationNameShare;
 
-extern const NSInteger FBSDKServerConfigurationVersion;
+FOUNDATION_EXPORT const NSInteger FBSDKServerConfigurationVersion;
 
 typedef NS_OPTIONS(NSUInteger, FBSDKServerConfigurationSmartLoginOptions)
 {
@@ -44,6 +44,9 @@ typedef NS_OPTIONS(NSUInteger, FBSDKServerConfigurationSmartLoginOptions)
 };
 
 @interface FBSDKServerConfiguration : NSObject <FBSDKCopying, NSSecureCoding>
+
+- (instancetype)init NS_UNAVAILABLE;
++ (instancetype)new NS_UNAVAILABLE;
 
 - (instancetype)initWithAppID:(NSString *)appID
                       appName:(NSString *)appName

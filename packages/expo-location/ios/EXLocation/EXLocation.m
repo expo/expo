@@ -1,7 +1,9 @@
-// Copyright 2015-present 650 Industries. All rights reserved.
+// Copyright 2016-present 650 Industries. All rights reserved.
 
 #import <EXLocation/EXLocation.h>
 #import <EXLocation/EXLocationDelegate.h>
+#import <EXLocation/EXLocationTaskConsumer.h>
+#import <EXLocation/EXGeofencingTaskConsumer.h>
 
 #import <CoreLocation/CLLocationManager.h>
 #import <CoreLocation/CLLocationManagerDelegate.h>
@@ -9,10 +11,12 @@
 #import <CoreLocation/CLGeocoder.h>
 #import <CoreLocation/CLPlacemark.h>
 #import <CoreLocation/CLError.h>
+#import <CoreLocation/CLCircularRegion.h>
 
 #import <EXCore/EXEventEmitterService.h>
 #import <EXCore/EXAppLifecycleService.h>
 #import <EXPermissionsInterface/EXPermissionsInterface.h>
+#import <EXTaskManagerInterface/EXTaskManagerInterface.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -27,6 +31,7 @@ NSString * const EXHeadingChangedEventName = @"Exponent.headingChanged";
 @property (nonatomic, weak) id<EXEventEmitterService> eventEmitter;
 @property (nonatomic, weak) id<EXPermissionsInterface> permissions;
 @property (nonatomic, weak) id<EXAppLifecycleService> lifecycleService;
+@property (nonatomic, weak) id<EXTaskManagerInterface> tasksManager;
 
 @end
 
@@ -52,6 +57,7 @@ EX_EXPORT_MODULE(ExpoLocation);
   _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(EXEventEmitterService)];
   _permissions = [moduleRegistry getModuleImplementingProtocol:@protocol(EXPermissionsInterface)];
   _lifecycleService = [moduleRegistry getModuleImplementingProtocol:@protocol(EXAppLifecycleService)];
+  _tasksManager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXTaskManagerInterface)];
 
   if (_lifecycleService) {
     [_lifecycleService registerAppLifecycleListener:self];
@@ -82,6 +88,7 @@ EX_EXPORT_METHOD_AS(getProviderStatusAsync,
 {
   resolve(@{
             @"locationServicesEnabled": @([CLLocationManager locationServicesEnabled]),
+            @"backgroundModeEnabled": @([_tasksManager hasBackgroundModeEnabled:@"location"]),
             });
 }
 
@@ -317,6 +324,107 @@ EX_EXPORT_METHOD_AS(requestPermissionsAsync,
                     withRejecter:reject];
 }
 
+EX_EXPORT_METHOD_AS(hasServicesEnabledAsync,
+                    hasServicesEnabled:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
+{
+  BOOL servicesEnabled = [CLLocationManager locationServicesEnabled];
+  resolve(@(servicesEnabled));
+}
+
+# pragma mark - Background location
+
+EX_EXPORT_METHOD_AS(startLocationUpdatesAsync,
+                    startLocationUpdatesForTaskWithName:(nonnull NSString *)taskName
+                    withOptions:(nonnull NSDictionary *)options
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
+{
+  if (![self checkPermissions:reject] || ![self checkBackgroundServices:reject]) {
+    return;
+  }
+  if (![CLLocationManager significantLocationChangeMonitoringAvailable]) {
+    return reject(@"E_SIGNIFICANT_CHANGES_UNAVAILABLE", @"Significant location changes monitoring is not available.", nil);
+  }
+
+  @try {
+    [_tasksManager registerTaskWithName:taskName consumer:[EXLocationTaskConsumer class] options:options];
+  }
+  @catch (NSException *e) {
+    return reject(e.name, e.reason, nil);
+  }
+  resolve(nil);
+}
+
+EX_EXPORT_METHOD_AS(stopLocationUpdatesAsync,
+                    stopLocationUpdatesForTaskWithName:(NSString *)taskName
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
+{
+  @try {
+    [_tasksManager unregisterTaskWithName:taskName consumerClass:[EXLocationTaskConsumer class]];
+  } @catch (NSException *e) {
+    return reject(e.name, e.reason, nil);
+  }
+  resolve(nil);
+}
+
+EX_EXPORT_METHOD_AS(hasStartedLocationUpdatesAsync,
+                    hasStartedLocationUpdatesForTaskWithName:(nonnull NSString *)taskName
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
+{
+  resolve(@([_tasksManager taskWithName:taskName hasConsumerOfClass:[EXLocationTaskConsumer class]]));
+}
+
+# pragma mark - Geofencing
+
+EX_EXPORT_METHOD_AS(startGeofencingAsync,
+                    startGeofencingWithTaskName:(nonnull NSString *)taskName
+                    withOptions:(nonnull NSDictionary *)options
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
+{
+  if (![self checkPermissions:reject] || ![self checkBackgroundServices:reject]) {
+    return;
+  }
+  if (![CLLocationManager isMonitoringAvailableForClass:[CLCircularRegion class]]) {
+    return reject(@"E_GEOFENCING_UNAVAILABLE", @"Geofencing is not available", nil);
+  }
+
+  @try {
+    [_tasksManager registerTaskWithName:taskName consumer:[EXGeofencingTaskConsumer class] options:options];
+  } @catch (NSException *e) {
+    return reject(e.name, e.reason, nil);
+  }
+  resolve(nil);
+}
+
+EX_EXPORT_METHOD_AS(stopGeofencingAsync,
+                    stopGeofencingWithTaskName:(nonnull NSString *)taskName
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
+{
+  if (![self checkBackgroundServices:reject]) {
+    return;
+  }
+
+  @try {
+    [_tasksManager unregisterTaskWithName:taskName consumerClass:[EXGeofencingTaskConsumer class]];
+  } @catch (NSException *e) {
+    return reject(e.name, e.reason, nil);
+  }
+  resolve(nil);
+}
+
+EX_EXPORT_METHOD_AS(hasStartedGeofencingAsync,
+                    hasStartedGeofencingForTaskWithName:(NSString *)taskName
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
+{
+  resolve(@([_tasksManager taskWithName:taskName hasConsumerOfClass:[EXGeofencingTaskConsumer class]]));
+}
+
 # pragma mark - helpers
 
 - (CLLocationManager *)locationManagerWithOptions:(NSDictionary *)options
@@ -327,6 +435,10 @@ EX_EXPORT_METHOD_AS(requestPermissionsAsync,
   locMgr.desiredAccuracy = [options[@"enableHighAccuracy"] boolValue] ? kCLLocationAccuracyBest : kCLLocationAccuracyHundredMeters;
   locMgr.allowsBackgroundLocationUpdates = NO;
 
+  if (options[@"accuracy"]) {
+    EXLocationAccuracy accuracy = [options[@"accuracy"] unsignedIntegerValue] ?: EXLocationAccuracyBalanced;
+    locMgr.desiredAccuracy = [self.class CLLocationAccuracyFromOption:accuracy];
+  }
   return locMgr;
 }
 
@@ -337,7 +449,20 @@ EX_EXPORT_METHOD_AS(requestPermissionsAsync,
     return NO;
   }
   if (![_permissions hasGrantedPermission:@"location"]) {
-    reject(@"E_LOCATION_UNAUTHORIZED", @"Not authorized to use location services", nil);
+    reject(@"E_NO_PERMISSIONS", @"LOCATION permission is required to do this operation.", nil);
+    return NO;
+  }
+  return YES;
+}
+
+- (BOOL)checkBackgroundServices:(EXPromiseRejectBlock)reject
+{
+  if (_tasksManager == nil) {
+    reject(@"E_TASKMANAGER_NOT_FOUND", @"`expo-task-manager` module is required to use background services.", nil);
+    return NO;
+  }
+  if (![_tasksManager hasBackgroundModeEnabled:@"location"]) {
+    reject(@"E_BACKGROUND_SERVICES_DISABLED", @"Background Location has not been configured. To enable it, add `location` to `UIBackgroundModes` in Info.plist file.", nil);
     return NO;
   }
   return YES;
@@ -359,6 +484,26 @@ EX_EXPORT_METHOD_AS(requestPermissionsAsync,
         },
     @"timestamp": @([location.timestamp timeIntervalSince1970] * 1000),
     };
+}
+
++ (CLLocationAccuracy)CLLocationAccuracyFromOption:(EXLocationAccuracy)accuracy
+{
+  switch (accuracy) {
+    case EXLocationAccuracyLowest:
+      return kCLLocationAccuracyThreeKilometers;
+    case EXLocationAccuracyLow:
+      return kCLLocationAccuracyKilometer;
+    case EXLocationAccuracyBalanced:
+      return kCLLocationAccuracyHundredMeters;
+    case EXLocationAccuracyHigh:
+      return kCLLocationAccuracyNearestTenMeters;
+    case EXLocationAccuracyHighest:
+      return kCLLocationAccuracyBest;
+    case EXLocationAccuracyBestForNavigation:
+      return kCLLocationAccuracyBestForNavigation;
+    default:
+      return kCLLocationAccuracyHundredMeters;
+  }
 }
 
 # pragma mark - EXAppLifecycleListener

@@ -24,13 +24,6 @@ If you're using Cocoapods, add the dependency to your `Podfile`:
 
 and run `pod install`.
 
-### iOS (no Cocoapods) _[this method is currently not supported, sorry]_
-
-1.  In XCode, in the project navigator, right click `Libraries` ➜ `Add Files to [your project's name]`
-2.  Go to `node_modules` ➜ `expo-react-native-adapter` and add `EXReactNativeAdapter.xcodeproj`
-3.  In XCode, in the project navigator, select your project. Add `libEXReactNativeAdapter.a` to your project's `Build Phases` ➜ `Link Binary With Libraries`
-4.  Run your project (`Cmd+R`).
-
 ### Android
 
 1.  Append the following lines to `android/settings.gradle`:
@@ -141,13 +134,13 @@ and run `pod install`.
     ```java
     import expo.adapters.react.ModuleRegistryAdapter;
     import expo.adapters.react.ReactAdapterPackage;
-    import expo.core.ModuleRegistryProvider;
+    import expo.adapters.react.ReactModuleRegistryProvider;
     import expo.core.interfaces.Package;
     ```
 3. Create an instance variable on the `Application`:
     ```java
-    private final ModuleRegistryProvider mModuleRegistryProvider = new ModuleRegistryProvider(Arrays.<Package>asList(
-        new ReactAdapterPackage(),
+    private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(Arrays.<Package>asList(
+        new ReactAdapterPackage()
         // more packages, like
         // new CameraPackage(), if you use expo-camera
         // etc.

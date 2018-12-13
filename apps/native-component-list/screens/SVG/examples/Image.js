@@ -1,6 +1,7 @@
+import { Svg } from 'expo';
 import React, { Component } from 'react';
 
-import Svg, { Image, Defs, Circle, ClipPath, Rect, Text } from 'react-native-svg';
+const { Image, Defs, Circle, ClipPath, Rect, Text } = Svg;
 
 class ImageExample extends Component {
   static title = 'Draw Image with preserveAspectRatio prop';

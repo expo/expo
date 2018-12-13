@@ -25,15 +25,15 @@
   },
   {
     "name": "FBSDKCoreKit",
-    "version": "4.37.0"
+    "version": "4.38.1"
   },
   {
     "name": "FBSDKLoginKit",
-    "version": "4.37.0"
+    "version": "4.38.1"
   },
   {
     "name": "FBSDKShareKit",
-    "version": "4.37.0"
+    "version": "4.38.1"
   },
   {
     "name": "Fabric",

@@ -68,6 +68,11 @@ public class ConstantsService implements InternalModule, ConstantsInterface {
     return constants;
   }
 
+  public String getAppId() {
+    // Just use package name in vanilla React Native apps.
+    return mContext.getPackageName();
+  }
+
   public String getAppOwnership() {
     return "guest";
   }

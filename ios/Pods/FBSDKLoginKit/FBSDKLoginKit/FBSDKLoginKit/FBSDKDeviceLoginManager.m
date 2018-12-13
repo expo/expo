@@ -23,7 +23,6 @@
 
 #import "FBSDKCoreKit+Internal.h"
 #import "FBSDKDeviceLoginCodeInfo+Internal.h"
-#import "FBSDKDeviceLoginError.h"
 #import "FBSDKLoginConstants.h"
 
 static NSMutableArray<FBSDKDeviceLoginManager *> *g_loginManagerInstances;
@@ -131,13 +130,15 @@ static NSMutableArray<FBSDKDeviceLoginManager *> *g_loginManagerInstances;
           !userID ||
           !permissionResult) {
 #if TARGET_TV_OS
-        NSError *wrappedError = [FBSDKTVOSError errorWithCode:FBSDKTVOSUnknownErrorCode
-                                                      message:@"Unable to fetch permissions for token"
-                                              underlyingError:error];
+        NSError *wrappedError = [NSError fbErrorWithDomain:FBSDKShareErrorDomain
+                                                      code:FBSDKErrorTVOSUnknown
+                                                   message:@"Unable to fetch permissions for token"
+                                           underlyingError:error];
 #else
-        NSError *wrappedError = [FBSDKDeviceLoginError errorWithCode:FBSDKUnknownErrorCode
-                                                             message:@"Unable to fetch permissions for token"
-                                                     underlyingError:error];
+        NSError *wrappedError = [NSError fbErrorWithDomain:FBSDKLoginErrorDomain
+                                                      code:FBSDKErrorUnknown
+                                                   message:@"Unable to fetch permissions for token"
+                                           underlyingError:error];
 #endif
         [self _notifyError:wrappedError];
       } else {
@@ -169,16 +170,16 @@ static NSMutableArray<FBSDKDeviceLoginManager *> *g_loginManagerInstances;
 
 - (void)_processError:(NSError *)error
 {
-  FBSDKDeviceLoginErrorSubcode code = [error.userInfo[FBSDKGraphRequestErrorGraphErrorSubcode] unsignedIntegerValue];
+  FBSDKDeviceLoginError code = [error.userInfo[FBSDKGraphRequestErrorGraphErrorSubcodeKey] unsignedIntegerValue];
   switch (code) {
-    case FBSDKDeviceLoginAuthorizationPendingErrorSubcode:
+    case FBSDKDeviceLoginErrorAuthorizationPending:
       [self _schedulePoll:_codeInfo.pollingInterval];
       break;
-    case FBSDKDeviceLoginCodeExpiredErrorSubcode:
-    case FBSDKDeviceLoginAuthorizationDeclinedErrorSubcode:
+    case FBSDKDeviceLoginErrorCodeExpired:
+    case FBSDKDeviceLoginErrorAuthorizationDeclined:
       [self _notifyToken:nil];
       break;
-    case FBSDKDeviceLoginExcessivePollingErrorSubcode:
+    case FBSDKDeviceLoginErrorExcessivePolling:
       [self _schedulePoll:_codeInfo.pollingInterval * 2];
     default:
       [self _notifyError:error];
@@ -211,8 +212,9 @@ static NSMutableArray<FBSDKDeviceLoginManager *> *g_loginManagerInstances;
         if (tokenString) {
           [self _notifyToken:tokenString];
         } else {
-          NSError *unknownError = [FBSDKDeviceLoginError errorWithCode:FBSDKUnknownErrorCode
-                                                               message:@"Device Login poll failed. No token nor error was found."];
+          NSError *unknownError = [NSError fbErrorWithDomain:FBSDKLoginErrorDomain
+                                                        code:FBSDKErrorUnknown
+                                                     message:@"Device Login poll failed. No token nor error was found."];
           [self _notifyError:unknownError];
         }
       }

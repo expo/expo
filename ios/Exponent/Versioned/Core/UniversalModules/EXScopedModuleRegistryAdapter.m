@@ -7,9 +7,11 @@
 #import "EXSensorsManagerBinding.h"
 #import "EXConstantsBinding.h"
 #import "EXUnversioned.h"
+#import "EXScopedFilePermissionModule.h"
 
 #import "EXScopedReactNativeAdapter.h"
 #import "EXModuleRegistryBinding.h"
+#import "EXExpoUserNotificationCenterProxy.h"
 
 @implementation EXScopedModuleRegistryAdapter
 
@@ -28,6 +30,12 @@
 
   EXScopedReactNativeAdapter *reactNativeAdapter = [[EXScopedReactNativeAdapter alloc] init];
   [moduleRegistry registerInternalModule:reactNativeAdapter];
+
+  EXExpoUserNotificationCenterProxy *userNotificationCenter = [[EXExpoUserNotificationCenterProxy alloc] init];
+  [moduleRegistry registerInternalModule:userNotificationCenter];
+
+  EXScopedFilePermissionModule *filePermissionModule = [[EXScopedFilePermissionModule alloc] init];
+  [moduleRegistry registerInternalModule:filePermissionModule];
 
   NSArray<id<RCTBridgeModule>> *bridgeModules = [self extraModulesForModuleRegistry:moduleRegistry];
   return [bridgeModules arrayByAddingObject:[[EXModuleRegistryBinding alloc] initWithModuleRegistry:moduleRegistry]];

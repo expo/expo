@@ -23,33 +23,6 @@ If you're using Cocoapods, add the dependency to your `Podfile`:
 
 and run `pod install`.
 
-### iOS (no Cocoapods)
-
-1. In XCode, in the project navigator, right click `Libraries` ➜ `Add Files to [your project's name]`
-2. Go to `node_modules` ➜ `expo-app-auth` and add `EXContacts.xcodeproj`
-3. In XCode, in the project navigator, select your project. Add `libEXContacts.a` to your project's `Build Phases` ➜ `Link Binary With Libraries`
-4. Run your project (`Cmd+R`).
-
-#### iOS Common
-
-You will need to add the following to your `AppDelegate.m`:
-
-```objc
-// Import the lib at the top of the file
-
-#import <EXAppAuth/EXAppAuth.h>
-
-// ...
-
-- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
-  // ...
-  if ([[EXAppAuth instance] application:app openURL:url options:options]) {
-    return YES;
-  }
-  // ...
-}
-```
-
 ### Android
 
 1. Append the following lines to `android/settings.gradle`:
@@ -62,7 +35,7 @@ You will need to add the following to your `AppDelegate.m`:
    and if not already included
 
    ```gradle
-      include ':expo-constants-interface'
+   include ':expo-constants-interface'
    project(':expo-constants-interface').projectDir = new File(rootProject.projectDir, '../node_modules/expo-constants-interface/android')
    ```
 
@@ -79,7 +52,8 @@ You will need to add the following to your `AppDelegate.m`:
    ```java
    /*
    * At the top of the file.
-   * This is automatically imported with Android Studio, but if you are in any other editor you will need to manually import the module.
+   * This is automatically imported with Android Studio, but if
+   * you are in any other editor you will need to manually import the module.
    */
    import expo.modules.appauth.AppAuthPackage;
    // Later in the file...

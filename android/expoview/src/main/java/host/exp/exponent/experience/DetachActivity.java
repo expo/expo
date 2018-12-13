@@ -15,12 +15,14 @@ import java.util.List;
 
 import expo.adapters.react.ReactModuleRegistryProvider;
 import expo.core.interfaces.Package;
+import expo.core.interfaces.SingletonModule;
 import host.exp.exponent.AppLoader;
 import host.exp.exponent.Constants;
 import host.exp.exponent.kernel.ExponentUrls;
 import host.exp.exponent.kernel.KernelConstants;
 import host.exp.expoview.ExpoViewBuildConfig;
 import host.exp.expoview.Exponent;
+import versioned.host.exp.exponent.ExponentPackage;
 import versioned.host.exp.exponent.ExponentPackageDelegate;
 import versioned.host.exp.exponent.modules.universal.ExpoModuleRegistryAdapter;
 
@@ -29,8 +31,8 @@ public abstract class DetachActivity extends ExperienceActivity implements Expon
   // Override me!
   public abstract String publishedUrl();
   public abstract String developmentUrl();
-  public abstract List<String> sdkVersions();
   public abstract List<ReactPackage> reactPackages();
+  public abstract List<Package> expoPackages();
   public abstract boolean isDebug();
 
   @Override
@@ -38,13 +40,12 @@ public abstract class DetachActivity extends ExperienceActivity implements Expon
     super.onCreate(savedInstanceState);
 
     ExpoViewBuildConfig.DEBUG = isDebug();
-    Constants.setSdkVersions(sdkVersions());
-    String defaultUrl = isDebug() ? developmentUrl() : publishedUrl();
-    Constants.INITIAL_URL = defaultUrl;
+    Constants.INITIAL_URL = isDebug() ? developmentUrl() : publishedUrl();
+    boolean forceCache = getIntent().getBooleanExtra(KernelConstants.LOAD_FROM_CACHE_KEY, false);
 
     mKernel.handleIntent(this, getIntent());
 
-    new AppLoader(Constants.INITIAL_URL) {
+    new AppLoader(Constants.INITIAL_URL, forceCache) {
       @Override
       public void onOptimisticManifest(final JSONObject optimisticManifest) {
         Exponent.getInstance().runOnUiThread(new Runnable() {
@@ -113,23 +114,12 @@ public abstract class DetachActivity extends ExperienceActivity implements Expon
   }
 
   @Override
-  public boolean forceUnversioned() {
-    return true;
-  }
-
-  @Override
-  public List<Package> expoPackages() {
-    // Override to add your own packages.
-    return Collections.emptyList();
-  }
-
-  @Override
   public ExponentPackageDelegate getExponentPackageDelegate() {
     return this;
   }
 
   @Override
-  public ExpoModuleRegistryAdapter getScopedModuleRegistryAdapterForPackages(List<Package> packages) {
-    return new DetachedModuleRegistryAdapter(new ReactModuleRegistryProvider(packages));
+  public ExpoModuleRegistryAdapter getScopedModuleRegistryAdapterForPackages(List<Package> packages, List<SingletonModule> singletonModules) {
+    return new DetachedModuleRegistryAdapter(new ReactModuleRegistryProvider(packages, singletonModules));
   }
 }

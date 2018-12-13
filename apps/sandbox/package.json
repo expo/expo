@@ -1,4 +1,6 @@
 {
+  "name": "@expo/sandbox",
+  "version": "0.0.0",
   "main": "__generated__/AppEntry.js",
   "scripts": {
     "start": "expo start",

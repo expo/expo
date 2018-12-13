@@ -8,6 +8,7 @@ import java.util.List;
 
 import expo.core.interfaces.InternalModule;
 import expo.core.interfaces.Package;
+import expo.core.interfaces.SingletonModule;
 
 /**
  * Builder for {@link ModuleRegistry}. Override this class to add some custom
@@ -28,7 +29,8 @@ public class ModuleRegistryProvider {
     return new ModuleRegistry(
             createInternalModules(context),
             createExportedModules(context),
-            createViewManagers(context)
+            createViewManagers(context),
+            createSingletonModules(context)
     );
   }
 
@@ -54,5 +56,13 @@ public class ModuleRegistryProvider {
       viewManagers.addAll(pkg.createViewManagers(context));
     }
     return viewManagers;
+  }
+
+  public Collection<SingletonModule> createSingletonModules(Context context) {
+    Collection<SingletonModule> singletonModules = new ArrayList<>();
+    for (Package pkg : getPackages()) {
+      singletonModules.addAll(pkg.createSingletonModules(context));
+    }
+    return singletonModules;
   }
 }

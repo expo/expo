@@ -1,6 +1,5 @@
 package expo.modules.localization;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -8,6 +7,7 @@ import android.os.LocaleList;
 import android.text.TextUtils;
 import android.view.View;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.HashMap;
@@ -17,49 +17,30 @@ import java.util.Set;
 import java.util.TimeZone;
 
 import expo.core.ExportedModule;
-import expo.core.ModuleRegistry;
 import expo.core.Promise;
-import expo.core.interfaces.ActivityProvider;
 import expo.core.interfaces.ExpoMethod;
-import expo.core.interfaces.ModuleRegistryConsumer;
 
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.LOLLIPOP;
 import static android.os.Build.VERSION_CODES.N;
 import static java.util.Currency.getAvailableCurrencies;
 
-public class LocalizationModule extends ExportedModule implements ModuleRegistryConsumer {
-
-    private ModuleRegistry mModuleRegistry;
+public class LocalizationModule extends ExportedModule {
+    private WeakReference<Context> mContextRef;
 
     public LocalizationModule(Context context) {
         super(context);
+        mContextRef = new WeakReference<>(context);
     }
 
     private final Context getApplicationContext() {
-        Activity activity = getCurrentActivity();
-        if (activity != null) {
-            return activity.getApplicationContext();
-        }
-        return null;
-    }
-
-    private Activity getCurrentActivity() {
-        if (mModuleRegistry != null) {
-            ActivityProvider activityProvider = mModuleRegistry.getModule(ActivityProvider.class);
-            return activityProvider.getCurrentActivity();
-        }
-        return null;
+        Context context = mContextRef.get();
+        return context != null ? context.getApplicationContext() : null;
     }
 
     @Override
     public String getName() {
         return "ExpoLocalization";
-    }
-
-    @Override
-    public void setModuleRegistry(ModuleRegistry moduleRegistry) {
-        mModuleRegistry = moduleRegistry;
     }
 
     @Override
@@ -131,19 +112,7 @@ public class LocalizationModule extends ExportedModule implements ModuleRegistry
     }
 
     private String toLocaleTag(Locale locale) {
-        String localeTag;
-
-        if (SDK_INT >= LOLLIPOP) {
-            localeTag = locale.toLanguageTag();
-        } else {
-            StringBuilder builder = new StringBuilder();
-            builder.append(locale.getLanguage());
-            if (locale.getCountry() != null) {
-                builder.append("-");
-                builder.append(locale.getCountry());
-            }
-            localeTag = builder.toString();
-        }
+        String localeTag = locale.toLanguageTag();
 
         if (localeTag.matches("^(iw|in|ji).*")) {
             localeTag = localeTag

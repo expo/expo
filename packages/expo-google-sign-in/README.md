@@ -116,9 +116,9 @@ See all the available options under the `GoogleSignInOptions` type.
 
 Asynchronously returns a boolean representing the user's authentication status.
 
-### `signInSilentlyAsync(): Promise<?GoogleSignIn.User>`
+### `signInSilentlyAsync(): Promise<?GoogleUser>`
 
-This method will attempt to reauthenticate the user without initializing the authentication flow. If the method is successful, the currently authenticated `GoogleSignIn.User` will be returned, otherwise the method will return `null`.
+This method will attempt to reauthenticate the user without initializing the authentication flow. If the method is successful, the currently authenticated `GoogleUser` will be returned, otherwise the method will return `null`.
 
 ### `signInAsync(): Promise<?GoogleSignInAuthResult>`
 
@@ -139,16 +139,14 @@ Returns true if a user is authenticated and the access token has not been invali
 
 Signs-out the current user out and revokes the access tokens associated with the account. This will prevent reauthentication, whereas `signOutAsync()` will not.
 
-### `getCurrentUserAsync(): Promise<?GoogleSignIn.User>`
+### `getCurrentUserAsync(): Promise<?GoogleUser>`
 
-If a user is authenticated, this method will return all the basic profile information in the form of a `GoogleSignIn.User`. This data can also be retrieved synchronously with `GoogleSignIn.currentUser`.
+If a user is authenticated, this method will return all the basic profile information in the form of a `GoogleUser`.
 
 ### `getPhotoAsync(size: number = 128): Promise<?string>`
 
 Returns an image URI for the currently authenticated user. This method will return `null` if no user is signed in, or if the current user doesn't have a profile image on Google.
 The default size is `128px`, if the requested image size is larger than the original image size, the full sized image will be returned.
-
-You can also access this value with `GoogleSignIn.currentUser.identity.photoURL`.
 
 ## Types
 
@@ -254,7 +252,7 @@ type GoogleSignInAuthResult = {
 
 ## Classes
 
-### `GoogleSignIn.AuthData`
+### `GoogleAuthData`
 
 The base class for `GoogleSignIn` authentication data. This method enables you to compare and serialize objects.
 
@@ -263,9 +261,9 @@ The base class for `GoogleSignIn` authentication data. This method enables you t
 - `equals(other: ?any): boolean`
 - `toJSON(): object`
 
-### `GoogleSignIn.Identity`
+### `GoogleIdentity`
 
-Extends `GoogleSignIn.AuthData`, core management of user data.
+Extends `GoogleAuthData`, core management of user data.
 
 **Variables:**
 
@@ -276,9 +274,9 @@ Extends `GoogleSignIn.AuthData`, core management of user data.
 - `firstName: ?string;`
 - `lastName: ?string;`
 
-### `GoogleSignIn.User`
+### `GoogleUser`
 
-Extends `GoogleSignIn.Identity`, manaages all data regarding an authenticated user.
+Extends `GoogleIdentity`, manaages all data regarding an authenticated user.
 
 **Variables:**
 
@@ -291,11 +289,11 @@ Extends `GoogleSignIn.Identity`, manaages all data regarding an authenticated us
 
 - `clearCache(): void`
 - `getHeaders(): Promise<{ [string]: string }>`
-- `refreshAuth(): Promise<?Authentication>`
+- `refreshAuth(): Promise<?GoogleAuthentication>`
 
-### `GoogleSignIn.Authentication`
+### `GoogleAuthentication`
 
-Extends `GoogleSignIn.AuthData`, manages the user tokens.
+Extends `GoogleAuthData`, manages the user tokens.
 
 **Variables:**
 
@@ -393,7 +391,7 @@ export default class AuthScreen extends React.Component {
         this._syncUserWithStateAsync();
       }
     } catch ({ message }) {
-      console.error('login: Error:' + message);
+      alert('login: Error:' + message);
     }
   };
 

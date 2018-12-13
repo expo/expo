@@ -44,11 +44,6 @@ public class ExperienceActivityUtils {
   }
 
   public static void setWindowTransparency(final String sdkVersion, final JSONObject manifest, final Activity activity) {
-    // For 5.0.0 and below everything has transparent status
-    if (ABIVersion.toNumber(sdkVersion) <= ABIVersion.toNumber("5.0.0")) {
-      return;
-    }
-
     JSONObject statusBarOptions = manifest.optJSONObject(ExponentManifest.MANIFEST_STATUS_BAR_KEY);
 
     String statusBarColor;
@@ -59,8 +54,7 @@ public class ExperienceActivityUtils {
       statusBarColor = manifest.optString(ExponentManifest.MANIFEST_STATUS_BAR_COLOR);
     }
 
-    if (statusBarColor != null && ColorParser.isValid(statusBarColor) &&
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+    if (statusBarColor != null && ColorParser.isValid(statusBarColor)) {
       try {
         activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         activity.getWindow().setStatusBarColor(Color.parseColor(statusBarColor));
@@ -90,27 +84,23 @@ public class ExperienceActivityUtils {
   }
 
   public static void setTaskDescription(final ExponentManifest exponentManifest, final JSONObject manifest, final Activity activity) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      final String iconUrl = manifest.optString(ExponentManifest.MANIFEST_ICON_URL_KEY);
-      final int color = exponentManifest.getColorFromManifest(manifest);
+    final String iconUrl = manifest.optString(ExponentManifest.MANIFEST_ICON_URL_KEY);
+    final int color = exponentManifest.getColorFromManifest(manifest);
 
-      exponentManifest.loadIconBitmap(iconUrl, new ExponentManifest.BitmapListener() {
-        @Override
-        public void onLoadBitmap(Bitmap bitmap) {
-          // This if statement is only needed so the compiler doesn't show an error.
-          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            try {
-              activity.setTaskDescription(new ActivityManager.TaskDescription(
-                  manifest.optString(ExponentManifest.MANIFEST_NAME_KEY),
-                  bitmap,
-                  color
-              ));
-            } catch (Throwable e) {
-              EXL.e(TAG, e);
-            }
-          }
+    exponentManifest.loadIconBitmap(iconUrl, new ExponentManifest.BitmapListener() {
+      @Override
+      public void onLoadBitmap(Bitmap bitmap) {
+        // This if statement is only needed so the compiler doesn't show an error.
+        try {
+          activity.setTaskDescription(new ActivityManager.TaskDescription(
+              manifest.optString(ExponentManifest.MANIFEST_NAME_KEY),
+              bitmap,
+              color
+          ));
+        } catch (Throwable e) {
+          EXL.e(TAG, e);
         }
-      });
-    }
+      }
+    });
   }
 }

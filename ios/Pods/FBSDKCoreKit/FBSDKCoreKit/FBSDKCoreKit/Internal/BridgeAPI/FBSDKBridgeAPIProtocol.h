@@ -18,15 +18,13 @@
 
 #import <Foundation/Foundation.h>
 
-#import <FBSDKCoreKit/FBSDKMacros.h>
-
 #import "FBSDKBridgeAPIProtocolType.h"
 
 @class FBSDKBridgeAPIRequest;
 
-FBSDK_EXTERN NSString *const FBSDKBridgeAPIAppIDKey;
-FBSDK_EXTERN NSString *const FBSDKBridgeAPISchemeSuffixKey;
-FBSDK_EXTERN NSString *const FBSDKBridgeAPIVersionKey;
+FOUNDATION_EXPORT NSString *const FBSDKBridgeAPIAppIDKey;
+FOUNDATION_EXPORT NSString *const FBSDKBridgeAPISchemeSuffixKey;
+FOUNDATION_EXPORT NSString *const FBSDKBridgeAPIVersionKey;
 
 @protocol FBSDKBridgeAPIProtocol <NSObject>
 

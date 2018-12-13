@@ -1,4 +1,4 @@
-import { Location } from 'expo-location';
+import * as Location from 'expo-location';
 import { NativeModulesProxy } from 'expo-core';
 
 import {
@@ -30,6 +30,10 @@ function applyMocks() {
 }
 
 describe('Location', () => {
+  beforeAll(() => {
+    Location.installWebGeolocationPolyfill();
+  });
+
   beforeEach(() => {
     applyMocks();
   });
@@ -87,8 +91,9 @@ describe('Location', () => {
 
   describe('reverseGeocodeAsync', () => {
     it('rejects non-numeric latitude/longitude', () => {
+      // We need to cast these latitude/longitude strings to any type, so TypeScript diagnostics will pass here.
       return expect(
-        Location.reverseGeocodeAsync({ latitude: '37.7', longitude: '-122.5' })
+        Location.reverseGeocodeAsync({ latitude: '37.7' as any, longitude: '-122.5' as any })
       ).rejects.toEqual(expect.any(TypeError));
     });
   });
