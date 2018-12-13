@@ -27,6 +27,9 @@
 
 @interface FBSDKShareUtility : NSObject
 
+- (instancetype)init NS_UNAVAILABLE;
++ (instancetype)new NS_UNAVAILABLE;
+
 + (void)assertCollection:(id<NSFastEnumeration>)collection ofClass:itemClass name:(NSString *)name;
 + (void)assertCollection:(id<NSFastEnumeration>)collection ofClassStrings:(NSArray *)classStrings name:(NSString *)name;
 + (void)assertOpenGraphKey:(id)key requireNamespace:(BOOL)requireNamespace;

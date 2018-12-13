@@ -22,7 +22,6 @@
 #import "FBSDKInternalUtility.h"
 #import "FBSDKMaleSilhouetteIcon.h"
 #import "FBSDKMath.h"
-#import "FBSDKURLConnection.h"
 #import "FBSDKUtility.h"
 
 @interface FBSDKProfilePictureViewState : NSObject
@@ -212,16 +211,16 @@
   if (!imageURL) {
     return;
   }
-  FBSDKURLConnectionHandler completionHandler = ^(FBSDKURLConnection *connection,
-                                                  NSError *error,
-                                                  NSURLResponse *response,
-                                                  NSData *responseData) {
-    if (!error && [responseData length]) {
-      completionBlock(responseData);
-    }
-  };
+
   NSURLRequest *request = [[NSURLRequest alloc] initWithURL:imageURL];
-  [[[FBSDKURLConnection alloc] initWithRequest:request completionHandler:completionHandler] start];
+  NSURLSession *session = [NSURLSession sharedSession];
+  [[session
+    dataTaskWithRequest:request
+    completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+      if (!error && data.length) {
+        completionBlock(data);
+      }
+    }] resume];
 }
 
 + (NSURL *)_imageURLWithState:(FBSDKProfilePictureViewState *)state

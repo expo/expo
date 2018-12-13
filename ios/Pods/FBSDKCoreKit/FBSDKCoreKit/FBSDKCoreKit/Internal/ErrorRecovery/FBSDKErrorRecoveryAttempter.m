@@ -25,9 +25,9 @@
 
 + (instancetype)recoveryAttempterFromConfiguration:(FBSDKErrorRecoveryConfiguration *)configuration
 {
-  if (configuration.errorCategory == FBSDKGraphRequestErrorCategoryTransient) {
+  if (configuration.errorCategory == FBSDKGraphRequestErrorTransient) {
     return [[_FBSDKTemporaryErrorRecoveryAttempter alloc] init];
-  } else if (configuration.errorCategory == FBSDKGraphRequestErrorCategoryOther) {
+  } else if (configuration.errorCategory == FBSDKGraphRequestErrorOther) {
     return nil;
   }
   if ([configuration.recoveryActionName isEqualToString:@"login"]) {

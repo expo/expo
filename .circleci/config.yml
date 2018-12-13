@@ -7,10 +7,28 @@ commands:
       - run: echo ". ~/.nix-profile/etc/profile.d/nix.sh" >> ~/.bash_profile
   setup:
     steps:
-      # ssh: used in circleci checkout steps
-      # direnv: used to configure environment with .envrc files
-      # rsync: used by expo-module-scripts to copy template files
-      - run: nix-env -iA nixpkgs.openssh nixpkgs.direnv nixpkgs.rsync
+      - run:
+          name: Install common packages
+          # direnv: configures environment with .envrc files
+          # findutils (where, find, etc): expo-module test
+          # git: circleci checkout steps
+          # gnugrep: used in .envrc
+          # gnutar: used by nix commands which download channels
+          # gzip: used by nix commands which download channels
+          # openssh: circleci checkout steps
+          # rsync: expo-module-scripts uses to copy template files
+          # xz: circleci checkout steps
+          command: |
+            nix-env -iA \
+              nixpkgs.direnv \
+              nixpkgs.findutils \
+              nixpkgs.git \
+              nixpkgs.gnugrep \
+              nixpkgs.gnutar \
+              nixpkgs.gzip \
+              nixpkgs.openssh \
+              nixpkgs.rsync \
+              nixpkgs.xz
       - run: mkdir -p ~/.config/direnv
       - run: echo -e "[whitelist]\nprefix = [ \"$HOME\" ]" > ~/.config/direnv/config.toml
       - run: echo 'eval "$(direnv export bash)"' >> ~/.bash_profile
@@ -19,11 +37,10 @@ commands:
   decrypt_secrets_if_possible:
     steps:
       - run: |
-          nix run expo.git-crypt --command bash -c "
-            if ! [ -v EXPO_GIT_CRYPT_KEY_BASE64 ]; then
-              echo 'git-crypt key not present in environment' && exit 0
-            fi
-            git crypt unlock <(echo $EXPO_GIT_CRYPT_KEY_BASE64 | base64 --decode)"
+          if ! [ -v EXPO_GIT_CRYPT_KEY_BASE64 ]; then
+            echo 'git-crypt key not present in environment' && exit 0
+          fi
+          git crypt unlock <(echo $EXPO_GIT_CRYPT_KEY_BASE64 | base64 --decode)
   update_submodules:
     steps:
       - run: git submodule update --init
@@ -72,7 +89,7 @@ commands:
       - run:
           name: yarn << parameters.command >> (<< parameters.working_directory >>)
           working_directory: << parameters.working_directory >>
-          command: for i in {1..<< parameters.max_tries >>}; do ((i > 1)) && sleep 5; nix run expo.yarn -c yarn << parameters.command >> && break; done
+          command: for i in {1..<< parameters.max_tries >>}; do ((i > 1)) && sleep 5; yarn << parameters.command >> && break; done
   yarn_install:
     parameters:
       working_directory:
@@ -87,7 +104,7 @@ executors:
   # We add -l to all the shell commands to make it easier to use direnv
   nix: &nix
     docker:
-      - image: lnl7/nix:latest # only latest includes common utils we want
+      - image: lnl7/nix:2.1.2
     # Symlink to the readline-enabled bash which is the default command of the container
     shell: /run/current-system/sw/bin/bash -leo pipefail
     working_directory: ~/expo
@@ -122,6 +139,10 @@ workflows:
       - client_android
       - client_ios
       - test_suite_publish
+      # TODO: fix devicefarm running tests
+      #- android_test_suite:
+      #   requires:
+      #     - test_suite_publish
       - shell_app_sim_base_ios
       - client_android_approve_google_play:
           type: approval
@@ -137,9 +158,6 @@ workflows:
   #     - shell_app_ios_tests:
   #         requires:
   #           - shell_app_sim_base_ios
-  #           - test_suite_publish
-  #     - client_android_tests:
-  #         requires:
   #           - test_suite_publish
   #     - shell_app_base_android_new # tarball built and uploaded from universe/server/turtle
 
@@ -227,7 +245,7 @@ jobs:
       - fetch_cocoapods_specs
       - yarn_install:
           working_directory: ~/project/tools-public
-      - run: nix run expo.nodejs expo.fastlane -c fastlane ios create_simulator_build
+      - run: fastlane ios create_simulator_build
       - store_artifacts:
           path: ~/Library/Logs/fastlane/
 
@@ -241,12 +259,30 @@ jobs:
       - fetch_cocoapods_specs
       - yarn_install:
           working_directory: ~/project/tools-public
-      - run: nix run expo.nodejs -c ~/project/tools-public/generate-files-ios.js
+      - run: ~/project/tools-public/generate-files-ios.js
       - run:
           name: Build ios shell app simulator
           working_directory: ~/project/tools-public
           no_output_timeout: 30m
-          command: nix run expo.nodePackages.gulp-cli expo.cocoapods expo.xcpretty expo.expo-cli --command gulp ios-shell-app --action build --type simulator --verbose true --skipRepoUpdate --shellAppSdkVersion UNVERSIONED
+          command: gulp ios-shell-app --action build --type simulator --verbose true --skipRepoUpdate --shellAppSdkVersion UNVERSIONED
+
+  android_test_suite:
+    executor: android
+    steps:
+      - setup
+      - setup
+      - yarn_install:
+          working_directory: ~/expo # need jsc-android dependency in expokit-npm-package
+      - yarn_install:
+          working_directory: ~/expo/tools-public
+      - restore_gradle_cache
+      - run: |
+          nix-shell android/shell.nix --pure \
+            --keep AWS_ACCESS_KEY_ID \
+            --keep AWS_SECRET_ACCESS_KEY \
+            --keep SSL_CERT_FILE \
+            --run "fastlane android devicefarm"
+      - save_gradle_cache
 
   client_android:
     executor: android
@@ -285,7 +321,7 @@ jobs:
       - run:
           name: Upload APK to Google Play and release to production
           working_directory: ~/expo
-          command: nix run expo.fastlane --command fastlane android prod_release
+          command: fastlane android prod_release
 
   test_suite_publish:
     executor: nix

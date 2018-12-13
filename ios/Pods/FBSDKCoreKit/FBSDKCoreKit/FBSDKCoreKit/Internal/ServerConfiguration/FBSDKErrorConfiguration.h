@@ -23,6 +23,9 @@
 // maps codes and subcodes pairs to FBSDKErrorRecoveryConfiguration instances.
 @interface FBSDKErrorConfiguration : NSObject <NSSecureCoding, NSCopying>
 
+- (instancetype)init NS_UNAVAILABLE;
++ (instancetype)new NS_UNAVAILABLE;
+
 // initialize from optional dictionary of existing configurations. If not supplied a fallback will be created.
 - (instancetype)initWithDictionary:(NSDictionary *)dictionary NS_DESIGNATED_INITIALIZER;
 

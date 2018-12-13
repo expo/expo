@@ -71,14 +71,24 @@
 - (void)addToParameters:(NSMutableDictionary<NSString *, id> *)parameters
           bridgeOptions:(FBSDKShareBridgeOptions)bridgeOptions
 {
+  [parameters addEntriesFromDictionary:[self addParameters:parameters bridgeOptions:bridgeOptions]];
+}
+
+- (NSDictionary<NSString *, id> *)addParameters:(NSDictionary<NSString *, id> *)existingParameters
+                                  bridgeOptions:(FBSDKShareBridgeOptions)bridgeOptions
+{
+  NSMutableDictionary<NSString *, id> *updatedParameters = [NSMutableDictionary dictionaryWithDictionary:existingParameters];
+
   NSString *previewPropertyName = [FBSDKShareUtility getOpenGraphNameAndNamespaceFromFullName:_previewPropertyName namespace:nil];
-  [FBSDKInternalUtility dictionary:parameters
+  [FBSDKInternalUtility dictionary:updatedParameters
                          setObject:previewPropertyName
                             forKey:@"previewPropertyName"];
-  [FBSDKInternalUtility dictionary:parameters setObject:_action.actionType forKey:@"actionType"];
-  [FBSDKInternalUtility dictionary:parameters
+  [FBSDKInternalUtility dictionary:updatedParameters setObject:_action.actionType forKey:@"actionType"];
+  [FBSDKInternalUtility dictionary:updatedParameters
                          setObject:[FBSDKShareUtility convertOpenGraphValueContainer:_action requireNamespace:NO]
                             forKey:@"action"];
+
+  return updatedParameters;
 }
 
 #pragma mark - FBSDKSharingValidation

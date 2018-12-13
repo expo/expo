@@ -75,22 +75,12 @@ public class SpeechModule extends ReactContextBaseJavaModule implements Lifecycl
       textToSpeech.setSpeechRate((float) options.getDouble("rate"));
     }
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      textToSpeech.speak(
-          text,
-          TextToSpeech.QUEUE_ADD,
-          null,
-          id
-      );
-    } else {
-      HashMap<String, String> params = new HashMap<>();
-      params.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, id);
-      textToSpeech.speak(
-          text,
-          TextToSpeech.QUEUE_ADD,
-          params
-      );
-    }
+    textToSpeech.speak(
+        text,
+        TextToSpeech.QUEUE_ADD,
+        null,
+        id
+    );
   }
 
   @ReactMethod

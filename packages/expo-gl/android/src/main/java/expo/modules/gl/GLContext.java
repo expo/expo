@@ -69,7 +69,7 @@ public class GLContext {
     mEventQueue.add(r);
   }
 
-  public void initialize(final Context context, SurfaceTexture surfaceTexture, final Runnable runnable) {
+  public void initialize(SurfaceTexture surfaceTexture, final Runnable completionCallback) {
     if (mGLThread != null) {
       return;
     }
@@ -92,7 +92,7 @@ public class GLContext {
         }
         EXGLContextSetFlushMethod(mEXGLCtxId, glContext);
         mManager.saveContext(glContext);
-        runnable.run();
+        completionCallback.run();
       }
     });
   }
@@ -344,10 +344,6 @@ public class GLContext {
       }
 
       deinitEGL();
-    }
-
-    public void setSurfaceTexture(SurfaceTexture surfaceTexture) {
-      mSurfaceTexture = surfaceTexture;
     }
 
     private EGLContext createGLContext(int contextVersion, EGLConfig eglConfig) {

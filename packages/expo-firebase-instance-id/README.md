@@ -25,15 +25,6 @@ pod 'EXFirebaseInstanceID', path: '../node_modules/expo-firebase-instance-id/ios
 
 and run `pod install`.
 
-#### Manually
-
-You could also choose install this module manually.
-
-1.  In XCode, in the project navigator, right click `Libraries` ➜ `Add Files to [your project's name]`
-2.  Go to `node_modules` ➜ `expo-firebase-instance-id` and add `EXFirebaseInstanceID.xcodeproj`
-3.  In XCode, in the project navigator, select your project. Add `libEXFirebaseInstanceID.a` to your project's `Build Phases` ➜ `Link Binary With Libraries`
-4.  Run your project (`Cmd+R`).
-
 ### Android
 
 1.  Append the following lines to `android/settings.gradle`:

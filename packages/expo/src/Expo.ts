@@ -6,7 +6,7 @@ import 'expo-asset/src/Asset';
 // polyfill navigator.geolocation
 import 'expo-location/src/Location';
 
-import { Constants } from 'expo-constants';
+import Constants from 'expo-constants';
 import { NativeModules, Platform } from 'react-native';
 
 if (typeof Constants.manifest.env === 'object') {
@@ -19,7 +19,7 @@ export { Asset } from 'expo-asset';
 export { AppAuth } from 'expo-app-auth';
 export { BarCodeScanner } from 'expo-barcode-scanner';
 export { Camera } from 'expo-camera';
-export { Constants } from 'expo-constants';
+export { Constants };
 export { Contacts } from 'expo-contacts';
 export { FaceDetector } from 'expo-face-detector';
 export { FileSystem } from 'expo-file-system';
@@ -36,8 +36,7 @@ export { Print } from 'expo-print';
 export { Accelerometer, Gyroscope, Magnetometer, MagnetometerUncalibrated } from 'expo-sensors';
 import * as SMS from 'expo-sms';
 export { SMS };
-import * as GestureHandler from 'react-native-gesture-handler';
-export { GestureHandler };
+export { GestureHandler } from './GestureHandler';
 export { default as MapView } from 'react-native-maps';
 
 import * as AR from './AR';
@@ -52,7 +51,7 @@ export { default as DangerZone } from './DangerZone';
 import * as DocumentPicker from './DocumentPicker';
 export { DocumentPicker };
 export { default as ErrorRecovery } from './ErrorRecovery/ErrorRecovery';
-import * as Facebook from './Facebook';
+import * as Facebook from './Facebook/Facebook';
 export { Facebook };
 import * as Google from './Google/Google';
 export { Google };
@@ -73,9 +72,9 @@ export { default as Notifications } from './Notifications/Notifications';
 export { default as SQLite } from './SQLite';
 import * as ScreenOrientation from './ScreenOrientation/ScreenOrientation';
 export { ScreenOrientation };
-import * as SecureStore from './SecureStore';
+import * as SecureStore from './SecureStore/SecureStore';
 export { SecureStore };
-import * as Speech from './Speech';
+import * as Speech from './Speech/Speech';
 export { Speech };
 import * as StoreReview from './StoreReview/StoreReview';
 export { StoreReview };

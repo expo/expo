@@ -10,6 +10,7 @@ buildscript {
 }
 apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
+apply plugin: 'devicefarm'
 
 repositories {
   maven { url 'https://maven.fabric.io/public' }
@@ -83,6 +84,15 @@ android {
   }
 }
 
+devicefarm {
+  projectName System.getenv("DEVICEFARM_PROJECT_NAME")
+  devicePool System.getenv("DEVICEFARM_DEVICE_POOL")
+  executionTimeoutMinutes 40
+  authentication {
+    accessKey System.getenv("AWS_ACCESS_KEY_ID")
+    secretKey System.getenv("AWS_SECRET_ACCESS_KEY")
+  }
+}
 
 configurations.all {
   resolutionStrategy {
@@ -230,6 +240,8 @@ dependencies {
   api 'host.exp.exponent:expo-constants-interface:1.1.0'
   api 'host.exp.exponent:expo-constants:1.1.0'
   api 'host.exp.exponent:expo-errors:0.0.1'
+  api 'host.exp.exponent:expo-file-system-interface:1.1.0'
+  api 'host.exp.exponent:expo-file-system:1.1.0'
   api 'host.exp.exponent:expo-permissions:1.2.0'
   api 'host.exp.exponent:expo-sensors-interface:1.1.0'
   api 'host.exp.exponent:expo-react-native-adapter:1.2.0'
@@ -245,8 +257,6 @@ dependencies {
   api 'host.exp.exponent:expo-camera:1.2.0'
   api 'host.exp.exponent:expo-contacts:1.1.0'
   api 'host.exp.exponent:expo-face-detector:1.1.0'
-  api 'host.exp.exponent:expo-file-system-interface:1.1.0'
-  api 'host.exp.exponent:expo-file-system:1.1.0'
   api 'host.exp.exponent:expo-font:1.1.0'
   api 'host.exp.exponent:expo-gl-cpp:1.1.0'
   api 'host.exp.exponent:expo-gl:1.1.0'

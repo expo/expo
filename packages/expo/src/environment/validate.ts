@@ -3,7 +3,7 @@ import {
   // renderer is loaded. We can cause this by loading one of its dependents.
   findNodeHandle, // eslint-disable-line no-unused-vars
 } from 'react-native';
-import { Constants } from 'expo-constants';
+import Constants from 'expo-constants';
 
 findNodeHandle; // eslint-disable-line no-unused-expressions
 

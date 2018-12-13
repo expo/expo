@@ -20,7 +20,7 @@
 
 #import "FBSDKCoreKit+Internal.h"
 #import "FBSDKHashtag.h"
-#import "FBSDKShareError.h"
+#import "FBSDKShareConstants.h"
 #import "FBSDKShareMessengerContentUtility.h"
 
 static NSString *const kMediaTemplatePageIDKey = @"pageID";
@@ -118,6 +118,14 @@ static NSArray<NSDictionary<NSString *, id> *> *_SerializableMediaTemplateConten
 - (void)addToParameters:(NSMutableDictionary<NSString *, id> *)parameters
           bridgeOptions:(FBSDKShareBridgeOptions)bridgeOptions
 {
+  [parameters addEntriesFromDictionary:[self addParameters:parameters bridgeOptions:bridgeOptions]];
+}
+
+- (NSDictionary<NSString *, id> *)addParameters:(NSDictionary<NSString *, id> *)existingParameters
+                                  bridgeOptions:(FBSDKShareBridgeOptions)bridgeOptions
+{
+  NSMutableDictionary<NSString *, id> *updatedParameters = [NSMutableDictionary dictionaryWithDictionary:existingParameters];
+
   NSMutableDictionary<NSString *, id> *payload = [NSMutableDictionary dictionary];
   [payload setObject:@"media" forKey:kFBSDKShareMessengerTemplateTypeKey];
   [payload setObject:_SerializableMediaTemplateContentFromContent(self) forKey:kFBSDKShareMessengerElementsKey];
@@ -138,7 +146,9 @@ static NSArray<NSDictionary<NSString *, id> *> *_SerializableMediaTemplateConten
   [FBSDKInternalUtility dictionary:contentForPreview setObject:_MediaTypeString(_mediaType) forKey:@"media_type"];
   AddToContentPreviewDictionaryForButton(contentForPreview, _button);
 
-  [FBSDKShareMessengerContentUtility addToParameters:parameters contentForShare:contentForShare contentForPreview:contentForPreview];
+  [FBSDKShareMessengerContentUtility addToParameters:updatedParameters contentForShare:contentForShare contentForPreview:contentForPreview];
+
+  return updatedParameters;
 }
 
 #pragma mark - FBSDKSharingValidation
@@ -147,7 +157,9 @@ static NSArray<NSDictionary<NSString *, id> *> *_SerializableMediaTemplateConten
 {
   if (!_mediaURL && !_attachmentID) {
     if (errorRef != NULL) {
-      *errorRef = [FBSDKShareError requiredArgumentErrorWithName:@"attachmentID/mediaURL" message:@"Must specify either attachmentID or mediaURL"];
+      *errorRef = [NSError fbRequiredArgumentErrorWithDomain:FBSDKShareErrorDomain
+                                                        name:@"attachmentID/mediaURL"
+                                                     message:@"Must specify either attachmentID or mediaURL"];
     }
     return NO;
   }

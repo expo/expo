@@ -19,9 +19,8 @@
 #import <Foundation/Foundation.h>
 
 #import "FBSDKAccessTokenCaching.h"
-#import "FBSDKMacros.h"
 
-FBSDK_EXTERN NSString *const FBSDKTokenInformationUUIDKey;
+FOUNDATION_EXPORT NSString *const FBSDKTokenInformationUUIDKey;
 
 @interface FBSDKAccessTokenCacheV3 : NSObject<FBSDKAccessTokenCaching>
 

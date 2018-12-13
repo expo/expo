@@ -33,6 +33,9 @@
  */
 @interface FBSDKVideoUploader : NSObject
 
+- (instancetype)init NS_UNAVAILABLE;
++ (instancetype)new NS_UNAVAILABLE;
+
 /**
   Initialize videoUploader
  @param videoName The file name of the video to be uploaded

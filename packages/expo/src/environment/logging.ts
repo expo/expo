@@ -1,4 +1,4 @@
-import { Constants } from 'expo-constants';
+import Constants from 'expo-constants';
 
 import Logs from '../logs/Logs';
 import RemoteLogging from '../logs/RemoteLogging';

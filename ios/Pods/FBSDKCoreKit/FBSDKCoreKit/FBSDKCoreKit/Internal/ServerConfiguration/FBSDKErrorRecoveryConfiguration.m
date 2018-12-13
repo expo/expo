@@ -25,18 +25,9 @@
 
 @implementation FBSDKErrorRecoveryConfiguration
 
-- (instancetype)init
-{
-  FBSDK_NOT_DESIGNATED_INITIALIZER(initWithRecoveryDescription:optionDescriptions:category:recoveryActionName:);
-  return [self initWithRecoveryDescription:nil
-                        optionDescriptions:nil
-                                  category:0
-                        recoveryActionName:nil];
-}
-
 - (instancetype)initWithRecoveryDescription:(NSString *)description
                          optionDescriptions:(NSArray *)optionDescriptions
-                                   category:(FBSDKGraphRequestErrorCategory)category
+                                   category:(FBSDKGraphRequestError)category
                          recoveryActionName:(NSString *)recoveryActionName {
   if ((self = [super init])) {
     _localizedRecoveryDescription = [description copy];

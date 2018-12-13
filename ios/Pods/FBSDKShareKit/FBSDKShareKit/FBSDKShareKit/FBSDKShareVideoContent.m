@@ -72,6 +72,14 @@
 - (void)addToParameters:(NSMutableDictionary<NSString *, id> *)parameters
           bridgeOptions:(FBSDKShareBridgeOptions)bridgeOptions
 {
+  [parameters addEntriesFromDictionary:[self addParameters:parameters bridgeOptions:bridgeOptions]];
+}
+
+- (NSDictionary<NSString *, id> *)addParameters:(NSDictionary<NSString *, id> *)existingParameters
+                                  bridgeOptions:(FBSDKShareBridgeOptions)bridgeOptions
+{
+  NSMutableDictionary<NSString *, id> *updatedParameters = [NSMutableDictionary dictionaryWithDictionary:existingParameters];
+
   NSMutableDictionary<NSString *, id> *videoParameters = [[NSMutableDictionary alloc] init];
   if (_video.videoAsset) {
     if (bridgeOptions & FBSDKShareBridgeOptionsVideoAsset) {
@@ -131,9 +139,11 @@
                          setObject:[FBSDKShareUtility convertPhoto:_previewPhoto]
                             forKey:@"previewPhoto"];
 
-  [FBSDKInternalUtility dictionary:parameters
+  [FBSDKInternalUtility dictionary:updatedParameters
                          setObject:videoParameters
                             forKey:@"video"];
+
+  return updatedParameters;
 }
 
 #pragma mark - FBSDKSharingValidation

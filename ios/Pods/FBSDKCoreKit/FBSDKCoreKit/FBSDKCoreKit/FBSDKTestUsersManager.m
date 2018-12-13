@@ -48,12 +48,6 @@ static NSMutableDictionary *gInstancesDictionary;
   return self;
 }
 
-- (instancetype)init
-{
-  FBSDK_NOT_DESIGNATED_INITIALIZER(initWithAppID:appSecret:);
-  return [self initWithAppID:nil appSecret:nil];
-}
-
 + (instancetype)sharedInstanceForAppID:(NSString *)appID appSecret:(NSString *)appSecret {
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
@@ -166,8 +160,8 @@ static NSMutableDictionary *gInstancesDictionary;
   __block int expectedCount = 2;
   void (^complete)(NSError *) = ^(NSError *error) {
     // ignore if they're already friends or pending request
-    if ([error.userInfo[FBSDKGraphRequestErrorGraphErrorCode] integerValue] == 522 ||
-        [error.userInfo[FBSDKGraphRequestErrorGraphErrorCode] integerValue] == 520) {
+    if ([error.userInfo[FBSDKGraphRequestErrorGraphErrorCodeKey] integerValue] == 522 ||
+        [error.userInfo[FBSDKGraphRequestErrorGraphErrorCodeKey] integerValue] == 520) {
       error = nil;
     }
     if (--expectedCount == 0 || error) {
