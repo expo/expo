@@ -316,6 +316,7 @@
 		E396BB759F55EA40EB120B5A /* libPods-ExponentIntegrationTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BEBABA2BA15649492989E40A /* libPods-ExponentIntegrationTests.a */; };
 		F11E531121601059007ACF56 /* EXHeadlessAppRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = F11E530D21601058007ACF56 /* EXHeadlessAppRecord.m */; };
 		F11E531221601059007ACF56 /* EXHeadlessAppLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = F11E531021601059007ACF56 /* EXHeadlessAppLoader.m */; };
+		F1389D0C21C3A507006CEB1A /* RNForceTouchHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = F1389D0B21C3A507006CEB1A /* RNForceTouchHandler.m */; };
 		F1545BF920877E39002DAC67 /* EXMenuWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = F1545BF820877E39002DAC67 /* EXMenuWindow.m */; };
 		F167C43B209C7EE600F01382 /* EXUtilService.m in Sources */ = {isa = PBXBuildFile; fileRef = F167C43A209C7EE600F01382 /* EXUtilService.m */; };
 		F77DDB931E04AC1100624CA2 /* SafariServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F77DDB921E04AC1100624CA2 /* SafariServices.framework */; };
@@ -964,6 +965,8 @@
 		F11E530E21601058007ACF56 /* EXHeadlessAppLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXHeadlessAppLoader.h; sourceTree = "<group>"; };
 		F11E530F21601059007ACF56 /* EXHeadlessAppRecord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXHeadlessAppRecord.h; sourceTree = "<group>"; };
 		F11E531021601059007ACF56 /* EXHeadlessAppLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXHeadlessAppLoader.m; sourceTree = "<group>"; };
+		F1389D0A21C3A506006CEB1A /* RNForceTouchHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNForceTouchHandler.h; sourceTree = "<group>"; };
+		F1389D0B21C3A507006CEB1A /* RNForceTouchHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNForceTouchHandler.m; sourceTree = "<group>"; };
 		F1545BF720877E39002DAC67 /* EXMenuWindow.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXMenuWindow.h; sourceTree = "<group>"; };
 		F1545BF820877E39002DAC67 /* EXMenuWindow.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXMenuWindow.m; sourceTree = "<group>"; };
 		F167C439209C7EE600F01382 /* EXUtilService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXUtilService.h; sourceTree = "<group>"; };
@@ -2090,20 +2093,22 @@
 		BB50E87720B9C0D3003C752D /* Handlers */ = {
 			isa = PBXGroup;
 			children = (
-				BB50E87820B9C0D3003C752D /* RNNativeViewHandler.h */,
-				BB50E87920B9C0D3003C752D /* RNTapHandler.h */,
 				BB50E87A20B9C0D3003C752D /* RNFlingHandler.h */,
-				BB50E87B20B9C0D3003C752D /* RNLongPressHandler.h */,
-				BB50E87C20B9C0D3003C752D /* RNRotationHandler.m */,
-				BB50E87D20B9C0D3003C752D /* RNPinchHandler.h */,
-				BB50E87E20B9C0D3003C752D /* RNPanHandler.m */,
-				BB50E87F20B9C0D3003C752D /* RNLongPressHandler.m */,
 				BB50E88020B9C0D3003C752D /* RNFlingHandler.m */,
-				BB50E88120B9C0D3003C752D /* RNTapHandler.m */,
+				F1389D0A21C3A506006CEB1A /* RNForceTouchHandler.h */,
+				F1389D0B21C3A507006CEB1A /* RNForceTouchHandler.m */,
+				BB50E87B20B9C0D3003C752D /* RNLongPressHandler.h */,
+				BB50E87F20B9C0D3003C752D /* RNLongPressHandler.m */,
+				BB50E87820B9C0D3003C752D /* RNNativeViewHandler.h */,
 				BB50E88220B9C0D3003C752D /* RNNativeViewHandler.m */,
 				BB50E88320B9C0D3003C752D /* RNPanHandler.h */,
+				BB50E87E20B9C0D3003C752D /* RNPanHandler.m */,
+				BB50E87D20B9C0D3003C752D /* RNPinchHandler.h */,
 				BB50E88420B9C0D3003C752D /* RNPinchHandler.m */,
 				BB50E88520B9C0D3003C752D /* RNRotationHandler.h */,
+				BB50E87C20B9C0D3003C752D /* RNRotationHandler.m */,
+				BB50E87920B9C0D3003C752D /* RNTapHandler.h */,
+				BB50E88120B9C0D3003C752D /* RNTapHandler.m */,
 			);
 			path = Handlers;
 			sourceTree = "<group>";
@@ -2603,6 +2608,7 @@
 				3179683620B5B96A00243B6B /* EXScopedModuleRegistryAdapter.m in Sources */,
 				3159BB9F21806E76002D2A81 /* RNSVGTSpanManager.m in Sources */,
 				19A04FA6209119B300D6EFE9 /* RNBranchConfig.m in Sources */,
+				F1389D0C21C3A507006CEB1A /* RNForceTouchHandler.m in Sources */,
 				BB36BC632135C98E00AFFD58 /* RNSScreenContainer.m in Sources */,
 				783435D5205B8BEE00DD28C3 /* AIRGoogleMapPolyline.m in Sources */,
 				31827BF5203CF0C000A12E65 /* EXAudioSessionManager.m in Sources */,

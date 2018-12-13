@@ -3,8 +3,8 @@ package versioned.host.exp.exponent.modules.api.components.gesturehandler.react;
 import android.util.SparseArray;
 import android.view.View;
 
-import versioned.host.exp.exponent.modules.api.components.gesturehandler.GestureHandler;
-import versioned.host.exp.exponent.modules.api.components.gesturehandler.GestureHandlerRegistry;
+import com.swmansion.gesturehandler.GestureHandler;
+import com.swmansion.gesturehandler.GestureHandlerRegistry;
 
 import java.util.ArrayList;
 

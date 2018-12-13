@@ -6,8 +6,8 @@ import android.view.ViewGroup;
 import com.facebook.react.uimanager.PointerEvents;
 import com.facebook.react.uimanager.ReactPointerEventsView;
 import com.facebook.react.views.view.ReactViewGroup;
-import versioned.host.exp.exponent.modules.api.components.gesturehandler.PointerEventsConfig;
-import versioned.host.exp.exponent.modules.api.components.gesturehandler.ViewConfigurationHelper;
+import com.swmansion.gesturehandler.PointerEventsConfig;
+import com.swmansion.gesturehandler.ViewConfigurationHelper;
 
 public class RNViewConfigurationHelper implements ViewConfigurationHelper {
 

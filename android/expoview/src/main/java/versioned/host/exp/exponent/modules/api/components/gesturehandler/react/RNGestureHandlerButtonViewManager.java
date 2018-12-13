@@ -2,6 +2,7 @@ package versioned.host.exp.exponent.modules.api.components.gesturehandler.react;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
@@ -26,6 +27,8 @@ public class RNGestureHandlerButtonViewManager extends
     static ButtonViewGroup sResponder;
 
     int mBackgroundColor = Color.TRANSPARENT;
+    // Using object because of handling null representing no value set.
+    Integer mRippleColor;
     boolean mUseForeground = false;
     boolean mUseBorderless = false;
     float mBorderRadius = 0;
@@ -44,6 +47,11 @@ public class RNGestureHandlerButtonViewManager extends
     @Override
     public void setBackgroundColor(int color) {
       mBackgroundColor = color;
+      mNeedBackgroundUpdate = true;
+    }
+
+    public void setRippleColor(Integer color) {
+      mRippleColor = color;
       mNeedBackgroundUpdate = true;
     }
 
@@ -99,11 +107,19 @@ public class RNGestureHandlerButtonViewManager extends
           // 2. There's no way to force native behavior of ReactViewGroup's superclass's onTouchEvent
           colorDrawable.setCornerRadius(mBorderRadius);
           if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
-                  && selectable instanceof RippleDrawable) {
+                && selectable instanceof RippleDrawable) {
             PaintDrawable mask = new PaintDrawable(Color.WHITE);
             mask.setCornerRadius(mBorderRadius);
             ((RippleDrawable) selectable).setDrawableByLayerId(android.R.id.mask, mask);
           }
+        }
+        if (mRippleColor != null
+                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+                && selectable instanceof RippleDrawable) {
+          int[][] states = new int[][] { new int[] { android.R.attr.state_enabled} };
+          int[] colors = new int[] { mRippleColor };
+          ColorStateList colorStateList = new ColorStateList(states, colors);
+          ((RippleDrawable) selectable).setColor(colorStateList);
         }
         LayerDrawable layerDrawable = new LayerDrawable(
                 new Drawable[] { colorDrawable, selectable});
@@ -196,6 +212,11 @@ public class RNGestureHandlerButtonViewManager extends
   @ReactProp(name = ViewProps.BORDER_RADIUS)
   public void setBorderRadius(ButtonViewGroup view, float borderRadius) {
     view.setBorderRadius(borderRadius);
+  }
+
+  @ReactProp(name = "rippleColor")
+  public void setRippleColor(ButtonViewGroup view, Integer rippleColor) {
+    view.setRippleColor(rippleColor);
   }
 
   @Override
