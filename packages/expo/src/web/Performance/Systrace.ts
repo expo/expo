@@ -1,4 +1,3 @@
-
 import invariant from 'invariant';
 
 /**
@@ -12,7 +11,6 @@ import invariant from 'invariant';
  */
 
 'use strict';
-
 
 const TRACE_TAG_REACT_APPS = 1 << 17; // eslint-disable-line no-bitwise
 const TRACE_TAG_JS_VM_CALLS = 1 << 27; // eslint-disable-line no-bitwise
@@ -52,15 +50,14 @@ const userTimingPolyfill = __DEV__
             typeof measureName === 'string' &&
               typeof startMark === 'string' &&
               typeof endMark === 'undefined',
-            'Only performance.measure(string, string) overload is supported.',
+            'Only performance.measure(string, string) overload is supported.'
           );
           const topMark = _markStack[_markStackIndex];
           invariant(
             startMark === topMark,
-            'There was a mismatching performance.measure() call. ' +
-              'Expected "%s" but got "%s."',
+            'There was a mismatching performance.measure() call. ' + 'Expected "%s" but got "%s."',
             topMark,
-            startMark,
+            startMark
           );
           _markStackIndex--;
           // We can't use more descriptive measureName because Systrace doesn't
@@ -103,11 +100,9 @@ const Systrace = {
     if (_enabled !== enabled) {
       if (__DEV__) {
         if (enabled) {
-          global.nativeTraceBeginLegacy &&
-            global.nativeTraceBeginLegacy(TRACE_TAG_JS_VM_CALLS);
+          global.nativeTraceBeginLegacy && global.nativeTraceBeginLegacy(TRACE_TAG_JS_VM_CALLS);
         } else {
-          global.nativeTraceEndLegacy &&
-            global.nativeTraceEndLegacy(TRACE_TAG_JS_VM_CALLS);
+          global.nativeTraceEndLegacy && global.nativeTraceEndLegacy(TRACE_TAG_JS_VM_CALLS);
         }
         if (_canInstallReactHook) {
           if (enabled && global.performance === undefined) {
@@ -128,8 +123,7 @@ const Systrace = {
    **/
   beginEvent(profileName?: any, args?: any) {
     if (_enabled) {
-      profileName =
-        typeof profileName === 'function' ? profileName() : profileName;
+      profileName = typeof profileName === 'function' ? profileName() : profileName;
       global.nativeTraceBeginSection(TRACE_TAG_REACT_APPS, profileName, args);
     }
   },
@@ -149,26 +143,16 @@ const Systrace = {
     const cookie = _asyncCookie;
     if (_enabled) {
       _asyncCookie++;
-      profileName =
-        typeof profileName === 'function' ? profileName() : profileName;
-      global.nativeTraceBeginAsyncSection(
-        TRACE_TAG_REACT_APPS,
-        profileName,
-        cookie,
-      );
+      profileName = typeof profileName === 'function' ? profileName() : profileName;
+      global.nativeTraceBeginAsyncSection(TRACE_TAG_REACT_APPS, profileName, cookie);
     }
     return cookie;
   },
 
   endAsyncEvent(profileName?: any, cookie?: any) {
     if (_enabled) {
-      profileName =
-        typeof profileName === 'function' ? profileName() : profileName;
-      global.nativeTraceEndAsyncSection(
-        TRACE_TAG_REACT_APPS,
-        profileName,
-        cookie,
-      );
+      profileName = typeof profileName === 'function' ? profileName() : profileName;
+      global.nativeTraceEndAsyncSection(TRACE_TAG_REACT_APPS, profileName, cookie);
     }
   },
 
@@ -177,20 +161,11 @@ const Systrace = {
    **/
   counterEvent(profileName?: any, value?: any) {
     if (_enabled) {
-      profileName =
-        typeof profileName === 'function' ? profileName() : profileName;
+      profileName = typeof profileName === 'function' ? profileName() : profileName;
       global.nativeTraceCounter &&
         global.nativeTraceCounter(TRACE_TAG_REACT_APPS, profileName, value);
     }
   },
 };
-
-if (__DEV__) {
-  // This is needed, because require callis in polyfills are not processed as
-  // other files. Therefore, calls to `require('moduleId')` are not replaced
-  // with numeric IDs
-  // TODO(davidaurelio) Scan polyfills for dependencies, too (t9759686)
-  // (require: any).Systrace = Systrace;
-}
 
 export default Systrace;
