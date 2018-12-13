@@ -103,7 +103,7 @@ export default class Camera extends React.Component {
         return (<ExponentCamera {...nativeProps} ref={this._setReference} onCameraReady={this._onCameraReady} onMountError={this._onMountError} onPictureSaved={this._onPictureSaved} onBarCodeScanned={this._onObjectDetected(this.props.onBarCodeScanned)} onFacesDetected={this._onObjectDetected(this.props.onFacesDetected)}/>);
     }
     _convertNativeProps(props) {
-        const newProps = mapValues(props, this._convertProp);
+        const newProps = mapValues(props, convertProp);
         const propsKeys = Object.keys(newProps);
         // barCodeTypes is deprecated
         if (!propsKeys.includes('barCodeScannerSettings') && propsKeys.includes('barCodeTypes')) {
@@ -122,12 +122,6 @@ export default class Camera extends React.Component {
             delete newProps.useCamera2Api;
         }
         return newProps;
-    }
-    _convertProp(value, key) {
-        if (typeof value === 'string' && Camera.ConversionTables[key]) {
-            return Camera.ConversionTables[key][value];
-        }
-        return value;
     }
 }
 Camera.Constants = {
@@ -173,6 +167,12 @@ Camera.defaultProps = {
     autoFocus: CameraManager.AutoFocus.on,
     flashMode: CameraManager.FlashMode.off,
     whiteBalance: CameraManager.WhiteBalance.auto,
+};
+const convertProp = (value, key) => {
+    if (typeof value === 'string' && Camera.ConversionTables[key]) {
+        return Camera.ConversionTables[key][value];
+    }
+    return value;
 };
 export const Constants = Camera.Constants;
 const ExponentCamera = requireNativeViewManager('ExponentCamera');

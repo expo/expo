@@ -160,7 +160,6 @@ export default class Camera extends React.Component<PropsType> {
     _setReference: (ref?: React.Component<{}, {}, any> | undefined) => void;
     render(): JSX.Element;
     _convertNativeProps(props: PropsType): any;
-    _convertProp(value: any, key: string): any;
 }
 export declare const Constants: {
     Type: any;

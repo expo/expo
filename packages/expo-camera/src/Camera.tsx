@@ -231,7 +231,7 @@ export default class Camera extends React.Component<PropsType> {
   }
 
   _convertNativeProps(props: PropsType) {
-    const newProps = mapValues(props, this._convertProp);
+    const newProps = mapValues(props, convertProp);
 
     const propsKeys = Object.keys(newProps);
     // barCodeTypes is deprecated
@@ -256,14 +256,14 @@ export default class Camera extends React.Component<PropsType> {
 
     return newProps;
   }
+}
 
-  _convertProp(value: any, key: string): any {
-    if (typeof value === 'string' && Camera.ConversionTables[key]) {
-      return Camera.ConversionTables[key][value];
-    }
-
-    return value;
+const convertProp = (value: any, key: string): any => {
+  if (typeof value === 'string' && Camera.ConversionTables[key]) {
+    return Camera.ConversionTables[key][value];
   }
+
+  return value;
 }
 
 export const Constants = Camera.Constants;
