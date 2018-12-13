@@ -1,8 +1,6 @@
-// @flow
-
 import { EventEmitter } from 'expo-core';
 
-type Coordinates = {
+interface Coordinates {
   latitude: number,
   longitude: number,
   altitude?: number,
@@ -12,21 +10,27 @@ type Coordinates = {
   speed?: number,
 };
 
-type Position = {
+interface Position {
   coords: Coordinates,
   timestamp: number,
 };
 
+interface PermissionResult {
+  status: string,
+};
+
 class GeocoderError extends Error {
+  code: string;
+
   constructor() {
     super('Geocoder service is not available for this device.');
     this.code = 'E_NO_GEOCODER';
   }
 }
 
-const emitter = new EventEmitter();
+const emitter = new EventEmitter({} as any);
 
-function positionToJSON(position: ?any): ?Position {
+function positionToJSON(position: any): Position | null {
   if (!position) return null;
 
   const { coords = {}, timestamp } = position;
@@ -53,8 +57,8 @@ export default {
       locationServicesEnabled: 'geolocation' in navigator,
     };
   },
-  async getCurrentPositionAsync(options: Object): Promise<?Position> {
-    return new Promise((resolve, reject) =>
+  async getCurrentPositionAsync(options: Object): Promise<Position | null> {
+    return new Promise<Position | null>((resolve, reject) =>
       navigator.geolocation.getCurrentPosition(
         position => resolve(positionToJSON(position)),
         reject,
@@ -68,14 +72,15 @@ export default {
   async watchDeviceHeading(headingId): Promise<void> {
     console.warn('Location.watchDeviceHeading: is not supported on web');
   },
-  async geocodeAsync(): Promise<Array> {
+  async geocodeAsync(): Promise<Array<any>> {
     throw new GeocoderError();
   },
-  async reverseGeocodeAsync(): Promise<Array> {
+  async reverseGeocodeAsync(): Promise<Array<any>> {
     throw new GeocoderError();
   },
   async watchPositionImplAsync(watchId: string, options: Object): Promise<string> {
-    return new Promise((resolve, reject) => {
+    return new Promise<string>(resolve => {
+      // @ts-ignore
       watchId = global.navigator.geolocation.watchPosition(
         location => {
           emitter.emit('Exponent.locationChanged', { watchId, location: positionToJSON(location) });
@@ -86,8 +91,8 @@ export default {
       resolve(watchId);
     });
   },
-  async requestPermissionsAsync(): Promise<{ status: string }> {
-    return new Promise((resolve, reject) => {
+  async requestPermissionsAsync(): Promise<PermissionResult> {
+    return new Promise<PermissionResult>(resolve => {
       navigator.geolocation.getCurrentPosition(
         () => resolve({ status: 'granted' }),
         ({ code }) => {

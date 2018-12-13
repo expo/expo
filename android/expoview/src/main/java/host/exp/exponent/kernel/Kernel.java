@@ -55,6 +55,7 @@ import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.experience.BaseExperienceActivity;
 import host.exp.exponent.experience.ExperienceActivity;
 import host.exp.exponent.experience.HomeActivity;
+import host.exp.exponent.headless.HeadlessAppLoader;
 import host.exp.exponent.notifications.ExponentNotification;
 import host.exp.expoview.BuildConfig;
 import host.exp.exponent.Constants;
@@ -272,7 +273,7 @@ public class Kernel extends KernelInterface {
                 .setApplication(mApplicationContext)
                 .setJSBundleFile(localBundlePath)
                 .addPackage(new MainReactPackage())
-                .addPackage(ExponentPackage.kernelExponentPackage(mExponentManifest.getKernelManifest(), HomeActivity.homeExpoPackages()))
+                .addPackage(ExponentPackage.kernelExponentPackage(mContext, mExponentManifest.getKernelManifest(), HomeActivity.homeExpoPackages()))
                 .setInitialLifecycleState(LifecycleState.RESUMED);
 
             if (!KernelConfig.FORCE_NO_KERNEL_DEBUG_MODE && mExponentManifest.isDebugModeEnabled(mExponentManifest.getKernelManifest())) {
@@ -751,6 +752,10 @@ public class Kernel extends KernelInterface {
     if (activityId == -1) {
       // This is the kernel
       return sInstance.getBundleUrl();
+    }
+
+    if (HeadlessAppLoader.hasBundleUrlForActivityId(activityId)) {
+      return HeadlessAppLoader.getBundleUrlForActivityId(activityId);
     }
 
     for (ExperienceActivityTask task : sManifestUrlToExperienceActivityTask.values()) {
