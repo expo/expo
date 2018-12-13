@@ -2,8 +2,6 @@
 
 package versioned.host.exp.exponent.modules.api.notifications;
 
-import android.support.v4.app.NotificationManagerCompat;
-
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -231,7 +229,7 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
     String experienceId;
 
     HashMap<String, Object> hashMap = data.toHashMap();
-    if (data.getString("categoryId") != null) {
+    if (data.hasKey("categoryId")) {
       hashMap.put("categoryId", getScopedIdIfNotDetached(data.getString("categoryId")));
     }
 
@@ -300,7 +298,7 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
     int notificationId = new Random().nextInt();
 
     HashMap<String, Object> hashMap = data.toHashMap();
-    if (data.getString("categoryId") != null) {
+    if (data.hasKey("categoryId")) {
       hashMap.put("categoryId", getScopedIdIfNotDetached(data.getString("categoryId")));
     }
 
