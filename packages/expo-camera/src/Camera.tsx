@@ -1,72 +1,55 @@
-// @flow
 import React from 'react';
+import { View } from 'react-native';
 import PropTypes from 'prop-types';
 import mapValues from 'lodash.mapvalues';
 import { NativeModulesProxy, requireNativeViewManager } from 'expo-core';
 import { findNodeHandle, ViewPropTypes, Platform } from 'react-native';
 
 type PictureOptions = {
-  quality?: number,
-  base64?: boolean,
-  exif?: boolean,
-  skipProcessing?: boolean,
-  onPictureSaved?: Function,
+  quality?: number;
+  base64?: boolean;
+  exif?: boolean;
+  skipProcessing?: boolean;
+  onPictureSaved?: Function;
   // internal
-  id?: number,
-  fastMode?: boolean,
+  id?: number;
+  fastMode?: boolean;
 };
 
 type RecordingOptions = {
-  maxDuration?: number,
-  maxFileSize?: number,
-  quality?: number | string,
+  maxDuration?: number;
+  maxFileSize?: number;
+  quality?: number | string;
 };
 
 type CapturedPicture = {
-  width: number,
-  height: number,
-  uri: string,
-  base64?: string,
-  exif?: Object,
+  width: number;
+  height: number;
+  uri: string;
+  base64?: string;
+  exif?: any;
 };
 
-type RecordingResult = {
-  uri: string,
+type PropsType = React.ComponentProps<typeof View> & {
+  zoom?: number;
+  ratio?: string;
+  focusDepth?: number;
+  type?: number | string;
+  onCameraReady?: Function;
+  useCamera2Api?: boolean;
+  flashMode?: number | string;
+  whiteBalance?: number | string;
+  autoFocus?: string | boolean | number;
+  pictureSize?: string;
+  videoStabilizationMode?: number;
+  onMountError?: (event: { message: string }) => void;
+  barCodeScannerSettings?: {};
+  onBarCodeScanned?: (scanningResult: { type: string; data: string }) => void;
+  faceDetectorSettings?: {};
+  onFacesDetected?: (faces: { faces: any[] }) => void;
 };
 
-type EventCallbackArgumentsType = {
-  nativeEvent: Object,
-};
-
-type MountErrorNativeEventType = {
-  message: string,
-};
-
-type PictureSavedNativeEventType = {
-  data: CapturedPicture,
-  id: number,
-};
-
-type PropsType = ViewPropTypes & {
-  zoom?: number,
-  ratio?: string,
-  focusDepth?: number,
-  type?: number | string,
-  onCameraReady?: Function,
-  useCamera2Api?: boolean,
-  flashMode?: number | string,
-  whiteBalance?: number | string,
-  autoFocus?: string | boolean | number,
-  pictureSize?: string,
-  videoStabilizationMode?: number,
-  onMountError?: MountErrorNativeEventType => void,
-  barCodeScannerSettings?: {},
-  onBarCodeScanned?: ({ type: string, data: string }) => void,
-  faceDetectorSettings?: {},
-  onFacesDetected?: ({ faces: Array<*> }) => void,
-};
-
-const CameraManager: Object =
+const CameraManager: any =
   NativeModulesProxy.ExponentCameraManager || NativeModulesProxy.ExponentCameraModule;
 
 const EventThrottleMs = 500;
@@ -81,8 +64,7 @@ export default class Camera extends React.Component<PropsType> {
     AutoFocus: CameraManager.AutoFocus,
     WhiteBalance: CameraManager.WhiteBalance,
     VideoQuality: CameraManager.VideoQuality,
-    VideoStabilization: CameraManager.VideoStabilization || {}
-
+    VideoStabilization: CameraManager.VideoStabilization || {},
   };
 
   // Values under keys from this object will be transformed to native options
@@ -113,7 +95,7 @@ export default class Camera extends React.Component<PropsType> {
     autoFocus: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.bool]),
   };
 
-  static defaultProps: Object = {
+  static defaultProps: PropsType = {
     zoom: 0,
     ratio: '4:3',
     focusDepth: 0,
@@ -124,10 +106,10 @@ export default class Camera extends React.Component<PropsType> {
     whiteBalance: CameraManager.WhiteBalance.auto,
   };
 
-  _cameraRef: ?Object;
-  _cameraHandle: ?number;
-  _lastEvents: { [string]: string };
-  _lastEventsTimes: { [string]: Date };
+  _cameraHandle?: number | null;
+  _cameraRef?: React.Component | null;
+  _lastEvents: { [eventName: string]: string };
+  _lastEventsTimes: { [eventName: string]: Date };
 
   constructor(props: PropsType) {
     super(props);
@@ -163,7 +145,7 @@ export default class Camera extends React.Component<PropsType> {
     return await CameraManager.getAvailablePictureSizes(ratio, this._cameraHandle);
   }
 
-  async recordAsync(options?: RecordingOptions): Promise<RecordingResult> {
+  async recordAsync(options?: RecordingOptions): Promise<{ uri: string }> {
     if (!options || typeof options !== 'object') {
       options = {};
     } else if (typeof options.quality === 'string') {
@@ -190,13 +172,13 @@ export default class Camera extends React.Component<PropsType> {
     }
   };
 
-  _onMountError = ({ nativeEvent }: { nativeEvent: MountErrorNativeEventType }) => {
+  _onMountError = ({ nativeEvent }: { nativeEvent: { message: string } }) => {
     if (this.props.onMountError) {
       this.props.onMountError(nativeEvent);
     }
   };
 
-  _onPictureSaved = ({ nativeEvent }: { nativeEvent: PictureSavedNativeEventType }) => {
+  _onPictureSaved = ({ nativeEvent }: { nativeEvent: { data: CapturedPicture; id: number } }) => {
     const callback = _PICTURE_SAVED_CALLBACKS[nativeEvent.id];
     if (callback) {
       callback(nativeEvent.data);
@@ -204,13 +186,13 @@ export default class Camera extends React.Component<PropsType> {
     }
   };
 
-  _onObjectDetected = (callback: ?Function) => ({ nativeEvent }: EventCallbackArgumentsType) => {
+  _onObjectDetected = (callback?: Function) => ({ nativeEvent }: { nativeEvent: any }) => {
     const { type } = nativeEvent;
     if (
       this._lastEvents[type] &&
       this._lastEventsTimes[type] &&
       JSON.stringify(nativeEvent) === this._lastEvents[type] &&
-      new Date() - this._lastEventsTimes[type] < EventThrottleMs
+      new Date().getTime() - this._lastEventsTimes[type].getTime() < EventThrottleMs
     ) {
       return;
     }
@@ -222,7 +204,7 @@ export default class Camera extends React.Component<PropsType> {
     }
   };
 
-  _setReference = (ref: ?Object) => {
+  _setReference = (ref?: React.Component) => {
     if (ref) {
       this._cameraRef = ref;
       this._cameraHandle = findNodeHandle(ref);
@@ -230,14 +212,6 @@ export default class Camera extends React.Component<PropsType> {
       this._cameraRef = null;
       this._cameraHandle = null;
     }
-  };
-
-  _onBarCodeScanned = () => {
-    const onBarCodeRead = this.props.onBarCodeRead && ((data) => {
-      console.warn("'onBarCodeRead' is deprecated in favour of 'onBarCodeScanned'");
-      return this.props.onBarCodeRead(data);
-    });
-    return this.props.onBarCodeScanned || onBarCodeRead;
   };
 
   render() {
@@ -250,23 +224,24 @@ export default class Camera extends React.Component<PropsType> {
         onCameraReady={this._onCameraReady}
         onMountError={this._onMountError}
         onPictureSaved={this._onPictureSaved}
-        onBarCodeScanned={this._onObjectDetected(this._onBarCodeScanned())}
+        onBarCodeScanned={this._onObjectDetected(this.props.onBarCodeScanned)}
         onFacesDetected={this._onObjectDetected(this.props.onFacesDetected)}
       />
     );
   }
 
   _convertNativeProps(props: PropsType) {
-    const newProps = mapValues(props, this._convertProp);
+    const newProps = mapValues(props, convertProp);
 
     const propsKeys = Object.keys(newProps);
-    if (!propsKeys.includes("barCodeScannerSettings") && propsKeys.includes("barCodeTypes")) { // barCodeTypes is deprecated
+    // barCodeTypes is deprecated
+    if (!propsKeys.includes('barCodeScannerSettings') && propsKeys.includes('barCodeTypes')) {
       newProps.barCodeScannerSettings = {
         barCodeTypes: newProps.barCodeTypes,
       };
     }
 
-    if (props.onBarCodeScanned || props.onBarCodeRead) { // onBarCodeRead is deprecated
+    if (props.onBarCodeScanned) {
       newProps.barCodeScannerEnabled = true;
     }
 
@@ -281,16 +256,16 @@ export default class Camera extends React.Component<PropsType> {
 
     return newProps;
   }
+}
 
-  _convertProp(value: *, key: string): * {
-    if (typeof value === 'string' && Camera.ConversionTables[key]) {
-      return Camera.ConversionTables[key][value];
-    }
-
-    return value;
+const convertProp = (value: any, key: string): any => {
+  if (typeof value === 'string' && Camera.ConversionTables[key]) {
+    return Camera.ConversionTables[key][value];
   }
+
+  return value;
 }
 
 export const Constants = Camera.Constants;
 
-const ExponentCamera = requireNativeViewManager('ExponentCamera', Camera);
+const ExponentCamera = requireNativeViewManager('ExponentCamera');
