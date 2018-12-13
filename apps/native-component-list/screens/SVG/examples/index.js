@@ -15,7 +15,7 @@ import * as Stroking from './Stroking';
 import * as Svg from './Svg';
 import * as Text from './Text';
 import * as TouchEvents from './TouchEvents';
-// import * as VictoryNative from './VictoryNative';
+import * as VictoryNative from './VictoryNative';
 
 export {
   Svg,
@@ -35,5 +35,5 @@ export {
   TouchEvents,
   Reusable,
   PanResponder,
-  // VictoryNative,
+  VictoryNative,
 };

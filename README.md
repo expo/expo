@@ -20,16 +20,15 @@ If you need to make native code changes to your Expo project, such as adding cus
 
 ## Set Up
 
-Please use Node 8+ and npm 4. We recommend installing Node using [nvm](https://github.com/creationix/nvm). We support building the clients only on macOS.
+Note: We support building the clients only on macOS.
 
-- Install the [`git-lfs`](https://git-lfs.github.com/) command line extension for `git`.
-- Install [the Gulp CLI](http://gulpjs.com/) globally: `npm install gulp-cli -g`.
+- Install [nix](https://nixos.org/nix) (currently `curl https://nixos.org/nix/install | sh`)
+- Install [direnv](http://direnv.net/) (to do this with nix, run `nix-env -iA nixpkgs.direnv`)
 - Clone this repo; we recommend cloning it to a directory whose full path does not include any spaces.
 - Run `yarn` in the `tools-public` directory.
 
 #### iOS
 - Make sure you have latest non-beta Xcode installed.
-- Install [Cocoapods](https://cocoapods.org/): `gem install cocoapods --no-ri --no-rdoc`
 - Run `git lfs pull`.
 - Run `./generate-files-ios.js` in the `tools-public` directory.
 - Open and run `ios/Exponent.xcworkspace` in Xcode.

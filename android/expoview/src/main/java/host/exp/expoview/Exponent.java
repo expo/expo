@@ -535,66 +535,35 @@ public class Exponent {
                                             RNObject builder) {
     if (!debuggerHost.isEmpty() && !mainModuleName.isEmpty()) {
       try {
-        if (ABIVersion.toNumber(sdkVersion) < 20) {
-          RNObject fieldObject;
-          fieldObject = new RNObject("com.facebook.react.devsupport.DevServerHelper");
-          fieldObject.loadVersion(builder.version());
-          if (!hasDeclaredField(fieldObject.rnClass(), "DEVICE_LOCALHOST")) {
-            fieldObject = new RNObject("com.facebook.react.modules.systeminfo.AndroidInfoHelpers");
-            fieldObject.loadVersion(builder.version());
-          }
+        RNObject fieldObject = new RNObject("com.facebook.react.modules.systeminfo.AndroidInfoHelpers");
+        fieldObject.loadVersion(builder.version());
 
-          Field deviceField = fieldObject.rnClass().getDeclaredField("DEVICE_LOCALHOST");
-          deviceField.setAccessible(true);
-          deviceField.set(null, debuggerHost);
+        String debuggerHostHostname = getHostname(debuggerHost);
+        int debuggerHostPort = getPort(debuggerHost);
 
-          Field genymotionField = fieldObject.rnClass().getDeclaredField("GENYMOTION_LOCALHOST");
-          genymotionField.setAccessible(true);
-          genymotionField.set(null, debuggerHost);
+        Field deviceField = fieldObject.rnClass().getDeclaredField("DEVICE_LOCALHOST");
+        deviceField.setAccessible(true);
+        deviceField.set(null, debuggerHostHostname);
 
-          Field emulatorField = fieldObject.rnClass().getDeclaredField("EMULATOR_LOCALHOST");
-          emulatorField.setAccessible(true);
-          emulatorField.set(null, debuggerHost);
+        Field genymotionField = fieldObject.rnClass().getDeclaredField("GENYMOTION_LOCALHOST");
+        genymotionField.setAccessible(true);
+        genymotionField.set(null, debuggerHostHostname);
 
-          builder.callRecursive("setUseDeveloperSupport", true)
-              .callRecursive("setJSMainModuleName", mainModuleName);
-        } else {
-          RNObject fieldObject = new RNObject("com.facebook.react.modules.systeminfo.AndroidInfoHelpers");
-          fieldObject.loadVersion(builder.version());
+        Field emulatorField = fieldObject.rnClass().getDeclaredField("EMULATOR_LOCALHOST");
+        emulatorField.setAccessible(true);
+        emulatorField.set(null, debuggerHostHostname);
 
-          String debuggerHostHostname = getHostname(debuggerHost);
-          int debuggerHostPort = getPort(debuggerHost);
+        Field debugServerHostPortField = fieldObject.rnClass().getDeclaredField("DEBUG_SERVER_HOST_PORT");
+        debugServerHostPortField.setAccessible(true);
+        debugServerHostPortField.set(null, debuggerHostPort);
 
-          Field deviceField = fieldObject.rnClass().getDeclaredField("DEVICE_LOCALHOST");
-          deviceField.setAccessible(true);
-          deviceField.set(null, debuggerHostHostname);
+        Field inspectorProxyPortField = fieldObject.rnClass().getDeclaredField("INSPECTOR_PROXY_PORT");
+        inspectorProxyPortField.setAccessible(true);
+        inspectorProxyPortField.set(null, debuggerHostPort);
 
-          Field genymotionField = fieldObject.rnClass().getDeclaredField("GENYMOTION_LOCALHOST");
-          genymotionField.setAccessible(true);
-          genymotionField.set(null, debuggerHostHostname);
-
-          Field emulatorField = fieldObject.rnClass().getDeclaredField("EMULATOR_LOCALHOST");
-          emulatorField.setAccessible(true);
-          emulatorField.set(null, debuggerHostHostname);
-
-          Field debugServerHostPortField = fieldObject.rnClass().getDeclaredField("DEBUG_SERVER_HOST_PORT");
-          debugServerHostPortField.setAccessible(true);
-          debugServerHostPortField.set(null, debuggerHostPort);
-
-          Field inspectorProxyPortField = fieldObject.rnClass().getDeclaredField("INSPECTOR_PROXY_PORT");
-          inspectorProxyPortField.setAccessible(true);
-          inspectorProxyPortField.set(null, debuggerHostPort);
-
-          builder.callRecursive("setUseDeveloperSupport", true);
-          if (ABIVersion.toNumber(sdkVersion) < 22) {
-            builder.callRecursive("setJSMainModuleName", mainModuleName);
-          } else {
-            builder.callRecursive("setJSMainModulePath", mainModuleName);
-          }
-        }
-      } catch (IllegalAccessException e) {
-        e.printStackTrace();
-      } catch (NoSuchFieldException e) {
+        builder.callRecursive("setUseDeveloperSupport", true);
+        builder.callRecursive("setJSMainModulePath", mainModuleName);
+      } catch (IllegalAccessException | NoSuchFieldException e) {
         e.printStackTrace();
       }
     }

@@ -1,9 +1,7 @@
 jest.mock('expo-constants', () => ({
-  Constants: {
-    manifest: {},
-    sessionId: 'testsession',
-    systemFonts: ['Helvetica', 'Helvetica Neue'],
-  },
+  manifest: {},
+  sessionId: 'testsession',
+  systemFonts: ['Helvetica', 'Helvetica Neue'],
 }));
 
 let Font;

@@ -21,13 +21,13 @@
 @class FBSDKShareMessengerURLActionButton;
 @protocol FBSDKShareMessengerActionButton;
 
-extern NSString *const kFBSDKShareMessengerTemplateTypeKey;
-extern NSString *const kFBSDKShareMessengerTemplateKey;
-extern NSString *const kFBSDKShareMessengerPayloadKey;
-extern NSString *const kFBSDKShareMessengerTypeKey;
-extern NSString *const kFBSDKShareMessengerAttachmentKey;
-extern NSString *const kFBSDKShareMessengerElementsKey;
-extern NSString *const kFBSDKShareMessengerButtonsKey;
+FOUNDATION_EXPORT NSString *const kFBSDKShareMessengerTemplateTypeKey;
+FOUNDATION_EXPORT NSString *const kFBSDKShareMessengerTemplateKey;
+FOUNDATION_EXPORT NSString *const kFBSDKShareMessengerPayloadKey;
+FOUNDATION_EXPORT NSString *const kFBSDKShareMessengerTypeKey;
+FOUNDATION_EXPORT NSString *const kFBSDKShareMessengerAttachmentKey;
+FOUNDATION_EXPORT NSString *const kFBSDKShareMessengerElementsKey;
+FOUNDATION_EXPORT NSString *const kFBSDKShareMessengerButtonsKey;
 
 void AddToContentPreviewDictionaryForButton(NSMutableDictionary<NSString *, id> *dictionary,
                                             id<FBSDKShareMessengerActionButton> button);

@@ -19,6 +19,8 @@
 #import "FBSDKAppEvents.h"
 #import "FBSDKAppEvents+Internal.h"
 
+#import <objc/runtime.h>
+
 #import <UIKit/UIApplication.h>
 
 #import "FBSDKAccessToken.h"
@@ -96,6 +98,31 @@ NSString *const FBSDKAppEventParameterNameDescription            = @"fb_descript
 NSString *const FBSDKAppEventParameterLaunchSource               = @"fb_mobile_launch_source";
 NSString *const FBSDKAppEventParameterNameAdType                 = @"ad_type";
 NSString *const FBSDKAppEventParameterNameOrderID                = @"fb_order_id";
+
+//
+// Public event parameter names for DPA Catalog
+//
+
+NSString *const FBSDKAppEventParameterProductCustomLabel0               = @"fb_product_custom_label_0";
+NSString *const FBSDKAppEventParameterProductCustomLabel1               = @"fb_product_custom_label_1";
+NSString *const FBSDKAppEventParameterProductCustomLabel2               = @"fb_product_custom_label_2";
+NSString *const FBSDKAppEventParameterProductCustomLabel3               = @"fb_product_custom_label_3";
+NSString *const FBSDKAppEventParameterProductCustomLabel4               = @"fb_product_custom_label_4";
+NSString *const FBSDKAppEventParameterProductAppLinkIOSUrl              = @"fb_product_applink_ios_url";
+NSString *const FBSDKAppEventParameterProductAppLinkIOSAppStoreID       = @"fb_product_applink_ios_app_store_id";
+NSString *const FBSDKAppEventParameterProductAppLinkIOSAppName          = @"fb_product_applink_ios_app_name";
+NSString *const FBSDKAppEventParameterProductAppLinkIPhoneUrl           = @"fb_product_applink_iphone_url";
+NSString *const FBSDKAppEventParameterProductAppLinkIPhoneAppStoreID    = @"fb_product_applink_iphone_app_store_id";
+NSString *const FBSDKAppEventParameterProductAppLinkIPhoneAppName       = @"fb_product_applink_iphone_app_name";
+NSString *const FBSDKAppEventParameterProductAppLinkIPadUrl             = @"fb_product_applink_ipad_url";
+NSString *const FBSDKAppEventParameterProductAppLinkIPadAppStoreID      = @"fb_product_applink_ipad_app_store_id";
+NSString *const FBSDKAppEventParameterProductAppLinkIPadAppName         = @"fb_product_applink_ipad_app_name";
+NSString *const FBSDKAppEventParameterProductAppLinkAndroidUrl          = @"fb_product_applink_android_url";
+NSString *const FBSDKAppEventParameterProductAppLinkAndroidPackage      = @"fb_product_applink_android_package";
+NSString *const FBSDKAppEventParameterProductAppLinkAndroidAppName      = @"fb_product_applink_android_app_name";
+NSString *const FBSDKAppEventParameterProductAppLinkWindowsPhoneUrl     = @"fb_product_applink_windows_phone_url";
+NSString *const FBSDKAppEventParameterProductAppLinkWindowsPhoneAppID   = @"fb_product_applink_windows_phone_app_id";
+NSString *const FBSDKAppEventParameterProductAppLinkWindowsPhoneAppName = @"fb_product_applink_windows_phone_app_name";
 
 //
 // Public event parameter values
@@ -238,7 +265,15 @@ NSString *const FBSDKAppEventsDialogShareContentTypeMessengerMediaTemplate      
 NSString *const FBSDKAppEventsDialogShareContentTypeMessengerOpenGraphMusicTemplate   = @"OpenGraphMusicTemplate";
 NSString *const FBSDKAppEventsDialogShareContentTypeUnknown                           = @"Unknown";
 
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
+
+NSNotificationName const FBSDKAppEventsLoggingResultNotification = @"com.facebook.sdk:FBSDKAppEventsLoggingResultNotification";
+
+#else
+
 NSString *const FBSDKAppEventsLoggingResultNotification = @"com.facebook.sdk:FBSDKAppEventsLoggingResultNotification";
+
+#endif
 
 NSString *const FBSDKAppEventsOverrideAppIDBundleKey = @"FacebookLoggingOverrideAppID";
 
@@ -271,11 +306,19 @@ NSString *const FBSDKAPPEventsWKWebViewMessagesProtocolKey = @"fbmq-0.1";
 #define FLUSH_PERIOD_IN_SECONDS 15
 #define USER_ID_USER_DEFAULTS_KEY @"com.facebook.sdk.appevents.userid"
 
+#define FBUnityUtilityClassName "FBUnityUtility"
+#define FBUnityUtilityUpdateBindingsSelector @"triggerUpdateBindings:"
+
+#define UNINSTALL_TRACKING_DEVICE_ID_KEY          @"device_id"
+#define UNINSTALL_TRACKING_PLATFORM_KEY           @"platform"
+#define UNINSTALL_TRACKING_DEVICE_TOKEN_KEY       @"device_token"
+#define UNINSTALL_TRACKING_TOKEN_ENDPOINT         @"app_push_device_token"
+
 static NSString *g_overrideAppID = nil;
 
 @interface FBSDKAppEvents ()
 
-@property (nonatomic, readwrite) FBSDKAppEventsFlushBehavior flushBehavior;
+@property (nonatomic, assign) FBSDKAppEventsFlushBehavior flushBehavior;
 //for testing only.
 @property (nonatomic, assign) BOOL disableTimer;
 
@@ -294,6 +337,7 @@ static NSString *g_overrideAppID = nil;
   FBSDKEventBindingManager *_eventBindingManager;
 #endif
   NSString *_userID;
+  BOOL _isUnityInit;
 }
 
 #pragma mark - Object Lifecycle
@@ -609,6 +653,23 @@ static NSString *g_overrideAppID = nil;
     if ([FBSDKAppEvents flushBehavior] != FBSDKAppEventsFlushBehaviorExplicitOnly) {
       [[FBSDKAppEvents singleton] flushForReason:FBSDKAppEventsFlushReasonEagerlyFlushingEvent];
     }
+
+    // Update device push token for uninstall tracking
+    [FBSDKServerConfigurationManager loadServerConfigurationWithCompletionBlock:^(FBSDKServerConfiguration *serverConfiguration, NSError *error) {
+      if (serverConfiguration.uninstallTrackingEnabled) {
+        FBSDKGraphRequest *request = [[FBSDKGraphRequest alloc]
+                                      initWithGraphPath:[NSString stringWithFormat:@"%@/%@",
+                                                         [FBSDKSettings appID], UNINSTALL_TRACKING_TOKEN_ENDPOINT]
+                                      parameters:@{
+                                                   UNINSTALL_TRACKING_DEVICE_TOKEN_KEY: deviceTokenString,
+                                                   UNINSTALL_TRACKING_PLATFORM_KEY: @"ios",
+                                                   // advertiserID could be 0s if user select limit ad tracking
+                                                   UNINSTALL_TRACKING_DEVICE_ID_KEY:  [FBSDKAppEventsUtility advertiserID] ?: @""
+                                                   }
+                                      HTTPMethod:@"POST"];
+        [request startWithCompletionHandler:nil];
+      }
+    }];
   }
 }
 
@@ -668,16 +729,16 @@ static NSString *g_overrideAppID = nil;
   [FBSDKUserDataStore setUserDataAndHash:userData];
 }
 
-+ (void)setUserEmail:(nullable NSString *)email
-           firstName:(nullable NSString *)firstName
-            lastName:(nullable NSString *)lastName
-               phone:(nullable NSString *)phone
-         dateOfBirth:(nullable NSString *)dateOfBirth
-              gender:(nullable NSString *)gender
-                city:(nullable NSString *)city
-               state:(nullable NSString *)state
-                 zip:(nullable NSString *)zip
-             country:(nullable NSString *)country
++ (void)setUserEmail:(NSString *)email
+           firstName:(NSString *)firstName
+            lastName:(NSString *)lastName
+               phone:(NSString *)phone
+         dateOfBirth:(NSString *)dateOfBirth
+              gender:(NSString *)gender
+                city:(NSString *)city
+               state:(NSString *)state
+                 zip:(NSString *)zip
+             country:(NSString *)country
 {
   [FBSDKUserDataStore setUserDataAndHash:email
                                firstName:firstName
@@ -716,7 +777,7 @@ static NSString *g_overrideAppID = nil;
 
   if (userID.length == 0) {
     [FBSDKLogger singleShotLogEntry:FBSDKLoggingBehaviorDeveloperErrors logEntry:@"Missing [FBSDKAppEvents userID] for [FBSDKAppEvents updateUserProperties:]"];
-    NSError *error = [FBSDKError requiredArgumentErrorWithName:@"userID" message:@"Missing [FBSDKAppEvents userID] for [FBSDKAppEvents updateUserProperties:]"];
+    NSError *error = [NSError fbRequiredArgumentErrorWithName:@"userID" message:@"Missing [FBSDKAppEvents userID] for [FBSDKAppEvents updateUserProperties:]"];
     if (handler) {
       handler(nil, nil, error);
     }
@@ -731,7 +792,7 @@ static NSString *g_overrideAppID = nil;
   __block NSError *invalidObjectError;
   NSString *dataJSONString = [FBSDKInternalUtility JSONStringForObject:@[dataDictionary] error:&error invalidObjectHandler:^id(id object, BOOL *stop) {
     *stop = YES;
-    invalidObjectError = [FBSDKError unknownErrorWithMessage:@"The values in the properties dictionary must be NSStrings or NSNumbers"];
+    invalidObjectError = [NSError fbUnknownErrorWithMessage:@"The values in the properties dictionary must be NSStrings or NSNumbers"];
     return nil;
   }];
   if (!error) {
@@ -784,6 +845,30 @@ static NSString *g_overrideAppID = nil;
   }
 }
 #endif
+
++ (void)setIsUnityInit:(BOOL)isUnityInit
+{
+  [FBSDKAppEvents singleton]->_isUnityInit = isUnityInit;
+}
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
++ (void)sendEventBindingsToUnity
+{
+  // Send event bindings to Unity only Unity is initialized
+  if ([FBSDKAppEvents singleton]->_isUnityInit) {
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:[FBSDKAppEvents singleton]->_serverConfiguration.eventBindings ?: @""
+                                                       options:0
+                                                         error:nil];
+    NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    Class classFBUnityUtility = objc_lookUpClass(FBUnityUtilityClassName);
+    SEL updateBindingSelector = NSSelectorFromString(FBUnityUtilityUpdateBindingsSelector);
+    if ([classFBUnityUtility respondsToSelector:updateBindingSelector]) {
+      [classFBUnityUtility performSelector:updateBindingSelector withObject:jsonString];
+    }
+  }
+}
+#pragma clang diagnostic pop
 
 #pragma mark - Internal Methods
 
@@ -875,8 +960,12 @@ static NSString *g_overrideAppID = nil;
       [_eventBindingManager start];
     }
 
-    [_eventBindingManager updateBindings:[FBSDKEventBindingManager
-                                          parseArray:_serverConfiguration.eventBindings]];
+    if ([FBSDKInternalUtility isUnity]) {
+      [FBSDKAppEvents sendEventBindingsToUnity];
+    } else {
+      [_eventBindingManager updateBindings:[FBSDKEventBindingManager
+                                            parseArray:_serverConfiguration.eventBindings]];
+    }
   }
 }
 #endif
@@ -1097,7 +1186,6 @@ static NSString *g_overrideAppID = nil;
                       prettyPrintedJsonEvents];
     }
 
-    [FBSDKAppEventsUtility logAndNotify:[NSString stringWithFormat:@"param %@", postParameters]];
     FBSDKGraphRequest *request = [[FBSDKGraphRequest alloc] initWithGraphPath:[NSString stringWithFormat:@"%@/activities", appEventsState.appID]
                                                          parameters:postParameters
                                                         tokenString:appEventsState.tokenString
@@ -1138,7 +1226,7 @@ static NSString *g_overrideAppID = nil;
   if (flushResult == FlushResultServerError) {
     // Only log events that developer can do something with (i.e., if parameters are incorrect).
     //  as opposed to cases where the token is bad.
-    if ([error.userInfo[FBSDKGraphRequestErrorCategoryKey] unsignedIntegerValue] == FBSDKGraphRequestErrorCategoryOther) {
+    if ([error.userInfo[FBSDKGraphRequestErrorKey] unsignedIntegerValue] == FBSDKGraphRequestErrorOther) {
       NSString *message = [NSString stringWithFormat:@"Failed to send AppEvents: %@", error];
       [FBSDKAppEventsUtility logAndNotify:message allowLogAsDeveloperError:!appEventsState.areAllEventsImplicit];
     }

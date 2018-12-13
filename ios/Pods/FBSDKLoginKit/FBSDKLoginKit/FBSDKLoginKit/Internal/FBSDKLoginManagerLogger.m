@@ -287,7 +287,7 @@ static NSString *const FBSDKLoginManagerLoggerTryWebView = @"tryFallback";
     NSString *value = error.userInfo[@"error_message"] ?: error.userInfo[FBSDKErrorLocalizedDescriptionKey];
     [FBSDKInternalUtility dictionary:params setObject:value forKey:FBSDKLoginManagerLoggerParamErrorMessageKey];
 
-    value = error.userInfo[FBSDKGraphRequestErrorGraphErrorCode] ?: [NSString stringWithFormat:@"%ld", (long)error.code];
+    value = error.userInfo[FBSDKGraphRequestErrorGraphErrorCodeKey] ?: [NSString stringWithFormat:@"%ld", (long)error.code];
     [FBSDKInternalUtility dictionary:params setObject:value forKey:FBSDKLoginManagerLoggerParamErrorCodeKey];
 
     NSError *innerError = error.userInfo[NSUnderlyingErrorKey];
@@ -295,7 +295,7 @@ static NSString *const FBSDKLoginManagerLoggerTryWebView = @"tryFallback";
       value = innerError.userInfo[@"error_message"] ?: innerError.userInfo[NSLocalizedDescriptionKey];
       [FBSDKInternalUtility dictionary:_extras setObject:value forKey:@"inner_error_message"];
 
-      value = innerError.userInfo[FBSDKGraphRequestErrorGraphErrorCode] ?: [NSString stringWithFormat:@"%ld", (long)innerError.code];
+      value = innerError.userInfo[FBSDKGraphRequestErrorGraphErrorCodeKey] ?: [NSString stringWithFormat:@"%ld", (long)innerError.code];
       [FBSDKInternalUtility dictionary:_extras setObject:value forKey:@"inner_error_code"];
     }
   } else if (error) {

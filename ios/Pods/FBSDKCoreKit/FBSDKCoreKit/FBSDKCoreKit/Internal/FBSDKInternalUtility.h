@@ -36,6 +36,9 @@ typedef NS_ENUM(int32_t, FBSDKUIKitVersion)
 
 @interface FBSDKInternalUtility : NSObject
 
+- (instancetype)init NS_UNAVAILABLE;
++ (instancetype)new NS_UNAVAILABLE;
+
 /**
   Constructs the scheme for apps that come to the current app through the bridge.
  */
@@ -343,6 +346,11 @@ setJSONStringForObject:(id)object
   Checks if the set of permissions are all publish permissions.
  */
 + (BOOL)areAllPermissionsPublishPermissions:(NSSet *)permissions;
+
+/*
+ Checks if the app is Unity.
+ */
++ (BOOL)isUnity;
 
 #pragma mark - FB Apps Installed
 

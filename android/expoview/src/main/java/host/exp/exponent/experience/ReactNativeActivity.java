@@ -435,15 +435,13 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
       String mainModuleName = mManifest.optString(ExponentManifest.MANIFEST_MAIN_MODULE_NAME_KEY);
       Exponent.enableDeveloperSupport(mSDKVersion, debuggerHost, mainModuleName, builder);
 
-      if (ABIVersion.toNumber(mSDKVersion) >= ABIVersion.toNumber("20.0.0")) {
-        RNObject devLoadingView = new RNObject("com.facebook.react.devsupport.DevLoadingViewController").loadVersion(mSDKVersion);
-        devLoadingView.callRecursive("setDevLoadingEnabled", false);
+      RNObject devLoadingView = new RNObject("com.facebook.react.devsupport.DevLoadingViewController").loadVersion(mSDKVersion);
+      devLoadingView.callRecursive("setDevLoadingEnabled", false);
 
-        RNObject devBundleDownloadListener = new RNObject("host.exp.exponent.ExponentDevBundleDownloadListener")
-            .loadVersion(mSDKVersion)
-            .construct(progressListener);
-        builder.callRecursive("setDevBundleDownloadListener", devBundleDownloadListener.get());
-      }
+      RNObject devBundleDownloadListener = new RNObject("host.exp.exponent.ExponentDevBundleDownloadListener")
+          .loadVersion(mSDKVersion)
+          .construct(progressListener);
+      builder.callRecursive("setDevBundleDownloadListener", devBundleDownloadListener.get());
 
       // checkForReactViews() is normally called in dev mode by devBundleDownloadListener.onSuccess()
       // so that AppLoading will continue to show the splash screen correctly. However, the
@@ -461,11 +459,7 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
     if (mNotification != null) {
       bundle.putString("notification", mNotification.body); // Deprecated
       try {
-        if (ABIVersion.toNumber(mSDKVersion) < ABIVersion.toNumber("10.0.0")) {
-          exponentProps.put("notification", mNotification.body);
-        } else {
-          exponentProps.put("notification", mNotification.toJSONObject("selected"));
-        }
+        exponentProps.put("notification", mNotification.toJSONObject("selected"));
       } catch (JSONException e) {
         e.printStackTrace();
       }

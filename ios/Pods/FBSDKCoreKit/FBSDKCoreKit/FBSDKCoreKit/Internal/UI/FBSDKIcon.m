@@ -18,8 +18,6 @@
 
 #import "FBSDKIcon.h"
 
-#import "FBSDKMacros.h"
-
 @implementation FBSDKIcon
 
 #pragma mark - Object Lifecycle

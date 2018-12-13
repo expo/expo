@@ -1,5 +1,8 @@
+import createStackNavigator from './createStackNavigator';
+
 import AppAuth from '../screens/AppAuthScreen';
 import AuthSession from '../screens/AuthSessionScreen';
+import Branch from '../screens/BranchScreen';
 import Calendars from '../screens/CalendarsScreen';
 import Constants from '../screens/ConstantsScreen';
 import ContactDetail from '../screens/Contacts/ContactDetailScreen';
@@ -30,23 +33,21 @@ import Print from '../screens/PrintScreen';
 import Reminders from '../screens/RemindersScreen';
 import ScreenOrientation from '../screens/ScreenOrientationScreen';
 import SecureStore from '../screens/SecureStoreScreen';
+import Sensor from '../screens/SensorScreen';
 import SMS from '../screens/SMSScreen';
 import StoreReview from '../screens/StoreReview';
 import TextToSpeech from '../screens/TextToSpeechScreen';
 import Util from '../screens/UtilScreen';
 import ViewShot from '../screens/ViewShotScreen';
 import WebBrowser from '../screens/WebBrowserScreen';
-import createStackNavigator from './createStackNavigator';
 import StackConfig from './StackConfig';
 
-// import Branch from '../screens/BranchScreen';
-// import Sensor from '../screens/SensorScreen';
 const ExpoApisStackNavigator = createStackNavigator(
   {
     ExpoApis,
     AppAuth,
     AuthSession,
-    // Branch,
+    Branch,
     DocumentPicker,
     Localization,
     FacebookLogin,
@@ -76,7 +77,7 @@ const ExpoApisStackNavigator = createStackNavigator(
     Reminders,
     ScreenOrientation,
     SecureStore,
-    // Sensor,
+    Sensor,
     SMS,
     StoreReview,
     TextToSpeech,

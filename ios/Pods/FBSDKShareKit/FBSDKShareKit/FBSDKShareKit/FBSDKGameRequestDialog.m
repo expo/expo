@@ -21,7 +21,6 @@
 #import "FBSDKCoreKit+Internal.h"
 #import "FBSDKGameRequestFrictionlessRecipientCache.h"
 #import "FBSDKShareConstants.h"
-#import "FBSDKShareError.h"
 #import "FBSDKShareUtility.h"
 
 @interface FBSDKGameRequestDialog () <FBSDKWebDialogDelegate>
@@ -83,8 +82,9 @@ static FBSDKGameRequestFrictionlessRecipientCache *_recipientCache = nil;
 {
   NSError *error;
   if (![self canShow]) {
-    error = [FBSDKShareError errorWithCode:FBSDKShareDialogNotAvailableErrorCode
-                                   message:@"Game request dialog is not available."];
+    error = [NSError fbErrorWithDomain:FBSDKShareErrorDomain
+                                  code:FBSDKShareErrorDialogNotAvailable
+                               message:@"Game request dialog is not available."];
     [_delegate gameRequestDialog:self didFailWithError:error];
     return NO;
   }
@@ -139,7 +139,10 @@ static FBSDKGameRequestFrictionlessRecipientCache *_recipientCache = nil;
     return [self.content validateWithOptions:FBSDKShareBridgeOptionsDefault error:errorRef];
   }
   if (errorRef != NULL) {
-    *errorRef = [FBSDKShareError invalidArgumentErrorWithName:@"content" value:self.content message:nil];
+    *errorRef = [NSError fbInvalidArgumentErrorWithDomain:FBSDKShareErrorDomain
+                                                     name:@"content"
+                                                    value:self.content
+                                                  message:nil];
   }
   return NO;
 }
@@ -156,8 +159,8 @@ static FBSDKGameRequestFrictionlessRecipientCache *_recipientCache = nil;
   }
   [self _cleanUp];
 
-  NSError *error = [FBSDKShareError errorWithCode:[FBSDKTypeUtility unsignedIntegerValue:results[@"error_code"]]
-                                          message:[FBSDKTypeUtility stringValue:results[@"error_message"]]];
+  NSError *error = [NSError fbErrorWithCode:[FBSDKTypeUtility unsignedIntegerValue:results[@"error_code"]]
+                                    message:[FBSDKTypeUtility stringValue:results[@"error_message"]]];
   if (!error.code) {
     // reformat "to[x]" keys into an array.
     int counter = 0;

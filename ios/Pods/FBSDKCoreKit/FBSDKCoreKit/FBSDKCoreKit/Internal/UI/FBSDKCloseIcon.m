@@ -18,8 +18,6 @@
 
 #import "FBSDKCloseIcon.h"
 
-#import "FBSDKMacros.h"
-
 @implementation FBSDKCloseIcon
 
 #pragma mark - Public API

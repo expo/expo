@@ -52,44 +52,52 @@ EX_EXPORT_METHOD_AS(sendSMSAsync,
 
   _resolve = resolve;
   _reject = reject;
+  
+  MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
+  messageComposeViewController.messageComposeDelegate = self;
+  messageComposeViewController.recipients = addresses;
+  messageComposeViewController.body = message;
 
-  MFMessageComposeViewController *composeViewController = [[MFMessageComposeViewController alloc] init];
-  composeViewController.messageComposeDelegate = self;
-  composeViewController.recipients = addresses;
-  composeViewController.body = message;
-
-  __weak EXSMSModule *weakSelf = self;
+  EX_WEAKIFY(self);
   [EXUtilities performSynchronouslyOnMainThread:^{
-    __strong EXSMSModule *strongSelf = weakSelf;
-    if (strongSelf) {
-      [strongSelf.utils.currentViewController presentViewController:composeViewController animated:YES completion:nil];
-    }
+    EX_ENSURE_STRONGIFY(self);
+    [self.utils.currentViewController presentViewController:messageComposeViewController animated:YES completion:nil];
   }];
 }
 
 - (void)messageComposeViewController:(MFMessageComposeViewController *)controller
                  didFinishWithResult:(MessageComposeResult)result
 {
+  NSDictionary *resolveData;
+  NSString *rejectMessage;
   switch (result) {
     case MessageComposeResultCancelled:
-      _resolve(@{@"result": @"cancelled"});
+      resolveData = @{@"result": @"cancelled"};
       break;
 
     case MessageComposeResultFailed:
-      _reject(@"E_SMS_SENDING_FAILED", @"SMS message sending failed", nil);
+      rejectMessage = @"SMS message sending failed";
       break;
 
     case MessageComposeResultSent:
-      _resolve(@{@"result": @"sent"});
+      resolveData = @{@"result": @"sent"};
       break;
 
     default:
-      _reject(@"E_SMS_SENDING_FAILED", @"SMS message sending failed with unknown error", nil);
+      rejectMessage = @"SMS message sending failed with unknown error";
       break;
   }
-  _reject = nil;
-  _resolve = nil;
-  [controller dismissViewControllerAnimated:YES completion:nil];
+  EX_WEAKIFY(self);
+  [controller dismissViewControllerAnimated:YES completion:^{
+    EX_ENSURE_STRONGIFY(self);
+    if (rejectMessage) {
+      self->_reject(@"E_SMS_SENDING_FAILED", rejectMessage, nil);
+    } else {
+      self->_resolve(resolveData);
+    }
+    self->_reject = nil;
+    self->_resolve = nil;
+  }];
 }
 
 @end

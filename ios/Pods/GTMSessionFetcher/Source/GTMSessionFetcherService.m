@@ -881,6 +881,19 @@ NSString *const kGTMSessionFetcherServiceSessionKey
                                   statusCode:(fakedErrorOrNil ? 500 : 200)
                                  HTTPVersion:@"HTTP/1.1"
                                 headerFields:nil];
+  return [self mockFetcherServiceWithFakedData:fakedDataOrNil
+                                 fakedResponse:fakedResponse
+                                    fakedError:fakedErrorOrNil];
+#else
+  GTMSESSION_ASSERT_DEBUG(0, @"Test blocks disabled");
+  return nil;
+#endif  // GTM_DISABLE_FETCHER_TEST_BLOCK
+}
+
++ (instancetype)mockFetcherServiceWithFakedData:(NSData *)fakedDataOrNil
+                                  fakedResponse:(NSHTTPURLResponse *)fakedResponse
+                                     fakedError:(NSError *)fakedErrorOrNil {
+#if !GTM_DISABLE_FETCHER_TEST_BLOCK
   GTMSessionFetcherService *service = [[self alloc] init];
   service.allowedInsecureSchemes = @[ @"http" ];
   service.testBlock = ^(GTMSessionFetcher *fetcherToTest,
