@@ -1,12 +1,44 @@
 import React from 'react';
-import { FlatList, PixelRatio, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
+import {
+  Alert,
+  ListView,
+  PixelRatio,
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableHighlight,
+  View,
+} from 'react-native';
 
 import { Entypo } from '@expo/vector-icons';
-import { withNavigation } from 'react-navigation';
 import ExpoAPIIcon from '../components/ExpoAPIIcon';
+import { ScrollView, withNavigation } from 'react-navigation';
 
-class ComponentListScreen extends React.Component {
-  _renderExampleSection = ({ item: exampleName }) => {
+@withNavigation
+export default class ComponentListScreen extends React.Component {
+  state = {
+    dataSource: new ListView.DataSource({
+      rowHasChanged: () => false,
+      sectionHeaderHasChanged: () => false,
+    }),
+  };
+
+  componentWillMount() {
+    const { tabName } = this.props;
+  }
+
+  componentDidMount() {
+    let dataSource = this.state.dataSource.cloneWithRowsAndSections(
+      this.props.apis.reduce((sections, name) => {
+        sections[name] = [() => this._renderExampleSection(name)];
+        return sections;
+      }, {})
+    );
+
+    this.setState({ dataSource });
+  }
+
+  _renderExampleSection = exampleName => {
     return (
       <TouchableHighlight
         underlayColor="#dddddd"
@@ -25,7 +57,7 @@ class ComponentListScreen extends React.Component {
 
   render() {
     return (
-      <FlatList
+      <ListView
         ref={view => {
           this._listView = view;
         }}
@@ -34,14 +66,19 @@ class ComponentListScreen extends React.Component {
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="on-drag"
         contentContainerStyle={{ backgroundColor: '#fff' }}
-        data={this.props.apis}
-        renderItem={this._renderExampleSection}
+        renderScrollComponent={props => <ScrollView {...props} />}
+        dataSource={this.state.dataSource}
+        renderRow={this._renderRow}
       />
     );
   }
 
   _scrollToTop = () => {
     this._listView.scrollTo({ x: 0, y: 0 });
+  };
+
+  _renderRow = renderRowFn => {
+    return <View>{renderRowFn && renderRowFn()}</View>;
   };
 }
 
@@ -74,5 +111,3 @@ const styles = StyleSheet.create({
     marginLeft: 6,
   },
 });
-
-export default withNavigation(ComponentListScreen);

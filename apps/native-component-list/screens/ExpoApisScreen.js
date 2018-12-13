@@ -15,9 +15,7 @@ export default class ExpoApisScreen extends React.Component {
   };
 
   componentWillMount() {
-    if (Platform.OS !== 'web') {
-      this._notificationSubscription = Notifications.addListener(this._handleNotification);
-    }
+    this._notificationSubscription = Notifications.addListener(this._handleNotification);
   }
 
   componentWillUnmount() {

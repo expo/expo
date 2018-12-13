@@ -1,4 +1,4 @@
-import createStackNavigator from './createStackNavigator';
+import { createStackNavigator } from 'react-navigation';
 
 import BasicMaskExample from '../screens/BasicMaskScreen';
 import GLMaskExample from '../screens/MaskGLScreen';

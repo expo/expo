@@ -1,4 +1,4 @@
-import createStackNavigator from './createStackNavigator';
+import { createStackNavigator } from 'react-navigation';
 
 import AppAuth from '../screens/AppAuthScreen';
 import AuthSession from '../screens/AuthSessionScreen';

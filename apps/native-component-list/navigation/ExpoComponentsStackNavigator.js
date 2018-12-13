@@ -1,4 +1,4 @@
-import createStackNavigator from './createStackNavigator';
+import { createStackNavigator } from 'react-navigation';
 
 import AdMob from '../screens/AdMobScreen';
 import BarCodeScanner from '../screens/BarCodeScannerScreen';
