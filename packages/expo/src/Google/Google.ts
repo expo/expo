@@ -1,7 +1,7 @@
 import { AppAuth } from 'expo-app-auth';
 import Constants from 'expo-constants';
-import { Platform } from 'react-native';
 import { UnavailabilityError } from 'expo-errors';
+import { Platform } from 'react-native';
 
 type LogInConfig = {
   androidClientId?: string;

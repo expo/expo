@@ -1,5 +1,7 @@
 # expo-google-sign-in
 
+> This library is a part of Expo v32+ but cannot be used in the Expo Client
+
 `expo-google-sign-in` enables native Google authentication features in your app!
 This module can only be used in ExpoKit, or a Standalone Expo app.
 

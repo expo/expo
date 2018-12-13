@@ -1,9 +1,10 @@
 // @flow
+import { UnavailabilityError } from 'expo-errors';
 import invariant from 'invariant';
 
-import { UnavailabilityError } from 'expo-errors';
 import ExpoGoogleSignIn from './ExpoGoogleSignIn';
 import GoogleUser from './GoogleUser';
+
 import type { GoogleSignInOptions, GoogleSignInAuthResult } from './GoogleSignIn.types';
 
 const DEFAULT_SCOPES = [SCOPES.PROFILE, SCOPES.EMAIL];

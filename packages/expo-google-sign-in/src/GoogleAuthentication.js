@@ -1,5 +1,4 @@
 // @flow
-
 import GoogleAuthData from './GoogleAuthData';
 
 class GoogleAuthentication extends GoogleAuthData {

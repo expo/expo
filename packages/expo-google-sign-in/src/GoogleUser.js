@@ -1,6 +1,7 @@
 // @flow
-import invariant from 'invariant';
 import { UnavailabilityError } from 'expo-errors';
+import invariant from 'invariant';
+
 import ExpoGoogleSignIn from './ExpoGoogleSignIn';
 import GoogleAuthentication from './GoogleAuthentication';
 import GoogleIdentity from './GoogleIdentity';
