@@ -72,7 +72,6 @@ export async function logInAsync(config: LogInConfig): Promise<LogInResult> {
       headers: { Authorization: `Bearer ${logInResult.accessToken}` },
     });
     const userInfo = await userInfoResponse.json();
-    console.log('EXGoogle: ', logInResult, userInfo);
     return {
       type: 'success',
       ...logInResult,

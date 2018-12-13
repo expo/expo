@@ -5,6 +5,7 @@
 #import "EXCachedResourceManager.h"
 #import "EXErrorRecoveryManager.h"
 #import "EXFileSystemManager.h"
+#import "EXGoogleAuthManager.h"
 #import "EXHomeModuleManager.h"
 #import "EXKernelAppRegistry.h"
 #import "EXKernelLinkingManager.h"
@@ -14,6 +15,7 @@
 #import "EXSensorManager.h"
 #import "EXAudioSessionManager.h"
 #import "EXUpdatesManager.h"
+#import "EXUserNotificationManager.h"
 
 #import <EXCore/EXModuleRegistryProvider.h>
 
@@ -22,6 +24,7 @@
 @property (nonatomic, strong) EXBranchManager *branchManager;
 @property (nonatomic, strong) EXCachedResourceManager *cachedResourceManager;
 @property (nonatomic, strong) EXFileSystemManager *fileSystemManager;
+@property (nonatomic, strong) EXGoogleAuthManager *googleAuthManager;
 @property (nonatomic, strong) EXErrorRecoveryManager *errorRecoveryManager;
 @property (nonatomic, strong) EXHomeModuleManager *homeModuleManager;
 @property (nonatomic, strong) EXKernelLinkingManager *linkingManager;
@@ -30,6 +33,7 @@
 @property (nonatomic, strong) EXSensorManager *sensorManager;
 @property (nonatomic, strong) EXAudioSessionManager *audioSessionManager;
 @property (nonatomic, strong) EXUpdatesManager *updatesManager;
+@property (nonatomic, strong) EXUserNotificationManager *notificationsManager;
 @property (nonatomic, strong) NSDictionary<NSString *, id> *allServices;
 
 @end
@@ -47,10 +51,12 @@
     [self linkingManager];
     [self homeModuleManager];
     [self screenOrientationManager];
+    [self googleAuthManager];
     [self sensorManager];
     [self fileSystemManager];
     [self audioSessionManager];
     [self updatesManager];
+    [self notificationsManager];
   }
   return self;
 }
@@ -93,6 +99,14 @@
     _fileSystemManager = [[EXFileSystemManager alloc] init];
   }
   return _fileSystemManager;
+}
+
+- (EXGoogleAuthManager *)googleAuthManager
+{
+  if (!_googleAuthManager) {
+    _googleAuthManager = [[EXGoogleAuthManager alloc] init];
+  }
+  return _googleAuthManager;
 }
 
 - (EXKernelLinkingManager *)linkingManager
@@ -143,6 +157,14 @@
   return _updatesManager;
 }
 
+- (EXUserNotificationManager *)notificationsManager
+{
+  if (!_notificationsManager) {
+    _notificationsManager = [[EXUserNotificationManager alloc] init];
+  }
+  return _notificationsManager;
+}
+
 - (NSDictionary *)allServices
 {
   if (!_allServices) {
@@ -158,13 +180,15 @@
                                   self.cachedResourceManager,
                                   self.errorRecoveryManager,
                                   self.fileSystemManager,
+                                  self.googleAuthManager,
                                   self.homeModuleManager,
                                   self.linkingManager,
                                   self.remoteNotificationManager,
                                   self.screenOrientationManager,
                                   self.sensorManager,
                                   self.updatesManager,
-                                  self.audioSessionManager
+                                  self.audioSessionManager,
+                                  self.notificationsManager
                                   ];
     NSArray *allServices = [registryServices arrayByAddingObjectsFromArray:[[EXModuleRegistryProvider singletonModules] allObjects]];
     for (id service in allServices) {
