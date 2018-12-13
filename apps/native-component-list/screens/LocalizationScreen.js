@@ -1,12 +1,12 @@
-import React from 'react';
-import { StyleSheet, Text, View, Picker, ScrollView, Platform } from 'react-native';
-import chunk from 'lodash/chunk';
-
 import { Localization } from 'expo-localization';
 import i18n from 'i18n-js';
+import chunk from 'lodash/chunk';
+import React from 'react';
+import { Picker, ScrollView, StyleSheet, Text, View } from 'react-native';
+
 import HeadingText from '../components/HeadingText';
-import MonoText from '../components/MonoText';
 import ListButton from '../components/ListButton';
+import MonoText from '../components/MonoText';
 
 i18n.fallbacks = true;
 i18n.locale = Localization.locale;
