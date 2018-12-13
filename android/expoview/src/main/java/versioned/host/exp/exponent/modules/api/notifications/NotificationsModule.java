@@ -11,31 +11,31 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.bridge.WritableMap;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
 import com.google.firebase.iid.FirebaseInstanceId;
 
-import host.exp.exponent.Constants;
-import host.exp.exponent.analytics.EXL;
-import host.exp.exponent.network.ExponentNetwork;
-import host.exp.exponent.notifications.NotificationConstants;
-import host.exp.exponent.notifications.NotificationHelper;
-import host.exp.exponent.notifications.ExponentNotificationManager;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
 import javax.inject.Inject;
 
+import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
+import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.di.NativeModuleDepsProvider;
+import host.exp.exponent.network.ExponentNetwork;
+import host.exp.exponent.notifications.ExponentNotificationManager;
+import host.exp.exponent.notifications.NotificationConstants;
+import host.exp.exponent.notifications.NotificationHelper;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 
 public class NotificationsModule extends ReactContextBaseJavaModule {
@@ -68,21 +68,23 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void createCategoryAsync(final String categoryIdParam, final ReadableArray actions, final Promise promise) {
     String categoryId = getScopedIdIfNotDetached(categoryIdParam);
-    ArrayList<HashMap<String, Object>> newActions = new ArrayList<>();
+    List<Map<String, Object>> newActions = new ArrayList<>();
 
     for (Object actionObject : actions.toArrayList()) {
-      HashMap<String, Object> action = (HashMap<String, Object>)actionObject;
-      newActions.add(action);
+      if (actionObject instanceof Map) {
+        Map<String, Object> action = (Map<String, Object>) actionObject;
+        newActions.add(action);
+      }
     }
 
-    NotificationActionCenter.put(categoryId, newActions, getReactApplicationContext());
+    NotificationActionCenter.putCategory(categoryId, newActions);
     promise.resolve(null);
   }
 
   @ReactMethod
   public void deleteCategoryAsync(final String categoryIdParam, final Promise promise) {
     String categoryId = getScopedIdIfNotDetached(categoryIdParam);
-    NotificationActionCenter.remove(categoryId);
+    NotificationActionCenter.removeCategory(categoryId);
     promise.resolve(null);
   }
 
@@ -228,9 +230,9 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
     HashMap<String, java.io.Serializable> details = new HashMap<>();
     String experienceId;
 
-    HashMap<String, Object> hashMap = ((ReadableNativeMap) data).toHashMap();
-    if (hashMap.containsKey("categoryId")) {
-      hashMap.put("categoryId", getScopedIdIfNotDetached((String) hashMap.get("categoryId")));
+    HashMap<String, Object> hashMap = data.toHashMap();
+    if (data.getString("categoryId") != null) {
+      hashMap.put("categoryId", getScopedIdIfNotDetached(data.getString("categoryId")));
     }
 
     details.put("data", hashMap);
@@ -259,18 +261,19 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
     int notificationId = new Random().nextInt();
 
     NotificationHelper.showNotification(
-            getReactApplicationContext(),
-            notificationId,
-            details,
-            mExponentManifest,
-            new NotificationHelper.Listener() {
-              public void onSuccess(int id) {
-                promise.resolve(id);
-              }
-              public void onFailure(Exception e) {
-                promise.reject(e);
-              }
-            });
+        getReactApplicationContext(),
+        notificationId,
+        details,
+        mExponentManifest,
+        new NotificationHelper.Listener() {
+          public void onSuccess(int id) {
+            promise.resolve(id);
+          }
+
+          public void onFailure(Exception e) {
+            promise.reject(e);
+          }
+        });
   }
 
   @ReactMethod
@@ -296,21 +299,22 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
 
     int notificationId = new Random().nextInt();
 
-    HashMap<String, Object> hashMap = ((ReadableNativeMap) data).toHashMap();
-    if (hashMap.containsKey("categoryId")) {
-      hashMap.put("categoryId", getScopedIdIfNotDetached((String)hashMap.get("categoryId")));
+    HashMap<String, Object> hashMap = data.toHashMap();
+    if (data.getString("categoryId") != null) {
+      hashMap.put("categoryId", getScopedIdIfNotDetached(data.getString("categoryId")));
     }
 
     NotificationHelper.scheduleLocalNotification(
         getReactApplicationContext(),
         notificationId,
         hashMap,
-        ((ReadableNativeMap) options).toHashMap(),
+        options.toHashMap(),
         mManifest,
         new NotificationHelper.Listener() {
           public void onSuccess(int id) {
             promise.resolve(id);
           }
+
           public void onFailure(Exception e) {
             promise.reject(e);
           }
@@ -322,8 +326,8 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
     try {
       ExponentNotificationManager manager = new ExponentNotificationManager(getReactApplicationContext());
       manager.cancel(
-              mManifest.getString(ExponentManifest.MANIFEST_ID_KEY),
-              notificationId
+          mManifest.getString(ExponentManifest.MANIFEST_ID_KEY),
+          notificationId
       );
       promise.resolve(true);
     } catch (JSONException e) {

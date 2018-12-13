@@ -15,7 +15,7 @@ export default async function registerForPushNotificationsAsync() {
   // Log it so we can easily copy it if we need to work with it
   console.log(`Got this device's push token: ${token}`);
 
-  await Notifications.createCategoryIOSAsync('welcome', [
+  await Notifications.createCategoryAsync('welcome', [
     {
       actionId: 'tada',
       buttonTitle: '🎉',

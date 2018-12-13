@@ -79,11 +79,11 @@ public class ExponentNotification {
     return args.get();
   }
 
-  public void addInputText(String inputText) {
+  public void setInputText(String inputText) {
     this.inputText = inputText;
   }
 
-  public void addActionType(String actionType) {
+  public void setActionType(String actionType) {
     this.actionType = actionType;
   }
 }

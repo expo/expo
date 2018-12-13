@@ -5,7 +5,6 @@ package host.exp.exponent.kernel;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Application;
-import android.app.NotificationManager;
 import android.app.RemoteInput;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -485,27 +484,20 @@ public class Kernel extends KernelInterface {
       String notification = bundle.getString(KernelConstants.NOTIFICATION_KEY); // deprecated
       String notificationObject = bundle.getString(KernelConstants.NOTIFICATION_OBJECT_KEY);
       String notificationManifestUrl = bundle.getString(KernelConstants.NOTIFICATION_MANIFEST_URL_KEY);
-      String actionType = null;
-      String inputText = null;
-
-      if (bundle.containsKey("actionType")) {
-        actionType = bundle.getString("actionType");
-      }
-
-      Bundle remoteInput = RemoteInput.getResultsFromIntent(intent);
-      if (remoteInput != null) {
-        inputText = remoteInput.getCharSequence(NotificationActionCenter.KEY_TEXT_REPLY).toString();
-      }
-
       if (notificationManifestUrl != null) {
         ExponentNotification exponentNotification = ExponentNotification.fromJSONObjectString(notificationObject);
-        exponentNotification.addActionType(actionType);
-        if (bundle.containsKey("actionType")) {
-          ExponentNotificationManager manager = new ExponentNotificationManager(mContext);
-          manager.cancel(exponentNotification.experienceId, exponentNotification.notificationId);
-        }
-        if (inputText != null) {
-          exponentNotification.addInputText(inputText);
+        if (exponentNotification != null) {
+          // Add action type
+          if (bundle.containsKey(KernelConstants.NOTIFICATION_ACTION_TYPE_KEY)) {
+            exponentNotification.setActionType(bundle.getString(KernelConstants.NOTIFICATION_ACTION_TYPE_KEY));
+            ExponentNotificationManager manager = new ExponentNotificationManager(mContext);
+            manager.cancel(exponentNotification.experienceId, exponentNotification.notificationId);
+          }
+          // Add remote input
+          Bundle remoteInput = RemoteInput.getResultsFromIntent(intent);
+          if (remoteInput != null) {
+            exponentNotification.setInputText(remoteInput.getString(NotificationActionCenter.KEY_TEXT_REPLY));
+          }
         }
         openExperience(new KernelConstants.ExperienceOptions(notificationManifestUrl, intentUri == null ? notificationManifestUrl : intentUri, notification, exponentNotification));
         return;

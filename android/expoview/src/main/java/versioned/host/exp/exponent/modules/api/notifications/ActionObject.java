@@ -1,12 +1,11 @@
 package versioned.host.exp.exponent.modules.api.notifications;
 
-
 import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 
-import java.util.HashMap;
+import java.util.Map;
 
 @Table(databaseName = ActionDatabase.NAME)
 public class ActionObject extends BaseModel {
@@ -21,34 +20,68 @@ public class ActionObject extends BaseModel {
   private String buttonTitle;
 
   @Column
-  private Boolean isDestructive = false;
+  private Boolean isDestructive;
 
   @Column
-  private Boolean isAuthenticationRequired = false;
+  private Boolean isAuthenticationRequired;
 
   @Column
-  private String submitButtonTitle = "go";
+  private String submitButtonTitle;
 
   @Column
-  private String placeholder = "...";
+  private String placeholder;
 
   @Column
-  private Boolean containTextInput = false;
-  
-  public Boolean getContainTextInput() {
-    return containTextInput;
+  private Boolean shouldShowTextInput;
+
+  @Column
+  private int position;
+
+  public ActionObject() {
+    this.position = 0;
+  }
+
+  public ActionObject(Map<String, Object> map, int position) {
+    this.categoryId = (String) map.get("categoryId");
+    this.actionId = (String) map.get("actionId");
+    this.buttonTitle = (String) map.get("buttonTitle");
+    this.isDestructive = (Boolean) map.get("isDestructive");
+    this.isAuthenticationRequired = (Boolean) map.get("isAuthenticationRequired");
+    this.shouldShowTextInput = (map.get("textInput") != null);
+    if (this.shouldShowTextInput && map.get("textInput") instanceof Map) {
+      Map<String, Object> subMap = (Map<String, Object>) map.get("textInput");
+      this.placeholder = (String) subMap.get("placeholder");
+      this.submitButtonTitle = (String) subMap.get("submitButtonTitle");
+    }
+    this.position = position;
   }
 
   public String getActionId() {
     return actionId;
   }
 
-  public void setActionId(String actionId) {
-    this.actionId = actionId;
+  public String getButtonTitle() {
+    return buttonTitle;
   }
 
-  public void setContainTextInput(Boolean containTextInput) {
-    this.containTextInput = containTextInput;
+  public boolean getShouldShowTextInput() {
+    return shouldShowTextInput;
+  }
+
+  public int getPosition() {
+    return position;
+  }
+
+  public void setPosition(int position) {
+    this.position = position;
+  }
+
+  public void setShouldShowTextInput(Boolean shouldShowTextInput) {
+    this.shouldShowTextInput = shouldShowTextInput;
+  }
+
+  public void setActionId(String actionId) {
+    this.actionId = actionId;
   }
 
   public String getSubmitButtonTitle() {
@@ -59,24 +92,12 @@ public class ActionObject extends BaseModel {
     this.submitButtonTitle = submitButtonTitle;
   }
 
-  public String getPlaceholder() {
-    return placeholder;
-  }
-
-  public void setPlaceholder(String placeholder) {
-    this.placeholder = placeholder;
-  }
-
   public String getCategoryId() {
     return categoryId;
   }
 
   public void setCategoryId(String categoryId) {
     this.categoryId = categoryId;
-  }
-
-  public String getButtonTitle() {
-    return buttonTitle;
   }
 
   public void setButtonTitle(String buttonTitle) {
@@ -99,17 +120,11 @@ public class ActionObject extends BaseModel {
     isAuthenticationRequired = authenticationRequired;
   }
 
-  public void populateObjectWithDataFromMap(HashMap<String, Object> map) {
-    this.categoryId = (String)map.get("categoryId");
-    this.actionId = (String)map.get("actionId");
-    this.buttonTitle = (String)map.get("buttonTitle");
-    this.isDestructive = (Boolean)map.get("isDestructive");
-    this.isAuthenticationRequired = (Boolean)map.get("isAuthenticationRequired");
-    this.containTextInput = (map.get("textInput") != null);
-    if (this.containTextInput) {
-      HashMap<String, Object> subMap = (HashMap<String, Object>) map.get("textInput");
-      this.placeholder = (String)subMap.get("placeholder");
-      this.submitButtonTitle = (String)subMap.get("submitButtonTitle");
-    }
+  public String getPlaceholder() {
+    return placeholder;
+  }
+
+  public void setPlaceholder(String placeholder) {
+    this.placeholder = placeholder;
   }
 }

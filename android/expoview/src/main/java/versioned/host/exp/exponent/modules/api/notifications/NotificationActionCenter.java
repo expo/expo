@@ -11,33 +11,30 @@ import android.support.v4.app.RemoteInput;
 import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.TreeMap;
+import java.util.Map;
 import java.util.UUID;
 
-import host.exp.expoview.BuildConfig;
+import host.exp.exponent.kernel.KernelConstants;
 
 public class NotificationActionCenter {
-  
   public static final String KEY_TEXT_REPLY = "notification_remote_input";
 
-  public synchronized static void put(String categoryId, ArrayList<HashMap<String, Object>> actions, Context context) {
+  public synchronized static void putCategory(String categoryId, List<Map<String, Object>> actions) {
     throwExceptionIfOnMainThread();
-    for (HashMap<String, Object> action: actions) {
+    for (int i = 0; i < actions.size(); i++) {
+      Map<String, Object> action = actions.get(i);
       action.put("categoryId", categoryId);
-      ActionObject actionObject= new ActionObject();
-      actionObject.populateObjectWithDataFromMap(action);
+      ActionObject actionObject = new ActionObject(action, i);
       actionObject.save();
     }
   }
 
-  public synchronized static void remove(String categoryId) {
+  public synchronized static void removeCategory(String categoryId) {
     List<ActionObject> actions = new Select().from(ActionObject.class)
         .where(Condition.column(ActionObject$Table.CATEGORYID).is(categoryId))
         .queryList();
-    for (ActionObject actionObject: actions) {
+    for (ActionObject actionObject : actions) {
       actionObject.delete();
     }
   }
@@ -45,12 +42,13 @@ public class NotificationActionCenter {
   public synchronized static void setCategory(String categoryId, NotificationCompat.Builder builder, Context context, IntentProvider intentProvider) {
     throwExceptionIfOnMainThread();
 
-    // Because expo have ongoing notification we have to change priority in order to show up buttons
+    // Expo Client has a permanent notification, so we have to set max priority in order to show up buttons
     builder.setPriority(Notification.PRIORITY_MAX);
 
     List<ActionObject> actions = new Select().from(ActionObject.class)
-                                     .where(Condition.column(ActionObject$Table.CATEGORYID).is(categoryId))
-                                     .queryList();
+        .where(Condition.column(ActionObject$Table.CATEGORYID).is(categoryId))
+        .orderBy(true, ActionObject$Table.POSITION)
+        .queryList();
 
     for (ActionObject actionObject : actions) {
       addAction(builder, actionObject, intentProvider, context);
@@ -58,12 +56,11 @@ public class NotificationActionCenter {
   }
 
   private static void addAction(NotificationCompat.Builder builder, ActionObject actionObject, IntentProvider intentProvider, Context context) {
-    TreeMap<String, String> action = new TreeMap<>();
     Intent intent = intentProvider.provide();
 
     String actionId = actionObject.getActionId();
 
-    intent.putExtra("actionType", actionId);
+    intent.putExtra(KernelConstants.NOTIFICATION_ACTION_TYPE_KEY, actionId);
     PendingIntent pendingIntent = PendingIntent.getActivity(context, UUID.randomUUID().hashCode(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
     NotificationCompat.Action.Builder actionBuilder = new NotificationCompat.Action.Builder(0,
@@ -71,17 +68,15 @@ public class NotificationActionCenter {
         pendingIntent
     );
 
-    if (actionObject.getContainTextInput()) {
-      RemoteInput.Builder remoteInputBuilder = new RemoteInput.Builder(KEY_TEXT_REPLY);
-      if (actionObject.getPlaceholder() != null) {
-        remoteInputBuilder.setLabel(actionObject.getPlaceholder());
-      }
-      RemoteInput remoteInput = remoteInputBuilder.build();
-      actionBuilder.addRemoteInput(remoteInput);
+    if (actionObject.getShouldShowTextInput()) {
+      actionBuilder.addRemoteInput(
+          new RemoteInput.Builder(KEY_TEXT_REPLY)
+              .setLabel(actionObject.getPlaceholder())
+              .build()
+      );
     }
 
-    NotificationCompat.Action notificationAction = actionBuilder.build();
-    builder.addAction(notificationAction);
+    builder.addAction(actionBuilder.build());
   }
 
   private static void throwExceptionIfOnMainThread() {
