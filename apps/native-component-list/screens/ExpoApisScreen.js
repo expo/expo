@@ -35,24 +35,20 @@ export default class ExpoApisScreen extends React.Component {
      */
 
     let message;
-    if (Platform.OS === 'android') {
-      message = `Notification ${origin} with data: ${JSON.stringify(data)}`;
+    if (remote) {
+      message = `Push notification ${
+        actionId ? `"${actionId}"` : origin
+      } with data: ${JSON.stringify(data)}`;
     } else {
-      if (remote) {
-        message = `Push notification ${
-          actionId ? `"${actionId}"` : origin
-        } with data: ${JSON.stringify(data)}`;
-      } else {
-        message = `Local notification ${
-          actionId ? `"${actionId}"` : origin
-        } with data: ${JSON.stringify(data)}`;
-      }
+      message = `Local notification ${
+        actionId ? `"${actionId}"` : origin
+      } with data: ${JSON.stringify(data)}`;
+    }
 
-      if (userText) {
-        message += `\nUser provided text: ${userText}.`;
-      } else {
-        message += `\nNo text provided.`;
-      }
+    if (userText) {
+      message += `\nUser provided text: ${userText}.`;
+    } else {
+      message += `\nNo text provided.`;
     }
 
     // Calling alert(message) immediately fails to show the alert on Android
