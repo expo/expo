@@ -3,16 +3,16 @@
 #import <EXAppLoaderProvider/EXAppLoaderProvider.h>
 #import <EXAppLoaderProvider/EXAppLoaderInterface.h>
 
-static NSMutableDictionary<NSString *, Class> *providedAppLoaderClasses;
+static NSMutableDictionary<NSString *, Class> *EXProvidedAppLoaderClasses;
 
 extern void EXRegisterAppLoader(NSString *, Class);
 extern void EXRegisterAppLoader(NSString *loaderName, Class loaderClass)
 {
   if ([loaderClass conformsToProtocol:@protocol(EXAppLoaderInterface)]) {
-    if (!providedAppLoaderClasses) {
-      providedAppLoaderClasses = [NSMutableDictionary new];
+    if (!EXProvidedAppLoaderClasses) {
+      EXProvidedAppLoaderClasses = [NSMutableDictionary new];
     }
-    providedAppLoaderClasses[loaderName] = loaderClass;
+    EXProvidedAppLoaderClasses[loaderName] = loaderClass;
   } else {
     NSLog(@"EXAppLoader class (%@) doesn't conform to the EXAppLoaderInterface protocol.", NSStringFromClass(loaderClass));
   }
@@ -22,7 +22,7 @@ extern void EXRegisterAppLoader(NSString *loaderName, Class loaderClass)
 
 - (nullable id<EXAppLoaderInterface>)createAppLoader:(NSString *)loaderName
 {
-  Class loaderClass = providedAppLoaderClasses[loaderName];
+  Class loaderClass = EXProvidedAppLoaderClasses[loaderName];
   return [loaderClass new];
 }
 
