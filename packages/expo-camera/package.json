@@ -18,19 +18,28 @@
     "expo",
     "camera"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git"
+  },
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-camera",
   "jest": {
     "preset": "expo-module-scripts"
   },
-  "homepage": "https://docs.expo.io/",
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "dependencies": {
+  "peerDependencies": {
     "expo-core": "~1.2.0",
     "expo-camera-interface": "~1.1.0",
     "expo-barcode-scanner-interface": "~1.1.0",
     "expo-file-system-interface": "~1.1.0",
     "expo-face-detector-interface": "~1.1.0",
-    "expo-permissions-interface": "~1.2.0",
+    "expo-permissions-interface": "~1.2.0"
+  },
+  "dependencies": {
     "lodash.mapvalues": "^4.6.0",
     "prop-types": "^15.6.0"
   },

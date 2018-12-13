@@ -32,7 +32,7 @@ export default class Camera extends React.Component {
             if (this._lastEvents[type] &&
                 this._lastEventsTimes[type] &&
                 JSON.stringify(nativeEvent) === this._lastEvents[type] &&
-                (new Date().getTime() - this._lastEventsTimes[type].getTime()) < EventThrottleMs) {
+                new Date().getTime() - this._lastEventsTimes[type].getTime() < EventThrottleMs) {
                 return;
             }
             if (callback) {
@@ -105,12 +105,13 @@ export default class Camera extends React.Component {
     _convertNativeProps(props) {
         const newProps = mapValues(props, this._convertProp);
         const propsKeys = Object.keys(newProps);
-        if (!propsKeys.includes("barCodeScannerSettings") && propsKeys.includes("barCodeTypes")) { // barCodeTypes is deprecated
+        // barCodeTypes is deprecated
+        if (!propsKeys.includes('barCodeScannerSettings') && propsKeys.includes('barCodeTypes')) {
             newProps.barCodeScannerSettings = {
                 barCodeTypes: newProps.barCodeTypes,
             };
         }
-        if (props.onBarCodeScanned) { // onBarCodeRead is deprecated
+        if (props.onBarCodeScanned) {
             newProps.barCodeScannerEnabled = true;
         }
         if (props.onFacesDetected) {
@@ -135,7 +136,7 @@ Camera.Constants = {
     AutoFocus: CameraManager.AutoFocus,
     WhiteBalance: CameraManager.WhiteBalance,
     VideoQuality: CameraManager.VideoQuality,
-    VideoStabilization: CameraManager.VideoStabilization || {}
+    VideoStabilization: CameraManager.VideoStabilization || {},
 };
 // Values under keys from this object will be transformed to native options
 Camera.ConversionTables = {
@@ -174,5 +175,5 @@ Camera.defaultProps = {
     whiteBalance: CameraManager.WhiteBalance.auto,
 };
 export const Constants = Camera.Constants;
-const ExponentCamera = requireNativeViewManager('ExponentCamera', Camera);
+const ExponentCamera = requireNativeViewManager('ExponentCamera');
 //# sourceMappingURL=Camera.js.map

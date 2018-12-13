@@ -1,86 +1,52 @@
 import React from 'react';
-import { View } from 'react-native'
+import { View } from 'react-native';
 import PropTypes from 'prop-types';
 import mapValues from 'lodash.mapvalues';
 import { NativeModulesProxy, requireNativeViewManager } from 'expo-core';
 import { findNodeHandle, ViewPropTypes, Platform } from 'react-native';
 
 type PictureOptions = {
-  quality?: number,
-  base64?: boolean,
-  exif?: boolean,
-  skipProcessing?: boolean,
-  onPictureSaved?: Function,
+  quality?: number;
+  base64?: boolean;
+  exif?: boolean;
+  skipProcessing?: boolean;
+  onPictureSaved?: Function;
   // internal
-  id?: number,
-  fastMode?: boolean,
+  id?: number;
+  fastMode?: boolean;
 };
 
-type RecordingOptions  ={
-  maxDuration?: number,
-  maxFileSize?: number,
-  quality?: number | string,
+type RecordingOptions = {
+  maxDuration?: number;
+  maxFileSize?: number;
+  quality?: number | string;
 };
 
 type CapturedPicture = {
-  width: number,
-  height: number,
-  uri: string,
-  base64?: string,
-  exif?: any,
-};
-
-type RecordingResult = {
-  uri: string,
-};
-
-type EventCallbackArgumentsType = {
-  nativeEvent: any,
-};
-
-type MountErrorNativeEventType = {
-  message: string,
-};
-
-type PictureSavedNativeEventType = {
-  data: CapturedPicture,
-  id: number,
-};
-
-type OnBarCodeScannedParam = {
-  type: string,
-  data: string
-};
-
-type FacesParam = {
-  faces: any[],
-};
-
-type StringPair = {
-  [s: string]: string,
-};
-
-type DatePair = {
-  [s: string]: Date,
+  width: number;
+  height: number;
+  uri: string;
+  base64?: string;
+  exif?: any;
 };
 
 type PropsType = React.ComponentProps<typeof View> & {
-  zoom?: number,
-  ratio?: string,
-  focusDepth?: number,
-  type?: number | string,
-  onCameraReady?: Function,
-  useCamera2Api?: boolean,
-  flashMode?: number | string,
-  whiteBalance?: number | string,
-  autoFocus?: string | boolean | number,
-  pictureSize?: string,
-  videoStabilizationMode?: number,
-  onMountError?: (MountErrorNativeEventType) => void,
-  barCodeScannerSettings?: {},
-  onBarCodeScanned?: (OnBarCodeScannedParam) => void,
-  faceDetectorSettings?: {},
-  onFacesDetected?: (FacesParam) => void,
+  zoom?: number;
+  ratio?: string;
+  focusDepth?: number;
+  type?: number | string;
+  onCameraReady?: Function;
+  useCamera2Api?: boolean;
+  flashMode?: number | string;
+  whiteBalance?: number | string;
+  autoFocus?: string | boolean | number;
+  pictureSize?: string;
+  videoStabilizationMode?: number;
+  onMountError?: (event: { message: string }) => void;
+  barCodeScannerSettings?: {};
+  onBarCodeScanned?: (scanningResult: { type: string; data: string }) => void;
+  faceDetectorSettings?: {};
+  onFacesDetected?: (faces: { faces: any[] }) => void;
 };
 
 const CameraManager: any =
@@ -98,8 +64,7 @@ export default class Camera extends React.Component<PropsType> {
     AutoFocus: CameraManager.AutoFocus,
     WhiteBalance: CameraManager.WhiteBalance,
     VideoQuality: CameraManager.VideoQuality,
-    VideoStabilization: CameraManager.VideoStabilization || {}
-
+    VideoStabilization: CameraManager.VideoStabilization || {},
   };
 
   // Values under keys from this object will be transformed to native options
@@ -130,7 +95,7 @@ export default class Camera extends React.Component<PropsType> {
     autoFocus: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.bool]),
   };
 
-  static defaultProps: any = {
+  static defaultProps: PropsType = {
     zoom: 0,
     ratio: '4:3',
     focusDepth: 0,
@@ -141,10 +106,10 @@ export default class Camera extends React.Component<PropsType> {
     whiteBalance: CameraManager.WhiteBalance.auto,
   };
 
-  _cameraRef?: any;
   _cameraHandle?: number | null;
-  _lastEvents: StringPair;
-  _lastEventsTimes: DatePair;
+  _cameraRef?: React.Component | null;
+  _lastEvents: { [eventName: string]: string };
+  _lastEventsTimes: { [eventName: string]: Date };
 
   constructor(props: PropsType) {
     super(props);
@@ -180,7 +145,7 @@ export default class Camera extends React.Component<PropsType> {
     return await CameraManager.getAvailablePictureSizes(ratio, this._cameraHandle);
   }
 
-  async recordAsync(options?: RecordingOptions): Promise<RecordingResult> {
+  async recordAsync(options?: RecordingOptions): Promise<{ uri: string }> {
     if (!options || typeof options !== 'object') {
       options = {};
     } else if (typeof options.quality === 'string') {
@@ -207,13 +172,13 @@ export default class Camera extends React.Component<PropsType> {
     }
   };
 
-  _onMountError = ({ nativeEvent }: { nativeEvent: MountErrorNativeEventType }) => {
+  _onMountError = ({ nativeEvent }: { nativeEvent: { message: string } }) => {
     if (this.props.onMountError) {
       this.props.onMountError(nativeEvent);
     }
   };
 
-  _onPictureSaved = ({ nativeEvent }: { nativeEvent: PictureSavedNativeEventType }) => {
+  _onPictureSaved = ({ nativeEvent }: { nativeEvent: { data: CapturedPicture; id: number } }) => {
     const callback = _PICTURE_SAVED_CALLBACKS[nativeEvent.id];
     if (callback) {
       callback(nativeEvent.data);
@@ -221,13 +186,13 @@ export default class Camera extends React.Component<PropsType> {
     }
   };
 
-  _onObjectDetected = (callback?: Function) => ({ nativeEvent }: EventCallbackArgumentsType) => {
+  _onObjectDetected = (callback?: Function) => ({ nativeEvent }: { nativeEvent: any }) => {
     const { type } = nativeEvent;
     if (
       this._lastEvents[type] &&
       this._lastEventsTimes[type] &&
       JSON.stringify(nativeEvent) === this._lastEvents[type] &&
-      ( new Date().getTime() - this._lastEventsTimes[type].getTime() ) < EventThrottleMs
+      new Date().getTime() - this._lastEventsTimes[type].getTime() < EventThrottleMs
     ) {
       return;
     }
@@ -239,7 +204,7 @@ export default class Camera extends React.Component<PropsType> {
     }
   };
 
-  _setReference = (ref?: any) => {
+  _setReference = (ref?: React.Component) => {
     if (ref) {
       this._cameraRef = ref;
       this._cameraHandle = findNodeHandle(ref);
@@ -269,13 +234,14 @@ export default class Camera extends React.Component<PropsType> {
     const newProps = mapValues(props, this._convertProp);
 
     const propsKeys = Object.keys(newProps);
-    if (!propsKeys.includes("barCodeScannerSettings") && propsKeys.includes("barCodeTypes")) { // barCodeTypes is deprecated
+    // barCodeTypes is deprecated
+    if (!propsKeys.includes('barCodeScannerSettings') && propsKeys.includes('barCodeTypes')) {
       newProps.barCodeScannerSettings = {
         barCodeTypes: newProps.barCodeTypes,
       };
     }
 
-    if (props.onBarCodeScanned) { // onBarCodeRead is deprecated
+    if (props.onBarCodeScanned) {
       newProps.barCodeScannerEnabled = true;
     }
 
@@ -302,4 +268,4 @@ export default class Camera extends React.Component<PropsType> {
 
 export const Constants = Camera.Constants;
 
-const ExponentCamera = requireNativeViewManager('ExponentCamera', Camera);
+const ExponentCamera = requireNativeViewManager('ExponentCamera');

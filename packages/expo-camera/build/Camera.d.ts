@@ -22,25 +22,6 @@ declare type CapturedPicture = {
     base64?: string;
     exif?: any;
 };
-declare type RecordingResult = {
-    uri: string;
-};
-declare type EventCallbackArgumentsType = {
-    nativeEvent: any;
-};
-declare type MountErrorNativeEventType = {
-    message: string;
-};
-declare type PictureSavedNativeEventType = {
-    data: CapturedPicture;
-    id: number;
-};
-declare type StringPair = {
-    [s: string]: string;
-};
-declare type DatePair = {
-    [s: string]: Date;
-};
 declare type PropsType = React.ComponentProps<typeof View> & {
     zoom?: number;
     ratio?: string;
@@ -53,11 +34,18 @@ declare type PropsType = React.ComponentProps<typeof View> & {
     autoFocus?: string | boolean | number;
     pictureSize?: string;
     videoStabilizationMode?: number;
-    onMountError?: (MountErrorNativeEventType: any) => void;
+    onMountError?: (event: {
+        message: string;
+    }) => void;
     barCodeScannerSettings?: {};
-    onBarCodeScanned?: (OnBarCodeScannedParam: any) => void;
+    onBarCodeScanned?: (scanningResult: {
+        type: string;
+        data: string;
+    }) => void;
     faceDetectorSettings?: {};
-    onFacesDetected?: (FacesParam: any) => void;
+    onFacesDetected?: (faces: {
+        faces: any[];
+    }) => void;
 };
 export default class Camera extends React.Component<PropsType> {
     static Constants: {
@@ -135,28 +123,41 @@ export default class Camera extends React.Component<PropsType> {
         onMagicTap: PropTypes.Validator<(() => void) | undefined>;
         accessibilityIgnoresInvertColors: PropTypes.Validator<boolean | undefined>;
     };
-    static defaultProps: any;
-    _cameraRef?: any;
+    static defaultProps: PropsType;
     _cameraHandle?: number | null;
-    _lastEvents: StringPair;
-    _lastEventsTimes: DatePair;
+    _cameraRef?: React.Component | null;
+    _lastEvents: {
+        [eventName: string]: string;
+    };
+    _lastEventsTimes: {
+        [eventName: string]: Date;
+    };
     constructor(props: PropsType);
     takePictureAsync(options?: PictureOptions): Promise<CapturedPicture>;
     getSupportedRatiosAsync(): Promise<Array<string>>;
     getAvailablePictureSizesAsync(ratio?: string): Promise<Array<string>>;
-    recordAsync(options?: RecordingOptions): Promise<RecordingResult>;
+    recordAsync(options?: RecordingOptions): Promise<{
+        uri: string;
+    }>;
     stopRecording(): void;
     pausePreview(): void;
     resumePreview(): void;
     _onCameraReady: () => void;
     _onMountError: ({ nativeEvent }: {
-        nativeEvent: MountErrorNativeEventType;
+        nativeEvent: {
+            message: string;
+        };
     }) => void;
     _onPictureSaved: ({ nativeEvent }: {
-        nativeEvent: PictureSavedNativeEventType;
+        nativeEvent: {
+            data: CapturedPicture;
+            id: number;
+        };
     }) => void;
-    _onObjectDetected: (callback?: Function | undefined) => ({ nativeEvent }: EventCallbackArgumentsType) => void;
-    _setReference: (ref?: any) => void;
+    _onObjectDetected: (callback?: Function | undefined) => ({ nativeEvent }: {
+        nativeEvent: any;
+    }) => void;
+    _setReference: (ref?: React.Component<{}, {}, any> | undefined) => void;
     render(): JSX.Element;
     _convertNativeProps(props: PropsType): any;
     _convertProp(value: any, key: string): any;
