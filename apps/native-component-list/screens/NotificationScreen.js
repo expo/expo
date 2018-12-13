@@ -43,14 +43,14 @@ export default class NotificationScreen extends React.Component {
         <HeadingText>Push Notifications</HeadingText>
         <ListButton onPress={this._sendNotificationAsync} title="Send me a push notification" />
 
-        <HeadingText>Custom notification categories (iOS)</HeadingText>
+        <HeadingText>Custom notification categories</HeadingText>
         <ListButton
           onPress={this._createCategoryAsync}
           title="Create a custom 'message' category"
         />
         <ListButton
           onPress={this._scheduleLocalNotificationWithCategoryAsync}
-          title="Schedule notification for 10 seconds from now with a 'message' category (iOS)"
+          title="Schedule notification for 10 seconds from now with a 'message' category"
         />
         <ListButton
           onPress={this._deleteCategoryAsync}
