@@ -1,1 +1,2 @@
-export * as GoogleSignIn from './src/GoogleSignIn';
+import * as GoogleSignIn from './src/GoogleSignIn';
+export { GoogleSignIn };
