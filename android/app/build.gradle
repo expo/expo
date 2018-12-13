@@ -146,7 +146,7 @@ dependencies {
   implementation 'com.facebook.device.yearclass:yearclass:2.1.0'
   implementation 'commons-io:commons-io:1.4'
   implementation 'me.leolin:ShortcutBadger:1.1.4@aar'
-  implementation 'com.theartofdev.edmodo:android-image-cropper:2.4.7'
+  implementation 'com.theartofdev.edmodo:android-image-cropper:2.7.0'
   implementation 'com.yqritc:android-scalablevideoview:1.0.1'
   implementation 'commons-codec:commons-codec:1.10'
   implementation 'com.segment.analytics.android:analytics:4.3.0'

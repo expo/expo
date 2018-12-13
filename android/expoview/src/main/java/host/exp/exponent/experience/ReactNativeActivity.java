@@ -192,6 +192,9 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
   }
 
   protected void updateLoadingProgress(String status, Integer done, Integer total) {
+    if (!mIsLoading) {
+      showLoadingScreen(mManifest);
+    }
     mLoadingView.updateProgress(status, done, total);
   }
 
