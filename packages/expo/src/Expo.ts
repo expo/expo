@@ -37,7 +37,7 @@ export { Accelerometer, Gyroscope, Magnetometer, MagnetometerUncalibrated } from
 import * as SMS from 'expo-sms';
 export { SMS };
 export { GestureHandler } from './GestureHandler';
-export { default as MapView } from 'react-native-maps';
+export { MapView } from './MapView';
 
 import * as AR from './AR';
 export { AR };
