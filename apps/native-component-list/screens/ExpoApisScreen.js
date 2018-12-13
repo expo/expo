@@ -69,6 +69,7 @@ export default class ExpoApisScreen extends React.Component {
     return [
       'AppAuth',
       'AuthSession',
+      'BackgroundFetch',
       'Branch',
       'Calendars',
       'Constants',
@@ -100,6 +101,7 @@ export default class ExpoApisScreen extends React.Component {
       'SecureStore',
       'SMS',
       'StoreReview',
+      'TaskManager',
       'TextToSpeech',
       'Util',
       'WebBrowser',

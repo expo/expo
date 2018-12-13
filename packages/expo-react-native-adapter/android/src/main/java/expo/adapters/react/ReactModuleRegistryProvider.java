@@ -16,6 +16,7 @@ import expo.core.ModuleRegistryProvider;
 import expo.core.interfaces.InternalModule;
 import expo.core.ViewManager;
 import expo.core.interfaces.Package;
+import expo.core.interfaces.SingletonModule;
 
 /**
  * Since React Native v0.55, {@link com.facebook.react.ReactPackage#createViewManagers(ReactApplicationContext)}
@@ -27,20 +28,36 @@ import expo.core.interfaces.Package;
  */
 public class ReactModuleRegistryProvider extends ModuleRegistryProvider {
   private Collection<ViewManager> mViewManagers;
+  private Collection<SingletonModule> mSingletonModules;
 
-  public ReactModuleRegistryProvider(List<Package> initialPackages) {
+  public ReactModuleRegistryProvider(List<Package> initialPackages, List<SingletonModule> singletonModules) {
     super(initialPackages);
+    mSingletonModules = singletonModules;
   }
 
   @Override
   public ModuleRegistry get(Context context) {
     Collection<InternalModule> internalModules = new ArrayList<>();
     Collection<ExportedModule> exportedModules = new ArrayList<>();
-    for(Package pkg : getPackages()) {
+
+    for (Package pkg : getPackages()) {
       internalModules.addAll(pkg.createInternalModules(context));
       exportedModules.addAll(pkg.createExportedModules(context));
     }
-    return new ModuleRegistry(internalModules, exportedModules, getViewManagers(context));
+    return new ModuleRegistry(internalModules, exportedModules, getViewManagers(context), getSingletonModules(context));
+  }
+
+  private Collection<SingletonModule> getSingletonModules(Context context) {
+    // If singleton modules were provided to registry provider, then just pass them to module registry.
+    if (mSingletonModules != null) {
+      return mSingletonModules;
+    }
+    Collection<SingletonModule> singletonModules = new ArrayList<>();
+
+    for (Package pkg : getPackages()) {
+      singletonModules.addAll(pkg.createSingletonModules(context));
+    }
+    return singletonModules;
   }
 
   /* package */ Collection<ViewManager> getViewManagers(Context context) {

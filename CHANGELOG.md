@@ -13,6 +13,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - removed deprecated support for passing an array into `Font.loadAsync`. This feature displayed a deprecation warning for several SDK versions so if you didn't see it, this change shouldn't affect you.
 - updated underlying Stripe dependency to 8.1.0 on Android and 13.2.0 on iOS and updated `expo-payments-stripe` with latest updates to `tipsi-stripe` (up to 6.1.2) by [@sjchmiela](https://github.com/sjchmiela) ([#2766](https://github.com/expo/expo/pull/2766)). This change dropped support for Bitcoin payments in SDK31.
 - removed `minSdk` application flavor from Android project (all Gradle commands in format `[verb][minSdkFlavor]minSdk[remoteKernelFlavor]Kernel[buildType]`, eg. `assembleDevMinSdkDevKernelDebug` become `[verb][remoteKernelFlavor]Kernel[buildType]`, eg. `assembleDevKernelDebug`) by [@sjchmiela](https://github.com/sjchmiela) ([`3b5e158`](https://github.com/expo/expo/commit/3b5e1583ecc210ee36b9d5772d2d7c35a6315500))
+- deprecated `enableHighAccuracy` option in `Location` module in favor of `accuracy` which gives much more options by [@tsapeta](https://github.com/tsapeta) ([#2338](https://github.com/expo/expo/pull/2338))
 - removed support for deprecated `onBarCodeRead` prop on `Camera` component by [@Szymon20000](https://github.com/Szymon20000) ([#2820](https://github.com/expo/expo/pull/2820)) (use `onBarCodeScanned` property)
 
 ### 🎉 New features
@@ -20,6 +21,10 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - added locales on Android (`[ar, cs, de, es-rGT, fr, he, jt, ja, ko, nb, nl, pl, pt-rBR, ru-rRU, vi, zh, zh-rCN, zh-rTW]`) in `ImagePicker.{launchImageLibraryAsync, launchCameraAsync}` when using `{ allowsEditing: true }` option by [@bbarthec](https://github.com/bbarthec) ([#2955](https://github.com/expo/expo/pull/2955))
 - added support for passing refs created by `React.createRef` to `takeSnapshotAsync` by [@sjchmiela](https://github.com/sjchmiela) ([#2771](https://github.com/expo/expo/pull/2771))
 - upgraded Gradle plugin (to 3.2.1) and its wrapper (to 4.10.2) by [@sjchmiela](https://github.com/sjchmiela) ([#2716](https://github.com/expo/expo/pull/2716))
+- new `TaskManager` module that paves the way to background code execution by [@tsapeta](https://github.com/tsapeta) ([#2338](https://github.com/expo/expo/pull/2338))
+- added API for background location updates by [@tsapeta](https://github.com/tsapeta) ([#2338](https://github.com/expo/expo/pull/2338))
+- added geofencing to `Location` module by [@tsapeta](https://github.com/tsapeta) ([#2338](https://github.com/expo/expo/pull/2338))
+- new `BackgroundFetch` module (iOS only) by [@tsapeta](https://github.com/tsapeta) ([#2338](https://github.com/expo/expo/pull/2338))
 
 ### 🐛 Bug fixes
 

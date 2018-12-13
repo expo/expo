@@ -125,6 +125,9 @@ dependencies {
   api 'host.exp.exponent:expo-react-native-adapter:1.2.0'
   api 'host.exp.exponent:expo-file-system:1.1.0'
   api 'host.exp.exponent:expo-file-system-interface:1.1.0'
+  api 'host.exp.exponent:expo-task-manager:1.0.0'
+  api 'host.exp.exponent:expo-task-manager-interface:1.0.0'
+  api 'host.exp.exponent:expo-app-loader-provider:1.0.0'
 
   // Optional universal modules
   compileOnly 'host.exp.exponent:expo-app-auth:1.0.0'
@@ -153,6 +156,7 @@ dependencies {
   compileOnly 'host.exp.exponent:expo-payments-stripe:1.1.0'
   compileOnly 'host.exp.exponent:expo-permissions:1.2.0'
   compileOnly 'host.exp.exponent:expo-permissions-interface:1.2.0'
+  compileOnly 'host.exp.exponent:expo-background-fetch:1.0.0'
   END UNCOMMENT WHEN DISTRIBUTING */
 
   // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
@@ -168,6 +172,9 @@ dependencies {
   api project(':expo-permissions-interface')
   api project(':expo-react-native-adapter')
   api project(':expo-sensors-interface')
+  api project(':expo-task-manager')
+  api project(':expo-task-manager-interface')
+  api project(':expo-app-loader-provider')
 
   // Optional universal modules
   // They're defined as "api" so we don't have to define them again in app/build.gradle
@@ -175,6 +182,7 @@ dependencies {
   api project(':expo-ads-admob')
   api project(':expo-analytics-segment')
   api project(':expo-app-auth')
+  api project(':expo-background-fetch')
   api project(':expo-barcode-scanner')
   api project(':expo-barcode-scanner-interface')
   api project(':expo-camera')

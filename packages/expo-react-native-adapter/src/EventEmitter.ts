@@ -62,7 +62,7 @@ export class EventEmitter {
     if (!nativeEmitterSubscription) {
       return;
     }
-  
+
     this._eventEmitter.removeSubscription(nativeEmitterSubscription!);
     this._listenerCount--;
 
