@@ -26,6 +26,7 @@ import host.exp.exponent.kernel.ExponentUrls;
 import host.exp.exponent.network.ExpoHttpCallback;
 import host.exp.exponent.network.ExpoResponse;
 import host.exp.exponent.network.ExponentNetwork;
+import host.exp.exponent.storage.ExperienceDBObject$Adapter;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponent.utils.AsyncCondition;
 import host.exp.exponent.utils.JSONUtils;
@@ -48,6 +49,8 @@ import host.exp.exponent.storage.ExperienceDBObject;
 import host.exp.exponent.storage.ExponentDB;
 import host.exp.exponent.utils.ColorParser;
 import host.exp.expoview.R;
+import versioned.host.exp.exponent.modules.api.notifications.IntentProvider;
+import versioned.host.exp.exponent.modules.api.notifications.NotificationActionCenter;
 
 public class NotificationHelper {
 
@@ -474,55 +477,76 @@ public class NotificationHelper {
 
     ExponentDB.experienceIdToExperience(experienceId, new ExponentDB.ExperienceResultListener() {
       @Override
-      public void onSuccess(ExperienceDBObject experience) {
-        try {
-          JSONObject manifest = new JSONObject(experience.manifest);
+      public void onSuccess(final ExperienceDBObject experience) {
+        new Thread(new Runnable() { /// use weak reference in the future
+          @Override
+          public void run() {
+            try {
+              JSONObject manifest = new JSONObject(experience.manifest);
 
-          Intent intent;
+              Intent intent;
 
-          if (data.containsKey("link")) {
-            intent = new Intent(Intent.ACTION_VIEW, Uri.parse((String) data.get("link")));
-          } else {
-            Class activityClass = KernelConstants.MAIN_ACTIVITY_CLASS;
-            intent = new Intent(context, activityClass);
-            intent.putExtra(KernelConstants.NOTIFICATION_MANIFEST_URL_KEY, experience.manifestUrl);
-          }
+              if (data.containsKey("link")) {
+                intent = new Intent(Intent.ACTION_VIEW, Uri.parse((String) data.get("link")));
+              } else {
+                Class activityClass = KernelConstants.MAIN_ACTIVITY_CLASS;
+                intent = new Intent(context, activityClass);
+                intent.putExtra(KernelConstants.NOTIFICATION_MANIFEST_URL_KEY, experience.manifestUrl);
+              }
 
-          String body = data.containsKey("data") ? JSONUtils.getJSONString(data.get("data")) : "";
+              final String body = data.containsKey("data") ? JSONUtils.getJSONString(data.get("data")) : "";
 
-          final ReceivedNotificationEvent notificationEvent = new ReceivedNotificationEvent(experienceId, body, id, false, false);
+              final ReceivedNotificationEvent notificationEvent = new ReceivedNotificationEvent(experienceId, body, id, false, false);
 
-          intent.putExtra(KernelConstants.NOTIFICATION_KEY, body); // deprecated
-          intent.putExtra(KernelConstants.NOTIFICATION_OBJECT_KEY, notificationEvent.toJSONObject(null).toString());
+              intent.putExtra(KernelConstants.NOTIFICATION_KEY, body); // deprecated
+              intent.putExtra(KernelConstants.NOTIFICATION_OBJECT_KEY, notificationEvent.toJSONObject(null).toString());
 
-          PendingIntent contentIntent = PendingIntent.getActivity(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-          builder.setContentIntent(contentIntent);
+              PendingIntent contentIntent = PendingIntent.getActivity(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+              builder.setContentIntent(contentIntent);
 
-          int color = NotificationHelper.getColor(
-              data.containsKey("color") ? (String) data.get("color") : null,
-              manifest,
-              exponentManifest);
-
-          builder.setColor(color);
-
-          NotificationHelper.loadIcon(
-              data.containsKey("icon") ? (String) data.get("icon") : null,
-              manifest,
-              exponentManifest,
-              new ExponentManifest.BitmapListener() {
-                @Override
-                public void onLoadBitmap(Bitmap bitmap) {
-                  if (data.containsKey("icon")) {
-                    builder.setLargeIcon(bitmap);
+              if (data.containsKey("categoryId")) {
+                final String manifestUrl = experience.manifestUrl;
+                NotificationActionCenter.setCategory((String)data.get("categoryId"), builder, context, new IntentProvider() {
+                  @Override
+                  public Intent provide() {
+                    Class activityClass = KernelConstants.MAIN_ACTIVITY_CLASS;
+                    Intent intent = new Intent(context, activityClass);
+                    intent.putExtra(KernelConstants.NOTIFICATION_MANIFEST_URL_KEY, manifestUrl);
+                    final ReceivedNotificationEvent notificationEvent = new ReceivedNotificationEvent(experienceId, body, id, false, false);
+                    intent.putExtra(KernelConstants.NOTIFICATION_KEY, body); // deprecated
+                    intent.putExtra(KernelConstants.NOTIFICATION_OBJECT_KEY, notificationEvent.toJSONObject(null).toString());
+                    return intent;
                   }
-                  manager.notify(experienceId, id, builder.build());
-                  EventBus.getDefault().post(notificationEvent);
-                  listener.onSuccess(id);
-                }
-              });
-        } catch (JSONException e) {
-          listener.onFailure(new Exception("Couldn't deserialize JSON for experience id " + experienceId));
-        }
+                });
+              }
+
+              int color = NotificationHelper.getColor(
+                  data.containsKey("color") ? (String) data.get("color") : null,
+                  manifest,
+                  exponentManifest);
+
+              builder.setColor(color);
+
+              NotificationHelper.loadIcon(
+                  data.containsKey("icon") ? (String) data.get("icon") : null,
+                  manifest,
+                  exponentManifest,
+                  new ExponentManifest.BitmapListener() {
+                    @Override
+                    public void onLoadBitmap(Bitmap bitmap) {
+                      if (data.containsKey("icon")) {
+                        builder.setLargeIcon(bitmap);
+                      }
+                      manager.notify(experienceId, id, builder.build());
+                      EventBus.getDefault().post(notificationEvent);
+                      listener.onSuccess(id);
+                    }
+                  });
+            } catch (JSONException e) {
+              listener.onFailure(new Exception("Couldn't deserialize JSON for experience id " + experienceId));
+            }
+          }
+        }).start();
       }
 
       @Override

@@ -30,6 +30,8 @@ import host.exp.exponent.storage.ExperienceDBObject;
 import host.exp.exponent.storage.ExponentDB;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.expoview.R;
+import versioned.host.exp.exponent.modules.api.notifications.IntentProvider;
+import versioned.host.exp.exponent.modules.api.notifications.NotificationActionCenter;
 
 public class PushNotificationHelper {
 
@@ -60,13 +62,13 @@ public class PushNotificationHelper {
     NativeModuleDepsProvider.getInstance().inject(PushNotificationHelper.class, this);
   }
 
-  public void onMessageReceived(final Context context, final String experienceId, final String channelId, final String message, final String body, final String title) {
+  public void onMessageReceived(final Context context, final String experienceId, final String channelId, final String message, final String body, final String title, final String categoryId) {
     ExponentDB.experienceIdToExperience(experienceId, new ExponentDB.ExperienceResultListener() {
       @Override
       public void onSuccess(ExperienceDBObject experience) {
         try {
           JSONObject manifest = new JSONObject(experience.manifest);
-          sendNotification(context, message, experienceId, channelId, experience.manifestUrl, manifest, body, title);
+          sendNotification(context, message, experienceId, channelId, experience.manifestUrl, manifest, body, title, categoryId);
         } catch (JSONException e) {
           EXL.e(TAG, "Couldn't deserialize JSON for experience id " + experienceId);
         }
@@ -81,7 +83,7 @@ public class PushNotificationHelper {
 
 
   private void sendNotification(final Context context, final String message, final String experienceId, final String channelId,
-                                final String manifestUrl, final JSONObject manifest, final String body, final String title) {
+                                final String manifestUrl, final JSONObject manifest, final String body, final String title, final String categoryId) {
     final String name = manifest.optString(ExponentManifest.MANIFEST_NAME_KEY);
     if (name == null) {
       EXL.e(TAG, "No name found for experience id " + experienceId);
@@ -93,7 +95,7 @@ public class PushNotificationHelper {
 
     NotificationHelper.loadIcon(null, manifest, mExponentManifest, new ExponentManifest.BitmapListener() {
       @Override
-      public void onLoadBitmap(Bitmap bitmap) {
+      public void onLoadBitmap(final Bitmap bitmap) {
         Mode mode = Mode.DEFAULT;
         String collapsedTitle = null;
         JSONArray unreadNotifications = new JSONArray();
@@ -107,7 +109,7 @@ public class PushNotificationHelper {
         }
 
         // Update metadata
-        int notificationId = mode == Mode.COLLAPSE ? experienceId.hashCode() : new Random().nextInt();
+        final int notificationId = mode == Mode.COLLAPSE ? experienceId.hashCode() : new Random().nextInt();
         addUnreadNotificationToMetadata(experienceId, message, notificationId);
 
         // Collapse mode fields
@@ -160,7 +162,7 @@ public class PushNotificationHelper {
 
         // Create notification object
         boolean isMultiple = mode == Mode.COLLAPSE && unreadNotifications.length() > 1;
-        ReceivedNotificationEvent notificationEvent = new ReceivedNotificationEvent(experienceId, body, notificationId, isMultiple, true);
+        final ReceivedNotificationEvent notificationEvent = new ReceivedNotificationEvent(experienceId, body, notificationId, isMultiple, true);
 
         // Create pending intent
         Intent intent = new Intent(context, KernelConstants.MAIN_ACTIVITY_CLASS);
@@ -171,7 +173,7 @@ public class PushNotificationHelper {
             PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_ONE_SHOT);
 
         // Build notification
-        NotificationCompat.Builder notificationBuilder;
+        final NotificationCompat.Builder notificationBuilder;
 
         if (isMultiple) {
           NotificationCompat.InboxStyle style = new NotificationCompat.InboxStyle()
@@ -219,20 +221,41 @@ public class PushNotificationHelper {
               .setContentIntent(pendingIntent);
         }
 
-        // Add icon
-        Notification notification;
-        if (!manifestUrl.equals(Constants.INITIAL_URL)) {
-          notification = notificationBuilder.setLargeIcon(bitmap).build();
-        } else {
-          // TODO: don't actually need to load bitmap in this case
-          notification = notificationBuilder.build();
-        }
 
-        // Display
-        manager.notify(experienceId, notificationId, notification);
 
-        // Send event. Will be consumed if experience is already open.
-        EventBus.getDefault().post(notificationEvent);
+        new Thread(new Runnable() {
+          @Override
+          public void run() {
+            // Add actions
+            if (categoryId != null) {
+              NotificationActionCenter.setCategory(categoryId, notificationBuilder, context, new IntentProvider() {
+                @Override
+                public Intent provide() {
+                  Intent intent = new Intent(context, KernelConstants.MAIN_ACTIVITY_CLASS);
+                  intent.putExtra(KernelConstants.NOTIFICATION_MANIFEST_URL_KEY, manifestUrl);
+                  intent.putExtra(KernelConstants.NOTIFICATION_KEY, body); // deprecated
+                  intent.putExtra(KernelConstants.NOTIFICATION_OBJECT_KEY, notificationEvent.toJSONObject(null).toString());
+                  return intent;
+                }
+              });
+            }
+
+            // Add icon
+            Notification notification;
+            if (!manifestUrl.equals(Constants.INITIAL_URL)) {
+              notification = notificationBuilder.setLargeIcon(bitmap).build();
+            } else {
+              // TODO: don't actually need to load bitmap in this case
+              notification = notificationBuilder.build();
+            }
+
+            // Display
+            manager.notify(experienceId, notificationId, notification);
+
+            // Send event. Will be consumed if experience is already open.
+            EventBus.getDefault().post(notificationEvent);
+          }
+        }).start();
       }
     });
   }
