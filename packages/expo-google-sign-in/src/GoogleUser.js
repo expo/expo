@@ -1,6 +1,6 @@
 // @flow
 import invariant from 'invariant';
-
+import { UnavailabilityError } from 'expo-errors';
 import ExpoGoogleSignIn from './ExpoGoogleSignIn';
 import GoogleAuthentication from './GoogleAuthentication';
 import GoogleIdentity from './GoogleIdentity';
@@ -47,6 +47,9 @@ class GoogleUser extends GoogleIdentity {
   };
 
   refreshAuth = async (): Promise<?GoogleAuthentication> => {
+    if (!ExpoGoogleSignIn.getTokensAsync) {
+      throw new UnavailabilityError('GoogleSignIn', 'getTokensAsync');
+    }
     const response: {
       idToken: ?string,
       accessToken: ?string,

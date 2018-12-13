@@ -25,7 +25,8 @@
   },
   "dependencies": {
     "expo-core": "~1.2.0",
-    "invariant": "^2.2.4"
+    "invariant": "^2.2.4",
+    "expo-errors": "^0.0.1"
   },
   "devDependencies": {
     "babel-preset-expo": "^5.0.0",

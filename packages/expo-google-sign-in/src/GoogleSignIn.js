@@ -1,9 +1,9 @@
 // @flow
 import invariant from 'invariant';
 
+import { UnavailabilityError } from 'expo-errors';
 import ExpoGoogleSignIn from './ExpoGoogleSignIn';
 import GoogleUser from './GoogleUser';
-
 import type { GoogleSignInOptions, GoogleSignInAuthResult } from './GoogleSignIn.types';
 
 const DEFAULT_SCOPES = [SCOPES.PROFILE, SCOPES.EMAIL];
@@ -57,6 +57,9 @@ async function ensureGoogleIsInitializedAsync(options: ?GoogleSignInOptions): Pr
 }
 
 async function invokeAuthMethod(method: string): Promise<GoogleUser | null> {
+  if (!ExpoGoogleSignIn[method]) {
+    throw new UnavailabilityError('GoogleSignIn', method);
+  }
   await ensureGoogleIsInitializedAsync();
   const payload = await ExpoGoogleSignIn[method]();
   let account = payload != null ? new GoogleUser(payload) : null;
@@ -82,6 +85,10 @@ export async function getPlayServiceAvailability(shouldAsk: boolean = false): Pr
 }
 
 export async function initAsync(options: ?GoogleSignInOptions): Promise<void> {
+  if (!ExpoGoogleSignIn.initAsync) {
+    throw new UnavailabilityError('GoogleSignIn', 'initAsync');
+  }
+
   _options = validateOptions(options || _options);
 
   const hasPlayServices = await getPlayServiceAvailability();
@@ -145,6 +152,10 @@ export async function getCurrentUserAsync(): Promise<GoogleUser | null> {
 }
 
 export async function getPhotoAsync(size: number = 128): Promise<string | null> {
+  if (!ExpoGoogleSignIn.getPhotoAsync) {
+    throw new UnavailabilityError('GoogleSignIn', 'getPhotoAsync');
+  }
+
   await ensureGoogleIsInitializedAsync();
   return await ExpoGoogleSignIn.getPhotoAsync(size);
 }
