@@ -98,13 +98,13 @@ This can be done in the app.json, the value should be your `REVERSED_CLIENT_ID` 
 > Android Only, this method always returns true on iOS
 
 Use this method to determine if a user's device can utilize Google Sign-In functionality.
-By default this method will assume the options `{ shouldUpdate: false }` and silently check the play services, whereas passing `{ shouldUpdate: true }` will present a modal if the Play Services aren't available.
+By default this method will assume the option is `false` and silently check the play services, whereas passing `true` will present a modal if the Play Services aren't available.
 
 ### `askForPlayServicesAsync(): Promise<boolean>`
 
 > Android Only, this method always returns true on iOS
 
-A convenience wrapper for `arePlayServicesAvailableAsync({ shouldUpdate: true })`, this method will present a modal for the user to update Play Services if they aren't already up-to-date.
+A convenience wrapper for `getPlayServiceAvailability(true)`, this method will present a modal for the user to update Play Services if they aren't already up-to-date.
 
 Returns true after the user successfully updates.
 
@@ -125,7 +125,7 @@ This method will attempt to reauthenticate the user without initializing the aut
 ### `signInAsync(): Promise<?GoogleSignInAuthResult>`
 
 Starts the native authentication flow with the information provided in `initAsync()`.
-If a user cancels, the method will return `{ type: 'cancel', user: null }`. However if a user successfully finishes the authentication flow, the returned value will be: `{ type: 'success', user: GoogleSignIn }`.
+If a user cancels, the method will return `{ type: 'cancel', user: null }`. However if a user successfully finishes the authentication flow, the returned value will be: `{ type: 'success', user: GoogleUser }`.
 
 There are some errors that can be thrown while authenticating, check `GoogleSignIn.ERRORS` for available error codes.
 
@@ -141,9 +141,13 @@ Returns true if a user is authenticated and the access token has not been invali
 
 Signs-out the current user out and revokes the access tokens associated with the account. This will prevent reauthentication, whereas `signOutAsync()` will not.
 
-### `getCurrentUserAsync(): Promise<?GoogleUser>`
+### `getCurrentUserAsync(): Promise<GoogleUser | null>`
 
 If a user is authenticated, this method will return all the basic profile information in the form of a `GoogleUser`.
+
+### `getCurrentUser(): GoogleUser | null`
+
+Get the most recent instance of the authenticated `GoogleUser`.
 
 ### `getPhotoAsync(size: number = 128): Promise<?string>`
 

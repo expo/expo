@@ -4,6 +4,8 @@ import { Image, StyleSheet, Text, View } from 'react-native';
 
 import GoogleSignInButton from '../components/GoogleSignInButton';
 
+GoogleSignIn.allowInClient();
+
 export default class GoogleSignInScreen extends React.Component {
   static navigationOptions = {
     title: 'Native Google Sign-In',

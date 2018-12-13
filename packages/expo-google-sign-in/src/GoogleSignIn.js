@@ -71,6 +71,10 @@ export function allowInClient() {
   _isClientUsageEnabled = true;
 }
 
+export function getCurrentUser(): GoogleUser | null {
+  return _currentUser;
+} 
+
 export async function askForPlayServicesAsync(): Promise<boolean> {
   return await getPlayServiceAvailability(true);
 }
