@@ -83,7 +83,6 @@
     }
     if (views) {
       self.loadingView = views.firstObject;
-      self.loadingView.layer.zPosition = 1000;
       self.loadingView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
       [self addSubview:self.loadingView];
       

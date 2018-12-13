@@ -5,6 +5,7 @@ import { createMaterialBottomTabNavigator } from 'react-navigation-material-bott
 
 import TabIcon from '../components/TabIcon';
 import { Colors, Layout } from '../constants';
+
 import ExpoApisStackNavigator from './ExpoApisStackNavigator';
 import ExpoComponentsStackNavigator from './ExpoComponentsStackNavigator';
 import ReactNativeCoreStackNavigator from './ReactNativeCoreStackNavigator';

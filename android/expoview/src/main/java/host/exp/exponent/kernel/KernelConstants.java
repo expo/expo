@@ -3,8 +3,8 @@
 package host.exp.exponent.kernel;
 
 import host.exp.exponent.analytics.EXL;
-import host.exp.exponent.notifications.ExponentNotification;
 import host.exp.exponent.experience.DetachActivity;
+import host.exp.exponent.notifications.ExponentNotification;
 
 public class KernelConstants {
   public static final String TAG = KernelConstants.class.getSimpleName();
@@ -13,10 +13,12 @@ public class KernelConstants {
   public static final String BUNDLE_URL_KEY = "bundleUrl";
   public static final String MANIFEST_URL_KEY = "experienceUrl";
   public static final String NOTIFICATION_MANIFEST_URL_KEY = "notificationExperienceUrl";
+  public static final String NOTIFICATION_ACTION_TYPE_KEY = "actionType";
   public static final String SHORTCUT_MANIFEST_URL_KEY = "shortcutExperienceUrl";
   public static final String HOME_MANIFEST_URL = "";
   public static final String LINKING_URI_KEY = "linkingUri";
   public static final String INTENT_URI_KEY = "intentUri";
+  public static final String IS_HEADLESS_KEY = "isHeadless";
   public static final String IS_OPTIMISTIC_KEY = "isOptimistic";
   public static final String LOAD_FROM_CACHE_KEY = "loadFromCache";
   public static final String OPTION_LOAD_NUX_KEY = "loadNux";
@@ -39,6 +41,7 @@ public class KernelConstants {
   public static final String DEV_FLAG = "dev_flag";
 
   public static Class MAIN_ACTIVITY_CLASS = DetachActivity.class;
+
   static {
     try {
       MAIN_ACTIVITY_CLASS = Class.forName("host.exp.exponent.MainActivity");

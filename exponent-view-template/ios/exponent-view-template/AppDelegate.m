@@ -4,12 +4,18 @@
 #import "ExpoKit.h"
 #import "EXViewController.h"
 
+#import <EXCore/EXModuleRegistryProvider.h>
+
 #if __has_include(<EXAuth/EXAuth.h>)
 #import <EXAuth/EXAuth.h>
 #endif
 
 #if __has_include(<GoogleSignIn/GoogleSignIn.h>)
 #import <GoogleSignIn/GoogleSignIn.h>
+#endif
+
+#if __has_include(<EXTaskManager/EXTaskService.h>)
+#import <EXTaskManager/EXTaskService.h>
 #endif
 
 @interface AppDelegate ()
@@ -22,16 +28,44 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    _window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-    _window.backgroundColor = [UIColor whiteColor];
-    [[ExpoKit sharedInstance] application:application didFinishLaunchingWithOptions:launchOptions];
-    _rootViewController = [ExpoKit sharedInstance].rootViewController;
-    _window.rootViewController = _rootViewController;
-
-    [_window makeKeyAndVisible];
-
-    return YES;
+  if ([application applicationState] != UIApplicationStateBackground) {
+    // App launched in foreground
+    [self _setUpUserInterfaceForApplication:application withLaunchOptions:launchOptions];
+  }
+#if __has_include(<EXTaskManager/EXTaskService.h>)
+  [(EXTaskService *)[EXModuleRegistryProvider getSingletonModuleForClass:EXTaskService.class] applicationDidFinishLaunchingWithOptions:launchOptions];
+#endif
+  return YES;
 }
+
+- (void)applicationWillEnterForeground:(UIApplication *)application
+{
+  [self _setUpUserInterfaceForApplication:application withLaunchOptions:nil];
+}
+
+- (void)_setUpUserInterfaceForApplication:(UIApplication *)application withLaunchOptions:(nullable NSDictionary *)launchOptions
+{
+  if (_window) {
+    return;
+  }
+  [[ExpoKit sharedInstance] application:application didFinishLaunchingWithOptions:launchOptions];
+
+  _window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+  _window.backgroundColor = [UIColor whiteColor];
+  _rootViewController = [ExpoKit sharedInstance].rootViewController;
+  _window.rootViewController = _rootViewController;
+
+  [_window makeKeyAndVisible];
+}
+
+#pragma mark - Background Fetch
+
+#if __has_include(<EXTaskManager/EXTaskService.h>)
+- (void)application:(UIApplication *)application performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
+{
+  [(EXTaskService *)[EXModuleRegistryProvider getSingletonModuleForClass:EXTaskService.class] runTasksWithReason:EXTaskLaunchReasonBackgroundFetch userInfo:nil completionHandler:completionHandler];
+}
+#endif
 
 #pragma mark - Handling URLs
 
@@ -56,7 +90,7 @@
 
 - (BOOL)application:(UIApplication *)application continueUserActivity:(nonnull NSUserActivity *)userActivity restorationHandler:(nonnull void (^)(NSArray * _Nullable))restorationHandler
 {
-    return [[ExpoKit sharedInstance] application:application continueUserActivity:userActivity restorationHandler:restorationHandler];
+  return [[ExpoKit sharedInstance] application:application continueUserActivity:userActivity restorationHandler:restorationHandler];
 }
 
 #pragma mark - Notifications
@@ -71,8 +105,12 @@
   [[ExpoKit sharedInstance] application:application didFailToRegisterForRemoteNotificationsWithError:err];
 }
 
-- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler {
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler
+{
   [[ExpoKit sharedInstance] application:application didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
+#if __has_include(<EXTaskManager/EXTaskService.h>)
+  [(EXTaskService *)[EXModuleRegistryProvider getSingletonModuleForClass:EXTaskService.class] runTasksWithReason:EXTaskLaunchReasonRemoteNotification userInfo:userInfo completionHandler:completionHandler];
+#endif
 }
 
 @end

@@ -18,6 +18,5 @@ Pod::Spec.new do |s|
 
   s.dependency 'EXCore'
   s.dependency 'EXPermissionsInterface'
+  s.dependency 'EXTaskManagerInterface'
 end
-
-
