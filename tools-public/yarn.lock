@@ -169,7 +169,7 @@
     babel-runtime "^6.23.0"
     exec-async "^2.2.0"
 
-"@expo/schemer@^1.2.2":
+"@expo/schemer@1.2.2":
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/@expo/schemer/-/schemer-1.2.2.tgz#4661e1663fd8b90d430b6d739a3791e2fb5176bf"
   integrity sha512-Ao5QMV7MpUyDOB9VMTgJUkb04nqPpPwNsyVlaxOd6ghvXSMdgTW6KU4WBvRh0LKsc4OfiYlzx5wFYFsBsDVVvQ==
@@ -1048,19 +1048,10 @@ cacheable-request@^2.1.1:
     normalize-url "2.0.1"
     responselike "1.0.2"
 
-caller-callsite@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/caller-callsite/-/caller-callsite-2.0.0.tgz#847e0fce0a223750a9a027c54b33731ad3154134"
-  integrity sha1-hH4PzgoiN1CpoCfFSzNzGtMVQTQ=
-  dependencies:
-    callsites "^2.0.0"
-
-caller-path@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/caller-path/-/caller-path-2.0.0.tgz#468f83044e369ab2010fac5f06ceee15bb2cb1f4"
-  integrity sha1-Ro+DBE42mrIBD6xfBs7uFbsssfQ=
-  dependencies:
-    caller-callsite "^2.0.0"
+callsite@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/callsite/-/callsite-1.0.0.tgz#280398e5d664bd74038b6f0905153e6e8af1bc20"
+  integrity sha1-KAOY5dZkvXQDi28JBRU+borxvCA=
 
 callsites@^2.0.0:
   version "2.0.0"
@@ -1520,6 +1511,13 @@ debug@^3.1.0:
   integrity sha512-D61LaDQPQkxJ5AUM2mbSJRbPkNs/TmdmOeLAi1hgDkpDfIfetSrjmWhccwtuResSwMbACjx/xXQofvM9CE/aeg==
   dependencies:
     ms "^2.1.1"
+
+decache@4.4.0:
+  version "4.4.0"
+  resolved "https://registry.yarnpkg.com/decache/-/decache-4.4.0.tgz#6f6df6b85d7e7c4410a932ffc26489b78e9acd13"
+  integrity sha1-b232uF1+fEQQqTL/wmSJt46azRM=
+  dependencies:
+    callsite "^1.0.0"
 
 decamelize@^1.1.1:
   version "1.2.0"
@@ -2887,14 +2885,6 @@ ignore-walk@^3.0.1:
   integrity sha512-DTVlMx3IYPe0/JJcYP7Gxg7ttZZu3IInhuEhbchuqneY9wWe5Ojy2mXLBaQFUQmo0AW2r3qG7m1mg86js+gnlQ==
   dependencies:
     minimatch "^3.0.4"
-
-import-fresh@2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/import-fresh/-/import-fresh-2.0.0.tgz#d81355c15612d386c61f9ddd3922d4304822a546"
-  integrity sha1-2BNVwVYS04bGH53dOSLUMEgipUY=
-  dependencies:
-    caller-path "^2.0.0"
-    resolve-from "^3.0.0"
 
 import-local@^1.0.0:
   version "1.0.0"
@@ -6967,22 +6957,23 @@ ws@^5.2.0:
   dependencies:
     async-limiter "~1.0.0"
 
-xdl@52.0.11-alpha.1:
-  version "52.0.11-alpha.1"
-  resolved "https://registry.yarnpkg.com/xdl/-/xdl-52.0.11-alpha.1.tgz#7314f7782f339ad618459f832fe58116dae48814"
-  integrity sha512-qN0Hzu1CkvB4+mKX8DCabxgTDrDyGESlup6C9z9a/lTQv51AgU3YPD8ssn0yBiFXMnx3Ilxcszd/AncGiy0N+Q==
+xdl@52.0.12:
+  version "52.0.12"
+  resolved "https://registry.yarnpkg.com/xdl/-/xdl-52.0.12.tgz#e126400a480a8e3f84344ef67ff2bc8235733728"
+  integrity sha512-TFC3WRy5g4Uv+aXtSaW9BncX8Aw/azX7p9LJjeLznVDn7JonBlMn3ot4RPpJdKBa9L3viMJpJifdhlt03N5/hA==
   dependencies:
     "@expo/bunyan" "3.0.2"
-    "@expo/json-file" "^8.1.0"
+    "@expo/json-file" "8.1.0"
     "@expo/ngrok" "2.4.3"
     "@expo/osascript" "^1.9.0"
-    "@expo/schemer" "^1.2.2"
+    "@expo/schemer" "1.2.2"
     "@expo/spawn-async" "1.3.0"
     analytics-node "^2.1.0"
     axios v0.19.0-beta.1
     chalk "2.4.1"
     command-exists "1.2.7"
     concat-stream "1.6.2"
+    decache "4.4.0"
     delay-async "1.1.0"
     es6-error "4.1.1"
     escape-string-regexp "1.0.5"
@@ -6998,7 +6989,6 @@ xdl@52.0.11-alpha.1:
     hashids "1.1.4"
     home-dir "1.0.0"
     idx "2.4.0"
-    import-fresh "2.0.0"
     indent-string "3.2.0"
     inquirer "5.2.0"
     invariant "2.2.4"
