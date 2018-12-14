@@ -434,15 +434,13 @@ EX_EXPORT_METHOD_AS(askAsync,
     return type;
   } else if ([type isEqualToString:@"reminders"]) {
     return type;
-  } else if ([type isEqualToString:@"SMS"]) {
-    return type;
   }
   return nil;
 }
 
 + (BOOL)isPermissionImplicitlyGranted:(NSString *)permissionType
 {
-  return [@[@"systemBrightness", @"SMS"] containsObject:permissionType];
+  return [@[@"systemBrightness"] containsObject:permissionType];
 }
 
 + (BOOL)isExcludedScopedPermission:(NSString *)permissionType
