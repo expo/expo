@@ -31,6 +31,15 @@ const mockImageLoader = {
 Object.defineProperty(mockNativeModules, 'ImageLoader', mockImageLoader);
 Object.defineProperty(mockNativeModules, 'ImageViewManager', mockImageLoader);
 
+const mockPlatformConstants = {
+  configurable: true,
+  enumerable: true,
+  get: () => ({
+    forceTouchAvailable: true,
+  }),
+};
+Object.defineProperty(mockNativeModules, 'PlatformConstants', mockPlatformConstants);
+
 const publicExpoModules = require('./expoModules');
 const internalExpoModules = require('./internalExpoModules');
 const expoModules = {
