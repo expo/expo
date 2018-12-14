@@ -2,7 +2,7 @@ import { Platform } from 'expo-core';
 import ExpoSMS from './ExpoSMS';
 
 type SMSResponse = {
-  result: 'sent' | 'cancelled';
+  result: 'unknown' | 'sent' | 'cancelled';
 };
 
 export async function sendSMSAsync(

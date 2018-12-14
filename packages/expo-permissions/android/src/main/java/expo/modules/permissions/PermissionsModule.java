@@ -131,9 +131,6 @@ public class PermissionsModule extends ExportedModule implements ModuleRegistryC
           permissionsTypesToBeAsked.add(Manifest.permission.READ_CALENDAR);
           permissionsTypesToBeAsked.add(Manifest.permission.WRITE_CALENDAR);
           break;
-        case "SMS":
-          permissionsTypesToBeAsked.add(Manifest.permission.READ_SMS);
-          break;
         default:
           promise.reject(ERROR_TAG + "_UNSUPPORTED", String.format("Cannot request permission: %s", type));
           return;
