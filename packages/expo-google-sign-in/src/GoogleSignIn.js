@@ -7,6 +7,8 @@ import GoogleUser from './GoogleUser';
 
 import type { GoogleSignInOptions, GoogleSignInAuthResult } from './GoogleSignIn.types';
 
+export const { ERRORS, SCOPES, TYPES } = ExpoGoogleSignIn;
+
 const DEFAULT_SCOPES = [SCOPES.PROFILE, SCOPES.EMAIL];
 
 const { Constants } = requireConstants();
@@ -165,7 +167,6 @@ export async function getPhotoAsync(size: number = 128): Promise<string | null> 
   return await ExpoGoogleSignIn.getPhotoAsync(size);
 }
 
-export const { ERRORS, SCOPES, TYPES } = ExpoGoogleSignIn;
 
 export { GoogleAuthData } from './GoogleAuthData';
 export { GoogleAuthentication } from './GoogleAuthentication';
