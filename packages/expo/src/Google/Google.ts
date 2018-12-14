@@ -32,8 +32,7 @@ type LogInResult =
 
 export async function logInAsync(config: LogInConfig): Promise<LogInResult> {
   if (!AppAuth.authAsync) {
-    /* TODO: Bacon: Should we inform that the native method isn't available or the JS? AppAuth or Google */
-    throw new UnavailabilityError('Google', 'logInAsync');
+    throw new UnavailabilityError('AppAuth', 'logInAsync');
   }
 
   const { behavior = 'web' } = config;

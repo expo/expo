@@ -1,4 +1,5 @@
 // @flow
+import Constants from 'expo-constants';
 import { UnavailabilityError } from 'expo-errors';
 import invariant from 'invariant';
 
@@ -10,16 +11,6 @@ import type { GoogleSignInOptions, GoogleSignInAuthResult } from './GoogleSignIn
 export const { ERRORS, SCOPES, TYPES } = ExpoGoogleSignIn;
 
 const DEFAULT_SCOPES = [SCOPES.PROFILE, SCOPES.EMAIL];
-
-const { Constants } = requireConstants();
-
-function requireConstants() {
-  try {
-    return require('expo-constants').default;
-  } catch (error) {
-    throw new Error('expo-google-sign-in needs expo-constants to be installed');
-  }
-}
 
 let _initialization: Promise<void>;
 let _options: GoogleSignInOptions = {};
