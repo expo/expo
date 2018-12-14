@@ -19,15 +19,15 @@ import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.UIBlock;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
-import com.swmansion.gesturehandler.FlingGestureHandler;
-import com.swmansion.gesturehandler.GestureHandler;
-import com.swmansion.gesturehandler.LongPressGestureHandler;
-import com.swmansion.gesturehandler.NativeViewGestureHandler;
-import com.swmansion.gesturehandler.OnTouchEventListener;
-import com.swmansion.gesturehandler.PanGestureHandler;
-import com.swmansion.gesturehandler.PinchGestureHandler;
-import com.swmansion.gesturehandler.RotationGestureHandler;
-import com.swmansion.gesturehandler.TapGestureHandler;
+import versioned.host.exp.exponent.modules.api.components.gesturehandler.FlingGestureHandler;
+import versioned.host.exp.exponent.modules.api.components.gesturehandler.GestureHandler;
+import versioned.host.exp.exponent.modules.api.components.gesturehandler.LongPressGestureHandler;
+import versioned.host.exp.exponent.modules.api.components.gesturehandler.NativeViewGestureHandler;
+import versioned.host.exp.exponent.modules.api.components.gesturehandler.OnTouchEventListener;
+import versioned.host.exp.exponent.modules.api.components.gesturehandler.PanGestureHandler;
+import versioned.host.exp.exponent.modules.api.components.gesturehandler.PinchGestureHandler;
+import versioned.host.exp.exponent.modules.api.components.gesturehandler.RotationGestureHandler;
+import versioned.host.exp.exponent.modules.api.components.gesturehandler.TapGestureHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +35,7 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
-import static com.swmansion.gesturehandler.GestureHandler.HIT_SLOP_NONE;
+import static versioned.host.exp.exponent.modules.api.components.gesturehandler.GestureHandler.HIT_SLOP_NONE;
 
 @ReactModule(name=RNGestureHandlerModule.MODULE_NAME)
 public class RNGestureHandlerModule extends ReactContextBaseJavaModule {

@@ -10,8 +10,8 @@ import com.facebook.react.ReactRootView;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
-import com.swmansion.gesturehandler.GestureHandler;
-import com.swmansion.gesturehandler.GestureHandlerOrchestrator;
+import versioned.host.exp.exponent.modules.api.components.gesturehandler.GestureHandler;
+import versioned.host.exp.exponent.modules.api.components.gesturehandler.GestureHandlerOrchestrator;
 
 public class RNGestureHandlerRootHelper {
 
