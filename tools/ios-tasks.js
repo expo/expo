@@ -813,7 +813,6 @@ exports.addVersionAsync = async function addVersionAsync(
           `cp -R ${rootPath}/${RELATIVE_UNIVERSAL_MODULES_PATH}/${libName}/ios/ ${newVersionPath}/${podName}`,
           `mv ${newVersionPath}/${podName}/${podName} ${newVersionPath}/${podName}/${versionedPodNames[podName]}`,
           `cp -R ${rootPath}/${RELATIVE_UNIVERSAL_MODULES_PATH}/${libName}/package.json ${newVersionPath}/${podName}`,
-          `rm -r ${newVersionPath}/${podName}/${podName}.xcodeproj`,
         ].join(' && ')
       )
       .join(' && ')
