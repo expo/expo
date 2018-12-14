@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "postinstall": "expo-yarn-workspaces postinstall",
-    "test": "cd runner && yarn && cd .. && node runner/index.js ."
+    "test": "cd runner && yarn && cd .. && node runner/index.js .",
+    "web": "webpack-dev-server -d --config ./webpack.config.js --inline --colors --content-base web/"
   },
   "author": "",
   "license": "MIT",
@@ -13,6 +14,15 @@
     "group": "client"
   },
   "dependencies": {
+    "@react-navigation/web": "^1.0.0-alpha.7",
+    "case-sensitive-paths-webpack-plugin": "^2.1.2",
+    "html-loader": "^0.5.5",
+    "html-webpack-plugin": "4.0.0-alpha.2",
+    "pnp-webpack-plugin": "^1.2.1",
+    "react-dev-utils": "6.0.5",
+    "react-dom": "16.6.1",
+    "react-native-web": "^0.9.6",
+    "webpack-manifest-plugin": "^2.0.4",
     "async-retry": "^1.1.4",
     "expo": "^31.0.0-rc.0",
     "i18n-js": "^3.0.11",
@@ -24,5 +34,24 @@
     "should": "^13.2.3",
     "should-sinon": "^0.0.6",
     "sinon": "^7.1.1"
-  }
+  },
+  "devDependencies": {
+    "babel-loader": "^8.0.4",
+    "babel-plugin-react-native-web": "^0.9.6",
+    "babel-preset-expo": "^5.0.0",
+    "css-loader": "^1.0.1",
+    "expo-yarn-workspaces": "^1.0.0",
+    "file-loader": "^2.0.0",
+    "react-native-scripts": "^2.0.1",
+    "style-loader": "^0.23.1",
+    "webpack": "^4.24.0",
+    "webpack-cli": "^3.1.2",
+    "webpack-dev-server": "3.1.10"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
 }
