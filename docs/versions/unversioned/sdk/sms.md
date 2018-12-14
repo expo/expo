@@ -6,11 +6,11 @@ Provides access to the system's UI/app for sending SMS messages.
 
 ### `Expo.SMS.isAvailableAsync()`
 
-Determine whether the SMS is available.
+Determines whether SMS is available.
 
 #### Returns
 
-Returns a promise that resolves to a `Boolean`, indicating whether the SMS is available on this device.
+Returns a promise that resolves to a `Boolean`, indicating whether SMS is available on this device.
 
 #### Example
 
@@ -25,9 +25,7 @@ if (isAvailable) {
 
 ### `Expo.SMS.sendSMSAsync(addresses, message)`
 
-Opens default UI/app for sending SMS messages with prefilled addresses and message.
-
-**Requires** `Permissions.SMS`.
+Opens the default UI/app for sending SMS messages with prefilled addresses and message.
 
 #### Arguments
 
@@ -37,10 +35,13 @@ Opens default UI/app for sending SMS messages with prefilled addresses and messa
 
 #### Returns
 
-Returns a `Promise` that resolves when SMS action is invoked by the user with corresponding result:
+Returns a `Promise` that resolves when the SMS action is invoked by the user, with corresponding result:
 
 - If the user cancelled the SMS sending process: `{ result: 'cancelled' }`.
 - If the user has sent/scheduled message for sending: `{ result: 'sent' }`.
+- If the status of the SMS message cannot be determined: `{ result: 'unknown' }`.
+
+Android does not provide information about the status of the SMS message, so on Android devices the `Promise` will always resolve with `{ result: 'unknown' }`.
 
 **_Note_**: The only feedback collected by this module is whether any message has been sent. That means we do not check actual content of message nor recipients list.
 
