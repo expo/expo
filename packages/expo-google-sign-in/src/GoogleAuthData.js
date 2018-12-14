@@ -1,19 +1,18 @@
 // @flow
 
-class AuthData {
+class GoogleAuthData {
   constructor() {
     this.equals = this.equals.bind(this);
     this.toJSON = this.toJSON.bind(this);
   }
 
   equals(other: ?any): boolean {
-    if (!other || !(other instanceof AuthData)) return false;
-    return true;
+    return other && other instanceof GoogleAuthData;
   }
 
-  toJSON(): object {
+  toJSON(): { [string]: any } {
     return {};
   }
 }
 
-export default AuthData;
+export default GoogleAuthData;

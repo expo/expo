@@ -1,6 +1,6 @@
-import { AppAuth, Google } from 'expo';
+import { AppAuth } from 'expo';
 import React from 'react';
-import { Alert, AsyncStorage, Button, StyleSheet, Text, View } from 'react-native';
+import { AsyncStorage, Button, StyleSheet, Text, View } from 'react-native';
 
 const GUID = '603386649315-vp4revvrcgrcjme51ebuhbkbspl048l9';
 const config = {
@@ -79,39 +79,6 @@ export default class AuthSessionScreen extends React.Component {
     }
   };
 
-  _testGoogleLoginAsync = async () => {
-    try {
-      const result = await Google.logInAsync({
-        behavior: 'web',
-        androidStandaloneAppClientId:
-          '603386649315-87mbvgc739sec2gjtptl701ha62pi98p.apps.googleusercontent.com',
-        androidClientId: '603386649315-9rbv8vmv2vvftetfbvlrbufcps1fajqf.apps.googleusercontent.com',
-        iosStandaloneAppClientId:
-          '603386649315-1b2o2gole94qc6h4prj6lvoiueq83se4.apps.googleusercontent.com',
-        iosClientId: '603386649315-vp4revvrcgrcjme51ebuhbkbspl048l9.apps.googleusercontent.com',
-        scopes: ['profile', 'email'],
-      });
-
-      const { type } = result;
-
-      if (type === 'success') {
-        // Avoid race condition with the WebView hiding when using web-based sign in
-        setTimeout(() => {
-          Alert.alert('Logged in!', JSON.stringify(result), [
-            {
-              text: 'OK!',
-              onPress: () => {
-                console.log({ result });
-              },
-            },
-          ]);
-        }, 1000);
-      }
-    } catch ({ message }) {
-      Alert.alert('Error! ' + message);
-    }
-  };
-
   _toggleAuthAsync = async () => {
     try {
       if (this.state.authState) {
@@ -129,13 +96,12 @@ export default class AuthSessionScreen extends React.Component {
   get hasAuth() {
     return this.state.authState;
   }
+
   render() {
     const title = this.hasAuth ? 'Sign out' : 'Sign in';
     return (
       <View style={styles.container}>
         <Button title={title} onPress={this._toggleAuthAsync} />
-        <Button title={'Google'} onPress={this._testGoogleLoginAsync} />
-
         {this.hasAuth ? (
           <Text style={styles.text}>
             Result: {JSON.stringify(this.state.authState).slice(0, 50)}

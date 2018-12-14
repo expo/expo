@@ -1,6 +1,6 @@
 {
   "name": "EXGoogleSignIn",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "summary": "Expo Unimodule for interfacing with the native GoogleSignIn library.",
   "description": "Expo Unimodule for interfacing with the native GoogleSignIn library.",
   "license": "MIT",
@@ -20,7 +20,7 @@
 
     ],
     "GoogleSignIn": [
-      "~> 4.1"
+      "~> 4.4"
     ]
   }
 }

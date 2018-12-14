@@ -1,11 +1,13 @@
 // @flow
+import { UnavailabilityError } from 'expo-errors';
+import invariant from 'invariant';
 
 import ExpoGoogleSignIn from './ExpoGoogleSignIn';
-import Identity from './Identity';
-import Authentication from './Authentication';
+import GoogleAuthentication from './GoogleAuthentication';
+import GoogleIdentity from './GoogleIdentity';
 
-class User extends Identity {
-  auth: ?Authentication;
+class GoogleUser extends GoogleIdentity {
+  auth: ?GoogleAuthentication;
   scopes: Array<string>;
   hostedDomain: ?string;
   serverAuthCode: ?string;
@@ -24,18 +26,20 @@ class User extends Identity {
     if (!ExpoGoogleSignIn.clearCacheAsync) {
       return;
     }
-    if (!this.auth || !this.auth.accessToken) {
-      throw new Error('GoogleSignIn: User.clearCache(): Invalid accessToken');
-    }
-    return ExpoGoogleSignIn.clearCacheAsync({ token: this.auth.accessToken });
+    invariant(
+      this.auth && this.auth.accessToken,
+      'GoogleSignIn: GoogleUser.clearCache(): Invalid accessToken'
+    );
+    return await ExpoGoogleSignIn.clearCacheAsync({ token: this.auth.accessToken });
   };
 
   getHeaders = (): Promise<{
     [string]: string,
   }> => {
-    if (!this.auth.accessToken || this.auth.accessToken === '') {
-      throw new Error('GoogleSignIn: User.getHeaders(): Invalid accessToken');
-    }
+    invariant(
+      this.auth && this.auth.accessToken && this.auth.accessToken !== '',
+      'GoogleSignIn: GoogleUser.getHeaders(): Invalid accessToken'
+    );
     return {
       Authorization: `Bearer ${this.auth.accessToken}`,
       Accept: 'application/json',
@@ -43,7 +47,10 @@ class User extends Identity {
     };
   };
 
-  refreshAuth = async (): Promise<?Authentication> => {
+  refreshAuth = async (): Promise<?GoogleAuthentication> => {
+    if (!ExpoGoogleSignIn.getTokensAsync) {
+      throw new UnavailabilityError('GoogleSignIn', 'getTokensAsync');
+    }
     const response: {
       idToken: ?string,
       accessToken: ?string,
@@ -55,7 +62,7 @@ class User extends Identity {
       response.idToken = this.auth.idToken;
     }
     if (!this.auth) {
-      this.auth = new Authentication(response);
+      this.auth = new GoogleAuthentication(response);
     } else {
       this.auth.idToken = response.idToken;
       this.auth.accessToken = response.accessToken;
@@ -64,7 +71,7 @@ class User extends Identity {
   };
 
   equals(other: ?any): boolean {
-    if (!super.equals(other) || !(other instanceof User)) {
+    if (!super.equals(other) || !(other instanceof GoogleUser)) {
       return false;
     }
 
@@ -76,7 +83,7 @@ class User extends Identity {
     );
   }
 
-  toJSON(): object {
+  toJSON(): { [string]: any } {
     let auth = this.auth;
     if (this.auth && this.auth.toJSON) {
       auth = this.auth.toJSON();
@@ -92,4 +99,4 @@ class User extends Identity {
   }
 }
 
-export default User;
+export default GoogleUser;
