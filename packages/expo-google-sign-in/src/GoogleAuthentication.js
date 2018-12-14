@@ -1,8 +1,7 @@
 // @flow
+import GoogleAuthData from './GoogleAuthData';
 
-import AuthData from './AuthData';
-
-class Authentication extends AuthData {
+class GoogleAuthentication extends GoogleAuthData {
   clientId: ?string;
   accessToken: ?string;
   accessTokenExpirationDate: ?number;
@@ -30,7 +29,7 @@ class Authentication extends AuthData {
   }
 
   equals(other: ?any): boolean {
-    if (!super.equals(other) || !(other instanceof Authentication)) {
+    if (!super.equals(other) || !(other instanceof GoogleAuthentication)) {
       return false;
     }
 
@@ -44,7 +43,7 @@ class Authentication extends AuthData {
     );
   }
 
-  toJSON(): object {
+  toJSON(): { [string]: any } {
     return {
       ...super.toJSON(),
       clientId: this.clientId,
@@ -57,4 +56,4 @@ class Authentication extends AuthData {
   }
 }
 
-export default Authentication;
+export default GoogleAuthentication;
