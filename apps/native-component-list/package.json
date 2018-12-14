@@ -6,28 +6,39 @@
   "private": true,
   "main": "__generated__/AppEntry.js",
   "scripts": {
+    "web": "webpack-dev-server -d --config ./webpack.config.js --inline --colors --content-base web/",
+    "build": "NODE_ENV=production webpack -p --config ./webpack.config.js",
     "postinstall": "expo-yarn-workspaces postinstall"
   },
   "powertools": {
     "group": "client"
   },
   "dependencies": {
+    "@react-navigation/web": "^1.0.0-alpha.7",
+    "case-sensitive-paths-webpack-plugin": "^2.1.2",
     "expo": "^31.0.0",
     "expo-processing": "1.0.3",
     "expo-three": "^2.0.3",
     "fbemitter": "^2.1.1",
     "gl-mat4": "^1.1.4",
     "hsv2rgb": "^1.1.0",
+    "html-loader": "^0.5.5",
+    "html-webpack-plugin": "4.0.0-alpha.2",
     "i18n-js": "^3.1.0",
     "path": "^0.12.7",
     "pixi.js": "^4.6.1",
+    "pnp-webpack-plugin": "^1.2.1",
     "processing-js": "^1.6.6",
     "prop-types": "^15.6.0",
     "react": "16.5.0",
+    "react-art": "^16.6.1",
+    "react-dev-utils": "6.0.5",
+    "react-dom": "16.6.1",
     "react-native": "0.57.1",
     "react-native-is-iphonex": "^1.0.1",
     "react-native-paper": "github:brentvatne/react-native-paper#@brent/fix-bottom-navigation-rn-57",
     "react-native-platform-touchable": "^1.1.1",
+    "react-native-web": "^0.9.6",
     "react-navigation": "3.0.0-rc.2",
     "react-navigation-header-buttons": "^1.2.1",
     "react-navigation-material-bottom-tabs": "1.0.0-alpha.4",
@@ -35,9 +46,26 @@
     "three": "^0.88.0",
     "url": "^0.11.0",
     "uuid": "^3.1.0",
-    "victory-native": "^30.4.0"
+    "victory-native": "^30.4.0",
+    "webpack-manifest-plugin": "^2.0.4"
   },
   "devDependencies": {
-    "babel-preset-expo": "^5.0.0"
-  }
+    "babel-loader": "^8.0.4",
+    "babel-plugin-react-native-web": "^0.9.6",
+    "babel-preset-expo": "^5.0.0",
+    "css-loader": "^1.0.1",
+    "expo-yarn-workspaces": "^1.0.0",
+    "file-loader": "^2.0.0",
+    "react-native-scripts": "^2.0.1",
+    "style-loader": "^0.23.1",
+    "webpack": "^4.24.0",
+    "webpack-cli": "^3.1.2",
+    "webpack-dev-server": "3.1.10"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
 }
