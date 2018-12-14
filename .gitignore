@@ -91,3 +91,9 @@ shellAppWorkspaces
 
 # Expo Client builds
 /client-builds
+
+# Expo web env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local

@@ -51,11 +51,12 @@ public class ErrorQueueAdapter extends ArrayAdapter<ExponentError> {
       }
 
       String lineNumber = "";
-      double lineNumberDouble = bundle.getDouble("lineNumber");
-      if (lineNumberDouble > 0) {
-        lineNumber = ":" + (int)lineNumberDouble;
-      } else {
-        lineNumber = ":" + bundle.getInt("lineNumber");
+      Object lineNumberObject = bundle.get("lineNumber");
+
+      if (lineNumberObject instanceof Double) {
+        lineNumber = ":" + ((Double) lineNumberObject).intValue();
+      } else if (lineNumberObject instanceof Integer) {
+        lineNumber = ":" + ((Integer) lineNumberObject).intValue();
       }
 
       String stacktracePreview = bundle.getString("methodName") + fileName + lineNumber;

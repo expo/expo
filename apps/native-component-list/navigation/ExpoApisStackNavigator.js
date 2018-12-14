@@ -1,5 +1,6 @@
 import AppAuth from '../screens/AppAuthScreen';
 import AuthSession from '../screens/AuthSessionScreen';
+import BackgroundFetch from '../screens/BackgroundFetchScreen';
 import Branch from '../screens/BranchScreen';
 import Calendars from '../screens/CalendarsScreen';
 import Constants from '../screens/ConstantsScreen';
@@ -21,7 +22,7 @@ import IntentLauncher from '../screens/IntentLauncherScreen';
 import KeepAwake from '../screens/KeepAwakeScreen';
 import LocalAuthentication from '../screens/LocalAuthenticationScreen';
 import Localization from '../screens/LocalizationScreen';
-import Location from '../screens/LocationScreen';
+import LocationScreens from '../screens/Location/LocationScreens';
 import MailComposer from '../screens/MailComposerScreen';
 import MediaLibraryScreens from '../screens/MediaLibrary/MediaLibraryScreens';
 import Notification from '../screens/NotificationScreen';
@@ -34,6 +35,7 @@ import SecureStore from '../screens/SecureStoreScreen';
 import Sensor from '../screens/SensorScreen';
 import SMS from '../screens/SMSScreen';
 import StoreReview from '../screens/StoreReview';
+import TaskManager from '../screens/TaskManagerScreen';
 import TextToSpeech from '../screens/TextToSpeechScreen';
 import Util from '../screens/UtilScreen';
 import ViewShot from '../screens/ViewShotScreen';
@@ -46,6 +48,7 @@ const ExpoApisStackNavigator = createStackNavigator(
     ExpoApis,
     AppAuth,
     AuthSession,
+    BackgroundFetch,
     Branch,
     DocumentPicker,
     Localization,
@@ -69,7 +72,7 @@ const ExpoApisStackNavigator = createStackNavigator(
     ...MediaLibraryScreens,
     Notification,
     LocalAuthentication,
-    Location,
+    ...LocationScreens,
     Pedometer,
     Permissions,
     Print,
@@ -79,6 +82,7 @@ const ExpoApisStackNavigator = createStackNavigator(
     Sensor,
     SMS,
     StoreReview,
+    TaskManager,
     TextToSpeech,
     Util,
     WebBrowser,

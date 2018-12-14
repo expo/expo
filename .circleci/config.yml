@@ -179,6 +179,9 @@ jobs:
           command: build
           working_directory: ~/expo/packages/expo-ads-admob
       - yarn:
+          command: build
+          working_directory: ~/expo/packages/expo-camera
+      - yarn:
           command: test --maxWorkers 1
           working_directory: ~/expo/packages/expo-font
       - yarn:

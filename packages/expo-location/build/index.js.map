@@ -1,0 +1,1 @@
+{"version":3,"file":"index.js","sourceRoot":"","sources":["../src/index.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,QAAQ,MAAM,YAAY,CAAC;AAEvC,eAAe,QAAQ,CAAC;AACxB,OAAO,EAAE,QAAQ,EAAE,CAAC","sourcesContent":["import * as Location from './Location';\n\nexport default Location;\nexport { Location };\n"]}

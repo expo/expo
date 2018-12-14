@@ -61,7 +61,6 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
   private static final String NAME = "ExponentFileSystem";
   private static final String TAG = FileSystemModule.class.getSimpleName();
   private static final String EXDownloadProgressEventName = "Exponent.downloadProgress";
-  private static final String SHELL_APP_EMBEDDED_MANIFEST_PATH = "shell-app-manifest.json";
   private static final long MIN_EVENT_DT_MS = 100;
   private static final String HEADER_KEY = "headers";
 
@@ -96,33 +95,8 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
     constants.put("documentDirectory", Uri.fromFile(getContext().getFilesDir()).toString() + "/");
     constants.put("cacheDirectory", Uri.fromFile(getContext().getCacheDir()).toString() + "/");
     constants.put("bundleDirectory", "asset:///");
-    constants.put("bundledAssets", getBundledAssets());
 
     return constants;
-  }
-
-  private List<String> getBundledAssets() {
-//    // Fastpath, only standalone apps support bundled assets.
-//    if (!ConstantsModule.getAppOwnership(mExperienceProperties).equals("standalone")) {
-//      return null;
-//    }
-    try {
-      InputStream inputStream = getContext().getAssets().open(SHELL_APP_EMBEDDED_MANIFEST_PATH);
-      String jsonString = IOUtils.toString(inputStream);
-      JSONObject manifest = new JSONObject(jsonString);
-      JSONArray bundledAssetsJSON = manifest.getJSONArray("bundledAssets");
-      if (bundledAssetsJSON == null) {
-        return null;
-      }
-      List<String> result = new ArrayList<>();
-      for (int i = 0; i < bundledAssetsJSON.length(); i++) {
-        result.add(bundledAssetsJSON.getString(i));
-      }
-      return result;
-    } catch (Exception ex) {
-      ex.printStackTrace();
-      return null;
-    }
   }
 
   private File uriToFile(Uri uri) {

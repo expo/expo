@@ -10,6 +10,7 @@ import android.util.DisplayMetrics;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import javax.inject.Inject;
@@ -79,6 +80,14 @@ public class ConstantsBinding extends ConstantsService implements ConstantsInter
     constants.put("platform", platform);
 
     return constants;
+  }
+
+  public String getAppId() {
+    try {
+      return mManifest.getString("id");
+    } catch (JSONException e) {
+      return null;
+    }
   }
 
   public String getAppOwnership() {

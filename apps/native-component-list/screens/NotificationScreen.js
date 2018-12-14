@@ -43,14 +43,14 @@ export default class NotificationScreen extends React.Component {
         <HeadingText>Push Notifications</HeadingText>
         <ListButton onPress={this._sendNotificationAsync} title="Send me a push notification" />
 
-        <HeadingText>Custom notification categories (iOS)</HeadingText>
+        <HeadingText>Custom notification categories</HeadingText>
         <ListButton
           onPress={this._createCategoryAsync}
           title="Create a custom 'message' category"
         />
         <ListButton
           onPress={this._scheduleLocalNotificationWithCategoryAsync}
-          title="Schedule notification for 10 seconds from now with a 'message' category (iOS)"
+          title="Schedule notification for 10 seconds from now with a 'message' category"
         />
         <ListButton
           onPress={this._deleteCategoryAsync}
@@ -130,7 +130,7 @@ export default class NotificationScreen extends React.Component {
   };
 
   _createCategoryAsync = () =>
-    Notifications.createCategoryIOSAsync('message', [
+    Notifications.createCategoryAsync('message', [
       {
         actionId: 'dismiss',
         buttonTitle: 'Dismiss notification',
@@ -149,7 +149,7 @@ export default class NotificationScreen extends React.Component {
       },
     ]);
 
-  _deleteCategoryAsync = () => Notifications.deleteCategoryIOSAsync('message');
+  _deleteCategoryAsync = () => Notifications.deleteCategoryAsync('message');
 
   _scheduleLocalNotificationWithCategoryAsync = async () => {
     await this._obtainUserFacingNotifPermissionsAsync();
@@ -160,11 +160,11 @@ export default class NotificationScreen extends React.Component {
         body: 'Howdy, fella!',
         ios: {
           sound: true,
-          categoryId: 'message',
         },
         android: {
           vibrate: true,
         },
+        categoryId: 'message',
       },
       {
         time: new Date().getTime() + 10000,
