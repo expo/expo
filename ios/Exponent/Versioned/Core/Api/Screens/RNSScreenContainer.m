@@ -113,10 +113,13 @@
     }
   }
 
-  if (activeScreenChanged) {
+  if (activeScreenChanged && _controller.presentedViewController == nil) {
     // if user has reachability enabled (one hand use) and the window is slided down the below
     // method will force it to slide back up as it is expected to happen with UINavController when
     // we push or pop views.
+    // We only do that if `presentedViewController` is nil, as otherwise it'd mean that modal has
+    // been presented on top of recently changed controller in which case the below method would
+    // dismiss such a modal (e.g., permission modal or alert)
     [_controller dismissViewControllerAnimated:NO completion:nil];
   }
 }
