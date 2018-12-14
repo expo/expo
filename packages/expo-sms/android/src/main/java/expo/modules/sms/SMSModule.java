@@ -51,7 +51,6 @@ public class SMSModule extends ExportedModule implements ModuleRegistryConsumer,
 
   @ExpoMethod
   public void sendSMSAsync(final ArrayList<String> addresses, final String message, final Promise promise) {
-
     if (!getContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_TELEPHONY) &&
         !getContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_TELEPHONY_CDMA)) {
       promise.reject(ERROR_TAG + "_UNAVAILABLE", "SMS service not available");
@@ -100,15 +99,16 @@ public class SMSModule extends ExportedModule implements ModuleRegistryConsumer,
 
   @Override
   public void onHostResume() {
-    if (mSMSComposerOpened) {
+    if (mSMSComposerOpened && mPromise != null) {
       // the only way to check the status of the message is to query the device's SMS database
       // but this requires READ_SMS permission, which Google is heavily restricting beginning Jan 2019
       // so we just resolve with an unknown value
-      mSMSComposerOpened = false;
       Bundle result = new Bundle();
       result.putString("result", "unknown");
       mPromise.resolve(result);
+      mPromise = null;
     }
+    mSMSComposerOpened = false;
   }
 
   @Override
