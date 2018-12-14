@@ -25,7 +25,7 @@ The `clientId` of the app from the Google APIs (or Firebase) console, must be se
 
 You will also need to define a custom URL scheme for `Google Sign-In` to handle the returned data.
 
-> If this step is skipped you should see an error: `"Exception 'Your app is missing support for the following URL schemes: com.googleusercontent.apps.{{CLIENT_ID}}' ...`
+**If this step is skipped you should see an error: `"Exception 'Your app is missing support for the following URL schemes: com.googleusercontent.apps.{{CLIENT_ID}}' ...`**
 
 This can be done in the app.json, the value should be your `REVERSED_CLIENT_ID` iOS:
 
@@ -50,25 +50,21 @@ This can be done in the app.json, the value should be your `REVERSED_CLIENT_ID` 
 1.  Append the following lines to `android/settings.gradle`:
 
     ```gradle
+    include ':expo-core'
+    project(':expo-core').projectDir = new File(rootProject.projectDir, '../node_modules/expo-core/android')
+
     include ':expo-google-sign-in'
     project(':expo-google-sign-in').projectDir = new File(rootProject.projectDir, '../node_modules/expo-google-sign-in/android')
     ```
 
-    and if not already included
-
-    ```gradle
-    include ':expo-core'
-    project(':expo-core').projectDir = new File(rootProject.projectDir, '../node_modules/expo-core/android')
-    ```
-
 2.  Insert the following lines inside the dependencies block in `android/app/build.gradle`:
-    ```gradle
-    api project(':expo-google-sign-in')
-    ```
-    and if not already included
+
     ```gradle
     api project(':expo-core')
+
+    api project(':expo-google-sign-in')
     ```
+
 3.  In order to access this module from Expo, you will need to include it in the `expoPackages` export:
     `./android/app/src/main/java/host/exp/exponent/MainActivity.java`
     ```java
