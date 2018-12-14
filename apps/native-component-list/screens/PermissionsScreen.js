@@ -5,9 +5,7 @@ import { Permissions } from 'expo';
 const CustomButton = ({ title, disabled, onPress }) => (
   <TouchableOpacity disabled={disabled} onPress={onPress}>
     <View style={[customButtonStyles.button, disabled && customButtonStyles.disabled]}>
-      <Text style={customButtonStyles.text}>
-        {title}
-      </Text>
+      <Text style={customButtonStyles.text}>{title}</Text>
     </View>
   </TouchableOpacity>
 );
@@ -40,7 +38,7 @@ export default class PermissionsScreen extends React.Component {
   invokePermissionsFunction = async (...types) => {
     const result = await Permissions[this.state.permissionsFunction](...types);
     alert(JSON.stringify(result, null, 2));
-  }
+  };
 
   renderSinglePermissionsButtons() {
     return [
@@ -54,12 +52,8 @@ export default class PermissionsScreen extends React.Component {
       'CAMERA_ROLL',
       'CALENDAR',
       'REMINDERS',
-      'SMS',
     ].map(permissionType => (
-      <View
-        key={permissionType}
-        style={styles.button}
-      >
+      <View key={permissionType} style={styles.button}>
         <CustomButton
           onPress={() => this.invokePermissionsFunction(Permissions[permissionType])}
           title={`Permissions.${permissionType}`}
@@ -70,61 +64,55 @@ export default class PermissionsScreen extends React.Component {
 
   render() {
     return (
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={styles.contentContainer}
-      >
+      <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
         <View>
           <Text style={styles.switchText}>
-            Function to be invoked Permissions.{this.state.permissionsFunction}
+            Function to be invoked Permissions.
+            {this.state.permissionsFunction}
           </Text>
           <View style={styles.switchContainer}>
             <View style={styles.switchButton}>
               <CustomButton
                 disabled={this.state.permissionsFunction === 'askAsync'}
                 title="askAsync"
-                onPress={() => this.setState({ permissionsFunction: 'askAsync'})}
+                onPress={() => this.setState({ permissionsFunction: 'askAsync' })}
               />
             </View>
             <View style={styles.switchButton}>
               <CustomButton
                 disabled={this.state.permissionsFunction === 'getAsync'}
                 title="getAsync"
-                onPress={() => this.setState({ permissionsFunction: 'getAsync'})}
+                onPress={() => this.setState({ permissionsFunction: 'getAsync' })}
               />
             </View>
           </View>
         </View>
-        <Text style={styles.header}>
-          Single Permissions
-        </Text>
-        <View>
-          {this.renderSinglePermissionsButtons()}
-        </View>
-        <Text style={styles.header}>
-          Multiple Permissions
-        </Text>
+        <Text style={styles.header}>Single Permissions</Text>
+        <View>{this.renderSinglePermissionsButtons()}</View>
+        <Text style={styles.header}>Multiple Permissions</Text>
         <View>
           <View style={styles.button}>
             <CustomButton
-              onPress={() => this.invokePermissionsFunction(
-                ...[
-                  Permissions.CAMERA,
-                  Permissions.AUDIO_RECORDING,
-                  Permissions.LOCATION,
-                  Permissions.USER_FACING_NOTIFICATIONS,
-                  Permissions.NOTIFICATIONS,
-                  Permissions.CONTACTS,
-                  Permissions.SYSTEM_BRIGHTNESS,
-                  Permissions.CAMERA_ROLL,
-                  Permissions.CALENDAR,
-                  Permissions.REMINDERS,
-                  Permissions.SMS,
-                ].filter(n => n && typeof n !== 'boolean')
-              )}
-              title={'Ask for Permissions: '
-                + 'CAMERA, AUDIO_RECORDING, LOCATION,'
-                + 'USER_FACING_NOTIFICATIONS, NOTIFICATIONS, CONTACTS, SYSTEM_BRIGHTNESS, CAMERA_ROLL, CALENDAR, REMINDERS, SMS'
+              onPress={() =>
+                this.invokePermissionsFunction(
+                  ...[
+                    Permissions.CAMERA,
+                    Permissions.AUDIO_RECORDING,
+                    Permissions.LOCATION,
+                    Permissions.USER_FACING_NOTIFICATIONS,
+                    Permissions.NOTIFICATIONS,
+                    Permissions.CONTACTS,
+                    Permissions.SYSTEM_BRIGHTNESS,
+                    Permissions.CAMERA_ROLL,
+                    Permissions.CALENDAR,
+                    Permissions.REMINDERS,
+                  ].filter(n => n && typeof n !== 'boolean')
+                )
+              }
+              title={
+                'Ask for Permissions: ' +
+                'CAMERA, AUDIO_RECORDING, LOCATION,' +
+                'USER_FACING_NOTIFICATIONS, NOTIFICATIONS, CONTACTS, SYSTEM_BRIGHTNESS, CAMERA_ROLL, CALENDAR, REMINDERS'
               }
             />
           </View>
@@ -141,7 +129,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   contentContainer: {
-    alignItems: 'center'
+    alignItems: 'center',
   },
   button: {
     padding: 10,

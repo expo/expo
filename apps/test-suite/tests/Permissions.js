@@ -11,9 +11,10 @@ export function test(t) {
       t.it('has proper shape', async () => {
         const result = await Permissions.getAsync(Permissions.NOTIFICATIONS);
         const keys = Object.keys(result);
-        const notificationsResult = result.permissions && result.permissions[Permissions.NOTIFICATIONS];
+        const notificationsResult =
+          result.permissions && result.permissions[Permissions.NOTIFICATIONS];
         const notificationsResultKeys = notificationsResult && Object.keys(notificationsResult);
-        
+
         // check top-level
         t.expect(keys).toContain('status');
         t.expect(keys).toContain('expires');
@@ -35,9 +36,10 @@ export function test(t) {
       t.it('has proper shape', async () => {
         const result = await Permissions.getAsync(Permissions.USER_FACING_NOTIFICATIONS);
         const keys = Object.keys(result);
-        const notificationsResult = result.permissions && result.permissions[Permissions.USER_FACING_NOTIFICATIONS];
+        const notificationsResult =
+          result.permissions && result.permissions[Permissions.USER_FACING_NOTIFICATIONS];
         const notificationsResultKeys = notificationsResult && Object.keys(notificationsResult);
-        
+
         // check top-level
         t.expect(keys).toContain('status');
         t.expect(keys).toContain('expires');
@@ -65,9 +67,9 @@ export function test(t) {
       }
     });
 
-    t.describe('of [Permissions.CAMERA, Permissions.SMS, Permissions.CALENDAR]', () => {
+    t.describe('of [Permissions.CAMERA, Permissions.CALENDAR]', () => {
       t.it('has proper shape', async () => {
-        const result = await Permissions.getAsync(Permissions.CAMERA, Permissions.SMS, Permissions.CALENDAR);
+        const result = await Permissions.getAsync(Permissions.CAMERA, Permissions.CALENDAR);
         const keys = Object.keys(result);
         const permissionsKeys = Object.keys(result.permissions);
 
@@ -78,16 +80,11 @@ export function test(t) {
 
         // check component level
         t.expect(permissionsKeys).toContain(Permissions.CAMERA);
-        t.expect(permissionsKeys).toContain(Permissions.SMS);
         t.expect(permissionsKeys).toContain(Permissions.CALENDAR);
 
         const cameraPermissionKeys = Object.keys(result.permissions[Permissions.CAMERA]);
         t.expect(cameraPermissionKeys).toContain('status');
         t.expect(cameraPermissionKeys).toContain('expires');
-
-        const SMSPermissionKeys = Object.keys(result.permissions[Permissions.SMS]);
-        t.expect(SMSPermissionKeys).toContain('status');
-        t.expect(SMSPermissionKeys).toContain('expires');
 
         const calendarPermissionKeys = Object.keys(result.permissions[Permissions.CALENDAR]);
         t.expect(calendarPermissionKeys).toContain('status');
