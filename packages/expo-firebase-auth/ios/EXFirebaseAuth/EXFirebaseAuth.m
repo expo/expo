@@ -60,6 +60,10 @@ EX_EXPORT_MODULE(ExpoFirebaseAuth);
 }
 
 - (void)dealloc {
+  [self invalidate];
+}
+
+- (void)invalidate {
   NSLog(@"EXFirebaseAuth:instance-destroyed");
   
   for(NSString* key in authStateHandlers) {
