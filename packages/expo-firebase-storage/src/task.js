@@ -128,20 +128,30 @@ export default class StorageTask {
     }
 
     if (_next) {
-      this.storage._addListener(this.path, StorageStatics.TaskEvent.STATE_CHANGED, _next);
+      this.storage._addListener(
+        this.path,
+        `Expo.Firebase.${StorageStatics.TaskEvent.STATE_CHANGED}`,
+        _next
+      );
     }
     if (_error) {
-      this.storage._addListener(this.path, `${this.type}_failure`, _error);
+      this.storage._addListener(this.path, `Expo.Firebase.${this.type}_failure`, _error);
     }
     if (_complete) {
-      this.storage._addListener(this.path, `${this.type}_success`, _complete);
+      this.storage._addListener(this.path, `Expo.Firebase.${this.type}_success`, _complete);
     }
 
     return () => {
       if (_next)
-        this.storage._removeListener(this.path, StorageStatics.TaskEvent.STATE_CHANGED, _next);
-      if (_error) this.storage._removeListener(this.path, `${this.type}_failure`, _error);
-      if (_complete) this.storage._removeListener(this.path, `${this.type}_success`, _complete);
+        this.storage._removeListener(
+          this.path,
+          `Expo.Firebase.${StorageStatics.TaskEvent.STATE_CHANGED}`,
+          _next
+        );
+      if (_error)
+        this.storage._removeListener(this.path, `Expo.Firebase.${this.type}_failure`, _error);
+      if (_complete)
+        this.storage._removeListener(this.path, `Expo.Firebase.${this.type}_success`, _complete);
     };
   }
 
