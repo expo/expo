@@ -6,41 +6,18 @@ import { utils } from 'expo-firebase-app';
 import invariant from 'invariant';
 import StorageStatics from './statics';
 
-type Storage = object;
-type StorageReference = object;
+import type {
+  Storage,
+  StorageReference,
+  FuncSnapshotType,
+  FuncErrorType,
+  NextOrObserverType,
+} from './index.types';
 
 export const UPLOAD_TASK = 'upload';
 export const DOWNLOAD_TASK = 'download';
 
 const { isFunction } = utils;
-
-declare type UploadTaskSnapshotType = {
-  bytesTransferred: number,
-  downloadURL: string | null,
-  metadata: Object, // TODO flow type def for https://firebase.google.com/docs/reference/js/firebase.storage.FullMetadata.html
-  ref: StorageReference,
-  state:
-    | typeof StorageStatics.TaskState.RUNNING
-    | typeof StorageStatics.TaskState.PAUSED
-    | typeof StorageStatics.TaskState.SUCCESS
-    | typeof StorageStatics.TaskState.CANCELLED
-    | typeof StorageStatics.TaskState.ERROR,
-  task: StorageTask,
-  totalBytes: number,
-};
-
-declare type FuncSnapshotType = null | ((snapshot: UploadTaskSnapshotType) => any);
-
-declare type FuncErrorType = null | ((error: Error) => any);
-
-declare type NextOrObserverType =
-  | null
-  | {
-      next?: FuncSnapshotType,
-      error?: FuncErrorType,
-      complete?: FuncSnapshotType,
-    }
-  | FuncSnapshotType;
 
 /**
  * @url https://firebase.google.com/docs/reference/js/firebase.storage.UploadTask
