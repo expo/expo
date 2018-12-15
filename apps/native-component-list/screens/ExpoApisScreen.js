@@ -123,6 +123,7 @@ export default class ExpoApisScreen extends React.Component {
         'SecureStore',
         'SMS',
         'StoreReview',
+        'TaskManager',
         'TextToSpeech',
         'Util',
         'WebBrowser',
