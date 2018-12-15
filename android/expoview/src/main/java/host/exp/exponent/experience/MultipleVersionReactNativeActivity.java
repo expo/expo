@@ -3,7 +3,7 @@
 package host.exp.exponent.experience;
 
 // Implement for each version.
-public class MultipleVersionReactNativeActivity extends ReactNativeActivity implements
+public class MultipleVersionReactNativeActivity extends ReactNativeActivity implements abi32_0_0.com.facebook.react.modules.core.DefaultHardwareBackBtnHandler,
     // The 4-space indentation is used by android-build-aar.sh.
     // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
     // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
