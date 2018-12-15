@@ -1016,15 +1016,6 @@
 			path = Exponent/Versioned/Core/Api/Calendar;
 			sourceTree = SOURCE_ROOT;
 		};
-		2519CCF8216B28D500FA7C80 /* NotificationCenter */ = {
-			isa = PBXGroup;
-			children = (
-				2519CCFA216B292600FA7C80 /* EXUserNotificationCenter.h */,
-				2519CCFB216B292600FA7C80 /* EXUserNotificationCenter.m */,
-			);
-			path = NotificationCenter;
-			sourceTree = "<group>";
-		};
 		3050F5A98E56E9379C36ABD2 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -1281,7 +1272,6 @@
 				B53BB2851C7E6C1E00D52FBD /* Analytics */,
 				B526B5031E6A543500606CAB /* ExpoKit */,
 				B5AC398B1E95A90B00540AA7 /* Kernel */,
-				2519CCF8216B28D500FA7C80 /* NotificationCenter */,
 				B5E49B521D1346FA00AA6436 /* Supporting */,
 				B5812C331C9CD59200A10345 /* Versioned */,
 				78CEE2D01ACD07D70095B124 /* Images.xcassets */,
@@ -1311,6 +1301,8 @@
 				B5AC39A61E95A90B00540AA7 /* EXRemoteNotificationManager.m */,
 				78D8252C2051217F00CBD9D9 /* NSData+EXRemoteNotifications.h */,
 				78D8252D2051217F00CBD9D9 /* NSData+EXRemoteNotifications.m */,
+				2519CCFA216B292600FA7C80 /* EXUserNotificationCenter.h */,
+				2519CCFB216B292600FA7C80 /* EXUserNotificationCenter.m */,
 			);
 			path = Notifications;
 			sourceTree = "<group>";

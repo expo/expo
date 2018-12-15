@@ -6,4 +6,6 @@
 
 @interface EXExpoUserNotificationCenterProxy : NSObject <EXInternalModule, EXUserNotificationCenterProxyInterface>
 
+- (instancetype)initWithUserNotificationCenter:(id<EXUserNotificationCenterProxyInterface>)userNotificationCenter;
+
 @end

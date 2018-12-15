@@ -23,18 +23,6 @@ static dispatch_queue_t queue;
   return self;
 }
 
-+ (instancetype)sharedInstance
-{
-  static EXUserNotificationCenter *theCenter;
-  static dispatch_once_t once;
-  dispatch_once(&once, ^{
-    if (!theCenter) {
-      theCenter = [[EXUserNotificationCenter alloc] init];
-    }
-  });
-  return theCenter;
-}
-
 - (void)requestAuthorizationWithOptions:(UNAuthorizationOptions)options completionHandler:(void (^)(BOOL granted, NSError *__nullable error))completionHandler {
   dispatch_async(queue, ^{
     [[UNUserNotificationCenter currentNotificationCenter] requestAuthorizationWithOptions:options completionHandler:^(BOOL granted, NSError * _Nullable error) {
