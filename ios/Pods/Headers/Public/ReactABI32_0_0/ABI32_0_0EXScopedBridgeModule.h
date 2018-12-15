@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI32_0_0/Expo/Core/ScopedModule/ABI32_0_0EXScopedBridgeModule.h
