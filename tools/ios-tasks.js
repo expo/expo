@@ -587,8 +587,8 @@ async function injectMacrosAsync(versionName, versionedReactPath, majorSDKVersio
   );
   await _transformFileContentsAsync(componentDataFilename, fileContents => {
     return fileContents.replace(
-      /(instancetype\)initWithManagerClass[.\S\s]+?(?=\}\n)\}\n)/g,
-      `$1    ${macroToInsert}\n`
+      /if \(\[name hasPrefix:@"RK"]\) \{\n)/g,
+      `${macroToInsert}\n  $1`
     );
   });
 
