@@ -2,13 +2,12 @@
  * @flow
  * Storage representation wrapper
  */
-import { NativeModulesProxy } from 'expo-core';
-import { SharedEventEmitter, ModuleBase, utils } from 'expo-firebase-app';
+import { ModuleBase, SharedEventEmitter } from 'expo-firebase-app';
 
 import type { App } from 'expo-firebase-app';
-import StorageRef from './reference';
 
-const { stripTrailingSlash } = utils;
+import StorageRef from './reference';
+import statics from './statics';
 
 const NATIVE_EVENTS = {
   storageEvent: 'Expo.Firebase.storage_event',
@@ -17,36 +16,6 @@ const NATIVE_EVENTS = {
 
 export const MODULE_NAME = 'ExpoFirebaseStorage';
 export const NAMESPACE = 'storage';
-
-const { [MODULE_NAME]: FirebaseStorage } = NativeModulesProxy;
-
-export const statics = {
-  TaskEvent: {
-    STATE_CHANGED: 'state_changed',
-  },
-  TaskState: {
-    RUNNING: 'running',
-    PAUSED: 'paused',
-    SUCCESS: 'success',
-    CANCELLED: 'cancelled',
-    ERROR: 'error',
-  },
-  Native: FirebaseStorage
-    ? {
-        MAIN_BUNDLE_PATH: stripTrailingSlash(FirebaseStorage.MAIN_BUNDLE_PATH),
-        CACHES_DIRECTORY_PATH: stripTrailingSlash(FirebaseStorage.CACHES_DIRECTORY_PATH),
-        DOCUMENT_DIRECTORY_PATH: stripTrailingSlash(FirebaseStorage.DOCUMENT_DIRECTORY_PATH),
-        EXTERNAL_DIRECTORY_PATH: stripTrailingSlash(FirebaseStorage.EXTERNAL_DIRECTORY_PATH),
-        EXTERNAL_STORAGE_DIRECTORY_PATH: stripTrailingSlash(
-          FirebaseStorage.EXTERNAL_STORAGE_DIRECTORY_PATH
-        ),
-        TEMP_DIRECTORY_PATH: stripTrailingSlash(FirebaseStorage.TEMP_DIRECTORY_PATH),
-        LIBRARY_DIRECTORY_PATH: stripTrailingSlash(FirebaseStorage.LIBRARY_DIRECTORY_PATH),
-        FILETYPE_REGULAR: stripTrailingSlash(FirebaseStorage.FILETYPE_REGULAR),
-        FILETYPE_DIRECTORY: stripTrailingSlash(FirebaseStorage.FILETYPE_DIRECTORY),
-      }
-    : {},
-};
 
 export default class Storage extends ModuleBase {
   static moduleName = MODULE_NAME;
