@@ -1,6 +1,6 @@
 // Copyright © 2018 650 Industries. All rights reserved.
 
-#import "ABI32_0_0EXScopedReactABI32_0_0NativeAdapter.h"
+#import "EXScopedReactABI32_0_0NativeAdapter.h"
 #import "ABI32_0_0EXUnversioned.h"
 
 @interface ABI32_0_0EXReactNativeAdapter (Protected)

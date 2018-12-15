@@ -9,7 +9,7 @@
 #include <memory>
 #include <string>
 
-#include <cxxReactABI32_0_0/ABI32_0_0ReactABI32_0_0Marker.h>
+#include <cxxReactABI32_0_0/ReactABI32_0_0Marker.h>
 #include <ABI32_0_0jschelpers/ABI32_0_0JavaScriptCore.h>
 
 #ifndef RN_EXPORT

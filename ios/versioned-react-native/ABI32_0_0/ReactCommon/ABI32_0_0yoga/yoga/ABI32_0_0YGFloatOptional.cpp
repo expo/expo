@@ -27,7 +27,7 @@ float ABI32_0_0YGFloatOptional::getValue() const {
   if (isUndefined_) {
     // Abort, accessing a value of an undefined float optional
     std::cerr << "Tried to get value of an undefined ABI32_0_0YGFloatOptional\n";
-    std::exit(ABI32_0_0EXIT_FAILURE);
+    std::exit(EXIT_FAILURE);
   }
   return value_;
 }

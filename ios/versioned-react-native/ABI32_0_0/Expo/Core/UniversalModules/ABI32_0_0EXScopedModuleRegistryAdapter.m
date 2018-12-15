@@ -9,7 +9,7 @@
 #import "ABI32_0_0EXUnversioned.h"
 #import "ABI32_0_0EXScopedFilePermissionModule.h"
 
-#import "ABI32_0_0EXScopedReactABI32_0_0NativeAdapter.h"
+#import "EXScopedReactABI32_0_0NativeAdapter.h"
 #import "ABI32_0_0EXModuleRegistryBinding.h"
 #import "ABI32_0_0EXExpoUserNotificationCenterProxy.h"
 

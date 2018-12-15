@@ -112,7 +112,7 @@ ABI32_0_0RCT_NOT_IMPLEMENTED(- (instancetype)init)
     return CGRectMake(x, y, width, height);
 }
 
-void PatternFunction(void* info, CGContextRef context)
+void ABI32_0_0PatternFunction(void* info, CGContextRef context)
 {
     ABI32_0_0RNSVGPainter *_painter = (__bridge ABI32_0_0RNSVGPainter *)info;
     ABI32_0_0RNSVGPattern *_pattern = [_painter pattern];
@@ -153,7 +153,7 @@ void PatternFunction(void* info, CGContextRef context)
     CGSize size = newBounds.size;
     self.paintBounds = newBounds;
 
-    const CGPatternCallbacks callbacks = { 0, &PatternFunction, NULL };
+    const CGPatternCallbacks callbacks = { 0, &ABI32_0_0PatternFunction, NULL };
     CGColorSpaceRef patternSpace = CGColorSpaceCreatePattern(NULL);
     CGContextSetFillColorSpace(context, patternSpace);
     CGColorSpaceRelease(patternSpace);
