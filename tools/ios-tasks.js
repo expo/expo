@@ -587,7 +587,7 @@ async function injectMacrosAsync(versionName, versionedReactPath, majorSDKVersio
   );
   await _transformFileContentsAsync(componentDataFilename, fileContents => {
     return fileContents.replace(
-      /if \(\[name hasPrefix:@"RK"\]\) \{\n/g,
+      /(if \(\[name hasPrefix:@"RK"\]\) \{\n)/g,
       `${macroToInsert}\n  $1`
     );
   });
@@ -874,6 +874,14 @@ exports.addVersionAsync = async function addVersionAsync(
     path.join(rootPath, 'exponent-view-template', 'ios', 'exponent-view-template', 'Supporting'),
     config => addVersionToConfig(config, versionNumber)
   );
+
+  const removeExtraMinusMinusFilesCommand = `find ${newVersionPath} -name '*--' | xargs rm`;
+  console.log(`Removing any \`filename--\` files from the new pod (running ${removeExtraMinusMinusFilesCommand})`);
+  try {
+    shell.exec(removeExtraMinusMinusFilesCommand);
+  } catch (error) {
+    console.warn("The script wasn't able to remove any possible `filename--` files created by sed. Please ensure there are no such files manually.")
+  }
 
   console.log(
     'Finished creating new version. `./generate-files-ios.sh` in `tools-public`, then `pod install` in `ios` to configure Xcode.'
