@@ -227,10 +227,6 @@ dependencies {
   implementation(project(':expoview-abi26_0_0'))
   // END_SDK_26
 
-  // BEGIN_SDK_25
-  implementation(project(':expoview-abi25_0_0'))
-  // END_SDK_25
-
   // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
   // WHEN_DISTRIBUTING_REMOVE_TO_HERE
 
