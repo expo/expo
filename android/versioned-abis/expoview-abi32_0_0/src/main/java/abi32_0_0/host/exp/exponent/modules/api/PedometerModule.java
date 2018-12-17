@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 
-import com.facebook.infer.annotation.Assertions;
+import expolib_v1.com.facebook.infer.annotation.Assertions;
 import abi32_0_0.com.facebook.react.bridge.Arguments;
 import abi32_0_0.com.facebook.react.bridge.LifecycleEventListener;
 import abi32_0_0.com.facebook.react.bridge.Promise;

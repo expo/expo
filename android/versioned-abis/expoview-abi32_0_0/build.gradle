@@ -73,7 +73,7 @@ dependencies {
   api 'expolib_v1.com.squareup.okhttp3:okhttp:3.6.0'
   api 'expolib_v1.com.squareup.okhttp3:okhttp-urlconnection:3.6.0'
   api 'expolib_v1.com.squareup.okio:okio:1.13.0'
-  api 'com.facebook.infer.annotation:infer-annotation:0.11.2'
+  api 'expolib_v1.com.facebook.infer.annotation:infer-annotation:0.11.2'
   api 'org.webkit:android-jsc:r224109'
   api 'javax.inject:javax.inject:1'
 

@@ -12,7 +12,7 @@ package abi32_0_0.host.exp.exponent.modules.api.components.svg;
 import android.graphics.Matrix;
 import android.view.View;
 
-import com.facebook.infer.annotation.Assertions;
+import expolib_v1.com.facebook.infer.annotation.Assertions;
 import abi32_0_0.com.facebook.react.bridge.Dynamic;
 import abi32_0_0.com.facebook.react.bridge.ReadableArray;
 import abi32_0_0.com.facebook.react.bridge.ReadableMap;

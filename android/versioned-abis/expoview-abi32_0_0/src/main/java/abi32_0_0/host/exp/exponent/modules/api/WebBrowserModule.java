@@ -8,7 +8,7 @@ import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.support.customtabs.CustomTabsIntent;
 
-import com.facebook.infer.annotation.Assertions;
+import expolib_v1.com.facebook.infer.annotation.Assertions;
 import abi32_0_0.com.facebook.react.bridge.Arguments;
 import abi32_0_0.com.facebook.react.bridge.Promise;
 import abi32_0_0.com.facebook.react.bridge.ReactApplicationContext;

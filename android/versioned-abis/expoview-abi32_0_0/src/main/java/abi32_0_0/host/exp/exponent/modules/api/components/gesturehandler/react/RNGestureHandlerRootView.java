@@ -3,7 +3,7 @@ package abi32_0_0.host.exp.exponent.modules.api.components.gesturehandler.react;
 import android.content.Context;
 import android.view.MotionEvent;
 
-import com.facebook.infer.annotation.Assertions;
+import expolib_v1.com.facebook.infer.annotation.Assertions;
 import abi32_0_0.com.facebook.react.bridge.ReactContext;
 import abi32_0_0.com.facebook.react.views.view.ReactViewGroup;
 
