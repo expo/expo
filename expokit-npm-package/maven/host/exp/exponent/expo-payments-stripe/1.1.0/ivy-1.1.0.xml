@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-  <info organisation="host.exp.exponent" module="expo-payments-stripe" revision="1.1.0" status="integration" publication="20181031222417"/>
+  <info organisation="host.exp.exponent" module="expo-payments-stripe" revision="1.1.0" status="integration" publication="20181217105024"/>
   <configurations>
+    <conf name="_internal_aapt2_binary" visibility="private" transitive="false"/>
+    <conf name="androidApis" visibility="public"/>
     <conf name="androidTestAnnotationProcessor" visibility="private"/>
     <conf name="androidTestApi" visibility="private" extends="androidTestCompile"/>
     <conf name="androidTestCompile" visibility="private"/>
@@ -105,12 +107,15 @@
     <artifact name="expo-payments-stripe" type="aar" ext="aar" conf="archives,default"/>
   </publications>
   <dependencies>
+    <dependency org="com.android.tools.build" name="aapt2" rev="3.2.1-4818971" conf="_internal_aapt2_binary-&gt;default">
+      <artifact name="aapt2" type="jar" ext="jar" m:classifier="osx" conf="_internal_aapt2_binary"/>
+    </dependency>
     <dependency org="com.google.android.gms" name="play-services-wallet" rev="15.0.1" conf="api-&gt;default"/>
     <dependency org="com.google.firebase" name="firebase-core" rev="16.0.1" conf="api-&gt;default"/>
-    <dependency org="com.stripe" name="stripe-android" rev="6.0.0" conf="api-&gt;default"/>
+    <dependency org="com.stripe" name="stripe-android" rev="8.1.0" conf="api-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-core" rev="1.2.0" conf="implementation-&gt;default"/>
-    <dependency org="com.github.tipsi" name="CreditCardEntry" rev="1.4.8.10" conf="implementation-&gt;default"/>
+    <dependency org="com.github.tipsi" name="CreditCardEntry" rev="1.5.0" conf="implementation-&gt;default"/>
     <dependency org="com.android.support" name="design" rev="27.1.0" conf="implementation-&gt;default"/>
-    <dependency org="com.android.tools.lint" name="lint-gradle" rev="26.1.4" conf="lintClassPath-&gt;default"/>
+    <dependency org="com.android.tools.lint" name="lint-gradle" rev="26.2.1" conf="lintClassPath-&gt;default"/>
   </dependencies>
 </ivy-module>

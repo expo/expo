@@ -5,7 +5,7 @@ apply plugin: 'com.jakewharton.butterknife'
 // WHEN_VERSIONING_REMOVE_FROM_HERE
 //maven repository info
 group = 'host.exp.exponent'
-version = '31.0.0'
+version = '32.0.0'
 
 //Upload android library to maven with javadoc and android sources
 configurations {
@@ -114,7 +114,7 @@ dependencies {
   // WHEN_VERSIONING_REMOVE_FROM_HERE
   // Current react native
   /* UNCOMMENT WHEN DISTRIBUTING
-  api 'com.facebook.react:react-native:31.0.0'
+  api 'com.facebook.react:react-native:32.0.0'
   api 'host.exp.exponent:expo-core:1.2.0'
   api 'host.exp.exponent:expo-constants:1.1.0'
   api 'host.exp.exponent:expo-constants-interface:1.1.0'
@@ -208,6 +208,9 @@ dependencies {
   // Versioned react native
   // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
   // THIS COMMENT IS USED BY android-build-aar.sh DO NOT MODIFY
+  // BEGIN_SDK_32
+  api 'host.exp:reactandroid-abi32_0_0:1.0.0'
+  // END_SDK_32
   // BEGIN_SDK_31
   api 'host.exp:reactandroid-abi31_0_0:1.0.0'
   // END_SDK_31

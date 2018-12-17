@@ -186,7 +186,7 @@ dependencies {
   testImplementation 'com.android.support.test:rules:1.0.2-alpha1'
 
   /* UNCOMMENT WHEN DISTRIBUTING
-  implementation('host.exp.exponent:expoview:31.0.0@aar') {
+  implementation('host.exp.exponent:expoview:32.0.0@aar') {
     transitive = true
     exclude group: 'com.squareup.okhttp3', module: 'okhttp'
     exclude group: 'com.squareup.okhttp3', module: 'okhttp-urlconnection'
@@ -202,6 +202,10 @@ dependencies {
   // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
 
   // ADD_NEW_SDKS_HERE
+
+  // BEGIN_SDK_32
+  implementation(project(':expoview-abi32_0_0'))
+  // END_SDK_32
 
   // BEGIN_SDK_31
   implementation(project(':expoview-abi31_0_0'))
