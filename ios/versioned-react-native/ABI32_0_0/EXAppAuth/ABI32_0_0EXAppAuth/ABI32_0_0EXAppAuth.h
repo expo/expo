@@ -3,7 +3,7 @@
 #import <ABI32_0_0EXCore/ABI32_0_0EXExportedModule.h>
 #import <ABI32_0_0EXCore/ABI32_0_0EXModuleRegistryConsumer.h>
 
-static id nullIfEmpty(NSString *input) {
+static id ABI32_0_0EXnullIfEmpty(NSString *input) {
   if (!input || input == nil || [input isEqualToString:@""]) {
     return [NSNull null];
   }

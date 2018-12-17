@@ -160,7 +160,7 @@ EX_EXPORT_METHOD_AS(executeAsync,
     refreshToken = input.accessToken;
   }
   
-  [output setValue:@"refreshToken" forKey:nullIfEmpty(refreshToken)];
+  [output setValue:@"refreshToken" forKey:EXnullIfEmpty(refreshToken)];
   
   return output;
 }
