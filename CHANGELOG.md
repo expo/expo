@@ -55,6 +55,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - fixed `onPlaybackStatusUpdate` not being called with `didJustFinish: true` when playing with looping enabled on Android by [@sjchmiela](https://github.com/sjchmiela) ([#2923](https://github.com/expo/expo/pull/2923))
 - fixed bundle building/downloading progress indicator not showing in ejected apps by [@sjchmiela](https://github.com/sjchmiela) ([#2951](https://github.com/expo/expo/pull/2951), [#2954](https://github.com/expo/expo/pull/2954))
 - fixed `subscription.remove()` not calling native `stopObserving()` for universal modules by [@ide](https://github.com/ide) ([#2897](https://github.com/expo/expo/pull/2897))
+- fixed calendar ID being returned as integer instead of a string on Android (when calling eg. `Calendar.createCalendarAsync`) by [@Szymon20000](https://github.com/Szymon20000) ([#3004](https://github.com/expo/expo/pull/3004))
 - fixed wrong fling direction for inverted `ScrollView`s on Android by [@mandrigin](https://github.com/mandrigin) (pulled in from React Native [facebook/react-native@b971c5b](https://github.com/facebook/react-native/commit/b971c5beb8c7f90543ea037194790142f4f57c80))
 - fixed snapping Android `ScrollView`s with `pagingEnabled` by [@olegbl](https://github.com/olegbl) (pulled in from React Native [facebook/react-native@0869e54](https://github.com/facebook/react-native/commit/0869e546fe1448f6c56b4ae97e41e8a67278d7dd))
 
