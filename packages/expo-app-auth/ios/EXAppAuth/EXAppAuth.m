@@ -141,7 +141,18 @@ EX_EXPORT_METHOD_AS(executeAsync,
       }
     };
     
-    UIViewController *presentingViewController = self->_utilities.currentViewController;
+    // On iOS < 11 presenting authorization request on currentViewController
+    // resulted in freezed SFSafariViewController.
+    // See issue https://github.com/google/GTMAppAuth/issues/6
+    // See pull request https://github.com/openid/AppAuth-iOS/pull/73
+    UIViewController *presentingViewController;
+    NSComparisonResult order = [[UIDevice currentDevice].systemVersion compare:@"11.0.0" options:NSNumericSearch];
+    if (order == NSOrderedSame || order == NSOrderedDescending) {
+      // iOS version >= 11.0.0
+      presentingViewController = self->_utilities.currentViewController;
+    } else {
+      presentingViewController = [[[UIApplication sharedApplication] keyWindow] rootViewController];
+    }
     self->session = [OIDAuthState authStateByPresentingAuthorizationRequest:request
                                                    presentingViewController:presentingViewController
                                                                    callback:callback];
