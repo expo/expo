@@ -14,8 +14,8 @@
 #import "EXRootViewController.h"
 #import "EXConstants.h"
 
-#if __has_include(<EXAuth/EXAuth.h>)
-#import <EXAuth/EXAuth.h>
+#if __has_include(<EXAppAuth/EXAppAuth.h>)
+#import <EXAppAuth/EXAppAuth.h>
 #endif
 
 #if __has_include(<GoogleSignIn/GoogleSignIn.h>)
@@ -85,8 +85,8 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
   }
 #endif
-#if __has_include(<EXAuth/EXAuth.h>)
-  if ([[EXAuth instance] application:app openURL:url options:options]) {
+#if __has_include(<EXAppAuth/EXAppAuth.h>)
+  if ([[EXAppAuth instance] application:app openURL:url options:options]) {
     return YES;
   }
 #endif
