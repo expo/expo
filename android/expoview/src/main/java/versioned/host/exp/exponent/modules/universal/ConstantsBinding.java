@@ -7,11 +7,11 @@ import android.content.res.Resources;
 import android.support.annotation.Nullable;
 import android.util.DisplayMetrics;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -78,6 +78,7 @@ public class ConstantsBinding extends ConstantsService implements ConstantsInter
     androidPlatform.put("versionCode", Constants.ANDROID_VERSION_CODE);
     platform.put("android", androidPlatform);
     constants.put("platform", platform);
+    constants.put("isDetached", Constants.isStandaloneApp());
 
     return constants;
   }
