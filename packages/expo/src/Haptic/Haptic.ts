@@ -45,7 +45,7 @@ export enum ImpactFeedbackStyle {
  * Triggers notification feedback.
  */
 export function notification(type: NotificationFeedbackType = NotificationFeedbackType.Success) {
-  if (!ExponentHaptic.notification) {
+  if (!ExponentHaptic || ExponentHaptic.notification) {
     throw new UnavailabilityError('Haptic', 'notification');
   }
 
@@ -56,7 +56,7 @@ export function notification(type: NotificationFeedbackType = NotificationFeedba
  * Triggers impact feedback.
  */
 export function impact(style: ImpactFeedbackStyle = ImpactFeedbackStyle.Medium) {
-  if (!ExponentHaptic.impact) {
+  if (!ExponentHaptic || !ExponentHaptic.impact) {
     throw new UnavailabilityError('Haptic', 'impact');
   }
 
@@ -67,7 +67,7 @@ export function impact(style: ImpactFeedbackStyle = ImpactFeedbackStyle.Medium) 
  * Triggers selection feedback.
  */
 export function selection() {
-  if (!ExponentHaptic.selection) {
+  if (!ExponentHaptic || !ExponentHaptic.selection) {
     throw new UnavailabilityError('Haptic', 'selection');
   }
 
