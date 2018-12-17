@@ -21,11 +21,11 @@
   if (!input) return nil;
   
   return @{
-           @"accessToken": nullIfEmpty([input accessToken]),
+           @"accessToken": ABI32_0_0EXnullIfEmpty([input accessToken]),
            @"accessTokenExpirationDate": ABI32_0_0EXNullIfNil([[self class] dateNativeToJSON:[input accessTokenExpirationDate]]),
            @"additionalParameters": ABI32_0_0EXNullIfNil([input additionalParameters]),
-           @"idToken": nullIfEmpty([input idToken]),
-           @"tokenType": nullIfEmpty([input tokenType]),
+           @"idToken": ABI32_0_0EXnullIfEmpty([input idToken]),
+           @"tokenType": ABI32_0_0EXnullIfEmpty([input tokenType]),
            };
 }
 
