@@ -23,6 +23,8 @@ class ComponentListScreen extends React.Component {
     );
   };
 
+  _keyExtractor = item => item;
+
   render() {
     return (
       <FlatList
@@ -35,6 +37,7 @@ class ComponentListScreen extends React.Component {
         keyboardDismissMode="on-drag"
         contentContainerStyle={{ backgroundColor: '#fff' }}
         data={this.props.apis}
+        keyExtractor={this._keyExtractor}
         renderItem={this._renderExampleSection}
       />
     );
