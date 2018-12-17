@@ -32,6 +32,7 @@ import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.network.ExponentNetwork;
 import host.exp.exponent.notifications.ExponentNotificationManager;
+import host.exp.exponent.notifications.NotificationActionCenter;
 import host.exp.exponent.notifications.NotificationConstants;
 import host.exp.exponent.notifications.NotificationHelper;
 import host.exp.exponent.storage.ExponentSharedPreferences;

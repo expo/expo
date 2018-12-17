@@ -59,6 +59,7 @@ import host.exp.exponent.experience.HomeActivity;
 import host.exp.exponent.headless.HeadlessAppLoader;
 import host.exp.exponent.notifications.ExponentNotification;
 import host.exp.exponent.notifications.ExponentNotificationManager;
+import host.exp.exponent.notifications.NotificationActionCenter;
 import host.exp.expoview.BuildConfig;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
@@ -76,7 +77,6 @@ import expolib_v1.okhttp3.OkHttpClient;
 import versioned.host.exp.exponent.ExponentPackage;
 import versioned.host.exp.exponent.ReactUnthemedRootView;
 import versioned.host.exp.exponent.ReadableObjectUtils;
-import versioned.host.exp.exponent.modules.api.notifications.NotificationActionCenter;
 
 // TOOD: need to figure out when we should reload the kernel js. Do we do it every time you visit
 // the home screen? only when the app gets kicked out of memory?
