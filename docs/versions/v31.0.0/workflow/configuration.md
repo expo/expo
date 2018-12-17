@@ -567,6 +567,7 @@ Configuration for how and when the app should request OTA JavaScript updates
       "WRITE_CALENDAR",
       "READ_EXTERNAL_STORAGE",
       "READ_PHONE_STATE",
+      "READ_SMS",
       "RECORD_AUDIO",
       "USE_FINGERPRINT",
       "VIBRATE",
