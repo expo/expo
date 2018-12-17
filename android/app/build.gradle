@@ -101,9 +101,9 @@ configurations.all {
 }
 
 // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
-
+/* UNCOMMENT WHEN DISTRIBUTING
 apply from: 'expo.gradle'
-
+END UNCOMMENT WHEN DISTRIBUTING */
 // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
 
 dependencies {
@@ -185,13 +185,13 @@ dependencies {
   testImplementation 'com.android.support.test:runner:1.0.2-alpha1'
   testImplementation 'com.android.support.test:rules:1.0.2-alpha1'
 
-  
+  /* UNCOMMENT WHEN DISTRIBUTING
   implementation('host.exp.exponent:expoview:32.0.0@aar') {
     transitive = true
     exclude group: 'com.squareup.okhttp3', module: 'okhttp'
     exclude group: 'com.squareup.okhttp3', module: 'okhttp-urlconnection'
   }
-  
+  END UNCOMMENT WHEN DISTRIBUTING */
 
   // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
 
