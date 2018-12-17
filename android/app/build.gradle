@@ -170,9 +170,6 @@ dependencies {
   implementation 'com.squareup.okhttp3:okhttp:3.10.0'
   implementation 'com.squareup.okhttp3:okhttp-urlconnection:3.10.0'
 
-  // expo-payments-stripe
-  implementation 'com.stripe:stripe-android:8.1.0'
-
   // Testing
   androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
   // We use a modified build of com.android.support.test:runner:1.0.1. Explanation in maven-test/README

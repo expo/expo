@@ -113,7 +113,7 @@ dependencies {
 
   // WHEN_VERSIONING_REMOVE_FROM_HERE
   // Current react native
-  
+  /* UNCOMMENT WHEN DISTRIBUTING
   api 'com.facebook.react:react-native:32.0.0'
   api 'host.exp.exponent:expo-core:1.2.0'
   api 'host.exp.exponent:expo-constants:1.1.0'
@@ -157,9 +157,9 @@ dependencies {
   compileOnly 'host.exp.exponent:expo-permissions:1.2.0'
   compileOnly 'host.exp.exponent:expo-permissions-interface:1.2.0'
   compileOnly 'host.exp.exponent:expo-background-fetch:1.0.0'
-  
+  END UNCOMMENT WHEN DISTRIBUTING */
 
-  /* WHEN_DISTRIBUTING_REMOVE_FROM_HERE
+  // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
   api project(':ReactAndroid')
 
   // Universal modules
@@ -229,7 +229,7 @@ dependencies {
   // END_SDK_26
   // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
   // WHEN_VERSIONING_REMOVE_TO_HERE
-  WHEN_DISTRIBUTING_REMOVE_TO_HERE */
+  // WHEN_DISTRIBUTING_REMOVE_TO_HERE
 
   // React native dependencies
   api 'com.facebook.fresco:fresco:1.10.0'
