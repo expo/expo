@@ -30,8 +30,6 @@ import host.exp.exponent.storage.ExperienceDBObject;
 import host.exp.exponent.storage.ExponentDB;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.expoview.R;
-import versioned.host.exp.exponent.modules.api.notifications.IntentProvider;
-import versioned.host.exp.exponent.modules.api.notifications.NotificationActionCenter;
 
 public class PushNotificationHelper {
 

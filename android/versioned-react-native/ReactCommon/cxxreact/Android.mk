@@ -35,8 +35,8 @@ LOCAL_CFLAGS := \
 
 LOCAL_CFLAGS += -fexceptions -frtti
 
-LOCAL_STATIC_LIBRARIES := jschelpers_abi31_0_0
-LOCAL_SHARED_LIBRARIES := libfb_abi31_0_0 libfolly_json_abi31_0_0 libjsc libglog_abi31_0_0
+LOCAL_STATIC_LIBRARIES := jschelpers_abi32_0_0
+LOCAL_SHARED_LIBRARIES := libfb_abi32_0_0 libfolly_json_abi32_0_0 libjsc libglog_abi32_0_0
 
 include $(BUILD_STATIC_LIBRARY)
 

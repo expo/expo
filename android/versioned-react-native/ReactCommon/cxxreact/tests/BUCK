@@ -21,7 +21,7 @@ TEST_SRCS = [
 jni_instrumentation_test_lib(
     name = "tests",
     srcs = TEST_SRCS,
-    class_under_test = "abi31_0_0/com/facebook/react/XplatBridgeTest",
+    class_under_test = "abi32_0_0/com/facebook/react/XplatBridgeTest",
     compiler_flags = [
         "-fexceptions",
         "-frtti",

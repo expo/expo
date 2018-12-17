@@ -1,4 +1,4 @@
-package versioned.host.exp.exponent.modules.api.notifications;
+package host.exp.exponent.notifications;
 
 import android.content.Intent;
 
