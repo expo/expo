@@ -18,6 +18,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - upgraded Android build tools — Gradle to 4.10.2, Gradle plugin to 3.2.1 by [@sjchmiela](https://github.com/sjchmiela) ([`7292c27`](https://github.com/expo/expo/commit/7292c27), [`d0c8b8d`](https://github.com/expo/expo/commit/d0c8b8d))
 - removed `run.sh` script from `android` directory in favor of `fastlane android start` command by [@nicknovitski](https://github.com/nicknovitski) ([`9301e95`](https://github.com/expo/expo/commit/9301e95533d4ed81a42955f64addb5001a32a236))
 - removed `minSdk` application flavor from Android project (all Gradle commands in format `[verb][minSdkFlavor]minSdk[remoteKernelFlavor]Kernel[buildType]`, eg. `assembleDevMinSdkDevKernelDebug` become `[verb][remoteKernelFlavor]Kernel[buildType]`, eg. `assembleDevKernelDebug`) by [@sjchmiela](https://github.com/sjchmiela) ([`3b5e158`](https://github.com/expo/expo/commit/3b5e1583ecc210ee36b9d5772d2d7c35a6315500))
+- calling `Haptic` methods on Android will now raise an error instead of a warning by [@EvanBacon](https://github.com/EvanBacon) ([#2787](https://github.com/expo/expo/pull/2787))
 
 ### 🎉 New features
 
