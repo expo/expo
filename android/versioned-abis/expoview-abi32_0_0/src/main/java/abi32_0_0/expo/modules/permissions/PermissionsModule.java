@@ -119,6 +119,7 @@ public class PermissionsModule extends ExportedModule implements ModuleRegistryC
           break;
         case "contacts":
           permissionsTypesToBeAsked.add(Manifest.permission.READ_CONTACTS);
+          permissionsTypesToBeAsked.add(Manifest.permission.WRITE_CONTACTS);
           break;
         case "audioRecording":
           permissionsTypesToBeAsked.add(Manifest.permission.RECORD_AUDIO);
