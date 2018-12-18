@@ -27,7 +27,7 @@ Prompts the user to log into Google and grants your app permission to access som
 
  A map of options:
 
--   **behavior** (_string_) -- The type of behavior to use for login, either `web` or `system`. Native (`system`) can only be used inside of a standalone app when built using the steps described below. Default is `web` inside of Expo app, and `system` in standalone. The only case where you would need to change this is if you would prefer to use `web` inside of a standalone app.
+-   **behavior** (_string_) -- The type of behavior to use for login, either `web` or `system`. Native (`system`) can only be used inside of a standalone app when built using the steps described below. Default is `system` in standalone app. You need to specify `web` in Expo app or if you would prefer to use `web` inside of a standalone app.
 -   **scopes** (_array_) -- An array specifying the scopes to ask for from Google for this login ([more information here](https://gsuite-developers.googleblog.com/2012/01/tips-on-using-apis-discovery-service.html)). Default scopes are `['profile', 'email']`.
 -   **androidClientId** (_string_) -- The Android client id registered with Google for use in the Expo client app.
 -   **iosClientId** (_string_) -- The iOS client id registered with Google for use in the Expo client app.
