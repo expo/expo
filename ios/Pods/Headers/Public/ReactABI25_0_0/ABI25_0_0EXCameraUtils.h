@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI25_0_0/Expo/Core/Api/Components/Camera/ABI25_0_0EXCameraUtils.h

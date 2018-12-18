@@ -95,7 +95,7 @@ async function alertIfRemoteNotificationsDisabledAsync() {
 
 async function checkMultiPermissions() {
   const { Permissions } = Expo;
-  const { status, expires, permissions } = await Permissions.getAsync(Permissions.CALENDAR, Permissions.SMS, Permissions.CONTACTS)
+  const { status, expires, permissions } = await Permissions.getAsync(Permissions.CALENDAR, Permissions.CONTACTS)
   if (status !== 'granted') {
     alert('Hey! You heve not enabled selected permissions');
   }
@@ -176,11 +176,6 @@ The permission type for reading or writing to the calendar.
 
 The permission type for reading or writing reminders (iOS only).
 
-### `Expo.Permissions.SMS`
-
-The permission type for accessing SMS storage.
-(Android only, iOS would return `granted` immediately)
-
 ### `Expo.Permissions.SYSTEM_BRIGHTNESS`
 
 The permissions type for changing brighness of the screen
@@ -197,4 +192,3 @@ If you specified `android.permissions` inside your `app.json` ([read more about 
 | CONTACTS        | READ_CONTACTS                                     |
 | CAMERA_ROLL     | READ\_EXTERNAL\_STORAGE, WRITE\_EXTERNAL\_STORAGE |
 | CALENDAR        | READ\_CALENDAR, WRITE\_CALENDAR                   |
-| SMS             | READ_SMS                                          |

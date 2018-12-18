@@ -1,5 +1,7 @@
 # expo-app-auth
 
+> This library is a part of Expo v32+
+
 This module provides access to the native OAuth library AppAuth by [OpenID](https://github.com/openid).
 
 ## Installation
@@ -50,7 +52,7 @@ and run `pod install`.
    ```java
    /*
    * At the top of the file.
-   * This is automatically imported with Android Studio, but if 
+   * This is automatically imported with Android Studio, but if
    * you are in any other editor you will need to manually import the module.
    */
    import expo.modules.appauth.AppAuthPackage;
@@ -369,7 +371,7 @@ import { AppAuth } from 'expo';
 const config = {
   issuer: 'https://accounts.google.com',
   scopes: ['openid', 'profile'],
-  /* This is the REVERSE_CLIENT_ID generated from a Firebase project */
+  /* This is the CLIENT_ID generated from a Firebase project */
   clientId: '603386649315-vp4revvrcgrcjme51ebuhbkbspl048l9.apps.googleusercontent.com',
 };
 

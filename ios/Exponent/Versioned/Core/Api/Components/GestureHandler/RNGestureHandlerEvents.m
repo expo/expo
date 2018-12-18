@@ -44,6 +44,22 @@
                            @"numberOfPointers": @(numberOfTouches)}];
 }
 
++ (RNGestureHandlerEventExtraData *)forForce:(CGFloat)force
+                                 forPosition:(CGPoint)position
+                        withAbsolutePosition:(CGPoint)absolutePosition
+                         withNumberOfTouches:(NSUInteger)numberOfTouches
+{
+    return [[RNGestureHandlerEventExtraData alloc]
+            initWithData:@{
+                           @"x": @(position.x),
+                           @"y": @(position.y),
+                           @"absoluteX": @(absolutePosition.x),
+                           @"absoluteY": @(absolutePosition.y),
+                           @"force": @(force),
+                           @"numberOfPointers": @(numberOfTouches)}];
+  
+}
+
 + (RNGestureHandlerEventExtraData *)forPinch:(CGFloat)scale
                               withFocalPoint:(CGPoint)focalPoint
                                 withVelocity:(CGFloat)velocity

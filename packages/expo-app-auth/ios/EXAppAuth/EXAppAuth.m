@@ -137,7 +137,7 @@ EX_EXPORT_METHOD_AS(executeAsync,
         NSDictionary *tokenResponse = [EXAppAuth _tokenResponseNativeToJSON:authState.lastTokenResponse request:options];
         resolve(tokenResponse);
       } else {
-        rejectWithError(reject, error);
+        EXrejectWithError(reject, error);
       }
     };
     
@@ -189,7 +189,7 @@ EX_EXPORT_METHOD_AS(executeAsync,
       NSDictionary *tokenResponse = [EXAppAuth _tokenResponseNativeToJSON:response request:options];
       resolve(tokenResponse);
     } else {
-      rejectWithError(reject, error);
+      EXrejectWithError(reject, error);
     }
   };
   [OIDAuthorizationService performTokenRequest:tokenRefreshRequest
@@ -206,7 +206,7 @@ EX_EXPORT_METHOD_AS(executeAsync,
       if (isRefresh) [self _refreshWithConfiguration:configuration options:options resolve:resolve reject:reject];
       else [self _authorizeWithConfiguration:configuration options:options resolve:resolve reject:reject];
     } else {
-      rejectWithError(reject, error);
+      EXrejectWithError(reject, error);
     }
   };
 }
@@ -219,7 +219,8 @@ EX_EXPORT_METHOD_AS(executeAsync,
 
 #pragma mark - Static
 
-void rejectWithError(EXPromiseRejectBlock reject, NSError *error) {
+// EX prefix for versioning to work smoothly
+void EXrejectWithError(EXPromiseRejectBlock reject, NSError *error) {
   NSString *errorMessage = [NSString stringWithFormat:@"%@: %@", EXAppAuthError, error.localizedDescription];
   if (error.localizedFailureReason != nil && ![error.localizedFailureReason isEqualToString:@""]) errorMessage = [NSString stringWithFormat:@"%@, Reason: %@", errorMessage, error.localizedFailureReason];
   if (error.localizedRecoverySuggestion != nil && ![error.localizedRecoverySuggestion isEqualToString:@""]) errorMessage = [NSString stringWithFormat:@"%@, Try: %@", errorMessage, error.localizedRecoverySuggestion];

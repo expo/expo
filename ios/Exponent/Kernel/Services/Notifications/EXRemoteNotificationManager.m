@@ -30,12 +30,13 @@ typedef void(^EXRemoteNotificationAPNSTokenHandler)(NSData * _Nullable apnsToken
 @property (nullable, nonatomic, strong) NSData *currentAPNSToken;
 @property (nonatomic, strong) NSMutableArray<EXRemoteNotificationAPNSTokenHandler> *apnsTokenHandlers;
 @property (nonatomic, assign) BOOL isPostingCurrentToken;
+@property (nonatomic, weak) EXUserNotificationCenter *userNotificationCenter;
 
 @end
 
 @implementation EXRemoteNotificationManager
 
-- (instancetype)init
+- (instancetype)initWithUserNotificationCenter:(id)userNotificationCenter
 {
   if (self = [super init]) {
     // NOTE: We currently use the main queue because we use UIApplication to register for
@@ -44,6 +45,7 @@ typedef void(^EXRemoteNotificationAPNSTokenHandler)(NSData * _Nullable apnsToken
     _currentAPNSToken = nil;
     _apnsTokenHandlers = [NSMutableArray array];
     _isPostingCurrentToken = NO;
+    _userNotificationCenter = userNotificationCenter;
   }
   return self;
 }
@@ -202,7 +204,7 @@ typedef void(^EXRemoteNotificationAPNSTokenHandler)(NSData * _Nullable apnsToken
 
   // When the user has not granted permission to display any type of notification, iOS doesn't
   // invoke the delegate methods and registering for remote notifications will never complete
-  [[EXUserNotificationCenter sharedInstance] getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings * _Nonnull settings) {
+  [_userNotificationCenter getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings * _Nonnull settings) {
     bool canRegister = settings.authorizationStatus == UNAuthorizationStatusAuthorized;
     if (@available(iOS 12, *)) {
       canRegister |= (settings.authorizationStatus == UNAuthorizationStatusProvisional);

@@ -16,6 +16,7 @@
 #import "EXAudioSessionManager.h"
 #import "EXUpdatesManager.h"
 #import "EXUserNotificationManager.h"
+#import "EXUserNotificationCenter.h"
 
 #import <EXCore/EXModuleRegistryProvider.h>
 
@@ -34,6 +35,7 @@
 @property (nonatomic, strong) EXAudioSessionManager *audioSessionManager;
 @property (nonatomic, strong) EXUpdatesManager *updatesManager;
 @property (nonatomic, strong) EXUserNotificationManager *notificationsManager;
+@property (nonatomic, strong) EXUserNotificationCenter *notificationCenter;
 @property (nonatomic, strong) NSDictionary<NSString *, id> *allServices;
 
 @end
@@ -57,6 +59,7 @@
     [self audioSessionManager];
     [self updatesManager];
     [self notificationsManager];
+    [self notificationCenter];
   }
   return self;
 }
@@ -80,7 +83,7 @@
 - (EXRemoteNotificationManager *)remoteNotificationManager
 {
   if (!_remoteNotificationManager) {
-    _remoteNotificationManager = [[EXRemoteNotificationManager alloc] init];
+    _remoteNotificationManager = [[EXRemoteNotificationManager alloc] initWithUserNotificationCenter:[self notificationCenter]];
   }
   return _remoteNotificationManager;
 }
@@ -165,6 +168,14 @@
   return _notificationsManager;
 }
 
+- (EXUserNotificationCenter *)notificationCenter
+{
+  if (!_notificationCenter) {
+    _notificationCenter = [[EXUserNotificationCenter alloc] init];
+  }
+  return _notificationCenter;
+}
+
 - (NSDictionary *)allServices
 {
   if (!_allServices) {
@@ -188,7 +199,8 @@
                                   self.sensorManager,
                                   self.updatesManager,
                                   self.audioSessionManager,
-                                  self.notificationsManager
+                                  self.notificationsManager,
+                                  self.notificationCenter
                                   ];
     NSArray *allServices = [registryServices arrayByAddingObjectsFromArray:[[EXModuleRegistryProvider singletonModules] allObjects]];
     for (id service in allServices) {

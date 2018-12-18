@@ -1,5 +1,3 @@
-import { createStackNavigator } from 'react-navigation';
-
 import AppAuth from '../screens/AppAuthScreen';
 import AuthSession from '../screens/AuthSessionScreen';
 import BackgroundFetch from '../screens/BackgroundFetchScreen';
@@ -42,6 +40,7 @@ import TextToSpeech from '../screens/TextToSpeechScreen';
 import Util from '../screens/UtilScreen';
 import ViewShot from '../screens/ViewShotScreen';
 import WebBrowser from '../screens/WebBrowserScreen';
+import createStackNavigator from './createStackNavigator';
 import StackConfig from './StackConfig';
 
 const ExpoApisStackNavigator = createStackNavigator(

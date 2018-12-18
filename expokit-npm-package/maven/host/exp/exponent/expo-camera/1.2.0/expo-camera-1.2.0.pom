@@ -8,24 +8,6 @@
   <packaging>aar</packaging>
   <dependencies>
     <dependency>
-      <groupId>com.google.android.gms</groupId>
-      <artifactId>play-services-vision</artifactId>
-      <version>15.0.2</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.android.support</groupId>
-      <artifactId>exifinterface</artifactId>
-      <version>26.1.0</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.google.android</groupId>
-      <artifactId>cameraview</artifactId>
-      <version>1.0.0</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
       <groupId>host.exp.exponent</groupId>
       <artifactId>expo-core</artifactId>
       <version>1.2.0</version>
@@ -65,6 +47,24 @@
       <groupId>host.exp.exponent</groupId>
       <artifactId>expo-camera-interface</artifactId>
       <version>1.1.0</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.android.gms</groupId>
+      <artifactId>play-services-vision</artifactId>
+      <version>15.0.2</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.android.support</groupId>
+      <artifactId>exifinterface</artifactId>
+      <version>26.1.0</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.android</groupId>
+      <artifactId>cameraview</artifactId>
+      <version>1.0.0</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>

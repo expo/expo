@@ -1,5 +1,5 @@
-import { NativeModulesProxy, Platform } from 'expo-core';
-const { ExpoLocalization } = NativeModulesProxy;
+import { Platform } from 'expo-core';
+import { Localization } from 'expo-localization';
 
 const isObject = obj => obj && obj.constructor && obj.constructor === Object;
 
@@ -115,26 +115,26 @@ function warnDeprecated(deprecated, replacement) {
 }
 
 export default {
-  ...ExpoLocalization,
+  ...Localization,
   getCurrentDeviceCountryAsync() {
     warnDeprecated('getCurrentDeviceCountryAsync()', 'country');
-    return ExpoLocalization.country;
+    return Localization.country;
   },
   getCurrentLocaleAsync() {
     warnDeprecated('getCurrentLocaleAsync()', 'locale');
-    return ExpoLocalization.locale.replace('-', '_');
+    return Localization.locale.replace('-', '_');
   },
   getCurrentTimeZoneAsync() {
     warnDeprecated('getCurrentTimeZoneAsync()', 'timezone');
-    return ExpoLocalization.timezone;
+    return Localization.timezone;
   },
   getPreferredLocalesAsync() {
     warnDeprecated('getPreferredLocalesAsync()', 'locales');
-    return ExpoLocalization.locales;
+    return Localization.locales;
   },
   getISOCurrencyCodesAsync() {
     warnDeprecated('getISOCurrencyCodesAsync()', 'isoCurrencyCodes');
-    return ExpoLocalization.isoCurrencyCodes;
+    return Localization.isoCurrencyCodes;
   },
   LocaleStore,
 };

@@ -8,6 +8,12 @@
   <packaging>aar</packaging>
   <dependencies>
     <dependency>
+      <groupId>com.google.android.gms</groupId>
+      <artifactId>play-services-location</artifactId>
+      <version>15.0.1</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
       <groupId>io.nlopez.smartlocation</groupId>
       <artifactId>library</artifactId>
       <version>3.2.11</version>
@@ -29,6 +35,12 @@
       <groupId>host.exp.exponent</groupId>
       <artifactId>expo-permissions-interface</artifactId>
       <version>1.2.0</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>host.exp.exponent</groupId>
+      <artifactId>expo-task-manager-interface</artifactId>
+      <version>1.0.0</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>
