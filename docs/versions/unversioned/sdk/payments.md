@@ -144,6 +144,8 @@ Stripe.setOptionsAsync({
 
 First, initialize the Payments module with your credentials:
 
+This `setOptionsAsync` method must put under the componentWillMount in android's production mode, unlike iOS that it works outside any component.
+
 ```javascript
 Stripe.setOptionsAsync({
   publishableKey: 'PUBLISHABLE_KEY', // Your key
