@@ -202,8 +202,6 @@ ABI32_0_0RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
   if ([[imageURL absoluteString] containsString:@"ext=PNG"]) {
     extension = @".png";
     data = UIImagePNGRepresentation(image);
-  } else if (imageURL != nil && ![[imageURL absoluteString] containsString:@"ext=JPG"]) {
-    ABI32_0_0RCTLogWarn(@"Unsupported format of the picked image. Using JPEG instead.");
   }
 
   id<ABI32_0_0EXFileSystemInterface> fileSystem = [self.bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(ABI32_0_0EXFileSystemInterface)];
