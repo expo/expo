@@ -1,6 +1,6 @@
 import './BeforePIXI';
 
-import * as Expo from 'expo';
+import { Asset } from 'expo';
 import ExpoTHREE from 'expo-three';
 import * as PIXI from 'pixi.js';
 import { Dimensions } from 'react-native';
@@ -73,7 +73,7 @@ void main () {
       gl.enableVertexAttribArray(positionAttrib);
       gl.vertexAttribPointer(positionAttrib, 2, gl.FLOAT, false, 0, 0);
 
-      const asset = Expo.Asset.fromModule(require('../../assets/images/nikki.png'));
+      const asset = Asset.fromModule(require('../../assets/images/nikki.png'));
       await asset.downloadAsync();
       const texture = gl.createTexture();
       gl.activeTexture(gl.TEXTURE0);
@@ -86,7 +86,7 @@ void main () {
       (async () => {
         await new Promise(resolve => setTimeout(resolve, 1000));
 
-        const asset = Expo.Asset.fromModule(require('../../assets/images/nikki-small-purple.png'));
+        const asset = Asset.fromModule(require('../../assets/images/nikki-small-purple.png'));
         await asset.downloadAsync();
         gl.texSubImage2D(gl.TEXTURE_2D, 0, 32, 32, gl.RGBA, gl.UNSIGNED_BYTE, asset);
         // Use below to test using a `TypedArray` parameter
@@ -125,16 +125,14 @@ void main () {
         1000
       );
 
-      const renderer = ExpoTHREE.createRenderer({ gl });
+      const renderer = new ExpoTHREE.Renderer({ gl });
       renderer.setSize(gl.drawingBufferWidth, gl.drawingBufferHeight);
       renderer.setClearColor(0xffffff);
 
       const geometry = new THREE.BoxGeometry(1, 1, 1);
       const material = new THREE.MeshBasicMaterial({
         transparent: true,
-        map: await ExpoTHREE.createTextureAsync({
-          asset: Expo.Asset.fromModule(require('../../assets/images/nikki.png')),
-        }),
+        map: await ExpoTHREE.loadAsync(Asset.fromModule(require('../../assets/images/nikki.png'))),
       });
       const cube = new THREE.Mesh(geometry, material);
       scene.add(cube);
@@ -164,7 +162,7 @@ void main () {
         1000
       );
 
-      const renderer = ExpoTHREE.createRenderer({ gl });
+      const renderer = new ExpoTHREE.Renderer({ gl });
       renderer.setSize(gl.drawingBufferWidth, gl.drawingBufferHeight);
       renderer.setClearColor(0xffffff);
 
@@ -178,9 +176,7 @@ void main () {
       const geometry = new THREE.BoxGeometry(1, 1, 1);
       const material = new THREE.MeshBasicMaterial({
         transparent: true,
-        map: await ExpoTHREE.createTextureAsync({
-          asset: Expo.Asset.fromModule(require('../../assets/images/nikki.png')),
-        }),
+        map: await ExpoTHREE.loadAsync(Asset.fromModule(require('../../assets/images/nikki.png'))),
       });
 
       const cubes = Array(24)
@@ -225,14 +221,12 @@ void main () {
         1000
       );
 
-      const renderer = ExpoTHREE.createRenderer({ gl });
+      const renderer = new ExpoTHREE.Renderer({ gl });
       renderer.setSize(gl.drawingBufferWidth, gl.drawingBufferHeight);
       renderer.setClearColor(0xffffff);
 
       const spriteMaterial = new THREE.SpriteMaterial({
-        map: await ExpoTHREE.createTextureAsync({
-          asset: Expo.Asset.fromModule(require('../../assets/images/nikki.png')),
-        }),
+        map: await ExpoTHREE.loadAsync(Asset.fromModule(require('../../assets/images/nikki.png'))),
         color: 0xffffff,
       });
       const sprite = new THREE.Sprite(spriteMaterial);
@@ -358,7 +352,7 @@ void main () {
       });
       app.ticker.add(() => gl.endFrameEXP());
 
-      const asset = Expo.Asset.fromModule(require('../../assets/images/nikki.png'));
+      const asset = Asset.fromModule(require('../../assets/images/nikki.png'));
       await asset.downloadAsync();
       const image = new HTMLImageElement(asset);
       const sprite = PIXI.Sprite.from(image);
@@ -380,7 +374,7 @@ void main () {
       });
       app.ticker.add(() => gl.endFrameEXP());
 
-      const asset = Expo.Asset.fromModule(require('../../assets/images/nikki.png'));
+      const asset = Asset.fromModule(require('../../assets/images/nikki.png'));
       await asset.downloadAsync();
       const image = new HTMLImageElement(asset);
       const sprite = PIXI.Sprite.from(image);
