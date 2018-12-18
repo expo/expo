@@ -182,25 +182,29 @@ public class GLCameraObject extends GLObject implements SurfaceTexture.OnFrameAv
           mCameraSurfaceTexture.setDefaultBufferSize(previewWidth, previewHeight);
         }
 
-        // update external texture and get transformation matrix
-        mCameraSurfaceTexture.updateTexImage();
-        mCameraSurfaceTexture.getTransformMatrix(transformMatrix);
+        try {
+          // update external texture and get transformation matrix
+          mCameraSurfaceTexture.updateTexImage();
+          mCameraSurfaceTexture.getTransformMatrix(transformMatrix);
 
-        // set uniforms
-        glBindTexture(GL_TEXTURE_EXTERNAL_OES, mExtTexture);
-        glUniform1i(textureLocation, prevActiveTexture[0] - GL_TEXTURE0);
-        glUniformMatrix4fv(transformLocation, 1, false, transformMatrix, 0);
+          // set uniforms
+          glBindTexture(GL_TEXTURE_EXTERNAL_OES, mExtTexture);
+          glUniform1i(textureLocation, prevActiveTexture[0] - GL_TEXTURE0);
+          glUniformMatrix4fv(transformLocation, 1, false, transformMatrix, 0);
 
-        // change viewport to fit the texture and draw
-        glViewport(0, 0, mTextureWidth, mTextureHeight);
-        glDrawArrays(GL_TRIANGLES, 0, textureCoords.length / 2);
+          // change viewport to fit the texture and draw
+          glViewport(0, 0, mTextureWidth, mTextureHeight);
+          glDrawArrays(GL_TRIANGLES, 0, textureCoords.length / 2);
 
-        // restore previous state
-        glViewport(viewport[0], viewport[1], viewport[2], viewport[3]);
-        glBindTexture(GL_TEXTURE_2D, prevTexture[0]);
-        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, prevFramebuffer[0]);
-        glBindVertexArray(prevVertexArray[0]);
-        glUseProgram(prevPrograms[0]);
+          // restore previous state
+          glViewport(viewport[0], viewport[1], viewport[2], viewport[3]);
+          glBindTexture(GL_TEXTURE_2D, prevTexture[0]);
+          glBindFramebuffer(GL_DRAW_FRAMEBUFFER, prevFramebuffer[0]);
+          glBindVertexArray(prevVertexArray[0]);
+          glUseProgram(prevPrograms[0]);
+        } catch (IllegalStateException e) {
+          // nothing, just prevents crashes
+        }
       }
     });
   }
