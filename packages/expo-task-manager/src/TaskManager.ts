@@ -1,6 +1,7 @@
 import { EventEmitter } from 'expo-core';
 import { UnavailabilityError } from 'expo-errors';
 import ExpoTaskManager from './ExpoTaskManager';
+
 interface TaskError {
   code: string | number,
   message: string,
