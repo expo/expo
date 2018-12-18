@@ -1,70 +1,13 @@
 'use strict';
-
-import React from 'react';
-import { Dimensions, Linking, NativeModules, Platform, ScrollView, Text, View } from 'react-native';
 import { Constants, registerRootComponent } from 'expo';
-import jasmineModule from 'jasmine-core/lib/jasmine-core/jasmine';
 import Immutable from 'immutable';
+import jasmineModule from 'jasmine-core/lib/jasmine-core/jasmine';
+import React from 'react';
+import { Dimensions, Linking, NativeModules, ScrollView, Text, View } from 'react-native';
 
-import * as TestUtils from './TestUtils';
+import getTestModulesAsync from './getTestModulesAsync';
 
 let { ExponentTest } = NativeModules;
-
-// List of all modules for tests. Each file path must be statically present for
-// the packager to pick them all up.
-async function getTestModulesAsync() {
-  // The tests don't complete on CircleCI on iOS so we test just that the app launches and runs
-  if (Platform.OS === 'ios') {
-    let isInCI = await TestUtils.shouldSkipTestsRequiringPermissionsAsync();
-    if (isInCI) {
-      return [];
-    }
-  }
-
-  let modules = [
-    // require('./tests/Basic1'),
-    // require('./tests/Basic2'),
-    require('./tests/Import1'),
-    require('./tests/Import2'),
-    require('./tests/Import3'),
-    require('./tests/Asset'),
-    require('./tests/Audio'),
-    require('./tests/Constants'),
-    require('./tests/Contacts'),
-    require('./tests/FileSystem'),
-    require('./tests/GoogleSignIn'),
-    require('./tests/Localization'),
-    require('./tests/Location'),
-    require('./tests/Linking'),
-    require('./tests/Recording'),
-    require('./tests/SecureStore'),
-    require('./tests/Segment'),
-    require('./tests/Speech'),
-    require('./tests/SQLite'),
-    require('./tests/Payments'),
-    require('./tests/AdMobInterstitial'),
-    require('./tests/AdMobBanner'),
-    require('./tests/AdMobPublisherBanner'),
-    require('./tests/AdMobRewarded'),
-    require('./tests/Video'),
-    require('./tests/Permissions'),
-    require('./tests/MediaLibrary'),
-    require('./tests/Notifications'),
-    require('./tests/FBNativeAd'),
-    require('./tests/FBBannerAd'),
-    require('./tests/TaskManager'),
-  ];
-  if (Constants.isDevice) {
-    modules = modules.concat([require('./tests/Brightness')]);
-    modules = modules.concat([require('./tests/BarCodeScanner')]);
-    if (Platform.OS === 'android') {
-      modules = modules.concat([require('./tests/JSC')]);
-      // The Camera tests are flaky on iOS, i.e. they fail randomly
-      modules = modules.concat([require('./tests/Camera')]);
-    }
-  }
-  return modules;
-}
 
 class App extends React.Component {
   // --- Lifecycle -------------------------------------------------------------
@@ -296,7 +239,9 @@ class App extends React.Component {
       specDone(jasmineResult) {
         if (app.state.testPortal) {
           console.warn(
-            `The test portal has not been cleaned up by \`${jasmineResult.fullName}\`. Call \`cleanupPortal\` before finishing the test.`
+            `The test portal has not been cleaned up by \`${
+              jasmineResult.fullName
+            }\`. Call \`cleanupPortal\` before finishing the test.`
           );
         }
 
@@ -346,7 +291,9 @@ class App extends React.Component {
           }
           {r.get('description')} ({status})
         </Text>
-        {r.get('failedExpectations').map((e, i) => <Text key={i}>{e.get('message')}</Text>)}
+        {r.get('failedExpectations').map((e, i) => (
+          <Text key={i}>{e.get('message')}</Text>
+        ))}
       </View>
     );
   };
@@ -375,9 +322,7 @@ class App extends React.Component {
   _onScrollViewContentSizeChange = (contentWidth, contentHeight) => {
     if (this._scrollViewRef) {
       this._scrollViewRef.scrollTo({
-        y:
-          Math.max(0, contentHeight - Dimensions.get('window').height) +
-          Constants.statusBarHeight,
+        y: Math.max(0, contentHeight - Dimensions.get('window').height) + Constants.statusBarHeight,
       });
     }
   };
