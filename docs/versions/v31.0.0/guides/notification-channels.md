@@ -106,3 +106,17 @@ _createNotificationAsync = () => {
 ```
 
 This will create a channel called "Reminders" with default settings of `max` priority and the vibrate pattern `[0, 250, 250, 250]`. Android 8 users can change these settings whenever they want, or even turn off notifications completely for the "Reminders" channel. When `presentLocalNotificationAsync` is called, the OS will read the channel's settings and present the notification accordingly.
+
+## Send channel notification with Expo api service.
+
+```javascript
+[{
+  "to": "ExponentPushToken[xxxxxx]",
+  "title":"test",
+  "priority":"high",
+  "body": "test",
+  "sound":"default", // android 7.0 , 6, 5 , 4
+  "channelId": "chat-messages", // android 8.0 later
+}]
+```
+
