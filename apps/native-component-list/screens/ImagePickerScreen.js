@@ -45,7 +45,9 @@ export default class ImagePickerScreen extends React.Component {
           return;
         }
       }
-      let result = await ImagePicker.launchImageLibraryAsync({});
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.All,
+      });
       if (result.cancelled) {
         this.setState({ selection: null });
       } else {
