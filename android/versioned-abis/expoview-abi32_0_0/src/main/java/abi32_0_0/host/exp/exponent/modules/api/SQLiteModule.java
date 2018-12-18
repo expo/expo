@@ -160,9 +160,9 @@ public class SQLiteModule extends ReactContextBaseJavaModule {
   private Object getValueFromCursor(Cursor cursor, int index, int columnType) {
     switch (columnType) {
       case Cursor.FIELD_TYPE_FLOAT:
-        return cursor.getFloat(index);
+        return cursor.getDouble(index);
       case Cursor.FIELD_TYPE_INTEGER:
-        return cursor.getInt(index);
+        return cursor.getLong(index);
       case Cursor.FIELD_TYPE_BLOB:
         // convert byte[] to binary string; it's good enough, because
         // WebSQL doesn't support blobs anyway
