@@ -72,6 +72,9 @@ export default {
   async watchDeviceHeading(headingId): Promise<void> {
     console.warn('Location.watchDeviceHeading: is not supported on web');
   },
+  async hasServicesEnabledAsync(): Promise<boolean> {
+    return false;
+  },
   async geocodeAsync(): Promise<Array<any>> {
     throw new GeocoderError();
   },
