@@ -159,7 +159,7 @@ ABI32_0_0RCT_CUSTOM_VIEW_PROPERTY(transform, CATransform3D, ABI32_0_0RNSVGNode)
     CATransform3D transform3d = json ? [ABI32_0_0RNSVGNodeManager CATransform3D:json] : defaultView.layer.transform;
     CGAffineTransform transform = CATransform3DGetAffineTransform(transform3d);
     view.invTransform = CGAffineTransformInvert(transform);
-    view.transform = transform;
+    view.transforms = transform;
     [view invalidate];
 }
 ABI32_0_0RCT_EXPORT_VIEW_PROPERTY(mask, NSString)
