@@ -1,5 +1,6 @@
-import { NativeModulesProxy, EventEmitter } from 'expo-core';
-const { ExpoTaskManager } = NativeModulesProxy;
+import { EventEmitter } from 'expo-core';
+import { UnavailabilityError } from 'expo-errors';
+import ExpoTaskManager from './ExpoTaskManager';
 const eventEmitter = new EventEmitter(ExpoTaskManager);
 const tasks = new Map();
 let isRunningDuringInitialization = true;
@@ -31,21 +32,36 @@ export function isTaskDefined(taskName) {
     return tasks.has(taskName);
 }
 export async function isTaskRegisteredAsync(taskName) {
+    if (!ExpoTaskManager.isTaskRegisteredAsync) {
+        throw new UnavailabilityError('TaskManager', 'isTaskRegisteredAsync');
+    }
     _validateTaskName(taskName);
     return ExpoTaskManager.isTaskRegisteredAsync(taskName);
 }
 export async function getTaskOptionsAsync(taskName) {
+    if (!ExpoTaskManager.getTaskOptionsAsync) {
+        throw new UnavailabilityError('TaskManager', 'getTaskOptionsAsync');
+    }
     _validateTaskName(taskName);
     return ExpoTaskManager.getTaskOptionsAsync(taskName);
 }
 export async function getRegisteredTasksAsync() {
+    if (!ExpoTaskManager.getRegisteredTasksAsync) {
+        throw new UnavailabilityError('TaskManager', 'getRegisteredTasksAsync');
+    }
     return ExpoTaskManager.getRegisteredTasksAsync();
 }
 export async function unregisterTaskAsync(taskName) {
+    if (!ExpoTaskManager.unregisterTaskAsync) {
+        throw new UnavailabilityError('TaskManager', 'unregisterTaskAsync');
+    }
     _validateTaskName(taskName);
     await ExpoTaskManager.unregisterTaskAsync(taskName);
 }
 export async function unregisterAllTasksAsync() {
+    if (!ExpoTaskManager.unregisterAllTasksAsync) {
+        throw new UnavailabilityError('TaskManager', 'unregisterAllTasksAsync');
+    }
     await ExpoTaskManager.unregisterAllTasksAsync();
 }
 eventEmitter.addListener(ExpoTaskManager.EVENT_NAME, async ({ data, error, executionInfo }) => {
