@@ -1,6 +1,6 @@
 {
   "name": "expo-constants",
-  "version": "1.1.0",
+  "version": "2.0.0-rc.0",
   "description": "Expo Constants standalone universal module",
   "main": "build/Constants.js",
   "types": "build/Constants.d.ts",
@@ -32,9 +32,9 @@
     "preset": "expo-module-scripts"
   },
   "peerDependencies": {
-    "expo": "*",
-    "expo-core": "~1.2.0",
-    "expo-constants-interface": "~1.1.0"
+    "expo": "~32.0.0-rc.0",
+    "expo-core": "~2.0.0-rc.0",
+    "expo-constants-interface": "~2.0.0-rc.0"
   },
   "dependencies": {
     "ua-parser-js": "^0.7.19",
@@ -42,5 +42,6 @@
   },
   "devDependencies": {
     "expo-module-scripts": "^1.0.0"
-  }
+  },
+  "gitHead": "6f6e8d93d4979663581002a9dcd5efc4e6f4fb5f"
 }
