@@ -1,4 +1,6 @@
-import { NativeModulesProxy, EventEmitter } from 'expo-core';
+import { EventEmitter } from 'expo-core';
+import { UnavailabilityError } from 'expo-errors';
+import ExpoTaskManager from './ExpoTaskManager';
 
 interface TaskError {
   code: string | number,
@@ -22,7 +24,6 @@ interface RegisteredTask {
 
 type Task = (body: TaskBody) => void;
 
-const { ExpoTaskManager } = NativeModulesProxy;
 const eventEmitter = new EventEmitter(ExpoTaskManager);
 const tasks: Map<string, Task> = new Map<string, Task>();
 
@@ -59,25 +60,45 @@ export function isTaskDefined(taskName: string): boolean {
 }
 
 export async function isTaskRegisteredAsync(taskName: string): Promise<boolean> {
+  if (!ExpoTaskManager.isTaskRegisteredAsync) {
+    throw new UnavailabilityError('TaskManager', 'isTaskRegisteredAsync')
+  }
+
   _validateTaskName(taskName);
   return ExpoTaskManager.isTaskRegisteredAsync(taskName);
 }
 
 export async function getTaskOptionsAsync<TaskOptions>(taskName: string): Promise<TaskOptions> {
+  if (!ExpoTaskManager.getTaskOptionsAsync) {
+    throw new UnavailabilityError('TaskManager', 'getTaskOptionsAsync')
+  }
+
   _validateTaskName(taskName);
   return ExpoTaskManager.getTaskOptionsAsync(taskName);
 }
 
 export async function getRegisteredTasksAsync(): Promise<RegisteredTask[]> {
+  if (!ExpoTaskManager.getRegisteredTasksAsync) {
+    throw new UnavailabilityError('TaskManager', 'getRegisteredTasksAsync')
+  }
+
   return ExpoTaskManager.getRegisteredTasksAsync();
 }
 
 export async function unregisterTaskAsync(taskName: string): Promise<void> {
+  if (!ExpoTaskManager.unregisterTaskAsync) {
+    throw new UnavailabilityError('TaskManager', 'unregisterTaskAsync')
+  }
+
   _validateTaskName(taskName);
   await ExpoTaskManager.unregisterTaskAsync(taskName);
 }
 
 export async function unregisterAllTasksAsync(): Promise<void> {
+  if (!ExpoTaskManager.unregisterAllTasksAsync) {
+    throw new UnavailabilityError('TaskManager', 'unregisterAllTasksAsync')
+  }
+
   await ExpoTaskManager.unregisterAllTasksAsync();
 }
 
