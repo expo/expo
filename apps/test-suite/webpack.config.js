@@ -129,6 +129,18 @@ const videoLoaderConfiguration = {
   ],
 };
 
+const dbLoaderConfiguration = {
+  test: /\.(db)$/,
+  use: [
+    {
+      loader: 'file-loader',
+      options: {
+        name: '[path][name].[ext]',
+      },
+    },
+  ],
+};
+
 function getWebModule(moduleName, initialRoot, logTag) {
   return function(res) {
     if (res.context.indexOf('node_modules/react-native/') === -1) return;
@@ -188,6 +200,7 @@ module.exports = {
       imageLoaderConfiguration,
       ttfLoaderConfiguration,
       videoLoaderConfiguration,
+      dbLoaderConfiguration,
     ],
   },
   plugins: [
