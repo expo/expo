@@ -1,11 +1,16 @@
 'use strict';
-
-import { FileSystem as FS, Asset } from 'expo';
+import { Asset, FileSystem as FS } from 'expo';
+import { Platform } from 'expo-core';
 
 export const name = 'FileSystem';
 
 export function test(t) {
   t.describe('FileSystem', () => {
+    /* Web is not currently supported */
+    if (Platform.OS === 'web') {
+      return;
+    }
+
     const throws = async run => {
       let error = null;
       try {

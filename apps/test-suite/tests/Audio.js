@@ -1,9 +1,9 @@
 'use strict';
-
 import { Asset, Audio } from 'expo';
-import { Platform } from 'react-native';
+import { Platform } from 'expo-core';
 
 import { retryForStatus, waitFor } from './helpers';
+
 
 export const name = 'Audio';
 const mainTestingSource = require('../assets/LLizard.mp3');
@@ -14,6 +14,12 @@ const redirectingSoundUri = 'http://bit.ly/2qBMx80';
 const authenticatedStaticFilesBackend = 'https://authenticated-static-files-hagckpsbra.now.sh';
 
 export function test(t) {
+
+  /* Web is not currently supported */
+  if (Platform.OS === 'web') {
+    return;
+  }
+
   t.describe('Audio class', () => {
     t.describe('Audio.setAudioModeAsync', () => {
       // These tests should work according to the documentation,

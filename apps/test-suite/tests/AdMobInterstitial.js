@@ -13,9 +13,9 @@ export function test(t) {
 
     t.describe('setAdUnitID', () => {
       t.it('successfully sets Ad Unit ID for interstitial ads', () => {
-        t
-          .expect(AdMobInterstitial.setAdUnitID('ca-app-pub-3940256099942544/1033173712'))
-          .not.toBeNull();
+        t.expect(
+          AdMobInterstitial.setAdUnitID('ca-app-pub-3940256099942544/1033173712')
+        ).not.toBeNull();
       });
     });
 

@@ -15,6 +15,10 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
   const describeWithPermissions = shouldSkipTestsRequiringPermissions ? t.xdescribe : t.describe;
 
   describeWithPermissions('Camera', () => {
+    /* Web is currently not supported */
+    if (Platform.OS === 'web') {
+      return;
+    }
     let instance = null;
     let originalTimeout;
 
@@ -217,138 +221,141 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
       }
     });
 
-    t.describe('Camera.recordAsync', () => {
-      t.beforeEach(async () => {
-        if (Platform.OS === 'ios') {
-          await waitFor(500);
-        }
-      });
+    /* Web doesn't support recording video */
+    if (Platform.OS !== 'web') {
+      t.describe('Camera.recordAsync', () => {
+        t.beforeEach(async () => {
+          if (Platform.OS === 'ios') {
+            await waitFor(500);
+          }
+        });
 
-      t.it('returns a local URI', async () => {
-        await mountAndWaitFor(<Camera ref={refSetter} style={style} />);
-        const recordingPromise = instance.recordAsync();
-        await waitFor(2500);
-        instance.stopRecording();
-        const response = await recordingPromise;
-        t.expect(response).toBeDefined();
-        t.expect(response.uri).toMatch(/^file:\/\//);
-      });
+        t.it('returns a local URI', async () => {
+          await mountAndWaitFor(<Camera ref={refSetter} style={style} />);
+          const recordingPromise = instance.recordAsync();
+          await waitFor(2500);
+          instance.stopRecording();
+          const response = await recordingPromise;
+          t.expect(response).toBeDefined();
+          t.expect(response.uri).toMatch(/^file:\/\//);
+        });
 
-      let recordedFileUri = null;
+        let recordedFileUri = null;
 
-      t.it('stops the recording after maxDuration', async () => {
-        await mountAndWaitFor(<Camera ref={refSetter} style={style} />);
-        const response = await instance.recordAsync({ maxDuration: 2 });
-        recordedFileUri = response.uri;
-      });
+        t.it('stops the recording after maxDuration', async () => {
+          await mountAndWaitFor(<Camera ref={refSetter} style={style} />);
+          const response = await instance.recordAsync({ maxDuration: 2 });
+          recordedFileUri = response.uri;
+        });
 
-      t.it('the video has a duration near maxDuration', async () => {
-        await mountAndWaitFor(
-          <Video style={style} source={{ uri: recordedFileUri }} ref={refSetter} />,
-          'onLoad'
-        );
-        await retryForStatus(instance, { isBuffering: false });
-        const video = await instance.getStatusAsync();
-        t.expect(video.durationMillis).toBeLessThan(2250);
-        t.expect(video.durationMillis).toBeGreaterThan(1750);
-      });
+        t.it('the video has a duration near maxDuration', async () => {
+          await mountAndWaitFor(
+            <Video style={style} source={{ uri: recordedFileUri }} ref={refSetter} />,
+            'onLoad'
+          );
+          await retryForStatus(instance, { isBuffering: false });
+          const video = await instance.getStatusAsync();
+          t.expect(video.durationMillis).toBeLessThan(2250);
+          t.expect(video.durationMillis).toBeGreaterThan(1750);
+        });
 
-      // Test for the fix to: https://github.com/expo/expo/issues/1976
-      const testFrontCameraRecording = async camera => {
-        await mountAndWaitFor(camera);
-        const response = await instance.recordAsync({ maxDuration: 2 });
+        // Test for the fix to: https://github.com/expo/expo/issues/1976
+        const testFrontCameraRecording = async camera => {
+          await mountAndWaitFor(camera);
+          const response = await instance.recordAsync({ maxDuration: 2 });
 
-        await mountAndWaitFor(
-          <Video style={style} source={{ uri: response.uri }} ref={refSetter} />,
-          'onLoad'
-        );
-        await retryForStatus(instance, { isBuffering: false });
-        const video = await instance.getStatusAsync();
+          await mountAndWaitFor(
+            <Video style={style} source={{ uri: response.uri }} ref={refSetter} />,
+            'onLoad'
+          );
+          await retryForStatus(instance, { isBuffering: false });
+          const video = await instance.getStatusAsync();
 
-        t.expect(video.durationMillis).toBeLessThan(2250);
-        t.expect(video.durationMillis).toBeGreaterThan(1750);
-      };
+          t.expect(video.durationMillis).toBeLessThan(2250);
+          t.expect(video.durationMillis).toBeGreaterThan(1750);
+        };
 
-      t.it('records using the front camera', async () => {
-        await testFrontCameraRecording(
-          <Camera
-            ref={refSetter}
-            style={style}
-            type={Camera.Constants.Type.front}
-            useCamera2Api={false}
-          />
-        );
-      });
-
-      if (Platform.OS === 'android') {
-        t.it('records using the front camera and Camera2 API', async () => {
+        t.it('records using the front camera', async () => {
           await testFrontCameraRecording(
             <Camera
               ref={refSetter}
               style={style}
               type={Camera.Constants.Type.front}
-              useCamera2Api
+              useCamera2Api={false}
             />
           );
         });
-      }
 
-      t.it('stops the recording after maxFileSize', async () => {
-        await mountAndWaitFor(<Camera ref={refSetter} style={style} />);
-        await instance.recordAsync({ maxFileSize: 256 * 1024 }); // 256 KiB
+        if (Platform.OS === 'android') {
+          t.it('records using the front camera and Camera2 API', async () => {
+            await testFrontCameraRecording(
+              <Camera
+                ref={refSetter}
+                style={style}
+                type={Camera.Constants.Type.front}
+                useCamera2Api
+              />
+            );
+          });
+        }
+
+        t.it('stops the recording after maxFileSize', async () => {
+          await mountAndWaitFor(<Camera ref={refSetter} style={style} />);
+          await instance.recordAsync({ maxFileSize: 256 * 1024 }); // 256 KiB
+        });
+
+        t.describe('can record consecutive clips', () => {
+          let defaultTimeoutInterval = null;
+          t.beforeAll(() => {
+            defaultTimeoutInterval = t.jasmine.DEFAULT_TIMEOUT_INTERVAL;
+            t.jasmine.DEFAULT_TIMEOUT_INTERVAL = defaultTimeoutInterval * 2;
+          });
+
+          t.afterAll(() => {
+            t.jasmine.DEFAULT_TIMEOUT_INTERVAL = defaultTimeoutInterval;
+          });
+
+          t.it('started/stopped manually', async () => {
+            await mountAndWaitFor(<Camera style={style} ref={refSetter} />);
+
+            const recordFor = duration =>
+              new Promise(async (resolve, reject) => {
+                const recordingPromise = instance.recordAsync();
+                await waitFor(duration);
+                instance.stopRecording();
+                try {
+                  const recordedVideo = await recordingPromise;
+                  t.expect(recordedVideo).toBeDefined();
+                  t.expect(recordedVideo.uri).toBeDefined();
+                  resolve();
+                } catch (error) {
+                  reject(error);
+                }
+              });
+
+            await recordFor(1000);
+            await waitFor(1000);
+            await recordFor(1000);
+          });
+
+          t.it('started/stopped automatically', async () => {
+            await mountAndWaitFor(<Camera style={style} ref={refSetter} />);
+
+            const recordFor = duration =>
+              new Promise(async (resolve, reject) => {
+                try {
+                  const response = await instance.recordAsync({ maxDuration: duration / 1000 });
+                  resolve(response);
+                } catch (error) {
+                  reject(error);
+                }
+              });
+
+            await recordFor(1000);
+            await recordFor(1000);
+          });
+        });
       });
-
-      t.describe('can record consecutive clips', () => {
-        let defaultTimeoutInterval = null;
-        t.beforeAll(() => {
-          defaultTimeoutInterval = t.jasmine.DEFAULT_TIMEOUT_INTERVAL;
-          t.jasmine.DEFAULT_TIMEOUT_INTERVAL = defaultTimeoutInterval * 2;
-        });
-
-        t.afterAll(() => {
-          t.jasmine.DEFAULT_TIMEOUT_INTERVAL = defaultTimeoutInterval;
-        });
-
-        t.it('started/stopped manually', async () => {
-          await mountAndWaitFor(<Camera style={style} ref={refSetter} />);
-
-          const recordFor = duration =>
-            new Promise(async (resolve, reject) => {
-              const recordingPromise = instance.recordAsync();
-              await waitFor(duration);
-              instance.stopRecording();
-              try {
-                const recordedVideo = await recordingPromise;
-                t.expect(recordedVideo).toBeDefined();
-                t.expect(recordedVideo.uri).toBeDefined();
-                resolve();
-              } catch (error) {
-                reject(error);
-              }
-            });
-
-          await recordFor(1000);
-          await waitFor(1000);
-          await recordFor(1000);
-        });
-
-        t.it('started/stopped automatically', async () => {
-          await mountAndWaitFor(<Camera style={style} ref={refSetter} />);
-
-          const recordFor = duration =>
-            new Promise(async (resolve, reject) => {
-              try {
-                const response = await instance.recordAsync({ maxDuration: duration / 1000 });
-                resolve(response);
-              } catch (error) {
-                reject(error);
-              }
-            });
-
-          await recordFor(1000);
-          await recordFor(1000);
-        });
-      });
-    });
+    }
   });
 }

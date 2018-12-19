@@ -1,6 +1,7 @@
 'use strict';
 
 import { Segment } from 'expo';
+import { Platform } from 'expo-core';
 
 export const name = 'Segment';
 
@@ -8,6 +9,11 @@ const ANDROID_WRITE_KEY = 'android-write-key';
 const IOS_WRITE_KEY = 'ios-write-key';
 
 export function test(t) {
+  /* Web is not currently supported */
+  if (Platform.OS === 'web') {
+    return;
+  }
+
   t.describe('Segment initialization', () => {
     t.it('works on all platforms', () => {
       t.expect(

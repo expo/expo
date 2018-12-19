@@ -3,7 +3,7 @@
 import React from 'react';
 import { forEach } from 'lodash';
 import { AdMobBanner } from 'expo';
-
+import { Platform } from 'expo-core';
 import { mountAndWaitFor as originalMountAndWaitFor } from './helpers';
 
 export const name = 'AdMobBanner';
@@ -23,6 +23,11 @@ const sizes = [
 
 export function test(t, { setPortalChild, cleanupPortal }) {
   t.describe('AdMobBanner', () => {
+    /* Web is not currently supported */
+    if (Platform.OS === 'web') {
+      return;
+    }
+
     t.afterEach(async () => await cleanupPortal());
 
     const mountAndWaitFor = (child, propName = 'onAdViewDidReceiveAd') =>

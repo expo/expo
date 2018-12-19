@@ -1,5 +1,5 @@
 import { Asset, Permissions, MediaLibrary } from 'expo';
-import { Platform } from 'react-native';
+import { Platform } from 'expo-core';
 
 const FILES = [
   require('../assets/icons/app.png'),
@@ -32,14 +32,14 @@ const INFO_KEYS = [
   'localUri',
   'location',
   'exif',
-  ...(Platform != 'ios' ? [] : ['orientation', 'isFavorite']),
+  ...(Platform.OS != 'ios' ? [] : ['orientation', 'isFavorite']),
 ];
 
 const ALBUM_KEYS = [
   'id',
   'title',
   'assetCount',
-  ...(Platform != 'ios'
+  ...(Platform.OS != 'ios'
     ? []
     : ['type', 'startTime', 'endTime', 'approximateLocation', 'locationNames']),
 ];
@@ -80,6 +80,10 @@ export async function test(t) {
     let testAssets;
     let album;
     let files;
+
+    if (Platform.OS === 'web') {
+      return;
+    }
 
     t.beforeAll(async () => {
       await Permissions.askAsync(Permissions.CAMERA_ROLL);

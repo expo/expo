@@ -1,7 +1,7 @@
 'use strict';
 
 import { isMatch } from 'lodash';
-import { Platform } from 'react-native';
+import { Platform } from 'expo-core';
 import { Notifications, Permissions } from 'expo';
 
 import { waitFor } from './helpers';
@@ -61,6 +61,10 @@ export async function test(t) {
         await Notifications.dismissAllNotificationsAsync();
       }
     });
+
+    if (Platform.OS === 'web') {
+      return;
+    }
 
     t.describe('getExpoPushTokenAsync', () => {
       t.it('resolves with a string', async () => {

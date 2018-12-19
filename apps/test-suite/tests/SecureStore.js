@@ -1,11 +1,16 @@
 'use strict';
 
 import { SecureStore } from 'expo';
-import { Platform } from 'react-native';
+import { Platform } from 'expo-core';
 
 export const name = 'SecureStore';
 
 export function test(t) {
+  /* Web is not currently supported */
+  if (Platform.OS === 'web') {
+    return;
+  }
+
   const value = 'value-to-test';
   const longValue =
     'EAAT3TDAdWacBAMjZAq4clOJEOvf8JW5ZAxAsRnZCGRBNb1IRVFrzwiNqsM2I5MyogyPCc78TL1KZAFZAnZAFHeZCjkN8VMytKpcKD4HQEtVZBoAS54WkGbA2STjOe1vV3XOx3BY9OsDpDcD4yTZAv1OcI1wNlVvryiujZBeheVnELK6KTyzUgrPM8zZA42ZAB6SEcZADoj4MNsX5DqrJ3FtG0cxjFCD0lhKfBmTQMrZBCmuefRrQZDZDEAAT3TDAdWacBAMjZAq4clOJEOvf8JW5ZAxAsRnZCGRBNb1IRVFrzwiNqsM2I5MyogyPCc78TL1KZAFZAnZAFHeZCjkN8VMytKpcKD4HQEtVZBoAS54WkGbA2STjOe1vV3XOx3BY9OsDpDcD4yTZAv1OcI1wNlVvryiujZBeheVnELK6KTyzUgrPM8zZA42ZAB6SEcZADoj4MNsX5DqrJ3FtG0cxjFCD0lhKfBmTQMrZBCmuefRrQZDZDEAAT3TDAdWacBAMjZAq4clOJEOvf8JW5ZAxAsRnZCGRBNb1IRVFrzwiNqsM2I5MyogyPCc78TL1KZAFZAnZAFHeZCjkN8VMytKpcKD4HQEtVZBoAS54WkGbA2STjOe1vV3XOx3BY9OsDpDcD4yTZAv1OcI1wNlVvryiujZBeheVnELK6KTyzUgrPM8zZA42ZAB6SEcZADoj4MNsX5DqrJ3FtG0cxjFCD0lhKfBmTQMrZBCmuefRrQZDZDEAAT3TDAdWacBAMjZAq4clOJEOvf8JW5ZAxAsRnZCGRBNb1IRVFrzwiNqsM2I5MyogyPCc78TL1KZAFZAnZAFHeZCjkN8VMytKpcKD4HQEtVZBoAS54WkGbA2STjOe1vV3XOx3BY9OsDpDcD4yTZAv1OcI1wNlVvryiujZBeheVnELK6KTyzUgrPM8zZA42ZAB6SEcZADoj4MNsX5DqrJ3FtG0cxjFCD0lhKfBmTQMrZBCmuefRrQZDZD';

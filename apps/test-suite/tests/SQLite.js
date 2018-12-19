@@ -1,12 +1,18 @@
 'use strict';
 
 import { SQLite, FileSystem as FS, Asset } from 'expo';
+import { Platform } from 'expo-core';
 
 export const name = 'SQLite';
 
 // TODO: Only tests successful cases, needs to test error cases like bad database name etc.
 export function test(t) {
   t.describe('SQLite', () => {
+    /* Web is not currently supported */
+    if (Platform.OS === 'web') {
+      return;
+    }
+
     t.it('should be able to drop + create a table, insert, query', async () => {
       const db = SQLite.openDatabase('test.db');
       await new Promise((resolve, reject) => {

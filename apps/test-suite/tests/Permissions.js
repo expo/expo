@@ -7,6 +7,11 @@ export const name = 'Permissions';
 
 export function test(t) {
   t.describe('Permissions.getAsync', () => {
+    /* Web is not currently supported */
+    if (Platform.OS === 'web') {
+      return;
+    }
+
     t.describe('of Permissions.NOTIFICATIONS', () => {
       t.it('has proper shape', async () => {
         const result = await Permissions.getAsync(Permissions.NOTIFICATIONS);

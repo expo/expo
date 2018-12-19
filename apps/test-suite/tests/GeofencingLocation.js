@@ -1,6 +1,7 @@
 'use strict';
 import { Location, TaskManager } from 'expo';
 
+import { Platform } from 'expo-core';
 import * as TestUtils from '../TestUtils';
 
 const GEOFENCING_TASK = 'geofencing-task';
@@ -12,6 +13,11 @@ export async function test(t) {
   const describeWithPermissions = shouldSkipTestsRequiringPermissions ? t.xdescribe : t.describe;
 
   describeWithPermissions('Location - geofencing', () => {
+    /* Web is not currently supported */
+    if (Platform.OS === 'web') {
+      return;
+    }
+
     const regions = [
       {
         identifier: 'Kraków, Poland',

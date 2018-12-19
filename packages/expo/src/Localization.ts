@@ -122,7 +122,7 @@ export default {
   },
   getCurrentLocaleAsync() {
     warnDeprecated('getCurrentLocaleAsync()', 'locale');
-    return Localization.locale.replace('-', '_');
+    return Localization.locale;
   },
   getCurrentTimeZoneAsync() {
     warnDeprecated('getCurrentTimeZoneAsync()', 'timezone');

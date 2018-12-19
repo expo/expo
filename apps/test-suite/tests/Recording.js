@@ -53,6 +53,11 @@ export async function test(t) {
   const describeWithPermissions = shouldSkipTestsRequiringPermissions ? t.xdescribe : t.describe;
 
   describeWithPermissions('Recording', () => {
+    /* Web is not currently supported */
+    if (Platform.OS === 'web') {
+      return;
+    }
+
     t.beforeAll(async () => {
       await Audio.setAudioModeAsync({
         shouldDuckAndroid: true,

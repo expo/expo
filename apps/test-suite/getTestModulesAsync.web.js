@@ -1,18 +1,7 @@
-'use strict';
-import { Constants } from 'expo';
-import { Platform } from 'react-native';
-import * as TestUtils from './TestUtils';
-
 // List of all modules for tests. Each file path must be statically present for
 // the packager to pick them all up.
 export default async function getTestModulesAsync() {
   // The tests don't complete on CircleCI on iOS so we test just that the app launches and runs
-  if (Platform.OS === 'ios') {
-    let isInCI = await TestUtils.shouldSkipTestsRequiringPermissionsAsync();
-    if (isInCI) {
-      return [];
-    }
-  }
 
   let modules = [
     // require('./tests/Basic1'),
@@ -27,7 +16,7 @@ export default async function getTestModulesAsync() {
     require('./tests/FileSystem'),
     require('./tests/GoogleSignIn'),
     require('./tests/Localization'),
-    require('./tests/Location'),
+    /* require('./tests/Location'), */
     require('./tests/BackgroundLocation'),
     require('./tests/GeofencingLocation'),
     require('./tests/Linking'),
@@ -48,16 +37,8 @@ export default async function getTestModulesAsync() {
     require('./tests/FBNativeAd'),
     require('./tests/FBBannerAd'),
     require('./tests/TaskManager'),
+    require('./tests/Camera'),
   ];
 
-  if (Constants.isDevice) {
-    modules = modules.concat([require('./tests/Brightness')]);
-    modules = modules.concat([require('./tests/BarCodeScanner')]);
-    if (Platform.OS === 'android') {
-      modules = modules.concat([require('./tests/JSC')]);
-      // The Camera tests are flaky on iOS, i.e. they fail randomly
-      modules = modules.concat([require('./tests/Camera')]);
-    }
-  }
   return modules;
 }

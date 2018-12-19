@@ -22,6 +22,11 @@ const style = { width: 200, height: 200 };
 
 export function test(t, { setPortalChild, cleanupPortal }) {
   t.describe('Video', () => {
+    /* Web is not currently supported */
+    if (Platform.OS === 'web') {
+      return;
+    }
+    
     t.beforeAll(async () => {
       const mp4Asset = Asset.fromModule(mp4Source);
       await mp4Asset.downloadAsync();
