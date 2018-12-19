@@ -1,5 +1,5 @@
 // @flow
-import React from 'react';
+import * as React from 'react';
 import { Text, View } from 'react-native';
 
 export default class AppLoading extends React.Component<{}> {

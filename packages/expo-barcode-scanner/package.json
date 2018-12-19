@@ -2,7 +2,17 @@
   "name": "expo-barcode-scanner",
   "version": "1.1.0",
   "description": "Expo BarCode Scanner standalone universal module",
-  "main": "index.js",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "test": "expo-module test",
+    "postinstall": "expo-module postinstall",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
   "keywords": [
     "barcode",
     "barcode-scanner",
@@ -15,12 +25,15 @@
   "peerDependencies": {
     "expo-core": "~1.2.0"
   },
+  "jest": {
+    "preset": "expo-module-scripts"
+  },
   "dependencies": {
     "expo-barcode-scanner-interface": "~1.1.0",
     "lodash.mapvalues": "^4.6.0",
     "prop-types": "^15.6.0"
   },
   "devDependencies": {
-    "flow-bin": "0.79.1"
+    "expo-module-scripts": "^1.0.0"
   }
 }

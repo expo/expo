@@ -1,29 +1,28 @@
-// @flow
 import React from 'react';
 import PropTypes from 'prop-types';
 import mapValues from 'lodash.mapvalues';
 import { NativeModulesProxy, requireNativeViewManager } from 'expo-core';
-import { findNodeHandle, ViewPropTypes, Platform } from 'react-native';
+import { findNodeHandle, ViewPropTypes, Platform, View } from 'react-native';
 
 type EventCallbackArgumentsType = {
-  nativeEvent: Object,
+  nativeEvent: any,
 };
 
-type Props = ViewPropTypes & {
-  onBarCodeScanned: EventCallbackArgumentsType => void,
-  barCodeTypes?: Array<BarCodeScanner.Constants.BarCodeType>,
+type Props = React.ComponentProps<typeof View> & {
+  onBarCodeScanned: (EventCallbackArgumentsType) => void,
+  barCodeTypes?: Array<string>,
   type?: string | number,
 };
 
-const { ExpoBarCodeScannerModule } = NativeModulesProxy;
+const { ExpoBarCodeScannerModule }: any = NativeModulesProxy;
 
-const EVENT_THROTTLE_MS = 500;
+const EVENT_THROTTLE_MS: number = 500;
 
 export default class BarCodeScanner extends React.Component<Props> {
-  lastEvents: Object;
-  lastEventsTimes: Object;
-  barCodeScannerRef: ?Object;
-  barCodeScannerHandle: ?number;
+  lastEvents: any;
+  lastEventsTimes: any;
+  barCodeScannerRef?: any;
+  barCodeScannerHandle?: number | null;
 
   static Constants = {
     BarCodeType: ExpoBarCodeScannerModule.BarCodeType,
@@ -52,7 +51,7 @@ export default class BarCodeScanner extends React.Component<Props> {
     this.lastEventsTimes = {};
   }
 
-  static async scanFromURLAsync(url: string, barCodeTypes: Array<BarCodeScanner.Constants.BarCodeType>) {
+  static async scanFromURLAsync(url: string, barCodeTypes: Array<string>) {
     if (Array.isArray(barCodeTypes) && barCodeTypes.length === 0) {
       throw new Error('No barCodeTypes requested, provide at least one barCodeType for scanner');
     }
@@ -73,17 +72,17 @@ export default class BarCodeScanner extends React.Component<Props> {
 
   render() {
     const nativeProps = this.convertNativeProps(this.props);
-    const { onBarCodeScanned, onBarCodeRead } = this.props;
+    const { onBarCodeScanned } = this.props;
     return (
       <ExpoBarCodeScannerView
         {...nativeProps}
         ref={this.setReference}
-        onBarCodeScanned={this.onObjectDetected(onBarCodeScanned || onBarCodeRead)} // onBarCodeRead is deprecated
-      /> 
+        onBarCodeScanned={this.onObjectDetected(onBarCodeScanned)}
+      />
     );
   }
 
-  setReference = (ref: ?Object) => {
+  setReference = (ref?: React.Component) => {
     if (ref) {
       this.barCodeScannerRef = ref;
       this.barCodeScannerHandle = findNodeHandle(ref);
@@ -93,12 +92,12 @@ export default class BarCodeScanner extends React.Component<Props> {
     }
   };
 
-  onObjectDetected = (callback: ?Function) => ({ nativeEvent }: EventCallbackArgumentsType) => {
+  onObjectDetected = (callback?: Function) => ({ nativeEvent }: EventCallbackArgumentsType) => {
     const { type } = nativeEvent;
     if (this.lastEvents[type] &&
       this.lastEventsTimes[type] &&
       JSON.stringify(nativeEvent) === this.lastEvents[type] &&
-      new Date() - this.lastEventsTimes[type] < EVENT_THROTTLE_MS
+      new Date().getTime() - this.lastEventsTimes[type].getTime() < EVENT_THROTTLE_MS
     ) {
       return;
     }
@@ -115,7 +114,7 @@ export default class BarCodeScanner extends React.Component<Props> {
     return newProps;
   }
 
-  convertProp(value: *, key: string): * {
+  convertProp(value, key: string) {
     if (typeof value === 'string' && BarCodeScanner.ConversionTables[key]) {
       return BarCodeScanner.ConversionTables[key][value];
     }
@@ -125,4 +124,4 @@ export default class BarCodeScanner extends React.Component<Props> {
 
 export const Constants = BarCodeScanner.Constants;
 
-const ExpoBarCodeScannerView = requireNativeViewManager('ExpoBarCodeScannerView', BarCodeScanner);
+const ExpoBarCodeScannerView = requireNativeViewManager('ExpoBarCodeScannerView');
