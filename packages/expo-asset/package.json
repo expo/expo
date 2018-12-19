@@ -1,28 +1,48 @@
 {
   "name": "expo-asset",
   "version": "2.0.0-rc.1",
-  "description": "Expo Asset standalone universal module",
-  "main": "index.js",
+  "description": "An Expo universal module to download assets and pass them into other APIs",
+  "main": "build/Asset.js",
+  "types": "build/Asset.d.ts",
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "test": "expo-module test",
+    "postinstall": "expo-module postinstall",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
   "keywords": [
     "react-native",
     "expo",
     "asset"
   ],
-  "homepage": "https://docs.expo.io/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git"
+  },
   "author": "650 Industries, Inc.",
   "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-asset",
+  "jest": {
+    "preset": "expo-module-scripts"
+  },
   "peerDependencies": {
     "expo-constants": "~2.0.0-rc.2",
     "expo-core": "~2.0.0-rc.2",
     "expo-file-system": "~2.0.0-rc.1"
   },
   "dependencies": {
-    "uri-parser": "^1.0.1",
-    "url-join": "^4.0.0",
-    "url-loader": "^1.1.2"
+    "path-browserify": "^1.0.0",
+    "url-parse": "^1.4.4"
   },
   "devDependencies": {
-    "babel-preset-expo": "^5.0.0"
-  },
-  "gitHead": "36f587788050b6e9acc3ddfbd5b9112bc2c6b285"
+    "@types/url-parse": "^1.4.1",
+    "babel-preset-expo": "^5.0.0",
+    "expo-module-scripts": "^1.0.0"
+  }
 }
