@@ -163,12 +163,16 @@
     self.initialCTM = CGContextGetCTM(context);
     self.invInitialCTM = CGAffineTransformInvert(self.initialCTM);
     if (self.align) {
-        _viewBoxTransform = [RNSVGViewBox getTransform:CGRectMake(self.minX, self.minY, self.vbWidth, self.vbHeight)
+        CGRect tRect = CGRectMake(self.minX, self.minY, self.vbWidth, self.vbHeight);
+        _viewBoxTransform = [RNSVGViewBox getTransform:tRect
                                                  eRect:rect
                                                  align:self.align
                                            meetOrSlice:self.meetOrSlice];
         _invviewBoxTransform = CGAffineTransformInvert(_viewBoxTransform);
         CGContextConcatCTM(context, _viewBoxTransform);
+    } else {
+        _viewBoxTransform = CGAffineTransformIdentity;
+        _invviewBoxTransform = CGAffineTransformIdentity;
     }
 
     for (UIView *node in self.subviews) {
@@ -222,8 +226,6 @@
 
         if (event) {
             node.active = NO;
-        } else if (node.active) {
-            return node;
         }
 
         UIView *hitChild = [node hitTest:transformed withEvent:event];

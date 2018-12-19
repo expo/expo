@@ -135,7 +135,7 @@
     [self renderGroupTo:context rect:rect];
     CGContextRestoreGState(context);
 
-    CGPathRef transformedPath = CGPathCreateCopyByTransformingPath(path, &CGAffineTransformIdentity);
+    CGPathRef transformedPath = CGPathCreateCopy(path);
     [self setHitArea:transformedPath];
     CGPathRelease(transformedPath);
 }
