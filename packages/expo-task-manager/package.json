@@ -26,6 +26,7 @@
   "license": "MIT",
   "dependencies": {
     "expo-core": "~1.2.0",
+    "expo-errors": "^0.0.1",
     "expo-task-manager-interface": "~1.0.0"
   },
   "devDependencies": {
