@@ -1,12 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { View } from 'react-native';
+declare type BarCodeType = any;
 declare type EventCallbackArgumentsType = {
     nativeEvent: any;
 };
 declare type Props = React.ComponentProps<typeof View> & {
     onBarCodeScanned: (EventCallbackArgumentsType: any) => void;
-    barCodeTypes?: Array<string>;
+    barCodeTypes?: Array<BarCodeType>;
     type?: string | number;
 };
 export default class BarCodeScanner extends React.Component<Props> {
@@ -74,7 +75,7 @@ export default class BarCodeScanner extends React.Component<Props> {
         barCodeTypes: {}[];
     };
     constructor(props: Props);
-    static scanFromURLAsync(url: string, barCodeTypes: Array<string>): Promise<any>;
+    static scanFromURLAsync(url: string, barCodeTypes: Array<BarCodeType>): Promise<any>;
     render(): JSX.Element;
     setReference: (ref?: React.Component<{}, {}, any> | undefined) => void;
     onObjectDetected: (callback?: Function | undefined) => ({ nativeEvent }: EventCallbackArgumentsType) => void;

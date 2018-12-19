@@ -4,13 +4,15 @@ import mapValues from 'lodash.mapvalues';
 import { NativeModulesProxy, requireNativeViewManager } from 'expo-core';
 import { findNodeHandle, ViewPropTypes, Platform, View } from 'react-native';
 
+type BarCodeType = any;
+
 type EventCallbackArgumentsType = {
   nativeEvent: any,
 };
 
 type Props = React.ComponentProps<typeof View> & {
   onBarCodeScanned: (EventCallbackArgumentsType) => void,
-  barCodeTypes?: Array<string>,
+  barCodeTypes?: Array<BarCodeType>,
   type?: string | number,
 };
 
@@ -51,7 +53,7 @@ export default class BarCodeScanner extends React.Component<Props> {
     this.lastEventsTimes = {};
   }
 
-  static async scanFromURLAsync(url: string, barCodeTypes: Array<string>) {
+  static async scanFromURLAsync(url: string, barCodeTypes: Array<BarCodeType>) {
     if (Array.isArray(barCodeTypes) && barCodeTypes.length === 0) {
       throw new Error('No barCodeTypes requested, provide at least one barCodeType for scanner');
     }
