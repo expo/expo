@@ -493,8 +493,8 @@ esutils@^2.0.2:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/esutils/-/esutils-2.0.2.tgz#0abf4f1caa5bcb1f7a9d8acc6dea4faaa04bac9b"
 
-expo-core@~1.1.0:
-  version "1.1.0"
+expo-core@~2.0.0-rc.0:
+  version "2.0.0-rc.0"
   resolved "https://registry.yarnpkg.com/expo-core/-/expo-core-1.0.0.tgz"
 
 find-babel-config@^1.0.1:

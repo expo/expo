@@ -1,6 +1,6 @@
 {
   "name": "expo-errors",
-  "version": "0.0.1",
+  "version": "1.0.0-rc.0",
   "description": "Error classes and helpers for Expo modules",
   "main": "build/Errors.js",
   "types": "build/Errors.d.ts",
@@ -27,9 +27,10 @@
     "preset": "expo-module-scripts"
   },
   "dependencies": {
-    "expo-core": "~1.2.0"
+    "expo-core": "~2.0.0-rc.0"
   },
   "devDependencies": {
     "expo-module-scripts": "^1.0.0"
-  }
+  },
+  "gitHead": "6f6e8d93d4979663581002a9dcd5efc4e6f4fb5f"
 }

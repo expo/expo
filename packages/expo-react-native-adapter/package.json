@@ -1,6 +1,6 @@
 {
   "name": "expo-react-native-adapter",
-  "version": "1.2.0",
+  "version": "2.0.0-rc.0",
   "description": "The adapter to use Expo universal modules with the React Native bridge",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -29,12 +29,12 @@
     "preset": "expo-module-scripts"
   },
   "peerDependencies": {
-    "expo-font-interface": "~1.1.0",
+    "expo-font-interface": "~2.0.0-rc.0",
     "react-native": "^0.57.1"
   },
   "dependencies": {
-    "expo-image-loader-interface": "~1.1.0",
-    "expo-permissions-interface": "~1.2.0",
+    "expo-image-loader-interface": "~2.0.0-rc.0",
+    "expo-permissions-interface": "~2.0.0-rc.0",
     "invariant": "^2.2.4",
     "lodash.omit": "^4.5.0",
     "lodash.pick": "^4.4.0",
@@ -44,6 +44,7 @@
     "@types/lodash.omit": "^4.5.4",
     "@types/lodash.pick": "^4.4.4",
     "babel-preset-expo": "^5.0.0",
-    "expo-core": "~1.2.0"
-  }
+    "expo-core": "~2.0.0-rc.0"
+  },
+  "gitHead": "6f6e8d93d4979663581002a9dcd5efc4e6f4fb5f"
 }

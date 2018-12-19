@@ -1,6 +1,6 @@
 {
   "name": "expo-permissions-interface",
-  "version": "1.2.0",
+  "version": "2.0.0-rc.0",
   "description": "Expo Permissions interface package",
   "main": "index.js",
   "keywords": [
@@ -12,6 +12,7 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "dependencies": {
-    "expo-core": "~1.2.0"
-  }
+    "expo-core": "~2.0.0-rc.0"
+  },
+  "gitHead": "6f6e8d93d4979663581002a9dcd5efc4e6f4fb5f"
 }

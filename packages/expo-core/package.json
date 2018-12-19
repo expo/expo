@@ -1,6 +1,6 @@
 {
   "name": "expo-core",
-  "version": "1.2.0",
+  "version": "2.0.0-rc.0",
   "description": "The core Expo universal module between application code and the underlying platform",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -28,8 +28,7 @@
     "preset": "expo-module-scripts"
   },
   "peerDependencies": {
-    "expo-react-native-adapter": "~1.2.0"
-  }
+    "expo-react-native-adapter": "~2.0.0-rc.0"
+  },
+  "gitHead": "6f6e8d93d4979663581002a9dcd5efc4e6f4fb5f"
 }
-
-

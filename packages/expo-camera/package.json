@@ -1,17 +1,17 @@
 {
   "name": "expo-camera",
-  "version": "1.2.0",
+  "version": "2.0.0-rc.0",
   "description": "Expo Camera standalone universal module",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "scripts": {
-   "build": "expo-module build",
-   "clean": "expo-module clean",
-   "test": "expo-module test",
-   "postinstall": "expo-module postinstall",
-   "prepare": "expo-module prepare",
-   "prepublishOnly": "expo-module prepublishOnly",
-   "expo-module": "expo-module"
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "test": "expo-module test",
+    "postinstall": "expo-module postinstall",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
   },
   "keywords": [
     "react-native",
@@ -32,12 +32,12 @@
     "preset": "expo-module-scripts"
   },
   "peerDependencies": {
-    "expo-core": "~1.2.0",
-    "expo-camera-interface": "~1.1.0",
-    "expo-barcode-scanner-interface": "~1.1.0",
-    "expo-file-system-interface": "~1.1.0",
-    "expo-face-detector-interface": "~1.1.0",
-    "expo-permissions-interface": "~1.2.0"
+    "expo-core": "~2.0.0-rc.0",
+    "expo-camera-interface": "~2.0.0-rc.0",
+    "expo-barcode-scanner-interface": "~2.0.0-rc.0",
+    "expo-file-system-interface": "~2.0.0-rc.0",
+    "expo-face-detector-interface": "~2.0.0-rc.0",
+    "expo-permissions-interface": "~2.0.0-rc.0"
   },
   "dependencies": {
     "lodash.mapvalues": "^4.6.0",
@@ -45,5 +45,6 @@
   },
   "devDependencies": {
     "expo-module-scripts": "^1.0.0"
-  }		  
+  },
+  "gitHead": "6f6e8d93d4979663581002a9dcd5efc4e6f4fb5f"
 }
