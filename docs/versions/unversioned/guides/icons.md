@@ -108,30 +108,3 @@ export default class SlackIcon extends React.Component {
 Let's assume that our `SlackIcon` class is located in `my-project/components/SlackIcon.js`, and our icon images are in `my-project/assets/images`, in order to refer to the image we use require and include the relative path. You can provide versions of your icon at various pixel densities and the appropriate image will be automatically used for you. In this example, we actually have `slack-icon@2x.png` and `slack-icon@3x.png`, so if I view this on an iPhone 6s the image I will see is `slack-icon@3x.png`. More on this in the [Images guide in the react-native documentation](https://facebook.github.io/react-native/docs/images.html#static-image-resources).
 
 We also set the `fadeDuration` (an Android specific property) to `0` because we usually want the icon to appear immediately rather than fade in over several hundred milliseconds.
-
-## Button Component
-A convenience component for creating buttons with an icon on the left side. 
-
-```js
-import { FontAwesome } from '@expo/vector-icons';
-
-const myButton = (
-  <FontAwesome.Button name="facebook" backgroundColor="#3b5998" onPress={this.loginWithFacebook}>
-    Login with Facebook
-  </FontAwesome.Button>
-);
-```
-
-![buttons](https://cloud.githubusercontent.com/assets/378279/7667568/2e9021b2-fc0d-11e4-8e68-cf91c329a6f4.png)
-
-### Properties
-Any [`Text`](http://facebook.github.io/react-native/docs/text.html), [`TouchableHighlight`](http://facebook.github.io/react-native/docs/touchablehighlight.html) or [`TouchableWithoutFeedback`](http://facebook.github.io/react-native/docs/touchablewithoutfeedback.html) property in addition to these:
-
-| Prop | Description | Default |
-|---|---|---|
-|**`color`**|Text and icon color, use `iconStyle` or nest a `Text` component if you need different colors.|`white`|
-|**`size`**|Icon size.|`20`|
-|**`iconStyle`**|Styles applied to the icon only, good for setting margins or a different color. *Note: use `iconStyle` for margins or expect unstable behaviour.*|`{marginRight: 10}`|
-|**`backgroundColor`**|Background color of the button.|`#007AFF`|
-|**`borderRadius`**|Border radius of the button, set to `0` to disable. |`5`|
-|**`onPress`**|A function called when the button is pressed. |*None*|
