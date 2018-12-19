@@ -3,22 +3,22 @@ import { Constants, registerRootComponent } from 'expo';
 import Immutable from 'immutable';
 import jasmineModule from 'jasmine-core/lib/jasmine-core/jasmine';
 import React from 'react';
-import { Dimensions, Linking, NativeModules, ScrollView, Text, View } from 'react-native';
+import { Linking, NativeModules, View } from 'react-native';
 
+import Portal from './components/Portal';
+import RunnerError from './components/RunnerError';
+import Suites from './components/Suites';
 import getTestModulesAsync from './getTestModulesAsync';
 
-let { ExponentTest } = NativeModules;
+const { ExponentTest } = NativeModules;
 
 class App extends React.Component {
   // --- Lifecycle -------------------------------------------------------------
 
-  constructor(props, context) {
-    super(props, context);
-    this.state = App.initialState;
-    this._results = '';
-    this._failures = '';
-    this._scrollViewRef = null;
-  }
+  state = App.initialState;
+  _results = '';
+  _failures = '';
+  _scrollViewRef = null;
 
   componentDidMount() {
     this._runTests(this.props.exp.initialUri);
@@ -263,104 +263,10 @@ class App extends React.Component {
     };
   }
 
-  // --- Rendering -------------------------------------------------------------
-
-  _renderSpecResult = r => {
-    const status = r.get('status') || 'running';
-    return (
-      <View
-        key={r.get('id')}
-        style={{
-          paddingLeft: 10,
-          marginVertical: 3,
-          borderColor: {
-            running: '#ff0',
-            passed: '#0f0',
-            failed: '#f00',
-            disabled: '#888',
-          }[status],
-          borderLeftWidth: 3,
-        }}>
-        <Text style={{ fontSize: 16 }}>
-          {
-            {
-              running: '😮 ',
-              passed: '😄 ',
-              failed: '😞 ',
-            }[status]
-          }
-          {r.get('description')} ({status})
-        </Text>
-        {r.get('failedExpectations').map((e, i) => (
-          <Text key={i}>{e.get('message')}</Text>
-        ))}
-      </View>
-    );
-  };
-  _renderSuiteResult = (r, depth) => {
-    const titleStyle =
-      depth == 0
-        ? { marginBottom: 8, fontSize: 16, fontWeight: 'bold' }
-        : { marginVertical: 8, fontSize: 16 };
-    const containerStyle =
-      depth == 0
-        ? {
-            paddingLeft: 16,
-            paddingVertical: 16,
-            borderBottomWidth: 1,
-            borderColor: '#ddd',
-          }
-        : { paddingLeft: 16 };
-    return (
-      <View key={r.get('result').get('id')} style={containerStyle}>
-        <Text style={titleStyle}>{r.get('result').get('description')}</Text>
-        {r.get('specs').map(this._renderSpecResult)}
-        {r.get('children').map(r => this._renderSuiteResult(r, depth + 1))}
-      </View>
-    );
-  };
-  _onScrollViewContentSizeChange = (contentWidth, contentHeight) => {
-    if (this._scrollViewRef) {
-      this._scrollViewRef.scrollTo({
-        y: Math.max(0, contentHeight - Dimensions.get('window').height) + Constants.statusBarHeight,
-      });
-    }
-  };
-  _renderPortal = () => {
-    const styles = {
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      position: 'absolute',
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundColor: 'rgb(255, 255, 255)',
-      opacity: this.state.portalChildShouldBeVisible ? 0.5 : 0,
-    };
-
-    if (this.state.testPortal) {
-      return (
-        <View style={styles} pointerEvents="none">
-          {this.state.testPortal}
-        </View>
-      );
-    }
-  };
-
   render() {
-    if (this.state.testRunnerError) {
-      return (
-        <View
-          style={{
-            flex: 1,
-            marginTop: Constants.statusBarHeight || 18,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}>
-          <Text style={{ color: 'red' }}>{this.state.testRunnerError}</Text>
-        </View>
-      );
+    const { testRunnerError, state, portalChildShouldBeVisible, testPortal } = this.state;
+    if (testRunnerError) {
+      return <RunnerError>{testRunnerError}</RunnerError>;
     }
 
     return (
@@ -372,18 +278,8 @@ class App extends React.Component {
           justifyContent: 'center',
         }}
         testID="test_suite_container">
-        <ScrollView
-          style={{
-            flex: 1,
-          }}
-          contentContainerStyle={{
-            padding: 5,
-          }}
-          ref={ref => (this._scrollViewRef = ref)}
-          onContentSizeChange={this._onScrollViewContentSizeChange}>
-          {this.state.state.get('suites').map(r => this._renderSuiteResult(r, 0))}
-        </ScrollView>
-        {this._renderPortal()}
+        <Suites suites={state.get('suites')} />
+        {testPortal && <Portal isVisible={portalChildShouldBeVisible}>{testPortal}</Portal>}
       </View>
     );
   }
