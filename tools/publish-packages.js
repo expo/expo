@@ -16,6 +16,7 @@ const defaultOptions = {
   prerelease: null,
   version: null,
   force: false,
+  forceVersions: false,
   dry: false,
   scope: null,
   exclude: null,
@@ -43,6 +44,7 @@ const TEAMS_WITH_RW_ACCESS = [
 const beforePublishPipeline = [
   _preparePublishAsync,
   _bumpVersionsAsync,
+  _saveGitHeadAsync,
   _prepackAsync,
 ];
 
@@ -104,26 +106,28 @@ function _gitLogWithFormat(sinceDate, format, directory) {
 }
 
 function _checkNativeChangesSince(date) {
-  const nativeDirsLog = _gitLogWithFormat(date, '%h', 'ios android');
+  const nativeDirsLog = _gitLogWithFormat(date, '%h', '-- ios android');
   return nativeDirsLog.numberOfCommits > 0;
 }
 
-function _listCommitsSince(date) {
+function _listCommitsSince(date, silent = false) {
   const format = '%C(yellow)>%Creset %C(green)%an%Creset, %C(cyan)%cr%Creset, (%C(yellow)%h%Creset) %C(blue)%s%Creset';
   const log =  _gitLogWithFormat(date, format, '.');
   const rawLog = _gitLogWithFormat(date, '%h', '.');
 
   if (!log.stdout) {
     console.log(chalk.yellow('No new commits since last publish. 🤷‍♂️\n'));
-    return 0;
+    return { numberOfCommits: 0, firstCommit: null };
   }
 
   const { lines, numberOfCommits } = rawLog;
   const firstCommit = numberOfCommits > 0 ? lines[lines.length - 1] : null;
 
-  console.log(chalk.gray('New commits since last publish:'));
-  console.log(log.stdout);
-  console.log();
+  if (!silent) {
+    console.log(chalk.gray('New commits since last publish:'));
+    console.log(log.stdout);
+    console.log();
+  }
 
   return { numberOfCommits, firstCommit };
 }
@@ -141,7 +145,7 @@ function _findDefaultVersion(packageJson, packageView, options) {
 
   if (options.prerelease) {
     if (!packageView) {
-      return semver.inc(defaultVersion, 'prepatch', options.prerelease);
+      return `${defaultVersion}-${options.prerelease}.0`;
     }
     if (_isPrereleaseVersion(defaultVersion)) {
       // options.release doesn't matter if the current version is also prerelease
@@ -192,6 +196,9 @@ async function _askForVersionAsync(libName, currentVersion, defaultVersion, pack
   }
   if (packageView && packageView.publishedDate && _checkNativeChangesSince(packageView.publishedDate)) {
     console.log(chalk.yellow(`Detected changes in native code! Consider bumping at least minor number.`));
+  }
+  if (options.forceVersions) {
+    return defaultVersion;
   }
   const result = await inquirer.prompt([
     {
@@ -336,7 +343,7 @@ async function _preparePublishAsync({ libName, dir }, allConfigs, options) {
           `${chalk.green(libName)}@${chalk.red(currentVersion)} was published at ${chalk.cyan(packageView.publishedDate)}`
         );
 
-        const { numberOfCommits, firstCommit } = _listCommitsSince(packageView.publishedDate);
+        const { numberOfCommits, firstCommit } = _listCommitsSince(packageView.publishedDate, options.force);
 
         if (numberOfCommits > 0 || options.force) {
           // there are new commits since last publish
@@ -456,6 +463,18 @@ async function _bumpVersionsAsync({ libName, dir, newVersion, shouldPublish, pac
   _runCommand(`npm version ${newVersion} --allow-same-version`);
 }
 
+async function _saveGitHeadAsync({ shouldPublish, dir }) {
+  if (!shouldPublish) {
+    return;
+  }
+
+  const packagePath = path.join(dir, 'package.json');
+  const packageJson = JSON.parse(await fs.readFile(packagePath, 'utf8'));
+
+  packageJson.gitHead = _runCommand('git rev-parse --verify HEAD').replace(/\s*$/, '');
+  await fs.writeFile(packagePath, JSON.stringify(packageJson, null, 2) + '\n', 'utf8');
+}
+
 async function _prepackAsync({ libName, newVersion, shouldPublish }) {
   if (!shouldPublish) {
     return;
@@ -479,14 +498,14 @@ async function _publishAsync({ libName, tarball, shouldPublish, newVersion }, al
   if (options.dry) {
     console.log(chalk.gray(`Publishing skipped because of --dry flag.`));
   } else {
-    _runCommand(`yarn publish ${tarball.filename} --tag ${options.tag} --new-version ${newVersion}`);
+    _runCommand(`npm_config_tag="${options.tag}" yarn publish ${tarball.filename} --tag ${options.tag} --new-version ${newVersion}`);
 
     // Unfortunately, `npm publish` doesn't provide --json flag, so the best way to check if it succeded
     // is to check if the new package view resolves current version to the new version we just tried publishing
     const newPackageView = await _getPackageViewFromRegistryAsync(libName);
 
     if (newPackageView.currentVersion === newVersion) {
-      console.log(`🚀🚀 Successfully published ${chalk.green(libName)} 🎉🎉`);
+      console.log(`🚀🚀 Successfully published ${chalk.green(libName)}@${chalk.red(newVersion)} 🎉🎉`);
       return { published: true };
     } else {
       console.error(chalk.red(`🚀 🌊 The rocket with ${chalk.green(libName)} fell into the ocean, but don't worry, the crew survived. 👨‍🚀`));
@@ -533,8 +552,14 @@ async function _gitCommitAsync(allConfigs) {
         publishedPackages.push(`${libName}@${newVersion}`);
 
         // Add to git index.
-        _runCommand('git add package.json yarn.lock');
+        _runCommand('git add package.json');
 
+        if (fs.existsSync(path.join(dir, 'yarn.lock'))) {
+          _runCommand('git add yarn.lock');
+        }
+        if (fs.existsSync(path.join(dir, 'build'))) {
+          _runCommand('git add build');
+        }
         if (fs.existsSync(path.join(dir, 'android/build.gradle'))) {
           _runCommand('git add android/build.gradle');
         }
@@ -564,7 +589,7 @@ async function _gitCommitAsync(allConfigs) {
 
 async function _updatePodsAsync(allConfigs) {
   const podNames = [...allConfigs.values()]
-    .filter(config => config.podName && config.shouldPublish && config.includeInExpoClient)
+    .filter(config => config.podName && config.shouldPublish && config.config.ios.includeInExpoClient)
     .map(config => config.podName)
     .join(' ');
 
