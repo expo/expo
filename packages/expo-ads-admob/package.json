@@ -18,6 +18,19 @@
     "react-native",
     "expo"
   ],
+  "files": [
+    "*.{js,jsx,json,ts,tsx,md,gradle,yaml}",
+    "ios/",
+    "android/build.gradle",
+    "android/src/main/AndroidManifest.xml",
+    "android/src/main/java/",
+    "android/lib/build.gradle",
+    "android/lib/src/main/java/",
+    "android/maven/",
+    "cpp/",
+    "src/",
+    "build/"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git"

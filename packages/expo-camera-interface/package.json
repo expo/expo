@@ -8,6 +8,19 @@
     "expo",
     "camera"
   ],
+  "files": [
+    "*.{js,jsx,json,ts,tsx,md,gradle,yaml}",
+    "ios/",
+    "android/build.gradle",
+    "android/src/main/AndroidManifest.xml",
+    "android/src/main/java/",
+    "android/lib/build.gradle",
+    "android/lib/src/main/java/",
+    "android/maven/",
+    "cpp/",
+    "src/",
+    "build/"
+  ],
   "homepage": "https://docs.expo.io/",
   "author": "650 Industries, Inc.",
   "license": "MIT",
