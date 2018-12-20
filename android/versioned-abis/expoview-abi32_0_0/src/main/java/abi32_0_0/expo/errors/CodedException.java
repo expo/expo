@@ -1,4 +1,4 @@
-package expo.errors;
+package abi32_0_0.expo.errors;
 
 /**
  * Base class that can be extended to create coded errors that promise.reject

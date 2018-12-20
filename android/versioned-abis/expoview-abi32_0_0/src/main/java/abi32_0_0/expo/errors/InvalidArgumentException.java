@@ -1,4 +1,4 @@
-package expo.errors;
+package abi32_0_0.expo.errors;
 
 /**
  * Exception for mismatched host-to-native interfaces. Compared to a Java-only
