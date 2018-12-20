@@ -1,6 +1,6 @@
 {
   "name": "expo-print",
-  "version": "2.0.0-rc.1",
+  "version": "2.0.0-rc.2",
   "description": "Expo universal module for printing",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -23,12 +23,12 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "dependencies": {
-    "expo-core": "~2.0.0-rc.1",
-    "expo-errors": "~1.0.0-rc.1",
+    "expo-core": "~2.0.0-rc.2",
+    "expo-errors": "~1.0.0-rc.2",
     "babel-preset-expo": "^5.0.0"
   },
   "devDependencies": {
     "expo-module-scripts": "^1.0.0"
   },
-  "gitHead": "6ba0420edc58629426183a6c9a9d5dafa1d40c5d"
+  "gitHead": "36f587788050b6e9acc3ddfbd5b9112bc2c6b285"
 }

@@ -1,6 +1,6 @@
 {
   "name": "expo-location",
-  "version": "2.0.0-rc.1",
+  "version": "2.0.0-rc.2",
   "description": "Expo Location standalone universal module",
   "main": "build/Location.js",
   "types": "build/Location.d.ts",
@@ -34,9 +34,9 @@
     "url": "https://github.com/expo/expo/issues"
   },
   "peerDependencies": {
-    "expo-core": "~2.0.0-rc.1",
-    "expo-permissions-interface": "~2.0.0-rc.0",
-    "expo-task-manager-interface": "~1.0.0-rc.0"
+    "expo-core": "~2.0.0-rc.2",
+    "expo-permissions-interface": "~2.0.0-rc.1",
+    "expo-task-manager-interface": "~1.0.0-rc.1"
   },
   "dependencies": {
     "invariant": "^2.2.4"
@@ -44,5 +44,5 @@
   "devDependencies": {
     "expo-module-scripts": "^1.0.0"
   },
-  "gitHead": "6ba0420edc58629426183a6c9a9d5dafa1d40c5d"
+  "gitHead": "36f587788050b6e9acc3ddfbd5b9112bc2c6b285"
 }

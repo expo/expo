@@ -331,110 +331,110 @@ PODS:
   - Crashlytics (3.10.7):
     - Fabric (~> 1.7.11)
   - DoubleConversion (1.1.6)
-  - EXAdsAdMob (2.0.0-rc.1):
+  - EXAdsAdMob (2.0.0-rc.2):
     - EXCore
     - Google-Mobile-Ads-SDK
-  - EXAppAuth (2.0.0-rc.0):
+  - EXAppAuth (2.0.0-rc.1):
     - AppAuth
     - EXCore
-  - EXAppLoaderProvider (1.0.0-rc.0)
-  - EXBackgroundFetch (1.0.0-rc.1):
+  - EXAppLoaderProvider (1.0.0-rc.1)
+  - EXBackgroundFetch (1.0.0-rc.2):
     - EXCore
     - EXTaskManagerInterface
-  - EXBarCodeScanner (2.0.0-rc.0):
+  - EXBarCodeScanner (2.0.0-rc.1):
     - EXCore
-  - EXBarCodeScannerInterface (2.0.0-rc.0):
+  - EXBarCodeScannerInterface (2.0.0-rc.1):
     - EXCore
-  - EXCamera (2.0.0-rc.1):
+  - EXCamera (2.0.0-rc.2):
     - EXBarCodeScannerInterface
     - EXCore
     - EXFaceDetectorInterface
     - EXFileSystemInterface
     - EXImageLoaderInterface
     - EXPermissionsInterface
-  - EXCameraInterface (2.0.0-rc.0):
+  - EXCameraInterface (2.0.0-rc.1):
     - EXCore
-  - EXConstants (2.0.0-rc.1):
+  - EXConstants (2.0.0-rc.2):
     - EXConstantsInterface
     - EXCore
-  - EXConstantsInterface (2.0.0-rc.0):
+  - EXConstantsInterface (2.0.0-rc.1):
     - EXCore
-  - EXContacts (2.0.0-rc.1):
+  - EXContacts (2.0.0-rc.2):
     - EXCore
     - EXFileSystemInterface
     - EXPermissionsInterface
-  - EXCore (2.0.0-rc.1)
-  - EXErrors (1.0.0-rc.1):
+  - EXCore (2.0.0-rc.2)
+  - EXErrors (1.0.0-rc.2):
     - EXCore
-  - EXFaceDetector (2.0.0-rc.0):
+  - EXFaceDetector (2.0.0-rc.1):
     - EXCore
     - EXFaceDetectorInterface
     - GoogleMobileVision/FaceDetector (~> 1.1.0)
     - GoogleMobileVision/MVDataOutput (~> 1.1.0)
-  - EXFaceDetectorInterface (2.0.0-rc.0):
+  - EXFaceDetectorInterface (2.0.0-rc.1):
     - EXCore
-  - EXFileSystem (2.0.0-rc.0):
+  - EXFileSystem (2.0.0-rc.1):
     - EXCore
     - EXFileSystemInterface
-  - EXFileSystemInterface (2.0.0-rc.0):
+  - EXFileSystemInterface (2.0.0-rc.1):
     - EXCore
-  - EXFont (2.0.0-rc.1):
+  - EXFont (2.0.0-rc.2):
     - EXCore
     - EXFontInterface
-  - EXFontInterface (2.0.0-rc.0):
+  - EXFontInterface (2.0.0-rc.1):
     - EXCore
-  - EXGL (2.0.0-rc.0):
+  - EXGL (2.0.0-rc.1):
     - EXCameraInterface
     - EXCore
     - EXFileSystemInterface
     - EXGL-CPP
-  - EXGL-CPP (2.0.0-rc.0):
-    - EXGL-CPP/UEXGL (= 2.0.0-rc.0)
-  - EXGL-CPP/UEXGL (2.0.0-rc.0)
-  - EXGoogleSignIn (2.0.0-rc.1):
+  - EXGL-CPP (2.0.0-rc.1):
+    - EXGL-CPP/UEXGL (= 2.0.0-rc.1)
+  - EXGL-CPP/UEXGL (2.0.0-rc.1)
+  - EXGoogleSignIn (2.0.0-rc.2):
     - EXCore
     - GoogleSignIn (~> 4.4)
-  - EXImageLoaderInterface (2.0.0-rc.0):
+  - EXImageLoaderInterface (2.0.0-rc.1):
     - EXCore
-  - EXLocalAuthentication (2.0.0-rc.0):
+  - EXLocalAuthentication (2.0.0-rc.1):
     - EXConstantsInterface
     - EXCore
-  - EXLocalization (2.0.0-rc.0):
+  - EXLocalization (2.0.0-rc.1):
     - EXCore
-  - EXLocation (2.0.0-rc.1):
+  - EXLocation (2.0.0-rc.2):
     - EXCore
     - EXPermissionsInterface
     - EXTaskManagerInterface
-  - EXMediaLibrary (2.0.0-rc.1):
+  - EXMediaLibrary (2.0.0-rc.2):
     - EXCore
     - EXPermissionsInterface
-  - EXPermissions (2.0.0-rc.0):
+  - EXPermissions (2.0.0-rc.1):
     - EXCore
     - EXPermissionsInterface
-  - EXPermissionsInterface (2.0.0-rc.0):
+  - EXPermissionsInterface (2.0.0-rc.1):
     - EXCore
-  - EXPrint (2.0.0-rc.1):
+  - EXPrint (2.0.0-rc.2):
     - EXCore
-  - EXReactNativeAdapter (2.0.0-rc.1):
+  - EXReactNativeAdapter (2.0.0-rc.2):
     - EXCore
     - EXFontInterface
     - React
-  - EXSegment (2.0.0-rc.0):
+  - EXSegment (2.0.0-rc.1):
     - Analytics (~> 3.5)
     - EXConstantsInterface
     - EXCore
-  - EXSensors (2.0.0-rc.1):
+  - EXSensors (2.0.0-rc.2):
     - EXCore
     - EXSensorsInterface
-  - EXSensorsInterface (2.0.0-rc.0):
+  - EXSensorsInterface (2.0.0-rc.1):
     - EXCore
-  - EXSMS (2.0.0-rc.1):
+  - EXSMS (2.0.0-rc.2):
     - EXCore
-  - EXTaskManager (1.0.0-rc.1):
+  - EXTaskManager (1.0.0-rc.2):
     - EXConstantsInterface
     - EXCore
     - EXTaskManagerInterface
-  - EXTaskManagerInterface (1.0.0-rc.0):
+  - EXTaskManagerInterface (1.0.0-rc.1):
     - EXCore
   - Fabric (1.7.11)
   - FBAudienceNetwork (4.99.0)

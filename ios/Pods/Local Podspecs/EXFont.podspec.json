@@ -1,6 +1,6 @@
 {
   "name": "EXFont",
-  "version": "2.0.0-rc.1",
+  "version": "2.0.0-rc.2",
   "summary": "An Expo universal module to load custom fonts",
   "description": "An Expo universal module to load custom fonts",
   "license": "MIT",
