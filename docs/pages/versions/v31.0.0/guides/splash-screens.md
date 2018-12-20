@@ -75,7 +75,7 @@ Notice that in the last example, we stretched the image to fill the entire width
 Any of the splash options can be configured on a per-platform basis by nesting the configuration under the `android` or `ios` keys within `app.json` (the same as how you would customize an icon for either platform). In addition to this, certain configuration options are only available on iOS or Android.
 
 - On iOS, you can set [ios.splash.tabletImage](../../workflow/configuration/#tabletimage) if you would like to have a different splash image on iPads.
-- On Android, you can set splash images for [different device DPIs](../../workflow/configuration/#ldpi), from `ldpi` to `xxxhdpi`.
+- On Android, you can set splash images for [different device DPIs](../../workflow/configuration/#mdpi), from `mdpi` to `xxxhdpi`.
 
 ### Using `AppLoading` and/or `SplashScreen`
 
@@ -83,7 +83,7 @@ As long as `AppLoading` is the only component rendered in your application, your
 
 Read more about [AppLoading](../../sdk/app-loading/) and [SplashScreen](../../sdk/splash-screen/).
 
-### Differences between environments
+### Differences between environments - iOS
 
 Your app can be opened from the Expo client or in a standalone app, and it can be either published or in development. There are slighty differences in the splash screen behavior between these environments.
 
@@ -92,6 +92,18 @@ Your app can be opened from the Expo client or in a standalone app, and it can b
 - **On the left**, we are in the Expo client and loading an app that is currently in development. Notice that on the bottom of the splash screen you see an information bar that shows information relevant to preparing the JavaScript and downloading it to the device. We see an orange screen before the splash image appears, because the background color is set immediately but the image needs to be downloaded.
 - **In the middle**, we are in the Expo client and we are loading a published app. Notice that again the splash image does not appear immediately.
 - **On the right**, we are in a standalone app. Notice that the splash image appears immediately.
+
+### Differences between environments - Android
+
+Splash screen behaves in most cases exactly the same as in iOS case.
+
+There is slightly difference when it comes down to **standalone Android applications**.
+In this scenario extra attention should be paid to [Android.`splash` section](../workflow/configuration.html#android) configuration provided by [`app.json`](../workflow/configuration.html).
+
+Depending on the `resizeMode` you choose you will get followings:
+- **cover** - In this mode Expo is leveraging Android possibility to present static bitmap at the very beginning of the application start. Unfortunately Android (unlike iOS) is not supporting provided image streching, so Expo will just present given image centered on the screen.
+By default `splash.image` would be used as `mdpi` resource. It's up to you to provide graphics that meet your expectations and fits the screen dimension. To achieve this use different resolutions for [different device DPIs](configuration.html#mdpi), from `mdpi` to `xxxhdpi`.
+- **contain** - As described in _cover_ mode we're unable to dynamicly adjust image to screen size at the very beginning of the application start. Therefore in this mode only background color will be presented and a while later when some view hierarchy is mounted we'll show provided `splash.image`.
 
 ### Ejected ExpoKit apps
 
