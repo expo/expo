@@ -481,8 +481,11 @@ async function _prepackAsync({ libName, newVersion, shouldPublish }) {
   }
 
   console.log(`Packaging ${chalk.green(libName)}... 📦`);
-  const filename = `${libName}-v${newVersion}.tgz`;
-  await _runJSONCommand(`yarn pack --filename ${filename} --json`);
+
+  // Unfortunately, pack command sends notice logs to stderr :(
+  _runCommand('npm pack 2>/dev/null');
+
+  const filename = `${libName}-${newVersion}.tgz`;
 
   return {
     tarball: { filename },
