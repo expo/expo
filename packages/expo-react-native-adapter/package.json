@@ -1,6 +1,6 @@
 {
   "name": "expo-react-native-adapter",
-  "version": "2.0.0-rc.0",
+  "version": "2.0.0-rc.1",
   "description": "The adapter to use Expo universal modules with the React Native bridge",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -43,7 +43,7 @@
     "@types/lodash.omit": "^4.5.4",
     "@types/lodash.pick": "^4.4.4",
     "babel-preset-expo": "^5.0.0",
-    "expo-core": "~2.0.0-rc.0"
+    "expo-core": "~2.0.0-rc.1"
   },
-  "gitHead": "6f6e8d93d4979663581002a9dcd5efc4e6f4fb5f"
+  "gitHead": "6ba0420edc58629426183a6c9a9d5dafa1d40c5d"
 }

@@ -1,6 +1,6 @@
 {
   "name": "expo-font",
-  "version": "2.0.0-rc.0",
+  "version": "2.0.0-rc.1",
   "description": "An Expo universal module to load custom fonts",
   "main": "build/Font.js",
   "types": "build/Font.d.ts",
@@ -31,8 +31,8 @@
   },
   "peerDependencies": {
     "expo-asset": "~2.0.0-rc.0",
-    "expo-constants": "~2.0.0-rc.0",
-    "expo-core": "~2.0.0-rc.0",
+    "expo-constants": "~2.0.0-rc.1",
+    "expo-core": "~2.0.0-rc.1",
     "expo-font-interface": "~2.0.0-rc.0"
   },
   "dependencies": {
@@ -41,5 +41,5 @@
   "devDependencies": {
     "expo-module-scripts": "^1.0.0"
   },
-  "gitHead": "6f6e8d93d4979663581002a9dcd5efc4e6f4fb5f"
+  "gitHead": "6ba0420edc58629426183a6c9a9d5dafa1d40c5d"
 }

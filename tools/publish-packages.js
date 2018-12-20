@@ -558,7 +558,8 @@ async function _gitCommitAsync(allConfigs) {
           _runCommand('git add yarn.lock');
         }
         if (fs.existsSync(path.join(dir, 'build'))) {
-          _runCommand('git add build');
+          // Sometimes `build` folder can be ignored by .gitignore, send errors to /dev/null
+          _runCommand('git add build 2>/dev/null');
         }
         if (fs.existsSync(path.join(dir, 'android/build.gradle'))) {
           _runCommand('git add android/build.gradle');
@@ -604,8 +605,8 @@ async function _updatePodsAsync(allConfigs) {
     // Update all pods that have been published
     console.log(`\nUpdating pods: ${chalk.green(podNames)}`);
     _runCommand(`pod update ${podNames} --no-repo-update`);
-    console.log('\nInstalling pods...');
-    _runCommand('pod install');
+    // console.log('\nInstalling pods...');
+    // _runCommand('pod install');
   }
 }
 
@@ -630,7 +631,7 @@ async function _updateAndroidDependenciesAsync(allConfigs) {
 
       console.log(chalk.yellow('>'), `Updating ${chalk.green(dependencyName)} dependency`);
       _runCommand(
-        `${SED} -i -- "s/api\\s\\+'${dependencyName}:[^']*'/api '${dependencyName}:${newVersion}'/g" expoview/build.gradle`
+        `${SED} -r -i -- "s/(api|compileOnly)\\s+'${dependencyName}:[^']*'/\\1 '${dependencyName}:${newVersion}'/g" expoview/build.gradle`
       );
     }
     console.log();
