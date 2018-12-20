@@ -101,9 +101,9 @@ There is slightly difference when it comes down to **standalone Android applicat
 In this scenario extra attention should be paid to [Android.`splash` section](../workflow/configuration.html#android) configuration provided by [`app.json`](../workflow/configuration.html).
 
 Depending on the `resizeMode` you choose you will get followings:
-- **cover** - In this mode Expo is leveraging Android possibility to present static bitmap at the very beginning of the application start. Unfortunately Android (unlike iOS) is not supporting provided image streching, so Expo will just present given image centered on the screen.
-By default `splash.image` would be used as `mdpi` resource. It's up to you to provide graphics that meet your expectations and fits the screen dimension. To achieve this use different resolutions for [different device DPIs](configuration.html#mdpi), from `mdpi` to `xxxhdpi`.
-- **contain** - As described in _cover_ mode we're unable to dynamicly adjust image to screen size at the very beginning of the application start. Therefore in this mode only background color will be presented and a while later when some view hierarchy is mounted we'll show provided `splash.image`.
+- **cover** - In this mode Expo is leveraging Android possibility to present static bitmap at the very beginning of the application start. Unfortunately Android (unlike iOS) is not supporting provided image stretching, so Expo will just present given image centered on the screen.
+By default `splash.image` would be used as `mdpi` resource. It's up to you to provide graphics that meet your expectations and fit the screen dimension. To achieve this, use different resolutions for [different device DPIs](configuration.html#mdpi), from `mdpi` to `xxxhdpi`.
+- **contain** - As described in _cover_ mode we're unable to dynamically adjust image to screen size at the very beginning of the application start. Therefore in this mode only background color will be presented and a while later when some view hierarchy is mounted we'll show provided `splash.image`.
 
 ### Ejected ExpoKit apps
 
