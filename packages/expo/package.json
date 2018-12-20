@@ -17,7 +17,6 @@
     "clean": "expo-module clean",
     "lint": "eslint tools",
     "test": "expo-module test",
-    "postinstall": "expo-module postinstall",
     "prepare": "expo-module prepare && expo-module babel --config-file ./babel.config.build.js --out-dir build build/Expo.js",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
