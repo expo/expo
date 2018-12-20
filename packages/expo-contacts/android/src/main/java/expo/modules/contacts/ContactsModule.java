@@ -14,7 +14,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds;
-import android.text.TextUtils;
 import android.content.pm.PackageManager;
 
 import expo.core.*;
@@ -31,8 +30,6 @@ import expo.modules.contacts.models.PostalAddressModel;
 import expo.modules.contacts.models.RelationshipModel;
 import expo.modules.contacts.models.UrlAddressModel;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static expo.modules.contacts.models.BaseModel.decodeList;
@@ -85,7 +82,6 @@ public class ContactsModule extends ExportedModule implements ModuleRegistryCons
   public void getContactsAsync(final Map<String, Object> options, final Promise promise) {
     if (isMissingPermissions(promise)) return;
 
-
     new Thread(new Runnable() {
       @Override
       public void run() {
@@ -136,9 +132,8 @@ public class ContactsModule extends ExportedModule implements ModuleRegistryCons
     }).start();
   }
 
-  // TODO: Evan: Test
   @ExpoMethod
-  public void addContactAsync(Map<String, Object> data, Map<String, Object> options, Promise promise) {
+  public void addContactAsync(Map<String, Object> data, String containerId, Promise promise) {
     if (isMissingPermissions(promise) || isMissingWritePermissions(promise)) return;
     Contact contact = mutateContact(null, data);
 
@@ -147,9 +142,11 @@ public class ContactsModule extends ExportedModule implements ModuleRegistryCons
     try {
       ContentProviderResult[] result = getResolver().applyBatch(ContactsContract.AUTHORITY, ops);
 
-      if (result != null && result.length > 0) {
+      if (result.length > 0) {
         String rawId = String.valueOf(ContentUris.parseId(result[0].uri));
         promise.resolve(rawId);
+      } else {
+        promise.reject("E_ADD_CONTACT_FAILED", "Given contact couldn't be added.");
       }
     } catch (Exception e) {
       promise.reject(e);
@@ -169,10 +166,10 @@ public class ContactsModule extends ExportedModule implements ModuleRegistryCons
       ArrayList<ContentProviderOperation> ops = targetContact.toOperationList();
       try {
         ContentProviderResult[] result = getResolver().applyBatch(ContactsContract.AUTHORITY, ops);
-        if (result != null && result.length > 0) {
+        if (result.length > 0) {
           promise.resolve(id);
         } else {
-          // TODO: Evan: Reject?
+          promise.reject("E_UPDATE_CONTACT_FAILED", "Given contact couldn't be updated.");
         }
       } catch (Exception e) {
         promise.reject(e);
@@ -183,16 +180,15 @@ public class ContactsModule extends ExportedModule implements ModuleRegistryCons
     }
   }
 
-  // TODO: Evan: Test
   @ExpoMethod
-  public void removeContactAsync(Map<String, Object> contact, final Promise promise) {
+  public void removeContactAsync(String contactId, final Promise promise) {
     if (isMissingPermissions(promise) || isMissingWritePermissions(promise)) return;
 
-    String id = contact.containsKey("id") ? (String)contact.get("id") : null;
-    Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI, id);
+    Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI, contactId);
+
     try {
       getResolver().delete(uri, null, null);
-      promise.resolve(id);
+      promise.resolve(null);
     } catch (Exception e) {
       promise.reject(e);
     }
@@ -218,7 +214,6 @@ public class ContactsModule extends ExportedModule implements ModuleRegistryCons
   public void writeContactToFileAsync(Map<String, Object> contact, final Promise promise) {
     if (isMissingPermissions(promise)) return;
 
-
     String id = contact.containsKey("id") ? (String)contact.get("id") : null;
     String lookupKey = getLookupKeyForContactId(id);
     if (lookupKey == null) {
@@ -231,7 +226,6 @@ public class ContactsModule extends ExportedModule implements ModuleRegistryCons
   @ExpoMethod
   public void presentFormAsync(String contactId, Map<String, Object> contactData, Map<String, Object> options, Promise promise) {
     if (isMissingPermissions(promise)) return;
-
 
     if (contactId != null) {
       Set<String> keysToFetch = getFieldsSet(null);
@@ -275,7 +269,6 @@ public class ContactsModule extends ExportedModule implements ModuleRegistryCons
   public void getContactByPhoneNumber(final String phoneNumber, final Promise promise) {
     if (isMissingPermissions(promise)) return;
 
-
     // TODO: Replace this with new format
     AsyncTask.execute(new Runnable() {
       @Override
@@ -298,7 +291,7 @@ public class ContactsModule extends ExportedModule implements ModuleRegistryCons
         } catch (Exception e) {
           promise.reject(e);
         } finally {
-          if (cursor != null && !cursor.isClosed()) {
+          if (!cursor.isClosed()) {
             cursor.close();
           }
         }
@@ -397,7 +390,7 @@ public class ContactsModule extends ExportedModule implements ModuleRegistryCons
     return null;
   }
 
-  public Contact getContactById(String contactId, Set<String> keysToFetch, Promise promise) {
+  private Contact getContactById(String contactId, Set<String> keysToFetch, Promise promise) {
     HashMap queryMap = createProjectionForQuery(keysToFetch);
     List<String> projection = (List<String>) queryMap.get("projection");
     String selection = (String) queryMap.get("selection");
@@ -446,7 +439,7 @@ public class ContactsModule extends ExportedModule implements ModuleRegistryCons
     return contactsArray;
   }
 
-  public HashMap<String, Object> getContactByName(final String query, final Set<String> keysToFetch, String sortOrder,
+  private HashMap<String, Object> getContactByName(final String query, final Set<String> keysToFetch, String sortOrder,
                                                   final Promise promise) {
     return fetchContacts(0, 9999, (new String[]{query}), ContactsContract.Data.DISPLAY_NAME_PRIMARY, keysToFetch, sortOrder, promise);
   }
@@ -467,9 +460,7 @@ public class ContactsModule extends ExportedModule implements ModuleRegistryCons
     for (Object key : fields) {
       if (key instanceof String) {
         String field = (String)key;
-        if (field != null) {
-          fieldStrings.add(field);
-        }
+        fieldStrings.add(field);
       }
     }
     return fieldStrings;
@@ -484,9 +475,8 @@ public class ContactsModule extends ExportedModule implements ModuleRegistryCons
     }
   }
 
-  public void getAllContactsAsync(final Map<String, Object> options, final Set<String> keysToFetch, String sortOrder,
+  private void getAllContactsAsync(final Map<String, Object> options, final Set<String> keysToFetch, String sortOrder,
                                   final Promise promise) {
-
     int pageOffset = 0;
     if (options.containsKey("pageOffset") && options.get("pageOffset") instanceof Number) {
       pageOffset = ((Number)options.get("pageOffset")).intValue();
@@ -728,10 +718,9 @@ public class ContactsModule extends ExportedModule implements ModuleRegistryCons
       default:
         return input;
     }
-
   }
 
-  public static Set<String> newHashSet(String... strings) {
+  private static Set<String> newHashSet(String... strings) {
     HashSet<String> set = new HashSet<>();
 
     for (String s : strings) {
@@ -770,11 +759,10 @@ public class ContactsModule extends ExportedModule implements ModuleRegistryCons
 
     Boolean hasPermission = (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED);
 
-        if (!hasPermission) {
-          promise.reject("E_MISSING_PERMISSION", "Missing read contacts permission.");
-        }
+    if (!hasPermission) {
+      promise.reject("E_MISSING_PERMISSION", "Missing read contacts permission.");
+    }
     return !hasPermission;
-
   }
 
   private boolean isMissingWritePermissions(Promise promise) {

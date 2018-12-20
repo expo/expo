@@ -61,6 +61,8 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - fixed calendar ID being returned as integer instead of a string on Android (when calling eg. `Calendar.createCalendarAsync`) by [@Szymon20000](https://github.com/Szymon20000) ([#3004](https://github.com/expo/expo/pull/3004))
 - fixed wrong fling direction for inverted `ScrollView`s on Android by [@mandrigin](https://github.com/mandrigin) (pulled in from React Native [facebook/react-native@b971c5b](https://github.com/facebook/react-native/commit/b971c5beb8c7f90543ea037194790142f4f57c80))
 - fixed snapping Android `ScrollView`s with `pagingEnabled` by [@olegbl](https://github.com/olegbl) (pulled in from React Native [facebook/react-native@0869e54](https://github.com/facebook/react-native/commit/0869e546fe1448f6c56b4ae97e41e8a67278d7dd))
+- fixed `Contacts` failing to add and remove contacts on Android by [@tsapeta](https://github.com/tsapeta) ([#3017](https://github.com/expo/expo/pull/3017))
+- fixed `Permissions.CONTACTS` not asking for Android's `WRITE_CONTACTS` permission by [@tsapeta](https://github.com/tsapeta) ([#3017](https://github.com/expo/expo/pull/3017))
 
 ## 31.0.6
 
