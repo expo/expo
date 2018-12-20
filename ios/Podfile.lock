@@ -391,7 +391,7 @@ PODS:
   - EXGL-CPP (2.0.0-rc.0):
     - EXGL-CPP/UEXGL (= 2.0.0-rc.0)
   - EXGL-CPP/UEXGL (2.0.0-rc.0)
-  - EXGoogleSignIn (2.0.0-rc.0):
+  - EXGoogleSignIn (2.0.0-rc.1):
     - EXCore
     - GoogleSignIn (~> 4.4)
   - EXImageLoaderInterface (2.0.0-rc.0):
@@ -405,7 +405,7 @@ PODS:
     - EXCore
     - EXPermissionsInterface
     - EXTaskManagerInterface
-  - EXMediaLibrary (2.0.0-rc.0):
+  - EXMediaLibrary (2.0.0-rc.1):
     - EXCore
     - EXPermissionsInterface
   - EXPermissions (2.0.0-rc.0):

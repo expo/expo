@@ -1,6 +1,6 @@
 {
   "name": "expo-media-library",
-  "version": "2.0.0-rc.0",
+  "version": "2.0.0-rc.1",
   "description": "Expo MediaLibrary module",
   "main": "index.js",
   "keywords": [
@@ -11,12 +11,12 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "dependencies": {
-    "expo-core": "~2.0.0-rc.0",
-    "expo-errors": "~1.0.0-rc.0",
+    "expo-core": "~2.0.0-rc.1",
+    "expo-errors": "~1.0.0-rc.1",
     "expo-permissions-interface": "~2.0.0-rc.0"
   },
   "devDependencies": {
     "flow-bin": "^0.79.1"
   },
-  "gitHead": "6f6e8d93d4979663581002a9dcd5efc4e6f4fb5f"
+  "gitHead": "f4902f26426f4175eae709379aead0352e38e013"
 }

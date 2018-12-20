@@ -1,6 +1,6 @@
 {
   "name": "expo-google-sign-in",
-  "version": "2.0.0-rc.0",
+  "version": "2.0.0-rc.1",
   "description": "Expo Unimodule for interfacing with the native GoogleSignIn library.",
   "main": "index.js",
   "keywords": [
@@ -21,16 +21,16 @@
   "readmeFilename": "README.md",
   "peerDependencies": {
     "react-native": "^0.55.4",
-    "expo-constants": "~2.0.0-rc.0",
-    "expo-core": "~2.0.0-rc.0"
+    "expo-constants": "~2.0.0-rc.1",
+    "expo-core": "~2.0.0-rc.1"
   },
   "dependencies": {
     "invariant": "^2.2.4",
-    "expo-errors": "~1.0.0-rc.0"
+    "expo-errors": "~1.0.0-rc.1"
   },
   "devDependencies": {
     "babel-preset-expo": "^5.0.0",
     "flow-bin": "^0.77.0"
   },
-  "gitHead": "6f6e8d93d4979663581002a9dcd5efc4e6f4fb5f"
+  "gitHead": "f4902f26426f4175eae709379aead0352e38e013"
 }
