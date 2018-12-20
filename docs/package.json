@@ -7,9 +7,6 @@
     "build": "yarn run mdjs-prod && cross-env NODE_ENV=production NODE_OPTIONS=--max-old-space-size=8192 next build",
     "export": "yarn run build && cross-env NODE_ENV=production next export",
     "start": "cross-env NODE_ENV=production node server.js",
-    "lint": "eslint .",
-    "lint:staged": "lint-staged",
-    "test": "npm run lint",
     "mdjs": "babel-node ./mdjs",
     "mdjs-prod": "node ./mdjs --no-watch",
     "fix-markdown": "node ./transition/fix-markdown.js",
@@ -41,7 +38,6 @@
     "mkdirp": "^0.5.1",
     "next": "^7.0.2",
     "nprogress": "0.2.0",
-    "prettier": "^1.13.5",
     "prismjs": "^1.11.0",
     "prop-types": "15.6.2",
     "query-string": "6.1.0",
@@ -57,11 +53,8 @@
     "@babel/cli": "^7.2.0",
     "@babel/core": "^7.2.0",
     "concurrently": "^3.6.0",
-    "lint-staged": "7.2.0",
     "minimist": "^1.2.0",
+    "prettier": "^1.15.3",
     "shelljs": "^0.8.2"
-  },
-  "lint-staged": {
-    "*.js": ["eslint", "prettier --write --no-semi --single-quote", "git add"]
   }
 }
