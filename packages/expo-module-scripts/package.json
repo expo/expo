@@ -27,7 +27,7 @@
     "@types/jest": "^23.3.9",
     "babel-preset-expo": "^5.0.0",
     "commander": "^2.19.0",
-    "jest-expo": "^31.0.0",
+    "jest-expo": "^32.0.0-rc.0",
     "ts-jest": "~23.10.4",
     "typescript": "^3.2.1"
   }
