@@ -16,7 +16,7 @@
   "dependencies": {
     "@react-navigation/web": "^1.0.0-alpha.7",
     "case-sensitive-paths-webpack-plugin": "^2.1.2",
-    "expo": "^31.0.0",
+    "expo": "^32.0.0-rc.3",
     "expo-processing": "1.0.3",
     "expo-three": "^3.0.0-alpha.6",
     "fbemitter": "^2.1.1",
