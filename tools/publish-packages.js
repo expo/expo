@@ -639,6 +639,22 @@ async function _updateAndroidDependenciesAsync(allConfigs) {
     }
     console.log();
   }
+
+  if (await _promptAsync(`Do you want to update dependencies in ${chalk.magenta('expo/android/app/build.gradle')}?`)) {
+    shell.cd(`${ROOT_DIR}/android`);
+
+    console.log(`\nUpdating dependencies in ${chalk.magenta('android/app/build.gradle')}... 🐘`);
+
+    for (const { libName, newVersion } of dependencies) {
+      const dependencyName = `host.exp.exponent:${libName}`;
+
+      console.log(chalk.yellow('>'), `Updating ${chalk.green(dependencyName)} dependency`);
+      _runCommand(
+        `${SED} -r -i -- "s/(api|compileOnly)\\s+'${dependencyName}:[^']*'/\\1 '${dependencyName}:${newVersion}'/g" app/build.gradle`
+      );
+    }
+    console.log();
+  }
 }
 
 async function publishPackagesAsync() {
