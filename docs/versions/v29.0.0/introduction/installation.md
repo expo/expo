@@ -4,25 +4,21 @@ title: Installation
 
 There are two tools that you need to develop apps with Expo: a local development tool and a mobile client to open your app.
 
-## Local Development Tool: XDE (or exp)
+## Local Development Tool: Expo CLI
 
-### Desktop Tool: XDE
+Expo CLI is a tool for developing apps with Expo. In addition the command-line interface (CLI) it also has a graphical UI, Expo Developer Tools, that pops up in your web browser. With Expo Dev Tools you can quickly set up your test devices, view logs and more.
 
-XDE stands for Expo Development Environment. It is a standalone desktop app that includes all dependencies you'll need to get started.
+You'll need to have Node.js (version 10 or newer) installed on your computer. [Download the latest version of Node.js](https://nodejs.org/en/). Additionally, you'll need Git to create new projects with Expo CLI. [You can download Git from here](https://git-scm.com).
 
-Download the latest version of XDE for [macOS](https://xde-updates.exponentjs.com/download/mac), [Windows (64-bit)](https://xde-updates.exponentjs.com/download/win32), or [Linux](https://xde-updates.exponentjs.com/download/linux-x86_64).
+You can install Expo CLI by running:
 
-On Linux, open with `chmod a+x xde*.AppImage` and `./xde*.AppImage`.
-
-### Optional Command Line Tool: exp
-
-`exp` is an alternative to XDE for users who prefer to use the command line. You can choose whichever one you want. Some advanced Expo features may require you to use `exp` later.
-
-You can install `exp` by running `npm i -g exp`.
+```
+npm install -g expo-cli
+```
 
 ## Mobile Client: Expo for iOS and Android
 
-Expo Client helps view your projects while you're developing them. When you serve your project from XDE or `exp`, it generates a development URL that you can open in Expo Client to preview your app. On Android, Expo Client can also be used to view others' projects on [expo.io](https://expo.io). Expo Client works on devices, simulators, and emulators.
+Expo Client helps view your projects while you're developing them. When you serve your project with Expo CLI, it generates a development URL that you can open in Expo Client to preview your app. On Android, Expo Client can also be used to view others' projects on [expo.io](https://expo.io). Expo Client works on devices, simulators, and emulators.
 
 ### On your device
 

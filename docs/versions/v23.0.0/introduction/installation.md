@@ -2,19 +2,23 @@
 title: Installation
 ---
 
-There are two tools that you need to develop apps with Expo - a desktop development tool and a mobile client to open your app.
+There are two tools that you need to develop apps with Expo: a local development tool and a mobile client to open your app.
 
-## Desktop Development Tool: XDE
+## Local Development Tool: Expo CLI
 
-XDE stands for Expo Development Environment. It is a standalone desktop app that includes all dependencies you'll need to get started.
+Expo CLI is a tool for developing apps with Expo. In addition the command-line interface (CLI) it also has a graphical UI, Expo Developer Tools, that pops up in your web browser. With Expo Dev Tools you can quickly set up your test devices, view logs and more.
 
-Download the latest version of XDE for [macOS](https://xde-updates.exponentjs.com/download/mac), [Windows (64-bit)](https://xde-updates.exponentjs.com/download/win32), or [Linux](https://xde-updates.exponentjs.com/download/linux-x86_64).
+You'll need to have Node.js (version 10 or newer) installed on your computer. [Download the latest version of Node.js](https://nodejs.org/en/). Additionally, you'll need Git to create new projects with Expo CLI. [You can download Git from here](https://git-scm.com).
 
-On Linux, open with `chmod a+x xde*.AppImage` and `./xde*.AppImage`.
+You can install Expo CLI by running:
+
+```
+npm install -g expo-cli
+```
 
 ## Mobile Client: Expo for iOS and Android
 
-The Expo client is like a browser for apps built with Expo. When you boot up XDE on your project it generates a unique development URL for you, and you can access that from the Expo client on iOS or Android, either on a real device or in a simulator.
+Expo Client helps view your projects while you're developing them. When you serve your project with Expo CLI, it generates a development URL that you can open in Expo Client to preview your app. On Android, Expo Client can also be used to view others' projects on [expo.io](https://expo.io). Expo Client works on devices, simulators, and emulators.
 
 ### On your device
 
