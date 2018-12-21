@@ -2,6 +2,14 @@
 
 This guide explains the standard configuration and tools for working on universal modules in this repository. One of our goals is to write a coherent, high-quality SDK that is consistent across APIs and stays reliable in a way that is sustainable for the Expo team. Another goal is to reuse knowledge from working on one module and apply it to others by reducing disparity and fragmentation between modules. Expo has many modules and we need to keep Expo and working on Expo simple.
 
+# Generating new uninversal module using `expo-cli` command
+
+`expo-cli` has specific command that would generate whole TypeScript based unimodule for you!
+Just run:
+* `expo generate-module|gm [new module directory]` - you can pass optional parameter `[new module directory]` to make this command even more user-friendly. E.g. `expo gm expo-test-module` would create `./expo-test-module` for you! :D
+
+You can provide your own template for module using `template-directory|td` pointing to existing local module template.
+
 # The Standard Configuration
 
 We use a shared set of configuration files and tools like TypeScript across universal modules. The `expo-module-scripts` package is the source of truth for much of the configuration. With Yarn workspaces, all universal modules use the same version of `expo-module-scripts`, helping us structurally ensure we use the same configuration across modules and uniformly use the same versions of Babel, TypeScript, Jest, and other tools.
@@ -95,5 +103,3 @@ Inside of package.json, set the repository and bugs URLs to the Expo repository.
   "homepage": "https://github.com/expo/expo/tree/master/packages/expo-sms",
 }
 ```
-
-
