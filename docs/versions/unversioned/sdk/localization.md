@@ -43,7 +43,7 @@ This API is mostly synchronous and driven by constants. On iOS the constants wil
 
 #### `Localization.locale: string`
 
-Native device language, returned in standard format. ex: `en-US`, `es-US`.
+Native device language, returned in standard format. Ex: `en`, `en-US`, `es-US`.
 
 #### `Localization.locales: Array<string>`
 
