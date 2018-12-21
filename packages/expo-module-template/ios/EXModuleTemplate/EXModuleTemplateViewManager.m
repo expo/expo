@@ -9,13 +9,13 @@
 
 @end
 
-@implementation EXGLViewManager
+@implementation EXModuleTemplateViewManager
 
 EX_EXPORT_MODULE(ExpoModuleTemplateViewManager);
 
 - (UIView *)view
 {
-  return [[EXGLView alloc] initWithModuleRegistry:_moduleRegistry];
+  return [[EXModuleTemplateView alloc] initWithModuleRegistry:_moduleRegistry];
 }
 
 - (NSString *)viewName

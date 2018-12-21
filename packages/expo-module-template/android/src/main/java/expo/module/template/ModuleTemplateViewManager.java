@@ -9,7 +9,7 @@ import expo.core.ModuleRegistry;
 import expo.core.ViewManager;
 import expo.core.interfaces.ModuleRegistryConsumer;
 
-public class ExpoModuleTemplateViewManager extends ViewManager<GLView> implements ModuleRegistryConsumer {
+public class ModuleTemplateViewManager extends ViewManager<ModuleTemplateView> implements ModuleRegistryConsumer {
   private static final String TAG = "ExpoModuleTemplateView";
 
   private ModuleRegistry mModuleRegistry;
@@ -20,8 +20,8 @@ public class ExpoModuleTemplateViewManager extends ViewManager<GLView> implement
   }
 
   @Override
-  public GLView createViewInstance(Context context) {
-    return new ExpoModuleTemplateView(context, mModuleRegistry);
+  public ModuleTemplateView createViewInstance(Context context) {
+    return new ModuleTemplateView(context, mModuleRegistry);
   }
 
   @Override
