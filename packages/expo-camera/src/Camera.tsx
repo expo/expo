@@ -245,7 +245,7 @@ export default class Camera extends React.Component<PropsType> {
     if (ref) {
       this._cameraRef = ref;
       if (Platform.OS === 'web') {
-        this._cameraHandle = new LibCameraPhoto(findNodeHandle(ref));
+        this._cameraHandle = new LibCameraPhoto((ref as any).video);
         this.resumePreview();
       } else {
         this._cameraHandle = findNodeHandle(ref);
