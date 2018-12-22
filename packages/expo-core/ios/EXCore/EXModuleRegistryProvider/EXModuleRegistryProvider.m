@@ -72,12 +72,24 @@ void (^EXinitializeGlobalSingletonModulesSet)(void) = ^{
   return EXSingletonModules;
 }
 
++ (nullable EXSingletonModule *)getSingletonModuleForClass:(Class)singletonClass
+{
+  NSSet<EXSingletonModule *> *singletonModules = [self singletonModules];
+
+  for (EXSingletonModule *singleton in singletonModules) {
+    if ([singleton isKindOfClass:singletonClass]) {
+      return singleton;
+    }
+  }
+  return nil;
+}
+
 - (EXModuleRegistry *)moduleRegistryForExperienceId:(NSString *)experienceId
 {
   NSMutableSet<id<EXInternalModule>> *internalModules = [NSMutableSet set];
   NSMutableSet<EXExportedModule *> *exportedModules = [NSMutableSet set];
   NSMutableSet<EXViewManager *> *viewManagerModules = [NSMutableSet set];
-  
+
   for (Class klass in [self getModulesClasses]) {
     if (![klass conformsToProtocol:@protocol(EXInternalModule)]) {
       EXLogWarn(@"Registered class `%@` does not conform to the `EXModule` protocol.", [klass description]);
@@ -85,20 +97,20 @@ void (^EXinitializeGlobalSingletonModulesSet)(void) = ^{
     }
 
     id<EXInternalModule> instance = [self createModuleInstance:klass forExperienceWithId:experienceId];
-    
+
     if ([[instance class] exportedInterfaces] != nil && [[[instance class] exportedInterfaces] count] > 0) {
       [internalModules addObject:instance];
     }
-    
+
     if ([instance isKindOfClass:[EXExportedModule class]]) {
       [exportedModules addObject:(EXExportedModule *)instance];
     }
-    
+
     if ([instance isKindOfClass:[EXViewManager class]]) {
       [viewManagerModules addObject:(EXViewManager *)instance];
     }
   }
-  
+
   EXModuleRegistry *moduleRegistry = [[EXModuleRegistry alloc] initWithInternalModules:internalModules
                                                                        exportedModules:exportedModules
                                                                           viewManagers:viewManagerModules

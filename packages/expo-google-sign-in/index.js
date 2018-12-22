@@ -1,5 +1,2 @@
-module.exports = {
-  get GoogleSignIn() {
-    return require('./src/GoogleSignIn').default;
-  },
-};
+import * as GoogleSignIn from './src/GoogleSignIn';
+export { GoogleSignIn };

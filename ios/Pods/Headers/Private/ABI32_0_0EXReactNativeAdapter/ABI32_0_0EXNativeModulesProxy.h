@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI32_0_0/EXReactNativeAdapter/ABI32_0_0EXReactNativeAdapter/EXNativeModulesProxy/ABI32_0_0EXNativeModulesProxy.h

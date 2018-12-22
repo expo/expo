@@ -98,7 +98,7 @@ afterEvaluate { project ->
         archives androidJavadocJar
     }
 
-    version = '31.0.0'
+    version = '32.0.0'
     group = 'com.facebook.react'
 
     signing {

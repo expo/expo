@@ -35,7 +35,7 @@
 {
     [self pushGlyphContext];
 
-    __block CGRect groupRect = CGRectNull;
+    __block CGRect bounds = CGRectNull;
 
     [self traverseSubviews:^(UIView *node) {
         if ([node isKindOfClass:[RNSVGNode class]]) {
@@ -52,7 +52,7 @@
 
             CGRect nodeRect = svgNode.clientRect;
             if (!CGRectIsEmpty(nodeRect)) {
-                groupRect = CGRectUnion(groupRect, nodeRect);
+                bounds = CGRectUnion(bounds, nodeRect);
             }
 
             if ([node isKindOfClass:[RNSVGRenderable class]]) {
@@ -72,8 +72,18 @@
         return YES;
     }];
     [self setHitArea:[self getPath:context]];
-    self.clientRect = groupRect;
-    self.bounds = groupRect;
+    self.clientRect = bounds;
+
+    CGAffineTransform matrix = self.matrix;
+    CGPoint mid = CGPointMake(CGRectGetMidX(bounds), CGRectGetMidY(bounds));
+    CGPoint center = CGPointApplyAffineTransform(mid, matrix);
+
+    self.bounds = bounds;
+    if (!isnan(center.x) && !isnan(center.y)) {
+        self.center = center;
+    }
+    self.frame = bounds;
+
     [self popGlyphContext];
 }
 
@@ -81,7 +91,7 @@
 {
     CGRect clipBounds = CGContextGetClipBoundingBox(context);
     clipBounds = CGRectApplyAffineTransform(clipBounds, self.matrix);
-    clipBounds = CGRectApplyAffineTransform(clipBounds, self.transform);
+    clipBounds = CGRectApplyAffineTransform(clipBounds, self.transforms);
     CGFloat width = CGRectGetWidth(clipBounds);
     CGFloat height = CGRectGetHeight(clipBounds);
 
@@ -115,7 +125,7 @@
     CGMutablePathRef __block path = CGPathCreateMutable();
     [self traverseSubviews:^(RNSVGNode *node) {
         if ([node isKindOfClass:[RNSVGNode class]]) {
-            CGAffineTransform transform = node.matrix;
+            CGAffineTransform transform = CGAffineTransformConcat(node.matrix, node.transforms);
             CGPathAddPath(path, &transform, [node getPath:context]);
         }
         return YES;
@@ -148,7 +158,7 @@
         NSPredicate *const anyActive = [NSPredicate predicateWithFormat:@"active == TRUE"];
         NSArray *const filtered = [self.subviews filteredArrayUsingPredicate:anyActive];
         if ([filtered count] != 0) {
-            return filtered.firstObject;
+            return [filtered.firstObject hitTest:transformed withEvent:event];
         }
     }
 
@@ -159,8 +169,6 @@
 
         if (event) {
             node.active = NO;
-        } else if (node.active) {
-            return node;
         }
 
         UIView *hitChild = [node hitTest:transformed withEvent:event];

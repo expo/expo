@@ -56,6 +56,9 @@ public class ExpoModuleRegistryAdapter extends ModuleRegistryAdapter implements 
     // Overriding expo-file-system FilePermissionModule
     moduleRegistry.registerInternalModule(new ScopedFilePermissionModule(scopedContext));
 
+    // Overriding expo-file-system FileSystemModule
+    moduleRegistry.registerExportedModule(new ScopedFileSystemModule(scopedContext));
+
     // ReactAdapterPackage requires ReactContext
     ReactApplicationContext reactContext = (ReactApplicationContext) scopedContext.getContext();
     for (InternalModule internalModule : mReactAdapterPackage.createInternalModules(reactContext)) {

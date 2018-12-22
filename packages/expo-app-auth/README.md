@@ -1,5 +1,7 @@
 # expo-app-auth
 
+> This library is a part of Expo v32+
+
 This module provides access to the native OAuth library AppAuth by [OpenID](https://github.com/openid).
 
 ## Installation
@@ -20,13 +22,6 @@ If you're using Cocoapods, add the dependency to your `Podfile`:
 `pod 'EXAppAuth'`
 
 and run `pod install`.
-
-### iOS (no Cocoapods)
-
-1. In XCode, in the project navigator, right click `Libraries` ➜ `Add Files to [your project's name]`
-2. Go to `node_modules` ➜ `expo-app-auth` and add `EXContacts.xcodeproj`
-3. In XCode, in the project navigator, select your project. Add `libEXContacts.a` to your project's `Build Phases` ➜ `Link Binary With Libraries`
-4. Run your project (`Cmd+R`).
 
 ### Android
 
@@ -57,7 +52,7 @@ and run `pod install`.
    ```java
    /*
    * At the top of the file.
-   * This is automatically imported with Android Studio, but if 
+   * This is automatically imported with Android Studio, but if
    * you are in any other editor you will need to manually import the module.
    */
    import expo.modules.appauth.AppAuthPackage;
@@ -376,7 +371,7 @@ import { AppAuth } from 'expo';
 const config = {
   issuer: 'https://accounts.google.com',
   scopes: ['openid', 'profile'],
-  /* This is the REVERSE_CLIENT_ID generated from a Firebase project */
+  /* This is the CLIENT_ID generated from a Firebase project */
   clientId: '603386649315-vp4revvrcgrcjme51ebuhbkbspl048l9.apps.googleusercontent.com',
 };
 

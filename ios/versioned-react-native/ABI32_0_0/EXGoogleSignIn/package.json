@@ -1,0 +1,35 @@
+{
+  "name": "expo-google-sign-in",
+  "version": "1.1.0",
+  "description": "Expo Unimodule for interfacing with the native GoogleSignIn library.",
+  "main": "index.js",
+  "keywords": [
+    "react-native",
+    "expo",
+    "google",
+    "firebase",
+    "auth",
+    "sign-in",
+    "oauth"
+  ],
+  "homepage": "https://docs.expo.io/",
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "contributors": [
+    "Evan Bacon <bacon@expo.io> (https://github.com/evanbacon)"
+  ],
+  "readmeFilename": "README.md",
+  "peerDependencies": {
+    "react-native": "^0.55.4",
+    "expo-constants": "~1.1.0",
+    "expo-core": "~1.2.0"
+  },
+  "dependencies": {
+    "invariant": "^2.2.4",
+    "expo-errors": "^0.0.1"
+  },
+  "devDependencies": {
+    "babel-preset-expo": "^5.0.0",
+    "flow-bin": "^0.77.0"
+  }
+}

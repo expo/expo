@@ -91,20 +91,9 @@
     // been scheduled as it may mean the new view has just been mounted and expects its initial
     // props to be calculated.
     // Unfortunately if the operation has just scheduled animation callback it won't run until the
-    // next frame. So if displayLink is set we trigger onAnimationFrame callback to make sure it
-    // runs in the correct frame.
-    [REANode runPropUpdates:_updateContext];
-    if (_operationsInBatch.count != 0) {
-      NSMutableArray<REANativeAnimationOp> *copiedOperationsQueue = _operationsInBatch;
-      _operationsInBatch = [NSMutableArray new];
-      RCTExecuteOnUIManagerQueue(^{
-        for (int i = 0; i < copiedOperationsQueue.count; i++) {
-          copiedOperationsQueue[i](self.uiManager);
-        }
-        [self.uiManager setNeedsLayout];
-      });
-    }
-    _wantRunUpdates = NO;
+    // next frame, so it's being triggered manually.
+    _wantRunUpdates = YES;
+    [self performOperations];
   }
 }
 
@@ -128,6 +117,13 @@
 - (void)startUpdatingOnAnimationFrame
 {
   if (!_displayLink) {
+    // Setting _currentAnimationTimestamp here is connected with manual triggering of performOperations
+    // in operationsBatchDidComplete. If new node has been created and clock has not been started,
+    // _displayLink won't be initialized soon enough and _displayLink.timestamp will be 0.
+    // However, CADisplayLink is using CACurrentMediaTime so if there's need to perform one more
+    // evaluation, it could be used it here. In usual case, CACurrentMediaTime is not being used in
+    // favor of setting it with _displayLink.timestamp in onAnimationFrame method.
+    _currentAnimationTimestamp = CACurrentMediaTime();
     _displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(onAnimationFrame:)];
     [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
   }
@@ -143,9 +139,8 @@
 
 - (void)onAnimationFrame:(CADisplayLink *)displayLink
 {
-  _currentAnimationTimestamp = displayLink.timestamp;
-
   // We process all enqueued events first
+  _currentAnimationTimestamp = _displayLink.timestamp;
   for (NSUInteger i = 0; i < _eventQueue.count; i++) {
     id<RCTEvent> event = _eventQueue[i];
     [self processEvent:event];
@@ -162,7 +157,18 @@
     block(displayLink);
   }
 
-  [REANode runPropUpdates:_updateContext];
+  [self performOperations];
+
+  if (_onAnimationCallbacks.count == 0) {
+    [self stopUpdatingOnAnimationFrame];
+  }
+}
+
+- (void)performOperations
+{
+  if (_wantRunUpdates) {
+    [REANode runPropUpdates:_updateContext];
+  }
   if (_operationsInBatch.count != 0) {
     NSMutableArray<REANativeAnimationOp> *copiedOperationsQueue = _operationsInBatch;
     _operationsInBatch = [NSMutableArray new];
@@ -174,10 +180,6 @@
     });
   }
   _wantRunUpdates = NO;
-
-  if (_onAnimationCallbacks.count == 0) {
-    [self stopUpdatingOnAnimationFrame];
-  }
 }
 
 - (void)enqueueUpdateViewOnNativeThread:(nonnull NSNumber *)reactTag
@@ -191,7 +193,13 @@
 - (void)getValue:(REANodeID)nodeID
         callback:(RCTResponseSenderBlock)callback
 {
-  callback(@[_nodes[nodeID].value]);
+  id val = _nodes[nodeID].value;
+  if (val) {
+    callback(@[val]);
+  } else {
+    // NULL is not an object and it's not possible to pass it as callback's argument
+    callback(@[[NSNull null]]);
+  }
 }
 
 #pragma mark -- Graph

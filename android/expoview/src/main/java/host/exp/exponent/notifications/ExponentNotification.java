@@ -17,6 +17,8 @@ public class ExponentNotification {
   public final int notificationId;
   public final boolean isMultiple;
   public final boolean isRemote;
+  public String actionType;
+  public String inputText;
 
   public ExponentNotification(final String experienceId, final String body, final int notificationId, final boolean isMultiple, final boolean isRemote) {
     this.experienceId = experienceId;
@@ -72,6 +74,16 @@ public class ExponentNotification {
     args.call("putInt", NotificationConstants.NOTIFICATION_ID_KEY, notificationId);
     args.call("putBoolean", NotificationConstants.NOTIFICATION_IS_MULTIPLE_KEY, isMultiple);
     args.call("putBoolean", NotificationConstants.NOTIFICATION_REMOTE_KEY, isRemote);
+    args.call("putString", NotificationConstants.NOTIFICATION_ACTION_TYPE, actionType);
+    args.call("putString", NotificationConstants.NOTIFICATION_INPUT_TEXT, inputText);
     return args.get();
+  }
+
+  public void setInputText(String inputText) {
+    this.inputText = inputText;
+  }
+
+  public void setActionType(String actionType) {
+    this.actionType = actionType;
   }
 }

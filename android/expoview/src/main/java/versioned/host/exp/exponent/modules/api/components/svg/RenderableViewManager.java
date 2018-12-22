@@ -11,6 +11,7 @@ package versioned.host.exp.exponent.modules.api.components.svg;
 
 import android.graphics.Matrix;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Dynamic;
@@ -1012,6 +1013,33 @@ class RenderableViewManager extends ViewGroupManager<VirtualView> {
         node.setName(name);
     }
 
+    private void invalidateSvgView(VirtualView node) {
+        SvgView view = node.getSvgView();
+        if (view!= null) {
+            view.invalidate();
+        }
+    }
+
+    @Override
+    protected void addEventEmitters(ThemedReactContext reactContext, VirtualView view) {
+        super.addEventEmitters(reactContext, view);
+        view.setOnHierarchyChangeListener(new ViewGroup.OnHierarchyChangeListener() {
+            @Override
+            public void onChildViewAdded(View view, View view1) {
+                if (view instanceof VirtualView) {
+                    invalidateSvgView((VirtualView) view);
+                }
+            }
+
+            @Override
+            public void onChildViewRemoved(View view, View view1) {
+                if (view instanceof VirtualView) {
+                    invalidateSvgView((VirtualView) view);
+                }
+            }
+        });
+    }
+
     /**
      * Callback that will be triggered after all properties are updated in current update transaction
      * (all @ReactProp handlers for properties updated in current transaction have been called). If
@@ -1021,11 +1049,7 @@ class RenderableViewManager extends ViewGroupManager<VirtualView> {
     @Override
     protected void onAfterUpdateTransaction(VirtualView node) {
         super.onAfterUpdateTransaction(node);
-        SvgView view = node.getSvgView();
-        if (view == null) {
-            return;
-        }
-        view.invalidate();
+        invalidateSvgView(node);
     }
 
     @Override

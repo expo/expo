@@ -18,6 +18,17 @@ newCommit=$(nix-prefetch-git --url $repo --rev $rev)
 # "default.nix" uses this file to pin exact dependencies
 echo "$newCommit" > nix/nixpkgs.json
 
+bin/nix-binstubs \
+  cocoapods \
+  expo-cli \
+  fastlane \
+  git-crypt \
+  git-lfs \
+  nodePackages.gulp-cli \
+  nodejs-10_x \
+  xcpretty \
+  yarn
+
 # Generate nix files for a node 8 project with the npm dependency expo
 pushd nix/nodepackages
 nix run -f $nixdir nodePackages.node2nix --command \

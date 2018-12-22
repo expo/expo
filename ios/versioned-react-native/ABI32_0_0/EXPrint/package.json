@@ -1,0 +1,34 @@
+{
+  "name": "expo-print",
+  "version": "2.0.0-alpha.0",
+  "description": "Expo universal module for printing",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "test": "expo-module test",
+    "postinstall": "expo-module postinstall",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
+  "keywords": [
+    "react-native",
+    "expo"
+  ],
+  "jest": {
+    "preset": "expo-module-scripts"
+  },
+  "homepage": "https://docs.expo.io/",
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "dependencies": {
+    "expo-core": "~1.2.0",
+    "expo-errors": "^0.0.1",
+    "babel-preset-expo": "^5.0.0"
+  },
+  "devDependencies": {
+    "expo-module-scripts": "^1.0.0"
+  }
+}

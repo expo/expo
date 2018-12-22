@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+script_dir=$(dirname "$0")
+
+repository_root="${script_dir}/.."
+nix_dir="${repository_root}/nix"
+target="${script_dir}/expotools-built"
+up_to_date_package="$(nix path-info -f "${nix_dir}" expotools 2>/dev/null || true)"
+
+buildAndLink() {
+  nix build -f "${nix_dir}" --out-link "${target}" expotools
+}
+
+if ! ls "${target}/bin/expotools" &>/dev/null; then
+  echo "No version of expotools linked. Rebuilding..."
+  buildAndLink
+elif [ -z "${up_to_date_package}" ]; then
+  read -r -t 7 -n 1 -p "Linked expotools is out of date. Rebuild (Y/n)? " choice || true
+  choice=${choice:-Y}
+  case "$choice" in 
+    y|Y ) buildAndLink ;;
+    * ) echo "Using previously-built expotools." ;;
+  esac
+elif [ "$(readlink "${target}")" != "${up_to_date_package}" ]; then
+  echo "Wrong version of expotools linked. Re-linking..."
+  buildAndLink
+fi
+
+exec "${target}/bin/expotools" "$@"

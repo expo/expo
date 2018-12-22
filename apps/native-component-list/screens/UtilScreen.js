@@ -1,8 +1,7 @@
 import React from 'react';
-import { AppState, ScrollView, Text, View } from 'react-native';
-import { DangerZone, Updates, Util } from 'expo';
+import { AppState, Text, View } from 'react-native';
+import { Updates, Util, Localization } from 'expo';
 import Button from '../components/Button';
-const { Localization } = DangerZone;
 
 export default class UtilScreen extends React.Component {
   static navigationOptions = {
@@ -25,9 +24,9 @@ export default class UtilScreen extends React.Component {
   }
 
   _update = async () => {
-    let locale = await Localization.getCurrentLocaleAsync();
-    let deviceCountry = await Localization.getCurrentDeviceCountryAsync();
-    let timeZone = await Localization.getCurrentTimeZoneAsync();
+    let locale = Localization.locale.replace('-', '_');
+    let deviceCountry = Localization.country;
+    let timeZone = Localization.timezone;
     this.setState({ locale, deviceCountry, timeZone });
   };
 
@@ -43,7 +42,7 @@ export default class UtilScreen extends React.Component {
             Util.reload();
           }}
           title="Util.reload()"
-          />
+        />
         <Button
           style={{ marginVertical: 10 }}
           onPress={async () => {
