@@ -13,10 +13,11 @@ import setupJasmine from './setupJasmine';
 class App extends React.Component {
   // --- Lifecycle -------------------------------------------------------------
 
-  state = App.initialState;
-  _results = '';
-  _failures = '';
-  _scrollViewRef = null;
+  constructor(...props) {
+    super(...props);
+
+    this.state = App.initialState;
+  }
 
   componentDidMount() {
     this._runTests(this.props.exp.initialUri);
@@ -34,7 +35,11 @@ class App extends React.Component {
     }),
   };
 
+  setPortalChild = testPortal => this.setState({ testPortal });
+  cleanupPortal = () => new Promise(resolve => this.setState({ testPortal: null }, resolve));
+
   async _runTests(uri) {
+    console.log('runTests', uri);
     // If the URL contains two pluses let's keep the existing state instead of rerunning tests.
     // This way we are able to test the Linking module.
     if (uri && uri.indexOf('++') > -1) {
@@ -44,7 +49,7 @@ class App extends React.Component {
     // Reset results state
     this.setState(App.initialState);
 
-    const { jasmineEnv, jasmine } = await setupJasmine();
+    const { jasmineEnv, jasmine } = await setupJasmine(this);
 
     // Load tests, confining to the ones named in the uri
     let modules = await getTestModulesAsync();
@@ -73,11 +78,12 @@ class App extends React.Component {
       }
     }
 
+    console.log({ modules });
     await Promise.all(
       modules.map(m =>
         m.test(jasmine, {
-          setPortalChild: testPortal => this.setState({ testPortal }),
-          cleanupPortal: () => new Promise(resolve => this.setState({ testPortal: null }, resolve)),
+          setPortalChild: this.setPortalChild,
+          cleanupPortal: this.cleanupPortal,
         })
       )
     );
@@ -92,7 +98,14 @@ class App extends React.Component {
     }
 
     return (
-      <View style={styles.container} testID="test_suite_container">
+      <View
+        style={{
+          flex: 1,
+          marginTop: Constants.statusBarHeight || 18,
+          alignItems: 'stretch',
+          justifyContent: 'center',
+        }}
+        testID="test_suite_container">
         <Suites suites={state.get('suites')} />
         {testPortal && <Portal isVisible={portalChildShouldBeVisible}>{testPortal}</Portal>}
       </View>
@@ -100,12 +113,3 @@ class App extends React.Component {
   }
 }
 registerRootComponent(App);
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    marginTop: Constants.statusBarHeight || 18,
-    alignItems: 'stretch',
-    justifyContent: 'center',
-  },
-});

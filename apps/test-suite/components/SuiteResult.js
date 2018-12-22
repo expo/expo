@@ -4,15 +4,14 @@ import SpecResult from './SpecResult';
 
 export default class SuiteResult extends React.Component {
   _renderSpecResult = r => {
-    const status = r.get('status') || 'running';
-    const id = r.get('id');
+    const status = r.get('status');
+    const key = r.get('id');
     const description = r.get('description');
     const failedExpectations = r.get('failedExpectations');
 
     return (
       <SpecResult
-        key={id}
-        id={id}
+        key={key}
         status={status}
         description={description}
         failedExpectations={failedExpectations}
@@ -21,7 +20,11 @@ export default class SuiteResult extends React.Component {
   };
 
   render() {
-    const { depth, id, description, specs, children } = this.props;
+    const { r, depth } = this.props;
+    const result = r.get('result');
+    const description = result.get('description');
+    const specs = r.get('specs');
+    const children = r.get('children');
 
     const titleStyle =
       depth === 0
@@ -38,26 +41,12 @@ export default class SuiteResult extends React.Component {
         : { paddingLeft: 16 };
 
     return (
-      <View key={id} style={containerStyle}>
+      <View style={containerStyle}>
         <Text style={titleStyle}>{description}</Text>
         {specs.map(this._renderSpecResult)}
-        {children.map(r => {
-          const result = r.get('result');
-          const id = result.get('id');
-          const description = result.get('description');
-          const specs = r.get('specs');
-          const children = r.get('children');
-
-          return (
-            <SuiteResult
-              id={id}
-              description={description}
-              specs={specs}
-              children={children}
-              depth={depth + 1}
-            />
-          );
-        })}
+        {children.map(r => (
+          <SuiteResult key={r.get('result').get('id')} r={r} depth={depth + 1} />
+        ))}
       </View>
     );
   }

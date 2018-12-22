@@ -1,13 +1,12 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 
-export default class SpecResult extends React.PureComponent {
+export default class SpecResult extends React.Component {
   render() {
-    const { status, id, description, failedExpectations } = this.props;
+    const { status = 'running', description, failedExpectations } = this.props;
 
     return (
       <View
-        key={id}
         style={{
           paddingLeft: 10,
           marginVertical: 3,

@@ -144,14 +144,14 @@ function jasmineConsoleReporter(jasmineEnv) {
   };
 }
 
-export default async function setupJasmine() {
+export default async function setupJasmine(app) {
   // Init
   jasmineModule.DEFAULT_TIMEOUT_INTERVAL = 10000;
   const jasmineCore = jasmineModule.core(jasmineModule);
   const jasmineEnv = jasmineCore.getEnv();
 
   // Add our custom reporters too
-  jasmineEnv.addReporter(jasmineSetStateReporter());
+  jasmineEnv.addReporter(jasmineSetStateReporter(undefined, app));
   jasmineEnv.addReporter(jasmineConsoleReporter());
 
   // Get the interface and make it support `async ` by default
@@ -172,7 +172,6 @@ export default async function setupJasmine() {
   jasmine.fit = (desc, fn, t) => oldFit.apply(jasmine, [desc, doneIfy(fn), t]);
 
   return {
-    jasmineCore,
     jasmineEnv,
     jasmine,
   };
