@@ -158,7 +158,6 @@ export function test(t) {
         const value = await DangerZoneLocalization[deprecated]();
 
         t.expect(warning).toBe(target);
-        console.log('VVV', value, Localization[replacement]);
         t.expect(`${value}`).toBe(`${Localization[replacement]}`);
       });
     });

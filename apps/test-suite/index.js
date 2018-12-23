@@ -39,7 +39,6 @@ class App extends React.Component {
   cleanupPortal = () => new Promise(resolve => this.setState({ testPortal: null }, resolve));
 
   async _runTests(uri) {
-    console.log('runTests', uri);
     // If the URL contains two pluses let's keep the existing state instead of rerunning tests.
     // This way we are able to test the Linking module.
     if (uri && uri.indexOf('++') > -1) {
@@ -78,7 +77,6 @@ class App extends React.Component {
       }
     }
 
-    console.log({ modules });
     await Promise.all(
       modules.map(m =>
         m.test(jasmine, {
