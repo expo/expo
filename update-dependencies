@@ -21,7 +21,6 @@ echo "$newCommit" > nix/nixpkgs.json
 bin/nix-binstubs \
   awscli \
   cocoapods \
-  expo-cli \
   fastlane \
   git-crypt \
   git-lfs \
@@ -29,15 +28,6 @@ bin/nix-binstubs \
   nodejs-10_x \
   xcpretty \
   yarn
-
-# Generate nix files for a node 8 project with the npm dependency expo
-pushd nix/nodepackages
-nix run -f $nixdir nodePackages.node2nix --command \
-  node2nix \
-  --strip-optional-dependencies \
-  --nodejs-10 \
-  --input <(echo '["expo-cli"]')
-popd
 
 # Generate nix files for the bundix ruby gem
 pushd nix/xcpretty
