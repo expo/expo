@@ -1,7 +1,8 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import <React/RCTBridgeModule.h>
+#import <EXCore/EXExportedModule.h>
+#import <EXCore/EXModuleRegistryConsumer.h>
 
-@interface EXSQLite : NSObject <RCTBridgeModule>
+@interface EXSQLite : EXExportedModule <EXModuleRegistryConsumer>
 
 @end
