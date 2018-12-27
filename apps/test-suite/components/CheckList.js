@@ -3,12 +3,9 @@ import React from 'react';
 import { FlatList, Switch, Text, View } from 'react-native';
 
 import Colors from '../constants/Colors';
+import ModulesContext from '../ModulesContext';
 
-export default class CheckList extends React.Component {
-  state = {
-    modules: [],
-  };
-
+class CheckList extends React.Component {
   onValueChange = (item, value) => {
     this.props.onUpdateData(item.key, value);
   };
@@ -30,14 +27,13 @@ export default class CheckList extends React.Component {
           testID={testID}
           value={isActive}
           onValueChange={value => this.onValueChange(item, value)}
-          thumbColor={Colors.tintColor}
         />
       </View>
     );
   };
 
   render() {
-    const { modules } = this.state;
+    console.log(this.props.data);
     return (
       <FlatList
         style={{
@@ -51,6 +47,18 @@ export default class CheckList extends React.Component {
         data={this.props.data}
         renderItem={this.renderItem}
       />
+    );
+  }
+}
+
+export default class ContextCheckList extends React.Component {
+  render() {
+    return (
+      <ModulesContext.Consumer>
+        {({ modules, onUpdateData }) => {
+          return <CheckList {...this.props} onUpdateData={onUpdateData} data={modules} />;
+        }}
+      </ModulesContext.Consumer>
     );
   }
 }

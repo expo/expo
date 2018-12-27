@@ -1,9 +1,10 @@
+import * as React from 'react';
 import { createDrawerNavigator } from 'react-navigation';
 
-import DrawerContentComponent from '../components/DrawerContentComponent';
 import TestsScreen from '../screens/TestsScreen';
 
-export default createDrawerNavigator(
+import DrawerContentComponent from '../components/DrawerContentComponent';
+const DrawerNavigator = createDrawerNavigator(
   {
     TestsScreen,
   },
@@ -15,3 +16,18 @@ export default createDrawerNavigator(
     contentComponent: DrawerContentComponent,
   }
 );
+
+export default DrawerNavigator;
+// () => (
+
+//       <DrawerNavigator {...props} screenProps={{ ...screenProps, onUpdateData }} />
+//     )}
+//   </ModulesProvider>
+// )
+// //   render() {
+// //     const { screenProps = {}, ...props } = this.props;
+// //     return (
+
+// //     );
+// //   }
+// // }

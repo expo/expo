@@ -8,8 +8,10 @@ import Portal from '../components/Portal';
 import RunnerError from '../components/RunnerError';
 import Suites from '../components/Suites';
 import setupJasmine from '../setupJasmine';
+import ModulesContext from '../ModulesContext';
+import ModulesProvider from '../ModulesProvider';
 
-export default class TestsScreen extends React.Component {
+class TestsScreen extends React.Component {
   static initialState = {
     portalChildShouldBeVisible: false,
     testRunnerError: null,
@@ -104,7 +106,6 @@ export default class TestsScreen extends React.Component {
     if (testRunnerError) {
       return <RunnerError>{testRunnerError}</RunnerError>;
     }
-
     return (
       <View
         style={{
@@ -117,6 +118,19 @@ export default class TestsScreen extends React.Component {
         <Suites suites={state.get('suites')} />
         {testPortal && <Portal isVisible={portalChildShouldBeVisible}>{testPortal}</Portal>}
       </View>
+    );
+  }
+}
+
+export default class ContextTestScreen extends React.Component {
+  render() {
+    return (
+      <ModulesContext.Consumer>
+        {({ modules, screenKey }) => {
+          const activeModules = modules.filter(({ isActive }) => isActive);
+          return <TestsScreen {...this.props} key={screenKey} modules={activeModules} />;
+        }}
+      </ModulesContext.Consumer>
     );
   }
 }

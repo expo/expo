@@ -1,12 +1,14 @@
 import { createNavigator, SceneView, SwitchRouter } from '@react-navigation/core';
-import { Link } from '@react-navigation/web';
 import React from 'react';
 
+import CheckList from '../components/CheckList';
+import ModulesProvider from '../ModulesProvider';
 import TestsScreen from '../screens/TestsScreen';
 
 class SidebarView extends React.Component {
   render() {
     const { descriptors, navigation } = this.props;
+    console.log({ props: this.props });
     const activeKey = navigation.state.routes[navigation.state.index].key;
     const descriptor = descriptors[activeKey];
     return (
@@ -14,18 +16,11 @@ class SidebarView extends React.Component {
         <div
           style={{
             width: 300,
+            height: '100%',
             backgroundColor: '#efefef',
             borderRight: '1px solid #99b',
           }}>
-          <h1>Hello, Navigation</h1>
-          <Link routeName="Home">Home</Link>
-          <Link routeName="About">About</Link>
-          <Link routeName="Profile" params={{ name: 'jamie' }}>
-            About Jamie
-          </Link>
-          <Link routeName="Profile" params={{ name: 'brent' }}>
-            About Brent
-          </Link>
+          <CheckList />
         </div>
         <div>
           <SceneView component={descriptor.getComponent()} navigation={descriptor.navigation} />
