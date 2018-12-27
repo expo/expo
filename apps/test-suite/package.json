@@ -14,6 +14,12 @@
   "powertools": {
     "group": "client"
   },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ],
   "dependencies": {
     "@react-navigation/web": "^1.0.0-alpha.7",
     "async-retry": "^1.1.4",
@@ -54,14 +60,9 @@
     "webpack-cli": "^3.1.2",
     "webpack-dev-server": "3.1.10"
   },
-  "browserslist": [
-    ">0.2%",
-    "not dead",
-    "not ie <= 11",
-    "not op_mini all"
-  ],
   "jest": {
     "verbose": true,
-    "testURL": "http://localhost/"
+    "testURL": "http://localhost/",
+    "testEnvironment": "jsdom"
   }
 }
