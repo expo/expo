@@ -5,4 +5,5 @@ export default {
   [Statuses.Passed]: '#0f0',
   [Statuses.Failed]: '#f00',
   [Statuses.Disabled]: '#888',
+  tintColor: '#4630EB', // Expo Blue
 };

@@ -40,6 +40,7 @@ export default class SuiteResult extends React.Component {
           }
         : { paddingLeft: 16 };
 
+    // console.log('Result', result);
     return (
       <View style={containerStyle}>
         <Text style={titleStyle}>{description}</Text>

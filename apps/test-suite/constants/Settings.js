@@ -1,0 +1,3 @@
+export default {
+  shouldRehydrate: false,
+};

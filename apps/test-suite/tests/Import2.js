@@ -1,6 +1,6 @@
 'use strict';
 
-export const name = 'Import1';
+export const name = 'Import 2';
 
 export function test(t) {
   t.describe(`import Expo from 'expo';`, () => {
