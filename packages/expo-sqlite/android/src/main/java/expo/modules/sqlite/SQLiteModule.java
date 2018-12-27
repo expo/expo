@@ -79,8 +79,10 @@ public class SQLiteModule extends ExportedModule implements ModuleRegistryConsum
   }
 
   @ExpoMethod
-  public void close(String dbName) {
+  public void close(String dbName, final Promise promise) {
+    DATABASES.get(dbName).close();
     DATABASES.remove(dbName);
+    promise.resolve(null);
   }
 
   // do a update/delete/insert operation

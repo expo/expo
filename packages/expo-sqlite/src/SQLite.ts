@@ -1,10 +1,11 @@
-import './timer/polyfillNextTick';
+import './polyfillNextTick';
 
 import zipObject from 'lodash.zipobject';
-import { NativeModules, Platform } from 'react-native';
+import { Platform } from 'react-native';
+import { NativeModulesProxy } from 'expo-core';
 import customOpenDatabase from '@expo/websql/custom';
 
-const { ExponentSQLite } = NativeModules;
+const { ExponentSQLite } = NativeModulesProxy;
 
 type InternalQuery = { sql: string; args: unknown[] };
 
