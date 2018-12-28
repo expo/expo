@@ -26,7 +26,7 @@ export enum OrientationLock {
 // TODO: should this be exported?
 type PlatformOptions = {
   screenOrientationConstantAndroid?: number;
-  screenOrientationArrayIOS?: Array<Orientation>;
+  screenOrientationArrayIOS?: Orientation[];
 };
 
 const _orientationChangeEmitter = new NativeEventEmitter(); // TODO: docs 4 why We dont pass in a manager
