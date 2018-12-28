@@ -22,6 +22,7 @@ declare const _default: {
     getCurrentPositionAsync(options: Object): Promise<Position | null>;
     removeWatchAsync(watchId: any): Promise<void>;
     watchDeviceHeading(headingId: any): Promise<void>;
+    hasServicesEnabledAsync(): Promise<boolean>;
     geocodeAsync(): Promise<any[]>;
     reverseGeocodeAsync(): Promise<any[]>;
     watchPositionImplAsync(watchId: string, options: Object): Promise<string>;

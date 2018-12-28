@@ -262,7 +262,7 @@ export async function reverseGeocodeAsync(location: { latitude: number, longitud
   });
 }
 
-function setApiKey(apiKey: string) {
+export function setApiKey(apiKey: string) {
   googleApiKey = apiKey;
 }
 
@@ -270,12 +270,16 @@ async function _googleGeocodeAsync(address: string): Promise<GeocodedLocation[]>
   const result = await fetch(`${googleApiUrl}?key=${googleApiKey}&address=${encodeURI(address)}`);
   const resultObject = await result.json();
 
-  if (resultObject.status !== 'OK') {
-    throw new Error('An error occurred during geocoding.');
+  const { status } = resultObject;
+  if (status === 'ZERO_RESULTS') {
+    return [];
+  } else if (status !== 'OK') {
+    throw new Error(`An error occurred during geocoding. ${status}`);
   }
 
   return resultObject.results.map(result => {
     let location = result.geometry.location;
+    // TODO: This is missing a lot of props
     return {
       latitude: location.lat,
       longitude: location.lng,
