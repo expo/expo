@@ -2,7 +2,7 @@
 
 import * as Expo from 'expo';
 
-export const name = 'Import1';
+export const name = 'Import 1';
 
 export function test(t) {
   t.describe(`import * as Expo from 'expo';`, () => {
