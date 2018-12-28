@@ -207,7 +207,7 @@ public class ScreenOrientationModule extends ReactContextBaseJavaModule implemen
   static final String GENERIC_ANDROID_ERROR = "GENERIC_ANDROID_ERROR";
 
   static final String ERR_SCREEN_ORIENTATION_INVALID_ORIENTATION_LOCK = "ERR_SCREEN_ORIENTATION_INVALID_ORIENTATION_LOCK";
-  static final String ERR_SCREEN_ORIENTATION_INVALID_ORIENTATION_LOCK_MSG = "an invalid OrientationLock was passed in";
+  static final String ERR_SCREEN_ORIENTATION_INVALID_ORIENTATION_LOCK_MSG = "An invalid OrientationLock was passed in";
 
   static final String UNKNOWN = "UNKNOWN";
   static final String DEFAULT = "DEFAULT";
