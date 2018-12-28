@@ -28,50 +28,50 @@ import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.kernel.ExponentKernelModuleProvider;
 import host.exp.exponent.utils.ScopedContext;
-import versioned.host.exp.exponent.modules.api.SplashScreenModule;
-import versioned.host.exp.exponent.modules.api.BrightnessModule;
-import versioned.host.exp.exponent.modules.api.ImageManipulatorModule;
-import versioned.host.exp.exponent.modules.api.MailComposerModule;
-import versioned.host.exp.exponent.modules.api.PedometerModule;
-import versioned.host.exp.exponent.modules.api.UpdatesModule;
-import versioned.host.exp.exponent.modules.api.av.video.VideoManager;
-import versioned.host.exp.exponent.modules.api.fbads.AdIconViewManager;
-import versioned.host.exp.exponent.modules.api.fbads.MediaViewManager;
 import versioned.host.exp.exponent.modules.api.AmplitudeModule;
+import versioned.host.exp.exponent.modules.api.BrightnessModule;
 import versioned.host.exp.exponent.modules.api.CalendarModule;
 import versioned.host.exp.exponent.modules.api.DocumentPickerModule;
 import versioned.host.exp.exponent.modules.api.ErrorRecoveryModule;
 import versioned.host.exp.exponent.modules.api.FacebookModule;
+import versioned.host.exp.exponent.modules.api.ImageManipulatorModule;
 import versioned.host.exp.exponent.modules.api.ImagePickerModule;
+import versioned.host.exp.exponent.modules.api.IntentLauncherModule;
 import versioned.host.exp.exponent.modules.api.KeepAwakeModule;
 import versioned.host.exp.exponent.modules.api.KeyboardModule;
-import versioned.host.exp.exponent.modules.api.notifications.NotificationsModule;
-import versioned.host.exp.exponent.modules.api.viewshot.RNViewShotModule;
+import versioned.host.exp.exponent.modules.api.MailComposerModule;
+import versioned.host.exp.exponent.modules.api.PedometerModule;
 import versioned.host.exp.exponent.modules.api.SQLiteModule;
 import versioned.host.exp.exponent.modules.api.ScreenOrientationModule;
-import versioned.host.exp.exponent.modules.api.screens.RNScreensPackage;
+import versioned.host.exp.exponent.modules.api.SecureStoreModule;
 import versioned.host.exp.exponent.modules.api.ShakeModule;
 import versioned.host.exp.exponent.modules.api.SpeechModule;
+import versioned.host.exp.exponent.modules.api.SplashScreenModule;
 import versioned.host.exp.exponent.modules.api.URLHandlerModule;
+import versioned.host.exp.exponent.modules.api.UpdatesModule;
 import versioned.host.exp.exponent.modules.api.WebBrowserModule;
 import versioned.host.exp.exponent.modules.api.av.AVModule;
+import versioned.host.exp.exponent.modules.api.av.video.VideoManager;
 import versioned.host.exp.exponent.modules.api.av.video.VideoViewManager;
 import versioned.host.exp.exponent.modules.api.cognito.RNAWSCognitoModule;
 import versioned.host.exp.exponent.modules.api.components.LinearGradientManager;
-import versioned.host.exp.exponent.modules.api.components.lottie.LottiePackage;
-import versioned.host.exp.exponent.modules.api.components.gesturehandler.react.RNGestureHandlerPackage;
 import versioned.host.exp.exponent.modules.api.components.gesturehandler.react.RNGestureHandlerModule;
+import versioned.host.exp.exponent.modules.api.components.gesturehandler.react.RNGestureHandlerPackage;
+import versioned.host.exp.exponent.modules.api.components.lottie.LottiePackage;
 import versioned.host.exp.exponent.modules.api.components.maps.MapsPackage;
 import versioned.host.exp.exponent.modules.api.components.svg.SvgPackage;
+import versioned.host.exp.exponent.modules.api.fbads.AdIconViewManager;
 import versioned.host.exp.exponent.modules.api.fbads.AdSettingsManager;
 import versioned.host.exp.exponent.modules.api.fbads.BannerViewManager;
 import versioned.host.exp.exponent.modules.api.fbads.InterstitialAdManager;
+import versioned.host.exp.exponent.modules.api.fbads.MediaViewManager;
 import versioned.host.exp.exponent.modules.api.fbads.NativeAdManager;
 import versioned.host.exp.exponent.modules.api.fbads.NativeAdViewManager;
-import versioned.host.exp.exponent.modules.api.IntentLauncherModule;
+import versioned.host.exp.exponent.modules.api.notifications.NotificationsModule;
 import versioned.host.exp.exponent.modules.api.reanimated.ReanimatedModule;
-import versioned.host.exp.exponent.modules.api.SecureStoreModule;
+import versioned.host.exp.exponent.modules.api.screens.RNScreensPackage;
 import versioned.host.exp.exponent.modules.api.standalone.branch.RNBranchModule;
+import versioned.host.exp.exponent.modules.api.viewshot.RNViewShotModule;
 import versioned.host.exp.exponent.modules.internal.ExponentAsyncStorageModule;
 import versioned.host.exp.exponent.modules.internal.ExponentIntentModule;
 import versioned.host.exp.exponent.modules.internal.ExponentUnsignedAsyncStorageModule;
@@ -106,7 +106,7 @@ public class ExponentPackage implements ReactPackage {
 
     List<Package> packages = expoPackages;
     if (packages == null) {
-       packages = ExperiencePackagePicker.packages(manifest);
+      packages = ExperiencePackagePicker.packages(manifest);
     }
     // Delegate may not be null only when the app is detached
     if (delegate != null) {
@@ -118,19 +118,22 @@ public class ExponentPackage implements ReactPackage {
 
   public static ExponentPackage kernelExponentPackage(Context context, JSONObject manifest, List<Package> expoPackages) {
     Map<String, Object> kernelExperienceProperties = new HashMap<>();
-    List<SingletonModule> singletonModules = ExponentPackage.getOrCreateSingletonModules(context);
+    List<SingletonModule> singletonModules = ExponentPackage.getOrCreateSingletonModules(context, manifest, expoPackages);
     kernelExperienceProperties.put(LINKING_URI_KEY, "exp://");
     kernelExperienceProperties.put(IS_HEADLESS_KEY, false);
     return new ExponentPackage(true, kernelExperienceProperties, manifest, expoPackages, singletonModules);
   }
 
-  public static List<SingletonModule> getOrCreateSingletonModules(Context context) {
+  public static List<SingletonModule> getOrCreateSingletonModules(Context context, JSONObject manifest, List<Package> providedExpoPackages) {
     if (Looper.getMainLooper() != Looper.myLooper()) {
       throw new RuntimeException("Singleton modules must be created on the main thread.");
     }
     if (sSingletonModules == null) {
       sSingletonModules = new ArrayList<>();
-      List<Package> expoPackages = ExperiencePackagePicker.packages();
+      List<Package> expoPackages = providedExpoPackages;
+      if (expoPackages == null) {
+        expoPackages = ExperiencePackagePicker.packages(manifest);
+      }
 
       for (Package expoPackage : expoPackages) {
         sSingletonModules.addAll(expoPackage.createSingletonModules(context));
@@ -226,11 +229,11 @@ public class ExponentPackage implements ReactPackage {
 
     // Add view manager from 3rd party library packages.
     addViewManagersFromPackages(reactContext, viewManagers, Arrays.<ReactPackage>asList(
-      new SvgPackage(),
-      new MapsPackage(),
-      new LottiePackage(),
-      new RNGestureHandlerPackage(),
-      new RNScreensPackage()
+        new SvgPackage(),
+        new MapsPackage(),
+        new LottiePackage(),
+        new RNGestureHandlerPackage(),
+        new RNScreensPackage()
     ));
 
     viewManagers.addAll(mModuleRegistryAdapter.createViewManagers(reactContext));
