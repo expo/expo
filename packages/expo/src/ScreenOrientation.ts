@@ -33,7 +33,7 @@ const _orientationChangeEmitter = new NativeEventEmitter(); // TODO: docs 4 why 
 let _orientationChangeSubscribers: EmitterSubscription[] = [];
 
 export function allowAsync(orientationLock: OrientationLock): Promise<void> {
-  return lockAsync(orientationLock);
+  await lockAsync(orientationLock);
 }
 
 export function lockAsync(orientationLock: OrientationLock): Promise<void> {
@@ -59,7 +59,7 @@ export function lockPlatformAsync(options: PlatformOptions): Promise<void> {
 }
 
 export function unlockAsync(): Promise<void> {
-  return ExpoScreenOrientation.unlockAsync();
+  await ExpoScreenOrientation.unlockAsync();
 }
 
 export function getOrientationAsync(): Promise<Orientation> {
@@ -76,7 +76,7 @@ export async function getOrientationLockPlatformAsync(): Promise<String> {
   return platformOrientationLock.toString();
 }
 
-export function supportsOrientationLock(orientationLock: OrientationLock): Boolean {
+export function supportsOrientationLock(orientationLock: OrientationLock): boolean {
   const orientationLocks = Object.values(OrientationLock);
   return orientationLocks.includes(orientationLock);
 }
@@ -88,7 +88,7 @@ export function doesSupportAsync(orientationLock: OrientationLock): Boolean {
 // We rely on RN to emit `didUpdateDimensions`
 // If this method no longer works, it's possible that the underlying RN implementation has changed
 // see https://github.com/facebook/react-native/blob/c31f79fe478b882540d7fd31ee37b53ddbd60a17/ReactAndroid/src/main/java/com/facebook/react/modules/deviceinfo/DeviceInfoModule.java#L90
-export function addOrientationChangeListener(listener: Function): EmitterSubscription {
+export function addOrientationChangeListener(listener: OrientationChangeListener): EmitterSubscription {
   if (typeof listener !== 'function'){
     throw new TypeError(`addOrientationChangeListener cannot be called with ${listener}`);
   }
