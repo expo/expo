@@ -22,7 +22,6 @@ public class ScreenContainer extends ViewGroup {
 
   private final ArrayList<Screen> mScreens = new ArrayList<>();
   private final Set<Screen> mActiveScreens = new HashSet<>();
-  private final FragmentManager mFragmentManager;
 
   private @Nullable FragmentTransaction mCurrentTransaction;
   private boolean mNeedUpdate;
@@ -37,13 +36,6 @@ public class ScreenContainer extends ViewGroup {
 
   public ScreenContainer(Context context) {
     super(context);
-    Activity activity = ((ReactContext) context).getCurrentActivity();
-    if (activity instanceof FragmentActivity) {
-      mFragmentManager = ((FragmentActivity) activity).getSupportFragmentManager();
-    } else {
-      throw new IllegalStateException(
-              "In order to use RNScreens components your app's activity need to extend ReactFragmentActivity or ReactCompatActivity");
-    }
   }
 
   @Override
@@ -88,8 +80,14 @@ public class ScreenContainer extends ViewGroup {
 
   private FragmentTransaction getOrCreateTransaction() {
     if (mCurrentTransaction == null) {
-      mCurrentTransaction = mFragmentManager.beginTransaction();
-      mCurrentTransaction.setReorderingAllowed(true);
+      Activity activity = ((ReactContext) getContext()).getCurrentActivity();
+      if (activity instanceof FragmentActivity) {
+        mCurrentTransaction = ((FragmentActivity) activity).getSupportFragmentManager().beginTransaction();
+        mCurrentTransaction.setReorderingAllowed(true);
+      } else {
+        throw new IllegalStateException(
+                "In order to use RNScreens components your app's activity need to extend ReactFragmentActivity or ReactCompatActivity");
+      }
     }
     return mCurrentTransaction;
   }
@@ -136,7 +134,7 @@ public class ScreenContainer extends ViewGroup {
   }
 
   private void updateIfNeeded() {
-    if (!mNeedUpdate || mFragmentManager.isDestroyed() || !mIsAttached) {
+    if (!mNeedUpdate || !mIsAttached) {
       return;
     }
     mNeedUpdate = false;
@@ -158,6 +156,15 @@ public class ScreenContainer extends ViewGroup {
       }
     }
 
+    // detect if we are "transitioning" based on the number of active screens
+    int activeScreens = 0;
+    for (int i = 0, size = mScreens.size(); i < size; i++) {
+      if (isScreenActive(mScreens.get(i), mScreens)) {
+        activeScreens += 1;
+      }
+    }
+    boolean transitioning = activeScreens > 1;
+
     // attach newly activated screens
     boolean addedBefore = false;
     for (int i = 0, size = mScreens.size(); i < size; i++) {
@@ -169,6 +176,7 @@ public class ScreenContainer extends ViewGroup {
       } else if (isActive && addedBefore) {
         moveToFront(screen);
       }
+      screen.setTransitioning(transitioning);
     }
     tryCommitTransaction();
   }
