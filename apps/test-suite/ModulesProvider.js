@@ -41,10 +41,20 @@ async function rehydrateModules(modules) {
   return modules;
 }
 
+function getCanReset(modules) {
+  for (const module of Object.values(modules)) {
+    if (module.isActive === false) {
+      return true;
+    }
+  }
+  return false;
+}
+
 export default class ModulesProvider extends React.Component {
   state = {
     modules: {},
     screenKey: 'screen',
+    isTesting: false,
   };
 
   componentDidMount() {
@@ -58,6 +68,14 @@ export default class ModulesProvider extends React.Component {
 
     for (let index in modules) {
       const module = modules[index];
+      if (!module.name || module.name === '') {
+        throw new Error(
+          'Module name is invalid. Expected a string with the name of the test to be exported: ' +
+            JSON.stringify(module) +
+            ' ' +
+            index
+        );
+      }
       const key = module.name.replace(' ', '_');
       modulesMap[key] = {
         index,
@@ -72,9 +90,26 @@ export default class ModulesProvider extends React.Component {
   };
 
   onUpdateData = async (key, isActive) => {
+    if (this._isTesting) return;
     const { modules } = this.state;
     if (modules[key]) {
       modules[key].isActive = isActive;
+    }
+    this.setState({ modules });
+
+    cacheModules(modules);
+  };
+
+  onToggleAll = () => {
+    if (this._isTesting) return;
+    const { modules } = this.state;
+
+    let toggleDirection;
+    for (const key in modules) {
+      if (toggleDirection === undefined) {
+        toggleDirection = !modules[key].isActive;
+      }
+      modules[key].isActive = toggleDirection;
     }
 
     this.setState({ modules });
@@ -82,8 +117,13 @@ export default class ModulesProvider extends React.Component {
     cacheModules(modules);
   };
 
+  onTestsComplete = isComplete => {
+    this._isTesting = !isComplete;
+    // this.setState({ isTesting });
+  };
+
   render() {
-    const { modules, screenKey, isLoaded } = this.state;
+    const { modules, screenKey, isTesting, isLoaded } = this.state;
     const modulesList = Object.values(modules);
 
     if (!isLoaded) {
@@ -92,7 +132,13 @@ export default class ModulesProvider extends React.Component {
 
     return (
       <ModulesContext.Provider
-        value={{ modules: modulesList, onUpdateData: this.onUpdateData, screenKey }}>
+        value={{
+          modules: modulesList,
+          onUpdateData: this.onUpdateData,
+          onToggleAll: this.onToggleAll,
+          onTestsComplete: this.onTestsComplete,
+          screenKey,
+        }}>
         {this.props.children}
       </ModulesContext.Provider>
     );

@@ -75,6 +75,8 @@ function timeoutWrapper(fun, time) {
   });
 }
 
+export const name = 'MediaLibrary';
+
 export async function test(t) {
   t.describe('MediaLibrary', async () => {
     let testAssets;

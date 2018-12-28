@@ -9,7 +9,7 @@ let _results = '';
 let _failures = '';
 
 // A jasmine reporter that writes results to this.state
-function jasmineSetStateReporter(jasmineEnv, app) {
+function jasmineSetStateReporter(jasmineEnv, app, onStart, onComplete) {
   return {
     suiteStarted(jasmineResult) {
       app.setState(({ state }) => ({
@@ -81,6 +81,13 @@ function jasmineSetStateReporter(jasmineEnv, app) {
         ),
       }));
     },
+
+    jasmineStarted() {
+      onStart();
+    },
+    jasmineDone() {
+      onComplete();
+    },
   };
 }
 
@@ -144,14 +151,14 @@ function jasmineConsoleReporter(jasmineEnv) {
   };
 }
 
-export default async function setupJasmine(app) {
+export default async function setupJasmine(app, onStart, onComplete) {
   // Init
   jasmineModule.DEFAULT_TIMEOUT_INTERVAL = 10000;
   const jasmineCore = jasmineModule.core(jasmineModule);
   const jasmineEnv = jasmineCore.getEnv();
 
   // Add our custom reporters too
-  jasmineEnv.addReporter(jasmineSetStateReporter(undefined, app));
+  jasmineEnv.addReporter(jasmineSetStateReporter(undefined, app, onStart, onComplete));
   jasmineEnv.addReporter(jasmineConsoleReporter());
 
   // Get the interface and make it support `async ` by default

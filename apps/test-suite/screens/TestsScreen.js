@@ -7,9 +7,8 @@ import { Linking, View } from 'react-native';
 import Portal from '../components/Portal';
 import RunnerError from '../components/RunnerError';
 import Suites from '../components/Suites';
-import setupJasmine from '../setupJasmine';
 import ModulesContext from '../ModulesContext';
-import ModulesProvider from '../ModulesProvider';
+import setupJasmine from '../setupJasmine';
 
 class TestsScreen extends React.Component {
   static initialState = {
@@ -23,14 +22,27 @@ class TestsScreen extends React.Component {
   static defaultProps = {
     modules: [],
   };
+
   _lastUri;
+
   state = TestsScreen.initialState;
   // --- Lifecycle -------------------------------------------------------------
 
-  componentDidMount() {
-    this._runTests(this.props.initialUri);
-    Linking.addEventListener('url', ({ url }) => url && this._runTests(url));
+  async componentDidMount() {
+    const initialUri = await Linking.getInitialURL();
+    this._runTests(initialUri);
+    Linking.addEventListener('url', this.foundNewURL);
   }
+
+  componentWillUnmount() {
+    Linking.removeEventListener('url', this.foundNewURL);
+  }
+
+  foundNewURL = ({ url }) => {
+    if (url) {
+      this._runTests(url);
+    }
+  };
 
   // --- Test running ----------------------------------------------------------
 
@@ -49,6 +61,13 @@ class TestsScreen extends React.Component {
     }
   }
 
+  shouldComponentUpdate(nextProps) {
+    if (nextProps.isTesting !== this.props.isTesting) {
+      return false;
+    }
+    return true;
+  }
+
   async _runTests(uri) {
     this._lastUri = uri;
     // If the URL contains two pluses let's keep the existing state instead of rerunning tests.
@@ -60,7 +79,18 @@ class TestsScreen extends React.Component {
     // Reset results state
     this.setState(TestsScreen.initialState);
 
-    const { jasmineEnv, jasmine } = await setupJasmine(this);
+    const { jasmineEnv, jasmine } = await setupJasmine(
+      this,
+      () => {
+        this.props.onTestsComplete(false);
+      },
+      () => {
+        console.log('complete');
+        setTimeout(() => {
+          this.props.onTestsComplete(true);
+        }, 100);
+      }
+    );
 
     // Load tests, confining to the ones named in the uri
     let modules = [...this.props.modules];
@@ -126,9 +156,16 @@ export default class ContextTestScreen extends React.Component {
   render() {
     return (
       <ModulesContext.Consumer>
-        {({ modules, screenKey }) => {
+        {({ modules, screenKey, onTestsComplete }) => {
           const activeModules = modules.filter(({ isActive }) => isActive);
-          return <TestsScreen {...this.props} key={screenKey} modules={activeModules} />;
+          return (
+            <TestsScreen
+              {...this.props}
+              key={'test-screenKey'}
+              onTestsComplete={onTestsComplete}
+              modules={activeModules}
+            />
+          );
         }}
       </ModulesContext.Consumer>
     );

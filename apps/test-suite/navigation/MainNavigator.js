@@ -1,33 +1,16 @@
-import * as React from 'react';
+import { Dimensions } from 'react-native';
 import { createDrawerNavigator } from 'react-navigation';
 
-import TestsScreen from '../screens/TestsScreen';
+import Tests from '../screens/TestsScreen';
+import ControlList from '../components/ControlList';
 
-import DrawerContentComponent from '../components/DrawerContentComponent';
-const DrawerNavigator = createDrawerNavigator(
+export default createDrawerNavigator(
   {
-    TestsScreen,
+    Tests,
   },
   {
-    // drawerType: 'back',
-    // drawerPosition: 'right',
-    // drawerWidth: 200,
-    // drawerBackgroundColor: 'orange',
-    contentComponent: DrawerContentComponent,
+    drawerType: 'slide',
+    drawerWidth: Dimensions.get('window').width / 2,
+    contentComponent: ControlList,
   }
 );
-
-export default DrawerNavigator;
-// () => (
-
-//       <DrawerNavigator {...props} screenProps={{ ...screenProps, onUpdateData }} />
-//     )}
-//   </ModulesProvider>
-// )
-// //   render() {
-// //     const { screenProps = {}, ...props } = this.props;
-// //     return (
-
-// //     );
-// //   }
-// // }

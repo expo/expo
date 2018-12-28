@@ -1,45 +1,26 @@
 'use strict';
 import React from 'react';
-import { FlatList, Switch, Text, View } from 'react-native';
+import { FlatList, StyleSheet } from 'react-native';
+import SwitchItem from './SwitchItem';
 
-import Colors from '../constants/Colors';
-import ModulesContext from '../ModulesContext';
-
-class CheckList extends React.Component {
-  onValueChange = (item, value) => {
-    this.props.onUpdateData(item.key, value);
+export default class CheckList extends React.Component {
+  onToggle = (...props) => {
+    this.props.onUpdateData(...props);
   };
 
   renderItem = ({ item }) => {
-    const { isActive, key, name } = item;
-    const fontWeight = isActive ? 'bold' : undefined;
-    const testID = `CheckList-Switch-${key}`;
-    return (
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          marginVertical: 8,
-          marginHorizontal: 16,
-        }}>
-        <Text style={{ fontWeight, marginRight: 8 }}>{name}</Text>
-        <Switch
-          testID={testID}
-          value={isActive}
-          onValueChange={value => this.onValueChange(item, value)}
-        />
-      </View>
-    );
+    return <SwitchItem id={item.key} {...item} onToggle={this.onToggle} />;
   };
 
   render() {
-    console.log(this.props.data);
     return (
       <FlatList
-        style={{
-          flex: 1,
-          backgroundColor: '#edf2f6',
-        }}
+        style={StyleSheet.flatten([
+          {
+            flex: 1,
+          },
+          this.props.style,
+        ])}
         contentContainerStyle={{
           alignItems: 'stretch',
           justifyContent: 'center',
@@ -47,18 +28,6 @@ class CheckList extends React.Component {
         data={this.props.data}
         renderItem={this.renderItem}
       />
-    );
-  }
-}
-
-export default class ContextCheckList extends React.Component {
-  render() {
-    return (
-      <ModulesContext.Consumer>
-        {({ modules, onUpdateData }) => {
-          return <CheckList {...this.props} onUpdateData={onUpdateData} data={modules} />;
-        }}
-      </ModulesContext.Consumer>
     );
   }
 }
