@@ -13,6 +13,8 @@
 @property (nonatomic, retain) UIViewController *controller;
 @property (nonatomic) BOOL active;
 
+- (void)notifyFinishTransitioning;
+
 @end
 
 @interface UIView (ABI32_0_0RNSScreen)
