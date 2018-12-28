@@ -1,5 +1,5 @@
 import invariant from 'invariant';
-import { Platform, NativeModules, NativeEventEmitter, EmitterSubscription } from 'react-native';
+import { EmitterSubscription, NativeEventEmitter, NativeModules, Platform } from 'react-native';
 
 const { ExpoScreenOrientation } = NativeModules;
 
