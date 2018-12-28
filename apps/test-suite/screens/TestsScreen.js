@@ -61,13 +61,6 @@ class TestsScreen extends React.Component {
     }
   }
 
-  shouldComponentUpdate(nextProps) {
-    if (nextProps.isTesting !== this.props.isTesting) {
-      return false;
-    }
-    return true;
-  }
-
   async _runTests(uri) {
     this._lastUri = uri;
     // If the URL contains two pluses let's keep the existing state instead of rerunning tests.
@@ -156,12 +149,11 @@ export default class ContextTestScreen extends React.Component {
   render() {
     return (
       <ModulesContext.Consumer>
-        {({ modules, screenKey, onTestsComplete }) => {
+        {({ modules, onTestsComplete }) => {
           const activeModules = modules.filter(({ isActive }) => isActive);
           return (
             <TestsScreen
               {...this.props}
-              key={'test-screenKey'}
               onTestsComplete={onTestsComplete}
               modules={activeModules}
             />
