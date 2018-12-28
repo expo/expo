@@ -30,7 +30,7 @@ type PlatformOptions = {
 };
 
 const _orientationChangeEmitter = new NativeEventEmitter(); // TODO: docs 4 why We dont pass in a manager
-let _orientationChangeSubscribers: Array<EmitterSubscription> = [];
+let _orientationChangeSubscribers: EmitterSubscription[] = [];
 
 export function allowAsync(orientationLock: OrientationLock): Promise<void> {
   return lockAsync(orientationLock);
