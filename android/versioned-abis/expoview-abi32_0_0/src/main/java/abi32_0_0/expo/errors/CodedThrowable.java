@@ -1,4 +1,4 @@
-package expo.errors;
+package abi32_0_0.expo.errors;
 
 /**
  * Helper interface to make errors easier to handle. The promise.reject

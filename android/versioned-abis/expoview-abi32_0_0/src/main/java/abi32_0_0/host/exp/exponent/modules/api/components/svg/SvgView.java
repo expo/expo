@@ -93,6 +93,12 @@ public class SvgView extends ReactViewGroup implements ReactCompoundView, ReactC
     }
 
     @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        this.invalidate();
+    }
+
+    @Override
     public int reactTagForTouch(float touchX, float touchY) {
         return hitTest(touchX, touchY);
     }

@@ -1,1 +1,0 @@
-{"version":3,"file":"index.js","sourceRoot":"","sources":["../src/index.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,WAAW,MAAM,eAAe,CAAC;AAE7C,eAAe,WAAW,CAAC;AAC3B,OAAO,EAAE,WAAW,EAAE,CAAC","sourcesContent":["import * as TaskManager from './TaskManager';\n\nexport default TaskManager;\nexport { TaskManager };\n"]}

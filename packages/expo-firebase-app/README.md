@@ -109,7 +109,7 @@ If you create an Auth Token in a native firebase app, then reload with a differe
 import React from 'react';
 import { View, Platform } from 'react-native';
 import firebase from 'expo-firebase-app';
-import { Constants } from 'expo-constants';
+import Constants from 'expo-constants';
 
 export default class ExampleView extends React.Component {
   async componentDidMount() {

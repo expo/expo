@@ -193,7 +193,7 @@ export default class NotificationScreen extends React.Component {
   };
 
   _scheduleLegacyNotificationAsync = async () => {
-    await this._obtainRemoteNotifPermissionsAsync();
+    await this._obtainUserFacingNotifPermissionsAsync();
     return await Notifications.scheduleLocalNotificationAsync(
       {
         title: 'Repeating notification',

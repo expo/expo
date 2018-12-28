@@ -141,7 +141,16 @@ EX_EXPORT_METHOD_AS(executeAsync,
       }
     };
     
-    UIViewController *presentingViewController = self->_utilities.currentViewController;
+    // On iOS < 11 presenting authorization request on currentViewController
+    // resulted in freezed SFSafariViewController.
+    // See issue https://github.com/google/GTMAppAuth/issues/6
+    // See pull request https://github.com/openid/AppAuth-iOS/pull/73
+    UIViewController *presentingViewController;
+    if (@available(iOS 11.0, *)) {
+      presentingViewController = self->_utilities.currentViewController;
+    } else {
+      presentingViewController = [[[UIApplication sharedApplication] keyWindow] rootViewController];
+    }
     self->session = [OIDAuthState authStateByPresentingAuthorizationRequest:request
                                                    presentingViewController:presentingViewController
                                                                    callback:callback];
@@ -160,7 +169,7 @@ EX_EXPORT_METHOD_AS(executeAsync,
     refreshToken = input.accessToken;
   }
   
-  [output setValue:@"refreshToken" forKey:nullIfEmpty(refreshToken)];
+  [output setValue:@"refreshToken" forKey:EXnullIfEmpty(refreshToken)];
   
   return output;
 }
