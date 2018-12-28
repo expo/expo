@@ -1,8 +1,8 @@
 import Constants from 'expo-constants';
-import { Linking } from 'react-native';
+import Linking from './LinkingModule';
 import qs from 'qs';
 
-type ParsedURL = {
+export type ParsedURL = {
   path: string | null,
   queryParams: Object | null,
 };
