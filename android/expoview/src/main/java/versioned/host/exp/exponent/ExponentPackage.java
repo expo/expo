@@ -17,8 +17,10 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import expo.adapters.react.ReactModuleRegistryProvider;
 import expo.core.interfaces.Package;
@@ -85,6 +87,7 @@ import static host.exp.exponent.kernel.KernelConstants.LINKING_URI_KEY;
 public class ExponentPackage implements ReactPackage {
   private static final String TAG = ExponentPackage.class.getSimpleName();
   private static List<SingletonModule> sSingletonModules;
+  private static Set<Class> sSingletonModulesClasses;
 
   private final boolean mIsKernel;
   private final Map<String, Object> mExperienceProperties;
@@ -130,13 +133,28 @@ public class ExponentPackage implements ReactPackage {
     }
     if (sSingletonModules == null) {
       sSingletonModules = new ArrayList<>();
-      List<Package> expoPackages = providedExpoPackages;
-      if (expoPackages == null) {
-        expoPackages = ExperiencePackagePicker.packages(manifest);
-      }
+    }
+    if (sSingletonModulesClasses == null) {
+      sSingletonModulesClasses = new HashSet<>();
+    }
+    List<Package> expoPackages = providedExpoPackages;
+    if (expoPackages == null) {
+      expoPackages = ExperiencePackagePicker.packages(manifest);
+    }
 
-      for (Package expoPackage : expoPackages) {
-        sSingletonModules.addAll(expoPackage.createSingletonModules(context));
+    for (Package expoPackage : expoPackages) {
+      // For now we just accumulate more and more singleton modules,
+      // but in fact we should only return singleton modules from the requested
+      // unimodules. This solution also unnecessarily creates singleton modules
+      // which are going to be deallocated in a tick, but there's no better solution
+      // without a bigger-than-minimal refactor. In SDK32 the only singleton module
+      // is TaskService which is safe to initialize more than once.
+      List<SingletonModule> packageSingletonModules = expoPackage.createSingletonModules(context);
+      for (SingletonModule singletonModule : packageSingletonModules) {
+        if (!sSingletonModulesClasses.contains(singletonModule.getClass())) {
+          sSingletonModules.add(singletonModule);
+          sSingletonModulesClasses.add(singletonModule.getClass());
+        }
       }
     }
     return sSingletonModules;
