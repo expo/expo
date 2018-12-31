@@ -10,6 +10,7 @@ On Android, there is a global system-wide brightness setting, and each app has i
 - [`Expo.Brightness.getBrightnessAsync()`](#expobrightnessgetbrightnessasync)
 - [`Expo.Brightness.setBrightnessAsync(brightnessValue)`](#expobrightnesssetbrightnessasyncbrightnessvalue)
 - [`Expo.Brightness.useSystemBrightnessAsync()`](#expobrightnessusesystembrightnessasync)
+- [`Expo.Brightness.isUsingSystemBrightnessAsync()`](#expobrightnessisusingsystembrightnessasync)
 - [`Expo.Brightness.getSystemBrightnessAsync()`](#expobrightnessgetsystembrightnessasync)
 - [`Expo.Brightness.setSystemBrightnessAsync(brightnessValue)`](#expobrightnesssetsystembrightnessasyncbrightnessvalue)
 - [`Expo.Brightness.getSystemBrightnessModeAsync()`](#expobrightnessgetsystembrightnessmodeasync)
@@ -58,6 +59,16 @@ A `Promise` that is resolved when the brightness has been successfully set.
 #### Returns
 
 A `Promise` that is resolved when the setting has been successfully changed.
+
+---
+
+### `Expo.Brightness.isUsingSystemBrightnessAsync()`
+
+**Android only.** Returns a boolean specifying whether or not the current activity is using the system-wide brightness value.
+
+#### Returns
+
+A `Promise` that resolves with `true` when the current activity is using the system-wide brightness value, and `false` otherwise.
 
 #### Error Codes
 
@@ -139,7 +150,7 @@ A `Promise` that is resolved when the brightness mode has been successfully set.
 
 #### Error Codes
 
-- `ERR_BRIGHTNESS_INVALID_BRIGHTNESS_MODE` - An invalid argument was passed. Only `BrightnessMode.MANUAL` or `BrightnessMode.AUTOMATIC` are allowed.
+- `ERR_INVALID_ARGUMENT` - An invalid argument was passed. Only `BrightnessMode.MANUAL` or `BrightnessMode.AUTOMATIC` are allowed.
 - `ERR_BRIGHTNESS_MODE` - An unexpected OS error occurred when trying to set the brightness mode. See the `nativeError` property of the thrown error for more information.
 - `ERR_BRIGHTNESS_PERMISSIONS_DENIED` - The user did not grant `SYSTEM_BRIGHTNESS` permissions.
 
@@ -156,7 +167,6 @@ A `Promise` that is resolved when the brightness mode has been successfully set.
 | Code | Description |
 | --- | --- |
 | `ERR_BRIGHTNESS` | An error occurred when getting or setting the app brightness. |
-| `ERR_BRIGHTNESS_INVALID_BRIGHTNESS_MODE` | An invalid brightness mode was passed as a method argument. |
 | `ERR_BRIGHTNESS_MODE` | An error occurred when getting or setting the system brightness mode. |
 | `ERR_BRIGHTNESS_PERMISSIONS_DENIED` | An attempt to set the system brightness was made without the proper permissions from the user. |
 | `ERR_BRIGHTNESS_SYSTEM` | An error occurred when getting or setting the system brightness. |
