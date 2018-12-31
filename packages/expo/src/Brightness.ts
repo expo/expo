@@ -43,6 +43,13 @@ export async function useSystemBrightnessAsync(): Promise<void> {
   return await NativeModules.ExpoBrightness.useSystemBrightnessAsync();
 }
 
+export async function isUsingSystemBrightnessAsync(): Promise<boolean> {
+  if (Platform.OS !== 'android') {
+    return false;
+  }
+  return await NativeModules.ExpoBrightness.isUsingSystemBrightnessAsync();
+}
+
 export async function getSystemBrightnessModeAsync(): Promise<BrightnessMode> {
   if (Platform.OS !== 'android') {
     return BrightnessMode.UNKNOWN;

@@ -56,6 +56,11 @@ describe(`iOS system brightness`, () => {
     expect(NativeModules.ExpoBrightness.setBrightnessAsync).toHaveBeenCalled();
     expect(NativeModules.ExpoBrightness.setSystemBrightnessAsync).not.toHaveBeenCalled();
   });
+
+  it(`returns false from isUsingSystemBrightnessAsync`, async () => {
+    const result = await Brightness.isUsingSystemBrightnessAsync();
+    expect(result).toBe(false);
+  });
 });
 
 describe(`Android system brightness`, () => {
@@ -79,9 +84,3 @@ describe(`Android system brightness`, () => {
     expect(NativeModules.ExpoBrightness.setSystemBrightnessAsync).toHaveBeenCalled();
   });
 });
-
-/*
-TODO: add new TypeError to docs
-other tests (e.g. UNKNOWN returned on ios) make more sense in test suite
-add note to docs about bridge doing type checking
-*/

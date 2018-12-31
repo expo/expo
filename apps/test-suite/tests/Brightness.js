@@ -180,6 +180,37 @@ export async function test(t) {
         });
       });
 
+      describeWithPermissions(`Brightness.isUsingSystemBrightnessAsync`, () => {
+        t.beforeAll(async () => {
+          await TestUtils.acceptPermissionsAndRunCommandAsync(() => {
+            return Permissions.askAsync(Permissions.SYSTEM_BRIGHTNESS);
+          });
+        });
+
+        t.beforeEach(async () => {
+          const cleanValue = 0.5;
+          await Brightness.setBrightnessAsync(cleanValue);
+          await Brightness.setSystemBrightnessAsync(cleanValue);
+        });
+
+        t.it(
+          `returns a boolean specifiying whether or not the current activity is using the system brightness`,
+          async () => {
+            let wasRejected = false;
+            const beforeValue = await Brightness.isUsingSystemBrightnessAsync();
+            try {
+              await Brightness.useSystemBrightnessAsync();
+            } catch (error) {
+              wasRejected = true;
+            }
+            const afterValue = await Brightness.isUsingSystemBrightnessAsync();
+            t.expect(beforeValue).toBe(false);
+            t.expect(afterValue).toBe(true);
+            t.expect(wasRejected).toBe(false);
+          }
+        );
+      });
+
       describeWithPermissions(`Brightness Mode`, () => {
         t.beforeAll(async () => {
           await TestUtils.acceptPermissionsAndRunCommandAsync(() => {
@@ -187,7 +218,7 @@ export async function test(t) {
           });
         });
 
-        t.it(`should be unaffected by setting the app brightness`, async () => {
+        t.it(`is unaffected by setting the app brightness`, async () => {
           let wasRejected = false;
           try {
             await Brightness.setSystemBrightnessModeAsync(Brightness.BrightnessMode.MANUAL);
@@ -208,7 +239,7 @@ export async function test(t) {
           t.expect(wasRejected).toBe(false);
         });
 
-        t.it(`should be set to MANUAL after setting the system brightness`, async () => {
+        t.it(`is set to MANUAL after setting the system brightness`, async () => {
           let wasRejected = false;
           try {
             await Brightness.setSystemBrightnessModeAsync(Brightness.BrightnessMode.AUTOMATIC);

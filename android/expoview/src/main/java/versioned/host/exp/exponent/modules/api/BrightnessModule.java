@@ -130,6 +130,18 @@ public class BrightnessModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public void isUsingSystemBrightnessAsync(final Promise promise) {
+    final Activity activity = getCurrentActivity();
+    activity.runOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        WindowManager.LayoutParams lp = getCurrentActivity().getWindow().getAttributes();
+        promise.resolve(lp.screenBrightness == WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE);
+      }
+    });
+  }
+
+  @ReactMethod
   public void getSystemBrightnessModeAsync(Promise promise) {
     try {
       int brightnessMode = Settings.System.getInt(

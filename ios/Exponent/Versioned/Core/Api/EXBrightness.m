@@ -47,6 +47,12 @@ RCT_EXPORT_METHOD(useSystemBrightnessAsync:(RCTPromiseResolveBlock)resolve
   // stub for jest-expo-mock-generator
 }
 
+RCT_EXPORT_METHOD(isUsingSystemBrightnessAsync:(RCTPromiseResolveBlock)resolve
+                                      rejecter:(RCTPromiseRejectBlock)reject)
+{
+  // stub for jest-expo-mock-generator
+}
+
 RCT_EXPORT_METHOD(getSystemBrightnessModeAsync:(RCTPromiseResolveBlock)resolve
                                       rejecter:(RCTPromiseRejectBlock)reject)
 {

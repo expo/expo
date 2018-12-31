@@ -73,12 +73,13 @@ module.exports = {
   },
   ExpoBrightness: {
     getBrightnessAsync: { type: 'function', functionType: 'promise' },
-    setBrightnessAsync: { type: 'function', functionType: 'promise' },
     getSystemBrightnessAsync: { type: 'function', functionType: 'promise' },
-    setSystemBrightnessAsync: { type: 'function', functionType: 'promise' },
-    useSystemBrightnessAsync: { type: 'function', functionType: 'promise' },
     getSystemBrightnessModeAsync: { type: 'function', functionType: 'promise' },
+    isUsingSystemBrightnessAsync: { type: 'function', functionType: 'promise' },
+    setBrightnessAsync: { type: 'function', functionType: 'promise' },
+    setSystemBrightnessAsync: { type: 'function', functionType: 'promise' },
     setSystemBrightnessModeAsync: { type: 'function', functionType: 'promise' },
+    useSystemBrightnessAsync: { type: 'function', functionType: 'promise' },
   },
   ExpoNativeModuleIntrospection: {
     getNativeModuleNamesAsync: { type: 'function', functionType: 'promise' },
