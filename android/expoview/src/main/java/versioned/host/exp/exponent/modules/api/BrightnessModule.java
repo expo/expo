@@ -10,7 +10,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 
-import expo.core.InvalidArgumentException;
+import expo.errors.InvalidArgumentException;
 
 public class BrightnessModule extends ReactContextBaseJavaModule {
 
@@ -158,7 +158,7 @@ public class BrightnessModule extends ReactContextBaseJavaModule {
       );
       promise.resolve(null);
     } catch (InvalidArgumentException e) {
-      promise.reject("ERR_BRIGHTNESS_INVALID_BRIGHTNESS_MODE", "Failed to set the system brightness mode. Make sure the input is valid.", e);
+      promise.reject(e);
     } catch (Exception e) {
       promise.reject("ERR_BRIGHTNESS_MODE", "Failed to set the system brightness mode", e);
     }
