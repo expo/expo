@@ -65,11 +65,7 @@ const STYLES_LIST_ITEM_BODY = css`
   line-height: 1.8rem;
 `;
 
-export const LI = withSlugger(({ id, children, slugger }) => {
-  if (id == null) {
-    id = Utilities.generateSlug(slugger, children);
-  }
-
+export const LI = ({ children }) => {
   return (
     <li className={`${STYLES_LIST_ITEM} docs-list-item`}>
       <div className={STYLES_LIST_ITEM_BULLET}>
@@ -78,4 +74,4 @@ export const LI = withSlugger(({ id, children, slugger }) => {
       <div className={STYLES_LIST_ITEM_BODY}>{children}</div>
     </li>
   );
-});
+};
