@@ -1,5 +1,5 @@
-import { UnavailabilityError } from 'expo-errors';
 import { EventEmitter, Subscription } from 'expo-core';
+import { UnavailabilityError } from 'expo-errors';
 
 import AdMobNativeModule from './ExpoAdsAdMobRewardedVideoAdManager';
 
