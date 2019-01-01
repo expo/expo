@@ -24,7 +24,7 @@ Note: We support building the clients only on macOS.
 
 - Install [nix](https://nixos.org/nix) (currently `curl https://nixos.org/nix/install | sh`)
 - Install [direnv](http://direnv.net/) (to do this with nix, run `nix-env -iA nixpkgs.direnv`)
-- Clone this repo; we recommend cloning it to a directory whose full path does not include any spaces.
+- Clone this repo; we recommend cloning it to a directory whose full path does not include any spaces (you should clone all the submodules with `git clone --recurse-submodules`, check out more information on git submodules [here](https://git-scm.com/book/en/v2/Git-Tools-Submodules))
 - Run `yarn` in the `tools-public` directory.
 
 #### iOS
