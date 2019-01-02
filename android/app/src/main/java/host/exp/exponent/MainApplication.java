@@ -25,7 +25,6 @@ import expo.modules.localauthentication.LocalAuthenticationPackage;
 import expo.modules.localization.LocalizationPackage;
 import expo.modules.location.LocationPackage;
 import expo.modules.medialibrary.MediaLibraryPackage;
-import expo.modules.payments.stripe.StripePackage;
 import expo.modules.permissions.PermissionsPackage;
 import expo.modules.print.PrintPackage;
 import expo.modules.sensors.SensorsPackage;
@@ -74,7 +73,6 @@ public class MainApplication extends ExpoApplication implements AppLoaderPackage
         new ContactsPackage(),
         new BarCodeScannerPackage(),
         new AdMobPackage(),
-        new StripePackage(),
         new LocalAuthenticationPackage(),
         new LocalizationPackage(),
         new AppAuthPackage(),

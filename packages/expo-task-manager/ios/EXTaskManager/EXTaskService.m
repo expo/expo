@@ -85,7 +85,7 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
 
   id<EXTaskInterface> task = [self _getTaskWithName:taskName forAppId:appId];
 
-  if (task && [task.consumer isMemberOfClass:consumerClass]) {
+  if (task && [task.consumer isMemberOfClass:unversionedConsumerClass]) {
     // Task already exists. Let's just update its options.
     [task setOptions:options];
 
@@ -96,7 +96,7 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
     task = [self _internalRegisterTaskWithName:taskName
                                          appId:appId
                                         appUrl:appUrl
-                                 consumerClass:consumerClass
+                                 consumerClass:unversionedConsumerClass
                                        options:options];
   }
   [self _addTaskToConfig:task];

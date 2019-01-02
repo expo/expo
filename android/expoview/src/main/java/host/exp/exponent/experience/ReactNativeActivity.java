@@ -425,7 +425,7 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
     instanceManagerBuilderProperties.expoPackages = extraExpoPackages;
     instanceManagerBuilderProperties.exponentPackageDelegate = delegate.getExponentPackageDelegate();
     instanceManagerBuilderProperties.manifest = mManifest;
-    instanceManagerBuilderProperties.singletonModules = ExponentPackage.getOrCreateSingletonModules(getApplicationContext());
+    instanceManagerBuilderProperties.singletonModules = ExponentPackage.getOrCreateSingletonModules(getApplicationContext(), mManifest, extraExpoPackages);
 
     RNObject versionedUtils = new RNObject("host.exp.exponent.VersionedUtils").loadVersion(mSDKVersion);
     RNObject builder = versionedUtils.callRecursive("getReactInstanceManagerBuilder", instanceManagerBuilderProperties);
