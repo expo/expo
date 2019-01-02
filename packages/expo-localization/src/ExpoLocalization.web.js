@@ -21,7 +21,7 @@ export default {
       navigator.userLanguage ||
       this.locales[0];
 
-    /* The native format is en-US */
+    // The native format is en-US
     return locale.replace('_', '-');
   },
   get locales(): Array<string> {
@@ -32,9 +32,7 @@ export default {
     return moment.tz.guess();
   },
   get isoCurrencyCodes(): Array<string> {
-    /*
-     * TODO: Bacon: Add this - very low priority
-     */
+    // TODO: Bacon: Add this - very low priority
     return [];
   },
   get country(): string | null {

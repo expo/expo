@@ -33,42 +33,42 @@ for (const eventName of eventNames) {
 export default {
   async setAdUnitID(id: string): Promise<void> {
     if (!AdMobNativeModule.setAdUnitID) {
-      throw new UnavailabilityError(moduleName, 'setAdUnitID')
+      throw new UnavailabilityError(moduleName, 'setAdUnitID');
     }
 
-    await AdMobNativeModule.setAdUnitID(id)
+    await AdMobNativeModule.setAdUnitID(id);
   },
   async setTestDeviceID(id: string): Promise<void> {
     if (!AdMobNativeModule.setTestDeviceID) {
-      throw new UnavailabilityError(moduleName, 'setTestDeviceID')
+      throw new UnavailabilityError(moduleName, 'setTestDeviceID');
     }
 
-    await AdMobNativeModule.setTestDeviceID(id)
+    await AdMobNativeModule.setTestDeviceID(id);
   },
   async requestAdAsync(): Promise<void> {
     if (!AdMobNativeModule.requestAd) {
-      throw new UnavailabilityError(moduleName, 'requestAdAsync')
+      throw new UnavailabilityError(moduleName, 'requestAdAsync');
     }
 
-    await AdMobNativeModule.requestAd()
+    await AdMobNativeModule.requestAd();
   },
   async showAdAsync(): Promise<void> {
     if (!AdMobNativeModule.showAd) {
-      throw new UnavailabilityError(moduleName, 'showAdAsync')
+      throw new UnavailabilityError(moduleName, 'showAdAsync');
     }
 
-    await AdMobNativeModule.showAd()
+    await AdMobNativeModule.showAd();
   },
   async dismissAdAsync(): Promise<void> {
     if (!AdMobNativeModule.dismissAd) {
-      throw new UnavailabilityError(moduleName, 'dismissAdAsync')
+      throw new UnavailabilityError(moduleName, 'dismissAdAsync');
     }
-    
-    await AdMobNativeModule.dismissAd()
+
+    await AdMobNativeModule.dismissAd();
   },
   async getIsReadyAsync(): Promise<boolean> {
     if (!AdMobNativeModule.getIsReady) {
-      throw new UnavailabilityError(moduleName, 'getIsReadyAsync')
+      throw new UnavailabilityError(moduleName, 'getIsReadyAsync');
     }
 
     return await AdMobNativeModule.getIsReady();

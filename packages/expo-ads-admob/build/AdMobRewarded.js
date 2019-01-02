@@ -1,5 +1,5 @@
-import { UnavailabilityError } from 'expo-errors';
 import { EventEmitter } from 'expo-core';
+import { UnavailabilityError } from 'expo-errors';
 import AdMobNativeModule from './ExpoAdsAdMobRewardedVideoAdManager';
 const moduleName = 'AdMobRewarded';
 const eventNames = [
