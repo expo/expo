@@ -9,8 +9,8 @@
   },
   "dependencies": {
     "@expo/mux": "^1.0.7",
-    "expo": "^31.0.0-rc.0",
+    "expo": "^32.0.0-rc.3",
     "react": "16.5.0",
-    "react-native": "^0.57.1"
+    "react-native": "0.57.1"
   }
 }

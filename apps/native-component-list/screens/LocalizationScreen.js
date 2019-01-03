@@ -1,48 +1,48 @@
-import React from 'react';
-import { StyleSheet, Text, View, Picker, ScrollView, Platform } from 'react-native';
-import { DangerZone } from 'expo';
+import { Localization } from 'expo-localization';
+import i18n from 'i18n-js';
 import chunk from 'lodash/chunk';
+import React from 'react';
+import { Picker, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import HeadingText from '../components/HeadingText';
-import MonoText from '../components/MonoText';
 import ListButton from '../components/ListButton';
+import MonoText from '../components/MonoText';
 
-const { Localization } = DangerZone;
-
-const russianMesssage = { phrase: 'Привет мой друг' };
-
-const localization = {
-  en_US: {
+i18n.fallbacks = true;
+i18n.locale = Localization.locale;
+i18n.translations = {
+  en: {
     phrase: 'Hello my friend',
     default: 'English language only',
   },
-  ...Platform.select({
-    ios: { ru_US: russianMesssage },
-    android: { ru_RU: russianMesssage },
-  }),
+  ru: {
+    phrase: 'Привет мой друг',
+  },
 };
 
 export default class LocalizationScreen extends React.Component {
   static navigationOptions = {
     title: 'Localization',
   };
-  constructor(p) {
-    super(p);
-    this.state = { currentLocale: Localization.locale, preferredLocales: [], isoCurrencyCodes: [] };
-    this.localeStore = new Localization.LocaleStore(localization);
-  }
+  state = {
+    currentLocale: Localization.locale,
+    preferredLocales: Localization.locales,
+    isoCurrencyCodes: Localization.isoCurrencyCodes,
+  };
 
   queryPreferredLocales = async () => {
     const preferredLocales = Localization.locales;
     const currentLocale = Localization.locale;
-    this.setState(() => ({ preferredLocales, currentLocale }));
+    this.setState({ preferredLocales, currentLocale });
   };
+
   queryCurrencyCodes = async () => {
     if (this.state.isoCurrencyCodes.length === 0) {
       const isoCurrencyCodes = Localization.isoCurrencyCodes;
-      this.setState(() => ({ isoCurrencyCodes }));
+      this.setState({ isoCurrencyCodes });
     }
   };
+
   prettyFormatCurrency = () => {
     let buffer = '';
     let seenCount = 0;
@@ -66,8 +66,10 @@ export default class LocalizationScreen extends React.Component {
     }
   };
 
-  changeLocale = locale =>
-    this.localeStore.setLocale(locale, () => this.setState(() => ({ locale })));
+  changeLocale = locale => {
+    i18n.locale = locale;
+    this.setState({ locale });
+  };
 
   render() {
     const preferredLocales =
@@ -85,11 +87,11 @@ export default class LocalizationScreen extends React.Component {
           <MonoText>{JSON.stringify(this.state.currentLocale, null, 2)}</MonoText>
 
           <HeadingText>Locales in Preference Order</HeadingText>
-          <ListButton title={'Show preferred Locales'} onPress={this.queryPreferredLocales} />
+          <ListButton title="Show preferred Locales" onPress={this.queryPreferredLocales} />
           {preferredLocales}
 
           <HeadingText>Currency Codes</HeadingText>
-          <ListButton title={'Show first 100 currency codes'} onPress={this.queryCurrencyCodes} />
+          <ListButton title="Show first 100 currency codes" onPress={this.queryCurrencyCodes} />
           {currencyCodes}
 
           <HeadingText>Localization Table</HeadingText>
@@ -97,23 +99,20 @@ export default class LocalizationScreen extends React.Component {
             style={styles.picker}
             selectedValue={this.state.locale}
             onValueChange={this.changeLocale}>
-            <Picker.Item label={'🇺🇸 English'} value={'en_US'} />
-            <Picker.Item
-              label={'🇷🇺 Russian'}
-              value={(Platform.OS === 'ios' && 'ru_US') || (Platform.OS === 'android' && 'ru_RU')}
-            />
+            <Picker.Item label="🇺🇸 English" value="en" />
+            <Picker.Item label="🇷🇺 Russian" value="ru" />
           </Picker>
 
-          <MonoText>{JSON.stringify(localization, null, 2)}</MonoText>
+          <MonoText>{JSON.stringify(Localization, null, 2)}</MonoText>
 
           <View style={styles.languageBox}>
             <View style={styles.row}>
               <Text>Exists in Both: </Text>
-              <Text>{this.state.currentLocale ? this.localeStore.phrase : ''}</Text>
+              <Text>{this.state.currentLocale ? i18n.t('phrase') : ''}</Text>
             </View>
             <View style={styles.row}>
               <Text>Default Case Only: </Text>
-              <Text>{this.state.currentLocale ? this.localeStore.default : ''}</Text>
+              <Text>{this.state.currentLocale ? i18n.t('default') : ''}</Text>
             </View>
           </View>
         </View>

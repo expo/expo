@@ -103,16 +103,9 @@ public class RNObject {
   public RNObject construct(Object... args) {
     try {
       mInstance = getConstructorWithTypes(mClazz, objectsToClasses(args)).newInstance(args);
-    } catch (NoSuchMethodException e) {
-      EXL.e(TAG, e);
-    } catch (InvocationTargetException e) {
-      EXL.e(TAG, e);
-    } catch (InstantiationException e) {
-      EXL.e(TAG, e);
-    } catch (IllegalAccessException e) {
+    } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
       EXL.e(TAG, e);
     }
-
     return this;
   }
 
@@ -167,14 +160,9 @@ public class RNObject {
   public Object callWithReceiver(Object receiver, String name, Object... args) {
     try {
       return getMethodWithTypes(mClazz, name, objectsToClasses(args)).invoke(receiver, args);
-    } catch (IllegalAccessException e) {
+    } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException | NoSuchMethodError e) {
       EXL.e(TAG, e);
-    } catch (InvocationTargetException e) {
-      EXL.e(TAG, e);
-    } catch (NoSuchMethodException e) {
-      EXL.e(TAG, e);
-    } catch (NoSuchMethodError e) {
-      EXL.e(TAG, e);
+      e.printStackTrace();
     } catch (Throwable e) {
       EXL.e(TAG, "Runtime exception in RNObject when calling method " + name + ": " + e.toString());
     }
@@ -185,12 +173,9 @@ public class RNObject {
   public void setFieldWithReceiver(Object receiver, String name, Object value) {
     try {
       getFieldWithType(mClazz, name, value.getClass()).set(receiver, value);
-    } catch (IllegalAccessException e) {
+    } catch (IllegalAccessException | NoSuchFieldException | NoSuchMethodError e) {
       EXL.e(TAG, e);
-    } catch (NoSuchFieldException e) {
-      EXL.e(TAG, e);
-    } catch (NoSuchMethodError e) {
-      EXL.e(TAG, e);
+      e.printStackTrace();
     } catch (Throwable e) {
       EXL.e(TAG, "Runtime exception in RNObject when setting field " + name + ": " + e.toString());
     }

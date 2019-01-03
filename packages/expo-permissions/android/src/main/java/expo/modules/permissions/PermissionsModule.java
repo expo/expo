@@ -6,6 +6,7 @@ import android.Manifest;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
@@ -14,7 +15,9 @@ import android.provider.Settings;
 import android.support.v4.app.NotificationManagerCompat;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import expo.core.ExportedModule;
@@ -119,6 +122,10 @@ public class PermissionsModule extends ExportedModule implements ModuleRegistryC
           break;
         case "contacts":
           permissionsTypesToBeAsked.add(Manifest.permission.READ_CONTACTS);
+          if (isPermissionPresentInManifest(Manifest.permission.WRITE_CONTACTS)) {
+            // Ask for WRITE_CONTACTS permission only if the permission is present in AndroidManifest.
+            permissionsTypesToBeAsked.add(Manifest.permission.WRITE_CONTACTS);
+          }
           break;
         case "audioRecording":
           permissionsTypesToBeAsked.add(Manifest.permission.RECORD_AUDIO);
@@ -130,9 +137,6 @@ public class PermissionsModule extends ExportedModule implements ModuleRegistryC
         case "calendar":
           permissionsTypesToBeAsked.add(Manifest.permission.READ_CALENDAR);
           permissionsTypesToBeAsked.add(Manifest.permission.WRITE_CALENDAR);
-          break;
-        case "SMS":
-          permissionsTypesToBeAsked.add(Manifest.permission.READ_SMS);
           break;
         default:
           promise.reject(ERROR_TAG + "_UNSUPPORTED", String.format("Cannot request permission: %s", type));
@@ -354,6 +358,24 @@ public class PermissionsModule extends ExportedModule implements ModuleRegistryC
       return true;
     } else {
       throw new IllegalStateException("No Permissions module present.");
+    }
+  }
+
+  /**
+   * Checks whether given permission is present in AndroidManifest or not.
+   */
+  private boolean isPermissionPresentInManifest(final String permission) {
+    try {
+      Context context = getContext();
+      PackageInfo packageInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), PackageManager.GET_PERMISSIONS);
+
+      if (packageInfo.requestedPermissions != null) {
+        List<String> permissions = Arrays.asList(packageInfo.requestedPermissions);
+        return permissions.contains(permission);
+      }
+      return false;
+    } catch (PackageManager.NameNotFoundException e) {
+      return false;
     }
   }
 

@@ -443,11 +443,12 @@ async function writeIOSTemplatesAsync(
 
   if (args.expoKitPath) {
     let expoKitPath = args.expoKitPath;
+    const expoJson = require(`${expoKitPath}/package.json`);
     await renderExpoKitPodspecAsync(
       path.join(templateFilesPath, platform, 'ExpoKit.podspec'),
       path.join(expoKitPath, 'ExpoKit.podspec'),
       {
-        IOS_EXPONENT_CLIENT_VERSION: iOSInfoPlistContents.CFBundleShortVersionString,
+        IOS_EXPONENT_CLIENT_VERSION: expoJson.exp.sdkVersion,
       }
     );
     await renderPodfileAsync(

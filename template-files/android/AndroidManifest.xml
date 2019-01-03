@@ -37,7 +37,6 @@
   <uses-permission android:name="android.permission.RECORD_AUDIO" />
   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
   <uses-permission android:name="android.permission.WRITE_SETTINGS" />
-  <uses-permission android:name="android.permission.READ_SMS" />
   <!-- END OPTIONAL PERMISSIONS -->
 
   <!-- ADD TEST PERMISSIONS HERE -->
@@ -146,6 +145,7 @@
     <activity android:name="com.facebook.react.devsupport.DevSettingsActivity"/>
     <!-- WHEN_PREPARING_SHELL_REMOVE_FROM_HERE -->
     <!-- ADD DEV SETTINGS HERE -->
+    <activity android:name="abi32_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
     <!-- BEGIN_SDK_31 -->
     <activity android:name="abi31_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
     <!-- END_SDK_31 -->
@@ -164,9 +164,6 @@
     <!-- BEGIN_SDK_26 -->
     <activity android:name="abi26_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
     <!-- END_SDK_26 -->
-    <!-- BEGIN_SDK_25 -->
-    <activity android:name="abi25_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
-    <!-- END_SDK_25 -->
     <!-- WHEN_PREPARING_SHELL_REMOVE_TO_HERE -->
 
     <activity

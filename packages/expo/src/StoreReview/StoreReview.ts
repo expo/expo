@@ -9,14 +9,14 @@ import ExponentStoreReview from './ExponentStoreReview';
  * `SKStoreReviewController` class is available
  */
 export function isSupported() {
-  return ExponentStoreReview.isSupported;
+  return ExponentStoreReview && ExponentStoreReview.isSupported;
 }
 
 /*
  * Use the iOS `SKStoreReviewController` API to prompt a user rating without leaving the app.
  */
 export async function requestReview() {
-  if (ExponentStoreReview.requestReview) {
+  if (ExponentStoreReview && ExponentStoreReview.requestReview) {
     ExponentStoreReview.requestReview();
   } else {
     /*

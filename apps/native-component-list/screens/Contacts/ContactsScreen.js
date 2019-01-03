@@ -76,6 +76,11 @@ export default class ContactsScreen extends React.Component {
     });
 
     const { data: contacts, hasPreviousPage, hasNextPage } = payload;
+
+    if (restart) {
+      this._rawContacts = {};
+    }
+
     for (const contact of contacts) {
       this._rawContacts[contact.id] = contact;
     }

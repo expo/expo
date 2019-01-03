@@ -1,190 +1,174 @@
 // @flow
+import Constants from 'expo-constants';
+import { UnavailabilityError } from 'expo-errors';
+import invariant from 'invariant';
 
-import AuthData from './AuthData';
-import Authentication from './Authentication';
-import Identity from './Identity';
-import User from './User';
 import ExpoGoogleSignIn from './ExpoGoogleSignIn';
+import GoogleUser from './GoogleUser';
 
-const { ERRORS, SCOPES, TYPES } = ExpoGoogleSignIn;
+import type { GoogleSignInOptions, GoogleSignInAuthResult } from './GoogleSignIn.types';
 
-export type GoogleSignInType = 'default' | 'games';
+export const { ERRORS, SCOPES, TYPES } = ExpoGoogleSignIn;
 
-export type GoogleSignInOptions = {
-  scopes: ?Array<string>,
-  webClientId: ?string,
-  hostedDomain: ?string,
-  accountName: ?string,
+const DEFAULT_SCOPES = [SCOPES.PROFILE, SCOPES.EMAIL];
 
-  // Android
-  signInType: ?GoogleSignInType,
-  isOfflineEnabled: ?boolean,
-  isPromptEnabled: ?boolean,
-  // iOS
-  clientId: ?string,
-  language: ?string,
-  openIdRealm: ?string,
-};
+let _initialization: Promise<void>;
+let _options: GoogleSignInOptions = {};
+let _currentUser: GoogleUser = null;
+let _isClientUsageEnabled = false;
 
-export type GoogleSignInAuthResultType = 'success' | 'cancel';
+function setCurrentUser(currentUser: GoogleUser | null): GoogleUser | null {
+  _currentUser = currentUser;
+  return _currentUser;
+}
 
-export type GoogleSignInAuthResult = {
-  type: GoogleSignInAuthResultType,
-  user: ?User,
-};
-
-export type GoogleSignInPlayServicesOptions = {
-  shouldUpdate: boolean,
-};
-
-export class GoogleSignIn {
-  _initialization: Promise;
-  _currentUser: User;
-
-  get ERRORS() {
-    return ERRORS;
-  }
-  get SCOPES() {
-    return SCOPES;
-  }
-  get TYPES() {
-    return TYPES;
+function validateOptions(options: ?GoogleSignInOptions = {}): GoogleSignInOptions {
+  if (options.offlineAccess) {
+    invariant(
+      typeof options.webClientId === 'string' && options.webClientId !== '',
+      'GoogleSignIn: Offline access (offlineAccess: true) requires a valid google server id `webClientId`'
+    );
   }
 
-  get AuthData() {
-    return AuthData;
-  }
-  get Authentication() {
-    return Authentication;
-  }
-  get Identity() {
-    return Identity;
-  }
-  get User() {
-    return User;
-  }
-
-  get currentUser(): ?User {
-    return this._currentUser;
-  }
-
-  _setCurrentUser(currentUser: ?User): User {
-    this._currentUser = currentUser;
-    return this._currentUser;
-  }
-
-  _validateOptions = (options: ?GoogleSignInOptions): GoogleSignInOptions => {
-    if (!options || !Object.keys(options).length) {
-      throw new Error('GoogleSignIn: you must provide a meaningful configuration, empty provided');
-    }
-    if (options.offlineAccess && !options.webClientId) {
-      throw new Error('GoogleSignIn: Offline access requires server `webClientId`');
-    }
-
-    const DEFAULT_SCOPES = [SCOPES.PROFILE, SCOPES.EMAIL];
-    return {
-      ...options,
-      scopes: options.scopes || DEFAULT_SCOPES,
-    };
-  };
-
-  _invokeAuthMethod = async (method: string): Promise<?GoogleSignInAuthResult> => {
-    await this._ensureGoogleIsInitializedAsync();
-    const payload = await ExpoGoogleSignIn[method]();
-    let account = payload != null ? new User(payload) : null;
-    return this._setCurrentUser(account);
-  };
-
-  askForPlayServicesAsync = (): Promise<boolean> => {
-    return this.arePlayServicesAvailableAsync({ shouldUpdate: true });
-  };
-
-  arePlayServicesAvailableAsync = async (
-    options?: GoogleSignInPlayServicesOptions = { shouldUpdate: false }
-  ): Promise<boolean> => {
-    if (ExpoGoogleSignIn.arePlayServicesAvailableAsync) {
-      if (options && options.shouldUpdate === undefined) {
-        throw new Error(
-          'ExpoGoogleSignIn: Missing property `shouldUpdate` in options object for `shouldUpdate`'
-        );
-      }
-      return ExpoGoogleSignIn.arePlayServicesAvailableAsync(options.shouldUpdate);
-    } else {
-      return true;
-    }
-  };
-
-  initAsync = async (options: ?GoogleSignInOptions): Promise<any> => {
-    this.options = this._validateOptions(options || this.options);
-
-    const hasPlayServices = await this.arePlayServicesAvailableAsync();
-    if (!hasPlayServices) {
-      return false;
-    }
-
-    this._initialization = ExpoGoogleSignIn.initAsync(this.options);
-
-    return this._initialization;
-  };
-
-  /*
-  TODO: Bacon: Maybe we should throw an error: "attempting to ... before Google has been initialized"
-  */
-  _ensureGoogleIsInitializedAsync = async (options: ?GoogleSignInOptions): Promise<any> => {
-    if (this._initialization == null) {
-      return this.initAsync(options);
-    }
-    return this._initialization;
-  };
-
-  isSignedInAsync = async (): Promise<boolean> => {
-    const user = await this.getCurrentUserAsync();
-    return user != null;
-  };
-
-  isConnectedAsync = async (): Promise<boolean> => {
-    return ExpoGoogleSignIn.isConnectedAsync();
-  };
-
-  signInSilentlyAsync = async (): Promise<?User> => {
-    const isConnected = await this.isConnectedAsync();
-    if (isConnected) {
-      try {
-        const auth = await this._invokeAuthMethod('signInSilentlyAsync');
-        return auth;
-      } catch (error) {
-        // Android parity
-        if (error.code === ERRORS.SIGN_IN_REQUIRED) {
-          return null;
-        }
-        throw error;
-      }
-    }
-    return null;
-  };
-
-  signInAsync = async (): Promise<?GoogleSignInAuthResult> => {
-    try {
-      const user = await this._invokeAuthMethod('signInAsync');
-      return { type: 'success', user };
-    } catch (error) {
-      if (error.code === ERRORS.SIGN_IN_CANCELLED) {
-        return { type: 'cancel', user: null };
-      }
-      throw error;
-    }
-  };
-
-  signOutAsync = (): Promise => this._invokeAuthMethod('signOutAsync');
-
-  disconnectAsync = (): Promise => this._invokeAuthMethod('disconnectAsync');
-
-  getCurrentUserAsync = (): Promise<?User> => this._invokeAuthMethod('getCurrentUserAsync');
-
-  getPhotoAsync = async (size: number = 128): Promise<?string> => {
-    await this._ensureGoogleIsInitializedAsync();
-    return ExpoGoogleSignIn.getPhotoAsync(size);
+  return {
+    ...options,
+    scopes: options.scopes || DEFAULT_SCOPES,
   };
 }
 
-export default new GoogleSignIn();
+function validateOwnership() {
+  invariant(
+    _isClientUsageEnabled || Constants.appOwnership !== 'expo',
+    'expo-google-sign-in is not supported in the Expo Client because a custom URL scheme is required at build time. Please refer to the docs for usage outside of Expo www.npmjs.com/package/expo-google-sign-in'
+  );
+}
+
+async function ensureGoogleIsInitializedAsync(options: ?GoogleSignInOptions): Promise<any> {
+  if (_initialization == null) {
+    return initAsync(options);
+  }
+  return _initialization;
+}
+
+async function invokeAuthMethod(method: string): Promise<GoogleUser | null> {
+  if (!ExpoGoogleSignIn[method]) {
+    throw new UnavailabilityError('GoogleSignIn', method);
+  }
+  await ensureGoogleIsInitializedAsync();
+  const payload = await ExpoGoogleSignIn[method]();
+  let account = payload != null ? new GoogleUser(payload) : null;
+  return setCurrentUser(account);
+}
+
+export function allowInClient() {
+  _isClientUsageEnabled = true;
+}
+
+export function getCurrentUser(): GoogleUser | null {
+  return _currentUser;
+} 
+
+export async function askForPlayServicesAsync(): Promise<boolean> {
+  return await getPlayServiceAvailability(true);
+}
+
+export async function getPlayServiceAvailability(shouldAsk: boolean = false): Promise<boolean> {
+  validateOwnership();
+
+  if (ExpoGoogleSignIn.arePlayServicesAvailableAsync) {
+    return await ExpoGoogleSignIn.arePlayServicesAvailableAsync(shouldAsk);
+  } else {
+    return true;
+  }
+}
+
+export async function initAsync(options: ?GoogleSignInOptions): Promise<void> {
+  if (!ExpoGoogleSignIn.initAsync) {
+    throw new UnavailabilityError('GoogleSignIn', 'initAsync');
+  }
+
+  _options = validateOptions(options || _options);
+
+  const hasPlayServices = await getPlayServiceAvailability();
+  if (!hasPlayServices) {
+    return false;
+  }
+
+  _initialization = ExpoGoogleSignIn.initAsync(_options);
+
+  return _initialization;
+}
+
+export async function isSignedInAsync(): Promise<boolean> {
+  const user = await getCurrentUserAsync();
+  return user != null;
+}
+
+export async function isConnectedAsync(): Promise<boolean> {
+  return await ExpoGoogleSignIn.isConnectedAsync();
+}
+
+export async function signInSilentlyAsync(): Promise<GoogleUser | null> {
+  const isConnected = await isConnectedAsync();
+  if (isConnected) {
+    try {
+      const auth = await invokeAuthMethod('signInSilentlyAsync');
+      return auth;
+    } catch (error) {
+      /* Return null to create parity with Android */
+      if (error.code === ERRORS.SIGN_IN_REQUIRED) {
+        return null;
+      }
+      throw error;
+    }
+  }
+  return null;
+}
+
+export async function signInAsync(): Promise<GoogleSignInAuthResult> {
+  try {
+    const user = await invokeAuthMethod('signInAsync');
+    return { type: 'success', user };
+  } catch (error) {
+    if (error.code === ERRORS.SIGN_IN_CANCELLED) {
+      return { type: 'cancel', user: null };
+    }
+    throw error;
+  }
+}
+
+export async function signOutAsync(): Promise<void> {
+  await invokeAuthMethod('signOutAsync');
+}
+
+export async function disconnectAsync(): Promise<void> {
+  await invokeAuthMethod('disconnectAsync');
+}
+
+export async function getCurrentUserAsync(): Promise<GoogleUser | null> {
+  return await invokeAuthMethod('getCurrentUserAsync');
+}
+
+export async function getPhotoAsync(size: number = 128): Promise<string | null> {
+  if (!ExpoGoogleSignIn.getPhotoAsync) {
+    throw new UnavailabilityError('GoogleSignIn', 'getPhotoAsync');
+  }
+
+  await ensureGoogleIsInitializedAsync();
+  return await ExpoGoogleSignIn.getPhotoAsync(size);
+}
+
+
+export { GoogleAuthData } from './GoogleAuthData';
+export { GoogleAuthentication } from './GoogleAuthentication';
+export { GoogleIdentity } from './GoogleIdentity';
+export { GoogleUser } from './GoogleUser';
+export { ExpoGoogleSignIn } from './ExpoGoogleSignIn';
+
+export {
+  GoogleSignInType,
+  GoogleSignInOptions,
+  GoogleSignInAuthResultType,
+  GoogleSignInAuthResult,
+  GoogleSignInPlayServicesOptions,
+} from './GoogleSignIn.types';

@@ -60,15 +60,19 @@ EX_EXPORT_MODULE(ExpoFirebaseAuth);
 }
 
 - (void)dealloc {
+  [self invalidate];
+}
+
+- (void)invalidate {
   NSLog(@"EXFirebaseAuth:instance-destroyed");
   
-  for(NSString* key in authStateHandlers) {
+  for (NSString *key in authStateHandlers) {
     FIRApp *firApp = [EXFirebaseAppUtil getApp:key];
     [[FIRAuth authWithApp:firApp] removeAuthStateDidChangeListener:[authStateHandlers valueForKey:key]];
     [authStateHandlers removeObjectForKey:key];
   }
   
-  for(NSString* key in idTokenHandlers) {
+  for (NSString *key in idTokenHandlers) {
     FIRApp *firApp = [EXFirebaseAppUtil getApp:key];
     [[FIRAuth authWithApp:firApp] removeIDTokenDidChangeListener:[idTokenHandlers valueForKey:key]];
     [idTokenHandlers removeObjectForKey:key];
@@ -77,6 +81,7 @@ EX_EXPORT_MODULE(ExpoFirebaseAuth);
 
 - (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
+  [self invalidate];
   _moduleRegistry = moduleRegistry;
   _eventEmitter = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXEventEmitterService)];
 }

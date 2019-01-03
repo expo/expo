@@ -3,7 +3,7 @@
 #import <EXCore/EXExportedModule.h>
 #import <EXCore/EXModuleRegistryConsumer.h>
 
-static id nullIfEmpty(NSString *input) {
+static id EXnullIfEmpty(NSString *input) {
   if (!input || input == nil || [input isEqualToString:@""]) {
     return [NSNull null];
   }

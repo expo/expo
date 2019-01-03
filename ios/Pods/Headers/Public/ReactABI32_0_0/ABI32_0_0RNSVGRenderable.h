@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI32_0_0/Expo/Core/Api/Components/Svg/ABI32_0_0RNSVGRenderable.h

@@ -42,4 +42,3 @@ export const SYSTEM_BRIGHTNESS = 'systemBrightness';
 export const CAMERA_ROLL = 'cameraRoll';
 export const CALENDAR = 'calendar';
 export const REMINDERS = 'reminders';
-export const SMS = 'SMS';

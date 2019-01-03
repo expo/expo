@@ -12,3 +12,4 @@ expo.core
 expo.interfaces
 expo.modules
 expo.adapters
+expo.errors

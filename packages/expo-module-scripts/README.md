@@ -21,7 +21,6 @@ For scripts that need to run as part of the npm lifecycle, you'd invoke the comm
 ```json
 {
   "scripts": {
-    "postinstall": "expo-module postinstall",
     "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
   }

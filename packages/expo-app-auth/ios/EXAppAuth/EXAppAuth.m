@@ -137,11 +137,20 @@ EX_EXPORT_METHOD_AS(executeAsync,
         NSDictionary *tokenResponse = [EXAppAuth _tokenResponseNativeToJSON:authState.lastTokenResponse request:options];
         resolve(tokenResponse);
       } else {
-        rejectWithError(reject, error);
+        EXrejectWithError(reject, error);
       }
     };
     
-    UIViewController *presentingViewController = self->_utilities.currentViewController;
+    // On iOS < 11 presenting authorization request on currentViewController
+    // resulted in freezed SFSafariViewController.
+    // See issue https://github.com/google/GTMAppAuth/issues/6
+    // See pull request https://github.com/openid/AppAuth-iOS/pull/73
+    UIViewController *presentingViewController;
+    if (@available(iOS 11.0, *)) {
+      presentingViewController = self->_utilities.currentViewController;
+    } else {
+      presentingViewController = [[[UIApplication sharedApplication] keyWindow] rootViewController];
+    }
     self->session = [OIDAuthState authStateByPresentingAuthorizationRequest:request
                                                    presentingViewController:presentingViewController
                                                                    callback:callback];
@@ -160,7 +169,7 @@ EX_EXPORT_METHOD_AS(executeAsync,
     refreshToken = input.accessToken;
   }
   
-  [output setValue:@"refreshToken" forKey:nullIfEmpty(refreshToken)];
+  [output setValue:@"refreshToken" forKey:EXnullIfEmpty(refreshToken)];
   
   return output;
 }
@@ -189,7 +198,7 @@ EX_EXPORT_METHOD_AS(executeAsync,
       NSDictionary *tokenResponse = [EXAppAuth _tokenResponseNativeToJSON:response request:options];
       resolve(tokenResponse);
     } else {
-      rejectWithError(reject, error);
+      EXrejectWithError(reject, error);
     }
   };
   [OIDAuthorizationService performTokenRequest:tokenRefreshRequest
@@ -206,7 +215,7 @@ EX_EXPORT_METHOD_AS(executeAsync,
       if (isRefresh) [self _refreshWithConfiguration:configuration options:options resolve:resolve reject:reject];
       else [self _authorizeWithConfiguration:configuration options:options resolve:resolve reject:reject];
     } else {
-      rejectWithError(reject, error);
+      EXrejectWithError(reject, error);
     }
   };
 }
@@ -219,7 +228,8 @@ EX_EXPORT_METHOD_AS(executeAsync,
 
 #pragma mark - Static
 
-void rejectWithError(EXPromiseRejectBlock reject, NSError *error) {
+// EX prefix for versioning to work smoothly
+void EXrejectWithError(EXPromiseRejectBlock reject, NSError *error) {
   NSString *errorMessage = [NSString stringWithFormat:@"%@: %@", EXAppAuthError, error.localizedDescription];
   if (error.localizedFailureReason != nil && ![error.localizedFailureReason isEqualToString:@""]) errorMessage = [NSString stringWithFormat:@"%@, Reason: %@", errorMessage, error.localizedFailureReason];
   if (error.localizedRecoverySuggestion != nil && ![error.localizedRecoverySuggestion isEqualToString:@""]) errorMessage = [NSString stringWithFormat:@"%@, Try: %@", errorMessage, error.localizedRecoverySuggestion];

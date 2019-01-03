@@ -52,6 +52,14 @@
   }
 }
 
+- (void)unregisterAppWithRecord:(nullable EXKernelAppRecord *)appRecord
+{
+  NSArray *recordIds = [_appRegistry allKeysForObject:appRecord];
+  if (recordIds.count > 0) {
+    [self unregisterAppWithRecordId:recordIds[0]];
+  }
+}
+
 - (void)registerHomeAppRecord:(EXKernelAppRecord *)homeRecord
 {
   _homeAppRecord = homeRecord;

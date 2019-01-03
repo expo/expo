@@ -202,8 +202,6 @@ RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
   if ([[imageURL absoluteString] containsString:@"ext=PNG"]) {
     extension = @".png";
     data = UIImagePNGRepresentation(image);
-  } else if (imageURL != nil && ![[imageURL absoluteString] containsString:@"ext=JPG"]) {
-    RCTLogWarn(@"Unsupported format of the picked image. Using JPEG instead.");
   }
 
   id<EXFileSystemInterface> fileSystem = [self.bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];

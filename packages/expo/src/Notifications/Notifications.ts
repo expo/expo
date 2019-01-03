@@ -183,19 +183,11 @@ export default {
   },
 
   // User passes set of actions titles.
-  createCategoryIOSAsync(categoryId: string, actions: ActionType[]): Promise<void> {
-    if (Platform.OS === 'android') {
-      console.warn('createCategoryAsync(...) has no effect on Android');
-      return Promise.resolve();
-    }
+  createCategoryAsync(categoryId: string, actions: ActionType[]): Promise<void> {
     return ExponentNotifications.createCategoryAsync(categoryId, actions);
   },
 
-  deleteCategoryIOSAsync(categoryId: string): Promise<void> {
-    if (Platform.OS === 'android') {
-      console.warn('deleteCategoryAsync(...) has no effect on Android');
-      return Promise.resolve();
-    }
+  deleteCategoryAsync(categoryId: string): Promise<void> {
     return ExponentNotifications.deleteCategoryAsync(categoryId);
   },
 

@@ -1,6 +1,6 @@
-import * as React from 'react';
-import PropTypes from 'prop-types';
 import { requireNativeViewManager } from 'expo-core';
+import PropTypes from 'prop-types';
+import * as React from 'react';
 import { View, ViewPropTypes } from 'react-native';
 
 type AppEvent = { [eventName: string]: any };
@@ -26,29 +26,29 @@ type PropsType = React.ComponentProps<typeof View> & {
     | 'fullBanner'
     | 'leaderboard'
     | 'smartBannerPortrait'
-    | 'smartBannerLandscape',
+    | 'smartBannerLandscape';
   /**
    * AdMob ad unit ID
    */
-  adUnitID?: string,
+  adUnitID?: string;
   /**
    * Test device ID
    */
-  testDeviceID?: string,
+  testDeviceID?: string;
   /**
    * AdMob iOS library events
    */
-  onAdViewDidReceiveAd?: () => void,
-  onDidFailToReceiveAdWithError?: (error: string) => void,
-  onAdViewWillPresentScreen?: () => void,
-  onAdViewWillDismissScreen?: () => void,
-  onAdViewDidDismissScreen?: () => void,
-  onAdViewWillLeaveApplication?: () => void,
-  onAdMobDispatchAppEvent?: (event: AppEvent) => void,
+  onAdViewDidReceiveAd?: () => void;
+  onDidFailToReceiveAdWithError?: (error: string) => void;
+  onAdViewWillPresentScreen?: () => void;
+  onAdViewWillDismissScreen?: () => void;
+  onAdViewDidDismissScreen?: () => void;
+  onAdViewWillLeaveApplication?: () => void;
+  onAdMobDispatchAppEvent?: (event: AppEvent) => void;
 };
 
 type StateType = {
-  style: { width?: number, height?: number },
+  style: { width?: number; height?: number };
 };
 
 export default class PublisherBanner extends React.Component<PropsType, StateType> {
@@ -78,7 +78,7 @@ export default class PublisherBanner extends React.Component<PropsType, StateTyp
 
   state = { style: {} };
 
-  _handleSizeChange = ({ nativeEvent }: { nativeEvent: { width: number, height: number } }) => {
+  _handleSizeChange = ({ nativeEvent }: { nativeEvent: { width: number; height: number } }) => {
     const { height, width } = nativeEvent;
     this.setState({ style: { width, height } });
   };

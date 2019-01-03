@@ -1,5 +1,5 @@
-The Expo client app is the quickest way to get started with Expo.
-
-Developers: Start writing apps with native views and APIs with just your Android device and your computer. Expo is a free and open-source toolchain for creating apps with JavaScript and the React Native engine. Bring your projects to life with interactive gestures and graphics, and try out Expo.
+Start building rich experiences with just your Android device and your computer. Expo is a developer tool for creating experiences with interactive gestures and graphics, using JavaScript and React Native.
 
 To learn more visit https://expo.io.
+
+Note: some programming experience is recommended.

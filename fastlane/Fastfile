@@ -61,7 +61,7 @@ platform :ios do
       scheme: "Exponent",
       sdk: "iphonesimulator",
       configuration: "Release",
-      derived_data_path: directory,
+      derivedDataPath: directory,
       xcargs: "ARCHS=\"i386 x86_64\" ONLY_ACTIVE_ARCH=NO"
     )
   end

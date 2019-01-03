@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI32_0_0/EXContacts/ABI32_0_0EXContacts/ABI32_0_0EXContacts.h
