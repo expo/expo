@@ -1,6 +1,6 @@
 {
   "name": "EXLocalization",
-  "version": "2.0.0-rc.1",
+  "version": "2.0.0-rc.2",
   "summary": "Expo Unimodule for interfacing with the native localization APIs",
   "description": "Expo Unimodule for interfacing with the native localization APIs",
   "license": "MIT",

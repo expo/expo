@@ -1,6 +1,6 @@
 {
   "name": "EXFontInterface",
-  "version": "2.0.0-rc.1",
+  "version": "2.0.0-rc.2",
   "summary": "Interface for managing fonts",
   "description": "Interface for managing fonts",
   "license": "MIT",
