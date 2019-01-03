@@ -9,10 +9,10 @@ You can access this documentation online at https://docs.expo.io/. It's built us
 Download the copy of this repostory.
 
 ```sh
-git clone https://github.com/expo/expo-docs.git
+git clone https://github.com/expo/expo.git
 ```
 
-Then `cd` into the downloaded directory and install dependencies with:
+Then `cd` into the `docs` directory and install dependencies with:
 
 ```sh
 yarn
@@ -112,7 +112,7 @@ You can import the React Native docs in an automated way into these docs.
 This will write all the relevant RN doc stuff into the unversioned version directory.
 You may need to tweak the script as the source docs change; the script hackily translates between the different forms of markdown that have different quirks.
 
-The React Native docs are actually versioned but we currently read off of master. 
+The React Native docs are actually versioned but we currently read off of master.
 
 TODOs:
     - Handle image sizing in imports better
