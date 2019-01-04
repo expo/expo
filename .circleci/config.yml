@@ -207,6 +207,7 @@ jobs:
   web_test_suite:
     executor: web
     steps:
+      - install_nix
       - setup
       - update_submodules
       - restore_yarn_cache
