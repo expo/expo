@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-  <info organisation="host.exp.exponent" module="expoview" revision="32.0.0" status="integration" publication="20190102134943"/>
+  <info organisation="host.exp.exponent" module="expoview" revision="32.0.0" status="integration" publication="20190104123714"/>
   <configurations>
     <conf name="_internal_aapt2_binary" visibility="private" transitive="false"/>
     <conf name="androidApis" visibility="public"/>
@@ -114,19 +114,19 @@
     <dependency org="com.jakewharton" name="butterknife-compiler" rev="8.8.1" conf="annotationProcessor-&gt;default"/>
     <dependency org="com.android.support" name="multidex" rev="1.0.3" conf="api-&gt;default"/>
     <dependency org="com.facebook.react" name="react-native" rev="32.0.0" conf="api-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-core" rev="2.0.0-rc.2" conf="api-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-constants" rev="2.0.0-rc.2" conf="api-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-constants-interface" rev="2.0.0-rc.1" conf="api-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-errors" rev="1.0.0-rc.2" conf="api-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-permissions" rev="2.0.0-rc.1" conf="api-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-sensors-interface" rev="2.0.0-rc.1" conf="api-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-permissions-interface" rev="2.0.0-rc.1" conf="api-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-react-native-adapter" rev="2.0.0-rc.2" conf="api-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-file-system" rev="2.0.0-rc.1" conf="api-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-file-system-interface" rev="2.0.0-rc.1" conf="api-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-task-manager" rev="1.0.0-rc.2" conf="api-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-task-manager-interface" rev="1.0.0-rc.1" conf="api-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-app-loader-provider" rev="1.0.0-rc.1" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-core" rev="2.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-constants" rev="2.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-constants-interface" rev="2.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-errors" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-permissions" rev="2.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-sensors-interface" rev="2.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-permissions-interface" rev="2.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-react-native-adapter" rev="2.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-file-system" rev="2.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-file-system-interface" rev="2.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-task-manager" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-task-manager-interface" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-app-loader-provider" rev="1.0.0" conf="api-&gt;default"/>
     <dependency org="com.facebook.fresco" name="fresco" rev="1.10.0" conf="api-&gt;default"/>
     <dependency org="com.facebook.fresco" name="animated-gif" rev="1.10.0" conf="api-&gt;default"/>
     <dependency org="com.facebook.fresco" name="animated-webp" rev="1.10.0" conf="api-&gt;default"/>
@@ -187,33 +187,33 @@
     <dependency org="com.jakewharton" name="butterknife" rev="8.4.0" conf="api-&gt;default"/>
     <dependency org="com.squareup.okhttp3" name="okhttp" rev="3.10.0" conf="api-&gt;default"/>
     <dependency org="com.squareup.okhttp3" name="okhttp-urlconnection" rev="3.10.0" conf="api-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-app-auth" rev="2.0.0-rc.1" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-image-loader-interface" rev="2.0.0-rc.1" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-gl" rev="2.0.0-rc.1" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-gl-cpp" rev="2.0.0-rc.1" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-sms" rev="2.0.0-rc.2" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-print" rev="2.0.0-rc.2" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-media-library" rev="2.0.0-rc.2" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-analytics-segment" rev="2.0.0-rc.1" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-font" rev="2.0.0-rc.2" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-google-sign-in" rev="2.0.0-rc.2" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-location" rev="2.0.0-rc.2" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-barcode-scanner-interface" rev="2.0.0-rc.1" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-barcode-scanner" rev="2.0.0-rc.1" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-contacts" rev="2.0.0-rc.2" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-ads-admob" rev="2.0.0-rc.2" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-local-authentication" rev="2.0.0-rc.1" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-localization" rev="2.0.0-rc.1" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-react-native-adapter" rev="2.0.0-rc.2" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-camera" rev="2.0.0-rc.2" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-camera-interface" rev="2.0.0-rc.1" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-sensors" rev="2.0.0-rc.2" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-sensors-interface" rev="2.0.0-rc.1" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-face-detector" rev="2.0.0-rc.1" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-payments-stripe" rev="2.0.0-rc.1" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-permissions" rev="2.0.0-rc.1" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-permissions-interface" rev="2.0.0-rc.1" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-background-fetch" rev="1.0.0-rc.2" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-app-auth" rev="2.0.0" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-image-loader-interface" rev="2.0.0" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-gl" rev="2.0.0" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-gl-cpp" rev="2.0.0" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-sms" rev="2.0.0" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-print" rev="2.0.0" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-media-library" rev="2.0.0" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-analytics-segment" rev="2.0.0" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-font" rev="2.0.0" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-google-sign-in" rev="2.0.0" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-location" rev="2.0.0" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-barcode-scanner-interface" rev="2.0.0" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-barcode-scanner" rev="2.0.0" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-contacts" rev="2.0.0" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-ads-admob" rev="2.0.0" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-local-authentication" rev="2.0.0" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-localization" rev="2.0.0" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-react-native-adapter" rev="2.0.0" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-camera" rev="2.0.0" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-camera-interface" rev="2.0.0" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-sensors" rev="2.0.0" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-sensors-interface" rev="2.0.0" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-face-detector" rev="2.0.0" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-payments-stripe" rev="2.0.0" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-permissions" rev="2.0.0" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-permissions-interface" rev="2.0.0" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-background-fetch" rev="1.0.0" conf="compileOnly-&gt;default"/>
     <dependency org="com.facebook.soloader" name="soloader" rev="0.5.1" conf="compileOnly-&gt;default"/>
     <dependency org="org.glassfish" name="javax.annotation" rev="3.1.1" conf="compileOnly-&gt;default"/>
     <dependency org="com.squareup.leakcanary" name="leakcanary-android-no-op" rev="1.4-beta1" conf="debugApi-&gt;default"/>
