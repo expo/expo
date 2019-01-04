@@ -131,13 +131,14 @@ function jasmineConsoleReporter(jasmineEnv) {
     jasmineDone() {
       console.log('--- tests done');
       console.log('--- send results to runner');
-      let result = JSON.stringify({
+      const testResults = {
         magic: '[TEST-SUITE-END]', // NOTE: Runner/Run.js waits to see this
         failed: failedSpecs.length,
         results: _results,
-      });
+      };
+      console.log(testResults);
+      let result = JSON.stringify(testResults);
       console.log(result);
-
       if (ExponentTest) {
         // Native logs are truncated so log just the failures for now
         ExponentTest.completed(

@@ -187,6 +187,7 @@ module.exports = {
     runtimeChunk: true,
   },
   devServer: {
+    contentBase: locations.output,
     historyApiFallback: true,
     compress: true,
   },

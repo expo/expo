@@ -6,8 +6,8 @@
   "scripts": {
     "postinstall": "expo-yarn-workspaces postinstall",
     "test": "cd runner && yarn && cd .. && node runner/index.js .",
-    "web": "webpack-dev-server -d --config ./webpack.config.js --inline --colors --content-base web/",
-    "test:web": "jest"
+    "web": "webpack-dev-server -d --config ./webpack.config.js --color",
+    "test:web": "node simulate-web-test/index.js"
   },
   "author": "",
   "license": "MIT",
