@@ -33,7 +33,6 @@
     "jasmine-core": "^2.4.1",
     "lodash": "^4.17.4",
     "pnp-webpack-plugin": "^1.2.1",
-    "puppeteer": "^1.11.0",
     "react": "16.5.0",
     "react-dev-utils": "6.0.5",
     "react-dom": "16.6.1",
@@ -51,7 +50,6 @@
     "babel-preset-expo": "^5.0.0",
     "css-loader": "^1.0.1",
     "expo-yarn-workspaces": "^1.0.0",
-    "faker": "^4.1.0",
     "file-loader": "^2.0.0",
     "http-server": "^0.11.1",
     "jest": "^22.4.3",
@@ -61,10 +59,5 @@
     "webpack": "^4.24.0",
     "webpack-cli": "^3.1.2",
     "webpack-dev-server": "3.1.10"
-  },
-  "jest": {
-    "verbose": true,
-    "testURL": "http://localhost/",
-    "testEnvironment": "jsdom"
   }
 }
