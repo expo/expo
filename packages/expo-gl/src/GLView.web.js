@@ -14,8 +14,6 @@ type Props = {
   onContextCreate?: (gl: *) => void,
 };
 
-let contextCache = {};
-
 function _getImageForAsset(asset) {
   if (asset == null) return null;
 
@@ -74,8 +72,7 @@ export default class GLView extends React.Component<Props> {
   }
 
   static async destroyContextAsync(exgl: WebGLRenderingContext | ?number): Promise<void> {
-    const exglCtxId = getContextId(exgl);
-    delete contextCache[exglCtxId];
+    // Do nothing
   }
 
   static async takeSnapshotAsync(
@@ -175,12 +172,3 @@ export default class GLView extends React.Component<Props> {
     throw new UnavailabilityError('GLView', 'destroyObjectAsync');
   }
 }
-
-const getContextId = (exgl: WebGLRenderingContext | ?number) => {
-  const exglCtxId = exgl && typeof exgl === 'object' ? exgl.__exglCtxId : exgl;
-
-  if (!exglCtxId || typeof exglCtxId !== 'number') {
-    throw new Error(`Invalid EXGLContext id: ${String(exglCtxId)}`);
-  }
-  return exglCtxId;
-};
