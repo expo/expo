@@ -64,7 +64,7 @@ commands:
       - save_cache:
           key: yarn-v1-{{ checksum "<< parameters.working_directory >>/yarn.lock" }}
           paths:
-            - ~/.cache/yarn  # `yarn cache dir`
+            - ~/.cache/yarn # `yarn cache dir`
   restore_gradle_cache:
     steps:
       - restore_cache:
@@ -116,7 +116,7 @@ executors:
     resource_class: small
   mac:
     macos: # https://circleci.com/docs/2.0/testing-ios/#supported-xcode-versions
-      xcode: "10.1.0"
+      xcode: '10.1.0'
     working_directory: /Users/distiller/project
     shell: /bin/bash -leo pipefail
     environment:
@@ -129,6 +129,7 @@ workflows:
   sdk:
     jobs:
       - expo_sdk
+      - web_test_suite
       - babel_preset
 
   # Android and iOS clients
@@ -194,6 +195,19 @@ jobs:
           command: test --maxWorkers 1
           working_directory: ~/expo/packages/expo-sms
 
+  web_test_suite:
+    executor: js
+    steps:
+      - setup
+      - update_submodules
+      - restore_yarn_cache
+      - yarn_install:
+          working_directory: ~/expo
+      - save_yarn_cache
+      # Add back linting once we get ESLint or TSLint set up
+      - yarn:
+          command: test:web:ci
+          working_directory: ~/expo/apps/test-suite
 
   babel_preset:
     executor: js
