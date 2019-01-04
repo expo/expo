@@ -20,7 +20,10 @@ const manuallyRunWebpack = true;
 let server;
 
 async function runPuppeteerAsync() {
-  const browser = await puppeteer.launch({ headless: true });
+  const browser = await puppeteer.launch({
+    // headless: true,
+    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+  });
   const page = await browser.newPage();
   await page.goto(`http://localhost:${port}`, {
     timeout: 3000000,

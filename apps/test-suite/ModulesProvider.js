@@ -68,6 +68,7 @@ export default class ModulesProvider extends React.Component {
 
     for (let index in modules) {
       const module = modules[index];
+      if (!module) continue;
       if (!module.name || module.name === '') {
         throw new Error(
           'Module name is invalid. Expected a string with the name of the test to be exported: ' +
