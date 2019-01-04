@@ -16,7 +16,6 @@ commander
   .command('clean', `Removes compiled files`)
 
   // Lifecycle scripts
-  .command('postinstall', `Scripts to run during the "postinstall" phase`)
   .command('prepare', `Scripts to run during the "prepare" phase`)
   .command('prepublishOnly', `Scripts to run during the "prepublishOnly" phase`)
 

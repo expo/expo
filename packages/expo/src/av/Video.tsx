@@ -435,7 +435,7 @@ export default class Video extends React.Component<Props, State> implements Play
     ) : null;
 
   render() {
-    const source = getNativeSourceFromSource(this.props.source);
+    const source = getNativeSourceFromSource(this.props.source || null);
 
     let nativeResizeMode = ExpoVideoManagerConstants.ScaleNone;
     if (this.props.resizeMode) {
