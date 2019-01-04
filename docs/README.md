@@ -4,6 +4,8 @@ This is the public documentation for **Expo**, its SDK, client and services.
 
 You can access this documentation online at https://docs.expo.io/. It's built using next.js on top of the https://github.com/zeit/docs codebase.
 
+> **Contributors:** Please make sure that you edit the docs in the `versions/unversioned` directory if you want your changes to apply to the next SDK version too!
+
 ### Running Locally
 
 Download the copy of this repostory.
