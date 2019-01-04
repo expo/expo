@@ -21,7 +21,7 @@ let server;
 
 async function runPuppeteerAsync() {
   const browser = await puppeteer.launch({
-    // headless: true,
+    headless: true,
     args: ['--no-sandbox', '--disable-setuid-sandbox'],
   });
   const page = await browser.newPage();
@@ -103,7 +103,12 @@ async function main(args) {
     await runPuppeteerAsync();
   } catch (error) {
     // Exit when puppeteer fails to startup - this will make CI tests evaluate faster
+    // Example: Failed to launch chrome!
     console.log(error);
+
+    if (server) {
+      server.close();
+    }
     process.exit(1);
   }
 }

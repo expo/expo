@@ -207,7 +207,6 @@ jobs:
       - yarn_install:
           working_directory: ~/expo
       - save_yarn_cache
-      # Add back linting once we get ESLint or TSLint set up
       - yarn:
           command: test:web:ci
           working_directory: ~/expo/apps/test-suite
