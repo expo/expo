@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import * as React from 'react';
 import { Dimensions, StyleSheet } from 'react-native';
 import { UnavailabilityError } from 'expo-errors';
-import type { SurfaceCreateEvent, SnapshotOptions } from './GLView.types';
+import type { SnapshotOptions } from './GLView.types';
 
 type Props = {
   /**
@@ -18,35 +18,40 @@ type Props = {
  */
 let contextCache = {};
 
+function _getImageForAsset(asset) {
+  if (asset == null) return null;
+
+  if (typeof asset === 'object' && asset !== null && asset.downloadAsync) {
+    const uri = asset.localUri || asset.uri;
+    const img = new Image();
+    img.src = uri;
+    // await new Promise(resolve => (img.onload = resolve));
+    return img;
+  }
+  return asset;
+}
+
 function asExpoContext(gl: WebGLRenderingContext) {
-  const originalTexImage2D = gl.texImage2D;
-  const originalTexSubImage2D = gl.texSubImage2D;
-
   gl.endFrameEXP = function glEndFrameEXP() {};
-  
-  const _getImageForAsset = function(...props) {
-    let lastProp = props.pop();
-    if (typeof lastProp === 'object' && lastProp !== null && lastProp.downloadAsync) {
-      const uri = lastProp.localUri || lastProp.uri;
-      const img = new Image();
-      img.crossOrigin = '';
-      img.src = uri;
-      lastProp = img;
-    }
-    return lastProp;
-  };
 
-  // gl.texImage2D = function(...props) {
-  //   const lastProp = _getImageForAsset(...props);
-  //   return originalTexImage2D(...props, lastProp);
-  // };
+  if (!gl._expo_texImage2D) {
+    gl._expo_texImage2D = gl.texImage2D;
+    gl.texImage2D = (...props) => {
+      let nextProps = [...props];
+      nextProps.push(_getImageForAsset(nextProps.pop()));
+      return gl._expo_texImage2D(...nextProps);
+    };
+  }
 
-  // gl.texSubImage2D = function(...props) {
-  //   const lastProp = _getImageForAsset(...props);
-  //   return originalTexSubImage2D(...props, lastProp);
-  // };
-  
-  // TODO: Bacon: texImage2d asset
+  if (!gl._expo_texSubImage2D) {
+    gl._expo_texSubImage2D = gl.texSubImage2D;
+    gl.texSubImage2D = async (...props) => {
+      let nextProps = [...props];
+      nextProps.push(await _getImageForAsset(nextProps.pop()));
+      return gl._expo_texSubImage2D(...nextProps);
+    };
+  }
+
   return gl;
 }
 export default class GLView extends React.Component<Props> {
@@ -126,31 +131,29 @@ export default class GLView extends React.Component<Props> {
       this._onContextCreate();
     }
   };
-  _onContextCreate = () => {
+  _onContextCreate = async () => {
     if (this._onContextCreated) return;
 
     this._onContextCreated = true;
     const { onContextCreate } = this.props;
 
     if (onContextCreate) {
-      const gl = asExpoContext(this.nativeRef.getContext('webgl'));
+      await new Promise(resolve => setTimeout(resolve));
+
+      const gl = asExpoContext(this.nativeRef.getContext('webgl2'));
       onContextCreate(gl);
     }
   };
 
   render() {
-    const {
-      onContextCreate,
-      style,
-      ...props
-    } = this.props;
+    const { onContextCreate, sketch, style, ...props } = this.props;
 
     const { width = 1, height = 1 } = this.state;
 
     return (
       <div style={StyleSheet.flatten([{ flex: 1 }, style])} ref={this._setWrapperRef}>
         <canvas
-          style={StyleSheet.flatten([{ flex: 1, maxWidth: width, maxHeight: height }])}
+          style={{ flex: 1, maxWidth: width, maxHeight: height }}
           resize="true"
           {...props}
           width={width * this.scale}
