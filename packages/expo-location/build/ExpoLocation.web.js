@@ -1,7 +1,4 @@
 import { EventEmitter } from 'expo-core';
-;
-;
-;
 class GeocoderError extends Error {
     constructor() {
         super('Geocoder service is not available for this device.');
@@ -45,7 +42,7 @@ export default {
         console.warn('Location.watchDeviceHeading: is not supported on web');
     },
     async hasServicesEnabledAsync() {
-        return false;
+        return 'geolocation' in navigator;
     },
     async geocodeAsync() {
         throw new GeocoderError();
