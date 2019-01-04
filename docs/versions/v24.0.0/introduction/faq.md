@@ -131,3 +131,7 @@ Expo supports Android 4.4+ and iOS 9+.
 If the package depends on [Node standard library APIs](https://nodejs.org/api/index.html), you will not be able to use it with Expo. The Node standard library is a set of functionality implemented largely in C++ that exposes functions to JavaScript that aren't part of the JavaScript language specification, such as the ability to read and write to your filesystem. React Native, and by extension Expo, do not include the Node standard library, just like Chrome and Firefox do not include it. JavaScript is a language that is used in many contexts, from mobile apps (in our case), to servers, and of course on websites. These contexts all include their own runtime environments that expose different APIs to JavaScript, depending on what makes sense in the context.
 
 As a side note, some Node standard library APIs do not depend on C++ extensions but instead can be implemented directly in JavaScript, such as [url](https://www.npmjs.com/package/url) and [assert](https://www.npmjs.com/package/assert). If a package you wish to use only depends on these Node APIs, you can install them from npm and the package will work.
+
+## How do I handle expired push notification credentials?
+
+When your push notification credentials have expired, simply run `expo build:ios -c --no-publish` to clear your expired credentials and generate new ones. The new credentials will take effect within a few minutes of being generated. You do not have to submit a new build!

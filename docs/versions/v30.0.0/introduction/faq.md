@@ -131,3 +131,7 @@ You can! Update your `.babelrc` you get on a new Expo project to the following:
 ```
 
 Substitute `./pathToYourBabelRelayPlugin` with the path to your Relay plugin.
+
+## How do I handle expired push notification credentials?
+
+When your push notification credentials have expired, simply run `expo build:ios -c --no-publish` to clear your expired credentials and generate new ones. The new credentials will take effect within a few minutes of being generated. You do not have to submit a new build!
