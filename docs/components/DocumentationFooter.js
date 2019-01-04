@@ -28,7 +28,7 @@ export default class DocumentationFooter extends React.PureComponent {
         <a
           className={STYLES_FOOTER_LINK}
           target="_blank"
-          href={'https://github.com/expo/expo-docs/'}>
+          href="https://github.com/expo/expo/tree/master/docs">
           Send us a pull request
         </a>
       </footer>
