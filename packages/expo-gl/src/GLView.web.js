@@ -18,35 +18,34 @@ type Props = {
  */
 let contextCache = {};
 
-function expoContext(gl: WebGLRenderingContext) {
-  gl.endFrameEXP = gl.endFrameEXP || function() {};
-  if (!gl.__expo_texImage2D) {
-    gl.__expo_texImage2D = gl.texImage2D;
-    gl.texImage2D = function(...props) {
-      let lastProp = props.pop();
-      if (typeof lastProp === 'object' && lastProp !== null && lastProp.downloadAsync) {
-        const uri = lastProp.localUri || lastProp.uri;
-        const img = new Image();
-        img.crossOrigin = '';
-        img.src = uri;
-        lastProp = img;
-      }
-      return gl.__expo_texImage2D(...props, lastProp);
-    };
+function asExpoContext(gl: WebGLRenderingContext) {
+  const originalTexImage2D = gl.texImage2D;
+  const originalTexSubImage2D = gl.texSubImage2D;
 
-    gl.__expo_texSubImage2D = gl.texSubImage2D;
-    gl.texSubImage2D = function(...props) {
-      let lastProp = props.pop();
-      if (typeof lastProp === 'object' && lastProp !== null && lastProp.downloadAsync) {
-        const uri = lastProp.localUri || lastProp.uri;
-        const img = new Image();
-        img.crossOrigin = '';
-        img.src = uri;
-        lastProp = img;
-      }
-      return gl.__expo_texSubImage2D(...props, lastProp);
-    };
-  }
+  gl.endFrameEXP = function glEndFrameEXP() {};
+  
+  const _getImageForAsset = function(...props) {
+    let lastProp = props.pop();
+    if (typeof lastProp === 'object' && lastProp !== null && lastProp.downloadAsync) {
+      const uri = lastProp.localUri || lastProp.uri;
+      const img = new Image();
+      img.crossOrigin = '';
+      img.src = uri;
+      lastProp = img;
+    }
+    return lastProp;
+  };
+
+  // gl.texImage2D = function(...props) {
+  //   const lastProp = _getImageForAsset(...props);
+  //   return originalTexImage2D(...props, lastProp);
+  // };
+
+  // gl.texSubImage2D = function(...props) {
+  //   const lastProp = _getImageForAsset(...props);
+  //   return originalTexSubImage2D(...props, lastProp);
+  // };
+  
   // TODO: Bacon: texImage2d asset
   return gl;
 }
@@ -67,7 +66,7 @@ export default class GLView extends React.Component<Props> {
     const canvas = document.createElement('canvas');
     canvas.width = width * scale;
     canvas.height = height * scale;
-    return expoContext(canvas.getContext('webgl'));
+    return asExpoContext(canvas.getContext('webgl'));
   }
 
   static async destroyContextAsync(exgl: WebGLRenderingContext | ?number) {
@@ -134,7 +133,7 @@ export default class GLView extends React.Component<Props> {
     const { onContextCreate } = this.props;
 
     if (onContextCreate) {
-      const gl = expoContext(this.nativeRef.getContext('webgl'));
+      const gl = asExpoContext(this.nativeRef.getContext('webgl'));
       onContextCreate(gl);
     }
   };
@@ -142,7 +141,7 @@ export default class GLView extends React.Component<Props> {
   render() {
     const {
       onContextCreate,
-      style, // eslint-disable-line no-unused-vars
+      style,
       ...props
     } = this.props;
 
