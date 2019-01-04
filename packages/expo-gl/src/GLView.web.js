@@ -75,10 +75,7 @@ export default class GLView extends React.Component<Props> {
 
   static async destroyContextAsync(exgl: WebGLRenderingContext | ?number): Promise<void> {
     const exglCtxId = getContextId(exgl);
-    if (exglCtxId in contextCache) {
-      document.removeChild(contextCache[exglCtxId]);
-      contextCache[exglCtxId] = undefined;
-    }
+    delete contextCache[exglCtxId];
   }
 
   static async takeSnapshotAsync(
