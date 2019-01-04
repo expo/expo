@@ -1,6 +1,6 @@
 {
   "name": "EXTaskManagerInterface",
-  "version": "1.0.0-rc.1",
+  "version": "1.0.0-rc.2",
   "summary": "Expo interface package for TaskManager",
   "description": "Expo interface package for TaskManager",
   "license": "MIT",

@@ -1,6 +1,6 @@
 {
   "name": "EXFileSystemInterface",
-  "version": "2.0.0-rc.1",
+  "version": "2.0.0-rc.2",
   "summary": "Expo interface package for File System",
   "description": "Expo interface package for File System",
   "license": "MIT",
