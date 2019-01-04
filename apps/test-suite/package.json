@@ -7,7 +7,8 @@
     "postinstall": "expo-yarn-workspaces postinstall",
     "test": "cd runner && yarn && cd .. && node runner/index.js .",
     "web": "webpack-dev-server -d --config ./webpack.config.js --color",
-    "test:web": "node simulate-web-test/index.js"
+    "test:web": "node simulate-web-test/index.js",
+    "test:web:ci": "cd simulate-web-test && yarn && cd .. && node simulate-web-test/index.js ."
   },
   "author": "",
   "license": "MIT",
