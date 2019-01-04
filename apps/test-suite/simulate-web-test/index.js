@@ -15,7 +15,7 @@ const options = {
 
 const port = 8080;
 
-const manuallyRunWebpack = false;
+const manuallyRunWebpack = true;
 
 let server;
 
