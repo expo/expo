@@ -98,7 +98,14 @@ async function main(args) {
       return;
     }
   }
-  runPuppeteerAsync();
+
+  try {
+    await runPuppeteerAsync();
+  } catch (error) {
+    // Exit when puppeteer fails to startup - this will make CI tests evaluate faster
+    console.log(error);
+    process.exit(1);
+  }
 }
 
 if (require.main === module) {
