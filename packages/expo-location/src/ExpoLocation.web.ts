@@ -1,23 +1,23 @@
 import { EventEmitter } from 'expo-core';
 
 interface Coordinates {
-  latitude: number,
-  longitude: number,
-  altitude?: number,
-  accuracy?: number,
-  altitudeAccuracy?: number,
-  heading?: number,
-  speed?: number,
-};
+  latitude: number;
+  longitude: number;
+  altitude?: number;
+  accuracy?: number;
+  altitudeAccuracy?: number;
+  heading?: number;
+  speed?: number;
+}
 
 interface Position {
-  coords: Coordinates,
-  timestamp: number,
-};
+  coords: Coordinates;
+  timestamp: number;
+}
 
 interface PermissionResult {
-  status: string,
-};
+  status: string;
+}
 
 class GeocoderError extends Error {
   code: string;
@@ -71,6 +71,9 @@ export default {
   },
   async watchDeviceHeading(headingId): Promise<void> {
     console.warn('Location.watchDeviceHeading: is not supported on web');
+  },
+  async hasServicesEnabledAsync(): Promise<boolean> {
+    return 'geolocation' in navigator;
   },
   async geocodeAsync(): Promise<Array<any>> {
     throw new GeocoderError();
