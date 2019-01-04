@@ -137,7 +137,7 @@ export default class GLView extends React.Component<Props> {
   };
 
   render() {
-    const { onContextCreate, sketch, style, ...props } = this.props;
+    const { onContextCreate, style, ...props } = this.props;
 
     const { width = 1, height = 1 } = this.state;
 
