@@ -5,7 +5,6 @@
 
 #import <UIKit/UIKit.h>
 #import <sys/utsname.h>
-#import "React/RCTAccessibilityManager.h"
 
 @interface EXScreenOrientation ()
 
