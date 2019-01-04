@@ -99,6 +99,30 @@ Cancels the scheduled notification corresponding to the given id.
 
 Cancel all scheduled notifications.
 
+## Notification categories
+
+A notification category defines a set of actions with which a user may respond to the incoming notification. You can read more about it [here (for iOS)](https://developer.apple.com/documentation/usernotifications/unnotificationcategory) and [here (for Android)](https://developer.android.com/guide/topics/ui/notifiers/notifications#Actions).
+
+### `Notifications.createCategoryAsync(name: string, actions: ActionType[])`
+
+Registers a new set of actions under given `name`.
+
+#### Arguments
+
+-   **name (_string_)** -- A string to assign as the ID of the category. When you present notifications later, you will pass this ID in order to associate them with your category.
+-   **actions (_array_)** -- An array of objects describing actions to associate to the category, of shape:
+      - **actionId (_string_)** -- A unique identifier of the ID of the action. When a user executes your action, your app  will receive this `actionId`.
+      - **buttonTitle (_string_)** -- A title of the button triggering this action.
+      - **textInput (_object_)** -- An optional object of shape: `{ submitButtonTitle: string, placeholder: string }`, which when provided, will prompt the user to enter a text value.
+      - **isDestructive (_boolean_)** -- (iOS only) If this property is truthy, on iOS the button title will be highlighted (as if [this native option](https://developer.apple.com/documentation/usernotifications/unnotificationactionoptions/1648199-destructive) was set)
+      - **isAuthenticationRequired (_boolean_)** -- (iOS only) If this property is truthy, triggering the action will require authentication from the user (as if [this native option](https://developer.apple.com/documentation/usernotifications/unnotificationactionoptions/1648196-authenticationrequired) was set)
+
+### `Notifications.deleteCategoryAsync(name: string)`
+
+Deletes category for given `name`.
+
+## Android channels
+
 ### `Expo.Notifications.createChannelAndroidAsync(id, channel)`
 
 _Android only_. On Android 8.0+, creates a new notification channel to which local and push notifications may be posted. Channels are visible to your users in the OS Settings app as "categories", and they can change settings or disable notifications entirely on a per-channel basis. NOTE: after calling this method, you may no longer be able to alter the settings for this channel, and cannot fully delete the channel without uninstalling the app. Notification channels are required on Android 8.0+, but use this method with caution and be sure to plan your channels carefully.
@@ -130,6 +154,7 @@ An object used to describe the local notification that you would like to present
 -   **title (_string_)** -- title text of the notification
 -   **body (_string_)** -- body text of the notification.
 -   **data (_optional_) (_object_)** -- any data that has been attached with the notification.
+-   **categoryId (_optional_) (_string_)** -- ID of the category (first created with `Notifications.createCategoryAsync`) associated to the notification.
 -   **ios (_optional_) (_object_)** -- notification configuration specific to iOS.
     -   **sound** (_optional_) (_boolean_) -- if `true`, play a sound. Default: `false`.
 -   **android (_optional_) (_object_)** -- notification configuration specific to Android.

@@ -92,6 +92,87 @@ If upgrading from SDK 30 or below, you'll also need to change `platform :ios, '9
 - Go to `MainActivity.java` and replace `Arrays.asList("[OLD SDK VERSION]")` with `Arrays.asList("[NEW SDK VERSION]")`.
 - Go to `android/app/build.gradle` and replace `compile('host.exp.exponent:expoview:[OLD SDK VERSION]@aar') {` with `compile('host.exp.exponent:expoview:[NEW SDK VERSION]@aar') {`.
 
+If upgrading from SDK31 or below:
+1. add the following lines to `android/app/build.gradle`:
+    ```groovy
+    api 'host.exp.exponent:expo-app-loader-provider:1.0.0'
+    api 'host.exp.exponent:expo-core:2.0.0'
+    api 'host.exp.exponent:expo-constants-interface:2.0.0'
+    api 'host.exp.exponent:expo-constants:2.0.0'
+    api 'host.exp.exponent:expo-errors:1.0.0'
+    api 'host.exp.exponent:expo-file-system-interface:2.0.0'
+    api 'host.exp.exponent:expo-file-system:2.0.0'
+    api 'host.exp.exponent:expo-image-loader-interface:2.0.0'
+    api 'host.exp.exponent:expo-permissions:2.0.0'
+    api 'host.exp.exponent:expo-permissions-interface:2.0.0'
+    api 'host.exp.exponent:expo-sensors-interface:2.0.0'
+    api 'host.exp.exponent:expo-react-native-adapter:2.0.0'
+    api 'host.exp.exponent:expo-task-manager:1.0.0'
+    api 'host.exp.exponent:expo-task-manager-interface:1.0.0'
+
+    // Optional universal modules, could be removed
+    // along with references in MainActivity
+    api 'host.exp.exponent:expo-ads-admob:2.0.0'
+    api 'host.exp.exponent:expo-app-auth:2.0.0'
+    api 'host.exp.exponent:expo-analytics-segment:2.0.0'
+    api 'host.exp.exponent:expo-barcode-scanner-interface:2.0.0'
+    api 'host.exp.exponent:expo-barcode-scanner:2.0.0'
+    api 'host.exp.exponent:expo-camera-interface:2.0.0'
+    api 'host.exp.exponent:expo-camera:2.0.0'
+    api 'host.exp.exponent:expo-contacts:2.0.0'
+    api 'host.exp.exponent:expo-face-detector:2.0.0'
+    api 'host.exp.exponent:expo-face-detector-interface:2.0.0'
+    api 'host.exp.exponent:expo-font:2.0.0'
+    api 'host.exp.exponent:expo-gl-cpp:2.0.0'
+    api 'host.exp.exponent:expo-gl:2.0.0'
+    api 'host.exp.exponent:expo-google-sign-in:2.0.0'
+    api 'host.exp.exponent:expo-local-authentication:2.0.0'
+    api 'host.exp.exponent:expo-localization:2.0.0'
+    api 'host.exp.exponent:expo-location:2.0.0'
+    api 'host.exp.exponent:expo-media-library:2.0.0'
+    api 'host.exp.exponent:expo-print:2.0.0'
+    api 'host.exp.exponent:expo-sensors:2.0.0'
+    api 'host.exp.exponent:expo-sms:2.0.0'
+    api 'host.exp.exponent:expo-background-fetch:1.0.0'
+    ```
+2. Ensure that in `MainActivity.java`, `expoPackages` method looks like this:
+    ```java
+    @Override
+    public List<Package> expoPackages() {
+      return ((MainApplication) getApplication()).getExpoPackages();
+    }
+    ```
+3. Ensure that in `MainApplication.java`, `getExpoPackages` method is defined like this:
+    ```java
+    public List<Package> getExpoPackages() {
+      return Arrays.<Package>asList(
+          new CameraPackage(),
+          new ConstantsPackage(),
+          new SensorsPackage(),
+          new FileSystemPackage(),
+          new FaceDetectorPackage(),
+          new GLPackage(),
+          new GoogleSignInPackage(),
+          new PermissionsPackage(),
+          new SMSPackage(),
+          new PrintPackage(),
+          new ConstantsPackage(),
+          new MediaLibraryPackage(),
+          new SegmentPackage(),
+          new FontLoaderPackage(),
+          new LocationPackage(),
+          new ContactsPackage(),
+          new BarCodeScannerPackage(),
+          new AdMobPackage(),
+          new LocalAuthenticationPackage(),
+          new LocalizationPackage(),
+          new AppAuthPackage(),
+          new TaskManagerPackage(),
+          new BackgroundFetchPackage()
+      );
+    }
+    ```
+
 If upgrading from SDK 30 or below, remove the following lines from `android/app/build.gradle`:
 ```groovy
 implementation 'com.squareup.okhttp3:okhttp:3.4.1'
