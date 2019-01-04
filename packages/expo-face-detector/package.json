@@ -1,6 +1,6 @@
 {
   "name": "expo-face-detector",
-  "version": "2.0.0-rc.2",
+  "version": "2.0.0",
   "description": "Expo Face Detector standalone universal module",
   "main": "index.js",
   "keywords": [
@@ -14,12 +14,12 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "dependencies": {
-    "expo-core": "~2.0.0-rc.3",
-    "expo-face-detector-interface": "~2.0.0-rc.2",
-    "expo-permissions-interface": "~2.0.0-rc.2"
+    "expo-core": "~2.0.0",
+    "expo-face-detector-interface": "~2.0.0",
+    "expo-permissions-interface": "~2.0.0"
   },
   "devDependencies": {
     "babel-preset-expo": "^5.0.0"
   },
-  "gitHead": "d56980698034063c398c2ed32e065913ba09a757"
+  "gitHead": "f15abc53c111bd0438cd36dc456c59cfa7c56a58"
 }

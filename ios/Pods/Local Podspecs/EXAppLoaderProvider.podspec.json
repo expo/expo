@@ -1,6 +1,6 @@
 {
   "name": "EXAppLoaderProvider",
-  "version": "1.0.0-rc.2",
+  "version": "1.0.0",
   "summary": "Expo module that provides application loaders",
   "description": "Expo module that provides application loaders",
   "license": "MIT",

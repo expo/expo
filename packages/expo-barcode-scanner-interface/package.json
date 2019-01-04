@@ -1,6 +1,6 @@
 {
   "name": "expo-barcode-scanner-interface",
-  "version": "2.0.0-rc.2",
+  "version": "2.0.0",
   "description": "Expo BarCode Scanner interface for standalone module",
   "main": "index.js",
   "keywords": [
@@ -12,5 +12,5 @@
   "homepage": "https://docs.expo.io/",
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "gitHead": "d56980698034063c398c2ed32e065913ba09a757"
+  "gitHead": "f15abc53c111bd0438cd36dc456c59cfa7c56a58"
 }

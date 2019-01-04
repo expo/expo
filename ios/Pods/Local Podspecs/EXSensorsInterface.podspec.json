@@ -1,6 +1,6 @@
 {
   "name": "EXSensorsInterface",
-  "version": "2.0.0-rc.2",
+  "version": "2.0.0",
   "summary": "Expo interface package for Sensors",
   "description": "Expo interface package for Sensors",
   "license": "MIT",

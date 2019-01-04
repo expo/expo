@@ -1,6 +1,6 @@
 {
   "name": "EXBarCodeScanner",
-  "version": "2.0.0-rc.2",
+  "version": "2.0.0",
   "summary": "Expo BarCode Scanner standalone universal module",
   "description": "Expo BarCode Scanner standalone universal module",
   "license": "MIT",
