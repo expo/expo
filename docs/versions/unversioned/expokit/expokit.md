@@ -89,7 +89,7 @@ If upgrading from SDK 30 or below, you'll also need to change `platform :ios, '9
 
 - Go to https://expo.io/--/api/v2/versions and find the `expokitNpmPackage` key under `sdkVersions.[NEW SDK VERSION]`.
 - Update your version of expokit in `package.json` to the version in `expokitNpmPackage` and yarn/npm install.
-- Go to `MainActivity.java` and replace `Arrays.asList("[OLD SDK VERSION]")` with `Arrays.asList("[NEW SDK VERSION]")`.
+- If upgrading to SDK 31 or below, go to `MainActivity.java` and replace `Arrays.asList("[OLD SDK VERSION]")` with `Arrays.asList("[NEW SDK VERSION]")`. If upgrading to SDK 32 or above, simply remove the entire `public List<String> sdkVersions()` method from `MainActivity.java`.
 - Go to `android/app/build.gradle` and replace `compile('host.exp.exponent:expoview:[OLD SDK VERSION]@aar') {` with `compile('host.exp.exponent:expoview:[NEW SDK VERSION]@aar') {`.
 
 If upgrading from SDK31 or below:
@@ -142,8 +142,43 @@ If upgrading from SDK31 or below:
       return ((MainApplication) getApplication()).getExpoPackages();
     }
     ```
-3. Ensure that in `MainApplication.java`, `getExpoPackages` method is defined like this:
+3. In `MainApplication.java`, replace
     ```java
+    public class MainApplication extends ExpoApplication {
+    ```
+    with
+    ```java
+    public class MainApplication extends ExpoApplication implements AppLoaderPackagesProviderInterface<ReactPackage> {
+    ```
+4. Add the following lines in `MainApplication.java`:
+    ```java
+    import expo.core.interfaces.Package;
+    import expo.loaders.provider.interfaces.AppLoaderPackagesProviderInterface;
+    import expo.modules.ads.admob.AdMobPackage;
+    import expo.modules.analytics.segment.SegmentPackage;
+    import expo.modules.appauth.AppAuthPackage;
+    import expo.modules.backgroundfetch.BackgroundFetchPackage;
+    import expo.modules.barcodescanner.BarCodeScannerPackage;
+    import expo.modules.camera.CameraPackage;
+    import expo.modules.constants.ConstantsPackage;
+    import expo.modules.contacts.ContactsPackage;
+    import expo.modules.facedetector.FaceDetectorPackage;
+    import expo.modules.filesystem.FileSystemPackage;
+    import expo.modules.font.FontLoaderPackage;
+    import expo.modules.gl.GLPackage;
+    import expo.modules.google.signin.GoogleSignInPackage;
+    import expo.modules.localauthentication.LocalAuthenticationPackage;
+    import expo.modules.localization.LocalizationPackage;
+    import expo.modules.location.LocationPackage;
+    import expo.modules.medialibrary.MediaLibraryPackage;
+    import expo.modules.permissions.PermissionsPackage;
+    import expo.modules.print.PrintPackage;
+    import expo.modules.sensors.SensorsPackage;
+    import expo.modules.sms.SMSPackage;
+    import expo.modules.taskManager.TaskManagerPackage;
+
+    ...
+
     public List<Package> getExpoPackages() {
       return Arrays.<Package>asList(
           new CameraPackage(),
