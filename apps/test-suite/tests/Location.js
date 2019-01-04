@@ -5,12 +5,12 @@ import { Platform } from 'react-native';
 import * as TestUtils from '../TestUtils';
 
 if (Platform.OS === 'web') {
-  try {
-    const { LocationGeocoding } = require('../SecretKeys');
-    Location.setApiKey(LocationGeocoding);
-  } catch (error) {
-    throw new Error('Missing Google Geocoding API Key');
-  }
+  // try {
+  //   const { LocationGeocoding } = require('../SecretKeys');
+  //   Location.setApiKey(LocationGeocoding);
+  // } catch (error) {
+  //   throw new Error('Missing Google Geocoding API Key');
+  // }
 }
 
 export const name = 'Location';
