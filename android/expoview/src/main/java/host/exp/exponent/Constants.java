@@ -43,7 +43,7 @@ public class Constants {
   public static String ABI_VERSIONS;
   public static String SDK_VERSIONS;
   public static List<String> SDK_VERSIONS_LIST;
-  public static final String TEMPORARY_ABI_VERSION = "32.0.0";
+  public static final String TEMPORARY_ABI_VERSION = null;
   public static final String EMBEDDED_KERNEL_PATH = "assets://kernel.android.bundle";
   public static List<EmbeddedResponse> EMBEDDED_RESPONSES;
   public static boolean DISABLE_NUX = false;
@@ -65,10 +65,12 @@ public class Constants {
 
   static {
     Set<String> abiVersions = new HashSet<>();
-    /* WHEN_DISTRIBUTING_REMOVE_FROM_HERE
+    // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
     // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
     // ADD ABI VERSIONS HERE DO NOT MODIFY
+    // BEGIN_SDK_32
     abiVersions.add("32.0.0");
+    // END_SDK_32
     // BEGIN_SDK_31
     abiVersions.add("31.0.0");
     // END_SDK_31
@@ -88,7 +90,7 @@ public class Constants {
     abiVersions.add("26.0.0");
     // END_SDK_26
     // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
-    WHEN_DISTRIBUTING_REMOVE_TO_HERE */
+    // WHEN_DISTRIBUTING_REMOVE_TO_HERE
 
     if (TEMPORARY_ABI_VERSION != null) {
       abiVersions.add(TEMPORARY_ABI_VERSION);
