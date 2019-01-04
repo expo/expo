@@ -1,6 +1,6 @@
 {
   "name": "EXAdsAdMob",
-  "version": "2.0.0-rc.2",
+  "version": "2.0.0",
   "summary": "Expo ads AdMob standalone module",
   "description": "Expo ads AdMob standalone module",
   "license": "MIT",
