@@ -2,8 +2,8 @@ import { PictureOptions, CapturedPicture } from './Camera.types';
 declare const _default: {
     readonly name: string;
     readonly Type: {
-        back: any;
-        front: any;
+        back: string;
+        front: string;
     };
     readonly FlashMode: {
         on: string;
@@ -22,5 +22,6 @@ declare const _default: {
     takePicture(options: PictureOptions, camera: any): Promise<CapturedPicture>;
     pausePreview(camera: any): Promise<any>;
     resumePreview(camera: any): Promise<any>;
+    setFacingMode(camera: any, facingMode: string): Promise<any>;
 };
 export default _default;

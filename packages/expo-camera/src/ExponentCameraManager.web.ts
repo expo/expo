@@ -1,5 +1,5 @@
 import LibCameraPhoto, { FACING_MODES } from 'jslib-html5-camera-photo';
-
+import invariant from 'invariant';
 import { PictureOptions, CapturedPicture } from './Camera.types';
 
 export default {
@@ -8,8 +8,8 @@ export default {
   },
   get Type() {
     return {
-      back: FACING_MODES.ENVIRONMENT,
-      front: FACING_MODES.USER,
+      back: 'back',
+      front: 'front',
     };
   },
   get FlashMode() {
@@ -72,8 +72,22 @@ export default {
   },
   async resumePreview(camera: LibCameraPhoto): Promise<any> {
     if (!camera.__cameraFacingMode) {
-      camera.__cameraFacingMode = FACING_MODES.USER;
+      camera.__cameraFacingMode = this.Type.front; // FACING_MODES.USER;
     }
-    return await camera.startCameraMaxResolution(camera.__cameraFacingMode);
+    const facingMode = CameraTypeMap[camera.__cameraFacingMode];
+    return await camera.startCamera(facingMode, {});
   },
+  async setFacingMode(camera: LibCameraPhoto, facingMode: string): Promise<any> {
+    invariant(
+      facingMode in this.Type,
+      `CameraManager.setFacingMode(): Invalid facing mode: ${facingMode}`
+    );
+    camera.__cameraFacingMode = facingMode;
+    return await this.resumePreview(camera);
+  },
+};
+
+const CameraTypeMap = {
+  front: FACING_MODES.USER,
+  back: FACING_MODES.ENVIRONMENT,
 };

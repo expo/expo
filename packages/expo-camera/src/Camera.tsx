@@ -156,6 +156,12 @@ export default class Camera extends React.Component<PropsType> {
   _lastEvents: { [eventName: string]: string } = {};
   _lastEventsTimes: { [eventName: string]: Date } = {};
 
+  componentWillReceiveProps({ type }) {
+    if (Platform.OS === 'web' && this._cameraHandle && type != this.props.type) {
+      CameraManager.setFacingMode(this._cameraHandle, type);
+    }
+  }
+
   async takePictureAsync(options?: PictureOptions): Promise<CapturedPicture> {
     const pictureOptions = ensurePictureOptions(options);
 
@@ -246,6 +252,7 @@ export default class Camera extends React.Component<PropsType> {
       this._cameraRef = ref;
       if (Platform.OS === 'web') {
         this._cameraHandle = new LibCameraPhoto((ref as any).video);
+        CameraManager.setFacingMode(this._cameraHandle, this.props.type);
         this.resumePreview();
       } else {
         this._cameraHandle = findNodeHandle(ref);

@@ -87,6 +87,9 @@ export default class Camera extends React.Component<PropsType> {
     _lastEventsTimes: {
         [eventName: string]: Date;
     };
+    componentWillReceiveProps({ type }: {
+        type: any;
+    }): void;
     takePictureAsync(options?: PictureOptions): Promise<CapturedPicture>;
     getSupportedRatiosAsync(): Promise<Array<string>>;
     getAvailablePictureSizesAsync(ratio?: string): Promise<Array<string>>;
