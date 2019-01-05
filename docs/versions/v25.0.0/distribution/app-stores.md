@@ -2,7 +2,7 @@
 title: Deploying to App Stores
 ---
 
-This guide offers best practices around submitting your Expo app to the Apple iTunes Store and Google Play Store. To learn how to generate native binaries for submission, see [Building Standalone Apps](./building-standalone-apps.html).
+This guide offers best practices around submitting your Expo app to the Apple iTunes Store and Google Play Store. To learn how to generate native binaries for submission, see [Building Standalone Apps](../building-standalone-apps/).
 
 Although you can share your published project through the Expo Client and on your [expo.io](https://expo.io) profile, submitting a standalone app to the Apple and Google stores is necessary to have a dedicated piece of real estate on your users' devices. Submitting to these stores carries stronger requirements and quality standards than sharing a toy project with a few friends, because it makes your app available through a much wider distribution platform.
 
@@ -16,24 +16,24 @@ Try your app on tablets in addition to handsets. Even if you have `ios.supportsT
 
 ## Make app loading seamless
 
-- Add a [splash screen](./splash-screens.html), the very first thing your users see after they select your app.
-- Use [AppLoading](../sdk/app-loading.html) to ensure your interface is ready before the user sees it.
-- [Preload and cache your assets](../guides/offline-support.html) so your app loads quickly, even with a poor internet connection.
+- Add a [splash screen](../splash-screens/), the very first thing your users see after they select your app.
+- Use [AppLoading](../../sdk/app-loading/) to ensure your interface is ready before the user sees it.
+- [Preload and cache your assets](../../guides/offline-support/) so your app loads quickly, even with a poor internet connection.
 
 ## Play nicely with the system UI
 
-- Configure the [status bar](./configuring-statusbar.html) so it doesn't clash with your interface.
-- Use [native gestures](../sdk/gesture-handler.html) whenever possible.
+- Configure the [status bar](../configuring-statusbar/) so it doesn't clash with your interface.
+- Use [native gestures](../../sdk/gesture-handler/) whenever possible.
 - Use interface elements that make sense on the device. For example, see the [iOS Human Interface Guidelines](https://developer.apple.com/ios/human-interface-guidelines/overview/themes/).
 
 > **Note**: iOS standalone apps [default](https://developer.apple.com/documentation/uikit/uibarstyle/uibarstyledefault) the status bar text color to white. But when developing within the Expo app, the default is black since the Expo app itself has a black status bar. Users are often surprised that their standalone apps suddenly have white status bars. In order to keep it black, you'll need to use a `<StatusBar barStyle="dark-content" />` component. See [StatusBar docs](https://facebook.github.io/react-native/docs/statusbar.html) for more information.
 
 ## Tailor your app metadata
 
-- Add a great [icon](./app-icons.html). Icon requirements between iOS and Android differ and are fairly strict, so be sure and familiarize yourself with that guide.
-- Customize your [primaryColor](../guides/configuration.html#primarycolor).
-- Make sure your app has a valid iOS [Bundle Identifier](./configuration.html#bundleidentifier) and [Android Package](./configuration.html#package). Take care in choosing these, as you will not be able to change them later.
-- Use [versionCode](configuration.html#versioncode) and [buildNumber](configuration.html#buildnumber) to distinguish different binaries of your app.
+- Add a great [icon](../app-icons/). Icon requirements between iOS and Android differ and are fairly strict, so be sure and familiarize yourself with that guide.
+- Customize your [primaryColor](../../workflow/configuration/#primarycolor).
+- Make sure your app has a valid iOS [Bundle Identifier](../configuration/#bundleidentifier) and [Android Package](../configuration/#package). Take care in choosing these, as you will not be able to change them later.
+- Use [versionCode](../configuration/#versioncode) and [buildNumber](../configuration/#buildnumber) to distinguish different binaries of your app.
 
 ## Privacy Policy
 
@@ -44,13 +44,13 @@ Try your app on tablets in addition to handsets. Even if you have `ios.supportsT
 
 - All apps in the iTunes Store must abide by the [App Store Review Guidelines](https://developer.apple.com/app-store/review/guidelines/).
 - It's helpful to glance over [Common App Rejections](https://developer.apple.com/app-store/review/rejections/).
-- Binaries can get rejected for having poorly formatted icons, so double check the [App Icon guide](./app-icons.html).
+- Binaries can get rejected for having poorly formatted icons, so double check the [App Icon guide](../app-icons/).
 - Apple can reject your app if elements don't render properly on an iPad, even if your app doesn't target the iPad form factor. Be sure and test your app on an iPad (or iPad simulator).
 - Apple will ask you whether your app uses the IDFA. Because Expo depends on Segment Analytics, the answer is yes, and you'll need to check a couple boxes on the Apple submission form. See [Segment's Guide](https://segment.com/docs/sources/mobile/ios/quickstart/#step-5-submitting-to-the-app-store) for which specific boxes to fill in.
 
 ## System permissions dialogs on iOS
 
-If your app asks for [system permissions](../sdk/permissions.html) from the user, e.g. to use the device's camera, access photos, or send notifications, Apple requires an explanation for how your app makes use of that data. Expo will automatically provide a boilerplate reason for you, such as "Allow cool-app to access the camera." If you would like to provide more information, you can override these values using the [ios.infoPlist](../workflow/configuration) key in `app.json`, for example:
+If your app asks for [system permissions](../../sdk/permissions/) from the user, e.g. to use the device's camera, access photos, or send notifications, Apple requires an explanation for how your app makes use of that data. Expo will automatically provide a boilerplate reason for you, such as "Allow cool-app to access the camera." If you would like to provide more information, you can override these values using the [ios.infoPlist](../../workflow/configuration) key in `app.json`, for example:
 
 ```
 "infoPlist": {

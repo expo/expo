@@ -37,7 +37,7 @@ An object that is passed into each event listener when a notification is receive
 
 #### Returns
 
-Returns a Promise that resolves to a token string. This token can be provided to the Expo notifications backend to send a push notification to this device. [Read more in the Push Notifications guide](../guides/push-notifications.html#push-notifications).
+Returns a Promise that resolves to a token string. This token can be provided to the Expo notifications backend to send a push notification to this device. [Read more in the Push Notifications guide](../../guides/push-notifications/#push-notifications).
 
 ### `Expo.Notifications.presentLocalNotificationAsync(localNotification)`
 

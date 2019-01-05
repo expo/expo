@@ -24,7 +24,7 @@ Returns an array of `ISO` currency codes like `AMD`, `GEL` and `JPY`.
 
 ## Localizing system dialogs
 
-iOS standalone apps created with `exp build` can support multiple languages in system permission dialogs. For more information, see [Deploying to App Stores](../guides/app-stores.html).
+iOS standalone apps created with `exp build` can support multiple languages in system permission dialogs. For more information, see [Deploying to App Stores](../../distribution/app-stores/).
 
 ## Using a locale store
 

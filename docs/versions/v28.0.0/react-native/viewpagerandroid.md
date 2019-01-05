@@ -45,22 +45,22 @@ var styles = {
 
 ### Props
 
-* [View props...](view.md#props)
+* [View props...](../view/#props)
 
-- [`initialPage`](viewpagerandroid.md#initialpage)
-- [`keyboardDismissMode`](viewpagerandroid.md#keyboarddismissmode)
-- [`onPageScroll`](viewpagerandroid.md#onpagescroll)
-- [`onPageScrollStateChanged`](viewpagerandroid.md#onpagescrollstatechanged)
-- [`onPageSelected`](viewpagerandroid.md#onpageselected)
-- [`pageMargin`](viewpagerandroid.md#pagemargin)
-- [`peekEnabled`](viewpagerandroid.md#peekenabled)
-- [`scrollEnabled`](viewpagerandroid.md#scrollenabled)
-- [`setPage`](viewpagerandroid.md#setpage)
-- [`setPageWithoutAnimation`](viewpagerandroid.md#setpagewithoutanimation)
+- [`initialPage`](../viewpagerandroid/#initialpage)
+- [`keyboardDismissMode`](../viewpagerandroid/#keyboarddismissmode)
+- [`onPageScroll`](../viewpagerandroid/#onpagescroll)
+- [`onPageScrollStateChanged`](../viewpagerandroid/#onpagescrollstatechanged)
+- [`onPageSelected`](../viewpagerandroid/#onpageselected)
+- [`pageMargin`](../viewpagerandroid/#pagemargin)
+- [`peekEnabled`](../viewpagerandroid/#peekenabled)
+- [`scrollEnabled`](../viewpagerandroid/#scrollenabled)
+- [`setPage`](../viewpagerandroid/#setpage)
+- [`setPageWithoutAnimation`](../viewpagerandroid/#setpagewithoutanimation)
 
 ### Type Definitions
 
-* [`ViewPagerScrollState`](viewpagerandroid.md#viewpagerscrollstate)
+* [`ViewPagerScrollState`](../viewpagerandroid/#viewpagerscrollstate)
 
 ---
 

@@ -28,7 +28,7 @@ with the `exp` cli. The binary produced will only pull releases published under 
 
 ## Access Channel from Code
 
-You can access the channel your release is published under with the `releaseChannel` field in the [manifest object](https://docs.expo.io/versions/latest/sdk/constants.html#expoconstantsmanifest).
+You can access the channel your release is published under with the `releaseChannel` field in the [manifest object](/versions/latest/sdk/constants/#expoconstantsmanifest).
 
 > `Expo.Constants.manifest.releaseChannel` does NOT exist in dev mode. It does exist, however when you explicitly publish / build with it.
 

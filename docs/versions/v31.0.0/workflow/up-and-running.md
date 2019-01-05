@@ -4,7 +4,7 @@ title: Up and Running
 
 The aim of this first guide is to get an Expo application up and running as quickly as possible.
 
-At this point we should have Expo CLI installed on our development machine and the Expo client on an iOS or Android physical device or emulator. If not, go back to the [Installation](../introduction/installation.html) guide before proceeding.
+At this point we should have Expo CLI installed on our development machine and the Expo client on an iOS or Android physical device or emulator. If not, go back to the [Installation](../../introduction/installation/) guide before proceeding.
 
 Alright, let's get started.
 
@@ -44,7 +44,7 @@ Open up `screens/HomeScreen.js` in your new project and change any of the text i
 
 Live reload is enabled by default, but let's just make sure we go over the steps to enable it in case somehow things just aren't working.
 
-- First, make sure you have [development mode enabled in Expo CLI](development-mode.html#development-mode).
+- First, make sure you have [development mode enabled in Expo CLI](../development-mode/#development-mode).
 
 - Next, close the app and reopen it.
 
@@ -66,7 +66,7 @@ You have created a new Expo project, made a change, and seen it update.
 
 ### Next Steps
 
-- The [Additional Resources](../introduction/additional-resources.html#additional-resources) has a bunch of useful resources for learning.
-- Read about the [Expo SDK](../sdk/index.html#expo-sdk) to learn about some useful APIs we provide out of the box.
-- Read some of our other guides, such as how to implement [Push Notifications](push-notifications.html#push-notifications), how we can take care of [Assets](assets.html#all-about-assets) for you, or how to build [Standalone Apps](building-standalone-apps.html#building-standalone-apps) you can submit to Apple or Google.
+- The [Additional Resources](../../introduction/additional-resources/#additional-resources) has a bunch of useful resources for learning.
+- Read about the [Expo SDK](../../sdk/) to learn about some useful APIs we provide out of the box.
+- Read some of our other guides, such as how to implement [Push Notifications](../../guides/push-notifications/#push-notifications), how we can take care of [Assets](../../guides/assets/#all-about-assets) for you, or how to build [Standalone Apps](../../distribution/building-standalone-apps/#building-standalone-apps) you can submit to Apple or Google.
 - Join us on Slack to get your questions answered.

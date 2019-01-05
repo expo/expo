@@ -33,7 +33,7 @@ A React component that renders a viewfinder for the device's either front or bac
 
 ## Usage
 
-You must request permission to access the user's camera before attempting to get it. To do this, you will want to use the [Permissions](permissions.md) API. You can see this in practice in the following example.
+You must request permission to access the user's camera before attempting to get it. To do this, you will want to use the [Permissions](../permissions/) API. You can see this in practice in the following example.
 
 ```javascript
 import React from 'react';

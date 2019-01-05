@@ -5,10 +5,10 @@ title: Dimensions
 
 ### Methods
 
-* [`set`](dimensions.md#set)
-* [`get`](dimensions.md#get)
-* [`addEventListener`](dimensions.md#addeventlistener)
-* [`removeEventListener`](dimensions.md#removeeventlistener)
+* [`set`](../dimensions/#set)
+* [`get`](../dimensions/#get)
+* [`addEventListener`](../dimensions/#addeventlistener)
+* [`removeEventListener`](../dimensions/#removeeventlistener)
 
 ---
 

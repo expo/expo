@@ -14,7 +14,7 @@ If you haven't done payments with Stripe before, create an account with [Stripe]
 
 The Payments module is currently only supported through ExpoKit on iOS (to understand why, refer to [Why ExpoKit on iOS?](#why-expokit-on-ios?)).
 
-First, detach your Expo project using ExpoKit (refer to [Detach to ExpoKit]('../guides/detach.md') for more information). Then, navigate to and open `your-project-name/ios/Podfile`. Add "Payments" to your Podfile's subspecs. Example:
+First, detach your Expo project using ExpoKit (refer to [Detach to ExpoKit](../../expokit/eject/) for more information). Then, navigate to and open `your-project-name/ios/Podfile`. Add "Payments" to your Podfile's subspecs. Example:
 
 ```ruby
 

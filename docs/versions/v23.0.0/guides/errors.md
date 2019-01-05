@@ -12,17 +12,17 @@ If your app encounters a fatal JS error, Expo will report the error differently 
 
 **In Production:** If your published app encounters a fatal JS error, Expo will immediately reload your app. If the error happens very quickly after reloading, Expo will show a generic error screen with a button to try manually reloading.
 
-Expo can also report custom information back to you after your app reloads. If you use `ErrorRecovery.setRecoveryProps`, and the app later encounters a fatal JS error, the contents of that method call will be passed back into your app's initial props upon reloading. See [Expo.ErrorRecovery](../sdk/error-recovery.html).
+Expo can also report custom information back to you after your app reloads. If you use `ErrorRecovery.setRecoveryProps`, and the app later encounters a fatal JS error, the contents of that method call will be passed back into your app's initial props upon reloading. See [Expo.ErrorRecovery](../../sdk/error-recovery/).
 
 ## Tracking JS Errors
 
-We recommend using [Sentry](../guides/using-sentry) to track JS errors in production and configuring our post-publish hook to keep your source maps up to date.
+We recommend using [Sentry](../../guides/using-sentry) to track JS errors in production and configuring our post-publish hook to keep your source maps up to date.
 
 ## What about Native Errors?
 
 Since Expo's native code never changes with regard to your project, the native symbols aren't especially meaningful (they would show you a trace into the React Native core or into Expo's native SDK). In the vast majority of circumstances *, the JS error is what you care about.
 
-Nonetheless, if you really want native crash logs and are deploying your app as a [standalone app](building-standalone-apps.html), you can configure custom Fabric keys for Android. See [Configuration with app.json](configuration.html).
+Nonetheless, if you really want native crash logs and are deploying your app as a [standalone app](../../workflow/building-standalone-apps/), you can configure custom Fabric keys for Android. See [Configuration with app.json](../../workflow/configuration/).
 
 For iOS, right now we don't expose a way for you to see native crash logs from your Expo app. This is because we don't build iOS native code on demand, which would be a requirement for uploading your debug symbols to Fabric (or a similar service).
 

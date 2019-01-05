@@ -442,9 +442,9 @@ Here are some extra links that might help you further.
 
 ### Useful subjects
 
-- [Release channels](release-channels.html)
-- [Building standalone apps](building-standalone-apps.html)
-- [Configuring OTA Updates](configuring-ota-updates.html)
+- [Release channels](../../distribution/release-channels/)
+- [Building standalone apps](../../distribution/building-standalone-apps/)
+- [Configuring OTA Updates](../configuring-ota-updates/)
 
 ### Official documentation CI/CD vendors
 

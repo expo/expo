@@ -15,7 +15,7 @@ A performant interface for rendering simple, flat lists, supporting the most han
 * Scroll loading.
 * ScrollToIndex support.
 
-If you need section support, use [`<SectionList>`](sectionlist.md).
+If you need section support, use [`<SectionList>`](../sectionlist/).
 
 Minimal Example:
 
@@ -94,53 +94,53 @@ class MultiSelectList extends React.PureComponent {
 
 ```
 
-This is a convenience wrapper around [`<VirtualizedList>`](virtualizedlist.md), and thus inherits its props (as well as those of [`<ScrollView>`](scrollview.md)) that aren't explicitly listed here, along with the following caveats:
+This is a convenience wrapper around [`<VirtualizedList>`](../virtualizedlist/), and thus inherits its props (as well as those of [`<ScrollView>`](../scrollview/)) that aren't explicitly listed here, along with the following caveats:
 
 * Internal state is not preserved when content scrolls out of the render window. Make sure all your data is captured in the item data or external stores like Flux, Redux, or Relay.
 * This is a `PureComponent` which means that it will not re-render if `props` remain shallow- equal. Make sure that everything your `renderItem` function depends on is passed as a prop (e.g. `extraData`) that is not `===` after updates, otherwise your UI may not update on changes. This includes the `data` prop and parent component state.
 * In order to constrain memory and enable smooth scrolling, content is rendered asynchronously offscreen. This means it's possible to scroll faster than the fill rate and momentarily see blank content. This is a tradeoff that can be adjusted to suit the needs of each application, and we are working on improving it behind the scenes.
 * By default, the list looks for a `key` prop on each item and uses that for the React key. Alternatively, you can provide a custom `keyExtractor` prop.
 
-Also inherits [ScrollView Props](scrollview.md#props), unless it is nested in another FlatList of same orientation.
+Also inherits [ScrollView Props](../scrollview/#props), unless it is nested in another FlatList of same orientation.
 
 ### Props
 
-* [`ScrollView` props...](scrollview.md#props)
-* [`VirtualizedList` props...](virtualizedlist.md#props)
-* [`renderItem`](flatlist.md#renderitem)
-* [`data`](flatlist.md#data)
-* [`ItemSeparatorComponent`](flatlist.md#itemseparatorcomponent)
-* [`ListEmptyComponent`](flatlist.md#listemptycomponent)
-* [`ListFooterComponent`](flatlist.md#listfootercomponent)
-* [`ListHeaderComponent`](flatlist.md#listheadercomponent)
-* [`columnWrapperStyle`](flatlist.md#columnwrapperstyle)
-* [`extraData`](flatlist.md#extradata)
-* [`getItemLayout`](flatlist.md#getitemlayout)
-* [`horizontal`](flatlist.md#horizontal)
-* [`initialNumToRender`](flatlist.md#initialnumtorender)
-* [`initialScrollIndex`](flatlist.md#initialscrollindex)
-* [`inverted`](flatlist.md#inverted)
-* [`keyExtractor`](flatlist.md#keyextractor)
-* [`numColumns`](flatlist.md#numcolumns)
-* [`onEndReached`](flatlist.md#onendreached)
-* [`onEndReachedThreshold`](flatlist.md#onendreachedthreshold)
-* [`onRefresh`](flatlist.md#onrefresh)
-* [`onViewableItemsChanged`](flatlist.md#onviewableitemschanged)
-* [`progressViewOffset`](flatlist.md#progressviewoffset)
-* [`legacyImplementation`](flatlist.md#legacyimplementation)
-* [`refreshing`](flatlist.md#refreshing)
-* [`removeClippedSubviews`](flatlist.md#removeclippedsubviews)
-* [`viewabilityConfig`](flatlist.md#viewabilityconfig)
-* [`viewabilityConfigCallbackPairs`](flatlist.md#viewabilityconfigcallbackpairs)
+* [`ScrollView` props...](../scrollview/#props)
+* [`VirtualizedList` props...](../virtualizedlist/#props)
+* [`renderItem`](../flatlist/#renderitem)
+* [`data`](../flatlist/#data)
+* [`ItemSeparatorComponent`](../flatlist/#itemseparatorcomponent)
+* [`ListEmptyComponent`](../flatlist/#listemptycomponent)
+* [`ListFooterComponent`](../flatlist/#listfootercomponent)
+* [`ListHeaderComponent`](../flatlist/#listheadercomponent)
+* [`columnWrapperStyle`](../flatlist/#columnwrapperstyle)
+* [`extraData`](../flatlist/#extradata)
+* [`getItemLayout`](../flatlist/#getitemlayout)
+* [`horizontal`](../flatlist/#horizontal)
+* [`initialNumToRender`](../flatlist/#initialnumtorender)
+* [`initialScrollIndex`](../flatlist/#initialscrollindex)
+* [`inverted`](../flatlist/#inverted)
+* [`keyExtractor`](../flatlist/#keyextractor)
+* [`numColumns`](../flatlist/#numcolumns)
+* [`onEndReached`](../flatlist/#onendreached)
+* [`onEndReachedThreshold`](../flatlist/#onendreachedthreshold)
+* [`onRefresh`](../flatlist/#onrefresh)
+* [`onViewableItemsChanged`](../flatlist/#onviewableitemschanged)
+* [`progressViewOffset`](../flatlist/#progressviewoffset)
+* [`legacyImplementation`](../flatlist/#legacyimplementation)
+* [`refreshing`](../flatlist/#refreshing)
+* [`removeClippedSubviews`](../flatlist/#removeclippedsubviews)
+* [`viewabilityConfig`](../flatlist/#viewabilityconfig)
+* [`viewabilityConfigCallbackPairs`](../flatlist/#viewabilityconfigcallbackpairs)
 
 ### Methods
 
-* [`scrollToEnd`](flatlist.md#scrolltoend)
-* [`scrollToIndex`](flatlist.md#scrolltoindex)
-* [`scrollToItem`](flatlist.md#scrolltoitem)
-* [`scrollToOffset`](flatlist.md#scrolltooffset)
-* [`recordInteraction`](flatlist.md#recordinteraction)
-* [`flashScrollIndicators`](flatlist.md#flashscrollindicators)
+* [`scrollToEnd`](../flatlist/#scrolltoend)
+* [`scrollToIndex`](../flatlist/#scrolltoindex)
+* [`scrollToItem`](../flatlist/#scrolltoitem)
+* [`scrollToOffset`](../flatlist/#scrolltooffset)
+* [`recordInteraction`](../flatlist/#recordinteraction)
+* [`flashScrollIndicators`](../flatlist/#flashscrollindicators)
 
 ---
 
@@ -195,7 +195,7 @@ Example usage:
 
 ### `data`
 
-For simplicity, data is just a plain array. If you want to use something else, like an immutable list, use the underlying [`VirtualizedList`](virtualizedlist.md) directly.
+For simplicity, data is just a plain array. If you want to use something else, like an immutable list, use the underlying [`VirtualizedList`](../virtualizedlist/) directly.
 
 | Type  | Required |
 | ----- | -------- |

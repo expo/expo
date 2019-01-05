@@ -8,7 +8,7 @@ title: Building Standalone Apps on Your CI
 
 This guide describes an advanced feature of Expo. In most cases you can build
 standalone Expo apps using Expo's build services as described in the guide
-on [Building Standalone Apps](./building-standalone-apps).
+on [Building Standalone Apps](../building-standalone-apps/).
 
 If you prefer to not rely on our builders stability and you don't like waiting
 in the queue to get your standalone app build then you can build your Expo
@@ -62,8 +62,8 @@ need to free up some disk space.
 ## Publish your project
 
 In order to build your standalone Expo app, you first need to have successfully
-published your project. See the guide on [how to publish your project](../workflow/publishing)
-with Expo CLI or [how to host an app on your servers](./hosting-your-app).
+published your project. See the guide on [how to publish your project](../../workflow/publishing/)
+with Expo CLI or [how to host an app on your servers](../hosting-your-app/).
 
 ## Start the build
 
@@ -83,7 +83,7 @@ Before starting the build, prepare the following things:
 - Keystore alias
 - Keystore password and key password
 
-To learn how to generate those, see the guide on [Building Standalone Apps](./building-standalone-apps)
+To learn how to generate those, see the guide on [Building Standalone Apps](../building-standalone-apps/)
 first.
 
 Set the `EXPO_ANDROID_KEYSTORE_PASSWORD` and `EXPO_ANDROID_KEY_PASSWORD`
@@ -112,7 +112,7 @@ Prepare the following unless you're building only for the iOS simulator:
 - Provisioning Profile
 
 To learn how to generate those, see the guide
-on [Building Standalone Apps](./building-standalone-apps) first.
+on [Building Standalone Apps](../building-standalone-apps/) first.
 
 Set the `EXPO_IOS_DIST_P12_PASSWORD` environment variable with the value of
 the Distribution Certificate password.
@@ -138,7 +138,7 @@ See below for examples of how to use Turtle CLI with popular CI services
 (i.e. [CircleCI](#circleci) and [Travis CI](#travis-ci)). Both configuration
 files consist of two stages. In the first stage we publish the Expo project
 using the `expo publish` command (to see what that means,
-see [Publishing](https://docs.expo.io/versions/latest/workflow/publishing)).
+see [Publishing](/versions/latest/workflow/publishing/)).
 In the second stage we build application binaries for:
 - Google Play Store - `.apk` file
 - Apple App Store - `.ipa` file

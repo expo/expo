@@ -22,7 +22,7 @@ project. It makes your project available at a persistent URL, for
 example https://expo.io/@community/native-component-list, which can be
 opened with the Expo client. It also uploads all of your app images,
 fonts, and videos to a CDN ([read more
-here](how-expo-works.html#publishingdeploying-an-expo-app-in-production)).
+here](../how-expo-works/#publishingdeploying-an-expo-app-in-production)).
 
 ## How to Publish
 
@@ -45,7 +45,7 @@ open it.
 When you're ready to distribute your app to end-users, you can create a
 standalone app binary (an ipa or apk file) and put it in the iOS App
 Store and the Google Play Store. [See the full guide to building a
-standalone app.](building-standalone-apps.html)
+standalone app.](../building-standalone-apps/)
 
 When you build the binary, the current version of your app JavaScript is
 bundled so that it loads immediately the first time the app opens. But

@@ -6,7 +6,7 @@ The purpose of this guide is to help you create standalone binaries of your Expo
 
 An Apple Developer account is needed to build an iOS standalone app, but a Google Play Developer account is not needed to build the Android standalone app. If you'd like to submit to either app store, you will need a developer account on that store.
 
-It's a good idea to read the best practices about [Deploying to App Stores](./app-stores.html) to ensure your app is in good shape to get accepted into the Apple and Google marketplaces. We can generate builds for you, but it's up to you to make your app awesome.
+It's a good idea to read the best practices about [Deploying to App Stores](../app-stores/) to ensure your app is in good shape to get accepted into the Apple and Google marketplaces. We can generate builds for you, but it's up to you to make your app awesome.
 
 ## 1. Install exp
 
@@ -38,7 +38,7 @@ The iOS `bundleIdentifier` and Android `package` fields use reverse DNS notation
 
 You're probably not surprised that `name`, `icon` and `version` are required, but if you haven't used Expo much you might be confused by `slug` and `sdkVersion`. `slug` is the url name that your app's JavaScript is published to, for example `exp.host/@community/native-component-list`, where `community` is my username and `native-component-list` is the slug. The `sdkVersion` tells Expo what Expo runtime version to use, which corresponds to a React Native version. Although `"XX.0.0"` is listed in the example, you already have an `sdkVersion` in your app.json and should not change it except when you want to update to a new version of Expo.
 
-There are other options you might want to add to `app.json`. We have only covered what is required. For example, some people like to configure their own build number, linking scheme, and more. We highly recommend you read through [Configuration with app.json](configuration.html) for the full spec.
+There are other options you might want to add to `app.json`. We have only covered what is required. For example, some people like to configure their own build number, linking scheme, and more. We highly recommend you read through [Configuration with app.json](../configuration/) for the full spec.
 
 > **Note**: iOS standalone apps [default](https://developer.apple.com/documentation/uikit/uibarstyle/uibarstyledefault) the status bar text color to white. But when developing within the Expo app, the default is black since the Expo app itself has a black status bar. Users are often surprised that their standalone apps suddenly have white status bars. In order to keep it black, you'll need to use a `<StatusBar barStyle="dark-content" />` component. See [StatusBar docs](https://facebook.github.io/react-native/docs/statusbar.html) for more information.
 
@@ -108,15 +108,15 @@ This will take a few minutes, you can check up on it by running `exp build:statu
 
 ## 6. Submit it to the appropriate store
 
-We don't automate this step (yet), but at this point you should be able to follow the Apple and Google documentation to submit your standalone binary to each respective store. For more info on how to polish your app and ensure it is accepted to the Apple and Google marketplaces, read the guide on [Deploying to App Stores](./app-stores.html).
+We don't automate this step (yet), but at this point you should be able to follow the Apple and Google documentation to submit your standalone binary to each respective store. For more info on how to polish your app and ensure it is accepted to the Apple and Google marketplaces, read the guide on [Deploying to App Stores](../app-stores/).
 
 ## 7. Update your app
 
-For the most part, when you want to update your app, just Publish again from exp or XDE. Your users will download the new JS the next time they open the app. To ensure your users have a seamless experience downloading JS updates, you may want to enable [background JS downloads](../guides/offline-support.html). However, there are a couple reasons why you might want to rebuild and resubmit the native binaries:
+For the most part, when you want to update your app, just Publish again from exp or XDE. Your users will download the new JS the next time they open the app. To ensure your users have a seamless experience downloading JS updates, you may want to enable [background JS downloads](../../guides/offline-support/). However, there are a couple reasons why you might want to rebuild and resubmit the native binaries:
 
 * If you want to change native metadata like the app's name or icon
 * If you upgrade to a newer `sdkVersion` of your app (which requires new native code)
 
-To keep track of this, you can also update the binary's [versionCode](configuration.html#versioncode) and [buildNumber](configuration.html#buildnumber). It is a good idea to glance through the [app.json documentation](configuration.html) to get an idea of all the properties you can change, e.g. the icons, deep linking url scheme, handset/tablet support, and a lot more.
+To keep track of this, you can also update the binary's [versionCode](../configuration/#versioncode) and [buildNumber](../configuration/#buildnumber). It is a good idea to glance through the [app.json documentation](../configuration/) to get an idea of all the properties you can change, e.g. the icons, deep linking url scheme, handset/tablet support, and a lot more.
 
 If you run into problems during this process, we're more than happy to help out! [Join our Slack](https://slack.expo.io/) and let us know if you have any questions.

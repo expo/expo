@@ -20,11 +20,11 @@ We call this "ejecting" because you still depend on the Expo SDK, but your proje
 
 ### You might want to eject if:
 
-- Your Expo project needs a native module that Expo doesn't currently support. We're always expanding the [Expo SDK](../sdk/index.html), so we hope this is never the case. But it happens, especially if your app has very specific and uncommon native demands.
+- Your Expo project needs a native module that Expo doesn't currently support. We're always expanding the [Expo SDK](../../sdk/), so we hope this is never the case. But it happens, especially if your app has very specific and uncommon native demands.
 
 ### You should not eject if:
 
-- All you need is to distribute your app in the iTunes Store or Google Play. Expo can [build binaries for you](../distribution/building-standalone-apps.html) in that case. If you eject, we can't automatically build for you any more.
+- All you need is to distribute your app in the iTunes Store or Google Play. Expo can [build binaries for you](../../distribution/building-standalone-apps/) in that case. If you eject, we can't automatically build for you any more.
 - You are uncomfortable writing native code. Ejected apps will require you to manage Xcode and Android Studio projects.
 - You enjoy the painless React Native upgrades that come with Expo. After your app is ejected, breaking changes in React Native will affect your project differently, and you may need to figure them out for your particular situation.
 - You require Expo's push notification services. After ejecting, since Expo no longer manages your push certificates, you'll need to manage your own push notification pipeline.
@@ -52,7 +52,7 @@ If you haven't used Expo CLI with an Expo account before, the eject command will
 
 ### 2. Make sure you have the necessary configuration options in app.json
 
-Ejecting requires the same configuration options as building a standalone app. [Follow these instructions before continuing to the next step](../distribution/building-standalone-apps.html#2-configure-appjson).
+Ejecting requires the same configuration options as building a standalone app. [Follow these instructions before continuing to the next step](../../distribution/building-standalone-apps/#2-configure-appjson).
 
 ### 3. Eject
 
@@ -61,13 +61,13 @@ build native projects under the `ios` and `android` directories.
 
 ### 4. Set up and Run your native project
 
-Congrats, you now have a native project with ExpoKit! Follow the directions under [Developing with ExpoKit](expokit.html) to get things set up and running.
+Congrats, you now have a native project with ExpoKit! Follow the directions under [Developing with ExpoKit](../expokit/) to get things set up and running.
 
 ### 5. Make native changes
 
 You can do whatever you want in the Xcode and Android Studio projects.
 
-To add third-party native modules for React Native, non-Expo-specific instructions such as `react-native link` should be supported. [Read more details about changing native dependencies in your ExpoKit project](expokit.html#changing-native-dependencies).
+To add third-party native modules for React Native, non-Expo-specific instructions such as `react-native link` should be supported. [Read more details about changing native dependencies in your ExpoKit project](../expokit/#changing-native-dependencies).
 
 ### 6. Distribute your app
 
@@ -79,6 +79,6 @@ If you do make native changes, people who don't have your native code may encoun
 they try to use features that depend on those changes.
 
 If you decide to distribute your app as an `ipa` or `apk`, it will automatically hit
-your app's published URL instead of your development Expo CLI URL. Read [advanced details about your app's JS url](advanced-expokit-topics.html#configuring-the-js-url).
+your app's published URL instead of your development Expo CLI URL. Read [advanced details about your app's JS url](../advanced-expokit-topics/#configuring-the-js-url).
 
-In general, before taking your app all the way to production, it's a good idea to glance over the [Advanced ExpoKit Topics](advanced-expokit-topics.html) guide.
+In general, before taking your app all the way to production, it's a good idea to glance over the [Advanced ExpoKit Topics](../advanced-expokit-topics/) guide.

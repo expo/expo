@@ -5,20 +5,20 @@ title: Image Style Props
 
 ### Props
 
-* [`borderTopRightRadius`](image-style-props.md#bordertoprightradius)
-* [`backfaceVisibility`](image-style-props.md#backfacevisibility)
-* [`borderBottomLeftRadius`](image-style-props.md#borderbottomleftradius)
-* [`borderBottomRightRadius`](image-style-props.md#borderbottomrightradius)
-* [`borderColor`](image-style-props.md#bordercolor)
-* [`borderRadius`](image-style-props.md#borderradius)
-* [`borderTopLeftRadius`](image-style-props.md#bordertopleftradius)
-* [`backgroundColor`](image-style-props.md#backgroundcolor)
-* [`borderWidth`](image-style-props.md#borderwidth)
-* [`opacity`](image-style-props.md#opacity)
-* [`overflow`](image-style-props.md#overflow)
-* [`resizeMode`](image-style-props.md#resizemode)
-* [`tintColor`](image-style-props.md#tintcolor)
-* [`overlayColor`](image-style-props.md#overlaycolor)
+* [`borderTopRightRadius`](../image-style-props/#bordertoprightradius)
+* [`backfaceVisibility`](../image-style-props/#backfacevisibility)
+* [`borderBottomLeftRadius`](../image-style-props/#borderbottomleftradius)
+* [`borderBottomRightRadius`](../image-style-props/#borderbottomrightradius)
+* [`borderColor`](../image-style-props/#bordercolor)
+* [`borderRadius`](../image-style-props/#borderradius)
+* [`borderTopLeftRadius`](../image-style-props/#bordertopleftradius)
+* [`backgroundColor`](../image-style-props/#backgroundcolor)
+* [`borderWidth`](../image-style-props/#borderwidth)
+* [`opacity`](../image-style-props/#opacity)
+* [`overflow`](../image-style-props/#overflow)
+* [`resizeMode`](../image-style-props/#resizemode)
+* [`tintColor`](../image-style-props/#tintcolor)
+* [`overlayColor`](../image-style-props/#overlaycolor)
 
 ---
 
@@ -62,7 +62,7 @@ title: Image Style Props
 
 | Type               | Required |
 | ------------------ | -------- |
-| [color](colors.md) | No       |
+| [color](../colors/) | No       |
 
 ---
 
@@ -86,7 +86,7 @@ title: Image Style Props
 
 | Type               | Required |
 | ------------------ | -------- |
-| [color](colors.md) | No       |
+| [color](../colors/) | No       |
 
 ---
 
@@ -128,7 +128,7 @@ Changes the color of all the non-transparent pixels to the tintColor.
 
 | Type               | Required |
 | ------------------ | -------- |
-| [color](colors.md) | No       |
+| [color](../colors/) | No       |
 
 ---
 

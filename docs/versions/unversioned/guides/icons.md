@@ -25,11 +25,11 @@ This component loads the Ionicons font if it hasn't been loaded already, and ren
 
 `import { Ionicons } from '@expo/vector-icons';` instead of.. `import Ionicons from 'react-native-vector-icons/Ionicons';`.
 
-> **Note:** As with [any custom font](using-custom-fonts.html#using-custom-fonts) in Expo, you may want to preload icon fonts before rendering your app. The font object is available as a static property on the font component, so in the case above it is `Ionicons.font`, which evaluates to `{ionicons: require('path/to/ionicons.ttf')}`. [Read more about preloading assets](https://docs.expo.io/versions/latest/guides/preloading-and-caching-assets).
+> **Note:** As with [any custom font](../using-custom-fonts/#using-custom-fonts) in Expo, you may want to preload icon fonts before rendering your app. The font object is available as a static property on the font component, so in the case above it is `Ionicons.font`, which evaluates to `{ionicons: require('path/to/ionicons.ttf')}`. [Read more about preloading assets](/versions/latest/guides/preloading-and-caching-assets/).
 
 ## Custom Icon Fonts
 
-First, make sure you import your custom icon font. [Read more about loading custom fonts](using-custom-fonts.html#using-custom-fonts). Once your font has loaded, you'll need to create an Icon Set. `@expo/vector-icons` exposes three methods to help you create an icon set.
+First, make sure you import your custom icon font. [Read more about loading custom fonts](../using-custom-fonts/#using-custom-fonts). Once your font has loaded, you'll need to create an Icon Set. `@expo/vector-icons` exposes three methods to help you create an icon set.
 
 ### createIconSet
 

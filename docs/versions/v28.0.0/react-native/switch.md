@@ -11,15 +11,15 @@ This is a controlled component that requires an `onValueChange` callback that up
 
 ### Props
 
-* [View props...](view.md#props)
+* [View props...](../view/#props)
 
-- [`disabled`](switch.md#disabled)
-- [`onTintColor`](switch.md#ontintcolor)
-- [`onValueChange`](switch.md#onvaluechange)
-- [`testID`](switch.md#testid)
-- [`thumbTintColor`](switch.md#thumbtintcolor)
-- [`tintColor`](switch.md#tintcolor)
-- [`value`](switch.md#value)
+- [`disabled`](../switch/#disabled)
+- [`onTintColor`](../switch/#ontintcolor)
+- [`onValueChange`](../switch/#onvaluechange)
+- [`testID`](../switch/#testid)
+- [`thumbTintColor`](../switch/#thumbtintcolor)
+- [`tintColor`](../switch/#tintcolor)
+- [`value`](../switch/#value)
 
 ---
 
@@ -43,7 +43,7 @@ Background color when the switch is turned on.
 
 | Type               | Required |
 | ------------------ | -------- |
-| [color](colors.md) | No       |
+| [color](../colors/) | No       |
 
 ---
 
@@ -73,7 +73,7 @@ Color of the foreground switch grip. If this is set on iOS, the switch grip will
 
 | Type               | Required |
 | ------------------ | -------- |
-| [color](colors.md) | No       |
+| [color](../colors/) | No       |
 
 ---
 
@@ -83,7 +83,7 @@ Border color on iOS and background color on Android when the switch is turned of
 
 | Type               | Required |
 | ------------------ | -------- |
-| [color](colors.md) | No       |
+| [color](../colors/) | No       |
 
 ---
 

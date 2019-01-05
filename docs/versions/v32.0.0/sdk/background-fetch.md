@@ -2,8 +2,8 @@
 title: BackgroundFetch
 ---
 
-Provides API to perform [background fetch](https://developer.apple.com/documentation/uikit/core_app/managing_your_app_s_life_cycle/preparing_your_app_to_run_in_the_background/updating_your_app_with_background_app_refresh) tasks. This module uses [TaskManager](./task-manager) Native API under the hood.
-In order to use `BackgroundFetch` API in standalone and detached apps, your app has to include background mode in the `Info.plist` file. See [background tasks configuration guide](./task-manager#configuration) for more details.
+Provides API to perform [background fetch](https://developer.apple.com/documentation/uikit/core_app/managing_your_app_s_life_cycle/preparing_your_app_to_run_in_the_background/updating_your_app_with_background_app_refresh) tasks. This module uses [TaskManager](../task-manager) Native API under the hood.
+In order to use `BackgroundFetch` API in standalone and detached apps, your app has to include background mode in the `Info.plist` file. See [background tasks configuration guide](../task-manager#configuration) for more details.
 **This module is implemented only on iOS.**
 
 ### `BackgroundFetch.getStatusAsync()`
@@ -23,7 +23,7 @@ Registers background fetch task with given name. Registered tasks are saved in p
 
 #### Arguments
 
--   **taskName (_string_)** -- Name of the task to register. The task needs to be defined first - see [TaskManager.defineTask](task-manager#taskmanagerdefinetasktaskname-task) for more details.
+-   **taskName (_string_)** -- Name of the task to register. The task needs to be defined first - see [TaskManager.defineTask](../task-manager/#taskmanagerdefinetasktaskname-task) for more details.
 
 #### Returns
 

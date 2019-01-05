@@ -45,7 +45,7 @@ Once the simulator is open and you have a project open in XDE, you can press _Op
 
 [Download Genymotion](https://www.genymotion.com/fun-zone/) (free version) and follow the [Genymotion installation guide](https://docs.genymotion.com/Content/01_Get_Started/Installation.htm). Once you've installed Genymotion, create a virtual device - we recommend a Nexus 5, the Android version is up to you. Start up the virtual device when it's ready.
 
-Once the emulator is open and you have a project open in XDE, you can press _Open project in Expo on Android_ in XDE and it will install the Expo client to the emulator and open up your app inside of it. If you run into any issues follow our [Genymotion guide](../guides/genymotion.html#genymotion).
+Once the emulator is open and you have a project open in XDE, you can press _Open project in Expo on Android_ in XDE and it will install the Expo client to the emulator and open up your app inside of it. If you run into any issues follow our [Genymotion guide](../../guides/genymotion/#genymotion).
 
 ## Node.js
 

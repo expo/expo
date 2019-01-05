@@ -17,18 +17,18 @@ Note that in order to get this to work on **Android** you need to set the follow
 
 ### Methods
 
-* [`configureNext`](layoutanimation.md#configurenext)
-* [`create`](layoutanimation.md#create)
-* [`checkConfig`](layoutanimation.md#checkconfig)
+* [`configureNext`](../layoutanimation/#configurenext)
+* [`create`](../layoutanimation/#create)
+* [`checkConfig`](../layoutanimation/#checkconfig)
 
 ### Properties
 
-* [`Types`](layoutanimation.md#types)
-* [`Properties`](layoutanimation.md#properties)
-* [`Presets`](layoutanimation.md#presets)
-* [`easeInEaseOut`](layoutanimation.md#easeineaseout)
-* [`linear`](layoutanimation.md#linear)
-* [`spring`](layoutanimation.md#spring)
+* [`Types`](../layoutanimation/#types)
+* [`Properties`](../layoutanimation/#properties)
+* [`Presets`](../layoutanimation/#presets)
+* [`easeInEaseOut`](../layoutanimation/#easeineaseout)
+* [`linear`](../layoutanimation/#linear)
+* [`spring`](../layoutanimation/#spring)
 
 ---
 

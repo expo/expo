@@ -36,17 +36,17 @@ ToastAndroid.showWithGravityAndOffset(
 
 ### Methods
 
-* [`show`](toastandroid.md#show)
-* [`showWithGravity`](toastandroid.md#showwithgravity)
-* [`showWithGravityAndOffset`](toastandroid.md#showwithgravityandoffset)
+* [`show`](../toastandroid/#show)
+* [`showWithGravity`](../toastandroid/#showwithgravity)
+* [`showWithGravityAndOffset`](../toastandroid/#showwithgravityandoffset)
 
 ### Properties
 
-* [`SHORT`](toastandroid.md#short)
-* [`LONG`](toastandroid.md#long)
-* [`TOP`](toastandroid.md#top)
-* [`BOTTOM`](toastandroid.md#bottom)
-* [`CENTER`](toastandroid.md#center)
+* [`SHORT`](../toastandroid/#short)
+* [`LONG`](../toastandroid/#long)
+* [`TOP`](../toastandroid/#top)
+* [`BOTTOM`](../toastandroid/#bottom)
+* [`CENTER`](../toastandroid/#center)
 
 ---
 

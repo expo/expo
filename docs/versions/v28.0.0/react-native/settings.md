@@ -5,10 +5,10 @@ title: Settings
 
 ### Methods
 
-* [`get`](settings.md#get)
-* [`set`](settings.md#set)
-* [`watchKeys`](settings.md#watchkeys)
-* [`clearWatch`](settings.md#clearwatch)
+* [`get`](../settings/#get)
+* [`set`](../settings/#set)
+* [`watchKeys`](../settings/#watchkeys)
+* [`clearWatch`](../settings/#clearwatch)
 
 ### Properties
 

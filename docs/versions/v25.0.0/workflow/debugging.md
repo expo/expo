@@ -16,7 +16,7 @@ Make sure you have the latest Xcode (e.g. from the [Mac App Store](https://itune
 
 On Android we recommend the Genymotion emulator over the standard emulator -- we have found it to be more feature complete, faster and easier to use.
 
-[Download Genymotion](https://www.genymotion.com/fun-zone/) (free version) and follow the [Genymotion installation guide](https://docs.genymotion.com/Content/01_Get_Started/Installation.htm). Once you've installed Genymotion, create a virtual device - we recommend a Nexus 5, the Android version is up to you. Start up the virtual device when it's ready. If you run into any issues follow our [Genymotion guide](genymotion.html#genymotion).
+[Download Genymotion](https://www.genymotion.com/fun-zone/) (free version) and follow the [Genymotion installation guide](https://docs.genymotion.com/Content/01_Get_Started/Installation.htm). Once you've installed Genymotion, create a virtual device - we recommend a Nexus 5, the Android version is up to you. Start up the virtual device when it's ready. If you run into any issues follow our [Genymotion guide](../genymotion/#genymotion).
 
 ## Developer Menu
 

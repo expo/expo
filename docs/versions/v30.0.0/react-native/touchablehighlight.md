@@ -100,15 +100,15 @@ AppRegistry.registerComponent('App', () => App)
 
 ### Props
 
-* [TouchableWithoutFeedback props...](touchablewithoutfeedback.md#props)
+* [TouchableWithoutFeedback props...](../touchablewithoutfeedback/#props)
 
-- [`activeOpacity`](touchablehighlight.md#activeopacity)
-- [`onHideUnderlay`](touchablehighlight.md#onhideunderlay)
-- [`onShowUnderlay`](touchablehighlight.md#onshowunderlay)
-- [`style`](touchablehighlight.md#style)
-- [`underlayColor`](touchablehighlight.md#underlaycolor)
-- [`hasTVPreferredFocus`](touchablehighlight.md#hastvpreferredfocus)
-- [`tvParallaxProperties`](touchablehighlight.md#tvparallaxproperties)
+- [`activeOpacity`](../touchablehighlight/#activeopacity)
+- [`onHideUnderlay`](../touchablehighlight/#onhideunderlay)
+- [`onShowUnderlay`](../touchablehighlight/#onshowunderlay)
+- [`style`](../touchablehighlight/#style)
+- [`underlayColor`](../touchablehighlight/#underlaycolor)
+- [`hasTVPreferredFocus`](../touchablehighlight/#hastvpreferredfocus)
+- [`tvParallaxProperties`](../touchablehighlight/#tvparallaxproperties)
 
 ---
 
@@ -160,7 +160,7 @@ The color of the underlay that will show through when the touch is active.
 
 | Type               | Required |
 | ------------------ | -------- |
-| [color](colors.md) | No       |
+| [color](../colors/) | No       |
 
 ---
 

@@ -75,6 +75,13 @@ export default redirect('/versions/latest/');
 
 console.timeEnd('Compiling *.md files to *.js');
 
+// symlink versions/latest to versions/v(latest version)
+const LATEST_VERSION = 'v' + require('../package.json').version;
+vLatest = path.join(DESTINATION_PATH_PREFIX, LATEST_VERSION);
+latest = path.join(DESTINATION_PATH_PREFIX, "latest");
+fs.removeSync(latest)
+fs.ensureSymlink(vLatest, latest)
+
 // Watch for changes in directory
 if (process.argv.length < 3) {
   fs.watch(`${ORIGINAL_PATH_PREFIX}`, { recursive: true }, (eventType, filename) => {

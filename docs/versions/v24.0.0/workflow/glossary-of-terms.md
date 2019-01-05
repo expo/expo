@@ -4,15 +4,15 @@ title: Glossary of terms
 
 ### app.json
 
-`app.json` is a file that exists for every Expo project and it is used to configure your project, for example the name, icon, and splash screen. [Read more in "Configuration with app.json"](configuration.html)
+`app.json` is a file that exists for every Expo project and it is used to configure your project, for example the name, icon, and splash screen. [Read more in "Configuration with app.json"](../configuration/)
 
 ### create-react-native-app
 
-The React Native equivalent of [create-react-app](https://github.com/facebookincubator/create-react-app). Gets you set up and creating a React Native app with no build configuration required, and it uses Expo to accomplish this. [Read more in "Expo & Create React Native App"](create-react-native-app.html).
+The React Native equivalent of [create-react-app](https://github.com/facebookincubator/create-react-app). Gets you set up and creating a React Native app with no build configuration required, and it uses Expo to accomplish this. [Read more in "Expo & Create React Native App"](../create-react-native-app/).
 
 ### detach
 
-The term "detach" is used in Expo to describe leaving the cozy comfort of the standard Expo development environment, where you do not have to deal with build configuration or native code. When you "detach" from Expo, you get the native projects along with [ExpoKit](#expokit), so you can continue building your project using the Expo APIs but your workflow now is the same as if you were building a React Native application without Expo. [Read more in "Detaching to ExpoKit"](https://docs.expo.io/versions/latest/guides/detach.html).
+The term "detach" is used in Expo to describe leaving the cozy comfort of the standard Expo development environment, where you do not have to deal with build configuration or native code. When you "detach" from Expo, you get the native projects along with [ExpoKit](#expokit), so you can continue building your project using the Expo APIs but your workflow now is the same as if you were building a React Native application without Expo. [Read more in "Detaching to ExpoKit"](/versions/latest/expokit/eject/).
 
 ### eject
 
@@ -24,7 +24,7 @@ Emulator is used to describe software emulators of Android devices on your compu
 
 ### exp
 
-The command-line tool for working with Expo. [Read more](exp-cli.html).
+The command-line tool for working with Expo. [Read more](../exp-cli/).
 
 ### Experience
 
@@ -36,11 +36,11 @@ The iOS and Android app that runs Expo apps. When you want to run your app outsi
 
 ### Expo SDK
 
-The Expo SDK provides access to device/system functionality such as camera, push notification, contacts, file system, and more. Scroll to the SDK API reference in the documentation navigation to see a full list of APIs and to explore them. [Read more about the Expo SDK](https://docs.expo.io/versions/latest/sdk/index.html). [Find it on Github](https://github.com/expo/expo-sdk).
+The Expo SDK provides access to device/system functionality such as camera, push notification, contacts, file system, and more. Scroll to the SDK API reference in the documentation navigation to see a full list of APIs and to explore them. [Read more about the Expo SDK](/versions/latest/sdk/). [Find it on Github](https://github.com/expo/expo-sdk).
 
 ### ExpoKit
 
-ExpoKit is an Objective-C and Java library that allows you to use the [Expo SDK](#expo-sdk) and platform and your existing Expo project as part of a larger standard native project — one that you would normally create using Xcode, Android Studio, or `react-native init`. [Read more](detach.html).
+ExpoKit is an Objective-C and Java library that allows you to use the [Expo SDK](#expo-sdk) and platform and your existing Expo project as part of a larger standard native project — one that you would normally create using Xcode, Android Studio, or `react-native init`. [Read more](../detach/).
 
 ### iOS
 
@@ -48,11 +48,11 @@ The operating system used on iPhone, iPad, and Apple TV. Expo currently runs on 
 
 ### Linking
 
-Linking can mean [deep linking into apps similar to how you link to websites on the web](linking.html) or [linking native libraries into your detached ExpoKit app](expokit.html#changing-native-dependencies).
+Linking can mean [deep linking into apps similar to how you link to websites on the web](../linking/) or [linking native libraries into your detached ExpoKit app](../expokit/#changing-native-dependencies).
 
 ### Manifest
 
-An Expo app manifest is similar to a [web app manifest](https://developer.mozilla.org/en-US/docs/Web/Manifest) - it provides information that Expo needs to know how to run the app and other relevant data. [Read more in "How Expo Works"](how-expo-works.html#expo-manifest).
+An Expo app manifest is similar to a [web app manifest](https://developer.mozilla.org/en-US/docs/Web/Manifest) - it provides information that Expo needs to know how to run the app and other relevant data. [Read more in "How Expo Works"](../how-expo-works/#expo-manifest).
 
 ### Native Directory
 
@@ -64,7 +64,7 @@ The React Native ecosystem has thousands of libraries. Without a purpose-built t
 
 ### Over the Air updates
 
-Traditionally, apps for iOS and Android are updated by submitting an updated binary to the App and Play stores. Over the Air (OTA) updates allow you to push an update to your app without the overhead of submitting a new release to the stores. [Read more in "Publishing"](publishing.html).
+Traditionally, apps for iOS and Android are updated by submitting an updated binary to the App and Play stores. Over the Air (OTA) updates allow you to push an update to your app without the overhead of submitting a new release to the stores. [Read more in "Publishing"](../publishing/).
 
 ### Package Manager
 
@@ -96,7 +96,7 @@ We use the word "slug" in [app.json](#appjson) to refer to the name to use for y
 
 ### Standalone app
 
-An application binary that can be submitted to the iOS App Store or Android Play Store. [Read more in "Building Standalone Apps"](building-standalone-apps.html).
+An application binary that can be submitted to the iOS App Store or Android Play Store. [Read more in "Building Standalone Apps"](../../distribution/building-standalone-apps/).
 
 ### XDE
 

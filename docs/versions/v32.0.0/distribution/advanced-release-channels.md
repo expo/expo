@@ -4,7 +4,7 @@ title: Advanced Release Channels
 
 ## Introduction
 
-For a quick introduction to release channels, read [this](https://docs.expo.io/versions/latest/guides/release-channels.html).
+For a quick introduction to release channels, read [this](/versions/latest/distribution/release-channels/).
 
 When you publish your app by running `expo publish --release-channel staging`, it creates:
 

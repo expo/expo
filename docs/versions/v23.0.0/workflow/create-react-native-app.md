@@ -12,7 +12,7 @@ You can run `create-react-native-app YourAppName` and off you go. So what does n
 - Publish your project to a permanent URL, eg:
   https://expo.io/@community/reactconf2017. See [Publishing on
 Expo](https://blog.expo.io/publishing-on-exponent-790493660d24#.bhtxw53ts) for more information.
-- [Build binaries for app / play store distribution](building-standalone-apps.html). To do this with CRNA without using Expo, you would need to run [eject](https://github.com/react-community/create-react-native-app#npm-run-eject).
+- [Build binaries for app / play store distribution](../building-standalone-apps/). To do this with CRNA without using Expo, you would need to run [eject](https://github.com/react-community/create-react-native-app#npm-run-eject).
 
 ### Can you use XDE/exp on a CRNA project?
 
@@ -21,7 +21,7 @@ exp and it will work as expected.
 
 ### What does using ExpoKit mean for a CRNA user?
 
-If you want to add custom native code to your Expo app, you will need to [use ExpoKit](expokit.html). With CRNA, you have two options: you
+If you want to add custom native code to your Expo app, you will need to [use ExpoKit](../expokit/). With CRNA, you have two options: you
 can either eject to a normal React Native project, without any
 dependencies on Expo, or you can eject to use ExpoKit, which will allow
 you to continue using the Expo APIs. [Read more about ejecting with CRNA

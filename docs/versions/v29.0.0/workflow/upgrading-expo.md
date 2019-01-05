@@ -10,7 +10,7 @@ That said, each version is better than the last, so you might want to stay up to
 
 We post our release notes to [Exposition](https://blog.expo.io/), for example the [v29.0.0 release notes](https://blog.expo.io/expo-sdk-v29-0-0-is-now-available-f001d77fadf). If you're upgrading by more than one major version, we recommend following the upgrade guide for each major version between your current version and your target.
 
-If you are running ExpoKit inside a native project, upgrading will require extra steps. ExpoKit is currently an alpha feature and upgrading difficulty will vary between versions, but there is some information [here](../expokit/expokit#upgrading-expokit).
+If you are running ExpoKit inside a native project, upgrading will require extra steps. ExpoKit is currently an alpha feature and upgrading difficulty will vary between versions, but there is some information [here](../../expokit/expokit#upgrading-expokit).
 
 ## Past Release Notes
 

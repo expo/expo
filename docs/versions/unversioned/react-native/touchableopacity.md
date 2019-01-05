@@ -98,15 +98,15 @@ AppRegistry.registerComponent('App', () => App)
 
 ### Props
 
-* [TouchableWithoutFeedback props...](touchablewithoutfeedback.md#props)
+* [TouchableWithoutFeedback props...](../touchablewithoutfeedback/#props)
 
-- [`activeOpacity`](touchableopacity.md#activeopacity)
-- [`tvParallaxProperties`](touchableopacity.md#tvparallaxproperties)
-- [`hasTVPreferredFocus`](touchableopacity.md#hastvpreferredfocus)
+- [`activeOpacity`](../touchableopacity/#activeopacity)
+- [`tvParallaxProperties`](../touchableopacity/#tvparallaxproperties)
+- [`hasTVPreferredFocus`](../touchableopacity/#hastvpreferredfocus)
 
 ### Methods
 
-* [`setOpacityTo`](touchableopacity.md#setopacityto)
+* [`setOpacityTo`](../touchableopacity/#setopacityto)
 
 ---
 
