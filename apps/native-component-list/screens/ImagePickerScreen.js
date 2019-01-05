@@ -13,14 +13,10 @@ export default class ImagePickerScreen extends React.Component {
     selection: null,
   };
 
-  async componentDidFocus() {
-    await Permissions.askAsync(Permissions.CAMERA);
-    await Permissions.askAsync(Permissions.CAMERA_ROLL);
-  }
-
   render() {
-    const showCamera = async () => {
-      let result = await ImagePicker.launchCameraAsync({});
+    const showCamera = async mediaTypes => {
+      // await Permissions.askAsync(Permissions.CAMERA);
+      let result = await ImagePicker.launchCameraAsync({ mediaTypes });
       if (result.cancelled) {
         this.setState({ selection: null });
       } else {
@@ -37,7 +33,8 @@ export default class ImagePickerScreen extends React.Component {
       }
     };
 
-    const showPicker = async () => {
+    const showPicker = async mediaTypes => {
+      await Permissions.askAsync(Permissions.CAMERA_ROLL);
       if (Platform.OS === 'ios') {
         let permission = await Permissions.getAsync(Permissions.CAMERA_ROLL);
         if (permission.status !== 'granted') {
@@ -46,8 +43,10 @@ export default class ImagePickerScreen extends React.Component {
         }
       }
       let result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        // mediaTypes: ImagePicker.MediaTypeOptions.All,
+        mediaTypes,
       });
+      alert('End ' + result.cancelled);
       if (result.cancelled) {
         this.setState({ selection: null });
       } else {
@@ -63,6 +62,7 @@ export default class ImagePickerScreen extends React.Component {
           return;
         }
       }
+      await Permissions.askAsync(Permissions.CAMERA_ROLL);
       let result = await ImagePicker.launchImageLibraryAsync({ allowsEditing: true });
       if (result.cancelled) {
         this.setState({ selection: null });
@@ -74,9 +74,31 @@ export default class ImagePickerScreen extends React.Component {
     return (
       <ScrollView style={{ padding: 10 }}>
         <NavigationEvents onDidFocus={this.componentDidFocus} />
-        <ListButton onPress={showCamera} title="Open camera" />
+        <ListButton
+          onPress={() => showCamera(ImagePicker.MediaTypeOptions.All)}
+          title="Take photo or video"
+        />
+        <ListButton
+          onPress={() => showCamera(ImagePicker.MediaTypeOptions.Images)}
+          title="Take photo"
+        />
+        <ListButton
+          onPress={() => showCamera(ImagePicker.MediaTypeOptions.Videos)}
+          title="Take video"
+        />
         <ListButton onPress={showCameraWithEditing} title="Open camera and edit" />
-        <ListButton onPress={showPicker} title="Pick photo or video" />
+        <ListButton
+          onPress={() => showPicker(ImagePicker.MediaTypeOptions.All)}
+          title="Pick photo or video"
+        />
+        <ListButton
+          onPress={() => showPicker(ImagePicker.MediaTypeOptions.Images)}
+          title="Pick photo"
+        />
+        <ListButton
+          onPress={() => showPicker(ImagePicker.MediaTypeOptions.Videos)}
+          title="Pick video"
+        />
         <ListButton onPress={showPickerWithEditing} title="Pick photo and edit" />
 
         {this._maybeRenderSelection()}

@@ -1,26 +1,9 @@
 import { UnavailabilityError } from 'expo-errors';
+
 import ExponentImagePicker from './ExponentImagePicker';
+import { CameraOptions, ImageLibraryOptions, ImageResult } from './ImagePicker.types';
 
-const MEDIA_TYPE_OPTIONS = {
-  All: 'All',
-  Videos: 'Videos',
-  Images: 'Images',
-};
-
-type ImageInfo = {
-  uri: string;
-  width: number;
-  height: number;
-};
-
-type ImageResult = { cancelled: true } | ({ cancelled: false } & ImageInfo);
-
-type ImageLibraryOptions = {
-  allowsEditing?: boolean;
-  aspect?: [number, number];
-  quality?: number;
-  mediaTypes?: keyof (typeof MEDIA_TYPE_OPTIONS);
-};
+export { default as MediaTypeOptions } from './MediaTypeOptions';
 
 export async function launchImageLibraryAsync(
   options: ImageLibraryOptions = {}
@@ -31,17 +14,9 @@ export async function launchImageLibraryAsync(
   return ExponentImagePicker.launchImageLibraryAsync(options);
 }
 
-type CameraOptions = {
-  allowsEditing?: boolean;
-  aspect?: [number, number];
-  quality?: number;
-};
-
 export async function launchCameraAsync(options: CameraOptions = {}): Promise<ImageResult> {
   if (!ExponentImagePicker.launchCameraAsync) {
     throw new UnavailabilityError('ImagePicker', 'launchCameraAsync');
   }
   return ExponentImagePicker.launchCameraAsync(options);
 }
-
-export const MediaTypeOptions = MEDIA_TYPE_OPTIONS;
