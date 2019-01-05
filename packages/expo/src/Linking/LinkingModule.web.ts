@@ -13,14 +13,17 @@ const EventTypes = ['url'];
 
 const messageEventKey = 'message';
 
-const listeners = [];
+const listeners: Array<[HandlerFunction, any]> = [];
 
 function _validateURL(url: string): void {
   invariant(typeof url === 'string', `Invalid URL: should be a string. Instead found: ${url}`);
   invariant(url, 'Invalid URL: cannot be empty');
 }
 
-export default {
+// For better parity this should extend EventEmitter like React Native
+class Linking {
+  constructor() {}
+
   addEventListener(type: 'url', handler: HandlerFunction): void {
     invariant(
       EventTypes.indexOf(type) !== -1,
@@ -29,7 +32,8 @@ export default {
     const callback = nativeEvent => handler({ url: window.location.href, nativeEvent });
     listeners.push([handler, callback]);
     window.addEventListener(messageEventKey, callback, false);
-  },
+  }
+
   removeEventListener(type: 'url', handler: HandlerFunction): void {
     invariant(
       EventTypes.indexOf(type) !== -1,
@@ -43,16 +47,21 @@ export default {
     const callback = listeners[listenerIndex][1];
     window.removeEventListener(messageEventKey, callback, false);
     listeners.splice(listenerIndex, 1);
-  },
+  }
+
   async canOpenURL(url: string): Promise<boolean> {
     _validateURL(url);
     return true;
-  },
+  }
+
   async getInitialURL(): Promise<string> {
     return window.location.href;
-  },
+  }
+
   async openURL(url: string): Promise<void> {
     _validateURL(url);
     window.location.href = url;
-  },
-};
+  }
+}
+
+export default new Linking();
