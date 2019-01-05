@@ -51,7 +51,7 @@ export { Brightness };
 import * as Calendar from './Calendar';
 export { Calendar };
 export { default as DangerZone } from './DangerZone';
-import * as DocumentPicker from './DocumentPicker';
+import * as DocumentPicker from './DocumentPicker/DocumentPicker';
 export { DocumentPicker };
 export { default as ErrorRecovery } from './ErrorRecovery/ErrorRecovery';
 import * as Facebook from './Facebook/Facebook';
