@@ -1,0 +1,20 @@
+{
+  "name": "expo-bluetooth",
+  "version": "1.0.0",
+  "description": "Expo Module Template standalone module",
+  "main": "index.js",
+  "keywords": [
+    "react-native",
+    "expo"
+  ],
+  "homepage": "https://docs.expo.io/",
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "dependencies": {
+    "expo-core": "~1.2.0"
+  },
+  "devDependencies": {
+    "babel-preset-expo": "^5.0.0",
+    "flow-bin": "^0.77.0"
+  }
+}
