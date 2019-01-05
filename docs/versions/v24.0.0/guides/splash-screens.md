@@ -2,7 +2,7 @@
 title: Splash Screens
 ---
 
-A splash screen, also known as a launch screen, is the first screen that a user sees when opening your app, and it stays visible while the app is loading. You can control when the splash screen disappears by using the [AppLoading](../sdk/app-loading.html) component.
+A splash screen, also known as a launch screen, is the first screen that a user sees when opening your app, and it stays visible while the app is loading. You can control when the splash screen disappears by using the [AppLoading](../../sdk/app-loading/) component.
 
 ## Customize the splash screen for your app
 
@@ -71,12 +71,12 @@ Notice that in the last example, we stretched the image to fill the entire width
 
 Any of the splash options can be configured on a per-platform basis by nesting the configuration under the `android` or `ios` keys within `app.json` (the same as how you would customize an icon for either platform). In addition to this, certain configuration options are only available on iOS or Android.
 
-- On iOS, you can set [ios.splash.tabletImage](configuration.html#tabletimage) if you would like to have a different splash image on iPads. 
-- On Android, you can set splash images for [different device DPIs](configuration.html#ldpi), from `ldpi` to `xxxhdpi`.
+- On iOS, you can set [ios.splash.tabletImage](../../workflow/configuration/#tabletimage) if you would like to have a different splash image on iPads. 
+- On Android, you can set splash images for [different device DPIs](../../workflow/configuration/#ldpi), from `ldpi` to `xxxhdpi`.
 
 ### Using `AppLoading`
 
-As long as `AppLoading` is the only component rendered in your application, your splash screen will remain visible. We recommend using `AppLoading` while caching assets or fetching any data from `AsyncStorage` to set the app up. [Read more about AppLoading](../sdk/app-loading.html).
+As long as `AppLoading` is the only component rendered in your application, your splash screen will remain visible. We recommend using `AppLoading` while caching assets or fetching any data from `AsyncStorage` to set the app up. [Read more about AppLoading](../../sdk/app-loading/).
 
 ### Differences between environments
 

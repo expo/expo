@@ -9,7 +9,7 @@ ${<SnackEmbed snackId="r116LYJne" />}
 
 #### Handling deep links from the WebBrowser
 
-If you are using the `WebBrowser` window for authentication or another use case where you would like to pass information back into your app through a deep link, be sure to add a handler with `Linking.addEventListener` before opening the browser. When the listener fires, you should call `WebBrowser.dismissBrowser()` -- it will not automatically dismiss when a deep link is handled. Aside from that, redirects from `WebBrowser` work the same as other deep links. [Read more about it in the Linking guide](https://docs.expo.io/versions/latest/guides/linking.html#handling-links-into-your-app).
+If you are using the `WebBrowser` window for authentication or another use case where you would like to pass information back into your app through a deep link, be sure to add a handler with `Linking.addEventListener` before opening the browser. When the listener fires, you should call `WebBrowser.dismissBrowser()` -- it will not automatically dismiss when a deep link is handled. Aside from that, redirects from `WebBrowser` work the same as other deep links. [Read more about it in the Linking guide](/versions/latest/workflow/linking/#handling-links-into-your-app).
 
 ## `Expo.WebBrowser`
 
@@ -36,7 +36,7 @@ the given url.
 #### Arguments
 
 - **url (_string_)** -- The url to open in the web browser. This should be a login page.
-- **redirectUrl (_string_)** -- **Optional**: the url to deep link back into your app. By default, this will be [Expo.Constants.linkingUrl](constants.html#expoconstantslinkinguri)
+- **redirectUrl (_string_)** -- **Optional**: the url to deep link back into your app. By default, this will be [Expo.Constants.linkingUrl](../constants/#expoconstantslinkinguri)
 
 Returns a Promise:
 

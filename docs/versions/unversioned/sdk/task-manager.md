@@ -5,8 +5,8 @@ title: TaskManager
 An API that allows to manage tasks, especially these running while your app is in the background.
 Some features of this module are used by other modules under the hood. Here is a list of modules using TaskManager:
 
-- [Location](./location)
-- [BackgroundFetch](./background-fetch)
+- [Location](../location)
+- [BackgroundFetch](../background-fetch)
 
 *Even though this module is a universal module, it is **not compatible** with vanilla React Native applications yet.*
 
@@ -102,7 +102,7 @@ Example:
 ### `TaskManager.unregisterTaskAsync(taskName)`
 
 Unregisters task from the app, so the app will not be receiving updates for that task anymore.
-*It is recommended to use methods specialized by modules that registered the task, eg. [Location.stopLocationUpdatesAsync](./location#expolocationstoplocationupdatesasynctaskname).*
+*It is recommended to use methods specialized by modules that registered the task, eg. [Location.stopLocationUpdatesAsync](../location#expolocationstoplocationupdatesasynctaskname).*
 
 #### Arguments
 

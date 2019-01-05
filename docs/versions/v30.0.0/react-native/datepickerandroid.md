@@ -28,9 +28,9 @@ try {
 
 ### Methods
 
-* [`open`](datepickerandroid.md#open)
-* [`dateSetAction`](datepickerandroid.md#datesetaction)
-* [`dismissedAction`](datepickerandroid.md#dismissedaction)
+* [`open`](../datepickerandroid/#open)
+* [`dateSetAction`](../datepickerandroid/#datesetaction)
+* [`dismissedAction`](../datepickerandroid/#dismissedaction)
 
 ---
 

@@ -4,7 +4,7 @@ title: Permissions
 
 When it comes to adding functionality that can access potentially sensitive information on a user's device, such as their location, or possibly send them possibly unwanted push notifications, you will need to ask the user for their permission first. Unless you've already asked their permission, then no need. And so we have the `Permissions` module.
 
-If you are deploying your app to the Apple iTunes Store, you should consider adding additional metadata to your app in order to customize the system permissions dialog and explain why your app requires permissions. See more info in the [App Store Deployment Guide](../guides/app-stores.html#system-permissions-dialogs-on-ios).
+If you are deploying your app to the Apple iTunes Store, you should consider adding additional metadata to your app in order to customize the system permissions dialog and explain why your app requires permissions. See more info in the [App Store Deployment Guide](../../distribution/app-stores/#system-permissions-dialogs-on-ios).
 
 ## Manually testing permissions
 
@@ -121,7 +121,7 @@ On iOS ask for this permission type individually.
 
 > **Note (iOS):** In Expo Client this permission will always ask the user for permission to access location data while the app is in use.
 >
-> If you would like to access location data in a standalone app, note that you'll need to provide location usage descriptions in `app.json`. For more information see [Deploying to App Stores guide](guides/app-stores.html#system-permissions-dialogs-on-ios).
+> If you would like to access location data in a standalone app, note that you'll need to provide location usage descriptions in `app.json`. For more information see [Deploying to App Stores guide](../../distribution/app-stores/#system-permissions-dialogs-on-ios).
 >
 > **What location usage descriptions should I provide?** Due to the design of the location permission API on iOS we aren't able to provide you with methods for asking for `whenInUse` or `always` location usage permission specifically. However, you can customize the behavior by providing the following sets of usage descriptions:
 > - if you provide only `NSLocationWhenInUseUsageDescription`, your application will only ever ask for location access permission "when in use",
@@ -164,7 +164,7 @@ The permissions type for changing brighness of the screen
 
 ## Android: permissions equivalents inside `app.json`
 
-In order to request permissions in a standalone Android app, you need to specify the corresponding native permission types in the `android.permissions` key inside `app.json` ([read more about configuration](../workflow/configuration.html#android)). The mapping between `Expo.Permissions` values and native permission types is as follows:
+In order to request permissions in a standalone Android app, you need to specify the corresponding native permission types in the `android.permissions` key inside `app.json` ([read more about configuration](../../workflow/configuration/#android)). The mapping between `Expo.Permissions` values and native permission types is as follows:
 
 | Expo            | Android                                           |
 | --------------- | --------------------------------------------------|

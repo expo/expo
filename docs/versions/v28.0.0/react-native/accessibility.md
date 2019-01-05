@@ -168,7 +168,7 @@ In the above example, the yellow layout and its descendants are completely invis
 
 ### Checking if a Screen Reader is Enabled
 
-The `AccessibilityInfo` API allows you to determine whether or not a screen reader is currently active. See the [AccessibilityInfo documentation](accessibilityinfo.md) for details.
+The `AccessibilityInfo` API allows you to determine whether or not a screen reader is currently active. See the [AccessibilityInfo documentation](../accessibilityinfo/) for details.
 
 ### Sending Accessibility Events (Android)
 

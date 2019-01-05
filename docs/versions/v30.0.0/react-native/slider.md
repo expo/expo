@@ -7,24 +7,24 @@ A component used to select a single value from a range of values.
 
 ### Props
 
-* [View props...](view.md#props)
+* [View props...](../view/#props)
 
-- [`style`](slider.md#style)
-- [`disabled`](slider.md#disabled)
-- [`maximumValue`](slider.md#maximumvalue)
-- [`minimumTrackTintColor`](slider.md#minimumtracktintcolor)
-- [`minimumValue`](slider.md#minimumvalue)
-- [`onSlidingComplete`](slider.md#onslidingcomplete)
-- [`onValueChange`](slider.md#onvaluechange)
-- [`step`](slider.md#step)
-- [`maximumTrackTintColor`](slider.md#maximumtracktintcolor)
-- [`testID`](slider.md#testid)
-- [`value`](slider.md#value)
-- [`thumbTintColor`](slider.md#thumbtintcolor)
-- [`maximumTrackImage`](slider.md#maximumtrackimage)
-- [`minimumTrackImage`](slider.md#minimumtrackimage)
-- [`thumbImage`](slider.md#thumbimage)
-- [`trackImage`](slider.md#trackimage)
+- [`style`](../slider/#style)
+- [`disabled`](../slider/#disabled)
+- [`maximumValue`](../slider/#maximumvalue)
+- [`minimumTrackTintColor`](../slider/#minimumtracktintcolor)
+- [`minimumValue`](../slider/#minimumvalue)
+- [`onSlidingComplete`](../slider/#onslidingcomplete)
+- [`onValueChange`](../slider/#onvaluechange)
+- [`step`](../slider/#step)
+- [`maximumTrackTintColor`](../slider/#maximumtracktintcolor)
+- [`testID`](../slider/#testid)
+- [`value`](../slider/#value)
+- [`thumbTintColor`](../slider/#thumbtintcolor)
+- [`maximumTrackImage`](../slider/#maximumtrackimage)
+- [`minimumTrackImage`](../slider/#minimumtrackimage)
+- [`thumbImage`](../slider/#thumbimage)
+- [`trackImage`](../slider/#trackimage)
 
 ---
 
@@ -68,7 +68,7 @@ The color used for the track to the left of the button. Overrides the default bl
 
 | Type               | Required |
 | ------------------ | -------- |
-| [color](colors.md) | No       |
+| [color](../colors/) | No       |
 
 ---
 
@@ -118,7 +118,7 @@ The color used for the track to the right of the button. Overrides the default g
 
 | Type               | Required |
 | ------------------ | -------- |
-| [color](colors.md) | No       |
+| [color](../colors/) | No       |
 
 ---
 
@@ -150,7 +150,7 @@ Color of the foreground switch grip.
 
 | Type               | Required | Platform |
 | ------------------ | -------- | -------- |
-| [color](colors.md) | No       | Android  |
+| [color](../colors/) | No       | Android  |
 
 ---
 

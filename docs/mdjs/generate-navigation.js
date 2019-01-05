@@ -74,7 +74,7 @@ const generateNavLinks = (path_, arr) => {
   let items = fs.readdirSync(path_);
 
   let processUrl = path => {
-    let newPath = path.replace(/^versions/, '/versions').replace(/.md$/, '');
+    let newPath = path.replace(/^versions/, '/versions').replace(/.md$/, '/');
     return newPath;
   };
 
@@ -82,15 +82,15 @@ const generateNavLinks = (path_, arr) => {
     const filePath = path.join(path_, items[i]);
     if (fs.statSync(filePath).isDirectory()) {
       const { name } = path.parse(filePath);
-      let indexPage = `${filePath}/index.md`;
       let initArr = [];
 
       // Make sure to add '/' at the end of index pages so that relative links in the markdown work correctly
-      let href = fs.existsSync(indexPage) ? processUrl(filePath) + '/' : '';
+      let href = fs.existsSync(filePath + '/index.md') ? processUrl(filePath) + '/' : '';
 
       // 'Introduction' section has a 'Quick Start' page that's actually at the root i.e. `/versions/v25.0/`, etc.
       if (name === 'introduction') {
-        initArr.push({ name: 'Quick Start', href: path.parse(href).dir + '/' });
+        // TODO: find what's eating the final slash
+        initArr.push({ name: 'Quick Start', href: path.parse(href).dir + '//' });
       }
       // 'SDK' section has a 'Introduction' page that's the same as the index page
       if (name === 'sdk') {

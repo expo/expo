@@ -76,7 +76,7 @@ If you are loading in your app into the expo client by passing in a URL string, 
 
 Here is an example URL from a remote server: [https://quinlanj.github.io/self-host/android-index.json](https://quinlanj.github.io/self-host/android-index.json)
 
-Here is an example URL from localhost: [http://localhost:8000/android-index.json](http://localhost:8000/android-index.json)
+Here is an example URL from localhost: `http://localhost:8000/android-index.json`
 
 ## Advanced Topics
 ### Debugging

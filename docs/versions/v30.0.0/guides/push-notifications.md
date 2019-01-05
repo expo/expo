@@ -74,7 +74,7 @@ Push notifications have to come from somewhere, and that somewhere is your serve
 
 Check out the source if you would like to implement it in another language.
 
-> **Note:** For Android, you'll also need to upload your Firebase Cloud Messaging server key to Expo so that Expo can send notifications to your app. **This step is necessary** unless you are not creating your own APK and using just the Expo Client app from Google Play. Follow the guide on [Using FCM for Push Notifications](../guides/using-fcm) to learn how to create a Firebase project, get your FCM server key,and upload the key to Expo.
+> **Note:** For Android, you'll also need to upload your Firebase Cloud Messaging server key to Expo so that Expo can send notifications to your app. **This step is necessary** unless you are not creating your own APK and using just the Expo Client app from Google Play. Follow the guide on [Using FCM for Push Notifications](../../guides/using-fcm) to learn how to create a Firebase project, get your FCM server key,and upload the key to Expo.
 
 The [Expo push notification tool](https://expo.io/dashboard/notifications) is also useful for testing push notifications during development. It lets you easily send test notifications to your device.
 

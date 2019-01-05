@@ -2,9 +2,9 @@
 title: Advanced ExpoKit Topics
 ---
 
-This guide goes deeper into a few [ExpoKit](expokit.html) topics that aren't critical
+This guide goes deeper into a few [ExpoKit](../expokit/) topics that aren't critical
 right out of the box, but that you may encounter down the road. If you're not familiar with
-ExpoKit, you might want to read [the ExpoKit guide](expokit.html) first.
+ExpoKit, you might want to read [the ExpoKit guide](../expokit/) first.
 
 ## Un-detaching
 
@@ -86,4 +86,4 @@ If everything worked properly your screen should look like this:
 
 ## Using Google Maps
 
-If you integrate Google Maps to your ExpoKit app with the MapView component, you may need to follow additional instructions to provide your Google Maps API key. See the [MapView docs](../sdk/map-view).
+If you integrate Google Maps to your ExpoKit app with the MapView component, you may need to follow additional instructions to provide your Google Maps API key. See the [MapView docs](../../sdk/map-view/).

@@ -30,7 +30,7 @@ with the `exp` cli. The binary produced will only pull releases published under 
 
 ## Get Channels
 
- You can access the channel your release is published under with the `releaseChannel` field in the [manifest object](https://docs.expo.io/versions/latest/sdk/constants.html#expoconstantsmanifest).
+ You can access the channel your release is published under with the `releaseChannel` field in the [manifest object](/versions/latest/sdk/constants/#expoconstantsmanifest).
 
 ## Example Workflow
 

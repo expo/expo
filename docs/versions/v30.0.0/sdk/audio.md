@@ -100,11 +100,11 @@ A static convenience method to construct and load a sound is also provided:
 
         -   A dictionary of the form `{ uri: 'http://path/to/file' }` with a network URL pointing to an audio file on the web.
         -   `require('path/to/file')` for an audio file asset in the source code directory.
-        -   An [`Expo.Asset`](asset.html) object for an audio file asset.
+        -   An [`Expo.Asset`](../asset/) object for an audio file asset.
 
-    -   **initialStatus (_PlaybackStatusToSet_)** -- The initial intended `PlaybackStatusToSet` of the sound, whose values will override the default initial playback status. This value defaults to `{}` if no parameter is passed. See the [AV documentation](av.html) for details on `PlaybackStatusToSet` and the default initial playback status.
+    -   **initialStatus (_PlaybackStatusToSet_)** -- The initial intended `PlaybackStatusToSet` of the sound, whose values will override the default initial playback status. This value defaults to `{}` if no parameter is passed. See the [AV documentation](../av/) for details on `PlaybackStatusToSet` and the default initial playback status.
 
-    -   **onPlaybackStatusUpdate (_function_)** -- A function taking a single parameter `PlaybackStatus`. This value defaults to `null` if no parameter is passed. See the [AV documentation](av.html) for details on the functionality provided by `onPlaybackStatusUpdate`
+    -   **onPlaybackStatusUpdate (_function_)** -- A function taking a single parameter `PlaybackStatus`. This value defaults to `null` if no parameter is passed. See the [AV documentation](../av/) for details on the functionality provided by `onPlaybackStatusUpdate`
 
     -   **downloadFirst (_boolean_)** -- If set to true, the system will attempt to download the resource to the device before loading. This value defaults to `true`. Note that at the moment, this will only work for `source`s of the form `require('path/to/file')` or `Asset` objects.
 
@@ -113,7 +113,7 @@ A static convenience method to construct and load a sound is also provided:
     A `Promise` that is rejected if creation failed, or fulfilled with the following dictionary if creation succeeded:
 
     -   `sound` : the newly created and loaded `Sound` object.
-    -   `status` : the `PlaybackStatus` of the `Sound` object. See the [AV documentation](av.html) for further information.
+    -   `status` : the `PlaybackStatus` of the `Sound` object. See the [AV documentation](../av/) for further information.
 
     #### Example
 
@@ -129,7 +129,7 @@ A static convenience method to construct and load a sound is also provided:
     }
     ```
 
-The rest of the API for `Expo.Audio.Sound` is the same as the imperative playback API for `Expo.Video`-- see the [AV documentation](av.html) for further information:
+The rest of the API for `Expo.Audio.Sound` is the same as the imperative playback API for `Expo.Video`-- see the [AV documentation](../av/) for further information:
 
 -   `soundObject.loadAsync(source, initialStatus = {}, downloadFirst = true)`
 
@@ -167,7 +167,7 @@ The rest of the API for `Expo.Audio.Sound` is the same as the imperative playbac
 
 This class represents an audio recording. After creating an instance of this class, `prepareToRecordAsync` must be called in order to record audio. Once recording is finished, call `stopAndUnloadAsync`. Note that only one recorder is allowed to exist in the state between `prepareToRecordAsync` and `stopAndUnloadAsync` at any given time.
 
-Note that your experience must request audio recording permissions in order for recording to function. See the [`Permissions` module](./permissions.html) for more details.
+Note that your experience must request audio recording permissions in order for recording to function. See the [`Permissions` module](../permissions/) for more details.
 
 #### Returns
 
@@ -287,16 +287,16 @@ try {
 
     #### Parameters
 
-    -   **initialStatus (_PlaybackStatusToSet_)** -- The initial intended `PlaybackStatusToSet` of the sound, whose values will override the default initial playback status. This value defaults to `{}` if no parameter is passed. See the [AV documentation](av.html) for details on `PlaybackStatusToSet` and the default initial playback status.
+    -   **initialStatus (_PlaybackStatusToSet_)** -- The initial intended `PlaybackStatusToSet` of the sound, whose values will override the default initial playback status. This value defaults to `{}` if no parameter is passed. See the [AV documentation](../av/) for details on `PlaybackStatusToSet` and the default initial playback status.
 
-    -   **onPlaybackStatusUpdate (_function_)** -- A function taking a single parameter `PlaybackStatus`. This value defaults to `null` if no parameter is passed. See the [AV documentation](av.html) for details on the functionality provided by `onPlaybackStatusUpdate`
+    -   **onPlaybackStatusUpdate (_function_)** -- A function taking a single parameter `PlaybackStatus`. This value defaults to `null` if no parameter is passed. See the [AV documentation](../av/) for details on the functionality provided by `onPlaybackStatusUpdate`
 
     #### Returns
 
     A `Promise` that is rejected if creation failed, or fulfilled with the following dictionary if creation succeeded:
 
     -   `sound` : the newly created and loaded `Sound` object.
-    -   `status` : the `PlaybackStatus` of the `Sound` object. See the [AV documentation](av.html) for further information.
+    -   `status` : the `PlaybackStatus` of the `Sound` object. See the [AV documentation](../av/) for further information.
 
 ### `RecordingOptions`
 

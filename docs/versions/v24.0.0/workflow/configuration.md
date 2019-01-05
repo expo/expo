@@ -17,7 +17,7 @@ title: Configuration with app.json
 
 `app.json` was previous referred to as `exp.json`, but for consistency with [Create React Native App](https://github.com/react-community/create-react-native-app) it has been consolidated under one file. If you are converting your app from using `exp.json` to `app.json`, all you need to do is add an `"expo"` key at the root of `app.json`, as the parent of all other keys.
 
-Most configuration from `app.json` is accessible at runtime from your JavaScript code via [`Expo.Constants.manifest`](../sdk/constants.html#expoconstantsmanifest). Sensitive information such as secret keys are removed. See the `"extra"` key below for information about how to pass arbitrary configuration data to your app.
+Most configuration from `app.json` is accessible at runtime from your JavaScript code via [`Expo.Constants.manifest`](../../sdk/constants/#expoconstantsmanifest). Sensitive information such as secret keys are removed. See the `"extra"` key below for information about how to pass arbitrary configuration data to your app.
 
 The following is a list of properties that are available for you under the `"expo"` key in `app.json`:
 
@@ -159,7 +159,7 @@ The following is a list of properties that are available for you under the `"exp
 
 - `extra`
 
-   Any extra fields you want to pass to your experience. Values are accessible via `Expo.Constants.manifest.extra` ([read more](../sdk/constants.html#expoconstantsmanifest))
+   Any extra fields you want to pass to your experience. Values are accessible via `Expo.Constants.manifest.extra` ([read more](../../sdk/constants/#expoconstantsmanifest))
 
 - `rnCliPath`
 
@@ -465,4 +465,4 @@ The following is a list of properties that are available for you under the `"exp
 
 - `assetBundlePatterns`
 
-   An array of file glob strings which point to assets that will be bundled within your standalone app binary. Read more in the [Offline Support guide](https://docs.expo.io/versions/latest/guides/offline-support.html)
+   An array of file glob strings which point to assets that will be bundled within your standalone app binary. Read more in the [Offline Support guide](/versions/latest/guides/offline-support/)

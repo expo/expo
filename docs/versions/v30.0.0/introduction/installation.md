@@ -44,7 +44,7 @@ Once the simulator is open and you have a project open in Expo Dev Tools, you ca
 
 ### Android emulator
 
-Follow our [Android Studio emulator guide](../workflow/android-studio-emulator.html) to set up Android tools and create a virtual device. Start up the virtual device when it's ready.
+Follow our [Android Studio emulator guide](../../workflow/android-studio-emulator/) to set up Android tools and create a virtual device. Start up the virtual device when it's ready.
 
 Once the emulator is open and you have a project open in Expo Dev Tools, you can press _Run on Android device/emulator_ in Expo Dev Tools and it will install the Expo client to the emulator and open up your app inside of it.
 

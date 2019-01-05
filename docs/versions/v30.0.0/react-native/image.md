@@ -107,33 +107,33 @@ dependencies {
 
 ### Props
 
-* [`style`](image.md#style)
-* [`blurRadius`](image.md#blurradius)
-* [`onLayout`](image.md#onlayout)
-* [`onLoad`](image.md#onload)
-* [`onLoadEnd`](image.md#onloadend)
-* [`onLoadStart`](image.md#onloadstart)
-* [`resizeMode`](image.md#resizemode)
-* [`source`](image.md#source)
-* [`loadingIndicatorSource`](image.md#loadingindicatorsource)
-* [`onError`](image.md#onerror)
-* [`testID`](image.md#testid)
-* [`resizeMethod`](image.md#resizemethod)
-* [`accessibilityLabel`](image.md#accessibilitylabel)
-* [`accessible`](image.md#accessible)
-* [`capInsets`](image.md#capinsets)
-* [`defaultSource`](image.md#defaultsource)
-* [`onPartialLoad`](image.md#onpartialload)
-* [`onProgress`](image.md#onprogress)
-* [`fadeDuration`](image.md#fadeduration)
+* [`style`](../image/#style)
+* [`blurRadius`](../image/#blurradius)
+* [`onLayout`](../image/#onlayout)
+* [`onLoad`](../image/#onload)
+* [`onLoadEnd`](../image/#onloadend)
+* [`onLoadStart`](../image/#onloadstart)
+* [`resizeMode`](../image/#resizemode)
+* [`source`](../image/#source)
+* [`loadingIndicatorSource`](../image/#loadingindicatorsource)
+* [`onError`](../image/#onerror)
+* [`testID`](../image/#testid)
+* [`resizeMethod`](../image/#resizemethod)
+* [`accessibilityLabel`](../image/#accessibilitylabel)
+* [`accessible`](../image/#accessible)
+* [`capInsets`](../image/#capinsets)
+* [`defaultSource`](../image/#defaultsource)
+* [`onPartialLoad`](../image/#onpartialload)
+* [`onProgress`](../image/#onprogress)
+* [`fadeDuration`](../image/#fadeduration)
 
 ### Methods
 
-* [`getSize`](image.md#getsize)
-* [`prefetch`](image.md#prefetch)
-* [`abortPrefetch`](image.md#abortprefetch)
-* [`queryCache`](image.md#querycache)
-* [`resolveAssetSource`](image.md#resolveassetsource)
+* [`getSize`](../image/#getsize)
+* [`prefetch`](../image/#prefetch)
+* [`abortPrefetch`](../image/#abortprefetch)
+* [`queryCache`](../image/#querycache)
+* [`resolveAssetSource`](../image/#resolveassetsource)
 
 ---
 
@@ -149,11 +149,11 @@ dependencies {
 | ----- | -------- |
 | style | No       |
 
-* [Layout Props...](layout-props.md#props)
+* [Layout Props...](../layout-props/#props)
 
-* [Shadow Props...](shadow-props.md#props)
+* [Shadow Props...](../shadow-props/#props)
 
-* [Transforms...](transforms.md#props)
+* [Transforms...](../transforms/#props)
 
 * **`borderTopRightRadius`**: number
 
@@ -163,13 +163,13 @@ dependencies {
 
 * **`borderBottomRightRadius`**: number
 
-* **`borderColor`**: [color](colors.md)
+* **`borderColor`**: [color](../colors/)
 
 * **`borderRadius`**: number
 
 * **`borderTopLeftRadius`**: number
 
-* **`backgroundColor`**: [color](colors.md)
+* **`backgroundColor`**: [color](../colors/)
 
 * **`borderWidth`**: number
 
@@ -179,7 +179,7 @@ dependencies {
 
 * **`resizeMode`**: Object.keys(ImageResizeMode)
 
-* **`tintColor`**: [color](colors.md)
+* **`tintColor`**: [color](../colors/)
 
   Changes the color of all the non-transparent pixels to the tintColor.
 

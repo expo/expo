@@ -57,11 +57,11 @@ class ScreenReaderStatusExample extends React.Component {
 
 ### Methods
 
-* [`fetch`](accessibilityinfo.md#fetch)
-* [`addEventListener`](accessibilityinfo.md#addeventlistener)
-* [`setAccessibilityFocus`](accessibilityinfo.md#setaccessibilityfocus)
-* [`announceForAccessibility`](accessibilityinfo.md#announceforaccessibility)
-* [`removeEventListener`](accessibilityinfo.md#removeeventlistener)
+* [`fetch`](../accessibilityinfo/#fetch)
+* [`addEventListener`](../accessibilityinfo/#addeventlistener)
+* [`setAccessibilityFocus`](../accessibilityinfo/#setaccessibilityfocus)
+* [`announceForAccessibility`](../accessibilityinfo/#announceforaccessibility)
+* [`removeEventListener`](../accessibilityinfo/#removeeventlistener)
 
 ---
 

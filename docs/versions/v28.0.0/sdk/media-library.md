@@ -10,7 +10,7 @@ Requires `Permissions.CAMERA_ROLL` permissions.
 
 ### `Expo.MediaLibrary.createAssetAsync(localUri)`
 
-Creates an asset from existing file. The most common use case is to save a picture taken by [Camera](./camera.html).
+Creates an asset from existing file. The most common use case is to save a picture taken by [Camera](../camera/).
 
 ```
 const { uri } = await camera.takePictureAsync();

@@ -55,16 +55,16 @@ const styles = StyleSheet.create({
 
 ### Props
 
-* [View props...](view.md#props)
+* [View props...](../view/#props)
 
-- [`date`](datepickerios.md#date)
-- [`onDateChange`](datepickerios.md#ondatechange)
-- [`maximumDate`](datepickerios.md#maximumdate)
-- [`minimumDate`](datepickerios.md#minimumdate)
-- [`minuteInterval`](datepickerios.md#minuteinterval)
-- [`mode`](datepickerios.md#mode)
-- [`locale`](datepickerios.md#locale)
-- [`timeZoneOffsetInMinutes`](datepickerios.md#timezoneoffsetinminutes)
+- [`date`](../datepickerios/#date)
+- [`onDateChange`](../datepickerios/#ondatechange)
+- [`maximumDate`](../datepickerios/#maximumdate)
+- [`minimumDate`](../datepickerios/#minimumdate)
+- [`minuteInterval`](../datepickerios/#minuteinterval)
+- [`mode`](../datepickerios/#mode)
+- [`locale`](../datepickerios/#locale)
+- [`timeZoneOffsetInMinutes`](../datepickerios/#timezoneoffsetinminutes)
 
 ---
 
@@ -120,7 +120,7 @@ Restricts the range of possible date/time values.
 | ---- | -------- |
 | Date | No       |
 
-See [`maximumDate`](datepickerios.md#maximumdate) for an example image.
+See [`maximumDate`](../datepickerios/#maximumdate) for an example image.
 
 ---
 

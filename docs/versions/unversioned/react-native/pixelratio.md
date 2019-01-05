@@ -33,10 +33,10 @@ In React Native, everything in JavaScript and within the layout engine works wit
 
 ### Methods
 
-* [`get`](pixelratio.md#get)
-* [`getFontScale`](pixelratio.md#getfontscale)
-* [`getPixelSizeForLayoutSize`](pixelratio.md#getpixelsizeforlayoutsize)
-* [`roundToNearestPixel`](pixelratio.md#roundtonearestpixel)
+* [`get`](../pixelratio/#get)
+* [`getFontScale`](../pixelratio/#getfontscale)
+* [`getPixelSizeForLayoutSize`](../pixelratio/#getpixelsizeforlayoutsize)
+* [`roundToNearestPixel`](../pixelratio/#roundtonearestpixel)
 
 ---
 

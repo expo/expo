@@ -7,7 +7,7 @@ title: FaceDetector
 ## Known issues
 
 - Android does not recognize faces that aren't aligned with the interface (top of the interface matches top of the head).
-- You cannot use this without detaching. More information [here](https://docs.expo.io/versions/latest/expokit/advanced-expokit-topics#enabling-optional-expo-modules-on-ios)
+- You cannot use this without detaching. More information [here](/versions/latest/expokit/advanced-expokit-topics/#enabling-optional-expo-modules-on-ios)
 
 ## Comprehensive Example
 
@@ -17,7 +17,7 @@ Check out a full example at [expo/camerja](https://github.com/expo/camerja). You
 
 ## Methods
 
-To use methods that `FaceDetector` exposes one just has to import the module. (In detached apps on iOS face detection will be supported only if you add the `FaceDetector` subspec to your project. Refer to [Adding the Payments Module on iOS](payments#adding-the-payments-module-on-ios) for an example of adding a subspec to your detached project.)
+To use methods that `FaceDetector` exposes one just has to import the module. (In detached apps on iOS face detection will be supported only if you add the `FaceDetector` subspec to your project. Refer to [Adding the Payments Module on iOS](../payments/#adding-the-payments-module-on-ios) for an example of adding a subspec to your detached project.)
 
 ```javascript
 import { FaceDetector } from 'expo';

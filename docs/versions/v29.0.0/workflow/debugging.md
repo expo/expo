@@ -14,7 +14,7 @@ Make sure you have the latest Xcode (e.g. from the [Mac App Store](https://itune
 
 ### Android
 
-Follow our [Android Studio emulator guide](android-studio-emulator.html) to set up the Android tools and create a virtual device to use for testing.
+Follow our [Android Studio emulator guide](../android-studio-emulator/) to set up the Android tools and create a virtual device to use for testing.
 
 ## Developer Menu
 

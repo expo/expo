@@ -113,11 +113,11 @@ exp start
 exp start --android
 ```
 
-Once you connect, in the Expo app on the device, disable Live Reload and Hot Reloading. For more information, see [exp Command-Line Interface](exp-cli.html#exp-cli).
+Once you connect, in the Expo app on the device, disable Live Reload and Hot Reloading. For more information, see [exp Command-Line Interface](../exp-cli/#exp-cli).
 
 ### Using XDE
 
-For more information, see [XDE tour](../introduction/xde-tour.html#xde-tour).
+For more information, see [XDE tour](../../introduction/xde-tour/#xde-tour).
 
 ## 6. Publish your app
 
@@ -134,7 +134,7 @@ This will publish your app to a persistent URL on Expo, for example: <https://ex
 
 ### How do I add custom native modules?
 
-See [How do I add custom native code to my Expo project?](../introduction/faq.html#faq).
+See [How do I add custom native code to my Expo project?](../../introduction/faq/#faq).
 
 ### Does it support Google Closure advanced compilation?
 

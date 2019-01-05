@@ -5,11 +5,11 @@ title: PickerIOS
 
 ### Props
 
-* [View props...](view.md#props)
+* [View props...](../view/#props)
 
-- [`itemStyle`](pickerios.md#itemstyle)
-- [`onValueChange`](pickerios.md#onvaluechange)
-- [`selectedValue`](pickerios.md#selectedvalue)
+- [`itemStyle`](../pickerios/#itemstyle)
+- [`onValueChange`](../pickerios/#onvaluechange)
+- [`selectedValue`](../pickerios/#selectedvalue)
 
 ---
 
@@ -21,7 +21,7 @@ title: PickerIOS
 
 | Type                               | Required |
 | ---------------------------------- | -------- |
-| [text styles](text-style-props.md) | No       |
+| [text styles](../text-style-props/) | No       |
 
 ---
 

@@ -2,7 +2,7 @@
 title: Creating A 2D Game
 ---
 
-> **Notice** This tutorial is written for [Expo v22](https://docs.expo.io/versions/v22.0.0/index.html)
+> **Notice** This tutorial is written for Expo v22.
 
 ### Goal
 In this tutorial we want to show you how easy it is to create a 2D cross-platform mobile game with React Native, Expo, and Three.js. We'll be recreating a version of the popular (and addictive) game Flappy Bird!
@@ -19,7 +19,7 @@ ${<SnackEmbed snackId="@community/flappy-bird" />}
 * Expo XDE + iOS/Android App
 
 ### Getting Started
-The starter code sets up the basics of creating an Expo app with [Three.js](threejs.org/). It also has some a psuedo-lib called GameKit which emulates some of the core features from [phaser.js](https://phaser.io/).
+The starter code sets up the basics of creating an Expo app with [Three.js](https://threejs.org). It also has some a psuedo-lib called GameKit which emulates some of the core features from [phaser.js](https://phaser.io/).
 To get started open this snack: https://snack.expo.io/@community/flappy-bird-starter
 
 You should see a beautiful blank canvas!
@@ -751,7 +751,7 @@ render() {
 ### Loading Sounds
 
 Nothing makes a game for more real than good sound effects.
-Lucky for us everyone at Expo is a huge audiophile and as a result of this we have a dope [audio API](https://docs.expo.io/versions/v22.0.0/sdk/audio.html)
+Lucky for us everyone at Expo is a huge audiophile and as a result of this we have a dope audio API
 Let's add sounds whenever a key moment occurs:
 * Getting a point 😎
 * Flapping 🤔
@@ -797,7 +797,7 @@ setupAudio = async () => {
 ```
 
 1. Because loading audio isn't dependent on a GL View, we can load it asap 😮
-2. Here we define how audio is used in our app. You can learn more about these settings here: https://docs.expo.io/versions/v22.0.0/sdk/audio.html
+2. Here we define how audio is used in our app.
 3. Now we parse the preloaded audio assets and create a helper object for playing sounds.
 4. This function will restart the sound and play it for us
 

@@ -45,15 +45,15 @@ By default, queued tasks are executed together in a loop in one `setImmediate` b
 
 ### Methods
 
-* [`runAfterInteractions`](interactionmanager.md#runafterinteractions)
-* [`createInteractionHandle`](interactionmanager.md#createinteractionhandle)
-* [`clearInteractionHandle`](interactionmanager.md#clearinteractionhandle)
-* [`setDeadline`](interactionmanager.md#setdeadline)
+* [`runAfterInteractions`](../interactionmanager/#runafterinteractions)
+* [`createInteractionHandle`](../interactionmanager/#createinteractionhandle)
+* [`clearInteractionHandle`](../interactionmanager/#clearinteractionhandle)
+* [`setDeadline`](../interactionmanager/#setdeadline)
 
 ### Properties
 
-* [`Events`](interactionmanager.md#events)
-* [`addListener`](interactionmanager.md#addlistener)
+* [`Events`](../interactionmanager/#events)
+* [`addListener`](../interactionmanager/#addlistener)
 
 ---
 

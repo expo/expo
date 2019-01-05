@@ -13,7 +13,7 @@ Vibration patterns are currently unsupported.
 
 ### Methods
 
-* [`vibrate`](vibrationios.md#vibrate)
+* [`vibrate`](../vibrationios/#vibrate)
 
 ---
 

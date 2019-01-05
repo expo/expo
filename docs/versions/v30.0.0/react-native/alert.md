@@ -69,7 +69,7 @@ Alert.alert(
 
 ### Methods
 
-* [`alert`](alert.md#alert)
+* [`alert`](../alert/#alert)
 
 ---
 

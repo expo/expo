@@ -7,8 +7,8 @@ title: Clipboard
 
 ### Methods
 
-* [`getString`](clipboard.md#getstring)
-* [`setString`](clipboard.md#setstring)
+* [`getString`](../clipboard/#getstring)
+* [`setString`](../clipboard/#setstring)
 
 ---
 

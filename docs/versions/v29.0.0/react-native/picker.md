@@ -21,16 +21,16 @@ Renders the native picker component on iOS and Android. Example:
 
 ### Props
 
-* [View props...](view.md#props)
+* [View props...](../view/#props)
 
-- [`onValueChange`](picker.md#onvaluechange)
-- [`selectedValue`](picker.md#selectedvalue)
-- [`style`](picker.md#style)
-- [`testID`](picker.md#testid)
-- [`enabled`](picker.md#enabled)
-- [`mode`](picker.md#mode)
-- [`prompt`](picker.md#prompt)
-- [`itemStyle`](picker.md#itemstyle)
+- [`onValueChange`](../picker/#onvaluechange)
+- [`selectedValue`](../picker/#selectedvalue)
+- [`style`](../picker/#style)
+- [`testID`](../picker/#testid)
+- [`enabled`](../picker/#enabled)
+- [`mode`](../picker/#mode)
+- [`prompt`](../picker/#prompt)
+- [`itemStyle`](../picker/#itemstyle)
 
 ---
 
@@ -118,5 +118,5 @@ Style to apply to each of the item labels.
 
 | Type                               | Required | Platform |
 | ---------------------------------- | -------- | -------- |
-| [text styles](text-style-props.md) | No       | iOS      |
+| [text styles](../text-style-props/) | No       | iOS      |
 
