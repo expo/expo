@@ -5,17 +5,21 @@ class ExponentGyroscope extends PlatformModule {
     return 'ExponentGyroscope';
   }
 
-  handleMotion({ alpha, beta, gamma }) {
-    this.emitter.emit('gyroscopeDidUpdate', { alpha, beta, gamma });
-  }
+  isAvailableAsync = async (): Promise<boolean> => {
+    return DeviceOrientationEvent !== undefined;
+  };
 
-  startObserving() {
-    window.addEventListener('deviceorientation', this.handleMotion, true);
-  }
+  _handleMotion = ({ alpha: z, beta: y, gamma: x }) => {
+    this.emitter.emit('gyroscopeDidUpdate', { x, y, z });
+  };
 
-  stopObserving() {
-    window.removeEventListener('deviceorientation', this.handleMotion, true);
-  }
+  startObserving = () => {
+    window.addEventListener('deviceorientation', this._handleMotion, true);
+  };
+
+  stopObserving = () => {
+    window.removeEventListener('deviceorientation', this._handleMotion, true);
+  };
 }
 
 export default new ExponentGyroscope();

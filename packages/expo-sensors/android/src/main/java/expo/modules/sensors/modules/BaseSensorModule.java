@@ -72,6 +72,10 @@ public abstract class BaseSensorModule extends ExportedModule implements SensorE
     getSensorKernelServiceSubscription().setUpdateInterval(updateInterval);
   }
 
+  public boolean isAvailable() {
+    return getSensorKernelServiceSubscription().isAvailable();
+  }
+
   private SensorServiceSubscription getSensorKernelServiceSubscription() {
     if (mSensorServiceSubscription != null) {
       return mSensorServiceSubscription;

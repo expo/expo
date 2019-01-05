@@ -33,5 +33,8 @@ export default class DeviceSensor {
     setUpdateInterval(intervalMs) {
         this._nativeModule.setUpdateInterval(intervalMs);
     }
+    isAvailableAsync() {
+        return this._nativeModule.isAvailableAsync();
+    }
 }
 //# sourceMappingURL=DeviceSensor.js.map

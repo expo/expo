@@ -9,17 +9,32 @@ class ExponentDeviceMotion extends PlatformModule {
     return 9.81;
   }
 
-  handleMotion(deviceMotion) {
-    this.emitter.emit('deviceMotionDidUpdate', deviceMotion);
-  }
+  isAvailableAsync = async (): Promise<boolean> => {
+    return DeviceMotionEvent !== undefined;
+  };
 
-  startObserving() {
-    window.addEventListener('devicemotion', this.handleMotion, true);
-  }
+  _handleMotion = ({ acceleration, accelerationIncludingGravity, rotationRate }) => {
+    this.emitter.emit('deviceMotionDidUpdate', {
+      acceleration,
+      accelerationIncludingGravity,
+      rotationRate,
+      // // https://stackoverflow.com/a/5493592/4047926
+      // rotation: {
+      //   alpha: undefined,
+      //   beta: undefined,
+      //   gamma: undefined,
+      // },
+      orientation: window.orientation,
+    });
+  };
 
-  stopObserving() {
-    window.removeEventListener('devicemotion', this.handleMotion, true);
-  }
+  startObserving = () => {
+    window.addEventListener('devicemotion', this._handleMotion, true);
+  };
+
+  stopObserving = () => {
+    window.removeEventListener('devicemotion', this._handleMotion, true);
+  };
 }
 
 export default new ExponentDeviceMotion();

@@ -5,21 +5,25 @@ class ExponentAccelerometer extends PlatformModule {
     return 'ExponentAccelerometer';
   }
 
-  handleMotion({ accelerationIncludingGravity }) {
+  isAvailableAsync = async (): Promise<boolean> => {
+    return DeviceMotionEvent !== undefined;
+  };
+
+  _handleMotion = ({ accelerationIncludingGravity }) => {
     this.emitter.emit('accelerometerDidUpdate', {
-      x: accelerationIncludingGravity.alpha,
-      y: accelerationIncludingGravity.beta,
-      z: accelerationIncludingGravity.gamma,
+      x: accelerationIncludingGravity.x,
+      y: accelerationIncludingGravity.y,
+      z: accelerationIncludingGravity.z,
     });
-  }
+  };
 
-  startObserving() {
-    window.addEventListener('devicemotion', this.handleMotion, true);
-  }
+  startObserving = () => {
+    window.addEventListener('devicemotion', this._handleMotion, true);
+  };
 
-  stopObserving() {
-    window.removeEventListener('devicemotion', this.handleMotion, true);
-  }
+  stopObserving = () => {
+    window.removeEventListener('devicemotion', this._handleMotion, true);
+  };
 }
 
 export default new ExponentAccelerometer();

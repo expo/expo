@@ -1,19 +1,27 @@
 import { EventEmitter } from 'expo-core';
 
 export default class PlatformModule {
-  emitter = new EventEmitter({ addListener() {}, removeListeners() {} });
+  emitter = new EventEmitter({} as any);
+
+  _updateInterval: number = 0;
 
   get name(): string {
     throw new Error('PlatformModule.name should be implemented');
   }
 
-  addListener(eventName: string) {}
+  async isAvailableAsync(): Promise<boolean> {
+    return false;
+  }
 
-  removeListeners(count: number) {}
+  addListener = (eventName: string): void => {};
 
-  startObserving() {}
+  removeListeners = (count: number): void => {};
 
-  stopObserving() {}
+  startObserving = (): void => {};
 
-  async setUpdateInterval(intervalMs: number) {}
+  stopObserving = (): void => {};
+
+  setUpdateInterval = async (intervalMs: number): Promise<void> => {
+    this._updateInterval = intervalMs;
+  };
 }
