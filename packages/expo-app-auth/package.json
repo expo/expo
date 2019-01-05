@@ -1,6 +1,6 @@
 {
   "name": "expo-app-auth",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Expo Unimodule for interfacing with the OpenID library AppAuth",
   "main": "index.js",
   "keywords": [
@@ -31,10 +31,11 @@
     "invariant": "^2.2.2"
   },
   "dependencies": {
-    "expo-core": "~1.2.0",
-    "expo-constants-interface": "~1.1.0"
+    "expo-core": "~2.0.0",
+    "expo-constants-interface": "~2.0.0"
   },
   "devDependencies": {
     "babel-preset-expo": "^5.0.0"
-  }
+  },
+  "gitHead": "f15abc53c111bd0438cd36dc456c59cfa7c56a58"
 }

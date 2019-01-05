@@ -4,8 +4,6 @@
 #import "EXModuleRegistryBinding.h"
 #import "EXUnversioned.h"
 #import "EXUtil.h"
-#import "EXEnvironment.h"
-#import "EXUserNotificationCenter.h"
 
 #import <React/RCTUtils.h>
 #import <React/RCTConvert.h>
@@ -33,12 +31,13 @@ RCT_ENUM_CONVERTER(NSCalendarUnit,
 // unversioned EXRemoteNotificationManager instance
 @property (nonatomic, weak) id <EXNotificationsScopedModuleDelegate> remoteNotificationsDelegate;
 @property (nonatomic, weak) id <EXNotificationsIdentifiersManager> notificationsIdentifiersManager;
+@property (nonatomic, weak) id <EXUserNotificationCenterService> userNotificationCenter;
 
 @end
 
 @implementation EXNotifications
 
-EX_EXPORT_SCOPED_MULTISERVICE_MODULE(ExponentNotifications, @"RemoteNotificationManager", @"UserNotificationManager");
+EX_EXPORT_SCOPED_MULTISERVICE_MODULE(ExponentNotifications, @"RemoteNotificationManager", @"UserNotificationManager", @"UserNotificationCenter");
 
 @synthesize bridge = _bridge;
 @synthesize methodQueue = _methodQueue;
@@ -51,6 +50,7 @@ EX_EXPORT_SCOPED_MULTISERVICE_MODULE(ExponentNotifications, @"RemoteNotification
 - (instancetype)initWithExperienceId:(NSString *)experienceId kernelServiceDelegates:(NSDictionary *)kernelServiceInstances params:(NSDictionary *)params
 {
   if (self = [super initWithExperienceId:experienceId kernelServiceDelegates:kernelServiceInstances params:params]) {
+    _userNotificationCenter = kernelServiceInstances[@"UserNotificationCenter"];
     _remoteNotificationsDelegate = kernelServiceInstances[@"RemoteNotificationManager"];
     _notificationsIdentifiersManager = kernelServiceInstances[@"UserNotificationManager"];
   }
@@ -106,7 +106,7 @@ RCT_EXPORT_METHOD(presentLocalNotification:(NSDictionary *)payload
                                                                         content:content
                                                                         trigger:nil];
 
-  [[EXUserNotificationCenter sharedInstance] addNotificationRequest:request withCompletionHandler:^(NSError * _Nullable error) {
+  [_userNotificationCenter addNotificationRequest:request withCompletionHandler:^(NSError * _Nullable error) {
     if (error) {
       reject(@"E_NOTIF", [NSString stringWithFormat:@"Could not add a notification request: %@", error.localizedDescription], error);
     } else {
@@ -129,7 +129,7 @@ RCT_EXPORT_METHOD(scheduleLocalNotification:(NSDictionary *)payload
   UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:content.userInfo[@"id"]
                                                                         content:content
                                                                         trigger:notificationTrigger];
-  [[EXUserNotificationCenter sharedInstance] addNotificationRequest:request withCompletionHandler:^(NSError * _Nullable error) {
+  [_userNotificationCenter addNotificationRequest:request withCompletionHandler:^(NSError * _Nullable error) {
     if (error) {
       reject(@"E_NOTIF_REQ", error.localizedDescription, error);
     } else {
@@ -185,10 +185,11 @@ RCT_REMAP_METHOD(cancelScheduledNotificationAsync,
                  withResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
-  [[EXUserNotificationCenter sharedInstance] getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> * _Nonnull requests) {
+  __weak id<EXUserNotificationCenterService> userNotificationCenter = _userNotificationCenter;
+  [_userNotificationCenter getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> * _Nonnull requests) {
     for (UNNotificationRequest *request in requests) {
       if ([request.content.userInfo[@"id"] isEqualToString:uniqueId]) {
-        [[EXUserNotificationCenter sharedInstance] removePendingNotificationRequestsWithIdentifiers:@[request.identifier]];
+        [userNotificationCenter removePendingNotificationRequestsWithIdentifiers:@[request.identifier]];
         return resolve(nil);
       }
     }
@@ -200,14 +201,15 @@ RCT_REMAP_METHOD(cancelAllScheduledNotificationsAsync,
                  cancelAllScheduledNotificationsAsyncWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(__unused RCTPromiseRejectBlock)reject)
 {
-  [[EXUserNotificationCenter sharedInstance] getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> * _Nonnull requests) {
+  __weak id<EXUserNotificationCenterService> userNotificationCenter = _userNotificationCenter;
+  [_userNotificationCenter getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> * _Nonnull requests) {
     NSMutableArray<NSString *> *requestsToCancelIdentifiers = [NSMutableArray new];
     for (UNNotificationRequest *request in requests) {
       if ([request.content.userInfo[@"experienceId"] isEqualToString:self.experienceId]) {
         [requestsToCancelIdentifiers addObject:request.identifier];
       }
     }
-    [[EXUserNotificationCenter sharedInstance] removePendingNotificationRequestsWithIdentifiers:requestsToCancelIdentifiers];
+    [userNotificationCenter removePendingNotificationRequestsWithIdentifiers:requestsToCancelIdentifiers];
     resolve(nil);
   }];
 }
@@ -255,7 +257,8 @@ RCT_REMAP_METHOD(createCategoryAsync,
                                                                      intentIdentifiers:@[]
                                                                                options:UNNotificationCategoryOptionNone];
 
-  [[EXUserNotificationCenter sharedInstance] getNotificationCategoriesWithCompletionHandler:^(NSSet<UNNotificationCategory *> *categories) {
+  __weak id<EXUserNotificationCenterService> userNotificationCenter = _userNotificationCenter;
+  [_userNotificationCenter getNotificationCategoriesWithCompletionHandler:^(NSSet<UNNotificationCategory *> *categories) {
     NSMutableSet<UNNotificationCategory *> *newCategories = [categories mutableCopy];
     for (UNNotificationCategory *category in newCategories) {
       if ([category.identifier isEqualToString:newCategory.identifier]) {
@@ -264,7 +267,7 @@ RCT_REMAP_METHOD(createCategoryAsync,
       }
     }
     [newCategories addObject:newCategory];
-    [[EXUserNotificationCenter sharedInstance] setNotificationCategories:newCategories];
+    [userNotificationCenter setNotificationCategories:newCategories];
     resolve(nil);
   }];
 }
@@ -275,7 +278,8 @@ RCT_REMAP_METHOD(deleteCategoryAsync,
                  rejecter:(__unused RCTPromiseRejectBlock)reject)
 {
   NSString *internalCategoryId = [self internalIdForIdentifier:categoryId];
-  [[EXUserNotificationCenter sharedInstance] getNotificationCategoriesWithCompletionHandler:^(NSSet<UNNotificationCategory *> *categories) {
+  __weak id<EXUserNotificationCenterService> userNotificationCenter = _userNotificationCenter;
+  [_userNotificationCenter getNotificationCategoriesWithCompletionHandler:^(NSSet<UNNotificationCategory *> *categories) {
     NSMutableSet<UNNotificationCategory *> *newCategories = [categories mutableCopy];
     for (UNNotificationCategory *category in newCategories) {
       if ([category.identifier isEqualToString:internalCategoryId]) {
@@ -283,7 +287,7 @@ RCT_REMAP_METHOD(deleteCategoryAsync,
         break;
       }
     }
-    [[EXUserNotificationCenter sharedInstance] setNotificationCategories:newCategories];
+    [userNotificationCenter setNotificationCategories:newCategories];
     resolve(nil);
   }];
 }

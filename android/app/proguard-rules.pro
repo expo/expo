@@ -44,6 +44,11 @@
   @**.expo.core.interfaces.ExpoMethod *;
 }
 
+-keep @**.expo.core.interfaces.DoNotStrip class *
+-keepclassmembers class * {
+  @**.expo.core.interfaces.DoNotStrip *;
+}
+
 ##### React Native #####
 -keep,allowobfuscation @interface **.facebook.proguard.annotations.DoNotStrip
 -keep,allowobfuscation @interface **.facebook.proguard.annotations.KeepGettersAndSetters

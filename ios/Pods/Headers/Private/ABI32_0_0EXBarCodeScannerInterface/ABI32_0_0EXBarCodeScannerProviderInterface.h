@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI32_0_0/EXBarCodeScannerInterface/ABI32_0_0EXBarCodeScannerInterface/ABI32_0_0EXBarCodeScannerProviderInterface.h

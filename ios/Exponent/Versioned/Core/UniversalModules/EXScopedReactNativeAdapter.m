@@ -46,9 +46,12 @@
 
 - (void)handleAppStateDidChange:(NSNotification *)notification
 {
-  if (!self.isForegrounded && [notification.name isEqualToString:EX_UNVERSIONED(@"EXKernelBridgeDidForegroundNotification")]) {
+  // For versioning sake let's not have extra parentheses in lines with EX_UNVERSIONED
+  NSString *didForegroundNotificationName = EX_UNVERSIONED(@"EXKernelBridgeDidForegroundNotification");
+  NSString *didBackgroundNotificationName = EX_UNVERSIONED(@"EXKernelBridgeDidBackgroundNotification");
+  if (!self.isForegrounded && [notification.name isEqualToString:didForegroundNotificationName]) {
     [self setAppStateToForeground];
-  } else if (self.isForegrounded && [notification.name isEqualToString:EX_UNVERSIONED(@"EXKernelBridgeDidBackgroundNotification")]) {
+  } else if (self.isForegrounded && [notification.name isEqualToString:didBackgroundNotificationName]) {
     [self setAppStateToBackground];
   } else {
     [super handleAppStateDidChange:notification];

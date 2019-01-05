@@ -3,13 +3,13 @@ package versioned.host.exp.exponent;
 import org.json.JSONObject;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import expo.core.interfaces.Package;
 import expo.modules.ads.admob.AdMobPackage;
 import expo.modules.analytics.segment.SegmentPackage;
 import expo.modules.appauth.AppAuthPackage;
+import expo.modules.backgroundfetch.BackgroundFetchPackage;
 import expo.modules.barcodescanner.BarCodeScannerPackage;
 import expo.modules.camera.CameraPackage;
 import expo.modules.constants.ConstantsPackage;
@@ -28,6 +28,7 @@ import expo.modules.permissions.PermissionsPackage;
 import expo.modules.print.PrintPackage;
 import expo.modules.sensors.SensorsPackage;
 import expo.modules.sms.SMSPackage;
+import expo.modules.taskManager.TaskManagerPackage;
 
 public class ExperiencePackagePicker {
   private static final List<Package> EXPO_MODULES_PACKAGES = Arrays.<Package>asList(
@@ -51,9 +52,22 @@ public class ExperiencePackagePicker {
       new StripePackage(),
       new LocalAuthenticationPackage(),
       new LocalizationPackage(),
-      new AppAuthPackage()
+      new AppAuthPackage(),
+      new TaskManagerPackage(),
+      new BackgroundFetchPackage()
   );
 
+  /**
+   * Returns all available packages.
+   */
+  static List<Package> packages() {
+    return EXPO_MODULES_PACKAGES;
+  }
+
+  /**
+   * Returns packages filtered based on the app's manifest.
+   * For now, filtering is not applied but it is on the todo list.
+   */
   static List<Package> packages(JSONObject manifest) {
     return EXPO_MODULES_PACKAGES;
   }

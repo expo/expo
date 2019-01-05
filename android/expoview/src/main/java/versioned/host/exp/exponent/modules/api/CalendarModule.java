@@ -87,8 +87,8 @@ public class CalendarModule extends ExpoKernelServiceConsumerBaseModule {
         @Override
         public void run() {
           try {
-            int calendarID = saveCalendar(details);
-            promise.resolve(calendarID);
+            Integer calendarID = saveCalendar(details);
+            promise.resolve(calendarID.toString());
           } catch (Exception e) {
             promise.reject("E_CALENDAR_NOT_SAVED", "Calendar could not be saved", e);
           }

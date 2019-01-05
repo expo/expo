@@ -19,11 +19,6 @@ export default class SMSScreen extends React.Component {
       setTimeout(() => this.setState({ error: undefined }), 10000);
       return;
     }
-    const { status } = await Permissions.askAsync(Permissions.SMS);
-    this.setState({ permissionGranted: status === 'granted' });
-    if (status !== 'granted') {
-      return;
-    }
     try {
       const { result } = await SMS.sendSMSAsync(this.state.phoneNumbers, this.state.message);
       this.setState({ phoneNumbers: [], message: null, result });
@@ -42,7 +37,8 @@ export default class SMSScreen extends React.Component {
           placeholder="Phone numbers, comma separated"
           value={this.state.phoneNumbers.join(',')}
           onChangeText={phoneNumbers =>
-            this.setState({ phoneNumbers: phoneNumbers.split(',').map(e => e.trim()) })}
+            this.setState({ phoneNumbers: phoneNumbers.split(',').map(e => e.trim()) })
+          }
         />
         <TextInput
           style={styles.message}

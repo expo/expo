@@ -10,8 +10,7 @@ export type PermissionType =
   | 'notifications'
   | 'reminders'
   | 'systemBrightness'
-  | 'userFacingNotifications'
-  | 'SMS';
+  | 'userFacingNotifications';
 
 export type PermissionStatus = 'undetermined' | 'granted' | 'denied';
 

@@ -1,6 +1,6 @@
 {
   "name": "EXPermissionsInterface",
-  "version": "1.2.0",
+  "version": "2.0.0",
   "summary": "Expo Permissions interface package",
   "description": "Expo Permissions interface package",
   "license": "MIT",

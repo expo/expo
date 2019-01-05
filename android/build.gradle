@@ -22,9 +22,6 @@ allprojects {
     }
     // For old expoviews to work
     maven {
-      url "$rootDir/versioned-abis/expoview-abi25_0_0/maven"
-    }
-    maven {
       url "$rootDir/versioned-abis/expoview-abi26_0_0/maven"
     }
     maven {
@@ -41,6 +38,9 @@ allprojects {
     }
     maven {
       url "$rootDir/versioned-abis/expoview-abi31_0_0/maven"
+    }
+    maven {
+      url "$rootDir/versioned-abis/expoview-abi32_0_0/maven"
     }
     // For detach
     maven {

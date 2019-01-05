@@ -43,7 +43,7 @@ const sortByStates = {
 export default class MediaLibraryScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
     const goToAlbums = () => navigation.navigate('MediaAlbums');
-    const clearAlbumSelection = () => navigation.pop(2);
+    const clearAlbumSelection = () => navigation.setParams({ album: null });
     const { params } = navigation.state;
     const isAlbumSet = params && params.album;
 
@@ -75,9 +75,12 @@ export default class MediaLibraryScreen extends React.Component {
 
   componentDidFocus = async () => {
     const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-    this.setState({ permission: status });
+    this.setState({ permission: status, assets: [], endCursor: null, hasNextPage: null });
     this.loadMoreAssets();
 
+    if (this.libraryChangeSubscription) {
+      this.libraryChangeSubscription.remove();
+    }
     this.libraryChangeSubscription = MediaLibrary.addListener(() => {
       this.loadMoreAssets([], null);
     });
@@ -218,13 +221,15 @@ export default class MediaLibraryScreen extends React.Component {
     return null;
   };
 
-  render() {
+  renderContent() {
     const { assets, permission, refreshing } = this.state;
 
+    if (!permission) {
+      return null;
+    }
     if (permission !== 'granted') {
       return (
         <View style={styles.permissions}>
-          <NavigationEvents onDidFocus={this.componentDidFocus} />
           <Text>
             Missing CAMERA_ROLL permission. To continue, you'll need to allow media gallery access
             in Settings.
@@ -234,19 +239,26 @@ export default class MediaLibraryScreen extends React.Component {
     }
 
     return (
+      <FlatList
+        contentContainerStyle={styles.flatList}
+        data={assets}
+        numColumns={COLUMNS}
+        keyExtractor={this.keyExtractor}
+        onEndReachedThreshold={0.5}
+        onEndReached={this.onEndReached}
+        renderItem={this.renderRowItem}
+        ListHeaderComponent={this.renderHeader}
+        ListFooterComponent={this.renderFooter}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={this.refresh} />}
+      />
+    );
+  }
+
+  render() {
+    return (
       <View style={styles.mediaGallery}>
-        <FlatList
-          contentContainerStyle={styles.flatList}
-          data={assets}
-          numColumns={COLUMNS}
-          keyExtractor={this.keyExtractor}
-          onEndReachedThreshold={0.5}
-          onEndReached={this.onEndReached}
-          renderItem={this.renderRowItem}
-          ListHeaderComponent={this.renderHeader}
-          ListFooterComponent={this.renderFooter}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={this.refresh} />}
-        />
+        <NavigationEvents onDidFocus={this.componentDidFocus} />
+        {this.renderContent()}
       </View>
     );
   }

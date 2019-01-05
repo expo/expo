@@ -1,0 +1,37 @@
+{
+  "name": "expo-background-fetch",
+  "version": "1.0.0",
+  "description": "Expo universal module for BackgroundFetch API",
+  "main": "build/BackgroundFetch.js",
+  "types": "build/BackgroundFetch.d.ts",
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
+  "keywords": [
+    "expo",
+    "react-native",
+    "fetch",
+    "background",
+    "background-fetch"
+  ],
+  "homepage": "https://docs.expo.io/",
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "peerDependencies": {
+    "expo-core": "~2.0.0",
+    "expo-task-manager-interface": "~1.0.0"
+  },
+  "dependencies": {
+    "expo-task-manager": "~1.0.0"
+  },
+  "devDependencies": {
+    "expo-module-scripts": "^1.0.0"
+  },
+  "gitHead": "f15abc53c111bd0438cd36dc456c59cfa7c56a58"
+}

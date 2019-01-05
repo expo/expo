@@ -5,6 +5,7 @@ import { createMaterialBottomTabNavigator } from 'react-navigation-material-bott
 
 import TabIcon from '../components/TabIcon';
 import { Colors, Layout } from '../constants';
+
 import ExpoApisStackNavigator from './ExpoApisStackNavigator';
 import ExpoComponentsStackNavigator from './ExpoComponentsStackNavigator';
 import ReactNativeCoreStackNavigator from './ReactNativeCoreStackNavigator';
@@ -19,6 +20,21 @@ const createTabNavigator = Platform.select({
   default: createBottomTabNavigator,
   android: createMaterialBottomTabNavigator,
 });
+
+ExpoApisStackNavigator.path = '';
+ExpoApisStackNavigator.navigationOptions = {
+  title: 'Expo API',
+};
+
+ExpoComponentsStackNavigator.path = '';
+ExpoComponentsStackNavigator.navigationOptions = {
+  title: 'Expo Components',
+};
+
+ReactNativeCoreStackNavigator.path = '';
+ReactNativeCoreStackNavigator.navigationOptions = {
+  title: 'React Native Core',
+};
 
 const MainTabNavigator = createTabNavigator(
   {
@@ -71,5 +87,10 @@ const MainTabNavigator = createTabNavigator(
     },
   }
 );
+
+MainTabNavigator.path = '';
+MainTabNavigator.navigationOptions = {
+  title: 'Native Component List',
+};
 
 export default MainTabNavigator;

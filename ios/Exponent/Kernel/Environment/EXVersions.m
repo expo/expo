@@ -72,7 +72,7 @@
       }
     }
   }
-  if (version && version.length) {
+  if (version && version.length && ![version isEqualToString:@"UNVERSIONED"]) {
     return [[@"ABI" stringByAppendingString:version] stringByReplacingOccurrencesOfString:@"." withString:@"_"];
   }
   return @"";

@@ -1,0 +1,17 @@
+{
+  "name": "expo-camera-interface",
+  "version": "1.1.0",
+  "description": "Expo Camera interface package",
+  "main": "index.js",
+  "keywords": [
+    "react-native",
+    "expo",
+    "camera"
+  ],
+  "homepage": "https://docs.expo.io/",
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "dependencies": {
+    "expo-core": "~1.2.0"
+  }
+}

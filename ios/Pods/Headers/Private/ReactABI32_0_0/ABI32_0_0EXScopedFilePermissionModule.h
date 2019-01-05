@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI32_0_0/Expo/Core/UniversalModules/ABI32_0_0EXScopedFilePermissionModule.h

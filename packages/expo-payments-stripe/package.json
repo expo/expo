@@ -1,6 +1,6 @@
 {
   "name": "expo-payments-stripe",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "description": "Expo Payments Module",
   "main": "index.js",
   "files": [
@@ -17,6 +17,7 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "dependencies": {
-    "expo-core": "~1.2.0"
-  }
+    "expo-core": "~2.0.0"
+  },
+  "gitHead": "f15abc53c111bd0438cd36dc456c59cfa7c56a58"
 }
