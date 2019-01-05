@@ -11,6 +11,7 @@ import expo.modules.analytics.segment.SegmentPackage;
 import expo.modules.appauth.AppAuthPackage;
 import expo.modules.backgroundfetch.BackgroundFetchPackage;
 import expo.modules.barcodescanner.BarCodeScannerPackage;
+import expo.modules.bluetooth.BluetoothPackage;
 import expo.modules.camera.CameraPackage;
 import expo.modules.constants.ConstantsPackage;
 import expo.modules.contacts.ContactsPackage;
@@ -54,7 +55,8 @@ public class ExperiencePackagePicker {
       new LocalizationPackage(),
       new AppAuthPackage(),
       new TaskManagerPackage(),
-      new BackgroundFetchPackage()
+      new BackgroundFetchPackage(),
+      new BluetoothPackage()
   );
 
   /**
