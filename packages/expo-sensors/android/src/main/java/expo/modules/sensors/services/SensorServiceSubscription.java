@@ -28,10 +28,6 @@ public class SensorServiceSubscription implements expo.interfaces.sensors.Sensor
     return mIsEnabled;
   }
 
-  public boolean isAvailable() {
-    return mSubscribableSensorService.isAvailable();
-  }
-
   public Long getUpdateInterval() {
     return mUpdateInterval;
   }

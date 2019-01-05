@@ -3,7 +3,9 @@
 package expo.modules.sensors.modules;
 
 import android.content.Context;
+import android.hardware.Sensor;
 import android.hardware.SensorEvent;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 
 import expo.core.Promise;
@@ -59,6 +61,8 @@ public class MagnetometerUncalibratedModule extends BaseSensorModule {
 
   @ExpoMethod
   public void isAvailableAsync(Promise promise) {
-    promise.resolve(super.isAvailable());
+    SensorManager mSensorManager = (SensorManager) getContext().getSystemService(Context.SENSOR_SERVICE);
+    Boolean isAvailable = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD_UNCALIBRATED) != null;
+    promise.resolve(isAvailable);
   }
 }

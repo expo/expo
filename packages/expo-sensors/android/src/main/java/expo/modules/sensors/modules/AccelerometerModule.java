@@ -3,9 +3,13 @@
 package expo.modules.sensors.modules;
 
 import android.content.Context;
+import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import expo.core.Promise;
 import expo.core.interfaces.ExpoMethod;
@@ -60,6 +64,8 @@ public class AccelerometerModule extends BaseSensorModule {
 
   @ExpoMethod
   public void isAvailableAsync(Promise promise) {
-    promise.resolve(super.isAvailable());
+    SensorManager mSensorManager = (SensorManager) getContext().getSystemService(Context.SENSOR_SERVICE);
+    Boolean isAvailable = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null;
+    promise.resolve(isAvailable);
   }
 }
