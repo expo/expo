@@ -11,6 +11,12 @@ module.exports = {
 
         result = { [pathname]: page };
 
+        // For every path which doesn't end in ".html" (except "/"), create a matching copy with ".html" added
+        // (We have many internal links of this sort)
+        if (! pathname.match(/\.html$/) && pathname.match(/[a-z]$/)) {
+          result[pathname + ".html"] = page;
+        }
+
         // For every path for the latest version, create a matching `latest` one
         if (pathname.match(LATEST_VERSION)) {
           result[pathname.replace(LATEST_VERSION, 'latest')] = page;
