@@ -1,6 +1,7 @@
 import './BeforePIXI';
 
 import { Asset } from 'expo';
+import { Platform } from 'expo-core';
 import * as PIXI from 'pixi.js';
 import { Dimensions } from 'react-native';
 
@@ -354,8 +355,13 @@ export default {
 
       const asset = Asset.fromModule(require('../../assets/images/nikki.png'));
       await asset.downloadAsync();
-      const image = new Image();
-      image.src = asset.localUri;
+      let image;
+      if (Platform.OS === 'web') {
+        image = new Image();
+        image.src = asset.localUri;
+      } else {
+        image = new Image(asset);
+      }
       const sprite = PIXI.Sprite.from(image);
       app.stage.addChild(sprite);
     }),

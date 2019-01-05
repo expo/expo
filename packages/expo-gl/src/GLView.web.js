@@ -139,7 +139,7 @@ export default class GLView extends React.Component<Props> {
       <div style={StyleSheet.flatten([{ flex: 1 }, style])} ref={this._setWrapperRef}>
         <canvas
           style={{ flex: 1, maxWidth: width, maxHeight: height }}
-          resize
+          resize="true"
           {...props}
           width={width * window.devicePixelRatio}
           height={height * window.devicePixelRatio}
