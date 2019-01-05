@@ -74,6 +74,18 @@ let mainAsync = async () => {
         '(https://facebook.github.io/react-native/docs/more-resources.html)'
       );
 
+      // `](./foo` -> `](foo`
+      l = l.replace(
+        /\]\(\.\/([^\):]+)/g,
+        (_match, path) => `](${path}`
+      );
+      // `](foo.md)` -> `](../foo/)`
+      // `](foo.md#bar)` -> `](../foo/#bar]`
+      l = l.replace(
+        /\]\(([^\):]+).md(#[^\)]+)?\)/g,
+        (_match, path, anchor) => `](../${path}/${anchor ? anchor : ''})`
+      );
+
       // TODO: Make these global replaces instead of just first instance
       l = l.replace(
         '<img src="/react-native/docs/assets/',
