@@ -22,7 +22,7 @@ EX_EXPORT_MODULE(ExponentAccelerometer);
   [sensorService setAccelerometerUpdateInterval:updateInterval];
 }
 
-- (BOOL)isAvailable
+- (BOOL)isAvailable:(id)sensorService
 {
   return [sensorService isAccelerometerAvailable];
 }

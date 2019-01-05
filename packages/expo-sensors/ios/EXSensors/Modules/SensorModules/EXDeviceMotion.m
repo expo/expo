@@ -31,7 +31,7 @@ EX_EXPORT_MODULE(ExponentDeviceMotion);
   [sensorService setDeviceMotionUpdateInterval:updateInterval];
 }
 
-- (BOOL)isAvailable
+- (BOOL)isAvailable:(id)sensorService
 {
   return [sensorService isDeviceMotionAvailable];
 }

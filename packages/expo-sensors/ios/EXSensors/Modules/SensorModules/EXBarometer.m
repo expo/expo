@@ -22,7 +22,7 @@ EX_EXPORT_MODULE(ExponentBarometer);
   [sensorService setBarometerUpdateInterval:updateInterval];
 }
 
-- (BOOL)isAvailable
+- (BOOL)isAvailable:(id)sensorService
 {
   return [sensorService isBarometerAvailable];
 }

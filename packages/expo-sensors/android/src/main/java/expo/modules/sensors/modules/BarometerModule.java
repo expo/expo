@@ -58,6 +58,6 @@ public class BarometerModule extends BaseSensorModule {
 
   @ExpoMethod
   public void isAvailableAsync(Promise promise) {
-    promise.resolve(super.isAvailableAsync());
+    promise.resolve(super.isAvailable());
   }
 }

@@ -56,4 +56,9 @@ public class MagnetometerModule extends BaseSensorModule {
     super.setUpdateInterval(updateInterval);
     promise.resolve(null);
   }
+
+  @ExpoMethod
+  public void isAvailableAsync(Promise promise) {
+    promise.resolve(super.isAvailable());
+  }
 }

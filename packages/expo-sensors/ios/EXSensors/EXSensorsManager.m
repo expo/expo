@@ -117,7 +117,8 @@ EX_REGISTER_MODULE();
     if (strongSelf && data) {
       for (void (^handler)(NSDictionary *) in strongSelf.barometerHandlers.allValues) {
         handler(@{
-                  @"pressure": [NSNumber numberWithDouble:data.pressure],
+                  @"pressure": data.pressure,
+                  @"relativeAltitude": data.relativeAltitude,
                   });
       }
     }

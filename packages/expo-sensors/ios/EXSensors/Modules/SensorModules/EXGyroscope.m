@@ -22,7 +22,7 @@ EX_EXPORT_MODULE(ExponentGyroscope);
   [sensorService setGyroscopeUpdateInterval:updateInterval];
 }
 
-- (BOOL)isAvailable
+- (BOOL)isAvailable:(id)sensorService
 {
   return [sensorService isGyroAvailable];
 }

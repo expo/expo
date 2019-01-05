@@ -22,7 +22,7 @@ EX_EXPORT_MODULE(ExponentMagnetometerUncalibrated);
   [sensorService setMagnetometerUncalibratedUpdateInterval:updateInterval];
 }
 
-- (BOOL)isAvailable
+- (BOOL)isAvailable:(id)sensorService
 {
   return [sensorService isMagnetometerUncalibratedAvailable];
 }

@@ -22,7 +22,7 @@ EX_EXPORT_MODULE(ExponentMagnetometer);
   [sensorService setMagnetometerUpdateInterval:updateInterval];
 }
 
-- (BOOL)isAvailable
+- (BOOL)isAvailable:(id)sensorService
 {
   return [sensorService isMagnetometerAvailable];
 }
