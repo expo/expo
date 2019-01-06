@@ -2,7 +2,7 @@
   "name": "expo-bluetooth",
   "version": "1.0.0",
   "description": "Expo Module Template standalone module",
-  "main": "index.js",
+  "main": "src/Bluetooth.js",
   "keywords": [
     "react-native",
     "expo"

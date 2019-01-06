@@ -1,4 +1,10 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-@interface EXBluetooth : NSObject
+#import <EXCore/EXExportedModule.h>
+#import <EXCore/EXEventEmitter.h>
+#import <EXCore/EXModuleRegistryConsumer.h>
+#import <CoreBluetooth/CoreBluetooth.h>
+
+@interface EXBluetooth : EXExportedModule <EXModuleRegistryConsumer, EXEventEmitter, CBCentralManagerDelegate, CBPeripheralDelegate>
+
 @end
