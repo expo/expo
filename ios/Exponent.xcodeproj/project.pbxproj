@@ -319,6 +319,7 @@
 		F1389D0C21C3A507006CEB1A /* RNForceTouchHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = F1389D0B21C3A507006CEB1A /* RNForceTouchHandler.m */; };
 		F1545BF920877E39002DAC67 /* EXMenuWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = F1545BF820877E39002DAC67 /* EXMenuWindow.m */; };
 		F167C43B209C7EE600F01382 /* EXUtilService.m in Sources */ = {isa = PBXBuildFile; fileRef = F167C43A209C7EE600F01382 /* EXUtilService.m */; };
+		F1C13B5C21E3AA8E00203A34 /* EXStandaloneAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F1C13B5B21E3AA8E00203A34 /* EXStandaloneAppDelegate.m */; };
 		F77DDB931E04AC1100624CA2 /* SafariServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F77DDB921E04AC1100624CA2 /* SafariServices.framework */; };
 /* End PBXBuildFile section */
 
@@ -971,6 +972,8 @@
 		F1545BF820877E39002DAC67 /* EXMenuWindow.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXMenuWindow.m; sourceTree = "<group>"; };
 		F167C439209C7EE600F01382 /* EXUtilService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXUtilService.h; sourceTree = "<group>"; };
 		F167C43A209C7EE600F01382 /* EXUtilService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXUtilService.m; sourceTree = "<group>"; };
+		F1C13B5A21E3AA8E00203A34 /* EXStandaloneAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXStandaloneAppDelegate.h; sourceTree = "<group>"; };
+		F1C13B5B21E3AA8E00203A34 /* EXStandaloneAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXStandaloneAppDelegate.m; sourceTree = "<group>"; };
 		F77DDB921E04AC1100624CA2 /* SafariServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SafariServices.framework; path = System/Library/Frameworks/SafariServices.framework; sourceTree = SDKROOT; };
 		FDC01B7874B93745E639DFA6 /* libPods-Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -1366,6 +1369,8 @@
 			children = (
 				B526B5041E6A543500606CAB /* ExpoKit.h */,
 				B526B5051E6A543500606CAB /* ExpoKit.m */,
+				F1C13B5A21E3AA8E00203A34 /* EXStandaloneAppDelegate.h */,
+				F1C13B5B21E3AA8E00203A34 /* EXStandaloneAppDelegate.m */,
 				B5D0D65A204F152D00DDFC99 /* EXViewController.h */,
 				B5D0D65B204F152D00DDFC99 /* EXViewController.m */,
 			);
@@ -2651,6 +2656,7 @@
 				3159BB2421806E0C002D2A81 /* RNSVGMask.m in Sources */,
 				3159BB4B21806E3D002D2A81 /* RNSVGGlyphContext.m in Sources */,
 				B5A72C3020A0D1BF00974CCE /* EXAppFetcher.m in Sources */,
+				F1C13B5C21E3AA8E00203A34 /* EXStandaloneAppDelegate.m in Sources */,
 				255A630A2154FB89009FDFC6 /* EXPendingNotification.m in Sources */,
 				78343616205B8C5F00DD28C3 /* AIRMapCoordinate.m in Sources */,
 				B5FB74BB1FF6DADC001C764B /* EXInterstitialAdManager.m in Sources */,
