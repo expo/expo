@@ -73,8 +73,6 @@ EX_REGISTER_MODULE();
 
 - (NSString *)buildNumber
 {
-  // always get this constant from the embedded Info.plist
-  // because the one in the manifest can get updated later.
   return [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
 }
 
