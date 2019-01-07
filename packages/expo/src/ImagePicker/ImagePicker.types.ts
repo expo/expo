@@ -12,7 +12,7 @@ export type ImageLibraryOptions = {
   allowsEditing?: boolean;
   aspect?: [number, number];
   quality?: number;
-  multiple?: boolean;
+  allowsMultipleSelection?: boolean;
   mediaTypes?: keyof (typeof MediaTypeOptions);
 };
 
@@ -20,6 +20,6 @@ export type CameraOptions = {
   allowsEditing?: boolean;
   aspect?: [number, number];
   quality?: number;
-  multiple?: boolean;
+  allowsMultipleSelection?: boolean;
   mediaTypes?: keyof (typeof MediaTypeOptions);
 };

@@ -1,3 +1,5 @@
+import uuidv4 from 'uuid/v4';
+
 import { CameraOptions, ImageLibraryOptions, ImageResult } from './ImagePicker.types';
 import MediaTypeOptions from './MediaTypeOptions';
 
@@ -13,41 +15,41 @@ export default {
   },
   async launchImageLibraryAsync({
     mediaTypes,
-    multiple = false,
+    allowsMultipleSelection = false,
   }: ImageLibraryOptions = {}): Promise<ImageResult> {
-    const accept = MediaTypeInput[mediaTypes || MediaTypeOptions.All];
     return await openFileBrowser({
-      accept,
-      multiple,
+      mediaTypes: MediaTypeInput[mediaTypes || MediaTypeOptions.All],
+      allowsMultipleSelection,
     });
   },
-  async launchCameraAsync({ mediaTypes, multiple = false }: CameraOptions = {}): Promise<
-    ImageResult
-  > {
-    const accept = MediaTypeInput[mediaTypes || MediaTypeOptions.All];
+  async launchCameraAsync({
+    mediaTypes,
+    allowsMultipleSelection = false,
+  }: CameraOptions = {}): Promise<ImageResult> {
     return await openFileBrowser({
-      accept,
-      multiple,
+      mediaTypes: MediaTypeInput[mediaTypes || MediaTypeOptions.All],
+      allowsMultipleSelection,
       capture: true,
     });
   },
 };
 
-function openFileBrowser({ accept, capture = false, multiple = false }): Promise<ImageResult> {
-  console.log('openFileBrowser', accept);
+function openFileBrowser({
+  mediaTypes,
+  capture = false,
+  allowsMultipleSelection = false,
+}): Promise<ImageResult> {
   const input = document.createElement('input');
+  input.style.display = 'none';
   input.setAttribute('type', 'file');
-  input.setAttribute('accept', accept);
-  input.setAttribute('id', 'hidden-file');
-  if (multiple) {
+  input.setAttribute('accept', mediaTypes);
+  input.setAttribute('id', uuidv4());
+  if (allowsMultipleSelection) {
     input.setAttribute('multiple', 'multiple');
   }
   if (capture) {
     input.setAttribute('capture', 'camera');
   }
-
-  input.style.display = 'none';
-
   document.body.appendChild(input);
 
   return new Promise((resolve, reject) => {
@@ -75,24 +77,7 @@ function openFileBrowser({ accept, capture = false, multiple = false }): Promise
       document.body.removeChild(input);
     });
 
-    const event = document.createEvent('MouseEvents');
-    event.initMouseEvent(
-      'click',
-      true,
-      true,
-      window,
-      1,
-      0,
-      0,
-      0,
-      0,
-      false,
-      false,
-      false,
-      false,
-      0,
-      null
-    );
+    const event = new MouseEvent('click');
     input.dispatchEvent(event);
   });
 }

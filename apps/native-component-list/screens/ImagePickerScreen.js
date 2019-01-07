@@ -1,105 +1,86 @@
-import React from 'react';
-import { Alert, ScrollView, View, Platform, Image } from 'react-native';
 import { ImagePicker, Permissions, Video } from 'expo';
+import React from 'react';
+import { Image, Platform, ScrollView, View } from 'react-native';
 import { NavigationEvents } from 'react-navigation';
+
 import ListButton from '../components/ListButton';
 import MonoText from '../components/MonoText';
 
+async function requestPermissionAsync(permission) {
+  // Image Picker doesn't need permissions in the web
+  if (Platform.OS === 'web') {
+    return true;
+  }
+  const { status } = await Permissions.askAsync(permission);
+  return status === 'granted';
+}
 export default class ImagePickerScreen extends React.Component {
   static navigationOptions = {
     title: 'ImagePicker',
   };
+
   state = {
     selection: null,
   };
 
+  showCamera = async (mediaTypes, allowsEditing = false) => {
+    await requestPermissionAsync(Permissions.CAMERA);
+    let result = await ImagePicker.launchCameraAsync({ mediaTypes, allowsEditing });
+    if (result.cancelled) {
+      this.setState({ selection: null });
+    } else {
+      this.setState({ selection: result });
+    }
+  };
+
+  showPicker = async (mediaTypes, allowsEditing = false) => {
+    await requestPermissionAsync(Permissions.CAMERA_ROLL);
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes,
+      allowsEditing,
+    });
+    if (result.cancelled) {
+      this.setState({ selection: null });
+    } else {
+      this.setState({ selection: result });
+    }
+  };
   render() {
-    const showCamera = async mediaTypes => {
-      // await Permissions.askAsync(Permissions.CAMERA);
-      let result = await ImagePicker.launchCameraAsync({ mediaTypes });
-      if (result.cancelled) {
-        this.setState({ selection: null });
-      } else {
-        this.setState({ selection: result });
-      }
-    };
-
-    const showCameraWithEditing = async () => {
-      let result = await ImagePicker.launchCameraAsync({ allowsEditing: true });
-      if (result.cancelled) {
-        this.setState({ selection: null });
-      } else {
-        this.setState({ selection: result });
-      }
-    };
-
-    const showPicker = async mediaTypes => {
-      await Permissions.askAsync(Permissions.CAMERA_ROLL);
-      if (Platform.OS === 'ios') {
-        let permission = await Permissions.getAsync(Permissions.CAMERA_ROLL);
-        if (permission.status !== 'granted') {
-          setTimeout(() => Alert.alert('Camera roll permission was not granted.'), 100);
-          return;
-        }
-      }
-      let result = await ImagePicker.launchImageLibraryAsync({
-        // mediaTypes: ImagePicker.MediaTypeOptions.All,
-        mediaTypes,
-      });
-      alert('End ' + result.cancelled);
-      if (result.cancelled) {
-        this.setState({ selection: null });
-      } else {
-        this.setState({ selection: result });
-      }
-    };
-
-    const showPickerWithEditing = async () => {
-      if (Platform.OS === 'ios') {
-        let permission = await Permissions.getAsync(Permissions.CAMERA_ROLL);
-        if (permission.status !== 'granted') {
-          setTimeout(() => Alert.alert('Camera roll permission was not granted.'), 100);
-          return;
-        }
-      }
-      await Permissions.askAsync(Permissions.CAMERA_ROLL);
-      let result = await ImagePicker.launchImageLibraryAsync({ allowsEditing: true });
-      if (result.cancelled) {
-        this.setState({ selection: null });
-      } else {
-        this.setState({ selection: result });
-      }
-    };
-
     return (
       <ScrollView style={{ padding: 10 }}>
         <NavigationEvents onDidFocus={this.componentDidFocus} />
         <ListButton
-          onPress={() => showCamera(ImagePicker.MediaTypeOptions.All)}
+          onPress={() => this.showCamera(ImagePicker.MediaTypeOptions.All)}
           title="Take photo or video"
         />
         <ListButton
-          onPress={() => showCamera(ImagePicker.MediaTypeOptions.Images)}
+          onPress={() => this.showCamera(ImagePicker.MediaTypeOptions.Images)}
           title="Take photo"
         />
         <ListButton
-          onPress={() => showCamera(ImagePicker.MediaTypeOptions.Videos)}
+          onPress={() => this.showCamera(ImagePicker.MediaTypeOptions.Videos)}
           title="Take video"
         />
-        <ListButton onPress={showCameraWithEditing} title="Open camera and edit" />
         <ListButton
-          onPress={() => showPicker(ImagePicker.MediaTypeOptions.All)}
+          onPress={() => this.showCamera(ImagePicker.MediaTypesOptions.All, true)}
+          title="Open camera and edit"
+        />
+        <ListButton
+          onPress={() => this.showPicker(ImagePicker.MediaTypeOptions.All)}
           title="Pick photo or video"
         />
         <ListButton
-          onPress={() => showPicker(ImagePicker.MediaTypeOptions.Images)}
+          onPress={() => this.showPicker(ImagePicker.MediaTypeOptions.Images)}
           title="Pick photo"
         />
         <ListButton
-          onPress={() => showPicker(ImagePicker.MediaTypeOptions.Videos)}
+          onPress={() => this.showPicker(ImagePicker.MediaTypeOptions.Videos)}
           title="Pick video"
         />
-        <ListButton onPress={showPickerWithEditing} title="Pick photo and edit" />
+        <ListButton
+          onPress={() => this.showPicker(ImagePicker.MediaTypesOptions.All, true)}
+          title="Pick photo and edit"
+        />
 
         {this._maybeRenderSelection()}
       </ScrollView>
