@@ -15,6 +15,8 @@
 
 @implementation EXConstantsService
 
+EX_REGISTER_MODULE();
+
 - (instancetype)initWithExperienceId:(NSString *)experienceId
 {
   if (self = [super init]) {
