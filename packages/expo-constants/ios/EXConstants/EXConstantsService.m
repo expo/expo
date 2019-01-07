@@ -41,14 +41,6 @@ EX_REGISTER_MODULE();
   isDebugXCodeScheme = YES;
 #endif
 
-  BOOL isDetached = YES;
-#ifdef EXPO_CLIENT
-  isDetached = NO;
-#endif
-#ifdef EX_DETACHED
-  isDetached = YES;
-#endif
-
   return @{
            @"sessionId": _sessionId,
            @"statusBarHeight": @([self statusBarHeight]),
@@ -57,7 +49,6 @@ EX_REGISTER_MODULE();
            @"isDevice": @([self isDevice]),
            @"systemFonts": [self systemFontNames],
            @"debugMode": @(isDebugXCodeScheme),
-           @"isDetached": @(isDetached),
            @"isHeadless": @(NO),
            @"platform": @{
                @"ios": @{
