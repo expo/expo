@@ -61,10 +61,12 @@ public class LocationHelpers {
     LocationParams.Builder locationParamsBuilder = buildLocationParamsForAccuracy(accuracy);
 
     if (options.containsKey("timeInterval")) {
-      locationParamsBuilder.setInterval((long) options.get("timeInterval"));
+      Number timeInterval = (Number) options.get("timeInterval");
+      locationParamsBuilder.setInterval(timeInterval.longValue());
     }
     if (options.containsKey("distanceInterval")) {
-      locationParamsBuilder.setDistance((float) options.get("distanceInterval"));
+      Number distanceInterval = (Number) options.get("distanceInterval");
+      locationParamsBuilder.setDistance(distanceInterval.floatValue());
     }
     return locationParamsBuilder.build();
   }
@@ -74,16 +76,7 @@ public class LocationHelpers {
     boolean highAccuracy = options.containsKey("enableHighAccuracy") && (Boolean) options.get("enableHighAccuracy");
 
     return options.containsKey("accuracy")
-        ? convertAccuracy(options.get("accuracy"))
+        ? ((Number) options.get("accuracy")).intValue()
         : highAccuracy ? ACCURACY_HIGH : ACCURACY_BALANCED;
-  }
-
-  private static int convertAccuracy(Object accuracy) {
-    // Looks like the accuracy can be an integer when restoring tasks from shared preferences.
-    // So let's make sure which type it is and then cast to int value.
-    if (accuracy instanceof Double) {
-      return ((Double) accuracy).intValue();
-    }
-    return (Integer) accuracy;
   }
 }
