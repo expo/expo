@@ -6,7 +6,7 @@ Expo makes it easy to get started writing apps, but Expo can also take your proj
 
 This guide is meant to give a high-level explanation of what Expo offers. For the curious, the technical implementation of these topics is covered in way more detail [here](../../workflow/how-expo-works/).
 
-![](./project-lifecycle.png)
+![](/static/images/project-lifecycle.png)
 
 ## Creating an Expo Project
 You can create a new Expo project with only our desktop tool and a text editor. See [Up and Running](../../workflow/up-and-running/) for a fast guide to creating a project, running it on a device, and making changes.

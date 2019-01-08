@@ -16,7 +16,7 @@ Android screen sizes vary greatly with the massive variety of devices on the mar
 
 You can work off of [this Sketch template](https://github.com/expo/files/blob/b264c7f7bf2cacfbdb45640063988ab61dfbbe23/splash-template.sketch?raw=true) if you like. I did, and I changed the background color to a faint yellow and put a Noodle emoji in the middle. It's worth noting that the splash image supports transparency, although we didn't use it here.
 
-![](./splash-example.png)
+![](/static/images/splash-example.png)
 
 Export the image as a PNG and put it in your project directory. I'll assume it's in the `assets` directory and named `splash.png`.
 
@@ -45,13 +45,13 @@ If you set a background color other than white for your splash image, you may se
 }
 ```
 
-![backgroundColor Example](./backgroundColor-noodles.png)
+![backgroundColor Example](/static/images/backgroundColor-noodles.png)
 
 ### `splash.resizeMode`
 
 Any splash image that you provide will be resized to maintain its aspect ratio and to fit the resolution of the user's device. There are two strategies that can be used for resizing: `contain` (default) and `cover`. In both cases, the splash image is within the splash screen. These work the same as the React Native `<Image>` component's `resizeMode` style equivalents, as demonstrated in the following diagram.
 
-![resizeMode](./resizeMode.png)
+![resizeMode](/static/images/resizeMode.png)
 
 Applying this to our noodles example, let's remove the `backgroundColor` and try it out:
 
@@ -62,7 +62,7 @@ Applying this to our noodles example, let's remove the `backgroundColor` and try
 }
 ```
 
-![resizeMode Example](./resizeMode-noodles.png)
+![resizeMode Example](/static/images/resizeMode-noodles.png)
 
 Notice that in the last example, we stretched the image to fill the entire width, while maintaining the aspect ratio, and so the noodles emoji ended up being larger than it was when `resizeMode` was set to `contain`. If you are still unclear about the difference between contain and cover, [this blog post describes precisely what they mean](http://blog.vjeux.com/2013/image/css-container-and-cover.html).
 

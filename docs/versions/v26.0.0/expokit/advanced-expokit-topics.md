@@ -73,4 +73,4 @@ In iOS Expokit projects, the DocumentPicker module requires the iCloud entitleme
 
 If everything worked properly your screen should look like this:
 
-![](./icloud-entitlement.png)
+![](/static/images/icloud-entitlement.png)

@@ -10,7 +10,7 @@
     "mdjs": "babel-node ./mdjs",
     "mdjs-prod": "node ./mdjs --no-watch",
     "fix-markdown": "node ./transition/fix-markdown.js",
-    "clean": "rm -r docs pages/versions generated/navigation-data.json static/images/generated",
+    "clean": "rm -r docs pages/versions generated/navigation-data.json",
     "import-react-native-docs": "node ./scripts/import-react-native-docs.js",
     "test-links": "wget --page-requisites --spider --random-wait --recursive",
     "test-links:all": "scripts/test-links-all-versions.sh"

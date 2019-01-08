@@ -48,13 +48,13 @@ Live reload is enabled by default, but let's just make sure we go over the steps
 
 -   If you see `Enable Live Reload`, press it and your app will reload. If you see `Disable Live Reload` then exit the developer menu and try making another change.
 
-    [![In-app developer menu](./developer-menu.png)](/_images/developer-menu.png)
+    [![In-app developer menu](/static/images/developer-menu.png)](/static/images/developer-menu.png)
 
 #### Manually reloading the app
 
 -   If you've followed the above steps and live reload **still** doesn't work, press the button in the bottom right of XDE to send us a support request. Until we resolve the issue for you, you can either shake the device and press `Reload`, or use one of the following tools which work both with an without development mode.
 
-    [![Refresh using Expo buttons](./expo-refresh.png)](/_images/expo-refresh.png)
+    [![Refresh using Expo buttons](/static/images/expo-refresh.png)](/static/images/expo-refresh.png)
 
 #### Congratulations
 

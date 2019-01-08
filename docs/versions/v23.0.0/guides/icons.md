@@ -8,7 +8,7 @@ As trendy as it is these days, not every app has to use emoji for all icons 😳
 
 This library is installed by default on the template project that you create through XDE. (If you're adding it to an existing project, you'll need to follow the special instructions in [Existing Projects](#for-existing-projects) below). It includes eight icon sets, you can browse all of the icons using the [@expo/vector-icons directory](https://expo.github.io/vector-icons/).
 
-![](./vector-icons-directory.png)
+![](/static/images/vector-icons-directory.png)
 
 ```javascript
 import React from 'react';

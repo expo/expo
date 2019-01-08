@@ -10,7 +10,7 @@ There are three main steps to wiring up push notifications: sending a user's Exp
 
 ## 1. Save the user's Expo Push Token on your server
 
-In order to send a push notification to somebody, we need to know about their device. Sure, we know our user's account information, but Apple, Google, and Expo do not understand what devices correspond to "Brent" in your proprietary user account system. Expo takes care of identifying your device with Apple and Google through the Expo push token, so all we need to do is send this to your server so you can associate it with the user account and use it in the future for sending push notifications.![Diagram explaining saving tokens](./saving-token.png)
+In order to send a push notification to somebody, we need to know about their device. Sure, we know our user's account information, but Apple, Google, and Expo do not understand what devices correspond to "Brent" in your proprietary user account system. Expo takes care of identifying your device with Apple and Google through the Expo push token, so all we need to do is send this to your server so you can associate it with the user account and use it in the future for sending push notifications.![Diagram explaining saving tokens](/static/images/saving-token.png)
 
 ```javascript
 import { Permissions, Notifications } from 'expo';
@@ -61,7 +61,7 @@ async function registerForPushNotificationsAsync() {
 
 ## 2. Call Expo's Push API with the user's token
 
-Push notifications have to come from somewhere, and that somewhere is your server, probably (you could write a command line tool to send them if you wanted, it's all the same). When you're ready to send a push notification, grab the Expo push token off of the user record and send it over to the Expo API using a plain old HTTP POST request. We've taken care of wrapping that for you in a few languages:![Diagram explaining sending a push from your server to device](./sending-notification.png)
+Push notifications have to come from somewhere, and that somewhere is your server, probably (you could write a command line tool to send them if you wanted, it's all the same). When you're ready to send a push notification, grab the Expo push token off of the user record and send it over to the Expo API using a plain old HTTP POST request. We've taken care of wrapping that for you in a few languages:![Diagram explaining sending a push from your server to device](/static/images/sending-notification.png)
 
 -   [expo-server-sdk-ruby](https://github.com/expo/expo-server-sdk-ruby)
 -   [expo-server-sdk-python](https://github.com/expo/expo-server-sdk-python)
@@ -162,7 +162,7 @@ export default class AppContainer extends React.Component {
 
 It's not entirely clear from the above when your app will be able to handle the notification depending on it's state at the time the notification is received. For clarification, see the following table:
 
-![Timing of notifications](./receiving-push.png)
+![Timing of notifications](/static/images/receiving-push.png)
 
 ## HTTP/2 API
 
