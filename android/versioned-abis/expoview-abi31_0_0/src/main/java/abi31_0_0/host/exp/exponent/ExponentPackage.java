@@ -2,6 +2,9 @@
 
 package abi31_0_0.host.exp.exponent;
 
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+
 import abi31_0_0.com.facebook.react.ReactPackage;
 import abi31_0_0.com.facebook.react.bridge.NativeModule;
 import abi31_0_0.com.facebook.react.bridge.ReactApplicationContext;
@@ -183,6 +186,13 @@ public class ExponentPackage implements ReactPackage {
       try {
         ExperienceId experienceId = ExperienceId.create(mManifest.getString(ExponentManifest.MANIFEST_ID_KEY));
         ScopedContext scopedContext = new ScopedContext(reactContext, experienceId.getUrlEncoded());
+
+        // Image Loader initialization for ImagePicker and ImageManipulator
+        try {
+          ImageLoader.getInstance().init(new ImageLoaderConfiguration.Builder(reactContext).build());
+        } catch (RuntimeException e) {
+          EXL.testError(e);
+        }
 
         nativeModules.add(new ExponentAsyncStorageModule(reactContext, mManifest));
         nativeModules.add(new NotificationsModule(reactContext, mManifest, mExperienceProperties));
