@@ -307,7 +307,17 @@ addListener(({ data, event }) => {
       const { resolve, reject, callbacks } = transactions[transactionId];
       if (callbacks) {
         for (let callback of callbacks) {
-          callback(data);
+          if (callback instanceof Function) {
+            callback(data);
+          } else {
+            const { resolve, reject } = callback;
+            if (error) {
+              reject(new Error(error.description));
+            } else {
+              resolve(data);
+            }
+            removeCallbackForTransactionId(callback, transactionId);
+          }
         }
         if (error) {
           throw new Error('why am i called' + error.description);
@@ -350,30 +360,24 @@ addListener(({ data, event }) => {
   }
 });
 
-// TODO: Bacon: Are these called more than once?
+// TODO: Bacon: Are these called more than once? - I'm gonna assume they are, I didn't see any instance of these being called multiple times. Because of this I'll use the singular structure.
 // TODO: Bacon: Add serviceUUIDs
-export function discoverServicesForPeripheral(
-  peripheralUUID: string,
-  callback: Function
-): Subscription {
-  return discover({ peripheralUUID }, callback);
+export async function discoverServicesForPeripheralAsync({
+  id,
+}): Promise<{ peripheral: any | null }> {
+  return await discoverAsync({ id });
 }
 
-export function discoverCharacteristicsForService(
-  peripheralUUID: string,
-  serviceUUID: string,
-  callback: Function
-): Subscription {
-  return discover({ peripheralUUID, serviceUUID }, callback);
+export async function discoverCharacteristicsForServiceAsync({
+  id,
+}): Promise<{ service: any | null }> {
+  return await discoverAsync({ id });
 }
 
-export function discoverDescriptorsForCharacteristics(
-  peripheralUUID: string,
-  serviceUUID: string,
-  characteristicUUID: string,
-  callback: Function
-): Subscription {
-  return discover({ peripheralUUID, serviceUUID, characteristicUUID }, callback);
+export async function discoverDescriptorsForCharacteristicAsync({
+  id,
+}): Promise<{ service: any | null }> {
+  return await discoverAsync({ id });
 }
 
 function discover(
@@ -388,7 +392,6 @@ function discover(
   if (!ExpoBluetooth.discover) {
     throw new UnavailabilityError('Bluetooth', 'discover');
   }
-  ExpoBluetooth.discover(options);
 
   const { peripheralUUID, serviceUUID, characteristicUUID } = options;
   const transactionId = createTransactionId(
@@ -403,11 +406,50 @@ function discover(
   });
 
   addCallbackForTransactionId(callback, transactionId);
+
+  ExpoBluetooth.discover(options);
+
   return {
     remove() {
       removeCallbackForTransactionId(callback, transactionId);
     },
   };
+}
+async function discoverAsync(options: {
+  id: string;
+  serviceUUIDsToQuery?: string[];
+}): Promise<any> {
+  if (!ExpoBluetooth.discover) {
+    throw new UnavailabilityError('Bluetooth', 'discover');
+  }
+
+  const { serviceUUIDsToQuery, id } = options;
+
+  const [peripheralUUID, serviceUUID, characteristicUUID] = id.split('|');
+
+  const transactionId = createTransactionId(
+    { peripheralUUID, serviceUUID, characteristicUUID },
+    TransactionType.scan
+  );
+
+  ExpoBluetooth.discover({
+    peripheralUUID,
+    serviceUUID,
+    characteristicUUID,
+    // Extra
+    serviceUUIDsToQuery,
+  });
+
+  console.log('Create Transaction ID: ', {
+    transactionId,
+    peripheralUUID,
+    serviceUUID,
+    characteristicUUID,
+  });
+
+  return new Promise((resolve, reject) => {
+    addCallbackForTransactionId({ resolve, reject }, transactionId);
+  });
 }
 
 function ensureCallbacksArrayForTransactionId(transactionId) {

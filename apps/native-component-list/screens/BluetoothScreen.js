@@ -181,54 +181,78 @@ class Item extends React.Component {
               try {
                 const peripheralUUID = item.uuid;
                 const data = await Bluetooth.connectAsync({ uuid: peripheralUUID });
-                console.log('Discovered Peripheral', data);
-                Bluetooth.discoverServicesForPeripheral(peripheralUUID, ({ error, peripheral }) => {
-                  if (error) {
-                    console.log('throw services error', error);
-                    throw new Error(error.message);
-                  }
-                  if (peripheral && peripheral.services && peripheral.services.length) {
-                    const firstService = peripheral.services[0];
-                    console.log('Discovered Services', peripheral.services);
-                    // TODO: Bacon: firstService.peripheral is a UUID - change name
-                    Bluetooth.discoverCharacteristicsForService(
-                      firstService.peripheral,
-                      firstService.uuid,
-                      ({ error, service }) => {
-                        if (error) {
-                          console.log('throw characteristics error', error);
-                          throw new Error(error.message);
-                        }
+                console.log('Connected to Peripheral', data);
+                const {
+                  peripheral: { services },
+                } = await Bluetooth.discoverServicesForPeripheralAsync(item);
+                console.log('Discovered Services', services);
 
-                        if (service && service.characteristics && service.characteristics.length) {
-                          const firstCharacteristic = service.characteristics[0];
-                          console.log('Discovered Characteristics', firstCharacteristic);
-
-                          Bluetooth.discoverDescriptorsForCharacteristics(
-                            peripheralUUID,
-                            firstCharacteristic.service,
-                            firstCharacteristic.uuid,
-                            ({ error, characteristic }) => {
-                              if (error) {
-                                console.log('throw descriptors error', error);
-                                throw new Error(error.message);
-                              }
-
-                              console.log('Discovered Descriptors', { characteristic });
-                              // if (service && service.characteristics && service.characteristics.length) {
-                              //   const firstCharacteristic = service.characteristics[0];
-                              //   console.log('Discovered Characteristics', firstCharacteristic);
-                              // }
-                            }
-                          );
-                        }
-                      }
+                if (services.length) {
+                  console.log('first service', services[0]);
+                  const {
+                    service: { characteristics },
+                  } = await Bluetooth.discoverCharacteristicsForServiceAsync(services[0]);
+                  console.log('Discovered characteristics', characteristics);
+                  if (characteristics.length) {
+                    const {
+                      peripheral,
+                      characteristic,
+                    } = await Bluetooth.discoverDescriptorsForCharacteristicAsync(
+                      characteristics[0]
                     );
+                    console.log('Discovered characteristic', peripheral, characteristic);
                   }
-                });
+                }
+
+                // Bluetooth.discoverServicesForPeripheral(peripheralUUID, ({ error, peripheral }) => {
+                //   if (error) {
+                //     console.log('throw services error', error);
+                //     throw new Error(error.message);
+                //   }
+                //   if (peripheral && peripheral.services && peripheral.services.length) {
+                //     const firstService = peripheral.services[0];
+                //     console.log('Discovered Services', peripheral.services);
+                //     // TODO: Bacon: firstService.peripheral is a UUID - change name
+                //     Bluetooth.discoverCharacteristicsForService(
+                //       firstService.peripheral,
+                //       firstService.uuid,
+                //       ({ error, service }) => {
+                //         if (error) {
+                //           console.log('throw characteristics error', error);
+                //           throw new Error(error.message);
+                //         }
+
+                //         if (service && service.characteristics && service.characteristics.length) {
+                //           const firstCharacteristic = service.characteristics[0];
+                //           console.log('Discovered Characteristics', firstCharacteristic);
+
+                //           Bluetooth.discoverDescriptorsForCharacteristics(
+                //             peripheralUUID,
+                //             firstCharacteristic.service,
+                //             firstCharacteristic.uuid,
+                //             ({ error, characteristic }) => {
+                //               if (error) {
+                //                 console.log('throw descriptors error', error);
+                //                 throw new Error(error.message);
+                //               }
+
+                //               console.log('Discovered Descriptors', { characteristic });
+                //               // if (service && service.characteristics && service.characteristics.length) {
+                //               //   const firstCharacteristic = service.characteristics[0];
+                //               //   console.log('Discovered Characteristics', firstCharacteristic);
+                //               // }
+                //             }
+                //           );
+                //         }
+                //       }
+                //     );
+                //   }
+                // });
                 // alert('Connected!');
-              } catch ({ message }) {
-                alert('Failed: ' + message);
+              } catch (error) {
+                console.log(error);
+                console.error(error);
+                // alert('Failed: ' + message);
               }
             } else if (item.state === 'connected') {
               await Bluetooth.disconnectAsync({ uuid: item.id });
