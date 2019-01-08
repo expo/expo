@@ -40,7 +40,7 @@ You can debug Expo apps using the Chrome debugger tools. Rather than running you
 
 -   To ensure the best debugging experience, first change your host type in XDE to `LAN` or `localhost`. If you use `Tunnel` with debugging enabled, you are likely to experience so much latency that your app is unusable. While here, also ensure that `Development Mode` is checked.
 
-[![](./debugging-host.png)](#)
+[![](/static/images/debugging-host.png)](#)
 
 -   If you are using `LAN`, make sure your device is on the same wifi network as your development machine. This may not work on some public networks. `localhost` will not work for iOS unless you are in the simulator, and it only work on Android if your device is connected to your machine via usb.
 

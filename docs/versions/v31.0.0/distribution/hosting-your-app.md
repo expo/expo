@@ -97,7 +97,7 @@ When we bundle your app, minification is always enabled. In order to see the ori
 2. A `debug.html` file will also be created at the root of your output directory.
 3. In Chrome, open up `debug.html` and navigate to the `Source` tab. In the left tab there should be a resource explorer with a red folder containing the reconstructed source code from your bundle.
 
-[![Debugging Source Code](./host-your-app-debug.png)](/_images/host-your-app-debug.png)
+[![Debugging Source Code](/static/images/host-your-app-debug.png)](/static/images/host-your-app-debug.png)
 
 ### Asset Hosting
 By default, all assets are hosted from an `assets` path resolving from your `public-url` (e.g. https://quinlanj.github.io/self-host/assets).  You can override this behavior in the `assetUrlOverride` field of your `android-index.json`. All relative URL's will be resolved from the `public-url`.

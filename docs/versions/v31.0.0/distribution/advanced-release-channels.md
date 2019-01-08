@@ -28,7 +28,7 @@ To see more details about this particular release, you can run `expo publish:det
 #### Example command and output
 `expo publish:details --publish-id d9bd6b80`
 
-[![Publish Details](./release-channels-pub-details-1.png)](/_images/release-channels-pub-details-1.png)
+[![Publish Details](/static/images/release-channels-pub-details-1.png)](/static/images/release-channels-pub-details-1.png)
 
 
 ## What version of the app will my users get?
@@ -40,7 +40,7 @@ Your users will get the most recent compatible release that was pushed to a chan
 
 The following flowchart shows how we determine which release to return to a user:
 
-[![Serving Flowchart](./release-channels-flowchart.png)](/_images/release-channels-flowchart.png)
+[![Serving Flowchart](/static/images/release-channels-flowchart.png)](/static/images/release-channels-flowchart.png)
 
 ## Promoting a release to a new channel
 

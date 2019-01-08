@@ -24,7 +24,7 @@ Here are a couple examples of the use of `GLView` on Snack:
 
 The [@community/gl-test](https://expo.io/@community/gl-test) Expo app demonstrates a number of example scenes. The image below is a low-quality capture, try the app on Expo for the best-quality experience. The source code for these scenes is available [here](https://github.com/expo/gl-test/tree/master/Scenes)
 
-![](./gl-test.gif)
+![](/static/images/gl-test.gif)
 
 ## The `gl` object
 

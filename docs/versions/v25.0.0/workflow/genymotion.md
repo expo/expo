@@ -16,12 +16,12 @@ Choose one of these two options:
 
 -   Go to Configure -> SDK Manager.
 
-[![Configure SDK](./genymotion-configure-sdk.png)](/_images/genymotion-configure-sdk.png)
+[![Configure SDK](/static/images/genymotion-configure-sdk.png)](/static/images/genymotion-configure-sdk.png)
 
 -   In SDK Manager, make sure you are in Appearance & Behaviour -> System Settings -> Android SDK.
    Your SDK and tools are in the box that says Android SDK Location. Remember this location!
 
-[![Android SDK location](./genymotion-android-sdk-location.png)](/_images/genymotion-android-sdk-location.png)
+[![Android SDK location](/static/images/genymotion-android-sdk-location.png)](/static/images/genymotion-android-sdk-location.png)
 
 -   If you are on macOS or Linux, add the Android SDK location to your PATH using `~/.bash_profile` or `~/.bash_rc`.
 
@@ -31,7 +31,7 @@ Choose one of these two options:
 
 -   Open Genymotion and navigate to Settings -> ADB. Select "Use custom Android SDK tools" and update with your Android SDK location:
 
-[![](./genymotion-android-tools.png)](/_images/genymotion-android-tools.png)
+[![](/static/images/genymotion-android-tools.png)](/static/images/genymotion-android-tools.png)
 
 -   Start Genymotion
 

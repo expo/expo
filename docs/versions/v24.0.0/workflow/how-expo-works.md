@@ -15,7 +15,7 @@ You can also browse the source, fork, hack on and contribute to the Expo tooling
 
 There are two pieces here: the Expo app and the Expo development tool (either XDE or `exp` CLI). We'll just assume XDE here for simplicity of naming. When you open an app up in XDE, it spawns and manages two server processes in the background: the Expo Development Server and the React Native Packager Server.
 
-![](./fetch-app-from-xde.png)
+![](/static/images/fetch-app-from-xde.png)
 
 > **Note:** XDE also spawns a tunnel process, which allows devices outside of your LAN to access the the above servers without you needing to change your firewall settings. If you want to learn more, see [ngrok](https://ngrok.com/).
 
@@ -109,7 +109,7 @@ If you publish an update to your app with a new `sdkVersion`, if a user has yet 
 
 The process is essentially the same as opening an Expo app in development, only now we hit an Expo server to get the manifest, and manifest points us to CloudFront to retrieve your app's JavaScript.
 
-![](./fetch-app-production.png)
+![](/static/images/fetch-app-production.png)
 
 ## Opening Expo Apps Offline
 

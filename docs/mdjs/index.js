@@ -17,18 +17,10 @@ const generateJsFromMd = recursionPath => {
       generateJsFromMd(filePath);
     } else {
       const { ext, name } = path.parse(filePath);
-      if (ext === '.md') {
-        const relativePath = path
-          .resolve(filePath)
-          .replace(path.resolve(ORIGINAL_PATH_PREFIX) + '/', '');
-        generatePage(path.dirname(relativePath), name);
-      } else {
-        const relativePath = path
-          .resolve(filePath)
-          .replace(path.resolve(ORIGINAL_PATH_PREFIX) + '/', '');
-        fs.ensureDirSync(`./static/images/generated`);
-        fs.copySync(filePath, `./static/images/generated/${relativePath}`);
-      }
+      const relativePath = path
+        .resolve(filePath)
+        .replace(path.resolve(ORIGINAL_PATH_PREFIX) + '/', '');
+      generatePage(path.dirname(relativePath), name);
     }
   }
 };
