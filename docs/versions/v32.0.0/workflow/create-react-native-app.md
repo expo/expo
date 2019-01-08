@@ -5,7 +5,7 @@ title: Expo & "Create React Native App"
 ### WARNING
 
 [Create React Native
-App](https://facebook.github.io/react-native/blog/2017/03/13/introducing-create-react-native-app.html) has been replaced Expo-CLI. If you’ve already created your project with CRNA, you can read about migrating from CRNA to expo-CLI [here](https://github.com/react-community/create-react-native-app/blob/master/CHANGELOG.md#upgrading-from-1140-to-201).
+App](https://facebook.github.io/react-native/blog/2017/03/13/introducing-create-react-native-app.html) has been replaced by the Expo-CLI. If you’ve already created your project with CRNA, you can read about migrating from CRNA to expo-CLI [here](https://github.com/react-community/create-react-native-app/blob/master/CHANGELOG.md#upgrading-from-1140-to-201).
 
 ### Important Notes
 
