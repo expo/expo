@@ -36,6 +36,10 @@ import Button from '../components/Button';
  *   - If possible (on iOS) we should link to Bluetooth in settings.
  *   - On Android we should be able to turn on/off bluetooth
  *
+ * Another Use Case:
+ * - Get parked car:
+ *   - This has nothing to do with bluetooth, create an example and document this to cut down on questions.
+ *
  */
 
 export default class BluetoothScreen extends React.Component {
