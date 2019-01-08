@@ -1,11 +1,11 @@
 {
   "name": "EXMailComposer",
   "version": "1.0.0",
-  "summary": "Expo Module Template standalone module",
-  "description": "Expo Module Template standalone module",
+  "summary": "Expo universal module for composing e-mails",
+  "description": "Expo universal module for composing e-mails",
   "license": "MIT",
   "authors": "650 Industries, Inc.",
-  "homepage": "https://docs.expo.io/",
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-mail-composer",
   "platforms": {
     "ios": "10.0"
   },

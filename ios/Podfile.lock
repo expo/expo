@@ -338,6 +338,8 @@ PODS:
     - AppAuth
     - EXCore
   - EXAppLoaderProvider (1.0.0)
+  - EXAV (1.0.0):
+    - EXCore
   - EXBackgroundFetch (1.0.0):
     - EXCore
     - EXTaskManagerInterface
@@ -1259,6 +1261,7 @@ DEPENDENCIES:
   - EXAdsAdMob (from `../packages/expo-ads-admob/ios`)
   - EXAppAuth (from `../packages/expo-app-auth/ios`)
   - EXAppLoaderProvider (from `../packages/expo-app-loader-provider/ios`)
+  - EXAV (from `../packages/expo-av/ios`)
   - EXBackgroundFetch (from `../packages/expo-background-fetch/ios`)
   - EXBarCodeScanner (from `../packages/expo-barcode-scanner/ios`)
   - EXBarCodeScannerInterface (from `../packages/expo-barcode-scanner-interface/ios`)
@@ -1690,6 +1693,8 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-app-auth/ios"
   EXAppLoaderProvider:
     :path: "../packages/expo-app-loader-provider/ios"
+  EXAV:
+    :path: "../packages/expo-av/ios"
   EXBackgroundFetch:
     :path: "../packages/expo-background-fetch/ios"
   EXBarCodeScanner:
@@ -1919,6 +1924,7 @@ SPEC CHECKSUMS:
   EXAdsAdMob: 66a3c271540f54f4d964fa72f0c8a953faea5a03
   EXAppAuth: df83ccf9fecfdfad741a930263524f4b75f8e962
   EXAppLoaderProvider: 2638ca3d779c8baae37e63352c785e5e2dad70d5
+  EXAV: b8cdf9dac2c2a408cf4dd12b5f60e1246f6baaa3
   EXBackgroundFetch: 1b5444a094fc71e0361c80720482946c4388c9b7
   EXBarCodeScanner: 0ed39b41ccec72935521823eceed3d60c73fc43d
   EXBarCodeScannerInterface: 4453aa03ca1e0a1c9b320aaf4ce5b7d88064d192
@@ -1991,6 +1997,6 @@ SPEC CHECKSUMS:
   yogaABI31_0_0: 7978689ddccec43cffd5914889304cf3b7fd7c77
   yogaABI32_0_0: b6e0ba3796cd5e47ccea0454694e605a1cfc817a
 
-PODFILE CHECKSUM: 3bf9ff8d80572c30c7cbb5d73fe5f936787562ea
+PODFILE CHECKSUM: 336fd9b9831be1d2b7979286355e821062356426
 
 COCOAPODS: 1.5.3

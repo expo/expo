@@ -1,0 +1,23 @@
+{
+  "name": "EXAV",
+  "version": "1.0.0",
+  "summary": "Expo universal module for Audio and Video playback",
+  "description": "Expo universal module for Audio and Video playback",
+  "license": "MIT",
+  "authors": "Expo",
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-av",
+  "platforms": {
+    "ios": "10.0"
+  },
+  "source": {
+    "git": "https://github.com/expo/expo.git"
+  },
+  "source_files": "EXAV/**/*.{h,m}",
+  "preserve_paths": "EXAV/**/*.{h,m}",
+  "requires_arc": true,
+  "dependencies": {
+    "EXCore": [
+
+    ]
+  }
+}
