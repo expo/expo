@@ -36,9 +36,9 @@
     "markdown-in-js": "1.1.4",
     "mitt": "1.1.3",
     "mkdirp": "^0.5.1",
-    "prettier": "^1.15.3",
     "next": "^7.0.2",
     "nprogress": "0.2.0",
+    "prettier": "^1.15.3",
     "prismjs": "^1.11.0",
     "prop-types": "15.6.2",
     "query-string": "6.1.0",
@@ -53,6 +53,7 @@
   "devDependencies": {
     "@babel/cli": "^7.2.0",
     "@babel/core": "^7.2.0",
+    "@babel/node": "^7.2.2",
     "concurrently": "^3.6.0",
     "minimist": "^1.2.0",
     "shelljs": "^0.8.2"
