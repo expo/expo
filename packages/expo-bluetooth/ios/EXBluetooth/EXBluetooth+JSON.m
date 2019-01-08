@@ -124,6 +124,7 @@
   NSDictionary *userInfo = [input userInfo];
   NSString *underlyingError = [[userInfo objectForKey:NSUnderlyingErrorKey] localizedDescription];
   NSString *errorCode = [NSString stringWithFormat:@"%ld", (long) input.code];
+  // TODO: Bacon: add message
   return @{
            @"code": errorCode,
            @"description": EXNullIfEmpty(input.localizedDescription),
@@ -219,8 +220,14 @@
 {
   if (!input) return nil;
   
+  NSString *descriptorUUIDString = [[input UUID] UUIDString];
+  NSString *characteristicUUIDString = [[[input characteristic] UUID] UUIDString];
+  NSString *serviceUUIDString = [[[[input characteristic] service] UUID] UUIDString];
+  NSString *peripheralUUIDString = [[[[[input characteristic] service] peripheral] identifier] UUIDString];
+
   return @{
-           @"uuid": [[input UUID] UUIDString],
+          @"id": [NSString stringWithFormat:@"%@|%@|%@|%@", peripheralUUIDString, serviceUUIDString, characteristicUUIDString, descriptorUUIDString],
+           @"uuid": descriptorUUIDString,
            @"characteristic": [[[input characteristic] UUID] UUIDString],
 //           @"value": [input value] // TODO: Bacon: Find out what this is. (id)
            };
@@ -230,12 +237,18 @@
 {
   if (!input) return nil;
 
+  NSString *characteristicUUIDString = [[input UUID] UUIDString];
+  NSString *serviceUUIDString = [[[input service] UUID] UUIDString];
+  NSString *peripheralUUIDString = [[[[input service] peripheral] identifier] UUIDString];
+
   return @{
-           @"uuid": [[input UUID] UUIDString],
-           @"service": [[[input service] UUID] UUIDString],
+            @"id": [NSString stringWithFormat:@"%@|%@|%@", peripheralUUIDString, serviceUUIDString, characteristicUUIDString],
+           @"uuid": characteristicUUIDString,
+           @"service": serviceUUIDString,
+           @"peripheral": peripheralUUIDString,
            @"properties": [[self class] CBCharacteristicProperties_NativeToJSON:[input properties]],
 //           @"value": EXNullIfNil([input value]), //TODO: Bacon: Find out what this is. (NSData)
-           @"descriptors": EXNullIfNil([[self class] CBDescriptorList_NativeToJSON:[input descriptors]]),
+           @"descriptors": [[self class] CBDescriptorList_NativeToJSON:[input descriptors]],
            @"isNotifying": @([input isNotifying])
 //           @"isBroadcasted": @([input isBroadcasted])
            };
@@ -245,10 +258,14 @@
 {
   if (!input) return nil;
   
+  NSString *serviceUUIDString = [[input UUID] UUIDString];
+  NSString *peripheralUUIDString = [[[input peripheral] identifier] UUIDString];
   return @{
-           @"uuid": [[input UUID] UUIDString],
-           @"peripheral": [[input peripheral] identifier],
+            @"id": [NSString stringWithFormat:@"%@|%@", peripheralUUIDString, serviceUUIDString],
+           @"uuid": serviceUUIDString,
+           @"peripheral": peripheralUUIDString,
            @"isPrimary": @([input isPrimary]),
+           // TODO: Bacon: is this a recursive loop?
            @"includedServices": [[self class] CBServiceArray_NativeToJSON:[input includedServices]],
            @"characteristics": [[self class] CBCharacteristicArray_NativeToJSON:[input characteristics]]
            };
@@ -260,8 +277,8 @@
 
   return @{
            @"id": [[input identifier] UUIDString],
+           @"uuid": [[input identifier] UUIDString],
            @"name": EXNullIfEmpty([input name]),
-           @"RSSI": EXNullIfNil([input RSSI]),
            @"state": EXNullIfNil([[self class] CBPeripheralState_NativeToJSON:[input state]]),
            @"services": [[self class] CBServiceArray_NativeToJSON:[input services]],
            @"canSendWriteWithoutResponse": @([input canSendWriteWithoutResponse])

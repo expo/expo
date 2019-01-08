@@ -36,10 +36,15 @@ import Button from '../components/Button';
  *   - If possible (on iOS) we should link to Bluetooth in settings.
  *   - On Android we should be able to turn on/off bluetooth
  *
+ * Extra:
+ * - Observe when a device disconnects
+ * - Search by name
+ *
  * Another Use Case:
  * - Get parked car:
  *   - This has nothing to do with bluetooth, create an example and document this to cut down on questions.
  *
+ * TODO: Bacon: Change | to _ in uuids
  */
 
 export default class BluetoothScreen extends React.Component {
@@ -60,7 +65,8 @@ export default class BluetoothScreen extends React.Component {
         peripherals: {
           ...others,
           [peripheral.id]: {
-            ...currentPeripheral,
+            discoveryTimestamp: currentPeripheral.discoveryTimestamp || Date.now(),
+            // ...currentPeripheral,
             ...peripheral,
           },
         },
@@ -69,27 +75,38 @@ export default class BluetoothScreen extends React.Component {
   };
 
   componentDidMount() {
-    this.listener = Bluetooth.addListener(({ event, data }) => {
-      if (data.error) {
-        console.log(data.error);
-        console.warn(data.error.description);
-      }
+    // this.listener = Bluetooth.addListener(({ event, data }) => {
+    //   if (data.error) {
+    //     console.log(data.error);
+    //     console.warn(data.error.description);
+    //   }
+    //   if (data.center) {
+    //     this.setState(({ center }) => ({ center: data.center }));
+    //   }
+    //   if (data.peripheral) {
+    //     this.updatePeripheral(data.peripheral);
+    //   }
+    //   // if (event === Bluetooth.Events.CENTRAL_DID_DISCOVER_PERIPHERAL_EVENT) {
+    //   //   const { RSSI, central, advertisementData, peripheral } = data;
+    //   // } else if (event === Bluetooth.Events.CENTRAL_DID_CONNECT_PERIPHERAL_EVENT) {
+    //   //   const { RSSI, central, advertisementData, peripheral } = data;
+    //   // } else {
+    //   // }
+    //   console.log('BluetoothScreen: Event: ', event, data);
+    // });
 
-      if (data.center) {
-        this.setState(({ center }) => ({ center: data.center }));
-      }
+    //scan|0D95AAFE-ED9E-6DB3-70E9-1EFDE2ECAA4C
 
-      if (data.peripheral) {
-        this.updatePeripheral(data.peripheral);
-      }
-
-      // if (event === Bluetooth.Events.CENTRAL_DID_DISCOVER_PERIPHERAL_EVENT) {
-      //   const { RSSI, central, advertisementData, peripheral } = data;
-      // } else if (event === Bluetooth.Events.CENTRAL_DID_CONNECT_PERIPHERAL_EVENT) {
-      //   const { RSSI, central, advertisementData, peripheral } = data;
-      // } else {
-      // }
-      console.log('BluetoothScreen: Event: ', event, data);
+    //scan|0D95AAFE-ED9E-6DB3-70E9-1EFDE2ECAA4C
+    this.setState({ isScanning: true }, () => {
+      Bluetooth.startScanAsync({}, ({ peripheral }) => {
+        this.updatePeripheral(peripheral);
+        // conso
+        setTimeout(() => {
+          Bluetooth.stopScanAsync();
+          this.setState({ isScanning: false });
+        }, 500);
+      });
     });
   }
 
@@ -108,13 +125,20 @@ export default class BluetoothScreen extends React.Component {
             if (this.state.isScanning) {
               Bluetooth.stopScanAsync();
             } else {
-              Bluetooth.startScanAsync();
+              Bluetooth.startScanAsync({}, ({ peripheral }) => {
+                this.updatePeripheral(peripheral);
+                // console.log('BluetoothScreen: Found peripheral', peripheral);
+              });
             }
             this.setState({ isScanning: !this.state.isScanning });
           }}
         />
 
-        <PeripheralsList data={Object.values(this.state.peripherals).sort((a, b) => a.id > b.id)} />
+        <PeripheralsList
+          data={Object.values(this.state.peripherals)
+            .filter(({ name }) => name != null)
+            .sort((a, b) => a.discoveryTimestamp > b.discoveryTimestamp)}
+        />
       </View>
     );
   }
@@ -154,7 +178,58 @@ class Item extends React.Component {
           title={item.state}
           onPress={async () => {
             if (item.state === 'disconnected') {
-              await Bluetooth.connectAsync({ uuid: item.id });
+              try {
+                const peripheralUUID = item.uuid;
+                const data = await Bluetooth.connectAsync({ uuid: peripheralUUID });
+                console.log('Discovered Peripheral', data);
+                Bluetooth.discoverServicesForPeripheral(peripheralUUID, ({ error, peripheral }) => {
+                  if (error) {
+                    console.log('throw services error', error);
+                    throw new Error(error.message);
+                  }
+                  if (peripheral && peripheral.services && peripheral.services.length) {
+                    const firstService = peripheral.services[0];
+                    console.log('Discovered Services', peripheral.services);
+                    // TODO: Bacon: firstService.peripheral is a UUID - change name
+                    Bluetooth.discoverCharacteristicsForService(
+                      firstService.peripheral,
+                      firstService.uuid,
+                      ({ error, service }) => {
+                        if (error) {
+                          console.log('throw characteristics error', error);
+                          throw new Error(error.message);
+                        }
+
+                        if (service && service.characteristics && service.characteristics.length) {
+                          const firstCharacteristic = service.characteristics[0];
+                          console.log('Discovered Characteristics', firstCharacteristic);
+
+                          Bluetooth.discoverDescriptorsForCharacteristics(
+                            peripheralUUID,
+                            firstCharacteristic.service,
+                            firstCharacteristic.uuid,
+                            ({ error, characteristic }) => {
+                              if (error) {
+                                console.log('throw descriptors error', error);
+                                throw new Error(error.message);
+                              }
+
+                              console.log('Discovered Descriptors', { characteristic });
+                              // if (service && service.characteristics && service.characteristics.length) {
+                              //   const firstCharacteristic = service.characteristics[0];
+                              //   console.log('Discovered Characteristics', firstCharacteristic);
+                              // }
+                            }
+                          );
+                        }
+                      }
+                    );
+                  }
+                });
+                // alert('Connected!');
+              } catch ({ message }) {
+                alert('Failed: ' + message);
+              }
             } else if (item.state === 'connected') {
               await Bluetooth.disconnectAsync({ uuid: item.id });
             }
@@ -172,6 +247,17 @@ class Header extends React.Component {
     return (
       <View style={styles.headerContainer}>
         <Text style={styles.headerText}>{title.toUpperCase()}</Text>
+      </View>
+    );
+  }
+}
+
+export class BluetoothInfoScreen extends React.Component {
+  render() {
+    const { item = {} } = this.props;
+    return (
+      <View style={styles.itemContainer}>
+        <MonoText containerStyle={styles.itemText}>{JSON.stringify(item, null, 2)}</MonoText>
       </View>
     );
   }
