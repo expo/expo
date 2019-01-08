@@ -35,6 +35,8 @@ Associates the current user with a user ID. Call this after calling [`Segment.in
 
 ### `Segment.identifyWithTraits(userId, traits)`
 
+<!– Associates the current user with a user ID and some metadata. Call this after calling [`Segment.initialize()`](#exposegmentinitialize "Segment.initialize") but before other segment calls. See <https://segment.com/docs/spec/identify/>. –>
+
 #### Arguments
 
 -   **userId (_string_)** – User ID for the current user.

@@ -2,10 +2,10 @@ import './environment/validate';
 import './environment/logging';
 
 // load expo-asset immediately to set a custom `source` transformer in React Native
-import 'expo-asset';
+import 'expo-asset/src/Asset';
 
 import Constants from 'expo-constants';
-import { Platform } from 'react-native';
+import { NativeModules, Platform } from 'react-native';
 
 if (typeof Constants.manifest.env === 'object') {
   Object.assign(process.env, Constants.manifest.env);

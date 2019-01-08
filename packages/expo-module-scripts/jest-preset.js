@@ -53,7 +53,7 @@ function _createTypeScriptConfiguration() {
     extends: tsConfigPath,
     compilerOptions: {
       // Explicitly specify "module" so that ts-jest doesn't provide its default
-      module: 'esnext',
+      module: 'es2015',
     },
   };
 

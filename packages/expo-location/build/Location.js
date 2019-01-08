@@ -175,22 +175,17 @@ export async function reverseGeocodeAsync(location) {
         throw error;
     });
 }
-export function setApiKey(apiKey) {
+function setApiKey(apiKey) {
     googleApiKey = apiKey;
 }
 async function _googleGeocodeAsync(address) {
     const result = await fetch(`${googleApiUrl}?key=${googleApiKey}&address=${encodeURI(address)}`);
     const resultObject = await result.json();
-    const { status } = resultObject;
-    if (status === 'ZERO_RESULTS') {
-        return [];
-    }
-    else if (status !== 'OK') {
-        throw new Error(`An error occurred during geocoding. ${status}`);
+    if (resultObject.status !== 'OK') {
+        throw new Error('An error occurred during geocoding.');
     }
     return resultObject.results.map(result => {
         let location = result.geometry.location;
-        // TODO: This is missing a lot of props
         return {
             latitude: location.lat,
             longitude: location.lng,

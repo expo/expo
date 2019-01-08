@@ -19,7 +19,7 @@ Returns a promise resolving to one of these values:
 
 ### `BackgroundFetch.registerTaskAsync(taskName)`
 
-Registers background fetch task with given name. Registered tasks are saved in persistent storage and restored once the app is initialized. Remember to also call [BackgroundFetch.setMinimumIntervalAsync](#backgroundfetchsetminimumintervalasyncminimuminterval) as fetch operations will not be occurring with its default value.
+Registers background fetch task with given name. Registered tasks are saved in persistent storage and restored once the app is initialized.
 
 #### Arguments
 
@@ -65,7 +65,7 @@ A promise resolving when the task is fully unregistered.
 
 ### `BackgroundFetch.setMinimumIntervalAsync(minimumInterval)`
 
-Sets the minimum number of seconds that must elapse before another background fetch can be initiated. This value is advisory only and does not indicate the exact amount of time expected between fetch operations. It defaults to the number large enough to prevent fetch operations from occurring.
+Sets the minimum number of seconds that must elapse before another background fetch can be initiated. This value is advisory only and does not indicate the exact amount of time expected between fetch operations.
 
 *It is a global value which means that it can overwrite settings from another application opened through Expo Client.*
 

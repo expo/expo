@@ -224,16 +224,6 @@ Stops location updates for given task.
 
 A promise resolving as soon as the task is unregistered.
 
-### `Expo.Location.hasStartedLocationUpdatesAsync(taskName)`
-
-#### Arguments
-
--   **taskName (_string_)** -- Name of the location task to check.
-
-#### Returns
-
-A promise resolving to boolean value indicating whether the location task is started or not.
-
 ## Geofencing
 
 Geofencing API notifies your app when the device enters or leaves geographical regions you set up.
@@ -296,16 +286,6 @@ Stops geofencing for specified task. It unregisters the background task so the a
 #### Returns
 
 A promise resolving as soon as the task is unregistered.
-
-### `Expo.Location.hasStartedGeofencingAsync(taskName)`
-
-#### Arguments
-
--   **taskName (_string_)** -- Name of the geofencing task to check.
-
-#### Returns
-
-A promise resolving to boolean value indicating whether the geofencing task is started or not.
 
 ## Types
 
