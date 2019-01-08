@@ -5,6 +5,39 @@ import Colors from '../constants/Colors';
 import MonoText from '../components/MonoText';
 import Button from '../components/Button';
 
+/*
+ * Mango:
+ *
+ * - Mounting this screen should start scanning for devices right away.
+ *   - This should collect all of the available bluetooth devices.
+ *   - This should filter out various bluetooth devices that aren't helpful. TODO: Bacon: (No name?)
+ *   - Devices should be sorted by discovery time to prevent jumping around.
+ * - Display them in a SectionList with one section dedicated to connected devices, and the other for every other device
+ * - Each device should have a button to view more info.
+ *   - The more info screen should contain a button to disconnect if connected.
+ *   - A button to (Forget This Device). Is this possible?
+ *   - The ability to rewrite data - example airpods allow for a name change
+ *   - A list of known functionality.
+ *   - TODO: Bacon: Add more info
+ *
+ * - If I tap a non-connected device I should be able to attempt a connection.
+ *   - If the connection fails (or times-out?) there should be an alert: "Connection Unsuccessful" "Make sure 'name of device' is turned on and in range." "OK"
+ * - When a device is connecting it should have an indicator next to it.
+ * - Is it possible to get a list of known devices like in the iOS bluetooth settings?
+ * - There should be an indicator at the bottom of the list which shows that scanning is in progress
+ * - Is it possible to show the discoverable name of the current device (ios settings)
+ *
+ * - There should be a toast that presents non-intrusive errors like a device disconnecting from us.
+ * - There should be an alert for larger errors.
+ *
+ * - There should be a section dedicated to the manager.
+ *   - This section will display the state of the manager.
+ *   - There should be a toggle for scanning.
+ *   - If possible (on iOS) we should link to Bluetooth in settings.
+ *   - On Android we should be able to turn on/off bluetooth
+ *
+ */
+
 export default class BluetoothScreen extends React.Component {
   static navigationOptions = {
     title: 'Bluetooth',
@@ -102,6 +135,7 @@ class PeripheralsList extends React.Component {
     );
   }
 }
+
 function CannyFooter() {
   return <View />;
 }
