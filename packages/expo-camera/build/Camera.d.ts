@@ -1,6 +1,6 @@
-import React from 'react';
 import PropTypes from 'prop-types';
-import { PictureOptions, RecordingOptions, CapturedPicture, PropsType } from './Camera.types';
+import React from 'react';
+import { CapturedPicture, PictureOptions, PropsType, RecordingOptions } from './Camera.types';
 export default class Camera extends React.Component<PropsType> {
     static Constants: {
         Type: any;
@@ -87,9 +87,6 @@ export default class Camera extends React.Component<PropsType> {
     _lastEventsTimes: {
         [eventName: string]: Date;
     };
-    componentWillReceiveProps({ type }: {
-        type: any;
-    }): void;
     takePictureAsync(options?: PictureOptions): Promise<CapturedPicture>;
     getSupportedRatiosAsync(): Promise<Array<string>>;
     getAvailablePictureSizesAsync(ratio?: string): Promise<Array<string>>;

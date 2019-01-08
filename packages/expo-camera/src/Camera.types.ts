@@ -60,7 +60,6 @@ export type NativePropsType = {
   onFaceDetectionError?: Function;
   onPictureSaved?: Function;
   type?: number | string;
-  ratio?: string;
   flashMode?: number | string;
   autoFocus?: string | boolean | number;
   focusDepth?: number;
@@ -68,8 +67,10 @@ export type NativePropsType = {
   whiteBalance?: number | string;
   pictureSize?: string;
   barCodeScannerSettings?: {};
-  useCamera2Api?: boolean;
   barCodeScannerEnabled?: boolean;
   faceDetectorEnabled?: boolean;
   faceDetectorSettings?: {};
+  // Android
+  ratio?: string;
+  useCamera2Api?: boolean;
 };

@@ -1,17 +1,13 @@
-import React from 'react';
-import { View } from 'react-native';
-import PropTypes from 'prop-types';
-import mapValues from 'lodash.mapvalues';
-import { NativeModulesProxy, requireNativeViewManager } from 'expo-core';
-import { findNodeHandle, ViewPropTypes, Platform } from 'react-native';
-import LibCameraPhoto from 'jslib-html5-camera-photo';
-
 import { UnavailabilityError } from 'expo-errors';
-import { PictureOptions, RecordingOptions, CapturedPicture, PropsType } from './Camera.types';
+import mapValues from 'lodash.mapvalues';
+import PropTypes from 'prop-types';
+import React from 'react';
+import { findNodeHandle, Platform, ViewPropTypes } from 'react-native';
 
+import { CapturedPicture, PictureOptions, PropsType, RecordingOptions } from './Camera.types';
 import ExponentCamera from './ExponentCamera';
-
 import _CameraManager from './ExponentCameraManager';
+
 // TODO: Bacon: Fix multiplatform
 const CameraManager = _CameraManager as any;
 
@@ -77,7 +73,7 @@ function ensureNativeProps(options?: PropsType): PropsType {
     newProps.faceDetectorEnabled = true;
   }
 
-  if (Platform.OS === 'ios') {
+  if (Platform.OS !== 'android') {
     delete newProps.ratio;
     delete newProps.useCamera2Api;
   }
@@ -155,12 +151,6 @@ export default class Camera extends React.Component<PropsType> {
   _cameraRef?: React.Component | null;
   _lastEvents: { [eventName: string]: string } = {};
   _lastEventsTimes: { [eventName: string]: Date } = {};
-
-  componentWillReceiveProps({ type }) {
-    if (Platform.OS === 'web' && this._cameraHandle && type != this.props.type) {
-      CameraManager.setFacingMode(this._cameraHandle, type);
-    }
-  }
 
   async takePictureAsync(options?: PictureOptions): Promise<CapturedPicture> {
     const pictureOptions = ensurePictureOptions(options);
@@ -250,10 +240,9 @@ export default class Camera extends React.Component<PropsType> {
   _setReference = (ref?: React.Component) => {
     if (ref) {
       this._cameraRef = ref;
+      // TODO: Bacon: Make this one...
       if (Platform.OS === 'web') {
-        this._cameraHandle = new LibCameraPhoto((ref as any).video);
-        CameraManager.setFacingMode(this._cameraHandle, this.props.type);
-        this.resumePreview();
+        this._cameraHandle = ref as any;
       } else {
         this._cameraHandle = findNodeHandle(ref);
       }

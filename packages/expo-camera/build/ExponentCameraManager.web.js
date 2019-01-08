@@ -1,5 +1,3 @@
-import { FACING_MODES } from 'jslib-html5-camera-photo';
-import invariant from 'invariant';
 export default {
     get name() {
         return 'ExponentCameraManager';
@@ -15,6 +13,7 @@ export default {
             on: 'on',
             off: 'off',
             auto: 'auto',
+            torch: 'torch',
         };
     },
     get AutoFocus() {
@@ -22,59 +21,33 @@ export default {
             on: 'on',
             off: 'off',
             auto: 'auto',
+            singleShot: 'singleShot',
         };
     },
     get WhiteBalance() {
         return {
             auto: 'auto',
+            continuous: 'continuous',
+            manual: 'manual',
         };
     },
     get VideoQuality() {
         return {};
     },
+    // TODO: Bacon: Is video possible?
+    // record(options): Promise
+    // stopRecording(): Promise<void>
     async takePicture(options, camera) {
-        const config = {
-            ...options,
-            imageCompression: options.quality || 0.92,
-        };
-        const dataUri = camera.getDataUri(config);
-        const capturedPicture = {
-            uri: dataUri,
-            base64: dataUri,
-            width: 0,
-            height: 0,
-            exif: undefined,
-        };
-        const cameraSettigs = camera.getCameraSettings();
-        if (cameraSettigs) {
-            const { height, width } = cameraSettigs;
-            capturedPicture.width = width;
-            capturedPicture.height = height;
-            capturedPicture.exif = cameraSettigs;
-        }
-        if (options.onPictureSaved) {
-            options.onPictureSaved(capturedPicture);
-        }
-        return capturedPicture;
+        return await camera.takePicture(options);
     },
     async pausePreview(camera) {
-        return await camera.stopCamera();
+        camera.pausePreview();
     },
     async resumePreview(camera) {
-        if (!camera.__cameraFacingMode) {
-            camera.__cameraFacingMode = this.Type.front; // FACING_MODES.USER;
-        }
-        const facingMode = CameraTypeMap[camera.__cameraFacingMode];
-        return await camera.startCamera(facingMode, {});
+        return await camera.resumePreview();
     },
-    async setFacingMode(camera, facingMode) {
-        invariant(facingMode in this.Type, `CameraManager.setFacingMode(): Invalid facing mode: ${facingMode}`);
-        camera.__cameraFacingMode = facingMode;
-        return await this.resumePreview(camera);
+    async getAvailablePictureSizes(ratio, camera) {
+        return await camera.getAvailablePictureSizes(ratio);
     },
-};
-const CameraTypeMap = {
-    front: FACING_MODES.USER,
-    back: FACING_MODES.ENVIRONMENT,
 };
 //# sourceMappingURL=ExponentCameraManager.web.js.map

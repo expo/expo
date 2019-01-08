@@ -1,6 +1,5 @@
-import LibCameraPhoto, { FACING_MODES } from 'jslib-html5-camera-photo';
-import invariant from 'invariant';
-import { PictureOptions, CapturedPicture } from './Camera.types';
+import { CapturedPicture, PictureOptions } from './Camera.types';
+import ExponentCamera from './ExponentCamera.web';
 
 export default {
   get name(): string {
@@ -17,6 +16,7 @@ export default {
       on: 'on',
       off: 'off',
       auto: 'auto',
+      torch: 'torch',
     };
   },
   get AutoFocus() {
@@ -24,70 +24,33 @@ export default {
       on: 'on',
       off: 'off',
       auto: 'auto',
+      singleShot: 'singleShot',
     };
   },
   get WhiteBalance() {
     return {
       auto: 'auto',
+      continuous: 'continuous',
+      manual: 'manual',
     };
   },
   get VideoQuality() {
     return {};
   },
-  async takePicture(options: PictureOptions, camera: LibCameraPhoto): Promise<CapturedPicture> {
-    const config = {
-      ...options,
-      imageCompression: options.quality || 0.92,
-      // sizeFactor: 1,
-      // imageType: 'jpg',
-      // isImageMirror:
-    };
 
-    const dataUri = camera.getDataUri(config);
-
-    const capturedPicture = {
-      uri: dataUri,
-      base64: dataUri,
-      width: 0, //undefined,
-      height: 0, //undefined,
-      exif: undefined,
-    };
-
-    const cameraSettigs = camera.getCameraSettings();
-    if (cameraSettigs) {
-      const { height, width } = cameraSettigs;
-      capturedPicture.width = width;
-      capturedPicture.height = height;
-      capturedPicture.exif = cameraSettigs;
-    }
-
-    if (options.onPictureSaved) {
-      options.onPictureSaved(capturedPicture);
-    }
-
-    return capturedPicture;
+  // TODO: Bacon: Is video possible?
+  // record(options): Promise
+  // stopRecording(): Promise<void>
+  async takePicture(options: PictureOptions, camera: ExponentCamera): Promise<CapturedPicture> {
+    return await camera.takePicture(options);
   },
-  async pausePreview(camera: LibCameraPhoto): Promise<any> {
-    return await camera.stopCamera();
+  async pausePreview(camera: ExponentCamera): Promise<void> {
+    camera.pausePreview();
   },
-  async resumePreview(camera: LibCameraPhoto): Promise<any> {
-    if (!camera.__cameraFacingMode) {
-      camera.__cameraFacingMode = this.Type.front; // FACING_MODES.USER;
-    }
-    const facingMode = CameraTypeMap[camera.__cameraFacingMode];
-    return await camera.startCamera(facingMode, {});
+  async resumePreview(camera: ExponentCamera): Promise<any> {
+    return await camera.resumePreview();
   },
-  async setFacingMode(camera: LibCameraPhoto, facingMode: string): Promise<any> {
-    invariant(
-      facingMode in this.Type,
-      `CameraManager.setFacingMode(): Invalid facing mode: ${facingMode}`
-    );
-    camera.__cameraFacingMode = facingMode;
-    return await this.resumePreview(camera);
+  async getAvailablePictureSizes(ratio: string, camera: ExponentCamera): Promise<string[]> {
+    return await camera.getAvailablePictureSizes(ratio);
   },
-};
-
-const CameraTypeMap = {
-  front: FACING_MODES.USER,
-  back: FACING_MODES.ENVIRONMENT,
 };

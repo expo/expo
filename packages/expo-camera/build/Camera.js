@@ -1,9 +1,8 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import mapValues from 'lodash.mapvalues';
-import { findNodeHandle, ViewPropTypes, Platform } from 'react-native';
-import LibCameraPhoto from 'jslib-html5-camera-photo';
 import { UnavailabilityError } from 'expo-errors';
+import mapValues from 'lodash.mapvalues';
+import PropTypes from 'prop-types';
+import React from 'react';
+import { findNodeHandle, Platform, ViewPropTypes } from 'react-native';
 import ExponentCamera from './ExponentCamera';
 import _CameraManager from './ExponentCameraManager';
 // TODO: Bacon: Fix multiplatform
@@ -56,7 +55,7 @@ function ensureNativeProps(options) {
     if (props.onFacesDetected) {
         newProps.faceDetectorEnabled = true;
     }
-    if (Platform.OS === 'ios') {
+    if (Platform.OS !== 'android') {
         delete newProps.ratio;
         delete newProps.useCamera2Api;
     }
@@ -108,10 +107,9 @@ export default class Camera extends React.Component {
         this._setReference = (ref) => {
             if (ref) {
                 this._cameraRef = ref;
+                // TODO: Bacon: Make this one...
                 if (Platform.OS === 'web') {
-                    this._cameraHandle = new LibCameraPhoto(ref.video);
-                    CameraManager.setFacingMode(this._cameraHandle, this.props.type);
-                    this.resumePreview();
+                    this._cameraHandle = ref;
                 }
                 else {
                     this._cameraHandle = findNodeHandle(ref);
@@ -122,11 +120,6 @@ export default class Camera extends React.Component {
                 this._cameraHandle = null;
             }
         };
-    }
-    componentWillReceiveProps({ type }) {
-        if (Platform.OS === 'web' && this._cameraHandle && type != this.props.type) {
-            CameraManager.setFacingMode(this._cameraHandle, type);
-        }
     }
     async takePictureAsync(options) {
         const pictureOptions = ensurePictureOptions(options);
