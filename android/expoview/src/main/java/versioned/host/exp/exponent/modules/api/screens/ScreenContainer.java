@@ -8,7 +8,9 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 
+import com.facebook.react.ReactRootView;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.modules.core.ChoreographerCompat;
 import com.facebook.react.modules.core.ReactChoreographer;
@@ -78,16 +80,32 @@ public class ScreenContainer extends ViewGroup {
     return mScreens.get(index);
   }
 
+  private FragmentActivity findRootFragmentActivity() {
+    ViewParent parent = this;
+    while (!(parent instanceof ReactRootView) && parent.getParent() != null) {
+      parent = parent.getParent();
+    }
+    // we expect top level view to be of type ReactRootView, this isn't really necessary but in order
+    // to find root view we test if parent is null. This could potentially happen also when the view
+    // is detached from the hierarchy and that test would not correctly indicate the root view. So
+    // in order to make sure we indeed reached the root we test if it is of a correct type. This
+    // allows us to provide a more descriptive error message for the aforementioned case.
+    if (!(parent instanceof ReactRootView)) {
+      throw new IllegalStateException("ScreenContainer is not attached under ReactRootView");
+    }
+    // ReactRootView is expected to be initialized with the main React Activity as a context
+    Context context = ((ReactRootView) parent).getContext();
+    if (!(context instanceof FragmentActivity)) {
+      throw new IllegalStateException(
+              "In order to use RNScreens components your app's activity need to extend ReactFragmentActivity or ReactCompatActivity");
+    }
+    return (FragmentActivity) context;
+  }
+
   private FragmentTransaction getOrCreateTransaction() {
     if (mCurrentTransaction == null) {
-      Activity activity = ((ReactContext) getContext()).getCurrentActivity();
-      if (activity instanceof FragmentActivity) {
-        mCurrentTransaction = ((FragmentActivity) activity).getSupportFragmentManager().beginTransaction();
-        mCurrentTransaction.setReorderingAllowed(true);
-      } else {
-        throw new IllegalStateException(
-                "In order to use RNScreens components your app's activity need to extend ReactFragmentActivity or ReactCompatActivity");
-      }
+      mCurrentTransaction = findRootFragmentActivity().getSupportFragmentManager().beginTransaction();
+      mCurrentTransaction.setReorderingAllowed(true);
     }
     return mCurrentTransaction;
   }
