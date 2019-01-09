@@ -1,9 +1,16 @@
 import { NativeModules } from 'react-native';
 
 type GetDocumentOptions = {
-  type?: string,
+  copyToCacheDirectory?: boolean;
+  type?: string;
 };
 
-export async function getDocumentAsync({ type = '*/*' }: GetDocumentOptions = {}) {
-  return await NativeModules.ExponentDocumentPicker.getDocumentAsync({ type });
+export async function getDocumentAsync({
+  copyToCacheDirectory = true,
+  type = '*/*',
+}: GetDocumentOptions = {}) {
+  return await NativeModules.ExponentDocumentPicker.getDocumentAsync({
+    copyToCacheDirectory,
+    type,
+  });
 }
