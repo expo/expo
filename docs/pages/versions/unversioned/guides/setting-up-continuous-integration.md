@@ -252,6 +252,12 @@ To perform the authentication, we will add this script to our configuration:
 $ npx expo login -u <EXPO USERNAME> -p <EXPO PASSWORD>
 ```
 
+If you don't want to expose the password in the login script, set the `EXPO_CLI_PASSWORD` environment variable to the password and run the following script instead:
+
+```bash
+$ npx expo login --non-interactive -u <EXPO USERNAME>
+```
+
 ### Publish new builds
 
 After having the CLI library and authentication in place, we can finally create the build step.
