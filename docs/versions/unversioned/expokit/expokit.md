@@ -83,12 +83,10 @@ ExpoKit's release cycle follows the Expo SDK release cycle. When a new version o
 - Open up `ios/Podfile` in your project, and update the `ExpoKit` tag to point at the [release](https://github.com/expo/expo/releases) corresponding to your SDK version. Run `pod update` then `pod install`.
 - Open `ios/your-project/Supporting/EXSDKVersions.plist` in your project and change all the values to the new SDK version.
 
-If upgrading from SDK 31 or below, you'll need to refactor `AppDelegate` class as we moved its Expo-related code to separate class `EXStandaloneAppDelegate` owned by `ExpoKit` to simplify future upgrade process as much as possible. As of SDK 32, your `AppDelegate` class needs to subclass `EXStandaloneAppDelegate` and override its methods if you need to add any custom behavior to the delegate, but then remember to call the same method from the superclass (see `application:didFinishLaunchingWithOptions:` in `AppDelegate.m` below). Here are the basic `AppDelegate` files without any custom behavior:
+If upgrading from SDK 31 or below, you'll need to refactor your `AppDelegate` class as we moved its Expo-related part to a separate `EXStandaloneAppDelegate ` class owned by `ExpoKit` to simplify future upgrade processes as much as possible. As of SDK 32, your `AppDelegate` class needs to subclass `EXStandaloneAppDelegate`. If you need to override its methods to add any custom behavior, **always** remember to call the same method from the superclass (for an example, see `application:didFinishLaunchingWithOptions:` in `AppDelegate.m` below). Here are the basic `AppDelegate` files without any custom behavior:
 
 `AppDelegate.h`:
 ```objc
-// Copyright 2015-present 650 Industries. All rights reserved.
-
 #import <UIKit/UIKit.h>
 #import <ExpoKit/EXStandaloneAppDelegate.h>
 
@@ -99,8 +97,6 @@ If upgrading from SDK 31 or below, you'll need to refactor `AppDelegate` class a
 
 `AppDelegate.m`:
 ```objc
-// Copyright 2015-present 650 Industries. All rights reserved.
-
 #import "AppDelegate.h"
 
 @implementation AppDelegate
