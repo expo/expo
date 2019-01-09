@@ -443,6 +443,15 @@ EX_EXPORT_METHOD_AS(discover,
 #pragma mark - CBCentralManagerDelegate
 
 - (void)centralManagerDidUpdateState:(CBCentralManager *)central {
+  if (central.state < CBManagerStatePoweredOff) {
+    // All peripherals are now invalid.
+        for (NSString *key in _peripherals) {
+          CBPeripheral *peripheral = _peripherals[key];
+//          [_manager cancelPeripheralConnection:peripheral];
+          [_peripherals removeObjectForKey:key];
+        }
+    
+  }
   [self emit:EXBluetoothCentralDidUpdateStateEvent data:@{ EXBluetoothCentral: EXNullIfNil([[self class] CBCentralManager_NativeToJSON:central])}];
 }
 

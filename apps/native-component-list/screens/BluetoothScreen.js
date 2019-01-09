@@ -1,6 +1,22 @@
 import React from 'react';
-import { FlatList, Animated, Image, Text, StyleSheet, View } from 'react-native';
+import {
+  FlatList,
+  TouchableHighlight,
+  Alert,
+  Animated,
+  Image,
+  TouchableOpacity,
+  Text,
+  ScrollView,
+  Platform,
+  StyleSheet,
+  View,
+  Switch,
+  LayoutAnimation,
+  ActivityIndicator,
+} from 'react-native';
 import * as Bluetooth from 'expo-bluetooth';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import Colors from '../constants/Colors';
 import MonoText from '../components/MonoText';
 import Button from '../components/Button';
@@ -77,29 +93,18 @@ export default class BluetoothScreen extends React.Component {
     center: {},
     peripherals: {},
     isScanning: false,
+    centralState: 'unknown',
   };
 
-  updatePeripheral = peripheral => {
-    this.setState(({ peripherals }) => {
-      const { [peripheral.id]: currentPeripheral = {}, ...others } = peripherals;
-      return {
-        peripherals: {
-          ...others,
-          [peripheral.id]: {
-            discoveryTimestamp: currentPeripheral.discoveryTimestamp || Date.now(),
-            // ...currentPeripheral,
-            ...peripheral,
-          },
-        },
-      };
+  async componentDidMount() {
+    this.stateListener = Bluetooth.observeStateAsync(state => {
+      console.log('observeStateAsync', state);
+      this.setState({ centralState: state });
     });
-  };
-
-  componentDidMount() {
     Bluetooth.observeUpdatesAsync(({ peripherals, error }) => {
       if (error) {
         console.log({ error });
-        throw new Error('Bluetooth Screen: observer: ' + error.description);
+        throw new Error('Bluetooth Screen: observer: ' + error.message);
       }
 
       this.setState(({ peripherals: currentPeripherals }) => {
@@ -112,52 +117,79 @@ export default class BluetoothScreen extends React.Component {
       });
     });
 
-    // Load in one or more peripherals
-    this.setState({ isScanning: true }, () => {
-      Bluetooth.startScanAsync({}, ({ peripheral }) => {
-        // this.updatePeripheral(peripheral);
-        Bluetooth.stopScanAsync();
-        this.setState({ isScanning: false });
-      });
-    });
+    const central = await Bluetooth.getCentralAsync();
+    console.log({ central });
+
+    // // Load in one or more peripherals
+    // this.setState({ isScanning: true }, () => {
+    //   Bluetooth.startScanAsync({}, ({ peripheral }) => {
+    //     // this.updatePeripheral(peripheral);
+    //     Bluetooth.stopScanAsync();
+    //     this.setState({ isScanning: false });
+    //   });
+    // });
   }
 
   componentWillUnmount() {
     if (this.listener) {
       this.listener.remove();
     }
+    if (this.stateListener) this.stateListener.remove();
+  }
+  componentWillUpdate() {
+    LayoutAnimation.easeInEaseOut();
   }
 
+  onPressInfo = peripheral => {
+    this.props.navigation.push('BluetoothInfoScreen', { peripheral });
+  };
+
   render() {
+    const { centralState, peripherals, isScanning } = this.state;
+    const data = Object.values(peripherals)
+      .filter(({ name }) => name != null)
+      .sort((a, b) => a.discoveryTimestamp > b.discoveryTimestamp);
+
+    const canUseBluetooth = centralState === 'poweredOn';
+    const message = canUseBluetooth
+      ? "Now discoverable as a name that Apple probably doesn't surface... Maybe \"Evan's iPhone?\""
+      : `Central is in the ${centralState} state. Please power it on`;
     return (
       <View style={styles.container}>
-        <Button
-          title={(this.state.isScanning ? 'Stop' : 'Start') + ' Scanning'}
-          onPress={() => {
-            if (this.state.isScanning) {
-              Bluetooth.stopScanAsync();
-            } else {
-              Bluetooth.startScanAsync({}, ({ peripheral }) => {
-                this.updatePeripheral(peripheral);
-                // console.log('BluetoothScreen: Found peripheral', peripheral);
-              });
-            }
-            this.setState({ isScanning: !this.state.isScanning });
-          }}
-        />
-
-        <PeripheralsList
-          data={Object.values(this.state.peripherals)
-            .filter(({ name }) => name != null)
-            .sort((a, b) => a.discoveryTimestamp > b.discoveryTimestamp)}
-        />
+        <ScrollView style={{ flex: 1 }}>
+          <View style={{ marginTop: 26 }}>
+            <ScanningItem
+              isDisabled={!canUseBluetooth}
+              value={isScanning}
+              onValueChange={value => {
+                this.setState({ isScanning: value });
+                if (value) {
+                  Bluetooth.startScanAsync();
+                } else {
+                  Bluetooth.stopScanAsync();
+                }
+              }}
+            />
+            <Text style={{ marginLeft: 16, marginVertical: 8, fontSize: 14, opacity: 0.6 }}>
+              {message}
+            </Text>
+          </View>
+          {data.length > 0 && (
+            <View style={{ marginTop: 26 }}>
+              <Text style={{ marginLeft: 16, marginVertical: 8, fontSize: 16, opacity: 0.6 }}>
+                DEVICES
+              </Text>
+              <PeripheralsList onPressInfo={this.onPressInfo} data={data} />
+            </View>
+          )}
+        </ScrollView>
       </View>
     );
   }
 }
 
 class PeripheralsList extends React.Component {
-  renderItem = ({ item }) => <Item item={item} />;
+  renderItem = ({ item }) => <Item onPressInfo={this.props.onPressInfo} item={item} />;
 
   renderSectionHeader = ({ section: { title } }) => <Header title={title} />;
 
@@ -166,6 +198,13 @@ class PeripheralsList extends React.Component {
   render() {
     return (
       <FlatList
+        ItemSeparatorComponent={() => (
+          <View
+            style={[
+              { height: StyleSheet.hairlineWidth, backgroundColor: '#C7C7C9', marginLeft: 16 },
+            ]}
+          />
+        )}
         data={this.props.data}
         style={styles.list}
         renderItem={this.renderItem}
@@ -181,37 +220,91 @@ function CannyFooter() {
 }
 
 class Item extends React.Component {
+  state = {
+    isConnecting: false,
+  };
+  onPress = async () => {
+    const { item = {} } = this.props;
+
+    if (item.state === 'disconnected') {
+      this.setState({ isConnecting: true });
+      try {
+        const peripheralUUID = item.uuid;
+        await Bluetooth.connectAsync({ uuid: peripheralUUID, timeout: 5000 });
+        const loadedPeripheral = await Bluetooth.loadPeripheralAsync({
+          id: peripheralUUID,
+        });
+        console.log({ loadedPeripheral });
+      } catch (error) {
+        Alert.alert('Connection Unsuccessful', `Make sure "${item.name}" is turned on and in range.`)
+        console.log(error);
+        // console.error(error);
+        // alert('Failed: ' + message);
+      } finally {
+        this.setState({ isConnecting: false });
+      }
+    } else if (item.state === 'connected') {
+      await Bluetooth.disconnectAsync({ uuid: item.id });
+    }
+  };
+
+  onPressInfo = () => {
+    this.props.onPressInfo(this.props.item);
+  };
+
+  getSubtitle = () => {
+    if (this.state.isConnecting) {
+      return <ActivityIndicator animating />;
+    }
+    return (
+      <Text style={[styles.itemText, { fontSize: 18, opacity: 0.6 }]}>{this.props.item.state}</Text>
+    );
+  };
   render() {
     const { item = {} } = this.props;
     return (
-      <View style={styles.itemContainer}>
-        <Button
-          style={styles.button}
-          title={item.state}
-          onPress={async () => {
-            if (item.state === 'disconnected') {
-              try {
-                const peripheralUUID = item.uuid;
-                // const unloadedPeripheral = await Bluetooth.connectAsync({ uuid: peripheralUUID });
-                const loadedPeripheral = await Bluetooth.loadPeripheralAsync({
-                  id: peripheralUUID,
-                });
-                console.log({ loadedPeripheral });
-              } catch (error) {
-                console.log(error);
-                console.error(error);
-                // alert('Failed: ' + message);
-              }
-            } else if (item.state === 'connected') {
-              await Bluetooth.disconnectAsync({ uuid: item.id });
-            }
-          }}
-        />
-        <MonoText containerStyle={styles.itemText}>{JSON.stringify(item, null, 2)}</MonoText>
-      </View>
+      <ItemContainer disabled={this.state.isConnecting} onPress={this.onPress}>
+        <Text style={styles.itemText}>{item.name}</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          {this.getSubtitle()}
+          <TouchableOpacity style={{ marginLeft: 8 }} onPress={this.onPressInfo}>
+            <Ionicons name={'ios-information-circle-outline'} color="#197AFA" size={28} />
+          </TouchableOpacity>
+        </View>
+      </ItemContainer>
     );
   }
 }
+
+class ScanningItem extends React.Component {
+  render() {
+    const { isDisabled } = this.props;
+    const title = isDisabled ? 'Bluetooth Scanning is Disabled' : 'Bluetooth Scanning';
+    return (
+      <ItemContainer
+        containerStyle={{ opacity: isDisabled ? 0.8 : 1 }}
+        pointerEvents={isDisabled ? 'none' : undefined}>
+        <Text style={styles.itemText}>{title}</Text>
+        <Switch
+          disabled={isDisabled}
+          value={this.props.value}
+          onValueChange={this.props.onValueChange}
+        />
+      </ItemContainer>
+    );
+  }
+}
+
+const ItemContainer = ({ children, pointerEvents, containerStyle, style, ...props }) => (
+  <TouchableHighlight
+    {...props}
+    underlayColor={Colors.listItemTouchableHighlight}
+    style={[{ backgroundColor: 'white' }, style]}>
+    <View pointerEvents={pointerEvents} style={[styles.itemContainer, containerStyle]}>
+      {children}
+    </View>
+  </TouchableHighlight>
+);
 
 class Header extends React.Component {
   render() {
@@ -225,11 +318,24 @@ class Header extends React.Component {
 }
 
 export class BluetoothInfoScreen extends React.Component {
+  static navigationOptions = ({ navigation }) => ({
+    title: navigation.getParam('peripheral').name,
+  });
+
   render() {
-    const { item = {} } = this.props;
+    const peripheral = this.props.navigation.getParam('peripheral');
     return (
-      <View style={styles.itemContainer}>
-        <MonoText containerStyle={styles.itemText}>{JSON.stringify(item, null, 2)}</MonoText>
+      <View style={styles.container}>
+        <MonoText
+          containerStyle={{
+            borderWidth: 0,
+            flex: 1,
+            marginVertical: 8,
+            paddingVertical: 18,
+            paddingLeft: 12,
+          }}>
+          {JSON.stringify(peripheral, null, 2)}
+        </MonoText>
       </View>
     );
   }
@@ -237,13 +343,25 @@ export class BluetoothInfoScreen extends React.Component {
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 16,
+    // paddingVertical: 16,
     flex: 1,
-    backgroundColor: Colors.greyBackground,
+    backgroundColor: '#EFEEF3',
+  },
+  itemContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginHorizontal: 16,
+    marginVertical: 10,
+  },
+
+  itemText: {
+    fontSize: 16,
+    color: 'black',
   },
   list: {
     flex: 1,
-    paddingHorizontal: 12,
+    // paddingHorizontal: 12,
   },
   headerContainer: {
     alignItems: 'stretch',
@@ -256,17 +374,6 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     fontSize: 14,
     fontWeight: 'bold',
-  },
-  itemContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  itemText: {
-    borderWidth: 0,
-    flex: 1,
-    marginVertical: 8,
-    paddingVertical: 18,
-    paddingLeft: 12,
   },
   button: {
     marginRight: 16,

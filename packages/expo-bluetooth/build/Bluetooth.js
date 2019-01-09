@@ -1,6 +1,6 @@
-import { EventEmitter } from 'expo-core';
+import { EventEmitter, Platform } from 'expo-core';
 import { UnavailabilityError } from 'expo-errors';
-import { TransactionType, } from './Bluetooth.types';
+import { TransactionType, CentralState, } from './Bluetooth.types';
 import ExpoBluetooth from './ExpoBluetooth';
 let transactions = {};
 const eventEmitter = new EventEmitter(ExpoBluetooth);
@@ -69,6 +69,8 @@ export async function observeUpdatesAsync(callback) {
     };
 }
 export async function observeStateAsync(callback) {
+    const central = await getCentralAsync();
+    callback(central.state);
     // TODO: Bacon: Is this just automatic?
     multiEventHandlers[Events.CENTRAL_DID_UPDATE_STATE_EVENT].push(callback);
     return {
@@ -87,7 +89,24 @@ export async function connectAsync(options) {
     const peripheralUUID = _validateUUID(options.uuid);
     return new Promise((resolve, reject) => {
         const transactionId = createTransactionId({ peripheralUUID }, TransactionType.connect);
-        transactions[transactionId] = { resolve, reject };
+        let timeoutTag;
+        if (options.timeout) {
+            timeoutTag = setTimeout(() => {
+                disconnectAsync({ uuid: peripheralUUID });
+                delete transactions[transactionId];
+                reject('request timeout');
+            }, options.timeout);
+        }
+        transactions[transactionId] = {
+            resolve(...props) {
+                clearTimeout(timeoutTag);
+                return resolve(...props);
+            },
+            reject(...props) {
+                clearTimeout(timeoutTag);
+                return reject(...props);
+            }
+        };
         ExpoBluetooth.connectAsync(options);
     });
 }
@@ -279,14 +298,33 @@ addListener(({ data, event }) => {
             }
         }
         else {
-            throw new Error('Unhandled transactionId');
+            console.log('Unhandled transactionId', data, event);
+            // throw new Error('Unhandled transactionId');
         }
     }
     else {
         switch (event) {
             case Events.CENTRAL_DID_DISCOVER_PERIPHERAL_EVENT:
-            case Events.CENTRAL_DID_UPDATE_STATE_EVENT:
                 fireMultiEventHandlers(event, { central, peripheral });
+                return;
+            case Events.CENTRAL_DID_UPDATE_STATE_EVENT:
+                console.log('CENTRAL DID UPDATE STATE', event);
+                if (!central) {
+                    throw new Error('EXBluetooth: Central not defined while processing: ' + event);
+                }
+                // Currently this is iOS only
+                if (Platform.OS === 'ios') {
+                    const peripheralsAreStillValid = central.state == CentralState.PoweredOff || central.state === CentralState.PoweredOn;
+                    if (!peripheralsAreStillValid) {
+                        // Clear caches
+                        _peripherals = {};
+                        firePeripheralObservers(error);
+                    }
+                }
+                for (const callback of multiEventHandlers[event]) {
+                    callback(central.state);
+                }
+                return;
             case Events.CENTRAL_DID_RETRIEVE_CONNECTED_PERIPHERALS_EVENT:
             case Events.CENTRAL_DID_RETRIEVE_PERIPHERALS_EVENT:
                 return;

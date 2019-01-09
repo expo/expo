@@ -7,6 +7,7 @@ export declare function observeUpdatesAsync(callback: (updates: any) => void): P
 export declare function observeStateAsync(callback: StateUpdatedCallback): Promise<Subscription>;
 export declare function connectAsync(options: {
     uuid: string;
+    timeout?: number;
     options?: any;
 }): Promise<PeripheralInterface>;
 export declare function disconnectAsync(options: {
