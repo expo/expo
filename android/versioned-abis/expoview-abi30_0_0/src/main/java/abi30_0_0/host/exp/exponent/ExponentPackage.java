@@ -2,10 +2,8 @@
 
 package abi30_0_0.host.exp.exponent;
 
-import abi30_0_0.com.facebook.react.ReactPackage;
-import abi30_0_0.com.facebook.react.bridge.NativeModule;
-import abi30_0_0.com.facebook.react.bridge.ReactApplicationContext;
-import abi30_0_0.com.facebook.react.uimanager.ViewManager;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,13 +15,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import abi30_0_0.com.facebook.react.ReactPackage;
+import abi30_0_0.com.facebook.react.bridge.NativeModule;
+import abi30_0_0.com.facebook.react.bridge.ReactApplicationContext;
+import abi30_0_0.com.facebook.react.uimanager.ViewManager;
 import abi30_0_0.expo.adapters.react.ReactModuleRegistryProvider;
 import abi30_0_0.expo.core.interfaces.Package;
 import abi30_0_0.expo.modules.ads.admob.AdMobPackage;
-import abi30_0_0.expo.modules.font.FontLoaderPackage;
-import abi30_0_0.expo.modules.localauthentication.LocalAuthenticationPackage;
-import abi30_0_0.expo.modules.payments.stripe.StripePackage;
-import abi30_0_0.expo.modules.print.PrintPackage;
 import abi30_0_0.expo.modules.analytics.segment.SegmentPackage;
 import abi30_0_0.expo.modules.barcodescanner.BarCodeScannerPackage;
 import abi30_0_0.expo.modules.camera.CameraPackage;
@@ -31,27 +29,18 @@ import abi30_0_0.expo.modules.constants.ConstantsPackage;
 import abi30_0_0.expo.modules.contacts.ContactsPackage;
 import abi30_0_0.expo.modules.facedetector.FaceDetectorPackage;
 import abi30_0_0.expo.modules.filesystem.FileSystemPackage;
+import abi30_0_0.expo.modules.font.FontLoaderPackage;
 import abi30_0_0.expo.modules.gl.GLPackage;
+import abi30_0_0.expo.modules.localauthentication.LocalAuthenticationPackage;
 import abi30_0_0.expo.modules.location.LocationPackage;
 import abi30_0_0.expo.modules.medialibrary.MediaLibraryPackage;
+import abi30_0_0.expo.modules.payments.stripe.StripePackage;
 import abi30_0_0.expo.modules.permissions.PermissionsPackage;
+import abi30_0_0.expo.modules.print.PrintPackage;
 import abi30_0_0.expo.modules.sensors.SensorsPackage;
 import abi30_0_0.expo.modules.sms.SMSPackage;
-import host.exp.exponent.ExponentManifest;
-import host.exp.exponent.analytics.EXL;
-import host.exp.exponent.kernel.ExperienceId;
-import host.exp.exponent.kernel.ExponentKernelModuleProvider;
-import host.exp.exponent.utils.ScopedContext;
-import abi30_0_0.host.exp.exponent.modules.api.SplashScreenModule;
-import abi30_0_0.host.exp.exponent.modules.api.BrightnessModule;
-import abi30_0_0.host.exp.exponent.modules.api.ImageManipulatorModule;
-import abi30_0_0.host.exp.exponent.modules.api.MailComposerModule;
-import abi30_0_0.host.exp.exponent.modules.api.PedometerModule;
-import abi30_0_0.host.exp.exponent.modules.api.UpdatesModule;
-import abi30_0_0.host.exp.exponent.modules.api.av.video.VideoManager;
-import abi30_0_0.host.exp.exponent.modules.api.fbads.AdIconViewManager;
-import abi30_0_0.host.exp.exponent.modules.api.fbads.MediaViewManager;
 import abi30_0_0.host.exp.exponent.modules.api.AmplitudeModule;
+import abi30_0_0.host.exp.exponent.modules.api.BrightnessModule;
 import abi30_0_0.host.exp.exponent.modules.api.CalendarModule;
 import abi30_0_0.host.exp.exponent.modules.api.CryptoModule;
 import abi30_0_0.host.exp.exponent.modules.api.DocumentPickerModule;
@@ -60,36 +49,44 @@ import abi30_0_0.host.exp.exponent.modules.api.FabricModule;
 import abi30_0_0.host.exp.exponent.modules.api.FacebookModule;
 import abi30_0_0.host.exp.exponent.modules.api.GoogleModule;
 import abi30_0_0.host.exp.exponent.modules.api.ImageCropperModule;
+import abi30_0_0.host.exp.exponent.modules.api.ImageManipulatorModule;
 import abi30_0_0.host.exp.exponent.modules.api.ImagePickerModule;
+import abi30_0_0.host.exp.exponent.modules.api.IntentLauncherModule;
 import abi30_0_0.host.exp.exponent.modules.api.KeepAwakeModule;
 import abi30_0_0.host.exp.exponent.modules.api.KeyboardModule;
 import abi30_0_0.host.exp.exponent.modules.api.LocalizationModule;
+import abi30_0_0.host.exp.exponent.modules.api.MailComposerModule;
 import abi30_0_0.host.exp.exponent.modules.api.NotificationsModule;
+import abi30_0_0.host.exp.exponent.modules.api.PedometerModule;
 import abi30_0_0.host.exp.exponent.modules.api.RNViewShotModule;
 import abi30_0_0.host.exp.exponent.modules.api.SQLiteModule;
 import abi30_0_0.host.exp.exponent.modules.api.ScreenOrientationModule;
-import abi30_0_0.host.exp.exponent.modules.api.screens.RNScreenPackage;
+import abi30_0_0.host.exp.exponent.modules.api.SecureStoreModule;
 import abi30_0_0.host.exp.exponent.modules.api.ShakeModule;
 import abi30_0_0.host.exp.exponent.modules.api.SpeechModule;
+import abi30_0_0.host.exp.exponent.modules.api.SplashScreenModule;
 import abi30_0_0.host.exp.exponent.modules.api.URLHandlerModule;
+import abi30_0_0.host.exp.exponent.modules.api.UpdatesModule;
 import abi30_0_0.host.exp.exponent.modules.api.WebBrowserModule;
 import abi30_0_0.host.exp.exponent.modules.api.av.AVModule;
+import abi30_0_0.host.exp.exponent.modules.api.av.video.VideoManager;
 import abi30_0_0.host.exp.exponent.modules.api.av.video.VideoViewManager;
 import abi30_0_0.host.exp.exponent.modules.api.cognito.RNAWSCognitoModule;
 import abi30_0_0.host.exp.exponent.modules.api.components.LinearGradientManager;
-import abi30_0_0.host.exp.exponent.modules.api.components.lottie.LottiePackage;
-import abi30_0_0.host.exp.exponent.modules.api.components.gesturehandler.react.RNGestureHandlerPackage;
 import abi30_0_0.host.exp.exponent.modules.api.components.gesturehandler.react.RNGestureHandlerModule;
+import abi30_0_0.host.exp.exponent.modules.api.components.gesturehandler.react.RNGestureHandlerPackage;
+import abi30_0_0.host.exp.exponent.modules.api.components.lottie.LottiePackage;
 import abi30_0_0.host.exp.exponent.modules.api.components.maps.MapsPackage;
 import abi30_0_0.host.exp.exponent.modules.api.components.svg.SvgPackage;
+import abi30_0_0.host.exp.exponent.modules.api.fbads.AdIconViewManager;
 import abi30_0_0.host.exp.exponent.modules.api.fbads.AdSettingsManager;
 import abi30_0_0.host.exp.exponent.modules.api.fbads.BannerViewManager;
 import abi30_0_0.host.exp.exponent.modules.api.fbads.InterstitialAdManager;
+import abi30_0_0.host.exp.exponent.modules.api.fbads.MediaViewManager;
 import abi30_0_0.host.exp.exponent.modules.api.fbads.NativeAdManager;
 import abi30_0_0.host.exp.exponent.modules.api.fbads.NativeAdViewManager;
-import abi30_0_0.host.exp.exponent.modules.api.IntentLauncherModule;
 import abi30_0_0.host.exp.exponent.modules.api.reanimated.ReanimatedModule;
-import abi30_0_0.host.exp.exponent.modules.api.SecureStoreModule;
+import abi30_0_0.host.exp.exponent.modules.api.screens.RNScreenPackage;
 import abi30_0_0.host.exp.exponent.modules.api.standalone.branch.RNBranchModule;
 import abi30_0_0.host.exp.exponent.modules.internal.ExponentAsyncStorageModule;
 import abi30_0_0.host.exp.exponent.modules.internal.ExponentIntentModule;
@@ -97,6 +94,10 @@ import abi30_0_0.host.exp.exponent.modules.internal.ExponentUnsignedAsyncStorage
 import abi30_0_0.host.exp.exponent.modules.test.ExponentTestNativeModule;
 import abi30_0_0.host.exp.exponent.modules.universal.ExpoModuleRegistryAdapter;
 import abi30_0_0.host.exp.exponent.modules.universal.ScopedModuleRegistryAdapter;
+import host.exp.exponent.ExponentManifest;
+import host.exp.exponent.analytics.EXL;
+import host.exp.exponent.kernel.ExperienceId;
+import host.exp.exponent.utils.ScopedContext;
 
 import static host.exp.exponent.kernel.KernelConstants.LINKING_URI_KEY;
 
@@ -188,6 +189,11 @@ public class ExponentPackage implements ReactPackage {
         ExperienceId experienceId = ExperienceId.create(mManifest.getString(ExponentManifest.MANIFEST_ID_KEY));
         ScopedContext scopedContext = new ScopedContext(reactContext, experienceId.getUrlEncoded());
 
+        // Image Loader initialization for ImagePicker and ImageManipulator
+        if (!ImageLoader.getInstance().isInited()) {
+          ImageLoader.getInstance().init(new ImageLoaderConfiguration.Builder(reactContext).build());
+        }
+
         nativeModules.add(new ExponentAsyncStorageModule(reactContext, mManifest));
         nativeModules.add(new NotificationsModule(reactContext, mManifest, mExperienceProperties));
         nativeModules.add(new CryptoModule(reactContext));
@@ -251,11 +257,11 @@ public class ExponentPackage implements ReactPackage {
 
     // Add view manager from 3rd party library packages.
     addViewManagersFromPackages(reactContext, viewManagers, Arrays.<ReactPackage>asList(
-      new SvgPackage(),
-      new MapsPackage(),
-      new LottiePackage(),
-      new RNGestureHandlerPackage(),
-      new RNScreenPackage()
+        new SvgPackage(),
+        new MapsPackage(),
+        new LottiePackage(),
+        new RNGestureHandlerPackage(),
+        new RNScreenPackage()
     ));
 
     viewManagers.addAll(mModuleRegistryAdapter.createViewManagers(reactContext));
