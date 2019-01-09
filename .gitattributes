@@ -1,3 +1,4 @@
+*.pbxproj -diff linguist-generated
 nix/nodepackages/** -diff linguist-generated
 nix/**/gemset.nix -diff linguist-generated
 packages/*/build/** -diff linguist-generated
