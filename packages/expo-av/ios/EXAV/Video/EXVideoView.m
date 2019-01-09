@@ -1,17 +1,11 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <AVFoundation/AVFoundation.h>
-
-#import <React/RCTConvert.h>
-#import <React/RCTBridge.h>
-#import <React/UIView+React.h>
-#import <React/RCTUtils.h>
-
-#import "EXAV.h"
-#import "EXUtil.h"
-#import "EXVideoView.h"
-#import "EXAVPlayerData.h"
-#import "EXVideoPlayerViewController.h"
+#import <EXCore/EXUtilities.h>
+#import <EXAV/EXAV.h>
+#import <EXAV/EXVideoView.h>
+#import <EXAV/EXAVPlayerData.h>
+#import <EXAV/EXVideoPlayerViewController.h>
 
 static NSString *const EXVideoReadyForDisplayKeyPath = @"readyForDisplay";
 static NSString *const EXVideoSourceURIKeyPath = @"uri";
@@ -30,8 +24,8 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
 @property (nonatomic, assign) BOOL fullscreenPlayerIsDismissing;
 @property (nonatomic, weak) UIViewController *nativeFullscreenPlayerViewController;
 @property (nonatomic, strong) EXVideoPlayerViewController *fullscreenPlayerViewController;
-@property (nonatomic, strong) RCTPromiseResolveBlock requestedFullscreenChangeResolver;
-@property (nonatomic, strong) RCTPromiseRejectBlock requestedFullscreenChangeRejecter;
+@property (nonatomic, strong) EXPromiseResolveBlock requestedFullscreenChangeResolver;
+@property (nonatomic, strong) EXPromiseRejectBlock requestedFullscreenChangeRejecter;
 @property (nonatomic, assign) BOOL requestedFullscreenChange;
 
 @property (nonatomic, strong) UIViewController *presentingViewController;
@@ -39,16 +33,19 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
 
 @property (nonatomic, strong) NSMutableDictionary *statusToSet;
 
+@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
+
 @end
 
 @implementation EXVideoView
 
 #pragma mark - EXVideoView interface methods
 
-- (instancetype)initWithBridge:(RCTBridge *)bridge
+- (instancetype)initWithModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   if ((self = [super init])) {
-    _exAV = [bridge moduleForClass:[EXAV class]];
+    _moduleRegistry = moduleRegistry;
+    // TODO: grab EXAV from module registry
     [_exAV registerVideoForAudioLifecycle:self];
     
     _data = nil;
@@ -90,8 +87,8 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
 
 #pragma mark - Player and source
 
-- (void)_tryUpdateDataStatus:(RCTPromiseResolveBlock)resolve
-                    rejecter:(RCTPromiseRejectBlock)reject
+- (void)_tryUpdateDataStatus:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject
 {
   if (_data) {
     if ([_statusToSet count] > 0) {
@@ -126,7 +123,7 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
 {
   if (_requestedFullscreenChangeRejecter) {
     NSString *errorMessage = @"Player is being removed, cancelling fullscreen change request.";
-    _requestedFullscreenChangeRejecter(@"E_VIDEO_FULLSCREEN", errorMessage, RCTErrorWithMessage(errorMessage));
+    _requestedFullscreenChangeRejecter(@"E_VIDEO_FULLSCREEN", errorMessage, EXErrorWithMessage(errorMessage));
     _requestedFullscreenChangeResolver = nil;
     _requestedFullscreenChangeRejecter = nil;
     _requestedFullscreenChange = NO;
@@ -207,7 +204,7 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
       }
     };
 
-    [EXUtil performSynchronouslyOnMainThread:block];
+    [EXUtilities performSynchronouslyOnMainThread:block];
   }
 }
 
@@ -242,7 +239,8 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
       }
     }
   } else if (object == _playerViewController && [keyPath isEqualToString:EXVideoBoundsKeyPath]) {
-    if (RCTPresentedViewController() == nil) {
+    UIViewController *presentedViewController = [[_moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)] currentViewController];
+    if (presentedViewController == nil) {
       return;
     }
 
@@ -252,12 +250,12 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
     // We may be presenting a fullscreen player for this video item
     UIViewController *fullscreenViewController;
 
-    if ([[RCTPresentedViewController().class description] isEqualToString:EXAVFullScreenViewControllerClassName]) {
+    if ([[presentedViewController.class description] isEqualToString:EXAVFullScreenViewControllerClassName]) {
       // RCTPresentedViewController() is fullscreen
-       fullscreenViewController = RCTPresentedViewController();
-    } else if (RCTPresentedViewController().presentedViewController != nil && [[RCTPresentedViewController().presentedViewController.class description] isEqualToString:EXAVFullScreenViewControllerClassName]) {
+       fullscreenViewController = presentedViewController;
+    } else if (presentedViewController.presentedViewController != nil && [[presentedViewController.presentedViewController.class description] isEqualToString:EXAVFullScreenViewControllerClassName]) {
       // RCTPresentedViewController().presentedViewController is fullscreen
-      fullscreenViewController = RCTPresentedViewController().presentedViewController;
+      fullscreenViewController = presentedViewController.presentedViewController;
     }
 
     if (fullscreenViewController.isBeingDismissed && _fullscreenPlayerPresented && _nativeFullscreenPlayerViewController == fullscreenViewController) {
@@ -284,8 +282,8 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
 
 - (void)setSource:(NSDictionary *)source
        withStatus:(NSDictionary *)initialStatus
-         resolver:(RCTPromiseResolveBlock)resolve
-         rejecter:(RCTPromiseRejectBlock)reject
+         resolver:(EXPromiseResolveBlock)resolve
+         rejecter:(EXPromiseRejectBlock)reject
 {
   if (_data) {
     [_statusToSet addEntriesFromDictionary:[_data getStatus]];
@@ -336,7 +334,7 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
                              } else if (strongSelf) {
                                [strongSelf _removePlayer];
                                if (reject) {
-                                 reject(@"E_VIDEO_NOTCREATED", error, RCTErrorWithMessage(error));
+                                 reject(@"E_VIDEO_NOTCREATED", error, EXErrorWithMessage(error));
                                }
                                [strongSelf _callErrorCallback:error];
                              }
@@ -354,8 +352,8 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
 }
 
 - (void)setStatus:(NSDictionary *)status
-         resolver:(RCTPromiseResolveBlock)resolve
-         rejecter:(RCTPromiseRejectBlock)reject
+         resolver:(EXPromiseResolveBlock)resolve
+         rejecter:(EXPromiseRejectBlock)reject
 {
   if (status != nil) {
     [_statusToSet addEntriesFromDictionary:status];
@@ -364,8 +362,8 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
 }
 
 - (void)replayWithStatus:(NSDictionary *)status
-                resolver:(RCTPromiseResolveBlock)resolve
-                rejecter:(RCTPromiseRejectBlock)reject
+                resolver:(EXPromiseResolveBlock)resolve
+                rejecter:(EXPromiseRejectBlock)reject
 {
   if (status != nil) {
     [_statusToSet addEntriesFromDictionary:status];
@@ -378,21 +376,21 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
 }
 
 - (void)setFullscreen:(BOOL)value
-             resolver:(RCTPromiseResolveBlock)resolve
-             rejecter:(RCTPromiseRejectBlock)reject
+             resolver:(EXPromiseResolveBlock)resolve
+             rejecter:(EXPromiseRejectBlock)reject
 {
   if (!_data) {
     // Tried to set fullscreen for an unloaded component.
     if (reject) {
       NSString *errorMessage = @"Fullscreen encountered an error: video is not loaded.";
-      reject(@"E_VIDEO_FULLSCREEN", errorMessage, RCTErrorWithMessage(errorMessage));
+      reject(@"E_VIDEO_FULLSCREEN", errorMessage, EXErrorWithMessage(errorMessage));
     }
     return;
   } else if (!_playerHasLoaded) {
     // `setUri` has been called, but the video has not yet loaded.
     if (_requestedFullscreenChangeRejecter) {
       NSString *errorMessage = @"Received newer request, cancelling fullscreen mode change request.";
-      _requestedFullscreenChangeRejecter(@"E_VIDEO_FULLSCREEN", errorMessage, RCTErrorWithMessage(errorMessage));
+      _requestedFullscreenChangeRejecter(@"E_VIDEO_FULLSCREEN", errorMessage, EXErrorWithMessage(errorMessage));
     }
     
     _requestedFullscreenChange = value;
@@ -412,7 +410,7 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
       [_fullscreenPlayerViewController setModalPresentationStyle:UIModalPresentationFullScreen];
 
       // Find the nearest view controller
-      _presentingViewController = RCTPresentedViewController();
+      _presentingViewController = [[_moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)] currentViewController];
       [self _callFullscreenCallbackForUpdate:EXVideoFullscreenUpdatePlayerWillPresent];
 
       dispatch_async(dispatch_get_main_queue(), ^{
@@ -451,19 +449,19 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
     } else if (value && !_fullscreenPlayerPresented && _fullscreenPlayerViewController && reject) {
       // Fullscreen player should be presented, is being presented, but hasn't been presented yet.
       NSString *errorMessage = @"Fullscreen player is already being presented. Await the first change request.";
-      reject(@"E_VIDEO_FULLSCREEN", errorMessage, RCTErrorWithMessage(errorMessage));
+      reject(@"E_VIDEO_FULLSCREEN", errorMessage, EXErrorWithMessage(errorMessage));
     } else if (!value && _fullscreenPlayerIsDismissing && _fullscreenPlayerViewController && reject) {
       // Fullscreen player should be dismissing, is already dismissing, but hasn't dismissed yet.
       NSString *errorMessage = @"Fullscreen player is already being dismissed. Await the first change request.";
-      reject(@"E_VIDEO_FULLSCREEN", errorMessage, RCTErrorWithMessage(errorMessage));
+      reject(@"E_VIDEO_FULLSCREEN", errorMessage, EXErrorWithMessage(errorMessage));
     } else if (!value && !_fullscreenPlayerPresented && _fullscreenPlayerViewController && reject) {
       // Fullscreen player is being presented and we receive request to dismiss it.
       NSString *errorMessage = @"Fullscreen player is being presented. Await the `present` request and then dismiss the player.";
-      reject(@"E_VIDEO_FULLSCREEN", errorMessage, RCTErrorWithMessage(errorMessage));
+      reject(@"E_VIDEO_FULLSCREEN", errorMessage, EXErrorWithMessage(errorMessage));
     } else if (value && _fullscreenPlayerIsDismissing && _fullscreenPlayerViewController && reject) {
       // Fullscreen player is being dismissed and we receive request to present it.
       NSString *errorMessage = @"Fullscreen player is being dismissed. Await the `dismiss` request and then present the player again.";
-      reject(@"E_VIDEO_FULLSCREEN", errorMessage, RCTErrorWithMessage(errorMessage));
+      reject(@"E_VIDEO_FULLSCREEN", errorMessage, EXErrorWithMessage(errorMessage));
     } else if (resolve) {
        // Fullscreen is already appropriately set.
       resolve([self getStatus]);
@@ -570,32 +568,32 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
 
 #pragma mark - React View Management
 
-- (void)insertReactSubview:(UIView *)view atIndex:(NSInteger)atIndex
-{
-  // We are early in the game and somebody wants to set a subview.
-  // That can only be in the context of playerViewController.
-  if (!_useNativeControls && !_playerLayer && !_playerViewController) {
-    [self setUseNativeControls:YES];
-  }
-  
-  if (_useNativeControls && _playerViewController) {
-    [super insertReactSubview:view atIndex:atIndex];
-    [view setFrame:self.bounds];
-    [_playerViewController.contentOverlayView insertSubview:view atIndex:atIndex];
-  } else {
-    RCTLogError(@"video cannot have any subviews");
-  }
-}
+//- (void)insertReactSubview:(UIView *)view atIndex:(NSInteger)atIndex
+//{
+//  // We are early in the game and somebody wants to set a subview.
+//  // That can only be in the context of playerViewController.
+//  if (!_useNativeControls && !_playerLayer && !_playerViewController) {
+//    [self setUseNativeControls:YES];
+//  }
+//
+//  if (_useNativeControls && _playerViewController) {
+//    [super insertReactSubview:view atIndex:atIndex];
+//    [view setFrame:self.bounds];
+//    [_playerViewController.contentOverlayView insertSubview:view atIndex:atIndex];
+//  } else {
+//    RCTLogError(@"video cannot have any subviews");
+//  }
+//}
 
-- (void)removeReactSubview:(UIView *)subview
-{
-  if (_useNativeControls) {
-    [super removeReactSubview:subview];
-    [subview removeFromSuperview];
-  } else {
-    RCTLogError(@"video cannot have any subviews");
-  }
-}
+//- (void)removeReactSubview:(UIView *)subview
+//{
+//  if (_useNativeControls) {
+//    [super removeReactSubview:subview];
+//    [subview removeFromSuperview];
+//  } else {
+//    RCTLogError(@"video cannot have any subviews");
+//  }
+//}
 
 - (void)layoutSubviews
 {

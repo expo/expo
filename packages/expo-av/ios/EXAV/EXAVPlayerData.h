@@ -2,7 +2,7 @@
 
 #import <AVFoundation/AVFoundation.h>
 
-#import "EXAV.h"
+#import <EXAV/EXAV.h>
 
 @interface EXAVPlayerData : NSObject <EXAVObject>
 
@@ -19,13 +19,13 @@
          withLoadFinishBlock:(void (^)(BOOL success, NSDictionary *successStatus, NSString *error))loadFinishBlock;
 
 - (void)setStatus:(NSDictionary *)parameters
-         resolver:(RCTPromiseResolveBlock)resolve
-         rejecter:(RCTPromiseRejectBlock)reject;
+         resolver:(EXPromiseResolveBlock)resolve
+         rejecter:(EXPromiseRejectBlock)reject;
 
 - (NSDictionary *)getStatus;
 
 - (void)replayWithStatus:(NSDictionary *)status
-                resolver:(RCTPromiseResolveBlock)resolve
-                rejecter:(RCTPromiseRejectBlock)reject;
+                resolver:(EXPromiseResolveBlock)resolve
+                rejecter:(EXPromiseRejectBlock)reject;
 
 @end

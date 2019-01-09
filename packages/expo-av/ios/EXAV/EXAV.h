@@ -2,10 +2,10 @@
 
 #import <AVFoundation/AVFoundation.h>
 
-#import <React/RCTBridgeModule.h>
-
-#import "EXScopedEventEmitter.h"
-#import "EXAVObject.h"
+#import <EXCore/EXAppLifecycleListener.h>
+#import <EXCore/EXExportedModule.h>
+#import <EXCore/EXEventEmitter.h>
+#import <EXAV/EXAVObject.h>
 
 typedef NS_OPTIONS(NSUInteger, EXAudioInterruptionMode)
 {
@@ -32,7 +32,13 @@ typedef NS_OPTIONS(NSUInteger, EXAudioRecordingOptionBitRateStrategy)
 
 @end
 
-@interface EXAV : EXScopedEventEmitter <RCTBridgeModule>
+@protocol EXAVScopedModule
+
+- (NSString *)experienceId;
+
+@end
+
+@interface EXAV : EXExportedModule <EXEventEmitter, EXAVScopedModule, EXAppLifecycleListener>
 
 - (void)handleMediaServicesReset:(NSNotification *)notification;
 - (void)handleAudioSessionInterruption:(NSNotification *)notification;

@@ -2,7 +2,7 @@
 
 #import <AVKit/AVKit.h>
 
-#import "EXVideoPlayerViewControllerDelegate.h"
+#import <EXAV/EXVideoPlayerViewControllerDelegate.h>
 
 @interface EXVideoPlayerViewController : AVPlayerViewController
 

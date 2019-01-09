@@ -2,20 +2,13 @@
 
 #import <AVFoundation/AVFoundation.h>
 
-#import <React/RCTUIManager.h>
-#import <React/RCTUIManagerUtils.h>
-#import <React/RCTUtils.h>
-
+#import <EXCore/EXAppLifecycleService.h>
 #import <EXFileSystemInterface/EXFileSystemInterface.h>
 #import <EXPermissions/EXPermissions.h>
 
-#import "EXAV.h"
-#import "EXAVPlayerData.h"
-#import "EXModuleRegistryBinding.h"
-#import "EXVideoView.h"
-#import "EXUnversioned.h"
-#import "EXAudioRecordingPermissionRequester.h"
-#import "EXScopedModuleRegistry.h"
+#import <EXAV/EXAV.h>
+#import <EXAV/EXAVPlayerData.h>
+#import <EXAV/EXVideoView.h>
 
 NSString *const EXAudioRecordingOptionsKey = @"ios";
 NSString *const EXAudioRecordingOptionExtensionKey = @"extension";
@@ -33,6 +26,8 @@ NSString *const EXAudioRecordingOptionLinearPCMIsFloatKey = @"linearPCMIsFloat";
 NSString *const EXDidUpdatePlaybackStatusEventName = @"didUpdatePlaybackStatus";
 
 @interface EXAV ()
+
+@property (nonatomic, strong) NSString *experienceId;
 
 @property (nonatomic, weak) id kernelAudioSessionManagerDelegate;
 @property (nonatomic, weak) id kernelPermissionsServiceDelegate;
@@ -57,15 +52,16 @@ NSString *const EXDidUpdatePlaybackStatusEventName = @"didUpdatePlaybackStatus";
 @property (nonatomic, assign) BOOL audioRecorderShouldBeginRecording;
 @property (nonatomic, assign) int audioRecorderDurationMillis;
 
+@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
+
 @end
 
 @implementation EXAV
 
-@synthesize methodQueue = _methodQueue;
-
-- (instancetype)initWithExperienceId:(NSString *)experienceId kernelServiceDelegates:(NSDictionary *)kernelServiceInstances params:(NSDictionary *)params
+- (instancetype)initWithExperienceId:(NSString *)experienceId
 {
-  if (self = [super initWithExperienceId:experienceId kernelServiceDelegates:kernelServiceInstances params:params]) {
+  if (self = [super init]) {
+    _experienceId = experienceId;
     _audioIsEnabled = YES;
     _currentAudioSessionMode = EXAVAudioSessionModeInactive;
     _isBackgrounded = NO;
@@ -86,51 +82,46 @@ NSString *const EXDidUpdatePlaybackStatusEventName = @"didUpdatePlaybackStatus";
     _audioRecorderShouldBeginRecording = false;
     _audioRecorderDurationMillis = 0;
 
-    _kernelPermissionsServiceDelegate = kernelServiceInstances[@"PermissionsManager"];
-    _kernelAudioSessionManagerDelegate = kernelServiceInstances[@"AudioSessionManager"];
+    // TODO: Singleton modules
+//    _kernelPermissionsServiceDelegate = kernelServiceInstances[@"PermissionsManager"];
+//    _kernelAudioSessionManagerDelegate = kernelServiceInstances[@"AudioSessionManager"];
     [_kernelAudioSessionManagerDelegate scopedModuleDidForeground:self];
   }
   return self;
 }
 
-+ (BOOL)requiresMainQueueSetup
+- (NSString *)experienceId
 {
-  return NO;
+  return _experienceId;
 }
 
 #pragma mark - Expo experience lifecycle
 
-- (void)setBridge:(RCTBridge *)bridge
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
-  [super setBridge:bridge];
-  
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(_bridgeDidForeground:)
-                                               name:EX_UNVERSIONED(@"EXKernelBridgeDidForegroundNotification")
-                                             object:self.bridge];
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(_bridgeDidBackground:)
-                                               name:EX_UNVERSIONED(@"EXKernelBridgeDidBackgroundNotification")
-                                             object:self.bridge];
+  [[_moduleRegistry getModuleImplementingProtocol:@protocol(EXAppLifecycleService)] unregisterAppLifecycleListener:self];
+  _moduleRegistry = moduleRegistry;
+  [[_moduleRegistry getModuleImplementingProtocol:@protocol(EXAppLifecycleService)] registerAppLifecycleListener:self];
+
 }
 
-- (void)_bridgeDidForeground:(NSNotification *)notification
+- (void)onAppForegrounded
 {
   [_kernelAudioSessionManagerDelegate scopedModuleDidForeground:self];
   _isBackgrounded = NO;
   
   [self _runBlockForAllAVObjects:^(NSObject<EXAVObject> *exAVObject) {
-    [exAVObject bridgeDidForeground:notification];
+    [exAVObject bridgeDidForeground:nil];
   }];
 }
 
-- (void)_bridgeDidBackground:(NSNotification *)notification
+- (void)onAppBackgrounded
 {
   _isBackgrounded = YES;
   [self _deactivateAudioSession]; // This will pause all players and stop all recordings
   
   [self _runBlockForAllAVObjects:^(NSObject<EXAVObject> *exAVObject) {
-    [exAVObject bridgeDidBackground:notification];
+    [exAVObject bridgeDidBackground:nil];
   }];
   [_kernelAudioSessionManagerDelegate scopedModuleDidBackground:self];
 }
@@ -177,9 +168,9 @@ NSString *const EXDidUpdatePlaybackStatusEventName = @"didUpdatePlaybackStatus";
   BOOL allowsRecording = ((NSNumber *)mode[@"allowsRecordingIOS"]).boolValue;
   
   if (!playsInSilentMode && interruptionMode == EXAudioInterruptionModeDuckOthers) {
-    return RCTErrorWithMessage(@"Impossible audio mode: playsInSilentMode == false and duckOthers == true cannot be set on iOS.");
+    return EXErrorWithMessage(@"Impossible audio mode: playsInSilentMode == false and duckOthers == true cannot be set on iOS.");
   } else if (!playsInSilentMode && allowsRecording) {
-    return RCTErrorWithMessage(@"Impossible audio mode: playsInSilentMode == false and allowsRecording == true cannot be set on iOS.");
+    return EXErrorWithMessage(@"Impossible audio mode: playsInSilentMode == false and allowsRecording == true cannot be set on iOS.");
   } else {
     if (!allowsRecording) {
       if (_audioRecorder && [_audioRecorder isRecording]) {
@@ -254,10 +245,10 @@ NSString *const EXDidUpdatePlaybackStatusEventName = @"didUpdatePlaybackStatus";
 - (NSError *)promoteAudioSessionIfNecessary
 {
   if (!_audioIsEnabled) {
-    return RCTErrorWithMessage(@"Expo Audio is disabled, so the audio session could not be activated.");
+    return EXErrorWithMessage(@"Expo Audio is disabled, so the audio session could not be activated.");
   }
   if (_isBackgrounded) {
-    return RCTErrorWithMessage(@"This experience is currently in the background, so the audio session could not be activated.");
+    return EXErrorWithMessage(@"This experience is currently in the background, so the audio session could not be activated.");
   }
   
   EXAVAudioSessionMode audioSessionModeRequired = [self _getAudioSessionModeRequired];
@@ -362,13 +353,13 @@ NSString *const EXDidUpdatePlaybackStatusEventName = @"didUpdatePlaybackStatus";
 
 - (void)_runBlock:(void (^)(EXAVPlayerData *data))block
   withSoundForKey:(nonnull NSNumber *)key
-     withRejecter:(RCTPromiseRejectBlock)reject
+     withRejecter:(EXPromiseRejectBlock)reject
 {
   EXAVPlayerData *data = _soundDictionary[key];
   if (data) {
     block(data);
   } else {
-    reject(@"E_AUDIO_NOPLAYER", nil, RCTErrorWithMessage(@"Player does not exist."));
+    reject(@"E_AUDIO_NOPLAYER", nil, EXErrorWithMessage(@"Player does not exist."));
   }
 }
 
@@ -386,19 +377,20 @@ NSString *const EXDidUpdatePlaybackStatusEventName = @"didUpdatePlaybackStatus";
 
 - (void)_runBlock:(void (^)(EXVideoView *view))block
 withEXVideoViewForTag:(nonnull NSNumber *)reactTag
-     withRejecter:(RCTPromiseRejectBlock)reject
+     withRejecter:(EXPromiseRejectBlock)reject
 {
   // TODO check that the bridge is still valid after the dispatch
   dispatch_async(dispatch_get_main_queue(), ^{
-    UIView *view = [self.bridge.uiManager viewForReactTag:reactTag];
-    if ([view isKindOfClass:[EXVideoView class]]) {
-      dispatch_async(RCTGetUIManagerQueue(), ^{
-        block((EXVideoView *)view);
-      });
-    } else {
-      NSString *errorMessage = [NSString stringWithFormat:@"Invalid view returned from registry, expecting EXVideo, got: %@", view];
-      reject(@"E_VIDEO_TAGINCORRECT", nil, RCTErrorWithMessage(errorMessage));
-    }
+    // TODO: viewForTag
+//    UIView *view = [self.bridge.uiManager viewForReactTag:reactTag];
+//    if ([view isKindOfClass:[EXVideoView class]]) {
+//      dispatch_async(RCTGetUIManagerQueue(), ^{
+//        block((EXVideoView *)view);
+//      });
+//    } else {
+//      NSString *errorMessage = [NSString stringWithFormat:@"Invalid view returned from registry, expecting EXVideo, got: %@", view];
+//      reject(@"E_VIDEO_TAGINCORRECT", nil, EXErrorWithMessage(errorMessage));
+//    }
   });
 }
 
@@ -478,13 +470,13 @@ withEXVideoViewForTag:(nonnull NSNumber *)reactTag
 - (NSError *)_createNewAudioRecorder
 {
   if (_audioRecorder) {
-    return RCTErrorWithMessage(@"Recorder already exists.");
+    return EXErrorWithMessage(@"Recorder already exists.");
   }
   
-  id<EXFileSystemInterface> fileSystem = [self.bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
+  id<EXFileSystemInterface> fileSystem = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
   
   if (!fileSystem) {
-    return RCTErrorWithMessage(@"No FileSystem module.");
+    return EXErrorWithMessage(@"No FileSystem module.");
   }
   
   NSString *directory = [fileSystem.cachesDirectory stringByAppendingPathComponent:@"AV"];
@@ -521,10 +513,10 @@ withEXVideoViewForTag:(nonnull NSNumber *)reactTag
   }
 }
 
-- (BOOL)_checkAudioRecorderExistsOrReject:(RCTPromiseRejectBlock)reject
+- (BOOL)_checkAudioRecorderExistsOrReject:(EXPromiseRejectBlock)reject
 {
   if (_audioRecorder == nil) {
-    reject(@"E_AUDIO_NORECORDER", nil, RCTErrorWithMessage(@"Recorder does not exist."));
+    reject(@"E_AUDIO_NORECORDER", nil, EXErrorWithMessage(@"Recorder does not exist."));
   }
   return _audioRecorder != nil;
 }
@@ -542,7 +534,7 @@ withEXVideoViewForTag:(nonnull NSNumber *)reactTag
   }
 }
 
-EX_EXPORT_SCOPED_MULTISERVICE_MODULE(ExponentAV, @"AudioSessionManager", @"PermissionsManager");
+//EX_EXPORT_SCOPED_MULTISERVICE_MODULE(ExponentAV, @"AudioSessionManager", @"PermissionsManager");
 
 - (NSArray<NSString *> *)supportedEvents
 {
@@ -551,9 +543,10 @@ EX_EXPORT_SCOPED_MULTISERVICE_MODULE(ExponentAV, @"AudioSessionManager", @"Permi
 
 #pragma mark - Audio API: Global settings
 
-RCT_EXPORT_METHOD(setAudioIsEnabled:(BOOL)value
-                           resolver:(RCTPromiseResolveBlock)resolve
-                           rejecter:(RCTPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(setAudioIsEnabled,
+                    setAudioIsEnabled:(BOOL)value
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   _audioIsEnabled = value;
   
@@ -563,9 +556,10 @@ RCT_EXPORT_METHOD(setAudioIsEnabled:(BOOL)value
   resolve(nil);
 }
 
-RCT_EXPORT_METHOD(setAudioMode:(nonnull NSDictionary *)mode
-                      resolver:(RCTPromiseResolveBlock)resolve
-                      rejecter:(RCTPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(setAudioMode,
+                    setAudioMode:(NSDictionary *)mode
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   NSError *error = [self _setAudioMode:mode];
   
@@ -578,10 +572,11 @@ RCT_EXPORT_METHOD(setAudioMode:(nonnull NSDictionary *)mode
 
 #pragma mark - Unified playback API - Audio
 
-RCT_EXPORT_METHOD(loadForSound:(nonnull NSDictionary *)source
-                    withStatus:(nonnull NSDictionary *)status
-                   withSuccess:(RCTResponseSenderBlock)loadSuccess
-                     withError:(RCTResponseSenderBlock)loadError)
+EX_EXPORT_METHOD_AS(loadForSound,
+                    loadForSound:(NSDictionary *)source
+                    withStatus:(NSDictionary *)status
+                    withSuccess:(EXDirectEventBlock)loadSuccess
+                    withError:(EXDirectEventBlock)loadError)
 {
   NSNumber *key = @(_soundDictionaryKeyCount++);
 
@@ -616,9 +611,15 @@ RCT_EXPORT_METHOD(loadForSound:(nonnull NSDictionary *)source
   _soundDictionary[key] = data;
 }
 
-RCT_EXPORT_METHOD(unloadForSound:(nonnull NSNumber *)key
-                        resolver:(RCTPromiseResolveBlock)resolve
-                        rejecter:(RCTPromiseRejectBlock)reject)
+- (void)sendEventWithName:(NSString *)eventName body:(NSDictionary *)body
+{
+//  [_]
+}
+
+EX_EXPORT_METHOD_AS(unloadForSound,
+                    unloadForSound:(NSNumber *)key
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   [self _runBlock:^(EXAVPlayerData *data) {
     [self _removeSoundForKey:key];
@@ -626,10 +627,11 @@ RCT_EXPORT_METHOD(unloadForSound:(nonnull NSNumber *)key
   } withSoundForKey:key withRejecter:reject];
 }
 
-RCT_EXPORT_METHOD(setStatusForSound:(nonnull NSNumber *)key
-                         withStatus:(nonnull NSDictionary *)status
-                           resolver:(RCTPromiseResolveBlock)resolve
-                           rejecter:(RCTPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(setStatusForSound,
+                    setStatusForSound:(NSNumber *)key
+                    withStatus:(NSDictionary *)status
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   [self _runBlock:^(EXAVPlayerData *data) {
     [data setStatus:status
@@ -638,9 +640,10 @@ RCT_EXPORT_METHOD(setStatusForSound:(nonnull NSNumber *)key
   } withSoundForKey:key withRejecter:reject];
 }
 
-RCT_EXPORT_METHOD(getStatusForSound:(nonnull NSNumber *)key
-                           resolver:(RCTPromiseResolveBlock)resolve
-                           rejecter:(RCTPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getStatusForSound,
+                    getStatusForSound:(NSNumber *)key
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   [self _runBlock:^(EXAVPlayerData *data) {
     NSDictionary *status = [data getStatus];
@@ -648,10 +651,11 @@ RCT_EXPORT_METHOD(getStatusForSound:(nonnull NSNumber *)key
   } withSoundForKey:key withRejecter:reject];
 }
 
-RCT_EXPORT_METHOD(replaySound:(nonnull NSNumber *)key
-                   withStatus:(nonnull NSDictionary *)status
-                     resolver:(RCTPromiseResolveBlock)resolve
-                     rejecter:(RCTPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(replaySound,
+                    replaySound:(NSNumber *)key
+                    withStatus:(NSDictionary *)status
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   [self _runBlock:^(EXAVPlayerData *data) {
     [data replayWithStatus:status
@@ -660,8 +664,9 @@ RCT_EXPORT_METHOD(replaySound:(nonnull NSNumber *)key
   } withSoundForKey:key withRejecter:reject];
 }
 
-RCT_EXPORT_METHOD(setErrorCallbackForSound:(nonnull NSNumber *)key
-                              withCallback:(RCTResponseSenderBlock)callback)
+EX_EXPORT_METHOD_AS(setErrorCallbackForSound,
+                    setErrorCallbackForSound:(NSNumber *)key
+                    withCallback:(EXDirectEventBlock)callback)
 {
   EXAVPlayerData *data = _soundDictionary[key];
   if (data) {
@@ -681,49 +686,54 @@ RCT_EXPORT_METHOD(setErrorCallbackForSound:(nonnull NSNumber *)key
 
 #pragma mark - Unified playback API - Video
 
-RCT_EXPORT_METHOD(loadForVideo:(nonnull NSNumber *)reactTag
-                        source:(nonnull NSDictionary *)source
-                    withStatus:(nonnull NSDictionary *)status
-                      resolver:(RCTPromiseResolveBlock)resolve
-                      rejecter:(RCTPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(loadForVideo,
+                    loadForVideo:(NSNumber *)reactTag
+                    source:(NSDictionary *)source
+                    withStatus:(NSDictionary *)status
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   [self _runBlock:^(EXVideoView *view) {
     [view setSource:source withStatus:status resolver:resolve rejecter:reject];
   } withEXVideoViewForTag:reactTag withRejecter:reject];
 }
 
-RCT_EXPORT_METHOD(unloadForVideo:(nonnull NSNumber *)reactTag
-                        resolver:(RCTPromiseResolveBlock)resolve
-                        rejecter:(RCTPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(unloadForVideo,
+                    unloadForVideo:(NSNumber *)reactTag
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   [self _runBlock:^(EXVideoView *view) {
     [view setSource:nil withStatus:nil resolver:resolve rejecter:reject];
   } withEXVideoViewForTag:reactTag withRejecter:reject];
 }
 
-RCT_EXPORT_METHOD(setStatusForVideo:(nonnull NSNumber *)reactTag
-                         withStatus:(nonnull NSDictionary *)status
-                           resolver:(RCTPromiseResolveBlock)resolve
-                           rejecter:(RCTPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(setStatusForVideo,
+                    setStatusForVideo:(NSNumber *)reactTag
+                    withStatus:(NSDictionary *)status
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   [self _runBlock:^(EXVideoView *view) {
     [view setStatus:status resolver:resolve rejecter:reject];
   } withEXVideoViewForTag:reactTag withRejecter:reject];
 }
 
-RCT_EXPORT_METHOD(replayVideo:(nonnull NSNumber *)reactTag
-                   withStatus:(nonnull NSDictionary *)status
-                     resolver:(RCTPromiseResolveBlock)resolve
-                     rejecter:(RCTPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(replayVideo,
+                    replayVideo:(NSNumber *)reactTag
+                    withStatus:(NSDictionary *)status
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   [self _runBlock:^(EXVideoView *view) {
     [view replayWithStatus:status resolver:resolve rejecter:reject];
   } withEXVideoViewForTag:reactTag withRejecter:reject];
 }
 
-RCT_EXPORT_METHOD(getStatusForVideo:(nonnull NSNumber *)reactTag
-                           resolver:(RCTPromiseResolveBlock)resolve
-                           rejecter:(RCTPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getStatusForVideo,
+                    getStatusForVideo:(NSNumber *)reactTag
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   [self _runBlock:^(EXVideoView *view) {
     resolve(view.status);
@@ -734,15 +744,17 @@ RCT_EXPORT_METHOD(getStatusForVideo:(nonnull NSNumber *)reactTag
 
 #pragma mark - Audio API: Recording
 
-RCT_EXPORT_METHOD(prepareAudioRecorder:(nonnull NSDictionary *)options
-                              resolver:(RCTPromiseResolveBlock)resolve
-                              rejecter:(RCTPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(prepareAudioRecorder,
+                    prepareAudioRecorder:(NSDictionary *)options
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
-  if ([EXPermissions statusForPermissions:[EXAudioRecordingPermissionRequester permissions]] != EXPermissionStatusGranted ||
-      ![_kernelPermissionsServiceDelegate hasGrantedPermission:@"audioRecording" forExperience:self.experienceId]) {
-    reject(@"E_MISSING_PERMISSION", @"Missing audio recording permission.", nil);
-    return;
-  }
+  // TODO: Permissions
+//  if ([EXPermissions statusForPermissions:[EXAudioRecordingPermissionRequester permissions]] != EXPermissionStatusGranted ||
+//      ![_kernelPermissionsServiceDelegate hasGrantedPermission:@"audioRecording" forExperience:self.experienceId]) {
+//    reject(@"E_MISSING_PERMISSION", @"Missing audio recording permission.", nil);
+//    return;
+//  }
 
   [self _setNewAudioRecorderFilenameAndSettings:options];
   NSError *error = [self _createNewAudioRecorder];
@@ -756,7 +768,7 @@ RCT_EXPORT_METHOD(prepareAudioRecorder:(nonnull NSDictionary *)options
       resolve(@{@"uri": [[_audioRecorder url] absoluteString],
                 @"status": [self _getAudioRecorderStatus]});
     } else {
-      reject(@"E_AUDIO_RECORDERNOTCREATED", nil, RCTErrorWithMessage(@"Prepare encountered an error: recorder not prepared."));
+      reject(@"E_AUDIO_RECORDERNOTCREATED", nil, EXErrorWithMessage(@"Prepare encountered an error: recorder not prepared."));
     }
     _audioRecorderIsPreparing = false;
     [self demoteAudioSessionIfPossible];
@@ -765,17 +777,19 @@ RCT_EXPORT_METHOD(prepareAudioRecorder:(nonnull NSDictionary *)options
   }
 }
 
-RCT_EXPORT_METHOD(startAudioRecording:(RCTPromiseResolveBlock)resolve
-                             rejecter:(RCTPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(startAudioRecording,
+                    startAudioRecording:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
-  if ([EXPermissions statusForPermissions:[EXAudioRecordingPermissionRequester permissions]] != EXPermissionStatusGranted ||
-      ![_kernelPermissionsServiceDelegate hasGrantedPermission:@"audioRecording" forExperience:self.experienceId]) {
-    reject(@"E_MISSING_PERMISSION", @"Missing audio recording permission.", nil);
-    return;
-  }
+  // TODO: Permissions
+//  if ([EXPermissions statusForPermissions:[EXAudioRecordingPermissionRequester permissions]] != EXPermissionStatusGranted ||
+//      ![_kernelPermissionsServiceDelegate hasGrantedPermission:@"audioRecording" forExperience:self.experienceId]) {
+//    reject(@"E_MISSING_PERMISSION", @"Missing audio recording permission.", nil);
+//    return;
+//  }
   if ([self _checkAudioRecorderExistsOrReject:reject]) {
     if (!_allowsAudioRecording) {
-      reject(@"E_AUDIO_AUDIOMODE", nil, RCTErrorWithMessage(@"Recording not allowed on iOS."));
+      reject(@"E_AUDIO_AUDIOMODE", nil, EXErrorWithMessage(@"Recording not allowed on iOS."));
     } else if (!_audioRecorder.recording) {
       _audioRecorderShouldBeginRecording = true;
       NSError *error = [self promoteAudioSessionIfNecessary];
@@ -783,7 +797,7 @@ RCT_EXPORT_METHOD(startAudioRecording:(RCTPromiseResolveBlock)resolve
         if ([_audioRecorder record]) {
           resolve([self _getAudioRecorderStatus]);
         } else {
-          reject(@"E_AUDIO_RECORDING", nil, RCTErrorWithMessage(@"Start encountered an error: recording not started."));
+          reject(@"E_AUDIO_RECORDING", nil, EXErrorWithMessage(@"Start encountered an error: recording not started."));
         }
       } else {
         reject(@"E_AUDIO_RECORDING", @"Start encountered an error: audio session not activated.", error);
@@ -795,8 +809,9 @@ RCT_EXPORT_METHOD(startAudioRecording:(RCTPromiseResolveBlock)resolve
   _audioRecorderShouldBeginRecording = false;
 }
 
-RCT_EXPORT_METHOD(pauseAudioRecording:(RCTPromiseResolveBlock)resolve
-                             rejecter:(RCTPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(pauseAudioRecording,
+                    pauseAudioRecording:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   if ([self _checkAudioRecorderExistsOrReject:reject]) {
     if (_audioRecorder.recording) {
@@ -807,8 +822,9 @@ RCT_EXPORT_METHOD(pauseAudioRecording:(RCTPromiseResolveBlock)resolve
   }
 }
 
-RCT_EXPORT_METHOD(stopAudioRecording:(RCTPromiseResolveBlock)resolve
-                            rejecter:(RCTPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(stopAudioRecording,
+                    stopAudioRecording:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   if ([self _checkAudioRecorderExistsOrReject:reject]) {
     if (_audioRecorder.recording) {
@@ -820,16 +836,18 @@ RCT_EXPORT_METHOD(stopAudioRecording:(RCTPromiseResolveBlock)resolve
   }
 }
 
-RCT_EXPORT_METHOD(getAudioRecordingStatus:(RCTPromiseResolveBlock)resolve
-                                 rejecter:(RCTPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getAudioRecordingStatus,
+                    getAudioRecordingStatus:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   if ([self _checkAudioRecorderExistsOrReject:reject]) {
     resolve([self _getAudioRecorderStatus]);
   }
 }
 
-RCT_EXPORT_METHOD(unloadAudioRecorder:(RCTPromiseResolveBlock)resolve
-                             rejecter:(RCTPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(unloadAudioRecorder,
+                    unloadAudioRecorder:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   if ([self _checkAudioRecorderExistsOrReject:reject]) {
     [self _removeAudioRecorder:YES];

@@ -2,22 +2,34 @@
 
 #import <AVFoundation/AVFoundation.h>
 
-#import <React/RCTBridge.h>
-#import <React/RCTUIManager.h>
-#import <React/RCTUtils.h>
+#import <EXAV/EXVideoManager.h>
+#import <EXAV/EXVideoView.h>
+#import <EXCore/EXUIManager.h>
 
-#import "EXVideoManager.h"
-#import "EXVideoView.h"
+@interface EXVideoManager ()
+
+@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
+
+@end
 
 @implementation EXVideoManager
 
-RCT_EXPORT_MODULE(ExponentVideoManager);
+EX_EXPORT_MODULE(ExponentVideoManager);
 
-@synthesize bridge = _bridge;
+- (NSString *)viewName
+{
+  return @"ExponentVideo";
+}
+
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+{
+  _moduleRegistry = moduleRegistry;
+}
 
 - (UIView *)view
 {
-  return [[EXVideoView alloc] initWithBridge:_bridge];
+  return nil;
+//  return [[EXVideoView alloc] initWithBridge:_bridge];
 }
 
 - (NSDictionary *)constantsToExport
@@ -28,48 +40,63 @@ RCT_EXPORT_MODULE(ExponentVideoManager);
            @"ScaleAspectFill": AVLayerVideoGravityResizeAspectFill};
 }
 
-+ (BOOL)requiresMainQueueSetup
+// Props set directly in <Video> component
+EX_VIEW_PROPERTY(status, NSDictionary *, EXVideoView)
 {
-  return NO;
+  [view setStatus:value];
 }
 
-// Props set directly in <Video> component
-RCT_EXPORT_VIEW_PROPERTY(status, NSDictionary);
-RCT_EXPORT_VIEW_PROPERTY(useNativeControls, BOOL);
+EX_VIEW_PROPERTY(useNativeControls, BOOL, EXVideoView)
+{
+  [view setUseNativeControls:value];
+}
 
 // Native only props -- set by Video.js
-RCT_EXPORT_VIEW_PROPERTY(source, NSDictionary);
-RCT_EXPORT_VIEW_PROPERTY(nativeResizeMode, NSString);
-RCT_REMAP_VIEW_PROPERTY(onStatusUpdateNative, onStatusUpdate, RCTDirectEventBlock);
-RCT_REMAP_VIEW_PROPERTY(onLoadStartNative, onLoadStart, RCTDirectEventBlock);
-RCT_REMAP_VIEW_PROPERTY(onLoadNative, onLoad, RCTDirectEventBlock);
-RCT_REMAP_VIEW_PROPERTY(onErrorNative, onError, RCTDirectEventBlock);
-RCT_REMAP_VIEW_PROPERTY(onReadyForDisplayNative, onReadyForDisplay, RCTDirectEventBlock);
-RCT_REMAP_VIEW_PROPERTY(onFullscreenUpdateNative, onFullscreenUpdate, RCTDirectEventBlock);
+EX_VIEW_PROPERTY(source, NSDictionary *, EXVideoView)
+{
+  [view setSource:value];
+}
+EX_VIEW_PROPERTY(nativeResizeMode, NSString *, EXVideoView)
+{
+  [view setNativeResizeMode:value];
+}
+
+- (NSArray<NSString *> *)supportedEvents
+{
+  return @[
+           @"onStatusUpdateNative",
+           @"onLoadStartNative",
+           @"onLoadNative",
+           @"onErrorNative",
+           @"onReadyForDisplayNative",
+           @"onFullscreenUpdateNative"
+           ];
+}
 
 - (void)_runBlock:(void (^)(EXVideoView *view))block
-withEXVideoViewForTag:(nonnull NSNumber *)reactTag
-     withRejecter:(RCTPromiseRejectBlock)reject
+withEXVideoViewForTag:(nonnull NSNumber *)viewTag
+     withRejecter:(EXPromiseRejectBlock)reject
 {
-  [_bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *,UIView *> *viewRegistry) {
-    UIView *view = viewRegistry[reactTag];
+  id<EXUIManager> uiManager = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXUIManager)];
+  [uiManager addUIBlock:^(id view) {
     if ([view isKindOfClass:[EXVideoView class]]) {
       block((EXVideoView *)view);
     } else {
       NSString *errorMessage = [NSString stringWithFormat:@"Invalid view returned from registry, expecting EXVideo, got: %@", view];
-      reject(@"E_VIDEO_TAGINCORRECT", nil, RCTErrorWithMessage(errorMessage));
+      reject(@"E_VIDEO_TAGINCORRECT", errorMessage, EXErrorWithMessage(errorMessage));
     }
-  }];
+  } forView:viewTag ofClass:[EXVideoView class]];
 }
 
-RCT_EXPORT_METHOD(setFullscreen:(nonnull NSNumber *)reactTag
-                  toValue:(BOOL)value
-                  resolver:(RCTPromiseResolveBlock)resolve
-                  rejecter:(RCTPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(setFullscreen,
+                    setFullscreen:(NSNumber *)viewTag
+                    toValue:(BOOL)value
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   [self _runBlock:^(EXVideoView *view) {
     [view setFullscreen:value resolver:resolve rejecter:reject];
-  } withEXVideoViewForTag:reactTag withRejecter:reject];
+  } withEXVideoViewForTag:viewTag withRejecter:reject];
 }
 
 // Note that the imperative playback API for Video is conducted through the AV module.

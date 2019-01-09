@@ -1,8 +1,6 @@
 // Copyright 2017-present 650 Industries. All rights reserved.
 
-#import <React/RCTUtils.h>
-
-#import "EXAVPlayerData.h"
+#import <EXAV/EXAVPlayerData.h>
 
 NSString *const EXAVPlayerDataStatusIsLoadedKeyPath = @"isLoaded";
 NSString *const EXAVPlayerDataStatusURIKeyPath = @"uri";
@@ -54,7 +52,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
 @property (nonatomic, assign) BOOL isLooping;
 @property (nonatomic, strong) NSArray<AVPlayerItem *> *items;
 
-@property (nonatomic, strong) RCTPromiseResolveBlock replayResolve;
+@property (nonatomic, strong) EXPromiseResolveBlock replayResolve;
 
 @end
 
@@ -213,8 +211,8 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
 }
 
 - (void)setStatus:(NSDictionary *)parameters
-         resolver:(RCTPromiseResolveBlock)resolve
-         rejecter:(RCTPromiseRejectBlock)reject
+         resolver:(EXPromiseResolveBlock)resolve
+         rejecter:(EXPromiseRejectBlock)reject
 {
   BOOL mustUpdateTimeObserver = NO;
   BOOL mustSeek = NO;
@@ -319,7 +317,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
           }
         } else if (!seekSucceeded) {
           if (reject) {
-            reject(@"E_AV_SEEKING", nil, RCTErrorWithMessage(@"Seeking interrupted."));
+            reject(@"E_AV_SEEKING", nil, EXErrorWithMessage(@"Seeking interrupted."));
           }
         } else if (resolve) {
           resolve([strongSelf getStatus]);
@@ -479,8 +477,8 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
 #pragma mark - Replay
 
 - (void)replayWithStatus:(NSDictionary *)status
-                resolver:(RCTPromiseResolveBlock)resolve
-                rejecter:(RCTPromiseRejectBlock)reject
+                resolver:(EXPromiseResolveBlock)resolve
+                rejecter:(EXPromiseRejectBlock)reject
 {
   [self _callStatusUpdateCallbackWithExtraFields:@{
                                                    EXAVPlayerDataStatusHasJustBeenInterruptedKeyPath: @([self _isPlayerPlaying]),
