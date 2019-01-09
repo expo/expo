@@ -172,4 +172,4 @@ In order to request permissions in a standalone Android app, you need to specify
 
 For example, if your app asks for `AUDIO_RECORDING` permission at runtime but no other permissions, you should set `android.permissions` to `["RECORD_AUDIO"]` in `app.json`.
 
-> **Note:** If you don't specify `android.permissions` inside your `app.json`, by default your standalone Android app will require the all of the permissions listed above.
+> **Note:** If you don't specify `android.permissions` inside your `app.json`, by default your standalone Android app will require all of the permissions listed above.
