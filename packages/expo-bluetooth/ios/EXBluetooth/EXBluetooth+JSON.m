@@ -124,10 +124,11 @@
   NSDictionary *userInfo = [input userInfo];
   NSString *underlyingError = [[userInfo objectForKey:NSUnderlyingErrorKey] localizedDescription];
   NSString *errorCode = [NSString stringWithFormat:@"%ld", (long) input.code];
-  // TODO: Bacon: add message
+
   return @{
            @"code": errorCode,
-           @"description": EXNullIfEmpty(input.localizedDescription),
+           @"domain": [input domain],
+           @"message": EXNullIfEmpty(input.localizedDescription),
            @"reason": EXNullIfEmpty(input.localizedFailureReason),
            @"suggestion": EXNullIfEmpty(input.localizedRecoverySuggestion),
            @"underlayingError": EXNullIfEmpty(underlyingError)
@@ -171,7 +172,6 @@
   return [input UUIDString];
 }
 
-
 + (NSMutableArray<NSString *> *)CBUUIDList_NativeToJSON:(NSArray<CBUUID *> *)input
 {
   if (!input) return nil;
@@ -191,7 +191,6 @@
   NSMutableArray *output = [NSMutableArray new];
   for (id value in input) {
     if ([value isKindOfClass:[NSString class]]) {
-      // TODO: Bacon: Maybe add support for generating CBUUID from Data (ArrayBuffer)
       CBUUID *uuid = [CBUUID UUIDWithString:(NSString *)value];
       [output addObject:uuid];
     }
@@ -202,7 +201,6 @@
   }
   return output;
 }
-
 
 + (NSDictionary *)serviceData_NativeToJSON:(NSDictionary<CBUUID *, NSData *> *)input
 {
@@ -225,14 +223,15 @@
   NSString *serviceUUIDString = [[[[input characteristic] service] UUID] UUIDString];
   NSString *peripheralUUIDString = [[[[[input characteristic] service] peripheral] identifier] UUIDString];
 
+  //TODO: Bacon: Should we add all of the UUIDs?
   return @{
-          @"id": [NSString stringWithFormat:@"%@|%@|%@|%@", peripheralUUIDString, serviceUUIDString, characteristicUUIDString, descriptorUUIDString],
+           @"id": [NSString stringWithFormat:@"%@|%@|%@|%@", peripheralUUIDString, serviceUUIDString, characteristicUUIDString, descriptorUUIDString],
            @"uuid": descriptorUUIDString,
-           @"characteristic": [[[input characteristic] UUID] UUIDString],
-//           @"value": [input value] // TODO: Bacon: Find out what this is. (id)
+           @"characteristicUUID": [[[input characteristic] UUID] UUIDString],
+           @"value": EXNullIfNil([[self class] NSData_NativeToJSON: [input value]]) // TODO: Bacon: Find out what this is. (id)
            };
 }
-  
+// TODO: Bacon: Investigate CBCharacteristic for read/write, permissions
 + (NSDictionary *)CBCharacteristic_NativeToJSON:(CBCharacteristic *)input
 {
   if (!input) return nil;
@@ -242,15 +241,14 @@
   NSString *peripheralUUIDString = [[[[input service] peripheral] identifier] UUIDString];
 
   return @{
-            @"id": [NSString stringWithFormat:@"%@|%@|%@", peripheralUUIDString, serviceUUIDString, characteristicUUIDString],
+           @"id": [NSString stringWithFormat:@"%@|%@|%@", peripheralUUIDString, serviceUUIDString, characteristicUUIDString],
            @"uuid": characteristicUUIDString,
-           @"service": serviceUUIDString,
-           @"peripheral": peripheralUUIDString,
+           @"serviceUUID": serviceUUIDString,
+           @"peripheralUUID": peripheralUUIDString,
            @"properties": [[self class] CBCharacteristicProperties_NativeToJSON:[input properties]],
-//           @"value": EXNullIfNil([input value]), //TODO: Bacon: Find out what this is. (NSData)
+           @"value": EXNullIfNil([[self class] NSData_NativeToJSON: [input value]]), //TODO: Bacon: Find out what this is. (NSData)
            @"descriptors": [[self class] CBDescriptorList_NativeToJSON:[input descriptors]],
            @"isNotifying": @([input isNotifying])
-//           @"isBroadcasted": @([input isBroadcasted])
            };
 }
 
@@ -261,9 +259,9 @@
   NSString *serviceUUIDString = [[input UUID] UUIDString];
   NSString *peripheralUUIDString = [[[input peripheral] identifier] UUIDString];
   return @{
-            @"id": [NSString stringWithFormat:@"%@|%@", peripheralUUIDString, serviceUUIDString],
+           @"id": [NSString stringWithFormat:@"%@|%@", peripheralUUIDString, serviceUUIDString],
            @"uuid": serviceUUIDString,
-           @"peripheral": peripheralUUIDString,
+           @"peripheralUUID": peripheralUUIDString,
            @"isPrimary": @([input isPrimary]),
            // TODO: Bacon: is this a recursive loop?
            @"includedServices": [[self class] CBServiceArray_NativeToJSON:[input includedServices]],
@@ -295,12 +293,9 @@
            };
 }
 
-+ (NSDictionary *)NSData_NativeToJSON:(NSData *)input
++ (NSString *)NSData_NativeToJSON:(NSData *)input
 {
-  return @{
-           @"data": [input base64EncodedStringWithOptions:0],
-           @"type": @"ArrayBuffer"
-           };
+  return [input base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
 }
 
 

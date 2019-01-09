@@ -1,18 +1,27 @@
 import { EventEmitter, Subscription } from 'expo-core';
-
 import { UnavailabilityError } from 'expo-errors';
 
+import {
+  Central,
+  PeripheralInterface,
+  ServiceInterface,
+  NativeEventData,
+  TransactionId,
+  CharacteristicInterface,
+  ErrorInterface,
+  ScanSettings,
+  StateUpdatedCallback,
+  TransactionType,
+  UUID,
+  WriteOptions,
+  AdvertismentDataInterface,
+  DescriptorInterface,
+} from './Bluetooth.types';
 import ExpoBluetooth from './ExpoBluetooth';
-import { DeviceInterface } from './Bluetooth.types';
+
+let transactions: { [transactionId: string]: any } = {};
 
 const eventEmitter = new EventEmitter(ExpoBluetooth);
-
-type DeviceFoundCallback = ((device: DeviceInterface) => void);
-type ScanOptions = {
-  options?: any;
-  uuid?: string;
-  serviceUUIDs?: string[];
-};
 
 function _validateUUID(uuid: string | undefined): string {
   if (uuid === undefined || (typeof uuid !== 'string' && uuid === '')) {
@@ -23,21 +32,39 @@ function _validateUUID(uuid: string | undefined): string {
 
 export const { Events } = ExpoBluetooth;
 
+// Manage all of the bluetooth information.
+let _peripherals: { [peripheralId: string]: PeripheralInterface } = {};
+
+let _advertisments: any = {};
+let _central: Central | null = null;
+
 const multiEventHandlers: any = {
   [Events.CENTRAL_DID_DISCOVER_PERIPHERAL_EVENT]: [],
   [Events.CENTRAL_DID_UPDATE_STATE_EVENT]: [],
+  everything: [],
+  centralState: [],
 };
 
-export async function startScanAsync(
-  options: ScanOptions = {},
-  callback: DeviceFoundCallback
-): Promise<Subscription> {
+export async function startScanAsync(scanSettings: ScanSettings = {}): Promise<Subscription> {
   if (!ExpoBluetooth.startScanAsync) {
     throw new UnavailabilityError('Bluetooth', 'startScanAsync');
   }
-  await ExpoBluetooth.startScanAsync(options);
 
-  multiEventHandlers[Events.CENTRAL_DID_DISCOVER_PERIPHERAL_EVENT].push(callback);
+  const { serviceUUIDsToQuery = [], scanningOptions, callback } = scanSettings;
+  /* Prevents the need for CBCentralManagerScanOptionAllowDuplicatesKey in the info.plist */
+  const serviceUUIDsWithoutDuplicates = [...new Set(serviceUUIDsToQuery)];
+  /* iOS:
+   *
+   * Although strongly discouraged,
+   * if <i>serviceUUIDs</i> is <i>nil</i> all discovered peripherals will be returned.
+   * If the central is already scanning with different
+   * <i>serviceUUIDs</i> or <i>options</i>, the provided parameters will replace them.
+   */
+  await ExpoBluetooth.startScanAsync(serviceUUIDsWithoutDuplicates, scanningOptions);
+
+  if (callback instanceof Function) {
+    multiEventHandlers[Events.CENTRAL_DID_DISCOVER_PERIPHERAL_EVENT].push(callback);
+  }
 
   return {
     remove() {
@@ -51,7 +78,7 @@ export async function startScanAsync(
   };
 }
 
-export async function stopScanAsync(): Promise<any> {
+export async function stopScanAsync(): Promise<void> {
   if (!ExpoBluetooth.stopScanAsync) {
     throw new UnavailabilityError('Bluetooth', 'stopScanAsync');
   }
@@ -59,12 +86,24 @@ export async function stopScanAsync(): Promise<any> {
   // Remove all callbacks
   multiEventHandlers[Events.CENTRAL_DID_DISCOVER_PERIPHERAL_EVENT] = [];
 
-  return await ExpoBluetooth.stopScanAsync();
+  await ExpoBluetooth.stopScanAsync();
 }
 
-export async function observeCentralStateAsync(
-  callback: DeviceFoundCallback
-): Promise<Subscription> {
+// Avoiding using "start" in passive method names
+export async function observeUpdatesAsync(callback: (updates: any) => void): Promise<Subscription> {
+  multiEventHandlers.everything.push(callback);
+
+  return {
+    remove() {
+      const index = multiEventHandlers.everything.indexOf(callback);
+      if (index != -1) {
+        multiEventHandlers.everything.splice(index, 1);
+      }
+    },
+  };
+}
+
+export async function observeStateAsync(callback: StateUpdatedCallback): Promise<Subscription> {
   // TODO: Bacon: Is this just automatic?
   multiEventHandlers[Events.CENTRAL_DID_UPDATE_STATE_EVENT].push(callback);
 
@@ -78,16 +117,10 @@ export async function observeCentralStateAsync(
   };
 }
 
-export async function stopObservingCentralStateAsync(): Promise<any> {
-  // Remove all callbacks
-  multiEventHandlers[Events.CENTRAL_DID_UPDATE_STATE_EVENT] = [];
-}
-
-// Peripherals
-
-type Peripheral = {};
-
-export async function connectAsync(options: { uuid: string; options?: any }): Promise<Peripheral> {
+export async function connectAsync(options: {
+  uuid: string;
+  options?: any;
+}): Promise<PeripheralInterface> {
   if (!ExpoBluetooth.connectAsync) {
     throw new UnavailabilityError('Bluetooth', 'connectAsync');
   }
@@ -111,36 +144,227 @@ export async function disconnectAsync(options: { uuid: string }): Promise<any> {
   });
 }
 
-//TODO: Bacon: Is this fired more than once?
-// export function discoverServices(
-//   options: { uuid: string; serviceUUIDs?: string[] },
-//   callback: DeviceFoundCallback
-// ): Subscription {
-//   if (!ExpoBluetooth.discoverServicesAsync) {
-//     throw new UnavailabilityError('Bluetooth', 'discoverServicesAsync');
-//   }
-//   const peripheralUUID = _validateUUID(options.uuid);
-//   const transactionId = createTransactionId({ peripheralUUID }, TransactionType.scan);
-//   transactions[transactionId] = { callback };
-//   ExpoBluetooth.discoverServicesAsync(options);
-//   return {
-//     remove() {
-//       if (transactionId in transactions) {
-//         delete transactions[transactionId];
-//       }
-//     },
-//   };
-// }
+export async function readAsync(options: WriteOptions): Promise<any> {
+  return await updateAsync(options, TransactionType.read);
+}
 
-type WriteOptions = {
-  peripheralUUID: string;
-  serviceUUID: string;
-  characteristicUUID: string;
-  descriptorUUID?: string;
-  characteristicProperties: number;
-  shouldMute: boolean;
-  data: any;
-};
+export async function writeAsync(options: WriteOptions): Promise<any> {
+  return await updateAsync(options, TransactionType.write);
+}
+
+async function updateAsync(options: WriteOptions, operation: TransactionType): Promise<any> {
+  if (!ExpoBluetooth.updateAsync) {
+    throw new UnavailabilityError('Bluetooth', 'updateAsync');
+  }
+  _validateUUID(options.peripheralUUID);
+  _validateUUID(options.serviceUUID);
+  _validateUUID(options.characteristicUUID);
+  return new Promise((resolve, reject) => {
+    const transactionId = createTransactionId(options, operation);
+    transactions[transactionId] = { resolve, reject };
+    ExpoBluetooth.updateAsync(options);
+  });
+}
+
+export async function readRSSIAsync(peripheralUUID: UUID): Promise<any> {
+  if (!ExpoBluetooth.readRSSIAsync) {
+    throw new UnavailabilityError('Bluetooth', 'readRSSIAsync');
+  }
+  _validateUUID(peripheralUUID);
+
+  return new Promise((resolve, reject) => {
+    const transactionId = createTransactionId({ peripheralUUID }, TransactionType.read);
+    transactions[transactionId] = { resolve, reject };
+    ExpoBluetooth.readRSSIAsync({ uuid: peripheralUUID });
+  });
+}
+
+export async function getPeripheralsAsync(): Promise<any[]> {
+  if (!ExpoBluetooth.getPeripheralsAsync) {
+    throw new UnavailabilityError('Bluetooth', 'getPeripheralsAsync');
+  }
+  // TODO: Bacon: Do we need to piggy back and get the delegate results? Or is the cached version accurate enough to return?
+  return await ExpoBluetooth.getPeripheralsAsync({});
+  // return new Promise((resolve, reject) => {
+  //   getPeripheralsAsyncCallbacks.push({ resolve, reject });
+  //   ExpoBluetooth.getPeripheralsAsync(options);
+  // })
+}
+
+export function getPeripherals(): any {
+  return _peripherals;
+}
+
+export function getPeripheralForId(id: string): any {
+  const uuid = peripheralIdFromId(id);
+  return _peripherals[uuid];
+}
+
+export async function getCentralAsync(): Promise<any> {
+  if (!ExpoBluetooth.getCentralAsync) {
+    throw new UnavailabilityError('Bluetooth', 'getCentralAsync');
+  }
+  return await ExpoBluetooth.getCentralAsync();
+}
+
+export async function isScanningAsync(): Promise<any> {
+  const { isScanning } = await getCentralAsync();
+  return isScanning;
+}
+
+// TODO: Bacon: Add serviceUUIDs
+export async function discoverServicesForPeripheralAsync(options: {
+  id: string;
+  serviceUUIDsToQuery?: UUID[];
+}): Promise<{ peripheral: PeripheralInterface }> {
+  return await discoverAsync(options);
+}
+
+export async function discoverCharacteristicsForServiceAsync({
+  id,
+}): Promise<{ service: ServiceInterface }> {
+  return await discoverAsync({ id });
+}
+
+export async function discoverDescriptorsForCharacteristicAsync({
+  id,
+}): Promise<{ peripheral: PeripheralInterface; characteristic: CharacteristicInterface }> {
+  return await discoverAsync({ id });
+}
+
+export async function loadPeripheralAsync(
+  { id },
+  skipConnecting: boolean = false
+): Promise<PeripheralInterface> {
+  const peripheralId = peripheralIdFromId(id);
+  const peripheral = getPeripherals()[peripheralId];
+  if (!peripheral) {
+    throw new Error('Not a peripheral ' + peripheralId);
+  }
+
+  if (peripheral.state !== 'connected') {
+    if (!skipConnecting) {
+      await connectAsync({ uuid: peripheralId });
+      return loadPeripheralAsync({ id }, true);
+    } else {
+      // This should never be called because in theory connectAsync would throw an error.
+    }
+  } else if (peripheral.state === 'connected') {
+    await loadChildrenRecursivelyAsync({ id: peripheralId });
+  }
+
+  // In case any updates occured during this function.
+  return getPeripherals()[peripheralId];
+}
+
+export async function loadChildrenRecursivelyAsync({ id }): Promise<Array<any>> {
+  const components = id.split('|');
+
+  if (components.length === 4) {
+    // Descriptor ID
+    throw new Error('Descriptors have no children');
+  } else if (components.length === 3) {
+    // Characteristic ID
+    console.log('Load Characteristic ', id);
+    const {
+      characteristic: { descriptors },
+    } = await discoverDescriptorsForCharacteristicAsync({ id });
+    return descriptors;
+  } else if (components.length === 2) {
+    // Service ID
+    console.log('Load Service ', id);
+    const {
+      service: { characteristics },
+    } = await discoverCharacteristicsForServiceAsync({ id });
+    return await Promise.all(
+      characteristics.map(characteristic => loadChildrenRecursivelyAsync(characteristic))
+    );
+  } else if (components.length === 1) {
+    // Peripheral ID
+    console.log('Load Peripheral ', id);
+    const {
+      peripheral: { services },
+    } = await discoverServicesForPeripheralAsync({ id });
+    return await Promise.all(services.map(service => loadChildrenRecursivelyAsync(service)));
+  } else {
+    throw new Error(`Unknown ID ${id}`);
+  }
+}
+
+addListener(({ data, event }: { data: NativeEventData; event: string }) => {
+  const { transactionId, peripheral, peripherals, central, advertisementData, rssi, error } = data;
+
+  if (central) {
+    _central = central;
+  }
+
+  if (peripheral) {
+    if (advertisementData) {
+      updateAdvertismentDataStore(peripheral.id, advertisementData);
+      peripheral.advertismentData = advertisementData;
+    }
+    if (rssi) {
+      peripheral.rssi = rssi;
+    }
+    updateStateWithPeripheral(peripheral);
+  }
+
+  if (peripherals) {
+    for (const peripheral of peripherals) {
+      updateStateWithPeripheral(peripheral);
+    }
+  }
+
+  firePeripheralObservers(error);
+
+  if (transactionId) {
+    if (transactionId in transactions) {
+      const { resolve, reject, callbacks } = transactions[transactionId];
+      if (callbacks) {
+        for (let callback of callbacks) {
+          if (callback instanceof Function) {
+            // TODO: Bacon: should we pass back an error? Will one ever exist?
+            callback(data);
+          } else {
+            const { resolve, reject } = callback;
+            if (error) {
+              reject(new Error(error.message));
+            } else {
+              resolve(data);
+            }
+            removeCallbackForTransactionId(callback, transactionId);
+          }
+        }
+      } else if (resolve && reject) {
+        if (error) {
+          reject(new Error(error.message));
+        } else {
+          resolve(data);
+        }
+        delete transactions[transactionId];
+      } else {
+        console.log('Throwing Error because no callback is found for transactionId: ', {
+          data,
+          transactions,
+        });
+        throw new Error('Unknown error');
+      }
+    } else {
+      throw new Error('Unhandled transactionId');
+    }
+  } else {
+    switch (event) {
+      case Events.CENTRAL_DID_DISCOVER_PERIPHERAL_EVENT:
+      case Events.CENTRAL_DID_UPDATE_STATE_EVENT:
+        fireMultiEventHandlers(event, { central, peripheral });
+      case Events.CENTRAL_DID_RETRIEVE_CONNECTED_PERIPHERALS_EVENT:
+      case Events.CENTRAL_DID_RETRIEVE_PERIPHERALS_EVENT:
+        return;
+      default:
+        throw new Error('EXBluetooth: Unhandled event: ' + event);
+    }
+  }
+});
 
 // Interactions
 function createTransactionId(
@@ -161,88 +385,37 @@ function createTransactionId(
   return targets.join('|');
 }
 
-export async function readAsync(options: WriteOptions): Promise<any> {
-  return await updateAsync(options, TransactionType.read);
-}
-
-export async function writeAsync(options: WriteOptions): Promise<any> {
-  return await updateAsync(options, TransactionType.write);
-}
-
-export async function updateAsync(options: WriteOptions, operation: TransactionType): Promise<any> {
-  if (!ExpoBluetooth.updateAsync) {
-    throw new UnavailabilityError('Bluetooth', 'updateAsync');
-  }
-  _validateUUID(options.peripheralUUID);
-  _validateUUID(options.serviceUUID);
-  _validateUUID(options.characteristicUUID);
-  return new Promise((resolve, reject) => {
-    const transactionId = createTransactionId(options, operation);
-    transactions[transactionId] = { resolve, reject };
-    ExpoBluetooth.updateAsync(options);
-  });
-}
-
-//TODO: Bacon: Add this
-// export async function readRSSIAsync({ uuid } = {}): Promise<any> {
-//   if (!ExpoBluetooth.readRSSIAsync) {
-//     throw new UnavailabilityError('Bluetooth', 'readRSSIAsync');
-//   }
-//   _validateUUID(uuid);
-//   return await ExpoBluetooth.readRSSIAsync({ uuid });
-// }
-
-// Get data
-
-export async function getPeripheralsAsync(): Promise<any[]> {
-  if (!ExpoBluetooth.getPeripheralsAsync) {
-    throw new UnavailabilityError('Bluetooth', 'getPeripheralsAsync');
-  }
-  // TODO: Bacon: Do we need to piggy back and get the delegate results? Or is the cached version accurate enough to return?
-  return await ExpoBluetooth.getPeripheralsAsync({});
-  // return new Promise((resolve, reject) => {
-  //   getPeripheralsAsyncCallbacks.push({ resolve, reject });
-  //   ExpoBluetooth.getPeripheralsAsync(options);
-  // })
-}
-
-export async function getCentralAsync(): Promise<any> {
-  if (!ExpoBluetooth.getCentralAsync) {
-    throw new UnavailabilityError('Bluetooth', 'getCentralAsync');
-  }
-  return await ExpoBluetooth.getCentralAsync();
-}
-
-export async function isScanningAsync(): Promise<any> {
-  const { isScanning } = await getCentralAsync();
-  return isScanning;
-}
-
-/* EXP Listener Pattern */
-export function addListener(listener: (event: any) => void): Subscription {
+function addListener(listener: (event: any) => void): Subscription {
   const subscription = eventEmitter.addListener(ExpoBluetooth.BLUETOOTH_EVENT, listener);
   return subscription;
 }
 
-export function removeAllListeners(): void {
+// TODO: Bacon: How do we plan on calling this...
+function removeAllListeners(): void {
   eventEmitter.removeAllListeners(ExpoBluetooth.BLUETOOTH_EVENT);
 }
 
-// Manage all of the bluetooth information.
-let peripherals: { [id: string]: DeviceInterface } = {};
-
-let _advertisments: any = {};
-let _center: any = {};
-function updateStateWithPeripheral(peripheral: DeviceInterface) {
-  const { [peripheral.id]: currentPeripheral = {}, ...others } = peripherals;
-  peripherals = {
+function updateStateWithPeripheral(peripheral: PeripheralInterface) {
+  const {
+    [peripheral.id]: currentPeripheral = {
+      discoveryTimestamp: Date.now(),
+      advertismentData: undefined,
+      rssi: null,
+    },
+    ...others
+  } = _peripherals;
+  _peripherals = {
     ...others,
     [peripheral.id]: {
+      discoveryTimestamp: currentPeripheral.discoveryTimestamp,
+      advertismentData: currentPeripheral.advertismentData,
+      rssi: currentPeripheral.rssi,
       // ...currentPeripheral,
       ...peripheral,
     },
   };
 }
+
 function updateAdvertismentDataStore(peripheralId: string, advertismentData: any) {
   const { [peripheralId]: current = {}, ...others } = _advertisments;
   _advertisments = {
@@ -255,170 +428,26 @@ function updateAdvertismentDataStore(peripheralId: string, advertismentData: any
   };
 }
 
-enum TransactionType {
-  get = 'get',
-  read = 'read',
-  write = 'write',
-  connect = 'connect',
-  disconnect = 'disconnect',
-  scan = 'scan',
+function firePeripheralObservers(error?: ErrorInterface | null) {
+  for (const subscription of multiEventHandlers.everything) {
+    subscription({ peripherals: getPeripherals(), error });
+  }
 }
 
-let transactions: any = {};
-
-addListener(({ data, event }) => {
-  const {
-    transactionId,
-    peripheral,
-    peripherals,
-    center,
-    descriptor,
-    service,
-    advertisementData,
-    rssi,
-    characteristic,
-    error,
-  } = data;
-
-  if (center) {
-    _center = center;
-  }
-
-  if (advertisementData) {
-    updateAdvertismentDataStore(peripheral.id, advertisementData);
-    peripheral.advertismentData = advertisementData;
-  }
-  if (rssi) {
-    peripheral.rssi = rssi;
-  }
-
-  if (peripheral) {
-    updateStateWithPeripheral(peripheral);
-  }
-  if (peripherals) {
-    for (const peripheral of peripherals) {
-      updateStateWithPeripheral(peripheral);
-    }
-  }
-
-  if (transactionId) {
-    if (transactionId in transactions) {
-      //TODO: Multi callbacks -ex: multiple search for services of same peripheral
-      const { resolve, reject, callbacks } = transactions[transactionId];
-      if (callbacks) {
-        for (let callback of callbacks) {
-          if (callback instanceof Function) {
-            callback(data);
-          } else {
-            const { resolve, reject } = callback;
-            if (error) {
-              reject(new Error(error.description));
-            } else {
-              resolve(data);
-            }
-            removeCallbackForTransactionId(callback, transactionId);
-          }
-        }
-        if (error) {
-          throw new Error('why am i called' + error.description);
-        }
-      } else if (resolve && reject) {
-        if (error) {
-          reject(new Error(error.description));
-        } else {
-          resolve(data);
-        }
-        delete transactions[transactionId];
-      } else {
-        console.log('Throwing Error because no callback is found for transactionId: ', {
-          data,
-          transactions,
-        });
-        throw new Error('Unknown error');
-      }
-    } else {
-      throw new Error('Unhandled transactionId');
-    }
-  } else {
-    if (error) {
-      throw new Error(error.description);
-    }
-    switch (event) {
-      case Events.CENTRAL_DID_DISCOVER_PERIPHERAL_EVENT:
-      case Events.CENTRAL_DID_UPDATE_STATE_EVENT:
-        for (const callback of multiEventHandlers[event]) {
-          callback(data);
-        }
-      case Events.CENTRAL_DID_RETRIEVE_CONNECTED_PERIPHERALS_EVENT:
-      case Events.CENTRAL_DID_RETRIEVE_PERIPHERALS_EVENT:
-        return;
-      default:
-        throw new Error('Unhandled event: ' + event);
-
-        break;
-    }
-  }
-});
-
-// TODO: Bacon: Are these called more than once? - I'm gonna assume they are, I didn't see any instance of these being called multiple times. Because of this I'll use the singular structure.
-// TODO: Bacon: Add serviceUUIDs
-export async function discoverServicesForPeripheralAsync({
-  id,
-}): Promise<{ peripheral: any | null }> {
-  return await discoverAsync({ id });
-}
-
-export async function discoverCharacteristicsForServiceAsync({
-  id,
-}): Promise<{ service: any | null }> {
-  return await discoverAsync({ id });
-}
-
-export async function discoverDescriptorsForCharacteristicAsync({
-  id,
-}): Promise<{ service: any | null }> {
-  return await discoverAsync({ id });
-}
-
-function discover(
-  options: {
-    peripheralUUID?: string;
-    serviceUUID?: string;
-    serviceUUIDs?: string[];
-    characteristicUUID?: string;
-  },
-  callback: Function
+function fireMultiEventHandlers(
+  event: string,
+  { central, peripheral }: { central?: Central | null; peripheral?: PeripheralInterface | null }
 ) {
-  if (!ExpoBluetooth.discover) {
-    throw new UnavailabilityError('Bluetooth', 'discover');
+  for (const callback of multiEventHandlers[event]) {
+    callback({ central, peripheral });
   }
-
-  const { peripheralUUID, serviceUUID, characteristicUUID } = options;
-  const transactionId = createTransactionId(
-    { peripheralUUID, serviceUUID, characteristicUUID },
-    TransactionType.scan
-  );
-  console.log('Create Transaction ID: ', {
-    transactionId,
-    peripheralUUID,
-    serviceUUID,
-    characteristicUUID,
-  });
-
-  addCallbackForTransactionId(callback, transactionId);
-
-  ExpoBluetooth.discover(options);
-
-  return {
-    remove() {
-      removeCallbackForTransactionId(callback, transactionId);
-    },
-  };
 }
-async function discoverAsync(options: {
-  id: string;
-  serviceUUIDsToQuery?: string[];
-}): Promise<any> {
+
+function peripheralIdFromId(id: string): string {
+  return id.split('|')[0];
+}
+
+async function discoverAsync(options: { id: string; serviceUUIDsToQuery?: UUID[] }): Promise<any> {
   if (!ExpoBluetooth.discover) {
     throw new UnavailabilityError('Bluetooth', 'discover');
   }
@@ -436,15 +465,7 @@ async function discoverAsync(options: {
     peripheralUUID,
     serviceUUID,
     characteristicUUID,
-    // Extra
     serviceUUIDsToQuery,
-  });
-
-  console.log('Create Transaction ID: ', {
-    transactionId,
-    peripheralUUID,
-    serviceUUID,
-    characteristicUUID,
   });
 
   return new Promise((resolve, reject) => {
@@ -457,6 +478,7 @@ function ensureCallbacksArrayForTransactionId(transactionId) {
     transactions[transactionId] = { callbacks: [] };
   }
 }
+
 function addCallbackForTransactionId(callback, transactionId) {
   ensureCallbacksArrayForTransactionId(transactionId);
   transactions[transactionId].callbacks.push(callback);
@@ -471,29 +493,3 @@ function removeCallbackForTransactionId(callback, transactionId) {
     transactions[transactionId].callbacks.splice(index, 1);
   }
 }
-
-/*
-
-Not used: 
-    case Events.CENTRAL_DID_RETRIEVE_CONNECTED_PERIPHERALS_EVENT: 
-    case Events.CENTRAL_DID_RETRIEVE_PERIPHERALS_EVENT: 
-
-
-    Special:
-    
-    Manual/Multiple (general callbacks)
-    case Events.CENTRAL_DID_DISCOVER_PERIPHERAL_EVENT: 
-    case Events.CENTRAL_DID_UPDATE_STATE_EVENT: // TODO: Bacon: is this right?
-
-    // Need TODO
-    case Events.PERIPHERAL_DID_DISCOVER_SERVICES_EVENT: 
-    case Events.PERIPHERAL_DID_DISCOVER_CHARACTERISTICS_FOR_SERVICE_EVENT: 
-    case Events.PERIPHERAL_DID_DISCOVER_DESCRIPTORS_FOR_CHARACTERISTIC_EVENT:
-
-    //transaction
-        case Events.PERIPHERAL_DID_UPDATE_VALUE_FOR_CHARACTERISTIC_EVENT: 
-    case Events.PERIPHERAL_DID_UPDATE_VALUE_FOR_DESCRIPTOR_EVENT: 
-    case Events.PERIPHERAL_DID_UPDATE_NOTIFICATION_STATE_FOR_CHARACTERISTIC_EVENT: 
-        case Events.PERIPHERAL_DID_WRITE_VALUE_FOR_CHARACTERISTIC_EVENT: 
-    case Events.PERIPHERAL_DID_WRITE_VALUE_FOR_DESCRIPTOR_EVENT: 
-*/
