@@ -47,8 +47,7 @@
     "react-emotion": "^9.2.9",
     "scroll-into-view-if-needed": "2.2.8",
     "showdown": "^1.8.6",
-    "smoothscroll-polyfill": "0.4.3",
-    "webpack": "^4.28.0"
+    "smoothscroll-polyfill": "0.4.3"
   },
   "devDependencies": {
     "@babel/cli": "^7.2.0",
