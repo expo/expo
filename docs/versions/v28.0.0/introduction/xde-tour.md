@@ -4,7 +4,7 @@ title: XDE Tour
 
 ## Sign in screen
 
-When you open XDE for the first time you'll be greeted by this sign in screen. If you have an account already, go ahead and sign in. If you don't, you can register an account.![XDE sign in screen](/static/images/xde-signin-2.png)
+When you open XDE for the first time you'll be greeted by this sign in screen. If you have an account already, go ahead and sign in. If you don't, you can register an account.![XDE sign in screen](/static/images/xde-signin.png)
 
 ## Home screen
 
