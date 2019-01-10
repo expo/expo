@@ -97,13 +97,13 @@ Your app can be opened from the Expo client or in a standalone app, and it can b
 
 Splash screen behaves in most cases exactly the same as in iOS case.
 
-There is slightly difference when it comes down to **standalone Android applications**.
-In this scenario extra attention should be paid to [Android.`splash` section](../workflow/configuration.html#android) configuration provided by [`app.json`](../workflow/configuration.html).
+There is a slight difference when it comes down to **standalone Android applications**.
+In this scenario extra attention should be paid to [`android.splash` section](../workflow/configuration.html#android) configuration inside [`app.json`](../workflow/configuration.html).
 
-Depending on the `resizeMode` you choose you will get followings:
-- **cover** - In this mode Expo is leveraging Android possibility to present static bitmap at the very beginning of the application start. Unfortunately Android (unlike iOS) is not supporting provided image stretching, so Expo will just present given image centered on the screen.
-By default `splash.image` would be used as `mdpi` resource. It's up to you to provide graphics that meet your expectations and fit the screen dimension. To achieve this, use different resolutions for [different device DPIs](configuration.html#mdpi), from `mdpi` to `xxxhdpi`.
-- **contain** - As described in _cover_ mode we're unable to dynamically adjust image to screen size at the very beginning of the application start. Therefore in this mode only background color will be presented and a while later when some view hierarchy is mounted we'll show provided `splash.image`.
+Depending on the `resizeMode` you will get the following behavior:
+- **cover** - In this mode your app will be leveraging Android's ability to present a static bitmap at the very beginning of the application start. Unfortunately, Android (unlike iOS) is not supporting stretching provided image, so the application will just present given image centered on the screen.
+By default `splash.image` would be used as the `mdpi` resource. It's up to you to provide graphics that meet your expectations and fit the screen dimension. To achieve this, use different resolutions for [different device DPIs](configuration.html#mdpi), from `mdpi` to `xxxhdpi`.
+- **contain** - As described in `cover` mode it isn't possible to dynamically adjust image to the screen size at the very beginning of the application start. Therefore, in this mode, at first only background color will be presented and then, when some view hierarchy is mounted, `splash.image` will be shown.
 
 ### Ejected ExpoKit apps
 
