@@ -2,6 +2,7 @@
 
 #import <AVFoundation/AVFoundation.h>
 
+#import <EXCore/EXEventEmitterService.h>
 #import <EXCore/EXAppLifecycleService.h>
 #import <EXFileSystemInterface/EXFileSystemInterface.h>
 #import <EXPermissions/EXPermissions.h>
@@ -58,6 +59,8 @@ NSString *const EXDidUpdatePlaybackStatusEventName = @"didUpdatePlaybackStatus";
 
 @implementation EXAV
 
+EX_EXPORT_MODULE(ExponentAV);
+
 - (instancetype)initWithExperienceId:(NSString *)experienceId
 {
   if (self = [super init]) {
@@ -81,11 +84,6 @@ NSString *const EXDidUpdatePlaybackStatusEventName = @"didUpdatePlaybackStatus";
     _audioRecorderIsPreparing = false;
     _audioRecorderShouldBeginRecording = false;
     _audioRecorderDurationMillis = 0;
-
-    // TODO: Singleton modules
-//    _kernelPermissionsServiceDelegate = kernelServiceInstances[@"PermissionsManager"];
-//    _kernelAudioSessionManagerDelegate = kernelServiceInstances[@"AudioSessionManager"];
-    [_kernelAudioSessionManagerDelegate scopedModuleDidForeground:self];
   }
   return self;
 }
@@ -101,6 +99,8 @@ NSString *const EXDidUpdatePlaybackStatusEventName = @"didUpdatePlaybackStatus";
 {
   [[_moduleRegistry getModuleImplementingProtocol:@protocol(EXAppLifecycleService)] unregisterAppLifecycleListener:self];
   _moduleRegistry = moduleRegistry;
+  _kernelAudioSessionManagerDelegate = [_moduleRegistry getSingletonModuleForName:@"AudioSessionManager"];
+  [_kernelAudioSessionManagerDelegate scopedModuleDidForeground:self];
   [[_moduleRegistry getModuleImplementingProtocol:@protocol(EXAppLifecycleService)] registerAppLifecycleListener:self];
 
 }
@@ -534,8 +534,6 @@ withEXVideoViewForTag:(nonnull NSNumber *)reactTag
   }
 }
 
-//EX_EXPORT_SCOPED_MULTISERVICE_MODULE(ExponentAV, @"AudioSessionManager", @"PermissionsManager");
-
 - (NSArray<NSString *> *)supportedEvents
 {
   return @[EXDidUpdatePlaybackStatusEventName, @"ExponentAV.onError"];
@@ -617,7 +615,7 @@ EX_EXPORT_METHOD_AS(loadForSound,
 
 - (void)sendEventWithName:(NSString *)eventName body:(NSDictionary *)body
 {
-//  [_]
+  [[_moduleRegistry getModuleImplementingProtocol:@protocol(EXEventEmitterService)] sendEventWithName:eventName body:body];
 }
 
 EX_EXPORT_METHOD_AS(unloadForSound,

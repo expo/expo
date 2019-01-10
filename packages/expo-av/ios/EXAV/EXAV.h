@@ -2,6 +2,7 @@
 
 #import <AVFoundation/AVFoundation.h>
 
+#import <EXCore/EXModuleRegistryConsumer.h>
 #import <EXCore/EXAppLifecycleListener.h>
 #import <EXCore/EXExportedModule.h>
 #import <EXCore/EXEventEmitter.h>
@@ -38,7 +39,7 @@ typedef NS_OPTIONS(NSUInteger, EXAudioRecordingOptionBitRateStrategy)
 
 @end
 
-@interface EXAV : EXExportedModule <EXEventEmitter, EXAVScopedModule, EXAppLifecycleListener>
+@interface EXAV : EXExportedModule <EXEventEmitter, EXAVScopedModule, EXAppLifecycleListener, EXModuleRegistryConsumer>
 
 - (void)handleMediaServicesReset:(NSNotification *)notification;
 - (void)handleAudioSessionInterruption:(NSNotification *)notification;
