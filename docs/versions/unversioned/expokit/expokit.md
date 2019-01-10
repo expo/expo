@@ -86,7 +86,7 @@ ExpoKit's release cycle follows the Expo SDK release cycle. When a new version o
 If upgrading from SDK 31 or below, you'll need to refactor your `AppDelegate` class as we moved its Expo-related part to a separate `EXStandaloneAppDelegate ` class owned by `ExpoKit` to simplify future upgrade processes as much as possible. As of SDK 32, your `AppDelegate` class needs to subclass `EXStandaloneAppDelegate`. If you need to override its methods to add any custom behavior, **always** remember to call the same method from the superclass (for an example, see `application:didFinishLaunchingWithOptions:` in `AppDelegate.m` below). Here are the basic `AppDelegate` files without any custom behavior:
 
 `AppDelegate.h`:
-```objc
+```objectivec
 #import <UIKit/UIKit.h>
 #import <ExpoKit/EXStandaloneAppDelegate.h>
 
@@ -96,7 +96,7 @@ If upgrading from SDK 31 or below, you'll need to refactor your `AppDelegate` cl
 ```
 
 `AppDelegate.m`:
-```objc
+```objectivec
 #import "AppDelegate.h"
 
 @implementation AppDelegate

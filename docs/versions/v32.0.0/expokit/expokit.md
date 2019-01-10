@@ -83,6 +83,35 @@ ExpoKit's release cycle follows the Expo SDK release cycle. When a new version o
 - Open up `ios/Podfile` in your project, and update the `ExpoKit` tag to point at the [release](https://github.com/expo/expo/releases) corresponding to your SDK version. Run `pod update` then `pod install`.
 - Open `ios/your-project/Supporting/EXSDKVersions.plist` in your project and change all the values to the new SDK version.
 
+If upgrading from SDK 31 or below, you'll need to refactor your `AppDelegate` class as we moved its Expo-related part to a separate `EXStandaloneAppDelegate ` class owned by `ExpoKit` to simplify future upgrade processes as much as possible. As of SDK 32, your `AppDelegate` class needs to subclass `EXStandaloneAppDelegate`. If you need to override its methods to add any custom behavior, **always** remember to call the same method from the superclass (for an example, see `application:didFinishLaunchingWithOptions:` in `AppDelegate.m` below). Here are the basic `AppDelegate` files without any custom behavior:
+
+`AppDelegate.h`:
+```objectivec
+#import <UIKit/UIKit.h>
+#import <ExpoKit/EXStandaloneAppDelegate.h>
+
+@interface AppDelegate : EXStandaloneAppDelegate <UIApplicationDelegate>
+
+@end
+```
+
+`AppDelegate.m`:
+```objectivec
+#import "AppDelegate.h"
+
+@implementation AppDelegate
+
+// Put your app delegate methods here. Remember to also call methods from EXStandaloneAppDelegate superclass
+// in order to keep Expo working. See example below.
+
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+{
+  return [super application:application didFinishLaunchingWithOptions:launchOptions];
+}
+
+@end
+```
+
 If upgrading from SDK 30 or below, you'll also need to change `platform :ios, '9.0'` to `platform :ios, '10.0'` in `ios/Podfile`.
 
 ### Android
