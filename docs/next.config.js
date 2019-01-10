@@ -1,10 +1,12 @@
-const LATEST_VERSION = 'v' + require('./package.json').version;
+const { join } = require('path');
+const { copyFileSync } = require('fs-extra');
 
 module.exports = {
-  async exportPathMap(defaultPathMap, {dev}) {
+  async exportPathMap(defaultPathMap, {dev, dir, outDir}) {
     if (dev) {
       return defaultPathMap
     }
+    copyFileSync(join(dir, 'robots.txt'), join(outDir, 'robots.txt'))
     return Object.assign(
       ...Object.entries(defaultPathMap).map(([pathname, page]) => {
         if (pathname.match(/\/v[1-9][^\/]*$/)) {
@@ -13,13 +15,6 @@ module.exports = {
         }
 
         result = { [pathname]: page };
-
-        // For every path which doesn't end in ".html" (except "/"), create a matching copy with ".html" added
-        // (We have many internal links of this sort)
-        if (! pathname.match(/\.html$/) && pathname.match(/[a-z]$/)) {
-          result[pathname + ".html"] = page;
-        }
-
 
         return result;
       })
