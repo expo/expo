@@ -1,9 +1,19 @@
 import React, { CSSProperties } from 'react';
-import { findNodeHandle, StyleSheet, View } from 'react-native';
-
 import { CapturedPicture, NativePropsType, PictureOptions } from './Camera.types';
 import CameraModule from './CameraModule/CameraModule';
 import CameraManager from './ExponentCameraManager.web';
+
+let findNodeHandle = function() {};
+let flatten = data => data;
+let View = props => <div {...props} />;
+
+// Without react-native-web
+try {
+  const ReactNative = require('react-native');
+  findNodeHandle = ReactNative.findNodeHandle;
+  flatten = ReactNative.StyleSheet.flatten;
+  View = ReactNative.View;
+} catch (error) {}
 
 export default class ExponentCamera extends React.Component<NativePropsType> {
   video?: number | null;
@@ -95,9 +105,13 @@ export default class ExponentCamera extends React.Component<NativePropsType> {
 
   render() {
     const transform = this.state.type === CameraManager.Type.front ? 'rotateY(180deg)' : 'none';
-    const reactStyle = StyleSheet.flatten(this.props.style);
+    const reactStyle = flatten(this.props.style);
     const style: CSSProperties = {
-      ...StyleSheet.absoluteFillObject,
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
       width: '100%',
       height: '100%',
       objectFit: 'cover',

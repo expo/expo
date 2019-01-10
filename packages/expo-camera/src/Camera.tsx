@@ -2,11 +2,23 @@ import { UnavailabilityError } from 'expo-errors';
 import mapValues from 'lodash.mapvalues';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { findNodeHandle, Platform, ViewPropTypes } from 'react-native';
-
 import { CapturedPicture, PictureOptions, PropsType, RecordingOptions } from './Camera.types';
 import ExponentCamera from './ExponentCamera';
 import _CameraManager from './ExponentCameraManager';
+// import { findNodeHandle, Platform, ViewPropTypes } from 'react-native';
+
+// Without react-native-web
+
+let findNodeHandle = function() {};
+let Platform = { OS: 'web' };
+let ViewPropTypes = {};
+
+try {
+  const ReactNative = require('react-native');
+  findNodeHandle = ReactNative.findNodeHandle;
+  Platform = ReactNative.Platform;
+  ViewPropTypes = ReactNative.ViewPropTypes;
+} catch (error) {}
 
 // TODO: Bacon: Fix multiplatform
 const CameraManager = _CameraManager as any;
