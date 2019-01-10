@@ -111,7 +111,7 @@ NSString *const EXDidUpdatePlaybackStatusEventName = @"didUpdatePlaybackStatus";
   _isBackgrounded = NO;
   
   [self _runBlockForAllAVObjects:^(NSObject<EXAVObject> *exAVObject) {
-    [exAVObject bridgeDidForeground:nil];
+    [exAVObject appDidForeground];
   }];
 }
 
@@ -121,7 +121,7 @@ NSString *const EXDidUpdatePlaybackStatusEventName = @"didUpdatePlaybackStatus";
   [self _deactivateAudioSession]; // This will pause all players and stop all recordings
   
   [self _runBlockForAllAVObjects:^(NSObject<EXAVObject> *exAVObject) {
-    [exAVObject bridgeDidBackground:nil];
+    [exAVObject appDidBackground];
   }];
   [_kernelAudioSessionManagerDelegate scopedModuleDidBackground:self];
 }

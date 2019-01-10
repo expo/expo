@@ -656,17 +656,17 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
   return _data == nil ? EXAVAudioSessionModeInactive : [_data getAudioSessionModeRequired];
 }
 
-- (void)bridgeDidForeground:(NSNotification *)notification
+- (void)appDidForeground
 {
   if (_data) {
-    [_data bridgeDidForeground:notification];
+    [_data appDidForeground];
   }
 }
 
-- (void)bridgeDidBackground:(NSNotification *)notification
+- (void)appDidBackground
 {
   if (_data) {
-    [_data bridgeDidForeground:notification];
+    [_data appDidBackground];
   }
 }
 

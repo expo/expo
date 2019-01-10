@@ -16,9 +16,9 @@ typedef NS_OPTIONS(NSUInteger, EXAVAudioSessionMode)
 
 - (EXAVAudioSessionMode)getAudioSessionModeRequired; // TODO (clarity): is needsAudioSession a better name?
 
-- (void)bridgeDidForeground:(NSNotification *)notification;
+- (void)appDidForeground;
 
-- (void)bridgeDidBackground:(NSNotification *)notification;
+- (void)appDidBackground;
 
 - (void)handleAudioSessionInterruption:(NSNotification*)notification;
 
