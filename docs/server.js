@@ -9,7 +9,6 @@ const app = next({ dev });
 const port = 3000;
 const handle = app.getRequestHandler();
 
-const LATEST_VERSION = 'v' + require('./package.json').version;
 const { WORKFLOW, DISTRIBUTION, EXPOKIT } = require('./transition/sections');
 const CATEGORY_ALIASES = [
   { path: 'workflow', files: WORKFLOW },
@@ -50,26 +49,24 @@ app.prepare().then(() => {
   }
 
   // NOTE(jim): Mutations have to line up with FS paths provided by mdjs.
-  server.get('/versions/:version/:category/:post', (req, res) => {
+  server.get('/versions/:version/:category/:post/', (req, res) => {
     const { query } = parse(req.url, true);
     let { version, category, post } = req.params;
-
-    post = stripTrailingSlashAndExtensions(post);
-
-    if (version === 'latest') {
-      version = LATEST_VERSION;
-    }
 
     category = mutateCategoryWithRedirectAlias(category, post);
 
     const updatedPath = `/versions/${version}/${category}/${post}`;
-    req.originalPath = updatedPath;
     app.render(req, res, updatedPath, query);
   });
 
+  server.get('/', (req, res) => {
+    const { pathname, query } = parse(req.url, true);
+    app.render(req, res, pathname, query)
+  })
+
   server.get('*', (req, res) => {
     const { pathname, query } = parse(req.url, true);
-    app.render(req, res, pathname, query);
+    app.render(req, res, pathname.slice(0,-1), query);
   });
 
   server.listen(port, err => {
