@@ -11,7 +11,7 @@ export class ProcessingView extends React.Component {
       this._p.exit();
       this._p = null;
     }
-    cancelAnimationFrame(this.rafID);
+    cancelAnimationFrame(this._rafID);
   }
 
   render() {
@@ -60,7 +60,7 @@ export class ProcessingView extends React.Component {
 
     const keepFlushing = () => {
       gl.endFrameEXP();
-      this.rafID = requestAnimationFrame(keepFlushing);
+      this._rafID = requestAnimationFrame(keepFlushing);
     };
     keepFlushing();
 
