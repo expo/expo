@@ -1,6 +1,7 @@
 import { EventEmitter, Platform } from 'expo-core';
 import { UnavailabilityError } from 'expo-errors';
-import { TransactionType, CentralState, } from './Bluetooth.types';
+import { CentralState, PeripheralState, TransactionType, CharacteristicProperty, } from './Bluetooth.types';
+export { CentralState, PeripheralState, TransactionType, CharacteristicProperty, };
 import ExpoBluetooth from './ExpoBluetooth';
 let transactions = {};
 const eventEmitter = new EventEmitter(ExpoBluetooth);
@@ -14,7 +15,6 @@ export const { Events } = ExpoBluetooth;
 // Manage all of the bluetooth information.
 let _peripherals = {};
 let _advertisments = {};
-let _central = null;
 const multiEventHandlers = {
     [Events.CENTRAL_DID_DISCOVER_PERIPHERAL_EVENT]: [],
     [Events.CENTRAL_DID_UPDATE_STATE_EVENT]: [],
@@ -105,7 +105,7 @@ export async function connectAsync(options) {
             reject(...props) {
                 clearTimeout(timeoutTag);
                 return reject(...props);
-            }
+            },
         };
         ExpoBluetooth.connectAsync(options);
     });
@@ -137,7 +137,7 @@ async function updateAsync(options, operation) {
     return new Promise((resolve, reject) => {
         const transactionId = createTransactionId(options, operation);
         transactions[transactionId] = { resolve, reject };
-        ExpoBluetooth.updateAsync(options);
+        ExpoBluetooth.updateAsync({ ...options, operation });
     });
 }
 export async function readRSSIAsync(peripheralUUID) {
@@ -241,7 +241,7 @@ export async function loadChildrenRecursivelyAsync({ id }) {
 addListener(({ data, event }) => {
     const { transactionId, peripheral, peripherals, central, advertisementData, rssi, error } = data;
     if (central) {
-        _central = central;
+        // _central = central;
     }
     if (peripheral) {
         if (advertisementData) {

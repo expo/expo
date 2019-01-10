@@ -105,7 +105,18 @@ export declare type WriteOptions = {
     serviceUUID: string;
     characteristicUUID: string;
     descriptorUUID?: string;
-    characteristicProperties: number;
-    shouldMute: boolean;
-    data: any;
+    characteristicProperties: CharacteristicProperty;
+    shouldMute?: boolean;
+    data?: any;
 };
+export declare enum CharacteristicProperty {
+    Broadcast = "broadcast",
+    WriteWithoutResponse = "writeWithoutResponse",
+    Write = "write",
+    Notify = "notify",
+    Indicate = "indicate",
+    AutheticateSignedWrites = "autheticateSignedWrites",
+    ExtendedProperties = "extendedProperties",
+    NotifyEncryptionRequired = "notifyEncryptionRequired",
+    IndicateEncryptionRequired = "indicateEncryptionRequired"
+}

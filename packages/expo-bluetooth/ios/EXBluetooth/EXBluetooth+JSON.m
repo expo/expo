@@ -78,6 +78,31 @@
   return props;
 }
 
++ (CBCharacteristicProperties)CBCharacteristicProperties_JSONToNative:(NSString *)input
+{
+  if ([input isEqualToString:@"broadcast"]) {
+    return CBCharacteristicPropertyBroadcast;
+  } else if ([input isEqualToString:@"writeWithoutResponse"]) {
+    return CBCharacteristicPropertyWriteWithoutResponse;
+  } else if ([input isEqualToString:@"write"]) {
+    return CBCharacteristicPropertyWrite;
+  } else if ([input isEqualToString:@"notify"]) {
+    return CBCharacteristicPropertyNotify;
+  } else if ([input isEqualToString:@"indicate"]) {
+    return CBCharacteristicPropertyIndicate;
+  } else if ([input isEqualToString:@"autheticateSignedWrites"]) {
+    return CBCharacteristicPropertyAuthenticatedSignedWrites;
+  } else if ([input isEqualToString:@"extendedProperties"]) {
+    return CBCharacteristicPropertyExtendedProperties;
+  } else if ([input isEqualToString:@"notifyEncryptionRequired"]) {
+    return CBCharacteristicPropertyNotifyEncryptionRequired;
+  } else if ([input isEqualToString:@"indicateEncryptionRequired"]) {
+    return CBCharacteristicPropertyIndicateEncryptionRequired;
+  } else {
+    return CBCharacteristicPropertyRead;
+  }
+}
+
 + (NSString *)CBManagerState_NativeToJSON:(CBManagerState)input
 {
   switch (input) {

@@ -24,4 +24,16 @@ export var TransactionType;
     TransactionType["disconnect"] = "disconnect";
     TransactionType["scan"] = "scan";
 })(TransactionType || (TransactionType = {}));
+export var CharacteristicProperty;
+(function (CharacteristicProperty) {
+    CharacteristicProperty["Broadcast"] = "broadcast";
+    CharacteristicProperty["WriteWithoutResponse"] = "writeWithoutResponse";
+    CharacteristicProperty["Write"] = "write";
+    CharacteristicProperty["Notify"] = "notify";
+    CharacteristicProperty["Indicate"] = "indicate";
+    CharacteristicProperty["AutheticateSignedWrites"] = "autheticateSignedWrites";
+    CharacteristicProperty["ExtendedProperties"] = "extendedProperties";
+    CharacteristicProperty["NotifyEncryptionRequired"] = "notifyEncryptionRequired";
+    CharacteristicProperty["IndicateEncryptionRequired"] = "indicateEncryptionRequired";
+})(CharacteristicProperty || (CharacteristicProperty = {}));
 //# sourceMappingURL=Bluetooth.types.js.map

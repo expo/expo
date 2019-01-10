@@ -32,6 +32,8 @@ static id EXNullIfEmpty(NSString *input) {
 
 + (NSMutableArray<CBUUID *> *)CBUUIDList_JSONToNative:(NSArray *)input;
 
++ (CBCharacteristicProperties)CBCharacteristicProperties_JSONToNative:(NSString *)input;
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -1,3 +1,5 @@
+// @flow
+
 import React from 'react';
 import {
   FlatList,
@@ -7,6 +9,7 @@ import {
   Image,
   TouchableOpacity,
   Text,
+  SectionList,
   ScrollView,
   Platform,
   StyleSheet,
@@ -20,7 +23,9 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import Colors from '../constants/Colors';
 import MonoText from '../components/MonoText';
 import Button from '../components/Button';
+import { Base64 } from 'js-base64';
 
+import { Services, Characteristics, Descriptors } from 'expo-bluetooth-utils'
 /*
  * Mango:
  *
@@ -61,6 +66,8 @@ import Button from '../components/Button';
  *   - This has nothing to do with bluetooth, create an example and document this to cut down on questions.
  *
  * TODO: Bacon: Change | to _ in uuids
+ *
+ * List of service UUIDS https://www.bluetooth.com/specifications/gatt/services
  */
 
 /*
@@ -117,9 +124,7 @@ export default class BluetoothScreen extends React.Component {
       });
     });
 
-    const central = await Bluetooth.getCentralAsync();
-    console.log({ central });
-
+    Bluetooth.startScanAsync();
     // // Load in one or more peripherals
     // this.setState({ isScanning: true }, () => {
     //   Bluetooth.startScanAsync({}, ({ peripheral }) => {
@@ -131,9 +136,7 @@ export default class BluetoothScreen extends React.Component {
   }
 
   componentWillUnmount() {
-    if (this.listener) {
-      this.listener.remove();
-    }
+    Bluetooth.stopScanAsync();
     if (this.stateListener) this.stateListener.remove();
   }
   componentWillUpdate() {
@@ -152,7 +155,7 @@ export default class BluetoothScreen extends React.Component {
 
     const canUseBluetooth = centralState === 'poweredOn';
     const message = canUseBluetooth
-      ? "Now discoverable as a name that Apple probably doesn't surface... Maybe \"Evan's iPhone?\""
+      ? 'Now discoverable as a name that Apple probably doesn\'t surface... Maybe "Evan\'s iPhone?"'
       : `Central is in the ${centralState} state. Please power it on`;
     return (
       <View style={styles.container}>
@@ -236,7 +239,10 @@ class Item extends React.Component {
         });
         console.log({ loadedPeripheral });
       } catch (error) {
-        Alert.alert('Connection Unsuccessful', `Make sure "${item.name}" is turned on and in range.`)
+        Alert.alert(
+          'Connection Unsuccessful',
+          `Make sure "${item.name}" is turned on and in range.`
+        );
         console.log(error);
         // console.error(error);
         // alert('Failed: ' + message);
@@ -244,7 +250,8 @@ class Item extends React.Component {
         this.setState({ isConnecting: false });
       }
     } else if (item.state === 'connected') {
-      await Bluetooth.disconnectAsync({ uuid: item.id });
+      // await Bluetooth.disconnectAsync({ uuid: item.id });
+      this.props.onPressInfo(this.props.item);
     }
   };
 
@@ -317,15 +324,85 @@ class Header extends React.Component {
   }
 }
 
+function b64EncodeUnicode(str) {
+  // first we use encodeURIComponent to get percent-encoded UTF-8,
+  // then we convert the percent encodings into raw bytes which
+  // can be fed into btoa.
+  return Base64.btoa(
+    encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function toSolidBytes(match, p1) {
+      return String.fromCharCode('0x' + p1);
+    })
+  );
+}
+
+function b64DecodeUnicode(str) {
+  // Going backwards: from bytestream, to percent-encoding, to original string.
+  return decodeURIComponent(
+    Base64.atob(str)
+      .split('')
+      .map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      })
+      .join('')
+  );
+}
+
 export class BluetoothInfoScreen extends React.Component {
   static navigationOptions = ({ navigation }) => ({
     title: navigation.getParam('peripheral').name,
   });
 
-  render() {
+  state = {
+    services: [],
+    sections: []
+  }
+  async componentDidMount() {
     const peripheral = this.props.navigation.getParam('peripheral');
+    const servicesInfo = await  Promise.all(peripheral.services.map(async (service) => {
+      const characteristics = await  Promise.all(service.characteristics.map(async characteristic => {
+
+        if (
+          characteristic.properties &&
+          characteristic.properties.length &&
+          characteristic.properties.indexOf('read') > -1
+        ) {
+          try {
+            const {
+              characteristic: { value },
+            } = await Bluetooth.readAsync({
+              peripheralUUID: characteristic.peripheralUUID,
+              serviceUUID: characteristic.serviceUUID,
+              characteristicUUID: characteristic.uuid,
+              characteristicProperties: Bluetooth.CharacteristicProperty.read, // read
+            });
+            if (value && value !== "" ) {
+              //Bluetooth.getInfoForCharacteristicUUID(uuid).format === 'utf8
+              console.log('ble: ', { value, uuid: characteristic.uuid, converted: b64DecodeUnicode(value) });
+            }
+          } catch ({ message }) {
+            console.error('BLEScreen: ' + message);
+          }
+        }
+
+        const descriptors = characteristic.descriptors.map(descriptor => {
+          return { ...descriptor, info: Descriptors[descriptor.uuid] };
+        })
+        return { ...characteristic, descriptors, info: Characteristics[characteristic.uuid] };
+      }))
+      return { ...service, characteristics, info: Services[service.uuid] };
+    }));
+    this.setState({ services: servicesInfo });
+  }
+
+  render() {
+    //TODO: Bacon: disconnect button
+    const peripheral = this.props.navigation.getParam('peripheral');
+
     return (
-      <View style={styles.container}>
+      <ScrollView style={styles.container}>
+
+        {this.state.services.map((item) => <ServiceView key={item.id} item={item}/>)}
+
         <MonoText
           containerStyle={{
             borderWidth: 0,
@@ -336,8 +413,79 @@ export class BluetoothInfoScreen extends React.Component {
           }}>
           {JSON.stringify(peripheral, null, 2)}
         </MonoText>
-      </View>
+      </ScrollView>
     );
+  }
+}
+
+// {peripheral.state === 'connected' && <TouchableOpacity onPress={() => {
+//   Bluetooth.disconnectAsync({ uuid: peripheral.id });
+// }}>Disconnect</TouchableOpacity>}
+class ServiceView extends React.Component {
+  render() {
+    const item: Bluetooth.ServiceInterface = this.props.item;
+    const {
+      isPrimary,
+      uuid,
+      includedServices = [],
+      characteristics = [],
+    } = item;
+    console.log("ServiceView: ", item)
+    return (<View>
+      <Text>{isPrimary ? 'Is Primary!' : 'Secondary'}</Text>
+      <Text>UUID: {uuid}</Text>
+
+      {characteristics.map((item) => <CharacteristicsView key={item.id} item={item}/>)}
+      {includedServices.map((item) => <ServiceView key={item.id} item={item}/>)}
+
+      </View>)
+  }
+}
+class CharacteristicsView extends React.Component {
+  render() {
+    const item: Bluetooth.CharacteristicInterface = this.props.item;
+    const {
+      properties = [],
+      descriptors = [],
+      value,
+      isNotifying,
+    } = item;
+    return (
+      <View>
+      <Text>Characteristic</Text>
+      <ItemContainer>
+      <Text>UUID: {item.uuid}</Text>
+      </ItemContainer>
+      <ItemContainer>      
+      <Text>Value: {value}</Text>
+      </ItemContainer>
+      <ItemContainer>      
+      <Text>isNotifying: {isNotifying}</Text>
+      </ItemContainer>
+        <View>
+          <Text>Properties</Text>
+          {properties.map((property) => <Text key={item.id + property}>{property}</Text>)}
+        </View>
+          {descriptors.map((item, index) => <DescriptorsView key={item.id + ' ' + index} item={item}/>)}
+      </View>
+      )
+  }
+}
+class DescriptorsView extends React.Component {
+  render() {
+    const item: Bluetooth.DescriptorInterface = this.props.item;
+    const { uuid, value } = item;
+    return (<View>
+      <Text>Descriptor</Text>
+      <ItemContainer>      
+      
+      <Text>UUID: {uuid}</Text>
+      </ItemContainer>      
+      
+      <ItemContainer>      
+      <Text>Value: {value}</Text>
+      </ItemContainer>      
+      </View>)
   }
 }
 

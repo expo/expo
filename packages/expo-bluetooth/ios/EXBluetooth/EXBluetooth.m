@@ -1,4 +1,5 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
+
 #import <EXBluetooth/EXBluetooth.h>
 #import <EXBluetooth/EXBluetooth+JSON.h>
 #import <EXCore/EXEventEmitterService.h>
@@ -57,6 +58,7 @@ NSString *const EXBluetoothServiceKey = @"service";
 }
 
 - (void)invalidate {
+
   if (_manager) {
 //    for (NSString *key in _peripherals) {
 //      CBPeripheral *peripheral = _peripherals[key];
@@ -208,12 +210,11 @@ EX_EXPORT_METHOD_AS(updateAsync,
   CBService *service = [self _getServiceOrReject:options[@"serviceUUID"] peripheral:peripheral reject:reject];
   if (!service) return;
   
-  CBCharacteristicProperties prop = [options[@"characteristicProperties"] integerValue];
-
+  CBCharacteristicProperties prop = [[self class] CBCharacteristicProperties_JSONToNative:options[@"characteristicProperties"]];
   CBCharacteristic *characteristic = [self _getCharacteristicOrReject:options[@"characteristicUUID"] service:service characteristicProperties:prop reject:reject];
   if (!characteristic) return;
   
-  NSString *operation = [options[@"operation"] stringValue];
+  NSString *operation = options[@"operation"];
   
   NSString *descriptorUUIDString = options[@"descriptorUUID"];
   
@@ -224,12 +225,18 @@ EX_EXPORT_METHOD_AS(updateAsync,
     if ([operation isEqualToString:@"read"]) {
       [peripheral readValueForDescriptor:descriptor];
     } else {
+      if (options[@"data"]) {
+
       NSData *data = [[NSData alloc] initWithBase64EncodedString:options[@"data"] options:NSDataBase64DecodingIgnoreUnknownCharacters];
       if (!data) {
         reject(@"E_INVALID_FORMAT", @"Failed to parse base64 string.", nil);
         return;
       }
       [peripheral writeValue:data forDescriptor:descriptor];
+      } else {
+        reject(@"E_INVALID_FORMAT", @"Failed to parse nil string.", nil);
+        return;
+      }
     }
   } else {
     if ([operation isEqualToString:@"read"]) {
@@ -240,12 +247,18 @@ EX_EXPORT_METHOD_AS(updateAsync,
         writeType = CBCharacteristicWriteWithoutResponse;
       }
       
-      NSData *data = [[NSData alloc] initWithBase64EncodedString:options[@"data"] options:NSDataBase64DecodingIgnoreUnknownCharacters];
-      if (!data) {
-        reject(@"E_INVALID_FORMAT", @"Failed to parse base64 string.", nil);
+      if (options[@"data"]) {
+        NSData *data = [[NSData alloc] initWithBase64EncodedString:options[@"data"] options:NSDataBase64DecodingIgnoreUnknownCharacters];
+        if (!data) {
+          reject(@"E_INVALID_FORMAT", @"Failed to parse base64 string.", nil);
+          return;
+        }
+        [peripheral writeValue:data forCharacteristic:characteristic type:writeType];
+
+      } else {
+        reject(@"E_INVALID_FORMAT", @"Failed to parse nil string.", nil);
         return;
       }
-      [peripheral writeValue:data forCharacteristic:characteristic type:writeType];
     }
   }
   resolve([NSNull null]);

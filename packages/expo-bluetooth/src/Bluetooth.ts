@@ -1,23 +1,54 @@
-import { EventEmitter, Subscription, Platform } from 'expo-core';
+import { EventEmitter, Platform, Subscription } from 'expo-core';
 import { UnavailabilityError } from 'expo-errors';
 
 import {
-  Central,
-  PeripheralInterface,
-  ServiceInterface,
-  NativeEventData,
-  TransactionId,
-  CharacteristicInterface,
-  ErrorInterface,
-  ScanSettings,
-  StateUpdatedCallback,
-  TransactionType,
-  UUID,
-  WriteOptions,
-  AdvertismentDataInterface,
-  DescriptorInterface,
   CentralState,
+PeripheralState,
+Base64,
+UUID,
+Identifier,
+TransactionId,
+NodeInterface,
+DescriptorInterface,
+NativeEventData,
+ErrorInterface,
+CharacteristicInterface,
+ServiceInterface,
+AdvertismentDataInterface,
+PeripheralInterface,
+TransactionType,
+PeripheralFoundCallback,
+StateUpdatedCallback,
+ScanSettings,
+Central,
+WriteOptions,
+CharacteristicProperty,
 } from './Bluetooth.types';
+
+
+export {
+  CentralState,
+PeripheralState,
+Base64,
+UUID,
+Identifier,
+TransactionId,
+NodeInterface,
+DescriptorInterface,
+NativeEventData,
+ErrorInterface,
+CharacteristicInterface,
+ServiceInterface,
+AdvertismentDataInterface,
+PeripheralInterface,
+TransactionType,
+PeripheralFoundCallback,
+StateUpdatedCallback,
+ScanSettings,
+Central,
+WriteOptions,
+CharacteristicProperty,
+}
 import ExpoBluetooth from './ExpoBluetooth';
 
 let transactions: { [transactionId: string]: any } = {};
@@ -37,7 +68,6 @@ export const { Events } = ExpoBluetooth;
 let _peripherals: { [peripheralId: string]: PeripheralInterface } = {};
 
 let _advertisments: any = {};
-let _central: Central | null = null;
 
 const multiEventHandlers: any = {
   [Events.CENTRAL_DID_DISCOVER_PERIPHERAL_EVENT]: [],
@@ -138,20 +168,21 @@ export async function connectAsync(options: {
       timeoutTag = setTimeout(() => {
         disconnectAsync({ uuid: peripheralUUID });
         delete transactions[transactionId];
-        reject('request timeout')
+        reject('request timeout');
       }, options.timeout);
     }
 
-    transactions[transactionId] = { 
+    transactions[transactionId] = {
       resolve(...props) {
         clearTimeout(timeoutTag);
         return resolve(...props);
-      }, 
+      },
       reject(...props) {
         clearTimeout(timeoutTag);
         return reject(...props);
-      }};
-    
+      },
+    };
+
     ExpoBluetooth.connectAsync(options);
   });
 }
@@ -186,7 +217,7 @@ async function updateAsync(options: WriteOptions, operation: TransactionType): P
   return new Promise((resolve, reject) => {
     const transactionId = createTransactionId(options, operation);
     transactions[transactionId] = { resolve, reject };
-    ExpoBluetooth.updateAsync(options);
+    ExpoBluetooth.updateAsync({ ...options, operation });
   });
 }
 
@@ -319,7 +350,7 @@ addListener(({ data, event }: { data: NativeEventData; event: string }) => {
   const { transactionId, peripheral, peripherals, central, advertisementData, rssi, error } = data;
 
   if (central) {
-    _central = central;
+    // _central = central;
   }
 
   if (peripheral) {
