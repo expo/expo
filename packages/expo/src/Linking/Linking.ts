@@ -1,11 +1,8 @@
 import Constants from 'expo-constants';
 import qs from 'qs';
-import Linking from './LinkingModule';
 
-export type ParsedURL = {
-  path: string | null;
-  queryParams: Object | null;
-};
+import { ParsedURL } from './Linking.types';
+import Linking from './LinkingModule';
 
 const { manifest } = Constants;
 

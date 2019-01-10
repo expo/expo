@@ -1,51 +1,44 @@
-import findIndex from 'array-find-index';
 import invariant from 'invariant';
 
-// TODO: Bacon: Is there enough coverage to use Array.prototype.findIndex() directly: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/findIndex#Browser_compatibility
-
-type NativeEvent = { data: any; origin: string; source: any };
-type EventType = { url: string; nativeEvent: NativeEvent };
-type HandlerFunction = (event: EventType) => {};
-
-// TODO: Bacon: Should we alias url to `hashchange` or `popstate`: https://stackoverflow.com/a/44318564/4047926
+import { Listener, NativeListener } from './Linking.types';
 
 const EventTypes = ['url'];
 
+// TODO: Bacon: Should we also listen to `hashchange`: https://stackoverflow.com/a/44318564/4047926
 const messageEventKey = 'message';
 
-const listeners: Array<[HandlerFunction, any]> = [];
+const listeners: Array<[Listener, any]> = [];
 
 function _validateURL(url: string): void {
   invariant(typeof url === 'string', `Invalid URL: should be a string. Instead found: ${url}`);
   invariant(url, 'Invalid URL: cannot be empty');
 }
 
-// For better parity this should extend EventEmitter like React Native
+// TODO: Bacon: For better parity this should extend EventEmitter like React Native.
 class Linking {
-  constructor() {}
-
-  addEventListener(type: 'url', handler: HandlerFunction): void {
+  addEventListener(type: 'url', listener: Listener): void {
     invariant(
       EventTypes.indexOf(type) !== -1,
       `Linking.addEventListener(): ${type} is not a valid event`
     );
-    const callback = nativeEvent => handler({ url: window.location.href, nativeEvent });
-    listeners.push([handler, callback]);
-    window.addEventListener(messageEventKey, callback, false);
+    const nativeListener: NativeListener = nativeEvent =>
+      listener({ url: window.location.href, nativeEvent });
+    listeners.push([listener, nativeListener]);
+    window.addEventListener(messageEventKey, nativeListener, false);
   }
 
-  removeEventListener(type: 'url', handler: HandlerFunction): void {
+  removeEventListener(type: 'url', listener: Listener): void {
     invariant(
       EventTypes.indexOf(type) !== -1,
-      `Linking.removeEventListener(): ${type} is not a valid event`
+      `Linking.removeEventListener(): ${type} is not a valid event.`
     );
-    const listenerIndex = findIndex(listeners, pair => pair[0] === handler);
+    const listenerIndex = listeners.findIndex(pair => pair[0] === listener);
     invariant(
       listenerIndex !== -1,
-      'cannot invoke Linking.removeEventListener with an unregistered event handler.'
+      'Linking.removeEventListener(): cannot remove an unregistered event listener.'
     );
-    const callback = listeners[listenerIndex][1];
-    window.removeEventListener(messageEventKey, callback, false);
+    const nativeListener = listeners[listenerIndex][1];
+    window.removeEventListener(messageEventKey, nativeListener, false);
     listeners.splice(listenerIndex, 1);
   }
 
