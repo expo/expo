@@ -17,6 +17,11 @@ export class Sound {
                 this._callOnPlaybackStatusUpdateForNewStatus(status);
             }
         };
+        this._internalErrorCallback = ({ key, error }) => {
+            if (this._key === key) {
+                this._errorCallback(error);
+            }
+        };
         this._errorCallback = (error) => {
             this._clearSubscriptions();
             this._loaded = false;
@@ -58,9 +63,10 @@ export class Sound {
         }
     }
     // TODO: We can optimize by only using time observer on native if (this._onPlaybackStatusUpdate).
-    _subscribeToNativeStatusUpdateEvents() {
+    _subscribeToNativeEvents() {
         if (this._loaded) {
             this._subscriptions.push(this._eventEmitter.addListener('didUpdatePlaybackStatus', this._internalStatusUpdateCallback));
+            this._subscriptions.push(this._eventEmitter.addListener('ExponentAV.onError', this._internalErrorCallback));
         }
     }
     _clearSubscriptions() {
@@ -82,20 +88,22 @@ export class Sound {
             const { nativeSource, fullInitialStatus, } = await getNativeSourceAndFullInitialStatusForLoadAsync(source, initialStatus, downloadFirst);
             // This is a workaround, since using load with resolve / reject seems to not work.
             return new Promise((resolve, reject) => {
-                const loadSuccess = (key, status) => {
+                const loadSuccess = (result) => {
+                    const [key, status] = result;
                     this._key = key;
                     this._loaded = true;
                     this._loading = false;
-                    NativeModulesProxy.ExponentAV.setErrorCallbackForSound(this._key, this._errorCallback);
-                    this._subscribeToNativeStatusUpdateEvents();
+                    this._subscribeToNativeEvents();
                     this._callOnPlaybackStatusUpdateForNewStatus(status);
                     resolve(status);
                 };
                 const loadError = (error) => {
                     this._loading = false;
-                    reject(new Error(error));
+                    reject(error);
                 };
-                NativeModulesProxy.ExponentAV.loadForSound(nativeSource, fullInitialStatus, loadSuccess, loadError);
+                NativeModulesProxy.ExponentAV.loadForSound(nativeSource, fullInitialStatus)
+                    .then(loadSuccess)
+                    .catch(loadError);
             });
         }
         else {

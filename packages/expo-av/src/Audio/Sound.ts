@@ -81,13 +81,26 @@ export class Sound implements Playback {
     }
   };
 
+  _internalErrorCallback = ({ key, error }: { key: number; error: string }) => {
+    if (this._key === key) {
+      this._errorCallback(error);
+    }
+  };
+
   // TODO: We can optimize by only using time observer on native if (this._onPlaybackStatusUpdate).
-  _subscribeToNativeStatusUpdateEvents() {
+  _subscribeToNativeEvents() {
     if (this._loaded) {
       this._subscriptions.push(
         this._eventEmitter.addListener(
           'didUpdatePlaybackStatus',
           this._internalStatusUpdateCallback
+        )
+      );
+
+      this._subscriptions.push(
+        this._eventEmitter.addListener(
+          'ExponentAV.onError',
+          this._internalErrorCallback
         )
       );
     }
@@ -151,27 +164,24 @@ export class Sound implements Playback {
 
       // This is a workaround, since using load with resolve / reject seems to not work.
       return new Promise<PlaybackStatus>((resolve, reject) => {
-        const loadSuccess = (key: number, status: PlaybackStatus) => {
+        const loadSuccess = (result: [number, PlaybackStatus]) => {
+          const [key, status] = result;
           this._key = key;
           this._loaded = true;
           this._loading = false;
-          NativeModulesProxy.ExponentAV.setErrorCallbackForSound(this._key, this._errorCallback);
-          this._subscribeToNativeStatusUpdateEvents();
+          this._subscribeToNativeEvents();
           this._callOnPlaybackStatusUpdateForNewStatus(status);
           resolve(status);
         };
 
-        const loadError = (error: string) => {
+        const loadError = (error: Error) => {
           this._loading = false;
-          reject(new Error(error));
+          reject(error);
         };
 
-        NativeModulesProxy.ExponentAV.loadForSound(
-          nativeSource,
-          fullInitialStatus,
-          loadSuccess,
-          loadError
-        );
+        NativeModulesProxy.ExponentAV.loadForSound(nativeSource, fullInitialStatus)
+          .then(loadSuccess)
+          .catch(loadError);
       });
     } else {
       throw new Error('The Sound is already loaded.');

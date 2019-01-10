@@ -538,7 +538,7 @@ withEXVideoViewForTag:(nonnull NSNumber *)reactTag
 
 - (NSArray<NSString *> *)supportedEvents
 {
-  return @[EXDidUpdatePlaybackStatusEventName];
+  return @[EXDidUpdatePlaybackStatusEventName, @"ExponentAV.onError"];
 }
 
 #pragma mark - Audio API: Global settings
@@ -575,8 +575,8 @@ EX_EXPORT_METHOD_AS(setAudioMode,
 EX_EXPORT_METHOD_AS(loadForSound,
                     loadForSound:(NSDictionary *)source
                     withStatus:(NSDictionary *)status
-                    withSuccess:(EXDirectEventBlock)loadSuccess
-                    withError:(EXDirectEventBlock)loadError)
+                    resolver:(EXPromiseResolveBlock)loadSuccess
+                    rejecter:(EXPromiseRejectBlock)loadError)
 {
   NSNumber *key = @(_soundDictionaryKeyCount++);
 
@@ -589,13 +589,17 @@ EX_EXPORT_METHOD_AS(loadForSound,
                                              loadSuccess(@[key, successStatus]);
                                            } else {
                                              [weakSelf _removeSoundForKey:key];
-                                             loadError(@[error]);
+                                             loadError(@"EXAV", error, nil);
                                            }
                                          }];
   data.errorCallback = ^(NSString *error) {
-    __strong __typeof__(weakSelf) strongSelf = weakSelf;
+    __strong __typeof__(self) strongSelf = weakSelf;
     
     if (strongSelf) {
+      [strongSelf sendEventWithName:@"ExponentAV.onError" body:@{
+                                                      @"key": key,
+                                                      @"error": error
+                                                      }];
       [strongSelf _removeSoundForKey:key];
     }
   };
@@ -662,26 +666,6 @@ EX_EXPORT_METHOD_AS(replaySound,
                   resolver:resolve
                   rejecter:reject];
   } withSoundForKey:key withRejecter:reject];
-}
-
-EX_EXPORT_METHOD_AS(setErrorCallbackForSound,
-                    setErrorCallbackForSound:(NSNumber *)key
-                    withCallback:(EXDirectEventBlock)callback)
-{
-  EXAVPlayerData *data = _soundDictionary[key];
-  if (data) {
-    __block BOOL used = NO; // RCTResponseSenderBlock can only be used once
-    __weak __typeof__(self) weakSelf = self;
-    data.errorCallback = ^(NSString *error) {
-      __strong __typeof__(self) strongSelf = weakSelf;
-      
-      if (strongSelf && !used) {
-        used = YES;
-        [strongSelf _removeSoundForKey:key];
-        callback(@[error]);
-      }
-    };
-  }
 }
 
 #pragma mark - Unified playback API - Video

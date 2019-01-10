@@ -26,7 +26,11 @@ export declare class Sound implements Playback {
         key: number;
         status: PlaybackStatus;
     }) => void;
-    _subscribeToNativeStatusUpdateEvents(): void;
+    _internalErrorCallback: ({ key, error }: {
+        key: number;
+        error: string;
+    }) => void;
+    _subscribeToNativeEvents(): void;
     _clearSubscriptions(): void;
     _errorCallback: (error: string) => void;
     getStatusAsync: () => Promise<PlaybackStatus>;
