@@ -1,6 +1,6 @@
-import { NativeModules } from 'react-native';
+import { NativeModulesProxy } from 'expo-core';
 
-const { ExponentAV } = NativeModules;
+const { ExponentAV } = NativeModulesProxy;
 
 let _enabled = true;
 

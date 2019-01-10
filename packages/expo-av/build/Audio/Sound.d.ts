@@ -1,4 +1,4 @@
-import { NativeEventEmitter } from 'react-native';
+import { EventEmitter } from 'expo-core';
 import { Playback, PlaybackSource, PlaybackStatus, PlaybackStatusToSet } from '../AV';
 export declare class Sound implements Playback {
     _loaded: boolean;
@@ -9,7 +9,7 @@ export declare class Sound implements Playback {
     _subscriptions: Array<{
         remove: () => void;
     }>;
-    _eventEmitter: NativeEventEmitter;
+    _eventEmitter: EventEmitter;
     _coalesceStatusUpdatesInMillis: number;
     _onPlaybackStatusUpdate: ((status: PlaybackStatus) => void) | null;
     static create: (source: PlaybackSource, initialStatus?: PlaybackStatusToSet, onPlaybackStatusUpdate?: ((status: PlaybackStatus) => void) | null, downloadFirst?: boolean) => Promise<{

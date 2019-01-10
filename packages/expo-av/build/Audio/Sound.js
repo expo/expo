@@ -1,4 +1,4 @@
-import { NativeEventEmitter, NativeModules } from 'react-native';
+import { NativeModulesProxy, EventEmitter } from 'expo-core';
 import { throwIfAudioIsDisabled } from './AudioAvailability';
 import { PlaybackMixin, assertStatusValuesInBounds, getNativeSourceAndFullInitialStatusForLoadAsync, getUnloadedStatus, } from '../AV';
 export class Sound {
@@ -9,7 +9,7 @@ export class Sound {
         this._lastStatusUpdate = null;
         this._lastStatusUpdateTime = null;
         this._subscriptions = [];
-        this._eventEmitter = new NativeEventEmitter(NativeModules.ExponentAV);
+        this._eventEmitter = new EventEmitter(NativeModulesProxy.ExponentAV);
         this._coalesceStatusUpdatesInMillis = 100;
         this._onPlaybackStatusUpdate = null;
         this._internalStatusUpdateCallback = ({ key, status }) => {
@@ -28,7 +28,7 @@ export class Sound {
         // Get status API
         this.getStatusAsync = async () => {
             if (this._loaded) {
-                return this._performOperationAndHandleStatusAsync(() => NativeModules.ExponentAV.getStatusForSound(this._key));
+                return this._performOperationAndHandleStatusAsync(() => NativeModulesProxy.ExponentAV.getStatusForSound(this._key));
             }
             const status = getUnloadedStatus();
             this._callOnPlaybackStatusUpdateForNewStatus(status);
@@ -86,7 +86,7 @@ export class Sound {
                     this._key = key;
                     this._loaded = true;
                     this._loading = false;
-                    NativeModules.ExponentAV.setErrorCallbackForSound(this._key, this._errorCallback);
+                    NativeModulesProxy.ExponentAV.setErrorCallbackForSound(this._key, this._errorCallback);
                     this._subscribeToNativeStatusUpdateEvents();
                     this._callOnPlaybackStatusUpdateForNewStatus(status);
                     resolve(status);
@@ -95,7 +95,7 @@ export class Sound {
                     this._loading = false;
                     reject(new Error(error));
                 };
-                NativeModules.ExponentAV.loadForSound(nativeSource, fullInitialStatus, loadSuccess, loadError);
+                NativeModulesProxy.ExponentAV.loadForSound(nativeSource, fullInitialStatus, loadSuccess, loadError);
             });
         }
         else {
@@ -107,7 +107,7 @@ export class Sound {
             this._loaded = false;
             const key = this._key;
             this._key = -1;
-            const status = await NativeModules.ExponentAV.unloadForSound(key);
+            const status = await NativeModulesProxy.ExponentAV.unloadForSound(key);
             this._callOnPlaybackStatusUpdateForNewStatus(status);
             this._clearSubscriptions();
             return status;
@@ -119,13 +119,13 @@ export class Sound {
     // Set status API (only available while isLoaded = true)
     async setStatusAsync(status) {
         assertStatusValuesInBounds(status);
-        return this._performOperationAndHandleStatusAsync(() => NativeModules.ExponentAV.setStatusForSound(this._key, status));
+        return this._performOperationAndHandleStatusAsync(() => NativeModulesProxy.ExponentAV.setStatusForSound(this._key, status));
     }
     async replayAsync(status = {}) {
         if (status.positionMillis && status.positionMillis !== 0) {
             throw new Error('Requested position after replay has to be 0.');
         }
-        return this._performOperationAndHandleStatusAsync(() => NativeModules.ExponentAV.replaySound(this._key, {
+        return this._performOperationAndHandleStatusAsync(() => NativeModulesProxy.ExponentAV.replaySound(this._key, {
             ...status,
             positionMillis: 0,
             shouldPlay: true,
