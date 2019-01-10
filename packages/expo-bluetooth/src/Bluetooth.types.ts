@@ -23,6 +23,7 @@ export type TransactionId = string;
 export interface NodeInterface {
   id: Identifier;
   uuid: UUID;
+  //TODO:Bacon: Maybe add a type like peripheral, service, characteristc, descriptor
 }
 
 export interface DescriptorInterface extends NodeInterface {
@@ -120,13 +121,13 @@ export interface Central {
 }
 
 export type WriteOptions = {
-  peripheralUUID: string;
-  serviceUUID: string;
-  characteristicUUID: string;
-  descriptorUUID?: string;
+  peripheralUUID: UUID;
+  serviceUUID: UUID;
+  characteristicUUID: UUID;
+  descriptorUUID?: UUID;
   characteristicProperties: CharacteristicProperty;
   shouldMute?: boolean;
-  data?: any;
+  data?: Base64;
 };
 
 export enum CharacteristicProperty {
