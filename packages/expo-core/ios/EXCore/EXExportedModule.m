@@ -146,6 +146,12 @@ static dispatch_once_t selectorRegularExpressionOnceToken = 0;
     if (obj != [NSNull null]) {
       [invocation setArgument:&obj atIndex:(2 + idx)];
     }
+    if ([methodSignature getArgumentTypeAtIndex:(2 + idx)][0] == _C_BOOL) {
+      // We need this intermediary variable, see
+      // https://stackoverflow.com/questions/11061166/pointer-to-bool-in-objective-c
+      BOOL value = [obj boolValue];
+      [invocation setArgument:&value atIndex:(2 + idx)];
+    }
   }];
   [invocation setArgument:&resolve atIndex:(2 + [arguments count])];
   [invocation setArgument:&reject atIndex:([arguments count] + 2 + 1)];
