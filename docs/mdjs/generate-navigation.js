@@ -74,7 +74,7 @@ const generateNavLinks = (path_, arr) => {
   let items = fs.readdirSync(path_);
 
   let processUrl = path => {
-    let newPath = path.replace(/^versions/, '/versions').replace(/.md$/, '/');
+    let newPath = path.replace(/^versions/, '/versions').replace(/.md$/, '');
     return newPath;
   };
 
