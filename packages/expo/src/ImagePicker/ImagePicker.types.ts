@@ -1,4 +1,8 @@
-import MediaTypeOptions from './MediaTypeOptions';
+export enum MediaTypeOptions {
+  All = 'All',
+  Videos = 'Videos',
+  Images = 'Images',
+}
 
 export type ImageInfo = {
   uri: string;
@@ -8,18 +12,16 @@ export type ImageInfo = {
 
 export type ImageResult = { cancelled: true } | ({ cancelled: false } & ImageInfo);
 
-export type ImageLibraryOptions = {
+export type PickerOptions = {
   allowsEditing?: boolean;
   aspect?: [number, number];
   quality?: number;
   allowsMultipleSelection?: boolean;
-  mediaTypes?: keyof (typeof MediaTypeOptions);
+  mediaTypes?: MediaTypeOptions;
 };
 
-export type CameraOptions = {
-  allowsEditing?: boolean;
-  aspect?: [number, number];
-  quality?: number;
-  allowsMultipleSelection?: boolean;
-  mediaTypes?: keyof (typeof MediaTypeOptions);
+export type OpenFileBrowserOptions = {
+  mediaTypes: MediaTypeOptions;
+  capture?: boolean;
+  allowsMultipleSelection: boolean;
 };

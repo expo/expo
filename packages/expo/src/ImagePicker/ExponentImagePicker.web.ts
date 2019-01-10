@@ -1,7 +1,11 @@
 import uuidv4 from 'uuid/v4';
 
-import { CameraOptions, ImageLibraryOptions, ImageResult } from './ImagePicker.types';
-import MediaTypeOptions from './MediaTypeOptions';
+import {
+  ImageResult,
+  MediaTypeOptions,
+  OpenFileBrowserOptions,
+  PickerOptions,
+} from './ImagePicker.types';
 
 const MediaTypeInput = {
   [MediaTypeOptions.All]: 'video/*,image/*',
@@ -14,35 +18,37 @@ export default {
     return 'ExponentImagePicker';
   },
   async launchImageLibraryAsync({
-    mediaTypes,
+    mediaTypes = MediaTypeOptions.All,
     allowsMultipleSelection = false,
-  }: ImageLibraryOptions = {}): Promise<ImageResult> {
-    return await openFileBrowser({
-      mediaTypes: MediaTypeInput[mediaTypes || MediaTypeOptions.All],
+  }: PickerOptions): Promise<ImageResult> {
+    return await openFileBrowserAsync({
+      mediaTypes,
       allowsMultipleSelection,
     });
   },
   async launchCameraAsync({
-    mediaTypes,
+    mediaTypes = MediaTypeOptions.All,
     allowsMultipleSelection = false,
-  }: CameraOptions = {}): Promise<ImageResult> {
-    return await openFileBrowser({
-      mediaTypes: MediaTypeInput[mediaTypes || MediaTypeOptions.All],
+  }: PickerOptions): Promise<ImageResult> {
+    return await openFileBrowserAsync({
+      mediaTypes,
       allowsMultipleSelection,
       capture: true,
     });
   },
 };
 
-function openFileBrowser({
+function openFileBrowserAsync({
   mediaTypes,
   capture = false,
   allowsMultipleSelection = false,
-}): Promise<ImageResult> {
+}: OpenFileBrowserOptions): Promise<ImageResult> {
+  const mediaTypeFormat = MediaTypeInput[mediaTypes];
+
   const input = document.createElement('input');
   input.style.display = 'none';
   input.setAttribute('type', 'file');
-  input.setAttribute('accept', mediaTypes);
+  input.setAttribute('accept', mediaTypeFormat);
   input.setAttribute('id', uuidv4());
   if (allowsMultipleSelection) {
     input.setAttribute('multiple', 'multiple');
@@ -57,8 +63,9 @@ function openFileBrowser({
       if (input.files) {
         const targetFile = input.files[0];
         const reader = new FileReader();
-        reader.onerror = reject;
-        reader.onabort = reject;
+        reader.onerror = () => {
+          reject('Failed to read the selected media because the operation failed.');
+        };
         reader.onload = ({ target }) => {
           const uri = (target as any).result;
           resolve({
