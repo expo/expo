@@ -88,6 +88,11 @@ EX_EXPORT_MODULE(ExponentAV);
   return self;
 }
 
++ (const NSArray<Protocol *> *)exportedInterfaces
+{
+  return @[@protocol(EXAVInterface)];
+}
+
 - (NSString *)experienceId
 {
   return _experienceId;

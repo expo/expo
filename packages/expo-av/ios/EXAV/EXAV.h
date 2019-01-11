@@ -39,10 +39,7 @@ typedef NS_OPTIONS(NSUInteger, EXAudioRecordingOptionBitRateStrategy)
 
 @end
 
-@interface EXAV : EXExportedModule <EXEventEmitter, EXAVScopedModule, EXAppLifecycleListener, EXModuleRegistryConsumer>
-
-- (void)handleMediaServicesReset:(NSNotification *)notification;
-- (void)handleAudioSessionInterruption:(NSNotification *)notification;
+@protocol EXAVInterface
 
 - (NSError *)promoteAudioSessionIfNecessary;
 
@@ -51,5 +48,12 @@ typedef NS_OPTIONS(NSUInteger, EXAudioRecordingOptionBitRateStrategy)
 - (void)registerVideoForAudioLifecycle:(NSObject<EXAVObject> *)video;
 
 - (void)unregisterVideoForAudioLifecycle:(NSObject<EXAVObject> *)video;
+
+@end
+
+@interface EXAV : EXExportedModule <EXEventEmitter, EXAVScopedModule, EXAppLifecycleListener, EXModuleRegistryConsumer, EXAVInterface>
+
+- (void)handleMediaServicesReset:(NSNotification *)notification;
+- (void)handleAudioSessionInterruption:(NSNotification *)notification;
 
 @end

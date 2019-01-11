@@ -28,8 +28,7 @@ EX_EXPORT_MODULE(ExponentVideoManager);
 
 - (UIView *)view
 {
-  return nil;
-//  return [[EXVideoView alloc] initWithBridge:_bridge];
+  return [[EXVideoView alloc] initWithModuleRegistry:_moduleRegistry];
 }
 
 - (NSDictionary *)constantsToExport
