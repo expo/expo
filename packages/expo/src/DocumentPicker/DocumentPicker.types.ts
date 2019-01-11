@@ -1,5 +1,6 @@
 export type GetDocumentOptions = {
   type?: string;
+  copyToCacheDirectory?: boolean;
   multiple?: boolean;
 };
 

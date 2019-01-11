@@ -1,4 +1,6 @@
-import { GetDocumentOptions, DocumentResult } from './DocumentPicker.types';
+import uuidv4 from 'uuid/v4';
+
+import { DocumentResult, GetDocumentOptions } from './DocumentPicker.types';
 
 export default {
   get name(): string {
@@ -10,12 +12,13 @@ export default {
     multiple = false,
   }: GetDocumentOptions): Promise<DocumentResult> {
     const input = document.createElement('input');
+    input.style.display = 'none';
     input.setAttribute('type', 'file');
     input.setAttribute('accept', type);
-    input.setAttribute('id', 'hidden-file');
-    if (multiple) input.setAttribute('multiple', '');
-
-    input.style.display = 'none';
+    input.setAttribute('id', uuidv4());
+    if (multiple) {
+      input.setAttribute('multiple', 'multiple');
+    }
 
     document.body.appendChild(input);
 
@@ -24,8 +27,9 @@ export default {
         if (input.files) {
           const targetFile = input.files[0];
           const reader = new FileReader();
-          reader.onerror = reject;
-          reader.onabort = reject;
+          reader.onerror = () => {
+            reject('Failed to read the selected media because the operation failed.');
+          };
           reader.onload = ({ target }) => {
             const uri = (target as any).result;
             resolve({
@@ -47,24 +51,7 @@ export default {
         document.body.removeChild(input);
       });
 
-      const event = document.createEvent('MouseEvents');
-      event.initMouseEvent(
-        'click',
-        true,
-        true,
-        window,
-        1,
-        0,
-        0,
-        0,
-        0,
-        false,
-        false,
-        false,
-        false,
-        0,
-        null
-      );
+      const event = new MouseEvent('click');
       input.dispatchEvent(event);
     });
   },
