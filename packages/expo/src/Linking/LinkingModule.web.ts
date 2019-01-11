@@ -1,13 +1,13 @@
 import invariant from 'invariant';
 
-import { Listener, NativeListener } from './Linking.types';
+import { URLListener, NativeURLListener } from './Linking.types';
 
 const EventTypes = ['url'];
 
 // TODO: Bacon: Should we also listen to `hashchange`: https://stackoverflow.com/a/44318564/4047926
 const messageEventKey = 'message';
 
-const listeners: Array<{ listener: Listener; nativeListener: NativeListener }> = [];
+const listeners: Array<{ listener: URLListener; nativeListener: NativeURLListener }> = [];
 
 function _validateURL(url: string): void {
   invariant(typeof url === 'string', `Invalid URL: should be a string. Instead found: ${url}`);
@@ -16,18 +16,18 @@ function _validateURL(url: string): void {
 
 // TODO: Bacon: For better parity this should extend EventEmitter like React Native.
 class Linking {
-  addEventListener(type: 'url', listener: Listener): void {
+  addEventListener(type: 'url', listener: URLListener): void {
     invariant(
       EventTypes.indexOf(type) !== -1,
       `Linking.addEventListener(): ${type} is not a valid event`
     );
-    const nativeListener: NativeListener = nativeEvent =>
+    const nativeListener: NativeURLListener = nativeEvent =>
       listener({ url: window.location.href, nativeEvent });
     listeners.push({ listener, nativeListener });
     window.addEventListener(messageEventKey, nativeListener, false);
   }
 
-  removeEventListener(type: 'url', listener: Listener): void {
+  removeEventListener(type: 'url', listener: URLListener): void {
     invariant(
       EventTypes.indexOf(type) !== -1,
       `Linking.removeEventListener(): ${type} is not a valid event.`

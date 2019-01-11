@@ -5,6 +5,6 @@ export type ParsedURL = {
 
 export type EventType = { url: string; nativeEvent: MessageEvent };
 
-export type Listener = (event: EventType) => void;
+export type URLListener = (event: EventType) => void;
 
-export type NativeListener = (nativeEvent: MessageEvent) => void;
+export type NativeURLListener = (nativeEvent: MessageEvent) => void;
