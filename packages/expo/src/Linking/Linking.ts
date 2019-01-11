@@ -1,11 +1,8 @@
 import Constants from 'expo-constants';
-import { Linking } from 'react-native';
 import qs from 'qs';
 
-type ParsedURL = {
-  path: string | null,
-  queryParams: Object | null,
-};
+import { ParsedURL } from './Linking.types';
+import Linking from './LinkingModule';
 
 const { manifest } = Constants;
 
