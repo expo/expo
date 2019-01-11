@@ -7,10 +7,6 @@ export const VIDEO_ASPECT_RATIOS = {
   '1280x720': 1280 / 720,
   '640x480': 640 / 480,
   '352x288': 352 / 288,
-  // "Photo": AVCaptureSessionPresetPhoto,
-  // "High": AVCaptureSessionPresetHigh,
-  // "Medium": AVCaptureSessionPresetMedium,
-  // "Low": AVCaptureSessionPresetLow
 };
 
 export const PictureSizes = ['3840x2160', '1920x1080', '1280x720', '640x480', '352x288'];
