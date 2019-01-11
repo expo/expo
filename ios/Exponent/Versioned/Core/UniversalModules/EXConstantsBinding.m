@@ -29,6 +29,13 @@
   NSMutableDictionary *constants = [[super constants] mutableCopy];
   
   [constants setValue:[self expoClientVersion] forKey:@"expoVersion"];
+
+  BOOL isDetached = NO;
+#ifdef EX_DETACHED
+  isDetached = YES;
+#endif
+
+  constants[@"isDetached"] = @(isDetached);
   
   if (_unversionedConstants) {
     [constants addEntriesFromDictionary:_unversionedConstants];

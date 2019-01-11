@@ -1,10 +1,10 @@
 import uuidv4 from 'uuid/v4';
 
 import {
-  ImageResult,
+  ImagePickerResult,
   MediaTypeOptions,
   OpenFileBrowserOptions,
-  PickerOptions,
+  ImagePickerOptions,
 } from './ImagePicker.types';
 
 const MediaTypeInput = {
@@ -20,7 +20,7 @@ export default {
   async launchImageLibraryAsync({
     mediaTypes = MediaTypeOptions.All,
     allowsMultipleSelection = false,
-  }: PickerOptions): Promise<ImageResult> {
+  }: ImagePickerOptions): Promise<ImagePickerResult> {
     return await openFileBrowserAsync({
       mediaTypes,
       allowsMultipleSelection,
@@ -29,7 +29,7 @@ export default {
   async launchCameraAsync({
     mediaTypes = MediaTypeOptions.All,
     allowsMultipleSelection = false,
-  }: PickerOptions): Promise<ImageResult> {
+  }: ImagePickerOptions): Promise<ImagePickerResult> {
     return await openFileBrowserAsync({
       mediaTypes,
       allowsMultipleSelection,
@@ -42,7 +42,7 @@ function openFileBrowserAsync({
   mediaTypes,
   capture = false,
   allowsMultipleSelection = false,
-}: OpenFileBrowserOptions): Promise<ImageResult> {
+}: OpenFileBrowserOptions): Promise<ImagePickerResult> {
   const mediaTypeFormat = MediaTypeInput[mediaTypes];
 
   const input = document.createElement('input');

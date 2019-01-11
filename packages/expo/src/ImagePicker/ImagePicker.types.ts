@@ -10,14 +10,16 @@ export type ImageInfo = {
   height: number;
 };
 
-export type ImageResult = { cancelled: true } | ({ cancelled: false } & ImageInfo);
+export type ImagePickerResult = { cancelled: true } | ({ cancelled: false } & ImageInfo);
 
-export type PickerOptions = {
+export type ImagePickerOptions = {
   allowsEditing?: boolean;
   aspect?: [number, number];
   quality?: number;
   allowsMultipleSelection?: boolean;
   mediaTypes?: MediaTypeOptions;
+  exif?: boolean;
+  base64?: boolean;
 };
 
 export type OpenFileBrowserOptions = {

@@ -1,6 +1,6 @@
 {
   "name": "expo-module-template",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Expo Module Template standalone module",
   "main": "index.js",
   "keywords": [
@@ -10,11 +10,11 @@
   "homepage": "https://docs.expo.io/",
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "dependencies": {
+  "peerDependencies": {
     "expo-core": "~2.0.0"
   },
   "devDependencies": {
-    "flow-bin": "^0.77.0"
+    "expo-module-scripts": "^1.0.0"
   },
   "gitHead": "f15abc53c111bd0438cd36dc456c59cfa7c56a58"
 }

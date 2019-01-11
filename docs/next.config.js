@@ -1,7 +1,10 @@
 const LATEST_VERSION = 'v' + require('./package.json').version;
 
 module.exports = {
-  async exportPathMap(defaultPathMap) {
+  async exportPathMap(defaultPathMap, {dev}) {
+    if (dev) {
+      return defaultPathMap
+    }
     return Object.assign(
       ...Object.entries(defaultPathMap).map(([pathname, page]) => {
         if (pathname.match(/\/v[1-9][^\/]*$/)) {
