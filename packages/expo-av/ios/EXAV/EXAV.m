@@ -2,6 +2,7 @@
 
 #import <AVFoundation/AVFoundation.h>
 
+#import <EXCore/EXUIManager.h>
 #import <EXCore/EXEventEmitterService.h>
 #import <EXCore/EXAppLifecycleService.h>
 #import <EXFileSystemInterface/EXFileSystemInterface.h>
@@ -385,18 +386,15 @@ withEXVideoViewForTag:(nonnull NSNumber *)reactTag
      withRejecter:(EXPromiseRejectBlock)reject
 {
   // TODO check that the bridge is still valid after the dispatch
-  dispatch_async(dispatch_get_main_queue(), ^{
-    // TODO: viewForTag
-//    UIView *view = [self.bridge.uiManager viewForReactTag:reactTag];
-//    if ([view isKindOfClass:[EXVideoView class]]) {
-//      dispatch_async(RCTGetUIManagerQueue(), ^{
-//        block((EXVideoView *)view);
-//      });
-//    } else {
-//      NSString *errorMessage = [NSString stringWithFormat:@"Invalid view returned from registry, expecting EXVideo, got: %@", view];
-//      reject(@"E_VIDEO_TAGINCORRECT", nil, EXErrorWithMessage(errorMessage));
-//    }
-  });
+  // TODO check if the queues are ok
+  [[_moduleRegistry getModuleImplementingProtocol:@protocol(EXUIManager)] addUIBlock:^(id view) {
+    if ([view isKindOfClass:[EXVideoView class]]) {
+      block(view);
+    } else {
+      NSString *errorMessage = [NSString stringWithFormat:@"Invalid view returned from registry, expecting EXVideo, got: %@", view];
+      reject(@"E_VIDEO_TAGINCORRECT", errorMessage, EXErrorWithMessage(errorMessage));
+    }
+  } forView:reactTag ofClass:[EXVideoView class]];
 }
 
 #pragma mark - Internal audio recording helper methods
