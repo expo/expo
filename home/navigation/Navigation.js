@@ -141,20 +141,30 @@ const DiagnosticsStack = createStackNavigator(
   }
 );
 
-const TabRoutes =
-  Platform.OS === 'android' || !Constants.isDevice
-    ? {
-        ProjectsStack,
-        ExploreStack,
-        DiagnosticsStack,
-        ProfileStack,
-      }
-    : {
-        ProjectsStack,
-        DiagnosticsStack,
-        ProfileStack,
-      };
+let TabRoutes;
 
+if (Platform.OS === 'android') {
+  TabRoutes = {
+    ProjectsStack,
+    ExploreStack,
+    ProfileStack,
+  };
+} else {
+  if (Constants.isDevice) {
+    TabRoutes = {
+      ProjectsStack,
+      DiagnosticsStack,
+      ProfileStack,
+    };
+  } else {
+    TabRoutes = {
+      ProjectsStack,
+      ExploreStack,
+      DiagnosticsStack,
+      ProfileStack,
+    };
+  }
+}
 const TabNavigator =
   Platform.OS === 'ios'
     ? createBottomTabNavigator(TabRoutes, {
