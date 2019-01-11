@@ -1,51 +1,24 @@
 import { UnavailabilityError } from 'expo-errors';
+
 import ExponentImagePicker from './ExponentImagePicker';
-
-const MEDIA_TYPE_OPTIONS = {
-  All: 'All',
-  Videos: 'Videos',
-  Images: 'Images',
-};
-
-type ImageInfo = {
-  uri: string;
-  width: number;
-  height: number;
-};
-
-type ImageResult = { cancelled: true } | ({ cancelled: false } & ImageInfo);
-
-type ImageLibraryOptions = {
-  allowsEditing?: boolean;
-  aspect?: [number, number];
-  base64?: boolean;
-  exif?: boolean;
-  quality?: number;
-  mediaTypes?: keyof (typeof MEDIA_TYPE_OPTIONS);
-};
+import { ImagePickerResult, MediaTypeOptions, ImagePickerOptions } from './ImagePicker.types';
 
 export async function launchImageLibraryAsync(
-  options: ImageLibraryOptions = {}
-): Promise<ImageResult> {
+  options: ImagePickerOptions = {}
+): Promise<ImagePickerResult> {
   if (!ExponentImagePicker.launchImageLibraryAsync) {
     throw new UnavailabilityError('ImagePicker', 'launchImageLibraryAsync');
   }
-  return ExponentImagePicker.launchImageLibraryAsync(options);
+  return await ExponentImagePicker.launchImageLibraryAsync(options);
 }
 
-type CameraOptions = {
-  allowsEditing?: boolean;
-  aspect?: [number, number];
-  base64?: boolean;
-  exif?: boolean;
-  quality?: number;
-};
-
-export async function launchCameraAsync(options: CameraOptions = {}): Promise<ImageResult> {
+export async function launchCameraAsync(
+  options: ImagePickerOptions = {}
+): Promise<ImagePickerResult> {
   if (!ExponentImagePicker.launchCameraAsync) {
     throw new UnavailabilityError('ImagePicker', 'launchCameraAsync');
   }
-  return ExponentImagePicker.launchCameraAsync(options);
+  return await ExponentImagePicker.launchCameraAsync(options);
 }
 
-export const MediaTypeOptions = MEDIA_TYPE_OPTIONS;
+export { MediaTypeOptions, ImagePickerOptions, ImagePickerResult };
