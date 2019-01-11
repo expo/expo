@@ -1,8 +1,8 @@
 import React from 'react';
 import { EventEmitter } from 'fbemitter';
 import { NavigationEvents } from 'react-navigation';
-import { AsyncStorage, Platform, StyleSheet, Text, View } from 'react-native';
-import { Location, MapView, TaskManager } from 'expo';
+import { AppState, AsyncStorage, Platform, StyleSheet, Text, View } from 'react-native';
+import { Location, MapView, Permissions, TaskManager } from 'expo';
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 
 import Button from '../components/PrimaryButton';
@@ -26,10 +26,22 @@ export default class BackgroundLocationScreen extends React.Component {
     showsBackgroundLocationIndicator: false,
     savedLocations: [],
     initialRegion: null,
+    error: null,
   };
 
   didFocus = async () => {
-    await Location.requestPermissionsAsync();
+    let { status } = await Permissions.askAsync(Permissions.LOCATION);
+
+    if (status !== 'granted') {
+      AppState.addEventListener('change', this.handleAppStateChange);
+      this.setState({
+        error:
+          'Location permissions are required in order to use this feature. You can manually enable them at any time in the "Location Services" section of the Settings app.',
+      });
+      return;
+    } else {
+      this.setState({ error: null });
+    }
 
     const { coords } = await Location.getCurrentPositionAsync();
     const isTracking = await Location.hasStartedLocationUpdatesAsync(LOCATION_UPDATES_TASK);
@@ -60,10 +72,26 @@ export default class BackgroundLocationScreen extends React.Component {
     });
   };
 
+  handleAppStateChange = (nextAppState) => {
+    if (nextAppState !== 'active') {
+      return;
+    }
+
+    if (this.state.initialRegion) {
+      AppState.removeEventListener('change', this.handleAppStateChange);
+      return;
+    }
+
+    this.didFocus();
+  };
+
+
   componentWillUnmount() {
     if (this.eventSubscription) {
       this.eventSubscription.remove();
     }
+
+    AppState.removeEventListener('change', this.handleAppStateChange);
   }
 
   async startLocationUpdates(accuracy = this.state.accuracy) {
@@ -153,6 +181,10 @@ export default class BackgroundLocationScreen extends React.Component {
   }
 
   render() {
+    if (this.state.error) {
+      return <Text style={styles.errorText}>{this.state.error}</Text>;
+    }
+
     if (!this.state.initialRegion) {
       return <NavigationEvents onDidFocus={this.didFocus} />;
     }
@@ -260,5 +292,10 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     paddingHorizontal: 10,
     marginVertical: 5,
+  },
+  errorText: {
+    fontSize: 15,
+    color: 'rgba(0,0,0,0.7)',
+    margin: 20,
   },
 });
