@@ -1,90 +1,269 @@
 import React from 'react';
-import { Button, StyleSheet, Text, View } from 'react-native';
-import { Permissions, Location, TaskManager } from 'expo';
+import { EventEmitter } from 'fbemitter';
+import { NavigationEvents } from 'react-navigation';
+import { AsyncStorage, StyleSheet, Text, View } from 'react-native';
+import { Location, MapView, TaskManager } from 'expo';
+import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 
-const LOCATION_TASK_NAME = 'background-location';
+import Button from '../components/PrimaryButton';
+import Colors from '../constants/Colors';
 
-TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
-  if (error) {
-    console.log(error);
-  }
+const STORAGE_KEY = 'expo-home-locations';
+const LOCATION_UPDATES_TASK = 'location-updates';
 
-  if (data) {
-    console.log(`data: ${JSON.stringify(data)}`);
-  }
-});
+const locationEventsEmitter = new EventEmitter();
 
-export default class App extends React.Component {
+export default class BackgroundLocationMapScreen extends React.Component {
+  static navigationOptions = {
+    title: 'Location Map',
+  };
+
+  mapViewRef = React.createRef();
+
   state = {
-    locationUpdatesEnabled: undefined,
+    accuracy: Location.Accuracy.High,
+    isTracking: false,
+    showsBackgroundLocationIndicator: false,
+    savedLocations: [],
+    initialRegion: null,
   };
 
-  async componentDidMount() {
-    let locationUpdatesEnabled = await Location.hasStartedLocationUpdatesAsync(
-      LOCATION_TASK_NAME
+  didFocus = async () => {
+    await Location.requestPermissionsAsync();
+
+    const { coords } = await Location.getCurrentPositionAsync();
+    const isTracking = await Location.hasStartedLocationUpdatesAsync(LOCATION_UPDATES_TASK);
+    const task = (await TaskManager.getRegisteredTasksAsync()).find(
+      ({ taskName }) => taskName === LOCATION_UPDATES_TASK
     );
-    this.setState({ locationUpdatesEnabled });
+    const savedLocations = await getSavedLocations();
+    const accuracy = (task && task.options.accuracy) || this.state.accuracy;
+
+    this.eventSubscription = locationEventsEmitter.addListener('update', locations => {
+      this.setState({ savedLocations: locations });
+    });
+
+    if (!isTracking) {
+      alert('Click `Start tracking` to start getting location updates.');
+    }
+
+    this.setState({
+      accuracy,
+      isTracking,
+      savedLocations,
+      initialRegion: {
+        latitude: coords.latitude,
+        longitude: coords.longitude,
+        latitudeDelta: 0.004,
+        longitudeDelta: 0.002,
+      },
+    });
+  };
+
+  componentWillUnmount() {
+    if (this.eventSubscription) {
+      this.eventSubscription.remove();
+    }
   }
 
-  _startLocationUpdates = async () => {
-    let { status } = await Permissions.askAsync(Permissions.LOCATION);
-    if (status !== 'granted') {
-      alert('uhh..');
-    }
+  async startLocationUpdates(accuracy = this.state.accuracy) {
+    await Location.startLocationUpdatesAsync(LOCATION_UPDATES_TASK, {
+      accuracy,
+      showsBackgroundLocationIndicator: this.state.showsBackgroundLocationIndicator,
+    });
 
-    try {
-      await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
-        accuracy: Location.Accuracy.Balanced,
+    if (!this.state.isTracking) {
+      alert('Now you can send app to the background, go somewhere and come back here! You can even terminate the app and it will be woken up when the new significant location change comes out.');
+    }
+    this.setState({ isTracking: true });
+  }
+
+  async stopLocationUpdates() {
+    await Location.stopLocationUpdatesAsync(LOCATION_UPDATES_TASK);
+    this.setState({ isTracking: false });
+  }
+
+  clearLocations = async () => {
+    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify([]));
+    this.setState({ savedLocations: [] });
+  };
+
+  toggleTracking = async () => {
+    await AsyncStorage.removeItem(STORAGE_KEY);
+
+    if (this.state.isTracking) {
+      await this.stopLocationUpdates();
+    } else {
+      await this.startLocationUpdates();
+    }
+    this.setState({ savedLocations: [] });
+  };
+
+  onAccuracyChange = () => {
+    const next = Location.Accuracy[this.state.accuracy + 1];
+    const accuracy = next ? Location.Accuracy[next] : Location.Accuracy.Lowest;
+
+    this.setState({ accuracy });
+
+    if (this.state.isTracking) {
+      // Restart background task with the new accuracy.
+      this.startLocationUpdates(accuracy);
+    }
+  };
+
+  toggleLocationIndicator = async () => {
+    const showsBackgroundLocationIndicator = !this.state.showsBackgroundLocationIndicator;
+
+    this.setState({ showsBackgroundLocationIndicator }, async () => {
+      if (this.state.isTracking) {
+        await this.startLocationUpdates();
+      }
+    });
+  };
+
+  onCenterMap = async () => {
+    const { coords } = await Location.getCurrentPositionAsync();
+    const mapView = this.mapViewRef.current;
+
+    if (mapView) {
+      mapView.animateToRegion({
+        latitude: coords.latitude,
+        longitude: coords.longitude,
+        latitudeDelta: 0.004,
+        longitudeDelta: 0.002,
       });
-      this.setState({ locationUpdatesEnabled: true });
-    } catch (e) {
-      console.error(e);
     }
   };
 
-  _stopLocationUpdates = async () => {
-    try {
-      await Location.stopLocationUpdatesAsync(LOCATION_TASK_NAME);
-      this.setState({ locationUpdatesEnabled: false });
-    } catch (e) {
-      console.error(e);
+  renderPolyline() {
+    const { savedLocations } = this.state;
+
+    if (savedLocations.length === 0) {
+      return null;
     }
-  };
+    return (
+      <MapView.Polyline
+        coordinates={savedLocations}
+        strokeWidth={3}
+        strokeColor={Colors.tintColor}
+      />
+    );
+  }
 
   render() {
+    if (!this.state.initialRegion) {
+      return <NavigationEvents onDidFocus={this.didFocus} />;
+    }
+
     return (
-      <View style={styles.container}>
-        {typeof this.state.locationUpdatesEnabled === 'undefined'
-          ? null
-          : this._renderToggle()}
+      <View style={styles.screen}>
+        <MapView
+          ref={this.mapViewRef}
+          style={styles.mapView}
+          initialRegion={this.state.initialRegion}
+          showsUserLocation>
+          {this.renderPolyline()}
+        </MapView>
+        <View style={styles.buttons} pointerEvents="box-none">
+          <View style={styles.topButtons}>
+            <View style={styles.buttonsColumn}>
+              <Button style={styles.button} onPress={this.toggleLocationIndicator}>
+                <Text>{this.state.showsBackgroundLocationIndicator ? 'Hide' : 'Show'}</Text>
+                <Text> background </Text>
+                <FontAwesome name="location-arrow" size={20} color="white" />
+                <Text> indicator</Text>
+              </Button>
+              <Button style={styles.button} onPress={this.onAccuracyChange}>
+                Accuracy: {Location.Accuracy[this.state.accuracy]}
+              </Button>
+            </View>
+            <View style={styles.buttonsColumn}>
+              <Button style={styles.button} onPress={this.onCenterMap}>
+                <MaterialIcons name="my-location" size={20} color="white" />
+              </Button>
+            </View>
+          </View>
+
+          <View style={styles.bottomButtons}>
+            <Button style={styles.button} onPress={this.clearLocations}>
+              Clear locations
+            </Button>
+            <Button style={styles.button} onPress={this.toggleTracking}>
+              {this.state.isTracking ? 'Stop tracking' : 'Start tracking'}
+            </Button>
+          </View>
+        </View>
       </View>
     );
   }
-
-  _renderToggle = () => {
-    if (this.state.locationUpdatesEnabled) {
-      return (
-        <Button
-          title="Stop tracking location"
-          onPress={this._stopLocationUpdates}
-        />
-      );
-    } else {
-      return (
-        <Button
-          title="Start tracking location"
-          onPress={this._startLocationUpdates}
-        />
-      );
-    }
-  };
 }
 
+async function getSavedLocations() {
+  try {
+    const item = await AsyncStorage.getItem(STORAGE_KEY);
+    return item ? JSON.parse(item) : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+TaskManager.defineTask(LOCATION_UPDATES_TASK, async ({ data: { locations } }) => {
+  if (locations && locations.length > 0) {
+    console.log(locations);
+
+    const savedLocations = await getSavedLocations();
+    const newLocations = locations.map(({ coords }) => ({
+      latitude: coords.latitude,
+      longitude: coords.longitude,
+    }));
+
+    savedLocations.push(...newLocations);
+    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(savedLocations));
+
+    locationEventsEmitter.emit('update', savedLocations);
+  }
+});
+
 const styles = StyleSheet.create({
-  container: {
+  screen: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+  },
+  blurView: {
+    flex: 1,
+    padding: 5,
+  },
+  headingText: {
+    textAlign: 'center',
+  },
+  mapView: {
+    flex: 1,
+  },
+  buttons: {
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    padding: 10,
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
+  },
+  topButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  bottomButtons: {
+    flexDirection: 'column',
+    alignItems: 'flex-end',
+  },
+  buttonsColumn: {
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+  },
+  button: {
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    marginVertical: 5,
   },
 });
