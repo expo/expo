@@ -18,6 +18,7 @@ EX_EXPORT_MODULE(ExpoModuleTemplate);
 }
 
 EX_EXPORT_METHOD_AS(someGreatMethodAsync,
+                    options:(NSDictionary *)options
                     resolve:(EXPromiseResolveBlock)resolve
                     reject:(EXPromiseRejectBlock)reject)
 {

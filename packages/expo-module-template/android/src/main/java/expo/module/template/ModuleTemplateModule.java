@@ -28,6 +28,6 @@ public class ModuleTemplateModule extends ExportedModule implements ModuleRegist
   }
 
   @ExpoMethod
-  public void someGreatMethodAsync(final Promise promise) {
+  public void someGreatMethodAsync(Map<String, Object> options, final Promise promise) {
   }
 }

@@ -1,18 +1,15 @@
-
 # expo-module-template
 
 `expo-module-template` module
 
 ## Installation
 
-*If your app is running in [Expo](https://expo.io) then everything is already set up for you, just `import { ExpoModuleTemplate } from 'expo';`*
-
-Otherwise, you need to install the package from `npm` registry.
+Install the package from `npm` registry:
 
 `yarn add expo-module-template` or `npm install expo-module-template`
 
 <!-- Write about Expo dependencies for your module -->
-Also, make sure that you have installed dependecies like [expo-core](https://github.com/expo/expo-core) installed.
+Also, make sure that you have dependecies like [expo-core](https://github.com/expo/tree/master/packages/expo-core) installed.
 
 #### iOS
 
@@ -40,14 +37,14 @@ and run `pod install` under the parent directory of your `Podfile`.
 ## Usage
 
 <!-- Describe prerequirements that need to be meet for your module to run properly -->
-<!-- e.g. You must request permission to access the user's location before attempting to get it. To do this, you will want to use the [Permissions](https://github.com/expo/expo-permissions) API. You can see this in practice in the following example. -->
+<!-- e.g. You must request permission to access the user's location before attempting to get it. To do this, you will want to use the [Permissions](https://github.com/expo/tree/master/packages/expo-permissions) API. You can see this in practice in the following example. -->
 
 <!-- Provide some js example -->
 ```javascript
 import React, { Component } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Permissions } from 'expo-permissions';
-import { ExpoModuleTemplate } from 'expo-module-template';
+import * as Permissions from 'expo-permissions';
+import * as ExpoModuleTemplate from 'expo-module-template';
 
 export default class App extends Component {
   componentDidMount() {
@@ -61,7 +58,7 @@ export default class App extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <Text style={styles.paragraph}>Example use of 'expo-module-template' module! :D</Text>
+        <Text style={styles.paragraph}>'expo-module-template' example</Text>
       </View>
     );
   }
@@ -98,8 +95,8 @@ Do some great work! :D
       A map of options:
 
     -   **greatFlag (_boolean_)** -- Enable something great! Like even greater greatness! :D
-    -   **greatNumber (_number_)** -- (Android only). If specified Android would be the greatest! :D
-    -   **greatString (_string_)** -- (iOS only). If provided iOS would be the greatest! :D
+    -   **greatNumber (_number_)** -- Remeber to provider great number! :D
+    -   **greatString (_string_)** -- Do not forget about great string! :D
 
 #### Returns
 
