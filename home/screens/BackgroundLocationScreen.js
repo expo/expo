@@ -1,7 +1,7 @@
 import React from 'react';
 import { EventEmitter } from 'fbemitter';
 import { NavigationEvents } from 'react-navigation';
-import { AsyncStorage, StyleSheet, Text, View } from 'react-native';
+import { AsyncStorage, Platform, StyleSheet, Text, View } from 'react-native';
 import { Location, MapView, TaskManager } from 'expo';
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 
@@ -13,9 +13,9 @@ const LOCATION_UPDATES_TASK = 'location-updates';
 
 const locationEventsEmitter = new EventEmitter();
 
-export default class BackgroundLocationMapScreen extends React.Component {
+export default class BackgroundLocationScreen extends React.Component {
   static navigationOptions = {
-    title: 'Location Map',
+    title: 'Background location',
   };
 
   mapViewRef = React.createRef();
@@ -73,7 +73,9 @@ export default class BackgroundLocationMapScreen extends React.Component {
     });
 
     if (!this.state.isTracking) {
-      alert('Now you can send app to the background, go somewhere and come back here! You can even terminate the app and it will be woken up when the new significant location change comes out.');
+      alert(
+        'Now you can send app to the background, go somewhere and come back here! You can even terminate the app and it will be woken up when the new significant location change comes out.'
+      );
     }
     this.setState({ isTracking: true });
   }
@@ -167,12 +169,14 @@ export default class BackgroundLocationMapScreen extends React.Component {
         <View style={styles.buttons} pointerEvents="box-none">
           <View style={styles.topButtons}>
             <View style={styles.buttonsColumn}>
-              <Button style={styles.button} onPress={this.toggleLocationIndicator}>
-                <Text>{this.state.showsBackgroundLocationIndicator ? 'Hide' : 'Show'}</Text>
-                <Text> background </Text>
-                <FontAwesome name="location-arrow" size={20} color="white" />
-                <Text> indicator</Text>
-              </Button>
+              {Platform.OS === 'android' ? null : (
+                <Button style={styles.button} onPress={this.toggleLocationIndicator}>
+                  <Text>{this.state.showsBackgroundLocationIndicator ? 'Hide' : 'Show'}</Text>
+                  <Text> background </Text>
+                  <FontAwesome name="location-arrow" size={20} color="white" />
+                  <Text> indicator</Text>
+                </Button>
+              )}
               <Button style={styles.button} onPress={this.onAccuracyChange}>
                 Accuracy: {Location.Accuracy[this.state.accuracy]}
               </Button>
@@ -209,8 +213,6 @@ async function getSavedLocations() {
 
 TaskManager.defineTask(LOCATION_UPDATES_TASK, async ({ data: { locations } }) => {
   if (locations && locations.length > 0) {
-    console.log(locations);
-
     const savedLocations = await getSavedLocations();
     const newLocations = locations.map(({ coords }) => ({
       latitude: coords.latitude,
@@ -227,13 +229,6 @@ TaskManager.defineTask(LOCATION_UPDATES_TASK, async ({ data: { locations } }) =>
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-  },
-  blurView: {
-    flex: 1,
-    padding: 5,
-  },
-  headingText: {
-    textAlign: 'center',
   },
   mapView: {
     flex: 1,
