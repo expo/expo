@@ -4,9 +4,6 @@ import { StyleSheet, View } from 'react-native';
 
 import Marker from './Marker';
 
-// {
-//   handleMapMounted: string | ((instance: GoogleMap | null) => void);
-// }
 class GoogleMapInnerContainer extends React.Component<any> {
   render() {
     const { handleMapMounted, ...props } = this.props;
@@ -20,23 +17,14 @@ type Props = {
   onRegionChangeComplete: Function | null;
   onPress: Function;
   onRegionChange: Function | null;
+  initialRegion: { latitude: number; longitude: number };
+  region: { latitude: number; longitude: number };
 };
 
-type State = {
-  center: { lat: number; lng: number };
-};
-
-class MapView extends React.Component<Props, State> {
+class MapView extends React.Component<Props> {
   static Marker = Marker;
 
   googleMap: GoogleMap | null = null;
-
-  constructor(props) {
-    super(props);
-    const { region, initialRegion = {} } = props;
-    const finalRegion = region || initialRegion;
-    this.state = { center: { lat: finalRegion.latitude, lng: finalRegion.longitude } };
-  }
 
   handleMapMounted = (googleMap: GoogleMap | null) => {
     this.googleMap = googleMap;
@@ -51,14 +39,22 @@ class MapView extends React.Component<Props, State> {
   };
 
   render() {
-    const { onRegionChange, onPress, children } = this.props;
+    const { region, initialRegion = {}, onRegionChange, onPress, children } = this.props;
+
+    const finalRegion = region || initialRegion;
+
+    const center = {
+      lat: finalRegion.latitude,
+      lng: finalRegion.longitude,
+    };
+
     return (
       <View style={styles.container}>
         <GoogleMapContainer
           handleMapMounted={this.handleMapMounted}
           containerElement={<div style={{ height: '100%' }} />}
           mapElement={<div style={{ height: '100%' }} />}
-          center={this.state.center}
+          center={center}
           onDragStart={onRegionChange}
           onDragEnd={this.onDragEnd}
           onClick={onPress}>
