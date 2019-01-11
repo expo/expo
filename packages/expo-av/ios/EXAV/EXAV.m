@@ -5,7 +5,7 @@
 #import <EXCore/EXEventEmitterService.h>
 #import <EXCore/EXAppLifecycleService.h>
 #import <EXFileSystemInterface/EXFileSystemInterface.h>
-#import <EXPermissions/EXPermissions.h>
+#import <EXPermissionsInterface/EXPermissionsInterface.h>
 
 #import <EXAV/EXAV.h>
 #import <EXAV/EXAVPlayerData.h>
@@ -736,12 +736,10 @@ EX_EXPORT_METHOD_AS(prepareAudioRecorder,
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject)
 {
-  // TODO: Permissions
-//  if ([EXPermissions statusForPermissions:[EXAudioRecordingPermissionRequester permissions]] != EXPermissionStatusGranted ||
-//      ![_kernelPermissionsServiceDelegate hasGrantedPermission:@"audioRecording" forExperience:self.experienceId]) {
-//    reject(@"E_MISSING_PERMISSION", @"Missing audio recording permission.", nil);
-//    return;
-//  }
+  if (![[_moduleRegistry getModuleImplementingProtocol:@protocol(EXPermissionsInterface)] hasGrantedPermission:@"audioRecording"]) {
+    reject(@"E_MISSING_PERMISSION", @"Missing audio recording permission.", nil);
+    return;
+  }
 
   [self _setNewAudioRecorderFilenameAndSettings:options];
   NSError *error = [self _createNewAudioRecorder];
@@ -768,12 +766,10 @@ EX_EXPORT_METHOD_AS(startAudioRecording,
                     startAudioRecording:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject)
 {
-  // TODO: Permissions
-//  if ([EXPermissions statusForPermissions:[EXAudioRecordingPermissionRequester permissions]] != EXPermissionStatusGranted ||
-//      ![_kernelPermissionsServiceDelegate hasGrantedPermission:@"audioRecording" forExperience:self.experienceId]) {
-//    reject(@"E_MISSING_PERMISSION", @"Missing audio recording permission.", nil);
-//    return;
-//  }
+  if (![[_moduleRegistry getModuleImplementingProtocol:@protocol(EXPermissionsInterface)] hasGrantedPermission:@"audioRecording"]) {
+    reject(@"E_MISSING_PERMISSION", @"Missing audio recording permission.", nil);
+    return;
+  }
   if ([self _checkAudioRecorderExistsOrReject:reject]) {
     if (!_allowsAudioRecording) {
       reject(@"E_AUDIO_AUDIOMODE", nil, EXErrorWithMessage(@"Recording not allowed on iOS."));
