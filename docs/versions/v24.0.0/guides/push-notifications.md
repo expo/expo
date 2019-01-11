@@ -361,3 +361,7 @@ The HTTP status code will be 200 also if all of the messages were successfully d
 -   `InvalidCredentials`: your push notification credentials for your standalone app are invalid (ex: you may have revoked them). Run `exp build:ios -c` to regenerate new push notification credentials for iOS.
 
 If Expo couldn't deliver the message to the Android or iOS push notification service, the receipt's details may also include service-specific information. This is useful mostly for debugging and reporting possible bugs to Expo.
+
+### Expired Credentials
+
+When your push notification credentials have expired, simply run `expo build:ios -c --no-publish` to clear your expired credentials and generate new ones. The new credentials will take effect within a few minutes of being generated. You do not have to submit a new build!

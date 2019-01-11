@@ -6,6 +6,17 @@ This is the log of notable changes to the Expo client that are developer-facing.
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+- fix `ImagePicker.launchImageLibraryAsync` and `ImageManipulator.manipulateAsync` in SDKs lower than 32 [@bbarthec](https://github.com/bbarthec) ([#3159](https://github.com/expo/expo/pull/3159))
+- fix app crash when attempting to `console.log(Object.create(null))` by [@juangl](https://github.com/juangl) ([#3143](https://github.com/expo/expo/pull/3143))
+
+## 32.0.0
+
+### 🛠 Breaking changes
+
 - deprecated `import { Font } from 'expo-font'` in favor of individually named exports (`import * as Font from expo-font`) for better dead-export elimination potential. Upgrade `@expo/vector-icons` if you get a warning about this. By [@ide](https://github.com/ide) ([`264c17cd`](https://github.com/expo/expo/commit/264c17cdb175021c7fd16bb461652b8ab6cb2fda))
 - removed deprecated internal Expo modules (`Crypto`, `Fabric`, and `ImageCropper`), which were never part of the Expo API by [@ide](https://github.com/ide) ([#2880](https://github.com/expo/expo/pull/2880))
 - removed deprecated `Expo.Fingerprint` API, which has been renamed to `Expo.LocalAuthentication` to reflect other forms of authentication (ex: FaceID) by [@ide](https://github.com/ide) ([`24e94d5`](https://github.com/expo/expo/commit/24e94d5c3c268793ec751ef07dbd31a2e41e6a8c))
@@ -33,7 +44,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - allowed selecting voice used by `Speech` on iOS by [@pyankoff](https://github.com/pyankoff) ([#2833](https://github.com/expo/expo/pull/2833))
 - removed obsolete assets from standalone apps by [@sjchmiela](https://github.com/sjchmiela) ([#2850](https://github.com/expo/expo/pull/2850))
 - added support for notifications categories by [@Szymon20000](https://github.com/Szymon20000) and [@sjchmiela](https://github.com/sjchmiela) ([#2316](https://github.com/expo/expo/pull/2316), [#2557](https://github.com/expo/expo/pull/2557))
-- upgraded libraries: `react-native-gesture-handler` to `1.0.12`, `react-native-screens` to `1.0.0-alpha.19`, `react-native-reanimated` to [`72b1792df`](https://github.com/kmagiera/react-native-reanimated/tree/72b1792df7951ed041bdf6d2c422cf03a17346a5) by [@tsapeta](https://github.com/tsapeta) and [@sjchmiela](https://github.com/sjchmiela) ([#2977](https://github.com/expo/expo/pull/2977), [#3078](https://github.com/expo/expo/pull/3078))
+- upgraded libraries: `react-native-gesture-handler` to `1.0.12`, `react-native-screens` to `1.0.0-alpha.21`, `react-native-reanimated` to `1.0.0-alpha.11` by [@tsapeta](https://github.com/tsapeta) and [@sjchmiela](https://github.com/sjchmiela) ([#2977](https://github.com/expo/expo/pull/2977), [#3078](https://github.com/expo/expo/pull/3078), [#3172](https://github.com/expo/expo/pull/3172))
 
 ### 🐛 Bug fixes
 

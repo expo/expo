@@ -125,6 +125,9 @@ executors:
       LANG: en_US.UTF-8
 
 workflows:
+  docs:
+    jobs:
+      - docs
   # JavaScript packages that make up the SDK
   sdk:
     jobs:
@@ -328,6 +331,23 @@ jobs:
           name: Upload APK to Google Play and release to production
           working_directory: ~/expo
           command: fastlane android prod_release
+
+  docs:
+    executor: nix
+    resource_class: xlarge # TODO: Use less than 8Gib of ram to build a static site
+    steps:
+      - setup
+      - update_submodules
+      - yarn_install:
+          working_directory: docs
+      - yarn:
+          command: export
+          working_directory: docs
+      - deploy:
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              aws s3 sync docs/out s3://docs.expo.io --delete
+            fi
 
   test_suite_publish:
     executor: nix

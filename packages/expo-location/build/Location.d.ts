@@ -85,6 +85,7 @@ export declare function reverseGeocodeAsync(location: {
     latitude: number;
     longitude: number;
 }): Promise<Address[]>;
+export declare function setApiKey(apiKey: string): void;
 export declare function watchPositionAsync(options: LocationOptions, callback: LocationCallback): Promise<{
     remove(): void;
 }>;

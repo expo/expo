@@ -122,8 +122,6 @@ const myButton = (
 );
 ```
 
-![buttons](https://cloud.githubusercontent.com/assets/378279/7667568/2e9021b2-fc0d-11e4-8e68-cf91c329a6f4.png)
-
 ### Properties
 Any [`Text`](http://facebook.github.io/react-native/docs/text.html), [`TouchableHighlight`](http://facebook.github.io/react-native/docs/touchablehighlight.html) or [`TouchableWithoutFeedback`](http://facebook.github.io/react-native/docs/touchablewithoutfeedback.html) property in addition to these:
 
@@ -131,7 +129,7 @@ Any [`Text`](http://facebook.github.io/react-native/docs/text.html), [`Touchable
 |---|---|---|
 |**`color`**|Text and icon color, use `iconStyle` or nest a `Text` component if you need different colors.|`white`|
 |**`size`**|Icon size.|`20`|
-|**`iconStyle`**|Styles applied to the icon only, good for setting margins or a different color. *Note: use `iconStyle` for margins or expect unstable behaviour.*|`{marginRight: 10}`|
+|**`iconStyle`**|Styles applied to the icon only, good for setting margins or a different color. *Note: use `iconStyle` for margins or expect unstable behaviour.*|\`{marginRight: 10}\`|
 |**`backgroundColor`**|Background color of the button.|`#007AFF`|
 |**`borderRadius`**|Border radius of the button, set to `0` to disable. |`5`|
 |**`onPress`**|A function called when the button is pressed. |*None*|

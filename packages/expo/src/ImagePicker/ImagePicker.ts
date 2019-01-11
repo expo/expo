@@ -18,6 +18,8 @@ type ImageResult = { cancelled: true } | ({ cancelled: false } & ImageInfo);
 type ImageLibraryOptions = {
   allowsEditing?: boolean;
   aspect?: [number, number];
+  base64?: boolean;
+  exif?: boolean;
   quality?: number;
   mediaTypes?: keyof (typeof MEDIA_TYPE_OPTIONS);
 };
@@ -34,6 +36,8 @@ export async function launchImageLibraryAsync(
 type CameraOptions = {
   allowsEditing?: boolean;
   aspect?: [number, number];
+  base64?: boolean;
+  exif?: boolean;
   quality?: number;
 };
 
