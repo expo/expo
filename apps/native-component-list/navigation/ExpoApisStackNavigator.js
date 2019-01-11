@@ -20,7 +20,7 @@ import ImageManipulator from '../screens/ImageManipulatorScreen';
 import ImagePicker from '../screens/ImagePickerScreen';
 import IntentLauncher from '../screens/IntentLauncherScreen';
 import KeepAwake from '../screens/KeepAwakeScreen';
-import Linking from '../screens/Linking';
+import Linking from '../screens/LinkingScreen';
 import LocalAuthentication from '../screens/LocalAuthenticationScreen';
 import Localization from '../screens/LocalizationScreen';
 import LocationScreens from '../screens/Location/LocationScreens';
