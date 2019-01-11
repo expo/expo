@@ -4,9 +4,6 @@ import { URLListener, NativeURLListener } from './Linking.types';
 
 const EventTypes = ['url'];
 
-// TODO: Bacon: Should we also listen to `hashchange`: https://stackoverflow.com/a/44318564/4047926
-const messageEventKey = 'message';
-
 const listeners: Array<{ listener: URLListener; nativeListener: NativeURLListener }> = [];
 
 function _validateURL(url: string): void {
@@ -24,7 +21,7 @@ class Linking {
     const nativeListener: NativeURLListener = nativeEvent =>
       listener({ url: window.location.href, nativeEvent });
     listeners.push({ listener, nativeListener });
-    window.addEventListener(messageEventKey, nativeListener, false);
+    window.addEventListener('message', nativeListener, false);
   }
 
   removeEventListener(type: 'url', listener: URLListener): void {
@@ -38,7 +35,7 @@ class Linking {
       'Linking.removeEventListener(): cannot remove an unregistered event listener.'
     );
     const nativeListener = listeners[listenerIndex].nativeListener;
-    window.removeEventListener(messageEventKey, nativeListener, false);
+    window.removeEventListener('message', nativeListener, false);
     listeners.splice(listenerIndex, 1);
   }
 
