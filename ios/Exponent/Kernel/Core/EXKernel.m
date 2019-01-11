@@ -167,6 +167,12 @@ const NSUInteger kEXErrorCodeAppForbidden = 424242;
 - (BOOL)sendNotification:(EXPendingNotification *)notification
 {
   EXKernelAppRecord *destinationApp = [_appRegistry newestRecordWithExperienceId:notification.experienceId];
+
+  // This allows home app record to receive notification events as well.
+  if (!destinationApp && [_appRegistry.homeAppRecord.experienceId isEqualToString:notification.experienceId]) {
+    destinationApp = _appRegistry.homeAppRecord;
+  }
+
   if (destinationApp) {
     // send the body to the already-open experience
     [self _dispatchJSEvent:@"Exponent.notification" body:notification.properties toApp:destinationApp];

@@ -1,5 +1,5 @@
 import React from 'react';
-import { GLView } from 'expo';
+import { GLView } from 'expo-gl';
 
 const Browser = require('processing-js/lib/Browser');
 Browser.window = window;
@@ -11,18 +11,15 @@ export class ProcessingView extends React.Component {
       this._p.exit();
       this._p = null;
     }
+    cancelAnimationFrame(this._rafID);
   }
 
   render() {
-    return (
-      <GLView
-        {...this.props}
-        onContextCreate={this._onGLContextCreate}
-      />
-    );
+    const { sketch, ...props } = this.props;
+    return <GLView {...props} onContextCreate={this._onGLContextCreate} />;
   }
 
-  _onGLContextCreate = (gl) => {
+  _onGLContextCreate = gl => {
     // Canvas polyfilling
 
     let canvas = Browser.document.createElement('canvas');
@@ -43,7 +40,7 @@ export class ProcessingView extends React.Component {
       loc = origGetUniformLocation.call(gl, program, name);
       program.uniformLocationCache[name] = loc;
       return loc;
-    }
+    };
 
     const origGetAttribLocation = gl.getAttribLocation;
     gl.getAttribLocation = (program, name) => {
@@ -57,28 +54,23 @@ export class ProcessingView extends React.Component {
       loc = origGetAttribLocation.call(gl, program, name);
       program.attribLocationCache[name] = loc;
       return loc;
-    }
-
+    };
 
     // Call `gl.endFrameEXP()` every frame
 
     const keepFlushing = () => {
       gl.endFrameEXP();
-      requestAnimationFrame(keepFlushing);
-    }
+      this._rafID = requestAnimationFrame(keepFlushing);
+    };
     keepFlushing();
-
 
     // The Processing sketch
 
-    new Processing(canvas, (p) => {
+    new Processing(canvas, p => {
       this._p = p;
 
       // Force render viewport size / mode
-      p.size(
-        gl.drawingBufferWidth,
-        gl.drawingBufferHeight,
-        p.WEBGL);
+      p.size(gl.drawingBufferWidth, gl.drawingBufferHeight, p.WEBGL);
       p.size = () => {};
 
       // Run user's sketch
@@ -88,5 +80,5 @@ export class ProcessingView extends React.Component {
         p.draw = () => {};
       }
     });
-  }
+  };
 }

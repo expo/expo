@@ -1,7 +1,7 @@
 import Constants from 'expo-constants';
 import qs from 'qs';
 
-import Linking from './Linking';
+import Linking from './Linking/Linking';
 import WebBrowser from './WebBrowser/WebBrowser';
 
 type AuthSessionOptions = {

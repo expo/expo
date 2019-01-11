@@ -85,32 +85,8 @@ ExpoKit's release cycle follows the Expo SDK release cycle. When a new version o
 
 If upgrading from SDK 31 or below, you'll need to refactor your `AppDelegate` class as we moved its Expo-related part to a separate `EXStandaloneAppDelegate ` class owned by `ExpoKit` to simplify future upgrade processes as much as possible. As of SDK 32, your `AppDelegate` class needs to subclass `EXStandaloneAppDelegate`. If you need to override its methods to add any custom behavior, **always** remember to call the same method from the superclass (for an example, see `application:didFinishLaunchingWithOptions:` in `AppDelegate.m` below). Here are the basic `AppDelegate` files without any custom behavior:
 
-`AppDelegate.h`:
-```objectivec
-#import <UIKit/UIKit.h>
-#import <ExpoKit/EXStandaloneAppDelegate.h>
-
-@interface AppDelegate : EXStandaloneAppDelegate <UIApplicationDelegate>
-
-@end
-```
-
-`AppDelegate.m`:
-```objectivec
-#import "AppDelegate.h"
-
-@implementation AppDelegate
-
-// Put your app delegate methods here. Remember to also call methods from EXStandaloneAppDelegate superclass
-// in order to keep Expo working. See example below.
-
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
-{
-  return [super application:application didFinishLaunchingWithOptions:launchOptions];
-}
-
-@end
-```
+- [AppDelegate.h](https://github.com/expo/expo/blob/master/exponent-view-template/ios/exponent-view-template/AppDelegate.h)
+- [AppDelegate.m](https://github.com/expo/expo/blob/master/exponent-view-template/ios/exponent-view-template/AppDelegate.m)
 
 If upgrading from SDK 30 or below, you'll also need to change `platform :ios, '9.0'` to `platform :ios, '10.0'` in `ios/Podfile`.
 

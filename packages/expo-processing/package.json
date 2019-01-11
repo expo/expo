@@ -1,6 +1,6 @@
 {
   "name": "expo-processing",
-  "version": "1.0.3",
+  "version": "2.0.0",
   "description": "Utilities for using Processing.js on Expo",
   "main": "index.js",
   "scripts": {
@@ -20,6 +20,7 @@
   "author": "Nikhilesh Sigatapu",
   "license": "MIT",
   "peerDependencies": {
-    "processing-js": "^1.6.6"
+    "processing-js": "^1.6.6",
+    "expo-gl": "^1.0.0"
   }
 }
