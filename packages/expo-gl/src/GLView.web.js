@@ -1,39 +1,32 @@
 // @flow
-import { UnavailabilityError } from 'expo-errors';
+import invariant from 'invariant';
 import PropTypes from 'prop-types';
-import * as React from 'react';
-import { Dimensions, StyleSheet } from 'react-native';
+import React from 'react';
+import { StyleSheet } from 'react-native';
+import { UnavailabilityError } from 'expo-errors';
 
-import type { SnapshotOptions } from './GLView.types';
-
-type Props = {
-  /**
-   * Called when the OpenGL context is created, with the context object as a parameter. The context
-   * object has an API mirroring WebGL's WebGLRenderingContext.
-   */
-  onContextCreate?: (gl: *) => void,
-};
-
-function _getImageForAsset(asset) {
-  if (asset == null) return null;
+function getImageForAsset(asset: any | null): any {
+  if (asset == null) {
+    return null;
+  }
 
   if (typeof asset === 'object' && asset !== null && asset.downloadAsync) {
-    const uri = asset.localUri || asset.uri;
-    const img = new Image();
-    img.src = uri;
-    return img;
+    const dataURI = asset.localUri || asset.uri;
+    const image = new Image();
+    image.src = dataURI;
+    return image;
   }
   return asset;
 }
 
 function asExpoContext(gl: WebGLRenderingContext): WebGLRenderingContext {
-  gl.endFrameEXP = function glEndFrameEXP() {};
+  gl.endFrameEXP = function glEndFrameEXP(): void {};
 
   if (!gl._expo_texImage2D) {
     gl._expo_texImage2D = gl.texImage2D;
     gl.texImage2D = (...props) => {
       let nextProps = [...props];
-      nextProps.push(_getImageForAsset(nextProps.pop()));
+      nextProps.push(getImageForAsset(nextProps.pop()));
       return gl._expo_texImage2D(...nextProps);
     };
   }
@@ -42,33 +35,76 @@ function asExpoContext(gl: WebGLRenderingContext): WebGLRenderingContext {
     gl._expo_texSubImage2D = gl.texSubImage2D;
     gl.texSubImage2D = (...props) => {
       let nextProps = [...props];
-      nextProps.push(_getImageForAsset(nextProps.pop()));
+      nextProps.push(getImageForAsset(nextProps.pop()));
       return gl._expo_texSubImage2D(...nextProps);
     };
   }
 
   return gl;
 }
-export default class GLView extends React.Component<Props> {
-  static propTypes = {
-    onContextCreate: PropTypes.func,
-  };
 
+function ensureContext(
+  canvas: HTMLCanvasElement,
+  contextAttributes?: WebGLContextAttributes
+): WebGLRenderingContext {
+  const context =
+    canvas.getContext('webgl2', contextAttributes) ||
+    canvas.getContext('webgl', contextAttributes) ||
+    canvas.getContext('webgl-experimental', contextAttributes) ||
+    canvas.getContext('experimental-webgl', contextAttributes);
+  invariant(context, 'Browser does not support WebGL');
+  return asExpoContext(context);
+}
+
+function stripNonDOMProps(props): any {
+  for (let k in propTypes) {
+    if (k in props) {
+      delete props[k];
+    }
+  }
+  return props;
+}
+
+const propTypes = {
+  onContextCreate: PropTypes.func.isRequired,
+  onContextRestored: PropTypes.func,
+  onContextLost: PropTypes.func,
+  webglContextAttributes: PropTypes.object,
+  style: PropTypes.object,
+};
+
+type Props = {
+  onContextCreate: (gl: WebGLRenderingContext) => void,
+  onContextRestored: (gl: ?WebGLRenderingContext) => void,
+  onContextLost: () => void,
+  webglContextAttributes?: WebGLContextAttributes,
+  pixelRatio?: number,
+  style?: any,
+};
+
+type State = {
+  width: number,
+  height: number,
+};
+export default class GLView extends React.Component<Props, State> {
   state = {
-    width: null,
-    height: null,
+    width: 0,
+    height: 0,
   };
 
-  nativeRef: ?HTMLCanvasElement;
+  static propTypes = propTypes;
 
-  _hasContextBeenCreated: boolean = false;
+  webglContextAttributes: WebGLContextAttributes | undefined;
+
+  canvas: HTMLCanvasElement | undefined;
+
+  gl: WebGLRenderingContext | undefined;
 
   static async createContextAsync(): Promise<WebGLRenderingContext> {
-    const { width, height, scale } = Dimensions.get('window');
     const canvas = document.createElement('canvas');
-    canvas.width = width * scale;
-    canvas.height = height * scale;
-    return asExpoContext(canvas.getContext('webgl2'));
+    canvas.width = window.innerWidth * window.devicePixelRatio;
+    canvas.height = window.innerHeight * window.devicePixelRatio;
+    return ensureContext(canvas);
   }
 
   static async destroyContextAsync(exgl: WebGLRenderingContext | ?number): Promise<void> {
@@ -76,88 +112,104 @@ export default class GLView extends React.Component<Props> {
   }
 
   static async takeSnapshotAsync(
-    exgl: WebGLRenderingContext | ?number,
+    exgl: WebGLRenderingContext,
     options: SnapshotOptions = {}
   ): Promise<void> {
-    throw new UnavailabilityError('GLView', 'takeSnapshotAsync');
+    invariant(exgl, 'GLView.takeSnapshotAsync(): canvas is not defined');
+    const canvas: HTMLCanvasElement = exgl.canvas;
+    return await new Promise(resolve => canvas.toBlob(resolve, options.format, options.compress));
+    //TODO:Bacon: Should we add data URI
+    // return canvas.toDataURL(options.format, options.compress);
   }
 
   componentDidMount() {
-    this._isMounted = true;
-    this._onContextCreate();
-    window.addEventListener('resize', this._onLayout);
+    window.addEventListener('resize', this.onLayout);
   }
 
-  componentWillUnmount() {
-    window.removeEventListener('resize', this._onLayout);
-  }
-
-  _onLayout = () => {
-    this.setState({
-      width: this.width,
-      height: this.height,
-    });
+  onContextCreate = () => {
+    this.gl = this.createContext();
+    this.props.onContextCreate(this.gl);
+    const { canvas } = this;
+    canvas.addEventListener('webglcontextlost', this.onContextLost);
+    canvas.addEventListener('webglcontextrestored', this.onContextRestored);
   };
 
-  get x(): number {
-    return this.wrapperRef.screenX;
-  }
-  get y(): number {
-    return this.wrapperRef.screenY;
-  }
-
-  get width(): number {
-    if (!this.wrapperRef) return 1;
-    return this.wrapperRef.clientWidth;
-  }
-
-  get height(): number {
-    if (!this.wrapperRef) return 1;
-    return this.wrapperRef.clientHeight;
-  }
-
-  _onContextCreate = () => {
-    if (this._hasContextBeenCreated || !this._isMounted || !this.nativeRef || !this.wrapperRef) {
-      return;
+  componentWillUnmount() {
+    if (this.gl) {
+      const loseContextExt = this.gl.getExtension('WEBGL_lose_context');
+      if (loseContextExt) {
+        loseContextExt.loseContext();
+      }
+      this.gl = null;
     }
-    this._hasContextBeenCreated = true;
-
-    if (this.props.onContextCreate) {
-      setTimeout(() => {
-        const gl = asExpoContext(this.nativeRef.getContext('webgl2'));
-        this.props.onContextCreate(gl);
-      });
+    if (this.canvas) {
+      this.canvas.removeEventListener('webglcontextlost', this.onContextLost);
+      this.canvas.removeEventListener('webglcontextrestored', this.onContextRestored);
     }
+    window.removeEventListener('resize', this.onLayout);
+  }
+
+  onLayout = () => {
+    const { clientWidth: width = 0, clientHeight: height = 0 } = this.container;
+    this.setState({ width, height });
   };
 
   render() {
-    const { onContextCreate, style, ...props } = this.props;
-
-    const { width = 1, height = 1 } = this.state;
+    const { devicePixelRatio = 1 } = window;
+    const { style, ...props } = this.props;
+    const { width, height } = this.state;
+    const domProps = stripNonDOMProps(props);
 
     return (
-      <div style={StyleSheet.flatten([{ flex: 1 }, style])} ref={this._setWrapperRef}>
+      <div ref={this.onContainer} style={StyleSheet.flatten([{ flex: 1 }, style])}>
         <canvas
-          style={{ flex: 1, maxWidth: width, maxHeight: height }}
-          resize="true"
-          {...props}
-          width={width * window.devicePixelRatio}
-          height={height * window.devicePixelRatio}
-          ref={this._setNativeRef}
+          ref={this.onCanvas}
+          style={{ flex: 1, width, height }}
+          width={width * devicePixelRatio}
+          height={height * devicePixelRatio}
+          {...domProps}
         />
       </div>
     );
   }
 
-  _setWrapperRef = (nativeRef: HTMLCanvasElement) => {
-    this.wrapperRef = nativeRef;
-    this._onLayout();
-    this._onContextCreate();
+  _hasContextBeenCreated = false;
+  componentDidUpdate(prev, prevState) {
+    if (this.canvas && !this._hasContextBeenCreated) {
+      this._hasContextBeenCreated = true;
+      this.onContextCreate();
+    }
+  }
+
+  createContext(): WebGLRenderingContext {
+    const { webglContextAttributes } = this.props;
+    const gl = ensureContext(this.canvas, webglContextAttributes);
+    this.webglContextAttributes = webglContextAttributes || {};
+    return gl;
+  }
+
+  onContextLost = (event: Event) => {
+    event.preventDefault();
+    this.gl = null;
+    if (this.props.onContextLost) {
+      this.props.onContextLost();
+    }
   };
 
-  _setNativeRef = (nativeRef: HTMLCanvasElement) => {
-    this.nativeRef = nativeRef;
-    this._onContextCreate();
+  onContextRestored = () => {
+    if (this.props.onContextRestored) {
+      this.gl = this.createContext();
+      this.props.onContextRestored(this.gl);
+    }
+  };
+
+  onCanvas = (canvas: HTMLCanvasElement) => {
+    this.canvas = canvas;
+  };
+
+  onContainer = (element: HTMLElement) => {
+    this.container = element;
+    this.onLayout();
   };
 
   async startARSessionAsync(): Promise<void> {
