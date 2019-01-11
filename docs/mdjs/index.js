@@ -28,6 +28,7 @@ const generateJsFromMd = recursionPath => {
 let versions = fs.readdirSync(ORIGINAL_PATH_PREFIX);
 
 // Compile all files initially
+fs.emptyDirSync(DESTINATION_PATH_PREFIX);
 
 console.time('Compiling *.md files to *.js');
 
@@ -36,8 +37,6 @@ const navigationData = [];
 versions.forEach(dir => {
   if (!fs.lstatSync(`${ORIGINAL_PATH_PREFIX}/${dir}`).isDirectory()) return;
   const version = dir === 'unversioned' ? 'unversioned' : dir.replace('.0.0', '');
-
-  fs.emptyDirSync(`${DESTINATION_PATH_PREFIX}/${dir}`);
 
   console.log(`Processing markdown files for version: ${dir}`);
   generateJsFromMd(`${ORIGINAL_PATH_PREFIX}/${dir}`);
@@ -68,11 +67,10 @@ export default redirect('/versions/latest/');
 console.timeEnd('Compiling *.md files to *.js');
 
 // copy versions/v(latest version) to versions/latest
-// (next only half-handles symlinks)
+// (Next.js only half-handles symlinks)
 const LATEST_VERSION = 'v' + require('../package.json').version;
 const vLatest = path.join(DESTINATION_PATH_PREFIX, LATEST_VERSION + "/");
 const latest = path.join(DESTINATION_PATH_PREFIX, "latest/");
-console.log(vLatest, latest);
 fs.removeSync(latest)
 fs.copySync(vLatest, latest)
 

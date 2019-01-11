@@ -85,7 +85,7 @@ const generateNavLinks = (path_, arr) => {
       let initArr = [];
 
       // Make sure to add '/' at the end of index pages so that relative links in the markdown work correctly
-      let href = fs.existsSync(filePath + '/index.md') ? processUrl(filePath) + '/' : '';
+      let href = fs.existsSync(path.join(filePath, 'index.md')) ? processUrl(filePath) + '/' : '';
 
       // 'Introduction' section has a 'Quick Start' page that's actually at the root i.e. `/versions/v25.0/`, etc.
       if (name === 'introduction') {
