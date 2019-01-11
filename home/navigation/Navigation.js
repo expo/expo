@@ -126,7 +126,7 @@ const DiagnosticsStack = createStackNavigator(
   {
     Diagnostics: DiagnosticsScreen,
     BackgroundLocation: BackgroundLocationScreen,
-    // Geofencing: GeofencingScreen,
+    Geofencing: GeofencingScreen,
   },
   {
     initialRouteName: 'Diagnostics',
