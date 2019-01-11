@@ -68,7 +68,7 @@ export { ImagePicker };
 import * as IntentLauncherAndroid from './IntentLauncherAndroid/IntentLauncherAndroid';
 export { IntentLauncherAndroid };
 export { default as KeepAwake } from './KeepAwake';
-export { default as Linking } from './Linking';
+export { default as Linking } from './Linking/Linking';
 import * as MailComposer from './MailComposer/MailComposer';
 export { MailComposer };
 export { default as Notifications } from './Notifications/Notifications';

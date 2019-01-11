@@ -8,7 +8,7 @@ You can access this documentation online at https://docs.expo.io/. It's built us
 
 ### Running Locally
 
-Download the copy of this repostory.
+Download the copy of this repository.
 
 ```sh
 git clone https://github.com/expo/expo.git
@@ -26,7 +26,7 @@ Then you need to install babel-cli
 yarn global add babel-cli
 ```
 
-Then you can run the app with (make sure you have no server running on port 3000):
+Then you can run the app with (make sure you have no server running on port `3000`):
 
 ```sh
 yarn run dev
