@@ -177,7 +177,7 @@ class UserSettingsButtonIOS extends React.Component {
   render() {
     return (
       <TouchableOpacity style={styles.buttonContainer} onPress={this._handlePress}>
-        <Text style={{ fontSize: 16, color: '#4E9BDE' }}>Options</Text>
+        <Text style={{ fontSize: 17, color: '#037aff' }}>Options</Text>
       </TouchableOpacity>
     );
   }

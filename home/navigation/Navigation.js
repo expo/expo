@@ -13,6 +13,9 @@ import { Entypo, Ionicons } from '@expo/vector-icons';
 import { Constants } from 'expo';
 
 import ProjectsScreen from '../screens/ProjectsScreen';
+import DiagnosticsScreen from '../screens/DiagnosticsScreen';
+import BackgroundLocationScreen from '../screens/BackgroundLocationScreen';
+import GeofencingScreen from '../screens/GeofencingScreen';
 import ExploreScreen from '../screens/ExploreScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import SearchScreen from '../screens/SearchScreen';
@@ -119,15 +122,36 @@ const ProfileStack = createStackNavigator(
   }
 );
 
+const DiagnosticsStack = createStackNavigator(
+  {
+    Diagnostics: DiagnosticsScreen,
+    BackgroundLocation: BackgroundLocationScreen,
+    // Geofencing: GeofencingScreen,
+  },
+  {
+    initialRouteName: 'Diagnostics',
+    defaultNavigationOptions,
+    navigationOptions: {
+      tabBarIcon: ({ focused }) => renderIcon(Ionicons, 'ios-git-branch', 26, focused),
+      tabBarLabel: 'Diagnostics',
+    },
+    cardStyle: {
+      backgroundColor: Colors.greyBackground,
+    },
+  }
+);
+
 const TabRoutes =
   Platform.OS === 'android' || !Constants.isDevice
     ? {
         ProjectsStack,
         ExploreStack,
+        DiagnosticsStack,
         ProfileStack,
       }
     : {
         ProjectsStack,
+        DiagnosticsStack,
         ProfileStack,
       };
 
@@ -181,6 +205,6 @@ function renderIcon(IconComponent: any, iconName: string, iconSize: number, isSe
 
 const styles = StyleSheet.create({
   icon: {
-    marginBottom: Platform.OS === 'ios' ? -2 : 0,
+    marginBottom: Platform.OS === 'ios' ? -3 : 0,
   },
 });
