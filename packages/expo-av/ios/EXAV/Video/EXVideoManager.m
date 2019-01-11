@@ -14,11 +14,11 @@
 
 @implementation EXVideoManager
 
-EX_EXPORT_MODULE(ExponentVideoManager);
+EX_EXPORT_MODULE(ExpoVideoManager);
 
 - (NSString *)viewName
 {
-  return @"ExponentVideo";
+  return @"ExpoVideoView";
 }
 
 - (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
@@ -55,7 +55,7 @@ EX_VIEW_PROPERTY(source, NSDictionary *, EXVideoView)
 {
   [view setSource:value];
 }
-EX_VIEW_PROPERTY(nativeResizeMode, NSString *, EXVideoView)
+EX_VIEW_PROPERTY(resizeMode, NSString *, EXVideoView)
 {
   [view setNativeResizeMode:value];
 }
@@ -63,12 +63,12 @@ EX_VIEW_PROPERTY(nativeResizeMode, NSString *, EXVideoView)
 - (NSArray<NSString *> *)supportedEvents
 {
   return @[
-           @"onStatusUpdateNative",
-           @"onLoadStartNative",
-           @"onLoadNative",
-           @"onErrorNative",
-           @"onReadyForDisplayNative",
-           @"onFullscreenUpdateNative"
+           @"onStatusUpdate",
+           @"onLoadStart",
+           @"onLoad",
+           @"onError",
+           @"onReadyForDisplay",
+           @"onFullscreenUpdate"
            ];
 }
 

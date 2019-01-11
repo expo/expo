@@ -52,24 +52,24 @@ declare type Props = {
 } & React.ComponentProps<typeof View>;
 declare type NativeProps = {
     source: PlaybackNativeSource | null;
-    nativeResizeMode?: unknown;
+    resizeMode?: unknown;
     status?: PlaybackStatusToSet;
-    onLoadStartNative?: () => void;
-    onLoadNative?: (event: {
+    onLoadStart?: () => void;
+    onLoad?: (event: {
         nativeEvent: PlaybackStatus;
     }) => void;
-    onErrorNative?: (event: {
+    onError?: (event: {
         nativeEvent: {
             error: string;
         };
     }) => void;
-    onStatusUpdateNative?: (event: {
+    onStatusUpdate?: (event: {
         nativeEvent: PlaybackStatus;
     }) => void;
-    onReadyForDisplayNative?: (event: {
+    onReadyForDisplay?: (event: {
         nativeEvent: ReadyForDisplayEvent;
     }) => void;
-    onFullscreenUpdateNative?: (event: {
+    onFullscreenUpdate?: (event: {
         nativeEvent: FullscreenUpdateEvent;
     }) => void;
     useNativeControls?: boolean;
