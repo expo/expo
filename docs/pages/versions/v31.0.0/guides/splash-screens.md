@@ -75,7 +75,7 @@ Notice that in the last example, we stretched the image to fill the entire width
 Any of the splash options can be configured on a per-platform basis by nesting the configuration under the `android` or `ios` keys within `app.json` (the same as how you would customize an icon for either platform). In addition to this, certain configuration options are only available on iOS or Android.
 
 - On iOS, you can set [ios.splash.tabletImage](../../workflow/configuration/#tabletimage) if you would like to have a different splash image on iPads.
-- On Android, you can set splash images for [different device DPIs](../../workflow/configuration/#mdpi), from `mdpi` to `xxxhdpi`.
+- On Android, you can set splash images for [different device DPIs](../../workflow/configuration/#android), from `mdpi` to `xxxhdpi`.
 
 ### Using `AppLoading` and/or `SplashScreen`
 
@@ -98,11 +98,11 @@ Your app can be opened from the Expo client or in a standalone app, and it can b
 Splash screen behaves in most cases exactly the same as in iOS case.
 
 There is a slight difference when it comes down to **standalone Android applications**.
-In this scenario extra attention should be paid to [`android.splash` section](../workflow/configuration.html#android) configuration inside [`app.json`](../workflow/configuration.html).
+In this scenario extra attention should be paid to [`android.splash` section](../../workflow/configuration/#android) configuration inside [`app.json`](../../workflow/configuration/#android).
 
 Depending on the `resizeMode` you will get the following behavior:
 - **cover** - In this mode your app will be leveraging Android's ability to present a static bitmap at the very beginning of the application start. Unfortunately, Android (unlike iOS) is not supporting stretching provided image, so the application will just present given image centered on the screen.
-By default `splash.image` would be used as the `mdpi` resource. It's up to you to provide graphics that meet your expectations and fit the screen dimension. To achieve this, use different resolutions for [different device DPIs](configuration.html#mdpi), from `mdpi` to `xxxhdpi`.
+By default `splash.image` would be used as the `mdpi` resource. It's up to you to provide graphics that meet your expectations and fit the screen dimension. To achieve this, use different resolutions for [different device DPIs](../../workflow/configuration/#android), from `mdpi` to `xxxhdpi`.
 - **contain** - As described in `cover` mode it isn't possible to dynamically adjust image to the screen size at the very beginning of the application start. Therefore, in this mode, at first only background color will be presented and then, when some view hierarchy is mounted, `splash.image` will be shown.
 
 ### Ejected ExpoKit apps
