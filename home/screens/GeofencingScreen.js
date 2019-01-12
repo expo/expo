@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavigationEvents } from 'react-navigation';
-import { AppState, StyleSheet, Text, View } from 'react-native';
+import { AppState, Platform, StyleSheet, Text, View } from 'react-native';
 import { Location, MapView, Permissions, Notifications, TaskManager } from 'expo';
 import { MaterialIcons } from '@expo/vector-icons';
 
@@ -60,7 +60,7 @@ export default class GeofencingScreen extends React.Component {
     });
   };
 
-  handleAppStateChange = (nextAppState) => {
+  handleAppStateChange = nextAppState => {
     if (nextAppState !== 'active') {
       return;
     }
@@ -212,22 +212,24 @@ async function getSavedRegions() {
   return task ? task.options.regions : [];
 }
 
-TaskManager.defineTask(GEOFENCING_TASK, async ({ data: { region } }) => {
-  const stateString = Location.GeofencingRegionState[region.state].toLowerCase();
-  const body = `You're ${stateString} a region with latitude: ${region.latitude}, longitude: ${
-    region.longitude
-  } and radius: ${region.radius}m`;
+if (Platform.OS !== 'android') {
+  TaskManager.defineTask(GEOFENCING_TASK, async ({ data: { region } }) => {
+    const stateString = Location.GeofencingRegionState[region.state].toLowerCase();
+    const body = `You're ${stateString} a region with latitude: ${region.latitude}, longitude: ${
+      region.longitude
+    } and radius: ${region.radius}m`;
 
-  await Notifications.presentLocalNotificationAsync({
-    title: 'Expo Geofencing',
-    body,
-    data: {
-      ...region,
-      notificationBody: body,
-      notificationType: GEOFENCING_TASK,
-    },
+    await Notifications.presentLocalNotificationAsync({
+      title: 'Expo Geofencing',
+      body,
+      data: {
+        ...region,
+        notificationBody: body,
+        notificationType: GEOFENCING_TASK,
+      },
+    });
   });
-});
+}
 
 Notifications.addListener(({ data, remote }) => {
   if (!remote && data.notificationType === GEOFENCING_TASK) {
@@ -277,6 +279,6 @@ const styles = StyleSheet.create({
   errorText: {
     fontSize: 15,
     color: 'rgba(0,0,0,0.7)',
-    margin: 20
+    margin: 20,
   },
 });
