@@ -72,7 +72,7 @@ export default class BackgroundLocationScreen extends React.Component {
     });
   };
 
-  handleAppStateChange = (nextAppState) => {
+  handleAppStateChange = nextAppState => {
     if (nextAppState !== 'active') {
       return;
     }
@@ -84,7 +84,6 @@ export default class BackgroundLocationScreen extends React.Component {
 
     this.didFocus();
   };
-
 
   componentWillUnmount() {
     if (this.eventSubscription) {
@@ -243,20 +242,22 @@ async function getSavedLocations() {
   }
 }
 
-TaskManager.defineTask(LOCATION_UPDATES_TASK, async ({ data: { locations } }) => {
-  if (locations && locations.length > 0) {
-    const savedLocations = await getSavedLocations();
-    const newLocations = locations.map(({ coords }) => ({
-      latitude: coords.latitude,
-      longitude: coords.longitude,
-    }));
+if (Platform.OS !== 'android') {
+  TaskManager.defineTask(LOCATION_UPDATES_TASK, async ({ data: { locations } }) => {
+    if (locations && locations.length > 0) {
+      const savedLocations = await getSavedLocations();
+      const newLocations = locations.map(({ coords }) => ({
+        latitude: coords.latitude,
+        longitude: coords.longitude,
+      }));
 
-    savedLocations.push(...newLocations);
-    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(savedLocations));
+      savedLocations.push(...newLocations);
+      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(savedLocations));
 
-    locationEventsEmitter.emit('update', savedLocations);
-  }
-});
+      locationEventsEmitter.emit('update', savedLocations);
+    }
+  });
+}
 
 const styles = StyleSheet.create({
   screen: {
