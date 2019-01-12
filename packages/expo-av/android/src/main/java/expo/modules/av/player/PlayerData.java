@@ -1,23 +1,19 @@
-package versioned.host.exp.exponent.modules.api.av.player;
+package expo.modules.av.player;
 
+import android.content.Context;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Handler;
 import android.util.Pair;
 import android.view.Surface;
 
-import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.Promise;
-import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.WritableMap;
-
 import java.lang.ref.WeakReference;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
 
-import versioned.host.exp.exponent.modules.api.av.AVModule;
-import versioned.host.exp.exponent.modules.api.av.AudioEventHandler;
+import expo.core.Promise;
+import expo.core.interfaces.Arguments;
+import expo.modules.av.AVModule;
+import expo.modules.av.AudioEventHandler;
 
 public abstract class PlayerData implements AudioEventHandler {
   static final String STATUS_ANDROID_IMPLEMENTATION_KEY_PATH = "androidImplementation";
@@ -39,8 +35,8 @@ public abstract class PlayerData implements AudioEventHandler {
   static final String STATUS_IS_LOOPING_KEY_PATH = "isLooping";
   static final String STATUS_DID_JUST_FINISH_KEY_PATH = "didJustFinish";
 
-  public static WritableMap getUnloadedStatus() {
-    final WritableMap map = Arguments.createMap();
+  public static Bundle getUnloadedStatus() {
+    final Bundle map = new Bundle();
     map.putBoolean(STATUS_IS_LOADED_KEY_PATH, false);
     return map;
   }
@@ -54,13 +50,13 @@ public abstract class PlayerData implements AudioEventHandler {
   }
 
   public interface LoadCompletionListener {
-    void onLoadSuccess(final WritableMap status);
+    void onLoadSuccess(final Bundle status);
 
     void onLoadError(final String error);
   }
 
   public interface StatusUpdateListener {
-    void onStatusUpdate(final WritableMap status);
+    void onStatusUpdate(final Bundle status);
   }
 
   interface SetStatusCompletionListener {
@@ -71,6 +67,7 @@ public abstract class PlayerData implements AudioEventHandler {
 
   public interface FullscreenPresenter {
     boolean isBeingPresentedFullscreen();
+
     void setFullscreenMode(boolean isFullscreen);
   }
 
@@ -116,17 +113,17 @@ public abstract class PlayerData implements AudioEventHandler {
     mUri = uri;
   }
 
-  public static PlayerData createUnloadedPlayerData(final AVModule avModule, final ReactContext context, final ReadableMap source, final ReadableMap status) {
+  public static PlayerData createUnloadedPlayerData(final AVModule avModule, final Context context, final Arguments source, final Arguments status) {
     final String uriString = source.getString(STATUS_URI_KEY_PATH);
-    Map<String, Object> requestHeaders = null;
-    if (source.hasKey(STATUS_HEADERS_KEY_PATH)) {
-      requestHeaders = source.getMap(STATUS_HEADERS_KEY_PATH).toHashMap();
+    Map requestHeaders = null;
+    if (source.containsKey(STATUS_HEADERS_KEY_PATH)) {
+      requestHeaders = source.getMap(STATUS_HEADERS_KEY_PATH);
     }
-    final String uriOverridingExtension = source.hasKey(STATUS_OVERRIDING_EXTENSION_KEY_PATH) ? source.getString(STATUS_OVERRIDING_EXTENSION_KEY_PATH) : null;
+    final String uriOverridingExtension = source.containsKey(STATUS_OVERRIDING_EXTENSION_KEY_PATH) ? source.getString(STATUS_OVERRIDING_EXTENSION_KEY_PATH) : null;
     // uriString is guaranteed not to be null (both VideoView.setSource and Sound.loadAsync handle that case)
     final Uri uri = Uri.parse(uriString);
 
-    if (status.hasKey(STATUS_ANDROID_IMPLEMENTATION_KEY_PATH)
+    if (status.containsKey(STATUS_ANDROID_IMPLEMENTATION_KEY_PATH)
         && status.getString(STATUS_ANDROID_IMPLEMENTATION_KEY_PATH).equals(MediaPlayerData.IMPLEMENTATION_NAME)) {
       return new MediaPlayerData(avModule, context, uri, requestHeaders);
     } else {
@@ -138,20 +135,20 @@ public abstract class PlayerData implements AudioEventHandler {
 
   // Lifecycle
 
-  public abstract void load(final ReadableMap status, final LoadCompletionListener loadCompletionListener);
+  public abstract void load(final Arguments status, final LoadCompletionListener loadCompletionListener);
 
   public abstract void release();
 
   // Status update listener
 
-  private void callStatusUpdateListenerWithStatus(final WritableMap status) {
+  private void callStatusUpdateListenerWithStatus(final Bundle status) {
     if (mStatusUpdateListener != null) {
       mStatusUpdateListener.onStatusUpdate(status);
     }
   }
 
   final void callStatusUpdateListenerWithDidJustFinish() {
-    final WritableMap status = getStatus();
+    final Bundle status = getStatus();
     status.putBoolean(STATUS_DID_JUST_FINISH_KEY_PATH, true);
     callStatusUpdateListenerWithStatus(status);
   }
@@ -202,13 +199,13 @@ public abstract class PlayerData implements AudioEventHandler {
   abstract void applyNewStatus(final Integer newPositionMillis, final Boolean newIsLooping)
       throws AVModule.AudioFocusNotAcquiredException, IllegalStateException;
 
-  final void setStatusWithListener(final ReadableMap status, final SetStatusCompletionListener setStatusCompletionListener) {
-    if (status.hasKey(STATUS_PROGRESS_UPDATE_INTERVAL_MILLIS_KEY_PATH)) {
+  final void setStatusWithListener(final Arguments status, final SetStatusCompletionListener setStatusCompletionListener) {
+    if (status.containsKey(STATUS_PROGRESS_UPDATE_INTERVAL_MILLIS_KEY_PATH)) {
       mProgressUpdateIntervalMillis = (int) status.getDouble(STATUS_PROGRESS_UPDATE_INTERVAL_MILLIS_KEY_PATH);
     }
 
     final Integer newPositionMillis;
-    if (status.hasKey(STATUS_POSITION_MILLIS_KEY_PATH)) {
+    if (status.containsKey(STATUS_POSITION_MILLIS_KEY_PATH)) {
       // Even though we set the position with an int, this is a double in the map because iOS can
       // take a floating point value for positionMillis.
       newPositionMillis = (int) status.getDouble(STATUS_POSITION_MILLIS_KEY_PATH);
@@ -216,28 +213,28 @@ public abstract class PlayerData implements AudioEventHandler {
       newPositionMillis = null;
     }
 
-    if (status.hasKey(STATUS_SHOULD_PLAY_KEY_PATH)) {
+    if (status.containsKey(STATUS_SHOULD_PLAY_KEY_PATH)) {
       mShouldPlay = status.getBoolean(STATUS_SHOULD_PLAY_KEY_PATH);
     }
 
-    if (status.hasKey(STATUS_RATE_KEY_PATH)) {
+    if (status.containsKey(STATUS_RATE_KEY_PATH)) {
       mRate = (float) status.getDouble(STATUS_RATE_KEY_PATH);
     }
 
-    if (status.hasKey(STATUS_SHOULD_CORRECT_PITCH_KEY_PATH)) {
+    if (status.containsKey(STATUS_SHOULD_CORRECT_PITCH_KEY_PATH)) {
       mShouldCorrectPitch = status.getBoolean(STATUS_SHOULD_CORRECT_PITCH_KEY_PATH);
     }
 
-    if (status.hasKey(STATUS_VOLUME_KEY_PATH)) {
+    if (status.containsKey(STATUS_VOLUME_KEY_PATH)) {
       mVolume = (float) status.getDouble(STATUS_VOLUME_KEY_PATH);
     }
 
-    if (status.hasKey(STATUS_IS_MUTED_KEY_PATH)) {
+    if (status.containsKey(STATUS_IS_MUTED_KEY_PATH)) {
       mIsMuted = status.getBoolean(STATUS_IS_MUTED_KEY_PATH);
     }
 
     final Boolean newIsLooping;
-    if (status.hasKey(STATUS_IS_LOOPING_KEY_PATH)) {
+    if (status.containsKey(STATUS_IS_LOOPING_KEY_PATH)) {
       newIsLooping = status.getBoolean(STATUS_IS_LOOPING_KEY_PATH);
     } else {
       newIsLooping = null;
@@ -255,7 +252,7 @@ public abstract class PlayerData implements AudioEventHandler {
     setStatusCompletionListener.onSetStatusComplete();
   }
 
-  public final void setStatus(final ReadableMap status, final Promise promise) {
+  public final void setStatus(final Arguments status, final Promise promise) {
     if (status == null) {
       if (promise != null) {
         promise.reject("E_AV_SETSTATUS", "Cannot set null status.");
@@ -296,21 +293,21 @@ public abstract class PlayerData implements AudioEventHandler {
 
   abstract boolean isLoaded();
 
-  abstract void getExtraStatusFields(final WritableMap map);
+  abstract void getExtraStatusFields(final Bundle map);
 
   // Sometimes another thread would release the player
   // in the middle of `getStatus()` call, which would result
   // in a null reference method invocation in `getExtraStatusFields`,
   // so we need to ensure nothing will release or nullify the property
   // while we get the latest status.
-  public synchronized final WritableMap getStatus() {
+  public synchronized final Bundle getStatus() {
     if (!isLoaded()) {
-      final WritableMap map = getUnloadedStatus();
+      final Bundle map = getUnloadedStatus();
       map.putString(STATUS_ANDROID_IMPLEMENTATION_KEY_PATH, getImplementationName());
       return map;
     }
 
-    final WritableMap map = Arguments.createMap();
+    final Bundle map = new Bundle();
 
     map.putBoolean(STATUS_IS_LOADED_KEY_PATH, true);
     map.putString(STATUS_ANDROID_IMPLEMENTATION_KEY_PATH, getImplementationName());

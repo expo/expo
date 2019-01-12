@@ -1,4 +1,4 @@
-package versioned.host.exp.exponent.modules.api.av.video;
+package expo.modules.av.video;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -25,7 +25,7 @@ import java.util.Formatter;
 import java.util.Locale;
 
 import host.exp.expoview.R;
-import versioned.host.exp.exponent.modules.api.av.player.PlayerDataControl;
+import expo.modules.av.player.PlayerDataControl;
 
 // Based on https://www.brightec.co.uk/ideas/custom-android-media-controller
 // We implement our own MediaController,

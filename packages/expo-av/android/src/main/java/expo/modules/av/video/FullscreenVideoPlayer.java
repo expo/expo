@@ -1,4 +1,4 @@
-package versioned.host.exp.exponent.modules.api.av.video;
+package expo.modules.av.video;
 
 import android.app.Dialog;
 import android.os.Handler;
@@ -13,7 +13,7 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import java.lang.ref.WeakReference;
 
 import versioned.host.exp.exponent.modules.api.KeepAwakeModule;
-import versioned.host.exp.exponent.modules.api.av.player.PlayerData;
+import expo.modules.av.player.PlayerData;
 
 public class FullscreenVideoPlayer extends Dialog {
   private static class KeepScreenOnUpdater implements Runnable {

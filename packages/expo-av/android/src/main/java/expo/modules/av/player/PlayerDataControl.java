@@ -1,68 +1,65 @@
-package versioned.host.exp.exponent.modules.api.av.player;
+package expo.modules.av.player;
 
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.widget.MediaController;
 
-import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.WritableMap;
-
 public class PlayerDataControl implements MediaController.MediaPlayerControl {
   private final PlayerData mPlayerData;
-  
+
   public PlayerDataControl(final @NonNull PlayerData playerData) {
     mPlayerData = playerData;
   }
 
   @Override
   public void start() {
-    final WritableMap map = Arguments.createMap();
+    final Bundle map = new Bundle();
     map.putBoolean(PlayerData.STATUS_SHOULD_PLAY_KEY_PATH, true);
     mPlayerData.setStatus(map, null);
   }
 
   @Override
   public void pause() {
-    final WritableMap map = Arguments.createMap();
+    final Bundle map = new Bundle();
     map.putBoolean(PlayerData.STATUS_SHOULD_PLAY_KEY_PATH, false);
     mPlayerData.setStatus(map, null);
   }
 
   @Override
   public int getDuration() {
-    final ReadableMap status = mPlayerData.getStatus();
+    final Bundle status = mPlayerData.getStatus();
     return (status.getBoolean(PlayerData.STATUS_IS_LOADED_KEY_PATH)
-        && status.hasKey(PlayerData.STATUS_DURATION_MILLIS_KEY_PATH))
+        && status.containsKey(PlayerData.STATUS_DURATION_MILLIS_KEY_PATH))
         ? status.getInt(PlayerData.STATUS_DURATION_MILLIS_KEY_PATH) : 0;
   }
 
   @Override
   public int getCurrentPosition() {
-    final ReadableMap status = mPlayerData.getStatus();
+    final Bundle status = mPlayerData.getStatus();
     return status.getBoolean(PlayerData.STATUS_IS_LOADED_KEY_PATH)
         ? status.getInt(PlayerData.STATUS_POSITION_MILLIS_KEY_PATH) : 0;
   }
 
   @Override
   public void seekTo(final int msec) {
-    final WritableMap map = Arguments.createMap();
+    final Bundle map = new Bundle();
     map.putDouble(PlayerData.STATUS_POSITION_MILLIS_KEY_PATH, msec);
     mPlayerData.setStatus(map, null);
   }
 
   @Override
   public boolean isPlaying() {
-    final ReadableMap status = mPlayerData.getStatus();
+    final Bundle status = mPlayerData.getStatus();
     return status.getBoolean(PlayerData.STATUS_IS_LOADED_KEY_PATH)
         && status.getBoolean(PlayerData.STATUS_IS_PLAYING_KEY_PATH);
   }
 
   @Override
   public int getBufferPercentage() {
-    final ReadableMap status = mPlayerData.getStatus();
+    final Bundle status = mPlayerData.getStatus();
     if (status.getBoolean(PlayerData.STATUS_IS_LOADED_KEY_PATH)
-        && status.hasKey(PlayerData.STATUS_DURATION_MILLIS_KEY_PATH)
-        && status.hasKey(PlayerData.STATUS_PLAYABLE_DURATION_MILLIS_KEY_PATH)) {
+        && status.containsKey(PlayerData.STATUS_DURATION_MILLIS_KEY_PATH)
+        && status.containsKey(PlayerData.STATUS_PLAYABLE_DURATION_MILLIS_KEY_PATH)) {
       final double duration = status.getInt(PlayerData.STATUS_DURATION_MILLIS_KEY_PATH);
       final double playableDuration = status.getInt(PlayerData.STATUS_PLAYABLE_DURATION_MILLIS_KEY_PATH);
       return (int) (playableDuration / duration * 100.0);

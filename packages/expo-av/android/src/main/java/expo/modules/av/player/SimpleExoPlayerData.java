@@ -1,14 +1,13 @@
-package versioned.host.exp.exponent.modules.api.av.player;
+package expo.modules.av.player;
 
+import android.content.Context;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Pair;
 import android.view.Surface;
 
-import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.WritableMap;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayerFactory;
@@ -41,7 +40,8 @@ import com.google.android.exoplayer2.util.Util;
 import java.io.IOException;
 import java.util.Map;
 
-import versioned.host.exp.exponent.modules.api.av.AVModule;
+import expo.core.interfaces.Arguments;
+import expo.modules.av.AVModule;
 
 class SimpleExoPlayerData extends PlayerData
     implements Player.EventListener, ExtractorMediaSource.EventListener, SimpleExoPlayer.VideoListener, AdaptiveMediaSourceEventListener {
@@ -56,9 +56,9 @@ class SimpleExoPlayerData extends PlayerData
   private Integer mLastPlaybackState = null;
   private boolean mIsLooping = false;
   private boolean mIsLoading = true;
-  private ReactContext mReactContext;
+  private Context mReactContext;
 
-  SimpleExoPlayerData(final AVModule avModule, final ReactContext context, final Uri uri, final String overridingExtension, final Map<String, Object> requestHeaders) {
+  SimpleExoPlayerData(final AVModule avModule, final Context context, final Uri uri, final String overridingExtension, final Map<String, Object> requestHeaders) {
     super(avModule, uri, requestHeaders);
     mReactContext = context;
     mOverridingExtension = overridingExtension;
@@ -74,7 +74,7 @@ class SimpleExoPlayerData extends PlayerData
   // Lifecycle
 
   @Override
-  public void load(final ReadableMap status, final LoadCompletionListener loadCompletionListener) {
+  public void load(final Arguments status, final LoadCompletionListener loadCompletionListener) {
     mLoadCompletionListener = loadCompletionListener;
 
     // Create a default TrackSelector
@@ -181,7 +181,7 @@ class SimpleExoPlayerData extends PlayerData
   }
 
   @Override
-  void getExtraStatusFields(final WritableMap map) {
+  void getExtraStatusFields(final Bundle map) {
     // TODO handle different timeline cases for streaming
     final int duration = (int) mSimpleExoPlayer.getDuration();
     map.putInt(STATUS_DURATION_MILLIS_KEY_PATH, duration);

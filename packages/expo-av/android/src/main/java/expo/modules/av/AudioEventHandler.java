@@ -1,4 +1,4 @@
-package versioned.host.exp.exponent.modules.api.av;
+package expo.modules.av;
 
 public interface AudioEventHandler {
 

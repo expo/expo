@@ -1,52 +1,40 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-package versioned.host.exp.exponent.modules.api.av;
+package expo.modules.av;
 
-import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.media.MediaRecorder;
-import android.os.Build;
-import android.view.View;
 import android.net.Uri;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.SystemClock;
 
-import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.Callback;
-import com.facebook.react.bridge.LifecycleEventListener;
-import com.facebook.react.bridge.Promise;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.common.SystemClock;
-import com.facebook.react.modules.core.DeviceEventManagerModule;
-import com.facebook.react.uimanager.NativeViewHierarchyManager;
-import com.facebook.react.uimanager.UIBlock;
-import com.facebook.react.uimanager.UIManagerModule;
+import com.google.android.exoplayer2.upstream.Loader;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import host.exp.exponent.kernel.ExperienceId;
-import host.exp.exponent.utils.ExpFileUtils;
-import host.exp.exponent.utils.ScopedContext;
-import host.exp.expoview.Exponent;
-import versioned.host.exp.exponent.modules.ExpoKernelServiceConsumerBaseModule;
-import versioned.host.exp.exponent.modules.api.av.player.PlayerData;
-import versioned.host.exp.exponent.modules.api.av.video.VideoView;
-import versioned.host.exp.exponent.modules.api.av.video.VideoViewWrapper;
+import expo.core.ExportedModule;
+import expo.core.Promise;
+import expo.core.interfaces.Arguments;
+import expo.core.interfaces.ExpoMethod;
+import expo.core.interfaces.LifecycleEventListener;
+import expo.modules.av.player.PlayerData;
+import expo.modules.av.video.VideoView;
 
 import static android.media.MediaRecorder.MEDIA_RECORDER_INFO_MAX_FILESIZE_REACHED;
 
-public class AVModule extends ExpoKernelServiceConsumerBaseModule
+public class AVModule extends ExportedModule
     implements LifecycleEventListener, AudioManager.OnAudioFocusChangeListener, MediaRecorder.OnInfoListener {
   private static final String AUDIO_MODE_SHOULD_DUCK_KEY = "shouldDuckAndroid";
   private static final String AUDIO_MODE_INTERRUPTION_MODE_KEY = "interruptionModeAndroid";
@@ -74,8 +62,8 @@ public class AVModule extends ExpoKernelServiceConsumerBaseModule
     }
   }
 
-  public final ScopedContext mScopedContext; // used by PlayerData
-  private final ReactApplicationContext mReactApplicationContext;
+  public final Context mScopedContext; // used by PlayerData
+  private final Context mReactApplicationContext;
 
   private boolean mEnabled = true;
 
@@ -100,7 +88,7 @@ public class AVModule extends ExpoKernelServiceConsumerBaseModule
   private long mAudioRecorderDurationAlreadyRecorded = 0L;
   private boolean mAudioRecorderIsRecording = false;
   private boolean mAudioRecorderIsPaused = false;
-  private Callback mAudioRecorderUnloadedCallback = null;
+  private Loader.Callback mAudioRecorderUnloadedCallback = null;
 
 
   @Override
@@ -108,9 +96,9 @@ public class AVModule extends ExpoKernelServiceConsumerBaseModule
     return "ExponentAV";
   }
 
-  public AVModule(final ReactApplicationContext reactContext, final ScopedContext scopedContext,
-                  ExperienceId experienceId) {
-    super(reactContext, experienceId);
+  public AVModule(final Context reactContext, final Context scopedContext, String experienceId) {
+    super(reactContext);
+//    super(reactContext, experienceId);
 
     mScopedContext = scopedContext;
     mReactApplicationContext = reactContext;
@@ -128,13 +116,14 @@ public class AVModule extends ExpoKernelServiceConsumerBaseModule
     };
     mReactApplicationContext.registerReceiver(mNoisyAudioStreamReceiver,
         new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY));
-    mReactApplicationContext.addLifecycleEventListener(this);
+    // TODO: ModuleRegistry
+    //    mReactApplicationContext.addLifecycleEventListener(this);
   }
 
-  private void sendEvent(String eventName, WritableMap params) {
-    mReactApplicationContext
-        .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-        .emit(eventName, params);
+  private void sendEvent(String eventName, Bundle params) {
+//    mReactApplicationContext
+//        .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+//        .emit(eventName, params);
   }
 
   // LifecycleEventListener
@@ -283,7 +272,7 @@ public class AVModule extends ExpoKernelServiceConsumerBaseModule
     mAudioManager.setSpeakerphoneOn(!playThroughEarpiece);
   }
 
-  @ReactMethod
+  @ExpoMethod
   public void setAudioIsEnabled(final Boolean value, final Promise promise) {
     mEnabled = value;
     if (!value) {
@@ -292,15 +281,15 @@ public class AVModule extends ExpoKernelServiceConsumerBaseModule
     promise.resolve(null);
   }
 
-  @ReactMethod
-  public void setAudioMode(final ReadableMap map, final Promise promise) {
+  @ExpoMethod
+  public void setAudioMode(final Arguments map, final Promise promise) {
     mShouldDuckAudio = map.getBoolean(AUDIO_MODE_SHOULD_DUCK_KEY);
     if (!mShouldDuckAudio) {
       mIsDuckingAudio = false;
       updateDuckStatusForAllPlayersPlaying();
     }
 
-    if (map.hasKey(AUDIO_MODE_PLAY_THROUGH_EARPIECE)) {
+    if (map.containsKey(AUDIO_MODE_PLAY_THROUGH_EARPIECE)) {
       mShouldRouteThroughEarpiece = map.getBoolean(AUDIO_MODE_PLAY_THROUGH_EARPIECE);
       updatePlaySoundThroughEarpiece(mShouldRouteThroughEarpiece);
     }
@@ -335,8 +324,8 @@ public class AVModule extends ExpoKernelServiceConsumerBaseModule
     }
   }
 
-  @ReactMethod
-  public void loadForSound(final ReadableMap source, final ReadableMap status, final Callback loadSuccess, final Callback loadError) {
+  @ExpoMethod
+  public void loadForSound(final Arguments source, final Arguments status, final Promise promise) {
     final int key = mSoundMapKeyCount++;
     final PlayerData data = PlayerData.createUnloadedPlayerData(this, mReactApplicationContext, source, status);
     data.setErrorListener(new PlayerData.ErrorListener() {
@@ -348,29 +337,29 @@ public class AVModule extends ExpoKernelServiceConsumerBaseModule
     mSoundMap.put(key, data);
     data.load(status, new PlayerData.LoadCompletionListener() {
       @Override
-      public void onLoadSuccess(final WritableMap status) {
-        loadSuccess.invoke(key, status);
+      public void onLoadSuccess(final Bundle status) {
+        promise.resolve(Arrays.asList(key, status));
       }
 
       @Override
       public void onLoadError(final String error) {
         mSoundMap.remove(key);
-        loadError.invoke(error);
+        promise.reject("E_LOAD_ERROR", error, null);
       }
     });
 
     data.setStatusUpdateListener(new PlayerData.StatusUpdateListener() {
       @Override
-      public void onStatusUpdate(final WritableMap status) {
-        WritableMap payload = Arguments.createMap();
+      public void onStatusUpdate(final Bundle status) {
+        Bundle payload = new Bundle();
         payload.putInt("key", key);
-        payload.putMap("status", status);
+        payload.putBundle("status", status);
         sendEvent("didUpdatePlaybackStatus", payload);
       }
     });
   }
 
-  @ReactMethod
+  @ExpoMethod
   public void unloadForSound(final Integer key, final Promise promise) {
     if (tryGetSoundForKey(key, promise) != null) {
       removeSoundForKey(key);
@@ -378,43 +367,28 @@ public class AVModule extends ExpoKernelServiceConsumerBaseModule
     } // Otherwise, tryGetSoundForKey has already rejected the promise.
   }
 
-  @ReactMethod
-  public void setStatusForSound(final Integer key, final ReadableMap status, final Promise promise) {
+  @ExpoMethod
+  public void setStatusForSound(final Integer key, final Arguments status, final Promise promise) {
     final PlayerData data = tryGetSoundForKey(key, promise);
     if (data != null) {
       data.setStatus(status, promise);
     } // Otherwise, tryGetSoundForKey has already rejected the promise.
   }
 
-  @ReactMethod
-  public void replaySound(final Integer key, final ReadableMap status, final Promise promise) {
+  @ExpoMethod
+  public void replaySound(final Integer key, final Arguments status, final Promise promise) {
     final PlayerData data = tryGetSoundForKey(key, promise);
     if (data != null) {
       data.setStatus(status, promise);
     } // Otherwise, tryGetSoundForKey has already rejected the promise.
   }
 
-  @ReactMethod
+  @ExpoMethod
   public void getStatusForSound(final Integer key, final Promise promise) {
     final PlayerData data = tryGetSoundForKey(key, promise);
     if (data != null) {
       promise.resolve(data.getStatus());
     } // Otherwise, tryGetSoundForKey has already rejected the promise.
-  }
-
-  @ReactMethod
-  public void setErrorCallbackForSound(final Integer key, final Callback callback) {
-    final PlayerData data = tryGetSoundForKey(key, null);
-    if (data != null) {
-      data.setErrorListener(new PlayerData.ErrorListener() {
-        @Override
-        public void onError(final String error) {
-          data.setErrorListener(null); // Can only use callback once.
-          removeSoundForKey(key);
-          callback.invoke(error);
-        }
-      });
-    }
   }
 
   // Unified playback API - Video
@@ -425,27 +399,28 @@ public class AVModule extends ExpoKernelServiceConsumerBaseModule
 
   // Rejects the promise if the VideoView is not found, otherwise executes the callback.
   private void tryRunWithVideoView(final Integer tag, final VideoViewCallback callback, final Promise promise) {
-    mReactApplicationContext.getNativeModule(UIManagerModule.class).addUIBlock(new UIBlock() {
-      @Override
-      public void execute(final NativeViewHierarchyManager nativeViewHierarchyManager) {
-        final VideoViewWrapper videoViewWrapper;
-        try {
-          final View view = nativeViewHierarchyManager.resolveView(tag);
-          if (!(view instanceof VideoViewWrapper)) {
-            throw new Exception();
-          }
-          videoViewWrapper = (VideoViewWrapper) view;
-        } catch (final Throwable e) {
-          promise.reject("E_VIDEO_TAGINCORRECT", "Invalid view returned from registry.");
-          return;
-        }
-        callback.runWithVideoView(videoViewWrapper.getVideoViewInstance());
-      }
-    });
+    // TODO: Use UIManager
+//    mReactApplicationContext.getNativeModule(UIManagerModule.class).addUIBlock(new UIBlock() {
+//      @Override
+//      public void execute(final NativeViewHierarchyManager nativeViewHierarchyManager) {
+//        final VideoViewWrapper videoViewWrapper;
+//        try {
+//          final View view = nativeViewHierarchyManager.resolveView(tag);
+//          if (!(view instanceof VideoViewWrapper)) {
+//            throw new Exception();
+//          }
+//          videoViewWrapper = (VideoViewWrapper) view;
+//        } catch (final Throwable e) {
+//          promise.reject("E_VIDEO_TAGINCORRECT", "Invalid view returned from registry.");
+//          return;
+//        }
+//        callback.runWithVideoView(videoViewWrapper.getVideoViewInstance());
+//      }
+//    });
   }
 
-  @ReactMethod
-  public void loadForVideo(final Integer tag, final ReadableMap source, final ReadableMap status, final Promise promise) {
+  @ExpoMethod
+  public void loadForVideo(final Integer tag, final Arguments source, final Arguments status, final Promise promise) {
     tryRunWithVideoView(tag, new VideoViewCallback() {
       @Override
       public void runWithVideoView(final VideoView videoView) {
@@ -454,7 +429,7 @@ public class AVModule extends ExpoKernelServiceConsumerBaseModule
     }, promise); // Otherwise, tryRunWithVideoView has already rejected the promise.
   }
 
-  @ReactMethod
+  @ExpoMethod
   public void unloadForVideo(final Integer tag, final Promise promise) {
     tryRunWithVideoView(tag, new VideoViewCallback() {
       @Override
@@ -464,8 +439,8 @@ public class AVModule extends ExpoKernelServiceConsumerBaseModule
     }, promise); // Otherwise, tryRunWithVideoView has already rejected the promise.
   }
 
-  @ReactMethod
-  public void setStatusForVideo(final Integer tag, final ReadableMap status, final Promise promise) {
+  @ExpoMethod
+  public void setStatusForVideo(final Integer tag, final Arguments status, final Promise promise) {
     tryRunWithVideoView(tag, new VideoViewCallback() {
       @Override
       public void runWithVideoView(final VideoView videoView) {
@@ -474,8 +449,8 @@ public class AVModule extends ExpoKernelServiceConsumerBaseModule
     }, promise); // Otherwise, tryRunWithVideoView has already rejected the promise.
   }
 
-  @ReactMethod
-  public void replayVideo(final Integer tag, final ReadableMap status, final Promise promise) {
+  @ExpoMethod
+  public void replayVideo(final Integer tag, final Arguments status, final Promise promise) {
     tryRunWithVideoView(tag, new VideoViewCallback() {
       @Override
       public void runWithVideoView(final VideoView videoView) {
@@ -484,7 +459,7 @@ public class AVModule extends ExpoKernelServiceConsumerBaseModule
     }, promise); // Otherwise, tryRunWithVideoView has already rejected the promise.
   }
 
-  @ReactMethod
+  @ExpoMethod
   public void getStatusForVideo(final Integer tag, final Promise promise) {
     tryRunWithVideoView(tag, new VideoViewCallback() {
       @Override
@@ -499,7 +474,8 @@ public class AVModule extends ExpoKernelServiceConsumerBaseModule
   // Recording API
 
   private boolean isMissingAudioRecordingPermissions() {
-    return !Exponent.getInstance().getPermissions(Manifest.permission.RECORD_AUDIO, this.experienceId);
+    // TODO: Use Permissions module
+//    return !Exponent.getInstance().getPermissions(Manifest.permission.RECORD_AUDIO, this.experienceId);
   }
 
   // Rejects the promise and returns false if the MediaRecorder is not found.
@@ -521,8 +497,8 @@ public class AVModule extends ExpoKernelServiceConsumerBaseModule
     return duration;
   }
 
-  private WritableMap getAudioRecorderStatus() {
-    final WritableMap map = Arguments.createMap();
+  private Bundle getAudioRecorderStatus() {
+    final Bundle map = new Bundle();
     if (mAudioRecorder != null) {
       map.putBoolean("canRecord", true);
       map.putBoolean("isRecording", mAudioRecorderIsRecording);
@@ -554,10 +530,10 @@ public class AVModule extends ExpoKernelServiceConsumerBaseModule
   public void onInfo(final MediaRecorder mr, final int what, final int extra) {
     switch (what) {
       case MEDIA_RECORDER_INFO_MAX_FILESIZE_REACHED:
-        final WritableMap finalStatus = getAudioRecorderStatus();
+        final Bundle finalStatus = new Bundle();
         removeAudioRecorder();
         if (mAudioRecorderUnloadedCallback != null) {
-          final Callback callback = mAudioRecorderUnloadedCallback;
+          final Loader.Callback callback = mAudioRecorderUnloadedCallback;
           mAudioRecorderUnloadedCallback = null;
           callback.invoke(finalStatus);
         }
@@ -566,15 +542,15 @@ public class AVModule extends ExpoKernelServiceConsumerBaseModule
     }
   }
 
-  @ReactMethod
-  public void setUnloadedCallbackForAndroidRecording(final Callback callback) {
+  @ExpoMethod
+  public void setUnloadedCallbackForAndroidRecording(final Loader.Callback callback) {
     // In JS, this is called before prepareAudioRecorder to make sure it is
     // available immediately upon recording. So, we don't check mAudioRecorder != null.
     mAudioRecorderUnloadedCallback = callback;
   }
 
-  @ReactMethod
-  public void prepareAudioRecorder(final ReadableMap options, final Promise promise) {
+  @ExpoMethod
+  public void prepareAudioRecorder(final Arguments options, final Promise promise) {
     if (isMissingAudioRecordingPermissions()) {
       promise.reject("E_MISSING_PERMISSION", "Missing audio recording permissions.");
       return;
@@ -582,13 +558,13 @@ public class AVModule extends ExpoKernelServiceConsumerBaseModule
 
     removeAudioRecorder();
 
-    final ReadableMap androidOptions = options.getMap(RECORDING_OPTIONS_KEY);
+    final Arguments androidOptions = options.getArguments(RECORDING_OPTIONS_KEY);
 
     final String filename = "recording-" + UUID.randomUUID().toString()
         + androidOptions.getString(RECORDING_OPTION_EXTENSION_KEY);
     try {
       final File directory = new File(mScopedContext.getCacheDir() + File.separator + "Audio");
-      ExpFileUtils.ensureDirExists(directory);
+      ensureDirExists(directory);
       mAudioRecordingFilePath = directory + File.separator + filename;
     } catch (final IOException e) {
       // This only occurs in the case that the scoped path is not in this experience's scope,
@@ -600,19 +576,19 @@ public class AVModule extends ExpoKernelServiceConsumerBaseModule
 
     mAudioRecorder.setOutputFormat(androidOptions.getInt(RECORDING_OPTION_OUTPUT_FORMAT_KEY));
     mAudioRecorder.setAudioEncoder(androidOptions.getInt(RECORDING_OPTION_AUDIO_ENCODER_KEY));
-    if (androidOptions.hasKey(RECORDING_OPTION_SAMPLE_RATE_KEY)) {
+    if (androidOptions.containsKey(RECORDING_OPTION_SAMPLE_RATE_KEY)) {
       mAudioRecorder.setAudioSamplingRate(androidOptions.getInt(RECORDING_OPTION_SAMPLE_RATE_KEY));
     }
-    if (androidOptions.hasKey(RECORDING_OPTION_NUMBER_OF_CHANNELS_KEY)) {
+    if (androidOptions.containsKey(RECORDING_OPTION_NUMBER_OF_CHANNELS_KEY)) {
       mAudioRecorder.setAudioChannels(androidOptions.getInt(RECORDING_OPTION_NUMBER_OF_CHANNELS_KEY));
     }
-    if (androidOptions.hasKey(RECORDING_OPTION_BIT_RATE_KEY)) {
+    if (androidOptions.containsKey(RECORDING_OPTION_BIT_RATE_KEY)) {
       mAudioRecorder.setAudioEncodingBitRate(androidOptions.getInt(RECORDING_OPTION_BIT_RATE_KEY));
     }
 
     mAudioRecorder.setOutputFile(mAudioRecordingFilePath);
 
-    if (androidOptions.hasKey(RECORDING_OPTION_MAX_FILE_SIZE_KEY)) {
+    if (androidOptions.containsKey(RECORDING_OPTION_MAX_FILE_SIZE_KEY)) {
       mAudioRecorder.setMaxFileSize(androidOptions.getInt(RECORDING_OPTION_MAX_FILE_SIZE_KEY));
       mAudioRecorder.setOnInfoListener(this);
     }
@@ -625,13 +601,13 @@ public class AVModule extends ExpoKernelServiceConsumerBaseModule
       return;
     }
 
-    final WritableMap map = Arguments.createMap();
+    final Bundle map = new Bundle();
     map.putString("uri", Uri.fromFile(new File(mAudioRecordingFilePath)).toString());
-    map.putMap("status", getAudioRecorderStatus());
+    map.putBundle("status", getAudioRecorderStatus());
     promise.resolve(map);
   }
 
-  @ReactMethod
+  @ExpoMethod
   public void startAudioRecording(final Promise promise) {
     if (isMissingAudioRecordingPermissions()) {
       promise.reject("E_MISSING_PERMISSION", "Missing audio recording permissions.");
@@ -658,7 +634,7 @@ public class AVModule extends ExpoKernelServiceConsumerBaseModule
     }
   }
 
-  @ReactMethod
+  @ExpoMethod
   public void pauseAudioRecording(final Promise promise) {
     if (checkAudioRecorderExistsOrReject(promise)) {
       if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
@@ -681,7 +657,7 @@ public class AVModule extends ExpoKernelServiceConsumerBaseModule
     }
   }
 
-  @ReactMethod
+  @ExpoMethod
   public void stopAudioRecording(final Promise promise) {
     if (checkAudioRecorderExistsOrReject(promise)) {
       try {
@@ -699,18 +675,25 @@ public class AVModule extends ExpoKernelServiceConsumerBaseModule
     }
   }
 
-  @ReactMethod
+  @ExpoMethod
   public void getAudioRecordingStatus(final Promise promise) {
     if (checkAudioRecorderExistsOrReject(promise)) {
       promise.resolve(getAudioRecorderStatus());
     }
   }
 
-  @ReactMethod
+  @ExpoMethod
   public void unloadAudioRecorder(final Promise promise) {
     if (checkAudioRecorderExistsOrReject(promise)) {
       removeAudioRecorder();
       promise.resolve(null);
     }
+  }
+
+  private static File ensureDirExists(File dir) throws IOException {
+    if (!(dir.isDirectory() || dir.mkdirs())) {
+      throw new IOException("Couldn't create directory '" + dir + "'");
+    }
+    return dir;
   }
 }

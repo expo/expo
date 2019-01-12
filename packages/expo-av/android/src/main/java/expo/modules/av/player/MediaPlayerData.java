@@ -1,31 +1,25 @@
-package versioned.host.exp.exponent.modules.api.av.player;
+package expo.modules.av.player;
 
 
+import android.content.Context;
 import android.media.MediaPlayer;
 import android.media.PlaybackParams;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.annotation.RequiresApi;
+import android.util.Log;
 import android.util.Pair;
 import android.view.Surface;
 
-import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.modules.network.NetworkingModule;
-
 import java.net.HttpCookie;
-import java.net.URI;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import expolib_v1.okhttp3.Cookie;
-import expolib_v1.okhttp3.HttpUrl;
-import host.exp.exponent.analytics.EXL;
-import versioned.host.exp.exponent.modules.api.av.AVModule;
+import expo.core.interfaces.Arguments;
+import expo.modules.av.AVModule;
 
 
 class MediaPlayerData extends PlayerData implements
@@ -39,13 +33,13 @@ class MediaPlayerData extends PlayerData implements
   static final String IMPLEMENTATION_NAME = "MediaPlayer";
 
   private MediaPlayer mMediaPlayer = null;
-  private ReactContext mReactContext = null;
+  private Context mReactContext = null;
   private boolean mMediaPlayerHasStartedEver = false;
 
   private Integer mPlayableDurationMillis = null;
   private boolean mIsBuffering = false;
 
-  MediaPlayerData(final AVModule avModule, final ReactContext context, final Uri uri, final Map<String, Object> requestHeaders) {
+  MediaPlayerData(final AVModule avModule, final Context context, final Uri uri, final Map<String, Object> requestHeaders) {
     super(avModule, uri, requestHeaders);
     mReactContext = context;
   }
@@ -60,7 +54,7 @@ class MediaPlayerData extends PlayerData implements
   // Lifecycle
 
   @Override
-  public void load(final ReadableMap status,
+  public void load(final Arguments status,
                    final LoadCompletionListener loadCompletionListener) {
     if (mMediaPlayer != null) {
       loadCompletionListener.onLoadError("Load encountered an error: MediaPlayerData cannot be loaded twice.");
@@ -75,7 +69,7 @@ class MediaPlayerData extends PlayerData implements
       } else {
         Map<String, String> headers = new HashMap<>(1);
         StringBuilder cookieBuilder = new StringBuilder();
-        for(HttpCookie httpCookie : getHttpCookiesList()) {
+        for (HttpCookie httpCookie : getHttpCookiesList()) {
           cookieBuilder.append(httpCookie.getName());
           cookieBuilder.append("=");
           cookieBuilder.append(httpCookie.getValue());
@@ -219,7 +213,7 @@ class MediaPlayerData extends PlayerData implements
     }
 
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M && mRate != 1.0f) {
-      EXL.w("Expo MediaPlayerData", "Cannot set audio/video playback rate for Android SDK < 23.");
+      Log.w("Expo MediaPlayerData", "Cannot set audio/video playback rate for Android SDK < 23.");
       mRate = 1.0f;
     }
 
@@ -256,7 +250,7 @@ class MediaPlayerData extends PlayerData implements
   }
 
   @Override
-  void getExtraStatusFields(final WritableMap map) {
+  void getExtraStatusFields(final Bundle map) {
     Integer duration = mMediaPlayer.getDuration();
     duration = duration < 0 ? null : duration;
     if (duration != null) {
@@ -407,17 +401,18 @@ class MediaPlayerData extends PlayerData implements
   // Utilities
 
   private List<HttpCookie> getHttpCookiesList() {
-    HttpUrl url = HttpUrl.get(URI.create(mUri.toString()));
-    if (url != null) {
-      List<Cookie> cookieList = mReactContext.getNativeModule(NetworkingModule.class).mCookieJarContainer.loadForRequest(url);
-      List<HttpCookie> httpCookieList = new ArrayList<>(cookieList.size());
-      for(Cookie cookie : cookieList) {
-        if (cookie.matches(url)) {
-          httpCookieList.add(new HttpCookie(cookie.name(), cookie.value()));
-        }
-      }
-      return httpCookieList;
-    }
+    // TODO: Use CookieProvider
+//    HttpUrl url = HttpUrl.get(URI.create(mUri.toString()));
+//    if (url != null) {
+//      List<Cookie> cookieList = mReactContext.getNativeModule(NetworkingModule.class).mCookieJarContainer.loadForRequest(url);
+//      List<HttpCookie> httpCookieList = new ArrayList<>(cookieList.size());
+//      for (Cookie cookie : cookieList) {
+//        if (cookie.matches(url)) {
+//          httpCookieList.add(new HttpCookie(cookie.name(), cookie.value()));
+//        }
+//      }
+//      return httpCookieList;
+//    }
     return Collections.emptyList();
   }
 }

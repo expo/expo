@@ -1,10 +1,9 @@
-package versioned.host.exp.exponent.modules.api.av.video;
+package expo.modules.av.video;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.widget.FrameLayout;
-
-import com.facebook.react.uimanager.ThemedReactContext;
 
 /**
  * We need the wrapper to be able to remove the view from the React-managed tree
@@ -16,7 +15,7 @@ import com.facebook.react.uimanager.ThemedReactContext;
 public class VideoViewWrapper extends FrameLayout {
   private VideoView mVideoView = null;
 
-  public VideoViewWrapper(@NonNull ThemedReactContext context) {
+  public VideoViewWrapper(@NonNull Context context) {
     super(context);
     mVideoView = new VideoView(context, this);
     addView(mVideoView, generateDefaultLayoutParams());

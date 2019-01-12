@@ -1,4 +1,4 @@
-package versioned.host.exp.exponent.modules.api.av.player;
+package expo.modules.av.player;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -10,8 +10,8 @@ import com.google.android.exoplayer2.upstream.TransferListener;
 
 import java.util.Map;
 
-import expolib_v1.okhttp3.CacheControl;
-import expolib_v1.okhttp3.Call;
+import okhttp3.CacheControl;
+import okhttp3.Call;
 
 // Mainly a copy of com.google.android.exoplayer2.ext.okhttp.OkHttpDataSourceFactory,
 // because it's declared as final :(

@@ -1,4 +1,4 @@
-package versioned.host.exp.exponent.modules.api.av.video;
+package expo.modules.av.video;
 
 import android.annotation.SuppressLint;
 import android.graphics.Matrix;

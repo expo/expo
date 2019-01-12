@@ -1,4 +1,4 @@
-package versioned.host.exp.exponent.modules.api.av.video;
+package expo.modules.av.video;
 
 public interface FullscreenVideoPlayerPresentationChangeListener {
   void onFullscreenPlayerWillPresent();
