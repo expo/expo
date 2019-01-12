@@ -1,6 +1,6 @@
-import PlatformModule from './PlatformModule';
+import PlatformSensorModule from './PlatformSensorModule';
 
-class ExponentBarometer extends PlatformModule {
+class ExponentBarometer extends PlatformSensorModule {
   get name(): string {
     return 'ExponentBarometer';
   }

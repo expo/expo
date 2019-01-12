@@ -1,6 +1,6 @@
-import PlatformModule from './PlatformModule';
+import PlatformSensorModule from './PlatformSensorModule';
 
-class ExponentMagnetometer extends PlatformModule {
+class ExponentMagnetometer extends PlatformSensorModule {
   get name(): string {
     return 'ExponentMagnetometer';
   }

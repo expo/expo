@@ -1,6 +1,6 @@
-import PlatformModule from './PlatformModule';
+import PlatformSensorModule from './PlatformSensorModule';
 
-class ExponentDeviceMotion extends PlatformModule {
+class ExponentDeviceMotion extends PlatformSensorModule {
   get name(): string {
     return 'ExponentDeviceMotion';
   }
@@ -10,30 +10,22 @@ class ExponentDeviceMotion extends PlatformModule {
   }
 
   isAvailableAsync = async (): Promise<boolean> => {
-    return DeviceMotionEvent !== undefined;
+    return !!DeviceMotionEvent;
   };
 
-  _handleMotion = ({ acceleration, accelerationIncludingGravity, rotationRate }) => {
+  _handleMotion = motion => {
     this.emitter.emit('deviceMotionDidUpdate', {
-      acceleration,
-      accelerationIncludingGravity,
-      rotationRate,
-      // // https://stackoverflow.com/a/5493592/4047926
-      // rotation: {
-      //   alpha: undefined,
-      //   beta: undefined,
-      //   gamma: undefined,
-      // },
+      ...motion,
       orientation: window.orientation,
     });
   };
 
   startObserving = () => {
-    window.addEventListener('devicemotion', this._handleMotion, true);
+    window.addEventListener('devicemotion', this._handleMotion);
   };
 
   stopObserving = () => {
-    window.removeEventListener('devicemotion', this._handleMotion, true);
+    window.removeEventListener('devicemotion', this._handleMotion);
   };
 }
 

@@ -1,6 +1,6 @@
-import PlatformModule from './PlatformModule';
+import PlatformSensorModule from './PlatformSensorModule';
 
-class ExponentPedometer extends PlatformModule {
+class ExponentPedometer extends PlatformSensorModule {
   get name(): string {
     return 'ExponentPedometer';
   }

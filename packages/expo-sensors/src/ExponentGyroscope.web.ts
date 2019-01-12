@@ -1,12 +1,12 @@
-import PlatformModule from './PlatformModule';
+import PlatformSensorModule from './PlatformSensorModule';
 
-class ExponentGyroscope extends PlatformModule {
+class ExponentGyroscope extends PlatformSensorModule {
   get name(): string {
     return 'ExponentGyroscope';
   }
 
   isAvailableAsync = async (): Promise<boolean> => {
-    return DeviceOrientationEvent !== undefined;
+    return !!DeviceOrientationEvent;
   };
 
   _handleMotion = ({ alpha: z, beta: y, gamma: x }) => {
@@ -14,11 +14,11 @@ class ExponentGyroscope extends PlatformModule {
   };
 
   startObserving = () => {
-    window.addEventListener('deviceorientation', this._handleMotion, true);
+    window.addEventListener('deviceorientation', this._handleMotion);
   };
 
   stopObserving = () => {
-    window.removeEventListener('deviceorientation', this._handleMotion, true);
+    window.removeEventListener('deviceorientation', this._handleMotion);
   };
 }
 

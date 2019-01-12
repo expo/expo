@@ -1,12 +1,12 @@
 import { EventEmitter } from 'expo-core';
 
-export default class PlatformModule {
+export default class PlatformSensorModule {
   emitter = new EventEmitter({} as any);
 
   _updateInterval: number = 0;
 
   get name(): string {
-    throw new Error('PlatformModule.name should be implemented');
+    throw new Error('PlatformSensorModule.name should be implemented');
   }
 
   async isAvailableAsync(): Promise<boolean> {
