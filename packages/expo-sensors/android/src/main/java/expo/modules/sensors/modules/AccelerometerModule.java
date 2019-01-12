@@ -65,7 +65,7 @@ public class AccelerometerModule extends BaseSensorModule {
   @ExpoMethod
   public void isAvailableAsync(Promise promise) {
     SensorManager mSensorManager = (SensorManager) getContext().getSystemService(Context.SENSOR_SERVICE);
-    Boolean isAvailable = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null;
+    boolean isAvailable = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null;
     promise.resolve(isAvailable);
   }
 }

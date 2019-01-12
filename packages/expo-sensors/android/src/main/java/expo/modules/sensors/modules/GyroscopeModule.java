@@ -62,7 +62,7 @@ public class GyroscopeModule extends BaseSensorModule {
   @ExpoMethod
   public void isAvailableAsync(Promise promise) {
     SensorManager mSensorManager = (SensorManager) getContext().getSystemService(Context.SENSOR_SERVICE);
-    Boolean isAvailable = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE) != null;
+    boolean isAvailable = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE) != null;
     promise.resolve(isAvailable);
   }
 }

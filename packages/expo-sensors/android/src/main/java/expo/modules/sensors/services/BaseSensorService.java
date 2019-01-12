@@ -22,11 +22,11 @@ public abstract class BaseSensorService extends BaseService implements SensorEve
   // Public API
 
   protected boolean isAvailable() {
-    return (mSensor = mSensorManager.getDefaultSensor(getSensorType())) != null;
+    return mSensorManager.getDefaultSensor(getSensorType()) != null;
   }
 
   protected void startObserving() {
-    if (isAvailable()) {
+    if ((mSensor = mSensorManager.getDefaultSensor(getSensorType())) != null) {
       mSensorManager.registerListener(this, mSensor, SensorManager.SENSOR_DELAY_FASTEST);
     }
   }

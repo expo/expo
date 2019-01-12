@@ -6,7 +6,6 @@
 @interface EXSensorsManager ()
 
 @property (nonatomic, strong) CMMotionManager *manager;
-@property (nonatomic, strong) CMAltimeter *altimeter;
 @property (nonatomic, strong) NSMutableDictionary *accelerometerHandlers;
 @property (nonatomic, strong) NSMutableDictionary *deviceMotionHandlers;
 @property (nonatomic, strong) NSMutableDictionary *gyroscopeHandlers;
@@ -44,13 +43,6 @@ EX_REGISTER_MODULE();
   return _manager;
 }
 
-- (CMAltimeter *)altimeter
-{
-  if (!_altimeter) {
-    _altimeter = [[CMAltimeter alloc] init];
-  }
-  return _altimeter;
-}
 
 - (void)dealloc
 {
@@ -58,8 +50,6 @@ EX_REGISTER_MODULE();
   [[self manager] stopDeviceMotionUpdates];
   [[self manager] stopGyroUpdates];
   [[self manager] stopMagnetometerUpdates];
-      
-  [[self altimeter] stopRelativeAltitudeUpdates];
 }
 
 - (void)sensorModuleDidSubscribeForAccelerometerUpdates:(id)scopedSensorModule

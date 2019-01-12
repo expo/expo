@@ -62,7 +62,7 @@ public class MagnetometerModule extends BaseSensorModule {
   @ExpoMethod
   public void isAvailableAsync(Promise promise) {
     SensorManager mSensorManager = (SensorManager) getContext().getSystemService(Context.SENSOR_SERVICE);
-    Boolean isAvailable = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD) != null;
+    boolean isAvailable = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD) != null;
     promise.resolve(isAvailable);
   }
 }
