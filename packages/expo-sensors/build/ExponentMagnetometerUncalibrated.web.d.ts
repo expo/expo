@@ -1,5 +1,5 @@
-import PlatformModule from './PlatformModule';
-declare class ExponentMagnetometerUncalibrated extends PlatformModule {
+import PlatformSensorModule from './PlatformSensorModule';
+declare class ExponentMagnetometerUncalibrated extends PlatformSensorModule {
     readonly name: string;
 }
 declare const _default: ExponentMagnetometerUncalibrated;

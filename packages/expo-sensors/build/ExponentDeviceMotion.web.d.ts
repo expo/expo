@@ -1,13 +1,9 @@
-import PlatformModule from './PlatformModule';
-declare class ExponentDeviceMotion extends PlatformModule {
+import PlatformSensorModule from './PlatformSensorModule';
+declare class ExponentDeviceMotion extends PlatformSensorModule {
     readonly name: string;
     readonly Gravity: number;
     isAvailableAsync: () => Promise<boolean>;
-    _handleMotion: ({ acceleration, accelerationIncludingGravity, rotationRate }: {
-        acceleration: any;
-        accelerationIncludingGravity: any;
-        rotationRate: any;
-    }) => void;
+    _handleMotion: (motion: any) => void;
     startObserving: () => void;
     stopObserving: () => void;
 }

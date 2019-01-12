@@ -1,9 +1,9 @@
-import PlatformModule from './PlatformModule';
-class ExponentAccelerometer extends PlatformModule {
+import PlatformSensorModule from './PlatformSensorModule';
+class ExponentAccelerometer extends PlatformSensorModule {
     constructor() {
         super(...arguments);
         this.isAvailableAsync = async () => {
-            return DeviceMotionEvent !== undefined;
+            return !!DeviceMotionEvent;
         };
         this._handleMotion = ({ accelerationIncludingGravity }) => {
             this.emitter.emit('accelerometerDidUpdate', {
@@ -13,10 +13,10 @@ class ExponentAccelerometer extends PlatformModule {
             });
         };
         this.startObserving = () => {
-            window.addEventListener('devicemotion', this._handleMotion, true);
+            window.addEventListener('devicemotion', this._handleMotion);
         };
         this.stopObserving = () => {
-            window.removeEventListener('devicemotion', this._handleMotion, true);
+            window.removeEventListener('devicemotion', this._handleMotion);
         };
     }
     get name() {

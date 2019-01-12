@@ -1,5 +1,5 @@
-import PlatformModule from './PlatformModule';
-declare class ExponentPedometer extends PlatformModule {
+import PlatformSensorModule from './PlatformSensorModule';
+declare class ExponentPedometer extends PlatformSensorModule {
     readonly name: string;
 }
 declare const _default: ExponentPedometer;

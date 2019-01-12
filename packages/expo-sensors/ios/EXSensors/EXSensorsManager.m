@@ -43,7 +43,6 @@ EX_REGISTER_MODULE();
   return _manager;
 }
 
-
 - (void)dealloc
 {
   [[self manager] stopAccelerometerUpdates];

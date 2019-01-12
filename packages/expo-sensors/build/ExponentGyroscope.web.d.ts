@@ -1,5 +1,5 @@
-import PlatformModule from './PlatformModule';
-declare class ExponentGyroscope extends PlatformModule {
+import PlatformSensorModule from './PlatformSensorModule';
+declare class ExponentGyroscope extends PlatformSensorModule {
     readonly name: string;
     isAvailableAsync: () => Promise<boolean>;
     _handleMotion: ({ alpha: z, beta: y, gamma: x }: {

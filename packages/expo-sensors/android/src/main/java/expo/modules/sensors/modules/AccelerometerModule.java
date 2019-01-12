@@ -8,9 +8,6 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
 import expo.core.Promise;
 import expo.core.interfaces.ExpoMethod;
 import expo.interfaces.sensors.SensorService;
