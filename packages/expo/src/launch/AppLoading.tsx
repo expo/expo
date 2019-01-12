@@ -5,7 +5,7 @@ import NativeAppLoading from './AppLoadingNativeWrapper';
 
 type Props =
   | {
-      startAsync: () => Promise<void>;
+      startAsync?: () => Promise<void>;
       onError?: (error: Error) => void;
       onFinish?: () => void;
       autoHideSplash?: boolean;

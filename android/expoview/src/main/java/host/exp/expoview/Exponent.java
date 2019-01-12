@@ -174,7 +174,6 @@ public class Exponent {
     // TODO: profile this
     FlowManager.init(context);
 
-
     if (ExpoViewBuildConfig.DEBUG) {
       Stetho.initializeWithDefaults(context);
     }

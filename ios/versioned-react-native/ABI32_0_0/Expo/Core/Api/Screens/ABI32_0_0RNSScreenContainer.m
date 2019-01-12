@@ -112,7 +112,7 @@
   // if we are adding new active screen, we perform remounting of all already marked as active
   // this is done to mimick the effect UINavigationController has when willMoveToWindow:nil is
   // triggered before the animation starts
-  if (activeScreenAdded) {
+  if ((activeScreenRemoved || activeScreenAdded) && _activeScreens.count == 1) {
     for (ABI32_0_0RNSScreenView *screen in _ReactABI32_0_0Subviews) {
       if (screen.active && [_activeScreens containsObject:screen]) {
         [self detachScreen:screen];

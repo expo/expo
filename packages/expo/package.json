@@ -48,7 +48,7 @@
   "homepage": "https://github.com/expo/expo/tree/master/packages/expo",
   "dependencies": {
     "@babel/runtime": "^7.1.2",
-    "@expo/vector-icons": "github:expo/vector-icons#expo-font-fix",
+    "@expo/vector-icons": "^9.0.0",
     "@expo/websql": "^1.0.1",
     "@types/fbemitter": "^2.0.32",
     "@types/invariant": "^2.2.29",
@@ -112,7 +112,7 @@
     "react-native-gesture-handler": "1.0.12",
     "react-native-maps": "expo/react-native-maps#v0.22.1-exp.0",
     "react-native-reanimated": "1.0.0-alpha.11",
-    "react-native-screens": "1.0.0-alpha.19",
+    "react-native-screens": "1.0.0-alpha.21",
     "react-native-svg": "8.0.10",
     "react-native-view-shot": "2.5.0",
     "serialize-error": "^2.1.0",

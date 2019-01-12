@@ -15,6 +15,8 @@
 
 @implementation EXConstantsService
 
+EX_REGISTER_MODULE();
+
 - (instancetype)initWithExperienceId:(NSString *)experienceId
 {
   if (self = [super init]) {
@@ -39,14 +41,6 @@
   isDebugXCodeScheme = YES;
 #endif
 
-  BOOL isDetached = YES;
-#ifdef EXPO_CLIENT
-  isDetached = NO;
-#endif
-#ifdef EX_DETACHED
-  isDetached = YES;
-#endif
-
   return @{
            @"sessionId": _sessionId,
            @"statusBarHeight": @([self statusBarHeight]),
@@ -55,7 +49,6 @@
            @"isDevice": @([self isDevice]),
            @"systemFonts": [self systemFontNames],
            @"debugMode": @(isDebugXCodeScheme),
-           @"isDetached": @(isDetached),
            @"isHeadless": @(NO),
            @"platform": @{
                @"ios": @{
@@ -71,8 +64,6 @@
 
 - (NSString *)buildNumber
 {
-  // always get this constant from the embedded Info.plist
-  // because the one in the manifest can get updated later.
   return [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
 }
 
