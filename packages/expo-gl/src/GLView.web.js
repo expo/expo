@@ -94,7 +94,9 @@ export default class GLView extends React.Component<Props, State> {
 
   static propTypes = propTypes;
 
-  webglContextAttributes: WebGLContextAttributes | undefined;
+  _hasContextBeenCreated = false;
+
+  _webglContextAttributes: WebGLContextAttributes | undefined;
 
   canvas: HTMLCanvasElement | undefined;
 
@@ -123,15 +125,14 @@ export default class GLView extends React.Component<Props, State> {
   }
 
   componentDidMount() {
-    window.addEventListener('resize', this.onLayout);
+    window.addEventListener('resize', this.updateLayout);
   }
 
-  onContextCreate = () => {
-    this.gl = this.createContext();
+  _contextCreated = () => {
+    this.gl = this._createContext();
     this.props.onContextCreate(this.gl);
-    const { canvas } = this;
-    canvas.addEventListener('webglcontextlost', this.onContextLost);
-    canvas.addEventListener('webglcontextrestored', this.onContextRestored);
+    this.canvas.addEventListener('webglcontextlost', this._contextLost);
+    this.canvas.addEventListener('webglcontextrestored', this._contextRestored);
   };
 
   componentWillUnmount() {
@@ -143,13 +144,13 @@ export default class GLView extends React.Component<Props, State> {
       this.gl = null;
     }
     if (this.canvas) {
-      this.canvas.removeEventListener('webglcontextlost', this.onContextLost);
-      this.canvas.removeEventListener('webglcontextrestored', this.onContextRestored);
+      this.canvas.removeEventListener('webglcontextlost', this._contextLost);
+      this.canvas.removeEventListener('webglcontextrestored', this._contextRestored);
     }
-    window.removeEventListener('resize', this.onLayout);
+    window.removeEventListener('resize', this._updateLayout);
   }
 
-  onLayout = () => {
+  _updateLayout = () => {
     const { clientWidth: width = 0, clientHeight: height = 0 } = this.container;
     this.setState({ width, height });
   };
@@ -161,9 +162,9 @@ export default class GLView extends React.Component<Props, State> {
     const domProps = stripNonDOMProps(props);
 
     return (
-      <div ref={this.onContainer} style={StyleSheet.flatten([{ flex: 1 }, style])}>
+      <div ref={this._assignContainerRef} style={StyleSheet.flatten([{ flex: 1 }, style])}>
         <canvas
-          ref={this.onCanvas}
+          ref={this._assignCanvasRef}
           style={{ flex: 1, width, height }}
           width={width * devicePixelRatio}
           height={height * devicePixelRatio}
@@ -173,22 +174,21 @@ export default class GLView extends React.Component<Props, State> {
     );
   }
 
-  _hasContextBeenCreated = false;
   componentDidUpdate(prev, prevState) {
     if (this.canvas && !this._hasContextBeenCreated) {
       this._hasContextBeenCreated = true;
-      this.onContextCreate();
+      this._contextCreated();
     }
   }
 
-  createContext(): WebGLRenderingContext {
+  _createContext(): WebGLRenderingContext {
     const { webglContextAttributes } = this.props;
     const gl = ensureContext(this.canvas, webglContextAttributes);
-    this.webglContextAttributes = webglContextAttributes || {};
+    this._webglContextAttributes = webglContextAttributes || {};
     return gl;
   }
 
-  onContextLost = (event: Event) => {
+  _contextLost = (event: Event) => {
     event.preventDefault();
     this.gl = null;
     if (this.props.onContextLost) {
@@ -196,20 +196,20 @@ export default class GLView extends React.Component<Props, State> {
     }
   };
 
-  onContextRestored = () => {
+  _contextRestored = () => {
     if (this.props.onContextRestored) {
-      this.gl = this.createContext();
+      this.gl = this._createContext();
       this.props.onContextRestored(this.gl);
     }
   };
 
-  onCanvas = (canvas: HTMLCanvasElement) => {
+  _assignCanvasRef = (canvas: HTMLCanvasElement) => {
     this.canvas = canvas;
   };
 
-  onContainer = (element: HTMLElement) => {
+  _assignContainerRef = (element: HTMLElement) => {
     this.container = element;
-    this.onLayout();
+    this._updateLayout();
   };
 
   async startARSessionAsync(): Promise<void> {
