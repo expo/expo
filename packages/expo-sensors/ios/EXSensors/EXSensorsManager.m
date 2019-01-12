@@ -8,7 +8,6 @@
 @property (nonatomic, strong) CMMotionManager *manager;
 @property (nonatomic, strong) CMAltimeter *altimeter;
 @property (nonatomic, strong) NSMutableDictionary *accelerometerHandlers;
-@property (nonatomic, strong) NSMutableDictionary *barometerHandlers;
 @property (nonatomic, strong) NSMutableDictionary *deviceMotionHandlers;
 @property (nonatomic, strong) NSMutableDictionary *gyroscopeHandlers;
 @property (nonatomic, strong) NSMutableDictionary *magnetometerHandlers;
@@ -22,7 +21,7 @@ EX_REGISTER_MODULE();
 
 + (const NSArray<Protocol *> *)exportedInterfaces
 {
-  return @[@protocol(EXAccelerometerInterface), @protocol(EXBarometerInterface), @protocol(EXDeviceMotionInterface), @protocol(EXGyroscopeInterface), @protocol(EXMagnetometerInterface), @protocol(EXMagnetometerUncalibratedInterface)];
+  return @[@protocol(EXAccelerometerInterface), @protocol(EXDeviceMotionInterface), @protocol(EXGyroscopeInterface), @protocol(EXMagnetometerInterface), @protocol(EXMagnetometerUncalibratedInterface)];
 }
 
 - (instancetype)init
@@ -103,45 +102,6 @@ EX_REGISTER_MODULE();
 - (BOOL)isAccelerometerAvailable
 {
   return [[self manager] isAccelerometerAvailable];
-}
-
-- (void)sensorModuleDidSubscribeForBarometerUpdates:(id)scopedSensorModule
-                                        withHandler:(void (^)(NSDictionary *event))handlerBlock
-{
-  if ([self isBarometerAvailable]) {
-    _barometerHandlers[scopedSensorModule] = handlerBlock;
-  }
-  __weak EXSensorsManager *weakSelf = self;
-  [[self altimeter] startRelativeAltitudeUpdatesToQueue:[NSOperationQueue mainQueue] withHandler:^(CMAltitudeData * _Nullable data, NSError * _Nullable error) {
-    __strong EXSensorsManager *strongSelf = weakSelf;
-    if (strongSelf && data) {
-      for (void (^handler)(NSDictionary *) in strongSelf.barometerHandlers.allValues) {
-        handler(@{
-                  @"pressure": data.pressure,
-                  @"relativeAltitude": data.relativeAltitude,
-                  });
-      }
-    }
-  }];
-}
-
-- (void)sensorModuleDidUnsubscribeForBarometerUpdates:(id)scopedSensorModule
-{
-  [_barometerHandlers removeObjectForKey:scopedSensorModule];
-  if (_barometerHandlers.count == 0) {
-    [[self altimeter] stopRelativeAltitudeUpdates];
-  }
-}
-
-- (void)setBarometerUpdateInterval:(NSTimeInterval)intervalMs
-{
-  // Do nothing
-}
-
-- (BOOL)isBarometerAvailable
-{
-  // TODO: Bacon: May need to check: ([CMPedometer authorizationStatus] == CMAuthorizationStatusAuthorized)
-  return [CMAltimeter isRelativeAltitudeAvailable];
 }
 
 - (void)sensorModuleDidSubscribeForDeviceMotionUpdates:(id)scopedSensorModule
