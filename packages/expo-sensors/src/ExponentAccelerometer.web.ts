@@ -6,7 +6,7 @@ class ExponentAccelerometer extends PlatformSensorModule {
   }
 
   isAvailableAsync = async (): Promise<boolean> => {
-    return !!DeviceMotionEvent;
+    return typeof DeviceMotionEvent !== 'undefined';
   };
 
   _handleMotion = ({ accelerationIncludingGravity }) => {

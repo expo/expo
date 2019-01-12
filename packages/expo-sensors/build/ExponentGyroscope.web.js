@@ -3,7 +3,7 @@ class ExponentGyroscope extends PlatformSensorModule {
     constructor() {
         super(...arguments);
         this.isAvailableAsync = async () => {
-            return !!DeviceOrientationEvent;
+            return typeof DeviceOrientationEvent !== 'undefined';
         };
         this._handleMotion = ({ alpha: z, beta: y, gamma: x }) => {
             this.emitter.emit('gyroscopeDidUpdate', { x, y, z });

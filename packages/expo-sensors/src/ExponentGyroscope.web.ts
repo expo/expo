@@ -6,7 +6,7 @@ class ExponentGyroscope extends PlatformSensorModule {
   }
 
   isAvailableAsync = async (): Promise<boolean> => {
-    return !!DeviceOrientationEvent;
+    return typeof DeviceOrientationEvent !== 'undefined';
   };
 
   _handleMotion = ({ alpha: z, beta: y, gamma: x }) => {

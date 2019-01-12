@@ -3,7 +3,7 @@ class ExponentDeviceMotion extends PlatformSensorModule {
     constructor() {
         super(...arguments);
         this.isAvailableAsync = async () => {
-            return !!DeviceMotionEvent;
+            return typeof DeviceMotionEvent !== 'undefined';
         };
         this._handleMotion = motion => {
             this.emitter.emit('deviceMotionDidUpdate', {
