@@ -122,7 +122,7 @@ On iOS ask for this permission type individually.
 
 > **Note (iOS):** In Expo Client this permission will always ask the user for permission to access location data while the app is in use.
 > 
-> **Note (iOS):** SDK 32 and up will return with a secondary parameter, `ios` which is an object of type: { scope: 'whenInUse' | 'always' | 'none' }
+> **Note (iOS):** SDK 32 and up will return  `permissions` key, which contains: `location: { ios } ` where `ios` which is an object of type: { scope: 'whenInUse' | 'always' | 'none' }
 > 
 > If you would like to access location data in a standalone app, note that you'll need to provide location usage descriptions in `app.json`. For more information see [Deploying to App Stores guide](guides/app-stores.html#system-permissions-dialogs-on-ios).
 >
