@@ -3,53 +3,61 @@ import { UnavailabilityError } from 'expo-errors';
 
 import {
   CentralState,
-PeripheralState,
-Base64,
-UUID,
-Identifier,
-TransactionId,
-NodeInterface,
-DescriptorInterface,
-NativeEventData,
-ErrorInterface,
-CharacteristicInterface,
-ServiceInterface,
-AdvertismentDataInterface,
-PeripheralInterface,
-TransactionType,
-PeripheralFoundCallback,
-StateUpdatedCallback,
-ScanSettings,
-Central,
-WriteOptions,
-CharacteristicProperty,
+  PeripheralState,
+  Base64,
+  UUID,
+  Identifier,
+  TransactionId,
+  NodeInterface,
+  DescriptorInterface,
+  NativeEventData,
+  ErrorInterface,
+  CharacteristicInterface,
+  ServiceInterface,
+  AdvertismentDataInterface,
+  PeripheralInterface,
+  TransactionType,
+  PeripheralFoundCallback,
+  StateUpdatedCallback,
+  ScanSettings,
+  Central,
+  WriteOptions,
+  CharacteristicProperty,
 } from './Bluetooth.types';
-
 
 export {
   CentralState,
-PeripheralState,
-Base64,
-UUID,
-Identifier,
-TransactionId,
-NodeInterface,
-DescriptorInterface,
-NativeEventData,
-ErrorInterface,
-CharacteristicInterface,
-ServiceInterface,
-AdvertismentDataInterface,
-PeripheralInterface,
-TransactionType,
-PeripheralFoundCallback,
-StateUpdatedCallback,
-ScanSettings,
-Central,
-WriteOptions,
-CharacteristicProperty,
-}
+  PeripheralState,
+  Base64,
+  UUID,
+  Identifier,
+  TransactionId,
+  NodeInterface,
+  DescriptorInterface,
+  NativeEventData,
+  ErrorInterface,
+  CharacteristicInterface,
+  ServiceInterface,
+  AdvertismentDataInterface,
+  PeripheralInterface,
+  TransactionType,
+  PeripheralFoundCallback,
+  StateUpdatedCallback,
+  ScanSettings,
+  Central,
+  WriteOptions,
+  CharacteristicProperty,
+};
 import ExpoBluetooth from './ExpoBluetooth';
+// const ExpoBluetooth: {
+//   addListener: (eventName: string) => void;
+//   removeListeners: (count: number) => void;
+//   [prop: string]: any;
+// } = {
+//   addListener() {},
+//   removeListeners() {},
+//   Events: {},
+// };
 
 let transactions: { [transactionId: string]: any } = {};
 
@@ -67,7 +75,7 @@ export const { Events } = ExpoBluetooth;
 // Manage all of the bluetooth information.
 let _peripherals: { [peripheralId: string]: PeripheralInterface } = {};
 
-let _advertisments: any = {};
+let _advertisements: any = {};
 
 const multiEventHandlers: any = {
   [Events.CENTRAL_DID_DISCOVER_PERIPHERAL_EVENT]: [],
@@ -81,7 +89,7 @@ export async function startScanAsync(scanSettings: ScanSettings = {}): Promise<S
     throw new UnavailabilityError('Bluetooth', 'startScanAsync');
   }
 
-  const { serviceUUIDsToQuery = [], scanningOptions, callback } = scanSettings;
+  const { serviceUUIDsToQuery = [], scanningOptions = {}, callback } = scanSettings;
   /* Prevents the need for CBCentralManagerScanOptionAllowDuplicatesKey in the info.plist */
   const serviceUUIDsWithoutDuplicates = [...new Set(serviceUUIDsToQuery)];
   /* iOS:
@@ -349,6 +357,7 @@ export async function loadChildrenRecursivelyAsync({ id }): Promise<Array<any>> 
 addListener(({ data, event }: { data: NativeEventData; event: string }) => {
   const { transactionId, peripheral, peripherals, central, advertisementData, rssi, error } = data;
 
+  console.log("GOT EVENT: ", {data, event});
   if (central) {
     // _central = central;
   }
@@ -356,7 +365,7 @@ addListener(({ data, event }: { data: NativeEventData; event: string }) => {
   if (peripheral) {
     if (advertisementData) {
       updateAdvertismentDataStore(peripheral.id, advertisementData);
-      peripheral.advertismentData = advertisementData;
+      peripheral.advertisementData = advertisementData;
     }
     if (rssi) {
       peripheral.rssi = rssi;
@@ -477,7 +486,7 @@ function updateStateWithPeripheral(peripheral: PeripheralInterface) {
   const {
     [peripheral.id]: currentPeripheral = {
       discoveryTimestamp: Date.now(),
-      advertismentData: undefined,
+      advertisementData: undefined,
       rssi: null,
     },
     ...others
@@ -486,7 +495,7 @@ function updateStateWithPeripheral(peripheral: PeripheralInterface) {
     ...others,
     [peripheral.id]: {
       discoveryTimestamp: currentPeripheral.discoveryTimestamp,
-      advertismentData: currentPeripheral.advertismentData,
+      advertisementData: currentPeripheral.advertisementData,
       rssi: currentPeripheral.rssi,
       // ...currentPeripheral,
       ...peripheral,
@@ -494,14 +503,14 @@ function updateStateWithPeripheral(peripheral: PeripheralInterface) {
   };
 }
 
-function updateAdvertismentDataStore(peripheralId: string, advertismentData: any) {
-  const { [peripheralId]: current = {}, ...others } = _advertisments;
-  _advertisments = {
+function updateAdvertismentDataStore(peripheralId: string, advertisementData: any) {
+  const { [peripheralId]: current = {}, ...others } = _advertisements;
+  _advertisements = {
     ...others,
     [peripheralId]: {
       peripheralId,
       // ...current,
-      ...advertismentData,
+      ...advertisementData,
     },
   };
 }
@@ -539,7 +548,7 @@ async function discoverAsync(options: { id: string; serviceUUIDsToQuery?: UUID[]
     TransactionType.scan
   );
 
-  ExpoBluetooth.discover({
+  ExpoBluetooth.discoverAsync({
     peripheralUUID,
     serviceUUID,
     characteristicUUID,

@@ -1,5 +1,8 @@
-
-<manifest package="expo.modules.bluetooth">
-
+<manifest package="expo.modules.bluetooth" 
+        xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.BLUETOOTH"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+    <uses-feature android:name="android.hardware.bluetooth_le" android:required="true"/>
 </manifest>
   

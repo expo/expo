@@ -24,8 +24,10 @@ import Colors from '../constants/Colors';
 import MonoText from '../components/MonoText';
 import Button from '../components/Button';
 import { Base64 } from 'js-base64';
-
+import { NativeModulesProxy } from 'expo-core'
 import { Services, Characteristics, Descriptors } from 'expo-bluetooth-utils'
+import { Permissions } from 'expo-permissions'
+const { ExpoBluetooth } = NativeModulesProxy;
 /*
  * Mango:
  *
@@ -104,6 +106,7 @@ export default class BluetoothScreen extends React.Component {
   };
 
   async componentDidMount() {
+    await Permissions.askAsync(Permissions.LOCATION);
     this.stateListener = Bluetooth.observeStateAsync(state => {
       console.log('observeStateAsync', state);
       this.setState({ centralState: state });
@@ -114,6 +117,7 @@ export default class BluetoothScreen extends React.Component {
         throw new Error('Bluetooth Screen: observer: ' + error.message);
       }
 
+      console.log("BLE Screen: observeUpdatesAsync: ", peripherals, error);
       this.setState(({ peripherals: currentPeripherals }) => {
         return {
           peripherals: {
@@ -124,7 +128,12 @@ export default class BluetoothScreen extends React.Component {
       });
     });
 
-    Bluetooth.startScanAsync();
+    // Bluetooth.startScanAsync();
+
+    
+
+
+
     // // Load in one or more peripherals
     // this.setState({ isScanning: true }, () => {
     //   Bluetooth.startScanAsync({}, ({ peripheral }) => {
@@ -165,6 +174,7 @@ export default class BluetoothScreen extends React.Component {
               isDisabled={!canUseBluetooth}
               value={isScanning}
               onValueChange={value => {
+                // ExpoBluetooth.enableBluetoothAsync(true)
                 this.setState({ isScanning: value });
                 if (value) {
                   Bluetooth.startScanAsync();

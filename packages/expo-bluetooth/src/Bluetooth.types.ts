@@ -6,12 +6,34 @@ export enum CentralState {
   PoweredOff = 'poweredOff',
   PoweredOn = 'poweredOn',
 }
+
+export enum AndroidCentralState {
+  poweringOff = 'poweringOff',
+  poweredOff = 'poweredOff',
+  poweringOn = 'poweringOn',
+  poweredOn = 'poweredOn',
+  unknown = 'unknown',
+}
+
 export enum PeripheralState {
   Disconnected = 'disconnected',
   Connecting = 'connecting',
   Connected = 'connected',
   Disconnecting = 'disconnecting',
   Unknown = 'unknown',
+}
+
+export enum AndroidAdapterScanMode {
+  none = 'none',
+  connectable = 'connectable',
+  discoverable = 'discoverable',
+}
+
+export enum AndroidScanMode {
+  lowLatency = 'lowLatency',
+  lowPower = 'lowPower',
+  balanced = 'balanced',
+  opportunistic = 'opportunistic',
 }
 
 /* Types */
@@ -84,7 +106,7 @@ export interface AdvertismentDataInterface {
 }
 
 export interface PeripheralInterface extends NodeInterface {
-  advertismentData?: AdvertismentDataInterface;
+  advertisementData?: AdvertismentDataInterface;
   name: string | null;
   rssi: number | null;
   state: PeripheralState;

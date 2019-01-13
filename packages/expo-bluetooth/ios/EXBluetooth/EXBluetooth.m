@@ -85,7 +85,7 @@ EX_EXPORT_MODULE(ExpoBluetooth);
 
 - (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
-  _manager = [[CBCentralManager alloc] initWithDelegate:self queue:nil options:nil];
+  _manager = [[CBCentralManager alloc] initWithDelegate:self queue:[self methodQueue] options:nil];
   _moduleRegistry = moduleRegistry;
   _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(EXEventEmitterService)];
 }
@@ -138,6 +138,28 @@ EX_EXPORT_MODULE(ExpoBluetooth);
   }
 }
 
+EX_EXPORT_METHOD_AS(initializeManagerAsync,
+                    initializeManagerAsync:(NSDictionary *)options
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
+{
+
+/* 
+CBCentralManagerOptionShowPowerAlertKey
+CBCentralManagerOptionRestoreIdentifierKey
+
+ */
+ resolve(nil);
+}
+
+EX_EXPORT_METHOD_AS(deallocateManagerAsync,
+                    deallocateManagerAsync:(NSDictionary *)options
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
+{
+  resolve(nil);
+}
+
 EX_EXPORT_METHOD_AS(getPeripheralsAsync,
                     getPeripheralsAsync:(NSDictionary *)options
                     resolve:(EXPromiseResolveBlock)resolve
@@ -146,7 +168,6 @@ EX_EXPORT_METHOD_AS(getPeripheralsAsync,
   resolve([[self class] CBPeripheralList_NativeToJSON:[_peripherals allValues]]);
 }
 
-// TODO: Bacon: This may not be needed, check after android API is done
 EX_EXPORT_METHOD_AS(getCentralAsync,
                     getCentralAsync:(EXPromiseResolveBlock)resolve
                     reject:(EXPromiseRejectBlock)reject)
@@ -214,6 +235,7 @@ EX_EXPORT_METHOD_AS(updateAsync,
   CBCharacteristic *characteristic = [self _getCharacteristicOrReject:options[@"characteristicUUID"] service:service characteristicProperties:prop reject:reject];
   if (!characteristic) return;
   
+  // TODO: Bacon: Use the characteristic prop to infer this value. ex: characteristic prop of read with operation of write does nothing.
   NSString *operation = options[@"operation"];
   
   NSString *descriptorUUIDString = options[@"descriptorUUID"];
@@ -276,8 +298,8 @@ EX_EXPORT_METHOD_AS(disconnectAsync,
   resolve([NSNull null]);
 }
 
-EX_EXPORT_METHOD_AS(discover,
-                    discover:(NSDictionary *)options
+EX_EXPORT_METHOD_AS(discoverAsync,
+                    discoverAsync:(NSDictionary *)options
                     resolve:(EXPromiseResolveBlock)resolve
                     reject:(EXPromiseRejectBlock)reject)
 {
@@ -458,10 +480,12 @@ EX_EXPORT_METHOD_AS(discover,
 - (void)centralManagerDidUpdateState:(CBCentralManager *)central {
   if (central.state < CBManagerStatePoweredOff) {
     // All peripherals are now invalid.
-        for (NSString *key in _peripherals) {
-          CBPeripheral *peripheral = _peripherals[key];
-//          [_manager cancelPeripheralConnection:peripheral];
-          [_peripherals removeObjectForKey:key];
+        @synchronized(peripherals) {
+          for (NSString *key in _peripherals) {
+            CBPeripheral *peripheral = _peripherals[key];
+  //          [_manager cancelPeripheralConnection:peripheral];
+            [_peripherals removeObjectForKey:key];
+          }
         }
     
   }
@@ -488,7 +512,9 @@ EX_EXPORT_METHOD_AS(discover,
      advertisementData:(NSDictionary<NSString *,id> *)advertisementData
                   RSSI:(NSNumber *)RSSI
 {
+      @synchronized(peripherals) {
   [_peripherals setObject:peripheral forKey:[[peripheral identifier] UUIDString]];
+      }
   NSDictionary *peripheralData = [[self class] CBPeripheral_NativeToJSON:peripheral];
 
   // TODO: Bacon: Roll all three items into one
@@ -623,15 +649,17 @@ EX_EXPORT_METHOD_AS(discover,
 
 - (void)peripheral:(CBPeripheral *)peripheral didReadRSSI:(nonnull NSNumber *)RSSI error:(nullable NSError *)error
 {
-  NSDictionary *peripheralData = [[self class] CBPeripheral_NativeToJSON:peripheral];
+  // TODO: Bacon: Add this right!!
+  
+  // NSDictionary *peripheralData = [[self class] CBPeripheral_NativeToJSON:peripheral];
 
-  [self
-   emit:EXBluetoothPeripheralDidUpdateValueForDescriptorEvent
-   data:@{
-          @"rssi": [NSString stringWithFormat:@"%@|%@", @"read", peripheralData[@"id"]],
-          EXBluetoothPeripheral: EXNullIfNil([[self class] CBPeripheral_NativeToJSON:peripheral]),
-          EXBluetoothErrorKey: EXNullIfNil([[self class] NSError_NativeToJSON:error])
-          }];
+  // [self
+  //  emit:EXBluetoothPeripheralDidUpdateValueForDescriptorEvent
+  //  data:@{
+  //         @"rssi": [NSString stringWithFormat:@"%@|%@", @"read", peripheralData[@"id"]],
+  //         EXBluetoothPeripheral: EXNullIfNil([[self class] CBPeripheral_NativeToJSON:peripheral]),
+  //         EXBluetoothErrorKey: EXNullIfNil([[self class] NSError_NativeToJSON:error])
+  //         }];
 }
 
 - (void)peripheral:(CBPeripheral *)peripheral didUpdateValueForDescriptor:(CBDescriptor *)descriptor error:(NSError *)error {

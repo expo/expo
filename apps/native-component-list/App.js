@@ -4,13 +4,23 @@ import { AppLoading, Asset, Font } from 'expo';
 import React from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { Platform, StatusBar, StyleSheet, View } from 'react-native';
-import { SafeAreaView } from 'react-navigation';
+import { SafeAreaView, createStackNavigator, createAppContainer } from 'react-navigation';
 import { Assets as StackAssets } from 'react-navigation-stack';
 import { useScreens } from 'react-native-screens';
+import { NativeModulesProxy } from 'expo-core';
 
 import Icons from './constants/Icons';
-import RootNavigation from './navigation/RootNavigation';
+import BluetoothScreen, { BluetoothInfoScreen } from './screens/BluetoothScreen';
 
+console.log('Bacon:::NativeModulesProxy', Object.keys(NativeModulesProxy.ExpoBluetooth));
+
+const RootNavigation = createAppContainer(
+  createStackNavigator({
+    BluetoothScreen,
+    BluetoothInfoScreen,
+  })
+);
+// import RootNavigation from './screens/GoogleScreen';
 
 // workaround for large android status bar in react-nav beta.27
 if (Platform.OS === 'android') {
@@ -34,7 +44,7 @@ export default class App extends React.Component {
         Asset.loadAsync(iconRequires),
         Asset.loadAsync(StackAssets),
         Font.loadAsync(Ionicons.font),
-        Font.loadAsync({ 'space-mono': require('./assets/fonts/SpaceMono-Regular.ttf') })
+        Font.loadAsync({ 'space-mono': require('./assets/fonts/SpaceMono-Regular.ttf') }),
       ]);
     } catch (e) {
       console.log({ e });

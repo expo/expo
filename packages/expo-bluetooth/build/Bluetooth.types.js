@@ -7,6 +7,14 @@ export var CentralState;
     CentralState["PoweredOff"] = "poweredOff";
     CentralState["PoweredOn"] = "poweredOn";
 })(CentralState || (CentralState = {}));
+export var AndroidCentralState;
+(function (AndroidCentralState) {
+    AndroidCentralState["poweringOff"] = "poweringOff";
+    AndroidCentralState["poweredOff"] = "poweredOff";
+    AndroidCentralState["poweringOn"] = "poweringOn";
+    AndroidCentralState["poweredOn"] = "poweredOn";
+    AndroidCentralState["unknown"] = "unknown";
+})(AndroidCentralState || (AndroidCentralState = {}));
 export var PeripheralState;
 (function (PeripheralState) {
     PeripheralState["Disconnected"] = "disconnected";
@@ -15,6 +23,19 @@ export var PeripheralState;
     PeripheralState["Disconnecting"] = "disconnecting";
     PeripheralState["Unknown"] = "unknown";
 })(PeripheralState || (PeripheralState = {}));
+export var AndroidAdapterScanMode;
+(function (AndroidAdapterScanMode) {
+    AndroidAdapterScanMode["none"] = "none";
+    AndroidAdapterScanMode["connectable"] = "connectable";
+    AndroidAdapterScanMode["discoverable"] = "discoverable";
+})(AndroidAdapterScanMode || (AndroidAdapterScanMode = {}));
+export var AndroidScanMode;
+(function (AndroidScanMode) {
+    AndroidScanMode["lowLatency"] = "lowLatency";
+    AndroidScanMode["lowPower"] = "lowPower";
+    AndroidScanMode["balanced"] = "balanced";
+    AndroidScanMode["opportunistic"] = "opportunistic";
+})(AndroidScanMode || (AndroidScanMode = {}));
 export var TransactionType;
 (function (TransactionType) {
     TransactionType["get"] = "get";

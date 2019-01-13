@@ -1,11 +1,10 @@
 {
   "expo": {
     "name": "Expo APIs",
-    "description":
-      "This demonstrates a bunch of the native components that you can use in React Native core and Expo.",
+    "description": "This demonstrates a bunch of the native components that you can use in React Native core and Expo.",
     "slug": "native-component-list",
-    "sdkVersion": "32.0.0",
-    "version": "32.0.0",
+    "sdkVersion": "UNVERSIONED",
+    "version": "UNVERSIONED",
     "githubUrl": "https://github.com/expo/native-component-list",
     "orientation": "portrait",
     "primaryColor": "#cccccc",
@@ -50,8 +49,7 @@
       "config": {
         "usesNonExemptEncryption": false,
         "googleSignIn": {
-          "reservedClientId":
-            "com.googleusercontent.apps.603386649315-1b2o2gole94qc6h4prj6lvoiueq83se4"
+          "reservedClientId": "com.googleusercontent.apps.603386649315-1b2o2gole94qc6h4prj6lvoiueq83se4"
         },
         "branch": {
           "apiKey": "key_live_pcxsCTBguAUqQBd8CjYZ7ogkurnZcQAO"

@@ -6,12 +6,30 @@ export declare enum CentralState {
     PoweredOff = "poweredOff",
     PoweredOn = "poweredOn"
 }
+export declare enum AndroidCentralState {
+    poweringOff = "poweringOff",
+    poweredOff = "poweredOff",
+    poweringOn = "poweringOn",
+    poweredOn = "poweredOn",
+    unknown = "unknown"
+}
 export declare enum PeripheralState {
     Disconnected = "disconnected",
     Connecting = "connecting",
     Connected = "connected",
     Disconnecting = "disconnecting",
     Unknown = "unknown"
+}
+export declare enum AndroidAdapterScanMode {
+    none = "none",
+    connectable = "connectable",
+    discoverable = "discoverable"
+}
+export declare enum AndroidScanMode {
+    lowLatency = "lowLatency",
+    lowPower = "lowPower",
+    balanced = "balanced",
+    opportunistic = "opportunistic"
 }
 export declare type Base64 = string;
 export declare type UUID = string;
@@ -73,7 +91,7 @@ export interface AdvertismentDataInterface {
     overflowServiceUUIDs: Array<UUID> | null;
 }
 export interface PeripheralInterface extends NodeInterface {
-    advertismentData?: AdvertismentDataInterface;
+    advertisementData?: AdvertismentDataInterface;
     name: string | null;
     rssi: number | null;
     state: PeripheralState;
@@ -101,13 +119,13 @@ export interface Central {
     isScanning: boolean;
 }
 export declare type WriteOptions = {
-    peripheralUUID: string;
-    serviceUUID: string;
-    characteristicUUID: string;
-    descriptorUUID?: string;
+    peripheralUUID: UUID;
+    serviceUUID: UUID;
+    characteristicUUID: UUID;
+    descriptorUUID?: UUID;
     characteristicProperties: CharacteristicProperty;
     shouldMute?: boolean;
-    data?: any;
+    data?: Base64;
 };
 export declare enum CharacteristicProperty {
     Broadcast = "broadcast",
