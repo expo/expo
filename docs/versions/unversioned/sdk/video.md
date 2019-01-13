@@ -23,7 +23,7 @@ Here's a simple example of a video that autoplays and loops.
 />
 ```
 
-For more advanced examples, check out the [Playlist example](https://github.com/expo/playlist-example/blob/master/App.js), and the [custom videoplayer controls component](https://github.com/expo/videoplayer/blob/master/index.js) that wraps `<Video>`, adds custom controls and use the `<Video>` API extensively. The videoplayer controls is used in [this app](https://github.com/expo/harvard-cs50-app).
+For more advanced examples, check out the [Playlist example](https://github.com/expo/playlist-example/blob/master/App.js), and the [custom videoplayer controls component](https://github.com/ihmpavel/expo-video-player/blob/master/lib/index.tsx) that wraps `<Video>`, adds custom controls and use the `<Video>` API extensively. The videoplayer controls is used in [this app](https://github.com/expo/harvard-cs50-app).
 
 ## `Expo.Video`
 
@@ -59,7 +59,7 @@ The `useNativeControls`, `resizeMode`, and `usePoster` props customize the UI of
 
 - `useNativeControls`
 
-  A boolean which, if set to `true`, will display native playback controls (such as play and pause) within the `Video` component. If you'd prefer to use custom controls, you can write them yourself, and/or check out the [Videoplayer component](https://github.com/expo/videoplayer).
+  A boolean which, if set to `true`, will display native playback controls (such as play and pause) within the `Video` component. If you'd prefer to use custom controls, you can write them yourself, and/or check out the [Videoplayer component](https://github.com/ihmpavel/expo-video-player).
 
 - `resizeMode`
 
