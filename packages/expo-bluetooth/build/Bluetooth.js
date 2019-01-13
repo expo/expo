@@ -406,8 +406,8 @@ function peripheralIdFromId(id) {
     return id.split('|')[0];
 }
 async function discoverAsync(options) {
-    if (!ExpoBluetooth.discover) {
-        throw new UnavailabilityError('Bluetooth', 'discover');
+    if (!ExpoBluetooth.discoverAsync) {
+        throw new UnavailabilityError('Bluetooth', 'discoverAsync');
     }
     const { serviceUUIDsToQuery, id } = options;
     const [peripheralUUID, serviceUUID, characteristicUUID] = id.split('|');

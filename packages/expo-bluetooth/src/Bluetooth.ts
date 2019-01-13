@@ -535,8 +535,8 @@ function peripheralIdFromId(id: string): string {
 }
 
 async function discoverAsync(options: { id: string; serviceUUIDsToQuery?: UUID[] }): Promise<any> {
-  if (!ExpoBluetooth.discover) {
-    throw new UnavailabilityError('Bluetooth', 'discover');
+  if (!ExpoBluetooth.discoverAsync) {
+    throw new UnavailabilityError('Bluetooth', 'discoverAsync');
   }
 
   const { serviceUUIDsToQuery, id } = options;

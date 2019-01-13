@@ -41,7 +41,7 @@ public class Peripheral extends BluetoothGattCallback {
   private ScanRecord advertisingData;
   private byte[] advertisingDataBytes;
   protected int advertisingRSSI;
-  private boolean connected = false;
+  protected boolean connected = false;
   private ModuleRegistry moduleRegistry;
   protected BluetoothGatt gatt;
   private Promise writePromise;
@@ -69,7 +69,7 @@ public class Peripheral extends BluetoothGattCallback {
     this.moduleRegistry = moduleRegistry;
   }
 
-  public void connect(Promise callback, Activity activity) {
+  public void connect(Promise promise, Activity activity) {
     if (!connected) {
       BluetoothDevice device = getDevice();
       if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
@@ -77,12 +77,12 @@ public class Peripheral extends BluetoothGattCallback {
       } else {
         gatt = device.connectGatt(activity, false, this, BluetoothDevice.TRANSPORT_LE);
       }
-      callback.resolve(null);
+      promise.resolve(null);
     } else {
-      if (guardGATT(callback)) {
+      if (guardGATT(promise)) {
         return;
       }
-      callback.resolve(null);
+      promise.resolve(null);
     }
   }
 
@@ -103,10 +103,10 @@ public class Peripheral extends BluetoothGattCallback {
 
         sendDisconnectedEvent(errorPayload);
       }
-    } else
+    } else {
       Log.d(BluetoothModule.TAG, "GATT is null");
+    }
   }
-
 
   // TODO: Bacon: [iOS] Are solicitedServiceUUIDs overflowServiceUUIDs possible
   public Bundle advertisementData() {
@@ -179,7 +179,6 @@ public class Peripheral extends BluetoothGattCallback {
 
     BluetoothModule.sendEvent(moduleRegistry, BluetoothModule.EXBluetoothPeripheralDidDiscoverServicesEvent, output);
   }
-
 
   private void sendConnectedEvent(Bundle error) {
     Bundle output = new Bundle();
@@ -354,8 +353,8 @@ public class Peripheral extends BluetoothGattCallback {
     // TODO: Bacon: Send RSSI event here - not done on iOS either
   }
 
-  private void setNotify(UUID serviceUUID, UUID characteristicUUID, Boolean notify, Promise callback) {
-    if (guardIsConnected(callback) || guardGATT(callback)) {
+  private void setNotify(UUID serviceUUID, UUID characteristicUUID, Boolean notify, Promise promise) {
+    if (guardIsConnected(promise) || guardGATT(promise)) {
       return;
     }
 
@@ -365,19 +364,19 @@ public class Peripheral extends BluetoothGattCallback {
     BluetoothGattCharacteristic characteristic = findNotifyCharacteristic(service, characteristicUUID);
 
     if (characteristic == null) {
-      callback.reject(BluetoothModule.ERROR_TAG, "Characteristic " + characteristicUUID + " not found");
+      promise.reject(BluetoothModule.ERROR_TAG, "Characteristic " + characteristicUUID + " not found");
       return;
     }
 
     if (!gatt.setCharacteristicNotification(characteristic, notify)) {
-      callback.reject(BluetoothModule.ERROR_TAG, "Failed to register notification for " + characteristicUUID);
+      promise.reject(BluetoothModule.ERROR_TAG, "Failed to register notification for " + characteristicUUID);
       return;
     }
 
     BluetoothGattDescriptor descriptor = characteristic.getDescriptor(UUIDHelper.uuidFromString(CHARACTERISTIC_NOTIFICATION_CONFIG));
 
     if (descriptor == null) {
-      callback.reject(BluetoothModule.ERROR_TAG, "Set notification failed for " + characteristicUUID);
+      promise.reject(BluetoothModule.ERROR_TAG, "Set notification failed for " + characteristicUUID);
       return;
     }
 
@@ -396,22 +395,22 @@ public class Peripheral extends BluetoothGattCallback {
       if (gatt.writeDescriptor(descriptor)) {
         Log.d(BluetoothModule.TAG, "setNotify complete");
       } else {
-        callback.reject(BluetoothModule.ERROR_TAG, "Failed to set client characteristic notification for " + characteristicUUID);
+        promise.reject(BluetoothModule.ERROR_TAG, "Failed to set client characteristic notification for " + characteristicUUID);
       }
     } catch (Exception e) {
       Log.d(BluetoothModule.TAG, "Error on setNotify", e);
-      callback.reject(BluetoothModule.ERROR_TAG, "Failed to set client characteristic notification for " + characteristicUUID + ", error: " + e.getMessage());
+      promise.reject(BluetoothModule.ERROR_TAG, "Failed to set client characteristic notification for " + characteristicUUID + ", error: " + e.getMessage());
     }
   }
 
-  public void registerNotify(UUID serviceUUID, UUID characteristicUUID, Promise callback) {
+  public void registerNotify(UUID serviceUUID, UUID characteristicUUID, Promise promise) {
     Log.d(BluetoothModule.TAG, "registerNotify");
-    this.setNotify(serviceUUID, characteristicUUID, true, callback);
+    this.setNotify(serviceUUID, characteristicUUID, true, promise);
   }
 
-  public void removeNotify(UUID serviceUUID, UUID characteristicUUID, Promise callback) {
+  public void removeNotify(UUID serviceUUID, UUID characteristicUUID, Promise promise) {
     Log.d(BluetoothModule.TAG, "removeNotify");
-    this.setNotify(serviceUUID, characteristicUUID, false, callback);
+    this.setNotify(serviceUUID, characteristicUUID, false, promise);
   }
 
   // Some devices reuse UUIDs across characteristics, so we can't use service.getCharacteristic(characteristicUUID)
@@ -448,7 +447,6 @@ public class Peripheral extends BluetoothGattCallback {
       return;
     }
 
-
     BluetoothGattService service = gatt.getService(serviceUUID);
     BluetoothGattCharacteristic characteristic = findReadableCharacteristic(service, characteristicUUID);
 
@@ -473,18 +471,18 @@ public class Peripheral extends BluetoothGattCallback {
     // TODO: Bacon: Add Reading code
   }
 
-//  public void refreshCache(Promise callback) {
+//  public void refreshCache(Promise promise) {
 //    try {
 //
 //      Method localMethod = gatt.getClass().getMethod("refresh", new Class[0]);
 //      if (localMethod != null) {
 //        boolean res = ((Boolean) localMethod.invoke(gatt, new Object[0])).booleanValue();
-//        callback.resolve(res);
+//        promise.resolve(res);
 //      } else {
-//        callback.reject(BluetoothModule.ERROR_TAG, "Could not refresh cache for device.");
+//        promise.reject(BluetoothModule.ERROR_TAG, "Could not refresh cache for device.");
 //      }
 //    } catch (Exception localException) {
-//      callback.reject(localException);
+//      promise.reject(localException);
 //    }
 //  }
 

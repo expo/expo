@@ -34,82 +34,63 @@ public class Serialize {
     return Serialize.CharacteristicPermissions_NativeToJSON(characteristic.getPermissions());
   }
 
-
   public static ArrayList<String> CharacteristicPermissions_NativeToJSON(int permissions) {
-
     ArrayList<String> props = new ArrayList<>();
 
     if ((permissions & BluetoothGattCharacteristic.PERMISSION_READ) != 0x0) {
       props.add("read");
     }
-
     if ((permissions & BluetoothGattCharacteristic.PERMISSION_WRITE) != 0x0) {
       props.add("write");
     }
-
     if ((permissions & BluetoothGattCharacteristic.PERMISSION_READ_ENCRYPTED) != 0x0) {
       props.add("readEncrypted");
     }
-
     if ((permissions & BluetoothGattCharacteristic.PERMISSION_WRITE_ENCRYPTED) != 0x0) {
       props.add("writeEncrypted");
     }
-
     if ((permissions & BluetoothGattCharacteristic.PERMISSION_READ_ENCRYPTED_MITM) != 0x0) {
       props.add("readEncryptedMITM");
     }
-
     if ((permissions & BluetoothGattCharacteristic.PERMISSION_WRITE_ENCRYPTED_MITM) != 0x0) {
       props.add("writeEncryptedMITM");
     }
-
     if ((permissions & BluetoothGattCharacteristic.PERMISSION_WRITE_SIGNED) != 0x0) {
       props.add("writeSigned");
     }
-
     if ((permissions & BluetoothGattCharacteristic.PERMISSION_WRITE_SIGNED_MITM) != 0x0) {
       props.add("writeSignedMITM");
     }
-
     return props;
   }
 
   public static ArrayList<String> DescriptorPermissions_NativeToJSON(int permissions) {
-
     ArrayList<String> props = new ArrayList<>();
 
     if ((permissions & BluetoothGattDescriptor.PERMISSION_READ) != 0x0) {
       props.add("read");
     }
-
     if ((permissions & BluetoothGattDescriptor.PERMISSION_WRITE) != 0x0) {
       props.add("write");
     }
-
     if ((permissions & BluetoothGattDescriptor.PERMISSION_READ_ENCRYPTED) != 0x0) {
       props.add("readEncrypted");
     }
-
     if ((permissions & BluetoothGattDescriptor.PERMISSION_WRITE_ENCRYPTED) != 0x0) {
       props.add("writeEncrypted");
     }
-
     if ((permissions & BluetoothGattDescriptor.PERMISSION_READ_ENCRYPTED_MITM) != 0x0) {
       props.add("readEncryptedMITM");
     }
-
     if ((permissions & BluetoothGattDescriptor.PERMISSION_WRITE_ENCRYPTED_MITM) != 0x0) {
       props.add("writeEncryptedMITM");
     }
-
     if ((permissions & BluetoothGattDescriptor.PERMISSION_WRITE_SIGNED) != 0x0) {
       props.add("writeSigned");
     }
-
     if ((permissions & BluetoothGattDescriptor.PERMISSION_WRITE_SIGNED_MITM) != 0x0) {
       props.add("writeSignedMITM");
     }
-
     return props;
   }
 
@@ -120,32 +101,24 @@ public class Serialize {
     if ((properties & BluetoothGattCharacteristic.PROPERTY_BROADCAST) != 0x0) {
       props.add("broadcast");
     }
-
     if ((properties & BluetoothGattCharacteristic.PROPERTY_READ) != 0x0) {
       props.add("read");
     }
-
     if ((properties & BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE) != 0x0) {
       props.add("writeWithoutResponse");
     }
-
     if ((properties & BluetoothGattCharacteristic.PROPERTY_WRITE) != 0x0) {
       props.add("write");
     }
-
     if ((properties & BluetoothGattCharacteristic.PROPERTY_NOTIFY) != 0x0) {
       props.add("notify");
     }
-
     if ((properties & BluetoothGattCharacteristic.PROPERTY_INDICATE) != 0x0) {
       props.add("indicate");
     }
-
     if ((properties & BluetoothGattCharacteristic.PROPERTY_SIGNED_WRITE) != 0x0) {
-      // Android calls this "write with signature", using iOS name for now
       props.add("authenticateSignedWrites");
     }
-
     if ((properties & BluetoothGattCharacteristic.PROPERTY_EXTENDED_PROPS) != 0x0) {
       props.add("extendedProperties");
     }
@@ -203,7 +176,6 @@ public class Serialize {
 
     String characteristicUUIDString = UUIDHelper.uuidToString(characteristic.getUuid());
     String serviceUUIDString = UUIDHelper.uuidToString(characteristic.getService().getUuid());
-
 
     output.putString("id", peripheralUUIDString + "|" + serviceUUIDString + "|" + characteristicUUIDString);
     output.putString("uuid", characteristicUUIDString);
@@ -354,18 +326,6 @@ public class Serialize {
     }
   }
 
-  public static String bytesToHex(byte[] bytes) {
-    char[] hexChars = new char[bytes.length * 2];
-    for (int j = 0; j < bytes.length; j++) {
-      int v = bytes[j] & 0xFF;
-      hexChars[j * 2] = hexArray[v >>> 4];
-      hexChars[j * 2 + 1] = hexArray[v & 0x0F];
-    }
-    return new String(hexChars);
-  }
-
-
-
   public static String bondingState_NativeToJSON(int bondState) {
     if (bondState == BluetoothDevice.BOND_BONDED) {
       return "connected";
@@ -387,28 +347,20 @@ public class Serialize {
   }
 
   public static Bundle Peripheral_NativeToJSON(Peripheral input) {
-      Bundle map = new Bundle();
+      Bundle output = new Bundle();
 
-      try {
-        String name = input.device.getName();
-        map.putString("name", name);
-        map.putString("id", input.getUUIDString()); // mac address
-        map.putString("uuid", input.getUUIDString()); // mac address
-//        map.putInt("rssi", input.advertisingRSSI);
-        map.putString("state", Serialize.bondingState_NativeToJSON(input.device.getBondState()));
-
-        ArrayList services = new ArrayList();
-        if (input.gatt != null) {
-          services = Serialize.ServiceList_NativeToJSON(input.gatt.getServices(), input.getUUIDString());
-        }
-        map.putParcelableArrayList("services", services);
-
-//        map.putBundle("advertisementData", input.advertisementData());
-      } catch (Exception e) { // this shouldn't happen
-        e.printStackTrace();
+      ArrayList services = new ArrayList();
+      if (input.gatt != null && input.gatt.getServices().size() > 0) {
+        services = Serialize.ServiceList_NativeToJSON(input.gatt.getServices(), input.getUUIDString());
       }
+      output.putParcelableArrayList("services", services);
+      output.putString("name", input.device.getName());
+      output.putString("id", input.getUUIDString());
+      output.putString("uuid", input.getUUIDString());
+//        map.putString("state", Serialize.bondingState_NativeToJSON(input.device.getBondState()));
+      output.putString("state", input.connected ? "connected" : "disconnected");
 
-      return map;
+      return output;
   }
 
 }

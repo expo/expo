@@ -243,7 +243,10 @@ class Item extends React.Component {
       this.setState({ isConnecting: true });
       try {
         const peripheralUUID = item.uuid;
-        await Bluetooth.connectAsync({ uuid: peripheralUUID, timeout: 5000 });
+        await Bluetooth.connectAsync({ 
+          uuid: peripheralUUID, 
+          // timeout: 5000 
+        });
         const loadedPeripheral = await Bluetooth.loadPeripheralAsync({
           id: peripheralUUID,
         });
@@ -253,7 +256,7 @@ class Item extends React.Component {
           'Connection Unsuccessful',
           `Make sure "${item.name}" is turned on and in range.`
         );
-        console.log(error);
+        console.log({error});
         // console.error(error);
         // alert('Failed: ' + message);
       } finally {
@@ -368,6 +371,8 @@ export class BluetoothInfoScreen extends React.Component {
   }
   async componentDidMount() {
     const peripheral = this.props.navigation.getParam('peripheral');
+
+    console.log("BATMAN", {peripheral});
     const servicesInfo = await  Promise.all(peripheral.services.map(async (service) => {
       const characteristics = await  Promise.all(service.characteristics.map(async characteristic => {
 
