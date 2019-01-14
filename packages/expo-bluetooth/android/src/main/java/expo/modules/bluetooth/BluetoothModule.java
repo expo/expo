@@ -3,8 +3,13 @@ package expo.modules.bluetooth;
 import android.Manifest;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothClass;
+import android.bluetooth.BluetoothClass.Service;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattDescriptor;
+import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
 import android.bluetooth.le.ScanCallback;
@@ -15,6 +20,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -47,7 +53,7 @@ import static android.bluetooth.BluetoothDevice.DEVICE_TYPE_DUAL;
 import static android.bluetooth.BluetoothDevice.DEVICE_TYPE_LE;
 
 
-public class BluetoothModule extends ExportedModule implements ModuleRegistryConsumer, LifecycleEventListener, ActivityEventListener {
+public class BluetoothModule extends ExportedModule implements ModuleRegistryConsumer, ActivityEventListener {
 
 
   // base UUID used to build 128 bit Bluetooth UUIDs
@@ -82,8 +88,8 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
   protected static final String EXBluetoothTransactionIdKey = "transactionId";
   protected static final String EXBluetoothCharacteristicKey = "characteristic";
   protected static final String EXBluetoothServiceKey = "service";
-  private static final int ENABLE_REQUEST = 539;
-  private final Map<String, Peripheral> peripherals = new LinkedHashMap<>();
+  private static final int ENABLE_REQUEST = 65072;
+  private Map<String, Peripheral> peripherals = new LinkedHashMap<>();
   BluetoothScanManager scanManager;
   private ModuleRegistry mModuleRegistry;
   private BluetoothManager bluetoothManager;
@@ -113,18 +119,31 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
   private Permissions mPermissions;
   @Override
   public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+
+    if (mReceiver != null) {
+      getApplicationContext().unregisterReceiver(mReceiver);
+      mReceiver = null;
+    }
+
     if (mModuleRegistry != null) {
       // Unregister from old UIManager
-      if (mModuleRegistry.getModule(UIManager.class) != null) {
-        mModuleRegistry.getModule(UIManager.class).unregisterLifecycleEventListener(this);
+      if (scanManager != null) {
+        scanManager.stopScan();
+        scanManager = null;
       }
+
+      for (Peripheral peripheral : peripherals.values()) {
+        peripheral.disconnect();
+      }
+      peripherals = new LinkedHashMap<>();
     }
+
     mModuleRegistry = moduleRegistry;
     mPermissions = moduleRegistry.getModule(Permissions.class);
+
     if (mModuleRegistry != null) {
       // Register to new UIManager
       if (mModuleRegistry.getModule(UIManager.class) != null) {
-        mModuleRegistry.getModule(UIManager.class).registerLifecycleEventListener(this);
         mModuleRegistry.getModule(UIManager.class).registerActivityEventListener(this);
       }
       createBluetoothInstance();
@@ -201,10 +220,11 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
   @ExpoMethod
   public void requestMTU(String peripheralUUID, int mtuValue, Promise promise) {
     Peripheral peripheral = _getPeripheralOrReject(peripheralUUID, promise);
-    if (peripheral == null) return;
+    if (peripheral == null) {
+      return;
+    }
     peripheral.requestMTU(mtuValue, promise);
   }
-
 
   private void createBluetoothInstance() {
     if (getBluetoothAdapter() == null) {
@@ -405,11 +425,10 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
   }
 
     private boolean isMissingPermissions() {
-    return mPermissions == null
-        || (
-            mPermissions.getPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-            && mPermissions.getPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
-        );
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        return mPermissions == null || mPermissions.getPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED;
+      }
+      return false;
   }
 
   private boolean guardPermission(Promise promise) {
@@ -527,8 +546,8 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
 
     String serviceUUIDString = (String) options.get("serviceUUID");
     String characteristicUUIDString = (String) options.get("characteristicUUID");
-    UUID serviceUUID = UUIDHelper.uuidFromString(serviceUUIDString);
-    UUID characteristicUUID = UUIDHelper.uuidFromString(characteristicUUIDString);
+    UUID serviceUUID = UUIDHelper.toUUID(serviceUUIDString);
+    UUID characteristicUUID = UUIDHelper.toUUID(characteristicUUIDString);
 
     String operation = (String) options.get("operation");
 
@@ -576,34 +595,71 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
 
     String peripheralUUID = (String) options.get("peripheralUUID");
     Peripheral peripheral = _getPeripheralOrReject(peripheralUUID, promise);
-    if (peripheral == null) return;
-
-    //TODO: Bacon: guard peripheral is connected
-    //TODO: Bacon: guard peripheral has a GATT
-    ArrayList<UUID> serviceUUIDs = Serialize.UUIDList_JSONToNative((ArrayList<String>) options.get("serviceUUIDs"));
-
-    if (options.containsKey("serviceUUID")) {
-      String serviceUUIDString = (String) options.get("serviceUUID");
-
-
-      // TODO: Bacon: Discover services then follow to ensure an event is sent:
-      /*
-        // First: [peripheral discoverServices:serviceUUIDs];
-
-        // Later:
-       [self
-   emit:EXBluetoothPeripheralDidDiscoverServicesEvent
-   data:@{
-          EXBluetoothTransactionIdKey: [NSString stringWithFormat:@"%@|%@", @"scan", peripheralData[@"id"]],
-          EXBluetoothPeripheral: EXNullIfNil(peripheralData),
-          EXBluetoothErrorKey: EXNullIfNil([[self class] NSError_NativeToJSON:error])
-          }];
-      */
-
-      peripheral.retrieveServices(promise);
-      promise.resolve(null);
+    if (peripheral == null) {
       return;
     }
+
+    if (!options.containsKey("serviceUUID")) {
+      peripheral.retrieveServices(promise);
+      return;
+    }
+
+    String serviceUUIDString = (String) options.get("serviceUUID");
+    BluetoothGattService service = _getServiceOrReject(peripheral, serviceUUIDString, promise);
+    if (service == null) {
+      return;
+    }
+
+    if (!options.containsKey("characteristicUUID")) {
+      promise.resolve(null);
+
+      //TODO: Bacon: Are these gotten automatically?
+      Bundle output = new Bundle();
+      Bundle peripheralData = Serialize.Peripheral_NativeToJSON(peripheral);
+      output.putBundle(BluetoothModule.EXBluetoothPeripheral, peripheralData);
+
+      Bundle serviceData = Serialize.Service_NativeToJSON(service, peripheralUUID);
+      output.putBundle(BluetoothModule.EXBluetoothServiceKey, peripheralData);
+
+      String transactionId = "scan|" + serviceData.getString("id");
+      output.putString(BluetoothModule.EXBluetoothTransactionIdKey, transactionId);
+      BluetoothModule.sendEvent(mModuleRegistry, BluetoothModule.EXBluetoothPeripheralDidDiscoverServicesEvent, output);
+      return;
+    }
+
+    String characteristicUUIDString = (String) options.get("characteristicUUID");
+    BluetoothGattCharacteristic characteristic = _getCharacteristicOrReject(service, characteristicUUIDString, promise);
+    if (characteristic == null) {
+      return;
+    }
+
+    if (!options.containsKey("descriptorUUID")) {
+      promise.resolve(null);
+
+      Bundle serviceData = Serialize.Service_NativeToJSON(service, peripheral.getUUIDString());
+      Bundle output = new Bundle();
+      output.putString(BluetoothModule.EXBluetoothTransactionIdKey, "scan|" + serviceData.getString("id") + "|" + characteristicUUIDString);
+      output.putBundle(BluetoothModule.EXBluetoothPeripheral, Serialize.Peripheral_NativeToJSON(peripheral));
+      output.putBundle(BluetoothModule.EXBluetoothServiceKey, serviceData);
+      BluetoothModule.sendEvent(mModuleRegistry, BluetoothModule.EXBluetoothPeripheralDidDiscoverCharacteristicsForServiceEvent, output);
+      return;
+    }
+
+    String descriptorUUIDString = (String) options.get("descriptorUUID");
+    BluetoothGattDescriptor descriptor = _getDescriptorOrReject(characteristic, descriptorUUIDString, promise);
+    if (descriptor == null) {
+      return;
+    }
+    promise.resolve(null);
+
+
+    Bundle characteristicData = Serialize.Characteristic_NativeToJSON(characteristic, peripheral.getUUIDString());
+    Bundle output = new Bundle();
+
+    output.putString(BluetoothModule.EXBluetoothTransactionIdKey, "scan|" + characteristicData.getString("id") + "|" + descriptorUUIDString);
+    output.putBundle(BluetoothModule.EXBluetoothPeripheral, Serialize.Peripheral_NativeToJSON(peripheral));
+    output.putBundle(BluetoothModule.EXBluetoothCharacteristicKey, characteristicData);
+    BluetoothModule.sendEvent(mModuleRegistry, BluetoothModule.EXBluetoothPeripheralDidDiscoverDescriptorsForCharacteristicEvent, output);
   }
 
   private List<Peripheral> peripheralsFromDevices(List<BluetoothDevice> devices) {
@@ -666,6 +722,36 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
     return peripheral;
   }
 
+  private BluetoothGattService _getServiceOrReject(Peripheral peripheral, String serviceUUIDString, Promise promise) {
+    BluetoothGattService service = peripheral.gatt.getService(UUIDHelper.toUUID(serviceUUIDString));
+
+    if (service == null) {
+      promise.reject("ERR_NO_SERVICE", "No valid service with UUID " + serviceUUIDString);
+    }
+
+    return service;
+  }
+
+  private BluetoothGattCharacteristic _getCharacteristicOrReject(BluetoothGattService service, String uuid, Promise promise) {
+    BluetoothGattCharacteristic characteristic = service.getCharacteristic(UUIDHelper.toUUID(uuid));
+
+    if (characteristic == null) {
+      promise.reject("ERR_NO_CHARACTERISTIC", "No valid characteristic with UUID " + uuid);
+    }
+
+    return characteristic;
+  }
+
+  private BluetoothGattDescriptor _getDescriptorOrReject(BluetoothGattCharacteristic characteristic, String uuid, Promise promise) {
+    BluetoothGattDescriptor descriptor = characteristic.getDescriptor(UUIDHelper.toUUID(uuid));
+
+    if (descriptor == null) {
+      promise.reject("ERR_NO_DESCRIPTOR", "No valid descriptor with UUID " + uuid);
+    }
+
+    return descriptor;
+  }
+
   private Peripheral retrieveOrCreatePeripheral(String peripheralUUID) {
     Peripheral peripheral = peripherals.get(peripheralUUID);
     if (peripheral == null) {
@@ -689,7 +775,7 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
 
     for (int i = 0; i < jsonArray.length(); i++) {
       String uuidString = jsonArray.getString(i);
-      serviceUUIDs.add(UUIDHelper.uuidFromString(uuidString));
+      serviceUUIDs.add(UUIDHelper.toUUID(uuidString));
     }
 
     return serviceUUIDs.toArray(new UUID[jsonArray.length()]);
@@ -765,21 +851,4 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
 
   }
 
-  @Override
-  public void onHostResume() {
-
-  }
-
-  @Override
-  public void onHostPause() {
-
-  }
-
-  @Override
-  public void onHostDestroy() {
-    if (scanManager != null) {
-      scanManager.stopScan();
-      scanManager = null;
-    }
-  }
 }

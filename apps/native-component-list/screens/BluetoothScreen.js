@@ -117,7 +117,7 @@ export default class BluetoothScreen extends React.Component {
         throw new Error('Bluetooth Screen: observer: ' + error.message);
       }
 
-      console.log("BLE Screen: observeUpdatesAsync: ", peripherals, error);
+      // console.log("BLE Screen: observeUpdatesAsync: ", peripherals, error);
       this.setState(({ peripherals: currentPeripherals }) => {
         return {
           peripherals: {
@@ -135,13 +135,16 @@ export default class BluetoothScreen extends React.Component {
 
 
     // // Load in one or more peripherals
-    // this.setState({ isScanning: true }, () => {
-    //   Bluetooth.startScanAsync({}, ({ peripheral }) => {
-    //     // this.updatePeripheral(peripheral);
-    //     Bluetooth.stopScanAsync();
-    //     this.setState({ isScanning: false });
-    //   });
-    // });
+    this.setState({ isScanning: true }, () => {
+      Bluetooth.startScanAsync({ callback: (({ peripheral }) => {
+        console.log("Found Device: Holla")
+        if (peripheral.name && peripheral.name !== "") {
+          // this.updatePeripheral(peripheral);
+          Bluetooth.stopScanAsync();
+          this.setState({ isScanning: false });
+        }
+      })});
+    });
   }
 
   componentWillUnmount() {
@@ -243,10 +246,13 @@ class Item extends React.Component {
       this.setState({ isConnecting: true });
       try {
         const peripheralUUID = item.uuid;
-        await Bluetooth.connectAsync({ 
-          uuid: peripheralUUID, 
-          // timeout: 5000 
-        });
+        // await Bluetooth.connectAsync({
+        //   uuid: peripheralUUID,
+        //   // timeout: 5000
+        // });
+
+        // return;
+
         const loadedPeripheral = await Bluetooth.loadPeripheralAsync({
           id: peripheralUUID,
         });
@@ -263,8 +269,8 @@ class Item extends React.Component {
         this.setState({ isConnecting: false });
       }
     } else if (item.state === 'connected') {
-      // await Bluetooth.disconnectAsync({ uuid: item.id });
-      this.props.onPressInfo(this.props.item);
+      await Bluetooth.disconnectAsync({ uuid: item.id });
+      // this.props.onPressInfo(this.props.item);
     }
   };
 
@@ -372,8 +378,9 @@ export class BluetoothInfoScreen extends React.Component {
   async componentDidMount() {
     const peripheral = this.props.navigation.getParam('peripheral');
 
-    console.log("BATMAN", {peripheral});
+    // console.log("BATMAN", {peripheral});
     const servicesInfo = await  Promise.all(peripheral.services.map(async (service) => {
+      console.log("ROBIN", service);
       const characteristics = await  Promise.all(service.characteristics.map(async characteristic => {
 
         if (

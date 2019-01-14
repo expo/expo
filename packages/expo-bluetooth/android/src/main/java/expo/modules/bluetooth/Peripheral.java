@@ -41,11 +41,13 @@ public class Peripheral extends BluetoothGattCallback {
   private ScanRecord advertisingData;
   private byte[] advertisingDataBytes;
   protected int advertisingRSSI;
-  protected boolean connected = false;
+  private boolean connected = false;
   private ModuleRegistry moduleRegistry;
   protected BluetoothGatt gatt;
-  private Promise writePromise;
+  private boolean writePromise = false;
   private Promise requestMTUPromise;
+
+  protected int MTU;
 
   private List<byte[]> writeQueue = new ArrayList<>();
 
@@ -127,7 +129,7 @@ public class Peripheral extends BluetoothGattCallback {
       if (advertisingData.getServiceData() != null) {
         for (Map.Entry<ParcelUuid, byte[]> entry : advertisingData.getServiceData().entrySet()) {
           if (entry.getValue() != null) {
-            serviceData.putString(UUIDHelper.uuidToString((entry.getKey()).getUuid()), Base64.encodeToString(entry.getValue(), Base64.NO_WRAP));
+            serviceData.putString(UUIDHelper.fromUUID((entry.getKey()).getUuid()), Base64.encodeToString(entry.getValue(), Base64.NO_WRAP));
           }
         }
       }
@@ -136,7 +138,7 @@ public class Peripheral extends BluetoothGattCallback {
       ArrayList serviceUuids = new ArrayList();
       if (advertisingData.getServiceUuids() != null && advertisingData.getServiceUuids().size() != 0) {
         for (ParcelUuid uuid : advertisingData.getServiceUuids()) {
-          serviceUuids.add(UUIDHelper.uuidToString(uuid.getUuid()));
+          serviceUuids.add(UUIDHelper.fromUUID(uuid.getUuid()));
         }
       }
       advertising.putParcelableArrayList("serviceUUIDs", serviceUuids);
@@ -200,28 +202,17 @@ public class Peripheral extends BluetoothGattCallback {
 
 
   @Override
-  public void onConnectionStateChange(BluetoothGatt gatta, int status, int newState) {
+  public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
 
     Log.d(BluetoothModule.TAG, "onConnectionStateChange to " + newState + " on peripheral: " + device.getAddress() + " with status" + status);
 
-    this.gatt = gatta;
+    this.gatt = gatt;
 
     if (newState == BluetoothProfile.STATE_CONNECTED) {
-
       connected = true;
 
-      new Handler(Looper.getMainLooper()).post(new Runnable() {
-        @Override
-        public void run() {
-          try {
-            gatt.discoverServices();
-          } catch (NullPointerException e) {
-            Log.d(BluetoothModule.TAG, "onConnectionStateChange connected but gatt of Run method was null");
-          }
-        }
-      });
+      device.createBond();
       sendConnectedEvent(null);
-
     } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
 
       if (connected) {
@@ -236,7 +227,7 @@ public class Peripheral extends BluetoothGattCallback {
 
       sendDisconnectedEvent(null);
 
-      writePromise = null;
+      writePromise = false;
       writeQueue.clear();
       requestMTUPromise = null;
     }
@@ -373,7 +364,7 @@ public class Peripheral extends BluetoothGattCallback {
       return;
     }
 
-    BluetoothGattDescriptor descriptor = characteristic.getDescriptor(UUIDHelper.uuidFromString(CHARACTERISTIC_NOTIFICATION_CONFIG));
+    BluetoothGattDescriptor descriptor = characteristic.getDescriptor(UUIDHelper.toUUID(CHARACTERISTIC_NOTIFICATION_CONFIG));
 
     if (descriptor == null) {
       promise.reject(BluetoothModule.ERROR_TAG, "Set notification failed for " + characteristicUUID);
@@ -491,6 +482,7 @@ public class Peripheral extends BluetoothGattCallback {
       return;
     }
     gatt.discoverServices();
+    promise.resolve(null);
   }
 
   // Some peripherals re-use UUIDs for multiple characteristics so we need to check the properties
@@ -541,14 +533,14 @@ public class Peripheral extends BluetoothGattCallback {
         promise.reject(BluetoothModule.ERROR_TAG, "You have already enqueued another message");
       }
 
-      if (writePromise != null) {
+      if (writePromise == true) {
         promise.reject(BluetoothModule.ERROR_TAG, "You're already writing");
       }
 
-      if (writeQueue.size() == 0 && writePromise == null) {
+      if (writeQueue.size() == 0 && writePromise == false) {
 
         if (BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT == writeType) {
-          writePromise = promise;
+          writePromise = true;
         }
 
         if (data.length > maxByteSize) {
@@ -576,7 +568,7 @@ public class Peripheral extends BluetoothGattCallback {
             writeQueue.addAll(splittedMessage);
             if (!doWrite(characteristic, firstMessage)) {
               writeQueue.clear();
-              writePromise = null;
+              writePromise = false;
               promise.reject(BluetoothModule.ERROR_TAG, "Write failed");
             }
           } else {
@@ -611,7 +603,7 @@ public class Peripheral extends BluetoothGattCallback {
           }
         } else {
           promise.reject(BluetoothModule.ERROR_TAG, "Write failed");
-          writePromise = null;
+          writePromise = false;
         }
       }
     }
@@ -635,6 +627,7 @@ public class Peripheral extends BluetoothGattCallback {
   @Override
   public void onMtuChanged(BluetoothGatt gatt, int mtu, int status) {
     super.onMtuChanged(gatt, mtu, status);
+    MTU = mtu;
     if (requestMTUPromise != null) {
       if (status == BluetoothGatt.GATT_SUCCESS) {
         requestMTUPromise.reject(BluetoothModule.ERROR_TAG, "Error requesting MTU status = " + status);
@@ -670,7 +663,7 @@ public class Peripheral extends BluetoothGattCallback {
   }
 
   private boolean guardIsConnected(Promise promise) {
-    if (isConnected()) {
+    if (!isConnected()) {
       promise.reject(BluetoothModule.ERROR_TAG, "Peripheral is not connected");
       return true;
     }
@@ -678,7 +671,7 @@ public class Peripheral extends BluetoothGattCallback {
   }
 
   private boolean guardGATT(Promise promise) {
-    if (isConnected()) {
+    if (gatt == null) {
       promise.reject(BluetoothModule.ERROR_TAG, "GATT is not defined");
       return true;
     }

@@ -6,20 +6,28 @@ package expo.modules.bluetooth;
 
 public class UUIDHelper {
 
-  // base UUID used to build 128 bit Bluetooth UUIDs
-  public static final String UUID_BASE = "0000XXXX-0000-1000-8000-00805f9b34fb";
+    private static String baseUUIDPrefix = "0000";
+    private static String baseUUIDSuffix = "-0000-1000-8000-00805F9B34FB";
 
   // handle 16 and 128 bit UUIDs
-  public static UUID uuidFromString(String uuid) {
+  public static UUID toUUID(String uuid) {
+        if (uuid == null) return null;
 
-    if (uuid.length() == 4) {
-      uuid = UUID_BASE.replace("XXXX", uuid);
-    }
-    return UUID.fromString(uuid);
+        if (uuid.length() == 4) {
+            uuid = baseUUIDPrefix + uuid + baseUUIDSuffix;
+        } else if (uuid.length() == 8) {
+            uuid = uuid + baseUUIDSuffix;
+        }
+
+        try {
+            return UUID.fromString(uuid);
+        } catch (Throwable e) {
+            return null;
+        }
   }
 
   // return 16 bit UUIDs where possible
-  public static String uuidToString(UUID uuid) {
+  public static String fromUUID(UUID uuid) {
     String longUUID = uuid.toString();
     Pattern pattern = Pattern.compile("0000(.{4})-0000-1000-8000-00805f9b34fb", Pattern.CASE_INSENSITIVE);
     Matcher matcher = pattern.matcher(longUUID);
@@ -31,3 +39,4 @@ public class UUIDHelper {
     }
   }
 }
+

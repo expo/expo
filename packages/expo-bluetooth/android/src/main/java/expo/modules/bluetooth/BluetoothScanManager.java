@@ -71,7 +71,7 @@ public class BluetoothScanManager {
 
     if (serviceUUIDs.size() > 0) {
       for (int i = 0; i < serviceUUIDs.size(); i++) {
-        ScanFilter filter = new ScanFilter.Builder().setServiceUuid(new ParcelUuid(UUIDHelper.uuidFromString((String) serviceUUIDs.get(i)))).build();
+        ScanFilter filter = new ScanFilter.Builder().setServiceUuid(new ParcelUuid(UUIDHelper.toUUID((String) serviceUUIDs.get(i)))).build();
         filters.add(filter);
         Log.d(BluetoothModule.TAG, "Filter service: " + serviceUUIDs.get(i));
       }

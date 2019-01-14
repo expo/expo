@@ -221,6 +221,7 @@ export async function loadPeripheralAsync({ id }, skipConnecting = false) {
 }
 export async function loadChildrenRecursivelyAsync({ id }) {
     const components = id.split('|');
+    console.log({ components });
     if (components.length === 4) {
         // Descriptor ID
         throw new Error('Descriptors have no children');
@@ -234,8 +235,9 @@ export async function loadChildrenRecursivelyAsync({ id }) {
     else if (components.length === 2) {
         // Service ID
         console.log('Load Service ', id);
-        const { service: { characteristics }, } = await discoverCharacteristicsForServiceAsync({ id });
-        return await Promise.all(characteristics.map(characteristic => loadChildrenRecursivelyAsync(characteristic)));
+        const { service, } = await discoverCharacteristicsForServiceAsync({ id });
+        console.log("LOADED CHARACTERISTICS FROM SERVICE", service);
+        return await Promise.all(service.characteristics.map(characteristic => loadChildrenRecursivelyAsync(characteristic)));
     }
     else if (components.length === 1) {
         // Peripheral ID
@@ -249,7 +251,7 @@ export async function loadChildrenRecursivelyAsync({ id }) {
 }
 addListener(({ data, event }) => {
     const { transactionId, peripheral, peripherals, central, advertisementData, rssi, error } = data;
-    console.log("GOT EVENT: ", { data, event });
+    // console.log("GOT EVENT: ", {data: !!data, event});
     if (central) {
         // _central = central;
     }
@@ -272,6 +274,7 @@ addListener(({ data, event }) => {
     if (transactionId) {
         if (transactionId in transactions) {
             const { resolve, reject, callbacks } = transactions[transactionId];
+            console.log('Handle: ', { transactionId, transactions: Object.keys(transactions), event, data: Object.keys(data) });
             if (callbacks) {
                 for (let callback of callbacks) {
                     if (callback instanceof Function) {
@@ -308,7 +311,7 @@ addListener(({ data, event }) => {
             }
         }
         else {
-            console.log('Unhandled transactionId', data, event);
+            console.log('Unhandled transactionId', { transactionId, transactions: Object.keys(transactions), event, data: Object.keys(data) });
             // throw new Error('Unhandled transactionId');
         }
     }
@@ -410,16 +413,17 @@ async function discoverAsync(options) {
         throw new UnavailabilityError('Bluetooth', 'discoverAsync');
     }
     const { serviceUUIDsToQuery, id } = options;
-    const [peripheralUUID, serviceUUID, characteristicUUID] = id.split('|');
-    const transactionId = createTransactionId({ peripheralUUID, serviceUUID, characteristicUUID }, TransactionType.scan);
-    ExpoBluetooth.discoverAsync({
-        peripheralUUID,
-        serviceUUID,
-        characteristicUUID,
-        serviceUUIDsToQuery,
-    });
+    const [peripheralUUID, serviceUUID, characteristicUUID, descriptorUUID] = id.split('|');
+    const transactionId = createTransactionId({ peripheralUUID, serviceUUID, characteristicUUID, descriptorUUID }, TransactionType.scan);
     return new Promise((resolve, reject) => {
+        console.log("discoverAsync(): ", transactionId);
         addCallbackForTransactionId({ resolve, reject }, transactionId);
+        ExpoBluetooth.discoverAsync({
+            peripheralUUID,
+            serviceUUID,
+            characteristicUUID,
+            serviceUUIDsToQuery,
+        });
     });
 }
 function ensureCallbacksArrayForTransactionId(transactionId) {
@@ -436,6 +440,9 @@ function removeCallbackForTransactionId(callback, transactionId) {
     const index = transactions[transactionId].callbacks.indexOf(callback);
     if (index != -1) {
         transactions[transactionId].callbacks.splice(index, 1);
+        if (transactions[transactionId].callbacks.length === 0) {
+            delete transactions[transactionId];
+        }
     }
 }
 //# sourceMappingURL=Bluetooth.js.map

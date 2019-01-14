@@ -25,7 +25,7 @@ public class Serialize {
     ArrayList<UUID> output = new ArrayList<>();
 
     for (String uuidString : input) {
-      output.add(UUIDHelper.uuidFromString(uuidString));
+      output.add(UUIDHelper.toUUID(uuidString));
     }
     return output;
   }
@@ -133,15 +133,16 @@ public class Serialize {
       return null;
     }
 
-    String descriptorUUIDString = UUIDHelper.uuidToString(input.getUuid());
-    String characteristicUUIDString = UUIDHelper.uuidToString(input.getCharacteristic().getUuid());
-    String serviceUUIDString = UUIDHelper.uuidToString(input.getCharacteristic().getService().getUuid());
+    String descriptorUUIDString = UUIDHelper.fromUUID(input.getUuid());
+    String characteristicUUIDString = UUIDHelper.fromUUID(input.getCharacteristic().getUuid());
+    String serviceUUIDString = UUIDHelper.fromUUID(input.getCharacteristic().getService().getUuid());
 
     output.putString("id", peripheralUUIDString + "|" + serviceUUIDString + "|" + characteristicUUIDString + "|" + descriptorUUIDString);
     output.putString("uuid", descriptorUUIDString);
     output.putString("characteristicUUID", characteristicUUIDString);
-//    output.putParcelableArrayList("value", Serialize.bytesToWritableArray(input.getValue()));
-    output.putString("value", Base64.encodeToString(input.getValue(), Base64.NO_WRAP));
+
+    output.putString("value", Base64Helper.fromBase64(input.getValue()));
+
 
     if (input.getPermissions() > 0) {
       output.putStringArrayList("permissions", Serialize.DescriptorPermissions_NativeToJSON(input.getPermissions()));
@@ -153,6 +154,8 @@ public class Serialize {
   }
 
   public static ArrayList<Bundle> DescriptorList_NativeToJSON(List<BluetoothGattDescriptor> input, String peripheralUUIDString) {
+    if (input == null) return null;
+
     ArrayList<Bundle> output = new ArrayList();
     for (BluetoothGattDescriptor value : input) {
       output.add(Serialize.Descriptor_NativeToJSON(value, peripheralUUIDString));
@@ -163,6 +166,8 @@ public class Serialize {
   // Characteristic
 
   public static ArrayList<Bundle> CharacteristicList_NativeToJSON(List<BluetoothGattCharacteristic> input, String peripheralUUIDString) {
+    if (input == null) return null;
+
     ArrayList<Bundle> output = new ArrayList();
     for (BluetoothGattCharacteristic value : input) {
       output.add(Serialize.Characteristic_NativeToJSON(value, peripheralUUIDString));
@@ -170,27 +175,36 @@ public class Serialize {
     return output;
   }
 
+  private static final UUID CLIENT_CHARACTERISTIC_CONFIG_UUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
+
   public static Bundle Characteristic_NativeToJSON(BluetoothGattCharacteristic characteristic, String peripheralUUIDString) {
+    if (characteristic == null) return null;
+
     Bundle output = new Bundle();
 
-
-    String characteristicUUIDString = UUIDHelper.uuidToString(characteristic.getUuid());
-    String serviceUUIDString = UUIDHelper.uuidToString(characteristic.getService().getUuid());
+    String characteristicUUIDString = UUIDHelper.fromUUID(characteristic.getUuid());
+    String serviceUUIDString = UUIDHelper.fromUUID(characteristic.getService().getUuid());
 
     output.putString("id", peripheralUUIDString + "|" + serviceUUIDString + "|" + characteristicUUIDString);
     output.putString("uuid", characteristicUUIDString);
     output.putString("serviceUUID", serviceUUIDString);
     output.putString("peripheralUUID", peripheralUUIDString);
     output.putStringArrayList("properties", Serialize.CharacteristicProperties_NativeToJSON(characteristic.getProperties()));
-//    output.putParcelableArrayList("value", Serialize.bytesToWritableArray(characteristic.getValue()));
-    output.putString("value", Base64.encodeToString(characteristic.getValue(), Base64.NO_WRAP));
+    output.putString("value", Base64Helper.fromBase64(characteristic.getValue()));
     if (characteristic.getPermissions() > 0) {
-      output.putStringArrayList("permissions", Serialize.decodePermissions(characteristic));
+      output.putStringArrayList("permissions", Serialize.CharacteristicPermissions_NativeToJSON(characteristic.getPermissions()));
     }
-
     output.putParcelableArrayList("descriptors", Serialize.DescriptorList_NativeToJSON(characteristic.getDescriptors(), peripheralUUIDString));
 
-    // TODO: Bacon: [iOS] isNotifying ??
+    BluetoothGattDescriptor descriptor = characteristic.getDescriptor(CLIENT_CHARACTERISTIC_CONFIG_UUID);
+    boolean isNotifying = false;
+    if (descriptor != null) {
+      byte[] descriptorValue = descriptor.getValue();
+      if (descriptorValue != null) {
+        isNotifying = (descriptorValue[0] & 0x01) != 0;
+      }
+    }
+    output.putBoolean("isNotifying", isNotifying);
 
     return output;
   }
@@ -198,8 +212,9 @@ public class Serialize {
   // Central
 
   public static Bundle BluetoothAdapter_NativeToJSON(BluetoothAdapter input) {
+    if (input == null) return null;
 
-    if (input != null) {
+
 
       Bundle map = new Bundle();
 
@@ -227,8 +242,7 @@ public class Serialize {
       }
 
       return map;
-    }
-    return null;
+
   }
 
   public static String BluetoothAdapterScanMode_NativeToJSON(int input) {
@@ -262,6 +276,8 @@ public class Serialize {
   // Service
 
   public static ArrayList<Bundle> ServiceList_NativeToJSON(List<BluetoothGattService> input, String peripheralUUIDString) {
+    if (input == null) return null;
+
     ArrayList<Bundle> output = new ArrayList();
     for (BluetoothGattService value : input) {
       output.add(Serialize.Service_NativeToJSON(value, peripheralUUIDString));
@@ -272,14 +288,13 @@ public class Serialize {
   public static Bundle Service_NativeToJSON(BluetoothGattService input, String peripheralUUIDString) {
     if (input == null) return null;
 
-    String serviceUUIDString = UUIDHelper.uuidToString(input.getUuid());
+    String serviceUUIDString = UUIDHelper.fromUUID(input.getUuid());
 
     Bundle output = new Bundle();
     output.putString("id", peripheralUUIDString + "|" + serviceUUIDString);
     output.putString("uuid", serviceUUIDString);
     output.putString("peripheralUUID", peripheralUUIDString);
-
-//    output.putBoolean("isPrimary", input.);
+    output.putBoolean("isPrimary", input.getType() == BluetoothGattService.SERVICE_TYPE_PRIMARY);
     output.putParcelableArrayList("includedServices", Serialize.ServiceList_NativeToJSON(input.getIncludedServices(), peripheralUUIDString));
     output.putParcelableArrayList("characteristics", Serialize.CharacteristicList_NativeToJSON(input.getCharacteristics(), peripheralUUIDString));
     return output;
@@ -310,7 +325,7 @@ public class Serialize {
       case BluetoothGatt.GATT_FAILURE:
         return "A GATT operation failed, errors other than the above";
       default:
-        return "An uknown error occured";
+        return "An unknown error occurred";
     }
   }
 
@@ -339,6 +354,8 @@ public class Serialize {
   // Peripheral
 
   public static ArrayList PeripheralList_NativeToJSON(List<Peripheral> input) {
+    if (input == null) return null;
+
     ArrayList output = new ArrayList();
     for (Peripheral peripheral : input) {
       output.add(Serialize.Peripheral_NativeToJSON(peripheral));
@@ -347,10 +364,13 @@ public class Serialize {
   }
 
   public static Bundle Peripheral_NativeToJSON(Peripheral input) {
-      Bundle output = new Bundle();
+    if (input == null) return null;
 
-      ArrayList services = new ArrayList();
-      if (input.gatt != null && input.gatt.getServices().size() > 0) {
+
+    Bundle output = new Bundle();
+
+      ArrayList<Bundle> services = new ArrayList();
+      if (input.gatt != null && input.gatt.getServices() != null && input.gatt.getServices().size() > 0) {
         services = Serialize.ServiceList_NativeToJSON(input.gatt.getServices(), input.getUUIDString());
       }
       output.putParcelableArrayList("services", services);
@@ -358,9 +378,15 @@ public class Serialize {
       output.putString("id", input.getUUIDString());
       output.putString("uuid", input.getUUIDString());
 //        map.putString("state", Serialize.bondingState_NativeToJSON(input.device.getBondState()));
-      output.putString("state", input.connected ? "connected" : "disconnected");
+      output.putString("state", input.isConnected() ? "connected" : "disconnected");
 
-      return output;
+    if(input.gatt != null) {
+      output.putInt("mtu", input.MTU);
+    } else {
+      output.putInt("mtu", 576); // TODO: Bacon: annotate
+    }
+
+    return output;
   }
 
 }
