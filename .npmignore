@@ -2,6 +2,7 @@
 *.key
 *.mobileprovision
 *.p12
+*.p8
 .expo
 .npmignore
 .vscode
