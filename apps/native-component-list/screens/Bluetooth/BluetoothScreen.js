@@ -100,11 +100,11 @@ export default class BluetoothScreen extends React.Component {
 
   async componentDidMount() {
     await Permissions.askAsync(Permissions.LOCATION);
-    this.stateListener = Bluetooth.observeStateAsync(state => {
+    this.stateListener = await Bluetooth.observeStateAsync(state => {
       console.log('observeStateAsync', state);
       this.setState({ centralState: state });
     });
-    Bluetooth.observeUpdatesAsync(({ peripherals, error }) => {
+    this.subscription = await Bluetooth.observeUpdatesAsync(({ peripherals, error }) => {
       if (error) {
         console.log({ error });
         throw new Error('Bluetooth Screen: observer: ' + error.message);
@@ -126,12 +126,25 @@ export default class BluetoothScreen extends React.Component {
     // // Load in one or more peripherals
     this.setState({ isScanning: true }, () => {
       Bluetooth.startScanAsync({
-        callback: ({ peripheral }) => {
-          console.log('Found Device: Holla');
-          if (peripheral.name && peripheral.name !== '') {
-            // this.updatePeripheral(peripheral);
-            Bluetooth.stopScanAsync();
-            this.setState({ isScanning: false });
+        callback: async ({ peripheral }) => {
+          const hasName = peripheral.name && peripheral.name !== '';
+
+          if (hasName) {
+            const name = peripheral.name.toLowerCase();
+            // TODO: Bacon: Use (serviceUUIDs)
+            const isBacon = name.indexOf('bacon') !== -1;
+            if (isBacon) {
+              console.log('Found Device: Holla');
+
+              // this.updatePeripheral(peripheral);
+              Bluetooth.stopScanAsync();
+              this.setState({ isScanning: false });
+
+              const loadedPeripheral = await Bluetooth.loadPeripheralAsync(peripheral);
+              this.props.navigation.push('BluetoothPeripheralScreen', {
+                peripheral: loadedPeripheral,
+              });
+            }
           }
         },
       });
@@ -141,6 +154,7 @@ export default class BluetoothScreen extends React.Component {
   componentWillUnmount() {
     Bluetooth.stopScanAsync();
     if (this.stateListener) this.stateListener.remove();
+    if (this.subscription) this.subscription.remove();
   }
   componentWillUpdate() {
     LayoutAnimation.easeInEaseOut();

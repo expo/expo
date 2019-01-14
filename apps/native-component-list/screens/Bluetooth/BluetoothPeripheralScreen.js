@@ -4,15 +4,73 @@ import { Characteristics, Descriptors, nativeToJSON, Services } from 'expo-bluet
 import React from 'react';
 import {
   ScrollView,
+  Alert,
   StyleSheet,
-  TouchableOpacity,
   Text,
   TouchableHighlight,
   View,
+  ActivityIndicator,
 } from 'react-native';
 
 import MonoText from '../../components/MonoText';
 import Colors from '../../constants/Colors';
+import BluetoothListItem from './BluetoothListItem';
+
+export default class BluetoothPeripheralScreen extends React.Component {
+  static navigationOptions = ({ navigation }) => ({
+    title: navigation.getParam('peripheral').name,
+  });
+
+  state = {
+    peripheral: {},
+    services: [],
+    sections: [],
+  };
+
+  async componentDidMount() {
+    const peripheral = this.props.navigation.getParam('peripheral');
+
+    this.setState({ peripheral });
+
+    this.subscription = await Bluetooth.observeUpdatesAsync(({ peripherals, error }) => {
+      if (peripheral.id in peripherals) {
+        this.setState({ peripheral: peripherals[peripheral.id] });
+      }
+    });
+
+    const servicesInfo = await decodePeripheral(peripheral);
+    this.setState({ services: servicesInfo });
+  }
+
+  componentWillUnmount() {
+    if (this.subscription) this.subscription.remove();
+  }
+
+  render() {
+    //TODO: Bacon: disconnect button
+    const { state, name, uuid } = this.state.peripheral;
+    const isConnected = state === 'connected';
+
+    return (
+      <ScrollView style={styles.container}>
+        <DataContainer>
+          <DisconnectPeripheralButton name={name} state={state} uuid={uuid} />
+        </DataContainer>
+        <PeripheralView gatt={this.state.peripheral} />
+        <MonoText
+          containerStyle={{
+            borderWidth: 0,
+            flex: 1,
+            marginVertical: 8,
+            paddingVertical: 18,
+            paddingLeft: 12,
+          }}>
+          {JSON.stringify(this.state.peripheral, null, 2)}
+        </MonoText>
+      </ScrollView>
+    );
+  }
+}
 
 class ItemContainer extends React.Component {
   render() {
@@ -61,7 +119,7 @@ async function decodePeripheral(peripheral) {
                 });
               }
             } catch ({ message }) {
-              console.error('BLEScreen: ' + message);
+              console.log('BLEScreen: ' + message);
             }
           }
 
@@ -78,133 +136,251 @@ async function decodePeripheral(peripheral) {
   return servicesInfo;
 }
 
-export default class BluetoothPeripheralScreen extends React.Component {
-  static navigationOptions = ({ navigation }) => ({
-    title: navigation.getParam('peripheral').name,
-  });
-
+class DisconnectPeripheralButton extends React.Component {
   state = {
-    services: [],
-    sections: [],
+    isConnecting: false,
   };
 
-  async componentDidMount() {
-    const peripheral = this.props.navigation.getParam('peripheral');
-    const servicesInfo = await decodePeripheral(peripheral);
-    this.setState({ services: servicesInfo });
-  }
+  onPress = async () => {
+    const { uuid, state } = this.props;
+    this.setState({ isConnecting: true });
+
+    let connected = false;
+    try {
+      if (state === 'connected') {
+        await Bluetooth.disconnectAsync({ uuid });
+      } else {
+        await Bluetooth.connectAsync({ uuid });
+        connected = true;
+      }
+
+      // console.log({ loadedPeripheral });
+    } catch (error) {
+      Alert.alert(
+        'Connection Unsuccessful',
+        `Make sure "${this.props.name}" is turned on and in range.`
+      );
+      console.log({ error });
+      // console.error(error);
+      // alert('Failed: ' + message);
+    } finally {
+      this.setState({ isConnecting: false });
+      if (connected) {
+        this.loadDataAsync();
+      }
+    }
+  };
+
+  loadDataAsync = async () => {
+    try {
+      await Bluetooth.loadPeripheralAsync({
+        id: this.props.uuid,
+      });
+    } catch (error) {
+      Alert.alert('Loading Failed', error.message);
+      console.log({ error });
+    }
+  };
 
   render() {
-    //TODO: Bacon: disconnect button
-    const peripheral = this.props.navigation.getParam('peripheral');
-
-    const { state, uuid } = peripheral;
-    const isConnected = state === 'connected';
-
+    const title = this.props.state === 'connected' ? 'Disconnect' : 'Connect';
     return (
-      <ScrollView style={styles.container}>
-        {isConnected && <DisconnectPeripheralButton uuid={uuid} />}
-
-        {this.state.services.map(item => (
-          <ServiceView key={item.id} item={item} />
-        ))}
-
-        <MonoText
-          containerStyle={{
-            borderWidth: 0,
-            flex: 1,
-            marginVertical: 8,
-            paddingVertical: 18,
-            paddingLeft: 12,
-          }}>
-          {JSON.stringify(peripheral, null, 2)}
-        </MonoText>
-      </ScrollView>
+      <BluetoothListItem
+        title={title}
+        onPress={this.onPress}
+        renderAction={() => {
+          if (this.state.isConnecting) {
+            return <ActivityIndicator />;
+          }
+          return null;
+        }}
+      />
     );
   }
 }
 
-class DisconnectPeripheralButton extends React.Component {
-  onPress = () => {
-    const { uuid } = this.props;
-    Bluetooth.disconnectAsync({ uuid });
-  };
-
+class PeripheralView extends React.Component {
   render() {
+    const gatt: Bluetooth.PeripheralInterface = this.props.gatt;
+
+    const {
+      name,
+      uuid,
+      canSendWriteWithoutResponse,
+      services = [],
+      state,
+      rssi,
+      discoveryTimestamp,
+      advertisementData,
+    } = gatt;
+
+    let discoveryDate;
+    if (discoveryTimestamp) {
+      discoveryDate = new Date(discoveryTimestamp).toISOString();
+    }
     return (
-      <TouchableOpacity onPress={this.onPress}>
-        <Text>Disconnect</Text>
-      </TouchableOpacity>
+      <DataContainer title="Peripheral">
+        {name && <BluetoothListItem title="Name" value={name} />}
+        <BluetoothListItem title="ID" value={uuid} />
+        <BluetoothListItem title="RSSI" value={rssi} />
+        <BluetoothListItem title="Connection State" value={state} />
+        {discoveryDate && <BluetoothListItem title="Discovered" value={discoveryDate} />}
+
+        <ItemListView
+          data={services}
+          renderItem={(item, index) => <ServiceView key={item.id} gatt={item} />}
+        />
+      </DataContainer>
     );
   }
 }
 
 class ServiceView extends React.Component {
   render() {
-    const item: Bluetooth.ServiceInterface = this.props.item;
-    const { isPrimary, uuid, includedServices = [], characteristics = [] } = item;
-    console.log('ServiceView: ', item);
-    return (
-      <View>
-        <Text>{isPrimary ? 'Is Primary!' : 'Secondary'}</Text>
-        <Text>UUID: {uuid}</Text>
+    const gatt: Bluetooth.ServiceInterface = this.props.gatt;
 
-        {characteristics.map(item => (
-          <CharacteristicsView key={item.id} item={item} />
-        ))}
-        {includedServices.map(item => (
-          <ServiceView key={item.id} item={item} />
-        ))}
-      </View>
+    const {
+      isPrimary,
+      uuid,
+      includedServices = [],
+      characteristics = [],
+      parsedValue,
+      specForGATT = {},
+    } = getStaticInfoFromGATT(gatt);
+
+    const priority = isPrimary ? 'Is Primary!' : 'Secondary';
+    return (
+      <DataContainer title="Service">
+        {specForGATT.name && <BluetoothListItem title={'GATT Name'} value={specForGATT.name} />}
+
+        <BluetoothListItem title={'Priority'} value={priority} />
+        <BluetoothListItem title={'GATT Number'} value={uuid} />
+        <ItemListView
+          title={'Characteristics'}
+          data={characteristics}
+          renderItem={(item, index) => <CharacteristicsView key={item.id} gatt={item} />}
+        />
+        <ItemListView
+          title={'Included Services'}
+          data={includedServices}
+          renderItem={(item, index) => <ServiceView key={item.id} gatt={item} />}
+        />
+      </DataContainer>
     );
   }
 }
+
+const DataContainer = ({ title, children }) => (
+  <View
+    style={
+      title && {
+        marginLeft: 12,
+        marginTop: 12,
+        backgroundColor: 'rgba(255,255,255,0.25)',
+        borderLeftWidth: 3,
+        borderLeftColor: Colors.tintColor,
+      }
+    }>
+    {title && (
+      <Text style={[styles.itemText, { fontWeight: 'bold', padding: 16, opacity: 0.7 }]}>
+        {title}
+      </Text>
+    )}
+    {children}
+  </View>
+);
+
+class ItemListView extends React.Component {
+  render() {
+    const { title, data, renderItem, style } = this.props;
+    if (data.length === 0) {
+      return null;
+    }
+    return (
+      <DataContainer title={title}>
+        {data.map((item, index) => renderItem(item, index))}
+      </DataContainer>
+    );
+  }
+}
+
 class CharacteristicsView extends React.Component {
   render() {
-    const item: Bluetooth.CharacteristicInterface = this.props.item;
-    const { properties = [], descriptors = [], value, isNotifying } = item;
+    const gatt: Bluetooth.CharacteristicInterface = this.props.gatt;
+    const {
+      properties = [],
+      uuid,
+      descriptors = [],
+      value,
+      isNotifying,
+      parsedValue,
+      specForGATT = {},
+    } = getStaticInfoFromGATT(gatt);
+
     return (
-      <View>
-        <Text>Characteristic</Text>
-        <ItemContainer>
-          <Text>UUID: {item.uuid}</Text>
-        </ItemContainer>
-        <ItemContainer>
-          <Text>Value: {value}</Text>
-        </ItemContainer>
-        <ItemContainer>
-          <Text>isNotifying: {isNotifying}</Text>
-        </ItemContainer>
-        <View>
-          <Text>Properties</Text>
-          {properties.map(property => (
-            <Text key={item.id + property}>{property}</Text>
-          ))}
-        </View>
-        {descriptors.map((item, index) => (
-          <DescriptorsView key={item.id + ' ' + index} item={item} />
-        ))}
-      </View>
+      <DataContainer>
+        {specForGATT.name && <BluetoothListItem title={'Name'} value={specForGATT.name} />}
+        {!specForGATT.name && <BluetoothListItem title={'GATT Number'} value={uuid} />}
+        {parsedValue && <BluetoothListItem title={'Value'} value={parsedValue} />}
+        {value && <BluetoothListItem title={'Raw Value'} value={value} />}
+        {isNotifying && <BluetoothListItem title={'isNotifying'} value={isNotifying} />}
+        {specForGATT.format && (
+          <BluetoothListItem title={'Decoding Format'} value={specForGATT.format} />
+        )}
+        {properties.length && <BluetoothListItem title={'Properties'} values={properties} />}
+        <ItemListView
+          title={'Descriptors'}
+          data={descriptors}
+          renderItem={(item, index) => <DescriptorsView key={item.id} gatt={item} />}
+        />
+      </DataContainer>
     );
   }
 }
+
 class DescriptorsView extends React.Component {
   render() {
-    const item: Bluetooth.DescriptorInterface = this.props.item;
-    const { uuid, value } = item;
-    return (
-      <View>
-        <Text>Descriptor</Text>
-        <ItemContainer>
-          <Text>UUID: {uuid}</Text>
-        </ItemContainer>
+    const gatt: Bluetooth.DescriptorInterface = this.props.gatt;
+    const { uuid, value, parsedValue, specForGATT = {} } = getStaticInfoFromGATT(gatt);
 
-        <ItemContainer>
-          <Text>Value: {value}</Text>
-        </ItemContainer>
-      </View>
+    return (
+      <DataContainer>
+        {specForGATT.name && <BluetoothListItem title={'Name'} value={specForGATT.name} />}
+        {parsedValue && <BluetoothListItem title={'Value'} value={parsedValue} />}
+        {value && <BluetoothListItem title={'Raw Value'} value={value} />}
+        {specForGATT.format && (
+          <BluetoothListItem title={'Decoding Format'} value={specForGATT.format} />
+        )}
+        <BluetoothListItem title={'GATT Number'} value={uuid} />
+      </DataContainer>
     );
   }
+}
+
+function getStaticDataFromGATT({ id }) {
+  if (!id || id === '') {
+    throw new Error('getStaticDataFromGATT(): Cannot get static data for null GATT number');
+  }
+  const inputValues = [{}, Services, Characteristics, Descriptors];
+  const components = id.split('|');
+  const dataSet = inputValues[components.length - 1];
+  return dataSet[components[components.length - 1]];
+}
+
+function getStaticInfoFromGATT(gatt) {
+  const dataSet = getStaticDataFromGATT(gatt);
+  if (dataSet && gatt.value) {
+    // TODO: Bacon: Add format to each data set item. Since this isn't done lets try converting every value to UTF-8
+
+    const convertedValue = nativeToJSON(gatt.value);
+
+    return {
+      ...gatt,
+      parsedValue: convertedValue,
+      specForGATT: dataSet,
+    };
+  }
+  return gatt;
 }
 
 const styles = StyleSheet.create({
@@ -212,6 +388,9 @@ const styles = StyleSheet.create({
     // paddingVertical: 16,
     flex: 1,
     backgroundColor: '#EFEEF3',
+  },
+  inset: {
+    marginLeft: 12,
   },
   itemContainer: {
     flexDirection: 'row',
