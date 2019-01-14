@@ -480,10 +480,10 @@ EX_EXPORT_METHOD_AS(discoverAsync,
 - (void)centralManagerDidUpdateState:(CBCentralManager *)central {
   if (central.state < CBManagerStatePoweredOff) {
     // All peripherals are now invalid.
-        @synchronized(peripherals) {
+        @synchronized(_peripherals) {
           for (NSString *key in _peripherals) {
             CBPeripheral *peripheral = _peripherals[key];
-  //          [_manager cancelPeripheralConnection:peripheral];
+            [_manager cancelPeripheralConnection:peripheral];
             [_peripherals removeObjectForKey:key];
           }
         }
@@ -492,27 +492,25 @@ EX_EXPORT_METHOD_AS(discoverAsync,
   [self emit:EXBluetoothCentralDidUpdateStateEvent data:@{ EXBluetoothCentral: EXNullIfNil([[self class] CBCentralManager_NativeToJSON:central])}];
 }
 
-//// TODO: Bacon: This may not be needed
-//- (void)centralManager:(CBCentralManager *)central didRetrieveConnectedPeripherals:(NSArray *)peripherals {
-//  [self emit:EXBluetoothCentralDidRetrieveConnectedPeripheralsEvent data:@{
-//                                                                           EXBluetoothCentral: EXNullIfNil([[self class] CBCentralManager_NativeToJSON:central]),
-//
-//                                                                           @"peripherals": EXNullIfNil([[self class] CBPeripheralList_NativeToJSON:peripherals])}];
-//}
-//
-//// TODO: Bacon: This may not be needed
-//- (void)centralManager:(CBCentralManager *)central didRetrievePeripherals:(NSArray *)peripherals {
-//  [self emit:EXBluetoothCentralDidRetrievePeripheralsEvent data:@{
-//                                                                  EXBluetoothCentral: EXNullIfNil([[self class] CBCentralManager_NativeToJSON:central]),
-//                                                                  @"peripherals": EXNullIfNil([[self class] CBPeripheralList_NativeToJSON:peripherals])} ];
-//}
+- (void)centralManager:(CBCentralManager *)central didRetrieveConnectedPeripherals:(NSArray *)peripherals {
+  [self emit:EXBluetoothCentralDidRetrieveConnectedPeripheralsEvent data:@{
+                                                                           EXBluetoothCentral: EXNullIfNil([[self class] CBCentralManager_NativeToJSON:central]),
+
+                                                                           @"peripherals": EXNullIfNil([[self class] CBPeripheralList_NativeToJSON:peripherals])}];
+}
+
+- (void)centralManager:(CBCentralManager *)central didRetrievePeripherals:(NSArray *)peripherals {
+  [self emit:EXBluetoothCentralDidRetrievePeripheralsEvent data:@{
+                                                                  EXBluetoothCentral: EXNullIfNil([[self class] CBCentralManager_NativeToJSON:central]),
+                                                                  @"peripherals": EXNullIfNil([[self class] CBPeripheralList_NativeToJSON:peripherals])} ];
+}
 
 - (void)centralManager:(CBCentralManager *)central
  didDiscoverPeripheral:(CBPeripheral *)peripheral
      advertisementData:(NSDictionary<NSString *,id> *)advertisementData
                   RSSI:(NSNumber *)RSSI
 {
-      @synchronized(peripherals) {
+      @synchronized(_peripherals) {
   [_peripherals setObject:peripheral forKey:[[peripheral identifier] UUIDString]];
       }
   NSDictionary *peripheralData = [[self class] CBPeripheral_NativeToJSON:peripheral];

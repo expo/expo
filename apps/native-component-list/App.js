@@ -10,14 +10,12 @@ import { useScreens } from 'react-native-screens';
 import { NativeModulesProxy } from 'expo-core';
 
 import Icons from './constants/Icons';
-import BluetoothScreen, { BluetoothInfoScreen } from './screens/BluetoothScreen';
-
-console.log('Bacon:::NativeModulesProxy', Object.keys(NativeModulesProxy.ExpoBluetooth));
-
+import BluetoothScreen from './screens/Bluetooth/BluetoothScreen';
+import BluetoothPeripheralScreen from './screens/Bluetooth/BluetoothPeripheralScreen';
 const RootNavigation = createAppContainer(
   createStackNavigator({
     BluetoothScreen,
-    BluetoothInfoScreen,
+    BluetoothPeripheralScreen,
   })
 );
 // import RootNavigation from './screens/GoogleScreen';

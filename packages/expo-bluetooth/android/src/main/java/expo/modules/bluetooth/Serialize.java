@@ -9,12 +9,9 @@ import android.bluetooth.BluetoothGattService;
 import android.bluetooth.le.ScanSettings;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.ParcelUuid;
-import android.util.Base64;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 public class Serialize {
@@ -216,32 +213,32 @@ public class Serialize {
 
 
 
-      Bundle map = new Bundle();
+    Bundle map = new Bundle();
 
-      // Parity
-      map.putString("state", Serialize.AdapterState_NativeToJSON(input.getState()));
-      map.putBoolean("isScanning", input.isDiscovering());
+    // Parity
+    map.putString("state", Serialize.AdapterState_NativeToJSON(input.getState()));
+    map.putBoolean("isScanning", input.isDiscovering());
 
-      // Android only
-      map.putBoolean("isOffloadedScanBatchingSupported", input.isOffloadedScanBatchingSupported());
-      map.putBoolean("isEnabled", input.isEnabled());
-      map.putString("name", input.getName());
-      map.putString("address", input.getAddress());
-      map.putBoolean("isMultipleAdvertisementSupported", input.isMultipleAdvertisementSupported());
-      map.putBoolean("isOffloadedFilteringSupported", input.isOffloadedFilteringSupported());
-      map.putBoolean("isOffloadedScanBatchingSupported", input.isOffloadedScanBatchingSupported());
-      map.putString("scanMode", Serialize.BluetoothAdapterScanMode_NativeToJSON(input.getScanMode()));
+    // Android only
+    map.putBoolean("isOffloadedScanBatchingSupported", input.isOffloadedScanBatchingSupported());
+    map.putBoolean("isEnabled", input.isEnabled());
+    map.putString("name", input.getName());
+    map.putString("address", input.getAddress());
+    map.putBoolean("isMultipleAdvertisementSupported", input.isMultipleAdvertisementSupported());
+    map.putBoolean("isOffloadedFilteringSupported", input.isOffloadedFilteringSupported());
+    map.putBoolean("isOffloadedScanBatchingSupported", input.isOffloadedScanBatchingSupported());
+    map.putString("scanMode", Serialize.BluetoothAdapterScanMode_NativeToJSON(input.getScanMode()));
 
-      // Oreo
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        map.putBoolean("isLe2MPhySupported", input.isLe2MPhySupported());
-        map.putBoolean("isLeCodedPhySupported", input.isLeCodedPhySupported());
-        map.putBoolean("isLeExtendedAdvertisingSupported", input.isLeExtendedAdvertisingSupported());
-        map.putBoolean("isLePeriodicAdvertisingSupported", input.isLePeriodicAdvertisingSupported());
-        map.putInt("leMaximumAdvertisingDataLength", input.getLeMaximumAdvertisingDataLength());
-      }
+    // Oreo
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      map.putBoolean("isLe2MPhySupported", input.isLe2MPhySupported());
+      map.putBoolean("isLeCodedPhySupported", input.isLeCodedPhySupported());
+      map.putBoolean("isLeExtendedAdvertisingSupported", input.isLeExtendedAdvertisingSupported());
+      map.putBoolean("isLePeriodicAdvertisingSupported", input.isLePeriodicAdvertisingSupported());
+      map.putInt("leMaximumAdvertisingDataLength", input.getLeMaximumAdvertisingDataLength());
+    }
 
-      return map;
+    return map;
 
   }
 
@@ -369,16 +366,16 @@ public class Serialize {
 
     Bundle output = new Bundle();
 
-      ArrayList<Bundle> services = new ArrayList();
-      if (input.gatt != null && input.gatt.getServices() != null && input.gatt.getServices().size() > 0) {
-        services = Serialize.ServiceList_NativeToJSON(input.gatt.getServices(), input.getUUIDString());
-      }
-      output.putParcelableArrayList("services", services);
-      output.putString("name", input.device.getName());
-      output.putString("id", input.getUUIDString());
-      output.putString("uuid", input.getUUIDString());
+    ArrayList<Bundle> services = new ArrayList();
+    if (input.gatt != null && input.gatt.getServices() != null && input.gatt.getServices().size() > 0) {
+      services = Serialize.ServiceList_NativeToJSON(input.gatt.getServices(), input.getUUIDString());
+    }
+    output.putParcelableArrayList("services", services);
+    output.putString("name", input.device.getName());
+    output.putString("id", input.getUUIDString());
+    output.putString("uuid", input.getUUIDString());
 //        map.putString("state", Serialize.bondingState_NativeToJSON(input.device.getBondState()));
-      output.putString("state", input.isConnected() ? "connected" : "disconnected");
+    output.putString("state", input.isConnected() ? "connected" : "disconnected");
 
     if(input.gatt != null) {
       output.putInt("mtu", input.MTU);
