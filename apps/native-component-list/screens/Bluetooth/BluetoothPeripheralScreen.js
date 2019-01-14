@@ -258,7 +258,9 @@ class ServiceView extends React.Component {
         <ItemListView
           title={'Characteristics'}
           data={characteristics}
-          renderItem={(item, index) => <CharacteristicsView key={item.id} gatt={item} />}
+          renderItem={(item, index) => (
+            <CharacteristicsView style={{ marginBottom: 8 }} key={item.id} gatt={item} />
+          )}
         />
         <ItemListView
           title={'Included Services'}
@@ -270,17 +272,18 @@ class ServiceView extends React.Component {
   }
 }
 
-const DataContainer = ({ title, children }) => (
+const DataContainer = ({ title, style, children }) => (
   <View
-    style={
+    style={[
       title && {
         marginLeft: 12,
         marginTop: 12,
-        backgroundColor: 'rgba(255,255,255,0.25)',
+        backgroundColor: 'rgba(255,255,255,0.3)',
         borderLeftWidth: 3,
         borderLeftColor: Colors.tintColor,
-      }
-    }>
+      },
+      style,
+    ]}>
     {title && (
       <Text style={[styles.itemText, { fontWeight: 'bold', padding: 16, opacity: 0.7 }]}>
         {title}
@@ -318,7 +321,7 @@ class CharacteristicsView extends React.Component {
     } = getStaticInfoFromGATT(gatt);
 
     return (
-      <DataContainer>
+      <DataContainer style={this.props.style}>
         {specForGATT.name && <BluetoothListItem title={'Name'} value={specForGATT.name} />}
         {!specForGATT.name && <BluetoothListItem title={'GATT Number'} value={uuid} />}
         {parsedValue && <BluetoothListItem title={'Value'} value={parsedValue} />}

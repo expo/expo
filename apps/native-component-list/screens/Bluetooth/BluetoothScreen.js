@@ -123,19 +123,19 @@ export default class BluetoothScreen extends React.Component {
 
     // Bluetooth.startScanAsync();
 
-    // // Load in one or more peripherals
+    const SnapChatSpectaclesServiceUUID = '3E400001-B5A3-F393-E0A9-E50E24DCCA9E';
+    const TileServiceUUID = 'FEED';
+    // Load in one or more peripherals
     this.setState({ isScanning: true }, () => {
       Bluetooth.startScanAsync({
+        /* This will query peripherals with a value found in the peripheral's `advertisementData.serviceUUIDs` */
+        // serviceUUIDsToQuery: [SnapChatSpectaclesServiceUUID, TileServiceUUID],
         callback: async ({ peripheral }) => {
           const hasName = peripheral.name && peripheral.name !== '';
-
           if (hasName) {
             const name = peripheral.name.toLowerCase();
-            // TODO: Bacon: Use (serviceUUIDs)
-            const isBacon = name.indexOf('bacon') !== -1;
+            const isBacon = name.indexOf('baconbook') !== -1; // My computer's name
             if (isBacon) {
-              console.log('Found Device: Holla');
-
               // this.updatePeripheral(peripheral);
               Bluetooth.stopScanAsync();
               this.setState({ isScanning: false });
