@@ -60,6 +60,7 @@ def includeUniversalModule = { name ->
     'expo-gl-cpp',
     'expo-google-sign-in',
     'expo-image-loader-interface',
+    'expo-image-manipulator',
     'expo-image-picker',
     'expo-keep-awake',
     'expo-linear-gradient',

@@ -215,6 +215,8 @@
 		B5FB74A11FF6DADC001C764B /* EXConstantsBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73791FF6DADB001C764B /* EXConstantsBinding.m */; };
 		B5FB74A51FF6DADC001C764B /* EXErrorRecovery.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73811FF6DADB001C764B /* EXErrorRecovery.m */; };
 		B5FB74AA1FF6DADC001C764B /* EXImageManipulator.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB738B1FF6DADB001C764B /* EXImageManipulator.m */; };
+		B5FB74A61FF6DADC001C764B /* EXFacebook.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73831FF6DADB001C764B /* EXFacebook.m */; };
+		B5FB74AB1FF6DADC001C764B /* EXImagePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB738D1FF6DADB001C764B /* EXImagePicker.m */; };
 		B5FB74AC1FF6DADC001C764B /* EXImageUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB738F1FF6DADB001C764B /* EXImageUtils.m */; };
 		B5FB74B01FF6DADC001C764B /* EXScreenOrientation.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73971FF6DADB001C764B /* EXScreenOrientation.m */; };
 		B5FB74B51FF6DADC001C764B /* EXUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73A11FF6DADB001C764B /* EXUtil.m */; };
@@ -729,6 +731,10 @@
 		B5FB73811FF6DADB001C764B /* EXErrorRecovery.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXErrorRecovery.m; sourceTree = "<group>"; };
 		B5FB738A1FF6DADB001C764B /* EXImageManipulator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXImageManipulator.h; sourceTree = "<group>"; };
 		B5FB738B1FF6DADB001C764B /* EXImageManipulator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXImageManipulator.m; sourceTree = "<group>"; };
+		B5FB73821FF6DADB001C764B /* EXFacebook.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXFacebook.h; sourceTree = "<group>"; };
+		B5FB73831FF6DADB001C764B /* EXFacebook.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXFacebook.m; sourceTree = "<group>"; };
+		B5FB738C1FF6DADB001C764B /* EXImagePicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXImagePicker.h; sourceTree = "<group>"; };
+		B5FB738D1FF6DADB001C764B /* EXImagePicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXImagePicker.m; sourceTree = "<group>"; };
 		B5FB738E1FF6DADB001C764B /* EXImageUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXImageUtils.h; sourceTree = "<group>"; };
 		B5FB738F1FF6DADB001C764B /* EXImageUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXImageUtils.m; sourceTree = "<group>"; };
 		B5FB73961FF6DADB001C764B /* EXScreenOrientation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXScreenOrientation.h; sourceTree = "<group>"; };
@@ -1576,6 +1582,8 @@
 				CDBF79F920868287009B25D6 /* EXStoreReview.m */,
 				B5FB738A1FF6DADB001C764B /* EXImageManipulator.h */,
 				B5FB738B1FF6DADB001C764B /* EXImageManipulator.m */,
+				B5FB738C1FF6DADB001C764B /* EXImagePicker.h */,
+				B5FB738D1FF6DADB001C764B /* EXImagePicker.m */,
 				B5FB738E1FF6DADB001C764B /* EXImageUtils.h */,
 				B5FB738F1FF6DADB001C764B /* EXImageUtils.m */,
 				25742BEC21774211003E7453 /* EXNotifications.h */,
@@ -2499,7 +2507,6 @@
 				3159BB3521806E24002D2A81 /* RNSVGEllipse.m in Sources */,
 				BB50E89120B9C0D3003C752D /* RNFlingHandler.m in Sources */,
 				B5276E9D208572380052C13F /* AIRMapOverlay.m in Sources */,
-				B5FB74AA1FF6DADC001C764B /* EXImageManipulator.m in Sources */,
 				CD4BAD342092A30A009A1287 /* EXAR.m in Sources */,
 				783435DE205B8BEE00DD28C3 /* RCTConvert+GMSMapViewType.m in Sources */,
 				BB50E89320B9C0D3003C752D /* RNNativeViewHandler.m in Sources */,

@@ -3,6 +3,8 @@ package expo.modules.barcodescanner;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.google.android.gms.vision.barcode.Barcode;
 
@@ -100,7 +102,7 @@ public class BarCodeScannerModule extends ExportedModule implements ModuleRegist
     final ImageLoader imageLoader = mModuleRegistry.getModule(ImageLoader.class);
     imageLoader.loadImageFromURL(url, new ImageLoader.ResultListener() {
       @Override
-      public void onSuccess(Bitmap bitmap) {
+      public void onSuccess(@NonNull Bitmap bitmap) {
         BarCodeScanner scanner = mBarCodeScannerProvider.createBarCodeDetectorWithContext(getContext());
         scanner.setSettings(new BarCodeScannerSettings() {{
           putTypes(types);
@@ -118,7 +120,7 @@ public class BarCodeScannerModule extends ExportedModule implements ModuleRegist
       }
 
       @Override
-      public void onFailure(Throwable cause) {
+      public void onFailure(@Nullable Throwable cause) {
         promise.reject(ERROR_TAG + "_IMAGE_RETRIEVAL_ERROR", "Could not get the image from given url: '" + url + "'", cause);
       }
     });
