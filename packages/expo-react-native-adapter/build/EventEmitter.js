@@ -40,6 +40,11 @@ export class EventEmitter {
         }
         this._eventEmitter.removeSubscription(nativeEmitterSubscription);
         this._listenerCount--;
+        // Ensure that the emitter's internal state remains correct even if `removeSubscription` is
+        // called again with the same subscription
+        delete subscription[nativeEmitterSubscriptionKey];
+        // Release closed-over references to the emitter
+        subscription.remove = () => { };
         if (!this._listenerCount && Platform.OS === 'android' && this._nativeModule.stopObserving) {
             this._nativeModule.stopObserving();
         }
