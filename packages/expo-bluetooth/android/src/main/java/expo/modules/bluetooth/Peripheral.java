@@ -44,12 +44,7 @@ public class Peripheral extends BluetoothGattCallback {
   private boolean connected = false;
   private ModuleRegistry moduleRegistry;
   protected BluetoothGatt gatt;
-  private boolean writePromise = false;
-  private Promise requestMTUPromise;
-
   protected int MTU;
-
-  private List<byte[]> writeQueue = new ArrayList<>();
 
   public Peripheral(BluetoothDevice device, int advertisingRSSI, byte[] scanRecord, ModuleRegistry moduleRegistry) {
     this.device = device;
@@ -184,54 +179,50 @@ public class Peripheral extends BluetoothGattCallback {
 
   private void sendConnectedEvent(Bundle error) {
     Bundle output = new Bundle();
-//      output.putBundle(BluetoothModule.EXBluetoothCentral, null);
     output.putBundle(BluetoothModule.EXBluetoothPeripheral, Serialize.Peripheral_NativeToJSON(this));
-    output.putString(BluetoothModule.EXBluetoothTransactionIdKey, "connect|" + this.device.getAddress());
+    output.putString(BluetoothModule.EXBluetoothTransactionIdKey, "connect|" + this.getUUIDString());
     output.putBundle(BluetoothModule.EXBluetoothErrorKey, error);
     BluetoothModule.sendEvent(moduleRegistry, BluetoothModule.EXBluetoothCentralDidConnectPeripheralEvent, output);
   }
 
   private void sendDisconnectedEvent(Bundle error) {
     Bundle output = new Bundle();
-//      output.putBundle(BluetoothModule.EXBluetoothCentral, null);
     output.putBundle(BluetoothModule.EXBluetoothPeripheral, Serialize.Peripheral_NativeToJSON(this));
-    output.putString(BluetoothModule.EXBluetoothTransactionIdKey, "disconnect|" + this.device.getAddress());
+    output.putString(BluetoothModule.EXBluetoothTransactionIdKey, "disconnect|" + this.getUUIDString());
     output.putBundle(BluetoothModule.EXBluetoothErrorKey, error);
     BluetoothModule.sendEvent(moduleRegistry, BluetoothModule.EXBluetoothCentralDidDisconnectPeripheralEvent, output);
   }
 
-
   @Override
   public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
-
-    Log.d(BluetoothModule.TAG, "onConnectionStateChange to " + newState + " on peripheral: " + device.getAddress() + " with status" + status);
-
     this.gatt = gatt;
 
-    if (newState == BluetoothProfile.STATE_CONNECTED) {
-      connected = true;
+    switch (newState) {
+      case BluetoothProfile.STATE_CONNECTED:
+        connected = true;
 
-      device.createBond();
-      sendConnectedEvent(null);
-    } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
+        device.createBond();
+        sendConnectedEvent(null);
+        break;
+      case BluetoothProfile.STATE_DISCONNECTED:
+        if (connected) {
+          connected = false;
 
-      if (connected) {
-        connected = false;
-
-        if (gatt != null) {
-          gatt.disconnect();
-          gatt.close();
-          this.gatt = null;
+          if (gatt != null) {
+            gatt.disconnect();
+            gatt.close();
+            this.gatt = null;
+          }
         }
-      }
 
-      sendDisconnectedEvent(null);
-
-      writePromise = false;
-      writeQueue.clear();
-      requestMTUPromise = null;
+        sendDisconnectedEvent(null);
+        break;
+      case BluetoothProfile.STATE_CONNECTING:
+      case BluetoothProfile.STATE_DISCONNECTING:
+      default:
+        // TODO: Bacon: Unhandled
+        break;
     }
-
   }
 
   public void updateRssi(int rssi) {
@@ -245,10 +236,6 @@ public class Peripheral extends BluetoothGattCallback {
   public void updateData(ScanRecord scanRecord) {
     advertisingData = scanRecord;
     advertisingDataBytes = scanRecord.getBytes();
-  }
-
-  public int unsignedToBytes(byte b) {
-    return b & 0xFF;
   }
 
   String getUUIDString() {
@@ -272,7 +259,6 @@ public class Peripheral extends BluetoothGattCallback {
   @Override
   public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
     super.onCharacteristicRead(gatt, characteristic, status);
-    Log.d(BluetoothModule.TAG, "onCharacteristicRead " + characteristic);
 
     Bundle characteristicData = Serialize.Characteristic_NativeToJSON(characteristic, this.getUUIDString());
     Bundle output = new Bundle();
@@ -287,19 +273,13 @@ public class Peripheral extends BluetoothGattCallback {
   public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
     super.onCharacteristicWrite(gatt, characteristic, status);
 
-    if (writeQueue.size() > 0) {
-      byte[] data = writeQueue.get(0);
-      writeQueue.remove(0);
-      doWrite(characteristic, data);
-    } else {
-      Bundle characteristicData = Serialize.Characteristic_NativeToJSON(characteristic, this.getUUIDString());
-      Bundle output = new Bundle();
-      output.putString(BluetoothModule.EXBluetoothTransactionIdKey, "write|" + characteristicData.getString("id"));
-      output.putBundle(BluetoothModule.EXBluetoothPeripheral, Serialize.Peripheral_NativeToJSON(this));
-      output.putBundle(BluetoothModule.EXBluetoothCharacteristicKey, characteristicData);
-      output.putBundle(BluetoothModule.EXBluetoothErrorKey, errorFromGattStatus(status));
-      BluetoothModule.sendEvent(moduleRegistry, BluetoothModule.EXBluetoothPeripheralDidWriteValueForCharacteristicEvent, output);
-    }
+    Bundle characteristicData = Serialize.Characteristic_NativeToJSON(characteristic, this.getUUIDString());
+    Bundle output = new Bundle();
+    output.putString(BluetoothModule.EXBluetoothTransactionIdKey, "write|" + characteristicData.getString("id"));
+    output.putBundle(BluetoothModule.EXBluetoothPeripheral, Serialize.Peripheral_NativeToJSON(this));
+    output.putBundle(BluetoothModule.EXBluetoothCharacteristicKey, characteristicData);
+    output.putBundle(BluetoothModule.EXBluetoothErrorKey, errorFromGattStatus(status));
+    BluetoothModule.sendEvent(moduleRegistry, BluetoothModule.EXBluetoothPeripheralDidWriteValueForCharacteristicEvent, output);
   }
 
   private Bundle errorFromGattStatus(int status) {
@@ -342,6 +322,151 @@ public class Peripheral extends BluetoothGattCallback {
       updateRssi(rssi);
     }
     // TODO: Bacon: Send RSSI event here - not done on iOS either
+  }
+
+  public BluetoothGattService getServiceOrReject(BluetoothGatt peripheral, String serviceUUIDString, Promise promise) {
+    UUID uuid = UUIDHelper.toUUID(serviceUUIDString);
+    BluetoothGattService service = peripheral.getService(uuid);
+    if (service == null) {
+      BluetoothError.reject(promise, new BluetoothError(BluetoothError.Codes.NO_SERVICE, BluetoothError.Messages.NO_SERVICE));
+      return null;
+    }
+    return service;
+  }
+
+  public BluetoothGattCharacteristic getCharacteristicOrReject(BluetoothGattService service, String characteristicUUIDString, Promise promise) {
+    UUID uuid = UUIDHelper.toUUID(characteristicUUIDString);
+    BluetoothGattCharacteristic characteristic = service.getCharacteristic(uuid);
+    if (characteristic == null) {
+      BluetoothError.reject(promise, new BluetoothError(BluetoothError.Codes.NO_CHARACTERISTIC, BluetoothError.Messages.NO_CHARACTERISTIC));
+      return null;
+    }
+    return characteristic;
+  }
+
+  public BluetoothGattDescriptor getDescriptorOrReject(BluetoothGattCharacteristic characteristic, String descriptorUUIDString, Promise promise) {
+    UUID uuid = UUIDHelper.toUUID(descriptorUUIDString);
+    BluetoothGattDescriptor descriptor = characteristic.getDescriptor(uuid);
+    if (descriptor == null) {
+      BluetoothError.reject(promise, new BluetoothError(BluetoothError.Codes.NO_DESCRIPTOR, BluetoothError.Messages.NO_DESCRIPTOR));
+      return null;
+    }
+    return descriptor;
+  }
+
+
+  public void updateDescriptorAsync(
+      final Map<String, Object> options,
+      final Promise promise
+  ) {
+    if (guardIsConnected(promise) || guardGATT(promise)) {
+      return;
+    }
+
+    BluetoothGattService service = getServiceOrReject(gatt, (String) options.get("serviceUUID"), promise);
+    if (service == null) {
+      return;
+    }
+    BluetoothGattCharacteristic characteristic = getCharacteristicOrReject(service, (String) options.get("characteristicUUID"), promise);
+    if (characteristic == null) {
+      return;
+    }
+    BluetoothGattDescriptor descriptor = getDescriptorOrReject(characteristic, (String) options.get("descriptorUUID"), promise);
+    if (descriptor == null) {
+      return;
+    }
+
+    String characteristicPropertiesString = (String) options.get("characteristicProperties");
+    int characteristicProperty = Serialize.CharacteristicProperties_JSONToNative(characteristicPropertiesString);
+
+    switch (characteristicProperty) {
+      case BluetoothGattCharacteristic.PROPERTY_READ:
+        if (!gatt.readDescriptor(descriptor)) {
+          //TODO: Bacon: Full breakout - match iOS
+          BluetoothError.reject(promise, "Failed to read descriptor: " + descriptor.getUuid().toString());
+          return;
+        }
+        promise.resolve(null);
+        return;
+      case BluetoothGattCharacteristic.PROPERTY_WRITE:
+      case BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE:
+//        // TODO: Bacon: This is different to iOS
+        List data = (List) options.get("data");
+        byte[] decoded = Serialize.Base64_JSONToNative(data);
+//        // TODO: Bacon: This should be in options?
+        int writeType = BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT;
+        if (characteristicProperty == BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE) {
+          writeType = BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE;
+        }
+        // TODO: Bacon: Write without notification?
+        descriptor.setValue(decoded);
+
+        if (!gatt.writeDescriptor(descriptor)) {
+          BluetoothError.reject(promise, "Failed to write to descriptor: " + descriptor.getUuid().toString());
+          return;
+        }
+        promise.resolve(null);
+        return;
+      default:
+        //TODO: Bacon: Add characteristicProperty error
+        BluetoothError.reject(promise, new BluetoothError(BluetoothError.Codes.UNIMPLEMENTED, BluetoothError.Messages.UNIMPLEMENTED));
+        return;
+    }
+  }
+
+  public void updateCharacteristicAsync(
+      final Map<String, Object> options,
+      final Promise promise
+  ) {
+    if (guardIsConnected(promise) || guardGATT(promise)) {
+      return;
+    }
+
+    BluetoothGattService service = getServiceOrReject(gatt, (String) options.get("serviceUUID"), promise);
+    if (service == null) {
+      return;
+    }
+    BluetoothGattCharacteristic characteristic = getCharacteristicOrReject(service, (String) options.get("characteristicUUID"), promise);
+    if (characteristic == null) {
+      return;
+    }
+
+    String characteristicPropertiesString = (String) options.get("characteristicProperties");
+    int characteristicProperty = Serialize.CharacteristicProperties_JSONToNative(characteristicPropertiesString);
+
+    switch (characteristicProperty) {
+      case BluetoothGattCharacteristic.PROPERTY_READ:
+        if (!gatt.readCharacteristic(characteristic)) {
+          //TODO: Bacon: Full breakout - match iOS
+          BluetoothError.reject(promise, "Failed to read characteristic: " + characteristic.getUuid().toString());
+          return;
+        }
+        promise.resolve(null);
+        return;
+      case BluetoothGattCharacteristic.PROPERTY_WRITE:
+      case BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE:
+//        // TODO: Bacon: This is different to iOS
+        List data = (List) options.get("data");
+        byte[] decoded = Serialize.Base64_JSONToNative(data);
+//        // TODO: Bacon: This should be in options?
+        int writeType = BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT;
+        if (characteristicProperty == BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE) {
+          writeType = BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE;
+        }
+        // TODO: Bacon: Write without notification?
+        characteristic.setValue(decoded);
+
+        if (!gatt.writeCharacteristic(characteristic)) {
+          BluetoothError.reject(promise, "Failed to write to characteristic: " + characteristic.getUuid().toString());
+          return;
+        }
+        promise.resolve(null);
+        return;
+      default:
+        //TODO: Bacon: Add characteristicProperty error
+        BluetoothError.reject(promise, new BluetoothError(BluetoothError.Codes.UNIMPLEMENTED, BluetoothError.Messages.UNIMPLEMENTED));
+        return;
+    }
   }
 
   private void setNotify(UUID serviceUUID, UUID characteristicUUID, Boolean notify, Promise promise) {
@@ -433,33 +558,16 @@ public class Peripheral extends BluetoothGattCallback {
     }
   }
 
-  public void read(UUID serviceUUID, UUID characteristicUUID, Promise promise) {
-    if (guardIsConnected(promise) || guardGATT(promise)) {
-      return;
-    }
-
-    BluetoothGattService service = gatt.getService(serviceUUID);
-    BluetoothGattCharacteristic characteristic = findReadableCharacteristic(service, characteristicUUID);
-
-    if (characteristic == null) {
-      promise.reject(BluetoothModule.ERROR_TAG, "Characteristic " + characteristicUUID + " not found.");
-    } else {
-      if (!gatt.readCharacteristic(characteristic)) {
-        promise.reject(BluetoothModule.ERROR_TAG, "Read failed");
-      }
-    }
-  }
-
   public void readRSSI(Promise promise) {
     if (guardIsConnected(promise) || guardGATT(promise)) {
       return;
     }
 
     if (!gatt.readRemoteRssi()) {
-      promise.reject(BluetoothModule.ERROR_TAG, "Failed  to read RSSI from peripheral: " + getUUIDString());
+      BluetoothError.reject(promise, "Failed  to read RSSI from peripheral: " + getUUIDString());
       return;
     }
-    // TODO: Bacon: Add Reading code
+    promise.resolve(null);
   }
 
 //  public void refreshCache(Promise promise) {
@@ -506,128 +614,39 @@ public class Peripheral extends BluetoothGattCallback {
     return null;
   }
 
-  public boolean doWrite(BluetoothGattCharacteristic characteristic, byte[] data) {
-    characteristic.setValue(data);
-
-    if (!gatt.writeCharacteristic(characteristic)) {
-      Log.d(BluetoothModule.TAG, "Error on doWrite");
-      return false;
-    }
-    return true;
-  }
-
-  public void write(UUID serviceUUID, UUID characteristicUUID, byte[] data, Integer maxByteSize, Integer queueSleepTime, int writeType, Promise promise) {
+  public void requestConnectionPriority(int connectionPriority, Promise promise) {
     if (guardIsConnected(promise) || guardGATT(promise)) {
       return;
     }
-
-    BluetoothGattService service = gatt.getService(serviceUUID);
-    BluetoothGattCharacteristic characteristic = findWritableCharacteristic(service, characteristicUUID, writeType);
-
-    if (characteristic == null) {
-      String message = "Could not find characteristic with UUID " + characteristicUUID + " on service with UUID " + serviceUUID + " on peripheral with UUID " + this.getUUIDString();
-      promise.reject("ERR_NO_CHARACTERISTIC", message);
+    if (gatt.requestConnectionPriority(connectionPriority)) {
+      BluetoothError.reject(promise, "Failed to request connection priority: " + connectionPriority);
       return;
     }
-
-    if (writeQueue.size() > 0 || writePromise == true) {
-      promise.reject(BluetoothModule.ERROR_TAG, "A write operation is currently in progress.");
-      return;
-    }
-
-    // Bacon: If the message is larger than the max write-size
-    if (data.length > maxByteSize) {
-      if (BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT == writeType) {
-        writePromise = true;
-      }
-
-      // TODO: Bacon: Maybe we should do this in JS as it could apply to iOS as well.
-      int dataLength = data.length;
-      int count = 0;
-      byte[] initialMessage = null;
-      List<byte[]> messageFragments = new ArrayList<>();
-
-      while (count < dataLength && (dataLength - count > maxByteSize)) {
-        if (count == 0) {
-          initialMessage = Arrays.copyOfRange(data, count, count + maxByteSize);
-        } else {
-          byte[] fragment = Arrays.copyOfRange(data, count, count + maxByteSize);
-          messageFragments.add(fragment);
-        }
-        count += maxByteSize;
-      }
-      if (count < dataLength) {
-        byte[] splitMessage = Arrays.copyOfRange(data, count, data.length);
-        messageFragments.add(splitMessage);
-      }
-
-      if (BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT == writeType) {
-        writeQueue.addAll(messageFragments);
-        if (!doWrite(characteristic, initialMessage)) {
-          writeQueue.clear();
-          writePromise = false;
-          promise.reject(BluetoothModule.ERROR_TAG, "Failed to write a default message to characteristic: " + characteristic.getUuid().toString());
-          return;
-        }
-      } else {
-        // TODO: Bacon: This is risky. May need to add a timer for bailing out.
-        try {
-          if (!doWrite(characteristic, initialMessage)) {
-            promise.reject(BluetoothModule.ERROR_TAG, "Failed to write initial headless message to characteristic: " + characteristic.getUuid().toString());
-            return;
-          }
-          Thread.sleep(queueSleepTime);
-          for (byte[] message : messageFragments) {
-            if (!doWrite(characteristic, message)) {
-              promise.reject(BluetoothModule.ERROR_TAG, "Failed to write headless message fragment to characteristic: " + characteristic.getUuid().toString());
-              return;
-            }
-            Thread.sleep(queueSleepTime);
-          }
-          promise.resolve(null);
-          return;
-        } catch (InterruptedException e) {
-          promise.reject(e);
-          return;
-        }
-      }
-    } else if (doWrite(characteristic, data) && BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE == writeType) {
-      promise.resolve(null);
-      return;
-    }
-
-    promise.reject(BluetoothModule.ERROR_TAG, "Failed to write message to characteristic: " + characteristic.getUuid().toString());
-    writePromise = false;
-    return;
-  }
-
-  public void requestConnectionPriority(int connectionPriority, Promise promise) {
-    if (guardGATT(promise)) {
-      return;
-    }
-    promise.resolve(gatt.requestConnectionPriority(connectionPriority));
+    promise.resolve(null);
   }
 
   public void requestMTU(int mtu, Promise promise) {
     if (guardIsConnected(promise) || guardGATT(promise)) {
       return;
     }
-    requestMTUPromise = promise;
-    gatt.requestMtu(mtu);
+    if (gatt.requestMtu(mtu)) {
+      BluetoothError.reject(promise, "Failed to request MTU: " + mtu);
+      return;
+    }
+    promise.resolve(null);
   }
 
   @Override
   public void onMtuChanged(BluetoothGatt gatt, int mtu, int status) {
     super.onMtuChanged(gatt, mtu, status);
     MTU = mtu;
-    if (requestMTUPromise != null) {
-      if (status == BluetoothGatt.GATT_SUCCESS) {
-        requestMTUPromise.reject(BluetoothModule.ERROR_TAG, "Error requesting MTU status = " + status);
-        return;
-      }
-      requestMTUPromise.resolve(mtu);
-      requestMTUPromise = null;
-    }
+
+    Bundle output = new Bundle();
+//      output.putBundle(BluetoothModule.EXBluetoothCentral, null);
+    output.putInt("mtu", mtu);
+    output.putString(BluetoothModule.EXBluetoothTransactionIdKey, "mtu|" + this.device.getAddress());
+    output.putBundle(BluetoothModule.EXBluetoothErrorKey, errorFromGattStatus(status));
+    BluetoothModule.sendEvent(moduleRegistry, BluetoothModule.EXBluetoothCentralDidConnectPeripheralEvent, output);
   }
 
   // Some peripherals re-use UUIDs for multiple characteristics so we need to check the properties
@@ -656,7 +675,7 @@ public class Peripheral extends BluetoothGattCallback {
 
   private boolean guardIsConnected(Promise promise) {
     if (!isConnected()) {
-      promise.reject(BluetoothModule.ERROR_TAG, "Peripheral is not connected");
+      promise.reject(BluetoothModule.ERROR_TAG, "Peripheral is not connected: " + this.getUUIDString());
       return true;
     }
     return false;

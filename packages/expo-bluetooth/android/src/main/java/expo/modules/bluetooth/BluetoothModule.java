@@ -56,8 +56,6 @@ import static android.bluetooth.BluetoothDevice.DEVICE_TYPE_LE;
 public class BluetoothModule extends ExportedModule implements ModuleRegistryConsumer, ActivityEventListener {
 
 
-  // base UUID used to build 128 bit Bluetooth UUIDs
-  public static final String UUID_BASE = "0000XXXX-0000-1000-8000-00805f9b34fb";
   protected static final String TAG = "ExpoBluetooth";
   protected static final String ERROR_TAG = "ERR_BLUETOOTH";
   private static final String EXBluetoothEvent = "bluetoothEvent";
@@ -219,6 +217,9 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
   // TODO: Bacon: Add to JS - Android only
   @ExpoMethod
   public void requestMTU(String peripheralUUID, int mtuValue, Promise promise) {
+    if (guardPeripheralAction(promise)) {
+      return;
+    }
     Peripheral peripheral = _getPeripheralOrReject(peripheralUUID, promise);
     if (peripheral == null) {
       return;
@@ -326,59 +327,6 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
     getApplicationContext().registerReceiver(mReceiver, filter);
   }
 
-//  @ExpoMethod
-//  public void initializeManagerAsync(
-//      final Map<String, Object> options,
-//      final Promise promise
-//  ) {
-//
-//    if (guardBluetoothAvailability(promise)) {
-//      return;
-//    }
-//
-//    scanManager = new BluetoothScanManager(getContext(), mModuleRegistry, new ScanCallback() {
-//      @Override
-//      public void onScanResult(final int callbackType, final ScanResult result) {
-//
-//        mModuleRegistry.getModule(UIManager.class).runOnUiQueueThread(new Runnable() {
-//          @Override
-//          public void run() {
-//
-//            Peripheral peripheral = savePeripheral(result.getDevice(), result.getRssi(), result.getScanRecord());
-//
-//            Bundle peripheralData = peripheral.asWritableMap();
-//
-//            Bundle output = new Bundle();
-//            //TODO: Bacon: Add RSSI & Advertisment data... Are they better off bundled in the device (peripheral)
-//            output.putInt("rssi", result.getRssi());
-////            output.putBundle("advertisementData", Serialize.advertisementData_NativeToJSON() );
-//            output.putBundle(EXBluetoothPeripheral, peripheralData);
-//
-//            Bundle central = Serialize.BluetoothAdapter_NativeToJSON(getBluetoothAdapter());
-//            output.putBundle(EXBluetoothCentral, central);
-//
-//            BluetoothModule.sendEvent(mModuleRegistry, EXBluetoothCentralDidDiscoverPeripheralEvent, output);
-//          }
-//        });
-//      }
-//
-//      @Override
-//      public void onBatchScanResults(final List<ScanResult> results) {
-//      }
-//
-//      @Override
-//      public void onScanFailed(final int errorCode) {
-//        Bundle map = new Bundle();
-//        BluetoothModule.sendEvent(mModuleRegistry, "BluetoothManagerStopScan", map);
-//      }
-//    });
-//
-//    IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
-//    filter.addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
-//    getContext().registerReceiver(mReceiver, filter);
-//    promise.resolve(null);
-//  }
-
   // TODO: Bacon: Done Maybe?
   @ExpoMethod
   public void enableBluetoothAsync(
@@ -417,7 +365,7 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
   public void stopScanAsync(
       final Promise promise
   ) {
-    if (guardBluetoothAvailability(promise) || guardPermission(promise) || guardBluetoothEnabled(promise) || guardBluetoothScanning(promise)) {
+    if (guardPeripheralAction(promise)) {
       return;
     }
     scanManager.stopScan();
@@ -440,6 +388,10 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
     return false;
   }
 
+  private boolean guardPeripheralAction(Promise promise) {
+    return (guardBluetoothAvailability(promise) || guardPermission(promise) || guardBluetoothEnabled(promise) || guardBluetoothScanning(promise));
+  }
+
   // TODO: Bacon: Maybe done?
   @ExpoMethod
   public void startScanAsync(
@@ -447,7 +399,7 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
       final Map<String, Object> options,
       final Promise promise
   ) {
-    if (guardBluetoothAvailability(promise) || guardPermission(promise) || guardBluetoothEnabled(promise) || guardBluetoothScanning(promise)) {
+    if (guardPeripheralAction(promise)) {
       return;
     }
     removeAllCachedPeripherals();
@@ -465,6 +417,9 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
   public void getCentralAsync(
       final Promise promise
   ) {
+    if (guardBluetoothAvailability(promise) || guardBluetoothEnabled(promise) || guardPermission(promise)) {
+      return;
+    }
     BluetoothAdapter adapter = getBluetoothAdapter();
     promise.resolve(Serialize.BluetoothAdapter_NativeToJSON(adapter));
   }
@@ -472,9 +427,11 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
   // TODO: Bacon: Done!
   @ExpoMethod
   public void getPeripheralsAsync(
-      final Map<String, Object> options,
       final Promise promise
   ) {
+    if (guardPeripheralAction(promise)) {
+      return;
+    }
     Map<String, Peripheral> peripheralsCopy = new LinkedHashMap<>(peripherals);
     ArrayList<Peripheral> input = new ArrayList<>(peripheralsCopy.values());
     promise.resolve(Serialize.PeripheralList_NativeToJSON(input));
@@ -483,17 +440,19 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
   // TODO: Bacon: Done!
   @ExpoMethod
   public void getBondedPeripheralsAsync(
-      final Map<String, Object> options,
       final Promise promise
   ) {
+    if (guardPeripheralAction(promise)) {
+      return;
+    }
     ArrayList bonded = new ArrayList<>();
     Set<BluetoothDevice> bondedDevices = getBluetoothAdapter().getBondedDevices();
     for (BluetoothDevice device : bondedDevices) {
       device.getBondState();
       int type = device.getType();
       if (type == DEVICE_TYPE_LE || type == DEVICE_TYPE_DUAL) {
-        Peripheral p = new Peripheral(device, mModuleRegistry);
-        bonded.add(p);
+        Peripheral peripheral = new Peripheral(device, mModuleRegistry);
+        bonded.add(peripheral);
       }
     }
     promise.resolve(Serialize.PeripheralList_NativeToJSON(bonded));
@@ -502,6 +461,9 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
   // TODO: Bacon: Done!
   @ExpoMethod
   public void getConnectedPeripheralsAsync(List serviceUUIDs, final Promise promise) {
+    if (guardPeripheralAction(promise)) {
+      return;
+    }
     List<BluetoothDevice> peripherals = getBluetoothManager().getConnectedDevices(BluetoothProfile.GATT);
     promise.resolve(Serialize.PeripheralList_NativeToJSON(peripheralsFromDevices(peripherals)));
   }
@@ -512,6 +474,9 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
       final Map<String, Object> options,
       final Promise promise
   ) {
+    if (guardPeripheralAction(promise)) {
+      return;
+    }
     String peripheralUUID = (String) options.get("uuid");
     Peripheral peripheral = retrieveOrCreatePeripheral(peripheralUUID);
     if (peripheral == null) {
@@ -528,99 +493,46 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
       final Map<String, Object> options,
       final Promise promise
   ) {
-    String peripheralUUID = (String) options.get("uuid");
-    Peripheral peripheral = _getPeripheralOrReject(peripheralUUID, promise);
-    if (peripheral == null) return;
+    if (guardPeripheralAction(promise)) {
+      return;
+    }
+    Peripheral peripheral = _getPeripheralOrReject((String) options.get("uuid"), promise);
+    if (peripheral == null) {
+      return;
+    }
     peripheral.readRSSI(promise);
   }
 
-  //TODO: Bacon: Maybe break this out into another function because it doesn't make sense on android like it does on iOS
   @ExpoMethod
   public void updateCharacteristicAsync(
       final Map<String, Object> options,
       final Promise promise
   ) {
-
-    Peripheral peripheral = _getPeripheralOrReject((String) options.get("peripheralUUID"), promise);
-    if (peripheral == null) return;
-
-    String serviceUUIDString = (String) options.get("serviceUUID");
-    String characteristicUUIDString = (String) options.get("characteristicUUID");
-    UUID serviceUUID = UUIDHelper.toUUID(serviceUUIDString);
-    UUID characteristicUUID = UUIDHelper.toUUID(characteristicUUIDString);
-
-    String characteristicProperties = (String) options.get("characteristicProperties");
-
-    int gattCharacteristic = Serialize.CharacteristicProperties_JSONToNative(characteristicProperties);
-    switch (gattCharacteristic) {
-      case BluetoothGattCharacteristic.PROPERTY_READ:
-        //TODO: Bacon: Done??
-        peripheral.read(serviceUUID, characteristicUUID, promise);
-        return;
-      case BluetoothGattCharacteristic.PROPERTY_WRITE:
-      case BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE:
-        // TODO: Bacon: This is different to iOS
-        List data = (List) options.get("data");
-        byte[] decoded = new byte[data.size()];
-        for (int i = 0; i < data.size(); i++) {
-          decoded[i] = new Integer((Integer) data.get(i)).byteValue();
-        }
-        // TODO: Bacon: This is not on iOS
-        int maxByteSize = (int) options.get("maxByteSize");
-        // TODO: Bacon: This should be in options?
-        int writeType = BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT;
-        if (gattCharacteristic == BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE) {
-          writeType = BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE;
-        }
-        peripheral.write(serviceUUID, characteristicUUID, decoded, maxByteSize, null, writeType, promise);
-        return;
-      default:
-        promise.reject("ERR_BLE_UPDATE_UNIMP", "The characteristicProperties you have chosen to update is not supported.");
-        return;
+    if (guardPeripheralAction(promise)) {
+      return;
     }
+    Peripheral peripheral = _getPeripheralOrReject((String) options.get("peripheralUUID"), promise);
+    if (peripheral == null) {
+      return;
+    }
+
+    peripheral.updateCharacteristicAsync(options, promise);
   }
 
-  //TODO: Bacon: this isn't as simple as iOS
   @ExpoMethod
   public void updateDescriptorAsync(
       final Map<String, Object> options,
       final Promise promise
   ) {
-
-    Peripheral peripheral = _getPeripheralOrReject((String) options.get("peripheralUUID"), promise);
-    if (peripheral == null) return;
-
-    String serviceUUIDString = (String) options.get("serviceUUID");
-    String characteristicUUIDString = (String) options.get("characteristicUUID");
-    String descriptorUUIDString = (String) options.get("descriptorUUID");
-
-    UUID serviceUUID = UUIDHelper.toUUID(serviceUUIDString);
-    UUID characteristicUUID = UUIDHelper.toUUID(characteristicUUIDString);
-    UUID descriptorUUID = UUIDHelper.toUUID(descriptorUUIDString);
-
-    String characteristicProperties = (String) options.get("characteristicProperties");
-
-    if (characteristicProperties.equals("write")) { // Write
-
-      // TODO: Bacon: This is different to iOS
-      List data = (List) options.get("data");
-      byte[] decoded = new byte[data.size()];
-      for (int i = 0; i < data.size(); i++) {
-        decoded[i] = new Integer((Integer) data.get(i)).byteValue();
-      }
-      // TODO: Bacon: This is not on iOS
-      int maxByteSize = (int) options.get("maxByteSize");
-      // TODO: Bacon: This should be in options?
-      int writeType = BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT;
-      peripheral.write(serviceUUID, characteristicUUID, decoded, maxByteSize, null, writeType, promise);
-
-      return;
-    } else { // Read
-
-      //TODO: Bacon: Done??
-      peripheral.read(serviceUUID, characteristicUUID, promise);
+    if (guardPeripheralAction(promise)) {
       return;
     }
+    Peripheral peripheral = _getPeripheralOrReject((String) options.get("peripheralUUID"), promise);
+    if (peripheral == null) {
+      return;
+    }
+
+    peripheral.updateDescriptorAsync(options, promise);
   }
 
   // TODO: Bacon: Done!
@@ -629,9 +541,14 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
       final Map<String, Object> options,
       final Promise promise
   ) {
+    if (guardPeripheralAction(promise)) {
+      return;
+    }
     String peripheralUUID = (String) options.get("uuid");
     Peripheral peripheral = _getPeripheralOrReject(peripheralUUID, promise);
-    if (peripheral == null) return;
+    if (peripheral == null) {
+      return;
+    }
 
     peripheral.disconnect();
     promise.resolve(null);
@@ -642,7 +559,9 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
       final Map<String, Object> options,
       final Promise promise
   ) {
-
+    if (guardPeripheralAction(promise)) {
+      return;
+    }
     String peripheralUUID = (String) options.get("peripheralUUID");
     Peripheral peripheral = _getPeripheralOrReject(peripheralUUID, promise);
     if (peripheral == null) {
@@ -655,7 +574,7 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
     }
 
     String serviceUUIDString = (String) options.get("serviceUUID");
-    BluetoothGattService service = _getServiceOrReject(peripheral, serviceUUIDString, promise);
+    BluetoothGattService service = peripheral.getServiceOrReject(peripheral.gatt, serviceUUIDString, promise);
     if (service == null) {
       return;
     }
@@ -678,7 +597,7 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
     }
 
     String characteristicUUIDString = (String) options.get("characteristicUUID");
-    BluetoothGattCharacteristic characteristic = _getCharacteristicOrReject(service, characteristicUUIDString, promise);
+    BluetoothGattCharacteristic characteristic = peripheral.getCharacteristicOrReject(service, characteristicUUIDString, promise);
     if (characteristic == null) {
       return;
     }
@@ -696,7 +615,7 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
     }
 
     String descriptorUUIDString = (String) options.get("descriptorUUID");
-    BluetoothGattDescriptor descriptor = _getDescriptorOrReject(characteristic, descriptorUUIDString, promise);
+    BluetoothGattDescriptor descriptor = peripheral.getDescriptorOrReject(characteristic, descriptorUUIDString, promise);
     if (descriptor == null) {
       return;
     }
@@ -770,36 +689,6 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
     }
 
     return peripheral;
-  }
-
-  private BluetoothGattService _getServiceOrReject(Peripheral peripheral, String serviceUUIDString, Promise promise) {
-    BluetoothGattService service = peripheral.gatt.getService(UUIDHelper.toUUID(serviceUUIDString));
-
-    if (service == null) {
-      promise.reject("ERR_NO_SERVICE", "No valid service with UUID " + serviceUUIDString);
-    }
-
-    return service;
-  }
-
-  private BluetoothGattCharacteristic _getCharacteristicOrReject(BluetoothGattService service, String uuid, Promise promise) {
-    BluetoothGattCharacteristic characteristic = service.getCharacteristic(UUIDHelper.toUUID(uuid));
-
-    if (characteristic == null) {
-      promise.reject("ERR_NO_CHARACTERISTIC", "No valid characteristic with UUID " + uuid);
-    }
-
-    return characteristic;
-  }
-
-  private BluetoothGattDescriptor _getDescriptorOrReject(BluetoothGattCharacteristic characteristic, String uuid, Promise promise) {
-    BluetoothGattDescriptor descriptor = characteristic.getDescriptor(UUIDHelper.toUUID(uuid));
-
-    if (descriptor == null) {
-      promise.reject("ERR_NO_DESCRIPTOR", "No valid descriptor with UUID " + uuid);
-    }
-
-    return descriptor;
   }
 
   private Peripheral retrieveOrCreatePeripheral(String peripheralUUID) {

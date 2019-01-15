@@ -27,6 +27,14 @@ public class Serialize {
     return output;
   }
 
+  public static byte[] Base64_JSONToNative(List input) {
+    byte[] decoded = new byte[input.size()];
+    for (int i = 0; i < input.size(); i++) {
+      decoded[i] = new Integer((Integer) input.get(i)).byteValue();
+    }
+    return decoded;
+  }
+
   public static ArrayList<String> decodePermissions(BluetoothGattCharacteristic characteristic) {
     return Serialize.CharacteristicPermissions_NativeToJSON(characteristic.getPermissions());
   }
