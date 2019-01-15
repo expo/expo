@@ -2,8 +2,6 @@ package expo.modules.av;
 
 import android.content.Context;
 
-import com.google.android.exoplayer2.upstream.Loader;
-
 import expo.core.ModuleRegistry;
 import expo.core.Promise;
 import expo.core.arguments.ReadableArguments;
@@ -45,8 +43,6 @@ public interface AVManagerInterface {
   void replayVideo(final Integer tag, final ReadableArguments status, final Promise promise);
 
   void getStatusForVideo(final Integer tag, final Promise promise);
-
-  void setUnloadedCallbackForAndroidRecording(final Loader.Callback callback, Promise promise);
 
   void prepareAudioRecorder(final ReadableArguments options, final Promise promise);
 

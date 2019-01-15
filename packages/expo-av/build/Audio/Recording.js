@@ -1,4 +1,4 @@
-import { NativeModulesProxy } from 'expo-core';
+import { NativeModulesProxy, EventEmitter, Platform } from 'expo-core';
 import { _DEFAULT_PROGRESS_UPDATE_INTERVAL_MILLIS, } from '../AV';
 import { isAudioEnabled, throwIfAudioIsDisabled } from './AudioAvailability';
 import { Sound } from './Sound';
@@ -104,8 +104,10 @@ export const RECORDING_OPTIONS_PRESET_LOW_QUALITY = {
     },
 };
 let _recorderExists = false;
+const eventEmitter = Platform.OS === 'android' ? new EventEmitter(NativeModulesProxy.ExponentAV) : null;
 export class Recording {
     constructor() {
+        this._subscription = null;
         this._canRecord = false;
         this._isDoneRecording = false;
         this._finalDurationMillis = 0;
@@ -121,8 +123,9 @@ export class Recording {
             // $FlowFixMe(greg): durationMillis is not always defined
             this._finalDurationMillis = finalStatus.durationMillis;
             _recorderExists = false;
-            if (NativeModulesProxy.ExponentAV.setUnloadedCallbackForAndroidRecording) {
-                NativeModulesProxy.ExponentAV.setUnloadedCallbackForAndroidRecording(null);
+            if (this._subscription) {
+                this._subscription.remove();
+                this._subscription = null;
             }
             this._disablePolling();
             return await this.getStatusAsync(); // Automatically calls onRecordingStatusUpdate for the final state.
@@ -217,8 +220,8 @@ export class Recording {
             throw new Error(`Your file extensions must match ${extensionRegex.toString()}.`);
         }
         if (!this._canRecord) {
-            if (NativeModulesProxy.ExponentAV.setUnloadedCallbackForAndroidRecording) {
-                NativeModulesProxy.ExponentAV.setUnloadedCallbackForAndroidRecording(this._cleanupForUnloadedRecorder);
+            if (eventEmitter) {
+                this._subscription = eventEmitter.addListener("Expo.Recording.recorderUnloaded", this._cleanupForUnloadedRecorder);
             }
             const { uri, status, } = await NativeModulesProxy.ExponentAV.prepareAudioRecorder(options);
             _recorderExists = true;

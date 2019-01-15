@@ -1,4 +1,4 @@
-import { NativeModulesProxy } from 'expo-core';
+import { NativeModulesProxy, EventEmitter, Subscription, Platform } from 'expo-core';
 
 import {
   _DEFAULT_PROGRESS_UPDATE_INTERVAL_MILLIS,
@@ -155,7 +155,10 @@ export type RecordingStatus = {
 
 let _recorderExists: boolean = false;
 
+const eventEmitter = Platform.OS === 'android' ? new EventEmitter(NativeModulesProxy.ExponentAV) : null;
+
 export class Recording {
+  _subscription: Subscription | null = null;
   _canRecord: boolean = false;
   _isDoneRecording: boolean = false;
   _finalDurationMillis: number = 0;
@@ -173,8 +176,9 @@ export class Recording {
     // $FlowFixMe(greg): durationMillis is not always defined
     this._finalDurationMillis = finalStatus.durationMillis;
     _recorderExists = false;
-    if (NativeModulesProxy.ExponentAV.setUnloadedCallbackForAndroidRecording) {
-      NativeModulesProxy.ExponentAV.setUnloadedCallbackForAndroidRecording(null);
+    if (this._subscription) {
+      this._subscription.remove();
+      this._subscription = null;
     }
     this._disablePolling();
     return await this.getStatusAsync(); // Automatically calls onRecordingStatusUpdate for the final state.
@@ -295,10 +299,8 @@ export class Recording {
     }
 
     if (!this._canRecord) {
-      if (NativeModulesProxy.ExponentAV.setUnloadedCallbackForAndroidRecording) {
-        NativeModulesProxy.ExponentAV.setUnloadedCallbackForAndroidRecording(
-          this._cleanupForUnloadedRecorder
-        );
+      if (eventEmitter) {
+        this._subscription = eventEmitter.addListener("Expo.Recording.recorderUnloaded", this._cleanupForUnloadedRecorder);
       }
 
       const {

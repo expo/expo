@@ -2,8 +2,6 @@ package expo.modules.av;
 
 import android.content.Context;
 
-import com.google.android.exoplayer2.upstream.Loader;
-
 import expo.core.ExportedModule;
 import expo.core.ModuleRegistry;
 import expo.core.Promise;
@@ -88,11 +86,6 @@ public class AVModule extends ExportedModule implements ModuleRegistryConsumer {
   @ExpoMethod
   void getStatusForVideo(final Integer tag, final Promise promise) {
     mAVManager.getStatusForVideo(tag, promise);
-  }
-
-  @ExpoMethod
-  void setUnloadedCallbackForAndroidRecording(final Loader.Callback callback, Promise promise) {
-    mAVManager.setUnloadedCallbackForAndroidRecording(callback, promise);
   }
 
   @ExpoMethod

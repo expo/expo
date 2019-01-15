@@ -15,8 +15,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 
-import com.google.android.exoplayer2.upstream.Loader;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -30,7 +28,6 @@ import java.util.UUID;
 
 import expo.core.ModuleRegistry;
 import expo.core.Promise;
-import expo.core.arguments.MapArguments;
 import expo.core.arguments.ReadableArguments;
 import expo.core.interfaces.InternalModule;
 import expo.core.interfaces.LifecycleEventListener;
@@ -90,7 +87,6 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
   private long mAudioRecorderDurationAlreadyRecorded = 0L;
   private boolean mAudioRecorderIsRecording = false;
   private boolean mAudioRecorderIsPaused = false;
-  private Loader.Callback mAudioRecorderUnloadedCallback = null;
 
   private ModuleRegistry mModuleRegistry;
 
@@ -550,25 +546,16 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
   public void onInfo(final MediaRecorder mr, final int what, final int extra) {
     switch (what) {
       case MEDIA_RECORDER_INFO_MAX_FILESIZE_REACHED:
-        final MapArguments finalStatus = new MapArguments();
         removeAudioRecorder();
-        if (mAudioRecorderUnloadedCallback != null) {
-          final Loader.Callback callback = mAudioRecorderUnloadedCallback;
-          mAudioRecorderUnloadedCallback = null;
-          // TODO: Callback
-//          callback.invoke(finalStatus);
+        if (mModuleRegistry != null) {
+          EventEmitter eventEmitter = mModuleRegistry.getModule(EventEmitter.class);
+          if (eventEmitter != null) {
+            eventEmitter.emit("Expo.Recording.recorderUnloaded", new Bundle());
+          }
         }
       default:
         // Do nothing
     }
-  }
-
-  @Override
-  public void setUnloadedCallbackForAndroidRecording(final Loader.Callback callback, Promise promise) {
-    // In JS, this is called before prepareAudioRecorder to make sure it is
-    // available immediately upon recording. So, we don't check mAudioRecorder != null.
-    mAudioRecorderUnloadedCallback = callback;
-    promise.resolve(null);
   }
 
   @Override

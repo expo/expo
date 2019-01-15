@@ -1,3 +1,4 @@
+import { Subscription } from 'expo-core';
 import { PlaybackStatus, PlaybackStatusToSet } from '../AV';
 import { Sound } from './Sound';
 export declare type RecordingOptions = {
@@ -92,6 +93,7 @@ export declare type RecordingStatus = {
     durationMillis: number;
 };
 export declare class Recording {
+    _subscription: Subscription | null;
     _canRecord: boolean;
     _isDoneRecording: boolean;
     _finalDurationMillis: number;
