@@ -306,4 +306,8 @@ dependencies {
   // expo-file-system
   api 'com.squareup.okhttp3:okhttp:3.10.0'
   api 'com.squareup.okhttp3:okhttp-urlconnection:3.10.0'
+
+  // expo-av
+  // See explanation in expo-av/build.gradle
+  api 'expolib_v1.com.google.android.exoplayer:expolib_v1-extension-okhttp:2.6.1'
 }
