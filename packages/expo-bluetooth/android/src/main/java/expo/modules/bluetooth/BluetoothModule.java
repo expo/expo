@@ -536,7 +536,7 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
 
   //TODO: Bacon: Maybe break this out into another function because it doesn't make sense on android like it does on iOS
   @ExpoMethod
-  public void updateAsync(
+  public void updateCharacteristicAsync(
       final Map<String, Object> options,
       final Promise promise
   ) {
@@ -549,9 +549,51 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
     UUID serviceUUID = UUIDHelper.toUUID(serviceUUIDString);
     UUID characteristicUUID = UUIDHelper.toUUID(characteristicUUIDString);
 
-    String operation = (String) options.get("operation");
+    String characteristicProperties = (String) options.get("characteristicProperties");
 
-    if (operation.equals("write")) { // Write
+    if (characteristicProperties.equals("write")) { // Write
+
+      // TODO: Bacon: This is different to iOS
+      List data = (List) options.get("data");
+      byte[] decoded = new byte[data.size()];
+      for (int i = 0; i < data.size(); i++) {
+        decoded[i] = new Integer((Integer) data.get(i)).byteValue();
+      }
+      // TODO: Bacon: This is not on iOS
+      int maxByteSize = (int) options.get("maxByteSize");
+      // TODO: Bacon: This should be in options?
+      int writeType = BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT;
+      peripheral.write(serviceUUID, characteristicUUID, decoded, maxByteSize, null, writeType, promise);
+      return;
+    } else { // Read
+
+      //TODO: Bacon: Done??
+      peripheral.read(serviceUUID, characteristicUUID, promise);
+      return;
+    }
+  }
+
+  //TODO: Bacon: this isn't as simple as iOS
+  @ExpoMethod
+  public void updateDescriptorAsync(
+      final Map<String, Object> options,
+      final Promise promise
+  ) {
+
+    Peripheral peripheral = _getPeripheralOrReject((String) options.get("peripheralUUID"), promise);
+    if (peripheral == null) return;
+
+    String serviceUUIDString = (String) options.get("serviceUUID");
+    String characteristicUUIDString = (String) options.get("characteristicUUID");
+    String descriptorUUIDString = (String) options.get("descriptorUUID");
+
+    UUID serviceUUID = UUIDHelper.toUUID(serviceUUIDString);
+    UUID characteristicUUID = UUIDHelper.toUUID(characteristicUUIDString);
+    UUID descriptorUUID = UUIDHelper.toUUID(descriptorUUIDString);
+
+    String characteristicProperties = (String) options.get("characteristicProperties");
+
+    if (characteristicProperties.equals("write")) { // Write
 
       // TODO: Bacon: This is different to iOS
       List data = (List) options.get("data");

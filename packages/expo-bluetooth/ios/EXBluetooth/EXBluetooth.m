@@ -22,6 +22,7 @@ NSString *const EXBluetoothPeripheralDidWriteValueForCharacteristicEvent = @"per
 NSString *const EXBluetoothPeripheralDidUpdateNotificationStateForCharacteristicEvent = @"peripheral.didUpdateNotificationStateForCharacteristic";
 NSString *const EXBluetoothPeripheralDidUpdateValueForDescriptorEvent = @"peripheral.didUpdateValueForDescriptor";
 NSString *const EXBluetoothPeripheralDidWriteValueForDescriptorEvent = @"peripheral.didWriteValueForDescriptor";
+NSString *const EXBluetoothPeripheralDidReadRSSIEvent = @"peripheral.didReadRSSI";
 
 NSString *const EXBluetoothCentral = @"central";
 NSString *const EXBluetoothPeripheral = @"peripheral";
@@ -58,16 +59,16 @@ NSString *const EXBluetoothServiceKey = @"service";
 }
 
 - (void)invalidate {
-
+  
   if (_manager) {
-//    for (NSString *key in _peripherals) {
-//      CBPeripheral *peripheral = _peripherals[key];
-//      [_manager cancelPeripheralConnection:peripheral];
-//      [_peripherals removeObjectForKey:key];
-//    }
+    //    for (NSString *key in _peripherals) {
+    //      CBPeripheral *peripheral = _peripherals[key];
+    //      [_manager cancelPeripheralConnection:peripheral];
+    //      [_peripherals removeObjectForKey:key];
+    //    }
     
     if ([_manager isScanning]) {
-         [_manager stopScan];
+      [_manager stopScan];
     }
     
     _manager = nil;
@@ -96,8 +97,8 @@ EX_EXPORT_MODULE(ExpoBluetooth);
            @"BLUETOOTH_EVENT": EXBluetoothEvent,
            @"Events": @{
                @"CENTRAL_DID_UPDATE_STATE_EVENT": EXBluetoothCentralDidUpdateStateEvent,
-//               @"CENTRAL_DID_RETRIEVE_CONNECTED_PERIPHERALS_EVENT": EXBluetoothCentralDidRetrieveConnectedPeripheralsEvent,
-//               @"CENTRAL_DID_RETRIEVE_PERIPHERALS_EVENT": EXBluetoothCentralDidRetrievePeripheralsEvent,
+               @"CENTRAL_DID_RETRIEVE_CONNECTED_PERIPHERALS_EVENT": EXBluetoothCentralDidRetrieveConnectedPeripheralsEvent,
+               @"CENTRAL_DID_RETRIEVE_PERIPHERALS_EVENT": EXBluetoothCentralDidRetrievePeripheralsEvent,
                @"CENTRAL_DID_DISCOVER_PERIPHERAL_EVENT": EXBluetoothCentralDidDiscoverPeripheralEvent,
                @"CENTRAL_DID_CONNECT_PERIPHERAL_EVENT": EXBluetoothCentralDidConnectPeripheralEvent,
                @"CENTRAL_DID_DISCONNECT_PERIPHERAL_EVENT": EXBluetoothCentralDidDisconnectPeripheralEvent,
@@ -108,7 +109,8 @@ EX_EXPORT_MODULE(ExpoBluetooth);
                @"PERIPHERAL_DID_WRITE_VALUE_FOR_CHARACTERISTIC_EVENT": EXBluetoothPeripheralDidWriteValueForCharacteristicEvent,
                @"PERIPHERAL_DID_UPDATE_NOTIFICATION_STATE_FOR_CHARACTERISTIC_EVENT": EXBluetoothPeripheralDidUpdateNotificationStateForCharacteristicEvent,
                @"PERIPHERAL_DID_UPDATE_VALUE_FOR_DESCRIPTOR_EVENT": EXBluetoothPeripheralDidUpdateValueForDescriptorEvent,
-               @"PERIPHERAL_DID_WRITE_VALUE_FOR_DESCRIPTOR_EVENT": EXBluetoothPeripheralDidWriteValueForDescriptorEvent
+               @"PERIPHERAL_DID_WRITE_VALUE_FOR_DESCRIPTOR_EVENT": EXBluetoothPeripheralDidWriteValueForDescriptorEvent,
+               @"PERIPHERAL_DID_READ_RSSI": EXBluetoothPeripheralDidReadRSSIEvent
                }
            };
 }
@@ -143,13 +145,13 @@ EX_EXPORT_METHOD_AS(initializeManagerAsync,
                     resolve:(EXPromiseResolveBlock)resolve
                     reject:(EXPromiseRejectBlock)reject)
 {
-
-/* 
-CBCentralManagerOptionShowPowerAlertKey
-CBCentralManagerOptionRestoreIdentifierKey
-
- */
- resolve(nil);
+  
+  /*
+   CBCentralManagerOptionShowPowerAlertKey
+   CBCentralManagerOptionRestoreIdentifierKey
+   
+   */
+  resolve(nil);
 }
 
 EX_EXPORT_METHOD_AS(deallocateManagerAsync,
@@ -220,8 +222,9 @@ EX_EXPORT_METHOD_AS(readRSSIAsync,
   resolve([NSNull null]);
 }
 
-EX_EXPORT_METHOD_AS(updateAsync,
-                    updateAsync:(NSDictionary *)options
+// TODO: Bacon: Guard bluetooth enabled/available
+EX_EXPORT_METHOD_AS(updateDescriptorAsync,
+                    updateDescriptorAsync:(NSDictionary *)options
                     resolve:(EXPromiseResolveBlock)resolve
                     reject:(EXPromiseRejectBlock)reject)
 {
@@ -231,59 +234,118 @@ EX_EXPORT_METHOD_AS(updateAsync,
   CBService *service = [self _getServiceOrReject:options[@"serviceUUID"] peripheral:peripheral reject:reject];
   if (!service) return;
   
-  CBCharacteristicProperties prop = [[self class] CBCharacteristicProperties_JSONToNative:options[@"characteristicProperties"]];
-  CBCharacteristic *characteristic = [self _getCharacteristicOrReject:options[@"characteristicUUID"] service:service characteristicProperties:prop reject:reject];
+  CBCharacteristicProperties characteristicProperties = [[self class] CBCharacteristicProperties_JSONToNative:options[@"characteristicProperties"]];
+  CBCharacteristic *characteristic = [self _getCharacteristicOrReject:options[@"characteristicUUID"] service:service characteristicProperties:characteristicProperties reject:reject];
   if (!characteristic) return;
   
-  // TODO: Bacon: Use the characteristic prop to infer this value. ex: characteristic prop of read with operation of write does nothing.
-  NSString *operation = options[@"operation"];
+  CBDescriptor *descriptor = [self _getDescriptorOrReject:options[@"descriptorUUID"] characteristic:characteristic reject:reject];
+  if (!descriptor) return;
   
-  NSString *descriptorUUIDString = options[@"descriptorUUID"];
-  
-  if (descriptorUUIDString != nil && ![descriptorUUIDString isEqualToString:@""]) {
-    CBDescriptor *descriptor = [self _getDescriptorOrReject:descriptorUUIDString characteristic:characteristic reject:reject];
-    if (!descriptor) return;
-    
-    if ([operation isEqualToString:@"read"]) {
+  switch (characteristicProperties) {
+    case CBCharacteristicPropertyRead:
       [peripheral readValueForDescriptor:descriptor];
-    } else {
-      if (options[@"data"]) {
-
-      NSData *data = [[NSData alloc] initWithBase64EncodedString:options[@"data"] options:NSDataBase64DecodingIgnoreUnknownCharacters];
+      break;
+    case CBCharacteristicPropertyWrite:
+    {
+      // Bacon: Predict the following, and throw an error without crashing the app.
+      if ([descriptor.UUID.UUIDString isEqualToString:CBUUIDClientCharacteristicConfigurationString]) {
+        reject(@"ERR_INVALID_WRITE", @"Client Characteristic Configuration descriptors must be configured using setNotifyValue:forCharacteristic:", nil);
+        return;
+      }
+      NSData *data = [self _getDataOrReject:options[@"data"] reject:reject];
       if (!data) {
-        reject(@"E_INVALID_FORMAT", @"Failed to parse base64 string.", nil);
         return;
       }
       [peripheral writeValue:data forDescriptor:descriptor];
-      } else {
-        reject(@"E_INVALID_FORMAT", @"Failed to parse nil string.", nil);
-        return;
-      }
     }
-  } else {
-    if ([operation isEqualToString:@"read"]) {
-      [peripheral readValueForCharacteristic:characteristic];
-    } else {
-      CBCharacteristicWriteType writeType = CBCharacteristicWriteWithResponse;
-      if (options[@"shouldMute"] != nil && [options[@"shouldMute"] boolValue] == YES) {
-        writeType = CBCharacteristicWriteWithoutResponse;
-      }
-      
-      if (options[@"data"]) {
-        NSData *data = [[NSData alloc] initWithBase64EncodedString:options[@"data"] options:NSDataBase64DecodingIgnoreUnknownCharacters];
-        if (!data) {
-          reject(@"E_INVALID_FORMAT", @"Failed to parse base64 string.", nil);
-          return;
-        }
-        [peripheral writeValue:data forCharacteristic:characteristic type:writeType];
+      break;
+    case CBCharacteristicPropertyWriteWithoutResponse:
+    case CBCharacteristicPropertyNotify:
+    case CBCharacteristicPropertyIndicate:
+    case CBCharacteristicPropertyBroadcast:
+    case CBCharacteristicPropertyExtendedProperties:
+    case CBCharacteristicPropertyNotifyEncryptionRequired:
+    case CBCharacteristicPropertyAuthenticatedSignedWrites:
+    case CBCharacteristicPropertyIndicateEncryptionRequired:
+    default:
+      reject(@"ERR_BLE_UPDATE_UNIMP", @"The CharacteristicProperty you have chosen to update is not supported.", nil);
+      break;
+  }
+}
 
-      } else {
-        reject(@"E_INVALID_FORMAT", @"Failed to parse nil string.", nil);
+EX_EXPORT_METHOD_AS(updateCharacteristicAsync,
+                    updateCharacteristicAsync:(NSDictionary *)options
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
+{
+  CBPeripheral *peripheral = [self _getPeripheralOrReject:options[@"peripheralUUID"] reject:reject];
+  if (!peripheral) return;
+  
+  CBService *service = [self _getServiceOrReject:options[@"serviceUUID"] peripheral:peripheral reject:reject];
+  if (!service) return;
+  
+  CBCharacteristicProperties characteristicProperties = [[self class] CBCharacteristicProperties_JSONToNative:options[@"characteristicProperties"]];
+  CBCharacteristic *characteristic = [self _getCharacteristicOrReject:options[@"characteristicUUID"] service:service characteristicProperties:characteristicProperties reject:reject];
+  if (!characteristic) return;
+  
+  // Characteristic Updates
+  switch (characteristicProperties) {
+    case CBCharacteristicPropertyRead:
+      [peripheral readValueForCharacteristic:characteristic];
+      break;
+    case CBCharacteristicPropertyWrite:
+    {
+      NSData *data = [self _getDataOrReject:options[@"data"] reject:reject];
+      if (!data) {
         return;
       }
+      [peripheral writeValue:data forCharacteristic:characteristic type:CBCharacteristicWriteWithResponse];
     }
+      break;
+    case CBCharacteristicPropertyWriteWithoutResponse:
+    {
+      NSData *data = [self _getDataOrReject:options[@"data"] reject:reject];
+      if (!data) {
+        return;
+      }
+      [peripheral writeValue:data forCharacteristic:characteristic type:CBCharacteristicWriteWithoutResponse];
+    }
+      break;
+      // TODO: Bacon: These probably break the transaction system.
+    case CBCharacteristicPropertyNotify:
+    case CBCharacteristicPropertyIndicate:
+    {
+      // TODO: Bacon: Add filter to delegate method
+      BOOL isEnabled = [options[@"isEnabled"] boolValue];
+      [peripheral setNotifyValue:isEnabled forCharacteristic:characteristic];
+    }
+      break;
+      // TODO: Bacon: Add these
+    case CBCharacteristicPropertyBroadcast:
+    case CBCharacteristicPropertyExtendedProperties:
+    case CBCharacteristicPropertyNotifyEncryptionRequired:
+    case CBCharacteristicPropertyAuthenticatedSignedWrites:
+    case CBCharacteristicPropertyIndicateEncryptionRequired:
+    default:
+      reject(@"ERR_BLE_UPDATE_UNIMP", @"The CharacteristicProperty you have chosen to update is not implemented in expo-bluetooth.", nil);
+      return;
   }
   resolve([NSNull null]);
+}
+
+- (NSData *)_getDataOrReject:(NSString *)dataString reject:(EXPromiseRejectBlock)reject
+{
+  if (dataString != nil) {
+    NSData *data = [[NSData alloc] initWithBase64EncodedString:dataString options:NSDataBase64DecodingIgnoreUnknownCharacters];
+    if (!data) {
+      reject(@"E_INVALID_FORMAT", @"Failed to parse base64 string.", nil);
+      return nil;
+    }
+    return data;
+  } else {
+    reject(@"E_INVALID_FORMAT", @"Failed to parse nil string.", nil);
+    return nil;
+  }
 }
 
 EX_EXPORT_METHOD_AS(disconnectAsync,
@@ -304,12 +366,12 @@ EX_EXPORT_METHOD_AS(discoverAsync,
                     reject:(EXPromiseRejectBlock)reject)
 {
   NSArray *serviceUUIDs = [[self class] CBUUIDList_JSONToNative:options[@"serviceUUIDs"]];
-
+  
   CBPeripheral *peripheral = [self _getPeripheralOrReject:options[@"peripheralUUID"] reject:reject];
   if (!peripheral) return;
   
   NSString *serviceUUIDString = options[@"serviceUUID"];
-
+  
   if (!serviceUUIDString) {
     [peripheral discoverServices:serviceUUIDs];
     resolve([NSNull null]);
@@ -320,7 +382,7 @@ EX_EXPORT_METHOD_AS(discoverAsync,
   if (!service) return;
   
   NSString *characteristicUUIDString = options[@"characteristicUUID"];
-
+  
   if (!characteristicUUIDString) {
     [peripheral discoverCharacteristics:serviceUUIDs forService:service];
     resolve([NSNull null]);
@@ -331,7 +393,7 @@ EX_EXPORT_METHOD_AS(discoverAsync,
   
   CBCharacteristic *characteristic = [self _getCharacteristicOrReject:characteristicUUIDString service:service characteristicProperties:prop reject:reject];
   if (!characteristic) return;
-
+  
   [peripheral discoverDescriptorsForCharacteristic:characteristic];
   resolve([NSNull null]);
 }
@@ -399,8 +461,10 @@ EX_EXPORT_METHOD_AS(discoverAsync,
 
 -(CBService *)serviceFromUUID:(CBUUID *)UUID peripheral:(CBPeripheral *)peripheral
 {
+  NSString *uuidString = UUID.UUIDString;
+  
   for (CBService *service in peripheral.services) {
-    if ([service.UUID.UUIDString isEqualToString:UUID.UUIDString]) {
+    if ([service.UUID.UUIDString isEqualToString:uuidString]) {
       return service;
     }
   }
@@ -409,8 +473,9 @@ EX_EXPORT_METHOD_AS(discoverAsync,
 
 - (CBCharacteristic *)characteristicFromUUID:(CBUUID *)UUID service:(CBService *)service prop:(CBCharacteristicProperties)prop
 {
+  NSString *uuidString = UUID.UUIDString;
   for (CBCharacteristic *characteristic in service.characteristics) {
-    if ((characteristic.properties & prop) != 0x0 && [characteristic.UUID.UUIDString isEqualToString: UUID.UUIDString]) {
+    if ((characteristic.properties & prop) != 0x0 && [characteristic.UUID.UUIDString isEqualToString:uuidString]) {
       return characteristic;
     }
   }
@@ -419,8 +484,10 @@ EX_EXPORT_METHOD_AS(discoverAsync,
 
 - (CBCharacteristic *)characteristicFromUUID:(CBUUID *)UUID service:(CBService *)service
 {
+  NSString *uuidString = UUID.UUIDString;
+  
   for (CBCharacteristic *characteristic in service.characteristics) {
-    if ([characteristic.UUID.UUIDString isEqualToString: UUID.UUIDString]) {
+    if ([characteristic.UUID.UUIDString isEqualToString:uuidString]) {
       return characteristic;
     }
   }
@@ -429,8 +496,10 @@ EX_EXPORT_METHOD_AS(discoverAsync,
 
 - (CBDescriptor *)descriptorFromUUID:(CBUUID *)UUID characteristic:(CBCharacteristic *)characteristic
 {
+  NSString *uuidString = UUID.UUIDString;
+  
   for (CBDescriptor *descriptor in characteristic.descriptors) {
-    if ([descriptor.UUID.UUIDString isEqualToString: UUID.UUIDString]) {
+    if ([descriptor.UUID.UUIDString isEqualToString:uuidString]) {
       return descriptor;
     }
   }
@@ -480,13 +549,13 @@ EX_EXPORT_METHOD_AS(discoverAsync,
 - (void)centralManagerDidUpdateState:(CBCentralManager *)central {
   if (central.state < CBManagerStatePoweredOff) {
     // All peripherals are now invalid.
-        @synchronized(_peripherals) {
-          for (NSString *key in _peripherals) {
-            CBPeripheral *peripheral = _peripherals[key];
-            [_manager cancelPeripheralConnection:peripheral];
-            [_peripherals removeObjectForKey:key];
-          }
-        }
+    @synchronized(_peripherals) {
+      for (NSString *key in _peripherals) {
+        CBPeripheral *peripheral = _peripherals[key];
+        [_manager cancelPeripheralConnection:peripheral];
+        [_peripherals removeObjectForKey:key];
+      }
+    }
     
   }
   [self emit:EXBluetoothCentralDidUpdateStateEvent data:@{ EXBluetoothCentral: EXNullIfNil([[self class] CBCentralManager_NativeToJSON:central])}];
@@ -495,7 +564,7 @@ EX_EXPORT_METHOD_AS(discoverAsync,
 - (void)centralManager:(CBCentralManager *)central didRetrieveConnectedPeripherals:(NSArray *)peripherals {
   [self emit:EXBluetoothCentralDidRetrieveConnectedPeripheralsEvent data:@{
                                                                            EXBluetoothCentral: EXNullIfNil([[self class] CBCentralManager_NativeToJSON:central]),
-
+                                                                           
                                                                            @"peripherals": EXNullIfNil([[self class] CBPeripheralList_NativeToJSON:peripherals])}];
 }
 
@@ -510,11 +579,11 @@ EX_EXPORT_METHOD_AS(discoverAsync,
      advertisementData:(NSDictionary<NSString *,id> *)advertisementData
                   RSSI:(NSNumber *)RSSI
 {
-      @synchronized(_peripherals) {
-  [_peripherals setObject:peripheral forKey:[[peripheral identifier] UUIDString]];
-      }
+  @synchronized(_peripherals) {
+    [_peripherals setObject:peripheral forKey:[[peripheral identifier] UUIDString]];
+  }
   NSDictionary *peripheralData = [[self class] CBPeripheral_NativeToJSON:peripheral];
-
+  
   // TODO: Bacon: Roll all three items into one
   [self emit:EXBluetoothCentralDidDiscoverPeripheralEvent data:@{
                                                                  EXBluetoothCentral: EXNullIfNil([[self class] CBCentralManager_NativeToJSON:central]),
@@ -528,7 +597,7 @@ EX_EXPORT_METHOD_AS(discoverAsync,
 - (void)centralManager:(CBCentralManager *)central didConnectPeripheral:(CBPeripheral *)peripheral {
   peripheral.delegate = self;
   NSDictionary *peripheralData = [[self class] CBPeripheral_NativeToJSON:peripheral];
-
+  
   [self
    emit:EXBluetoothCentralDidConnectPeripheralEvent
    data:@{
@@ -539,8 +608,8 @@ EX_EXPORT_METHOD_AS(discoverAsync,
 }
 
 - (void)centralManager:(CBCentralManager *)central didDisconnectPeripheral:(CBPeripheral *)peripheral error:(NSError *)error {
-    NSDictionary *peripheralData = [[self class] CBPeripheral_NativeToJSON:peripheral];
-
+  NSDictionary *peripheralData = [[self class] CBPeripheral_NativeToJSON:peripheral];
+  
   [self
    emit:EXBluetoothCentralDidDisconnectPeripheralEvent
    data:@{
@@ -582,7 +651,7 @@ EX_EXPORT_METHOD_AS(discoverAsync,
 
 - (void)peripheral:(CBPeripheral *)peripheral didDiscoverCharacteristicsForService:(CBService *)service error:(NSError *)error {
   NSDictionary *serviceData = [[self class] CBService_NativeToJSON:service];
-
+  
   [self
    emit:EXBluetoothPeripheralDidDiscoverCharacteristicsForServiceEvent
    data:@{
@@ -595,7 +664,7 @@ EX_EXPORT_METHOD_AS(discoverAsync,
 
 - (void)peripheral:(CBPeripheral *)peripheral didDiscoverDescriptorsForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error {
   NSDictionary *characteristicData = [[self class] CBCharacteristic_NativeToJSON:characteristic];
-
+  
   [self
    emit:EXBluetoothPeripheralDidDiscoverDescriptorsForCharacteristicEvent
    data:@{
@@ -608,7 +677,7 @@ EX_EXPORT_METHOD_AS(discoverAsync,
 
 - (void)peripheral:(CBPeripheral *)peripheral didUpdateValueForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error {
   NSDictionary *characteristicData = [[self class] CBCharacteristic_NativeToJSON:characteristic];
-
+  
   [self
    emit:EXBluetoothPeripheralDidUpdateValueForCharacteristicEvent
    data:@{
@@ -621,7 +690,7 @@ EX_EXPORT_METHOD_AS(discoverAsync,
 
 - (void)peripheral:(CBPeripheral *)peripheral didWriteValueForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error {
   NSDictionary *characteristicData = [[self class] CBCharacteristic_NativeToJSON:characteristic];
-
+  
   [self
    emit:EXBluetoothPeripheralDidWriteValueForCharacteristicEvent
    data:@{
@@ -634,7 +703,7 @@ EX_EXPORT_METHOD_AS(discoverAsync,
 
 - (void)peripheral:(CBPeripheral *)peripheral didUpdateNotificationStateForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error {
   NSDictionary *characteristicData = [[self class] CBCharacteristic_NativeToJSON:characteristic];
-
+  
   [self
    emit:EXBluetoothPeripheralDidUpdateNotificationStateForCharacteristicEvent
    data:@{
@@ -647,22 +716,21 @@ EX_EXPORT_METHOD_AS(discoverAsync,
 
 - (void)peripheral:(CBPeripheral *)peripheral didReadRSSI:(nonnull NSNumber *)RSSI error:(nullable NSError *)error
 {
-  // TODO: Bacon: Add this right!!
+  //   NSDictionary *peripheralData = [[self class] CBPeripheral_NativeToJSON:peripheral];
   
-  // NSDictionary *peripheralData = [[self class] CBPeripheral_NativeToJSON:peripheral];
-
-  // [self
-  //  emit:EXBluetoothPeripheralDidUpdateValueForDescriptorEvent
-  //  data:@{
-  //         @"rssi": [NSString stringWithFormat:@"%@|%@", @"read", peripheralData[@"id"]],
-  //         EXBluetoothPeripheral: EXNullIfNil([[self class] CBPeripheral_NativeToJSON:peripheral]),
-  //         EXBluetoothErrorKey: EXNullIfNil([[self class] NSError_NativeToJSON:error])
-  //         }];
+  //   [self
+  //    emit:EXBluetoothPeripheralDidReadRSSIEvent
+  //    data:@{
+  //           EXBluetoothTransactionIdKey: [NSString stringWithFormat:@"%@|%@", @"rssi", peripheralData[@"id"]],
+  //           @"rssi": RSSI,
+  //           EXBluetoothPeripheral: EXNullIfNil([[self class] CBPeripheral_NativeToJSON:peripheral]),
+  //           EXBluetoothErrorKey: EXNullIfNil([[self class] NSError_NativeToJSON:error])
+  //           }];
 }
 
 - (void)peripheral:(CBPeripheral *)peripheral didUpdateValueForDescriptor:(CBDescriptor *)descriptor error:(NSError *)error {
   NSDictionary *descriptorData = [[self class] CBDescriptor_NativeToJSON:descriptor];
-
+  
   [self
    emit:EXBluetoothPeripheralDidUpdateValueForDescriptorEvent
    data:@{

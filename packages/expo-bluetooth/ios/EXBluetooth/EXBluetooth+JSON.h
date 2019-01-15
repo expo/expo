@@ -3,8 +3,6 @@
 #import <EXBluetooth/EXBluetooth.h>
 #import <CoreBluetooth/CoreBluetooth.h>
 
-NS_ASSUME_NONNULL_BEGIN
-
 static id EXNullIfEmpty(NSString *input) {
   if (!input || input == nil || [input isEqualToString:@""]) {
     return [NSNull null];
@@ -35,5 +33,3 @@ static id EXNullIfEmpty(NSString *input) {
 + (CBCharacteristicProperties)CBCharacteristicProperties_JSONToNative:(NSString *)input;
 
 @end
-
-NS_ASSUME_NONNULL_END

@@ -4,6 +4,7 @@ export default {
         uti: 'org.bluetooth.descriptor.gatt.characteristic_aggregate_format',
         uuid: 0x2905,
         spec: 'GSS',
+        format: 'utf8',
     },
     '2900': {
         name: 'Characteristic Extended Properties',
@@ -16,6 +17,7 @@ export default {
         uti: 'org.bluetooth.descriptor.gatt.characteristic_presentation_format',
         uuid: 0x2904,
         spec: 'GSS',
+        format: 'utf8',
     },
     '2901': {
         name: 'Characteristic User Description',

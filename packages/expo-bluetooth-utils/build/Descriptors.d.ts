@@ -4,6 +4,7 @@ declare const _default: {
         uti: string;
         uuid: number;
         spec: string;
+        format: string;
     };
     '2900': {
         name: string;
@@ -16,6 +17,7 @@ declare const _default: {
         uti: string;
         uuid: number;
         spec: string;
+        format: string;
     };
     '2901': {
         name: string;

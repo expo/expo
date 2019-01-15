@@ -58,6 +58,10 @@ export declare type NativeEventData = {
 export interface ErrorInterface {
     message: string;
     code: string;
+    domain?: string | null;
+    reason?: string | null;
+    suggestion?: string | null;
+    underlayingError?: string | null;
 }
 export interface CharacteristicInterface extends NodeInterface {
     serviceUUID: UUID;
@@ -101,8 +105,7 @@ export interface PeripheralInterface extends NodeInterface {
 }
 export declare enum TransactionType {
     get = "get",
-    read = "read",
-    write = "write",
+    rssi = "rssi",
     connect = "connect",
     disconnect = "disconnect",
     scan = "scan"
@@ -118,17 +121,24 @@ export interface Central {
     state: CentralState;
     isScanning: boolean;
 }
-export declare type WriteOptions = {
+export declare type UpdateDescriptorOptions = {
+    descriptorUUID?: UUID;
+};
+export declare type UpdateOptions = {
     peripheralUUID: UUID;
     serviceUUID: UUID;
     characteristicUUID: UUID;
-    descriptorUUID?: UUID;
-    characteristicProperties: CharacteristicProperty;
-    shouldMute?: boolean;
-    data?: Base64;
+};
+export declare type UpdateCharacteristicOptions = UpdateOptions & {
+    isEnabled?: boolean;
+};
+export declare type ReadCharacteristicOptions = UpdateCharacteristicOptions;
+export declare type WriteCharacteristicOptions = UpdateCharacteristicOptions & {
+    data: Base64;
 };
 export declare enum CharacteristicProperty {
     Broadcast = "broadcast",
+    Read = "read",
     WriteWithoutResponse = "writeWithoutResponse",
     Write = "write",
     Notify = "notify",
@@ -137,4 +147,10 @@ export declare enum CharacteristicProperty {
     ExtendedProperties = "extendedProperties",
     NotifyEncryptionRequired = "notifyEncryptionRequired",
     IndicateEncryptionRequired = "indicateEncryptionRequired"
+}
+export declare enum Permissions {
+    Readable = "Readable",
+    Writeable = "Writeable",
+    ReadEncryptionRequired = "ReadEncryptionRequired",
+    WriteEncryptionRequired = "WriteEncryptionRequired"
 }

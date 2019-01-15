@@ -130,23 +130,91 @@ export async function disconnectAsync(options) {
         ExpoBluetooth.disconnectAsync(options);
     });
 }
-export async function readAsync(options) {
-    return await updateAsync(options, TransactionType.read);
+class BluetoothError extends Error {
+    constructor({ message, code, domain, reason, suggestion, underlayingError }) {
+        super(`expo-bluetooth: ${message}`);
+        this.code = code;
+        this.domain = domain;
+        this.reason = reason;
+        this.suggestion = suggestion;
+        this.underlayingError = underlayingError;
+    }
 }
-export async function writeAsync(options) {
-    return await updateAsync(options, TransactionType.write);
+/* TODO: Bacon: Add a return type */
+export async function readDescriptorAsync({ peripheralUUID, serviceUUID, characteristicUUID, descriptorUUID }) {
+    const output = await updateDescriptorAsync({ peripheralUUID, serviceUUID, characteristicUUID, descriptorUUID }, CharacteristicProperty.Read);
+    if (output && output.descriptor) {
+        const descriptor = output.descriptor;
+        return descriptor.value;
+    }
+    throw new Error(`Not able to read descriptor: ${JSON.stringify({ peripheralUUID, serviceUUID, characteristicUUID, descriptorUUID })}`);
 }
-async function updateAsync(options, operation) {
-    if (!ExpoBluetooth.updateAsync) {
-        throw new UnavailabilityError('Bluetooth', 'updateAsync');
+/* TODO: Bacon: Add a return type */
+export async function writeDescriptorAsync({ peripheralUUID, serviceUUID, characteristicUUID, descriptorUUID, data }) {
+    return await updateDescriptorAsync({ peripheralUUID, serviceUUID, characteristicUUID, descriptorUUID, data }, CharacteristicProperty.Write);
+}
+/* TODO: Bacon: Add a return type */
+export async function readCharacteristicAsync({ peripheralUUID, serviceUUID, characteristicUUID }) {
+    const output = await updateCharacteristicAsync({ peripheralUUID, serviceUUID, characteristicUUID }, CharacteristicProperty.Read);
+    if (output && output.characteristic) {
+        const characteristic = output.characteristic;
+        return characteristic.value;
+    }
+    throw new Error(`Not able to read characteristic: ${JSON.stringify({ peripheralUUID, serviceUUID, characteristicUUID })}`);
+}
+/* TODO: Bacon: Add a return type */
+export async function writeCharacteristicAsync({ peripheralUUID, serviceUUID, characteristicUUID, data }) {
+    return await updateCharacteristicAsync({ peripheralUUID, serviceUUID, characteristicUUID, data }, CharacteristicProperty.Write);
+}
+/* TODO: Bacon: Why would anyone use this? */
+/* TODO: Bacon: Test if this works */
+/* TODO: Bacon: Add a return type */
+export async function writeCharacteristicWithoutResponseAsync({ peripheralUUID, serviceUUID, characteristicUUID, data }) {
+    return await updateCharacteristicAsync({ peripheralUUID, serviceUUID, characteristicUUID, data }, CharacteristicProperty.WriteWithoutResponse);
+}
+// export async function setCharacteristicShouldNotifyAsync({ isEnabled, peripheralUUID, serviceUUID, characteristicUUID, data }: any): Promise<any> {
+//   return await updateCharacteristicAsync({ isEnabled, peripheralUUID, serviceUUID, characteristicUUID, data }, CharacteristicProperty.Notify);
+// }
+// export async function setCharacteristicShouldIndicateAsync({ isEnabled, peripheralUUID, serviceUUID, characteristicUUID, data }: any): Promise<any> {
+//   return await updateCharacteristicAsync({ isEnabled, peripheralUUID, serviceUUID, characteristicUUID, data }, CharacteristicProperty.Indicate);
+// }
+async function updateCharacteristicAsync(options, characteristicProperties) {
+    if (!ExpoBluetooth.updateCharacteristicAsync) {
+        throw new UnavailabilityError('Bluetooth', 'updateCharacteristicAsync');
     }
     _validateUUID(options.peripheralUUID);
     _validateUUID(options.serviceUUID);
     _validateUUID(options.characteristicUUID);
     return new Promise((resolve, reject) => {
-        const transactionId = createTransactionId(options, operation);
+        const expectResponse = characteristicPropertyUpdateExpectsResponse(characteristicProperties);
+        if (expectResponse) {
+            const transactionId = createTransactionId(options, characteristicProperties);
+            transactions[transactionId] = { resolve, reject };
+        }
+        else {
+            resolve();
+        }
+        ExpoBluetooth.updateCharacteristicAsync({ ...options, characteristicProperties });
+    });
+}
+function characteristicPropertyUpdateExpectsResponse(characteristicProperty) {
+    if (characteristicProperty === CharacteristicProperty.WriteWithoutResponse) {
+        return false;
+    }
+    return true;
+}
+async function updateDescriptorAsync(options, characteristicProperties) {
+    if (!ExpoBluetooth.updateDescriptorAsync) {
+        throw new UnavailabilityError('Bluetooth', 'updateDescriptorAsync');
+    }
+    _validateUUID(options.peripheralUUID);
+    _validateUUID(options.serviceUUID);
+    _validateUUID(options.characteristicUUID);
+    _validateUUID(options.descriptorUUID);
+    return new Promise((resolve, reject) => {
+        const transactionId = createTransactionId(options, characteristicProperties);
         transactions[transactionId] = { resolve, reject };
-        ExpoBluetooth.updateAsync({ ...options, operation });
+        ExpoBluetooth.updateDescriptorAsync({ ...options, characteristicProperties });
     });
 }
 export async function readRSSIAsync(peripheralUUID) {
@@ -155,7 +223,7 @@ export async function readRSSIAsync(peripheralUUID) {
     }
     _validateUUID(peripheralUUID);
     return new Promise((resolve, reject) => {
-        const transactionId = createTransactionId({ peripheralUUID }, TransactionType.read);
+        const transactionId = createTransactionId({ peripheralUUID }, TransactionType.rssi);
         transactions[transactionId] = { resolve, reject };
         ExpoBluetooth.readRSSIAsync({ uuid: peripheralUUID });
     });
@@ -270,8 +338,10 @@ addListener(({ data, event }) => {
             updateStateWithPeripheral(peripheral);
         }
     }
-    firePeripheralObservers(error);
     if (transactionId) {
+        if (error == null) {
+            firePeripheralObservers();
+        }
         if (transactionId in transactions) {
             const { resolve, reject, callbacks } = transactions[transactionId];
             console.log('Handle: ', { transactionId, transactions: Object.keys(transactions), event, data: Object.keys(data) });
@@ -284,23 +354,27 @@ addListener(({ data, event }) => {
                     else {
                         const { resolve, reject } = callback;
                         if (error) {
-                            reject(new Error(error.message));
+                            reject(new BluetoothError(error));
                         }
                         else {
-                            resolve(data);
+                            const { error, ...outputData } = data;
+                            resolve(outputData);
                         }
                         removeCallbackForTransactionId(callback, transactionId);
                     }
                 }
+                return;
             }
             else if (resolve && reject) {
                 if (error) {
-                    reject(new Error(error.message));
+                    reject(new BluetoothError(error));
                 }
                 else {
-                    resolve(data);
+                    const { error, ...outputData } = data;
+                    resolve(outputData);
                 }
                 delete transactions[transactionId];
+                return;
             }
             else {
                 console.log('Throwing Error because no callback is found for transactionId: ', {
@@ -331,7 +405,7 @@ addListener(({ data, event }) => {
                     if (!peripheralsAreStillValid) {
                         // Clear caches
                         _peripherals = {};
-                        firePeripheralObservers(error);
+                        firePeripheralObservers();
                     }
                 }
                 for (const callback of multiEventHandlers[event]) {
@@ -395,9 +469,9 @@ function updateAdvertismentDataStore(peripheralId, advertisementData) {
         },
     };
 }
-function firePeripheralObservers(error) {
+function firePeripheralObservers() {
     for (const subscription of multiEventHandlers.everything) {
-        subscription({ peripherals: getPeripherals(), error });
+        subscription({ peripherals: getPeripherals() });
     }
 }
 function fireMultiEventHandlers(event, { central, peripheral }) {

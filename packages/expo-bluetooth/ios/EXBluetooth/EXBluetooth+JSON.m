@@ -41,6 +41,25 @@
   return output;
 }
 
++ (NSMutableArray<NSString *> *)CBAttributePermissions_NativeToJSON:(CBAttributePermissions)input
+{
+  NSMutableArray *props = [NSMutableArray new];
+  
+  if ((input & CBAttributePermissionsReadable) != 0x0) {
+    [props addObject:@"readable"];
+  }
+  if ((input & CBAttributePermissionsWriteable) != 0x0) {
+    [props addObject:@"writeable"];
+  }
+  if ((input & CBAttributePermissionsReadEncryptionRequired) != 0x0) {
+    [props addObject:@"readEncryptionRequired"];
+  }
+  if ((input & CBAttributePermissionsWriteEncryptionRequired) != 0x0) {
+    [props addObject:@"writeEncryptionRequired"];
+  }
+  return props;
+}
+
 + (NSMutableArray<NSString *> *)CBCharacteristicProperties_NativeToJSON:(CBCharacteristicProperties)input
 {
   NSMutableArray *props = [NSMutableArray new];
@@ -116,7 +135,7 @@
     return @"poweredOff";
     case CBManagerStatePoweredOn:
     return @"poweredOn";
-//    case CBManagerStateUnknown:
+    case CBManagerStateUnknown:
     default:
     return @"unknown";
   }
@@ -234,7 +253,7 @@
   NSMutableDictionary *output = [NSMutableDictionary new];
   for (CBUUID *key in [input allKeys]) {
     NSData *value = [input objectForKey:key];
-    [output setObject:[[self class] NSData_NativeToJSON:value] forKey:[key UUIDString]];
+    [output setObject:EXNullIfEmpty([[self class] NSData_NativeToJSON:value]) forKey:key.UUIDString];
   }
   return output;
 }
@@ -243,17 +262,36 @@
 {
   if (!input) return nil;
   
-  NSString *descriptorUUIDString = [[input UUID] UUIDString];
-  NSString *characteristicUUIDString = [[[input characteristic] UUID] UUIDString];
-  NSString *serviceUUIDString = [[[[input characteristic] service] UUID] UUIDString];
-  NSString *peripheralUUIDString = [[[[[input characteristic] service] peripheral] identifier] UUIDString];
+  NSString *descriptorUUIDString = input.UUID.UUIDString;
+  NSString *characteristicUUIDString = input.characteristic.UUID.UUIDString;
+  NSString *serviceUUIDString = input.characteristic.service.UUID.UUIDString;
+  NSString *peripheralUUIDString = input.characteristic.service.peripheral.identifier.UUIDString;
 
-  //TODO: Bacon: Should we add all of the UUIDs?
+  id outputData;
+  NSString *parsedValue;
+  if([descriptorUUIDString isEqualToString:CBUUIDCharacteristicExtendedPropertiesString]  ||
+     [descriptorUUIDString isEqualToString:CBUUIDClientCharacteristicConfigurationString] ||
+     [descriptorUUIDString isEqualToString:CBUUIDServerCharacteristicConfigurationString]) {
+    outputData = EXNullIfNil(input.value);
+    if (input.value != nil) {
+      parsedValue = [outputData stringValue];
+    }
+  } else if ([descriptorUUIDString isEqualToString:CBUUIDCharacteristicUserDescriptionString]) {
+    outputData = EXNullIfNil(input.value);
+    parsedValue = input.value;
+  } else if ([descriptorUUIDString isEqualToString:CBUUIDCharacteristicFormatString] ||
+             [descriptorUUIDString isEqualToString:CBUUIDCharacteristicAggregateFormatString]) {
+    outputData = EXNullIfEmpty([[self class] NSData_NativeToJSON:input.value]);
+    // Bacon: Because we know the format upfront, we should parse it here - the format could be different on Android.
+    parsedValue = [[NSString alloc] initWithData:input.value encoding:NSUTF8StringEncoding];
+  }
+  
   return @{
            @"id": [NSString stringWithFormat:@"%@|%@|%@|%@", peripheralUUIDString, serviceUUIDString, characteristicUUIDString, descriptorUUIDString],
            @"uuid": descriptorUUIDString,
-           @"characteristicUUID": [[[input characteristic] UUID] UUIDString],
-           @"value": EXNullIfNil([[self class] NSData_NativeToJSON: [input value]]) // TODO: Bacon: Find out what this is. (id)
+           @"characteristicUUID": characteristicUUIDString,
+           @"value": outputData,
+           @"parsedValue": EXNullIfEmpty(parsedValue)
            };
 }
 // TODO: Bacon: Investigate CBCharacteristic for read/write, permissions
@@ -261,19 +299,19 @@
 {
   if (!input) return nil;
 
-  NSString *characteristicUUIDString = [[input UUID] UUIDString];
-  NSString *serviceUUIDString = [[[input service] UUID] UUIDString];
-  NSString *peripheralUUIDString = [[[[input service] peripheral] identifier] UUIDString];
+  NSString *characteristicUUIDString = input.UUID.UUIDString;
+  NSString *serviceUUIDString = input.service.UUID.UUIDString;
+  NSString *peripheralUUIDString = input.service.peripheral.identifier.UUIDString;
 
   return @{
            @"id": [NSString stringWithFormat:@"%@|%@|%@", peripheralUUIDString, serviceUUIDString, characteristicUUIDString],
            @"uuid": characteristicUUIDString,
            @"serviceUUID": serviceUUIDString,
            @"peripheralUUID": peripheralUUIDString,
-           @"properties": [[self class] CBCharacteristicProperties_NativeToJSON:[input properties]],
-           @"value": EXNullIfNil([[self class] NSData_NativeToJSON: [input value]]), //TODO: Bacon: Find out what this is. (NSData)
-           @"descriptors": [[self class] CBDescriptorList_NativeToJSON:[input descriptors]],
-           @"isNotifying": @([input isNotifying])
+           @"properties": [[self class] CBCharacteristicProperties_NativeToJSON:input.properties],
+           @"value": EXNullIfEmpty([[self class] NSData_NativeToJSON:input.value]), //TODO: Bacon: Find out what this is. (NSData)
+           @"descriptors": [[self class] CBDescriptorList_NativeToJSON:input.descriptors],
+           @"isNotifying": @(input.isNotifying)
            };
 }
 
@@ -289,8 +327,8 @@
            @"peripheralUUID": peripheralUUIDString,
            @"isPrimary": @([input isPrimary]),
            // TODO: Bacon: is this a recursive loop?
-           @"includedServices": [[self class] CBServiceArray_NativeToJSON:[input includedServices]],
-           @"characteristics": [[self class] CBCharacteristicArray_NativeToJSON:[input characteristics]]
+           @"includedServices": [[self class] CBServiceArray_NativeToJSON:input.includedServices],
+           @"characteristics": [[self class] CBCharacteristicArray_NativeToJSON:input.characteristics]
            };
 }
 
@@ -299,12 +337,12 @@
   if (!input) return nil;
 
   return @{
-           @"id": [[input identifier] UUIDString],
-           @"uuid": [[input identifier] UUIDString],
-           @"name": EXNullIfEmpty([input name]),
-           @"state": EXNullIfNil([[self class] CBPeripheralState_NativeToJSON:[input state]]),
-           @"services": [[self class] CBServiceArray_NativeToJSON:[input services]],
-           @"canSendWriteWithoutResponse": @([input canSendWriteWithoutResponse])
+           @"id": input.identifier.UUIDString,
+           @"uuid": input.identifier.UUIDString,
+           @"name": EXNullIfEmpty(input.name),
+           @"state": EXNullIfNil([[self class] CBPeripheralState_NativeToJSON:input.state]),
+           @"services": [[self class] CBServiceArray_NativeToJSON:input.services],
+           @"canSendWriteWithoutResponse": @(input.canSendWriteWithoutResponse)
            };
 }
 
@@ -320,6 +358,7 @@
 
 + (NSString *)NSData_NativeToJSON:(NSData *)input
 {
+  if (!input) return nil;
   return [input base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
 }
 

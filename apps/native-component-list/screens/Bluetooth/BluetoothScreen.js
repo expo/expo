@@ -104,12 +104,7 @@ export default class BluetoothScreen extends React.Component {
       console.log('observeStateAsync', state);
       this.setState({ centralState: state });
     });
-    this.subscription = await Bluetooth.observeUpdatesAsync(({ peripherals, error }) => {
-      if (error) {
-        console.log({ error });
-        throw new Error('Bluetooth Screen: observer: ' + error.message);
-      }
-
+    this.subscription = await Bluetooth.observeUpdatesAsync(({ peripherals }) => {
       // console.log("BLE Screen: observeUpdatesAsync: ", peripherals, error);
       this.setState(({ peripherals: currentPeripherals }) => {
         return {

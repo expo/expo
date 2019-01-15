@@ -1,6 +1,12 @@
 // @flow
 import * as Bluetooth from 'expo-bluetooth';
-import { Characteristics, Descriptors, nativeToJSON, Services } from 'expo-bluetooth-utils';
+import {
+  Characteristics,
+  Descriptors,
+  JSONToNative,
+  nativeToJSON,
+  Services,
+} from 'expo-bluetooth-utils';
 import React from 'react';
 import {
   ScrollView,
@@ -34,12 +40,13 @@ export default class BluetoothPeripheralScreen extends React.Component {
 
     this.subscription = await Bluetooth.observeUpdatesAsync(({ peripherals, error }) => {
       if (peripheral.id in peripherals) {
+        console.log('Updated peripheral', peripherals[peripheral.id]);
         this.setState({ peripheral: peripherals[peripheral.id] });
       }
     });
 
-    const servicesInfo = await decodePeripheral(peripheral);
-    this.setState({ services: servicesInfo });
+    // const servicesInfo = await decodePeripheral(peripheral);
+    // this.setState({ services: servicesInfo });
   }
 
   componentWillUnmount() {
@@ -56,7 +63,7 @@ export default class BluetoothPeripheralScreen extends React.Component {
         <DataContainer>
           <DisconnectPeripheralButton name={name} state={state} uuid={uuid} />
         </DataContainer>
-        <PeripheralView gatt={this.state.peripheral} />
+        <PeripheralView {...this.state.peripheral} />
         <MonoText
           containerStyle={{
             borderWidth: 0,
@@ -99,18 +106,15 @@ async function decodePeripheral(peripheral) {
           if (
             characteristic.properties &&
             characteristic.properties.length &&
-            characteristic.properties.indexOf('read') > -1
+            characteristic.properties.includes('read')
           ) {
             try {
-              const {
-                characteristic: { value },
-              } = await Bluetooth.readAsync({
+              const value = await Bluetooth.readCharacteristicAsync({
                 peripheralUUID: characteristic.peripheralUUID,
                 serviceUUID: characteristic.serviceUUID,
                 characteristicUUID: characteristic.uuid,
-                characteristicProperties: Bluetooth.CharacteristicProperty.read, // read
               });
-              if (value && value !== '') {
+              if (value) {
                 //Bluetooth.getInfoForCharacteristicUUID(uuid).format === 'utf8
                 console.log('ble: ', {
                   value,
@@ -123,9 +127,33 @@ async function decodePeripheral(peripheral) {
             }
           }
 
-          const descriptors = characteristic.descriptors.map(descriptor => {
-            return { ...descriptor, info: Descriptors[descriptor.uuid] };
-          });
+          const descriptors = await Promise.all(
+            characteristic.descriptors.map(async descriptor => {
+              try {
+                console.log('readDescriptorAsync: Start', descriptor);
+
+                const value = await Bluetooth.readDescriptorAsync({
+                  peripheralUUID: characteristic.peripheralUUID,
+                  serviceUUID: characteristic.serviceUUID,
+                  characteristicUUID: characteristic.uuid,
+                  descriptorUUID: descriptor.uuid,
+                });
+                console.log('readDescriptorAsync: resolved');
+                if (value) {
+                  //Bluetooth.getInfoForCharacteristicUUID(uuid).format === 'utf8
+                  console.log('ble.descriptor: ', {
+                    value,
+                    uuid: descriptor.uuid,
+                    converted: nativeToJSON(value),
+                  });
+                }
+              } catch ({ message }) {
+                console.log('BLEScreen: ' + message);
+              }
+
+              return { ...descriptor, info: Descriptors[descriptor.uuid] };
+            })
+          );
           return { ...characteristic, descriptors, info: Characteristics[characteristic.uuid] };
         })
       );
@@ -133,6 +161,7 @@ async function decodePeripheral(peripheral) {
     })
   );
 
+  console.log('decodePeripheral resolved');
   return servicesInfo;
 }
 
@@ -201,7 +230,7 @@ class DisconnectPeripheralButton extends React.Component {
 
 class PeripheralView extends React.Component {
   render() {
-    const gatt: Bluetooth.PeripheralInterface = this.props.gatt;
+    // const gatt: Bluetooth.PeripheralInterface = this.props.gatt;
 
     const {
       name,
@@ -212,7 +241,7 @@ class PeripheralView extends React.Component {
       rssi,
       discoveryTimestamp,
       advertisementData,
-    } = gatt;
+    } = this.props;
 
     let discoveryDate;
     if (discoveryTimestamp) {
@@ -228,7 +257,7 @@ class PeripheralView extends React.Component {
 
         <ItemListView
           data={services}
-          renderItem={(item, index) => <ServiceView key={item.id} gatt={item} />}
+          renderItem={(item, index) => <ServiceView key={item.id} {...item} />}
         />
       </DataContainer>
     );
@@ -237,7 +266,7 @@ class PeripheralView extends React.Component {
 
 class ServiceView extends React.Component {
   render() {
-    const gatt: Bluetooth.ServiceInterface = this.props.gatt;
+    // const gatt: Bluetooth.ServiceInterface = this.props.gatt;
 
     const {
       isPrimary,
@@ -246,7 +275,7 @@ class ServiceView extends React.Component {
       characteristics = [],
       parsedValue,
       specForGATT = {},
-    } = getStaticInfoFromGATT(gatt);
+    } = getStaticInfoFromGATT(this.props);
 
     const priority = isPrimary ? 'Is Primary!' : 'Secondary';
     return (
@@ -259,20 +288,24 @@ class ServiceView extends React.Component {
           title={'Characteristics'}
           data={characteristics}
           renderItem={(item, index) => (
-            <CharacteristicsView style={{ marginBottom: 8 }} key={item.id} gatt={item} />
+            <CharacteristicsView
+              style={{ marginBottom: index === characteristics.length - 1 ? 0 : 12 }}
+              key={item.id}
+              {...item}
+            />
           )}
         />
         <ItemListView
           title={'Included Services'}
           data={includedServices}
-          renderItem={(item, index) => <ServiceView key={item.id} gatt={item} />}
+          renderItem={(item, index) => <ServiceView key={item.id} {...item} />}
         />
       </DataContainer>
     );
   }
 }
 
-const DataContainer = ({ title, style, children }) => (
+const DataContainer = ({ title, style, onPress, children }) => (
   <View
     style={[
       title && {
@@ -285,7 +318,9 @@ const DataContainer = ({ title, style, children }) => (
       style,
     ]}>
     {title && (
-      <Text style={[styles.itemText, { fontWeight: 'bold', padding: 16, opacity: 0.7 }]}>
+      <Text
+        onPress={onPress}
+        style={[styles.itemText, { fontWeight: 'bold', padding: 16, opacity: 0.7 }]}>
         {title}
       </Text>
     )}
@@ -309,7 +344,7 @@ class ItemListView extends React.Component {
 
 class CharacteristicsView extends React.Component {
   render() {
-    const gatt: Bluetooth.CharacteristicInterface = this.props.gatt;
+    // const gatt: Bluetooth.CharacteristicInterface = this.props.gatt;
     const {
       properties = [],
       uuid,
@@ -318,10 +353,27 @@ class CharacteristicsView extends React.Component {
       isNotifying,
       parsedValue,
       specForGATT = {},
-    } = getStaticInfoFromGATT(gatt);
+    } = getStaticInfoFromGATT(this.props);
 
     return (
-      <DataContainer style={this.props.style}>
+      <DataContainer
+        title={'Update'}
+        style={this.props.style}
+        onPress={async () => {
+          try {
+            await Bluetooth.writeCharacteristicAsync({
+              ...getGATTNumbersFromID(this.props.id),
+              data: JSONToNative('bacon'),
+            });
+            // const some = await Bluetooth.readCharacteristicAsync(
+            //   getGATTNumbersFromID(this.props.id)
+            // );
+            // console.log('Update SOME', some);
+          } catch (error) {
+            Alert.alert('Error!', error.message);
+            console.log(error);
+          }
+        }}>
         {specForGATT.name && <BluetoothListItem title={'Name'} value={specForGATT.name} />}
         {!specForGATT.name && <BluetoothListItem title={'GATT Number'} value={uuid} />}
         {parsedValue && <BluetoothListItem title={'Value'} value={parsedValue} />}
@@ -345,19 +397,41 @@ class DescriptorsView extends React.Component {
   render() {
     const gatt: Bluetooth.DescriptorInterface = this.props.gatt;
     const { uuid, value, parsedValue, specForGATT = {} } = getStaticInfoFromGATT(gatt);
-
     return (
-      <DataContainer>
+      <DataContainer
+        title={'Reload'}
+        onPress={async () => {
+          try {
+            await Bluetooth.writeDescriptorAsync({
+              ...getGATTNumbersFromID(gatt.id),
+              data: JSONToNative('bacon'),
+            });
+            // const some = await Bluetooth.readDescriptorAsync(getGATTNumbersFromID(gatt.id));
+            // console.log('SOME', some);
+          } catch (error) {
+            console.log('Descriptor reading error', error);
+          }
+        }}>
         {specForGATT.name && <BluetoothListItem title={'Name'} value={specForGATT.name} />}
         {parsedValue && <BluetoothListItem title={'Value'} value={parsedValue} />}
-        {value && <BluetoothListItem title={'Raw Value'} value={value} />}
-        {specForGATT.format && (
-          <BluetoothListItem title={'Decoding Format'} value={specForGATT.format} />
-        )}
+        {value != null && <BluetoothListItem title={'Raw Value'} value={value} />}
         <BluetoothListItem title={'GATT Number'} value={uuid} />
       </DataContainer>
     );
   }
+}
+
+function getGATTNumbersFromID(id) {
+  if (!id || id === '') {
+    throw new Error('getGATTNumbersFromID(): Cannot get static data for null GATT number');
+  }
+  const [peripheralUUID, serviceUUID, characteristicUUID, descriptorUUID] = id.split('|');
+  return {
+    peripheralUUID,
+    serviceUUID,
+    characteristicUUID,
+    descriptorUUID,
+  };
 }
 
 function getStaticDataFromGATT({ id }) {
@@ -372,14 +446,17 @@ function getStaticDataFromGATT({ id }) {
 
 function getStaticInfoFromGATT(gatt) {
   const dataSet = getStaticDataFromGATT(gatt);
-  if (dataSet && gatt.value) {
+  let parsedValue = null;
+  if (dataSet) {
     // TODO: Bacon: Add format to each data set item. Since this isn't done lets try converting every value to UTF-8
 
-    const convertedValue = nativeToJSON(gatt.value);
+    if (gatt.value != null && dataSet.format === 'utf8') {
+      parsedValue = nativeToJSON(gatt.value);
+    }
 
     return {
       ...gatt,
-      parsedValue: convertedValue,
+      parsedValue,
       specForGATT: dataSet,
     };
   }

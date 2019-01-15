@@ -21,7 +21,6 @@ import {
   StateUpdatedCallback,
   ScanSettings,
   Central,
-  WriteOptions,
   CharacteristicProperty,
 } from './Bluetooth.types';
 
@@ -45,7 +44,6 @@ export {
   StateUpdatedCallback,
   ScanSettings,
   Central,
-  WriteOptions,
   CharacteristicProperty,
 };
 import ExpoBluetooth from './ExpoBluetooth';
@@ -207,25 +205,110 @@ export async function disconnectAsync(options: { uuid: string }): Promise<any> {
   });
 }
 
-export async function readAsync(options: WriteOptions): Promise<any> {
-  return await updateAsync(options, TransactionType.read);
+
+class BluetoothError extends Error implements ErrorInterface {
+  code: string;
+  domain?: string | null;
+  reason?: string | null;
+  suggestion?: string | null;
+  underlayingError?: string | null;
+
+  constructor({ message, code, domain, reason, suggestion, underlayingError }: ErrorInterface) {
+    super(`expo-bluetooth: ${message}`);
+    this.code = code;
+    this.domain = domain;
+    this.reason = reason;
+    this.suggestion = suggestion;
+    this.underlayingError = underlayingError;
+  }
 }
 
-export async function writeAsync(options: WriteOptions): Promise<any> {
-  return await updateAsync(options, TransactionType.write);
+/* TODO: Bacon: Add a return type */
+export async function readDescriptorAsync({ peripheralUUID, serviceUUID, characteristicUUID, descriptorUUID }: any): Promise<Base64 | undefined> {
+  const output = await updateDescriptorAsync({ peripheralUUID, serviceUUID, characteristicUUID, descriptorUUID }, CharacteristicProperty.Read);
+
+  if (output && output.descriptor) {
+    const descriptor: DescriptorInterface = output.descriptor;
+    return descriptor.value;
+  }
+
+  throw new Error(`Not able to read descriptor: ${JSON.stringify({ peripheralUUID, serviceUUID, characteristicUUID, descriptorUUID })}`)
 }
 
-async function updateAsync(options: WriteOptions, operation: TransactionType): Promise<any> {
-  if (!ExpoBluetooth.updateAsync) {
-    throw new UnavailabilityError('Bluetooth', 'updateAsync');
+/* TODO: Bacon: Add a return type */
+export async function writeDescriptorAsync({ peripheralUUID, serviceUUID, characteristicUUID, descriptorUUID, data }: any): Promise<any> {
+  return await updateDescriptorAsync({ peripheralUUID, serviceUUID, characteristicUUID, descriptorUUID, data }, CharacteristicProperty.Write);
+}
+
+/* TODO: Bacon: Add a return type */
+export async function readCharacteristicAsync({ peripheralUUID, serviceUUID, characteristicUUID }: any): Promise<Base64 | null> {
+  const output = await updateCharacteristicAsync({ peripheralUUID, serviceUUID, characteristicUUID }, CharacteristicProperty.Read);
+  if (output && output.characteristic) {
+    const characteristic: CharacteristicInterface = output.characteristic;
+    return characteristic.value;
+  }
+
+  throw new Error(`Not able to read characteristic: ${JSON.stringify({ peripheralUUID, serviceUUID, characteristicUUID })}`)
+}
+
+/* TODO: Bacon: Add a return type */
+export async function writeCharacteristicAsync({ peripheralUUID, serviceUUID, characteristicUUID, data }: any): Promise<any> {
+  return await updateCharacteristicAsync({ peripheralUUID, serviceUUID, characteristicUUID, data }, CharacteristicProperty.Write);
+}
+
+/* TODO: Bacon: Why would anyone use this? */
+/* TODO: Bacon: Test if this works */
+/* TODO: Bacon: Add a return type */
+export async function writeCharacteristicWithoutResponseAsync({ peripheralUUID, serviceUUID, characteristicUUID, data }: any): Promise<any> {
+  return await updateCharacteristicAsync({ peripheralUUID, serviceUUID, characteristicUUID, data }, CharacteristicProperty.WriteWithoutResponse);
+}
+
+// export async function setCharacteristicShouldNotifyAsync({ isEnabled, peripheralUUID, serviceUUID, characteristicUUID, data }: any): Promise<any> {
+//   return await updateCharacteristicAsync({ isEnabled, peripheralUUID, serviceUUID, characteristicUUID, data }, CharacteristicProperty.Notify);
+// }
+
+// export async function setCharacteristicShouldIndicateAsync({ isEnabled, peripheralUUID, serviceUUID, characteristicUUID, data }: any): Promise<any> {
+//   return await updateCharacteristicAsync({ isEnabled, peripheralUUID, serviceUUID, characteristicUUID, data }, CharacteristicProperty.Indicate);
+// }
+
+async function updateCharacteristicAsync(options: any, characteristicProperties: CharacteristicProperty): Promise<any> {
+  if (!ExpoBluetooth.updateCharacteristicAsync) {
+    throw new UnavailabilityError('Bluetooth', 'updateCharacteristicAsync');
   }
   _validateUUID(options.peripheralUUID);
   _validateUUID(options.serviceUUID);
   _validateUUID(options.characteristicUUID);
   return new Promise((resolve, reject) => {
-    const transactionId = createTransactionId(options, operation);
+    const expectResponse = characteristicPropertyUpdateExpectsResponse(characteristicProperties);
+    if (expectResponse) {
+      const transactionId = createTransactionId(options, characteristicProperties);
+      transactions[transactionId] = { resolve, reject };
+    } else {
+      resolve();
+    }
+    ExpoBluetooth.updateCharacteristicAsync({ ...options, characteristicProperties });
+  });
+}
+
+function characteristicPropertyUpdateExpectsResponse(characteristicProperty: CharacteristicProperty): boolean {
+  if (characteristicProperty === CharacteristicProperty.WriteWithoutResponse) {
+    return false;
+  }
+  return true;
+}
+
+async function updateDescriptorAsync(options: any, characteristicProperties: CharacteristicProperty.Read | CharacteristicProperty.Write): Promise<any> {
+  if (!ExpoBluetooth.updateDescriptorAsync) {
+    throw new UnavailabilityError('Bluetooth', 'updateDescriptorAsync');
+  }
+  _validateUUID(options.peripheralUUID);
+  _validateUUID(options.serviceUUID);
+  _validateUUID(options.characteristicUUID);
+  _validateUUID(options.descriptorUUID);
+  return new Promise((resolve, reject) => {
+    const transactionId = createTransactionId(options, characteristicProperties);
     transactions[transactionId] = { resolve, reject };
-    ExpoBluetooth.updateAsync({ ...options, operation });
+    ExpoBluetooth.updateDescriptorAsync({...options, characteristicProperties});
   });
 }
 
@@ -236,7 +319,7 @@ export async function readRSSIAsync(peripheralUUID: UUID): Promise<any> {
   _validateUUID(peripheralUUID);
 
   return new Promise((resolve, reject) => {
-    const transactionId = createTransactionId({ peripheralUUID }, TransactionType.read);
+    const transactionId = createTransactionId({ peripheralUUID }, TransactionType.rssi);
     transactions[transactionId] = { resolve, reject };
     ExpoBluetooth.readRSSIAsync({ uuid: peripheralUUID });
   });
@@ -380,9 +463,10 @@ addListener(({ data, event }: { data: NativeEventData; event: string }) => {
     }
   }
 
-  firePeripheralObservers(error);
-
   if (transactionId) {
+    if (error == null) {
+      firePeripheralObservers();
+    }
     if (transactionId in transactions) {
       
       const { resolve, reject, callbacks } = transactions[transactionId];
@@ -397,20 +481,24 @@ addListener(({ data, event }: { data: NativeEventData; event: string }) => {
           } else {
             const { resolve, reject } = callback;
             if (error) {
-              reject(new Error(error.message));
+              reject(new BluetoothError(error));
             } else {
-              resolve(data);
+              const { error, ...outputData } = data;
+              resolve(outputData);
             }
             removeCallbackForTransactionId(callback, transactionId);
           }
         }
-      } else if (resolve && reject) {
+        return;
+      } else if (resolve && reject) {        
         if (error) {
-          reject(new Error(error.message));
+          reject(new BluetoothError(error));
         } else {
-          resolve(data);
+          const { error, ...outputData } = data;
+          resolve(outputData);
         }
         delete transactions[transactionId];
+        return;
       } else {
         console.log('Throwing Error because no callback is found for transactionId: ', {
           data,
@@ -440,7 +528,7 @@ addListener(({ data, event }: { data: NativeEventData; event: string }) => {
           if (!peripheralsAreStillValid) {
             // Clear caches
             _peripherals = {};
-            firePeripheralObservers(error);
+            firePeripheralObservers();
           }
         }
 
@@ -466,7 +554,7 @@ function createTransactionId(
     characteristicUUID?: string;
     descriptorUUID?: string;
   },
-  transactionType: TransactionType
+  transactionType: TransactionType | CharacteristicProperty
 ): string {
   let targets: string[] = [transactionType];
 
@@ -520,9 +608,9 @@ function updateAdvertismentDataStore(peripheralId: string, advertisementData: an
   };
 }
 
-function firePeripheralObservers(error?: ErrorInterface | null) {
+function firePeripheralObservers() {
   for (const subscription of multiEventHandlers.everything) {
-    subscription({ peripherals: getPeripherals(), error });
+    subscription({ peripherals: getPeripherals() });
   }
 }
 

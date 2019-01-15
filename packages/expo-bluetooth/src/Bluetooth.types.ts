@@ -69,6 +69,10 @@ export type NativeEventData = {
 export interface ErrorInterface {
   message: string;
   code: string;
+  domain?: string | null;
+  reason?: string | null;
+  suggestion?: string | null;
+  underlayingError?: string | null;
 }
 
 export interface CharacteristicInterface extends NodeInterface {
@@ -120,8 +124,7 @@ export interface PeripheralInterface extends NodeInterface {
 
 export enum TransactionType {
   get = 'get',
-  read = 'read',
-  write = 'write',
+  rssi = 'rssi',
   connect = 'connect',
   disconnect = 'disconnect',
   scan = 'scan',
@@ -133,7 +136,7 @@ export type StateUpdatedCallback = (state: CentralState) => void;
 
 export type ScanSettings = {
   serviceUUIDsToQuery?: UUID[];
-  scanningOptions?: any; //TODO: Bacon:
+  scanningOptions?: any; //TODO: Bacon: This is where the iOS multi-scan value would be defined.
   callback?: PeripheralFoundCallback;
 };
 
@@ -142,24 +145,61 @@ export interface Central {
   isScanning: boolean;
 }
 
-export type WriteOptions = {
+export type UpdateDescriptorOptions = {
+  descriptorUUID?: UUID;
+};
+
+export type UpdateOptions = {
   peripheralUUID: UUID;
   serviceUUID: UUID;
   characteristicUUID: UUID;
-  descriptorUUID?: UUID;
-  characteristicProperties: CharacteristicProperty;
-  shouldMute?: boolean;
-  data?: Base64;
+};
+
+export type UpdateCharacteristicOptions = UpdateOptions & {
+  isEnabled?: boolean;
+};
+
+export type ReadCharacteristicOptions = UpdateCharacteristicOptions;
+
+export type WriteCharacteristicOptions = UpdateCharacteristicOptions & {
+  data: Base64;
 };
 
 export enum CharacteristicProperty {
+  /* Permits broadcasts of the characteristic value using a characteristic configuration descriptor.
+   * Not allowed for local characteristics.
+   */
   Broadcast = 'broadcast',
+  /* Permits reads of the characteristic value. */
+  Read = 'read',
+  /* Permits writes of the characteristic value, without a response. */
   WriteWithoutResponse = 'writeWithoutResponse',
+  /* Permits writes of the characteristic value. */
   Write = 'write',
+  /* Permits notifications of the characteristic value, without a response. */
   Notify = 'notify',
+  /* Permits indications of the characteristic value. */
   Indicate = 'indicate',
+  /* Permits signed writes of the characteristic value */
   AutheticateSignedWrites = 'autheticateSignedWrites',
+  /* If set, additional characteristic properties are defined in the characteristic extended properties descriptor.
+   * Not allowed for local characteristics.
+   */
   ExtendedProperties = 'extendedProperties',
+  /* If set, only trusted devices can enable notifications of the characteristic value. */
   NotifyEncryptionRequired = 'notifyEncryptionRequired',
+  /* If set, only trusted devices can enable indications of the characteristic value. */
   IndicateEncryptionRequired = 'indicateEncryptionRequired',
+}
+
+/* Read, write, and encryption permissions for an ATT attribute. Can be combined. */
+export enum Permissions {
+  /* Read-only. */
+  Readable = 'Readable',
+  /* Write-only. */
+  Writeable = 'Writeable',
+  /* Readable by trusted devices. */
+  ReadEncryptionRequired = 'ReadEncryptionRequired',
+  /* Writeable by trusted devices. */
+  WriteEncryptionRequired = 'WriteEncryptionRequired',
 }
