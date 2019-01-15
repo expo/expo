@@ -43,7 +43,7 @@ public class PlayerDataControl implements MediaController.MediaPlayerControl {
   @Override
   public void seekTo(final int msec) {
     final Bundle map = new Bundle();
-    map.putDouble(PlayerData.STATUS_POSITION_MILLIS_KEY_PATH, msec);
+    map.putDouble(PlayerData.STATUS_POSITION_MILLIS_KEY_PATH, (double) msec);
     mPlayerData.setStatus(map, null);
   }
 

@@ -11,9 +11,10 @@ import java.lang.ref.WeakReference;
 import java.util.Map;
 
 import expo.core.Promise;
-import expo.core.interfaces.Arguments;
-import expo.modules.av.AVModule;
+import expo.core.arguments.ReadableArguments;
+import expo.modules.av.AVManagerInterface;
 import expo.modules.av.AudioEventHandler;
+import expo.modules.av.AudioFocusNotAcquiredException;
 
 public abstract class PlayerData implements AudioEventHandler {
   static final String STATUS_ANDROID_IMPLEMENTATION_KEY_PATH = "androidImplementation";
@@ -71,7 +72,7 @@ public abstract class PlayerData implements AudioEventHandler {
     void setFullscreenMode(boolean isFullscreen);
   }
 
-  final AVModule mAVModule;
+  final AVManagerInterface mAVModule;
   final Uri mUri;
   final Map<String, Object> mRequestHeaders;
 
@@ -107,13 +108,13 @@ public abstract class PlayerData implements AudioEventHandler {
   float mVolume = 1.0f;
   boolean mIsMuted = false;
 
-  PlayerData(final AVModule avModule, final Uri uri, final Map<String, Object> requestHeaders) {
+  PlayerData(final AVManagerInterface avModule, final Uri uri, final Map<String, Object> requestHeaders) {
     mRequestHeaders = requestHeaders;
     mAVModule = avModule;
     mUri = uri;
   }
 
-  public static PlayerData createUnloadedPlayerData(final AVModule avModule, final Context context, final Arguments source, final Arguments status) {
+  public static PlayerData createUnloadedPlayerData(final AVManagerInterface avModule, final Context context, final ReadableArguments source, final Bundle status) {
     final String uriString = source.getString(STATUS_URI_KEY_PATH);
     Map requestHeaders = null;
     if (source.containsKey(STATUS_HEADERS_KEY_PATH)) {
@@ -135,7 +136,7 @@ public abstract class PlayerData implements AudioEventHandler {
 
   // Lifecycle
 
-  public abstract void load(final Arguments status, final LoadCompletionListener loadCompletionListener);
+  public abstract void load(final Bundle status, final LoadCompletionListener loadCompletionListener);
 
   public abstract void release();
 
@@ -194,12 +195,12 @@ public abstract class PlayerData implements AudioEventHandler {
     return mShouldPlay && mRate > 0.0;
   }
 
-  abstract void playPlayerWithRateAndMuteIfNecessary() throws AVModule.AudioFocusNotAcquiredException;
+  abstract void playPlayerWithRateAndMuteIfNecessary() throws AudioFocusNotAcquiredException;
 
   abstract void applyNewStatus(final Integer newPositionMillis, final Boolean newIsLooping)
-      throws AVModule.AudioFocusNotAcquiredException, IllegalStateException;
+      throws AudioFocusNotAcquiredException, IllegalStateException;
 
-  final void setStatusWithListener(final Arguments status, final SetStatusCompletionListener setStatusCompletionListener) {
+  final void setStatusWithListener(final Bundle status, final SetStatusCompletionListener setStatusCompletionListener) {
     if (status.containsKey(STATUS_PROGRESS_UPDATE_INTERVAL_MILLIS_KEY_PATH)) {
       mProgressUpdateIntervalMillis = (int) status.getDouble(STATUS_PROGRESS_UPDATE_INTERVAL_MILLIS_KEY_PATH);
     }
@@ -252,7 +253,7 @@ public abstract class PlayerData implements AudioEventHandler {
     setStatusCompletionListener.onSetStatusComplete();
   }
 
-  public final void setStatus(final Arguments status, final Promise promise) {
+  public final void setStatus(final Bundle status, final Promise promise) {
     if (status == null) {
       if (promise != null) {
         promise.reject("E_AV_SETSTATUS", "Cannot set null status.");
@@ -322,9 +323,9 @@ public abstract class PlayerData implements AudioEventHandler {
     // STATUS_IS_PLAYING_KEY_PATH and STATUS_IS_BUFFERING_KEY_PATH are set
     // in addExtraStatusFields().
 
-    map.putDouble(STATUS_RATE_KEY_PATH, mRate);
+    map.putDouble(STATUS_RATE_KEY_PATH, (double) mRate);
     map.putBoolean(STATUS_SHOULD_CORRECT_PITCH_KEY_PATH, mShouldCorrectPitch);
-    map.putDouble(STATUS_VOLUME_KEY_PATH, mVolume);
+    map.putDouble(STATUS_VOLUME_KEY_PATH, (double) mVolume);
     map.putBoolean(STATUS_IS_MUTED_KEY_PATH, mIsMuted);
     // STATUS_IS_LOOPING_KEY_PATH is set in addExtraStatusFields().
 
@@ -372,7 +373,7 @@ public abstract class PlayerData implements AudioEventHandler {
   public final void handleAudioFocusGained() {
     try {
       playPlayerWithRateAndMuteIfNecessary();
-    } catch (final AVModule.AudioFocusNotAcquiredException e) {
+    } catch (final AudioFocusNotAcquiredException e) {
       // This is ok -- we might be paused or audio might have been disabled.
     }
   }
@@ -386,7 +387,7 @@ public abstract class PlayerData implements AudioEventHandler {
   public final void onResume() {
     try {
       playPlayerWithRateAndMuteIfNecessary();
-    } catch (final AVModule.AudioFocusNotAcquiredException e) {
+    } catch (final AudioFocusNotAcquiredException e) {
       // Do nothing -- another app has audio focus for now, and handleAudioFocusGained() will be
       // called when it abandons it.
     }

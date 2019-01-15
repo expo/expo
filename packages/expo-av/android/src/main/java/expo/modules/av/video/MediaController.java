@@ -24,7 +24,7 @@ import java.lang.ref.WeakReference;
 import java.util.Formatter;
 import java.util.Locale;
 
-import host.exp.expoview.R;
+import expo.modules.av.R;
 import expo.modules.av.player.PlayerDataControl;
 
 // Based on https://www.brightec.co.uk/ideas/custom-android-media-controller
@@ -102,6 +102,7 @@ public class MediaController extends FrameLayout {
   /**
    * Set the view that acts as the anchor for the control view.
    * This can for example be a VideoView, or your Activity's main view.
+   *
    * @param view The view to which to anchor the controller when it is visible.
    */
   public void setAnchorView(ViewGroup view) {
@@ -123,6 +124,7 @@ public class MediaController extends FrameLayout {
   /**
    * Create the view that holds the widgets that control playback.
    * Derived classes can override this to create their own.
+   *
    * @return The controller view.
    */
   protected View makeControllerView() {
@@ -228,8 +230,9 @@ public class MediaController extends FrameLayout {
   /**
    * Show the controller on screen. It will go away
    * automatically after 'timeout' milliseconds of inactivity.
+   *
    * @param timeout The timeout in milliseconds. Use 0 to show
-   * the controller until hide() is called.
+   *                the controller until hide() is called.
    */
   public void show(int timeout) {
     if (!mShowing && mAnchor != null) {
@@ -287,7 +290,7 @@ public class MediaController extends FrameLayout {
 
     int seconds = totalSeconds % 60;
     int minutes = (totalSeconds / 60) % 60;
-    int hours   = totalSeconds / 3600;
+    int hours = totalSeconds / 3600;
 
     mFormatBuilder.setLength(0);
     if (hours > 0) {
@@ -308,7 +311,7 @@ public class MediaController extends FrameLayout {
       if (duration > 0) {
         // use long to avoid overflow
         long pos = 1000L * position / duration;
-        mProgress.setProgress( (int) pos);
+        mProgress.setProgress((int) pos);
       }
       int percent = mPlayer.getBufferPercentage();
       mProgress.setSecondaryProgress(percent * 10);
@@ -348,7 +351,7 @@ public class MediaController extends FrameLayout {
     int keyCode = event.getKeyCode();
     final boolean uniqueDown = event.getRepeatCount() == 0
         && event.getAction() == KeyEvent.ACTION_DOWN;
-    if (keyCode ==  KeyEvent.KEYCODE_HEADSETHOOK
+    if (keyCode == KeyEvent.KEYCODE_HEADSETHOOK
         || keyCode == KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE
         || keyCode == KeyEvent.KEYCODE_SPACE) {
       if (uniqueDown) {
@@ -423,8 +426,7 @@ public class MediaController extends FrameLayout {
 
     if (mPlayer.isFullscreen()) {
       mFullscreenButton.setImageResource(R.drawable.ic_fullscreen_exit_32dp);
-    }
-    else {
+    } else {
       mFullscreenButton.setImageResource(R.drawable.ic_fullscreen_32dp);
     }
   }

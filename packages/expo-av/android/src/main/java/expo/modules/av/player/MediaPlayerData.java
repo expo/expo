@@ -12,14 +12,19 @@ import android.util.Log;
 import android.util.Pair;
 import android.view.Surface;
 
+import java.io.IOException;
+import java.net.CookieHandler;
 import java.net.HttpCookie;
+import java.net.URI;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import expo.core.interfaces.Arguments;
-import expo.modules.av.AVModule;
+import expo.core.ModuleRegistry;
+import expo.modules.av.AVManagerInterface;
+import expo.modules.av.AudioFocusNotAcquiredException;
 
 
 class MediaPlayerData extends PlayerData implements
@@ -33,15 +38,15 @@ class MediaPlayerData extends PlayerData implements
   static final String IMPLEMENTATION_NAME = "MediaPlayer";
 
   private MediaPlayer mMediaPlayer = null;
-  private Context mReactContext = null;
+  private ModuleRegistry mModuleRegistry = null;
   private boolean mMediaPlayerHasStartedEver = false;
 
   private Integer mPlayableDurationMillis = null;
   private boolean mIsBuffering = false;
 
-  MediaPlayerData(final AVModule avModule, final Context context, final Uri uri, final Map<String, Object> requestHeaders) {
+  MediaPlayerData(final AVManagerInterface avModule, final Context context, final Uri uri, final Map<String, Object> requestHeaders) {
     super(avModule, uri, requestHeaders);
-    mReactContext = context;
+    mModuleRegistry = avModule.getModuleRegistry();
   }
 
   @Override
@@ -54,7 +59,7 @@ class MediaPlayerData extends PlayerData implements
   // Lifecycle
 
   @Override
-  public void load(final Arguments status,
+  public void load(final Bundle status,
                    final LoadCompletionListener loadCompletionListener) {
     if (mMediaPlayer != null) {
       loadCompletionListener.onLoadError("Load encountered an error: MediaPlayerData cannot be loaded twice.");
@@ -65,7 +70,7 @@ class MediaPlayerData extends PlayerData implements
 
     try {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        unpreparedPlayer.setDataSource(mAVModule.mScopedContext, mUri, null, getHttpCookiesList());
+        unpreparedPlayer.setDataSource(mAVModule.getContext(), mUri, null, getHttpCookiesList());
       } else {
         Map<String, String> headers = new HashMap<>(1);
         StringBuilder cookieBuilder = new StringBuilder();
@@ -84,7 +89,7 @@ class MediaPlayerData extends PlayerData implements
             }
           }
         }
-        unpreparedPlayer.setDataSource(mAVModule.mScopedContext, mUri, headers);
+        unpreparedPlayer.setDataSource(mAVModule.getContext(), mUri, headers);
       }
     } catch (final Throwable throwable) {
       loadCompletionListener.onLoadError("Load encountered an error: setDataSource() threw an exception was thrown with message: " + throwable.toString());
@@ -161,7 +166,7 @@ class MediaPlayerData extends PlayerData implements
   }
 
   @Override
-  void playPlayerWithRateAndMuteIfNecessary() throws AVModule.AudioFocusNotAcquiredException {
+  void playPlayerWithRateAndMuteIfNecessary() throws AudioFocusNotAcquiredException {
     if (mMediaPlayer == null || !shouldPlayerPlay()) {
       return;
     }
@@ -207,7 +212,7 @@ class MediaPlayerData extends PlayerData implements
 
   @Override
   void applyNewStatus(final Integer newPositionMillis, final Boolean newIsLooping)
-      throws AVModule.AudioFocusNotAcquiredException, IllegalStateException {
+      throws AudioFocusNotAcquiredException, IllegalStateException {
     if (mMediaPlayer == null) {
       throw new IllegalStateException("mMediaPlayer is null!");
     }
@@ -401,18 +406,22 @@ class MediaPlayerData extends PlayerData implements
   // Utilities
 
   private List<HttpCookie> getHttpCookiesList() {
-    // TODO: Use CookieProvider
-//    HttpUrl url = HttpUrl.get(URI.create(mUri.toString()));
-//    if (url != null) {
-//      List<Cookie> cookieList = mReactContext.getNativeModule(NetworkingModule.class).mCookieJarContainer.loadForRequest(url);
-//      List<HttpCookie> httpCookieList = new ArrayList<>(cookieList.size());
-//      for (Cookie cookie : cookieList) {
-//        if (cookie.matches(url)) {
-//          httpCookieList.add(new HttpCookie(cookie.name(), cookie.value()));
-//        }
-//      }
-//      return httpCookieList;
-//    }
+    if (mModuleRegistry != null) {
+      CookieHandler cookieHandler = mModuleRegistry.getModule(CookieHandler.class);
+      if (cookieHandler != null) {
+        try {
+          Map<String, List<String>> headersMap = cookieHandler.get(URI.create(mUri.toString()), null);
+          List<String> cookies = headersMap.get("Cookie");
+          List<HttpCookie> httpCookies = new ArrayList<>();
+          for (String cookieValue : cookies) {
+            httpCookies.addAll(HttpCookie.parse(cookieValue));
+          }
+          return httpCookies;
+        } catch (IOException e) {
+          // do nothing, we'll return an empty list
+        }
+      }
+    }
     return Collections.emptyList();
   }
 }

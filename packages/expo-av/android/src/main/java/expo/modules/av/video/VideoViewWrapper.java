@@ -5,6 +5,8 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.widget.FrameLayout;
 
+import expo.core.ModuleRegistry;
+
 /**
  * We need the wrapper to be able to remove the view from the React-managed tree
  * into the FullscreenVideoPlayer and not have to fight with the React styles
@@ -15,9 +17,9 @@ import android.widget.FrameLayout;
 public class VideoViewWrapper extends FrameLayout {
   private VideoView mVideoView = null;
 
-  public VideoViewWrapper(@NonNull Context context) {
+  public VideoViewWrapper(@NonNull Context context, ModuleRegistry moduleRegistry) {
     super(context);
-    mVideoView = new VideoView(context, this);
+    mVideoView = new VideoView(context, this, moduleRegistry);
     addView(mVideoView, generateDefaultLayoutParams());
   }
 

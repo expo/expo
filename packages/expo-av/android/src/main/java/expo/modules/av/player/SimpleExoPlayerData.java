@@ -40,8 +40,9 @@ import com.google.android.exoplayer2.util.Util;
 import java.io.IOException;
 import java.util.Map;
 
-import expo.core.interfaces.Arguments;
-import expo.modules.av.AVModule;
+import expo.modules.av.AVManagerInterface;
+import expo.modules.av.AudioFocusNotAcquiredException;
+import expo.modules.av.player.datasource.DataSourceFactoryProvider;
 
 class SimpleExoPlayerData extends PlayerData
     implements Player.EventListener, ExtractorMediaSource.EventListener, SimpleExoPlayer.VideoListener, AdaptiveMediaSourceEventListener {
@@ -58,7 +59,7 @@ class SimpleExoPlayerData extends PlayerData
   private boolean mIsLoading = true;
   private Context mReactContext;
 
-  SimpleExoPlayerData(final AVModule avModule, final Context context, final Uri uri, final String overridingExtension, final Map<String, Object> requestHeaders) {
+  SimpleExoPlayerData(final AVManagerInterface avModule, final Context context, final Uri uri, final String overridingExtension, final Map<String, Object> requestHeaders) {
     super(avModule, uri, requestHeaders);
     mReactContext = context;
     mOverridingExtension = overridingExtension;
@@ -74,7 +75,7 @@ class SimpleExoPlayerData extends PlayerData
   // Lifecycle
 
   @Override
-  public void load(final Arguments status, final LoadCompletionListener loadCompletionListener) {
+  public void load(final Bundle status, final LoadCompletionListener loadCompletionListener) {
     mLoadCompletionListener = loadCompletionListener;
 
     // Create a default TrackSelector
@@ -85,12 +86,12 @@ class SimpleExoPlayerData extends PlayerData
     final TrackSelector trackSelector = new DefaultTrackSelector(trackSelectionFactory);
 
     // Create the player
-    mSimpleExoPlayer = ExoPlayerFactory.newSimpleInstance(mAVModule.mScopedContext, trackSelector);
+    mSimpleExoPlayer = ExoPlayerFactory.newSimpleInstance(mAVModule.getContext(), trackSelector);
     mSimpleExoPlayer.addListener(this);
     mSimpleExoPlayer.addVideoListener(this);
 
     // Produces DataSource instances through which media data is loaded.
-    final DataSource.Factory dataSourceFactory = new SharedCookiesDataSourceFactory(mUri, mReactContext, Util.getUserAgent(mAVModule.mScopedContext, "yourApplicationName"), mRequestHeaders);
+    final DataSource.Factory dataSourceFactory = mAVModule.getModuleRegistry().getModule(DataSourceFactoryProvider.class).createFactory(mReactContext, mAVModule.getModuleRegistry(), Util.getUserAgent(mAVModule.getContext(), "yourApplicationName"), mRequestHeaders);
     try {
       // This is the MediaSource representing the media to be played.
       final MediaSource source = buildMediaSource(mUri, mOverridingExtension, mainHandler, dataSourceFactory);
@@ -119,7 +120,7 @@ class SimpleExoPlayerData extends PlayerData
   // Set status
 
   @Override
-  void playPlayerWithRateAndMuteIfNecessary() throws AVModule.AudioFocusNotAcquiredException {
+  void playPlayerWithRateAndMuteIfNecessary() throws AudioFocusNotAcquiredException {
     if (mSimpleExoPlayer == null || !shouldPlayerPlay()) {
       return;
     }
@@ -139,7 +140,7 @@ class SimpleExoPlayerData extends PlayerData
 
   @Override
   void applyNewStatus(final Integer newPositionMillis, final Boolean newIsLooping)
-      throws AVModule.AudioFocusNotAcquiredException, IllegalStateException {
+      throws AudioFocusNotAcquiredException, IllegalStateException {
     if (mSimpleExoPlayer == null) {
       throw new IllegalStateException("mSimpleExoPlayer is null!");
     }

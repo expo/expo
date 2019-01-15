@@ -1,18 +1,17 @@
 package expo.modules.av.video;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
-import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.uimanager.ThemedReactContext;
-
 import java.lang.ref.WeakReference;
 
-import versioned.host.exp.exponent.modules.api.KeepAwakeModule;
+import expo.core.ModuleRegistry;
+import expo.core.interfaces.services.KeepAwakeManager;
 import expo.modules.av.player.PlayerData;
 
 public class FullscreenVideoPlayer extends Dialog {
@@ -31,14 +30,19 @@ public class FullscreenVideoPlayer extends Dialog {
         final Window window = fullscreenVideoPlayer.getWindow();
         if (window != null) {
           boolean isPlaying =
-              fullscreenVideoPlayer.mVideoView.getStatus().hasKey(PlayerData.STATUS_IS_PLAYING_KEY_PATH)
+              fullscreenVideoPlayer.mVideoView.getStatus().containsKey(PlayerData.STATUS_IS_PLAYING_KEY_PATH)
                   && fullscreenVideoPlayer.mVideoView.getStatus().getBoolean(PlayerData.STATUS_IS_PLAYING_KEY_PATH);
-          KeepAwakeModule keepAwakeModule = fullscreenVideoPlayer.mReactContext.getNativeModule(KeepAwakeModule.class);
-          if (isPlaying || keepAwakeModule.isActivated()) {
-            window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-          } else {
-            window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+          ModuleRegistry moduleRegistry = fullscreenVideoPlayer.mModuleRegistry;
+          if (moduleRegistry != null) {
+            KeepAwakeManager keepAwakeManager = moduleRegistry.getModule(KeepAwakeManager.class);
+            boolean keepAwakeIsActivated = keepAwakeManager != null && keepAwakeManager.isActivated();
+            if (isPlaying || keepAwakeIsActivated) {
+              window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            } else {
+              window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            }
           }
+          fullscreenVideoPlayer.mModuleRegistry.getModule(KeepAwakeManager.class).isActivated();
         }
         fullscreenVideoPlayer.mKeepScreenOnHandler.postDelayed(this, UPDATE_KEEP_SCREEN_ON_FLAG_MS);
       }
@@ -49,14 +53,14 @@ public class FullscreenVideoPlayer extends Dialog {
   private Runnable mKeepScreenOnUpdater;
 
   private FrameLayout mParent;
-  private ReactContext mReactContext;
+  private ModuleRegistry mModuleRegistry;
   private final VideoView mVideoView;
   private final FrameLayout mContainerView;
   private WeakReference<FullscreenVideoPlayerPresentationChangeListener> mUpdateListener;
 
-  FullscreenVideoPlayer(@NonNull ThemedReactContext context, VideoView videoView) {
+  FullscreenVideoPlayer(@NonNull Context context, VideoView videoView, ModuleRegistry moduleRegistry) {
     super(context, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
-    mReactContext = context;
+    mModuleRegistry = moduleRegistry;
 
     setCancelable(false);
 

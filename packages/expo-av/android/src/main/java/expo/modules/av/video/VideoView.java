@@ -9,13 +9,13 @@ import android.view.MotionEvent;
 import android.view.Surface;
 import android.widget.FrameLayout;
 
-import com.facebook.react.bridge.WritableMap;
 import com.yqritc.scalablevideoview.ScalableType;
 
+import expo.core.ModuleRegistry;
 import expo.core.Promise;
-import expo.core.interfaces.Arguments;
+import expo.core.arguments.ReadableArguments;
 import expo.core.interfaces.services.EventEmitter;
-import expo.modules.av.AVModule;
+import expo.modules.av.AVManagerInterface;
 import expo.modules.av.AudioEventHandler;
 import expo.modules.av.player.PlayerData;
 import expo.modules.av.player.PlayerDataControl;
@@ -36,13 +36,12 @@ public class VideoView extends FrameLayout implements AudioEventHandler, Fullscr
     @Override
     public void onStatusUpdate(final Bundle status) {
       post(mMediaControllerUpdater);
-      // TODO: Use Event Emitter
-//      mEventEmitter.receiveEvent(getReactId(), VideoViewManager.Events.EVENT_STATUS_UPDATE.toString(), status);
+      mEventEmitter.emit(getReactId(), VideoViewManager.Events.EVENT_STATUS_UPDATE.toString(), status);
     }
   };
 
   private EventEmitter mEventEmitter;
-  private final AVModule mAVModule;
+  private final AVManagerInterface mAVModule;
   private VideoViewWrapper mVideoViewWrapper;
 
   private PlayerData mPlayerData = null;
@@ -64,20 +63,19 @@ public class VideoView extends FrameLayout implements AudioEventHandler, Fullscr
   private boolean mShouldShowFullscreenPlayerOnLoad = false;
   private FullscreenVideoPlayerPresentationChangeProgressListener mFullscreenVideoPlayerPresentationOnLoadChangeListener = null;
 
-  public VideoView(@NonNull Context context, VideoViewWrapper videoViewWrapper) {
+  public VideoView(@NonNull Context context, VideoViewWrapper videoViewWrapper, ModuleRegistry moduleRegistry) {
     super(context);
 
     mVideoViewWrapper = videoViewWrapper;
 
-//    mEventEmitter = context.getJSModule(RCTEventEmitter.class);
-//    mAVModule = context.getNativeModule(AVModule.class);
-    mAVModule = null;
+    mEventEmitter = moduleRegistry.getModule(EventEmitter.class);
+    mAVModule = moduleRegistry.getModule(AVManagerInterface.class);
     mAVModule.registerVideoViewForAudioLifecycle(this);
 
     mVideoTextureView = new VideoTextureView(context, this);
     addView(mVideoTextureView, generateDefaultLayoutParams());
 
-    mFullscreenPlayer = new FullscreenVideoPlayer(context, this);
+    mFullscreenPlayer = new FullscreenVideoPlayer(context, this, moduleRegistry);
     mFullscreenPlayer.setUpdateListener(this);
 
     mMediaController = new MediaController(VideoView.this.getContext());
@@ -108,8 +106,7 @@ public class VideoView extends FrameLayout implements AudioEventHandler, Fullscr
   private void callOnError(final String error) {
     final Bundle map = new Bundle();
     map.putString("error", error);
-    // TODO: Use EventEmitter
-//    mEventEmitter.receiveEvent(getReactId(), VideoViewManager.Events.EVENT_ERROR.toString(), map);
+    mEventEmitter.emit(getReactId(), VideoViewManager.Events.EVENT_ERROR.toString(), map);
   }
 
   private void callOnReadyForDisplay(final Pair<Integer, Integer> videoWidthHeight) {
@@ -129,8 +126,7 @@ public class VideoView extends FrameLayout implements AudioEventHandler, Fullscr
       final Bundle map = new Bundle();
       map.putBundle("naturalSize", naturalSize);
       map.putBundle("status", mPlayerData.getStatus());
-      // TODO: Use EventEmitter
-//      mEventEmitter.receiveEvent(getReactId(), VideoViewManager.Events.EVENT_READY_FOR_DISPLAY.toString(), map);
+      mEventEmitter.emit(getReactId(), VideoViewManager.Events.EVENT_READY_FOR_DISPLAY.toString(), map);
     }
   }
 
@@ -264,25 +260,25 @@ public class VideoView extends FrameLayout implements AudioEventHandler, Fullscr
     Bundle event = new Bundle();
     event.putInt("fullscreenUpdate", update.getValue());
     event.putBundle("status", getStatus());
-    // TODO: Use EventEmitter
-//    mEventEmitter.receiveEvent(getReactId(), VideoViewManager.Events.EVENT_FULLSCREEN_PLAYER_UPDATE.toString(), event);
+    mEventEmitter.emit(getReactId(), VideoViewManager.Events.EVENT_FULLSCREEN_PLAYER_UPDATE.toString(), event);
   }
 
   // Prop setting
 
-  public void setStatus(final Arguments status, final Promise promise) {
-    mStatusToSet.putAll(status);
+  public void setStatus(final ReadableArguments status, final Promise promise) {
+    Bundle statusBundle = status.toBundle();
+    mStatusToSet.putAll(statusBundle);
     if (mPlayerData != null) {
-      final WritableMap statusToSet = Arguments.createMap();
-      statusToSet.merge(mStatusToSet);
-      mStatusToSet = Arguments.createMap();
-      mPlayerData.setStatus(status, promise);
+      final Bundle statusToSet = new Bundle();
+      statusToSet.putAll(mStatusToSet);
+      mStatusToSet = new Bundle();
+      mPlayerData.setStatus(statusBundle, promise);
     } else if (promise != null) {
       promise.resolve(PlayerData.getUnloadedStatus());
     }
   }
 
-  public WritableMap getStatus() {
+  public Bundle getStatus() {
     return mPlayerData == null ? PlayerData.getUnloadedStatus() : mPlayerData.getStatus();
   }
 
@@ -304,7 +300,7 @@ public class VideoView extends FrameLayout implements AudioEventHandler, Fullscr
     maybeUpdateMediaControllerForUseNativeControls();
   }
 
-  public void setSource(final Arguments source, final Arguments initialStatus, final Promise promise) {
+  public void setSource(final ReadableArguments source, final ReadableArguments initialStatus, final Promise promise) {
     if (mPlayerData != null) {
       mStatusToSet.putAll(mPlayerData.getStatus());
       mPlayerData.release();
@@ -313,7 +309,7 @@ public class VideoView extends FrameLayout implements AudioEventHandler, Fullscr
     }
 
     if (initialStatus != null) {
-      mStatusToSet.putAll(initialStatus);
+      mStatusToSet.putAll(initialStatus.toBundle());
     }
 
     final String uriString = source != null ? source.getString(PlayerData.STATUS_URI_KEY_PATH) : null;
@@ -325,8 +321,7 @@ public class VideoView extends FrameLayout implements AudioEventHandler, Fullscr
       return;
     }
 
-    // TODO: Use EventEmitter
-//    mEventEmitter.receiveEvent(getReactId(), VideoViewManager.Events.EVENT_LOAD_START.toString(), Arguments.createMap());
+    mEventEmitter.emit(getReactId(), VideoViewManager.Events.EVENT_LOAD_START.toString(), new Bundle());
 
     final Bundle statusToInitiallySet = new Bundle();
     statusToInitiallySet.putAll(mStatusToSet);
@@ -372,8 +367,7 @@ public class VideoView extends FrameLayout implements AudioEventHandler, Fullscr
         mMediaController.setMediaPlayer(new PlayerDataControl(mPlayerData));
         mMediaController.setAnchorView(VideoView.this);
         maybeUpdateMediaControllerForUseNativeControls(false);
-        // TODO: Use EventEmitter
-//        mEventEmitter.receiveEvent(getReactId(), VideoViewManager.Events.EVENT_LOAD.toString(), status);
+        mEventEmitter.emit(getReactId(), VideoViewManager.Events.EVENT_LOAD.toString(), status);
         // Execute the fullscreen player state change requested before the video loaded
         if (mFullscreenVideoPlayerPresentationOnLoadChangeListener != null) {
           FullscreenVideoPlayerPresentationChangeProgressListener listener = mFullscreenVideoPlayerPresentationOnLoadChangeListener;

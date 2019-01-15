@@ -1,13 +1,13 @@
 package expo.modules.av.video;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.graphics.Matrix;
 import android.graphics.SurfaceTexture;
 import android.util.Pair;
 import android.view.Surface;
 import android.view.TextureView;
 
-import com.facebook.react.uimanager.ThemedReactContext;
 import com.yqritc.scalablevideoview.ScalableType;
 import com.yqritc.scalablevideoview.ScaleManager;
 import com.yqritc.scalablevideoview.Size;
@@ -21,7 +21,7 @@ public class VideoTextureView extends TextureView implements TextureView.Surface
 
   private Surface mSurface = null;
 
-  public VideoTextureView(final ThemedReactContext themedReactContext, VideoView videoView) {
+  public VideoTextureView(final Context themedReactContext, VideoView videoView) {
     super(themedReactContext, null, 0);
 
     mVideoView = videoView;

@@ -1,23 +1,32 @@
 package expo.modules.av.video;
 
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.common.MapBuilder;
-import com.facebook.react.uimanager.SimpleViewManager;
-import com.facebook.react.uimanager.ThemedReactContext;
-import com.facebook.react.uimanager.annotations.ReactProp;
+import android.content.Context;
+
 import com.yqritc.scalablevideoview.ScalableType;
 
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
-import javax.annotation.Nullable;
+import expo.core.ModuleRegistry;
+import expo.core.ViewManager;
+import expo.core.arguments.ReadableArguments;
+import expo.core.interfaces.ExpoProp;
+import expo.core.interfaces.ModuleRegistryConsumer;
 
-public class VideoViewManager extends SimpleViewManager<VideoViewWrapper> {
-  public static final String REACT_CLASS = "ExponentVideo";
+public class VideoViewManager extends ViewManager<VideoViewWrapper> implements ModuleRegistryConsumer {
+  public static final String REACT_CLASS = "ExpoVideoView";
 
   private static final String PROP_STATUS = "status";
   private static final String PROP_USE_NATIVE_CONTROLS = "useNativeControls";
   private static final String PROP_SOURCE = "source";
-  private static final String PROP_NATIVE_RESIZE_MODE = "nativeResizeMode";
+  private static final String PROP_NATIVE_RESIZE_MODE = "resizeMode";
+
+  private ModuleRegistry mModuleRegistry;
+
+  @Override
+  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+    mModuleRegistry = moduleRegistry;
+  }
 
   enum FullscreenPlayerUpdate {
     FULLSCREEN_PLAYER_WILL_PRESENT(0),
@@ -26,20 +35,23 @@ public class VideoViewManager extends SimpleViewManager<VideoViewWrapper> {
     FULLSCREEN_PLAYER_DID_DISMISS(3);
 
     private final int mValue;
+
     FullscreenPlayerUpdate(final int value) {
       mValue = value;
     }
 
-    public int getValue() { return mValue; }
+    public int getValue() {
+      return mValue;
+    }
   }
 
   enum Events {
-    EVENT_STATUS_UPDATE("onStatusUpdateNative"),
-    EVENT_LOAD_START("onLoadStartNative"),
-    EVENT_LOAD("onLoadNative"),
-    EVENT_ERROR("onErrorNative"),
-    EVENT_READY_FOR_DISPLAY("onReadyForDisplayNative"),
-    EVENT_FULLSCREEN_PLAYER_UPDATE("onFullscreenUpdateNative");
+    EVENT_STATUS_UPDATE("onStatusUpdate"),
+    EVENT_LOAD_START("onLoadStart"),
+    EVENT_LOAD("onLoad"),
+    EVENT_ERROR("onError"),
+    EVENT_READY_FOR_DISPLAY("onReadyForDisplay"),
+    EVENT_FULLSCREEN_PLAYER_UPDATE("onFullscreenUpdate");
 
     private final String mName;
 
@@ -59,8 +71,13 @@ public class VideoViewManager extends SimpleViewManager<VideoViewWrapper> {
   }
 
   @Override
-  protected VideoViewWrapper createViewInstance(final ThemedReactContext themedReactContext) {
-    return new VideoViewWrapper(themedReactContext);
+  public ViewManagerType getViewManagerType() {
+    return ViewManagerType.SIMPLE;
+  }
+
+  @Override
+  public VideoViewWrapper createViewInstance(final Context themedReactContext) {
+    return new VideoViewWrapper(themedReactContext, mModuleRegistry);
   }
 
   @Override
@@ -69,49 +86,36 @@ public class VideoViewManager extends SimpleViewManager<VideoViewWrapper> {
     videoViewWrapper.getVideoViewInstance().onDropViewInstance();
   }
 
-  @Override
-  @Nullable
-  public Map<String, Object> getExportedViewConstants() {
-    // We cast the values as Object so that MapBuilder gives a Map<String, Object> instance.
-    return MapBuilder.of(
-        "ScaleNone", (Object) Integer.toString(ScalableType.LEFT_TOP.ordinal()),
-        "ScaleToFill", (Object) Integer.toString(ScalableType.FIT_XY.ordinal()),
-        "ScaleAspectFit", (Object) Integer.toString(ScalableType.FIT_CENTER.ordinal()),
-        "ScaleAspectFill", (Object) Integer.toString(ScalableType.CENTER_CROP.ordinal())
-    );
-  }
-
   // Props set directly in <Video> component:
 
-  @ReactProp(name = PROP_STATUS)
-  public void setStatus(final VideoViewWrapper videoViewWrapper, final ReadableMap status) {
+  @ExpoProp(name = PROP_STATUS)
+  public void setStatus(final VideoViewWrapper videoViewWrapper, final ReadableArguments status) {
     videoViewWrapper.getVideoViewInstance().setStatus(status, null);
   }
 
-  @ReactProp(name = PROP_USE_NATIVE_CONTROLS, defaultBoolean = false)
+  @ExpoProp(name = PROP_USE_NATIVE_CONTROLS)
   public void setUseNativeControls(final VideoViewWrapper videoViewWrapper, final boolean useNativeControls) {
     videoViewWrapper.getVideoViewInstance().setUseNativeControls(useNativeControls);
   }
 
   // Native only props -- set by Video.js
 
-  @ReactProp(name = PROP_SOURCE)
-  public void setSource(final VideoViewWrapper videoViewWrapper, final @Nullable ReadableMap source) {
+  @ExpoProp(name = PROP_SOURCE)
+  public void setSource(final VideoViewWrapper videoViewWrapper, final ReadableArguments source) {
     videoViewWrapper.getVideoViewInstance().setSource(source, null, null);
   }
 
-  @ReactProp(name = PROP_NATIVE_RESIZE_MODE, defaultBoolean = false)
+  @ExpoProp(name = PROP_NATIVE_RESIZE_MODE)
   public void setNativeResizeMode(final VideoViewWrapper videoViewWrapper, final String resizeModeOrdinalString) {
     videoViewWrapper.getVideoViewInstance().setResizeMode(ScalableType.values()[Integer.parseInt(resizeModeOrdinalString)]);
   }
 
   @Override
-  @Nullable
-  public Map<String, Object> getExportedCustomDirectEventTypeConstants() {
-    MapBuilder.Builder<String, Object> builder = MapBuilder.builder();
+  public List<String> getExportedEventNames() {
+    List<String> eventNames = new ArrayList<>();
     for (Events event : Events.values()) {
-      builder.put(event.toString(), MapBuilder.of("registrationName", event.toString()));
+      eventNames.add(event.toString());
     }
-    return builder.build();
+    return eventNames;
   }
 }

@@ -1,34 +1,52 @@
 package expo.modules.av.video;
 
+import android.content.Context;
 import android.support.annotation.Nullable;
-import android.view.View;
 
-import com.facebook.react.bridge.Promise;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.uimanager.NativeViewHierarchyManager;
-import com.facebook.react.uimanager.UIBlock;
-import com.facebook.react.uimanager.UIManagerModule;
+import com.yqritc.scalablevideoview.ScalableType;
 
-public class VideoManager extends ReactContextBaseJavaModule {
-  private final static String NAME = "ExponentVideoManager";
-  private final ReactApplicationContext mReactApplicationContext;
+import java.util.HashMap;
+import java.util.Map;
+
+import expo.core.ExportedModule;
+import expo.core.ModuleRegistry;
+import expo.core.Promise;
+import expo.core.interfaces.ExpoMethod;
+import expo.core.interfaces.ModuleRegistryConsumer;
+import expo.core.interfaces.services.UIManager;
+
+public class VideoManager extends ExportedModule implements ModuleRegistryConsumer {
+  private final static String NAME = "ExpoVideoManager";
+  private ModuleRegistry mModuleRegistry;
 
   @Override
   public String getName() {
     return NAME;
   }
 
-  public VideoManager(final ReactApplicationContext reactContext) {
+  public VideoManager(final Context reactContext) {
     super(reactContext);
+  }
 
-    mReactApplicationContext = reactContext;
+  @Override
+  public Map<String, Object> getConstants() {
+    // We cast the values as Object so that MapBuilder gives a Map<String, Object> instance.
+    Map<String, Object> constants = new HashMap<>();
+    constants.put("ScaleNone", Integer.toString(ScalableType.LEFT_TOP.ordinal()));
+    constants.put("ScaleToFill", Integer.toString(ScalableType.FIT_XY.ordinal()));
+    constants.put("ScaleAspectFit", Integer.toString(ScalableType.FIT_CENTER.ordinal()));
+    constants.put("ScaleAspectFill", Integer.toString(ScalableType.CENTER_CROP.ordinal()));
+    return constants;
+  }
+
+  @Override
+  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+    mModuleRegistry = moduleRegistry;
   }
 
   // Imperative API
 
-  @ReactMethod
+  @ExpoMethod
   public void setFullscreen(final Integer tag, final Boolean shouldBeFullscreen, final Promise promise) {
     tryRunWithVideoView(tag, new VideoViewCallback() {
       @Override
@@ -81,22 +99,16 @@ public class VideoManager extends ReactContextBaseJavaModule {
 
   // Rejects the promise if the VideoView is not found, otherwise executes the callback.
   private void tryRunWithVideoView(final Integer tag, final VideoViewCallback callback, final Promise promise) {
-    mReactApplicationContext.getNativeModule(UIManagerModule.class).addUIBlock(new UIBlock() {
+    mModuleRegistry.getModule(UIManager.class).addUIBlock(tag, new UIManager.UIBlock<VideoViewWrapper>() {
       @Override
-      public void execute(final NativeViewHierarchyManager nativeViewHierarchyManager) {
-        final VideoViewWrapper videoViewWrapper;
-        try {
-          final View view = nativeViewHierarchyManager.resolveView(tag);
-          if (!(view instanceof VideoViewWrapper)) {
-            throw new Exception();
-          }
-          videoViewWrapper = (VideoViewWrapper) view;
-        } catch (final Throwable e) {
-          promise.reject("E_VIDEO_TAGINCORRECT", "Invalid view returned from registry.");
-          return;
-        }
+      public void resolve(VideoViewWrapper videoViewWrapper) {
         callback.runWithVideoView(videoViewWrapper.getVideoViewInstance());
       }
-    });
+
+      @Override
+      public void reject(Throwable throwable) {
+        promise.reject("E_VIDEO_TAGINCORRECT", "Invalid view returned from registry.");
+      }
+    }, VideoViewWrapper.class);
   }
 }
