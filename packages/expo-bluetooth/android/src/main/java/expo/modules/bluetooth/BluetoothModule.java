@@ -551,25 +551,32 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
 
     String characteristicProperties = (String) options.get("characteristicProperties");
 
-    if (characteristicProperties.equals("write")) { // Write
-
-      // TODO: Bacon: This is different to iOS
-      List data = (List) options.get("data");
-      byte[] decoded = new byte[data.size()];
-      for (int i = 0; i < data.size(); i++) {
-        decoded[i] = new Integer((Integer) data.get(i)).byteValue();
-      }
-      // TODO: Bacon: This is not on iOS
-      int maxByteSize = (int) options.get("maxByteSize");
-      // TODO: Bacon: This should be in options?
-      int writeType = BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT;
-      peripheral.write(serviceUUID, characteristicUUID, decoded, maxByteSize, null, writeType, promise);
-      return;
-    } else { // Read
-
-      //TODO: Bacon: Done??
-      peripheral.read(serviceUUID, characteristicUUID, promise);
-      return;
+    int gattCharacteristic = Serialize.CharacteristicProperties_JSONToNative(characteristicProperties);
+    switch (gattCharacteristic) {
+      case BluetoothGattCharacteristic.PROPERTY_READ:
+        //TODO: Bacon: Done??
+        peripheral.read(serviceUUID, characteristicUUID, promise);
+        return;
+      case BluetoothGattCharacteristic.PROPERTY_WRITE:
+      case BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE:
+        // TODO: Bacon: This is different to iOS
+        List data = (List) options.get("data");
+        byte[] decoded = new byte[data.size()];
+        for (int i = 0; i < data.size(); i++) {
+          decoded[i] = new Integer((Integer) data.get(i)).byteValue();
+        }
+        // TODO: Bacon: This is not on iOS
+        int maxByteSize = (int) options.get("maxByteSize");
+        // TODO: Bacon: This should be in options?
+        int writeType = BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT;
+        if (gattCharacteristic == BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE) {
+          writeType = BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE;
+        }
+        peripheral.write(serviceUUID, characteristicUUID, decoded, maxByteSize, null, writeType, promise);
+        return;
+      default:
+        promise.reject("ERR_BLE_UPDATE_UNIMP", "The characteristicProperties you have chosen to update is not supported.");
+        return;
     }
   }
 
@@ -606,6 +613,7 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
       // TODO: Bacon: This should be in options?
       int writeType = BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT;
       peripheral.write(serviceUUID, characteristicUUID, decoded, maxByteSize, null, writeType, promise);
+
       return;
     } else { // Read
 

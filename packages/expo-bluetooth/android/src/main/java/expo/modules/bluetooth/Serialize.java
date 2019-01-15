@@ -123,6 +123,27 @@ public class Serialize {
     return props;
   }
 
+  public static int CharacteristicProperties_JSONToNative(String properties) {
+    if (properties.equals("broadcast")) {
+      return BluetoothGattCharacteristic.PROPERTY_BROADCAST;
+    } else if (properties.equals("writeWithoutResponse")) {
+      return BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE;
+    } else if (properties.equals("write")) {
+      return BluetoothGattCharacteristic.PROPERTY_WRITE;
+    } else if (properties.equals("notify")) {
+      return BluetoothGattCharacteristic.PROPERTY_NOTIFY;
+    } else if (properties.equals("indicate")) {
+      return BluetoothGattCharacteristic.PROPERTY_INDICATE;
+    } else if (properties.equals("authenticateSignedWrites")) {
+      return BluetoothGattCharacteristic.PROPERTY_SIGNED_WRITE;
+    } else if (properties.equals("extendedProperties")) {
+      return BluetoothGattCharacteristic.PROPERTY_EXTENDED_PROPS;
+    } else if (properties.equals("read")) {
+      return BluetoothGattCharacteristic.PROPERTY_READ;
+    }
+    return -1;
+  }
+
   public static Bundle Descriptor_NativeToJSON(BluetoothGattDescriptor input, String peripheralUUIDString) {
     Bundle output = new Bundle();
 

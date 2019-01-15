@@ -525,88 +525,80 @@ public class Peripheral extends BluetoothGattCallback {
     BluetoothGattCharacteristic characteristic = findWritableCharacteristic(service, characteristicUUID, writeType);
 
     if (characteristic == null) {
-      promise.reject(BluetoothModule.ERROR_TAG, "Characteristic " + characteristicUUID + " not found.");
-    } else {
-      characteristic.setWriteType(writeType);
-
-      if (writeQueue.size() > 0) {
-        promise.reject(BluetoothModule.ERROR_TAG, "You have already enqueued another message");
-      }
-
-      if (writePromise == true) {
-        promise.reject(BluetoothModule.ERROR_TAG, "You're already writing");
-      }
-
-      if (writeQueue.size() == 0 && writePromise == false) {
-
-        if (BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT == writeType) {
-          writePromise = true;
-        }
-
-        if (data.length > maxByteSize) {
-          int dataLength = data.length;
-          int count = 0;
-          byte[] firstMessage = null;
-          List<byte[]> splittedMessage = new ArrayList<>();
-
-          while (count < dataLength && (dataLength - count > maxByteSize)) {
-            if (count == 0) {
-              firstMessage = Arrays.copyOfRange(data, count, count + maxByteSize);
-            } else {
-              byte[] splitMessage = Arrays.copyOfRange(data, count, count + maxByteSize);
-              splittedMessage.add(splitMessage);
-            }
-            count += maxByteSize;
-          }
-          if (count < dataLength) {
-            // Other bytes in queue
-            byte[] splitMessage = Arrays.copyOfRange(data, count, data.length);
-            splittedMessage.add(splitMessage);
-          }
-
-          if (BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT == writeType) {
-            writeQueue.addAll(splittedMessage);
-            if (!doWrite(characteristic, firstMessage)) {
-              writeQueue.clear();
-              writePromise = false;
-              promise.reject(BluetoothModule.ERROR_TAG, "Write failed");
-            }
-          } else {
-            try {
-              boolean writeError = false;
-              if (!doWrite(characteristic, firstMessage)) {
-                writeError = true;
-                promise.reject(BluetoothModule.ERROR_TAG, "Write failed");
-              }
-              if (!writeError) {
-                Thread.sleep(queueSleepTime);
-                for (byte[] message : splittedMessage) {
-                  if (!doWrite(characteristic, message)) {
-                    writeError = true;
-                    promise.reject(BluetoothModule.ERROR_TAG, "Write failed");
-                    break;
-                  }
-                  Thread.sleep(queueSleepTime);
-                }
-                if (!writeError) {
-                  promise.resolve(null);
-                }
-              }
-            } catch (InterruptedException e) {
-              promise.reject(e);
-            }
-          }
-        } else if (doWrite(characteristic, data)) {
-          Log.d(BluetoothModule.TAG, "Write completed");
-          if (BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE == writeType) {
-            promise.resolve(null);
-          }
-        } else {
-          promise.reject(BluetoothModule.ERROR_TAG, "Write failed");
-          writePromise = false;
-        }
-      }
+      String message = "Could not find characteristic with UUID " + characteristicUUID + " on service with UUID " + serviceUUID + " on peripheral with UUID " + this.getUUIDString();
+      promise.reject("ERR_NO_CHARACTERISTIC", message);
+      return;
     }
+
+    if (writeQueue.size() > 0 || writePromise == true) {
+      promise.reject(BluetoothModule.ERROR_TAG, "A write operation is currently in progress.");
+      return;
+    }
+
+    // Bacon: If the message is larger than the max write-size
+    if (data.length > maxByteSize) {
+      if (BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT == writeType) {
+        writePromise = true;
+      }
+
+      // TODO: Bacon: Maybe we should do this in JS as it could apply to iOS as well.
+      int dataLength = data.length;
+      int count = 0;
+      byte[] initialMessage = null;
+      List<byte[]> messageFragments = new ArrayList<>();
+
+      while (count < dataLength && (dataLength - count > maxByteSize)) {
+        if (count == 0) {
+          initialMessage = Arrays.copyOfRange(data, count, count + maxByteSize);
+        } else {
+          byte[] fragment = Arrays.copyOfRange(data, count, count + maxByteSize);
+          messageFragments.add(fragment);
+        }
+        count += maxByteSize;
+      }
+      if (count < dataLength) {
+        byte[] splitMessage = Arrays.copyOfRange(data, count, data.length);
+        messageFragments.add(splitMessage);
+      }
+
+      if (BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT == writeType) {
+        writeQueue.addAll(messageFragments);
+        if (!doWrite(characteristic, initialMessage)) {
+          writeQueue.clear();
+          writePromise = false;
+          promise.reject(BluetoothModule.ERROR_TAG, "Failed to write a default message to characteristic: " + characteristic.getUuid().toString());
+          return;
+        }
+      } else {
+        // TODO: Bacon: This is risky. May need to add a timer for bailing out.
+        try {
+          if (!doWrite(characteristic, initialMessage)) {
+            promise.reject(BluetoothModule.ERROR_TAG, "Failed to write initial headless message to characteristic: " + characteristic.getUuid().toString());
+            return;
+          }
+          Thread.sleep(queueSleepTime);
+          for (byte[] message : messageFragments) {
+            if (!doWrite(characteristic, message)) {
+              promise.reject(BluetoothModule.ERROR_TAG, "Failed to write headless message fragment to characteristic: " + characteristic.getUuid().toString());
+              return;
+            }
+            Thread.sleep(queueSleepTime);
+          }
+          promise.resolve(null);
+          return;
+        } catch (InterruptedException e) {
+          promise.reject(e);
+          return;
+        }
+      }
+    } else if (doWrite(characteristic, data) && BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE == writeType) {
+      promise.resolve(null);
+      return;
+    }
+
+    promise.reject(BluetoothModule.ERROR_TAG, "Failed to write message to characteristic: " + characteristic.getUuid().toString());
+    writePromise = false;
+    return;
   }
 
   public void requestConnectionPriority(int connectionPriority, Promise promise) {
