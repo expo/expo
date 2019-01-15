@@ -9,6 +9,7 @@ import expo.core.interfaces.Package;
 import expo.modules.ads.admob.AdMobPackage;
 import expo.modules.analytics.segment.SegmentPackage;
 import expo.modules.appauth.AppAuthPackage;
+import expo.modules.av.AVPackage;
 import expo.modules.backgroundfetch.BackgroundFetchPackage;
 import expo.modules.barcodescanner.BarCodeScannerPackage;
 import expo.modules.camera.CameraPackage;
@@ -56,7 +57,8 @@ public class ExperiencePackagePicker {
       new AppAuthPackage(),
       new TaskManagerPackage(),
       new BackgroundFetchPackage(),
-      new MailComposerPackage()
+      new MailComposerPackage(),
+      new AVPackage()
   );
 
   /**
