@@ -12,12 +12,22 @@ at https://github.com/expo/expo. Thanks!
 
   ```js
   "scripts": {
-    "test": "node_modules/.bin/jest"
+    "test": "node_modules/.bin/jest",
+    "test:watch": "node_modules/.bin/jest --watch"
   },
   "jest": {
     "preset": "jest-expo"
   }
   ```
+  Or you can use this code if it's dosen't run your test:
+    ```js
+  "scripts": {
+    "test": "node ./node_modules/jest/bin/jest.js",
+    "test:watch": "node ./node_modules/jest/bin/jest.js --watch",
+  },
+  "jest": {
+    "preset": "jest-expo"
+  }
 
 - Create a `__tests__` directory anywhere you like and a `Example-test.js` file inside of it, and add this code:
 
@@ -27,7 +37,7 @@ at https://github.com/expo/expo. Thanks!
   });
   ```
 
-- Run `npm test` and it should pass
+- Run `npm test` and it should pass or run `npm run test:watch` to watch your tests
 
 ### Learning Jest
 
