@@ -1,4 +1,5 @@
 import AppAuth from '../screens/AppAuthScreen';
+import Audio from '../screens/AV/AudioScreen';
 import AuthSession from '../screens/AuthSessionScreen';
 import BackgroundFetch from '../screens/BackgroundFetchScreen';
 import Branch from '../screens/BranchScreen';
@@ -48,6 +49,7 @@ const ExpoApisStackNavigator = createStackNavigator(
   {
     ExpoApis,
     AppAuth,
+    Audio,
     AuthSession,
     BackgroundFetch,
     Branch,

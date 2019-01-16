@@ -93,6 +93,7 @@ export default class ExpoApisScreen extends React.Component {
       ],
       default: [
         'AppAuth',
+        'Audio',
         'AuthSession',
         'BackgroundFetch',
         'Branch',
