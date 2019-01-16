@@ -2,6 +2,7 @@ package versioned.host.exp.exponent.modules.api.screens;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -93,8 +94,12 @@ public class ScreenContainer extends ViewGroup {
     if (!(parent instanceof ReactRootView)) {
       throw new IllegalStateException("ScreenContainer is not attached under ReactRootView");
     }
-    // ReactRootView is expected to be initialized with the main React Activity as a context
+    // ReactRootView is expected to be initialized with the main React Activity as a context but
+    // in case of Expo the activity is wrapped in ContextWrapper and we need to unwrap it
     Context context = ((ReactRootView) parent).getContext();
+    while (!(context instanceof FragmentActivity) && context instanceof ContextWrapper) {
+      context = ((ContextWrapper) context).getBaseContext();
+    }
     if (!(context instanceof FragmentActivity)) {
       throw new IllegalStateException(
               "In order to use RNScreens components your app's activity need to extend ReactFragmentActivity or ReactCompatActivity");
