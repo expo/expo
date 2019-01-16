@@ -67,11 +67,11 @@ Read the entire contents of a file as a string. Binary will be returned in raw f
 
 -   **options (_object_)** -- Optional props that define how a file must be read.
 
-  -   **encoding (_EncodingType_)** -- The encoding format to use when reading the file. Options: `FileSystem.EncodingTypes.UTF8`, `FileSystem.EncodingTypes.Base64`. Default is `FileSystem.EncodingTypes.UTF8`.
+    -   **encoding (_EncodingType_)** -- The encoding format to use when reading the file. Options: `FileSystem.EncodingTypes.UTF8`, `FileSystem.EncodingTypes.Base64`. Default is `FileSystem.EncodingTypes.UTF8`.
 
-  -   **length (_number_)** -- Optional number of bytes to read. This option is only used when `encoding: FileSystem.EncodingTypes.Base64` and `position` is defined.
+    -   **length (_number_)** -- Optional number of bytes to read. This option is only used when `encoding: FileSystem.EncodingTypes.Base64` and `position` is defined.
 
-  -   **position (_number_)** -- Optional number of bytes to skip. This option is only used when `encoding: FileSystem.EncodingTypes.Base64` and `length` is defined. 
+    -   **position (_number_)** -- Optional number of bytes to skip. This option is only used when `encoding: FileSystem.EncodingTypes.Base64` and `length` is defined. 
 
 #### Returns
 
@@ -89,7 +89,7 @@ Write the entire contents of a file as a string.
 
 -   **options (_object_)** -- Optional props that define how a file must be written.
 
-  -   **encoding (_string_)** -- The encoding format to use when writing the file. Options: `FileSystem.EncodingTypes.UTF8`, `FileSystem.EncodingTypes.Base64`. Default is `FileSystem.EncodingTypes.UTF8`
+    -   **encoding (_string_)** -- The encoding format to use when writing the file. Options: `FileSystem.EncodingTypes.UTF8`, `FileSystem.EncodingTypes.Base64`. Default is `FileSystem.EncodingTypes.UTF8`
 
 ### `FileSystem.deleteAsync(fileUri, options)`
 
