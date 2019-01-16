@@ -4,7 +4,7 @@ title: ImageManipulator
 
 An API to modify images stored in app scope.
 
-### `Expo.ImageManipulator.manipulate(uri, actions, saveOptions)`
+### `Expo.ImageManipulator.manipulateAsync(uri, actions, saveOptions)`
 
 Manipulate the image provided via `uri`. Available modifications are rotating, flipping (mirroring), resizing and cropping. Each invocation results in a new file. With one invocation you can provide a set of actions to perform over the image. Overwriting the source file would not have an effect in displaying the result as images are cached. 
 
@@ -69,7 +69,7 @@ export default class ImageManipulatorSample extends React.Component {
   }
 
   _rotate90andFlip = async () => {
-    const manipResult = await ImageManipulator.manipulate(
+    const manipResult = await ImageManipulator.manipulateAsync(
       this.state.image.localUri || this.state.image.uri,
       [{ rotate: 90}, { flip: { vertical: true }}],
       { format: 'png' }
