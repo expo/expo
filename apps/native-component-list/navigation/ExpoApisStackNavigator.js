@@ -31,6 +31,7 @@ import Notification from '../screens/NotificationScreen';
 import Pedometer from '../screens/PedometerScreen';
 import Permissions from '../screens/PermissionsScreen';
 import Print from '../screens/PrintScreen';
+import Recording from '../screens/AV/RecordingScreen';
 import Reminders from '../screens/RemindersScreen';
 import ScreenOrientation from '../screens/ScreenOrientationScreen';
 import SecureStore from '../screens/SecureStoreScreen';
@@ -80,6 +81,7 @@ const ExpoApisStackNavigator = createStackNavigator(
     Pedometer,
     Permissions,
     Print,
+    Recording,
     Reminders,
     ScreenOrientation,
     SecureStore,
