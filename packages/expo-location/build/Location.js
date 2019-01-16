@@ -175,7 +175,7 @@ export async function reverseGeocodeAsync(location) {
         throw error;
     });
 }
-function setApiKey(apiKey) {
+export function setApiKey(apiKey) {
     googleApiKey = apiKey;
 }
 async function _googleGeocodeAsync(address) {

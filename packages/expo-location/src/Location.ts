@@ -262,7 +262,7 @@ export async function reverseGeocodeAsync(location: { latitude: number, longitud
   });
 }
 
-function setApiKey(apiKey: string) {
+export function setApiKey(apiKey: string) {
   googleApiKey = apiKey;
 }
 
