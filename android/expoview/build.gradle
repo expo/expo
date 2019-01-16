@@ -140,7 +140,7 @@ dependencies {
   compileOnly 'host.exp.exponent:expo-analytics-segment:2.0.0'
   compileOnly 'host.exp.exponent:expo-font:2.0.0'
   compileOnly 'host.exp.exponent:expo-google-sign-in:2.0.0'
-  compileOnly 'host.exp.exponent:expo-location:2.0.0'
+  compileOnly 'host.exp.exponent:expo-location:2.0.1'
   compileOnly 'host.exp.exponent:expo-barcode-scanner-interface:2.0.0'
   compileOnly 'host.exp.exponent:expo-barcode-scanner:2.0.0'
   compileOnly 'host.exp.exponent:expo-contacts:2.0.0'
