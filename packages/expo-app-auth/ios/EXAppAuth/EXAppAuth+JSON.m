@@ -19,13 +19,14 @@
 + (NSDictionary *)tokenResponseNativeToJSON:(OIDTokenResponse *)input
 {
   if (!input) return nil;
-  
+
   return @{
            @"accessToken": EXnullIfEmpty([input accessToken]),
            @"accessTokenExpirationDate": EXNullIfNil([[self class] dateNativeToJSON:[input accessTokenExpirationDate]]),
            @"additionalParameters": EXNullIfNil([input additionalParameters]),
            @"idToken": EXnullIfEmpty([input idToken]),
            @"tokenType": EXnullIfEmpty([input tokenType]),
+           @"refreshToken": EXnullIfEmpty([input refreshToken]),
            };
 }
 
