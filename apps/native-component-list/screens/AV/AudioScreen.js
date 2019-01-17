@@ -5,7 +5,7 @@ import { ScrollView, StyleSheet, PixelRatio } from 'react-native';
 import ListButton from '../../components/ListButton';
 import HeadingText from '../../components/HeadingText';
 
-import Player from './Player';
+import Player from './AudioPlayer';
 import AudioModeSelector from './AudioModeSelector';
 
 export default class AuthSessionScreen extends React.Component {

@@ -1,86 +1,91 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { ScrollView, Slider, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-import { Audio } from 'expo';
 import { Ionicons } from '@expo/vector-icons';
 
 import Colors from '../../constants/Colors';
 
 export default class Player extends React.Component {
+  static propTypes = {
+    header: PropTypes.node,
+    children: PropTypes.node,
+    extraButtons: PropTypes.arrayOf(
+      PropTypes.shape({
+        iconName: PropTypes.string.isRequired,
+        title: PropTypes.string.isRequired,
+        onPress: PropTypes.func.isRequired,
+        active: PropTypes.bool.isRequired,
+      })
+    ),
+
+    // Functions
+    playAsync: PropTypes.func.isRequired,
+    pauseAsync: PropTypes.func.isRequired,
+    setRateAsync: PropTypes.func.isRequired,
+    setIsMutedAsync: PropTypes.func.isRequired,
+    setPositionAsync: PropTypes.func.isRequired,
+    setIsLoopingAsync: PropTypes.func.isRequired,
+
+    // Status
+    isLoaded: PropTypes.bool.isRequired,
+    isLooping: PropTypes.bool.isRequired,
+    rate: PropTypes.number.isRequired,
+    positionMillis: PropTypes.number.isRequired,
+    durationMillis: PropTypes.number.isRequired,
+    shouldCorrectPitch: PropTypes.bool.isRequired,
+    isPlaying: PropTypes.bool.isRequired,
+
+    // Error
+    errorMessage: PropTypes.string,
+  };
+
   state = {
     userIsDraggingSlider: false,
-    isLoaded: false,
-    isLooping: false,
-    errorMessage: null,
-    positionMillis: 0,
-    durationMillis: 0,
   };
 
-  componentDidMount() {
-    this._loadSoundAsync(this.props.source);
-  }
+  _play = () => this.props.playAsync();
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.source !== this.props.source) {
-      this._loadSoundAsync(nextProps.source);
-    }
-  }
-
-  _loadSoundAsync = async source => {
-    const soundObject = new Audio.Sound();
-    try {
-      await soundObject.loadAsync(source, { progressUpdateIntervalMillis: 100 });
-      soundObject.setOnPlaybackStatusUpdate(this._updateStateToStatus);
-      const status = await soundObject.getStatusAsync();
-      this._updateStateToStatus(status);
-      this._sound = soundObject;
-    } catch (error) {
-      this.setState({ errorMessage: error.message });
-    }
-  };
-
-  _updateStateToStatus = status => this.setState(status);
-
-  _play = () => this._sound.playAsync();
-
-  _pause = () => this._sound.pauseAsync();
+  _pause = () => this.props.pauseAsync();
 
   _playFromPosition = position =>
-    this._sound
+    this.props
       .setPositionAsync(position)
       .then(() => this.setState({ userIsDraggingSlider: false }));
 
-  _toggleLooping = () => this._sound.setIsLoopingAsync(!this.state.isLooping);
+  _toggleLooping = () => this.props.setIsLoopingAsync(!this.props.isLooping);
+
+  _toggleIsMuted = () => this.props.setIsMutedAsync(!this.props.isMuted);
 
   _toggleSlowRate = () =>
-    this._sound.setRateAsync(this.state.rate < 1 ? 1 : 0.5, this.state.shouldCorrectPitch);
+    this.props.setRateAsync(this.props.rate < 1 ? 1 : 0.5, this.props.shouldCorrectPitch);
 
   _toggleFastRate = () =>
-    this._sound.setRateAsync(this.state.rate > 1 ? 1 : 2, this.state.shouldCorrectPitch);
+    this.props.setRateAsync(this.props.rate > 1 ? 1 : 2, this.props.shouldCorrectPitch);
 
   _toggleShouldCorrectPitch = () =>
-    this._sound.setRateAsync(this.state.rate, !this.state.shouldCorrectPitch);
+    this.props.setRateAsync(this.props.rate, !this.props.shouldCorrectPitch);
 
   _renderPlayPauseButton = () => {
     let onPress = this._pause;
     let iconName = 'ios-pause';
 
-    if (!this.state.isPlaying) {
+    if (!this.props.isPlaying) {
       onPress = this._play;
       iconName = 'ios-play';
     }
 
     return (
-      <TouchableOpacity onPress={onPress} disabled={!this.state.isLoaded}>
+      <TouchableOpacity onPress={onPress} disabled={!this.props.isLoaded}>
         <Ionicons name={iconName} style={[styles.icon, styles.playPauseIcon]} />
       </TouchableOpacity>
     );
   };
 
   _maybeRenderErrorOverlay = () => {
-    if (this.state.errorMessage) {
+    if (this.props.errorMessage) {
       return (
         <ScrollView style={styles.errorMessage}>
-          <Text style={styles.errorText}>{this.state.errorMessage}</Text>
+          <Text style={styles.errorText}>{this.props.errorMessage}</Text>
         </ScrollView>
       );
     }
@@ -89,8 +94,9 @@ export default class Player extends React.Component {
 
   _renderAuxiliaryButton = ({ iconName, title, onPress, active }) => (
     <TouchableOpacity
+      key={title}
       style={[styles.button, active && styles.activeButton]}
-      disabled={!this.state.isLoaded}
+      disabled={!this.props.isLoaded}
       onPress={onPress}>
       <Ionicons
         name={`ios-${iconName}`}
@@ -103,6 +109,7 @@ export default class Player extends React.Component {
   render() {
     return (
       <View style={this.props.style}>
+        {this.props.header}
         <View style={styles.container}>
           {this._renderPlayPauseButton()}
           <Slider
@@ -110,49 +117,60 @@ export default class Player extends React.Component {
             value={
               this.state.userIsDraggingSlider
                 ? this.state.positionMillisWhenStartedDragging
-                : this.state.positionMillis
+                : this.props.positionMillis
             }
-            maximumValue={this.state.durationMillis}
-            disabled={!this.state.isLoaded}
+            maximumValue={this.props.durationMillis}
+            disabled={!this.props.isLoaded}
             minimumTrackTintColor={Colors.tintColor}
             onSlidingComplete={this._playFromPosition}
             onResponderGrant={() =>
               this.setState({
                 userIsDraggingSlider: true,
-                positionMillisWhenStartedDragging: this.state.positionMillis,
+                positionMillisWhenStartedDragging: this.props.positionMillis,
               })
             }
           />
           <Text style={{ width: 80, textAlign: 'right' }} adjustsFontSizeToFit numberOfLines={1}>
-            {_formatTime(this.state.positionMillis / 1000)} /{' '}
-            {_formatTime(this.state.durationMillis / 1000)}
+            {_formatTime(this.props.positionMillis / 1000)} /{' '}
+            {_formatTime(this.props.durationMillis / 1000)}
           </Text>
         </View>
-        <View style={[styles.container, { justifyContent: 'space-evenly', alignItems: 'stretch' }]}>
+        <View style={[styles.container, styles.buttonsContainer]}>
           {this._renderAuxiliaryButton({
             iconName: 'repeat',
             title: 'Repeat',
             onPress: this._toggleLooping,
-            active: this.state.isLooping,
+            active: this.props.isLooping,
           })}
           {this._renderAuxiliaryButton({
             iconName: 'hourglass',
             title: 'Slower',
             onPress: this._toggleSlowRate,
-            active: this.state.rate < 1,
+            active: this.props.rate < 1,
           })}
           {this._renderAuxiliaryButton({
             iconName: 'speedometer',
             title: 'Faster',
             onPress: this._toggleFastRate,
-            active: this.state.rate > 1,
+            active: this.props.rate > 1,
           })}
           {this._renderAuxiliaryButton({
             iconName: 'stats',
             title: 'Correct pitch',
             onPress: this._toggleShouldCorrectPitch,
-            active: this.state.shouldCorrectPitch,
+            active: this.props.shouldCorrectPitch,
           })}
+          {this._renderAuxiliaryButton({
+            iconName: 'volume-off',
+            title: 'Mute',
+            onPress: this._toggleIsMuted,
+            active: this.props.isMuted,
+          })}
+        </View>
+        <View style={[styles.container, styles.buttonsContainer]}>
+          {this.props.extraButtons
+            ? this.props.extraButtons.map(this._renderAuxiliaryButton)
+            : null}
         </View>
         {this._maybeRenderErrorOverlay()}
       </View>
@@ -202,6 +220,10 @@ const styles = StyleSheet.create({
     margin: 8,
     fontWeight: 'bold',
     color: Colors.errorText,
+  },
+  buttonsContainer: {
+    justifyContent: 'space-evenly',
+    alignItems: 'stretch',
   },
   button: {
     flex: 1,
