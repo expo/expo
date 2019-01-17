@@ -14,9 +14,11 @@ module.exports = {
           pathname += '/index.html'; // TODO: find out why we need to do this
         }
 
-        result = { [pathname]: page };
-
-        return result;
+        if (pathname.match(/unversioned/)) {
+          return {}
+        } else {
+          return { [pathname]: page };
+        }
       })
     );
   },
