@@ -175,8 +175,12 @@ module.exports = {
     runtimeChunk: true,
   },
   devServer: {
+    progress: true,
     historyApiFallback: true,
     compress: true,
+    disableHostCheck: true,
+    contentBase: locations.output,
+    inline: true,
   },
   module: {
     rules: [
