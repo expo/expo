@@ -10,13 +10,19 @@ import Colors from '../../constants/Colors';
 export default class Recorder extends React.Component {
   static propTypes = {
     onDone: PropTypes.func,
-  }
+  };
   state = {
     options: null,
     canRecord: false,
     durationMillis: 0,
     isRecording: false,
   };
+
+  componentWillUnmount() {
+    if (this._recorder) {
+      this._recorder.stopAndUnloadAsync();
+    }
+  }
 
   _prepare = options => async () => {
     const recordingObject = new Audio.Recording();
@@ -46,11 +52,11 @@ export default class Recorder extends React.Component {
 
   _stopAndUnload = async () => {
     await this._recorder.stopAndUnloadAsync();
-    this.setState({ options: null, durationMillis: 0 });
     if (this.props.onDone) {
       this.props.onDone(this._recorder.getURI());
     }
     this._recorder = null;
+    this.setState({ options: null, durationMillis: 0 });
   };
 
   _maybeRenderErrorOverlay = () => {
