@@ -19,6 +19,5 @@ export default {
     stopObserving() {
         window.removeEventListener('devicemotion', this._handleMotion);
     },
-    async setUpdateInterval(intervalMs) { },
 };
 //# sourceMappingURL=ExponentAccelerometer.web.js.map

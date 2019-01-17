@@ -6,6 +6,5 @@ declare const _default: {
     }): void;
     startObserving(): void;
     stopObserving(): void;
-    setUpdateInterval(intervalMs: number): Promise<void>;
 };
 export default _default;

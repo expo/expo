@@ -11,8 +11,12 @@ export default {
     return typeof DeviceMotionEvent !== 'undefined';
   },
   _handleMotion(motion) {
+    // TODO: Bacon: Can rotation be calculated?
     GlobalPlatformEmitter.emit('deviceMotionDidUpdate', {
-      ...motion,
+      acceleration: motion.acceleration,
+      accelerationIncludingGravity: motion.accelerationIncludingGravity,
+      interval: motion.interval,
+      rotationRate: motion.rotationRate,
       orientation: window.orientation,
     });
   },
