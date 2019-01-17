@@ -410,7 +410,14 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
       [_fullscreenPlayerViewController setModalPresentationStyle:UIModalPresentationFullScreen];
 
       // Find the nearest view controller
-      _presentingViewController = [[_moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)] currentViewController];
+      UIViewController *controller = [UIApplication sharedApplication].keyWindow.rootViewController;
+      UIViewController *presentedController = controller.presentedViewController;
+      while (presentedController && ![presentedController isBeingDismissed]) {
+        controller = presentedController;
+        presentedController = controller.presentedViewController;
+      }
+
+      _presentingViewController = controller;
       [self _callFullscreenCallbackForUpdate:EXVideoFullscreenUpdatePlayerWillPresent];
 
       dispatch_async(dispatch_get_main_queue(), ^{
