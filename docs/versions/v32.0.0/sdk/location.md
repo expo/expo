@@ -204,7 +204,7 @@ Background location task will be receiving following data:
 import { TaskManager } from 'expo';
 
 TaskManager.defineTask(YOUR_TASK_NAME, ({ data: { locations }, error }) => {
-  if (!error) {
+  if (error) {
     // check `error.message` for more details.
     return;
   }
@@ -273,7 +273,7 @@ Geofencing task will be receiving following data:
 import { Location, TaskManager } from 'expo';
 
 TaskManager.defineTask(YOUR_TASK_NAME, ({ data: { eventType, region }, error }) => {
-  if (!error) {
+  if (error) {
     // check `error.message` for more details.
     return;
   }
