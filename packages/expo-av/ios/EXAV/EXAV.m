@@ -534,6 +534,7 @@ withEXVideoViewForTag:(nonnull NSNumber *)reactTag
   if (removeFilenameAndSettings) {
     _audioRecorderFilename = nil;
     _audioRecorderSettings = nil;
+    _audioRecorderDurationMillis = 0;
   }
 }
 
