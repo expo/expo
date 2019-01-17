@@ -206,7 +206,7 @@ export default class Video extends React.Component {
         // @ts-ignore: TypeScript thinks "children" is not in the list of props
         const nativeProps = {
             style: _STYLES.base,
-            ...omit(this.props, 'source', 'shouldPlay'),
+            ...omit(this.props, 'source', ...Object.keys(status)),
             source,
             resizeMode: nativeResizeMode,
             status,
