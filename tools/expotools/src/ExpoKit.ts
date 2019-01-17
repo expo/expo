@@ -94,11 +94,6 @@ export async function updateExpoKitAndroidAsync(
       source: path.join(androidDir, 'debug.keystore'),
       destination: 'debug.keystore',
     },
-    {
-      isFile: true,
-      source: path.join(androidDir, 'run.sh'),
-      destination: 'run.sh',
-    },
 
     // Manually add template files from android-paths.json. uploadDirectoriesAsync will exclude all
     // files not added to git so we need to include these manually
