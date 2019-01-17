@@ -340,6 +340,7 @@ PODS:
   - EXAppLoaderProvider (1.0.0)
   - EXAV (1.0.0):
     - EXCore
+    - EXPermissionsInterface
   - EXBackgroundFetch (1.0.0):
     - EXCore
     - EXTaskManagerInterface
@@ -1924,7 +1925,7 @@ SPEC CHECKSUMS:
   EXAdsAdMob: 66a3c271540f54f4d964fa72f0c8a953faea5a03
   EXAppAuth: df83ccf9fecfdfad741a930263524f4b75f8e962
   EXAppLoaderProvider: 2638ca3d779c8baae37e63352c785e5e2dad70d5
-  EXAV: b8cdf9dac2c2a408cf4dd12b5f60e1246f6baaa3
+  EXAV: f005cfd3df93cee2ba9856336d780beaffc9c4d8
   EXBackgroundFetch: 1b5444a094fc71e0361c80720482946c4388c9b7
   EXBarCodeScanner: 0ed39b41ccec72935521823eceed3d60c73fc43d
   EXBarCodeScannerInterface: 4453aa03ca1e0a1c9b320aaf4ce5b7d88064d192
