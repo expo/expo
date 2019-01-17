@@ -14,9 +14,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import expo.modules.bluetooth.helpers.Base64Helper;
+import expo.modules.bluetooth.helpers.UUIDHelper;
+import expo.modules.bluetooth.objects.Peripheral;
+
 public class Serialize {
 
   private final static char[] hexArray = "0123456789ABCDEF".toCharArray();
+  private static final UUID CLIENT_CHARACTERISTIC_CONFIG_UUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
 
   public static ArrayList<UUID> UUIDList_JSONToNative(ArrayList<String> input) {
     ArrayList<UUID> output = new ArrayList<>();
@@ -179,6 +184,8 @@ public class Serialize {
     return output;
   }
 
+  // Characteristic
+
   public static ArrayList<Bundle> DescriptorList_NativeToJSON(List<BluetoothGattDescriptor> input, String peripheralUUIDString) {
     if (input == null) return null;
 
@@ -189,8 +196,6 @@ public class Serialize {
     return output;
   }
 
-  // Characteristic
-
   public static ArrayList<Bundle> CharacteristicList_NativeToJSON(List<BluetoothGattCharacteristic> input, String peripheralUUIDString) {
     if (input == null) return null;
 
@@ -200,8 +205,6 @@ public class Serialize {
     }
     return output;
   }
-
-  private static final UUID CLIENT_CHARACTERISTIC_CONFIG_UUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
 
   public static Bundle Characteristic_NativeToJSON(BluetoothGattCharacteristic characteristic, String peripheralUUIDString) {
     if (characteristic == null) return null;
@@ -239,7 +242,6 @@ public class Serialize {
 
   public static Bundle BluetoothAdapter_NativeToJSON(BluetoothAdapter input) {
     if (input == null) return null;
-
 
 
     Bundle map = new Bundle();
@@ -281,6 +283,19 @@ public class Serialize {
         return "discoverable";
       default:
         return null;
+    }
+  }
+
+  public static String Bonding_NativeToJSON(int input) {
+    switch (input) {
+      case BluetoothDevice.BOND_BONDED:
+      return BluetoothConstants.BONDING.BONDED;
+      case BluetoothDevice.BOND_BONDING:
+      return BluetoothConstants.BONDING.BONDING;
+      case BluetoothDevice.BOND_NONE:
+      return BluetoothConstants.BONDING.NONE;
+      default:
+      return BluetoothConstants.BONDING.UNKNOWN;
     }
   }
 
@@ -376,43 +391,4 @@ public class Serialize {
       return "disconnected";
     }
   }
-
-  // Peripheral
-
-  public static ArrayList PeripheralList_NativeToJSON(List<Peripheral> input) {
-    if (input == null) return null;
-
-    ArrayList output = new ArrayList();
-    for (Peripheral peripheral : input) {
-      output.add(Serialize.Peripheral_NativeToJSON(peripheral));
-    }
-    return output;
-  }
-
-  public static Bundle Peripheral_NativeToJSON(Peripheral input) {
-    if (input == null) return null;
-
-
-    Bundle output = new Bundle();
-
-    ArrayList<Bundle> services = new ArrayList();
-    if (input.gatt != null && input.gatt.getServices() != null && input.gatt.getServices().size() > 0) {
-      services = Serialize.ServiceList_NativeToJSON(input.gatt.getServices(), input.getUUIDString());
-    }
-    output.putParcelableArrayList("services", services);
-    output.putString("name", input.device.getName());
-    output.putString("id", input.getUUIDString());
-    output.putString("uuid", input.getUUIDString());
-//        map.putString("state", Serialize.bondingState_NativeToJSON(input.device.getBondState()));
-    output.putString("state", input.isConnected() ? "connected" : "disconnected");
-
-    if(input.gatt != null) {
-      output.putInt("mtu", input.MTU);
-    } else {
-      output.putInt("mtu", 576); // TODO: Bacon: annotate
-    }
-
-    return output;
-  }
-
 }

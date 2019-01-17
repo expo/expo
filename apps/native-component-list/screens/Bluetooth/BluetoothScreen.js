@@ -105,7 +105,7 @@ export default class BluetoothScreen extends React.Component {
       this.setState({ centralState: state });
     });
     this.subscription = await Bluetooth.observeUpdatesAsync(({ peripherals }) => {
-      // console.log("BLE Screen: observeUpdatesAsync: ", peripherals, error);
+      console.log('BLE Screen: observeUpdatesAsync: ', peripherals);
       this.setState(({ peripherals: currentPeripherals }) => {
         return {
           peripherals: {
@@ -124,8 +124,9 @@ export default class BluetoothScreen extends React.Component {
     this.setState({ isScanning: true }, () => {
       Bluetooth.startScanAsync({
         /* This will query peripherals with a value found in the peripheral's `advertisementData.serviceUUIDs` */
-        // serviceUUIDsToQuery: [SnapChatSpectaclesServiceUUID, TileServiceUUID],
+        serviceUUIDsToQuery: [SnapChatSpectaclesServiceUUID, TileServiceUUID],
         callback: async ({ peripheral }) => {
+          console.log('Found: ', peripheral);
           const hasName = peripheral.name && peripheral.name !== '';
           if (hasName) {
             const name = peripheral.name.toLowerCase();
@@ -165,6 +166,7 @@ export default class BluetoothScreen extends React.Component {
       .filter(({ name }) => name != null)
       .sort((a, b) => a.discoveryTimestamp > b.discoveryTimestamp);
 
+    console.log('ANNNND: ', { data });
     const canUseBluetooth = centralState === 'poweredOn';
     const message = canUseBluetooth
       ? 'Now discoverable as a name that Apple probably doesn\'t surface... Maybe "Evan\'s iPhone?"'
@@ -251,7 +253,7 @@ class Item extends React.Component {
         const loadedPeripheral = await Bluetooth.loadPeripheralAsync({
           id: peripheralUUID,
         });
-        console.log({ loadedPeripheral });
+        // console.log({ loadedPeripheral });
       } catch (error) {
         Alert.alert(
           'Connection Unsuccessful',

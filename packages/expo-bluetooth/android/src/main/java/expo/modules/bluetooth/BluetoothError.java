@@ -1,5 +1,6 @@
 package expo.modules.bluetooth;
 
+import android.bluetooth.BluetoothGatt;
 import android.os.Bundle;
 
 import expo.core.Promise;
@@ -18,37 +19,17 @@ public class BluetoothError {
   public String characteristicUUID;
   public String descriptorUUID;
 
-  static void reject(Promise promise, BluetoothError error) {
-    promise.reject(error.code, error.message);
-  }
-
-  static void reject(Promise promise, String message) {
-    promise.reject(Codes.UNIMPLEMENTED, message);
-  }
-
   public BluetoothError(String code, String message) {
     this.code = code;
     this.message = message;
   }
 
-  public class Codes {
-    protected static final String PLACEHOLDER = "ERR_BLUETOOTH";
-
-    protected static final String NO_PERIPHERAL = "ERR_NO_PERIPHERAL";
-    protected static final String NO_SERVICE = "ERR_NO_SERVICE";
-    protected static final String NO_CHARACTERISTIC = "ERR_NO_CHARACTERISTIC";
-    protected static final String NO_DESCRIPTOR = "ERR_NO_DESCRIPTOR";
-
-    protected static final String UNIMPLEMENTED = "ERR_UNIMPLEMENTED";
+  public static void reject(Promise promise, BluetoothError error) {
+    promise.reject(error.code, error.message);
   }
 
-  public class Messages {
-    protected static final String PLACEHOLDER = "An unknown error has occurred";
-    protected static final String NO_PERIPHERAL = "ERR_NO_PERIPHERAL";
-    protected static final String NO_SERVICE = "ERR_NO_SERVICE";
-    protected static final String NO_CHARACTERISTIC = "ERR_NO_CHARACTERISTIC";
-    protected static final String NO_DESCRIPTOR = "ERR_NO_DESCRIPTOR";
-    protected static final String UNIMPLEMENTED = "ERR_UNIMPLEMENTED";
+  public static void reject(Promise promise, String message) {
+    promise.reject(Codes.UNIMPLEMENTED, message);
   }
 
   public Bundle toJSON() {
@@ -60,5 +41,35 @@ public class BluetoothError {
     output.putString("suggestion", this.suggestion);
     output.putString("underlayingError", this.underlayingError);
     return output;
+  }
+
+  public class Codes {
+    public static final String PLACEHOLDER = "ERR_BLUETOOTH";
+
+    public static final String NO_PERIPHERAL = "ERR_NO_PERIPHERAL";
+    public static final String NO_SERVICE = "ERR_NO_SERVICE";
+    public static final String NO_CHARACTERISTIC = "ERR_NO_CHARACTERISTIC";
+    public static final String NO_DESCRIPTOR = "ERR_NO_DESCRIPTOR";
+
+    public static final String UNIMPLEMENTED = "ERR_UNIMPLEMENTED";
+  }
+
+  public class Messages {
+    public static final String PLACEHOLDER = "An unknown error has occurred";
+    public static final String NO_PERIPHERAL = "ERR_NO_PERIPHERAL";
+    public static final String NO_SERVICE = "ERR_NO_SERVICE";
+    public static final String NO_CHARACTERISTIC = "ERR_NO_CHARACTERISTIC";
+    public static final String NO_DESCRIPTOR = "ERR_NO_DESCRIPTOR";
+    public static final String UNIMPLEMENTED = "ERR_UNIMPLEMENTED";
+  }
+
+
+  public static Bundle errorFromGattStatus(int status) {
+    if (status != BluetoothGatt.GATT_SUCCESS) {
+      Bundle output = new Bundle();
+      output.putString(BluetoothConstants.JSON.MESSAGE, Serialize.messageForGATTStatus(status));
+      return output;
+    }
+    return null;
   }
 }

@@ -1,4 +1,4 @@
-package expo.modules.bluetooth;
+package expo.modules.bluetooth.objects;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -11,7 +11,7 @@ import java.util.UUID;
 public class AdvertisementData {
 
   private static final long BLUETOOTH_BASE_UUID_LSB = 0x800000805F9B34FBL;
-  private static final int  BLUETOOTH_BASE_UUID_MSB = 0x00001000;
+  private static final int BLUETOOTH_BASE_UUID_MSB = 0x00001000;
   private byte[] manufacturerData;
   private Map<UUID, byte[]> serviceData;
   private ArrayList<UUID> serviceUUIDs;
@@ -143,7 +143,7 @@ public class AdvertisementData {
 
   private static void parseTxPowerLevel(AdvertisementData advData, int adLength, ByteBuffer data) {
     if (adLength != 1) return;
-    advData.txPowerLevel = (int)data.get();
+    advData.txPowerLevel = (int) data.get();
   }
 
   private static void parseManufacturerData(AdvertisementData advData, int adLength, ByteBuffer data) {

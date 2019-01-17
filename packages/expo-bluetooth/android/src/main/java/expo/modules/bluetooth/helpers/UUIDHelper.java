@@ -1,4 +1,4 @@
-package expo.modules.bluetooth;
+package expo.modules.bluetooth.helpers;
 
 import java.util.UUID;
 import java.util.regex.Matcher;

@@ -25,7 +25,7 @@
 {
   NSMutableArray *output = [NSMutableArray new];
   for (CBService *value in input) {
-    NSDictionary *serializedValue = [[self class] CBService_NativeToJSON:value];
+    NSDictionary *serializedValue = [self.class CBService_NativeToJSON:value];
     [output addObject:EXNullIfNil(serializedValue)];
   }
   return output;
@@ -35,7 +35,7 @@
 {
   NSMutableArray *output = [NSMutableArray new];
   for (CBCharacteristic *value in input) {
-    NSDictionary *serializedValue = [[self class] CBCharacteristic_NativeToJSON:value];
+    NSDictionary *serializedValue = [self.class CBCharacteristic_NativeToJSON:value];
     [output addObject:EXNullIfNil(serializedValue)];
   }
   return output;
@@ -145,7 +145,7 @@
 {
   NSMutableArray *output = [NSMutableArray new];
   for (CBDescriptor *value in input) {
-    NSDictionary *serializedValue = [[self class] CBDescriptor_NativeToJSON:value];
+    NSDictionary *serializedValue = [self.class CBDescriptor_NativeToJSON:value];
     [output addObject:EXNullIfNil(serializedValue)];
   }
   return output;
@@ -155,7 +155,7 @@
 {
   NSMutableArray *output = [NSMutableArray new];
   for (CBPeripheral *value in input) {
-    NSDictionary *serializedValue = [[self class] CBPeripheral_NativeToJSON:value];
+    NSDictionary *serializedValue = [self.class CBPeripheral_NativeToJSON:value];
     [output addObject:EXNullIfNil(serializedValue)];
   }
   return output;
@@ -191,11 +191,11 @@
     manufacturerDataValue = [NSString stringWithFormat:@"%lu bytes",(unsigned long)manufacturerData.length];
   }
 
-  NSDictionary *serviceData = [[self class] serviceData_NativeToJSON:input[CBAdvertisementDataServiceDataKey]];
+  NSDictionary *serviceData = [self.class serviceData_NativeToJSON:input[CBAdvertisementDataServiceDataKey]];
   
-  NSArray *serviceUUIDs = [[self class] CBUUIDList_NativeToJSON:input[CBAdvertisementDataServiceUUIDsKey]];
-  NSArray *overflowServiceUUIDs = [[self class] CBUUIDList_NativeToJSON:input[CBAdvertisementDataOverflowServiceUUIDsKey]];
-  NSArray *solicitedServiceUUIDs = [[self class] CBUUIDList_NativeToJSON:input[CBAdvertisementDataSolicitedServiceUUIDsKey]];
+  NSArray *serviceUUIDs = [self.class CBUUIDList_NativeToJSON:input[CBAdvertisementDataServiceUUIDsKey]];
+  NSArray *overflowServiceUUIDs = [self.class CBUUIDList_NativeToJSON:input[CBAdvertisementDataOverflowServiceUUIDsKey]];
+  NSArray *solicitedServiceUUIDs = [self.class CBUUIDList_NativeToJSON:input[CBAdvertisementDataSolicitedServiceUUIDsKey]];
 
   return @{
         @"localName": EXNullIfEmpty(localNameKey),
@@ -222,7 +222,7 @@
   
   NSMutableArray *output = [NSMutableArray new];
   for (CBUUID *value in input) {
-    NSString *serializedValue = [[self class] CBUUID_NativeToJSON:value];
+    NSString *serializedValue = [self.class CBUUID_NativeToJSON:value];
     [output addObject:EXNullIfEmpty(serializedValue)];
   }
   return output;
@@ -253,7 +253,7 @@
   NSMutableDictionary *output = [NSMutableDictionary new];
   for (CBUUID *key in [input allKeys]) {
     NSData *value = [input objectForKey:key];
-    [output setObject:EXNullIfEmpty([[self class] NSData_NativeToJSON:value]) forKey:key.UUIDString];
+    [output setObject:EXNullIfEmpty([self.class NSData_NativeToJSON:value]) forKey:key.UUIDString];
   }
   return output;
 }
@@ -281,7 +281,7 @@
     parsedValue = input.value;
   } else if ([descriptorUUIDString isEqualToString:CBUUIDCharacteristicFormatString] ||
              [descriptorUUIDString isEqualToString:CBUUIDCharacteristicAggregateFormatString]) {
-    outputData = EXNullIfEmpty([[self class] NSData_NativeToJSON:input.value]);
+    outputData = EXNullIfEmpty([self.class NSData_NativeToJSON:input.value]);
     // Bacon: Because we know the format upfront, we should parse it here - the format could be different on Android.
     parsedValue = [[NSString alloc] initWithData:input.value encoding:NSUTF8StringEncoding];
   }
@@ -308,9 +308,9 @@
            @"uuid": characteristicUUIDString,
            @"serviceUUID": serviceUUIDString,
            @"peripheralUUID": peripheralUUIDString,
-           @"properties": [[self class] CBCharacteristicProperties_NativeToJSON:input.properties],
-           @"value": EXNullIfEmpty([[self class] NSData_NativeToJSON:input.value]), //TODO: Bacon: Find out what this is. (NSData)
-           @"descriptors": [[self class] CBDescriptorList_NativeToJSON:input.descriptors],
+           @"properties": [self.class CBCharacteristicProperties_NativeToJSON:input.properties],
+           @"value": EXNullIfEmpty([self.class NSData_NativeToJSON:input.value]), //TODO: Bacon: Find out what this is. (NSData)
+           @"descriptors": [self.class CBDescriptorList_NativeToJSON:input.descriptors],
            @"isNotifying": @(input.isNotifying)
            };
 }
@@ -326,9 +326,8 @@
            @"uuid": serviceUUIDString,
            @"peripheralUUID": peripheralUUIDString,
            @"isPrimary": @([input isPrimary]),
-           // TODO: Bacon: is this a recursive loop?
-           @"includedServices": [[self class] CBServiceArray_NativeToJSON:input.includedServices],
-           @"characteristics": [[self class] CBCharacteristicArray_NativeToJSON:input.characteristics]
+           @"includedServices": [self.class CBServiceArray_NativeToJSON:input.includedServices],
+           @"characteristics": [self.class CBCharacteristicArray_NativeToJSON:input.characteristics]
            };
 }
 
@@ -340,8 +339,8 @@
            @"id": input.identifier.UUIDString,
            @"uuid": input.identifier.UUIDString,
            @"name": EXNullIfEmpty(input.name),
-           @"state": EXNullIfNil([[self class] CBPeripheralState_NativeToJSON:input.state]),
-           @"services": [[self class] CBServiceArray_NativeToJSON:input.services],
+           @"state": EXNullIfNil([self.class CBPeripheralState_NativeToJSON:input.state]),
+           @"services": [self.class CBServiceArray_NativeToJSON:input.services],
            @"canSendWriteWithoutResponse": @(input.canSendWriteWithoutResponse)
            };
 }
@@ -351,7 +350,7 @@
   if (!input) return nil;
 
   return @{
-           @"state": [[self class] CBManagerState_NativeToJSON:[input state]],
+           @"state": [self.class CBManagerState_NativeToJSON:[input state]],
            @"isScanning": @([input isScanning])
            };
 }

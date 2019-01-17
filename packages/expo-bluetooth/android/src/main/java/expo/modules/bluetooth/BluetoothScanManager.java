@@ -1,12 +1,9 @@
 package expo.modules.bluetooth;
 
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothManager;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanFilter;
-import android.bluetooth.le.ScanResult;
 import android.bluetooth.le.ScanSettings;
-import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.ParcelUuid;
@@ -20,34 +17,26 @@ import java.util.concurrent.atomic.AtomicInteger;
 import expo.core.ModuleRegistry;
 import expo.core.Promise;
 import expo.core.interfaces.services.UIManager;
+import expo.modules.bluetooth.helpers.UUIDHelper;
 
 public class BluetoothScanManager {
 
-	protected BluetoothAdapter bluetoothAdapter;
-	protected Context context;
-	protected ModuleRegistry moduleRegistry;
-	protected AtomicInteger scanSessionId = new AtomicInteger();
+  protected BluetoothAdapter adapter;
+  protected ModuleRegistry moduleRegistry;
+  protected AtomicInteger scanSessionId = new AtomicInteger();
   private ScanCallback mScanCallback;
 
-	public BluetoothScanManager(Context context, ModuleRegistry moduleRegistry, ScanCallback scanCallback) {
-		this.context = context;
-		this.moduleRegistry = moduleRegistry;
+  public BluetoothScanManager(BluetoothAdapter adapter, ModuleRegistry moduleRegistry, ScanCallback scanCallback) {
+    this.adapter = adapter;
+    this.moduleRegistry = moduleRegistry;
     this.mScanCallback = scanCallback;
-	}
-
-	protected BluetoothAdapter getBluetoothAdapter() {
-		if (bluetoothAdapter == null) {
-			android.bluetooth.BluetoothManager manager = (android.bluetooth.BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
-			bluetoothAdapter = manager.getAdapter();
-		}
-		return bluetoothAdapter;
-	}
+  }
 
   public void stopScan() {
     // update scanSessionId to prevent stopping next scan by running timeout thread
     scanSessionId.incrementAndGet();
 
-    getBluetoothAdapter().getBluetoothLeScanner().stopScan(mScanCallback);
+    adapter.getBluetoothLeScanner().stopScan(mScanCallback);
   }
 
   public void scan(ArrayList serviceUUIDs, final int timeout, Map<String, Object> options, Promise callback) {
@@ -77,7 +66,7 @@ public class BluetoothScanManager {
       }
     }
 
-    getBluetoothAdapter().getBluetoothLeScanner().startScan(filters, scanSettingsBuilder.build(), mScanCallback);
+    adapter.getBluetoothLeScanner().startScan(filters, scanSettingsBuilder.build(), mScanCallback);
     if (timeout > 0) {
       Thread thread = new Thread() {
         private int currentScanSession = scanSessionId.incrementAndGet();
@@ -94,7 +83,6 @@ public class BluetoothScanManager {
             @Override
             public void run() {
 
-              BluetoothAdapter adapter = getBluetoothAdapter();
               // check current scan session was not stopped
               if (scanSessionId.intValue() == currentScanSession) {
                 if (adapter.getState() == BluetoothAdapter.STATE_ON) {
@@ -102,7 +90,7 @@ public class BluetoothScanManager {
                 }
                 Bundle map = new Bundle();
                 // TODO: Bacon: I don't think this can fail, so maybe it doesn't matter
-                BluetoothModule.sendEvent(moduleRegistry, BluetoothModule.EXBluetoothCentralDidStopScanningEvent, map);
+                BluetoothModule.sendEvent(BluetoothConstants.EVENTS.CENTRAL_DID_STOP_SCANNING, map);
               }
             }
           });

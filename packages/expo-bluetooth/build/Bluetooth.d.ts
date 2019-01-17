@@ -1,7 +1,7 @@
 import { Subscription } from 'expo-core';
 import { CentralState, PeripheralState, Base64, UUID, Identifier, TransactionId, NodeInterface, DescriptorInterface, NativeEventData, ErrorInterface, CharacteristicInterface, ServiceInterface, AdvertismentDataInterface, PeripheralInterface, TransactionType, PeripheralFoundCallback, StateUpdatedCallback, ScanSettings, Central, CharacteristicProperty } from './Bluetooth.types';
 export { CentralState, PeripheralState, Base64, UUID, Identifier, TransactionId, NodeInterface, DescriptorInterface, NativeEventData, ErrorInterface, CharacteristicInterface, ServiceInterface, AdvertismentDataInterface, PeripheralInterface, TransactionType, PeripheralFoundCallback, StateUpdatedCallback, ScanSettings, Central, CharacteristicProperty, };
-export declare const Events: any;
+export declare const EVENTS: any;
 export declare function startScanAsync(scanSettings?: ScanSettings): Promise<Subscription>;
 export declare function stopScanAsync(): Promise<void>;
 export declare function observeUpdatesAsync(callback: (updates: any) => void): Promise<Subscription>;

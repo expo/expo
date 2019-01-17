@@ -10,7 +10,7 @@ import ExpoBluetooth from './ExpoBluetooth';
 // } = {
 //   addListener() {},
 //   removeListeners() {},
-//   Events: {},
+//   EVENTS: {},
 // };
 let transactions = {};
 const eventEmitter = new EventEmitter(ExpoBluetooth);
@@ -20,13 +20,13 @@ function _validateUUID(uuid) {
     }
     return uuid;
 }
-export const { Events } = ExpoBluetooth;
+export const { EVENTS } = ExpoBluetooth;
 // Manage all of the bluetooth information.
 let _peripherals = {};
 let _advertisements = {};
 const multiEventHandlers = {
-    [Events.CENTRAL_DID_DISCOVER_PERIPHERAL_EVENT]: [],
-    [Events.CENTRAL_DID_UPDATE_STATE_EVENT]: [],
+    [EVENTS.CENTRAL_DID_DISCOVER_PERIPHERAL]: [],
+    [EVENTS.CENTRAL_DID_UPDATE_STATE]: [],
     everything: [],
     centralState: [],
 };
@@ -46,13 +46,15 @@ export async function startScanAsync(scanSettings = {}) {
      */
     await ExpoBluetooth.startScanAsync(serviceUUIDsWithoutDuplicates, scanningOptions);
     if (callback instanceof Function) {
-        multiEventHandlers[Events.CENTRAL_DID_DISCOVER_PERIPHERAL_EVENT].push(callback);
+        multiEventHandlers[EVENTS.CENTRAL_DID_DISCOVER_PERIPHERAL].push(callback);
     }
     return {
         remove() {
-            const index = multiEventHandlers[Events.CENTRAL_DID_DISCOVER_PERIPHERAL_EVENT].indexOf(callback);
-            if (index != -1) {
-                multiEventHandlers[Events.CENTRAL_DID_DISCOVER_PERIPHERAL_EVENT].splice(index, 1);
+            if (callback instanceof Function) {
+                const index = multiEventHandlers[EVENTS.CENTRAL_DID_DISCOVER_PERIPHERAL].indexOf(callback);
+                if (index != -1) {
+                    multiEventHandlers[EVENTS.CENTRAL_DID_DISCOVER_PERIPHERAL].splice(index, 1);
+                }
             }
         },
     };
@@ -62,7 +64,7 @@ export async function stopScanAsync() {
         throw new UnavailabilityError('Bluetooth', 'stopScanAsync');
     }
     // Remove all callbacks
-    multiEventHandlers[Events.CENTRAL_DID_DISCOVER_PERIPHERAL_EVENT] = [];
+    multiEventHandlers[EVENTS.CENTRAL_DID_DISCOVER_PERIPHERAL] = [];
     await ExpoBluetooth.stopScanAsync();
 }
 // Avoiding using "start" in passive method names
@@ -81,12 +83,12 @@ export async function observeStateAsync(callback) {
     const central = await getCentralAsync();
     callback(central.state);
     // TODO: Bacon: Is this just automatic?
-    multiEventHandlers[Events.CENTRAL_DID_UPDATE_STATE_EVENT].push(callback);
+    multiEventHandlers[EVENTS.CENTRAL_DID_UPDATE_STATE].push(callback);
     return {
         remove() {
-            const index = multiEventHandlers[Events.CENTRAL_DID_UPDATE_STATE_EVENT].indexOf(callback);
+            const index = multiEventHandlers[EVENTS.CENTRAL_DID_UPDATE_STATE].indexOf(callback);
             if (index != -1) {
-                multiEventHandlers[Events.CENTRAL_DID_UPDATE_STATE_EVENT].splice(index, 1);
+                multiEventHandlers[EVENTS.CENTRAL_DID_UPDATE_STATE].splice(index, 1);
             }
         },
     };
@@ -319,7 +321,7 @@ export async function loadChildrenRecursivelyAsync({ id }) {
 }
 addListener(({ data, event }) => {
     const { transactionId, peripheral, peripherals, central, advertisementData, rssi, error } = data;
-    // console.log("GOT EVENT: ", {data: !!data, event});
+    console.log("GOT EVENT: ", { data: data, event });
     if (central) {
         // _central = central;
     }
@@ -340,6 +342,7 @@ addListener(({ data, event }) => {
     }
     if (transactionId) {
         if (error == null) {
+            // TODO: Bacon: Handle the case where a peripheral disconnects from the central randomly.
             firePeripheralObservers();
         }
         if (transactionId in transactions) {
@@ -391,10 +394,11 @@ addListener(({ data, event }) => {
     }
     else {
         switch (event) {
-            case Events.CENTRAL_DID_DISCOVER_PERIPHERAL_EVENT:
+            case EVENTS.CENTRAL_DID_DISCOVER_PERIPHERAL:
                 fireMultiEventHandlers(event, { central, peripheral });
+                firePeripheralObservers();
                 return;
-            case Events.CENTRAL_DID_UPDATE_STATE_EVENT:
+            case EVENTS.CENTRAL_DID_UPDATE_STATE:
                 console.log('CENTRAL DID UPDATE STATE', event);
                 if (!central) {
                     throw new Error('EXBluetooth: Central not defined while processing: ' + event);
@@ -412,8 +416,8 @@ addListener(({ data, event }) => {
                     callback(central.state);
                 }
                 return;
-            case Events.CENTRAL_DID_RETRIEVE_CONNECTED_PERIPHERALS_EVENT:
-            case Events.CENTRAL_DID_RETRIEVE_PERIPHERALS_EVENT:
+            case EVENTS.CENTRAL_DID_RETRIEVE_CONNECTED_PERIPHERALS:
+            case EVENTS.CENTRAL_DID_RETRIEVE_PERIPHERALS:
                 return;
             default:
                 throw new Error('EXBluetooth: Unhandled event: ' + event);
@@ -434,6 +438,7 @@ function createTransactionId(options, transactionType) {
     return targets.join('|');
 }
 function addListener(listener) {
+    console.log("Listen to ", ExpoBluetooth.BLUETOOTH_EVENT);
     const subscription = eventEmitter.addListener(ExpoBluetooth.BLUETOOTH_EVENT, listener);
     return subscription;
 }
