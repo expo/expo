@@ -7,7 +7,7 @@ async function action(options) {
     throw new Error('--appVersion and --sdkVersion are both required');
   }
 
-  await ExpoKit.updateExpoKitAndroidAsync(EXPO_DIR, options.appVersion, options.sdkVersion);
+  await ExpoKit.updateExpoKitAndroidAsync(EXPO_DIR, options.appVersion, options.sdkVersion, options.expokitVersion);
 }
 
 export default (program: any) => {
@@ -16,5 +16,6 @@ export default (program: any) => {
     .description('Update staging ExpoKit files')
     .option('--appVersion [string]', 'Android app version from app/build.gradle')
     .option('--sdkVersion [string]', 'SDK version that will use this ExpoKit code')
+    .option('--expokitVersion [string]', 'Version for the expokit npm package (optional)')
     .asyncAction(action);
 };

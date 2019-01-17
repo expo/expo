@@ -8,6 +8,7 @@ export default class GLScreen extends React.Component {
   static navigationOptions = {
     title: 'Examples of GL use',
   };
+  static path = 'GL';
 
   render() {
     return (

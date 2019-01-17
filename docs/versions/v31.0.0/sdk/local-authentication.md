@@ -18,7 +18,8 @@ Determine what kinds of authentications are available on the device.
 
 #### Returns
 
-Returns a promise resolving to an array containing `Expo.LocalAuthentication.AuthenticationType.{FINGERPRINT, FACIAL_RECOGNITION}`. These determine what kinds of authentications are available on the device.
+Returns a promise resolving to an array containing `Expo.LocalAuthentication.AuthenticationType.{FINGERPRINT, FACIAL_RECOGNITION}`. A value of `1` indicates Fingerprint support and `2` indicates Facial Recognition support. Eg: `[1,2]` means the device has both types supported.
+
 
 ### `Expo.LocalAuthentication.isEnrolledAsync()`
 

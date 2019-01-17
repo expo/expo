@@ -401,7 +401,7 @@ PODS:
     - EXCore
   - EXLocalization (2.0.0):
     - EXCore
-  - EXLocation (2.0.0):
+  - EXLocation (2.0.1):
     - EXCore
     - EXPermissionsInterface
     - EXTaskManagerInterface

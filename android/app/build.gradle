@@ -25,8 +25,8 @@ android {
     targetSdkVersion 26
     // ADD VERSIONS HERE
     // BEGIN VERSIONS
-    versionCode 102
-    versionName '2.10.3'
+    versionCode 103
+    versionName '2.10.4'
     // END VERSIONS
     ndk {
       abiFilters 'armeabi-v7a', 'x86'
@@ -269,7 +269,7 @@ dependencies {
   api 'host.exp.exponent:expo-google-sign-in:2.0.0'
   api 'host.exp.exponent:expo-local-authentication:2.0.0'
   api 'host.exp.exponent:expo-localization:2.0.0'
-  api 'host.exp.exponent:expo-location:2.0.0'
+  api 'host.exp.exponent:expo-location:2.0.1'
   api 'host.exp.exponent:expo-media-library:2.0.0'
   api 'host.exp.exponent:expo-print:2.0.0'
   api 'host.exp.exponent:expo-sensors:2.0.0'
