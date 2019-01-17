@@ -1,7 +1,6 @@
-import { EventEmitter } from 'expo-core';
 export default class PlatformSensorModule {
-    emitter: EventEmitter;
     _updateInterval: number;
+    emitter: any;
     readonly name: string;
     isAvailableAsync(): Promise<boolean>;
     addListener: (eventName: string) => void;

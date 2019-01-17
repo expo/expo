@@ -1,8 +1,11 @@
-import PlatformSensorModule from './PlatformSensorModule';
-class ExponentMagnetometer extends PlatformSensorModule {
+export default {
     get name() {
         return 'ExponentMagnetometer';
-    }
-}
-export default new ExponentMagnetometer();
+    },
+    async isAvailableAsync() {
+        return false;
+    },
+    startObserving() { },
+    stopObserving() { },
+};
 //# sourceMappingURL=ExponentMagnetometer.web.js.map

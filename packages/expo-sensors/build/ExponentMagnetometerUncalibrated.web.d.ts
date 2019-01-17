@@ -1,6 +1,7 @@
-import PlatformSensorModule from './PlatformSensorModule';
-declare class ExponentMagnetometerUncalibrated extends PlatformSensorModule {
+declare const _default: {
     readonly name: string;
-}
-declare const _default: ExponentMagnetometerUncalibrated;
+    isAvailableAsync(): Promise<boolean>;
+    startObserving(): void;
+    stopObserving(): void;
+};
 export default _default;

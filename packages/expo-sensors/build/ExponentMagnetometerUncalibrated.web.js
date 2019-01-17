@@ -1,8 +1,11 @@
-import PlatformSensorModule from './PlatformSensorModule';
-class ExponentMagnetometerUncalibrated extends PlatformSensorModule {
+export default {
     get name() {
         return 'ExponentMagnetometerUncalibrated';
-    }
-}
-export default new ExponentMagnetometerUncalibrated();
+    },
+    async isAvailableAsync() {
+        return false;
+    },
+    startObserving() { },
+    stopObserving() { },
+};
 //# sourceMappingURL=ExponentMagnetometerUncalibrated.web.js.map

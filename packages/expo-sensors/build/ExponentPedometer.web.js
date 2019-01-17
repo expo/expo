@@ -1,8 +1,11 @@
-import PlatformSensorModule from './PlatformSensorModule';
-class ExponentPedometer extends PlatformSensorModule {
+export default {
     get name() {
         return 'ExponentPedometer';
-    }
-}
-export default new ExponentPedometer();
+    },
+    async isAvailableAsync() {
+        return false;
+    },
+    startObserving() { },
+    stopObserving() { },
+};
 //# sourceMappingURL=ExponentPedometer.web.js.map

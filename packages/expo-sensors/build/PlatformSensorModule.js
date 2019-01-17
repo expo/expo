@@ -1,8 +1,8 @@
-import { EventEmitter } from 'expo-core';
+import GlobalPlatformEmitter from './GlobalPlatformEmitter';
 export default class PlatformSensorModule {
     constructor() {
-        this.emitter = new EventEmitter({});
         this._updateInterval = 0;
+        this.emitter = GlobalPlatformEmitter;
         this.addListener = (eventName) => { };
         this.removeListeners = (count) => { };
         this.startObserving = () => { };
@@ -11,6 +11,9 @@ export default class PlatformSensorModule {
             this._updateInterval = intervalMs;
         };
     }
+    // get emitter() {
+    //   return RCTDeviceEventEmitter.sharedSubscriber;
+    // }
     get name() {
         throw new Error('PlatformSensorModule.name should be implemented');
     }

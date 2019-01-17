@@ -1,9 +1,10 @@
-import PlatformSensorModule from './PlatformSensorModule';
-
-class ExponentPedometer extends PlatformSensorModule {
+export default {
   get name(): string {
     return 'ExponentPedometer';
-  }
-}
-
-export default new ExponentPedometer();
+  },
+  async isAvailableAsync(): Promise<boolean> {
+    return false;
+  },
+  startObserving() {},
+  stopObserving() {},
+};

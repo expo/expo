@@ -1,29 +1,24 @@
-import PlatformSensorModule from './PlatformSensorModule';
+import GlobalPlatformEmitter from './GlobalPlatformEmitter';
 
-class ExponentAccelerometer extends PlatformSensorModule {
+export default {
   get name(): string {
     return 'ExponentAccelerometer';
-  }
-
-  isAvailableAsync = async (): Promise<boolean> => {
+  },
+  async isAvailableAsync(): Promise<boolean> {
     return typeof DeviceMotionEvent !== 'undefined';
-  };
-
-  _handleMotion = ({ accelerationIncludingGravity }) => {
-    this.emitter.emit('accelerometerDidUpdate', {
+  },
+  _handleMotion({ accelerationIncludingGravity }) {
+    GlobalPlatformEmitter.emit('accelerometerDidUpdate', {
       x: accelerationIncludingGravity.x,
       y: accelerationIncludingGravity.y,
       z: accelerationIncludingGravity.z,
     });
-  };
-
-  startObserving = () => {
+  },
+  startObserving() {
     window.addEventListener('devicemotion', this._handleMotion);
-  };
-
-  stopObserving = () => {
+  },
+  stopObserving() {
     window.removeEventListener('devicemotion', this._handleMotion);
-  };
-}
-
-export default new ExponentAccelerometer();
+  },
+  async setUpdateInterval(intervalMs: number): Promise<void> {},
+};

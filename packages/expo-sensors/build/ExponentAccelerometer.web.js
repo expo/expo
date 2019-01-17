@@ -1,27 +1,24 @@
-import PlatformSensorModule from './PlatformSensorModule';
-class ExponentAccelerometer extends PlatformSensorModule {
-    constructor() {
-        super(...arguments);
-        this.isAvailableAsync = async () => {
-            return typeof DeviceMotionEvent !== 'undefined';
-        };
-        this._handleMotion = ({ accelerationIncludingGravity }) => {
-            this.emitter.emit('accelerometerDidUpdate', {
-                x: accelerationIncludingGravity.x,
-                y: accelerationIncludingGravity.y,
-                z: accelerationIncludingGravity.z,
-            });
-        };
-        this.startObserving = () => {
-            window.addEventListener('devicemotion', this._handleMotion);
-        };
-        this.stopObserving = () => {
-            window.removeEventListener('devicemotion', this._handleMotion);
-        };
-    }
+import GlobalPlatformEmitter from './GlobalPlatformEmitter';
+export default {
     get name() {
         return 'ExponentAccelerometer';
-    }
-}
-export default new ExponentAccelerometer();
+    },
+    async isAvailableAsync() {
+        return typeof DeviceMotionEvent !== 'undefined';
+    },
+    _handleMotion({ accelerationIncludingGravity }) {
+        GlobalPlatformEmitter.emit('accelerometerDidUpdate', {
+            x: accelerationIncludingGravity.x,
+            y: accelerationIncludingGravity.y,
+            z: accelerationIncludingGravity.z,
+        });
+    },
+    startObserving() {
+        window.addEventListener('devicemotion', this._handleMotion);
+    },
+    stopObserving() {
+        window.removeEventListener('devicemotion', this._handleMotion);
+    },
+    async setUpdateInterval(intervalMs) { },
+};
 //# sourceMappingURL=ExponentAccelerometer.web.js.map

@@ -1,23 +1,19 @@
-import PlatformSensorModule from './PlatformSensorModule';
-class ExponentGyroscope extends PlatformSensorModule {
-    constructor() {
-        super(...arguments);
-        this.isAvailableAsync = async () => {
-            return typeof DeviceOrientationEvent !== 'undefined';
-        };
-        this._handleMotion = ({ alpha: z, beta: y, gamma: x }) => {
-            this.emitter.emit('gyroscopeDidUpdate', { x, y, z });
-        };
-        this.startObserving = () => {
-            window.addEventListener('deviceorientation', this._handleMotion);
-        };
-        this.stopObserving = () => {
-            window.removeEventListener('deviceorientation', this._handleMotion);
-        };
-    }
+import GlobalPlatformEmitter from './GlobalPlatformEmitter';
+export default {
     get name() {
         return 'ExponentGyroscope';
-    }
-}
-export default new ExponentGyroscope();
+    },
+    async isAvailableAsync() {
+        return typeof DeviceOrientationEvent !== 'undefined';
+    },
+    _handleMotion({ alpha: z, beta: y, gamma: x }) {
+        GlobalPlatformEmitter.emit('gyroscopeDidUpdate', { x, y, z });
+    },
+    startObserving() {
+        window.addEventListener('deviceorientation', this._handleMotion);
+    },
+    stopObserving() {
+        window.removeEventListener('deviceorientation', this._handleMotion);
+    },
+};
 //# sourceMappingURL=ExponentGyroscope.web.js.map

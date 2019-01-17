@@ -1,29 +1,25 @@
-import PlatformSensorModule from './PlatformSensorModule';
-class ExponentDeviceMotion extends PlatformSensorModule {
-    constructor() {
-        super(...arguments);
-        this.isAvailableAsync = async () => {
-            return typeof DeviceMotionEvent !== 'undefined';
-        };
-        this._handleMotion = motion => {
-            this.emitter.emit('deviceMotionDidUpdate', {
-                ...motion,
-                orientation: window.orientation,
-            });
-        };
-        this.startObserving = () => {
-            window.addEventListener('devicemotion', this._handleMotion);
-        };
-        this.stopObserving = () => {
-            window.removeEventListener('devicemotion', this._handleMotion);
-        };
-    }
+import GlobalPlatformEmitter from './GlobalPlatformEmitter';
+export default {
     get name() {
         return 'ExponentDeviceMotion';
-    }
+    },
     get Gravity() {
         return 9.81;
-    }
-}
-export default new ExponentDeviceMotion();
+    },
+    async isAvailableAsync() {
+        return typeof DeviceMotionEvent !== 'undefined';
+    },
+    _handleMotion(motion) {
+        GlobalPlatformEmitter.emit('deviceMotionDidUpdate', {
+            ...motion,
+            orientation: window.orientation,
+        });
+    },
+    startObserving() {
+        window.addEventListener('devicemotion', this._handleMotion);
+    },
+    stopObserving() {
+        window.removeEventListener('devicemotion', this._handleMotion);
+    },
+};
 //# sourceMappingURL=ExponentDeviceMotion.web.js.map
