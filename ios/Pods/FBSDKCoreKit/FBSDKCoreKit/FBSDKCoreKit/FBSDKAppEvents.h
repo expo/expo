@@ -160,7 +160,7 @@ FOUNDATION_EXPORT NSString *const FBSDKAppEventNameSchedule;
 /** The start of a free trial of a product or service you offer (example: trial subscription). */
 FOUNDATION_EXPORT NSString *const FBSDKAppEventNameStartTrial;
 
-/** The submission of an application for a product, service or program you offer (example: credit card, educational program or job).. */
+/** The submission of an application for a product, service or program you offer (example: credit card, educational program or job). */
 FOUNDATION_EXPORT NSString *const FBSDKAppEventNameSubmitApplication;
 
 /** The start of a paid subscription for a product or service you offer. */
@@ -217,6 +217,70 @@ FOUNDATION_EXPORT NSString *const FBSDKAppEventParameterNameSearchString;
 
 /** Parameter key used to specify whether the activity being logged about was successful or not.  `FBSDKAppEventParameterValueYes` and `FBSDKAppEventParameterValueNo` are good canonical values to use for this parameter. */
 FOUNDATION_EXPORT NSString *const FBSDKAppEventParameterNameSuccess;
+
+/**
+ @methodgroup Predefined event name parameters for common additional information to accompany events logged through the `logProductItem` method on `FBSDKAppEvents`.
+ */
+
+/** Parameter key used to specify the product item's custom label 0. */
+FOUNDATION_EXPORT NSString *const FBSDKAppEventParameterProductCustomLabel0;
+
+/** Parameter key used to specify the product item's custom label 1. */
+FOUNDATION_EXPORT NSString *const FBSDKAppEventParameterProductCustomLabel1;
+
+/** Parameter key used to specify the product item's custom label 2. */
+FOUNDATION_EXPORT NSString *const FBSDKAppEventParameterProductCustomLabel2;
+
+/** Parameter key used to specify the product item's custom label 3. */
+FOUNDATION_EXPORT NSString *const FBSDKAppEventParameterProductCustomLabel3;
+
+/** Parameter key used to specify the product item's custom label 4. */
+FOUNDATION_EXPORT NSString *const FBSDKAppEventParameterProductCustomLabel4;
+
+/** Parameter key used to specify the product item's AppLink app URL for iOS. */
+FOUNDATION_EXPORT NSString *const FBSDKAppEventParameterProductAppLinkIOSUrl;
+
+/** Parameter key used to specify the product item's AppLink app ID for iOS App Store. */
+FOUNDATION_EXPORT NSString *const FBSDKAppEventParameterProductAppLinkIOSAppStoreID;
+
+/** Parameter key used to specify the product item's AppLink app name for iOS. */
+FOUNDATION_EXPORT NSString *const FBSDKAppEventParameterProductAppLinkIOSAppName;
+
+/** Parameter key used to specify the product item's AppLink app URL for iPhone. */
+FOUNDATION_EXPORT NSString *const FBSDKAppEventParameterProductAppLinkIPhoneUrl;
+
+/** Parameter key used to specify the product item's AppLink app ID for iPhone App Store. */
+FOUNDATION_EXPORT NSString *const FBSDKAppEventParameterProductAppLinkIPhoneAppStoreID;
+
+/** Parameter key used to specify the product item's AppLink app name for iPhone. */
+FOUNDATION_EXPORT NSString *const FBSDKAppEventParameterProductAppLinkIPhoneAppName;
+
+/** Parameter key used to specify the product item's AppLink app URL for iPad. */
+FOUNDATION_EXPORT NSString *const FBSDKAppEventParameterProductAppLinkIPadUrl;
+
+/** Parameter key used to specify the product item's AppLink app ID for iPad App Store. */
+FOUNDATION_EXPORT NSString *const FBSDKAppEventParameterProductAppLinkIPadAppStoreID;
+
+/** Parameter key used to specify the product item's AppLink app name for iPad. */
+FOUNDATION_EXPORT NSString *const FBSDKAppEventParameterProductAppLinkIPadAppName;
+
+/** Parameter key used to specify the product item's AppLink app URL for Android. */
+FOUNDATION_EXPORT NSString *const FBSDKAppEventParameterProductAppLinkAndroidUrl;
+
+/** Parameter key used to specify the product item's AppLink fully-qualified package name for intent generation. */
+FOUNDATION_EXPORT NSString *const FBSDKAppEventParameterProductAppLinkAndroidPackage;
+
+/** Parameter key used to specify the product item's AppLink app name for Android. */
+FOUNDATION_EXPORT NSString *const FBSDKAppEventParameterProductAppLinkAndroidAppName;
+
+/** Parameter key used to specify the product item's AppLink app URL for Windows Phone. */
+FOUNDATION_EXPORT NSString *const FBSDKAppEventParameterProductAppLinkWindowsPhoneUrl;
+
+/** Parameter key used to specify the product item's AppLink app ID, as a GUID, for App Store. */
+FOUNDATION_EXPORT NSString *const FBSDKAppEventParameterProductAppLinkWindowsPhoneAppID;
+
+/** Parameter key used to specify the product item's AppLink app name for Windows Phone. */
+FOUNDATION_EXPORT NSString *const FBSDKAppEventParameterProductAppLinkWindowsPhoneAppName;
 
 /*
  @methodgroup Predefined values to assign to event parameters that accompany events logged through the `logEvent` family
@@ -550,6 +614,17 @@ FOUNDATION_EXPORT NSString *const FBSDKAppEventParameterNameOrderID;
  @param deviceToken Device token data.
  */
 + (void)setPushNotificationsDeviceToken:(NSData *)deviceToken;
+
+/**
+ Sets and sends device token string to register the current application for push notifications.
+
+
+
+ Sets and sends a device token string
+
+ @param deviceTokenString Device token string.
+ */
++ (void)setPushNotificationsDeviceTokenString:(NSString *)deviceTokenString;
 
 /*
  * Control over event batching/flushing

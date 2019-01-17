@@ -33,5 +33,6 @@
 + (UITableView *)getParentTableView:(UIView *)cell;
 + (UICollectionView *)getParentCollectionView:(UIView *)cell;
 + (NSInteger)getTag:(NSObject *)obj;
++ (NSNumber *)getViewReactTag:(UIView *)view;
 
 @end

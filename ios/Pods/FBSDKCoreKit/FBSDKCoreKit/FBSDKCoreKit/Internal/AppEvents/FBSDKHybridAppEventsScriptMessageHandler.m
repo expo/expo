@@ -32,7 +32,7 @@ NSString *const FBSDKAppEventsWKWebViewMessagesPixelReferralParamKey = @"_fb_pix
 
   if ([message.name isEqualToString:FBSDKAppEventsWKWebViewMessagesHandlerKey]) {
     NSString *event = message.body[FBSDKAppEventsWKWebViewMessagesEventKey];
-    if ([event length] > 0) {
+    if (event.length > 0) {
       NSString *stringedParams = message.body[FBSDKAppEventsWKWebViewMessagesParamsKey];
       NSMutableDictionary <NSObject *, NSObject *> *params = nil;
       NSError *jsonParseError = nil;
@@ -52,7 +52,7 @@ NSString *const FBSDKAppEventsWKWebViewMessagesPixelReferralParamKey = @"_fb_pix
         params = [[NSMutableDictionary alloc] initWithObjectsAndKeys:pixelID, FBSDKAppEventsWKWebViewMessagesPixelReferralParamKey, nil];
       }
       else {
-        [params setObject:pixelID forKey: FBSDKAppEventsWKWebViewMessagesPixelReferralParamKey];
+        params[FBSDKAppEventsWKWebViewMessagesPixelReferralParamKey] = pixelID;
       }
       [FBSDKAppEvents logEvent:event parameters:params];
     }

@@ -192,7 +192,7 @@ static const long INACTIVE_SECONDS_QUANTA[] =
     if (!content) {
 
       // Nothing persisted, so this is the first launch.
-      _sessionID = [[NSUUID UUID] UUIDString];
+      _sessionID = [NSUUID UUID].UUIDString;
       _secondsSpentInCurrentSession = 0;
       _numInterruptionsInCurrentSession = 0;
       _lastSuspendTime = 0;
@@ -205,12 +205,12 @@ static const long INACTIVE_SECONDS_QUANTA[] =
 
       NSDictionary *results = [FBSDKInternalUtility objectForJSONString:content error:NULL];
 
-      _lastSuspendTime = [[results objectForKey:FBSDKTimeSpentPersistKeyLastSuspendTime] longValue];
+      _lastSuspendTime = [results[FBSDKTimeSpentPersistKeyLastSuspendTime] longValue];
 
       _timeSinceLastSuspend = now - _lastSuspendTime;
-      _secondsSpentInCurrentSession = [[results objectForKey:FBSDKTimeSpentPersistKeySessionSecondsSpent] intValue];
-      _sessionID = results[FBSDKTimeSpentPersistKeySessionID] ? : [[NSUUID UUID] UUIDString];
-      _numInterruptionsInCurrentSession = [[results objectForKey:FBSDKTimeSpentPersistKeySessionNumInterruptions] intValue];
+      _secondsSpentInCurrentSession = [results[FBSDKTimeSpentPersistKeySessionSecondsSpent] intValue];
+      _sessionID = results[FBSDKTimeSpentPersistKeySessionID] ? : [NSUUID UUID].UUIDString;
+      _numInterruptionsInCurrentSession = [results[FBSDKTimeSpentPersistKeySessionNumInterruptions] intValue];
       _shouldLogActivateEvent = (_timeSinceLastSuspend > [FBSDKServerConfigurationManager cachedServerConfiguration].sessionTimoutInterval);
 
       // Other than the first launch, we always log the last session's deactivate with this session's activate.
@@ -237,7 +237,7 @@ static const long INACTIVE_SECONDS_QUANTA[] =
         // We've logged the session stats, now reset.
         _secondsSpentInCurrentSession = 0;
         _numInterruptionsInCurrentSession = 0;
-        _sessionID = [[NSUUID UUID] UUIDString];
+        _sessionID = [NSUUID UUID].UUIDString;
       }
 
       if (_shouldLogActivateEvent) {

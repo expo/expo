@@ -40,6 +40,7 @@
                   methodName:(NSString *__autoreleasing *)methodNameRef
                   parameters:(NSDictionary *__autoreleasing *)parametersRef
                        error:(NSError *__autoreleasing *)errorRef;
++ (NSString *)buildWebShareTags:(NSArray<NSString *> *)peopleIDs;
 + (void)buildAsyncWebPhotoContent:(FBSDKSharePhotoContent *)content
                 completionHandler:(void(^)(BOOL, NSString *, NSDictionary *))completion;
 + (id)convertOpenGraphValue:(id)value;

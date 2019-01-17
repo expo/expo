@@ -67,7 +67,7 @@ static NSString *const FBSDKCameraEffectArgumentsArgumentsKey = @"arguments";
 
 - (NSUInteger)hash
 {
-  return [_arguments hash];
+  return _arguments.hash;
 }
 
 - (BOOL)isEqual:(id)object
@@ -93,7 +93,7 @@ static NSString *const FBSDKCameraEffectArgumentsArgumentsKey = @"arguments";
   return YES;
 }
 
-- (id)initWithCoder:(NSCoder *)decoder
+- (instancetype)initWithCoder:(NSCoder *)decoder
 {
   if ((self = [self init])) {
     _arguments = [decoder decodeObjectOfClass:[NSMutableDictionary class]

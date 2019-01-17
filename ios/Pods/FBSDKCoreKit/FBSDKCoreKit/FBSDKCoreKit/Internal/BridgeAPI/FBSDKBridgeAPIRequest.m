@@ -93,7 +93,7 @@ NSString *const FBSDKBridgeAPIVersionKey = @"version";
     _parameters = [parameters copy];
     _userInfo = [userInfo copy];
 
-    _actionID = [[NSUUID UUID] UUIDString];
+    _actionID = [NSUUID UUID].UUIDString;
   }
   return self;
 }

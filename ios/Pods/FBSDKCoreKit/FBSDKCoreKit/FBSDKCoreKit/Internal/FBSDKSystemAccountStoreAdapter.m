@@ -99,7 +99,7 @@ static FBSDKSystemAccountStoreAdapter *_singletonInstance = nil;
   if (self.accountType && self.accountType.accessGranted) {
     NSArray *fbAccounts = [self.accountStore accountsWithAccountType:self.accountType];
     if (fbAccounts.count > 0) {
-      id account = [fbAccounts objectAtIndex:0];
+      id account = fbAccounts[0];
       id credential = [account credential];
 
       return [credential oauthToken];
@@ -137,11 +137,9 @@ static FBSDKSystemAccountStoreAdapter *_singletonInstance = nil;
   }
 
   // construct access options
-  NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys:
-                           appID, fbsdkdfl_ACFacebookAppIdKey(),
-                           [permissions allObjects], fbsdkdfl_ACFacebookPermissionsKey(),
-                           defaultAudience, fbsdkdfl_ACFacebookAudienceKey(), // must end on this key/value due to audience possibly being nil
-                           nil];
+  NSDictionary<NSString *, id> *options = @{fbsdkdfl_ACFacebookAppIdKey(): appID,
+                                            fbsdkdfl_ACFacebookPermissionsKey(): permissions.allObjects,
+                                            fbsdkdfl_ACFacebookAudienceKey(): defaultAudience};
 
   if (self.forceBlockingRenew
       && [self.accountStore accountsWithAccountType:self.accountType].count > 0) {
@@ -200,7 +198,7 @@ static FBSDKSystemAccountStoreAdapter *_singletonInstance = nil;
        if (granted) {
          NSArray *fbAccounts = [self.accountStore accountsWithAccountType:self.accountType];
          if (fbAccounts.count > 0) {
-           account = [fbAccounts objectAtIndex:0];
+           account = fbAccounts[0];
 
            id credential = [account credential];
 
@@ -233,11 +231,11 @@ static FBSDKSystemAccountStoreAdapter *_singletonInstance = nil;
   if (self.accountStore && self.accountType && self.accountType.accessGranted) {
     NSArray *fbAccounts = [self.accountStore accountsWithAccountType:self.accountType];
     id account;
-    if (fbAccounts && [fbAccounts count] > 0 &&
-        (account = [fbAccounts objectAtIndex:0])) {
+    if (fbAccounts && fbAccounts.count > 0 &&
+        (account = fbAccounts[0])) {
 
       FBSDKAccessToken *currentToken = [FBSDKAccessToken currentAccessToken];
-      if (![currentToken.tokenString isEqualToString:[self accessTokenString]]) {
+      if (![currentToken.tokenString isEqualToString:self.accessTokenString]) {
         currentToken = nil;
       }
       [self.accountStore renewCredentialsForAccount:account completion:^(ACAccountCredentialRenewResult renewResult, NSError *error) {
@@ -252,8 +250,9 @@ static FBSDKSystemAccountStoreAdapter *_singletonInstance = nil;
             [currentToken isEqual:[FBSDKAccessToken currentAccessToken]]) {
           // account store renewals can change the stored oauth token so we need to update the currentAccessToken
           // so future comparisons to -[ accessTokenString] work correctly (e.g., error recovery).
-          FBSDKAccessToken *updatedToken = [[FBSDKAccessToken alloc] initWithTokenString:[self accessTokenString]
-                                                                             permissions:[currentToken.permissions allObjects]                                                                     declinedPermissions:[currentToken.declinedPermissions allObjects]
+          FBSDKAccessToken *updatedToken = [[FBSDKAccessToken alloc] initWithTokenString:self.accessTokenString
+                                                                             permissions:currentToken.permissions.allObjects
+                                                                     declinedPermissions:currentToken.declinedPermissions.allObjects
                                                                                    appID:currentToken.appID
                                                                                   userID:currentToken.userID
                                                                           expirationDate:[NSDate distantFuture]

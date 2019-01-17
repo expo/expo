@@ -60,10 +60,10 @@
   FBSDKAdvertisingTrackingStatus advertisingTrackingStatus = [[self class] advertisingTrackingStatus];
   if (advertisingTrackingStatus != FBSDKAdvertisingTrackingUnspecified) {
     BOOL allowed = (advertisingTrackingStatus == FBSDKAdvertisingTrackingAllowed);
-    parameters[@"advertiser_tracking_enabled"] = [@(allowed) stringValue];
+    parameters[@"advertiser_tracking_enabled"] = @(allowed).stringValue;
   }
 
-  parameters[@"application_tracking_enabled"] = [@(!FBSDKSettings.limitEventAndDataUsage) stringValue];
+  parameters[@"application_tracking_enabled"] = @(!FBSDKSettings.limitEventAndDataUsage).stringValue;
 
   NSString *userID = [FBSDKAppEvents userID];
   if (userID) {
@@ -82,8 +82,8 @@
   dispatch_once(&fetchBundleOnce, ^{
     NSBundle *mainBundle = [NSBundle mainBundle];
     urlSchemes = [[NSMutableArray alloc] init];
-    for (NSDictionary *fields in [mainBundle objectForInfoDictionaryKey:@"CFBundleURLTypes"]) {
-      NSArray *schemesForType = [fields objectForKey:@"CFBundleURLSchemes"];
+    for (NSDictionary<NSString *, id> *fields in [mainBundle objectForInfoDictionaryKey:@"CFBundleURLTypes"]) {
+      NSArray<NSString *> *schemesForType = fields[@"CFBundleURLSchemes"];
       if (schemesForType) {
         [urlSchemes addObjectsFromArray:schemesForType];
       }
@@ -91,8 +91,7 @@
   });
 
   if (urlSchemes.count > 0) {
-    [parameters setObject:[FBSDKInternalUtility JSONStringForObject:urlSchemes error:NULL invalidObjectHandler:NULL]
-                   forKey:@"url_schemes"];
+    parameters[@"url_schemes"] = [FBSDKInternalUtility JSONStringForObject:urlSchemes error:NULL invalidObjectHandler:NULL];
   }
 
   return parameters;
@@ -100,12 +99,16 @@
 
 + (NSString *)advertiserID
 {
+  if (![[FBSDKSettings advertiserIDCollectionEnabled] boolValue]) {
+    return nil;
+  }
+
   NSString *result = nil;
 
   Class ASIdentifierManagerClass = fbsdkdfl_ASIdentifierManagerClass();
   if ([ASIdentifierManagerClass class]) {
     ASIdentifierManager *manager = [ASIdentifierManagerClass sharedManager];
-    result = [[manager advertisingIdentifier] UUIDString];
+    result = manager.advertisingIdentifier.UUIDString;
   }
 
   return result;
@@ -122,7 +125,7 @@
     if ([ASIdentifierManagerClass class]) {
       ASIdentifierManager *manager = [ASIdentifierManagerClass sharedManager];
       if (manager) {
-        status = [manager isAdvertisingTrackingEnabled] ? FBSDKAdvertisingTrackingAllowed : FBSDKAdvertisingTrackingDisallowed;
+        status = manager.advertisingTrackingEnabled ? FBSDKAdvertisingTrackingAllowed : FBSDKAdvertisingTrackingDisallowed;
       }
     }
   });
@@ -139,7 +142,7 @@
     // Generate a new anonymous ID.  Create as a UUID, but then prepend the fairly
     // arbitrary 'XZ' to the front so it's easily distinguishable from IDFA's which
     // will only contain hex.
-    result = [NSString stringWithFormat:@"XZ%@", [[NSUUID UUID] UUIDString]];
+    result = [NSString stringWithFormat:@"XZ%@", [NSUUID UUID].UUIDString];
 
     [self persistAnonymousID:result];
   }
@@ -151,7 +154,7 @@
 #if TARGET_OS_TV
   return nil;
 #else
-  return [[UIPasteboard pasteboardWithName:@"fb_app_attribution" create:NO] string];
+  return [UIPasteboard pasteboardWithName:@"fb_app_attribution" create:NO].string;
 #endif
 }
 
@@ -208,7 +211,7 @@
 {
   NSString *behaviorToLog = FBSDKLoggingBehaviorAppEvents;
   if (allowLogAsDeveloperError) {
-    if ([[FBSDKSettings loggingBehavior] containsObject:FBSDKLoggingBehaviorDeveloperErrors]) {
+    if ([FBSDKSettings.loggingBehaviors containsObject:FBSDKLoggingBehaviorDeveloperErrors]) {
       // Rather than log twice, prefer 'DeveloperErrors' if it's set over AppEvents.
       behaviorToLog = FBSDKLoggingBehaviorDeveloperErrors;
     }
@@ -298,7 +301,7 @@ restOfStringCharacterSet:(NSCharacterSet *)restOfStringCharacterSet
 {
   NSSearchPathDirectory directory = NSLibraryDirectory;
   NSArray *paths = NSSearchPathForDirectoriesInDomains(directory, NSUserDomainMask, YES);
-  NSString *docDirectory = [paths objectAtIndex:0];
+  NSString *docDirectory = paths[0];
   return [docDirectory stringByAppendingPathComponent:filename];
 }
 
@@ -310,7 +313,7 @@ restOfStringCharacterSet:(NSCharacterSet *)restOfStringCharacterSet
                                                       encoding:NSASCIIStringEncoding
                                                          error:nil];
   NSDictionary *results = [FBSDKInternalUtility objectForJSONString:content error:NULL];
-  return [results objectForKey:FBSDK_APPEVENTSUTILITY_ANONYMOUSID_KEY];
+  return results[FBSDK_APPEVENTSUTILITY_ANONYMOUSID_KEY];
 }
 
 // Given a candidate token (which may be nil), find the real token to string to use.
@@ -338,11 +341,11 @@ restOfStringCharacterSet:(NSCharacterSet *)restOfStringCharacterSet
 
 + (long)unixTimeNow
 {
-  return (long)round([[NSDate date] timeIntervalSince1970]);
+  return (long)round([NSDate date].timeIntervalSince1970);
 }
 
 + (id)getVariable:(NSString *)variableName fromInstance:(NSObject *)instance {
-  Ivar ivar = class_getInstanceVariable([instance class], [variableName UTF8String]);
+  Ivar ivar = class_getInstanceVariable([instance class], variableName.UTF8String);
   if (ivar != NULL) {
     const char *encoding = ivar_getTypeEncoding(ivar);
     if (encoding != NULL && encoding[0] == '@') {
@@ -377,7 +380,7 @@ restOfStringCharacterSet:(NSCharacterSet *)restOfStringCharacterSet
 
     value = [formatter numberFromString:validText];
     if (nil == value) {
-      value = @([validText floatValue]);
+      value = @(validText.floatValue);
     }
   }
 
@@ -414,6 +417,58 @@ restOfStringCharacterSet:(NSCharacterSet *)restOfStringCharacterSet
 
   return NO;
 #endif
+}
+
++ (BOOL)isSensitiveUserData:(NSString *)text
+{
+  if (0 == text.length) {
+    return NO;
+  }
+
+  return [self isEmailAddress:text] || [self isCreditCardNumber:text];
+}
+
++ (BOOL)isCreditCardNumber:(NSString *)text
+{
+  text = [[text componentsSeparatedByCharactersInSet:[NSCharacterSet.decimalDigitCharacterSet invertedSet]] componentsJoinedByString:@""];
+
+  if (text.doubleValue == 0) {
+    return NO;
+  }
+
+  if (text.length < 9 || text.length > 21) {
+    return NO;
+  }
+
+  const char *chars = [text cStringUsingEncoding:NSUTF8StringEncoding];
+  if (NULL == chars) {
+    return NO;
+  }
+
+  BOOL isOdd = YES;
+  int oddSum = 0;
+  int evenSum = 0;
+
+  for (int i = (int)text.length - 1; i >= 0; i--) {
+    int digit = chars[i] - '0';
+
+    if (isOdd)
+      oddSum += digit;
+    else
+      evenSum += digit / 5 + (2 * digit) % 10;
+
+    isOdd = !isOdd;
+  }
+
+  return ((oddSum + evenSum) % 10 == 0);
+}
+
++ (BOOL)isEmailAddress:(NSString *)text
+{
+  NSString *pattern = @"[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}";
+  NSRegularExpression *regex = [[NSRegularExpression alloc] initWithPattern:pattern options:NSRegularExpressionCaseInsensitive error:nil];
+  NSUInteger matches = [regex numberOfMatchesInString:text options:0 range:NSMakeRange(0, [text length])];
+  return matches > 0;
 }
 
 @end

@@ -69,6 +69,12 @@ NS_EXTENSION_UNAVAILABLE_IOS("Not available in app extension")
 /*! The AppLink to navigate to */
 @property (nonatomic, strong, readonly) FBSDKAppLink *appLink;
 
+/*!
+ Return navigation type for current instance.
+ No-side-effect version of navigate:
+ */
+@property (nonatomic, readonly) FBSDKAppLinkNavigationType navigationType;
+
 /*! Creates an AppLinkNavigation with the given link, extras, and App Link data */
 + (instancetype)navigationWithAppLink:(FBSDKAppLink *)appLink
                                extras:(NSDictionary<NSString *, id> *)extras
@@ -102,12 +108,6 @@ NS_EXTENSION_UNAVAILABLE_IOS("Not available in app extension")
  internal web view instead of going straight to the browser for regular links.)
  */
 + (FBSDKAppLinkNavigationType)navigationTypeForLink:(FBSDKAppLink *)link;
-
-/*!
- Return navigation type for current instance.
- No-side-effect version of navigate:
- */
-- (FBSDKAppLinkNavigationType)navigationType;
 
 /*! Navigates to a URL (an asynchronous action) and returns a FBSDKNavigationType */
 + (void)navigateToURL:(NSURL *)destination handler:(FBSDKAppLinkNavigationHandler)handler;

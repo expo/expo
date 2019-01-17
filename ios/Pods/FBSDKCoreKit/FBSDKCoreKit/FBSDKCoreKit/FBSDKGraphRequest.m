@@ -149,8 +149,10 @@ static NSString *const kPostHTTPMethod = @"POST";
                   forBatch:(BOOL)forBatch {
   params = [self preprocessParams: params];
 
-  NSCharacterSet *urlAllowedSet = [NSCharacterSet URLFragmentAllowedCharacterSet];
-  NSURL *parsedURL = [NSURL URLWithString:[baseUrl stringByAddingPercentEncodingWithAllowedCharacters:urlAllowedSet]];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+  NSURL *parsedURL = [NSURL URLWithString:[baseUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+#pragma clang pop
 
   if ([httpMethod isEqualToString:kPostHTTPMethod] && !forBatch) {
     return baseUrl;
@@ -175,7 +177,7 @@ static NSString *const kPostHTTPMethod = @"POST";
   NSString *debugValue = [FBSDKSettings graphAPIDebugParamValue];
   if (debugValue) {
     NSMutableDictionary *mutableParams = [NSMutableDictionary dictionaryWithDictionary:params];
-    [mutableParams setObject:debugValue forKey:@"debug"];
+    mutableParams[@"debug"] = debugValue;
     return mutableParams;
   }
 
@@ -203,7 +205,7 @@ static NSString *const kPostHTTPMethod = @"POST";
   if (self.HTTPMethod) {
     [result appendFormat:@", HTTPMethod: %@", self.HTTPMethod];
   }
-  [result appendFormat:@", parameters: %@>", [self.parameters description]];
+  [result appendFormat:@", parameters: %@>", self.parameters.description];
   return result;
 }
 

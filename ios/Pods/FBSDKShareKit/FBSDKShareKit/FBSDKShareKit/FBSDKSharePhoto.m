@@ -85,10 +85,10 @@ NSString *const kFBSDKSharePhotoCaptionKey = @"caption";
 - (NSUInteger)hash
 {
   NSUInteger subhashes[] = {
-    [_image hash],
-    [_imageURL hash],
-    [_photoAsset hash],
-    [_caption hash],
+    _image.hash,
+    _imageURL.hash,
+    _photoAsset.hash,
+    _caption.hash,
     (_userGenerated ? 1u : 0u)
   };
   return [FBSDKMath hashWithIntegerArray:subhashes count:sizeof(subhashes) / sizeof(subhashes[0])];
@@ -189,7 +189,7 @@ NSString *const kFBSDKSharePhotoCaptionKey = @"caption";
   return YES;
 }
 
-- (id)initWithCoder:(NSCoder *)decoder
+- (instancetype)initWithCoder:(NSCoder *)decoder
 {
   if ((self = [self init])) {
     _image = [decoder decodeObjectOfClass:[UIImage class] forKey:kFBSDKSharePhotoImageKey];
