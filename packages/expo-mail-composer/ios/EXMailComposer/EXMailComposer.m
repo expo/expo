@@ -92,11 +92,14 @@ EX_EXPORT_METHOD_AS(composeAsync,
         return;
       }
 
-      CFStringRef identifier = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)[path pathExtension], NULL);
-      CFStringRef typeRef = UTTypeCopyPreferredTagWithClass (identifier, kUTTagClassMIMEType);
-      CFRelease(identifier);
-      NSString *mimeType = [NSString stringWithString:(__bridge NSString *)(typeRef)];
-      CFRelease(typeRef);
+      NSString *mimeType = @"application/octet-stream";
+      if ([path pathExtension]) {
+        CFStringRef identifier = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)[path pathExtension], NULL);
+        CFStringRef typeRef = UTTypeCopyPreferredTagWithClass (identifier, kUTTagClassMIMEType);
+        CFRelease(identifier);
+        mimeType = [NSString stringWithString:(__bridge NSString *)(typeRef)];
+        CFRelease(typeRef);
+      }
 
       NSData *fileData = [NSData dataWithContentsOfFile:path];
 
