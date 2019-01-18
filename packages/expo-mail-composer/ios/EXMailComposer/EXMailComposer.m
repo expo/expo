@@ -23,7 +23,7 @@
 
 @implementation EXMailComposer
 
-EX_EXPORT_MODULE(ExponentMailComposer);
+EX_EXPORT_MODULE(ExpoMailComposer);
 
 - (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {

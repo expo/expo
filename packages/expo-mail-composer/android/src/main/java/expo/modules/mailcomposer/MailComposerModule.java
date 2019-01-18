@@ -37,7 +37,7 @@ public class MailComposerModule extends ExportedModule implements LifecycleEvent
 
   @Override
   public String getName() {
-    return "ExponentMailComposer";
+    return "ExpoMailComposer";
   }
 
   @Override
