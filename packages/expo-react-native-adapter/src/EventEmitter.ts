@@ -28,7 +28,7 @@ export class EventEmitter {
   }
 
   addListener<T>(eventName: string, listener: (event: T) => void): Subscription {
-    if (!this._listenerCount && Platform.OS === 'android' && this._nativeModule.startObserving) {
+    if (!this._listenerCount && Platform.OS !== 'ios' && this._nativeModule.startObserving) {
       this._nativeModule.startObserving();
     }
 
@@ -52,7 +52,7 @@ export class EventEmitter {
       `EventEmitter must have a non-negative number of listeners`
     );
 
-    if (!this._listenerCount && Platform.OS === 'android' && this._nativeModule.stopObserving) {
+    if (!this._listenerCount && Platform.OS !== 'ios' && this._nativeModule.stopObserving) {
       this._nativeModule.stopObserving();
     }
   }
@@ -73,7 +73,7 @@ export class EventEmitter {
     // Release closed-over references to the emitter
     subscription.remove = () => {};
 
-    if (!this._listenerCount && Platform.OS === 'android' && this._nativeModule.stopObserving) {
+    if (!this._listenerCount && Platform.OS !== 'ios' && this._nativeModule.stopObserving) {
       this._nativeModule.stopObserving();
     }
   }
