@@ -131,6 +131,7 @@ dependencies {
 
   // Optional universal modules
   compileOnly 'host.exp.exponent:expo-app-auth:2.0.0'
+  compileOnly 'host.exp.exponent:expo-av:1.0.0'
   compileOnly 'host.exp.exponent:expo-image-loader-interface:2.0.0'
   compileOnly 'host.exp.exponent:expo-gl:2.0.0'
   compileOnly 'host.exp.exponent:expo-gl-cpp:2.0.0'
@@ -183,6 +184,7 @@ dependencies {
   api project(':expo-ads-admob')
   api project(':expo-analytics-segment')
   api project(':expo-app-auth')
+  api project(':expo-av')
   api project(':expo-background-fetch')
   api project(':expo-barcode-scanner')
   api project(':expo-barcode-scanner-interface')
@@ -285,15 +287,8 @@ dependencies {
   // debugApi 'com.squareup.leakcanary:leakcanary-android:1.4-beta1'
   releaseApi 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta1'
   api 'commons-io:commons-io:1.4'
-  // Newer version introduces dependency versions conflict
-  // on 'com.android.support:support-annotations'
-  api 'com.google.android.exoplayer:exoplayer:2.6.1'
-  // expolib_v1-extension-okhttp is an exoplayer:extension-okhttp using expolib_v1.okhttp,
-  // created with tools/android-versioning and distributed in expokit-npm-package.
-  api 'expolib_v1.com.google.android.exoplayer:expolib_v1-extension-okhttp:2.6.1@aar'
   api 'me.leolin:ShortcutBadger:1.1.4@aar'
   api 'com.theartofdev.edmodo:android-image-cropper:2.7.0'
-  api 'com.yqritc:android-scalablevideoview:1.0.1'
   api 'commons-codec:commons-codec:1.10'
   api 'net.openid:appauth:0.4.1'
   api('com.airbnb.android:lottie:2.5.5') {
@@ -311,4 +306,8 @@ dependencies {
   // expo-file-system
   api 'com.squareup.okhttp3:okhttp:3.10.0'
   api 'com.squareup.okhttp3:okhttp-urlconnection:3.10.0'
+
+  // expo-av
+  // See explanation in expo-av/build.gradle
+  api 'expolib_v1.com.google.android.exoplayer:expolib_v1-extension-okhttp:2.6.1'
 }

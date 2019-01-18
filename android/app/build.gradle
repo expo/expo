@@ -147,7 +147,6 @@ dependencies {
   implementation 'commons-io:commons-io:1.4'
   implementation 'me.leolin:ShortcutBadger:1.1.4@aar'
   implementation 'com.theartofdev.edmodo:android-image-cropper:2.7.0'
-  implementation 'com.yqritc:android-scalablevideoview:1.0.1'
   implementation 'commons-codec:commons-codec:1.10'
   implementation 'com.segment.analytics.android:analytics:4.3.0'
   implementation 'com.google.zxing:core:3.3.3'
@@ -162,9 +161,6 @@ dependencies {
   implementation 'com.android.support:exifinterface:27.1.1'
   implementation 'com.squareup.okio:okio:1.9.0'
   implementation 'com.facebook.soloader:soloader:0.5.1'
-
-  implementation 'com.google.android.exoplayer:exoplayer:2.6.1'
-  implementation 'expolib_v1.com.google.android.exoplayer:expolib_v1-extension-okhttp:2.6.1@aar'
 
   // expo-file-system
   implementation 'com.squareup.okhttp3:okhttp:3.10.0'
@@ -255,6 +251,7 @@ dependencies {
   // along with references in MainActivity
   api 'host.exp.exponent:expo-ads-admob:2.0.0'
   api 'host.exp.exponent:expo-app-auth:2.0.0'
+  api 'host.exp.exponent:expo-av:1.0.0'
   api 'host.exp.exponent:expo-analytics-segment:2.0.0'
   api 'host.exp.exponent:expo-barcode-scanner-interface:2.0.0'
   api 'host.exp.exponent:expo-barcode-scanner:2.0.0'

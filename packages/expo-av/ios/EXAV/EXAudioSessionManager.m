@@ -2,10 +2,11 @@
 
 #import <AVFoundation/AVFoundation.h>
 
-#import <React/RCTLog.h>
+#import <EXCore/EXDefines.h>
 
-#import "EXAudioSessionManager.h"
-#import "EXUnversioned.h"
+#import <EXAV/EXAudioSessionManager.h>
+
+#import <EXAV/EXAV.h>
 
 NSString * const EXAudioSessionManagerErrorDomain = @"EXAudioSessionManager";
 
@@ -24,6 +25,8 @@ NSString * const EXAudioSessionManagerErrorDomain = @"EXAudioSessionManager";
 @end
 
 @implementation EXAudioSessionManager
+
+EX_REGISTER_SINGLETON_MODULE(AudioSessionManager);
 
 - (instancetype)init
 {
@@ -68,8 +71,16 @@ NSString * const EXAudioSessionManagerErrorDomain = @"EXAudioSessionManager";
 
 #pragma mark - EXAVScopedModuleDelegate
 
++ (NSString *)getExperienceIdFromScopedModule:(id)scopedModule
+{
+  if ([scopedModule respondsToSelector:@selector(experienceId)]) {
+    return [scopedModule experienceId];
+  }
+  return nil;
+}
+
 - (NSError *)setActive:(BOOL)active forScopedModule:(id)scopedModule {
-  NSString *experienceId = [EXScopedEventEmitter getExperienceIdFromEventEmitter:scopedModule];
+  NSString *experienceId = [EXAudioSessionManager getExperienceIdFromScopedModule:scopedModule];
   if (!experienceId) {
     return [self _getNoExperienceIdError];
   }
@@ -89,7 +100,7 @@ NSString * const EXAudioSessionManagerErrorDomain = @"EXAudioSessionManager";
 }
 
 - (NSError *)setCategory:(NSString *)category withOptions:(AVAudioSessionCategoryOptions)options forScopedModule:(id)scopedModule {
-  NSString *experienceId = [EXScopedEventEmitter getExperienceIdFromEventEmitter:scopedModule];
+  NSString *experienceId = [EXAudioSessionManager getExperienceIdFromScopedModule:scopedModule];
   if (!experienceId) {
     return [self _getNoExperienceIdError];
   }
@@ -122,7 +133,7 @@ NSString * const EXAudioSessionManagerErrorDomain = @"EXAudioSessionManager";
 - (void)scopedModuleDidForeground:(id)scopedModule
 {
   _activeScopedModule = scopedModule;
-  NSString *experienceId = [EXScopedEventEmitter getExperienceIdFromEventEmitter:scopedModule];
+  NSString *experienceId = [EXAudioSessionManager getExperienceIdFromScopedModule:scopedModule];
   @synchronized (_allModules) {
     [_allModules setObject:scopedModule forKey:experienceId];
   }
@@ -139,7 +150,7 @@ NSString * const EXAudioSessionManagerErrorDomain = @"EXAudioSessionManager";
     [self scopedModuleDidBackground:scopedModule];
   }
 
-  NSString *experienceId = [EXScopedEventEmitter getExperienceIdFromEventEmitter:scopedModule];
+  NSString *experienceId = [EXAudioSessionManager getExperienceIdFromScopedModule:scopedModule];
   @synchronized (_allModules) {
     if ([_allModules objectForKey:experienceId] == scopedModule) {
       [_allModules removeObjectForKey:experienceId];
@@ -154,7 +165,7 @@ NSString * const EXAudioSessionManagerErrorDomain = @"EXAudioSessionManager";
 
 - (NSError *)_updateSessionConfigurationForScopedModule:(id)scopedModule
 {
-  NSString *experienceId = [EXScopedEventEmitter getExperienceIdFromEventEmitter:scopedModule];
+  NSString *experienceId = [EXAudioSessionManager getExperienceIdFromScopedModule:scopedModule];
 
   AVAudioSession *session = [AVAudioSession sharedInstance];
   NSError *error;
@@ -205,7 +216,7 @@ NSString * const EXAudioSessionManagerErrorDomain = @"EXAudioSessionManager";
 
 - (NSString *)_getRequestedCategoryForScopedModule:(id)scopedModule
 {
-  NSString *experienceId = [EXScopedEventEmitter getExperienceIdFromEventEmitter:scopedModule];
+  NSString *experienceId = [EXAudioSessionManager getExperienceIdFromScopedModule:scopedModule];
   NSString *category = [_moduleCategory objectForKey:experienceId];
   if (category) {
     return category;
@@ -215,7 +226,7 @@ NSString * const EXAudioSessionManagerErrorDomain = @"EXAudioSessionManager";
 
 - (AVAudioSessionCategoryOptions)_getCategoryOptionsForScopedModule:(id)scopedModule
 {
-  NSString *experienceId = [EXScopedEventEmitter getExperienceIdFromEventEmitter:scopedModule];
+  NSString *experienceId = [EXAudioSessionManager getExperienceIdFromScopedModule:scopedModule];
   NSNumber *categoryOptions = [_moduleCategoryOptions objectForKey:experienceId];
   if (categoryOptions) {
     return [categoryOptions unsignedIntegerValue];
