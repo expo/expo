@@ -203,7 +203,7 @@
     <dependency>
       <groupId>com.facebook.android</groupId>
       <artifactId>facebook-android-sdk</artifactId>
-      <version>4.38.1</version>
+      <version>4.39.0</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
