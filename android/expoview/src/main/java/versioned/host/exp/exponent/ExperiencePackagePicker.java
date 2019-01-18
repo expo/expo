@@ -22,6 +22,7 @@ import expo.modules.google.signin.GoogleSignInPackage;
 import expo.modules.localauthentication.LocalAuthenticationPackage;
 import expo.modules.localization.LocalizationPackage;
 import expo.modules.location.LocationPackage;
+import expo.modules.mailcomposer.MailComposerPackage;
 import expo.modules.medialibrary.MediaLibraryPackage;
 import expo.modules.payments.stripe.StripePackage;
 import expo.modules.permissions.PermissionsPackage;
@@ -54,7 +55,8 @@ public class ExperiencePackagePicker {
       new LocalizationPackage(),
       new AppAuthPackage(),
       new TaskManagerPackage(),
-      new BackgroundFetchPackage()
+      new BackgroundFetchPackage(),
+      new MailComposerPackage()
   );
 
   /**
