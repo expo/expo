@@ -115,39 +115,40 @@ EX_EXPORT_METHOD_AS(composeAsync,
 
 - (void)mailComposeController:(MFMailComposeViewController *)controller
           didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error {
-
-  if (self.resolve != nil && self.reject != nil) {
-    if (error != nil) {
-      self.reject(@"E_MAIL_ERROR", @"An error occurred while trying to send the e-mail.", error);
-      self.reject = nil;
-      self.resolve = nil;
-      return;
-    }
-
-    switch (result) {
-      case MFMailComposeResultSent:
-        self.resolve(@{ @"status": @"sent" });
-        break;
-      case MFMailComposeResultSaved:
-        self.resolve(@{ @"status": @"saved" });
-        break;
-      case MFMailComposeResultCancelled:
-        self.resolve(@{ @"status": @"cancelled" });
-        break;
-      case MFMailComposeResultFailed:
-        self.reject(@"E_MAIL_ERROR", @"Something went wrong while trying to send the e-mail.", error);
-        break;
-      default:
-        self.reject(@"E_MAIL_ERROR", @"Something went wrong while trying to send the e-mail.", error);
-        break;
-    }
-
-    self.reject = nil;
-    self.resolve = nil;
-  }
-
+  __weak typeof(self) weakSelf = self;
   dispatch_async(dispatch_get_main_queue(), ^{
-    [controller dismissViewControllerAnimated:YES completion:nil];
+    [controller dismissViewControllerAnimated:YES completion:^{
+      __strong typeof(self) strongSelf = weakSelf;
+      if (strongSelf && strongSelf.resolve != nil && strongSelf.reject != nil) {
+        if (error != nil) {
+          strongSelf.reject(@"E_MAIL_ERROR", @"An error occurred while trying to send the e-mail.", error);
+          strongSelf.reject = nil;
+          strongSelf.resolve = nil;
+          return;
+        }
+
+        switch (result) {
+          case MFMailComposeResultSent:
+            strongSelf.resolve(@{ @"status": @"sent" });
+            break;
+          case MFMailComposeResultSaved:
+            strongSelf.resolve(@{ @"status": @"saved" });
+            break;
+          case MFMailComposeResultCancelled:
+            strongSelf.resolve(@{ @"status": @"cancelled" });
+            break;
+          case MFMailComposeResultFailed:
+            strongSelf.reject(@"E_MAIL_ERROR", @"Something went wrong while trying to send the e-mail.", error);
+            break;
+          default:
+            strongSelf.reject(@"E_MAIL_ERROR", @"Something went wrong while trying to send the e-mail.", error);
+            break;
+        }
+
+        strongSelf.reject = nil;
+        strongSelf.resolve = nil;
+      }
+    }];
   });
 }
 
