@@ -8,6 +8,10 @@ class GlobalPlatformEmitter extends EventEmitter {
   constructor() {
     super(RCTDeviceEventEmitter.sharedSubscriber);
   }
+
+  emit(eventName: string, props: any): void {
+    super.emit(eventName, props);
+  }
 }
 
 export default new GlobalPlatformEmitter();

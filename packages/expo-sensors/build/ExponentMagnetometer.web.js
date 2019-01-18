@@ -5,7 +5,5 @@ export default {
     async isAvailableAsync() {
         return false;
     },
-    startObserving() { },
-    stopObserving() { },
 };
 //# sourceMappingURL=ExponentMagnetometer.web.js.map
