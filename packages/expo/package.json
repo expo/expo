@@ -63,6 +63,7 @@
     "expo-app-auth": "~2.0.0",
     "expo-app-loader-provider": "~1.0.0",
     "expo-asset": "~2.0.0",
+    "expo-av": "~1.0.0",
     "expo-background-fetch": "~1.0.0",
     "expo-barcode-scanner": "~2.0.0",
     "expo-barcode-scanner-interface": "~2.0.0",

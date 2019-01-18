@@ -43,7 +43,7 @@ public class ArgumentsHelper {
       default:
         // JS argument is not null, however we can't recognize the type.
         throw new RuntimeException(
-                "Don't know how to convert React Native argument of type " + argument.getType() + " to native."
+            "Don't know how to convert React Native argument of type " + argument.getType() + " to native."
         );
     }
   }

@@ -119,8 +119,11 @@ static dispatch_once_t selectorRegularExpressionOnceToken = 0;
   return [selectorRegularExpression stringByReplacingMatchesInString:nameString options:0 range:NSMakeRange(0, [nameString length]) withTemplate:@""];
 }
 
+static const NSNumber *trueValue;
+
 - (void)callExportedMethod:(NSString *)methodName withArguments:(NSArray *)arguments resolver:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject
 {
+  trueValue = [NSNumber numberWithBool:YES];
   const NSString *moduleName = [[self class] exportedModuleName];
   NSString *methodDeclaration = _exportedMethods[methodName];
   if (methodDeclaration == nil) {
