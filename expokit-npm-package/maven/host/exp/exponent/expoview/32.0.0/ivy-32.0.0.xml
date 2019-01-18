@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-  <info organisation="host.exp.exponent" module="expoview" revision="32.0.0" status="integration" publication="20190116150515"/>
+  <info organisation="host.exp.exponent" module="expoview" revision="32.0.0" status="integration" publication="20190118104913"/>
   <configurations>
     <conf name="_internal_aapt2_binary" visibility="private" transitive="false"/>
     <conf name="androidApis" visibility="public"/>
@@ -146,7 +146,7 @@
     <dependency org="com.crashlytics.sdk.android" name="crashlytics" rev="2.5.5" conf="api-&gt;default">
       <artifact name="crashlytics" type="aar" ext="aar" conf="api"/>
     </dependency>
-    <dependency org="com.facebook.android" name="facebook-android-sdk" rev="4.38.1" conf="api-&gt;default"/>
+    <dependency org="com.facebook.android" name="facebook-android-sdk" rev="4.39.0" conf="api-&gt;default"/>
     <dependency org="com.facebook.android" name="audience-network-sdk" rev="4.99.0" conf="api-&gt;default">
       <exclude org="*" module="play-services-ads"/>
     </dependency>

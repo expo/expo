@@ -25,15 +25,14 @@
 
 - (instancetype)initWithJSON:(NSDictionary *)dict {
   if (self = [super init]) {
-    _name = [[dict objectForKey:CODELESS_MAPPING_PARAMETER_NAME_KEY] copy];
-    _value = [[dict objectForKey:CODELESS_MAPPING_PARAMETER_VALUE_KEY] copy];
-    _pathType = [[dict objectForKey:CODELESS_MAPPING_PATH_TYPE_KEY] copy];
+    _name = [dict[CODELESS_MAPPING_PARAMETER_NAME_KEY] copy];
+    _value = [dict[CODELESS_MAPPING_PARAMETER_VALUE_KEY] copy];
+    _pathType = [dict[CODELESS_MAPPING_PATH_TYPE_KEY] copy];
 
-    NSArray *ary = [dict objectForKey:CODELESS_MAPPING_PATH_KEY];
+    NSArray *ary = dict[CODELESS_MAPPING_PATH_KEY];
     NSMutableArray *mut = [NSMutableArray array];
     for (NSDictionary *info in ary) {
-      FBSDKCodelessPathComponent *component = [[FBSDKCodelessPathComponent alloc]
-                                            initWithJSON:info];
+      FBSDKCodelessPathComponent *component = [[FBSDKCodelessPathComponent alloc] initWithJSON:info];
       [mut addObject:component];
     }
     _path = [mut copy];

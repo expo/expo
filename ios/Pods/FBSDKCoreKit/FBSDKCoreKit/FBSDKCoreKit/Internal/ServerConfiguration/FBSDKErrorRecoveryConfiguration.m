@@ -54,7 +54,7 @@
 
   return [self initWithRecoveryDescription:description
                         optionDescriptions:options
-                                  category:[category unsignedIntegerValue]
+                                  category:category.unsignedIntegerValue
                         recoveryActionName:action];
 }
 

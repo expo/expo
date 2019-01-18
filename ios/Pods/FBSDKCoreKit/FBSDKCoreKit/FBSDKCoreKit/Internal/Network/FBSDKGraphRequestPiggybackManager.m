@@ -31,7 +31,7 @@ static int const FBSDKTokenRefreshRetrySeconds = 60 * 60;           // hour
     BOOL safeForPiggyback = YES;
     for (FBSDKGraphRequestMetadata *metadata in connection.requests) {
       if (![metadata.request.version isEqualToString:[FBSDKSettings graphAPIVersion]] ||
-          [metadata.request hasAttachments]) {
+          metadata.request.hasAttachments) {
         safeForPiggyback = NO;
         break;
       }
@@ -57,19 +57,19 @@ static int const FBSDKTokenRefreshRetrySeconds = 60 * 60;           // hour
       FBSDKAccessToken *currentToken = [FBSDKAccessToken currentAccessToken];
       NSDate *expirationDate = currentToken.expirationDate;
       if (expirationDateNumber) {
-        expirationDate = ([expirationDateNumber doubleValue] > 0 ?
-                          [NSDate dateWithTimeIntervalSince1970:[expirationDateNumber doubleValue]] :
+        expirationDate = (expirationDateNumber.doubleValue > 0 ?
+                          [NSDate dateWithTimeIntervalSince1970:expirationDateNumber.doubleValue] :
                           [NSDate distantFuture]);
       }
       NSDate *dataExpirationDate = currentToken.dataAccessExpirationDate;
       if (dataAccessExpirationDateNumber) {
-            dataExpirationDate = ([dataAccessExpirationDateNumber doubleValue] > 0 ?
-                              [NSDate dateWithTimeIntervalSince1970:[dataAccessExpirationDateNumber doubleValue]] :
+            dataExpirationDate = (dataAccessExpirationDateNumber.doubleValue > 0 ?
+                              [NSDate dateWithTimeIntervalSince1970:dataAccessExpirationDateNumber.doubleValue] :
                               [NSDate distantFuture]);
       }
       FBSDKAccessToken *refreshedToken = [[FBSDKAccessToken alloc] initWithTokenString:tokenString ?: currentToken.tokenString
-                                                                           permissions:[(permissions ?: currentToken.permissions) allObjects]
-                                                                   declinedPermissions:[(declinedPermissions ?: currentToken.declinedPermissions) allObjects]
+                                                                           permissions:(permissions ?: currentToken.permissions).allObjects
+                                                                   declinedPermissions:(declinedPermissions ?: currentToken.declinedPermissions).allObjects
                                                                                  appID:currentToken.appID
                                                                                 userID:currentToken.userID
                                                                         expirationDate:expirationDate
@@ -135,7 +135,7 @@ static int const FBSDKTokenRefreshRetrySeconds = 60 * 60;           // hour
 
 + (void)addServerConfigurationPiggyback:(FBSDKGraphRequestConnection *)connection
 {
-  if (![[FBSDKServerConfigurationManager cachedServerConfiguration] isDefaults]
+  if (![FBSDKServerConfigurationManager cachedServerConfiguration].isDefaults
       && [[NSDate date] timeIntervalSinceDate:[FBSDKServerConfigurationManager cachedServerConfiguration].timestamp]
       < FBSDK_SERVER_CONFIGURATION_MANAGER_CACHE_TIMEOUT) {
     return;

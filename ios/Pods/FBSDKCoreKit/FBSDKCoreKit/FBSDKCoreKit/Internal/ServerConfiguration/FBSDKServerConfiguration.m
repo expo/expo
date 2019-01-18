@@ -157,12 +157,12 @@ implicitPurchaseLoggingEnabled:(BOOL)implicitPurchaseLoggingEnabled
 - (BOOL)_useFeatureWithKey:(NSString *)key dialogName:(NSString *)dialogName
 {
   if ([dialogName isEqualToString:FBSDKDialogConfigurationNameLogin]) {
-    return [(NSNumber *)(_dialogFlows[dialogName][key] ?:
-                         _dialogFlows[FBSDKDialogConfigurationNameDefault][key]) boolValue];
+    return ((NSNumber *)(_dialogFlows[dialogName][key] ?:
+                         _dialogFlows[FBSDKDialogConfigurationNameDefault][key])).boolValue;
   } else {
-    return [(NSNumber *)(_dialogFlows[dialogName][key] ?:
+    return ((NSNumber *)(_dialogFlows[dialogName][key] ?:
                          _dialogFlows[FBSDKDialogConfigurationNameSharing][key] ?:
-                         _dialogFlows[FBSDKDialogConfigurationNameDefault][key]) boolValue];
+                         _dialogFlows[FBSDKDialogConfigurationNameDefault][key])).boolValue;
   }
 }
 

@@ -5,7 +5,7 @@ import { ScrollView, StyleSheet, PixelRatio } from 'react-native';
 import ListButton from '../../components/ListButton';
 import HeadingText from '../../components/HeadingText';
 
-import Player from './Player';
+import Player from './AudioPlayer';
 import AudioModeSelector from './AudioModeSelector';
 
 export default class AuthSessionScreen extends React.Component {
@@ -44,24 +44,6 @@ export default class AuthSessionScreen extends React.Component {
 const styles = StyleSheet.create({
   contentContainer: {
     padding: 10,
-  },
-  text: {
-    marginVertical: 15,
-    marginHorizontal: 10,
-  },
-  faintText: {
-    color: '#888',
-    marginHorizontal: 30,
-  },
-  oopsTitle: {
-    fontSize: 25,
-    marginBottom: 5,
-    textAlign: 'center',
-  },
-  oopsText: {
-    textAlign: 'center',
-    marginTop: 10,
-    marginHorizontal: 30,
   },
   player: {
     borderBottomWidth: 1.0 / PixelRatio.get(),

@@ -20,6 +20,7 @@ import expo.core.interfaces.ModuleRegistryConsumer;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.utils.ScopedContext;
+import versioned.host.exp.exponent.modules.universal.av.SharedCookiesDataSourceFactoryProvider;
 import versioned.host.exp.exponent.modules.universal.sensors.ScopedAccelerometerService;
 import versioned.host.exp.exponent.modules.universal.sensors.ScopedGravitySensorService;
 import versioned.host.exp.exponent.modules.universal.sensors.ScopedGyroscopeService;
@@ -46,6 +47,7 @@ public class ExpoModuleRegistryAdapter extends ModuleRegistryAdapter implements 
     moduleRegistry.registerInternalModule(new ScopedMagnetometerService(experienceId));
     moduleRegistry.registerInternalModule(new ScopedMagnetometerUncalibratedService(experienceId));
     moduleRegistry.registerInternalModule(new ScopedRotationVectorSensorService(experienceId));
+    moduleRegistry.registerInternalModule(new SharedCookiesDataSourceFactoryProvider());
 
     // Overriding expo-permissions/PermissionsService -- binding checks with kernel services
     moduleRegistry.registerInternalModule(new PermissionsServiceBinding(scopedContext, experienceId));

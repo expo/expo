@@ -17,7 +17,7 @@ import ImagePreview from '../screens/Reanimated/ImagePreviewScreen';
 import Screens from '../screens/Screens';
 import SVGExample from '../screens/SVG/SVGExampleScreen';
 import SVG from '../screens/SVG/SVGScreen';
-import Video from '../screens/VideoScreen';
+import Video from '../screens/AV/VideoScreen';
 import createStackNavigator from './createStackNavigator';
 import StackConfig from './StackConfig';
 

@@ -46,7 +46,7 @@ static void FBSDKLoginRequestMeAndPermissions(FBSDKLoginCompletionParameters *pa
   [connection addRequest:userIDRequest completionHandler:^(FBSDKGraphRequestConnection *requestConnection,
                                                            id result,
                                                            NSError *error) {
-    parameters.userID = [result objectForKey:@"id"];
+    parameters.userID = result[@"id"];
     if (error) {
       parameters.error = error;
     }
@@ -104,8 +104,8 @@ static void FBSDKLoginRequestMeAndPermissions(FBSDKLoginCompletionParameters *pa
 @implementation FBSDKLoginURLCompleter
 {
   FBSDKLoginCompletionParameters *_parameters;
-  id<NSObject> _observer
-  ;  BOOL _performExplicitFallback;
+  id<NSObject> _observer;
+  BOOL _performExplicitFallback;
 }
 
 - (instancetype)initWithURLParameters:(NSDictionary *)parameters appID:(NSString *)appID
@@ -182,8 +182,8 @@ static void FBSDKLoginRequestMeAndPermissions(FBSDKLoginCompletionParameters *pa
 
   NSString *expirationDateString = parameters[@"expires"] ?: parameters[@"expires_at"];
   NSDate *expirationDate = [NSDate distantFuture];
-  if (expirationDateString && [expirationDateString doubleValue] > 0) {
-    expirationDate = [NSDate dateWithTimeIntervalSince1970:[expirationDateString doubleValue]];
+  if (expirationDateString && expirationDateString.doubleValue > 0) {
+    expirationDate = [NSDate dateWithTimeIntervalSince1970:expirationDateString.doubleValue];
   } else if (parameters[@"expires_in"] && [parameters[@"expires_in"] integerValue] > 0) {
     expirationDate = [NSDate dateWithTimeIntervalSinceNow:[parameters[@"expires_in"] integerValue]];
   }

@@ -64,7 +64,7 @@ typedef NS_ENUM(NSUInteger, FBCodelessClassBitmask) {
   // children of window should be viewcontroller
   if ([obj isKindOfClass:[UIWindow class]]) {
     UIViewController *rootVC = ((UIWindow *)obj).rootViewController;
-    NSArray *subviews = [(UIWindow *)obj subviews];
+    NSArray<UIView *> *subviews = ((UIWindow *)obj).subviews;
     for (UIView *child in subviews) {
       if (child != rootVC.view) {
         UIViewController *vc = [FBSDKViewHierarchy getParentViewController:child];
@@ -80,7 +80,7 @@ typedef NS_ENUM(NSUInteger, FBCodelessClassBitmask) {
       }
     }
   } else if ([obj isKindOfClass:[UIView class]]) {
-    NSArray *subviews = [[(UIView *)obj subviews] copy];
+    NSArray<UIView *> *subviews = [((UIView *)obj).subviews copy];
     for (UIView *child in subviews) {
       UIViewController *vc = [FBSDKViewHierarchy getParentViewController:child];
       if (vc && vc.view == child) {
@@ -90,8 +90,8 @@ typedef NS_ENUM(NSUInteger, FBCodelessClassBitmask) {
       }
     }
   } else if ([obj isKindOfClass:[UINavigationController class]]) {
-    UIViewController *vc = [(UINavigationController*)obj visibleViewController];
-    UIViewController *tc = [(UINavigationController*)obj topViewController];
+    UIViewController *vc = ((UINavigationController*)obj).visibleViewController;
+    UIViewController *tc = ((UINavigationController*)obj).topViewController;
     NSArray *nextChildren = [FBSDKViewHierarchy getChildren:((UIViewController*)obj).view];
     for (NSObject *child in nextChildren) {
       if (tc && [self isView:child superViewOfView:tc.view]) {
@@ -115,7 +115,7 @@ typedef NS_ENUM(NSUInteger, FBCodelessClassBitmask) {
       [children addObject:vc];
     }
   } else if ([obj isKindOfClass:[UITabBarController class]]) {
-    UIViewController *vc = [(UITabBarController *)obj selectedViewController];
+    UIViewController *vc = ((UITabBarController *)obj).selectedViewController;
     NSArray *nextChildren = [FBSDKViewHierarchy getChildren:((UIViewController*)obj).view];
     for (NSObject *child in nextChildren) {
       if (vc && [self isView:child superViewOfView:vc.view]) {
@@ -140,7 +140,7 @@ typedef NS_ENUM(NSUInteger, FBCodelessClassBitmask) {
         [children addObjectsFromArray:nextChildren];
       }
     }
-    for (NSObject *child in [vc childViewControllers]) {
+    for (NSObject *child in vc.childViewControllers) {
       [children addObject:child];
     }
     UIViewController *presentedVC = vc.presentedViewController;
@@ -154,7 +154,7 @@ typedef NS_ENUM(NSUInteger, FBCodelessClassBitmask) {
 + (NSObject *)getParent:(NSObject *)obj
 {
   if ([obj isKindOfClass:[UIView class]]) {
-    UIView *superview = [(UIView *)obj superview];
+    UIView *superview = ((UIView *)obj).superview;
     UIViewController *superviewViewController = [FBSDKViewHierarchy
                                                  getParentViewController:superview];
     if (superviewViewController && superviewViewController.view == superview) {
@@ -166,10 +166,10 @@ typedef NS_ENUM(NSUInteger, FBCodelessClassBitmask) {
   }
   else if ([obj isKindOfClass:[UIViewController class]]) {
     UIViewController *vc = (UIViewController *)obj;
-    UIViewController *parentVC = [vc parentViewController];
-    UIViewController *presentingVC = [vc presentingViewController];
-    UINavigationController *nav = [vc navigationController];
-    UITabBarController *tab = [vc tabBarController];
+    UIViewController *parentVC = vc.parentViewController;
+    UIViewController *presentingVC = vc.presentingViewController;
+    UINavigationController *nav = vc.navigationController;
+    UITabBarController *tab = vc.tabBarController;
 
     if (nav) {
       return nav;
@@ -183,7 +183,7 @@ typedef NS_ENUM(NSUInteger, FBCodelessClassBitmask) {
       return parentVC;
     }
 
-    if (presentingVC && [presentingVC presentedViewController] == vc) {
+    if (presentingVC && presentingVC.presentedViewController == vc) {
       return presentingVC;
     }
 
@@ -229,40 +229,35 @@ typedef NS_ENUM(NSUInteger, FBCodelessClassBitmask) {
 + (NSDictionary<NSString *, id> *)getAttributesOf:(NSObject *)obj parent:(NSObject *)parent
 {
   NSMutableDictionary *componentInfo = [NSMutableDictionary dictionary];
-  [componentInfo setObject:NSStringFromClass([obj class])
-                    forKey:CODELESS_MAPPING_CLASS_NAME_KEY];
+  componentInfo[CODELESS_MAPPING_CLASS_NAME_KEY] = NSStringFromClass([obj class]);
 
   NSString *text = [FBSDKViewHierarchy getText:obj];
   if (text) {
-    [componentInfo setObject:text forKey:CODELESS_MAPPING_TEXT_KEY];
+    componentInfo[CODELESS_MAPPING_TEXT_KEY] = text;
   }
 
   NSString *hint = [FBSDKViewHierarchy getHint:obj];
   if (hint) {
-    [componentInfo setObject:hint forKey:CODELESS_MAPPING_HINT_KEY];
+    componentInfo[CODELESS_MAPPING_HINT_KEY] = hint;
   }
 
   NSIndexPath *indexPath = [FBSDKViewHierarchy getIndexPath:obj];
   if (indexPath) {
-    [componentInfo setObject:@(indexPath.section)
-                      forKey:CODELESS_MAPPING_SECTION_KEY];
-    [componentInfo setObject:@(indexPath.row)
-                      forKey:CODELESS_MAPPING_ROW_KEY];
+    componentInfo[CODELESS_MAPPING_SECTION_KEY] = @(indexPath.section);
+    componentInfo[CODELESS_MAPPING_ROW_KEY] = @(indexPath.row);
   }
 
   if (parent != nil) {
     NSArray *children = [FBSDKViewHierarchy getChildren:parent];
     NSUInteger index = [children indexOfObject:obj];
     if (index != NSNotFound) {
-      [componentInfo setObject:@(index)
-                        forKey:CODELESS_MAPPING_INDEX_KEY];
+      componentInfo[CODELESS_MAPPING_INDEX_KEY] = @(index);
     }
   } else {
-    [componentInfo setObject:@0 forKey:CODELESS_MAPPING_INDEX_KEY];
+    componentInfo[CODELESS_MAPPING_INDEX_KEY] = @0;
   }
 
-  [componentInfo setObject:@([FBSDKViewHierarchy getTag:obj])
-                    forKey:CODELESS_VIEW_TREE_TAG_KEY];
+  componentInfo[CODELESS_VIEW_TREE_TAG_KEY] = @([FBSDKViewHierarchy getTag:obj]);
 
   return [componentInfo copy];
 }
@@ -280,17 +275,16 @@ typedef NS_ENUM(NSUInteger, FBCodelessClassBitmask) {
   NSMutableDictionary *result = [NSMutableDictionary dictionaryWithDictionary:simpleAttributes];
 
   NSString *className = NSStringFromClass([obj class]);
-  [result setObject:className forKey:CODELESS_VIEW_TREE_CLASS_NAME_KEY];
+  result[CODELESS_VIEW_TREE_CLASS_NAME_KEY] = className;
 
   NSUInteger classBitmask = [FBSDKViewHierarchy getClassBitmask:obj];
-  [result setObject:[NSString stringWithFormat:@"%lu", (unsigned long)classBitmask]
-             forKey:CODELESS_VIEW_TREE_CLASS_TYPE_BIT_MASK_KEY];
+  result[CODELESS_VIEW_TREE_CLASS_TYPE_BIT_MASK_KEY] = [NSString stringWithFormat:@"%lu", (unsigned long)classBitmask];
 
   if ([obj isKindOfClass:[UIControl class]]) {
     // Get actions of UIControl
     UIControl *control = (UIControl *)obj;
     NSMutableSet *actions = [NSMutableSet set];
-    NSSet *targets = [control allTargets];
+    NSSet *targets = control.allTargets;
     for (NSObject *target in targets) {
       NSArray *ary = [control actionsForTarget:target forControlEvent:0];
       if (ary.count > 0) {
@@ -298,16 +292,15 @@ typedef NS_ENUM(NSUInteger, FBCodelessClassBitmask) {
       }
     }
     if (targets.count > 0) {
-      [result setObject:[actions allObjects] forKey:CODELESS_VIEW_TREE_ACTIONS_KEY];
+      result[CODELESS_VIEW_TREE_ACTIONS_KEY] = actions.allObjects;
     }
   }
 
-  [result setObject:[FBSDKViewHierarchy getDimensionOf:obj]
-             forKey:CODELESS_VIEW_TREE_DIMENSION_KEY];
+  result[CODELESS_VIEW_TREE_DIMENSION_KEY] = [FBSDKViewHierarchy getDimensionOf:obj];
 
   NSDictionary<NSString *, id> *textStyle = [FBSDKViewHierarchy getTextStyle:obj];
   if (textStyle) {
-    [result setObject:textStyle forKey:CODELESS_VIEW_TREE_TEXT_STYLE_KEY];
+    result[CODELESS_VIEW_TREE_TEXT_STYLE_KEY] = textStyle;
   }
 
   return result;
@@ -333,14 +326,14 @@ typedef NS_ENUM(NSUInteger, FBCodelessClassBitmask) {
   NSString *text = nil;
 
   if ([obj isKindOfClass:[UIButton class]]) {
-    text = [(UIButton *)obj currentTitle];
+    text = ((UIButton *)obj).currentTitle;
   } else if ([obj isKindOfClass:[UITextView class]] ||
              [obj isKindOfClass:[UITextField class]] ||
              [obj isKindOfClass:[UILabel class]]) {
-    text = [(UILabel *)obj text];
+    text = ((UILabel *)obj).text;
   } else if ([obj isKindOfClass:[UIPickerView class]]) {
     UIPickerView *picker = (UIPickerView *)obj;
-    NSInteger sections = [picker numberOfComponents];
+    NSInteger sections = picker.numberOfComponents;
     NSMutableArray *titles = [NSMutableArray array];
 
     for (NSInteger i = 0; i < sections; i++) {
@@ -351,9 +344,9 @@ typedef NS_ENUM(NSUInteger, FBCodelessClassBitmask) {
         title = [picker.delegate pickerView:picker titleForRow:row forComponent:i];
       } else if ([picker.delegate
                   respondsToSelector:@selector(pickerView:attributedTitleForRow:forComponent:)]) {
-        title = [[picker.delegate
-                  pickerView:picker
-                  attributedTitleForRow:row forComponent:i] string];
+        title = [picker.delegate
+                 pickerView:picker
+                 attributedTitleForRow:row forComponent:i].string;
       }
       [titles addObject:title ?: @""];
     }
@@ -366,23 +359,23 @@ typedef NS_ENUM(NSUInteger, FBCodelessClassBitmask) {
   } else if ([obj isKindOfClass:[UIDatePicker class]]) {
     UIDatePicker *picker = (UIDatePicker *)obj;
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-    [formatter setDateFormat:@"yyyy-MM-dd HH:mm:ssZ"];
+    formatter.dateFormat = @"yyyy-MM-dd HH:mm:ssZ";
     text = [formatter stringFromDate:picker.date];
   } else if ([obj isKindOfClass:objc_lookUpClass("RCTTextView")]) {
     NSTextStorage *textStorage = [FBSDKAppEventsUtility getVariable:@"_textStorage"
                                                        fromInstance:obj];
     if (textStorage) {
-      text = [textStorage string];
+      text = textStorage.string;
     }
   } else if ([obj isKindOfClass:objc_lookUpClass("RCTBaseTextInputView")]) {
     NSAttributedString *attributedText = [FBSDKAppEventsUtility getVariable:@"attributedText"
                                                                fromInstance:obj];
-    text = [attributedText string];
+    text = attributedText.string;
   }
 
   if ([obj conformsToProtocol:@protocol(UITextInput)]) {
     id<UITextInput> input = (id<UITextInput>)obj;
-    if ([input isSecureTextEntry]) {
+    if (input.secureTextEntry) {
       text = nil;
     } else {
       switch (input.keyboardType) {
@@ -393,6 +386,10 @@ typedef NS_ENUM(NSUInteger, FBCodelessClassBitmask) {
         default: break;
       }
     }
+  }
+
+  if ([FBSDKAppEventsUtility isSensitiveUserData:text]) {
+    return nil;
   }
 
   return text.length > 0 ? text : nil;
@@ -432,9 +429,9 @@ typedef NS_ENUM(NSUInteger, FBCodelessClassBitmask) {
   NSString *hint = nil;
 
   if ([obj isKindOfClass:[UITextField class]]) {
-    hint = [(UITextField *)obj placeholder];
+    hint = ((UITextField *)obj).placeholder;
   } else if ([obj isKindOfClass:[UINavigationController class]]) {
-    UIViewController *top = [(UINavigationController *)obj topViewController];
+    UIViewController *top = ((UINavigationController *)obj).topViewController;
     if (top) {
       hint = NSStringFromClass([top class]);
     }
@@ -467,12 +464,8 @@ typedef NS_ENUM(NSUInteger, FBCodelessClassBitmask) {
       bitmask |= FBCodelessClassBitmaskLabel;
     }
 
-    if ([(UIView *)obj isAccessibilityElement] &&
-        [(UIView *)obj accessibilityTraits] == UIAccessibilityTraitButton) {
-      Class classRCTView = objc_lookUpClass(ReactNativeClassRCTView);
-      if (classRCTView && [obj isKindOfClass:classRCTView]) {
-        bitmask |= FBCodelessClassBitmaskReactNativeButton;
-      }
+    if ([FBSDKViewHierarchy isRCTButton:((UIView *)obj)]) {
+      bitmask |= FBCodelessClassBitmaskReactNativeButton;
     }
 
     // Check selector of UITextInput protocol instead of checking conformsToProtocol
@@ -486,6 +479,48 @@ typedef NS_ENUM(NSUInteger, FBCodelessClassBitmask) {
   return bitmask;
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wundeclared-selector"
++ (BOOL)isRCTButton:(UIView *)view
+{
+  if (view == nil) {
+    return NO;
+  }
+
+  Class classRCTView = objc_lookUpClass(ReactNativeClassRCTView);
+  if (classRCTView && [view isKindOfClass:classRCTView] &&
+      [view respondsToSelector:@selector(reactTagAtPoint:)] &&
+      [view respondsToSelector:@selector(reactTag)] &&
+      view.userInteractionEnabled) {
+    // We check all its subviews locations and the view is clickable if there exists one that mathces reactTagAtPoint
+    for (UIView *subview in view.subviews) {
+      if (subview && ![subview isKindOfClass:classRCTView]) {
+        NSNumber *reactTag = [view performSelector:@selector(reactTagAtPoint:)
+                                        withObject:[NSValue valueWithCGPoint:subview.frame.origin]];
+        NSNumber *subviewReactTag = [FBSDKViewHierarchy getViewReactTag:subview];
+        if (reactTag != nil && subviewReactTag != nil && [reactTag isEqualToNumber:subviewReactTag]) {
+          return YES;
+        }
+      }
+    }
+  }
+
+  return NO;
+}
+
++ (NSNumber *)getViewReactTag:(UIView *)view
+{
+  if (view != nil && [view respondsToSelector:@selector(reactTag)]) {
+    NSNumber *reactTag = [view performSelector:@selector(reactTag)];
+    if (reactTag != nil && [reactTag isKindOfClass:[NSNumber class]]) {
+      return reactTag;
+    }
+  }
+
+  return nil;
+}
+#pragma clang diagnostic pop
+
 + (BOOL)isView:(NSObject *)obj1 superViewOfView:(UIView *)obj2
 {
   if (![obj1 isKindOfClass:[UIView class]]
@@ -496,7 +531,7 @@ typedef NS_ENUM(NSUInteger, FBCodelessClassBitmask) {
   UIView *view2 = (UIView *)obj2;
   UIView *superview = view2;
   while (superview) {
-    superview = [superview superview];
+    superview = superview.superview;
     if (superview == view1) {
       return YES;
     }
@@ -510,7 +545,7 @@ typedef NS_ENUM(NSUInteger, FBCodelessClassBitmask) {
   UIResponder *parentResponder = view;
 
   while (parentResponder) {
-    parentResponder = [parentResponder nextResponder];
+    parentResponder = parentResponder.nextResponder;
     if ([parentResponder isKindOfClass:[UIViewController class]]) {
       return (UIViewController *)parentResponder;
     }
@@ -526,7 +561,7 @@ typedef NS_ENUM(NSUInteger, FBCodelessClassBitmask) {
     if ([superview isKindOfClass:[UITableView class]]) {
       return (UITableView *)superview;
     }
-    superview = [superview superview];
+    superview = superview.superview;
   }
   return nil;
 }
@@ -538,7 +573,7 @@ typedef NS_ENUM(NSUInteger, FBCodelessClassBitmask) {
     if ([superview isKindOfClass:[UICollectionView class]]) {
       return (UICollectionView *)superview;
     }
-    superview = [superview superview];
+    superview = superview.superview;
   }
   return nil;
 }
