@@ -46,6 +46,7 @@
     "regl": "^1.3.0",
     "three": "^0.88.0",
     "url": "^0.11.0",
+    "url-loader": "^1.1.2",
     "uuid": "^3.1.0",
     "victory-native": "^30.4.0",
     "webpack-manifest-plugin": "^2.0.4"
