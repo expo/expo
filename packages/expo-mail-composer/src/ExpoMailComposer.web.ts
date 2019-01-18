@@ -13,7 +13,7 @@ function checkValue(value?: string[] | string): string | null {
 
 export default {
   get name(): string {
-    return 'ExponentMailComposer';
+    return 'ExpoMailComposer';
   },
   async composeAsync(options: ComposeOptions): Promise<ComposeResult> {
     const email = filter({
