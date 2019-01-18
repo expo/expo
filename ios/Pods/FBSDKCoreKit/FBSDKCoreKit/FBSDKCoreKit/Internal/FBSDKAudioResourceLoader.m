@@ -79,7 +79,7 @@
 {
   NSURL *fileURL = [self _fileURL:errorRef];
 
-  if (![_fileManager fileExistsAtPath:[fileURL path]]) {
+  if (![_fileManager fileExistsAtPath:fileURL.path]) {
     NSData *data = [[self class] data];
     if (![data writeToURL:fileURL options:NSDataWritingAtomic error:errorRef]) {
       return NO;

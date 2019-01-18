@@ -69,7 +69,7 @@
  @see [FBSDKSharing validateWithError:]
  @return YES if the receiver can send, otherwise NO.
  */
-- (BOOL)canShare;
+@property (nonatomic, readonly) BOOL canShare;
 
 /**
   Creates an User Owned Open Graph object without an action.

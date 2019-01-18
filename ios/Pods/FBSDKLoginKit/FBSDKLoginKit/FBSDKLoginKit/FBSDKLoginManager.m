@@ -34,6 +34,7 @@ static int const FBClientStateChallengeLength = 20;
 static NSString *const FBSDKExpectedChallengeKey = @"expected_login_challenge";
 static NSString *const FBSDKOauthPath = @"/dialog/oauth";
 static NSString *const SFVCCanceledLogin = @"com.apple.SafariServices.Authentication";
+static NSString *const ASCanceledLogin = @"com.apple.AuthenticationServices.WebAuthenticationSession";
 
 typedef NS_ENUM(NSInteger, FBSDKLoginManagerState) {
   FBSDKLoginManagerStateIdle,
@@ -65,7 +66,7 @@ typedef NS_ENUM(NSInteger, FBSDKLoginManagerState) {
   self = [super init];
   if (self) {
     self.authType = @"rerequest";
-    NSString *keyChainServiceIdentifier = [NSString stringWithFormat:@"com.facebook.sdk.loginmanager.%@", [[NSBundle mainBundle] bundleIdentifier]];
+    NSString *keyChainServiceIdentifier = [NSString stringWithFormat:@"com.facebook.sdk.loginmanager.%@", [NSBundle mainBundle].bundleIdentifier];
     _keychainStore = [[FBSDKKeychainStore alloc] initWithService:keyChainServiceIdentifier accessGroup:nil];
   }
   return self;
@@ -255,8 +256,8 @@ typedef NS_ENUM(NSInteger, FBSDKLoginManagerState) {
 
       if (recentlyGrantedPermissions.count > 0) {
         FBSDKAccessToken *token = [[FBSDKAccessToken alloc] initWithTokenString:tokenString
-                                                                    permissions:[grantedPermissions allObjects]
-                                                            declinedPermissions:[declinedPermissions allObjects]
+                                                                    permissions:grantedPermissions.allObjects
+                                                            declinedPermissions:declinedPermissions.allObjects
                                                                           appID:parameters.appID
                                                                          userID:parameters.userID
                                                                  expirationDate:parameters.expirationDate
@@ -377,7 +378,7 @@ typedef NS_ENUM(NSInteger, FBSDKLoginManagerState) {
 
   [FBSDKInternalUtility dictionary:loginParams setObject:[FBSDKSettings appURLSchemeSuffix] forKey:@"local_client_id"];
   [FBSDKInternalUtility dictionary:loginParams setObject:[FBSDKLoginUtility stringForAudience:self.defaultAudience] forKey:@"default_audience"];
-  [FBSDKInternalUtility dictionary:loginParams setObject:[[permissions allObjects] componentsJoinedByString:@","] forKey:@"scope"];
+  [FBSDKInternalUtility dictionary:loginParams setObject:[permissions.allObjects componentsJoinedByString:@","] forKey:@"scope"];
 
   NSString *expectedChallenge = [FBSDKLoginManager stringForChallenge];
   NSDictionary *state = @{@"challenge": [FBSDKUtility URLEncode:expectedChallenge]};
@@ -423,7 +424,8 @@ typedef NS_ENUM(NSInteger, FBSDKLoginManagerState) {
     if (didPerformLogIn) {
       [self->_logger startAuthMethod:authMethod];
       self->_state = FBSDKLoginManagerStatePerformingLogin;
-    } else if (error && [error.domain isEqualToString:SFVCCanceledLogin]) {
+    } else if ([error.domain isEqualToString:SFVCCanceledLogin] ||
+               [error.domain isEqualToString:ASCanceledLogin]) {
       [self handleImplicitCancelOfLogIn];
     } else {
       if (!error) {
@@ -489,7 +491,9 @@ typedef NS_ENUM(NSInteger, FBSDKLoginManagerState) {
 }
 
 + (NSString *)stringForChallenge {
-  return [FBSDKCrypto randomString:FBClientStateChallengeLength];
+  NSString *challenge = [FBSDKCrypto randomString:FBClientStateChallengeLength];
+
+  return [challenge stringByReplacingOccurrencesOfString:@"+" withString:@"="];
 }
 
 - (void)validateReauthentication:(FBSDKAccessToken *)currentToken withResult:(FBSDKLoginManagerLoginResult *)loginResult
@@ -546,7 +550,7 @@ typedef NS_ENUM(NSInteger, FBSDKLoginManagerState) {
 
   NSDate *start = [NSDate date];
   [[FBSDKApplicationDelegate sharedInstance] openURL:authURL sender:self handler:^(BOOL openedURL, NSError *anError) {
-    [self->_logger logNativeAppDialogResult:openedURL dialogDuration:-[start timeIntervalSinceNow]];
+    [self->_logger logNativeAppDialogResult:openedURL dialogDuration:-start.timeIntervalSinceNow];
     if (handler) {
       handler(openedURL, anError);
     }
@@ -634,8 +638,8 @@ typedef NS_ENUM(NSInteger, FBSDKLoginManagerState) {
         annotation:(id)annotation
 {
   // verify the URL is intended as a callback for the SDK's log in
-  BOOL isFacebookURL = [[url scheme] hasPrefix:[NSString stringWithFormat:@"fb%@", [FBSDKSettings appID]]] &&
-  [[url host] isEqualToString:@"authorize"];
+  BOOL isFacebookURL = [url.scheme hasPrefix:[NSString stringWithFormat:@"fb%@", [FBSDKSettings appID]]] &&
+  [url.host isEqualToString:@"authorize"];
 
   BOOL isExpectedSourceApplication = [sourceApplication hasPrefix:@"com.facebook"] || [sourceApplication hasPrefix:@"com.apple"] || [sourceApplication hasPrefix:@"com.burbn"];
 

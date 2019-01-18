@@ -1,5 +1,7 @@
 # Facebook SDK for iOS
 
+[![Build Status](https://travis-ci.org/facebook/facebook-objc-sdk.svg?branch=master)](https://travis-ci.org/facebook/facebook-objc-sdk)
+
 This open-source library allows you to integrate Facebook into your iOS app.
 
 Learn more about the provided samples, documentation, integrating the SDK into your app, accessing source code, and more at https://developers.facebook.com/docs/ios

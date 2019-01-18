@@ -179,6 +179,18 @@ FOUNDATION_EXPORT NSString *const FBSDKLoggingBehaviorDeveloperErrors;
 + (void)setCodelessDebugLogEnabled:(NSNumber *)CodelessDebugLogEnabled;
 
 /**
+ Flag which controls whether advertiserID could be collected.
+ If not explicitly set, the default is 1 - true
+ */
++ (NSNumber *)advertiserIDCollectionEnabled;
+
+/**
+ Set the flag which controls ontrols whether advertiserID could be collected.
+ @param AdvertiserIDCollectionEnabled Flag value, expressed as a value from 0 - false or 1 - true.
+ */
++ (void)setAdvertiserIDCollectionEnabled:(NSNumber *)AdvertiserIDCollectionEnabled;
+
+/**
   Gets whether data such as that generated through FBSDKAppEvents and sent to Facebook should be restricted from being used for other than analytics and conversions.  Defaults to NO.  This value is stored on the device and persists across app launches.
  */
 + (BOOL)limitEventAndDataUsage;
@@ -196,9 +208,12 @@ FOUNDATION_EXPORT NSString *const FBSDKLoggingBehaviorDeveloperErrors;
 + (NSString *)sdkVersion;
 
 /**
-  Retrieve the current Facebook SDK logging behavior.
+  The current Facebook SDK logging behavior.
  */
-+ (NSSet *)loggingBehavior;
+@property (class, nonatomic, copy) NSSet<NSString *> *loggingBehaviors;
+
++ (NSSet *)loggingBehavior
+DEPRECATED_MSG_ATTRIBUTE("Renamed `loggingBehaviors`");
 
 /**
   Set the current Facebook SDK logging behavior.  This should consist of strings defined as

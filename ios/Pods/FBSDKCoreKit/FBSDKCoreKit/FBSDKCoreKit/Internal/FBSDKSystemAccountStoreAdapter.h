@@ -31,6 +31,28 @@ typedef void (^FBSDKGraphRequestAccessToAccountsHandler)(NSString *oauthToken, N
 @interface FBSDKSystemAccountStoreAdapter : NSObject
 
 /*
+ s gets the oauth token stored in the account store credential, if available. If not empty,
+ this implies user has granted access.
+ */
+@property (nonatomic, readonly, copy) NSString *accessTokenString;
+
+/*
+  Gets or sets the flag indicating if the next requestAccess call should block
+ on a renew call.
+ */
+@property (nonatomic, assign) BOOL forceBlockingRenew;
+
+/*
+  A convenience getter to the Facebook account type in the account store, if available.
+ */
+@property (strong, nonatomic, readonly) ACAccountType *accountType;
+
+/*
+  The singleton instance.
+ */
+@property (class, nonatomic, strong) FBSDKSystemAccountStoreAdapter *sharedInstance;
+
+/*
   Requests access to the device's Facebook account for the given parameters.
  @param permissions the permissions
  @param defaultAudience the default audience
@@ -50,32 +72,5 @@ typedef void (^FBSDKGraphRequestAccessToAccountsHandler)(NSString *oauthToken, N
  @param handler the handler that is invoked on completion
  */
 - (void)renewSystemAuthorization:(void(^)(ACAccountCredentialRenewResult result, NSError *error))handler;
-
-/*
- s gets the oauth token stored in the account store credential, if available. If not empty,
- this implies user has granted access.
- */
-- (NSString *)accessTokenString;
-
-/*
-  Gets the singleton instance.
- */
-+ (FBSDKSystemAccountStoreAdapter *)sharedInstance;
-
-/*
-  Sets the singleton instance, typically only for unit tests
- */
-+ (void)setSharedInstance:(FBSDKSystemAccountStoreAdapter *)instance;
-
-/*
-  Gets or sets the flag indicating if the next requestAccess call should block
- on a renew call.
- */
-@property (nonatomic, assign) BOOL forceBlockingRenew;
-
-/*
-  A convenience getter to the Facebook account type in the account store, if available.
- */
-@property (strong, nonatomic, readonly) ACAccountType *accountType;
 
 @end

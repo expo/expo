@@ -55,7 +55,7 @@
 
 - (NSUInteger)hash
 {
-  return [FBSDKMath hashWithInteger:[super hash] andInteger:[_actionType hash]];
+  return [FBSDKMath hashWithInteger:super.hash andInteger:_actionType.hash];
 }
 
 - (BOOL)isEqual:(id)object
@@ -83,7 +83,7 @@
   return YES;
 }
 
-- (id)initWithCoder:(NSCoder *)decoder
+- (instancetype)initWithCoder:(NSCoder *)decoder
 {
   if ((self = [super initWithCoder:decoder])) {
     _actionType = [decoder decodeObjectOfClass:[NSString class] forKey:FBSDK_SHARE_OPEN_GRAPH_ACTION_TYPE_KEY];

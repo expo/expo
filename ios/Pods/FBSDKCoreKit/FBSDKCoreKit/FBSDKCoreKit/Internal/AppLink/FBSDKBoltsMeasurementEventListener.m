@@ -68,7 +68,7 @@ static NSString *const BoltsMeasurementEventPrefix = @"bf_";
         NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"[^0-9a-zA-Z _-]" options:0 error:&error];
         NSString *safeKey = [regex stringByReplacingMatchesInString:key
                                                             options:0
-                                                              range:NSMakeRange(0, [key length])
+                                                              range:NSMakeRange(0, key.length)
                                                        withTemplate:@"-"];
         safeKey = [safeKey stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@" -"]];
         logData[safeKey] = eventArgs[key];

@@ -152,7 +152,7 @@ static const CGFloat FBSDKCloseButtonHeight = 12.0;
             include = YES;
             break;
         case FBSDKIncludeStatusBarInSizeIOS7AndLater: {
-            float systemVersion = [[[UIDevice currentDevice] systemVersion] floatValue];
+            float systemVersion = [UIDevice currentDevice].systemVersion.floatValue;
             include = (systemVersion >= 7.0);
             break;
         }
@@ -205,7 +205,7 @@ static const CGFloat FBSDKCloseButtonHeight = 12.0;
 #pragma mark - Private
 
 - (void)updateLabelText {
-    NSString *appName = (_refererAppLink && _refererAppLink.targets[0]) ? [_refererAppLink.targets[0] appName] : nil;
+    NSString *appName = (_refererAppLink && _refererAppLink.targets[0]) ? _refererAppLink.targets[0].appName : nil;
     _labelView.text = [self localizedLabelForReferer:appName];
 }
 
@@ -222,8 +222,8 @@ static const CGFloat FBSDKCloseButtonHeight = 12.0;
 
     CGContextRef context = UIGraphicsGetCurrentContext();
 
-    CGContextSetStrokeColorWithColor(context, [color CGColor]);
-    CGContextSetFillColorWithColor(context, [color CGColor]);
+    CGContextSetStrokeColorWithColor(context, color.CGColor);
+    CGContextSetFillColorWithColor(context, color.CGColor);
 
     CGContextSetLineWidth(context, 1.25f);
 
@@ -265,7 +265,7 @@ static const CGFloat FBSDKCloseButtonHeight = 12.0;
 }
 
 - (void)updateHidden {
-    [super setHidden:_explicitlyHidden || _closed || !self.hasRefererData];
+    super.hidden = _explicitlyHidden || _closed || !self.hasRefererData;
 }
 
 @end

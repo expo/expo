@@ -105,15 +105,15 @@
 - (NSUInteger)hash
 {
   NSUInteger subhashes[] = {
-    [_action hash],
-    [_contentURL hash],
-    [_hashtag hash],
-    [_peopleIDs hash],
-    [_placeID hash],
-    [_previewPropertyName hash],
-    [_ref hash],
-    [_pageID hash],
-    [_shareUUID hash],
+    _action.hash,
+    _contentURL.hash,
+    _hashtag.hash,
+    _peopleIDs.hash,
+    _placeID.hash,
+    _previewPropertyName.hash,
+    _ref.hash,
+    _pageID.hash,
+    _shareUUID.hash,
   };
   return [FBSDKMath hashWithIntegerArray:subhashes count:sizeof(subhashes) / sizeof(subhashes[0])];
 }
@@ -150,7 +150,7 @@
   return YES;
 }
 
-- (id)initWithCoder:(NSCoder *)decoder
+- (instancetype)initWithCoder:(NSCoder *)decoder
 {
   if ((self = [super init])) {
     _action = [decoder decodeObjectOfClass:[FBSDKShareOpenGraphAction class]

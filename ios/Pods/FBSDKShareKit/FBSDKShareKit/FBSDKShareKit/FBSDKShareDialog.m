@@ -69,6 +69,7 @@ static inline void FBSDKShareDialogValidateShareExtensionSchemeRegisteredForCanO
 @implementation FBSDKShareDialog
 {
   FBSDKWebDialog *_webDialog;
+  NSMutableArray<NSURL *> *_temporaryFiles;
 }
 
 #pragma mark - Class Methods
@@ -98,6 +99,13 @@ static inline void FBSDKShareDialogValidateShareExtensionSchemeRegisteredForCanO
 - (void)dealloc
 {
   _webDialog.delegate = nil;
+  if (_temporaryFiles) {
+    NSFileManager *const fileManager = [NSFileManager defaultManager];
+    for (NSURL *temporaryFile in _temporaryFiles) {
+      [fileManager removeItemAtURL:temporaryFile error:nil];
+    }
+    _temporaryFiles = nil;
+  }
 }
 
 #pragma mark - Properties
@@ -418,19 +426,43 @@ static inline void FBSDKShareDialogValidateShareExtensionSchemeRegisteredForCanO
   return [ret copy];
 }
 
+- (NSURL *)_contentVideoURL:(FBSDKShareVideo *)video
+{
+  if (video.videoAsset != nil) {
+    return video.videoAsset.videoURL;
+  } else if (video.data != nil) {
+    NSURL *const temporaryDirectory = [NSURL fileURLWithPath:NSTemporaryDirectory() isDirectory:YES];
+    if (temporaryDirectory) {
+      NSURL *const temporaryFile = [temporaryDirectory URLByAppendingPathComponent:[[NSUUID UUID] UUIDString]];
+      if (temporaryFile) {
+        if (!_temporaryFiles) {
+          _temporaryFiles = [NSMutableArray new];
+        }
+        [_temporaryFiles addObject:temporaryFile];
+        if ([video.data writeToURL:temporaryFile atomically:YES]) {
+          return temporaryFile;
+        }
+      }
+    }
+  } else if (video.videoURL != nil) {
+    return video.videoURL;
+  }
+  return nil;
+}
+
 - (NSArray *)_contentVideoURLs
 {
-  NSMutableArray *ret = [NSMutableArray new];
-  id<FBSDKSharingContent> shareContent = self.shareContent;
+  NSMutableArray<NSURL *> *const ret = [NSMutableArray new];
+  const id<FBSDKSharingContent> shareContent = self.shareContent;
   if ([shareContent isKindOfClass:[FBSDKShareVideoContent class]]) {
-    NSURL *videoURL = ((FBSDKShareVideoContent *)shareContent).video.videoURL;
+    NSURL *const videoURL = [self _contentVideoURL:[(FBSDKShareVideoContent *)shareContent video]];
     if (videoURL != nil) {
       [ret addObject:videoURL];
     }
   } else if ([shareContent isKindOfClass:[FBSDKShareMediaContent class]]) {
-    for (id media in ((FBSDKShareMediaContent *)shareContent).media) {
+    for (const id media in ((FBSDKShareMediaContent *)shareContent).media) {
       if ([media isKindOfClass:[FBSDKShareVideo class]]) {
-        NSURL *videoURL = ((FBSDKShareVideo *)media).videoURL;
+        NSURL *const videoURL = [self _contentVideoURL:(FBSDKShareVideo *)media];
         if (videoURL != nil) {
           [ret addObject:videoURL];
         }
@@ -493,9 +525,6 @@ static inline void FBSDKShareDialogValidateShareExtensionSchemeRegisteredForCanO
     return NO;
   }
   id<FBSDKSharingContent> shareContent = self.shareContent;
-  NSString *methodName;
-  NSDictionary *parameters;
-
   if ([shareContent isKindOfClass:[FBSDKSharePhotoContent class]] && [self _photoContentHasAtLeastOneImage:(FBSDKSharePhotoContent *)shareContent]) {
     void(^completion)(BOOL, NSString *, NSDictionary *) = ^(BOOL successfullyBuilt, NSString *cMethodName, NSDictionary *cParameters) {
       if (successfullyBuilt) {
@@ -520,6 +549,8 @@ static inline void FBSDKShareDialogValidateShareExtensionSchemeRegisteredForCanO
     [FBSDKShareUtility buildAsyncWebPhotoContent:shareContent
                                completionHandler:completion];
   } else {
+    NSString *methodName;
+    NSDictionary<NSString *, id> *parameters;
     if (![FBSDKShareUtility buildWebShareContent:shareContent
                                       methodName:&methodName
                                       parameters:&parameters
@@ -1015,8 +1046,8 @@ static inline void FBSDKShareDialogValidateShareExtensionSchemeRegisteredForCanO
       BOOL isOGURLShare = [self _isOpenGraphURLShare:ogContent];
 
       BOOL isValidOGShare = (isOGURLShare &&
-                             [ogContent.action.actionType length] != 0 &&
-                             [ogContent.previewPropertyName length] != 0);
+                             ogContent.action.actionType.length != 0 &&
+                             ogContent.previewPropertyName.length != 0);
       if (!isValidOGShare) {
         if ((errorRef != NULL) && !*errorRef) {
           NSString *message = @"Share content must include an URL in the action, an action type, and a preview property name in order to share with the share sheet.";
@@ -1145,7 +1176,7 @@ static inline void FBSDKShareDialogValidateShareExtensionSchemeRegisteredForCanO
       initialTextDictionary[@"hashtags"] = @[hashtag];
     }
     if ([self.shareContent isKindOfClass:[FBSDKShareLinkContent class]]) {
-      NSString *quote = [(FBSDKShareLinkContent *)self.shareContent quote];
+      NSString *quote = ((FBSDKShareLinkContent *)self.shareContent).quote;
       if (quote != nil) {
         initialTextDictionary[@"quotes"] = @[quote];
       }

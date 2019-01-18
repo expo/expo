@@ -21,10 +21,11 @@
 // this type is not thread safe.
 @interface FBSDKAppEventsState : NSObject<NSCopying, NSSecureCoding>
 
-@property (readonly, copy) NSArray *events;
-@property (readonly, assign) NSUInteger numSkipped;
-@property (readonly, copy) NSString *tokenString;
-@property (readonly, copy) NSString *appID;
+@property (nonatomic, readonly, copy) NSArray *events;
+@property (nonatomic, readonly, assign) NSUInteger numSkipped;
+@property (nonatomic, readonly, copy) NSString *tokenString;
+@property (nonatomic, readonly, copy) NSString *appID;
+@property (nonatomic, readonly) BOOL areAllEventsImplicit;
 
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new NS_UNAVAILABLE;
@@ -32,7 +33,6 @@
 
 - (void)addEvent:(NSDictionary *)eventDictionary isImplicit:(BOOL)isImplicit;
 - (void)addEventsFromAppEventState:(FBSDKAppEventsState *)appEventsState;
-- (BOOL)areAllEventsImplicit;
 - (BOOL)isCompatibleWithAppEventsState:(FBSDKAppEventsState *)appEventsState;
 - (BOOL)isCompatibleWithTokenString:(NSString *)tokenString appID:(NSString *)appID;
 - (NSString *)JSONStringForEvents:(BOOL)includeImplicitEvents;
