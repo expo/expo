@@ -249,7 +249,7 @@ Most vendors make use of environment variables which are "injected" into the env
 To perform the authentication, we will add this script to our configuration:
 
 ```bash
-$ npx expo login -u <EXPO USERNAME> -p <EXO PASSWORD>
+$ npx expo login -u <EXPO USERNAME> -p <EXPO PASSWORD>
 ```
 
 ### Publish new builds
