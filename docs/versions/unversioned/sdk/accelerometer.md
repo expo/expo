@@ -5,21 +5,29 @@ title: Accelerometer
 Access the device accelerometer sensor(s) to respond to changes in
 acceleration in 3d space.
 
+### `Expo.Accelerometer.isAvailableAsync()`
+
+Is the sensor enabled on the device.
+
+#### Returns
+
+- A Promise that resolves to a `boolean` denoting the availability of the sensor.
+
 ### `Expo.Accelerometer.addListener(listener)`
 
 Subscribe for updates to the accelerometer.
 
 #### Arguments
 
--   **listener (_function_)** -- A callback that is invoked when an
-    accelerometer update is available. When invoked, the listener is
-    provided a single argument that is an object    containing keys x, y,
-    z.
+- **listener (_function_)** -- A callback that is invoked when an
+  accelerometer update is available. When invoked, the listener is
+  provided a single argument that is an object containing keys x, y,
+  z.
 
 #### Returns
 
--   An EventSubscription object that you can call remove() on when you
-    would like to unsubscribe the listener.
+- An EventSubscription object that you can call remove() on when you
+  would like to unsubscribe the listener.
 
 ### `Expo.Accelerometer.removeAllListeners()`
 
@@ -31,8 +39,8 @@ Subscribe for updates to the accelerometer.
 
 #### Arguments
 
--   **intervalMs (_number_)** Desired interval in milliseconds between
-    accelerometer updates.
+- **intervalMs (_number_)** Desired interval in milliseconds between
+  accelerometer updates.
 
 ## Example: basic subscription
 
@@ -44,7 +52,7 @@ import { Accelerometer } from 'expo';
 export default class AccelerometerSensor extends React.Component {
   state = {
     accelerometerData: {},
-  }
+  };
 
   componentDidMount() {
     this._toggle();
@@ -60,39 +68,46 @@ export default class AccelerometerSensor extends React.Component {
     } else {
       this._subscribe();
     }
-  }
+  };
 
   _slow = () => {
-    /* @info Request updates every 1000ms */Accelerometer.setUpdateInterval(1000); /* @end */
-
-  }
+    /* @info Request updates every 1000ms */ Accelerometer.setUpdateInterval(1000); /* @end */
+  };
 
   _fast = () => {
-    /* @info Request updates every 16ms, which is approximately equal to every frame at 60 frames per second */Accelerometer.setUpdateInterval(16);/* @end */
-
-  }
+    /* @info Request updates every 16ms, which is approximately equal to every frame at 60 frames per second */ Accelerometer.setUpdateInterval(
+      16
+    ); /* @end */
+  };
 
   _subscribe = () => {
-    /* @info Subscribe to events and update the component state with the new data from the Accelerometer. We save the subscription object away so that we can remove it when the component is unmounted*/this._subscription = Accelerometer.addListener(accelerometerData => {
-      this.setState({ accelerometerData });
-    });/* @end */
-
-  }
+    /* @info Subscribe to events and update the component state with the new data from the Accelerometer. We save the subscription object away so that we can remove it when the component is unmounted*/ this._subscription = Accelerometer.addListener(
+      accelerometerData => {
+        this.setState({ accelerometerData });
+      }
+    ); /* @end */
+  };
 
   _unsubscribe = () => {
-    /* @info Be sure to unsubscribe from events when the component is unmounted */this._subscription && this._subscription.remove();/* @end */
+    /* @info Be sure to unsubscribe from events when the component is unmounted */ this
+      ._subscription && this._subscription.remove(); /* @end */
 
     this._subscription = null;
-  }
+  };
 
   render() {
-    /* @info A data point is provided for each of the x, y, and z axes */let { x, y, z } = this.state.accelerometerData;/* @end */
-
+    /* @info A data point is provided for each of the x, y, and z axes */ let {
+      x,
+      y,
+      z,
+    } = this.state.accelerometerData; /* @end */
 
     return (
       <View style={styles.sensor}>
         <Text>Accelerometer:</Text>
-        <Text>x: {round(x)} y: {round(y)} z: {round(z)}</Text>
+        <Text>
+          x: {round(x)} y: {round(y)} z: {round(z)}
+        </Text>
 
         <View style={styles.buttonContainer}>
           <TouchableOpacity onPress={this._toggle} style={styles.button}>
@@ -120,7 +135,7 @@ function round(n) {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1
+    flex: 1,
   },
   buttonContainer: {
     flexDirection: 'row',
