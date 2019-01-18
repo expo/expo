@@ -13,7 +13,7 @@ async function getUserInfo(accessToken) {
     headers: { Authorization: `Bearer ${accessToken}`},
   });
 
-  return userInfoResponse;
+  return await userInfoResponse.json();
 }
 ```
 
