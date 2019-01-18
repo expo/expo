@@ -1,10 +1,4 @@
-//
-//  EXMailComposer.m
-//  Exponent
-//
-//  Created by Alicja Warchał on 20.12.2017.
-//  Copyright © 2017 650 Industries. All rights reserved.
-//
+// Copyright 2017-present 650 Industries. All rights reserved.
 
 #import <EXMailComposer/EXMailComposer.h>
 #import <MobileCoreServices/MobileCoreServices.h>
