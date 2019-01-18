@@ -1,5 +1,4 @@
-import { NativeModulesProxy } from 'expo-core';
+import ExponentMagnetometerUncalibrated from './ExponentMagnetometerUncalibrated';
 import ThreeAxisSensor from './ThreeAxisSensor';
-const { ExponentMagnetometerUncalibrated } = NativeModulesProxy;
 export default new ThreeAxisSensor(ExponentMagnetometerUncalibrated, 'magnetometerUncalibratedDidUpdate');
 //# sourceMappingURL=MagnetometerUncalibrated.js.map

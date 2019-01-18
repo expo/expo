@@ -1,0 +1,1 @@
+{"version":3,"file":"ExponentAccelerometer.js","sourceRoot":"","sources":["../src/ExponentAccelerometer.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,kBAAkB,EAAE,MAAM,WAAW,CAAC;AAC/C,eAAe,kBAAkB,CAAC,qBAAqB,CAAC","sourcesContent":["import { NativeModulesProxy } from 'expo-core';\nexport default NativeModulesProxy.ExponentAccelerometer;\n"]}
