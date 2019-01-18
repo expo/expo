@@ -62,6 +62,7 @@ Sentry.config('your Public DSN goes here').install();
     }
   }
 ```
+The correct authToken can be generated at the [sentry API page ](https://sentry.io/settings/account/api/)
 
 ### Publish your app with sourcemaps
 
