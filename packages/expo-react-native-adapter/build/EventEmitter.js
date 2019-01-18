@@ -4,7 +4,6 @@ import { Platform } from 'react-native';
 // use NativeEventEmitter from React Native and not from RNWeb.
 import NativeEventEmitter from 'react-native/Libraries/EventEmitter/NativeEventEmitter';
 const nativeEmitterSubscriptionKey = '@@nativeEmitterSubscription@@';
-const isPlatformObservable = Platform.OS === 'android' || Platform.OS === 'web';
 export class EventEmitter {
     constructor(nativeModule) {
         this._listenerCount = 0;
@@ -12,7 +11,7 @@ export class EventEmitter {
         this._eventEmitter = new NativeEventEmitter(nativeModule);
     }
     addListener(eventName, listener) {
-        if (!this._listenerCount && isPlatformObservable && this._nativeModule.startObserving) {
+        if (!this._listenerCount && Platform.OS !== 'ios' && this._nativeModule.startObserving) {
             this._nativeModule.startObserving();
         }
         this._listenerCount++;
@@ -30,7 +29,7 @@ export class EventEmitter {
         this._eventEmitter.removeAllListeners(eventName);
         this._listenerCount -= removedListenerCount;
         invariant(this._listenerCount >= 0, `EventEmitter must have a non-negative number of listeners`);
-        if (!this._listenerCount && isPlatformObservable && this._nativeModule.stopObserving) {
+        if (!this._listenerCount && Platform.OS !== 'ios' && this._nativeModule.stopObserving) {
             this._nativeModule.stopObserving();
         }
     }
@@ -46,7 +45,7 @@ export class EventEmitter {
         delete subscription[nativeEmitterSubscriptionKey];
         // Release closed-over references to the emitter
         subscription.remove = () => { };
-        if (!this._listenerCount && isPlatformObservable && this._nativeModule.stopObserving) {
+        if (!this._listenerCount && Platform.OS !== 'ios' && this._nativeModule.stopObserving) {
             this._nativeModule.stopObserving();
         }
     }

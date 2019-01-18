@@ -17,7 +17,6 @@ export type Subscription = {
   remove: () => void;
 };
 
-const isPlatformObservable = Platform.OS === 'android' || Platform.OS === 'web';
 export class EventEmitter {
   _listenerCount = 0;
   _nativeModule: NativeModule;
@@ -29,7 +28,7 @@ export class EventEmitter {
   }
 
   addListener<T>(eventName: string, listener: (event: T) => void): Subscription {
-    if (!this._listenerCount && isPlatformObservable && this._nativeModule.startObserving) {
+    if (!this._listenerCount && Platform.OS !== 'ios' && this._nativeModule.startObserving) {
       this._nativeModule.startObserving();
     }
 
@@ -53,7 +52,7 @@ export class EventEmitter {
       `EventEmitter must have a non-negative number of listeners`
     );
 
-    if (!this._listenerCount && isPlatformObservable && this._nativeModule.stopObserving) {
+    if (!this._listenerCount && Platform.OS !== 'ios' && this._nativeModule.stopObserving) {
       this._nativeModule.stopObserving();
     }
   }
@@ -74,7 +73,7 @@ export class EventEmitter {
     // Release closed-over references to the emitter
     subscription.remove = () => {};
 
-    if (!this._listenerCount && isPlatformObservable && this._nativeModule.stopObserving) {
+    if (!this._listenerCount && Platform.OS !== 'ios' && this._nativeModule.stopObserving) {
       this._nativeModule.stopObserving();
     }
   }
