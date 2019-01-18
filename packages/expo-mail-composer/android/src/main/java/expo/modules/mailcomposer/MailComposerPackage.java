@@ -11,6 +11,6 @@ import expo.core.ExportedModule;
 public class MailComposerPackage extends BasePackage {
   @Override
   public List<ExportedModule> createExportedModules(Context context) {
-    return Collections.emptyList();
+    return Collections.singletonList((ExportedModule) new MailComposerModule(context));
   }
 }
