@@ -1,4 +1,15 @@
-// Copyright 2018-present 650 Industries. All rights reserved.
+//
+//  EXMailComposer.h
+//  Exponent
+//
+//  Created by Alicja Warchał on 20.12.2017.
+//  Copyright © 2017 650 Industries. All rights reserved.
+//
 
-@interface EXMailComposer : NSObject
+#import <EXCore/EXExportedModule.h>
+#import <EXCore/EXModuleRegistryConsumer.h>
+
+#import <MessageUI/MessageUI.h>
+
+@interface EXMailComposer : EXExportedModule <EXModuleRegistryConsumer, MFMailComposeViewControllerDelegate>
 @end
