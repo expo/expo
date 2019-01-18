@@ -1,4 +1,4 @@
-import { EventEmitter, Platform } from 'expo-core';
+import { EventEmitter } from 'expo-core';
 /**
  * A base class for subscribable sensors. The events emitted by this class are measurements
  * specified by the parameter type `M`.
@@ -31,15 +31,7 @@ export default class DeviceSensor {
         this._nativeEmitter.removeSubscription(subscription);
     }
     setUpdateInterval(intervalMs) {
-        if (!this._nativeModule.setUpdateInterval) {
-            console.warn(`expo-sensors: setUpdateInterval() is not supported on ${Platform.OS}`);
-        }
-        else {
-            this._nativeModule.setUpdateInterval(intervalMs);
-        }
-    }
-    isAvailableAsync() {
-        return this._nativeModule.isAvailableAsync();
+        this._nativeModule.setUpdateInterval(intervalMs);
     }
 }
 //# sourceMappingURL=DeviceSensor.js.map

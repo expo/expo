@@ -17,6 +17,5 @@ export default class DeviceSensor<M> {
     removeAllListeners(): void;
     removeSubscription(subscription: Subscription): void;
     setUpdateInterval(intervalMs: number): void;
-    isAvailableAsync(): Promise<boolean>;
 }
 export {};

@@ -88,11 +88,6 @@ EX_REGISTER_MODULE();
   [[self manager] setAccelerometerUpdateInterval:intervalMs];
 }
 
-- (BOOL)isAccelerometerAvailable
-{
-  return [[self manager] isAccelerometerAvailable];
-}
-
 - (void)sensorModuleDidSubscribeForDeviceMotionUpdates:(id)scopedSensorModule
                                            withHandler:(void (^)(NSDictionary *event))handlerBlock
 {
@@ -117,11 +112,6 @@ EX_REGISTER_MODULE();
   [[self manager] setDeviceMotionUpdateInterval:intervalMs];
 }
 
-- (BOOL)isDeviceMotionAvailable
-{
-  return [[self manager] isDeviceMotionAvailable];
-}
-
 - (void)sensorModuleDidSubscribeForGyroscopeUpdates:(id)scopedSensorModule
                                         withHandler:(void (^)(NSDictionary *event))handlerBlock
 {
@@ -135,7 +125,6 @@ EX_REGISTER_MODULE();
       __strong EXSensorsManager *strongSelf = weakSelf;
       if (strongSelf) {
         for (void (^handler)(NSDictionary *) in strongSelf.gyroscopeHandlers.allValues) {
-          // https://docs-assets.developer.apple.com/published/96e9d46b41/ab00c9d5-4f3d-475b-8020-95066068a18d.png
           handler(@{
                     @"x": [NSNumber numberWithDouble:data.rotationRate.x],
                     @"y": [NSNumber numberWithDouble:data.rotationRate.y],
@@ -160,11 +149,6 @@ EX_REGISTER_MODULE();
   [[self manager] setGyroUpdateInterval:intervalMs];
 }
 
-- (BOOL)isGyroAvailable
-{
-  return [[self manager] isGyroAvailable];
-}
-
 - (void)sensorModuleDidSubscribeForMagnetometerUpdates:(id)scopedSensorModule
                                            withHandler:(void (^)(NSDictionary *event))handlerBlock
 {
@@ -187,11 +171,6 @@ EX_REGISTER_MODULE();
 - (void)setMagnetometerUpdateInterval:(NSTimeInterval)intervalMs
 {
   [[self manager] setDeviceMotionUpdateInterval:intervalMs];
-}
-
-- (BOOL)isMagnetometerAvailable
-{
-  return [self isDeviceMotionAvailable];
 }
 
 - (void)sensorModuleDidSubscribeForMagnetometerUncalibratedUpdates:(id)scopedSensorModule
@@ -229,11 +208,6 @@ EX_REGISTER_MODULE();
 - (void)setMagnetometerUncalibratedUpdateInterval:(NSTimeInterval)intervalMs
 {
   [[self manager] setMagnetometerUpdateInterval:intervalMs];
-}
-
-- (BOOL)isMagnetometerUncalibratedAvailable
-{
-  return [[self manager] isMagnetometerAvailable];
 }
 
 - (float)getGravity

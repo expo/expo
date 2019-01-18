@@ -22,11 +22,6 @@ EX_EXPORT_MODULE(ExponentMagnetometerUncalibrated);
   [sensorService setMagnetometerUncalibratedUpdateInterval:updateInterval];
 }
 
-- (BOOL)isAvailable:(id)sensorService
-{
-  return [sensorService isMagnetometerUncalibratedAvailable];
-}
-
 - (void)subscribeToSensorService:(id)sensorService withHandler:(void (^)(NSDictionary *event))handlerBlock
 {
   [sensorService sensorModuleDidSubscribeForMagnetometerUncalibratedUpdates:self withHandler:handlerBlock];
