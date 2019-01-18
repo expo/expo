@@ -177,10 +177,7 @@ module.exports = {
           { key: 4, argumentsCount: 1, name: 'getTaskOptionsAsync' },
           { key: 5, argumentsCount: 2, name: 'notifyTaskFinishedAsync' },
         ],
-        ExponentAccelerometer: [
-          { key: 0, argumentsCount: 1, name: 'setUpdateInterval' },
-          { key: 1, argumentsCount: 0, name: 'isAvailableAsync' },
-        ],
+        ExponentAccelerometer: [{ key: 0, argumentsCount: 1, name: 'setUpdateInterval' }],
         ExponentCameraManager: [
           { key: 0, argumentsCount: 1, name: 'stopRecording' },
           { key: 1, argumentsCount: 2, name: 'getAvailablePictureSizes' },
@@ -190,10 +187,7 @@ module.exports = {
           { key: 5, argumentsCount: 1, name: 'resumePreview' },
         ],
         ExponentConstants: [{ key: 0, argumentsCount: 0, name: 'getWebViewUserAgentAsync' }],
-        ExponentDeviceMotion: [
-          { key: 0, argumentsCount: 1, name: 'setUpdateInterval' },
-          { key: 1, argumentsCount: 0, name: 'isAvailableAsync' },
-        ],
+        ExponentDeviceMotion: [{ key: 0, argumentsCount: 1, name: 'setUpdateInterval' }],
         ExponentFileSystem: [
           { key: 0, argumentsCount: 5, name: 'downloadResumableStartAsync' },
           { key: 1, argumentsCount: 1, name: 'downloadResumablePauseAsync' },
@@ -215,17 +209,10 @@ module.exports = {
           { key: 4, argumentsCount: 2, name: 'takeSnapshotAsync' },
         ],
         ExponentGLViewManager: [],
-        ExponentGyroscope: [
-          { key: 0, argumentsCount: 1, name: 'setUpdateInterval' },
-          { key: 1, argumentsCount: 0, name: 'isAvailableAsync' },
-        ],
-        ExponentMagnetometer: [
-          { key: 0, argumentsCount: 1, name: 'setUpdateInterval' },
-          { key: 1, argumentsCount: 0, name: 'isAvailableAsync' },
-        ],
+        ExponentGyroscope: [{ key: 0, argumentsCount: 1, name: 'setUpdateInterval' }],
+        ExponentMagnetometer: [{ key: 0, argumentsCount: 1, name: 'setUpdateInterval' }],
         ExponentMagnetometerUncalibrated: [
           { key: 0, argumentsCount: 1, name: 'setUpdateInterval' },
-          { key: 1, argumentsCount: 0, name: 'isAvailableAsync' },
         ],
         ExponentMediaLibrary: [
           { key: 0, argumentsCount: 1, name: 'getAlbumAsync' },
