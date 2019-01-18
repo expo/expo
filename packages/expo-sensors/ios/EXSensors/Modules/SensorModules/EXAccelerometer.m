@@ -22,6 +22,11 @@ EX_EXPORT_MODULE(ExponentAccelerometer);
   [sensorService setAccelerometerUpdateInterval:updateInterval];
 }
 
+- (BOOL)isAvailable:(id)sensorService
+{
+  return [sensorService isAccelerometerAvailable];
+}
+
 - (void)subscribeToSensorService:(id)sensorService withHandler:(void (^)(NSDictionary *event))handlerBlock
 {
   [sensorService sensorModuleDidSubscribeForAccelerometerUpdates:self withHandler:handlerBlock];
