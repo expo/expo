@@ -55,6 +55,7 @@ def includeUniversalModule = { name ->
   'expo-local-authentication',
   'expo-location',
   'expo-localization',
+  'expo-mail-composer',
   'expo-media-library',
   'expo-payments-stripe',
   'expo-permissions',

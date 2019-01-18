@@ -405,6 +405,8 @@ PODS:
     - EXCore
     - EXPermissionsInterface
     - EXTaskManagerInterface
+  - EXMailComposer (1.0.0):
+    - EXCore
   - EXMediaLibrary (2.0.0):
     - EXCore
     - EXPermissionsInterface
@@ -1280,6 +1282,7 @@ DEPENDENCIES:
   - EXLocalAuthentication (from `../packages/expo-local-authentication/ios`)
   - EXLocalization (from `../packages/expo-localization/ios`)
   - EXLocation (from `../packages/expo-location/ios`)
+  - EXMailComposer (from `../packages/expo-mail-composer/ios`)
   - EXMediaLibrary (from `../packages/expo-media-library/ios`)
   - EXPermissions (from `../packages/expo-permissions/ios`)
   - EXPermissionsInterface (from `../packages/expo-permissions-interface/ios`)
@@ -1733,6 +1736,8 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-localization/ios"
   EXLocation:
     :path: "../packages/expo-location/ios"
+  EXMailComposer:
+    :path: "../packages/expo-mail-composer/ios"
   EXMediaLibrary:
     :path: "../packages/expo-media-library/ios"
   EXPermissions:
@@ -1937,6 +1942,7 @@ SPEC CHECKSUMS:
   EXLocalAuthentication: b70696613cb24d726d3c98a1818c22c481a46b01
   EXLocalization: 1243adc132eaad4793dd7e5b497135ad5d803441
   EXLocation: 54f562edcc410be18699a364e80fcabcf97228f0
+  EXMailComposer: 2054a17624144bd1a210cab55e20fbe207b08908
   EXMediaLibrary: f91c4f6ff2c9be8102e06d0a4d08987231a7e286
   EXPermissions: dd31cb432c078eed1f4c1e290bc32649d5280bd3
   EXPermissionsInterface: 76f80a0dcd16afde36498e3d3aa168cb43999558
@@ -1985,6 +1991,6 @@ SPEC CHECKSUMS:
   yogaABI31_0_0: 7978689ddccec43cffd5914889304cf3b7fd7c77
   yogaABI32_0_0: b6e0ba3796cd5e47ccea0454694e605a1cfc817a
 
-PODFILE CHECKSUM: 452a52823b48a2198810ac4a95ec0b641005df73
+PODFILE CHECKSUM: 3bf9ff8d80572c30c7cbb5d73fe5f936787562ea
 
 COCOAPODS: 1.5.3

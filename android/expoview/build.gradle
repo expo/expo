@@ -157,6 +157,7 @@ dependencies {
   compileOnly 'host.exp.exponent:expo-permissions:2.0.0'
   compileOnly 'host.exp.exponent:expo-permissions-interface:2.0.0'
   compileOnly 'host.exp.exponent:expo-background-fetch:1.0.0'
+  compileOnly 'host.exp.exponent:expo-mail-composer:1.0.0'
   END UNCOMMENT WHEN DISTRIBUTING */
 
   // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
@@ -199,6 +200,7 @@ dependencies {
   api project(':expo-local-authentication')
   api project(':expo-localization')
   api project(':expo-location')
+  api project(':expo-mail-composer')
   api project(':expo-media-library')
   api project(':expo-payments-stripe')
   api project(':expo-print')

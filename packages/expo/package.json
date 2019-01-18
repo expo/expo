@@ -86,6 +86,7 @@
     "expo-local-authentication": "~2.0.0",
     "expo-localization": "~2.0.0",
     "expo-location": "~2.0.1",
+    "expo-mail-composer": "~1.0.0",
     "expo-media-library": "~2.0.0",
     "expo-payments-stripe": "~2.0.0",
     "expo-permissions": "~2.0.0",

@@ -69,7 +69,7 @@ import * as IntentLauncherAndroid from './IntentLauncherAndroid/IntentLauncherAn
 export { IntentLauncherAndroid };
 export { default as KeepAwake } from './KeepAwake';
 export { default as Linking } from './Linking/Linking';
-import * as MailComposer from './MailComposer/MailComposer';
+import * as MailComposer from 'expo-mail-composer';
 export { MailComposer };
 export { default as Notifications } from './Notifications/Notifications';
 export { default as SQLite } from './SQLite';
