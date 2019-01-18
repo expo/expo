@@ -50,7 +50,7 @@
 - (void)setBackgroundColor:(UIColor *)backgroundColor
 {
   if (![self.backgroundColor isEqual:backgroundColor]) {
-    [super setBackgroundColor:backgroundColor];
+    super.backgroundColor = backgroundColor;
     [self setNeedsDisplay];
   }
 }

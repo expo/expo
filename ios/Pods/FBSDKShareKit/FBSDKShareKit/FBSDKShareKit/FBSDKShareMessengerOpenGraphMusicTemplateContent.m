@@ -76,15 +76,15 @@ static NSArray<NSDictionary<NSString *, id> *> *_SerializableOpenGraphMusicTempl
   NSMutableDictionary<NSString *, id> *updatedParameters = [NSMutableDictionary dictionaryWithDictionary:existingParameters];
 
   NSMutableDictionary<NSString *, id> *payload = [NSMutableDictionary dictionary];
-  [payload setObject:@"open_graph" forKey:kFBSDKShareMessengerTemplateTypeKey];
-  [payload setObject:_SerializableOpenGraphMusicTemplateContentFromContent(self) forKey:kFBSDKShareMessengerElementsKey];
+  payload[kFBSDKShareMessengerTemplateTypeKey] = @"open_graph";
+  payload[kFBSDKShareMessengerElementsKey] = _SerializableOpenGraphMusicTemplateContentFromContent(self);
 
   NSMutableDictionary<NSString *, id> *attachment = [NSMutableDictionary dictionary];
-  [attachment setObject:kFBSDKShareMessengerTemplateKey forKey:kFBSDKShareMessengerTypeKey];
-  [attachment setObject:payload forKey:kFBSDKShareMessengerPayloadKey];
+  attachment[kFBSDKShareMessengerTypeKey] = kFBSDKShareMessengerTemplateKey;
+  attachment[kFBSDKShareMessengerPayloadKey] = payload;
 
   NSMutableDictionary<NSString *, id> *contentForShare = [NSMutableDictionary dictionary];
-  [contentForShare setObject:attachment forKey:kFBSDKShareMessengerAttachmentKey];
+  contentForShare[kFBSDKShareMessengerAttachmentKey] = attachment;
 
   NSMutableDictionary<NSString *, id> *contentForPreview = [NSMutableDictionary dictionary];
   [FBSDKInternalUtility dictionary:contentForPreview setObject:@"OPEN_GRAPH" forKey:@"preview_type"];

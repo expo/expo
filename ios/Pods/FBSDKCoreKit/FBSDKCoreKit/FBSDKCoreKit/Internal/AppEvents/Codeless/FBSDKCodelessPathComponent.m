@@ -24,32 +24,32 @@
 
 - (instancetype)initWithJSON:(NSDictionary *)dict {
   if (self = [super init]) {
-    _className = [[dict objectForKey:CODELESS_MAPPING_CLASS_NAME_KEY] copy];
-    _text = [[dict objectForKey:CODELESS_MAPPING_TEXT_KEY] copy];
-    _hint = [[dict objectForKey:CODELESS_MAPPING_HINT_KEY] copy];
-    _desc = [[dict objectForKey:CODELESS_MAPPING_DESC_KEY] copy];
+    _className = [dict[CODELESS_MAPPING_CLASS_NAME_KEY] copy];
+    _text = [dict[CODELESS_MAPPING_TEXT_KEY] copy];
+    _hint = [dict[CODELESS_MAPPING_HINT_KEY] copy];
+    _desc = [dict[CODELESS_MAPPING_DESC_KEY] copy];
 
 
-    if ([dict objectForKey:CODELESS_MAPPING_INDEX_KEY]) {
-      _index = [[dict objectForKey:CODELESS_MAPPING_INDEX_KEY] intValue];
+    if (dict[CODELESS_MAPPING_INDEX_KEY]) {
+      _index = [dict[CODELESS_MAPPING_INDEX_KEY] intValue];
     } else {
       _index = -1;
     }
 
-    if ([dict objectForKey:CODELESS_MAPPING_SECTION_KEY]) {
-      _section = [[dict objectForKey:CODELESS_MAPPING_SECTION_KEY] intValue];
+    if (dict[CODELESS_MAPPING_SECTION_KEY]) {
+      _section = [dict[CODELESS_MAPPING_SECTION_KEY] intValue];
     } else {
       _section = -1;
     }
 
-    if ([dict objectForKey:CODELESS_MAPPING_ROW_KEY]) {
-      _row = [[dict objectForKey:CODELESS_MAPPING_ROW_KEY] intValue];
+    if (dict[CODELESS_MAPPING_ROW_KEY]) {
+      _row = [dict[CODELESS_MAPPING_ROW_KEY] intValue];
     } else {
       _row = -1;
     }
 
-    _tag = [[dict objectForKey:CODELESS_MAPPING_TAG_KEY] intValue];
-    _matchBitmask = [[dict objectForKey:CODELESS_MAPPING_MATCH_BITMASK_KEY] intValue];
+    _tag = [dict[CODELESS_MAPPING_TAG_KEY] intValue];
+    _matchBitmask = [dict[CODELESS_MAPPING_MATCH_BITMASK_KEY] intValue];
   }
 
   return self;

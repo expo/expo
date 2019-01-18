@@ -75,7 +75,7 @@ DEPRECATED_MSG_ATTRIBUTE("use showFromViewController:withContent:delegate: inste
  @see validateWithError:
  @return YES if the receiver can show the dialog, otherwise NO.
  */
-- (BOOL)canShow;
+@property (nonatomic, readonly) BOOL canShow;
 
 /**
  Begins the app invite from the receiver.

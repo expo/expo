@@ -31,7 +31,7 @@
 - (instancetype)initWithService:(NSString *)service accessGroup:(NSString *)accessGroup
 {
     if ((self = [super init])) {
-      _service = service ? [service copy] : [[NSBundle mainBundle] bundleIdentifier];
+      _service = service ? [service copy] : [NSBundle mainBundle].bundleIdentifier;
         _accessGroup = [accessGroup copy];
         NSAssert(_service, @"Keychain must be initialized with service");
     }

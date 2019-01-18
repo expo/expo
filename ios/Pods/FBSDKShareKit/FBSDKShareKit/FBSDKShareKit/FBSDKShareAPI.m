@@ -110,7 +110,7 @@ static NSMutableArray *g_pendingFBSDKShareAPI;
 - (BOOL)createOpenGraphObject:(FBSDKShareOpenGraphObject *)openGraphObject
 {
   NSError *error;
-  if (![self canShare]) {
+  if (!self.canShare) {
     NSString *message = @"Share API is not available; verify 'canShare' returns YES";
     error = [NSError fbErrorWithDomain:FBSDKShareErrorDomain
                                   code:FBSDKShareErrorDialogNotAvailable
@@ -147,7 +147,7 @@ static NSMutableArray *g_pendingFBSDKShareAPI;
 - (BOOL)share
 {
   NSError *error;
-  if (![self canShare]) {
+  if (!self.canShare) {
     NSString *message = @"Share API is not available; verify 'canShare' returns YES";
     error = [NSError fbErrorWithDomain:FBSDKShareErrorDomain
                                   code:FBSDKShareErrorDialogNotAvailable
@@ -350,8 +350,8 @@ static NSMutableArray *g_pendingFBSDKShareAPI;
   NSMutableArray *requests = [[NSMutableArray alloc] init];
   for (FBSDKSharePhoto *photo in photos) {
     UIImage *image = photo.image;
-    if (!image && [photo.imageURL isFileURL]) {
-      image = [UIImage imageWithContentsOfFile:[photo.imageURL path]];
+    if (!image && photo.imageURL.isFileURL) {
+      image = [UIImage imageWithContentsOfFile:photo.imageURL.path];
     }
     if (image) {
       NSString *graphPath = [self _graphPathWithSuffix:FBSDKShareAPIPhotosEdge, nil];
@@ -367,7 +367,7 @@ static NSMutableArray *g_pendingFBSDKShareAPI;
                                                             HTTPMethod:@"POST"]];
     }
   }
-  NSUInteger requestCount = [requests count];
+  NSUInteger requestCount = requests.count;
   NSMutableArray *results = [[NSMutableArray alloc] init];
   NSMutableArray *errors = [[NSMutableArray alloc] init];
   __block NSUInteger completedCount = 0;
@@ -381,9 +381,9 @@ static NSMutableArray *g_pendingFBSDKShareAPI;
     if (!self->_delegate) {
       return;
     }
-    if ([errors count]) {
+    if (errors.count) {
       [self->_delegate sharer:self didFailWithError:errors[0]];
-    } else if ([results count]) {
+    } else if (results.count) {
       NSArray *individualPhotoIDs = [results valueForKeyPath:@"id"];
       // each photo upload will be merged into the same post, so grab the post_id from the first and use that
       NSMutableDictionary *shareResults = [[NSMutableDictionary alloc] init];
@@ -413,14 +413,14 @@ static NSMutableArray *g_pendingFBSDKShareAPI;
     FBSDKSharePhoto *photo = videoContent.previewPhoto;
 #pragma clang diagnostic pop
     UIImage *image = photo.image;
-    if (!image && [photo.imageURL isFileURL]) {
-      image = [UIImage imageWithContentsOfFile:[photo.imageURL path]];
+    if (!image && photo.imageURL.fileURL) {
+      image = [UIImage imageWithContentsOfFile:photo.imageURL.path];
     }
     [FBSDKInternalUtility dictionary:parameters setObject:image forKey:@"thumb"];
   }
   FBSDKShareVideo *video = videoContent.video;
   NSURL *videoURL = video.videoURL;
-  if ([videoURL isFileURL]) {
+  if (videoURL.fileURL) {
     NSError *fileError;
     _fileHandle = [NSFileHandle fileHandleForReadingFromURL:videoURL error:&fileError];
     if (!_fileHandle) {
@@ -430,7 +430,7 @@ static NSMutableArray *g_pendingFBSDKShareAPI;
     if (![self _addToPendingShareAPI]) {
       return NO;
     }
-    FBSDKVideoUploader *videoUploader = [[FBSDKVideoUploader alloc] initWithVideoName:[videoURL lastPathComponent]
+    FBSDKVideoUploader *videoUploader = [[FBSDKVideoUploader alloc] initWithVideoName:videoURL.lastPathComponent
                                                                             videoSize:(unsigned long)[_fileHandle seekToEndOfFile]
                                                                            parameters:parameters
                                                                              delegate:self];
@@ -447,7 +447,7 @@ static NSMutableArray *g_pendingFBSDKShareAPI;
     [[FBSDKShareAPI defaultAssetsLibrary] assetForURL:videoURL resultBlock:^(ALAsset *asset) {
       self->_assetRepresentation = [asset defaultRepresentation];
       NSUInteger size = (NSUInteger)self->_assetRepresentation.size;
-      FBSDKVideoUploader *videoUploader = [[FBSDKVideoUploader alloc] initWithVideoName:[videoURL lastPathComponent]
+      FBSDKVideoUploader *videoUploader = [[FBSDKVideoUploader alloc] initWithVideoName:videoURL.lastPathComponent
                                                                               videoSize:size
                                                                              parameters:parameters
                                                                                delegate:self];
@@ -746,7 +746,7 @@ static NSMutableArray *g_pendingFBSDKShareAPI;
     return YES;
   } else if ([value isKindOfClass:[NSURL class]]) {
     if (stagingHandler != NULL) {
-      stagingHandler([(NSURL *)value absoluteString]);
+      stagingHandler(((NSURL *)value).absoluteString);
     }
     return YES;
   } else if ([value isKindOfClass:[FBSDKSharePhoto class]]) {
@@ -772,9 +772,9 @@ static NSMutableArray *g_pendingFBSDKShareAPI;
                addRequest:(FBSDKGraphRequest *)request
         completionHandler:(FBSDKGraphRequestHandler)completionHandler
 {
-  NSUInteger requestCount = [connection.requests count];
+  NSUInteger requestCount = connection.requests.count;
   NSString *batchEntryName = [[NSString alloc] initWithFormat:@"request_%lu", (unsigned long)requestCount];
-  [connection addRequest:request completionHandler:completionHandler batchEntryName:batchEntryName];
+  [connection addRequest:request batchEntryName:batchEntryName completionHandler:completionHandler];
   return batchEntryName;
 }
 
@@ -818,7 +818,7 @@ static NSMutableArray *g_pendingFBSDKShareAPI;
   else if (_assetRepresentation) {
     NSMutableData *data = [NSMutableData dataWithLength:chunkSize];
     NSError *error;
-    NSUInteger bufferedLength = [_assetRepresentation getBytes:[data mutableBytes] fromOffset:startOffset length:chunkSize error:&error];
+    NSUInteger bufferedLength = [_assetRepresentation getBytes:data.mutableBytes fromOffset:startOffset length:chunkSize error:&error];
     if (bufferedLength != chunkSize || data == nil || error) {
       return nil;
     }

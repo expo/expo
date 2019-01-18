@@ -81,7 +81,7 @@ static FBSDKGameRequestFrictionlessRecipientCache *_recipientCache = nil;
 - (BOOL)show
 {
   NSError *error;
-  if (![self canShow]) {
+  if (!self.canShow) {
     error = [NSError fbErrorWithDomain:FBSDKShareErrorDomain
                                   code:FBSDKShareErrorDialogNotAvailable
                                message:@"Game request dialog is not available."];
