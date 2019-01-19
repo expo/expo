@@ -414,7 +414,7 @@ static const NSUInteger kExpiryTimeTolerance = 60;
                 redirectURL:nil
                    clientID:_lastAuthorizationResponse.request.clientID
                clientSecret:_lastAuthorizationResponse.request.clientSecret
-                      scope:_lastAuthorizationResponse.request.scope
+                      scope:nil
                refreshToken:_refreshToken
                codeVerifier:nil
        additionalParameters:additionalParameters];
