@@ -166,7 +166,7 @@ EX_EXPORT_METHOD_AS(executeAsync,
   if (!input.refreshToken) {
     refreshToken = request[@"refreshToken"];
   } else {
-    refreshToken = input.accessToken;
+    refreshToken = input.refreshToken;
   }
 
   [output setValue:EXnullIfEmpty(refreshToken) forKey:@"refreshToken"];
