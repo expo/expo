@@ -39,14 +39,7 @@ class MapView extends React.Component<Props> {
   };
 
   render() {
-    const { region, initialRegion = {}, onRegionChange, onPress, children } = this.props;
-
-    const finalRegion = region || initialRegion;
-
-    const center = {
-      lat: finalRegion.latitude,
-      lng: finalRegion.longitude,
-    };
+    const { region, initialRegion, onRegionChange, onPress, children } = this.props;
 
     return (
       <View style={styles.container}>
@@ -54,7 +47,14 @@ class MapView extends React.Component<Props> {
           handleMapMounted={this.handleMapMounted}
           containerElement={<div style={{ height: '100%' }} />}
           mapElement={<div style={{ height: '100%' }} />}
-          center={center}
+          defaultCenter={{
+            lat: initialRegion.latitude,
+            lng: initialRegion.longitude,
+          }}
+          center={{
+            lat: region.latitude,
+            lng: region.longitude,
+          }}
           onDragStart={onRegionChange}
           onDragEnd={this.onDragEnd}
           onClick={onPress}>
