@@ -26,7 +26,6 @@
            @"additionalParameters": EXNullIfNil([input additionalParameters]),
            @"idToken": EXnullIfEmpty([input idToken]),
            @"tokenType": EXnullIfEmpty([input tokenType]),
-           @"refreshToken": EXnullIfEmpty([input refreshToken]),
            };
 }
 
