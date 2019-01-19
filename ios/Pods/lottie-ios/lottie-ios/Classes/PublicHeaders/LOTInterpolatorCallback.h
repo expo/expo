@@ -23,7 +23,7 @@
 @property (nonatomic) CGPoint toPoint;
 
 /*!
- @brief As currentProgess changes from 0 to 1 the point sent to the animation view is interpolated between fromPoint and toPoint.
+ @brief As currentProgress changes from 0 to 1 the point sent to the animation view is interpolated between fromPoint and toPoint.
  */
 
 @property (nonatomic, assign) CGFloat currentProgress;
@@ -43,7 +43,7 @@
 @property (nonatomic) CGSize toSize;
 
 /*!
- @brief As currentProgess changes from 0 to 1 the size sent to the animation view is interpolated between fromSize and toSize.
+ @brief As currentProgress changes from 0 to 1 the size sent to the animation view is interpolated between fromSize and toSize.
  */
 
 @property (nonatomic, assign) CGFloat currentProgress;
@@ -63,7 +63,7 @@
 @property (nonatomic) CGFloat toFloat;
 
 /*!
- @brief As currentProgess changes from 0 to 1 the float sent to the animation view is interpolated between fromFloat and toFloat.
+ @brief As currentProgress changes from 0 to 1 the float sent to the animation view is interpolated between fromFloat and toFloat.
  */
 
 @property (nonatomic, assign) CGFloat currentProgress;

@@ -36,14 +36,14 @@
                       withAssetBundle:(NSBundle * _Nullable)bundle;
 
 @property (nonatomic, readonly) CGRect compBounds;
-@property (nonatomic, readonly, nullable) NSNumber *startFrame;
-@property (nonatomic, readonly, nullable) NSNumber *endFrame;
-@property (nonatomic, readonly, nullable) NSNumber *framerate;
+@property (nonatomic, strong, readonly, nullable) NSNumber *startFrame;
+@property (nonatomic, strong, readonly, nullable) NSNumber *endFrame;
+@property (nonatomic, strong, readonly, nullable) NSNumber *framerate;
 @property (nonatomic, readonly) NSTimeInterval timeDuration;
-@property (nonatomic, readonly, nullable) LOTLayerGroup *layerGroup;
-@property (nonatomic, readonly, nullable) LOTAssetGroup *assetGroup;
-@property (nonatomic, readwrite, nullable) NSString *rootDirectory;
-@property (nonatomic, readonly, nullable) NSBundle *assetBundle;
+@property (nonatomic, strong, readonly, nullable) LOTLayerGroup *layerGroup;
+@property (nonatomic, strong, readonly, nullable) LOTAssetGroup *assetGroup;
+@property (nonatomic, strong, readwrite, nullable) NSString *rootDirectory;
+@property (nonatomic, strong, readonly, nullable) NSBundle *assetBundle;
 @property (nonatomic, copy, nullable) NSString *cacheKey;
 
 @end

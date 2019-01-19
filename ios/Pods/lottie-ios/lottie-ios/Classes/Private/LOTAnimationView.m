@@ -57,9 +57,8 @@ static NSString * const kCompContainerAnimationKey = @"play";
 # pragma mark - Initializers
 
 - (instancetype)initWithContentsOfURL:(NSURL *)url {
-  self = [super initWithFrame:CGRectZero];
+  self = [self initWithFrame:CGRectZero];
   if (self) {
-    [self _commonInit];
     LOTComposition *laScene = [[LOTAnimationCache sharedCache] animationForKey:url.absoluteString];
     if (laScene) {
       laScene.cacheKey = url.absoluteString;
@@ -92,18 +91,17 @@ static NSString * const kCompContainerAnimationKey = @"play";
 }
 
 - (instancetype)initWithModel:(LOTComposition *)model inBundle:(NSBundle *)bundle {
-  self = [super initWithFrame:model.compBounds];
+  self = [self initWithFrame:model.compBounds];
   if (self) {
     _bundle = bundle;
-    [self _commonInit];
     [self _initializeAnimationContainer];
     [self _setupWithSceneModel:model];
   }
   return self;
 }
 
-- (instancetype)init {
-  self = [super init];
+- (instancetype)initWithFrame:(CGRect)frame {
+  self = [super initWithFrame:frame];
   if (self) {
     [self _commonInit];
   }
@@ -118,6 +116,16 @@ static NSString * const kCompContainerAnimationKey = @"play";
   return self;
 }
 
+# pragma mark - Inspectables
+
+- (void)setAnimation:(NSString *)animationName {
+    
+    _animation = animationName;
+    
+    [self setAnimationNamed:animationName];
+    
+}
+
 # pragma mark - Internal Methods
 
 #if TARGET_OS_IPHONE || TARGET_OS_SIMULATOR
@@ -125,14 +133,6 @@ static NSString * const kCompContainerAnimationKey = @"play";
 - (void)_initializeAnimationContainer {
   self.clipsToBounds = YES;
 }
-
-#else
-
-- (void)_initializeAnimationContainer {
-  self.wantsLayer = YES;
-}
-
-#endif
 
 - (void)_commonInit {
   _animationSpeed = 1;
@@ -143,6 +143,35 @@ static NSString * const kCompContainerAnimationKey = @"play";
   _playRangeStartFrame = nil;
   _playRangeEndProgress = 0;
   _playRangeStartProgress = 0;
+  _shouldRasterizeWhenIdle = NO;
+  [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_handleWillEnterForeground) name:UIApplicationWillEnterForegroundNotification object:nil];
+  [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_handleWillEnterBackground) name:UIApplicationDidEnterBackgroundNotification object:nil];
+}
+
+#else
+
+- (void)_initializeAnimationContainer {
+  self.wantsLayer = YES;
+}
+
+- (void)_commonInit {
+  _animationSpeed = 1;
+  _animationProgress = 0;
+  _loopAnimation = NO;
+  _autoReverseAnimation = NO;
+  _playRangeEndFrame = nil;
+  _playRangeStartFrame = nil;
+  _playRangeEndProgress = 0;
+  _playRangeStartProgress = 0;
+  _shouldRasterizeWhenIdle = NO;
+}
+
+#endif
+
+
+
+- (void)dealloc {
+  [NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
 - (void)_setupWithSceneModel:(LOTComposition *)model {
@@ -180,6 +209,7 @@ static NSString * const kCompContainerAnimationKey = @"play";
 - (void)_removeCurrentAnimationIfNecessary {
   _isAnimationPlaying = NO;
   [_compContainer removeAllAnimations];
+  _compContainer.shouldRasterize = _shouldRasterizeWhenIdle;
 }
 
 - (CGFloat)_progressForFrame:(NSNumber *)frame {
@@ -201,6 +231,44 @@ static NSString * const kCompContainerAnimationKey = @"play";
   return _animationSpeed >= 0;
 }
 
+- (void)_handleWindowChanges:(BOOL)hasNewWindow
+{
+  // When this view or its superview is leaving the screen, e.g. a modal is presented or another
+  // screen is pushed, this method will get called with newWindow value set to nil - indicating that
+  // this view will be detached from the visible window.
+  // When a view is detached, animations will stop - but will not automatically resumed when it's
+  // re-attached back to window, e.g. when the presented modal is dismissed or another screen is
+  // pop.
+  if (hasNewWindow) {
+    // The view is being re-attached, resume animation if needed.
+    if (_shouldRestoreStateWhenAttachedToWindow) {
+      _shouldRestoreStateWhenAttachedToWindow = NO;
+      
+      _isAnimationPlaying = YES;
+      _completionBlock = _completionBlockToRestoreWhenAttachedToWindow;
+      _completionBlockToRestoreWhenAttachedToWindow = nil;
+      
+      [self performSelector:@selector(_restoreState) withObject:nil afterDelay:0 inModes:@[NSRunLoopCommonModes]];
+    }
+  } else {
+    // The view is being detached, capture information that need to be restored later.
+    if (_isAnimationPlaying) {
+      [self pause];
+      _shouldRestoreStateWhenAttachedToWindow = YES;
+      _completionBlockToRestoreWhenAttachedToWindow = _completionBlock;
+      _completionBlock = nil;
+    }
+  }
+}
+
+- (void)_handleWillEnterBackground {
+  [self _handleWindowChanges: false];
+}
+
+- (void)_handleWillEnterForeground {
+  [self _handleWindowChanges: (self.window != nil)];
+}
+
 # pragma mark - Completion Block
 
 - (void)_callCompletionIfNecessary:(BOOL)complete {
@@ -215,6 +283,13 @@ static NSString * const kCompContainerAnimationKey = @"play";
 
 - (void)setAnimationNamed:(nonnull NSString *)animationName {
   LOTComposition *comp = [LOTComposition animationNamed:animationName];
+
+  [self _initializeAnimationContainer];
+  [self _setupWithSceneModel:comp];
+}
+
+- (void)setAnimationFromJSON:(nonnull NSDictionary *)animationJSON {
+  LOTComposition *comp = [LOTComposition animationFromJSON:animationJSON];
 
   [self _initializeAnimationContainer];
   [self _setupWithSceneModel:comp];
@@ -327,9 +402,12 @@ static NSString * const kCompContainerAnimationKey = @"play";
     animation.delegate = self;
     animation.removedOnCompletion = NO;
     if (offset != 0) {
-      animation.beginTime = CACurrentMediaTime() - (offset * 1 / _animationSpeed);
+      CFTimeInterval currentTime = CACurrentMediaTime();
+      CFTimeInterval currentLayerTime = [self.layer convertTime:currentTime fromLayer:nil];
+      animation.beginTime = currentLayerTime - (offset * 1 / _animationSpeed);
     }
     [_compContainer addAnimation:animation forKey:kCompContainerAnimationKey];
+    _compContainer.shouldRasterize = NO;
   }
   _isAnimationPlaying = YES;
 }
@@ -407,6 +485,15 @@ static NSString * const kCompContainerAnimationKey = @"play";
 
 - (void)forceDrawingUpdate {
   [self _layoutAndForceUpdate];
+}
+
+# pragma mark - External Methods - Idle Rasterization
+
+- (void)setShouldRasterizeWhenIdle:(BOOL)shouldRasterize {
+  _shouldRasterizeWhenIdle = shouldRasterize;
+  if (!_isAnimationPlaying) {
+    _compContainer.shouldRasterize = _shouldRasterizeWhenIdle;
+  }
 }
 
 # pragma mark - External Methods - Cache
@@ -580,32 +667,11 @@ static NSString * const kCompContainerAnimationKey = @"play";
 }
 
 - (void)willMoveToWindow:(UIWindow *)newWindow {
-  // When this view or its superview is leaving the screen, e.g. a modal is presented or another
-  // screen is pushed, this method will get called with newWindow value set to nil - indicating that
-  // this view will be detached from the visible window.
-  // When a view is detached, animations will stop - but will not automatically resumed when it's
-  // re-attached back to window, e.g. when the presented modal is dismissed or another screen is
-  // pop.
-  if (newWindow) {
-    // The view is being re-attached, resume animation if needed.
-    if (_shouldRestoreStateWhenAttachedToWindow) {
-      _shouldRestoreStateWhenAttachedToWindow = NO;
+  [self _handleWindowChanges:(newWindow != nil)];
+}
 
-      _isAnimationPlaying = YES;
-      _completionBlock = _completionBlockToRestoreWhenAttachedToWindow;
-      _completionBlockToRestoreWhenAttachedToWindow = nil;
-
-      [self performSelector:@selector(_restoreState) withObject:nil afterDelay:0];
-    }
-  } else {
-    // The view is being detached, capture information that need to be restored later.
-    if (_isAnimationPlaying) {
-        [self pause];
-      _shouldRestoreStateWhenAttachedToWindow = YES;
-      _completionBlockToRestoreWhenAttachedToWindow = _completionBlock;
-      _completionBlock = nil;
-    }
-  }
+- (void)didMoveToWindow {
+    _compContainer.rasterizationScale = self.window.screen.scale;
 }
 
 - (void)setContentMode:(LOTViewContentMode)contentMode {
@@ -619,6 +685,14 @@ static NSString * const kCompContainerAnimationKey = @"play";
 }
 
 #else
+
+- (void)viewWillMoveToWindow:(NSWindow *)newWindow {
+  [self _handleWindowChanges:(newWindow != nil)];
+}
+
+- (void)viewDidMoveToWindow {
+    _compContainer.rasterizationScale = self.window.screen.backingScaleFactor;
+}
     
 - (void)setCompletionBlock:(LOTAnimationCompletionBlock)completionBlock {
     if (completionBlock) {
@@ -701,7 +775,7 @@ static NSString * const kCompContainerAnimationKey = @"play";
   [CATransaction commit];
 }
 
-# pragma mark - CAANimationDelegate
+# pragma mark - CAAnimationDelegate
 
 - (void)animationDidStop:(CAAnimation *)anim finished:(BOOL)complete {
   if ([_compContainer animationForKey:kCompContainerAnimationKey] == anim &&

@@ -56,7 +56,7 @@ extern NSString * _Nonnull const kLOTKeypathEnd;
 
  LOTKeypath can describe a specific object, or can use wildcards for fuzzy matching of objects. Acceptable wildcards are either "*" (star) or "**" (double star). Single star will search a single depth for the next object, double star will search any depth.
 
- @param  firstKey A nil terminitated list of strings describing a keypath. EG @"Layer", @"Shape Group", @"Stroke 1", @"Color", nil
+ @param  firstKey A nil terminated list of strings describing a keypath. EG @"Layer", @"Shape Group", @"Stroke 1", @"Color", nil
 
  @return A new LOTKeypath
  */
