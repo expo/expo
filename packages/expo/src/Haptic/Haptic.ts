@@ -1,4 +1,5 @@
 import { UnavailabilityError } from 'expo-errors';
+import invariant from 'invariant';
 import ExponentHaptic from './ExponentHaptic';
 
 /**
@@ -45,10 +46,13 @@ export enum ImpactFeedbackStyle {
  * Triggers notification feedback.
  */
 export function notification(type: NotificationFeedbackType = NotificationFeedbackType.Success) {
-  if (!ExponentHaptic || ExponentHaptic.notification) {
+  if (!ExponentHaptic.notification) {
     throw new UnavailabilityError('Haptic', 'notification');
   }
-
+  invariant(
+    Object.values(NotificationFeedbackType).includes(type),
+    `Haptic.notification(): ${type} is not a valid NotificationFeedbackType`
+  );
   return ExponentHaptic.notification(type);
 }
 
@@ -56,10 +60,13 @@ export function notification(type: NotificationFeedbackType = NotificationFeedba
  * Triggers impact feedback.
  */
 export function impact(style: ImpactFeedbackStyle = ImpactFeedbackStyle.Medium) {
-  if (!ExponentHaptic || !ExponentHaptic.impact) {
+  if (!ExponentHaptic.impact) {
     throw new UnavailabilityError('Haptic', 'impact');
   }
-
+  invariant(
+    Object.values(ImpactFeedbackStyle).includes(style),
+    `Haptic.impact(): ${style} is not a valid ImpactFeedbackStyle`
+  );
   return ExponentHaptic.impact(style);
 }
 
@@ -67,7 +74,7 @@ export function impact(style: ImpactFeedbackStyle = ImpactFeedbackStyle.Medium) 
  * Triggers selection feedback.
  */
 export function selection() {
-  if (!ExponentHaptic || !ExponentHaptic.selection) {
+  if (!ExponentHaptic.selection) {
     throw new UnavailabilityError('Haptic', 'selection');
   }
 
