@@ -17,6 +17,7 @@
   "dependencies": {
     "@react-navigation/web": "^1.0.0-alpha.7",
     "case-sensitive-paths-webpack-plugin": "^2.1.2",
+    "date-format": "^2.0.0",
     "expo": "^32.0.0-rc.3",
     "expo-processing": "~2.0.0",
     "expo-three": "^3.0.0-alpha.6",

@@ -2,7 +2,6 @@ package expo.modules.taskManager;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -12,14 +11,17 @@ import java.util.Map;
 
 import expo.core.ModuleRegistry;
 import expo.core.interfaces.InternalModule;
+import expo.core.interfaces.LifecycleEventListener;
 import expo.core.interfaces.ModuleRegistryConsumer;
 import expo.core.interfaces.services.EventEmitter;
+import expo.core.interfaces.services.UIManager;
 import expo.interfaces.constants.ConstantsInterface;
 import expo.interfaces.taskManager.TaskConsumerInterface;
 import expo.interfaces.taskManager.TaskServiceInterface;
 import expo.interfaces.taskManager.TaskManagerInterface;
 
-public class TaskManagerInternalModule implements InternalModule, ModuleRegistryConsumer, TaskManagerInterface {
+public class TaskManagerInternalModule implements InternalModule, ModuleRegistryConsumer, TaskManagerInterface, LifecycleEventListener {
+  private UIManager mUIManager;
   private EventEmitter mEventEmitter;
   private ConstantsInterface mConstants;
   private TaskServiceInterface mTaskService;
@@ -42,12 +44,21 @@ public class TaskManagerInternalModule implements InternalModule, ModuleRegistry
 
   @Override
   public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+    if (mUIManager != null) {
+      mUIManager.unregisterLifecycleEventListener(this);
+    }
+
+    mUIManager = moduleRegistry.getModule(UIManager.class);
     mEventEmitter = moduleRegistry.getModule(EventEmitter.class);
     mConstants = moduleRegistry.getModule(ConstantsInterface.class);
     mTaskService = moduleRegistry.getSingletonModule("TaskService", TaskServiceInterface.class);
 
     // Register in TaskService.
     mTaskService.setTaskManager(this, getAppId(), getAppUrl());
+
+    if (mUIManager != null) {
+      mUIManager.registerLifecycleEventListener(this);
+    }
   }
 
   //endregion
@@ -109,6 +120,39 @@ public class TaskManagerInternalModule implements InternalModule, ModuleRegistry
       return (boolean) mConstants.getConstants().get("isHeadless");
     }
     return false;
+  }
+
+  //endregion
+  //region LifecycleEventListener
+
+  @Override
+  public void onHostResume() {
+    List<TaskConsumerInterface> taskConsumers = mTaskService.getTaskConsumers(getAppId());
+    for (TaskConsumerInterface taskConsumer : taskConsumers) {
+      if (taskConsumer instanceof LifecycleEventListener) {
+        ((LifecycleEventListener) taskConsumer).onHostResume();
+      }
+    }
+  }
+
+  @Override
+  public void onHostPause() {
+    List<TaskConsumerInterface> taskConsumers = mTaskService.getTaskConsumers(getAppId());
+    for (TaskConsumerInterface taskConsumer : taskConsumers) {
+      if (taskConsumer instanceof LifecycleEventListener) {
+        ((LifecycleEventListener) taskConsumer).onHostPause();
+      }
+    }
+  }
+
+  @Override
+  public void onHostDestroy() {
+    List<TaskConsumerInterface> taskConsumers = mTaskService.getTaskConsumers(getAppId());
+    for (TaskConsumerInterface taskConsumer : taskConsumers) {
+      if (taskConsumer instanceof LifecycleEventListener) {
+        ((LifecycleEventListener) taskConsumer).onHostDestroy();
+      }
+    }
   }
 
   //endregion
