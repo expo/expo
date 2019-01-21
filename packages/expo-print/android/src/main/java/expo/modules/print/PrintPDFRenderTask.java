@@ -84,10 +84,10 @@ public class PrintPDFRenderTask {
       int height = DEFAULT_MEDIA_HEIGHT;
 
       if (mOptions.containsKey("width") && mOptions.get("width") != null) {
-        width = (int) mOptions.get("width");
+        width = ((Number) mOptions.get("width")).intValue();
       }
       if (mOptions.containsKey("height") && mOptions.get("height") != null) {
-        height = (int) mOptions.get("height");
+        height = ((Number) mOptions.get("height")).intValue();
       }
 
       PrintAttributes.MediaSize mediaSize = new PrintAttributes.MediaSize(
