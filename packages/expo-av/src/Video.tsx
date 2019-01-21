@@ -35,8 +35,10 @@ import {
   ResizeMode,
   State,
   ExponentVideoComponent,
+  NaturalSize,
 } from './Video.types';
 
+export { NaturalSize };
 export const FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT = 0;
 export const FULLSCREEN_UPDATE_PLAYER_DID_PRESENT = 1;
 export const FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS = 2;
