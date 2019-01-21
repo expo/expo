@@ -1,31 +1,23 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
+package expo.modules.sqlite;
 
-package versioned.host.exp.exponent.modules.api;
-
-import com.facebook.react.bridge.NativeArray;
-import com.facebook.react.bridge.Promise;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.bridge.ReadableType;
-import com.facebook.react.bridge.WritableNativeArray;
-
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
-import android.os.Handler;
-import android.os.HandlerThread;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import host.exp.exponent.utils.ExpFileUtils;
-import host.exp.exponent.utils.ScopedContext;
+import expo.core.ExportedModule;
+import expo.core.Promise;
+import expo.core.interfaces.ExpoMethod;
 
-public class SQLiteModule extends ReactContextBaseJavaModule {
+public class SQLiteModule extends ExportedModule {
   private static final boolean DEBUG_MODE = false;
 
   private static final String TAG = SQLiteModule.class.getSimpleName();
@@ -36,11 +28,11 @@ public class SQLiteModule extends ReactContextBaseJavaModule {
 
   private static final Map<String, SQLiteDatabase> DATABASES = new HashMap<String, SQLiteDatabase>();
 
-  private ScopedContext mScopedContext;
+  private Context mContext;
 
-  public SQLiteModule(ReactApplicationContext reactContext, ScopedContext scopedContext) {
-    super(reactContext);
-    mScopedContext = scopedContext;
+  public SQLiteModule(Context scopedContext) {
+    super(scopedContext);
+    mContext = scopedContext;
   }
 
   @Override
@@ -48,23 +40,17 @@ public class SQLiteModule extends ReactContextBaseJavaModule {
     return "ExponentSQLite";
   }
 
-  private Handler createBackgroundHandler() {
-    HandlerThread thread = new HandlerThread("SQLitePlugin BG Thread");
-    thread.start();
-    return new Handler(thread.getLooper());
-  }
-
-  @ReactMethod
-  public void exec(String dbName, ReadableArray queries, Boolean readOnly, Promise promise) {
+  @ExpoMethod
+  public void exec(String dbName, ArrayList<ArrayList<Object>> queries, Boolean readOnly, final Promise promise) {
     try {
       int numQueries = queries.size();
       SQLitePluginResult[] results = new SQLitePluginResult[numQueries];
       SQLiteDatabase db = getDatabase(dbName);
 
       for (int i = 0; i < numQueries; i++) {
-        ReadableArray sqlQuery = queries.getArray(i);
-        String sql = sqlQuery.getString(0);
-        String[] bindArgs = convertParamsToStringArray(sqlQuery.getArray(1));
+        ArrayList<Object> sqlQuery = queries.get(i);
+        String sql = (String) sqlQuery.get(0);
+        String[] bindArgs = convertParamsToStringArray(sqlQuery.get(1));
         try {
           if (isSelect(sql)) {
             results[i] = doSelectInBackgroundAndPossiblyThrow(sql, bindArgs, db);
@@ -82,16 +68,18 @@ public class SQLiteModule extends ReactContextBaseJavaModule {
           results[i] = new SQLitePluginResult(EMPTY_ROWS, EMPTY_COLUMNS, 0, 0, e);
         }
       }
-      NativeArray data = pluginResultsToPrimitiveData(results);
+      List<Object> data = pluginResultsToPrimitiveData(results);
       promise.resolve(data);
     } catch (Exception e) {
       promise.reject("SQLiteError", e);
     }
   }
 
-  @ReactMethod
-  public void close(String dbName) {
+  @ExpoMethod
+  public void close(String dbName, final Promise promise) {
+    DATABASES.get(dbName).close();
     DATABASES.remove(dbName);
+    promise.resolve(null);
   }
 
   // do a update/delete/insert operation
@@ -173,9 +161,16 @@ public class SQLiteModule extends ReactContextBaseJavaModule {
     return null;
   }
 
+  private static File ensureDirExists(File dir) throws IOException {
+    if (!(dir.isDirectory() || dir.mkdirs())) {
+      throw new IOException("Couldn't create directory '" + dir + "'");
+    }
+    return dir;
+  }
+
   private String pathForDatabaseName(String name) throws IOException {
-    File directory = new File(mScopedContext.getFilesDir() + File.separator + "SQLite");
-    ExpFileUtils.ensureDirExists(directory);
+    File directory = new File(mContext.getFilesDir() + File.separator + "SQLite");
+    ensureDirExists(directory);
     return directory + File.separator + name;
   }
 
@@ -193,67 +188,70 @@ public class SQLiteModule extends ReactContextBaseJavaModule {
     return database;
   }
 
-  private static NativeArray pluginResultsToPrimitiveData(SQLitePluginResult[] results) {
-    WritableNativeArray list = new WritableNativeArray();
+  private static List<Object> pluginResultsToPrimitiveData(SQLitePluginResult[] results) {
+    List<Object> list = new ArrayList<>();
     for (int i = 0; i < results.length; i++) {
       SQLitePluginResult result = results[i];
-      WritableNativeArray arr = convertPluginResultToArray(result);
-      list.pushArray(arr);
+      List<Object> arr = convertPluginResultToArray(result);
+      list.add(arr);
     }
     return list;
   }
 
-  private static WritableNativeArray convertPluginResultToArray(SQLitePluginResult result) {
-    WritableNativeArray data = new WritableNativeArray();
+  private static List<Object> convertPluginResultToArray(SQLitePluginResult result) {
+    List<Object> data = new ArrayList<>();
     if (result.error != null) {
-      data.pushString(result.error.getMessage());
+      data.add(result.error.getMessage());
     } else {
-      data.pushNull();
+      data.add(null);
     }
-    data.pushInt((int) result.insertId);
-    data.pushInt(result.rowsAffected);
+    data.add((int) result.insertId);
+    data.add(result.rowsAffected);
 
     // column names
-    WritableNativeArray columnNames = new WritableNativeArray();
+    List<String> columnNames = new ArrayList<>();
     for (int i = 0; i < result.columns.length; i++) {
-      columnNames.pushString(result.columns[i]);
+      columnNames.add(result.columns[i]);
     }
-    data.pushArray(columnNames);
+    data.add(columnNames);
 
     // rows
-    WritableNativeArray rows = new WritableNativeArray();
+    List<Object> rows = new ArrayList<>();
     for (int i = 0; i < result.rows.length; i++) {
       Object[] values = result.rows[i];
       // row content
-      WritableNativeArray rowContent = new WritableNativeArray();
+      List<Object> rowContent = new ArrayList<>();
       for (int j = 0; j < values.length; j++) {
         Object value = values[j];
         if (value == null) {
-          rowContent.pushNull();
+          rowContent.add(null);
         } else if (value instanceof String) {
-          rowContent.pushString((String)value);
+          rowContent.add((String) value);
         } else if (value instanceof Boolean) {
-          rowContent.pushBoolean((Boolean)value);
+          rowContent.add((Boolean) value);
         } else {
-          Number v = (Number)value;
-          rowContent.pushDouble(v.doubleValue());
+          Number v = (Number) value;
+          rowContent.add(v.doubleValue());
         }
       }
-      rows.pushArray(rowContent);
+      rows.add(rowContent);
     }
-    data.pushArray(rows);
+    data.add(rows);
     return data;
   }
 
   private static boolean isSelect(String str) {
     return startsWithCaseInsensitive(str, "select") || startsWithCaseInsensitive(str, "pragma");
   }
+
   private static boolean isInsert(String str) {
     return startsWithCaseInsensitive(str, "insert");
   }
+
   private static boolean isUpdate(String str) {
     return startsWithCaseInsensitive(str, "update");
   }
+
   private static boolean isDelete(String str) {
     return startsWithCaseInsensitive(str, "delete");
   }
@@ -283,20 +281,21 @@ public class SQLiteModule extends ReactContextBaseJavaModule {
     return true;
   }
 
-  private static String[] convertParamsToStringArray(ReadableArray paramArray) {
+  private static String[] convertParamsToStringArray(Object paramArrayArg) {
+    ArrayList<Object> paramArray = (ArrayList<Object>) paramArrayArg;
     int len = paramArray.size();
     String[] res = new String[len];
     for (int i = 0; i < len; i++) {
-      ReadableType type = paramArray.getType(i);
-      if (type == ReadableType.String) {
-        String unescaped = unescapeBlob(paramArray.getString(i));
-        res[i] = unescaped;
-      } else if (type == ReadableType.Boolean) {
-        res[i] = paramArray.getBoolean(i) ? "0" : "1";
-      } else if (type == ReadableType.Null) {
-        res[i] = null;
-      } else if (type == ReadableType.Number) {
-        res[i] = Double.toString(paramArray.getDouble(i));
+      Object object = paramArray.get(i);
+      res[i] = null;
+      if (object instanceof String) {
+        res[i] = unescapeBlob((String) object);
+      } else if (object instanceof Boolean) {
+        res[i] = ((Boolean) object) ? "0" : "1";
+      } else if (object instanceof Double) {
+        res[i] = object.toString();
+      } else if (object != null) {
+        throw new ClassCastException("Cound not find proper type in SQLite module");
       }
     }
     return res;

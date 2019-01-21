@@ -1,17 +1,15 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "EXSQLite.h"
+#import <EXSQLite/EXSQLite.h>
 
-#import "EXModuleRegistryBinding.h"
 #import <EXFileSystemInterface/EXFileSystemInterface.h>
-
-#import <React/RCTLog.h>
 
 #import <sqlite3.h>
 
 @interface EXSQLite ()
 
 @property (nonatomic, copy) NSMutableDictionary *cachedDatabases;
+@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
 
 @end
 
@@ -24,21 +22,19 @@
   return dispatch_get_main_queue();
 }
 
-RCT_EXPORT_MODULE(ExponentSQLite)
+EX_EXPORT_MODULE(ExponentSQLite);
 
-@synthesize bridge = _bridge;
-
-- (void)setBridge:(RCTBridge *)bridge
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
-  _bridge = bridge;
+  _moduleRegistry = moduleRegistry;
   cachedDatabases = [NSMutableDictionary dictionary];
 }
 
 - (NSString *)pathForDatabaseName:(NSString *)name
 {
-  id<EXFileSystemInterface> fileSystem = [self.bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
+  id<EXFileSystemInterface> fileSystem = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
   if (!fileSystem) {
-    RCTLogError(@"No FileSystem module.");
+    EXLogError(@"No FileSystem module.");
     return nil;
   }
   NSString *directory = [fileSystem.documentDirectory stringByAppendingPathComponent:@"SQLite"];
@@ -68,11 +64,12 @@ RCT_EXPORT_MODULE(ExponentSQLite)
   return cachedDB;
 }
 
-RCT_EXPORT_METHOD(exec:(NSString *)dbName
-                  queries:(NSArray *)sqlQueries
-                  readOnly:(BOOL)readOnly
-                  resolver:(RCTPromiseResolveBlock)resolve
-                  rejecter:(RCTPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(exec,
+                    exec:(NSString *)dbName
+                 queries:(NSArray *)sqlQueries
+                readOnly:(BOOL)readOnly
+                resolver:(EXPromiseResolveBlock)resolve
+                rejecter:(EXPromiseRejectBlock)reject)
 {
   @synchronized(self) {
     NSValue *databasePointer = [self openDatabase:dbName];
@@ -92,10 +89,14 @@ RCT_EXPORT_METHOD(exec:(NSString *)dbName
   }
 }
 
-RCT_EXPORT_METHOD(close:(NSString *)dbName)
+EX_EXPORT_METHOD_AS(close,
+                    close:(NSString *)dbName
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   @synchronized(self) {
     [cachedDatabases removeObjectForKey:dbName];
+    resolve(nil);
   }
 }
 
