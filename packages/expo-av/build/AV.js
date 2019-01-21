@@ -1,4 +1,5 @@
 import { Asset } from 'expo-asset';
+import { Platform } from 'expo-core';
 export const _DEFAULT_PROGRESS_UPDATE_INTERVAL_MILLIS = 500;
 export const _DEFAULT_INITIAL_PLAYBACK_STATUS = {
     positionMillis: 0,
@@ -14,6 +15,13 @@ export function getNativeSourceFromSource(source) {
     let uri = null;
     let overridingExtension = null;
     let headers;
+    if (typeof source === 'string' && Platform.OS === 'web') {
+        return {
+            uri: source,
+            overridingExtension,
+            headers,
+        };
+    }
     let asset = _getAssetFromPlaybackSource(source);
     if (asset != null) {
         uri = asset.localUri || asset.uri;
@@ -33,7 +41,10 @@ export function getNativeSourceFromSource(source) {
         typeof source.overrideFileExtensionAndroid === 'string') {
         overridingExtension = source.overrideFileExtensionAndroid;
     }
-    if (source != null && typeof source !== 'number' && 'headers' in source && typeof source.headers === 'object') {
+    if (source != null &&
+        typeof source !== 'number' &&
+        'headers' in source &&
+        typeof source.headers === 'object') {
         headers = source.headers;
     }
     return { uri, overridingExtension, headers };
@@ -60,6 +71,23 @@ export function assertStatusValuesInBounds(status) {
     }
 }
 export async function getNativeSourceAndFullInitialStatusForLoadAsync(source, initialStatus, downloadFirst) {
+    // Get the full initial status
+    const fullInitialStatus = initialStatus == null
+        ? _DEFAULT_INITIAL_PLAYBACK_STATUS
+        : {
+            ..._DEFAULT_INITIAL_PLAYBACK_STATUS,
+            ...initialStatus,
+        };
+    assertStatusValuesInBounds(fullInitialStatus);
+    if (typeof source === 'string' && Platform.OS === 'web') {
+        return {
+            nativeSource: {
+                uri: source,
+                overridingExtension: null,
+            },
+            fullInitialStatus,
+        };
+    }
     // Download first if necessary.
     let asset = _getAssetFromPlaybackSource(source);
     if (downloadFirst && asset) {
@@ -71,14 +99,6 @@ export async function getNativeSourceAndFullInitialStatusForLoadAsync(source, in
     if (nativeSource === null) {
         throw new Error(`Cannot load an AV asset from a null playback source`);
     }
-    // Get the full initial status
-    const fullInitialStatus = initialStatus == null
-        ? _DEFAULT_INITIAL_PLAYBACK_STATUS
-        : {
-            ..._DEFAULT_INITIAL_PLAYBACK_STATUS,
-            ...initialStatus,
-        };
-    assertStatusValuesInBounds(fullInitialStatus);
     return { nativeSource, fullInitialStatus };
 }
 export function getUnloadedStatus(error = null) {

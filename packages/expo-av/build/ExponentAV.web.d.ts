@@ -1,0 +1,24 @@
+declare const _default: {
+    readonly name: string;
+    presentFullscreenPlayer(): Promise<void>;
+    getStatusForVideo(): Promise<void>;
+    loadForVideo(): Promise<void>;
+    unloadForVideo(): Promise<void>;
+    setStatusForVideo(): Promise<void>;
+    replayVideo(): Promise<void>;
+    setAudioMode(): Promise<void>;
+    setAudioIsEnabled(): Promise<void>;
+    getStatusForSound(): Promise<void>;
+    setErrorCallbackForSound(): Promise<void>;
+    loadForSound(): Promise<void>;
+    unloadForSound(): Promise<void>;
+    setStatusForSound(): Promise<void>;
+    replaySound(): Promise<void>;
+    getAudioRecordingStatus(): Promise<void>;
+    prepareAudioRecorder(): Promise<void>;
+    startAudioRecording(): Promise<void>;
+    pauseAudioRecording(): Promise<void>;
+    stopAudioRecording(): Promise<void>;
+    unloadAudioRecorder(): Promise<void>;
+};
+export default _default;

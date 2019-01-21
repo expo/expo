@@ -1,6 +1,6 @@
 export default {
   get name(): string {
-    return 'ExponentVideoManager';
+    return 'ExpoVideoManager';
   },
   ScaleNone: 'ScaleNone',
   ScaleToFill: 'ScaleToFill',

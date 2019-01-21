@@ -1,5 +1,4 @@
-import { NativeModulesProxy } from 'expo-core';
-const { ExponentAV } = NativeModulesProxy;
+import ExponentAV from '../ExponentAV';
 let _enabled = true;
 export function isAudioEnabled() {
     return _enabled;
