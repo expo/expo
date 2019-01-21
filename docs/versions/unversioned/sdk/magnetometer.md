@@ -8,11 +8,11 @@ and uncalibrated raw values with `Expo.MagnetometerUncalibrated`.
 
 ### `Expo.Magnetometer.isAvailableAsync()`
 
-Is the sensor enabled on the device.
+Returns whether the magnetometer is enabled on the device.
 
 #### Returns
 
-- A Promise that resolves to a `boolean` denoting the availability of the sensor.
+- A promise that resolves to a `boolean` denoting the availability of the sensor.
 
 ### `Expo.Magnetometer.addListener(listener)`
 
@@ -27,7 +27,7 @@ Subscribe for updates to the Magnetometer.
 
 #### Returns
 
-- An EventSubscription object that you can call remove() on when you
+- A subscription that you can call `remove()` on when you
   would like to unsubscribe the listener.
 
 ### `Expo.Magnetometer.removeAllListeners()`

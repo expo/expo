@@ -6,11 +6,11 @@ Access the device motion and orientation sensors. All data is presented in terms
 
 ### `Expo.DangerZone.DeviceMotion.isAvailableAsync()`
 
-Is the sensor enabled on the device.
+Returns whether device motion is enabled on the device.
 
 #### Returns
 
-- A Promise that resolves to a `boolean` denoting the availability of the sensor.
+- A promise that resolves to a `boolean` denoting the availability of the sensor.
 
 ### `Expo.DangerZone.DeviceMotion.addListener(listener)`
 
@@ -34,7 +34,7 @@ Subscribe for updates to DeviceMotion.
 
 #### Returns
 
-- An EventSubscription object that you can call remove() on when you
+- A subscription that you can call `remove()` on when you
   would like to unsubscribe the listener.
 
 ### `Expo.DangerZone.DeviceMotion.removeAllListeners()`

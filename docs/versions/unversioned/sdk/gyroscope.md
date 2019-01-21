@@ -6,11 +6,11 @@ Access the device gyroscope sensor to respond to changes in rotation in 3d space
 
 ### `Expo.Gyroscope.isAvailableAsync()`
 
-Is the sensor enabled on the device.
+Returns whether the gyroscope is enabled on the device.
 
 #### Returns
 
-- A Promise that resolves to a `boolean` denoting the availability of the sensor.
+- A promise that resolves to a `boolean` denoting the availability of the sensor.
 
 ### `Expo.Gyroscope.addListener(listener)`
 
@@ -22,8 +22,9 @@ Subscribe for updates to the gyroscope.
 
 #### Returns
 
-An EventSubscription object that you can call remove() on when you would like to unsubscribe the listener.
-
+- A subscription that you can call `remove()` on when you
+  would like to unsubscribe the listener.
+  
 ### `Expo.Gyroscope.removeAllListeners()`
 
 Remove all listeners.

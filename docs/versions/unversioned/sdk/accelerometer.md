@@ -11,7 +11,7 @@ Returns whether the accelerometer is enabled on the device.
 
 #### Returns
 
-- A Promise that resolves to a `boolean` denoting the availability of the sensor.
+- A promise that resolves to a `boolean` denoting the availability of the sensor.
 
 ### `Expo.Accelerometer.addListener(listener)`
 
@@ -26,7 +26,7 @@ Subscribe for updates to the accelerometer.
 
 #### Returns
 
-- An EventSubscription object that you can call remove() on when you
+- A subscription that you can call `remove()` on when you
   would like to unsubscribe the listener.
 
 ### `Expo.Accelerometer.removeAllListeners()`
