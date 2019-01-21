@@ -3,14 +3,15 @@ import nullthrows from 'nullthrows';
 import PropTypes from 'prop-types';
 import * as React from 'react';
 import {
+  findNodeHandle,
   Image,
+  NativeComponent,
+  NativeModules,
+  Platform,
   StyleSheet,
   View,
   ViewPropTypes,
-  findNodeHandle,
-  NativeComponent,
 } from 'react-native';
-import { requireNativeViewManager, NativeModulesProxy } from 'expo-core';
 
 import {
   assertStatusValuesInBounds,
@@ -20,89 +21,21 @@ import {
   Playback,
   PlaybackMixin,
   PlaybackSource,
-  PlaybackNativeSource,
   PlaybackStatus,
   PlaybackStatusToSet,
 } from './AV';
-
-export type NaturalSize = {
-  width: number;
-  height: number;
-  orientation: 'portrait' | 'landscape';
-};
-
-enum ResizeMode {
-  CONTAIN = 'contain',
-  COVER = 'cover',
-  STRETCH = 'stretch',
-}
-
-type ReadyForDisplayEvent = {
-  naturalSize: NaturalSize;
-  status: PlaybackStatus;
-};
-
-type FullscreenUpdateEvent = {
-  fullscreenUpdate: 0 | 1 | 2 | 3;
-  status: PlaybackStatus;
-};
-
-type Props = {
-  // Source stuff
-  source?: PlaybackSource; // { uri: 'http://foo/bar.mp4' }, Asset, or require('./foo/bar.mp4')
-  posterSource?: { uri: string } | number; // { uri: 'http://foo/bar.mp4' } or require('./foo/bar.mp4')
-
-  // Callbacks
-  onPlaybackStatusUpdate?: (status: PlaybackStatus) => void;
-  onLoadStart?: () => void;
-  onLoad?: (status: PlaybackStatus) => void;
-  onError?: (error: string) => void;
-  onReadyForDisplay?: (event: ReadyForDisplayEvent) => void;
-  onFullscreenUpdate?: (event: FullscreenUpdateEvent) => void;
-  onIOSFullscreenUpdate?: (event: FullscreenUpdateEvent) => void;
-
-  // UI stuff
-  useNativeControls?: boolean;
-  // NOTE(ide): This should just be ResizeMode. We have the explicit strings for now since we don't
-  // currently export the ResizeMode enum.
-  resizeMode?: ResizeMode | 'stretch' | 'cover' | 'contain';
-  usePoster?: boolean;
-
-  // Playback API
-  status?: PlaybackStatusToSet;
-  progressUpdateIntervalMillis?: number;
-  positionMillis?: number;
-  shouldPlay?: boolean;
-  rate?: number;
-  shouldCorrectPitch?: boolean;
-  volume?: number;
-  isMuted?: boolean;
-  isLooping?: boolean;
-
-  // Required by react-native
-  scaleX?: number;
-  scaleY?: number;
-  translateX?: number;
-  translateY?: number;
-  rotation?: number;
-} & React.ComponentProps<typeof View>;
-
-type NativeProps = {
-  source: PlaybackNativeSource | null;
-  resizeMode?: unknown;
-  status?: PlaybackStatusToSet;
-  onLoadStart?: () => void;
-  onLoad?: (event: { nativeEvent: PlaybackStatus }) => void;
-  onError?: (event: { nativeEvent: { error: string } }) => void;
-  onStatusUpdate?: (event: { nativeEvent: PlaybackStatus }) => void;
-  onReadyForDisplay?: (event: { nativeEvent: ReadyForDisplayEvent }) => void;
-  onFullscreenUpdate?: (event: { nativeEvent: FullscreenUpdateEvent }) => void;
-  useNativeControls?: boolean;
-} & React.ComponentProps<typeof View>;
-
-type State = {
-  showPoster: boolean;
-};
+import ExponentAV from './ExponentAV';
+import ExponentVideo from './ExponentVideo';
+import ExpoVideoManager from './ExpoVideoManager';
+import {
+  FullscreenUpdateEvent,
+  NativeProps,
+  Props,
+  ReadyForDisplayEvent,
+  ResizeMode,
+  State,
+  ExponentVideoComponent,
+} from './Video.types';
 
 export const FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT = 0;
 export const FULLSCREEN_UPDATE_PLAYER_DID_PRESENT = 1;
@@ -137,8 +70,8 @@ const _STYLES = StyleSheet.create({
 
 // On a real device UIManager should be present, however when running offline tests with jest-expo
 // we have to use the provided native module mock to access constants
-const ExpoVideoManagerConstants = NativeModulesProxy.ExpoVideoManager;
-const ExpoVideoViewManager = NativeModulesProxy.ExpoVideoManager;
+const ExpoVideoManagerConstants = ExpoVideoManager;
+const ExpoVideoViewManager = ExpoVideoManager;
 
 export default class Video extends React.Component<Props, State> implements Playback {
   static RESIZE_MODE_CONTAIN = ResizeMode.CONTAIN;
@@ -214,7 +147,7 @@ export default class Video extends React.Component<Props, State> implements Play
     ...ViewPropTypes,
   };
 
-  _nativeRef = React.createRef<InstanceType<ExponentVideo> & NativeComponent>();
+  _nativeRef = React.createRef<InstanceType<ExponentVideoComponent> & NativeComponent>();
 
   // componentOrHandle: null | number | React.Component<any, any> | React.ComponentClass<any>
 
@@ -281,7 +214,7 @@ export default class Video extends React.Component<Props, State> implements Play
 
   presentFullscreenPlayerAsync = () =>
     this._performOperationAndHandleStatusAsync((tag: number) =>
-      NativeModulesProxy.ExponentAV.presentFullscreenPlayer(tag)
+      ExponentAV.presentFullscreenPlayer(tag)
     );
 
   dismissFullscreenPlayer = async () => {
@@ -302,7 +235,7 @@ export default class Video extends React.Component<Props, State> implements Play
 
   getStatusAsync = async (): Promise<PlaybackStatus> => {
     return this._performOperationAndHandleStatusAsync((tag: number) =>
-      NativeModulesProxy.ExponentAV.getStatusForVideo(tag)
+      ExponentAV.getStatusForVideo(tag)
     );
   };
 
@@ -318,14 +251,14 @@ export default class Video extends React.Component<Props, State> implements Play
       fullInitialStatus,
     } = await getNativeSourceAndFullInitialStatusForLoadAsync(source, initialStatus, downloadFirst);
     return this._performOperationAndHandleStatusAsync((tag: number) =>
-      NativeModulesProxy.ExponentAV.loadForVideo(tag, nativeSource, fullInitialStatus)
+      ExponentAV.loadForVideo(tag, nativeSource, fullInitialStatus)
     );
   };
 
   // Equivalent to setting URI to null.
   unloadAsync = async (): Promise<PlaybackStatus> => {
     return this._performOperationAndHandleStatusAsync((tag: number) =>
-      NativeModulesProxy.ExponentAV.unloadForVideo(tag)
+      ExponentAV.unloadForVideo(tag)
     );
   };
 
@@ -334,7 +267,7 @@ export default class Video extends React.Component<Props, State> implements Play
   setStatusAsync = async (status: PlaybackStatusToSet): Promise<PlaybackStatus> => {
     assertStatusValuesInBounds(status);
     return this._performOperationAndHandleStatusAsync((tag: number) =>
-      NativeModulesProxy.ExponentAV.setStatusForVideo(tag, status)
+      ExponentAV.setStatusForVideo(tag, status)
     );
   };
 
@@ -344,7 +277,7 @@ export default class Video extends React.Component<Props, State> implements Play
     }
 
     return this._performOperationAndHandleStatusAsync((tag: number) =>
-      NativeModulesProxy.ExponentAV.replayVideo(tag, {
+      ExponentAV.replayVideo(tag, {
         ...status,
         positionMillis: 0,
         shouldPlay: true,
@@ -490,6 +423,3 @@ export default class Video extends React.Component<Props, State> implements Play
 }
 
 Object.assign(Video.prototype, PlaybackMixin);
-
-type ExponentVideo = React.ComponentClass<NativeProps>;
-const ExponentVideo = requireNativeViewManager('ExpoVideoView');

@@ -1,4 +1,4 @@
-import { NativeModulesProxy } from 'expo-core';
+import ExponentAV from './ExponentAV';
 
 export * from './Audio/Recording';
 export * from './Audio/Sound';
@@ -71,5 +71,5 @@ export async function setAudioModeAsync(mode: AudioMode): Promise<void> {
       '"allowsRecordingIOS", "playsInSilentModeIOS", "playThroughEarpieceAndroid", and "shouldDuckAndroid" must be booleans.'
     );
   }
-  return await NativeModulesProxy.ExponentAV.setAudioMode(mode);
+  return await ExponentAV.setAudioMode(mode);
 }
