@@ -30,6 +30,7 @@ import expo.modules.permissions.PermissionsPackage;
 import expo.modules.print.PrintPackage;
 import expo.modules.sensors.SensorsPackage;
 import expo.modules.sms.SMSPackage;
+import expo.modules.sqlite.SQLitePackage;
 import expo.modules.taskManager.TaskManagerPackage;
 
 public class ExperiencePackagePicker {
@@ -58,7 +59,8 @@ public class ExperiencePackagePicker {
       new TaskManagerPackage(),
       new BackgroundFetchPackage(),
       new MailComposerPackage(),
-      new AVPackage()
+      new AVPackage(),
+      new SQLitePackage()
   );
 
   /**

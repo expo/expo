@@ -1,0 +1,1 @@
+{"version":3,"file":"SQLite.web.js","sourceRoot":"","sources":["../src/SQLite.web.ts"],"names":[],"mappings":"AAAA,MAAM,CAAC,MAAM,EAAE,YAAY,EAAE,GAAG,MAAM,CAAC;AACvC,eAAe,EAAE,YAAY,EAAE,CAAC","sourcesContent":["export const { openDatabase } = global;\nexport default { openDatabase };\n"]}

@@ -159,6 +159,7 @@ dependencies {
   compileOnly 'host.exp.exponent:expo-permissions-interface:2.0.0'
   compileOnly 'host.exp.exponent:expo-background-fetch:1.0.0'
   compileOnly 'host.exp.exponent:expo-mail-composer:1.0.0'
+  compileOnly 'host.exp.exponent:expo-sqlite:1.0.0'
   END UNCOMMENT WHEN DISTRIBUTING */
 
   // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
@@ -208,6 +209,7 @@ dependencies {
   api project(':expo-print')
   api project(':expo-sensors')
   api project(':expo-sms')
+  api project(':expo-sqlite')
 
   // Versioned react native
   // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
