@@ -32,6 +32,12 @@
 - (void)sensorModuleDidUnsubscribeForMagnetometerUncalibratedUpdatesOfExperience:(NSString *)experienceId;
 - (void)setMagnetometerUncalibratedUpdateInterval:(NSTimeInterval)intervalMs;
 
+- (BOOL)isAccelerometerAvailable;
+- (BOOL)isDeviceMotionAvailable;
+- (BOOL)isGyroAvailable;
+- (BOOL)isMagnetometerAvailable;
+- (BOOL)isMagnetometerUncalibratedAvailable;
+
 @end
 
 @interface EXSensorsManagerBinding : NSObject <EXInternalModule, EXAccelerometerInterface, EXDeviceMotionInterface, EXGyroscopeInterface, EXMagnetometerInterface, EXMagnetometerUncalibratedInterface>
@@ -53,5 +59,11 @@
 - (void)setGyroscopeUpdateInterval:(NSTimeInterval)intervalMs;
 - (void)setMagnetometerUncalibratedUpdateInterval:(NSTimeInterval)intervalMs;
 - (void)setMagnetometerUpdateInterval:(NSTimeInterval)intervalMs;
+
+- (BOOL)isAccelerometerAvailable;
+- (BOOL)isDeviceMotionAvailable;
+- (BOOL)isGyroAvailable;
+- (BOOL)isMagnetometerAvailable;
+- (BOOL)isMagnetometerUncalibratedAvailable;
 
 @end
