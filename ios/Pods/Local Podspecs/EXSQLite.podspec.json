@@ -1,5 +1,5 @@
 {
-  "name": "EXSQlite",
+  "name": "EXSQLite",
   "version": "1.0.0",
   "summary": "SQLite module",
   "description": "SQLite module",
@@ -12,8 +12,8 @@
   "source": {
     "git": "https://github.com/expo/expo.git"
   },
-  "source_files": "EXSQlite/**/*.{h,m}",
-  "preserve_paths": "EXSQlite/**/*.{h,m}",
+  "source_files": "EXSQLite/**/*.{h,m}",
+  "preserve_paths": "EXSQLite/**/*.{h,m}",
   "requires_arc": true,
   "dependencies": {
     "EXCore": [

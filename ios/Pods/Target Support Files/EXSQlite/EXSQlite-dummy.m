@@ -1,5 +1,5 @@
 #import <Foundation/Foundation.h>
-@interface PodsDummy_EXSQlite : NSObject
+@interface PodsDummy_EXSQLite : NSObject
 @end
-@implementation PodsDummy_EXSQlite
+@implementation PodsDummy_EXSQLite
 @end
