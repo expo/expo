@@ -14,12 +14,10 @@ import java.util.List;
 import java.util.Map;
 
 import expo.core.ExportedModule;
-import expo.core.ModuleRegistry;
 import expo.core.Promise;
 import expo.core.interfaces.ExpoMethod;
-import expo.core.interfaces.ModuleRegistryConsumer;
 
-public class SQLiteModule extends ExportedModule implements ModuleRegistryConsumer {
+public class SQLiteModule extends ExportedModule {
   private static final boolean DEBUG_MODE = false;
 
   private static final String TAG = SQLiteModule.class.getSimpleName();
@@ -30,7 +28,6 @@ public class SQLiteModule extends ExportedModule implements ModuleRegistryConsum
 
   private static final Map<String, SQLiteDatabase> DATABASES = new HashMap<String, SQLiteDatabase>();
 
-  private ModuleRegistry mModuleReqistry;
   private Context mContext;
 
   public SQLiteModule(Context scopedContext) {
@@ -51,7 +48,7 @@ public class SQLiteModule extends ExportedModule implements ModuleRegistryConsum
       SQLiteDatabase db = getDatabase(dbName);
 
       for (int i = 0; i < numQueries; i++) {
-        ArrayList<Object> sqlQuery =  queries.get(i);
+        ArrayList<Object> sqlQuery = queries.get(i);
         String sql = (String) sqlQuery.get(0);
         String[] bindArgs = convertParamsToStringArray(sqlQuery.get(1));
         try {
@@ -164,7 +161,7 @@ public class SQLiteModule extends ExportedModule implements ModuleRegistryConsum
     return null;
   }
 
-  public static File ensureDirExists(File dir) throws IOException {
+  private static File ensureDirExists(File dir) throws IOException {
     if (!(dir.isDirectory() || dir.mkdirs())) {
       throw new IOException("Couldn't create directory '" + dir + "'");
     }
@@ -229,11 +226,11 @@ public class SQLiteModule extends ExportedModule implements ModuleRegistryConsum
         if (value == null) {
           rowContent.add(null);
         } else if (value instanceof String) {
-          rowContent.add((String)value);
+          rowContent.add((String) value);
         } else if (value instanceof Boolean) {
-          rowContent.add((Boolean)value);
+          rowContent.add((Boolean) value);
         } else {
-          Number v = (Number)value;
+          Number v = (Number) value;
           rowContent.add(v.doubleValue());
         }
       }
@@ -246,12 +243,15 @@ public class SQLiteModule extends ExportedModule implements ModuleRegistryConsum
   private static boolean isSelect(String str) {
     return startsWithCaseInsensitive(str, "select") || startsWithCaseInsensitive(str, "pragma");
   }
+
   private static boolean isInsert(String str) {
     return startsWithCaseInsensitive(str, "insert");
   }
+
   private static boolean isUpdate(String str) {
     return startsWithCaseInsensitive(str, "update");
   }
+
   private static boolean isDelete(String str) {
     return startsWithCaseInsensitive(str, "delete");
   }
@@ -289,9 +289,9 @@ public class SQLiteModule extends ExportedModule implements ModuleRegistryConsum
       Object object = paramArray.get(i);
       res[i] = null;
       if (object instanceof String) {
-        res[i] = unescapeBlob((String)object);
+        res[i] = unescapeBlob((String) object);
       } else if (object instanceof Boolean) {
-        res[i] = ((Boolean)object) ? "0" : "1";
+        res[i] = ((Boolean) object) ? "0" : "1";
       } else if (object instanceof Double) {
         res[i] = object.toString();
       } else if (object != null) {
@@ -305,11 +305,6 @@ public class SQLiteModule extends ExportedModule implements ModuleRegistryConsum
     return str.replaceAll("\u0001\u0001", "\u0000")
         .replaceAll("\u0001\u0002", "\u0001")
         .replaceAll("\u0002\u0002", "\u0002");
-  }
-
-  @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
-    mModuleReqistry = moduleRegistry;
   }
 
   private static class SQLitePluginResult {

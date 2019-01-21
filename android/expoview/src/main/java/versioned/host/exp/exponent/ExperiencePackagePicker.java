@@ -59,7 +59,7 @@ public class ExperiencePackagePicker {
       new TaskManagerPackage(),
       new BackgroundFetchPackage(),
       new MailComposerPackage(),
-      new AVPackage()
+      new AVPackage(),
       new SQLitePackage()
   );
 

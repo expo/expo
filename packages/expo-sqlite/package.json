@@ -3,16 +3,16 @@
   "version": "1.0.0",
   "description": "SQLite module",
   "main": "build/index.js",
-   "types": "build/index.d.ts",
-   "scripts": {
-   "build": "expo-module build",
-   "clean": "expo-module clean",
-   "test": "expo-module test",
-   "postinstall": "expo-module postinstall",
-   "prepare": "expo-module prepare",
-   "prepublishOnly": "expo-module prepublishOnly",
-   "expo-module": "expo-module"
- },
+  "types": "build/index.d.ts",
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "test": "expo-module test",
+    "postinstall": "expo-module postinstall",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
   "keywords": [
     "react-native",
     "expo"
@@ -23,7 +23,7 @@
   "jest": {
     "preset": "expo-module-scripts"
   },
-  "dependencies": {
+  "peerDependencies": {
     "expo-core": "~1.2.0"
   },
   "devDependencies": {
