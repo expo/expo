@@ -98,7 +98,10 @@ export class Sound implements Playback {
       );
 
       this._subscriptions.push(
-        this._eventEmitter.addListener('ExponentAV.onError', this._internalErrorCallback)
+        this._eventEmitter.addListener(
+          'ExponentAV.onError',
+          this._internalErrorCallback
+        )
       );
     }
   }
