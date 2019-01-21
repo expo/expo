@@ -3,6 +3,7 @@ import ExponentBarometer from './ExponentBarometer';
 
 type PressureMeasurement = {
   pressure: number;
+  relativeAltitude?: number;
 };
 
 class BarometerSensor extends DeviceSensor<PressureMeasurement> {}

@@ -35,7 +35,7 @@ public class BarometerModule extends BaseSensorModule {
 
   protected Bundle eventToMap(SensorEvent sensorEvent) {
     Bundle map = new Bundle();
-    map.putDouble("pressure", sensorEvent.values[0]);
+    map.putDouble("pressure", sensorEvent.values[0] * 0.1);
     return map;
   }
 

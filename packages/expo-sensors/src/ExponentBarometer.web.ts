@@ -1,9 +1,10 @@
-import PlatformSensorModule from './PlatformSensorModule';
-
-class ExponentBarometer extends PlatformSensorModule {
+export default {
   get name(): string {
     return 'ExponentBarometer';
-  }
-}
-
-export default new ExponentBarometer();
+  },
+  async isAvailableAsync(): Promise<boolean> {
+    return false;
+  },
+  startObserving() {},
+  stopObserving() {},
+};

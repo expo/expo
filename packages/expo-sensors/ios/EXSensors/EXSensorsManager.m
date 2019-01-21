@@ -29,6 +29,7 @@ EX_REGISTER_MODULE();
 {
   if (self = [super init]) {
     _accelerometerHandlers = [[NSMutableDictionary alloc] init];
+    _barometerHandlers = [[NSMutableDictionary alloc] init];
     _deviceMotionHandlers = [[NSMutableDictionary alloc] init];
     _gyroscopeHandlers = [[NSMutableDictionary alloc] init];
     _magnetometerHandlers = [[NSMutableDictionary alloc] init];
@@ -59,8 +60,7 @@ EX_REGISTER_MODULE();
   [[self manager] stopDeviceMotionUpdates];
   [[self manager] stopGyroUpdates];
   [[self manager] stopMagnetometerUpdates];
-      
-  [[self altimeter] stopRelativeAltitudeUpdates];
+  [self.altimeter stopRelativeAltitudeUpdates];
 }
 
 - (void)sensorModuleDidSubscribeForAccelerometerUpdates:(id)scopedSensorModule
