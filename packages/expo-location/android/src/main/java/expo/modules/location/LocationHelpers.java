@@ -3,6 +3,8 @@ package expo.modules.location;
 import android.content.Context;
 import android.location.LocationManager;
 
+import com.google.android.gms.location.LocationRequest;
+
 import java.util.Map;
 
 import io.nlopez.smartlocation.location.config.LocationAccuracy;
@@ -78,5 +80,32 @@ public class LocationHelpers {
     return options.containsKey("accuracy")
         ? ((Number) options.get("accuracy")).intValue()
         : highAccuracy ? ACCURACY_HIGH : ACCURACY_BALANCED;
+  }
+
+  public static LocationRequest prepareLocationRequest(Map<String, Object> options) {
+    LocationParams locationParams = LocationHelpers.mapOptionsToLocationParams(options);
+    int accuracy = LocationHelpers.getAccuracyFromOptions(options);
+
+    return new LocationRequest()
+        .setFastestInterval(locationParams.getInterval())
+        .setInterval(locationParams.getInterval())
+        .setSmallestDisplacement(locationParams.getDistance())
+        .setPriority(mapAccuracyToPriority(accuracy));
+  }
+
+  private static int mapAccuracyToPriority(int accuracy) {
+    switch (accuracy) {
+      case LocationModule.ACCURACY_BEST_FOR_NAVIGATION:
+      case LocationModule.ACCURACY_HIGHEST:
+      case LocationModule.ACCURACY_HIGH:
+        return LocationRequest.PRIORITY_HIGH_ACCURACY;
+      case LocationModule.ACCURACY_BALANCED:
+      default:
+        return LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY;
+      case LocationModule.ACCURACY_LOW:
+        return LocationRequest.PRIORITY_LOW_POWER;
+      case LocationModule.ACCURACY_LOWEST:
+        return LocationRequest.PRIORITY_NO_POWER;
+    }
   }
 }

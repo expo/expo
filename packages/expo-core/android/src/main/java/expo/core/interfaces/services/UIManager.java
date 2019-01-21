@@ -15,4 +15,5 @@ public interface UIManager {
   void registerLifecycleEventListener(LifecycleEventListener listener);
   void unregisterLifecycleEventListener(LifecycleEventListener listener);
   void registerActivityEventListener(ActivityEventListener activityEventListener);
+  void unregisterActivityEventListener(ActivityEventListener activityEventListener);
 }

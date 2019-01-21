@@ -14,6 +14,22 @@ export async function test(t) {
   const shouldSkipTestsRequiringPermissions = await TestUtils.shouldSkipTestsRequiringPermissionsAsync();
   const describeWithPermissions = shouldSkipTestsRequiringPermissions ? t.xdescribe : t.describe;
 
+  function testLocationShape(location) {
+    t.expect(typeof location === 'object').toBe(true);
+
+    const { coords, timestamp } = location;
+    const { latitude, longitude, altitude, accuracy, altitudeAccuracy, heading, speed } = coords;
+
+    t.expect(typeof latitude === 'number').toBe(true);
+    t.expect(typeof longitude === 'number').toBe(true);
+    t.expect(typeof altitude === 'number').toBe(true);
+    t.expect(typeof accuracy === 'number').toBe(true);
+    t.expect(Platform.OS !== 'ios' || typeof altitudeAccuracy === 'number').toBe(true);
+    t.expect(typeof heading === 'number').toBe(true);
+    t.expect(typeof speed === 'number').toBe(true);
+    t.expect(typeof timestamp === 'number').toBe(true);
+  }
+
   t.describe('Location', () => {
     t.describe('Location.getProviderStatusAsync()', () => {
       const timeout = 1000;
@@ -52,6 +68,30 @@ export async function test(t) {
         );
       }
     });
+
+    t.describe('Location.enableNetworkProviderAsync()', () => {
+      // To properly test this, you need to change device's location mode to "Device only" in system settings.
+      // In this mode, network provider is off.
+
+      t.it(
+        'asks user to enable network provider or just resolves on iOS',
+        async () => {
+          try {
+            await Location.enableNetworkProviderAsync();
+
+            if (Platform.OS === 'android') {
+              const result = await Location.getProviderStatusAsync();
+              t.expect(result.networkAvailable).toBe(true);
+            }
+          } catch (error) {
+            // User has denied the dialog.
+            t.expect(error.code).toBe('E_LOCATION_SETTINGS_UNSATISFIED');
+          }
+        },
+        20000
+      );
+    });
+
     describeWithPermissions('Location.getCurrentPositionAsync()', () => {
       // Manual interaction:
       //   1. Just try
@@ -71,18 +111,8 @@ export async function test(t) {
             return Permissions.askAsync(Permissions.LOCATION);
           });
           if (status === 'granted') {
-            const {
-              coords: { latitude, longitude, altitude, accuracy, altitudeAccuracy, heading, speed },
-              timestamp,
-            } = await Location.getCurrentPositionAsync(options);
-            t.expect(typeof latitude === 'number').toBe(true);
-            t.expect(typeof longitude === 'number').toBe(true);
-            t.expect(typeof altitude === 'number').toBe(true);
-            t.expect(typeof accuracy === 'number').toBe(true);
-            t.expect(Platform.OS !== 'ios' || typeof altitudeAccuracy === 'number').toBe(true);
-            t.expect(typeof heading === 'number').toBe(true);
-            t.expect(typeof speed === 'number').toBe(true);
-            t.expect(typeof timestamp === 'number').toBe(true);
+            const location = await Location.getCurrentPositionAsync(options);
+            testLocationShape(location);
           } else {
             let error;
             try {
@@ -144,6 +174,49 @@ export async function test(t) {
         },
         timeout + second
       );
+
+      t.it('resolves when called simultaneously', async () => {
+        await Promise.all([
+          Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.High }),
+          Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Low }),
+          Location.getCurrentPositionAsync(),
+        ]);
+      });
+
+      t.it('resolves when watchPositionAsync is running', async () => {
+        const subscriber = await Location.watchPositionAsync({}, () => {});
+        await Location.getCurrentPositionAsync();
+        subscriber.remove();
+      });
+    });
+
+    describeWithPermissions('Location.watchPositionAsync()', () => {
+      t.it('gets a result of the correct shape', async () => {
+        await new Promise(async (resolve, reject) => {
+          const subscriber = await Location.watchPositionAsync({}, location => {
+            testLocationShape(location);
+            subscriber.remove();
+            resolve();
+          });
+        });
+      });
+
+      t.it('can be called simultaneously', async () => {
+        const spies = [1, 2, 3].map(number => t.jasmine.createSpy(`watchPosition${number}`));
+
+        const subscribers = await Promise.all(
+          spies.map(spy => Location.watchPositionAsync({}, spy))
+        );
+
+        await new Promise((resolve, reject) => {
+          setTimeout(() => {
+            spies.forEach(spy => t.expect(spy).toHaveBeenCalled());
+            resolve();
+          }, 1000);
+        });
+
+        subscribers.forEach(subscriber => subscriber.remove());
+      });
     });
 
     describeWithPermissions('Location.getHeadingAsync()', () => {

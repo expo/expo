@@ -152,7 +152,7 @@ describe('Location', () => {
 });
 
 function emitNativeLocationUpdate(location) {
-  Location.EventEmitter.emit('Exponent.locationChanged', {
+  Location.EventEmitter.emit('Expo.locationChanged', {
     watchId: Location._getCurrentWatchId(),
     location,
   });

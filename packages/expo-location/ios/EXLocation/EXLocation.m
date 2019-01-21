@@ -20,8 +20,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString * const EXLocationChangedEventName = @"Exponent.locationChanged";
-NSString * const EXHeadingChangedEventName = @"Exponent.headingChanged";
+NSString * const EXLocationChangedEventName = @"Expo.locationChanged";
+NSString * const EXHeadingChangedEventName = @"Expo.headingChanged";
 
 @interface EXLocation ()
 
