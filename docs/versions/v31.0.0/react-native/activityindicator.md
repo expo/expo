@@ -51,12 +51,12 @@ AppRegistry.registerComponent('App', () => App)
 
 ### Props
 
-* [View props...](view.md#props)
+* [View props...](../view/#props)
 
-- [`animating`](activityindicator.md#animating)
-- [`color`](activityindicator.md#color)
-- [`size`](activityindicator.md#size)
-- [`hidesWhenStopped`](activityindicator.md#hideswhenstopped)
+- [`animating`](../activityindicator/#animating)
+- [`color`](../activityindicator/#color)
+- [`size`](../activityindicator/#size)
+- [`hidesWhenStopped`](../activityindicator/#hideswhenstopped)
 
 ---
 
@@ -80,7 +80,7 @@ The foreground color of the spinner (default is gray).
 
 | Type               | Required |
 | ------------------ | -------- |
-| [color](colors.md) | No       |
+| [color](../colors/) | No       |
 
 ---
 

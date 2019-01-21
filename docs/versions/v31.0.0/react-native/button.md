@@ -7,7 +7,7 @@ A basic button component that should render nicely on any platform. Supports a m
 
 <center><img src="https://facebook.github.io/react-native/docs/assets/buttonExample.png"></img></center>
 
-If this button doesn't look right for your app, you can build your own button using [TouchableOpacity](touchableopacity.md) or [TouchableNativeFeedback](touchablenativefeedback.md). For inspiration, look at the [source code for this button component](https://github.com/facebook/react-native/blob/master/Libraries/Components/Button.js). Or, take a look at the [wide variety of button components built by the community](https://js.coach/react-native?search=button).
+If this button doesn't look right for your app, you can build your own button using [TouchableOpacity](../touchableopacity/) or [TouchableNativeFeedback](../touchablenativefeedback/). For inspiration, look at the [source code for this button component](https://github.com/facebook/react-native/blob/master/Libraries/Components/Button.js). Or, take a look at the [wide variety of button components built by the community](https://js.coach/react-native?search=button).
 
 Example usage:
 
@@ -29,13 +29,13 @@ import { Button } from 'react-native';
 
 ### Props
 
-* [`onPress`](button.md#onpress)
-* [`title`](button.md#title)
-* [`accessibilityLabel`](button.md#accessibilitylabel)
-* [`color`](button.md#color)
-* [`disabled`](button.md#disabled)
-* [`testID`](button.md#testid)
-* [`hasTVPreferredFocus`](button.md#hastvpreferredfocus)
+* [`onPress`](../button/#onpress)
+* [`title`](../button/#title)
+* [`accessibilityLabel`](../button/#accessibilitylabel)
+* [`color`](../button/#color)
+* [`disabled`](../button/#disabled)
+* [`testID`](../button/#testid)
+* [`hasTVPreferredFocus`](../button/#hastvpreferredfocus)
 
 ---
 
@@ -79,7 +79,7 @@ Color of the text (iOS), or background color of the button (Android)
 
 | Type               | Required |
 | ------------------ | -------- |
-| [color](colors.md) | No       |
+| [color](../colors/) | No       |
 
 ---
 

@@ -3,7 +3,7 @@ id: easing
 title: Easing
 ---
 
-The `Easing` module implements common easing functions. This module is used by [Animated.timing()](animated.md#timing) to convey physically believable motion in animations.
+The `Easing` module implements common easing functions. This module is used by [Animated.timing()](../animated/#timing) to convey physically believable motion in animations.
 
 You can find a visualization of some common easing functions at http://easings.net/
 
@@ -11,55 +11,55 @@ You can find a visualization of some common easing functions at http://easings.n
 
 The `Easing` module provides several predefined animations through the following methods:
 
-* [`back`](easing.md#back) provides a simple animation where the object goes slightly back before moving forward
-* [`bounce`](easing.md#bounce) provides a bouncing animation
-* [`ease`](easing.md#ease) provides a simple inertial animation
-* [`elastic`](easing.md#elastic) provides a simple spring interaction
+* [`back`](../easing/#back) provides a simple animation where the object goes slightly back before moving forward
+* [`bounce`](../easing/#bounce) provides a bouncing animation
+* [`ease`](../easing/#ease) provides a simple inertial animation
+* [`elastic`](../easing/#elastic) provides a simple spring interaction
 
 ### Standard functions
 
 Three standard easing functions are provided:
 
-* [`linear`](easing.md#linear)
-* [`quad`](easing.md#quad)
-* [`cubic`](easing.md#cubic)
+* [`linear`](../easing/#linear)
+* [`quad`](../easing/#quad)
+* [`cubic`](../easing/#cubic)
 
-The [`poly`](easing.md#poly) function can be used to implement quartic, quintic, and other higher power functions.
+The [`poly`](../easing/#poly) function can be used to implement quartic, quintic, and other higher power functions.
 
 ### Additional functions
 
 Additional mathematical functions are provided by the following methods:
 
-* [`bezier`](easing.md#bezier) provides a cubic bezier curve
-* [`circle`](easing.md#circle) provides a circular function
-* [`sin`](easing.md#sin) provides a sinusoidal function
-* [`exp`](easing.md#exp) provides an exponential function
+* [`bezier`](../easing/#bezier) provides a cubic bezier curve
+* [`circle`](../easing/#circle) provides a circular function
+* [`sin`](../easing/#sin) provides a sinusoidal function
+* [`exp`](../easing/#exp) provides an exponential function
 
 The following helpers are used to modify other easing functions.
 
-* [`in`](easing.md#in) runs an easing function forwards
-* [`inOut`](easing.md#inout) makes any easing function symmetrical
-* [`out`](easing.md#out) runs an easing function backwards
+* [`in`](../easing/#in) runs an easing function forwards
+* [`inOut`](../easing/#inout) makes any easing function symmetrical
+* [`out`](../easing/#out) runs an easing function backwards
 
 ### Methods
 
-* [`step0`](easing.md#step0)
-* [`step1`](easing.md#step1)
-* [`linear`](easing.md#linear)
-* [`ease`](easing.md#ease)
-* [`quad`](easing.md#quad)
-* [`cubic`](easing.md#cubic)
-* [`poly`](easing.md#poly)
-* [`sin`](easing.md#sin)
-* [`circle`](easing.md#circle)
-* [`exp`](easing.md#exp)
-* [`elastic`](easing.md#elastic)
-* [`back`](easing.md#back)
-* [`bounce`](easing.md#bounce)
-* [`bezier`](easing.md#bezier)
-* [`in`](easing.md#in)
-* [`out`](easing.md#out)
-* [`inOut`](easing.md#inout)
+* [`step0`](../easing/#step0)
+* [`step1`](../easing/#step1)
+* [`linear`](../easing/#linear)
+* [`ease`](../easing/#ease)
+* [`quad`](../easing/#quad)
+* [`cubic`](../easing/#cubic)
+* [`poly`](../easing/#poly)
+* [`sin`](../easing/#sin)
+* [`circle`](../easing/#circle)
+* [`exp`](../easing/#exp)
+* [`elastic`](../easing/#elastic)
+* [`back`](../easing/#back)
+* [`bounce`](../easing/#bounce)
+* [`bezier`](../easing/#bezier)
+* [`in`](../easing/#in)
+* [`out`](../easing/#out)
+* [`inOut`](../easing/#inout)
 
 ---
 

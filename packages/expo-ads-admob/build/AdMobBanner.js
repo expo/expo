@@ -1,7 +1,7 @@
-import * as React from 'react';
-import PropTypes from 'prop-types';
-import { View, ViewPropTypes } from 'react-native';
 import { requireNativeViewManager } from 'expo-core';
+import PropTypes from 'prop-types';
+import * as React from 'react';
+import { View, ViewPropTypes } from 'react-native';
 export default class AdMobBanner extends React.Component {
     constructor() {
         super(...arguments);

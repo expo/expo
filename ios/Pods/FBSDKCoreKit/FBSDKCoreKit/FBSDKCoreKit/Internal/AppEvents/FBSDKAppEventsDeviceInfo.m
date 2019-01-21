@@ -147,7 +147,7 @@ static const u_int FB_GIGABYTE = 1024 * 1024 * 1024;  // bytes
   _shortVersion = [mainBundle objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
 
   // Locale stuff
-  _language = [[NSLocale currentLocale] localeIdentifier];
+  _language = [NSLocale currentLocale].localeIdentifier;
 
   // Device stuff
   UIDevice *device = [UIDevice currentDevice];
@@ -165,7 +165,7 @@ static const u_int FB_GIGABYTE = 1024 * 1024 * 1024;  // bytes
   _machine = @(systemInfo.machine);
 
   // Disk space stuff
-  float totalDiskSpace = [[FBSDKAppEventsDeviceInfo _getTotalDiskSpace] floatValue];
+  float totalDiskSpace = [FBSDKAppEventsDeviceInfo _getTotalDiskSpace].floatValue;
   _totalDiskSpaceGB = (unsigned long long)round(totalDiskSpace / FB_GIGABYTE);
 }
 
@@ -194,7 +194,7 @@ static const u_int FB_GIGABYTE = 1024 * 1024 * 1024;  // bytes
   }
 
   // Remaining disk space
-  float remainingDiskSpace = [[FBSDKAppEventsDeviceInfo _getRemainingDiskSpace] floatValue];
+  float remainingDiskSpace = [FBSDKAppEventsDeviceInfo _getRemainingDiskSpace].floatValue;
   unsigned long long newRemainingDiskSpaceGB = (unsigned long long)round(remainingDiskSpace / FB_GIGABYTE);
   if (_remainingDiskSpaceGB != newRemainingDiskSpaceGB) {
     _remainingDiskSpaceGB = newRemainingDiskSpaceGB;
@@ -237,14 +237,14 @@ static const u_int FB_GIGABYTE = 1024 * 1024 * 1024;  // bytes
 {
   NSDictionary *attrs = [[[NSFileManager alloc] init] attributesOfFileSystemForPath:NSHomeDirectory()
                                                                               error:nil];
-  return [attrs objectForKey:NSFileSystemSize];
+  return attrs[NSFileSystemSize];
 }
 
 + (NSNumber *)_getRemainingDiskSpace
 {
   NSDictionary *attrs = [[[NSFileManager alloc] init] attributesOfFileSystemForPath:NSHomeDirectory()
                                                                               error:nil];
-  return [attrs objectForKey:NSFileSystemFreeSize];
+  return attrs[NSFileSystemFreeSize];
 }
 
 + (uint)_coreCount
@@ -270,8 +270,8 @@ static const u_int FB_GIGABYTE = 1024 * 1024 * 1024;  // bytes
 #else
   // Dynamically load class for this so calling app doesn't need to link framework in.
   CTTelephonyNetworkInfo *networkInfo = [[fbsdkdfl_CTTelephonyNetworkInfoClass() alloc] init];
-  CTCarrier *carrier = [networkInfo subscriberCellularProvider];
-  return [carrier carrierName] ?: @"NoCarrier";
+  CTCarrier *carrier = networkInfo.subscriberCellularProvider;
+  return carrier.carrierName ?: @"NoCarrier";
 #endif
 }
 

@@ -25,7 +25,7 @@ Prints a document or HTML.
 
 ### `Expo.Print.printToFileAsync(options)`
 
-Prints HTML to PDF file and saves it to [app's cache directory](filesystem#expofilesystemcachedirectory).
+Prints HTML to PDF file and saves it to [app's cache directory](../filesystem/#expofilesystemcachedirectory).
 
 #### Arguments
 

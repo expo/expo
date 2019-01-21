@@ -72,7 +72,7 @@
           return NO;
         };
 
-        if ([request.tokenString isEqualToString:[[FBSDKSystemAccountStoreAdapter sharedInstance] accessTokenString]] &&
+        if ([request.tokenString isEqualToString:[FBSDKSystemAccountStoreAdapter sharedInstance].accessTokenString] &&
             isLoginRecoveryAttempter) {
           // special system auth case: if user has granted permissions we can simply renew. On a successful
           // renew, treat this as immediately recovered without the standard alert prompty.

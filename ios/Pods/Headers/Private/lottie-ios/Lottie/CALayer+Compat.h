@@ -1,1 +1,1 @@
-../../../../lottie-ios/lottie-ios/Classes/MacCompatability/CALayer+Compat.h
+../../../../lottie-ios/lottie-ios/Classes/MacCompatibility/CALayer+Compat.h

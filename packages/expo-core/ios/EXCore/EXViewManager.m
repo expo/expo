@@ -100,6 +100,12 @@ static const NSString *noViewNameExceptionReason = @"You've subclassed an EXView
     [invocation setTarget:self];
     [invocation setSelector:selector];
     [invocation setArgument:&value atIndex:2];
+    if ([methodSignature getArgumentTypeAtIndex:2][0] == _C_BOOL) {
+      // We need this intermediary variable, see
+      // https://stackoverflow.com/questions/11061166/pointer-to-bool-in-objective-c
+      BOOL retainedValue = [value boolValue];
+      [invocation setArgument:&retainedValue atIndex:2];
+    }
     [invocation setArgument:(void *)&view atIndex:3];
     [invocation retainArguments];
     [invocation invoke];

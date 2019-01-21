@@ -62,9 +62,9 @@ Browser
 
 * [console.${"{"}log, warn, error, info, trace, table${"}"}](https://developer.chrome.com/devtools/docs/console-api)
 * [CommonJS require](https://nodejs.org/docs/latest/api/modules.html)
-* [XMLHttpRequest, fetch](network.md#content)
-* [${"{"}set, clear${"}"}${"{"}Timeout, Interval, Immediate${"}"}, ${"{"}request, cancel${"}"}AnimationFrame](timers.md#content)
-* [navigator.geolocation](geolocation.md#content)
+* [XMLHttpRequest, fetch](../network/#content)
+* [${"{"}set, clear${"}"}${"{"}Timeout, Interval, Immediate${"}"}, ${"{"}request, cancel${"}"}AnimationFrame](../timers/#content)
+* [navigator.geolocation](../../sdk/location/)
 
 ES6
 

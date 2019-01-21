@@ -50,14 +50,14 @@ AppRegistry.registerComponent("App", () => App);
 
 ### Props
 
-* [View props...](view.md#props)
+* [View props...](../view/#props)
 
-- [`animating`](progressbarandroid.md#animating)
-- [`color`](progressbarandroid.md#color)
-- [`indeterminate`](progressbarandroid.md#indeterminate)
-- [`progress`](progressbarandroid.md#progress)
-- [`styleAttr`](progressbarandroid.md#styleattr)
-- [`testID`](progressbarandroid.md#testid)
+- [`animating`](../progressbarandroid/#animating)
+- [`color`](../progressbarandroid/#color)
+- [`indeterminate`](../progressbarandroid/#indeterminate)
+- [`progress`](../progressbarandroid/#progress)
+- [`styleAttr`](../progressbarandroid/#styleattr)
+- [`testID`](../progressbarandroid/#testid)
 
 ---
 
@@ -81,7 +81,7 @@ Color of the progress bar.
 
 | Type               | Required |
 | ------------------ | -------- |
-| [color](colors.md) | No       |
+| [color](../colors/) | No       |
 
 ---
 

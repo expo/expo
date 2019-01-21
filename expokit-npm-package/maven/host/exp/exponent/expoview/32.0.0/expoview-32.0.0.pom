@@ -22,79 +22,79 @@
     <dependency>
       <groupId>host.exp.exponent</groupId>
       <artifactId>expo-core</artifactId>
-      <version>2.0.0-rc.2</version>
+      <version>2.0.0</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>host.exp.exponent</groupId>
       <artifactId>expo-constants</artifactId>
-      <version>2.0.0-rc.2</version>
+      <version>2.0.0</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>host.exp.exponent</groupId>
       <artifactId>expo-constants-interface</artifactId>
-      <version>2.0.0-rc.1</version>
+      <version>2.0.0</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>host.exp.exponent</groupId>
       <artifactId>expo-errors</artifactId>
-      <version>1.0.0-rc.2</version>
+      <version>1.0.0</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>host.exp.exponent</groupId>
       <artifactId>expo-permissions</artifactId>
-      <version>2.0.0-rc.1</version>
+      <version>2.0.0</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>host.exp.exponent</groupId>
       <artifactId>expo-sensors-interface</artifactId>
-      <version>2.0.0-rc.1</version>
+      <version>2.0.0</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>host.exp.exponent</groupId>
       <artifactId>expo-permissions-interface</artifactId>
-      <version>2.0.0-rc.1</version>
+      <version>2.0.0</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>host.exp.exponent</groupId>
       <artifactId>expo-react-native-adapter</artifactId>
-      <version>2.0.0-rc.2</version>
+      <version>2.0.0</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>host.exp.exponent</groupId>
       <artifactId>expo-file-system</artifactId>
-      <version>2.0.0-rc.1</version>
+      <version>2.0.0</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>host.exp.exponent</groupId>
       <artifactId>expo-file-system-interface</artifactId>
-      <version>2.0.0-rc.1</version>
+      <version>2.0.0</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>host.exp.exponent</groupId>
       <artifactId>expo-task-manager</artifactId>
-      <version>1.0.0-rc.2</version>
+      <version>1.0.0</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>host.exp.exponent</groupId>
       <artifactId>expo-task-manager-interface</artifactId>
-      <version>1.0.0-rc.1</version>
+      <version>1.0.0</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>host.exp.exponent</groupId>
       <artifactId>expo-app-loader-provider</artifactId>
-      <version>1.0.0-rc.1</version>
+      <version>1.0.0</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -203,7 +203,7 @@
     <dependency>
       <groupId>com.facebook.android</groupId>
       <artifactId>facebook-android-sdk</artifactId>
-      <version>4.38.1</version>
+      <version>4.39.0</version>
       <scope>compile</scope>
     </dependency>
     <dependency>

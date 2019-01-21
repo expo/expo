@@ -144,13 +144,13 @@ static FBSDKProfile *g_currentProfile;
 - (NSUInteger)hash
 {
   NSUInteger subhashes[] = {
-    [self.userID hash],
-    [self.firstName hash],
-    [self.middleName hash],
-    [self.lastName hash],
-    [self.name hash],
-    [self.linkURL hash],
-    [self.refreshDate hash]
+    self.userID.hash,
+    self.firstName.hash,
+    self.middleName.hash,
+    self.lastName.hash,
+    self.name.hash,
+    self.linkURL.hash,
+    self.refreshDate.hash
   };
   return [FBSDKMath hashWithIntegerArray:subhashes count:sizeof(subhashes) / sizeof(subhashes[0])];
 }
@@ -183,7 +183,7 @@ static FBSDKProfile *g_currentProfile;
   return YES;
 }
 
-- (id)initWithCoder:(NSCoder *)decoder
+- (instancetype)initWithCoder:(NSCoder *)decoder
 {
   NSString *userID = [decoder decodeObjectOfClass:[NSString class] forKey:FBSDKPROFILE_USERID_KEY];
   NSString *firstName = [decoder decodeObjectOfClass:[NSString class] forKey:FBSDKPROFILE_FIRSTNAME_KEY];

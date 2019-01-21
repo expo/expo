@@ -3,7 +3,7 @@ id: view
 title: View
 ---
 
-The most fundamental component for building a UI, `View` is a container that supports layout with [flexbox](flexbox.md), [style](style.md), [some touch handling](handling-touches.md), and [accessibility](accessibility.md) controls. `View` maps directly to the native view equivalent on whatever platform React Native is running on, whether that is a `UIView`, `<div>`, `android.view`, etc.
+The most fundamental component for building a UI, `View` is a container that supports layout with [flexbox](../flexbox/), [style](../style/), [some touch handling](../handling-touches/), and [accessibility](../accessibility/) controls. `View` maps directly to the native view equivalent on whatever platform React Native is running on, whether that is a `UIView`, `<div>`, `android.view`, etc.
 
 `View` is designed to be nested inside other views and can have 0 to many children of any type.
 
@@ -32,7 +32,7 @@ class ViewColoredBoxesWithText extends Component {
 ```
 
 
-> `View`s are designed to be used with [`StyleSheet`](style.md) for clarity and performance, although inline styles are also supported.
+> `View`s are designed to be used with [`StyleSheet`](../style/) for clarity and performance, although inline styles are also supported.
 
 ### Synthetic Touch Events
 
@@ -51,37 +51,37 @@ For `View` responder props (e.g., `onResponderMove`), the synthetic touch event 
 
 ### Props
 
-* [`onStartShouldSetResponder`](view.md#onstartshouldsetresponder)
-* [`accessibilityLabel`](view.md#accessibilitylabel)
-* [`hitSlop`](view.md#hitslop)
-* [`nativeID`](view.md#nativeid)
-* [`onAccessibilityTap`](view.md#onaccessibilitytap)
-* [`onLayout`](view.md#onlayout)
-* [`onMagicTap`](view.md#onmagictap)
-* [`onMoveShouldSetResponder`](view.md#onmoveshouldsetresponder)
-* [`onMoveShouldSetResponderCapture`](view.md#onmoveshouldsetrespondercapture)
-* [`onResponderGrant`](view.md#onrespondergrant)
-* [`onResponderMove`](view.md#onrespondermove)
-* [`onResponderReject`](view.md#onresponderreject)
-* [`onResponderRelease`](view.md#onresponderrelease)
-* [`onResponderTerminate`](view.md#onresponderterminate)
-* [`onResponderTerminationRequest`](view.md#onresponderterminationrequest)
-* [`accessible`](view.md#accessible)
-* [`onStartShouldSetResponderCapture`](view.md#onstartshouldsetrespondercapture)
-* [`pointerEvents`](view.md#pointerevents)
-* [`removeClippedSubviews`](view.md#removeclippedsubviews)
-* [`style`](view.md#style)
-* [`testID`](view.md#testid)
-* [`accessibilityComponentType`](view.md#accessibilitycomponenttype)
-* [`accessibilityLiveRegion`](view.md#accessibilityliveregion)
-* [`collapsable`](view.md#collapsable)
-* [`importantForAccessibility`](view.md#importantforaccessibility)
-* [`needsOffscreenAlphaCompositing`](view.md#needsoffscreenalphacompositing)
-* [`renderToHardwareTextureAndroid`](view.md#rendertohardwaretextureandroid)
-* [`accessibilityTraits`](view.md#accessibilitytraits)
-* [`accessibilityViewIsModal`](view.md#accessibilityviewismodal)
-* [`accessibilityElementsHidden`](view.md#accessibilityElementsHidden)
-* [`shouldRasterizeIOS`](view.md#shouldrasterizeios)
+* [`onStartShouldSetResponder`](../view/#onstartshouldsetresponder)
+* [`accessibilityLabel`](../view/#accessibilitylabel)
+* [`hitSlop`](../view/#hitslop)
+* [`nativeID`](../view/#nativeid)
+* [`onAccessibilityTap`](../view/#onaccessibilitytap)
+* [`onLayout`](../view/#onlayout)
+* [`onMagicTap`](../view/#onmagictap)
+* [`onMoveShouldSetResponder`](../view/#onmoveshouldsetresponder)
+* [`onMoveShouldSetResponderCapture`](../view/#onmoveshouldsetrespondercapture)
+* [`onResponderGrant`](../view/#onrespondergrant)
+* [`onResponderMove`](../view/#onrespondermove)
+* [`onResponderReject`](../view/#onresponderreject)
+* [`onResponderRelease`](../view/#onresponderrelease)
+* [`onResponderTerminate`](../view/#onresponderterminate)
+* [`onResponderTerminationRequest`](../view/#onresponderterminationrequest)
+* [`accessible`](../view/#accessible)
+* [`onStartShouldSetResponderCapture`](../view/#onstartshouldsetrespondercapture)
+* [`pointerEvents`](../view/#pointerevents)
+* [`removeClippedSubviews`](../view/#removeclippedsubviews)
+* [`style`](../view/#style)
+* [`testID`](../view/#testid)
+* [`accessibilityComponentType`](../view/#accessibilitycomponenttype)
+* [`accessibilityLiveRegion`](../view/#accessibilityliveregion)
+* [`collapsable`](../view/#collapsable)
+* [`importantForAccessibility`](../view/#importantforaccessibility)
+* [`needsOffscreenAlphaCompositing`](../view/#needsoffscreenalphacompositing)
+* [`renderToHardwareTextureAndroid`](../view/#rendertohardwaretextureandroid)
+* [`accessibilityTraits`](../view/#accessibilitytraits)
+* [`accessibilityViewIsModal`](../view/#accessibilityviewismodal)
+* [`accessibilityElementsHidden`](../view/#accessibilityElementsHidden)
+* [`shouldRasterizeIOS`](../view/#shouldrasterizeios)
 
 ---
 
@@ -347,7 +347,7 @@ This is a special performance property exposed by `RCTView` and is useful for sc
 
 | Type                               | Required |
 | ---------------------------------- | -------- |
-| [view styles](view-style-props.md) | No       |
+| [view styles](../view-style-props/) | No       |
 
 ---
 
@@ -475,7 +475,7 @@ Possible values for `AccessibilityTraits` are:
 * `'allowsDirectInteraction'` - The element allows direct touch interaction for VoiceOver users.
 * `'pageTurn'` - Informs VoiceOver that it should scroll to the next page when it finishes reading the contents of the element.
 
-See the [Accessibility guide](accessibility.md#accessibilitytraits-ios) for more information.
+See the [Accessibility guide](../accessibility/#accessibilitytraits-ios) for more information.
 
 | Type                                               | Required | Platform |
 | -------------------------------------------------- | -------- | -------- |
@@ -487,7 +487,7 @@ See the [Accessibility guide](accessibility.md#accessibilitytraits-ios) for more
 
 A value indicating whether VoiceOver should ignore the elements within views that are siblings of the receiver. Default is `false`.
 
-See the [Accessibility guide](accessibility.md#accessibilityviewismodal-ios) for more information.
+See the [Accessibility guide](../accessibility/#accessibilityviewismodal-ios) for more information.
 
 | Type | Required | Platform |
 | ---- | -------- | -------- |
@@ -499,7 +499,7 @@ See the [Accessibility guide](accessibility.md#accessibilityviewismodal-ios) for
 
 A value indicating whether the accessibility elements contained within this accessibility element are hidden. Default is `false`.
 
-See the [Accessibility guide](accessibility.md#accessibilityelementshidden-ios) for more information.
+See the [Accessibility guide](../accessibility/#accessibilityelementshidden-ios) for more information.
 
 | Type | Required | Platform |
 | ---- | -------- | -------- |

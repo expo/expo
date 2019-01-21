@@ -17,18 +17,10 @@ const generateJsFromMd = recursionPath => {
       generateJsFromMd(filePath);
     } else {
       const { ext, name } = path.parse(filePath);
-      if (ext === '.md') {
-        const relativePath = path
-          .resolve(filePath)
-          .replace(path.resolve(ORIGINAL_PATH_PREFIX) + '/', '');
-        generatePage(path.dirname(relativePath), name);
-      } else {
-        const relativePath = path
-          .resolve(filePath)
-          .replace(path.resolve(ORIGINAL_PATH_PREFIX) + '/', '');
-        fs.ensureDirSync(`./static/images/generated`);
-        fs.copySync(filePath, `./static/images/generated/${relativePath}`);
-      }
+      const relativePath = path
+        .resolve(filePath)
+        .replace(path.resolve(ORIGINAL_PATH_PREFIX) + '/', '');
+      generatePage(path.dirname(relativePath), name);
     }
   }
 };
@@ -36,6 +28,7 @@ const generateJsFromMd = recursionPath => {
 let versions = fs.readdirSync(ORIGINAL_PATH_PREFIX);
 
 // Compile all files initially
+fs.emptyDirSync(DESTINATION_PATH_PREFIX);
 
 console.time('Compiling *.md files to *.js');
 
@@ -44,8 +37,6 @@ const navigationData = [];
 versions.forEach(dir => {
   if (!fs.lstatSync(`${ORIGINAL_PATH_PREFIX}/${dir}`).isDirectory()) return;
   const version = dir === 'unversioned' ? 'unversioned' : dir.replace('.0.0', '');
-
-  fs.emptyDirSync(`${DESTINATION_PATH_PREFIX}/${dir}`);
 
   console.log(`Processing markdown files for version: ${dir}`);
   generateJsFromMd(`${ORIGINAL_PATH_PREFIX}/${dir}`);
@@ -74,6 +65,14 @@ export default redirect('/versions/latest/');
 );
 
 console.timeEnd('Compiling *.md files to *.js');
+
+// copy versions/v(latest version) to versions/latest
+// (Next.js only half-handles symlinks)
+const LATEST_VERSION = 'v' + require('../package.json').version;
+const vLatest = path.join(DESTINATION_PATH_PREFIX, LATEST_VERSION + "/");
+const latest = path.join(DESTINATION_PATH_PREFIX, "latest/");
+fs.removeSync(latest)
+fs.copySync(vLatest, latest)
 
 // Watch for changes in directory
 if (process.argv.length < 3) {

@@ -88,14 +88,14 @@
                 if (sourceApplication) {
                     logData[@"sourceApplication"] = sourceApplication;
                 }
-                if ([_targetURL absoluteString]) {
-                    logData[@"targetURL"] = [_targetURL absoluteString];
+                if (_targetURL.absoluteString) {
+                    logData[@"targetURL"] = _targetURL.absoluteString;
                 }
-                if ([_inputURL absoluteString]) {
-                    logData[@"inputURL"] = [_inputURL absoluteString];
+                if (_inputURL.absoluteString) {
+                    logData[@"inputURL"] = _inputURL.absoluteString;
                 }
-                if ([_inputURL scheme]) {
-                    logData[@"inputURLScheme"] = [_inputURL scheme];
+                if (_inputURL.scheme) {
+                    logData[@"inputURLScheme"] = _inputURL.scheme;
                 }
                 logData[@"forRenderBackToReferrerBar"] = forRenderBackToReferrerBar ? EVENT_YES_VAL : EVENT_NO_VAL;
                 logData[@"forOpenUrl"] = forOpenURLEvent ? EVENT_YES_VAL : EVENT_NO_VAL;

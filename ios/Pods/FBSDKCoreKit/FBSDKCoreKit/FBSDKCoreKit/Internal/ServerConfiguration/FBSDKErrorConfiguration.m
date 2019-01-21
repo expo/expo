@@ -123,18 +123,18 @@ static NSString *const kErrorCategoryLogin = @"login";
         NSArray *subcodes = codeSubcodesDictionary[@"subcodes"];
         if (subcodes.count > 0) {
           for (NSNumber *subcodeNumber in subcodes) {
-            currentSubcodes[[subcodeNumber stringValue]] = [[FBSDKErrorRecoveryConfiguration alloc]
-                                                            initWithRecoveryDescription:suggestion
-                                                            optionDescriptions:options
-                                                            category:category
-                                                            recoveryActionName:action];
-          }
-        } else {
-          currentSubcodes[@"*"] = [[FBSDKErrorRecoveryConfiguration alloc]
+            currentSubcodes[subcodeNumber.stringValue] = [[FBSDKErrorRecoveryConfiguration alloc]
                                                           initWithRecoveryDescription:suggestion
                                                           optionDescriptions:options
                                                           category:category
                                                           recoveryActionName:action];
+          }
+        } else {
+          currentSubcodes[@"*"] = [[FBSDKErrorRecoveryConfiguration alloc]
+                                   initWithRecoveryDescription:suggestion
+                                   optionDescriptions:options
+                                   category:category
+                                   recoveryActionName:action];
         }
       }
     }];
@@ -150,7 +150,9 @@ static NSString *const kErrorCategoryLogin = @"login";
 
 - (id)initWithCoder:(NSCoder *)decoder
 {
-  NSDictionary *configurationDictionary = [decoder decodeObjectOfClass:[NSDictionary class] forKey:FBSDKERRORCONFIGURATION_DICTIONARY_KEY];
+  NSSet *classes = [[NSSet alloc] initWithObjects:[NSDictionary class], [FBSDKErrorRecoveryConfiguration class], nil];
+  NSDictionary *configurationDictionary = [decoder decodeObjectOfClasses:classes
+                                                                  forKey:FBSDKERRORCONFIGURATION_DICTIONARY_KEY];
   return [self initWithDictionary:configurationDictionary];
 }
 

@@ -1,0 +1,1 @@
+{"version":3,"file":"ExpoAdsAdMobInterstitialManager.js","sourceRoot":"","sources":["../src/ExpoAdsAdMobInterstitialManager.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,kBAAkB,EAAE,MAAM,WAAW,CAAC;AAE/C,eAAe,kBAAkB,CAAC,+BAA+B,CAAC","sourcesContent":["import { NativeModulesProxy } from 'expo-core';\n\nexport default NativeModulesProxy.ExpoAdsAdMobInterstitialManager;\n"]}

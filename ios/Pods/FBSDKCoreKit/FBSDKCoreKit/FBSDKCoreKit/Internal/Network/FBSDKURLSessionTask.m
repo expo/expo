@@ -62,8 +62,8 @@
     NSString *logEntry = [NSString
                           stringWithFormat:@"FBSDKURLSessionTask <#%lu>:\n  Error: '%@'\n%@\n",
                           (unsigned long)self.loggerSerialNumber,
-                          [error localizedDescription],
-                          [error userInfo]];
+                          error.localizedDescription,
+                          error.userInfo];
 
     [self logMessage:logEntry];
   }
@@ -75,11 +75,11 @@
                    response:(NSURLResponse *)response
                responseData:(NSData *)responseData {
   // Basic FBSDKURLSessionTask logging just prints out the URL.  FBSDKGraphRequest logging provides more details.
-  NSString *mimeType = [response MIMEType];
+  NSString *mimeType = response.MIMEType;
   NSMutableString *mutableLogEntry = [NSMutableString stringWithFormat:@"FBSDKURLSessionTask <#%lu>:\n  Duration: %llu msec\nResponse Size: %lu kB\n  MIME type: %@\n",
                                       (unsigned long)self.loggerSerialNumber,
                                       [FBSDKInternalUtility currentTimeInMilliseconds] - self.requestStartTime,
-                                      (unsigned long)[responseData length] / 1024,
+                                      (unsigned long)responseData.length / 1024,
                                       mimeType];
 
   if ([mimeType isEqualToString:@"text/javascript"]) {

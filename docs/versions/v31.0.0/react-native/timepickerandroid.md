@@ -28,9 +28,9 @@ try {
 
 ### Methods
 
-* [`open`](timepickerandroid.md#open)
-* [`timeSetAction`](timepickerandroid.md#timesetaction)
-* [`dismissedAction`](timepickerandroid.md#dismissedaction)
+* [`open`](../timepickerandroid/#open)
+* [`timeSetAction`](../timepickerandroid/#timesetaction)
+* [`dismissedAction`](../timepickerandroid/#dismissedaction)
 
 ---
 

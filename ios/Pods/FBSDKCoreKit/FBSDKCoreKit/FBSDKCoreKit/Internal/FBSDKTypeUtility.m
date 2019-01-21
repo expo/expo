@@ -31,10 +31,10 @@
 {
   if ([object isKindOfClass:[NSNumber class]]) {
     // @0 or @NO returns NO, otherwise YES
-    return [(NSNumber *)object boolValue];
+    return ((NSNumber *)object).boolValue;
   } else if ([object isKindOfClass:[NSString class]]) {
     // Returns YES on encountering one of "Y", "y", "T", "t", or a digit 1-9, otherwise NO
-    return [(NSString *)object boolValue];
+    return ((NSString *)object).boolValue;
   } else {
     return ([self objectValue:object] != nil);
   }
@@ -48,9 +48,9 @@
 + (NSInteger)integerValue:(id)object
 {
   if ([object isKindOfClass:[NSNumber class]]) {
-    return [(NSNumber *)object integerValue];
+    return ((NSNumber *)object).integerValue;
   } else if ([object isKindOfClass:[NSString class]]) {
-    return [(NSString *)object integerValue];
+    return ((NSString *)object).integerValue;
   } else {
     return 0;
   }
@@ -66,9 +66,9 @@
   if ([object isKindOfClass:[NSString class]]) {
     return (NSString *)object;
   } else if ([object isKindOfClass:[NSNumber class]]) {
-    return [(NSNumber *)object stringValue];
+    return ((NSNumber *)object).stringValue;
   } else if ([object isKindOfClass:[NSURL class]]) {
-    return [(NSURL *)object absoluteString];
+    return ((NSURL *)object).absoluteString;
   } else {
     return nil;
   }
@@ -77,9 +77,9 @@
 + (NSTimeInterval)timeIntervalValue:(id)object
 {
   if ([object isKindOfClass:[NSNumber class]]) {
-    return [(NSNumber *)object doubleValue];
+    return ((NSNumber *)object).doubleValue;
   } else if ([object isKindOfClass:[NSString class]]) {
-    return [(NSString *)object doubleValue];
+    return ((NSString *)object).doubleValue;
   } else {
     return 0;
   }
@@ -88,7 +88,7 @@
 + (NSUInteger)unsignedIntegerValue:(id)object
 {
   if ([object isKindOfClass:[NSNumber class]]) {
-    return [(NSNumber *)object unsignedIntegerValue];
+    return ((NSNumber *)object).unsignedIntegerValue;
   } else {
     // there is no direct support for strings containing unsigned values > NSIntegerMax - not worth writing ourselves
     // right now, so just cap unsigned values at NSIntegerMax until we have a need for larger

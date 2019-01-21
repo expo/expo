@@ -80,7 +80,7 @@
   }
   BOOL mustHaveobjectID = _actionType == FBSDKGameRequestActionTypeSend
   || _actionType == FBSDKGameRequestActionTypeAskFor;
-  BOOL hasobjectID = [_objectID length] > 0;
+  BOOL hasobjectID = _objectID.length > 0;
   if (mustHaveobjectID ^ hasobjectID) {
     if (errorRef != NULL) {
       NSString *message = @"The objectID is required when the actionType is either send or askfor.";
@@ -90,9 +90,9 @@
     }
     return NO;
   }
-  BOOL hasTo = [_recipients count] > 0;
+  BOOL hasTo = _recipients.count > 0;
   BOOL hasFilters = _filters != FBSDKGameRequestFilterNone;
-  BOOL hasSuggestions = [_recipientSuggestions count] > 0;
+  BOOL hasSuggestions = _recipientSuggestions.count > 0;
   if (hasTo && hasFilters) {
     if (errorRef != NULL) {
       NSString *message = @"Cannot specify to and filters at the same time.";
@@ -125,7 +125,7 @@
     return NO;
   }
 
-  if ([_data length] > 255) {
+  if (_data.length > 255) {
     if (errorRef != NULL) {
       NSString *message = @"The data cannot be longer than 255 characters";
       *errorRef = [NSError fbInvalidArgumentErrorWithDomain:FBSDKShareErrorDomain
@@ -161,13 +161,13 @@
 {
   NSUInteger subhashes[] = {
     [FBSDKMath hashWithInteger:_actionType],
-    [_data hash],
+    _data.hash,
     [FBSDKMath hashWithInteger:_filters],
-    [_message hash],
-    [_objectID hash],
-    [_recipientSuggestions hash],
-    [_title hash],
-    [_recipients hash],
+    _message.hash,
+    _objectID.hash,
+    _recipientSuggestions.hash,
+    _title.hash,
+    _recipients.hash,
   };
   return [FBSDKMath hashWithIntegerArray:subhashes count:sizeof(subhashes) / sizeof(subhashes[0])];
 }
@@ -203,7 +203,7 @@
   return YES;
 }
 
-- (id)initWithCoder:(NSCoder *)decoder
+- (instancetype)initWithCoder:(NSCoder *)decoder
 {
   if ((self = [self init])) {
     _actionType = [decoder decodeIntegerForKey:FBSDK_APP_REQUEST_CONTENT_ACTION_TYPE_KEY];

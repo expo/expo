@@ -10,9 +10,9 @@ When you open an app that is being served from XDE or exp, the app will send log
 
 ### XDE logging pane
 
-When you open a project in XDE, the log window is split in two. Your app logs show up on the right, and the packager logs show up on the left.![XDE window with logs](./xde-logs.png)
+When you open a project in XDE, the log window is split in two. Your app logs show up on the right, and the packager logs show up on the left.![XDE window with logs](/static/images/xde-logs.png)
 
-XDE also lets you switch between the logs for any device that has opened the app.![XDE window with device picker selected](./xde-logs-device-picker.png)
+XDE also lets you switch between the logs for any device that has opened the app.![XDE window with device picker selected](/static/images/xde-logs-device-picker.png)
 
 ### Viewing logs with `exp`
 

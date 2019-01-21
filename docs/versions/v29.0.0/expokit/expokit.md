@@ -9,7 +9,7 @@ native iOS/Android project.
 
 There are two ways to get an ExpoKit project:
 
-- Create a pure-JS project in XDE, then use [exp detach](detach.html) to add ExpoKit.
+- Create a pure-JS project in XDE, then use [exp detach](../detach/) to add ExpoKit.
 - Create an app with [create-react-native-app](https://github.com/react-community/create-react-native-app), then choose "eject with ExpoKit".
 
 Make sure you follow one of the above paths before continuing in this guide. The remainder of the guide will assume you have created an ExpoKit project.

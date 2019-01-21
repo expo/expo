@@ -191,9 +191,9 @@ static void (*fb_swizzledMethods[MAX_ARGS - MIN_ARGS + 1])() = {fb_swizzledMetho
             IMP swizzledMethod = (IMP)fb_swizzledMethods[numArgs - 2];
             // Check whether the first parameter is integer
             if (4 == numArgs) {
-              NSString *firstType = [NSString stringWithUTF8String:method_copyArgumentType(aMethod, 2)];
+              NSString *firstType = @(method_copyArgumentType(aMethod, 2));
               NSString *integerTypes = @"islq";
-              if ([integerTypes containsString:[firstType lowercaseString]]) {
+              if ([integerTypes containsString:firstType.lowercaseString]) {
                 swizzledMethod = (IMP)fb_swizzleMethod_4_io;
               }
             }

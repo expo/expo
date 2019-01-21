@@ -48,18 +48,18 @@ class RefreshableList extends Component {
 
 ### Props
 
-* [View props...](view.md#props)
+* [View props...](../view/#props)
 
-- [`refreshing`](refreshcontrol.md#refreshing)
-- [`onRefresh`](refreshcontrol.md#onrefresh)
-- [`colors`](refreshcontrol.md#colors)
-- [`enabled`](refreshcontrol.md#enabled)
-- [`progressBackgroundColor`](refreshcontrol.md#progressbackgroundcolor)
-- [`progressViewOffset`](refreshcontrol.md#progressviewoffset)
-- [`size`](refreshcontrol.md#size)
-- [`tintColor`](refreshcontrol.md#tintcolor)
-- [`title`](refreshcontrol.md#title)
-- [`titleColor`](refreshcontrol.md#titlecolor)
+- [`refreshing`](../refreshcontrol/#refreshing)
+- [`onRefresh`](../refreshcontrol/#onrefresh)
+- [`colors`](../refreshcontrol/#colors)
+- [`enabled`](../refreshcontrol/#enabled)
+- [`progressBackgroundColor`](../refreshcontrol/#progressbackgroundcolor)
+- [`progressViewOffset`](../refreshcontrol/#progressviewoffset)
+- [`size`](../refreshcontrol/#size)
+- [`tintColor`](../refreshcontrol/#tintcolor)
+- [`title`](../refreshcontrol/#title)
+- [`titleColor`](../refreshcontrol/#titlecolor)
 
 ---
 
@@ -93,7 +93,7 @@ The colors (at least one) that will be used to draw the refresh indicator.
 
 | Type                        | Required | Platform |
 | --------------------------- | -------- | -------- |
-| array of [color](colors.md) | No       | Android  |
+| array of [color](../colors/) | No       | Android  |
 
 ---
 
@@ -113,7 +113,7 @@ The background color of the refresh indicator.
 
 | Type               | Required | Platform |
 | ------------------ | -------- | -------- |
-| [color](colors.md) | No       | Android  |
+| [color](../colors/) | No       | Android  |
 
 ---
 
@@ -143,7 +143,7 @@ The color of the refresh indicator.
 
 | Type               | Required | Platform |
 | ------------------ | -------- | -------- |
-| [color](colors.md) | No       | iOS      |
+| [color](../colors/) | No       | iOS      |
 
 ---
 
@@ -163,5 +163,5 @@ Title color.
 
 | Type               | Required | Platform |
 | ------------------ | -------- | -------- |
-| [color](colors.md) | No       | iOS      |
+| [color](../colors/) | No       | iOS      |
 

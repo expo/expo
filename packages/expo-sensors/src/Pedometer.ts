@@ -1,7 +1,9 @@
-import { EventEmitter, NativeModulesProxy } from 'expo-core';
+import { EventEmitter } from 'expo-core';
 import invariant from 'invariant';
+import { UnavailabilityError } from 'expo-errors';
+import ExponentPedometer from './ExponentPedometer';
 
-const PedometerEventEmitter = new EventEmitter(NativeModulesProxy.ExponentPedometer);
+const PedometerEventEmitter = new EventEmitter(ExponentPedometer);
 
 type PedometerResult = { steps: number };
 type PedometerUpdateCallback = (result: PedometerResult) => void;
@@ -12,10 +14,13 @@ export function watchStepCount(callback: PedometerUpdateCallback): PedometerList
 }
 
 export async function getStepCountAsync(start: Date, end: Date): Promise<PedometerResult> {
+  if (!ExponentPedometer.getStepCountAsync) {
+    throw new UnavailabilityError('ExponentPedometer', 'getStepCountAsync');
+  }
   invariant(start <= end, 'Pedometer: The start date must precede the end date.');
-  return await NativeModulesProxy.ExponentPedometer.getStepCountAsync(start.getTime(), end.getTime());
+  return await ExponentPedometer.getStepCountAsync(start.getTime(), end.getTime());
 }
 
 export async function isAvailableAsync(): Promise<boolean> {
-  return await NativeModulesProxy.ExponentPedometer.isAvailableAsync();
+  return await ExponentPedometer.isAvailableAsync();
 }

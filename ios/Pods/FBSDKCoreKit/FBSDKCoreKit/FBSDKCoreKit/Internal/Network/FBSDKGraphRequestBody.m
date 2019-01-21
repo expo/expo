@@ -54,7 +54,7 @@
 
 - (void)appendUTF8:(NSString *)utf8
 {
-  if (![_data length]) {
+  if (!_data.length) {
     NSString *headerUTF8 = [NSString stringWithFormat:@"--%@%@", _stringBoundary, kNewline];
     NSData *headerData = [headerUTF8 dataUsingEncoding:NSUTF8StringEncoding];
     [_data appendData:headerData];
@@ -71,7 +71,7 @@
     [self appendUTF8:value];
   }];
   if (key && value) {
-    [_json setObject:value forKey:key];
+    _json[key] = value;
   }
   [logger appendFormat:@"\n    %@:\t%@", key, (NSString *)value];
 }
@@ -85,7 +85,7 @@
     [self->_data appendData:data];
   }];
   _json = nil;
-  [logger appendFormat:@"\n    %@:\t<Image - %lu kB>", key, (unsigned long)([data length] / 1024)];
+  [logger appendFormat:@"\n    %@:\t<Image - %lu kB>", key, (unsigned long)(data.length / 1024)];
 }
 
 - (void)appendWithKey:(NSString *)key
@@ -96,7 +96,7 @@
     [self->_data appendData:data];
   }];
   _json = nil;
-  [logger appendFormat:@"\n    %@:\t<Data - %lu kB>", key, (unsigned long)([data length] / 1024)];
+  [logger appendFormat:@"\n    %@:\t<Data - %lu kB>", key, (unsigned long)(data.length / 1024)];
 }
 
 - (void)appendWithKey:(NSString *)key
@@ -110,7 +110,7 @@
     [self->_data appendData:data];
   }];
   _json = nil;
-  [logger appendFormat:@"\n    %@:\t<Data - %lu kB>", key, (unsigned long)([data length] / 1024)];
+  [logger appendFormat:@"\n    %@:\t<Data - %lu kB>", key, (unsigned long)(data.length / 1024)];
 }
 
 - (NSData *)data

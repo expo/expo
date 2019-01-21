@@ -254,26 +254,26 @@ We believe that this more constrained way to style text will yield better apps:
 
 ### Props
 
-* [`selectable`](text.md#selectable)
-* [`accessibilityHint`](text.md#accessibilityhint)
-* [`accessibilityLabel`](text.md#accessibilitylabel)
-* [`accessible`](text.md#accessible)
-* [`ellipsizeMode`](text.md#ellipsizemode)
-* [`nativeID`](text.md#nativeid)
-* [`numberOfLines`](text.md#numberoflines)
-* [`onLayout`](text.md#onlayout)
-* [`onLongPress`](text.md#onlongpress)
-* [`onPress`](text.md#onpress)
-* [`pressRetentionOffset`](text.md#pressretentionoffset)
-* [`allowFontScaling`](text.md#allowfontscaling)
-* [`style`](text.md#style)
-* [`testID`](text.md#testid)
-* [`disabled`](text.md#disabled)
-* [`selectionColor`](text.md#selectioncolor)
-* [`textBreakStrategy`](text.md#textbreakstrategy)
-* [`adjustsFontSizeToFit`](text.md#adjustsfontsizetofit)
-* [`minimumFontScale`](text.md#minimumfontscale)
-* [`suppressHighlighting`](text.md#suppresshighlighting)
+* [`selectable`](../text/#selectable)
+* [`accessibilityHint`](../text/#accessibilityhint)
+* [`accessibilityLabel`](../text/#accessibilitylabel)
+* [`accessible`](../text/#accessible)
+* [`ellipsizeMode`](../text/#ellipsizemode)
+* [`nativeID`](../text/#nativeid)
+* [`numberOfLines`](../text/#numberoflines)
+* [`onLayout`](../text/#onlayout)
+* [`onLongPress`](../text/#onlongpress)
+* [`onPress`](../text/#onpress)
+* [`pressRetentionOffset`](../text/#pressretentionoffset)
+* [`allowFontScaling`](../text/#allowfontscaling)
+* [`style`](../text/#style)
+* [`testID`](../text/#testid)
+* [`disabled`](../text/#disabled)
+* [`selectionColor`](../text/#selectioncolor)
+* [`textBreakStrategy`](../text/#textbreakstrategy)
+* [`adjustsFontSizeToFit`](../text/#adjustsfontsizetofit)
+* [`minimumFontScale`](../text/#minimumfontscale)
+* [`suppressHighlighting`](../text/#suppresshighlighting)
 
 ---
 
@@ -315,7 +315,7 @@ Overrides the text that's read by the screen reader when the user interacts with
 
 When set to `true`, indicates that the view is an accessibility element. The default value for a `Text` element is `true`.
 
-See the [Accessibility guide](accessibility.md#accessible-ios-android) for more information.
+See the [Accessibility guide](../accessibility/#accessible-ios-android) for more information.
 
 | Type | Required |
 | ---- | -------- |
@@ -426,11 +426,11 @@ Specifies whether fonts should scale to respect Text Size accessibility settings
 | ----- | -------- |
 | style | No       |
 
-* [View Style Props...](view-style-props.md#style)
+* [View Style Props...](../view-style-props/#style)
 
 * **`textShadowOffset`**: object: ${"{"}width: number,height: number${"}"}
 
-* **`color`**: [color](colors.md)
+* **`color`**: [color](../colors/)
 
 * **`fontSize`**: number
 
@@ -448,7 +448,7 @@ Specifies whether fonts should scale to respect Text Size accessibility settings
 
 * **`textDecorationLine`**: enum('none', 'underline', 'line-through', 'underline line-through')
 
-* **`textShadowColor`**: [color](colors.md)
+* **`textShadowColor`**: [color](../colors/)
 
 * **`fontFamily`**: string
 
@@ -470,7 +470,7 @@ Specifies whether fonts should scale to respect Text Size accessibility settings
 
   Android: Only supported since Android 5.0 - older versions will ignore this attribute. Please note that additional space will be added _around_ the glyphs (half on each side), which differs from the iOS rendering. It is possible to emulate the iOS rendering by using layout attributes, e.g. negative margins, as appropriate for your situation.
 
-- **`textDecorationColor`**: [color](colors.md) (_iOS_)
+- **`textDecorationColor`**: [color](../colors/) (_iOS_)
 
 - **`textDecorationStyle`**: enum('solid', 'double', 'dotted', 'dashed') (_iOS_)
 
@@ -506,7 +506,7 @@ The highlight color of the text.
 
 | Type               | Required | Platform |
 | ------------------ | -------- | -------- |
-| [color](colors.md) | No       | Android  |
+| [color](../colors/) | No       | Android  |
 
 ---
 

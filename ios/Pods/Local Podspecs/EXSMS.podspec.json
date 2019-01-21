@@ -1,6 +1,6 @@
 {
   "name": "EXSMS",
-  "version": "2.0.0-rc.2",
+  "version": "2.0.0",
   "summary": "An Expo universal module to present the system UI for sending SMS messages",
   "description": "An Expo universal module to present the system UI for sending SMS messages",
   "license": "MIT",

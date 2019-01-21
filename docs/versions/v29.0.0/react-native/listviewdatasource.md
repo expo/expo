@@ -28,18 +28,18 @@ _onDataArrived(newData) {
 
 ### Methods
 
-* [`constructor`](listviewdatasource.md#constructor)
-* [`cloneWithRows`](listviewdatasource.md#clonewithrows)
-* [`cloneWithRowsAndSections`](listviewdatasource.md#clonewithrowsandsections)
-* [`getRowCount`](listviewdatasource.md#getrowcount)
-* [`getRowAndSectionCount`](listviewdatasource.md#getrowandsectioncount)
-* [`rowShouldUpdate`](listviewdatasource.md#rowshouldupdate)
-* [`getRowData`](listviewdatasource.md#getrowdata)
-* [`getRowIDForFlatIndex`](listviewdatasource.md#getrowidforflatindex)
-* [`getSectionIDForFlatIndex`](listviewdatasource.md#getsectionidforflatindex)
-* [`getSectionLengths`](listviewdatasource.md#getsectionlengths)
-* [`sectionHeaderShouldUpdate`](listviewdatasource.md#sectionheadershouldupdate)
-* [`getSectionHeaderData`](listviewdatasource.md#getsectionheaderdata)
+* [`constructor`](../listviewdatasource/#constructor)
+* [`cloneWithRows`](../listviewdatasource/#clonewithrows)
+* [`cloneWithRowsAndSections`](../listviewdatasource/#clonewithrowsandsections)
+* [`getRowCount`](../listviewdatasource/#getrowcount)
+* [`getRowAndSectionCount`](../listviewdatasource/#getrowandsectioncount)
+* [`rowShouldUpdate`](../listviewdatasource/#rowshouldupdate)
+* [`getRowData`](../listviewdatasource/#getrowdata)
+* [`getRowIDForFlatIndex`](../listviewdatasource/#getrowidforflatindex)
+* [`getSectionIDForFlatIndex`](../listviewdatasource/#getsectionidforflatindex)
+* [`getSectionLengths`](../listviewdatasource/#getsectionlengths)
+* [`sectionHeaderShouldUpdate`](../listviewdatasource/#sectionheadershouldupdate)
+* [`getSectionHeaderData`](../listviewdatasource/#getsectionheaderdata)
 
 ---
 

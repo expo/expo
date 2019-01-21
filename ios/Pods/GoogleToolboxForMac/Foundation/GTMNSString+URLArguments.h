@@ -34,12 +34,12 @@
 /// NOTE: Apps targeting iOS 8 or OS X 10.10 and later should use
 ///       NSURLComponents and NSURLQueryItem to create properly-escaped
 ///       URLs instead of using these category methods.
-- (NSString*)gtm_stringByEscapingForURLArgument;
+- (NSString*)gtm_stringByEscapingForURLArgument NS_DEPRECATED(10_0, 10_10, 2_0, 8_0, "Use NSURLComponents.");
 
 /// Returns the unescaped version of a URL argument
 ///
 /// This has the same behavior as stringByReplacingPercentEscapesUsingEncoding:,
 /// except that it will also convert '+' to space.
-- (NSString*)gtm_stringByUnescapingFromURLArgument;
+- (NSString*)gtm_stringByUnescapingFromURLArgument NS_DEPRECATED(10_0, 10_10, 2_0, 8_0, "Use NSURLComponents.");
 
 @end

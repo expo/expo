@@ -1,4 +1,5 @@
 import AppAuth from '../screens/AppAuthScreen';
+import Audio from '../screens/AV/AudioScreen';
 import AuthSession from '../screens/AuthSessionScreen';
 import BackgroundFetch from '../screens/BackgroundFetchScreen';
 import Branch from '../screens/BranchScreen';
@@ -20,6 +21,7 @@ import ImageManipulator from '../screens/ImageManipulatorScreen';
 import ImagePicker from '../screens/ImagePickerScreen';
 import IntentLauncher from '../screens/IntentLauncherScreen';
 import KeepAwake from '../screens/KeepAwakeScreen';
+import Linking from '../screens/LinkingScreen';
 import LocalAuthentication from '../screens/LocalAuthenticationScreen';
 import Localization from '../screens/LocalizationScreen';
 import LocationScreens from '../screens/Location/LocationScreens';
@@ -29,6 +31,7 @@ import Notification from '../screens/NotificationScreen';
 import Pedometer from '../screens/PedometerScreen';
 import Permissions from '../screens/PermissionsScreen';
 import Print from '../screens/PrintScreen';
+import Recording from '../screens/AV/RecordingScreen';
 import Reminders from '../screens/RemindersScreen';
 import ScreenOrientation from '../screens/ScreenOrientationScreen';
 import SecureStore from '../screens/SecureStoreScreen';
@@ -47,6 +50,7 @@ const ExpoApisStackNavigator = createStackNavigator(
   {
     ExpoApis,
     AppAuth,
+    Audio,
     AuthSession,
     BackgroundFetch,
     Branch,
@@ -68,6 +72,7 @@ const ExpoApisStackNavigator = createStackNavigator(
     ImagePicker,
     IntentLauncher,
     KeepAwake,
+    Linking,
     MailComposer,
     ...MediaLibraryScreens,
     Notification,
@@ -76,6 +81,7 @@ const ExpoApisStackNavigator = createStackNavigator(
     Pedometer,
     Permissions,
     Print,
+    Recording,
     Reminders,
     ScreenOrientation,
     SecureStore,

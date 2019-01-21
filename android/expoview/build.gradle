@@ -115,48 +115,50 @@ dependencies {
   // Current react native
   /* UNCOMMENT WHEN DISTRIBUTING
   api 'com.facebook.react:react-native:32.0.0'
-  api 'host.exp.exponent:expo-core:2.0.0-rc.2'
-  api 'host.exp.exponent:expo-constants:2.0.0-rc.2'
-  api 'host.exp.exponent:expo-constants-interface:2.0.0-rc.1'
-  api 'host.exp.exponent:expo-errors:1.0.0-rc.2'
-  api 'host.exp.exponent:expo-permissions:2.0.0-rc.1'
-  api 'host.exp.exponent:expo-sensors-interface:2.0.0-rc.1'
-  api 'host.exp.exponent:expo-permissions-interface:2.0.0-rc.1'
-  api 'host.exp.exponent:expo-react-native-adapter:2.0.0-rc.2'
-  api 'host.exp.exponent:expo-file-system:2.0.0-rc.1'
-  api 'host.exp.exponent:expo-file-system-interface:2.0.0-rc.1'
-  api 'host.exp.exponent:expo-task-manager:1.0.0-rc.2'
-  api 'host.exp.exponent:expo-task-manager-interface:1.0.0-rc.1'
-  api 'host.exp.exponent:expo-app-loader-provider:1.0.0-rc.1'
+  api 'host.exp.exponent:expo-core:2.0.0'
+  api 'host.exp.exponent:expo-constants:2.0.0'
+  api 'host.exp.exponent:expo-constants-interface:2.0.0'
+  api 'host.exp.exponent:expo-errors:1.0.0'
+  api 'host.exp.exponent:expo-permissions:2.0.0'
+  api 'host.exp.exponent:expo-sensors-interface:2.0.0'
+  api 'host.exp.exponent:expo-permissions-interface:2.0.0'
+  api 'host.exp.exponent:expo-react-native-adapter:2.0.0'
+  api 'host.exp.exponent:expo-file-system:2.0.0'
+  api 'host.exp.exponent:expo-file-system-interface:2.0.0'
+  api 'host.exp.exponent:expo-task-manager:1.0.0'
+  api 'host.exp.exponent:expo-task-manager-interface:1.0.0'
+  api 'host.exp.exponent:expo-app-loader-provider:1.0.0'
 
   // Optional universal modules
-  compileOnly 'host.exp.exponent:expo-app-auth:2.0.0-rc.1'
-  compileOnly 'host.exp.exponent:expo-image-loader-interface:2.0.0-rc.1'
-  compileOnly 'host.exp.exponent:expo-gl:2.0.0-rc.1'
-  compileOnly 'host.exp.exponent:expo-gl-cpp:2.0.0-rc.1'
-  compileOnly 'host.exp.exponent:expo-sms:2.0.0-rc.2'
-  compileOnly 'host.exp.exponent:expo-print:2.0.0-rc.2'
-  compileOnly 'host.exp.exponent:expo-media-library:2.0.0-rc.2'
-  compileOnly 'host.exp.exponent:expo-analytics-segment:2.0.0-rc.1'
-  compileOnly 'host.exp.exponent:expo-font:2.0.0-rc.2'
-  compileOnly 'host.exp.exponent:expo-google-sign-in:2.0.0-rc.2'
-  compileOnly 'host.exp.exponent:expo-location:2.0.0-rc.2'
-  compileOnly 'host.exp.exponent:expo-barcode-scanner-interface:2.0.0-rc.1'
-  compileOnly 'host.exp.exponent:expo-barcode-scanner:2.0.0-rc.1'
-  compileOnly 'host.exp.exponent:expo-contacts:2.0.0-rc.2'
-  compileOnly 'host.exp.exponent:expo-ads-admob:2.0.0-rc.2'
-  compileOnly 'host.exp.exponent:expo-local-authentication:2.0.0-rc.1'
-  compileOnly 'host.exp.exponent:expo-localization:2.0.0-rc.1'
-  compileOnly 'host.exp.exponent:expo-react-native-adapter:2.0.0-rc.2'
-  compileOnly 'host.exp.exponent:expo-camera:2.0.0-rc.2'
-  compileOnly 'host.exp.exponent:expo-camera-interface:2.0.0-rc.1'
-  compileOnly 'host.exp.exponent:expo-sensors:2.0.0-rc.2'
-  compileOnly 'host.exp.exponent:expo-sensors-interface:2.0.0-rc.1'
-  compileOnly 'host.exp.exponent:expo-face-detector:2.0.0-rc.1'
-  compileOnly 'host.exp.exponent:expo-payments-stripe:2.0.0-rc.1'
-  compileOnly 'host.exp.exponent:expo-permissions:2.0.0-rc.1'
-  compileOnly 'host.exp.exponent:expo-permissions-interface:2.0.0-rc.1'
-  compileOnly 'host.exp.exponent:expo-background-fetch:1.0.0-rc.2'
+  compileOnly 'host.exp.exponent:expo-app-auth:2.0.0'
+  compileOnly 'host.exp.exponent:expo-av:1.0.0'
+  compileOnly 'host.exp.exponent:expo-image-loader-interface:2.0.0'
+  compileOnly 'host.exp.exponent:expo-gl:2.0.0'
+  compileOnly 'host.exp.exponent:expo-gl-cpp:2.0.0'
+  compileOnly 'host.exp.exponent:expo-sms:2.0.0'
+  compileOnly 'host.exp.exponent:expo-print:2.0.0'
+  compileOnly 'host.exp.exponent:expo-media-library:2.0.0'
+  compileOnly 'host.exp.exponent:expo-analytics-segment:2.0.0'
+  compileOnly 'host.exp.exponent:expo-font:2.0.0'
+  compileOnly 'host.exp.exponent:expo-google-sign-in:2.0.0'
+  compileOnly 'host.exp.exponent:expo-location:2.0.1'
+  compileOnly 'host.exp.exponent:expo-barcode-scanner-interface:2.0.0'
+  compileOnly 'host.exp.exponent:expo-barcode-scanner:2.0.0'
+  compileOnly 'host.exp.exponent:expo-contacts:2.0.0'
+  compileOnly 'host.exp.exponent:expo-ads-admob:2.0.0'
+  compileOnly 'host.exp.exponent:expo-local-authentication:2.0.0'
+  compileOnly 'host.exp.exponent:expo-localization:2.0.0'
+  compileOnly 'host.exp.exponent:expo-react-native-adapter:2.0.0'
+  compileOnly 'host.exp.exponent:expo-camera:2.0.0'
+  compileOnly 'host.exp.exponent:expo-camera-interface:2.0.0'
+  compileOnly 'host.exp.exponent:expo-sensors:2.0.0'
+  compileOnly 'host.exp.exponent:expo-sensors-interface:2.0.0'
+  compileOnly 'host.exp.exponent:expo-face-detector:2.0.0'
+  compileOnly 'host.exp.exponent:expo-payments-stripe:2.0.0'
+  compileOnly 'host.exp.exponent:expo-permissions:2.0.0'
+  compileOnly 'host.exp.exponent:expo-permissions-interface:2.0.0'
+  compileOnly 'host.exp.exponent:expo-background-fetch:1.0.0'
+  compileOnly 'host.exp.exponent:expo-mail-composer:1.0.0'
   END UNCOMMENT WHEN DISTRIBUTING */
 
   // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
@@ -182,6 +184,7 @@ dependencies {
   api project(':expo-ads-admob')
   api project(':expo-analytics-segment')
   api project(':expo-app-auth')
+  api project(':expo-av')
   api project(':expo-background-fetch')
   api project(':expo-barcode-scanner')
   api project(':expo-barcode-scanner-interface')
@@ -199,6 +202,7 @@ dependencies {
   api project(':expo-local-authentication')
   api project(':expo-localization')
   api project(':expo-location')
+  api project(':expo-mail-composer')
   api project(':expo-media-library')
   api project(':expo-payments-stripe')
   api project(':expo-print')
@@ -256,7 +260,7 @@ dependencies {
   api('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') {
     transitive = true
   }
-  api 'com.facebook.android:facebook-android-sdk:4.38.1'
+  api 'com.facebook.android:facebook-android-sdk:4.39.0'
   api('com.facebook.android:audience-network-sdk:4.99.0') {
     exclude module: 'play-services-ads'
   }
@@ -283,15 +287,8 @@ dependencies {
   // debugApi 'com.squareup.leakcanary:leakcanary-android:1.4-beta1'
   releaseApi 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta1'
   api 'commons-io:commons-io:1.4'
-  // Newer version introduces dependency versions conflict
-  // on 'com.android.support:support-annotations'
-  api 'com.google.android.exoplayer:exoplayer:2.6.1'
-  // expolib_v1-extension-okhttp is an exoplayer:extension-okhttp using expolib_v1.okhttp,
-  // created with tools/android-versioning and distributed in expokit-npm-package.
-  api 'expolib_v1.com.google.android.exoplayer:expolib_v1-extension-okhttp:2.6.1@aar'
   api 'me.leolin:ShortcutBadger:1.1.4@aar'
   api 'com.theartofdev.edmodo:android-image-cropper:2.7.0'
-  api 'com.yqritc:android-scalablevideoview:1.0.1'
   api 'commons-codec:commons-codec:1.10'
   api 'net.openid:appauth:0.4.1'
   api('com.airbnb.android:lottie:2.5.5') {
@@ -309,4 +306,8 @@ dependencies {
   // expo-file-system
   api 'com.squareup.okhttp3:okhttp:3.10.0'
   api 'com.squareup.okhttp3:okhttp-urlconnection:3.10.0'
+
+  // expo-av
+  // See explanation in expo-av/build.gradle
+  api 'expolib_v1.com.google.android.exoplayer:expolib_v1-extension-okhttp:2.6.1'
 }

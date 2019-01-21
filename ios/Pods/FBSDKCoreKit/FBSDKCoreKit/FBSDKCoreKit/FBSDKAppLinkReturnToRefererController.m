@@ -130,7 +130,7 @@ static const CFTimeInterval kFBSDKViewAnimationDuration = 0.25f;
 #pragma mark - Private
 
 - (void)statusBarFrameWillChange:(NSNotification *)notification {
-    NSValue *rectValue = [[notification userInfo] valueForKey:UIApplicationStatusBarFrameUserInfoKey];
+    NSValue *rectValue = [notification.userInfo valueForKey:UIApplicationStatusBarFrameUserInfoKey];
     CGRect newFrame;
     [rectValue getValue:&newFrame];
 
@@ -145,7 +145,7 @@ static const CFTimeInterval kFBSDKViewAnimationDuration = 0.25f;
 }
 
 - (void)statusBarFrameDidChange:(NSNotification *)notification {
-    NSValue *rectValue = [[notification userInfo] valueForKey:UIApplicationStatusBarFrameUserInfoKey];
+    NSValue *rectValue = [notification.userInfo valueForKey:UIApplicationStatusBarFrameUserInfoKey];
     CGRect newFrame;
     [rectValue getValue:&newFrame];
 

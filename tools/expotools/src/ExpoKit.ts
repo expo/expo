@@ -43,7 +43,8 @@ export async function updateExpoKitIosAsync(
 export async function updateExpoKitAndroidAsync(
   expoDir: string,
   appVersion: string,
-  sdkVersion: string
+  sdkVersion: string,
+  expokitVersion: string
 ) {
   const key = `android-v${appVersion.trim().replace(/^v/, '')}-sdk${sdkVersion}-${uuid()}.tar.gz`;
   const androidDir = path.join(expoDir, 'android');
@@ -93,11 +94,6 @@ export async function updateExpoKitAndroidAsync(
       source: path.join(androidDir, 'debug.keystore'),
       destination: 'debug.keystore',
     },
-    {
-      isFile: true,
-      source: path.join(androidDir, 'run.sh'),
-      destination: 'run.sh',
-    },
 
     // Manually add template files from android-paths.json. uploadDirectoriesAsync will exclude all
     // files not added to git so we need to include these manually
@@ -125,8 +121,10 @@ export async function updateExpoKitAndroidAsync(
     throw new Error(`SDK version ${sdkVersion} not found in versions JSON`);
   }
 
-  let expokitNpmPackageDir = path.join(expoDir, `expokit-npm-package`);
-  await spawnAsync(`npm`, ['version', 'minor'], {
+  const expokitNpmPackageDir = path.join(expoDir, `expokit-npm-package`);
+  const npmVersionArg = expokitVersion || 'patch';
+
+  await spawnAsync(`npm`, ['version', npmVersionArg], {
     stdio: 'inherit',
     cwd: expokitNpmPackageDir,
   });

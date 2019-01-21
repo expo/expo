@@ -119,8 +119,11 @@ static dispatch_once_t selectorRegularExpressionOnceToken = 0;
   return [selectorRegularExpression stringByReplacingMatchesInString:nameString options:0 range:NSMakeRange(0, [nameString length]) withTemplate:@""];
 }
 
+static const NSNumber *trueValue;
+
 - (void)callExportedMethod:(NSString *)methodName withArguments:(NSArray *)arguments resolver:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject
 {
+  trueValue = [NSNumber numberWithBool:YES];
   const NSString *moduleName = [[self class] exportedModuleName];
   NSString *methodDeclaration = _exportedMethods[methodName];
   if (methodDeclaration == nil) {
@@ -145,6 +148,12 @@ static dispatch_once_t selectorRegularExpressionOnceToken = 0;
   [arguments enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
     if (obj != [NSNull null]) {
       [invocation setArgument:&obj atIndex:(2 + idx)];
+    }
+    if ([methodSignature getArgumentTypeAtIndex:(2 + idx)][0] == _C_BOOL) {
+      // We need this intermediary variable, see
+      // https://stackoverflow.com/questions/11061166/pointer-to-bool-in-objective-c
+      BOOL value = [obj boolValue];
+      [invocation setArgument:&value atIndex:(2 + idx)];
     }
   }];
   [invocation setArgument:&resolve atIndex:(2 + [arguments count])];

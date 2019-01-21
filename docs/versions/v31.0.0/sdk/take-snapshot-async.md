@@ -4,7 +4,7 @@ title: takeSnapshotAsync
 
 Given a view, `takeSnapshotAsync` will essentially screenshot that view and return an image for you. This is very useful for things like signature pads, where the user draws something and then you want to save an image from it.
 
-If you're interested in taking snapshots from the GLView, we recommend you use [GLView's takeSnapshotAsync](./gl-view.html#takesnapshotasync) instead.
+If you're interested in taking snapshots from the GLView, we recommend you use [GLView's takeSnapshotAsync](../gl-view/#takesnapshotasync) instead.
 
 ### `Expo.takeSnapshotAsync(view, options)`
 
@@ -15,16 +15,17 @@ Snapshots the given view.
 -   **view (_number|ReactElement_)** -- The `ref` or `reactTag` (also known as node handle) for the view to snapshot.
 -   **options (_object_)** --
 
-      A map of options:
+      An optional map of optional options
 
-    -   **format (_string_)** -- `"png" | "jpg" | "jpeg" | "webm"`
-    -   **quality (_number_)** -- Number between 0 and 1 where 0 is worst quality and 1 is best.
+    -   **format (_string_)** -- `"png" | "jpg" | "webm"`, defaults to `"png"`, `"webm"` supported only on Android.
+    -   **quality (_number_)** -- Number between 0 and 1 where 0 is worst quality and 1 is best, defaults to `1`
     -   **result (_string_)** -- The type for the resulting image.
-            \-   `'file'` -- Return a file uri.
+            \-   `'tmpfile'` -- (default) Return a temporary file uri.
             \-   `'base64'` -- base64 encoded image.
             \-   `'data-uri'` -- base64 encoded image with data-uri prefix.
-    -   **height (_number_)** -- Height of result in pixels.
-    -   **width (_number_)** -- Width of result in pixels.
+    -   **height (_number_)** -- Height of result in pixels
+    -   **width (_number_)** -- Width of result in pixels
+    -   **snapshotContentContainer (_bool_)** -- if true and when view is a ScrollView, the "content container" height will be evaluated instead of the container height
 
 #### Returns
 

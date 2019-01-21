@@ -70,14 +70,11 @@ public List<Package> expoPackages() {
 import React from 'react';
 import { Text } from 'react-native';
 import { Localization } from 'expo-localization';
-
 import i18n from 'i18n-js';
-
 const en = {
   foo: 'Foo',
   bar: 'Bar {{someValue}}',
 };
-
 const fr = {
   foo: 'como telle fous',
   bar: 'chatouiller {{someValue}}',
@@ -86,20 +83,7 @@ const fr = {
 i18n.fallbacks = true;
 i18n.translations = { fr, en };
 i18n.locale = Localization.locale;
-
 export default class LitView extends React.Component {
-  componentWillMount() {
-    this._subscription = Localization.addListener(({ locale }) => {
-      i18n.locale = locale;
-    });
-  }
-
-  componentWillUnmount() {
-    if (!!this._subscription) {
-      this._subscription.remove();
-    }
-  }
-
   render() {
     return (
       <Text>
@@ -114,11 +98,11 @@ export default class LitView extends React.Component {
 
 ### Constants
 
-This API is mostly synchronous and driven by constants.
+This API is mostly synchronous and driven by constants. On iOS the constants will always be correct, on Android you should check if the locale has updated using `AppState` and `Expo.Localization.getLocalizationAsync()`. Initally the constants will be correct on both platforms, but on Android a user can change the language and return, more on this later.
 
 #### `Localization.locale: string`
 
-Native device language, returned in standard format. ex: `en-US`, `es-US`.
+Native device language, returned in standard format. Ex: `en`, `en-US`, `es-US`.
 
 #### `Localization.locales: Array<string>`
 
@@ -142,16 +126,25 @@ This will return `true` if the current language is Right-to-Left.
 
 ### Methods
 
-> Callbacks are Android only, changing the native locale on iOS will cause all the apps to reset.
+#### `Localization.getLocalizationAsync(): Promise<Localization>`
 
-#### `Localization.addListener(listener: Listener): ?Subscription`
+> Android only, on iOS changing the locale settings will cause all the apps to reset.
 
-Observe when a language is added or moved in the Android settings.
+```js
+type NativeEvent = {
+  locale: string,
+  locales: Array<string>,
+  timezone: string,
+  isoCurrencyCodes: ?Array<string>,
+  country: ?string,
+  isRTL: boolean,
+};
+```
 
-#### `Localization.removeAllListeners(): void`
+**Example**
 
-Clear all language observers.
+```js
+// When the app returns from the background on Android...
 
-#### `Localization.removeSubscription(subscription: Subscription): void`
-
-Stop observing when the native languages are edited.
+const { locale } = await Localization.getLocalizationAsync();
+```

@@ -2,9 +2,9 @@
 title: Advanced ExpoKit Topics
 ---
 
-This guide goes deeper into a few [ExpoKit](expokit.html) topics that aren't critical
+This guide goes deeper into a few [ExpoKit](../expokit/) topics that aren't critical
 right out of the box, but that you may encounter down the road. If you're not familiar with
-ExpoKit, you might want to read [the ExpoKit guide](expokit.html) first.
+ExpoKit, you might want to read [the ExpoKit guide](../expokit/) first.
 
 ## Un-detaching
 
@@ -73,4 +73,4 @@ In iOS Expokit projects, the DocumentPicker module requires the iCloud entitleme
 
 If everything worked properly your screen should look like this:
 
-![](./icloud-entitlement.png)
+![](/static/images/icloud-entitlement.png)

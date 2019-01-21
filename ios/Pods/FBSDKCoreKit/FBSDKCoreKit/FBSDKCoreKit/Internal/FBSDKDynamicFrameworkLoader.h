@@ -182,6 +182,10 @@ FOUNDATION_EXPORT Class fbsdkdfl_ASIdentifierManagerClass(void);
 FOUNDATION_EXPORT Class fbsdkdfl_SFSafariViewControllerClass(void);
 FOUNDATION_EXPORT Class fbsdkdfl_SFAuthenticationSessionClass(void);
 
+#pragma mark - AuthenticationServices Classes
+
+FOUNDATION_EXPORT Class fbsdkdfl_ASWebAuthenticationSessionClass(void);
+
 #pragma mark - Accounts Constants
 
 FOUNDATION_EXPORT NSString *fbsdkdfl_ACFacebookAppIdKey(void);

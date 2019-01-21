@@ -10,7 +10,7 @@ native iOS/Android project.
 To create an ExpoKit project:
 
 1.  Create a pure-JS project with Expo CLI (also projects that were created with exp, XDE or create-react-native-app will work)
-2.  Then use [`expo eject`](eject.html) to add ExpoKit (choose the "ExpoKit" option).
+2.  Then use [`expo eject`](../eject/) to add ExpoKit (choose the "ExpoKit" option).
 
 Make sure to perform these steps before continuing in this guide. The remainder of the guide will assume you have created an ExpoKit project.
 

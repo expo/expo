@@ -1,6 +1,6 @@
 {
   "name": "EXLocalAuthentication",
-  "version": "2.0.0-rc.1",
+  "version": "2.0.0",
   "summary": "Expo module to authenticate device owner",
   "description": "Expo module to authenticate device owner",
   "license": "MIT",

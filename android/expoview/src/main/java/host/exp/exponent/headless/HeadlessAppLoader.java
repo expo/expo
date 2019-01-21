@@ -82,7 +82,8 @@ public class HeadlessAppLoader implements AppLoaderInterface, Exponent.StartReac
 
     new AppLoader(mManifestUrl, true) {
       @Override
-      public void onOptimisticManifest(final JSONObject optimisticManifest) {}
+      public void onOptimisticManifest(final JSONObject optimisticManifest) {
+      }
 
       @Override
       public void onManifestCompleted(final JSONObject manifest) {
@@ -107,7 +108,8 @@ public class HeadlessAppLoader implements AppLoaderInterface, Exponent.StartReac
       }
 
       @Override
-      public void emitEvent(JSONObject params) {}
+      public void emitEvent(JSONObject params) {
+      }
 
       @Override
       public void onError(Exception e) {
@@ -292,7 +294,7 @@ public class HeadlessAppLoader implements AppLoaderInterface, Exponent.StartReac
     instanceManagerBuilderProperties.expoPackages = extraExpoPackages;
     instanceManagerBuilderProperties.exponentPackageDelegate = delegate.getExponentPackageDelegate();
     instanceManagerBuilderProperties.manifest = mManifest;
-    instanceManagerBuilderProperties.singletonModules = ExponentPackage.getOrCreateSingletonModules(mContext);
+    instanceManagerBuilderProperties.singletonModules = ExponentPackage.getOrCreateSingletonModules(mContext, mManifest, extraExpoPackages);
 
     RNObject versionedUtils = new RNObject("host.exp.exponent.VersionedUtils").loadVersion(mSDKVersion);
     RNObject builder = versionedUtils.callRecursive("getReactInstanceManagerBuilder", instanceManagerBuilderProperties);

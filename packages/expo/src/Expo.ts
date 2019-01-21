@@ -2,10 +2,10 @@ import './environment/validate';
 import './environment/logging';
 
 // load expo-asset immediately to set a custom `source` transformer in React Native
-import 'expo-asset/src/Asset';
+import 'expo-asset';
 
 import Constants from 'expo-constants';
-import { NativeModules, Platform } from 'react-native';
+import { Platform } from 'react-native';
 
 if (typeof Constants.manifest.env === 'object') {
   Object.assign(process.env, Constants.manifest.env);
@@ -51,7 +51,7 @@ export { Brightness };
 import * as Calendar from './Calendar';
 export { Calendar };
 export { default as DangerZone } from './DangerZone';
-import * as DocumentPicker from './DocumentPicker';
+import * as DocumentPicker from './DocumentPicker/DocumentPicker';
 export { DocumentPicker };
 export { default as ErrorRecovery } from './ErrorRecovery/ErrorRecovery';
 import * as Facebook from './Facebook/Facebook';
@@ -68,8 +68,8 @@ export { ImagePicker };
 import * as IntentLauncherAndroid from './IntentLauncherAndroid/IntentLauncherAndroid';
 export { IntentLauncherAndroid };
 export { default as KeepAwake } from './KeepAwake';
-export { default as Linking } from './Linking';
-import * as MailComposer from './MailComposer/MailComposer';
+export { default as Linking } from './Linking/Linking';
+import * as MailComposer from 'expo-mail-composer';
 export { MailComposer };
 export { default as Notifications } from './Notifications/Notifications';
 export { default as SQLite } from './SQLite';
@@ -89,9 +89,8 @@ export { Util };
 export { default as WebBrowser } from './WebBrowser/WebBrowser';
 export { default as apisAreAvailable } from './apisAreAvailable';
 export { default as takeSnapshotAsync } from './takeSnapshotAsync';
-import * as Audio from './av/Audio';
-export { Audio };
-export { default as Video } from './av/Video';
+import { Audio, Video } from 'expo-av';
+export { Audio, Video };
 export { default as BlurView } from './effects/BlurView';
 export { default as LinearGradient } from './effects/LinearGradient';
 import * as FacebookAds from './facebook-ads';

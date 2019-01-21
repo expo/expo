@@ -47,5 +47,5 @@ So this code is defining `HelloWorldApp`, a new `Component`. When you're buildin
 
 ## This app doesn't do very much
 
-Good point. To make components do more interesting things, you need to [learn about Props](props.md).
+Good point. To make components do more interesting things, you need to [learn about Props](../props/).
 

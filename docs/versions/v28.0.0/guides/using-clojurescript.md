@@ -97,11 +97,11 @@ exp start --ios
 exp start --android
 ```
 
-For more information, see [exp Command-Line Interface](exp-cli.html#exp-cli).
+For more information, see [exp Command-Line Interface](../../workflow/exp-cli/#exp-cli).
 
 ### Using XDE
 
-For more information, see [XDE tour](../introduction/xde-tour.html#xde-tour).
+For more information, see [XDE tour](../../introduction/xde-tour/#xde-tour).
 
 ## 4. Publish your app
 
@@ -118,7 +118,7 @@ This will publish your app to a persistent URL on Expo, for example: <https://ex
 
 ### How do I add custom native modules?
 
-See [How do I add custom native code to my Expo project?](../introduction/faq.html#faq).
+See [How do I add custom native code to my Expo project?](../../introduction/faq/#faq).
 
 ### Does it support Google Closure advanced compilation?
 

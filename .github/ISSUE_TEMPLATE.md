@@ -1,5 +1,3 @@
-<!-- The Expo team will be less responsive to issues during the holiday season through New Year's. For dedicated help, as always we recommend working with consultants or an agency such as the ones here depending on their holiday availability: https://expo.io/consultants. -->
-
 # READ THIS FIRST, PLEASE!
 
 Hello! Thanks for reporting an issue. Please make sure you're posting this in the right place:

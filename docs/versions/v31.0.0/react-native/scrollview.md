@@ -9,7 +9,7 @@ Keep in mind that ScrollViews must have a bounded height in order to work, since
 
 Doesn't yet support other contained responders from blocking this scroll view from becoming the responder.
 
-`<ScrollView>` vs [`<FlatList>`](flatlist.md) - which one to use?
+`<ScrollView>` vs [`<FlatList>`](../flatlist/) - which one to use?
 
 `ScrollView` simply renders all its react child components at once. That makes it very easy to understand and use.
 
@@ -21,62 +21,62 @@ This is where `FlatList` comes into play. `FlatList` renders items lazily, just 
 
 ### Props
 
-* [View props...](view.md#props)
+* [View props...](../view/#props)
 
-- [`alwaysBounceVertical`](scrollview.md#alwaysbouncevertical)
-- [`contentContainerStyle`](scrollview.md#contentcontainerstyle)
-- [`keyboardDismissMode`](scrollview.md#keyboarddismissmode)
-- [`keyboardShouldPersistTaps`](scrollview.md#keyboardshouldpersisttaps)
-- [`onContentSizeChange`](scrollview.md#oncontentsizechange)
-- [`onMomentumScrollBegin`](scrollview.md#onmomentumscrollbegin)
-- [`onMomentumScrollEnd`](scrollview.md#onmomentumscrollend)
-- [`onScroll`](scrollview.md#onscroll)
-- [`onScrollBeginDrag`](scrollview.md#onscrollbegindrag)
-- [`onScrollEndDrag`](scrollview.md#onscrollenddrag)
-- [`pagingEnabled`](scrollview.md#pagingenabled)
-- [`refreshControl`](scrollview.md#refreshcontrol)
-- [`removeClippedSubviews`](scrollview.md#removeclippedsubviews)
-- [`scrollEnabled`](scrollview.md#scrollenabled)
-- [`showsHorizontalScrollIndicator`](scrollview.md#showshorizontalscrollindicator)
-- [`showsVerticalScrollIndicator`](scrollview.md#showsverticalscrollindicator)
-- [`stickyHeaderIndices`](scrollview.md#stickyheaderindices)
-- [`endFillColor`](scrollview.md#endfillcolor)
-- [`overScrollMode`](scrollview.md#overscrollmode)
-- [`scrollPerfTag`](scrollview.md#scrollperftag)
-- [`DEPRECATED_sendUpdatedChildFrames`](scrollview.md#deprecated-sendupdatedchildframes)
-- [`alwaysBounceHorizontal`](scrollview.md#alwaysbouncehorizontal)
-- [`horizontal`](scrollview.md#horizontal)
-- [`automaticallyAdjustContentInsets`](scrollview.md#automaticallyadjustcontentinsets)
-- [`bounces`](scrollview.md#bounces)
-- [`bouncesZoom`](scrollview.md#bounceszoom)
-- [`canCancelContentTouches`](scrollview.md#cancancelcontenttouches)
-- [`centerContent`](scrollview.md#centercontent)
-- [`contentInset`](scrollview.md#contentinset)
-- [`contentInsetAdjustmentBehavior`](scrollview.md#contentinsetadjustmentbehavior)
-- [`contentOffset`](scrollview.md#contentoffset)
-- [`decelerationRate`](scrollview.md#decelerationrate)
-- [`directionalLockEnabled`](scrollview.md#directionallockenabled)
-- [`indicatorStyle`](scrollview.md#indicatorstyle)
-- [`maximumZoomScale`](scrollview.md#maximumzoomscale)
-- [`minimumZoomScale`](scrollview.md#minimumzoomscale)
-- [`pinchGestureEnabled`](scrollview.md#pinchgestureenabled)
-- [`scrollEventThrottle`](scrollview.md#scrolleventthrottle)
-- [`scrollIndicatorInsets`](scrollview.md#scrollindicatorinsets)
-- [`scrollsToTop`](scrollview.md#scrollstotop)
-- [`snapToAlignment`](scrollview.md#snaptoalignment)
-- [`snapToInterval`](scrollview.md#snaptointerval)
-- [`snapToOffsets`](scrollview.md#snaptooffsets)
-- [`snapToStart`](scrollview.md#snaptostart)
-- [`snapToEnd`](scrollview.md#snaptoend)
-- [`zoomScale`](scrollview.md#zoomscale)
-- [`nestedScrollEnabled`](scrollview.md#nestedscrollenabled)
+- [`alwaysBounceVertical`](../scrollview/#alwaysbouncevertical)
+- [`contentContainerStyle`](../scrollview/#contentcontainerstyle)
+- [`keyboardDismissMode`](../scrollview/#keyboarddismissmode)
+- [`keyboardShouldPersistTaps`](../scrollview/#keyboardshouldpersisttaps)
+- [`onContentSizeChange`](../scrollview/#oncontentsizechange)
+- [`onMomentumScrollBegin`](../scrollview/#onmomentumscrollbegin)
+- [`onMomentumScrollEnd`](../scrollview/#onmomentumscrollend)
+- [`onScroll`](../scrollview/#onscroll)
+- [`onScrollBeginDrag`](../scrollview/#onscrollbegindrag)
+- [`onScrollEndDrag`](../scrollview/#onscrollenddrag)
+- [`pagingEnabled`](../scrollview/#pagingenabled)
+- [`refreshControl`](../scrollview/#refreshcontrol)
+- [`removeClippedSubviews`](../scrollview/#removeclippedsubviews)
+- [`scrollEnabled`](../scrollview/#scrollenabled)
+- [`showsHorizontalScrollIndicator`](../scrollview/#showshorizontalscrollindicator)
+- [`showsVerticalScrollIndicator`](../scrollview/#showsverticalscrollindicator)
+- [`stickyHeaderIndices`](../scrollview/#stickyheaderindices)
+- [`endFillColor`](../scrollview/#endfillcolor)
+- [`overScrollMode`](../scrollview/#overscrollmode)
+- [`scrollPerfTag`](../scrollview/#scrollperftag)
+- [`DEPRECATED_sendUpdatedChildFrames`](../scrollview/#deprecated-sendupdatedchildframes)
+- [`alwaysBounceHorizontal`](../scrollview/#alwaysbouncehorizontal)
+- [`horizontal`](../scrollview/#horizontal)
+- [`automaticallyAdjustContentInsets`](../scrollview/#automaticallyadjustcontentinsets)
+- [`bounces`](../scrollview/#bounces)
+- [`bouncesZoom`](../scrollview/#bounceszoom)
+- [`canCancelContentTouches`](../scrollview/#cancancelcontenttouches)
+- [`centerContent`](../scrollview/#centercontent)
+- [`contentInset`](../scrollview/#contentinset)
+- [`contentInsetAdjustmentBehavior`](../scrollview/#contentinsetadjustmentbehavior)
+- [`contentOffset`](../scrollview/#contentoffset)
+- [`decelerationRate`](../scrollview/#decelerationrate)
+- [`directionalLockEnabled`](../scrollview/#directionallockenabled)
+- [`indicatorStyle`](../scrollview/#indicatorstyle)
+- [`maximumZoomScale`](../scrollview/#maximumzoomscale)
+- [`minimumZoomScale`](../scrollview/#minimumzoomscale)
+- [`pinchGestureEnabled`](../scrollview/#pinchgestureenabled)
+- [`scrollEventThrottle`](../scrollview/#scrolleventthrottle)
+- [`scrollIndicatorInsets`](../scrollview/#scrollindicatorinsets)
+- [`scrollsToTop`](../scrollview/#scrollstotop)
+- [`snapToAlignment`](../scrollview/#snaptoalignment)
+- [`snapToInterval`](../scrollview/#snaptointerval)
+- [`snapToOffsets`](../scrollview/#snaptooffsets)
+- [`snapToStart`](../scrollview/#snaptostart)
+- [`snapToEnd`](../scrollview/#snaptoend)
+- [`zoomScale`](../scrollview/#zoomscale)
+- [`nestedScrollEnabled`](../scrollview/#nestedscrollenabled)
 
 ### Methods
 
-* [`scrollTo`](scrollview.md#scrollto)
-* [`scrollToEnd`](scrollview.md#scrolltoend)
-* [`scrollWithoutAnimationTo`](scrollview.md#scrollwithoutanimationto)
-* [`flashScrollIndicators`](scrollview.md#flashscrollindicators)
+* [`scrollTo`](../scrollview/#scrollto)
+* [`scrollToEnd`](../scrollview/#scrolltoend)
+* [`scrollWithoutAnimationTo`](../scrollview/#scrollwithoutanimationto)
+* [`flashScrollIndicators`](../scrollview/#flashscrollindicators)
 
 ---
 
@@ -236,7 +236,7 @@ Note: Vertical pagination is not supported on Android.
 
 A RefreshControl component, used to provide pull-to-refresh functionality for the ScrollView. Only works for vertical ScrollViews (`horizontal` prop must be `false`).
 
-See [RefreshControl](refreshcontrol.md).
+See [RefreshControl](../refreshcontrol/).
 
 | Type    | Required |
 | ------- | -------- |
@@ -302,7 +302,7 @@ Sometimes a scrollview takes up more space than its content fills. When this is 
 
 | Type               | Required | Platform |
 | ------------------ | -------- | -------- |
-| [color](colors.md) | No       | Android  |
+| [color](../colors/) | No       | Android  |
 
 ---
 

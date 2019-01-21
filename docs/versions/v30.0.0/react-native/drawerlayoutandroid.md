@@ -34,24 +34,24 @@ render: function() {
 
 ### Props
 
-* [View props...](view.md#props)
+* [View props...](../view/#props)
 
-- [`renderNavigationView`](drawerlayoutandroid.md#rendernavigationview)
-- [`onDrawerClose`](drawerlayoutandroid.md#ondrawerclose)
-- [`drawerPosition`](drawerlayoutandroid.md#drawerposition)
-- [`drawerWidth`](drawerlayoutandroid.md#drawerwidth)
-- [`keyboardDismissMode`](drawerlayoutandroid.md#keyboarddismissmode)
-- [`drawerLockMode`](drawerlayoutandroid.md#drawerlockmode)
-- [`onDrawerOpen`](drawerlayoutandroid.md#ondraweropen)
-- [`onDrawerSlide`](drawerlayoutandroid.md#ondrawerslide)
-- [`onDrawerStateChanged`](drawerlayoutandroid.md#ondrawerstatechanged)
-- [`drawerBackgroundColor`](drawerlayoutandroid.md#drawerbackgroundcolor)
-- [`statusBarBackgroundColor`](drawerlayoutandroid.md#statusbarbackgroundcolor)
+- [`renderNavigationView`](../drawerlayoutandroid/#rendernavigationview)
+- [`onDrawerClose`](../drawerlayoutandroid/#ondrawerclose)
+- [`drawerPosition`](../drawerlayoutandroid/#drawerposition)
+- [`drawerWidth`](../drawerlayoutandroid/#drawerwidth)
+- [`keyboardDismissMode`](../drawerlayoutandroid/#keyboarddismissmode)
+- [`drawerLockMode`](../drawerlayoutandroid/#drawerlockmode)
+- [`onDrawerOpen`](../drawerlayoutandroid/#ondraweropen)
+- [`onDrawerSlide`](../drawerlayoutandroid/#ondrawerslide)
+- [`onDrawerStateChanged`](../drawerlayoutandroid/#ondrawerstatechanged)
+- [`drawerBackgroundColor`](../drawerlayoutandroid/#drawerbackgroundcolor)
+- [`statusBarBackgroundColor`](../drawerlayoutandroid/#statusbarbackgroundcolor)
 
 ### Methods
 
-* [`openDrawer`](drawerlayoutandroid.md#opendrawer)
-* [`closeDrawer`](drawerlayoutandroid.md#closedrawer)
+* [`openDrawer`](../drawerlayoutandroid/#opendrawer)
+* [`closeDrawer`](../drawerlayoutandroid/#closedrawer)
 
 ---
 
@@ -177,7 +177,7 @@ return (
 
 | Type               | Required |
 | ------------------ | -------- |
-| [color](colors.md) | No       |
+| [color](../colors/) | No       |
 
 ---
 
@@ -187,7 +187,7 @@ Make the drawer take the entire screen and draw the background of the status bar
 
 | Type               | Required |
 | ------------------ | -------- |
-| [color](colors.md) | No       |
+| [color](../colors/) | No       |
 
 ## Methods
 

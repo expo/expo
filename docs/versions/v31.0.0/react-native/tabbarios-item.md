@@ -5,19 +5,19 @@ title: TabBarIOS.Item
 
 ### Props
 
-* [View props...](view.md#props)
+* [View props...](../view/#props)
 
-- [`selected`](tabbarios-item.md#selected)
-- [`badge`](tabbarios-item.md#badge)
-- [`icon`](tabbarios-item.md#icon)
-- [`onPress`](tabbarios-item.md#onpress)
-- [`renderAsOriginal`](tabbarios-item.md#renderasoriginal)
-- [`badgeColor`](tabbarios-item.md#badgecolor)
-- [`selectedIcon`](tabbarios-item.md#selectedicon)
-- [`style`](tabbarios-item.md#style)
-- [`systemIcon`](tabbarios-item.md#systemicon)
-- [`title`](tabbarios-item.md#title)
-- [`isTVSelectable`](tabbarios-item.md#istvselectable)
+- [`selected`](../tabbarios-item/#selected)
+- [`badge`](../tabbarios-item/#badge)
+- [`icon`](../tabbarios-item/#icon)
+- [`onPress`](../tabbarios-item/#onpress)
+- [`renderAsOriginal`](../tabbarios-item/#renderasoriginal)
+- [`badgeColor`](../tabbarios-item/#badgecolor)
+- [`selectedIcon`](../tabbarios-item/#selectedicon)
+- [`style`](../tabbarios-item/#style)
+- [`systemIcon`](../tabbarios-item/#systemicon)
+- [`title`](../tabbarios-item/#title)
+- [`isTVSelectable`](../tabbarios-item/#istvselectable)
 
 ---
 
@@ -81,7 +81,7 @@ Background color for the badge. Available since iOS 10.
 
 | Type               | Required |
 | ------------------ | -------- |
-| [color](colors.md) | No       |
+| [color](../colors/) | No       |
 
 ---
 

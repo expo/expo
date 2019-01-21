@@ -43,6 +43,7 @@ export default class BackgroundFetchScreen extends React.Component {
       await BackgroundFetch.unregisterTaskAsync(BACKGROUND_FETCH_TASK);
     } else {
       await BackgroundFetch.registerTaskAsync(BACKGROUND_FETCH_TASK);
+      await BackgroundFetch.setMinimumIntervalAsync(60 * 10); // 10 minutes
     }
     this.setState({ isRegistered: !this.state.isRegistered });
   };

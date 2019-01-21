@@ -38,6 +38,7 @@
 
 static NSMutableDictionary<NSString *, id> *_gateKeepers;
 static const NSTimeInterval kTimeout = 4.0;
+static NSDate *_timestamp;
 static BOOL _loadingGateKeepers;
 static BOOL _requeryFinishedForAppStart;
 
@@ -47,6 +48,7 @@ static BOOL _requeryFinishedForAppStart;
              appID:(NSString *)appID
       defaultValue:(BOOL)defaultValue
 {
+  [self loadGateKeepers];
   if (appID == nil || _gateKeepers == nil || _gateKeepers[appID] == nil) {
     return defaultValue;
   }
@@ -69,11 +71,12 @@ static BOOL _requeryFinishedForAppStart;
     if ([data isKindOfClass:[NSData class]]) {
       NSMutableDictionary<NSString *, id> *gatekeeper = [NSKeyedUnarchiver unarchiveObjectWithData:data];
       if (gatekeeper != nil && [gatekeeper isKindOfClass:[NSMutableDictionary class]] && appID != nil) {
-        [_gateKeepers setObject:gatekeeper forKey:appID];
+        _gateKeepers[appID] = gatekeeper;
       }
     }
 
-    if (!_requeryFinishedForAppStart) {
+    // Query the server when the requery is not finished for app start or the timestamp is not valid
+    if (![self _gateKeeperIsValid]) {
       if (!_loadingGateKeepers) {
         _loadingGateKeepers = YES;
         FBSDKGraphRequest *request = [[self class] requestToLoadGateKeepers:appID];
@@ -96,10 +99,10 @@ static BOOL _requeryFinishedForAppStart;
 + (FBSDKGraphRequest *)requestToLoadGateKeepers:(NSString *)appID
 {
   NSString *sdkVersion = [FBSDKSettings sdkVersion];
-  NSString *advertiserID = [FBSDKAppEventsUtility advertiserID];
+  NSString *advertiserID = [FBSDKAppEventsUtility advertiserID] ?: @"";
 
   NSDictionary<NSString *, NSString *> *parameters = @{ @"platform": @"ios" ,
-                                                        @"device_id": advertiserID ?: @"",
+                                                        @"device_id": advertiserID,
                                                         @"sdk_version": sdkVersion,
                                                         @"fields": FBSDK_GATEKEEPER_APP_GATEKEEPER_FIELDS};
 
@@ -116,38 +119,60 @@ static BOOL _requeryFinishedForAppStart;
 
 + (void)processLoadRequestResponse:(id)result error:(NSError *)error appID:(NSString *)appID
 {
-  if (error) {
-    return;
-  }
+  @synchronized(self) {
+    _loadingGateKeepers = NO;
 
-  NSMutableDictionary<NSString *, id> *gateKeeper = _gateKeepers[appID];
-  if (gateKeeper == nil) {
-    gateKeeper = [[NSMutableDictionary alloc] init];
-  }
-  NSDictionary<NSString *, id> *resultDictionary = [FBSDKTypeUtility dictionaryValue:result];
-  NSDictionary<NSString *, id> *fetchedData = [FBSDKTypeUtility dictionaryValue:[resultDictionary[@"data"] firstObject]];
-  NSArray<id> *gateKeeperList = fetchedData != nil ? [FBSDKTypeUtility arrayValue:fetchedData[FBSDK_GATEKEEPER_APP_GATEKEEPER_FIELDS]] : nil;
-
-  if (gateKeeperList != nil) {
-    // updates gate keeper with fetched data
-    for (id gateKeeperEntry in gateKeeperList) {
-      NSDictionary<NSString *, id> *entry = [FBSDKTypeUtility dictionaryValue:gateKeeperEntry];
-      NSString *key = [FBSDKTypeUtility stringValue:[entry objectForKey:@"key"]];
-      id value = [entry objectForKey:@"value"];
-      if (entry != nil && key != nil && value != nil) {
-        [gateKeeper setObject: value forKey:key];
-      }
+    if (error) {
+      return;
     }
-    [_gateKeepers setObject:gateKeeper forKey:appID];
 
+    // Update the timestamp only when there is no error
+    _timestamp = [NSDate date];
+
+    NSMutableDictionary<NSString *, id> *gateKeeper = _gateKeepers[appID];
+    if (gateKeeper == nil) {
+      gateKeeper = [[NSMutableDictionary alloc] init];
+    }
+    NSDictionary<NSString *, id> *resultDictionary = [FBSDKTypeUtility dictionaryValue:result];
+    NSDictionary<NSString *, id> *fetchedData = [FBSDKTypeUtility dictionaryValue:[resultDictionary[@"data"] firstObject]];
+    NSArray<id> *gateKeeperList = fetchedData != nil ? [FBSDKTypeUtility arrayValue:fetchedData[FBSDK_GATEKEEPER_APP_GATEKEEPER_FIELDS]] : nil;
+
+    if (gateKeeperList != nil) {
+      // updates gate keeper with fetched data
+      for (id gateKeeperEntry in gateKeeperList) {
+        NSDictionary<NSString *, id> *entry = [FBSDKTypeUtility dictionaryValue:gateKeeperEntry];
+        NSString *key = [FBSDKTypeUtility stringValue:entry[@"key"]];
+        id value = entry[@"value"];
+        if (entry != nil && key != nil && value != nil) {
+          gateKeeper[key] = value;
+        }
+      }
+      _gateKeepers[appID] = gateKeeper;
+    }
+
+    // update the cached copy in user defaults
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    NSString *defaultKey = [NSString stringWithFormat:FBSDK_GATEKEEPER_USER_DEFAULTS_KEY,
+                            appID];
+    NSData *data = [NSKeyedArchiver archivedDataWithRootObject:gateKeeper];
+    [defaults setObject:data forKey:defaultKey];
   }
+}
 
-  // update the cached copy in user defaults
-  NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-  NSString *defaultKey = [NSString stringWithFormat:FBSDK_GATEKEEPER_USER_DEFAULTS_KEY,
-                          appID];
-  NSData *data = [NSKeyedArchiver archivedDataWithRootObject:gateKeeper];
-  [defaults setObject:data forKey:defaultKey];
++ (BOOL)_gateKeeperTimestampIsValid:(NSDate *)timestamp
+{
+  if (timestamp == nil) {
+    return NO;
+  }
+  return ([[NSDate date] timeIntervalSinceDate:timestamp] < FBSDK_GATEKEEPER_MANAGER_CACHE_TIMEOUT);
+}
+
++ (BOOL)_gateKeeperIsValid
+{
+  if (_requeryFinishedForAppStart && (_timestamp && [self _gateKeeperTimestampIsValid:_timestamp])) {
+    return YES;
+  }
+  return NO;
 }
 
 @end
