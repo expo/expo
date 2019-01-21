@@ -64,12 +64,12 @@ This example will only ever appear to say "Current state is: active" because the
 
 ### Methods
 
-* [`addEventListener`](appstate.md#addeventlistener)
-* [`removeEventListener`](appstate.md#removeeventlistener)
+* [`addEventListener`](../appstate/#addeventlistener)
+* [`removeEventListener`](../appstate/#removeeventlistener)
 
 ### Properties
 
-* [`currentState`](appstate.md#currentState)
+* [`currentState`](../appstate/#currentState)
 
 ---
 

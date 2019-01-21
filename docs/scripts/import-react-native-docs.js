@@ -74,6 +74,32 @@ let mainAsync = async () => {
         '(https://facebook.github.io/react-native/docs/more-resources.html)'
       );
 
+      l.replace(
+       /\[`Toolbar` widget\]\([^\)]+\)/,
+       '[`Toolbar` widget](https://developer.android.com/reference/android/support/v7/widget/Toolbar.html)'
+      );
+      l.replace(
+        /\[navigator\.geolocation\]\([^\)]+\)/g,
+        '[navigator.geolocation](../../sdk/location/)'
+      );
+
+      l.replace(
+        /\[CameraRoll\]([^\)]+\)/g,
+        '[CameraRoll](https://facebook.github.io/react-native/docs/cameraroll.html)'
+      );
+
+      // `](./foo` -> `](foo`
+      l = l.replace(
+        /\]\(\.\/([^\):]+)/g,
+        (_match, path) => `](${path}`
+      );
+      // `](foo.md)` -> `](../foo/)`
+      // `](foo.md#bar)` -> `](../foo/#bar]`
+      l = l.replace(
+        /\]\(([^\):]+).md(#[^\)]+)?\)/g,
+        (_match, path, anchor) => `](../${path}/${anchor ? anchor : ''})`
+      );
+
       // TODO: Make these global replaces instead of just first instance
       l = l.replace(
         '<img src="/react-native/docs/assets/',

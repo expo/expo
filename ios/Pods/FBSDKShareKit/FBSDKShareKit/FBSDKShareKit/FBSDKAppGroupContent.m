@@ -44,8 +44,8 @@ NSString *NSStringFromFBSDKAppGroupPrivacy(FBSDKAppGroupPrivacy privacy)
 - (NSUInteger)hash
 {
   NSUInteger subhashes[] = {
-    [_groupDescription hash],
-    [_name hash],
+    _groupDescription.hash,
+    _name.hash,
     _privacy,
   };
   return [FBSDKMath hashWithIntegerArray:subhashes count:sizeof(subhashes) / sizeof(subhashes[0])];
@@ -77,7 +77,7 @@ NSString *NSStringFromFBSDKAppGroupPrivacy(FBSDKAppGroupPrivacy privacy)
   return YES;
 }
 
-- (id)initWithCoder:(NSCoder *)decoder
+- (instancetype)initWithCoder:(NSCoder *)decoder
 {
   if ((self = [self init])) {
     _groupDescription = [decoder decodeObjectOfClass:[NSString class]

@@ -35,12 +35,13 @@ export { MediaLibrary } from 'expo-media-library';
 export { Permissions } from 'expo-permissions';
 export { Print } from 'expo-print';
 export { Accelerometer, Gyroscope, Magnetometer, MagnetometerUncalibrated } from 'expo-sensors';
+export { SQLite } from 'expo-sqlite';
 import * as SMS from 'expo-sms';
 export { SMS };
 import * as TaskManager from 'expo-task-manager';
 export { TaskManager }
 export { GestureHandler } from './GestureHandler';
-export { default as MapView } from 'react-native-maps';
+export { default as MapView } from './Maps/MapView';
 
 import * as AR from './AR';
 export { AR };
@@ -69,10 +70,9 @@ import * as IntentLauncherAndroid from './IntentLauncherAndroid/IntentLauncherAn
 export { IntentLauncherAndroid };
 export { default as KeepAwake } from './KeepAwake';
 export { default as Linking } from './Linking/Linking';
-import * as MailComposer from './MailComposer/MailComposer';
+import * as MailComposer from 'expo-mail-composer';
 export { MailComposer };
 export { default as Notifications } from './Notifications/Notifications';
-export { default as SQLite } from './SQLite';
 import * as ScreenOrientation from './ScreenOrientation/ScreenOrientation';
 export { ScreenOrientation };
 import * as SecureStore from './SecureStore/SecureStore';
@@ -89,9 +89,8 @@ export { Util };
 export { default as WebBrowser } from './WebBrowser/WebBrowser';
 export { default as apisAreAvailable } from './apisAreAvailable';
 export { default as takeSnapshotAsync } from './takeSnapshotAsync';
-import * as Audio from './av/Audio';
-export { Audio };
-export { default as Video } from './av/Video';
+import { Audio, Video } from 'expo-av';
+export { Audio, Video };
 export { default as BlurView } from './effects/BlurView';
 export { default as LinearGradient } from './effects/LinearGradient';
 import * as FacebookAds from './facebook-ads';

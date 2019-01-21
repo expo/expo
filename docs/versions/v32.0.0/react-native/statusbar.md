@@ -36,26 +36,26 @@ For cases where using a component is not ideal, there is also an imperative API 
 
 ### Props
 
-* [`animated`](statusbar.md#animated)
-* [`barStyle`](statusbar.md#barstyle)
-* [`hidden`](statusbar.md#hidden)
-* [`backgroundColor`](statusbar.md#backgroundcolor)
-* [`translucent`](statusbar.md#translucent)
-* [`networkActivityIndicatorVisible`](statusbar.md#networkactivityindicatorvisible)
-* [`showHideTransition`](statusbar.md#showhidetransition)
+* [`animated`](../statusbar/#animated)
+* [`barStyle`](../statusbar/#barstyle)
+* [`hidden`](../statusbar/#hidden)
+* [`backgroundColor`](../statusbar/#backgroundcolor)
+* [`translucent`](../statusbar/#translucent)
+* [`networkActivityIndicatorVisible`](../statusbar/#networkactivityindicatorvisible)
+* [`showHideTransition`](../statusbar/#showhidetransition)
 
 ### Methods
 
-* [`setHidden`](statusbar.md#sethidden)
-* [`setBarStyle`](statusbar.md#setbarstyle)
-* [`setNetworkActivityIndicatorVisible`](statusbar.md#setnetworkactivityindicatorvisible)
-* [`setBackgroundColor`](statusbar.md#setbackgroundcolor)
-* [`setTranslucent`](statusbar.md#settranslucent)
+* [`setHidden`](../statusbar/#sethidden)
+* [`setBarStyle`](../statusbar/#setbarstyle)
+* [`setNetworkActivityIndicatorVisible`](../statusbar/#setnetworkactivityindicatorvisible)
+* [`setBackgroundColor`](../statusbar/#setbackgroundcolor)
+* [`setTranslucent`](../statusbar/#settranslucent)
 
 ### Type Definitions
 
-* [`StatusBarStyle`](statusbar.md#statusbarstyle)
-* [`StatusBarAnimation`](statusbar.md#statusbaranimation)
+* [`StatusBarStyle`](../statusbar/#statusbarstyle)
+* [`StatusBarAnimation`](../statusbar/#statusbaranimation)
 
 ---
 
@@ -99,7 +99,7 @@ The background color of the status bar.
 
 | Type               | Required | Platform |
 | ------------------ | -------- | -------- |
-| [color](colors.md) | No       | Android  |
+| [color](../colors/) | No       | Android  |
 
 ---
 
@@ -150,7 +150,7 @@ Show or hide the status bar
 | Name      | Type                                                  | Required | Description                                                      |
 | --------- | ----------------------------------------------------- | -------- | ---------------------------------------------------------------- |
 | hidden    | boolean                                               | Yes      | Hide the status bar.                                             |
-| animation | [StatusBarAnimation](statusbar.md#statusbaranimation) | No       | Optional animation when changing the status bar hidden property. |
+| animation | [StatusBarAnimation](../statusbar/#statusbaranimation) | No       | Optional animation when changing the status bar hidden property. |
 
 ---
 
@@ -170,7 +170,7 @@ Set the status bar style
 
 | Name     | Type                                          | Required | Description               |
 | -------- | --------------------------------------------- | -------- | ------------------------- |
-| style    | [StatusBarStyle](statusbar.md#statusbarstyle) | Yes      | Status bar style to set   |
+| style    | [StatusBarStyle](../statusbar/#statusbarstyle) | Yes      | Status bar style to set   |
 | animated | boolean                                       | No       | Animate the style change. |
 
 ---

@@ -37,25 +37,23 @@
 - (FBSDKEventBinding *)initWithJSON:(NSDictionary *)dict
 {
   if ((self = [super init])) {
-    _eventName = [[dict objectForKey:CODELESS_MAPPING_EVENT_NAME_KEY] copy];
-    _eventType = [[dict objectForKey:CODELESS_MAPPING_EVENT_TYPE_KEY] copy];
-    _appVersion = [[dict objectForKey:CODELESS_MAPPING_APP_VERSION_KEY] copy];
-    _pathType = [[dict objectForKey:CODELESS_MAPPING_PATH_TYPE_KEY] copy];
+    _eventName = [dict[CODELESS_MAPPING_EVENT_NAME_KEY] copy];
+    _eventType = [dict[CODELESS_MAPPING_EVENT_TYPE_KEY] copy];
+    _appVersion = [dict[CODELESS_MAPPING_APP_VERSION_KEY] copy];
+    _pathType = [dict[CODELESS_MAPPING_PATH_TYPE_KEY] copy];
 
-    NSArray *pathComponents = [dict objectForKey:CODELESS_MAPPING_PATH_KEY];
+    NSArray *pathComponents = dict[CODELESS_MAPPING_PATH_KEY];
     NSMutableArray *mut = [NSMutableArray array];
     for (NSDictionary *info in pathComponents) {
-      FBSDKCodelessPathComponent *component = [[FBSDKCodelessPathComponent alloc]
-                                                       initWithJSON:info];
+      FBSDKCodelessPathComponent *component = [[FBSDKCodelessPathComponent alloc] initWithJSON:info];
       [mut addObject:component];
     }
     _path = [mut copy];
 
-    NSArray *parameters = [dict objectForKey:CODELESS_MAPPING_PARAMETERS_KEY];
+    NSArray *parameters = dict[CODELESS_MAPPING_PARAMETERS_KEY];
     mut = [NSMutableArray array];
     for (NSDictionary *info in parameters) {
-      FBSDKCodelessParameterComponent *component = [[FBSDKCodelessParameterComponent alloc]
-                                            initWithJSON:info];
+      FBSDKCodelessParameterComponent *component = [[FBSDKCodelessParameterComponent alloc] initWithJSON:info];
       [mut addObject:component];
     }
     _parameters = [mut copy];
@@ -67,7 +65,7 @@
 {
   UIView *sourceView = [sender isKindOfClass:[UIView class]] ? (UIView *)sender : nil;
   NSMutableDictionary *params = [NSMutableDictionary dictionary];
-  [params setObject:@"1" forKey:CODELESS_CODELESS_EVENT_KEY];
+  params[CODELESS_CODELESS_EVENT_KEY] = @"1";
   for (FBSDKCodelessParameterComponent *component in self.parameters) {
     NSString *text = component.value;
     if (!text || text.length == 0) {
@@ -78,9 +76,9 @@
     if (text) {
       if ([component.name isEqualToString:PARAMETER_NAME_PRICE]) {
         NSNumber *value = [FBSDKAppEventsUtility getNumberValue:text];
-        [params setObject:value forKey:component.name];
+        params[component.name] = value;
       } else {
-        [params setObject:text forKey:component.name];
+        params[component.name] = text;
       }
     }
   }
@@ -162,8 +160,8 @@ pathComponent:(FBSDKCodelessPathComponent *)component
     NSInteger idxPath = path.count - i - 1;
     NSInteger idxViewPath = viewPath.count - i - 1;
 
-    FBSDKCodelessPathComponent *pathComponent = [path objectAtIndex:idxPath];
-    FBSDKCodelessPathComponent *viewPathComponent = [viewPath objectAtIndex:idxViewPath];
+    FBSDKCodelessPathComponent *pathComponent = path[idxPath];
+    FBSDKCodelessPathComponent *viewPathComponent = viewPath[idxViewPath];
 
     if (![pathComponent.className isEqualToString:viewPathComponent.className]) {
       return NO;
@@ -206,7 +204,7 @@ pathComponent:(FBSDKCodelessPathComponent *)component
     return nil;
   }
 
-  FBSDKCodelessPathComponent *pathComponent = [path objectAtIndex:level];
+  FBSDKCodelessPathComponent *pathComponent = path[level];
 
   //  If found parent, skip to next level
   if ([pathComponent.className isEqualToString:CODELESS_MAPPING_PARENT_CLASS_NAME]) {
@@ -232,7 +230,7 @@ pathComponent:(FBSDKCodelessPathComponent *)component
   if (path.count - 1 == level) {
     int index = pathComponent.index;
     if (index >= 0) {
-      NSObject *child = index < children.count ? [children objectAtIndex:index] : nil;
+      NSObject *child = index < children.count ? children[index] : nil;
       if ([self match:child pathComponent:pathComponent]) {
         return child;
       }

@@ -127,7 +127,7 @@ static const CGFloat kPaddingBetweenLogoTitle = 8.0;
 
 - (CGSize)sizeThatFits:(CGSize)size
 {
-  if ([self isHidden]) {
+  if (self.hidden) {
     return CGSizeZero;
   }
   UIFont *font = self.titleLabel.font;
@@ -171,11 +171,11 @@ static const CGFloat kPaddingBetweenLogoTitle = 8.0;
 
   [self configureWithIcon:nil
                     title:logInTitle
-          backgroundColor:[self backgroundColor]
+          backgroundColor:self.backgroundColor
          highlightedColor:nil
             selectedTitle:logOutTitle
              selectedIcon:nil
-            selectedColor:[self backgroundColor]
+            selectedColor:self.backgroundColor
  selectedHighlightedColor:nil];
   self.titleLabel.textAlignment = NSTextAlignmentCenter;
   [self addConstraint:[NSLayoutConstraint constraintWithItem:self
@@ -198,14 +198,14 @@ static const CGFloat kPaddingBetweenLogoTitle = 8.0;
 
 - (void)_accessTokenDidChangeNotification:(NSNotification *)notification
 {
-  if (notification.userInfo[FBSDKAccessTokenDidChangeUserID] || notification.userInfo[FBSDKAccessTokenDidExpire]) {
+  if (notification.userInfo[FBSDKAccessTokenDidChangeUserIDKey] || notification.userInfo[FBSDKAccessTokenDidExpireKey]) {
     [self _updateContent];
   }
 }
 
 - (void)_buttonPressed:(id)sender
 {
-  [self logTapEventWithEventName:FBSDKAppEventNameFBSDKLoginButtonDidTap parameters:[self analyticsParameters]];
+  [self logTapEventWithEventName:FBSDKAppEventNameFBSDKLoginButtonDidTap parameters:self.analyticsParameters];
   if ([FBSDKAccessToken currentAccessTokenIsActive]) {
     NSString *title = nil;
 
@@ -280,7 +280,6 @@ static const CGFloat kPaddingBetweenLogoTitle = 8.0;
   return NSLocalizedStringWithDefaultValue(@"LoginButton.LogOut", @"FacebookSDK", [FBSDKInternalUtility bundleForStrings],
                                            @"Log out",
                                            @"The label for the FBSDKLoginButton when the user is currently logged in");
-  ;
 }
 
 - (NSString *)_longLogInTitle

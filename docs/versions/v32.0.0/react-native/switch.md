@@ -9,16 +9,16 @@ This is a controlled component that requires an `onValueChange` callback that up
 
 ### Props
 
-* [View props...](view.md#props)
+* [View props...](../view/#props)
 
-- [`disabled`](switch.md#disabled)
-- [`trackColor`](switch.md#trackcolor)
-- [`ios_backgroundColor`](switch.md#ios-backgroundcolor)
-- [`onValueChange`](switch.md#onvaluechange)
-- [`testID`](switch.md#testid)
-- [`thumbColor`](switch.md#thumbcolor)
-- [`tintColor`](switch.md#tintcolor)
-- [`value`](switch.md#value)
+- [`disabled`](../switch/#disabled)
+- [`trackColor`](../switch/#trackcolor)
+- [`ios_backgroundColor`](../switch/#ios-backgroundcolor)
+- [`onValueChange`](../switch/#onvaluechange)
+- [`testID`](../switch/#testid)
+- [`thumbColor`](../switch/#thumbcolor)
+- [`tintColor`](../switch/#tintcolor)
+- [`value`](../switch/#value)
 
 ---
 
@@ -40,11 +40,11 @@ If true the user won't be able to toggle the switch. Default value is false.
 
 Custom colors for the switch track.
 
-_iOS_: When the switch value is false, the track shrinks into the border. If you want to change the color of the background exposed by the shrunken track, use [`ios_backgroundColor`](switch.md#ios_backgroundColor).
+_iOS_: When the switch value is false, the track shrinks into the border. If you want to change the color of the background exposed by the shrunken track, use [`ios_backgroundColor`](../switch/#ios_backgroundColor).
 
 | Type                                                          | Required |
 | ------------------------------------------------------------- | -------- |
-| object: ${"{"}false: [color](colors.md), true: [color](colors.md)${"}"} | No       |
+| object: ${"{"}false: [color](../colors/), true: [color](../colors/)${"}"} | No       |
 
 ---
 
@@ -54,7 +54,7 @@ On iOS, custom color for the background. This background color can be seen eithe
 
 | Type               | Required |
 | ------------------ | -------- |
-| [color](colors.md) | No       |
+| [color](../colors/) | No       |
 
 ---
 
@@ -84,7 +84,7 @@ Color of the foreground switch grip. If this is set on iOS, the switch grip will
 
 | Type               | Required |
 | ------------------ | -------- |
-| [color](colors.md) | No       |
+| [color](../colors/) | No       |
 
 ---
 
@@ -96,7 +96,7 @@ Border color on iOS and background color on Android when the switch is turned of
 
 | Type               | Required |
 | ------------------ | -------- |
-| [color](colors.md) | No       |
+| [color](../colors/) | No       |
 
 ---
 

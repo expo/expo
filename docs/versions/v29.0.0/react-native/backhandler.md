@@ -74,9 +74,9 @@ Lifecycle alternative:
 
 ### Methods
 
-* [`exitApp`](backhandler.md#exitapp)
-* [`addEventListener`](backhandler.md#addeventlistener)
-* [`removeEventListener`](backhandler.md#removeeventlistener)
+* [`exitApp`](../backhandler/#exitapp)
+* [`addEventListener`](../backhandler/#addeventlistener)
+* [`removeEventListener`](../backhandler/#removeeventlistener)
 
 ---
 

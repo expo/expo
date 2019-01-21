@@ -60,14 +60,14 @@ To request network info, you need to add the following line to your app's `Andro
 
 ### Methods
 
-* [`addEventListener`](netinfo.md#addeventlistener)
-* [`removeEventListener`](netinfo.md#removeeventlistener)
-* [`getConnectionInfo`](netinfo.md#getconnectioninfo)
-* [`isConnectionExpensive`](netinfo.md#isconnectionexpensive)
+* [`addEventListener`](../netinfo/#addeventlistener)
+* [`removeEventListener`](../netinfo/#removeeventlistener)
+* [`getConnectionInfo`](../netinfo/#getconnectioninfo)
+* [`isConnectionExpensive`](../netinfo/#isconnectionexpensive)
 
 ### Properties
 
-* [`isConnected`](netinfo.md#isconnected)
+* [`isConnected`](../netinfo/#isconnected)
 
 ---
 
@@ -134,7 +134,7 @@ NetInfo.getConnectionInfo();
 ```
 
 
-Returns a promise that resolves to an object with `type` and `effectiveType` keys whose values are a [`ConnectionType`](netinfo.md#connectiontype-enum) and an [`EffectiveConnectionType`](netinfo.md#effectiveconnectiontype-enum)), respectively.
+Returns a promise that resolves to an object with `type` and `effectiveType` keys whose values are a [`ConnectionType`](../netinfo/#connectiontype-enum) and an [`EffectiveConnectionType`](../netinfo/#effectiveconnectiontype-enum)), respectively.
 
 ---
 

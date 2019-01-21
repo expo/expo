@@ -37,11 +37,11 @@ Note that if you've enabled Google Play's app signing service, you will need to 
 
 ## Deploying Google Maps to a standalone app on iOS
 
-Apple Maps should just work with no extra configuration. For Google Maps, you can specify your own Google Maps API key using the `ios.config.googleMapsApiKey` [configuration](../workflow/configuration#ios) in your project's app.json.
+Apple Maps should just work with no extra configuration. For Google Maps, you can specify your own Google Maps API key using the `ios.config.googleMapsApiKey` [configuration](../../workflow/configuration#ios) in your project's app.json.
 
 ## Deploying Google Maps to ExpoKit for iOS
 
-If you want to add MapView with Google Maps to an [ExpoKit](../expokit) (detached) project on iOS, you may need to manually provide a key by calling:
+If you want to add MapView with Google Maps to an [ExpoKit](../../expokit) (detached) project on iOS, you may need to manually provide a key by calling:
 
 ```
 [GMSServices provideApiKey:@"your api key"]

@@ -91,7 +91,7 @@
   NSMutableDictionary *fullUserInfo = [[NSMutableDictionary alloc] initWithDictionary:userInfo];
   [FBSDKInternalUtility dictionary:fullUserInfo setObject:message forKey:FBSDKErrorDeveloperMessageKey];
   [FBSDKInternalUtility dictionary:fullUserInfo setObject:underlyingError forKey:NSUnderlyingErrorKey];
-  userInfo = ([fullUserInfo count] ? [fullUserInfo copy] : nil);
+  userInfo = fullUserInfo.count ? [fullUserInfo copy] : nil;
   return [[NSError alloc] initWithDomain:domain code:code userInfo:userInfo];
 }
 

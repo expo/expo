@@ -152,6 +152,25 @@ describe('Android', () => {
     subscription.remove();
     expect(mockNativeModule.stopObserving).toHaveBeenCalledTimes(1);
   });
+
+  it(`removes subscriptions idempotently`, () => {
+    let mockNativeModule = _createMockNativeModule();
+    let emitter = new EventEmitter(mockNativeModule);
+
+    let mockListener = jest.fn();
+    let subscription1 = emitter.addListener('test', mockListener);
+    let subscription2 = emitter.addListener('test', mockListener);
+    expect(mockNativeModule.startObserving).toHaveBeenCalledTimes(1);
+
+    emitter.removeSubscription(subscription1);
+    emitter.removeSubscription(subscription1);
+    subscription1.remove();
+    subscription1.remove();
+    expect(mockNativeModule.stopObserving).not.toHaveBeenCalled();
+
+    emitter.removeSubscription(subscription2);
+    expect(mockNativeModule.stopObserving).toHaveBeenCalledTimes(1);
+  });
 });
 
 function _createMockNativeModule() {

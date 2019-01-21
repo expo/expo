@@ -199,17 +199,17 @@
 
 - (void)_handleTap:(FBSDKLikeButton *)likeButton
 {
-  [self logTapEventWithEventName:FBSDKAppEventNameFBSDKLikeButtonDidTap parameters:[self analyticsParameters]];
+  [self logTapEventWithEventName:FBSDKAppEventNameFBSDKLikeButtonDidTap parameters:self.analyticsParameters];
   [self _ensureLikeActionController:YES];
   [_likeActionController toggleLikeWithSoundEnabled:self.soundEnabled
-                                analyticsParameters:[self analyticsParameters]
+                                analyticsParameters:self.analyticsParameters
                                  fromViewController:[FBSDKInternalUtility viewControllerForView:self]];
 }
 
 - (void)_like:(id)sender
 {
   [_likeActionController toggleLikeWithSoundEnabled:_soundEnabled
-                                analyticsParameters:[self analyticsParameters]
+                                analyticsParameters:self.analyticsParameters
                                  fromViewController:[FBSDKInternalUtility viewControllerForView:self]];
 }
 

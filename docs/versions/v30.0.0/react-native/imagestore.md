@@ -5,10 +5,10 @@ title: ImageStore
 
 ### Methods
 
-* [`hasImageForTag`](imagestore.md#hasimagefortag)
-* [`removeImageForTag`](imagestore.md#removeimagefortag)
-* [`addImageFromBase64`](imagestore.md#addimagefrombase64)
-* [`getBase64ForTag`](imagestore.md#getbase64fortag)
+* [`hasImageForTag`](../imagestore/#hasimagefortag)
+* [`removeImageForTag`](../imagestore/#removeimagefortag)
+* [`addImageFromBase64`](../imagestore/#addimagefrombase64)
+* [`getBase64ForTag`](../imagestore/#getbase64fortag)
 
 ---
 

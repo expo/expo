@@ -115,11 +115,11 @@ Callback invoked when camera preview has been set.
 
 - **onFacesDetected** (_function_)
 
-Callback invoked with results of face detection on the preview. See [FaceDetector documentation](facedetector#event-shape) for details.
+Callback invoked with results of face detection on the preview. See [FaceDetector documentation](../facedetector/#event-shape) for details.
 
 - **faceDetectorSettings** (_Object_)
 
-A settings object passed directly to an underlying module providing face detection features. See [FaceDetector documentation](facedetector#settings) for details.
+A settings object passed directly to an underlying module providing face detection features. See [FaceDetector documentation](../facedetector/#settings) for details.
 
 - **onMountError** (_function_)
 
@@ -131,7 +131,7 @@ Callback invoked when camera preview could not been started. It is provided with
 
 - **onBarCodeScanned (_function_)**
 
-Callback that is invoked when a bar code has been successfully scanned. The callback is provided with an object of the shape `{ type: BarCodeScanner.Constants.BarCodeType, data: string }`, where the type refers to the bar code type that was scanned and the data is the information encoded in the bar code (in this case of QR codes, this is often a URL). See [`BarCodeScanner.Constants.BarCodeType`](bar-code-scanner.md#supported-formats) for supported values.
+Callback that is invoked when a bar code has been successfully scanned. The callback is provided with an object of the shape `{ type: BarCodeScanner.Constants.BarCodeType, data: string }`, where the type refers to the bar code type that was scanned and the data is the information encoded in the bar code (in this case of QR codes, this is often a URL). See [`BarCodeScanner.Constants.BarCodeType`](../bar-code-scanner/#supported-formats) for supported values.
 
 - **barCodeTypes (_Array<string>_)**
 
@@ -139,7 +139,7 @@ Callback that is invoked when a bar code has been successfully scanned. The call
 
 - **barCodeScannerSettings (_object_)**
 
-Settings exposed by [`BarCodeScanner`](bar-code-scanner.md) module. Supported settings: [**barCodeTypes**].
+Settings exposed by [`BarCodeScanner`](../bar-code-scanner/) module. Supported settings: [**barCodeTypes**].
 
 ```javascript
 <Camera
@@ -196,7 +196,7 @@ Takes a picture and saves it to app's cache directory. Photos are rotated to mat
 
 Returns a Promise that resolves to an object: `{ uri, width, height, exif, base64 }` where `uri` is a URI to the local image file (useable as the source for an `Image` element) and `width, height` specify the dimensions of the image. `base64` is included if the `base64` option was truthy, and is a string containing the JPEG data of the image in Base64--prepend that with `'data:image/jpg;base64,'` to get a data URI, which you can use as the source for an `Image` element for example. `exif` is included if the `exif` option was truthy, and is an object containing EXIF data for the image--the names of its properties are EXIF tags and their values are the values for those tags.
 
-The local image URI is temporary. Use [`Expo.FileSystem.copyAsync`](filesystem.md#expofilesystemcopyasyncoptions) to make a permanent copy of the image.
+The local image URI is temporary. Use [`Expo.FileSystem.copyAsync`](../filesystem/#expofilesystemcopyasyncoptions) to make a permanent copy of the image.
 
 ### `recordAsync`
 

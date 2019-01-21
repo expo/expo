@@ -52,15 +52,15 @@ Performance:
 
 ### Methods
 
-* [`setStyleAttributePreprocessor`](stylesheet.md#setstyleattributepreprocessor)
-* [`create`](stylesheet.md#create)
-* [`flatten`](stylesheet.md#flatten)
+* [`setStyleAttributePreprocessor`](../stylesheet/#setstyleattributepreprocessor)
+* [`create`](../stylesheet/#create)
+* [`flatten`](../stylesheet/#flatten)
 
 ### Properties
 
-* [`hairlineWidth`](stylesheet.md#hairlinewidth)
-* [`absoluteFill`](stylesheet.md#absolutefill)
-* [`absoluteFillObject`](stylesheet.md#absolutefillobject)
+* [`hairlineWidth`](../stylesheet/#hairlinewidth)
+* [`absoluteFill`](../stylesheet/#absolutefill)
+* [`absoluteFillObject`](../stylesheet/#absolutefillobject)
 
 ---
 

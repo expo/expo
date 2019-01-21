@@ -12,17 +12,17 @@ Follow [Facebook's developer documentation](https://developers.facebook.com/docs
 
     -   Add `host.exp.Exponent` as an iOS _Bundle ID_. Add `rRW++LUjmZZ+58EbN5DVhGAnkX4=` as an Android _key hash_. Your app's settings should end up including the following under "Settings > Basic":
 
-[![](./facebook-app-settings.png)](/_images/facebook-app-settings.png)
+[!](/static/images/facebook-app-settings.png)
 
 -   **iOS standalone app**
 
     -   Add your app's Bundle ID as a _Bundle ID_ in app's settings page pictured above.
-    -   In your [app.json](../guides/configuration.html), add a field `facebookScheme` with your Facebook login redirect URL scheme found [here](https://developers.facebook.com/docs/facebook-login/ios) under _4. Configure Your info.plist_. It should look like `"fb123456"`.
-    -   Also in your [app.json](../guides/configuration.html), add your [Facebook App ID and Facebook Display Name](https://developers.facebook.com/docs/facebook-login/ios) under the `facebookAppId` and `facebookDisplayName` keys.
+    -   In your [app.json](../../workflow/configuration/), add a field `facebookScheme` with your Facebook login redirect URL scheme found [here](https://developers.facebook.com/docs/facebook-login/ios) under _4. Configure Your info.plist_. It should look like `"fb123456"`.
+    -   Also in your [app.json](../../workflow/configuration/), add your [Facebook App ID and Facebook Display Name](https://developers.facebook.com/docs/facebook-login/ios) under the `facebookAppId` and `facebookDisplayName` keys.
 
 -   **Android standalone app**
 
-    -   [Build your standalone app](../guides/building-standalone-apps.html#building-standalone-apps) for Android.
+    -   [Build your standalone app](../../distribution/building-standalone-apps/#building-standalone-apps) for Android.
     -   Run `exp fetch:android:hashes`.
     -   Copy `Facebook Key Hash` and paste it as an additional key hash in your Facebook developer page pictured above.
 

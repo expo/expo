@@ -4,7 +4,7 @@ title: Branch
 
 Expo includes alpha support for [Branch](https://branch.io/) attribution services.
 
-> **Note:** This API only works with standalone builds created with [expo build](../guides/building-standalone-apps.html).
+> **Note:** This API only works with standalone builds created with [expo build](../../distribution/building-standalone-apps/).
 
 ## Importing Branch
 

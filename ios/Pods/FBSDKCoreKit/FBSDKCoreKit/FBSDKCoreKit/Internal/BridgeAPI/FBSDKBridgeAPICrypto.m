@@ -65,7 +65,7 @@ static NSString *g_cipherKey = nil;
     return nil;
   }
   NSArray *additionalSignedDataArray = @[
-                                         [[NSBundle mainBundle] bundleIdentifier],
+                                         [NSBundle mainBundle].bundleIdentifier,
                                          [FBSDKSettings appID] ?: @"",
                                          @"bridge",
                                          request.methodName ?: @"",

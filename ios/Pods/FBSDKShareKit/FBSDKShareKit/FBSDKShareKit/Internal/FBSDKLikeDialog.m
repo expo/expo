@@ -122,7 +122,7 @@
 
 - (BOOL)validateWithError:(NSError *__autoreleasing *)errorRef
 {
-  if (![self.objectID length]) {
+  if (!self.objectID.length) {
     if (errorRef != NULL) {
       *errorRef = [NSError fbRequiredArgumentErrorWithDomain:FBSDKShareErrorDomain
                                                         name:@"objectID"

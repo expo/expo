@@ -25,10 +25,10 @@ return (
 
 ### Props
 
-* [`Image` props...](image.md#props)
-* [`style`](imagebackground.md#style)
-* [`imageStyle`](imagebackground.md#imageStyle)
-* [`imageRef`](imagebackground.md#imageRef)
+* [`Image` props...](../image/#props)
+* [`style`](../imagebackground/#style)
+* [`imageStyle`](../imagebackground/#imageStyle)
+* [`imageRef`](../imagebackground/#imageRef)
 
 ---
 
@@ -40,13 +40,13 @@ return (
 
 | Type                               | Required |
 | ---------------------------------- | -------- |
-| [view styles](view-style-props.md) | No       |
+| [view styles](../view-style-props/) | No       |
 
 ### `imageStyle`
 
 | Type                                 | Required |
 | ------------------------------------ | -------- |
-| [image styles](image-style-props.md) | No       |
+| [image styles](../image-style-props/) | No       |
 
 ### `imageRef`
 

@@ -32,13 +32,13 @@
 - (instancetype)init
 {
   if ((self = [super init])) {
-    NSString *keyChainServiceIdentifier = [NSString stringWithFormat:@"com.facebook.sdk.tokencache.%@", [[NSBundle mainBundle] bundleIdentifier]];
+    NSString *keyChainServiceIdentifier = [NSString stringWithFormat:@"com.facebook.sdk.tokencache.%@", [NSBundle mainBundle].bundleIdentifier];
     _keychainStore = [[FBSDKKeychainStore alloc] initWithService:keyChainServiceIdentifier accessGroup:nil];
   }
   return self;
 }
 
-- (FBSDKAccessToken *)fetchAccessToken
+- (FBSDKAccessToken *)accessToken
 {
   NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
   NSString *uuidKey = [[FBSDKSettings legacyUserDefaultTokenInformationKeyName] stringByAppendingString:@"UUID"];
@@ -56,7 +56,7 @@
   [_keychainStore setDictionary:nil forKey:[FBSDKSettings legacyUserDefaultTokenInformationKeyName] accessibility:nil];
 }
 
-- (void)cacheAccessToken:(FBSDKAccessToken *)token
+- (void)setAccessToken:(FBSDKAccessToken *)token
 {
   //no-op.
   NSAssert(NO, @"deprecated cache FBSDKAccessTokenCacheV3_21 should not be used to cache a token");

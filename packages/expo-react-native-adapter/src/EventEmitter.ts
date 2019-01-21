@@ -1,5 +1,5 @@
 import invariant from 'invariant';
-import { EmitterSubscription, Platform } from 'react-native';
+import { Platform } from 'react-native';
 // Importing this directly will circumvent the webpack alias `react-native$`. This will enable us to
 // use NativeEventEmitter from React Native and not from RNWeb.
 import NativeEventEmitter from 'react-native/Libraries/EventEmitter/NativeEventEmitter';
@@ -28,7 +28,7 @@ export class EventEmitter {
   }
 
   addListener<T>(eventName: string, listener: (event: T) => void): Subscription {
-    if (!this._listenerCount && Platform.OS === 'android' && this._nativeModule.startObserving) {
+    if (!this._listenerCount && Platform.OS !== 'ios' && this._nativeModule.startObserving) {
       this._nativeModule.startObserving();
     }
 
@@ -52,7 +52,7 @@ export class EventEmitter {
       `EventEmitter must have a non-negative number of listeners`
     );
 
-    if (!this._listenerCount && Platform.OS === 'android' && this._nativeModule.stopObserving) {
+    if (!this._listenerCount && Platform.OS !== 'ios' && this._nativeModule.stopObserving) {
       this._nativeModule.stopObserving();
     }
   }
@@ -66,7 +66,14 @@ export class EventEmitter {
     this._eventEmitter.removeSubscription(nativeEmitterSubscription!);
     this._listenerCount--;
 
-    if (!this._listenerCount && Platform.OS === 'android' && this._nativeModule.stopObserving) {
+    // Ensure that the emitter's internal state remains correct even if `removeSubscription` is
+    // called again with the same subscription
+    delete subscription[nativeEmitterSubscriptionKey];
+
+    // Release closed-over references to the emitter
+    subscription.remove = () => {};
+
+    if (!this._listenerCount && Platform.OS !== 'ios' && this._nativeModule.stopObserving) {
       this._nativeModule.stopObserving();
     }
   }

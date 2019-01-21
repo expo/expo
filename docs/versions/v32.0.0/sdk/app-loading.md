@@ -63,4 +63,4 @@ The following props are recommended, but optional for the sake of backwards comp
 - **startAsync (_function_)** -- A `function` that returns a `Promise`, and the `Promise` should resolve when the app is done loading required data and assets.
 - **onError (_function_)** -- If `startAsync` throws an error, it is caught and passed into the function provided to `onError`.
 - **onFinish (_function_)** -- **(Required if you provide `startAsync`)**. Called when `startAsync` resolves or rejects. This should be used to set state and unmount the `AppLoading` component.
-- **autoHideSplash (_boolean_)** -- Whether to hide the native splash screen as soon as you unmount the AppLoading component. See [SplashScreen module](./splash-screen.md) for an example.
+- **autoHideSplash (_boolean_)** -- Whether to hide the native splash screen as soon as you unmount the AppLoading component. See [SplashScreen module](../splash-screen/) for an example.

@@ -10,11 +10,11 @@ If you don't have an Android device available to test with, we recommend using t
 
 -   Go to Preferences -> Appearance & Behavior -> System Settings -> Android SDK. Click on the "SDK Tools" tab and make sure you have at least one version of the "Android SDK Build-Tools" installed.
 
-[![Android SDK location](./android-studio-build-tools.png)](#)
+[![Android SDK location](/static/images/android-studio-build-tools.png)](#)
 
 -   Copy or remember the path listed in the box that says "Android SDK Location."
 
-[![Android SDK location](./android-studio-sdk-location.png)](#)
+[![Android SDK location](/static/images/android-studio-sdk-location.png)](#)
 
 -   If you are on macOS or Linux, add the Android SDK location to your PATH using `~/.bash_profile` or `~/.bash_rc`. You can do this by adding a line like `export ANDROID_SDK=/Users/myuser/Library/Android/sdk`.
 
@@ -36,7 +36,7 @@ If you use XDE, you may need to complete this step to properly integrate the And
 
 -   Press the "+ Create Virtual Device" button.
 
-[![Android SDK location](./android-studio-avd-manager.png)](#)
+[![Android SDK location](/static/images/android-studio-avd-manager.png)](#)
 
 -   Choose the type of hardware you'd like to emulate. We recommend testing against a variety of devices, but if you're unsure where to start, the newest device in the Pixel line could be a good choice.
 

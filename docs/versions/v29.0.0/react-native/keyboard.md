@@ -48,10 +48,10 @@ class Example extends Component {
 
 ### Methods
 
-* [`addListener`](keyboard.md#addlistener)
-* [`removeListener`](keyboard.md#removelistener)
-* [`removeAllListeners`](keyboard.md#removealllisteners)
-* [`dismiss`](keyboard.md#dismiss)
+* [`addListener`](../keyboard/#addlistener)
+* [`removeListener`](../keyboard/#removelistener)
+* [`removeAllListeners`](../keyboard/#removealllisteners)
+* [`dismiss`](../keyboard/#dismiss)
 
 ---
 

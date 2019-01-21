@@ -5,10 +5,10 @@ title: Shadow Props
 
 ### Props
 
-* [`shadowColor`](shadow-props.md#shadowcolor)
-* [`shadowOffset`](shadow-props.md#shadowoffset)
-* [`shadowOpacity`](shadow-props.md#shadowopacity)
-* [`shadowRadius`](shadow-props.md#shadowradius)
+* [`shadowColor`](../shadow-props/#shadowcolor)
+* [`shadowOffset`](../shadow-props/#shadowoffset)
+* [`shadowOpacity`](../shadow-props/#shadowopacity)
+* [`shadowRadius`](../shadow-props/#shadowradius)
 
 ---
 
@@ -22,7 +22,7 @@ Sets the drop shadow color
 
 | Type               | Required | Platform |
 | ------------------ | -------- | -------- |
-| [color](colors.md) | No       | iOS      |
+| [color](../colors/) | No       | iOS      |
 
 ---
 

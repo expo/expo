@@ -7,14 +7,14 @@ Use `ProgressViewIOS` to render a UIProgressView on iOS.
 
 ### Props
 
-* [View props...](view.md#props)
+* [View props...](../view/#props)
 
-- [`progress`](progressviewios.md#progress)
-- [`progressImage`](progressviewios.md#progressimage)
-- [`progressTintColor`](progressviewios.md#progresstintcolor)
-- [`progressViewStyle`](progressviewios.md#progressviewstyle)
-- [`trackImage`](progressviewios.md#trackimage)
-- [`trackTintColor`](progressviewios.md#tracktintcolor)
+- [`progress`](../progressviewios/#progress)
+- [`progressImage`](../progressviewios/#progressimage)
+- [`progressTintColor`](../progressviewios/#progresstintcolor)
+- [`progressViewStyle`](../progressviewios/#progressviewstyle)
+- [`trackImage`](../progressviewios/#trackimage)
+- [`trackTintColor`](../progressviewios/#tracktintcolor)
 
 ---
 

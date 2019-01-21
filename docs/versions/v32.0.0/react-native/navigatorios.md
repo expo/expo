@@ -178,29 +178,29 @@ In the example above the navigation bar color is changed when the new route is p
 
 ### Props
 
-* [`initialRoute`](navigatorios.md#initialroute)
-* [`barStyle`](navigatorios.md#barstyle)
-* [`barTintColor`](navigatorios.md#bartintcolor)
-* [`interactivePopGestureEnabled`](navigatorios.md#interactivepopgestureenabled)
-* [`itemWrapperStyle`](navigatorios.md#itemwrapperstyle)
-* [`navigationBarHidden`](navigatorios.md#navigationbarhidden)
-* [`shadowHidden`](navigatorios.md#shadowhidden)
-* [`tintColor`](navigatorios.md#tintcolor)
-* [`titleTextColor`](navigatorios.md#titletextcolor)
-* [`translucent`](navigatorios.md#translucent)
+* [`initialRoute`](../navigatorios/#initialroute)
+* [`barStyle`](../navigatorios/#barstyle)
+* [`barTintColor`](../navigatorios/#bartintcolor)
+* [`interactivePopGestureEnabled`](../navigatorios/#interactivepopgestureenabled)
+* [`itemWrapperStyle`](../navigatorios/#itemwrapperstyle)
+* [`navigationBarHidden`](../navigatorios/#navigationbarhidden)
+* [`shadowHidden`](../navigatorios/#shadowhidden)
+* [`tintColor`](../navigatorios/#tintcolor)
+* [`titleTextColor`](../navigatorios/#titletextcolor)
+* [`translucent`](../navigatorios/#translucent)
 
 ### Methods
 
-* [`push`](navigatorios.md#push)
-* [`popN`](navigatorios.md#popn)
-* [`pop`](navigatorios.md#pop)
-* [`replaceAtIndex`](navigatorios.md#replaceatindex)
-* [`replace`](navigatorios.md#replace)
-* [`replacePrevious`](navigatorios.md#replaceprevious)
-* [`popToTop`](navigatorios.md#poptotop)
-* [`popToRoute`](navigatorios.md#poptoroute)
-* [`replacePreviousAndPop`](navigatorios.md#replacepreviousandpop)
-* [`resetTo`](navigatorios.md#resetto)
+* [`push`](../navigatorios/#push)
+* [`popN`](../navigatorios/#popn)
+* [`pop`](../navigatorios/#pop)
+* [`replaceAtIndex`](../navigatorios/#replaceatindex)
+* [`replace`](../navigatorios/#replace)
+* [`replacePrevious`](../navigatorios/#replaceprevious)
+* [`popToTop`](../navigatorios/#poptotop)
+* [`popToRoute`](../navigatorios/#poptoroute)
+* [`replacePreviousAndPop`](../navigatorios/#replacepreviousandpop)
+* [`resetTo`](../navigatorios/#resetto)
 
 ---
 

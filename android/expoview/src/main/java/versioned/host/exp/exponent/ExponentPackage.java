@@ -41,9 +41,7 @@ import versioned.host.exp.exponent.modules.api.ImagePickerModule;
 import versioned.host.exp.exponent.modules.api.IntentLauncherModule;
 import versioned.host.exp.exponent.modules.api.KeepAwakeModule;
 import versioned.host.exp.exponent.modules.api.KeyboardModule;
-import versioned.host.exp.exponent.modules.api.MailComposerModule;
 import versioned.host.exp.exponent.modules.api.PedometerModule;
-import versioned.host.exp.exponent.modules.api.SQLiteModule;
 import versioned.host.exp.exponent.modules.api.ScreenOrientationModule;
 import versioned.host.exp.exponent.modules.api.SecureStoreModule;
 import versioned.host.exp.exponent.modules.api.ShakeModule;
@@ -52,9 +50,6 @@ import versioned.host.exp.exponent.modules.api.SplashScreenModule;
 import versioned.host.exp.exponent.modules.api.URLHandlerModule;
 import versioned.host.exp.exponent.modules.api.UpdatesModule;
 import versioned.host.exp.exponent.modules.api.WebBrowserModule;
-import versioned.host.exp.exponent.modules.api.av.AVModule;
-import versioned.host.exp.exponent.modules.api.av.video.VideoManager;
-import versioned.host.exp.exponent.modules.api.av.video.VideoViewManager;
 import versioned.host.exp.exponent.modules.api.cognito.RNAWSCognitoModule;
 import versioned.host.exp.exponent.modules.api.components.LinearGradientManager;
 import versioned.host.exp.exponent.modules.api.components.gesturehandler.react.RNGestureHandlerModule;
@@ -195,13 +190,10 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new KeepAwakeModule(reactContext));
         nativeModules.add(new ExponentTestNativeModule(reactContext));
         nativeModules.add(new WebBrowserModule(reactContext));
-        nativeModules.add(new AVModule(reactContext, scopedContext, experienceId));
-        nativeModules.add(new VideoManager(reactContext));
         nativeModules.add(new NativeAdManager(reactContext));
         nativeModules.add(new AdSettingsManager(reactContext));
         nativeModules.add(new InterstitialAdManager(reactContext));
         nativeModules.add(new PedometerModule(reactContext));
-        nativeModules.add(new SQLiteModule(reactContext, scopedContext));
         nativeModules.add(new DocumentPickerModule(reactContext, scopedContext));
         nativeModules.add(new RNBranchModule(reactContext));
         nativeModules.add(new ErrorRecoveryModule(reactContext, experienceId));
@@ -212,7 +204,6 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new BrightnessModule(reactContext));
         nativeModules.add(new RNGestureHandlerModule(reactContext));
         nativeModules.add(new RNAWSCognitoModule(reactContext));
-        nativeModules.add(new MailComposerModule(reactContext));
         nativeModules.add(new CalendarModule(reactContext, experienceId));
         nativeModules.add(new ReanimatedModule(reactContext));
         nativeModules.add(new SplashScreenModule(reactContext, experienceId));
@@ -238,7 +229,6 @@ public class ExponentPackage implements ReactPackage {
   public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
     List<ViewManager> viewManagers = new ArrayList<>(Arrays.<ViewManager>asList(
         new LinearGradientManager(),
-        new VideoViewManager(),
         new NativeAdViewManager(),
         new BannerViewManager(),
         new MediaViewManager(),
