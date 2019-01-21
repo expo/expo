@@ -162,6 +162,7 @@ class BarometerSensor extends SensorBlock {
   renderData = () => (
     <View>
       <Text>Pressure: {this.state.data.pressure}</Text>
+      <Text>Relative Altitude: {this.state.data.relativeAltitude}</Text>
     </View>
   );
 }
