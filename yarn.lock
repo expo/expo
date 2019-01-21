@@ -4223,16 +4223,6 @@ expo-asset-utils@^0.0.4-alpha.2:
   resolved "https://registry.yarnpkg.com/expo-asset-utils/-/expo-asset-utils-0.0.4-alpha.3.tgz#557aa99e394d6e4e6a369914b7e040a414588e78"
   integrity sha512-COMyBrFN2719uTR6c+OnpZmjG8ox2Ipa+t4VHOmrA2ErYxtIYAZs4OcYXe+1Zjn8TlUoQ3B2VC8AofB/P9h7yw==
 
-expo-core@~1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/expo-core/-/expo-core-1.2.0.tgz#c8fecf18b36a5b583bcb69a0227d4a6e45b56f17"
-  integrity sha512-EbfgL/NPIROzY+Vvmuo2teUqSo8FEdFSZm3dyUcCTEV8jXioTCyJNpsH3G3cTI2U7nxn84SxoB6BvEzWdQyu4Q==
-
-expo-processing@1.0.3:
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/expo-processing/-/expo-processing-1.0.3.tgz#782f495e6f1cabed3bb3aad0f0a83a4b7ec456b1"
-  integrity sha1-eC9JXm8cq+07s6rQ8Kg6S37EVrE=
-
 expo-three@^3.0.0-alpha.6:
   version "3.0.0-alpha.6"
   resolved "https://registry.yarnpkg.com/expo-three/-/expo-three-3.0.0-alpha.6.tgz#e9ea3744c194a366fa4d7fb19b74a93cfa9d048b"
