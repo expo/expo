@@ -4,25 +4,12 @@ import * as Utils from './CameraUtils';
 import { FacingModeToCameraType, PictureSizes } from './constants';
 import * as CapabilityUtils from './CapabilityUtils';
 export { ImageType, CameraType };
-/*
- * TODO: Bacon: Add more props for Android
- *
- * aspectRatio: { min (0.00033), max (4032) }
- * colorTemperature: MediaSettingsRange  (max: 7000, min: 2850, step: 50)
- * exposureCompensation: MediaSettingsRange (max: 2, min: -2, step: 0.1666666716337204)
- * exposureMode: 'continuous' | 'manual'
- * frameRate: { min: (1), max: (60) }
- * iso: MediaSettingsRange (max: 3200, min: 50, step: 1)
- * width: { min: 1, max}
- * height: { min: 1, max}
- */
 class CameraModule {
     constructor(videoElement) {
-        this.numberOfMaxResolutionTry = 1;
         this.stream = null;
         this.settings = null;
-        this.onCameraReady = function () { };
-        this.onMountError = function () { };
+        this.onCameraReady = () => { };
+        this.onMountError = () => { };
         this._isStartingCamera = false;
         this._autoFocus = 'continuous';
         this._flashMode = 'off';

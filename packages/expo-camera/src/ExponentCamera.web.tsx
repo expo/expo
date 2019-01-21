@@ -1,9 +1,9 @@
 import React, { CSSProperties } from 'react';
-import { CapturedPicture, NativePropsType, PictureOptions } from './Camera.types';
-import CameraModule from './CameraModule/CameraModule';
+import { CapturedPicture, NativePropsType, PictureOptions, MountError } from './Camera.types';
+import CameraModule, { CameraType } from './CameraModule/CameraModule';
 import CameraManager from './ExponentCameraManager.web';
 
-let findNodeHandle = function() {};
+let findNodeHandle = function(node: any): any {};
 let flatten = data => data;
 let View = props => <div {...props} />;
 
@@ -17,9 +17,10 @@ try {
 
 export default class ExponentCamera extends React.Component<NativePropsType> {
   video?: number | null;
-  camera: CameraModule | null = null;
+  camera?: CameraModule;
 
   state = { type: null };
+
   componentWillReceiveProps(nextProps) {
     this._updateCameraProps(nextProps);
   }
@@ -32,20 +33,20 @@ export default class ExponentCamera extends React.Component<NativePropsType> {
     autoFocus,
     // focusDepth,
     whiteBalance,
-  }) => {
+  }: NativePropsType) => {
     const { camera } = this;
-    if (camera == null) {
+    if (!camera) {
       return;
     }
-
-    // TODO: Bacon: Batch process
-    camera.setTypeAsync(type);
-    camera.setPictureSize(pictureSize);
-    camera.setZoomAsync(zoom);
-    camera.setAutoFocusAsync(autoFocus);
-    camera.setWhiteBalanceAsync(whiteBalance);
-    camera.setFlashModeAsync(flashMode);
-    await camera.ensureCameraIsRunningAsync();
+    await Promise.all([
+      camera.setTypeAsync(type as CameraType),
+      camera.setPictureSize(pictureSize as string),
+      camera.setZoomAsync(zoom as number),
+      camera.setAutoFocusAsync(autoFocus as string),
+      camera.setWhiteBalanceAsync(whiteBalance as string),
+      camera.setFlashModeAsync(flashMode as string),
+      camera.ensureCameraIsRunningAsync(),
+    ]);
     const actualCameraType = camera.getActualCameraType();
     if (actualCameraType !== this.state.type) {
       this.setState({ type: actualCameraType });
@@ -53,10 +54,10 @@ export default class ExponentCamera extends React.Component<NativePropsType> {
   };
 
   getCamera = (): CameraModule => {
-    if (this.camera == null) {
-      throw new Error('Camera is not defined yet!');
+    if (this.camera) {
+      return this.camera;
     }
-    return this.camera;
+    throw new Error('Camera is not defined yet!');
   };
 
   getAvailablePictureSizes = async (ratio: string): Promise<string[]> => {
@@ -89,9 +90,9 @@ export default class ExponentCamera extends React.Component<NativePropsType> {
     }
   };
 
-  onMountError = error => {
+  onMountError = ({ nativeEvent }: { nativeEvent: MountError }) => {
     if (this.props.onMountError) {
-      this.props.onMountError(error);
+      this.props.onMountError({ nativeEvent });
     }
   };
 
@@ -100,7 +101,7 @@ export default class ExponentCamera extends React.Component<NativePropsType> {
     this.camera = new CameraModule(ref);
     this.camera.onCameraReady = this.onCameraReady;
     this.camera.onMountError = this.onMountError;
-    this._updateCameraProps(this.props as any);
+    this._updateCameraProps(this.props);
   };
 
   render() {

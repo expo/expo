@@ -21,13 +21,15 @@ export { ImageType, CameraType, CaptureOptions };
  * height: { min: 1, max}
  */
 
+type OnCameraReadyListener = () => void;
+type OnMountErrorListener = ({ nativeEvent: Error }) => void;
+
 class CameraModule {
   videoElement: HTMLVideoElement;
-  numberOfMaxResolutionTry: number = 1;
   stream: MediaStream | null = null;
   settings: MediaTrackSettings | null = null;
-  onCameraReady: Function = function() {};
-  onMountError: Function = function() {};
+  onCameraReady: OnCameraReadyListener = () => {};
+  onMountError: OnMountErrorListener = () => {};
   _pictureSize?: string;
   _isStartingCamera = false;
 
@@ -56,9 +58,11 @@ class CameraModule {
   }
 
   _whiteBalance: string = 'continuous';
+
   get whiteBalance(): string {
     return this._whiteBalance;
   }
+
   async setWhiteBalanceAsync(value: string): Promise<void> {
     if (value === this.whiteBalance) {
       return;
@@ -68,9 +72,11 @@ class CameraModule {
   }
 
   _cameraType: CameraType = CameraType.front;
+
   get type(): CameraType {
     return this._cameraType;
   }
+
   async setTypeAsync(value: CameraType) {
     if (value === this._cameraType) {
       return;
@@ -80,9 +86,11 @@ class CameraModule {
   }
 
   _zoom: number = 1;
+
   get zoom(): number {
     return this._zoom;
   }
+
   async setZoomAsync(value: number): Promise<void> {
     if (value === this.zoom) {
       return;

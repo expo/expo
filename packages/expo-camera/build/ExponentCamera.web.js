@@ -1,37 +1,47 @@
 import React from 'react';
-import { findNodeHandle, StyleSheet, View } from 'react-native';
 import CameraModule from './CameraModule/CameraModule';
 import CameraManager from './ExponentCameraManager.web';
+let findNodeHandle = function (node) { };
+let flatten = data => data;
+let View = props => <div {...props}/>;
+// Without react-native-web
+try {
+    const ReactNative = require('react-native');
+    findNodeHandle = ReactNative.findNodeHandle;
+    flatten = ReactNative.StyleSheet.flatten;
+    View = ReactNative.View;
+}
+catch (error) { }
 export default class ExponentCamera extends React.Component {
     constructor() {
         super(...arguments);
-        this.camera = null;
         this.state = { type: null };
         this._updateCameraProps = async ({ type, zoom, pictureSize, flashMode, autoFocus, 
         // focusDepth,
         whiteBalance, }) => {
             const { camera } = this;
-            if (camera == null) {
+            if (!camera) {
                 return;
             }
-            // TODO: Bacon: Batch process
-            camera.setTypeAsync(type);
-            camera.setPictureSize(pictureSize);
-            camera.setZoomAsync(zoom);
-            camera.setAutoFocusAsync(autoFocus);
-            camera.setWhiteBalanceAsync(whiteBalance);
-            camera.setFlashModeAsync(flashMode);
-            await camera.ensureCameraIsRunningAsync();
+            await Promise.all([
+                camera.setTypeAsync(type),
+                camera.setPictureSize(pictureSize),
+                camera.setZoomAsync(zoom),
+                camera.setAutoFocusAsync(autoFocus),
+                camera.setWhiteBalanceAsync(whiteBalance),
+                camera.setFlashModeAsync(flashMode),
+                camera.ensureCameraIsRunningAsync(),
+            ]);
             const actualCameraType = camera.getActualCameraType();
             if (actualCameraType !== this.state.type) {
                 this.setState({ type: actualCameraType });
             }
         };
         this.getCamera = () => {
-            if (this.camera == null) {
-                throw new Error('Camera is not defined yet!');
+            if (this.camera) {
+                return this.camera;
             }
-            return this.camera;
+            throw new Error('Camera is not defined yet!');
         };
         this.getAvailablePictureSizes = async (ratio) => {
             const camera = this.getCamera();
@@ -58,9 +68,9 @@ export default class ExponentCamera extends React.Component {
                 this.props.onCameraReady();
             }
         };
-        this.onMountError = error => {
+        this.onMountError = ({ nativeEvent }) => {
             if (this.props.onMountError) {
-                this.props.onMountError(error);
+                this.props.onMountError({ nativeEvent });
             }
         };
         this._setRef = async (ref) => {
@@ -76,9 +86,13 @@ export default class ExponentCamera extends React.Component {
     }
     render() {
         const transform = this.state.type === CameraManager.Type.front ? 'rotateY(180deg)' : 'none';
-        const reactStyle = StyleSheet.flatten(this.props.style);
+        const reactStyle = flatten(this.props.style);
         const style = {
-            ...StyleSheet.absoluteFillObject,
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
             width: '100%',
             height: '100%',
             objectFit: 'cover',

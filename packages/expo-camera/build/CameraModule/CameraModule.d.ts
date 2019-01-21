@@ -1,13 +1,16 @@
 import { PictureOptions } from '../Camera.types';
 import { CameraType, CapturedPicture, CaptureOptions, ImageType } from './CameraModule.types';
 export { ImageType, CameraType, CaptureOptions };
+declare type OnCameraReadyListener = () => void;
+declare type OnMountErrorListener = ({ nativeEvent: Error }: {
+    nativeEvent: any;
+}) => void;
 declare class CameraModule {
     videoElement: HTMLVideoElement;
-    numberOfMaxResolutionTry: number;
     stream: MediaStream | null;
     settings: MediaTrackSettings | null;
-    onCameraReady: Function;
-    onMountError: Function;
+    onCameraReady: OnCameraReadyListener;
+    onMountError: OnMountErrorListener;
     _pictureSize?: string;
     _isStartingCamera: boolean;
     _autoFocus: string;
