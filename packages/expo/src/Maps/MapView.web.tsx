@@ -6,8 +6,8 @@ import Marker from './Marker';
 
 class GoogleMapInnerContainer extends React.Component<any> {
   render() {
-    const { handleMapMounted, ...props } = this.props;
-    return <GoogleMap {...props} ref={handleMapMounted} />;
+    const { onMapMount, ...props } = this.props;
+    return <GoogleMap {...props} ref={onMapMount} />;
   }
 }
 
@@ -26,7 +26,7 @@ class MapView extends React.Component<Props> {
 
   googleMap: GoogleMap | null = null;
 
-  handleMapMounted = (googleMap: GoogleMap | null) => {
+  onMapMount = (googleMap: GoogleMap | null) => {
     this.googleMap = googleMap;
   };
 
@@ -44,7 +44,7 @@ class MapView extends React.Component<Props> {
     return (
       <View style={styles.container}>
         <GoogleMapContainer
-          handleMapMounted={this.handleMapMounted}
+          onMapMount={this.onMapMount}
           containerElement={<div style={{ height: '100%' }} />}
           mapElement={<div style={{ height: '100%' }} />}
           defaultCenter={{
