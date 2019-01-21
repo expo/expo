@@ -11,6 +11,7 @@ import expo.loaders.provider.interfaces.AppLoaderPackagesProviderInterface;
 import expo.modules.ads.admob.AdMobPackage;
 import expo.modules.analytics.segment.SegmentPackage;
 import expo.modules.appauth.AppAuthPackage;
+import expo.modules.av.AVPackage;
 import expo.modules.backgroundfetch.BackgroundFetchPackage;
 import expo.modules.barcodescanner.BarCodeScannerPackage;
 import expo.modules.camera.CameraPackage;
@@ -80,6 +81,8 @@ public class MainApplication extends ExpoApplication implements AppLoaderPackage
         new AppAuthPackage(),
         new TaskManagerPackage(),
         new BackgroundFetchPackage(),
+        new MailComposerPackage(),
+        new AVPackage(),
         new SQLitePackage()
     );
   }
