@@ -91,8 +91,8 @@ EX_EXPORT_METHOD_AS(exec,
 
 EX_EXPORT_METHOD_AS(close,
                     close:(NSString *)dbName
-                 resolver:(EXPromiseResolveBlock)resolve
-                 rejecter:(EXPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   @synchronized(self) {
     [cachedDatabases removeObjectForKey:dbName];
