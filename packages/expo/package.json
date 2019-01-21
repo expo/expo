@@ -110,6 +110,7 @@
     "pretty-format": "^23.6.0",
     "prop-types": "^15.6.0",
     "qs": "^6.5.0",
+    "react-google-maps": "^9.4.5",
     "react-native-branch": "2.2.5",
     "react-native-gesture-handler": "1.0.12",
     "react-native-maps": "expo/react-native-maps#v0.22.1-exp.0",

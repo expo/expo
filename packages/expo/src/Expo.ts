@@ -40,7 +40,7 @@ export { SMS };
 import * as TaskManager from 'expo-task-manager';
 export { TaskManager }
 export { GestureHandler } from './GestureHandler';
-export { default as MapView } from 'react-native-maps';
+export { default as MapView } from './Maps/MapView';
 
 import * as AR from './AR';
 export { AR };
