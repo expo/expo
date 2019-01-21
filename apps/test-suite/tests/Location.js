@@ -175,13 +175,17 @@ export async function test(t) {
         timeout + second
       );
 
-      t.it('resolves when called simultaneously', async () => {
-        await Promise.all([
-          Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.High }),
-          Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Low }),
-          Location.getCurrentPositionAsync(),
-        ]);
-      });
+      t.it(
+        'resolves when called simultaneously',
+        async () => {
+          await Promise.all([
+            Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Low }),
+            Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Lowest }),
+            Location.getCurrentPositionAsync(),
+          ]);
+        },
+        timeout
+      );
 
       t.it('resolves when watchPositionAsync is running', async () => {
         const subscriber = await Location.watchPositionAsync({}, () => {});
