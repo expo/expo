@@ -7,7 +7,7 @@ acceleration in 3d space.
 
 ### `Expo.Accelerometer.isAvailableAsync()`
 
-Is the sensor enabled on the device.
+Returns whether the accelerometer is enabled on the device.
 
 #### Returns
 
