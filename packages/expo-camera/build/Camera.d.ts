@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { CapturedPicture, PictureOptions, PropsType, RecordingOptions } from './Camera.types';
-export default class Camera extends React.Component<PropsType> {
+import { CapturedPicture, PictureOptions, Props, RecordingOptions } from './Camera.types';
+export default class Camera extends React.Component<Props> {
     static Constants: {
         Type: any;
         FlashMode: any;
@@ -78,7 +78,7 @@ export default class Camera extends React.Component<PropsType> {
         onMagicTap?: PropTypes.Validator<(() => void) | undefined> | undefined;
         accessibilityIgnoresInvertColors?: PropTypes.Validator<boolean | undefined> | undefined;
     };
-    static defaultProps: PropsType;
+    static defaultProps: Props;
     _cameraHandle?: number | null;
     _cameraRef?: React.Component | null;
     _lastEvents: {

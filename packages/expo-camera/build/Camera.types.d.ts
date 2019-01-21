@@ -30,7 +30,7 @@ export declare type BarCodeScanningResult = {
 export declare type FaceDetectionResult = {
     faces: any[];
 };
-export declare type PropsType = React.ComponentProps<typeof View> & {
+export declare type Props = React.ComponentProps<typeof View> & {
     zoom?: number;
     ratio?: string;
     focusDepth?: number;
@@ -48,7 +48,7 @@ export declare type PropsType = React.ComponentProps<typeof View> & {
     faceDetectorSettings?: {};
     onFacesDetected?: (faces: FaceDetectionResult) => void;
 };
-export declare type NativePropsType = {
+export declare type NativeProps = {
     style?: any;
     ref?: Function;
     onCameraReady?: Function;

@@ -1,9 +1,7 @@
 import { requireNativeViewManager } from 'expo-core';
 import * as React from 'react';
-import { NativePropsType } from './Camera.types';
+import { NativeProps } from './Camera.types';
 
-const ExponentCamera: React.ComponentType<NativePropsType> = requireNativeViewManager(
-  'ExponentCamera'
-);
+const ExponentCamera: React.ComponentType<NativeProps> = requireNativeViewManager('ExponentCamera');
 
 export default ExponentCamera;

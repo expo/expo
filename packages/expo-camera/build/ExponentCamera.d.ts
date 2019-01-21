@@ -1,4 +1,4 @@
 import * as React from 'react';
-import { NativePropsType } from './Camera.types';
-declare const ExponentCamera: React.ComponentType<NativePropsType>;
+import { NativeProps } from './Camera.types';
+declare const ExponentCamera: React.ComponentType<NativeProps>;
 export default ExponentCamera;

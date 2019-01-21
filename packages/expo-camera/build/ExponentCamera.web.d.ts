@@ -1,14 +1,14 @@
 import React from 'react';
-import { CapturedPicture, NativePropsType, PictureOptions, MountError } from './Camera.types';
+import { CapturedPicture, NativeProps, PictureOptions, MountError } from './Camera.types';
 import CameraModule from './CameraModule/CameraModule';
-export default class ExponentCamera extends React.Component<NativePropsType> {
+export default class ExponentCamera extends React.Component<NativeProps> {
     video?: number | null;
     camera?: CameraModule;
     state: {
         type: null;
     };
     componentWillReceiveProps(nextProps: any): void;
-    _updateCameraProps: ({ type, zoom, pictureSize, flashMode, autoFocus, whiteBalance, }: NativePropsType) => Promise<void>;
+    _updateCameraProps: ({ type, zoom, pictureSize, flashMode, autoFocus, whiteBalance, }: NativeProps) => Promise<void>;
     getCamera: () => CameraModule;
     getAvailablePictureSizes: (ratio: string) => Promise<string[]>;
     takePicture: (options: PictureOptions) => Promise<CapturedPicture>;

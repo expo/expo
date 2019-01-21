@@ -3,7 +3,7 @@ import mapValues from 'lodash.mapvalues';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { findNodeHandle, Platform, ViewPropTypes } from 'react-native';
-import { CapturedPicture, PictureOptions, PropsType, RecordingOptions } from './Camera.types';
+import { CapturedPicture, PictureOptions, Props, RecordingOptions } from './Camera.types';
 import ExponentCamera from './ExponentCamera';
 import _CameraManager from './ExponentCameraManager';
 
@@ -47,7 +47,7 @@ function ensureRecordingOptions(options?: RecordingOptions): RecordingOptions {
   return recordingOptions;
 }
 
-function ensureNativeProps(options?: PropsType): PropsType {
+function ensureNativeProps(options?: Props): Props {
   let props = options || {};
 
   if (!props || typeof props !== 'object') {
@@ -97,7 +97,7 @@ function _onPictureSaved({ nativeEvent }: { nativeEvent: { data: CapturedPicture
   }
 }
 
-export default class Camera extends React.Component<PropsType> {
+export default class Camera extends React.Component<Props> {
   static Constants = {
     Type: CameraManager.Type,
     FlashMode: CameraManager.FlashMode,
@@ -135,7 +135,7 @@ export default class Camera extends React.Component<PropsType> {
     autoFocus: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.bool]),
   };
 
-  static defaultProps: PropsType = {
+  static defaultProps: Props = {
     zoom: 0,
     ratio: '4:3',
     focusDepth: 0,

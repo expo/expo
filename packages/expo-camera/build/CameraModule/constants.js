@@ -1,4 +1,4 @@
-import { ImageType, CameraType } from './CameraModule.types';
+import { CameraType, ImageType } from './CameraModule.types';
 // https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackConstraints/aspectRatio
 export const VIDEO_ASPECT_RATIOS = {
     '3840x2160': 3840 / 2160,
@@ -7,7 +7,7 @@ export const VIDEO_ASPECT_RATIOS = {
     '640x480': 640 / 480,
     '352x288': 352 / 288,
 };
-export const PictureSizes = ['3840x2160', '1920x1080', '1280x720', '640x480', '352x288'];
+export const PictureSizes = Object.keys(VIDEO_ASPECT_RATIOS);
 export const ImageTypeFormat = {
     [ImageType.jpg]: 'image/jpeg',
     [ImageType.png]: 'image/png',

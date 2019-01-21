@@ -1,5 +1,5 @@
 import React, { CSSProperties } from 'react';
-import { CapturedPicture, NativePropsType, PictureOptions, MountError } from './Camera.types';
+import { CapturedPicture, NativeProps, PictureOptions, MountError } from './Camera.types';
 import CameraModule, { CameraType } from './CameraModule/CameraModule';
 import CameraManager from './ExponentCameraManager.web';
 
@@ -15,7 +15,7 @@ try {
   View = ReactNative.View;
 } catch (error) {}
 
-export default class ExponentCamera extends React.Component<NativePropsType> {
+export default class ExponentCamera extends React.Component<NativeProps> {
   video?: number | null;
   camera?: CameraModule;
 
@@ -33,7 +33,7 @@ export default class ExponentCamera extends React.Component<NativePropsType> {
     autoFocus,
     // focusDepth,
     whiteBalance,
-  }: NativePropsType) => {
+  }: NativeProps) => {
     const { camera } = this;
     if (!camera) {
       return;
