@@ -15,6 +15,8 @@
 
 @implementation EXConstantsService
 
+EX_REGISTER_MODULE();
+
 - (instancetype)initWithExperienceId:(NSString *)experienceId
 {
   if (self = [super init]) {
@@ -33,6 +35,12 @@
   if (!_sessionId) {
     _sessionId = [[NSUUID UUID] UUIDString];
   }
+
+  BOOL isDebugXCodeScheme = NO;
+#if DEBUG
+  isDebugXCodeScheme = YES;
+#endif
+
   return @{
            @"sessionId": _sessionId,
            @"statusBarHeight": @([self statusBarHeight]),
@@ -40,6 +48,8 @@
            @"deviceName": [[self class] deviceName],
            @"isDevice": @([self isDevice]),
            @"systemFonts": [self systemFontNames],
+           @"debugMode": @(isDebugXCodeScheme),
+           @"isHeadless": @(NO),
            @"platform": @{
                @"ios": @{
                    @"buildNumber": [self buildNumber],
@@ -54,8 +64,6 @@
 
 - (NSString *)buildNumber
 {
-  // always get this constant from the embedded Info.plist
-  // because the one in the manifest can get updated later.
   return [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
 }
 

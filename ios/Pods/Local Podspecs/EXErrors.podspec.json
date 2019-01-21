@@ -1,6 +1,6 @@
 {
   "name": "EXErrors",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "summary": "Error classes and helpers for Expo modules",
   "description": "Error classes and helpers for Expo modules",
   "license": "MIT",

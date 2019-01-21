@@ -82,7 +82,7 @@ static CGMutablePathRef _fbsdkCreateDownPointingBubbleWithRect(CGRect rect, CGFl
     _verticalCrossOffset = - 2.5f;
     _verticalTextOffset = 0;
     _displayDuration = 6.0;
-    [self setColorStyle:colorStyle];
+    self.colorStyle = colorStyle;
 
     _message = [message copy];
     _tagline = [tagline copy];
@@ -160,7 +160,7 @@ static CGMutablePathRef _fbsdkCreateDownPointingBubbleWithRect(CGRect rect, CGFl
 
   // Add to view, while invisible.
   self.hidden = YES;
-  if ([self superview]) {
+  if (self.superview) {
     [self removeFromSuperview];
   }
   [view addSubview:self];
@@ -473,7 +473,7 @@ static CGMutablePathRef _createCloseCrossGlyphWithRect(CGRect rect)
 - (CGRect)layoutSubviewsAndDetermineFrame
 {
   // Compute the positioning of the arrow.
-  CGRect screenBounds = [[UIScreen mainScreen] bounds];
+  CGRect screenBounds = [UIScreen mainScreen].bounds;
   UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
   if (!UIInterfaceOrientationIsPortrait(orientation)) {
     screenBounds = CGRectMake(0, 0, screenBounds.size.height, screenBounds.size.width);
@@ -542,7 +542,7 @@ static CGMutablePathRef _createCloseCrossGlyphWithRect(CGRect rect)
   message = message ?: @"";
   // Ensure tagline is empty string or ends with space
   tagline = tagline ?: @"";
-  if ([tagline length] && ![tagline hasSuffix:@" "])
+  if (tagline.length && ![tagline hasSuffix:@" "])
     tagline = [tagline stringByAppendingString:@" "];
 
   // Concatenate tagline & main message
@@ -554,8 +554,8 @@ static CGMutablePathRef _createCloseCrossGlyphWithRect(CGRect rect)
   UIFont *font=[UIFont boldSystemFontOfSize:kNUXFontSize];
   [attrString addAttribute:NSFontAttributeName value:font range:fullRange];
   [attrString addAttribute:NSForegroundColorAttributeName value:[UIColor whiteColor] range:fullRange];
-  if ([tagline length]) {
-    [attrString addAttribute:NSForegroundColorAttributeName value: FBSDKUIColorWithRGB(0x6D, 0x87, 0xC7) range:NSMakeRange(0, [tagline length])];
+  if (tagline.length) {
+    [attrString addAttribute:NSForegroundColorAttributeName value: FBSDKUIColorWithRGB(0x6D, 0x87, 0xC7) range:NSMakeRange(0, tagline.length)];
   }
 
   _textLabel.attributedText = attrString;
@@ -572,7 +572,7 @@ static CGMutablePathRef _createCloseCrossGlyphWithRect(CGRect rect)
 {
   [[self class] cancelPreviousPerformRequestsWithTarget:self selector:@selector(scheduleFadeoutRespectingMinimumDisplayDuration) object:nil];
 
-  if (_displayDuration > 0.0 && [self superview]) {
+  if (_displayDuration > 0.0 && self.superview) {
     CFTimeInterval intervalAlreadyDisplaying = CFAbsoluteTimeGetCurrent() - _displayTime;
     CFTimeInterval timeRemainingBeforeAutomaticFadeout = _displayDuration - intervalAlreadyDisplaying;
     if (timeRemainingBeforeAutomaticFadeout > 0.0) {

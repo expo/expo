@@ -108,7 +108,7 @@
     }
     return NO;
   }
-  if (![content.name length]) {
+  if (!content.name.length) {
     if (errorRef != NULL) {
       *errorRef = [NSError fbRequiredArgumentErrorWithDomain:FBSDKShareErrorDomain
                                                         name:@"name"
@@ -116,7 +116,7 @@
     }
     return NO;
   }
-  if (![content.groupDescription length]) {
+  if (!content.groupDescription.length) {
     if (errorRef != NULL) {
       *errorRef = [NSError fbRequiredArgumentErrorWithDomain:FBSDKShareErrorDomain
                                                         name:@"groupDescription"

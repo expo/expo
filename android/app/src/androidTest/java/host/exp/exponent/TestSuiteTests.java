@@ -152,6 +152,14 @@ public class TestSuiteTests extends BaseTestClass {
   @Ignore
   @Test
   @ExpoTestSuiteTest
+  @ExpoSdkVersionTest("32.0.0")
+  public void sdk32TestSuite() {
+    runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-32-0-0", false);
+  }
+
+  @Ignore
+  @Test
+  @ExpoTestSuiteTest
   @ExpoSdkVersionTest("31.0.0")
   public void sdk31TestSuite() {
     runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-31-0-0", false);
@@ -187,14 +195,6 @@ public class TestSuiteTests extends BaseTestClass {
   @ExpoSdkVersionTest("26.0.0")
   public void sdk26TestSuite() {
     runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-26-0-0", false);
-  }
-
-  @Ignore
-  @Test
-  @ExpoTestSuiteTest
-  @ExpoSdkVersionTest("25.0.0")
-  public void sdk25TestSuite() {
-    runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-25-0-0", false);
   }
 
   @Test

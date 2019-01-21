@@ -11,24 +11,24 @@ import android.os.Debug;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 
+import com.facebook.soloader.SoLoader;
 import com.squareup.leakcanary.LeakCanary;
+
+import java.util.Arrays;
+import java.util.List;
 
 import de.greenrobot.event.EventBus;
 import expo.core.interfaces.Package;
 import expo.modules.barcodescanner.BarCodeScannerPackage;
 import expo.modules.constants.ConstantsPackage;
 import expo.modules.filesystem.FileSystemPackage;
+import expo.modules.font.FontLoaderPackage;
 import expo.modules.permissions.PermissionsPackage;
+import host.exp.exponent.Constants;
 import host.exp.exponent.RNObject;
 import host.exp.exponent.analytics.Analytics;
-import host.exp.expoview.BuildConfig;
-import host.exp.exponent.Constants;
 import host.exp.exponent.kernel.Kernel;
-
-import com.facebook.soloader.SoLoader;
-
-import java.util.Arrays;
-import java.util.List;
+import host.exp.expoview.BuildConfig;
 
 public class HomeActivity extends BaseExperienceActivity {
 
@@ -101,6 +101,7 @@ public class HomeActivity extends BaseExperienceActivity {
         new ConstantsPackage(),
         new PermissionsPackage(),
         new FileSystemPackage(),
+        new FontLoaderPackage(),
         new BarCodeScannerPackage()
     );
   }

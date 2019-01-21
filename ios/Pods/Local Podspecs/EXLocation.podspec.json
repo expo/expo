@@ -1,11 +1,11 @@
 {
   "name": "EXLocation",
-  "version": "1.1.0",
+  "version": "2.0.1",
   "summary": "Expo Location standalone universal module",
   "description": "Expo Location standalone universal module",
   "license": "MIT",
   "authors": "650 Industries, Inc.",
-  "homepage": "https://docs.expo.io/",
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-location",
   "platforms": {
     "ios": "10.0"
   },
@@ -20,6 +20,9 @@
 
     ],
     "EXPermissionsInterface": [
+
+    ],
+    "EXTaskManagerInterface": [
 
     ]
   }

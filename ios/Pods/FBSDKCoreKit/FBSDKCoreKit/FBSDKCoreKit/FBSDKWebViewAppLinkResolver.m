@@ -289,7 +289,7 @@ static NSString *const FBSDKWebViewAppLinkResolverShouldFallbackKey = @"should_f
     NSURL *webUrl = destination;
 
     if (shouldFallbackString &&
-        [@[ @"no", @"false", @"0" ] containsObject:[shouldFallbackString lowercaseString]]) {
+        [@[ @"no", @"false", @"0" ] containsObject:shouldFallbackString.lowercaseString]) {
         webUrl = nil;
     }
     if (webUrl && webUrlString) {

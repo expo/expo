@@ -1,47 +1,19 @@
+// @flow
+
 export default {
-  get name() {
+  get name(): string {
     return 'ExpoGoogleSignIn';
   },
-  get ERRORS() {
+  get ERRORS(): { [string]: string } {
     return {};
   },
-  get SCOPES() {
+  get SCOPES(): { [string]: string } {
     return {};
   },
-  get TYPES() {
-    return {
-      DEFAULT: 'default',
-      GAMES: 'games',
-    };
+  get TYPES(): { [string]: string } {
+    return {};
   },
-  isSignedInAsync() {
-    return Promise.resolve();
-  },
-  initAsync() {
-    return Promise.resolve();
-  },
-  signInSilentlyAsync() {
-    return Promise.resolve();
-  },
-  signInAsync() {
-    return Promise.resolve();
-  },
-  signOutAsync() {
-    return Promise.resolve();
-  },
-  disconnectAsync() {
-    return Promise.resolve();
-  },
-  getTokensAsync() {
-    return Promise.resolve({
-      idToken: null,
-      accessToken: null,
-    });
-  },
-  getCurrentUserAsync() {
-    return null;
-  },
-  getPhotoAsync() {
-    return null;
+  async isConnectedAsync(): Promise<boolean> {
+    return false;
   },
 };

@@ -28,7 +28,15 @@ NS_ASSUME_NONNULL_BEGIN
  */
 extern BOOL gOIDURLQueryComponentForceIOS7Handling;
 
-/*! @brief A utility class for creating and parsing URL query components.
+/*! @brief A utility class for creating and parsing URL query components encoded with the
+        application/x-www-form-urlencoded format.
+    @description Supports application/x-www-form-urlencoded encoding and decoding, specifically
+        '+' is replaced with space before percent decoding. For encoding, simply percent encodes
+        space, as this is valid application/x-www-form-urlencoded.
+    @see https://tools.ietf.org/html/rfc6749#section-4.1.2
+    @see https://tools.ietf.org/html/rfc6749#section-4.1.3
+    @see https://tools.ietf.org/html/rfc6749#appendix-B
+    @see https://url.spec.whatwg.org/#urlencoded-parsing
  */
 @interface OIDURLQueryComponent : NSObject {
   // private variables

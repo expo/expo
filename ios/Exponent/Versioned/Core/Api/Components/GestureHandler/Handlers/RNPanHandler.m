@@ -117,45 +117,41 @@
 {
   _hasCustomActivationCriteria = !isnan(_minDistSq)
   || !isnan(_minVelocityX) || !isnan(_minVelocityY) || !isnan(_minVelocitySq)
-  || !isnan(_activeOffsetXStart) || !isnan(_activeOffsetXEnd) || !isnan(_failOffsetXStart)
-  || !isnan(_failOffsetXEnd) || !isnan(_activeOffsetYStart) || !isnan(_activeOffsetYEnd)
-  || !isnan(_failOffsetYStart) || !isnan(_failOffsetYEnd);
+  || !isnan(_activeOffsetXStart) || !isnan(_activeOffsetXEnd)
+  ||  !isnan(_activeOffsetYStart) || !isnan(_activeOffsetYEnd);
 }
 
 - (BOOL)shouldFailUnderCustomCriteria
 {
   CGPoint trans = [self translationInView:self.view];
-  
-  if (TEST_MIN_IF_NOT_NAN(trans.x, _failOffsetXStart)) {
+  if (!isnan(_failOffsetXStart) && trans.x < _failOffsetXStart) {
     return YES;
   }
-  if (TEST_MAX_IF_NOT_NAN(trans.x, _failOffsetXEnd)) {
+  if (!isnan(_failOffsetXEnd) && trans.x > _failOffsetXEnd) {
     return YES;
   }
-  if (TEST_MIN_IF_NOT_NAN(trans.y, _failOffsetYStart)) {
+  if (!isnan(_failOffsetYStart) && trans.y < _failOffsetYStart) {
     return YES;
   }
-  if (TEST_MAX_IF_NOT_NAN(trans.y, _failOffsetYEnd)) {
+  if (!isnan(_failOffsetYEnd) && trans.y > _failOffsetYEnd) {
     return YES;
   }
-  
-  
   return NO;
 }
 
 - (BOOL)shouldActivateUnderCustomCriteria
 {
   CGPoint trans = [self translationInView:self.view];
-  if (TEST_MIN_IF_NOT_NAN(trans.x, _activeOffsetXStart)) {
+  if (!isnan(_activeOffsetXStart) && trans.x < _activeOffsetXStart) {
     return YES;
   }
-  if (TEST_MAX_IF_NOT_NAN(trans.x, _activeOffsetXEnd)) {
+  if (!isnan(_activeOffsetXEnd) && trans.x > _activeOffsetXEnd) {
     return YES;
   }
-  if (TEST_MIN_IF_NOT_NAN(trans.y, _activeOffsetYStart)) {
+  if (!isnan(_activeOffsetYStart) && trans.y < _activeOffsetYStart) {
     return YES;
   }
-  if (TEST_MAX_IF_NOT_NAN(trans.y, _activeOffsetYEnd)) {
+  if (!isnan(_activeOffsetYEnd) && trans.y > _activeOffsetYEnd) {
     return YES;
   }
   

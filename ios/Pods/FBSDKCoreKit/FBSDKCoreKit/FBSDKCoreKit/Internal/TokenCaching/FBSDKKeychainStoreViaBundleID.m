@@ -25,7 +25,7 @@
 
 - (instancetype)init
 {
-  return [super initWithService:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
+  return [super initWithService:[NSBundle mainBundle].bundleIdentifier accessGroup:nil];
 }
 
 - (instancetype)initWithService:(NSString *)service accessGroup:(NSString *)accessGroup

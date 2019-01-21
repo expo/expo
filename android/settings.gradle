@@ -6,13 +6,13 @@ project(':ReactAndroid').projectDir = new File(rootDir, 'ReactAndroid')
 
 [
     // ADD_NEW_SUPPORTED_ABIS_HERE
+    "abi32_0_0",
     "abi31_0_0",
     "abi30_0_0",
     "abi29_0_0",
     "abi28_0_0",
     "abi27_0_0",
     "abi26_0_0",
-    "abi25_0_0",
 ].forEach({ abiVariant ->
   include ":expoview-$abiVariant"
   project(":expoview-$abiVariant").projectDir = new File(rootDir, "versioned-abis/expoview-$abiVariant")
@@ -31,6 +31,9 @@ def includeUniversalModule = { name ->
   'expo-app-auth',
   'expo-ads-admob',
   'expo-analytics-segment',
+  'expo-app-loader-provider',
+  'expo-av',
+  'expo-background-fetch',
   'expo-barcode-scanner',
   'expo-barcode-scanner-interface',
   'expo-camera',
@@ -53,6 +56,7 @@ def includeUniversalModule = { name ->
   'expo-local-authentication',
   'expo-location',
   'expo-localization',
+  'expo-mail-composer',
   'expo-media-library',
   'expo-payments-stripe',
   'expo-permissions',
@@ -62,4 +66,6 @@ def includeUniversalModule = { name ->
   'expo-sensors',
   'expo-sensors-interface',
   'expo-sms',
+  'expo-task-manager',
+  'expo-task-manager-interface'
 ].forEach({ moduleName -> includeUniversalModule(moduleName) })

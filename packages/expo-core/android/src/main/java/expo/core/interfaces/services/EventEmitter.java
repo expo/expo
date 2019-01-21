@@ -22,6 +22,7 @@ public interface EventEmitter {
     }
   }
 
+  void emit(int viewId, String eventName, Bundle eventBody);
   void emit(String eventName, Bundle eventBody);
   void emit(int viewId, Event event);
 }

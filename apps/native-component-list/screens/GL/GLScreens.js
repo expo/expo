@@ -1,10 +1,11 @@
 import './BeforePIXI';
 
-import * as Expo from 'expo';
-import ExpoTHREE from 'expo-three';
+import { Asset } from 'expo';
+import { Platform } from 'expo-core';
 import * as PIXI from 'pixi.js';
 import { Dimensions } from 'react-native';
 
+import ExpoTHREE from './ExpoTHREE';
 import GLWrap from './GLWrap';
 import GLCameraScreen from './GLCameraScreen';
 import GLSnapshotsScreen from './GLSnapshotsScreen';
@@ -37,25 +38,25 @@ export default {
       gl.shaderSource(
         vert,
         `
-precision highp float;
-attribute vec2 position;
-varying vec2 uv;
-void main () {
-  uv = position;
-  gl_Position = vec4(1.0 - 2.0 * position, 0, 1);
-}`
+  precision highp float;
+  attribute vec2 position;
+  varying vec2 uv;
+  void main () {
+    uv = position;
+    gl_Position = vec4(1.0 - 2.0 * position, 0, 1);
+  }`
       );
       gl.compileShader(vert);
       const frag = gl.createShader(gl.FRAGMENT_SHADER);
       gl.shaderSource(
         frag,
         `
-precision highp float;
-uniform sampler2D texture;
-varying vec2 uv;
-void main () {
-  gl_FragColor = texture2D(texture, vec2(uv.x, uv.y));
-}`
+  precision highp float;
+  uniform sampler2D texture;
+  varying vec2 uv;
+  void main () {
+    gl_FragColor = texture2D(texture, vec2(uv.x, uv.y));
+  }`
       );
       gl.compileShader(frag);
 
@@ -73,7 +74,7 @@ void main () {
       gl.enableVertexAttribArray(positionAttrib);
       gl.vertexAttribPointer(positionAttrib, 2, gl.FLOAT, false, 0, 0);
 
-      const asset = Expo.Asset.fromModule(require('../../assets/images/nikki.png'));
+      const asset = Asset.fromModule(require('../../assets/images/nikki.png'));
       await asset.downloadAsync();
       const texture = gl.createTexture();
       gl.activeTexture(gl.TEXTURE0);
@@ -86,7 +87,7 @@ void main () {
       (async () => {
         await new Promise(resolve => setTimeout(resolve, 1000));
 
-        const asset = Expo.Asset.fromModule(require('../../assets/images/nikki-small-purple.png'));
+        const asset = Asset.fromModule(require('../../assets/images/nikki-small-purple.png'));
         await asset.downloadAsync();
         gl.texSubImage2D(gl.TEXTURE_2D, 0, 32, 32, gl.RGBA, gl.UNSIGNED_BYTE, asset);
         // Use below to test using a `TypedArray` parameter
@@ -125,16 +126,14 @@ void main () {
         1000
       );
 
-      const renderer = ExpoTHREE.createRenderer({ gl });
+      const renderer = new ExpoTHREE.Renderer({ gl });
       renderer.setSize(gl.drawingBufferWidth, gl.drawingBufferHeight);
       renderer.setClearColor(0xffffff);
 
       const geometry = new THREE.BoxGeometry(1, 1, 1);
       const material = new THREE.MeshBasicMaterial({
         transparent: true,
-        map: await ExpoTHREE.createTextureAsync({
-          asset: Expo.Asset.fromModule(require('../../assets/images/nikki.png')),
-        }),
+        map: await ExpoTHREE.loadAsync(Asset.fromModule(require('../../assets/images/nikki.png'))),
       });
       const cube = new THREE.Mesh(geometry, material);
       scene.add(cube);
@@ -164,7 +163,7 @@ void main () {
         1000
       );
 
-      const renderer = ExpoTHREE.createRenderer({ gl });
+      const renderer = new ExpoTHREE.Renderer({ gl });
       renderer.setSize(gl.drawingBufferWidth, gl.drawingBufferHeight);
       renderer.setClearColor(0xffffff);
 
@@ -178,9 +177,7 @@ void main () {
       const geometry = new THREE.BoxGeometry(1, 1, 1);
       const material = new THREE.MeshBasicMaterial({
         transparent: true,
-        map: await ExpoTHREE.createTextureAsync({
-          asset: Expo.Asset.fromModule(require('../../assets/images/nikki.png')),
-        }),
+        map: await ExpoTHREE.loadAsync(Asset.fromModule(require('../../assets/images/nikki.png'))),
       });
 
       const cubes = Array(24)
@@ -225,14 +222,12 @@ void main () {
         1000
       );
 
-      const renderer = ExpoTHREE.createRenderer({ gl });
+      const renderer = new ExpoTHREE.Renderer({ gl });
       renderer.setSize(gl.drawingBufferWidth, gl.drawingBufferHeight);
       renderer.setClearColor(0xffffff);
 
       const spriteMaterial = new THREE.SpriteMaterial({
-        map: await ExpoTHREE.createTextureAsync({
-          asset: Expo.Asset.fromModule(require('../../assets/images/nikki.png')),
-        }),
+        map: await ExpoTHREE.loadAsync(Asset.fromModule(require('../../assets/images/nikki.png'))),
         color: 0xffffff,
       });
       const sprite = new THREE.Sprite(spriteMaterial);
@@ -358,31 +353,15 @@ void main () {
       });
       app.ticker.add(() => gl.endFrameEXP());
 
-      const asset = Expo.Asset.fromModule(require('../../assets/images/nikki.png'));
+      const asset = Asset.fromModule(require('../../assets/images/nikki.png'));
       await asset.downloadAsync();
-      const image = new HTMLImageElement(asset);
-      const sprite = PIXI.Sprite.from(image);
-      app.stage.addChild(sprite);
-    }),
-  },
-
-  PIXISprite: {
-    screen: GLWrap('pixi.js sprite rendering', async gl => {
-      const { scale: resolution } = Dimensions.get('window');
-      const width = gl.drawingBufferWidth / resolution;
-      const height = gl.drawingBufferHeight / resolution;
-      const app = new PIXI.Application({
-        context: gl,
-        width,
-        height,
-        resolution,
-        backgroundColor: 0xffffff,
-      });
-      app.ticker.add(() => gl.endFrameEXP());
-
-      const asset = Expo.Asset.fromModule(require('../../assets/images/nikki.png'));
-      await asset.downloadAsync();
-      const image = new HTMLImageElement(asset);
+      let image;
+      if (Platform.OS === 'web') {
+        image = new Image();
+        image.src = asset.localUri;
+      } else {
+        image = new Image(asset);
+      }
       const sprite = PIXI.Sprite.from(image);
       app.stage.addChild(sprite);
     }),
@@ -405,64 +384,64 @@ void main () {
       const ACCELERATION = -1.0;
 
       const vertexSource = `#version 300 es
-        #define POSITION_LOCATION ${POSITION_LOCATION}
-        #define VELOCITY_LOCATION ${VELOCITY_LOCATION}
-        #define SPAWNTIME_LOCATION ${SPAWNTIME_LOCATION}
-        #define LIFETIME_LOCATION ${LIFETIME_LOCATION}
-        #define ID_LOCATION ${ID_LOCATION}
+          #define POSITION_LOCATION ${POSITION_LOCATION}
+          #define VELOCITY_LOCATION ${VELOCITY_LOCATION}
+          #define SPAWNTIME_LOCATION ${SPAWNTIME_LOCATION}
+          #define LIFETIME_LOCATION ${LIFETIME_LOCATION}
+          #define ID_LOCATION ${ID_LOCATION}
 
-        precision highp float;
-        precision highp int;
-        precision highp sampler3D;
+          precision highp float;
+          precision highp int;
+          precision highp sampler3D;
 
-        uniform float u_time;
-        uniform vec2 u_acceleration;
+          uniform float u_time;
+          uniform vec2 u_acceleration;
 
-        layout(location = POSITION_LOCATION) in vec2 a_position;
-        layout(location = VELOCITY_LOCATION) in vec2 a_velocity;
-        layout(location = SPAWNTIME_LOCATION) in float a_spawntime;
-        layout(location = LIFETIME_LOCATION) in float a_lifetime;
-        layout(location = ID_LOCATION) in float a_ID;
+          layout(location = POSITION_LOCATION) in vec2 a_position;
+          layout(location = VELOCITY_LOCATION) in vec2 a_velocity;
+          layout(location = SPAWNTIME_LOCATION) in float a_spawntime;
+          layout(location = LIFETIME_LOCATION) in float a_lifetime;
+          layout(location = ID_LOCATION) in float a_ID;
 
-        out vec2 v_position;
-        out vec2 v_velocity;
-        out float v_spawntime;
-        out float v_lifetime;
+          out vec2 v_position;
+          out vec2 v_velocity;
+          out float v_spawntime;
+          out float v_lifetime;
 
-        float rand(vec2 co){
-          return fract(sin(dot(co.xy, vec2(12.9898, 78.233))) * 43758.5453);
-        }
-
-        void main() {
-          if (a_spawntime == 0.0 || (u_time - a_spawntime > a_lifetime) || a_position.y < -0.5) {
-            // Generate a new particle
-            v_position = vec2(0.0, 0.0);
-            v_velocity = vec2(rand(vec2(a_ID, 0.0)) - 0.5, rand(vec2(a_ID, a_ID)));
-            v_spawntime = u_time;
-            v_lifetime = 5000.0;
-          } else {
-            v_velocity = a_velocity + 0.01 * u_acceleration;
-            v_position = a_position + 0.01 * v_velocity;
-            v_spawntime = a_spawntime;
-            v_lifetime = a_lifetime;
+          float rand(vec2 co){
+            return fract(sin(dot(co.xy, vec2(12.9898, 78.233))) * 43758.5453);
           }
-          gl_Position = vec4(v_position, 0.0, 1.0);
-          gl_PointSize = 2.0;
-        }
-      `;
+
+          void main() {
+            if (a_spawntime == 0.0 || (u_time - a_spawntime > a_lifetime) || a_position.y < -0.5) {
+              // Generate a new particle
+              v_position = vec2(0.0, 0.0);
+              v_velocity = vec2(rand(vec2(a_ID, 0.0)) - 0.5, rand(vec2(a_ID, a_ID)));
+              v_spawntime = u_time;
+              v_lifetime = 5000.0;
+            } else {
+              v_velocity = a_velocity + 0.01 * u_acceleration;
+              v_position = a_position + 0.01 * v_velocity;
+              v_spawntime = a_spawntime;
+              v_lifetime = a_lifetime;
+            }
+            gl_Position = vec4(v_position, 0.0, 1.0);
+            gl_PointSize = 2.0;
+          }
+        `;
 
       const fragmentSource = `#version 300 es
-        precision highp float;
-        precision highp int;
+          precision highp float;
+          precision highp int;
 
-        uniform vec4 u_color;
+          uniform vec4 u_color;
 
-        out vec4 color;
+          out vec4 color;
 
-        void main() {
-          color = u_color;
-        }
-      `;
+          void main() {
+            color = u_color;
+          }
+        `;
 
       const vert = gl.createShader(gl.VERTEX_SHADER);
       gl.shaderSource(vert, vertexSource);

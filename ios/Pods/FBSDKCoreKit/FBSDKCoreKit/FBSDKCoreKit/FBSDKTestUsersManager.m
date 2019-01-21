@@ -126,7 +126,7 @@ static NSMutableDictionary *gInstancesDictionary;
                     completionHandler:(FBSDKTestUsersManagerRetrieveTestAccountTokensHandler)handler {
   NSDictionary *params = @{
                            @"installed" : @"true",
-                           @"permissions" : [[permissions allObjects] componentsJoinedByString:@","],
+                           @"permissions" : [permissions.allObjects componentsJoinedByString:@","],
                            @"access_token" : self.appAccessToken
                            };
   FBSDKGraphRequest *request = [[FBSDKGraphRequest alloc] initWithGraphPath:[NSString stringWithFormat:kFBGraphAPITestUsersPathFormat, _appID]
@@ -179,12 +179,16 @@ static NSMutableDictionary *gInstancesDictionary;
                                                                 version:nil
                                                              HTTPMethod:@"POST"];
   FBSDKGraphRequestConnection *conn = [[FBSDKGraphRequestConnection alloc] init];
-  [conn addRequest:one completionHandler:^(FBSDKGraphRequestConnection *connection, id result, NSError *error) {
+  [conn addRequest:one
+    batchEntryName:@"first"
+ completionHandler:^(FBSDKGraphRequestConnection *connection, id result, NSError *error) {
     complete(error);
-  } batchEntryName:@"first"];
-  [conn addRequest:two completionHandler:^(FBSDKGraphRequestConnection *connection, id result, NSError *error) {
+  }];
+  [conn addRequest:two
+   batchParameters:@{ @"depends_on" : @"first"}
+ completionHandler:^(FBSDKGraphRequestConnection *connection, id result, NSError *error) {
     complete(error);
-  } batchParameters:@{ @"depends_on" : @"first"} ];
+  }];
   [conn start];
 }
 
@@ -205,7 +209,7 @@ static NSMutableDictionary *gInstancesDictionary;
 #pragma mark - private methods
 - (FBSDKAccessToken *)tokenDataForTokenString:(NSString *)tokenString permissions:(NSSet *)permissions userId:(NSString *)userId{
   return [[FBSDKAccessToken alloc] initWithTokenString:tokenString
-                                           permissions:[permissions allObjects]
+                                           permissions:permissions.allObjects
                                    declinedPermissions:nil
                                                  appID:_appID
                                                 userID:userId

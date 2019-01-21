@@ -3,7 +3,7 @@
     "name": "sandbox",
     "slug": "sandbox",
     "privacy": "public",
-    "sdkVersion": "31.0.0",
+    "sdkVersion": "UNVERSIONED",
     "platforms": [
       "ios",
       "android"

@@ -132,28 +132,33 @@ static const struct
                        parameters:(NSDictionary *)parameters
                             error:(NSError *__autoreleasing *)errorRef
 {
-  NSString *host = @"dialog";
-  NSString *path = [@"/" stringByAppendingString:methodName];
+  NSString *const host = @"dialog";
+  NSString *const path = [@"/" stringByAppendingString:methodName];
 
-  NSMutableDictionary *queryParameters = [[NSMutableDictionary alloc] init];
+  NSMutableDictionary<NSString *, id> *const queryParameters = [[NSMutableDictionary alloc] init];
   [FBSDKInternalUtility dictionary:queryParameters setObject:methodVersion
                             forKey:FBSDKBridgeAPIProtocolNativeV1OutputKeys.methodVersion];
 
-  if ([parameters count]) {
-    NSString *parametersString = [self _JSONStringForObject:parameters enablePasteboard:YES error:errorRef];
+  if (parameters.count) {
+    NSString *const parametersString = [self _JSONStringForObject:parameters enablePasteboard:YES error:errorRef];
     if (!parametersString) {
       return nil;
     }
+    NSString *const escapedParametersString = [parametersString stringByReplacingOccurrencesOfString:@"&"
+                                                                                          withString:@"%26"
+                                                                                             options:NSCaseInsensitiveSearch
+                                                                                               range:NSMakeRange(0,
+                                                                                                                 parametersString.length)];
     [FBSDKInternalUtility dictionary:queryParameters
-                           setObject:parametersString
+                           setObject:escapedParametersString
                               forKey:FBSDKBridgeAPIProtocolNativeV1OutputKeys.methodArgs];
   }
 
-  NSDictionary *bridgeParameters = [self _bridgeParametersWithActionID:actionID error:errorRef];
+  NSDictionary<NSString *, id> *const bridgeParameters = [self _bridgeParametersWithActionID:actionID error:errorRef];
   if (!bridgeParameters) {
     return nil;
   }
-  NSString *bridgeParametersString = [self _JSONStringForObject:bridgeParameters enablePasteboard:NO error:errorRef];
+  NSString *const bridgeParametersString = [self _JSONStringForObject:bridgeParameters enablePasteboard:NO error:errorRef];
   if (!bridgeParametersString) {
     return nil;
   }
@@ -235,7 +240,7 @@ static const struct
   NSArray *files = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleIcons"]
   [@"CFBundlePrimaryIcon"]
   [@"CFBundleIconFiles"];
-  if (![files count]) {
+  if (!files.count) {
     return nil;
   }
   return [UIImage imageNamed:files[0]];
@@ -307,7 +312,7 @@ static const struct
       }
       return dictionary;
     } else if ([invalidObject isKindOfClass:[NSURL class]]) {
-      return [(NSURL *)invalidObject absoluteString];
+      return ((NSURL *)invalidObject).absoluteString;
     }
     return invalidObject;
   }];

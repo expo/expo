@@ -1,11 +1,11 @@
 {
   "name": "EXCamera",
-  "version": "1.2.0",
+  "version": "2.0.0",
   "summary": "Expo Camera standalone universal module",
   "description": "Expo Camera standalone universal module",
   "license": "MIT",
   "authors": "650 Industries, Inc.",
-  "homepage": "https://docs.expo.io/",
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-camera",
   "platforms": {
     "ios": "10.0"
   },

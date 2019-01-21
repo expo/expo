@@ -16,7 +16,7 @@ import {
   View,
 } from 'react-native';
 
-import Expo, { Constants } from 'expo';
+import { Constants } from 'expo';
 import ResponsiveImage from '@expo/react-native-responsive-image';
 
 import DevIndicator from '../components/DevIndicator';
@@ -150,7 +150,7 @@ export default class MenuView extends React.Component {
 
   _renderNUXRow() {
     let tooltipMessage;
-    if (Expo.Constants.isDevice) {
+    if (Constants.isDevice) {
       tooltipMessage = 'Shake your device to show this menu.';
     } else {
       tooltipMessage = 'In iPhone Simulator, press \u2318D to show this menu.';

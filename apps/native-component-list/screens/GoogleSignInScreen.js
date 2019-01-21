@@ -1,12 +1,14 @@
+import { GoogleSignIn } from 'expo';
 import React from 'react';
-import { GoogleSignIn, Localization } from 'expo';
 import { Image, StyleSheet, Text, View } from 'react-native';
 
 import GoogleSignInButton from '../components/GoogleSignInButton';
 
+GoogleSignIn.allowInClient();
+
 export default class GoogleSignInScreen extends React.Component {
   static navigationOptions = {
-    title: 'Google Sign-In',
+    title: 'Native Google Sign-In',
   };
 
   state = { user: null };
@@ -16,13 +18,11 @@ export default class GoogleSignInScreen extends React.Component {
   }
 
   _configureAsync = async () => {
-    const language = Localization.locale;
     try {
       await GoogleSignIn.initAsync({
         isOfflineEnabled: true,
         isPromptEnabled: true,
         clientId: '603386649315-vp4revvrcgrcjme51ebuhbkbspl048l9.apps.googleusercontent.com',
-        language,
       });
     } catch ({ message }) {
       console.error('Demo: Error: init: ' + message);
@@ -38,10 +38,11 @@ export default class GoogleSignInScreen extends React.Component {
 
     if (await GoogleSignIn.signInSilentlyAsync()) {
       const photoURL = await GoogleSignIn.getPhotoAsync(256);
+      const user = await GoogleSignIn.getCurrentUserAsync();
       this.setState({
         user: {
-          ...GoogleSignIn.currentUser.toJSON(),
-          photoURL: photoURL || GoogleSignIn.currentUser.photoURL,
+          ...user.toJSON(),
+          photoURL: photoURL || user.photoURL,
         },
       });
     } else {

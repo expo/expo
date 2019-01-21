@@ -2,7 +2,7 @@ LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 
-LOCAL_MODULE := jschelpers_abi31_0_0
+LOCAL_MODULE := jschelpers_abi32_0_0
 
 LOCAL_SRC_FILES := \
   JSCHelpers.cpp \
@@ -17,7 +17,7 @@ LOCAL_CFLAGS := \
 
 LOCAL_CFLAGS += -fexceptions -frtti
 
-LOCAL_SHARED_LIBRARIES := libfolly_json_abi31_0_0 libjsc libglog_abi31_0_0
+LOCAL_SHARED_LIBRARIES := libfolly_json_abi32_0_0 libjsc libglog_abi32_0_0
 
 include $(BUILD_STATIC_LIBRARY)
 

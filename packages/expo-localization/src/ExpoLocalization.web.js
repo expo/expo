@@ -4,7 +4,7 @@ import moment from 'moment';
 import 'moment-timezone';
 
 /*
- * TODO: Bacon: We only use moment for guessing the current timezone. 
+ * TODO: Bacon: We only use moment for guessing the current timezone.
  * We should find a more cost-effective approach.
  */
 
@@ -20,7 +20,9 @@ export default {
       navigator.browserLanguage ||
       navigator.userLanguage ||
       this.locales[0];
-    return locale;
+
+    // The native format is en-US
+    return locale.replace('_', '-');
   },
   get locales(): Array<string> {
     const { navigator = {} } = global;
@@ -30,9 +32,7 @@ export default {
     return moment.tz.guess();
   },
   get isoCurrencyCodes(): Array<string> {
-    /*
-     * TODO: Bacon: Add this - very low priority
-     */
+    // TODO: Bacon: Add this - very low priority
     return [];
   },
   get country(): string | null {

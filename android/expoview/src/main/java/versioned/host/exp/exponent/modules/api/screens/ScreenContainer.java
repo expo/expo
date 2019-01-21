@@ -2,13 +2,16 @@ package versioned.host.exp.exponent.modules.api.screens;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 
+import com.facebook.react.ReactRootView;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.modules.core.ChoreographerCompat;
 import com.facebook.react.modules.core.ReactChoreographer;
@@ -22,7 +25,6 @@ public class ScreenContainer extends ViewGroup {
 
   private final ArrayList<Screen> mScreens = new ArrayList<>();
   private final Set<Screen> mActiveScreens = new HashSet<>();
-  private final FragmentManager mFragmentManager;
 
   private @Nullable FragmentTransaction mCurrentTransaction;
   private boolean mNeedUpdate;
@@ -37,13 +39,6 @@ public class ScreenContainer extends ViewGroup {
 
   public ScreenContainer(Context context) {
     super(context);
-    Activity activity = ((ReactContext) context).getCurrentActivity();
-    if (activity instanceof FragmentActivity) {
-      mFragmentManager = ((FragmentActivity) activity).getSupportFragmentManager();
-    } else {
-      throw new IllegalStateException(
-              "In order to use RNScreens components your app's activity need to extend ReactFragmentActivity or ReactCompatActivity");
-    }
   }
 
   @Override
@@ -86,9 +81,35 @@ public class ScreenContainer extends ViewGroup {
     return mScreens.get(index);
   }
 
+  private FragmentActivity findRootFragmentActivity() {
+    ViewParent parent = this;
+    while (!(parent instanceof ReactRootView) && parent.getParent() != null) {
+      parent = parent.getParent();
+    }
+    // we expect top level view to be of type ReactRootView, this isn't really necessary but in order
+    // to find root view we test if parent is null. This could potentially happen also when the view
+    // is detached from the hierarchy and that test would not correctly indicate the root view. So
+    // in order to make sure we indeed reached the root we test if it is of a correct type. This
+    // allows us to provide a more descriptive error message for the aforementioned case.
+    if (!(parent instanceof ReactRootView)) {
+      throw new IllegalStateException("ScreenContainer is not attached under ReactRootView");
+    }
+    // ReactRootView is expected to be initialized with the main React Activity as a context but
+    // in case of Expo the activity is wrapped in ContextWrapper and we need to unwrap it
+    Context context = ((ReactRootView) parent).getContext();
+    while (!(context instanceof FragmentActivity) && context instanceof ContextWrapper) {
+      context = ((ContextWrapper) context).getBaseContext();
+    }
+    if (!(context instanceof FragmentActivity)) {
+      throw new IllegalStateException(
+              "In order to use RNScreens components your app's activity need to extend ReactFragmentActivity or ReactCompatActivity");
+    }
+    return (FragmentActivity) context;
+  }
+
   private FragmentTransaction getOrCreateTransaction() {
     if (mCurrentTransaction == null) {
-      mCurrentTransaction = mFragmentManager.beginTransaction();
+      mCurrentTransaction = findRootFragmentActivity().getSupportFragmentManager().beginTransaction();
       mCurrentTransaction.setReorderingAllowed(true);
     }
     return mCurrentTransaction;
@@ -136,7 +157,7 @@ public class ScreenContainer extends ViewGroup {
   }
 
   private void updateIfNeeded() {
-    if (!mNeedUpdate || mFragmentManager.isDestroyed() || !mIsAttached) {
+    if (!mNeedUpdate || !mIsAttached) {
       return;
     }
     mNeedUpdate = false;
@@ -158,6 +179,15 @@ public class ScreenContainer extends ViewGroup {
       }
     }
 
+    // detect if we are "transitioning" based on the number of active screens
+    int activeScreens = 0;
+    for (int i = 0, size = mScreens.size(); i < size; i++) {
+      if (isScreenActive(mScreens.get(i), mScreens)) {
+        activeScreens += 1;
+      }
+    }
+    boolean transitioning = activeScreens > 1;
+
     // attach newly activated screens
     boolean addedBefore = false;
     for (int i = 0, size = mScreens.size(); i < size; i++) {
@@ -169,6 +199,7 @@ public class ScreenContainer extends ViewGroup {
       } else if (isActive && addedBefore) {
         moveToFront(screen);
       }
+      screen.setTransitioning(transitioning);
     }
     tryCommitTransaction();
   }

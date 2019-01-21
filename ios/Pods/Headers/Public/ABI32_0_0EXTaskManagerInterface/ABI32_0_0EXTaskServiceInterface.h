@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI32_0_0/EXTaskManagerInterface/ABI32_0_0EXTaskManagerInterface/ABI32_0_0EXTaskServiceInterface.h

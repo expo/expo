@@ -28,6 +28,16 @@ export default class SensorScreen extends React.Component {
 class SensorBlock extends React.Component {
   state = {
     data: {},
+    isAvailable: undefined,
+  };
+
+  componentDidMount() {
+    this.checkAvailability();
+  }
+
+  checkAvailability = async () => {
+    const isAvailable = await this.getSensor().isAvailableAsync();
+    this.setState({ isAvailable });
   };
 
   componentWillUnmount() {
@@ -71,6 +81,9 @@ class SensorBlock extends React.Component {
   );
 
   render() {
+    if (this.state.isAvailable !== true) {
+      return null;
+    }
     return (
       <View style={styles.sensor}>
         <Text>{this.getName()}:</Text>

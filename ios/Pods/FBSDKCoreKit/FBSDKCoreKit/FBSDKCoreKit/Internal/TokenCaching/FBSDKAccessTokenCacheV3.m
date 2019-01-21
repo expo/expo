@@ -35,7 +35,7 @@ NSString *const FBSDKTokenInformationUUIDKey = @"com.facebook.sdk:TokenInformati
 
 @implementation FBSDKAccessTokenCacheV3
 
-- (FBSDKAccessToken *)fetchAccessToken
+- (FBSDKAccessToken *)accessToken
 {
   // Check NSUserDefaults ( <= v3.16 )
   NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
@@ -50,7 +50,7 @@ NSString *const FBSDKTokenInformationUUIDKey = @"com.facebook.sdk:TokenInformati
   [defaults synchronize];
 }
 
-- (void)cacheAccessToken:(FBSDKAccessToken *)token
+- (void)setAccessToken:(FBSDKAccessToken *)token
 {
   //no-op.
   NSAssert(NO, @"deprecated cache FBSDKAccessTokenCacheV3 should not be used to cache a token");

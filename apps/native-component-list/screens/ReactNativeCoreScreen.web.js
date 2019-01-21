@@ -24,6 +24,8 @@ import Layout from '../constants/Layout';
 import ModalExample from './ModalExample';
 
 export default class ReactNativeCoreScreen extends React.Component {
+  static path = '';
+
   static navigationOptions = {
     title: 'React Native Core',
   };
@@ -310,7 +312,6 @@ class PickerExample extends React.Component {
   render() {
     return (
       <Picker
-        st
         selectedValue={this.state.language}
         onValueChange={lang => this.setState({ language: lang })}>
         <Picker.Item label="Java" value="java" />

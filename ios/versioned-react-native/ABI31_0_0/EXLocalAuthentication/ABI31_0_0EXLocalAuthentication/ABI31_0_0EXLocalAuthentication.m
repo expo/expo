@@ -165,7 +165,11 @@ static BOOL ABI31_0_0EXIsTouchIDDevice()
   dispatch_once(&onceToken, ^{
     LAContext *context = [LAContext new];
     [context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:nil];
-    isTouchIDDevice = context.biometryType == LABiometryTypeTouchID;
+    if (@available(iOS 11.0, *)) {
+      isTouchIDDevice = context.biometryType == LABiometryTypeTouchID;
+    } else {
+      isTouchIDDevice = true;
+    }
   });
 
   return isTouchIDDevice;

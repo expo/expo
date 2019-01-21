@@ -292,8 +292,18 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
 
   @Override
   public void fling(int velocityY) {
+    // Workaround.
+    // On Android P if a ScrollView is inverted, we will get a wrong sign for
+    // velocityY (see https://issuetracker.google.com/issues/112385925). 
+    // At the same time, mOnScrollDispatchHelper tracks the correct velocity direction. 
+    //
+    // Hence, we can use the absolute value from whatever the OS gives
+    // us and use the sign of what mOnScrollDispatchHelper has tracked.
+    final int correctedVelocityY = (int)(Math.abs(velocityY) * Math.signum(mOnScrollDispatchHelper.getYFlingVelocity()));
+
+
     if (mPagingEnabled) {
-      smoothScrollAndSnap(velocityY);
+      flingAndSnap(correctedVelocityY);
     } else if (mScroller != null) {
       // FB SCROLLVIEW CHANGE
 
@@ -309,7 +319,7 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
         getScrollX(), // startX
         getScrollY(), // startY
         0, // velocityX
-        velocityY, // velocityY
+        correctedVelocityY, // velocityY
         0, // minX
         0, // maxX
         0, // minY
@@ -322,9 +332,9 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
 
       // END FB SCROLLVIEW CHANGE
     } else {
-      super.fling(velocityY);
+      super.fling(correctedVelocityY);
     }
-    handlePostTouchScrolling(0, velocityY);
+    handlePostTouchScrolling(0, correctedVelocityY);
   }
 
   private void enableFpsListener() {
@@ -408,7 +418,7 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
             // Only if we have pagingEnabled and we have not snapped to the page do we
             // need to continue checking for the scroll.  And we cause that scroll by asking for it
             mSnappingToPage = true;
-            smoothScrollAndSnap(0);
+            flingAndSnap(0);
             ViewCompat.postOnAnimationDelayed(ReactScrollView.this,
               this,
               ReactScrollViewHelper.MOMENTUM_DELAY);
@@ -427,21 +437,7 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
       ReactScrollViewHelper.MOMENTUM_DELAY);
   }
 
-  /**
-   * This will smooth scroll us to the nearest snap offset point
-   * It currently just looks at where the content is and slides to the nearest point.
-   * It is intended to be run after we are done scrolling, and handling any momentum scrolling.
-   */
-  private void smoothScrollAndSnap(int velocityY) {
-    if (getChildCount() <= 0) {
-      return;
-    }
-
-    int maximumOffset = getMaxScrollY();
-    int targetOffset = 0;
-    int smallerOffset = 0;
-    int largerOffset = maximumOffset;
-
+  private int predictFinalScrollPosition(int velocityY) {
     // ScrollView can *only* scroll for 250ms when using smoothScrollTo and there's
     // no way to customize the scroll duration. So, we create a temporary OverScroller
     // so we can predict where a fling would land and snap to nearby that point.
@@ -449,6 +445,7 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
     scroller.setFriction(1.0f - mDecelerationRate);
 
     // predict where a fling would end up so we can scroll to the nearest snap offset
+    int maximumOffset = getMaxScrollY();
     int height = getHeight() - getPaddingBottom() - getPaddingTop();
     scroller.fling(
       getScrollX(), // startX
@@ -462,7 +459,76 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
       0, // overX
       height/2 // overY
     );
-    targetOffset = scroller.getFinalY();
+    return scroller.getFinalY();
+  }
+
+  /**
+   * This will smooth scroll us to the nearest snap offset point
+   * It currently just looks at where the content is and slides to the nearest point.
+   * It is intended to be run after we are done scrolling, and handling any momentum scrolling.
+   */
+  private void smoothScrollAndSnap(int velocity) {
+    double interval = (double) getSnapInterval();
+    double currentOffset = (double) getScrollY();
+    double targetOffset = (double) predictFinalScrollPosition(velocity);
+
+    int previousPage = (int) Math.floor(currentOffset / interval);
+    int nextPage = (int) Math.ceil(currentOffset / interval);
+    int currentPage = (int) Math.round(currentOffset / interval);
+    int targetPage = (int) Math.round(targetOffset / interval);
+
+    if (velocity > 0 && nextPage == previousPage) {
+      nextPage ++;
+    } else if (velocity < 0 && previousPage == nextPage) {
+      previousPage --;
+    }
+
+    if (
+      // if scrolling towards next page
+      velocity > 0 &&
+      // and the middle of the page hasn't been crossed already
+      currentPage < nextPage &&
+      // and it would have been crossed after flinging
+      targetPage > previousPage
+    ) {
+      currentPage = nextPage;
+    }
+    else if (
+      // if scrolling towards previous page
+      velocity < 0 &&
+      // and the middle of the page hasn't been crossed already
+      currentPage > previousPage &&
+      // and it would have been crossed after flinging
+      targetPage < nextPage
+    ) {
+      currentPage = previousPage;
+    }
+
+    targetOffset = currentPage * interval;
+    if (targetOffset != currentOffset) {
+      mActivelyScrolling = true;
+      smoothScrollTo(getScrollX(), (int) targetOffset);
+    }
+  }
+
+  private void flingAndSnap(int velocityY) {
+    if (getChildCount() <= 0) {
+      return;
+    }
+
+    // pagingEnabled only allows snapping one interval at a time
+    if (mSnapInterval == 0 && mSnapOffsets == null) {
+      smoothScrollAndSnap(velocityY);
+      return;
+    }
+
+    int maximumOffset = getMaxScrollY();
+    int targetOffset = predictFinalScrollPosition(velocityY);
+    int smallerOffset = 0;
+    int largerOffset = maximumOffset;
+    int firstOffset = 0;
+    int lastOffset = maximumOffset;
+    int height = getHeight() - getPaddingBottom() - getPaddingTop();
 
     // get the nearest snap points to the target offset
     if (mSnapOffsets != null) {
