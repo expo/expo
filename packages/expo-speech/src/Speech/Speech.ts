@@ -3,7 +3,7 @@ import ExponentSpeech from './ExponentSpeech';
 import { UnavailabilityError } from 'expo-errors';
 import { SpeechOptions } from './Speech.types';
 
-const SpeechEventEmitter = new NativeEventEmitter(ExponentSpeech);
+const SpeechEventEmitter = ExponentSpeech && new NativeEventEmitter(ExponentSpeech);
 
 const _CALLBACKS = {};
 let _nextCallbackId = 1;

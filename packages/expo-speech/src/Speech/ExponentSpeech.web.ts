@@ -5,6 +5,7 @@ export default {
     return 'ExponentSpeech';
   },
   async speak(id: string, text: string, options: SpeechOptions): Promise<SpeechSynthesisUtterance> {
+    // @ts-ignore
     const { SpeechSynthesisUtterance } = global.window;
 
     const message = new SpeechSynthesisUtterance();

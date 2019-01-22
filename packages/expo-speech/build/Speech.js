@@ -1,7 +1,7 @@
 import { NativeEventEmitter } from 'react-native';
 import ExponentSpeech from './ExponentSpeech';
 import { UnavailabilityError } from 'expo-errors';
-const SpeechEventEmitter = new NativeEventEmitter(ExponentSpeech);
+const SpeechEventEmitter = ExponentSpeech && new NativeEventEmitter(ExponentSpeech);
 const _CALLBACKS = {};
 let _nextCallbackId = 1;
 let _didSetListeners = false;

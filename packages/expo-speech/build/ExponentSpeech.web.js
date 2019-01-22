@@ -3,6 +3,7 @@ export default {
         return 'ExponentSpeech';
     },
     async speak(id, text, options) {
+        // @ts-ignore
         const { SpeechSynthesisUtterance } = global.window;
         const message = new SpeechSynthesisUtterance();
         if ('rate' in options) {
