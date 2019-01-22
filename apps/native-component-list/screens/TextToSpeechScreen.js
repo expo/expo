@@ -130,8 +130,8 @@ export default class TextToSpeechScreen extends React.Component {
     Speech.stop();
   };
 
-  _pause = () => {
-    Speech.pause();
+  _pause = async () => {
+    await Speech.pause();
     this.setState({ paused: true });
   };
 

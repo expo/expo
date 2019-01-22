@@ -66,6 +66,7 @@ def includeUniversalModule = { name ->
   'expo-sensors',
   'expo-sensors-interface',
   'expo-sms',
+  'expo-speech',
   'expo-sqlite',
   'expo-task-manager',
   'expo-task-manager-interface'

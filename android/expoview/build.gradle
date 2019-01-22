@@ -153,6 +153,7 @@ dependencies {
   compileOnly 'host.exp.exponent:expo-camera-interface:2.0.0'
   compileOnly 'host.exp.exponent:expo-sensors:2.0.0'
   compileOnly 'host.exp.exponent:expo-sensors-interface:2.0.0'
+  compileOnly 'host.exp.exponent:expo-speech:1.0.0'
   compileOnly 'host.exp.exponent:expo-face-detector:2.0.0'
   compileOnly 'host.exp.exponent:expo-payments-stripe:2.0.0'
   compileOnly 'host.exp.exponent:expo-permissions:2.0.0'
@@ -209,6 +210,7 @@ dependencies {
   api project(':expo-print')
   api project(':expo-sensors')
   api project(':expo-sms')
+  api project(':expo-speech')
   api project(':expo-sqlite')
 
   // Versioned react native
