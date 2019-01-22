@@ -38,6 +38,8 @@ export { Accelerometer, Gyroscope, Magnetometer, MagnetometerUncalibrated } from
 export { SQLite } from 'expo-sqlite';
 import * as SMS from 'expo-sms';
 export { SMS };
+import * as Speech from 'expo-speech';
+export { Speech };
 import * as TaskManager from 'expo-task-manager';
 export { TaskManager }
 export { GestureHandler } from './GestureHandler';
@@ -77,8 +79,6 @@ import * as ScreenOrientation from './ScreenOrientation/ScreenOrientation';
 export { ScreenOrientation };
 import * as SecureStore from './SecureStore/SecureStore';
 export { SecureStore };
-import * as Speech from './Speech/Speech';
-export { Speech };
 import * as StoreReview from './StoreReview/StoreReview';
 export { StoreReview };
 export { default as Svg } from './Svg';
