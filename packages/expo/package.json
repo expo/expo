@@ -3,6 +3,7 @@
   "version": "32.0.1",
   "description": "The Expo SDK",
   "main": "build/Expo.js",
+  "types": "build/Expo.d.ts",
   "bin": {
     "expo": "bin/cli.js"
   },
