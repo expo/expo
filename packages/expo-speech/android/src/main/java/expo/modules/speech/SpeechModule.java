@@ -1,18 +1,10 @@
-package versioned.host.exp.exponent.modules.api;
+package expo.modules.speech;
 
-import android.os.Build;
+import android.content.Context;
+import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
 
-import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.LifecycleEventListener;
-import com.facebook.react.bridge.Promise;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.modules.core.DeviceEventManagerModule;
 
 import java.util.ArrayDeque;
 import java.util.Collections;
@@ -21,15 +13,26 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Queue;
 
-public class SpeechModule extends ReactContextBaseJavaModule implements LifecycleEventListener {
+import expo.core.ExportedModule;
+import expo.core.ModuleRegistry;
+import expo.core.Promise;
+import expo.core.interfaces.ExpoMethod;
+import expo.core.interfaces.LifecycleEventListener;
+import expo.core.interfaces.ModuleRegistryConsumer;
+import expo.core.interfaces.services.EventEmitter;
+import expo.core.interfaces.services.UIManager;
+
+public class SpeechModule extends ExportedModule implements ModuleRegistryConsumer, LifecycleEventListener {
 
   private TextToSpeech mTextToSpeech;
   private boolean mTtsReady = false;
   private Queue<Map<String, Object>> mDelayedUtterances = new ArrayDeque<>();
+  private Context mContext;
+  private ModuleRegistry mModuleRegistry;
 
-  public SpeechModule(ReactApplicationContext reactContext) {
-    super(reactContext);
-    reactContext.addLifecycleEventListener(this);
+  public SpeechModule(Context context) {
+    super(context);
+    mContext = context;
   }
 
   @Override
@@ -37,8 +40,8 @@ public class SpeechModule extends ReactContextBaseJavaModule implements Lifecycl
     return "ExponentSpeech";
   }
 
-  @ReactMethod
-  public void speak(final String id, final String text, final ReadableMap options) {
+  @ExpoMethod
+  public void speak(final String id, final String text, final Map<String, Object> options, final Promise promise) {
     if (mTtsReady) {
       speakOut(id, text, options);
     } else {
@@ -52,12 +55,13 @@ public class SpeechModule extends ReactContextBaseJavaModule implements Lifecycl
       // init TTS, speaking will be available only after onInit
       getTextToSpeech();
     }
+    promise.resolve(null);
   }
 
-  private void speakOut(final String id, final String text, final ReadableMap options) {
+  private void speakOut(final String id, final String text, final Map<String, Object> options) {
     TextToSpeech textToSpeech = getTextToSpeech();
-    if (options.hasKey("language")) {
-      Locale locale = new Locale(options.getString("language"));
+    if (options.containsKey("language")) {
+      Locale locale = new Locale((String) options.get("language"));
       int languageAvailable = textToSpeech.isLanguageAvailable(locale);
       if (languageAvailable != TextToSpeech.LANG_MISSING_DATA &&
           languageAvailable != TextToSpeech.LANG_NOT_SUPPORTED) {
@@ -68,11 +72,11 @@ public class SpeechModule extends ReactContextBaseJavaModule implements Lifecycl
     } else {
       textToSpeech.setLanguage(Locale.getDefault());
     }
-    if (options.hasKey("pitch")) {
-      textToSpeech.setPitch((float) options.getDouble("pitch"));
+    if (options.containsKey("pitch")) {
+      textToSpeech.setPitch(((Number) options.get("pitch")).floatValue());
     }
-    if (options.hasKey("rate")) {
-      textToSpeech.setSpeechRate((float) options.getDouble("rate"));
+    if (options.containsKey("rate")) {
+      textToSpeech.setSpeechRate(((Number) options.get("rate")).floatValue());
     }
 
     textToSpeech.speak(
@@ -83,19 +87,20 @@ public class SpeechModule extends ReactContextBaseJavaModule implements Lifecycl
     );
   }
 
-  @ReactMethod
+  @ExpoMethod
   public void isSpeaking(Promise promise) {
     promise.resolve(getTextToSpeech().isSpeaking());
   }
 
-  @ReactMethod
-  public void stop() {
+  @ExpoMethod
+  public void stop(final Promise promise) {
     getTextToSpeech().stop();
+    promise.resolve(null);
   }
 
   private TextToSpeech getTextToSpeech() {
     if (mTextToSpeech == null) {
-      mTextToSpeech = new TextToSpeech(getReactApplicationContext(), new TextToSpeech.OnInitListener() {
+      mTextToSpeech = new TextToSpeech(mContext, new TextToSpeech.OnInitListener() {
         @Override
         public void onInit(int status) {
           if (status == TextToSpeech.SUCCESS) {
@@ -105,30 +110,26 @@ public class SpeechModule extends ReactContextBaseJavaModule implements Lifecycl
               mTextToSpeech.setOnUtteranceProgressListener(new UtteranceProgressListener() {
                 @Override
                 public void onStart(String utteranceId) {
-                  getReactApplicationContext()
-                    .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                    .emit("Exponent.speakingStarted", idToMap(utteranceId));
+                  EventEmitter emitter = mModuleRegistry.getModule(EventEmitter.class);
+                  emitter.emit("Exponent.speakingStarted", idToMap(utteranceId));
                 }
 
                 @Override
                 public void onDone(String utteranceId) {
-                  getReactApplicationContext()
-                    .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                    .emit("Exponent.speakingDone", idToMap(utteranceId));
+                  EventEmitter emitter = mModuleRegistry.getModule(EventEmitter.class);
+                  emitter.emit("Exponent.speakingDone", idToMap(utteranceId));
                 }
 
                 @Override
                 public void onStop(String utteranceId, boolean interrupted) {
-                  getReactApplicationContext()
-                    .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                    .emit("Exponent.speakingStopped", idToMap(utteranceId));
+                  EventEmitter emitter = mModuleRegistry.getModule(EventEmitter.class);
+                  emitter.emit("Exponent.speakingStopped", idToMap(utteranceId));
                 }
 
                 @Override
                 public void onError(String utteranceId) {
-                  getReactApplicationContext()
-                    .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                    .emit("Exponent.speakingError", idToMap(utteranceId));
+                  EventEmitter emitter = mModuleRegistry.getModule(EventEmitter.class);
+                  emitter.emit("Exponent.speakingError", idToMap(utteranceId));
                 }
               });
 
@@ -136,7 +137,7 @@ public class SpeechModule extends ReactContextBaseJavaModule implements Lifecycl
                 speakOut(
                   (String) arguments.get("id"),
                   (String) arguments.get("text"),
-                  (ReadableMap) arguments.get("options")
+                  (Map<String, Object>) arguments.get("options")
                 );
               }
             }
@@ -158,9 +159,24 @@ public class SpeechModule extends ReactContextBaseJavaModule implements Lifecycl
     getTextToSpeech().shutdown();
   }
 
-  private WritableMap idToMap(String id) {
-    WritableMap map = Arguments.createMap();
+  private Bundle idToMap(String id) {
+    Bundle map = new Bundle();
     map.putString("id", id);
     return map;
+  }
+
+  @Override
+  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+    // Unregister from old UIManager
+    if (mModuleRegistry != null && mModuleRegistry.getModule(UIManager.class) != null) {
+      mModuleRegistry.getModule(UIManager.class).unregisterLifecycleEventListener(this);
+    }
+
+    mModuleRegistry = moduleRegistry;
+
+    // Register to new UIManager
+    if (mModuleRegistry != null && mModuleRegistry.getModule(UIManager.class) != null) {
+      mModuleRegistry.getModule(UIManager.class).registerLifecycleEventListener(this);
+    }
   }
 }

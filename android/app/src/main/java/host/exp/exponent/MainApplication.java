@@ -31,6 +31,7 @@ import expo.modules.permissions.PermissionsPackage;
 import expo.modules.print.PrintPackage;
 import expo.modules.sensors.SensorsPackage;
 import expo.modules.sms.SMSPackage;
+import expo.modules.speech.SpeechPackage;
 import expo.modules.sqlite.SQLitePackage;
 import expo.modules.taskManager.TaskManagerPackage;
 import expolib_v1.okhttp3.OkHttpClient;
@@ -80,6 +81,7 @@ public class MainApplication extends ExpoApplication implements AppLoaderPackage
         new LocalizationPackage(),
         new AppAuthPackage(),
         new TaskManagerPackage(),
+        new SpeechPackage(),
         new BackgroundFetchPackage(),
         new MailComposerPackage(),
         new AVPackage(),
