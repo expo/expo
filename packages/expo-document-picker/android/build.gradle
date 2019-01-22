@@ -67,6 +67,6 @@ if (new File(rootProject.projectDir.parentFile, 'pubspec.yaml').exists()) {
 dependencies {
   expendency 'expo-core'
 
-  api 'com.android.support:support-annotations:28.0.0'
+  api 'com.android.support:support-annotations:27.1.1'
   api 'commons-io:commons-io:2.6'
 }

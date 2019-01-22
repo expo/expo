@@ -69,14 +69,13 @@ public class DocumentPickerModule extends ExportedModule implements ModuleRegist
   @ExpoMethod
   public void getDocumentAsync(Map<String, Object> options, final Promise promise) {
     if (mPromise != null) {
-      Bundle result = new Bundle();
-      result.putString("type", "cancel");
-      mPromise.resolve(result);
+      promise.reject("E_DOCUMENT_PICKER", "Different document picking in progress. Await other document picking first.");
+      return;
     }
 
     // mUIManger nullability suggests there's no listener registered for Activity result
     if (mActivityProvider == null || mUIManager == null) {
-      promise.reject("");
+      promise.reject("E_MISSING_MODULES", "Missing core modules. Are you sure all the installed Expo modules are properly linked?");
       return;
     }
 
