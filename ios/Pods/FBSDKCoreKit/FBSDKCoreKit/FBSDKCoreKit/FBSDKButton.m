@@ -76,7 +76,7 @@
 
 - (CGRect)imageRectForContentRect:(CGRect)contentRect
 {
-  if ([self isHidden] || CGRectIsEmpty(self.bounds)) {
+  if (self.hidden || CGRectIsEmpty(self.bounds)) {
     return CGRectZero;
   }
   CGRect imageRect = UIEdgeInsetsInsetRect(contentRect, self.imageEdgeInsets);
@@ -101,9 +101,9 @@
 {
   // automatic impression tracking if the button conforms to FBSDKButtonImpressionTracking
   if ([self conformsToProtocol:@protocol(FBSDKButtonImpressionTracking)]) {
-    NSString *eventName = [(id<FBSDKButtonImpressionTracking>)self impressionTrackingEventName];
-    NSString *identifier = [(id<FBSDKButtonImpressionTracking>)self impressionTrackingIdentifier];
-    NSDictionary *parameters = [(id<FBSDKButtonImpressionTracking>)self analyticsParameters];
+    NSString *eventName = ((id<FBSDKButtonImpressionTracking>)self).impressionTrackingEventName;
+    NSString *identifier = ((id<FBSDKButtonImpressionTracking>)self).impressionTrackingIdentifier;
+    NSDictionary<NSString *, id> *parameters = ((id<FBSDKButtonImpressionTracking>)self).analyticsParameters;
     if (eventName && identifier) {
       FBSDKViewImpressionTracker *impressionTracker = [FBSDKViewImpressionTracker impressionTrackerWithEventName:eventName];
       [impressionTracker logImpressionWithIdentifier:identifier parameters:parameters];
@@ -114,7 +114,7 @@
 
 - (CGSize)sizeThatFits:(CGSize)size
 {
-  if ([self isHidden]) {
+  if (self.hidden) {
     return CGSizeZero;
   }
   CGSize normalSize = [self sizeThatFits:size title:[self titleForState:UIControlStateNormal]];
@@ -131,7 +131,7 @@
 
 - (CGRect)titleRectForContentRect:(CGRect)contentRect
 {
-  if ([self isHidden] || CGRectIsEmpty(self.bounds)) {
+  if (self.hidden || CGRectIsEmpty(self.bounds)) {
     return CGRectZero;
   }
   CGRect imageRect = [self imageRectForContentRect:contentRect];
@@ -174,9 +174,9 @@
 
 - (void)checkImplicitlyDisabled
 {
-  BOOL enabled = !_isExplicitlyDisabled && ![self isImplicitlyDisabled];
-  BOOL currentEnabled = [self isEnabled];
-  [super setEnabled:enabled];
+  BOOL enabled = !_isExplicitlyDisabled && !self.implicitlyDisabled;
+  BOOL currentEnabled = self.enabled;
+  super.enabled = enabled;
   if (currentEnabled != enabled) {
     [self invalidateIntrinsicContentSize];
     [self setNeedsLayout];
@@ -185,10 +185,10 @@
 
 - (void)configureButton
 {
-  [self configureWithIcon:[[self class] defaultIcon]
+  [self configureWithIcon:[self defaultIcon]
                     title:nil
-          backgroundColor:[[self class] defaultBackgroundColor]
-         highlightedColor:[[self class] defaultHighlightedColor]];
+          backgroundColor:[self defaultBackgroundColor]
+         highlightedColor:[self defaultHighlightedColor]];
 }
 
 - (void)configureWithIcon:(FBSDKIcon *)icon

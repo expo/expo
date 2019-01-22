@@ -101,61 +101,61 @@ Note that on Android performing text selection in input can change app's activit
 
 ### Props
 
-* [View props...](view.md#props)
+* [View props...](../view/#props)
 
-- [`allowFontScaling`](textinput.md#allowfontscaling)
-- [`autoCapitalize`](textinput.md#autocapitalize)
-- [`autoCorrect`](textinput.md#autocorrect)
-- [`autoFocus`](textinput.md#autofocus)
-- [`blurOnSubmit`](textinput.md#bluronsubmit)
-- [`caretHidden`](textinput.md#carethidden)
-- [`clearButtonMode`](textinput.md#clearbuttonmode)
-- [`clearTextOnFocus`](textinput.md#cleartextonfocus)
-- [`contextMenuHidden`](textinput.md#contextmenuhidden)
-- [`dataDetectorTypes`](textinput.md#datadetectortypes)
-- [`defaultValue`](textinput.md#defaultvalue)
-- [`disableFullscreenUI`](textinput.md#disablefullscreenui)
-- [`editable`](textinput.md#editable)
-- [`enablesReturnKeyAutomatically`](textinput.md#enablesreturnkeyautomatically)
-- [`inlineImageLeft`](textinput.md#inlineimageleft)
-- [`inlineImagePadding`](textinput.md#inlineimagepadding)
-- [`keyboardAppearance`](textinput.md#keyboardappearance)
-- [`keyboardType`](textinput.md#keyboardtype)
-- [`maxLength`](textinput.md#maxlength)
-- [`multiline`](textinput.md#multiline)
-- [`numberOfLines`](textinput.md#numberoflines)
-- [`onBlur`](textinput.md#onblur)
-- [`onChange`](textinput.md#onchange)
-- [`onChangeText`](textinput.md#onchangetext)
-- [`onContentSizeChange`](textinput.md#oncontentsizechange)
-- [`onEndEditing`](textinput.md#onendediting)
-- [`onFocus`](textinput.md#onfocus)
-- [`onKeyPress`](textinput.md#onkeypress)
-- [`onLayout`](textinput.md#onlayout)
-- [`onScroll`](textinput.md#onscroll)
-- [`onSelectionChange`](textinput.md#onselectionchange)
-- [`onSubmitEditing`](textinput.md#onsubmitediting)
-- [`placeholder`](textinput.md#placeholder)
-- [`placeholderTextColor`](textinput.md#placeholdertextcolor)
-- [`returnKeyLabel`](textinput.md#returnkeylabel)
-- [`returnKeyType`](textinput.md#returnkeytype)
-- [`scrollEnabled`](textinput.md#scrollenabled)
-- [`secureTextEntry`](textinput.md#securetextentry)
-- [`selection`](textinput.md#selection)
-- [`selectionColor`](textinput.md#selectioncolor)
-- [`selectionState`](textinput.md#selectionstate)
-- [`selectTextOnFocus`](textinput.md#selecttextonfocus)
-- [`spellCheck`](textinput.md#spellcheck)
-- [`textContentType`](textinput.md#textcontenttype)
-- [`style`](textinput.md#style)
-- [`textBreakStrategy`](textinput.md#textbreakstrategy)
-- [`underlineColorAndroid`](textinput.md#underlinecolorandroid)
-- [`value`](textinput.md#value)
+- [`allowFontScaling`](../textinput/#allowfontscaling)
+- [`autoCapitalize`](../textinput/#autocapitalize)
+- [`autoCorrect`](../textinput/#autocorrect)
+- [`autoFocus`](../textinput/#autofocus)
+- [`blurOnSubmit`](../textinput/#bluronsubmit)
+- [`caretHidden`](../textinput/#carethidden)
+- [`clearButtonMode`](../textinput/#clearbuttonmode)
+- [`clearTextOnFocus`](../textinput/#cleartextonfocus)
+- [`contextMenuHidden`](../textinput/#contextmenuhidden)
+- [`dataDetectorTypes`](../textinput/#datadetectortypes)
+- [`defaultValue`](../textinput/#defaultvalue)
+- [`disableFullscreenUI`](../textinput/#disablefullscreenui)
+- [`editable`](../textinput/#editable)
+- [`enablesReturnKeyAutomatically`](../textinput/#enablesreturnkeyautomatically)
+- [`inlineImageLeft`](../textinput/#inlineimageleft)
+- [`inlineImagePadding`](../textinput/#inlineimagepadding)
+- [`keyboardAppearance`](../textinput/#keyboardappearance)
+- [`keyboardType`](../textinput/#keyboardtype)
+- [`maxLength`](../textinput/#maxlength)
+- [`multiline`](../textinput/#multiline)
+- [`numberOfLines`](../textinput/#numberoflines)
+- [`onBlur`](../textinput/#onblur)
+- [`onChange`](../textinput/#onchange)
+- [`onChangeText`](../textinput/#onchangetext)
+- [`onContentSizeChange`](../textinput/#oncontentsizechange)
+- [`onEndEditing`](../textinput/#onendediting)
+- [`onFocus`](../textinput/#onfocus)
+- [`onKeyPress`](../textinput/#onkeypress)
+- [`onLayout`](../textinput/#onlayout)
+- [`onScroll`](../textinput/#onscroll)
+- [`onSelectionChange`](../textinput/#onselectionchange)
+- [`onSubmitEditing`](../textinput/#onsubmitediting)
+- [`placeholder`](../textinput/#placeholder)
+- [`placeholderTextColor`](../textinput/#placeholdertextcolor)
+- [`returnKeyLabel`](../textinput/#returnkeylabel)
+- [`returnKeyType`](../textinput/#returnkeytype)
+- [`scrollEnabled`](../textinput/#scrollenabled)
+- [`secureTextEntry`](../textinput/#securetextentry)
+- [`selection`](../textinput/#selection)
+- [`selectionColor`](../textinput/#selectioncolor)
+- [`selectionState`](../textinput/#selectionstate)
+- [`selectTextOnFocus`](../textinput/#selecttextonfocus)
+- [`spellCheck`](../textinput/#spellcheck)
+- [`textContentType`](../textinput/#textcontenttype)
+- [`style`](../textinput/#style)
+- [`textBreakStrategy`](../textinput/#textbreakstrategy)
+- [`underlineColorAndroid`](../textinput/#underlinecolorandroid)
+- [`value`](../textinput/#value)
 
 ### Methods
 
-* [`clear`](textinput.md#clear)
-* [`isFocused`](textinput.md#isfocused)
+* [`clear`](../textinput/#clear)
+* [`isFocused`](../textinput/#isfocused)
 
 ---
 
@@ -553,7 +553,7 @@ The text color of the placeholder string.
 
 | Type               | Required |
 | ------------------ | -------- |
-| [color](colors.md) | No       |
+| [color](../colors/) | No       |
 
 ---
 
@@ -641,7 +641,7 @@ The highlight and cursor color of the text input.
 
 | Type               | Required |
 | ------------------ | -------- |
-| [color](colors.md) | No       |
+| [color](../colors/) | No       |
 
 ---
 
@@ -745,11 +745,11 @@ Note that not all Text styles are supported, an incomplete list of what is not s
 
 see [Issue#7070](https://github.com/facebook/react-native/issues/7070) for more detail.
 
-[Styles](style.md)
+[Styles](../style/)
 
 | Type                  | Required |
 | --------------------- | -------- |
-| [Text](text.md#style) | No       |
+| [Text](../text/#style) | No       |
 
 ---
 
@@ -769,7 +769,7 @@ The color of the `TextInput` underline.
 
 | Type               | Required | Platform |
 | ------------------ | -------- | -------- |
-| [color](colors.md) | No       | Android  |
+| [color](../colors/) | No       | Android  |
 
 ---
 

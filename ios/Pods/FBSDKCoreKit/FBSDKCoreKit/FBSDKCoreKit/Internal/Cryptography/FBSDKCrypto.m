@@ -78,7 +78,7 @@ static inline NSData *FBSDKCryptoMakeSubKey(uint8_t *key, size_t len, uint32_t i
   NSData *masterKeyData = [FBSDKCrypto randomBytes:kFBSDK_CRYPTO_CURRENT_MASTER_KEY_LENGTH + 1];
 
   // force the first byte to be the crypto version
-  uint8_t *first = (uint8_t *) [masterKeyData bytes];
+  uint8_t *first = (uint8_t *)masterKeyData.bytes;
   *first = kFBSDK_CRYPTO_CURRENT_VERSION;
 
   NSString *masterKey = [FBSDKBase64 encodeData:masterKeyData];
@@ -111,8 +111,8 @@ static inline NSData *FBSDKCryptoMakeSubKey(uint8_t *key, size_t len, uint32_t i
 {
   if ((self = [super init])) {
     NSData *masterKeyData = [FBSDKBase64 decodeAsData:masterKey];
-    NSUInteger len = [masterKeyData length];
-    uint8_t *first = (uint8_t *) [masterKeyData bytes];
+    NSUInteger len = masterKeyData.length;
+    uint8_t *first = (uint8_t *)masterKeyData.bytes;
 
     if (len == 0 || first == nil || *first != kFBSDK_CRYPTO_CURRENT_VERSION) {
       // only one version supported at the moment

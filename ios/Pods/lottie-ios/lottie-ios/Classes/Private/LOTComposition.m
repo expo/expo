@@ -32,6 +32,13 @@
   NSError *error;
   NSString *filePath = [bundle pathForResource:animationName ofType:@"json"];
   NSData *jsonData = [[NSData alloc] initWithContentsOfFile:filePath];
+  
+  if (@available(iOS 9.0, *)) {
+    if (!jsonData) {
+      jsonData = [[NSDataAsset alloc] initWithName:animationName].data;
+    }
+  }
+  
   NSDictionary  *JSONObject = jsonData ? [NSJSONSerialization JSONObjectWithData:jsonData
                                                                          options:0 error:&error] : nil;
   if (JSONObject && !error) {

@@ -87,7 +87,7 @@ If you are loading in your app into the expo client by passing in a URL string, 
 
 Here is an example URL from a remote server: [https://quinlanj.github.io/self-host/android-index.json](https://quinlanj.github.io/self-host/android-index.json)
 
-Here is an example URL from localhost: [http://localhost:8000/android-index.json](http://localhost:8000/android-index.json)
+Here is an example URL from localhost: `http://localhost:8000/android-index.json`
 
 ## Advanced Topics
 ### Debugging
@@ -97,7 +97,7 @@ When we bundle your app, minification is always enabled. In order to see the ori
 2. A `debug.html` file will also be created at the root of your output directory.
 3. In Chrome, open up `debug.html` and navigate to the `Source` tab. In the left tab there should be a resource explorer with a red folder containing the reconstructed source code from your bundle.
 
-[![Debugging Source Code](./host-your-app-debug.png)](/_images/host-your-app-debug.png)
+[![Debugging Source Code](/static/images/host-your-app-debug.png)](/static/images/host-your-app-debug.png)
 
 ### Multimanifests
 As new Expo SDK versions are released, you may want to serve multiple versions of your app from your server endpoint. For example, if you first released your app with SDK 29 and later upgraded to SDK 30, you'd want users with your old standalone binary to receive the SDK 29 version, and those with the new standalone binary to receive the SDK 30 version.  

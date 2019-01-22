@@ -12,7 +12,7 @@ In addition to `https`, you're likely also familiar with the `mailto` scheme. Wh
 
 `https` and `http` are handled by your browser, but it's possible to link to other applications by using different url schemes. For example, when you get a "Magic Link" email from Slack, the "Launch Slack" button is an anchor tag with an href that looks something like: `slack://secret/magic-login/other-secret`. Like with Slack, you can tell the operating system that you want to handle a custom scheme. Read more about [configuring a scheme](#in-a-standalone-app). When the Slack app opens, it receives the URL that was used to open it and can then act on the data that is made available through the url -- in this case, a secret string that will log the user in to a particular server. This is often referred to as **deep linking**. Read more about [handling deep links into your app](#handling-links-into-your-app).
 
-Deep linking with scheme isn't the only linking tool available to you -- we are working on adding support for universal links on iOS, and we support deferred deep links with [Branch](../sdk/branch.html) already.  We will update this documentation with more information in future SDKs.
+Deep linking with scheme isn't the only linking tool available to you -- we are working on adding support for universal links on iOS, and we support deferred deep links with [Branch](../../sdk/branch/) already.  We will update this documentation with more information in future SDKs.
 
 ## Linking from your app to other apps
 
@@ -163,7 +163,7 @@ The example project [examples/with-webbrowser-redirect](https://github.com/expo/
 
 ### Example: using linking for authentication
 
-A common use case for linking to your app is to redirect back to your app after opening a [WebBrowser](../sdk/webbrowser.html). For example, you can open a web browser session to your sign in screen and when the user has successfully signed in, you can have your website redirect back to your app by using the scheme and appending the authentication token and other data to the URL.
+A common use case for linking to your app is to redirect back to your app after opening a [WebBrowser](../../sdk/webbrowser/). For example, you can open a web browser session to your sign in screen and when the user has successfully signed in, you can have your website redirect back to your app by using the scheme and appending the authentication token and other data to the URL.
 
 **Note**: if try to use `Linking.openURL` to open the web browser for authentication then your app may be rejected by Apple on the grounds of a bad or confusing user experience. `WebBrowser.openBrowserAsync` opens the browser window in a modal, which looks and feels good and is Apple approved.
 

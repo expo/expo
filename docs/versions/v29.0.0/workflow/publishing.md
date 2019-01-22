@@ -22,7 +22,7 @@ project. It makes your project available at a persistent URL, for
 example https://expo.io/@community/native-component-list, which can be
 opened with the Expo Client app. It also uploads all of your app images,
 fonts, and videos to a CDN ([read more
-here](how-expo-works.html#publishingdeploying-an-expo-app-in-production)).
+here](../how-expo-works/#publishingdeploying-an-expo-app-in-production)).
 
 ## How to Publish
 
@@ -44,7 +44,7 @@ open it.
 
 When you're ready to distribute your app to end-users, you can create a
 standalone app binary (an ipa or apk file) and put it in the iOS App
-Store and the Google Play Store. See [Distributing Your App](../distribution/index.html).
+Store and the Google Play Store. See [Distributing Your App](../../distribution/).
 
 The standalone app knows to look for updates at your app's published
 url, and if you publish an update then the next time a user opens your
@@ -53,7 +53,7 @@ commonly referred to as "Over the Air" (OTA) updates, the functionality
 is similar to [CodePush](https://microsoft.github.io/code-push/), but it
 is built into Expo so you don't need to install anything.
 
-To configure the way your app handles JS updates, see [Offline Support](../guides/offline-support.html).
+To configure the way your app handles JS updates, see [Offline Support](../../guides/offline-support/).
 
 ## Limitations
 

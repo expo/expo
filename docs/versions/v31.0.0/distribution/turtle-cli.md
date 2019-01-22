@@ -6,7 +6,7 @@ title: Building Standalone Apps on Your CI
 
 > **NOTE:** macOS is required to build standalone iOS apps.
 
-This guide describes an advanced feature of Expo. In most cases you can build standalone Expo apps using Expo's build services as described in the guide on [Building Standalone Apps](./building-standalone-apps).
+This guide describes an advanced feature of Expo. In most cases you can build standalone Expo apps using Expo's build services as described in the guide on [Building Standalone Apps](../building-standalone-apps/).
 
 If you prefer to not rely on our builders stability and you don't like waiting in the queue to get your standalone app build then you can build your Expo project on your own. The only thing you need is Turtle CLI. Turtle CLI is a command line interface for building Expo standalone apps. You can use it both on your CI and your private computer.
 
@@ -47,8 +47,7 @@ All Expo-related dependencies will be installed in a directory named `.turtle` w
 
 ## Publish your project
 
-In order to build your standalone Expo app, you first need to have successfully published your project. See the guide on [how to publish your project](../workflow/publishing) with Expo CLI or [how to host an app on your servers](./hosting-your-app).
-
+In order to build your standalone Expo app, you first need to have successfully published your project. See the guide on [how to publish your project](../../workflow/publishing/) with Expo CLI or [how to host an app on your servers](../hosting-your-app/).
 
 ## Start the build
 
@@ -62,7 +61,7 @@ Before starting the build, prepare the following things:
 - Keystore alias
 - Keystore password and key password
 
-To learn how to generate those, see the guide on [Building Standalone Apps](./building-standalone-apps) first.
+To learn how to generate those, see the guide on [Building Standalone Apps](../building-standalone-apps/) first.
 
 Set the `EXPO_ANDROID_KEYSTORE_PASSWORD` and `EXPO_ANDROID_KEY_PASSWORD` environment variables with the values of the keystore password and key password, respectively.
 
@@ -86,7 +85,7 @@ Prepare the following unless you're building only for the iOS simulator:
 - Push Notification Certificate .p12 file *(+ password)*
 - Provisioning Profile
 
-To learn how to generate those, see the guide on [Building Standalone Apps](./building-standalone-apps) first.
+To learn how to generate those, see the guide on [Building Standalone Apps](../building-standalone-apps/) first.
 
 Set the `EXPO_IOS_DIST_P12_PASSWORD` and `EXPO_IOS_PUSH_P12_PASSWORD` environment variables with the values of the Distribution Certificate password and Push Notification Certificate password, respectively.
 
@@ -106,7 +105,7 @@ If you want to print the list of all available command arguments, please run `tu
 
 ## CI configuration file examples
 
-See below for examples of how to use Turtle CLI with popular CI services (i.e. [CircleCI](#circleci) and [Travis CI](#travis-ci)). Both configuration files consist of two stages. In the first stage we publish the Expo project using the `expo publish` command (to see what that means, see [Publishing](https://docs.expo.io/versions/latest/workflow/publishing)). In the second stage we build application binaries for:
+See below for examples of how to use Turtle CLI with popular CI services (i.e. [CircleCI](#circleci) and [Travis CI](#travis-ci)). Both configuration files consist of two stages. In the first stage we publish the Expo project using the `expo publish` command (to see what that means, see [Publishing](/versions/latest/workflow/publishing/)). In the second stage we build application binaries for:
 - Google Play Store - `.apk` file
 - Apple App Store - `.ipa` file
 - iOS simulator - in `.tar.gz` archive

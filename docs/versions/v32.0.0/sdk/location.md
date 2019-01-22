@@ -4,7 +4,7 @@ title: Location
 
 This module allows reading geolocation information from the device. Your app can poll for the current location or subscribe to location update events.
 
-You must request permission to access the user's location before attempting to get it. To do this, you will want to use the [Permissions](permissions.html) API. You can see this in practice in the following example.
+You must request permission to access the user's location before attempting to get it. To do this, you will want to use the [Permissions](../permissions/) API. You can see this in practice in the following example.
 
 ${<SnackEmbed snackId="H14SNiW3g" />}
 
@@ -173,9 +173,9 @@ Polyfills `navigator.geolocation` for interop with the core React Native and Web
 
 Background Location API can notify your app about new locations, also while it's in background. There are some requirements in order to use Background Location API:
 
-- `Permissions.LOCATION` permission must be granted. On iOS it must be granted with `Always` option — see [`Permissions.LOCATION`](./permissions#expopermissionslocation) for more details.
-- `"location"` background mode must be specified in `Info.plist` file. See [background tasks configuration guide](./task-manager#configuration). (*iOS only*)
-- Background location task must be defined in the top-level scope, using [TaskManager.defineTask](./task-manager#taskmanagerdefinetasktaskname-task).
+- `Permissions.LOCATION` permission must be granted. On iOS it must be granted with `Always` option — see [`Permissions.LOCATION`](../permissions#expopermissionslocation) for more details.
+- `"location"` background mode must be specified in `Info.plist` file. See [background tasks configuration guide](../task-manager#configuration). (*iOS only*)
+- Background location task must be defined in the top-level scope, using [TaskManager.defineTask](../task-manager#taskmanagerdefinetasktaskname-task).
 
 ### `Expo.Location.startLocationUpdatesAsync(taskName, options)`
 
@@ -187,7 +187,7 @@ Registers for receiving location updates that can also come when the app is in t
 -   **options (_object_)** -- An object of options passed to the location manager.
     -   **accuracy (_[Location.Accuracy](#expolocationaccuracy)_)** -- Location manager accuracy. Pass one of [Location.Accuracy](#expolocationaccuracy) enum values. For low-accuracy the implementation can avoid geolocation providers that consume a significant amount of power (such as GPS).
     -   **timeInterval (_number_)** -- Minimum time to wait between each update in milliseconds. Default value depends on `accuracy` option. (**Android only**)
-    -   **distanceInterval (_number_)** -- Receive updates only when the location has changed by at least this distance in meters. Default value depends on `accuracy` option. (**Android only**)
+    -   **distanceInterval (_number_)** -- Receive updates only when the location has changed by at least this distance in meters. Default value may depend on `accuracy` option.
     -   **showsBackgroundLocationIndicator (_boolean_)** -- A boolean indicating whether the status bar changes its appearance when location services are used in the background. Defaults to `false`. (**Takes effect only on iOS 11.0 and later**)
 
 #### Returns
@@ -204,7 +204,7 @@ Background location task will be receiving following data:
 import { TaskManager } from 'expo';
 
 TaskManager.defineTask(YOUR_TASK_NAME, ({ data: { locations }, error }) => {
-  if (!error) {
+  if (error) {
     // check `error.message` for more details.
     return;
   }
@@ -237,11 +237,11 @@ A promise resolving to boolean value indicating whether the location task is sta
 ## Geofencing
 
 Geofencing API notifies your app when the device enters or leaves geographical regions you set up.
-To make it work in the background, it uses [TaskManager](./task-manager) Native API under the hood. There are some requirements in order to use Geofencing API:
+To make it work in the background, it uses [TaskManager](../task-manager) Native API under the hood. There are some requirements in order to use Geofencing API:
 
-- `Permissions.LOCATION` permission must be granted. On iOS it must be granted with `Always` option — see [`Permissions.LOCATION`](./permissions#expopermissionslocation) for more details.
-- `"location"` background mode must be specified in `Info.plist` file. See [background tasks configuration guide](./task-manager#configuration). (*iOS only*)
-- Geofencing task must be defined in the top-level scope, using [`TaskManager.defineTask`](./task-manager#taskmanagerdefinetasktaskname-task).
+- `Permissions.LOCATION` permission must be granted. On iOS it must be granted with `Always` option — see [`Permissions.LOCATION`](../permissions#expopermissionslocation) for more details.
+- `"location"` background mode must be specified in `Info.plist` file. See [background tasks configuration guide](../task-manager#configuration). (*iOS only*)
+- Geofencing task must be defined in the top-level scope, using [`TaskManager.defineTask`](../task-manager#taskmanagerdefinetasktaskname-task).
 
 ### `Expo.Location.startGeofencingAsync(taskName, regions)`
 
@@ -273,7 +273,7 @@ Geofencing task will be receiving following data:
 import { Location, TaskManager } from 'expo';
 
 TaskManager.defineTask(YOUR_TASK_NAME, ({ data: { eventType, region }, error }) => {
-  if (!error) {
+  if (error) {
     // check `error.message` for more details.
     return;
   }

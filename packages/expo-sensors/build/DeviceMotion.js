@@ -1,6 +1,5 @@
-import { NativeModulesProxy } from 'expo-core';
 import DeviceSensor from './DeviceSensor';
-const { ExponentDeviceMotion } = NativeModulesProxy;
+import ExponentDeviceMotion from './ExponentDeviceMotion';
 class DeviceMotionSensor extends DeviceSensor {
     constructor() {
         super(...arguments);

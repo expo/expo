@@ -31,15 +31,15 @@ The selected index can be changed on the fly by assigning the selectedIndex prop
 
 ### Props
 
-* [View props...](view.md#props)
+* [View props...](../view/#props)
 
-- [`enabled`](segmentedcontrolios.md#enabled)
-- [`momentary`](segmentedcontrolios.md#momentary)
-- [`onChange`](segmentedcontrolios.md#onchange)
-- [`onValueChange`](segmentedcontrolios.md#onvaluechange)
-- [`selectedIndex`](segmentedcontrolios.md#selectedindex)
-- [`tintColor`](segmentedcontrolios.md#tintcolor)
-- [`values`](segmentedcontrolios.md#values)
+- [`enabled`](../segmentedcontrolios/#enabled)
+- [`momentary`](../segmentedcontrolios/#momentary)
+- [`onChange`](../segmentedcontrolios/#onchange)
+- [`onValueChange`](../segmentedcontrolios/#onvaluechange)
+- [`selectedIndex`](../segmentedcontrolios/#selectedindex)
+- [`tintColor`](../segmentedcontrolios/#tintcolor)
+- [`values`](../segmentedcontrolios/#values)
 
 ---
 

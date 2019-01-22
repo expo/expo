@@ -7,9 +7,9 @@ Deprecated. Use BackHandler instead.
 
 ### Methods
 
-* [`exitApp`](backandroid.md#exitapp)
-* [`addEventListener`](backandroid.md#addeventlistener)
-* [`removeEventListener`](backandroid.md#removeeventlistener)
+* [`exitApp`](../backandroid/#exitapp)
+* [`addEventListener`](../backandroid/#addeventlistener)
+* [`removeEventListener`](../backandroid/#removeeventlistener)
 
 ---
 

@@ -63,10 +63,10 @@ static NSString *const FBSDKDeferredAppLinkEvent = @"DEFERRED_APP_LINK";
         NSString *createTimeUtc = result[@"click_time"];
         if (createTimeUtc) {
           // append/translate the create_time_utc so it can be used by clients
-          NSString *modifiedURLString = [[applinkURL absoluteString]
+          NSString *modifiedURLString = [applinkURL.absoluteString
                                          stringByAppendingFormat:@"%@fb_click_time_utc=%@",
-                                         ([applinkURL query]) ? @"&" : @"?" ,
-                                         createTimeUtc ];
+                                         (applinkURL.query) ? @"&" : @"?" ,
+                                         createTimeUtc];
           applinkURL = [NSURL URLWithString:modifiedURLString];
         }
       }
@@ -88,12 +88,12 @@ static NSString *const FBSDKDeferredAppLinkEvent = @"DEFERRED_APP_LINK";
 + (NSString*)appInvitePromotionCodeFromURL:(NSURL*)url;
 {
   BFURL *parsedUrl = [[FBSDKInternalUtility resolveBoltsClassWithName:@"BFURL"] URLWithURL:url];
-  NSDictionary *extras = [parsedUrl appLinkExtras];
+  NSDictionary *extras = parsedUrl.appLinkExtras;
   if (extras) {
     NSString *deeplinkContextString = extras[@"deeplink_context"];
 
     // Parse deeplinkContext and extract promo code
-    if ([deeplinkContextString length] > 0) {
+    if (deeplinkContextString.length > 0) {
       NSError *error = nil;
       NSDictionary *deeplinkContextData = [FBSDKInternalUtility objectForJSONString:deeplinkContextString error:&error];
       if (!error && [deeplinkContextData isKindOfClass:[NSDictionary class]]) {

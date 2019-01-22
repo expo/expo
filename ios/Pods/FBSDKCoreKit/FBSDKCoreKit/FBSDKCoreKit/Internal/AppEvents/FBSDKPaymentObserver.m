@@ -22,7 +22,6 @@
 
 #import "FBSDKAppEvents+Internal.h"
 #import "FBSDKDynamicFrameworkLoader.h"
-#import "FBSDKGateKeeperManager.h"
 #import "FBSDKLogger.h"
 #import "FBSDKSettings.h"
 
@@ -186,7 +185,7 @@ static NSMutableArray *g_pendingRequestors;
     return @"";
   }
 
-  return [inputString length] <= FBSDKMaxParameterValueLength ? inputString : [inputString substringToIndex:FBSDKMaxParameterValueLength];
+  return inputString.length <= FBSDKMaxParameterValueLength ? inputString : [inputString substringToIndex:FBSDKMaxParameterValueLength];
 }
 
 - (void)logTransactionEvent:(SKProduct *)product
@@ -195,7 +194,7 @@ static NSMutableArray *g_pendingRequestors;
   NSString *transactionID = nil;
   NSString *transactionDate = nil;
   NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-  [formatter setDateFormat:@"yyyy-MM-dd HH:mm:ssZ"];
+  formatter.dateFormat = @"yyyy-MM-dd HH:mm:ssZ";
   switch (self.transaction.transactionState) {
     case SKPaymentTransactionStatePurchasing:
       eventName = FBSDKAppEventNameInitiatedCheckout;
@@ -241,9 +240,6 @@ static NSMutableArray *g_pendingRequestors;
     if (@available(iOS 11.2, *)) {
       BOOL isSubscription = (product.subscriptionPeriod != nil) && ((unsigned long)product.subscriptionPeriod.numberOfUnits > 0);
       if (isSubscription) {
-        if ([FBSDKGateKeeperManager boolForKey:@"app_events_if_auto_log_subs" appID:[FBSDKSettings appID] defaultValue:true]) {
-          eventName = FBSDKAppEventNameSubscribe;
-        }
         // subs inapp
         SKProductSubscriptionPeriod *period = product.subscriptionPeriod;
         NSString *unit = nil;
@@ -254,16 +250,16 @@ static NSMutableArray *g_pendingRequestors;
           case SKProductPeriodUnitYear: unit = @"Y"; break;
         }
         NSString *p = [NSString stringWithFormat:@"P%lu%@", (unsigned long)period.numberOfUnits, unit];
-        [eventParameters setObject:p forKey:FBSDKAppEventParameterNameSubscriptionPeriod];
-        [eventParameters setObject:@"subs" forKey:FBSDKAppEventParameterNameInAppPurchaseType];
+        eventParameters[FBSDKAppEventParameterNameSubscriptionPeriod] = p;
+        eventParameters[FBSDKAppEventParameterNameInAppPurchaseType] = @"subs";
       } else {
-        [eventParameters setObject:@"inapp" forKey:FBSDKAppEventParameterNameInAppPurchaseType];
+        eventParameters[FBSDKAppEventParameterNameInAppPurchaseType] = @"inapp";
       }
     }
 #endif
 #endif
     if (transactionID) {
-      [eventParameters setObject:transactionID forKey:FBSDKAppEventParameterNameTransactionID];
+      eventParameters[FBSDKAppEventParameterNameTransactionID] = transactionID;
     }
   }
 
@@ -318,7 +314,7 @@ static NSMutableArray *g_pendingRequestors;
     }
   }
 
-  [eventParameters setObject:@"1" forKey:FBSDKAppEventParameterImplicitlyLoggedPurchase];
+  eventParameters[FBSDKAppEventParameterImplicitlyLoggedPurchase] = @"1";
   [FBSDKAppEvents logEvent:eventName
                 valueToSum:valueToSum
                 parameters:eventParameters];
@@ -332,7 +328,7 @@ static NSMutableArray *g_pendingRequestors;
 
 // Fetch the current receipt for this application.
 - (NSData*)fetchDeviceReceipt {
-  NSURL *receiptURL = [[NSBundle bundleForClass:[self class]] appStoreReceiptURL];
+  NSURL *receiptURL = [NSBundle bundleForClass:[self class]].appStoreReceiptURL;
   NSData *receipt = [NSData dataWithContentsOfURL:receiptURL];
   return receipt;
 }

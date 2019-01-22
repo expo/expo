@@ -219,7 +219,7 @@ cd ..
 yarn start
 ```
 
-The React app is now running on [http://localhost:3000](http://localhost:3000) in your browser (the GraphQL server is running on [http://localhost:4000](http://localhost:4000)).
+The React app is now running on `http://localhost:3000` (the GraphQL server is running on `http://localhost:4000`).
 
 > To learn about the queries and mutations accepted by the GraphQL API, check out the GraphQL schema that's stored in `server/src/schema.graphql`.
 

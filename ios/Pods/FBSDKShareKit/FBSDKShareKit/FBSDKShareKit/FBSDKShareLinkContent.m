@@ -125,18 +125,18 @@
 - (NSUInteger)hash
 {
   NSUInteger subhashes[] = {
-    [_contentDescription hash],
-    [_contentURL hash],
-    [_hashtag hash],
-    [_imageURL hash],
-    [_peopleIDs hash],
-    [_placeID hash],
-    [_ref hash],
-    [_pageID hash],
-    [_contentTitle hash],
-    [_feedParameters hash],
-    [_quote hash],
-    [_shareUUID hash],
+    _contentDescription.hash,
+    _contentURL.hash,
+    _hashtag.hash,
+    _imageURL.hash,
+    _peopleIDs.hash,
+    _placeID.hash,
+    _ref.hash,
+    _pageID.hash,
+    _contentTitle.hash,
+    _feedParameters.hash,
+    _quote.hash,
+    _shareUUID.hash,
   };
   return [FBSDKMath hashWithIntegerArray:subhashes count:sizeof(subhashes) / sizeof(subhashes[0])];
 }
@@ -179,7 +179,7 @@
   return YES;
 }
 
-- (id)initWithCoder:(NSCoder *)decoder
+- (instancetype)initWithCoder:(NSCoder *)decoder
 {
   if ((self = [self init])) {
     _contentDescription = [decoder decodeObjectOfClass:[NSString class]

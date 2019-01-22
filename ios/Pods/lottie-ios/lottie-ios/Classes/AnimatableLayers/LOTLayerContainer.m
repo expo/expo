@@ -80,7 +80,7 @@
   _timeStretchFactor = [layer.timeStretch copy];
   _transformInterpolator = [LOTTransformInterpolator transformForLayer:layer];
 
-  if (layer.parentID) {
+  if (layer.parentID != nil) {
     NSNumber *parentID = layer.parentID;
     LOTTransformInterpolator *childInterpolator = _transformInterpolator;
     while (parentID != nil) {
@@ -142,7 +142,12 @@
 - (void)_setImageForAsset:(LOTAsset *)asset {
   if (asset.imageName) {
     UIImage *image;
-    if (asset.rootDirectory.length > 0) {
+    if ([asset.imageName hasPrefix:@"data:"]) {
+      // Contents look like a data: URL. Ignore asset.imageDirectory and simply load the image directly.
+      NSURL *imageUrl = [NSURL URLWithString:asset.imageName];
+      NSData *imageData = [NSData dataWithContentsOfURL:imageUrl];
+      image = [UIImage imageWithData:imageData];
+    } else if (asset.rootDirectory.length > 0) {
       NSString *rootDirectory  = asset.rootDirectory;
       if (asset.imageDirectory.length > 0) {
         rootDirectory = [rootDirectory stringByAppendingPathComponent:asset.imageDirectory];
@@ -162,6 +167,11 @@
     } else {
         NSString *imagePath = [asset.assetBundle pathForResource:asset.imageName ofType:nil];
         image = [UIImage imageWithContentsOfFile:imagePath];
+    }
+
+    //try loading from asset catalogue instead if all else fails
+    if (!image) {
+      image = [UIImage imageNamed:asset.imageName inBundle: asset.assetBundle compatibleWithTraitCollection:nil];
     }
     
     if (image) {
@@ -271,7 +281,7 @@
   if (_contentsGroup == nil && [keypath pushKey:self.layerName]) {
     // Matches self.
     if ([keypath pushKey:@"Transform"]) {
-      // Is a transform node, check  interpolators
+      // Is a transform node, check interpolators
       LOTValueInterpolator *interpolator = _valueInterpolators[keypath.currentKey];
       if (interpolator) {
         // We have a match!
@@ -297,7 +307,7 @@
   if ([keypath pushKey:self.layerName]) {
     // Matches self.
     if ([keypath pushKey:@"Transform"]) {
-      // Is a transform node, check  interpolators
+      // Is a transform node, check interpolators
       LOTValueInterpolator *interpolator = _valueInterpolators[keypath.currentKey];
       if (interpolator) {
         // We have a match!

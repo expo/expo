@@ -97,7 +97,7 @@ static NSString *const kFBSDKShareCameraEffectContentUUIDKey = @"uuid";
       // Convert UIImages to NSData, because UIImage is not archivable.
       NSData *imageData = UIImagePNGRepresentation(img);
       if (imageData) {
-        [texturesDataDict setObject:imageData forKey:key];
+        texturesDataDict[key] = imageData;
       }
     }];
     effectTexturesData = [NSKeyedArchiver archivedDataWithRootObject:texturesDataDict];
@@ -126,8 +126,8 @@ static NSString *const kFBSDKShareCameraEffectContentUUIDKey = @"uuid";
 
 - (BOOL)validateWithOptions:(FBSDKShareBridgeOptions)bridgeOptions error:(NSError *__autoreleasing *)errorRef
 {
-  if ([_effectID length] > 0) {
-    NSCharacterSet* nonDigitCharacters = [[NSCharacterSet decimalDigitCharacterSet] invertedSet];
+  if (_effectID.length > 0) {
+    NSCharacterSet* nonDigitCharacters = [NSCharacterSet decimalDigitCharacterSet].invertedSet;
     if ([_effectID rangeOfCharacterFromSet:nonDigitCharacters].location != NSNotFound) {
       if (errorRef != NULL) {
         *errorRef = [NSError fbInvalidArgumentErrorWithName:@"effectID"
@@ -146,16 +146,16 @@ static NSString *const kFBSDKShareCameraEffectContentUUIDKey = @"uuid";
 - (NSUInteger)hash
 {
   NSUInteger subhashes[] = {
-    [_effectID hash],
-    [_effectArguments hash],
-    [_effectTextures hash],
-    [_contentURL hash],
-    [_hashtag hash],
-    [_peopleIDs hash],
-    [_placeID hash],
-    [_ref hash],
-    [_pageID hash],
-    [_shareUUID hash],
+    _effectID.hash,
+    _effectArguments.hash,
+    _effectTextures.hash,
+    _contentURL.hash,
+    _hashtag.hash,
+    _peopleIDs.hash,
+    _placeID.hash,
+    _ref.hash,
+    _pageID.hash,
+    _shareUUID.hash,
   };
   return [FBSDKMath hashWithIntegerArray:subhashes count:sizeof(subhashes) / sizeof(subhashes[0])];
 }
@@ -193,7 +193,7 @@ static NSString *const kFBSDKShareCameraEffectContentUUIDKey = @"uuid";
   return YES;
 }
 
-- (id)initWithCoder:(NSCoder *)decoder
+- (instancetype)initWithCoder:(NSCoder *)decoder
 {
   if ((self = [self init])) {
     _effectID = [decoder decodeObjectOfClass:[NSString class] forKey:kFBSDKShareCameraEffectContentEffectIDKey];

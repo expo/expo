@@ -64,9 +64,9 @@ TL;DR you can do it, but most people never need to.
 
 Standard Expo projects don't support custom native code, including third-party libraries which require custom native components. In an Expo project, you only write pure JS. Expo is designed this way on purpose and we think it's better this way.
 
-In [our SDK](../sdk/index.html), we give you a large set of commonly desired, high-quality native modules. We recommend doing as much in JS as possible, since it can immediately deploy to all your users and work across both platforms, and will always continue to benefit from Expo SDK updates. Especially in the case of UI components, there is pretty much always a better option written in JS.
+In [our SDK](../../sdk/), we give you a large set of commonly desired, high-quality native modules. We recommend doing as much in JS as possible, since it can immediately deploy to all your users and work across both platforms, and will always continue to benefit from Expo SDK updates. Especially in the case of UI components, there is pretty much always a better option written in JS.
 
-However, if you need something very custom--like on-the-fly video processing or low level control over the Bluetooth radio to do a firmware update--we do have early/alpha support for [using Expo in native Xcode and Android Studio projects](../guides/expokit.html).
+However, if you need something very custom--like on-the-fly video processing or low level control over the Bluetooth radio to do a firmware update--we do have early/alpha support for [using Expo in native Xcode and Android Studio projects](../../expokit/).
 
 ## Is Expo similar to React for web development?
 
@@ -76,7 +76,7 @@ Expo and React Native are similar to React. You'll have to learn a new set of co
 
 The fastest way to share your Expo project is to publish it. You can do this by clicking 'Publish' in XDE or running `exp publish` in your project. This gives your app a URL; you can share this URL with anybody who has the Expo Client for Android and they can open your app immediately. [Read more about publishing on Expo](https://blog.expo.io/publishing-on-exponent-790493660d24). To share with iOS users, you can use Apple TestFlight.
 
-When you're ready, you can create a standalone app (`.ipa` and `.apk`) for submission to Apple and Google's app stores. Expo will build the binary for you when you run one command; see [Building Standalone Apps](../guides/building-standalone-apps.html#building-standalone-apps). Apple charges $99/year to publish your app in the App Store and Google charges a $25 one-time fee for the Play Store.
+When you're ready, you can create a standalone app (`.ipa` and `.apk`) for submission to Apple and Google's app stores. Expo will build the binary for you when you run one command; see [Building Standalone Apps](../../distribution/building-standalone-apps/#building-standalone-apps). Apple charges $99/year to publish your app in the App Store and Google charges a $25 one-time fee for the Play Store.
 
 ## Why does Expo use a fork of React Native?
 
@@ -94,9 +94,9 @@ _N.B. We used to maintain a tool `exp convert` but it is not currently working o
 
 ## How do I remove an Expo project that I published?
 
-The default [privacy setting](../guides/configuration.html) for Expo apps is `unlisted` so nobody can find your app unless you share the link with them.
+The default [privacy setting](../../workflow/configuration/) for Expo apps is `unlisted` so nobody can find your app unless you share the link with them.
 
-If you really want your published app to be 'unpublished', check out our guide on [Advanced Release Channels](../guides/advanced-release-channels.html), which explains how to roll back.
+If you really want your published app to be 'unpublished', check out our guide on [Advanced Release Channels](../../distribution/advanced-release-channels/), which explains how to roll back.
 
 ## What is Exponent and how is it different from Expo?
 

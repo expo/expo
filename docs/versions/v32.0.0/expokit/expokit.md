@@ -10,7 +10,7 @@ native iOS/Android project.
 To create an ExpoKit project:
 
 1.  Create a pure-JS project with Expo CLI (also projects that were created with exp, XDE or create-react-native-app will work)
-2.  Then use [`expo eject`](eject.html) to add ExpoKit (choose the "ExpoKit" option).
+2.  Then use [`expo eject`](../eject/) to add ExpoKit (choose the "ExpoKit" option).
 
 Make sure to perform these steps before continuing in this guide. The remainder of the guide will assume you have created an ExpoKit project.
 
@@ -82,6 +82,11 @@ ExpoKit's release cycle follows the Expo SDK release cycle. When a new version o
 
 - Open up `ios/Podfile` in your project, and update the `ExpoKit` tag to point at the [release](https://github.com/expo/expo/releases) corresponding to your SDK version. Run `pod update` then `pod install`.
 - Open `ios/your-project/Supporting/EXSDKVersions.plist` in your project and change all the values to the new SDK version.
+
+If upgrading from SDK 31 or below, you'll need to refactor your `AppDelegate` class as we moved its Expo-related part to a separate `EXStandaloneAppDelegate ` class owned by `ExpoKit` to simplify future upgrade processes as much as possible. As of SDK 32, your `AppDelegate` class needs to subclass `EXStandaloneAppDelegate`. If you need to override its methods to add any custom behavior, **always** remember to call the same method from the superclass (for an example, see `application:didFinishLaunchingWithOptions:` in `AppDelegate.m` below). Here are the basic `AppDelegate` files without any custom behavior:
+
+- [AppDelegate.h](https://github.com/expo/expo/blob/master/exponent-view-template/ios/exponent-view-template/AppDelegate.h)
+- [AppDelegate.m](https://github.com/expo/expo/blob/master/exponent-view-template/ios/exponent-view-template/AppDelegate.m)
 
 If upgrading from SDK 30 or below, you'll also need to change `platform :ios, '9.0'` to `platform :ios, '10.0'` in `ios/Podfile`.
 

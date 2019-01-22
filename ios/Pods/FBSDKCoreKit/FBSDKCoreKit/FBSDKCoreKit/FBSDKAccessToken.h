@@ -58,7 +58,10 @@ FOUNDATION_EXPORT NSString *const FBSDKAccessTokenDidChangeNotification;
   of an access token, this key will also exist since the access token
   is moving from a null state (no user) to a non-null state (user).
  */
-FOUNDATION_EXPORT NSString *const FBSDKAccessTokenDidChangeUserID;
+FOUNDATION_EXPORT NSString *const FBSDKAccessTokenDidChangeUserIDKey;
+
+FOUNDATION_EXPORT NSString *const FBSDKAccessTokenDidChangeUserID
+DEPRECATED_MSG_ATTRIBUTE("Renamed `FBSDKAccessTokenDidChangeUserIDKey`");
 
 /*
   key in notification's userInfo object for getting the old token.
@@ -78,7 +81,10 @@ FOUNDATION_EXPORT NSString *const FBSDKAccessTokenChangeNewKey;
  A key in the notification's userInfo that will be set
  if and only if the token has expired.
  */
-FOUNDATION_EXPORT NSString *const FBSDKAccessTokenDidExpire;
+FOUNDATION_EXPORT NSString *const FBSDKAccessTokenDidExpireKey;
+
+FOUNDATION_EXPORT NSString *const FBSDKAccessTokenDidExpire
+DEPRECATED_MSG_ATTRIBUTE("Renamed `FBSDKAccessTokenDidExpireKey`");
 
 
 /**

@@ -5,9 +5,9 @@ title: Share
 
 ### Methods
 
-* [`share`](share.md#share)
-* [`sharedAction`](share.md#sharedaction)
-* [`dismissedAction`](share.md#dismissedaction)
+* [`share`](../share/#share)
+* [`sharedAction`](../share/#sharedaction)
+* [`dismissedAction`](../share/#dismissedaction)
 
 ---
 

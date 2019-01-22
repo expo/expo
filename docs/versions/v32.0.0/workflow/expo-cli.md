@@ -6,7 +6,7 @@ Expo CLI is a command line interface for developing Expo apps. It also includes 
 
 ## Installation
 
-See [Installation](../introduction/installation).
+See [Installation](../../introduction/installation).
 
 ## Commands
 

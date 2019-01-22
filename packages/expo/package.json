@@ -1,6 +1,6 @@
 {
   "name": "expo",
-  "version": "32.0.0",
+  "version": "32.0.1",
   "description": "The Expo SDK",
   "main": "build/Expo.js",
   "bin": {
@@ -48,7 +48,7 @@
   "homepage": "https://github.com/expo/expo/tree/master/packages/expo",
   "dependencies": {
     "@babel/runtime": "^7.1.2",
-    "@expo/vector-icons": "github:expo/vector-icons#expo-font-fix",
+    "@expo/vector-icons": "^9.0.0",
     "@expo/websql": "^1.0.1",
     "@types/fbemitter": "^2.0.32",
     "@types/invariant": "^2.2.29",
@@ -63,6 +63,7 @@
     "expo-app-auth": "~2.0.0",
     "expo-app-loader-provider": "~1.0.0",
     "expo-asset": "~2.0.0",
+    "expo-av": "~1.0.0",
     "expo-background-fetch": "~1.0.0",
     "expo-barcode-scanner": "~2.0.0",
     "expo-barcode-scanner-interface": "~2.0.0",
@@ -86,7 +87,8 @@
     "expo-image-loader-interface": "~2.0.0",
     "expo-local-authentication": "~2.0.0",
     "expo-localization": "~2.0.0",
-    "expo-location": "~2.0.0",
+    "expo-location": "~2.0.1",
+    "expo-mail-composer": "~1.0.0",
     "expo-media-library": "~2.0.0",
     "expo-payments-stripe": "~2.0.0",
     "expo-permissions": "~2.0.0",
@@ -96,6 +98,7 @@
     "expo-sensors": "~2.0.0",
     "expo-sensors-interface": "~2.0.0",
     "expo-sms": "~2.0.0",
+    "expo-sqlite": "~1.0.0",
     "expo-task-manager": "~1.0.0",
     "fbemitter": "^2.1.1",
     "invariant": "^2.2.2",
@@ -109,11 +112,12 @@
     "pretty-format": "^23.6.0",
     "prop-types": "^15.6.0",
     "qs": "^6.5.0",
+    "react-google-maps": "^9.4.5",
     "react-native-branch": "2.2.5",
     "react-native-gesture-handler": "1.0.12",
     "react-native-maps": "expo/react-native-maps#v0.22.1-exp.0",
     "react-native-reanimated": "1.0.0-alpha.11",
-    "react-native-screens": "1.0.0-alpha.19",
+    "react-native-screens": "1.0.0-alpha.22",
     "react-native-svg": "8.0.10",
     "react-native-view-shot": "2.5.0",
     "serialize-error": "^2.1.0",
@@ -130,5 +134,5 @@
     "react-native": "^0.57.1",
     "react-test-renderer": "16.5.0"
   },
-  "gitHead": "f15abc53c111bd0438cd36dc456c59cfa7c56a58"
+  "gitHead": "354cdc348a81b23f4fe9ad036cc06e1afddd0e01"
 }

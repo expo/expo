@@ -33,7 +33,7 @@ if (Platform.OS === 'android') {
 
 Creating a channel that already exists is essentially a no-op, so it's safe to call this each time your app starts up. For example, the `componentDidMount` of your app's root component might be a good place for this. However, note that you cannot change any settings of a notification channel after it's been created -- only the user can do this. So be sure to plan your channels carefully.
 
-Then, when you want to send a notification for a chat message, either add the `channelId: 'chat-messages'` field to your [push notification message](push-notifications#message-format), or create a local notification like this:
+Then, when you want to send a notification for a chat message, either add the `channelId: 'chat-messages'` field to your [push notification message](../push-notifications/#message-format), or create a local notification like this:
 
 ```javascript
 Expo.Notifications.presentLocalNotificationAsync({
@@ -53,7 +53,7 @@ On devices with Android 7 and below, which don't support notification channels, 
 
 ## Updating an existing app to use channels
 
-If you have an existing Android app that relies on `sound`, `vibrate`, or `priority` settings for notifications, you'll need to update it to take advantage of channels, as those settings no longer have any effect on individual notifications. If you do not rely on those settings, you may want to update it anyway in order to give users more control over the different types of notifications your app presents. (Note that the client-side `priority` setting involved here only affects the notification's UI behavior and is distinct from [the `priority` of a push notification](push-notifications#message-format), which is not affected by notification channels.)
+If you have an existing Android app that relies on `sound`, `vibrate`, or `priority` settings for notifications, you'll need to update it to take advantage of channels, as those settings no longer have any effect on individual notifications. If you do not rely on those settings, you may want to update it anyway in order to give users more control over the different types of notifications your app presents. (Note that the client-side `priority` setting involved here only affects the notification's UI behavior and is distinct from [the `priority` of a push notification](../push-notifications/#message-format), which is not affected by notification channels.)
 
 To do this, first make sure you are using the latest minor update of `expo` for your SDK version. Notification channels are supported in SDKs 22 and above, so for example, if you're on SDK 27 you should `npm install`/`yarn add` `expo@^27.1.0`.
 

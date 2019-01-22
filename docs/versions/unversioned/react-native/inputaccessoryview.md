@@ -55,9 +55,9 @@ This component can also be used to create sticky text inputs (text inputs which 
 
 ### Props
 
-* [`backgroundColor`](inputaccessoryview.md#backgroundcolor)
-* [`nativeID`](inputaccessoryview.md#nativeid)
-* [`style`](inputaccessoryview.md#style)
+* [`backgroundColor`](../inputaccessoryview/#backgroundcolor)
+* [`nativeID`](../inputaccessoryview/#nativeid)
+* [`style`](../inputaccessoryview/#style)
 
 ---
 
@@ -69,7 +69,7 @@ This component can also be used to create sticky text inputs (text inputs which 
 
 | Type               | Required |
 | ------------------ | -------- |
-| [color](colors.md) | No       |
+| [color](../colors/) | No       |
 
 ---
 
@@ -87,7 +87,7 @@ An ID which is used to associate this `InputAccessoryView` to specified TextInpu
 
 | Type                         | Required |
 | ---------------------------- | -------- |
-| [style](view-style-props.md) | No       |
+| [style](../view-style-props/) | No       |
 
 # Known issues
 

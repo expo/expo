@@ -263,4 +263,24 @@
    }];
 }
 
+- (BOOL)isAccelerometerAvailable {
+  return [self.manager isAccelerometerAvailable];
+}
+
+- (BOOL)isDeviceMotionAvailable {
+  return [self.manager isDeviceMotionAvailable];
+}
+
+- (BOOL)isGyroAvailable {
+  return [self.manager isGyroAvailable];
+}
+
+- (BOOL)isMagnetometerAvailable {
+  return [self.manager isMagnetometerAvailable];
+}
+
+- (BOOL)isMagnetometerUncalibratedAvailable {
+  return [self.manager isMagnetometerAvailable];
+}
+
 @end

@@ -2,12 +2,20 @@ package expo.adapters.react;
 
 import com.facebook.react.bridge.Dynamic;
 
+import java.util.Map;
+
+import expo.core.arguments.MapArguments;
+import expo.core.arguments.ReadableArguments;
+
 public class ArgumentsHelper {
   public static Object getNativeArgumentForExpectedClass(Dynamic argument, Class<?> expectedArgumentClass) {
     switch (argument.getType()) {
       case String:
         return argument.asString();
       case Map:
+        if (expectedArgumentClass.isAssignableFrom(ReadableArguments.class)) {
+          return new MapArguments(argument.asMap().toHashMap());
+        }
         return argument.asMap().toHashMap();
       case Array:
         return argument.asArray().toArrayList();
@@ -35,7 +43,7 @@ public class ArgumentsHelper {
       default:
         // JS argument is not null, however we can't recognize the type.
         throw new RuntimeException(
-                "Don't know how to convert React Native argument of type " + argument.getType() + " to native."
+            "Don't know how to convert React Native argument of type " + argument.getType() + " to native."
         );
     }
   }

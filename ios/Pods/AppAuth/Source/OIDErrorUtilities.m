@@ -66,7 +66,8 @@
   // not a valid OAuth error
   if (![self isOAuthErrorDomain:oAuthErrorDomain]
       || !errorResponse
-      || !errorResponse[OIDOAuthErrorFieldError]) {
+      || !errorResponse[OIDOAuthErrorFieldError]
+      || ![errorResponse[OIDOAuthErrorFieldError] isKindOfClass:[NSString class]]) {
     return [[self class] errorWithCode:OIDErrorCodeNetworkError
                        underlyingError:underlyingError
                            description:underlyingError.localizedDescription];
@@ -80,8 +81,18 @@
   }
 
   NSString *oauthErrorCodeString = errorResponse[OIDOAuthErrorFieldError];
-  NSString *oauthErrorMessage = errorResponse[OIDOAuthErrorFieldErrorDescription];
-  NSString *oauthErrorURI = errorResponse[OIDOAuthErrorFieldErrorURI];
+  NSString *oauthErrorMessage = nil;
+  if ([errorResponse[OIDOAuthErrorFieldErrorDescription] isKindOfClass:[NSString class]]) {
+    oauthErrorMessage = errorResponse[OIDOAuthErrorFieldErrorDescription];
+  } else {
+    oauthErrorMessage = [errorResponse[OIDOAuthErrorFieldErrorDescription] description];
+  }
+  NSString *oauthErrorURI = nil;
+  if ([errorResponse[OIDOAuthErrorFieldErrorURI] isKindOfClass:[NSString class]]) {
+    oauthErrorURI = errorResponse[OIDOAuthErrorFieldErrorURI];
+  } else {
+    oauthErrorURI = [errorResponse[OIDOAuthErrorFieldErrorURI] description];
+  }
 
   // builds the error description, using the information supplied by the server if possible
   NSMutableString *description = [NSMutableString string];

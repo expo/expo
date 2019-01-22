@@ -15,7 +15,7 @@ You can also browse the source, fork, hack on and contribute to the Expo tooling
 
 There are two pieces here: the Expo app and the Expo development tool (either XDE or `exp` CLI). We'll just assume XDE here for simplicity of naming. When you open an app up in XDE, it spawns and manages two server processes in the background: the Expo Development Server and the React Native Packager Server.
 
-![](./fetch-app-from-xde.png)
+![](/static/images/fetch-app-from-xde.png)
 
 > **Note:** XDE also spawns a tunnel process, which allows devices outside of your LAN to access the the above servers without you needing to change your firewall settings. If you want to learn more, see [ngrok](https://ngrok.com/).
 
@@ -25,7 +25,7 @@ This server is the endpoint that you hit first when you type the URL into the Ex
 
 #### `Expo Manifest`
 
-The following is an example of a manifest being served through XDE. The first thing that you should notice is there are a lot of identical fields to `app.json` (see the [Configuration with app.json](configuration.html#exp) section if you haven't read it yet). These fields are taken directly from that file -- this is how the Expo app accesses your configuration.
+The following is an example of a manifest being served through XDE. The first thing that you should notice is there are a lot of identical fields to `app.json` (see the [Configuration with app.json](../configuration/#exp) section if you haven't read it yet). These fields are taken directly from that file -- this is how the Expo app accesses your configuration.
 
 ```javascript
 {
@@ -79,10 +79,10 @@ The second purpose is to serve assets. When you include an image in your app, yo
 
 ## Publishing/Deploying an Expo app in Production
 
-When you publish an Expo app, we compile it into a JavaScript bundle with production flags enabled. That is, we minify the source and we tell the React Native packager to build in production mode (which in turn sets [`__DEV__`](https://facebook.github.io/react-native/docs/javascript-environment.html#polyfills) to `false` amongst other things). After compilation, we upload that bundle, along with any assets that it requires (see [Assets](assets.html#all-about-assets)) to CloudFront. We also upload your [Manifest](#expo-manifest) (including most of your `app.json` configuration) to our server.
+When you publish an Expo app, we compile it into a JavaScript bundle with production flags enabled. That is, we minify the source and we tell the React Native packager to build in production mode (which in turn sets [`__DEV__`](https://facebook.github.io/react-native/docs/javascript-environment.html#polyfills) to `false` amongst other things). After compilation, we upload that bundle, along with any assets that it requires (see [Assets](../../guides/assets/#all-about-assets)) to CloudFront. We also upload your [Manifest](#expo-manifest) (including most of your `app.json` configuration) to our server.
 When publishing is complete, we'll give you a URL to your app which you can send to anybody who has the Expo client.
 
-> **Note:** By default, all Expo projects are `unlisted`, which means that publishing does not make it publicly searchable or discoverable anywhere. It is up to you to share the link. You can change this setting in [app.json](configuration.html).
+> **Note:** By default, all Expo projects are `unlisted`, which means that publishing does not make it publicly searchable or discoverable anywhere. It is up to you to share the link. You can change this setting in [app.json](../configuration/).
 
 As soon as the publish is complete, the new version of your code is available to all your existing users. They'll download the updated version next time they open the app or refresh it, provided that they have a version of the Expo client that supports the `sdkVersion` specified in your `app.json`.
 
@@ -93,7 +93,7 @@ is downloaded in the background. The second time they open the app they'll get
 the new version. On iOS, updates are downloaded synchronously, so users will
 get the new version the first time they open your app after an update.
 
-> **Note:** To package your app for deployment on the Apple App Store or Google Play Store, see [Building Standalone Apps](building-standalone-apps.html#building-standalone-apps). Each time you update the SDK version you will need to rebuild your binary.
+> **Note:** To package your app for deployment on the Apple App Store or Google Play Store, see [Building Standalone Apps](../../distribution/building-standalone-apps/#building-standalone-apps). Each time you update the SDK version you will need to rebuild your binary.
 
 ## SDK Versions
 
@@ -109,7 +109,7 @@ If you publish an update to your app with a new `sdkVersion`, if a user has yet 
 
 The process is essentially the same as opening an Expo app in development, only now we hit an Expo server to get the manifest, and manifest points us to CloudFront to retrieve your app's JavaScript.
 
-![](./fetch-app-production.png)
+![](/static/images/fetch-app-production.png)
 
 ## Opening Expo Apps Offline
 
@@ -121,4 +121,4 @@ If you build a standalone app with Expo, that standalone binary will also ship w
 
 You can also package your Expo app into a standalone binary for submission to the Apple iTunes Store or Google Play.
 
-Under the hood, it's a modified version of the Expo client which is designed only to load a single URL (the one for your app) and which will never show the Expo home screen or brand. For more information, see [Building Standalone Apps](building-standalone-apps.html#building-standalone-apps).
+Under the hood, it's a modified version of the Expo client which is designed only to load a single URL (the one for your app) and which will never show the Expo home screen or brand. For more information, see [Building Standalone Apps](../../distribution/building-standalone-apps/#building-standalone-apps).

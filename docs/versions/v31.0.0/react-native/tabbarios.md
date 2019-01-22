@@ -5,16 +5,16 @@ title: TabBarIOS
 
 ### Props
 
-* [View props...](view.md#props)
+* [View props...](../view/#props)
 
-- [`barStyle`](tabbarios.md#barstyle)
-- [`barTintColor`](tabbarios.md#bartintcolor)
-- [`itemPositioning`](tabbarios.md#itempositioning)
-- [`style`](tabbarios.md#style)
-- [`tintColor`](tabbarios.md#tintcolor)
-- [`translucent`](tabbarios.md#translucent)
-- [`unselectedItemTintColor`](tabbarios.md#unselecteditemtintcolor)
-- [`unselectedTintColor`](tabbarios.md#unselectedtintcolor)
+- [`barStyle`](../tabbarios/#barstyle)
+- [`barTintColor`](../tabbarios/#bartintcolor)
+- [`itemPositioning`](../tabbarios/#itempositioning)
+- [`style`](../tabbarios/#style)
+- [`tintColor`](../tabbarios/#tintcolor)
+- [`translucent`](../tabbarios/#translucent)
+- [`unselectedItemTintColor`](../tabbarios/#unselecteditemtintcolor)
+- [`unselectedTintColor`](../tabbarios/#unselectedtintcolor)
 
 ---
 
@@ -38,7 +38,7 @@ Background color of the tab bar
 
 | Type               | Required |
 | ------------------ | -------- |
-| [color](colors.md) | No       |
+| [color](../colors/) | No       |
 
 ---
 
@@ -70,7 +70,7 @@ Color of the currently selected tab icon
 
 | Type               | Required |
 | ------------------ | -------- |
-| [color](colors.md) | No       |
+| [color](../colors/) | No       |
 
 ---
 
@@ -90,7 +90,7 @@ Color of unselected tab icons. Available since iOS 10.
 
 | Type               | Required |
 | ------------------ | -------- |
-| [color](colors.md) | No       |
+| [color](../colors/) | No       |
 
 ---
 
@@ -100,5 +100,5 @@ Color of text on unselected tabs
 
 | Type               | Required |
 | ------------------ | -------- |
-| [color](colors.md) | No       |
+| [color](../colors/) | No       |
 

@@ -98,7 +98,7 @@
   }
 
   NSMutableDictionary *queryParameters = [[FBSDKUtility dictionaryWithQueryString:requestURL.query] mutableCopy];
-  queryParameters[@"ios_bundle_id"] = [[NSBundle mainBundle] bundleIdentifier];
+  queryParameters[@"ios_bundle_id"] = [NSBundle mainBundle].bundleIdentifier;
   NSURL *redirectURL = [self _redirectURLWithActionID:nil methodName:methodName error:errorRef];
   if (!redirectURL) {
     return nil;

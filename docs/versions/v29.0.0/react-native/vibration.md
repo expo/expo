@@ -44,8 +44,8 @@ Vibration.cancel()
 
 ### Methods
 
-* [`vibrate`](vibration.md#vibrate)
-* [`cancel`](vibration.md#cancel)
+* [`vibrate`](../vibration/#vibrate)
+* [`cancel`](../vibration/#cancel)
 
 ---
 

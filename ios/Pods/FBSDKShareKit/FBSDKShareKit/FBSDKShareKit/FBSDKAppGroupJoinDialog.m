@@ -94,7 +94,7 @@
 
 - (BOOL)validateWithError:(NSError *__autoreleasing *)errorRef
 {
-  if (![self.groupID length]) {
+  if (!self.groupID.length) {
     if (errorRef != NULL) {
       *errorRef = [NSError fbRequiredArgumentErrorWithDomain:FBSDKShareErrorDomain
                                                         name:@"groupID"

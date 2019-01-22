@@ -26,7 +26,7 @@ FBSDKTriStateBOOL FBSDKTriStateBOOLFromBOOL(BOOL value)
 FBSDKTriStateBOOL FBSDKTriStateBOOLFromNSNumber(NSNumber *value)
 {
   return ([value isKindOfClass:[NSNumber class]] ?
-          FBSDKTriStateBOOLFromBOOL([value boolValue]) :
+          FBSDKTriStateBOOLFromBOOL(value.boolValue) :
           FBSDKTriStateBOOLValueUnknown);
 }
 

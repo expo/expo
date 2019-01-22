@@ -83,14 +83,14 @@
 
 - (BOOL)isImplicitlyDisabled
 {
-  return ![_dialog canShow] || ![_dialog validateWithError:NULL];
+  return !_dialog.canShow || ![_dialog validateWithError:NULL];
 }
 
 #pragma mark - Helper Methods
 
 - (void)_share:(id)sender
 {
-  [self logTapEventWithEventName:FBSDKAppEventNameFBSDKSendButtonDidTap parameters:[self analyticsParameters]];
+  [self logTapEventWithEventName:FBSDKAppEventNameFBSDKSendButtonDidTap parameters:self.analyticsParameters];
   [_dialog show];
 }
 

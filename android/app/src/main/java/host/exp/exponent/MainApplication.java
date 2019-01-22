@@ -11,6 +11,7 @@ import expo.loaders.provider.interfaces.AppLoaderPackagesProviderInterface;
 import expo.modules.ads.admob.AdMobPackage;
 import expo.modules.analytics.segment.SegmentPackage;
 import expo.modules.appauth.AppAuthPackage;
+import expo.modules.av.AVPackage;
 import expo.modules.backgroundfetch.BackgroundFetchPackage;
 import expo.modules.barcodescanner.BarCodeScannerPackage;
 import expo.modules.camera.CameraPackage;
@@ -24,11 +25,13 @@ import expo.modules.google.signin.GoogleSignInPackage;
 import expo.modules.localauthentication.LocalAuthenticationPackage;
 import expo.modules.localization.LocalizationPackage;
 import expo.modules.location.LocationPackage;
+import expo.modules.mailcomposer.MailComposerPackage;
 import expo.modules.medialibrary.MediaLibraryPackage;
 import expo.modules.permissions.PermissionsPackage;
 import expo.modules.print.PrintPackage;
 import expo.modules.sensors.SensorsPackage;
 import expo.modules.sms.SMSPackage;
+import expo.modules.sqlite.SQLitePackage;
 import expo.modules.taskManager.TaskManagerPackage;
 import expolib_v1.okhttp3.OkHttpClient;
 
@@ -77,7 +80,10 @@ public class MainApplication extends ExpoApplication implements AppLoaderPackage
         new LocalizationPackage(),
         new AppAuthPackage(),
         new TaskManagerPackage(),
-        new BackgroundFetchPackage()
+        new BackgroundFetchPackage(),
+        new MailComposerPackage(),
+        new AVPackage(),
+        new SQLitePackage()
     );
   }
 

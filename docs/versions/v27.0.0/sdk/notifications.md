@@ -37,7 +37,7 @@ An object that is passed into each event listener when a notification is receive
 
 #### Returns
 
-Returns a Promise that resolves to a token string. This token can be provided to the Expo notifications backend to send a push notification to this device. [Read more in the Push Notifications guide](../guides/push-notifications.html#push-notifications).
+Returns a Promise that resolves to a token string. This token can be provided to the Expo notifications backend to send a push notification to this device. [Read more in the Push Notifications guide](../../guides/push-notifications/#push-notifications).
 
 The Promise will be rejected if the app does not have permission to send notifications. Be sure to check the result of `Permissions.askAsync(Permissions.REMOTE_NOTIFICATIONS)` before attempting to get an Expo push token.
 

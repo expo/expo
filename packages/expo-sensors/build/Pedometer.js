@@ -1,14 +1,19 @@
-import { EventEmitter, NativeModulesProxy } from 'expo-core';
+import { EventEmitter } from 'expo-core';
 import invariant from 'invariant';
-const PedometerEventEmitter = new EventEmitter(NativeModulesProxy.ExponentPedometer);
+import { UnavailabilityError } from 'expo-errors';
+import ExponentPedometer from './ExponentPedometer';
+const PedometerEventEmitter = new EventEmitter(ExponentPedometer);
 export function watchStepCount(callback) {
     return PedometerEventEmitter.addListener('Exponent.pedometerUpdate', callback);
 }
 export async function getStepCountAsync(start, end) {
+    if (!ExponentPedometer.getStepCountAsync) {
+        throw new UnavailabilityError('ExponentPedometer', 'getStepCountAsync');
+    }
     invariant(start <= end, 'Pedometer: The start date must precede the end date.');
-    return await NativeModulesProxy.ExponentPedometer.getStepCountAsync(start.getTime(), end.getTime());
+    return await ExponentPedometer.getStepCountAsync(start.getTime(), end.getTime());
 }
 export async function isAvailableAsync() {
-    return await NativeModulesProxy.ExponentPedometer.isAvailableAsync();
+    return await ExponentPedometer.isAvailableAsync();
 }
 //# sourceMappingURL=Pedometer.js.map

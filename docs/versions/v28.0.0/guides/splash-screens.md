@@ -2,7 +2,7 @@
 title: Splash Screens
 ---
 
-A splash screen, also known as a launch screen, is the first screen that a user sees when opening your app, and it stays visible while the app is loading. You can control when the splash screen disappears by using the [AppLoading](../sdk/app-loading.html) component.
+A splash screen, also known as a launch screen, is the first screen that a user sees when opening your app, and it stays visible while the app is loading. You can control when the splash screen disappears by using the [AppLoading](../../sdk/app-loading/) component.
 
 ## Customize the splash screen for your app
 
@@ -17,7 +17,7 @@ Android screen sizes vary greatly with the massive variety of devices on the mar
 
 You can work off of [this Sketch template](https://github.com/expo/files/blob/b264c7f7bf2cacfbdb45640063988ab61dfbbe23/splash-template.sketch?raw=true) if you like. I did, and I changed the background color to a faint yellow and put a Noodle emoji in the middle. It's worth noting that the splash image supports transparency, although we didn't use it here.
 
-![](./splash-example.png)
+![](/static/images/splash-example.png)
 
 Export the image as a PNG and put it in your project directory. I'll assume it's in the `assets` directory and named `splash.png`.
 
@@ -46,13 +46,13 @@ If you set a background color other than white for your splash image, you may se
 }
 ```
 
-![backgroundColor Example](./backgroundColor-noodles.png)
+![backgroundColor Example](/static/images/backgroundColor-noodles.png)
 
 ### `splash.resizeMode`
 
 Any splash image that you provide will be resized to maintain its aspect ratio and to fit the resolution of the user's device. There are two strategies that can be used for resizing: `contain` (default) and `cover`. In both cases, the splash image is within the splash screen. These work the same as the React Native `<Image>` component's `resizeMode` style equivalents, as demonstrated in the following diagram.
 
-![resizeMode](./resizeMode.png)
+![resizeMode](/static/images/resizeMode.png)
 
 Applying this to our noodles example, let's remove the `backgroundColor` and try it out:
 
@@ -63,7 +63,7 @@ Applying this to our noodles example, let's remove the `backgroundColor` and try
 }
 ```
 
-![resizeMode Example](./resizeMode-noodles.png)
+![resizeMode Example](/static/images/resizeMode-noodles.png)
 
 Notice that in the last example, we stretched the image to fill the entire width, while maintaining the aspect ratio, and so the noodles emoji ended up being larger than it was when `resizeMode` was set to `contain`. If you are still unclear about the difference between contain and cover, [this blog post describes precisely what they mean](http://blog.vjeux.com/2013/image/css-container-and-cover.html).
 
@@ -71,12 +71,12 @@ Notice that in the last example, we stretched the image to fill the entire width
 
 Any of the splash options can be configured on a per-platform basis by nesting the configuration under the `android` or `ios` keys within `app.json` (the same as how you would customize an icon for either platform). In addition to this, certain configuration options are only available on iOS or Android.
 
-- On iOS, you can set [ios.splash.tabletImage](configuration.html#tabletimage) if you would like to have a different splash image on iPads. 
-- On Android, you can set splash images for [different device DPIs](configuration.html#ldpi), from `ldpi` to `xxxhdpi`.
+- On iOS, you can set [ios.splash.tabletImage](../../workflow/configuration/#tabletimage) if you would like to have a different splash image on iPads. 
+- On Android, you can set splash images for [different device DPIs](../../workflow/configuration/#ldpi), from `ldpi` to `xxxhdpi`.
 
 ### Using `AppLoading`
 
-As long as `AppLoading` is the only component rendered in your application, your splash screen will remain visible. We recommend using `AppLoading` while caching assets or fetching any data from `AsyncStorage` to set the app up. [Read more about AppLoading](../sdk/app-loading.html).
+As long as `AppLoading` is the only component rendered in your application, your splash screen will remain visible. We recommend using `AppLoading` while caching assets or fetching any data from `AsyncStorage` to set the app up. [Read more about AppLoading](../../sdk/app-loading/).
 
 ### Differences between environments
 

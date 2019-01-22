@@ -97,12 +97,14 @@ export default class DocumentationPage extends React.Component {
 
   _handleSetVersion = version => {
     this._version = version;
+    let newPath = '/versions/' + version;
 
-    if (version === 'latest') {
-      Router.push('/versions/' + LATEST_VERSION + '/', '/versions/' + version + '/');
-    } else {
-      Router.push('/versions/' + version + '/', '/versions/' + version + '/');
+    // TODO: Find what's stripping trailing slashes from these
+    if (version.startsWith('v')) {
+      newPath += '/'
     }
+
+    Router.push(newPath + '/');
   };
 
   _handleShowMenu = () => {

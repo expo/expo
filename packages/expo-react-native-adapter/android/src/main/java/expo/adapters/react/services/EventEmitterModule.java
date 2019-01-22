@@ -32,6 +32,31 @@ public class EventEmitterModule implements EventEmitter, InternalModule {
   }
 
   @Override
+  public void emit(final int viewId, final String eventName, final Bundle eventBody) {
+    mReactContext.getNativeModule(UIManagerModule.class).getEventDispatcher().dispatchEvent(new com.facebook.react.uimanager.events.Event(viewId) {
+      @Override
+      public String getEventName() {
+        return eventName;
+      }
+
+      @Override
+      public void dispatch(RCTEventEmitter rctEventEmitter) {
+        rctEventEmitter.receiveEvent(viewId, eventName, Arguments.fromBundle(eventBody));
+      }
+
+      @Override
+      public boolean canCoalesce() {
+        return false;
+      }
+
+      @Override
+      public short getCoalescingKey() {
+        return 0;
+      }
+    });
+  }
+
+  @Override
   public List<Class> getExportedInterfaces() {
     return Collections.singletonList((Class) EventEmitter.class);
   }

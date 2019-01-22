@@ -64,6 +64,10 @@
   [_kernelService setAccelerometerUpdateInterval:intervalMs];
 }
 
+- (BOOL)isAccelerometerAvailable {
+  return [_kernelService isAccelerometerAvailable];
+}
+
 - (void)setDeviceMotionUpdateInterval:(NSTimeInterval)intervalMs {
   [_kernelService setDeviceMotionUpdateInterval:intervalMs];
 }
@@ -72,17 +76,32 @@
   return [_kernelService getGravity];
 }
 
+- (BOOL)isDeviceMotionAvailable {
+  return [_kernelService isDeviceMotionAvailable];
+}
 
 - (void)setGyroscopeUpdateInterval:(NSTimeInterval)intervalMs {
   [_kernelService setGyroscopeUpdateInterval:intervalMs];
+}
+
+- (BOOL)isGyroAvailable {
+  return [_kernelService isGyroAvailable];
 }
 
 - (void)setMagnetometerUncalibratedUpdateInterval:(NSTimeInterval)intervalMs {
   [_kernelService setMagnetometerUncalibratedUpdateInterval:intervalMs];
 }
 
+- (BOOL)isMagnetometerUncalibratedAvailable {
+  return [_kernelService isMagnetometerUncalibratedAvailable];
+}
+
 - (void)setMagnetometerUpdateInterval:(NSTimeInterval)intervalMs {
   [_kernelService setMagnetometerUpdateInterval:intervalMs];
+}
+
+- (BOOL)isMagnetometerAvailable {
+  return [_kernelService isMagnetometerAvailable];
 }
 
 + (const NSArray<Protocol *> *)exportedInterfaces {

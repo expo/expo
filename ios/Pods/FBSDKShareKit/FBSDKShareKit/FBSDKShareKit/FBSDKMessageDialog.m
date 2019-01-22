@@ -68,7 +68,7 @@
 - (BOOL)show
 {
   NSError *error;
-  if (![self canShow]) {
+  if (!self.canShow) {
     error = [NSError fbErrorWithDomain:FBSDKShareErrorDomain
                                   code:FBSDKShareErrorDialogNotAvailable
                                message:@"Message dialog is not available."];

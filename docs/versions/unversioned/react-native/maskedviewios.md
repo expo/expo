@@ -57,9 +57,9 @@ The following image demonstrates that you can put almost anything behind the mas
 
 ### Props
 
-* [View props...](view.md#props)
+* [View props...](../view/#props)
 
-- [`maskElement`](maskedviewios.md#maskelement)
+- [`maskElement`](../maskedviewios/#maskelement)
 
 ---
 

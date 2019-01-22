@@ -249,7 +249,7 @@ Most vendors make use of environment variables which are "injected" into the env
 To perform the authentication, we will add this script to our configuration:
 
 ```bash
-$ npx expo login -u <EXPO USERNAME> -p <EXO PASSWORD>
+$ npx expo login -u <EXPO USERNAME> -p <EXPO PASSWORD>
 ```
 
 ### Publish new builds
@@ -442,9 +442,9 @@ Here are some extra links that might help you further.
 
 ### Useful subjects
 
-- [Release channels](release-channels.html)
-- [Building standalone apps](building-standalone-apps.html)
-- [Configuring OTA Updates](configuring-ota-updates.html)
+- [Release channels](../../distribution/release-channels/)
+- [Building standalone apps](../../distribution/building-standalone-apps/)
+- [Configuring OTA Updates](../configuring-ota-updates/)
 
 ### Official documentation CI/CD vendors
 
