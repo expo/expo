@@ -1,4 +1,10 @@
-// Copyright 2018-present 650 Industries. All rights reserved.
+// Copyright 2016-present 650 Industries. All rights reserved.
 
-@interface EXFacebook : NSObject
+#import <EXCore/EXExportedModule.h>
+#import <EXCore/EXModuleRegistryConsumer.h>
+
+@interface EXFacebook : EXExportedModule <EXModuleRegistryConsumer>
+
++ (id)facebookAppIdFromNSBundle;
+
 @end

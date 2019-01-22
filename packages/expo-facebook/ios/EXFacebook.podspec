@@ -17,6 +17,10 @@ Pod::Spec.new do |s|
   s.requires_arc   = true
 
   s.dependency 'EXCore'
+  s.dependency 'EXConstantsInterface'
+
+  s.dependency 'FBSDKCoreKit'
+  s.dependency 'FBSDKLoginKit'
 
 end
 
