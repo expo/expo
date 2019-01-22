@@ -38,6 +38,11 @@
 - (void)setBarometerUpdateInterval:(NSTimeInterval)intervalMs;
 
 - (BOOL)isBarometerAvailable;
+- (BOOL)isAccelerometerAvailable;
+- (BOOL)isDeviceMotionAvailable;
+- (BOOL)isGyroAvailable;
+- (BOOL)isMagnetometerAvailable;
+- (BOOL)isMagnetometerUncalibratedAvailable;
 
 @end
 
@@ -65,5 +70,11 @@
 - (void)setBarometerUpdateInterval:(NSTimeInterval)intervalMs;
 
 - (BOOL)isBarometerAvailable;
+
+- (BOOL)isAccelerometerAvailable;
+- (BOOL)isDeviceMotionAvailable;
+- (BOOL)isGyroAvailable;
+- (BOOL)isMagnetometerAvailable;
+- (BOOL)isMagnetometerUncalibratedAvailable;
 
 @end
