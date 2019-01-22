@@ -17,6 +17,7 @@ import expo.modules.blurview.BlurViewPackage;
 import expo.modules.camera.CameraPackage;
 import expo.modules.constants.ConstantsPackage;
 import expo.modules.contacts.ContactsPackage;
+import expo.modules.facebook.FacebookPackage;
 import expo.modules.facedetector.FaceDetectorPackage;
 import expo.modules.filesystem.FileSystemPackage;
 import expo.modules.font.FontLoaderPackage;
@@ -86,7 +87,8 @@ public class MainApplication extends ExpoApplication implements AppLoaderPackage
         new MailComposerPackage(),
         new AVPackage(),
         new SQLitePackage(),
-        new BlurViewPackage()
+        new BlurViewPackage(),
+        new FacebookPackage()
     );
   }
 
