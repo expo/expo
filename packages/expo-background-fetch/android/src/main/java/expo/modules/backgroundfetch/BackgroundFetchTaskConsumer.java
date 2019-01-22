@@ -54,11 +54,6 @@ public class BackgroundFetchTaskConsumer extends TaskConsumer implements TaskCon
   }
 
   @Override
-  public void setOptions(Map<String, Object> options) {
-    startAlarm();
-  }
-
-  @Override
   public void didReceiveBroadcast(Intent intent) {
     Context context = getContext();
     TaskManagerUtilsInterface taskManagerUtils = getTaskManagerUtils();
