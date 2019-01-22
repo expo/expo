@@ -2,7 +2,12 @@
 title: Gyroscope
 ---
 
-Access the device gyroscope sensor to respond to changes in rotation in 3d space.
+Access the device gyroscope sensor(s) to respond to changes in
+acceleration in 3d space. Data is measured in _`m/s^2`_.
+
+This module interfaces directly with native code of the same name. This is why the Accelerometer functions like a Gyroscope and vise-versa.
+
+For detecting the rotation/orientation of your device, see the `Accelerometer` module.
 
 ### `Expo.Gyroscope.addListener(listener)`
 
@@ -10,7 +15,7 @@ Subscribe for updates to the gyroscope.
 
 #### Arguments
 
--   **listener (_function_)** -- A callback that is invoked when an gyroscope update is available. When invoked, the listener is provided a single argumument that is an object containing keys x, y, z.
+- **listener (_function_)** -- A callback that is invoked when an gyroscope update is available. When invoked, the listener is provided a single argumument that is an object containing keys x, y, z.
 
 #### Returns
 
@@ -26,26 +31,19 @@ Subscribe for updates to the gyroscope.
 
 #### Arguments
 
--   **intervalMs (_number_)** -- Desired interval in milliseconds between gyroscope updates.
+- **intervalMs (_number_)** -- Desired interval in milliseconds between gyroscope updates.
 
 ## Example: basic subscription
 
 ```javascript
 import React from 'react';
-import {
-  Gyroscope,
-} from 'expo';
-import {
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View
-} from 'react-native';
+import { Gyroscope } from 'expo';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default class GyroscopeSensor extends React.Component {
   state = {
     gyroscopeData: {},
-  }
+  };
 
   componentDidMount() {
     this._toggle();
@@ -61,26 +59,26 @@ export default class GyroscopeSensor extends React.Component {
     } else {
       this._subscribe();
     }
-  }
+  };
 
   _slow = () => {
     Gyroscope.setUpdateInterval(1000);
-  }
+  };
 
   _fast = () => {
     Gyroscope.setUpdateInterval(16);
-  }
+  };
 
   _subscribe = () => {
-    this._subscription = Gyroscope.addListener((result) => {
-      this.setState({gyroscopeData: result});
+    this._subscription = Gyroscope.addListener(result => {
+      this.setState({ gyroscopeData: result });
     });
-  }
+  };
 
   _unsubscribe = () => {
     this._subscription && this._subscription.remove();
     this._subscription = null;
-  }
+  };
 
   render() {
     let { x, y, z } = this.state.gyroscopeData;
@@ -88,7 +86,9 @@ export default class GyroscopeSensor extends React.Component {
     return (
       <View style={styles.sensor}>
         <Text>Gyroscope:</Text>
-        <Text>x: {round(x)} y: {round(y)} z: {round(z)}</Text>
+        <Text>
+          x: {round(x)} y: {round(y)} z: {round(z)}
+        </Text>
 
         <View style={styles.buttonContainer}>
           <TouchableOpacity onPress={this._toggle} style={styles.button}>
@@ -116,7 +116,7 @@ function round(n) {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1
+    flex: 1,
   },
   buttonContainer: {
     flexDirection: 'row',

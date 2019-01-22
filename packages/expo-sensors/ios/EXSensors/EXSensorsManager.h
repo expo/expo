@@ -7,7 +7,7 @@
 #import <EXSensorsInterface/EXMagnetometerInterface.h>
 #import <EXSensorsInterface/EXMagnetometerUncalibratedInterface.h>
 
-static const float EXGravity = 9.81;
+static const float EXGravity = -9.81;
 
 @interface EXSensorsManager : NSObject <EXInternalModule, EXAccelerometerInterface, EXDeviceMotionInterface, EXGyroscopeInterface, EXMagnetometerInterface, EXMagnetometerUncalibratedInterface>
 

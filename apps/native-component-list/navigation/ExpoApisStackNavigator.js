@@ -36,6 +36,7 @@ import Reminders from '../screens/RemindersScreen';
 import ScreenOrientation from '../screens/ScreenOrientationScreen';
 import SecureStore from '../screens/SecureStoreScreen';
 import Sensor from '../screens/SensorScreen';
+import Accelerometer from '../screens/AccelerometerScreen';
 import SMS from '../screens/SMSScreen';
 import StoreReview from '../screens/StoreReview';
 import TaskManager from '../screens/TaskManagerScreen';
@@ -49,6 +50,7 @@ import StackConfig from './StackConfig';
 const ExpoApisStackNavigator = createStackNavigator(
   {
     ExpoApis,
+    Accelerometer,
     AppAuth,
     Audio,
     AuthSession,

@@ -55,10 +55,16 @@
     [self.manager setAccelerometerUpdateInterval:0.1f];
     [self.manager startAccelerometerUpdatesToQueue:[NSOperationQueue mainQueue] withHandler:^(CMAccelerometerData *data, NSError *error) {
       for (void (^handler)(NSDictionary *) in self.accelerometerHandlers.allValues) {
+        
+        // Inverse values to match Android
+        double x = -data.acceleration.x;
+        double y = -data.acceleration.y;
+        double z = -data.acceleration.z;
+        
         handler(@{
-                  @"x": [NSNumber numberWithDouble:data.acceleration.x],
-                  @"y": [NSNumber numberWithDouble:data.acceleration.y],
-                  @"z": [NSNumber numberWithDouble:data.acceleration.z]
+                  @"x": [NSNumber numberWithDouble:x],
+                  @"y": [NSNumber numberWithDouble:y],
+                  @"z": [NSNumber numberWithDouble:z]
                   });
       }
     }];

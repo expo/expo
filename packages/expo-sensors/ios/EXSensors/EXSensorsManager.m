@@ -64,10 +64,15 @@ EX_REGISTER_MODULE();
       __strong EXSensorsManager *strongSelf = weakSelf;
       if (strongSelf) {
         for (void (^handler)(NSDictionary *) in strongSelf.accelerometerHandlers.allValues) {
+          // Inverse values to match Android
+          double x = -data.acceleration.x;
+          double y = -data.acceleration.y;
+          double z = -data.acceleration.z;
+          
           handler(@{
-                    @"x": [NSNumber numberWithDouble:data.acceleration.x],
-                    @"y": [NSNumber numberWithDouble:data.acceleration.y],
-                    @"z": [NSNumber numberWithDouble:data.acceleration.z]
+                    @"x": [NSNumber numberWithDouble:x],
+                    @"y": [NSNumber numberWithDouble:y],
+                    @"z": [NSNumber numberWithDouble:z]
                     });
         }
       }

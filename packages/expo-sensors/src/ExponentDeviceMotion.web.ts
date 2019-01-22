@@ -5,7 +5,7 @@ export default {
     return 'ExponentDeviceMotion';
   },
   get Gravity(): number {
-    return 9.81;
+    return -9.81;
   },
   async isAvailableAsync(): Promise<boolean> {
     return typeof DeviceMotionEvent !== 'undefined';
