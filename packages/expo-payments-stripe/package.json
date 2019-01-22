@@ -1,7 +1,7 @@
 {
-  "name": "expo-payments-stripe",
+  "name": "@ferriswheel/expo-payments-stripe",
   "version": "1.1.0",
-  "description": "Expo Payments Module",
+  "description": "Expo Payments Module - Ferriswheel Fork",
   "main": "index.js",
   "files": [
     "android/",
