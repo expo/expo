@@ -11,7 +11,6 @@ import { globalNProgress } from '~/global-styles/nprogress';
 import { globalTables } from '~/global-styles/tables';
 import { globalFonts } from '~/global-styles/fonts';
 import { globalPrism } from '~/global-styles/prism';
-import { globalTippy } from '~/global-styles/tippy';
 
 import { LATEST_VERSION } from '~/common/versions';
 
@@ -40,7 +39,6 @@ export default class MyDocument extends Document {
         <Head>
           <Analytics.GoogleScript id="UA-107832480-3" />
           <script src="/static/libs/prism/prism.js" />
-          <script src="/static/libs/tippy/tippy.all.min.js" />
           <script src="/static/libs/nprogress/nprogress.js" />
 
           <style dangerouslySetInnerHTML={{ __html: this.props.css }} />
@@ -59,7 +57,6 @@ export default class MyDocument extends Document {
           <style dangerouslySetInnerHTML={{ __html: globalNProgress }} />
           <style dangerouslySetInnerHTML={{ __html: globalTables }} />
           <style dangerouslySetInnerHTML={{ __html: globalPrism }} />
-          <style dangerouslySetInnerHTML={{ __html: globalTippy }} />
           <link href="/static/libs/algolia/algolia.min.css" rel="stylesheet" />
         </Head>
         <body>

@@ -67,37 +67,8 @@ const STYLES_CODE_CONTAINER = css`
 `;
 
 export class Code extends React.Component {
-  componentDidMount() {
-    this._runTippy();
-  }
-
-  componentDidUpdate() {
-    this._runTippy();
-  }
-
-  _runTippy() {
-    if (process.browser) {
-      tippy('.code-annotation', {
-        theme: 'expo',
-        placement: 'top',
-        arrow: true,
-        arrowType: 'round',
-        interactive: true,
-        distance: 20,
-      });
-    }
-  }
-
   _escapeHtml(text) {
     return text.replace(/"/g, '&quot;');
-  }
-
-  _replaceCommentsWithAnnotations(value) {
-    return value
-      .replace(/<span class="token comment">\/\* @info (.*?)\*\/<\/span>\s*/g, (match, content) => {
-        return `<span class="code-annotation" title="${this._escapeHtml(content)}">`;
-      })
-      .replace(/<span class="token comment">\/\* @end \*\/<\/span>(\n *)?/g, '</span>');
   }
 
   render() {
@@ -111,7 +82,6 @@ export class Code extends React.Component {
     }
     if (lang && Prism.languages[lang]) {
       html = Prism.highlight(html, Prism.languages[lang]);
-      html = this._replaceCommentsWithAnnotations(html);
     }
 
     // Remove leading newline if it exists (because inside <pre> all whitespace is dislayed as is by the browser, and
