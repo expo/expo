@@ -409,6 +409,10 @@ PODS:
     - GoogleSignIn (~> 4.4)
   - EXImageLoaderInterface (2.0.0):
     - EXCore
+  - EXKeepAwake (1.0.0):
+    - EXCore
+  - EXLinearGradient (1.0.0):
+    - EXCore
   - EXLocalAuthentication (2.0.0):
     - EXConstantsInterface
     - EXCore
@@ -463,7 +467,7 @@ PODS:
     - Bolts (~> 1.9)
   - FBSDKLoginKit (4.39.1):
     - FBSDKCoreKit
-  - FBSDKShareKit (4.39.1):
+  - FBSDKShareKit (4.40.0):
     - FBSDKCoreKit
   - Folly (2016.10.31.00):
     - boost-for-react-native
@@ -1302,6 +1306,8 @@ DEPENDENCIES:
   - EXGL-CPP (from `../packages/expo-gl-cpp/cpp`)
   - EXGoogleSignIn (from `../packages/expo-google-sign-in/ios`)
   - EXImageLoaderInterface (from `../packages/expo-image-loader-interface/ios`)
+  - EXKeepAwake (from `../packages/expo-keep-awake/ios`)
+  - EXLinearGradient (from `../packages/expo-linear-gradient/ios`)
   - EXLocalAuthentication (from `../packages/expo-local-authentication/ios`)
   - EXLocalization (from `../packages/expo-localization/ios`)
   - EXLocation (from `../packages/expo-location/ios`)
@@ -1763,6 +1769,10 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-google-sign-in/ios"
   EXImageLoaderInterface:
     :path: "../packages/expo-image-loader-interface/ios"
+  EXKeepAwake:
+    :path: "../packages/expo-keep-awake/ios"
+  EXLinearGradient:
+    :path: "../packages/expo-linear-gradient/ios"
   EXLocalAuthentication:
     :path: "../packages/expo-local-authentication/ios"
   EXLocalization:
@@ -1982,6 +1992,8 @@ SPEC CHECKSUMS:
   EXGL-CPP: 46b589a3ed0c59ae2e7f9434897b66cd8dd2e70c
   EXGoogleSignIn: 646a6097f0e6ca5c4812b5dc2fcda1979ad9d333
   EXImageLoaderInterface: 3f460f6ff344ba6c4e00621806c0d1d76249cd8f
+  EXKeepAwake: f8d01da0507d5921135ba63799c98ac4e059ff36
+  EXLinearGradient: b09d4e1478b72b08a39f902a1ec045772e3a59e3
   EXLocalAuthentication: b70696613cb24d726d3c98a1818c22c481a46b01
   EXLocalization: 1243adc132eaad4793dd7e5b497135ad5d803441
   EXLocation: 54f562edcc410be18699a364e80fcabcf97228f0
@@ -2004,7 +2016,7 @@ SPEC CHECKSUMS:
   FBAudienceNetwork: 80275c0a28574ff5ce820abdc251d05e07e6ae7a
   FBSDKCoreKit: f442aa96179cc9b382bb4abeb7e340a47cca8f91
   FBSDKLoginKit: c3079d9a4db27c492287b1eed7a4272b28cf8a59
-  FBSDKShareKit: 27d7b982e7b1f4638da2f2b1ab6eba5afc6b5888
+  FBSDKShareKit: 0e45916f4150da485928ae2a17ca021950b194f5
   Folly: c89ac2d5c6ab169cd7397ef27485c44f35f742c7
   glog: e8acf0ebbf99759d3ff18c86c292a5898282dcde
   Google-Maps-iOS-Utils: c32891ff472eaaa1fca032beedafa1a013af7875
@@ -2037,6 +2049,6 @@ SPEC CHECKSUMS:
   yogaABI31_0_0: 7978689ddccec43cffd5914889304cf3b7fd7c77
   yogaABI32_0_0: b6e0ba3796cd5e47ccea0454694e605a1cfc817a
 
-PODFILE CHECKSUM: f753fde78c7f1807c682cf5cf8ae6dfe0a2debe0
+PODFILE CHECKSUM: 83345f62f3f6616d4b2dc7021dcb7b98c825cc56
 
 COCOAPODS: 1.5.3
