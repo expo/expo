@@ -118,6 +118,7 @@ dependencies {
   api 'host.exp.exponent:expo-core:2.0.0'
   api 'host.exp.exponent:expo-constants:2.0.0'
   api 'host.exp.exponent:expo-constants-interface:2.0.0'
+  api 'host.exp.exponent:expo-document-picker:1.0.0'
   api 'host.exp.exponent:expo-errors:1.0.0'
   api 'host.exp.exponent:expo-permissions:2.0.0'
   api 'host.exp.exponent:expo-sensors-interface:2.0.0'
@@ -171,6 +172,7 @@ dependencies {
   api project(':expo-core')
   api project(':expo-constants')
   api project(':expo-constants-interface')
+  api project(':expo-document-picker')
   api project(':expo-errors')
   api project(':expo-permissions')
   api project(':expo-permissions-interface')

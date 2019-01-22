@@ -223,7 +223,6 @@
 		B5FB749F1FF6DADC001C764B /* EXAmplitude.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73751FF6DADB001C764B /* EXAmplitude.m */; };
 		B5FB74A01FF6DADC001C764B /* EXBrightness.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73771FF6DADB001C764B /* EXBrightness.m */; };
 		B5FB74A11FF6DADC001C764B /* EXConstantsBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73791FF6DADB001C764B /* EXConstantsBinding.m */; };
-		B5FB74A31FF6DADC001C764B /* EXDocumentPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB737D1FF6DADB001C764B /* EXDocumentPicker.m */; };
 		B5FB74A51FF6DADC001C764B /* EXErrorRecovery.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73811FF6DADB001C764B /* EXErrorRecovery.m */; };
 		B5FB74AA1FF6DADC001C764B /* EXImageManipulator.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB738B1FF6DADB001C764B /* EXImageManipulator.m */; };
 		B5FB74AB1FF6DADC001C764B /* EXImagePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB738D1FF6DADB001C764B /* EXImagePicker.m */; };
@@ -763,8 +762,6 @@
 		B5FB73771FF6DADB001C764B /* EXBrightness.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXBrightness.m; sourceTree = "<group>"; };
 		B5FB73781FF6DADB001C764B /* EXConstantsBinding.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXConstantsBinding.h; sourceTree = "<group>"; };
 		B5FB73791FF6DADB001C764B /* EXConstantsBinding.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXConstantsBinding.m; sourceTree = "<group>"; };
-		B5FB737C1FF6DADB001C764B /* EXDocumentPicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXDocumentPicker.h; sourceTree = "<group>"; };
-		B5FB737D1FF6DADB001C764B /* EXDocumentPicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXDocumentPicker.m; sourceTree = "<group>"; };
 		B5FB73801FF6DADB001C764B /* EXErrorRecovery.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXErrorRecovery.h; sourceTree = "<group>"; };
 		B5FB73811FF6DADB001C764B /* EXErrorRecovery.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXErrorRecovery.m; sourceTree = "<group>"; };
 		B5FB738A1FF6DADB001C764B /* EXImageManipulator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXImageManipulator.h; sourceTree = "<group>"; };
@@ -1664,8 +1661,6 @@
 				B5FB73751FF6DADB001C764B /* EXAmplitude.m */,
 				B5FB73761FF6DADB001C764B /* EXBrightness.h */,
 				B5FB73771FF6DADB001C764B /* EXBrightness.m */,
-				B5FB737C1FF6DADB001C764B /* EXDocumentPicker.h */,
-				B5FB737D1FF6DADB001C764B /* EXDocumentPicker.m */,
 				B5FB73801FF6DADB001C764B /* EXErrorRecovery.h */,
 				B5FB73811FF6DADB001C764B /* EXErrorRecovery.m */,
 				CD99394E2040C1AA0087C883 /* EXHaptic.h */,
@@ -2616,7 +2611,6 @@
 				78343623205B8C5F00DD28C3 /* AIRMap.m in Sources */,
 				0779EE2720977C9E00C2D71B /* AIRGoogleMapOverlayManager.m in Sources */,
 				B52217D61F146658002241BA /* EXKernelServiceRegistry.m in Sources */,
-				B5FB74A31FF6DADC001C764B /* EXDocumentPicker.m in Sources */,
 				B5FB74F11FF6DADC001C764B /* EXScopedEventEmitter.m in Sources */,
 				19382BA91EC2EACC001ED4A1 /* EXBranchManager.m in Sources */,
 				B5FB74B71FF6DADC001C764B /* EXWebBrowser.m in Sources */,
