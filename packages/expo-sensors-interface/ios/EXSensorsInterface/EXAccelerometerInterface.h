@@ -5,5 +5,6 @@
 - (void)sensorModuleDidSubscribeForAccelerometerUpdates:(id)scopedSensorModule withHandler:(void (^)(NSDictionary *event))handlerBlock;
 - (void)sensorModuleDidUnsubscribeForAccelerometerUpdates:(id)scopedSensorModule;
 - (void)setAccelerometerUpdateInterval:(NSTimeInterval)intervalMs;
+- (BOOL)isAccelerometerAvailable;
 
 @end

@@ -8,7 +8,7 @@ ${<SnackEmbed snackId="S1gdfOb4Z" />}
 
 ### `Expo.Pedometer.isAvailableAsync()`
 
-Determine whether the pedometer is available.
+Returns whether the pedometer is enabled on the device.
 
 #### Returns
 
