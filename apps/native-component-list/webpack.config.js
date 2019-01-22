@@ -22,6 +22,15 @@ const locations = {
   modules: absolutePath('../../node_modules'),
 };
 
+let appManifest;
+try {
+  const PWAManifest = require(absolutePath('./web/manifest.json'));
+  appManifest = PWAManifest || {};
+} catch (error) {
+  const nativeAppManifest = require(absolutePath('./app.json'));
+  appManifest = nativeAppManifest || {};
+}
+
 const environment = process.env.NODE_ENV || 'development';
 const __DEV__ = environment !== 'production';
 
@@ -47,6 +56,9 @@ function getClientEnvironment(publicUrl) {
         // This should only be used as an escape hatch. Normally you would put
         // images into the `src` and `import` them in code to get their paths.
         PUBLIC_URL: JSON.stringify(publicUrl),
+
+        // Surface the manifest for use in expo-constants
+        APP_MANIFEST: JSON.stringify(appManifest),
       }
     );
   return {
