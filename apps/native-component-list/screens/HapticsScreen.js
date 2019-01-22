@@ -1,36 +1,62 @@
 import React from 'react';
 import { SectionList, StyleSheet, Text, View } from 'react-native';
-import { Haptic } from 'expo';
+import { Haptics } from 'expo';
+
 import Button from '../components/Button';
 import Colors from '../constants/Colors';
 import MonoText from '../components/MonoText';
-import CannyFooter from '../components/CannyFooter';
 
 const sections = [
   {
-    title: 'notification',
-    data: ['success', 'warning', 'error'],
+    method: Haptics.notificationAsync,
+    data: [
+      {
+        accessor: 'Haptics.NotificationFeedbackType.Success',
+        value: Haptics.NotificationFeedbackType.Success,
+      },
+      {
+        accessor: 'Haptics.NotificationFeedbackType.Warning',
+        value: Haptics.NotificationFeedbackType.Warning,
+      },
+      {
+        accessor: 'Haptics.NotificationFeedbackType.Error',
+        value: Haptics.NotificationFeedbackType.Error,
+      },
+    ],
   },
   {
-    title: 'impact',
-    data: ['light', 'medium', 'heavy'],
+    method: Haptics.impactAsync,
+    data: [
+      {
+        accessor: 'Haptics.ImpactFeedbackStyle.Light',
+        value: Haptics.ImpactFeedbackStyle.Light,
+      },
+      {
+        accessor: 'Haptics.ImpactFeedbackStyle.Medium',
+        value: Haptics.ImpactFeedbackStyle.Medium,
+      },
+      {
+        accessor: 'Haptics.ImpactFeedbackStyle.Heavy',
+        value: Haptics.ImpactFeedbackStyle.Heavy,
+      },
+    ],
   },
   {
-    title: 'selection',
-    data: [''],
+    method: Haptics.selectionAsync,
+    data: [{}],
   },
 ];
 
-class HapticScreen extends React.Component {
+class HapticsScreen extends React.Component {
   static navigationOptions = {
-    title: 'Haptic Feedback',
+    title: 'Haptics Feedback',
   };
 
-  renderItem = ({ item, section: { title } }) => <Item method={title} type={item} />;
+  renderItem = ({ item, section: { method } }) => <Item method={method} type={item} />;
 
-  renderSectionHeader = ({ section: { title } }) => <Header title={title} />;
+  renderSectionHeader = ({ section: { method } }) => <Header title={method.name} />;
 
-  keyExtractor = item => `key-${item}`;
+  keyExtractor = ({ accessor, value }) => `key-${accessor}-${value}`;
 
   render() {
     return (
@@ -41,7 +67,6 @@ class HapticScreen extends React.Component {
           renderItem={this.renderItem}
           renderSectionHeader={this.renderSectionHeader}
           keyExtractor={this.keyExtractor}
-          ListFooterComponent={CannyFooter}
         />
       </View>
     );
@@ -50,20 +75,21 @@ class HapticScreen extends React.Component {
 
 class Item extends React.Component {
   get code() {
-    const { method, type } = this.props;
-
-    let writtenType = '';
-    if (type && type !== '') {
-      writtenType = `'${type}'`;
-    }
-    return `Haptic.${method}(${writtenType})`;
+    const {
+      method,
+      type: { accessor },
+    } = this.props;
+    return `Haptics.${method.name}(${accessor || ''})`;
   }
   render() {
-    const { method, type } = this.props;
+    const {
+      method,
+      type: { value },
+    } = this.props;
 
     return (
       <View style={styles.itemContainer}>
-        <HapticButton style={styles.button} method={method} type={type} />
+        <HapticButton style={styles.button} method={method} type={value} />
         <MonoText containerStyle={styles.itemText}>{this.code}</MonoText>
       </View>
     );
@@ -75,7 +101,7 @@ class Header extends React.Component {
     const { title } = this.props;
     return (
       <View style={styles.headerContainer}>
-        <Text style={styles.headerText}>{title.toUpperCase()}</Text>
+        <Text style={styles.headerText}>{title}</Text>
       </View>
     );
   }
@@ -84,7 +110,7 @@ class Header extends React.Component {
 class HapticButton extends React.Component {
   onPress = () => {
     const { method, type } = this.props;
-    Haptic[method](type);
+    method(type);
   };
   render() {
     return <Button onPress={this.onPress} style={this.props.style} title="Run" />;
@@ -129,4 +155,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HapticScreen;
+export default HapticsScreen;

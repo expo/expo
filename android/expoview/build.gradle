@@ -155,6 +155,7 @@ dependencies {
   compileOnly 'host.exp.exponent:expo-gl:2.0.0'
   compileOnly 'host.exp.exponent:expo-gl-cpp:2.0.0'
   compileOnly 'host.exp.exponent:expo-google-sign-in:2.0.0'
+  compileOnly 'host.exp.exponent:expo-haptics:1.0.0'
   compileOnly 'host.exp.exponent:expo-image-loader-interface:2.0.0'
   compileOnly 'host.exp.exponent:expo-image-manipulator:1.0.0'
   compileOnly 'host.exp.exponent:expo-image-picker:1.0.0'
@@ -217,6 +218,7 @@ dependencies {
   api project(':expo-gl')
   api project(':expo-gl-cpp')
   api project(':expo-google-sign-in')
+  api project(':expo-haptics')
   api project(':expo-image-loader-interface')
   api project(':expo-image-manipulator')
   api project(':expo-image-picker')

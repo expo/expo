@@ -38,6 +38,7 @@ async function getTestModulesAsync() {
     require('./tests/Contacts'),
     require('./tests/FileSystem'),
     require('./tests/GoogleSignIn'),
+    require('./tests/Haptics'),
     require('./tests/Localization'),
     require('./tests/Location'),
     require('./tests/Linking'),
