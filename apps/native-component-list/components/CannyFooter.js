@@ -1,5 +1,6 @@
 import React from 'react';
-import { Linking, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
+import { Linking } from 'expo';
 
 import Colors from '../constants/Colors';
 import Button from './Button';

@@ -51,11 +51,15 @@ class LinkingScreen extends React.Component {
 }
 
 class TextInputButton extends React.Component {
-  state = {
-    text: '',
-    parsedText: '',
-    canOpenText: false,
-  };
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      text: props.text,
+      parsedText: '',
+      canOpenText: false,
+    };
+  }
 
   componentDidMount() {
     this.onChangeText(this.props.text);
@@ -73,14 +77,14 @@ class TextInputButton extends React.Component {
   };
 
   handleClick = async () => {
-    const { url } = this.props;
+    const { text } = this.state;
     try {
-      const supported = await Linking.canOpenURL(url);
+      const supported = await Linking.canOpenURL(text);
 
       if (supported) {
-        Linking.openURL(url);
+        Linking.openURL(text);
       } else {
-        const message = `Don't know how to open URI: ${url}`;
+        const message = `Don't know how to open URI: ${text}`;
         console.log(message);
         alert(message);
       }
