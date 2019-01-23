@@ -116,7 +116,7 @@ dependencies {
   /* UNCOMMENT WHEN DISTRIBUTING
   api 'com.facebook.react:react-native:32.0.0'
   api 'host.exp.exponent:expo-core:2.0.0'
-  api 'host.exp.exponent:expo-constants:2.0.0'
+  api 'host.exp.exponent:expo-constants:2.0.1'
   api 'host.exp.exponent:expo-constants-interface:2.0.0'
   api 'host.exp.exponent:expo-errors:1.0.0'
   api 'host.exp.exponent:expo-permissions:2.0.0'

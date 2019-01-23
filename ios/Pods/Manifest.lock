@@ -354,7 +354,7 @@ PODS:
     - EXPermissionsInterface
   - EXCameraInterface (2.0.0):
     - EXCore
-  - EXConstants (2.0.0):
+  - EXConstants (2.0.1):
     - EXConstantsInterface
     - EXCore
   - EXConstantsInterface (2.0.0):
