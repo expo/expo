@@ -31,31 +31,56 @@ export declare enum AndroidScanMode {
     balanced = "balanced",
     opportunistic = "opportunistic"
 }
+export declare enum TransactionType {
+    get = "get",
+    rssi = "rssi",
+    connect = "connect",
+    disconnect = "disconnect",
+    scan = "scan"
+}
+export declare enum CharacteristicProperty {
+    Broadcast = "broadcast",
+    Read = "read",
+    WriteWithoutResponse = "writeWithoutResponse",
+    Write = "write",
+    Notify = "notify",
+    Indicate = "indicate",
+    AutheticateSignedWrites = "autheticateSignedWrites",
+    ExtendedProperties = "extendedProperties",
+    NotifyEncryptionRequired = "notifyEncryptionRequired",
+    IndicateEncryptionRequired = "indicateEncryptionRequired"
+}
+export declare enum Permissions {
+    Readable = "Readable",
+    Writeable = "Writeable",
+    ReadEncryptionRequired = "ReadEncryptionRequired",
+    WriteEncryptionRequired = "WriteEncryptionRequired"
+}
 export declare type Base64 = string;
 export declare type UUID = string;
 export declare type Identifier = string;
 export declare type TransactionId = string;
-export interface NodeInterface {
+export interface NativeBluetoothElement {
     id: Identifier;
     uuid: UUID;
 }
-export interface DescriptorInterface extends NodeInterface {
+export interface NativeDescriptor extends NativeBluetoothElement {
     characteristicUUID: UUID;
     value?: Base64;
 }
 export declare type NativeEventData = {
     transactionId?: TransactionId;
-    peripheral?: PeripheralInterface | null;
-    peripherals?: PeripheralInterface[];
-    characteristic?: CharacteristicInterface | null;
+    peripheral?: NativePeripheral | null;
+    peripherals?: NativePeripheral[];
+    characteristic?: NativeCharacteristic | null;
     central?: Central | null;
-    descriptor?: DescriptorInterface | null;
-    service?: ServiceInterface | null;
-    advertisementData?: AdvertismentDataInterface | null;
+    descriptor?: NativeDescriptor | null;
+    service?: NativeService | null;
+    advertisementData?: NativeAdvertismentData | null;
     rssi?: number;
-    error?: ErrorInterface | null;
+    error?: NativeError | null;
 };
-export interface ErrorInterface {
+export interface NativeError {
     message: string;
     code: string;
     domain?: string | null;
@@ -63,11 +88,11 @@ export interface ErrorInterface {
     suggestion?: string | null;
     underlayingError?: string | null;
 }
-export interface CharacteristicInterface extends NodeInterface {
+export interface NativeCharacteristic extends NativeBluetoothElement {
     serviceUUID: UUID;
     peripheralUUID: UUID;
     properties: string[];
-    descriptors: DescriptorInterface[];
+    descriptors: NativeDescriptor[];
     value: Base64 | null;
     isNotifying: boolean;
     isReadable: boolean;
@@ -76,41 +101,34 @@ export interface CharacteristicInterface extends NodeInterface {
     isNotifiable: boolean;
     isIndicatable: boolean;
 }
-export interface ServiceInterface extends NodeInterface {
+export interface NativeService extends NativeBluetoothElement {
     peripheralUUID: UUID;
     isPrimary: boolean;
-    includedServices: ServiceInterface[];
-    characteristics: CharacteristicInterface[];
+    includedServices: NativeService[];
+    characteristics: NativeCharacteristic[];
 }
-export interface AdvertismentDataInterface {
+export interface NativeAdvertismentData {
     manufacturerData: Base64 | null;
     serviceData: {
         [uuid: string]: Base64;
     } | null;
-    serviceUUIDs: Array<UUID> | null;
+    serviceUUIDs: UUID[] | null;
     localName: string | null;
     txPowerLevel: number | null;
-    solicitedServiceUUIDs: Array<UUID> | null;
+    solicitedServiceUUIDs: UUID[] | null;
     isConnectable: boolean | null;
-    overflowServiceUUIDs: Array<UUID> | null;
+    overflowServiceUUIDs: UUID[] | null;
 }
-export interface PeripheralInterface extends NodeInterface {
-    advertisementData?: AdvertismentDataInterface;
+export interface NativePeripheral extends NativeBluetoothElement {
+    advertisementData?: NativeAdvertismentData;
     name: string | null;
     rssi: number | null;
     state: PeripheralState;
     canSendWriteWithoutResponse: boolean;
-    services: ServiceInterface[];
+    services: NativeService[];
     discoveryTimestamp?: number;
 }
-export declare enum TransactionType {
-    get = "get",
-    rssi = "rssi",
-    connect = "connect",
-    disconnect = "disconnect",
-    scan = "scan"
-}
-export declare type PeripheralFoundCallback = ((peripheral: PeripheralInterface) => void);
+export declare type PeripheralFoundCallback = ((peripheral: NativePeripheral) => void);
 export declare type StateUpdatedCallback = (state: CentralState) => void;
 export declare type ScanSettings = {
     serviceUUIDsToQuery?: UUID[];
@@ -136,21 +154,4 @@ export declare type ReadCharacteristicOptions = UpdateCharacteristicOptions;
 export declare type WriteCharacteristicOptions = UpdateCharacteristicOptions & {
     data: Base64;
 };
-export declare enum CharacteristicProperty {
-    Broadcast = "broadcast",
-    Read = "read",
-    WriteWithoutResponse = "writeWithoutResponse",
-    Write = "write",
-    Notify = "notify",
-    Indicate = "indicate",
-    AutheticateSignedWrites = "autheticateSignedWrites",
-    ExtendedProperties = "extendedProperties",
-    NotifyEncryptionRequired = "notifyEncryptionRequired",
-    IndicateEncryptionRequired = "indicateEncryptionRequired"
-}
-export declare enum Permissions {
-    Readable = "Readable",
-    Writeable = "Writeable",
-    ReadEncryptionRequired = "ReadEncryptionRequired",
-    WriteEncryptionRequired = "WriteEncryptionRequired"
-}
+export declare type TransactionHandler = any;

@@ -1,40 +1,18 @@
-import { EventEmitter, Platform } from 'expo-core';
-import { UnavailabilityError } from 'expo-errors';
-import { CentralState, PeripheralState, TransactionType, CharacteristicProperty, } from './Bluetooth.types';
-export { CentralState, PeripheralState, TransactionType, CharacteristicProperty, };
+import { Platform } from 'expo-core';
+import { CentralState, CharacteristicProperty, PeripheralState, TransactionType, } from './Bluetooth.types';
+import { BLUETOOTH_EVENT, DELIMINATOR, EVENTS, TYPES } from './BluetoothConstants';
+import BluetoothError from './BluetoothError';
+import { addHandlerForKey, addListener, fireMultiEventHandlers, firePeripheralObservers, getHandlersForKey, resetHandlersForKey, } from './BluetoothEventHandler';
+import { invariantAvailability, invariantUUID } from './BluetoothInvariant';
+import { clearPeripherals, getPeripherals, updateAdvertismentDataStore, updateStateWithPeripheral, } from './BluetoothLocalState';
+import { addCallbackForTransactionId, addTransactionForId, deleteTransactionForId, getTransactionForId, getTransactions, peripheralIdFromId, removeCallbackForTransactionId, } from './BluetoothTransactions';
 import ExpoBluetooth from './ExpoBluetooth';
-// const ExpoBluetooth: {
-//   addListener: (eventName: string) => void;
-//   removeListeners: (count: number) => void;
-//   [prop: string]: any;
-// } = {
-//   addListener() {},
-//   removeListeners() {},
-//   EVENTS: {},
-// };
-let transactions = {};
-const eventEmitter = new EventEmitter(ExpoBluetooth);
-function _validateUUID(uuid) {
-    if (uuid === undefined || (typeof uuid !== 'string' && uuid === '')) {
-        throw new Error('Bluetooth: Invalid UUID provided!');
-    }
-    return uuid;
-}
-export const { EVENTS } = ExpoBluetooth;
-// Manage all of the bluetooth information.
-let _peripherals = {};
-let _advertisements = {};
-const multiEventHandlers = {
-    [EVENTS.CENTRAL_DID_DISCOVER_PERIPHERAL]: [],
-    [EVENTS.CENTRAL_DID_UPDATE_STATE]: [],
-    everything: [],
-    centralState: [],
-};
+import Transaction from './Transaction';
+export { CentralState, PeripheralState, TransactionType, CharacteristicProperty, };
+export { BLUETOOTH_EVENT, TYPES, EVENTS };
 export async function startScanAsync(scanSettings = {}) {
-    if (!ExpoBluetooth.startScanAsync) {
-        throw new UnavailabilityError('Bluetooth', 'startScanAsync');
-    }
-    const { serviceUUIDsToQuery = [], scanningOptions = {}, callback } = scanSettings;
+    invariantAvailability('startScanAsync');
+    const { serviceUUIDsToQuery = [], scanningOptions = {}, callback = function () { } } = scanSettings;
     /* Prevents the need for CBCentralManagerScanOptionAllowDuplicatesKey in the info.plist */
     const serviceUUIDsWithoutDuplicates = [...new Set(serviceUUIDsToQuery)];
     /* iOS:
@@ -45,70 +23,39 @@ export async function startScanAsync(scanSettings = {}) {
      * <i>serviceUUIDs</i> or <i>options</i>, the provided parameters will replace them.
      */
     await ExpoBluetooth.startScanAsync(serviceUUIDsWithoutDuplicates, scanningOptions);
-    if (callback instanceof Function) {
-        multiEventHandlers[EVENTS.CENTRAL_DID_DISCOVER_PERIPHERAL].push(callback);
-    }
-    return {
-        remove() {
-            if (callback instanceof Function) {
-                const index = multiEventHandlers[EVENTS.CENTRAL_DID_DISCOVER_PERIPHERAL].indexOf(callback);
-                if (index != -1) {
-                    multiEventHandlers[EVENTS.CENTRAL_DID_DISCOVER_PERIPHERAL].splice(index, 1);
-                }
-            }
-        },
-    };
+    return addHandlerForKey(EVENTS.CENTRAL_DID_DISCOVER_PERIPHERAL, callback);
 }
 export async function stopScanAsync() {
-    if (!ExpoBluetooth.stopScanAsync) {
-        throw new UnavailabilityError('Bluetooth', 'stopScanAsync');
-    }
+    invariantAvailability('stopScanAsync');
     // Remove all callbacks
-    multiEventHandlers[EVENTS.CENTRAL_DID_DISCOVER_PERIPHERAL] = [];
+    resetHandlersForKey(EVENTS.CENTRAL_DID_DISCOVER_PERIPHERAL);
     await ExpoBluetooth.stopScanAsync();
 }
 // Avoiding using "start" in passive method names
 export async function observeUpdatesAsync(callback) {
-    multiEventHandlers.everything.push(callback);
-    return {
-        remove() {
-            const index = multiEventHandlers.everything.indexOf(callback);
-            if (index != -1) {
-                multiEventHandlers.everything.splice(index, 1);
-            }
-        },
-    };
+    return addHandlerForKey('everything', callback);
 }
 export async function observeStateAsync(callback) {
     const central = await getCentralAsync();
     callback(central.state);
-    // TODO: Bacon: Is this just automatic?
-    multiEventHandlers[EVENTS.CENTRAL_DID_UPDATE_STATE].push(callback);
-    return {
-        remove() {
-            const index = multiEventHandlers[EVENTS.CENTRAL_DID_UPDATE_STATE].indexOf(callback);
-            if (index != -1) {
-                multiEventHandlers[EVENTS.CENTRAL_DID_UPDATE_STATE].splice(index, 1);
-            }
-        },
-    };
+    return addHandlerForKey(EVENTS.CENTRAL_DID_UPDATE_STATE, callback);
 }
 export async function connectAsync(options) {
-    if (!ExpoBluetooth.connectAsync) {
-        throw new UnavailabilityError('Bluetooth', 'connectAsync');
-    }
-    const peripheralUUID = _validateUUID(options.uuid);
+    invariantAvailability('connectAsync');
+    invariantUUID(options.uuid);
+    const peripheralUUID = options.uuid;
     return new Promise((resolve, reject) => {
-        const transactionId = createTransactionId({ peripheralUUID }, TransactionType.connect);
+        const transaction = new Transaction({ peripheralUUID }, TransactionType.connect);
+        const transactionId = transaction.generateId();
         let timeoutTag;
         if (options.timeout) {
             timeoutTag = setTimeout(() => {
                 disconnectAsync({ uuid: peripheralUUID });
-                delete transactions[transactionId];
+                deleteTransactionForId(transactionId);
                 reject('request timeout');
             }, options.timeout);
         }
-        transactions[transactionId] = {
+        addTransactionForId(transactionId, {
             resolve(...props) {
                 clearTimeout(timeoutTag);
                 return resolve(...props);
@@ -117,30 +64,19 @@ export async function connectAsync(options) {
                 clearTimeout(timeoutTag);
                 return reject(...props);
             },
-        };
+        });
         ExpoBluetooth.connectAsync(options);
     });
 }
 export async function disconnectAsync(options) {
-    if (!ExpoBluetooth.disconnectAsync) {
-        throw new UnavailabilityError('Bluetooth', 'disconnectAsync');
-    }
-    const peripheralUUID = _validateUUID(options.uuid);
+    invariantAvailability('disconnectAsync');
+    invariantUUID(options.uuid);
+    const peripheralUUID = options.uuid;
     return new Promise((resolve, reject) => {
-        const transactionId = createTransactionId({ peripheralUUID }, TransactionType.disconnect);
-        transactions[transactionId] = { resolve, reject };
+        const transactionId = Transaction.generateTransactionId({ peripheralUUID }, TransactionType.disconnect);
+        addTransactionForId(transactionId, { resolve, reject });
         ExpoBluetooth.disconnectAsync(options);
     });
-}
-class BluetoothError extends Error {
-    constructor({ message, code, domain, reason, suggestion, underlayingError }) {
-        super(`expo-bluetooth: ${message}`);
-        this.code = code;
-        this.domain = domain;
-        this.reason = reason;
-        this.suggestion = suggestion;
-        this.underlayingError = underlayingError;
-    }
 }
 /* TODO: Bacon: Add a return type */
 export async function readDescriptorAsync({ peripheralUUID, serviceUUID, characteristicUUID, descriptorUUID }) {
@@ -174,66 +110,17 @@ export async function writeCharacteristicAsync({ peripheralUUID, serviceUUID, ch
 export async function writeCharacteristicWithoutResponseAsync({ peripheralUUID, serviceUUID, characteristicUUID, data }) {
     return await updateCharacteristicAsync({ peripheralUUID, serviceUUID, characteristicUUID, data }, CharacteristicProperty.WriteWithoutResponse);
 }
-// export async function setCharacteristicShouldNotifyAsync({ isEnabled, peripheralUUID, serviceUUID, characteristicUUID, data }: any): Promise<any> {
-//   return await updateCharacteristicAsync({ isEnabled, peripheralUUID, serviceUUID, characteristicUUID, data }, CharacteristicProperty.Notify);
-// }
-// export async function setCharacteristicShouldIndicateAsync({ isEnabled, peripheralUUID, serviceUUID, characteristicUUID, data }: any): Promise<any> {
-//   return await updateCharacteristicAsync({ isEnabled, peripheralUUID, serviceUUID, characteristicUUID, data }, CharacteristicProperty.Indicate);
-// }
-async function updateCharacteristicAsync(options, characteristicProperties) {
-    if (!ExpoBluetooth.updateCharacteristicAsync) {
-        throw new UnavailabilityError('Bluetooth', 'updateCharacteristicAsync');
-    }
-    _validateUUID(options.peripheralUUID);
-    _validateUUID(options.serviceUUID);
-    _validateUUID(options.characteristicUUID);
-    return new Promise((resolve, reject) => {
-        const expectResponse = characteristicPropertyUpdateExpectsResponse(characteristicProperties);
-        if (expectResponse) {
-            const transactionId = createTransactionId(options, characteristicProperties);
-            transactions[transactionId] = { resolve, reject };
-        }
-        else {
-            resolve();
-        }
-        ExpoBluetooth.updateCharacteristicAsync({ ...options, characteristicProperties });
-    });
-}
-function characteristicPropertyUpdateExpectsResponse(characteristicProperty) {
-    if (characteristicProperty === CharacteristicProperty.WriteWithoutResponse) {
-        return false;
-    }
-    return true;
-}
-async function updateDescriptorAsync(options, characteristicProperties) {
-    if (!ExpoBluetooth.updateDescriptorAsync) {
-        throw new UnavailabilityError('Bluetooth', 'updateDescriptorAsync');
-    }
-    _validateUUID(options.peripheralUUID);
-    _validateUUID(options.serviceUUID);
-    _validateUUID(options.characteristicUUID);
-    _validateUUID(options.descriptorUUID);
-    return new Promise((resolve, reject) => {
-        const transactionId = createTransactionId(options, characteristicProperties);
-        transactions[transactionId] = { resolve, reject };
-        ExpoBluetooth.updateDescriptorAsync({ ...options, characteristicProperties });
-    });
-}
 export async function readRSSIAsync(peripheralUUID) {
-    if (!ExpoBluetooth.readRSSIAsync) {
-        throw new UnavailabilityError('Bluetooth', 'readRSSIAsync');
-    }
-    _validateUUID(peripheralUUID);
+    invariantAvailability('readRSSIAsync');
+    invariantUUID(peripheralUUID);
     return new Promise((resolve, reject) => {
-        const transactionId = createTransactionId({ peripheralUUID }, TransactionType.rssi);
-        transactions[transactionId] = { resolve, reject };
+        const transactionId = Transaction.generateTransactionId({ peripheralUUID }, TransactionType.rssi);
+        addTransactionForId(transactionId, { resolve, reject });
         ExpoBluetooth.readRSSIAsync({ uuid: peripheralUUID });
     });
 }
 export async function getPeripheralsAsync() {
-    if (!ExpoBluetooth.getPeripheralsAsync) {
-        throw new UnavailabilityError('Bluetooth', 'getPeripheralsAsync');
-    }
+    invariantAvailability('getPeripheralsAsync');
     // TODO: Bacon: Do we need to piggy back and get the delegate results? Or is the cached version accurate enough to return?
     return await ExpoBluetooth.getPeripheralsAsync({});
     // return new Promise((resolve, reject) => {
@@ -241,17 +128,8 @@ export async function getPeripheralsAsync() {
     //   ExpoBluetooth.getPeripheralsAsync(options);
     // })
 }
-export function getPeripherals() {
-    return _peripherals;
-}
-export function getPeripheralForId(id) {
-    const uuid = peripheralIdFromId(id);
-    return _peripherals[uuid];
-}
 export async function getCentralAsync() {
-    if (!ExpoBluetooth.getCentralAsync) {
-        throw new UnavailabilityError('Bluetooth', 'getCentralAsync');
-    }
+    invariantAvailability('getCentralAsync');
     return await ExpoBluetooth.getCentralAsync();
 }
 export async function isScanningAsync() {
@@ -290,7 +168,7 @@ export async function loadPeripheralAsync({ id }, skipConnecting = false) {
     return getPeripherals()[peripheralId];
 }
 export async function loadChildrenRecursivelyAsync({ id }) {
-    const components = id.split('|');
+    const components = id.split(DELIMINATOR);
     console.log({ components });
     if (components.length === 4) {
         // Descriptor ID
@@ -345,9 +223,9 @@ addListener(({ data, event }) => {
             // TODO: Bacon: Handle the case where a peripheral disconnects from the central randomly.
             firePeripheralObservers();
         }
-        if (transactionId in transactions) {
-            const { resolve, reject, callbacks } = transactions[transactionId];
-            console.log('Handle: ', { transactionId, transactions: Object.keys(transactions), event, data: Object.keys(data) });
+        if (transactionId in getTransactions()) {
+            const { resolve, reject, callbacks } = getTransactionForId(transactionId);
+            console.log('Handle: ', { transactionId, transactions: Object.keys(getTransactions()), event, data: Object.keys(data) });
             if (callbacks) {
                 for (let callback of callbacks) {
                     if (callback instanceof Function) {
@@ -376,19 +254,19 @@ addListener(({ data, event }) => {
                     const { error, ...outputData } = data;
                     resolve(outputData);
                 }
-                delete transactions[transactionId];
+                deleteTransactionForId(transactionId);
                 return;
             }
             else {
                 console.log('Throwing Error because no callback is found for transactionId: ', {
                     data,
-                    transactions,
+                    transactions: getTransactions()
                 });
                 throw new Error('Unknown error');
             }
         }
         else {
-            console.log('Unhandled transactionId', { transactionId, transactions: Object.keys(transactions), event, data: Object.keys(data) });
+            console.log('Unhandled transactionId', { transactionId, transactions: Object.keys(getTransactions()), event, data: Object.keys(data) });
             // throw new Error('Unhandled transactionId');
         }
     }
@@ -399,7 +277,6 @@ addListener(({ data, event }) => {
                 firePeripheralObservers();
                 return;
             case EVENTS.CENTRAL_DID_UPDATE_STATE:
-                console.log('CENTRAL DID UPDATE STATE', event);
                 if (!central) {
                     throw new Error('EXBluetooth: Central not defined while processing: ' + event);
                 }
@@ -408,11 +285,11 @@ addListener(({ data, event }) => {
                     const peripheralsAreStillValid = central.state == CentralState.PoweredOff || central.state === CentralState.PoweredOn;
                     if (!peripheralsAreStillValid) {
                         // Clear caches
-                        _peripherals = {};
+                        clearPeripherals();
                         firePeripheralObservers();
                     }
                 }
-                for (const callback of multiEventHandlers[event]) {
+                for (const callback of getHandlersForKey(event)) {
                     callback(central.state);
                 }
                 return;
@@ -425,103 +302,58 @@ addListener(({ data, event }) => {
     }
 });
 // Interactions
-function createTransactionId(options, transactionType) {
-    let targets = [transactionType];
-    if (options.peripheralUUID)
-        targets.push(options.peripheralUUID);
-    if (options.serviceUUID)
-        targets.push(options.serviceUUID);
-    if (options.characteristicUUID)
-        targets.push(options.characteristicUUID);
-    if (options.descriptorUUID)
-        targets.push(options.descriptorUUID);
-    return targets.join('|');
-}
-function addListener(listener) {
-    console.log("Listen to ", ExpoBluetooth.BLUETOOTH_EVENT);
-    const subscription = eventEmitter.addListener(ExpoBluetooth.BLUETOOTH_EVENT, listener);
-    return subscription;
-}
-// TODO: Bacon: How do we plan on calling this...
-function removeAllListeners() {
-    eventEmitter.removeAllListeners(ExpoBluetooth.BLUETOOTH_EVENT);
-}
-function updateStateWithPeripheral(peripheral) {
-    const { [peripheral.id]: currentPeripheral = {
-        discoveryTimestamp: Date.now(),
-        advertisementData: undefined,
-        rssi: null,
-    }, ...others } = _peripherals;
-    _peripherals = {
-        ...others,
-        [peripheral.id]: {
-            discoveryTimestamp: currentPeripheral.discoveryTimestamp,
-            advertisementData: currentPeripheral.advertisementData,
-            rssi: currentPeripheral.rssi,
-            // ...currentPeripheral,
-            ...peripheral,
-        },
-    };
-}
-function updateAdvertismentDataStore(peripheralId, advertisementData) {
-    const { [peripheralId]: current = {}, ...others } = _advertisements;
-    _advertisements = {
-        ...others,
-        [peripheralId]: {
-            peripheralId,
-            // ...current,
-            ...advertisementData,
-        },
-    };
-}
-function firePeripheralObservers() {
-    for (const subscription of multiEventHandlers.everything) {
-        subscription({ peripherals: getPeripherals() });
-    }
-}
-function fireMultiEventHandlers(event, { central, peripheral }) {
-    for (const callback of multiEventHandlers[event]) {
-        callback({ central, peripheral });
-    }
-}
-function peripheralIdFromId(id) {
-    return id.split('|')[0];
-}
 async function discoverAsync(options) {
-    if (!ExpoBluetooth.discoverAsync) {
-        throw new UnavailabilityError('Bluetooth', 'discoverAsync');
-    }
+    invariantAvailability('discoverAsync');
     const { serviceUUIDsToQuery, id } = options;
-    const [peripheralUUID, serviceUUID, characteristicUUID, descriptorUUID] = id.split('|');
-    const transactionId = createTransactionId({ peripheralUUID, serviceUUID, characteristicUUID, descriptorUUID }, TransactionType.scan);
+    const transaction = Transaction.fromTransactionId(id);
+    transaction.setType(TransactionType.scan);
     return new Promise((resolve, reject) => {
-        console.log("discoverAsync(): ", transactionId);
-        addCallbackForTransactionId({ resolve, reject }, transactionId);
+        addCallbackForTransactionId({ resolve, reject }, transaction.generateId());
         ExpoBluetooth.discoverAsync({
-            peripheralUUID,
-            serviceUUID,
-            characteristicUUID,
+            ...transaction.getUUIDs(),
             serviceUUIDsToQuery,
         });
     });
 }
-function ensureCallbacksArrayForTransactionId(transactionId) {
-    if (!(transactionId in transactions) || !Array.isArray(transactions[transactionId].callbacks)) {
-        transactions[transactionId] = { callbacks: [] };
-    }
-}
-function addCallbackForTransactionId(callback, transactionId) {
-    ensureCallbacksArrayForTransactionId(transactionId);
-    transactions[transactionId].callbacks.push(callback);
-}
-function removeCallbackForTransactionId(callback, transactionId) {
-    ensureCallbacksArrayForTransactionId(transactionId);
-    const index = transactions[transactionId].callbacks.indexOf(callback);
-    if (index != -1) {
-        transactions[transactionId].callbacks.splice(index, 1);
-        if (transactions[transactionId].callbacks.length === 0) {
-            delete transactions[transactionId];
+// export async function setCharacteristicShouldNotifyAsync({ isEnabled, peripheralUUID, serviceUUID, characteristicUUID, data }: any): Promise<any> {
+//   return await updateCharacteristicAsync({ isEnabled, peripheralUUID, serviceUUID, characteristicUUID, data }, CharacteristicProperty.Notify);
+// }
+// export async function setCharacteristicShouldIndicateAsync({ isEnabled, peripheralUUID, serviceUUID, characteristicUUID, data }: any): Promise<any> {
+//   return await updateCharacteristicAsync({ isEnabled, peripheralUUID, serviceUUID, characteristicUUID, data }, CharacteristicProperty.Indicate);
+// }
+async function updateCharacteristicAsync(options, characteristicProperties) {
+    invariantAvailability('updateCharacteristicAsync');
+    invariantUUID(options.peripheralUUID);
+    invariantUUID(options.serviceUUID);
+    invariantUUID(options.characteristicUUID);
+    return new Promise((resolve, reject) => {
+        const expectResponse = characteristicPropertyUpdateExpectsResponse(characteristicProperties);
+        if (expectResponse) {
+            const transactionId = Transaction.generateTransactionId(options, characteristicProperties);
+            addTransactionForId(transactionId, { resolve, reject });
         }
+        else {
+            resolve();
+        }
+        ExpoBluetooth.updateCharacteristicAsync({ ...options, characteristicProperties });
+    });
+}
+function characteristicPropertyUpdateExpectsResponse(characteristicProperty) {
+    if (characteristicProperty === CharacteristicProperty.WriteWithoutResponse) {
+        return false;
     }
+    return true;
+}
+async function updateDescriptorAsync(options, characteristicProperties) {
+    invariantAvailability('updateDescriptorAsync');
+    invariantUUID(options.peripheralUUID);
+    invariantUUID(options.serviceUUID);
+    invariantUUID(options.characteristicUUID);
+    invariantUUID(options.descriptorUUID);
+    return new Promise((resolve, reject) => {
+        const transactionId = Transaction.generateTransactionId(options, characteristicProperties);
+        addTransactionForId(transactionId, { resolve, reject });
+        ExpoBluetooth.updateDescriptorAsync({ ...options, characteristicProperties });
+    });
 }
 //# sourceMappingURL=Bluetooth.js.map

@@ -36,92 +36,6 @@ export enum AndroidScanMode {
   opportunistic = 'opportunistic',
 }
 
-/* Types */
-export type Base64 = string;
-export type UUID = string;
-export type Identifier = string;
-export type TransactionId = string;
-
-export interface NodeInterface {
-  id: Identifier;
-  uuid: UUID;
-  //TODO:Bacon: Maybe add a type like peripheral, service, characteristc, descriptor
-}
-
-export interface DescriptorInterface extends NodeInterface {
-  characteristicUUID: UUID;
-  value?: Base64;
-}
-
-export type NativeEventData = {
-  transactionId?: TransactionId;
-  peripheral?: PeripheralInterface | null;
-  peripherals?: PeripheralInterface[];
-  characteristic?: CharacteristicInterface | null;
-  central?: Central | null;
-  descriptor?: DescriptorInterface | null;
-  service?: ServiceInterface | null;
-  advertisementData?: AdvertismentDataInterface | null;
-  rssi?: number;
-  error?: ErrorInterface | null;
-};
-
-export interface ErrorInterface {
-  message: string;
-  code: string;
-  domain?: string | null;
-  reason?: string | null;
-  suggestion?: string | null;
-  underlayingError?: string | null;
-}
-
-export interface CharacteristicInterface extends NodeInterface {
-  serviceUUID: UUID;
-  peripheralUUID: UUID;
-  properties: string[]; // TODO: Bacon: more specific
-  descriptors: DescriptorInterface[];
-  value: Base64 | null;
-  isNotifying: boolean;
-
-  //TODO: Bacon: Add
-  isReadable: boolean;
-  isWritableWithResponse: boolean;
-  isWritableWithoutResponse: boolean;
-  isNotifiable: boolean;
-  isIndicatable: boolean;
-}
-
-export interface ServiceInterface extends NodeInterface {
-  peripheralUUID: UUID;
-  isPrimary: boolean;
-  includedServices: ServiceInterface[];
-  characteristics: CharacteristicInterface[];
-}
-
-export interface AdvertismentDataInterface {
-  manufacturerData: Base64 | null;
-  serviceData: { [uuid: string]: Base64 } | null;
-  serviceUUIDs: Array<UUID> | null;
-  localName: string | null;
-  txPowerLevel: number | null;
-  solicitedServiceUUIDs: Array<UUID> | null;
-  isConnectable: boolean | null;
-  overflowServiceUUIDs: Array<UUID> | null;
-}
-
-export interface PeripheralInterface extends NodeInterface {
-  advertisementData?: AdvertismentDataInterface;
-  name: string | null;
-  rssi: number | null;
-  state: PeripheralState;
-  canSendWriteWithoutResponse: boolean;
-  services: ServiceInterface[];
-  // Android
-  // mtu: number;
-  // JS
-  discoveryTimestamp?: number;
-}
-
 export enum TransactionType {
   get = 'get',
   rssi = 'rssi',
@@ -129,41 +43,6 @@ export enum TransactionType {
   disconnect = 'disconnect',
   scan = 'scan',
 }
-
-export type PeripheralFoundCallback = ((peripheral: PeripheralInterface) => void);
-
-export type StateUpdatedCallback = (state: CentralState) => void;
-
-export type ScanSettings = {
-  serviceUUIDsToQuery?: UUID[];
-  scanningOptions?: any; //TODO: Bacon: This is where the iOS multi-scan value would be defined.
-  callback?: PeripheralFoundCallback;
-};
-
-export interface Central {
-  state: CentralState;
-  isScanning: boolean;
-}
-
-export type UpdateDescriptorOptions = {
-  descriptorUUID?: UUID;
-};
-
-export type UpdateOptions = {
-  peripheralUUID: UUID;
-  serviceUUID: UUID;
-  characteristicUUID: UUID;
-};
-
-export type UpdateCharacteristicOptions = UpdateOptions & {
-  isEnabled?: boolean;
-};
-
-export type ReadCharacteristicOptions = UpdateCharacteristicOptions;
-
-export type WriteCharacteristicOptions = UpdateCharacteristicOptions & {
-  data: Base64;
-};
 
 export enum CharacteristicProperty {
   /* Permits broadcasts of the characteristic value using a characteristic configuration descriptor.
@@ -203,3 +82,131 @@ export enum Permissions {
   /* Writeable by trusted devices. */
   WriteEncryptionRequired = 'WriteEncryptionRequired',
 }
+
+/* Types */
+export type Base64 = string;
+export type UUID = string;
+export type Identifier = string;
+export type TransactionId = string;
+
+export interface NativeBluetoothElement {
+  id: Identifier;
+  uuid: UUID;
+  //TODO:Bacon: Maybe add a type like peripheral, service, characteristc, descriptor
+}
+
+export interface NativeDescriptor extends NativeBluetoothElement {
+  characteristicUUID: UUID;
+  value?: Base64;
+}
+
+export type NativeEventData = {
+  transactionId?: TransactionId;
+  peripheral?: NativePeripheral | null;
+  peripherals?: NativePeripheral[];
+  characteristic?: NativeCharacteristic | null;
+  central?: Central | null;
+  descriptor?: NativeDescriptor | null;
+  service?: NativeService | null;
+  advertisementData?: NativeAdvertismentData | null;
+  rssi?: number;
+  error?: NativeError | null;
+};
+
+export interface NativeError {
+  message: string;
+  code: string;
+  domain?: string | null;
+  reason?: string | null;
+  suggestion?: string | null;
+  underlayingError?: string | null;
+}
+
+export interface NativeCharacteristic extends NativeBluetoothElement {
+  serviceUUID: UUID;
+  peripheralUUID: UUID;
+  properties: string[]; // TODO: Bacon: more specific
+  descriptors: NativeDescriptor[];
+  value: Base64 | null;
+  isNotifying: boolean;
+
+  //TODO: Bacon: Add
+  isReadable: boolean;
+  isWritableWithResponse: boolean;
+  isWritableWithoutResponse: boolean;
+  isNotifiable: boolean;
+  isIndicatable: boolean;
+}
+
+export interface NativeService extends NativeBluetoothElement {
+  peripheralUUID: UUID;
+  isPrimary: boolean;
+  includedServices: NativeService[];
+  characteristics: NativeCharacteristic[];
+}
+
+export interface NativeAdvertismentData {
+  manufacturerData: Base64 | null;
+  serviceData: { [uuid: string]: Base64 } | null;
+  serviceUUIDs: UUID[] | null;
+  localName: string | null;
+  txPowerLevel: number | null;
+  solicitedServiceUUIDs: UUID[] | null;
+  isConnectable: boolean | null;
+  overflowServiceUUIDs: UUID[] | null;
+}
+
+export interface NativePeripheral extends NativeBluetoothElement {
+  advertisementData?: NativeAdvertismentData;
+  name: string | null;
+  rssi: number | null;
+  state: PeripheralState;
+  canSendWriteWithoutResponse: boolean;
+  services: NativeService[];
+  // Android
+  // mtu: number;
+  // JS
+  discoveryTimestamp?: number;
+}
+
+export type PeripheralFoundCallback = ((peripheral: NativePeripheral) => void);
+
+export type StateUpdatedCallback = (state: CentralState) => void;
+
+export type ScanSettings = {
+  serviceUUIDsToQuery?: UUID[];
+  scanningOptions?: any; //TODO: Bacon: This is where the iOS multi-scan value would be defined.
+  callback?: PeripheralFoundCallback;
+};
+
+export interface Central {
+  state: CentralState;
+  isScanning: boolean;
+}
+
+export type UpdateDescriptorOptions = {
+  descriptorUUID?: UUID;
+};
+
+export type UpdateOptions = {
+  peripheralUUID: UUID;
+  serviceUUID: UUID;
+  characteristicUUID: UUID;
+};
+
+export type UpdateCharacteristicOptions = UpdateOptions & {
+  isEnabled?: boolean;
+};
+
+export type ReadCharacteristicOptions = UpdateCharacteristicOptions;
+
+export type WriteCharacteristicOptions = UpdateCharacteristicOptions & {
+  data: Base64;
+};
+
+// export type TransactionHandler = { callbacks: Array<Function | Promise<any>> } | Promise<any>;
+type Prom = {
+  resolve: Function;
+  reject: Function;
+};
+export type TransactionHandler = any; // { callbacks: Array<Function | Prom> } | Prom;
