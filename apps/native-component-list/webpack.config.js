@@ -61,13 +61,27 @@ const includeModule = module => {
   return path.resolve(locations.modules, module);
 };
 
+// Only compile files from react-native, and expo libraries.
+const includeModulesThatContainPaths = [
+  'node_modules/react-native',
+  'node_modules/react-navigation',
+  'node_modules/expo',
+  'node_modules/@react',
+  'node_modules/@expo/',
+  // Special case for this app
+  'apps/native-component-list',
+];
+
 const babelLoaderConfiguration = {
   test: /\.jsx?$/,
-  include: [
-    // TODO: Bacon: This makes compilation take a while
-    locations.root,
-    locations.modules,
-  ],
+  include(inputPath) {
+    for (const option of includeModulesThatContainPaths) {
+      if (inputPath.includes(option)) {
+        return inputPath;
+      }
+    }
+    return null;
+  },
   use: {
     loader: 'babel-loader',
     options: {

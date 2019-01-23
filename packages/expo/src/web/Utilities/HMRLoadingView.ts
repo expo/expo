@@ -1,5 +1,4 @@
 export default class HMRLoadingView {
-  static showMessage() {}
-
-  static hide() {}
+  static showMessage(): void {}
+  static hide(): void {}
 }
