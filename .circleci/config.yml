@@ -34,6 +34,8 @@ commands:
       - run: echo 'eval "$(direnv export bash)"' >> ~/.bash_profile
       - run: echo '--frozen-lockfile true' >> ~/.yarnrc
       - checkout
+      - run: git submodule sync
+      - run: git submodule update --init
   decrypt_secrets_if_possible:
     steps:
       - run: |
