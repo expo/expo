@@ -348,6 +348,8 @@ PODS:
     - EXCore
   - EXBarCodeScannerInterface (2.0.0):
     - EXCore
+  - EXBlur (1.0.0):
+    - EXCore
   - EXCamera (2.0.0):
     - EXBarCodeScannerInterface
     - EXCore
@@ -1270,6 +1272,7 @@ DEPENDENCIES:
   - EXBackgroundFetch (from `../packages/expo-background-fetch/ios`)
   - EXBarCodeScanner (from `../packages/expo-barcode-scanner/ios`)
   - EXBarCodeScannerInterface (from `../packages/expo-barcode-scanner-interface/ios`)
+  - EXBlur (from `../packages/expo-blur/ios`)
   - EXCamera (from `../packages/expo-camera/ios`)
   - EXCameraInterface (from `../packages/expo-camera-interface/ios`)
   - EXConstants (from `../packages/expo-constants/ios`)
@@ -1708,6 +1711,8 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-barcode-scanner/ios"
   EXBarCodeScannerInterface:
     :path: "../packages/expo-barcode-scanner-interface/ios"
+  EXBlur:
+    :path: "../packages/expo-blur/ios"
   EXCamera:
     :path: "../packages/expo-camera/ios"
   EXCameraInterface:
@@ -1939,6 +1944,7 @@ SPEC CHECKSUMS:
   EXBackgroundFetch: 1b5444a094fc71e0361c80720482946c4388c9b7
   EXBarCodeScanner: 0ed39b41ccec72935521823eceed3d60c73fc43d
   EXBarCodeScannerInterface: 4453aa03ca1e0a1c9b320aaf4ce5b7d88064d192
+  EXBlur: 33a24162664da1367d5454366341b01ad7d9506d
   EXCamera: 00936f79aafe16125c6cdc7c7ea2bf2d2c976dfe
   EXCameraInterface: 6d990173e3f6355e575f44b38dcf61d0c90bc47e
   EXConstants: 4ab8da18840ebae518e15541164fbaf7907e58c2
@@ -2010,6 +2016,6 @@ SPEC CHECKSUMS:
   yogaABI31_0_0: 7978689ddccec43cffd5914889304cf3b7fd7c77
   yogaABI32_0_0: b6e0ba3796cd5e47ccea0454694e605a1cfc817a
 
-PODFILE CHECKSUM: e2aeb76352b32c59278b6ef62371b4b369bab139
+PODFILE CHECKSUM: e26757350ac4c4ea73d1c85245a905d705460f0d
 
 COCOAPODS: 1.5.3
