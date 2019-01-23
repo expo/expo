@@ -22,14 +22,14 @@ interface BackgroundFetchOptions {
 
 export async function getStatusAsync(): Promise<BackgroundFetchStatus | null> {
   if (Platform.OS !== 'ios') {
-    return Promise.resolve(BackgroundFetchStatus.Available);
+    return BackgroundFetchStatus.Available;
   }
   return ExpoBackgroundFetch.getStatusAsync();
 }
 
 export async function setMinimumIntervalAsync(minimumInterval: number): Promise<void> {
   if (Platform.OS !== 'ios') {
-    return Promise.resolve();
+    return;
   }
   await ExpoBackgroundFetch.setMinimumIntervalAsync(minimumInterval);
 }
