@@ -6,3 +6,6 @@
   url = git@github.com:expo/react-native.git
   branch = exp-latest
   update = checkout
+[submodule "packages/expo-blur"]
+	path = packages/expo-blur
+	url = git@github.com:expo/react-native-blur.git

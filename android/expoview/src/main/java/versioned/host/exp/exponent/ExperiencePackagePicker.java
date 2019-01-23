@@ -12,6 +12,7 @@ import expo.modules.appauth.AppAuthPackage;
 import expo.modules.av.AVPackage;
 import expo.modules.backgroundfetch.BackgroundFetchPackage;
 import expo.modules.barcodescanner.BarCodeScannerPackage;
+import expo.modules.blurview.BlurViewPackage;
 import expo.modules.camera.CameraPackage;
 import expo.modules.constants.ConstantsPackage;
 import expo.modules.contacts.ContactsPackage;
@@ -62,7 +63,8 @@ public class ExperiencePackagePicker {
       new BackgroundFetchPackage(),
       new MailComposerPackage(),
       new AVPackage(),
-      new SQLitePackage()
+      new SQLitePackage(),
+      new BlurViewPackage()
   );
 
   /**

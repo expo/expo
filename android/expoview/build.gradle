@@ -190,6 +190,7 @@ dependencies {
   api project(':expo-background-fetch')
   api project(':expo-barcode-scanner')
   api project(':expo-barcode-scanner-interface')
+  api project(':expo-blur')
   api project(':expo-camera')
   api project(':expo-camera-interface')
   api project(':expo-contacts')
