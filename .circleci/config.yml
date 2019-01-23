@@ -191,6 +191,9 @@ jobs:
           working_directory: ~/expo/packages/expo-camera
       - yarn:
           command: test --maxWorkers 1
+          working_directory: ~/expo/packages/expo-facebook
+      - yarn:
+          command: test --maxWorkers 1
           working_directory: ~/expo/packages/expo-font
       - yarn:
           command: test --maxWorkers 1
