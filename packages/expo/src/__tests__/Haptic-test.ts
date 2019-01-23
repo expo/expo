@@ -1,10 +1,15 @@
 import { UnavailabilityError } from 'expo-errors';
-import { Platform } from 'expo-core';
+import { NativeModules, Platform } from 'react-native';
+
+import {
+  mockPlatformAndroid,
+  mockPlatformWeb,
+  mockProperty,
+  unmockAllProperties,
+} from '../../test/mocking';
 import * as Haptic from '../Haptic/Haptic';
 
-const unavailableMessage = `is unavailable on ${Platform.OS}`;
-
-async function executeFailingMethod(method, name) {
+async function executeUnavailableMethod(method, name) {
   try {
     await method();
     expect(name).toBe('a failing method');
@@ -13,90 +18,72 @@ async function executeFailingMethod(method, name) {
   }
 }
 
+function applyMocks() {
+  mockPlatformWeb();
+  ['selection', 'impact', 'notification'].forEach(methodName => {
+    mockProperty(NativeModules.ExponentHaptic, methodName, null);
+  });
+}
+
 describe('Haptic', () => {
-  if (Platform.OS === 'ios') {
+  describe('iOS', () => {
     describe('selection()', () => {
       it("Doesn't throw an error", async () => {
-        let resultingError;
-        try {
-          await Haptic.selection();
-        } catch (error) {
-          resultingError = error;
-        }
-        expect(resultingError).toBeUndefined();
+        await Haptic.selection();
       });
     });
     describe('impact()', () => {
       it("Doesn't throw an error", async () => {
-        let resultingError;
-        try {
-          await Haptic.impact();
-        } catch (error) {
-          resultingError = error;
-        }
-        expect(resultingError).toBeUndefined();
+        await Haptic.impact();
       });
       it('Throws an error when an unexpected type is provided', async () => {
-        let resultingError;
-        try {
-          await Haptic.impact('James Ide' as any);
-        } catch (error) {
-          resultingError = error;
-        }
-        expect(resultingError).toBeDefined();
+        const invalidInput: any = 'invalid input';
+        expect(Haptic.impact(invalidInput)).rejects.toThrowError('Invariant Violation');
       });
       it('Can perform any impact style', async () => {
         const { Light, Medium, Heavy } = Haptic.ImpactFeedbackStyle;
         for (const style of [Light, Medium, Heavy]) {
-          let resultingError;
-          try {
-            await Haptic.impact(style as Haptic.ImpactFeedbackStyle);
-          } catch (error) {
-            resultingError = error;
-          }
-          expect(resultingError).toBeUndefined();
+          await Haptic.impact(style as Haptic.ImpactFeedbackStyle);
         }
       });
     });
     describe('notification()', () => {
       it("Doesn't throw an error", async () => {
-        let resultingError;
-        try {
-          await Haptic.notification();
-        } catch (error) {
-          resultingError = error;
-        }
-        expect(resultingError).toBeUndefined();
+        await Haptic.notification();
       });
       it('Throws an error when an unexpected type is provided', async () => {
-        let resultingError;
-        try {
-          await Haptic.notification('SSBU' as any);
-        } catch (error) {
-          resultingError = error;
-        }
-        expect(resultingError).toBeDefined();
+        const invalidInput: any = 'invalid input';
+        expect(Haptic.notification(invalidInput)).rejects.toThrowError('Invariant Violation');
       });
       it('Can perform any notification type', async () => {
         const { Warning, Success, Error } = Haptic.NotificationFeedbackType;
         for (const type of [Warning, Success, Error]) {
-          let resultingError;
-          try {
-            await Haptic.notification(type);
-          } catch (error) {
-            resultingError = error;
-          }
-          expect(resultingError).toBeUndefined();
+          await Haptic.notification(type);
         }
       });
     });
-  } else {
-    ['selection', 'impact', 'notification'].map(unsupportedMethod => {
-      describe(`Haptic.${unsupportedMethod}()`, () => {
-        it(unavailableMessage, () =>
-          executeFailingMethod(Haptic[unsupportedMethod], unsupportedMethod)
-        );
+  });
+
+  ['selection', 'impact', 'notification'].forEach(unsupportedMethod => {
+    describeUnsupportedPlatforms(`Haptic.${unsupportedMethod}()`, () => {
+      it(`is unavailable on ${Platform.OS}`, () => {
+        executeUnavailableMethod(Haptic[unsupportedMethod], unsupportedMethod);
       });
     });
-  }
+  });
 });
+
+export function describeUnsupportedPlatforms(message, tests) {
+  describe(`🕸  ${message}`, () => {
+    beforeEach(applyMocks);
+    mockPlatformWeb();
+    tests();
+    afterAll(unmockAllProperties);
+  });
+  describe(`🤖 ${message}`, () => {
+    beforeEach(applyMocks);
+    mockPlatformAndroid();
+    tests();
+    afterAll(unmockAllProperties);
+  });
+}
