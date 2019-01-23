@@ -22,15 +22,37 @@ const locations = {
   modules: absolutePath('../../node_modules'),
 };
 
-let appManifest;
-try {
-  const PWAManifest = require(absolutePath('./web/manifest.json'));
-  appManifest = PWAManifest || {};
-} catch (error) {
+function getAppManifest() {
   const nativeAppManifest = require(absolutePath('./app.json'));
-  appManifest = nativeAppManifest || {};
-}
 
+  if (nativeAppManifest && nativeAppManifest.expo) {
+    const { expo } = nativeAppManifest;
+    const PWAManifest = require(absolutePath('./web/manifest.json'));
+    const web = PWAManifest || {};
+
+    return {
+      // facebookScheme
+      // facebookAppId
+      // facebookDisplayName
+      name: expo.name,
+      description: expo.description,
+      slug: expo.slug,
+      sdkVersion: expo.sdkVersion,
+      version: expo.version,
+      githubUrl: expo.githubUrl,
+      orientation: expo.orientation,
+      primaryColor: expo.primaryColor,
+      privacy: expo.privacy,
+      icon: expo.icon,
+      scheme: expo.scheme,
+      notification: expo.notification,
+      splash: expo.splash,
+      androidShowExponentNotificationInShellApp: expo.androidShowExponentNotificationInShellApp,
+      web,
+    };
+  }
+  return {};
+}
 const environment = process.env.NODE_ENV || 'development';
 const __DEV__ = environment !== 'production';
 
@@ -58,7 +80,7 @@ function getClientEnvironment(publicUrl) {
         PUBLIC_URL: JSON.stringify(publicUrl),
 
         // Surface the manifest for use in expo-constants
-        APP_MANIFEST: JSON.stringify(appManifest),
+        APP_MANIFEST: JSON.stringify(getAppManifest()),
       }
     );
   return {

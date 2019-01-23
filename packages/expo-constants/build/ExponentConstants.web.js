@@ -36,7 +36,7 @@ export default {
     },
     get deviceName() {
         const { browser, engine, os: OS } = parser.getResult();
-        return `${browser.name || engine.name || OS.name}`;
+        return browser.name || engine.name || OS.name || null;
     },
     get systemFonts() {
         // TODO: Bacon: Maybe possible.
@@ -51,12 +51,7 @@ export default {
         return null;
     },
     get manifest() {
-        let manifest;
-        // Bacon: Get manifest from webpack.config.js
-        if (process) {
-            manifest = process.env.APP_MANIFEST;
-        }
-        return manifest || {};
+        return process.env.APP_MANIFEST || {};
     },
     async getWebViewUserAgentAsync() {
         return navigator.userAgent;
