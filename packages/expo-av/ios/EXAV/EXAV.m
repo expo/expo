@@ -124,6 +124,12 @@ EX_EXPORT_MODULE(ExponentAV);
 - (void)onAppBackgrounded
 {
   _isBackgrounded = YES;
+  NSBundle* mainBundle = [NSBundle mainBundle];
+  NSNumber *n = [mainBundle objectForInfoDictionaryKey:@"KeepBackgroundAvActiveDuringLock"];
+  int nInt = [n intValue];
+  if (nInt == 1) {
+    return;
+  }
   [self _deactivateAudioSession]; // This will pause all players and stop all recordings
   
   [self _runBlockForAllAVObjects:^(NSObject<EXAVObject> *exAVObject) {
