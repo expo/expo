@@ -1,4 +1,4 @@
-#import "EXFacebook.h"
+#import "EXFacebookAdHelper.h"
 #import "EXInterstitialAdManager.h"
 #import "EXUnversioned.h"
 #import "EXUtil.h"
@@ -47,7 +47,7 @@ RCT_EXPORT_METHOD(
 {
   RCTAssert(_resolve == nil && _reject == nil, @"Only one `showAd` can be called at once");
   RCTAssert(_isBackground == false, @"`showAd` can be called only when experience is running in foreground");
-  if (![EXFacebook facebookAppIdFromNSBundle]) {
+  if (![EXFacebookAdHelper facebookAppIdFromNSBundle]) {
     RCTLogWarn(@"No Facebook app id is specified. Facebook ads may have undefined behavior.");
   }
   
