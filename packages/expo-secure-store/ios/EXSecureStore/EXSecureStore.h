@@ -1,8 +1,7 @@
-// Copyright 2015-present 650 Industries. All rights reserved.
+//  Copyright © 2018 650 Industries. All rights reserved.
 
-#import "EXScopedBridgeModule.h"
-
-@class EXSecureStore;
+#import <EXCore/EXExportedModule.h>
+#import <EXCore/EXModuleRegistryConsumer.h>
 
 typedef NS_ENUM(NSInteger, EXSecureStoreAccessible) {
   EXSecureStoreAccessibleAfterFirstUnlock = 0,
@@ -14,6 +13,6 @@ typedef NS_ENUM(NSInteger, EXSecureStoreAccessible) {
   EXSecureStoreAccessibleWhenUnlockedThisDeviceOnly = 6
 };
 
-@interface EXSecureStore: EXScopedBridgeModule
+@interface EXSecureStore : EXExportedModule
 
 @end

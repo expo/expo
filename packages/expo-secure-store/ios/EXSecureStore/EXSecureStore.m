@@ -1,36 +1,25 @@
-//
-//  EXSecureStore.m
-//  Exponent
-//
-//  Created by Craig Cronin on 7/14/17.
-//  Copyright © 2017 650 Industries. All rights reserved.
-//
+//  Copyright © 2018 650 Industries. All rights reserved.
 
-#import "EXSecureStore.h"
-#import "EXScopedModuleRegistry.h"
+#import <EXSecureStore/EXSecureStore.h>
 
 #import <CommonCrypto/CommonHMAC.h>
-#import <React/RCTUtils.h>
-#import <React/RCTConvert.h>
 #import <Security/Security.h>
 
-@implementation RCTConvert (EXSecureStore)
+@interface EXSecureStore ()
 
-RCT_ENUM_CONVERTER(EXSecureStoreAccessible, (@{
-                                               @"AFTER_FIRST_UNLOCK":@(EXSecureStoreAccessibleAfterFirstUnlock),
-                                               @"AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY":@(EXSecureStoreAccessibleAfterFirstUnlockThisDeviceOnly),
-                                               @"ALWAYS":@(EXSecureStoreAccessibleAlways),
-                                               @"WHEN_PASSCODE_SET_THIS_DEVICE_ONLY":@(EXSecureStoreAccessibleWhenPasscodeSetThisDeviceOnly),
-                                               @"ALWAYS_THIS_DEVICE_ONLY":@(EXSecureStoreAccessibleAlwaysThisDeviceOnly),
-                                               @"WHEN_UNLOCKED":@(EXSecureStoreAccessibleWhenUnlocked),
-                                               @"WHEN_UNLOCKED_THIS_DEVICE_ONLY":@(EXSecureStoreAccessibleWhenUnlockedThisDeviceOnly),
-                                               }), EXSecureStoreAccessibleWhenUnlocked, integerValue)
+@property (strong, nonatomic) NSString *experienceId;
 
 @end
 
 @implementation EXSecureStore
 
-@synthesize bridge = _bridge;
+- (instancetype)initWithExperienceId:(NSString *)experienceId
+{
+  if (self = [super init]) {
+    _experienceId = experienceId;
+  }
+  return self;
+}
 
 #pragma mark - internal
 
@@ -44,7 +33,7 @@ RCT_ENUM_CONVERTER(EXSecureStoreAccessible, (@{
                                   (__bridge id)kSecAttrGeneric:encodedKey,
                                   (__bridge id)kSecAttrAccount:encodedKey
                                   } mutableCopy];
-  
+
   return query;
 }
 
@@ -52,15 +41,15 @@ RCT_ENUM_CONVERTER(EXSecureStoreAccessible, (@{
 {
   NSMutableDictionary *dictionary = [self _queryWithKey:key
                                             withOptions:options];
-  
+
   NSData *valueData = [value dataUsingEncoding:NSUTF8StringEncoding];
   [dictionary setObject:valueData forKey:(__bridge id)kSecValueData];
-  
+
   CFStringRef accessibility = [self _accessibilityAttributeWithOptions:options];
   [dictionary setObject:(__bridge id)accessibility forKey:(__bridge id)kSecAttrAccessible];
-  
+
   OSStatus status = SecItemAdd((__bridge CFDictionaryRef)dictionary, NULL);
-  
+
   if (status == errSecSuccess) {
     return YES;
   } else if (status == errSecDuplicateItem){
@@ -99,10 +88,10 @@ RCT_ENUM_CONVERTER(EXSecureStoreAccessible, (@{
                                                   withOptions:options];
   NSData *valueData = [value dataUsingEncoding:NSUTF8StringEncoding];
   NSDictionary *updateDictionary = @{(__bridge id)kSecValueData:valueData};
-  
+
   OSStatus status = SecItemUpdate((__bridge CFDictionaryRef)searchDictionary,
                                   (__bridge CFDictionaryRef)updateDictionary);
-  
+
   if (status == errSecSuccess) {
     return YES;
   } else {
@@ -115,13 +104,13 @@ RCT_ENUM_CONVERTER(EXSecureStoreAccessible, (@{
 {
   NSMutableDictionary *searchDictionary = [self _queryWithKey:key
                                                   withOptions:options];
-  
+
   [searchDictionary setObject:(__bridge id)kSecMatchLimitOne forKey:(__bridge id)kSecMatchLimit];
   [searchDictionary setObject:(__bridge id)kCFBooleanTrue forKey:(__bridge id)kSecReturnData];
-  
+
   CFTypeRef foundDict = NULL;
   OSStatus status = SecItemCopyMatching((__bridge CFDictionaryRef)searchDictionary, &foundDict);
-  
+
   if (status == noErr) {
     NSData *result = (__bridge_transfer NSData *)foundDict;
     return result;
@@ -136,13 +125,13 @@ RCT_ENUM_CONVERTER(EXSecureStoreAccessible, (@{
   NSMutableDictionary *searchDictionary = [self _queryWithKey:key
                                                   withOptions:options];
   CFDictionaryRef dictionary = (__bridge CFDictionaryRef)searchDictionary;
-  
+
   SecItemDelete(dictionary);
 }
 
 - (CFStringRef)_accessibilityAttributeWithOptions:(NSDictionary *)options
 {
-  NSInteger accessibility = [RCTConvert NSInteger:options[@"keychainAccessible"]];
+  NSInteger accessibility = [[self constantsToExport][options[@"keychainAccessible"]] integerValue];
   switch (accessibility) {
     case EXSecureStoreAccessibleAfterFirstUnlock:
       return kSecAttrAccessibleAfterFirstUnlock;
@@ -168,8 +157,8 @@ RCT_ENUM_CONVERTER(EXSecureStoreAccessible, (@{
   if (!key || trimmedKey.length == 0) {
     return nil;
   }
-  
-  return [NSString stringWithFormat:@"%@-%@", self.experienceId, key];
+
+  return [NSString stringWithFormat:@"%@-%@", _experienceId, key];
 }
 
 + (NSString *) _messageForError:(NSError *)error
@@ -177,54 +166,49 @@ RCT_ENUM_CONVERTER(EXSecureStoreAccessible, (@{
   switch (error.code) {
     case errSecUnimplemented:
       return @"Function or operation not implemented.";
-      
+
     case errSecIO:
       return @"I/O error.";
-      
+
     case errSecOpWr:
       return @"File already open with with write permission.";
-      
+
     case errSecParam:
       return @"One or more parameters passed to a function where not valid.";
-      
+
     case errSecAllocate:
       return @"Failed to allocate memory.";
-      
+
     case errSecUserCanceled:
       return @"User canceled the operation.";
-      
+
     case errSecBadReq:
       return @"Bad parameter or invalid state for operation.";
-      
+
     case errSecNotAvailable:
       return @"No keychain is available. You may need to restart your computer.";
-      
+
     case errSecDuplicateItem:
       return @"The specified item already exists in the keychain.";
-      
+
     case errSecItemNotFound:
       return @"The specified item could not be found in the keychain.";
-      
+
     case errSecInteractionNotAllowed:
       return @"User interaction is not allowed.";
-      
+
     case errSecDecode:
       return @"Unable to decode the provided data.";
-      
+
     case errSecAuthFailed:
       return @"The user name or passphrase you entered is not correct.";
-      
+
     default:
       return error.localizedDescription;
   }
 }
 
 #pragma mark - SecureStore API
-
-+ (BOOL)requiresMainQueueSetup
-{
-  return NO;
-}
 
 - (NSDictionary *)constantsToExport
 {
@@ -239,17 +223,18 @@ RCT_ENUM_CONVERTER(EXSecureStoreAccessible, (@{
            };
 };
 
-EX_EXPORT_SCOPED_MODULE(ExponentSecureStore, nil);
+EX_EXPORT_MODULE(ExpoSecureStore);
 
-RCT_EXPORT_METHOD(setValueWithKeyAsync:(NSString *)value
-                  key:(NSString *)key
-                  options:(NSDictionary *)options
-                  resolver:(RCTPromiseResolveBlock)resolve
-                  rejecter:(RCTPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(setValueWithKeyAsync,
+                    setValueWithKeyAsync:(NSString *)value
+                    key:(NSString *)key
+                    options:(NSDictionary *)options
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   NSString *scopedKey = [self _scopedKey:key];
   if (!scopedKey) {
-    reject(@"E_SECURESTORE_SETVALUEFAIL", nil, RCTErrorWithMessage(@"Invalid key."));
+    reject(@"E_SECURESTORE_SETVALUEFAIL", nil, EXErrorWithMessage(@"Invalid key."));
   } else {
     NSError *error;
     BOOL setValue = [self _setValue:value
@@ -259,19 +244,20 @@ RCT_EXPORT_METHOD(setValueWithKeyAsync:(NSString *)value
     if (setValue) {
       resolve(nil);
     } else {
-      reject(@"E_SECURESTORE_SETVALUEFAIL", nil, RCTErrorWithMessage([[self class] _messageForError:error]));
+      reject(@"E_SECURESTORE_SETVALUEFAIL", nil, EXErrorWithMessage([[self class] _messageForError:error]));
     }
   }
 }
 
-RCT_EXPORT_METHOD(getValueWithKeyAsync:(NSString *)key
-                  options:(NSDictionary *)options
-                  resolver:(RCTPromiseResolveBlock)resolve
-                  rejecter:(RCTPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getValueWithKeyAsync,
+                    getValueWithKeyAsync:(NSString *)key
+                    options:(NSDictionary *)options
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   NSString *scopedKey = [self _scopedKey:key];
   if (!scopedKey) {
-    reject(@"E_SECURESTORE_GETVALUEFAIL", nil, RCTErrorWithMessage(@"Invalid key."));
+    reject(@"E_SECURESTORE_GETVALUEFAIL", nil, EXErrorWithMessage(@"Invalid key."));
   } else {
     NSError *error;
     NSString *value = [self _getValueWithKey:scopedKey
@@ -281,7 +267,7 @@ RCT_EXPORT_METHOD(getValueWithKeyAsync:(NSString *)key
       if (error.code == errSecItemNotFound) {
         resolve([NSNull null]);
       } else {
-        reject(@"E_SECURESTORE_GETVALUEFAIL", nil, RCTErrorWithMessage([[self class] _messageForError:error]));
+        reject(@"E_SECURESTORE_GETVALUEFAIL", nil, EXErrorWithMessage([[self class] _messageForError:error]));
       }
     } else {
       resolve(value);
@@ -289,14 +275,15 @@ RCT_EXPORT_METHOD(getValueWithKeyAsync:(NSString *)key
   }
 }
 
-RCT_EXPORT_METHOD(deleteValueWithKeyAsync:(NSString *)key
-                  options:(NSDictionary *)options
-                  resolver:(RCTPromiseResolveBlock)resolve
-                  rejecter:(RCTPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(deleteValueWithKeyAsync,
+                    deleteValueWithKeyAsync:(NSString *)key
+                    options:(NSDictionary *)options
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   NSString *scopedKey = [self _scopedKey:key];
   if (!scopedKey) {
-    reject(@"E_SECURESTORE_DELETEVALUEFAIL", nil, RCTErrorWithMessage(@"Invalid key."));
+    reject(@"E_SECURESTORE_DELETEVALUEFAIL", nil, EXErrorWithMessage(@"Invalid key."));
   } else {
     [self _deleteValueWithKey:scopedKey
                   withOptions:options];

@@ -31,6 +31,7 @@ import expo.modules.medialibrary.MediaLibraryPackage;
 import expo.modules.payments.stripe.StripePackage;
 import expo.modules.permissions.PermissionsPackage;
 import expo.modules.print.PrintPackage;
+import expo.modules.securestore.SecureStorePackage;
 import expo.modules.sensors.SensorsPackage;
 import expo.modules.sms.SMSPackage;
 import expo.modules.speech.SpeechPackage;
@@ -62,6 +63,7 @@ public class ExperiencePackagePicker {
       new MediaLibraryPackage(),
       new PermissionsPackage(),
       new PrintPackage(),
+      new SecureStorePackage(),
       new SegmentPackage(),
       new SensorsPackage(),
       new SMSPackage(),
