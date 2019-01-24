@@ -240,6 +240,7 @@ dependencies {
   api 'host.exp.exponent:expo-core:2.0.0'
   api 'host.exp.exponent:expo-constants-interface:2.0.0'
   api 'host.exp.exponent:expo-constants:2.0.0'
+  api 'host.exp.exponent:expo-document-picker:1.0.0'
   api 'host.exp.exponent:expo-errors:1.0.0'
   api 'host.exp.exponent:expo-file-system-interface:2.0.0'
   api 'host.exp.exponent:expo-file-system:2.0.0'
