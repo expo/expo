@@ -119,7 +119,7 @@ Provide overrides by locale for System Dialog prompts like Permissions Boxes
 
 ## "assetBundlePatterns"
 
-An array of file glob strings which point to assets that will be bundled within your standalone app binary. Read more in the [Offline Support guide](/versions/latest/guides/offline-support/)
+An array of file glob strings which point to assets that will be bundled within your standalone app binary. Read more in the [Offline Support guide](../../guides/offline-support/)
 
 ## "androidStatusBarColor"
 
