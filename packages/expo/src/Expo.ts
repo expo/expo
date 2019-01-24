@@ -77,7 +77,7 @@ export { MailComposer };
 export { default as Notifications } from './Notifications/Notifications';
 import * as ScreenOrientation from './ScreenOrientation/ScreenOrientation';
 export { ScreenOrientation };
-import * as SecureStore from './SecureStore/SecureStore';
+import * as SecureStore from 'expo-secure-store';
 export { SecureStore };
 import * as StoreReview from './StoreReview/StoreReview';
 export { StoreReview };

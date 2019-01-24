@@ -1,6 +1,6 @@
 export default {
   get name(): string {
-    return 'ExponentSecureStore';
+    return 'ExpoSecureStore';
   },
   async getValueWithKeyAsync(): Promise<null> {
     return null;
