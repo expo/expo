@@ -8,6 +8,8 @@ This is the log of notable changes to the Expo client that are developer-facing.
 
 ### 🎉 New features
 
+- added `BackgroundFetch` support for Android by [@tsapeta](https://github.com/tsapeta) ([#3281](https://github.com/expo/expo/pull/3281))
+
 ### 🐛 Bug fixes
 
 - fix `ImagePicker.launchImageLibraryAsync` and `ImageManipulator.manipulateAsync` in SDKs lower than 32 [@bbarthec](https://github.com/bbarthec) ([#3159](https://github.com/expo/expo/pull/3159))
