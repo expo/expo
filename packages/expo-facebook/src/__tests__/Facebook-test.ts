@@ -1,5 +1,6 @@
+import { NativeModulesProxy } from 'expo-core';
 import { NativeModules } from 'react-native';
-import * as Facebook from '../Facebook/Facebook';
+import * as Facebook from '../Facebook';
 
 import { describeCrossPlatform, mockProperty, unmockAllProperties } from '../../test/mocking';
 
@@ -27,7 +28,7 @@ describeCrossPlatform('iOS and Android', () => {
     Facebook.logInWithReadPermissionsAsync('appId', {
       permissions: ['email'],
     });
-    expect(NativeModules.ExponentFacebook.logInWithReadPermissionsAsync).toHaveBeenCalledWith(
+    expect(NativeModulesProxy.ExponentFacebook.logInWithReadPermissionsAsync).toHaveBeenCalledWith(
       'appId',
       { permissions: ['email'] }
     );
@@ -37,7 +38,7 @@ describeCrossPlatform('iOS and Android', () => {
     Facebook.logInWithReadPermissionsAsync(1234 as any, {
       permissions: ['email'],
     });
-    expect(NativeModules.ExponentFacebook.logInWithReadPermissionsAsync).toHaveBeenCalledWith(
+    expect(NativeModulesProxy.ExponentFacebook.logInWithReadPermissionsAsync).toHaveBeenCalledWith(
       '1234',
       { permissions: ['email'] }
     );

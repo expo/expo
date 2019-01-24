@@ -263,6 +263,7 @@ dependencies {
   api 'host.exp.exponent:expo-camera-interface:2.0.0'
   api 'host.exp.exponent:expo-camera:2.0.0'
   api 'host.exp.exponent:expo-contacts:2.0.0'
+  api 'host.exp.exponent:expo-facebook:1.0.0'
   api 'host.exp.exponent:expo-face-detector:2.0.0'
   api 'host.exp.exponent:expo-face-detector-interface:2.0.0'
   api 'host.exp.exponent:expo-font:2.0.0'

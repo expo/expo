@@ -1,13 +1,11 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
-#import "EXFacebook.h"
+#import <EXFacebook/EXFacebook.h>
 
-#import <React/RCTUtils.h>
 #import <EXConstantsInterface/EXConstantsInterface.h>
 
-#import "EXModuleRegistryBinding.h"
-#import "FBSDKCoreKit/FBSDKCoreKit.h"
-#import "FBSDKLoginKit/FBSDKLoginKit.h"
+#import <FBSDKCoreKit/FBSDKCoreKit.h>
+#import <FBSDKLoginKit/FBSDKLoginKit.h>
 #import "../Private/FBSDKCoreKit/FBSDKInternalUtility.h"
 
 @implementation FBSDKInternalUtility (EXFacebook)
@@ -27,17 +25,26 @@
 NSString * const EXFacebookLoginErrorDomain = @"E_FBLOGIN";
 NSString * const EXFacebookLoginBehaviorErrorDomain = @"E_FBLOGIN_BEHAVIOR";
 
+@interface EXFacebook ()
+
+@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
+
+@end
+
 @implementation EXFacebook
 
-@synthesize bridge = _bridge;
+EX_EXPORT_MODULE(ExponentFacebook)
 
-RCT_EXPORT_MODULE(ExponentFacebook)
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+{
+  _moduleRegistry = moduleRegistry;
+}
 
-RCT_REMAP_METHOD(logInWithReadPermissionsAsync,
-                 appId:(NSString *)appId
-                 config:(NSDictionary *)config
-                 resolver:(RCTPromiseResolveBlock)resolve
-                 rejecter:(RCTPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(logInWithReadPermissionsAsync,
+                    logInWithReadPermissionsWithAppId:(NSString *)appId
+                    config:(NSDictionary *)config
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   NSArray *permissions = config[@"permissions"];
   if (!permissions) {
@@ -69,17 +76,17 @@ RCT_REMAP_METHOD(logInWithReadPermissionsAsync,
         loginMgr.loginBehavior = FBSDKLoginBehaviorWeb;
       }
     }
-    
+
     if (loginMgr.loginBehavior != FBSDKLoginBehaviorWeb) {
-      id<EXConstantsInterface> constants = [self->_bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXConstantsInterface)];
-      
+      id<EXConstantsInterface> constants = [self->_moduleRegistry getModuleImplementingProtocol:@protocol(EXConstantsInterface)];
+
       if (![constants.appOwnership isEqualToString:@"expo"] && ![[self class] facebookAppIdFromNSBundle]) {
         // standalone: non-web requires native config
         NSString *message = [NSString stringWithFormat:
                              @"Tried to perform Facebook login with behavior `%@`, but "
                              "no Facebook app id was provided. Specify Facebook app id in app.json "
                              "or switch to `web` behavior.", behavior];
-        reject(EXFacebookLoginBehaviorErrorDomain, message, RCTErrorWithMessage(message));
+        reject(EXFacebookLoginBehaviorErrorDomain, message, EXErrorWithMessage(message));
         return;
       }
     }
@@ -113,13 +120,13 @@ RCT_REMAP_METHOD(logInWithReadPermissionsAsync,
     }
     @catch (NSException *exception) {
       NSError *error = [[NSError alloc] initWithDomain:EXFacebookLoginErrorDomain code:650 userInfo:@{
-                                   NSLocalizedDescriptionKey: exception.description,
-                                   NSLocalizedFailureReasonErrorKey: exception.reason,
-                                   @"ExceptionUserInfo": exception.userInfo,
-                                   @"ExceptionCallStackSymbols": exception.callStackSymbols,
-                                   @"ExceptionCallStackReturnAddresses": exception.callStackReturnAddresses,
-                                   @"ExceptionName": exception.name
-                                   }];
+                                                                                                      NSLocalizedDescriptionKey: exception.description,
+                                                                                                      NSLocalizedFailureReasonErrorKey: exception.reason,
+                                                                                                      @"ExceptionUserInfo": exception.userInfo,
+                                                                                                      @"ExceptionCallStackSymbols": exception.callStackSymbols,
+                                                                                                      @"ExceptionCallStackReturnAddresses": exception.callStackReturnAddresses,
+                                                                                                      @"ExceptionName": exception.name
+                                                                                                      }];
       reject(error.domain, exception.reason, error);
     }
   });
