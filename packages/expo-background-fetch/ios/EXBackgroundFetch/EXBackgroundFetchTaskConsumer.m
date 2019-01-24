@@ -57,7 +57,7 @@
 - (void)updateMinimumInterval
 {
   NSNumber *interval = _task.options[@"minimumInterval"];
-  NSTimeInterval timeInterval = interval != nil ? [interval doubleValue] : UIApplicationBackgroundFetchIntervalMinimum;
+  NSTimeInterval timeInterval = [interval doubleValue] ?: UIApplicationBackgroundFetchIntervalMinimum;
 
   dispatch_async(dispatch_get_main_queue(), ^{
     [[UIApplication sharedApplication] setMinimumBackgroundFetchInterval:timeInterval];
