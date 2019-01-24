@@ -1,5 +1,4 @@
 import { UnavailabilityError } from 'expo-errors';
-import invariant from 'invariant';
 import ExpoSecureStore from './ExpoSecureStore';
 
 export type KeychainAccessibilityConstant = number;
@@ -59,10 +58,11 @@ export async function setItemAsync(
 }
 
 function _ensureValidKey(key: string) {
-  invariant(
-    _isValidKey(key),
-    `Invalid key provided to SecureStore. Keys must not be empty and contain only alphanumeric characters, ".", "-", and "_".`
-  );
+  if (!_isValidKey(key)) {
+    throw new Error(
+      `Invalid key provided to SecureStore. Keys must not be empty and contain only alphanumeric characters, ".", "-", and "_".`
+    );
+  }
 }
 
 function _isValidKey(key: string) {

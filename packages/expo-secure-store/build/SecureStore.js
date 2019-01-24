@@ -1,5 +1,4 @@
 import { UnavailabilityError } from 'expo-errors';
-import invariant from 'invariant';
 import ExpoSecureStore from './ExpoSecureStore';
 export const AFTER_FIRST_UNLOCK = ExpoSecureStore.AFTER_FIRST_UNLOCK;
 export const AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY = ExpoSecureStore.AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY;
@@ -30,7 +29,9 @@ export async function setItemAsync(key, value, options = {}) {
     await ExpoSecureStore.setValueWithKeyAsync(value, key, options);
 }
 function _ensureValidKey(key) {
-    invariant(_isValidKey(key), `Invalid key provided to SecureStore. Keys must not be empty and contain only alphanumeric characters, ".", "-", and "_".`);
+    if (!_isValidKey(key)) {
+        throw new Error(`Invalid key provided to SecureStore. Keys must not be empty and contain only alphanumeric characters, ".", "-", and "_".`);
+    }
 }
 function _isValidKey(key) {
     return typeof key === 'string' && /^[\w.-]+$/.test(key);

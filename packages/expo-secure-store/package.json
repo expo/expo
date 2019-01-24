@@ -24,9 +24,10 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://github.com/expo/expo/tree/master/packages/expo-secure-store",
-  "dependencies": {
-    "invariant": "^2.2.4"
+  "jest": {
+    "preset": "expo-module-scripts"
   },
+  "dependencies": {},
   "peerDependencies": {
     "expo-core": "~2.0.0",
     "expo-errors": "~1.0.0"

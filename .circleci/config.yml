@@ -198,6 +198,9 @@ jobs:
           working_directory: ~/expo/packages/expo-react-native-adapter
       - yarn:
           command: test --maxWorkers 1
+          working_directory: ~/expo/packages/expo-secure-store
+      - yarn:
+          command: test --maxWorkers 1
           working_directory: ~/expo/packages/expo-sensors
       - yarn:
           command: test --maxWorkers 1
