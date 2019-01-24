@@ -19,13 +19,15 @@ Returns a promise resolving to one of these values:
 ### `BackgroundFetch.registerTaskAsync(taskName, options)`
 
 Registers background fetch task with given name. Registered tasks are saved in persistent storage and restored once the app is initialized.
-On iOS, it is also required to call [BackgroundFetch.setMinimumIntervalAsync](#backgroundfetchsetminimumintervalasyncminimuminterval) as fetch operations will not be occurring with its default value.
 
 #### Arguments
 
 -   **taskName (_string_)** -- Name of the task to register. The task needs to be defined first - see [TaskManager.defineTask](../task-manager#taskmanagerdefinetasktaskname-task) for more details.
 -   **options (_object_)** -- An object of options:
-    -   **interval (_number_)** -- Inexact interval in seconds between subsequent repeats of the background fetch alarm. The final interval may differ from the specified one to minimize wakeups and battery usage. Defaults to **15 minutes**. (**Android only**, see [BackgroundFetch.setMinimumIntervalAsync](#backgroundfetchsetminimumintervalasyncminimuminterval) for iOS alternative)
+    -   **minimumInterval (_number_)** -- Inexact interval in seconds between subsequent repeats of the background fetch alarm. The final interval may differ from the specified one to minimize wakeups and battery usage.
+    On Android it defaults to **15 minutes**. On iOS it calls [BackgroundFetch.setMinimumIntervalAsync](#backgroundfetchsetminimumintervalasyncminimuminterval) behind the scenes and the default value is the smallest fetch interval supported by the system (**10-15 minutes**).
+    -   **stopOnTerminate (_boolean_)** -- Whether to stop receiving background fetch events after user terminates the app. Defaults to `true`. (**Android only**)
+    -   **startOnBoot (_boolean_)** -- Whether to restart background fetch events when the device has finished booting. Defaults to `false`. (**Android only**)
 
 #### Returns
 
@@ -67,7 +69,9 @@ A promise resolving when the task is fully unregistered.
 
 ### `BackgroundFetch.setMinimumIntervalAsync(minimumInterval)`
 
-Sets the minimum number of seconds that must elapse before another background fetch can be initiated. This value is advisory only and does not indicate the exact amount of time expected between fetch operations. It defaults to the number large enough to prevent fetch operations from occurring.
+Sets the minimum number of seconds that must elapse before another background fetch can be initiated. This value is advisory only and does not indicate the exact amount of time expected between fetch operations.
+
+*This method doesn't take any effect on Android.*
 
 *It is a global value which means that it can overwrite settings from another application opened through Expo Client.*
 
