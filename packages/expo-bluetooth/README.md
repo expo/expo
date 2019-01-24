@@ -10,7 +10,7 @@ Expo Bluetooth provides access to native Bluetooth Low-Energy features in React 
 - Restoration: React Native state + the asynchronous nature of the native Bluetooth API makes this a very messy and unreliable feature.
 - Mesh Networks: Basically completely unrealted to this library.
 - Android classic Bluetooth API: Because of the minimum Android version, I've decided it'd make for a much better cross-platform experience if this wasn't supported.
-- Acting as a peripheral: Feel free to open a PR.
+- Acting as a peripheral: This would make sense as a different library, something that extends `CBPeripheralManager` on iOS the same way we extend the `Central` here
 - Encrypted requests: Feel free to open a PR.
 - Android Web: Not even a thing.
 - Enable/Disable Bluetooth on iOS: Not possible.
