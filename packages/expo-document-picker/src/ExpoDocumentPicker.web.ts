@@ -1,10 +1,10 @@
 import uuidv4 from 'uuid/v4';
 
-import { DocumentResult, GetDocumentOptions } from './DocumentPicker.types';
+import { DocumentResult, GetDocumentOptions } from './types';
 
 export default {
   get name(): string {
-    return 'ExponentDocumentPicker';
+    return 'ExpoDocumentPicker';
   },
 
   async getDocumentAsync({

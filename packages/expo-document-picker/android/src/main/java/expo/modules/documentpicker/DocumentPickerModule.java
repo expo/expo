@@ -1,19 +1,14 @@
-package versioned.host.exp.exponent.modules.api;
+package expo.modules.documentpicker;
 
 import android.app.Activity;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Bundle;
 import android.provider.OpenableColumns;
-
-import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.Promise;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.WritableMap;
+import android.support.annotation.Nullable;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
@@ -25,76 +20,91 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Map;
 
-import javax.annotation.Nullable;
+import expo.core.ExportedModule;
+import expo.core.ModuleRegistry;
+import expo.core.Promise;
+import expo.core.interfaces.ActivityEventListener;
+import expo.core.interfaces.ActivityProvider;
+import expo.core.interfaces.ExpoMethod;
+import expo.core.interfaces.ModuleRegistryConsumer;
+import expo.core.interfaces.services.UIManager;
+import expo.core.utilities.FileUtilities;
 
-import host.exp.exponent.ActivityResultListener;
-import host.exp.exponent.Constants;
-import host.exp.exponent.kernel.KernelConstants;
-import host.exp.exponent.utils.ExpFileUtils;
-import host.exp.exponent.utils.ScopedContext;
-import host.exp.expoview.Exponent;
+public class DocumentPickerModule extends ExportedModule implements ModuleRegistryConsumer, ActivityEventListener {
 
+  private static final String TAG = "ExpoDocumentPicker";
 
-public class DocumentPickerModule extends ReactContextBaseJavaModule implements ActivityResultListener {
   private static int OPEN_DOCUMENT_CODE = 4137;
+  private ModuleRegistry mModuleRegistry;
+  private ActivityProvider mActivityProvider;
+  private UIManager mUIManager;
 
-  private @Nullable Promise mPromise;
-  private ScopedContext mScopedContext;
-
+  @Nullable
+  private Promise mPromise;
   private boolean mCopyToCacheDirectory = true;
 
-  public DocumentPickerModule(ReactApplicationContext reactContext, ScopedContext scopedContext) {
-    super(reactContext);
-    mScopedContext = scopedContext;
-
-    Exponent.getInstance().addActivityResultListener(this);
+  public DocumentPickerModule(Context context) {
+    super(context);
   }
 
   @Override
   public String getName() {
-    return "ExponentDocumentPicker";
+    return TAG;
   }
 
-  @ReactMethod
-  public void getDocumentAsync(ReadableMap options, Promise promise) {
+  @Override
+  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+    mModuleRegistry = moduleRegistry;
+
+    if (mModuleRegistry != null) {
+      mActivityProvider = mModuleRegistry.getModule(ActivityProvider.class);
+      mUIManager = mModuleRegistry.getModule(UIManager.class);
+
+      if (mUIManager != null) {
+        mUIManager.registerActivityEventListener(this);
+      }
+    }
+  }
+
+  @ExpoMethod
+  public void getDocumentAsync(Map<String, Object> options, final Promise promise) {
     if (mPromise != null) {
-      WritableMap result = Arguments.createMap();
-      result.putString("type", "cancel");
-      mPromise.resolve(result);
+      promise.reject("E_DOCUMENT_PICKER", "Different document picking in progress. Await other document picking first.");
+      return;
+    }
+
+    // mUIManger nullability suggests there's no listener registered for Activity result
+    if (mActivityProvider == null || mUIManager == null) {
+      promise.reject("E_MISSING_MODULES", "Missing core modules. Are you sure all the installed Expo modules are properly linked?");
+      return;
     }
 
     mPromise = promise;
 
     Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
     intent.addCategory(Intent.CATEGORY_OPENABLE);
-    if (options.hasKey("type")) {
-      intent.setType(options.getString("type"));
+    if (options.get("type") != null) {
+      intent.setType((String) options.get("type"));
     } else {
       intent.setType("*/*");
     }
 
-    if (options.hasKey("copyToCacheDirectory") && !options.getBoolean("copyToCacheDirectory")) {
-      mCopyToCacheDirectory = false;
-    } else {
-      mCopyToCacheDirectory = true;
-    }
-
-    Activity activity = Exponent.getInstance().getCurrentActivity();
-    activity.startActivityForResult(intent, OPEN_DOCUMENT_CODE);
+    mCopyToCacheDirectory = options.get("copyToCacheDirectory") == null || (Boolean) options.get("copyToCacheDirectory");
+    mActivityProvider.getCurrentActivity().startActivityForResult(intent, OPEN_DOCUMENT_CODE);
   }
 
   @Override
-  public void onActivityResult(int requestCode, int resultCode, Intent data) {
+  public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
     if (requestCode == OPEN_DOCUMENT_CODE) {
       if (mPromise == null) {
         return;
       }
 
-      WritableMap result = Arguments.createMap();
+      Bundle result = new Bundle();
       if (resultCode == Activity.RESULT_OK) {
         result.putString("type", "success");
         Uri uri = data.getData();
-        ContentResolver contentResolver = getReactApplicationContext().getContentResolver();
+        final ContentResolver contentResolver = getContext().getContentResolver();
         try (Cursor cursor = contentResolver.query(uri, null, null, null, null)) {
           if (cursor != null && cursor.moveToFirst()) {
             String displayName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
@@ -110,7 +120,7 @@ public class DocumentPickerModule extends ReactContextBaseJavaModule implements 
               int size = cursor.getInt(sizeColumnIndex);
               result.putInt("size", size);
             } else {
-              result.putNull("size");
+              result.putParcelable("size", null);
             }
           }
         }
@@ -122,14 +132,19 @@ public class DocumentPickerModule extends ReactContextBaseJavaModule implements 
     }
   }
 
+  @Override
+  public void onNewIntent(Intent intent) {
+    // do nothing
+  }
+
   private String writeDocument(Uri uri, ContentResolver contentResolver, String name) {
     InputStream in;
     OutputStream out = null;
     String path = null;
     try {
       in = contentResolver.openInputStream(uri);
-      path = ExpFileUtils.generateOutputPath(
-          mScopedContext.getCacheDir(),
+      path = FileUtilities.generateOutputPath(
+          getContext().getCacheDir(),
           "DocumentPicker",
           FilenameUtils.getExtension(name)
       );

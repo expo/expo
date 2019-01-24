@@ -1,21 +1,17 @@
-// Copyright 2015-present 650 Industries. All rights reserved.
+// Copyright 2018-present 650 Industries. All rights reserved.
 
-#import "EXDocumentPicker.h"
-#import "EXScopedModuleRegistry.h"
-#import "EXUtil.h"
-#import "EXModuleRegistryBinding.h"
+
+#import <EXDocumentPicker/EXDocumentPickerModule.h>
 #import <EXCore/EXUtilitiesInterface.h>
 #import <EXFileSystemInterface/EXFileSystemInterface.h>
 
-#import <MobileCoreServices/MobileCoreServices.h>
 #import <UIKit/UIKit.h>
-#import <React/RCTConvert.h>
-#import <React/RCTUtils.h>
+#import <MobileCoreServices/MobileCoreServices.h>
 
 static NSString * EXConvertMimeTypeToUTI(NSString *mimeType)
 {
   CFStringRef uti;
-
+  
   // UTTypeCreatePreferredIdentifierForTag doesn't work with wildcard mimetypes
   // so support common top level types with wildcards here.
   if ([mimeType isEqualToString:@"*/*"]) {
@@ -32,44 +28,59 @@ static NSString * EXConvertMimeTypeToUTI(NSString *mimeType)
     CFStringRef mimeTypeRef = (__bridge CFStringRef)mimeType;
     uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassMIMEType, mimeTypeRef, NULL);
   }
-
+  
   return (__bridge_transfer NSString *)uti;
 }
 
-@interface EXDocumentPicker () <UIDocumentMenuDelegate, UIDocumentPickerDelegate>
+@interface EXDocumentPickerModule () <UIDocumentMenuDelegate, UIDocumentPickerDelegate>
 
-@property (nonatomic, strong) RCTPromiseResolveBlock resolve;
-@property (nonatomic, strong) RCTPromiseRejectBlock reject;
+@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) id<EXFileSystemInterface> fileSystem;
+@property (nonatomic, weak) id<EXUtilitiesInterface> utilities;
+
+@property (nonatomic, strong) EXPromiseResolveBlock resolve;
+@property (nonatomic, strong) EXPromiseRejectBlock reject;
 
 @property (nonatomic, assign) BOOL shouldCopyToCacheDirectory;
 
 @end
 
-@implementation EXDocumentPicker
+@implementation EXDocumentPickerModule
 
-@synthesize bridge = _bridge;
+EX_EXPORT_MODULE(ExpoDocumentPicker);
 
-RCT_EXPORT_MODULE(ExponentDocumentPicker)
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+{
+  _moduleRegistry = moduleRegistry;
+  
+  if (_moduleRegistry != nil) {
+    _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
+    _utilities = [moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)];
+  }
+}
 
-RCT_EXPORT_METHOD(getDocumentAsync:(NSDictionary *)options resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+EX_EXPORT_METHOD_AS(getDocumentAsync,
+                    options:(NSDictionary *)options
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
+{
+  if (_resolve != nil) {
+    return reject(@"E_DOCUMENT_PICKER", @"Different document picking in progress. Await other document picking first.", nil);
+  }
   _resolve = resolve;
   _reject = reject;
-
+  
   NSString *type = EXConvertMimeTypeToUTI(options[@"type"] ?: @"*/*");
-
-  if (options[@"copyToCacheDirectory"] && [RCTConvert BOOL:options[@"copyToCacheDirectory"]] == NO) {
-    _shouldCopyToCacheDirectory = NO;
-  } else {
-    _shouldCopyToCacheDirectory = YES;
-  }
-
+  
+  _shouldCopyToCacheDirectory = options[@"copyToCacheDirectory"] && [options[@"copyToCacheDirectory"] boolValue] == NO ? NO : YES;
+  
   UIDocumentMenuViewController *documentMenuVC;
   @try {
     documentMenuVC = [[UIDocumentMenuViewController alloc] initWithDocumentTypes:@[type]
                                                                           inMode:UIDocumentPickerModeImport];
   }
   @catch (NSException *exception) {
-    reject(@"E_PICKER_ICLOUD", @"DocumentPicker requires the iCloud entitlement. If you are using ExpoKit, you need to add this capability to your App Id. See `https://docs.expo.io/versions/v16.0.0/guides/advanced-expokit-topics.html#enabling-icloud-entitlement` for more info.", nil);
+    reject(@"E_PICKER_ICLOUD", @"DocumentPicker requires the iCloud entitlement. If you are using ExpoKit, you need to add this capability to your App Id. See `https://docs.expo.io/versions/latest/expokit/advanced-expokit-topics#using-documentpicker` for more info.", nil);
     _resolve = nil;
     _reject = nil;
     return;
@@ -78,20 +89,18 @@ RCT_EXPORT_METHOD(getDocumentAsync:(NSDictionary *)options resolver:(RCTPromiseR
   
   // Because of the way IPad works with Actionsheets such as this one, we need to provide a source view and set it's position.
   if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-    documentMenuVC.popoverPresentationController.sourceRect = CGRectMake(CGRectGetMidX([RCTPresentedViewController().view frame]), CGRectGetMaxY([RCTPresentedViewController().view frame]), 0, 0);
-    documentMenuVC.popoverPresentationController.sourceView = RCTPresentedViewController().view;
+    documentMenuVC.popoverPresentationController.sourceRect = CGRectMake(CGRectGetMidX([_utilities.currentViewController.view frame]), CGRectGetMaxY([_utilities.currentViewController.view frame]), 0, 0);
+    documentMenuVC.popoverPresentationController.sourceView = _utilities.currentViewController.view;
     documentMenuVC.modalPresentationStyle = UIModalPresentationPageSheet;
   }
-
-  id<EXUtilitiesInterface> utils = [_bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)];
-  [utils.currentViewController presentViewController:documentMenuVC animated:YES completion:nil];
+  
+  [_utilities.currentViewController presentViewController:documentMenuVC animated:YES completion:nil];
 }
 
 - (void)documentMenu:(UIDocumentMenuViewController *)documentMenu didPickDocumentPicker:(UIDocumentPickerViewController *)documentPicker
 {
   documentPicker.delegate = self;
-  id<EXUtilitiesInterface> utils = [_bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)];
-  [utils.currentViewController presentViewController:documentPicker animated:YES completion:nil];
+  [_utilities.currentViewController presentViewController:documentPicker animated:YES completion:nil];
 }
 
 - (void)documentMenuWasCancelled:(UIDocumentMenuViewController *)documentMenu
@@ -103,7 +112,7 @@ RCT_EXPORT_METHOD(getDocumentAsync:(NSDictionary *)options resolver:(RCTPromiseR
 
 - (void)documentPicker:(UIDocumentPickerViewController *)controller didPickDocumentAtURL:(NSURL *)url
 {
-
+  
   NSNumber *fileSize = nil;
   NSError *fileSizeError = nil;
   [url getResourceValue:&fileSize forKey:NSURLFileSizeKey error:&fileSizeError];
@@ -116,14 +125,13 @@ RCT_EXPORT_METHOD(getDocumentAsync:(NSDictionary *)options resolver:(RCTPromiseR
   
   NSURL *newUrl = url;
   if (_shouldCopyToCacheDirectory) {
-    id<EXFileSystemInterface> fileSystem = [_bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
-    if (!fileSystem) {
+    if (!_fileSystem) {
       _reject(@"E_CANNOT_PICK_FILE", @"No FileSystem module.", nil);
       return;
     }
-    NSString *directory = [fileSystem.cachesDirectory stringByAppendingPathComponent:@"DocumentPicker"];
+    NSString *directory = [_fileSystem.cachesDirectory stringByAppendingPathComponent:@"DocumentPicker"];
     NSString *extension = [url pathExtension];
-    NSString *path = [fileSystem generatePathInDirectory:directory withExtension:[extension isEqualToString:@""] ? extension : [@"." stringByAppendingString:extension]];
+    NSString *path = [_fileSystem generatePathInDirectory:directory withExtension:[extension isEqualToString:@""] ? extension : [@"." stringByAppendingString:extension]];
     NSError *error = nil;
     newUrl = [NSURL fileURLWithPath:path];
     [[NSFileManager defaultManager] copyItemAtURL:url toURL:newUrl error:&error];
@@ -132,13 +140,13 @@ RCT_EXPORT_METHOD(getDocumentAsync:(NSDictionary *)options resolver:(RCTPromiseR
       return;
     }
   }
-
+  
   _resolve(@{
-    @"type": @"success",
-    @"uri": [newUrl absoluteString],
-    @"name": [url lastPathComponent],
-    @"size": fileSize,
-  });
+             @"type": @"success",
+             @"uri": [newUrl absoluteString],
+             @"name": [url lastPathComponent],
+             @"size": fileSize,
+             });
   _resolve = nil;
   _reject = nil;
 }
@@ -151,4 +159,3 @@ RCT_EXPORT_METHOD(getDocumentAsync:(NSDictionary *)options resolver:(RCTPromiseR
 }
 
 @end
-
