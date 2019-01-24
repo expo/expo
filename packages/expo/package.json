@@ -77,6 +77,7 @@
     "expo-errors": "~1.0.0",
     "expo-face-detector": "~2.0.0",
     "expo-face-detector-interface": "~2.0.0",
+    "expo-facebook": "~1.0.0",
     "expo-file-system": "~2.0.0",
     "expo-file-system-interface": "~2.0.0",
     "expo-font": "~2.0.0",

@@ -44,6 +44,7 @@ def includeUniversalModule = { name ->
     'expo-contacts',
     'expo-core',
     'expo-errors',
+    'expo-facebook',
     'expo-face-detector',
     'expo-face-detector-interface',
     'expo-file-system',

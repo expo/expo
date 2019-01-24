@@ -1,8 +1,9 @@
-// Copyright 2015-present 650 Industries. All rights reserved.
+package expo.modules.facebook;
 
-package versioned.host.exp.exponent.modules.api;
-
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -16,30 +17,25 @@ import com.facebook.login.LoginResult;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
-import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.Promise;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.WritableArray;
-import com.facebook.react.bridge.WritableMap;
+import expo.core.ExportedModule;
+import expo.core.ModuleRegistry;
+import expo.core.Promise;
+import expo.core.arguments.ReadableArguments;
+import expo.core.interfaces.ActivityEventListener;
+import expo.core.interfaces.ActivityProvider;
+import expo.core.interfaces.ExpoMethod;
+import expo.core.interfaces.ModuleRegistryConsumer;
+import expo.core.interfaces.services.UIManager;
 
-import host.exp.exponent.ActivityResultListener;
-import host.exp.expoview.Exponent;
-
-public class FacebookModule extends ReactContextBaseJavaModule implements ActivityResultListener {
+public class FacebookModule extends ExportedModule implements ModuleRegistryConsumer, ActivityEventListener {
   private CallbackManager mCallbackManager;
+  private ModuleRegistry mModuleRegistry;
 
-  public FacebookModule(ReactApplicationContext reactContext) {
-    super(reactContext);
-
-    Exponent.getInstance().addActivityResultListener(this);
-
-    FacebookSdk.sdkInitialize(reactContext);
+  public FacebookModule(Context context) {
+    super(context);
+    //noinspection deprecation
+    FacebookSdk.sdkInitialize(context);
     mCallbackManager = CallbackManager.Factory.create();
   }
 
@@ -48,31 +44,14 @@ public class FacebookModule extends ReactContextBaseJavaModule implements Activi
     return "ExponentFacebook";
   }
 
-  private WritableArray arrayFromPermissions(Set<String> permissions) {
-    WritableArray permissionsArray = Arguments.createArray();
-    for (String permission : permissions) {
-      permissionsArray.pushString(permission);
-    }
-    return permissionsArray;
-  }
-
-  @ReactMethod
-  public void logInWithReadPermissionsAsync(final String appId, final ReadableMap config, final Promise promise) {
+  @ExpoMethod
+  public void logInWithReadPermissionsAsync(final String appId, final ReadableArguments config, final Promise promise) {
     AccessToken.setCurrentAccessToken(null);
     FacebookSdk.setApplicationId(appId);
 
-    List<String> permissions;
-    if (config.hasKey("permissions")) {
-      permissions = new ArrayList<>();
-      ReadableArray ps = config.getArray("permissions");
-      for (int i = 0; i < ps.size(); ++i) {
-        permissions.add(ps.getString(i));
-      }
-    } else {
-      permissions = Arrays.asList("public_profile", "email");
-    }
+    List<String> permissions = (List<String>) config.getList("permissions", Arrays.asList("public_profile", "email"));
 
-    if (config.hasKey("behavior")) {
+    if (config.containsKey("behavior")) {
       LoginBehavior behavior = LoginBehavior.NATIVE_WITH_FALLBACK;
       switch (config.getString("behavior")) {
         case "browser":
@@ -96,13 +75,13 @@ public class FacebookModule extends ReactContextBaseJavaModule implements Activi
           promise.reject(new IllegalStateException("Logged into wrong app, try again?"));
           return;
         }
-        WritableMap response = Arguments.createMap();
+        Bundle response = new Bundle();
         response.putString("type", "success");
         response.putString("token", loginResult.getAccessToken().getToken());
         response.putInt("expires", (int) (loginResult.getAccessToken().getExpires().getTime() / 1000));
 
-        response.putArray("permissions", arrayFromPermissions(loginResult.getAccessToken().getPermissions()));
-        response.putArray("declinedPermissions", arrayFromPermissions(loginResult.getAccessToken().getDeclinedPermissions()));
+        response.putStringArrayList("permissions", new ArrayList<>(loginResult.getAccessToken().getPermissions()));
+        response.putStringArrayList("declinedPermissions", new ArrayList<>(loginResult.getAccessToken().getDeclinedPermissions()));
         promise.resolve(response);
       }
 
@@ -110,7 +89,7 @@ public class FacebookModule extends ReactContextBaseJavaModule implements Activi
       public void onCancel() {
         LoginManager.getInstance().registerCallback(mCallbackManager, null);
 
-        WritableMap response = Arguments.createMap();
+        Bundle response = new Bundle();
         response.putString("type", "cancel");
         promise.resolve(response);
       }
@@ -124,14 +103,27 @@ public class FacebookModule extends ReactContextBaseJavaModule implements Activi
     });
 
     try {
-      LoginManager.getInstance().logInWithReadPermissions(Exponent.getInstance().getCurrentActivity(), permissions);
+      LoginManager.getInstance().logInWithReadPermissions(mModuleRegistry.getModule(ActivityProvider.class).getCurrentActivity(), permissions);
     } catch (FacebookException e) {
       promise.reject("E_FBLOGIN_ERROR", "An error occurred while trying to log in to Facebook", e);
     }
   }
 
   @Override
-  public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+    mModuleRegistry = moduleRegistry;
+    if (mModuleRegistry != null) {
+      mModuleRegistry.getModule(UIManager.class).registerActivityEventListener(this);
+    }
+  }
+
+  @Override
+  public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
     mCallbackManager.onActivityResult(requestCode, resultCode, data);
+  }
+
+  @Override
+  public void onNewIntent(Intent intent) {
+    // do nothing
   }
 }
