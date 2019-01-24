@@ -176,6 +176,8 @@
            @"reason": EXNullIfEmpty(input.localizedFailureReason),
            @"suggestion": EXNullIfEmpty(input.localizedRecoverySuggestion),
            @"underlayingError": EXNullIfEmpty(underlyingError)
+           @"type": @"error",
+           @"_nativeClass": NSStringFromClass([input class])
            };
 }
 
@@ -291,7 +293,9 @@
            @"uuid": descriptorUUIDString,
            @"characteristicUUID": characteristicUUIDString,
            @"value": outputData,
-           @"parsedValue": EXNullIfEmpty(parsedValue)
+           @"parsedValue": EXNullIfEmpty(parsedValue),
+           @"type": @"descriptor",
+           @"_nativeClass": NSStringFromClass([input class])
            };
 }
 // TODO: Bacon: Investigate CBCharacteristic for read/write, permissions
@@ -311,7 +315,9 @@
            @"properties": [self.class CBCharacteristicProperties_NativeToJSON:input.properties],
            @"value": EXNullIfEmpty([self.class NSData_NativeToJSON:input.value]), //TODO: Bacon: Find out what this is. (NSData)
            @"descriptors": [self.class CBDescriptorList_NativeToJSON:input.descriptors],
-           @"isNotifying": @(input.isNotifying)
+           @"isNotifying": @(input.isNotifying),
+           @"type": @"characteristic",
+           @"_nativeClass": NSStringFromClass([input class])
            };
 }
 
@@ -327,7 +333,9 @@
            @"peripheralUUID": peripheralUUIDString,
            @"isPrimary": @([input isPrimary]),
            @"includedServices": [self.class CBServiceArray_NativeToJSON:input.includedServices],
-           @"characteristics": [self.class CBCharacteristicArray_NativeToJSON:input.characteristics]
+           @"characteristics": [self.class CBCharacteristicArray_NativeToJSON:input.characteristics],
+           @"type": @"service",
+           @"_nativeClass": NSStringFromClass([input class])
            };
 }
 
@@ -341,7 +349,9 @@
            @"name": EXNullIfEmpty(input.name),
            @"state": EXNullIfNil([self.class CBPeripheralState_NativeToJSON:input.state]),
            @"services": [self.class CBServiceArray_NativeToJSON:input.services],
-           @"canSendWriteWithoutResponse": @(input.canSendWriteWithoutResponse)
+           @"canSendWriteWithoutResponse": @(input.canSendWriteWithoutResponse),
+           @"type": @"peripheral",
+           @"_nativeClass": NSStringFromClass([input class])
            };
 }
 
@@ -351,7 +361,9 @@
 
   return @{
            @"state": [self.class CBManagerState_NativeToJSON:[input state]],
-           @"isScanning": @([input isScanning])
+           @"isScanning": @([input isScanning]),
+           @"type": @"central",
+           @"_nativeClass": NSStringFromClass([input class])
            };
 }
 
@@ -359,6 +371,31 @@
 {
   if (!input) return nil;
   return [input base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
+}
+
+
++ (NSDictionary *)CBPeer_NativeToJSON:(CBPeer *)input
+{
+  if (!input) return nil;
+
+  return @{
+           @"uuid": input.identifier.UUIDString,
+           @"type": @"peer",
+           @"_nativeClass": NSStringFromClass([input class])
+           };
+}
+
++ (NSDictionary *)CBL2CAPChannel_NativeToJSON:(CBL2CAPChannel *)input
+API_AVAILABLE(ios(11.0)) {
+  if (!input) return nil;
+  
+  // TODO: Bacon: Input/Output streams
+  return @{
+           @"peer": [self.class CBPeer_NativeToJSON:input.peer],
+           @"PSM": [NSNumber numberWithUnsignedInteger:input.PSM],
+           @"type": @"L2CAPChannel",
+           @"_nativeClass": NSStringFromClass([input class])
+           };
 }
 
 

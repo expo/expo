@@ -32,4 +32,13 @@ static id EXNullIfEmpty(NSString *input) {
 
 + (CBCharacteristicProperties)CBCharacteristicProperties_JSONToNative:(NSString *)input;
 
++ (NSMutableArray<NSString *> *)CBCharacteristicProperties_NativeToJSON:(CBCharacteristicProperties)input;
+
++ (NSString *)CBPeripheralState_NativeToJSON:(CBPeripheralState)input;
+
++ (NSString *)CBManagerState_NativeToJSON:(CBManagerState)input;
+
++ (NSDictionary *)CBL2CAPChannel_NativeToJSON:(CBL2CAPChannel *)input
+API_AVAILABLE(ios(11.0));
+
 @end
