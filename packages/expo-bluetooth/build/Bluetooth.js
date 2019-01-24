@@ -40,17 +40,16 @@ export async function observeStateAsync(callback) {
     callback(central.state);
     return addHandlerForKey(EVENTS.CENTRAL_DID_UPDATE_STATE, callback);
 }
-export async function connectAsync(options) {
+export async function connectAsync(peripheralUUID, options = {}) {
     invariantAvailability('connectAsync');
-    invariantUUID(options.uuid);
-    const peripheralUUID = options.uuid;
+    invariantUUID(peripheralUUID);
     return new Promise((resolve, reject) => {
         const transaction = new Transaction({ peripheralUUID }, TransactionType.connect);
         const transactionId = transaction.generateId();
         let timeoutTag;
         if (options.timeout) {
             timeoutTag = setTimeout(() => {
-                disconnectAsync({ uuid: peripheralUUID });
+                disconnectAsync(peripheralUUID);
                 deleteTransactionForId(transactionId);
                 reject('request timeout');
             }, options.timeout);
@@ -65,17 +64,16 @@ export async function connectAsync(options) {
                 return reject(...props);
             },
         });
-        ExpoBluetooth.connectAsync(options);
+        ExpoBluetooth.connectAsync({ peripheralUUID, timeout: options.timeout, options });
     });
 }
-export async function disconnectAsync(options) {
+export async function disconnectAsync(peripheralUUID) {
     invariantAvailability('disconnectAsync');
-    invariantUUID(options.uuid);
-    const peripheralUUID = options.uuid;
+    invariantUUID(peripheralUUID);
     return new Promise((resolve, reject) => {
         const transactionId = Transaction.generateTransactionId({ peripheralUUID }, TransactionType.disconnect);
         addTransactionForId(transactionId, { resolve, reject });
-        ExpoBluetooth.disconnectAsync(options);
+        ExpoBluetooth.disconnectAsync({ peripheralUUID });
     });
 }
 /* TODO: Bacon: Add a return type */
@@ -116,7 +114,7 @@ export async function readRSSIAsync(peripheralUUID) {
     return new Promise((resolve, reject) => {
         const transactionId = Transaction.generateTransactionId({ peripheralUUID }, TransactionType.rssi);
         addTransactionForId(transactionId, { resolve, reject });
-        ExpoBluetooth.readRSSIAsync({ uuid: peripheralUUID });
+        ExpoBluetooth.readRSSIAsync({ peripheralUUID });
     });
 }
 export async function getPeripheralsAsync() {
@@ -154,7 +152,7 @@ export async function loadPeripheralAsync({ id }, skipConnecting = false) {
     }
     if (peripheral.state !== 'connected') {
         if (!skipConnecting) {
-            await connectAsync({ uuid: peripheralId });
+            await connectAsync(peripheralId);
             return loadPeripheralAsync({ id }, true);
         }
         else {
@@ -225,7 +223,7 @@ addListener(({ data, event }) => {
         }
         if (transactionId in getTransactions()) {
             const { resolve, reject, callbacks } = getTransactionForId(transactionId);
-            console.log('Handle: ', { transactionId, transactions: Object.keys(getTransactions()), event, data: Object.keys(data) });
+            // console.log('Handle: ', { transactionId, transactions: Object.keys(getTransactions()), event, data: Object.keys(data) });
             if (callbacks) {
                 for (let callback of callbacks) {
                     if (callback instanceof Function) {

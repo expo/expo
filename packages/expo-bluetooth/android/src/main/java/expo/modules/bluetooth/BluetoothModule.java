@@ -490,7 +490,7 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
     if (guardPeripheralAction(promise)) {
       return;
     }
-    String peripheralUUID = (String) options.get(BluetoothConstants.JSON.UUID);
+    String peripheralUUID = (String) options.get(BluetoothConstants.JSON.PERIPHERAL_UUID);
     Peripheral peripheral = retrieveOrCreatePeripheral(peripheralUUID);
     if (peripheral == null) {
       promise.reject("ERR_NO_PERIPHERAL", "No valid peripheral with UUID " + peripheralUUID);
@@ -508,7 +508,7 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
     if (guardPeripheralAction(promise)) {
       return;
     }
-    Peripheral peripheral = _getPeripheralOrReject((String) options.get(BluetoothConstants.JSON.UUID), promise);
+    Peripheral peripheral = _getPeripheralOrReject((String) options.get(BluetoothConstants.JSON.PERIPHERAL_UUID), promise);
     if (peripheral == null) {
       return;
     }
@@ -579,7 +579,7 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
     if (guardPeripheralAction(promise)) {
       return;
     }
-    String peripheralUUID = (String) options.get(BluetoothConstants.JSON.UUID);
+    String peripheralUUID = (String) options.get(BluetoothConstants.JSON.PERIPHERAL_UUID);
     Peripheral peripheral = _getPeripheralOrReject(peripheralUUID, promise);
     if (peripheral == null) {
       return;

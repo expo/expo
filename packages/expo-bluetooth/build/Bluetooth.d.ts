@@ -7,14 +7,11 @@ export declare function startScanAsync(scanSettings?: ScanSettings): Promise<Sub
 export declare function stopScanAsync(): Promise<void>;
 export declare function observeUpdatesAsync(callback: (updates: any) => void): Promise<Subscription>;
 export declare function observeStateAsync(callback: StateUpdatedCallback): Promise<Subscription>;
-export declare function connectAsync(options: {
-    uuid: string;
+export declare function connectAsync(peripheralUUID: UUID, options?: {
     timeout?: number;
     options?: any;
 }): Promise<NativePeripheral>;
-export declare function disconnectAsync(options: {
-    uuid: string;
-}): Promise<any>;
+export declare function disconnectAsync(peripheralUUID: UUID): Promise<any>;
 export declare function readDescriptorAsync({ peripheralUUID, serviceUUID, characteristicUUID, descriptorUUID }: any): Promise<Base64 | undefined>;
 export declare function writeDescriptorAsync({ peripheralUUID, serviceUUID, characteristicUUID, descriptorUUID, data }: any): Promise<any>;
 export declare function readCharacteristicAsync({ peripheralUUID, serviceUUID, characteristicUUID }: any): Promise<Base64 | null>;

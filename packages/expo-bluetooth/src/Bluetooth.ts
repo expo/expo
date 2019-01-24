@@ -112,14 +112,12 @@ export async function observeStateAsync(callback: StateUpdatedCallback): Promise
   return addHandlerForKey(EVENTS.CENTRAL_DID_UPDATE_STATE, callback);
 }
 
-export async function connectAsync(options: {
-  uuid: string;
+export async function connectAsync(peripheralUUID: UUID, options: {
   timeout?: number;
   options?: any;
-}): Promise<NativePeripheral> {
+} = {}): Promise<NativePeripheral> {
   invariantAvailability('connectAsync');
-  invariantUUID(options.uuid)
-  const peripheralUUID = options.uuid;
+  invariantUUID(peripheralUUID)
   return new Promise((resolve, reject) => {
 
     const transaction = new Transaction({ peripheralUUID }, TransactionType.connect);
@@ -128,7 +126,7 @@ export async function connectAsync(options: {
     let timeoutTag: number | undefined;
     if (options.timeout) {
       timeoutTag = setTimeout(() => {
-        disconnectAsync({ uuid: peripheralUUID });
+        disconnectAsync(peripheralUUID);
         deleteTransactionForId(transactionId);
         reject('request timeout');
       }, options.timeout);
@@ -145,18 +143,17 @@ export async function connectAsync(options: {
       },
     });
 
-    ExpoBluetooth.connectAsync(options);
+    ExpoBluetooth.connectAsync({ peripheralUUID, timeout: options.timeout, options });
   });
 }
 
-export async function disconnectAsync(options: { uuid: string }): Promise<any> {
+export async function disconnectAsync(peripheralUUID: UUID): Promise<any> {
   invariantAvailability('disconnectAsync');
-  invariantUUID(options.uuid);
-  const peripheralUUID = options.uuid;
+  invariantUUID(peripheralUUID);
   return new Promise((resolve, reject) => {
     const transactionId = Transaction.generateTransactionId({ peripheralUUID }, TransactionType.disconnect);
     addTransactionForId(transactionId, { resolve, reject });
-    ExpoBluetooth.disconnectAsync(options);
+    ExpoBluetooth.disconnectAsync({ peripheralUUID });
   });
 }
 
@@ -207,7 +204,7 @@ export async function readRSSIAsync(peripheralUUID: UUID): Promise<any> {
   return new Promise((resolve, reject) => {
     const transactionId = Transaction.generateTransactionId({ peripheralUUID }, TransactionType.rssi);
     addTransactionForId(transactionId, { resolve, reject });
-    ExpoBluetooth.readRSSIAsync({ uuid: peripheralUUID });
+    ExpoBluetooth.readRSSIAsync({ peripheralUUID });
   });
 }
 
@@ -263,7 +260,7 @@ export async function loadPeripheralAsync(
 
   if (peripheral.state !== 'connected') {
     if (!skipConnecting) {
-      await connectAsync({ uuid: peripheralId });
+      await connectAsync(peripheralId);
       return loadPeripheralAsync({ id }, true);
     } else {
       // This should never be called because in theory connectAsync would throw an error.
@@ -345,7 +342,7 @@ addListener(({ data, event }: { data: NativeEventData; event: string }) => {
       
       const { resolve, reject, callbacks } = getTransactionForId(transactionId);
 
-      console.log('Handle: ', { transactionId, transactions: Object.keys(getTransactions()), event, data: Object.keys(data) });
+      // console.log('Handle: ', { transactionId, transactions: Object.keys(getTransactions()), event, data: Object.keys(data) });
 
       if (callbacks) {
         for (let callback of callbacks) {
@@ -354,6 +351,7 @@ addListener(({ data, event }: { data: NativeEventData; event: string }) => {
             callback(data);
           } else {
             const { resolve, reject } = callback;
+            
             if (error) {
               reject(new BluetoothError(error));
             } else {

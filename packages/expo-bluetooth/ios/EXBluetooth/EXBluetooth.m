@@ -91,7 +91,7 @@ NSString *const EXBluetoothTransactionIdKey = @"transactionId";
 //    @synchronized(_peripherals) {
 //      for (NSString *key in _peripherals) {
 //        CBPeripheral *peripheral = _peripherals[key];
-//        [_manager cancelPeripheralConnection:peripheral];
+//        [self _disconnectPeripheral:peripheral];
 //        [_peripherals removeObjectForKey:key];
 //      }
 //    }
@@ -111,6 +111,7 @@ EX_EXPORT_MODULE(ExpoBluetooth);
 
 - (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
+  // TODO: Bacon: Maybe add restoration ID
   _manager = [[CBCentralManager alloc] initWithDelegate:self queue:[self methodQueue] options:nil];
   _moduleRegistry = moduleRegistry;
   _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(EXEventEmitterService)];
@@ -120,6 +121,20 @@ EX_EXPORT_MODULE(ExpoBluetooth);
 {
   return @{
            @"BLUETOOTH_EVENT": EXBluetoothEvent,
+           @"CENTRAL_OPTIONS": @{
+              @"SHOW_POWER_ALERT": CBCentralManagerOptionShowPowerAlertKey,
+              @"RESTORE_IDENTIFIER": CBCentralManagerOptionRestoreIdentifierKey,
+           },
+           @"SCAN_OPTIONS": @{
+               @"ALLOW_DUPLICATES": CBCentralManagerScanOptionAllowDuplicatesKey,
+               @"SOLICITED_SERVICE_UUIDS": CBCentralManagerScanOptionSolicitedServiceUUIDsKey
+               },
+           @"CONNECT_PERIPHERAL_OPTIONS": @{
+               @"NotifyOnConnection": CBConnectPeripheralOptionNotifyOnConnectionKey,
+               @"NotifyOnDisconnection": CBConnectPeripheralOptionNotifyOnDisconnectionKey,
+               @"NotifyOnNotification": CBConnectPeripheralOptionNotifyOnNotificationKey,
+               @"StartDelay": CBConnectPeripheralOptionStartDelayKey
+               },
            @"UUID": @{
                @"PERIPHERAL": EXBluetoothPeripheralUUID,
                @"SERVICE": EXBluetoothServiceUUID,
@@ -183,9 +198,8 @@ EX_EXPORT_METHOD_AS(initializeManagerAsync,
                     resolve:(EXPromiseResolveBlock)resolve
                     reject:(EXPromiseRejectBlock)reject)
 {
-  if ([self guardBluetoothEnabled:reject]) {
-    return;
-  }
+  _manager = [[CBCentralManager alloc] initWithDelegate:self queue:[self methodQueue] options:options];
+  
   /*
    CBCentralManagerOptionShowPowerAlertKey
    CBCentralManagerOptionRestoreIdentifierKey
@@ -236,7 +250,8 @@ EX_EXPORT_METHOD_AS(startScanAsync,
     return;
   }
   NSArray *serviceUUIDs = [self.class CBUUIDList_JSONToNative:serviceUUIDStrings];
-  // TODO: Bacon: Fix these options
+  
+  // SCAN_OPTIONS
   [_manager scanForPeripheralsWithServices:serviceUUIDs options:options];
   resolve([NSNull null]);
 }
@@ -261,12 +276,11 @@ EX_EXPORT_METHOD_AS(connectAsync,
     return;
   }
   
-  CBPeripheral *peripheral = [self _getPeripheralOrReject:options[@"uuid"] reject:reject];
+  CBPeripheral *peripheral = [self _getPeripheralOrReject:options[@"peripheralUUID"] reject:reject];
   if (!peripheral) {
     return;
   }
-  
-  // TODO: Bacon: Convert the options to native
+  // CONNECT_PERIPHERAL_OPTIONS
   [_manager connectPeripheral:peripheral options:options[@"options"]];
   resolve([NSNull null]);
 }
@@ -279,7 +293,7 @@ EX_EXPORT_METHOD_AS(readRSSIAsync,
   if ([self guardBluetoothEnabled:reject]) {
     return;
   }
-  CBPeripheral *peripheral = [self _getPeripheralOrReject:options[@"uuid"] reject:reject];
+  CBPeripheral *peripheral = [self _getPeripheralOrReject:options[@"peripheralUUID"] reject:reject];
   if (!peripheral) {
     return;
   }
@@ -298,7 +312,7 @@ EX_EXPORT_METHOD_AS(updateDescriptorAsync,
     return;
   }
   CBPeripheral *peripheral = [self _getPeripheralOrReject:options[EXBluetoothPeripheralUUID] reject:reject];
-  if (!peripheral) {
+  if (!peripheral || [self guardPeripheralConnected:peripheral reject:reject]) {
     return;
   }
   
@@ -359,7 +373,7 @@ EX_EXPORT_METHOD_AS(updateCharacteristicAsync,
     return;
   }
   CBPeripheral *peripheral = [self _getPeripheralOrReject:options[EXBluetoothPeripheralUUID] reject:reject];
-  if (!peripheral) {
+  if (!peripheral || [self guardPeripheralConnected:peripheral reject:reject]) {
     return;
   }
   
@@ -377,6 +391,7 @@ EX_EXPORT_METHOD_AS(updateCharacteristicAsync,
   // Characteristic Updates
   switch (characteristicProperties) {
     case CBCharacteristicPropertyRead:
+      [peripheral setNotifyValue:YES forCharacteristic:characteristic];
       [peripheral readValueForCharacteristic:characteristic];
       break;
     case CBCharacteristicPropertyWrite:
@@ -427,12 +442,12 @@ EX_EXPORT_METHOD_AS(disconnectAsync,
   if ([self guardBluetoothEnabled:reject]) {
     return;
   }
-  CBPeripheral *peripheral = [self _getPeripheralOrReject:options[@"uuid"] reject:reject];
+  CBPeripheral *peripheral = [self _getPeripheralOrReject:options[@"peripheralUUID"] reject:reject];
   if (!peripheral) {
     return;
   }
   
-  [_manager cancelPeripheralConnection:peripheral];
+  [self _disconnectPeripheral:peripheral];
   resolve([NSNull null]);
 }
 
@@ -467,6 +482,7 @@ EX_EXPORT_METHOD_AS(discoverAsync,
   NSString *characteristicUUIDString = options[EXBluetoothCharacteristicUUID];
   
   if (!characteristicUUIDString) {
+    // TODO: Bacon: This name seems confusing, maybe make this more generic or more specific.
     [peripheral discoverCharacteristics:serviceUUIDs forService:service];
     resolve([NSNull null]);
     return;
@@ -557,10 +573,19 @@ EX_EXPORT_METHOD_AS(discoverAsync,
   return descriptor;
 }
 
+-(BOOL)guardPeripheralConnected:(CBPeripheral *)peripheral reject:(EXPromiseRejectBlock)reject
+{
+  if (peripheral.state != CBPeripheralStateConnected) {
+    reject(EXBluetoothErrorState, [NSString stringWithFormat:@"Peripheral is not connected: %@ state: %ld", peripheral.identifier.UUIDString, (long)peripheral.state], nil);
+    return true;
+  }
+  return false;
+}
+
 - (BOOL)guardBluetoothEnabled:(EXPromiseRejectBlock)reject
 {
   if (_manager.state < CBManagerStatePoweredOff) {
-    reject(EXBluetoothErrorState, [NSString stringWithFormat:@"Bluetooth is unavailable: %@", _manager.state], nil);
+    reject(EXBluetoothErrorState, [NSString stringWithFormat:@"Bluetooth is unavailable: %ld", (long)_manager.state], nil);
     return true;
   }
   return false;
@@ -661,7 +686,7 @@ EX_EXPORT_METHOD_AS(discoverAsync,
     @synchronized(_peripherals) {
       for (NSString *key in _peripherals) {
         CBPeripheral *peripheral = _peripherals[key];
-        [_manager cancelPeripheralConnection:peripheral];
+        [self _disconnectPeripheral:peripheral];
         [_peripherals removeObjectForKey:key];
       }
     }
@@ -871,6 +896,30 @@ EX_EXPORT_METHOD_AS(discoverAsync,
   }
   return [CBUUID UUIDWithString:outputString];
 }
+
+
+- (void)_disconnectPeripheral:(CBPeripheral *)peripheral
+{
+    peripheral.delegate = nil;
+    
+    if (peripheral.state == CBPeripheralStateDisconnected) {
+        return;
+    }
+    
+    if (peripheral.services != nil) {
+        [peripheral.services enumerateObjectsUsingBlock:^(CBService *service, NSUInteger idx, BOOL *stop) {
+            [service.characteristics enumerateObjectsUsingBlock:^(CBCharacteristic *characteristic, NSUInteger idx, BOOL *stop) {
+              if (characteristic.isNotifying) {
+                  [peripheral setNotifyValue:NO forCharacteristic:characteristic];
+              }
+            }];
+        }];
+    }
+    
+    [_manager cancelPeripheralConnection:peripheral];
+}
+
+
 
 @end
 
