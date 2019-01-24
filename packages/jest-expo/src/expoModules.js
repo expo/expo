@@ -79,6 +79,7 @@ module.exports = {
     exportedMethods: {
       type: 'object',
       mock: {
+        BlurViewManager: [{ key: 0, argumentsCount: 2, name: 'updateProps' }],
         ExpoAdsAdMobBannerView: [],
         ExpoAdsAdMobInterstitialManager: [
           { key: 0, argumentsCount: 1, name: 'setTestDeviceID' },
@@ -169,6 +170,11 @@ module.exports = {
         ExpoSMS: [
           { key: 0, argumentsCount: 0, name: 'isAvailableAsync' },
           { key: 1, argumentsCount: 2, name: 'sendSMSAsync' },
+        ],
+        ExpoSecureStore: [
+          { key: 0, argumentsCount: 2, name: 'getValueWithKeyAsync' },
+          { key: 1, argumentsCount: 2, name: 'deleteValueWithKeyAsync' },
+          { key: 2, argumentsCount: 3, name: 'setValueWithKeyAsync' },
         ],
         ExpoTaskManager: [
           { key: 0, argumentsCount: 1, name: 'isTaskRegisteredAsync' },
@@ -300,6 +306,7 @@ module.exports = {
           { key: 3, argumentsCount: 0, name: 'resume' },
           { key: 4, argumentsCount: 0, name: 'isSpeaking' },
         ],
+        VibrancyViewManager: [{ key: 0, argumentsCount: 2, name: 'updateProps' }],
       },
     },
     modulesConstants: {
@@ -353,6 +360,20 @@ module.exports = {
           locales: { type: 'array' },
           removeListeners: { type: 'function' },
           timezone: { type: 'string' },
+        },
+        ExpoSecureStore: {
+          AFTER_FIRST_UNLOCK: { type: 'number', mock: 0 },
+          AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY: { type: 'number', mock: 1 },
+          ALWAYS: { type: 'number', mock: 2 },
+          ALWAYS_THIS_DEVICE_ONLY: { type: 'number', mock: 4 },
+          WHEN_PASSCODE_SET_THIS_DEVICE_ONLY: { type: 'number', mock: 3 },
+          WHEN_UNLOCKED: { type: 'number', mock: 5 },
+          WHEN_UNLOCKED_THIS_DEVICE_ONLY: { type: 'number', mock: 6 },
+          addListener: { type: 'function' },
+          deleteValueWithKeyAsync: { type: 'function' },
+          getValueWithKeyAsync: { type: 'function' },
+          removeListeners: { type: 'function' },
+          setValueWithKeyAsync: { type: 'function' },
         },
         ExpoTaskManager: {
           EVENT_NAME: { type: 'string' },
@@ -469,12 +490,14 @@ module.exports = {
     viewManagersNames: {
       type: 'array',
       mock: [
-        'ExpoAdsPublisherBannerView',
-        'ExpoBarCodeScannerView',
         'ExpoVideoView',
+        'VibrancyView',
+        'ExpoBarCodeScannerView',
+        'ExponentCamera',
+        'BlurView',
         'ExpoAdsAdMobBannerView',
         'ExponentGLView',
-        'ExponentCamera',
+        'ExpoAdsPublisherBannerView',
       ],
     },
     callMethod: { type: 'function', functionType: 'promise' },
@@ -529,7 +552,6 @@ module.exports = {
     setUserId: { type: 'function', functionType: 'async' },
     setUserProperties: { type: 'function', functionType: 'async' },
   },
-  ExponentBlurViewManager: {},
   ExponentBrightness: {
     getBrightnessAsync: { type: 'function', functionType: 'promise' },
     setBrightnessAsync: { type: 'function', functionType: 'promise' },
@@ -584,18 +606,6 @@ module.exports = {
   ExponentScreenOrientation: {
     allowAsync: { type: 'function', functionType: 'promise' },
     doesSupportAsync: { type: 'function', functionType: 'promise' },
-  },
-  ExponentSecureStore: {
-    AFTER_FIRST_UNLOCK: { type: 'number', mock: 0 },
-    AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY: { type: 'number', mock: 1 },
-    ALWAYS: { type: 'number', mock: 2 },
-    ALWAYS_THIS_DEVICE_ONLY: { type: 'number', mock: 4 },
-    WHEN_PASSCODE_SET_THIS_DEVICE_ONLY: { type: 'number', mock: 3 },
-    WHEN_UNLOCKED: { type: 'number', mock: 5 },
-    WHEN_UNLOCKED_THIS_DEVICE_ONLY: { type: 'number', mock: 6 },
-    deleteValueWithKeyAsync: { type: 'function', functionType: 'promise' },
-    getValueWithKeyAsync: { type: 'function', functionType: 'promise' },
-    setValueWithKeyAsync: { type: 'function', functionType: 'promise' },
   },
   ExponentSplashScreen: {
     hide: { type: 'function', functionType: 'async' },

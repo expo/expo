@@ -276,6 +276,7 @@ dependencies {
   api 'host.exp.exponent:expo-location:2.0.1'
   api 'host.exp.exponent:expo-media-library:2.0.0'
   api 'host.exp.exponent:expo-print:2.0.0'
+  api 'host.exp.exponent:expo-secure-store:1.0.0'
   api 'host.exp.exponent:expo-sensors:2.0.0'
   api 'host.exp.exponent:expo-sms:2.0.0'
   api 'host.exp.exponent:expo-background-fetch:1.0.0'

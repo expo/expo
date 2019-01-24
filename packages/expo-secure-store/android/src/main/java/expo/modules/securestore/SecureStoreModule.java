@@ -1,6 +1,4 @@
-// Copyright 2015-present 650 Industries. All rights reserved.
-
-package versioned.host.exp.exponent.modules.api;
+package expo.modules.securestore;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -10,17 +8,9 @@ import android.preference.PreferenceManager;
 import android.security.KeyPairGeneratorSpec;
 import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyProperties;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
-
-import com.facebook.react.bridge.AssertionException;
-import com.facebook.react.bridge.Promise;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.ReadableMap;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,18 +21,13 @@ import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.KeyPairGenerator;
 import java.security.KeyStore;
-import java.security.KeyStore.PrivateKeyEntry;
-import java.security.KeyStore.SecretKeyEntry;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
-import java.security.Provider;
 import java.security.SecureRandom;
-import java.security.Security;
 import java.security.UnrecoverableEntryException;
 import java.security.cert.CertificateException;
 import java.security.spec.AlgorithmParameterSpec;
-import java.util.Arrays;
 import java.util.Date;
 
 import javax.crypto.Cipher;
@@ -53,12 +38,13 @@ import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import javax.security.auth.x500.X500Principal;
 
-import host.exp.exponent.utils.ScopedContext;
-import host.exp.expoview.Exponent;
+import expo.core.ExportedModule;
+import expo.core.Promise;
+import expo.core.arguments.ReadableArguments;
+import expo.core.interfaces.ExpoMethod;
 
-public class SecureStoreModule extends ReactContextBaseJavaModule {
-  private static final String TAG = SecureStoreModule.class.getSimpleName();
-
+public class SecureStoreModule extends ExportedModule {
+  private static final String TAG = "ExpoSecureStore";
   private static final String SHARED_PREFERENCES_NAME = "SecureStore";
   private static final String KEYSTORE_PROVIDER = "AndroidKeyStore";
 
@@ -66,29 +52,24 @@ public class SecureStoreModule extends ReactContextBaseJavaModule {
 
   private static final String SCHEME_PROPERTY = "scheme";
 
-  private ScopedContext mScopedContext;
+  private KeyStore mKeyStore;
+  protected AESEncrypter mAESEncrypter;
+  protected HybridAESEncrypter mHybridAESEncrypter;
 
-  private @Nullable KeyStore mKeyStore;
-  private AESEncrypter mAESEncrypter;
-  private HybridAESEncrypter mHybridAESEncrypter;
-
-  public SecureStoreModule(ReactApplicationContext reactContext, ScopedContext scopedContext) {
-    super(reactContext);
-
-    mScopedContext = scopedContext;
-
+  public SecureStoreModule(Context context) {
+    super(context);
     mAESEncrypter = new AESEncrypter();
-    mHybridAESEncrypter = new HybridAESEncrypter(mScopedContext, mAESEncrypter);
+    mHybridAESEncrypter = new HybridAESEncrypter(context, mAESEncrypter);
   }
 
   @Override
   public String getName() {
-    return "ExponentSecureStore";
+    return TAG;
   }
 
   // NOTE: This currently doesn't remove the entry (if any) in the legacy shared preferences
-  @ReactMethod
-  public void setValueWithKeyAsync(@Nullable String value, String key, ReadableMap options, Promise promise) {
+  @ExpoMethod
+  public void setValueWithKeyAsync(String value, String key, ReadableArguments options, Promise promise) {
     try {
       setItemImpl(key, value, options, promise);
     } catch (Exception e) {
@@ -97,13 +78,13 @@ public class SecureStoreModule extends ReactContextBaseJavaModule {
     }
   }
 
-  private void setItemImpl(String key, @Nullable String value, ReadableMap options, Promise promise) {
+  private void setItemImpl(String key, String value, ReadableArguments options, Promise promise) {
     if (key == null) {
       promise.reject("E_SECURESTORE_NULL_KEY", "SecureStore keys must not be null");
       return;
     }
 
-    SharedPreferences prefs = mScopedContext.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+    SharedPreferences prefs = getContext().getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
 
     if (value == null) {
       boolean success = prefs.edit().putString(key, null).commit();
@@ -124,11 +105,11 @@ public class SecureStoreModule extends ReactContextBaseJavaModule {
       // use in the encrypted JSON item so that we know how to decode and decrypt it when reading
       // back a value.
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        SecretKeyEntry secretKeyEntry = getKeyEntry(SecretKeyEntry.class, mAESEncrypter, options);
+        KeyStore.SecretKeyEntry secretKeyEntry = getKeyEntry(KeyStore.SecretKeyEntry.class, mAESEncrypter, options);
         encryptedItem = mAESEncrypter.createEncryptedItem(value, keyStore, secretKeyEntry);
         encryptedItem.put(SCHEME_PROPERTY, AESEncrypter.NAME);
       } else {
-        PrivateKeyEntry privateKeyEntry = getKeyEntry(PrivateKeyEntry.class, mHybridAESEncrypter, options);
+        KeyStore.PrivateKeyEntry privateKeyEntry = getKeyEntry(KeyStore.PrivateKeyEntry.class, mHybridAESEncrypter, options);
         encryptedItem = mHybridAESEncrypter.createEncryptedItem(value, keyStore, privateKeyEntry);
         encryptedItem.put(SCHEME_PROPERTY, HybridAESEncrypter.NAME);
       }
@@ -160,8 +141,8 @@ public class SecureStoreModule extends ReactContextBaseJavaModule {
     }
   }
 
-  @ReactMethod
-  public void getValueWithKeyAsync(String key, ReadableMap options, Promise promise) {
+  @ExpoMethod
+  public void getValueWithKeyAsync(String key, ReadableArguments options, Promise promise) {
     try {
       getItemImpl(key, options, promise);
     } catch (Exception e) {
@@ -170,7 +151,7 @@ public class SecureStoreModule extends ReactContextBaseJavaModule {
     }
   }
 
-  private void getItemImpl(String key, ReadableMap options, Promise promise) {
+  private void getItemImpl(String key, ReadableArguments options, Promise promise) {
     // We use a SecureStore-specific shared preferences file, which lets us do things like enumerate
     // its entries or clear all of them
     SharedPreferences prefs = getSharedPreferences();
@@ -181,7 +162,7 @@ public class SecureStoreModule extends ReactContextBaseJavaModule {
     }
   }
 
-  private void readJSONEncodedItem(String key, SharedPreferences prefs, ReadableMap options, Promise promise) {
+  private void readJSONEncodedItem(String key, SharedPreferences prefs, ReadableArguments options, Promise promise) {
     String encryptedItemString = prefs.getString(key, null);
     JSONObject encryptedItem;
     try {
@@ -203,11 +184,11 @@ public class SecureStoreModule extends ReactContextBaseJavaModule {
     try {
       switch (scheme) {
         case AESEncrypter.NAME:
-          SecretKeyEntry secretKeyEntry = getKeyEntry(SecretKeyEntry.class, mAESEncrypter, options);
+          KeyStore.SecretKeyEntry secretKeyEntry = getKeyEntry(KeyStore.SecretKeyEntry.class, mAESEncrypter, options);
           value = mAESEncrypter.decryptItem(encryptedItem, secretKeyEntry);
           break;
         case HybridAESEncrypter.NAME:
-          PrivateKeyEntry privateKeyEntry = getKeyEntry(PrivateKeyEntry.class, mHybridAESEncrypter, options);
+          KeyStore.PrivateKeyEntry privateKeyEntry = getKeyEntry(KeyStore.PrivateKeyEntry.class, mHybridAESEncrypter, options);
           value = mHybridAESEncrypter.decryptItem(encryptedItem, privateKeyEntry);
           break;
         default:
@@ -233,8 +214,8 @@ public class SecureStoreModule extends ReactContextBaseJavaModule {
     promise.resolve(value);
   }
 
-  private void readLegacySDK20Item(String key, ReadableMap options, Promise promise) {
-    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mScopedContext);
+  private void readLegacySDK20Item(String key, ReadableArguments options, Promise promise) {
+    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
     String encryptedItem = prefs.getString(key, null);
 
     // In the SDK20 scheme, we stored null and empty strings directly so we want to decode them the
@@ -257,12 +238,12 @@ public class SecureStoreModule extends ReactContextBaseJavaModule {
       }
 
       KeyStore.Entry keyStoreEntry = keyStore.getEntry(keystoreAlias, null);
-      if (!(keyStoreEntry instanceof PrivateKeyEntry)) {
+      if (!(keyStoreEntry instanceof KeyStore.PrivateKeyEntry)) {
         promise.reject("E_SECURESTORE_DECRYPT_ERROR", "The keystore entry for the legacy item is not a private key entry");
         return;
       }
 
-      value = encrypter.decryptItem(encryptedItem, (PrivateKeyEntry) keyStoreEntry);
+      value = encrypter.decryptItem(encryptedItem, (KeyStore.PrivateKeyEntry) keyStoreEntry);
     } catch (IOException e) {
       Log.w(TAG, e);
       promise.reject("E_SECURESTORE_IO_ERROR", "There was an I/O error loading the keystore for SecureStore", e);
@@ -276,8 +257,8 @@ public class SecureStoreModule extends ReactContextBaseJavaModule {
     promise.resolve(value);
   }
 
-  @ReactMethod
-  public void deleteValueWithKeyAsync(String key, ReadableMap options, Promise promise) {
+  @ExpoMethod
+  public void deleteValueWithKeyAsync(String key, ReadableArguments options, Promise promise) {
     try {
       deleteItemImpl(key, options, promise);
     } catch (Exception e) {
@@ -286,14 +267,14 @@ public class SecureStoreModule extends ReactContextBaseJavaModule {
     }
   }
 
-  private void deleteItemImpl(String key, ReadableMap options, Promise promise) {
+  private void deleteItemImpl(String key, ReadableArguments options, Promise promise) {
     boolean success = true;
     SharedPreferences prefs = getSharedPreferences();
     if (prefs.contains(key)) {
       success = prefs.edit().remove(key).commit() && success;
     }
 
-    SharedPreferences legacyPrefs = PreferenceManager.getDefaultSharedPreferences(mScopedContext);
+    SharedPreferences legacyPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
     if (legacyPrefs.contains(key)) {
       success = legacyPrefs.edit().remove(key).commit() && success;
     }
@@ -310,7 +291,7 @@ public class SecureStoreModule extends ReactContextBaseJavaModule {
    * lets us easily list or remove all the entries for an experience.
    */
   private SharedPreferences getSharedPreferences() {
-    return mScopedContext.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+    return getContext().getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
   }
 
   private KeyStore getKeyStore() throws IOException, KeyStoreException, NoSuchAlgorithmException, CertificateException {
@@ -324,7 +305,7 @@ public class SecureStoreModule extends ReactContextBaseJavaModule {
 
   private <E extends KeyStore.Entry> E getKeyEntry(Class<E> keyStoreEntryClass,
                                                    KeyBasedEncrypter<E> encrypter,
-                                                   ReadableMap options) throws IOException, GeneralSecurityException {
+                                                   ReadableArguments options) throws IOException, GeneralSecurityException {
     KeyStore keyStore = getKeyStore();
     String keystoreAlias = encrypter.getKeyStoreAlias(options);
 
@@ -346,9 +327,9 @@ public class SecureStoreModule extends ReactContextBaseJavaModule {
   }
 
   private interface KeyBasedEncrypter<E extends KeyStore.Entry> {
-    String getKeyStoreAlias(ReadableMap options);
+    String getKeyStoreAlias(ReadableArguments options);
 
-    E initializeKeyStoreEntry(KeyStore keyStore, ReadableMap options) throws
+    E initializeKeyStoreEntry(KeyStore keyStore, ReadableArguments options) throws
         GeneralSecurityException;
 
     JSONObject createEncryptedItem(String plaintextValue, KeyStore keyStore, E keyStoreEntry) throws
@@ -362,12 +343,12 @@ public class SecureStoreModule extends ReactContextBaseJavaModule {
    * An encrypter that stores a symmetric key (AES) in the Android keystore. It generates a new IV
    * each time an item is written to prevent many-time pad attacks. The IV is stored with the
    * encrypted item.
-   *
+   * <p>
    * AES with GCM is supported on Android 10+ but storing an AES key in the keystore is supported
    * on only Android 23+. If you generate your own key instead of using the Android keystore (like
    * the hybrid encrypter does) you can use the encyption and decryption methods of this class.
    */
-  private static class AESEncrypter implements KeyBasedEncrypter<SecretKeyEntry> {
+  protected static class AESEncrypter implements KeyBasedEncrypter<KeyStore.SecretKeyEntry> {
     public static final String NAME = "aes";
 
     private static final String DEFAULT_ALIAS = "key_v1";
@@ -379,14 +360,14 @@ public class SecureStoreModule extends ReactContextBaseJavaModule {
     private static final String GCM_AUTHENTICATION_TAG_LENGTH_PROPERTY = "tlen";
 
     @Override
-    public String getKeyStoreAlias(ReadableMap options) {
-      String baseAlias = options.hasKey(ALIAS_PROPERTY) ? options.getString(ALIAS_PROPERTY) : DEFAULT_ALIAS;
+    public String getKeyStoreAlias(ReadableArguments options) {
+      String baseAlias = options.containsKey(ALIAS_PROPERTY) ? options.getString(ALIAS_PROPERTY) : DEFAULT_ALIAS;
       return AES_CIPHER + ":" + baseAlias;
     }
 
     @Override
     @TargetApi(23)
-    public KeyStore.SecretKeyEntry initializeKeyStoreEntry(KeyStore keyStore, ReadableMap options) throws GeneralSecurityException {
+    public KeyStore.SecretKeyEntry initializeKeyStoreEntry(KeyStore keyStore, ReadableArguments options) throws GeneralSecurityException {
       String keystoreAlias = getKeyStoreAlias(options);
       int keyPurposes = KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT;
       AlgorithmParameterSpec algorithmSpec = new KeyGenParameterSpec.Builder(keystoreAlias, keyPurposes)
@@ -400,7 +381,7 @@ public class SecureStoreModule extends ReactContextBaseJavaModule {
 
       // KeyGenParameterSpec stores the key when it is generated
       keyGenerator.generateKey();
-      SecretKeyEntry keyStoreEntry = (SecretKeyEntry) keyStore.getEntry(keystoreAlias, null);
+      KeyStore.SecretKeyEntry keyStoreEntry = (KeyStore.SecretKeyEntry) keyStore.getEntry(keystoreAlias, null);
       if (keyStoreEntry == null) {
         throw new UnrecoverableEntryException("Could not retrieve the newly generated secret key entry");
       }
@@ -409,7 +390,7 @@ public class SecureStoreModule extends ReactContextBaseJavaModule {
     }
 
     @Override
-    public JSONObject createEncryptedItem(String plaintextValue, KeyStore keyStore, SecretKeyEntry secretKeyEntry) throws
+    public JSONObject createEncryptedItem(String plaintextValue, KeyStore keyStore, KeyStore.SecretKeyEntry secretKeyEntry) throws
         GeneralSecurityException, JSONException {
 
       SecretKey secretKey = secretKeyEntry.getSecretKey();
@@ -437,7 +418,7 @@ public class SecureStoreModule extends ReactContextBaseJavaModule {
     }
 
     @Override
-    public String decryptItem(JSONObject encryptedItem, SecretKeyEntry secretKeyEntry) throws
+    public String decryptItem(JSONObject encryptedItem, KeyStore.SecretKeyEntry secretKeyEntry) throws
         GeneralSecurityException, JSONException {
 
       String ciphertext = encryptedItem.getString(CIPHERTEXT_PROPERTY);
@@ -459,16 +440,16 @@ public class SecureStoreModule extends ReactContextBaseJavaModule {
    * An AES encrypter that works with Android L (API 22) and below, which cannot store symmetric
    * keys in the keystore. We store an asymmetric key pair (RSA) in the keystore, which is used to
    * securely encrypt a symmetric key (AES) that we use to encrypt the data.
-   *
+   * <p>
    * The item we store includes the ciphertext (encrypted with AES), the AES IV, and the encrypted
    * symmetric key (which requires the keystore's asymmetric private key to decrypt).
-   *
+   * <p>
    * https://crypto.stackexchange.com/questions/14/how-can-i-use-asymmetric-encryption-such-as-rsa-to-encrypt-an-arbitrary-length
-   *
+   * <p>
    * When we drop support for Android API 22, we can remove the write paths but need to keep the
    * read paths for phones that still have hybrid-encrypted values on disk.
    */
-  private static class HybridAESEncrypter implements KeyBasedEncrypter<PrivateKeyEntry> {
+  protected static class HybridAESEncrypter implements KeyBasedEncrypter<KeyStore.PrivateKeyEntry> {
     public static final String NAME = "hybrid";
 
     private static final String DEFAULT_ALIAS = "key_v1";
@@ -476,16 +457,16 @@ public class SecureStoreModule extends ReactContextBaseJavaModule {
     // BouncyCastle/SpongyCastle throw an exception on older Android versions when accessing RSA key
     // pairs generated using the keystore
     private static final String RSA_CIPHER_LEGACY_PROVIDER = "AndroidOpenSSL";
-    private static final int X509_SERIAL_NUMBER_LENGTH_BITS = 20 * 8;
+    protected static final int X509_SERIAL_NUMBER_LENGTH_BITS = 20 * 8;
 
     private static final int GCM_IV_LENGTH_BYTES = 12;
     private static final int GCM_AUTHENTICATION_TAG_LENGTH_BITS = 128;
 
     private static final String ENCRYPTED_SECRET_KEY_PROPERTY = "esk";
 
-    private Context mContext;
+    protected Context mContext;
     private AESEncrypter mAESEncrypter;
-    private SecureRandom mSecureRandom;
+    protected SecureRandom mSecureRandom;
 
     public HybridAESEncrypter(Context context, AESEncrypter aesEncrypter) {
       mContext = context;
@@ -494,14 +475,14 @@ public class SecureStoreModule extends ReactContextBaseJavaModule {
     }
 
     @Override
-    public String getKeyStoreAlias(ReadableMap options) {
-      String baseAlias = options.hasKey(ALIAS_PROPERTY) ? options.getString(ALIAS_PROPERTY) : DEFAULT_ALIAS;
+    public String getKeyStoreAlias(ReadableArguments options) {
+      String baseAlias = options.containsKey(ALIAS_PROPERTY) ? options.getString(ALIAS_PROPERTY) : DEFAULT_ALIAS;
       return RSA_CIPHER + ":" + baseAlias;
     }
 
     @Override
     @SuppressWarnings("deprecation")
-    public KeyStore.PrivateKeyEntry initializeKeyStoreEntry(KeyStore keyStore, ReadableMap options) throws GeneralSecurityException {
+    public KeyStore.PrivateKeyEntry initializeKeyStoreEntry(KeyStore keyStore, ReadableArguments options) throws GeneralSecurityException {
       String keystoreAlias = getKeyStoreAlias(options);
       // See https://tools.ietf.org/html/rfc1779#section-2.3 for the DN grammar
       String escapedCommonName = '"' + keystoreAlias.replace("\\", "\\\\").replace("\"", "\\\"") + '"';
@@ -515,27 +496,7 @@ public class SecureStoreModule extends ReactContextBaseJavaModule {
 
       KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(KeyProperties.KEY_ALGORITHM_RSA, keyStore.getProvider());
       keyPairGenerator.initialize(algorithmSpec);
-
-      // Before Android M, only the AndroidOpenSSL provider doesn't throw an exception when
-      // generating the key pair. Since we give the Spongy Castle provider the highest priority, we
-      // need to tell Android not to use it here. Unfortunately generateKeyPair() generates a
-      // certificate without passing in an explicit provider, which means Android chooses a provider
-      // based on priority and uses Spongy Castle: https://android.googlesource.com/platform/frameworks/base/+/android-5.0.0_r7/keystore/java/android/security/AndroidKeyPairGenerator.java#133
-      // So, we temporarily remove Spongy Castle, generate the key pair, and then add it back.
-      Provider spongyCastleProvider = Exponent.getBouncyCastleProvider();
-      // Security providers are 1-indexed
-      int spongyCastleProviderPosition = Arrays.asList(Security.getProviders()).indexOf(spongyCastleProvider) + 1;
-      if (spongyCastleProviderPosition > 0) {
-        Security.removeProvider(spongyCastleProvider.getName());
-      }
-      try {
-        // KeyPairGenerator stores the keys and self-signed certificates when they are generated
-        keyPairGenerator.generateKeyPair();
-      } finally {
-        if (spongyCastleProviderPosition > 0) {
-          Security.insertProviderAt(spongyCastleProvider, spongyCastleProviderPosition);
-        }
-      }
+      keyPairGenerator.generateKeyPair();
 
       KeyStore.PrivateKeyEntry keyStoreEntry = (KeyStore.PrivateKeyEntry) keyStore.getEntry(keystoreAlias, null);
       if (keyStoreEntry == null) {
@@ -570,7 +531,7 @@ public class SecureStoreModule extends ReactContextBaseJavaModule {
       String expectedIVString = Base64.encodeToString(ivBytes, Base64.DEFAULT);
       if (!ivString.equals(expectedIVString)) {
         Log.e(TAG, String.format("HybridAESEncrypter generated two different IVs: %s and %s", expectedIVString, ivString));
-        throw new AssertionException("HybridAESEncrypter must store the same IV as the one used to parameterize the secret key");
+        throw new IllegalStateException("HybridAESEncrypter must store the same IV as the one used to parameterize the secret key");
       }
 
       // Encrypt the symmetric key with the asymmetric public key
@@ -613,15 +574,15 @@ public class SecureStoreModule extends ReactContextBaseJavaModule {
   /**
    * A legacy encrypter that supports only RSA decryption for values written with SDK 20's
    * implementation of SecureStore.
-   *
+   * <p>
    * Consider removing this after it's likely users have migrated all legacy entries (SDK ~27).
    */
   private static class LegacySDK20Encrypter {
     private static final String RSA_CIPHER = "RSA/ECB/PKCS1Padding";
     private static final String DEFAULT_ALIAS = "MY_APP";
 
-    public String getKeyStoreAlias(ReadableMap options) {
-      return options.hasKey(ALIAS_PROPERTY) ? options.getString(ALIAS_PROPERTY) : DEFAULT_ALIAS;
+    public String getKeyStoreAlias(ReadableArguments options) {
+      return options.containsKey(ALIAS_PROPERTY) ? options.getString(ALIAS_PROPERTY) : DEFAULT_ALIAS;
     }
 
     public String decryptItem(String encryptedItem, KeyStore.PrivateKeyEntry privateKeyEntry) throws GeneralSecurityException {

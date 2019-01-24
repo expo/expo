@@ -1,21 +1,19 @@
 import { UnavailabilityError } from 'expo-errors';
-import invariant from 'invariant';
-import ExponentSecureStore from './ExponentSecureStore';
+import ExpoSecureStore from './ExpoSecureStore';
 
 export type KeychainAccessibilityConstant = number;
 
-export const AFTER_FIRST_UNLOCK: KeychainAccessibilityConstant =
-  ExponentSecureStore.AFTER_FIRST_UNLOCK;
+export const AFTER_FIRST_UNLOCK: KeychainAccessibilityConstant = ExpoSecureStore.AFTER_FIRST_UNLOCK;
 export const AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY: KeychainAccessibilityConstant =
-  ExponentSecureStore.AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY;
-export const ALWAYS: KeychainAccessibilityConstant = ExponentSecureStore.ALWAYS;
+  ExpoSecureStore.AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY;
+export const ALWAYS: KeychainAccessibilityConstant = ExpoSecureStore.ALWAYS;
 export const WHEN_PASSCODE_SET_THIS_DEVICE_ONLY: KeychainAccessibilityConstant =
-  ExponentSecureStore.WHEN_PASSCODE_SET_THIS_DEVICE_ONLY;
+  ExpoSecureStore.WHEN_PASSCODE_SET_THIS_DEVICE_ONLY;
 export const ALWAYS_THIS_DEVICE_ONLY: KeychainAccessibilityConstant =
-  ExponentSecureStore.ALWAYS_THIS_DEVICE_ONLY;
-export const WHEN_UNLOCKED: KeychainAccessibilityConstant = ExponentSecureStore.WHEN_UNLOCKED;
+  ExpoSecureStore.ALWAYS_THIS_DEVICE_ONLY;
+export const WHEN_UNLOCKED: KeychainAccessibilityConstant = ExpoSecureStore.WHEN_UNLOCKED;
 export const WHEN_UNLOCKED_THIS_DEVICE_ONLY: KeychainAccessibilityConstant =
-  ExponentSecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY;
+  ExpoSecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY;
 
 export type SecureStoreOptions = {
   keychainService?: string;
@@ -28,10 +26,10 @@ export async function deleteItemAsync(
 ): Promise<void> {
   _ensureValidKey(key);
 
-  if (!ExponentSecureStore.deleteValueWithKeyAsync) {
+  if (!ExpoSecureStore.deleteValueWithKeyAsync) {
     throw new UnavailabilityError('SecureStore', 'deleteItemAsync');
   }
-  await ExponentSecureStore.deleteValueWithKeyAsync(key, options);
+  await ExpoSecureStore.deleteValueWithKeyAsync(key, options);
 }
 
 export async function getItemAsync(
@@ -39,7 +37,7 @@ export async function getItemAsync(
   options: SecureStoreOptions = {}
 ): Promise<string | null> {
   _ensureValidKey(key);
-  return await ExponentSecureStore.getValueWithKeyAsync(key, options);
+  return await ExpoSecureStore.getValueWithKeyAsync(key, options);
 }
 
 export async function setItemAsync(
@@ -53,17 +51,18 @@ export async function setItemAsync(
       `Invalid value provided to SecureStore. Values must be strings; consider JSON-encoding your values if they are serializable.`
     );
   }
-  if (!ExponentSecureStore.setValueWithKeyAsync) {
+  if (!ExpoSecureStore.setValueWithKeyAsync) {
     throw new UnavailabilityError('SecureStore', 'setItemAsync');
   }
-  await ExponentSecureStore.setValueWithKeyAsync(value, key, options);
+  await ExpoSecureStore.setValueWithKeyAsync(value, key, options);
 }
 
 function _ensureValidKey(key: string) {
-  invariant(
-    _isValidKey(key),
-    `Invalid key provided to SecureStore. Keys must not be empty and contain only alphanumeric characters, ".", "-", and "_".`
-  );
+  if (!_isValidKey(key)) {
+    throw new Error(
+      `Invalid key provided to SecureStore. Keys must not be empty and contain only alphanumeric characters, ".", "-", and "_".`
+    );
+  }
 }
 
 function _isValidKey(key: string) {
