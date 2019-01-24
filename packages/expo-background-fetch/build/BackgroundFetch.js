@@ -16,13 +16,13 @@ var BackgroundFetchStatus;
 })(BackgroundFetchStatus || (BackgroundFetchStatus = {}));
 export async function getStatusAsync() {
     if (Platform.OS !== 'ios') {
-        return Promise.resolve(BackgroundFetchStatus.Available);
+        return BackgroundFetchStatus.Available;
     }
     return ExpoBackgroundFetch.getStatusAsync();
 }
 export async function setMinimumIntervalAsync(minimumInterval) {
     if (Platform.OS !== 'ios') {
-        return Promise.resolve();
+        return;
     }
     await ExpoBackgroundFetch.setMinimumIntervalAsync(minimumInterval);
 }
