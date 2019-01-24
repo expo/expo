@@ -18,16 +18,17 @@ import java.util.Date;
 import javax.security.auth.x500.X500Principal;
 
 import expo.core.arguments.ReadableArguments;
+import expo.modules.securestore.SecureStoreModule;
 import host.exp.expoview.Exponent;
 
-public class SecureStoreModule extends expo.modules.securestore.SecureStoreModule {
-  public SecureStoreModule(Context context) {
+public class SecureStoreModuleBinding extends SecureStoreModule {
+  public SecureStoreModuleBinding(Context context) {
     super(context);
     mHybridAESEncrypter = new ExponentHybridAESEncrypter(context, mAESEncrypter);
   }
 
   protected class ExponentHybridAESEncrypter extends HybridAESEncrypter {
-    public ExponentHybridAESEncrypter(Context context, expo.modules.securestore.SecureStoreModule.AESEncrypter aesEncrypter) {
+    public ExponentHybridAESEncrypter(Context context, SecureStoreModule.AESEncrypter aesEncrypter) {
       super(context, aesEncrypter);
     }
 

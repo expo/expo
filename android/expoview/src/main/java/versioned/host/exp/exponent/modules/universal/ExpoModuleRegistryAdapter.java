@@ -61,7 +61,7 @@ public class ExpoModuleRegistryAdapter extends ModuleRegistryAdapter implements 
     // Overriding expo-file-system FileSystemModule
     moduleRegistry.registerExportedModule(new ScopedFileSystemModule(scopedContext));
 
-    moduleRegistry.registerExportedModule(new SecureStoreModule(scopedContext));
+    moduleRegistry.registerExportedModule(new SecureStoreModuleBinding(scopedContext));
 
     // ReactAdapterPackage requires ReactContext
     ReactApplicationContext reactContext = (ReactApplicationContext) scopedContext.getContext();
