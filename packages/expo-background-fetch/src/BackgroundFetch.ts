@@ -17,7 +17,9 @@ enum BackgroundFetchStatus {
 }
 
 interface BackgroundFetchOptions {
-  interval?: number,
+  minimumInterval?: number;
+  stopOnTerminate?: boolean;
+  startOnBoot?: boolean;
 }
 
 export async function getStatusAsync(): Promise<BackgroundFetchStatus | null> {

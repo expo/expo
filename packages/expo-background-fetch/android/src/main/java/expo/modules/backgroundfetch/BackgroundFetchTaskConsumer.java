@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.PersistableBundle;
 import android.os.SystemClock;
+import android.util.Log;
 
 import java.util.Map;
 
@@ -37,6 +38,13 @@ public class BackgroundFetchTaskConsumer extends TaskConsumer implements TaskCon
   }
 
   @Override
+  public boolean canReceiveCustomBroadcast(String action) {
+    // Let the TaskService know that we want to receive custom broadcasts
+    // having "android.intent.action.BOOT_COMPLETED" action.
+    return Intent.ACTION_BOOT_COMPLETED.equals(action);
+  }
+
+  @Override
   public void didRegister(TaskInterface task) {
     mTask = task;
   }
@@ -55,11 +63,23 @@ public class BackgroundFetchTaskConsumer extends TaskConsumer implements TaskCon
 
   @Override
   public void didReceiveBroadcast(Intent intent) {
-    Context context = getContext();
-    TaskManagerUtilsInterface taskManagerUtils = getTaskManagerUtils();
+    String action = intent.getAction();
 
-    if (context != null) {
-      taskManagerUtils.scheduleJob(context, mTask, new PersistableBundle());
+    if (Intent.ACTION_BOOT_COMPLETED.equals(action)) {
+      // Device has just been booted up - restore an alarm if "startOnBoot" option is enabled.
+      Map<String, Object> options = mTask.getOptions();
+      boolean startOnBoot = options.containsKey("startOnBoot") && (boolean) options.get("startOnBoot");
+
+      if (startOnBoot) {
+        startAlarm();
+      }
+    } else {
+      Context context = getContext();
+      TaskManagerUtilsInterface taskManagerUtils = getTaskManagerUtils();
+
+      if (context != null) {
+        taskManagerUtils.scheduleJob(context, mTask, new PersistableBundle());
+      }
     }
   }
 
@@ -88,10 +108,10 @@ public class BackgroundFetchTaskConsumer extends TaskConsumer implements TaskCon
   private int getIntervalMs() {
     Map<String, Object> options = mTask != null ? mTask.getOptions() : null;
 
-    if (options != null && options.containsKey("interval")) {
+    if (options != null && options.containsKey("minimumInterval")) {
       // Given option is in seconds.
       // It doesn't make much sense to offer millisecond accuracy since the interval is inexact.
-      return ((Number) options.get("interval")).intValue() * 1000;
+      return ((Number) options.get("minimumInterval")).intValue() * 1000;
     }
     return DEFAULT_INTERVAL_MS;
   }
@@ -112,6 +132,8 @@ public class BackgroundFetchTaskConsumer extends TaskConsumer implements TaskCon
     // Cancel existing alarm for this pending intent.
     alarmManager.cancel(mPendingIntent);
 
+    Log.i(TAG, "Starting an alarm for task '" + mTask.getName() + "'.");
+
     alarmManager.setInexactRepeating(
         AlarmManager.ELAPSED_REALTIME_WAKEUP,
         SystemClock.elapsedRealtime() + interval,
@@ -124,6 +146,8 @@ public class BackgroundFetchTaskConsumer extends TaskConsumer implements TaskCon
     AlarmManager alarmManager = getAlarmManager();
 
     if (alarmManager != null && mPendingIntent != null) {
+      Log.i(TAG, "Stopping an alarm for task '" + mTask.getName() + "'.");
+
       alarmManager.cancel(mPendingIntent);
     }
   }
@@ -143,7 +167,13 @@ public class BackgroundFetchTaskConsumer extends TaskConsumer implements TaskCon
 
   @Override
   public void onHostDestroy() {
-    // nothing - the alarm should continue to work when the activity is terminated.
+    // Stop an alarm if "stopOnTerminate" is set to true (default).
+    // Otherwise it should continue to work when the activity is terminated.
+    Map<String, Object> options = mTask.getOptions();
+
+    if (!options.containsKey("stopOnTerminate") || (boolean) options.get("stopOnTerminate")) {
+      stopAlarm();
+    }
   }
 
   //endregion
