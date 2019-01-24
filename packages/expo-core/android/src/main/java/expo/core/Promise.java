@@ -12,7 +12,7 @@ public abstract class Promise {
   public void reject(Throwable e) {
     if (e instanceof CodedThrowable) {
       CodedThrowable codedThrowable = (CodedThrowable) e;
-      reject(codedThrowable.getCode(), codedThrowable.getMessage(), null);
+      reject(codedThrowable.getCode(), codedThrowable.getMessage(), e);
     } else {
       reject(UNKNOWN_ERROR, e);
     }

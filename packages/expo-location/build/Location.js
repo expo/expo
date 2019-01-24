@@ -53,10 +53,9 @@ export async function enableNetworkProviderAsync() {
     // Android's location provider may not give you any results. Use this method in order to ask the user
     // to change the location mode to "High accuracy" which uses Google Play services and enables network provider.
     // `getCurrentPositionAsync` and `watchPositionAsync` are doing it automatically anyway.
-    if (Platform.OS === 'ios') {
-        return Promise.resolve();
+    if (Platform.OS === 'android') {
+        return ExpoLocation.enableNetworkProviderAsync();
     }
-    return ExpoLocation.enableNetworkProviderAsync();
 }
 export async function getCurrentPositionAsync(options = {}) {
     return ExpoLocation.getCurrentPositionAsync(options);
