@@ -268,7 +268,23 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     String action = intent.getAction();
     Uri dataUri = intent.getData();
 
-    if (!TaskBroadcastReceiver.INTENT_ACTION.equals(action) || dataUri == null) {
+    if (!TaskBroadcastReceiver.INTENT_ACTION.equals(action)) {
+      // Call custom broadcasts on all consumers that can handle them.
+
+      Log.i(TAG, "Handling intent with action '" + action + "'.");
+
+      for (String appId : sTasksTable.keySet()) {
+        List<TaskConsumerInterface> taskConsumers = getTaskConsumers(appId);
+
+        for (TaskConsumerInterface consumer : taskConsumers) {
+          if (consumer.canReceiveCustomBroadcast(action)) {
+            consumer.didReceiveBroadcast(intent);
+          }
+        }
+      }
+      return;
+    }
+    if (dataUri == null) {
       return;
     }
 
@@ -277,7 +293,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
 
     TaskConsumerInterface consumer = getTaskConsumer(taskName, appId);
 
-    Log.i(TAG, "Handling TaskService intent with task name '" + taskName + "' for app with ID '" + appId + "'.");
+    Log.i(TAG, "Handling intent with task name '" + taskName + "' and appId '" + appId + "'.");
 
     if (consumer == null) {
       Log.w(TAG, "Task or consumer not found.");
@@ -306,7 +322,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
       return false;
     }
 
-    Log.i(TAG, "Handling TaskService job with task name '" + taskName + "' for app with ID '" + appId + "'.");
+    Log.i(TAG, "Handling job with task name '" + taskName + "' for app with ID '" + appId + "'.");
 
     // executes task
     boolean isAsyncJob = consumer.didExecuteJob(jobService, params);
