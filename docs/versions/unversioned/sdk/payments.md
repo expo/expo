@@ -57,6 +57,11 @@ _Note_: These steps are required only if you have ejected your app with SDK < 30
 1.  Add these lines into your settings.gradle file.
 
 ```groovy
+// make sure this two lines are there
+include ':expo-core'
+project(':expo-core').projectDir = new File(rootProject.projectDir, '../node_modules/expo-core/android')
+
+// add this two lines
 include ':expo-payments-stripe'
 project(':expo-payments-stripe').projectDir = new File(rootProject.projectDir, '../node_modules/expo-payments-stripe/android')
 ```
@@ -101,6 +106,19 @@ implementation project(':expo-payments-stripe')
       }
     }
 ```
+
+6.  Add `StripePackage` to the list of Expo Packages in `your-project/android/app/src/main/java/host/exp/exponent/MainApplication.java`.
+
+```groovy
+  public List<Package> getExpoPackages() {
+    return Arrays.<Package>asList(
+        ...
+        new BackgroundFetchPackage(),
+        new StripePackage()
+    );
+  }
+```
+
 
 ### Register hook in order to let Stripe process source authorization
 
