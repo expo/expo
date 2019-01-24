@@ -129,6 +129,7 @@ dependencies {
   api 'host.exp.exponent:expo-task-manager:1.0.0'
   api 'host.exp.exponent:expo-task-manager-interface:1.0.0'
   api 'host.exp.exponent:expo-app-loader-provider:1.0.0'
+  api 'host.exp.exponent:expo-secure-store:1.0.0'
 
   // Optional universal modules
   compileOnly 'host.exp.exponent:expo-app-auth:2.0.0'
@@ -212,6 +213,7 @@ dependencies {
   api project(':expo-media-library')
   api project(':expo-payments-stripe')
   api project(':expo-print')
+  api project(':expo-secure-store')
   api project(':expo-sensors')
   api project(':expo-sms')
   api project(':expo-speech')

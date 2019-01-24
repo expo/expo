@@ -41,7 +41,6 @@ import versioned.host.exp.exponent.modules.api.KeepAwakeModule;
 import versioned.host.exp.exponent.modules.api.KeyboardModule;
 import versioned.host.exp.exponent.modules.api.PedometerModule;
 import versioned.host.exp.exponent.modules.api.ScreenOrientationModule;
-import versioned.host.exp.exponent.modules.api.SecureStoreModule;
 import versioned.host.exp.exponent.modules.api.ShakeModule;
 import versioned.host.exp.exponent.modules.api.SplashScreenModule;
 import versioned.host.exp.exponent.modules.api.URLHandlerModule;
@@ -194,7 +193,6 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new ErrorRecoveryModule(reactContext, experienceId));
         nativeModules.add(new IntentLauncherModule(reactContext));
         nativeModules.add(new ScreenOrientationModule(reactContext));
-        nativeModules.add(new SecureStoreModule(reactContext, scopedContext));
         nativeModules.add(new BrightnessModule(reactContext));
         nativeModules.add(new RNGestureHandlerModule(reactContext));
         nativeModules.add(new RNAWSCognitoModule(reactContext));
