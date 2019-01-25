@@ -1653,10 +1653,6 @@
 				B5FB738D1FF6DADB001C764B /* EXImagePicker.m */,
 				B5FB738E1FF6DADB001C764B /* EXImageUtils.h */,
 				B5FB738F1FF6DADB001C764B /* EXImageUtils.m */,
-				B5FB73901FF6DADB001C764B /* EXKeepAwake.h */,
-				B5FB73911FF6DADB001C764B /* EXKeepAwake.m */,
-				3CEBDC3F1FFBC73C0025EF24 /* EXMailComposer.h */,
-				3CEBDC401FFBC73D0025EF24 /* EXMailComposer.m */,
 				25742BEC21774211003E7453 /* EXNotifications.h */,
 				25742BEF21774212003E7453 /* EXNotifications.m */,
 				B5FB73961FF6DADB001C764B /* EXScreenOrientation.h */,
@@ -1679,7 +1675,6 @@
 		B5FB728D1FF6DADB001C764B /* Components */ = {
 			isa = PBXGroup;
 			children = (
-				310AC14521918CC500E9F37E /* LinearGradient */,
 				B5FB72951FF6DADB001C764B /* EXBlurView.h */,
 				B5FB72961FF6DADB001C764B /* EXBlurView.m */,
 				B5FB72971FF6DADB001C764B /* EXBlurViewManager.h */,
@@ -2422,8 +2417,6 @@
 				78343621205B8C5F00DD28C3 /* RCTConvert+AirMap.m in Sources */,
 				783435E5205B8BEE00DD28C3 /* AIRGoogleMap.m in Sources */,
 				B5A358621C7E6C4300D1BE67 /* EXAnalytics.m in Sources */,
-				B5FB74AD1FF6DADC001C764B /* EXKeepAwake.m in Sources */,
-				B5FB74B31FF6DADC001C764B /* EXSpeech.m in Sources */,
 				B5D0D65C204F152D00DDFC99 /* EXViewController.m in Sources */,
 				BB557F122138C81B00053523 /* REAConcatNode.m in Sources */,
 				B5FB74EB1FF6DADC001C764B /* EXStatusBarManager.m in Sources */,
