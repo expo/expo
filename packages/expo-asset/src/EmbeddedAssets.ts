@@ -1,5 +1,5 @@
 import Constants from 'expo-constants';
-import { FileSystem } from 'expo-file-system';
+import * as FileSystem from 'expo-file-system';
 
 // Fast lookup check if assets are available in the local bundle
 const bundledAssets = new Set(FileSystem.bundledAssets || []);
