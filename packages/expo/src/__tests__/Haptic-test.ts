@@ -9,22 +9,6 @@ import {
 } from '../../test/mocking';
 import * as Haptic from '../Haptic/Haptic';
 
-async function executeUnavailableMethod(method, name) {
-  try {
-    await method();
-    expect(name).toBe('a failing method');
-  } catch (error) {
-    expect(error instanceof UnavailabilityError).toBeTruthy();
-  }
-}
-
-function applyMocks() {
-  mockPlatformWeb();
-  ['selection', 'impact', 'notification'].forEach(methodName => {
-    mockProperty(NativeModules.ExponentHaptic, methodName, null);
-  });
-}
-
 describe('Haptic', () => {
   describe('iOS', () => {
     describe('selection()', () => {
@@ -64,14 +48,33 @@ describe('Haptic', () => {
     });
   });
 
-  ['selection', 'impact', 'notification'].forEach(unsupportedMethod => {
-    describeUnsupportedPlatforms(`Haptic.${unsupportedMethod}()`, () => {
-      it(`is unavailable on ${Platform.OS}`, () => {
-        executeUnavailableMethod(Haptic[unsupportedMethod], unsupportedMethod);
+  const { selection, impact, notification } = Haptic;
+  const methods = {
+    selection,
+    impact,
+    notification,
+  };
+  for (const methodName in methods) {
+    describeUnsupportedPlatforms(`Haptic.${methodName}()`, () => {
+      it(`is unavailable on ${Platform.OS}`, async () => {
+        try {
+          const method = methods[methodName];
+          await method();
+          expect(methodName).toBe('an unavailable method');
+        } catch (error) {
+          expect(error instanceof UnavailabilityError).toBeTruthy();
+        }
       });
     });
-  });
+  }
 });
+
+function applyMocks() {
+  mockPlatformWeb();
+  ['selection', 'impact', 'notification'].forEach(methodName => {
+    mockProperty(NativeModules.ExponentHaptic, methodName, null);
+  });
+}
 
 export function describeUnsupportedPlatforms(message, tests) {
   describe(`🕸  ${message}`, () => {
