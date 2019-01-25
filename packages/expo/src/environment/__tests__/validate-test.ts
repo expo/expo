@@ -1,4 +1,4 @@
-import { mockProperty, unmockAllProperties } from '../../../test/mocking';
+import { mockProperty, unmockAllProperties } from 'jest-expo';
 
 const createMockInitializeCore = jest.fn(() => jest.fn());
 jest.doMock('react-native/Libraries/Core/InitializeCore', createMockInitializeCore);

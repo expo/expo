@@ -14,7 +14,7 @@ type AuthSessionResult =
   | {
       type: 'error' | 'success';
       errorCode: string | null;
-      params: Object;
+      params: { [key: string]: string };
       url: string;
     };
 
@@ -113,7 +113,7 @@ function getDefaultReturnUrl(): string {
   return Linking.makeUrl('expo-auth-session');
 }
 
-function parseUrl(url: string): { errorCode: string | null; params: Object } {
+function parseUrl(url: string): { errorCode: string | null; params: { [key: string]: string } } {
   let parts = url.split('#');
   let hash = parts[1];
   let partsWithoutHash = parts[0].split('?');

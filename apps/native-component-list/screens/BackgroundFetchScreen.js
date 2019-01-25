@@ -1,6 +1,8 @@
 import React from 'react';
+import format from 'date-format';
+import { NavigationEvents } from 'react-navigation';
 import { BackgroundFetch, TaskManager } from 'expo';
-import { AsyncStorage, Platform, StyleSheet, Text, View } from 'react-native';
+import { AppState, AsyncStorage, StyleSheet, Text, View } from 'react-native';
 
 import Button from '../components/Button';
 
@@ -19,11 +21,25 @@ export default class BackgroundFetchScreen extends React.Component {
   };
 
   componentDidMount() {
-    this.getLastFetchDateAsync();
-    this.checkStatusAsync();
+    AppState.addEventListener('change', this.handleAppStateChange);
   }
 
-  async getLastFetchDateAsync() {
+  componentWillUnmount() {
+    AppState.removeEventListener('change', this.handleAppStateChange);
+  }
+
+  didFocus = () => {
+    this.refreshLastFetchDateAsync();
+    this.checkStatusAsync();
+  };
+
+  handleAppStateChange = nextAppState => {
+    if (nextAppState === 'active') {
+      this.refreshLastFetchDateAsync();
+    }
+  };
+
+  async refreshLastFetchDateAsync() {
     const lastFetchDateStr = await AsyncStorage.getItem(LAST_FETCH_DATE_KEY);
 
     if (lastFetchDateStr) {
@@ -42,8 +58,11 @@ export default class BackgroundFetchScreen extends React.Component {
     if (this.state.isRegistered) {
       await BackgroundFetch.unregisterTaskAsync(BACKGROUND_FETCH_TASK);
     } else {
-      await BackgroundFetch.registerTaskAsync(BACKGROUND_FETCH_TASK);
-      await BackgroundFetch.setMinimumIntervalAsync(60 * 10); // 10 minutes
+      await BackgroundFetch.registerTaskAsync(BACKGROUND_FETCH_TASK, {
+        minimumInterval: 60, // 1 minute
+        stopOnTerminate: false,
+        startOnBoot: true,
+      });
     }
     this.setState({ isRegistered: !this.state.isRegistered });
   };
@@ -53,29 +72,19 @@ export default class BackgroundFetchScreen extends React.Component {
       return <Text>There was no BackgroundFetch call yet.</Text>;
     }
     return (
-      <Text>
-        Last background fetch was invoked at:
-        <Text style={styles.boldText}>{this.state.fetchDate.toISOString()}</Text>
-      </Text>
+      <View style={{ flexDirection: 'column', alignItems: 'center' }}>
+        <Text>Last background fetch was invoked at:</Text>
+        <Text style={styles.boldText}>
+          {format('yyyy-MM-dd hh:mm:ss:SSS', this.state.fetchDate)}
+        </Text>
+      </View>
     );
   }
 
   render() {
-    if (Platform.OS !== 'ios') {
-      return (
-        <View style={styles.screen}>
-          <View style={styles.textContainer}>
-            <Text>
-              BackgroundFetch API is not supported on platform:{' '}
-              <Text style={styles.boldText}>{Platform.OS}</Text>
-            </Text>
-          </View>
-        </View>
-      );
-    }
-
     return (
       <View style={styles.screen}>
+        <NavigationEvents onDidFocus={this.didFocus} />
         <View style={styles.textContainer}>
           <Text>
             Background fetch status:{' '}

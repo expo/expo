@@ -29,7 +29,7 @@ public class IntentLauncherModule extends ReactContextBaseJavaModule implements 
 
 
   @ReactMethod
-  public void startActivity(String activity, @Nullable ReadableMap data, @Nullable String uri, Promise promise) {
+  public void startActivity(String activity, @Nullable ReadableMap data, @Nullable String uri, @Nullable String mime, Promise promise) {
     if (pendingPromise != null) {
       pendingPromise.reject("ERR_INTERRUPTED", "A new activity was started");
       pendingPromise = null;
@@ -49,7 +49,7 @@ public class IntentLauncherModule extends ReactContextBaseJavaModule implements 
       }
 
       if (uri != null && !uri.isEmpty()) {
-        intent.setData(Uri.parse(uri));
+        intent.setDataAndType(Uri.parse(uri), mime);
       }
 
       if (currentActivity != null) {

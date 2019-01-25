@@ -18,11 +18,11 @@ Expo also offers OTA (Over The Air) updates and a push notification service.
 
 - If you've ever been in a situation where you find a spelling mistake in your app and have to wait for Apple to approve a change, you'll appreciate OTA updates - these changes will appear as soon as you run `expo publish`! You aren't limited to text either, this applies to assets like images and configuration updates too!
 
-There's no need re-build or redeploy your app to the App and Play store. It's like [Code Push](https://microsoft.github.io/code-push/) if you've used that before. There are a few limitations, however. [Read about those here](/versions/latest/workflow/publishing/#limitations).
+There's no need re-build or redeploy your app to the App and Play store. It's like [Code Push](https://microsoft.github.io/code-push/) if you've used that before. There are a few limitations, however. [Read about those here](../../workflow/publishing/#limitations).
 
 Expo offers a shared configuration file we call a manifest. Typically you'd update your Xcode plist or Android Studio xml files to handle changes. For example, if you want to lock screen orientation, change your icon, customize your splash screen or add/remove permissions you'd do this within `app.json` once and it would apply to both.
 
-- Configuration that you would typically do inside of your Xcode / plist files or Android studio / xml files is handled through `app.json`. For example, if you want to lock the orientation, change your icon, customize your splash screen, add/remove permissions and entitlements (in standalone apps), configure keys for Google Maps and other services, you set this in `app.json`. [See the guide here](/versions/latest/workflow/configuration/).
+- Configuration that you would typically do inside of your Xcode / plist files or Android studio / xml files is handled through `app.json`. For example, if you want to lock the orientation, change your icon, customize your splash screen, add/remove permissions and entitlements (in standalone apps), configure keys for Google Maps and other services, you set this in `app.json`. [See the guide here](../../workflow/configuration/).
 
 With Expo, you can share your app with anyone, anywhere in the world while you're working through the Expo client [(available on the App / Play Store)](https://expo.io). Scan a QR code, or enter in a phone number and we'll send you a link that will instantly load your app on your device.
 
@@ -36,7 +36,7 @@ Since you write your code in Javascript, we bundle it up and serve it from S3. E
 
 ## Developing in Expo
 
-Apps are served from Expo CLI through a tunnel service by default (we currently use [ngrok](https://ngrok.com) for this) -- this means that you don't have to have your device connected to your computer, or to even be in the same room or country (or planet? I guess it should work from space) as the development machine and you can still live reload, use hot module reloading, enable remote JS debugging, and all of those things you can do normally with React Native. One caveat to this is that using a tunnel is a bit slower than using your LAN address or localhost, so if you can, you should use LAN or localhost. [See how to configure this in Expo CLI](/versions/latest/workflow/how-expo-works/).
+Apps are served from Expo CLI through a tunnel service by default (we currently use [ngrok](https://ngrok.com) for this) -- this means that you don't have to have your device connected to your computer, or to even be in the same room or country (or planet? I guess it should work from space) as the development machine and you can still live reload, use hot module reloading, enable remote JS debugging, and all of those things you can do normally with React Native. One caveat to this is that using a tunnel is a bit slower than using your LAN address or localhost, so if you can, you should use LAN or localhost. [See how to configure this in Expo CLI](../../workflow/how-expo-works/).
 
 - Expo streams your device logs to Expo CLI and Expo Dev Tools so you don't need to run `adb logcat` or the iOS equivalent -- the `console.log / warn /error` messages from any device that is connected to your app will show up automatically in your terminal and Expo Dev Tools.
 
@@ -55,7 +55,7 @@ If you prefer to build your app on your own machine, you can [follow these steps
 
 - [Expo Snack](https://snack.expo.io)
   - The best way to test and share Expo features directly from your browser. Point your phone at the QR code and you have a sandbox environment you can build in the browser and test directly on your device.
-- [Expo Docs](/versions/latest/)
+- [Expo Docs](../../)
   - If there's something you don't understand or wish to learn more about, this is a great place to start.
 - [Expo Forums](https://forums.expo.io)
   - The fastest way to get help from the Expo team or community
