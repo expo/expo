@@ -111,7 +111,6 @@ implementation project(':expo-payments-stripe')
   public List<Package> getExpoPackages() {
     return Arrays.<Package>asList(
         // other packages here
-        new BackgroundFetchPackage(),
         new StripePackage()
     );
   }
