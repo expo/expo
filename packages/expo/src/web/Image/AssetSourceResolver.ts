@@ -1,13 +1,9 @@
 import { Platform } from 'expo-core';
+import { UnavailabilityError } from 'expo-errors';
 import invariant from 'invariant';
 import { Dimensions } from 'react-native';
 
-import {
-  getAndroidResourceFolderName,
-  getAndroidResourceIdentifier,
-  getBasePath,
-  PackagerAsset,
-} from './assetPathUtils';
+import { getBasePath, PackagerAsset } from './assetPathUtils';
 
 export type ResolvedAssetSource = {
   __packager_asset: boolean;
@@ -26,13 +22,6 @@ function getScaledAssetPath(asset): string {
   const scaleSuffix = scale === 1 ? '' : '@' + scale + 'x';
   const assetDir = getBasePath(asset);
   return assetDir + '/' + asset.name + scaleSuffix + '.' + asset.type;
-}
-
-function getAssetPathInDrawableFolder(asset): string {
-  const scale = AssetSourceResolver.pickScale(asset.scales, getScale());
-  const drawbleFolder = getAndroidResourceFolderName(asset, scale);
-  const fileName = getAndroidResourceIdentifier(asset);
-  return drawbleFolder + '/' + fileName + '.' + asset.type;
 }
 
 export default class AssetSourceResolver {
@@ -62,13 +51,7 @@ export default class AssetSourceResolver {
       return this.assetServerURL();
     }
 
-    if (Platform.OS === 'android') {
-      return this.isLoadedFromFileSystem()
-        ? this.drawableFolderInBundle()
-        : this.resourceIdentifierWithoutScale();
-    } else {
-      return this.scaledAssetURLNearBundle();
-    }
+    return this.scaledAssetURLNearBundle();
   }
   assetServerURL(): ResolvedAssetSource {
     invariant(!!this.serverUrl, 'need server to load from');
@@ -89,12 +72,10 @@ export default class AssetSourceResolver {
     return this.fromSource(path + getScaledAssetPath(this.asset));
   }
   resourceIdentifierWithoutScale(): ResolvedAssetSource {
-    invariant(Platform.OS === 'android', 'resource identifiers work on Android');
-    return this.fromSource(getAndroidResourceIdentifier(this.asset));
+    throw new UnavailabilityError('react-native', 'resourceIdentifierWithoutScale()');
   }
   drawableFolderInBundle(): ResolvedAssetSource {
-    const path = this.jsbundleUrl || 'file://';
-    return this.fromSource(path + getAssetPathInDrawableFolder(this.asset));
+    throw new UnavailabilityError('react-native', 'drawableFolderInBundle()');
   }
   fromSource(source: string): ResolvedAssetSource {
     return {
