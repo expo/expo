@@ -1,6 +1,5 @@
 package host.exp.exponent;
 
-
 import com.facebook.react.ReactPackage;
 
 import java.util.Arrays;
@@ -14,14 +13,19 @@ import expo.modules.appauth.AppAuthPackage;
 import expo.modules.av.AVPackage;
 import expo.modules.backgroundfetch.BackgroundFetchPackage;
 import expo.modules.barcodescanner.BarCodeScannerPackage;
+import expo.modules.blurview.BlurViewPackage;
 import expo.modules.camera.CameraPackage;
 import expo.modules.constants.ConstantsPackage;
 import expo.modules.contacts.ContactsPackage;
+import expo.modules.documentpicker.DocumentPickerPackage;
+import expo.modules.facebook.FacebookPackage;
 import expo.modules.facedetector.FaceDetectorPackage;
 import expo.modules.filesystem.FileSystemPackage;
 import expo.modules.font.FontLoaderPackage;
 import expo.modules.gl.GLPackage;
 import expo.modules.google.signin.GoogleSignInPackage;
+import expo.modules.keepawake.KeepAwakePackage;
+import expo.modules.lineargradient.LinearGradientPackage;
 import expo.modules.localauthentication.LocalAuthenticationPackage;
 import expo.modules.localization.LocalizationPackage;
 import expo.modules.location.LocationPackage;
@@ -29,6 +33,7 @@ import expo.modules.mailcomposer.MailComposerPackage;
 import expo.modules.medialibrary.MediaLibraryPackage;
 import expo.modules.permissions.PermissionsPackage;
 import expo.modules.print.PrintPackage;
+import expo.modules.securestore.SecureStorePackage;
 import expo.modules.sensors.SensorsPackage;
 import expo.modules.sms.SMSPackage;
 import expo.modules.speech.SpeechPackage;
@@ -59,33 +64,38 @@ public class MainApplication extends ExpoApplication implements AppLoaderPackage
 
   public List<Package> getExpoPackages() {
     return Arrays.<Package>asList(
+        new AVPackage(),
+        new AdMobPackage(),
+        new AppAuthPackage(),
+        new BackgroundFetchPackage(),
+        new BarCodeScannerPackage(),
+        new BlurViewPackage(),
         new CameraPackage(),
         new ConstantsPackage(),
-        new SensorsPackage(),
-        new FileSystemPackage(),
+        new ContactsPackage(),
+        new DocumentPickerPackage(),
         new FaceDetectorPackage(),
+        new FacebookPackage(),
+        new FileSystemPackage(),
+        new FontLoaderPackage(),
         new GLPackage(),
         new GoogleSignInPackage(),
-        new PermissionsPackage(),
-        new SMSPackage(),
-        new PrintPackage(),
-        new ConstantsPackage(),
-        new MediaLibraryPackage(),
-        new SegmentPackage(),
-        new FontLoaderPackage(),
-        new LocationPackage(),
-        new ContactsPackage(),
-        new BarCodeScannerPackage(),
-        new AdMobPackage(),
+        new KeepAwakePackage(),
+        new LinearGradientPackage(),
         new LocalAuthenticationPackage(),
         new LocalizationPackage(),
-        new AppAuthPackage(),
-        new TaskManagerPackage(),
-        new SpeechPackage(),
-        new BackgroundFetchPackage(),
+        new LocationPackage(),
         new MailComposerPackage(),
-        new AVPackage(),
-        new SQLitePackage()
+        new MediaLibraryPackage(),
+        new PermissionsPackage(),
+        new PrintPackage(),
+        new SMSPackage(),
+        new SQLitePackage(),
+        new SecureStorePackage(),
+        new SegmentPackage(),
+        new SensorsPackage(),
+        new SpeechPackage(),
+        new TaskManagerPackage()
     );
   }
 

@@ -139,7 +139,7 @@ Provide overrides by locale for System Dialog prompts like Permissions alerts
 
 ### `"assetBundlePatterns"`
 
-An array of file glob strings which point to assets that will be bundled within your standalone app binary. Read more in the [Offline Support guide](/versions/latest/guides/offline-support/)
+An array of file glob strings which point to assets that will be bundled within your standalone app binary. Read more in the [Offline Support guide](../../guides/offline-support/)
 
 ### `"androidStatusBar"`
 
@@ -354,7 +354,8 @@ Configuration for how and when the app should request OTA JavaScript updates
     "infoPlist": OBJECT,
 
     /*
-      An array that contains Associated Domains for the standalone app.
+      An array that contains Associated Domains for the standalone app. See apple's docs for config: https://developer.apple.com/documentation/uikit/core_app/allowing_apps_and_websites_to_link_to_your_content/enabling_universal_links
+      Entries must be prefixed with "www."
 
       ExpoKit: use Xcode to set this.
     */

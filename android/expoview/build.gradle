@@ -93,7 +93,9 @@ task generateDynamicMacros(type: Exec) {
     workingDir '../../tools-public'
     commandLine 'cmd.exe', '/c', 'generate-dynamic-macros-cli.js --buildConstantsPath ./src/main/java/host/exp/exponent/generated/ExponentBuildConstants.java --platform android'
   } else {
-    commandLine '../../tools-public/generate-dynamic-macros-cli.js', '--buildConstantsPath', './src/main/java/host/exp/exponent/generated/ExponentBuildConstants.java', '--platform', 'android'
+    // NOTE(brentvatne): this is a common install path for node
+    environment 'PATH', "${environment.PATH}:/usr/local/bin"
+    commandLine '../../tools-public/generate-dynamic-macros-android.sh'
   }
 }
 preBuild.dependsOn generateDynamicMacros
@@ -118,6 +120,7 @@ dependencies {
   api 'host.exp.exponent:expo-core:2.0.0'
   api 'host.exp.exponent:expo-constants:2.0.0'
   api 'host.exp.exponent:expo-constants-interface:2.0.0'
+  api 'host.exp.exponent:expo-document-picker:1.0.0'
   api 'host.exp.exponent:expo-errors:1.0.0'
   api 'host.exp.exponent:expo-permissions:2.0.0'
   api 'host.exp.exponent:expo-sensors-interface:2.0.0'
@@ -128,6 +131,7 @@ dependencies {
   api 'host.exp.exponent:expo-task-manager:1.0.0'
   api 'host.exp.exponent:expo-task-manager-interface:1.0.0'
   api 'host.exp.exponent:expo-app-loader-provider:1.0.0'
+  api 'host.exp.exponent:expo-secure-store:1.0.0'
 
   // Optional universal modules
   compileOnly 'host.exp.exponent:expo-app-auth:2.0.0'
@@ -136,6 +140,8 @@ dependencies {
   compileOnly 'host.exp.exponent:expo-gl:2.0.0'
   compileOnly 'host.exp.exponent:expo-gl-cpp:2.0.0'
   compileOnly 'host.exp.exponent:expo-sms:2.0.0'
+  compileOnly 'host.exp.exponent:expo-keep-awake:1.0.0'
+  compileOnly 'host.exp.exponent:expo-linear-gradient:1.0.0'
   compileOnly 'host.exp.exponent:expo-print:2.0.0'
   compileOnly 'host.exp.exponent:expo-media-library:2.0.0'
   compileOnly 'host.exp.exponent:expo-analytics-segment:2.0.0'
@@ -171,6 +177,7 @@ dependencies {
   api project(':expo-core')
   api project(':expo-constants')
   api project(':expo-constants-interface')
+  api project(':expo-document-picker')
   api project(':expo-errors')
   api project(':expo-permissions')
   api project(':expo-permissions-interface')
@@ -190,9 +197,11 @@ dependencies {
   api project(':expo-background-fetch')
   api project(':expo-barcode-scanner')
   api project(':expo-barcode-scanner-interface')
+  api project(':expo-blur')
   api project(':expo-camera')
   api project(':expo-camera-interface')
   api project(':expo-contacts')
+  api project(':expo-facebook')
   api project(':expo-face-detector')
   api project(':expo-file-system')
   api project(':expo-file-system-interface')
@@ -201,6 +210,8 @@ dependencies {
   api project(':expo-gl-cpp')
   api project(':expo-google-sign-in')
   api project(':expo-image-loader-interface')
+  api project(':expo-keep-awake')
+  api project(':expo-linear-gradient')
   api project(':expo-local-authentication')
   api project(':expo-localization')
   api project(':expo-location')
@@ -208,6 +219,7 @@ dependencies {
   api project(':expo-media-library')
   api project(':expo-payments-stripe')
   api project(':expo-print')
+  api project(':expo-secure-store')
   api project(':expo-sensors')
   api project(':expo-sms')
   api project(':expo-speech')
@@ -264,7 +276,6 @@ dependencies {
   api('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') {
     transitive = true
   }
-  api 'com.facebook.android:facebook-android-sdk:4.39.0'
   api('com.facebook.android:audience-network-sdk:4.99.0') {
     exclude module: 'play-services-ads'
   }

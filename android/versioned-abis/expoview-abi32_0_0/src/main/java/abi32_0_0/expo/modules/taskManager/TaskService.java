@@ -189,6 +189,12 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
   }
 
   @Override
+  public List<TaskConsumerInterface> getTaskConsumers(String appId) {
+    // stub just to satisfy TaskServiceInterface requirements introduced in SDK33.
+    return new ArrayList<>();
+  }
+
+  @Override
   public void notifyTaskFinished(String taskName, final String appId, Map<String, Object> response) {
     String eventId = (String) response.get("eventId");
     List<String> appEvents = sEvents.get(appId);

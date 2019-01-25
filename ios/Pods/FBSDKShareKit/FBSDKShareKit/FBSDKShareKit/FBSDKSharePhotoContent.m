@@ -109,9 +109,9 @@
     } else if (photo.imageURL) {
       if (photo.imageURL.isFileURL) {
         // load the contents of the file and bridge the image
-        UIImage *image = [UIImage imageWithContentsOfFile:photo.imageURL.absoluteString];
+        UIImage *image = [UIImage imageWithContentsOfFile:photo.imageURL.path];
         if (image) {
-          [images addObject:photo.image];
+          [images addObject:image];
         }
       }
     } else if (photo.image) {

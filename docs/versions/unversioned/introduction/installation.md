@@ -24,7 +24,7 @@ Expo Client helps view your projects while you're developing them. When you serv
 
 [Download for Android from the Play Store](https://play.google.com/store/apps/details?id=host.exp.exponent) or [for iOS from the App Store](https://itunes.com/apps/exponent)
 
-> **Required Android and iOS versions:** The minimum Android version Expo supports is Android 6 and the minimum iOS version is iOS 10.0.
+> **Required Android and iOS versions:** The minimum Android version Expo supports is Android 5 and the minimum iOS version is iOS 10.0.
 
 You don't need to manually install the Expo client on your emulator/simulator, because Expo CLI will do that automatically. See the next sections of this guide.
 

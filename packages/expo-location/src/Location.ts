@@ -18,6 +18,7 @@ interface LocationOptions {
   timeInterval?: number,
   distanceInterval?: number,
   timeout?: number,
+  mayShowUserSettingsDialog?: boolean,
 };
 
 interface LocationData {
@@ -118,6 +119,17 @@ export async function getProviderStatusAsync(): Promise<ProviderStatus> {
   return ExpoLocation.getProviderStatusAsync();
 }
 
+export async function enableNetworkProviderAsync(): Promise<void> {
+  // If network provider is disabled (user's location mode is set to "Device only"),
+  // Android's location provider may not give you any results. Use this method in order to ask the user
+  // to change the location mode to "High accuracy" which uses Google Play services and enables network provider.
+  // `getCurrentPositionAsync` and `watchPositionAsync` are doing it automatically anyway.
+
+  if (Platform.OS === 'android') {
+    return ExpoLocation.enableNetworkProviderAsync();
+  }
+}
+
 export async function getCurrentPositionAsync(options: LocationOptions = {}): Promise<LocationData> {
   return ExpoLocation.getCurrentPositionAsync(options);
 }
@@ -133,7 +145,7 @@ export async function getHeadingAsync(): Promise<HeadingData> {
       if (headingEventSub) {
         let tries = 0;
         const headingSub = LocationEventEmitter.addListener(
-          'Exponent.headingChanged',
+          'Expo.headingChanged',
           ({ heading }: { heading: HeadingData }) => {
             if (heading.accuracy > 1 || tries > 5) {
               resolve(heading);
@@ -178,7 +190,7 @@ export async function watchHeadingAsync(callback: HeadingCallback): Promise<obje
   }
 
   headingEventSub = LocationEventEmitter.addListener(
-    'Exponent.headingChanged',
+    'Expo.headingChanged',
     ({ watchId, heading }: { watchId: string, heading: HeadingData }) => {
       const callback = watchCallbacks[watchId];
       if (callback) {
@@ -216,7 +228,7 @@ function _removeHeadingWatcher(watchId) {
 function _maybeInitializeEmitterSubscription() {
   if (!deviceEventSubscription) {
     deviceEventSubscription = LocationEventEmitter.addListener(
-      'Exponent.locationChanged',
+      'Expo.locationChanged',
       ({ watchId, location }: { watchId: string, location: LocationData }) => {
         const callback = watchCallbacks[watchId];
         if (callback) {

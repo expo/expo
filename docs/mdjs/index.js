@@ -2,13 +2,16 @@ const path = require('path');
 const fs = require('fs-extra');
 const jsonfile = require('jsonfile');
 
+const { VERSIONS } = require('../common/versions');
 const generatePage = require('./generate-page');
-const generateNavLinks = require('./generate-navigation');
 
 const ORIGINAL_PATH_PREFIX = './versions';
 const DESTINATION_PATH_PREFIX = './pages/versions';
 
 const generateJsFromMd = recursionPath => {
+  if (!fs.existsSync(recursionPath)) {
+    return;
+  }
   let items = fs.readdirSync(recursionPath);
 
   for (var i = 0; i < items.length; i++) {
@@ -25,34 +28,10 @@ const generateJsFromMd = recursionPath => {
   }
 };
 
-let versions = fs.readdirSync(ORIGINAL_PATH_PREFIX);
-
 // Compile all files initially
 fs.emptyDirSync(DESTINATION_PATH_PREFIX);
 
-console.time('Compiling *.md files to *.js');
-
-const navigationData = [];
-
-versions.forEach(dir => {
-  if (!fs.lstatSync(`${ORIGINAL_PATH_PREFIX}/${dir}`).isDirectory()) return;
-  const version = dir === 'unversioned' ? 'unversioned' : dir.replace('.0.0', '');
-
-  console.log(`Processing markdown files for version: ${dir}`);
-  generateJsFromMd(`${ORIGINAL_PATH_PREFIX}/${dir}`);
-
-  navigationData.push({
-    version,
-    navigation: generateNavLinks(`${ORIGINAL_PATH_PREFIX}/${dir}`, []),
-  });
-});
-
-console.log(`Script is running from:                `, __dirname);
-console.log(`Generating navigation-data.json at:    ./generated/navigation-data.json`);
-
-// NOTE(jim): CircleCI seems to forget where it is? With __dirname the path begins where the
-// mdjs script was executed.
-jsonfile.writeFileSync(`${__dirname}/../generated/navigation-data.json`, navigationData);
+VERSIONS.forEach(dir => generateJsFromMd(`${ORIGINAL_PATH_PREFIX}/${dir}`));
 
 console.log(`Generating index.js at:                ./pages/version`);
 fs.writeFileSync(
@@ -64,15 +43,13 @@ export default redirect('/versions/latest/');
 `
 );
 
-console.timeEnd('Compiling *.md files to *.js');
-
 // copy versions/v(latest version) to versions/latest
 // (Next.js only half-handles symlinks)
 const LATEST_VERSION = 'v' + require('../package.json').version;
-const vLatest = path.join(DESTINATION_PATH_PREFIX, LATEST_VERSION + "/");
-const latest = path.join(DESTINATION_PATH_PREFIX, "latest/");
-fs.removeSync(latest)
-fs.copySync(vLatest, latest)
+const vLatest = path.join(DESTINATION_PATH_PREFIX, LATEST_VERSION + '/');
+const latest = path.join(DESTINATION_PATH_PREFIX, 'latest/');
+fs.removeSync(latest);
+fs.copySync(vLatest, latest);
 
 // Watch for changes in directory
 if (process.argv.length < 3) {

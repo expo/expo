@@ -70,4 +70,5 @@ if (new File(rootProject.projectDir.parentFile, 'pubspec.yaml').exists()) {
 
 dependencies {
     expendency "expo-core"
+    expendency "expo-task-manager-interface"
 }

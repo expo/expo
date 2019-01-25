@@ -1,5 +1,5 @@
 
-#import "EXFacebook.h"
+#import "EXFacebookAdHelper.h"
 #import "EXNativeAdManager.h"
 #import "EXNativeAdView.h"
 #import "EXNativeAdEmitter.h"
@@ -110,7 +110,7 @@ RCT_EXPORT_METHOD(registerViewsForInteraction:(nonnull NSNumber *)nativeAdViewTa
 
 RCT_EXPORT_METHOD(init:(NSString *)placementId withAdsToRequest:(nonnull NSNumber *)adsToRequest)
 {
-  if (![EXFacebook facebookAppIdFromNSBundle]) {
+  if (![EXFacebookAdHelper facebookAppIdFromNSBundle]) {
     RCTLogWarn(@"No Facebook app id is specified. Facebook ads may have undefined behavior.");
   }
   FBNativeAdsManager *adsManager = [[FBNativeAdsManager alloc] initWithPlacementID:placementId
