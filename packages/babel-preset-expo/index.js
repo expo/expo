@@ -1,4 +1,6 @@
-module.exports = function() {
+module.exports = function(api) {
+  const isWeb = api.caller(isTargetWeb);
+
   const plugins = [
     [
       'babel-plugin-module-resolver',
@@ -12,7 +14,7 @@ module.exports = function() {
   ];
 
   // On web add the `react-native-web` plugin.
-  if (!process.env.REACT_NATIVE_APP_ROOT) {
+  if (isWeb) {
     plugins.push('babel-plugin-react-native-web');
   }
 
@@ -21,3 +23,7 @@ module.exports = function() {
     plugins,
   };
 };
+
+function isTargetWeb(caller) {
+  return caller && caller.name === 'babel-loader';
+}

@@ -20,8 +20,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString * const EXLocationChangedEventName = @"Exponent.locationChanged";
-NSString * const EXHeadingChangedEventName = @"Exponent.headingChanged";
+NSString * const EXLocationChangedEventName = @"Expo.locationChanged";
+NSString * const EXHeadingChangedEventName = @"Expo.headingChanged";
 
 @interface EXLocation ()
 
@@ -117,7 +117,9 @@ EX_EXPORT_METHOD_AS(getCurrentPositionAsync,
       [weakSelf.retainedDelegates removeObject:delegate];
       delegate = nil;
     }
-  } onUpdateHeadings:nil onError:nil];
+  } onUpdateHeadings:nil onError:^(NSError *error) {
+    reject(@"E_LOCATION_UNAVAILABLE", [@"Cannot obtain current location: " stringByAppendingString:error.description], nil);
+  }];
 
   // retain location manager delegate so it will not dealloc until onUpdateLocations gets called
   [_retainedDelegates addObject:delegate];

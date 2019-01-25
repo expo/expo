@@ -1,16 +1,16 @@
-import navigation from '~/generated/navigation-data.json';
-import _ from 'lodash';
 import Package from '~/package.json';
 
-let VERSIONS = _.map(navigation, 'version');
-VERSIONS = _.map(VERSIONS, v => {
-  if (v !== 'unversioned') {
-    return v + '.0.0';
-  } else {
-    return v;
-  }
-});
-VERSIONS.push(`latest`);
+const versionDirectories = preval`
+  const { readdirSync } = require('fs');
+
+  const versionsContents = readdirSync('./versions', {withFileTypes: true});
+
+  module.exports = versionsContents.filter(f => f.isDirectory()).map(f => f.name);
+`;
+
+const VERSIONS = versionDirectories
+  .concat(['latest'])
+  .filter(dir => process.env.NODE_ENV != 'production' || dir != 'unversioned');
 
 const LATEST_VERSION =
   typeof window !== 'undefined' && window._LATEST_VERSION

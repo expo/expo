@@ -114,12 +114,6 @@ const generateJsPage = (filePath, filename) => {
     return `<Code lang='${lang}'>{\``;
   });
 
-  // Replace URLs for images
-  regex = /!\[.*\]\((.*)\.(gif|png|jpg|jpeg|svg)/g;
-  markdown = markdown.replace(regex, match => {
-    return match.replace('./', `/static/images/generated/${filePath}/`);
-  });
-
   // Linkify URLs
   regex = /(\s)(https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*))\b/g;
   markdown = markdown.replace(regex, (match, leadingSpace, url) => {
