@@ -1,7 +1,6 @@
+import { describeCrossPlatform } from 'jest-expo';
 import { NativeModules } from 'react-native';
 import Amplitude from '../Amplitude/Amplitude';
-
-import { describeCrossPlatform } from '../../test/mocking';
 
 describeCrossPlatform('all Amplitude methods available', () => {
   it('initializes', () => {

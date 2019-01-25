@@ -19,14 +19,14 @@
   ],
   "transform": {
     "^.+\\.(js|ts|tsx)$": "babel-jest",
-    "^.+\\.(bmp|gif|jpg|jpeg|mp4|png|psd|svg|webp|ttf|otf|m4v|mov|mp4|mpeg|mpg|webm|aac|aiff|caf|m4a|mp3|wav|html|pdf|obj)$": "jest-expo/src/assetFileTransformer.js"
+    "^.+\\.(bmp|gif|jpg|jpeg|mp4|png|psd|svg|webp|ttf|otf|m4v|mov|mp4|mpeg|mpg|webm|aac|aiff|caf|m4a|mp3|wav|html|pdf|obj)$": "jest-expo/src/preset/assetFileTransformer.js"
   },
   "transformIgnorePatterns": [
     "node_modules/(?!((jest-)?react-native|react-clone-referenced-element|expo(nent)?|@expo(nent)?/.*|react-navigation|@react-navigation/.*|sentry-expo|native-base))"
   ],
   "setupFiles": [
     "react-native/jest/setup.js",
-    "jest-expo/src/setup.js"
+    "jest-expo/src/preset/setup.js"
   ],
   "testEnvironment": "node",
   "moduleFileExtensions": [

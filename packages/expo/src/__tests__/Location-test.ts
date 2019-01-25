@@ -1,12 +1,11 @@
 import * as Location from 'expo-location';
 import { NativeModulesProxy } from 'expo-core';
-
 import {
   mockProperty,
   unmockAllProperties,
   mockPlatformIOS,
   mockPlatformAndroid,
-} from '../../test/mocking';
+} from 'jest-expo';
 
 const fakeReturnValue = {
   coords: {
