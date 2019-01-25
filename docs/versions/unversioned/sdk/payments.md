@@ -110,7 +110,7 @@ implementation project(':expo-payments-stripe')
 ```groovy
   public List<Package> getExpoPackages() {
     return Arrays.<Package>asList(
-        ...
+        // other packages here
         new BackgroundFetchPackage(),
         new StripePackage()
     );
