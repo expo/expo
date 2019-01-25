@@ -1,6 +1,6 @@
 /**
- * Adds Expo-related mocks to the Jest environment. Jest runs this setup module
- * after it runs the React Native setup module.
+ * Adds Expo-related mocks to the Jest environment. Jest runs this setup module after it runs the
+ * React Native setup module.
  */
 'use strict';
 
