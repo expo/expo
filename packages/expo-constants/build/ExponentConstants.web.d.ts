@@ -1,8 +1,7 @@
 declare const _default: {
-    _sessionId: any;
-    readonly appOwnership: string;
-    readonly installationId: any;
     readonly name: string;
+    readonly appOwnership: string;
+    readonly installationId: string | null;
     readonly sessionId: string;
     readonly platform: object;
     readonly isDevice: boolean;
