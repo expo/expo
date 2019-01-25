@@ -54,7 +54,6 @@
   },
   "devDependencies": {
     "babel-loader": "^8.0.4",
-    "babel-plugin-react-native-web": "^0.9.6",
     "babel-preset-expo": "^5.0.0",
     "css-loader": "^1.0.1",
     "expo-yarn-workspaces": "^1.0.0",
