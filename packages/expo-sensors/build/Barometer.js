@@ -1,6 +1,6 @@
 import DeviceSensor from './DeviceSensor';
-import ExponentBarometer from './ExponentBarometer';
+import ExpoBarometer from './ExpoBarometer';
 class BarometerSensor extends DeviceSensor {
 }
-export default new BarometerSensor(ExponentBarometer, 'barometerDidUpdate');
+export default new BarometerSensor(ExpoBarometer, 'barometerDidUpdate');
 //# sourceMappingURL=Barometer.js.map

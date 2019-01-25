@@ -288,7 +288,7 @@
     if (strongSelf && data) {
       for (void (^handler)(NSDictionary *) in strongSelf.barometerHandlers.allValues) {
         handler(@{
-                  @"pressure": data.pressure,
+                  @"pressure": data.pressure * 10,
                   @"relativeAltitude": data.relativeAltitude,
                   });
       }

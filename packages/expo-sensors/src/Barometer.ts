@@ -1,11 +1,11 @@
 import DeviceSensor from './DeviceSensor';
-import ExponentBarometer from './ExponentBarometer';
+import ExpoBarometer from './ExpoBarometer';
 
-type PressureMeasurement = {
+type BarometerMeasurement = {
   pressure: number;
   relativeAltitude?: number;
 };
 
-class BarometerSensor extends DeviceSensor<PressureMeasurement> {}
+class BarometerSensor extends DeviceSensor<BarometerMeasurement> {}
 
-export default new BarometerSensor(ExponentBarometer, 'barometerDidUpdate');
+export default new BarometerSensor(ExpoBarometer, 'barometerDidUpdate');

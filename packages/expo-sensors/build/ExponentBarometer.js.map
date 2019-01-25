@@ -1,1 +1,0 @@
-{"version":3,"file":"ExponentBarometer.js","sourceRoot":"","sources":["../src/ExponentBarometer.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,kBAAkB,EAAE,MAAM,WAAW,CAAC;AAC/C,eAAe,kBAAkB,CAAC,iBAAiB,CAAC","sourcesContent":["import { NativeModulesProxy } from 'expo-core';\nexport default NativeModulesProxy.ExponentBarometer;\n"]}

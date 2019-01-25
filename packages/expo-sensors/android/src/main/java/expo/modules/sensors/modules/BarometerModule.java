@@ -20,7 +20,7 @@ public class BarometerModule extends BaseSensorModule {
 
   @Override
   public String getName() {
-    return "ExponentBarometer";
+    return "ExpoBarometer";
   }
 
   @Override

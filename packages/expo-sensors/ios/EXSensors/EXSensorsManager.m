@@ -140,7 +140,6 @@ EX_REGISTER_MODULE();
 
 - (BOOL)isBarometerAvailable
 {
-  // TODO: Bacon: May need to check: ([CMPedometer authorizationStatus] == CMAuthorizationStatusAuthorized)
   return [CMAltimeter isRelativeAltitudeAvailable];
 }
 

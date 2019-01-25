@@ -5,7 +5,7 @@
 
 @implementation EXBarometer
 
-EX_EXPORT_MODULE(ExponentBarometer);
+EX_EXPORT_MODULE(ExpoBarometer);
 
 - (const NSString *)updateEventName
 {

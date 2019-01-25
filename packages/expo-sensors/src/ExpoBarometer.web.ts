@@ -1,6 +1,6 @@
 export default {
   get name(): string {
-    return 'ExponentBarometer';
+    return 'ExpoBarometer';
   },
   async isAvailableAsync(): Promise<boolean> {
     return false;
