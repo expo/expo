@@ -8,7 +8,7 @@ import * as Constants from '~/common/constants';
 import * as WindowUtils from '~/common/window';
 import { VERSIONS, LATEST_VERSION } from '~/common/versions';
 
-import NavigationJSON from '~/generated/navigation-data.json';
+import navigation from '~/common/navigation';
 
 import DocumentationHeader from '~/components/DocumentationHeader';
 import DocumentationFooter from '~/components/DocumentationFooter';
@@ -132,10 +132,7 @@ export default class DocumentationPage extends React.Component {
     }
     this._version = version;
 
-    const routes = _.find(NavigationJSON, {
-      version:
-        version !== 'latest' ? version.replace('.0.0', '') : LATEST_VERSION.replace('.0.0', ''),
-    }).navigation;
+    const routes = navigation[version];
 
     const headerElement = (
       <DocumentationHeader

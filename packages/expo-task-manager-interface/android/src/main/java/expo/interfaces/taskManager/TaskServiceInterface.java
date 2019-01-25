@@ -49,6 +49,11 @@ public interface TaskServiceInterface extends SingletonModule {
   List<Bundle> getTasksForAppId(String appId);
 
   /**
+   *  Returns a list of task consumer for given appId.
+   */
+  List<TaskConsumerInterface> getTaskConsumers(String appId);
+
+  /**
    *  Notifies the service that a task has just finished.
    */
   void notifyTaskFinished(String taskName, String appId, Map<String, Object> response);
