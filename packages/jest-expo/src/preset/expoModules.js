@@ -71,6 +71,16 @@ module.exports = {
     registerViewsForInteraction: { type: 'function', functionType: 'promise' },
     setMediaCachePolicy: { type: 'function', functionType: 'async' },
   },
+  ExpoBrightness: {
+    getBrightnessAsync: { type: 'function', functionType: 'promise' },
+    getSystemBrightnessAsync: { type: 'function', functionType: 'promise' },
+    getSystemBrightnessModeAsync: { type: 'function', functionType: 'promise' },
+    isUsingSystemBrightnessAsync: { type: 'function', functionType: 'promise' },
+    setBrightnessAsync: { type: 'function', functionType: 'promise' },
+    setSystemBrightnessAsync: { type: 'function', functionType: 'promise' },
+    setSystemBrightnessModeAsync: { type: 'function', functionType: 'promise' },
+    useSystemBrightnessAsync: { type: 'function', functionType: 'promise' },
+  },
   ExpoNativeModuleIntrospection: {
     getNativeModuleNamesAsync: { type: 'function', functionType: 'promise' },
     introspectNativeModuleAsync: { type: 'function', functionType: 'promise' },
@@ -551,10 +561,6 @@ module.exports = {
     setGroup: { type: 'function', functionType: 'async' },
     setUserId: { type: 'function', functionType: 'async' },
     setUserProperties: { type: 'function', functionType: 'async' },
-  },
-  ExponentBrightness: {
-    getBrightnessAsync: { type: 'function', functionType: 'promise' },
-    setBrightnessAsync: { type: 'function', functionType: 'promise' },
   },
   ExponentCalendar: {
     deleteCalendarAsync: { type: 'function', functionType: 'promise' },
