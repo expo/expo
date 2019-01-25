@@ -118,7 +118,7 @@ Log a custom event with optional params.
 
 | Name       | Type   | Description                                                      |
 | ---------- | ------ | ---------------------------------------------------------------- |
-| screenName | string | Defines the name of a custom event                               |
+| name       | string | Defines the name of a custom event                               |
 | params     | Object | key/value pair of event properties, max length of 100 characters |
 
 #### Example
