@@ -12,13 +12,13 @@ Starts the specified activity. The method will return a promise which resolves w
 
 #### Arguments
 
-- **activity (_string_)** -- A string specifying which settings screen to open, or alternatively the action of the intent. There are a few pre-defined constants you can use for this parameter. You can find them at [expo/expo/src/IntentLauncherAndroid.js](https://github.com/expo/expo/blob/master/packages/expo/src/IntentLauncherAndroid/IntentLauncherAndroid.ts).
+- **activity (`string`)** -- A string specifying which settings screen to open, or alternatively the action of the intent. There are a few pre-defined constants you can use for this parameter. You can find them at [expo/src/IntentLauncherAndroid.ts](https://github.com/expo/expo/blob/master/packages/expo/src/IntentLauncherAndroid/IntentLauncherAndroid.ts).
 
-- **data (_{ [key: string]: any }_)** (Optional) -- A map specifying additional key-value pairs which are passed with the intent as `extras`.
+- **data (`{ [key: string]: any }`)** (Optional) -- A map specifying additional key-value pairs which are passed with the intent as `extras`.
 
-- **uri (_string_)** (Optional) -- A URI specifying the data that the intent should operate upon. (_Note: Android requires the URI scheme to be lowercase, unlike the formal RFC._)
+- **uri (`string`)** (Optional) -- A URI specifying the data that the intent should operate upon. (_Note: Android requires the URI scheme to be lowercase, unlike the formal RFC._)
 
-- **mime (_string_)** (Optional) -- A string specifying the MIME type of the data represented by the `uri` argument. Ignore this argument to allow Android to infer the correct MIME type.
+- **mime (`string`)** (Optional) -- A string specifying the MIME type of the data represented by the `uri` argument. Ignore this argument to allow Android to infer the correct MIME type.
 
 #### Example
 
