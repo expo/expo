@@ -123,17 +123,18 @@ export default FacebookAds.withNativeAd(AdComponent);
 
 #### 4. Mark which components trigger the ad
 
-> ** Note:** In order for elements wrapped with `AdTriggerView` to trigger the ad, you also must include `AdMediaView` in the children tree.
+> ** Note:** In order for elements wrapped with `AdTriggerView` to trigger the ad, you also must include `AdMediaView` and `AdIconView` in the children tree.
 
 ```js
 import { FacebookAds } from 'expo';
-const { AdTriggerView, AdMediaView } = FacebookAds;
+const { AdTriggerView, AdMediaView, AdIconView } = FacebookAds;
 
 class AdComponent extends React.Component {
   render() {
     return (
       <View>
         <AdMediaView />
+        <AdIconView />
         <AdTriggerView>
           <Text>{this.props.nativeAd.bodyText}</Text>
         </AdTriggerView>
