@@ -5,6 +5,6 @@
 #import <EXCore/EXModuleRegistryConsumer.h>
 #import <CoreBluetooth/CoreBluetooth.h>
 
-@interface EXBluetooth : EXExportedModule <EXModuleRegistryConsumer, EXEventEmitter, CBCentralManagerDelegate, CBPeripheralDelegate>
+@interface EXBluetooth : EXExportedModule <EXModuleRegistryConsumer, EXEventEmitter>
 
 @end

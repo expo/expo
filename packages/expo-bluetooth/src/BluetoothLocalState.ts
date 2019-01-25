@@ -1,5 +1,6 @@
 import { NativePeripheral } from './Bluetooth.types';
 import { peripheralIdFromId } from './BluetoothTransactions';
+import { UUID } from './Bluetooth';
 
 // Manage all of the bluetooth information.
 let _peripherals: { [peripheralId: string]: NativePeripheral } = {};
@@ -17,6 +18,10 @@ export function getPeripheralForId(id: string): any {
 
 export function clearPeripherals() {
   _peripherals = {};
+}
+
+export function removePeripheral(uuid: UUID) {
+  delete _peripherals[uuid];
 }
 
 export function updateStateWithPeripheral(peripheral: NativePeripheral) {

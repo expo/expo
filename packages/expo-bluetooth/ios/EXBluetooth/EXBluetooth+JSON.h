@@ -2,6 +2,12 @@
 
 #import <EXBluetooth/EXBluetooth.h>
 #import <CoreBluetooth/CoreBluetooth.h>
+#import <EXBluetooth/EXBluetoothPeripheral.h>
+#import <EXBluetooth/EXBluetoothService.h>
+#import <EXBluetooth/EXBluetoothCharacteristic.h>
+#import <EXBluetooth/EXBluetoothDescriptor.h>
+#import <EXBluetooth/EXBluetoothCentralManager.h>
+
 
 static id EXNullIfEmpty(NSString *input) {
   if (!input || input == nil || [input isEqualToString:@""]) {
@@ -12,17 +18,17 @@ static id EXNullIfEmpty(NSString *input) {
 
 @interface EXBluetooth (JSON)
 
-+ (NSDictionary *)CBPeripheral_NativeToJSON:(CBPeripheral *)input;
++ (NSDictionary *)EXBluetoothPeripheral_NativeToJSON:(EXBluetoothPeripheral *)input;
 
-+ (NSDictionary *)CBCentralManager_NativeToJSON:(CBCentralManager *)input;
++ (NSDictionary *)EXBluetoothCentralManager_NativeToJSON:(EXBluetoothCentralManager *)input;
 
-+ (NSDictionary *)CBService_NativeToJSON:(CBService *)input;
++ (NSDictionary *)EXBluetoothService_NativeToJSON:(EXBluetoothService *)input;
 
-+ (NSDictionary *)CBCharacteristic_NativeToJSON:(CBCharacteristic *)input;
++ (NSDictionary *)EXBluetoothCharacteristic_NativeToJSON:(EXBluetoothCharacteristic *)input;
 
-+ (NSDictionary *)CBDescriptor_NativeToJSON:(CBDescriptor *)input;
++ (NSDictionary *)EXBluetoothDescriptor_NativeToJSON:(EXBluetoothDescriptor *)input;
 
-+ (NSMutableArray *)CBPeripheralList_NativeToJSON:(NSArray<CBPeripheral *> *)input;
++ (NSMutableArray *)EXBluetoothPeripheralList_NativeToJSON:(NSArray<EXBluetoothPeripheral *> *)input;
 
 + (NSDictionary *)NSError_NativeToJSON:(NSError *)input;
 

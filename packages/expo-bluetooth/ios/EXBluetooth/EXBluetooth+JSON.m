@@ -2,6 +2,7 @@
 
 #import <EXBluetooth/EXBluetooth+JSON.h>
 #import <EXCore/EXUtilities.h>
+#import <EXBluetooth/EXBluetoothConstants.h>
 
 @implementation EXBluetooth (JSON)
 
@@ -21,21 +22,21 @@
   }
 }
 
-+ (NSMutableArray *)CBServiceArray_NativeToJSON:(NSArray<CBService *> *)input
++ (NSMutableArray *)EXBluetoothServiceArray_NativeToJSON:(NSArray<EXBluetoothService *> *)input
 {
   NSMutableArray *output = [NSMutableArray new];
-  for (CBService *value in input) {
-    NSDictionary *serializedValue = [self.class CBService_NativeToJSON:value];
+  for (EXBluetoothService *value in input) {
+    NSDictionary *serializedValue = [self.class EXBluetoothService_NativeToJSON:value];
     [output addObject:EXNullIfNil(serializedValue)];
   }
   return output;
 }
 
-+ (NSMutableArray *)CBCharacteristicArray_NativeToJSON:(NSArray<CBCharacteristic *> *)input
++ (NSMutableArray *)EXBluetoothCharacteristicArray_NativeToJSON:(NSArray<EXBluetoothCharacteristic *> *)input
 {
   NSMutableArray *output = [NSMutableArray new];
-  for (CBCharacteristic *value in input) {
-    NSDictionary *serializedValue = [self.class CBCharacteristic_NativeToJSON:value];
+  for (EXBluetoothCharacteristic *value in input) {
+    NSDictionary *serializedValue = [self.class EXBluetoothCharacteristic_NativeToJSON:value];
     [output addObject:EXNullIfNil(serializedValue)];
   }
   return output;
@@ -141,21 +142,21 @@
   }
 }
 
-+ (NSMutableArray *)CBDescriptorList_NativeToJSON:(NSArray<CBDescriptor *> *)input
++ (NSMutableArray *)EXBluetoothDescriptorList_NativeToJSON:(NSArray<EXBluetoothDescriptor *> *)input
 {
   NSMutableArray *output = [NSMutableArray new];
-  for (CBDescriptor *value in input) {
-    NSDictionary *serializedValue = [self.class CBDescriptor_NativeToJSON:value];
+  for (EXBluetoothDescriptor *value in input) {
+    NSDictionary *serializedValue = [self.class EXBluetoothDescriptor_NativeToJSON:value];
     [output addObject:EXNullIfNil(serializedValue)];
   }
   return output;
 }
 
-+ (NSMutableArray *)CBPeripheralList_NativeToJSON:(NSArray<CBPeripheral *> *)input
++ (NSMutableArray *)EXBluetoothPeripheralList_NativeToJSON:(NSArray<EXBluetoothPeripheral *> *)input
 {
   NSMutableArray *output = [NSMutableArray new];
-  for (CBPeripheral *value in input) {
-    NSDictionary *serializedValue = [self.class CBPeripheral_NativeToJSON:value];
+  for (EXBluetoothPeripheral *value in input) {
+    NSDictionary *serializedValue = [self.class EXBluetoothPeripheral_NativeToJSON:value];
     [output addObject:EXNullIfNil(serializedValue)];
   }
   return output;
@@ -175,7 +176,7 @@
            @"message": EXNullIfEmpty(input.localizedDescription),
            @"reason": EXNullIfEmpty(input.localizedFailureReason),
            @"suggestion": EXNullIfEmpty(input.localizedRecoverySuggestion),
-           @"underlayingError": EXNullIfEmpty(underlyingError)
+           @"underlayingError": EXNullIfEmpty(underlyingError),
            @"type": @"error",
            @"_nativeClass": NSStringFromClass([input class])
            };
@@ -260,7 +261,7 @@
   return output;
 }
 
-+ (NSDictionary *)CBDescriptor_NativeToJSON:(CBDescriptor *)input
++ (NSDictionary *)EXBluetoothDescriptor_NativeToJSON:(EXBluetoothDescriptor *)input
 {
   if (!input) return nil;
   
@@ -299,7 +300,7 @@
            };
 }
 // TODO: Bacon: Investigate CBCharacteristic for read/write, permissions
-+ (NSDictionary *)CBCharacteristic_NativeToJSON:(CBCharacteristic *)input
++ (NSDictionary *)EXBluetoothCharacteristic_NativeToJSON:(EXBluetoothCharacteristic *)input
 {
   if (!input) return nil;
 
@@ -312,50 +313,52 @@
            @"uuid": characteristicUUIDString,
            @"serviceUUID": serviceUUIDString,
            @"peripheralUUID": peripheralUUIDString,
-           @"properties": [self.class CBCharacteristicProperties_NativeToJSON:input.properties],
-           @"value": EXNullIfEmpty([self.class NSData_NativeToJSON:input.value]), //TODO: Bacon: Find out what this is. (NSData)
-           @"descriptors": [self.class CBDescriptorList_NativeToJSON:input.descriptors],
+           @"properties": [EXBluetooth.class CBCharacteristicProperties_NativeToJSON:input.properties],
+           @"value": EXNullIfEmpty([EXBluetooth.class NSData_NativeToJSON:input.value]), //TODO: Bacon: Find out what this is. (NSData)
+           @"descriptors": [EXBluetooth.class EXBluetoothDescriptorList_NativeToJSON:input.descriptors],
            @"isNotifying": @(input.isNotifying),
            @"type": @"characteristic",
            @"_nativeClass": NSStringFromClass([input class])
            };
 }
 
-+ (NSDictionary *)CBService_NativeToJSON:(CBService *)input
++ (NSDictionary *)EXBluetoothService_NativeToJSON:(EXBluetoothService *)input
 {
   if (!input) return nil;
   
-  NSString *serviceUUIDString = [[input UUID] UUIDString];
-  NSString *peripheralUUIDString = [[[input peripheral] identifier] UUIDString];
+  NSString *serviceUUIDString = input.UUID.UUIDString;
+  NSString *peripheralUUIDString = input.peripheral.identifier.UUIDString;
   return @{
            @"id": [NSString stringWithFormat:@"%@|%@", peripheralUUIDString, serviceUUIDString],
            @"uuid": serviceUUIDString,
            @"peripheralUUID": peripheralUUIDString,
-           @"isPrimary": @([input isPrimary]),
-           @"includedServices": [self.class CBServiceArray_NativeToJSON:input.includedServices],
-           @"characteristics": [self.class CBCharacteristicArray_NativeToJSON:input.characteristics],
+           @"isPrimary": @(input.isPrimary),
+           @"includedServices": [self.class EXBluetoothServiceArray_NativeToJSON:input.includedServices],
+           @"characteristics": [self.class EXBluetoothCharacteristicArray_NativeToJSON:input.characteristics],
            @"type": @"service",
            @"_nativeClass": NSStringFromClass([input class])
            };
 }
 
-+ (NSDictionary *)CBPeripheral_NativeToJSON:(CBPeripheral *)input
++ (NSDictionary *)EXBluetoothPeripheral_NativeToJSON:(EXBluetoothPeripheral *)input
 {
   if (!input) return nil;
 
   return @{
+           EXBluetoothRSSIKey: EXNullIfNil(input.RSSI),
            @"id": input.identifier.UUIDString,
            @"uuid": input.identifier.UUIDString,
            @"name": EXNullIfEmpty(input.name),
-           @"state": EXNullIfNil([self.class CBPeripheralState_NativeToJSON:input.state]),
-           @"services": [self.class CBServiceArray_NativeToJSON:input.services],
+           @"state": [[EXBluetooth class] CBPeripheralState_NativeToJSON:input.state],
+           @"services": [[EXBluetooth class] EXBluetoothServiceArray_NativeToJSON:input.services],
            @"canSendWriteWithoutResponse": @(input.canSendWriteWithoutResponse),
+           @"advertisementData": EXNullIfNil([[EXBluetooth class] advertisementData_NativeToJSON:input.advertisementData]),
            @"type": @"peripheral",
            @"_nativeClass": NSStringFromClass([input class])
            };
 }
 
-+ (NSDictionary *)CBCentralManager_NativeToJSON:(CBCentralManager *)input
++ (NSDictionary *)EXBluetoothCentralManager_NativeToJSON:(EXBluetoothCentralManager *)input
 {
   if (!input) return nil;
 

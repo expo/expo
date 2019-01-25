@@ -15,14 +15,21 @@ export function firePeripheralObservers() {
     }
 }
 export function fireMultiEventHandlers(event, { central, peripheral }) {
+    ensureKey(event);
     for (const callback of multiEventHandlers[event]) {
         callback({ central, peripheral });
+    }
+}
+function ensureKey(key) {
+    if (!(key in multiEventHandlers)) {
+        multiEventHandlers[key] = [];
     }
 }
 export function resetHandlersForKey(key) {
     multiEventHandlers[key] = [];
 }
 export function addHandlerForKey(key, callback) {
+    ensureKey(key);
     multiEventHandlers[key].push(callback);
     return {
         remove() {
@@ -34,6 +41,7 @@ export function addHandlerForKey(key, callback) {
     };
 }
 export function getHandlersForKey(key) {
+    ensureKey(key);
     return multiEventHandlers[key];
 }
 export function addListener(listener) {

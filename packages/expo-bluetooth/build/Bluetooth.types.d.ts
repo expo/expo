@@ -77,7 +77,7 @@ export declare type NativeEventData = {
     descriptor?: NativeDescriptor | null;
     service?: NativeService | null;
     advertisementData?: NativeAdvertismentData | null;
-    rssi?: number;
+    RSSI?: number;
     error?: NativeError | null;
 };
 export interface NativeError {

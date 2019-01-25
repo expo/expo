@@ -24,7 +24,6 @@ import {
   WriteCharacteristicOptions,
 } from './Bluetooth.types';
 import { BLUETOOTH_EVENT, DELIMINATOR, EVENTS, TYPES } from './BluetoothConstants';
-import BluetoothError from './BluetoothError';
 import {
   addHandlerForKey,
   addListener,
@@ -34,21 +33,8 @@ import {
   resetHandlersForKey,
 } from './BluetoothEventHandler';
 import { invariantAvailability, invariantUUID } from './BluetoothInvariant';
-import {
-  clearPeripherals,
-  getPeripherals,
-  updateAdvertismentDataStore,
-  updateStateWithPeripheral,
-} from './BluetoothLocalState';
-import {
-  addCallbackForTransactionId,
-  addTransactionForId,
-  deleteTransactionForId,
-  getTransactionForId,
-  getTransactions,
-  peripheralIdFromId,
-  removeCallbackForTransactionId,
-} from './BluetoothTransactions';
+import { clearPeripherals, getPeripherals, updateStateWithPeripheral } from './BluetoothLocalState';
+import { peripheralIdFromId } from './BluetoothTransactions';
 import ExpoBluetooth from './ExpoBluetooth';
 import Transaction from './Transaction';
 
@@ -75,10 +61,31 @@ export {
   CharacteristicProperty,
 };
 
-export { BLUETOOTH_EVENT, TYPES, EVENTS }
+/*
+initializeManagerAsync
+deallocateManagerAsync
+
+getPeripheralsAsync
+getCentralAsync
+startScanningAsync
+stopScanningAsync
+connectPeripheralAsync
+readRSSIAsync
+readDescriptorAsync
+writeDescriptorAsync
+writeCharacteristicAsync
+readCharacteristicAsync
+setNotifyCharacteristicAsync
+
+discoverDescriptorsForCharacteristicAsync
+discoverCharacteristicsForServiceAsync
+discoverIncludedServicesForServiceAsync
+disconnectPeripheralAsync
+*/
+export { BLUETOOTH_EVENT, TYPES, EVENTS };
 
 export async function startScanAsync(scanSettings: ScanSettings = {}): Promise<Subscription> {
-  invariantAvailability('startScanAsync');
+  invariantAvailability('startScanningAsync');
   const { serviceUUIDsToQuery = [], scanningOptions = {}, callback = function() {} } = scanSettings;
   /* Prevents the need for CBCentralManagerScanOptionAllowDuplicatesKey in the info.plist */
   const serviceUUIDsWithoutDuplicates = [...new Set(serviceUUIDsToQuery)];
@@ -89,16 +96,16 @@ export async function startScanAsync(scanSettings: ScanSettings = {}): Promise<S
    * If the central is already scanning with different
    * <i>serviceUUIDs</i> or <i>options</i>, the provided parameters will replace them.
    */
-  
-  await ExpoBluetooth.startScanAsync(serviceUUIDsWithoutDuplicates, scanningOptions);
-  return addHandlerForKey(EVENTS.CENTRAL_DID_DISCOVER_PERIPHERAL, callback)
+
+  return await ExpoBluetooth.startScanningAsync(serviceUUIDsWithoutDuplicates, scanningOptions);
+  // return addHandlerForKey(EVENTS.CENTRAL_DID_DISCOVER_PERIPHERAL, callback)
 }
 
 export async function stopScanAsync(): Promise<void> {
-  invariantAvailability('stopScanAsync');
+  invariantAvailability('stopScanningAsync');
   // Remove all callbacks
   resetHandlersForKey(EVENTS.CENTRAL_DID_DISCOVER_PERIPHERAL);
-  await ExpoBluetooth.stopScanAsync();
+  await ExpoBluetooth.stopScanningAsync();
 }
 
 // Avoiding using "start" in passive method names
@@ -112,110 +119,165 @@ export async function observeStateAsync(callback: StateUpdatedCallback): Promise
   return addHandlerForKey(EVENTS.CENTRAL_DID_UPDATE_STATE, callback);
 }
 
-export async function connectAsync(peripheralUUID: UUID, options: {
-  timeout?: number;
-  options?: any;
-} = {}): Promise<NativePeripheral> {
-  invariantAvailability('connectAsync');
-  invariantUUID(peripheralUUID)
-  return new Promise((resolve, reject) => {
+export async function connectAsync(
+  peripheralUUID: UUID,
+  options: {
+    timeout?: number;
+    options?: any;
+    onDisconnect?: any;
+  } = {}
+): Promise<NativePeripheral> {
+  invariantAvailability('connectPeripheralAsync');
+  invariantUUID(peripheralUUID);
 
-    const transaction = new Transaction({ peripheralUUID }, TransactionType.connect);
-    const transactionId = transaction.generateId();
+  const { onDisconnect } = options;
+  if (onDisconnect) {
+    addHandlerForKey(EVENTS.CENTRAL_DID_DISCONNECT_PERIPHERAL, onDisconnect);
+  }
 
-    let timeoutTag: number | undefined;
-    if (options.timeout) {
-      timeoutTag = setTimeout(() => {
-        disconnectAsync(peripheralUUID);
-        deleteTransactionForId(transactionId);
-        reject('request timeout');
-      }, options.timeout);
-    }
+  let timeoutTag: number | undefined;
 
-    addTransactionForId(transactionId, {
-      resolve(...props) {
-        clearTimeout(timeoutTag);
-        return resolve(...props);
-      },
-      reject(...props) {
-        clearTimeout(timeoutTag);
-        return reject(...props);
-      },
-    });
+  if (options.timeout) {
+    timeoutTag = setTimeout(() => {
+      disconnectAsync(peripheralUUID);
+      throw new Error('request timeout');
+    }, options.timeout);
+  }
 
-    ExpoBluetooth.connectAsync({ peripheralUUID, timeout: options.timeout, options });
-  });
+  let result;
+  try {
+    result = await ExpoBluetooth.connectPeripheralAsync(peripheralUUID, options.options);
+  } catch (error) {
+    throw error;
+  } finally {
+    clearTimeout(timeoutTag);
+  }
+  return result;
 }
 
 export async function disconnectAsync(peripheralUUID: UUID): Promise<any> {
-  invariantAvailability('disconnectAsync');
+  invariantAvailability('disconnectPeripheralAsync');
   invariantUUID(peripheralUUID);
-  return new Promise((resolve, reject) => {
-    const transactionId = Transaction.generateTransactionId({ peripheralUUID }, TransactionType.disconnect);
-    addTransactionForId(transactionId, { resolve, reject });
-    ExpoBluetooth.disconnectAsync({ peripheralUUID });
+  return await ExpoBluetooth.disconnectPeripheralAsync(peripheralUUID);
+}
+
+/* TODO: Bacon: Add a return type */
+export async function readDescriptorAsync({
+  peripheralUUID,
+  serviceUUID,
+  characteristicUUID,
+  descriptorUUID,
+}: any): Promise<Base64 | undefined> {
+  const { descriptor } = await ExpoBluetooth.readDescriptorAsync({
+    peripheralUUID,
+    serviceUUID,
+    characteristicUUID,
+    descriptorUUID,
+    characteristicProperties: CharacteristicProperty.Read,
   });
+
+  return descriptor.value;
 }
 
 /* TODO: Bacon: Add a return type */
-export async function readDescriptorAsync({ peripheralUUID, serviceUUID, characteristicUUID, descriptorUUID }: any): Promise<Base64 | undefined> {
-  const output = await updateDescriptorAsync({ peripheralUUID, serviceUUID, characteristicUUID, descriptorUUID }, CharacteristicProperty.Read);
+export async function writeDescriptorAsync({
+  peripheralUUID,
+  serviceUUID,
+  characteristicUUID,
+  descriptorUUID,
+  data,
+}: any): Promise<any> {
+  invariantAvailability('writeDescriptorAsync');
+  const { descriptor } = await ExpoBluetooth.writeDescriptorAsync({
+    peripheralUUID,
+    serviceUUID,
+    characteristicUUID,
+    descriptorUUID,
+    data,
+    characteristicProperties: CharacteristicProperty.Write,
+  });
+  return descriptor;
+}
+export async function shouldNotifyDescriptorAsync({
+  peripheralUUID,
+  serviceUUID,
+  characteristicUUID,
+  descriptorUUID,
+  shouldNotify,
+}: any): Promise<any> {
+  invariantAvailability('setNotifyCharacteristicAsync');
 
-  if (output && output.descriptor) {
-    const descriptor: NativeDescriptor = output.descriptor;
-    return descriptor.value;
-  }
-
-  throw new Error(`Not able to read descriptor: ${JSON.stringify({ peripheralUUID, serviceUUID, characteristicUUID, descriptorUUID })}`)
+  const { descriptor } = await ExpoBluetooth.setNotifyCharacteristicAsync({
+    peripheralUUID,
+    serviceUUID,
+    characteristicUUID,
+    descriptorUUID,
+    shouldNotify,
+  });
+  return descriptor;
 }
 
 /* TODO: Bacon: Add a return type */
-export async function writeDescriptorAsync({ peripheralUUID, serviceUUID, characteristicUUID, descriptorUUID, data }: any): Promise<any> {
-  return await updateDescriptorAsync({ peripheralUUID, serviceUUID, characteristicUUID, descriptorUUID, data }, CharacteristicProperty.Write);
+export async function readCharacteristicAsync({
+  peripheralUUID,
+  serviceUUID,
+  characteristicUUID,
+}: any): Promise<Base64 | null> {
+  const { characteristic } = await ExpoBluetooth.readCharacteristicAsync({
+    peripheralUUID,
+    serviceUUID,
+    characteristicUUID,
+    characteristicProperties: CharacteristicProperty.Read,
+  });
+
+  return characteristic.value;
 }
 
 /* TODO: Bacon: Add a return type */
-export async function readCharacteristicAsync({ peripheralUUID, serviceUUID, characteristicUUID }: any): Promise<Base64 | null> {
-  const output = await updateCharacteristicAsync({ peripheralUUID, serviceUUID, characteristicUUID }, CharacteristicProperty.Read);
-  if (output && output.characteristic) {
-    const characteristic: NativeCharacteristic = output.characteristic;
-    return characteristic.value;
-  }
-
-  throw new Error(`Not able to read characteristic: ${JSON.stringify({ peripheralUUID, serviceUUID, characteristicUUID })}`)
-}
-
-/* TODO: Bacon: Add a return type */
-export async function writeCharacteristicAsync({ peripheralUUID, serviceUUID, characteristicUUID, data }: any): Promise<any> {
-  return await updateCharacteristicAsync({ peripheralUUID, serviceUUID, characteristicUUID, data }, CharacteristicProperty.Write);
+export async function writeCharacteristicAsync({
+  peripheralUUID,
+  serviceUUID,
+  characteristicUUID,
+  data,
+}: any): Promise<any> {
+  const { characteristic } = await ExpoBluetooth.writeCharacteristicAsync({
+    peripheralUUID,
+    serviceUUID,
+    characteristicUUID,
+    data,
+    characteristicProperties: CharacteristicProperty.Write,
+  });
+  return characteristic;
 }
 
 /* TODO: Bacon: Why would anyone use this? */
 /* TODO: Bacon: Test if this works */
 /* TODO: Bacon: Add a return type */
-export async function writeCharacteristicWithoutResponseAsync({ peripheralUUID, serviceUUID, characteristicUUID, data }: WriteCharacteristicOptions): Promise<any> {
-  return await updateCharacteristicAsync({ peripheralUUID, serviceUUID, characteristicUUID, data }, CharacteristicProperty.WriteWithoutResponse);
+export async function writeCharacteristicWithoutResponseAsync({
+  peripheralUUID,
+  serviceUUID,
+  characteristicUUID,
+  data,
+}: WriteCharacteristicOptions): Promise<any> {
+  const { characteristic } = await ExpoBluetooth.writeCharacteristicAsync({
+    peripheralUUID,
+    serviceUUID,
+    characteristicUUID,
+    characteristicProperties: CharacteristicProperty.WriteWithoutResponse,
+  });
+  return characteristic;
 }
 
-export async function readRSSIAsync(peripheralUUID: UUID): Promise<any> {
+export async function readRSSIAsync(peripheralUUID: UUID): Promise<number> {
   invariantAvailability('readRSSIAsync');
   invariantUUID(peripheralUUID);
-
-  return new Promise((resolve, reject) => {
-    const transactionId = Transaction.generateTransactionId({ peripheralUUID }, TransactionType.rssi);
-    addTransactionForId(transactionId, { resolve, reject });
-    ExpoBluetooth.readRSSIAsync({ peripheralUUID });
-  });
+  const { RSSI } = await ExpoBluetooth.readRSSIAsync(peripheralUUID);
+  return RSSI;
 }
 
 export async function getPeripheralsAsync(): Promise<any[]> {
   invariantAvailability('getPeripheralsAsync');
-  // TODO: Bacon: Do we need to piggy back and get the delegate results? Or is the cached version accurate enough to return?
-  return await ExpoBluetooth.getPeripheralsAsync({});
-  // return new Promise((resolve, reject) => {
-  //   getPeripheralsAsyncCallbacks.push({ resolve, reject });
-  //   ExpoBluetooth.getPeripheralsAsync(options);
-  // })
+  return await ExpoBluetooth.getPeripheralsAsync();
 }
 
 export async function getCentralAsync(): Promise<any> {
@@ -231,21 +293,56 @@ export async function isScanningAsync(): Promise<any> {
 // TODO: Bacon: Add serviceUUIDs
 export async function discoverServicesForPeripheralAsync(options: {
   id: string;
-  serviceUUIDsToQuery?: UUID[];
+  serviceUUIDs?: UUID[];
+  characteristicProperties?: CharacteristicProperty;
 }): Promise<{ peripheral: NativePeripheral }> {
-  return await discoverAsync(options);
+  invariantAvailability('discoverServicesForPeripheralAsync');
+  const transaction = Transaction.fromTransactionId(options.id);
+  return await ExpoBluetooth.discoverServicesForPeripheralAsync({
+    ...transaction.getUUIDs(),
+    serviceUUIDs: options.serviceUUIDs,
+    characteristicProperties: options.characteristicProperties,
+  });
+}
+export async function discoverIncludedServicesForServiceAsync(options: {
+  id: string;
+  serviceUUIDs?: UUID[];
+}): Promise<{ peripheral: NativePeripheral }> {
+  invariantAvailability('discoverIncludedServicesForServiceAsync');
+  const transaction = Transaction.fromTransactionId(options.id);
+  return await ExpoBluetooth.discoverIncludedServicesForServiceAsync({
+    ...transaction.getUUIDs(),
+    serviceUUIDs: options.serviceUUIDs,
+  });
 }
 
-export async function discoverCharacteristicsForServiceAsync({
-  id,
+export async function discoverCharacteristicsForServiceAsync(options: {
+  id: string;
+  serviceUUIDs?: UUID[];
+  characteristicProperties?: CharacteristicProperty;
 }): Promise<{ service: NativeService }> {
-  return await discoverAsync({ id });
+  invariantAvailability('discoverCharacteristicsForServiceAsync');
+  const transaction = Transaction.fromTransactionId(options.id);
+  return await ExpoBluetooth.discoverCharacteristicsForServiceAsync({
+    ...transaction.getUUIDs(),
+    serviceUUIDs: options.serviceUUIDs,
+    characteristicProperties: options.characteristicProperties,
+  });
 }
 
-export async function discoverDescriptorsForCharacteristicAsync({
-  id,
+export async function discoverDescriptorsForCharacteristicAsync(options: {
+  id: string;
+  serviceUUIDs?: UUID[];
+  characteristicProperties?: CharacteristicProperty;
 }): Promise<{ peripheral: NativePeripheral; characteristic: NativeCharacteristic }> {
-  return await discoverAsync({ id });
+  invariantAvailability('discoverDescriptorsForCharacteristicAsync');
+  const transaction = Transaction.fromTransactionId(options.id);
+  return await ExpoBluetooth.discoverDescriptorsForCharacteristicAsync({
+    ...transaction.getUUIDs(),
+    serviceUUIDs: options.serviceUUIDs,
+    characteristicProperties: options.characteristicProperties,
+  });
+  // return await discoverAsync({ id });
 }
 
 export async function loadPeripheralAsync(
@@ -260,12 +357,18 @@ export async function loadPeripheralAsync(
 
   if (peripheral.state !== 'connected') {
     if (!skipConnecting) {
-      await connectAsync(peripheralId);
-      return loadPeripheralAsync({ id }, true);
+      const connectedPeripheral = await connectAsync(peripheralId, {
+        onDisconnect: (...props) => {
+          console.log('On Disconnect public callback', ...props);
+        },
+      });
+      console.log('loadPeripheralAsync(): connected!');
+      return loadPeripheralAsync(connectedPeripheral, true);
     } else {
       // This should never be called because in theory connectAsync would throw an error.
     }
   } else if (peripheral.state === 'connected') {
+    console.log('loadPeripheralAsync(): loadChildrenRecursivelyAsync!');
     await loadChildrenRecursivelyAsync({ id: peripheralId });
   }
 
@@ -275,13 +378,17 @@ export async function loadPeripheralAsync(
 
 export async function loadChildrenRecursivelyAsync({ id }): Promise<any[]> {
   const components = id.split(DELIMINATOR);
-  console.log({components});
+  console.log({ components });
   if (components.length === 4) {
     // Descriptor ID
     throw new Error('Descriptors have no children');
   } else if (components.length === 3) {
     // Characteristic ID
     console.log('Load Characteristic ', id);
+    // DEBUG
+
+    // console.warn('DISABLE ME');
+    // return [];
     const {
       characteristic: { descriptors },
     } = await discoverDescriptorsForCharacteristicAsync({ id });
@@ -289,10 +396,8 @@ export async function loadChildrenRecursivelyAsync({ id }): Promise<any[]> {
   } else if (components.length === 2) {
     // Service ID
     console.log('Load Service ', id);
-    const {
-      service,
-    } = await discoverCharacteristicsForServiceAsync({ id });
-    console.log("LOADED CHARACTERISTICS FROM SERVICE", service);
+    const { service } = await discoverCharacteristicsForServiceAsync({ id });
+    console.log('LOADED CHARACTERISTICS FROM SERVICE', service);
     return await Promise.all(
       service.characteristics.map(characteristic => loadChildrenRecursivelyAsync(characteristic))
     );
@@ -309,177 +414,40 @@ export async function loadChildrenRecursivelyAsync({ id }): Promise<any[]> {
 }
 
 addListener(({ data, event }: { data: NativeEventData; event: string }) => {
-  const { transactionId, peripheral, peripherals, central, advertisementData, rssi, error } = data;
+  const { transactionId, peripheral, peripherals, central, advertisementData, RSSI, error } = data;
 
-  console.log("GOT EVENT: ", {data: data, event});
-  if (central) {
-    // _central = central;
-  }
-
-  if (peripheral) {
-    if (advertisementData) {
-      updateAdvertismentDataStore(peripheral.id, advertisementData);
-      peripheral.advertisementData = advertisementData;
-    }
-    if (rssi) {
-      peripheral.rssi = rssi;
-    }
-    updateStateWithPeripheral(peripheral);
-  }
-
-  if (peripherals) {
-    for (const peripheral of peripherals) {
-      updateStateWithPeripheral(peripheral);
-    }
-  }
-
-  if (transactionId) {
-    if (error == null) {
-      // TODO: Bacon: Handle the case where a peripheral disconnects from the central randomly.
-      firePeripheralObservers();
-    }
-    if (transactionId in getTransactions()) {
-      
-      const { resolve, reject, callbacks } = getTransactionForId(transactionId);
-
-      // console.log('Handle: ', { transactionId, transactions: Object.keys(getTransactions()), event, data: Object.keys(data) });
-
-      if (callbacks) {
-        for (let callback of callbacks) {
-          if (callback instanceof Function) {
-            // TODO: Bacon: should we pass back an error? Will one ever exist?
-            callback(data);
-          } else {
-            const { resolve, reject } = callback;
-            
-            if (error) {
-              reject(new BluetoothError(error));
-            } else {
-              const { error, ...outputData } = data;
-              resolve(outputData);
-            }
-            removeCallbackForTransactionId(callback, transactionId);
-          }
-        }
-        return;
-      } else if (resolve && reject) {        
-        if (error) {
-          reject(new BluetoothError(error));
-        } else {
-          const { error, ...outputData } = data;
-          resolve(outputData);
-        }
-        deleteTransactionForId(transactionId);
-        return;
-      } else {
-        console.log('Throwing Error because no callback is found for transactionId: ', {
-          data,
-          transactions: getTransactions()
-        });
-        throw new Error('Unknown error');
+  console.log('GOT EVENT: ', { data, event });
+  if (event === 'UPDATE') {
+    clearPeripherals();
+    if (peripherals) {
+      for (const peripheral of peripherals) {
+        updateStateWithPeripheral(peripheral);
       }
-    } else {
-      console.log('Unhandled transactionId', { transactionId, transactions: Object.keys(getTransactions()), event, data: Object.keys(data) });
-      // throw new Error('Unhandled transactionId');
     }
-  } else {
-    switch (event) {
-      case EVENTS.CENTRAL_DID_DISCOVER_PERIPHERAL:
-        fireMultiEventHandlers(event, { central, peripheral });
-        firePeripheralObservers();
+    firePeripheralObservers();
+    return;
+  }
 
-        return;
-      case EVENTS.CENTRAL_DID_UPDATE_STATE:
-        if (!central) {
-          throw new Error('EXBluetooth: Central not defined while processing: ' + event);
-        }
-        // Currently this is iOS only
-        if (Platform.OS === 'ios') {
-          const peripheralsAreStillValid =
-            central.state == CentralState.PoweredOff || central.state === CentralState.PoweredOn;
-          if (!peripheralsAreStillValid) {
-            // Clear caches
-            clearPeripherals();
-            firePeripheralObservers();
-          }
-        }
+  switch (event) {
+    case EVENTS.CENTRAL_DID_DISCONNECT_PERIPHERAL:
+    case EVENTS.CENTRAL_DID_DISCOVER_PERIPHERAL:
+      fireMultiEventHandlers(event, { central, peripheral });
+      firePeripheralObservers();
+      return;
+    case EVENTS.CENTRAL_DID_UPDATE_STATE:
+      if (!central) {
+        throw new Error('EXBluetooth: Central not defined while processing: ' + event);
+      }
 
-        for (const callback of getHandlersForKey(event)) {
-          callback(central.state);
-        }
+      for (const callback of getHandlersForKey(event)) {
+        callback(central.state);
+      }
 
-        return;
-      case EVENTS.CENTRAL_DID_RETRIEVE_CONNECTED_PERIPHERALS:
-      case EVENTS.CENTRAL_DID_RETRIEVE_PERIPHERALS:
-        return;
-      default:
-        throw new Error('EXBluetooth: Unhandled event: ' + event);
-    }
+      return;
+    case EVENTS.CENTRAL_DID_RETRIEVE_CONNECTED_PERIPHERALS:
+    case EVENTS.CENTRAL_DID_RETRIEVE_PERIPHERALS:
+      return;
+    default:
+      throw new Error('EXBluetooth: Unhandled event: ' + event);
   }
 });
-
-// Interactions
-
-async function discoverAsync(options: { id: string; serviceUUIDsToQuery?: UUID[] }): Promise<any> {
-  invariantAvailability('discoverAsync');
-  const { serviceUUIDsToQuery, id } = options;
-
-  const transaction = Transaction.fromTransactionId(id);
-  transaction.setType(TransactionType.scan);
-
-  return new Promise((resolve, reject) => {  
-    addCallbackForTransactionId({ resolve, reject }, transaction.generateId());
-    ExpoBluetooth.discoverAsync({
-      ...transaction.getUUIDs(),
-      serviceUUIDsToQuery,
-    });
-  });
-}
-
-
-// export async function setCharacteristicShouldNotifyAsync({ isEnabled, peripheralUUID, serviceUUID, characteristicUUID, data }: any): Promise<any> {
-//   return await updateCharacteristicAsync({ isEnabled, peripheralUUID, serviceUUID, characteristicUUID, data }, CharacteristicProperty.Notify);
-// }
-
-// export async function setCharacteristicShouldIndicateAsync({ isEnabled, peripheralUUID, serviceUUID, characteristicUUID, data }: any): Promise<any> {
-//   return await updateCharacteristicAsync({ isEnabled, peripheralUUID, serviceUUID, characteristicUUID, data }, CharacteristicProperty.Indicate);
-// }
-
-async function updateCharacteristicAsync(options: any, characteristicProperties: CharacteristicProperty): Promise<any> {
-  invariantAvailability('updateCharacteristicAsync');
-
-  invariantUUID(options.peripheralUUID);
-  invariantUUID(options.serviceUUID);
-  invariantUUID(options.characteristicUUID);
-  return new Promise((resolve, reject) => {
-    const expectResponse = characteristicPropertyUpdateExpectsResponse(characteristicProperties);
-    if (expectResponse) {
-      const transactionId = Transaction.generateTransactionId(options, characteristicProperties);
-      addTransactionForId(transactionId, { resolve, reject });
-    } else {
-      resolve();
-    }
-    ExpoBluetooth.updateCharacteristicAsync({ ...options, characteristicProperties });
-  });
-}
-
-function characteristicPropertyUpdateExpectsResponse(characteristicProperty: CharacteristicProperty): boolean {
-  if (characteristicProperty === CharacteristicProperty.WriteWithoutResponse) {
-    return false;
-  }
-  return true;
-}
-
-async function updateDescriptorAsync(options: any, characteristicProperties: CharacteristicProperty.Read | CharacteristicProperty.Write): Promise<any> {
-  invariantAvailability('updateDescriptorAsync');
-
-  invariantUUID(options.peripheralUUID);
-  invariantUUID(options.serviceUUID);
-  invariantUUID(options.characteristicUUID);
-  invariantUUID(options.descriptorUUID);
-  return new Promise((resolve, reject) => {
-    const transactionId = Transaction.generateTransactionId(options, characteristicProperties);
-    addTransactionForId(transactionId, { resolve, reject });
-    ExpoBluetooth.updateDescriptorAsync({...options, characteristicProperties});
-  });
-}

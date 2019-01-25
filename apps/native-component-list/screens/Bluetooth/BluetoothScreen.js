@@ -116,15 +116,17 @@ export default class BluetoothScreen extends React.Component {
       });
     });
 
-    // Bluetooth.startScanAsync();
+    // await Bluetooth.startScanAsync();
+    // await Bluetooth.stopScanAsync();
 
-    const SnapChatSpectaclesServiceUUID = '3E400001-B5A3-F393-E0A9-E50E24DCCA9E';
-    const TileServiceUUID = 'FEED';
+    // await new Promise(res => setTimeout(res, 10));
+    // const SnapChatSpectaclesServiceUUID = '3E400001-B5A3-F393-E0A9-E50E24DCCA9E';
+    // const TileServiceUUID = 'FEED';
     // Load in one or more peripherals
     this.setState({ isScanning: true }, () => {
       Bluetooth.startScanAsync({
         /* This will query peripherals with a value found in the peripheral's `advertisementData.serviceUUIDs` */
-        serviceUUIDsToQuery: [SnapChatSpectaclesServiceUUID, TileServiceUUID],
+        // serviceUUIDsToQuery: [SnapChatSpectaclesServiceUUID, TileServiceUUID],
         callback: async ({ peripheral }) => {
           console.log('Found: ', peripheral);
           const hasName = peripheral.name && peripheral.name !== '';
@@ -156,7 +158,7 @@ export default class BluetoothScreen extends React.Component {
     LayoutAnimation.easeInEaseOut();
   }
 
-  onPressInfo = peripheral => {
+  onPressInfo = async peripheral => {
     this.props.navigation.push('BluetoothPeripheralScreen', { peripheral });
   };
 
@@ -166,7 +168,7 @@ export default class BluetoothScreen extends React.Component {
       .filter(({ name }) => name != null)
       .sort((a, b) => a.discoveryTimestamp > b.discoveryTimestamp);
 
-    console.log('ANNNND: ', { data });
+    // console.log('ANNNND: ', { data });
     const canUseBluetooth = centralState === 'poweredOn';
     const message = canUseBluetooth
       ? 'Now discoverable as a name that Apple probably doesn\'t surface... Maybe "Evan\'s iPhone?"'
@@ -266,7 +268,7 @@ class Item extends React.Component {
         this.setState({ isConnecting: false });
       }
     } else if (item.state === 'connected') {
-      await Bluetooth.disconnectAsync({ uuid: item.id });
+      await Bluetooth.disconnectAsync(item.id);
       // this.props.onPressInfo(this.props.item);
     }
   };

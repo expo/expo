@@ -63,6 +63,15 @@ export default class BluetoothPeripheralScreen extends React.Component {
         <DataContainer>
           <DisconnectPeripheralButton name={name} state={state} uuid={uuid} />
         </DataContainer>
+        {isConnected && (
+          <DataContainer>
+            <RSSIButton
+              RSSI={this.state.peripheral.RSSI}
+              onPress={this.onPress}
+              peripheralUUID={uuid}
+            />
+          </DataContainer>
+        )}
         <PeripheralView {...this.state.peripheral} />
         <MonoText
           containerStyle={{
@@ -177,9 +186,9 @@ class DisconnectPeripheralButton extends React.Component {
     let connected = false;
     try {
       if (state === 'connected') {
-        await Bluetooth.disconnectAsync({ uuid });
+        await Bluetooth.disconnectAsync(uuid);
       } else {
-        await Bluetooth.connectAsync({ uuid });
+        await Bluetooth.connectAsync(uuid);
         connected = true;
       }
 
@@ -222,6 +231,43 @@ class DisconnectPeripheralButton extends React.Component {
             return <ActivityIndicator />;
           }
           return null;
+        }}
+      />
+    );
+  }
+}
+class RSSIButton extends React.Component {
+  state = {
+    isUpdating: false,
+  };
+
+  onPress = async () => {
+    if (this.state.isUpdating) {
+      return;
+    }
+    const { peripheralUUID } = this.props;
+    this.setState({ isUpdating: true });
+
+    try {
+      await Bluetooth.readRSSIAsync(peripheralUUID);
+    } catch (error) {
+      Alert.alert('RSSI Error!', error.message);
+    } finally {
+      this.setState({ isUpdating: false });
+    }
+  };
+
+  render() {
+    return (
+      <BluetoothListItem
+        disabled={this.state.isUpdating}
+        title={this.state.isUpdating ? 'Refreshing RSSI...' : 'Refresh RSSI'}
+        onPress={this.onPress}
+        renderAction={() => {
+          if (this.state.isUpdating) {
+            return <ActivityIndicator />;
+          }
+          return <Text>{this.props.RSSI}</Text>;
         }}
       />
     );
@@ -355,23 +401,41 @@ class CharacteristicsView extends React.Component {
       specForGATT = {},
     } = getStaticInfoFromGATT(this.props);
 
+    const canRead = properties.includes('read');
+    const canWrite = properties.includes('write');
     return (
       <DataContainer
-        title={'Update'}
+        title={canRead ? 'Read' : 'IDK'}
         style={this.props.style}
         onPress={async () => {
-          try {
+          if (!isNotifying && properties.includes('notify')) {
+            await Bluetooth.shouldNotifyDescriptorAsync({
+              ...getGATTNumbersFromID(this.props.id),
+              shouldNotify: true,
+            });
+          }
+          if (canWrite) {
             await Bluetooth.writeCharacteristicAsync({
               ...getGATTNumbersFromID(this.props.id),
               data: JSONToNative('bacon'),
             });
-            // const some = await Bluetooth.readCharacteristicAsync(
-            //   getGATTNumbersFromID(this.props.id)
-            // );
-            // console.log('Update SOME', some);
-          } catch (error) {
-            Alert.alert('Error!', error.message);
-            console.log(error);
+          } else if (canRead) {
+            try {
+              // if (properties.includes('write')) {
+              //   await Bluetooth.writeCharacteristicAsync({
+              //     ...getGATTNumbersFromID(this.props.id),
+              //     data: JSONToNative('bacon'),
+              //   });
+              // }
+
+              const some = await Bluetooth.readCharacteristicAsync(
+                getGATTNumbersFromID(this.props.id)
+              );
+              console.log('Update SOME', some);
+            } catch (error) {
+              Alert.alert('Error!', error.message);
+              console.log(error);
+            }
           }
         }}>
         {specForGATT.name && <BluetoothListItem title={'Name'} value={specForGATT.name} />}

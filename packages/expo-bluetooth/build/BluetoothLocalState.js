@@ -12,6 +12,9 @@ export function getPeripheralForId(id) {
 export function clearPeripherals() {
     _peripherals = {};
 }
+export function removePeripheral(uuid) {
+    delete _peripherals[uuid];
+}
 export function updateStateWithPeripheral(peripheral) {
     const { [peripheral.id]: currentPeripheral = {
         discoveryTimestamp: Date.now(),

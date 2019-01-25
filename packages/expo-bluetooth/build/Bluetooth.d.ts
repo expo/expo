@@ -10,30 +10,43 @@ export declare function observeStateAsync(callback: StateUpdatedCallback): Promi
 export declare function connectAsync(peripheralUUID: UUID, options?: {
     timeout?: number;
     options?: any;
+    onDisconnect?: any;
 }): Promise<NativePeripheral>;
 export declare function disconnectAsync(peripheralUUID: UUID): Promise<any>;
-export declare function readDescriptorAsync({ peripheralUUID, serviceUUID, characteristicUUID, descriptorUUID }: any): Promise<Base64 | undefined>;
-export declare function writeDescriptorAsync({ peripheralUUID, serviceUUID, characteristicUUID, descriptorUUID, data }: any): Promise<any>;
-export declare function readCharacteristicAsync({ peripheralUUID, serviceUUID, characteristicUUID }: any): Promise<Base64 | null>;
-export declare function writeCharacteristicAsync({ peripheralUUID, serviceUUID, characteristicUUID, data }: any): Promise<any>;
-export declare function writeCharacteristicWithoutResponseAsync({ peripheralUUID, serviceUUID, characteristicUUID, data }: WriteCharacteristicOptions): Promise<any>;
-export declare function readRSSIAsync(peripheralUUID: UUID): Promise<any>;
+export declare function readDescriptorAsync({ peripheralUUID, serviceUUID, characteristicUUID, descriptorUUID, }: any): Promise<Base64 | undefined>;
+export declare function writeDescriptorAsync({ peripheralUUID, serviceUUID, characteristicUUID, descriptorUUID, data, }: any): Promise<any>;
+export declare function shouldNotifyDescriptorAsync({ peripheralUUID, serviceUUID, characteristicUUID, descriptorUUID, shouldNotify, }: any): Promise<any>;
+export declare function readCharacteristicAsync({ peripheralUUID, serviceUUID, characteristicUUID, }: any): Promise<Base64 | null>;
+export declare function writeCharacteristicAsync({ peripheralUUID, serviceUUID, characteristicUUID, data, }: any): Promise<any>;
+export declare function writeCharacteristicWithoutResponseAsync({ peripheralUUID, serviceUUID, characteristicUUID, data, }: WriteCharacteristicOptions): Promise<any>;
+export declare function readRSSIAsync(peripheralUUID: UUID): Promise<number>;
 export declare function getPeripheralsAsync(): Promise<any[]>;
 export declare function getCentralAsync(): Promise<any>;
 export declare function isScanningAsync(): Promise<any>;
 export declare function discoverServicesForPeripheralAsync(options: {
     id: string;
-    serviceUUIDsToQuery?: UUID[];
+    serviceUUIDs?: UUID[];
+    characteristicProperties?: CharacteristicProperty;
 }): Promise<{
     peripheral: NativePeripheral;
 }>;
-export declare function discoverCharacteristicsForServiceAsync({ id, }: {
-    id: any;
+export declare function discoverIncludedServicesForServiceAsync(options: {
+    id: string;
+    serviceUUIDs?: UUID[];
+}): Promise<{
+    peripheral: NativePeripheral;
+}>;
+export declare function discoverCharacteristicsForServiceAsync(options: {
+    id: string;
+    serviceUUIDs?: UUID[];
+    characteristicProperties?: CharacteristicProperty;
 }): Promise<{
     service: NativeService;
 }>;
-export declare function discoverDescriptorsForCharacteristicAsync({ id, }: {
-    id: any;
+export declare function discoverDescriptorsForCharacteristicAsync(options: {
+    id: string;
+    serviceUUIDs?: UUID[];
+    characteristicProperties?: CharacteristicProperty;
 }): Promise<{
     peripheral: NativePeripheral;
     characteristic: NativeCharacteristic;

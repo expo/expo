@@ -24,8 +24,15 @@ export function fireMultiEventHandlers(
   event: string,
   { central, peripheral }: { central?: Central | null; peripheral?: NativePeripheral | null }
 ) {
+  ensureKey(event);
   for (const callback of multiEventHandlers[event]) {
     callback({ central, peripheral });
+  }
+}
+
+function ensureKey(key) {
+  if (!(key in multiEventHandlers)) {
+    multiEventHandlers[key] = [];
   }
 }
 
@@ -34,6 +41,7 @@ export function resetHandlersForKey(key) {
 }
 
 export function addHandlerForKey(key: string, callback: (updates: any) => void): Subscription {
+  ensureKey(key);
   multiEventHandlers[key].push(callback);
 
   return {
@@ -47,6 +55,7 @@ export function addHandlerForKey(key: string, callback: (updates: any) => void):
 }
 
 export function getHandlersForKey(key) {
+  ensureKey(key);
   return multiEventHandlers[key];
 }
 
