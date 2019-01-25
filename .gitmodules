@@ -9,3 +9,8 @@
 [submodule "packages/expo-blur"]
 	path = packages/expo-blur
 	url = git@github.com:expo/react-native-blur.git
+[submodule "detox-lab/Detox"]
+  path = detox-lab/Detox
+  url = https://github.com/expo/Detox
+  branch = exp-latest
+  update = checkout
