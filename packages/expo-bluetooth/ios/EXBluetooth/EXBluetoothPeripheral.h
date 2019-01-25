@@ -77,9 +77,9 @@ NS_CLASS_AVAILABLE(NA, 7_0)
  *
  *	@discussion While connected, retrieves the current RSSI of the link.
  *
- *  @see		EXBluetoothPeripheralRedRSSIBlock
+ *  @see		EXBluetoothPeripheralReadRSSIBlock
  */
-- (void)readRSSI:(nullable EXBluetoothPeripheralRedRSSIBlock)block;
+- (void)readRSSI:(nullable EXBluetoothPeripheralReadRSSIBlock)block;
 
 /*!
  *  @method discoverServices:withBlock:

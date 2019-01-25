@@ -24,7 +24,7 @@
 @interface EXBluetoothPeripheral() <CBPeripheralDelegate>
 {
   EXBluetoothPeripheralDidUpdateNameBlock _didUpdateNameBlock;
-  EXBluetoothPeripheralRedRSSIBlock _readRSSIBlock;
+  EXBluetoothPeripheralReadRSSIBlock _readRSSIBlock;
   EXBluetoothPeripheralDiscoverServicesBlock _discoverServicesBlock;
   
   // Discovery
@@ -111,7 +111,7 @@
   return array;
 }
 
-- (void)readRSSI:(EXBluetoothPeripheralRedRSSIBlock)block
+- (void)readRSSI:(EXBluetoothPeripheralReadRSSIBlock)block
 {
   NSAssert(block, @"readRSSI: block cannot be nil");
   _readRSSIBlock = block;

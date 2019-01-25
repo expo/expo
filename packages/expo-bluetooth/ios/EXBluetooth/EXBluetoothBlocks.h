@@ -59,7 +59,7 @@ typedef void (^EXBluetoothPeripheralReadValueForDescriptorsBlock)(EXBluetoothPer
 typedef void (^EXBluetoothPeripheralWriteValueForDescriptorsBlock)(EXBluetoothPeripheral *peripheral, EXBluetoothDescriptor *descriptor, NSError *error);
 
 // Red RSSI Block
-typedef void (^EXBluetoothPeripheralRedRSSIBlock)(EXBluetoothPeripheral *peripheral, NSNumber *RSSI, NSError *error);
+typedef void (^EXBluetoothPeripheralReadRSSIBlock)(EXBluetoothPeripheral *peripheral, NSNumber *RSSI, NSError *error);
 
 // TODO: Bacon: Services
 // TODO: Bacon: Characteristics
