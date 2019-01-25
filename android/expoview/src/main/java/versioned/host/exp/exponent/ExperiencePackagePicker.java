@@ -23,6 +23,8 @@ import expo.modules.filesystem.FileSystemPackage;
 import expo.modules.font.FontLoaderPackage;
 import expo.modules.gl.GLPackage;
 import expo.modules.google.signin.GoogleSignInPackage;
+import expo.modules.keepawake.KeepAwakePackage;
+import expo.modules.lineargradient.LinearGradientPackage;
 import expo.modules.localauthentication.LocalAuthenticationPackage;
 import expo.modules.localization.LocalizationPackage;
 import expo.modules.location.LocationPackage;
@@ -40,9 +42,9 @@ import expo.modules.taskManager.TaskManagerPackage;
 
 public class ExperiencePackagePicker {
   private static final List<Package> EXPO_MODULES_PACKAGES = Arrays.<Package>asList(
+      new AVPackage(),
       new AdMobPackage(),
       new AppAuthPackage(),
-      new AVPackage(),
       new BackgroundFetchPackage(),
       new BarCodeScannerPackage(),
       new BlurViewPackage(),
@@ -50,12 +52,14 @@ public class ExperiencePackagePicker {
       new ConstantsPackage(),
       new ContactsPackage(),
       new DocumentPickerPackage(),
-      new FacebookPackage(),
       new FaceDetectorPackage(),
+      new FacebookPackage(),
       new FileSystemPackage(),
       new FontLoaderPackage(),
       new GLPackage(),
       new GoogleSignInPackage(),
+      new KeepAwakePackage(),
+      new LinearGradientPackage(),
       new LocalAuthenticationPackage(),
       new LocalizationPackage(),
       new LocationPackage(),
@@ -63,12 +67,12 @@ public class ExperiencePackagePicker {
       new MediaLibraryPackage(),
       new PermissionsPackage(),
       new PrintPackage(),
+      new SMSPackage(),
+      new SQLitePackage(),
       new SecureStorePackage(),
       new SegmentPackage(),
       new SensorsPackage(),
-      new SMSPackage(),
       new SpeechPackage(),
-      new SQLitePackage(),
       new StripePackage(),
       new TaskManagerPackage()
   );

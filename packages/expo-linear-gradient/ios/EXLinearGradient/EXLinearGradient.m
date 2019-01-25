@@ -1,9 +1,15 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "EXLinearGradient.h"
-#import "EXLinearGradientLayer.h"
-#import <React/RCTConvert.h>
+#import <EXLinearGradient/EXLinearGradient.h>
+#import <EXLinearGradient/EXLinearGradientLayer.h>
 #import <UIKit/UIKit.h>
+#import <EXCore/EXModuleRegistry.h>
+#import <EXCore/EXAppLifecycleListener.h>
+#import <EXCore/EXUtilities.h>
+
+@interface EXLinearGradient ()
+
+@end
 
 @implementation EXLinearGradient
 
@@ -21,7 +27,7 @@
 {
   NSMutableArray *colors = [NSMutableArray arrayWithCapacity:colorStrings.count];
   for (NSString *colorString in colorStrings) {
-    UIColor *convertedColor = [RCTConvert UIColor:colorString];
+    UIColor *convertedColor = [EXUtilities UIColor:colorString];
     if (convertedColor) {
       [colors addObject:convertedColor];
     }
