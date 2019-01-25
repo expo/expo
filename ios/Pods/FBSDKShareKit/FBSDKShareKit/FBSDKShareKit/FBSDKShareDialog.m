@@ -145,7 +145,8 @@ static inline void FBSDKShareDialogValidateShareExtensionSchemeRegisteredForCanO
 - (BOOL)show
 {
   BOOL didShow = NO;
-  NSError *error = nil;
+  NSError *error;
+  NSError *validationError;
 
   if ([self _validateWithError:&error]) {
     switch (self.mode) {
@@ -166,11 +167,11 @@ static inline void FBSDKShareDialogValidateShareExtensionSchemeRegisteredForCanO
         break;
       }
       case FBSDKShareDialogModeNative:{
-        didShow = [self _showNativeWithCanShowError:&error validationError:&error];
+        didShow = [self _showNativeWithCanShowError:&error validationError:&validationError];
         break;
       }
       case FBSDKShareDialogModeShareSheet:{
-        didShow = [self _showShareSheetWithCanShowError:&error validationError:&error];
+        didShow = [self _showShareSheetWithCanShowError:&error validationError:&validationError];
         break;
       }
       case FBSDKShareDialogModeWeb:{
@@ -180,7 +181,7 @@ static inline void FBSDKShareDialogValidateShareExtensionSchemeRegisteredForCanO
     }
   }
   if (!didShow) {
-    [self _invokeDelegateDidFailWithError:error];
+    [self _invokeDelegateDidFailWithError:error ?: validationError];
   } else {
     [self _logDialogShow];
     [FBSDKInternalUtility registerTransientObject:self];
@@ -188,7 +189,7 @@ static inline void FBSDKShareDialogValidateShareExtensionSchemeRegisteredForCanO
   return didShow;
 }
 
-- (BOOL)validateWithError:(NSError *__autoreleasing *)errorRef
+- (BOOL)validateWithError:(NSError **)errorRef
 {
   return [self _validateWithError:errorRef] && [self _validateFullyCompatibleWithError:errorRef];
 }
@@ -262,7 +263,7 @@ static inline void FBSDKShareDialogValidateShareExtensionSchemeRegisteredForCanO
   return hasOGURL;
 }
 
--(BOOL)_showAutomatic:(NSError *__autoreleasing *)errorRef
+-(BOOL)_showAutomatic:(NSError **)errorRef
 {
   BOOL isDefaultToShareSheet = [self _isDefaultToShareSheet];
   BOOL useNativeDialog = [self _useNativeDialog];
@@ -789,7 +790,7 @@ static inline void FBSDKShareDialogValidateShareExtensionSchemeRegisteredForCanO
   return [configuration useSafariViewControllerForDialogName:FBSDKDialogConfigurationNameShare];
 }
 
-- (BOOL)_validateWithError:(NSError *__autoreleasing *)errorRef
+- (BOOL)_validateWithError:(NSError **)errorRef
 {
   if (errorRef != NULL) {
     *errorRef = nil;
@@ -866,7 +867,7 @@ static inline void FBSDKShareDialogValidateShareExtensionSchemeRegisteredForCanO
 
  This method exists to enable the behavior described above and should only be called from `validateWithError:`.
  */
-- (BOOL)_validateFullyCompatibleWithError:(NSError *__autoreleasing *)errorRef
+- (BOOL)_validateFullyCompatibleWithError:(NSError **)errorRef
 {
   id<FBSDKSharingContent> shareContent = self.shareContent;
   if ([shareContent isKindOfClass:[FBSDKShareLinkContent class]]) {
@@ -886,7 +887,7 @@ static inline void FBSDKShareDialogValidateShareExtensionSchemeRegisteredForCanO
   return YES;
 }
 
-- (BOOL)_validateShareContentForBrowserWithOptions:(FBSDKShareBridgeOptions)bridgeOptions error:(NSError *__autoreleasing *)errorRef
+- (BOOL)_validateShareContentForBrowserWithOptions:(FBSDKShareBridgeOptions)bridgeOptions error:(NSError **)errorRef
 {
   id<FBSDKSharingContent> shareContent = self.shareContent;
   if ([shareContent isKindOfClass:[FBSDKShareLinkContent class]]) {

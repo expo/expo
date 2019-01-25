@@ -35,6 +35,7 @@ Commands:
   fetch:ios:certs [options] [project-dir]         Fetch this project's iOS certificates and provisioning profile. Writes certificates to PROJECT_DIR/PROJECT_NAME_(dist|push).p12 and prints passwords to stdout.
   fetch:android:keystore [options] [project-dir]  Fetch this project's Android keystore. Writes keystore to PROJECT_DIR/PROJECT_NAME.jks and prints passwords to stdout.
   fetch:android:hashes [options] [project-dir]    Fetch this project's Android key hashes needed to setup Google/Facebook authentication.
+  generate-module [options] [project-dir]         Create new universal module for Expo.
   init|i [options] [project-dir]                  Initializes a directory with an example project. Run it without any options and you will be prompted for the name and type.
   install:ios [options]                           Install the latest version of Expo Client for iOS on the simulator
   install:android [options]                       Install the latest version of Expo Client for Android on a connected device or emulator

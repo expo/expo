@@ -1,0 +1,1 @@
+../../../../../packages/expo-blur/ios/EXBlur/EXVibrancyViewManager.h

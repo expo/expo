@@ -4,6 +4,8 @@
 
 @implementation EXFilePermissionModule
 
+EX_REGISTER_MODULE();
+
 + (const NSArray<Protocol *> *)exportedInterfaces
 {
   return @[@protocol(EXFilePermissionModuleInterface)];

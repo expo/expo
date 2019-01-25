@@ -18,6 +18,11 @@
 #import <EXTaskManager/EXTaskService.h>
 #endif
 
+#if __has_include(<EXFacebook/EXFacebook.h>)
+#import <EXFacebook/EXFacebook.h>
+#import <FBSDKCoreKit/FBSDKCoreKit.h>
+#endif
+
 @interface EXStandaloneAppDelegate ()
 
 @property (nonatomic, strong) EXViewController *rootViewController;
@@ -28,6 +33,12 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+#if __has_include(<EXFacebook/EXFacebook.h>)
+  if ([EXFacebook facebookAppIdFromNSBundle]) {
+    [[FBSDKApplicationDelegate sharedInstance] application:application
+                             didFinishLaunchingWithOptions:launchOptions];
+  }
+#endif
   if ([application applicationState] != UIApplicationStateBackground) {
     // App launched in foreground
     [self _setUpUserInterfaceForApplication:application withLaunchOptions:launchOptions];
@@ -83,6 +94,15 @@
 #if __has_include(<EXAppAuth/EXAppAuth.h>)
   if ([[EXAppAuth instance] application:app openURL:url options:options]) {
     return YES;
+  }
+#endif
+#if __has_include(<EXFacebook/EXFacebook.h>)
+  if ([EXFacebook facebookAppIdFromNSBundle]) {
+    if ([[FBSDKApplicationDelegate sharedInstance] application:app
+                                                       openURL:url
+                                                       options:options]) {
+      return YES;
+    }
   }
 #endif
   return [[ExpoKit sharedInstance] application:app openURL:url sourceApplication:sourceApplication annotation:annotation];

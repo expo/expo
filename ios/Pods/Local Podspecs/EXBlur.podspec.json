@@ -1,0 +1,23 @@
+{
+  "name": "EXBlur",
+  "version": "1.0.0",
+  "summary": "Universal module for React Native Blur component",
+  "description": "Universal module for React Native Blur component",
+  "license": "MIT",
+  "authors": "Alexey Kureev <kureev-mail@ya.ru> (https://github.com/Kureev)",
+  "homepage": "https://github.com/react-native-community/react-native-blur",
+  "platforms": {
+    "ios": "10.0"
+  },
+  "source": {
+    "git": "https://github.com/expo/expo.git"
+  },
+  "source_files": "EXBlur/**/*.{h,m}",
+  "preserve_paths": "EXBlur/**/*.{h,m}",
+  "requires_arc": true,
+  "dependencies": {
+    "EXCore": [
+
+    ]
+  }
+}

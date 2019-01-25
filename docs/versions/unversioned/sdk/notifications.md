@@ -192,7 +192,7 @@ Sets the number displayed in the app icon's badge to the given number. Setting t
 
 Note: Most people do not need to use this. It is easier to use `getExpoPushTokenAsync` unless you have a specific reason to need the actual device tokens. We also don't guarantee that the iOS and Android clients will continue expecting the same push notification payload format.
 
-Returns a native APNS, FCM or GCM token that can be used with another push notification service. If firebase cloud messaging is configured on your standalone Android app ([see guide here](/versions/latest/guides/using-fcm/)), it will return an FCM token, otherwise it will return a GCM token.
+Returns a native APNS, FCM or GCM token that can be used with another push notification service. If firebase cloud messaging is configured on your standalone Android app ([see guide here](../../guides/using-fcm/)), it will return an FCM token, otherwise it will return a GCM token.
 
 #### Arguments
 

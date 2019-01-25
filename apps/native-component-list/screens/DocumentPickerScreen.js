@@ -1,5 +1,5 @@
 import React from 'react';
-import { Alert, Image, ScrollView, Text, View } from 'react-native';
+import { Alert, Image, Text, View } from 'react-native';
 import { DocumentPicker } from 'expo';
 import Button from '../components/Button';
 
@@ -7,7 +7,7 @@ export default class DocumentPickerScreen extends React.Component {
   static navigationOptions = {
     title: 'DocumentPicker',
   };
-  
+
   state = {
     document: null,
   };

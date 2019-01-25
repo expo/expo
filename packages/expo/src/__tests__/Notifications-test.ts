@@ -1,6 +1,6 @@
+import { mockPlatformIOS, mockPlatformAndroid } from 'jest-expo';
 import { NativeModules } from 'react-native';
 import Notifications from '../Notifications/Notifications';
-import { mockPlatformIOS, mockPlatformAndroid } from '../../test/mocking';
 
 const mockNotificationObject = { origin: 'selected', data: {} } as any;
 const mockNotificationString = JSON.stringify({ origin: 'received', data: {} });

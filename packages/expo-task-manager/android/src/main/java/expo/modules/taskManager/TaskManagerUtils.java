@@ -20,30 +20,27 @@ import expo.interfaces.taskManager.TaskManagerUtilsInterface;
 import expo.interfaces.taskManager.TaskInterface;
 
 public class TaskManagerUtils implements TaskManagerUtilsInterface {
+  // Request code number used for pending intents created by this module.
+  private static final int PENDING_INTENT_REQUEST_CODE = 5055;
+
   private static final int DEFAULT_OVERRIDE_DEADLINE = 60 * 1000; // 1 minute
 
   // make intent and job ids locally-unique
-  private static Integer sCurrentIntentId = 2137;
   private static Integer sCurrentJobId = 2137;
 
   // Set of job IDs that are scheduled but not started yet.
   private static final List<Integer> sPendingJobIds = new ArrayList<>();
 
   public PendingIntent createTaskIntent(Context context, TaskInterface task) {
-    Integer intentId = sCurrentIntentId++;
-    String appId = task.getAppId();
-    String taskName = task.getName();
-    Intent intent = new Intent(TaskBroadcastReceiver.INTENT_ACTION, null, context, TaskBroadcastReceiver.class);
+    return createTaskIntent(context, task, PendingIntent.FLAG_UPDATE_CURRENT);
+  }
 
-    Uri dataUri = new Uri.Builder()
-        .appendQueryParameter("intentId", intentId.toString())
-        .appendQueryParameter("appId", appId)
-        .appendQueryParameter("taskName", taskName)
-        .build();
+  public void cancelTaskIntent(Context context, String appId, String taskName) {
+    PendingIntent pendingIntent = createTaskIntent(context, appId, taskName, PendingIntent.FLAG_NO_CREATE);
 
-    intent.setData(dataUri);
-
-    return PendingIntent.getBroadcast(context, intentId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+    if (pendingIntent != null) {
+      pendingIntent.cancel();
+    }
   }
 
   public void scheduleJob(Context context, JobInfo jobInfo) {
@@ -69,6 +66,30 @@ public class TaskManagerUtils implements TaskManagerUtilsInterface {
     JobInfo jobInfo = createJobInfo(context, jobId, extras);
 
     scheduleJob(context, jobInfo);
+  }
+
+  private PendingIntent createTaskIntent(Context context, String appId, String taskName, int flags) {
+    if (context == null) {
+      return null;
+    }
+
+    Intent intent = new Intent(TaskBroadcastReceiver.INTENT_ACTION, null, context, TaskBroadcastReceiver.class);
+
+    Uri dataUri = new Uri.Builder()
+        .appendQueryParameter("appId", appId)
+        .appendQueryParameter("taskName", taskName)
+        .build();
+
+    intent.setData(dataUri);
+
+    return PendingIntent.getBroadcast(context, PENDING_INTENT_REQUEST_CODE, intent, flags);
+  }
+
+  private PendingIntent createTaskIntent(Context context, TaskInterface task, int flags) {
+    String appId = task.getAppId();
+    String taskName = task.getName();
+
+    return createTaskIntent(context, appId, taskName, flags);
   }
 
   @SuppressWarnings("unchecked")
@@ -108,7 +129,7 @@ public class TaskManagerUtils implements TaskManagerUtilsInterface {
   }
 
   @SuppressWarnings("unchecked")
-  public static double[] listToDoubleArray(List<Object> list) {
+  private static double[] listToDoubleArray(List<Object> list) {
     double[] doubles = new double[list.size()];
     for (int i = 0; i < list.size(); i++) {
       doubles[i] = (Double) list.get(i);
@@ -151,7 +172,7 @@ public class TaskManagerUtils implements TaskManagerUtilsInterface {
     }
   }
 
-  public static void removeFromPendingJobs(int jobId) {
+  static void removeFromPendingJobs(int jobId) {
     sPendingJobIds.remove((Integer) jobId);
   }
 

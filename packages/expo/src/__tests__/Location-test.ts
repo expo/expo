@@ -1,12 +1,11 @@
 import * as Location from 'expo-location';
 import { NativeModulesProxy } from 'expo-core';
-
 import {
   mockProperty,
   unmockAllProperties,
   mockPlatformIOS,
   mockPlatformAndroid,
-} from '../../test/mocking';
+} from 'jest-expo';
 
 const fakeReturnValue = {
   coords: {
@@ -153,7 +152,7 @@ describe('Location', () => {
 });
 
 function emitNativeLocationUpdate(location) {
-  Location.EventEmitter.emit('Exponent.locationChanged', {
+  Location.EventEmitter.emit('Expo.locationChanged', {
     watchId: Location._getCurrentWatchId(),
     location,
   });

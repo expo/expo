@@ -12,7 +12,7 @@ The React Native equivalent of [create-react-app](https://github.com/facebookinc
 
 ### detach
 
-The term "detach" is used in Expo to describe leaving the cozy comfort of the standard Expo development environment, where you do not have to deal with build configuration or native code. When you "detach" from Expo, you get the native projects along with [ExpoKit](#expokit), so you can continue building your project using the Expo APIs but your workflow now is the same as if you were building a React Native application without Expo. [Read more in "Detaching to ExpoKit"](/versions/latest/expokit/eject/).
+The term "detach" is used in Expo to describe leaving the cozy comfort of the standard Expo development environment, where you do not have to deal with build configuration or native code. When you "detach" from Expo, you get the native projects along with [ExpoKit](#expokit), so you can continue building your project using the Expo APIs but your workflow now is the same as if you were building a React Native application without Expo. [Read more in "Detaching to ExpoKit"](../../expokit/detach/).
 
 ### eject
 
@@ -36,7 +36,7 @@ The iOS and Android app that runs Expo apps. When you want to run your app outsi
 
 ### Expo SDK
 
-The Expo SDK provides access to device/system functionality such as camera, push notification, contacts, file system, and more. Scroll to the SDK API reference in the documentation navigation to see a full list of APIs and to explore them. [Read more about the Expo SDK](/versions/latest/sdk/). [Find it on Github](https://github.com/expo/expo-sdk).
+The Expo SDK provides access to device/system functionality such as camera, push notification, contacts, file system, and more. Scroll to the SDK API reference in the documentation navigation to see a full list of APIs and to explore them. [Read more about the Expo SDK](../../sdk/). [Find it on Github](https://github.com/expo/expo-sdk).
 
 ### ExpoKit
 
