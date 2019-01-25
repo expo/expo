@@ -54,7 +54,7 @@ export default {
         return new Promise(resolve => {
             // @ts-ignore
             watchId = global.navigator.geolocation.watchPosition(location => {
-                emitter.emit('Exponent.locationChanged', { watchId, location: positionToJSON(location) });
+                emitter.emit('Expo.locationChanged', { watchId, location: positionToJSON(location) });
             }, null, options);
             resolve(watchId);
         });
