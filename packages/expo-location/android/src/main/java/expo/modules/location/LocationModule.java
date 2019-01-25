@@ -16,11 +16,8 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.location.LocationManager;
-import android.os.BaseBundle;
 import android.os.Bundle;
 import android.os.Looper;
-import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -55,7 +52,6 @@ import expo.core.interfaces.LifecycleEventListener;
 import expo.core.interfaces.ModuleRegistryConsumer;
 import expo.core.interfaces.services.EventEmitter;
 import expo.core.interfaces.services.UIManager;
-import expo.errors.CodedException;
 import expo.interfaces.permissions.Permissions;
 import expo.interfaces.taskManager.TaskManagerInterface;
 import expo.modules.location.exceptions.LocationRequestRejectedException;
@@ -149,54 +145,7 @@ public class LocationModule extends ExportedModule implements ModuleRegistryCons
     }
   }
 
-  public static <BundleType extends BaseBundle> BundleType locationToBundle(Location location, Class<BundleType> bundleTypeClass) {
-    try {
-      BundleType map = bundleTypeClass.newInstance();
-      BundleType coords = bundleTypeClass.newInstance();
-
-      coords.putDouble("latitude", location.getLatitude());
-      coords.putDouble("longitude", location.getLongitude());
-      coords.putDouble("altitude", location.getAltitude());
-      coords.putDouble("accuracy", location.getAccuracy());
-      coords.putDouble("heading", location.getBearing());
-      coords.putDouble("speed", location.getSpeed());
-
-      if (map instanceof PersistableBundle) {
-        ((PersistableBundle) map).putPersistableBundle("coords", (PersistableBundle) coords);
-      } else if (map instanceof Bundle) {
-        ((Bundle) map).putBundle("coords", (Bundle) coords);
-        ((Bundle) map).putBoolean("mocked", location.isFromMockProvider());
-      }
-      map.putDouble("timestamp", location.getTime());
-
-      return map;
-    } catch (IllegalAccessException | InstantiationException e) {
-      Log.e(TAG, "Unexpected exception was thrown when converting location to the bundle: " + e.toString());
-      return null;
-    }
-  }
-
-  private static Bundle addressToMap(Address address) {
-    Bundle map = new Bundle();
-
-    map.putString("city", address.getLocality());
-    map.putString("street", address.getThoroughfare());
-    map.putString("region", address.getAdminArea());
-    map.putString("country", address.getCountryName());
-    map.putString("postalCode", address.getPostalCode());
-    map.putString("name", address.getFeatureName());
-    map.putString("isoCountryCode", address.getCountryCode());
-
-    return map;
-  }
-
-  private boolean isMissingPermissions() {
-    return mPermissions == null
-        || (
-            mPermissions.getPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-            && mPermissions.getPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
-        );
-  }
+  //region Expo methods
 
   @ExpoMethod
   public void getCurrentPositionAsync(final Map<String, Object> options, final Promise promise) {
@@ -228,22 +177,22 @@ public class LocationModule extends ExportedModule implements ModuleRegistryCons
         @Override
         public void onSuccess(Location location) {
           if (location != null) {
-            promise.resolve(locationToBundle(location, Bundle.class));
+            promise.resolve(LocationHelpers.locationToBundle(location, Bundle.class));
             timeoutObject.markDoneIfNotTimedOut();
           }
         }
       });
     }
 
-    if (hasNetworkProviderEnabled() || !showUserSettingsDialog) {
-      requestSingleLocation(locationRequest, timeoutObject, promise);
+    if (LocationHelpers.hasNetworkProviderEnabled(mContext) || !showUserSettingsDialog) {
+      LocationHelpers.requestSingleLocation(this, locationRequest, timeoutObject, promise);
     } else {
       // Pending requests can ask the user to turn on improved accuracy mode in user's settings.
       addPendingLocationRequest(locationRequest, new LocationActivityResultListener() {
         @Override
         public void onResult(int resultCode) {
           if (resultCode == Activity.RESULT_OK) {
-            requestSingleLocation(locationRequest, timeoutObject, promise);
+            LocationHelpers.requestSingleLocation(LocationModule.this, locationRequest, timeoutObject, promise);
           } else {
             promise.reject(new LocationSettingsUnsatisfiedException());
           }
@@ -252,9 +201,326 @@ public class LocationModule extends ExportedModule implements ModuleRegistryCons
     }
   }
 
-  private boolean hasNetworkProviderEnabled() {
-    LocationManager locationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
-    return locationManager != null && locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+  @ExpoMethod
+  public void getProviderStatusAsync(final Promise promise) {
+    if (mContext == null) {
+      promise.reject("E_CONTEXT_UNAVAILABLE", "Context is not available");
+    }
+
+    LocationState state = SmartLocation.with(mContext).location().state();
+
+    Bundle map = new Bundle();
+
+    map.putBoolean("locationServicesEnabled", state.locationServicesEnabled()); // If location is off
+    map.putBoolean("gpsAvailable", state.isGpsAvailable()); // If GPS provider is enabled
+    map.putBoolean("networkAvailable", state.isNetworkAvailable()); // If network provider is enabled
+    map.putBoolean("passiveAvailable", state.isPassiveAvailable()); // If passive provider is enabled
+
+    promise.resolve(map);
+  }
+
+  // Start Compass Module
+
+  @ExpoMethod
+  public void watchDeviceHeading(final int watchId, final Promise promise) {
+    mSensorManager = (SensorManager) mContext.getSystemService(Context.SENSOR_SERVICE);
+    this.mHeadingId = watchId;
+    startHeadingUpdate();
+    promise.resolve(null);
+  }
+
+  @ExpoMethod
+  public void watchPositionImplAsync(final int watchId, final Map<String, Object> options, final Promise promise) {
+    // Check for permissions
+    if (isMissingPermissions()) {
+      promise.reject(new LocationUnauthorizedException());
+      return;
+    }
+
+    final LocationRequest locationRequest = LocationHelpers.prepareLocationRequest(options);
+    boolean showUserSettingsDialog = !options.containsKey(SHOW_USER_SETTINGS_DIALOG_KEY) || (boolean) options.get(SHOW_USER_SETTINGS_DIALOG_KEY);
+
+    if (LocationHelpers.hasNetworkProviderEnabled(mContext) || !showUserSettingsDialog) {
+      LocationHelpers.requestContinuousUpdates(this, locationRequest, watchId, promise);
+    } else {
+      // Pending requests can ask the user to turn on improved accuracy mode in user's settings.
+      addPendingLocationRequest(locationRequest, new LocationActivityResultListener() {
+        @Override
+        public void onResult(int resultCode) {
+          if (resultCode == Activity.RESULT_OK) {
+            LocationHelpers.requestContinuousUpdates(LocationModule.this, locationRequest, watchId, promise);
+          } else {
+            promise.reject(new LocationSettingsUnsatisfiedException());
+          }
+        }
+      });
+    }
+  }
+
+  @ExpoMethod
+  public void removeWatchAsync(final int watchId, final Promise promise) {
+    if (isMissingPermissions()) {
+      promise.reject(new LocationUnauthorizedException());
+      return;
+    }
+
+    // Check if we want to stop watching location or compass
+    if (watchId == mHeadingId) {
+      destroyHeadingWatch();
+    } else {
+      removeLocationUpdatesForRequest(watchId);
+    }
+
+    promise.resolve(null);
+  }
+
+  @ExpoMethod
+  public void geocodeAsync(final String address, final Promise promise) {
+    if (mGeocoderPaused) {
+      promise.reject("E_CANNOT_GEOCODE", "Geocoder is not running.");
+      return;
+    }
+
+    if (isMissingPermissions()) {
+      promise.reject(new LocationUnauthorizedException());
+      return;
+    }
+
+    if (Geocoder.isPresent()) {
+      SmartLocation.with(mContext).geocoding()
+          .direct(address, new OnGeocodingListener() {
+            @Override
+            public void onLocationResolved(String s, List<LocationAddress> list) {
+              List<Bundle> results = new ArrayList<>(list.size());
+
+              for (LocationAddress locationAddress : list) {
+                Bundle coords = LocationHelpers.locationToCoordsBundle(locationAddress.getLocation(), Bundle.class);
+
+                if (coords != null) {
+                  results.add(coords);
+                }
+              }
+
+              SmartLocation.with(mContext).geocoding().stop();
+              promise.resolve(results);
+            }
+          });
+    } else {
+      promise.reject("E_NO_GEOCODER", "Geocoder service is not available for this device.");
+    }
+  }
+
+  @ExpoMethod
+  public void reverseGeocodeAsync(final Map<String, Object> locationMap, final Promise promise) {
+    if (mGeocoderPaused) {
+      promise.reject("E_CANNOT_GEOCODE", "Geocoder is not running.");
+      return;
+    }
+
+    if (isMissingPermissions()) {
+      promise.reject(new LocationUnauthorizedException());
+      return;
+    }
+
+    Location location = new Location("");
+    location.setLatitude((double) locationMap.get("latitude"));
+    location.setLongitude((double) locationMap.get("longitude"));
+
+    if (Geocoder.isPresent()) {
+      SmartLocation.with(mContext).geocoding()
+          .reverse(location, new OnReverseGeocodingListener() {
+            @Override
+            public void onAddressResolved(Location original, List<Address> addresses) {
+              List<Bundle> results = new ArrayList<>(addresses.size());
+
+              for (Address address : addresses) {
+                results.add(LocationHelpers.addressToBundle(address));
+              }
+
+              SmartLocation.with(mContext).geocoding().stop();
+              promise.resolve(results);
+            }
+          });
+    } else {
+      promise.reject("E_NO_GEOCODER", "Geocoder service is not available for this device.");
+    }
+  }
+
+  @ExpoMethod
+  public void requestPermissionsAsync(final Promise promise) {
+    if (mPermissions == null) {
+      promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?");
+      return;
+    }
+
+    mPermissions.askForPermissions(
+        new String[] {
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+        },
+        new Permissions.PermissionsRequestListener() {
+          @Override
+          public void onPermissionsResult(int[] results) {
+            for (int result : results) {
+              // we need at least one of asked permissions to be granted
+              if (result == PackageManager.PERMISSION_GRANTED) {
+                promise.resolve(null);
+                return;
+              }
+            }
+            promise.reject(new LocationUnauthorizedException());
+          }
+        });
+  }
+
+  @ExpoMethod
+  public void enableNetworkProviderAsync(final Promise promise) {
+    if (LocationHelpers.hasNetworkProviderEnabled(mContext)) {
+      promise.resolve(null);
+      return;
+    }
+
+    LocationRequest locationRequest = LocationHelpers.prepareLocationRequest(new HashMap<String, Object>());
+
+    addPendingLocationRequest(locationRequest, new LocationActivityResultListener() {
+      @Override
+      public void onResult(int resultCode) {
+        if (resultCode == Activity.RESULT_OK) {
+          promise.resolve(null);
+        } else {
+          promise.reject(new LocationSettingsUnsatisfiedException());
+        }
+      }
+    });
+  }
+
+  @ExpoMethod
+  public void hasServicesEnabledAsync(final Promise promise) {
+    boolean servicesEnabled = LocationHelpers.isAnyProviderAvailable(getContext());
+    promise.resolve(servicesEnabled);
+  }
+
+  //region Background location
+
+  @ExpoMethod
+  public void startLocationUpdatesAsync(String taskName, Map<String, Object> options, final Promise promise) {
+    try {
+      mTaskManager.registerTask(taskName, LocationTaskConsumer.class, options);
+      promise.resolve(null);
+    } catch (Exception e) {
+      promise.reject(e);
+    }
+  }
+
+  @ExpoMethod
+  public void stopLocationUpdatesAsync(String taskName, final Promise promise) {
+    try {
+      mTaskManager.unregisterTask(taskName, LocationTaskConsumer.class);
+      promise.resolve(null);
+    } catch (Exception e) {
+      promise.reject(e);
+    }
+  }
+
+  @ExpoMethod
+  public void hasStartedLocationUpdatesAsync(String taskName, final Promise promise) {
+    promise.resolve(mTaskManager.taskHasConsumerOfClass(taskName, LocationTaskConsumer.class));
+  }
+
+  //endregion Background location
+  //region Geofencing
+
+  @ExpoMethod
+  public void startGeofencingAsync(String taskName, Map<String, Object> options, final Promise promise) {
+    try {
+      mTaskManager.registerTask(taskName, GeofencingTaskConsumer.class, options);
+      promise.resolve(null);
+    } catch (Exception e) {
+      promise.reject(e);
+    }
+  }
+
+  @ExpoMethod
+  public void stopGeofencingAsync(String taskName, final Promise promise) {
+    try {
+      mTaskManager.unregisterTask(taskName, GeofencingTaskConsumer.class);
+      promise.resolve(null);
+    } catch (Exception e) {
+      promise.reject(e);
+    }
+  }
+
+  @ExpoMethod
+  public void hasStartedGeofencingAsync(String taskName, final Promise promise) {
+    promise.resolve(mTaskManager.taskHasConsumerOfClass(taskName, GeofencingTaskConsumer.class));
+  }
+
+  //endregion Geofencing
+  //endregion Expo methods
+  //region public methods
+
+  void requestLocationUpdates(final LocationRequest locationRequest, Integer requestId, final LocationRequestCallbacks callbacks) {
+    final FusedLocationProviderClient locationClient = LocationServices.getFusedLocationProviderClient(mContext);
+
+    LocationCallback locationCallback = new LocationCallback() {
+      @Override
+      public void onLocationResult(LocationResult locationResult) {
+        Location location = locationResult != null ? locationResult.getLastLocation() : null;
+
+        if (location != null) {
+          callbacks.onLocationChanged(location);
+        }
+      }
+
+      @Override
+      public void onLocationAvailability(LocationAvailability locationAvailability) {
+        if (!locationAvailability.isLocationAvailable()) {
+          callbacks.onLocationError(new LocationUnavailableException());
+        }
+      }
+    };
+
+    if (requestId != null) {
+      // Save location callback and request so we will be able to pause/resume receiving updates.
+      mLocationCallbacks.put(requestId, locationCallback);
+      mLocationRequests.put(requestId, locationRequest);
+    }
+
+    try {
+      locationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());
+      callbacks.onRequestSuccess();
+    } catch (SecurityException e) {
+      callbacks.onRequestFailed(new LocationRequestRejectedException(e));
+    }
+  }
+
+  //region private methods
+
+  private boolean isMissingPermissions() {
+    return mPermissions == null
+        || (
+        mPermissions.getPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+            && mPermissions.getPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
+    );
+  }
+
+  private void getLastKnownLocation(final Double maximumAge, final OnSuccessListener<Location> callback) {
+    final FusedLocationProviderClient locationClient = LocationServices.getFusedLocationProviderClient(mContext);
+
+    try {
+      locationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+        @Override
+        public void onSuccess(Location location) {
+          if (location != null && (maximumAge == null || System.currentTimeMillis() - location.getTime() < maximumAge)) {
+            callback.onSuccess(location);
+          } else {
+            callback.onSuccess(null);
+          }
+        }
+      });
+    } catch (SecurityException e) {
+      callback.onSuccess(null);
+    }
   }
 
   private void addPendingLocationRequest(LocationRequest locationRequest, LocationActivityResultListener listener) {
@@ -317,117 +583,52 @@ public class LocationModule extends ExportedModule implements ModuleRegistryCons
     });
   }
 
-  private void requestSingleLocation(final LocationRequest locationRequest, final TimeoutObject timeoutObject, final Promise promise) {
-    // we want just one update
-    locationRequest.setNumUpdates(1);
+  private void pauseLocationUpdatesForRequest(Integer requestId) {
+    final FusedLocationProviderClient locationClient = LocationServices.getFusedLocationProviderClient(mContext);
 
-    requestLocationUpdates(locationRequest, null, new LocationRequestCallbacks() {
-      @Override
-      public void onLocationChanged(Location location) {
-        if (timeoutObject.markDoneIfNotTimedOut()) {
-          promise.resolve(locationToBundle(location, Bundle.class));
-        }
-      }
-
-      @Override
-      public void onLocationError(CodedException exception) {
-        if (timeoutObject.markDoneIfNotTimedOut()) {
-          promise.reject(exception);
-        }
-      }
-
-      @Override
-      public void onRequestFailed(CodedException exception) {
-        if (timeoutObject.markDoneIfNotTimedOut()) {
-          promise.reject(exception);
-        }
-      }
-    });
+    if (mLocationCallbacks.containsKey(requestId)) {
+      LocationCallback locationCallback = mLocationCallbacks.get(requestId);
+      locationClient.removeLocationUpdates(locationCallback);
+    }
   }
 
-  private void requestContinuousUpdates(final LocationRequest locationRequest, final int watchId, final Promise promise) {
-    requestLocationUpdates(locationRequest, watchId, new LocationRequestCallbacks() {
-      @Override
-      public void onLocationChanged(Location location) {
-        Bundle response = new Bundle();
-
-        response.putBundle("location", locationToBundle(location, Bundle.class));
-        sendLocationResponse(watchId, response);
-      }
-
-      @Override
-      public void onRequestSuccess() {
-        promise.resolve(null);
-      }
-
-      @Override
-      public void onRequestFailed(CodedException exception) {
-        promise.reject(exception);
-      }
-    });
-  }
-
-  private boolean startWatching() {
-    if (mContext == null) {
-      return false;
-    }
-
-    // if permissions not granted it won't work anyway, but this can be invoked when permission dialog disappears
-    if (!isMissingPermissions()) {
-      mGeocoderPaused = false;
-    }
-
-    // Resume paused location updates
-    resumeLocationUpdates();
-
-    return true;
-  }
-
-  private void stopWatching() {
-    if (mContext == null) {
-      return;
-    }
-
-    // if permissions not granted it won't work anyway, but this can be invoked when permission dialog appears
-    if (Geocoder.isPresent() && !isMissingPermissions()) {
-      SmartLocation.with(mContext).geocoding().stop();
-      mGeocoderPaused = true;
-    }
+  private void resumeLocationUpdates() {
+    final FusedLocationProviderClient locationClient = LocationServices.getFusedLocationProviderClient(mContext);
 
     for (Integer requestId : mLocationCallbacks.keySet()) {
-      pauseLocationUpdatesForRequest(requestId);
+      LocationCallback locationCallback = mLocationCallbacks.get(requestId);
+      LocationRequest locationRequest = mLocationRequests.get(requestId);
+
+      if (locationCallback != null && locationRequest != null) {
+        try {
+          locationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());
+        } catch (SecurityException e) {
+          Log.e(TAG, "Error occurred while resuming location updates: " + e.toString());
+        }
+      }
     }
   }
 
-  @ExpoMethod
-  public void getProviderStatusAsync(final Promise promise) {
-    if (mContext == null) {
-      promise.reject("E_CONTEXT_UNAVAILABLE", "Context is not available");
+  private void removeLocationUpdatesForRequest(Integer requestId) {
+    pauseLocationUpdatesForRequest(requestId);
+    mLocationCallbacks.remove(requestId);
+    mLocationRequests.remove(requestId);
+  }
+
+  void sendLocationResponse(int watchId, Bundle response) {
+    response.putInt("watchId", watchId);
+    mEventEmitter.emit(LOCATION_EVENT_NAME, response);
+  }
+
+  private void executePendingRequests(int resultCode) {
+    // Propagate result to pending location requests.
+    for (LocationActivityResultListener listener : mPendingLocationRequests) {
+      listener.onResult(resultCode);
     }
-
-    LocationState state = SmartLocation.with(mContext).location().state();
-
-    Bundle map = new Bundle();
-
-    map.putBoolean("locationServicesEnabled", state.locationServicesEnabled()); // If location is off
-    map.putBoolean("gpsAvailable", state.isGpsAvailable()); // If GPS provider is enabled
-    map.putBoolean("networkAvailable", state.isNetworkAvailable()); // If network provider is enabled
-    map.putBoolean("passiveAvailable", state.isPassiveAvailable()); // If passive provider is enabled
-
-    promise.resolve(map);
+    mPendingLocationRequests.clear();
   }
 
-  // Start Compass Module
-
-  @ExpoMethod
-  public void watchDeviceHeading(final int watchId, final Promise promise) {
-    mSensorManager = (SensorManager) mContext.getSystemService(Context.SENSOR_SERVICE);
-    this.mHeadingId = watchId;
-    startHeadingUpdate();
-    promise.resolve(null);
-  }
-
-  public void startHeadingUpdate() {
+  private void startHeadingUpdate() {
     if (mSensorManager == null || mContext == null) {
       return;
     }
@@ -457,16 +658,6 @@ public class LocationModule extends ExportedModule implements ModuleRegistryCons
     mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
   }
 
-  public void onSensorChanged(SensorEvent event) {
-    if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER)
-      mGravity = event.values;
-    if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD)
-      mGeomagnetic = event.values;
-    if (mGravity != null && mGeomagnetic != null) {
-      sendUpdate();
-    }
-  }
-
   private void sendUpdate() {
     float R[] = new float[9];
     float I[] = new float[9];
@@ -486,13 +677,9 @@ public class LocationModule extends ExportedModule implements ModuleRegistryCons
 
         // Write data to send back to React
         Bundle response = new Bundle();
-        Bundle heading = new Bundle();
+        Bundle heading = LocationHelpers.headingToBundle(trueNorth, magneticNorth, mAccuracy);
 
         response.putInt("watchId", mHeadingId);
-
-        heading.putDouble("trueHeading", trueNorth);
-        heading.putDouble("magHeading", magneticNorth);
-        heading.putInt("accuracy", mAccuracy);
         response.putBundle("heading", heading);
 
         mEventEmitter.emit(HEADING_EVENT_NAME, response);
@@ -531,346 +718,54 @@ public class LocationModule extends ExportedModule implements ModuleRegistryCons
     mAccuracy = 0;
   }
 
+  private void startWatching() {
+    if (mContext == null) {
+      return;
+    }
+
+    // if permissions not granted it won't work anyway, but this can be invoked when permission dialog disappears
+    if (!isMissingPermissions()) {
+      mGeocoderPaused = false;
+    }
+
+    // Resume paused location updates
+    resumeLocationUpdates();
+  }
+
+  private void stopWatching() {
+    if (mContext == null) {
+      return;
+    }
+
+    // if permissions not granted it won't work anyway, but this can be invoked when permission dialog appears
+    if (Geocoder.isPresent() && !isMissingPermissions()) {
+      SmartLocation.with(mContext).geocoding().stop();
+      mGeocoderPaused = true;
+    }
+
+    for (Integer requestId : mLocationCallbacks.keySet()) {
+      pauseLocationUpdatesForRequest(requestId);
+    }
+  }
+
+  //endregion
+  //region SensorEventListener
+
+  public void onSensorChanged(SensorEvent event) {
+    if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+      mGravity = event.values;
+    } else if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
+      mGeomagnetic = event.values;
+    }
+    if (mGravity != null && mGeomagnetic != null) {
+      sendUpdate();
+    }
+  }
+
   // Android returns 4 different values for accuracy
   // 3: high accuracy, 2: medium, 1: low, 0: none
   public void onAccuracyChanged(Sensor sensor, int accuracy) {
     mAccuracy = accuracy;
-  }
-  // End Compass
-
-  @ExpoMethod
-  public void watchPositionImplAsync(final int watchId, final Map<String, Object> options, final Promise promise) {
-    // Check for permissions
-    if (isMissingPermissions()) {
-      promise.reject(new LocationUnauthorizedException());
-      return;
-    }
-
-    final LocationRequest locationRequest = LocationHelpers.prepareLocationRequest(options);
-    boolean showUserSettingsDialog = !options.containsKey(SHOW_USER_SETTINGS_DIALOG_KEY) || (boolean) options.get(SHOW_USER_SETTINGS_DIALOG_KEY);
-
-    if (hasNetworkProviderEnabled() || !showUserSettingsDialog) {
-      requestContinuousUpdates(locationRequest, watchId, promise);
-    } else {
-      // Pending requests can ask the user to turn on improved accuracy mode in user's settings.
-      addPendingLocationRequest(locationRequest, new LocationActivityResultListener() {
-        @Override
-        public void onResult(int resultCode) {
-          if (resultCode == Activity.RESULT_OK) {
-            requestContinuousUpdates(locationRequest, watchId, promise);
-          } else {
-            promise.reject(new LocationSettingsUnsatisfiedException());
-          }
-        }
-      });
-    }
-  }
-
-  // TODO: Stop sending watchId from JS since we ignore it.
-  @ExpoMethod
-  public void removeWatchAsync(final int watchId, final Promise promise) {
-    if (isMissingPermissions()) {
-      promise.reject(new LocationUnauthorizedException());
-      return;
-    }
-
-    // Check if we want to stop watching location or compass
-    if (watchId == mHeadingId) {
-      destroyHeadingWatch();
-    } else {
-      removeLocationUpdatesForRequest(watchId);
-    }
-
-    promise.resolve(null);
-  }
-
-  @ExpoMethod
-  public void geocodeAsync(final String address, final Promise promise) {
-    if (mGeocoderPaused) {
-      promise.reject("E_CANNOT_GEOCODE", "Geocoder is not running.");
-      return;
-    }
-
-    if (isMissingPermissions()) {
-      promise.reject(new LocationUnauthorizedException());
-      return;
-    }
-
-    if (Geocoder.isPresent()) {
-      SmartLocation.with(mContext).geocoding()
-          .direct(address, new OnGeocodingListener() {
-            @Override
-            public void onLocationResolved(String s, List<LocationAddress> list) {
-              List<Bundle> results = new ArrayList<>(list.size());
-
-              for (LocationAddress locationAddress : list) {
-                Bundle coords = new Bundle();
-                Location location = locationAddress.getLocation();
-
-                coords.putDouble("latitude", location.getLatitude());
-                coords.putDouble("longitude", location.getLongitude());
-                coords.putDouble("altitude", location.getAltitude());
-                coords.putDouble("accuracy", location.getAccuracy());
-                results.add(coords);
-              }
-
-              SmartLocation.with(mContext).geocoding().stop();
-              promise.resolve(results);
-            }
-          });
-    } else {
-      promise.reject("E_NO_GEOCODER", "Geocoder service is not available for this device.");
-    }
-  }
-
-  @ExpoMethod
-  public void reverseGeocodeAsync(final Map<String, Object> locationMap, final Promise promise) {
-    if (mGeocoderPaused) {
-      promise.reject("E_CANNOT_GEOCODE", "Geocoder is not running.");
-      return;
-    }
-
-    if (isMissingPermissions()) {
-      promise.reject(new LocationUnauthorizedException());
-      return;
-    }
-
-    Location location = new Location("");
-    location.setLatitude((double) locationMap.get("latitude"));
-    location.setLongitude((double) locationMap.get("longitude"));
-
-    if (Geocoder.isPresent()) {
-      SmartLocation.with(mContext).geocoding()
-          .reverse(location, new OnReverseGeocodingListener() {
-            @Override
-            public void onAddressResolved(Location original, List<Address> addresses) {
-              List<Bundle> results = new ArrayList<>(addresses.size());
-
-              for (Address address : addresses) {
-                results.add(addressToMap(address));
-              }
-
-              SmartLocation.with(mContext).geocoding().stop();
-              promise.resolve(results);
-            }
-          });
-    } else {
-      promise.reject("E_NO_GEOCODER", "Geocoder service is not available for this device.");
-    }
-  }
-
-  @ExpoMethod
-  public void requestPermissionsAsync(final Promise promise) {
-    if (mPermissions == null) {
-      promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?");
-      return;
-    }
-
-    mPermissions.askForPermissions(
-        new String[] {
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION,
-        },
-        new Permissions.PermissionsRequestListener() {
-          @Override
-          public void onPermissionsResult(int[] results) {
-            for (int result : results) {
-              // we need at least one of asked permissions to be granted
-              if (result == PackageManager.PERMISSION_GRANTED) {
-                promise.resolve(null);
-                return;
-              }
-            }
-            promise.reject(new LocationUnauthorizedException());
-          }
-        });
-  }
-
-  @ExpoMethod
-  public void enableNetworkProviderAsync(final Promise promise) {
-    if (hasNetworkProviderEnabled()) {
-      promise.resolve(null);
-      return;
-    }
-
-    LocationRequest locationRequest = LocationHelpers.prepareLocationRequest(new HashMap<String, Object>());
-
-    addPendingLocationRequest(locationRequest, new LocationActivityResultListener() {
-      @Override
-      public void onResult(int resultCode) {
-        if (resultCode == Activity.RESULT_OK) {
-          promise.resolve(null);
-        } else {
-          promise.reject(new LocationSettingsUnsatisfiedException());
-        }
-      }
-    });
-  }
-
-  //region hasServicesEnabled
-
-  @ExpoMethod
-  public void hasServicesEnabledAsync(final Promise promise) {
-    boolean servicesEnabled = LocationHelpers.isAnyProviderAvailable(getContext());
-    promise.resolve(servicesEnabled);
-  }
-
-  //endregion
-  //region Background location
-
-  @ExpoMethod
-  public void startLocationUpdatesAsync(String taskName, Map<String, Object> options, final Promise promise) {
-    try {
-      mTaskManager.registerTask(taskName, LocationTaskConsumer.class, options);
-      promise.resolve(null);
-    } catch (Exception e) {
-      promise.reject(e);
-    }
-  }
-
-  @ExpoMethod
-  public void stopLocationUpdatesAsync(String taskName, final Promise promise) {
-    try {
-      mTaskManager.unregisterTask(taskName, LocationTaskConsumer.class);
-      promise.resolve(null);
-    } catch (Exception e) {
-      promise.reject(e);
-    }
-  }
-
-  @ExpoMethod
-  public void hasStartedLocationUpdatesAsync(String taskName, final Promise promise) {
-    promise.resolve(mTaskManager.taskHasConsumerOfClass(taskName, LocationTaskConsumer.class));
-  }
-
-  //endregion Background location
-  //region Geofencing
-
-  @ExpoMethod
-  public void startGeofencingAsync(String taskName, Map<String, Object> options, final Promise promise) {
-    try {
-      mTaskManager.registerTask(taskName, GeofencingTaskConsumer.class, options);
-      promise.resolve(null);
-    } catch (Exception e) {
-      promise.reject(e);
-    }
-  }
-
-  @ExpoMethod
-  public void stopGeofencingAsync(String taskName, final Promise promise) {
-    try {
-      mTaskManager.unregisterTask(taskName, GeofencingTaskConsumer.class);
-      promise.resolve(null);
-    } catch (Exception e) {
-      promise.reject(e);
-    }
-  }
-
-  @ExpoMethod
-  public void hasStartedGeofencingAsync(String taskName, final Promise promise) {
-    promise.resolve(mTaskManager.taskHasConsumerOfClass(taskName, GeofencingTaskConsumer.class));
-  }
-
-  //endregion Geofencing
-  //region Requesting for location updates
-
-  private void getLastKnownLocation(final Double maximumAge, final OnSuccessListener<Location> callback) {
-    final FusedLocationProviderClient locationClient = LocationServices.getFusedLocationProviderClient(mContext);
-
-    try {
-      locationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
-        @Override
-        public void onSuccess(Location location) {
-          if (location != null && (maximumAge == null || System.currentTimeMillis() - location.getTime() < maximumAge)) {
-            callback.onSuccess(location);
-          } else {
-            callback.onSuccess(null);
-          }
-        }
-      });
-    } catch (SecurityException e) {
-      callback.onSuccess(null);
-    }
-  }
-
-  private void requestLocationUpdates(final LocationRequest locationRequest, Integer requestId, final LocationRequestCallbacks callbacks) {
-    final FusedLocationProviderClient locationClient = LocationServices.getFusedLocationProviderClient(mContext);
-
-    LocationCallback locationCallback = new LocationCallback() {
-      @Override
-      public void onLocationResult(LocationResult locationResult) {
-        Location location = locationResult != null ? locationResult.getLastLocation() : null;
-
-        if (location != null) {
-          callbacks.onLocationChanged(location);
-        }
-      }
-
-      @Override
-      public void onLocationAvailability(LocationAvailability locationAvailability) {
-        if (!locationAvailability.isLocationAvailable()) {
-          callbacks.onLocationError(new LocationUnavailableException());
-        }
-      }
-    };
-
-    if (requestId != null) {
-      // Save location callback and request so we will be able to pause/resume receiving updates.
-      mLocationCallbacks.put(requestId, locationCallback);
-      mLocationRequests.put(requestId, locationRequest);
-    }
-
-    try {
-      locationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());
-      callbacks.onRequestSuccess();
-    } catch (SecurityException e) {
-      callbacks.onRequestFailed(new LocationRequestRejectedException(e));
-    }
-  }
-
-  private void pauseLocationUpdatesForRequest(Integer requestId) {
-    final FusedLocationProviderClient locationClient = LocationServices.getFusedLocationProviderClient(mContext);
-
-    if (mLocationCallbacks.containsKey(requestId)) {
-      LocationCallback locationCallback = mLocationCallbacks.get(requestId);
-      locationClient.removeLocationUpdates(locationCallback);
-    }
-  }
-
-  private void resumeLocationUpdates() {
-    final FusedLocationProviderClient locationClient = LocationServices.getFusedLocationProviderClient(mContext);
-
-    for (Integer requestId : mLocationCallbacks.keySet()) {
-      LocationCallback locationCallback = mLocationCallbacks.get(requestId);
-      LocationRequest locationRequest = mLocationRequests.get(requestId);
-
-      if (locationCallback != null && locationRequest != null) {
-        try {
-          locationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());
-        } catch (SecurityException e) {
-          Log.e(TAG, "Error occurred while resuming location updates: " + e.toString());
-        }
-      }
-    }
-  }
-
-  private void removeLocationUpdatesForRequest(Integer requestId) {
-    pauseLocationUpdatesForRequest(requestId);
-    mLocationCallbacks.remove(requestId);
-    mLocationRequests.remove(requestId);
-  }
-
-  private void sendLocationResponse(int watchId, Bundle response) {
-    response.putInt("watchId", watchId);
-    mEventEmitter.emit(LOCATION_EVENT_NAME, response);
-  }
-
-  private void executePendingRequests(int resultCode) {
-    // Propagate result to pending location requests.
-    for (LocationActivityResultListener listener : mPendingLocationRequests) {
-      listener.onResult(resultCode);
-    }
-    mPendingLocationRequests.clear();
   }
 
   //endregion
