@@ -6,11 +6,11 @@ Allows changing supported screen orientations at runtime. This will take priorit
 
 ## Methods
 
-### `Expo.ScreenOrientation.allow(orientation)`
+### `ScreenOrientation.allow(orientation)`
 
-Deprecated in favour of `Expo.ScreenOrientation.allowAsync`.
+Deprecated in favour of `ScreenOrientation.allowAsync`.
 
-### `Expo.ScreenOrientation.allowAsync(orientation)`
+### `ScreenOrientation.allowAsync(orientation)`
 
 Allow a screen orientation. You can call this function multiple times with multiple orientations to allow multiple orientations.
 
@@ -27,13 +27,13 @@ Returns a `Promise` with `null` value.
 
 ```javascript
 function changeScreenOrientation() {
-  Expo.ScreenOrientation.allowAsync(Expo.ScreenOrientation.Orientation.LANDSCAPE);
+  ScreenOrientation.allowAsync(ScreenOrientation.Orientation.LANDSCAPE);
 }
 ```
 
 ## Orientation types
 
-### `Expo.ScreenOrientation.Orientation`
+### `ScreenOrientation.Orientation`
 
 An object containing the values that can be passed to the allow function.
 

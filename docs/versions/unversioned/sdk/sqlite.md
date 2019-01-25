@@ -6,9 +6,9 @@ This module gives access to a database that can be queried through a [WebSQL](ht
 
 An [example to do list app](https://github.com/expo/sqlite-example) is available that uses this module for storage.
 
-### `Expo.SQLite.openDatabase(name, version, description, size)`
+### `SQLite.openDatabase(name, version, description, size)`
 
-Open a database, creating it if it doesn't exist, and return a `Database` object. On disk, the database will be created under the app's [documents directory](../filesystem), i.e. `${Expo.FileSystem.documentDirectory}/SQLite/${name}`.
+Open a database, creating it if it doesn't exist, and return a `Database` object. On disk, the database will be created under the app's [documents directory](../filesystem), i.e. `${FileSystem.documentDirectory}/SQLite/${name}`.
 
 #### Arguments
 
@@ -22,7 +22,7 @@ Returns a `Database` object, described below.
 
 ### `Database` objects
 
-`Database` objects are returned by calls to `Expo.SQLite.openDatabase()`. Such an object represents a connection to a database on your device. They support one method:
+`Database` objects are returned by calls to `SQLite.openDatabase()`. Such an object represents a connection to a database on your device. They support one method:
 
 -   `db.transaction(callback, error, success)`
 

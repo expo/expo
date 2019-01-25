@@ -19,7 +19,7 @@ async function getUserInfo(accessToken) {
 
 ## Usage
 
-### `Expo.Google.logInAsync(options)`
+### `Google.logInAsync(options)`
 
 Prompts the user to log into Google and grants your app permission to access some of their Google data, as specified by the scopes.
 
@@ -61,7 +61,7 @@ To use Google Sign In, you will need to create a project on the Google Developer
     -   Use `host.exp.exponent` as the bundle identifier.
     -   Click "Create"
     -   You will now see a modal with the client ID.
-    -   The client ID is used in the `iosClientId` option for `Expo.Google.loginAsync` (see code example below).
+    -   The client ID is used in the `iosClientId` option for `Google.loginAsync` (see code example below).
 
 -   **Create an Android OAuth Client ID**
 
@@ -71,7 +71,7 @@ To use Google Sign In, you will need to create a project on the Google Developer
     -   Use `host.exp.exponent` as the "Package name".
     -   Click "Create"
     -   You will now see a modal with the Client ID.
-    -   The client ID is used in the `androidClientId` option for `Expo.Google.loginAsync` (see code example below).
+    -   The client ID is used in the `androidClientId` option for `Google.loginAsync` (see code example below).
 
 -   **Add the Client IDs to your app**
 
@@ -80,7 +80,7 @@ To use Google Sign In, you will need to create a project on the Google Developer
 
     async function signInWithGoogleAsync() {
       try {
-        const result = await Expo.Google.logInAsync({
+        const result = await Google.logInAsync({
           androidClientId: YOUR_CLIENT_ID_HERE,
           iosClientId: YOUR_CLIENT_ID_HERE,
           scopes: ['profile', 'email'],
@@ -124,7 +124,7 @@ If you want to use Google Sign In for a standalone app, you can follow these ste
     3.  Open `app.json` and add your **Google API Key** to `android.config.googleSignIn.apiKey`.
     4.  Run `expo fetch:android:hashes`.
     5.  Take `Google Certificate Hash` from the previous step to `app.json` under `android.config.googleSignIn.certificateHash`.
-    6.  When you use `Expo.Google.logInAsync(..)`, pass in the **OAuth client ID** as the `androidStandaloneAppClientId` option.
+    6.  When you use `Google.logInAsync(..)`, pass in the **OAuth client ID** as the `androidStandaloneAppClientId` option.
     7.  Rebuild your standalone app.
 
 Note that if you've enabled Google Play's app signing service, you will need to grab their app signing certificate in production rather than the upload certificate returned by `expo fetch:android:hashes`. You can do this by grabbing the signature from Play Console -> Your App -> Release management -> App signing, and then going to the [API Dashboard](https://console.developers.google.com/apis/) -> Credentials and adding the signature to your existing credential.
@@ -138,7 +138,7 @@ If you want to use native sign in for a standalone app, you can follow these ste
 3.  Click **Create credentials** and then **OAuth client ID**, then choose **iOS**.
 4.  Provide your `bundleIdentifier` in the **Bundle ID** field, then press **Create**.
 5.  Add the given **iOS URL scheme** to your `app.json` under `ios.config.googleSignIn.reservedClientId`.
-6.  Wherever you use `Expo.Google.logInAsync`, provide the **OAuth client ID** as the `iosStandaloneAppClientId` option.
+6.  Wherever you use `Google.logInAsync`, provide the **OAuth client ID** as the `iosStandaloneAppClientId` option.
 7.  Rebuild your standalone app.
 
 ## Server side APIs
@@ -148,12 +148,12 @@ If you need to access Google APIs using the user's authorization you need to pas
 1.  Open your browser to [Google Developer Credentials](https://console.developers.google.com/apis/credentials)
 2.  Click **Create credentials** and then **OAuth client ID**, then choose **web** and press **Create**.
 -   **For Standalone apps**
-Wherever you use `Expo.Google.logInAsync`, provide the **OAuth client ID** as the `webClientId` option.
+Wherever you use `Google.logInAsync`, provide the **OAuth client ID** as the `webClientId` option.
 -   **Inside of Expo apps**
 When your app is running as an Expo experience, the process is a little different. Due to Google's restrictions, the only way to make this work is via web authentication flow. Once you have your code, send it to your backend and exchange it, but make sure to set the redirect_uri parameter to the same value you used on your client side call to Google.
 (Something similar to https://auth.expo.io/@username/your-app-slug). With Expo, you can easily authenticate your user with the `AuthSession` module:
 ```javascript
-let result = await Expo.AuthSession.startAsync({
+let result = await AuthSession.startAsync({
 authUrl:
 `https://accounts.google.com/o/oauth2/v2/auth?` +
 `&client_id=${googleWebAppId}` +

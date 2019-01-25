@@ -6,7 +6,7 @@ Provides a way to launch android intents. e.g. - opening a specific settings scr
 
 ## Usage
 
-### `Expo.IntentLauncherAndroid.startActivityAsync(activity, data, uri, mime)`
+### `IntentLauncherAndroid.startActivityAsync(activity, data, uri, mime)`
 
 Starts the specified activity. The method will return a promise which resolves when the user returns to the app.
 
