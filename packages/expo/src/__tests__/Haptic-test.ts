@@ -85,7 +85,7 @@ describeUnsupportedPlatforms(`Haptic`, () => {
 });
 
 function applyMocks() {
-  ['selection', 'impact', 'notification'].forEach(methodName => {
+  Object.keys(methods).forEach(methodName => {
     mockProperty(NativeModules.ExponentHaptic, methodName, null);
   });
 }
