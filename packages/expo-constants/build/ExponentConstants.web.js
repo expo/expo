@@ -1,5 +1,5 @@
-import uuidv4 from 'uuid/v4';
 import UAParser from 'ua-parser-js';
+import uuidv4 from 'uuid/v4';
 const ExpoPackageJson = require('expo/package.json');
 const parser = new UAParser();
 const ID_KEY = 'EXPO_CONSTANTS_INSTALLATION_ID';
