@@ -105,7 +105,7 @@ implementation project(':expo-payments-stripe')
     }
 ```
 
-6.  Add `StripePackage` to the list of Expo Packages in `your-project/android/app/src/main/java/host/exp/exponent/MainApplication.java`.
+6.  Add `StripePackage` to the list of Expo Packages in `android/app/src/main/java/host/exp/exponent/MainApplication.java`.
 
 ```groovy
   public List<Package> getExpoPackages() {
