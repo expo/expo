@@ -1,12 +1,7 @@
 import { UnavailabilityError } from 'expo-errors';
+import { mockPlatformAndroid, mockPlatformWeb, mockProperty, unmockAllProperties } from 'jest-expo';
 import { NativeModules, Platform } from 'react-native';
 
-import {
-  mockPlatformAndroid,
-  mockPlatformWeb,
-  mockProperty,
-  unmockAllProperties,
-} from '../../test/mocking';
 import * as Haptic from '../Haptic/Haptic';
 
 describe('Haptic', () => {
