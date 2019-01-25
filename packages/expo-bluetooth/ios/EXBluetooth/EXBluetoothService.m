@@ -1,9 +1,4 @@
-//
-//  EXBluetoothService.m
-//  EXBluetooth
-//
-//  Created by Evan Bacon on 1/24/19.
-//
+// Copyright 2019-present 650 Industries. All rights reserved.
 
 #import <EXBluetooth/EXBluetoothService.h>
 #import <EXBluetooth/EXBluetoothPeripheral.h>
@@ -101,7 +96,6 @@
   return characteristic;
 }
 
-
 - (EXBluetoothCharacteristic *)characteristicFromUUID:(CBUUID *)UUID prop:(CBCharacteristicProperties)prop
 {
   NSString *uuidString = UUID.UUIDString;
@@ -123,8 +117,6 @@
                               _service.UUID.UUIDString,
                               _service.peripheral.identifier.UUIDString];
     reject(EXBluetoothErrorNoCharacteristic, errorMessage, nil);
-
-    
   }
   return characteristic;
 }

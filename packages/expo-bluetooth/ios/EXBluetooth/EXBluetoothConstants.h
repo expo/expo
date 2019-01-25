@@ -1,9 +1,4 @@
-//
-//  EXBluetoothConstants.h
-//  EXBluetooth
-//
-//  Created by Evan Bacon on 1/24/19.
-//
+// Copyright 2019-present 650 Industries. All rights reserved.
 
 #ifndef EXBluetoothConstants_h
 #define EXBluetoothConstants_h
@@ -18,7 +13,6 @@ static NSString *const EXBluetoothErrorRead = @"ERR_READ";
 static NSString *const EXBluetoothErrorInvalidBase64 = @"ERR_INVALID_BASE64";
 static NSString *const EXBluetoothErrorState = @"ERR_STATE";
 static NSString *const EXBluetoothErrorScanning = @"ERR_SCANNING";
-
 
 static NSString *const EXBluetoothEvent = @"bluetoothEvent";
 static NSString *const EXBluetoothDisconnectEvent = @"bluetoothDisconnect";

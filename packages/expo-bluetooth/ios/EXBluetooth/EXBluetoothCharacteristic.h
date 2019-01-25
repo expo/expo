@@ -1,20 +1,10 @@
-//
-//  EXBluetoothCharacteristic.h
-//  EXBluetooth
-//
-//  Created by Evan Bacon on 1/24/19.
-//
+// Copyright 2019-present 650 Industries. All rights reserved.
 
 #import <Foundation/Foundation.h>
-#import <CoreBluetooth/CoreBluetooth.h>
-#import <EXBluetooth/EXBluetoothBlocks.h>
 #import <EXCore/EXExportedModule.h>
+#import <CoreBluetooth/CoreBluetooth.h>
 #import <EXBluetooth/EXBluetooth+JSON.h>
-#import <EXBluetooth/EXBluetoothConstants.h>
-
-@class EXBluetoothPeripheral;
-@class EXBluetoothService;
-@class EXBluetoothDescriptor;
+#import <EXBluetooth/EXBluetoothBlocks.h>
 
 @interface EXBluetoothCharacteristic : NSObject
 
@@ -48,6 +38,5 @@
 - (EXBluetoothDescriptor *)descriptorFromUUID:(CBUUID *)UUID;
 
 - (NSDictionary *)getJSON;
-
 
 @end

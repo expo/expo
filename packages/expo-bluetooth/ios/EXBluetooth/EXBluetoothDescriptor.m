@@ -1,9 +1,4 @@
-//
-//  EXBluetoothDescriptor.m
-//  EXBluetooth
-//
-//  Created by Evan Bacon on 1/24/19.
-//
+// Copyright 2019-present 650 Industries. All rights reserved.
 
 #import <Foundation/Foundation.h>
 #import <EXBluetooth/EXBluetoothDescriptor.h>
@@ -68,4 +63,5 @@
 {
   return [[EXBluetooth class] EXBluetoothDescriptor_NativeToJSON:self];
 }
+
 @end

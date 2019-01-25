@@ -1,9 +1,4 @@
-//
-//  EXBluetoothPeripheral.m
-//  EXBluetooth
-//
-//  Created by Evan Bacon on 1/24/19.
-//
+// Copyright 2019-present 650 Industries. All rights reserved.
 
 #import <EXBluetooth/EXBluetoothPeripheral.h>
 #import <EXBluetooth/EXBluetoothCharacteristic.h>
@@ -12,7 +7,7 @@
 #import <EXBluetooth/EXBluetooth+JSON.h>
 #import <EXBluetooth/EXBluetoothConstants.h>
 
-#define EXBluetoothPeripheralIsSelf(peripheral) [peripheral.identifier.UUIDString isEqualToString:_peripheral.identifier.UUIDString]
+#define EXBluetoothPeripheralIsSelf(peripheral) [_peripheral.identifier.UUIDString isEqualToString:peripheral.identifier.UUIDString]
 
 @interface EXBluetoothCharacteristic()
 @property (nonatomic, strong) CBCharacteristic *characteristic;
@@ -28,23 +23,22 @@
 
 @interface EXBluetoothPeripheral() <CBPeripheralDelegate>
 {
-  EXBluetoothPeripheralRedRSSIBlock            _readRSSIBlock;
-  EXBluetoothPeripheralDiscoverServicesBlock   _discoverServicesBlock;
   EXBluetoothPeripheralDidUpdateNameBlock _didUpdateNameBlock;
+  EXBluetoothPeripheralRedRSSIBlock _readRSSIBlock;
+  EXBluetoothPeripheralDiscoverServicesBlock _discoverServicesBlock;
   
+  // Discovery
+  NSMutableDictionary *_discoverCharacteristicsBlocks;
+  NSMutableDictionary *_discoverIncludedServicesBlocks;
+  NSMutableDictionary *_discoverDescriptorsForCharacteristicBlocks;
+
+  // Ops
   NSMutableDictionary *_readValueForCharacteristicsBlocks;
   NSMutableDictionary *_writeValueForCharacteristicsBlocks;
   NSMutableDictionary *_notifyValyeForCharacteristicsBlocks;
   NSMutableDictionary *_readValueForDescriptorsBlock;
   NSMutableDictionary *_writeValueForDescriptorsBlock;
-  
-  NSMutableDictionary *_discoverCharacteristicsBlocks;
-  NSMutableDictionary *_discoverIncludedServicesBlocks;
-  NSMutableDictionary *_discoverDescriptorsForCharacteristicBlocks;
-//  NSNumber *_RSSI;
 }
-
-//@property(retain, readwrite, nullable) NSNumber *RSSI;
 
 @end
 
@@ -58,14 +52,16 @@
     _peripheral = peripheral;
     _peripheral.delegate = self;
     
+    // Discovery
+    _discoverCharacteristicsBlocks = [[NSMutableDictionary alloc] init];
+    _discoverIncludedServicesBlocks = [[NSMutableDictionary alloc] init];
+    _discoverDescriptorsForCharacteristicBlocks = [[NSMutableDictionary alloc] init];
+    // Ops
     _readValueForCharacteristicsBlocks = [[NSMutableDictionary alloc] init];
     _writeValueForCharacteristicsBlocks = [[NSMutableDictionary alloc] init];
     _notifyValyeForCharacteristicsBlocks = [[NSMutableDictionary alloc] init];
     _readValueForDescriptorsBlock = [[NSMutableDictionary alloc] init];
     _writeValueForDescriptorsBlock = [[NSMutableDictionary alloc] init];
-    _discoverCharacteristicsBlocks = [[NSMutableDictionary alloc] init];
-    _discoverIncludedServicesBlocks = [[NSMutableDictionary alloc] init];
-    _discoverDescriptorsForCharacteristicBlocks = [[NSMutableDictionary alloc] init];
   }
   return self;
 }
@@ -114,16 +110,6 @@
   }
   return array;
 }
-
-//- (void)setRSSI:(NSNumber *)RSSI
-//{
-//  _RSSI = RSSI;
-//}
-//
-//- (NSNumber *)RSSI
-//{
-//  return _RSSI;
-//}
 
 - (void)readRSSI:(EXBluetoothPeripheralRedRSSIBlock)block
 {
@@ -213,118 +199,132 @@
 
 - (void)peripheralDidUpdateName:(CBPeripheral *)peripheral
 {
-  if (EXBluetoothPeripheralIsSelf(peripheral) && _didUpdateNameBlock) {
-    _didUpdateNameBlock(self);
+  if (!EXBluetoothPeripheralIsSelf(peripheral) || !_didUpdateNameBlock) {
+    return;
   }
+  
+  _didUpdateNameBlock(self);
 }
 
 - (void)peripheral:(CBPeripheral *)peripheral didModifyServices:(NSArray<CBService *> *)invalidatedServices
 {
-  if (EXBluetoothPeripheralIsSelf(peripheral)) {
-    // TODO: Bacon: Somehow notify that we've invalidated services
+  if (!EXBluetoothPeripheralIsSelf(peripheral)) {
+    return;
   }
+
+  // TODO: Bacon: Somehow notify that we've invalidated services
 }
 
 - (void)peripheral:(CBPeripheral *)peripheral didReadRSSI:(NSNumber *)RSSI error:(NSError *)error
 {
-  if (EXBluetoothPeripheralIsSelf(peripheral) && _readRSSIBlock) {
-    _RSSI = RSSI;
-    _readRSSIBlock(self, RSSI, error);
-    _readRSSIBlock = nil;
+  if (!EXBluetoothPeripheralIsSelf(peripheral) || !_readRSSIBlock) {
+    return;
   }
+  _RSSI = RSSI;
+  _readRSSIBlock(self, RSSI, error);
+  _readRSSIBlock = nil;
 }
 
 - (void)peripheral:(CBPeripheral *)peripheral didDiscoverServices:(NSError *)error
 {
-  if (EXBluetoothPeripheralIsSelf(peripheral) && _discoverServicesBlock) {
-    _discoverServicesBlock(self, error);
-    _discoverServicesBlock = nil;
+  if (!EXBluetoothPeripheralIsSelf(peripheral) || !_discoverServicesBlock) {
+    return;
   }
+  _discoverServicesBlock(self, error);
+  _discoverServicesBlock = nil;
 }
 
 - (void)peripheral:(CBPeripheral *)peripheral didDiscoverIncludedServicesForService:(CBService *)service error:(NSError *)error
 {
   EXBluetoothPeripheralDiscoverIncludedServicesBlock block = [_discoverIncludedServicesBlocks objectForKey:service.UUID.UUIDString];
-  if (EXBluetoothPeripheralIsSelf(peripheral) && block) {
-    EXBluetoothService *mService = [[EXBluetoothService alloc] initWithService:service peripheral:self];
-    block(self, mService, error);
-    [_discoverIncludedServicesBlocks removeObjectForKey:service.UUID.UUIDString];
+  if (!EXBluetoothPeripheralIsSelf(peripheral) || !block) {
+    return;
   }
+  EXBluetoothService *mService = [[EXBluetoothService alloc] initWithService:service peripheral:self];
+  block(self, mService, error);
+  [_discoverIncludedServicesBlocks removeObjectForKey:service.UUID.UUIDString];
 }
 
 - (void)peripheral:(CBPeripheral *)peripheral didDiscoverCharacteristicsForService:(CBService *)service error:(NSError *)error
 {
   EXBluetoothPeripheralDiscoverCharacteristicsBlock block = [_discoverCharacteristicsBlocks objectForKey:service.UUID.UUIDString];
-  if (EXBluetoothPeripheralIsSelf(peripheral) && block) {
-    EXBluetoothService *mService = [[EXBluetoothService alloc] initWithService:service peripheral:self];
-    block(self, mService, error);
-    [_discoverCharacteristicsBlocks removeObjectForKey:service.UUID.UUIDString];
+  if (!EXBluetoothPeripheralIsSelf(peripheral) || !block) {
+    return;
   }
+  EXBluetoothService *mService = [[EXBluetoothService alloc] initWithService:service peripheral:self];
+  block(self, mService, error);
+  [_discoverCharacteristicsBlocks removeObjectForKey:service.UUID.UUIDString];
 }
 
 - (void)peripheral:(CBPeripheral *)peripheral didUpdateValueForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error
 {
-  if (EXBluetoothPeripheralIsSelf(peripheral)) {
-    EXBluetoothPeripheralReadValueForCharacteristicBlock readBlock = [_readValueForCharacteristicsBlocks objectForKey:characteristic.UUID.UUIDString];
-    EXBluetoothCharacteristic *mCharacteristic = [[EXBluetoothCharacteristic alloc] initWithCharacteristic:characteristic peripheral:self];
-    if (readBlock) {
-      readBlock(self, mCharacteristic, error);
-      [_readValueForCharacteristicsBlocks removeObjectForKey:characteristic.UUID.UUIDString];
-    }
-    EXBluetoothPeripheralNotifyValueForCharacteristicsBlock notifyBlock = [_notifyValyeForCharacteristicsBlocks objectForKey:characteristic.UUID.UUIDString];
-    if (notifyBlock) {
-      notifyBlock(self, mCharacteristic, error);
-    }
+  if (!EXBluetoothPeripheralIsSelf(peripheral)) {
+    return;
+  }
+  EXBluetoothPeripheralReadValueForCharacteristicBlock readBlock = [_readValueForCharacteristicsBlocks objectForKey:characteristic.UUID.UUIDString];
+  EXBluetoothCharacteristic *mCharacteristic = [[EXBluetoothCharacteristic alloc] initWithCharacteristic:characteristic peripheral:self];
+  if (readBlock) {
+    readBlock(self, mCharacteristic, error);
+    [_readValueForCharacteristicsBlocks removeObjectForKey:characteristic.UUID.UUIDString];
+  }
+  EXBluetoothPeripheralNotifyValueForCharacteristicsBlock notifyBlock = [_notifyValyeForCharacteristicsBlocks objectForKey:characteristic.UUID.UUIDString];
+  if (notifyBlock) {
+    notifyBlock(self, mCharacteristic, error);
   }
 }
 
 - (void)peripheral:(CBPeripheral *)peripheral didWriteValueForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error
 {
   EXBluetoothPeripheralWriteValueForCharacteristicsBlock block = [_writeValueForCharacteristicsBlocks objectForKey:characteristic.UUID.UUIDString];
-  if (EXBluetoothPeripheralIsSelf(peripheral) && block) {
-    EXBluetoothCharacteristic *mCharacteristic = [[EXBluetoothCharacteristic alloc] initWithCharacteristic:characteristic peripheral:self];
-    block(self, mCharacteristic, error);
-    [_writeValueForCharacteristicsBlocks removeObjectForKey:characteristic.UUID.UUIDString];
+  if (!EXBluetoothPeripheralIsSelf(peripheral) || !block) {
+    return;
   }
+  EXBluetoothCharacteristic *mCharacteristic = [[EXBluetoothCharacteristic alloc] initWithCharacteristic:characteristic peripheral:self];
+  block(self, mCharacteristic, error);
+  [_writeValueForCharacteristicsBlocks removeObjectForKey:characteristic.UUID.UUIDString];
 }
 
 - (void)peripheral:(CBPeripheral *)peripheral didUpdateNotificationStateForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error
 {
   EXBluetoothPeripheralNotifyValueForCharacteristicsBlock block = [_notifyValyeForCharacteristicsBlocks objectForKey:characteristic.UUID.UUIDString];
-  if (EXBluetoothPeripheralIsSelf(peripheral) && block) {
-    EXBluetoothCharacteristic *mCharacteristic = [[EXBluetoothCharacteristic alloc] initWithCharacteristic:characteristic peripheral:self];
-    block(self, mCharacteristic, error);
+  if (!EXBluetoothPeripheralIsSelf(peripheral) || !block) {
+    return;
   }
+  EXBluetoothCharacteristic *mCharacteristic = [[EXBluetoothCharacteristic alloc] initWithCharacteristic:characteristic peripheral:self];
+  block(self, mCharacteristic, error);
 }
 
 - (void)peripheral:(CBPeripheral *)peripheral didDiscoverDescriptorsForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error
 {
   EXBluetoothPeripheralDiscoverDescriptorsForCharacteristicBlock block = [_discoverDescriptorsForCharacteristicBlocks objectForKey:characteristic.UUID.UUIDString];
-  if (EXBluetoothPeripheralIsSelf(peripheral) && block) {
-    EXBluetoothCharacteristic *mCharacteristic = [[EXBluetoothCharacteristic alloc] initWithCharacteristic:characteristic peripheral:self];
-    block(self, mCharacteristic, error);
-    [_discoverDescriptorsForCharacteristicBlocks removeObjectForKey:characteristic.UUID.UUIDString];
+  if (!EXBluetoothPeripheralIsSelf(peripheral) || !block) {
+    return;
   }
+  EXBluetoothCharacteristic *mCharacteristic = [[EXBluetoothCharacteristic alloc] initWithCharacteristic:characteristic peripheral:self];
+  block(self, mCharacteristic, error);
+  [_discoverDescriptorsForCharacteristicBlocks removeObjectForKey:characteristic.UUID.UUIDString];
 }
 
 - (void)peripheral:(CBPeripheral *)peripheral didUpdateValueForDescriptor:(CBDescriptor *)descriptor error:(NSError *)error
 {
   EXBluetoothPeripheralReadValueForDescriptorsBlock block = [_readValueForDescriptorsBlock objectForKey:descriptor.UUID.UUIDString];
-  if (EXBluetoothPeripheralIsSelf(peripheral) && block) {
-    EXBluetoothDescriptor *mDescriptor = [[EXBluetoothDescriptor alloc] initWithDescriptor:descriptor peripheral:self];
-    block(self, mDescriptor, error);
-    [_readValueForDescriptorsBlock removeObjectForKey:descriptor.UUID.UUIDString];
+  if (!EXBluetoothPeripheralIsSelf(peripheral) || !block) {
+    return
   }
+  EXBluetoothDescriptor *mDescriptor = [[EXBluetoothDescriptor alloc] initWithDescriptor:descriptor peripheral:self];
+  block(self, mDescriptor, error);
+  [_readValueForDescriptorsBlock removeObjectForKey:descriptor.UUID.UUIDString];
 }
 
 - (void)peripheral:(CBPeripheral *)peripheral didWriteValueForDescriptor:(CBDescriptor *)descriptor error:(NSError *)error
 {
   EXBluetoothPeripheralWriteValueForDescriptorsBlock block = [_writeValueForDescriptorsBlock objectForKey:descriptor.UUID.UUIDString];
-  if (EXBluetoothPeripheralIsSelf(peripheral) && block) {
-    EXBluetoothDescriptor *exDescriptor = [[EXBluetoothDescriptor alloc] initWithDescriptor:descriptor peripheral:self];
-    block(self, exDescriptor, error);
-    [_writeValueForDescriptorsBlock removeObjectForKey:descriptor.UUID.UUIDString];
+  if (!EXBluetoothPeripheralIsSelf(peripheral) || !block) {
+    return;
   }
+  EXBluetoothDescriptor *exDescriptor = [[EXBluetoothDescriptor alloc] initWithDescriptor:descriptor peripheral:self];
+  block(self, exDescriptor, error);
+  [_writeValueForDescriptorsBlock removeObjectForKey:descriptor.UUID.UUIDString];
 }
 
 - (NSDictionary *)getJSON
@@ -332,12 +332,11 @@
   return [[EXBluetooth class] EXBluetoothPeripheral_NativeToJSON:self];
 }
 
-
 -(BOOL)guardIsConnected:(EXPromiseRejectBlock)reject
 {
   if (_peripheral.state != CBPeripheralStateConnected) {
     NSString *state = [[EXBluetooth class] CBPeripheralState_NativeToJSON:_peripheral.state];
-    
+
     reject(EXBluetoothErrorState, [NSString stringWithFormat:@"Peripheral is not connected: %@ state: %@", _peripheral.identifier.UUIDString, state], nil);
     return true;
   }
@@ -366,7 +365,4 @@
   return nil;
 }
 
-
-
 @end
-

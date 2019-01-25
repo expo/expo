@@ -1,16 +1,11 @@
-//
-//  EXBluetoothCharacteristic.m
-//  EXBluetooth
-//
-//  Created by Evan Bacon on 1/24/19.
-//
+// Copyright 2019-present 650 Industries. All rights reserved.
 
-
-#import "EXBluetoothCharacteristic.h"
-#import "EXBluetoothPeripheral.h"
-#import "EXBluetoothService.h"
 #import <EXBluetooth/EXBluetooth+JSON.h>
+#import <EXBluetooth/EXBluetoothCharacteristic.h>
 #import <EXBluetooth/EXBluetoothConstants.h>
+#import <EXBluetooth/EXBluetoothDescriptor.h>
+#import <EXBluetooth/EXBluetoothPeripheral.h>
+#import <EXBluetooth/EXBluetoothService.h>
 
 @interface EXBluetoothCharacteristic()
 {
@@ -19,7 +14,6 @@
 
 @property (nonatomic, strong) CBCharacteristic *characteristic;
 @property (nonatomic, weak, readwrite) EXBluetoothPeripheral *peripheral;
-
 
 @end
 
