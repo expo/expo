@@ -1,27 +1,33 @@
 import uuidv4 from 'uuid/v4';
 import UAParser from 'ua-parser-js';
-import { DeviceUUID } from 'device-uuid';
 
 const ExpoPackageJson = require('expo/package.json');
 
 const parser = new UAParser();
-const deviceId = new DeviceUUID().get();
+const ID_KEY = 'EXPO_CONSTANTS_INSTALLATION_ID';
 
 declare var process: any;
 
+const _sessionId = uuidv4();
+
 export default {
-  _sessionId: uuidv4(),
+  get name(): string {
+    return 'ExponentConstants';
+  },
   get appOwnership() {
     return 'expo';
   },
   get installationId() {
-    return deviceId;
-  },
-  get name(): string {
-    return 'ExponentConstants';
+    let installationId = localStorage.getItem(ID_KEY);
+    if (!installationId) {
+      installationId = uuidv4();
+      localStorage.setItem(ID_KEY, installationId as string);
+    }
+
+    return installationId;
   },
   get sessionId(): string {
-    return this._sessionId;
+    return _sessionId;
   },
   get platform(): object {
     return { web: UAParser(navigator.userAgent) };
