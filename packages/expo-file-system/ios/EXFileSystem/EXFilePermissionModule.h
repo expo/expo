@@ -4,12 +4,12 @@
 #import <EXFileSystemInterface/EXFileSystemInterface.h>
 #import <EXFileSystemInterface/EXFilePermissionModuleInterface.h>
 #import <EXFileSystemInterface/EXFileSystemManagerInterface.h>
-#import <EXCore/EXExportedModule.h>
+#import <EXCore/EXInternalModule.h>
 #import <EXCore/EXModuleRegistryConsumer.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EXFilePermissionModule : EXExportedModule <EXFilePermissionModuleInterface, EXModuleRegistryConsumer>
+@interface EXFilePermissionModule : NSObject <EXInternalModule, EXFilePermissionModuleInterface, EXModuleRegistryConsumer>
 
 - (EXFileSystemPermissionFlags)getPathPermissions:(NSString *)path
                                        scopedDirs:(NSArray<NSString *> *)scopedDirs;

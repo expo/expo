@@ -105,7 +105,7 @@ If you want to print the list of all available command arguments, please run `tu
 
 ## CI configuration file examples
 
-See below for examples of how to use Turtle CLI with popular CI services (i.e. [CircleCI](#circleci) and [Travis CI](#travis-ci)). Both configuration files consist of two stages. In the first stage we publish the Expo project using the `expo publish` command (to see what that means, see [Publishing](/versions/latest/workflow/publishing/)). In the second stage we build application binaries for:
+See below for examples of how to use Turtle CLI with popular CI services (i.e. [CircleCI](#circleci) and [Travis CI](#travis-ci)). Both configuration files consist of two stages. In the first stage we publish the Expo project using the `expo publish` command (to see what that means, see [Publishing](../../workflow/publishing/)). In the second stage we build application binaries for:
 - Google Play Store - `.apk` file
 - Apple App Store - `.ipa` file
 - iOS simulator - in `.tar.gz` archive

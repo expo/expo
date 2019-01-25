@@ -1,4 +1,6 @@
-module.exports = function() {
+module.exports = function(api) {
+  const isWeb = api.caller(isTargetWeb); // eslint-disable-line no-unused-vars
+
   return {
     presets: ['module:metro-react-native-babel-preset'],
     plugins: [
@@ -14,3 +16,7 @@ module.exports = function() {
     ],
   };
 };
+
+function isTargetWeb(caller) {
+  return caller && caller.name === 'babel-loader';
+}

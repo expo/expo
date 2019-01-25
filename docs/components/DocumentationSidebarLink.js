@@ -66,7 +66,6 @@ export default class DocumentationSidebarLink extends React.Component {
 
     return (
       <NextLink
-        prefetch
         href={this.props.info.href}
         as={this.props.info.as || this.props.info.href}>
         <a

@@ -43,6 +43,7 @@ EX_EXPORT_METHOD_AS(setMinimumIntervalAsync,
 
 EX_EXPORT_METHOD_AS(registerTaskAsync,
                     registerTaskWithName:(nonnull NSString *)taskName
+                    options:(nullable NSDictionary *)options
                     resolve:(EXPromiseResolveBlock)resolve
                     reject:(EXPromiseRejectBlock)reject)
 {
@@ -57,7 +58,7 @@ EX_EXPORT_METHOD_AS(registerTaskAsync,
   @try {
     [_taskManager registerTaskWithName:taskName
                               consumer:EXBackgroundFetchTaskConsumer.class
-                               options:@{}];
+                               options:options];
   }
   @catch (NSException *e) {
     return reject(e.name, e.reason, nil);
