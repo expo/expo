@@ -1,23 +1,15 @@
+// @preval
+
 const path = require('path');
 const fm = require('front-matter');
 const fs = require('fs-extra');
-const _ = require('lodash');
-const {
-  ROOT,
-  INTRODUCTION,
-  WORKING_WITH_EXPO,
-  GUIDES,
-  DISTRIBUTION,
-  EXPOKIT,
-  REACT_NATIVE,
-} = require('./sidebar-navigation-order');
 
 const DIR_MAPPING = {
   introduction: 'Introduction',
   guides: 'Guides',
   tutorials: 'Tutorials',
   sdk: 'SDK API Reference',
-  "react-native": "React Native",
+  'react-native': 'React Native',
   // "react-native-apis": 'React Native APIs',
   // 'react-native-components': 'React Native Components',
   // 'react-native-guides': 'React Native Guides',
@@ -25,49 +17,6 @@ const DIR_MAPPING = {
   workflow: 'Working with Expo',
   distribution: 'Distributing Your App',
   expokit: 'ExpoKit',
-};
-
-const sortAccordingToReference = (arr, reference) => {
-  reference = _.clone(reference);
-  reference.reverse();
-
-  let subSort = (arr, i) => arr.slice(0, i).concat(arr.slice(i).sort());
-
-  arr.forEach(category => {
-    category.weight = reference.indexOf(category.name) * -1;
-  });
-
-  let arrSortedByWeight = _.sortBy(arr, ['weight']);
-  return subSort(arrSortedByWeight, _.findIndex(arrSortedByWeight, { weight: 1 }));
-};
-
-let sections = [
-  { name: 'Introduction', reference: INTRODUCTION },
-  { name: 'Guides', reference: GUIDES },
-  { name: 'Distributing Your App', reference: DISTRIBUTION },
-  { name: 'ExpoKit', reference: EXPOKIT },
-  { name: 'Working with Expo', reference: WORKING_WITH_EXPO },
-  { name: "React Native", reference: REACT_NATIVE,}
-  // { name: 'React Native Basics', reference: REACT_NATIVE_BASICS, },
-  // { name: 'React Native Guides', reference: REACT_NATIVE_GUIDES, },
-  // { name: 'React Native Components', reference: REACT_NATIVE_COMPONENTS, },
-  // { name: 'React Native APIs', reference: REACT_NATIVE_APIS, },
-];
-
-const sortNav = nav => {
-  nav = sortAccordingToReference(nav, ROOT);
-
-  sections.forEach(({ name, reference }) => {
-    let section = _.find(nav, o => {
-      console.log(o);
-      return o.name.toLowerCase() === name.toLowerCase();
-    });
-    if (section) {
-      section.posts = sortAccordingToReference(section.posts, reference);
-    }
-  });
-
-  return nav;
 };
 
 const generateNavLinks = (path_, arr) => {
@@ -123,6 +72,17 @@ const generateNavLinks = (path_, arr) => {
   return arr;
 };
 
-module.exports = path_ => {
-  return sortNav(generateNavLinks(path_, []));
-};
+const ORIGINAL_PATH_PREFIX = './versions';
+
+let versionDirectories = fs
+  .readdirSync(ORIGINAL_PATH_PREFIX, { withFileTypes: true })
+  .filter(f => f.isDirectory())
+  .map(f => f.name);
+
+module.exports = versionDirectories.reduce(
+  (obj, version) => ({
+    ...obj,
+    [version]: generateNavLinks(`${ORIGINAL_PATH_PREFIX}/${version}`, []),
+  }),
+  {}
+);
