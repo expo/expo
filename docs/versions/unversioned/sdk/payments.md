@@ -61,7 +61,6 @@ _Note_: These steps are required only if you have ejected your app with SDK < 30
 include ':expo-core'
 project(':expo-core').projectDir = new File(rootProject.projectDir, '../node_modules/expo-core/android')
 
-// add this two lines
 include ':expo-payments-stripe'
 project(':expo-payments-stripe').projectDir = new File(rootProject.projectDir, '../node_modules/expo-payments-stripe/android')
 ```
