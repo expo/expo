@@ -57,7 +57,6 @@ _Note_: These steps are required only if you have ejected your app with SDK < 30
 1.  Add these lines into your settings.gradle file.
 
 ```groovy
-// make sure this two lines are there
 include ':expo-core'
 project(':expo-core').projectDir = new File(rootProject.projectDir, '../node_modules/expo-core/android')
 
