@@ -87,6 +87,8 @@
     "expo-gl-cpp": "~2.0.0",
     "expo-google-sign-in": "~2.0.0",
     "expo-image-loader-interface": "~2.0.0",
+    "expo-keep-awake": "~1.0.0",
+    "expo-linear-gradient": "~1.0.0",
     "expo-local-authentication": "~2.0.0",
     "expo-localization": "~2.0.0",
     "expo-location": "~2.0.1",

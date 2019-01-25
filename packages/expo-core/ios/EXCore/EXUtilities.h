@@ -9,6 +9,7 @@
 
 + (void)performSynchronouslyOnMainThread:(void (^)(void))block;
 + (CGFloat)screenScale;
++ (UIColor *)UIColor:(id)json;
 
 - (UIViewController *)currentViewController;
 - (nullable NSDictionary *)launchOptions;

@@ -93,7 +93,9 @@ task generateDynamicMacros(type: Exec) {
     workingDir '../../tools-public'
     commandLine 'cmd.exe', '/c', 'generate-dynamic-macros-cli.js --buildConstantsPath ./src/main/java/host/exp/exponent/generated/ExponentBuildConstants.java --platform android'
   } else {
-    commandLine '../../tools-public/generate-dynamic-macros-cli.js', '--buildConstantsPath', './src/main/java/host/exp/exponent/generated/ExponentBuildConstants.java', '--platform', 'android'
+    // NOTE(brentvatne): this is a common install path for node
+    environment 'PATH', "${environment.PATH}:/usr/local/bin"
+    commandLine '../../tools-public/generate-dynamic-macros-android.sh'
   }
 }
 preBuild.dependsOn generateDynamicMacros
@@ -138,6 +140,8 @@ dependencies {
   compileOnly 'host.exp.exponent:expo-gl:2.0.0'
   compileOnly 'host.exp.exponent:expo-gl-cpp:2.0.0'
   compileOnly 'host.exp.exponent:expo-sms:2.0.0'
+  compileOnly 'host.exp.exponent:expo-keep-awake:1.0.0'
+  compileOnly 'host.exp.exponent:expo-linear-gradient:1.0.0'
   compileOnly 'host.exp.exponent:expo-print:2.0.0'
   compileOnly 'host.exp.exponent:expo-media-library:2.0.0'
   compileOnly 'host.exp.exponent:expo-analytics-segment:2.0.0'
@@ -206,6 +210,8 @@ dependencies {
   api project(':expo-gl-cpp')
   api project(':expo-google-sign-in')
   api project(':expo-image-loader-interface')
+  api project(':expo-keep-awake')
+  api project(':expo-linear-gradient')
   api project(':expo-local-authentication')
   api project(':expo-localization')
   api project(':expo-location')
