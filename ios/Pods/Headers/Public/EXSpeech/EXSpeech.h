@@ -1,0 +1,1 @@
+../../../../../packages/expo-speech/ios/EXSpeech/EXSpeech.h

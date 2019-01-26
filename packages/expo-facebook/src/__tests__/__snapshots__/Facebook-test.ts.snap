@@ -1,0 +1,5 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`🤖  iOS and Android converts to appId string when called with a number parameter: warning 1`] = `"logInWithReadPermissionsAsync: parameter 'appId' must be a string, was 'number''."`;
+
+exports[`  iOS and Android converts to appId string when called with a number parameter: warning 1`] = `"logInWithReadPermissionsAsync: parameter 'appId' must be a string, was 'number''."`;
