@@ -2,7 +2,7 @@
 title: Barometer
 ---
 
-Access the device barometer sensor to respond to changes in air pressure. `pressure` is converted to _`hectopascals`_ or _`hPa`_.
+Access the device barometer sensor to respond to changes in air pressure. `pressure` is measured in _`hectopascals`_ or _`hPa`_.
 
 | OS      | Units   | Provider                                                                                                | Description                                                                                                                         |
 | ------- | ------- | ------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
