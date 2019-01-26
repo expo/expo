@@ -32,6 +32,15 @@ public class Serialize {
     return output;
   }
 
+  public static ArrayList<String> UUIDList_NativeToJSON(ArrayList<UUID> input) {
+    ArrayList<String> output = new ArrayList<>();
+    for (UUID uuid : input) {
+      output.add(UUIDHelper.fromUUID(uuid));
+    }
+    return output;
+  }
+
+
   public static byte[] Base64_JSONToNative(List input) {
     byte[] decoded = new byte[input.size()];
     for (int i = 0; i < input.size(); i++) {

@@ -28,6 +28,10 @@ public class BluetoothError {
     promise.reject(error.code, error.message);
   }
 
+  public static void rejectWithStatus(Promise promise, int status) {
+    promise.reject(Codes.UNIMPLEMENTED, Serialize.messageForGATTStatus(status));
+  }
+
   public static void reject(Promise promise, String message) {
     promise.reject(Codes.UNIMPLEMENTED, message);
   }

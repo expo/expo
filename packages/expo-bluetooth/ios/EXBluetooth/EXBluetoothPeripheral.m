@@ -35,7 +35,7 @@
   // Ops
   NSMutableDictionary *_readValueForCharacteristicsBlocks;
   NSMutableDictionary *_writeValueForCharacteristicsBlocks;
-  NSMutableDictionary *_notifyValyeForCharacteristicsBlocks;
+  NSMutableDictionary *_notifyValueForCharacteristics;
   NSMutableDictionary *_readValueForDescriptorsBlock;
   NSMutableDictionary *_writeValueForDescriptorsBlock;
 }
@@ -59,7 +59,7 @@
     // Ops
     _readValueForCharacteristicsBlocks = [[NSMutableDictionary alloc] init];
     _writeValueForCharacteristicsBlocks = [[NSMutableDictionary alloc] init];
-    _notifyValyeForCharacteristicsBlocks = [[NSMutableDictionary alloc] init];
+    _notifyValueForCharacteristics = [[NSMutableDictionary alloc] init];
     _readValueForDescriptorsBlock = [[NSMutableDictionary alloc] init];
     _writeValueForDescriptorsBlock = [[NSMutableDictionary alloc] init];
   }
@@ -166,9 +166,9 @@
   
   if (enabled) {
     NSAssert(block, @"setNotifyValue:forCharacteristic:withBlock: block cannot be nil");
-    [_notifyValyeForCharacteristicsBlocks setValue:block forKey:characteristic.UUID.UUIDString];
+    [_notifyValueForCharacteristics setValue:block forKey:characteristic.UUID.UUIDString];
   } else {
-    [_notifyValyeForCharacteristicsBlocks removeObjectForKey:characteristic.UUID.UUIDString];
+    [_notifyValueForCharacteristics removeObjectForKey:characteristic.UUID.UUIDString];
   }
   
   [_peripheral setNotifyValue:enabled forCharacteristic:characteristic.characteristic];
@@ -267,7 +267,7 @@
     readBlock(self, mCharacteristic, error);
     [_readValueForCharacteristicsBlocks removeObjectForKey:characteristic.UUID.UUIDString];
   }
-  EXBluetoothPeripheralNotifyValueForCharacteristicsBlock notifyBlock = [_notifyValyeForCharacteristicsBlocks objectForKey:characteristic.UUID.UUIDString];
+  EXBluetoothPeripheralNotifyValueForCharacteristicsBlock notifyBlock = [_notifyValueForCharacteristics objectForKey:characteristic.UUID.UUIDString];
   if (notifyBlock) {
     notifyBlock(self, mCharacteristic, error);
   }
@@ -286,7 +286,7 @@
 
 - (void)peripheral:(CBPeripheral *)peripheral didUpdateNotificationStateForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error
 {
-  EXBluetoothPeripheralNotifyValueForCharacteristicsBlock block = [_notifyValyeForCharacteristicsBlocks objectForKey:characteristic.UUID.UUIDString];
+  EXBluetoothPeripheralNotifyValueForCharacteristicsBlock block = [_notifyValueForCharacteristics objectForKey:characteristic.UUID.UUIDString];
   if (!EXBluetoothPeripheralIsSelf(peripheral) || !block) {
     return;
   }

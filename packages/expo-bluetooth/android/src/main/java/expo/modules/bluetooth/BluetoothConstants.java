@@ -24,6 +24,7 @@ public class BluetoothConstants {
   public interface JSON {
     String CENTRAL = "central";
     String PERIPHERAL = "peripheral";
+    String PERIPHERALS = "peripherals";
     String ERROR = "error";
     String TRANSACTION_ID = "transactionId";
     String CHARACTERISTIC = "characteristic";
@@ -59,10 +60,12 @@ public class BluetoothConstants {
     String MANUFACTURER_DATA = "manufacturerData";
     String SERVICE_DATA = "serviceData";
     String SERVICE_UUIDS = "serviceUUIDs";
-
+    String CHARACTERISTIC_UUIDS = "characteristicUUIDs";
     String CHARACTERISTIC_PROPERTIES = "characteristicProperties";
+    String INCLUDED_SERVICES_UUIDS = "includedServicesUUIDs";
 
-    String RSSI = "rssi";
+
+    String RSSI = "RSSI";
     String ADVERTISEMENT_DATA = "advertisementData";
   }
 

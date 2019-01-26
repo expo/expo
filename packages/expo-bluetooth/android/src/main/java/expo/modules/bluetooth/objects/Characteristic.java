@@ -4,8 +4,10 @@ import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.os.Bundle;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
+import expo.core.Promise;
 import expo.modules.bluetooth.BluetoothConstants;
 import expo.modules.bluetooth.BluetoothError;
 import expo.modules.bluetooth.BluetoothModule;
@@ -77,5 +79,16 @@ public class Characteristic extends EXBluetoothChildObject {
   public boolean setValue(byte[] data) {
     return getCharacteristic().setValue(data);
   }
+
+  public void discoverDescriptors(Promise promise) {
+    //TODO: Bacon: Are these gotten automatically?
+    Bundle output = new Bundle();
+    output.putString(BluetoothConstants.JSON.TRANSACTION_ID, transactionIdForOperation(BluetoothConstants.OPERATIONS.SCAN));
+    output.putBundle(BluetoothConstants.JSON.PERIPHERAL, getPeripheral().toJSON());
+    output.putBundle(BluetoothConstants.JSON.SERVICE, getParent().toJSON());
+//    BluetoothModule.sendEvent(BluetoothConstants.EVENTS.PERIPHERAL_DID_DISCOVER_CHARACTERISTICS_FOR_SERVICE, output);
+    promise.resolve(output);
+  }
+
 
 }

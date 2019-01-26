@@ -658,10 +658,10 @@ EX_EXPORT_METHOD_AS(discoverIncludedServicesForServiceAsync,
     return;
   }
   
-  NSArray *includedServiceUUIDs = [EXBluetooth.class CBUUIDList_JSONToNative:options[@"includedServiceUUIDs"]];
+  NSArray *includedServicesUUIDs = [EXBluetooth.class CBUUIDList_JSONToNative:options[@"includedServicesUUIDs"]];
   __weak EXBluetooth *weakSelf = self;
 
-  [service discoverIncludedServices:includedServiceUUIDs withBlock:^(EXBluetoothPeripheral *peripheral, EXBluetoothService *service, NSError *error) {
+  [service discoverIncludedServices:includedServicesUUIDs withBlock:^(EXBluetoothPeripheral *peripheral, EXBluetoothService *service, NSError *error) {
     if (error) {
       reject(EXBluetoothErrorKey, error.localizedDescription, error);
     } else {
@@ -724,10 +724,7 @@ EX_EXPORT_METHOD_AS(disconnectPeripheralAsync,
     if (error) {
       reject(EXBluetoothErrorKey, error.localizedDescription, error);
     } else {
-      resolve(@{
-                EXBluetoothCentralKey: EXNullIfNil([centralManager getJSON]),
-                EXBluetoothPeripheralKey: EXNullIfNil([peripheral getJSON])
-                });
+      resolve(EXNullIfNil([peripheral getJSON]));
     }
   }];
 }
