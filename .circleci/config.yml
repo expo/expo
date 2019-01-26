@@ -356,7 +356,7 @@ jobs:
           background: true
       - run:
           working_directory: docs
-          command: yarn run test-links:all http://localhost:8000
+          command: yarn run test-links http://localhost:8000
       - deploy:
           command: |
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
