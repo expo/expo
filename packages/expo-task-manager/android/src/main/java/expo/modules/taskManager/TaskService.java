@@ -1,6 +1,5 @@
 package expo.modules.taskManager;
 
-import android.app.PendingIntent;
 import android.app.job.JobParameters;
 import android.app.job.JobService;
 import android.content.Context;
@@ -51,6 +50,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
   private static final int MAX_TASK_EXECUTION_TIME_MS = 15000; // 15 seconds
 
   private WeakReference<Context> mContextRef;
+  private TaskManagerUtilsInterface mTaskManagerUtils;
 
   // { "<appId>": { "<taskName>": TaskInterface } }
   private static Map<String, Map<String, TaskInterface>> sTasksTable = null;
@@ -189,6 +189,19 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
   }
 
   @Override
+  public List<TaskConsumerInterface> getTaskConsumers(String appId) {
+    Map<String, TaskInterface> appTasks = sTasksTable.get(appId);
+    List<TaskConsumerInterface> taskConsumers = new ArrayList<>();
+
+    if (appTasks != null) {
+      for (TaskInterface task : appTasks.values()) {
+        taskConsumers.add(task.getConsumer());
+      }
+    }
+    return taskConsumers;
+  }
+
+  @Override
   public void notifyTaskFinished(String taskName, final String appId, Map<String, Object> response) {
     String eventId = (String) response.get("eventId");
     List<String> appEvents = sEvents.get(appId);
@@ -255,7 +268,23 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     String action = intent.getAction();
     Uri dataUri = intent.getData();
 
-    if (!TaskBroadcastReceiver.INTENT_ACTION.equals(action) || dataUri == null) {
+    if (!TaskBroadcastReceiver.INTENT_ACTION.equals(action)) {
+      // Call custom broadcasts on all consumers that can handle them.
+
+      Log.i(TAG, "Handling intent with action '" + action + "'.");
+
+      for (String appId : sTasksTable.keySet()) {
+        List<TaskConsumerInterface> taskConsumers = getTaskConsumers(appId);
+
+        for (TaskConsumerInterface consumer : taskConsumers) {
+          if (consumer.canReceiveCustomBroadcast(action)) {
+            consumer.didReceiveBroadcast(intent);
+          }
+        }
+      }
+      return;
+    }
+    if (dataUri == null) {
       return;
     }
 
@@ -264,18 +293,13 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
 
     TaskConsumerInterface consumer = getTaskConsumer(taskName, appId);
 
-    Log.i(TAG, "Handling TaskService intent with task name '" + taskName + "' for app with ID '" + appId + "'.");
+    Log.i(TAG, "Handling intent with task name '" + taskName + "' and appId '" + appId + "'.");
 
     if (consumer == null) {
       Log.w(TAG, "Task or consumer not found.");
 
       // Cancel pending intent.
-      Integer intentId = Integer.valueOf(dataUri.getQueryParameter("intentId"));
-      Context context = mContextRef.get();
-
-      if (context != null) {
-        PendingIntent.getBroadcast(context, intentId, intent, PendingIntent.FLAG_UPDATE_CURRENT).cancel();
-      }
+      getTaskManagerUtils().cancelTaskIntent(mContextRef.get(), appId, taskName);
       return;
     }
 
@@ -298,7 +322,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
       return false;
     }
 
-    Log.i(TAG, "Handling TaskService job with task name '" + taskName + "' for app with ID '" + appId + "'.");
+    Log.i(TAG, "Handling job with task name '" + taskName + "' for app with ID '" + appId + "'.");
 
     // executes task
     boolean isAsyncJob = consumer.didExecuteJob(jobService, params);
@@ -389,7 +413,6 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
   //region helpers
 
   private void internalRegisterTask(String taskName, String appId, String appUrl, Class<TaskConsumerInterface> consumerClass, Map<String, Object> options) throws TaskRegisteringFailedException {
-    TaskManagerUtilsInterface taskManagerUtils = new TaskManagerUtils();
     Constructor<?> consumerConstructor;
     TaskConsumerInterface consumer;
     Context context = mContextRef.get();
@@ -400,7 +423,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
 
     try {
       consumerConstructor = consumerClass.getDeclaredConstructor(Context.class, TaskManagerUtilsInterface.class);
-      consumer = (TaskConsumerInterface) consumerConstructor.newInstance(context, taskManagerUtils);
+      consumer = (TaskConsumerInterface) consumerConstructor.newInstance(context, getTaskManagerUtils());
     } catch (Exception e) {
       throw new TaskRegisteringFailedException(consumerClass, e);
     }
@@ -452,6 +475,13 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     }
     TaskInterface task = getTask(taskName, appId);
     return task != null ? task.getConsumer() : null;
+  }
+
+  private TaskManagerUtilsInterface getTaskManagerUtils() {
+    if (mTaskManagerUtils == null) {
+      mTaskManagerUtils = new TaskManagerUtils();
+    }
+    return mTaskManagerUtils;
   }
 
   private SharedPreferences getSharedPreferences() {

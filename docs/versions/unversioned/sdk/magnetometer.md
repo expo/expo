@@ -3,10 +3,10 @@ title: Magnetometer
 ---
 
 Access the device magnetometer sensor(s) to respond to measure the changes
-in the magnetic field. You can access the calibrated values with `Expo.Magnetometer.`
-and uncalibrated raw values with `Expo.MagnetometerUncalibrated`.
+in the magnetic field. You can access the calibrated values with `Magnetometer.`
+and uncalibrated raw values with `MagnetometerUncalibrated`.
 
-### `Expo.Magnetometer.isAvailableAsync()`
+### `Magnetometer.isAvailableAsync()`
 
 Returns whether the magnetometer is enabled on the device.
 
@@ -14,7 +14,7 @@ Returns whether the magnetometer is enabled on the device.
 
 - A promise that resolves to a `boolean` denoting the availability of the sensor.
 
-### `Expo.Magnetometer.addListener(listener)`
+### `Magnetometer.addListener(listener)`
 
 Subscribe for updates to the Magnetometer.
 
@@ -30,11 +30,11 @@ Subscribe for updates to the Magnetometer.
 - A subscription that you can call `remove()` on when you
   would like to unsubscribe the listener.
 
-### `Expo.Magnetometer.removeAllListeners()`
+### `Magnetometer.removeAllListeners()`
 
 Remove all listeners.
 
-### `Expo.Magnetometer.setUpdateInterval(intervalMs)`
+### `Magnetometer.setUpdateInterval(intervalMs)`
 
 Subscribe for updates to the Magnetometer.
 

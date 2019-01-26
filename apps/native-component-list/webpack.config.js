@@ -117,8 +117,8 @@ const htmlLoaderConfiguration = {
   include: [absolutePath('./assets')],
 };
 
-const videoLoaderConfiguration = {
-  test: /\.(mov|mp4)$/,
+const mediaLoaderConfiguration = {
+  test: /\.(mov|mp4|mp3|wav)$/,
   use: [
     {
       loader: 'file-loader',
@@ -191,7 +191,7 @@ module.exports = {
       cssLoaderConfiguration,
       imageLoaderConfiguration,
       ttfLoaderConfiguration,
-      videoLoaderConfiguration,
+      mediaLoaderConfiguration,
     ],
   },
   plugins: [

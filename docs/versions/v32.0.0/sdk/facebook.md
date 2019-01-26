@@ -6,13 +6,13 @@ Provides Facebook integration for Expo apps. Expo exposes a minimal native API s
 
 ## Registering your app with Facebook
 
-Follow [Facebook's developer documentation](https://developers.facebook.com/docs/apps/register) to register an application with Facebook's API and get an application ID. Take note of this application ID because it will be used as the `appId` option in your [`Expo.Facebook.logInWithReadPermissionsAsync`](#expofacebookloginwithreadpermissionsasync 'Expo.Facebook.logInWithReadPermissionsAsync') call. Then follow these steps based on the platforms you're targetting. This will need to be done from the [Facebook developer site](https://developers.facebook.com/):
+Follow [Facebook's developer documentation](https://developers.facebook.com/docs/apps/register) to register an application with Facebook's API and get an application ID. Take note of this application ID because it will be used as the `appId` option in your [`Facebook.logInWithReadPermissionsAsync`](#expofacebookloginwithreadpermissionsasync 'Facebook.logInWithReadPermissionsAsync') call. Then follow these steps based on the platforms you're targetting. This will need to be done from the [Facebook developer site](https://developers.facebook.com/):
 
 - **The Expo client app**
 
   - Add `host.exp.Exponent` as an iOS _Bundle ID_. Add `rRW++LUjmZZ+58EbN5DVhGAnkX4=` as an Android _key hash_. Your app's settings should end up including the following under "Settings > Basic":
 
-[!](/static/images/facebook-app-settings.png)
+![](/static/images/facebook-app-settings.png)
 
 - **iOS standalone app**
 
@@ -30,7 +30,7 @@ You may have to switch the app from 'development mode' to 'public mode' on the F
 
 ## Usage
 
-### `Expo.Facebook.logInWithReadPermissionsAsync(appId, options)`
+### `Facebook.logInWithReadPermissionsAsync(appId, options)`
 
 Prompts the user to log into Facebook and grants your app permission
 to access their Facebook data.
@@ -68,7 +68,7 @@ async function logIn() {
       expires,
       permissions,
       declinedPermissions,
-    } = await Expo.Facebook.logInWithReadPermissionsAsync('<APP_ID>', {
+    } = await Facebook.logInWithReadPermissionsAsync('<APP_ID>', {
       permissions: ['public_profile'],
     });
     if (type === 'success') {

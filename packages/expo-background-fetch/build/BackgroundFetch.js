@@ -1,5 +1,6 @@
-import { Platform, NativeModulesProxy } from 'expo-core';
 import * as TaskManager from 'expo-task-manager';
+import { UnavailabilityError } from 'expo-errors';
+import { Platform, NativeModulesProxy } from 'expo-core';
 const { ExpoBackgroundFetch } = NativeModulesProxy;
 var BackgroundFetchResult;
 (function (BackgroundFetchResult) {
@@ -15,31 +16,28 @@ var BackgroundFetchStatus;
 })(BackgroundFetchStatus || (BackgroundFetchStatus = {}));
 export async function getStatusAsync() {
     if (Platform.OS !== 'ios') {
-        return Promise.resolve(null);
+        return BackgroundFetchStatus.Available;
     }
     return ExpoBackgroundFetch.getStatusAsync();
 }
 export async function setMinimumIntervalAsync(minimumInterval) {
     if (Platform.OS !== 'ios') {
-        console.warn(`expo-background-fetch is currently available only on iOS`);
         return;
     }
     await ExpoBackgroundFetch.setMinimumIntervalAsync(minimumInterval);
 }
-export async function registerTaskAsync(taskName) {
-    if (Platform.OS !== 'ios') {
-        console.warn(`expo-background-fetch is currently available only on iOS`);
-        return;
+export async function registerTaskAsync(taskName, options = {}) {
+    if (!ExpoBackgroundFetch.registerTaskAsync) {
+        throw new UnavailabilityError('BackgroundFetch', 'registerTaskAsync');
     }
     if (!TaskManager.isTaskDefined(taskName)) {
         throw new Error(`Task '${taskName}' is not defined. You must define a task using TaskManager.defineTask before registering.`);
     }
-    await ExpoBackgroundFetch.registerTaskAsync(taskName);
+    await ExpoBackgroundFetch.registerTaskAsync(taskName, options);
 }
 export async function unregisterTaskAsync(taskName) {
-    if (Platform.OS !== 'ios') {
-        console.warn(`expo-background-fetch is currently available only on iOS`);
-        return;
+    if (!ExpoBackgroundFetch.unregisterTaskAsync) {
+        throw new UnavailabilityError('BackgroundFetch', 'unregisterTaskAsync');
     }
     await ExpoBackgroundFetch.unregisterTaskAsync(taskName);
 }

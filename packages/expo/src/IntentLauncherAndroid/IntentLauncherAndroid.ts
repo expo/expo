@@ -105,10 +105,11 @@ export function startActivityAsync(
   activity: string,
   // TODO: Make this type more precise
   data: { [key: string]: any } | null = null,
-  uri: string | null = null
+  uri: string | null = null,
+  mime: string | null = null
 ): Promise<boolean> {
   if (!ExponentIntentLauncher.startActivity) {
     throw new UnavailabilityError('IntentLauncherAndroid', 'startActivityAsync');
   }
-  return ExponentIntentLauncher.startActivity(activity, data, uri);
+  return ExponentIntentLauncher.startActivity(activity, data, uri, mime);
 }

@@ -12,7 +12,7 @@ Often you want to be able to test what happens when you reject a permission to e
 
 ## Methods
 
-### `Expo.Permissions.getAsync(...permissionTypes)`
+### `Permissions.getAsync(...permissionTypes)`
 
 Determines whether your app has already been granted access to the provided permissions types.
 
@@ -65,7 +65,7 @@ async function checkMultiPermissions() {
 }
 ```
 
-### `Expo.Permissions.askAsync(...types)`
+### `Permissions.askAsync(...types)`
 
 Prompt the user for types of permissions. If they have already granted access, response will be success.
 
@@ -82,7 +82,8 @@ Same as for `Permissions.getAsync`
 ```javascript
 async function getLocationAsync() {
   const { Location, Permissions } = Expo;
-  const { status } = await Permissions.askAsync(Permissions.LOCATION);
+  // permissions returns only for location permissions on iOS and under certain conditions, see Permissions.LOCATION
+  const { status, permissions } = await Permissions.askAsync(Permissions.LOCATION);
   if (status === 'granted') {
     return Location.getCurrentPositionAsync({enableHighAccuracy: true});
   } else {
@@ -93,7 +94,7 @@ async function getLocationAsync() {
 
 ## Permissions types
 
-### `Expo.Permissions.NOTIFICATIONS`
+### `Permissions.NOTIFICATIONS`
 
 The permission type for user-facing notifications **and** remote push notifications.
 
@@ -103,7 +104,7 @@ The permission type for user-facing notifications **and** remote push notificati
 
 > **Note:** Android does not differentiate between permissions for local and remote notifications, so status of permission for `NOTIFICATIONS` should always be the same as the status for `USER_FACING_NOTIFICATIONS`.
 
-### `Expo.Permissions.USER_FACING_NOTIFICATIONS`
+### `Permissions.USER_FACING_NOTIFICATIONS`
 
 The permission type for user-facing notifications. This does **not** register your app to receive remote push notifications; see the `NOTIFICATIONS` permission.
 
@@ -111,7 +112,7 @@ The permission type for user-facing notifications. This does **not** register yo
 
 > **Note:** Android does not differentiate between permissions for local and remote notifications, so status of permission for `USER_FACING_NOTIFICATIONS` should always be the same as the status for `NOTIFICATIONS`.
 
-### `Expo.Permissions.LOCATION`
+### `Permissions.LOCATION`
 
 The permission type for location access.
 
@@ -120,7 +121,8 @@ The permission type for location access.
 On iOS ask for this permission type individually.
 
 > **Note (iOS):** In Expo Client this permission will always ask the user for permission to access location data while the app is in use.
->
+
+> **Note (iOS):** iOS provides more detailed permissions, returning `{ status, permissions: { location: { ios } } }` where `ios` which is an object containing: `{ scope: 'whenInUse' | 'always' | 'none' }`
 > If you would like to access location data in a standalone app, note that you'll need to provide location usage descriptions in `app.json`. For more information see [Deploying to App Stores guide](../../distribution/app-stores/#system-permissions-dialogs-on-ios).
 >
 > **What location usage descriptions should I provide?** Due to the design of the location permission API on iOS we aren't able to provide you with methods for asking for `whenInUse` or `always` location usage permission specifically. However, you can customize the behavior by providing the following sets of usage descriptions:
@@ -128,38 +130,38 @@ On iOS ask for this permission type individually.
 > - if you provide both `NSLocationWhenInUseUsageDescription` and `NSLocationAlwaysAndWhenInUseUsageDescription`, your application will only ask for "when in use" permission on iOS 10, whereas on iOS 11+ it will show a dialog to the user where he'll be able to pick whether he'd like to give your app permission to access location always or only when the app is in use,
 > - if you provide all three: `NSLocationWhenInUseUsageDescription`, `NSLocationAlwaysAndWhenInUseUsageDescription` and `NSLocationAlwaysUsageDescription`, your application on iOS 11+ will still show a dialog described above and on iOS 10 it will only ask for "always" location permission.
 
-### `Expo.Permissions.CAMERA`
+### `Permissions.CAMERA`
 
 The permission type for photo and video taking.
 
-### `Expo.Permissions.AUDIO_RECORDING`
+### `Permissions.AUDIO_RECORDING`
 
 The permission type for audio recording.
 
-### `Expo.Permissions.CONTACTS`
+### `Permissions.CONTACTS`
 
 The permission type for reading contacts.
 
-### `Expo.Permissions.CAMERA_ROLL`
+### `Permissions.CAMERA_ROLL`
 
 The permission type for reading or writing to the camera roll.
 
-### `Expo.Permissions.CALENDAR`
+### `Permissions.CALENDAR`
 
 The permission type for reading or writing to the calendar.
 
-### `Expo.Permissions.REMINDERS`
+### `Permissions.REMINDERS`
 
 The permission type for reading or writing reminders.
 (iOS only, on Android would return `granted` immediately)
 
-### `Expo.Permissions.SYSTEM_BRIGHTNESS`
+### `Permissions.SYSTEM_BRIGHTNESS`
 
 The permissions type for changing brighness of the screen
 
 ## Android: permissions equivalents inside `app.json`
 
-In order to request permissions in a standalone Android app, you need to specify the corresponding native permission types in the `android.permissions` key inside `app.json` ([read more about configuration](../../workflow/configuration/#android)). The mapping between `Expo.Permissions` values and native permission types is as follows:
+In order to request permissions in a standalone Android app, you need to specify the corresponding native permission types in the `android.permissions` key inside `app.json` ([read more about configuration](../../workflow/configuration/#android)). The mapping between `Permissions` values and native permission types is as follows:
 
 | Expo            | Android                                           |
 | --------------- | --------------------------------------------------|

@@ -4,7 +4,7 @@ title: Gyroscope
 
 Access the device gyroscope sensor to respond to changes in rotation in 3d space.
 
-### `Expo.Gyroscope.addListener(listener)`
+### `Gyroscope.addListener(listener)`
 
 Subscribe for updates to the gyroscope.
 

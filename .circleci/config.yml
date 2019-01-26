@@ -189,10 +189,16 @@ jobs:
           working_directory: ~/expo/packages/expo-camera
       - yarn:
           command: test --maxWorkers 1
+          working_directory: ~/expo/packages/expo-facebook
+      - yarn:
+          command: test --maxWorkers 1
           working_directory: ~/expo/packages/expo-font
       - yarn:
           command: test --maxWorkers 1
           working_directory: ~/expo/packages/expo-react-native-adapter
+      - yarn:
+          command: test --maxWorkers 1
+          working_directory: ~/expo/packages/expo-secure-store
       - yarn:
           command: test --maxWorkers 1
           working_directory: ~/expo/packages/expo-sensors
@@ -279,7 +285,7 @@ jobs:
     executor: android
     steps:
       - setup
-      - setup
+      - update_submodules
       - yarn_install:
           working_directory: ~/expo # need jsc-android dependency in expokit-npm-package
       - yarn_install:
@@ -297,6 +303,7 @@ jobs:
     executor: android
     steps:
       - setup
+      - update_submodules
       - yarn_install:
           working_directory: ~/expo # need jsc-android dependency in expokit-npm-package
       - yarn_install:

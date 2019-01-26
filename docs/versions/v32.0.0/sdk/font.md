@@ -6,18 +6,18 @@ Allows loading fonts from the web and using them in React Native components. See
 
 ## Usage
 
-### `Expo.Font.loadAsync(object)`
+### `Font.loadAsync(object)`
 
-Convenience form of [`Expo.Font.loadAsync()`](#expofontloadasync "Expo.Font.loadAsync") that loads multiple fonts at once.
+Convenience form of [`Font.loadAsync()`](#expofontloadasync "Font.loadAsync") that loads multiple fonts at once.
 
 #### Arguments
 
--   **map (_object_)** -- A map of names to `require` statements as in [`Expo.Font.loadAsync()`](#expofontloadasync "Expo.Font.loadAsync").
+-   **map (_object_)** -- A map of names to `require` statements as in [`Font.loadAsync()`](#expofontloadasync "Font.loadAsync").
 
 #### Example
 
 ```javascript
-Expo.Font.loadAsync({
+Font.loadAsync({
   Montserrat: require('./assets/fonts/Montserrat.ttf'),
   'Montserrat-SemiBold': require('./assets/fonts/Montserrat-SemiBold.ttf'),
 });

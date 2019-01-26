@@ -1,6 +1,6 @@
 import { Segment } from 'expo-analytics-segment';
 import { NativeModulesProxy } from 'expo-react-native-adapter';
-import { mockPlatformAndroid, mockPlatformIOS, unmockAllProperties } from '../../test/mocking';
+import { mockPlatformAndroid, mockPlatformIOS, unmockAllProperties } from 'jest-expo';
 
 describe('initialization', () => {
   const mockOptions = {

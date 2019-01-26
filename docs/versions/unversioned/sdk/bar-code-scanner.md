@@ -89,7 +89,7 @@ export default class BarcodeScannerExample extends React.Component {
 
 ## Methods
 
-### `Expo.BarCodeScanner.scanFromURLAsync(url, barCodeTypes)`
+### `BarCodeScanner.scanFromURLAsync(url, barCodeTypes)`
 
 Scan bar codes from the image given by the URL.
 

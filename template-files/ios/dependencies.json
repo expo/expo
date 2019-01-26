@@ -32,10 +32,6 @@
     "version": "4.39.1"
   },
   {
-    "name": "FBSDKShareKit",
-    "version": "4.39.1"
-  },
-  {
     "name": "Fabric",
     "version": "~> 1.6"
   },

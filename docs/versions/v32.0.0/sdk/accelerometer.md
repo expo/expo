@@ -5,7 +5,7 @@ title: Accelerometer
 Access the device accelerometer sensor(s) to respond to changes in
 acceleration in 3d space.
 
-### `Expo.Accelerometer.addListener(listener)`
+### `Accelerometer.addListener(listener)`
 
 Subscribe for updates to the accelerometer.
 
@@ -21,11 +21,11 @@ Subscribe for updates to the accelerometer.
 -   An EventSubscription object that you can call remove() on when you
     would like to unsubscribe the listener.
 
-### `Expo.Accelerometer.removeAllListeners()`
+### `Accelerometer.removeAllListeners()`
 
 Remove all listeners.
 
-### `Expo.Accelerometer.setUpdateInterval(intervalMs)`
+### `Accelerometer.setUpdateInterval(intervalMs)`
 
 Subscribe for updates to the accelerometer.
 

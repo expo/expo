@@ -8,7 +8,7 @@ Expo includes version 0.22.0 of react-native-maps (the latest as of the time of 
 
 ${<SnackEmbed snackId="@adamjnav/mapview-example" />}
 
-## `Expo.MapView`
+## `MapView`
 
 See full documentation at [react-community/react-native-maps](https://github.com/react-community/react-native-maps).
 
