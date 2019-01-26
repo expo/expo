@@ -122,13 +122,13 @@ export interface NativeAdvertismentData {
 export interface NativePeripheral extends NativeBluetoothElement {
     advertisementData?: NativeAdvertismentData;
     name: string | null;
-    rssi: number | null;
+    RSSI: number | null;
     state: PeripheralState;
     canSendWriteWithoutResponse: boolean;
     services: NativeService[];
     discoveryTimestamp?: number;
 }
-export declare type PeripheralFoundCallback = ((peripheral: NativePeripheral) => void);
+export declare type PeripheralFoundCallback = (peripheral: NativePeripheral) => void;
 export declare type StateUpdatedCallback = (state: CentralState) => void;
 export declare type ScanSettings = {
     serviceUUIDsToQuery?: UUID[];

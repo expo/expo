@@ -92,7 +92,7 @@ export default class BluetoothScreen extends React.Component {
   };
 
   state = {
-    center: {},
+    central: {},
     peripherals: {},
     isScanning: false,
     centralState: 'unknown',
@@ -130,23 +130,26 @@ export default class BluetoothScreen extends React.Component {
         callback: async ({ peripheral }) => {
           console.log('Found: ', peripheral);
           const hasName = peripheral.name && peripheral.name !== '';
-          if (hasName) {
-            const name = peripheral.name.toLowerCase();
-            const isBacon = name.indexOf('baconbook') !== -1; // My computer's name
-            if (isBacon) {
-              // this.updatePeripheral(peripheral);
-              Bluetooth.stopScanAsync();
-              this.setState({ isScanning: false });
+          // if (hasName) {
+          //   const name = peripheral.name.toLowerCase();
+          //   const isBacon = name.indexOf('baconbook') !== -1; // My computer's name
+          //   if (isBacon) {
+          //     // this.updatePeripheral(peripheral);
+          //     Bluetooth.stopScanAsync();
+          //     this.setState({ isScanning: false });
 
-              const loadedPeripheral = await Bluetooth.loadPeripheralAsync(peripheral);
-              this.props.navigation.push('BluetoothPeripheralScreen', {
-                peripheral: loadedPeripheral,
-              });
-            }
-          }
+          //     const loadedPeripheral = await Bluetooth.loadPeripheralAsync(peripheral);
+          //     this.props.navigation.push('BluetoothPeripheralScreen', {
+          //       peripheral: loadedPeripheral,
+          //     });
+          //   }
+          // }
         },
       });
     });
+
+    const central = await Bluetooth.getCentralAsync();
+    this.setState({ central });
   }
 
   componentWillUnmount() {

@@ -61,7 +61,7 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
   private static final int ENABLE_REQUEST = 65072;
   static ModuleRegistry moduleRegistry;
   public BluetoothScanManager scanManager;
-  private Map<String, Peripheral> peripherals = new LinkedHashMap<>();
+  static private Map<String, Peripheral> peripherals = new LinkedHashMap<>();
   private ModuleRegistry mModuleRegistry;
   private BluetoothManager bluetoothManager;
   private BondingPromise createBond;
@@ -88,12 +88,14 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
     Log.e(TAG, errorMessage);
   }
 
-  public void emitState() {
-    Map<String, Peripheral> peripheralsCopy = new LinkedHashMap<>(peripherals);
-    ArrayList<Peripheral> input = new ArrayList<>(peripheralsCopy.values());
-    Bundle output = new Bundle();
-    output.putParcelableArrayList(BluetoothConstants.JSON.PERIPHERALS, Peripheral.listToJSON(input));
-    sendEvent("UPDATE", output);
+  public static void emitState() {
+    if (peripherals != null) {
+      Map<String, Peripheral> peripheralsCopy = new LinkedHashMap<>(peripherals);
+      ArrayList<Peripheral> input = new ArrayList<>(peripheralsCopy.values());
+      Bundle output = new Bundle();
+      output.putParcelableArrayList(BluetoothConstants.JSON.PERIPHERALS, Peripheral.listToJSON(input));
+      sendEvent("UPDATE", output);
+    }
   }
 
 
@@ -238,6 +240,7 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
         error.putInt(BluetoothConstants.JSON.CODE, errorCode);
         map.putBundle(BluetoothConstants.JSON.ERROR, map);
         BluetoothModule.sendEvent(BluetoothConstants.EVENTS.CENTRAL_DID_STOP_SCANNING, map);
+        emitState();
       }
     });
 
@@ -249,7 +252,7 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
       @Override
       public void onReceive(Context context, Intent intent) {
         final String action = intent.getAction();
-
+        emitState();
         if (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)) {
           // TODO: Bacon: Test if this works like expected: centralManagerDidUpdateState
           final int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR);
@@ -525,13 +528,13 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
 
   @ExpoMethod
   public void readRSSIAsync(
-      final Map<String, Object> options,
+      final String peripheralUUID,
       final Promise promise
   ) {
     if (guardPeripheralAction(promise)) {
       return;
     }
-    Peripheral peripheral = _getPeripheralOrReject((String) options.get(BluetoothConstants.JSON.PERIPHERAL_UUID), promise);
+    Peripheral peripheral = _getPeripheralOrReject(peripheralUUID, promise);
     if (peripheral == null) {
       return;
     }
@@ -959,6 +962,7 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
       if (!peripherals.containsKey(address)) {
         Peripheral peripheral = new Peripheral(device, RSSI, scanRecord);
         peripherals.put(device.getAddress(), peripheral);
+        emitState();
       } else {
         Peripheral peripheral = peripherals.get(address);
         peripheral.updateRSSI(RSSI);

@@ -154,6 +154,7 @@ export async function writeCharacteristicWithoutResponseAsync({ peripheralUUID, 
         peripheralUUID,
         serviceUUID,
         characteristicUUID,
+        data,
         characteristicProperties: CharacteristicProperty.WriteWithoutResponse,
     });
     return characteristic;
@@ -161,8 +162,12 @@ export async function writeCharacteristicWithoutResponseAsync({ peripheralUUID, 
 export async function readRSSIAsync(peripheralUUID) {
     invariantAvailability('readRSSIAsync');
     invariantUUID(peripheralUUID);
-    const { RSSI } = await ExpoBluetooth.readRSSIAsync(peripheralUUID);
-    return RSSI;
+    return await ExpoBluetooth.readRSSIAsync(peripheralUUID);
+}
+export async function requestMTUAsync(peripheralUUID, MTU) {
+    invariantAvailability('requestMTUAsync');
+    invariantUUID(peripheralUUID);
+    return await ExpoBluetooth.requestMTUAsync(peripheralUUID, MTU);
 }
 export async function getPeripheralsAsync() {
     invariantAvailability('getPeripheralsAsync');

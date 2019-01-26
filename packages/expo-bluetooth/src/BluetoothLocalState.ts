@@ -29,7 +29,7 @@ export function updateStateWithPeripheral(peripheral: NativePeripheral) {
     [peripheral.id]: currentPeripheral = {
       discoveryTimestamp: Date.now(),
       advertisementData: undefined,
-      rssi: null,
+      RSSI: null,
     },
     ...others
   } = _peripherals;
@@ -38,7 +38,7 @@ export function updateStateWithPeripheral(peripheral: NativePeripheral) {
     [peripheral.id]: {
       discoveryTimestamp: currentPeripheral.discoveryTimestamp,
       advertisementData: currentPeripheral.advertisementData,
-      rssi: currentPeripheral.rssi,
+      RSSI: currentPeripheral.RSSI,
       // ...currentPeripheral,
       ...peripheral,
     },

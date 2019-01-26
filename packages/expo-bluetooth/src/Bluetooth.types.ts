@@ -159,7 +159,7 @@ export interface NativeAdvertismentData {
 export interface NativePeripheral extends NativeBluetoothElement {
   advertisementData?: NativeAdvertismentData;
   name: string | null;
-  rssi: number | null;
+  RSSI: number | null;
   state: PeripheralState;
   canSendWriteWithoutResponse: boolean;
   services: NativeService[];
@@ -169,7 +169,7 @@ export interface NativePeripheral extends NativeBluetoothElement {
   discoveryTimestamp?: number;
 }
 
-export type PeripheralFoundCallback = ((peripheral: NativePeripheral) => void);
+export type PeripheralFoundCallback = (peripheral: NativePeripheral) => void;
 
 export type StateUpdatedCallback = (state: CentralState) => void;
 

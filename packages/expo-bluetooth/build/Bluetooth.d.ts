@@ -17,9 +17,10 @@ export declare function readDescriptorAsync({ peripheralUUID, serviceUUID, chara
 export declare function writeDescriptorAsync({ peripheralUUID, serviceUUID, characteristicUUID, descriptorUUID, data, }: any): Promise<any>;
 export declare function shouldNotifyDescriptorAsync({ peripheralUUID, serviceUUID, characteristicUUID, descriptorUUID, shouldNotify, }: any): Promise<any>;
 export declare function readCharacteristicAsync({ peripheralUUID, serviceUUID, characteristicUUID, }: any): Promise<Base64 | null>;
-export declare function writeCharacteristicAsync({ peripheralUUID, serviceUUID, characteristicUUID, data, }: any): Promise<any>;
-export declare function writeCharacteristicWithoutResponseAsync({ peripheralUUID, serviceUUID, characteristicUUID, data, }: WriteCharacteristicOptions): Promise<any>;
+export declare function writeCharacteristicAsync({ peripheralUUID, serviceUUID, characteristicUUID, data, }: any): Promise<NativeCharacteristic>;
+export declare function writeCharacteristicWithoutResponseAsync({ peripheralUUID, serviceUUID, characteristicUUID, data, }: WriteCharacteristicOptions): Promise<NativeCharacteristic>;
 export declare function readRSSIAsync(peripheralUUID: UUID): Promise<number>;
+export declare function requestMTUAsync(peripheralUUID: UUID, MTU: number): Promise<number>;
 export declare function getPeripheralsAsync(): Promise<any[]>;
 export declare function getCentralAsync(): Promise<any>;
 export declare function isScanningAsync(): Promise<any>;

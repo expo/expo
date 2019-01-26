@@ -284,7 +284,7 @@ class PeripheralView extends React.Component {
       canSendWriteWithoutResponse,
       services = [],
       state,
-      rssi,
+      RSSI,
       discoveryTimestamp,
       advertisementData,
     } = this.props;
@@ -297,7 +297,7 @@ class PeripheralView extends React.Component {
       <DataContainer title="Peripheral">
         {name && <BluetoothListItem title="Name" value={name} />}
         <BluetoothListItem title="ID" value={uuid} />
-        <BluetoothListItem title="RSSI" value={rssi} />
+        <BluetoothListItem title="RSSI" value={RSSI} />
         <BluetoothListItem title="Connection State" value={state} />
         {discoveryDate && <BluetoothListItem title="Discovered" value={discoveryDate} />}
 
