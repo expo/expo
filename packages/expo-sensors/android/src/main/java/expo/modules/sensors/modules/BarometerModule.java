@@ -36,7 +36,6 @@ public class BarometerModule extends BaseSensorModule {
   protected Bundle eventToMap(SensorEvent sensorEvent) {
     Bundle map = new Bundle();
     // TODO: Bacon: Can we get relative altitude?
-    // TODO: Bacon: Should we create a conversion from PSI to hPa?
     map.putDouble("pressure", sensorEvent.values[0]);
     return map;
   }
