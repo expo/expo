@@ -17,7 +17,7 @@ For questions on setup, feel free to comment on this post: [**React Native Googl
 3. Create a native iOS, and Android app using the Bundle ID and Android package you defined earlier.
 4. Download the `GoogleService-info.plist` (iOS) & the `google-services.json` (Android). Move them to your Expo project.
 5. In the `app.json`, set your `expo.ios.config.googleSignIn.reservedClientId` to the value of `REVERSE_CLIENT_ID` in the `GoogleService-info.plist`.
-6. Still in `app.json`, assign `expo.android.googleServicesFile` to the relative path of your `google-services.json`. Make sure the file is located somewhere in your expo project.
+6. Also in `app.json`, set `expo.android.googleServicesFile` to the relative path of your `google-services.json`. Make sure the file is located somewhere in your Expo project.
 
 ```js
  // app.json
