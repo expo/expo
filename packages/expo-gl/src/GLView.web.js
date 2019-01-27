@@ -151,8 +151,10 @@ export default class GLView extends React.Component<Props, State> {
   }
 
   _updateLayout = () => {
-    const { clientWidth: width = 0, clientHeight: height = 0 } = this.container;
-    this.setState({ width, height });
+    if (this.container) {
+      const { clientWidth: width = 0, clientHeight: height = 0 } = this.container;
+      this.setState({ width, height });
+    }
   };
 
   render() {
