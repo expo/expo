@@ -25,7 +25,7 @@ For questions on setup, feel free to comment on this post: [**React Native Googl
   "expo": {
     "ios": {
       // The bundle ID you used with your Firebase app
-      "bundleIdentifier": "com.bacon.expo.googlesignin",
+      "bundleIdentifier": "example.expo.googlesignin",
       "config": {
         "googleSignIn": {
           // Your REVERSE_CLIENT_ID from the GoogleService-info.plist
