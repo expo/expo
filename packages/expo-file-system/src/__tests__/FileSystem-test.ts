@@ -1,16 +1,9 @@
-import { mockPlatformWeb, mockProperty, unmockAllProperties } from 'jest-expo';
+import { mockPlatformWeb, mockProperty } from 'jest-expo';
 
 import ExponentFileSystem from '../ExponentFileSystem';
 import * as FileSystem from '../FileSystem';
 
 describe('FileSystem', () => {
-  beforeEach(() => {
-    applyMocks();
-    mockPlatformWeb();
-  });
-
-  afterAll(unmockAllProperties);
-
   describe('Constants', () => {
     it('documentDirectory', () => expect(FileSystem.documentDirectory).toBeDefined());
     it('cacheDirectory', () => expect(FileSystem.cacheDirectory).toBeDefined());
@@ -51,9 +44,9 @@ describe('FileSystem', () => {
     it('readDirectoryAsync', async () => {
       await FileSystem.readDirectoryAsync(URI);
     });
-    // it ('downloadAsync', async () => {
-    // await FileSystem.downloadAsync();
-    // });
+    it('downloadAsync', async () => {
+      await FileSystem.downloadAsync(URI, toURI);
+    });
   });
 });
 
