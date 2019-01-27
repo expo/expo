@@ -4,7 +4,7 @@ title: Print
 
 An API for iOS (AirPrint) and Android printing functionality.
 
-### `Expo.Print.printAsync(options)`
+### `Print.printAsync(options)`
 
 Prints a document or HTML.
 
@@ -23,7 +23,7 @@ Prints a document or HTML.
 
 -   Resolves to an empty promise if printing started.
 
-### `Expo.Print.printToFileAsync(options)`
+### `Print.printToFileAsync(options)`
 
 Prints HTML to PDF file and saves it to [app's cache directory](../filesystem/#expofilesystemcachedirectory).
 
@@ -42,7 +42,7 @@ Prints HTML to PDF file and saves it to [app's cache directory](../filesystem/#e
     -   **numberOfPages (_number_)** -- Number of pages that were needed to render given content.
     -   **base64 (_string_)** -- Base64 encoded string containing the data of the PDF file. **Available only if `base64` option is truthy.** It doesn't include data URI prefix `data:application/pdf;base64,`.
 
-### `Expo.Print.selectPrinterAsync()`
+### `Print.selectPrinterAsync()`
 
 **Available on iOS only.** Chooses a printer that can be later used in `printAsync`.
 

@@ -22,6 +22,11 @@ EX_EXPORT_MODULE(ExponentGyroscope);
   [sensorService setGyroscopeUpdateInterval:updateInterval];
 }
 
+- (BOOL)isAvailable:(id)sensorService
+{
+  return [sensorService isGyroAvailable];
+}
+
 - (void)subscribeToSensorService:(id)sensorService withHandler:(void (^)(NSDictionary *event))handlerBlock
 {
   [sensorService sensorModuleDidSubscribeForGyroscopeUpdates:self withHandler:handlerBlock];

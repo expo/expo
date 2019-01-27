@@ -116,4 +116,58 @@ EX_REGISTER_MODULE();
   return scale;
 }
 
+
+// Kind of copied from RN to make UIColor:(id)json work
++ (NSArray<NSNumber *> *)NSNumberArray:(id)json
+{
+  return json;
+}
+
++ (NSNumber *)NSNumber:(id)json
+{
+  return json;
+}
+
++ (CGFloat)CGFloat:(id)json
+{
+  return [[self NSNumber:json] floatValue];
+}
+
++ (NSInteger)NSInteger:(id)json
+{
+  return [[self NSNumber:json] integerValue];
+}
+
++ (NSUInteger)NSUInteger:(id)json
+{
+  return [[self NSNumber:json] unsignedIntegerValue];
+}
+
+// Copied from RN
++ (UIColor *)UIColor:(id)json
+{
+  if (!json) {
+    return nil;
+  }
+  if ([json isKindOfClass:[NSArray class]]) {
+    NSArray *components = [self NSNumberArray:json];
+    CGFloat alpha = components.count > 3 ? [self CGFloat:components[3]] : 1.0;
+    return [UIColor colorWithRed:[self CGFloat:components[0]]
+                           green:[self CGFloat:components[1]]
+                            blue:[self CGFloat:components[2]]
+                           alpha:alpha];
+  } else if ([json isKindOfClass:[NSNumber class]]) {
+    NSUInteger argb = [self NSUInteger:json];
+    CGFloat a = ((argb >> 24) & 0xFF) / 255.0;
+    CGFloat r = ((argb >> 16) & 0xFF) / 255.0;
+    CGFloat g = ((argb >> 8) & 0xFF) / 255.0;
+    CGFloat b = (argb & 0xFF) / 255.0;
+    return [UIColor colorWithRed:r green:g blue:b alpha:a];
+  } else {
+    EXLogInfo(@"%@ cannot be converted to a UIColor", json);
+    return nil;
+  }
+}
+
+
 @end

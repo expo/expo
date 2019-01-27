@@ -381,9 +381,7 @@ const styles = StyleSheet.create({
   bottomBar: {
     paddingBottom: isIPhoneX ? 25 : 5,
     backgroundColor: 'transparent',
-    alignSelf: 'flex-end',
     justifyContent: 'space-between',
-    flex: 0.12,
     flexDirection: 'row',
   },
   noPermissions: {

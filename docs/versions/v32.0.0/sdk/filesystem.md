@@ -4,29 +4,29 @@ title: FileSystem
 
 Provides access to a file system stored locally on the device. Each Expo app has a separate file systems and has no access to the file system of other Expo apps. The API takes `file://` URIs pointing to local files on the device to identify files. Each app only has read and write access to locations under the following directories:
 
--   **`Expo.FileSystem.documentDirectory`**
+-   **`FileSystem.documentDirectory`**
 
   `file://` URI pointing to the directory where user documents for this app will be stored. Files stored here will remain until explicitly deleted by the app. Ends with a trailing `/`. Example uses are for files the user saves that they expect to see again.
 
--   **`Expo.FileSystem.cacheDirectory`**
+-   **`FileSystem.cacheDirectory`**
 
   `file://` URI pointing to the directory where temporary files used by this app will be stored. Files stored here may be automatically deleted by the system when low on storage. Example uses are for downloaded or generated files that the app just needs for one-time usage.
 
-So, for example, the URI to a file named `'myFile'` under `'myDirectory'` in the app's user documents directory would be `Expo.FileSystem.documentDirectory + 'myDirectory/myFile'`.
+So, for example, the URI to a file named `'myFile'` under `'myDirectory'` in the app's user documents directory would be `FileSystem.documentDirectory + 'myDirectory/myFile'`.
 
 Expo APIs that create files generally operate within these directories. This includes `Audio` recordings,  `Camera` photos, `ImagePicker` results, `SQLite` databases and `takeSnapShotAsync()` results. This allows their use with the `FileSystem` API.
 
-Some `FileSystem` functions are able to read from (but not write to) other locations. Currently `Expo.FileSystem.getInfoAsync()` and `Expo.FileSystem.copyAsync()` are able to read from URIs returned by [`CameraRoll.getPhotos()`](https://facebook.github.io/react-native/docs/cameraroll.html#getphotos) from React Native.
+Some `FileSystem` functions are able to read from (but not write to) other locations. Currently `FileSystem.getInfoAsync()` and `FileSystem.copyAsync()` are able to read from URIs returned by [`CameraRoll.getPhotos()`](https://facebook.github.io/react-native/docs/cameraroll.html#getphotos) from React Native.
 
--   **`Expo.FileSystem.EncodingTypes`**
+-   **`FileSystem.EncodingTypes`**
 
   These constants can be used to define how data is read / written.
 
-  - **Expo.FileSystem.EncodingTypes.UTF8** -- Standard readable format.
+  - **FileSystem.EncodingTypes.UTF8** -- Standard readable format.
 
-  - **Expo.FileSystem.EncodingTypes.Base64** -- Binary, radix-64 representation.
+  - **FileSystem.EncodingTypes.Base64** -- Binary, radix-64 representation.
 
-### `Expo.FileSystem.getInfoAsync(fileUri, options)`
+### `FileSystem.getInfoAsync(fileUri, options)`
 
 Get metadata information about a file or directory.
 
@@ -57,7 +57,7 @@ If no item exists at this URI, returns `{ exists: false, isDirectory: false }`. 
 -   **md5 (_string_)** -- Present if the `md5` option was truthy. Contains the MD5 hash of the file.
 
 
-### `Expo.FileSystem.readAsStringAsync(fileUri, options)`
+### `FileSystem.readAsStringAsync(fileUri, options)`
 
 Read the entire contents of a file as a string. Binary will be returned in raw format, you will need to append `data:image/png;base64,` to use it as Base64.
 
@@ -77,7 +77,7 @@ Read the entire contents of a file as a string. Binary will be returned in raw f
 
 A string containing the entire contents of the file.
 
-### `Expo.FileSystem.writeAsStringAsync(fileUri, contents, options)`
+### `FileSystem.writeAsStringAsync(fileUri, contents, options)`
 
 Write the entire contents of a file as a string.
 
@@ -91,7 +91,7 @@ Write the entire contents of a file as a string.
 
   -   **encoding (_string_)** -- The encoding format to use when writing the file. Options: `FileSystem.EncodingTypes.UTF8`, `FileSystem.EncodingTypes.Base64`. Default is `FileSystem.EncodingTypes.UTF8`
 
-### `Expo.FileSystem.deleteAsync(fileUri, options)`
+### `FileSystem.deleteAsync(fileUri, options)`
 
 Delete a file or directory. If the URI points to a directory, the directory and all its contents are recursively deleted.
 
@@ -103,7 +103,7 @@ Delete a file or directory. If the URI points to a directory, the directory and 
 
     -   **idempotent (_boolean_)** -- If `true`, don't throw an error if there is no file or directory at this URI. `false` by default.
 
-### `Expo.FileSystem.moveAsync(options)`
+### `FileSystem.moveAsync(options)`
 
 Move a file or directory to a new location.
 
@@ -115,7 +115,7 @@ Move a file or directory to a new location.
 
     -   **to (_string_)** -- `file://` URI to the file or directory at what should be its new location.
 
-### `Expo.FileSystem.copyAsync(options)`
+### `FileSystem.copyAsync(options)`
 
 Create a copy of a file or directory. Directories are recursively copied with all of their contents.
 
@@ -127,7 +127,7 @@ Create a copy of a file or directory. Directories are recursively copied with al
 
     -   **to (_string_)** -- The `file://` URI to the new copy to create.
 
-### `Expo.FileSystem.makeDirectoryAsync(fileUri, options)`
+### `FileSystem.makeDirectoryAsync(fileUri, options)`
 
 Create a new empty directory.
 
@@ -139,7 +139,7 @@ Create a new empty directory.
 
     -   **intermediates (_boolean_)** -- If `true`, create any non-existent parent directories when creating the directory at `fileUri`. If `false`, raises an error if any of the intermediate parent directories does not exist. `false` by default.
 
-### `Expo.FileSystem.readDirectoryAsync(fileUri)`
+### `FileSystem.readDirectoryAsync(fileUri)`
 
 Enumerate the contents of a directory.
 
@@ -151,7 +151,7 @@ Enumerate the contents of a directory.
 
 An array of strings, each containing the name of a file or directory contained in the directory at `fileUri`.
 
-### `Expo.FileSystem.downloadAsync(uri, fileUri, options)`
+### `FileSystem.downloadAsync(uri, fileUri, options)`
 
 Download the contents at a remote URI to a file in the app's file system.
 
@@ -192,7 +192,7 @@ Returns an object with the following fields:
 
 -   **md5 (_string_)** -- Present if the `md5` option was truthy. Contains the MD5 hash of the file.
 
-### `Expo.FileSystem.createDownloadResumable(uri, fileUri, options, callback, resumeData)`
+### `FileSystem.createDownloadResumable(uri, fileUri, options, callback, resumeData)`
 
 Create a `DownloadResumable` object which can start, pause, and resume a download of contents at a remote URI to a file in the app's file system.  Please note:  You need to call `downloadAsync()`, on a `DownloadResumable` instance to initiate the download.  The `DownloadResumable` object has a callback that provides download progress updates.  Downloads can be resumed across app restarts by using `AsyncStorage` to store the `DownloadResumable.savable()` object for later retrieval.  The `savable` object contains the arguments required to initialize a new `DownloadResumable` object to resume the download after an app restart.
 
@@ -215,7 +215,7 @@ Create a `DownloadResumable` object which can start, pause, and resume a downloa
 
 -   **resumeData (_string_)** -- The string which allows the api to resume a paused download.  This is set on the `DownloadResumable` object automatically when a download is paused.  When initializing a new `DownloadResumable` this should be `null`.
 
-### `Expo.FileSystem.DownloadResumable.downloadAsync()`
+### `FileSystem.DownloadResumable.downloadAsync()`
 
 Download the contents at a remote URI to a file in the app's file system.
 
@@ -231,9 +231,9 @@ Returns an object with the following fields:
 
 -   **md5 (_string_)** -- Present if the `md5` option was truthy. Contains the MD5 hash of the file.
 
-### `Expo.FileSystem.DownloadResumable.pauseAsync()`
+### `FileSystem.DownloadResumable.pauseAsync()`
 
-Pause the current download operation.  `resumeData` is added to the `DownloadResumable` object after a successful pause operation.  Returns an object that can be saved with `AsyncStorage` for future retrieval (the same object that is returned from calling `Expo.FileSystem.DownloadResumable.savable()`.  Please see the example below.
+Pause the current download operation.  `resumeData` is added to the `DownloadResumable` object after a successful pause operation.  Returns an object that can be saved with `AsyncStorage` for future retrieval (the same object that is returned from calling `FileSystem.DownloadResumable.savable()`.  Please see the example below.
 
 #### Returns
 
@@ -249,7 +249,7 @@ Returns an object with the following fields:
 
 -   **resumeData (_string_)** -- The string which allows the API to resume a paused download.
 
-### `Expo.FileSystem.DownloadResumable.resumeAsync()`
+### `FileSystem.DownloadResumable.resumeAsync()`
 
 Resume a paused download operation.
 
@@ -265,7 +265,7 @@ Returns an object with the following fields:
 
 -   **md5 (_string_)** -- Present if the `md5` option was truthy. Contains the MD5 hash of the file.
 
-### `Expo.FileSystem.DownloadResumable.savable()`
+### `FileSystem.DownloadResumable.savable()`
 
 Returns an object which can be saved with `AsyncStorage` for future retrieval.
 

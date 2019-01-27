@@ -6,6 +6,7 @@ import android.content.Context;
 
 import host.exp.exponent.kernel.services.linking.LinkingKernelService;
 import host.exp.exponent.kernel.services.sensors.AccelerometerKernelService;
+import host.exp.exponent.kernel.services.sensors.BarometerKernelService;
 import host.exp.exponent.kernel.services.sensors.GravitySensorKernelService;
 import host.exp.exponent.kernel.services.sensors.GyroscopeKernelService;
 import host.exp.exponent.kernel.services.sensors.LinearAccelerationSensorKernelService;
@@ -19,6 +20,8 @@ public class ExpoKernelServiceRegistry {
   private GyroscopeKernelService mGyroscopeKernelService = null;
   private MagnetometerKernelService mMagnetometerKernelService = null;
   private AccelerometerKernelService mAccelerometerKernelService = null;
+  private BarometerKernelService mBarometerKernelService = null;
+
   private GravitySensorKernelService mGravitySensorKernelService = null;
   private RotationVectorSensorKernelService mRotationVectorSensorKernelService = null;
   private LinearAccelerationSensorKernelService mLinearAccelerationSensorKernelService = null;
@@ -31,6 +34,7 @@ public class ExpoKernelServiceRegistry {
     mGyroscopeKernelService = new GyroscopeKernelService(context);
     mMagnetometerKernelService = new MagnetometerKernelService(context);
     mAccelerometerKernelService = new AccelerometerKernelService(context);
+    mBarometerKernelService = new BarometerKernelService(context);
     mGravitySensorKernelService = new GravitySensorKernelService(context);
     mRotationVectorSensorKernelService = new RotationVectorSensorKernelService(context);
     mLinearAccelerationSensorKernelService = new LinearAccelerationSensorKernelService(context);
@@ -54,6 +58,10 @@ public class ExpoKernelServiceRegistry {
 
   public AccelerometerKernelService getAccelerometerKernelService() {
     return mAccelerometerKernelService;
+  }
+
+  public BarometerKernelService getBarometerKernelService() {
+    return mBarometerKernelService;
   }
 
   public GravitySensorKernelService getGravitySensorKernelService() {

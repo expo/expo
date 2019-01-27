@@ -6,5 +6,6 @@
                                                        withHandler:(void (^)(NSDictionary *event))handlerBlock;
 - (void)sensorModuleDidUnsubscribeForMagnetometerUncalibratedUpdates:(id)scopedSensorModule;
 - (void)setMagnetometerUncalibratedUpdateInterval:(NSTimeInterval)intervalMs;
+- (BOOL)isMagnetometerUncalibratedAvailable;
 
 @end

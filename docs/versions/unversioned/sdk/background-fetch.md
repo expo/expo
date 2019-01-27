@@ -3,8 +3,7 @@ title: BackgroundFetch
 ---
 
 Provides API to perform [background fetch](https://developer.apple.com/documentation/uikit/core_app/managing_your_app_s_life_cycle/preparing_your_app_to_run_in_the_background/updating_your_app_with_background_app_refresh) tasks. This module uses [TaskManager](../task-manager) Native API under the hood.
-In order to use `BackgroundFetch` API in standalone and detached apps, your app has to include background mode in the `Info.plist` file. See [background tasks configuration guide](../task-manager#configuration) for more details.
-**This module is implemented only on iOS.**
+In order to use `BackgroundFetch` API in standalone and detached apps on iOS, your app has to include background mode in the `Info.plist` file. See [background tasks configuration guide](../task-manager#configuration-for-standalone-apps) for more details.
 
 ### `BackgroundFetch.getStatusAsync()`
 
@@ -17,13 +16,18 @@ Returns a promise resolving to one of these values:
 -   `BackgroundFetch.Status.Denied` - The user explicitly disabled background behavior for this app or for the whole system.
 -   `BackgroundFetch.Status.Available` - Background updates are available for the app.
 
-### `BackgroundFetch.registerTaskAsync(taskName)`
+### `BackgroundFetch.registerTaskAsync(taskName, options)`
 
-Registers background fetch task with given name. Registered tasks are saved in persistent storage and restored once the app is initialized. Remember to also call [BackgroundFetch.setMinimumIntervalAsync](#backgroundfetchsetminimumintervalasyncminimuminterval) as fetch operations will not be occurring with its default value.
+Registers background fetch task with given name. Registered tasks are saved in persistent storage and restored once the app is initialized.
 
 #### Arguments
 
--   **taskName (_string_)** -- Name of the task to register. The task needs to be defined first - see [TaskManager.defineTask](../task-manager/#taskmanagerdefinetasktaskname-task) for more details.
+-   **taskName (_string_)** -- Name of the task to register. The task needs to be defined first - see [TaskManager.defineTask](../task-manager#taskmanagerdefinetasktaskname-task) for more details.
+-   **options (_object_)** -- An object of options:
+    -   **minimumInterval (_number_)** -- Inexact interval in seconds between subsequent repeats of the background fetch alarm. The final interval may differ from the specified one to minimize wakeups and battery usage.
+    On Android it defaults to **15 minutes**. On iOS it calls [BackgroundFetch.setMinimumIntervalAsync](#backgroundfetchsetminimumintervalasyncminimuminterval) behind the scenes and the default value is the smallest fetch interval supported by the system (**10-15 minutes**).
+    -   **stopOnTerminate (_boolean_)** -- Whether to stop receiving background fetch events after user terminates the app. Defaults to `true`. (**Android only**)
+    -   **startOnBoot (_boolean_)** -- Whether to restart background fetch events when the device has finished booting. Defaults to `false`. (**Android only**)
 
 #### Returns
 
@@ -65,7 +69,9 @@ A promise resolving when the task is fully unregistered.
 
 ### `BackgroundFetch.setMinimumIntervalAsync(minimumInterval)`
 
-Sets the minimum number of seconds that must elapse before another background fetch can be initiated. This value is advisory only and does not indicate the exact amount of time expected between fetch operations. It defaults to the number large enough to prevent fetch operations from occurring.
+Sets the minimum number of seconds that must elapse before another background fetch can be initiated. This value is advisory only and does not indicate the exact amount of time expected between fetch operations.
+
+*This method doesn't take any effect on Android.*
 
 *It is a global value which means that it can overwrite settings from another application opened through Expo Client.*
 

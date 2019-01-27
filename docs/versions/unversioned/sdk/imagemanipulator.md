@@ -4,7 +4,7 @@ title: ImageManipulator
 
 An API to modify images stored in app scope.
 
-### `Expo.ImageManipulator.manipulateAsync(uri, actions, saveOptions)`
+### `ImageManipulator.manipulateAsync(uri, actions, saveOptions)`
 
 Manipulate the image provided via `uri`. Available modifications are rotating, flipping (mirroring), resizing and cropping. Each invocation results in a new file. With one invocation you can provide a set of actions to perform over the image. Overwriting the source file would not have an effect in displaying the result as images are cached. 
 

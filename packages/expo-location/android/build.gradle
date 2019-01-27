@@ -66,10 +66,11 @@ if (new File(rootProject.projectDir.parentFile, 'pubspec.yaml').exists()) {
 
 dependencies {
   expendency "expo-core"
+  expendency "expo-errors"
   expendency "expo-permissions-interface"
   expendency "expo-task-manager-interface"
 
-  api 'com.google.android.gms:play-services-location:15.0.1'
+  api 'com.google.android.gms:play-services-location:16.0.0'
 
   api('io.nlopez.smartlocation:library:3.2.11') {
     transitive = false

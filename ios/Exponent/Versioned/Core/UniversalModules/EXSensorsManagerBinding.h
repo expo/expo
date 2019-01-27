@@ -3,6 +3,7 @@
 #import <Foundation/Foundation.h>
 #import <EXCore/EXInternalModule.h>
 #import <EXSensorsInterface/EXAccelerometerInterface.h>
+#import <EXSensorsInterface/EXBarometerInterface.h>
 #import <EXSensorsInterface/EXDeviceMotionInterface.h>
 #import <EXSensorsInterface/EXGyroscopeInterface.h>
 #import <EXSensorsInterface/EXMagnetometerInterface.h>
@@ -32,9 +33,20 @@
 - (void)sensorModuleDidUnsubscribeForMagnetometerUncalibratedUpdatesOfExperience:(NSString *)experienceId;
 - (void)setMagnetometerUncalibratedUpdateInterval:(NSTimeInterval)intervalMs;
 
+- (void)sensorModuleDidSubscribeForBarometerUpdatesOfExperience:(NSString *)experienceId withHandler:(void (^)(NSDictionary *event))handlerBlock;
+- (void)sensorModuleDidUnsubscribeForBarometerUpdatesOfExperience:(NSString *)experienceId;
+- (void)setBarometerUpdateInterval:(NSTimeInterval)intervalMs;
+
+- (BOOL)isBarometerAvailable;
+- (BOOL)isAccelerometerAvailable;
+- (BOOL)isDeviceMotionAvailable;
+- (BOOL)isGyroAvailable;
+- (BOOL)isMagnetometerAvailable;
+- (BOOL)isMagnetometerUncalibratedAvailable;
+
 @end
 
-@interface EXSensorsManagerBinding : NSObject <EXInternalModule, EXAccelerometerInterface, EXDeviceMotionInterface, EXGyroscopeInterface, EXMagnetometerInterface, EXMagnetometerUncalibratedInterface>
+@interface EXSensorsManagerBinding : NSObject <EXInternalModule, EXAccelerometerInterface, EXBarometerInterface, EXDeviceMotionInterface, EXGyroscopeInterface, EXMagnetometerInterface, EXMagnetometerUncalibratedInterface>
 
 - (instancetype)initWithExperienceId:(NSString *)experienceId andKernelService:(id<EXSensorsManagerBindingDelegate>)kernelService;
 
@@ -43,15 +55,26 @@
 - (void)sensorModuleDidSubscribeForGyroscopeUpdates:(id)scopedSensorModule withHandler:(void (^)(NSDictionary *))handlerBlock;
 - (void)sensorModuleDidSubscribeForMagnetometerUncalibratedUpdates:(id)scopedSensorModule withHandler:(void (^)(NSDictionary *))handlerBlock;
 - (void)sensorModuleDidSubscribeForMagnetometerUpdates:(id)scopedSensorModule withHandler:(void (^)(NSDictionary *))handlerBlock;
+- (void)sensorModuleDidSubscribeForBarometerUpdates:(id)scopedSensorModule withHandler:(void (^)(NSDictionary *))handlerBlock;
 - (void)sensorModuleDidUnsubscribeForAccelerometerUpdates:(id)scopedSensorModule;
 - (void)sensorModuleDidUnsubscribeForDeviceMotionUpdates:(id)scopedSensorModule;
 - (void)sensorModuleDidUnsubscribeForGyroscopeUpdates:(id)scopedSensorModule;
 - (void)sensorModuleDidUnsubscribeForMagnetometerUncalibratedUpdates:(id)scopedSensorModule;
 - (void)sensorModuleDidUnsubscribeForMagnetometerUpdates:(id)scopedSensorModule;
+- (void)sensorModuleDidUnsubscribeForBarometerUpdates:(id)scopedSensorModule;
 - (void)setAccelerometerUpdateInterval:(NSTimeInterval)intervalMs;
 - (void)setDeviceMotionUpdateInterval:(NSTimeInterval)intervalMs;
 - (void)setGyroscopeUpdateInterval:(NSTimeInterval)intervalMs;
 - (void)setMagnetometerUncalibratedUpdateInterval:(NSTimeInterval)intervalMs;
 - (void)setMagnetometerUpdateInterval:(NSTimeInterval)intervalMs;
+- (void)setBarometerUpdateInterval:(NSTimeInterval)intervalMs;
+
+- (BOOL)isBarometerAvailable;
+
+- (BOOL)isAccelerometerAvailable;
+- (BOOL)isDeviceMotionAvailable;
+- (BOOL)isGyroAvailable;
+- (BOOL)isMagnetometerAvailable;
+- (BOOL)isMagnetometerUncalibratedAvailable;
 
 @end

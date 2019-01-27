@@ -1,7 +1,6 @@
+import { describeCrossPlatform, mockProperty, unmockAllProperties } from 'jest-expo';
 import { NativeModules } from 'react-native';
 import WebBrowser from '../WebBrowser/WebBrowser';
-
-import { mockProperty, unmockAllProperties, describeCrossPlatform } from '../../test/mocking';
 
 const fakeReturnValue = {
   type: 'cancel',
