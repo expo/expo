@@ -33,22 +33,29 @@ export default {
     get platform() {
         return { web: UAParser(navigator.userAgent) };
     },
+    get isHeadless() {
+        return false;
+    },
     get isDevice() {
         // TODO: Bacon: Possibly want to add information regarding simulators
         return true;
+    },
+    get isDetached() {
+        return false;
     },
     get expoVersion() {
         return ExpoPackageJson.version;
     },
     get linkingUri() {
+        // On native this is `exp://`
         return location.origin + location.pathname;
     },
     get expoRuntimeVersion() {
-        return null;
+        return ExpoPackageJson.version;
     },
     get deviceName() {
         const { browser, engine, os: OS } = parser.getResult();
-        return browser.name || engine.name || OS.name || null;
+        return browser.name || engine.name || OS.name || undefined;
     },
     get systemFonts() {
         // TODO: Bacon: Maybe possible.
@@ -60,10 +67,16 @@ export default {
     get deviceYearClass() {
         // TODO: Bacon: The android version isn't very accurate either, maybe we could try and guess this value.
         console.log(`ExponentConstants.deviceYearClass: is unimplemented on web.`);
-        return null;
+        return undefined;
     },
     get manifest() {
         return process.env.APP_MANIFEST || {};
+    },
+    get experienceUrl() {
+        return location.origin + location.pathname;
+    },
+    get debugMode() {
+        return __DEV__;
     },
     async getWebViewUserAgentAsync() {
         return navigator.userAgent;
