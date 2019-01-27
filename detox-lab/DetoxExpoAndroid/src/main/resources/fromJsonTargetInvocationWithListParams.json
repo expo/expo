@@ -1,0 +1,12 @@
+{
+  "target": {
+    "type": "Class",
+    "value": "com.wix.detox.espresso.EspressoDetox"
+  },
+  "method": "setURLBlacklist",
+  "args": [
+    [
+      ".*10.0.2.2.*"
+    ]
+  ]
+}
