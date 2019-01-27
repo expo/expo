@@ -10,7 +10,7 @@ ${<SnackEmbed snackId="BJbef43HW" />}
 
 ${<SnackEmbed snackId="r1pvMV3HW" />}
 
-## `Expo.LinearGradient`
+## `LinearGradient`
 
 ### props
 

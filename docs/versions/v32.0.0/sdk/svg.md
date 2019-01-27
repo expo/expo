@@ -2,7 +2,7 @@
 title: Svg
 ---
 
-### `Expo.Svg()`
+### `Svg()`
 
 A set of drawing primitives such as `Circle`, `Rect`, `Path`,
 `ClipPath`, and `Polygon`. It supports most SVG elements and properties.

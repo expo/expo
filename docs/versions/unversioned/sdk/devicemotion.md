@@ -4,7 +4,7 @@ title: DeviceMotion
 
 Access the device motion and orientation sensors. All data is presented in terms of three axes that run through a device. According to portrait orientation: X runs from left to right, Y from bottom to top and Z perpendicularly through the screen from back to front.
 
-### `Expo.DangerZone.DeviceMotion.isAvailableAsync()`
+### `DangerZone.DeviceMotion.isAvailableAsync()`
 
 Returns whether device motion is enabled on the device.
 
@@ -12,7 +12,7 @@ Returns whether device motion is enabled on the device.
 
 - A promise that resolves to a `boolean` denoting the availability of the sensor.
 
-### `Expo.DangerZone.DeviceMotion.addListener(listener)`
+### `DangerZone.DeviceMotion.addListener(listener)`
 
 Subscribe for updates to DeviceMotion.
 
@@ -37,11 +37,11 @@ Subscribe for updates to DeviceMotion.
 - A subscription that you can call `remove()` on when you
   would like to unsubscribe the listener.
 
-### `Expo.DangerZone.DeviceMotion.removeAllListeners()`
+### `DangerZone.DeviceMotion.removeAllListeners()`
 
 Remove all listeners.
 
-### `Expo.DangerZone.DeviceMotion.setUpdateInterval(intervalMs)`
+### `DangerZone.DeviceMotion.setUpdateInterval(intervalMs)`
 
 Subscribe for updates to DeviceMotion.
 

@@ -6,7 +6,7 @@ Provides access to remote notifications (also known as push notifications) and l
 
 ## Subscribing to Notifications
 
-### `Expo.Notifications.addListener(listener)`
+### `Notifications.addListener(listener)`
 
 #### Arguments
 
@@ -33,7 +33,7 @@ An object that is passed into each event listener when a notification is receive
 
 ## Notifications
 
-### `Expo.Notifications.getExpoPushTokenAsync()`
+### `Notifications.getExpoPushTokenAsync()`
 
 #### Returns
 
@@ -41,7 +41,7 @@ Returns a Promise that resolves to a token string. This token can be provided to
 
 The Promise will be rejected if the app does not have permission to send notifications. Be sure to check the result of `Permissions.askAsync(Permissions.REMOTE_NOTIFICATIONS)` before attempting to get an Expo push token.
 
-### `Expo.Notifications.presentLocalNotificationAsync(localNotification)`
+### `Notifications.presentLocalNotificationAsync(localNotification)`
 
 Trigger a local notification immediately.
 
@@ -53,7 +53,7 @@ Trigger a local notification immediately.
 
 A Promise that resolves to a unique notification id.
 
-### `Expo.Notifications.scheduleLocalNotificationAsync(localNotification, schedulingOptions)`
+### `Notifications.scheduleLocalNotificationAsync(localNotification, schedulingOptions)`
 
 Schedule a local notification to fire at some specific time in the future or at a given interval.
 
@@ -75,7 +75,7 @@ Schedule a local notification to fire at some specific time in the future or at 
 
 A Promise that resolves to a unique notification id.
 
-### `Expo.Notifications.dismissNotificationAsync(localNotificationId)`
+### `Notifications.dismissNotificationAsync(localNotificationId)`
 
 _Android only_. Dismisses the notification with the given id.
 
@@ -83,11 +83,11 @@ _Android only_. Dismisses the notification with the given id.
 
 -   **localNotificationId (_number_)** -- A unique id assigned to the notification, returned from `scheduleLocalNotificationAsync` or `presentLocalNotificationAsync`.
 
-### `Expo.Notifications.dismissAllNotificationsAsync()`
+### `Notifications.dismissAllNotificationsAsync()`
 
 _Android only_. Clears any notifications that have been presented by the app.
 
-### `Expo.Notifications.cancelScheduledNotificationAsync(localNotificationId)`
+### `Notifications.cancelScheduledNotificationAsync(localNotificationId)`
 
 Cancels the scheduled notification corresponding to the given id.
 
@@ -95,7 +95,7 @@ Cancels the scheduled notification corresponding to the given id.
 
 -   **localNotificationId (_number_)** -- A unique id assigned to the notification, returned from `scheduleLocalNotificationAsync` or `presentLocalNotificationAsync`.
 
-### `Expo.Notifications.cancelAllScheduledNotificationsAsync()`
+### `Notifications.cancelAllScheduledNotificationsAsync()`
 
 Cancel all scheduled notifications.
 
@@ -123,7 +123,7 @@ Deletes category for given `name`.
 
 ## Android channels
 
-### `Expo.Notifications.createChannelAndroidAsync(id, channel)`
+### `Notifications.createChannelAndroidAsync(id, channel)`
 
 _Android only_. On Android 8.0+, creates a new notification channel to which local and push notifications may be posted. Channels are visible to your users in the OS Settings app as "categories", and they can change settings or disable notifications entirely on a per-channel basis. NOTE: after calling this method, you may no longer be able to alter the settings for this channel, and cannot fully delete the channel without uninstalling the app. Notification channels are required on Android 8.0+, but use this method with caution and be sure to plan your channels carefully.
 
@@ -138,7 +138,7 @@ On devices with Android 7.1 and below, Expo will "polyfill" channels for you by 
 -   **id (_string_)** -- A unique string to assign as the ID of this channel. When you present notifications later, you will pass this ID in order to associate them with your channel.
 -   **channel (_object_)** -- An object with the properties described in [ChannelAndroid](#channelandroid).
 
-### `Expo.Notifications.deleteChannelAndroidAsync(id)`
+### `Notifications.deleteChannelAndroidAsync(id)`
 
 _Android only_. On Android 8.0+, deletes the notification channel with the given ID. Note that the OS Settings UI will display the number of deleted notification channels to the user as a spam prevention mechanism, so the only way to fully delete a channel is to uninstall the app or clearing all app data.
 
@@ -176,19 +176,19 @@ An object used to describe an Android notification channel that you would like t
 
 ## App Icon Badge Number (iOS)
 
-### `Expo.Notifications.getBadgeNumberAsync()`
+### `Notifications.getBadgeNumberAsync()`
 
 #### Returns
 
 Returns a promise that resolves to the number that is displayed in a badge on the app icon. This method returns zero when there is no badge (or when on Android).
 
-### `Expo.Notifications.setBadgeNumberAsync(number)`
+### `Notifications.setBadgeNumberAsync(number)`
 
 Sets the number displayed in the app icon's badge to the given number. Setting the number to zero will both clear the badge and the list of notifications in the device's notification center on iOS. On Android this method does nothing.
 
 ## Standalone App Only
 
-### `Expo.Notifications.getDevicePushTokenAsync(config)`
+### `Notifications.getDevicePushTokenAsync(config)`
 
 Note: Most people do not need to use this. It is easier to use `getExpoPushTokenAsync` unless you have a specific reason to need the actual device tokens. We also don't guarantee that the iOS and Android clients will continue expecting the same push notification payload format.
 

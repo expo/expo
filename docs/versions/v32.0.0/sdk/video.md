@@ -25,7 +25,7 @@ Here's a simple example of a video that autoplays and loops.
 
 For more advanced examples, check out the [Playlist example](https://github.com/expo/playlist-example/blob/master/App.js), and the [custom videoplayer controls component](https://github.com/expo/videoplayer/blob/master/index.js) that wraps `<Video>`, adds custom controls and use the `<Video>` API extensively. The videoplayer controls is used in [this app](https://github.com/expo/harvard-cs50-app).
 
-## `Expo.Video`
+## `Video`
 
 ### props
 
@@ -42,7 +42,7 @@ The `source` and `posterSource` props customize the source of the video content.
   -   A dictionary of the form `{ uri: string, headers?: { [string]: string }, overrideFileExtensionAndroid?: string }` with a network URL pointing to a video file on the web, an optional headers object passed in a network request to the `uri` and an optional Android-specific `overrideFileExtensionAndroid` string overriding extension inferred from the URL.
       The `overrideFileExtensionAndroid` property may come in handy if the player receives an URL like `example.com/play` which redirects to `example.com/player.m3u8`. Setting this property to `m3u8` would allow the Android player to properly infer the content type of the media and use proper media file reader.
   -   `require('path/to/file')` for a video file asset in the source code directory.
-  -   An [`Expo.Asset`](../asset/) object for a video file asset.
+  -   An [`Asset`](../asset/) object for a video file asset.
 
   The [iOS developer documentation](https://developer.apple.com/library/ios/documentation/Miscellaneous/Conceptual/iPhoneOSTechOverview/MediaLayer/MediaLayer.html) lists the video formats supported on iOS.
 
@@ -65,9 +65,9 @@ The `useNativeControls`, `resizeMode`, and `usePoster` props customize the UI of
 
   A string describing how the video should be scaled for display in the component view bounds. Must be one of the following values:
 
-  - `Expo.Video.RESIZE_MODE_STRETCH` -- Stretch to fill component bounds.
-  - `Expo.Video.RESIZE_MODE_CONTAIN` -- Fit within component bounds while preserving aspect ratio.
-  - `Expo.Video.RESIZE_MODE_COVER` -- Fill component bounds while preserving aspect ratio.
+  - `Video.RESIZE_MODE_STRETCH` -- Stretch to fill component bounds.
+  - `Video.RESIZE_MODE_CONTAIN` -- Fit within component bounds while preserving aspect ratio.
+  - `Video.RESIZE_MODE_COVER` -- Fill component bounds while preserving aspect ratio.
 
 - `usePoster`
 
@@ -98,10 +98,10 @@ The `onPlaybackStatusUpdate`, `onReadyForDisplay`, and `onIOSFullscreenUpdate` p
   The function is passed a dictionary with the following key-value pairs:
 
   - `fullscreenUpdate`: a number taking one of the following values:
-      - `Expo.Video.FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT`: describing that the fullscreen player is about to present
-      - `Expo.Video.FULLSCREEN_UPDATE_PLAYER_DID_PRESENT`: describing that the fullscreen player just finished presenting
-      - `Expo.Video.FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS`: describing that the fullscreen player is about to dismiss
-      - `Expo.Video.FULLSCREEN_UPDATE_PLAYER_DID_DISMISS`: describing that the fullscreen player just finished dismissing
+      - `Video.FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT`: describing that the fullscreen player is about to present
+      - `Video.FULLSCREEN_UPDATE_PLAYER_DID_PRESENT`: describing that the fullscreen player just finished presenting
+      - `Video.FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS`: describing that the fullscreen player is about to dismiss
+      - `Video.FULLSCREEN_UPDATE_PLAYER_DID_DISMISS`: describing that the fullscreen player just finished dismissing
   - `status`: the `PlaybackStatus` of the video; see the [AV documentation](../av/) for further information.
 
 - `onLoadStart`
@@ -172,7 +172,7 @@ Finally, the following props are available to control the playback of the video,
 
   A `Promise` that is fulfilled with the `PlaybackStatus` of the video once the fullscreen player has finished dismissing, or rejects if there was an error, or if this was called on an Android device.
 
-The rest of the API on the `Video` component ref is the same as the API for `Expo.Audio.Sound`-- see the [AV documentation](../av/) for further information:
+The rest of the API on the `Video` component ref is the same as the API for `Audio.Sound`-- see the [AV documentation](../av/) for further information:
 
 -   `videoRef.loadAsync(source, initialStatus = {}, downloadFirst = true)`
 

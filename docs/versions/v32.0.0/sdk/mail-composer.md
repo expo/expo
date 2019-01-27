@@ -4,7 +4,7 @@ title: MailComposer
 
 An API to compose mails using OS specific UI.
 
-### `Expo.MailComposer.composeAsync(options)`
+### `MailComposer.composeAsync(options)`
 
 Opens a mail modal for iOS and a mail app intent for Android and fills the fields with provided data. 
 

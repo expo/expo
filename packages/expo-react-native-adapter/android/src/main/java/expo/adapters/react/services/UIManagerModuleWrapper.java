@@ -47,6 +47,7 @@ public class UIManagerModuleWrapper implements
 {
   private ReactContext mReactContext;
   private Map<LifecycleEventListener, com.facebook.react.bridge.LifecycleEventListener> mLifecycleListenersMap = new WeakHashMap<>();
+  private Map<ActivityEventListener, com.facebook.react.bridge.ActivityEventListener> mActivityEventListenersMap = new WeakHashMap<>();
 
   public UIManagerModuleWrapper(ReactContext reactContext) {
     mReactContext = reactContext;
@@ -149,17 +150,33 @@ public class UIManagerModuleWrapper implements
 
   @Override
   public void registerActivityEventListener(final ActivityEventListener activityEventListener) {
-    mReactContext.addActivityEventListener(new com.facebook.react.bridge.ActivityEventListener() {
+    final WeakReference<ActivityEventListener> weakListener = new WeakReference<>(activityEventListener);
+
+    mActivityEventListenersMap.put(activityEventListener, new com.facebook.react.bridge.ActivityEventListener() {
       @Override
       public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
-        activityEventListener.onActivityResult(activity, requestCode, resultCode, data);
+        ActivityEventListener listener = weakListener.get();
+        if (listener != null) {
+          listener.onActivityResult(activity, requestCode, resultCode, data);
+        }
       }
 
       @Override
       public void onNewIntent(Intent intent) {
-        activityEventListener.onNewIntent(intent);
+        ActivityEventListener listener = weakListener.get();
+        if (listener != null) {
+          listener.onNewIntent(intent);
+        }
       }
     });
+
+    mReactContext.addActivityEventListener(mActivityEventListenersMap.get(activityEventListener));
+  }
+
+  @Override
+  public void unregisterActivityEventListener(final ActivityEventListener activityEventListener) {
+    getContext().removeActivityEventListener(mActivityEventListenersMap.get(activityEventListener));
+    mActivityEventListenersMap.remove(activityEventListener);
   }
 
   @Override
