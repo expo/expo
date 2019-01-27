@@ -6,7 +6,7 @@ const ExpoPackageJson = require('expo/package.json');
 const parser = new UAParser();
 const ID_KEY = 'EXPO_CONSTANTS_INSTALLATION_ID';
 
-declare var process: any;
+declare var process: { env: any };
 declare var navigator: Navigator;
 declare var location: Location;
 declare var localStorage: Storage;
@@ -17,17 +17,22 @@ export default {
   get name(): string {
     return 'ExponentConstants';
   },
-  get appOwnership() {
+  get appOwnership(): 'expo' {
     return 'expo';
   },
-  get installationId() {
-    let installationId = localStorage.getItem(ID_KEY);
-    if (!installationId) {
-      installationId = uuidv4();
-      localStorage.setItem(ID_KEY, installationId as string);
+  get installationId(): string {
+    let installationId;
+    try {
+      installationId = localStorage.getItem(ID_KEY);
+      if (installationId == null || typeof installationId !== 'string') {
+        installationId = uuidv4();
+        localStorage.setItem(ID_KEY, installationId as string);
+      }
+    } catch (error) {
+      installationId = _sessionId;
+    } finally {
+      return installationId;
     }
-
-    return installationId;
   },
   get sessionId(): string {
     return _sessionId;

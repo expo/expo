@@ -12,12 +12,20 @@ export default {
         return 'expo';
     },
     get installationId() {
-        let installationId = localStorage.getItem(ID_KEY);
-        if (!installationId) {
-            installationId = uuidv4();
-            localStorage.setItem(ID_KEY, installationId);
+        let installationId;
+        try {
+            installationId = localStorage.getItem(ID_KEY);
+            if (installationId == null || typeof installationId !== 'string') {
+                installationId = uuidv4();
+                localStorage.setItem(ID_KEY, installationId);
+            }
         }
-        return installationId;
+        catch (error) {
+            installationId = _sessionId;
+        }
+        finally {
+            return installationId;
+        }
     },
     get sessionId() {
         return _sessionId;

@@ -1,7 +1,7 @@
 declare const _default: {
     readonly name: string;
-    readonly appOwnership: string;
-    readonly installationId: string | null;
+    readonly appOwnership: "expo";
+    readonly installationId: string;
     readonly sessionId: string;
     readonly platform: object;
     readonly isDevice: boolean;
