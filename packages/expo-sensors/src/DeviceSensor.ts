@@ -53,8 +53,11 @@ export default class DeviceSensor<M> {
       this._nativeModule.setUpdateInterval(intervalMs);
     }
   }
-
-  isAvailableAsync(): Promise<boolean> {
-    return this._nativeModule.isAvailableAsync();
+  async isAvailableAsync(): Promise<boolean> {
+    if (!this._nativeModule.isAvailableAsync) {
+      return false;
+    } else {
+      return await this._nativeModule.isAvailableAsync();
+    }
   }
 }
