@@ -4,7 +4,7 @@ title: Asset
 
 This module provides an interface to Expo's asset system. An asset is any file that lives alongside the source code of your app that the app needs at runtime. Examples include images, fonts and sounds. Expo's asset system integrates with React Native's, so that you can refer to files with `require('path/to/file')`. This is how you refer to static image files in React Native for use in an `Image` component, for example. Check out React Native's [documentation on static image resources](https://facebook.github.io/react-native/docs/images.html#static-image-resources) for more information. This method of referring to static image resources works out of the box with Expo.
 
-### `Expo.Asset()`
+### `Asset()`
 
 This class represents an asset in your app. It gives metadata about the asset (such as its name and type) and provides facilities to load the asset data.
 
@@ -26,7 +26,7 @@ A URI that points to the asset's data on the remote server. When running the pub
 
 - `localUri`
 
-If the asset has been downloaded (by calling [`downloadAsync()`](#expoassetdownloadasync "Expo.Asset.downloadAsync")), the `file://` URI pointing to the local file on the device that contains the asset data.
+If the asset has been downloaded (by calling [`downloadAsync()`](#expoassetdownloadasync "Asset.downloadAsync")), the `file://` URI pointing to the local file on the device that contains the asset data.
 
 - `width`
 
@@ -38,11 +38,11 @@ If the asset is an image, the height of the image data divided by the scale fact
 
 - `downloadAsync()`
 
-Downloads the asset data to a local file in the device's cache directory. Once the returned promise is fulfilled without error, the [`localUri`](#expoassetlocaluri "Expo.Asset.localUri") field of this asset points to a local file containing the asset data. The asset is only downloaded if an up-to-date local file for the asset isn't already present due to an earlier download.
+Downloads the asset data to a local file in the device's cache directory. Once the returned promise is fulfilled without error, the [`localUri`](#expoassetlocaluri "Asset.localUri") field of this asset points to a local file containing the asset data. The asset is only downloaded if an up-to-date local file for the asset isn't already present due to an earlier download.
 
-### `Expo.Asset.loadAsync(modules)`
+### `Asset.loadAsync(modules)`
 
-A helper that wraps `Expo.Asset.fromModule(module).downloadAsync` for convenience.
+A helper that wraps `Asset.fromModule(module).downloadAsync` for convenience.
 
 #### Arguments
 
@@ -52,9 +52,9 @@ A helper that wraps `Expo.Asset.fromModule(module).downloadAsync` for convenienc
 
 Returns a Promise that resolves when the asset has been saved to disk.
 
-### `Expo.Asset.fromModule(module)`
+### `Asset.fromModule(module)`
 
-Returns the [`Expo.Asset`](#expoasset "Expo.Asset") instance representing an asset given its module
+Returns the [`Asset`](#expoasset "Asset") instance representing an asset given its module
 
 #### Arguments
 
@@ -62,12 +62,12 @@ Returns the [`Expo.Asset`](#expoasset "Expo.Asset") instance representing an ass
 
 #### Returns
 
-The [`Expo.Asset`](#expoasset "Expo.Asset") instance for the asset
+The [`Asset`](#expoasset "Asset") instance for the asset
 
 #### Example
 
 ```javascript
-const imageURI = Expo.Asset.fromModule(require('./images/hello.jpg')).uri;
+const imageURI = Asset.fromModule(require('./images/hello.jpg')).uri;
 ```
 
 On running this piece of code, `imageURI` gives the remote URI that the contents of `images/hello.jpg` can be read from. The path is resolved relative to the source file that this code is evaluated in.

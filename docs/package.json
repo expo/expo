@@ -8,7 +8,7 @@
     "export": "yarn run build && cross-env NODE_ENV=production next export",
     "export-server": "cd out && python -m SimpleHTTPServer 8000",
     "mdjs": "babel-node ./mdjs",
-    "mdjs-prod": "node ./mdjs --no-watch",
+    "mdjs-prod": "babel-node ./mdjs --no-watch",
     "fix-markdown": "node ./transition/fix-markdown.js",
     "import-react-native-docs": "node ./scripts/import-react-native-docs.js",
     "test-links": "wget --page-requisites --spider --random-wait --recursive",
@@ -50,6 +50,7 @@
     "@babel/cli": "^7.2.0",
     "@babel/core": "^7.2.0",
     "@babel/node": "^7.2.2",
+    "babel-plugin-preval": "^3.0.1",
     "concurrently": "^3.6.0",
     "minimist": "^1.2.0",
     "shelljs": "^0.8.2"

@@ -11,7 +11,7 @@ import { Contacts } from 'expo';
 You can also import all Expo SDK modules:
 
 ```javascript
-import Expo from 'expo';
+import * as Expo from 'expo';
 ```
 
 This allows you to write [`Expo.Contacts.getContactsAsync()`](contacts/#getcontactsasync), for example.

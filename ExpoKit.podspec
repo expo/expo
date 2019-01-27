@@ -27,7 +27,6 @@ Pod::Spec.new do |s|
     ss.dependency 'FBAudienceNetwork', '4.99.0'
     ss.dependency 'FBSDKCoreKit', '4.39.1'
     ss.dependency 'FBSDKLoginKit', '4.39.1'
-    ss.dependency 'FBSDKShareKit', '4.39.1'
     ss.dependency 'Fabric', '~> 1.6'
     ss.dependency 'GoogleSignIn', '~> 4.1'
     ss.dependency 'GoogleMaps', '~> 2.5.0'

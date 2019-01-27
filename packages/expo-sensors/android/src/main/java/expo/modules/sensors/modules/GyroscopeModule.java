@@ -3,7 +3,9 @@
 package expo.modules.sensors.modules;
 
 import android.content.Context;
+import android.hardware.Sensor;
 import android.hardware.SensorEvent;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 
 import expo.core.Promise;
@@ -55,5 +57,12 @@ public class GyroscopeModule extends BaseSensorModule {
   public void setUpdateInterval(int updateInterval, Promise promise) {
     super.setUpdateInterval(updateInterval);
     promise.resolve(null);
+  }
+
+  @ExpoMethod
+  public void isAvailableAsync(Promise promise) {
+    SensorManager mSensorManager = (SensorManager) getContext().getSystemService(Context.SENSOR_SERVICE);
+    boolean isAvailable = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE) != null;
+    promise.resolve(isAvailable);
   }
 }

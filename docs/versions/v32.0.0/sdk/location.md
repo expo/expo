@@ -8,7 +8,7 @@ You must request permission to access the user's location before attempting to g
 
 ${<SnackEmbed snackId="H14SNiW3g" />}
 
-### `Expo.Location.hasServicesEnabledAsync()`
+### `Location.hasServicesEnabledAsync()`
 
 Checks whether location services are enabled by the user.
 
@@ -16,7 +16,7 @@ Checks whether location services are enabled by the user.
 
 Returns a promise resolving to `true` if location services are enabled on the device, or `false` if not.
 
-### `Expo.Location.requestPermissionsAsync()`
+### `Location.requestPermissionsAsync()`
 
 Requests the user for location permissions, similarly to `Permissions.askAsync(Permissions.LOCATION)`.
 
@@ -24,7 +24,7 @@ Requests the user for location permissions, similarly to `Permissions.askAsync(P
 
 Returns a promise that resolves when the permissions are granted and rejects when denied.
 
-### `Expo.Location.getCurrentPositionAsync(options)`
+### `Location.getCurrentPositionAsync(options)`
 
 Get the current position of the device.
 
@@ -38,7 +38,7 @@ Get the current position of the device.
 
 Returns a promise resolving to an object representing [Location](#typelocation) type.
 
-### `Expo.Location.watchPositionAsync(options, callback)`
+### `Location.watchPositionAsync(options, callback)`
 
 Subscribe to location updates from the device. Please note that updates will only occur while the application is in the foreground. To get location updates while in background you'll need to use [`Location.startLocationUpdatesAsync`](#expolocationstartlocationupdatesasync).
 
@@ -59,7 +59,7 @@ Returns a promise resolving to a subscription object, which has one field:
 
 -   **remove (_function_)** -- Call this function with no arguments to remove this subscription. The callback will no longer be called for location updates.
 
-### `Expo.Location.getProviderStatusAsync()`
+### `Location.getProviderStatusAsync()`
 
 Check status of location providers.
 
@@ -72,7 +72,7 @@ Returns a promise resolving to an object with the following fields:
 -   **networkAvailable (_boolean_)** (android only) -- If the network provider is available, if yes, location data will be from cellular network.
 -   **passiveAvailable (_boolean_)** (android only) -- If the passive provider is available, if yes, location data will be determined passively.
 
-### `Expo.Location.getHeadingAsync()`
+### `Location.getHeadingAsync()`
 
 Gets the current heading information from the device
 
@@ -87,7 +87,7 @@ Object with:
   - Reference for iOS: 3: < 20 degrees uncertainty, 2: < 35 degrees, 1: < 50 degrees, 0: > 50 degrees
 
 
-### `Expo.Location.watchHeadingAsync(callback)`
+### `Location.watchHeadingAsync(callback)`
 
 Subscribe to compass updates from the device.
 
@@ -109,13 +109,13 @@ Returns a promise resolving to a subscription object, which has one field:
 
 - **remove (function)** — Call this function with no arguments to remove this subscription. The callback will no longer be called for location updates.
 
-### `Expo.Location.geocodeAsync(address)`
+### `Location.geocodeAsync(address)`
 
 Geocode an address string to latitiude-longitude location.
 
 > **Note**: Geocoding is resource consuming and has to be used reasonably. Creating too many requests at a time can result in an error so they have to be managed properly.
 >
-> On Android, you must request a location permission (`Expo.Permissions.LOCATION`) from the user before geocoding can be used.
+> On Android, you must request a location permission (`Permissions.LOCATION`) from the user before geocoding can be used.
 
 #### Arguments
 
@@ -130,13 +130,13 @@ Returns a promise resolving to an array (in most cases its size is 1) of geocode
 -   **altitude (_number_)** -- The altitude in meters above the WGS 84 reference ellipsoid.
 -   **accuracy (_number_)** -- The radius of uncertainty for the location, measured in meters.
 
-### `Expo.Location.reverseGeocodeAsync(location)`
+### `Location.reverseGeocodeAsync(location)`
 
 Reverse geocode a location to postal address.
 
 > **Note**: Geocoding is resource consuming and has to be used reasonably. Creating too many requests at a time can result in an error so they have to be managed properly.
 
-> On Android, you must request a location permission (`Expo.Permissions.LOCATION`) from the user before geocoding can be used.
+> On Android, you must request a location permission (`Permissions.LOCATION`) from the user before geocoding can be used.
 
 #### Arguments
 
@@ -157,7 +157,7 @@ Returns a promise resolving to an array (in most cases its size is 1) of address
 -   **country (_string_)** -- Localized country name of the address.
 -   **name (_string_)** -- Place name of the address, for example, "Tower Bridge".
 
-### `Expo.Location.setApiKey(apiKey)`
+### `Location.setApiKey(apiKey)`
 
 Sets a Google API Key for using Geocoding API. This method can be useful for Android devices that do not have Google Play Services, hence no Geocoder Service. After setting the key using Google's API will be possible.
 
@@ -165,7 +165,7 @@ Sets a Google API Key for using Geocoding API. This method can be useful for And
 
 -   **apiKey (_string_)** -- API key collected from Google Developer site.
 
-### `Expo.Location.installWebGeolocationPolyfill()`
+### `Location.installWebGeolocationPolyfill()`
 
 Polyfills `navigator.geolocation` for interop with the core React Native and Web API approach to geolocation.
 
@@ -177,7 +177,7 @@ Background Location API can notify your app about new locations, also while it's
 - `"location"` background mode must be specified in `Info.plist` file. See [background tasks configuration guide](../task-manager#configuration). (*iOS only*)
 - Background location task must be defined in the top-level scope, using [TaskManager.defineTask](../task-manager#taskmanagerdefinetasktaskname-task).
 
-### `Expo.Location.startLocationUpdatesAsync(taskName, options)`
+### `Location.startLocationUpdatesAsync(taskName, options)`
 
 Registers for receiving location updates that can also come when the app is in the background.
 
@@ -212,7 +212,7 @@ TaskManager.defineTask(YOUR_TASK_NAME, ({ data: { locations }, error }) => {
 });
 ```
 
-### `Expo.Location.stopLocationUpdatesAsync(taskName)`
+### `Location.stopLocationUpdatesAsync(taskName)`
 
 Stops location updates for given task.
 
@@ -224,7 +224,7 @@ Stops location updates for given task.
 
 A promise resolving as soon as the task is unregistered.
 
-### `Expo.Location.hasStartedLocationUpdatesAsync(taskName)`
+### `Location.hasStartedLocationUpdatesAsync(taskName)`
 
 #### Arguments
 
@@ -243,7 +243,7 @@ To make it work in the background, it uses [TaskManager](../task-manager) Native
 - `"location"` background mode must be specified in `Info.plist` file. See [background tasks configuration guide](../task-manager#configuration). (*iOS only*)
 - Geofencing task must be defined in the top-level scope, using [`TaskManager.defineTask`](../task-manager#taskmanagerdefinetasktaskname-task).
 
-### `Expo.Location.startGeofencingAsync(taskName, regions)`
+### `Location.startGeofencingAsync(taskName, regions)`
 
 Starts geofencing for given regions. When the new event comes, the task with specified name will be called with the region that the device enter to or exit from.
 If you want to add or remove regions from already running geofencing task, you can just call `startGeofencingAsync` again with the new array of regions.
@@ -285,7 +285,7 @@ TaskManager.defineTask(YOUR_TASK_NAME, ({ data: { eventType, region }, error }) 
 });
 ```
 
-### `Expo.Location.stopGeofencingAsync(taskName)`
+### `Location.stopGeofencingAsync(taskName)`
 
 Stops geofencing for specified task. It unregisters the background task so the app will not be receiving any updates, especially in the background.
 
@@ -297,7 +297,7 @@ Stops geofencing for specified task. It unregisters the background task so the a
 
 A promise resolving as soon as the task is unregistered.
 
-### `Expo.Location.hasStartedGeofencingAsync(taskName)`
+### `Location.hasStartedGeofencingAsync(taskName)`
 
 #### Arguments
 
@@ -335,7 +335,7 @@ Object of type `Region` includes following fields:
 
 ## Enums
 
-### `Expo.Location.Accuracy`
+### `Location.Accuracy`
 
 | Accuracy                     | Value | Description                                                                                   |
 | ---------------------------- | ----- | --------------------------------------------------------------------------------------------- |
@@ -346,14 +346,14 @@ Object of type `Region` includes following fields:
 | `Accuracy.Highest`           |   5   | The best level of accuracy available.                                                         |
 | `Accuracy.BestForNavigation` |   6   | The highest possible accuracy that uses additional sensor data to facilitate navigation apps. |
 
-### `Expo.Location.GeofencingEventType`
+### `Location.GeofencingEventType`
 
 | Event type                  | Value | Description                                        |
 | --------------------------- | ----- | -------------------------------------------------- |
 | `GeofencingEventType.Enter` |   1   | Emitted when the device entered observed region.   |
 | `GeofencingEventType.Exit`  |   2   | Occurs as soon as the device left observed region. |
 
-### `Expo.Location.GeofencingRegionState`
+### `Location.GeofencingRegionState`
 
 | Region state                    | Value | Description                                     |
 | ------------------------------- | ----- | ----------------------------------------------- |

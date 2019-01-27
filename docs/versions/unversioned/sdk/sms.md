@@ -4,7 +4,7 @@ title: SMS
 
 Provides access to the system's UI/app for sending SMS messages.
 
-### `Expo.SMS.isAvailableAsync()`
+### `SMS.isAvailableAsync()`
 
 Determines whether SMS is available.
 
@@ -15,7 +15,7 @@ Returns a promise that resolves to a `Boolean`, indicating whether SMS is availa
 #### Example
 
 ```javascript
-const isAvailable = await Expo.SMS.isAvailableAsync();
+const isAvailable = await SMS.isAvailableAsync();
 if (isAvailable) {
   // do your SMS stuff here
 } else {
@@ -23,7 +23,7 @@ if (isAvailable) {
 }
 ```
 
-### `Expo.SMS.sendSMSAsync(addresses, message)`
+### `SMS.sendSMSAsync(addresses, message)`
 
 Opens the default UI/app for sending SMS messages with prefilled addresses and message.
 
@@ -49,5 +49,5 @@ Android does not provide information about the status of the SMS message, so on 
 #### Example
 
 ```javascript
-const { result } = await Expo.SMS.sendSMSAsync(['0123456789', '9876543210'], 'My sample HelloWorld message');
+const { result } = await SMS.sendSMSAsync(['0123456789', '9876543210'], 'My sample HelloWorld message');
 ```
