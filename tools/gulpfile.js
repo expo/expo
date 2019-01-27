@@ -324,6 +324,19 @@ gulp.task('update-react-native-screens', () => {
   });
 });
 
+gulp.task('update-detox',
+  gulp.series([  
+    shell.task([
+    'rm -rf ../detox-lab/DetoxExpoAndroid',
+    'cp -r ../detox-lab/Detox/detox/android/detox ../detox-lab/DetoxExpoAndroid',
+    ]),
+    gulp.parallel(
+      async () => await AndroidExpolib.namespaceExpolibImportsAsync('okhttpjarjar.txt', resolve('../detox-lab/DetoxExpoAndroid')),
+      async () => await AndroidExpolib.namespaceExpolibGradleDependenciesGeneralAsync(resolve('../detox-lab/DetoxExpoAndroid'))
+    )
+  ])
+);
+
 // Upload kernel bundles
 gulp.task('bundle', saveKernelBundlesAsync);
 gulp.task('android-jarjar-on-aar', androidVersionLibraries.runJarJarOnAAR);

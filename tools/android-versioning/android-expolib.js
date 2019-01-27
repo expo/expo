@@ -10,9 +10,10 @@ const shell = require('shelljs');
 const reactAndroidPath = path.resolve(__dirname, '../../android/ReactAndroid');
 
 exports.namespaceExpolibImportsAsync = async function namespaceExpolibImportsAsync(
-  rulesFile = 'okhttpjarjar.txt'
+  rulesFile = 'okhttpjarjar.txt',
+  androidPath = reactAndroidPath
 ) {
-  let filePaths = await glob(`${reactAndroidPath}/**/*.java`);
+  let filePaths = await glob(`${androidPath}/**/*.java`);
   const rules = await _readJarJarRulesAsync(rulesFile);
 
   const rewriteImports = _getImportRewriteFunction(rules);
@@ -99,6 +100,20 @@ exports.namespaceExpolibGradleDependenciesAsync = async function namespaceExpoli
   gradleFile = _addGradleRepositoriesSection(gradleFile);
 
   await fs.writeFile(reactAndroidGradlePath, gradleFile);
+};
+
+
+// TODO(quin): This method must exist somewhere else :/
+exports.namespaceExpolibGradleDependenciesGeneralAsync = async function namespaceExpolibGradleDependenciesGeneralAsync(androidPath) {
+  let gradlePath = path.join(androidPath, 'build.gradle');
+  let gradleFile = await fs.readFile(gradlePath, 'utf8');
+
+  gradleFile = gradleFile.replace(
+    /(.+['"])(com\.squareup\.(?:okhttp3|okio):.+:.+['"])/g,
+    '$1expolib_v1.$2'
+  );
+
+  await fs.writeFile(gradlePath, gradleFile);
 };
 
 function _rewriteGradleDependencies(gradleFile) {
