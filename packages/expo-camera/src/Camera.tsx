@@ -1,63 +1,103 @@
-import React from 'react';
-import { View } from 'react-native';
-import PropTypes from 'prop-types';
+import { UnavailabilityError } from 'expo-errors';
 import mapValues from 'lodash.mapvalues';
-import { NativeModulesProxy, requireNativeViewManager } from 'expo-core';
-import { findNodeHandle, ViewPropTypes, Platform } from 'react-native';
+import PropTypes from 'prop-types';
+import React from 'react';
+import { findNodeHandle, Platform, ViewPropTypes } from 'react-native';
+import { CapturedPicture, PictureOptions, Props, RecordingOptions } from './Camera.types';
+import ExponentCamera from './ExponentCamera';
+import _CameraManager from './ExponentCameraManager';
 
-type PictureOptions = {
-  quality?: number;
-  base64?: boolean;
-  exif?: boolean;
-  skipProcessing?: boolean;
-  onPictureSaved?: Function;
-  // internal
-  id?: number;
-  fastMode?: boolean;
-};
-
-type RecordingOptions = {
-  maxDuration?: number;
-  maxFileSize?: number;
-  quality?: number | string;
-};
-
-type CapturedPicture = {
-  width: number;
-  height: number;
-  uri: string;
-  base64?: string;
-  exif?: any;
-};
-
-type PropsType = React.ComponentProps<typeof View> & {
-  zoom?: number;
-  ratio?: string;
-  focusDepth?: number;
-  type?: number | string;
-  onCameraReady?: Function;
-  useCamera2Api?: boolean;
-  flashMode?: number | string;
-  whiteBalance?: number | string;
-  autoFocus?: string | boolean | number;
-  pictureSize?: string;
-  videoStabilizationMode?: number;
-  onMountError?: (event: { message: string }) => void;
-  barCodeScannerSettings?: {};
-  onBarCodeScanned?: (scanningResult: { type: string; data: string }) => void;
-  faceDetectorSettings?: {};
-  onFacesDetected?: (faces: { faces: any[] }) => void;
-};
-
-const CameraManager: any =
-  NativeModulesProxy.ExponentCameraManager || NativeModulesProxy.ExponentCameraModule;
+// TODO: Bacon: Fix multiplatform
+const CameraManager = _CameraManager as any;
 
 const EventThrottleMs = 500;
 
 const _PICTURE_SAVED_CALLBACKS = {};
+
 let _GLOBAL_PICTURE_ID = 1;
 
-export default class Camera extends React.Component<PropsType> {
+function ensurePictureOptions(options?: PictureOptions): PictureOptions {
+  let pictureOptions = options || {};
+
+  if (!pictureOptions || typeof pictureOptions !== 'object') {
+    pictureOptions = {};
+  }
+
+  if (!pictureOptions.quality) {
+    pictureOptions.quality = 1;
+  }
+  if (pictureOptions.onPictureSaved) {
+    const id = _GLOBAL_PICTURE_ID++;
+    _PICTURE_SAVED_CALLBACKS[id] = pictureOptions.onPictureSaved;
+    pictureOptions.id = id;
+    pictureOptions.fastMode = true;
+  }
+  return pictureOptions;
+}
+
+function ensureRecordingOptions(options?: RecordingOptions): RecordingOptions {
+  let recordingOptions = options || {};
+
+  if (!recordingOptions || typeof recordingOptions !== 'object') {
+    recordingOptions = {};
+  } else if (typeof recordingOptions.quality === 'string') {
+    recordingOptions.quality = Camera.Constants.VideoQuality[recordingOptions.quality];
+  }
+
+  return recordingOptions;
+}
+
+function ensureNativeProps(options?: Props): Props {
+  let props = options || {};
+
+  if (!props || typeof props !== 'object') {
+    props = {};
+  }
+
+  const newProps = mapValues(props, convertProp);
+
+  const propsKeys = Object.keys(newProps);
+  // barCodeTypes is deprecated
+  if (!propsKeys.includes('barCodeScannerSettings') && propsKeys.includes('barCodeTypes')) {
+    newProps.barCodeScannerSettings = {
+      barCodeTypes: newProps.barCodeTypes,
+    };
+  }
+
+  if (props.onBarCodeScanned) {
+    newProps.barCodeScannerEnabled = true;
+  }
+
+  if (props.onFacesDetected) {
+    newProps.faceDetectorEnabled = true;
+  }
+
+  if (Platform.OS !== 'android') {
+    delete newProps.ratio;
+    delete newProps.useCamera2Api;
+  }
+
+  return newProps;
+}
+
+function convertProp(value: any, key: string): any {
+  if (typeof value === 'string' && Camera.ConversionTables[key]) {
+    return Camera.ConversionTables[key][value];
+  }
+
+  return value;
+}
+
+function _onPictureSaved({ nativeEvent }: { nativeEvent: { data: CapturedPicture; id: number } }) {
+  const { id, data } = nativeEvent;
+  const callback = _PICTURE_SAVED_CALLBACKS[id];
+  if (callback) {
+    callback(data);
+    delete _PICTURE_SAVED_CALLBACKS[id];
+  }
+}
+
+export default class Camera extends React.Component<Props> {
   static Constants = {
     Type: CameraManager.Type,
     FlashMode: CameraManager.FlashMode,
@@ -95,7 +135,7 @@ export default class Camera extends React.Component<PropsType> {
     autoFocus: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.bool]),
   };
 
-  static defaultProps: PropsType = {
+  static defaultProps: Props = {
     zoom: 0,
     ratio: '4:3',
     focusDepth: 0,
@@ -108,61 +148,61 @@ export default class Camera extends React.Component<PropsType> {
 
   _cameraHandle?: number | null;
   _cameraRef?: React.Component | null;
-  _lastEvents: { [eventName: string]: string };
-  _lastEventsTimes: { [eventName: string]: Date };
-
-  constructor(props: PropsType) {
-    super(props);
-    this._lastEvents = {};
-    this._lastEventsTimes = {};
-  }
+  _lastEvents: { [eventName: string]: string } = {};
+  _lastEventsTimes: { [eventName: string]: Date } = {};
 
   async takePictureAsync(options?: PictureOptions): Promise<CapturedPicture> {
-    if (!options) {
-      options = {};
-    }
-    if (!options.quality) {
-      options.quality = 1;
-    }
-    if (options.onPictureSaved) {
-      const id = _GLOBAL_PICTURE_ID++;
-      _PICTURE_SAVED_CALLBACKS[id] = options.onPictureSaved;
-      options.id = id;
-      options.fastMode = true;
-    }
-    return await CameraManager.takePicture(options, this._cameraHandle);
+    const pictureOptions = ensurePictureOptions(options);
+
+    return await CameraManager.takePicture(pictureOptions, this._cameraHandle);
   }
 
   async getSupportedRatiosAsync(): Promise<Array<string>> {
-    if (Platform.OS === 'android') {
-      return await CameraManager.getSupportedRatios(this._cameraHandle);
-    } else {
-      throw new Error('Ratio is not supported on iOS');
+    if (!CameraManager.getSupportedRatios) {
+      throw new UnavailabilityError('Camera', 'getSupportedRatiosAsync');
     }
+
+    return await CameraManager.getSupportedRatios(this._cameraHandle);
   }
 
   async getAvailablePictureSizesAsync(ratio?: string): Promise<Array<string>> {
+    if (!CameraManager.getAvailablePictureSizes) {
+      throw new UnavailabilityError('Camera', 'getAvailablePictureSizesAsync');
+    }
     return await CameraManager.getAvailablePictureSizes(ratio, this._cameraHandle);
   }
 
   async recordAsync(options?: RecordingOptions): Promise<{ uri: string }> {
-    if (!options || typeof options !== 'object') {
-      options = {};
-    } else if (typeof options.quality === 'string') {
-      options.quality = Camera.Constants.VideoQuality[options.quality];
+    if (!CameraManager.record) {
+      throw new UnavailabilityError('Camera', 'recordAsync');
     }
-    return await CameraManager.record(options, this._cameraHandle);
+
+    const recordingOptions = ensureRecordingOptions(options);
+
+    return await CameraManager.record(recordingOptions, this._cameraHandle);
   }
 
   stopRecording() {
+    if (!CameraManager.stopRecording) {
+      throw new UnavailabilityError('Camera', 'stopRecording');
+    }
+
     CameraManager.stopRecording(this._cameraHandle);
   }
 
   pausePreview() {
+    if (!CameraManager.pausePreview) {
+      throw new UnavailabilityError('Camera', 'pausePreview');
+    }
+
     CameraManager.pausePreview(this._cameraHandle);
   }
 
   resumePreview() {
+    if (!CameraManager.resumePreview) {
+      throw new UnavailabilityError('Camera', 'resumePreview');
+    }
+
     CameraManager.resumePreview(this._cameraHandle);
   }
 
@@ -175,14 +215,6 @@ export default class Camera extends React.Component<PropsType> {
   _onMountError = ({ nativeEvent }: { nativeEvent: { message: string } }) => {
     if (this.props.onMountError) {
       this.props.onMountError(nativeEvent);
-    }
-  };
-
-  _onPictureSaved = ({ nativeEvent }: { nativeEvent: { data: CapturedPicture; id: number } }) => {
-    const callback = _PICTURE_SAVED_CALLBACKS[nativeEvent.id];
-    if (callback) {
-      callback(nativeEvent.data);
-      delete _PICTURE_SAVED_CALLBACKS[nativeEvent.id];
     }
   };
 
@@ -207,7 +239,12 @@ export default class Camera extends React.Component<PropsType> {
   _setReference = (ref?: React.Component) => {
     if (ref) {
       this._cameraRef = ref;
-      this._cameraHandle = findNodeHandle(ref);
+      // TODO: Bacon: Make this one...
+      if (Platform.OS === 'web') {
+        this._cameraHandle = ref as any;
+      } else {
+        this._cameraHandle = findNodeHandle(ref);
+      }
     } else {
       this._cameraRef = null;
       this._cameraHandle = null;
@@ -215,7 +252,10 @@ export default class Camera extends React.Component<PropsType> {
   };
 
   render() {
-    const nativeProps = this._convertNativeProps(this.props);
+    const nativeProps = ensureNativeProps(this.props);
+
+    const onBarCodeScanned = this._onObjectDetected(this.props.onBarCodeScanned);
+    const onFacesDetected = this._onObjectDetected(this.props.onFacesDetected);
 
     return (
       <ExponentCamera
@@ -223,49 +263,12 @@ export default class Camera extends React.Component<PropsType> {
         ref={this._setReference}
         onCameraReady={this._onCameraReady}
         onMountError={this._onMountError}
-        onPictureSaved={this._onPictureSaved}
-        onBarCodeScanned={this._onObjectDetected(this.props.onBarCodeScanned)}
-        onFacesDetected={this._onObjectDetected(this.props.onFacesDetected)}
+        onBarCodeScanned={onBarCodeScanned}
+        onFacesDetected={onFacesDetected}
+        onPictureSaved={_onPictureSaved}
       />
     );
   }
-
-  _convertNativeProps(props: PropsType) {
-    const newProps = mapValues(props, convertProp);
-
-    const propsKeys = Object.keys(newProps);
-    // barCodeTypes is deprecated
-    if (!propsKeys.includes('barCodeScannerSettings') && propsKeys.includes('barCodeTypes')) {
-      newProps.barCodeScannerSettings = {
-        barCodeTypes: newProps.barCodeTypes,
-      };
-    }
-
-    if (props.onBarCodeScanned) {
-      newProps.barCodeScannerEnabled = true;
-    }
-
-    if (props.onFacesDetected) {
-      newProps.faceDetectorEnabled = true;
-    }
-
-    if (Platform.OS === 'ios') {
-      delete newProps.ratio;
-      delete newProps.useCamera2Api;
-    }
-
-    return newProps;
-  }
-}
-
-const convertProp = (value: any, key: string): any => {
-  if (typeof value === 'string' && Camera.ConversionTables[key]) {
-    return Camera.ConversionTables[key][value];
-  }
-
-  return value;
 }
 
 export const Constants = Camera.Constants;
-
-const ExponentCamera = requireNativeViewManager('ExponentCamera');
