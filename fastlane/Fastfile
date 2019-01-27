@@ -172,11 +172,12 @@ platform :android do
     devicefarm_follow_run("arn:aws:devicefarm:us-west-2:274251141632:run:#{result_info[:project_id]}/#{result_info[:run_id]}")
   end
 
-  lane :build do |build_type: "Debug"|
+  lane :build do |build_type: "Debug", system_properties: "{}"|
     gradle(
       project_dir: "android",
       task: "app:assemble",
       build_type: build_type,
+      system_properties: JSON.parse(system_properties),
     )
   end
 

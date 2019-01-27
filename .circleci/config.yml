@@ -149,6 +149,7 @@ workflows:
       - home
       - expotools
       - client_android
+      - client_android_test
       - client_ios
       - test_suite_publish
       # TODO: fix devicefarm running tests
@@ -373,6 +374,33 @@ jobs:
             --keep ANDROID_KEY_ALIAS \
             --keep ANDROID_KEY_PASSWORD \
             --run "fastlane android build build_type:Release"
+      - save_gradle_cache
+      - save_cache:
+          key: client-android-apk-{{ .Revision }}
+          paths:
+            - ~/expo/android/app/build/outputs/apk
+      - store_artifacts:
+          path: ~/expo/android/app/build/outputs/apk
+      - store_artifacts: # daemon logs for debugging crashes
+          path: ~/.gradle/daemon
+
+  client_android_test:
+    executor: android
+    steps:
+      - setup
+      - yarn_install:
+          working_directory: ~/expo # need jsc-android dependency in expokit-npm-package
+      - yarn_install:
+          working_directory: ~/expo/tools-public
+      - restore_gradle_cache
+      - decrypt_secrets_if_possible
+      - run: echo $ANDROID_KEYSTORE_B64 | base64 -d > android/app/release-key.jks
+      - run: |
+          nix-shell android/shell.nix --pure \
+            --keep ANDROID_KEYSTORE_PASSWORD \
+            --keep ANDROID_KEY_ALIAS \
+            --keep ANDROID_KEY_PASSWORD \
+            --run "fastlane android build build_type:ReleaseAndroidTest  system_properties:{\\\"testBuildType\\\":\\\"release\\\"}"
       - save_gradle_cache
       - save_cache:
           key: client-android-apk-{{ .Revision }}
