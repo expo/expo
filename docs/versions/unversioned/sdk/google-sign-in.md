@@ -43,7 +43,7 @@ For questions on setup, feel free to comment on this post: [**React Native Googl
 }
 ```
 
-At this point you can build your project and upload it to the App/Play Store.
+At this point you can build your project and upload it to the App Store or the Google Play Store.
 
 When your app is built you can verify that the iOS URL Scheme is properly setup by reading from `expo-app-auth` in Standalone.
 
