@@ -56,7 +56,7 @@ const { URLSchemes } = AppAuth;
 
 ## Configuring
 
-Setup your project to use the `CLIENT_ID` of your `GoogleService-info.plist` when your app is running in a **Standalone** context.
+Set up your project to use the `CLIENT_ID` of your `GoogleService-info.plist` when your project is running in a **standalone** app.
 
 ```js
 import * as Constants from 'expo-constants';
