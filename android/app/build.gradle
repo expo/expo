@@ -41,6 +41,9 @@ android {
     // required by expo-blur
     renderscriptTargetApi 23
     renderscriptSupportModeEnabled true
+  
+    testBuildType System.getProperty('testBuildType', 'debug')  //this will later be used to control the test apk build type
+    missingDimensionStrategy "minReactNative", "minReactNative46" //read note
   }
   dexOptions {
     javaMaxHeapSize System.getenv("DISABLE_DEX_MAX_HEAP") ? null : "8g"
@@ -169,6 +172,10 @@ dependencies {
   androidTestImplementation 'com.google.code.findbugs:jsr305:3.0.0'
   androidTestImplementation 'com.android.support.test.uiautomator:uiautomator-v18:2.1.1'
   androidTestImplementation 'com.azimolabs.conditionwatcher:conditionwatcher:0.2'
+
+  androidTestImplementation(project(path: ":detox"))
+  androidTestImplementation 'junit:junit:4.12'
+  androidTestImplementation 'com.android.support.test:rules:1.0.1'
 
   testImplementation 'junit:junit:4.12'
   testImplementation 'org.mockito:mockito-core:1.10.19'

@@ -86,3 +86,7 @@ def includeUniversalModule = { name ->
     'expo-task-manager-interface',
     'expo-web-browser'
 ].forEach({ moduleName -> includeUniversalModule(moduleName) })
+
+// Detox
+include ':detox'
+project(':detox').projectDir = new File(rootDir, '../detox-lab/DetoxExpoAndroid')
