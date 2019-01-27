@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { StyleSheet, View } from 'react-native';
+import ExponentAV from './ExponentAV';
 
 import { PlaybackNativeSource, PlaybackStatus, PlaybackStatusToSet } from './AV';
 
@@ -8,9 +9,9 @@ type ExponentVideoProps = {
   resizeMode?: Object;
   status?: PlaybackStatusToSet;
   useNativeControls?: boolean;
-  onStatusUpdate?: (event: Object) => void;
-  onReadyForDisplay?: (event: Object) => void;
-  onFullscreenUpdate?: (event: Object) => void;
+  onStatusUpdate?: (event: { nativeEvent: PlaybackStatus }) => void;
+  onReadyForDisplay?: (event: { nativeEvent: Object }) => void;
+  onFullscreenUpdate?: (event: { nativeEvent: Object }) => void;
   onLoadStart: () => void;
   onLoad: (event: { nativeEvent: PlaybackStatus }) => void;
   onError: (event: { nativeEvent: { error: string } }) => void;
@@ -38,57 +39,17 @@ export const IOS_FULLSCREEN_UPDATE_PLAYER_DID_PRESENT = FULLSCREEN_UPDATE_PLAYER
 export const IOS_FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS = FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS;
 export const IOS_FULLSCREEN_UPDATE_PLAYER_DID_DISMISS = FULLSCREEN_UPDATE_PLAYER_DID_DISMISS;
 
-function getStatusFromVideo(video?: HTMLVideoElement): PlaybackStatus {
-  if (!video) {
-    return {
-      isLoaded: false,
-      error: undefined,
-    };
-  }
-
-  const isPlaying = !!(
-    video.currentTime > 0 &&
-    !video.paused &&
-    !video.ended &&
-    video.readyState > 2
-  );
-  const status: PlaybackStatus = {
-    isLoaded: true,
-    // androidImplementation?: string,
-    uri: video.src,
-    progressUpdateIntervalMillis: 100, //TODO: Bacon: Add interval between calls
-    durationMillis: video.duration * 1000,
-    positionMillis: video.currentTime * 1000,
-    // playableDurationMillis: video.buffered * 1000,
-    // seekMillisToleranceBefore?: number
-    // seekMillisToleranceAfter?: number
-
-    shouldPlay: video.autoplay,
-    isPlaying,
-    isBuffering: false, //video.waiting, // false, // TODO: Bacon: research
-
-    rate: video.playbackRate,
-    shouldCorrectPitch: false, // TODO: Bacon: research
-    volume: video.volume,
-    isMuted: video.muted,
-    isLooping: video.loop,
-
-    didJustFinish: video.ended, // true exactly once when the track plays to finish
-  };
-  console.log(status);
-  return status;
-}
-
 export default class ExponentVideo extends React.Component<ExponentVideoProps> {
   _video?: HTMLVideoElement;
 
-  onStatusUpdate = () => {
+  onStatusUpdate = async () => {
     if (!this.props.onStatusUpdate) {
       return;
     }
-
-    this.props.onStatusUpdate(getStatusFromVideo(this._video));
+    const nativeEvent = await ExponentAV.getStatusForVideo(this._video);
+    this.props.onStatusUpdate({ nativeEvent });
   };
+
   onLoadStart = () => {
     if (!this.props.onLoadStart) {
       return;
@@ -101,7 +62,7 @@ export default class ExponentVideo extends React.Component<ExponentVideoProps> {
     if (!this.props.onLoad) {
       return;
     }
-    this.props.onLoad(event.nativeEvent);
+    this.props.onLoad(event);
     this.onStatusUpdate();
   };
 
@@ -109,7 +70,7 @@ export default class ExponentVideo extends React.Component<ExponentVideoProps> {
     if (!this.props.onError) {
       return;
     }
-    this.props.onError(event.nativeEvent);
+    this.props.onError(event);
     this.onStatusUpdate();
   };
 
@@ -129,11 +90,11 @@ export default class ExponentVideo extends React.Component<ExponentVideoProps> {
     this.onStatusUpdate();
   };
 
-  onCanPlay = ({ nativeEvent }) => {
+  onCanPlay = event => {
     if (!this.props.onReadyForDisplay) {
       return;
     }
-    this.props.onReadyForDisplay(nativeEvent);
+    this.props.onReadyForDisplay(event);
     this.onStatusUpdate();
   };
 
@@ -147,15 +108,21 @@ export default class ExponentVideo extends React.Component<ExponentVideoProps> {
   };
 
   render() {
-    const { source, status = {}, useNativeControls, style } = this.props;
-    console.log('ExponentVideo', source);
+    const { source, status = {}, resizeMode: objectFit, useNativeControls, style } = this.props;
+
+    const customStyle = {
+      position: undefined,
+      objectFit,
+      overflow: 'hidden',
+    } as any;
+    const finalStyle = StyleSheet.flatten([style, customStyle]) as React.CSSProperties;
     return (
       <video
         ref={this.onRef}
         onLoadStart={this.onLoadStart}
         onLoadedData={this.onLoadedData}
         onError={this.onError}
-        onProgress={this.onProgress}
+        onTimeUpdate={this.onProgress}
         onSeeking={this.onSeeking}
         onEnded={this.onEnded}
         onLoadedMetadata={this.onLoadedMetadata}
@@ -166,7 +133,7 @@ export default class ExponentVideo extends React.Component<ExponentVideoProps> {
         loop={status.isLooping}
         autoPlay={status.shouldPlay}
         controls={useNativeControls}
-        style={StyleSheet.flatten(style) as any}
+        style={finalStyle}
       />
     );
   }

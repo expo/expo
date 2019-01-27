@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import * as React from 'react';
 import { Playback, PlaybackSource, PlaybackStatus, PlaybackStatusToSet } from './AV';
-import { FullscreenUpdateEvent, NativeProps, Props, ReadyForDisplayEvent, ResizeMode, State, NaturalSize } from './Video.types';
+import { FullscreenUpdateEvent, NativeProps, NaturalSize, Props, ReadyForDisplayEvent, ResizeMode, State } from './Video.types';
 export { NaturalSize };
 export declare const FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT = 0;
 export declare const FULLSCREEN_UPDATE_PLAYER_DID_PRESENT = 1;

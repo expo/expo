@@ -2,7 +2,7 @@ import omit from 'lodash.omit';
 import nullthrows from 'nullthrows';
 import PropTypes from 'prop-types';
 import * as React from 'react';
-import { findNodeHandle, Image, StyleSheet, View, ViewPropTypes, } from 'react-native';
+import { findNodeHandle, Image, StyleSheet, View, ViewPropTypes } from 'react-native';
 import { assertStatusValuesInBounds, getNativeSourceAndFullInitialStatusForLoadAsync, getNativeSourceFromSource, getUnloadedStatus, PlaybackMixin, } from './AV';
 import ExponentAV from './ExponentAV';
 import ExponentVideo from './ExponentVideo';
@@ -77,7 +77,9 @@ export default class Video extends React.Component {
             console.warn("You're using `presentIOSFullscreenPlayer`. Please migrate your code to use `presentFullscreenPlayer` instead.");
             return this.presentFullscreenPlayer();
         };
-        this.presentFullscreenPlayerAsync = () => this._performOperationAndHandleStatusAsync((tag) => ExponentAV.presentFullscreenPlayer(tag));
+        this.presentFullscreenPlayerAsync = async () => {
+            return await this.presentFullscreenPlayer();
+        };
         this.dismissFullscreenPlayer = async () => {
             return this._setFullscreen(false);
         };
@@ -202,8 +204,8 @@ export default class Video extends React.Component {
         // Replace selected native props
         // @ts-ignore: TypeScript thinks "children" is not in the list of props
         const nativeProps = {
-            style: _STYLES.base,
             ...omit(this.props, 'source', ...Object.keys(status)),
+            style: StyleSheet.flatten([_STYLES.base, this.props.style]),
             source,
             resizeMode: nativeResizeMode,
             status,

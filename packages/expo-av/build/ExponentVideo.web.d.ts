@@ -6,9 +6,15 @@ declare type ExponentVideoProps = {
     resizeMode?: Object;
     status?: PlaybackStatusToSet;
     useNativeControls?: boolean;
-    onStatusUpdate?: (event: Object) => void;
-    onReadyForDisplay?: (event: Object) => void;
-    onFullscreenUpdate?: (event: Object) => void;
+    onStatusUpdate?: (event: {
+        nativeEvent: PlaybackStatus;
+    }) => void;
+    onReadyForDisplay?: (event: {
+        nativeEvent: Object;
+    }) => void;
+    onFullscreenUpdate?: (event: {
+        nativeEvent: Object;
+    }) => void;
     onLoadStart: () => void;
     onLoad: (event: {
         nativeEvent: PlaybackStatus;
@@ -39,7 +45,7 @@ export declare const IOS_FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS = 2;
 export declare const IOS_FULLSCREEN_UPDATE_PLAYER_DID_DISMISS = 3;
 export default class ExponentVideo extends React.Component<ExponentVideoProps> {
     _video?: HTMLVideoElement;
-    onStatusUpdate: () => void;
+    onStatusUpdate: () => Promise<void>;
     onLoadStart: () => void;
     onLoadedData: (event: any) => void;
     onError: (event: any) => void;
@@ -47,9 +53,7 @@ export default class ExponentVideo extends React.Component<ExponentVideoProps> {
     onSeeking: () => void;
     onEnded: () => void;
     onLoadedMetadata: () => void;
-    onCanPlay: ({ nativeEvent }: {
-        nativeEvent: any;
-    }) => void;
+    onCanPlay: (event: any) => void;
     onStalled: () => void;
     onRef: (ref: HTMLVideoElement) => void;
     render(): JSX.Element;

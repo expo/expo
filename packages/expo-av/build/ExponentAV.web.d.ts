@@ -1,11 +1,11 @@
+import { PlaybackStatusToSet, PlaybackStatus, PlaybackNativeSource } from './AV';
 declare const _default: {
     readonly name: string;
-    presentFullscreenPlayer(): Promise<void>;
-    getStatusForVideo(): Promise<void>;
-    loadForVideo(): Promise<void>;
-    unloadForVideo(): Promise<void>;
-    setStatusForVideo(): Promise<void>;
-    replayVideo(): Promise<void>;
+    getStatusForVideo(element: HTMLMediaElement): Promise<PlaybackStatus>;
+    loadForVideo(element: HTMLMediaElement, nativeSource: PlaybackNativeSource, fullInitialStatus: PlaybackStatusToSet): Promise<PlaybackStatus>;
+    unloadForVideo(element: HTMLMediaElement): Promise<PlaybackStatus>;
+    setStatusForVideo(element: HTMLMediaElement, status: PlaybackStatusToSet): Promise<PlaybackStatus>;
+    replayVideo(element: HTMLMediaElement, status: PlaybackStatusToSet): Promise<PlaybackStatus>;
     setAudioMode(): Promise<void>;
     setAudioIsEnabled(): Promise<void>;
     getStatusForSound(): Promise<void>;

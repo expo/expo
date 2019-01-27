@@ -2,16 +2,7 @@ import omit from 'lodash.omit';
 import nullthrows from 'nullthrows';
 import PropTypes from 'prop-types';
 import * as React from 'react';
-import {
-  findNodeHandle,
-  Image,
-  NativeComponent,
-  NativeModules,
-  Platform,
-  StyleSheet,
-  View,
-  ViewPropTypes,
-} from 'react-native';
+import { findNodeHandle, Image, NativeComponent, StyleSheet, View, ViewPropTypes } from 'react-native';
 
 import {
   assertStatusValuesInBounds,
@@ -28,14 +19,14 @@ import ExponentAV from './ExponentAV';
 import ExponentVideo from './ExponentVideo';
 import ExpoVideoManager from './ExpoVideoManager';
 import {
+  ExponentVideoComponent,
   FullscreenUpdateEvent,
   NativeProps,
+  NaturalSize,
   Props,
   ReadyForDisplayEvent,
   ResizeMode,
   State,
-  ExponentVideoComponent,
-  NaturalSize,
 } from './Video.types';
 
 export { NaturalSize };
@@ -214,10 +205,9 @@ export default class Video extends React.Component<Props, State> implements Play
     return this.presentFullscreenPlayer();
   };
 
-  presentFullscreenPlayerAsync = () =>
-    this._performOperationAndHandleStatusAsync((tag: number) =>
-      ExponentAV.presentFullscreenPlayer(tag)
-    );
+  presentFullscreenPlayerAsync = async () => {
+    return await this.presentFullscreenPlayer();
+  };
 
   dismissFullscreenPlayer = async () => {
     return this._setFullscreen(false);
@@ -402,8 +392,8 @@ export default class Video extends React.Component<Props, State> implements Play
     // Replace selected native props
     // @ts-ignore: TypeScript thinks "children" is not in the list of props
     const nativeProps: NativeProps = {
-      style: _STYLES.base,
       ...omit(this.props, 'source', ...Object.keys(status)),
+      style: StyleSheet.flatten([_STYLES.base, this.props.style]),
       source,
       resizeMode: nativeResizeMode,
       status,
