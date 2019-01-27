@@ -1,6 +1,6 @@
-import { NativeModules } from 'react-native';
+import NativeProxy from './ExpoNativeModuleProxy';
+import EXReactNativeEventEmitter from './EXReactNativeEventEmitter';
 
-const NativeProxy = NativeModules.ExpoNativeModuleProxy;
 const modulesConstantsKey = 'modulesConstants';
 const exportedMethodsKey = 'exportedMethods';
 
@@ -16,7 +16,9 @@ if (NativeProxy) {
   Object.keys(NativeProxy[exportedMethodsKey]).forEach(moduleName => {
     NativeModulesProxy[moduleName] = NativeProxy[modulesConstantsKey][moduleName] || {};
     NativeProxy[exportedMethodsKey][moduleName].forEach(methodInfo => {
-      NativeModulesProxy[moduleName][methodInfo.name] = async (...args: unknown[]): Promise<any> => {
+      NativeModulesProxy[moduleName][methodInfo.name] = async (
+        ...args: unknown[]
+      ): Promise<any> => {
         const { key, argumentsCount } = methodInfo;
         if (argumentsCount !== args.length) {
           throw new Error(
@@ -35,9 +37,9 @@ if (NativeProxy) {
     // On Android only {start,stop}Observing are called on the native module
     // and these should be exported as Expo methods.
     NativeModulesProxy[moduleName].addListener = (...args) =>
-      NativeModules.EXReactNativeEventEmitter.addProxiedListener(moduleName, ...args);
+      EXReactNativeEventEmitter.addProxiedListener(moduleName, ...args);
     NativeModulesProxy[moduleName].removeListeners = (...args) =>
-      NativeModules.EXReactNativeEventEmitter.removeProxiedListeners(moduleName, ...args);
+      EXReactNativeEventEmitter.removeProxiedListeners(moduleName, ...args);
   });
 } else {
   console.warn(

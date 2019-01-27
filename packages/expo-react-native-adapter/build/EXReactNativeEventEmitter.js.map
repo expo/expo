@@ -1,0 +1,1 @@
+{"version":3,"file":"EXReactNativeEventEmitter.js","sourceRoot":"","sources":["../src/EXReactNativeEventEmitter.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,aAAa,EAAE,MAAM,cAAc,CAAC;AAE7C,eAAe,aAAa,CAAC,yBAAyB,CAAC","sourcesContent":["import { NativeModules } from 'react-native';\n\nexport default NativeModules.EXReactNativeEventEmitter;\n"]}
