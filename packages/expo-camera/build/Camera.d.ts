@@ -1,53 +1,7 @@
-import React from 'react';
-import { View } from 'react-native';
 import PropTypes from 'prop-types';
-declare type PictureOptions = {
-    quality?: number;
-    base64?: boolean;
-    exif?: boolean;
-    skipProcessing?: boolean;
-    onPictureSaved?: Function;
-    id?: number;
-    fastMode?: boolean;
-};
-declare type RecordingOptions = {
-    maxDuration?: number;
-    maxFileSize?: number;
-    quality?: number | string;
-};
-declare type CapturedPicture = {
-    width: number;
-    height: number;
-    uri: string;
-    base64?: string;
-    exif?: any;
-};
-declare type PropsType = React.ComponentProps<typeof View> & {
-    zoom?: number;
-    ratio?: string;
-    focusDepth?: number;
-    type?: number | string;
-    onCameraReady?: Function;
-    useCamera2Api?: boolean;
-    flashMode?: number | string;
-    whiteBalance?: number | string;
-    autoFocus?: string | boolean | number;
-    pictureSize?: string;
-    videoStabilizationMode?: number;
-    onMountError?: (event: {
-        message: string;
-    }) => void;
-    barCodeScannerSettings?: {};
-    onBarCodeScanned?: (scanningResult: {
-        type: string;
-        data: string;
-    }) => void;
-    faceDetectorSettings?: {};
-    onFacesDetected?: (faces: {
-        faces: any[];
-    }) => void;
-};
-export default class Camera extends React.Component<PropsType> {
+import React from 'react';
+import { CapturedPicture, PictureOptions, Props, RecordingOptions } from './Camera.types';
+export default class Camera extends React.Component<Props> {
     static Constants: {
         Type: any;
         FlashMode: any;
@@ -124,7 +78,7 @@ export default class Camera extends React.Component<PropsType> {
         onMagicTap?: PropTypes.Validator<(() => void) | undefined> | undefined;
         accessibilityIgnoresInvertColors?: PropTypes.Validator<boolean | undefined> | undefined;
     };
-    static defaultProps: PropsType;
+    static defaultProps: Props;
     _cameraHandle?: number | null;
     _cameraRef?: React.Component | null;
     _lastEvents: {
@@ -133,7 +87,6 @@ export default class Camera extends React.Component<PropsType> {
     _lastEventsTimes: {
         [eventName: string]: Date;
     };
-    constructor(props: PropsType);
     takePictureAsync(options?: PictureOptions): Promise<CapturedPicture>;
     getSupportedRatiosAsync(): Promise<Array<string>>;
     getAvailablePictureSizesAsync(ratio?: string): Promise<Array<string>>;
@@ -149,18 +102,11 @@ export default class Camera extends React.Component<PropsType> {
             message: string;
         };
     }) => void;
-    _onPictureSaved: ({ nativeEvent }: {
-        nativeEvent: {
-            data: CapturedPicture;
-            id: number;
-        };
-    }) => void;
     _onObjectDetected: (callback?: Function | undefined) => ({ nativeEvent }: {
         nativeEvent: any;
     }) => void;
     _setReference: (ref?: React.Component<{}, {}, any> | undefined) => void;
     render(): JSX.Element;
-    _convertNativeProps(props: PropsType): any;
 }
 export declare const Constants: {
     Type: any;
@@ -170,4 +116,3 @@ export declare const Constants: {
     VideoQuality: any;
     VideoStabilization: any;
 };
-export {};
