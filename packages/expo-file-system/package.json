@@ -24,6 +24,7 @@
   "dependencies": {
     "expo-core": "~2.0.0",
     "expo-file-system-interface": "~2.0.0",
+    "jest-expo": "^32.0.0",
     "uuid-js": "^0.7.5"
   },
   "jest": {

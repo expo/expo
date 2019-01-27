@@ -31,12 +31,12 @@ and run `pod install`.
 
 ## Introduction
 
-```js
-// ✅
-import * as FileSystem from 'expo-file-system';
+Import and use the library like so:
 
-// ❌
-import { FileSystem } from 'expo-file-system';
+```diff
+- import { FileSystem } from 'expo-file-system';
+
++ import * as FileSystem from 'expo-file-system';
 ```
 
 The API takes `file://` URIs pointing to local files on the device to identify files. Each app only has read and write access to locations under the following directories:

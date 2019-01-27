@@ -1,19 +1,16 @@
-import { UnavailabilityError } from 'expo-errors';
-import * as FileSystem from '../FileSystem';
+import { mockPlatformWeb, mockProperty, unmockAllProperties } from 'jest-expo';
+
 import ExponentFileSystem from '../ExponentFileSystem';
-
-import { mockPlatformWeb, mockProperty, unmockAllProperties } from '../../test/mocking';
-
-async function executeUnavailableMethod(method, name) {
-  try {
-    await method();
-    expect(name).toBe('a failing method');
-  } catch (error) {
-    expect(error instanceof UnavailabilityError).toBeTruthy();
-  }
-}
+import * as FileSystem from '../FileSystem';
 
 describe('FileSystem', () => {
+  beforeEach(() => {
+    applyMocks();
+    mockPlatformWeb();
+  });
+
+  afterAll(unmockAllProperties);
+
   describe('Constants', () => {
     it('documentDirectory', () => expect(FileSystem.documentDirectory).toBeDefined());
     it('cacheDirectory', () => expect(FileSystem.cacheDirectory).toBeDefined());
@@ -23,6 +20,7 @@ describe('FileSystem', () => {
 
   describe('Methods', () => {
     const URI = '/';
+    const toURI = '/other';
     it('downloadAsync', () => {
       const props: any = ['foo', 'bar', {}];
       FileSystem.downloadAsync(props[0], props[1], props[2]);
@@ -42,10 +40,10 @@ describe('FileSystem', () => {
       await FileSystem.deleteAsync(URI);
     });
     it('moveAsync', async () => {
-      await FileSystem.moveAsync(URI, URI + '/');
+      await FileSystem.moveAsync({ from: URI, to: toURI });
     });
     it('copyAsync', async () => {
-      await FileSystem.copyAsync(URI, URI + '/');
+      await FileSystem.copyAsync({ from: URI, to: toURI });
     });
     it('makeDirectoryAsync', async () => {
       await FileSystem.makeDirectoryAsync(URI);
@@ -75,21 +73,3 @@ function applyMocks() {
     mockProperty(ExponentFileSystem, methodName, null);
   });
 }
-export function describeUnsupportedPlatforms(message, tests) {
-  describe(`🕸  ${message}`, () => {
-    beforeEach(applyMocks);
-    mockPlatformWeb();
-    tests();
-    afterAll(unmockAllProperties);
-  });
-}
-
-// getInfoAsync;
-// readAsStringAsync;
-// writeAsStringAsync;
-// deleteAsync;
-// moveAsync;
-// copyAsync;
-// makeDirectoryAsync;
-// readDirectoryAsync;
-// downloadAsync;
