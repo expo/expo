@@ -59,7 +59,7 @@ export { Location };
 export { MediaLibrary } from 'expo-media-library';
 export { Permissions } from 'expo-permissions';
 export { Print } from 'expo-print';
-export { Accelerometer, Gyroscope, Magnetometer, MagnetometerUncalibrated } from 'expo-sensors';
+export { Accelerometer, Barometer, Gyroscope, Magnetometer, MagnetometerUncalibrated } from 'expo-sensors';
 export { SQLite } from 'expo-sqlite';
 export { SMS };
 export { Speech };

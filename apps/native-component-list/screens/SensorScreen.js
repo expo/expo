@@ -1,7 +1,14 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View, ScrollView } from 'react-native';
-
-import { Accelerometer, Gyroscope, Magnetometer, MagnetometerUncalibrated, DangerZone } from 'expo';
+import { NativeModulesProxy } from 'expo-core';
+import {
+  Accelerometer,
+  Barometer,
+  Gyroscope,
+  Magnetometer,
+  MagnetometerUncalibrated,
+  DangerZone,
+} from 'expo';
 const { DeviceMotion } = DangerZone;
 
 const FAST_INTERVAL = 16;
@@ -19,6 +26,7 @@ export default class SensorScreen extends React.Component {
         <AccelerometerSensor />
         <MagnetometerSensor />
         <MagnetometerUncalibratedSensor />
+        <BarometerSensor />
         <DeviceMotionSensor />
       </ScrollView>
     );
@@ -144,6 +152,17 @@ class DeviceMotionSensor extends SensorBlock {
       {this._renderABGBlock('Rotation', this.state.data.rotation)}
       {this._renderABGBlock('Rotation rate', this.state.data.rotationRate)}
       <Text>Orientation: {this.state.data.orientation}</Text>
+    </View>
+  );
+}
+
+class BarometerSensor extends SensorBlock {
+  getName = () => 'Barometer';
+  getSensor = () => Barometer;
+  renderData = () => (
+    <View>
+      <Text>Pressure: {this.state.data.pressure}</Text>
+      <Text>Relative Altitude: {this.state.data.relativeAltitude}</Text>
     </View>
   );
 }
