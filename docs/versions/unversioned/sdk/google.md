@@ -6,7 +6,7 @@ title: Google
 
 Provides Google authentication integration for Expo apps using a system web browser (not WebView, so credentials saved on the device can be re-used!).
 
-You'll get an access token after a succesful login. Once you have the token, if you would like to make further calls to the Google API, you can use Google's [REST APIs](https://developers.google.com/apis-explorer/) directly through HTTP (using [fetch](https://facebook.github.io/react-native/docs/network.html#fetch), for example).
+You'll get an access token after a successful login. Once you have the token, if you would like to make further calls to the Google API, you can use Google's [REST APIs](https://developers.google.com/apis-explorer/) directly through HTTP (using [fetch](https://facebook.github.io/react-native/docs/network.html#fetch), for example).
 
 Native Google Sign-In functionality can be used in Standalone builds via the `expo-google-sign-in` package.
 
@@ -29,22 +29,22 @@ async function getUserInfo(accessToken) {
 logInAsync(config: LogInConfig): Promise<LogInResult>
 ```
 
-This method uses `AppAuth` to authenticate, for even more native functionality see `expo-google-sign-in`.
+This method uses `AppAuth` to authenticate; for even more native functionality see `expo-google-sign-in`.
 
 Prompts the user to log into Google and grants your app permission to access some of their Google data, as specified by the scopes.
-The difference between this method and native authentication are very sparce. Google has done a very good job at making the web auth flow work consistently. The biggest difference is that you cannot use `expo-google-sign-in` in the client (Standalone only). Which makes `Expo.Google.logInAsync` your best solution for testing in development.
+The difference between this method and native authentication are very sparce. Google has done a very good job at making the web auth flow work consistently. The biggest difference is that you cannot use `expo-google-sign-in` in the Expo Client (standalone apps only), which makes `Expo.Google.logInAsync` your best solution for testing in development.
 
 **Parameters**
 
-| Name   | Type          | Description                       |
-| ------ | ------------- | --------------------------------- |
-| config | `LogInConfig` | Used to log into your google app. |
+| Name   | Type          | Description                               |
+| ------ | ------------- | ----------------------------------------- |
+| config | `LogInConfig` | Used to log into your Google application. |
 
 **LogInConfig**
 
 | Name                         | Type       | Description                                                                                                                                                                                                                          |
 | ---------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| clientId                     | `string`   | **Web API key** that denotes the Google application to log-in to                                                                                                                                                                     |
+| clientId                     | `string`   | **Web API key** that denotes the Google application to log in to                                                                                                                                                                     |
 | scopes                       | `string[]` | An array specifying the scopes to ask for from Google for this login ([more information here](https://gsuite-developers.googleblog.com/2012/01/tips-on-using-apis-discovery-service.html)). Default scopes are `['profile', 'email'] |
 | androidClientId              | `string`   | **DEPRECATED** use `clientId` instead                                                                                                                                                                                                |
 | iosClientId                  | `string`   | **DEPRECATED** use `clientId` instead                                                                                                                                                                                                |
@@ -84,7 +84,7 @@ The difference between this method and native authentication are very sparce. Go
 ```js
 import { Google } from 'expo';
 
-const clientId = '603386649315-vp4revvrcgrcjme51ebuhbkbspl048l9.apps.googleusercontent.com';
+const clientId = '<YOUR_WEB_CLIENT_ID>';
 const { type, accessToken, user } = await Google.logInAsync({ clientId });
 
 if (type === 'success') {
@@ -120,23 +120,23 @@ async function logOutAsync({ accessToken, clientId }): Promise<any> {
 
 **Parameters**
 
-| Name    | Type                                        | Description                        |
-| ------- | ------------------------------------------- | ---------------------------------- |
-| options | `{ accessToken: string, clientId: string }` | Used to log out of the google app. |
+| Name    | Type                                        | Description                                |
+| ------- | ------------------------------------------- | ------------------------------------------ |
+| options | `{ accessToken: string, clientId: string }` | Used to log out of the Google application. |
 
 **options**
 
-| Name        | Type     | Description                                                |
-| ----------- | -------- | ---------------------------------------------------------- |
-| accessToken | `string` | Provided when the user authenticates with your google app. |
-| clientId    | `string` | Used to identify the corresponding application.            |
+| Name        | Type     | Description                                                        |
+| ----------- | -------- | ------------------------------------------------------------------ |
+| accessToken | `string` | Provided when the user authenticates with your Google application. |
+| clientId    | `string` | Used to identify the corresponding application.                    |
 
 **Example**
 
 ```js
 import { Google } from 'expo';
 
-const clientId = '603386649315-vp4revvrcgrcjme51ebuhbkbspl048l9.apps.googleusercontent.com';
+const clientId = '<YOUR_WEB_CLIENT_ID>';
 const { type, accessToken } = await Google.logInAsync({ clientId });
 
 if (type === 'success') {
@@ -148,7 +148,7 @@ if (type === 'success') {
 
 ## Using it inside of the Expo app
 
-In the Expo client app, you can only use browser-based login (this works very well actually because it re-uses credentials saved in your system browser). If you build a standalone app, you can use the native login with the package `expo-google-sign-in`.
+In the Expo Client app, you can only use browser-based login (this works very well actually because it re-uses credentials saved in your system browser). If you build a standalone app, you can use the native login with the package `expo-google-sign-in`.
 
 To use Google Sign In, you will need to create a project in Firebase (or on the Google Developer Console).
 In Firebase create a project, then enable Google Sign-In in the Authentication tab on the left side of the page.

@@ -4,7 +4,7 @@ title: Google Sign-In
 
 > Introduced in Expo v32
 
-This library provides full Google authentication for **standalone** Expo apps. It cannot be used in the Expo Client as the native `GoogleSignIn` library expects your `REVERSE_CLIENT_ID` in the `info.plist` at build-time. To use Google authentication in the Expo Client, check out `Expo.Google`.
+This library provides full Google authentication for **standalone** Expo apps. It cannot be used in the Expo Client as the native `GoogleSignIn` library expects your `REVERSE_CLIENT_ID` in the `info.plist` at build-time. To use Google authentication in the Expo Client with web authentication, check out `Expo.Google`.
 
 `expo-google-sign-in` is a Unimodule that can be used outside of Expo in apps using bare React Native. For more information on how to set it up outside of Expo, look through the [npm page](https://www.npmjs.com/package/expo-google-sign-in).
 
@@ -29,7 +29,7 @@ For questions on setup, feel free to comment on this post: [**React Native Googl
       "config": {
         "googleSignIn": {
           // Your REVERSE_CLIENT_ID from the GoogleService-info.plist
-          "reservedClientId": "com.googleusercontent.apps.157851373513-bip0o55padtj29hvs1ro22cqoopd5449"
+          "reservedClientId": "<YOUR_IOS_CLIENT_ID>"
         }
       }
     },
@@ -45,7 +45,7 @@ For questions on setup, feel free to comment on this post: [**React Native Googl
 
 At this point you can build your project and upload it to the App Store or the Google Play Store.
 
-When your app is built you can verify that the iOS URL Scheme is properly setup by reading from `expo-app-auth` in Standalone.
+When your app is built you can verify that the iOS URL Scheme is properly setup by reading from `expo-app-auth` in standalone.
 
 ```js
 import { AppAuth } from 'expo-app-auth';
@@ -54,44 +54,13 @@ import { AppAuth } from 'expo-app-auth';
 const { URLSchemes } = AppAuth;
 ```
 
-## Configuring
-
-Setup your project to use the `CLIENT_ID` of your `GoogleService-info.plist` when your app is running in a **Standalone** context.
-
-```js
-import * as Constants from 'expo-constants';
-import { GoogleSignIn } from 'expo-google-sign-in';
-
-// 1.
-const isInClient = Constants.appOwnership === 'expo';
-
-if (isInClient) {
-  // 2.
-  GoogleSignIn.allowInClient();
-}
-
-// 3.
-const clientIdForUseInTheExpoClient =
-  '603386649315-vp4revvrcgrcjme51ebuhbkbspl048l9.apps.googleusercontent.com';
-
-// 4.
-const youriOSClientIdForUseInStandalone = '<YOUR_IOS_CLIENT_ID>';
-
-const clientId = isInClient ? clientIdForUseInTheExpoClient : youriOSClientIdForUseInStandalone;
-```
-
-1. Get the current ownership. We can only use our native auth when the app is not in the client.
-2. In the case where we aren't running in Standalone, we can enable a special flag which will use the Expo auth keys. This should be used for testing only as you won't have access to the server-side API.
-3. This is the Expo Client ID
-4. Set this value to the `CLIENT_ID` of your `GoogleService-info.plist`.
-
 ## Initialize the API
 
 Before using the API we first need to call `GoogleSignIn.initAsync({ ... })` which configures how sign-in functionality will work.
 
 ```js
 try {
-  await GoogleSignIn.initAsync({ clientId });
+  await GoogleSignIn.initAsync({ clientId: '<YOUR_IOS_CLIENT_ID>' });
 } catch ({ message }) {
   alert('GoogleSignIn.initAsync(): ' + message);
 }
@@ -131,7 +100,7 @@ signOutAsync = async () => {
 > Android Only, this method always returns true on iOS
 
 Use this method to determine if a user's device can utilize Google Sign-In functionality.
-By default this method will assume the option is `false` and silently check the play services, whereas passing `true` will present a modal if the Play Services aren't available.
+By default this method will assume the option is `false` and silently check for Play Services, whereas passing `true` will present a modal if the Play Services aren't available.
 
 ### `askForPlayServicesAsync(): Promise<boolean>`
 
@@ -141,7 +110,7 @@ A convenience wrapper for `getPlayServiceAvailability(true)`, this method will p
 
 Returns true after the user successfully updates.
 
-### `initAsync(options: ?GoogleSignInOptions): Promise`
+### `initAsync(options: ?GoogleSignInOptions): Promise<void>`
 
 Configures how the `GoogleSignIn` module will attempt to sign-in. You can call this method multiple times.
 
@@ -162,17 +131,17 @@ If a user cancels, the method will return `{ type: 'cancel', user: null }`. Howe
 
 There are some errors that can be thrown while authenticating, check `GoogleSignIn.ERRORS` for available error codes.
 
-### `signOutAsync(): Promise`
+### `signOutAsync(): Promise<void>`
 
-Signs-out the currently authenticated user. Unlike `disconnectAsync()`, this method will not revoke the access token. This means you can specifiy the `accountName` and reauthenticate without extra user approval.
+Signs out the currently authenticated user. Unlike `disconnectAsync()`, this method will not revoke the access token. This means you can specify the `accountName` and reauthenticate without extra user approval.
 
 ### `isConnectedAsync(): Promise<boolean>`
 
 Returns true if a user is authenticated and the access token has not been invalidated.
 
-### `disconnectAsync(): Promise`
+### `disconnectAsync(): Promise<void>`
 
-Signs-out the current user out and revokes the access tokens associated with the account. This will prevent reauthentication, whereas `signOutAsync()` will not.
+Signs out the current user and revokes the access tokens associated with the account. This will prevent reauthentication, whereas `signOutAsync()` will not.
 
 ### `getCurrentUserAsync(): Promise<GoogleUser | null>`
 
@@ -215,7 +184,7 @@ type GoogleSignInOptions = {
   /*
    * [iOS][Android][optional]: `hostedDomain: ?string`
    * [default]: `undefined`
-   * The hosted G Suite domain of the user. Provided only if the user belongs to a hosted domain
+   * The hosted G Suite domain of the user. Provided only if the user belongs to a hosted domain.
    */
   hostedDomain: ?string,
 
@@ -392,22 +361,28 @@ All of the available authentication error codes.
 
 ### `GoogleSignIn.TYPES`
 
-All of the available sign-in types.
+All of the available sign in types.
 
 - `GoogleSignIn.TYPES.DEFAULT` The standard login method.
-- `GoogleSignIn.TYPES.GAMES` Sign-in to Google Play Games (Android only)
+- `GoogleSignIn.TYPES.GAMES` Sign in to Google Play Games (Android only)
 
 ## Usage
 
-```javascript
+```js
 import React from 'react';
-import { View } from 'react-native';
+import { Text } from 'react-native';
 import { GoogleSignIn } from 'expo-google-sign-in';
 
 export default class AuthScreen extends React.Component {
+  state = { user: null };
+
+  componentDidMount() {
+    this.initAsync();
+  }
+
   initAsync = async () => {
     await GoogleSignIn.initAsync({
-      clientId: '603386649315-vp4revvrcgrcjme51ebuhbkbspl048l9.apps.googleusercontent.com',
+      clientId: '<YOUR_IOS_CLIENT_ID>',
     });
     this._syncUserWithStateAsync();
   };
@@ -434,8 +409,16 @@ export default class AuthScreen extends React.Component {
     }
   };
 
+  onPress = () => {
+    if (this.state.user) {
+      this.signOutAsync();
+    } else {
+      this.signInAsync();
+    }
+  };
+
   render() {
-    return <View />;
+    return <Text onPress={this.onPress}>Toggle Auth</Text>;
   }
 }
 ```
