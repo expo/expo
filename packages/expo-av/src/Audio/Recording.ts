@@ -6,6 +6,7 @@ import {
   PlaybackStatusToSet,
 } from '../AV';
 
+import ExponentAV from '../ExponentAV';
 import { isAudioEnabled, throwIfAudioIsDisabled } from './AudioAvailability';
 
 import { Sound } from './Sound';
@@ -154,8 +155,7 @@ export type RecordingStatus = {
 };
 
 let _recorderExists: boolean = false;
-
-const eventEmitter = Platform.OS === 'android' ? new EventEmitter(NativeModulesProxy.ExponentAV) : null;
+const eventEmitter = Platform.OS === 'android' ? new EventEmitter(ExponentAV) : null;
 
 export class Recording {
   _subscription: Subscription | null = null;
@@ -238,9 +238,7 @@ export class Recording {
   getStatusAsync = async (): Promise<RecordingStatus> => {
     // Automatically calls onRecordingStatusUpdate.
     if (this._canRecord) {
-      return this._performOperationAndHandleStatusAsync(() =>
-        NativeModulesProxy.ExponentAV.getAudioRecordingStatus()
-      );
+      return this._performOperationAndHandleStatusAsync(() => ExponentAV.getAudioRecordingStatus());
     }
     const status = {
       canRecord: false,
@@ -300,7 +298,10 @@ export class Recording {
 
     if (!this._canRecord) {
       if (eventEmitter) {
-        this._subscription = eventEmitter.addListener("Expo.Recording.recorderUnloaded", this._cleanupForUnloadedRecorder);
+        this._subscription = eventEmitter.addListener(
+          'Expo.Recording.recorderUnloaded',
+          this._cleanupForUnloadedRecorder
+        );
       }
 
       const {
@@ -310,7 +311,7 @@ export class Recording {
         uri: string;
         // status is of type RecordingStatus, but without the canRecord field populated
         status: Pick<RecordingStatus, Exclude<keyof RecordingStatus, 'canRecord'>>;
-      } = await NativeModulesProxy.ExponentAV.prepareAudioRecorder(options);
+      } = await ExponentAV.prepareAudioRecorder(options);
 
       _recorderExists = true;
       this._uri = uri;
@@ -327,15 +328,11 @@ export class Recording {
   }
 
   async startAsync(): Promise<RecordingStatus> {
-    return this._performOperationAndHandleStatusAsync(() =>
-      NativeModulesProxy.ExponentAV.startAudioRecording()
-    );
+    return this._performOperationAndHandleStatusAsync(() => ExponentAV.startAudioRecording());
   }
 
   async pauseAsync(): Promise<RecordingStatus> {
-    return this._performOperationAndHandleStatusAsync(() =>
-      NativeModulesProxy.ExponentAV.pauseAudioRecording()
-    );
+    return this._performOperationAndHandleStatusAsync(() => ExponentAV.pauseAudioRecording());
   }
 
   async stopAndUnloadAsync(): Promise<RecordingStatus> {
@@ -348,8 +345,8 @@ export class Recording {
     }
     // We perform a separate native API call so that the state of the Recording can be updated with
     // the final duration of the recording. (We cast stopStatus as Object to appease Flow)
-    const finalStatus = await NativeModulesProxy.ExponentAV.stopAudioRecording();
-    await NativeModulesProxy.ExponentAV.unloadAudioRecorder();
+    const finalStatus = await ExponentAV.stopAudioRecording();
+    await ExponentAV.unloadAudioRecorder();
     return this._cleanupForUnloadedRecorder(finalStatus);
   }
 
