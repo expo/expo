@@ -1,0 +1,1 @@
+../../../../../packages/expo-amplitude/ios/EXAmplitude/Api/Components/Svg/Utils/RCTConvert+RNSVG.h

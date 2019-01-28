@@ -29,6 +29,7 @@ def includeUniversalModule = { name ->
 
 [
     'expo-ads-admob',
+    'expo-amplitude',
     'expo-analytics-segment',
     'expo-app-auth',
     'expo-app-loader-provider',

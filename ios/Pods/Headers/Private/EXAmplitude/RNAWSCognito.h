@@ -1,0 +1,1 @@
+../../../../../packages/expo-amplitude/ios/EXAmplitude/Api/Cognito/RNAWSCognito.h

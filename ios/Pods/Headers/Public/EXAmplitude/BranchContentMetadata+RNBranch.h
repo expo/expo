@@ -1,0 +1,1 @@
+../../../../../packages/expo-amplitude/ios/EXAmplitude/Api/Standalone/Branch/BranchContentMetadata+RNBranch.h

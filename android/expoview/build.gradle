@@ -135,6 +135,7 @@ dependencies {
 
   // Optional universal modules
   compileOnly 'host.exp.exponent:expo-app-auth:2.0.0'
+  compileOnly 'host.exp.exponent:expo-amplitude:1.0.0'
   compileOnly 'host.exp.exponent:expo-av:1.0.0'
   compileOnly 'host.exp.exponent:expo-image-loader-interface:2.0.0'
   compileOnly 'host.exp.exponent:expo-gl:2.0.0'
@@ -191,6 +192,7 @@ dependencies {
   // They're defined as "api" so we don't have to define them again in app/build.gradle
   // In distribution they're "compileOnly" and it's the app/build.gradle who manages them.
   api project(':expo-ads-admob')
+  api project(':expo-amplitude')
   api project(':expo-analytics-segment')
   api project(':expo-app-auth')
   api project(':expo-av')

@@ -1,0 +1,1 @@
+../../../../../packages/expo-amplitude/ios/EXAmplitude/Api/Components/GestureHandler/Handlers/RNPinchHandler.h

@@ -7,6 +7,7 @@ import java.util.List;
 
 import expo.core.interfaces.Package;
 import expo.modules.ads.admob.AdMobPackage;
+import expo.modules.amplitude.AmplitudePackage;
 import expo.modules.analytics.segment.SegmentPackage;
 import expo.modules.appauth.AppAuthPackage;
 import expo.modules.av.AVPackage;
@@ -74,7 +75,8 @@ public class ExperiencePackagePicker {
       new SensorsPackage(),
       new SpeechPackage(),
       new StripePackage(),
-      new TaskManagerPackage()
+      new TaskManagerPackage(),
+      new AmplitudePackage()
   );
 
   /**

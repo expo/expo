@@ -1,0 +1,1 @@
+{"version":3,"file":"ExponentAmplitude.web.js","sourceRoot":"","sources":["../src/ExponentAmplitude.web.ts"],"names":[],"mappings":"AAAA,eAAe;IACb,IAAI,IAAI;QACN,OAAO,mBAAmB,CAAC;IAC7B,CAAC;CACF,CAAC","sourcesContent":["export default {\n  get name(): string {\n    return 'ExponentAmplitude';\n  },\n};\n"]}

@@ -13,7 +13,7 @@ import * as Location from 'expo-location';
 import * as SMS from 'expo-sms';
 import * as Speech from 'expo-speech';
 import * as TaskManager from 'expo-task-manager';
-
+import * as Amplitude from 'expo-amplitude';
 import * as Facebook from 'expo-facebook';
 import * as MailComposer from 'expo-mail-composer';
 import * as SecureStore from 'expo-secure-store';
@@ -39,6 +39,7 @@ if (typeof Constants.manifest.env === 'object') {
 }
 
 export { AdMobBanner, AdMobInterstitial, AdMobRewarded, PublisherBanner } from 'expo-ads-admob';
+export { Amplitude };
 export { Segment } from 'expo-analytics-segment';
 export { Asset } from 'expo-asset';
 export { AppAuth } from 'expo-app-auth';
@@ -67,7 +68,6 @@ export { TaskManager };
 export { GestureHandler } from './GestureHandler';
 export { default as MapView } from './Maps/MapView';
 export { AR };
-export { default as Amplitude } from './Amplitude/Amplitude';
 export { default as AuthSession } from './AuthSession';
 export { Brightness };
 export { Calendar };
