@@ -172,7 +172,7 @@ export function getEscapedString(string: string): string {
   return string.replace(/([.*+?^${}()|\[\]\/\\])/g, '\\$1');
 }
 
-export function postponeMethodExecution(ms) {
+export function postponeMethodExecution(ms): (args: any) => Promise<any> {
   return arg =>
     new Promise(resolve => {
       setTimeout(() => {

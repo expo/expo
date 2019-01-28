@@ -1,12 +1,17 @@
 import { batchProcessAllSourcesAsync, shouldProcess } from './ProcessSources.web';
 import { makeIterable } from './Utils.web';
 
-export type WebFontAction = {
-  resolve: () => Promise<string>;
-  src: () => string;
-};
+declare var document: Document;
 
-function findAllFontsForDocument(document = global.document): WebFontAction[] {
+export async function batchResolveAllFontsAsync(element: HTMLElement): Promise<HTMLElement> {
+  const fontCSSStyles = await findAllFontsForDocumentAsync();
+  const styleNode = document.createElement('style');
+  element.appendChild(styleNode);
+  styleNode.appendChild(document.createTextNode(fontCSSStyles.join('\n')));
+  return element;
+}
+
+async function findAllFontsForDocumentAsync(): Promise<string[]> {
   const styleSheets: StyleSheetList = document.styleSheets;
   const sheets: CSSStyleSheet[] = makeIterable(styleSheets);
   const cssRules = getCSSRules(sheets);
@@ -14,26 +19,18 @@ function findAllFontsForDocument(document = global.document): WebFontAction[] {
     .filter(({ type }) => type === CSSRule.FONT_FACE_RULE)
     .filter(({ style }) => shouldProcess(style.getPropertyValue('src')));
 
-  return rulesToProcess.map(item => createNewFontForCSSRule(item));
+  return await Promise.all(rulesToProcess.map(item => createNewFontForCSSRule(item)));
 }
 
-function createNewFontForCSSRule({
+async function createNewFontForCSSRule({
   parentStyleSheet,
   cssText,
-  style,
-}: CSSStyleRule): WebFontAction {
-  return {
-    async resolve(): Promise<string> {
-      let initialURL;
-      if (parentStyleSheet && parentStyleSheet.href != null) {
-        initialURL = parentStyleSheet.href;
-      }
-      return await batchProcessAllSourcesAsync(cssText, initialURL);
-    },
-    src(): string {
-      return style.getPropertyValue('src');
-    },
-  };
+}: CSSStyleRule): Promise<string> {
+  let initialURL;
+  if (parentStyleSheet && parentStyleSheet.href != null) {
+    initialURL = parentStyleSheet.href;
+  }
+  return await batchProcessAllSourcesAsync(cssText, initialURL);
 }
 
 function getCSSRules(styleSheets: CSSStyleSheet[]): CSSStyleRule[] {
@@ -47,15 +44,4 @@ function getCSSRules(styleSheets: CSSStyleSheet[]): CSSStyleRule[] {
     }
   }
   return cssRules;
-}
-
-export async function batchResolveAllFontsAsync(element: HTMLElement): Promise<HTMLElement> {
-  const webFonts = findAllFontsForDocument(document);
-  const fontCSSStyles = await Promise.all(webFonts.map(webFont => webFont.resolve()));
-  const fontCSSString = fontCSSStyles.join('\n');
-
-  const styleNode = document.createElement('style');
-  element.appendChild(styleNode);
-  styleNode.appendChild(document.createTextNode(fontCSSString));
-  return element;
 }

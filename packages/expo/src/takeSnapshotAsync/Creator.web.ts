@@ -5,6 +5,8 @@ import { batchResolveAllFontsAsync } from './Fonts.web';
 import { processAllImagesAsync } from './Images.web';
 import * as util from './Utils.web';
 
+declare var window: Window;
+
 type FillStyle = string | CanvasGradient | CanvasPattern;
 
 interface SVGOptions {
@@ -17,22 +19,10 @@ interface SVGOptions {
   preventCaching?: boolean;
 }
 
-let options: any = {};
-
 async function generateSVGAsync(
   element: Element,
-  { missingImageSource, preventCaching, width, height, bgcolor, style }: SVGOptions = {}
+  { width, height, bgcolor, style }: SVGOptions = {}
 ): Promise<string> {
-  if (typeof missingImageSource !== 'undefined') {
-    options.missingImageSource = missingImageSource;
-  }
-
-  if (typeof preventCaching === 'undefined') {
-    options.preventCaching = false;
-  } else {
-    options.preventCaching = preventCaching;
-  }
-
   const clone = await cloneElement(element);
 
   if (clone === undefined) {
@@ -132,6 +122,7 @@ async function draw(
   context.drawImage(image, 0, 0);
   return canvas;
 }
+
 function newCanvas(
   element: Element,
   options: { width?: number; height?: number; bgcolor?: string | CanvasGradient | CanvasPattern }
@@ -167,49 +158,48 @@ async function cloneElement(
   const clonedNode = await getDeepCopyForElement(element);
   const clone = await cloneChildren(element, clonedNode);
   return await processClone(element, clone as any);
+}
 
-  async function cloneChildren(
-    { childNodes },
-    clone: HTMLImageElement | Node
-  ): Promise<HTMLElement | Node> {
-    const children = util.makeIterable(childNodes);
-    if (children.length === 0) {
-      return clone;
-    }
-
-    for (const child of children) {
-      const childClone = await cloneElement(child);
-      if (childClone) {
-        await clone.appendChild(childClone);
-      }
-    }
-
+async function cloneChildren(
+  { childNodes },
+  clone: HTMLImageElement | Node
+): Promise<HTMLElement | Node> {
+  const children = util.makeIterable(childNodes);
+  if (children.length === 0) {
     return clone;
   }
 
-  async function processClone(original: Element, clone: HTMLElement): Promise<HTMLElement | any> {
-    if (!(clone instanceof HTMLElement)) {
-      // TODO: Bacon: Avoid or throw error
-      return clone;
+  for (const child of children) {
+    const childClone = await cloneElement(child);
+    if (childClone) {
+      await clone.appendChild(childClone);
     }
+  }
 
-    const source = window.getComputedStyle(original);
-    const target = clone.style;
-
-    if (source.cssText) {
-      target.cssText = source.cssText;
-    } else {
-      util.makeIterable(source).forEach(name => {
-        target.setProperty(name, source.getPropertyValue(name), source.getPropertyPriority(name));
-      });
-    }
-
-    clonePseudoElement(':before', original, clone);
-    clonePseudoElement(':after', original, clone);
-    mutateInputElement(original, clone);
-    mutateSVGElementClone(clone);
+  return clone;
+}
+async function processClone(original: Element, clone: HTMLElement): Promise<HTMLElement | any> {
+  if (!(clone instanceof HTMLElement)) {
+    // TODO: Bacon: Avoid or throw error
     return clone;
   }
+
+  const source = window.getComputedStyle(original);
+  const target = clone.style;
+
+  if (source.cssText) {
+    target.cssText = source.cssText;
+  } else {
+    util.makeIterable(source).forEach(name => {
+      target.setProperty(name, source.getPropertyValue(name), source.getPropertyPriority(name));
+    });
+  }
+
+  clonePseudoElement(':before', original, clone);
+  clonePseudoElement(':after', original, clone);
+  mutateInputElement(original, clone);
+  mutateSVGElementClone(clone);
+  return clone;
 }
 
 function clonePseudoElement(element: string, original: Element, clone: HTMLElement): void {
@@ -225,36 +215,36 @@ function clonePseudoElement(element: string, original: Element, clone: HTMLEleme
   const styleElement = document.createElement('style');
   styleElement.appendChild(formatPseudoElementStyle(className, element, style));
   clone.appendChild(styleElement);
+}
 
-  function formatPseudoElementStyle(
-    className: string,
-    element: string,
-    style: CSSStyleDeclaration
-  ): Text {
-    const selector = `.${className}:${element}`;
-    const cssText = style.cssText ? formatCSSText(style) : formatCSSProperties(style);
-    return document.createTextNode(`${selector}{${cssText}}`);
+function formatPseudoElementStyle(
+  className: string,
+  element: string,
+  style: CSSStyleDeclaration
+): Text {
+  const selector = `.${className}:${element}`;
+  const cssText = style.cssText ? formatCSSText(style) : formatCSSProperties(style);
+  return document.createTextNode(`${selector}{${cssText}}`);
+}
 
-    function formatCSSText(style: CSSStyleDeclaration): string {
-      const content = style.getPropertyValue('content');
-      return `${style.cssText} content: ${content};`;
-    }
+function formatCSSText(style: CSSStyleDeclaration): string {
+  const content = style.getPropertyValue('content');
+  return `${style.cssText} content: ${content};`;
+}
 
-    function formatCSSProperties(style: CSSStyleDeclaration): string {
-      const parsed = util
-        .makeIterable(style)
-        .map(formatProperty)
-        .join('; ');
+function formatCSSProperties(style: CSSStyleDeclaration): string {
+  const parsed = util
+    .makeIterable(style)
+    .map(name => formatProperty(name, style))
+    .join('; ');
 
-      return `${parsed};`;
+  return `${parsed};`;
+}
 
-      function formatProperty(name: string): string {
-        return `${name}: ${style.getPropertyValue(name)}${
-          style.getPropertyPriority(name) ? ' !important' : ''
-        }`;
-      }
-    }
-  }
+function formatProperty(name: string, style: CSSStyleDeclaration): string {
+  return `${name}: ${style.getPropertyValue(name)}${
+    style.getPropertyPriority(name) ? ' !important' : ''
+  }`;
 }
 
 function mutateInputElement(element: Element, clone: HTMLElement): void {
