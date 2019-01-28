@@ -9,8 +9,8 @@ import { Assets as StackAssets } from 'react-navigation-stack';
 import { useScreens } from 'react-native-screens';
 
 import Icons from './constants/Icons';
-import RootNavigation from './screens/ViewShotScreen';
-// import RootNavigation from './screens/LinearGradientScreen';
+import RootNavigation from './navigation/RootNavigation';
+
 
 // workaround for large android status bar in react-nav beta.27
 if (Platform.OS === 'android') {
@@ -34,7 +34,7 @@ export default class App extends React.Component {
         Asset.loadAsync(iconRequires),
         Asset.loadAsync(StackAssets),
         Font.loadAsync(Ionicons.font),
-        Font.loadAsync({ 'space-mono': require('./assets/fonts/SpaceMono-Regular.ttf') }),
+        Font.loadAsync({ 'space-mono': require('./assets/fonts/SpaceMono-Regular.ttf') })
       ]);
     } catch (e) {
       console.log({ e });
