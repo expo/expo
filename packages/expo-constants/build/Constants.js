@@ -1,6 +1,6 @@
 import { AppOwnership, UserInterfaceIdiom, } from './Constants.types';
 import ExponentConstants from './ExponentConstants';
-export { AppOwnership, UserInterfaceIdiom };
+export { AppOwnership, UserInterfaceIdiom, };
 if (!ExponentConstants) {
     console.warn("No native ExponentConstants module found, are you sure the expo-constants's module is linked properly?");
 }
@@ -12,12 +12,12 @@ if (ExponentConstants && ExponentConstants.manifest) {
         manifest = JSON.parse(manifest);
     }
 }
-const { name, ...Constants } = (ExponentConstants || {});
+const { name, ...constants } = (ExponentConstants || {});
 export default {
-    ...Constants,
+    ...constants,
     manifest,
     // Legacy aliases
-    deviceId: Constants.installationId,
-    linkingUrl: Constants.linkingUri,
+    deviceId: constants.installationId,
+    linkingUrl: constants.linkingUri,
 };
 //# sourceMappingURL=Constants.js.map

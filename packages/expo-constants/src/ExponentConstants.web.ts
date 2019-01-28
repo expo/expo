@@ -1,6 +1,6 @@
 import UAParser from 'ua-parser-js';
 import uuidv4 from 'uuid/v4';
-import { PlatformInterface, WebManifest, NativeConstantsInterface } from './Constants.types';
+import { PlatformManifest, WebManifest, NativeConstants } from './Constants.types';
 
 const ExpoPackageJson = require('expo/package.json');
 
@@ -39,7 +39,7 @@ export default {
   get sessionId(): string {
     return _sessionId;
   },
-  get platform(): PlatformInterface {
+  get platform(): PlatformManifest {
     return { web: UAParser(navigator.userAgent) };
   },
   get isHeadless(): false {
@@ -91,4 +91,4 @@ export default {
   async getWebViewUserAgentAsync(): Promise<string> {
     return navigator.userAgent;
   },
-} as NativeConstantsInterface;
+} as NativeConstants;

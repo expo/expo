@@ -59,12 +59,12 @@ export interface AppManifest {
     logUrl?: string;
     [key: string]: any;
 }
-export interface PlatformInterface {
+export interface PlatformManifest {
     ios?: IOSManifest;
     android?: AndroidManifest;
     web?: WebManifest;
 }
-export interface NativeConstantsInterface {
+export interface NativeConstants {
     name: 'ExponentConstants';
     appOwnership: AppOwnership;
     debugMode: boolean;
@@ -84,6 +84,6 @@ export interface NativeConstantsInterface {
     statusBarHeight: number;
     systemFonts: string[];
     systemVersion?: number;
-    platform?: PlatformInterface;
+    platform?: PlatformManifest;
     getWebViewUserAgentAsync: () => Promise<string | null>;
 }

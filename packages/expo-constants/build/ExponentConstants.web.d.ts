@@ -1,3 +1,3 @@
-import { NativeConstantsInterface } from './Constants.types';
-declare const _default: NativeConstantsInterface;
+import { NativeConstants } from './Constants.types';
+declare const _default: NativeConstants;
 export default _default;

@@ -2,13 +2,22 @@ import {
   AndroidManifest,
   AppOwnership,
   IOSManifest,
-  NativeConstantsInterface,
+  PlatformManifest,
+  NativeConstants,
   UserInterfaceIdiom,
   WebManifest,
 } from './Constants.types';
 import ExponentConstants from './ExponentConstants';
 
-export { AppOwnership, UserInterfaceIdiom, IOSManifest, AndroidManifest, WebManifest };
+export {
+  AppOwnership,
+  UserInterfaceIdiom,
+  PlatformManifest,
+  NativeConstants,
+  IOSManifest,
+  AndroidManifest,
+  WebManifest,
+};
 
 if (!ExponentConstants) {
   console.warn(
@@ -25,17 +34,17 @@ if (ExponentConstants && ExponentConstants.manifest) {
   }
 }
 
-const { name, ...Constants } = (ExponentConstants || {}) as any;
+const { name, ...constants } = (ExponentConstants || {}) as any;
 
-export interface ConstantsInterface extends NativeConstantsInterface {
+export interface Constants extends NativeConstants {
   deviceId?: string;
   linkingUrl?: string;
 }
 
 export default {
-  ...Constants,
+  ...constants,
   manifest,
   // Legacy aliases
-  deviceId: Constants.installationId,
-  linkingUrl: Constants.linkingUri,
-} as ConstantsInterface;
+  deviceId: constants.installationId,
+  linkingUrl: constants.linkingUri,
+} as Constants;
