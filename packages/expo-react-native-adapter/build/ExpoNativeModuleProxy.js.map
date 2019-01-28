@@ -1,1 +1,0 @@
-{"version":3,"file":"ExpoNativeModuleProxy.js","sourceRoot":"","sources":["../src/ExpoNativeModuleProxy.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,aAAa,EAAE,MAAM,cAAc,CAAC;AAE7C,eAAe,aAAa,CAAC,qBAAqB,CAAC","sourcesContent":["import { NativeModules } from 'react-native';\n\nexport default NativeModules.ExpoNativeModuleProxy;\n"]}
