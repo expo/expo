@@ -138,6 +138,7 @@ workflows:
       - expotools
       - client_android
       - client_ios
+      - iphone_build
       - test_suite_publish
       # TODO: fix devicefarm running tests
       #- android_test_suite:
@@ -251,6 +252,24 @@ jobs:
       - run: fastlane ios create_simulator_build
       - store_artifacts:
           path: ~/Library/Logs/fastlane/
+
+  iphone_build:
+    executor: mac
+    steps:
+      - install_nix
+      - setup
+      - update_submodules
+      - run: git lfs pull
+      - fetch_cocoapods_specs
+      - yarn_install:
+          working_directory: ~/project/tools-public
+      - run: |
+          fastlane ios create_iphone_build
+          tar -C . \
+            -zcf "/tmp/shellapp.tar.gz" \
+            iphone-build
+      - store_artifacts:
+          path: /tmp/shellapp.tar.gz
 
   shell_app_sim_base_ios:
     executor: mac
