@@ -90,6 +90,7 @@ export default class ExpoApisScreen extends React.Component {
         'SMS',
         'TextToSpeech',
         'Util',
+        'ViewShot',
       ],
       default: [
         'AppAuth',

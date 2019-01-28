@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { captureRef, CaptureOptions } from 'react-native-view-shot';
-
+import { CaptureOptions } from 'react-native-view-shot';
+import captureRef from './captureRef';
 type ReactNativeNodeHandle = number;
 
 export default async function takeSnapshotAsync<T>(

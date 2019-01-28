@@ -25,7 +25,7 @@ export default class ViewShotScreen extends React.Component {
   handlePress = async () => {
     try {
       const image = await takeSnapshotAsync(this.view, {
-        format: 'png',
+        format: 'jpg',
         quality: 0.5,
         result: 'data-uri',
       });
@@ -36,11 +36,11 @@ export default class ViewShotScreen extends React.Component {
   };
 
   handleScreenCapturePress = async () => {
-    const uri = await captureScreen({
-      format: 'jpg',
-      quality: 0.8,
-    });
-    this.setState({ screenUri: uri });
+    // const uri = await captureScreen({
+    //   format: 'jpg',
+    //   quality: 0.8,
+    // });
+    // this.setState({ screenUri: uri });
   };
 
   render() {

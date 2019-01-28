@@ -59,7 +59,13 @@ export { Location };
 export { MediaLibrary } from 'expo-media-library';
 export { Permissions } from 'expo-permissions';
 export { Print } from 'expo-print';
-export { Accelerometer, Barometer, Gyroscope, Magnetometer, MagnetometerUncalibrated } from 'expo-sensors';
+export {
+  Accelerometer,
+  Barometer,
+  Gyroscope,
+  Magnetometer,
+  MagnetometerUncalibrated,
+} from 'expo-sensors';
 export { SQLite } from 'expo-sqlite';
 export { SMS };
 export { Speech };
@@ -92,7 +98,7 @@ export { Updates };
 export { Util };
 export { default as WebBrowser } from './WebBrowser/WebBrowser';
 export { default as apisAreAvailable } from './apisAreAvailable';
-export { default as takeSnapshotAsync } from './takeSnapshotAsync';
+export { default as takeSnapshotAsync } from './takeSnapshotAsync/takeSnapshotAsync';
 export { Audio, Video };
 export { BlurView, VibrancyView };
 export { LinearGradient } from 'expo-linear-gradient';
