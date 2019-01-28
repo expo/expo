@@ -409,6 +409,8 @@ PODS:
     - GoogleSignIn (~> 4.4)
   - EXImageLoaderInterface (2.0.0):
     - EXCore
+  - EXImagePicker (1.0.0):
+    - EXCore
   - EXKeepAwake (1.0.0):
     - EXCore
   - EXLinearGradient (1.0.0):
@@ -1306,6 +1308,7 @@ DEPENDENCIES:
   - EXGL-CPP (from `../packages/expo-gl-cpp/cpp`)
   - EXGoogleSignIn (from `../packages/expo-google-sign-in/ios`)
   - EXImageLoaderInterface (from `../packages/expo-image-loader-interface/ios`)
+  - EXImagePicker (from `../packages/expo-image-picker/ios`)
   - EXKeepAwake (from `../packages/expo-keep-awake/ios`)
   - EXLinearGradient (from `../packages/expo-linear-gradient/ios`)
   - EXLocalAuthentication (from `../packages/expo-local-authentication/ios`)
@@ -1769,6 +1772,8 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-google-sign-in/ios"
   EXImageLoaderInterface:
     :path: "../packages/expo-image-loader-interface/ios"
+  EXImagePicker:
+    :path: "../packages/expo-image-picker/ios"
   EXKeepAwake:
     :path: "../packages/expo-keep-awake/ios"
   EXLinearGradient:
@@ -1992,6 +1997,7 @@ SPEC CHECKSUMS:
   EXGL-CPP: 46b589a3ed0c59ae2e7f9434897b66cd8dd2e70c
   EXGoogleSignIn: 646a6097f0e6ca5c4812b5dc2fcda1979ad9d333
   EXImageLoaderInterface: 3f460f6ff344ba6c4e00621806c0d1d76249cd8f
+  EXImagePicker: 36cfb1337979dc4b196e5948e2fdeb55bdb05896
   EXKeepAwake: f8d01da0507d5921135ba63799c98ac4e059ff36
   EXLinearGradient: b09d4e1478b72b08a39f902a1ec045772e3a59e3
   EXLocalAuthentication: b70696613cb24d726d3c98a1818c22c481a46b01
@@ -2049,6 +2055,6 @@ SPEC CHECKSUMS:
   yogaABI31_0_0: 7978689ddccec43cffd5914889304cf3b7fd7c77
   yogaABI32_0_0: b6e0ba3796cd5e47ccea0454694e605a1cfc817a
 
-PODFILE CHECKSUM: ecc9403a19c2b48c7f7c176242c2b2ca44313f26
+PODFILE CHECKSUM: 248ea93a6cb10cf2965ce8d5a71a0293942bab0f
 
 COCOAPODS: 1.5.3
