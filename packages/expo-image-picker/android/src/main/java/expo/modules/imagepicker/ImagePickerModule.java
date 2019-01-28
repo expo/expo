@@ -1,17 +1,22 @@
-package versioned.host.exp.exponent.modules.api;
+package expo.modules.imagepicker;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.Application;
+import android.content.Context;
 import android.content.Intent;
+import android.content.PeriodicSync;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.media.MediaMetadataRetriever;
+import android.os.Bundle;
 import android.support.media.ExifInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.provider.MediaStore;
+import android.support.v4.content.FileProvider;
 import android.util.Base64;
 import android.webkit.MimeTypeMap;
 
@@ -22,8 +27,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.ref.WeakReference;
+import expo.interfaces.permissions.*;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 
 import com.facebook.common.executors.CallerThreadExecutor;
 import com.facebook.common.references.CloseableReference;
@@ -34,29 +44,20 @@ import com.facebook.imagepipeline.datasource.BaseBitmapDataSubscriber;
 import com.facebook.imagepipeline.image.CloseableImage;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
-import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.Promise;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableType;
-import com.facebook.react.bridge.WritableMap;
 import com.theartofdev.edmodo.cropper.CropImage;
 
 import org.apache.commons.io.IOUtils;
 
-import javax.annotation.Nullable;
+import expo.core.ExportedModule;
+import expo.core.ModuleRegistry;
+import expo.core.Promise;
+import expo.core.interfaces.ActivityEventListener;
+import expo.core.interfaces.ActivityProvider;
+import expo.core.interfaces.ExpoMethod;
+import expo.core.interfaces.ModuleRegistryConsumer;
+import expo.core.interfaces.services.UIManager;
 
-import host.exp.exponent.ActivityResultListener;
-import host.exp.exponent.analytics.EXL;
-import host.exp.exponent.kernel.ExperienceId;
-import host.exp.exponent.utils.ExpFileUtils;
-import host.exp.exponent.utils.ScopedContext;
-import host.exp.expoview.Exponent;
-import versioned.host.exp.exponent.modules.ExpoKernelServiceConsumerBaseModule;
-
-public class ImagePickerModule extends ExpoKernelServiceConsumerBaseModule implements ActivityResultListener {
+public class ImagePickerModule extends ExportedModule implements ModuleRegistryConsumer, ActivityEventListener {
 
   public static final String TAG = "ExponentImagePicker";
 
@@ -64,11 +65,13 @@ public class ImagePickerModule extends ExpoKernelServiceConsumerBaseModule imple
   static final int REQUEST_LAUNCH_IMAGE_LIBRARY = 2;
 
   private static final int DEFAULT_QUALITY = 100;
+  public static final String MISSING_ACTIVITY = "MISSING_ACTIVITY";
+  public static final String MISSING_ACTIVITY_MESSAGE = "Activity which was provided during module initialization is no longer available";
 
   private Uri mCameraCaptureURI;
   private Promise mPromise;
   private Boolean mLaunchedCropper = false;
-  private WritableMap mExifData = null;
+  private Bundle mExifData = null;
 
   final String OPTION_QUALITY = "quality";
   final String OPTION_ALLOWS_EDITING = "allowsEditing";
@@ -79,18 +82,20 @@ public class ImagePickerModule extends ExpoKernelServiceConsumerBaseModule imple
 
   private Integer quality = null;
   private Boolean allowsEditing = false;
-  private ReadableArray forceAspect = null;
+  private ArrayList<Object> forceAspect = null;
   private Boolean base64 = false;
   private String mediaTypes = null;
   private Boolean exif = false;
+  private String mExperienceId;
+  private WeakReference<Activity> mExperienceActivity;
+  private boolean mInitialized = false;
+  
+  private Context mContext;
+  private ModuleRegistry mModuleRegistry;
 
-  private ScopedContext mScopedContext;
-
-  public ImagePickerModule(ReactApplicationContext reactContext, ScopedContext scopedContext,
-                           ExperienceId experienceId) {
-    super(reactContext, experienceId);
-    mScopedContext = scopedContext;
-    Exponent.getInstance().addActivityResultListener(this);
+  public ImagePickerModule(Context context) {
+    super(context);
+    mContext = context;
   }
 
   @Override
@@ -98,54 +103,68 @@ public class ImagePickerModule extends ExpoKernelServiceConsumerBaseModule imple
     return "ExponentImagePicker";
   }
 
-  private boolean readOptions(final ReadableMap options, final Promise promise) {
-    if (options.hasKey(OPTION_QUALITY)) {
-      quality = (int) (options.getDouble(OPTION_QUALITY) * 100);
+  private boolean readOptions(final Map<String, Object> options, final Promise promise) {
+    if (options.containsKey((OPTION_QUALITY))) {
+      quality = (int) (((Double) options.get(OPTION_QUALITY)) * 100);
     }
-    allowsEditing = options.hasKey(OPTION_ALLOWS_EDITING) && options.getBoolean(OPTION_ALLOWS_EDITING);
-    if (options.hasKey(OPTION_MEDIA_TYPES)) {
-      mediaTypes = options.getString(OPTION_MEDIA_TYPES);
+    allowsEditing = options.containsKey(OPTION_ALLOWS_EDITING) && ((Boolean) options.get(OPTION_ALLOWS_EDITING));
+    if (options.containsKey(OPTION_MEDIA_TYPES)) {
+      mediaTypes = (String) options.get(OPTION_MEDIA_TYPES);
     }
-    if (options.hasKey(OPTION_ASPECT)) {
-      forceAspect = options.getArray(OPTION_ASPECT);
-      if (forceAspect.size() != 2 || forceAspect.getType(0) != ReadableType.Number ||
-              forceAspect.getType(1) != ReadableType.Number) {
+    if (options.containsKey(OPTION_ASPECT)) {
+      forceAspect = (ArrayList<Object>) options.get(OPTION_ASPECT);
+      if (forceAspect.size() != 2 || !(forceAspect.get(0) instanceof Number) ||
+          !(forceAspect.get(1) instanceof Number)) {
         promise.reject(new IllegalArgumentException("'aspect option must be of form [Number, Number]"));
         return false;
       }
     } else {
       forceAspect = null;
     }
-    base64 = options.hasKey(OPTION_BASE64) && options.getBoolean(OPTION_BASE64);
-    exif = options.hasKey(OPTION_EXIF) && options.getBoolean(OPTION_EXIF);
+    base64 = options.containsKey(OPTION_BASE64) && ((Boolean) options.get(OPTION_BASE64));
+    exif = options.containsKey(OPTION_EXIF) && (Boolean) options.get(OPTION_EXIF);
     return true;
   }
 
   // NOTE: Currently not reentrant / doesn't support concurrent requests
-  @ReactMethod
-  public void launchCameraAsync(final ReadableMap options, final Promise promise) {
+  @ExpoMethod
+  public void launchCameraAsync(final Map<String, Object> options, final Promise promise) {
     if (!readOptions(options, promise)) {
       return;
     }
 
+    if (getExperienceActivity() == null) {
+      promise.reject(MISSING_ACTIVITY, MISSING_ACTIVITY_MESSAGE);
+      return;
+    }
+
     final Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-    if (cameraIntent.resolveActivity(Exponent.getInstance().getApplication().getPackageManager()) == null) {
+
+    if (cameraIntent.resolveActivity(getApplication(null).getPackageManager()) == null) {
       promise.reject(new IllegalStateException("Error resolving activity"));
       return;
     }
 
-    if (Exponent.getInstance().getPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE, this.experienceId) &&
-        Exponent.getInstance().getPermissions(Manifest.permission.CAMERA, this.experienceId)) {
-      launchCameraWithPermissionsGranted(promise, cameraIntent);
-    } else {
-      promise.reject(new SecurityException("User rejected permissions"));
-    }
+    Permissions permissionsModule = mModuleRegistry.getModule(Permissions.class);
+
+    String permissionsTable[] = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA};
+
+    permissionsModule.askForPermissions(permissionsTable, new Permissions.PermissionsRequestListener() {
+      @Override
+      public void onPermissionsResult(int[] results) {
+        if (results[0] == PackageManager.PERMISSION_GRANTED && results[1] == PackageManager.PERMISSION_GRANTED) {
+          launchCameraWithPermissionsGranted(promise, cameraIntent);
+        } else {
+          promise.reject(new SecurityException("User rejected permissions"));
+        }
+      }
+    });
   }
 
   private void launchCameraWithPermissionsGranted(Promise promise, Intent cameraIntent) {
     File imageFile;
     try {
-      imageFile = new File(ExpFileUtils.generateOutputPath(mScopedContext.getCacheDir(),
+      imageFile = new File(ExpFileUtils.generateOutputPath(mContext.getCacheDir(),
           "ImagePicker", ".jpg"));
     } catch (IOException e) {
       e.printStackTrace();
@@ -157,28 +176,34 @@ public class ImagePickerModule extends ExpoKernelServiceConsumerBaseModule imple
     }
     mCameraCaptureURI = ExpFileUtils.uriFromFile(imageFile);
 
+    if (getExperienceActivity() == null) {
+      promise.reject(MISSING_ACTIVITY, MISSING_ACTIVITY_MESSAGE);
+      return;
+    }
+
+    Application application = getExperienceActivity().getApplication();
+
     // fix for Permission Denial in Android < 21
-    List<ResolveInfo> resolvedIntentActivities = Exponent.getInstance().getApplication()
+    List<ResolveInfo> resolvedIntentActivities = application
       .getPackageManager().queryIntentActivities(cameraIntent, PackageManager.MATCH_DEFAULT_ONLY);
 
     for (ResolveInfo resolvedIntentInfo : resolvedIntentActivities) {
       String packageName = resolvedIntentInfo.activityInfo.packageName;
-      Exponent.getInstance().getApplication().grantUriPermission(
+      application.grantUriPermission(
         packageName,
         mCameraCaptureURI,
         Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION
       );
     }
-
-    // camera intent needs a content URI but we need a file one
-    cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, ExpFileUtils.contentUriFromFile(imageFile));
     mPromise = promise;
-    Exponent.getInstance().getCurrentActivity().startActivityForResult(cameraIntent, REQUEST_LAUNCH_CAMERA);
+    // camera intent needs a content URI but we need a file one
+    cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, ExpFileUtils.contentUriFromFile(imageFile, getApplication(null)));
+    startActivityOnResult(cameraIntent, REQUEST_LAUNCH_CAMERA, promise);
   }
 
   // NOTE: Currently not reentrant / doesn't support concurrent requests
-  @ReactMethod
-  public void launchImageLibraryAsync(final ReadableMap options, final Promise promise) {
+  @ExpoMethod
+  public void launchImageLibraryAsync(final Map<String, Object> options, final Promise promise) {
     if (!readOptions(options, promise)) {
       return;
     }
@@ -198,9 +223,10 @@ public class ImagePickerModule extends ExpoKernelServiceConsumerBaseModule imple
       libraryIntent.setType("image/*");
     }
 
-    libraryIntent.setAction(Intent.ACTION_GET_CONTENT);
     mPromise = promise;
-    Exponent.getInstance().getCurrentActivity().startActivityForResult(libraryIntent, REQUEST_LAUNCH_IMAGE_LIBRARY);
+
+    libraryIntent.setAction(Intent.ACTION_GET_CONTENT);
+    startActivityOnResult(libraryIntent, REQUEST_LAUNCH_IMAGE_LIBRARY, promise);
   }
 
   public void onActivityResult(final int requestCode, final int resultCode, final Intent intent) {
@@ -209,14 +235,14 @@ public class ImagePickerModule extends ExpoKernelServiceConsumerBaseModule imple
         mLaunchedCropper = false;
         final Promise promise = mPromise;
         mPromise = null;
-        WritableMap exifData = mExifData;
+        Bundle exifData = mExifData;
         mExifData = null;
 
         if (promise == null) {
           return;
         }
         if (resultCode != Activity.RESULT_OK) {
-          WritableMap response = Arguments.createMap();
+          Bundle response = new Bundle();
           response.putBoolean("cancelled", true);
           promise.resolve(response);
           return;
@@ -237,7 +263,7 @@ public class ImagePickerModule extends ExpoKernelServiceConsumerBaseModule imple
 
     // User cancel
     if (resultCode != Activity.RESULT_OK) {
-      WritableMap response = Arguments.createMap();
+      Bundle response = new Bundle();
       response.putBoolean("cancelled", true);
       if (requestCode == REQUEST_LAUNCH_CAMERA) {
         revokeUriPermissionForCamera();
@@ -251,8 +277,13 @@ public class ImagePickerModule extends ExpoKernelServiceConsumerBaseModule imple
       public void run() {
         try {
           final Uri uri = requestCode == REQUEST_LAUNCH_CAMERA ? mCameraCaptureURI : intent.getData();
-          final WritableMap exifData = exif ? readExif(uri) : null;
-          String type = getReactApplicationContext().getContentResolver().getType(uri);
+          final Bundle exifData = exif ? readExif(uri, promise) : null;
+
+          if (getExperienceActivity() == null) {
+            promise.reject(MISSING_ACTIVITY, MISSING_ACTIVITY_MESSAGE);
+            return;
+          }
+          String type = getExperienceActivity().getApplication().getContentResolver().getType(uri);
 
           // previous method sometimes returns null
           if (type == null) {
@@ -271,14 +302,14 @@ public class ImagePickerModule extends ExpoKernelServiceConsumerBaseModule imple
               compressFormat = Bitmap.CompressFormat.PNG;
               extension = ".png";
             } else if (!type.contains("jpeg")) {
-              EXL.w(TAG, "Image type not supported. Falling back to JPEG instead.");
+              System.out.println(TAG + " Image type not supported. Falling back to JPEG instead.");
               extension = ".jpg";
             }
 
             // if the image is created by camera intent we don't need a new path - it's been already saved
             final String path = requestCode == REQUEST_LAUNCH_CAMERA ?
                 uri.getPath() :
-                ExpFileUtils.generateOutputPath(mScopedContext.getCacheDir(), "ImagePicker", extension);
+                ExpFileUtils.generateOutputPath(mContext.getCacheDir(), "ImagePicker", extension);
             Uri fileUri = requestCode == REQUEST_LAUNCH_CAMERA ? uri : Uri.fromFile(new File(path));
 
             if (allowsEditing) {
@@ -289,7 +320,7 @@ public class ImagePickerModule extends ExpoKernelServiceConsumerBaseModule imple
               CropImage.ActivityBuilder cropImage = CropImage.activity(uri);
               if (forceAspect != null) {
                 cropImage
-                    .setAspectRatio(forceAspect.getInt(0), forceAspect.getInt(1))
+                    .setAspectRatio((Integer) forceAspect.get(0), (Integer) forceAspect.get(1))
                     .setFixAspectRatio(true)
                     .setInitialCropWindowPaddingRatio(0);
               }
@@ -297,7 +328,7 @@ public class ImagePickerModule extends ExpoKernelServiceConsumerBaseModule imple
                   .setOutputUri(fileUri)
                   .setOutputCompressFormat(compressFormat)
                   .setOutputCompressQuality(quality == null ? DEFAULT_QUALITY : quality)
-                  .start(Exponent.getInstance().getCurrentActivity());
+                  .start(getExperienceActivity());
             } else {
               ImageRequest imageRequest =
                   ImageRequestBuilder
@@ -305,11 +336,11 @@ public class ImagePickerModule extends ExpoKernelServiceConsumerBaseModule imple
                       .setRotationOptions(RotationOptions.autoRotate())
                       .build();
               final DataSource<CloseableReference<CloseableImage>> dataSource
-                  = Fresco.getImagePipeline().fetchDecodedImage(imageRequest, getReactApplicationContext());
+                  = Fresco.getImagePipeline().fetchDecodedImage(imageRequest, getApplication(null));
               final Bitmap.CompressFormat finalCompressFormat = compressFormat;
               dataSource.subscribe(new BaseBitmapDataSubscriber() {
                 @Override
-                protected void onNewResultImpl(@Nullable Bitmap bitmap) {
+                protected void onNewResultImpl(Bitmap bitmap) {
                   if (bitmap == null) {
                     onFailureImpl(dataSource);
                   } else {
@@ -341,20 +372,20 @@ public class ImagePickerModule extends ExpoKernelServiceConsumerBaseModule imple
               }, CallerThreadExecutor.getInstance());
             }
           } else {
-            WritableMap response = Arguments.createMap();
+            Bundle response = new Bundle();
             response.putString("uri", Uri.fromFile(new File(writeVideo(uri))).toString());
             response.putBoolean("cancelled", false);
             response.putString("type", "video");
 
             MediaMetadataRetriever retriever = new MediaMetadataRetriever();
             try {
-              retriever.setDataSource(mScopedContext, uri);
+              retriever.setDataSource(mContext, uri);
               response.putInt("width", Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)));
               response.putInt("height", Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)));
               response.putInt("rotation", Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION)));
               response.putInt("duration", Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)));
             } catch (IllegalArgumentException | SecurityException e){
-              EXL.d(ImagePickerModule.class.getSimpleName(), "Could not read metadata from video: " + uri);
+              System.out.println(ImagePickerModule.class.getSimpleName() + " Could not read metadata from video: " + uri);
             }
             promise.resolve(response);
           }
@@ -394,7 +425,7 @@ public class ImagePickerModule extends ExpoKernelServiceConsumerBaseModule imple
   private void copyImage(Uri originalUri, File file, ByteArrayOutputStream out)
       throws IOException {
     InputStream is = Objects.requireNonNull(
-        mScopedContext.getApplicationContext().getContentResolver().openInputStream(originalUri));
+        mContext.getApplicationContext().getContentResolver().openInputStream(originalUri));
 
     if (out != null) {
       IOUtils.copy(is, out);
@@ -411,7 +442,7 @@ public class ImagePickerModule extends ExpoKernelServiceConsumerBaseModule imple
     }
   }
 
-  private void handleCropperResult(Intent intent, Promise promise, WritableMap exifData) {
+  private void handleCropperResult(Intent intent, Promise promise, Bundle exifData) {
     CropImage.ActivityResult result = CropImage.getActivityResult(intent);
     int width, height;
     int rot = result.getRotation() % 360;
@@ -441,9 +472,9 @@ public class ImagePickerModule extends ExpoKernelServiceConsumerBaseModule imple
     returnImageResult(exifData, result.getUri().toString(), width, height, out, promise);
   }
 
-  private void returnImageResult(WritableMap exifData, String uri, int width, int height,
+  private void returnImageResult(Bundle exifData, String uri, int width, int height,
                                  ByteArrayOutputStream base64OutputStream, Promise promise) {
-    WritableMap response = Arguments.createMap();
+    Bundle response = new Bundle();
     response.putString("uri", uri);
     if (base64) {
       response.putString("base64", Base64.encodeToString(base64OutputStream.toByteArray(), Base64.DEFAULT));
@@ -451,7 +482,7 @@ public class ImagePickerModule extends ExpoKernelServiceConsumerBaseModule imple
     response.putInt("width", width);
     response.putInt("height", height);
     if (exifData != null) {
-      response.putMap("exif", exifData);
+      response.putBundle("exif", exifData);
     }
     response.putBoolean("cancelled", false);
     response.putString("type", "image");
@@ -481,12 +512,12 @@ public class ImagePickerModule extends ExpoKernelServiceConsumerBaseModule imple
     OutputStream out = null;
     String path = null;
     try {
-      in = getReactApplicationContext().getContentResolver().openInputStream(uri);
+      in = getApplication(mPromise).getContentResolver().openInputStream(uri);
       if (in != null) {
         byte[] buffer = new byte[in.available()];
         in.read(buffer);
 
-        path = ExpFileUtils.generateOutputPath(mScopedContext.getCacheDir(), "ImagePicker", ".mp4");
+        path = ExpFileUtils.generateOutputPath(mContext.getCacheDir(), "ImagePicker", ".mp4");
         out = new FileOutputStream(path);
         out.write(buffer);
       }
@@ -504,11 +535,16 @@ public class ImagePickerModule extends ExpoKernelServiceConsumerBaseModule imple
     return path;
   }
 
-  private WritableMap readExif(Uri uri) throws IOException {
-    InputStream in = getReactApplicationContext().getContentResolver().openInputStream(uri);
+  private Bundle readExif(Uri uri, Promise promise) throws IOException {
+    Application application = getApplication(promise);
+    if (application == null) {
+      return null;
+    }
+
+    InputStream in = application.getContentResolver().openInputStream(uri);
 
     ExifInterface exifInterface = new ExifInterface(in);
-    WritableMap exifMap = Arguments.createMap();
+    Bundle exifMap = new Bundle();
     for (String[] tagInfo : exifTags) {
       String name = tagInfo[1];
       if (exifInterface.getAttribute(name) != null) {
@@ -539,7 +575,11 @@ public class ImagePickerModule extends ExpoKernelServiceConsumerBaseModule imple
   }
 
   private void revokeUriPermissionForCamera() {
-    Exponent.getInstance().getApplication()
+      if (getApplication(null) == null) {
+        return;
+      }
+
+      getApplication(null)
       .revokeUriPermission(
         mCameraCaptureURI,
         Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION
@@ -679,4 +719,86 @@ public class ImagePickerModule extends ExpoKernelServiceConsumerBaseModule imple
       {"int", ExifInterface.TAG_RW2_SENSOR_TOP_BORDER},
       {"int", ExifInterface.TAG_RW2_ISO},
   };
+
+  @Override
+  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+    mModuleRegistry = moduleRegistry;
+  }
+  
+  private Activity getExperienceActivity() {
+    if (!mInitialized) {
+      mInitialized = true;
+      ActivityProvider activityProvider = mModuleRegistry.getModule(ActivityProvider.class);
+      mExperienceActivity = new WeakReference<>(activityProvider.getCurrentActivity());
+
+      UIManager uiManager = mModuleRegistry.getModule(UIManager.class);
+      uiManager.registerActivityEventListener(this);
+    }
+    return mExperienceActivity.get();
+  }
+
+  @Override
+  public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
+    if (getExperienceActivity() != null && activity == getExperienceActivity()) {
+      this.onActivityResult(requestCode, resultCode, data); // another function
+    }
+  }
+
+  @Override
+  public void onNewIntent(Intent intent) {
+
+  }
+
+  private void startActivityOnResult(Intent intent, int requestCode, Promise promise) {
+    if (getExperienceActivity() != null) {
+      getExperienceActivity().startActivityForResult(intent, requestCode);
+    } else {
+      promise.reject(MISSING_ACTIVITY,
+          MISSING_ACTIVITY_MESSAGE);
+    }
+  }
+
+  private Application getApplication(Promise promise) {
+    if (getExperienceActivity() == null) {
+      if (promise != null) {
+        promise.reject(MISSING_ACTIVITY, MISSING_ACTIVITY_MESSAGE);
+      }
+      return null;
+    } else {
+      return getExperienceActivity().getApplication();
+    }
+  }
+
+  public static class ExpFileUtils {
+
+    // http://stackoverflow.com/a/38858040/1771921
+    public static Uri uriFromFile(File file) {
+      return Uri.fromFile(file);
+    }
+
+    public static Uri contentUriFromFile(File file, Application application) {
+      try {
+        return FileProvider.getUriForFile(application,application.getPackageName() + ".provider", file);
+      } catch (Exception e) {
+        return Uri.fromFile(file);
+      }
+    }
+
+    public static File ensureDirExists(File dir) throws IOException {
+      if (!(dir.isDirectory() || dir.mkdirs())) {
+        throw new IOException("Couldn't create directory '" + dir + "'");
+      }
+      return dir;
+    }
+
+    public static String generateOutputPath(File internalDirectory, String dirName, String extension) throws IOException {
+      File directory = new File(internalDirectory + File.separator + dirName);
+      ExpFileUtils.ensureDirExists(directory);
+      String filename = UUID.randomUUID().toString();
+      return directory + File.separator + filename + extension;
+    }
+  }
+
 }
+
+

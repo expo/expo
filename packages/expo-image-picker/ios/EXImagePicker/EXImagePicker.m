@@ -1,17 +1,13 @@
-#import "EXImagePicker.h"
+#import <EXImagePicker/EXImagePicker.h>
 
-#import <React/RCTConvert.h>
-#import <React/RCTUtils.h>
 #import <AssetsLibrary/AssetsLibrary.h>
 
 #import <EXFileSystemInterface/EXFileSystemInterface.h>
 #import <EXPermissions/EXPermissions.h>
 #import <EXCore/EXUtilitiesInterface.h>
 
-#import "EXModuleRegistryBinding.h"
 #import "EXCameraPermissionRequester.h"
 #import "EXCameraRollRequester.h"
-#import "EXScopedModuleRegistry.h"
 
 @import MobileCoreServices;
 @import Photos;
@@ -23,30 +19,25 @@ const CGFloat EXDefaultImageQuality = 0.2;
 
 @property (nonatomic, strong) UIAlertController *alertController;
 @property (nonatomic, strong) UIImagePickerController *picker;
-@property (nonatomic, strong) RCTPromiseResolveBlock resolve;
-@property (nonatomic, strong) RCTPromiseRejectBlock reject;
+@property (nonatomic, strong) EXPromiseResolveBlock resolve;
+@property (nonatomic, strong) EXPromiseRejectBlock reject;
 @property (nonatomic, weak) id kernelPermissionsServiceDelegate;
 @property (nonatomic, strong) NSDictionary *defaultOptions;
 @property (nonatomic, retain) NSMutableDictionary *options;
 @property (nonatomic, strong) NSDictionary *customButtons;
+@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) id<EXPermissionsInterface> permissionsModule;
+
 
 @end
 
 @implementation EXImagePicker
 
-EX_EXPORT_SCOPED_MODULE(ExponentImagePicker, PermissionsManager);
+EX_EXPORT_MODULE(ExponentImagePicker);
 
-@synthesize bridge = _bridge;
-
-- (void)setBridge:(RCTBridge *)bridge
+- (instancetype)init
 {
-  _bridge = bridge;
-}
-
-- (instancetype)initWithExperienceId:(NSString *)experienceId kernelServiceDelegate:(id)kernelServiceInstance params:(NSDictionary *)params
-{
-  if (self = [super initWithExperienceId:experienceId kernelServiceDelegate:kernelServiceInstance params:params]) {
-    _kernelPermissionsServiceDelegate = kernelServiceInstance;
+  if (self = [super init]) {
     self.defaultOptions = @{
                             @"title": @"Select a Photo",
                             @"cancelButtonTitle": @"Cancel",
@@ -64,37 +55,43 @@ EX_EXPORT_SCOPED_MODULE(ExponentImagePicker, PermissionsManager);
   return NO;
 }
 
-RCT_EXPORT_METHOD(launchCameraAsync:(NSDictionary *)options
-                  resolver:(RCTPromiseResolveBlock)resolve
-                  rejecter:(RCTPromiseRejectBlock)reject)
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
-  if ([EXPermissions statusForPermissions:[EXCameraRollRequester permissions]] != EXPermissionStatusGranted ||
-      ![_kernelPermissionsServiceDelegate hasGrantedPermission:@"cameraRoll" forExperience:self.experienceId] ||
-      [EXPermissions statusForPermissions:[EXCameraPermissionRequester permissions]] != EXPermissionStatusGranted ||
-      ![_kernelPermissionsServiceDelegate hasGrantedPermission:@"camera" forExperience:self.experienceId]) {
+  _moduleRegistry = moduleRegistry;
+  _permissionsModule = [self.moduleRegistry getModuleImplementingProtocol:@protocol(EXPermissionsInterface)];
+}
+
+EX_EXPORT_METHOD_AS(launchCameraAsync, launchCameraAsync:(NSDictionary *)options
+                  resolver:(EXPromiseResolveBlock)resolve
+                  rejecter:(EXPromiseRejectBlock)reject)
+{
+
+  BOOL permissionsAreGranted = [self.permissionsModule hasGrantedPermission:@"cameraRoll"] &&
+                               [self.permissionsModule hasGrantedPermission:@"camera"];
+
+  if (!permissionsAreGranted) {
     reject(@"E_MISSING_PERMISSION", @"Missing camera or camera roll permission.", nil);
     return;
   }
   self.resolve = resolve;
   self.reject = reject;
-  [self launchImagePicker:RNImagePickerTargetCamera options:options];
+  [self launchImagePicker:EXImagePickerTargetCamera options:options];
 }
 
-RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
-                  resolver:(RCTPromiseResolveBlock)resolve
-                  rejecter:(RCTPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictionary *)options
+                  resolver:(EXPromiseResolveBlock)resolve
+                  rejecter:(EXPromiseRejectBlock)reject)
 {
-  if ([EXPermissions statusForPermissions:[EXCameraRollRequester permissions]] != EXPermissionStatusGranted ||
-      ![_kernelPermissionsServiceDelegate hasGrantedPermission:@"cameraRoll" forExperience:self.experienceId]) {
+  if (![self.permissionsModule hasGrantedPermission:@"camera"]) {
     reject(@"E_MISSING_PERMISSION", @"Missing camera roll permission.", nil);
     return;
   }
   self.resolve = resolve;
   self.reject = reject;
-  [self launchImagePicker:RNImagePickerTargetLibrarySingleImage options:options];
+  [self launchImagePicker:EXImagePickerTargetLibrarySingleImage options:options];
 }
 
-- (void)launchImagePicker:(RNImagePickerTarget)target options:(NSDictionary *)options
+- (void)launchImagePicker:(EXImagePickerTarget)target options:(NSDictionary *)options
 {
   self.options = [NSMutableDictionary dictionaryWithDictionary:self.defaultOptions]; // Set default options
   for (NSString *key in options.keyEnumerator) { // Replace default options
@@ -103,13 +100,13 @@ RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
   [self launchImagePicker:target];
 }
 
-- (void)launchImagePicker:(RNImagePickerTarget)target
+- (void)launchImagePicker:(EXImagePickerTarget)target
 {
   self.picker = [[UIImagePickerController alloc] init];
 
-  if (target == RNImagePickerTargetCamera) {
+  if (target == EXImagePickerTargetCamera) {
 #if TARGET_IPHONE_SIMULATOR
-    self.reject(RCTErrorUnspecified, @"Camera not available on simulator", nil);
+    self.reject(@"CAMERA_MISSING", @"Camera not available on simulator", nil);
     return;
 #else
     self.picker.sourceType = UIImagePickerControllerSourceTypeCamera;
@@ -121,7 +118,7 @@ RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
 #endif
   } else { // RNImagePickerTargetLibrarySingleImage
     self.picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-    
+
     NSMutableArray *mediaTypes = [[NSMutableArray alloc] init];
     NSString *requestedMediaTypes = self.options[@"mediaTypes"];
     if (requestedMediaTypes != nil) {
@@ -134,7 +131,7 @@ RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
     } else {
       [mediaTypes addObject:(NSString *)kUTTypeImage];
     }
-    
+
     self.picker.mediaTypes = mediaTypes;
   }
 
@@ -145,7 +142,7 @@ RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
   self.picker.delegate = self;
 
   dispatch_async(dispatch_get_main_queue(), ^{
-    id<EXUtilitiesInterface> utils = [self->_bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)];
+    id<EXUtilitiesInterface> utils = [self.moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)];
     [utils.currentViewController presentViewController:self.picker animated:YES completion:nil];
   });
 }
@@ -156,7 +153,7 @@ RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
     NSString *mediaType = [info objectForKey:UIImagePickerControllerMediaType];
     NSMutableDictionary *response = [[NSMutableDictionary alloc] init];
     response[@"cancelled"] = @NO;
-    id<EXFileSystemInterface> fileSystem = [self.bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
+    id<EXFileSystemInterface> fileSystem = [self.moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
     if (!fileSystem) {
       self.reject(@"E_MISSING_MODULE", @"No FileSystem module", nil);
       return;
@@ -170,7 +167,7 @@ RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
       [self handleVideoWithInfo:info saveAt:directory updateResponse:response];
       self.resolve(response);
     }
-    
+
   };
   dispatch_async(dispatch_get_main_queue(), ^{
     [picker dismissViewControllerAnimated:YES completion:dismissCompletionBlock];
@@ -204,7 +201,7 @@ RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
     data = UIImagePNGRepresentation(image);
   }
 
-  id<EXFileSystemInterface> fileSystem = [self.bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
+  id<EXFileSystemInterface> fileSystem = [self.moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
   if (!fileSystem) {
     self.reject(@"E_NO_MODULE", @"No FileSystem module.", nil);
     return;
@@ -224,7 +221,7 @@ RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
 
   NSString *filePath = [fileURL absoluteString];
   response[@"uri"] = filePath;
-  
+
   if ([[self.options objectForKey:@"base64"] boolValue]) {
     if (@available(iOS 11.0, *)) {
       if (fileCopied) {
@@ -251,7 +248,7 @@ RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
           completionHandler();
         }];
       } else {
-        RCTLogInfo(@"Could not fetch metadata for image %@", [imageURL absoluteString]);
+        EXLogInfo(@"Could not fetch metadata for image %@", [imageURL absoluteString]);
         completionHandler();
       }
     }
@@ -289,18 +286,18 @@ RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
     response[@"height"] = @(videoAsset.pixelHeight);
     response[@"duration"] = @(videoAsset.duration * 1000);
   } else {
-    RCTLogInfo(@"Could not fetch metadata for video %@", [videoURL absoluteString]);
+    EXLogInfo(@"Could not fetch metadata for video %@", [videoURL absoluteString]);
   }
-  
+
   if (([[self.options objectForKey:@"allowsEditing"] boolValue])) {
     AVURLAsset *editedAsset = [AVURLAsset assetWithURL:videoURL];
     CMTime duration = [editedAsset duration];
     response[@"duration"] = @((float) duration.value / duration.timescale * 1000);
   }
-  
+
   response[@"type"] = @"video";
   NSError *error = nil;
-  id<EXFileSystemInterface> fileSystem = [self.bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
+  id<EXFileSystemInterface> fileSystem = [self.moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
   if (!fileSystem) {
     self.reject(@"E_NO_MODULE", @"No FileSystem module.", nil);
     return;
@@ -313,7 +310,7 @@ RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
     self.reject(@"E_CANNOT_PICK_VIDEO", @"Video could not be picked", error);
     return;
   }
-  
+
   NSURL *fileURL = [NSURL fileURLWithPath:path];
   NSString *filePath = [fileURL absoluteString];
   response[@"uri"] = filePath;
@@ -330,7 +327,7 @@ RCT_EXPORT_METHOD(launchImageLibraryAsync:(NSDictionary *)options
       exif[[@"GPS" stringByAppendingString:gpsKey]] = gps[gpsKey];
     }
   }
-  
+
   // Inject orientation into exif
   if ([metadata valueForKey:(NSString *)kCGImagePropertyOrientation] != nil) {
     exif[(NSString *)kCGImagePropertyOrientation] = metadata[(NSString *)kCGImagePropertyOrientation];
