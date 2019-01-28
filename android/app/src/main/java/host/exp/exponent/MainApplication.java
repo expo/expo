@@ -8,6 +8,7 @@ import java.util.List;
 import expo.core.interfaces.Package;
 import expo.loaders.provider.interfaces.AppLoaderPackagesProviderInterface;
 import expo.modules.ads.admob.AdMobPackage;
+import expo.modules.ads.facebook.AdsFacebookPackage;
 import expo.modules.analytics.segment.SegmentPackage;
 import expo.modules.appauth.AppAuthPackage;
 import expo.modules.av.AVPackage;
@@ -67,6 +68,7 @@ public class MainApplication extends ExpoApplication implements AppLoaderPackage
     return Arrays.<Package>asList(
         new AVPackage(),
         new AdMobPackage(),
+        new AdsFacebookPackage(),
         new AppAuthPackage(),
         new BackgroundFetchPackage(),
         new BarCodeScannerPackage(),

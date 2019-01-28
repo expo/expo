@@ -152,6 +152,7 @@ dependencies {
   compileOnly 'host.exp.exponent:expo-barcode-scanner:2.0.0'
   compileOnly 'host.exp.exponent:expo-contacts:2.0.0'
   compileOnly 'host.exp.exponent:expo-ads-admob:2.0.0'
+  compileOnly 'host.exp.exponent:expo-ads-facebook:1.0.0'
   compileOnly 'host.exp.exponent:expo-local-authentication:2.0.0'
   compileOnly 'host.exp.exponent:expo-localization:2.0.0'
   compileOnly 'host.exp.exponent:expo-react-native-adapter:2.0.0'
@@ -192,6 +193,7 @@ dependencies {
   // They're defined as "api" so we don't have to define them again in app/build.gradle
   // In distribution they're "compileOnly" and it's the app/build.gradle who manages them.
   api project(':expo-ads-admob')
+  api project(':expo-ads-facebook')
   api project(':expo-analytics-segment')
   api project(':expo-app-auth')
   api project(':expo-av')
@@ -277,9 +279,6 @@ dependencies {
   api 'com.android.support:customtabs:27.1.1'
   api('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') {
     transitive = true
-  }
-  api('com.facebook.android:audience-network-sdk:4.99.0') {
-    exclude module: 'play-services-ads'
   }
   compileOnly 'org.glassfish:javax.annotation:3.1.1'
   api 'de.greenrobot:eventbus:2.4.0'

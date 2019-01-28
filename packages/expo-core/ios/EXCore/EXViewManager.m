@@ -16,7 +16,7 @@ static const NSString *noViewExceptionName = @"No custom -(UIView *)view impleme
 static const NSString *noViewExceptionReason = @"You've subclassed an EXViewManager, but didn't override the -(UIView *)view method. Override this method and return a new view instance.";
 
 static const NSString *noViewNameExceptionName = @"No custom -(NSString *)viewName implementation.";
-static const NSString *noViewNameExceptionReason = @"You've subclassed an EXViewManager, but didn't override the -(NSString *)viewName method. Override this method and return a name of the view component.";
+static const NSString *noViewNameExceptionReasonFormat = @"You've subclassed an EXViewManager in %@, but didn't override the -(NSString *)viewName method. Override this method and return a name of the view component.";
 
 @interface EXViewManager ()
 
@@ -44,7 +44,7 @@ static const NSString *noViewNameExceptionReason = @"You've subclassed an EXView
 - (NSString *)viewName
 {
   @throw [NSException exceptionWithName:(NSString *)noViewNameExceptionName
-                                 reason:(NSString *)noViewNameExceptionReason
+                                 reason:(NSString *)[NSString stringWithFormat:(NSString *)noViewNameExceptionReasonFormat, NSStringFromClass([self class])]
                                userInfo:nil];
 }
 
