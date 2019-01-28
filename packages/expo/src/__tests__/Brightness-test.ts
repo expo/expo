@@ -1,7 +1,7 @@
 import { NativeModules } from 'react-native';
+import { mockPlatformAndroid, mockPlatformIOS, unmockAllProperties } from 'jest-expo';
 
 import * as Brightness from '../Brightness';
-import { mockPlatformAndroid, mockPlatformIOS, unmockAllProperties } from '../../test/mocking';
 
 it(`clamps the brightness value in setBrightnessAsync`, async () => {
   await Brightness.setBrightnessAsync(5);

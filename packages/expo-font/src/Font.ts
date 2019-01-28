@@ -1,7 +1,6 @@
 import { Asset } from 'expo-asset';
 import Constants from 'expo-constants';
 import { Platform } from 'expo-core';
-import invariant from 'invariant';
 
 import ExpoFontLoader from './ExpoFontLoader';
 
@@ -80,7 +79,9 @@ export async function loadAsync(
   // promise in the program, we need to create the promise synchronously without yielding the event
   // loop from this point.
 
-  invariant(source, `No source from which to load font "${name}"`);
+  if (!source) {
+    throw new Error(`No source from which to load font "${name}"`);
+  }
   const asset = _getAssetForSource(source);
   loadPromises[name] = (async () => {
     try {
@@ -95,6 +96,10 @@ export async function loadAsync(
 }
 
 function _getAssetForSource(source: FontSource): Asset {
+  if (source instanceof Asset) {
+    return source;
+  }
+
   if (!isWeb && typeof source === 'string') {
     // TODO(nikki): need to implement Asset.fromUri(...)
     // asset = Asset.fromUri(uriOrModuleOrAsset);
@@ -107,6 +112,9 @@ function _getAssetForSource(source: FontSource): Asset {
     return Asset.fromModule(source);
   }
 
+  // @ts-ignore Error: Type 'string' is not assignable to type 'Asset'
+  // We can't have a string here, we would have thrown an error if !isWeb
+  // or returned Asset.fromModule if isWeb.
   return source;
 }
 
