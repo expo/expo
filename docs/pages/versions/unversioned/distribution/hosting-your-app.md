@@ -14,7 +14,7 @@ For simplicity, the rest of this article will refer to hosting an app for the An
 
 ## Export app
 
-First, you’ll need to export all the static files of your app so they can be served from your CDN. To do this, run `expo export --public-url <server-endpoint>` in your project directory and it will output all your app’s static files to a directory named `dist`.  In this guide, we will use `https://quinlanj.github.io/self-host` as our example server endpoint. Asset and bundle files are named by the md5 hash of their content. Your output directory should look something like this now:
+First, you’ll need to export all the static files of your app so they can be served from your CDN. To do this, run `expo export --public-url <server-endpoint>` in your project directory and it will output all your app’s static files to a directory named `dist`.  In this guide, we will use `https://expo.github.io/self-hosting-example` as our example server endpoint. Asset and bundle files are named by the md5 hash of their content. Your output directory should look something like this now:
 ```
 .
 ├── android-index.json
@@ -32,11 +32,11 @@ Once you've exported your app's static files, you can host the contents on your 
 
 ```
 # run this from your project directory
-expo export --public-url https://quinlanj.github.io/self-host
+expo export --public-url https://expo.github.io/self-hosting-example
 
 # commit output directory contents to your repo
 cd dist
-git init && git remote add origin git@github.com:quinlanj/self-host.git
+git init && git remote add origin git@github.com:expo/self-hosting-example.git
 git add * && git commit -m "Update my app with this JS bundle"
 git push origin master
 ```
@@ -48,10 +48,10 @@ To setup a QR code to view your hosted app, or if you want to host your files lo
 In order to configure your standalone binary to pull OTA updates from your server, you’ll need to define the URL where you will host your `index.json` file. Pass the URL to your hosted `index.json` file to the `expo build` command.
 
 For iOS builds, run the following commands from your terminal:
-`expo build:ios --public-url <path-to-ios-index.json>`, where the `public-url` option will be something like https://quinlanj.github.io/self-host/ios-index.json
+`expo build:ios --public-url <path-to-ios-index.json>`, where the `public-url` option will be something like https://expo.github.io/self-hosting-example/ios-index.json
 
 For Android builds, run the following commands from your terminal:
-`expo build:android --public-url <path-to-android-index.json>`, where the `public-url` option will be something like https://quinlanj.github.io/self-host/android-index.json
+`expo build:android --public-url <path-to-android-index.json>`, where the `public-url` option will be something like https://expo.github.io/self-hosting-example/android-index.json
 
 
 ## Loading QR Code/URL in Development
@@ -63,7 +63,7 @@ The URI you’ll use to convert to QR code will be deeplinked using the `exps`/`
 
 #### Here’s an example of how you’d do this with a remote server:
 
-URI: `exps://quinlanj.github.io/self-host/android-index.json`
+URI: `exps://expo.github.io/self-hosting-example/android-index.json`
 
 QR code: Generate the URI from a website like https://www.qr-code-generator.com/
 
@@ -90,7 +90,7 @@ QR code: Generate a QR code using your URI from a website like https://www.qr-co
 ### URL
 If you are loading in your app into the expo client by passing in a URL string, you will need to pass in an URL pointing to your json file.
 
-Here is an example URL from a remote server: [https://quinlanj.github.io/self-host/android-index.json](https://quinlanj.github.io/self-host/android-index.json)
+Here is an example URL from a remote server: [https://expo.github.io/self-hosting-example/android-index.json](https://expo.github.io/self-hosting-example/android-index.json)
 
 Here is an example URL from localhost: `http://localhost:8000/android-index.json`
 
@@ -114,7 +114,7 @@ Here is an example workflow:
 2. Update your app and include previous Expo SDK versions. For example, if you've previously released SDK 28 and 29 versions of your app, you can include them when you release an SDK 30 version by running `expo export --merge-src-dir sdk29 --merge-src-dir sdk28`. Alternatively, you could also compress and host the directories and run `expo export --merge-src-url https://examplesite.com/sdk29.tar.gz --merge-src-url https://examplesite.com/sdk28.tar.gz`. This creates a multiversion app in the `dist` output directory. The `asset` and `bundle` folders contain everything that the source directories had, and the `index.json` file contains an array of the individual `index.json` files found in the source directories.
 
 ### Asset Hosting
-By default, all assets are hosted from an `assets` path resolving from your `public-url` (e.g. https://quinlanj.github.io/self-host/assets).  You can override this behavior in the `assetUrlOverride` field of your `android-index.json`. All relative URL's will be resolved from the `public-url`.
+By default, all assets are hosted from an `assets` path resolving from your `public-url` (e.g. https://expo.github.io/self-hosting-example/assets).  You can override this behavior in the `assetUrlOverride` field of your `android-index.json`. All relative URL's will be resolved from the `public-url`.
 
 ### Special fields
 Most of the fields in the `index.json` files are the same as in `app.json`. Here are some fields that are notable in `index.json`:
