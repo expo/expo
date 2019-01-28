@@ -49,13 +49,11 @@
   "dependencies": {
     "@babel/runtime": "^7.1.2",
     "@expo/vector-icons": "^9.0.0",
-    "@expo/websql": "^1.0.1",
     "@types/fbemitter": "^2.0.32",
     "@types/invariant": "^2.2.29",
     "@types/lodash.zipobject": "^4.1.4",
     "@types/qs": "^6.5.1",
     "@types/uuid-js": "^0.7.1",
-    "@types/websql": "^0.0.27",
     "babel-preset-expo": "^5.0.0",
     "cross-spawn": "^6.0.5",
     "expo-ads-admob": "~2.0.0",

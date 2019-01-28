@@ -3528,11 +3528,6 @@ detox@^8.0.0:
     tempfile "^2.0.0"
     ws "^1.1.1"
 
-device-uuid@^1.0.4:
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/device-uuid/-/device-uuid-1.0.4.tgz#f6973e58f19b92a237aeca7b16a395ae7195a883"
-  integrity sha1-9pc+WPGbkqI3rsp7FqOVrnGVqIM=
-
 diff@^3.1.0, diff@^3.2.0, diff@^3.5.0:
   version "3.5.0"
   resolved "https://registry.yarnpkg.com/diff/-/diff-3.5.0.tgz#800c0dd1e0a8bfbc95835c202ad220fe317e5a12"

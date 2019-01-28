@@ -288,7 +288,7 @@
     if (strongSelf && data) {
       for (void (^handler)(NSDictionary *) in strongSelf.barometerHandlers.allValues) {
         handler(@{
-                  @"pressure": data.pressure * 10,
+                  @"pressure": @([data.pressure intValue] * 10), // conversion from kPa to hPa
                   @"relativeAltitude": data.relativeAltitude,
                   });
       }
