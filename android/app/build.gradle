@@ -37,6 +37,7 @@ android {
     manifestPlaceholders = [
         'appAuthRedirectScheme': 'host.exp.exponent'
     ]
+    testBuildType System.getProperty('testBuildType', 'debug')  //this will later be used to control the test apk build type
   }
   dexOptions {
     javaMaxHeapSize System.getenv("DISABLE_DEX_MAX_HEAP") ? null : "8g"
