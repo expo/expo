@@ -9,7 +9,7 @@ export default class LinearGradient extends React.Component {
             console.warn('LinearGradient colors and locations props should be arrays of the same length');
             locations = locations.slice(0, colors.length);
         }
-        return (<NativeLinearGradient {...props} colors={colors.map(processColor)} locations={locations} startPoint={start ? _normalizePoint(start) : undefined} endPoint={end ? _normalizePoint(end) : undefined}/>);
+        return (<NativeLinearGradient {...props} colors={colors.map(processColor)} locations={locations} startPoint={_normalizePoint(start)} endPoint={_normalizePoint(end)}/>);
     }
 }
 LinearGradient.propTypes = {
@@ -20,6 +20,13 @@ LinearGradient.propTypes = {
     end: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.number), PropTypes.object]),
 };
 function _normalizePoint(point) {
+    if (!point) {
+        return undefined;
+    }
+    if (Array.isArray(point) && point.length !== 2) {
+        console.warn('start and end props for LinearGradient must be of the format [x,y] or {x, y}');
+        return undefined;
+    }
     return Array.isArray(point) ? point : [point.x, point.y];
 }
 //# sourceMappingURL=LinearGradient.js.map

@@ -116,6 +116,10 @@ module.exports = {
         ],
         ExpoBarCodeScannerModule: [{ key: 0, argumentsCount: 2, name: 'scanFromURLAsync' }],
         ExpoBarCodeScannerView: [],
+        ExpoBarometer: [
+          { key: 0, argumentsCount: 0, name: 'isAvailableAsync' },
+          { key: 1, argumentsCount: 1, name: 'setUpdateInterval' },
+        ],
         ExpoContacts: [
           { key: 0, argumentsCount: 0, name: 'getDefaultContainerIdentifierAsync' },
           { key: 1, argumentsCount: 2, name: 'addExistingGroupToContainerAsync' },

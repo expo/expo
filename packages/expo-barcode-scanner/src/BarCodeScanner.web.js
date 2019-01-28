@@ -2,7 +2,16 @@
 import React from 'react';
 import { Text, View } from 'react-native';
 
-export default class AppLoading extends React.Component<{}> {
+export default class BarCodeScanner extends React.Component<{}> {
+  static Constants = {
+    BarCodeType: {},
+    Type: {},
+  };
+
+  static ConversionTables = {
+    type: {},
+  };
+
   render() {
     return (
       <View>
@@ -11,3 +20,5 @@ export default class AppLoading extends React.Component<{}> {
     );
   }
 }
+
+export const Constants = BarCodeScanner.Constants;

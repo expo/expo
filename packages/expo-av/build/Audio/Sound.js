@@ -1,6 +1,7 @@
-import { NativeModulesProxy, EventEmitter } from 'expo-core';
+import { EventEmitter } from 'expo-core';
 import { throwIfAudioIsDisabled } from './AudioAvailability';
 import { PlaybackMixin, assertStatusValuesInBounds, getNativeSourceAndFullInitialStatusForLoadAsync, getUnloadedStatus, } from '../AV';
+import ExponentAV from '../ExponentAV';
 export class Sound {
     constructor() {
         this._loaded = false;
@@ -9,7 +10,7 @@ export class Sound {
         this._lastStatusUpdate = null;
         this._lastStatusUpdateTime = null;
         this._subscriptions = [];
-        this._eventEmitter = new EventEmitter(NativeModulesProxy.ExponentAV);
+        this._eventEmitter = new EventEmitter(ExponentAV);
         this._coalesceStatusUpdatesInMillis = 100;
         this._onPlaybackStatusUpdate = null;
         this._internalStatusUpdateCallback = ({ key, status }) => {
@@ -33,7 +34,7 @@ export class Sound {
         // Get status API
         this.getStatusAsync = async () => {
             if (this._loaded) {
-                return this._performOperationAndHandleStatusAsync(() => NativeModulesProxy.ExponentAV.getStatusForSound(this._key));
+                return this._performOperationAndHandleStatusAsync(() => ExponentAV.getStatusForSound(this._key));
             }
             const status = getUnloadedStatus();
             this._callOnPlaybackStatusUpdateForNewStatus(status);
@@ -101,7 +102,7 @@ export class Sound {
                     this._loading = false;
                     reject(error);
                 };
-                NativeModulesProxy.ExponentAV.loadForSound(nativeSource, fullInitialStatus)
+                ExponentAV.loadForSound(nativeSource, fullInitialStatus)
                     .then(loadSuccess)
                     .catch(loadError);
             });
@@ -115,7 +116,7 @@ export class Sound {
             this._loaded = false;
             const key = this._key;
             this._key = -1;
-            const status = await NativeModulesProxy.ExponentAV.unloadForSound(key);
+            const status = await ExponentAV.unloadForSound(key);
             this._callOnPlaybackStatusUpdateForNewStatus(status);
             this._clearSubscriptions();
             return status;
@@ -127,13 +128,13 @@ export class Sound {
     // Set status API (only available while isLoaded = true)
     async setStatusAsync(status) {
         assertStatusValuesInBounds(status);
-        return this._performOperationAndHandleStatusAsync(() => NativeModulesProxy.ExponentAV.setStatusForSound(this._key, status));
+        return this._performOperationAndHandleStatusAsync(() => ExponentAV.setStatusForSound(this._key, status));
     }
     async replayAsync(status = {}) {
         if (status.positionMillis && status.positionMillis !== 0) {
             throw new Error('Requested position after replay has to be 0.');
         }
-        return this._performOperationAndHandleStatusAsync(() => NativeModulesProxy.ExponentAV.replaySound(this._key, {
+        return this._performOperationAndHandleStatusAsync(() => ExponentAV.replaySound(this._key, {
             ...status,
             positionMillis: 0,
             shouldPlay: true,

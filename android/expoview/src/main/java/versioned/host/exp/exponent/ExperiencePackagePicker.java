@@ -25,6 +25,7 @@ import expo.modules.gl.GLPackage;
 import expo.modules.google.signin.GoogleSignInPackage;
 import expo.modules.keepawake.KeepAwakePackage;
 import expo.modules.lineargradient.LinearGradientPackage;
+import expo.modules.imagepicker.ImagePickerPackage;
 import expo.modules.localauthentication.LocalAuthenticationPackage;
 import expo.modules.localization.LocalizationPackage;
 import expo.modules.location.LocationPackage;
@@ -58,6 +59,7 @@ public class ExperiencePackagePicker {
       new FontLoaderPackage(),
       new GLPackage(),
       new GoogleSignInPackage(),
+      new ImagePickerPackage(),
       new KeepAwakePackage(),
       new LinearGradientPackage(),
       new LocalAuthenticationPackage(),

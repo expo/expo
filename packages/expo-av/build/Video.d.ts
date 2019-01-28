@@ -1,82 +1,8 @@
 import PropTypes from 'prop-types';
 import * as React from 'react';
-import { View } from 'react-native';
-import { Playback, PlaybackSource, PlaybackNativeSource, PlaybackStatus, PlaybackStatusToSet } from './AV';
-export declare type NaturalSize = {
-    width: number;
-    height: number;
-    orientation: 'portrait' | 'landscape';
-};
-declare enum ResizeMode {
-    CONTAIN = "contain",
-    COVER = "cover",
-    STRETCH = "stretch"
-}
-declare type ReadyForDisplayEvent = {
-    naturalSize: NaturalSize;
-    status: PlaybackStatus;
-};
-declare type FullscreenUpdateEvent = {
-    fullscreenUpdate: 0 | 1 | 2 | 3;
-    status: PlaybackStatus;
-};
-declare type Props = {
-    source?: PlaybackSource;
-    posterSource?: {
-        uri: string;
-    } | number;
-    onPlaybackStatusUpdate?: (status: PlaybackStatus) => void;
-    onLoadStart?: () => void;
-    onLoad?: (status: PlaybackStatus) => void;
-    onError?: (error: string) => void;
-    onReadyForDisplay?: (event: ReadyForDisplayEvent) => void;
-    onFullscreenUpdate?: (event: FullscreenUpdateEvent) => void;
-    onIOSFullscreenUpdate?: (event: FullscreenUpdateEvent) => void;
-    useNativeControls?: boolean;
-    resizeMode?: ResizeMode | 'stretch' | 'cover' | 'contain';
-    usePoster?: boolean;
-    status?: PlaybackStatusToSet;
-    progressUpdateIntervalMillis?: number;
-    positionMillis?: number;
-    shouldPlay?: boolean;
-    rate?: number;
-    shouldCorrectPitch?: boolean;
-    volume?: number;
-    isMuted?: boolean;
-    isLooping?: boolean;
-    scaleX?: number;
-    scaleY?: number;
-    translateX?: number;
-    translateY?: number;
-    rotation?: number;
-} & React.ComponentProps<typeof View>;
-declare type NativeProps = {
-    source: PlaybackNativeSource | null;
-    resizeMode?: unknown;
-    status?: PlaybackStatusToSet;
-    onLoadStart?: () => void;
-    onLoad?: (event: {
-        nativeEvent: PlaybackStatus;
-    }) => void;
-    onError?: (event: {
-        nativeEvent: {
-            error: string;
-        };
-    }) => void;
-    onStatusUpdate?: (event: {
-        nativeEvent: PlaybackStatus;
-    }) => void;
-    onReadyForDisplay?: (event: {
-        nativeEvent: ReadyForDisplayEvent;
-    }) => void;
-    onFullscreenUpdate?: (event: {
-        nativeEvent: FullscreenUpdateEvent;
-    }) => void;
-    useNativeControls?: boolean;
-} & React.ComponentProps<typeof View>;
-declare type State = {
-    showPoster: boolean;
-};
+import { Playback, PlaybackSource, PlaybackStatus, PlaybackStatusToSet } from './AV';
+import { FullscreenUpdateEvent, NativeProps, NaturalSize, Props, ReadyForDisplayEvent, ResizeMode, State } from './Video.types';
+export { NaturalSize };
 export declare const FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT = 0;
 export declare const FULLSCREEN_UPDATE_PLAYER_DID_PRESENT = 1;
 export declare const FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS = 2;
@@ -138,7 +64,7 @@ export default class Video extends React.Component<Props, State> implements Play
         accessibilityLiveRegion?: PropTypes.Validator<"none" | "polite" | "assertive" | undefined> | undefined;
         importantForAccessibility?: PropTypes.Validator<"auto" | "yes" | "no" | "no-hide-descendants" | undefined> | undefined;
         accessibilityElementsHidden?: PropTypes.Validator<boolean | undefined> | undefined;
-        accessibilityTraits?: PropTypes.Validator<"key" | "button" | "header" | "link" | "summary" | "image" | "text" | "none" | "search" | "adjustable" | "selected" | "disabled" | "plays" | "frequentUpdates" | "startsMedia" | "allowsDirectInteraction" | "pageTurn" | import("react-native").AccessibilityTrait[] | undefined> | undefined;
+        accessibilityTraits?: PropTypes.Validator<"button" | "header" | "link" | "summary" | "image" | "text" | "none" | "search" | "adjustable" | "selected" | "disabled" | "plays" | "key" | "frequentUpdates" | "startsMedia" | "allowsDirectInteraction" | "pageTurn" | import("react-native").AccessibilityTrait[] | undefined> | undefined;
         onAccessibilityTap?: PropTypes.Validator<(() => void) | undefined> | undefined;
         onMagicTap?: PropTypes.Validator<(() => void) | undefined> | undefined;
         accessibilityIgnoresInvertColors?: PropTypes.Validator<boolean | undefined> | undefined;
@@ -236,4 +162,3 @@ export default class Video extends React.Component<Props, State> implements Play
     _renderPoster: () => JSX.Element | null;
     render(): JSX.Element;
 }
-export {};

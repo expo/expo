@@ -23,7 +23,7 @@ const generateNavLinks = (path_, arr) => {
   let items = fs.readdirSync(path_);
 
   let processUrl = path => {
-    let newPath = path.replace(/^versions/, '/versions').replace(/.md$/, '');
+    let newPath = path.replace(/^pages\/versions/, '/versions').replace(/.mdx?$/, '');
     return newPath;
   };
 
@@ -72,7 +72,7 @@ const generateNavLinks = (path_, arr) => {
   return arr;
 };
 
-const ORIGINAL_PATH_PREFIX = './versions';
+const ORIGINAL_PATH_PREFIX = './pages/versions';
 
 let versionDirectories = fs
   .readdirSync(ORIGINAL_PATH_PREFIX, { withFileTypes: true })

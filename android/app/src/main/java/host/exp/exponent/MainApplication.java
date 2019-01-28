@@ -80,6 +80,7 @@ public class MainApplication extends ExpoApplication implements AppLoaderPackage
         new FontLoaderPackage(),
         new GLPackage(),
         new GoogleSignInPackage(),
+        new ImagePickerPackage(),
         new KeepAwakePackage(),
         new LinearGradientPackage(),
         new LocalAuthenticationPackage(),

@@ -8,7 +8,6 @@
         "~": "."
       }
     }],
-    "markdown-in-js/babel",
     "preval"
   ]
 }
