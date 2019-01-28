@@ -265,9 +265,9 @@ jobs:
           working_directory: ~/project/tools-public
       - run: |
           fastlane ios create_iphone_build
-          tar -C . \
+          tar \
             -zcf "/tmp/shellapp.tar.gz" \
-            iphone-build
+            ~/project/iphone-build
       - store_artifacts:
           path: /tmp/shellapp.tar.gz
 
