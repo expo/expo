@@ -2,7 +2,8 @@
   "name": "expo-firebase-auth",
   "version": "2.0.0",
   "description": "Expo Unimodule for interfacing with Firebase Authentication",
-  "main": "src/index.js",
+  "main": "src/index.ts",
+  "types": "build/index.d.ts",
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",
