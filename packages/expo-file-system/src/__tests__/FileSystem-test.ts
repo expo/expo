@@ -1,68 +1,100 @@
-import { mockPlatformWeb, mockProperty } from 'jest-expo';
+import { mockProperty } from 'jest-expo';
 
 import ExponentFileSystem from '../ExponentFileSystem';
 import * as FileSystem from '../FileSystem';
 
 describe('FileSystem', () => {
-  describe('constants', () => {
-    it('documentDirectory', () => expect(FileSystem.documentDirectory).toBeDefined());
-    it('cacheDirectory', () => expect(FileSystem.cacheDirectory).toBeDefined());
-    it('bundledAssets', () => expect(FileSystem.bundledAssets).toBeDefined());
-    it('bundleDirectory', () => expect(FileSystem.bundleDirectory).toBeDefined());
-  });
+  const throws = async run => {
+    let error = null;
+    try {
+      await run();
+    } catch (e) {
+      error = e;
+    }
+    expect(error).toBeTruthy();
+  };
 
-  describe('methods', () => {
-    const URI = '/';
-    const toURI = '/other';
-    it('downloadAsync', () => {
-      const props: any = ['foo', 'bar', {}];
-      FileSystem.downloadAsync(props[0], props[1], props[2]);
-      expect(ExponentFileSystem.downloadAsync).toHaveBeenCalledWith(...props);
+  describe('DownloadResumable', () => {
+    const remoteUri = 'http://techslides.com/demos/sample-videos/small.mp4';
+    const localUri = FileSystem.documentDirectory + 'small.mp4';
+    const options = {};
+    const resumeData = '';
+    const fakeObject = {
+      url: remoteUri,
+      fileUri: localUri,
+      options,
+      resumeData,
+    };
+    const callback = downloadProgress => {
+      const progress =
+        downloadProgress.totalBytesWritten / downloadProgress.totalBytesExpectedToWrite;
+    };
+    let downloadResumable;
+    beforeEach(() => {
+      downloadResumable = FileSystem.createDownloadResumable(
+        remoteUri,
+        localUri,
+        options,
+        callback,
+        resumeData
+      );
     });
 
-    it('getInfoAsync', async () => {
-      await FileSystem.getInfoAsync(URI);
+    it('downloads with the correct props', async () => {
+      await downloadResumable.downloadAsync();
+
+      expect(ExponentFileSystem.downloadResumableStartAsync).toHaveBeenCalledWith(
+        remoteUri,
+        localUri,
+        downloadResumable._uuid,
+        options,
+        resumeData
+      );
     });
-    it('readAsStringAsync', async () => {
-      await FileSystem.readAsStringAsync(URI);
+
+    it('pauses correctly', async () => {
+      mockProperty(
+        ExponentFileSystem,
+        'downloadResumablePauseAsync',
+        jest.fn(async () => fakeObject)
+      );
+
+      const downloadPauseState = await downloadResumable.pauseAsync();
+
+      expect(downloadPauseState).toMatchObject(fakeObject);
+
+      expect(ExponentFileSystem.downloadResumablePauseAsync).toHaveBeenCalledWith(
+        downloadResumable._uuid
+      );
     });
-    it('writeAsStringAsync', async () => {
-      await FileSystem.writeAsStringAsync(URI, 'bar');
+    it('pauses with error', async () => {
+      throws(downloadResumable.pauseAsync());
     });
-    it('deleteAsync', async () => {
-      await FileSystem.deleteAsync(URI);
+
+    it('resumes correctly', async () => {
+      mockProperty(
+        ExponentFileSystem,
+        'downloadResumableStartAsync',
+        jest.fn(async () => fakeObject)
+      );
+
+      const downloadPauseState = await downloadResumable.resumeAsync();
+
+      expect(downloadPauseState).toMatchObject(fakeObject);
+
+      expect(ExponentFileSystem.downloadResumableStartAsync).toHaveBeenCalledWith(
+        remoteUri,
+        localUri,
+        downloadResumable._uuid,
+        options,
+        resumeData
+      );
     });
-    it('moveAsync', async () => {
-      await FileSystem.moveAsync({ from: URI, to: toURI });
-    });
-    it('copyAsync', async () => {
-      await FileSystem.copyAsync({ from: URI, to: toURI });
-    });
-    it('makeDirectoryAsync', async () => {
-      await FileSystem.makeDirectoryAsync(URI);
-    });
-    it('readDirectoryAsync', async () => {
-      await FileSystem.readDirectoryAsync(URI);
-    });
-    it('downloadAsync', async () => {
-      await FileSystem.downloadAsync(URI, toURI);
+
+    it('has same save state as original input', async () => {
+      const downloadPauseState = await downloadResumable.savable();
+
+      expect(downloadPauseState).toMatchObject(fakeObject);
     });
   });
 });
-
-function applyMocks() {
-  mockPlatformWeb();
-  [
-    'getInfoAsync',
-    'readAsStringAsync',
-    'writeAsStringAsync',
-    'deleteAsync',
-    'moveAsync',
-    'copyAsync',
-    'makeDirectoryAsync',
-    'readDirectoryAsync',
-    'downloadAsync',
-  ].forEach(methodName => {
-    mockProperty(ExponentFileSystem, methodName, null);
-  });
-}
