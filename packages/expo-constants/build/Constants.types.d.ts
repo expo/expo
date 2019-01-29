@@ -57,7 +57,7 @@ export interface AppManifest {
         tool?: string;
         [key: string]: any;
     };
-    bundleUrl?: string;
+    bundleUrl: string;
     debuggerHost?: string;
     mainModuleName?: string;
     logUrl?: string;
