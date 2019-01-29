@@ -189,6 +189,9 @@ jobs:
           working_directory: ~/expo/packages/expo-camera
       - yarn:
           command: test --maxWorkers 1
+          working_directory: ~/expo/packages/expo-analytics-amplitude
+      - yarn:
+          command: test --maxWorkers 1
           working_directory: ~/expo/packages/expo-facebook
       - yarn:
           command: test --maxWorkers 1
