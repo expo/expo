@@ -44,8 +44,10 @@ const STYLES_SELECT_ELEMENT = css`
 const orderVersions = versions => {
   versions = [...versions];
 
+  let unversionedPresent = false;
   if (versions.indexOf('unversioned') >= 0) {
     versions.splice(versions.indexOf('unversioned'), 1);
+    unversionedPresent = true;
   }
 
   if (versions.indexOf('latest') >= 0) {
@@ -63,10 +65,7 @@ const orderVersions = versions => {
 
   versions.push('latest');
 
-  if (
-    (typeof window === 'object' && window._NODE_ENV === 'development') ||
-    (process.env.NODE_ENV && process.env.NODE_ENV === 'development')
-  ) {
+  if (unversionedPresent) {
     versions.push('unversioned');
   }
 
