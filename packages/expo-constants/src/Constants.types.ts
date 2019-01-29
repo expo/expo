@@ -40,9 +40,11 @@ export interface AppManifest {
   notification?: {
     icon?: string;
     color?: string;
+    [key: string]: any;
   };
   loading?: {
     icon?: string;
+    [key: string]: any;
   };
   entryPoint?: string;
   packagerOpts?: {
@@ -53,10 +55,12 @@ export interface AppManifest {
     urlType?: string;
     urlRandomness?: string;
     lanType?: string;
+    [key: string]: any;
   };
   xde?: boolean;
   developer?: {
     tool?: string;
+    [key: string]: any;
   };
   bundleUrl?: string;
   debuggerHost?: string;
@@ -69,6 +73,15 @@ export interface PlatformManifest {
   ios?: IOSManifest;
   android?: AndroidManifest;
   web?: WebManifest;
+  detach?: {
+    scheme?: string;
+    [key: string]: any;
+  };
+  logUrl?: string;
+  scheme?: string;
+  hostUri?: string;
+  developer?: string;
+  [key: string]: any;
 }
 
 export interface NativeConstants {
@@ -76,7 +89,7 @@ export interface NativeConstants {
   appOwnership: AppOwnership;
   debugMode: boolean;
   deviceName?: string;
-  deviceYearClass?: number;
+  deviceYearClass: number | null;
   experienceUrl: string;
   expoRuntimeVersion: string;
   expoVersion: string;
@@ -86,12 +99,13 @@ export interface NativeConstants {
   isDevice: boolean;
   isHeadless: boolean;
   linkingUri: string;
-  manifest?: AppManifest | string;
+  manifest: AppManifest;
   sessionId: string;
   statusBarHeight: number;
   systemFonts: string[];
   systemVersion?: number;
   platform?: PlatformManifest;
+  [key: string]: any;
 
   getWebViewUserAgentAsync: () => Promise<string | null>;
 }

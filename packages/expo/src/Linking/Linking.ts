@@ -4,7 +4,7 @@ import qs from 'qs';
 import { ParsedURL } from './Linking.types';
 import Linking from './LinkingModule';
 
-const { manifest } = Constants;
+const { manifest = {} } = Constants;
 
 const USES_CUSTOM_SCHEME = Constants.appOwnership === 'standalone' && manifest.scheme;
 

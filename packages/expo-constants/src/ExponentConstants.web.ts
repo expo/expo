@@ -74,10 +74,10 @@ export default {
   get statusBarHeight(): number {
     return 0;
   },
-  get deviceYearClass(): number | undefined {
+  get deviceYearClass(): number | null {
     // TODO: Bacon: The android version isn't very accurate either, maybe we could try and guess this value.
     console.log(`ExponentConstants.deviceYearClass: is unimplemented on web.`);
-    return undefined;
+    return null;
   },
   get manifest(): WebManifest {
     return process.env.APP_MANIFEST || {};
