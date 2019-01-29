@@ -45,13 +45,13 @@ export enum EncodingTypes {
 export type EncodingType = typeof EncodingTypes.UTF8 | typeof EncodingTypes.Base64;
 
 export type ReadingOptions = {
-  encoding?: EncodingType;
+  encoding?: EncodingType | 'utf8' | 'base64';
   position?: number;
   length?: number;
 };
 
 export type WritingOptions = {
-  encoding?: EncodingType;
+  encoding?: EncodingType | 'utf8' | 'base64';
 };
 
 export type ProgressEvent = {

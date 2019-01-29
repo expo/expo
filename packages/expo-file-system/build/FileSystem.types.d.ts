@@ -39,12 +39,12 @@ export declare enum EncodingTypes {
 }
 export declare type EncodingType = typeof EncodingTypes.UTF8 | typeof EncodingTypes.Base64;
 export declare type ReadingOptions = {
-    encoding?: EncodingType;
+    encoding?: EncodingType | 'utf8' | 'base64';
     position?: number;
     length?: number;
 };
 export declare type WritingOptions = {
-    encoding?: EncodingType;
+    encoding?: EncodingType | 'utf8' | 'base64';
 };
 export declare type ProgressEvent = {
     uuid: string;
