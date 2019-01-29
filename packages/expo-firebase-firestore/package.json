@@ -3,6 +3,14 @@
   "version": "2.0.0",
   "description": "Expo Unimodule for interfacing with Firebase Cloud Firestore",
   "main": "src/index.js",
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
   "keywords": [
     "react-native",
     "flutter",
@@ -24,9 +32,11 @@
   },
   "bugs": "https://github.com/expo/expo/issues",
   "dependencies": {
-    "expo-core": "~2.0.0",
-    "expo-firebase-app": "~2.0.0",
     "js-base64": "^2.4.9"
+  },
+  "peerDependencies": {
+    "expo-core": "~2.0.0",
+    "expo-firebase-app": "~2.0.0"
   },
   "devDependencies": {
     "flow-bin": "^0.77.0"
