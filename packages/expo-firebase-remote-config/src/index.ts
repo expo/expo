@@ -1,25 +1,22 @@
 import { App, ModuleBase } from 'expo-firebase-app';
 
-type NativeValue = {
+interface NativeValue {
   stringValue?: string;
   numberValue?: number;
   dataValue?: Object;
   boolValue?: boolean;
   source: 'remoteConfigSourceRemote' | 'remoteConfigSourceDefault' | ' remoteConfigSourceStatic';
-};
+}
 
 export const MODULE_NAME = 'ExpoFirebaseRemoteConfig';
 export const NAMESPACE = 'config';
 export const statics = {};
 
-type ConfigSnapshot = {
+interface ConfigSnapshot {
   source: string;
   val(): any;
-};
+}
 
-/**
- * @class Config
- */
 export default class RemoteConfig extends ModuleBase {
   static moduleName = MODULE_NAME;
   static namespace = NAMESPACE;
@@ -138,7 +135,7 @@ export default class RemoteConfig extends ModuleBase {
    *    "source" : OneOf<String>(remoteConfigSourceRemote|remoteConfigSourceDefault|remoteConfigSourceStatic)
    *  }
    */
-  getValues(keys: Array<string>): Promise<{ [key: string]: ConfigSnapshot }> {
+  getValues(keys: string[]): Promise<{ [key: string]: ConfigSnapshot }> {
     return this.nativeModule.getValues(keys || []).then(nativeValues => {
       const values: { [key: string]: Object } = {};
       for (let i = 0, len = keys.length; i < len; i++) {

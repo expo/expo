@@ -1,5 +1,5 @@
 import { Platform } from 'expo-core';
-import { App, SharedEventEmitter, INTERNALS, ModuleBase, utils } from 'expo-firebase-app';
+import { App, SharedEventEmitter, INTERNALS, ModuleBase } from 'expo-firebase-app';
 
 import ConfirmationResult from './phone/ConfirmationResult';
 import PhoneAuthListener from './phone/PhoneAuthListener';
@@ -24,10 +24,6 @@ import {
 } from './types';
 
 const isAndroid = Platform.OS === 'android';
-
-const isBoolean = (value: any): boolean => {
-  return typeof value === 'boolean';
-};
 
 type AuthState = {
   user?: NativeUser;
@@ -491,7 +487,6 @@ export default class Auth extends ModuleBase {
    *
    * @return {AuthSettings}
    */
-
 
   _settings?: AuthSettings;
   get settings(): AuthSettings {

@@ -2,9 +2,6 @@ import { ModuleBase } from 'expo-firebase-app';
 export const MODULE_NAME = 'ExpoFirebaseRemoteConfig';
 export const NAMESPACE = 'config';
 export const statics = {};
-/**
- * @class Config
- */
 export default class RemoteConfig extends ModuleBase {
     constructor(app) {
         super(app, {

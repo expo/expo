@@ -2,7 +2,7 @@
   "name": "expo-firebase-links",
   "version": "2.0.0",
   "description": "Expo Unimodule for interfacing with Firebase Dynamic Linking",
-  "main": "src/index.ts",
+  "main": "build/index.js",
   "types": "build/index.d.ts",
   "scripts": {
     "build": "expo-module build",
