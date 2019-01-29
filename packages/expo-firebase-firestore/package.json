@@ -38,8 +38,5 @@
     "expo-core": "~2.0.0",
     "expo-firebase-app": "~2.0.0"
   },
-  "devDependencies": {
-    "flow-bin": "^0.77.0"
-  },
   "gitHead": "f15abc53c111bd0438cd36dc456c59cfa7c56a58"
 }
