@@ -194,6 +194,9 @@ jobs:
           command: test --maxWorkers 1
           working_directory: ~/expo/packages/expo-font
       - yarn:
+          command: build
+          working_directory: ~/expo/packages/expo-permissions
+      - yarn:
           command: test --maxWorkers 1
           working_directory: ~/expo/packages/expo-react-native-adapter
       - yarn:

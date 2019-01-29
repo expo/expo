@@ -1,6 +1,9 @@
-// @flow
-import { PermissionType, SimpleResponse } from './Permissions.types';
-
+import {
+  PermissionInfo,
+  PermissionMap,
+  PermissionStatus,
+  PermissionType,
+} from './Permissions.types';
 
 /*
  * TODO: Bacon: https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia#Permissions
@@ -9,7 +12,7 @@ import { PermissionType, SimpleResponse } from './Permissions.types';
 
 // https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia#Using_the_new_API_in_older_browsers
 // Older browsers might not implement mediaDevices at all, so we set an empty object first
-function _getUserMedia(constraints: MediaStreamConstraints) {
+function _getUserMedia(constraints: MediaStreamConstraints): Promise<MediaStream> {
   if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
     return navigator.mediaDevices.getUserMedia(constraints);
   }
@@ -21,100 +24,99 @@ function _getUserMedia(constraints: MediaStreamConstraints) {
   // First get ahold of the legacy getUserMedia, if present
   const getUserMedia =
     navigator.getUserMedia ||
-    navigator.webkitGetUserMedia ||
-    navigator.mozGetUserMedia ||
+    (navigator as any).webkitGetUserMedia ||
+    (navigator as any).mozGetUserMedia ||
     function() {
-      const err = new Error('Permission unimplemented');
-      err.code = 0;
-      err.name = 'NotAllowedError';
-      throw err;
+      const error: any = new Error('Permission unimplemented');
+      error.code = 0;
+      error.name = 'NotAllowedError';
+      throw error;
     };
 
-  return new Promise(function(resolve, reject) {
+  return new Promise((resolve, reject) => {
     getUserMedia.call(navigator, constraints, resolve, reject);
   });
 }
 
-const Status = {
-  undetermined: 'undetermined',
-  granted: 'granted',
-  denied: 'denied',
-};
-
-async function askForMediaPermissionAsync(options: MediaStreamConstraints): Promise<SimpleResponse> {
+async function askForMediaPermissionAsync(
+  options: MediaStreamConstraints
+): Promise<PermissionInfo> {
   try {
     await _getUserMedia(options);
-    return { status: Status.granted };
+    return { status: PermissionStatus.GRANTED, expires: 'never' };
   } catch ({ message }) {
     // name: NotAllowedError
     // code: 0
     if (message === 'Permission dismissed') {
       // message: Permission dismissed
-      return { status: Status.undetermined };
+      return { status: PermissionStatus.UNDETERMINED, expires: 'never' };
     } else {
       // TODO: Bacon: [OSX] The system could deny access to chrome.
       // TODO: Bacon: add: { status: 'unimplemented' }
       // message: Permission denied
-      return { status: Status.denied };
+      return { status: PermissionStatus.DENIED, expires: 'never' };
     }
   }
 }
 
-async function askForMicrophonePermissionAsync(): Promise<SimpleResponse> {
+async function askForMicrophonePermissionAsync(): Promise<PermissionInfo> {
   return await askForMediaPermissionAsync({ audio: true });
 }
 
-async function askForCameraPermissionAsync(): Promise<SimpleResponse> {
+async function askForCameraPermissionAsync(): Promise<PermissionInfo> {
   return await askForMediaPermissionAsync({ video: true });
 }
 
-async function askForLocationPermissionAsync(): Promise<SimpleResponse> {
+async function askForLocationPermissionAsync(): Promise<PermissionInfo> {
   return new Promise(resolve => {
     navigator.geolocation.getCurrentPosition(
-      () => resolve({ status: Status.granted }),
+      () => resolve({ status: PermissionStatus.GRANTED, expires: 'never' }),
       ({ code }: PositionError) => {
         // https://developer.mozilla.org/en-US/docs/Web/API/PositionError/code
         if (code === 1) {
-          resolve({ status: Status.denied });
+          resolve({ status: PermissionStatus.DENIED, expires: 'never' });
         } else {
-          resolve({ status: Status.undetermined });
+          resolve({ status: PermissionStatus.UNDETERMINED, expires: 'never' });
         }
       }
     );
   });
 }
 
-async function getPermissionAsync(permission: PermissionType, shouldAsk: boolean): Promise<SimpleResponse> {
+async function getPermissionAsync(
+  permission: PermissionType,
+  shouldAsk: boolean
+): Promise<PermissionInfo> {
   switch (permission) {
     case 'userFacingNotifications':
     case 'notifications':
       {
-        const { Notification = {} } = global;
+        const { Notification = {} } = window as any;
         if (Notification.requestPermission) {
           let status = Notification.permission;
           if (shouldAsk) {
             status = await Notification.requestPermission();
           }
           if (!status || status === 'default') {
-            return { status: Status.undetermined };
+            return { status: PermissionStatus.UNDETERMINED, expires: 'never' };
           }
-          return { status };
+          return { status, expires: 'never' };
         }
       }
       break;
     case 'location':
       {
-        const { navigator = {} } = global;
+        const { navigator = {} } = window as any;
         if (navigator.permissions) {
           const { state } = await navigator.permissions.query({ name: 'geolocation' });
-          if (state !== Status.granted && state !== Status.denied) {
+          if (state !== PermissionStatus.GRANTED && state !== PermissionStatus.DENIED) {
             if (shouldAsk) {
               return await askForLocationPermissionAsync();
             }
-            return { status: Status.undetermined };
+            return { status: PermissionStatus.UNDETERMINED, expires: 'never' };
           }
 
-          return { status: state };
+          return { status: state, expires: 'never' };
         } else if (shouldAsk) {
           // TODO: Bacon: should this function as ask async when not in chrome?
           return await askForLocationPermissionAsync();
@@ -138,29 +140,27 @@ async function getPermissionAsync(permission: PermissionType, shouldAsk: boolean
     default:
       break;
   }
-  return { status: Status.undetermined };
+  return { status: PermissionStatus.UNDETERMINED, expires: 'never' };
 }
 
 export default {
   get name(): string {
     return 'ExpoPermissions';
   },
-  async getAsync(permissionsTypes: Array<string>): Promise<Array<SimpleResponse>> {
-    const permissions = [...new Set(permissionsTypes)];
-    let permissionResults: Array<SimpleResponse> = [];
-    for (let permission of permissions) {
-      const result = await getPermissionAsync(permission, false);
-      permissionResults.push(result);
+
+  async getAsync(permissionTypes: PermissionType[]): Promise<PermissionMap> {
+    const results = {};
+    for (const permissionType of new Set(permissionTypes)) {
+      results[permissionType] = await getPermissionAsync(permissionType, /* shouldAsk */ false);
     }
-    return permissionResults;
+    return results;
   },
-  async askAsync(permissionsTypes: Array<string>): Promise<Array<SimpleResponse>> {
-    const permissions = [...new Set(permissionsTypes)];
-    let permissionResults: Array<SimpleResponse> = [];
-    for (let permission of permissions) {
-      const result = await getPermissionAsync(permission, true);
-      permissionResults.push(result);
+
+  async askAsync(permissionTypes: PermissionType[]): Promise<PermissionMap> {
+    const results = {};
+    for (const permissionType of new Set(permissionTypes)) {
+      results[permissionType] = await getPermissionAsync(permissionType, /* shouldAsk */ true);
     }
-    return permissionResults;
+    return results;
   },
 };
