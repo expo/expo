@@ -20,7 +20,7 @@ Paste that URL into your browser when the build is complete, and you will see yo
 ## [Surge](https://surge.sh/)
 
 Install the Surge CLI if you haven’t already by running `npm install -g surge`.
-Run the `surge` command, then promptly log-in or create a new account.
+Run the `surge` command, then promptly log in or create a new account.
 
 When asked about the project path, make sure to specify the `build` folder, for example:
 
@@ -30,11 +30,11 @@ project path: /path/to/expo-project/build
 
 > To support routers that use the HTML 5 `pushState` API, you'll need to rename the `build/index.html` to `build/200.html` before deploying.
 
-## [Github Pages](https://pages.github.com/)
+## [GitHub Pages](https://pages.github.com/)
 
 > We'll use `yarn` but you can use `npm` if you want.
 
-Before starting, be sure to [create a new repo on Github](https://github.com/new)
+Before starting, be sure to [create a new repo on GitHub](https://github.com/new)
 
 **TL;DR:**
 
@@ -67,7 +67,7 @@ yarn deploy
 
 ---
 
-Here are the formal instructions for deploying to `GH-Pages`:
+Here are the formal instructions for deploying to GitHub Pages:
 
 1. **Initialize a git repo**
 
@@ -95,7 +95,7 @@ Here are the formal instructions for deploying to `GH-Pages`:
 
 4. **Configure your `package.json` for web hosting**
 
-   - At the top level, add a `homepage` property. Assign it's value to the string `http://{username on github, without the curly brackets}.github.io/{repo-name}`. For example: If my GitHub name is `evanbacon` and my GitHub repository is `expo-gh-pages`, I'll asign the following:
+   - At the top level, add a `homepage` property. Set it's value to the string `http://{username on github, without the curly brackets}.github.io/{repo-name}`. For example: If my GitHub name is `evanbacon` and my GitHub repository is `expo-gh-pages`, I'll asign the following:
 
    ```js
    /* ... */
@@ -139,6 +139,6 @@ Choose `build` as the path to deploy.
 
 With this setup Netlify will build and deploy when you push to git or open a new pull request:
 
-1. [Start a new netlify project](https://app.netlify.com/signup)
+1. [Start a new Netlify project](https://app.netlify.com/signup)
 2. Pick your Git hosting service and select your repository
 3. Click `Build your site`

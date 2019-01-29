@@ -28,16 +28,16 @@ Check out the examples of Expo for web:
 
 ## Platform Modules
 
-A platform module is an agnostic native module that can run in on platform. Utilizing the universal [`expo-core`](https://github.com/expo/expo/tree/master/packages/expo-core) package, a platform module consists of a native-layer and an API-layer.
+A platform module is a library with a common API interface for interacting with corresponding native functionality. For example, you could develop a module which binds Objective-C, Java, and JavaScript to a unified API which functions the same across multiple platforms. Every platform module consists of a native layer and a unified API layer, they are then bound together using the [univeral module](https://github.com/expo/expo/tree/master/packages/expo-core) system.
 
-- API-layer: The developer-facing side of a Unimodule that interfaces with the native-layer.
+- API layer: The developer-facing side of a Unimodule that interfaces with the native layer.
 - Native-layer: The platform specific API of a Unimodule. For instance: Objective-C, Java, & JavaScript.
 
 Some of the established standards of a platform module:
 
 - Currently all alterations to modules should be written in TypeScript.
 - All unimplemented methods should be detected, and an `UnavailabilityError` from `expo-errors` should be thrown.
-- Avoid creating platform specific features in a single file of the API-layer. Instead create platform specific files like: `.ios.ts`, `.android.ts`, `.web.ts`, `.native.ts`.
+- Avoid creating platform specific features in a single file of the API layer. Instead create platform specific files like: `.ios.ts`, `.android.ts`, `.web.ts`, `.native.ts`.
 
 ### Tracking progress
 

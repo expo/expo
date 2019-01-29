@@ -44,6 +44,8 @@ export default {
 More often than not you will need to guard for support. To this you should start methods that contain Platform Modules with an availability check.
 
 ```js
+// src/Print.ts
+
 import { UnavailabilityError } from 'expo-errors';
 
 async function selectPrinter(): Promise<SelectResult> {
