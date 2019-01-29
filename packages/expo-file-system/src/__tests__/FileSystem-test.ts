@@ -4,14 +4,14 @@ import ExponentFileSystem from '../ExponentFileSystem';
 import * as FileSystem from '../FileSystem';
 
 describe('FileSystem', () => {
-  describe('Constants', () => {
+  describe('constants', () => {
     it('documentDirectory', () => expect(FileSystem.documentDirectory).toBeDefined());
     it('cacheDirectory', () => expect(FileSystem.cacheDirectory).toBeDefined());
     it('bundledAssets', () => expect(FileSystem.bundledAssets).toBeDefined());
     it('bundleDirectory', () => expect(FileSystem.bundleDirectory).toBeDefined());
   });
 
-  describe('Methods', () => {
+  describe('methods', () => {
     const URI = '/';
     const toURI = '/other';
     it('downloadAsync', () => {

@@ -72,12 +72,12 @@ export async function readAsStringAsync(
 export async function writeAsStringAsync(
   fileUri: string,
   contents: string,
-  options?: WritingOptions
+  options: WritingOptions = {}
 ): Promise<void> {
   if (!FS.writeAsStringAsync) {
     throw new UnavailabilityError('expo-file-system', 'writeAsStringAsync');
   }
-  return await FS.writeAsStringAsync(fileUri, contents, options || {});
+  return await FS.writeAsStringAsync(fileUri, contents, options);
 }
 
 export async function deleteAsync(

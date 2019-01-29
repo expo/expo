@@ -28,11 +28,11 @@ export async function readAsStringAsync(fileUri, options) {
     }
     return await FS.readAsStringAsync(fileUri, options || {});
 }
-export async function writeAsStringAsync(fileUri, contents, options) {
+export async function writeAsStringAsync(fileUri, contents, options = {}) {
     if (!FS.writeAsStringAsync) {
         throw new UnavailabilityError('expo-file-system', 'writeAsStringAsync');
     }
-    return await FS.writeAsStringAsync(fileUri, contents, options || {});
+    return await FS.writeAsStringAsync(fileUri, contents, options);
 }
 export async function deleteAsync(fileUri, options = {}) {
     if (!FS.deleteAsync) {
