@@ -25,18 +25,7 @@ function rand(from = 1, to = 9999) {
   return Math.floor(r * (to - from + from));
 }
 
-export default function test({
-  should,
-  describe,
-  xdescribe,
-  it,
-  xit,
-  beforeEach,
-  expect,
-  jasmine,
-  OS,
-  firebase,
-}) {
+export default function test({ should, describe, it, xit, OS, firebase }) {
   describe('Core', () => {
     describe('Firebase', () => {
       xit('it should create js apps for natively initialized apps', () => {
@@ -93,23 +82,23 @@ export default function test({
       });
 
       xit('delete default app is unsupported', () => {
-        (() => {
-          firebase.app().delete();
-        }).should.throw('Unable to delete the default native firebase app instance.');
+        expect(firebase.app().delete()).toThrow(
+          'Unable to delete the default native firebase app instance.'
+        );
       });
 
       it('extendApp should error if an object is not supplied', () => {
-        (() => {
-          firebase.app().extendApp('string');
-        }).should.throw("Missing required argument of type 'Object' for method 'extendApp()'.");
+        expect(firebase.app().extendApp('string')).toThrow(
+          "Missing required argument of type 'Object' for method 'extendApp()'."
+        );
       });
 
       it('extendApp should error if a protected property is supplied', () => {
-        (() => {
+        expect(
           firebase.app().extendApp({
             database: {},
-          });
-        }).should.throw("Property 'database' is protected and can not be overridden by extendApp.");
+          })
+        ).toThrow("Property 'database' is protected and can not be overridden by extendApp.");
       });
 
       it('extendApp should provide additional functionality', () => {

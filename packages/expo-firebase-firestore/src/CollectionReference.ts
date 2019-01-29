@@ -9,7 +9,7 @@ import {
   MetadataChanges,
   QueryDirection,
   QueryOperator,
-} from './firestoreTypes.flow';
+} from './firestoreTypes.types';
 import FieldPath from './FieldPath';
 import Path from './Path';
 import { Observer, ObserverOnError, ObserverOnNext } from './Query';

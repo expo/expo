@@ -1,7 +1,7 @@
 import { DynamicLink, NativeNavigationParameters } from './types';
 
 export default class NavigationParameters {
-  _forcedRedirectEnabled: boolean | void;
+  _forcedRedirectEnabled?: boolean;
 
   _link: DynamicLink;
 

@@ -1,53 +1,35 @@
 import invariant from 'invariant';
 
-import { Importance, Visibility } from './types';
-
-import { ImportanceType, VisibilityType } from './types';
-
-type NativeAndroidChannel = {|
-  bypassDnd?: boolean,
-  channelId: string,
-  description?: string,
-  group?: string,
-  importance: ImportanceType,
-  lightColor?: string,
-  lightsEnabled?: boolean,
-  lockScreenVisibility?: VisibilityType,
-  name: string,
-  showBadge?: boolean,
-  sound?: string,
-  vibrationEnabled?: boolean,
-  vibrationPattern?: number[],
-|};
+import { Importance, Visibility, NativeAndroidChannel } from './types';
 
 export default class AndroidChannel {
-  _bypassDnd: boolean | void;
+  _bypassDnd?: boolean;
 
   _channelId: string;
 
-  _description: string | void;
+  _description?: string;
 
-  _group: string | void;
+  _group?: string;
 
-  _importance: ImportanceType;
+  _importance: Importance;
 
-  _lightColor: string | void;
+  _lightColor?: string;
 
-  _lightsEnabled: boolean | void;
+  _lightsEnabled?: boolean;
 
-  _lockScreenVisibility: VisibilityType;
+  _lockScreenVisibility?: Visibility;
 
   _name: string;
 
-  _showBadge: boolean | void;
+  _showBadge?: boolean;
 
-  _sound: string | void;
+  _sound?: string;
 
-  _vibrationEnabled: boolean | void;
+  _vibrationEnabled?: boolean;
 
-  _vibrationPattern: number[] | void;
+  _vibrationPattern?: number[];
 
-  constructor(channelId: string, name: string, importance: ImportanceType) {
+  constructor(channelId: string, name: string, importance: Importance) {
     invariant(
       Object.values(Importance).includes(importance),
       `AndroidChannel() Invalid Importance: ${importance}`
@@ -57,7 +39,7 @@ export default class AndroidChannel {
     this._importance = importance;
   }
 
-  get bypassDnd(): ?boolean {
+  get bypassDnd(): boolean | undefined {
     return this._bypassDnd;
   }
 
@@ -65,27 +47,27 @@ export default class AndroidChannel {
     return this._channelId;
   }
 
-  get description(): ?string {
+  get description(): string | undefined {
     return this._description;
   }
 
-  get group(): ?string {
+  get group(): string | undefined {
     return this._group;
   }
 
-  get importance(): ImportanceType {
+  get importance(): Importance {
     return this._importance;
   }
 
-  get lightColor(): ?string {
+  get lightColor(): string | undefined {
     return this._lightColor;
   }
 
-  get lightsEnabled(): ?boolean {
+  get lightsEnabled(): boolean | undefined {
     return this._lightsEnabled;
   }
 
-  get lockScreenVisibility(): ?VisibilityType {
+  get lockScreenVisibility(): Visibility | undefined {
     return this._lockScreenVisibility;
   }
 
@@ -93,19 +75,19 @@ export default class AndroidChannel {
     return this._name;
   }
 
-  get showBadge(): ?boolean {
+  get showBadge(): boolean | undefined {
     return this._showBadge;
   }
 
-  get sound(): ?string {
+  get sound(): string | undefined {
     return this._sound;
   }
 
-  get vibrationEnabled(): ?boolean {
+  get vibrationEnabled(): boolean | undefined {
     return this._vibrationEnabled;
   }
 
-  get vibrationPattern(): ?(number[]) {
+  get vibrationPattern(): number[] | undefined {
     return this._vibrationPattern;
   }
 
@@ -174,7 +156,7 @@ export default class AndroidChannel {
    * @param lockScreenVisibility
    * @returns {AndroidChannel}
    */
-  setLockScreenVisibility(lockScreenVisibility: VisibilityType): AndroidChannel {
+  setLockScreenVisibility(lockScreenVisibility: Visibility): AndroidChannel {
     invariant(
       Object.values(Visibility).includes(lockScreenVisibility),
       `AndroidChannel:setLockScreenVisibility Invalid Visibility: ${lockScreenVisibility}`

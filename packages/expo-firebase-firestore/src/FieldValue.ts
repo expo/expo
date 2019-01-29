@@ -1,4 +1,4 @@
-import type { AnyJs } from './utils/any';
+import { AnyJs } from './utils/any';
 
 export default class FieldValue {
   _type: string;

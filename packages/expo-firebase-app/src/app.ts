@@ -12,7 +12,7 @@ import { FirebaseNamespaces, DEFAULT_APP_NAME } from './constants';
 
 const { ExpoFirebaseApp: FirebaseCoreModule } = NativeModulesProxy;
 export default class App {
-  _extendedProps: { [string]: boolean };
+  _extendedProps: { [key: string]: boolean };
   _initialized: boolean = false;
   _name: string;
   _nativeInitialized: boolean = false;
@@ -83,26 +83,18 @@ export default class App {
     }
   }
 
-  /**
-   *
-   * @return {Promise}
-   */
-  delete() {
+  async delete(): Promise<any> {
     if (this._name === DEFAULT_APP_NAME && this._nativeInitialized) {
-      return Promise.reject(
-        new Error('Unable to delete the default native firebase app instance.')
-      );
+      throw new Error('Unable to delete the default native firebase app instance.');
     }
 
-    return FirebaseCoreModule.deleteApp(this._name);
+    return await FirebaseCoreModule.deleteApp(this._name);
   }
 
-  /**
-   *
-   * @return {*}
-   */
-  onReady(): Promise<App> {
-    if (this._initialized) return Promise.resolve(this);
+  async onReady(): Promise<App> {
+    if (this._initialized) {
+      return this;
+    }
 
     return new Promise((resolve, reject) => {
       SharedEventEmitter.once(`AppReady:${this._name}`, ({ error }) => {
@@ -117,7 +109,7 @@ export default class App {
    *
    * @return {string}
    */
-  toString() {
+  toString(): string {
     return this._name;
   }
 }

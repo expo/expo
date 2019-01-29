@@ -12,6 +12,11 @@ export { default as INTERNALS } from './utils/internals';
 
 export { utils, parseConfig, configUtils };
 
-export { NativeErrorResponse, NativeErrorObject, NativeErrorInterface } from './types';
+export {
+  NativeErrorResponse,
+  NativeErrorObject,
+  NativeErrorInterface,
+  FirebaseError,
+} from './types';
 
 export default Firebase;

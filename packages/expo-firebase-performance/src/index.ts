@@ -1,6 +1,6 @@
-import { ModuleBase } from 'expo-firebase-app';
+import { App, ModuleBase } from 'expo-firebase-app';
 import invariant from 'invariant';
-import { App } from 'expo-firebase-app';
+
 import HttpMetric from './HttpMetric';
 import Trace from './Trace';
 
@@ -50,19 +50,19 @@ export default class PerformanceMonitoring extends ModuleBase {
    * @param enabled
    * @returns {*}
    */
-  setPerformanceCollectionEnabled(enabled: boolean): Promise {
+  async setPerformanceCollectionEnabled(enabled: boolean): Promise<void> {
     invariant(
       typeof enabled === 'boolean',
       'firebase.perf().setPerformanceCollectionEnabled() requires a boolean value'
     );
-    return this.nativeModule.setPerformanceCollectionEnabled(enabled);
+    return await this.nativeModule.setPerformanceCollectionEnabled(enabled);
   }
 
   /**
    * Returns a new trace instance
    * @param trace
    */
-  newTrace(trace: string): ?Trace {
+  newTrace(trace: string): Trace | undefined {
     invariant(typeof trace === 'string', 'firebase.perf().newTrace() requires a string value');
     return new Trace(this.nativeModule, trace);
   }
@@ -93,6 +93,4 @@ export default class PerformanceMonitoring extends ModuleBase {
   }
 }
 
-export { Trace, HttpMetric, HTTP_METHODS };
-
-export type { HttpMethod };
+export { HttpMethod, Trace, HttpMetric, HTTP_METHODS };

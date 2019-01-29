@@ -4,7 +4,7 @@ import invariant from 'invariant';
 import AndroidChannel from './AndroidChannel';
 import AndroidChannelGroup from './AndroidChannelGroup';
 
-import { Notifications } from './types';
+import { Notifications, NativeAndroidChannel, NativeAndroidChannelGroup } from './types';
 
 const isAndroid = Platform.OS === 'android';
 export default class AndroidNotifications {
@@ -42,7 +42,7 @@ export default class AndroidNotifications {
         Array.isArray(channelGroups),
         `AndroidNotifications:createChannelGroups expects an 'Array' but got type ${typeof channelGroups}`
       );
-      const nativeChannelGroups = [];
+      const nativeChannelGroups: NativeAndroidChannelGroup[] = [];
       for (let i = 0; i < channelGroups.length; i++) {
         const channelGroup = channelGroups[i];
         invariant(
@@ -59,11 +59,10 @@ export default class AndroidNotifications {
   createChannels(channels: AndroidChannel[]): Promise<void> {
     if (isAndroid) {
       invariant(
-        Array.isArray(
-          channels
-        )`AndroidNotifications:createChannels expects an 'Array' but got type ${typeof channels}`
+        Array.isArray(channels),
+        `AndroidNotifications:createChannels expects an 'Array' but got type ${typeof channels}`
       );
-      const nativeChannels = [];
+      const nativeChannels: NativeAndroidChannel[] = [];
       for (let i = 0; i < channels.length; i++) {
         const channel = channels[i];
         invariant(

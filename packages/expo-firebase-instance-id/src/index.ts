@@ -1,6 +1,4 @@
-import { ModuleBase } from 'expo-firebase-app';
-
-import { App } from 'expo-firebase-app';
+import { App, ModuleBase } from 'expo-firebase-app';
 
 export const MODULE_NAME = 'ExpoFirebaseInstanceID';
 export const NAMESPACE = 'iid';
@@ -20,37 +18,37 @@ export default class InstanceId extends ModuleBase {
     });
   }
 
-  delete(): Promise<void> {
-    return this.nativeModule.delete();
+  async delete(): Promise<void> {
+    return await this.nativeModule.delete();
   }
 
-  get(): Promise<string> {
-    return this.nativeModule.get();
+  async get(): Promise<string> {
+    return await this.nativeModule.get();
   }
 
-  _validateAuthorizedEntity = (token: ?string): ?string => {
+  _validateAuthorizedEntity = (token?: string): string | undefined => {
     if (!token || token === '') {
       return this.app.options.messagingSenderId;
     }
     return token;
   };
 
-  _validateScope = (scope: ?string): ?string => {
+  _validateScope = (scope?: string): string | undefined => {
     if (!scope || scope === '') {
       return '*';
     }
     return scope;
   };
 
-  getToken = (authorizedEntity?: string, scope?: string): Promise<string> => {
-    return this.nativeModule.getToken(
+  getToken = async (authorizedEntity?: string, scope?: string): Promise<string> => {
+    return await this.nativeModule.getToken(
       this._validateAuthorizedEntity(authorizedEntity),
       this._validateScope(scope)
     );
   };
 
-  deleteToken = (authorizedEntity?: string, scope?: string): Promise<void> => {
-    return this.nativeModule.deleteToken(
+  deleteToken = async (authorizedEntity?: string, scope?: string): Promise<void> => {
+    return await this.nativeModule.deleteToken(
       this._validateAuthorizedEntity(authorizedEntity),
       this._validateScope(scope)
     );

@@ -90,7 +90,7 @@ export default function test({
 
         // test async functions - they always return a promise in JS
         let didReject = false;
-        let updateFunction = async () => 1;
+        let updateFunction: any = async () => 1;
         try {
           await firestore.runTransaction(updateFunction);
         } catch (e) {
@@ -100,7 +100,7 @@ export default function test({
 
         // should not error as a promise returned
         didReject = false;
-        updateFunction = () => Promise.resolve();
+        updateFunction = async () => {};
         try {
           await firestore.runTransaction(updateFunction);
         } catch (e) {

@@ -1,15 +1,4 @@
-export default function test({
-  describe,
-  xdescribe,
-  it,
-  xit,
-  beforeEach,
-  expect,
-  jasmine,
-  firebase,
-  OS,
-  device,
-}) {
+export default function test({ describe, xdescribe, it, xit, firebase, OS, device }) {
   describe('crashlytics()', () => {
     // todo test is flakey due to a detox error occurring sometimes;
     // Error: the string "Error when sending event: websocketFailed with body:

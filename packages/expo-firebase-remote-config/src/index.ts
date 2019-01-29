@@ -1,13 +1,11 @@
-import { ModuleBase } from 'expo-firebase-app';
-
-import { App } from 'expo-firebase-app';
+import { App, ModuleBase } from 'expo-firebase-app';
 
 type NativeValue = {
-  stringValue?: string,
-  numberValue?: number,
-  dataValue?: Object,
-  boolValue?: boolean,
-  source: 'remoteConfigSourceRemote' | 'remoteConfigSourceDefault' | ' remoteConfigSourceStatic',
+  stringValue?: string;
+  numberValue?: number;
+  dataValue?: Object;
+  boolValue?: boolean;
+  source: 'remoteConfigSourceRemote' | 'remoteConfigSourceDefault' | ' remoteConfigSourceStatic';
 };
 
 export const MODULE_NAME = 'ExpoFirebaseRemoteConfig';
@@ -15,8 +13,8 @@ export const NAMESPACE = 'config';
 export const statics = {};
 
 type ConfigSnapshot = {
-  source: string,
-  val(): any,
+  source: string;
+  val(): any;
 };
 
 /**
@@ -89,13 +87,13 @@ export default class RemoteConfig extends ModuleBase {
    * Call activateFetched to make fetched data available in app
    * @returns {*|Promise.<String>}:
    */
-  fetch(expiration?: number): Promise<string> {
+  async fetch(expiration?: number): Promise<string> {
     if (expiration !== undefined) {
       this.logger.debug(`Fetching remote config data with expiration ${expiration.toString()}`);
-      return this.nativeModule.fetchWithExpirationDuration(expiration);
+      return await this.nativeModule.fetchWithExpirationDuration(expiration);
     }
     this.logger.debug('Fetching remote config data');
-    return this.nativeModule.fetch();
+    return await this.nativeModule.fetch();
   }
 
   /**
@@ -104,9 +102,9 @@ export default class RemoteConfig extends ModuleBase {
    * resolves if there was a Fetched Config, and it was activated,
    * rejects if no Fetched Config was found, or the Fetched Config was already activated.
    */
-  activateFetched(): Promise<boolean> {
+  async activateFetched(): Promise<boolean> {
     this.logger.debug('Activating remote config');
-    return this.nativeModule.activateFetched();
+    return await this.nativeModule.activateFetched();
   }
 
   /**
@@ -122,8 +120,8 @@ export default class RemoteConfig extends ModuleBase {
    *    "source" : OneOf<String>(remoteConfigSourceRemote|remoteConfigSourceDefault|remoteConfigSourceStatic)
    *  }
    */
-  getValue(key: string): Promise<ConfigSnapshot> {
-    return this.nativeModule.getValue(key || '').then(this._nativeValueToJS);
+  async getValue(key: string): Promise<ConfigSnapshot> {
+    return await this.nativeModule.getValue(key || '').then(this._nativeValueToJS);
   }
 
   /**
@@ -140,9 +138,9 @@ export default class RemoteConfig extends ModuleBase {
    *    "source" : OneOf<String>(remoteConfigSourceRemote|remoteConfigSourceDefault|remoteConfigSourceStatic)
    *  }
    */
-  getValues(keys: Array<string>): Promise<{ [string]: ConfigSnapshot }> {
+  getValues(keys: Array<string>): Promise<{ [key: string]: ConfigSnapshot }> {
     return this.nativeModule.getValues(keys || []).then(nativeValues => {
-      const values: { [string]: Object } = {};
+      const values: { [key: string]: Object } = {};
       for (let i = 0, len = keys.length; i < len; i++) {
         values[keys[i]] = this._nativeValueToJS(nativeValues[i]);
       }
@@ -155,8 +153,8 @@ export default class RemoteConfig extends ModuleBase {
    * @param prefix: The key prefix to look for. If prefix is nil or empty, returns all the keys.
    * @returns {*|Promise.<Array<String>>}
    */
-  getKeysByPrefix(prefix?: string): Promise<string[]> {
-    return this.nativeModule.getKeysByPrefix(prefix);
+  async getKeysByPrefix(prefix?: string): Promise<string[]> {
+    return await this.nativeModule.getKeysByPrefix(prefix);
   }
 
   /**
@@ -176,4 +174,4 @@ export default class RemoteConfig extends ModuleBase {
   }
 }
 
-export type { NativeValue, ConfigSnapshot };
+export { NativeValue, ConfigSnapshot };

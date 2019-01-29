@@ -6,13 +6,13 @@ import { NativeInboundRemoteMessage, NativeOutboundRemoteMessage } from './types
 const { isObject, generatePushID } = utils;
 
 export default class RemoteMessage {
-  _collapseKey: string | void;
-  _data: { [string]: string };
-  _from: string | void;
-  _messageId: string;
-  _messageType: string | void;
-  _sentTime: number | void;
-  _to: string;
+  _collapseKey?: string;
+  _data: { [key: string]: string } = {};
+  _from?: string;
+  _messageId: string = generatePushID();
+  _messageType?: string;
+  _sentTime?: number;
+  _to?: string;
   _ttl: number;
 
   constructor(inboundMessage?: NativeInboundRemoteMessage) {
@@ -31,35 +31,35 @@ export default class RemoteMessage {
     this._ttl = 3600;
   }
 
-  get collapseKey(): ?string {
+  get collapseKey(): string | undefined {
     return this._collapseKey;
   }
 
-  get data(): { [string]: string } {
+  get data(): { [key: string]: string } {
     return this._data;
   }
 
-  get from(): ?string {
+  get from(): string | undefined {
     return this._from;
   }
 
-  get messageId(): ?string {
+  get messageId(): string {
     return this._messageId;
   }
 
-  get messageType(): ?string {
+  get messageType(): string | undefined {
     return this._messageType;
   }
 
-  get sentTime(): ?number {
+  get sentTime(): number | undefined {
     return this._sentTime;
   }
 
-  get to(): ?string {
+  get to(): string | undefined {
     return this._to;
   }
 
-  get ttl(): ?number {
+  get ttl(): number {
     return this._ttl;
   }
 
@@ -78,7 +78,7 @@ export default class RemoteMessage {
    * @param data
    * @returns {RemoteMessage}
    */
-  setData(data: { [string]: string } = {}) {
+  setData(data: { [key: string]: string } = {}) {
     invariant(
       isObject(data),
       `RemoteMessage:setData expects an object but got type '${typeof data}'.`
@@ -128,10 +128,10 @@ export default class RemoteMessage {
   }
 
   build(): NativeOutboundRemoteMessage {
-    invariant(this._data, 'RemoteMessage: Missing required `data` property');
-    invariant(this._messageId, 'RemoteMessage: Missing required `messageId` property');
-    invariant(this._to, 'RemoteMessage: Missing required `to` property');
-    invariant(this._ttl, 'RemoteMessage: Missing required `ttl` property');
+    if (!this._data) throw new Error('RemoteMessage: Missing required `data` property');
+    if (!this._messageId) throw new Error('RemoteMessage: Missing required `messageId` property');
+    if (!this._to) throw new Error('RemoteMessage: Missing required `to` property');
+    if (!this._ttl) throw new Error('RemoteMessage: Missing required `ttl` property');
 
     return {
       collapseKey: this._collapseKey,

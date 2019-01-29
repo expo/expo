@@ -1,4 +1,4 @@
-import { ReferenceBase, utils } from 'expo-firebase-app';
+import { ReferenceBase, utils, FirebaseError } from 'expo-firebase-app';
 import invariant from 'invariant';
 
 import DataSnapshot from './DataSnapshot';
@@ -6,9 +6,9 @@ import OnDisconnect from './OnDisconnect';
 import Query from './Query';
 import SyncTree from './SyncTree';
 // import type Database from './index';
-import { DatabaseModifier, FirebaseError } from './firestoreTypes.flow';
+import { DatabaseModifier } from './types';
 
-type Database = object;
+type Database = { [key: string]: any };
 
 const {
   promiseOrCallback,
@@ -28,19 +28,19 @@ let listeners = 0;
  * @readonly
  * @enum {String}
  */
-const ReferenceEventTypes = {
-  value: 'value',
-  child_added: 'child_added',
-  child_removed: 'child_removed',
-  child_changed: 'child_changed',
-  child_moved: 'child_moved',
-};
+enum ReferenceEventTypes {
+  value = 'value',
+  child_added = 'child_added',
+  child_removed = 'child_removed',
+  child_changed = 'child_changed',
+  child_moved = 'child_moved',
+}
 
 type DatabaseListener = {
-  listenerId: number,
-  eventName: string,
-  successCallback: Function,
-  failureCallback?: Function,
+  listenerId: number;
+  eventName: string;
+  successCallback: Function;
+  failureCallback?: Function;
 };
 
 /**
@@ -72,11 +72,11 @@ type DatabaseListener = {
  */
 export default class Reference extends ReferenceBase {
   _database: Database;
-  _promise: ?Promise<*>;
+  _promise: Promise<any> | null;
   _query: Query;
   _refListeners: { [listenerId: number]: DatabaseListener };
 
-  constructor(database: Database, path: string, existingModifiers?: Array<DatabaseModifier>) {
+  constructor(database: Database, path: string, existingModifiers?: DatabaseModifier[]) {
     super(path);
     this._promise = null;
     this._refListeners = {};
@@ -112,7 +112,7 @@ export default class Reference extends ReferenceBase {
    * @param onComplete
    * @returns {Promise}
    */
-  set(value: any, onComplete?: Function): Promise<void> {
+  async set(value: any, onComplete?: Function): Promise<void> {
     return promiseOrCallback(
       this._database.nativeModule.set(this.path, this._serializeAnyType(value)),
       onComplete
@@ -127,7 +127,7 @@ export default class Reference extends ReferenceBase {
    * @param onComplete
    * @returns {Promise}
    */
-  setPriority(priority: string | number | null, onComplete?: Function): Promise<void> {
+  async setPriority(priority: string | number | null, onComplete?: Function): Promise<void> {
     const _priority = this._serializeAnyType(priority);
 
     return promiseOrCallback(
@@ -145,7 +145,7 @@ export default class Reference extends ReferenceBase {
    * @param onComplete
    * @returns {Promise}
    */
-  setWithPriority(
+  async setWithPriority(
     value: any,
     priority: string | number | null,
     onComplete?: Function
@@ -167,7 +167,7 @@ export default class Reference extends ReferenceBase {
    * @param onComplete
    * @returns {Promise}
    */
-  update(val: Object, onComplete?: Function): Promise<void> {
+  async update(val: Object, onComplete?: Function): Promise<void> {
     const value = this._serializeObject(val);
 
     return promiseOrCallback(this._database.nativeModule.update(this.path, value), onComplete);
@@ -180,7 +180,7 @@ export default class Reference extends ReferenceBase {
    * @param onComplete
    * @return {Promise}
    */
-  remove(onComplete?: Function): Promise<void> {
+  async remove(onComplete?: Function): Promise<void> {
     return promiseOrCallback(this._database.nativeModule.remove(this.path), onComplete);
   }
 
@@ -194,7 +194,7 @@ export default class Reference extends ReferenceBase {
    */
   transaction(
     transactionUpdate: Function,
-    onComplete: (error: ?Error, committed: boolean, snapshot: ?DataSnapshot) => *,
+    onComplete: (error: Error | null, committed: boolean, snapshot?: DataSnapshot | null) => any,
     applyLocally: boolean = false
   ) {
     if (!isFunction(transactionUpdate)) {
@@ -267,7 +267,7 @@ export default class Reference extends ReferenceBase {
    * @param onComplete
    * @returns {*}
    */
-  push(value: any, onComplete?: Function): ThenableReference<void> {
+  push(value: any, onComplete?: Function): ThenableReference<{}> {
     if (value === null || value === undefined) {
       return new ThenableReference(
         this._database,
@@ -282,14 +282,8 @@ export default class Reference extends ReferenceBase {
     const promise = newRef.set(value);
 
     // if callback provided then internally call the set promise with value
-    if (isFunction(onComplete)) {
-      return (
-        promise
-          // $FlowExpectedError: Reports that onComplete can change to null despite the null check: https://github.com/facebook/flow/issues/1655
-          .then(() => onComplete(null, newRef))
-          // $FlowExpectedError: Reports that onComplete can change to null despite the null check: https://github.com/facebook/flow/issues/1655
-          .catch(error => onComplete(error, null))
-      );
+    if (onComplete && typeof onComplete === 'function') {
+      return promise.then(() => onComplete(null, newRef)).catch(error => onComplete(error, null)) as any;
     }
 
     // otherwise attach promise to 'thenable' reference and return the
@@ -512,7 +506,7 @@ export default class Reference extends ReferenceBase {
    * Access then method of promise if set
    * @return {*}
    */
-  then(fnResolve: any => any, fnReject: any => any) {
+  then(fnResolve: (value: any) => any, fnReject: (value: any) => any) {
     if (isFunction(fnResolve) && this._promise && this._promise.then) {
       return this._promise.then.bind(this._promise)(
         result => {
@@ -538,7 +532,7 @@ export default class Reference extends ReferenceBase {
    * Access catch method of promise if set
    * @return {*}
    */
-  catch(fnReject: any => any) {
+  catch(fnReject: (value: any) => any) {
     if (isFunction(fnReject) && this._promise && this._promise.catch) {
       return this._promise.catch.bind(this._promise)(possibleErr => {
         this._promise = null;
@@ -580,7 +574,7 @@ export default class Reference extends ReferenceBase {
    * @param promise
    * @private
    */
-  _setThenable(promise: Promise<*>) {
+  _setThenable(promise: Promise<any>) {
     this._promise = promise;
   }
 
@@ -646,9 +640,9 @@ export default class Reference extends ReferenceBase {
    */
   on(
     eventType: string,
-    callback: DataSnapshot => any,
-    cancelCallbackOrContext?: Object => any | Object,
-    context?: Object
+    callback: (snapshot: DataSnapshot) => any,
+    cancelCallbackOrContext?: (value: any) => any | any,
+    context?: any
   ): Function {
     invariant(eventType, 'Query.on failed: Function called with 0 arguments. Expects at least 2.');
 
@@ -757,7 +751,7 @@ export default class Reference extends ReferenceBase {
    * @param eventType
    * @param originalCallback
    */
-  off(eventType?: string = '', originalCallback?: () => any) {
+  off(eventType: string = '', originalCallback?: () => any) {
     if (!arguments.length) {
       // Firebase Docs:
       //     if no eventType or callback is specified, all callbacks for the Reference will be removed.
@@ -816,7 +810,7 @@ export default class Reference extends ReferenceBase {
 }
 
 // eslint-disable-next-line no-unused-vars
-declare class ThenableReference<+R> extends Reference {
+declare class ThenableReference<R> extends Reference {
   then<U>(
     onFulfill?: (value: R) => Promise<U> | U,
     onReject?: (error: any) => Promise<U> | U

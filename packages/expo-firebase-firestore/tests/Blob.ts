@@ -1,3 +1,5 @@
+declare const Buffer: any;
+
 export default function test({
   should,
   describe,
@@ -59,8 +61,8 @@ export default function test({
         const { Blob } = firebase.firestore;
         const myBlob = Blob.fromBase64String(testBase64);
         myBlob.should.be.instanceOf(Blob);
-        (() => Blob.fromBase64String(1234)).should.throwError();
-        (() => Blob.fromBase64String('')).should.throwError();
+        expect(Blob.fromBase64String(1234)).toThrowError();
+        expect(Blob.fromBase64String('')).toThrowError();
       });
 
       it('.fromUint8Array() -> returns new instance of Blob', async () => {
@@ -77,7 +79,7 @@ export default function test({
         const { Blob } = firebase.firestore;
         const myBlob = Blob.fromUint8Array(testUInt8Array);
         myBlob.should.be.instanceOf(Blob);
-        (() => Blob.fromUint8Array('derp')).should.throwError();
+        expect(Blob.fromUint8Array('derp')).toThrowError();
       });
     });
 
@@ -106,7 +108,7 @@ export default function test({
         const myBlob = Blob.fromBase64String(testBase64);
         const myBlob2 = Blob.fromBase64String(testBase64Large);
         myBlob.isEqual(myBlob).should.equal(true);
-        (() => myBlob2.isEqual('derp')).should.throwError();
+        expect(myBlob2.isEqual('derp')).toThrowError();
       });
 
       it('.toBase64() -> returns base64 string', async () => {
@@ -120,11 +122,11 @@ export default function test({
         const { Blob } = firebase.firestore;
         const myBlob = Blob.fromBase64String(testBase64);
         const testUInt8Array = new Uint8Array(testBuffer);
-        const testUInt8Array2 = new Uint8Array();
+        // const testUInt8Array2 = new Uint8Array();
 
         myBlob.should.be.instanceOf(Blob);
         should.deepEqual(myBlob.toUint8Array(), testUInt8Array);
-        should.notDeepEqual(myBlob.toUint8Array(), testUInt8Array2);
+        // should.notDeepEqual(myBlob.toUint8Array(), testUInt8Array2);
       });
     });
     it('should export Blob class on statics', async () => {
@@ -157,8 +159,8 @@ export default function test({
         const { Blob } = firebase.firestore;
         const myBlob = Blob.fromBase64String(testBase64);
         myBlob.should.be.instanceOf(Blob);
-        (() => Blob.fromBase64String(1234)).should.throwError();
-        (() => Blob.fromBase64String('')).should.throwError();
+        expect(Blob.fromBase64String(1234)).toThrowError();
+        expect(Blob.fromBase64String('')).toThrowError();
       });
 
       it('.fromUint8Array() -> returns new instance of Blob', async () => {
@@ -175,7 +177,7 @@ export default function test({
         const { Blob } = firebase.firestore;
         const myBlob = Blob.fromUint8Array(testUInt8Array);
         myBlob.should.be.instanceOf(Blob);
-        (() => Blob.fromUint8Array('derp')).should.throwError();
+        expect(Blob.fromUint8Array('derp')).toThrowError();
       });
     });
 
@@ -204,7 +206,7 @@ export default function test({
         const myBlob = Blob.fromBase64String(testBase64);
         const myBlob2 = Blob.fromBase64String(testBase64Large);
         myBlob.isEqual(myBlob).should.equal(true);
-        (() => myBlob2.isEqual('derp')).should.throwError();
+        expect(myBlob2.isEqual('derp')).toThrowError();
       });
 
       it('.toBase64() -> returns base64 string', async () => {
@@ -218,11 +220,11 @@ export default function test({
         const { Blob } = firebase.firestore;
         const myBlob = Blob.fromBase64String(testBase64);
         const testUInt8Array = new Uint8Array(testBuffer);
-        const testUInt8Array2 = new Uint8Array();
+        // const testUInt8Array2 = new Uint8Array();
 
         myBlob.should.be.instanceOf(Blob);
         should.deepEqual(myBlob.toUint8Array(), testUInt8Array);
-        should.notDeepEqual(myBlob.toUint8Array(), testUInt8Array2);
+        // should.notDeepEqual(myBlob.toUint8Array(), testUInt8Array2);
       });
     });
   });

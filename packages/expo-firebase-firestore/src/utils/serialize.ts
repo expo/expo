@@ -7,7 +7,7 @@ import FieldValue from '../FieldValue';
 import GeoPoint from '../GeoPoint';
 import Path from '../Path';
 // import type Firestore from '../';
-import { NativeTypeMap } from '../firestoreTypes.flow';
+import { NativeTypeMap } from '../firestoreTypes.types';
 
 type Firestore = object;
 
@@ -32,8 +32,8 @@ export const buildNativeMap = (data: Object): { [key: string]: NativeTypeMap } =
   return nativeData;
 };
 
-export const buildNativeArray = (array: Object[]): NativeTypeMap[] => {
-  const nativeArray = [];
+export const buildNativeArray = (array: { [key: string]: any }[]): NativeTypeMap[] => {
+  const nativeArray: any[] = [];
   if (array) {
     array.forEach(value => {
       const typeMap = buildTypeMap(value);
@@ -162,7 +162,7 @@ export const parseNativeMap = (
 };
 
 const parseNativeArray = (firestore: Firestore, nativeArray: NativeTypeMap[]): any[] => {
-  const array = [];
+  const array: any[] = [];
   if (nativeArray) {
     nativeArray.forEach(typeMap => {
       array.push(parseTypeMap(firestore, typeMap));

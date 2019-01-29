@@ -1,5 +1,5 @@
 export type HttpsCallableResult = {
-  data: Object;
+  data: { [key: string]: any };
 };
 
 export type FunctionsErrorCode =
@@ -21,7 +21,12 @@ export type FunctionsErrorCode =
   | 'data-loss'
   | 'unauthenticated';
 
-export type HttpsCallablePromise = Promise<HttpsCallableResult> | Promise<HttpsError>;
+export interface HttpsErrorInterface extends Error {
+  details?: any;
+  code: FunctionsErrorCode;
+}
+
+export type HttpsCallablePromise = Promise<HttpsCallableResult> | Promise<HttpsErrorInterface>;
 
 export type HttpsCallable = (data?: any) => HttpsCallablePromise;
 

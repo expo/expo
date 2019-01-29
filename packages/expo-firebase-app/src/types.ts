@@ -1,31 +1,28 @@
-import ModuleBase from './utils/ModuleBase';
-import Utils from './utils';
-import { typeof statics as UtilsStatics } from './utils';
-
 /* Core types */
 export type FirebaseError = {
-  message: string,
-  name: string,
-  code: string,
-  stack: string,
-  path: string,
-  details: string,
-  modifiers: string,
+  message: string;
+  name: string;
+  code: string;
+  stack: string;
+  path: string;
+  details: string;
+  modifiers: string;
 };
 
-export type FirebaseModule = $Subtype<ModuleBase>;
+export type FirebaseModule = any;
 
 export type FirebaseModuleConfig = {
-  events?: string[],
-  moduleName: FirebaseModuleName,
-  hasMultiAppSupport: boolean,
-  hasCustomUrlSupport?: boolean,
-  hasRegionsSupport?: boolean,
-  namespace: FirebaseNamespace,
+  statics?: any;
+  events?: string[];
+  moduleName: FirebaseModuleName;
+  hasMultiAppSupport: boolean;
+  hasCustomUrlSupport?: boolean;
+  hasRegionsSupport?: boolean;
+  namespace: FirebaseNamespace;
 };
 
 // TODO: Bacon: Add this
-export type App = object;
+export type App = any;
 
 export type FirebaseModuleName =
   | 'ExpoFirebaseAdMob'
@@ -37,7 +34,7 @@ export type FirebaseModuleName =
   | 'ExpoFirebaseDatabase'
   | 'ExpoFirebaseFirestore'
   | 'ExpoFirebaseFunctions'
-  | 'ExpoFirebaseInstanceId'
+  | 'ExpoFirebaseInstanceID'
   | 'ExpoFirebaseInvites'
   | 'ExpoFirebaseLinks'
   | 'ExpoFirebaseMessaging'
@@ -64,44 +61,38 @@ export type FirebaseNamespace =
   | 'utils';
 
 export type FirebaseOptions = {
-  apiKey: string,
-  appId: string,
-  databaseURL: string,
-  messagingSenderId: string,
-  projectId: string,
-  storageBucket: string,
+  apiKey: string;
+  appId: string;
+  databaseURL: string;
+  messagingSenderId: string;
+  projectId: string;
+  storageBucket: string;
 };
 
-export type FirebaseModuleAndStatics<M: FirebaseModule, S: FirebaseStatics> = {
-  (): M,
-  nativeModuleExists: boolean,
-} & S;
+export type FirebaseModuleAndStatics<FirebaseModule, FirebaseStatics> = {
+  (): FirebaseModule;
+  nativeModuleExists: boolean;
+} & FirebaseStatics;
 
-export type FirebaseStatics = $Subtype<Object>;
+export type FirebaseStatics = any;
 
 /* Utils types */
 
-export type UtilsModule = {
-  (): Utils,
-  nativeModuleExists: boolean,
-} & UtilsStatics;
-
 export type NativeErrorObject = {
-  code: string,
-  message: string,
-  nativeErrorCode: string | number,
-  nativeErrorMessage: string,
+  code: string;
+  message: string;
+  nativeErrorCode?: string | number;
+  nativeErrorMessage?: string;
 };
 
 export type NativeErrorResponse = {
-  error: NativeErrorObject,
+  error: NativeErrorObject;
   // everything else
-  [key: string]: ?any,
+  [key: string]: any;
 };
 
 export interface NativeErrorInterface extends Error {
-  +code: string;
-  +message: string;
-  +nativeErrorCode: string | number;
-  +nativeErrorMessage: string;
+  code: string;
+  nativeErrorCode?: string | number;
+  nativeErrorMessage?: string;
 }

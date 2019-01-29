@@ -1,6 +1,4 @@
-import { ModuleBase } from 'expo-firebase-app';
-
-import App from 'expo-firebase-app';
+import { App, ModuleBase } from 'expo-firebase-app';
 
 export const MODULE_NAME = 'ExpoFirebaseCrashlytics';
 export const NAMESPACE = 'crashlytics';

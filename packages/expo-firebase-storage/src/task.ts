@@ -1,4 +1,3 @@
-
 import { utils } from 'expo-firebase-app';
 import invariant from 'invariant';
 import StorageStatics from './statics';
@@ -6,9 +5,9 @@ import StorageStatics from './statics';
 import {
   Storage,
   StorageReference,
-  FuncSnapshotType,
-  FuncErrorType,
   NextOrObserverType,
+  FuncErrorType,
+  FuncSnapshotType,
 } from './index.types';
 
 export const UPLOAD_TASK = 'upload';
@@ -24,12 +23,12 @@ export default class StorageTask {
   ref: StorageReference;
   storage: Storage;
   path: string;
-  then: () => Promise<*>;
-  catch: () => Promise<*>;
+  then: () => Promise<any>;
+  catch: () => Promise<any>;
 
   constructor(
     type: typeof UPLOAD_TASK | typeof DOWNLOAD_TASK,
-    promise: Promise<*>,
+    promise: Promise<any>,
     storageRef: StorageReference
   ) {
     this.type = type;
@@ -48,8 +47,10 @@ export default class StorageTask {
    * @returns {Promise.<T>}
    * @private
    */
-  _interceptSnapshotEvent(f: ?Function): null | (() => *) {
-    if (!isFunction(f)) return null;
+  _interceptSnapshotEvent(f?: Function | null): null | ((snapshot: any) => any) {
+    if (!isFunction(f)) {
+      return null;
+    }
     return snapshot => {
       const _snapshot = Object.assign({}, snapshot);
       _snapshot.task = this;
@@ -64,10 +65,12 @@ export default class StorageTask {
    * @returns {*}
    * @private
    */
-  _interceptErrorEvent(f: ?Function): null | (Error => *) {
-    if (!isFunction(f)) return null;
-    return error => {
-      const _error = new Error(error.message);
+  _interceptErrorEvent(f?: Function | null): null | ((error: Error) => any) {
+    if (!isFunction(f)) {
+      return null;
+    }
+    return (error: any) => {
+      const _error: any = new Error(error.message);
       // $FlowExpectedError
       _error.code = error.code;
       return f && f(_error);

@@ -1,25 +1,21 @@
-/**
- * @flow
- * Firestore Transaction representation wrapper
- */
 import DocumentSnapshot from './DocumentSnapshot';
 import { parseUpdateArgs } from './utils';
 import { buildNativeMap } from './utils/serialize';
 
-import type { Firestore } from './firestoreTypes.flow';
+import { Firestore } from './firestoreTypes.types';
 //import type { TransactionMeta } from './TransactionHandler';
-import type DocumentReference from './DocumentReference';
+import DocumentReference from './DocumentReference';
 
-type TransactionMeta = object;
+type TransactionMeta = { [key: string]: any };
 type Command = {
-  type: 'set' | 'update' | 'delete',
-  path: string,
-  data?: { [string]: any },
-  options?: SetOptions | {},
+  type: 'set' | 'update' | 'delete';
+  path: string;
+  data?: { [key: string]: any };
+  options?: SetOptions | {};
 };
 
 type SetOptions = {
-  merge: boolean,
+  merge: boolean;
 };
 
 // TODO docs state all get requests must be made FIRST before any modifications
@@ -29,7 +25,7 @@ type SetOptions = {
  * @class Transaction
  */
 export default class Transaction {
-  _pendingResult: ?any;
+  _pendingResult?: any;
   _firestore: Firestore;
   _meta: TransactionMeta;
   _commandBuffer: Array<Command>;

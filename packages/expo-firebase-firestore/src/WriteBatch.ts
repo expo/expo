@@ -2,7 +2,7 @@ import { parseUpdateArgs } from './utils';
 import { buildNativeMap } from './utils/serialize';
 
 import DocumentReference from './DocumentReference';
-import { Firestore, SetOptions } from './firestoreTypes.flow';
+import { Firestore, SetOptions } from './firestoreTypes.types';
 
 type DocumentWrite = {
   data?: Object;

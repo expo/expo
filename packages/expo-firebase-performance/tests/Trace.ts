@@ -1,14 +1,4 @@
-export default function test({
-  describe,
-  xdescribe,
-  it,
-  xit,
-  beforeEach,
-  expect,
-  jasmine,
-  firebase,
-  should,
-}) {
+export default function test({ describe, it, firebase, should }) {
   describe('perf()', () => {
     describe('Trace', () => {
       it('start() & stop()', async () => {

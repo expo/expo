@@ -36,7 +36,7 @@ const subscribeToNativeModuleEvents = (
 ): void => {
   if (!NATIVE_SUBSCRIPTIONS[eventName]) {
     const nativeEmitter = getNativeEmitter(moduleName, module);
-    nativeEmitter.addListener(eventName, event => {
+    nativeEmitter.addListener(eventName, (event: any) => {
       if (event.appName) {
         // native event has an appName property - auto prefix and internally emit
         SharedEventEmitter.emit(`${event.appName}-${eventName}`, event);

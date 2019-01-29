@@ -65,7 +65,7 @@ class Firebase {
    * A (read-only) array of all initialized apps.
    * @return {Array}
    */
-  get apps(): Array<App> {
+  get apps(): App[] {
     return APPS.apps();
   }
 

@@ -99,7 +99,7 @@ export default function test({
           return val === 3; // stop iteration after key 3
         });
 
-        total.should.equal(6); // 0 + 1 + 2 + 3 = 6
+        expect(total).toBe(6); // 0 + 1 + 2 + 3 = 6
       });
 
       it('should provide a key property', async () => {

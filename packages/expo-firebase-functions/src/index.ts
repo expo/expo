@@ -1,6 +1,4 @@
-import { App } from 'expo-firebase-app';
-
-import firebase, { ModuleBase, utils } from 'expo-firebase-app';
+import firebase, { App, ModuleBase, utils } from 'expo-firebase-app';
 import HttpsError from './HttpsError';
 import { HttpsCallable, HttpsErrorCode, HttpsCallablePromise } from './types.flow';
 
@@ -34,19 +32,17 @@ export const statics: { HttpsErrorCode: HttpsErrorCode } = {
  *   INTERNALS
  * -------------
  */
-function errorOrResult(possibleError): HttpsCallablePromise {
+async function errorOrResult(possibleError): Promise<HttpsCallablePromise> {
   if (isObject(possibleError) && possibleError.__error) {
     const { code, message, details } = possibleError;
-    return Promise.reject(
-      new HttpsError(
-        statics.HttpsErrorCode[code] || statics.HttpsErrorCode.UNKNOWN,
-        message,
-        details
-      )
+    throw new HttpsError(
+      statics.HttpsErrorCode[code] || statics.HttpsErrorCode.UNKNOWN,
+      message,
+      details
     );
   }
 
-  return Promise.resolve(possibleError);
+  return possibleError;
 }
 
 export default class Functions extends ModuleBase {
@@ -101,7 +97,7 @@ export default class Functions extends ModuleBase {
    * @param origin the origin string of the local emulator started via firebase tools
    * "http://10.0.0.8:1337".
    */
-  useFunctionsEmulator(origin: string): Promise<null> {
-    return this.nativeModule.useFunctionsEmulator(origin);
+  async useFunctionsEmulator(origin: string): Promise<null> {
+    return await this.nativeModule.useFunctionsEmulator(origin);
   }
 }

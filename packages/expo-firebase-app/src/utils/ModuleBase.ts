@@ -3,10 +3,11 @@ import { initialiseLogger, getLogger } from './log';
 import { initialiseNativeModule, getNativeModule } from './native';
 import App from '../app';
 import { FirebaseModuleConfig, FirebaseNamespace } from '../types';
+
 export default class ModuleBase {
   _app: App;
 
-  _customUrlOrRegion: ?string;
+  _customUrlOrRegion?: string;
 
   namespace: FirebaseNamespace;
 
@@ -15,7 +16,7 @@ export default class ModuleBase {
    * @param app
    * @param config
    */
-  constructor(app: App, config: FirebaseModuleConfig, customUrlOrRegion: ?string) {
+  constructor(app: App, config: FirebaseModuleConfig, customUrlOrRegion?: string) {
     invariant(config.moduleName, 'Error: expo-firebase-app: ModuleBase() Missing module name');
     invariant(config.namespace, 'Error: expo-firebase-app: ModuleBase() Missing namespace');
     const { moduleName } = config;
@@ -44,11 +45,11 @@ export default class ModuleBase {
     return this._app;
   }
 
-  get nativeModule() {
+  get nativeModule(): any {
     return getNativeModule(this);
   }
 
-  get logger() {
+  get logger(): any {
     return getLogger(this);
   }
 }

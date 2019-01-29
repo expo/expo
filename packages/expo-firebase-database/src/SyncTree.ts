@@ -1,23 +1,23 @@
-
 import { EventEmitter, NativeModulesProxy } from 'expo-core';
 import { SharedEventEmitter, utils } from 'expo-firebase-app';
 
 import DataSnapshot from './DataSnapshot';
 import DatabaseReference from './Reference';
 
-const { isString, nativeToJSError } = utils;
+const { nativeToJSError } = utils;
 
-type Listener = DataSnapshot => any;
+type Listener = (snapshot: DataSnapshot) => any;
 
 type Registration = {
-  key: string,
-  path: string,
-  once?: boolean,
-  appName: string,
-  eventType: string,
-  listener: Listener,
-  eventRegistrationKey: string,
-  ref: DatabaseReference,
+  key: string;
+  path: string;
+  once?: boolean;
+  appName: string;
+  eventType: string;
+  listener: Listener;
+  eventRegistrationKey: string;
+  dbURL?: string;
+  ref: DatabaseReference;
 };
 
 /**
@@ -25,9 +25,9 @@ type Registration = {
  * subscriptions and keep the listeners in sync in js vs native.
  */
 class SyncTree {
-  _nativeEmitter: EventEmitter;
-  _reverseLookup: { [string]: Registration };
-  _tree: { [string]: { [string]: { [string]: Listener } } };
+  _nativeEmitter?: EventEmitter;
+  _reverseLookup: { [key: string]: Registration };
+  _tree: { [key: string]: { [key: string]: { [key: string]: Listener } } };
 
   constructor() {
     this._tree = {};
@@ -46,7 +46,7 @@ class SyncTree {
    * @param event
    * @private
    */
-  _handleSyncEvent(event) {
+  _handleSyncEvent(event: any): void {
     if (event.error) {
       this._handleErrorEvent(event);
     } else {
@@ -62,7 +62,7 @@ class SyncTree {
    * @param event
    * @private
    */
-  _handleValueEvent(event) {
+  async _handleValueEvent(event): Promise<any> {
     // console.log('SyncTree.VALUE >>>', event);
     const { key, eventRegistrationKey } = event.registration;
     const registration = this.getRegistration(eventRegistrationKey);
@@ -72,7 +72,7 @@ class SyncTree {
       // notify native that the registration
       // no longer exists so it can remove
       // the native listeners
-      return NativeModulesProxy.ExpoFirebaseDatabase.off(key, eventRegistrationKey);
+      return await NativeModulesProxy.ExpoFirebaseDatabase.off(key, eventRegistrationKey);
     }
 
     const { snapshot, previousChildName } = event.data;
@@ -131,13 +131,16 @@ class SyncTree {
    * @return {number}
    */
   removeListenersForRegistrations(registrations: string | string[]): number {
-    if (isString(registrations)) {
+    if (typeof registrations === 'string') {
       this.removeRegistration(registrations);
       SharedEventEmitter.removeAllListeners(registrations);
       return 1;
     }
 
-    if (!Array.isArray(registrations)) return 0;
+    if (!Array.isArray(registrations)) {
+      return 0;
+    }
+
     for (let i = 0, len = registrations.length; i < len; i++) {
       this.removeRegistration(registrations[i]);
       SharedEventEmitter.removeAllListeners(registrations[i]);
@@ -154,8 +157,10 @@ class SyncTree {
    * @return {Array} array of registrations removed
    */
   removeListenerRegistrations(listener: () => any, registrations: string[]) {
-    if (!Array.isArray(registrations)) return [];
-    const removed = [];
+    if (!Array.isArray(registrations)) {
+      return [];
+    }
+    const removed: any[] = [];
 
     for (let i = 0, len = registrations.length; i < len; i++) {
       const registration = registrations[i];
@@ -202,8 +207,12 @@ class SyncTree {
    * @return {Array}
    */
   getRegistrationsByPathEvent(path: string, eventType: string): string[] {
-    if (!this._tree[path]) return [];
-    if (!this._tree[path][eventType]) return [];
+    if (!this._tree[path]) {
+      return [];
+    }
+    if (!this._tree[path][eventType]) {
+      return [];
+    }
 
     return Object.keys(this._tree[path][eventType]);
   }
@@ -216,15 +225,21 @@ class SyncTree {
    * @param listener
    * @return {Array}
    */
-  getOneByPathEventListener(path: string, eventType: string, listener: Function): ?string {
-    if (!this._tree[path]) return null;
-    if (!this._tree[path][eventType]) return null;
+  getOneByPathEventListener(path: string, eventType: string, listener: Function): string | null {
+    if (!this._tree[path]) {
+      return null;
+    }
+    if (!this._tree[path][eventType]) {
+      return null;
+    }
 
     const registrationsForPathEvent = Object.entries(this._tree[path][eventType]);
 
     for (let i = 0; i < registrationsForPathEvent.length; i++) {
       const registration = registrationsForPathEvent[i];
-      if (registration[1] === listener) return registration[0];
+      if (registration[1] === listener) {
+        return registration[0];
+      }
     }
 
     return null;
@@ -240,8 +255,12 @@ class SyncTree {
   addRegistration(registration: Registration): string {
     const { eventRegistrationKey, eventType, listener, once, path } = registration;
 
-    if (!this._tree[path]) this._tree[path] = {};
-    if (!this._tree[path][eventType]) this._tree[path][eventType] = {};
+    if (!this._tree[path]) {
+      this._tree[path] = {};
+    }
+    if (!this._tree[path][eventType]) {
+      this._tree[path][eventType] = {};
+    }
 
     this._tree[path][eventType][eventRegistrationKey] = listener;
     this._reverseLookup[eventRegistrationKey] = registration;
@@ -266,7 +285,9 @@ class SyncTree {
    * @return {boolean}
    */
   removeRegistration(registration: string): boolean {
-    if (!this._reverseLookup[registration]) return false;
+    if (!this._reverseLookup[registration]) {
+      return false;
+    }
     const { path, eventType, once } = this._reverseLookup[registration];
 
     if (!this._tree[path]) {
@@ -300,7 +321,7 @@ class SyncTree {
    * @return {function(...[*])}
    * @private
    */
-  _onOnceRemoveRegistration(registration, listener) {
+  _onOnceRemoveRegistration(registration, listener): any {
     return (...args: any[]) => {
       this.removeRegistration(registration);
       listener(...args);

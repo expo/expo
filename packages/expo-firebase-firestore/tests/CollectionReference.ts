@@ -39,15 +39,13 @@ export default function test({
         const firestore = firebase.firestore();
 
         const reference = new CollectionReference(firestore, new Path(['tests']));
-        reference.should.be.instanceOf(CollectionReference);
-        reference.id.should.equal('tests');
+        expect(reference.id).toBe('tests');
       });
 
       it('get firestore()', () => {
         const firestore = firebase.firestore();
 
         const reference = new CollectionReference(firestore, new Path(['tests']));
-        reference.should.be.instanceOf(CollectionReference);
         reference.firestore.should.equal(firestore);
       });
 
@@ -55,16 +53,17 @@ export default function test({
         const firestore = firebase.firestore();
 
         const reference = new CollectionReference(firestore, new Path(['tests']));
-        reference.should.be.instanceOf(CollectionReference);
+        expect(reference instanceof CollectionReference).toBeTruthy();
         should.equal(reference.parent, null);
 
         const reference2 = new CollectionReference(
           firestore,
           new Path(['tests', 'someDoc', 'someChildCollection'])
         );
-        reference2.should.be.instanceOf(CollectionReference);
+        expect(reference2 instanceof CollectionReference).toBeTruthy();
+
         should.notEqual(reference2.parent, null);
-        reference2.parent.should.be.an.instanceOf(DocumentReference);
+        expect(reference.parent instanceof DocumentReference).toBeTruthy();
       });
 
       describe('add()', () => {
@@ -82,7 +81,7 @@ export default function test({
             .doc(docRef.path)
             .get();
 
-          doc.data().first.should.equal('Ada');
+          expect(doc.data().first).toBe('Ada');
 
           await firebase
             .firestore()
@@ -98,12 +97,12 @@ export default function test({
         });
 
         it('should error when supplied an incorrect path', () => {
-          (() => {
+          expect(
             firebase
               .firestore()
               .collection('collection')
-              .doc('invalid/doc');
-          }).should.throw('Argument "documentPath" must point to a document.');
+              .doc('invalid/doc')
+          ).toThrow('Argument "documentPath" must point to a document.');
         });
       });
 

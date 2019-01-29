@@ -52,7 +52,7 @@ export default class StorageReference extends ReferenceBase {
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#getMetadata
    * @returns {Promise.<T>|*}
    */
-  getMetadata(): Promise<Object> {
+  getMetadata(): Promise<any> {
     return this._storage.nativeModule.getMetadata(this.path);
   }
 
@@ -61,7 +61,7 @@ export default class StorageReference extends ReferenceBase {
    * @param metadata
    * @returns {Promise.<T>|*}
    */
-  updateMetadata(metadata: Object = {}): Promise<Object> {
+  updateMetadata(metadata: any = {}): Promise<any> {
     return this._storage.nativeModule.updateMetadata(this.path, metadata);
   }
 
@@ -70,19 +70,20 @@ export default class StorageReference extends ReferenceBase {
    * @param {String} filePath Where to store the file
    * @return {Promise}
    */
-  downloadFile(filePath: string): Promise<Object> {
-    return new StorageTask(
+  downloadFile(filePath: string): StorageTask {
+    const task = new StorageTask(
       DOWNLOAD_TASK,
       this._storage.nativeModule.downloadFile(this.path, filePath),
       this
     );
+    return task;
   }
 
   /**
    * Alias to putFile
    * @returns {StorageReference.putFile}
    */
-  get put(): (Object, Object) => Promise<Object> {
+  get put(): (filePath: any, metadata: any) => StorageTask {
     return this.putFile;
   }
 
@@ -92,13 +93,17 @@ export default class StorageReference extends ReferenceBase {
    * @param  {object} metadata An object containing metadata
    * @return {Promise}
    */
-  putFile(filePath: Object, metadata: Object = {}): Promise<Object> {
+  putFile(filePath: any, metadata: any = {}): StorageTask {
     let _filePath = filePath.replace('file://', '');
-    if (_filePath.includes('%')) _filePath = decodeURI(_filePath);
-    return new StorageTask(
+    if (_filePath.includes('%')) {
+      _filePath = decodeURI(_filePath);
+    }
+
+    const task = new StorageTask(
       UPLOAD_TASK,
       this._storage.nativeModule.putFile(this.path, _filePath, metadata),
       this
     );
+    return task;
   }
 }

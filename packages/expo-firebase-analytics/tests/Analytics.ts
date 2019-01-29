@@ -53,17 +53,13 @@ export default function test({ describe, it, xit, firebase }) {
       });
 
       it('errors if name is not a string', () => {
-        (() => {
-          firebase.analytics().logEvent(123456);
-        }).should.throw(
+        expect(firebase.analytics().logEvent(123456)).toThrow(
           `analytics.logEvent(): First argument 'name' is required and must be a string value.`
         );
       });
 
       it('errors if params is not an object', () => {
-        (() => {
-          firebase.analytics().logEvent('test_event', 'this should be an object');
-        }).should.throw(
+        expect(firebase.analytics().logEvent('test_event', 'this should be an object')).toThrow(
           `analytics.logEvent(): Second optional argument 'params' must be an object if provided.`
         );
       });

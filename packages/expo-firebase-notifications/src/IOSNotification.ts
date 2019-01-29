@@ -2,39 +2,41 @@ import { Platform } from 'expo-core';
 import { BackgroundFetchResultValue } from './IOSNotifications';
 
 import Notification from './Notification';
-import {
-  Notifications,
-  IOSAttachment,
-  IOSAttachmentOptions,
-  NativeIOSNotification,
-} from './types';
+import { Notifications, IOSAttachment, IOSAttachmentOptions, NativeIOSNotification } from './types';
 
-type CompletionHandler = BackgroundFetchResultValue => void;
+type CompletionHandler = (results: BackgroundFetchResultValue) => void;
 
 const isIOS = Platform.OS === 'ios';
 export default class IOSNotification {
-  _alertAction: string | void;
+  _alertAction?: string;
 
   // alertAction | N/A
-  _attachments: IOSAttachment[];
+  _attachments: IOSAttachment[] = [];
 
   // N/A | attachments
-  _badge: number | void;
+  _badge?: number;
 
   // applicationIconBadgeNumber | badge
-  _category: string | void;
+  _category?: string;
 
-  _hasAction: boolean | void;
+  _hasAction?: boolean;
 
   // hasAction | N/A
-  _launchImage: string | void;
+  _launchImage?: string;
 
   // alertLaunchImage | launchImageName
   _notification: Notification;
 
-  _threadIdentifier: string | void; // N/A | threadIdentifier
+  _threadIdentifier?: string; // N/A | threadIdentifier
 
-  _complete: CompletionHandler;
+  _complete?: CompletionHandler;
+
+  _location?: any;
+
+  _summaryArgumentCount?: number;
+  _summaryArgument?: string;
+  _volume?: number;
+  _isCritical: boolean = false;
 
   constructor(
     notification: Notification,
@@ -74,7 +76,7 @@ export default class IOSNotification {
     this._attachments = this._attachments || [];
   }
 
-  get alertAction(): ?string {
+  get alertAction(): string | undefined {
     return this._alertAction;
   }
 
@@ -82,31 +84,31 @@ export default class IOSNotification {
     return this._attachments;
   }
 
-  get badge(): ?number {
+  get badge(): number | undefined {
     return this._badge;
   }
 
-  get category(): ?string {
+  get category(): string | undefined {
     return this._category;
   }
 
-  get location(): ?string {
+  get location(): string | undefined {
     return this._location;
   }
 
-  get hasAction(): ?boolean {
+  get hasAction(): boolean | undefined {
     return this._hasAction;
   }
 
-  get launchImage(): ?string {
+  get launchImage(): string | undefined {
     return this._launchImage;
   }
 
-  get threadIdentifier(): ?string {
+  get threadIdentifier(): string | undefined {
     return this._threadIdentifier;
   }
 
-  get complete(): CompletionHandler {
+  get complete(): CompletionHandler | undefined {
     return this._complete;
   }
 

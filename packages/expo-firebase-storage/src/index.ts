@@ -1,6 +1,4 @@
-import { ModuleBase, SharedEventEmitter } from 'expo-firebase-app';
-
-import { App } from 'expo-firebase-app';
+import { App, ModuleBase, SharedEventEmitter } from 'expo-firebase-app';
 
 import StorageRef from './reference';
 import statics from './statics';
@@ -98,7 +96,7 @@ export default class Storage extends ModuleBase {
     return this.getAppEventName(`${path}-${eventName}`);
   }
 
-  _handleStorageEvent(event: Object) {
+  _handleStorageEvent(event: any) {
     const { path, eventName } = event;
     const body = event.body || {};
 
@@ -106,7 +104,7 @@ export default class Storage extends ModuleBase {
     SharedEventEmitter.emit(this._getSubEventName(path, eventName), body);
   }
 
-  _handleStorageError(err: Object) {
+  _handleStorageError(err: any) {
     const { path, eventName } = err;
     const body = err.body || {};
 
@@ -114,11 +112,11 @@ export default class Storage extends ModuleBase {
     SharedEventEmitter.emit(this._getSubEventName(path, eventName), body);
   }
 
-  _addListener(path: string, eventName: string, cb: (evt: Object) => Object): void {
+  _addListener(path: string, eventName: string, cb: (evt: any) => any): void {
     SharedEventEmitter.addListener(this._getSubEventName(path, eventName), cb);
   }
 
-  _removeListener(path: string, eventName: string, origCB: (evt: Object) => Object): void {
+  _removeListener(path: string, eventName: string, origCB: (evt: any) => any): void {
     SharedEventEmitter.removeListener(this._getSubEventName(path, eventName), origCB);
   }
 }

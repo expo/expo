@@ -1,29 +1,27 @@
+import { App, ModuleBase, SharedEventEmitter, utils } from 'expo-firebase-app';
 import invariant from 'invariant';
 
-import { Platform } from 'expo-core';
-import { SharedEventEmitter, ModuleBase, utils } from 'expo-firebase-app';
-
-import App from 'expo-firebase-app';
 import AndroidAction from './AndroidAction';
 import AndroidChannel from './AndroidChannel';
 import AndroidChannelGroup from './AndroidChannelGroup';
 import AndroidNotifications from './AndroidNotifications';
-import IOSNotifications from './IOSNotifications';
 import AndroidRemoteInput from './AndroidRemoteInput';
-import Notification from './Notification';
+import IOSNotifications from './IOSNotifications';
+import Notification, { NotificationOpen } from './Notification';
 import {
   BadgeIconType,
   Category,
   Defaults,
   GroupAlert,
   Importance,
+  NativeNotification,
+  NativeNotificationOpen,
   Priority,
+  Schedule,
   SemanticAction,
   Visibility,
 } from './types';
 
-import { NotificationOpen } from './Notification';
-import { NativeNotification, NativeNotificationOpen, Schedule } from './types';
 const { isFunction, isObject } = utils;
 
 type OnNotification = (notification: Notification) => any;
@@ -208,11 +206,15 @@ export default class Notifications extends ModuleBase {
     return this.nativeModule.getScheduledNotifications();
   }
 
-  onNotification(nextOrObserver: OnNotification | OnNotificationObserver): () => any {
+  onNotification(nextOrObserver: OnNotification | OnNotificationObserver | any): () => any {
     let listener;
     if (isFunction(nextOrObserver)) {
       listener = nextOrObserver;
-    } else if (isObject(nextOrObserver) && isFunction(nextOrObserver.next)) {
+    } else if (
+      isObject(nextOrObserver) &&
+      nextOrObserver.next &&
+      typeof nextOrObserver.next === 'function'
+    ) {
       listener = nextOrObserver.next;
     } else {
       throw new Error(
@@ -229,7 +231,9 @@ export default class Notifications extends ModuleBase {
     };
   }
 
-  onNotificationDisplayed(nextOrObserver: OnNotification | OnNotificationObserver): () => any {
+  onNotificationDisplayed(
+    nextOrObserver: OnNotification | OnNotificationObserver | any
+  ): () => any {
     let listener;
     if (isFunction(nextOrObserver)) {
       listener = nextOrObserver;
@@ -251,7 +255,7 @@ export default class Notifications extends ModuleBase {
   }
 
   onNotificationOpened(
-    nextOrObserver: OnNotificationOpened | OnNotificationOpenedObserver
+    nextOrObserver: OnNotificationOpened | OnNotificationOpenedObserver | any
   ): () => any {
     let listener;
     if (isFunction(nextOrObserver)) {
@@ -323,4 +327,5 @@ export {
   AndroidNotifications,
   AndroidRemoteInput,
   Notification,
+  NotificationOpen,
 };

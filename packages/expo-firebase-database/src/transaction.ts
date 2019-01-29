@@ -1,7 +1,7 @@
 import { SharedEventEmitter } from 'expo-firebase-app';
 
 // import type Database from './index';
-type Database = object;
+type Database = { [key: string]: any };
 
 let transactionId = 0;
 
@@ -17,7 +17,7 @@ const generateTransactionId = (): number => transactionId++;
  */
 export default class TransactionHandler {
   _database: Database;
-  _transactions: { [number]: Object };
+  _transactions: { [id: number]: any };
 
   constructor(database: Database) {
     this._transactions = {};
@@ -37,10 +37,10 @@ export default class TransactionHandler {
    * @param applyLocally
    */
   add(
-    reference: Object,
+    reference: any,
     transactionUpdater: Function,
     onComplete?: Function,
-    applyLocally?: boolean = false
+    applyLocally: boolean = false
   ) {
     const id = generateTransactionId();
 
@@ -67,7 +67,7 @@ export default class TransactionHandler {
    * @returns {*}
    * @private
    */
-  _handleTransactionEvent(event: Object = {}) {
+  _handleTransactionEvent(event: { [key: string]: any } = {}) {
     switch (event.type) {
       case 'update':
         return this._handleUpdate(event);
@@ -86,7 +86,7 @@ export default class TransactionHandler {
    * @param event
    * @private
    */
-  _handleUpdate(event: Object = {}) {
+  _handleUpdate(event: { [key: string]: any } = {}) {
     let newValue;
     const { id, value } = event;
 
@@ -114,7 +114,7 @@ export default class TransactionHandler {
    * @param event
    * @private
    */
-  _handleError(event: Object = {}) {
+  _handleError(event: { [key: string]: any } = {}) {
     const transaction = this._transactions[event.id];
     if (transaction && !transaction.completed) {
       transaction.completed = true;
@@ -133,7 +133,7 @@ export default class TransactionHandler {
    * @param event
    * @private
    */
-  _handleComplete(event: Object = {}) {
+  _handleComplete(event: { [key: string]: any } = {}) {
     const transaction = this._transactions[event.id];
     if (transaction && !transaction.completed) {
       transaction.completed = true;

@@ -1,14 +1,4 @@
-export default function test({
-  should,
-  describe,
-  xdescribe,
-  it,
-  xit,
-  beforeEach: before,
-  expect,
-  jasmine,
-  firebase,
-}) {
+export default function test({ should, describe, it, beforeEach: before, firebase }) {
   describe('storage()', () => {
     describe('ref()', () => {
       describe('toString()', () => {
@@ -122,24 +112,23 @@ export default function test({
         });
 
         it('listens to upload state', () => {
-          const { resolve, reject, promise } = Promise.defer();
-          const path = `${firebase.storage.Native.DOCUMENT_DIRECTORY_PATH}/ok.jpeg`;
-          const ref = firebase.storage().ref('/uploadOk.jpeg');
+          return new Promise(resolve => {
+            const path = `${firebase.storage.Native.DOCUMENT_DIRECTORY_PATH}/ok.jpeg`;
+            const ref = firebase.storage().ref('/uploadOk.jpeg');
 
-          const unsubscribe = ref.putFile(path).on(
-            firebase.storage.TaskEvent.STATE_CHANGED,
-            snapshot => {
-              if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
-                resolve();
+            const unsubscribe = ref.putFile(path).on(
+              firebase.storage.TaskEvent.STATE_CHANGED,
+              snapshot => {
+                if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
+                  resolve();
+                }
+              },
+              error => {
+                unsubscribe();
+                throw error;
               }
-            },
-            error => {
-              unsubscribe();
-              reject(error);
-            }
-          );
-
-          return promise;
+            );
+          });
         });
       });
     });

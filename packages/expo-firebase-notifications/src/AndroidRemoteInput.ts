@@ -4,11 +4,11 @@ import { AndroidAllowDataType, NativeAndroidRemoteInput } from './types';
 export default class AndroidRemoteInput {
   _allowedDataTypes: AndroidAllowDataType[];
 
-  _allowFreeFormInput: boolean | void;
+  _allowFreeFormInput?: boolean;
 
   _choices: string[];
 
-  _label: string | void;
+  _label?: string;
 
   _resultKey: string;
 
@@ -22,7 +22,7 @@ export default class AndroidRemoteInput {
     return this._allowedDataTypes;
   }
 
-  get allowFreeFormInput(): ?boolean {
+  get allowFreeFormInput(): boolean | undefined {
     return this._allowFreeFormInput;
   }
 
@@ -30,7 +30,7 @@ export default class AndroidRemoteInput {
     return this._choices;
   }
 
-  get label(): ?string {
+  get label(): string | undefined {
     return this._label;
   }
 

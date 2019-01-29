@@ -1,11 +1,7 @@
 export default function test({
   describe,
-  xdescribe,
   it,
-  xit,
   beforeEach,
-  expect,
-  jasmine,
   firebase,
   contextify,
   TestHelpers: {
@@ -22,7 +18,7 @@ export default function test({
         returnValue.should.be.Promise();
 
         const value = await returnValue;
-        (value == null).should.be.true();
+        expect(value == null).toBe(true);
       });
 
       it('changes value', async () => {
@@ -56,7 +52,7 @@ export default function test({
 
             await ref.set(null);
             const snapshot2 = await ref.once('value');
-            (snapshot2.val() == null).should.be.true();
+            expect(snapshot2.val() == null).toBe(true);
           })
         );
       });

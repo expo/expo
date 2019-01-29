@@ -63,19 +63,13 @@ export default function test({
       it('errors when invalid parameters supplied', async () => {
         const ref = firebase.firestore().doc('collection/doc');
         const batch = firebase.firestore().batch();
-        (() => {
-          batch.update(ref, 'error');
-        }).should.throw(
+        expect(batch.update(ref, 'error')).toThrow(
           'WriteBatch.update failed: If using a single update argument, it must be an object.'
         );
-        (() => {
-          batch.update(ref, 'error1', 'error2', 'error3');
-        }).should.throw(
+        expect(batch.update(ref, 'error1', 'error2', 'error3')).toThrow(
           'WriteBatch.update failed: The update arguments must be either a single object argument, or equal numbers of key/value pairs.'
         );
-        (() => {
-          batch.update(ref, 0, 'error');
-        }).should.throw(
+        expect(batch.update(ref, 0, 'error')).toThrow(
           'WriteBatch.update failed: Argument at index 0 must be a string or FieldPath'
         );
       });

@@ -21,7 +21,7 @@ export default function test({
     describe('EmailAuthProvider', () => {
       describe('constructor', () => {
         it('should throw an unsupported error', () => {
-          (() => new firebase.auth.EmailAuthProvider()).should.throw(
+          expect(new firebase.auth.EmailAuthProvider()).toThrow(
             '`new EmailAuthProvider()` is not supported on the native Firebase SDKs.'
           );
         });
@@ -71,7 +71,7 @@ export default function test({
     describe('FacebookAuthProvider', () => {
       describe('constructor', () => {
         it('should throw an unsupported error', () => {
-          (() => new firebase.auth.FacebookAuthProvider()).should.throw(
+          expect(new firebase.auth.FacebookAuthProvider()).toThrow(
             '`new FacebookAuthProvider()` is not supported on the native Firebase SDKs.'
           );
         });
@@ -97,7 +97,7 @@ export default function test({
     describe('GithubAuthProvider', () => {
       describe('constructor', () => {
         it('should throw an unsupported error', () => {
-          (() => new firebase.auth.GithubAuthProvider()).should.throw(
+          expect(new firebase.auth.GithubAuthProvider()).toThrow(
             '`new GithubAuthProvider()` is not supported on the native Firebase SDKs.'
           );
         });
@@ -123,7 +123,7 @@ export default function test({
     describe('GoogleAuthProvider', () => {
       describe('constructor', () => {
         it('should throw an unsupported error', () => {
-          (() => new firebase.auth.GoogleAuthProvider()).should.throw(
+          expect(new firebase.auth.GoogleAuthProvider()).toThrow(
             '`new GoogleAuthProvider()` is not supported on the native Firebase SDKs.'
           );
         });
@@ -150,7 +150,7 @@ export default function test({
     describe('OAuthProvider', () => {
       describe('constructor', () => {
         it('should throw an unsupported error', () => {
-          (() => new firebase.auth.OAuthProvider()).should.throw(
+          expect(new firebase.auth.OAuthProvider()).toThrow(
             '`new OAuthProvider()` is not supported on the native Firebase SDKs.'
           );
         });
@@ -177,7 +177,7 @@ export default function test({
     describe('PhoneAuthProvider', () => {
       describe('constructor', () => {
         it('should throw an unsupported error', () => {
-          (() => new firebase.auth.PhoneAuthProvider()).should.throw(
+          expect(new firebase.auth.PhoneAuthProvider()).toThrow(
             '`new PhoneAuthProvider()` is not supported on the native Firebase SDKs.'
           );
         });
@@ -204,7 +204,7 @@ export default function test({
     describe('TwitterAuthProvider', () => {
       describe('constructor', () => {
         it('should throw an unsupported error', () => {
-          (() => new firebase.auth.TwitterAuthProvider()).should.throw(
+          expect(new firebase.auth.TwitterAuthProvider()).toThrow(
             '`new TwitterAuthProvider()` is not supported on the native Firebase SDKs.'
           );
         });

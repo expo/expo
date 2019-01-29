@@ -7,17 +7,17 @@ import { NativeInvitation } from './types';
 export default class Invitation {
   _android: AndroidInvitation;
 
-  _androidClientId: string | void;
+  _androidClientId?: string;
 
-  _androidMinimumVersionCode: number | void;
+  _androidMinimumVersionCode?: number;
 
-  _callToActionText: string | void;
+  _callToActionText?: string;
 
-  _customImage: string | void;
+  _customImage?: string;
 
-  _deepLink: string | void;
+  _deepLink?: string;
 
-  _iosClientId: string | void;
+  _iosClientId?: string;
 
   _message: string;
 

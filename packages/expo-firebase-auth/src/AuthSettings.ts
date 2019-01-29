@@ -3,8 +3,8 @@ import { Platform } from 'expo-core';
 const isIOS = Platform.OS === 'ios';
 const isAndroid = Platform.OS === 'android';
 
-// import type Auth from '.';
-type Auth = object;
+type Auth = any;
+
 export default class AuthSettings {
   _auth: Auth;
 
@@ -50,11 +50,11 @@ export default class AuthSettings {
    * @param smsCode
    * @return {*}
    */
-  setAutoRetrievedSmsCodeForPhoneNumber(phoneNumber: string, smsCode: string): Promise<null> {
+  async setAutoRetrievedSmsCodeForPhoneNumber(phoneNumber: string, smsCode: string): Promise<null> {
     if (isAndroid) {
       return this._auth.nativeModule.setAutoRetrievedSmsCodeForPhoneNumber(phoneNumber, smsCode);
     }
 
-    return Promise.resolve(null);
+    return null;
   }
 }

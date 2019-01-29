@@ -1,7 +1,5 @@
-
-import { INTERNALS, ModuleBase, SharedEventEmitter, utils } from 'expo-firebase-app';
+import { App, INTERNALS, ModuleBase, SharedEventEmitter, utils } from 'expo-firebase-app';
 import invariant from 'invariant';
-import App from 'expo-firebase-app';
 
 import IOSMessaging from './IOSMessaging';
 import RemoteMessage from './RemoteMessage';
@@ -10,16 +8,16 @@ import { NativeInboundRemoteMessage } from './types';
 
 const { isFunction, isObject } = utils;
 
-export type OnMessage = RemoteMessage => any;
+export type OnMessage = (message: RemoteMessage) => any;
 
 export type OnMessageObserver = {
-  next: OnMessage,
+  next: OnMessage;
 };
 
-export type OnTokenRefresh = string => any;
+export type OnTokenRefresh = (token: string) => any;
 
 export type OnTokenRefreshObserver = {
-  next: OnTokenRefresh,
+  next: OnTokenRefresh;
 };
 
 const NATIVE_EVENTS = {
@@ -82,8 +80,8 @@ export default class Messaging extends ModuleBase {
   }
 
   onMessage(nextOrObserver: OnMessage | OnMessageObserver): () => any {
-    let listener: RemoteMessage => any;
-    if (isFunction(nextOrObserver)) {
+    let listener: (message: RemoteMessage) => any;
+    if (nextOrObserver && typeof nextOrObserver === 'function') {
       // $FlowExpectedError: Not coping with the overloaded method signature
       listener = nextOrObserver;
     } else if (isObject(nextOrObserver) && isFunction(nextOrObserver.next)) {
@@ -105,8 +103,8 @@ export default class Messaging extends ModuleBase {
   }
 
   onTokenRefresh(nextOrObserver: OnTokenRefresh | OnTokenRefreshObserver): () => any {
-    let listener: string => any;
-    if (isFunction(nextOrObserver)) {
+    let listener: (value: string) => any;
+    if (nextOrObserver && typeof nextOrObserver === 'function') {
       // $FlowExpectedError: Not coping with the overloaded method signature
       listener = nextOrObserver;
     } else if (isObject(nextOrObserver) && isFunction(nextOrObserver.next)) {
@@ -130,41 +128,37 @@ export default class Messaging extends ModuleBase {
    * NON WEB-SDK METHODS
    */
 
-  sendMessage(remoteMessage: RemoteMessage): Promise<void> {
+  async sendMessage(remoteMessage: RemoteMessage): Promise<void> {
     invariant(
       remoteMessage instanceof RemoteMessage,
       `Messaging:sendMessage expects a 'RemoteMessage' but got type ${typeof remoteMessage}`
     );
-    try {
-      return this.nativeModule.sendMessage(remoteMessage.build());
-    } catch (error) {
-      return Promise.reject(error);
-    }
+    return await this.nativeModule.sendMessage(remoteMessage.build());
   }
 
-  subscribeToTopic(topic: string): Promise<void> {
-    return this.nativeModule.subscribeToTopic(topic);
+  async subscribeToTopic(topic: string): Promise<void> {
+    return await this.nativeModule.subscribeToTopic(topic);
   }
 
-  unsubscribeFromTopic(topic: string): Promise<void> {
-    return this.nativeModule.unsubscribeFromTopic(topic);
+  async unsubscribeFromTopic(topic: string): Promise<void> {
+    return await this.nativeModule.unsubscribeFromTopic(topic);
   }
 
   /**
    * KNOWN UNSUPPORTED METHODS
    */
 
-  getToken(): Promise<string> {
+  async getToken(): Promise<string> {
     throw new Error(INTERNALS.STRINGS.ERROR_UNSUPPORTED_MODULE_METHOD('messaging', 'getToken'));
   }
 
-  requestPermission(): Promise<void> {
+  async requestPermission(): Promise<void> {
     throw new Error(
       INTERNALS.STRINGS.ERROR_UNSUPPORTED_MODULE_METHOD('messaging', 'requestPermission')
     );
   }
 
-  hasPermission(): Promise<boolean> {
+  async hasPermission(): Promise<boolean> {
     throw new Error(
       INTERNALS.STRINGS.ERROR_UNSUPPORTED_MODULE_METHOD('messaging', 'hasPermission')
     );
@@ -187,9 +181,5 @@ export default class Messaging extends ModuleBase {
   }
 }
 
-export type {
-  NativeInboundRemoteMessage,
-  NativeOutboundRemoteMessage,
-  Notification,
-} from './types';
+export { NativeInboundRemoteMessage, NativeOutboundRemoteMessage, Notification } from './types';
 export { RemoteMessage };

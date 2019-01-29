@@ -4,8 +4,7 @@ import FieldPath from './FieldPath';
 import Path from './Path';
 import { parseNativeMap } from './utils/serialize';
 
-import Firestore from './';
-import { NativeDocumentSnapshot, SnapshotMetadata } from './firestoreTypes.flow';
+import { Firestore, NativeDocumentSnapshot, SnapshotMetadata } from './firestoreTypes.types';
 
 const { isObject, deepGet } = utils;
 

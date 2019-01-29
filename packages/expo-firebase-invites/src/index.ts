@@ -1,7 +1,4 @@
-
-import { SharedEventEmitter, ModuleBase } from 'expo-firebase-app';
-
-import App from 'expo-firebase-app';
+import { App, SharedEventEmitter, ModuleBase } from 'expo-firebase-app';
 import Invitation from './Invitation';
 
 export const MODULE_NAME = 'ExpoFirebaseInvites';
@@ -15,8 +12,8 @@ export const statics = {
 };
 
 type InvitationOpen = {
-  deepLink: string,
-  invitationId: string,
+  deepLink: string;
+  invitationId: string;
 };
 
 export default class Invites extends ModuleBase {
@@ -52,8 +49,8 @@ export default class Invites extends ModuleBase {
    * Returns the invitation that triggered application open
    * @returns {Promise.<InvitationOpen>}
    */
-  getInitialInvitation(): Promise<?InvitationOpen> {
-    return this.nativeModule.getInitialInvitation();
+  async getInitialInvitation(): Promise<InvitationOpen | undefined> {
+    return await this.nativeModule.getInitialInvitation();
   }
 
   /**
@@ -72,19 +69,13 @@ export default class Invites extends ModuleBase {
     };
   }
 
-  sendInvitation(invitation: Invitation): Promise<string[]> {
+  async sendInvitation(invitation: Invitation): Promise<string[]> {
     if (!(invitation instanceof Invitation)) {
-      return Promise.reject(
-        new Error(
-          `Invites:sendInvitation expects an 'Invitation' but got type ${typeof invitation}`
-        )
+      throw new Error(
+        `Invites:sendInvitation expects an 'Invitation' but got type ${typeof invitation}`
       );
     }
-    try {
-      return this.nativeModule.sendInvitation(invitation.build());
-    } catch (error) {
-      return Promise.reject(error);
-    }
+    return await this.nativeModule.sendInvitation(invitation.build());
   }
 }
 

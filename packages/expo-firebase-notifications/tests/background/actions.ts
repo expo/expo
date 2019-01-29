@@ -1,12 +1,10 @@
-import firebase from 'expo-firebase-app';
-// Optional flow type
-import { NotificationOpen } from 'expo-firebase-notifications';
+// import { NotificationOpen } from '../../build';
+type NotificationOpen = any;
 
-export default async (notificationOpen: NotificationOpen) => {
+export default async (notificationOpen: NotificationOpen): Promise<void> => {
   if (notificationOpen.action === 'snooze') {
     // handle the action
   }
 
   console.log('baconground.actions', notificationOpen);
-  return Promise.resolve();
 };

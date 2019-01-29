@@ -1,6 +1,6 @@
 import { utils } from 'expo-firebase-app';
 // import type Reference from './Reference';
-type Reference = object;
+type Reference = any;
 const { isObject, deepGet, deepExists } = utils;
 
 /**
@@ -15,7 +15,7 @@ export default class DataSnapshot {
   _priority: any;
   _childKeys: Array<string>;
 
-  constructor(ref: Reference, snapshot: Object) {
+  constructor(ref: Reference, snapshot: { [key: string]: any }) {
     this.key = snapshot.key;
 
     if (ref.key !== snapshot.key) {

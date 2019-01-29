@@ -58,9 +58,9 @@ export default function test({
         });
 
         it('should error if invalid collection path supplied', () => {
-          (() => {
-            test2DocRef(COL2_DOC_1_ID).collection('pages/page1');
-          }).should.throw('Argument "collectionPath" must point to a collection.');
+          expect(test2DocRef(COL2_DOC_1_ID).collection('pages/page1')).toThrow(
+            'Argument "collectionPath" must point to a collection.'
+          );
         });
       });
 
@@ -142,31 +142,32 @@ export default function test({
         });
 
         it('snapshot error returns instance of SnapshotError', () => {
-          let unsubscribe;
-          const { reject, resolve, promise } = Promise.defer();
-          const collection = firebase.firestore().doc('blocked-collection/nope');
+          return new Promise((resolve, reject) => {
+            let unsubscribe;
 
-          const observer = {
-            next: () => {
-              unsubscribe();
-              reject(new Error('Did not error!'));
-            },
-            error: snapshotError => {
-              snapshotError.should.be.instanceOf(SnapshotError);
-              snapshotError.code.should.be.a.String();
-              snapshotError.path.should.be.a.String();
-              snapshotError.appName.should.be.a.String();
-              snapshotError.message.should.be.a.String();
-              snapshotError.nativeErrorMessage.should.be.a.String();
-              snapshotError.appName.should.equal('[DEFAULT]');
-              snapshotError.path.should.equal('blocked-collection/nope');
-              snapshotError.code.should.equal('firestore/permission-denied');
-              resolve();
-            },
-          };
+            const collection = firebase.firestore().doc('blocked-collection/nope');
 
-          unsubscribe = collection.onSnapshot(observer);
-          return promise;
+            const observer = {
+              next: () => {
+                unsubscribe();
+                reject(new Error('Did not error!'));
+              },
+              error: snapshotError => {
+                snapshotError.should.be.instanceOf(SnapshotError);
+                snapshotError.code.should.be.a.String();
+                snapshotError.path.should.be.a.String();
+                snapshotError.appName.should.be.a.String();
+                snapshotError.message.should.be.a.String();
+                snapshotError.nativeErrorMessage.should.be.a.String();
+                snapshotError.appName.should.equal('[DEFAULT]');
+                snapshotError.path.should.equal('blocked-collection/nope');
+                snapshotError.code.should.equal('firestore/permission-denied');
+                resolve();
+              },
+            };
+
+            unsubscribe = collection.onSnapshot(observer);
+          });
         });
 
         it('calls callback with the initial data and then when value changes', async () => {
@@ -471,38 +472,29 @@ export default function test({
 
         it('errors when invalid parameters supplied', async () => {
           const docRef = test2DocRef(COL2_DOC_1_ID);
-          (() => {
-            docRef.onSnapshot(() => {}, 'error');
-          }).should.throw(
+          expect(docRef.onSnapshot(() => {}, 'error')).toThrow(
             'DocumentReference.onSnapshot failed: Second argument must be a valid function.'
           );
-          (() => {
-            docRef.onSnapshot({
-              next: () => {},
-              error: 'error',
-            });
-          }).should.throw(
+          expect(docRef.onSnapshot({ next: () => {}, error: 'error' })).toThrow(
             'DocumentReference.onSnapshot failed: Observer.error must be a valid function.'
           );
-          (() => {
-            docRef.onSnapshot({
-              next: 'error',
-            });
-          }).should.throw(
+          expect(docRef.onSnapshot({ next: 'error' })).toThrow(
             'DocumentReference.onSnapshot failed: Observer.next must be a valid function.'
           );
-          (() => {
+
+          expect(
             docRef.onSnapshot(
               {
                 includeMetadataChanges: true,
               },
               () => {},
               'error'
-            );
-          }).should.throw(
+            )
+          ).toThrow(
             'DocumentReference.onSnapshot failed: Third argument must be a valid function.'
           );
-          (() => {
+
+          expect(
             docRef.onSnapshot(
               {
                 includeMetadataChanges: true,
@@ -511,11 +503,12 @@ export default function test({
                 next: () => {},
                 error: 'error',
               }
-            );
-          }).should.throw(
+            )
+          ).toThrow(
             'DocumentReference.onSnapshot failed: Observer.error must be a valid function.'
           );
-          (() => {
+
+          expect(
             docRef.onSnapshot(
               {
                 includeMetadataChanges: true,
@@ -523,30 +516,19 @@ export default function test({
               {
                 next: 'error',
               }
-            );
-          }).should.throw(
-            'DocumentReference.onSnapshot failed: Observer.next must be a valid function.'
-          );
-          (() => {
-            docRef.onSnapshot(
-              {
-                includeMetadataChanges: true,
-              },
-              'error'
-            );
-          }).should.throw(
+            )
+          ).toThrow('DocumentReference.onSnapshot failed: Observer.next must be a valid function.');
+
+          expect(docRef.onSnapshot({ includeMetadataChanges: true }, 'error')).toThrow(
             'DocumentReference.onSnapshot failed: Second argument must be a function or observer.'
           );
-          (() => {
-            docRef.onSnapshot({
-              error: 'error',
-            });
-          }).should.throw(
+
+          expect(docRef.onSnapshot({ error: 'error' })).toThrow(
             'DocumentReference.onSnapshot failed: First argument must be a function, observer or options.'
           );
-          (() => {
-            docRef.onSnapshot();
-          }).should.throw('DocumentReference.onSnapshot failed: Called with invalid arguments.');
+          expect(docRef.onSnapshot()).toThrow(
+            'DocumentReference.onSnapshot failed: Called with invalid arguments.'
+          );
         });
       });
 
@@ -620,19 +602,16 @@ export default function test({
 
         it('errors when invalid parameters supplied', async () => {
           const docRef = test2DocRef(COL2_DOC_1_ID);
-          (() => {
-            docRef.update('error');
-          }).should.throw(
+
+          expect(docRef.update('error')).toThrow(
             'DocumentReference.update failed: If using a single update argument, it must be an object.'
           );
-          (() => {
-            docRef.update('error1', 'error2', 'error3');
-          }).should.throw(
+
+          expect(docRef.update('error1', 'error2', 'error3')).toThrow(
             'DocumentReference.update failed: The update arguments must be either a single object argument, or equal numbers of key/value pairs.'
           );
-          (() => {
-            docRef.update(0, 'error');
-          }).should.throw(
+
+          expect(docRef.update(0, 'error')).toThrow(
             'DocumentReference.update failed: Argument at index 0 must be a string or FieldPath'
           );
         });

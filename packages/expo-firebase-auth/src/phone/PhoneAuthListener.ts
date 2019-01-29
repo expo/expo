@@ -3,37 +3,37 @@ import { Platform } from 'expo-core';
 import { SharedEventEmitter, utils, INTERNALS } from 'expo-firebase-app';
 
 // import type Auth from '../';
-type Auth = object;
+type Auth = any;
 const { generatePushID, isFunction, isString, nativeToJSError } = utils;
 
 const isIOS = Platform.OS === 'ios';
 const isAndroid = Platform.OS === 'android';
 
 type PhoneAuthSnapshot = {
-  state: 'sent' | 'timeout' | 'verified' | 'error',
-  verificationId: string,
-  code: string | null,
-  error: Error | null,
+  state: 'sent' | 'timeout' | 'verified' | 'error';
+  verificationId: string;
+  code: string | null;
+  error: Error | null;
 };
 
 type PhoneAuthError = {
-  code: string | null,
-  verificationId: string,
-  message: string | null,
-  stack: string | null,
+  code: string | null;
+  verificationId: string;
+  message: string | null;
+  stack: string | null;
 };
 
 export default class PhoneAuthListener {
   _auth: Auth;
   _timeout: number;
-  _publicEvents: Object;
-  _internalEvents: Object;
+  _publicEvents: { [key: string]: any };
+  _internalEvents: { [key: string]: any };
   _reject: Function | null;
   _resolve: Function | null;
-  _credential: Object | null;
-  _promise: Promise<*> | null;
+  _credential: { [key: string]: any } | null;
+  _promise: Promise<any> | null;
   _phoneAuthRequestKey: string;
-
+  _forceResending: any;
   /**
    *
    * @param auth
@@ -132,7 +132,9 @@ export default class PhoneAuthListener {
    */
   _emitToErrorCb(snapshot) {
     const { error } = snapshot;
-    if (this._reject) this._reject(error);
+    if (this._reject) {
+      this._reject(error);
+    }
     SharedEventEmitter.emit(this._publicEvents.error, error);
   }
 
@@ -142,7 +144,9 @@ export default class PhoneAuthListener {
    * @private
    */
   _emitToSuccessCb(snapshot) {
-    if (this._resolve) this._resolve(snapshot);
+    if (this._resolve) {
+      this._resolve(snapshot);
+    }
     SharedEventEmitter.emit(this._publicEvents.success, snapshot);
   }
 
@@ -276,9 +280,9 @@ export default class PhoneAuthListener {
 
   on(
     event: string,
-    observer: PhoneAuthSnapshot => void,
-    errorCb?: PhoneAuthError => void,
-    successCb?: PhoneAuthSnapshot => void
+    observer: (snapshot: PhoneAuthSnapshot) => void,
+    errorCb?: (error: PhoneAuthError) => void,
+    successCb?: (snapshot: PhoneAuthSnapshot) => void
   ): this {
     invariant(isString(event), INTERNALS.STRINGS.ERROR_MISSING_ARG_NAMED('event', 'string', 'on'));
     invariant(
@@ -307,7 +311,7 @@ export default class PhoneAuthListener {
    * Promise .then proxy
    * @param fn
    */
-  then(fn: PhoneAuthSnapshot => void) {
+  then(fn: (snapshot: PhoneAuthSnapshot) => void) {
     this._promiseDeferred();
     // $FlowFixMe: Unsure how to annotate `bind` here
     if (this._promise) return this._promise.then.bind(this._promise)(fn);
@@ -318,7 +322,7 @@ export default class PhoneAuthListener {
    * Promise .catch proxy
    * @param fn
    */
-  catch(fn: Error => void) {
+  catch(fn: (error: Error) => void) {
     this._promiseDeferred();
     // $FlowFixMe: Unsure how to annotate `bind` here
     if (this._promise) return this._promise.catch.bind(this._promise)(fn);

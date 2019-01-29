@@ -3,17 +3,16 @@ import { NativeModulesProxy } from 'expo-core';
 import invariant from 'invariant';
 import App from '../app';
 import { DEFAULT_APP_NAME } from '../constants';
-import { isObject, isString } from './';
+import { isObject, isString } from '.';
 import { APP_STORE, CUSTOM_URL_OR_REGION_NAMESPACES } from './appStore';
 import INTERNALS from './internals';
 import parseConfig from './parseConfig';
 import {
-  FirebaseModule,
   FirebaseModuleAndStatics,
   FirebaseModuleName,
+  FirebaseModule,
   FirebaseNamespace,
   FirebaseOptions,
-  FirebaseStatics,
 } from '../types';
 
 const { ExpoFirebaseApp: FirebaseCoreModule } = NativeModulesProxy;
@@ -26,20 +25,22 @@ export default {
     return app;
   },
 
-  apps(): Array<App> {
+  apps(): App[] {
     // $FlowExpectedError: Object.values always returns mixed type: https://github.com/facebook/flow/issues/2221
     return Object.values(APP_STORE);
   },
 
-  deleteApp(name: string): Promise<boolean> {
+  async deleteApp(name: string): Promise<boolean> {
     const app = APP_STORE[name];
-    if (!app) return Promise.resolve(true);
+    if (!app) {
+      return true;
+    }
 
     // https://firebase.google.com/docs/reference/js/firebase.app.App#delete
-    return app.delete().then(() => {
-      delete APP_STORE[name];
-      return true;
-    });
+
+    await app.delete();
+    delete APP_STORE[name];
+    return true;
   },
 
   /**
@@ -49,7 +50,7 @@ export default {
    * @param name
    * @return {*}
    */
-  initializeApp(options: FirebaseOptions, name: string): App {
+  initializeApp(options: FirebaseOptions | any, name: string): App {
     invariant(!name || isString(name), INTERNALS.STRINGS.ERROR_INIT_STRING_NAME);
 
     const _name = (name || DEFAULT_APP_NAME).toUpperCase();
@@ -81,7 +82,7 @@ export default {
   /**
    * Bootstraps all native app instances that were discovered on boot
    */
-  initializeNativeApps() {
+  initializeNativeApps(): void {
     for (let i = 0, len = FirebaseCoreModule.apps.length; i < len; i++) {
       const app = FirebaseCoreModule.apps[i];
       const options = Object.assign({}, app);
@@ -96,7 +97,7 @@ export default {
    * @param moduleName
    * @return {function(App=)}
    */
-  moduleAndStatics<M: FirebaseModule, S: FirebaseStatics>(
+  moduleAndStatics<M, S>(
     namespace: FirebaseNamespace,
     statics: S,
     moduleName: FirebaseModuleName
@@ -105,8 +106,8 @@ export default {
       appOrUrlOrRegion?: App | string,
       customUrlOrRegion?: string
     ): FirebaseModule => {
-      let _app = appOrUrlOrRegion;
-      let _customUrlOrRegion: ?string = customUrlOrRegion || null;
+      let _app: App | string | undefined | null = appOrUrlOrRegion;
+      let _customUrlOrRegion: string | null = customUrlOrRegion || null;
 
       if (typeof appOrUrlOrRegion === 'string' && CUSTOM_URL_OR_REGION_NAMESPACES[namespace]) {
         _app = null;

@@ -19,9 +19,9 @@ export default function test({
       });
 
       it('should error if invalid collection path supplied', () => {
-        (() => {
-          firebase.firestore().collection('collection1/doc1');
-        }).should.throw('Argument "collectionPath" must point to a collection.');
+        expect(firebase.firestore().collection('collection1/doc1')).toThrow(
+          'Argument "collectionPath" must point to a collection.'
+        );
       });
     });
 
@@ -34,9 +34,9 @@ export default function test({
       });
 
       it('should error if invalid document path supplied', () => {
-        (() => {
-          firebase.firestore().doc('collection1');
-        }).should.throw('Argument "documentPath" must point to a document.');
+        expect(firebase.firestore().doc('collection1')).toThrow(
+          'Argument "documentPath" must point to a document.'
+        );
       });
     });
 
@@ -64,9 +64,9 @@ export default function test({
       });
 
       it('should throw an invalid parameter error', () => {
-        (() => {
-          firebase.firestore.setLogLevel('warn');
-        }).should.throw('Argument `logLevel` must be one of: `debug`, `error`, `silent`');
+        expect(firebase.firestore.setLogLevel('warn')).toThrow(
+          'Argument `logLevel` must be one of: `debug`, `error`, `silent`'
+        );
       });
     });
 

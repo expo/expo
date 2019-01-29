@@ -12,7 +12,7 @@ const NATIVE_MODULES: { [key: string]: Object } = {};
  * @param NativeModule
  * @param argToPrepend
  */
-const nativeWithArgs = (NativeModule: Object, argToPrepend: Array<mixed>): Object => {
+const nativeWithArgs = (NativeModule: Object, argToPrepend: any[]): Object => {
   const native = {};
   const methods = Object.keys(NativeModule);
 
@@ -37,7 +37,7 @@ export const getNativeModule = (module: ModuleBase): Object =>
 export const initialiseNativeModule = (
   module: ModuleBase,
   config: FirebaseModuleConfig,
-  customUrlOrRegion: ?string
+  customUrlOrRegion?: string
 ): Object => {
   const {
     moduleName,
@@ -55,7 +55,7 @@ export const initialiseNativeModule = (
 
   // used by the modules that extend ModuleBase
   // to access their native module counterpart
-  const argToPrepend = [];
+  const argToPrepend: Array<string | undefined> = [];
 
   if (hasMultiAppSupport) {
     argToPrepend.push(module.app.name);

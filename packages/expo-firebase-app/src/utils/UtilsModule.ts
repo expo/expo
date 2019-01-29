@@ -63,24 +63,32 @@ export class ExpoFirebaseUtils extends ModuleBase {
     }
   }
 
-  getPlayServicesStatus(): Promise<GoogleApiAvailabilityType | null> {
-    if (isIOS) return Promise.resolve(null);
-    return ExpoFirebaseApp.getPlayServicesStatus();
+  async getPlayServicesStatus(): Promise<GoogleApiAvailabilityType | null> {
+    if (isIOS) {
+      return null;
+    }
+    return await ExpoFirebaseApp.getPlayServicesStatus();
   }
 
-  promptForPlayServices() {
-    if (isIOS) return null;
-    return ExpoFirebaseApp.promptForPlayServices();
+  async promptForPlayServices(): Promise<any | null> {
+    if (isIOS) {
+      return null;
+    }
+    return await ExpoFirebaseApp.promptForPlayServices();
   }
 
-  resolutionForPlayServices() {
-    if (isIOS) return null;
-    return ExpoFirebaseApp.resolutionForPlayServices();
+  async resolutionForPlayServices(): Promise<any | null> {
+    if (isIOS) {
+      return null;
+    }
+    return await ExpoFirebaseApp.resolutionForPlayServices();
   }
 
-  makePlayServicesAvailable() {
-    if (isIOS) return null;
-    return ExpoFirebaseApp.makePlayServicesAvailable();
+  async makePlayServicesAvailable(): Promise<any | null> {
+    if (isIOS) {
+      return null;
+    }
+    return await ExpoFirebaseApp.makePlayServicesAvailable();
   }
 
   /**

@@ -1,8 +1,8 @@
 import { utils } from 'expo-firebase-app';
-// import type { DatabaseModifier } from './types';
+
+import { DatabaseModifier } from './types';
 // import type Reference from './Reference';
-type DatabaseModifier = object;
-type Reference = object;
+type Reference = { [key: string]: any };
 const { objectToUniqueId } = utils;
 
 // todo doc methods
@@ -77,7 +77,7 @@ export default class Query {
    *
    * @return {[*]}
    */
-  getModifiers(): Array<DatabaseModifier> {
+  getModifiers(): DatabaseModifier[] {
     return [...this.modifiers];
   }
 
@@ -85,7 +85,7 @@ export default class Query {
    *
    * @return {*}
    */
-  queryIdentifier() {
+  queryIdentifier(): string {
     // sort modifiers to enforce ordering
     const sortedModifiers = this.getModifiers().sort((a, b) => {
       if (a.id < b.id) return -1;

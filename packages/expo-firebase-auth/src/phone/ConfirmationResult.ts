@@ -1,6 +1,6 @@
 // import type Auth from '../';
 import User from '../User';
-type Auth = object;
+type Auth = any;
 
 export default class ConfirmationResult {
   _auth: Auth;

@@ -1,4 +1,3 @@
-
 import DocumentChange from './DocumentChange';
 import DocumentSnapshot from './DocumentSnapshot';
 
@@ -7,7 +6,7 @@ import {
   NativeDocumentChange,
   NativeDocumentSnapshot,
   SnapshotMetadata,
-} from './firestoreTypes.flow';
+} from './firestoreTypes.types';
 
 /**
  * @class QuerySnapshot
@@ -15,9 +14,9 @@ import {
 import Query from './Query';
 
 type NativeQuerySnapshot = {
-  changes: NativeDocumentChange[],
-  documents: NativeDocumentSnapshot[],
-  metadata: SnapshotMetadata,
+  changes: NativeDocumentChange[];
+  documents: NativeDocumentSnapshot[];
+  metadata: SnapshotMetadata;
 };
 
 /**
@@ -63,7 +62,7 @@ export default class QuerySnapshot {
     return this._docs.length;
   }
 
-  forEach(callback: DocumentSnapshot => any) {
+  forEach(callback: (snapshot: DocumentSnapshot) => any) {
     // TODO: Validation
     // validate.isFunction('callback', callback);
 

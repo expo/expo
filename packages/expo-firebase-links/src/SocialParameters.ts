@@ -1,13 +1,13 @@
 import { DynamicLink, NativeSocialParameters } from './types';
 
 export default class SocialParameters {
-  _descriptionText: string | void;
+  _descriptionText?: string;
 
-  _imageUrl: string | void;
+  _imageUrl?: string;
 
   _link: DynamicLink;
 
-  _title: string | void;
+  _title?: string;
 
   constructor(link: DynamicLink) {
     this._link = link;

@@ -4,7 +4,7 @@ import { isObject, isString } from './';
 
 const isAndroid = Platform.OS === 'android';
 
-function isValidString(str: ?string): string {
+function isValidString(str?: string): boolean {
   return isString(str) && str !== '';
 }
 
@@ -13,9 +13,9 @@ export function guessProjectId({
   authDomain,
   databaseURL,
 }: {
-  storageBucket?: string,
-  authDomain?: string,
-  databaseURL?: string,
+  storageBucket?: string;
+  authDomain?: string;
+  databaseURL?: string;
 }): string | undefined {
   function extractFromUrl(url) {
     if (!isValidString(url)) return;
@@ -28,7 +28,7 @@ export function guessProjectId({
   return projectId;
 }
 
-export function parseCommonConfig(data: Object): Object {
+export function parseCommonConfig(data: { [key: string]: any }): { [key: string]: any } {
   if (!isValidString(data.projectId)) {
     data.projectId = guessProjectId(data);
     if (isValidString(data.projectId)) {
@@ -43,7 +43,7 @@ export function parseCommonConfig(data: Object): Object {
   return data;
 }
 
-export function parseAndroidConfig(data: Object): Object {
+export function parseAndroidConfig(data: { [key: string]: any }): { [key: string]: any } {
   const { project_info, client } = data;
 
   if (isObject(project_info)) {
@@ -79,7 +79,7 @@ export function parseAndroidConfig(data: Object): Object {
   return data;
 }
 
-export function parseIosConfig(plist: Object): Object {
+export function parseIosConfig(plist: { [key: string]: any }): { [key: string]: any } {
   const desiredKeys = {
     appId: 'GOOGLE_APP_ID',
     apiKey: 'API_KEY',
@@ -104,7 +104,7 @@ export function parseIosConfig(plist: Object): Object {
   return plist;
 }
 
-export default function parseConfig(config: Object): Object {
+export default function parseConfig(config: { [key: string]: any }): { [key: string]: any } {
   if (isAndroid) {
     config = parseAndroidConfig(config);
   } else {

@@ -1,3 +1,4 @@
+import NativeError from '../NativeError';
 // todo cleanup unused utilities from legacy code
 
 // modeled after base64 web-safe chars, but ordered by ASCII
@@ -12,7 +13,7 @@ const { hasOwnProperty } = Object;
  * @param property
  * @returns {*}
  */
-export function hop(object: Object, property: string): boolean {
+export function hop(object: any, property: string): boolean {
   return hasOwnProperty.call(object, property);
 }
 
@@ -24,7 +25,7 @@ export function hop(object: Object, property: string): boolean {
  * @param joiner
  * @returns {*}
  */
-export function deepGet(object: any, path: string, joiner?: string = '/'): any {
+export function deepGet(object: any, path: string, joiner: string = '/'): any {
   if (!isObject(object) && !Array.isArray(object)) return undefined;
   const keys = path.split(joiner);
 
@@ -49,7 +50,7 @@ export function deepGet(object: any, path: string, joiner?: string = '/'): any {
  * @param joiner
  * @returns {*}
  */
-export function deepExists(object: Object, path: string, joiner?: string = '/'): boolean {
+export function deepExists(object: any, path: string, joiner: string = '/'): boolean {
   const keys = path.split(joiner);
 
   let i = 0;
@@ -71,7 +72,7 @@ export function deepExists(object: Object, path: string, joiner?: string = '/'):
  * @param obj2
  * @returns {boolean}
  */
-export function areObjectKeysContainedInOther(obj1: Object, obj2: Object): boolean {
+export function areObjectKeysContainedInOther(obj1: any, obj2: any): boolean {
   if (!isObject(obj1) || !isObject(obj2)) {
     return false;
   }
@@ -91,7 +92,7 @@ export function areObjectKeysContainedInOther(obj1: Object, obj2: Object): boole
  * @param arr2
  * @returns {boolean}
  */
-export function isArrayContainedInOther(arr1: Array<*>, arr2: Array<*>): boolean {
+export function isArrayContainedInOther(arr1: any[], arr2: any[]): boolean {
   if (!Array.isArray(arr1) || !Array.isArray(arr2)) {
     return false;
   }
@@ -103,7 +104,7 @@ export function isArrayContainedInOther(arr1: Array<*>, arr2: Array<*>): boolean
  * @param item
  * @returns {boolean}
  */
-export function isObject(item: mixed): boolean %checks {
+export function isObject(item: any): boolean {
   return item ? typeof item === 'object' && !Array.isArray(item) && item !== null : false;
 }
 
@@ -112,7 +113,7 @@ export function isObject(item: mixed): boolean %checks {
  * @param item
  * @returns {*|boolean}
  */
-export function isFunction(item?: mixed): boolean %checks {
+export function isFunction(item?: any): boolean {
   return item ? typeof item === 'function' : false;
 }
 
@@ -121,7 +122,7 @@ export function isFunction(item?: mixed): boolean %checks {
  * @param value
  * @return {boolean}
  */
-export function isString(value: mixed): boolean %checks {
+export function isString(value: any): boolean {
   return typeof value === 'string';
 }
 
@@ -130,7 +131,7 @@ export function isString(value: mixed): boolean %checks {
  * @param value
  * @return {boolean}
  */
-export function isBoolean(value: mixed): boolean %checks {
+export function isBoolean(value: any): boolean {
   return typeof value === 'boolean';
 }
 
@@ -152,7 +153,7 @@ export function tryJSONParse(string: string | null): any {
  * @param data
  * @returns {*}
  */
-export function tryJSONStringify(data: mixed): string | null {
+export function tryJSONStringify(data: any): string | null {
   try {
     return JSON.stringify(data);
   } catch (jsonError) {
@@ -195,14 +196,14 @@ let lastPushTime = 0;
 // timestamp to prevent collisions with other clients.  We store the last characters we
 // generated because in the event of a collision, we'll use those same characters except
 // "incremented" by one.
-const lastRandChars = [];
+const lastRandChars: any[] = [];
 
 /**
  * Generate a firebase id - for use with ref().push(val, cb) - e.g. -KXMr7k2tXUFQqiaZRY4'
  * @param serverTimeOffset - pass in server time offset from native side
  * @returns {string}
  */
-export function generatePushID(serverTimeOffset?: number = 0): string {
+export function generatePushID(serverTimeOffset: number = 0): string {
   const timeStampChars = new Array(8);
   let now = new Date().getTime() + serverTimeOffset;
   const duplicateTime = now === lastPushTime;
@@ -249,9 +250,8 @@ export function generatePushID(serverTimeOffset?: number = 0): string {
  * @param additionalProps
  * @returns {Error}
  */
-export function nativeToJSError(code: string, message: string, additionalProps?: Object = {}) {
-  const error: Object = new Error(message);
-  error.code = code;
+export function nativeToJSError(code: string, message: string, additionalProps: Object = {}) {
+  const error: any = new NativeError({ message, code });
   Object.assign(error, additionalProps);
   // exclude this function from the stack
   const _stackArray = error.stack.split('\n');
@@ -289,7 +289,10 @@ export function objectToUniqueId(object: Object): string {
  * @param optionalCallback
  * @return {Promise}
  */
-export function promiseOrCallback(promise: Promise<*>, optionalCallback?: Function): Promise<*> {
+export function promiseOrCallback(
+  promise: Promise<any>,
+  optionalCallback?: Function
+): Promise<any> {
   if (!isFunction(optionalCallback)) return promise;
 
   return promise

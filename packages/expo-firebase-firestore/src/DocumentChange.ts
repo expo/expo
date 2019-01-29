@@ -1,10 +1,7 @@
 import DocumentSnapshot from './DocumentSnapshot';
 
-import { Firestore, NativeDocumentChange } from './firestoreTypes.flow';
+import { Firestore, NativeDocumentChange } from './firestoreTypes.types';
 
-/**
- * @class DocumentChange
- */
 export default class DocumentChange {
   _document: DocumentSnapshot;
 

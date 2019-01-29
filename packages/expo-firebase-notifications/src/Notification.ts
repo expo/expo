@@ -7,35 +7,35 @@ import IOSNotification from './IOSNotification';
 import { Notifications, NativeNotification } from './types';
 const { generatePushID, isObject } = utils;
 
-export type NotificationOpen = {|
-  action: string,
-  notification: Notification,
-  results?: { [string]: string },
-|};
+export type NotificationOpen = {
+  action: string;
+  notification: Notification;
+  results?: { [key: string]: string };
+};
 
 export default class Notification {
   // iOS 8/9 | 10+ | Android
   _android: AndroidNotification;
 
-  _body: string;
+  _body: string = '';
 
   // alertBody | body | contentText
-  _data: { [string]: string };
+  _data: { [key: string]: string } = {};
 
   // userInfo | userInfo | extras
   _ios: IOSNotification;
 
-  _notificationId: string;
+  _notificationId?: string;
 
-  _sound: string | void;
+  _sound?: string;
 
   // soundName | sound | sound
-  _subtitle: string | void;
+  _subtitle?: string;
 
   // N/A | subtitle | subText
-  _title: string; // alertTitle | title | contentTitle
+  _title: string = ''; // alertTitle | title | contentTitle
 
-  constructor(nativeNotification?: NativeNotification, notifications: Notifications) {
+  constructor(nativeNotification: NativeNotification | undefined, notifications: Notifications) {
     if (nativeNotification) {
       this._body = nativeNotification.body;
       this._data = nativeNotification.data;
@@ -62,11 +62,11 @@ export default class Notification {
     return this._android;
   }
 
-  get body(): string {
+  get body(): string | undefined {
     return this._body;
   }
 
-  get data(): { [string]: string } {
+  get data(): { [key: string]: string } | undefined {
     return this._data;
   }
 
@@ -74,19 +74,19 @@ export default class Notification {
     return this._ios;
   }
 
-  get notificationId(): string {
+  get notificationId(): string | undefined {
     return this._notificationId;
   }
 
-  get sound(): ?string {
+  get sound(): string | undefined {
     return this._sound;
   }
 
-  get subtitle(): ?string {
+  get subtitle(): string | undefined {
     return this._subtitle;
   }
 
-  get title(): string {
+  get title(): string | undefined {
     return this._title;
   }
 
@@ -105,7 +105,7 @@ export default class Notification {
    * @param data
    * @returns {Notification}
    */
-  setData(data: Object = {}): Notification {
+  setData(data: { [key: string]: any } = {}): Notification {
     invariant(
       isObject(data),
       `Notification:withData expects an object but got type '${typeof data}'.`
@@ -155,7 +155,8 @@ export default class Notification {
   }
 
   build(): NativeNotification {
-    invariant(this._notificationId, 'Notification: Missing required `notificationId` property');
+    if (!this._notificationId)
+      throw new Error('Notification: Missing required `notificationId` property');
 
     return {
       android: Platform.OS === 'android' ? this._android.build() : undefined,

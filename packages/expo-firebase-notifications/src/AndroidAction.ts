@@ -1,20 +1,19 @@
 import invariant from 'invariant';
 import RemoteInput, { fromNativeAndroidRemoteInput } from './AndroidRemoteInput';
-import { SemanticAction } from './types';
-import { NativeAndroidAction, SemanticActionType } from './types';
+import { NativeAndroidAction, SemanticAction } from './types';
 
 export default class AndroidAction {
   _action: string;
 
-  _allowGeneratedReplies: boolean | void;
+  _allowGeneratedReplies?: boolean;
 
   _icon: string;
 
   _remoteInputs: RemoteInput[];
 
-  _semanticAction: SemanticActionType | void;
+  _semanticAction?: SemanticAction;
 
-  _showUserInterface: boolean | void;
+  _showUserInterface?: boolean;
 
   _title: string;
 
@@ -30,7 +29,7 @@ export default class AndroidAction {
     return this._action;
   }
 
-  get allowGeneratedReplies(): ?boolean {
+  get allowGeneratedReplies(): boolean | undefined {
     return this._allowGeneratedReplies;
   }
 
@@ -42,11 +41,11 @@ export default class AndroidAction {
     return this._remoteInputs;
   }
 
-  get semanticAction(): ?SemanticActionType {
+  get semanticAction(): SemanticAction | undefined {
     return this._semanticAction;
   }
 
-  get showUserInterface(): ?boolean {
+  get showUserInterface(): boolean | undefined {
     return this._showUserInterface;
   }
 
@@ -83,7 +82,7 @@ export default class AndroidAction {
    * @param semanticAction
    * @returns {AndroidAction}
    */
-  setSemanticAction(semanticAction: SemanticActionType): AndroidAction {
+  setSemanticAction(semanticAction: SemanticAction): AndroidAction {
     invariant(
       Object.values(SemanticAction).includes(semanticAction),
       `AndroidAction:setSemanticAction Invalid Semantic Action: ${semanticAction}`

@@ -3,8 +3,8 @@ import { utils } from 'expo-firebase-app';
 // import type Database from './index';
 // import type Reference from './Reference';
 
-type Database = object;
-type Reference = object;
+type Database = { [key: string]: any };
+type Reference = { [key: string]: any };
 
 const { typeOf } = utils;
 
@@ -32,8 +32,8 @@ export default class OnDisconnect {
    * @param value
    * @returns {*}
    */
-  set(value: string | Object): Promise<void> {
-    return this._database.nativeModule.onDisconnectSet(this.path, {
+  async set(value: string | Object): Promise<void> {
+    return await this._database.nativeModule.onDisconnectSet(this.path, {
       type: typeOf(value),
       value,
     });
@@ -44,23 +44,23 @@ export default class OnDisconnect {
    * @param values
    * @returns {*}
    */
-  update(values: Object): Promise<void> {
-    return this._database.nativeModule.onDisconnectUpdate(this.path, values);
+  async update(values: Object): Promise<void> {
+    return await this._database.nativeModule.onDisconnectUpdate(this.path, values);
   }
 
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.database.OnDisconnect#remove
    * @returns {*}
    */
-  remove(): Promise<void> {
-    return this._database.nativeModule.onDisconnectRemove(this.path);
+  async remove(): Promise<void> {
+    return await this._database.nativeModule.onDisconnectRemove(this.path);
   }
 
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.database.OnDisconnect#cancel
    * @returns {*}
    */
-  cancel(): Promise<void> {
-    return this._database.nativeModule.onDisconnectCancel(this.path);
+  async cancel(): Promise<void> {
+    return await this._database.nativeModule.onDisconnectCancel(this.path);
   }
 }

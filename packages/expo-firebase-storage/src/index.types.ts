@@ -1,13 +1,15 @@
-export type Storage = object;
+import StorageStatics from './statics';
 
-export type StorageReference = object;
+export type Storage = any;
 
-export type StorageTask = object;
+export type StorageReference = any;
+
+export type StorageTask = any;
 
 export type UploadTaskSnapshotType = {
   bytesTransferred: number;
   downloadURL: string | null;
-  metadata: Object; // TODO flow type def for https://firebase.google.com/docs/reference/js/firebase.storage.FullMetadata.html
+  metadata: any; // TODO flow type def for https://firebase.google.com/docs/reference/js/firebase.storage.FullMetadata.html
   ref: StorageReference;
   state:
     | typeof StorageStatics.TaskState.RUNNING

@@ -2,13 +2,13 @@
 import { DynamicLink, NativeAndroidParameters } from './types';
 
 export default class AndroidParameters {
-  _fallbackUrl: string | void;
+  _fallbackUrl?: string;
 
   _link: DynamicLink;
 
-  _minimumVersion: number | void;
+  _minimumVersion?: number;
 
-  _packageName: string | void;
+  _packageName?: string;
 
   constructor(link: DynamicLink) {
     this._link = link;

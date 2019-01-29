@@ -1,5 +1,4 @@
-import { SharedEventEmitter, ModuleBase } from 'expo-firebase-app';
-import App from 'expo-firebase-app';
+import { App, SharedEventEmitter, ModuleBase } from 'expo-firebase-app';
 
 import DynamicLink from './DynamicLink';
 
@@ -51,17 +50,14 @@ export default class Links extends ModuleBase {
    * @param parameters
    * @returns {Promise.<String>}
    */
-  createDynamicLink(link: DynamicLink): Promise<string> {
+  async createDynamicLink(link: DynamicLink): Promise<string> {
     if (!(link instanceof DynamicLink)) {
-      return Promise.reject(
-        new Error(`Links:createDynamicLink expects a 'DynamicLink' but got type ${typeof link}`)
+      throw new Error(
+        `Links:createDynamicLink expects a 'DynamicLink' but got type ${typeof link}`
       );
     }
-    try {
-      return this.nativeModule.createDynamicLink(link.build());
-    } catch (error) {
-      return Promise.reject(error);
-    }
+
+    return await this.nativeModule.createDynamicLink(link.build());
   }
 
   /**
@@ -69,27 +65,22 @@ export default class Links extends ModuleBase {
    * @param parameters
    * @returns {Promise.<String>}
    */
-  createShortDynamicLink(link: DynamicLink, type?: 'SHORT' | 'UNGUESSABLE'): Promise<String> {
+  async createShortDynamicLink(link: DynamicLink, type?: 'SHORT' | 'UNGUESSABLE'): Promise<string> {
     if (!(link instanceof DynamicLink)) {
-      return Promise.reject(
-        new Error(
-          `Links:createShortDynamicLink expects a 'DynamicLink' but got type ${typeof link}`
-        )
+      throw new Error(
+        `Links:createShortDynamicLink expects a 'DynamicLink' but got type ${typeof link}`
       );
     }
-    try {
-      return this.nativeModule.createShortDynamicLink(link.build(), type);
-    } catch (error) {
-      return Promise.reject(error);
-    }
+
+    return await this.nativeModule.createShortDynamicLink(link.build(), type);
   }
 
   /**
    * Returns the link that triggered application open
    * @returns {Promise.<String>}
    */
-  getInitialLink(): Promise<?string> {
-    return this.nativeModule.getInitialLink();
+  async getInitialLink(): Promise<string | undefined> {
+    return await this.nativeModule.getInitialLink();
   }
 
   /**
@@ -97,7 +88,7 @@ export default class Links extends ModuleBase {
    * @param listener
    * @returns {Function}
    */
-  onLink(listener: string => any): () => any {
+  onLink(listener: (event: string) => any): () => any {
     this.logger.info('Creating onLink listener');
 
     SharedEventEmitter.addListener('onLink', listener);

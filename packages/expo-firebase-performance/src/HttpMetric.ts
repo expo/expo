@@ -3,9 +3,9 @@ export default class HttpMetric {
 
   httpMethod: string;
 
-  _nativeModule: object;
+  _nativeModule: any;
 
-  constructor(nativeModule, url: string, httpMethod: string) {
+  constructor(nativeModule: any, url: string, httpMethod: string) {
     this._nativeModule = nativeModule;
     this.url = url;
     this.httpMethod = httpMethod;

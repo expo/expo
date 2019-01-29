@@ -3,6 +3,8 @@ import { Platform } from 'expo-core';
 import { APP_MODULES, CUSTOM_URL_OR_REGION_NAMESPACES } from './appStore';
 import getModuleInstance from './getModuleInstance';
 import INTERNALS from './internals';
+import { FirebaseModule } from '../types';
+type App = any;
 
 type ModuleFactory = () => FirebaseModule;
 
@@ -17,12 +19,12 @@ const isAndroid = Platform.OS === 'android';
  * @private
  */
 
-export const createAppModule = <M: FirebaseModule>(
+export const createAppModule = <M>(
   app: App,
-  namespace: FirebaseNamespace,
-  InstanceClass: Class<M>
+  namespace: any,
+  InstanceClass?: any
 ): ModuleFactory => {
-  return (customUrlOrRegion: ?string = null): M => {
+  return (customUrlOrRegion: string | null = null): M => {
     if (customUrlOrRegion && !CUSTOM_URL_OR_REGION_NAMESPACES[namespace]) {
       throw new Error(INTERNALS.STRINGS.ERROR_INIT_SERVICE_URL_UNSUPPORTED(namespace));
     }

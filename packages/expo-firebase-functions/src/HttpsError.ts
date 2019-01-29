@@ -1,17 +1,16 @@
+import { FunctionsErrorCode, HttpsErrorInterface } from './types.flow';
 
-import { FunctionsErrorCode } from './types.flow';
+export default class HttpsError extends Error implements HttpsErrorInterface {
+  details?: any;
 
-export default class HttpsError extends Error {
-  +details: ?any;
-
-  +message: string;
-
-  +code: FunctionsErrorCode;
+  code: FunctionsErrorCode;
 
   constructor(code: FunctionsErrorCode, message?: string, details?: any) {
     super(message);
     this.code = code;
     this.details = details;
-    this.message = message;
+    if (message !== undefined) {
+      this.message = message;
+    }
   }
 }

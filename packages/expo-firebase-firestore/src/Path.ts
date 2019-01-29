@@ -1,7 +1,3 @@
-/**
- * @class Path
- */
-
 import invariant from 'invariant';
 
 export default class Path {
@@ -40,7 +36,7 @@ export default class Path {
    *
    * @package
    */
-  static fromName(name: string): Path {
+  static fromName(name?: string): Path {
     if (!name) return new Path([]);
     const parts = name.split('/');
     return new Path(parts);

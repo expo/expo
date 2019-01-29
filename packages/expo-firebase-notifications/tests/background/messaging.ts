@@ -1,10 +1,9 @@
-import firebase from 'expo-firebase-app';
 // Optional flow type
-import { RemoteMessage } from 'expo-firebase-messaging';
+// import { RemoteMessage } from '../../build';
+type RemoteMessage = any;
 
-export default async (message: RemoteMessage) => {
+export default async (message: RemoteMessage): Promise<void> => {
   // handle your message
 
   console.log('Background.messaging', message);
-  return Promise.resolve();
 };

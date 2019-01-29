@@ -2,13 +2,13 @@
 import { DynamicLink, NativeITunesParameters } from './types';
 
 export default class ITunesParameters {
-  _affiliateToken: string | void;
+  _affiliateToken?: string;
 
-  _campaignToken: string | void;
+  _campaignToken?: string;
 
   _link: DynamicLink;
 
-  _providerToken: string | void;
+  _providerToken?: string;
 
   constructor(link: DynamicLink) {
     this._link = link;

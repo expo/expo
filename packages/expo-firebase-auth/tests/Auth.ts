@@ -11,6 +11,7 @@ export default function test({
   sinon,
   helpers,
 }) {
+  const firebaseAdmin = firebase; // TODO: Bacon: ADD 
   const { randomString, sleep } = helpers;
   describe('auth()', () => {
     beforeEach(async () => {
@@ -1063,31 +1064,19 @@ export default function test({
 
     describe('getRedirectResult()', () => {
       it('should throw an unsupported error', () => {
-        (() => {
-          firebase.auth().getRedirectResult();
-        }).should.throw(
-          'firebase.auth().getRedirectResult() is unsupported by the native Firebase SDKs.'
-        );
+        expect(firebase.auth().getRedirectResult()).toThrow('firebase.auth().getRedirectResult() is unsupported by the native Firebase SDKs.')
       });
     });
 
     describe('setPersistence()', () => {
       it('should throw an unsupported error', () => {
-        (() => {
-          firebase.auth().setPersistence();
-        }).should.throw(
-          'firebase.auth().setPersistence() is unsupported by the native Firebase SDKs.'
-        );
+        expect(firebase.auth().setPersistence()).toThrow('firebase.auth().setPersistence() is unsupported by the native Firebase SDKs.')
       });
     });
 
     describe('signInWithPopup', () => {
       it('should throw an unsupported error', () => {
-        (() => {
-          firebase.auth().signInWithPopup();
-        }).should.throw(
-          'firebase.auth().signInWithPopup() is unsupported by the native Firebase SDKs.'
-        );
+        expect(firebase.auth().signInWithPopup()).toThrow('firebase.auth().signInWithPopup() is unsupported by the native Firebase SDKs.')
       });
     });
 
@@ -1105,28 +1094,20 @@ export default function test({
         } catch (error) {
           // Reject
           await firebase.auth().currentUser.delete();
-          throw new Error('sendPasswordResetEmail() caused an error', error);
+          throw new Error('sendPasswordResetEmail() caused an error');
         }
       });
     });
 
     describe('signInWithRedirect()', () => {
       it('should throw an unsupported error', () => {
-        (() => {
-          firebase.auth().signInWithRedirect();
-        }).should.throw(
-          'firebase.auth().signInWithRedirect() is unsupported by the native Firebase SDKs.'
-        );
+        expect(firebase.auth().signInWithRedirect(), 'firebase.auth().signInWithRedirect() is unsupported by the native Firebase SDKs.');
       });
     });
 
     describe('useDeviceLanguage()', () => {
       it('should throw an unsupported error', () => {
-        (() => {
-          firebase.auth().useDeviceLanguage();
-        }).should.throw(
-          'firebase.auth().useDeviceLanguage() is unsupported by the native Firebase SDKs.'
-        );
+        expect(firebase.auth().useDeviceLanguage()).toThrow('firebase.auth().useDeviceLanguage() is unsupported by the native Firebase SDKs.');
       });
     });
   });

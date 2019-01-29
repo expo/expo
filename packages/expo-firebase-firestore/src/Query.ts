@@ -1,31 +1,30 @@
+import { NativeErrorResponse, SharedEventEmitter, utils } from 'expo-firebase-app';
 
-import { SharedEventEmitter, utils } from 'expo-firebase-app';
-
-import { NativeErrorResponse } from 'expo-firebase-app';
 import DocumentSnapshot from './DocumentSnapshot';
 import FieldPath from './FieldPath';
 import QuerySnapshot from './QuerySnapshot';
 import SnapshotError from './SnapshotError';
 import { buildNativeArray, buildTypeMap } from './utils/serialize';
 
-import  Path from './Path';
-import  {
+import Path from './Path';
+import {
   Firestore,
   MetadataChanges,
   QueryDirection,
+  GetOptions,
   QueryOperator,
-} from './firestoreTypes.flow';
+} from './firestoreTypes.types';
 
 const { firestoreAutoId, isFunction, isObject } = utils;
 
-const DIRECTIONS: { [key: QueryDirection]: string } = {
-  ASC: 'ASCENDING',
-  asc: 'ASCENDING',
-  DESC: 'DESCENDING',
-  desc: 'DESCENDING',
-};
+enum DIRECTIONS {
+  ASC = 'ASCENDING',
+  asc = 'ASCENDING',
+  DESC = 'DESCENDING',
+  desc = 'DESCENDING',
+}
 
-const OPERATORS: { [key: QueryOperator]: string } = {
+const OPERATORS: { [key: string]: string } = {
   '=': 'EQUAL',
   '==': 'EQUAL',
   '>': 'GREATER_THAN',
@@ -35,36 +34,36 @@ const OPERATORS: { [key: QueryOperator]: string } = {
   'array-contains': 'ARRAY_CONTAINS',
 };
 
-type NativeFieldPath = {|
-  elements?: string[],
-  string?: string,
-  type: 'fieldpath' | 'string',
-|};
-type FieldFilter = {|
-  fieldPath: NativeFieldPath,
-  operator: string,
-  value: any,
-|};
-type FieldOrder = {|
-  direction: string,
-  fieldPath: NativeFieldPath,
-|};
+type NativeFieldPath = {
+  elements?: string[];
+  string?: string;
+  type: 'fieldpath' | 'string';
+};
+type FieldFilter = {
+  fieldPath: NativeFieldPath;
+  operator: string;
+  value: any;
+};
+type FieldOrder = {
+  direction: string;
+  fieldPath: NativeFieldPath;
+};
 type QueryOptions = {
-  endAt?: any[],
-  endBefore?: any[],
-  limit?: number,
-  offset?: number,
-  selectFields?: string[],
-  startAfter?: any[],
-  startAt?: any[],
+  endAt?: any[];
+  endBefore?: any[];
+  limit?: number;
+  offset?: number;
+  selectFields?: string[];
+  startAfter?: any[];
+  startAt?: any[];
 };
 
-export type ObserverOnError = SnapshotError => void;
-export type ObserverOnNext = QuerySnapshot => void;
+export type ObserverOnError = (error: SnapshotError) => void;
+export type ObserverOnNext = (snapshot: QuerySnapshot) => void;
 
 export type Observer = {
-  error?: ObserverOnError,
-  next: ObserverOnNext,
+  error?: ObserverOnError;
+  next: ObserverOnNext;
 };
 
 const buildNativeFieldPath = (fieldPath: string | FieldPath): NativeFieldPath => {
@@ -87,7 +86,7 @@ export default class Query {
   _fieldFilters: FieldFilter[];
   _fieldOrders: FieldOrder[];
   _firestore: Firestore;
-  _iid: number;
+  _iid?: number;
   _queryOptions: QueryOptions;
   _referencePath: Path;
 
@@ -139,30 +138,27 @@ export default class Query {
     );
   }
 
-  get(options?: GetOptions): Promise<QuerySnapshot> {
+  async get(options?: GetOptions): Promise<QuerySnapshot> {
     if (options) {
       if (!isObject(options)) {
-        return Promise.reject(new Error('Query.get failed: First argument must be an object.'));
+        throw new Error('Query.get failed: First argument must be an object.');
       } else if (
         options.source &&
         (options.source !== 'default' && options.source !== 'server' && options.source !== 'cache')
       ) {
-        return Promise.reject(
-          new Error(
-            'Query.get failed: GetOptions.source must be one of `default`, `server` or `cache`.'
-          )
+        throw new Error(
+          'Query.get failed: GetOptions.source must be one of `default`, `server` or `cache`.'
         );
       }
     }
-    return this._firestore.nativeModule
-      .collectionGet(
-        this._referencePath.relativeName,
-        this._fieldFilters,
-        this._fieldOrders,
-        this._queryOptions,
-        options
-      )
-      .then(nativeData => new QuerySnapshot(this._firestore, this, nativeData));
+    const nativeData = await this._firestore.nativeModule.collectionGet(
+      this._referencePath.relativeName,
+      this._fieldFilters,
+      this._fieldOrders,
+      this._queryOptions,
+      options
+    );
+    return new QuerySnapshot(this._firestore, this, nativeData);
   }
 
   limit(limit: number): Query {
@@ -190,16 +186,17 @@ export default class Query {
     let observer: Observer;
     let metadataChanges = {};
     // Called with: onNext, ?onError
-    if (isFunction(optionsOrObserverOrOnNext)) {
-      if (observerOrOnNextOrOnError && !isFunction(observerOrOnNextOrOnError)) {
+    if (optionsOrObserverOrOnNext && typeof optionsOrObserverOrOnNext === 'function') {
+      if (observerOrOnNextOrOnError && typeof observerOrOnNextOrOnError !== 'function') {
         throw new Error('Query.onSnapshot failed: Second argument must be a valid function.');
       }
       // $FlowExpectedError: Not coping with the overloaded method signature
       observer = {
         next: optionsOrObserverOrOnNext,
-        error: observerOrOnNextOrOnError,
+        error: observerOrOnNextOrOnError as ObserverOnError,
       };
     } else if (optionsOrObserverOrOnNext && isObject(optionsOrObserverOrOnNext)) {
+      optionsOrObserverOrOnNext = optionsOrObserverOrOnNext as Observer;
       // Called with: Observer
       if (optionsOrObserverOrOnNext.next) {
         if (isFunction(optionsOrObserverOrOnNext.next)) {
@@ -219,13 +216,13 @@ export default class Query {
       ) {
         metadataChanges = optionsOrObserverOrOnNext;
         // Called with: Options, onNext, ?onError
-        if (isFunction(observerOrOnNextOrOnError)) {
+        if (typeof observerOrOnNextOrOnError === 'function') {
           if (onError && !isFunction(onError)) {
             throw new Error('Query.onSnapshot failed: Third argument must be a valid function.');
           }
           // $FlowExpectedError: Not coping with the overloaded method signature
           observer = {
-            next: observerOrOnNextOrOnError,
+            next: observerOrOnNextOrOnError as ObserverOnNext,
             error: onError,
           };
           // Called with Options, Observer
@@ -311,7 +308,7 @@ export default class Query {
     return unsubscribe;
   }
 
-  orderBy(fieldPath: string | FieldPath, directionStr?: QueryDirection = 'asc'): Query {
+  orderBy(fieldPath: string | FieldPath, directionStr: QueryDirection = 'asc'): Query {
     // TODO: Validation
     // validate.isFieldPath('fieldPath', fieldPath);
     // validate.isOptionalFieldOrder('directionStr', directionStr);

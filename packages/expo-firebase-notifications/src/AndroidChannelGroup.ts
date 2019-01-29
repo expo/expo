@@ -1,9 +1,6 @@
 import invariant from 'invariant';
 
-type NativeAndroidChannelGroup = {|
-  groupId: string,
-  name: string,
-|};
+import { NativeAndroidChannelGroup } from './types';
 
 export default class AndroidChannelGroup {
   _groupId: string;

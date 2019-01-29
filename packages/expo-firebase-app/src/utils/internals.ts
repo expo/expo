@@ -13,9 +13,9 @@ const NAMESPACE_PODS = {
   storage: 'Firebase/Storage',
 };
 
-const GRADLE_DEPS = {
-  admob: 'ads',
-};
+enum GRADLE_DEPS {
+  admob = 'ads',
+}
 
 const PLAY_SERVICES_CODES = {
   // $FlowExpectedError: Doesn't like numerical object keys: https://github.com/facebook/flow/issues/380

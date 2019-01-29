@@ -1,45 +1,47 @@
-export type Firestore = object;
+export type Firestore = { [key: string]: any };
 
-export type MetadataChanges = {|
-  includeMetadataChanges: boolean,
-|};
+export type MetadataChanges = {
+  includeMetadataChanges: boolean;
+};
 
 export type QueryDirection = 'DESC' | 'desc' | 'ASC' | 'asc';
 
 export type QueryOperator = '<' | '<=' | '=' | '==' | '>' | '>=';
 
 export type GetOptions = {
-  source: 'default' | 'server' | 'cache',
+  source: 'default' | 'server' | 'cache';
 };
 
 export type SetOptions = {
-  merge?: boolean,
+  merge?: boolean;
 };
 
 export type SnapshotOptions = {
-  INNER?: string,
+  INNER?: string;
 };
 
 export type SnapshotMetadata = {
-  fromCache: boolean,
-  hasPendingWrites: boolean,
+  fromCache: boolean;
+  hasPendingWrites: boolean;
 };
 
 export type NativeDocumentChange = {
-  document: NativeDocumentSnapshot,
-  newIndex: number,
-  oldIndex: number,
-  type: string,
+  document: NativeDocumentSnapshot;
+  newIndex: number;
+  oldIndex: number;
+  type: 'added' | 'modified' | 'removed';
 };
 
 export type NativeDocumentSnapshot = {
-  data: { [string]: NativeTypeMap },
-  metadata: SnapshotMetadata,
-  path: string,
+  data: { [key: string]: NativeTypeMap };
+  metadata: SnapshotMetadata;
+  path: string;
 };
 
 export type NativeTypeMap = {
   type:
+    | 'infinity'
+    | 'nan'
     | 'array'
     | 'boolean'
     | 'date'
@@ -51,6 +53,6 @@ export type NativeTypeMap = {
     | 'number'
     | 'object'
     | 'reference'
-    | 'string',
-  value: any,
+    | 'string';
+  value: any;
 };

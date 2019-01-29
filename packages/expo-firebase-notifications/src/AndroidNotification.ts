@@ -1,102 +1,103 @@
 import invariant from 'invariant';
 
 import AndroidAction, { fromNativeAndroidAction } from './AndroidAction';
-import { BadgeIconType, Category, GroupAlert, Priority } from './types';
 import {
+  BadgeIconType,
+  Category,
+  GroupAlert,
+  Priority,
   Notification,
-  BadgeIconTypeType,
   BigPicture,
   BigText,
-  CategoryType,
-  DefaultsType,
-  GroupAlertType,
+  Defaults,
   InboxStyle,
   Lights,
   NativeAndroidNotification,
-  PriorityType,
   Progress,
   SmallIcon,
-  VisibilityType,
+  Visibility,
 } from './types';
 
 export default class AndroidNotification {
-  _actions: AndroidAction[];
+  _actions: AndroidAction[] = [];
 
-  _autoCancel: boolean | void;
+  _autoCancel?: boolean;
 
-  _badgeIconType: BadgeIconTypeType | void;
+  _badgeIconType?: BadgeIconType;
 
-  _bigPicture: BigPicture | void;
+  _bigPicture?: BigPicture;
 
-  _bigText: BigText | void;
+  _bigText?: BigText;
 
-  _category: CategoryType | void;
+  _category?: Category;
 
-  _channelId: string;
+  _channelId?: string;
 
-  _clickAction: string | void;
+  _clickAction?: string;
 
-  _color: string | void;
+  _color?: string;
 
-  _colorized: boolean | void;
+  _colorized?: boolean;
 
-  _contentInfo: string | void;
+  _contentInfo?: string;
 
-  _defaults: DefaultsType[] | void;
+  _defaults?: Defaults[];
 
-  _group: string | void;
+  _group?: string;
 
-  _groupAlertBehaviour: GroupAlertType | void;
+  _groupAlertBehaviour?: GroupAlert;
 
-  _groupSummary: boolean | void;
+  _groupSummary?: boolean;
 
-  _inboxStyle: InboxStyle | void;
+  _inboxStyle?: InboxStyle;
 
-  _largeIcon: string | void;
+  _largeIcon?: string;
 
-  _lights: Lights | void;
+  _lights?: Lights;
 
-  _localOnly: boolean | void;
+  _localOnly?: boolean;
 
   _notification: Notification;
 
-  _number: number | void;
+  _number?: number;
 
-  _ongoing: boolean | void;
+  _ongoing?: boolean;
 
-  _onlyAlertOnce: boolean | void;
+  _onlyAlertOnce?: boolean;
 
-  _people: string[];
+  _people: string[] = [];
 
-  _priority: PriorityType | void;
+  _priority?: Priority;
 
-  _progress: Progress | void;
+  _progress?: Progress;
 
   // _publicVersion: Notification;
-  _remoteInputHistory: string[] | void;
+  _remoteInputHistory?: string[];
 
-  _shortcutId: string | void;
+  _shortcutId?: string;
 
-  _showWhen: boolean | void;
+  _showWhen?: boolean;
 
-  _smallIcon: SmallIcon;
+  _smallIcon: SmallIcon = {
+    icon: 'ic_launcher',
+  };
 
-  _sortKey: string | void;
+  _sortKey?: string;
 
   // TODO: style: Style; // Need to figure out if this can work
-  _tag: string | void;
+  _tag?: string;
 
-  _ticker: string | void;
+  _ticker?: string;
 
-  _timeoutAfter: number | void;
+  _timeoutAfter?: number;
 
-  _usesChronometer: boolean | void;
+  _usesChronometer?: boolean;
 
-  _vibrate: number[] | void;
+  _vibrate?: number[];
 
-  _visibility: VisibilityType | void;
+  _visibility?: Visibility;
 
-  _when: number | void;
+  _when?: number;
 
   // android unsupported
   // content: RemoteViews
@@ -162,90 +163,90 @@ export default class AndroidNotification {
     };
   }
 
-  get inboxStyle(): ?InboxStyle {
+  get inboxStyle(): InboxStyle | undefined {
     return this._inboxStyle;
   }
   get actions(): AndroidAction[] {
     return this._actions;
   }
 
-  get autoCancel(): ?boolean {
+  get autoCancel(): boolean | undefined {
     return this._autoCancel;
   }
 
-  get badgeIconType(): ?BadgeIconTypeType {
+  get badgeIconType(): BadgeIconType | undefined {
     return this._badgeIconType;
   }
 
-  get bigPicture(): ?BigPicture {
+  get bigPicture(): BigPicture | undefined {
     return this._bigPicture;
   }
 
-  get bigText(): ?BigText {
+  get bigText(): BigText | undefined {
     return this._bigText;
   }
 
-  get category(): ?CategoryType {
+  get category(): Category | undefined {
     return this._category;
   }
 
-  get channelId(): string {
+  get channelId(): string | undefined {
     return this._channelId;
   }
 
-  get clickAction(): ?string {
+  get clickAction(): string | undefined {
     return this._clickAction;
   }
 
-  get color(): ?string {
+  get color(): string | undefined {
     return this._color;
   }
 
-  get colorized(): ?boolean {
+  get colorized(): boolean | undefined {
     return this._colorized;
   }
 
-  get contentInfo(): ?string {
+  get contentInfo(): string | undefined {
     return this._contentInfo;
   }
 
-  get defaults(): ?(DefaultsType[]) {
+  get defaults(): (Defaults[]) | undefined {
     return this._defaults;
   }
 
-  get group(): ?string {
+  get group(): string | undefined {
     return this._group;
   }
 
-  get groupAlertBehaviour(): ?GroupAlertType {
+  get groupAlertBehaviour(): GroupAlert | undefined {
     return this._groupAlertBehaviour;
   }
 
-  get groupSummary(): ?boolean {
+  get groupSummary(): boolean | undefined {
     return this._groupSummary;
   }
 
-  get largeIcon(): ?string {
+  get largeIcon(): string | undefined {
     return this._largeIcon;
   }
 
-  get lights(): ?Lights {
+  get lights(): Lights | undefined {
     return this._lights;
   }
 
-  get localOnly(): ?boolean {
+  get localOnly(): boolean | undefined {
     return this._localOnly;
   }
 
-  get number(): ?number {
+  get number(): number | undefined {
     return this._number;
   }
 
-  get ongoing(): ?boolean {
+  get ongoing(): boolean | undefined {
     return this._ongoing;
   }
 
-  get onlyAlertOnce(): ?boolean {
+  get onlyAlertOnce(): boolean | undefined {
     return this._onlyAlertOnce;
   }
 
@@ -253,23 +254,23 @@ export default class AndroidNotification {
     return this._people;
   }
 
-  get priority(): ?PriorityType {
+  get priority(): Priority | undefined {
     return this._priority;
   }
 
-  get progress(): ?Progress {
+  get progress(): Progress | undefined {
     return this._progress;
   }
 
-  get remoteInputHistory(): ?(string[]) {
+  get remoteInputHistory(): (string[]) | undefined {
     return this._remoteInputHistory;
   }
 
-  get shortcutId(): ?string {
+  get shortcutId(): string | undefined {
     return this._shortcutId;
   }
 
-  get showWhen(): ?boolean {
+  get showWhen(): boolean | undefined {
     return this._showWhen;
   }
 
@@ -277,35 +278,35 @@ export default class AndroidNotification {
     return this._smallIcon;
   }
 
-  get sortKey(): ?string {
+  get sortKey(): string | undefined {
     return this._sortKey;
   }
 
-  get tag(): ?string {
+  get tag(): string | undefined {
     return this._tag;
   }
 
-  get ticker(): ?string {
+  get ticker(): string | undefined {
     return this._ticker;
   }
 
-  get timeoutAfter(): ?number {
+  get timeoutAfter(): number | undefined {
     return this._timeoutAfter;
   }
 
-  get usesChronometer(): ?boolean {
+  get usesChronometer(): boolean | undefined {
     return this._usesChronometer;
   }
 
-  get vibrate(): ?(number[]) {
+  get vibrate(): (number[]) | undefined {
     return this._vibrate;
   }
 
-  get visibility(): ?VisibilityType {
+  get visibility(): Visibility | undefined {
     return this._visibility;
   }
 
-  get when(): ?number {
+  get when(): number | undefined {
     return this._when;
   }
 
@@ -364,7 +365,7 @@ export default class AndroidNotification {
    * @param badgeIconType
    * @returns {Notification}
    */
-  setBadgeIconType(badgeIconType: BadgeIconTypeType): Notification {
+  setBadgeIconType(badgeIconType: BadgeIconType): Notification {
     invariant(
       Object.values(BadgeIconType).includes(badgeIconType),
       `AndroidNotification:setBadgeIconType Invalid BadgeIconType: ${badgeIconType}`
@@ -402,7 +403,7 @@ export default class AndroidNotification {
    * @param category
    * @returns {Notification}
    */
-  setCategory(category: CategoryType): Notification {
+  setCategory(category: Category): Notification {
     invariant(
       Object.values(Category).includes(category),
       `AndroidNotification:setCategory Invalid Category: ${category}`
@@ -466,7 +467,7 @@ export default class AndroidNotification {
    * @param defaults
    * @returns {Notification}
    */
-  setDefaults(defaults: DefaultsType[]): Notification {
+  setDefaults(defaults: Defaults[]): Notification {
     this._defaults = defaults;
     return this._notification;
   }
@@ -486,7 +487,7 @@ export default class AndroidNotification {
    * @param groupAlertBehaviour
    * @returns {Notification}
    */
-  setGroupAlertBehaviour(groupAlertBehaviour: GroupAlertType): Notification {
+  setGroupAlertBehaviour(groupAlertBehaviour: GroupAlert): Notification {
     invariant(
       Object.values(GroupAlert).includes(groupAlertBehaviour),
       `AndroidNotification:setGroupAlertBehaviour Invalid GroupAlert: ${groupAlertBehaviour}`
@@ -577,7 +578,7 @@ export default class AndroidNotification {
    * @param priority
    * @returns {Notification}
    */
-  setPriority(priority: PriorityType): Notification {
+  setPriority(priority: Priority): Notification {
     invariant(
       Object.values(Priority).includes(priority),
       `AndroidNotification:setPriority Invalid Priority: ${priority}`
@@ -722,7 +723,7 @@ export default class AndroidNotification {
    * @param visibility
    * @returns {Notification}
    */
-  setVisibility(visibility: VisibilityType): Notification {
+  setVisibility(visibility: Visibility): Notification {
     this._visibility = visibility;
     return this._notification;
   }
@@ -739,7 +740,8 @@ export default class AndroidNotification {
 
   build(): NativeAndroidNotification {
     // TODO: Validation of required fields
-    invariant(this._channelId, 'AndroidNotification: Missing required `channelId` property');
+    if (!this._channelId)
+      throw new Error('AndroidNotification: Missing required `channelId` property');
     invariant(this._smallIcon, 'AndroidNotification: Missing required `smallIcon` property');
 
     return {

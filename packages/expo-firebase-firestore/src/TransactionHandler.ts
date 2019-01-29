@@ -2,7 +2,7 @@ import { SharedEventEmitter } from 'expo-firebase-app';
 
 import Transaction from './Transaction';
 
-import { Firestore } from './firestoreTypes.flow';
+import { Firestore } from './firestoreTypes.types';
 
 let transactionId = 0;
 
@@ -16,9 +16,9 @@ const generateTransactionId = (): number => transactionId++;
 export type TransactionMeta = {
   id: number;
   stack: string[];
-  reject?: Function;
-  resolve?: Function;
-  transaction: Transaction;
+  reject: Function;
+  resolve: Function;
+  transaction?: Transaction;
   updateFunction: (transaction: Transaction) => Promise<any>;
 };
 
@@ -62,10 +62,16 @@ export default class TransactionHandler {
   _add(updateFunction: (transaction: Transaction) => Promise<any>): Promise<any> {
     const id = generateTransactionId();
     // $FlowExpectedError: Transaction has to be populated
+
+    const stackError: any = new Error();
+
     const meta: TransactionMeta = {
       id,
+      // To be replaced later
+      resolve() {},
+      reject() {},
       updateFunction,
-      stack: new Error().stack
+      stack: stackError.stack
         .split('\n')
         .slice(2)
         .join('\n'),
@@ -142,8 +148,9 @@ export default class TransactionHandler {
     if (!this._pending[id]) return this._remove(id);
 
     const { meta, transaction } = this._pending[id];
-    const { updateFunction, reject } = meta;
+    const { updateFunction } = meta;
 
+    const reject: any = meta.reject;
     // clear any saved state from previous transaction runs
     transaction._prepare();
 
@@ -196,14 +203,14 @@ export default class TransactionHandler {
    */
   _handleError(event: TransactionEvent) {
     const { id, error } = event;
-    const { meta } = this._pending[id];
+    const meta: any = this._pending[id].meta;
 
     if (meta && error) {
       const { code, message } = error;
       // build a JS error and replace its stack
       // with the captured one at start of transaction
       // so it's actually relevant to the user
-      const errorWithStack = new Error(message);
+      const errorWithStack: any = new Error(message);
       // $FlowExpectedError: code is needed for Firebase errors
       errorWithStack.code = code;
       // $FlowExpectedError: stack should be a stack trace

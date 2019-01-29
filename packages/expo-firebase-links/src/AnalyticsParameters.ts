@@ -2,17 +2,17 @@
 import { DynamicLink, NativeAnalyticsParameters } from './types';
 
 export default class AnalyticsParameters {
-  _campaign: string | void;
+  _campaign?: string;
 
-  _content: string | void;
+  _content?: string;
 
   _link: DynamicLink;
 
-  _medium: string | void;
+  _medium?: string;
 
-  _source: string | void;
+  _source?: string;
 
-  _term: string | void;
+  _term?: string;
 
   constructor(link: DynamicLink) {
     this._link = link;

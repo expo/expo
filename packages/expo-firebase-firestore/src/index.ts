@@ -1,7 +1,6 @@
 import { NativeModulesProxy } from 'expo-core';
-import { SharedEventEmitter, ModuleBase, utils } from 'expo-firebase-app';
+import { App, SharedEventEmitter, ModuleBase, utils } from 'expo-firebase-app';
 import invariant from 'invariant';
-import { App } from 'expo-firebase-app';
 import Blob from './Blob';
 import CollectionReference from './CollectionReference';
 import DocumentReference from './DocumentReference';

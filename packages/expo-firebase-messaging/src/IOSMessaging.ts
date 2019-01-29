@@ -1,14 +1,17 @@
 import { Platform } from 'expo-core';
-import Messaging from './';
+
 const isIOS = Platform.OS === 'ios';
+
 export default class IOSMessaging {
-  constructor(messaging: Messaging) {
+  _messaging: any;
+  constructor(messaging: any) {
     this._messaging = messaging;
   }
-  getAPNSToken(): Promise<string | null> {
+
+  async getAPNSToken(): Promise<string | null> {
     if (!isIOS) {
       return null;
     }
-    return this._messaging.nativeModule.getAPNSToken();
+    return await this._messaging.nativeModule.getAPNSToken();
   }
 }

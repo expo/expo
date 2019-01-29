@@ -52,9 +52,9 @@ export default function test({
         tokenResult.issuedAtTime.should.be.a.String();
         tokenResult.expirationTime.should.be.a.String();
 
-        new Date(tokenResult.authTime).toString().should.not.equal('Invalid Date');
-        new Date(tokenResult.issuedAtTime).toString().should.not.equal('Invalid Date');
-        new Date(tokenResult.expirationTime).toString().should.not.equal('Invalid Date');
+        expect(new Date(tokenResult.authTime).toString()).not.toBe('Invalid Date');
+        expect(new Date(tokenResult.issuedAtTime).toString()).not.toBe('Invalid Date');
+        expect(new Date(tokenResult.expirationTime).toString()).not.toBe('Invalid Date');
 
         tokenResult.claims.should.be.a.Object();
         tokenResult.claims.iat.should.be.a.Number();
@@ -236,7 +236,7 @@ export default function test({
         } catch (error) {
           // Reject
           await firebase.auth().signOut();
-          return Promise.reject(new Error('reload() caused an error', error));
+          throw new Error('reload() caused an error');
         }
       });
     });
@@ -255,7 +255,7 @@ export default function test({
         } catch (error) {
           // Reject
           await firebase.auth().currentUser.delete();
-          return Promise.reject(new Error('sendEmailVerification() caused an error', error));
+          throw new Error('sendEmailVerification() caused an error');
         }
       });
     });
@@ -375,9 +375,9 @@ export default function test({
     describe('linkWithPhoneNumber()', () => {
       it('should throw an unsupported error', async () => {
         await firebase.auth().signInAnonymouslyAndRetrieveData();
-        (() => {
-          firebase.auth().currentUser.linkWithPhoneNumber();
-        }).should.throw('User.linkWithPhoneNumber() is unsupported by the native Firebase SDKs.');
+        expect(firebase.auth().currentUser.linkWithPhoneNumber()).toThrow(
+          'User.linkWithPhoneNumber() is unsupported by the native Firebase SDKs.'
+        );
         await firebase.auth().signOut();
       });
     });
@@ -385,9 +385,9 @@ export default function test({
     describe('linkWithPopup()', () => {
       it('should throw an unsupported error', async () => {
         await firebase.auth().signInAnonymouslyAndRetrieveData();
-        (() => {
-          firebase.auth().currentUser.linkWithPopup();
-        }).should.throw('User.linkWithPopup() is unsupported by the native Firebase SDKs.');
+        expect(firebase.auth().currentUser.linkWithPopup()).toThrow(
+          'User.linkWithPopup() is unsupported by the native Firebase SDKs.'
+        );
         await firebase.auth().signOut();
       });
     });
@@ -395,9 +395,9 @@ export default function test({
     describe('linkWithRedirect()', () => {
       it('should throw an unsupported error', async () => {
         await firebase.auth().signInAnonymouslyAndRetrieveData();
-        (() => {
-          firebase.auth().currentUser.linkWithRedirect();
-        }).should.throw('User.linkWithRedirect() is unsupported by the native Firebase SDKs.');
+        expect(firebase.auth().currentUser.linkWithRedirect()).toThrow(
+          'User.linkWithRedirect() is unsupported by the native Firebase SDKs.'
+        );
         await firebase.auth().signOut();
       });
     });
@@ -405,9 +405,7 @@ export default function test({
     describe('reauthenticateWithPhoneNumber()', () => {
       it('should throw an unsupported error', async () => {
         await firebase.auth().signInAnonymouslyAndRetrieveData();
-        (() => {
-          firebase.auth().currentUser.reauthenticateWithPhoneNumber();
-        }).should.throw(
+        expect(firebase.auth().currentUser.reauthenticateWithPhoneNumber()).toThrow(
           'User.reauthenticateWithPhoneNumber() is unsupported by the native Firebase SDKs.'
         );
         await firebase.auth().signOut();
@@ -417,9 +415,7 @@ export default function test({
     describe('reauthenticateWithPopup()', () => {
       it('should throw an unsupported error', async () => {
         await firebase.auth().signInAnonymouslyAndRetrieveData();
-        (() => {
-          firebase.auth().currentUser.reauthenticateWithPopup();
-        }).should.throw(
+        expect(firebase.auth().currentUser.reauthenticateWithPopup()).toThrow(
           'User.reauthenticateWithPopup() is unsupported by the native Firebase SDKs.'
         );
         await firebase.auth().signOut();
@@ -429,9 +425,7 @@ export default function test({
     describe('reauthenticateWithRedirect()', () => {
       it('should throw an unsupported error', async () => {
         await firebase.auth().signInAnonymouslyAndRetrieveData();
-        (() => {
-          firebase.auth().currentUser.reauthenticateWithRedirect();
-        }).should.throw(
+        expect(firebase.auth().currentUser.reauthenticateWithRedirect()).toThrow(
           'User.reauthenticateWithRedirect() is unsupported by the native Firebase SDKs.'
         );
         await firebase.auth().signOut();
@@ -441,7 +435,7 @@ export default function test({
     describe('refreshToken', () => {
       it('should throw an unsupported error', async () => {
         await firebase.auth().signInAnonymouslyAndRetrieveData();
-        (() => firebase.auth().currentUser.refreshToken).should.throw(
+        expect(firebase.auth().currentUser.refreshToken).toThrow(
           'User.refreshToken is unsupported by the native Firebase SDKs.'
         );
         await firebase.auth().signOut();

@@ -1,1 +1,1 @@
-export type AnyJs = null | undefined | boolean | number | string | object;
+export type AnyJs = null | undefined | boolean | number | string | { [key: string]: any };

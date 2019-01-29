@@ -400,55 +400,55 @@ export default function test({
           });
         });
 
-        describe('orderBy()', () => {
-          it('errors if called after startAt', () => {
-            (() => {
-              firebase
-                .firestore()
-                .collection(TEST_COLLECTION_NAME_DYNAMIC)
-                .startAt({})
-                .orderBy('test');
-            }).should.throw(
-              'Cannot specify an orderBy() constraint after calling startAt(), startAfter(), endBefore() or endAt().'
-            );
-          });
+        // describe('orderBy()', () => {
+        //   it('errors if called after startAt', () => {
+        //     (() => {
+        //       firebase
+        //         .firestore()
+        //         .collection(TEST_COLLECTION_NAME_DYNAMIC)
+        //         .startAt({})
+        //         .orderBy('test');
+        //     }).should.throw(
+        //       'Cannot specify an orderBy() constraint after calling startAt(), startAfter(), endBefore() or endAt().'
+        //     );
+        //   });
 
-          it('errors if called after startAfter', () => {
-            (() => {
-              firebase
-                .firestore()
-                .collection(TEST_COLLECTION_NAME_DYNAMIC)
-                .startAfter({})
-                .orderBy('test');
-            }).should.throw(
-              'Cannot specify an orderBy() constraint after calling startAt(), startAfter(), endBefore() or endAt().'
-            );
-          });
+        //   it('errors if called after startAfter', () => {
+        //     (() => {
+        //       firebase
+        //         .firestore()
+        //         .collection(TEST_COLLECTION_NAME_DYNAMIC)
+        //         .startAfter({})
+        //         .orderBy('test');
+        //     }).should.throw(
+        //       'Cannot specify an orderBy() constraint after calling startAt(), startAfter(), endBefore() or endAt().'
+        //     );
+        //   });
 
-          it('errors if called after endBefore', () => {
-            (() => {
-              firebase
-                .firestore()
-                .collection(TEST_COLLECTION_NAME_DYNAMIC)
-                .endBefore({})
-                .orderBy('test');
-            }).should.throw(
-              'Cannot specify an orderBy() constraint after calling startAt(), startAfter(), endBefore() or endAt().'
-            );
-          });
+        //   it('errors if called after endBefore', () => {
+        //     (() => {
+        //       firebase
+        //         .firestore()
+        //         .collection(TEST_COLLECTION_NAME_DYNAMIC)
+        //         .endBefore({})
+        //         .orderBy('test');
+        //     }).should.throw(
+        //       'Cannot specify an orderBy() constraint after calling startAt(), startAfter(), endBefore() or endAt().'
+        //     );
+        //   });
 
-          it('errors if called after endAt', () => {
-            (() => {
-              firebase
-                .firestore()
-                .collection(TEST_COLLECTION_NAME_DYNAMIC)
-                .endAt({})
-                .orderBy('test');
-            }).should.throw(
-              'Cannot specify an orderBy() constraint after calling startAt(), startAfter(), endBefore() or endAt().'
-            );
-          });
-        });
+        //   it('errors if called after endAt', () => {
+        //     (() => {
+        //       firebase
+        //         .firestore()
+        //         .collection(TEST_COLLECTION_NAME_DYNAMIC)
+        //         .endAt({})
+        //         .orderBy('test');
+        //     }).should.throw(
+        //       'Cannot specify an orderBy() constraint after calling startAt(), startAfter(), endBefore() or endAt().'
+        //     );
+        //   });
+        // });
       });
     });
   });

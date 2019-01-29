@@ -1,7 +1,5 @@
 import { NativeModulesProxy } from 'expo-core';
-import firebase, { ModuleBase } from 'expo-firebase-app';
-
-import { App } from 'expo-firebase-app';
+import firebase, { App, ModuleBase } from 'expo-firebase-app';
 import Reference from './Reference';
 import TransactionHandler from './transaction';
 
@@ -38,7 +36,7 @@ export default class Database extends ModuleBase {
   static statics = statics;
 
   _databaseURL: string;
-  _offsetRef: Reference;
+  _offsetRef?: Reference;
   _serverTimeOffset: number;
   _transactionHandler: TransactionHandler;
 
@@ -94,7 +92,7 @@ export default class Database extends ModuleBase {
    * @return {number}
    */
   getServerTime(): number {
-    return new Date(Date.now() + this._serverTimeOffset);
+    return new Date(Date.now() + this._serverTimeOffset).getTime();
   }
 
   /**

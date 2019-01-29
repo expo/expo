@@ -1,7 +1,6 @@
 import { Platform } from 'expo-core';
-import { SharedEventEmitter, INTERNALS, ModuleBase, utils } from 'expo-firebase-app';
+import { App, SharedEventEmitter, INTERNALS, ModuleBase, utils } from 'expo-firebase-app';
 
-import { App } from 'expo-firebase-app';
 import ConfirmationResult from './phone/ConfirmationResult';
 import PhoneAuthListener from './phone/PhoneAuthListener';
 import EmailAuthProvider from './providers/EmailAuthProvider';
@@ -26,10 +25,12 @@ import {
 
 const isAndroid = Platform.OS === 'android';
 
-const { isBoolean } = utils;
+const isBoolean = (value: any): boolean => {
+  return typeof value === 'boolean';
+};
 
 type AuthState = {
-  user?: NativeUser,
+  user?: NativeUser;
 };
 
 const NATIVE_EVENTS = {
@@ -55,6 +56,7 @@ export const statics = {
     ERROR: 'error',
   },
 };
+
 export default class Auth extends ModuleBase {
   static namespace = 'auth';
   static moduleName = 'ExpoFirebaseAuth';
@@ -92,7 +94,7 @@ export default class Auth extends ModuleBase {
       // sub to internal native event - this fans out to
       // public events based on event.type
       this.getAppEventName(NATIVE_EVENTS.phoneAuthStateChanged),
-      (event: Object) => {
+      (event: { [key: string]: any }) => {
         const eventKey = `phone:auth:${event.requestKey}:${event.type}`;
         SharedEventEmitter.emit(eventKey, event.state);
       }
@@ -112,7 +114,7 @@ export default class Auth extends ModuleBase {
     this.nativeModule.addIdTokenListener();
   }
 
-  _setUser(user: ?NativeUser): ?User {
+  _setUser(user?: NativeUser): User | null {
     this._user = user ? new User(this, user) : null;
     this._authResult = true;
     SharedEventEmitter.emit(this.getAppEventName('onUserChanged'), this._user);
@@ -183,10 +185,9 @@ export default class Auth extends ModuleBase {
    * Sign the current user out
    * @return {Promise}
    */
-  signOut(): Promise<void> {
-    return this.nativeModule.signOut().then(() => {
-      this._setUser();
-    });
+  async signOut(): Promise<void> {
+    await this.nativeModule.signOut();
+    this._setUser();
   }
 
   /**
@@ -364,10 +365,10 @@ export default class Auth extends ModuleBase {
     autoVerifyTimeoutOrForceResend?: number | boolean,
     forceResend?: boolean
   ): PhoneAuthListener {
-    let _forceResend = forceResend;
-    let _autoVerifyTimeout = 60;
+    let _forceResend: boolean | undefined = forceResend;
+    let _autoVerifyTimeout: number | boolean | undefined = 60;
 
-    if (isBoolean(autoVerifyTimeoutOrForceResend)) {
+    if (typeof autoVerifyTimeoutOrForceResend === 'boolean') {
       _forceResend = autoVerifyTimeoutOrForceResend;
     } else {
       _autoVerifyTimeout = autoVerifyTimeoutOrForceResend;
@@ -490,6 +491,9 @@ export default class Auth extends ModuleBase {
    *
    * @return {AuthSettings}
    */
+
+
+  _settings?: AuthSettings;
   get settings(): AuthSettings {
     if (!this._settings) {
       // lazy initialize

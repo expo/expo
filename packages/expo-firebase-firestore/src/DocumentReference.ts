@@ -1,4 +1,3 @@
-
 import { SharedEventEmitter, utils } from 'expo-firebase-app';
 import invariant from 'invariant';
 
@@ -13,15 +12,15 @@ import {
   MetadataChanges,
   NativeDocumentSnapshot,
   SetOptions,
-} from './firestoreTypes.flow';
+} from './firestoreTypes.types';
 import Path from './Path';
 
-type ObserverOnError = Object => void;
-type ObserverOnNext = DocumentSnapshot => void;
+type ObserverOnError = (error: { [key: string]: any }) => void;
+type ObserverOnNext = (snapshot: DocumentSnapshot) => void;
 
 type Observer = {
-  error?: ObserverOnError,
-  next: ObserverOnNext,
+  error?: ObserverOnError;
+  next: ObserverOnNext;
 };
 
 const { firestoreAutoId, isFunction, isObject } = utils;
@@ -48,8 +47,7 @@ export default class DocumentReference {
 
   get parent(): CollectionReference {
     const parentPath = this._documentPath.parent();
-    // $FlowExpectedError: parentPath can never be null
-    return new CollectionReference(this._firestore, parentPath);
+    return new CollectionReference(this._firestore, parentPath as Path);
   }
 
   get path(): string {
@@ -97,27 +95,26 @@ export default class DocumentReference {
     let observer: Observer;
     let docListenOptions = {};
     // Called with: onNext, ?onError
-    if (isFunction(optionsOrObserverOrOnNext)) {
-      if (observerOrOnNextOrOnError && !isFunction(observerOrOnNextOrOnError)) {
+    if (optionsOrObserverOrOnNext && typeof optionsOrObserverOrOnNext === 'function') {
+      if (observerOrOnNextOrOnError && typeof observerOrOnNextOrOnError !== 'function') {
         throw new Error(
           'DocumentReference.onSnapshot failed: Second argument must be a valid function.'
         );
       }
-      // $FlowExpectedError: Not coping with the overloaded method signature
       observer = {
         next: optionsOrObserverOrOnNext,
         error: observerOrOnNextOrOnError,
-      };
+      } as any;
     } else if (optionsOrObserverOrOnNext && isObject(optionsOrObserverOrOnNext)) {
       // Called with: Observer
+      optionsOrObserverOrOnNext = optionsOrObserverOrOnNext as Observer;
       if (optionsOrObserverOrOnNext.next) {
-        if (isFunction(optionsOrObserverOrOnNext.next)) {
+        if (typeof optionsOrObserverOrOnNext.next === 'function') {
           if (optionsOrObserverOrOnNext.error && !isFunction(optionsOrObserverOrOnNext.error)) {
             throw new Error(
               'DocumentReference.onSnapshot failed: Observer.error must be a valid function.'
             );
           }
-          // $FlowExpectedError: Not coping with the overloaded method signature
           observer = {
             next: optionsOrObserverOrOnNext.next,
             error: optionsOrObserverOrOnNext.error,
@@ -138,26 +135,28 @@ export default class DocumentReference {
               'DocumentReference.onSnapshot failed: Third argument must be a valid function.'
             );
           }
-          // $FlowExpectedError: Not coping with the overloaded method signature
           observer = {
             next: observerOrOnNextOrOnError,
             error: onError,
-          };
+          } as any;
           // Called with Options, Observer
         } else if (
           observerOrOnNextOrOnError &&
           isObject(observerOrOnNextOrOnError) &&
-          observerOrOnNextOrOnError.next
+          observerOrOnNextOrOnError['next']
         ) {
-          if (isFunction(observerOrOnNextOrOnError.next)) {
-            if (observerOrOnNextOrOnError.error && !isFunction(observerOrOnNextOrOnError.error)) {
+          if (typeof observerOrOnNextOrOnError['next'] === 'function') {
+            if (
+              observerOrOnNextOrOnError['error'] &&
+              typeof observerOrOnNextOrOnError['error'] === 'function'
+            ) {
               throw new Error(
                 'DocumentReference.onSnapshot failed: Observer.error must be a valid function.'
               );
             }
             observer = {
-              next: observerOrOnNextOrOnError.next,
-              error: observerOrOnNextOrOnError.error,
+              next: observerOrOnNextOrOnError['next'],
+              error: observerOrOnNextOrOnError['error'],
             };
           } else {
             throw new Error(

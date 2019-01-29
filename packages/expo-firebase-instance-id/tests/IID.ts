@@ -1,15 +1,4 @@
-export default function test({
-  describe,
-  xdescribe,
-  it,
-  xit,
-  beforeEach,
-  expect,
-  jasmine,
-  firebase,
-  should,
-  helpers: { sleep },
-}) {
+export default function test({ describe, it, expect, firebase, should, helpers: { sleep } }) {
   describe('iid()', () => {
     describe('get()', () => {
       it('returns instance id string', async () => {

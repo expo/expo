@@ -1,21 +1,21 @@
 import { DynamicLink, NativeIOSParameters } from './types';
 
 export default class IOSParameters {
-  _appStoreId: string | void;
+  _appStoreId?: string;
 
-  _bundleId: string | void;
+  _bundleId?: string;
 
-  _customScheme: string | void;
+  _customScheme?: string;
 
-  _fallbackUrl: string | void;
+  _fallbackUrl?: string;
 
-  _iPadBundleId: string | void;
+  _iPadBundleId?: string;
 
-  _iPadFallbackUrl: string | void;
+  _iPadFallbackUrl?: string;
 
   _link: DynamicLink;
 
-  _minimumVersion: string | void;
+  _minimumVersion?: string;
 
   constructor(link: DynamicLink) {
     this._link = link;

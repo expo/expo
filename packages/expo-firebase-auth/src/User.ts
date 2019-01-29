@@ -10,7 +10,7 @@ import {
   IdTokenResult,
 } from './types';
 
-type Auth = object;
+type Auth = any;
 
 type UpdateProfile = {
   displayName?: string;
@@ -84,10 +84,9 @@ export default class User {
    * Delete the current user
    * @return {Promise}
    */
-  delete(): Promise<void> {
-    return this._auth.nativeModule.delete().then(() => {
-      this._auth._setUser();
-    });
+  async delete(): Promise<User> {
+    await this._auth.nativeModule.delete();
+    return this._auth._setUser();
   }
 
   /**
@@ -96,8 +95,8 @@ export default class User {
    * @param forceRefresh boolean Force refresh regardless of token expiration.
    * @return {Promise<string>}
    */
-  getIdToken(forceRefresh: boolean = false): Promise<string> {
-    return this._auth.nativeModule.getIdToken(forceRefresh);
+  async getIdToken(forceRefresh: boolean = false): Promise<string> {
+    return await this._auth.nativeModule.getIdToken(forceRefresh);
   }
 
   /**
@@ -107,38 +106,42 @@ export default class User {
    * @param forceRefresh boolean Force refresh regardless of token expiration.
    * @return {Promise<IdTokenResult>}
    */
-  getIdTokenResult(forceRefresh: boolean = false): Promise<IdTokenResult> {
-    return this._auth.nativeModule.getIdTokenResult(forceRefresh);
+  async getIdTokenResult(forceRefresh: boolean = false): Promise<IdTokenResult> {
+    return await this._auth.nativeModule.getIdTokenResult(forceRefresh);
   }
 
   /**
    * @param credential
    */
-  linkWithCredential(credential: AuthCredential): Promise<UserCredential> {
-    return this._auth.nativeModule
-      .linkWithCredential(credential.providerId, credential.token, credential.secret)
-      .then(userCredential => this._auth._setUserCredential(userCredential));
+  async linkWithCredential(credential: AuthCredential): Promise<UserCredential> {
+    const userCredential = await this._auth.nativeModule.linkWithCredential(
+      credential.providerId,
+      credential.token,
+      credential.secret
+    );
+    return await this._auth._setUserCredential(userCredential);
   }
 
   /**
    * @deprecated Deprecated linkAndRetrieveDataWithCredential in favor of linkWithCredential.
    * @param credential
    */
-  linkAndRetrieveDataWithCredential(credential: AuthCredential): Promise<UserCredential> {
+  async linkAndRetrieveDataWithCredential(credential: AuthCredential): Promise<UserCredential> {
     console.warn('Deprecated linkAndRetrieveDataWithCredential in favor of linkWithCredential.');
-    return this._auth.nativeModule
-      .linkWithCredential(credential.providerId, credential.token, credential.secret)
-      .then(userCredential => this._auth._setUserCredential(userCredential));
+    return await this.linkAndRetrieveDataWithCredential(credential);
   }
 
   /**
    * Re-authenticate a user with a third-party authentication provider
    * @return {Promise}         A promise resolved upon completion
    */
-  reauthenticateWithCredential(credential: AuthCredential): Promise<UserCredential> {
-    return this._auth.nativeModule
-      .reauthenticateWithCredential(credential.providerId, credential.token, credential.secret)
-      .then(userCredential => this._auth._setUserCredential(userCredential));
+  async reauthenticateWithCredential(credential: AuthCredential): Promise<UserCredential> {
+    const userCredential = await this._auth.nativeModule.reauthenticateWithCredential(
+      credential.providerId,
+      credential.token,
+      credential.secret
+    );
+    return await this._auth._setUserCredential(userCredential);
   }
 
   /**
@@ -147,35 +150,33 @@ export default class User {
    * @deprecated Deprecated reauthenticateAndRetrieveDataWithCredential in favor of reauthenticateWithCredential.
    * @return {Promise}         A promise resolved upon completion
    */
-  reauthenticateAndRetrieveDataWithCredential(credential: AuthCredential): Promise<UserCredential> {
+  async reauthenticateAndRetrieveDataWithCredential(
+    credential: AuthCredential
+  ): Promise<UserCredential> {
     console.warn(
       'Deprecated reauthenticateAndRetrieveDataWithCredential in favor of reauthenticateWithCredential.'
     );
-    return this._auth.nativeModule
-      .reauthenticateWithCredential(credential.providerId, credential.token, credential.secret)
-      .then(userCredential => this._auth._setUserCredential(userCredential));
+    return await this.reauthenticateWithCredential(credential);
   }
 
   /**
    * Reload the current user
    * @return {Promise}
    */
-  reload(): Promise<void> {
-    return this._auth.nativeModule.reload().then(user => {
-      this._auth._setUser(user);
-    });
+  async reload(): Promise<User> {
+    const user = await this._auth.nativeModule.reload();
+    return await this._auth._setUser(user);
   }
 
   /**
    * Send verification email to current user.
    */
-  sendEmailVerification(actionCodeSettings?: ActionCodeSettings): Promise<void> {
-    return this._auth.nativeModule.sendEmailVerification(actionCodeSettings).then(user => {
-      this._auth._setUser(user);
-    });
+  async sendEmailVerification(actionCodeSettings?: ActionCodeSettings): Promise<User> {
+    const user = await this._auth.nativeModule.sendEmailVerification(actionCodeSettings);
+    return await this._auth._setUser(user);
   }
 
-  toJSON(): Object {
+  toJSON(): { [key: string]: any } {
     return Object.assign({}, this._user);
   }
 
@@ -184,8 +185,9 @@ export default class User {
    * @param providerId
    * @return {Promise.<TResult>|*}
    */
-  unlink(providerId: string): Promise<User> {
-    return this._auth.nativeModule.unlink(providerId).then(user => this._auth._setUser(user));
+  async unlink(providerId: string): Promise<User> {
+    const user = await this._auth.nativeModule.unlink(providerId);
+    return await this._auth._setUser(user);
   }
 
   /**
@@ -194,10 +196,9 @@ export default class User {
    * @param  {string} email The user's _new_ email
    * @return {Promise}       A promise resolved upon completion
    */
-  updateEmail(email: string): Promise<void> {
-    return this._auth.nativeModule.updateEmail(email).then(user => {
-      this._auth._setUser(user);
-    });
+  async updateEmail(email: string): Promise<void> {
+    const user = await this._auth.nativeModule.updateEmail(email);
+    return await this._auth._setUser(user);
   }
 
   /**
@@ -205,10 +206,9 @@ export default class User {
    * @param  {string} password the new password
    * @return {Promise}
    */
-  updatePassword(password: string): Promise<void> {
-    return this._auth.nativeModule.updatePassword(password).then(user => {
-      this._auth._setUser(user);
-    });
+  async updatePassword(password: string): Promise<User> {
+    const user = await this._auth.nativeModule.updatePassword(password);
+    return await this._auth._setUser(user);
   }
 
   /**
@@ -217,12 +217,13 @@ export default class User {
    * @param  {AuthCredential} credential Auth credential with the _new_ phone number
    * @return {Promise}
    */
-  updatePhoneNumber(credential: AuthCredential): Promise<void> {
-    return this._auth.nativeModule
-      .updatePhoneNumber(credential.providerId, credential.token, credential.secret)
-      .then(user => {
-        this._auth._setUser(user);
-      });
+  async updatePhoneNumber(credential: AuthCredential): Promise<User> {
+    const user = await this._auth.nativeModule.updatePhoneNumber(
+      credential.providerId,
+      credential.token,
+      credential.secret
+    );
+    return await this._auth._setUser(user);
   }
 
   /**
@@ -230,10 +231,9 @@ export default class User {
    * @param  {Object} updates An object containing the keys listed [here](https://firebase.google.com/docs/auth/ios/manage-users#update_a_users_profile)
    * @return {Promise}
    */
-  updateProfile(updates: UpdateProfile = {}): Promise<void> {
-    return this._auth.nativeModule.updateProfile(updates).then(user => {
-      this._auth._setUser(user);
-    });
+  async updateProfile(updates: UpdateProfile = {}): Promise<User> {
+    const user = await this._auth.nativeModule.updateProfile(updates);
+    return this._auth._setUser(user);
   }
 
   /**

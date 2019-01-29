@@ -1,13 +1,13 @@
 import { Invitation, NativeAndroidInvitation } from './types';
 
 export default class AndroidInvitation {
-  _additionalReferralParameters: { [string]: string } | void;
+  _additionalReferralParameters?: { [key: string]: string };
 
-  _emailHtmlContent: string | void;
+  _emailHtmlContent?: string;
 
-  _emailSubject: string | void;
+  _emailSubject?: string;
 
-  _googleAnalyticsTrackingId: string | void;
+  _googleAnalyticsTrackingId?: string;
 
   _invitation: Invitation;
 

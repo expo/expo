@@ -2,44 +2,44 @@ export default class Trace {
   identifier: string;
   _nativeModule: any;
 
-  constructor(nativeModule, identifier: string) {
+  constructor(nativeModule: any, identifier: string) {
     this._nativeModule = nativeModule;
     this.identifier = identifier;
   }
 
-  getAttribute(attribute: string): Promise<string | null> {
-    return this._nativeModule.getTraceAttribute(this.identifier, attribute);
+  async getAttribute(attribute: string): Promise<string | null> {
+    return await this._nativeModule.getTraceAttribute(this.identifier, attribute);
   }
 
-  getAttributes(): Promise<Object> {
-    return this._nativeModule.getTraceAttributes(this.identifier);
+  async getAttributes(): Promise<Object> {
+    return await this._nativeModule.getTraceAttributes(this.identifier);
   }
 
-  getMetric(metricName: string): Promise<number> {
-    return this._nativeModule.getTraceLongMetric(this.identifier, metricName);
+  async getMetric(metricName: string): Promise<number> {
+    return await this._nativeModule.getTraceLongMetric(this.identifier, metricName);
   }
 
-  incrementMetric(metricName: string, incrementBy: number): Promise<null> {
-    return this._nativeModule.incrementTraceMetric(this.identifier, metricName, incrementBy);
+  async incrementMetric(metricName: string, incrementBy: number): Promise<null> {
+    return await this._nativeModule.incrementTraceMetric(this.identifier, metricName, incrementBy);
   }
 
-  putAttribute(attribute: string, value: string): Promise<true | false> {
-    return this._nativeModule.putTraceAttribute(this.identifier, attribute, value);
+  async putAttribute(attribute: string, value: string): Promise<boolean> {
+    return await this._nativeModule.putTraceAttribute(this.identifier, attribute, value);
   }
 
-  putMetric(metricName: string, value: number): Promise<null> {
-    return this._nativeModule.putTraceMetric(this.identifier, metricName, value);
+  async putMetric(metricName: string, value: number): Promise<null> {
+    return await this._nativeModule.putTraceMetric(this.identifier, metricName, value);
   }
 
-  removeAttribute(attribute: string): Promise<null> {
-    return this._nativeModule.removeTraceAttribute(this.identifier, attribute);
+  async removeAttribute(attribute: string): Promise<null> {
+    return await this._nativeModule.removeTraceAttribute(this.identifier, attribute);
   }
 
-  start(): Promise<null> {
-    return this._nativeModule.startTrace(this.identifier);
+  async start(): Promise<null> {
+    return await this._nativeModule.startTrace(this.identifier);
   }
 
-  stop(): Promise<null> {
-    return this._nativeModule.stopTrace(this.identifier);
+  async stop(): Promise<null> {
+    return await this._nativeModule.stopTrace(this.identifier);
   }
 }
