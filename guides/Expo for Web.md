@@ -21,7 +21,7 @@ Check out the examples of Expo for web:
 
 ## Terminology
 
-- Platform Module: Native Module get's hard to use when you have a _"web Native Module"_ written in JS. Because of this we now call "Native Modules" "Platform Modules"
+- Platform Module: The term "native module" is partly confusing since "web native modules" are written in JS for the DOM; in this context, "native" refers to using the web platform while in other contexts, "native" refers to Objective-C, Java, and so on. Because of this ambiguity, we now refer to "native modules" as "platform modules".
 - Unimodule: An agnostic Platform Module that uses the universal [`expo-core`](https://github.com/expo/expo/tree/master/packages/expo-core) package.
 - `[front-end]`: The "front-end" represents the user-facing side of a Unimodule.
 - `[back-end]`: The platform specific API of a Unimodule. For instance: Objective-C, Java, & JavaScript.
