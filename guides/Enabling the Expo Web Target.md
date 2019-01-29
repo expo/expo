@@ -15,7 +15,7 @@ A standard Expo app (Running `expo init` with the `expo-cli`) will have the foll
 - app.json
 ```
 
-You'll need to add and configure a couple of things manually while we finalize the Expo for web offical bootstrapping flow.
+You'll need to add and configure a couple of things manually while we finalize the official project creation for Expo for web.
 
 - Add [`web/`](https://github.com/expo/expo/tree/master/apps/native-component-list/web)
 - Add [`webpack.config.js`](https://github.com/expo/expo/blob/master/apps/native-component-list/webpack.config.js) You will also need to change `modules: absolutePath('../../node_modules'),` to `modules: absolutePath('./node_modules'),`. Currently we are targeting all the `node_modules/` to prevent silly errors.
