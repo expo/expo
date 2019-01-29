@@ -33,13 +33,12 @@ function rand(from = 1, to = 9999) {
 
 describe('Core', () => {
   describe('Firebase', () => {
-    xit('it should create js apps for natively initialized apps', () => {
+    xit('it should create js apps for natively initialized apps', async () => {
       // N/A in Expo
       expect(firebase.app()._nativeInitialized).toBe(true);
-      return Promise.resolve();
     });
 
-    it('natively initialized apps should have options available in js', () => {
+    it('natively initialized apps should have options available in js', async () => {
       expect(firebase.app().options.apiKey).toBe(
         OS === 'ios' ? iosTestConfig.apiKey : androidTestConfig.apiKey
       );
@@ -50,7 +49,6 @@ describe('Core', () => {
       expect(firebase.app().options.messagingSenderId).toBe(iosTestConfig.messagingSenderId);
       expect(firebase.app().options.projectId).toBe(iosTestConfig.projectId);
       expect(firebase.app().options.storageBucket).toBe(iosTestConfig.storageBucket);
-      return Promise.resolve();
     });
 
     it('it should resolve onReady for natively initialized apps', () => firebase.app().onReady());
@@ -77,10 +75,9 @@ describe('Core', () => {
   });
 
   describe('App', () => {
-    it('apps should provide an array of apps', () => {
+    it('apps should provide an array of apps', async () => {
       expect(!!firebase.apps.length).toBe(true);
       expect(firebase.apps.includes(firebase.app('[DEFAULT]'))).toBe(true);
-      return Promise.resolve();
     });
 
     xit('delete default app is unsupported', () => {
@@ -108,7 +105,7 @@ describe('Core', () => {
       firebase.app().extendApp({
         extension,
       });
-      expect(firebase.app().extension).toBe(extension);
+      expect((firebase.app() as any).extension).toBe(extension);
     });
   });
 });
