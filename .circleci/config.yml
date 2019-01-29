@@ -267,7 +267,7 @@ jobs:
           fastlane ios create_iphone_build
           tar \
             -zcf "/tmp/shellapp.tar.gz" \
-            ~/project/iphone-build
+            ~/project/iphone-build/Exponent.xcarchive
       - store_artifacts:
           path: /tmp/shellapp.tar.gz
 
