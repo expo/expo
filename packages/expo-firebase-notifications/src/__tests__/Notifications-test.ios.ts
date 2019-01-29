@@ -1,3 +1,5 @@
+import firebase from 'expo-firebase-app';
+
 const trigger = {
   type: 'push',
 };
@@ -17,21 +19,7 @@ const notification = {
   // 'action-identifier': '',
 };
 
-export default function test({
-  describe,
-  xdescribe,
-  it,
-  xit,
-  beforeEach,
-  expect,
-  jasmine,
-  firebase,
-  should,
-  sleep,
-  device,
-  OS,
-  jet,
-}) {
+export default function test({ device, jet }) {
   describe('notifications() - iOS Only', () => {
     describe('getInitialNotification()', () => {
       it('should be provided ', async () => {

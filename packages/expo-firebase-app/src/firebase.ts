@@ -8,6 +8,25 @@ import { FirebaseOptions } from './types';
 
 import getModuleInstance from './utils/getModuleInstance';
 
+import {
+  AdMobModule,
+  AnalyticsModule,
+  AuthModule,
+  ConfigModule,
+  CrashlyticsModule,
+  DatabaseModule,
+  FirestoreModule,
+  FunctionsModule,
+  InstanceIdModule,
+  InvitesModule,
+  LinksModule,
+  MessagingModule,
+  NotificationsModule,
+  PerformanceModule,
+  StorageModule,
+  UtilsModule,
+} from './module.types';
+
 // TODO: Evan: Read Firebase version.
 const VERSION = '5.0.0';
 
@@ -27,6 +46,38 @@ function createDefaultModule(instance, namespace) {
 }
 
 class Firebase {
+  // admob: AdMobModule;
+
+  analytics: AnalyticsModule;
+
+  auth: AuthModule;
+
+  config: ConfigModule;
+
+  crashlytics: CrashlyticsModule;
+
+  database: DatabaseModule;
+
+  firestore: FirestoreModule;
+
+  functions: FunctionsModule;
+
+  iid: InstanceIdModule;
+
+  invites: InvitesModule;
+
+  links: LinksModule;
+
+  messaging: MessagingModule;
+
+  notifications: NotificationsModule;
+
+  perf: PerformanceModule;
+
+  storage: StorageModule;
+
+  utils: UtilsModule;
+
   constructor() {
     invariant(ExpoFirebaseApp, INTERNALS.STRINGS.ERROR_MISSING_CORE);
 

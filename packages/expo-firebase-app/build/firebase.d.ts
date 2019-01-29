@@ -1,6 +1,22 @@
 import App from './app';
 import { FirebaseOptions } from './types';
+import { AnalyticsModule, AuthModule, ConfigModule, CrashlyticsModule, DatabaseModule, FirestoreModule, FunctionsModule, InstanceIdModule, InvitesModule, LinksModule, MessagingModule, NotificationsModule, PerformanceModule, StorageModule, UtilsModule } from './module.types';
 declare class Firebase {
+    analytics: AnalyticsModule;
+    auth: AuthModule;
+    config: ConfigModule;
+    crashlytics: CrashlyticsModule;
+    database: DatabaseModule;
+    firestore: FirestoreModule;
+    functions: FunctionsModule;
+    iid: InstanceIdModule;
+    invites: InvitesModule;
+    links: LinksModule;
+    messaging: MessagingModule;
+    notifications: NotificationsModule;
+    perf: PerformanceModule;
+    storage: StorageModule;
+    utils: UtilsModule;
     constructor();
     /**
      * Web SDK initializeApp

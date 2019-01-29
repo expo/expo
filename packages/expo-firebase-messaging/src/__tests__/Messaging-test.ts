@@ -1,3 +1,3 @@
-export default function test({ xdescribe }) {
-  xdescribe('messaging()', () => {});
-}
+import firebase from 'expo-firebase-app';
+
+xdescribe('messaging()', () => {});

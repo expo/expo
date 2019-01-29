@@ -1,14 +1,8 @@
+import firebase from 'expo-firebase-app';
+
 const should = require('should');
 
 export default function test({
-  describe,
-  xdescribe,
-  it,
-  xit,
-  beforeEach,
-  expect,
-  jasmine,
-  firebase,
   contextify,
   TestHelpers: {
     firestore: { COL_DOC_1, COL_DOC_1_PATH, TEST_COLLECTION_NAME_DYNAMIC, resetTestCollectionDoc },
@@ -25,7 +19,7 @@ export default function test({
             .where('arrString', 'array-contains', 'a')
             .get();
 
-          should.equal(found.size, 1);
+          expect(found.size).toBe(1);
           found.forEach(documentSnapshot => {
             should.deepEqual(documentSnapshot.data().arrString, contextify(['a', 'b', 'c', 'd']));
           });
@@ -36,7 +30,7 @@ export default function test({
             .where('arrString', 'array-contains', 'f')
             .get();
 
-          should.equal(notFound.size, 0);
+          expect(notFound.size).toBe(0);
         });
 
         it('`array-contains` a number value', async () => {
@@ -46,7 +40,7 @@ export default function test({
             .where('arrNumber', 'array-contains', 1)
             .get();
 
-          should.equal(found.size, 1);
+          expect(found.size).toBe(1);
           found.forEach(documentSnapshot => {
             should.deepEqual(documentSnapshot.data().arrNumber, contextify([1, 2, 3, 4]));
           });
@@ -57,7 +51,7 @@ export default function test({
             .where('arrNumber', 'array-contains', 5)
             .get();
 
-          should.equal(notFound.size, 0);
+          expect(notFound.size).toBe(0);
         });
 
         // TODO: below tests should also check the inverse to ensure working as
@@ -69,9 +63,9 @@ export default function test({
             .where('baz', '==', true)
             .get()
             .then(querySnapshot => {
-              should.equal(querySnapshot.size, 1);
+              expect(querySnapshot.size).toBe(1);
               querySnapshot.forEach(documentSnapshot => {
-                should.equal(documentSnapshot.data().baz, true);
+                expect(documentSnapshot.data().baz).toBe(true);
               });
             }));
 
@@ -82,9 +76,9 @@ export default function test({
             .where('foo', '==', 'bar')
             .get()
             .then(querySnapshot => {
-              should.equal(querySnapshot.size, 1);
+              expect(querySnapshot.size).toBe(1);
               querySnapshot.forEach(documentSnapshot => {
-                should.equal(documentSnapshot.data().foo, 'bar');
+                expect(documentSnapshot.data().foo).toBe('bar');
               });
             }));
 
@@ -95,9 +89,9 @@ export default function test({
             .where('naz', '==', null)
             .get()
             .then(querySnapshot => {
-              should.equal(querySnapshot.size, 1);
+              expect(querySnapshot.size).toBe(1);
               querySnapshot.forEach(documentSnapshot => {
-                should.equal(documentSnapshot.data().naz, null);
+                expect(documentSnapshot.data().naz).toBe(null);
               });
             }));
 
@@ -108,7 +102,7 @@ export default function test({
             .where('timestamp', '==', COL_DOC_1().timestamp)
             .get()
             .then(querySnapshot => {
-              should.equal(querySnapshot.size, 1);
+              expect(querySnapshot.size).toBe(1);
             }));
 
         it('== GeoPoint value', () =>
@@ -118,7 +112,7 @@ export default function test({
             .where('geopoint', '==', COL_DOC_1().geopoint)
             .get()
             .then(querySnapshot => {
-              should.equal(querySnapshot.size, 1);
+              expect(querySnapshot.size).toBe(1);
             }));
 
         it('>= number value', () =>
@@ -128,9 +122,9 @@ export default function test({
             .where('daz', '>=', 123)
             .get()
             .then(querySnapshot => {
-              should.equal(querySnapshot.size, 1);
+              expect(querySnapshot.size).toBe(1);
               querySnapshot.forEach(documentSnapshot => {
-                should.equal(documentSnapshot.data().daz, 123);
+                expect(documentSnapshot.data().daz).toBe(123);
               });
             }));
 
@@ -141,7 +135,7 @@ export default function test({
             .where('geopoint', '>=', new firebase.firestore.GeoPoint(-1, -1))
             .get()
             .then(querySnapshot => {
-              should.equal(querySnapshot.size, 1);
+              expect(querySnapshot.size).toBe(1);
             }));
 
         it('<= float value', () =>
@@ -151,9 +145,9 @@ export default function test({
             .where('gaz', '<=', 12.1234666)
             .get()
             .then(querySnapshot => {
-              should.equal(querySnapshot.size, 1);
+              expect(querySnapshot.size).toBe(1);
               querySnapshot.forEach(documentSnapshot => {
-                should.equal(documentSnapshot.data().gaz, 12.1234567);
+                expect(documentSnapshot.data().gaz).toBe(12.1234567);
               });
             }));
 
@@ -164,9 +158,9 @@ export default function test({
             .where(new firebase.firestore.FieldPath('baz'), '==', true)
             .get()
             .then(querySnapshot => {
-              should.equal(querySnapshot.size, 1);
+              expect(querySnapshot.size).toBe(1);
               querySnapshot.forEach(documentSnapshot => {
-                should.equal(documentSnapshot.data().baz, true);
+                expect(documentSnapshot.data().baz).toBe(true);
               });
             }));
       });

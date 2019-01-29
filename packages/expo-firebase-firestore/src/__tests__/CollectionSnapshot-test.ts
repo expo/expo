@@ -1,15 +1,7 @@
 import { SnapshotError } from 'expo-firebase-firestore';
+import firebase from 'expo-firebase-app';
 
 export default function test({
-  should,
-  describe,
-  xdescribe,
-  it,
-  xit,
-  beforeEach,
-  expect,
-  jasmine,
-  firebase,
   TestHelpers: {
     firestore: {
       COL_DOC_1,

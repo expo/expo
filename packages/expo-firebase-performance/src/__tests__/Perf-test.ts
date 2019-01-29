@@ -1,5 +1,8 @@
-import { HttpMetric, Trace } from '../src';
-export default function test({ describe, it, expect, firebase, helpers: { sleep }, device }) {
+import firebase from 'expo-firebase-app';
+
+import { HttpMetric, Trace } from '../../build';
+
+export default function test({ helpers: { sleep }, device }) {
   describe('perf()', () => {
     describe('setPerformanceCollectionEnabled()', () => {
       it('true', async () => {

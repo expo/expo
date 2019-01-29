@@ -1,13 +1,6 @@
+import firebase from 'expo-firebase-app';
+
 export default function test({
-  describe,
-  xdescribe,
-  it,
-  xit,
-  beforeEach,
-  expect,
-  jasmine,
-  should,
-  firebase,
   TestHelpers: {
     firestore: { DOC_2, DOC_2_PATH, testCollectionDoc, resetTestCollectionDoc },
   },
@@ -19,7 +12,7 @@ export default function test({
       describe('delete()', () => {
         it('should delete a field', async () => {
           const { data } = await testCollectionDoc(DOC_2_PATH).get();
-          should.equal(data().title, DOC_2.title);
+          expect(data().title).toBe(DOC_2.title);
 
           await testCollectionDoc(DOC_2_PATH).update({
             title: firebase.firestore.FieldValue.delete(),
@@ -27,14 +20,14 @@ export default function test({
 
           const { data: dataAfterUpdate } = await testCollectionDoc(DOC_2_PATH).get();
 
-          should.equal(dataAfterUpdate().title, undefined);
+          expect(dataAfterUpdate().title).toBeUndefined();
         });
       });
 
       describe('serverTimestamp()', () => {
         it('should set timestamp', async () => {
           const { data } = await testCollectionDoc(DOC_2_PATH).get();
-          should.equal(data().creationDate, undefined);
+          expect(data().creationDate).toBeUndefined();
 
           await testCollectionDoc(DOC_2_PATH).update({
             creationDate: firebase.firestore.FieldValue.serverTimestamp(),
@@ -42,7 +35,7 @@ export default function test({
 
           const { data: dataAfterUpdate } = await testCollectionDoc(DOC_2_PATH).get();
 
-          dataAfterUpdate().creationDate.should.be.instanceof(Date);
+          expect(dataAfterUpdate().creationDate instanceof Date).toBeTruthy();
         });
       });
     });

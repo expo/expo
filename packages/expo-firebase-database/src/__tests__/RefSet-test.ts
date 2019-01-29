@@ -1,8 +1,6 @@
+import firebase from 'expo-firebase-app';
+
 export default function test({
-  describe,
-  it,
-  beforeEach,
-  firebase,
   contextify,
   TestHelpers: {
     database: { setDatabaseContents, CONTENTS },
@@ -15,7 +13,7 @@ export default function test({
       it('returns a promise', async () => {
         const ref = firebase.database().ref('tests/types/number');
         const returnValue = ref.set(CONTENTS.DEFAULT.number);
-        returnValue.should.be.Promise();
+        expect(returnValue).toBeInstanceOf(Promise);
 
         const value = await returnValue;
         expect(value == null).toBe(true);
@@ -29,14 +27,14 @@ export default function test({
             const ref = firebase.database().ref(`tests/types/${dataRef}`);
 
             const snapshot = await ref.once('value');
-            snapshot.val().should.eql(previousValue);
+            expect(snapshot.val()).toBe(previousValue);
 
             const newValue = contextify(CONTENTS.NEW[dataRef]);
 
             await ref.set(newValue);
 
             const snapshot2 = await ref.once('value');
-            snapshot2.val().should.eql(newValue);
+            expect(snapshot2.val()).toBe(newValue);
           })
         );
       });
@@ -48,7 +46,7 @@ export default function test({
             const ref = firebase.database().ref(`tests/types/${dataRef}`);
 
             const snapshot = await ref.once('value');
-            snapshot.val().should.eql(previousValue);
+            expect(snapshot.val()).toBe(previousValue);
 
             await ref.set(null);
             const snapshot2 = await ref.once('value');

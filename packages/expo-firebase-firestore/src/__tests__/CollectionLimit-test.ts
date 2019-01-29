@@ -1,14 +1,7 @@
+import firebase from 'expo-firebase-app';
+
 export default function test({
-  should,
-  describe,
-  xdescribe,
-  it,
-  xit,
-  beforeEach,
-  expect,
   sinon,
-  jasmine,
-  firebase,
   TestHelpers: {
     firestore: { COL_DOC_1, cleanCollection, TEST_COLLECTION_NAME_DYNAMIC },
   },
@@ -37,7 +30,7 @@ export default function test({
             .limit(3)
             .get()
             .then(querySnapshot => {
-              should.equal(querySnapshot.size, 3);
+              expect(querySnapshot.size).toBe(3);
             }));
 
         it('correctly works with onSnapshot()', async () => {

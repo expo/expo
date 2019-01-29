@@ -1,3 +1,5 @@
+import firebase from 'expo-firebase-app';
+
 import { User } from 'expo-firebase-auth';
 
 const TEST_PHONE_A = '+';
@@ -6,18 +8,7 @@ const TEST_CODE_A = '123456';
 const TEST_PHONE_B = '+';
 const TEST_CODE_B = '654321';
 
-export default function test({
-  describe,
-  firebase,
-  xdescribe,
-  it,
-  xit,
-  beforeEach,
-  expect,
-  jasmine,
-  should,
-  helpers: { sleep },
-}) {
+export default function test({ should, helpers: { sleep } }) {
   describe('auth() => Phone', async () => {
     // iOS
     firebase.auth().settings.appVerificationDisabledForTesting = true;

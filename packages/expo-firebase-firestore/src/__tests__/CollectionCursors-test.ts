@@ -1,12 +1,10 @@
+import firebase from 'expo-firebase-app';
+
 export default function test({
   should,
   describe,
-  xdescribe,
   it,
-  xit,
   beforeEach,
-  expect,
-  jasmine,
   firebase,
   TestHelpers: {
     firestore: { COL_DOC_1, cleanCollection, TEST_COLLECTION_NAME_DYNAMIC },
@@ -62,7 +60,7 @@ export default function test({
               .endAt(new Date(2017, 2, 12, 10, 0, 0))
               .get()
               .then(querySnapshot => {
-                should.equal(querySnapshot.size, 3);
+                expect(querySnapshot.size).toBe(3);
                 should.deepEqual(querySnapshot.docs.map(doc => doc.data().daz), [123, 234, 345]);
               }));
 
@@ -74,7 +72,7 @@ export default function test({
               .endAt(345)
               .get()
               .then(querySnapshot => {
-                should.equal(querySnapshot.size, 3);
+                expect(querySnapshot.size).toBe(3);
                 should.deepEqual(querySnapshot.docs.map(doc => doc.data().daz), [123, 234, 345]);
               }));
 
@@ -86,7 +84,7 @@ export default function test({
               .endAt('bar2')
               .get()
               .then(querySnapshot => {
-                should.equal(querySnapshot.size, 3);
+                expect(querySnapshot.size).toBe(3);
                 should.deepEqual(querySnapshot.docs.map(doc => doc.data().daz), [123, 234, 345]);
               }));
 
@@ -104,7 +102,7 @@ export default function test({
               .endAt(collectionSnapshot.docs[2])
               .get()
               .then(querySnapshot => {
-                should.equal(querySnapshot.size, 3);
+                expect(querySnapshot.size).toBe(3);
                 should.deepEqual(querySnapshot.docs.map(doc => doc.data().daz), [123, 234, 345]);
               });
           });
@@ -117,7 +115,7 @@ export default function test({
               .endAt(new Date(2017, 2, 12, 10, 0, 0))
               .get()
               .then(querySnapshot => {
-                should.equal(querySnapshot.size, 3);
+                expect(querySnapshot.size).toBe(3);
                 should.deepEqual(querySnapshot.docs.map(doc => doc.data().daz), [123, 234, 345]);
               }));
 
@@ -134,7 +132,7 @@ export default function test({
               .endAt(collectionSnapshot.docs[2])
               .get()
               .then(querySnapshot => {
-                should.equal(querySnapshot.size, 3);
+                expect(querySnapshot.size).toBe(3);
                 should.deepEqual(querySnapshot.docs.map(doc => doc.data().daz), [123, 234, 345]);
               });
           });
@@ -149,7 +147,7 @@ export default function test({
               .endBefore(new Date(2017, 2, 12, 10, 0, 0))
               .get()
               .then(querySnapshot => {
-                should.equal(querySnapshot.size, 2);
+                expect(querySnapshot.size).toBe(2);
                 should.deepEqual(querySnapshot.docs.map(doc => doc.data().daz), [123, 234]);
               }));
 
@@ -161,7 +159,7 @@ export default function test({
               .endBefore(345)
               .get()
               .then(querySnapshot => {
-                should.equal(querySnapshot.size, 2);
+                expect(querySnapshot.size).toBe(2);
                 should.deepEqual(querySnapshot.docs.map(doc => doc.data().daz), [123, 234]);
               }));
 
@@ -173,7 +171,7 @@ export default function test({
               .endBefore('bar2')
               .get()
               .then(querySnapshot => {
-                should.equal(querySnapshot.size, 2);
+                expect(querySnapshot.size).toBe(2);
                 should.deepEqual(querySnapshot.docs.map(doc => doc.data().daz), [123, 234]);
               }));
 
@@ -191,7 +189,7 @@ export default function test({
               .endBefore(collectionSnapshot.docs[2])
               .get()
               .then(querySnapshot => {
-                should.equal(querySnapshot.size, 2);
+                expect(querySnapshot.size).toBe(2);
                 should.deepEqual(querySnapshot.docs.map(doc => doc.data().daz), [123, 234]);
               });
           });
@@ -204,7 +202,7 @@ export default function test({
               .endBefore(new Date(2017, 2, 12, 10, 0, 0))
               .get()
               .then(querySnapshot => {
-                should.equal(querySnapshot.size, 2);
+                expect(querySnapshot.size).toBe(2);
                 should.deepEqual(querySnapshot.docs.map(doc => doc.data().daz), [123, 234]);
               }));
 
@@ -221,7 +219,7 @@ export default function test({
               .endBefore(collectionSnapshot.docs[2])
               .get()
               .then(querySnapshot => {
-                should.equal(querySnapshot.size, 2);
+                expect(querySnapshot.size).toBe(2);
                 should.deepEqual(querySnapshot.docs.map(doc => doc.data().daz), [123, 234]);
               });
           });
@@ -236,7 +234,7 @@ export default function test({
               .startAt(new Date(2017, 2, 12, 10, 0, 0))
               .get()
               .then(querySnapshot => {
-                should.equal(querySnapshot.size, 3);
+                expect(querySnapshot.size).toBe(3);
                 should.deepEqual(querySnapshot.docs.map(doc => doc.data().daz), [345, 456, 567]);
               }));
 
@@ -248,7 +246,7 @@ export default function test({
               .startAt(345)
               .get()
               .then(querySnapshot => {
-                should.equal(querySnapshot.size, 3);
+                expect(querySnapshot.size).toBe(3);
                 should.deepEqual(querySnapshot.docs.map(doc => doc.data().daz), [345, 456, 567]);
               }));
 
@@ -260,7 +258,7 @@ export default function test({
               .startAt('bar2')
               .get()
               .then(querySnapshot => {
-                should.equal(querySnapshot.size, 3);
+                expect(querySnapshot.size).toBe(3);
                 should.deepEqual(querySnapshot.docs.map(doc => doc.data().daz), [345, 456, 567]);
               }));
 
@@ -277,7 +275,7 @@ export default function test({
               .startAt(collectionSnapshot.docs[2])
               .get()
               .then(querySnapshot => {
-                should.equal(querySnapshot.size, 3);
+                expect(querySnapshot.size).toBe(3);
                 should.deepEqual(querySnapshot.docs.map(doc => doc.data().daz), [345, 456, 567]);
               });
           });
@@ -290,7 +288,7 @@ export default function test({
               .startAt(new Date(2017, 2, 12, 10, 0, 0))
               .get()
               .then(querySnapshot => {
-                should.equal(querySnapshot.size, 3);
+                expect(querySnapshot.size).toBe(3);
                 should.deepEqual(querySnapshot.docs.map(doc => doc.data().daz), [345, 456, 567]);
               }));
 
@@ -307,7 +305,7 @@ export default function test({
               .startAt(collectionSnapshot.docs[2])
               .get()
               .then(querySnapshot => {
-                should.equal(querySnapshot.size, 3);
+                expect(querySnapshot.size).toBe(3);
                 should.deepEqual(querySnapshot.docs.map(doc => doc.data().daz), [345, 456, 567]);
               });
           });
@@ -322,7 +320,7 @@ export default function test({
               .startAfter(new Date(2017, 2, 12, 10, 0, 0))
               .get()
               .then(querySnapshot => {
-                should.equal(querySnapshot.size, 2);
+                expect(querySnapshot.size).toBe(2);
                 should.deepEqual(querySnapshot.docs.map(doc => doc.data().daz), [456, 567]);
               }));
 
@@ -334,7 +332,7 @@ export default function test({
               .startAfter(345)
               .get()
               .then(querySnapshot => {
-                should.equal(querySnapshot.size, 2);
+                expect(querySnapshot.size).toBe(2);
                 should.deepEqual(querySnapshot.docs.map(doc => doc.data().daz), [456, 567]);
               }));
 
@@ -346,7 +344,7 @@ export default function test({
               .startAfter('bar2')
               .get()
               .then(querySnapshot => {
-                should.equal(querySnapshot.size, 2);
+                expect(querySnapshot.size).toBe(2);
                 should.deepEqual(querySnapshot.docs.map(doc => doc.data().daz), [456, 567]);
               }));
 
@@ -363,7 +361,7 @@ export default function test({
               .startAfter(collectionSnapshot.docs[2])
               .get()
               .then(querySnapshot => {
-                should.equal(querySnapshot.size, 2);
+                expect(querySnapshot.size).toBe(2);
                 should.deepEqual(querySnapshot.docs.map(doc => doc.data().daz), [456, 567]);
               });
           });
@@ -376,7 +374,7 @@ export default function test({
               .startAfter(new Date(2017, 2, 12, 10, 0, 0))
               .get()
               .then(querySnapshot => {
-                should.equal(querySnapshot.size, 2);
+                expect(querySnapshot.size).toBe(2);
                 should.deepEqual(querySnapshot.docs.map(doc => doc.data().daz), [456, 567]);
               }));
 
@@ -394,7 +392,7 @@ export default function test({
               .startAfter(collectionSnapshot.docs[2])
               .get()
               .then(querySnapshot => {
-                should.equal(querySnapshot.size, 2);
+                expect(querySnapshot.size).toBe(2);
                 should.deepEqual(querySnapshot.docs.map(doc => doc.data().daz), [456, 567]);
               });
           });

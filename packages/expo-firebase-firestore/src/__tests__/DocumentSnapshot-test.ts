@@ -1,15 +1,12 @@
 import { DocumentReference } from 'expo-firebase-firestore';
+import firebase from 'expo-firebase-app';
+
+import { Platform } from 'expo-core';
+
+const { OS } = Platform;
 
 export default function test({
   should,
-  describe,
-  xdescribe,
-  it,
-  xit,
-  beforeEach,
-  expect,
-  jasmine,
-  firebase,
   TestHelpers: {
     firestore: {
       COL_DOC_1,
@@ -81,24 +78,24 @@ export default function test({
           const snapshot = await testCollectionDoc(COL_DOC_1_PATH).get();
           const { get } = snapshot;
 
-          should.equal(snapshot.get('foo'), 'bar');
-          should.equal(get('foo'), 'bar');
+          expect(snapshot.get('foo')).toBe('bar');
+          expect(get('foo')).toBe('bar');
 
-          should.equal(snapshot.get('object.daz'), 123);
-          should.equal(get('object.daz'), 123);
+          expect(snapshot.get('object.daz')).toBe(123);
+          expect(get('object.daz')).toBe(123);
 
-          should.equal(snapshot.get('nonexistent.object'), undefined);
-          should.equal(get('nonexistent.object'), undefined);
+          expect(snapshot.get('nonexistent.object')).toBe(undefined);
+          expect(get('nonexistent.object')).toBe(undefined);
         });
 
         it('using a FieldPath instance', async () => {
           const snapshot = await testCollectionDoc(COL_DOC_1_PATH).get();
 
-          should.equal(snapshot.get('foo'), 'bar');
+          expect(snapshot.get('foo')).toBe('bar');
 
-          should.equal(snapshot.get(new firebase.firestore.FieldPath('foo')), 'bar');
+          expect(snapshot.get(new firebase.firestore.FieldPath('foo'))).toBe('bar');
 
-          should.equal(snapshot.get(new firebase.firestore.FieldPath('object', 'daz')), 123);
+          expect(snapshot.get(new firebase.firestore.FieldPath('object', 'daz'))).toBe(123);
 
           should.equal(
             snapshot.get(new firebase.firestore.FieldPath('nonexistent', 'object')),

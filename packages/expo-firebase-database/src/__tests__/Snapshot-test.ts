@@ -1,14 +1,8 @@
+import firebase from 'expo-firebase-app';
+
 export default function test({
-  describe,
-  xdescribe,
-  it,
-  xit,
-  beforeEach,
-  expect,
-  jasmine,
-  firebase,
   TestHelpers: {
-    database: { CONTENTS, setDatabaseContents },
+    database: { setDatabaseContents },
   },
 }) {
   // TODO use testRunId in refs to prevent multiple test instances interfering with each other

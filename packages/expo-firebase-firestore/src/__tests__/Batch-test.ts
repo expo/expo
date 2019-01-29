@@ -1,16 +1,9 @@
+import firebase from 'expo-firebase-app';
+
 export default function test({
-  describe,
-  xdescribe,
-  it,
-  xit,
-  beforeEach,
-  expect,
-  jasmine,
-  firebase,
   TestHelpers: {
     firestore: { testDocRef },
   },
-  should,
 }) {
   describe('firestore()', () => {
     describe('batch()', () => {
@@ -44,20 +37,20 @@ export default function test({
         await batch.commit();
 
         const ayDoc = await ayRef.get();
-        should.equal(ayDoc.exists, false);
+        expect(ayDoc.exists).toBe(false);
 
         const lDoc = await lRef.get();
-        lDoc.data().name.should.equal('London');
-        lDoc.data().population.should.equal(3000000);
+        expect(lDoc.data().name).toBe('London');
+        expect(lDoc.data().population).toBe(3000000);
 
         const nycDoc = await nycRef.get();
-        nycDoc.data().name.should.equal('New York City');
-        nycDoc.data().population.should.equal(1000000);
+        expect(nycDoc.data().name).toBe('New York City');
+        expect(nycDoc.data().population).toBe(1000000);
 
         const sfDoc = await sfRef.get();
-        sfDoc.data().name.should.equal('San Fran FieldPath');
-        sfDoc.data().nested.firstname.should.equal('First Name');
-        sfDoc.data().nested.lastname.should.equal('Last Name');
+        expect(sfDoc.data().name).toBe('San Fran FieldPath');
+        expect(sfDoc.data().nested.firstname).toBe('First Name');
+        expect(sfDoc.data().nested.lastname).toBe('Last Name');
       });
 
       it('errors when invalid parameters supplied', async () => {

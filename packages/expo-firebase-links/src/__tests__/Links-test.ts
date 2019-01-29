@@ -1,3 +1,3 @@
-export default function test({ xdescribe }) {
-  xdescribe('links()', () => {});
-}
+import firebase from 'expo-firebase-app';
+
+xdescribe('links()', () => {});

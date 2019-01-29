@@ -1,15 +1,6 @@
-export default function test({
-  describe,
-  xdescribe,
-  it,
-  xit,
-  beforeEach,
-  expect,
-  jasmine,
-  firebase,
-  should,
-  helpers: { sleep },
-}) {
+import firebase from 'expo-firebase-app';
+
+export default function test({ helpers: { sleep } }) {
   describe('auth() -> Providers', () => {
     beforeEach(async () => {
       if (firebase.auth().currentUser) {

@@ -1,17 +1,8 @@
+import firebase from 'expo-firebase-app';
+
 declare const Buffer: any;
 
-export default function test({
-  should,
-  describe,
-  xdescribe,
-  it,
-  xit,
-  beforeEach,
-  expect,
-  jasmine,
-  firebase,
-  testRunId,
-}) {
+export default function test({ should, testRunId }) {
   const testObject = { hello: 'world', testRunId };
   const testString = JSON.stringify(testObject);
   const testBuffer = Buffer.from(testString);

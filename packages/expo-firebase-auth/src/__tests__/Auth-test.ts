@@ -1,13 +1,6 @@
+import firebase from 'expo-firebase-app';
+
 export default function test({
-  describe,
-  should,
-  firebase,
-  beforeEach,
-  it,
-  expect,
-  jasmine,
-  xit,
-  xdescribe,
   sinon,
   helpers,
 }) {
@@ -349,7 +342,7 @@ export default function test({
           currentUser.should.be.an.Object();
           currentUser.uid.should.be.a.String();
           currentUser.toJSON().should.be.an.Object();
-          should.equal(currentUser.toJSON().email, null);
+          expect(currentUser.toJSON().email).toBe(null);
           currentUser.isAnonymous.should.equal(true);
           currentUser.providerId.should.equal('firebase');
           currentUser.should.equal(firebase.auth().currentUser);
@@ -374,7 +367,7 @@ export default function test({
           currentUser.should.be.an.Object();
           currentUser.uid.should.be.a.String();
           currentUser.toJSON().should.be.an.Object();
-          should.equal(currentUser.toJSON().email, null);
+          expect(currentUser.toJSON().email).toBe(null);
           currentUser.isAnonymous.should.equal(true);
           currentUser.providerId.should.equal('firebase');
           currentUser.should.equal(firebase.auth().currentUser);
@@ -1101,7 +1094,7 @@ export default function test({
 
     describe('signInWithRedirect()', () => {
       it('should throw an unsupported error', () => {
-        expect(firebase.auth().signInWithRedirect(), 'firebase.auth().signInWithRedirect() is unsupported by the native Firebase SDKs.');
+        expect(firebase.auth().signInWithRedirect()).toThrow('firebase.auth().signInWithRedirect() is unsupported by the native Firebase SDKs.');
       });
     });
 

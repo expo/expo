@@ -1,13 +1,9 @@
-export default function test({
-  describe,
-  it,
-  beforeEach,
-  firebase,
+import firebase from 'expo-firebase-app';
 
+export default function test({
   TestHelpers: {
-    database: { CONTENTS, setDatabaseContents },
+    database: { setDatabaseContents },
   },
-  should,
 }) {
   // TODO use testRunId in refs to prevent multiple test instances interfering with each other
   describe('database()', () => {
@@ -25,7 +21,7 @@ export default function test({
           return valueBefore + 10;
         }, true);
 
-        should.equal(committed, true, 'Transaction did not commit.');
+        expect(committed, true).toBe('Transaction did not commit.');
         snapshot.val().should.equal(valueBefore + 10);
       });
 
@@ -33,7 +29,7 @@ export default function test({
         const ref = firebase.database().ref('tests/transaction');
 
         const { committed } = await ref.transaction(() => undefined, true);
-        should.equal(committed, false, 'Transaction committed and did not abort.');
+        expect(committed, false).toBe('Transaction committed and did not abort.');
       });
     });
   });

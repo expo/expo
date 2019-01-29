@@ -1,9 +1,11 @@
-export default function test({ describe, it, expect, firebase, should, helpers: { sleep } }) {
+import firebase from 'expo-firebase-app';
+
+export default function test({ helpers: { sleep } }) {
   describe('iid()', () => {
     describe('get()', () => {
       it('returns instance id string', async () => {
         const iid = await firebase.iid().get();
-        iid.should.be.a.String();
+        expect(iid).toBeInstanceOf(String);
       });
     });
 
@@ -24,19 +26,19 @@ export default function test({ describe, it, expect, firebase, should, helpers: 
       it('should return an FCM token from getToken with arguments', async () => {
         const authorizedEntity = firebase.iid().app.options.messagingSenderId;
         const token = await firebase.iid().getToken(authorizedEntity, '*');
-        token.should.be.a.String();
+        expect(token).toBeInstanceOf(String);
       });
 
       it('should return an FCM token from getToken without arguments', async () => {
         const token = await firebase.iid().getToken();
-        token.should.be.a.String();
+        expect(token).toBeInstanceOf(String);
       });
 
       it('should return an FCM token from getToken with 1 argument', async () => {
         const authorizedEntity = firebase.iid().app.options.messagingSenderId;
 
         const token = await firebase.iid().getToken(authorizedEntity);
-        token.should.be.a.String();
+        expect(token).toBeInstanceOf(String);
       });
     });
 
@@ -44,18 +46,18 @@ export default function test({ describe, it, expect, firebase, should, helpers: 
       it('should return nil from deleteToken with arguments', async () => {
         const authorizedEntity = firebase.iid().app.options.messagingSenderId;
         const token = await firebase.iid().deleteToken(authorizedEntity, '*');
-        should.not.exist(token);
+        expect(token).toBeUndefined();
       });
 
       it('should return nil from deleteToken without arguments', async () => {
         const token = await firebase.iid().deleteToken();
-        should.not.exist(token);
+        expect(token).toBeUndefined();
       });
 
       it('should return nil from deleteToken with 1 argument', async () => {
         const authorizedEntity = firebase.iid().app.options.messagingSenderId;
         const token = await firebase.iid().deleteToken(authorizedEntity);
-        should.not.exist(token);
+        expect(token).toBeUndefined();
       });
     });
   });

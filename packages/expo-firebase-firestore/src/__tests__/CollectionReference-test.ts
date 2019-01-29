@@ -5,27 +5,16 @@ import {
   Path,
 } from 'expo-firebase-firestore';
 
+import firebase from 'expo-firebase-app';
+
 export default function test({
-  describe,
-  afterEach,
-  xdescribe,
-  it,
-  xit,
-  beforeEach,
-  expect,
-  jasmine,
   should,
-  firebase,
   TestHelpers: {
     firestore: {
       COL_DOC_1,
-      DOC_2_PATH,
-      COL_DOC_1_ID,
       COL_DOC_1_PATH,
       TEST_COLLECTION_NAME,
-      TEST_COLLECTION_NAME_DYNAMIC,
       testCollection,
-      cleanCollection,
       testCollectionDoc,
       resetTestCollectionDoc,
     },
@@ -54,7 +43,7 @@ export default function test({
 
         const reference = new CollectionReference(firestore, new Path(['tests']));
         expect(reference instanceof CollectionReference).toBeTruthy();
-        should.equal(reference.parent, null);
+        expect(reference.parent).toBe(null);
 
         const reference2 = new CollectionReference(
           firestore,
@@ -93,7 +82,7 @@ export default function test({
       describe('doc()', () => {
         it('should create DocumentReference with correct path', async () => {
           const docRef = await testCollectionDoc(COL_DOC_1_PATH);
-          should.equal(docRef.path, COL_DOC_1_PATH);
+          expect(docRef.path).toBe(COL_DOC_1_PATH);
         });
 
         it('should error when supplied an incorrect path', () => {
@@ -112,7 +101,7 @@ export default function test({
 
           const querySnapshot = await collection.get();
 
-          should.equal(querySnapshot.size >= 1, true);
+          expect(querySnapshot.size >= 1).toBe(true);
 
           querySnapshot.forEach(documentSnapshot => {
             documentSnapshot.should.be.instanceOf(DocumentSnapshot);
@@ -122,26 +111,26 @@ export default function test({
         it('should support GetOptions source=`default`', async () => {
           const collection = testCollection(TEST_COLLECTION_NAME);
           const querySnapshot = await collection.get({ source: 'default' });
-          should.equal(querySnapshot.size >= 1, true);
+          expect(querySnapshot.size >= 1).toBe(true);
           querySnapshot.metadata.should.be.an.Object();
-          should.equal(querySnapshot.metadata.fromCache, false);
+          expect(querySnapshot.metadata.fromCache).toBe(false);
         });
 
         it('should support GetOptions source=`server`', async () => {
           const collection = testCollection(TEST_COLLECTION_NAME);
           const querySnapshot = await collection.get({ source: 'server' });
-          should.equal(querySnapshot.size >= 1, true);
+          expect(querySnapshot.size >= 1).toBe(true);
           querySnapshot.metadata.should.be.an.Object();
-          should.equal(querySnapshot.metadata.fromCache, false);
+          expect(querySnapshot.metadata.fromCache).toBe(false);
         });
 
         // TODO: Investigate why this isn't returning `fromCache=true`
         xit('should support GetOptions source=`cache`', async () => {
           const collection = testCollection(TEST_COLLECTION_NAME);
           const querySnapshot = await collection.get({ source: 'cache' });
-          should.equal(querySnapshot.size >= 1, true);
+          expect(querySnapshot.size >= 1).toBe(true);
           querySnapshot.metadata.should.be.an.Object();
-          should.equal(querySnapshot.metadata.fromCache, true);
+          expect(querySnapshot.metadata.fromCache).toBe(true);
         });
 
         it('should error with invalid GetOptions source option', async () => {

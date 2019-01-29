@@ -1,15 +1,6 @@
-export default function test({
-  describe,
-  xdescribe,
-  it,
-  xit,
-  beforeEach,
-  expect,
-  jasmine,
-  firebase,
-  should,
-  helpers: { randomString, sleep },
-}) {
+import firebase from 'expo-firebase-app';
+
+export default function test({ helpers: { randomString, sleep } }) {
   describe('auth() -> emailLink Provider', () => {
     beforeEach(async () => {
       if (firebase.auth().currentUser) {
@@ -47,10 +38,10 @@ export default function test({
         const emailLink4 =
           'https://x59dg.app.goo.gl/?link=https://rnfirebase-b9ad4.firebaseapp.com/__/auth/action?apiKey%3Dfoo%26mode%3DsignIn%26oobCode%3Dbar';
 
-        should.equal(true, firebase.auth().isSignInWithEmailLink(emailLink1));
-        should.equal(false, firebase.auth().isSignInWithEmailLink(emailLink2));
-        should.equal(false, firebase.auth().isSignInWithEmailLink(emailLink3));
-        should.equal(true, firebase.auth().isSignInWithEmailLink(emailLink4));
+        expect(true).toBe(firebase.auth().isSignInWithEmailLink(emailLink1));
+        expect(false).toBe(firebase.auth().isSignInWithEmailLink(emailLink2));
+        expect(false).toBe(firebase.auth().isSignInWithEmailLink(emailLink3));
+        expect(true).toBe(firebase.auth().isSignInWithEmailLink(emailLink4));
       });
     });
 

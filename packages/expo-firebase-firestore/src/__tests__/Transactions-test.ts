@@ -1,13 +1,10 @@
+import firebase from 'expo-firebase-app';
+
+import { Platform } from 'expo-core';
+
+const { OS } = Platform;
+
 export default function test({
-  describe,
-  xdescribe,
-  it,
-  xit,
-  beforeEach,
-  expect,
-  jasmine,
-  firebase,
-  OS,
   should,
   TestHelpers: {
     firestore: { testDocRef },
@@ -30,7 +27,7 @@ export default function test({
         };
 
         const result = await firestore.runTransaction(updateFunction);
-        should.equal(result, 1);
+        expect(result).toBe(1);
         const finalDoc = await docRef.get();
         finalDoc.data().value.should.equal(1);
         finalDoc.data().somethingElse.should.equal('set');
@@ -56,7 +53,7 @@ export default function test({
         };
 
         const result = await firestore.runTransaction(updateFunction);
-        should.equal(result, 1);
+        expect(result).toBe(1);
 
         const finalDoc = await docRef.get();
         finalDoc.data().value.should.equal(2);
@@ -79,7 +76,7 @@ export default function test({
         };
 
         const result = await firestore.runTransaction(updateFunction);
-        should.equal(result, 1);
+        expect(result).toBe(1);
 
         const finalDoc = await docRef.get();
         finalDoc.exists.should.equal(false);
@@ -96,7 +93,7 @@ export default function test({
         } catch (e) {
           didReject = true;
         }
-        should.equal(didReject, false);
+        expect(didReject).toBe(false);
 
         // should not error as a promise returned
         didReject = false;
@@ -106,7 +103,7 @@ export default function test({
         } catch (e) {
           didReject = true;
         }
-        should.equal(didReject, false);
+        expect(didReject).toBe(false);
 
         // should error as no promise returned
         didReject = false;
@@ -117,7 +114,7 @@ export default function test({
           didReject = true;
           e.message.includes('must return a Promise');
         }
-        should.equal(didReject, true);
+        expect(didReject).toBe(true);
       });
 
       it('updateFn promise rejections / js exceptions handled', async () => {
@@ -131,9 +128,9 @@ export default function test({
           await firestore.runTransaction(updateFunction);
         } catch (e) {
           didReject = true;
-          should.equal(e, 'shoop');
+          expect(e).toBe('shoop');
         }
-        should.equal(didReject, true);
+        expect(didReject).toBe(true);
 
         // exceptions
         didReject = false;
@@ -145,9 +142,9 @@ export default function test({
           await firestore.runTransaction(updateFunction);
         } catch (e) {
           didReject = true;
-          should.equal(e, 'doop');
+          expect(e).toBe('doop');
         }
-        should.equal(didReject, true);
+        expect(didReject).toBe(true);
       });
 
       it('handle native exceptions', async () => {
@@ -174,7 +171,7 @@ export default function test({
           }
           didReject = true;
         }
-        should.equal(didReject, true);
+        expect(didReject).toBe(true);
       });
     });
   });

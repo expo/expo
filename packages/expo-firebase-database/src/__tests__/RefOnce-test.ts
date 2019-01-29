@@ -1,13 +1,6 @@
+import firebase from 'expo-firebase-app';
+
 export default function test({
-  describe,
-  xdescribe,
-  it,
-  xit,
-  beforeEach,
-  expect,
-  jasmine,
-  sinon,
-  firebase,
   TestHelpers: {
     database: { CONTENTS, setDatabaseContents },
   },
@@ -19,7 +12,7 @@ export default function test({
       it('returns a promise', () => {
         const ref = firebase.database().ref('tests/types/number');
         const returnValue = ref.once('value');
-        returnValue.should.be.Promise();
+        expect(returnValue).toBeInstanceOf(Promise);
       });
 
       it('resolves with the correct value', async () => {
@@ -35,11 +28,11 @@ export default function test({
       });
 
       it('is NOT called when the value is changed', async () => {
-        const callback = sinon.spy();
+        const callback = jest.fn();
         const ref = firebase.database().ref('tests/types/number');
         ref.once('value').then(callback);
         await ref.set(CONTENTS.NEW.number);
-        callback.should.be.calledOnce();
+        expect(callback).toHaveBeenCalled();
       });
 
       it('errors if permission denied', async () => {
@@ -48,7 +41,7 @@ export default function test({
         try {
           await reference.once('value');
         } catch (error) {
-          error.code.includes('database/permission-denied').should.be.true();
+          expect(error.code.includes('database/permission-denied')).toBeTruthy();
           return true;
         }
 

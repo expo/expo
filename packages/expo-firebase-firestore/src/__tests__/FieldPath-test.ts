@@ -1,13 +1,11 @@
+import firebase from 'expo-firebase-app';
+
+import { Platform } from 'expo-core';
+
+const { OS } = Platform;
+
 export default function test({
-  describe,
-  xdescribe,
-  it,
-  xit,
-  beforeEach,
-  expect,
-  jasmine,
   should,
-  firebase,
   TestHelpers: {
     firestore: { COL_DOC_1, COL_DOC_1_PATH, testCollectionDoc, resetTestCollectionDoc },
   },
@@ -24,11 +22,11 @@ export default function test({
       it('should allow getting values via documentSnapshot.get(FieldPath)', async () => {
         const snapshot = await testCollectionDoc(COL_DOC_1_PATH).get();
 
-        should.equal(snapshot.get('foo'), 'bar');
+        expect(snapshot.get('foo')).toBe('bar');
 
-        should.equal(snapshot.get(new firebase.firestore.FieldPath('foo')), 'bar');
+        expect(snapshot.get(new firebase.firestore.FieldPath('foo'))).toBe('bar');
 
-        should.equal(snapshot.get(new firebase.firestore.FieldPath('object', 'daz')), 123);
+        expect(snapshot.get(new firebase.firestore.FieldPath('object', 'daz'))).toBe(123);
 
         should.equal(
           snapshot.get(new firebase.firestore.FieldPath('nonexistent', 'object')),

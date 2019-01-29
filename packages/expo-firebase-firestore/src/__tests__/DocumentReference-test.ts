@@ -1,15 +1,11 @@
 import { SnapshotError } from 'expo-firebase-firestore';
+import firebase from 'expo-firebase-app';
+
+import { Platform } from 'expo-core';
+
+const { OS } = Platform;
 
 export default function test({
-  describe,
-  xdescribe,
-  it,
-  xit,
-  beforeEach,
-  expect,
-  jasmine,
-  firebase,
-  should,
   sinon,
   helpers: { sleep },
   TestHelpers: {
@@ -69,7 +65,7 @@ export default function test({
           await resetTestCollectionDoc(COL2_DOC_1_PATH, COL2_DOC_1());
           await test2DocRef(COL2_DOC_1_ID).delete();
           const doc = await test2DocRef(COL2_DOC_1_ID).get();
-          should.equal(doc.exists, false);
+          expect(doc.exists).toBe(false);
         });
       });
 
@@ -88,7 +84,7 @@ export default function test({
           });
           snapshot.id.should.equal(COL2_DOC_1_ID);
           snapshot.metadata.should.be.an.Object();
-          should.equal(snapshot.metadata.fromCache, false);
+          expect(snapshot.metadata.fromCache).toBe(false);
         });
 
         it('should support GetOptions source=`server`', async () => {
@@ -98,7 +94,7 @@ export default function test({
           });
           snapshot.id.should.equal(COL2_DOC_1_ID);
           snapshot.metadata.should.be.an.Object();
-          should.equal(snapshot.metadata.fromCache, false);
+          expect(snapshot.metadata.fromCache).toBe(false);
         });
 
         // TODO: For some reason when using `cache` it's not seeing the data as available, even if
@@ -113,7 +109,7 @@ export default function test({
           const snapshot = await ref.get({ source: 'cache' });
           snapshot.id.should.equal(COL2_DOC_1_ID);
           snapshot.metadata.should.be.an.Object();
-          should.equal(snapshot.metadata.fromCache, true);
+          expect(snapshot.metadata.fromCache).toBe(true);
         });
 
         it('should error with invalid GetOptions source option', async () => {
@@ -625,7 +621,7 @@ export default function test({
           });
 
           const doc = await docRef.get();
-          should.equal(doc.data().field, true);
+          expect(doc.data().field).toBe(true);
         });
 
         it('should handle Date field', async () => {
@@ -637,8 +633,8 @@ export default function test({
 
           const doc = await docRef.get();
           doc.data().field.should.be.instanceof(Date);
-          should.equal(doc.data().field.toISOString(), date.toISOString());
-          should.equal(doc.data().field.getTime(), date.getTime());
+          expect(doc.data().field.toISOString()).toBe(date.toISOString());
+          expect(doc.data().field.getTime()).toBe(date.getTime());
         });
 
         it('should handle DocumentReference field', async () => {
@@ -648,7 +644,7 @@ export default function test({
           });
 
           const doc = await docRef.get();
-          should.equal(doc.data().field.path, 'test/field');
+          expect(doc.data().field.path).toBe('test/field');
         });
 
         it('should handle GeoPoint field', async () => {
@@ -658,8 +654,8 @@ export default function test({
           });
 
           const doc = await docRef.get();
-          should.equal(doc.data().field.latitude, 1.01);
-          should.equal(doc.data().field.longitude, 1.02);
+          expect(doc.data().field.latitude).toBe(1.01);
+          expect(doc.data().field.longitude).toBe(1.02);
         });
       });
     });

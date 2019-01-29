@@ -1,7 +1,6 @@
+import firebase from 'expo-firebase-app';
+
 export default function test({
-  describe,
-  it,
-  firebase,
   TestHelpers: {
     functions: { data: TEST_DATA },
   },
@@ -12,37 +11,37 @@ export default function test({
       it('accepts primitive args: undefined', async () => {
         const functionRunner = firebase.functions().httpsCallable('runTest');
         const response = await functionRunner();
-        response.data.should.equal('null');
+        expect(response.data).toBe('null');
       });
 
       it('accepts primitive args: string', async () => {
         const functionRunner = firebase.functions().httpsCallable('runTest');
         const response = await functionRunner('hello');
-        response.data.should.equal('string');
+        expect(response.data).toBe('string');
       });
 
       it('accepts primitive args: number', async () => {
         const functionRunner = firebase.functions().httpsCallable('runTest');
         const response = await functionRunner(123);
-        response.data.should.equal('number');
+        expect(response.data).toBe('number');
       });
 
       it('accepts primitive args: boolean', async () => {
         const functionRunner = firebase.functions().httpsCallable('runTest');
         const response = await functionRunner(true);
-        response.data.should.equal('boolean');
+        expect(response.data).toBe('boolean');
       });
 
       it('accepts primitive args: null', async () => {
         const functionRunner = firebase.functions().httpsCallable('runTest');
         const response = await functionRunner(null);
-        response.data.should.equal('null');
+        expect(response.data).toBe('null');
       });
 
       it('accepts array args', async () => {
         const functionRunner = firebase.functions().httpsCallable('runTest');
         const response = await functionRunner([1, 2, 3, 4]);
-        response.data.should.equal('array');
+        expect(response.data).toBeInstanceOf(Array);
       });
 
       it('accepts object args', async () => {
@@ -86,9 +85,9 @@ export default function test({
           await functionRunner({});
           return Promise.reject(new Error('Function did not reject with error.'));
         } catch (e) {
-          should.equal(e.details, null);
-          e.code.should.equal('invalid-argument');
-          e.message.should.equal('Invalid test requested.');
+          expect(e.details).toBe(null);
+          expect(e.code).toBe('invalid-argument');
+          expect(e.message).toBe('Invalid test requested.');
         }
 
         return Promise.resolve();
@@ -107,8 +106,8 @@ export default function test({
           return Promise.reject(new Error('Function did not reject with error.'));
         } catch (e) {
           should.deepEqual(e.details, inputData);
-          e.code.should.equal('cancelled');
-          e.message.should.equal(
+          expect(e.code).toBe('cancelled');
+          expect(e.message).toBe(
             'Response data was requested to be sent as part of an Error payload, so here we are!'
           );
         }
@@ -124,8 +123,8 @@ export default function test({
           return Promise.reject(new Error('Function did not reject with error.'));
         } catch (e) {
           should.deepEqual(e.details, inputData);
-          e.code.should.equal('cancelled');
-          e.message.should.equal(
+          expect(e.code).toBe('cancelled');
+          expect(e.message).toBe(
             'Response data was requested to be sent as part of an Error payload, so here we are!'
           );
         }
@@ -145,8 +144,8 @@ export default function test({
           });
           return Promise.reject(new Error('Function did not reject with error.'));
         } catch (e) {
-          e.code.should.equal('cancelled');
-          e.message.should.equal(
+          expect(e.code).toBe('cancelled');
+          expect(e.message).toBe(
             'Response data was requested to be sent as part of an Error payload, so here we are!'
           );
           should.deepEqual(e.details, inputData);
@@ -163,8 +162,8 @@ export default function test({
           return Promise.reject(new Error('Function did not reject with error.'));
         } catch (e) {
           should.deepEqual(e.details, inputData);
-          e.code.should.equal('cancelled');
-          e.message.should.equal(
+          expect(e.code).toBe('cancelled');
+          expect(e.message).toBe(
             'Response data was requested to be sent as part of an Error payload, so here we are!'
           );
         }
@@ -180,8 +179,8 @@ export default function test({
           return Promise.reject(new Error('Function did not reject with error.'));
         } catch (e) {
           should.deepEqual(e.details, inputData);
-          e.code.should.equal('cancelled');
-          e.message.should.equal(
+          expect(e.code).toBe('cancelled');
+          expect(e.message).toBe(
             'Response data was requested to be sent as part of an Error payload, so here we are!'
           );
         }
@@ -197,8 +196,8 @@ export default function test({
           return Promise.reject(new Error('Function did not reject with error.'));
         } catch (e) {
           should.deepEqual(e.details, inputData);
-          e.code.should.equal('cancelled');
-          e.message.should.equal(
+          expect(e.code).toBe('cancelled');
+          expect(e.message).toBe(
             'Response data was requested to be sent as part of an Error payload, so here we are!'
           );
         }
