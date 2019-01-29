@@ -1,4 +1,4 @@
-# Migrating an Universal Module to TypeScript
+# Migrating Universal Modules to TypeScript
 
 ## Change default import to named import
 
