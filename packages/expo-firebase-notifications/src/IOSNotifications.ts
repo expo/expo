@@ -1,11 +1,10 @@
-// @flow
 // import type Notifications from '.';
-import type { Notifications } from './types';
+import { Notifications } from './types';
 export type BackgroundFetchResultValue = string;
 type BackgroundFetchResult = {
-  noData: BackgroundFetchResultValue,
-  newData: BackgroundFetchResultValue,
-  failure: BackgroundFetchResultValue,
+  noData: BackgroundFetchResultValue;
+  newData: BackgroundFetchResultValue;
+  failure: BackgroundFetchResultValue;
 };
 
 export default class IOSNotifications {

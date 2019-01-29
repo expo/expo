@@ -1,11 +1,7 @@
-/**
- * @flow
- * Auth representation wrapper
- */
 import { Platform } from 'expo-core';
 import { SharedEventEmitter, INTERNALS, ModuleBase, utils } from 'expo-firebase-app';
 
-import type { App } from 'expo-firebase-app';
+import { App } from 'expo-firebase-app';
 import ConfirmationResult from './phone/ConfirmationResult';
 import PhoneAuthListener from './phone/PhoneAuthListener';
 import EmailAuthProvider from './providers/EmailAuthProvider';
@@ -19,7 +15,7 @@ import User from './User';
 import AuthSettings from './AuthSettings';
 
 // providers
-import type {
+import {
   ActionCodeInfo,
   ActionCodeSettings,
   AuthCredential,

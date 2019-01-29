@@ -1,11 +1,10 @@
-// @flow
 import { Platform } from 'expo-core';
 import invariant from 'invariant';
 
 import AndroidChannel from './AndroidChannel';
 import AndroidChannelGroup from './AndroidChannelGroup';
 
-import type { Notifications } from './types';
+import { Notifications } from './types';
 
 const isAndroid = Platform.OS === 'android';
 export default class AndroidNotifications {

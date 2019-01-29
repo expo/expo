@@ -1,6 +1,3 @@
-/**
- * @flow
- */
 import { NativeModulesProxy } from 'expo-core';
 
 import invariant from 'invariant';
@@ -10,7 +7,7 @@ import { isObject, isString } from './';
 import { APP_STORE, CUSTOM_URL_OR_REGION_NAMESPACES } from './appStore';
 import INTERNALS from './internals';
 import parseConfig from './parseConfig';
-import type {
+import {
   FirebaseModule,
   FirebaseModuleAndStatics,
   FirebaseModuleName,

@@ -1,15 +1,11 @@
-/**
- * @flow
- * DocumentSnapshot representation wrapper
- */
 import { utils } from 'expo-firebase-app';
 import DocumentReference from './DocumentReference';
 import FieldPath from './FieldPath';
 import Path from './Path';
 import { parseNativeMap } from './utils/serialize';
 
-import type Firestore from './';
-import type { NativeDocumentSnapshot, SnapshotMetadata } from './firestoreTypes.flow';
+import Firestore from './';
+import { NativeDocumentSnapshot, SnapshotMetadata } from './firestoreTypes.flow';
 
 const { isObject, deepGet } = utils;
 

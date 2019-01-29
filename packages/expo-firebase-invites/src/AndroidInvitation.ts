@@ -1,9 +1,4 @@
-/**
- * @flow
- * AndroidInvitation representation wrapper
- */
-
-import type { Invitation, NativeAndroidInvitation } from './types';
+import { Invitation, NativeAndroidInvitation } from './types';
 
 export default class AndroidInvitation {
   _additionalReferralParameters: { [string]: string } | void;
@@ -25,7 +20,9 @@ export default class AndroidInvitation {
    * @param additionalReferralParameters
    * @returns {Invitation}
    */
-  setAdditionalReferralParameters(additionalReferralParameters: { [string]: string }): Invitation {
+  setAdditionalReferralParameters(additionalReferralParameters: {
+    [key: string]: string;
+  }): Invitation {
     this._additionalReferralParameters = additionalReferralParameters;
     return this._invitation;
   }

@@ -1,5 +1,3 @@
-// @flow
-
 export default class Trace {
   identifier: string;
   _nativeModule: any;

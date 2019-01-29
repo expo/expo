@@ -1,10 +1,7 @@
-/**
- * @flow
- * Invites representation wrapper
- */
+
 import { SharedEventEmitter, ModuleBase } from 'expo-firebase-app';
 
-import type App from 'expo-firebase-app';
+import App from 'expo-firebase-app';
 import Invitation from './Invitation';
 
 export const MODULE_NAME = 'ExpoFirebaseInvites';
@@ -64,7 +61,7 @@ export default class Invites extends ModuleBase {
    * @param listener
    * @returns {Function}
    */
-  onInvitation(listener: InvitationOpen => any) {
+  onInvitation(listener: (InvitationOpen) => any) {
     this.logger.info('Creating onInvitation listener');
 
     SharedEventEmitter.addListener('onInvitation', listener);

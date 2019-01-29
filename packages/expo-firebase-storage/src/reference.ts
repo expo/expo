@@ -1,10 +1,6 @@
-/**
- * @flow
- * StorageReference representation wrapper
- */
 import { ReferenceBase } from 'expo-firebase-app';
 
-import type { Storage } from './index.types';
+import { Storage } from './index.types';
 
 import StorageTask, { DOWNLOAD_TASK, UPLOAD_TASK } from './task';
 

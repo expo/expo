@@ -1,9 +1,5 @@
-/**
- * @flow
- * ITunesParameters representation wrapper
- */
 // import type DynamicLink from './DynamicLink';
-import type { DynamicLink, NativeITunesParameters } from './types';
+import { DynamicLink, NativeITunesParameters } from './types';
 
 export default class ITunesParameters {
   _affiliateToken: string | void;

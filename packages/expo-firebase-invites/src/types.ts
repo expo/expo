@@ -1,8 +1,6 @@
-/**
- * @flow
- */
+
 export type NativeAndroidInvitation = {|
-  additionalReferralParameters?: { [string]: string },
+  additionalReferralParameters?: { [key: string]: string },
   emailHtmlContent?: string,
   emailSubject?: string,
   googleAnalyticsTrackingId?: string,

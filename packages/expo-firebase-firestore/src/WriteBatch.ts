@@ -1,18 +1,14 @@
-/**
- * @flow
- * WriteBatch representation wrapper
- */
 import { parseUpdateArgs } from './utils';
 import { buildNativeMap } from './utils/serialize';
 
-import type DocumentReference from './DocumentReference';
-import type { Firestore, SetOptions } from './firestoreTypes.flow';
+import DocumentReference from './DocumentReference';
+import { Firestore, SetOptions } from './firestoreTypes.flow';
 
 type DocumentWrite = {
-  data?: Object,
-  options?: Object,
-  path: string,
-  type: 'DELETE' | 'SET' | 'UPDATE',
+  data?: Object;
+  options?: Object;
+  path: string;
+  type: 'DELETE' | 'SET' | 'UPDATE';
 };
 
 /**

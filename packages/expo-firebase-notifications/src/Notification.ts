@@ -1,11 +1,10 @@
-// @flow
 import invariant from 'invariant';
 
 import { Platform } from 'expo-core';
 import { utils } from 'expo-firebase-app';
 import AndroidNotification from './AndroidNotification';
 import IOSNotification from './IOSNotification';
-import type { Notifications, NativeNotification } from './types';
+import { Notifications, NativeNotification } from './types';
 const { generatePushID, isObject } = utils;
 
 export type NotificationOpen = {|

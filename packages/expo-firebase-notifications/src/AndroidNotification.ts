@@ -1,9 +1,8 @@
-// @flow
 import invariant from 'invariant';
 
 import AndroidAction, { fromNativeAndroidAction } from './AndroidAction';
 import { BadgeIconType, Category, GroupAlert, Priority } from './types';
-import type {
+import {
   Notification,
   BadgeIconTypeType,
   BigPicture,

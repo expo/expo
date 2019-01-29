@@ -1,9 +1,5 @@
-/**
- * @flow
- * Dynamic Links representation wrapper
- */
 import { SharedEventEmitter, ModuleBase } from 'expo-firebase-app';
-import type App from 'expo-firebase-app';
+import App from 'expo-firebase-app';
 
 import DynamicLink from './DynamicLink';
 

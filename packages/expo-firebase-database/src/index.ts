@@ -1,11 +1,7 @@
-/**
- * @flow
- * Database representation wrapper
- */
 import { NativeModulesProxy } from 'expo-core';
 import firebase, { ModuleBase } from 'expo-firebase-app';
 
-import type { App } from 'expo-firebase-app';
+import { App } from 'expo-firebase-app';
 import Reference from './Reference';
 import TransactionHandler from './transaction';
 

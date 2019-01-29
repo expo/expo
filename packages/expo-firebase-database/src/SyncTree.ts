@@ -1,6 +1,4 @@
-/**
- * @flow
- */
+
 import { EventEmitter, NativeModulesProxy } from 'expo-core';
 import { SharedEventEmitter, utils } from 'expo-firebase-app';
 

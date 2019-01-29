@@ -1,7 +1,4 @@
-/**
- * @flow
- * DocumentReference representation wrapper
- */
+
 import { SharedEventEmitter, utils } from 'expo-firebase-app';
 import invariant from 'invariant';
 
@@ -10,14 +7,14 @@ import DocumentSnapshot from './DocumentSnapshot';
 import { parseUpdateArgs } from './utils';
 import { buildNativeMap } from './utils/serialize';
 
-import type {
+import {
   Firestore,
   GetOptions,
   MetadataChanges,
   NativeDocumentSnapshot,
   SetOptions,
 } from './firestoreTypes.flow';
-import type Path from './Path';
+import Path from './Path';
 
 type ObserverOnError = Object => void;
 type ObserverOnNext = DocumentSnapshot => void;

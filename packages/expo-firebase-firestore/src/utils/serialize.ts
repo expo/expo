@@ -1,4 +1,3 @@
-// @flow
 import { utils } from 'expo-firebase-app';
 
 import Blob from '../Blob';
@@ -8,7 +7,7 @@ import FieldValue from '../FieldValue';
 import GeoPoint from '../GeoPoint';
 import Path from '../Path';
 // import type Firestore from '../';
-import type { NativeTypeMap } from '../firestoreTypes.flow';
+import { NativeTypeMap } from '../firestoreTypes.flow';
 
 type Firestore = object;
 
@@ -20,7 +19,7 @@ const { typeOf } = utils;
  * for transmission to the native side
  */
 
-export const buildNativeMap = (data: Object): { [string]: NativeTypeMap } => {
+export const buildNativeMap = (data: Object): { [key: string]: NativeTypeMap } => {
   const nativeData = {};
   if (data) {
     Object.keys(data).forEach(key => {
@@ -150,7 +149,7 @@ export const buildTypeMap = (value: any): NativeTypeMap | null => {
 
 export const parseNativeMap = (
   firestore: Firestore,
-  nativeData: { [string]: NativeTypeMap }
+  nativeData: { [key: string]: NativeTypeMap }
 ): Object | void => {
   let data;
   if (nativeData) {

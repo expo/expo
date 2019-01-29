@@ -1,12 +1,7 @@
-/**
- * @flow
- * RemoteMessage representation wrapper
- */
-
 import invariant from 'invariant';
 
 import { utils } from 'expo-firebase-app';
-import type { NativeInboundRemoteMessage, NativeOutboundRemoteMessage } from './types';
+import { NativeInboundRemoteMessage, NativeOutboundRemoteMessage } from './types';
 
 const { isObject, generatePushID } = utils;
 

@@ -1,9 +1,5 @@
-/**
- * @flow
- * AndroidParameters representation wrapper
- */
 // import type DynamicLink from './DynamicLink';
-import type { DynamicLink, NativeAndroidParameters } from './types';
+import { DynamicLink, NativeAndroidParameters } from './types';
 
 export default class AndroidParameters {
   _fallbackUrl: string | void;

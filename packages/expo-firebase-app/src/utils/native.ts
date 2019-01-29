@@ -1,14 +1,11 @@
-/*
- * @flow
- */
 import { NativeModulesProxy } from 'expo-core';
 import { initialiseNativeModuleEventEmitter } from './events';
 import INTERNALS from './internals';
 
-import type ModuleBase from './ModuleBase';
-import type { FirebaseModuleConfig } from '../types';
+import ModuleBase from './ModuleBase';
+import { FirebaseModuleConfig } from '../types';
 
-const NATIVE_MODULES: { [string]: Object } = {};
+const NATIVE_MODULES: { [key: string]: Object } = {};
 
 /**
  * Prepends all arguments in prependArgs to all native method calls

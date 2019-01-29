@@ -1,14 +1,11 @@
-/**
- * @flow
- */
 import { NativeModulesProxy, EventEmitter } from 'expo-core';
 
 import SharedEventEmitter from './SharedEventEmitter';
-import type ModuleBase from './ModuleBase';
-import type { FirebaseModuleConfig, FirebaseModuleName } from '../types';
+import ModuleBase from './ModuleBase';
+import { FirebaseModuleConfig, FirebaseModuleName } from '../types';
 
-const NATIVE_EMITTERS: { [string]: EventEmitter } = {};
-const NATIVE_SUBSCRIPTIONS: { [string]: boolean } = {};
+const NATIVE_EMITTERS: { [key: string]: EventEmitter } = {};
+const NATIVE_SUBSCRIPTIONS: { [key: string]: boolean } = {};
 
 export const getAppEventName = (module: ModuleBase, eventName: string): string =>
   `${module.app.name}-${eventName}`;

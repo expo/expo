@@ -1,23 +1,19 @@
-/**
- * @flow
- * CollectionReference representation wrapper
- */
 import { utils } from 'expo-firebase-app';
 import invariant from 'invariant';
 import DocumentReference from './DocumentReference';
 import Query from './Query';
 
-import type {
+import {
   Firestore,
   GetOptions,
   MetadataChanges,
   QueryDirection,
   QueryOperator,
 } from './firestoreTypes.flow';
-import type FieldPath from './FieldPath';
-import type Path from './Path';
-import type { Observer, ObserverOnError, ObserverOnNext } from './Query';
-import type QuerySnapshot from './QuerySnapshot';
+import FieldPath from './FieldPath';
+import Path from './Path';
+import { Observer, ObserverOnError, ObserverOnNext } from './Query';
+import QuerySnapshot from './QuerySnapshot';
 const { firestoreAutoId } = utils;
 
 /**

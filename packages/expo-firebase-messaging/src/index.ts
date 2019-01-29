@@ -1,15 +1,12 @@
-/**
- * @flow
- * Messaging (FCM) representation wrapper
- */
+
 import { INTERNALS, ModuleBase, SharedEventEmitter, utils } from 'expo-firebase-app';
 import invariant from 'invariant';
-import type App from 'expo-firebase-app';
+import App from 'expo-firebase-app';
 
 import IOSMessaging from './IOSMessaging';
 import RemoteMessage from './RemoteMessage';
 
-import type { NativeInboundRemoteMessage } from './types';
+import { NativeInboundRemoteMessage } from './types';
 
 const { isFunction, isObject } = utils;
 

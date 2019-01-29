@@ -1,11 +1,8 @@
-/**
- * @flow
- */
 import invariant from 'invariant';
 import { initialiseLogger, getLogger } from './log';
 import { initialiseNativeModule, getNativeModule } from './native';
-import type App from '../app';
-import type { FirebaseModuleConfig, FirebaseNamespace } from '../types';
+import App from '../app';
+import { FirebaseModuleConfig, FirebaseNamespace } from '../types';
 export default class ModuleBase {
   _app: App;
 
@@ -31,7 +28,7 @@ export default class ModuleBase {
     initialiseLogger(this, `${app.name}:${moduleName.replace('ExpoFirebase', '')}`);
   }
 
-  getAppEventName(eventName: ?string): string {
+  getAppEventName(eventName?: string): string {
     invariant(
       eventName,
       'Error: expo-firebase-app: ModuleBase.getAppEventName() requires a valid eventName'

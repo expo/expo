@@ -1,8 +1,4 @@
-/**
- * @flow
- * EmailAuthProvider representation wrapper
- */
-import type { AuthCredential } from '../types';
+import { AuthCredential } from '../types';
 
 const providerId = 'google.com';
 

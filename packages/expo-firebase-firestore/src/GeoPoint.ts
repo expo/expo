@@ -1,7 +1,3 @@
-/**
- * @flow
- * GeoPoint representation wrapper
- */
 import invariant from 'invariant';
 
 /**

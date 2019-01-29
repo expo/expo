@@ -1,6 +1,4 @@
-/**
- * @flow
- */
+
 export type NativeAnalyticsParameters = {|
   campaign?: string,
   content?: string,

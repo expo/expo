@@ -1,10 +1,9 @@
-// @flow
 import invariant from 'invariant';
 
 import { Platform } from 'expo-core';
 import { SharedEventEmitter, ModuleBase, utils } from 'expo-firebase-app';
 
-import type App from 'expo-firebase-app';
+import App from 'expo-firebase-app';
 import AndroidAction from './AndroidAction';
 import AndroidChannel from './AndroidChannel';
 import AndroidChannelGroup from './AndroidChannelGroup';
@@ -23,20 +22,20 @@ import {
   Visibility,
 } from './types';
 
-import type { NotificationOpen } from './Notification';
-import type { NativeNotification, NativeNotificationOpen, Schedule } from './types';
+import { NotificationOpen } from './Notification';
+import { NativeNotification, NativeNotificationOpen, Schedule } from './types';
 const { isFunction, isObject } = utils;
 
-type OnNotification = Notification => any;
+type OnNotification = (notification: Notification) => any;
 
 type OnNotificationObserver = {
-  next: OnNotification,
+  next: OnNotification;
 };
 
-type OnNotificationOpened = NotificationOpen => any;
+type OnNotificationOpened = (notification: NotificationOpen) => any;
 
 type OnNotificationOpenedObserver = {
-  next: NotificationOpen,
+  next: NotificationOpen;
 };
 
 const NATIVE_EVENTS = {

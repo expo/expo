@@ -1,6 +1,3 @@
-/**
- * @flow
- */
 import { Platform } from 'expo-core';
 
 const NAMESPACE_PODS = {

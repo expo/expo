@@ -1,7 +1,3 @@
-/**
- * @flow
- * Database Transaction representation wrapper
- */
 import { SharedEventEmitter } from 'expo-firebase-app';
 
 // import type Database from './index';

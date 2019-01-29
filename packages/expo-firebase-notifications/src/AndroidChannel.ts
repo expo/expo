@@ -1,9 +1,8 @@
-// @flow
 import invariant from 'invariant';
 
 import { Importance, Visibility } from './types';
 
-import type { ImportanceType, VisibilityType } from './types';
+import { ImportanceType, VisibilityType } from './types';
 
 type NativeAndroidChannel = {|
   bypassDnd?: boolean,

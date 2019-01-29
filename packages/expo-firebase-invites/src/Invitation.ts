@@ -1,12 +1,8 @@
-/**
- * @flow
- * Invitation representation wrapper
- */
 import { Platform } from 'expo-core';
 import invariant from 'invariant';
 import AndroidInvitation from './AndroidInvitation';
 
-import type { NativeInvitation } from './types';
+import { NativeInvitation } from './types';
 
 export default class Invitation {
   _android: AndroidInvitation;

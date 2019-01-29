@@ -1,6 +1,3 @@
-/**
- * @flow
- */
 import Firebase from './firebase';
 import * as utils from './utils';
 import parseConfig, * as configUtils from './utils/parseConfig';
@@ -15,6 +12,6 @@ export { default as INTERNALS } from './utils/internals';
 
 export { utils, parseConfig, configUtils };
 
-export type { NativeErrorResponse, NativeErrorObject, NativeErrorInterface } from './types';
+export { NativeErrorResponse, NativeErrorObject, NativeErrorInterface } from './types';
 
 export default Firebase;

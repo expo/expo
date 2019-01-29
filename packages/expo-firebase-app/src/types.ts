@@ -1,6 +1,5 @@
-/* @flow */
-import type ModuleBase from './utils/ModuleBase';
-import type Utils from './utils';
+import ModuleBase from './utils/ModuleBase';
+import Utils from './utils';
 import { typeof statics as UtilsStatics } from './utils';
 
 /* Core types */

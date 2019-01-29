@@ -1,4 +1,3 @@
-// @flow
 // todo cleanup unused utilities from legacy code
 
 // modeled after base64 web-safe chars, but ordered by ASCII

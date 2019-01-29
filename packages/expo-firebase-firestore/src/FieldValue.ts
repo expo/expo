@@ -1,8 +1,3 @@
-/**
- * @flow
- * FieldValue representation wrapper
- */
-
 import type { AnyJs } from './utils/any';
 
 export default class FieldValue {

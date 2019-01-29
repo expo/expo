@@ -1,7 +1,3 @@
-/*
- * @flow
- */
-
 export type Firestore = object;
 
 export type MetadataChanges = {|

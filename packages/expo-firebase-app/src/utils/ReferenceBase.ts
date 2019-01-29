@@ -1,6 +1,3 @@
-/**
- * @flow
- */
 export default class ReferenceBase {
   path: string;
 

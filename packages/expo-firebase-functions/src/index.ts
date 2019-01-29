@@ -1,12 +1,8 @@
-/**
- * @flow
- * Functions representation wrapper
- */
-import type { App } from 'expo-firebase-app';
+import { App } from 'expo-firebase-app';
 
 import firebase, { ModuleBase, utils } from 'expo-firebase-app';
 import HttpsError from './HttpsError';
-import type { HttpsCallable, HttpsErrorCode, HttpsCallablePromise } from './types.flow';
+import { HttpsCallable, HttpsErrorCode, HttpsCallablePromise } from './types.flow';
 
 const { isObject } = utils;
 export const NAMESPACE = 'functions';

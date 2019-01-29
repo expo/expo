@@ -1,7 +1,6 @@
-// @flow
 import { INTERNALS } from 'expo-firebase-app';
-// import type Auth from './';
-import type {
+// import Auth from './';
+import {
   ActionCodeSettings,
   AuthCredential,
   NativeUser,
@@ -14,8 +13,8 @@ import type {
 type Auth = object;
 
 type UpdateProfile = {
-  displayName?: string,
-  photoURL?: string,
+  displayName?: string;
+  photoURL?: string;
 };
 
 export default class User {
@@ -37,11 +36,11 @@ export default class User {
    * PROPERTIES
    */
 
-  get displayName(): ?string {
+  get displayName(): string | null {
     return this._user.displayName || null;
   }
 
-  get email(): ?string {
+  get email(): string | null {
     return this._user.email || null;
   }
 
@@ -57,11 +56,11 @@ export default class User {
     return this._user.metadata;
   }
 
-  get phoneNumber(): ?string {
+  get phoneNumber(): string | null {
     return this._user.phoneNumber || null;
   }
 
-  get photoURL(): ?string {
+  get photoURL(): string | null {
     return this._user.photoURL || null;
   }
 

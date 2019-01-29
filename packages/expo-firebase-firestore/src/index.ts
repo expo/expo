@@ -1,11 +1,7 @@
-/**
- * @flow
- * Firestore representation wrapper
- */
 import { NativeModulesProxy } from 'expo-core';
 import { SharedEventEmitter, ModuleBase, utils } from 'expo-firebase-app';
 import invariant from 'invariant';
-import type { App } from 'expo-firebase-app';
+import { App } from 'expo-firebase-app';
 import Blob from './Blob';
 import CollectionReference from './CollectionReference';
 import DocumentReference from './DocumentReference';
@@ -17,30 +13,30 @@ import Transaction from './Transaction';
 import TransactionHandler from './TransactionHandler';
 import WriteBatch from './WriteBatch';
 
-import type DocumentSnapshot from './DocumentSnapshot';
-import type QuerySnapshot from './QuerySnapshot';
+import DocumentSnapshot from './DocumentSnapshot';
+import QuerySnapshot from './QuerySnapshot';
 
 type CollectionSyncEvent = {
-  appName: string,
-  querySnapshot?: QuerySnapshot,
-  error?: Object,
-  listenerId: string,
-  path: string,
+  appName: string;
+  querySnapshot?: QuerySnapshot;
+  error?: Object;
+  listenerId: string;
+  path: string;
 };
 
 type DocumentSyncEvent = {
-  appName: string,
-  documentSnapshot?: DocumentSnapshot,
-  error?: Object,
-  listenerId: string,
-  path: string,
+  appName: string;
+  documentSnapshot?: DocumentSnapshot;
+  error?: Object;
+  listenerId: string;
+  path: string;
 };
 
 type Settings = {
-  host?: string,
-  persistence?: boolean,
-  ssl?: boolean,
-  timestampsInSnapshots?: boolean,
+  host?: string;
+  persistence?: boolean;
+  ssl?: boolean;
+  timestampsInSnapshots?: boolean;
 };
 
 const { isBoolean, isObject, isString, hop } = utils;

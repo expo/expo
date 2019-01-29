@@ -1,4 +1,3 @@
-// @flow
 import { Platform } from 'expo-core';
 
 import { APP_MODULES, CUSTOM_URL_OR_REGION_NAMESPACES } from './appStore';

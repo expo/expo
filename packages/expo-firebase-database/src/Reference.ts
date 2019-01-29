@@ -1,7 +1,3 @@
-/**
- * @flow
- * Database Reference representation wrapper
- */
 import { ReferenceBase, utils } from 'expo-firebase-app';
 import invariant from 'invariant';
 
@@ -10,9 +6,9 @@ import OnDisconnect from './OnDisconnect';
 import Query from './Query';
 import SyncTree from './SyncTree';
 // import type Database from './index';
-import type { DatabaseModifier, FirebaseError } from './firestoreTypes.flow';
+import { DatabaseModifier, FirebaseError } from './firestoreTypes.flow';
 
-type Database = obejct;
+type Database = object;
 
 const {
   promiseOrCallback,

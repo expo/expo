@@ -1,4 +1,3 @@
-// @flow
 import INTERNALS from './internals';
 
 const FirebasePackages = {

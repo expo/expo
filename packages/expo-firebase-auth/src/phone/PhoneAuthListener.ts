@@ -1,4 +1,3 @@
-// @flow
 import invariant from 'invariant';
 import { Platform } from 'expo-core';
 import { SharedEventEmitter, utils, INTERNALS } from 'expo-firebase-app';

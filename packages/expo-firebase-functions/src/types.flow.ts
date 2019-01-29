@@ -1,6 +1,5 @@
-// @flow
 export type HttpsCallableResult = {
-  data: Object,
+  data: Object;
 };
 
 export type FunctionsErrorCode =

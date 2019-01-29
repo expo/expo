@@ -1,7 +1,3 @@
-/**
- * @flow
- * DataSnapshot representation wrapper
- */
 import { utils } from 'expo-firebase-app';
 // import type Reference from './Reference';
 type Reference = object;

@@ -1,5 +1,4 @@
-/* @flow */
-import type Database from './index';
+import Database from './index';
 import { typeof statics as DatabaseStatics } from './index';
 
 export type DatabaseModifier = {

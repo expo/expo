@@ -1,7 +1,6 @@
-// @flow
 import firebase from 'expo-firebase-app';
 // Optional flow type
-import type { NotificationOpen } from 'expo-firebase-notifications';
+import { NotificationOpen } from 'expo-firebase-notifications';
 
 export default async (notificationOpen: NotificationOpen) => {
   if (notificationOpen.action === 'snooze') {

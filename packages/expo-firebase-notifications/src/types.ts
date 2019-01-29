@@ -1,5 +1,3 @@
-// @flow
-
 export const BadgeIconType = {
   Large: 2,
   None: 0,

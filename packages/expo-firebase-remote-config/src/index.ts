@@ -1,7 +1,6 @@
-// @flow
 import { ModuleBase } from 'expo-firebase-app';
 
-import type { App } from 'expo-firebase-app';
+import { App } from 'expo-firebase-app';
 
 type NativeValue = {
   stringValue?: string,

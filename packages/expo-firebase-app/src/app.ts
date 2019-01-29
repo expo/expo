@@ -1,6 +1,3 @@
-/*
- * @flow
- */
 import { NativeModulesProxy } from 'expo-core';
 
 import SharedEventEmitter from './utils/SharedEventEmitter';
@@ -8,7 +5,7 @@ import INTERNALS from './utils/internals';
 
 import { isObject } from './utils';
 
-import type { FirebaseOptions } from './types';
+import { FirebaseOptions } from './types';
 import { createAppModule } from './utils/createAppModule';
 
 import { FirebaseNamespaces, DEFAULT_APP_NAME } from './constants';

@@ -1,8 +1,4 @@
-/**
- * @flow
- * SocialParameters representation wrapper
- */
-import type { DynamicLink, NativeSocialParameters } from './types';
+import { DynamicLink, NativeSocialParameters } from './types';
 
 export default class SocialParameters {
   _descriptionText: string | void;

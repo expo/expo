@@ -1,9 +1,7 @@
-// @flow
-
 import invariant from 'invariant';
 import RemoteInput, { fromNativeAndroidRemoteInput } from './AndroidRemoteInput';
 import { SemanticAction } from './types';
-import type { NativeAndroidAction, SemanticActionType } from './types';
+import { NativeAndroidAction, SemanticActionType } from './types';
 
 export default class AndroidAction {
   _action: string;

@@ -1,7 +1,5 @@
-// @flow
-
 import { Platform } from 'expo-core';
-import type Messaging from './';
+import Messaging from './';
 const isIOS = Platform.OS === 'ios';
 export default class IOSMessaging {
   constructor(messaging: Messaging) {

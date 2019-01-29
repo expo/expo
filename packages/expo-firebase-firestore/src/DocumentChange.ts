@@ -1,10 +1,6 @@
-/**
- * @flow
- * DocumentChange representation wrapper
- */
 import DocumentSnapshot from './DocumentSnapshot';
 
-import type { Firestore, NativeDocumentChange } from './firestoreTypes.flow';
+import { Firestore, NativeDocumentChange } from './firestoreTypes.flow';
 
 /**
  * @class DocumentChange

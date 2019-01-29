@@ -1,12 +1,8 @@
-/**
- * @flow
- * Firestore Transaction representation wrapper
- */
 import { SharedEventEmitter } from 'expo-firebase-app';
 
 import Transaction from './Transaction';
 
-import type { Firestore } from './firestoreTypes.flow';
+import { Firestore } from './firestoreTypes.flow';
 
 let transactionId = 0;
 
@@ -18,18 +14,18 @@ let transactionId = 0;
 const generateTransactionId = (): number => transactionId++;
 
 export type TransactionMeta = {
-  id: number,
-  stack: string[],
-  reject?: Function,
-  resolve?: Function,
-  transaction: Transaction,
-  updateFunction: (transaction: Transaction) => Promise<any>,
+  id: number;
+  stack: string[];
+  reject?: Function;
+  resolve?: Function;
+  transaction: Transaction;
+  updateFunction: (transaction: Transaction) => Promise<any>;
 };
 
 type TransactionEvent = {
-  id: number,
-  type: 'update' | 'error' | 'complete',
-  error: ?{ code: string, message: string },
+  id: number;
+  type: 'update' | 'error' | 'complete';
+  error?: { code: string; message: string };
 };
 
 /**
@@ -38,10 +34,10 @@ type TransactionEvent = {
 export default class TransactionHandler {
   _firestore: Firestore;
   _pending: {
-    [number]: {
-      meta: TransactionMeta,
-      transaction: Transaction,
-    },
+    [key: number]: {
+      meta: TransactionMeta;
+      transaction: Transaction;
+    };
   };
 
   constructor(firestore: Firestore) {

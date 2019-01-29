@@ -1,7 +1,3 @@
-/**
- * @flow
- * Query representation wrapper
- */
 import { utils } from 'expo-firebase-app';
 // import type { DatabaseModifier } from './types';
 // import type Reference from './Reference';

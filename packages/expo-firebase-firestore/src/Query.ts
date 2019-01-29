@@ -1,18 +1,15 @@
-/**
- * @flow
- * Query representation wrapper
- */
+
 import { SharedEventEmitter, utils } from 'expo-firebase-app';
 
-import type { NativeErrorResponse } from 'expo-firebase-app';
+import { NativeErrorResponse } from 'expo-firebase-app';
 import DocumentSnapshot from './DocumentSnapshot';
 import FieldPath from './FieldPath';
 import QuerySnapshot from './QuerySnapshot';
 import SnapshotError from './SnapshotError';
 import { buildNativeArray, buildTypeMap } from './utils/serialize';
 
-import type Path from './Path';
-import type {
+import  Path from './Path';
+import  {
   Firestore,
   MetadataChanges,
   QueryDirection,
@@ -21,14 +18,14 @@ import type {
 
 const { firestoreAutoId, isFunction, isObject } = utils;
 
-const DIRECTIONS: { [QueryDirection]: string } = {
+const DIRECTIONS: { [key: QueryDirection]: string } = {
   ASC: 'ASCENDING',
   asc: 'ASCENDING',
   DESC: 'DESCENDING',
   desc: 'DESCENDING',
 };
 
-const OPERATORS: { [QueryOperator]: string } = {
+const OPERATORS: { [key: QueryOperator]: string } = {
   '=': 'EQUAL',
   '==': 'EQUAL',
   '>': 'GREATER_THAN',

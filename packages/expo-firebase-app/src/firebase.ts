@@ -1,13 +1,10 @@
-/**
- * @flow
- */
 import { NativeModulesProxy } from 'expo-core';
 import invariant from 'invariant';
 import APPS from './utils/apps';
 import INTERNALS from './utils/internals';
-import type App from './app';
+import App from './app';
 import { FirebaseNamespaces } from './constants';
-import type { FirebaseOptions } from './types';
+import { FirebaseOptions } from './types';
 
 import getModuleInstance from './utils/getModuleInstance';
 

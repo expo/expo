@@ -1,10 +1,5 @@
-/**
- * @flow
- * AnalyticsParameters representation wrapper
- */
-
 // import type DynamicLink from './DynamicLink';
-import type { DynamicLink, NativeAnalyticsParameters } from './types';
+import { DynamicLink, NativeAnalyticsParameters } from './types';
 
 export default class AnalyticsParameters {
   _campaign: string | void;

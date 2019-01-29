@@ -1,7 +1,5 @@
-// @flow
-
 import invariant from 'invariant';
-import type { AndroidAllowDataType, NativeAndroidRemoteInput } from './types';
+import { AndroidAllowDataType, NativeAndroidRemoteInput } from './types';
 
 export default class AndroidRemoteInput {
   _allowedDataTypes: AndroidAllowDataType[];

@@ -1,6 +1,3 @@
-/*
- * @flow
- */
 import { Platform } from 'expo-core';
 
 import { isObject, isString } from './';
@@ -16,10 +13,10 @@ export function guessProjectId({
   authDomain,
   databaseURL,
 }: {
-  storageBucket?: ?string,
-  authDomain?: ?string,
-  databaseURL?: ?string,
-}): ?string {
+  storageBucket?: string,
+  authDomain?: string,
+  databaseURL?: string,
+}): string | undefined {
   function extractFromUrl(url) {
     if (!isValidString(url)) return;
     const first = url.split('.')[0];

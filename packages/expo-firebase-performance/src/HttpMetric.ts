@@ -1,5 +1,3 @@
-// @flow
-
 export default class HttpMetric {
   url: string;
 

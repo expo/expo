@@ -1,9 +1,5 @@
-/**
- * @flow
- * ConfirmationResult representation wrapper
- */
 // import type Auth from '../';
-import type User from '../User';
+import User from '../User';
 type Auth = object;
 
 export default class ConfirmationResult {

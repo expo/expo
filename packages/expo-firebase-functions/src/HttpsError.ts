@@ -1,5 +1,5 @@
-// @flow
-import type { FunctionsErrorCode } from './types.flow';
+
+import { FunctionsErrorCode } from './types.flow';
 
 export default class HttpsError extends Error {
   +details: ?any;

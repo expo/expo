@@ -1,6 +1,4 @@
-// @flow
-
-import type User from './User';
+import User from './User';
 
 export type IdTokenResult = {
   token: string,

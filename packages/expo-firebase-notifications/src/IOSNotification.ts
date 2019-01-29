@@ -1,9 +1,8 @@
-// @flow
 import { Platform } from 'expo-core';
 import { BackgroundFetchResultValue } from './IOSNotifications';
 
-import type Notification from './Notification';
-import type {
+import Notification from './Notification';
+import {
   Notifications,
   IOSAttachment,
   IOSAttachmentOptions,

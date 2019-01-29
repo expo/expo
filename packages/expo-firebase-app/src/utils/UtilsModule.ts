@@ -1,21 +1,20 @@
-// @flow
 import { NativeModulesProxy, Platform } from 'expo-core';
 
 import INTERNALS from './internals';
 import ModuleBase from './ModuleBase';
 
-import type App from '../app';
+import App from '../app';
 
 const isIOS = Platform.OS === 'ios';
 
 const { ExpoFirebaseApp } = NativeModulesProxy;
 
 type GoogleApiAvailabilityType = {
-  status: number,
-  isAvailable: boolean,
-  isUserResolvableError?: boolean,
-  hasResolution?: boolean,
-  error?: string,
+  status: number;
+  isAvailable: boolean;
+  isUserResolvableError?: boolean;
+  hasResolution?: boolean;
+  error?: string;
 };
 
 export const MODULE_NAME = 'ExpoFirebaseUtils';

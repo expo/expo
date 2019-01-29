@@ -1,9 +1,4 @@
 /**
- * @flow
- * Path representation wrapper
- */
-
-/**
  * @class Path
  */
 

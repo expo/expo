@@ -1,7 +1,3 @@
-/**
- * @flow
- * OnDisconnect representation wrapper
- */
 import { utils } from 'expo-firebase-app';
 
 // import type Database from './index';

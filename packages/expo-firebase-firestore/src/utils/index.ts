@@ -1,6 +1,3 @@
-/**
- * @flow
- */
 import { utils } from 'expo-firebase-app';
 
 import FieldPath from '../FieldPath';

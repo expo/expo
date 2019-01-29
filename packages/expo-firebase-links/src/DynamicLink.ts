@@ -1,7 +1,3 @@
-/**
- * @flow
- * DynamicLink representation wrapper
- */
 import invariant from 'invariant';
 import AnalyticsParameters from './AnalyticsParameters';
 import AndroidParameters from './AndroidParameters';
@@ -9,7 +5,7 @@ import IOSParameters from './IOSParameters';
 import ITunesParameters from './ITunesParameters';
 import NavigationParameters from './NavigationParameters';
 import SocialParameters from './SocialParameters';
-import type { NativeDynamicLink } from './types';
+import { NativeDynamicLink } from './types';
 
 export default class DynamicLink {
   _analytics: AnalyticsParameters;

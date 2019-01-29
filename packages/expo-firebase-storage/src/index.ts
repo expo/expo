@@ -1,10 +1,6 @@
-/**
- * @flow
- * Storage representation wrapper
- */
 import { ModuleBase, SharedEventEmitter } from 'expo-firebase-app';
 
-import type { App } from 'expo-firebase-app';
+import { App } from 'expo-firebase-app';
 
 import StorageRef from './reference';
 import statics from './statics';

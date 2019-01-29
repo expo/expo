@@ -1,9 +1,4 @@
-/**
- * @flow
- * IOSParameters representation wrapper
- */
-
-import type { DynamicLink, NativeIOSParameters } from './types';
+import { DynamicLink, NativeIOSParameters } from './types';
 
 export default class IOSParameters {
   _appStoreId: string | void;

@@ -1,9 +1,5 @@
-/**
- * @flow
- * GithubAuthProvider representation wrapper
- */
 import invariant from 'invariant';
-import type { AuthCredential } from '../types';
+import { AuthCredential } from '../types';
 
 const providerId = 'github.com';
 

@@ -1,9 +1,4 @@
 /**
- * @flow
- * FieldPath representation wrapper
- */
-
-/**
  * @class FieldPath
  */
 export default class FieldPath {

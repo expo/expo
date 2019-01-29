@@ -1,11 +1,7 @@
-/*
- * @flow
- */
-
 import INTERNALS from './internals';
-import type ModuleBase from './ModuleBase';
+import ModuleBase from './ModuleBase';
 
-const NATIVE_LOGGERS: { [string]: Object } = {};
+const NATIVE_LOGGERS: { [key: string]: Object } = {};
 
 const getModuleKey = (module: ModuleBase): string => `${module.app.name}:${module.namespace}`;
 

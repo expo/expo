@@ -1,12 +1,9 @@
-/**
- * @flow
- * UploadTask representation wrapper
- */
+
 import { utils } from 'expo-firebase-app';
 import invariant from 'invariant';
 import StorageStatics from './statics';
 
-import type {
+import {
   Storage,
   StorageReference,
   FuncSnapshotType,

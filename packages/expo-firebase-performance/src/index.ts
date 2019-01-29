@@ -1,7 +1,6 @@
-// @flow
 import { ModuleBase } from 'expo-firebase-app';
 import invariant from 'invariant';
-import type { App } from 'expo-firebase-app';
+import { App } from 'expo-firebase-app';
 import HttpMetric from './HttpMetric';
 import Trace from './Trace';
 

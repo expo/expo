@@ -1,11 +1,8 @@
-/**
- * @flow
- * QuerySnapshot representation wrapper
- */
+
 import DocumentChange from './DocumentChange';
 import DocumentSnapshot from './DocumentSnapshot';
 
-import type {
+import {
   Firestore,
   NativeDocumentChange,
   NativeDocumentSnapshot,
@@ -15,7 +12,7 @@ import type {
 /**
  * @class QuerySnapshot
  */
-import type Query from './Query';
+import Query from './Query';
 
 type NativeQuerySnapshot = {
   changes: NativeDocumentChange[],

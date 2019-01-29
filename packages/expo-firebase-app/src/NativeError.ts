@@ -1,5 +1,4 @@
-// @flow
-import type { NativeErrorObject, NativeErrorInterface } from './types';
+import { NativeErrorObject, NativeErrorInterface } from './types';
 
 export default class NativeError extends Error implements NativeErrorInterface {
   constructor(nativeError: NativeErrorObject) {
