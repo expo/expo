@@ -52,10 +52,12 @@ EX_EXPORT_METHOD_AS(getWebViewUserAgentAsync,
           }
           
           strongSelf.webViewUserAgent = [NSString stringWithFormat:@"%@", result];
-          resolve(strongSelf.webViewUserAgent);
+          resolve(EXNullIfNil(strongSelf.webViewUserAgent));
           // Destroy the webview now that it's task is complete.
           strongSelf->webView = nil;
         }];
+      } else {
+        resolve(EXNullIfNil(strongSelf.webViewUserAgent));
       }
     }
   });
