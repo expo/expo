@@ -1,0 +1,29 @@
+{
+  "name": "expo-analytics-amplitude",
+  "version": "1.0.0",
+  "description": "ExpoAmplitude standalone module",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "scripts": {},
+  "keywords": [
+    "react-native",
+    "expo",
+    "expo-analytics-amplitude"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git"
+  },
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-analytics-amplitude",
+  "dependencies": {},
+  "peerDependencies": {
+    "expo-core": "~2.0.0"
+  },
+  "gitHead": "f15abc53c111bd0438cd36dc456c59cfa7c56a58"
+
+,"_resolved": ""
+,"_integrity": ""
+,"_from": "expo-analytics-amplitude@2.1.0"
+}
