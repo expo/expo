@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import Router from 'next/router';
 import styled, { keyframes, css } from 'react-emotion';
 
