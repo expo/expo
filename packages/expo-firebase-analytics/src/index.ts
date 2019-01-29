@@ -1,6 +1,4 @@
-import { App, ModuleBase, utils } from 'expo-firebase-app';
-
-const { isObject } = utils;
+import { App, ModuleBase } from 'expo-firebase-app';
 
 const AlphaNumericUnderscore = /^[a-zA-Z0-9_]+$/;
 
@@ -55,7 +53,7 @@ export default class Analytics extends ModuleBase {
       );
     }
 
-    if (typeof params !== 'undefined' && !isObject(params)) {
+    if (typeof params !== 'undefined' && typeof params !== 'object') {
       throw new Error(
         `analytics.logEvent(): Second optional argument 'params' must be an object if provided.`
       );

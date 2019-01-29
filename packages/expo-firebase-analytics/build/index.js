@@ -1,5 +1,4 @@
-import { ModuleBase, utils } from 'expo-firebase-app';
-const { isObject } = utils;
+import { ModuleBase } from 'expo-firebase-app';
 const AlphaNumericUnderscore = /^[a-zA-Z0-9_]+$/;
 const ReservedEventNames = [
     'app_clear_data',
@@ -41,7 +40,7 @@ export default class Analytics extends ModuleBase {
         if (!isString(name)) {
             throw new Error(`analytics.logEvent(): First argument 'name' is required and must be a string value.`);
         }
-        if (typeof params !== 'undefined' && !isObject(params)) {
+        if (typeof params !== 'undefined' && typeof params !== 'object') {
             throw new Error(`analytics.logEvent(): Second optional argument 'params' must be an object if provided.`);
         }
         // check name is not a reserved event name
