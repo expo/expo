@@ -18,7 +18,7 @@ A standard Expo app (Running `expo init` with the `expo-cli`) will have the foll
 You'll need to add and configure a couple of things manually while we finalize the official project creation for Expo for web.
 
 - Add [`web/`](https://github.com/expo/expo/tree/master/apps/native-component-list/web)
-- Add [`webpack.config.js`](https://github.com/expo/expo/blob/master/apps/native-component-list/webpack.config.js) You will also need to change `modules: absolutePath('../../node_modules'),` to `modules: absolutePath('./node_modules'),`. Currently we are targeting all the `node_modules/` to prevent silly errors.
+- Add [`webpack.config.js`](https://github.com/expo/expo/blob/master/apps/native-component-list/webpack.config.js) You will also need to change `modules: absolutePath('../../node_modules'),` to `modules: absolutePath('./node_modules'),`. Currently we are targeting all the `node_modules/` to account for the increasing number of libraries written in modern JavaScript syntax.
 - If you have a `.babelrc` file, upgrade to the Babel 7 [`babel.config.js`](https://github.com/expo/expo/blob/master/apps/native-component-list/babel.config.js). Notice that there is platform specific code in here.
 - Ensure your main entry point is `App.js` (Default for Expo)
 - Make the following changes to your `package.json`
@@ -26,7 +26,7 @@ You'll need to add and configure a couple of things manually while we finalize t
 ```js
 "scripts": {
     ...
-    // To test secure features like iOS permissions, you need to add: --https --host <YOUR_IP>
+    // To test secure features like camera or microphone, you will need to add: --https --host <YOUR_IP>
     "web": "webpack-dev-server -d --config ./webpack.config.js --inline --colors --content-base web/",
     "build": "NODE_ENV=production webpack -p --config ./webpack.config.js",
 }
@@ -82,11 +82,11 @@ You can also add the following:
 ]
 ```
 
-You should now be able to run `yarn web` to start webpack. Expo may not work as all of the web changes may not be published to NPM yet.
+You should now be able to run `yarn web` to start webpack. Features are currently being added and changed rapidly, use with caution.
 
 ## Usage
 
-After adding web support, your main entry point should be the `App.js` file.
+After adding web support your main entry point should be the `App.js` file.
 
 ```js
 // ✅
@@ -99,4 +99,6 @@ AppRegistry.registerComponent('App', () => App);
 AppRegistry.runApplication('App', { rootTag: document.getElementById('react-root') });
 ```
 
-Generally most of the interactions you will do with `react-native` will come from `react-native-web`, so you should refer to the [compatibility guide](https://github.com/necolas/react-native-web#compatibility-with-react-native) to see what's available.
+Generally most of the interactions you will do with `react-native` will come from `react-native-web`, so you should refer to the [compatibility guide][react-native-web-compatibility] to see what's available.
+
+[react-native-web-compatibility]: https://github.com/necolas/react-native-web#compatibility-with-react-native

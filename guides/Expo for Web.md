@@ -2,15 +2,15 @@
 
 > All information here is "pre-rc" and subject to changes.
 
-Expo for web brings all of the high-quality modules you've come to expect from React Native to the Web. Building on top of React Native for Web, Expo removes all of the complexity and makes it easy to create responsive mobile-web experiences.
+Expo for web brings all of the high quality modules you've come to expect from React Native to the Web. Building on top of React Native for Web, Expo removes all of the complexity and makes it easy to create responsive mobile-web experiences.
 
-The high-level goals of this project:
+The high level goals of this project:
 
-- Be highly universal with little-to-no lock-in.
+- Be highly universal with little-to-no lock in.
 - Actually maximize code reuse.
 - Dig deep to make sure our modules emulate native features as best they can.
-- Reuse native configurations to create high-fidelity progressive web apps. (PWA)
-- Enable community members to contribute to Platform Modules.
+- Reuse native configurations to create high fidelity progressive web apps (PWAs).
+- Enable community members to contribute to Universal Modules.
 
 ## Examples
 
@@ -19,19 +19,12 @@ Check out the examples of Expo for web:
 - [Native Component List](https://github.com/expo/expo/tree/master/apps/native-component-list/)
 - [Test Suite](https://github.com/expo/expo/tree/master/apps/test-suite/)
 
-## Terminology
+## Universal Modules
 
-- Platform Module: The term "native module" is partly confusing since "web native modules" are written in JS for the DOM; in this context, "native" refers to using the web platform while in other contexts, "native" refers to Objective-C, Java, and so on. Because of this ambiguity, we now refer to "native modules" as "platform modules".
-- Unimodule: An agnostic Platform Module that uses the universal [`expo-core`](https://github.com/expo/expo/tree/master/packages/expo-core) package.
-- `[front-end]`: The "front-end" represents the user-facing side of a Unimodule.
-- `[back-end]`: The platform specific API of a Unimodule. For instance: Objective-C, Java, & JavaScript.
+A platform module is a library with a common API interface for interacting with corresponding native functionality. For example, you could develop a module which binds Objective-C, Java, and JavaScript to a unified API which functions the same across multiple platforms. Every platform module consists of a native layer and a unified API layer, they are then bound together using the [universal module](https://github.com/expo/expo/tree/master/packages/expo-core) system.
 
-## Platform Modules
-
-A platform module is a library with a common API interface for interacting with corresponding native functionality. For example, you could develop a module which binds Objective-C, Java, and JavaScript to a unified API which functions the same across multiple platforms. Every platform module consists of a native layer and a unified API layer, they are then bound together using the [univeral module](https://github.com/expo/expo/tree/master/packages/expo-core) system.
-
-- API layer: The developer-facing side of a Unimodule that interfaces with the native layer.
-- Native-layer: The platform specific API of a Unimodule. For instance: Objective-C, Java, & JavaScript.
+- API layer: The developer facing side of a Unimodule that interfaces with the native layer.
+- Native layer: The platform specific API of a Unimodule. For instance: Objective-C, Java, and JavaScript.
 
 Some of the established standards of a platform module:
 
@@ -45,7 +38,7 @@ We are currently making all changes in the [Expo/Expo monorepo with the **[web]*
 
 ### Contributing
 
-Initially you should clone [expo](https://github.com/expo/expo) and work in `apps/` & `packages/`. The following process will outline how to add web support to existing Unimodules.
+Initially you should clone [expo](https://github.com/expo/expo) and work in `apps/` and `packages/`. The following process will outline how to add web support to existing Unimodules.
 
 #### New Features
 
@@ -73,6 +66,8 @@ soon as possible. We may suggest some changes or improvements.
 Thank you for contributing!
 
 #### Releases
+
+> For the Expo team
 
 To commit, publish, and push a final version:
 

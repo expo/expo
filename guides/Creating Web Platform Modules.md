@@ -1,12 +1,12 @@
-# Creating Web Platform Modules
+# Creating Web Universal Modules
 
 > All information here is "pre-rc" and subject to changes.
 
 Below we've outlined the specification for creating high-quality, performant platform modules that run in the browser.
 
-### Importing Platform Modules
+### Importing Universal Modules
 
-The first step is to make sure the code can be imported in a web project. We do this by moving the native module to a separate file, and creating a web version with the same name and a `.web` extension.
+The first step is to make sure the web implementation of a native module can be imported in a web project. We do this by moving the import of the native module to a separate file and overriding it with a web implementation with the same name and a `.web.ts` extension.
 
 ```js
 // Print.ts
@@ -27,7 +27,7 @@ import { NativeModulesProxy } from 'expo-core';
 export default NativeModulesProxy.ExpoPrint;
 ```
 
-Now create a web module: `(.web.ts)`
+Now create a web module (`.web.ts`):
 
 ```js
 // ExpoPrint.web.ts
@@ -41,7 +41,7 @@ export default {
 
 ### Handling Unsupported Features
 
-More often than not you will need to guard for support. To this you should start methods that contain Platform Modules with an availability check.
+More often than not, the API layer will need to guard against unimplemented methods of the native layer. To this you should start methods that contain Platform Modules with an availability check.
 
 ```js
 // src/Print.ts
@@ -50,7 +50,7 @@ import { UnavailabilityError } from 'expo-errors';
 
 async function selectPrinter(): Promise<SelectResult> {
   /*
-   * Check if a Platform Module method exists before using it.
+   * Check if a Universal Module method exists before using it.
    * If it doesn't then throw an error.
    */
 
@@ -59,29 +59,23 @@ async function selectPrinter(): Promise<SelectResult> {
   }
 
   /*
-   * The Expo module audit specifies that all promises should be evaluated.
+   * We explicitly await promises before returning, rather than relying on implicit promises
    */
   return await ExpoPrint.selectPrinter();
 }
 ```
 
-### Creating Platform Modules for web
+### Creating Universal Modules for web
 
 #### Exporting
+
+We use default exports instead of named exports in order to better match the native synatx.
 
 ```js
 // ✅
 export default {
 
-}
-
-// ❌ - This may be used in the future do to TypeScript code elimination
-
-export const name = "";
-
-export function foo() {
-
-}
+};
 
 // ❌
 class ExpoPrint {
@@ -93,7 +87,7 @@ export default new ExpoPrint();
 
 #### Name
 
-Each module has a name property.
+Each module has a `name` property. The name should be consistent across all platforms' implementations of the same module. We use a getter property to make `name` an immutable value.
 
 ##### Web
 
@@ -116,7 +110,7 @@ EX_EXPORT_MODULE(ExpoPrint);
 ```java
 @Override
 public String getName() {
-    return "ExpoPrint";
+  return "ExpoPrint";
 }
 ```
 
@@ -140,13 +134,11 @@ export default {
 ##### iOS
 
 ```objc
-
 - (NSDictionary *)constantsToExport {
     return @{
         @"EVENTS": @"EVENTS"
     };
 }
-
 ```
 
 ##### Android:
@@ -162,7 +154,7 @@ public Map<String, Object> getConstants() {
 
 #### Methods
 
-Methods are all defined after the `name` property & any constants.
+Methods are all defined after the `name` property and any constants.
 
 ##### Web
 
@@ -178,7 +170,7 @@ export default {
     };
   },
   async printAsync(): Promise<void> {
-    return null;
+    return;
   },
 };
 ```
@@ -238,7 +230,7 @@ EX_EXPORT_METHOD_AS(printAsync,
 
 #### Return value
 
-Currently all methods are `async` & return a `Promise`. This is until Turbo Modules are released, at which time we will add synchronous methods.
+Currently all methods are `async` and return a promise. This is until Turbo Modules are released, at which time we will add synchronous methods.
 
 ```js
 // ✅
