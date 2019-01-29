@@ -1,11 +1,13 @@
 import UAParser from 'ua-parser-js';
 import uuidv4 from 'uuid/v4';
+import { PlatformManifest, WebManifest, NativeConstants } from './Constants.types';
 
 const ExpoPackageJson = require('expo/package.json');
 
 const parser = new UAParser();
 const ID_KEY = 'EXPO_CONSTANTS_INSTALLATION_ID';
 
+declare var __DEV__: boolean;
 declare var process: { env: any };
 declare var navigator: Navigator;
 declare var location: Location;
@@ -37,26 +39,33 @@ export default {
   get sessionId(): string {
     return _sessionId;
   },
-  get platform(): object {
+  get platform(): PlatformManifest {
     return { web: UAParser(navigator.userAgent) };
   },
-  get isDevice(): boolean {
+  get isHeadless(): false {
+    return false;
+  },
+  get isDevice(): true {
     // TODO: Bacon: Possibly want to add information regarding simulators
     return true;
+  },
+  get isDetached(): false {
+    return false;
   },
   get expoVersion(): string {
     return ExpoPackageJson.version;
   },
   get linkingUri(): string {
+    // On native this is `exp://`
     return location.origin + location.pathname;
   },
-  get expoRuntimeVersion(): string | null {
-    return null;
+  get expoRuntimeVersion(): string {
+    return ExpoPackageJson.version;
   },
-  get deviceName(): string | null {
+  get deviceName(): string | undefined {
     const { browser, engine, os: OS } = parser.getResult();
 
-    return browser.name || engine.name || OS.name || null;
+    return browser.name || engine.name || OS.name || undefined;
   },
   get systemFonts(): string[] {
     // TODO: Bacon: Maybe possible.
@@ -65,15 +74,21 @@ export default {
   get statusBarHeight(): number {
     return 0;
   },
-  get deviceYearClass(): string | null {
+  get deviceYearClass(): number | null {
     // TODO: Bacon: The android version isn't very accurate either, maybe we could try and guess this value.
     console.log(`ExponentConstants.deviceYearClass: is unimplemented on web.`);
     return null;
   },
-  get manifest(): { [manifestKey: string]: any } {
+  get manifest(): WebManifest {
     return process.env.APP_MANIFEST || {};
+  },
+  get experienceUrl(): string {
+    return location.origin + location.pathname;
+  },
+  get debugMode(): boolean {
+    return __DEV__;
   },
   async getWebViewUserAgentAsync(): Promise<string> {
     return navigator.userAgent;
   },
-};
+} as NativeConstants;
