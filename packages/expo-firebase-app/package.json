@@ -31,8 +31,12 @@
     "url": "git+https://github.com/expo/expo.git"
   },
   "bugs": "https://github.com/expo/expo/issues",
+  "jest": {
+    "preset": "expo-module-scripts"
+  },
   "peerDependencies": {
-    "expo-core": "~2.0.0"
+    "expo-core": "~2.0.0",
+    "jest-expo": "^32.0.0"
   },
   "gitHead": "f15abc53c111bd0438cd36dc456c59cfa7c56a58"
 }
