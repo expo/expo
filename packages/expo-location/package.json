@@ -38,6 +38,9 @@
     "expo-permissions-interface": "~2.0.0",
     "expo-task-manager-interface": "~1.0.0"
   },
+  "jest": {
+    "preset": "expo-module-scripts"
+  },
   "dependencies": {
     "invariant": "^2.2.4"
   },

@@ -1,11 +1,6 @@
-import * as Location from 'expo-location';
 import { NativeModulesProxy } from 'expo-core';
-import {
-  mockProperty,
-  unmockAllProperties,
-  mockPlatformIOS,
-  mockPlatformAndroid,
-} from 'jest-expo';
+import { mockProperty, unmockAllProperties, mockPlatformIOS, mockPlatformAndroid } from 'jest-expo';
+import * as Location from '../Location';
 
 const fakeReturnValue = {
   coords: {
@@ -84,7 +79,9 @@ describe('Location', () => {
         (error as any).code = 'E_NO_GEOCODER';
         throw error;
       });
-      return expect(Location.geocodeAsync('Googleplex')).rejects.toMatchObject({ code: 'E_NO_GEOCODER' });
+      return expect(Location.geocodeAsync('Googleplex')).rejects.toMatchObject({
+        code: 'E_NO_GEOCODER',
+      });
     });
   });
 
