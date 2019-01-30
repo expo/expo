@@ -18,6 +18,9 @@
   "dependencies": {
     "EXCore": [
 
+    ],
+    "EXFileSystemInterface": [
+
     ]
   }
 }
