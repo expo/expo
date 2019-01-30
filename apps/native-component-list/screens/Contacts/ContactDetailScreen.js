@@ -1,9 +1,10 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Contacts, ImagePicker, Permissions } from 'expo';
+import { Linking, ImagePicker } from 'expo';
+import { Contacts } from 'expo-contacts';
+import { Permissions } from 'expo-permissions';
 import React from 'react';
 import {
   ActionSheetIOS,
-  Linking,
   Platform,
   RefreshControl,
   StyleSheet,
@@ -334,7 +335,9 @@ export default class ContactDetailScreen extends React.Component {
           ))}
         </View>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-          {this.links.map((linkedItem, index) => <LinkedButton {...linkedItem} key={index} />)}
+          {this.links.map((linkedItem, index) => (
+            <LinkedButton {...linkedItem} key={index} />
+          ))}
         </View>
       </View>
     );
