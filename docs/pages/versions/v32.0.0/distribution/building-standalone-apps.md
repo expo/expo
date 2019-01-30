@@ -19,7 +19,7 @@ generate builds for you, but it's up to you to make your app awesome.
 
 ## 1. Install Expo CLI
 
-Expo CLI is the tool for developing and building Expo apps. Run `npm install -g expo-cli` to get it.
+Expo CLI is the tool for developing and building Expo apps. Run `npm install -g expo-cli` (or `yarn global add expo-cli`) to get it.
 
 If you haven't created an Expo account before, you'll be asked to create one when running the build command.
 
@@ -61,7 +61,7 @@ for App Store metadata.
 ## 3. Start the build
 
 Run `expo build:android` or `expo build:ios`. If you don't already have a packager running for this
-project, `exp` will start one for you.
+project, `expo` will start one for you.
 
 ### If you choose to build for Android
 
@@ -88,39 +88,57 @@ If you don't know what this means, let us handle it! :)
 
 ### If you choose to build for iOS
 
-You are given a choice of letting the `exp` client create the
+You are given a choice of letting the `expo` client create the
 necessary credentials for you, while still having a chance to provide
 your own overrides. Your Apple ID and password is used locally and
 never saved on Expo's servers.
 
 ```bash
-[exp] Making sure project is set up correctly...
-[exp] Your project looks good!
-[exp] Checking if current build exists...
+$ expo build:ios
+[16:44:37] Checking if current build exists...
 
-[exp] No currently active or previous builds for this project.
-? How would you like to upload your credentials?
- (Use arrow keys)
+[16:44:37] No currently active or previous builds for this project.
+[16:44:37]
+We need your Apple ID/password to manage certificates, keys
+and provisioning profiles from your Apple Developer account.
+
+Note: Expo does not keep your Apple ID or your Apple ID password.
+
+? What\'s your Apple ID? xxx@yyy.zzz
+? Password? [hidden]
+✔ Authenticated with Apple Developer Portal successfully!
+[16:44:46] You have 4 teams associated with your account
+? Which team would you like to use? 3) ABCDEFGHIJ "John Turtle" (Individual)
+✔ Ensured App ID exists on Apple Developer Portal!
+[16:44:59] We do not have some credentials for you: Apple Distribution Certificate, Apple Push Notifications service key, Apple Provisioning Profile
+? How would you like to upload your credentials? (Use arrow keys)
 ❯ Expo handles all credentials, you can still provide overrides
-  I will provide all the credentials and files needed, Expo does no validation
+  I will provide all the credentials and files needed, Expo does limited validation
 ```
 
-We ask you if you'd like us to handle your distribution certificate or
-use your own. Similar to the Android keystore, if you don't know what
-a distribution certificate is, just let us handle it for you. If you
-do need to upload your own certificates, we recommend following
-[this excellent guide on making a p12file](https://calvium.com/how-to-make-a-p12-file/).
-**Note:** this guide recommends leaving the p12's password blank, but a p12 password
+We ask you if you'd like us to handle your Distribution Certificate or
+use your own. If you have previously used `expo-cli` for building a standalone app
+for a different project, then we'll ask you if you'd like to reuse your existing
+Distribution Certificate. Similar to the Android keystore, if you don't know what
+a Distribution Certificate is, just let us handle it for you. If you do need
+to upload your own certificates, we recommend following [this excellent guide on making a P12 file](https://calvium.com/how-to-make-a-p12-file/).
+**Note:** this guide recommends leaving the P12's password blank, but a P12 password
 is required to upload your own certificate to Expo's service. Please enter a password
-when prompted.
+when prompted. We'll ask you similar questions about your choice regarding
+Push Notifications service key. Remember that Push Notifications service keys
+can be reused across different Expo apps as well.
+
+If you are using Push Notifications Certificate and want to switch to Push Notifications Key you need
+to start build with `--clear-push-cert`. We will remove certificate from our servers and generate Push Notifcations Key for you.
 
 > **Note:** The Expo build service supports both normal App Store distribution as well as enterprise
 > distribution. To use the latter, you must be a member of the ["Apple Developer Enterprise
 > Program"](https://developer.apple.com/programs/enterprise/). Only normal Apple developer accounts
 > can build apps that can be submitted to the Apple App Store, and only enterprise developer
 > accounts can build apps that can be distributed using enterprise distribution methods. When you
-> call `expo build:ios`, use the `--apple-enterprise-account` flag. At this time, the standalone app
-> builder does not support "ad hoc" distribution certificates or provisioning profiles.
+> call `expo build:ios`, you just need to choose the correct team, it will be labeled `(In-House)`.
+> At this time, the standalone app builder does not support "ad hoc" distribution certificates
+> or provisioning profiles.
 
 ## 4. Wait for it to finish building
 
@@ -175,7 +193,7 @@ You can always change your webhook URL and/or webhook secret using the same comm
 
 ## 6. Submit it to the appropriate store
 
-We don't automate this step (yet), but at this point you should be able to follow the Apple and Google documentation to submit your standalone binary to each respective store. For more info on how to polish your app and ensure it is accepted to the Apple and Google marketplaces, read the guide on [Deploying to App Stores](../app-stores/).
+Read the guide on [Uploading Apps to the Apple App Store and Google Play](../uploading-apps/).
 
 ## 7. Update your app
 
