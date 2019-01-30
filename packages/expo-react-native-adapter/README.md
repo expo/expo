@@ -44,108 +44,113 @@ and run `pod install`.
 2. Import `<EXCore/EXModuleRegistry.h>`, `<EXReactNativeAdapter/EXNativeModulesProxy.h>` and `<EXReactNativeAdapter/EXModuleRegistryAdapter.h>`.
 3. Make `AppDelegate` implement `RCTBridgeDelegate` protocol (`@interface AppDelegate () <RCTBridgeDelegate>`).
 4. Add a new instance variable to your `AppDelegate`:
-    ```objc
-    @interface AppDelegate () <RCTBridgeDelegate>
 
-    // add this line
-    @property (nonatomic, strong) EXModuleRegistryAdapter *moduleRegistryAdapter;
+   ```objc
+   @interface AppDelegate () <RCTBridgeDelegate>
 
-    @end
-    ```
+   // add this line
+   @property (nonatomic, strong) EXModuleRegistryAdapter *moduleRegistryAdapter;
+
+   @end
+   ```
+
 5. In `-application:didFinishLaunchingWithOptions:` add the following at the top of the implementation:
-    ```objc
-    self.moduleRegistryAdapter = [[EXModuleRegistryAdapter alloc] initWithModuleRegistryProvider:[[EXModuleRegistryProvider alloc] init]];
-    ```
-4. Add two methods to the `AppDelegate`'s implementation:
-    ```objc
-    - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
-    {
-        NSArray<id<RCTBridgeModule>> *extraModules = [_moduleRegistryAdapter extraModulesForBridge:bridge andExperience:nil];
-        // If you'd like to export some custom RCTBridgeModules that are not Expo modules, add them here!
-        return extraModules;
-    }
+   ```objc
+   self.moduleRegistryAdapter = [[EXModuleRegistryAdapter alloc] initWithModuleRegistryProvider:[[EXModuleRegistryProvider alloc] init]];
+   ```
+6. Add two methods to the `AppDelegate`'s implementation:
 
-    - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge {
-        return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
-    }
-    ```
-5. When initializing `RCTBridge`, make the `AppDelegate` a delegate of the bridge:
-    ```objc
-    RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
-    ```
-6. That's it! All in all, your `AppDelegate.m` should look similar to:
-    <details>
-        <summary>Click to expand</summary>
-        <p>
+   ```objc
+   - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
+   {
+       NSArray<id<RCTBridgeModule>> *extraModules = [_moduleRegistryAdapter extraModulesForBridge:bridge andExperience:nil];
+       // If you'd like to export some custom RCTBridgeModules that are not Expo modules, add them here!
+       return extraModules;
+   }
 
-    ```objc
-    #import "AppDelegate.h"
+   - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge {
+       return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
+   }
+   ```
 
-    #import <React/RCTBundleURLProvider.h>
-    #import <React/RCTRootView.h>
+7. When initializing `RCTBridge`, make the `AppDelegate` a delegate of the bridge:
+   ```objc
+   RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
+   ```
+8. That's it! All in all, your `AppDelegate.m` should look similar to:
 
-    #import <EXCore/EXModuleRegistry.h>
-    #import <EXReactNativeAdapter/EXNativeModulesProxy.h>
-    #import <EXReactNativeAdapter/EXModuleRegistryAdapter.h>
+   <details>
+       <summary>Click to expand</summary>
+       <p>
 
-    @interface AppDelegate () <RCTBridgeDelegate>
+   ```objc
+   #import "AppDelegate.h"
 
-    @property (nonatomic, strong) EXModuleRegistryAdapter *moduleRegistryAdapter;
+   #import <React/RCTBundleURLProvider.h>
+   #import <React/RCTRootView.h>
 
-    @end
+   #import <EXCore/EXModuleRegistry.h>
+   #import <EXReactNativeAdapter/EXNativeModulesProxy.h>
+   #import <EXReactNativeAdapter/EXModuleRegistryAdapter.h>
 
-    @implementation AppDelegate
+   @interface AppDelegate () <RCTBridgeDelegate>
 
-    - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
-    {
-        self.moduleRegistryAdapter = [[EXModuleRegistryAdapter alloc] initWithModuleRegistryProvider:[[EXModuleRegistryProvider alloc] init]];
-        RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
-        RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge moduleName:@"YOUR_MODULE_NAME" initialProperties:nil];
-        rootView.backgroundColor = [[UIColor alloc] initWithRed:1.0f green:1.0f blue:1.0f alpha:1];
+   @property (nonatomic, strong) EXModuleRegistryAdapter *moduleRegistryAdapter;
 
-        self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-        UIViewController *rootViewController = [UIViewController new];
-        rootViewController.view = rootView;
-        self.window.rootViewController = rootViewController;
-        [self.window makeKeyAndVisible];
-        return YES;
-    }
+   @end
 
-    - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
-    {
-        NSArray<id<RCTBridgeModule>> *extraModules = [_moduleRegistryAdapter extraModulesForBridge:bridge andExperience:nil];
-        // If you'd like to export some custom RCTBridgeModules that are not Expo modules, add them here!
-        return extraModules;
-    }
+   @implementation AppDelegate
 
-    - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge {
-        return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
-    }
+   - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+   {
+       self.moduleRegistryAdapter = [[EXModuleRegistryAdapter alloc] initWithModuleRegistryProvider:[[EXModuleRegistryProvider alloc] init]];
+       RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
+       RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge moduleName:@"YOUR_MODULE_NAME" initialProperties:nil];
+       rootView.backgroundColor = [[UIColor alloc] initWithRed:1.0f green:1.0f blue:1.0f alpha:1];
 
-    @end
-    ```
+       self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+       UIViewController *rootViewController = [UIViewController new];
+       rootViewController.view = rootView;
+       self.window.rootViewController = rootViewController;
+       [self.window makeKeyAndVisible];
+       return YES;
+   }
 
-    </details>
+   - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
+   {
+       NSArray<id<RCTBridgeModule>> *extraModules = [_moduleRegistryAdapter extraModulesForBridge:bridge andExperience:nil];
+       // If you'd like to export some custom RCTBridgeModules that are not Expo modules, add them here!
+       return extraModules;
+   }
+
+   - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge {
+       return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
+   }
+
+   @end
+   ```
+
+   </details>
 
 #### Android
 
 1. Open the `MainApplication.java` of your application.
 2. Add to the imports:
-    ```java
-    import expo.adapters.react.ModuleRegistryAdapter;
-    import expo.adapters.react.ReactAdapterPackage;
-    import expo.adapters.react.ReactModuleRegistryProvider;
-    import expo.core.interfaces.Package;
-    ```
+   ```java
+   import expo.adapters.react.ModuleRegistryAdapter;
+   import expo.adapters.react.ReactAdapterPackage;
+   import expo.adapters.react.ReactModuleRegistryProvider;
+   import expo.core.interfaces.Package;
+   ```
 3. Create an instance variable on the `Application`:
-    ```java
-    private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(Arrays.<Package>asList(
-        new ReactAdapterPackage()
-        // more packages, like
-        // new CameraPackage(), if you use expo-camera
-        // etc.
-    ));
-    ```
+   ```java
+   private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(Arrays.<Package>asList(
+       new ReactAdapterPackage()
+       // more packages, like
+       // new CameraPackage(), if you use expo-camera
+       // etc.
+   ));
+   ```
 4. Add `new ModuleRegistryAdapter(mModuleRegistryProvider)` to the list returned by `protected List<ReactPackage> getPackages()`.
 5. You're good to go!
 
@@ -170,7 +175,34 @@ import { NativeModulesProxy } from 'expo-core';
 
 const { FileSystem } = NativeModulesProxy;
 
-FileSystem.getInfo("file:///...");
+FileSystem.getInfo('file:///...');
 ```
 
 Note that all the methods return `Promise`s.
+
+### Synthetic Platform Events
+
+When creating web universal modules, you may find that you need to send events back to the API layer.
+In this case you will want to use the shared instance `SyntheticPlatformEmitter` which can emit events to `NativeEventEmitter` or `EventEmitter` from `expo-core`.
+
+`ExponentGyroscope.web.ts`
+
+```js
+// Example from expo-sensors native web gyroscope sensor
+
+import { SyntheticPlatformEmitter } from 'expo-core';
+
+SyntheticPlatformEmitter.emit('gyroscopeDidUpdate', { x, y, z });
+```
+
+This emitted event is then received with a `EventEmitter` in the developer facing API.
+
+```js
+import { EventEmitter, Subscription, Platform } from 'expo-core';
+
+import ExponentGyroscope from './ExponentGyroscope';
+
+const nativeEmitter = new EventEmitter(nativeSensorModule);
+
+nativeEmitter.addListener('gyroscopeDidUpdate', ({ x, y, z }) => {});
+```
