@@ -30,7 +30,7 @@ import * as ScreenOrientation from './ScreenOrientation/ScreenOrientation';
 import * as StoreReview from './StoreReview/StoreReview';
 import * as Updates from './Updates/Updates';
 import * as Util from './Util';
-import * as FacebookAds from './facebook-ads';
+import * as FacebookAds from 'expo-ads-facebook';
 import * as SplashScreen from './launch/SplashScreen';
 
 if (typeof Constants.manifest.env === 'object') {

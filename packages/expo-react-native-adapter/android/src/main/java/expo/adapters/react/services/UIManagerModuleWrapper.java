@@ -1,8 +1,10 @@
 package expo.adapters.react.services;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.view.View;
 
 import com.facebook.common.references.CloseableReference;
@@ -12,7 +14,6 @@ import com.facebook.imagepipeline.core.ImagePipeline;
 import com.facebook.imagepipeline.datasource.BaseBitmapDataSubscriber;
 import com.facebook.imagepipeline.image.CloseableImage;
 import com.facebook.imagepipeline.request.ImageRequest;
-import android.content.Intent;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.modules.core.PermissionAwareActivity;
 import com.facebook.react.modules.core.PermissionListener;
@@ -25,17 +26,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+import javax.annotation.Nullable;
+
 import expo.core.interfaces.ActivityEventListener;
 import expo.core.interfaces.ActivityProvider;
 import expo.core.interfaces.InternalModule;
-import expo.core.interfaces.LifecycleEventListener;
 import expo.core.interfaces.JavaScriptContextProvider;
+import expo.core.interfaces.LifecycleEventListener;
 import expo.core.interfaces.services.UIManager;
 import expo.interfaces.imageloader.ImageLoader;
-import expo.interfaces.permissions.PermissionsManager;
 import expo.interfaces.permissions.PermissionsListener;
-
-import javax.annotation.Nullable;
+import expo.interfaces.permissions.PermissionsManager;
 
 public class UIManagerModuleWrapper implements
     ActivityProvider,
@@ -43,8 +44,7 @@ public class UIManagerModuleWrapper implements
     InternalModule,
     JavaScriptContextProvider,
     PermissionsManager,
-    UIManager
-{
+    UIManager {
   private ReactContext mReactContext;
   private Map<LifecycleEventListener, com.facebook.react.bridge.LifecycleEventListener> mLifecycleListenersMap = new WeakHashMap<>();
   private Map<ActivityEventListener, com.facebook.react.bridge.ActivityEventListener> mActivityEventListenersMap = new WeakHashMap<>();
@@ -60,11 +60,11 @@ public class UIManagerModuleWrapper implements
   @Override
   public List<Class> getExportedInterfaces() {
     return Arrays.<Class>asList(
-      ActivityProvider.class,
-      ImageLoader.class,
-      JavaScriptContextProvider.class,
-      PermissionsManager.class,
-      UIManager.class
+        ActivityProvider.class,
+        ImageLoader.class,
+        JavaScriptContextProvider.class,
+        PermissionsManager.class,
+        UIManager.class
     );
   }
 
@@ -88,6 +88,26 @@ public class UIManagerModuleWrapper implements
             block.reject(e);
           }
         }
+      }
+    });
+  }
+
+  @Override
+  public void addUIBlock(final GroupUIBlock block) {
+    getContext().getNativeModule(UIManagerModule.class).addUIBlock(new com.facebook.react.uimanager.UIBlock() {
+      @Override
+      public void execute(final NativeViewHierarchyManager nativeViewHierarchyManager) {
+        block.execute(new ViewHolder() {
+          @Override
+          public View get(Object key) {
+            if (key instanceof Number) {
+              return nativeViewHierarchyManager.mTagsToViews.get(((Number) key).intValue());
+            } else {
+              Log.w("E_INVALID_TAG", "Provided tag is of class " + key.getClass() + " whereas React expects tags to be integers. Are you sure you're providing proper argument to addUIBlock?");
+            }
+            return null;
+          }
+        });
       }
     });
   }
