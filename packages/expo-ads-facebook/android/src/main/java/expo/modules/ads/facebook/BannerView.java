@@ -1,11 +1,9 @@
 package expo.modules.ads.facebook;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.res.Resources;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
-import android.util.TypedValue;
-import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import com.facebook.ads.Ad;
 import com.facebook.ads.AdError;
@@ -18,13 +16,23 @@ import expo.core.interfaces.LifecycleEventListener;
 import expo.core.interfaces.services.EventEmitter;
 import expo.core.interfaces.services.UIManager;
 
-
-public class BannerView extends ViewGroup implements AdListener, LifecycleEventListener {
+@SuppressLint("ViewConstructor")
+public class BannerView extends LinearLayout implements AdListener, LifecycleEventListener {
   private AdView myAdView;
   private String mPlacementId;
   private AdSize mSize;
   private EventEmitter mEventEmitter;
   private UIManager mUIManager;
+
+  private final Runnable mLayoutRunnable = new Runnable() {
+    @Override
+    public void run() {
+      measure(
+          MeasureSpec.makeMeasureSpec(getWidth(), MeasureSpec.EXACTLY),
+          MeasureSpec.makeMeasureSpec(getHeight(), MeasureSpec.EXACTLY));
+      layout(getLeft(), getTop(), getRight(), getBottom());
+    }
+  };
 
   public BannerView(Context context, ModuleRegistry moduleRegistry) {
     super(context);
@@ -56,19 +64,7 @@ public class BannerView extends ViewGroup implements AdListener, LifecycleEventL
 
   @Override
   public void onAdLoaded(Ad ad) {
-    this.removeAllViews();
-
-    Resources r = getContext().getResources();
-    DisplayMetrics dm = r.getDisplayMetrics();
-    int pxW = mSize.getWidth() > 0 ?
-        dp2px(mSize.getWidth(), dm)
-        : r.getDisplayMetrics().widthPixels;
-    int pxH = dp2px(mSize.getHeight(), dm);
-
-    myAdView.measure(pxW, pxH);
-    myAdView.layout(0, 0, pxW, pxH);
-
-    addView(myAdView);
+    // do nothing
   }
 
   @Override
@@ -85,13 +81,10 @@ public class BannerView extends ViewGroup implements AdListener, LifecycleEventL
     if (myAdView == null && mPlacementId != null && mSize != null) {
       myAdView = new AdView(this.getContext(), mPlacementId, mSize);
       myAdView.setAdListener(this);
-
+      removeAllViews();
+      addView(myAdView);
       myAdView.loadAd();
     }
-  }
-
-  private int dp2px(int dp, DisplayMetrics dm) {
-    return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, dm));
   }
 
   @Override
@@ -114,7 +107,12 @@ public class BannerView extends ViewGroup implements AdListener, LifecycleEventL
   }
 
   @Override
-  protected void onLayout(boolean b, int i, int i1, int i2, int i3) {
-    // TODO: Platform should handle this for us?
+  public void requestLayout() {
+    super.requestLayout();
+
+    // Code borrowed from:
+    // https://github.com/facebook/react-native/blob/d19afc73f5048f81656d0b4424232ce6d69a6368/ReactAndroid/src/main/java/com/facebook/react/views/toolbar/ReactToolbar.java#L166
+    // Thanks to it, the ad is visible when it loads and isn't laid out with (0, 0, 0, 0).
+    post(mLayoutRunnable);
   }
 }
