@@ -76,7 +76,7 @@ function getClientEnvironment(publicUrl) {
         // Useful for resolving the correct path to static assets in `public`.
         // For example, <img src={process.env.PUBLIC_URL + '/img/logo.png'} />.
         // This should only be used as an escape hatch. Normally you would put
-        // images into the `src` and `import` them in code to get their paths.
+        // images into the root folder and `import` them in code to get their paths.
         PUBLIC_URL: JSON.stringify(publicUrl),
 
         // Surface the manifest for use in expo-constants
@@ -95,13 +95,27 @@ const includeModule = module => {
   return path.resolve(locations.modules, module);
 };
 
+// Only compile files from react-native, and expo libraries.
+const includeModulesThatContainPaths = [
+  'node_modules/react-native',
+  'node_modules/react-navigation',
+  'node_modules/expo',
+  'node_modules/@react',
+  'node_modules/@expo/',
+  // Special case for this app
+  'apps/native-component-list',
+];
+
 const babelLoaderConfiguration = {
   test: /\.jsx?$/,
-  include: [
-    // TODO: Bacon: This makes compilation take a while
-    locations.root,
-    locations.modules,
-  ],
+  include(inputPath) {
+    for (const option of includeModulesThatContainPaths) {
+      if (inputPath.includes(option)) {
+        return inputPath;
+      }
+    }
+    return null;
+  },
   use: {
     loader: 'babel-loader',
     options: {
@@ -163,26 +177,21 @@ const mediaLoaderConfiguration = {
   ],
 };
 
-function getWebModule(moduleName, initialRoot, logTag) {
+// This method intercepts modules being referenced in react-native
+// and redirects them to web friendly versions in expo.
+function getWebModule(initialRoot, moduleName) {
   return function(res) {
-    if (res.context.indexOf('node_modules/react-native/') === -1) return;
-    res.request = includeModule(initialRoot + moduleName);
+    if (res.context.includes('node_modules/react-native/')) {
+      res.request = includeModule(initialRoot + moduleName);
+    }
   };
 }
 
-function useWebModules(modules, initialRoot = 'react-native-web/dist/exports/', logTag) {
-  return modules.map(module => {
-    let moduleName = module;
-    let proxyName = module;
-    if (Array.isArray(module)) {
-      moduleName = module[0];
-      proxyName = module[1];
-    }
-    return new webpack.NormalModuleReplacementPlugin(
-      new RegExp(moduleName),
-      getWebModule(proxyName, initialRoot, logTag)
-    );
-  });
+function useWebModule(modulePathToHiJack, redirectPath, initialRoot = 'expo/build/web/') {
+  return new webpack.NormalModuleReplacementPlugin(
+    new RegExp(modulePathToHiJack),
+    getWebModule(initialRoot, redirectPath)
+  );
 }
 
 const publicPath = '/';
@@ -260,29 +269,31 @@ module.exports = {
     }),
 
     new webpack.DefinePlugin(env),
-    ...useWebModules(['Platform', 'DeviceInfo', 'Dimensions', 'Linking', 'Image', 'Share', 'Text']),
-    ...useWebModules(
-      [
-        'Performance/Systrace',
-        ['HMRLoadingView', 'Utilities/HMRLoadingView'],
-        ['RCTNetworking', 'Network/RCTNetworking'],
-      ],
-      'expo/build/web/'
-    ),
+
+    useWebModule('Platform', 'Utilities/Platform'),
+    useWebModule('Performance/Systrace', 'Performance/Systrace'),
+    useWebModule('HMRLoadingView', 'Utilities/HMRLoadingView'),
+    useWebModule('RCTNetworking', 'Network/RCTNetworking'),
   ],
   resolve: {
     symlinks: false,
     extensions: ['.web.js', '.js', '.jsx', '.json'],
     alias: {
+      /* Alias direct react-native imports to react-native-web */
       'react-native$': 'react-native-web',
+      /* Add polyfills for modules that react-native-web doesn't support */
+      'react-native/Libraries/Image/AssetSourceResolver$':
+        'expo/build/web/Image/AssetSourceResolver',
+      'react-native/Libraries/Image/assetPathUtils$': 'expo/build/web/Image/assetPathUtils',
+      'react-native/Libraries/Image/resolveAssetSource$': 'expo/build/web/Image/resolveAssetSource',
     },
     plugins: [
       // Adds support for installing with Plug'n'Play, leading to faster installs and adding
       // guards against forgotten dependencies and such.
       PnpWebpackPlugin,
-      // Prevents users from importing files from outside of src/ (or node_modules/).
-      // This often causes confusion because we only process files within src/ with babel.
-      // To fix this, we prevent you from importing files out of src/ -- if you'd like to,
+      // Prevents users from importing files from outside of node_modules/.
+      // This often causes confusion because we only process files within the root folder with babel.
+      // To fix this, we prevent you from importing files out of the root folder -- if you'd like to,
       // please link the files into your node_modules/ and let module-resolution kick in.
       // Make sure your source files are compiled, as they will not be processed in any way.
       new ModuleScopePlugin(locations.output, [locations.packageJson]),
