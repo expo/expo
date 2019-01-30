@@ -84,39 +84,32 @@ export default class AccelerometerSensor extends React.Component {
   };
 
   _slow = () => {
-    /* @info Request updates every 1000ms */ Accelerometer.setUpdateInterval(1000); /* @end */
-
+    Accelerometer.setUpdateInterval(1000); // @info Request updates every 1000ms
   };
 
   _fast = () => {
-    /* @info Request updates every 16ms, which is approximately equal to every frame at 60 frames per second */ Accelerometer.setUpdateInterval(
-      16
-    ); /* @end */
-
+    Accelerometer.setUpdateInterval(16); // @info Request updates every 16ms, which is approximately equal to every frame at 60 frames per second
   };
 
   _subscribe = () => {
-    /* @info Subscribe to events and update the component state with the new data from the Accelerometer. We save the subscription object away so that we can remove it when the component is unmounted*/ this._subscription = Accelerometer.addListener(
+    this._subscription = Accelerometer.addListener(
       accelerometerData => {
         this.setState({ accelerometerData });
       }
-    ); /* @end */
-
+    ); // @info Subscribe to events and update the component state with the new data from the Accelerometer. We save the subscription object away so that we can remove it when the component is unmounted
   };
 
   _unsubscribe = () => {
-    /* @info Be sure to unsubscribe from events when the component is unmounted */ this._subscription && this._subscription.remove(); /* @end */
-
+    this._subscription && this._subscription.remove(); // @info Be sure to unsubscribe from events when the component is unmounted
     this._subscription = null;
   };
 
   render() {
-    /* @info A data point is provided for each of the x, y, and z axes */ let {
+    let {
       x,
       y,
       z,
-    } = this.state.accelerometerData; /* @end */
-
+    } = this.state.accelerometerData; // @info A data point is provided for each of the x, y, and z axes
 
     return (
       <View style={styles.sensor}>

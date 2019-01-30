@@ -24,15 +24,13 @@ export default class App extends React.Component {
 
   render() {
     if (!this.state.isReady) {
-      /* @info As long as AppLoading is the only leaf/native component that has been mounted, the loading screen will remain visible */
       return (
         <AppLoading
           startAsync={this._cacheResourcesAsync}
           onFinish={() => this.setState({ isReady: true })}
           onError={console.warn}
         />
-      );/* @end */
-
+      ); // @info As long as AppLoading is the only leaf/native component that has been mounted, the loading screen will remain visible
     }
 
     return (
@@ -49,13 +47,11 @@ export default class App extends React.Component {
       require('./assets/images/slack-icon.png'),
     ];
 
-    /* @info Read more about <a href='../guides/preloading-and-caching-assets.html'>Preloading and Caching Assets</a> */
     const cacheImages = images.map((image) => {
       return Asset.fromModule(image).downloadAsync();
-    });/* @end */
+    }); // @info Read more about <a href='../../guides/preloading-and-caching-assets/'>Preloading and Caching Assets</a>
 
     return Promise.all(cacheImages)
-
   }
 }
 ```

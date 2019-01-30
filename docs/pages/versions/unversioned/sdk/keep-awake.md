@@ -29,9 +29,7 @@ export default class KeepAwakeExample extends React.Component {
   render() {
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        /* @info As long as this component is mounted, the screen will not turn off from being idle.
-        */ <KeepAwake />
-        /* @end */
+        <KeepAwake /> // @info As long as this component is mounted, the screen will not turn off from being idle.
         <Text>This screen will never sleep!</Text>
       </View>
     );
@@ -57,11 +55,11 @@ export default class KeepAwakeExample extends React.Component {
   }
 
   _activate = () => {
-    /* @info Screen will remain on after called until <strong>KeepAwake.deactivate()</strong> is called. */ KeepAwake.activate(); /* @end */
+    KeepAwake.activate(); // @info Screen will remain on after called until <strong>KeepAwake.deactivate()</strong> is called.
   };
 
   _deactivate = () => {
-    /* @info Deactivates KeepAwake, or does nothing if it was never activated. */ KeepAwake.deactivate(); /* @end */
+    KeepAwake.deactivate(); // @info Deactivates KeepAwake, or does nothing if it was never activated.
   };
 }
 ```

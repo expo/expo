@@ -1,7 +1,6 @@
 import { css } from 'react-emotion';
 
 import * as React from 'react';
-import { renderToStaticMarkup } from 'react-dom/server';
 import * as Constants from '~/common/constants';
 
 const attributes = {
@@ -21,6 +20,10 @@ const STYLES_CODE_BLOCK = css`
     transition: 200ms ease all;
     transition-property: text-shadow, opacity;
     text-shadow: 1px 1px ${Constants.colors.black30};
+    /* Use a pseudo-element to not break copy-and-paste */
+    ::after {
+      content: '💬';
+    }
   }
 
   .code-annotation:hover {
@@ -66,6 +69,40 @@ const STYLES_CODE_CONTAINER = css`
   line-height: 1.2rem;
 `;
 
+const recursiveMap = (children, fn) => {
+  return React.Children.map(children, child => {
+    if (!React.isValidElement(child)) return child;
+
+    if (child.props.children) {
+      child = React.cloneElement(child, {
+        children: recursiveMap(child.props.children, fn),
+      });
+    }
+
+    return fn(child);
+  });
+};
+
+const tooltipMarker = '@info';
+
+const tooltipComment = ({ props }) =>
+  props.name === 'span' &&
+  props.props.className === 'token comment' &&
+  typeof props.children[0] === 'string' &&
+  props.children[0].includes(tooltipMarker);
+
+const annotationContent = ({ props }) =>
+  props.children[0]
+    .replace('/*', '')
+    .replace(tooltipMarker, '')
+    .replace('*/', '')
+    .replace('//', '');
+
+const replaceCommentsWithAnnotations = thisArg => {
+  if (!tooltipComment(thisArg)) return thisArg;
+  return <span className="code-annotation" title={annotationContent(thisArg)} />;
+};
+
 export class Pre extends React.Component {
   componentDidMount() {
     this._runTippy();
@@ -88,27 +125,13 @@ export class Pre extends React.Component {
     }
   }
 
-  _escapeHtml(text) {
-    return text.replace(/"/g, '&quot;');
-  }
-
-  _replaceCommentsWithAnnotations(value) {
-    return renderToStaticMarkup(value)
-      .replace(/<span class="token comment">\/\* @info (.*?)\*\/<\/span>\s*/g, (match, content) => {
-        return `<span class="code-annotation" title="${this._escapeHtml(content)}">`;
-      })
-      .replace(/<span class="token comment">\/\* @end \*\/<\/span>(\n *)?/g, '</span>');
-  }
-
   render() {
     this.props.children.props.props.className += ' ' + STYLES_CODE_BLOCK;
     return (
       <pre
         className={this.props.className + ' ' + STYLES_CODE_CONTAINER}
+        children={recursiveMap(this.props.children, replaceCommentsWithAnnotations)}
         {...attributes}
-        dangerouslySetInnerHTML={{
-          __html: this._replaceCommentsWithAnnotations(this.props.children),
-        }}
       />
     );
   }
