@@ -1,10 +1,10 @@
 import { EventEmitter } from 'expo-core';
 import { Playback, PlaybackSource, PlaybackStatus, PlaybackStatusToSet } from '../AV';
-declare type AudioInstance = number | HTMLMediaElement;
+declare type AudioInstance = number | HTMLMediaElement | null;
 export declare class Sound implements Playback {
     _loaded: boolean;
     _loading: boolean;
-    _key?: AudioInstance;
+    _key: AudioInstance;
     _lastStatusUpdate: string | null;
     _lastStatusUpdateTime: Date | null;
     _subscriptions: Array<{

@@ -104,7 +104,7 @@ export default {
                 status: getStatusFromMedia(media),
             });
         };
-        media.onerror = error => {
+        media.onerror = (event, source, fileno, columnNumber, error) => {
             GlobalPlatformEmitter.emit('ExponentAV.onError', {
                 key: media,
                 error,

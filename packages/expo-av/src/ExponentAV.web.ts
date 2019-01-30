@@ -128,7 +128,7 @@ export default {
       });
     };
 
-    media.onerror = error => {
+    media.onerror = (event: Event | string, source?: string, fileno?: number, columnNumber?: number, error?: Error) => {
       GlobalPlatformEmitter.emit('ExponentAV.onError', {
         key: media,
         error,

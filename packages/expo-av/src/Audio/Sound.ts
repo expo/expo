@@ -12,11 +12,11 @@ import {
 } from '../AV';
 import ExponentAV from '../ExponentAV';
 
-type AudioInstance = number | HTMLMediaElement;
+type AudioInstance = number | HTMLMediaElement | null;
 export class Sound implements Playback {
   _loaded: boolean = false;
   _loading: boolean = false;
-  _key?: AudioInstance;
+  _key: AudioInstance = null;
   _lastStatusUpdate: string | null = null;
   _lastStatusUpdateTime: Date | null = null;
   _subscriptions: Array<{ remove: () => void }> = [];
@@ -118,7 +118,7 @@ export class Sound implements Playback {
   _errorCallback = (error: string) => {
     this._clearSubscriptions();
     this._loaded = false;
-    this._key = undefined;
+    this._key = null;
     this._callOnPlaybackStatusUpdateForNewStatus(getUnloadedStatus(error));
   };
 
@@ -196,7 +196,7 @@ export class Sound implements Playback {
     if (this._loaded) {
       this._loaded = false;
       const key = this._key;
-      this._key = undefined;
+      this._key = null;
       const status = await ExponentAV.unloadForSound(key);
       this._callOnPlaybackStatusUpdateForNewStatus(status);
       this._clearSubscriptions();

@@ -6,6 +6,7 @@ export class Sound {
     constructor() {
         this._loaded = false;
         this._loading = false;
+        this._key = null;
         this._lastStatusUpdate = null;
         this._lastStatusUpdateTime = null;
         this._subscriptions = [];
@@ -25,7 +26,7 @@ export class Sound {
         this._errorCallback = (error) => {
             this._clearSubscriptions();
             this._loaded = false;
-            this._key = undefined;
+            this._key = null;
             this._callOnPlaybackStatusUpdateForNewStatus(getUnloadedStatus(error));
         };
         // ### Unified playback API ### (consistent with Video.js)
@@ -114,7 +115,7 @@ export class Sound {
         if (this._loaded) {
             this._loaded = false;
             const key = this._key;
-            this._key = undefined;
+            this._key = null;
             const status = await ExponentAV.unloadForSound(key);
             this._callOnPlaybackStatusUpdateForNewStatus(status);
             this._clearSubscriptions();
