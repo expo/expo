@@ -1,7 +1,7 @@
-import styled, { keyframes, css } from 'react-emotion';
-import Prism from 'prismjs';
+import { css } from 'react-emotion';
 
 import * as React from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
 import * as Constants from '~/common/constants';
 
 const attributes = {
@@ -66,7 +66,7 @@ const STYLES_CODE_CONTAINER = css`
   line-height: 1.2rem;
 `;
 
-export class Code extends React.Component {
+export class Pre extends React.Component {
   componentDidMount() {
     this._runTippy();
   }
@@ -93,7 +93,7 @@ export class Code extends React.Component {
   }
 
   _replaceCommentsWithAnnotations(value) {
-    return value
+    return renderToStaticMarkup(value)
       .replace(/<span class="token comment">\/\* @info (.*?)\*\/<\/span>\s*/g, (match, content) => {
         return `<span class="code-annotation" title="${this._escapeHtml(content)}">`;
       })
@@ -101,32 +101,19 @@ export class Code extends React.Component {
   }
 
   render() {
-    let html = this.props.children.toString();
-    // mdx will add the class `language-foo` to codeblocks with the tag `foo`
-    // if this class is present, we want to slice out `language-`
-    let lang = this.props.className && this.props.className.slice(9).toLowerCase();
-    if (lang && !Prism.languages[lang]) {
-      try {
-        require('prismjs/components/prism-' + lang + '.js');
-      } catch (e) {}
-    }
-    if (lang && Prism.languages[lang]) {
-      html = Prism.highlight(html, Prism.languages[lang]);
-      html = this._replaceCommentsWithAnnotations(html);
-    }
-
-    // Remove leading newline if it exists (because inside <pre> all whitespace is dislayed as is by the browser, and
-    // sometimes, Prism adds a newline before the code)
-    if (html.startsWith('\n')) {
-      html = html.replace('\n', '');
-    }
-
+    this.props.children.props.props.className += ' ' + STYLES_CODE_BLOCK;
     return (
-      <pre className={STYLES_CODE_CONTAINER} {...attributes}>
-        <code className={STYLES_CODE_BLOCK} dangerouslySetInnerHTML={{ __html: html }} />
-      </pre>
+      <pre
+        className={this.props.className + ' ' + STYLES_CODE_CONTAINER}
+        {...attributes}
+        dangerouslySetInnerHTML={{
+          __html: this._replaceCommentsWithAnnotations(this.props.children),
+        }}
+      />
     );
   }
 }
 
-export const InlineCode = ({ children }) => <code className={`${STYLES_INLINE_CODE} inline`}>{children}</code>;
+export const InlineCode = ({ children }) => (
+  <code className={`${STYLES_INLINE_CODE} inline`}>{children}</code>
+);

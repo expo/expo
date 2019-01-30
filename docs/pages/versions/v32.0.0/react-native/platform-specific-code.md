@@ -111,7 +111,7 @@ When your platform-specific code is more complex, you should consider splitting 
 For example, say you have the following files in your project:
 
 
-```sh
+```shell
 
 BigButton.ios.js
 BigButton.android.js

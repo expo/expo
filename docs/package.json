@@ -11,6 +11,7 @@
     "test-links": "blc --recursive --exclude-external --filter-level 2"
   },
   "dependencies": {
+    "@mapbox/rehype-prism": "^0.3.1",
     "@mdx-js/loader": "^0.16.8",
     "@mdx-js/mdx": "^0.16.8",
     "babel-plugin-module-resolver": "3.1.1",

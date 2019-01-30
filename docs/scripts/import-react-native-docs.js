@@ -66,6 +66,8 @@ let mainAsync = async () => {
     let inAlertSpecialSection = false;
 
     for (let l of lines) {
+      l = l.replace('```sh', '```shell'); // prism supports `bash` and `shell` but not `sh`
+      l = l.replace('```javascripton', '```javascript'); // typo in performance.md
       l = l.replace('```ReactNativeWebPlayer', '```javascript');
       // TODO: Make this work with Snack :/
       l = l.replace(/```SnackPlayer.*$/, '```javascript');

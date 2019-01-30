@@ -167,13 +167,13 @@ To get started, you can use the `graphql create` command (which is similar to `c
 
 First, you need to install the [GraphQL CLI](https://github.com/graphql-cli/graphql-cli):
 
-```sh
+```shell
 npm install -g graphql-cli
 ```
 
 With the CLI installed, you can run the following command:
 
-```sh
+```shell
 graphql create myapp
 ```
 
@@ -183,7 +183,7 @@ Choose `minimal` to learn what the most minimal version of a GraphQL server look
 
 To skip the interactive prompt, you can also pass the `--boilerplate` (short: `-b`) flag to the `graphql create` command and specify which starter kit you'd like to use. For example:
 
-```sh
+```shell
 graphql create myapp --boilerplate node-advanced # The `advanced` boilerplate for Node.js
 # or
 graphql create myapp --boilerplate react-fullstack-basic # The `basic` boilerplate for a fullstack React app
@@ -197,7 +197,7 @@ If you want to get your hands dirty and learn how to get started with a practica
 
 Run `graphql create` and specify `react-fullstack-basic` as your target boilerplate:
 
-```sh
+```shell
 graphql create myapp --boilerplate react-fullstack-basic
 ```
 
@@ -209,7 +209,7 @@ The install script will use the generated endpoint for the Prisma service and co
 
 Once the command has finished, you first need to start the server and second start the React app:
 
-```sh
+```shell
 cd myapp/server
 yarn start
 # the server is now running on http://localhost:4000;

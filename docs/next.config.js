@@ -1,5 +1,6 @@
 const { join } = require('path');
 const { copySync, removeSync } = require('fs-extra');
+const rehypePrism = require('@mapbox/rehype-prism');
 
 // copy versions/v(latest version) to versions/latest
 // (Next.js only half-handles symlinks)
@@ -16,7 +17,7 @@ module.exports = {
       test: /.mdx?$/, // load both .md and .mdx files
       use: [
         options.defaultLoaders.babel,
-        '@mdx-js/loader',
+        { loader: '@mdx-js/loader', options: { hastPlugins: [ rehypePrism ] } },
         join(__dirname, './common/md-loader'),
       ],
     });
