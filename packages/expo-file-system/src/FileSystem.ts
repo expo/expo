@@ -13,7 +13,6 @@ import {
   EncodingType,
   ReadingOptions,
   WritingOptions,
-  EncodingTypes,
   ProgressEvent,
 } from './FileSystem.types';
 
@@ -33,7 +32,6 @@ export {
   EncodingType,
   ReadingOptions,
   WritingOptions,
-  EncodingTypes,
   ProgressEvent,
 };
 

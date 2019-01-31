@@ -1,12 +1,12 @@
 export type DownloadOptions = {
   md5?: boolean;
-  headers?: { [key: string]: string };
+  headers?: { [name: string]: string };
 };
 
 export type DownloadResult = {
   uri: string;
   status: number;
-  headers: { [key: string]: string };
+  headers: { [name: string]: string };
   md5?: string;
 };
 
@@ -37,12 +37,10 @@ export type FileInfo =
       isDirectory: false;
     };
 
-export enum EncodingTypes {
+export enum EncodingType {
   UTF8 = 'utf8',
   Base64 = 'base64',
 }
-
-export type EncodingType = typeof EncodingTypes.UTF8 | typeof EncodingTypes.Base64;
 
 export type ReadingOptions = {
   encoding?: EncodingType | 'utf8' | 'base64';

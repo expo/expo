@@ -2,11 +2,11 @@ import { UnavailabilityError } from 'expo-errors';
 import { EventEmitter } from 'expo-core';
 import UUID from 'uuid-js';
 import FS from './ExponentFileSystem';
-import { EncodingTypes, } from './FileSystem.types';
+import { EncodingType, } from './FileSystem.types';
 if (!FS) {
     console.warn("No native ExponentFileSystem module found, are you sure the expo-file-system's module is linked properly?");
 }
-export { EncodingTypes, };
+export { EncodingType, };
 function normalizeEndingSlash(p) {
     if (p != null) {
         return p.replace(/\/*$/, '') + '/';

@@ -4,16 +4,6 @@ import ExponentFileSystem from '../ExponentFileSystem';
 import * as FileSystem from '../FileSystem';
 
 describe('FileSystem', () => {
-  const throws = async run => {
-    let error = null;
-    try {
-      await run();
-    } catch (e) {
-      error = e;
-    }
-    expect(error).toBeTruthy();
-  };
-
   describe('DownloadResumable', () => {
     const remoteUri = 'http://techslides.com/demos/sample-videos/small.mp4';
     const localUri = FileSystem.documentDirectory + 'small.mp4';
@@ -40,7 +30,7 @@ describe('FileSystem', () => {
       );
     });
 
-    it('downloads with the correct props', async () => {
+    it(`downloads with the correct props`, async () => {
       await downloadResumable.downloadAsync();
 
       expect(ExponentFileSystem.downloadResumableStartAsync).toHaveBeenCalledWith(
@@ -52,7 +42,7 @@ describe('FileSystem', () => {
       );
     });
 
-    it('pauses correctly', async () => {
+    it(`pauses correctly`, async () => {
       mockProperty(
         ExponentFileSystem,
         'downloadResumablePauseAsync',
@@ -67,11 +57,11 @@ describe('FileSystem', () => {
         downloadResumable._uuid
       );
     });
-    it('pauses with error', async () => {
-      throws(downloadResumable.pauseAsync());
+    it(`pauses with error`, async () => {
+      await expect(downloadResumable.pauseAsync()).rejects.toThrow();
     });
 
-    it('resumes correctly', async () => {
+    it(`resumes correctly`, async () => {
       mockProperty(
         ExponentFileSystem,
         'downloadResumableStartAsync',
@@ -91,7 +81,7 @@ describe('FileSystem', () => {
       );
     });
 
-    it('has same save state as original input', async () => {
+    it(`has same save state as original input`, async () => {
       const downloadPauseState = await downloadResumable.savable();
 
       expect(downloadPauseState).toMatchObject(fakeObject);
