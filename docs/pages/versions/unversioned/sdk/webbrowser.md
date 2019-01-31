@@ -51,7 +51,7 @@ Returns a Promise:
 
 ### `Expo.WebBrowser.dismissBrowser()`
 
-Dismisses the system's presented web browser.
+Dismisses the system's presented web browser. On Android calling this method doesn't actually do anything, the user still has to manually dismiss the browser.
 
 #### Returns
 
