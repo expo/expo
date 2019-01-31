@@ -1,12 +1,4 @@
-/**
- * @flow
- * Analytics representation wrapper
- */
-import { ModuleBase, utils } from 'expo-firebase-app';
-
-import type { App } from 'expo-firebase-app';
-
-const { isString, isObject } = utils;
+import { App, ModuleBase } from 'expo-firebase-app';
 
 const AlphaNumericUnderscore = /^[a-zA-Z0-9_]+$/;
 
@@ -30,6 +22,10 @@ export const MODULE_NAME = 'ExpoFirebaseAnalytics';
 export const NAMESPACE = 'analytics';
 export const statics = {};
 
+const isString = (value: any): boolean => {
+  return value != null && typeof value === 'string';
+};
+
 export default class Analytics extends ModuleBase {
   static moduleName = MODULE_NAME;
   static namespace = NAMESPACE;
@@ -50,14 +46,14 @@ export default class Analytics extends ModuleBase {
    * @param params
    * @return {Promise}
    */
-  logEvent(name: string, params: Object = {}): Promise {
+  async logEvent(name: string, params: Object = {}): Promise<void> {
     if (!isString(name)) {
       throw new Error(
         `analytics.logEvent(): First argument 'name' is required and must be a string value.`
       );
     }
 
-    if (typeof params !== 'undefined' && !isObject(params)) {
+    if (typeof params !== 'undefined' && typeof params !== 'object') {
       throw new Error(
         `analytics.logEvent(): Second optional argument 'params' must be an object if provided.`
       );
@@ -86,15 +82,15 @@ export default class Analytics extends ModuleBase {
     // types are supported. String parameter values can be up to 36 characters long. The "firebase_"
     // prefix is reserved and should not be used for parameter names.
 
-    return this.nativeModule.logEvent(name, params);
+    await this.nativeModule.logEvent(name, params);
   }
 
   /**
    * Sets whether analytics collection is enabled for this app on this device.
    * @param enabled
    */
-  setAnalyticsCollectionEnabled(enabled: boolean): Promise {
-    return this.nativeModule.setAnalyticsCollectionEnabled(enabled);
+  async setAnalyticsCollectionEnabled(enabled: boolean): Promise<void> {
+    await this.nativeModule.setAnalyticsCollectionEnabled(enabled);
   }
 
   /**
@@ -102,35 +98,35 @@ export default class Analytics extends ModuleBase {
    * @param screenName
    * @param screenClassOverride
    */
-  setCurrentScreen(screenName: string, screenClassOverride?: string): Promise {
-    return this.nativeModule.setCurrentScreen(screenName, screenClassOverride);
+  async setCurrentScreen(screenName: string, screenClassOverride?: string): Promise<void> {
+    await this.nativeModule.setCurrentScreen(screenName, screenClassOverride);
   }
 
   /**
    * Sets the minimum engagement time required before starting a session. The default value is 10000 (10 seconds).
    * @param milliseconds
    */
-  setMinimumSessionDuration(milliseconds: number = 10000): Promise {
-    return this.nativeModule.setMinimumSessionDuration(milliseconds);
+  async setMinimumSessionDuration(milliseconds: number = 10000): Promise<void> {
+    await this.nativeModule.setMinimumSessionDuration(milliseconds);
   }
 
   /**
    * Sets the duration of inactivity that terminates the current session. The default value is 1800000 (30 minutes).
    * @param milliseconds
    */
-  setSessionTimeoutDuration(milliseconds: number = 1800000): Promise {
-    return this.nativeModule.setSessionTimeoutDuration(milliseconds);
+  async setSessionTimeoutDuration(milliseconds: number = 1800000): Promise<void> {
+    await this.nativeModule.setSessionTimeoutDuration(milliseconds);
   }
 
   /**
    * Sets the user ID property.
    * @param id
    */
-  setUserId(id: string | null): Promise {
-    if (id !== null && !isString(id)) {
+  async setUserId(id: string | null): Promise<void> {
+    if (!isString(id)) {
       throw new Error('analytics.setUserId(): The supplied userId must be a string value or null.');
     }
-    return this.nativeModule.setUserId(id);
+    await this.nativeModule.setUserId(id);
   }
 
   /**
@@ -138,30 +134,30 @@ export default class Analytics extends ModuleBase {
    * @param name
    * @param value
    */
-  setUserProperty(name: string, value: string | null): Promise {
-    if (value !== null && !isString(value)) {
+  async setUserProperty(name: string, value: string | null): Promise<void> {
+    if (!isString(value)) {
       throw new Error(
         'analytics.setUserProperty(): The supplied property must be a string value or null.'
       );
     }
-    return this.nativeModule.setUserProperty(name, value);
+    await this.nativeModule.setUserProperty(name, value);
   }
 
   /**
    * Sets multiple user properties to the supplied values.
    * @param object
    */
-  setUserProperties(object: Object): Promise {
-    let tasks = [];
+  async setUserProperties(object: Object): Promise<void> {
+    let tasks: any[] = [];
     for (const entry of Object.entries(object)) {
       const [property, value] = entry;
-      if (value !== null && !isString(value)) {
+      if (!isString(value)) {
         throw new Error(
           `analytics.setUserProperties(): The property with name '${property}' must be a string value or null.`
         );
       }
       tasks.push(this.nativeModule.setUserProperty(property, value));
     }
-    return Promise.all(tasks);
+    await Promise.all(tasks);
   }
 }
