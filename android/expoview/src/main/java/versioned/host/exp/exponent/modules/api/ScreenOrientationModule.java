@@ -11,6 +11,8 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.WritableNativeMap;
 
 import expo.errors.InvalidArgumentException;
 
@@ -106,7 +108,9 @@ public class ScreenOrientationModule extends ReactContextBaseJavaModule implemen
 
     try {
       Orientation orientation = getScreenOrientation(activity);
-      promise.resolve(orientation.toString());
+      WritableMap orientationInfo =  new WritableNativeMap();
+      orientationInfo.putString("orientation", orientation.toString());
+      promise.resolve(orientationInfo);
     } catch (Exception e) {
       promise.reject(ERR_SCREEN_ORIENTATION, "Could not get the current screen orientation", e);
     }
@@ -191,13 +195,13 @@ public class ScreenOrientationModule extends ReactContextBaseJavaModule implemen
           orientation = Orientation.LANDSCAPE_LEFT;
           break;
         case Surface.ROTATION_90:
-          orientation = Orientation.PORTRAIT_UP;
+          orientation = Orientation.PORTRAIT_DOWN;
           break;
         case Surface.ROTATION_180:
           orientation = Orientation.LANDSCAPE_RIGHT;
           break;
         case Surface.ROTATION_270:
-          orientation = Orientation.PORTRAIT_DOWN;
+          orientation = Orientation.PORTRAIT_UP;
           break;
         default:
           orientation = Orientation.UNKNOWN;
