@@ -72,7 +72,7 @@ export interface PlatformManifest {
         [key: string]: any;
     };
     logUrl?: string;
-    scheme: string;
+    scheme?: string;
     hostUri?: string;
     developer?: string;
     [key: string]: any;
