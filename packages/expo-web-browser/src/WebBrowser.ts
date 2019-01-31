@@ -1,6 +1,6 @@
 import { Linking, Platform } from 'react-native';
 import { UnavailabilityError } from 'expo-errors';
-import ExponentWebBrowser from './ExponentWebBrowser';
+import ExponentWebBrowser from './ExpoWebBrowser';
 
 type RedirectEvent = {
   url: string;
@@ -17,21 +17,21 @@ type RedirectResult = {
   url: string;
 };
 
-async function openBrowserAsync(url: string): Promise<BrowserResult> {
+export async function openBrowserAsync(url: string): Promise<BrowserResult> {
   if (!ExponentWebBrowser.openBrowserAsync) {
     throw new UnavailabilityError('WebBrowser', 'openBrowserAsync');
   }
   return ExponentWebBrowser.openBrowserAsync(url);
 }
 
-function dismissBrowser(): void {
+export function dismissBrowser(): void {
   if (!ExponentWebBrowser.dismissBrowser) {
     throw new UnavailabilityError('WebBrowser', 'dismissBrowser');
   }
   ExponentWebBrowser.dismissBrowser();
 }
 
-async function openAuthSessionAsync(url: string, redirectUrl: string): Promise<AuthSessionResult> {
+export async function openAuthSessionAsync(url: string, redirectUrl: string): Promise<AuthSessionResult> {
   if (_authSessionIsNativelySupported()) {
     if (!ExponentWebBrowser.openAuthSessionAsync) {
       throw new UnavailabilityError('WebBrowser', 'openAuthSessionAsync');
@@ -42,7 +42,7 @@ async function openAuthSessionAsync(url: string, redirectUrl: string): Promise<A
   }
 }
 
-function dismissAuthSession(): void {
+export function dismissAuthSession(): void {
   if (_authSessionIsNativelySupported()) {
     if (!ExponentWebBrowser.dismissAuthSession) {
       throw new UnavailabilityError('WebBrowser', 'dismissAuthSession');
@@ -104,10 +104,3 @@ function _waitForRedirectAsync(returnUrl: string): Promise<RedirectResult> {
     Linking.addEventListener('url', _redirectHandler);
   });
 }
-
-export default {
-  openBrowserAsync,
-  openAuthSessionAsync,
-  dismissBrowser,
-  dismissAuthSession,
-};

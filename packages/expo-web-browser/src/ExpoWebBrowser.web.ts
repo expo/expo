@@ -1,5 +1,5 @@
 export default {
   get name() {
-    return 'ExponentWebBrowser';
+    return 'ExpoWebBrowser';
   },
 };

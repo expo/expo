@@ -33,6 +33,7 @@ import * as Updates from './Updates/Updates';
 import * as Util from './Util';
 import * as FacebookAds from 'expo-ads-facebook';
 import * as SplashScreen from './launch/SplashScreen';
+import * as WebBrowser from 'expo-web-browser';
 
 if (typeof Constants.manifest.env === 'object') {
   Object.assign(process.env, Constants.manifest.env);
@@ -92,7 +93,7 @@ export { StoreReview };
 export { default as Svg } from './Svg';
 export { Updates };
 export { Util };
-export { default as WebBrowser } from './WebBrowser/WebBrowser';
+export { WebBrowser };
 export { default as apisAreAvailable } from './apisAreAvailable';
 export { default as takeSnapshotAsync } from './takeSnapshotAsync';
 export { Audio, Video };
