@@ -49,7 +49,7 @@ export { Constants };
 export { Contacts } from 'expo-contacts';
 export { DocumentPicker };
 export { FaceDetector } from 'expo-face-detector';
-export { FileSystem }
+export { FileSystem };
 export { Font };
 export { GLView } from 'expo-gl';
 export { GoogleSignIn } from 'expo-google-sign-in';
