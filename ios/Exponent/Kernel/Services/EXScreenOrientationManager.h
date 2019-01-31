@@ -8,11 +8,10 @@
 
 @property (nonatomic, assign) UIInterfaceOrientationMask supportedInterfaceOrientationsForVisibleApp;
 
-- (void)setSupportInterfaceOrientations:(UIInterfaceOrientationMask)supportedInterfaceOrientations
-                         forExperienceId:(NSString *)experienceId;
+- (void)setSupportInterfaceOrientations:(UIInterfaceOrientationMask)supportedInterfaceOrientations forExperienceId:(NSString *)experienceId;
 
-- (void) handleScreenOrientationChange: (nullable UITraitCollection *) traitCollection;
+- (void)handleScreenOrientationChange:(nullable UITraitCollection *)traitCollection;
 
-- (UITraitCollection *) getTraitCollection;
+- (UITraitCollection *)getTraitCollection;
 
 @end

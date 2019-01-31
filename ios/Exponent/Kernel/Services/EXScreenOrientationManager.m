@@ -35,12 +35,13 @@ NSNotificationName kEXChangeForegroundTaskSupportedOrientationsNotification = @"
 - (void)handleScreenOrientationChange:(UITraitCollection *)traitCollection
 {
   for(NSString *experienceId in _subscribedModules) {
-    EXScreenOrientation * subscribedModule = [_subscribedModules objectForKey:experienceId];
+    EXScreenOrientation *subscribedModule = [_subscribedModules objectForKey:experienceId];
     [subscribedModule handleScreenOrientationChange:traitCollection];
   }
 }
 
-- (UITraitCollection *) getTraitCollection{
+- (UITraitCollection *)getTraitCollection
+{
   EXKernelAppRecord *visibleApp = [EXKernel sharedInstance].visibleApp;
   return [visibleApp.viewController traitCollection];
 }
@@ -54,12 +55,12 @@ didChangeSupportedInterfaceOrientations:(UIInterfaceOrientationMask)supportedInt
 }
 
 
-- (void)removeOrientationChangeListener:(NSString *) experienceId
+- (void)removeOrientationChangeListener:(NSString *)experienceId
 {
   [_subscribedModules removeObjectForKey:experienceId];
 }
 
-- (void)addOrientationChangeListener:(NSString *) experienceId subscriberModule:(id) subscriberModule
+- (void)addOrientationChangeListener:(NSString *)experienceId subscriberModule:(id)subscriberModule
 {
   [_subscribedModules setObject:subscriberModule forKey:experienceId];
 }

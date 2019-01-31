@@ -333,7 +333,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)traitCollectionDidChange:(nullable UITraitCollection *)previousTraitCollection {
-  [super traitCollectionDidChange: previousTraitCollection];
+  [super traitCollectionDidChange:previousTraitCollection];
   if ((self.traitCollection.verticalSizeClass != previousTraitCollection.verticalSizeClass)
       || (self.traitCollection.horizontalSizeClass != previousTraitCollection.horizontalSizeClass)) {
     [[EXKernel sharedInstance].serviceRegistry.screenOrientationManager handleScreenOrientationChange:self.traitCollection];
