@@ -1,5 +1,5 @@
 import { Platform } from 'expo-core';
-import { FileSystem } from 'expo-file-system';
+import * as FileSystem from 'expo-file-system';
 import { getAssetByID } from 'react-native/Libraries/Image/AssetRegistry';
 import { setCustomSourceTransformer } from 'react-native/Libraries/Image/resolveAssetSource';
 
@@ -69,7 +69,7 @@ export class Asset {
     if (typeof virtualAssetModule === 'string') {
       return Asset.fromURI(virtualAssetModule);
     }
-  
+
     const meta = getAssetByID(virtualAssetModule);
     if (!meta) {
       throw new Error(`Module "${virtualAssetModule}" is missing from the asset registry`);

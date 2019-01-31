@@ -9,7 +9,7 @@ jest.mock('expo-constants', () => {
 });
 
 jest.mock('expo-file-system', () => {
-  const { FileSystem } = require.requireActual('expo-file-system');
+  const FileSystem = require.requireActual('expo-file-system');
   return {
     FileSystem: {
       ...FileSystem,
