@@ -1,14 +1,13 @@
 import { NativeModulesProxy } from 'expo-core';
-import { NativeModules } from 'react-native';
 import * as Facebook from '../Facebook';
 
-import { describeCrossPlatform, mockProperty, unmockAllProperties } from '../../test/mocking';
+import { describeCrossPlatform, mockProperty, unmockAllProperties } from 'jest-expo';
 
 const fakeReturnValue = { type: 'dismissed' };
 
 function applyMocks() {
   mockProperty(
-    NativeModules.ExponentWebBrowser,
+    NativeModulesProxy.ExpoWebBrowser,
     'openBrowserAsync',
     jest.fn(async () => fakeReturnValue)
   );
