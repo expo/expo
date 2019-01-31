@@ -50,7 +50,7 @@ export default class BarcodeScannerExample extends React.Component {
   }
 
   async componentDidMount() {
-    const { status } = await Permissions.askAsync(Permissions.CAMERA); /// @info Before we can use the BarCodeScanner we need to ask the user for permission to access their camera. <a href='../permissions/'>Read more about Permissions.</a>
+    const { status } = await Permissions.askAsync(Permissions.CAMERA); /// @tooltip Before we can use the BarCodeScanner we need to ask the user for permission to access their camera. <a href='../permissions/'>Read more about Permissions.</a>
     this.setState({ hasCameraPermission: status === 'granted' });
   }
 

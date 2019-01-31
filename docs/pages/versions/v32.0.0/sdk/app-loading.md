@@ -30,7 +30,7 @@ export default class App extends React.Component {
           onFinish={() => this.setState({ isReady: true })}
           onError={console.warn}
         />
-      ); // @info As long as AppLoading is the only leaf/native component that has been mounted, the loading screen will remain visible
+      ); // @tooltip As long as AppLoading is the only leaf/native component that has been mounted, the loading screen will remain visible
     }
 
     return (
@@ -49,7 +49,7 @@ export default class App extends React.Component {
 
     const cacheImages = images.map((image) => {
       return Asset.fromModule(image).downloadAsync();
-    }); // @info Read more about <a href='../../guides/preloading-and-caching-assets/'>Preloading and Caching Assets</a>
+    }); // @tooltip Read more about <a href='../../guides/preloading-and-caching-assets/'>Preloading and Caching Assets</a>
 
     return Promise.all(cacheImages)
   }

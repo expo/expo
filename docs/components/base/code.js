@@ -83,7 +83,7 @@ const recursiveMap = (children, fn) => {
   });
 };
 
-const tooltipMarker = '@info';
+const tooltipMarker = '@tooltip';
 
 const tooltipComment = ({ props }) =>
   props.name === 'span' &&

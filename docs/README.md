@@ -52,7 +52,7 @@ This method is not great for accessibility and should be avoided where possible.
 
 ### Source tooltips
 
-Any language-appropriate comment in a markdown code block which includes the string `@info` will be transformed in the final page to an onhover/ontouch tooltip popup attached to a 💬 symbol.  These can contain html, and in the case of block comments, can be written across multiple lines.
+Any language-appropriate comment in a markdown code block which includes the string `@tooltip` will be transformed in the final page to an onhover/ontouch tooltip popup attached to a 💬 symbol.  These can contain html, and in the case of block comments, can be written across multiple lines.
 
 For examples, see the AuthSession files.  The implementation is in the Pre component.
 

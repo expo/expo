@@ -50,7 +50,7 @@ import React from 'react';
 import { Button, StyleSheet, Text, View } from 'react-native';
 import { AuthSession } from 'expo';
 
-const FB_APP_ID = 'YOUR_APP_ID';// @info Replace <strong>'YOUR_APP_ID'</strong> with your application id from <a href='https://developers.facebook.com' target='_blank'>developers.facebook.com</a>
+const FB_APP_ID = 'YOUR_APP_ID';// @tooltip Replace <strong>'YOUR_APP_ID'</strong> with your application id from <a href='https://developers.facebook.com' target='_blank'>developers.facebook.com</a>
 
 export default class App extends React.Component {
   state = {
@@ -63,18 +63,18 @@ export default class App extends React.Component {
         <Button title="Open FB Auth" onPress={this._handlePressAsync} />
         {this.state.result ? (
           <Text>{JSON.stringify(this.state.result)}</Text>
-        ) : null} // @info In this example, show the authentication result after success. In a real application, this would be a weird thing to do, instead you would use this data to match the user with a user in your application and sign them in.
+        ) : null} // @tooltip In this example, show the authentication result after success. In a real application, this would be a weird thing to do, instead you would use this data to match the user with a user in your application and sign them in.
       </View>
     );
   }
 
   _handlePressAsync = async () => {
-    let redirectUrl = AuthSession.getRedirectUrl(); // @info <strong>AuthSession.getRedirectUrl()</strong> gets the appropriate URL on <em>https://auth.expo.io</em> to redirect back to your application. Read more about it below.
-    let result = await AuthSession.startAsync({/* @info <strong>AuthSession.startAsync</strong> returns a Promise that resolves to an object with the information that was passed back from your authentication provider, for example the user id. */
-      authUrl: // @info authUrl is a required parameter -- it is the URL that points to the sign in page for your chosen authentication service (in this case, we are using Facebook sign in)
-        `https://www.facebook.com/v2.8/dialog/oauth?response_type=token` + // @info The particular URL and the format you need to use for this depend on your authentication service. For Facebook, information was found <a href='https://developers.facebook.com/docs/facebook-login/manually-build-a-login-flow/' target='_blank'>here</a>.
+    let redirectUrl = AuthSession.getRedirectUrl(); // @tooltip <strong>AuthSession.getRedirectUrl()</strong> gets the appropriate URL on <em>https://auth.expo.io</em> to redirect back to your application. Read more about it below.
+    let result = await AuthSession.startAsync({/* @tooltip <strong>AuthSession.startAsync</strong> returns a Promise that resolves to an object with the information that was passed back from your authentication provider, for example the user id. */
+      authUrl: // @tooltip authUrl is a required parameter -- it is the URL that points to the sign in page for your chosen authentication service (in this case, we are using Facebook sign in)
+        `https://www.facebook.com/v2.8/dialog/oauth?response_type=token` + // @tooltip The particular URL and the format you need to use for this depend on your authentication service. For Facebook, information was found <a href='https://developers.facebook.com/docs/facebook-login/manually-build-a-login-flow/' target='_blank'>here</a>.
         `&client_id=${FB_APP_ID}` +
-        `&redirect_uri=${encodeURIComponent(redirectUrl)}`, // @info Be sure to call <a href='https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent'>encodeURIComponent</a> on any query parameters, or use a library such as <a href='https://github.com/ljharb/qs'>qs</a>.
+        `&redirect_uri=${encodeURIComponent(redirectUrl)}`, // @tooltip Be sure to call <a href='https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent'>encodeURIComponent</a> on any query parameters, or use a library such as <a href='https://github.com/ljharb/qs'>qs</a>.
     });
     this.setState({ result });
   };

@@ -44,7 +44,7 @@ export default class BarcodeScannerExample extends React.Component {
   }
 
   async componentWillMount() {
-    const { status } = await Permissions.askAsync(Permissions.CAMERA); // @info Before we can use the BarCodeScanner we need to ask the user for permission to access their camera. <a href='../permissions/'>Read more about Permissions.</a>
+    const { status } = await Permissions.askAsync(Permissions.CAMERA); // @tooltip Before we can use the BarCodeScanner we need to ask the user for permission to access their camera. <a href='../permissions/'>Read more about Permissions.</a>
     this.setState({hasCameraPermission: status === 'granted'});
   }
 
@@ -61,14 +61,14 @@ export default class BarcodeScannerExample extends React.Component {
           <BarCodeScanner
             onBarCodeRead={this._handleBarCodeRead}
             style={StyleSheet.absoluteFill}
-          /> // @info The BarCodeScanner is a component that renders the viewfinder from the user's camera. If you render it without having user permission to use the camera, the view will be black.
+          /> // @tooltip The BarCodeScanner is a component that renders the viewfinder from the user's camera. If you render it without having user permission to use the camera, the view will be black.
         </View>
       );
     }
   }
 
-  _handleBarCodeRead = ({ type, data }) => { // @info We destructure the bar code result object into <em>type</em> and <em>data</em>
-    alert(`Bar code with type ${type} and data ${data} has been scanned!`); // @info Here we just alert the information for the sake of the example
+  _handleBarCodeRead = ({ type, data }) => { // @tooltip We destructure the bar code result object into <em>type</em> and <em>data</em>
+    alert(`Bar code with type ${type} and data ${data} has been scanned!`); // @tooltip Here we just alert the information for the sake of the example
 
   }
 }
