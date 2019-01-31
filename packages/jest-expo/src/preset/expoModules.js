@@ -210,6 +210,12 @@ module.exports = {
           { key: 5, argumentsCount: 2, name: 'notifyTaskFinishedAsync' },
         ],
         ExpoVideoManager: [{ key: 0, argumentsCount: 2, name: 'setFullscreen' }],
+        ExpoWebBrowser: [
+          { key: 0, argumentsCount: 0, name: 'dismissBrowser' },
+          { key: 1, argumentsCount: 1, name: 'openBrowserAsync' },
+          { key: 2, argumentsCount: 0, name: 'dismissAuthSession' },
+          { key: 3, argumentsCount: 2, name: 'openAuthSessionAsync' },
+        ],
         ExponentAV: [
           { key: 0, argumentsCount: 1, name: 'prepareAudioRecorder' },
           { key: 1, argumentsCount: 0, name: 'getAudioRecordingStatus' },
@@ -653,12 +659,6 @@ module.exports = {
     reloadFromCache: { type: 'function', functionType: 'async' },
   },
   ExponentUtil: {},
-  ExponentWebBrowser: {
-    dismissAuthSession: { type: 'function', functionType: 'async' },
-    dismissBrowser: { type: 'function', functionType: 'async' },
-    openAuthSessionAsync: { type: 'function', functionType: 'promise' },
-    openBrowserAsync: { type: 'function', functionType: 'promise' },
-  },
   LottieAnimationView: {
     VERSION: { type: 'number', mock: 1 },
     play: { type: 'function', functionType: 'async' },
