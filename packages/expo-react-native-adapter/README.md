@@ -183,7 +183,7 @@ Note that all the methods return `Promise`s.
 ### Synthetic Platform Events
 
 When creating web universal modules, you may find that you need to send events back to the API layer.
-In this case you will want to use the shared instance `SyntheticPlatformEmitter` which can emit events to `NativeEventEmitter` or `EventEmitter` from `expo-core`.
+In this case you will want to use the shared `SyntheticPlatformEmitter` instance from `expo-core`. The shared emitter emit events to `react-native`'s `NativeEventEmitter` and `expo-core`'s `EventEmitter` .
 
 `ExponentGyroscope.web.ts`
 
@@ -195,14 +195,16 @@ import { SyntheticPlatformEmitter } from 'expo-core';
 SyntheticPlatformEmitter.emit('gyroscopeDidUpdate', { x, y, z });
 ```
 
-This emitted event is then received with a `EventEmitter` in the developer facing API.
+This emitted event is then received with a `EventEmitter` in the developer-facing API.
 
 ```js
-import { EventEmitter, Subscription, Platform } from 'expo-core';
+import { EventEmitter } from 'expo-core';
 
 import ExponentGyroscope from './ExponentGyroscope';
 
-const nativeEmitter = new EventEmitter(nativeSensorModule);
+const nativeEmitter = new EventEmitter(ExponentGyroscope);
 
+// On Android and iOS, `nativeEmitter` receives events sent from Objective-C and Java. On web, it
+// receives events from the shared `SyntheticPlatformEmitter` instance.
 nativeEmitter.addListener('gyroscopeDidUpdate', ({ x, y, z }) => {});
 ```

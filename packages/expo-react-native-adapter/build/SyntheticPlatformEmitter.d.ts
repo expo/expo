@@ -1,6 +1,5 @@
-import EventEmitter from 'react-native/Libraries/vendor/emitter/EventEmitter';
-declare class SyntheticPlatformEmitter extends EventEmitter {
-    constructor();
+declare class SyntheticPlatformEmitter {
+    _emitter: any;
     emit(eventName: string, props: any): void;
 }
 declare const _default: SyntheticPlatformEmitter;
