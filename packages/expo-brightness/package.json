@@ -1,10 +1,17 @@
 {
   "name": "expo-brightness",
   "version": "1.0.0",
-  "description": "ExpoBrightness standalone module",
-  "main": "build/index.js",
-  "types": "build/index.d.ts",
-  "scripts": {},
+  "description": "Brightness universal module",
+  "main": "build/Brightness.js",
+  "types": "build/Brightness.d.ts",
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
   "keywords": [
     "react-native",
     "expo",
@@ -16,14 +23,18 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "jest": {
+    "preset": "expo-module-scripts"
+  },
   "homepage": "https://github.com/expo/expo/tree/master/packages/expo-brightness",
   "dependencies": {},
   "peerDependencies": {
     "expo-core": "~2.0.0"
   },
-  "gitHead": "f15abc53c111bd0438cd36dc456c59cfa7c56a58"
-
-,"_resolved": ""
-,"_integrity": ""
-,"_from": "expo-brightness@2.1.0"
+  "devDependencies": {
+    "expo-module-scripts": "^1.0.0"
+  }
 }
