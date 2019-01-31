@@ -1,4 +1,4 @@
-import { mockProperty } from 'jest-expo';
+import { mockProperty, unmockAllProperties } from 'jest-expo';
 
 import ExponentFileSystem from '../ExponentFileSystem';
 import * as FileSystem from '../FileSystem';
@@ -30,6 +30,10 @@ describe('FileSystem', () => {
       );
     });
 
+    afterEach(() => {
+      unmockAllProperties();
+    });
+
     it(`downloads with the correct props`, async () => {
       await downloadResumable.downloadAsync();
 
@@ -57,6 +61,7 @@ describe('FileSystem', () => {
         downloadResumable._uuid
       );
     });
+
     it(`pauses with error`, async () => {
       await expect(downloadResumable.pauseAsync()).rejects.toThrow();
     });
