@@ -1,6 +1,6 @@
 export default {
   get name(): string {
-    return 'ExponentScreenOrientation';
+    return 'ExpoScreenOrientation';
   },
   async doesSupportAsync(): Promise<Boolean> {
     return false;
