@@ -149,12 +149,10 @@ export class Asset {
       } else {
         const localUri = `${FileSystem.cacheDirectory}ExponentAsset-${this.hash}.${this.type}`;
         let { exists, md5 } = await FileSystem.getInfoAsync(localUri, {
-          cache: true,
           md5: true,
         });
         if (!exists || md5 !== this.hash) {
           ({ md5 } = await FileSystem.downloadAsync(this.uri, localUri, {
-            cache: true,
             md5: true,
           }));
           if (md5 !== this.hash) {
