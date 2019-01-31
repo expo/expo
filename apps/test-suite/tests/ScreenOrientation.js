@@ -38,7 +38,7 @@ const applyAsync = ({ desiredOrientationLock, desiredOrientations, validOrientat
   }
   return new Promise(async function(resolve, reject) {
     let subscriptionCancelled = false;
-    const subscription = ScreenOrientation.addOrientationChangeListener(async update => {
+    const subscription = ScreenOrientation.addOrientationChangeListener(update => {
       const { orientationInfo, orientationLock } = update;
       const { orientation } = orientationInfo;
       if (validOrientations && !validOrientations.includes(orientation)) {
@@ -105,43 +105,35 @@ export function test(t) {
       t.it(
         'Sets screen to landscape orientation and gets the correct orientationLock',
         async () => {
-          try {
-            // set the screen orientation to LANDSCAPE LEFT lock
-            await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE_LEFT);
+          // set the screen orientation to LANDSCAPE LEFT lock
+          await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE_LEFT);
 
-            // detect the correct orientationLock policy immediately
-            const orientationLock = await ScreenOrientation.getOrientationLockAsync();
-            t.expect(orientationLock).toBe(ScreenOrientation.OrientationLock.LANDSCAPE_LEFT);
-          } catch (error) {
-            t.fail(error);
-          }
+          // detect the correct orientationLock policy immediately
+          const orientationLock = await ScreenOrientation.getOrientationLockAsync();
+          t.expect(orientationLock).toBe(ScreenOrientation.OrientationLock.LANDSCAPE_LEFT);
         }
       );
 
       t.it('Sets screen to landscape orientation and gets the correct orientation', async () => {
-        try {
-          const desiredOrientationLock = ScreenOrientation.OrientationLock.LANDSCAPE_LEFT;
-          const desiredOrientation = ScreenOrientation.Orientation.LANDSCAPE_LEFT;
-          const validOrientations = [
-            ScreenOrientation.Orientation.LANDSCAPE_LEFT,
-            ScreenOrientation.Orientation.PORTRAIT_UP,
-          ];
-          await applyAsync({
-            desiredOrientationLock,
-            desiredOrientations: [desiredOrientation],
-            validOrientations,
-          });
+        const desiredOrientationLock = ScreenOrientation.OrientationLock.LANDSCAPE_LEFT;
+        const desiredOrientation = ScreenOrientation.Orientation.LANDSCAPE_LEFT;
+        const validOrientations = [
+          ScreenOrientation.Orientation.LANDSCAPE_LEFT,
+          ScreenOrientation.Orientation.PORTRAIT_UP,
+        ];
+        await applyAsync({
+          desiredOrientationLock,
+          desiredOrientations: [desiredOrientation],
+          validOrientations,
+        });
 
-          const orientationInfo = await ScreenOrientation.getOrientationAsync();
-          const { orientation } = orientationInfo;
-          // ios can only detect orientation with coarse granularity
-          t.expect([
-            ScreenOrientation.Orientation.LANDSCAPE_LEFT,
-            ScreenOrientation.Orientation.LANDSCAPE,
-          ]).toContain(orientation);
-        } catch (error) {
-          t.fail(error);
-        }
+        const orientationInfo = await ScreenOrientation.getOrientationAsync();
+        const { orientation } = orientationInfo;
+        // ios can only detect orientation with coarse granularity
+        t.expect([
+          ScreenOrientation.Orientation.LANDSCAPE_LEFT,
+          ScreenOrientation.Orientation.LANDSCAPE,
+        ]).toContain(orientation);
       });
 
       // We rely on RN to emit `didUpdateDimensions`
@@ -150,65 +142,53 @@ export function test(t) {
       t.it(
         'Register for the callback, set to landscape orientation and get the correct orientation',
         async () => {
-          try {
-            const callListenerAsync = new Promise(async function(resolve, reject) {
-              // Register for screen orientation changes
-              ScreenOrientation.addOrientationChangeListener(async update => {
-                const { orientationInfo } = update;
-                const { orientation } = orientationInfo;
-                if (
-                  orientation === ScreenOrientation.Orientation.PORTRAIT_UP ||
-                  orientation === ScreenOrientation.Orientation.PORTRAIT // ios can only detect orientation with coarse granularity
-                ) {
-                  // orientation update has not happened yet
-                } else if (
-                  orientation === ScreenOrientation.Orientation.LANDSCAPE_LEFT ||
-                  orientation === ScreenOrientation.Orientation.LANDSCAPE // ios can only detect orientation with coarse granularity
-                ) {
-                  resolve();
-                } else {
-                  reject(new Error(`Should not be in orientation: ${orientation}`));
-                }
-              });
-
-              // Put the screen to LANDSCAPE_LEFT
-              await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE_LEFT);
+          const callListenerAsync = new Promise(async function(resolve, reject) {
+            // Register for screen orientation changes
+            ScreenOrientation.addOrientationChangeListener(update => {
+              const { orientationInfo } = update;
+              const { orientation } = orientationInfo;
+              if (
+                orientation === ScreenOrientation.Orientation.PORTRAIT_UP ||
+                orientation === ScreenOrientation.Orientation.PORTRAIT // ios can only detect orientation with coarse granularity
+              ) {
+                // orientation update has not happened yet
+              } else if (
+                orientation === ScreenOrientation.Orientation.LANDSCAPE_LEFT ||
+                orientation === ScreenOrientation.Orientation.LANDSCAPE // ios can only detect orientation with coarse granularity
+              ) {
+                resolve();
+              } else {
+                reject(new Error(`Should not be in orientation: ${orientation}`));
+              }
             });
 
-            // Wait for listener to get called
-            await callListenerAsync;
-          } catch (error) {
-            t.fail(error);
-          }
+            // Put the screen to LANDSCAPE_LEFT
+            await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE_LEFT);
+          });
+
+          // Wait for listener to get called
+          await callListenerAsync;
         }
       );
 
       t.it('Unlock the screen orientation back to default', async () => {
-        try {
-          // Put the screen to LANDSCAPE_LEFT
-          await applyAsync({
-            desiredOrientationLock: ScreenOrientation.OrientationLock.LANDSCAPE_LEFT,
-            desiredOrientations: [ScreenOrientation.Orientation.LANDSCAPE_LEFT],
-          });
+        // Put the screen to LANDSCAPE_LEFT
+        await applyAsync({
+          desiredOrientationLock: ScreenOrientation.OrientationLock.LANDSCAPE_LEFT,
+          desiredOrientations: [ScreenOrientation.Orientation.LANDSCAPE_LEFT],
+        });
 
-          // Unlock the screen orientation
-          await ScreenOrientation.unlockAsync();
+        // Unlock the screen orientation
+        await ScreenOrientation.unlockAsync();
 
-          // detect the correct orientationLock policy immediately
-          const orientationLock = await ScreenOrientation.getOrientationLockAsync();
-          t.expect(orientationLock).toBe(ScreenOrientation.OrientationLock.DEFAULT);
-        } catch (error) {
-          t.fail(error);
-        }
+        // detect the correct orientationLock policy immediately
+        const orientationLock = await ScreenOrientation.getOrientationLockAsync();
+        t.expect(orientationLock).toBe(ScreenOrientation.OrientationLock.DEFAULT);
       });
 
-      t.it('Apply a native android lock', async () => {
-        // This test only applies to android devices
-        if (Platform.OS !== 'android') {
-          return;
-        }
-
-        try {
+      // This test only applies to android devices
+      if (Platform.OS === 'android') {
+        t.it('Apply a native android lock', async () => {
           // Apply the native USER_LANDSCAPE android lock (11)
           // https://developer.android.com/reference/android/R.attr#screenOrientation
           await ScreenOrientation.lockPlatformAsync({ screenOrientationConstantAndroid: 11 });
@@ -232,18 +212,12 @@ export function test(t) {
             ScreenOrientation.Orientation.PORTRAIT_UP,
           ];
           await applyAsync({ desiredOrientations, validOrientations });
-        } catch (error) {
-          t.fail(error);
-        }
-      });
+        });
+      }
 
-      t.it('Apply a native ios lock', async () => {
-        // This test only applies to ios devices
-        if (Platform.OS !== 'ios') {
-          return;
-        }
-
-        try {
+      // This test only applies to ios devices
+      if (Platform.OS === 'ios') {
+        t.it('Apply a native iOS lock', async () => {
           // Allow only PORTRAIT_UP and LANDSCAPE_RIGHT
           await ScreenOrientation.lockPlatformAsync({
             screenOrientationArrayIOS: [
@@ -273,81 +247,71 @@ export function test(t) {
             ScreenOrientation.Orientation.LANDSCAPE_RIGHT,
           ];
           await applyAsync({ desiredOrientations, validOrientations });
-        } catch (error) {
-          t.fail(error);
-        }
-      });
+        });
+      }
 
       t.it('Remove all listeners and expect them never to be called', async () => {
-        try {
-          // Register for screen orientation changes
-          let listenerWasCalled = false;
-          ScreenOrientation.addOrientationChangeListener(async () => {
-            listenerWasCalled = true;
-          });
+        // Register for screen orientation changes
+        let listenerWasCalled = false;
+        ScreenOrientation.addOrientationChangeListener(() => {
+          listenerWasCalled = true;
+        });
 
-          ScreenOrientation.addOrientationChangeListener(async () => {
-            listenerWasCalled = true;
-          });
+        ScreenOrientation.addOrientationChangeListener(() => {
+          listenerWasCalled = true;
+        });
 
-          ScreenOrientation.removeOrientationChangeListeners();
+        ScreenOrientation.removeOrientationChangeListeners();
 
-          // set the screen orientation to LANDSCAPE LEFT lock
-          await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE_LEFT);
+        // set the screen orientation to LANDSCAPE LEFT lock
+        await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE_LEFT);
 
-          // If we set a different lock and wait for it to be applied without ever having the
-          // listeners invoked, we assume they've been successfully removed
-          const desiredOrientations = [ScreenOrientation.Orientation.LANDSCAPE_LEFT];
-          const validOrientations = [
-            ScreenOrientation.Orientation.LANDSCAPE_LEFT,
-            ScreenOrientation.Orientation.PORTRAIT_UP,
-          ];
-          await applyAsync({ desiredOrientations, validOrientations });
+        // If we set a different lock and wait for it to be applied without ever having the
+        // listeners invoked, we assume they've been successfully removed
+        const desiredOrientations = [ScreenOrientation.Orientation.LANDSCAPE_LEFT];
+        const validOrientations = [
+          ScreenOrientation.Orientation.LANDSCAPE_LEFT,
+          ScreenOrientation.Orientation.PORTRAIT_UP,
+        ];
+        await applyAsync({ desiredOrientations, validOrientations });
 
-          // expect listeners to not have been called
-          t.expect(listenerWasCalled).toBe(false);
-        } catch (error) {
-          t.fail(error);
-        }
+        // expect listeners to not have been called
+        t.expect(listenerWasCalled).toBe(false);
       });
 
       t.it('Register some listeners and remove a subset', async () => {
-        try {
-          // Register for screen orientation changes
-          let subscription1Called = false;
-          let subscription2Called = false;
+        // Register for screen orientation changes
+        let subscription1Called = false;
+        let subscription2Called = false;
 
-          const subscription1 = ScreenOrientation.addOrientationChangeListener(async () => {
-            subscription1Called = true;
-          });
+        const subscription1 = ScreenOrientation.addOrientationChangeListener(() => {
+          subscription1Called = true;
+        });
 
-          ScreenOrientation.addOrientationChangeListener(async () => {
-            subscription2Called = true;
-          });
+        ScreenOrientation.addOrientationChangeListener(() => {
+          subscription2Called = true;
+        });
 
-          // remove subscription1 ONLY
-          ScreenOrientation.removeOrientationChangeListener(subscription1);
+        // remove subscription1 ONLY
+        ScreenOrientation.removeOrientationChangeListener(subscription1);
 
-          // set the screen orientation to LANDSCAPE LEFT lock
-          await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE_LEFT);
+        // set the screen orientation to LANDSCAPE LEFT lock
+        await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE_LEFT);
 
-          // If we set a different lock and wait for it to be applied without ever having the
-          // listeners invoked, we assume they've been successfully removed
-          const desiredOrientations = [ScreenOrientation.Orientation.LANDSCAPE_LEFT];
-          const validOrientations = [
-            ScreenOrientation.Orientation.LANDSCAPE_LEFT,
-            ScreenOrientation.Orientation.PORTRAIT_UP,
-          ];
-          await applyAsync({ desiredOrientations, validOrientations });
+        // If we set a different lock and wait for it to be applied without ever having the
+        // listeners invoked, we assume they've been successfully removed
+        const desiredOrientations = [ScreenOrientation.Orientation.LANDSCAPE_LEFT];
+        const validOrientations = [
+          ScreenOrientation.Orientation.LANDSCAPE_LEFT,
+          ScreenOrientation.Orientation.PORTRAIT_UP,
+        ];
+        await applyAsync({ desiredOrientations, validOrientations });
 
-          // expect subscription1 to NOT have been called
-          t.expect(subscription1Called).toBe(false);
+        // expect subscription1 to NOT have been called
+        t.expect(subscription1Called).toBe(false);
 
-          // expect subscription2 to have been called
-          t.expect(subscription2Called).toBe(true);
-        } catch (error) {
-          t.fail(error);
-        }
+        // expect subscription2 to have been called
+        t.expect(subscription2Called).toBe(true);
       });
 
       t.it('ensure that we correctly detect our supported orientationLocks', async () => {
@@ -357,7 +321,7 @@ export function test(t) {
           ScreenOrientation.OrientationLock.LANDSCAPE_RIGHT,
         ];
 
-        for (let lock of acceptedLocks) {
+        for (const lock of acceptedLocks) {
           const supported = await ScreenOrientation.supportsOrientationLockAsync(lock);
           t.expect(supported).toBe(true);
         }
@@ -369,7 +333,7 @@ export function test(t) {
 
         // Expect non-lock values to throw an error
         const notLocks = ['FOO', ScreenOrientation.Orientation.UNKNOWN, 3];
-        for (let notLock of notLocks) {
+        for (const notLock of notLocks) {
           let hasError = false;
           try {
             await ScreenOrientation.supportsOrientationLockAsync(notLock);
