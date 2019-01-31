@@ -17,6 +17,7 @@ import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.utils.ScopedContext;
 import versioned.host.exp.exponent.modules.universal.ConstantsBinding;
 import versioned.host.exp.exponent.modules.universal.ExpoModuleRegistryAdapter;
+import versioned.host.exp.exponent.modules.universal.ScopedFileSystemModule;
 import versioned.host.exp.exponent.modules.universal.ScopedUIManagerModuleWrapper;
 
 public class DetachedModuleRegistryAdapter extends ExpoModuleRegistryAdapter {
@@ -41,6 +42,9 @@ public class DetachedModuleRegistryAdapter extends ExpoModuleRegistryAdapter {
 
     // Overriding ScopedUIManagerModuleWrapper from ReactAdapterPackage
     moduleRegistry.registerInternalModule(new ScopedUIManagerModuleWrapper(reactContext, experienceId, manifest.optString(ExponentManifest.MANIFEST_NAME_KEY)));
+
+    // Overriding expo-file-system FileSystemModule
+    moduleRegistry.registerExportedModule(new ScopedFileSystemModule(scopedContext));
 
     // Adding other modules (not universal) to module registry as consumers.
     // It allows these modules to refer to universal modules.
