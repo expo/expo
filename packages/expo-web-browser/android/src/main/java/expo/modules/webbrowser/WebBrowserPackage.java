@@ -14,9 +14,4 @@ public class WebBrowserPackage extends BasePackage {
   public List<ExportedModule> createExportedModules(Context context) {
     return Collections.singletonList((ExportedModule) new WebBrowserModule(context));
   }
-
-  @Override
-  public List<ViewManager> createViewManagers(Context context) {
-    return Collections.singletonList((ViewManager) new WebBrowserViewManager());
-  }
 }

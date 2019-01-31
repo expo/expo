@@ -66,4 +66,5 @@ if (new File(rootProject.projectDir.parentFile, 'pubspec.yaml').exists()) {
 
 dependencies {
   expendency 'expo-core'
+  api 'com.android.support:customtabs:27.1.1'
 }

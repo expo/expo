@@ -287,7 +287,7 @@ dependencies {
   api 'host.exp.exponent:expo-mail-composer:1.0.0'
   api 'host.exp.exponent:expo-speech:1.0.0'
   api 'host.exp.exponent:expo-sqlite:1.0.0'
-
+  api 'host.exp.exponent:expo-web-browser:1.0.0'
   END UNCOMMENT WHEN DISTRIBUTING */
 }
 

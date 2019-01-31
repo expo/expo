@@ -1,2 +1,9 @@
-<manifest package="expo.modules.template">
+<manifest package="expo.modules.webbrowser"
+          xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application>
+        <activity
+            android:name=".ChromeTabsManagerActivity">
+        </activity>
+    </application>
 </manifest>
