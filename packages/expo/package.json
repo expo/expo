@@ -58,6 +58,7 @@
     "cross-spawn": "^6.0.5",
     "expo-ads-admob": "~2.0.0",
     "expo-ads-facebook": "~1.0.0",
+    "expo-analytics-amplitude": "~1.0.0",
     "expo-analytics-segment": "~2.0.0",
     "expo-app-auth": "~2.0.0",
     "expo-app-loader-provider": "~1.0.0",
