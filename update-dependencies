@@ -27,7 +27,6 @@ bin/nix-binstubs \
   git-lfs \
   nodePackages.gulp-cli \
   nodejs-10_x \
-  wget \
   xcpretty \
   yarn
 

@@ -194,6 +194,9 @@ jobs:
           command: test --maxWorkers 1
           working_directory: ~/expo/packages/expo-font
       - yarn:
+          command: build
+          working_directory: ~/expo/packages/expo-permissions
+      - yarn:
           command: test --maxWorkers 1
           working_directory: ~/expo/packages/expo-react-native-adapter
       - yarn:
@@ -356,7 +359,7 @@ jobs:
           background: true
       - run:
           working_directory: docs
-          command: yarn run test-links:all http://localhost:8000
+          command: yarn run test-links http://localhost:8000
       - deploy:
           command: |
             if [ "${CIRCLE_BRANCH}" == "master" ]; then

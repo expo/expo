@@ -5,7 +5,7 @@
       "This demonstrates a bunch of the native components that you can use in React Native core and Expo.",
     "slug": "native-component-list",
     "sdkVersion": "UNVERSIONED",
-    "version": "32.0.0",
+    "version": "UNVERSIONED",
     "githubUrl": "https://github.com/expo/native-component-list",
     "orientation": "portrait",
     "primaryColor": "#cccccc",

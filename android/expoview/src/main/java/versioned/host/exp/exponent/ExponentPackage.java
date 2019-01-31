@@ -35,7 +35,6 @@ import versioned.host.exp.exponent.modules.api.BrightnessModule;
 import versioned.host.exp.exponent.modules.api.CalendarModule;
 import versioned.host.exp.exponent.modules.api.ErrorRecoveryModule;
 import versioned.host.exp.exponent.modules.api.ImageManipulatorModule;
-import versioned.host.exp.exponent.modules.api.ImagePickerModule;
 import versioned.host.exp.exponent.modules.api.IntentLauncherModule;
 import versioned.host.exp.exponent.modules.api.KeyboardModule;
 import versioned.host.exp.exponent.modules.api.PedometerModule;
@@ -51,13 +50,6 @@ import versioned.host.exp.exponent.modules.api.components.gesturehandler.react.R
 import versioned.host.exp.exponent.modules.api.components.lottie.LottiePackage;
 import versioned.host.exp.exponent.modules.api.components.maps.MapsPackage;
 import versioned.host.exp.exponent.modules.api.components.svg.SvgPackage;
-import versioned.host.exp.exponent.modules.api.fbads.AdIconViewManager;
-import versioned.host.exp.exponent.modules.api.fbads.AdSettingsManager;
-import versioned.host.exp.exponent.modules.api.fbads.BannerViewManager;
-import versioned.host.exp.exponent.modules.api.fbads.InterstitialAdManager;
-import versioned.host.exp.exponent.modules.api.fbads.MediaViewManager;
-import versioned.host.exp.exponent.modules.api.fbads.NativeAdManager;
-import versioned.host.exp.exponent.modules.api.fbads.NativeAdViewManager;
 import versioned.host.exp.exponent.modules.api.notifications.NotificationsModule;
 import versioned.host.exp.exponent.modules.api.reanimated.ReanimatedModule;
 import versioned.host.exp.exponent.modules.api.screens.RNScreensPackage;
@@ -176,15 +168,11 @@ public class ExponentPackage implements ReactPackage {
 
         nativeModules.add(new ExponentAsyncStorageModule(reactContext, mManifest));
         nativeModules.add(new NotificationsModule(reactContext, mManifest, mExperienceProperties));
-        nativeModules.add(new ImagePickerModule(reactContext, scopedContext, experienceId));
         nativeModules.add(new ImageManipulatorModule(reactContext, scopedContext));
         nativeModules.add(new AmplitudeModule(reactContext, scopedContext));
         nativeModules.add(new RNViewShotModule(reactContext, scopedContext));
         nativeModules.add(new ExponentTestNativeModule(reactContext));
         nativeModules.add(new WebBrowserModule(reactContext));
-        nativeModules.add(new NativeAdManager(reactContext));
-        nativeModules.add(new AdSettingsManager(reactContext));
-        nativeModules.add(new InterstitialAdManager(reactContext));
         nativeModules.add(new PedometerModule(reactContext));
         nativeModules.add(new RNBranchModule(reactContext));
         nativeModules.add(new ErrorRecoveryModule(reactContext, experienceId));
@@ -216,12 +204,7 @@ public class ExponentPackage implements ReactPackage {
 
   @Override
   public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
-    List<ViewManager> viewManagers = new ArrayList<>(Arrays.<ViewManager>asList(
-        new NativeAdViewManager(),
-        new BannerViewManager(),
-        new MediaViewManager(),
-        new AdIconViewManager()
-    ));
+    List<ViewManager> viewManagers = new ArrayList<>();
 
     // Add view manager from 3rd party library packages.
     addViewManagersFromPackages(reactContext, viewManagers, Arrays.<ReactPackage>asList(

@@ -8,6 +8,7 @@ import java.util.List;
 import expo.core.interfaces.Package;
 import expo.loaders.provider.interfaces.AppLoaderPackagesProviderInterface;
 import expo.modules.ads.admob.AdMobPackage;
+import expo.modules.ads.facebook.AdsFacebookPackage;
 import expo.modules.analytics.segment.SegmentPackage;
 import expo.modules.appauth.AppAuthPackage;
 import expo.modules.av.AVPackage;
@@ -24,6 +25,7 @@ import expo.modules.filesystem.FileSystemPackage;
 import expo.modules.font.FontLoaderPackage;
 import expo.modules.gl.GLPackage;
 import expo.modules.google.signin.GoogleSignInPackage;
+import expo.modules.imagepicker.ImagePickerPackage;
 import expo.modules.keepawake.KeepAwakePackage;
 import expo.modules.lineargradient.LinearGradientPackage;
 import expo.modules.localauthentication.LocalAuthenticationPackage;
@@ -66,6 +68,7 @@ public class MainApplication extends ExpoApplication implements AppLoaderPackage
     return Arrays.<Package>asList(
         new AVPackage(),
         new AdMobPackage(),
+        new AdsFacebookPackage(),
         new AppAuthPackage(),
         new BackgroundFetchPackage(),
         new BarCodeScannerPackage(),
@@ -80,6 +83,7 @@ public class MainApplication extends ExpoApplication implements AppLoaderPackage
         new FontLoaderPackage(),
         new GLPackage(),
         new GoogleSignInPackage(),
+        new ImagePickerPackage(),
         new KeepAwakePackage(),
         new LinearGradientPackage(),
         new LocalAuthenticationPackage(),

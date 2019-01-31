@@ -7,6 +7,7 @@ import java.util.List;
 
 import expo.core.interfaces.Package;
 import expo.modules.ads.admob.AdMobPackage;
+import expo.modules.ads.facebook.AdsFacebookPackage;
 import expo.modules.analytics.segment.SegmentPackage;
 import expo.modules.appauth.AppAuthPackage;
 import expo.modules.av.AVPackage;
@@ -25,6 +26,7 @@ import expo.modules.gl.GLPackage;
 import expo.modules.google.signin.GoogleSignInPackage;
 import expo.modules.keepawake.KeepAwakePackage;
 import expo.modules.lineargradient.LinearGradientPackage;
+import expo.modules.imagepicker.ImagePickerPackage;
 import expo.modules.localauthentication.LocalAuthenticationPackage;
 import expo.modules.localization.LocalizationPackage;
 import expo.modules.location.LocationPackage;
@@ -44,6 +46,7 @@ public class ExperiencePackagePicker {
   private static final List<Package> EXPO_MODULES_PACKAGES = Arrays.<Package>asList(
       new AVPackage(),
       new AdMobPackage(),
+      new AdsFacebookPackage(),
       new AppAuthPackage(),
       new BackgroundFetchPackage(),
       new BarCodeScannerPackage(),
@@ -58,6 +61,7 @@ public class ExperiencePackagePicker {
       new FontLoaderPackage(),
       new GLPackage(),
       new GoogleSignInPackage(),
+      new ImagePickerPackage(),
       new KeepAwakePackage(),
       new LinearGradientPackage(),
       new LocalAuthenticationPackage(),
