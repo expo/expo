@@ -1,3 +1,4 @@
+import { NativeModulesProxy } from 'expo-core';
 import * as EmbeddedAssets from '../EmbeddedAssets';
 
 jest.mock('expo-constants', () => {

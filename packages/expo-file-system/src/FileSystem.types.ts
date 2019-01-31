@@ -25,14 +25,23 @@ export type DownloadPauseState = {
   resumeData?: string;
 };
 
-export type FileInfo = {
-  exists: boolean;
-  isDirectory: false;
-  uri?: string;
-  size?: number;
-  modificationTime?: number;
-  md5?: string;
-};
+export type FileInfo =
+  | {
+      exists: true;
+      uri: string;
+      size: number;
+      isDirectory: boolean;
+      modificationTime: number;
+      md5?: string;
+    }
+  | {
+      exists: false;
+      uri: string;
+      size: undefined;
+      isDirectory: false;
+      modificationTime: undefined;
+      md5: undefined;
+    };
 
 export enum EncodingType {
   UTF8 = 'utf8',

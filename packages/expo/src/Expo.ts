@@ -6,6 +6,7 @@ import 'expo-asset';
 
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
+import * as Amplitude from 'expo-analytics-amplitude';
 import * as BackgroundFetch from 'expo-background-fetch';
 import * as DocumentPicker from 'expo-document-picker';
 import * as Font from 'expo-font';
@@ -13,7 +14,6 @@ import * as Location from 'expo-location';
 import * as SMS from 'expo-sms';
 import * as Speech from 'expo-speech';
 import * as TaskManager from 'expo-task-manager';
-
 import * as Facebook from 'expo-facebook';
 import * as MailComposer from 'expo-mail-composer';
 import * as SecureStore from 'expo-secure-store';
@@ -70,7 +70,7 @@ export { TaskManager };
 export { GestureHandler } from './GestureHandler';
 export { default as MapView } from './Maps/MapView';
 export { AR };
-export { default as Amplitude } from './Amplitude/Amplitude';
+export { Amplitude };
 export { default as AuthSession } from './AuthSession';
 export { Brightness };
 export { Calendar };

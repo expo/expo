@@ -337,6 +337,10 @@ PODS:
   - EXAdsFacebook (1.0.0):
     - EXCore
     - FBAudienceNetwork
+  - EXAmplitude (1.0.0):
+    - Amplitude-iOS
+    - EXConstantsInterface
+    - EXCore
   - EXAppAuth (2.0.0):
     - AppAuth
     - EXCore
@@ -1287,6 +1291,7 @@ DEPENDENCIES:
   - DoubleConversion (from `../react-native-lab/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - EXAdsAdMob (from `../packages/expo-ads-admob/ios`)
   - EXAdsFacebook (from `../packages/expo-ads-facebook/ios`)
+  - EXAmplitude (from `../packages/expo-analytics-amplitude/ios`)
   - EXAppAuth (from `../packages/expo-app-auth/ios`)
   - EXAppLoaderProvider (from `../packages/expo-app-loader-provider/ios`)
   - EXAV (from `../packages/expo-av/ios`)
@@ -1727,6 +1732,8 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-ads-admob/ios"
   EXAdsFacebook:
     :path: "../packages/expo-ads-facebook/ios"
+  EXAmplitude:
+    :path: "../packages/expo-analytics-amplitude/ios"
   EXAppAuth:
     :path: "../packages/expo-app-auth/ios"
   EXAppLoaderProvider:
@@ -1979,6 +1986,7 @@ SPEC CHECKSUMS:
   DoubleConversion: bb338842f62ab1d708ceb63ec3d999f0f3d98ecd
   EXAdsAdMob: 66a3c271540f54f4d964fa72f0c8a953faea5a03
   EXAdsFacebook: 4b1d0aceaba2c9c97ca0e84c7a7bc042a967a7bf
+  EXAmplitude: ee40db61a99557551cc729bdf7495198d4d3409a
   EXAppAuth: df83ccf9fecfdfad741a930263524f4b75f8e962
   EXAppLoaderProvider: 2638ca3d779c8baae37e63352c785e5e2dad70d5
   EXAV: f005cfd3df93cee2ba9856336d780beaffc9c4d8
@@ -2063,6 +2071,6 @@ SPEC CHECKSUMS:
   yogaABI31_0_0: 7978689ddccec43cffd5914889304cf3b7fd7c77
   yogaABI32_0_0: b6e0ba3796cd5e47ccea0454694e605a1cfc817a
 
-PODFILE CHECKSUM: d70489df1e06f9176ad0d23a85ff71f812f53fb5
+PODFILE CHECKSUM: ed79f2bf6e2f48980fa64430b7e3d061b62a1486
 
 COCOAPODS: 1.5.3
