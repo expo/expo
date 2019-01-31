@@ -1,6 +1,6 @@
 {
   "name": "expokit",
-  "version": "32.0.5",
+  "version": "32.0.6-rc.0",
   "description": "",
   "main": "index.js",
   "scripts": {
