@@ -638,10 +638,6 @@ module.exports = {
     setBadgeNumberAsync: { type: 'function', functionType: 'promise' },
   },
   ExponentScopedModuleRegistry: {},
-  ExponentScreenOrientation: {
-    allowAsync: { type: 'function', functionType: 'promise' },
-    doesSupportAsync: { type: 'function', functionType: 'promise' },
-  },
   ExponentSplashScreen: {
     hide: { type: 'function', functionType: 'async' },
     preventAutoHide: { type: 'function', functionType: 'async' },
