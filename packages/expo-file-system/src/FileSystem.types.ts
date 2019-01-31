@@ -1,5 +1,6 @@
 export type DownloadOptions = {
   md5?: boolean;
+  cache?: boolean;
   headers?: { [name: string]: string };
 };
 
@@ -24,18 +25,14 @@ export type DownloadPauseState = {
   resumeData?: string;
 };
 
-export type FileInfo =
-  | {
-      exists: true;
-      uri: string;
-      size: number;
-      modificationTime: number;
-      md5?: string;
-    }
-  | {
-      exists: false;
-      isDirectory: false;
-    };
+export type FileInfo = {
+  exists: boolean;
+  isDirectory: false;
+  uri?: string;
+  size?: number;
+  modificationTime?: number;
+  md5?: string;
+};
 
 export enum EncodingType {
   UTF8 = 'utf8',

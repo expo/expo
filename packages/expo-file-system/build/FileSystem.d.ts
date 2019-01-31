@@ -4,6 +4,7 @@ export { DownloadOptions, DownloadResult, DownloadProgressCallback, DownloadProg
 export declare const documentDirectory: any, cacheDirectory: any, bundledAssets: any, bundleDirectory: any;
 export declare function getInfoAsync(fileUri: string, options?: {
     md5?: boolean;
+    cache?: boolean;
 }): Promise<FileInfo>;
 export declare function readAsStringAsync(fileUri: string, options?: ReadingOptions): Promise<string>;
 export declare function writeAsStringAsync(fileUri: string, contents: string, options?: WritingOptions): Promise<void>;

@@ -49,7 +49,7 @@ export const { documentDirectory, cacheDirectory, bundledAssets, bundleDirectory
 
 export async function getInfoAsync(
   fileUri: string,
-  options: { md5?: boolean } = {}
+  options: { md5?: boolean; cache?: boolean } = {}
 ): Promise<FileInfo> {
   if (!FS.getInfoAsync) {
     throw new UnavailabilityError('expo-file-system', 'getInfoAsync');

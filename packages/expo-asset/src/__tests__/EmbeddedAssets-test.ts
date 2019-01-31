@@ -11,12 +11,10 @@ jest.mock('expo-constants', () => {
 jest.mock('expo-file-system', () => {
   const FileSystem = require.requireActual('expo-file-system');
   return {
-    FileSystem: {
-      ...FileSystem,
-      bundleDirectory:
-        'file:///Containers/Bundle/Application/00A4A2F0-E268-40DC-A1AD-2F3A90BA2340/Expo.app/',
-      bundledAssets: ['asset_test1', 'asset_test2.png'],
-    },
+    ...FileSystem,
+    bundleDirectory:
+      'file:///Containers/Bundle/Application/00A4A2F0-E268-40DC-A1AD-2F3A90BA2340/Expo.app/',
+    bundledAssets: ['asset_test1', 'asset_test2.png'],
   };
 });
 
