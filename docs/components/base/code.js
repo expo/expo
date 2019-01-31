@@ -1,6 +1,8 @@
 import { css } from 'react-emotion';
 
 import * as React from 'react';
+import Tippy from '@tippy.js/react';
+import 'tippy.js/dist/tippy.css';
 import * as Constants from '~/common/constants';
 
 const attributes = {
@@ -100,42 +102,30 @@ const annotationContent = ({ props }) =>
 
 const replaceCommentsWithAnnotations = thisArg => {
   if (!tooltipComment(thisArg)) return thisArg;
-  return <span className="code-annotation" title={annotationContent(thisArg)} />;
+  return (
+    <Tippy
+      content={annotationContent(thisArg)}
+      theme="expo"
+      placement="top"
+      arrow={true}
+      arrowType="round"
+      interactive={true}
+      distance={20}>
+      <span className="code-annotation" />
+    </Tippy>
+  );
 };
 
-export class Pre extends React.Component {
-  componentDidMount() {
-    this._runTippy();
-  }
-
-  componentDidUpdate() {
-    this._runTippy();
-  }
-
-  _runTippy() {
-    if (process.browser) {
-      tippy('.code-annotation', {
-        theme: 'expo',
-        placement: 'top',
-        arrow: true,
-        arrowType: 'round',
-        interactive: true,
-        distance: 20,
-      });
-    }
-  }
-
-  render() {
-    this.props.children.props.props.className += ' ' + STYLES_CODE_BLOCK;
-    return (
-      <pre
-        className={this.props.className + ' ' + STYLES_CODE_CONTAINER}
-        children={recursiveMap(this.props.children, replaceCommentsWithAnnotations)}
-        {...attributes}
-      />
-    );
-  }
-}
+export const Pre = ({ className, children }) => {
+  children.props.props.className += ' ' + STYLES_CODE_BLOCK;
+  return (
+    <pre
+      className={className + ' ' + STYLES_CODE_CONTAINER}
+      children={recursiveMap(children, replaceCommentsWithAnnotations)}
+      {...attributes}
+    />
+  );
+};
 
 export const InlineCode = ({ children }) => (
   <code className={`${STYLES_INLINE_CODE} inline`}>{children}</code>
