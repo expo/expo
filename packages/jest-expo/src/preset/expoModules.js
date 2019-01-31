@@ -548,6 +548,18 @@ module.exports = {
     },
     callMethod: { type: 'function', functionType: 'promise' },
   },
+  ExpoScreenOrientation: {
+    addListener: { type: 'function', functionType: 'async' },
+    doesSupportAsync: { type: 'function', functionType: 'promise' },
+    getOrientationAsync: { type: 'function', functionType: 'promise' },
+    getOrientationLockAsync: { type: 'function', functionType: 'promise' },
+    getPlatformOrientationLockAsync: { type: 'function', functionType: 'promise' },
+    lockAsync: { type: 'function', functionType: 'promise' },
+    lockPlatformAsync: { type: 'function', functionType: 'promise' },
+    removeListeners: { type: 'function', functionType: 'async' },
+    supportsOrientationLockAsync: { type: 'function', functionType: 'promise' },
+    unlockAsync: { type: 'function', functionType: 'promise' },
+  },
   ExponentAR: {
     ARFaceTrackingConfiguration: { type: 'boolean', mock: false },
     ARKitVersion: { type: 'string' },
@@ -626,10 +638,6 @@ module.exports = {
     setBadgeNumberAsync: { type: 'function', functionType: 'promise' },
   },
   ExponentScopedModuleRegistry: {},
-  ExponentScreenOrientation: {
-    allowAsync: { type: 'function', functionType: 'promise' },
-    doesSupportAsync: { type: 'function', functionType: 'promise' },
-  },
   ExponentSplashScreen: {
     hide: { type: 'function', functionType: 'async' },
     preventAutoHide: { type: 'function', functionType: 'async' },
