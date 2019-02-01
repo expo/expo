@@ -1,56 +1,28 @@
-import ExpoScreenOrientation from './ExpoScreenOrientation';
+import { EventEmitter, Platform, Subscription } from 'expo-core';
 import { UnavailabilityError } from 'expo-errors';
-import { EmitterSubscription, NativeEventEmitter, Platform } from 'react-native';
 
-export enum Orientation {
-  UNKNOWN = 'UNKNOWN',
-  PORTRAIT = 'PORTRAIT',
-  PORTRAIT_UP = 'PORTRAIT_UP',
-  PORTRAIT_DOWN = 'PORTRAIT_DOWN',
-  LANDSCAPE = 'LANDSCAPE',
-  LANDSCAPE_LEFT = 'LANDSCAPE_LEFT',
-  LANDSCAPE_RIGHT = 'LANDSCAPE_RIGHT',
-}
+import ExpoScreenOrientation from './ExpoScreenOrientation';
+import {
+  Orientation,
+  OrientationChangeEvent,
+  OrientationChangeListener,
+  OrientationInfo,
+  OrientationLock,
+  PlatformOrientationInfo,
+  SizeClassIOS,
+} from './ScreenOrientation.types';
 
-export enum OrientationLock {
-  DEFAULT = 'DEFAULT',
-  ALL = 'ALL',
-  PORTRAIT = 'PORTRAIT',
-  PORTRAIT_UP = 'PORTRAIT_UP',
-  PORTRAIT_DOWN = 'PORTRAIT_DOWN',
-  LANDSCAPE = 'LANDSCAPE',
-  LANDSCAPE_LEFT = 'LANDSCAPE_LEFT',
-  LANDSCAPE_RIGHT = 'LANDSCAPE_RIGHT',
-  OTHER = 'OTHER',
-  ALL_BUT_UPSIDE_DOWN = 'ALL_BUT_UPSIDE_DOWN', // deprecated
-}
-
-enum SizeClassIOS {
-  REGULAR = 'REGULAR',
-  COMPACT = 'COMPACT',
-  UNKNOWN = 'UNKNOWN',
-}
-
-type OrientationInfo = {
-  orientation: Orientation;
-  verticalSizeClass?: SizeClassIOS;
-  horizontalSizeClass?: SizeClassIOS;
+export {
+  Orientation,
+  OrientationLock,
+  SizeClassIOS,
+  OrientationInfo,
+  PlatformOrientationInfo,
+  OrientationChangeListener,
+  OrientationChangeEvent,
 };
 
-type PlatformOrientationInfo = {
-  screenOrientationConstantAndroid?: number;
-  screenOrientationArrayIOS?: Orientation[];
-};
-
-type OrientationChangeListener = (event: OrientationChangeEvent) => void;
-
-type OrientationChangeEvent = {
-  orientationLock: OrientationLock;
-  orientationInfo: OrientationInfo;
-};
-
-const _orientationChangeEmitter = new NativeEventEmitter(ExpoScreenOrientation);
-let _orientationChangeSubscribers: EmitterSubscription[] = [];
+const _orientationChangeEmitter = new EventEmitter(ExpoScreenOrientation);
 
 export function allow(orientationLock: OrientationLock): void {
   console.warn(
@@ -89,7 +61,7 @@ export async function lockPlatformAsync(options: PlatformOrientationInfo): Promi
   }
 
   const { screenOrientationConstantAndroid, screenOrientationArrayIOS } = options;
-  let platformOrientationParam;
+  let platformOrientationParam: number | Orientation[] | undefined;
   if (Platform.OS === 'android' && screenOrientationConstantAndroid) {
     if (isNaN(screenOrientationConstantAndroid)) {
       throw new TypeError(
@@ -143,6 +115,9 @@ export async function getOrientationLockAsync(): Promise<OrientationLock> {
 }
 
 export async function getPlatformOrientationLockAsync(): Promise<PlatformOrientationInfo> {
+  if (!ExpoScreenOrientation.getPlatformOrientationLockAsync) {
+    throw new UnavailabilityError('ScreenOrientation', 'getPlatformOrientationLockAsync');
+  }
   const platformOrientationLock = await ExpoScreenOrientation.getPlatformOrientationLockAsync();
   if (Platform.OS === 'android') {
     return {
@@ -152,9 +127,10 @@ export async function getPlatformOrientationLockAsync(): Promise<PlatformOrienta
     return {
       screenOrientationArrayIOS: platformOrientationLock,
     };
-  } else {
-    throw new UnavailabilityError('ScreenOrientation', 'getPlatformOrientationLockAsync');
   }
+  return {
+    screenOrientationArray: platformOrientationLock,
+  };
 }
 
 export async function supportsOrientationLockAsync(
@@ -179,53 +155,40 @@ export async function doesSupportAsync(orientationLock: OrientationLock): Promis
   return await supportsOrientationLockAsync(orientationLock);
 }
 
+/* Make this a getter for jest */
+function getEventName(): string {
+  return Platform.OS === 'ios' ? 'expoDidUpdateDimensions' : 'didUpdateDimensions';
+}
+
 // We rely on RN to emit `didUpdateDimensions`
 // If this method no longer works, it's possible that the underlying RN implementation has changed
 // see https://github.com/facebook/react-native/blob/c31f79fe478b882540d7fd31ee37b53ddbd60a17/ReactAndroid/src/main/java/com/facebook/react/modules/deviceinfo/DeviceInfoModule.java#L90
-export function addOrientationChangeListener(
-  listener: OrientationChangeListener
-): EmitterSubscription {
+export function addOrientationChangeListener(listener: OrientationChangeListener): Subscription {
   if (typeof listener !== 'function') {
     throw new TypeError(`addOrientationChangeListener cannot be called with ${listener}`);
   }
 
-  const eventName = Platform.OS === 'ios' ? 'expoDidUpdateDimensions' : 'didUpdateDimensions';
-  const subscription = _orientationChangeEmitter.addListener(eventName, async update => {
-    let orientationInfo, orientationLock;
-    if (Platform.OS === 'ios') {
-      // RN relies on statusBarOrientation (deprecated) to emit `didUpdateDimensions` event, so we emit our own `expoDidUpdateDimensions` event instead
-      orientationLock = update.orientationLock;
-      orientationInfo = update.orientationInfo;
-    } else {
-      // We rely on the RN Dimensions to emit the `didUpdateDimensions` event on Android
-      [orientationLock, orientationInfo] = await Promise.all([
-        ExpoScreenOrientation.getOrientationLockAsync(),
-        ExpoScreenOrientation.getOrientationAsync(),
-      ]);
+  const subscription = _orientationChangeEmitter.addListener(
+    getEventName(),
+    async (update: OrientationChangeEvent) => {
+      let orientationInfo, orientationLock;
+      if (Platform.OS === 'ios') {
+        // RN relies on statusBarOrientation (deprecated) to emit `didUpdateDimensions` event, so we emit our own `expoDidUpdateDimensions` event instead
+        orientationLock = update.orientationLock;
+        orientationInfo = update.orientationInfo;
+      } else {
+        // We rely on the RN Dimensions to emit the `didUpdateDimensions` event on Android
+        [orientationLock, orientationInfo] = await Promise.all([
+          ExpoScreenOrientation.getOrientationLockAsync(),
+          ExpoScreenOrientation.getOrientationAsync(),
+        ]);
+      }
+      listener({ orientationInfo, orientationLock });
     }
-    listener({ orientationInfo, orientationLock });
-  });
-  _orientationChangeSubscribers.push(subscription);
-
+  );
   return subscription;
 }
 
 export function removeOrientationChangeListeners(): void {
-  // Remove listener by subscription instead of eventType to avoid clobbering Dimension module's subscription of didUpdateDimensions
-  let i = _orientationChangeSubscribers.length;
-  while (i--) {
-    const subscriber = _orientationChangeSubscribers[i];
-    subscriber.remove();
-
-    // remove after a successful unsubscribe
-    _orientationChangeSubscribers.pop();
-  }
-}
-
-export function removeOrientationChangeListener(subscription: EmitterSubscription): void {
-  if (!subscription || !subscription.remove) {
-    throw new TypeError(`Must pass in a valid subscription`);
-  }
-  subscription.remove();
-  _orientationChangeSubscribers = _orientationChangeSubscribers.filter(sub => sub !== subscription);
+  _orientationChangeEmitter.removeAllListeners(getEventName());
 }
