@@ -14,6 +14,24 @@ To optimize our libraries for _dead code elimination_ we should migrate our expo
 
 Ideally we would make the main entry-point of a module be a file named like the module:
 `src/FileSystem.ts` (`build/FileSystem.js`).
+
+**`package.json`**
+
+```diff
+- "main": "index.js",
+
++ "main": "build/FileSystem.js",
++ "types": "build/FileSystem.d.ts",
+```
+
+Add a jest object to the `package.json`
+
+```js
+"jest": {
+  "preset": "expo-module-scripts"
+},
+```
+
 To migrate from libraries using different imports, we should add a deprecation notice:
 
 **`src/index.ts`**
