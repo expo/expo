@@ -46,15 +46,6 @@ android {
     javaMaxHeapSize System.getenv("DISABLE_DEX_MAX_HEAP") ? null : "8g"
   }
 
-  flavorDimensions 'remoteKernel'
-  productFlavors {
-    devKernel {
-      dimension 'remoteKernel'
-    }
-    prodKernel {
-      dimension 'remoteKernel'
-    }
-  }
   signingConfigs {
     debug {
       storeFile file('../debug.keystore')
