@@ -65,6 +65,8 @@ A list of all the supported ISO codes.
 
 The current time zone in display format. ex: `America/Los_Angeles`
 
+On Web `timezone` is calculated with `Intl.DateTimeFormat().resolvedOptions().timeZone`. For a better guess you could use the `moment-timezone` library but is a very large library and will add significant bloat to your bundle.
+
 #### `Localization.isRTL: boolean`
 
 This will return `true` if the current language is Right-to-Left.
