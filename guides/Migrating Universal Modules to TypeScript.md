@@ -1,4 +1,4 @@
-# Migrating Universal Modules to TypeScript
+# Migrating [Universal Modules][universal-modules] to TypeScript
 
 ## Change default import to named import
 
@@ -14,7 +14,7 @@ To optimize our libraries for _dead code elimination_ we should migrate our expo
 
 Ideally we would make the main entry-point of a module be a file named like the module:
 `src/FileSystem.ts` (`build/FileSystem.js`).
-To migrate I propose we do what `expo-constants` does:
+To migrate from libraries using different imports, we should add a deprecation notice:
 
 **`src/index.ts`**
 
@@ -55,7 +55,22 @@ If the package is using the old structure of `test/` for utilities, they should 
 
 In order to prevent overlapping native code in `node_modules`, we should move any `dependencies` containing native code to `peerDependencies`.
 
-## Generate `tsconfig.json` with `expo-module-scripts`
+## Add module scripts
+
+```js
+"scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+}
+```
+
+## Generate a `tsconfig.json` with `expo-module-scripts`
+
+To get the `tsconfig` that we use in all of our modules, run `expo-module prepare` or the yarn script `yarn prepare` (given the script is defined in a module's `package.json`)
 
 `/tsconfig.json`
 
@@ -71,21 +86,10 @@ In order to prevent overlapping native code in `node_modules`, we should move an
 }
 ```
 
-## Various other changes:
+## Various Changes
 
-- Removed `babel-preset-expo`
-- Removed flow (obviously)
-- Add scripts:
-
-```js
-"scripts": {
-    "build": "expo-module build",
-    "clean": "expo-module clean",
-    "test": "expo-module test",
-    "prepare": "expo-module prepare",
-    "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
-}
-```
-
+- Remove `babel-preset-expo`
+- Remove `flow`
 - For reusing types across web native-layer and API-layer, types should be moved to a named file with the `.types.ts` extension. There are cases (`expo-av` for example) where you should separate types into smaller files.
+
+[universal-modules]: https://github.com/expo/expo/blob/master/guides/Expo%20Universal%20Module%20Infrastructure.md
