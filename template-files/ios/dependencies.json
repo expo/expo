@@ -21,15 +21,15 @@
   },
   {
     "name": "FBAudienceNetwork",
-    "version": "4.99.0"
+    "version": "5.1.1"
   },
   {
     "name": "FBSDKCoreKit",
-    "version": "4.39.1"
+    "version": "4.40.0"
   },
   {
     "name": "FBSDKLoginKit",
-    "version": "4.39.1"
+    "version": "4.40.0"
   },
   {
     "name": "Fabric",
