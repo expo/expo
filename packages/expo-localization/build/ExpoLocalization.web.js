@@ -33,7 +33,7 @@ export default {
             const isoCountryCode = locale.substring(locale.lastIndexOf('-') + 1);
             return isoCountryCode.toUpperCase();
         }
-        return null;
+        return undefined;
     },
     async getLocalizationAsync() {
         const { country, isoCurrencyCodes, timezone, locales, locale, isRTL } = this;

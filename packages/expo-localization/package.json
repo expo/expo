@@ -23,11 +23,17 @@
     "Evan Bacon <bacon@expo.io> (https://github.com/evanbacon)"
   ],
   "readmeFilename": "README.md",
+  "jest": {
+    "preset": "expo-module-scripts"
+  },
   "dependencies": {
     "rtl-detect": "^1.0.2"
   },
-  "devDependencies": {
+  "peerDependencies": {
     "expo-core": "~2.0.0"
+  },
+  "devDependencies": {
+    "jest-expo": "^32.0.0"
   },
   "gitHead": "f15abc53c111bd0438cd36dc456c59cfa7c56a58"
 }

@@ -33,13 +33,13 @@ export default {
     // TODO: Bacon: Add this - very low priority
     return [];
   },
-  get country(): string | null {
+  get country(): string | undefined {
     const { locale } = this;
     if (typeof locale === 'string' && locale.length) {
       const isoCountryCode = locale.substring(locale.lastIndexOf('-') + 1);
       return isoCountryCode.toUpperCase();
     }
-    return null;
+    return undefined;
   },
   async getLocalizationAsync(): Promise<Localization> {
     const { country, isoCurrencyCodes, timezone, locales, locale, isRTL } = this;
