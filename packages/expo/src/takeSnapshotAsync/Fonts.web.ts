@@ -36,8 +36,8 @@ function getCSSRules(styleSheets: CSSStyleSheet[]): CSSStyleRule[] {
   const cssRules: CSSStyleRule[] = [];
   for (const sheet of styleSheets) {
     try {
-      const rules: CSSRule[] = Array.from(sheet.cssRules);
-      rules.forEach(cssRules.push.bind(cssRules));
+      const rules: any[] = Array.from(sheet.cssRules);
+      cssRules.push(...rules);
     } catch ({ message }) {
       throw new Error(`Error while reading CSS rules from ${sheet.href}: ${message}`);
     }

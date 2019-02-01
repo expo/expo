@@ -27,8 +27,7 @@ async function generateSVGAsync(
     throw new Error('Cannot clone null element');
   }
 
-  await batchResolveAllFontsAsync(clone);
-  await processAllImagesAsync(clone);
+  await Promise.all([batchResolveAllFontsAsync(clone), processAllImagesAsync(clone)]);
 
   if (bgcolor) {
     clone.style.backgroundColor = bgcolor as string;
@@ -42,9 +41,7 @@ async function generateSVGAsync(
   }
 
   if (style) {
-    for (const property of Object.keys(style)) {
-      clone.style[property] = style[property];
-    }
+    Object.assign(clone.style, style);
   }
 
   const svgDataUri = await makeSVGDataURIAsync(
@@ -66,7 +63,7 @@ export async function createPixelDataAsync(
   const canvas = await draw(element, options);
 
   const context = canvas.getContext('2d');
-  if (context == null) {
+  if (!context) {
     throw new Error('Canvas context is not supported.');
   }
 
@@ -114,7 +111,7 @@ async function draw(
 
   const canvas = newCanvas(element, options);
   const context = canvas.getContext('2d');
-  if (context == null) {
+  if (!context) {
     throw new Error('Canvas context is not supported.');
   }
   context.drawImage(image, 0, 0);
@@ -170,7 +167,7 @@ async function cloneChildren(
   for (const child of children) {
     const childClone = await cloneElement(child);
     if (childClone) {
-      await clone.appendChild(childClone);
+      clone.appendChild(childClone);
     }
   }
 
@@ -188,9 +185,9 @@ async function processClone(original: Element, clone: HTMLElement): Promise<HTML
   if (source.cssText) {
     target.cssText = source.cssText;
   } else {
-    Array.from(source).forEach(name => {
+    for (const name in source) {
       target.setProperty(name, source.getPropertyValue(name), source.getPropertyPriority(name));
-    });
+    }
   }
 
   clonePseudoElement(':before', original, clone);
