@@ -16,20 +16,28 @@ import abi28_0_0.com.facebook.react.uimanager.events.RCTEventEmitter;
 import abi28_0_0.com.facebook.react.views.view.ReactViewGroup;
 
 public class NativeAdView extends ReactViewGroup {
-  /** @{NativeAd} received from the ads manager **/
+  /**
+   * @{NativeAd} received from the ads manager
+   **/
   private NativeAd mNativeAd;
 
   private MediaView mMediaView;
 
   private List<View> mTriggerableViews;
 
-  /** @{RCTEventEmitter} instance used for sending events back to JS **/
+  /**
+   * @{RCTEventEmitter} instance used for sending events back to JS
+   **/
   private RCTEventEmitter mEventEmitter;
 
-  /** @{float} x coordinate where the touch event started **/
+  /**
+   * @{float} x coordinate where the touch event started
+   **/
   private float startX;
 
-  /** @{float} y coordinate where the touche event started **/
+  /**
+   * @{float} y coordinate where the touche event started
+   **/
   private float startY;
 
   /**
@@ -84,7 +92,7 @@ public class NativeAdView extends ReactViewGroup {
     }
 
     mEventEmitter.receiveEvent(getId(), "onAdLoaded", event);
-    mNativeAd.registerViewForInteraction(this, mMediaView, null, mTriggerableViews);
+    mNativeAd.registerViewForInteraction(this, mMediaView, (MediaView) null, mTriggerableViews);
   }
 
   /**
@@ -92,7 +100,6 @@ public class NativeAdView extends ReactViewGroup {
    * trigger its listener
    *
    * @param {MotionEvent} ev
-   *
    * @return
    */
   @Override

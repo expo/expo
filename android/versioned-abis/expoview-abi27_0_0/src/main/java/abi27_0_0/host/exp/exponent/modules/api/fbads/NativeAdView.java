@@ -92,7 +92,7 @@ public class NativeAdView extends ReactViewGroup {
     }
 
     mEventEmitter.receiveEvent(getId(), "onAdLoaded", event);
-    mNativeAd.registerViewForInteraction(this, mMediaView, null, mTriggerableViews);
+    mNativeAd.registerViewForInteraction(this, mMediaView, (MediaView) null, mTriggerableViews);
   }
 
   /**
