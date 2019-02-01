@@ -1,6 +1,6 @@
 {
   "name": "expo",
-  "version": "32.0.1",
+  "version": "32.0.3",
   "description": "The Expo SDK",
   "main": "build/Expo.js",
   "bin": {
@@ -109,7 +109,7 @@
     "prop-types": "^15.6.0",
     "qs": "^6.5.0",
     "react-native-branch": "2.2.5",
-    "react-native-gesture-handler": "1.0.12",
+    "react-native-gesture-handler": "1.0.14",
     "react-native-maps": "expo/react-native-maps#v0.22.1-exp.0",
     "react-native-reanimated": "1.0.0-alpha.11",
     "react-native-screens": "1.0.0-alpha.22",

@@ -8772,10 +8772,10 @@ react-native-deprecated-custom-components@^0.1.0:
     react-timer-mixin "^0.13.2"
     rebound "^0.0.13"
 
-react-native-gesture-handler@1.0.12:
-  version "1.0.12"
-  resolved "https://registry.yarnpkg.com/react-native-gesture-handler/-/react-native-gesture-handler-1.0.12.tgz#99a22f90212df299245357dbd3a9a01c788f310b"
-  integrity sha512-Qp5FjRmqUFeCevSu2IYQG1Xw+YXZ9YOzqze/ZxaIvWzYAoKsRchlgHhNoxvCqElp/befrnVFIjAEQyUxcmBKJw==
+react-native-gesture-handler@1.0.14:
+  version "1.0.14"
+  resolved "https://registry.yarnpkg.com/react-native-gesture-handler/-/react-native-gesture-handler-1.0.14.tgz#0e79fcc7175c9bb2e550917a35488100eec8738b"
+  integrity sha512-mp+VD7ukS/gI6HhIJMp9GTIUzbNB+1MS9CvvtWEYoVp0eWFHuDA4W+t1cFNZv08kgDI9mBNbV9jj05hlzefSTw==
   dependencies:
     hoist-non-react-statics "^2.3.1"
     invariant "^2.2.2"
@@ -8833,10 +8833,10 @@ react-native-safe-module@^1.1.0:
   dependencies:
     dedent "^0.6.0"
 
-react-native-screens@1.0.0-alpha.21:
-  version "1.0.0-alpha.21"
-  resolved "https://registry.yarnpkg.com/react-native-screens/-/react-native-screens-1.0.0-alpha.21.tgz#ba8d401e82fa3d0f30e7922dbb6446a8c000d7ef"
-  integrity sha512-Jm0hfUyEw0v4Rn2rmpG2ab+H2J+36a/505gufMeZQUcx8EajysiuyzNcHQ9B9NhUEUajk/ostF73X4pHuMLItw==
+react-native-screens@1.0.0-alpha.22:
+  version "1.0.0-alpha.22"
+  resolved "https://registry.yarnpkg.com/react-native-screens/-/react-native-screens-1.0.0-alpha.22.tgz#7a120377b52aa9bbb94d0b8541a014026be9289b"
+  integrity sha512-kSyAt0AeVU6N7ZonfV6dP6iZF8B7Bce+tk3eujXhzBGsLg0VSLnU7uE9VqJF0xdQrHR91ZjGgVMieo/8df9KTA==
 
 "react-native-screens@^1 || ^1.0.0-alpha":
   version "1.0.0-alpha.19"
