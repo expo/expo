@@ -64,7 +64,7 @@ commands:
       - save_cache:
           key: yarn-v1-{{ checksum "<< parameters.working_directory >>/yarn.lock" }}
           paths:
-            - ~/.cache/yarn  # `yarn cache dir`
+            - ~/.cache/yarn # `yarn cache dir`
   restore_gradle_cache:
     steps:
       - restore_cache:
@@ -116,7 +116,7 @@ executors:
     resource_class: small
   mac:
     macos: # https://circleci.com/docs/2.0/testing-ios/#supported-xcode-versions
-      xcode: "10.1.0"
+      xcode: '10.1.0'
     working_directory: /Users/distiller/project
     shell: /bin/bash -leo pipefail
     environment:
@@ -188,6 +188,9 @@ jobs:
           command: build
           working_directory: ~/expo/packages/expo-camera
       - yarn:
+          command: build
+          working_directory: ~/expo/packages/expo-constants
+      - yarn:
           command: test --maxWorkers 1
           working_directory: ~/expo/packages/expo-analytics-amplitude
       - yarn:
@@ -196,6 +199,9 @@ jobs:
       - yarn:
           command: test --maxWorkers 1
           working_directory: ~/expo/packages/expo-font
+      - yarn:
+          command: test --maxWorkers 1
+          working_directory: ~/expo/packages/expo-file-system
       - yarn:
           command: build
           working_directory: ~/expo/packages/expo-permissions
@@ -211,7 +217,6 @@ jobs:
       - yarn:
           command: test --maxWorkers 1
           working_directory: ~/expo/packages/expo-sms
-
 
   babel_preset:
     executor: js

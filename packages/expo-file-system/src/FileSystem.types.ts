@@ -1,5 +1,6 @@
 export type DownloadOptions = {
   md5?: boolean;
+  cache?: boolean;
   headers?: { [name: string]: string };
 };
 
