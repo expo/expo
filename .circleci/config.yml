@@ -118,6 +118,7 @@ executors:
     docker:
       - image: circleci/node:latest-browsers
     shell: /bin/bash -leo pipefail
+    working_directory: ~/expo
     resource_class: small
     environment:
       USER: circleci
