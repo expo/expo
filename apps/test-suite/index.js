@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Dimensions, Linking, NativeModules, Platform, ScrollView, Text, View } from 'react-native';
-import { Constants, registerRootComponent } from 'expo';
+import { Constants } from 'expo';
 import jasmineModule from 'jasmine-core/lib/jasmine-core/jasmine';
 import Immutable from 'immutable';
 
@@ -19,6 +19,10 @@ async function getTestModulesAsync() {
     if (isInCI) {
       return [];
     }
+  }
+
+  if (Platform.OS === 'web') {
+    return [require('./tests/Import1')];
   }
 
   let modules = [
@@ -66,7 +70,7 @@ async function getTestModulesAsync() {
   return modules;
 }
 
-class App extends React.Component {
+export default class App extends React.Component {
   // --- Lifecycle -------------------------------------------------------------
 
   constructor(props, context) {
@@ -226,6 +230,7 @@ class App extends React.Component {
           failed: failedSpecs.length,
           results: this._results,
         });
+        // This log needs to be an object for puppeteer tests
         console.log(result);
 
         if (ExponentTest) {
@@ -296,7 +301,9 @@ class App extends React.Component {
       specDone(jasmineResult) {
         if (app.state.testPortal) {
           console.warn(
-            `The test portal has not been cleaned up by \`${jasmineResult.fullName}\`. Call \`cleanupPortal\` before finishing the test.`
+            `The test portal has not been cleaned up by \`${
+              jasmineResult.fullName
+            }\`. Call \`cleanupPortal\` before finishing the test.`
           );
         }
 
@@ -346,7 +353,9 @@ class App extends React.Component {
           }
           {r.get('description')} ({status})
         </Text>
-        {r.get('failedExpectations').map((e, i) => <Text key={i}>{e.get('message')}</Text>)}
+        {r.get('failedExpectations').map((e, i) => (
+          <Text key={i}>{e.get('message')}</Text>
+        ))}
       </View>
     );
   };
@@ -375,9 +384,7 @@ class App extends React.Component {
   _onScrollViewContentSizeChange = (contentWidth, contentHeight) => {
     if (this._scrollViewRef) {
       this._scrollViewRef.scrollTo({
-        y:
-          Math.max(0, contentHeight - Dimensions.get('window').height) +
-          Constants.statusBarHeight,
+        y: Math.max(0, contentHeight - Dimensions.get('window').height) + Constants.statusBarHeight,
       });
     }
   };
@@ -443,4 +450,3 @@ class App extends React.Component {
     );
   }
 }
-registerRootComponent(App);

@@ -1,0 +1,26 @@
+{
+  "name": "puppeteer-test",
+  "version": "1.0.0",
+  "description": "Test Expo APIs in web with puppeteer",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "650 Industries, Inc.",
+  "contributors": [
+    "Evan Bacon <bacon@expo.io> (https://github.com/evanbacon)"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.24.1",
+    "babel-register": "^6.24.1",
+    "minimist": "^1.2.0",
+    "puppeteer": "^1.11.0",
+    "request": "^2.83.0",
+    "request-promise-native": "^1.0.4",
+    "webpack": "^4.28.3",
+    "webpack-dev-server": "^3.1.14",
+    "xdl": "^51.4.0"
+  }
+}
