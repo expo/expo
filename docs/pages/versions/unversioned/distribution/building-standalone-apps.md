@@ -128,9 +128,6 @@ when prompted. We'll ask you similar questions about your choice regarding
 Push Notifications service key. Remember that Push Notifications service keys
 can be reused across different Expo apps as well.
 
-If you are using Push Notifications Certificate and want to switch to Push Notifications Key you need
-to start build with `--clear-push-cert`. We will remove certificate from our servers and generate Push Notifcations Key for you.
-
 > **Note:** The Expo build service supports both normal App Store distribution as well as enterprise
 > distribution. To use the latter, you must be a member of the ["Apple Developer Enterprise
 > Program"](https://developer.apple.com/programs/enterprise/). Only normal Apple developer accounts
@@ -139,6 +136,11 @@ to start build with `--clear-push-cert`. We will remove certificate from our ser
 > call `expo build:ios`, you just need to choose the correct team, it will be labeled `(In-House)`.
 > At this time, the standalone app builder does not support "ad hoc" distribution certificates
 > or provisioning profiles.
+
+### Switch to Push Notification Key on iOS
+
+If you are using Push Notifications Certificate and want to switch to Push Notifications Key you need
+to start build with `--clear-push-cert`. We will remove certificate from our servers and generate Push Notifcations Key for you.
 
 ## 4. Wait for it to finish building
 
