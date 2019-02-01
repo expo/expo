@@ -116,11 +116,6 @@ public class MainApplication extends ExpoApplication implements AppLoaderPackage
     return getString(R.string.gcm_defaultSenderId);
   }
 
-  @Override
-  public boolean shouldUseInternetKernel() {
-    return BuildVariantConstants.USE_INTERNET_KERNEL;
-  }
-
   public static OkHttpClient.Builder okHttpClientBuilder(OkHttpClient.Builder builder) {
     // Customize/override OkHttp client here
     return builder;
