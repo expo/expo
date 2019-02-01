@@ -71,8 +71,13 @@ export async function lockAsync(orientationLock: OrientationLock): Promise<void>
     throw new UnavailabilityError('ScreenOrientation', 'lockAsync');
   }
 
-  if (typeof orientationLock !== 'string') {
-    throw new TypeError(`lockAsync cannot be called with ${orientationLock}`);
+  const orientationLocks = Object.values(OrientationLock);
+  if (!orientationLocks.includes(orientationLock)) {
+    throw new TypeError(`Invalid Orientation Lock: ${orientationLock}`);
+  }
+
+  if (orientationLock === OrientationLock.OTHER){
+    return;
   }
 
   await ExpoScreenOrientation.lockAsync(orientationLock);
@@ -108,6 +113,10 @@ export async function lockPlatformAsync(options: PlatformOrientationInfo): Promi
       }
     }
     platformOrientationParam = screenOrientationArrayIOS;
+  }
+
+  if (!platformOrientationParam){
+    throw new TypeError('lockPlatformAsync cannot be called with undefined option properties');
   }
   await ExpoScreenOrientation.lockPlatformAsync(platformOrientationParam);
 }
