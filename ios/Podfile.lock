@@ -334,6 +334,13 @@ PODS:
   - EXAdsAdMob (2.0.0):
     - EXCore
     - Google-Mobile-Ads-SDK
+  - EXAdsFacebook (1.0.0):
+    - EXCore
+    - FBAudienceNetwork
+  - EXAmplitude (1.0.0):
+    - Amplitude-iOS
+    - EXConstantsInterface
+    - EXCore
   - EXAppAuth (2.0.0):
     - AppAuth
     - EXCore
@@ -350,6 +357,11 @@ PODS:
     - EXCore
   - EXBlur (1.0.0):
     - EXCore
+  - EXBrightness (1.0.0):
+    - EXCore
+  - EXCalendar (1.0.0):
+    - EXCore
+    - EXPermissionsInterface
   - EXCamera (2.0.0):
     - EXBarCodeScannerInterface
     - EXCore
@@ -411,6 +423,7 @@ PODS:
     - EXCore
   - EXImagePicker (1.0.0):
     - EXCore
+    - EXFileSystemInterface
   - EXKeepAwake (1.0.0):
     - EXCore
   - EXLinearGradient (1.0.0):
@@ -463,13 +476,13 @@ PODS:
     - EXTaskManagerInterface
   - EXTaskManagerInterface (1.0.0):
     - EXCore
+  - EXWebBrowser (1.0.0):
+    - EXCore
   - Fabric (1.9.0)
-  - FBAudienceNetwork (4.99.0)
-  - FBSDKCoreKit (4.39.1):
+  - FBAudienceNetwork (5.1.1)
+  - FBSDKCoreKit (4.40.0):
     - Bolts (~> 1.9)
-  - FBSDKLoginKit (4.39.1):
-    - FBSDKCoreKit
-  - FBSDKShareKit (4.40.0):
+  - FBSDKLoginKit (4.40.0):
     - FBSDKCoreKit
   - Folly (2016.10.31.00):
     - boost-for-react-native
@@ -606,7 +619,6 @@ PODS:
     - FBAudienceNetwork
     - FBSDKCoreKit
     - FBSDKLoginKit
-    - FBSDKShareKit
     - Google-Mobile-Ads-SDK
     - GoogleMaps
     - GoogleSignIn
@@ -675,7 +687,6 @@ PODS:
     - FBAudienceNetwork
     - FBSDKCoreKit
     - FBSDKLoginKit
-    - FBSDKShareKit
     - Google-Mobile-Ads-SDK
     - GoogleMaps
     - GoogleSignIn
@@ -741,7 +752,6 @@ PODS:
     - FBAudienceNetwork
     - FBSDKCoreKit
     - FBSDKLoginKit
-    - FBSDKShareKit
     - Google-Maps-iOS-Utils
     - Google-Mobile-Ads-SDK
     - GoogleMaps
@@ -826,7 +836,6 @@ PODS:
     - FBAudienceNetwork
     - FBSDKCoreKit
     - FBSDKLoginKit
-    - FBSDKShareKit
     - Google-Maps-iOS-Utils
     - Google-Mobile-Ads-SDK
     - GoogleMaps
@@ -920,7 +929,6 @@ PODS:
     - FBAudienceNetwork
     - FBSDKCoreKit
     - FBSDKLoginKit
-    - FBSDKShareKit
     - Google-Maps-iOS-Utils
     - Google-Mobile-Ads-SDK
     - GoogleMaps
@@ -1016,7 +1024,6 @@ PODS:
     - FBAudienceNetwork
     - FBSDKCoreKit
     - FBSDKLoginKit
-    - FBSDKShareKit
     - Google-Maps-iOS-Utils
     - Google-Mobile-Ads-SDK
     - GoogleMaps
@@ -1119,7 +1126,6 @@ PODS:
     - FBAudienceNetwork
     - FBSDKCoreKit
     - FBSDKLoginKit
-    - FBSDKShareKit
     - Google-Maps-iOS-Utils
     - Google-Mobile-Ads-SDK
     - GoogleMaps
@@ -1282,6 +1288,8 @@ DEPENDENCIES:
   - Crashlytics (~> 3.8)
   - DoubleConversion (from `../react-native-lab/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - EXAdsAdMob (from `../packages/expo-ads-admob/ios`)
+  - EXAdsFacebook (from `../packages/expo-ads-facebook/ios`)
+  - EXAmplitude (from `../packages/expo-analytics-amplitude/ios`)
   - EXAppAuth (from `../packages/expo-app-auth/ios`)
   - EXAppLoaderProvider (from `../packages/expo-app-loader-provider/ios`)
   - EXAV (from `../packages/expo-av/ios`)
@@ -1289,6 +1297,8 @@ DEPENDENCIES:
   - EXBarCodeScanner (from `../packages/expo-barcode-scanner/ios`)
   - EXBarCodeScannerInterface (from `../packages/expo-barcode-scanner-interface/ios`)
   - EXBlur (from `../packages/expo-blur/ios`)
+  - EXBrightness (from `../packages/expo-brightness/ios`)
+  - EXCalendar (from `../packages/expo-calendar/ios`)
   - EXCamera (from `../packages/expo-camera/ios`)
   - EXCameraInterface (from `../packages/expo-camera-interface/ios`)
   - EXConstants (from `../packages/expo-constants/ios`)
@@ -1329,10 +1339,11 @@ DEPENDENCIES:
   - EXSQLite (from `../packages/expo-sqlite/ios`)
   - EXTaskManager (from `../packages/expo-task-manager/ios`)
   - EXTaskManagerInterface (from `../packages/expo-task-manager-interface/ios`)
+  - EXWebBrowser (from `../packages/expo-web-browser/ios`)
   - Fabric (~> 1.6)
-  - FBAudienceNetwork (= 4.99.0)
-  - FBSDKCoreKit (= 4.39.1)
-  - FBSDKLoginKit (= 4.39.1)
+  - FBAudienceNetwork (= 5.1.1)
+  - FBSDKCoreKit (= 4.40.0)
+  - FBSDKLoginKit (= 4.40.0)
   - Folly (from `../react-native-lab/react-native/third-party-podspecs/Folly.podspec`)
   - glog (from `../react-native-lab/react-native/third-party-podspecs/glog.podspec`)
   - Google-Maps-iOS-Utils (~> 2.1.0)
@@ -1482,7 +1493,6 @@ SPEC REPOS:
     - FBAudienceNetwork
     - FBSDKCoreKit
     - FBSDKLoginKit
-    - FBSDKShareKit
     - Google-Maps-iOS-Utils
     - Google-Mobile-Ads-SDK
     - GoogleInterchangeUtilities
@@ -1720,6 +1730,10 @@ EXTERNAL SOURCES:
     :podspec: "../react-native-lab/react-native/third-party-podspecs/DoubleConversion.podspec"
   EXAdsAdMob:
     :path: "../packages/expo-ads-admob/ios"
+  EXAdsFacebook:
+    :path: "../packages/expo-ads-facebook/ios"
+  EXAmplitude:
+    :path: "../packages/expo-analytics-amplitude/ios"
   EXAppAuth:
     :path: "../packages/expo-app-auth/ios"
   EXAppLoaderProvider:
@@ -1734,6 +1748,10 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-barcode-scanner-interface/ios"
   EXBlur:
     :path: "../packages/expo-blur/ios"
+  EXBrightness:
+    :path: "../packages/expo-brightness/ios"
+  EXCalendar:
+    :path: "../packages/expo-calendar/ios"
   EXCamera:
     :path: "../packages/expo-camera/ios"
   EXCameraInterface:
@@ -1814,6 +1832,8 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-task-manager/ios"
   EXTaskManagerInterface:
     :path: "../packages/expo-task-manager-interface/ios"
+  EXWebBrowser:
+    :path: "../packages/expo-web-browser/ios"
   Folly:
     :podspec: "../react-native-lab/react-native/third-party-podspecs/Folly.podspec"
   glog:
@@ -1971,6 +1991,8 @@ SPEC CHECKSUMS:
   Crashlytics: 07fb167b1694128c1c9a5a5cc319b0e9c3ca0933
   DoubleConversion: bb338842f62ab1d708ceb63ec3d999f0f3d98ecd
   EXAdsAdMob: 66a3c271540f54f4d964fa72f0c8a953faea5a03
+  EXAdsFacebook: 4b1d0aceaba2c9c97ca0e84c7a7bc042a967a7bf
+  EXAmplitude: ee40db61a99557551cc729bdf7495198d4d3409a
   EXAppAuth: df83ccf9fecfdfad741a930263524f4b75f8e962
   EXAppLoaderProvider: 2638ca3d779c8baae37e63352c785e5e2dad70d5
   EXAV: f005cfd3df93cee2ba9856336d780beaffc9c4d8
@@ -1978,6 +2000,8 @@ SPEC CHECKSUMS:
   EXBarCodeScanner: 0ed39b41ccec72935521823eceed3d60c73fc43d
   EXBarCodeScannerInterface: 4453aa03ca1e0a1c9b320aaf4ce5b7d88064d192
   EXBlur: 33a24162664da1367d5454366341b01ad7d9506d
+  EXBrightness: 9ffd9f0462552397c0c217115610a17862b08f84
+  EXCalendar: 6d75bc6681c9088a5d003f0c15d136dbf89f11b3
   EXCamera: 00936f79aafe16125c6cdc7c7ea2bf2d2c976dfe
   EXCameraInterface: 6d990173e3f6355e575f44b38dcf61d0c90bc47e
   EXConstants: 4ab8da18840ebae518e15541164fbaf7907e58c2
@@ -1997,7 +2021,7 @@ SPEC CHECKSUMS:
   EXGL-CPP: 46b589a3ed0c59ae2e7f9434897b66cd8dd2e70c
   EXGoogleSignIn: 646a6097f0e6ca5c4812b5dc2fcda1979ad9d333
   EXImageLoaderInterface: 3f460f6ff344ba6c4e00621806c0d1d76249cd8f
-  EXImagePicker: 36cfb1337979dc4b196e5948e2fdeb55bdb05896
+  EXImagePicker: b78781a9dcfd04c6e5ea76d88ee5dc1c721a617b
   EXKeepAwake: f8d01da0507d5921135ba63799c98ac4e059ff36
   EXLinearGradient: b09d4e1478b72b08a39f902a1ec045772e3a59e3
   EXLocalAuthentication: b70696613cb24d726d3c98a1818c22c481a46b01
@@ -2018,11 +2042,11 @@ SPEC CHECKSUMS:
   EXSQLite: 0a4c0e7bf79f4210743fc6cc8d282bd34d79fdac
   EXTaskManager: c4b3dd6936b827b040899a33e9788b42b17d5c25
   EXTaskManagerInterface: f9869b0f902ba7ccead16e0768c6dd75603163e0
+  EXWebBrowser: 536d4307fc5c994d31385b342c38abb0976dbf25
   Fabric: f988e33c97f08930a413e08123064d2e5f68d655
-  FBAudienceNetwork: 80275c0a28574ff5ce820abdc251d05e07e6ae7a
-  FBSDKCoreKit: f442aa96179cc9b382bb4abeb7e340a47cca8f91
-  FBSDKLoginKit: c3079d9a4db27c492287b1eed7a4272b28cf8a59
-  FBSDKShareKit: 0e45916f4150da485928ae2a17ca021950b194f5
+  FBAudienceNetwork: 56c2dc9b5f075f4a9757d7dc8a83d3972270f645
+  FBSDKCoreKit: ae214474b25033399c131dc81d258e412582a2ba
+  FBSDKLoginKit: 7a1e411d46acc8834588eca437daf34de42e1d52
   Folly: c89ac2d5c6ab169cd7397ef27485c44f35f742c7
   glog: e8acf0ebbf99759d3ff18c86c292a5898282dcde
   Google-Maps-iOS-Utils: c32891ff472eaaa1fca032beedafa1a013af7875
@@ -2039,13 +2063,13 @@ SPEC CHECKSUMS:
   JKBigInteger2: e91672035c42328c48b7dd015b66812ddf40ca9b
   lottie-ios: 3fef45d3fabe63e3c7c2eb603dd64ddfffc73062
   React: 1fe0eb13d90b625d94c3b117c274dcfd2e760e11
-  ReactABI26_0_0: 42bd2f67b539d66bdc63c57f4fe0f75d94605e36
-  ReactABI27_0_0: c9a420256ec867ad158d6bec5087e0316cae1043
-  ReactABI28_0_0: 81a22bc10779e2ee144e1ac58d83a44d5da96131
-  ReactABI29_0_0: 00e8258a226893d84b01ce136b8bf160b30b39b8
-  ReactABI30_0_0: 3d1d194067363dcc0f0f8941b4cdac1fc7e268b8
-  ReactABI31_0_0: 0cc61f9074e8495af6c3e1ec9e35576d5a2e0ce3
-  ReactABI32_0_0: 2456c0a7cdedf1a9889713e0ebda3019498cd518
+  ReactABI26_0_0: d4d795143f0c4d4178b46b680e08ab15dadeb428
+  ReactABI27_0_0: 116223f1e2d03ff282f020792e5bd8078cb41d20
+  ReactABI28_0_0: f6e3790bb09c4288518be94e257abb08921e43f2
+  ReactABI29_0_0: d06c0c6ceb828ce1dce4b57007bb32c19326dbdb
+  ReactABI30_0_0: 801e156645b710af58dd6ce33df3a828f2be27a1
+  ReactABI31_0_0: 1153bcc4d2a62453ea9105fcf8f56ed6d9566ca0
+  ReactABI32_0_0: 474f19ba214d520d8dfa91a450ab41496486158d
   yoga: b1ce48b6cf950b98deae82838f5173ea7cf89e85
   yogaABI26_0_0: 3d0b9ddd940a22bab64f64291415846298cb263c
   yogaABI27_0_0: 15bb7f6d47c919692ddbfef84e1f69d935664fce
@@ -2055,6 +2079,6 @@ SPEC CHECKSUMS:
   yogaABI31_0_0: 7978689ddccec43cffd5914889304cf3b7fd7c77
   yogaABI32_0_0: b6e0ba3796cd5e47ccea0454694e605a1cfc817a
 
-PODFILE CHECKSUM: 248ea93a6cb10cf2965ce8d5a71a0293942bab0f
+PODFILE CHECKSUM: eda27d56cc2300ae7d8029aa98ce31bfda5cea68
 
 COCOAPODS: 1.5.3

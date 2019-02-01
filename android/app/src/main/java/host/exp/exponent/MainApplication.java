@@ -8,12 +8,16 @@ import java.util.List;
 import expo.core.interfaces.Package;
 import expo.loaders.provider.interfaces.AppLoaderPackagesProviderInterface;
 import expo.modules.ads.admob.AdMobPackage;
+import expo.modules.ads.facebook.AdsFacebookPackage;
+import expo.modules.analytics.amplitude.AmplitudePackage;
 import expo.modules.analytics.segment.SegmentPackage;
 import expo.modules.appauth.AppAuthPackage;
 import expo.modules.av.AVPackage;
 import expo.modules.backgroundfetch.BackgroundFetchPackage;
 import expo.modules.barcodescanner.BarCodeScannerPackage;
 import expo.modules.blurview.BlurViewPackage;
+import expo.modules.brightness.BrightnessPackage;
+import expo.modules.calendar.CalendarPackage;
 import expo.modules.camera.CameraPackage;
 import expo.modules.constants.ConstantsPackage;
 import expo.modules.contacts.ContactsPackage;
@@ -24,6 +28,7 @@ import expo.modules.filesystem.FileSystemPackage;
 import expo.modules.font.FontLoaderPackage;
 import expo.modules.gl.GLPackage;
 import expo.modules.google.signin.GoogleSignInPackage;
+import expo.modules.imagepicker.ImagePickerPackage;
 import expo.modules.keepawake.KeepAwakePackage;
 import expo.modules.lineargradient.LinearGradientPackage;
 import expo.modules.localauthentication.LocalAuthenticationPackage;
@@ -39,6 +44,7 @@ import expo.modules.sms.SMSPackage;
 import expo.modules.speech.SpeechPackage;
 import expo.modules.sqlite.SQLitePackage;
 import expo.modules.taskManager.TaskManagerPackage;
+import expo.modules.webbrowser.WebBrowserPackage;
 import expolib_v1.okhttp3.OkHttpClient;
 
 // Needed for `react-native link`
@@ -66,10 +72,14 @@ public class MainApplication extends ExpoApplication implements AppLoaderPackage
     return Arrays.<Package>asList(
         new AVPackage(),
         new AdMobPackage(),
+        new AdsFacebookPackage(),
         new AppAuthPackage(),
+        new AmplitudePackage(),
         new BackgroundFetchPackage(),
         new BarCodeScannerPackage(),
         new BlurViewPackage(),
+        new BrightnessPackage(),
+        new CalendarPackage(),
         new CameraPackage(),
         new ConstantsPackage(),
         new ContactsPackage(),
@@ -96,18 +106,14 @@ public class MainApplication extends ExpoApplication implements AppLoaderPackage
         new SegmentPackage(),
         new SensorsPackage(),
         new SpeechPackage(),
-        new TaskManagerPackage()
+        new TaskManagerPackage(),
+        new WebBrowserPackage()
     );
   }
 
   @Override
   public String gcmSenderId() {
     return getString(R.string.gcm_defaultSenderId);
-  }
-
-  @Override
-  public boolean shouldUseInternetKernel() {
-    return BuildVariantConstants.USE_INTERNET_KERNEL;
   }
 
   public static OkHttpClient.Builder okHttpClientBuilder(OkHttpClient.Builder builder) {

@@ -67,7 +67,7 @@ export default class MapsScreen extends React.Component {
 
   _renderJumpToCoordButton = () => {
     return (
-      <View style={{paddingHorizontal: 10}}>
+      <View style={{ paddingHorizontal: 10 }}>
         <ListButton onPress={this._animateToRandomCoord} title="Animate to random SF Coord" />
         <ListButton
           onPress={this._animateToRandomViewingAngle}
@@ -79,15 +79,19 @@ export default class MapsScreen extends React.Component {
 
   _animateToRandomViewingAngle = () => {
     if (this._mapView) {
-      this._mapView.animateToViewingAngle(getRandomFloat(0, 90));
+      this._mapView.animateCamera({
+        pitch: getRandomFloat(0, 90),
+      });
     }
   };
 
   _animateToRandomCoord = () => {
     if (this._mapView) {
-      this._mapView.animateToCoordinate({
-        latitude: REGION.latitude + (Math.random() - 0.5) * (REGION.latitudeDelta / 2),
-        longitude: REGION.longitude + (Math.random() - 0.5) * (REGION.longitudeDelta / 2),
+      this._mapView.animateCamera({
+        center: {
+          latitude: REGION.latitude + (Math.random() - 0.5) * (REGION.latitudeDelta / 2),
+          longitude: REGION.longitude + (Math.random() - 0.5) * (REGION.longitudeDelta / 2),
+        },
       });
     }
   };

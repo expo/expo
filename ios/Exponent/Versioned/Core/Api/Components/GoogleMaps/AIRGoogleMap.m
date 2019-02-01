@@ -46,7 +46,7 @@ id regionAsJSON(MKCoordinateRegion region) {
   NSMutableArray<UIView *> *_reactSubviews;
   MKCoordinateRegion _initialRegion;
   MKCoordinateRegion _region;
-  BOOL _initialRegionSetOnLoad;
+  BOOL _initialCameraSetOnLoad;
   BOOL _didCallOnMapReady;
   BOOL _didMoveToWindow;
 }
@@ -61,9 +61,11 @@ id regionAsJSON(MKCoordinateRegion region) {
     _circles = [NSMutableArray array];
     _tiles = [NSMutableArray array];
     _overlays = [NSMutableArray array];
+    _initialCamera = nil;
+    _cameraProp = nil;
     _initialRegion = MKCoordinateRegionMake(CLLocationCoordinate2DMake(0.0, 0.0), MKCoordinateSpanMake(0.0, 0.0));
     _region = MKCoordinateRegionMake(CLLocationCoordinate2DMake(0.0, 0.0), MKCoordinateSpanMake(0.0, 0.0));
-    _initialRegionSetOnLoad = false;
+    _initialCameraSetOnLoad = false;
     _didCallOnMapReady = false;
     _didMoveToWindow = false;
 
@@ -184,11 +186,34 @@ id regionAsJSON(MKCoordinateRegion region) {
 }
 #pragma clang diagnostic pop
 
+- (NSArray *)getMapBoundaries
+{
+    GMSVisibleRegion visibleRegion = self.projection.visibleRegion;
+    GMSCoordinateBounds *bounds = [[GMSCoordinateBounds alloc] initWithRegion:visibleRegion];
+    
+    CLLocationCoordinate2D northEast = bounds.northEast;
+    CLLocationCoordinate2D southWest = bounds.southWest;
+    
+    return @[
+        @[
+            [NSNumber numberWithDouble:northEast.longitude],
+            [NSNumber numberWithDouble:northEast.latitude]
+        ],
+        @[
+            [NSNumber numberWithDouble:southWest.longitude],
+            [NSNumber numberWithDouble:southWest.latitude]
+        ]
+    ];
+}
+
 - (void)didMoveToWindow {
   if (_didMoveToWindow) return;
   _didMoveToWindow = true;
 
-  if (_initialRegion.span.latitudeDelta != 0.0 &&
+  if (_initialCamera != nil) {
+    self.camera = _initialCamera;
+  }
+  else if (_initialRegion.span.latitudeDelta != 0.0 &&
       _initialRegion.span.longitudeDelta != 0.0) {
     self.camera = [AIRGoogleMap makeGMSCameraPositionFromMap:self andMKCoordinateRegion:_initialRegion];
   } else if (_region.span.latitudeDelta != 0.0 &&
@@ -200,10 +225,17 @@ id regionAsJSON(MKCoordinateRegion region) {
 }
 
 - (void)setInitialRegion:(MKCoordinateRegion)initialRegion {
-  if (_initialRegionSetOnLoad) return;
+  if (_initialCameraSetOnLoad) return;
   _initialRegion = initialRegion;
-  _initialRegionSetOnLoad = _didMoveToWindow;
+  _initialCameraSetOnLoad = _didMoveToWindow;
   self.camera = [AIRGoogleMap makeGMSCameraPositionFromMap:self andMKCoordinateRegion:initialRegion];
+}
+
+- (void)setInitialCamera:(GMSCameraPosition*)initialCamera {
+    if (_initialCameraSetOnLoad) return;
+    _initialCamera = initialCamera;
+    _initialCameraSetOnLoad = _didMoveToWindow;
+    self.camera = initialCamera;
 }
 
 - (void)setRegion:(MKCoordinateRegion)region {
@@ -211,6 +243,12 @@ id regionAsJSON(MKCoordinateRegion region) {
   _region = region;
   self.camera = [AIRGoogleMap makeGMSCameraPositionFromMap:self  andMKCoordinateRegion:region];
 }
+
+- (void)setCameraProp:(GMSCameraPosition*)camera {
+    _initialCamera = camera;
+    self.camera = camera;
+}
+
 
 - (void)didPrepareMap {
   if (_didCallOnMapReady) return;

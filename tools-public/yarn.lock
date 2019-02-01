@@ -47,10 +47,10 @@
     mv "~2"
     safe-json-stringify "~1"
 
-"@expo/json-file@8.1.0":
-  version "8.1.0"
-  resolved "https://registry.yarnpkg.com/@expo/json-file/-/json-file-8.1.0.tgz#adcbadb20b9ac4e945a354b879b5b307c19df91f"
-  integrity sha512-L2Z3Sod/TDeHNIsixMwiRKgdISJpjA81SknFArFUiD3E0eVYhgPEx++kU23KRD2f8FqwTI6tWJSM5msyxAEldg==
+"@expo/json-file@^8.0.0":
+  version "8.0.1"
+  resolved "https://registry.yarnpkg.com/@expo/json-file/-/json-file-8.0.1.tgz#6109f0c1e18c0f84aa5e052406c861cd7ae347a8"
+  integrity sha512-ojXbGO0cr0d3jGsPahy4egrcv+VVDL4KxeauGoGDeEotGBqbnLgjNvsxB8GJRJmKekAhPyGlVUBxpUPU+wVyGQ==
   dependencies:
     "@babel/code-frame" "^7.0.0-beta.44"
     json5 "^1.0.1"
@@ -58,10 +58,10 @@
     util.promisify "^1.0.0"
     write-file-atomic "^2.3.0"
 
-"@expo/json-file@^8.0.0":
-  version "8.0.1"
-  resolved "https://registry.yarnpkg.com/@expo/json-file/-/json-file-8.0.1.tgz#6109f0c1e18c0f84aa5e052406c861cd7ae347a8"
-  integrity sha512-ojXbGO0cr0d3jGsPahy4egrcv+VVDL4KxeauGoGDeEotGBqbnLgjNvsxB8GJRJmKekAhPyGlVUBxpUPU+wVyGQ==
+"@expo/json-file@^8.1.0":
+  version "8.1.0"
+  resolved "https://registry.yarnpkg.com/@expo/json-file/-/json-file-8.1.0.tgz#adcbadb20b9ac4e945a354b879b5b307c19df91f"
+  integrity sha512-L2Z3Sod/TDeHNIsixMwiRKgdISJpjA81SknFArFUiD3E0eVYhgPEx++kU23KRD2f8FqwTI6tWJSM5msyxAEldg==
   dependencies:
     "@babel/code-frame" "^7.0.0-beta.44"
     json5 "^1.0.1"
@@ -169,7 +169,7 @@
     babel-runtime "^6.23.0"
     exec-async "^2.2.0"
 
-"@expo/schemer@1.2.2":
+"@expo/schemer@^1.2.2":
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/@expo/schemer/-/schemer-1.2.2.tgz#4661e1663fd8b90d430b6d739a3791e2fb5176bf"
   integrity sha512-Ao5QMV7MpUyDOB9VMTgJUkb04nqPpPwNsyVlaxOd6ghvXSMdgTW6KU4WBvRh0LKsc4OfiYlzx5wFYFsBsDVVvQ==
@@ -1299,11 +1299,6 @@ combined-stream@~1.0.6:
   integrity sha512-brWl9y6vOB1xYPZcpZde3N9zDByXTosAeMDo4p1wzo6UMOX4vumB+TP1RZ76sfE6Md68Q0NJSrE/gbezd4Ul+w==
   dependencies:
     delayed-stream "~1.0.0"
-
-command-exists@1.2.7:
-  version "1.2.7"
-  resolved "https://registry.yarnpkg.com/command-exists/-/command-exists-1.2.7.tgz#16828f0c3ff2b0c58805861ef211b64fc15692a8"
-  integrity sha512-doWDvhXCcW5LK0cIUWrOQ8oMFXJv3lEQCkJpGVjM8v9SV0uhqYXB943538tEA2CiaWqSyuYUGAm5ezDwEx9xlw==
 
 commander@^2.9.0:
   version "2.18.0"
@@ -6957,21 +6952,20 @@ ws@^5.2.0:
   dependencies:
     async-limiter "~1.0.0"
 
-xdl@52.1.1-beta.2:
-  version "52.1.1-beta.2"
-  resolved "https://registry.yarnpkg.com/xdl/-/xdl-52.1.1-beta.2.tgz#07ebd4de4e3cf5436d76caab06c1b063061bccef"
-  integrity sha512-87YKEzizhmgXXTHVUVak72IODNtKqELDTVXlCAWhyLKzhSBYKAvDybSF55UnPUxA5kMClnWR9aWisXfO04bqRw==
+xdl@52.1.2-alpha.1:
+  version "52.1.2-alpha.1"
+  resolved "https://registry.yarnpkg.com/xdl/-/xdl-52.1.2-alpha.1.tgz#1ac36ed97c897d9a62ca6e47c57c6005a762b4f4"
+  integrity sha512-DuO/htgWvbup/ir+hwjpseADDiIy546SBvGBEcUwMnKOplJ2C7RbDVDE93pt9jLSQl4RyPrIsChHETze42DCVg==
   dependencies:
     "@expo/bunyan" "3.0.2"
-    "@expo/json-file" "8.1.0"
+    "@expo/json-file" "^8.1.0"
     "@expo/ngrok" "2.4.3"
     "@expo/osascript" "^1.9.0"
-    "@expo/schemer" "1.2.2"
+    "@expo/schemer" "^1.2.2"
     "@expo/spawn-async" "1.3.0"
     analytics-node "^2.1.0"
     axios v0.19.0-beta.1
     chalk "2.4.1"
-    command-exists "1.2.7"
     concat-stream "1.6.2"
     decache "4.4.0"
     delay-async "1.1.0"

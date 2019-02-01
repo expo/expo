@@ -1,4 +1,4 @@
-import GlobalPlatformEmitter from './GlobalPlatformEmitter';
+import { SyntheticPlatformEmitter } from 'expo-core';
 export default {
     get name() {
         return 'ExponentGyroscope';
@@ -7,7 +7,7 @@ export default {
         return typeof DeviceOrientationEvent !== 'undefined';
     },
     _handleMotion({ alpha: z, beta: y, gamma: x }) {
-        GlobalPlatformEmitter.emit('gyroscopeDidUpdate', { x, y, z });
+        SyntheticPlatformEmitter.emit('gyroscopeDidUpdate', { x, y, z });
     },
     startObserving() {
         window.addEventListener('deviceorientation', this._handleMotion);

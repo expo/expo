@@ -1,14 +1,12 @@
 jest.mock('expo-file-system', () => {
-  const { FileSystem } = require.requireActual('expo-file-system');
+  const FileSystem = require.requireActual('expo-file-system');
   return {
-    FileSystem: {
-      ...FileSystem,
-      bundleDirectory: 'file:///Expo.app/',
-      cacheDirectory: 'file:///Caches/Expo.app/',
-      bundledAssets: ['asset_test1.png'],
-      getInfoAsync: jest.fn(),
-      downloadAsync: jest.fn(),
-    },
+    ...FileSystem,
+    bundleDirectory: 'file:///Expo.app/',
+    cacheDirectory: 'file:///Caches/Expo.app/',
+    bundledAssets: ['asset_test1.png'],
+    getInfoAsync: jest.fn(),
+    downloadAsync: jest.fn(),
   };
 });
 
@@ -121,7 +119,7 @@ it(`throws when creating an asset from a missing module`, () => {
 });
 
 it(`downloads uncached assets`, async () => {
-  const { FileSystem } = require('expo-file-system');
+  const FileSystem = require('expo-file-system');
   const { Asset } = require('../Asset');
 
   let asset = Asset.fromMetadata(mockImageMetadata);
@@ -139,7 +137,7 @@ it(`downloads uncached assets`, async () => {
 });
 
 it(`throws when the file's checksum does not match`, async () => {
-  const { FileSystem } = require('expo-file-system');
+  const FileSystem = require('expo-file-system');
   const { Asset } = require('../Asset');
 
   let asset = Asset.fromMetadata(mockImageMetadata);
@@ -151,7 +149,7 @@ it(`throws when the file's checksum does not match`, async () => {
 });
 
 it(`uses the local filesystem's cache directory for downloads`, async () => {
-  const { FileSystem } = require('expo-file-system');
+  const FileSystem = require('expo-file-system');
   const { Asset } = require('../Asset');
 
   let asset = Asset.fromMetadata(mockImageMetadata);
@@ -165,7 +163,7 @@ it(`uses the local filesystem's cache directory for downloads`, async () => {
 });
 
 it(`coalesces downloads`, async () => {
-  const { FileSystem } = require('expo-file-system');
+  const FileSystem = require('expo-file-system');
   const { Asset } = require('../Asset');
 
   let asset = Asset.fromMetadata(mockImageMetadata);

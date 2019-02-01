@@ -41,7 +41,7 @@ public class EventEmitterModule implements EventEmitter, InternalModule {
 
       @Override
       public void dispatch(RCTEventEmitter rctEventEmitter) {
-        rctEventEmitter.receiveEvent(viewId, eventName, Arguments.fromBundle(eventBody));
+        rctEventEmitter.receiveEvent(viewId, eventName, eventBody != null ? Arguments.fromBundle(eventBody) : null);
       }
 
       @Override

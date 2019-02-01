@@ -36,5 +36,6 @@ RCT_EXPORT_VIEW_PROPERTY(urlTemplate, NSString)
 RCT_EXPORT_VIEW_PROPERTY(maximumZ, NSInteger)
 RCT_EXPORT_VIEW_PROPERTY(minimumZ, NSInteger)
 RCT_EXPORT_VIEW_PROPERTY(shouldReplaceMapContent, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(tileSize, CGFloat)
 
 @end

@@ -15,15 +15,15 @@ import abi29_0_0.com.facebook.react.bridge.ReactApplicationContext;
 import abi29_0_0.com.facebook.react.bridge.ReactContextBaseJavaModule;
 import abi29_0_0.com.facebook.react.bridge.ReactMethod;
 import abi29_0_0.com.facebook.react.bridge.WritableMap;
-
+import abi29_0_0.host.exp.exponent.modules.internal.ChromeTabsManagerActivity;
 import de.greenrobot.event.EventBus;
-import host.exp.exponent.chrometabs.ChromeTabsManagerActivity;
 import host.exp.expoview.Exponent;
 
 public class WebBrowserModule extends ReactContextBaseJavaModule {
   private final static String ERROR_CODE = "EXWebBrowser";
 
-  private @Nullable Promise mOpenBrowserPromise;
+  private @Nullable
+  Promise mOpenBrowserPromise;
 
   public WebBrowserModule(ReactApplicationContext reactContext) {
     super(reactContext);

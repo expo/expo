@@ -27,6 +27,12 @@ public interface Permissions {
    */
   void askForPermission(String permission, PermissionRequestListener listener);
 
+  /**
+   * @param permissions {String[]} of {@link android.Manifest.permission}
+   * @return {boolean} whether all given permissions are granted.
+   */
+  boolean hasPermissions(String[] permissions);
+
   interface PermissionRequestListener {
     /**
      * @param result {@link android.content.pm.PackageManager#PERMISSION_GRANTED} if you have the

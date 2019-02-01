@@ -57,7 +57,7 @@ async function _getModuleSpecAsync(moduleName, module) {
   let spec = _addFunctionTypes(_mockify(module), moduleDescription.methods);
   if (moduleName === 'ExpoNativeModuleProxy') {
     spec.exportedMethods.mock = _sortObject(module.exportedMethods);
-    spec.viewManagersNames.mock = module.viewManagersNames;
+    spec.viewManagersNames.mock = module.viewManagersNames.sort();
     spec.modulesConstants.type = 'mock';
     spec.modulesConstants.mockDefinition = Object.keys(module.modulesConstants)
       .sort()

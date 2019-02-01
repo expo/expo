@@ -1,20 +1,3 @@
-declare const _default: {
-    readonly name: string;
-    readonly appOwnership: "expo";
-    readonly installationId: string;
-    readonly sessionId: string;
-    readonly platform: object;
-    readonly isDevice: boolean;
-    readonly expoVersion: string;
-    readonly linkingUri: string;
-    readonly expoRuntimeVersion: string | null;
-    readonly deviceName: string | null;
-    readonly systemFonts: string[];
-    readonly statusBarHeight: number;
-    readonly deviceYearClass: string | null;
-    readonly manifest: {
-        [manifestKey: string]: any;
-    };
-    getWebViewUserAgentAsync(): Promise<string>;
-};
+import { NativeConstants } from './Constants.types';
+declare const _default: NativeConstants;
 export default _default;
