@@ -1,6 +1,6 @@
 {
   "name": "@expo/home",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "main": "__generated__/AppEntry.js",
   "private": true,
   "description": "The Expo client app",
