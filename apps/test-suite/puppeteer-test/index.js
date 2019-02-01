@@ -40,6 +40,16 @@ async function runPuppeteerAsync() {
 
   // 1. Observe all console logs on the page
   page.on('console', async msg => {
+    // DEBUG: End
+    await browser.close();
+
+    if (server) {
+      server.close();
+    }
+    process.exit(0);
+
+    return;
+
     // 2. Filter the results into a list of objects
     const args = await Promise.all(msg.args().map(arg => parseHandle(arg)));
 
