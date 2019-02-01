@@ -1,4 +1,4 @@
-import GlobalPlatformEmitter from './GlobalPlatformEmitter';
+import { SyntheticPlatformEmitter } from 'expo-core';
 export default {
     get name() {
         return 'ExponentAccelerometer';
@@ -7,7 +7,7 @@ export default {
         return typeof DeviceMotionEvent !== 'undefined';
     },
     _handleMotion({ accelerationIncludingGravity }) {
-        GlobalPlatformEmitter.emit('accelerometerDidUpdate', {
+        SyntheticPlatformEmitter.emit('accelerometerDidUpdate', {
             x: accelerationIncludingGravity.x,
             y: accelerationIncludingGravity.y,
             z: accelerationIncludingGravity.z,
