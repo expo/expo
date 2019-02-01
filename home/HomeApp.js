@@ -63,35 +63,9 @@ export default class App extends React.Component {
     return !this._isExpoHost(host);
   };
 
-  _getIsValidHomeManifestToOpen = async event => {
-    const { manifest, manifestUrl } = event;
-    let isValid = false;
-    if (!Constants.isDevice) {
-      // simulator has no restriction
-      isValid = true;
-    } else if (this._isThirdPartyHosted(manifestUrl)) {
-      // TODO(quin): figure out a long term solution for this
-      // allow self hosted applications to be loaded into the client
-      isValid = true;
-    } else if (manifest) {
-      if (manifest.developer && manifest.developer.tool) {
-        isValid = true;
-      } else if (manifest.slug === 'snack') {
-        isValid = true;
-      } else if (manifest.id) {
-        try {
-          let manifestAuthorComponents = manifest.id.split('/');
-          let manifestAuthor = manifestAuthorComponents[0].substring(1);
-
-          let username = await getViewerUsernameAsync();
-
-          if (username && manifestAuthor && manifestAuthor === username) {
-            isValid = true;
-          }
-        } catch (_) {}
-      }
-    }
-    return { isValid };
+  // TODO(eric): remove
+  _getIsValidHomeManifestToOpen = async () => {
+    return { isValid: true };
   };
 
   _initializeStateAsync = async () => {
