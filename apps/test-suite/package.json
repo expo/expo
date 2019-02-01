@@ -5,8 +5,10 @@
   "main": "__generated__/AppEntry.js",
   "scripts": {
     "postinstall": "expo-yarn-workspaces postinstall",
+    "web": "webpack-dev-server -d --config ./webpack.config.js",
     "test": "cd runner && yarn && cd .. && node runner/index.js .",
-    "web": "webpack-dev-server -d --config ./webpack.config.js"
+    "test:web": "node puppeteer-test/index.js",
+    "test:web:ci": "cd puppeteer-test && yarn && cd .. && node puppeteer-test/index.js ."
   },
   "author": "",
   "license": "MIT",
