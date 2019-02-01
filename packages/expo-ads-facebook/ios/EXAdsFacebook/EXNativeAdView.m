@@ -54,12 +54,17 @@
 
 - (void)registerViewsForInteraction:(FBMediaView *)mediaView adIcon:(FBAdIconView *)adIconView clickableViews:(NSArray<UIView *> *)clickable
 {
-
-  [_nativeAd registerViewForInteraction:self
-                                  mediaView:mediaView
-                                   iconView:adIconView
-                             viewController:[[_moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)] currentViewController]
-                             clickableViews:clickable];
+  __weak typeof(self) weakSelf = self;
+  dispatch_async(dispatch_get_main_queue(), ^{
+    __strong typeof(self) strongSelf = weakSelf;
+    if (strongSelf) {
+      [strongSelf.nativeAd registerViewForInteraction:strongSelf
+                                            mediaView:mediaView
+                                             iconView:adIconView
+                                       viewController:[[strongSelf.moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)] currentViewController]
+                                       clickableViews:clickable];
+    }
+  });
 }
 
 @end

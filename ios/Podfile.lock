@@ -479,10 +479,10 @@ PODS:
   - EXWebBrowser (1.0.0):
     - EXCore
   - Fabric (1.9.0)
-  - FBAudienceNetwork (4.99.0)
-  - FBSDKCoreKit (4.39.1):
+  - FBAudienceNetwork (5.1.1)
+  - FBSDKCoreKit (4.40.0):
     - Bolts (~> 1.9)
-  - FBSDKLoginKit (4.39.1):
+  - FBSDKLoginKit (4.40.0):
     - FBSDKCoreKit
   - FBSDKShareKit (4.40.0):
     - FBSDKCoreKit
@@ -1350,9 +1350,9 @@ DEPENDENCIES:
   - EXTaskManagerInterface (from `../packages/expo-task-manager-interface/ios`)
   - EXWebBrowser (from `../packages/expo-web-browser/ios`)
   - Fabric (~> 1.6)
-  - FBAudienceNetwork (= 4.99.0)
-  - FBSDKCoreKit (= 4.39.1)
-  - FBSDKLoginKit (= 4.39.1)
+  - FBAudienceNetwork (= 5.1.1)
+  - FBSDKCoreKit (= 4.40.0)
+  - FBSDKLoginKit (= 4.40.0)
   - Folly (from `../react-native-lab/react-native/third-party-podspecs/Folly.podspec`)
   - glog (from `../react-native-lab/react-native/third-party-podspecs/glog.podspec`)
   - Google-Maps-iOS-Utils (~> 2.1.0)
@@ -2054,9 +2054,9 @@ SPEC CHECKSUMS:
   EXTaskManagerInterface: f9869b0f902ba7ccead16e0768c6dd75603163e0
   EXWebBrowser: 536d4307fc5c994d31385b342c38abb0976dbf25
   Fabric: f988e33c97f08930a413e08123064d2e5f68d655
-  FBAudienceNetwork: 80275c0a28574ff5ce820abdc251d05e07e6ae7a
-  FBSDKCoreKit: f442aa96179cc9b382bb4abeb7e340a47cca8f91
-  FBSDKLoginKit: c3079d9a4db27c492287b1eed7a4272b28cf8a59
+  FBAudienceNetwork: 56c2dc9b5f075f4a9757d7dc8a83d3972270f645
+  FBSDKCoreKit: ae214474b25033399c131dc81d258e412582a2ba
+  FBSDKLoginKit: 7a1e411d46acc8834588eca437daf34de42e1d52
   FBSDKShareKit: 0e45916f4150da485928ae2a17ca021950b194f5
   Folly: c89ac2d5c6ab169cd7397ef27485c44f35f742c7
   glog: e8acf0ebbf99759d3ff18c86c292a5898282dcde
@@ -2090,6 +2090,6 @@ SPEC CHECKSUMS:
   yogaABI31_0_0: 7978689ddccec43cffd5914889304cf3b7fd7c77
   yogaABI32_0_0: b6e0ba3796cd5e47ccea0454694e605a1cfc817a
 
-PODFILE CHECKSUM: 1f49748d6d9b7b96bae6cfc9abe975c41b333c74
+PODFILE CHECKSUM: ad4a6624a9f78fb2083525abac60a89baf8bb819
 
 COCOAPODS: 1.5.3
