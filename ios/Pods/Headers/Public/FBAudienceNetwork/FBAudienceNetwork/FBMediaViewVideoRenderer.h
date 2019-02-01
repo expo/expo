@@ -1,1 +1,1 @@
-../../../../FBAudienceNetwork/FBAudienceNetwork.framework/Headers/FBMediaViewVideoRenderer.h
+../../../../FBAudienceNetwork/Static/FBAudienceNetwork.framework/Headers/FBMediaViewVideoRenderer.h

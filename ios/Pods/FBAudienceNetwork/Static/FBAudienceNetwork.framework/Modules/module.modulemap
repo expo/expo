@@ -1,0 +1,45 @@
+framework module FBAudienceNetwork {
+    umbrella header "FBAudienceNetwork.h"
+
+    export *
+    module * {
+        export *
+    }
+
+    requires objc, blocks
+
+    link framework "AdSupport"
+    link framework "AudioToolbox"
+    link framework "AVFoundation"
+    link framework "CoreGraphics"
+    link framework "CoreImage"
+    link framework "CoreMedia"
+    link framework "CoreMotion"
+    link framework "Foundation"
+    link framework "SafariServices"
+    link framework "Security"
+    link framework "StoreKit"
+    link framework "UIKit"
+    link framework "WebKit"
+    link framework "VideoToolbox"
+
+    link "c++"
+    link "xml2"
+
+    header "FBAdChoicesView.h"
+    header "FBAdDefines.h"
+    header "FBAdSettings.h"
+    header "FBAdView.h"
+    header "FBInstreamAdView.h"
+    header "FBInterstitialAd.h"
+    header "FBMediaView.h"
+    header "FBNativeAd.h"
+    header "FBNativeAdScrollView.h"
+    header "FBNativeAdTableViewAdProvider.h"
+    header "FBNativeAdTableViewCellProvider.h"
+    header "FBNativeAdCollectionViewAdProvider.h"
+    header "FBNativeAdCollectionViewCellProvider.h"
+    header "FBNativeAdView.h"
+    header "FBNativeAdsManager.h"
+    header "FBRewardedVideoAd.h"
+}
