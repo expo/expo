@@ -69,6 +69,7 @@
     "expo-barcode-scanner-interface": "~2.0.0",
     "expo-blur": "~1.0.0",
     "expo-brightness": "~1.0.0",
+    "expo-calendar": "~1.0.0",
     "expo-camera": "~2.0.0",
     "expo-camera-interface": "~2.0.0",
     "expo-constants": "~2.0.0",

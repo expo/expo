@@ -1,62 +1,62 @@
-// Copyright 2015-present 650 Industries. All rights reserved.
-
-package versioned.host.exp.exponent.modules.api;
+package expo.modules.calendar;
 
 import android.Manifest;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.text.TextUtils;
-import android.database.Cursor;
 import android.util.Log;
-
-import com.facebook.react.bridge.Promise;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableType;
-import com.facebook.react.bridge.WritableArray;
-import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.bridge.WritableNativeArray;
-import com.facebook.react.bridge.WritableNativeMap;
-import com.facebook.react.bridge.Dynamic;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 
-import host.exp.exponent.kernel.ExperienceId;
-import host.exp.expoview.Exponent;
-import versioned.host.exp.exponent.modules.ExpoKernelServiceConsumerBaseModule;
+import expo.core.ExportedModule;
+import expo.core.ModuleRegistry;
+import expo.core.Promise;
+import expo.core.arguments.ReadableArguments;
+import expo.core.interfaces.ExpoMethod;
+import expo.core.interfaces.ModuleRegistryConsumer;
+import expo.interfaces.permissions.Permissions;
 
-public class CalendarModule extends ExpoKernelServiceConsumerBaseModule {
+public class CalendarModule extends ExportedModule implements ModuleRegistryConsumer {
   private static final String TAG = CalendarModule.class.getSimpleName();
 
-  private ReactContext reactContext;
+  private Context mContext;
+  private Permissions mPermissionsModule;
 
-  public CalendarModule(ReactApplicationContext reactContext, ExperienceId experienceId) {
-    super(reactContext, experienceId);
-    this.reactContext = reactContext;
+  public CalendarModule(Context context) {
+    super(context);
+    mContext = context;
   }
 
   @Override
   public String getName() {
-    return "ExponentCalendar";
+    return "ExpoCalendar";
   }
 
-  @ReactMethod
+  @Override
+  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+    mPermissionsModule = moduleRegistry.getModule(Permissions.class);
+  }
+
+  //region Exported methods
+
+  @ExpoMethod
   public void getCalendarsAsync(final String type, final Promise promise) {
-    if (isMissingPermissions()) {
-      promise.reject("E_CANNOT_GET_CALENDARS", "User rejected permissions required to get calendars.");
+    if (!checkPermissions(promise)) {
       return;
     }
     if (type != null && type.equals("reminder")) {
@@ -67,7 +67,7 @@ public class CalendarModule extends ExpoKernelServiceConsumerBaseModule {
       AsyncTask.execute(new Runnable() {
         @Override
         public void run() {
-          WritableArray calendars = findCalendars();
+          List<Bundle> calendars = findCalendars();
           promise.resolve(calendars);
         }
       });
@@ -76,64 +76,52 @@ public class CalendarModule extends ExpoKernelServiceConsumerBaseModule {
     }
   }
 
-  @ReactMethod
-  public void saveCalendarAsync(final ReadableMap details, final Promise promise) {
-    if (isMissingPermissions()) {
-      promise.reject("E_CANNOT_SAVE_CALENDAR", "User rejected permissions required to save the calendar.");
+  @ExpoMethod
+  public void saveCalendarAsync(final ReadableArguments details, final Promise promise) {
+    if (!checkPermissions(promise)) {
       return;
     }
-    try {
-      AsyncTask.execute(new Runnable() {
-        @Override
-        public void run() {
-          try {
-            Integer calendarID = saveCalendar(details);
-            promise.resolve(calendarID.toString());
-          } catch (Exception e) {
-            promise.reject("E_CALENDAR_NOT_SAVED", "Calendar could not be saved", e);
-          }
+    AsyncTask.execute(new Runnable() {
+      @Override
+      public void run() {
+        try {
+          Integer calendarID = saveCalendar(details);
+          promise.resolve(calendarID.toString());
+        } catch (Exception e) {
+          promise.reject("E_CALENDAR_NOT_SAVED", "Calendar could not be saved: " + e.getMessage(), e);
         }
-      });
-    } catch (Exception e) {
-      promise.reject("E_CALENDAR_NOT_SAVED", "Calendar could not be saved", e);
-    }
+      }
+    });
   }
 
-  @ReactMethod
+  @ExpoMethod
   public void deleteCalendarAsync(final String calendarID, final Promise promise) {
-    if (isMissingPermissions()) {
-      promise.reject("E_CANNOT_SAVE_CALENDAR", "User rejected permissions required to delete the calendar.");
+    if (!checkPermissions(promise)) {
       return;
     }
-    try {
-      AsyncTask.execute(new Runnable() {
-        @Override
-        public void run() {
-          boolean successful = deleteCalendar(calendarID);
-          if (successful) {
-            promise.resolve(null);
-          } else {
-            promise.reject("E_CALENDAR_NOT_DELETED", String.format("Calendar with id %s could not be deleted", calendarID));
-          }
+    AsyncTask.execute(new Runnable() {
+      @Override
+      public void run() {
+        boolean successful = deleteCalendar(calendarID);
+        if (successful) {
+          promise.resolve(null);
+        } else {
+          promise.reject("E_CALENDAR_NOT_DELETED", String.format("Calendar with id %s could not be deleted", calendarID));
         }
-      });
-
-    } catch (Exception e) {
-      promise.reject("E_CALENDAR_NOT_DELETED", String.format("Calendar with id %s could not be deleted", calendarID), e);
-    }
+      }
+    });
   }
 
-  @ReactMethod
-  public void getEventsAsync(final Dynamic startDate, final Dynamic endDate, final ReadableArray calendars, final Promise promise) {
-    if (isMissingPermissions()) {
-      promise.reject("E_CANNOT_SAVE_CALENDAR", "User rejected permissions required to get events.");
+  @ExpoMethod
+  public void getEventsAsync(final Object startDate, final Object endDate, final List<String> calendars, final Promise promise) {
+    if (!checkPermissions(promise)) {
       return;
     }
     try {
       AsyncTask.execute(new Runnable() {
         @Override
         public void run() {
-          WritableNativeArray results = findEvents(startDate, endDate, calendars);
+          List<Bundle> results = findEvents(startDate, endDate, calendars);
           promise.resolve(results);
         }
       });
@@ -143,157 +131,151 @@ public class CalendarModule extends ExpoKernelServiceConsumerBaseModule {
     }
   }
 
-  @ReactMethod
+  @ExpoMethod
   public void getEventByIdAsync(final String eventID, final Promise promise) {
-    if (isMissingPermissions()) {
-      promise.reject("E_CANNOT_SAVE_CALENDAR", "User rejected permissions required to get the event.");
+    if (!checkPermissions(promise)) {
       return;
     }
-    try {
-      AsyncTask.execute(new Runnable() {
-        @Override
-        public void run() {
-          WritableMap results = findEventById(eventID);
+    AsyncTask.execute(new Runnable() {
+      @Override
+      public void run() {
+        Bundle results = findEventById(eventID);
+        if (results != null) {
           promise.resolve(results);
+        } else {
+          promise.reject("E_EVENT_NOT_FOUND", "Event with id " + eventID + " could not be found");
         }
-      });
-
-    } catch (Exception e) {
-      promise.reject("E_EVENT_NOT_FOUND", String.format("Event with id %s could not be found", eventID), e);
-    }
+      }
+    });
   }
 
-  @ReactMethod
-  public void saveEventAsync(final ReadableMap details, final ReadableMap options, final Promise promise) {
-    if (isMissingPermissions()) {
-      promise.reject("E_CANNOT_SAVE_CALENDAR", "User rejected permissions required to save the event.");
+  @ExpoMethod
+  public void saveEventAsync(final ReadableArguments details, final ReadableArguments options, final Promise promise) {
+    if (!checkPermissions(promise)) {
       return;
     }
-    try {
-      AsyncTask.execute(new Runnable() {
-        @Override
-        public void run() {
-          try {
-            int eventID = saveEvent(details);
-            promise.resolve(eventID);
-          } catch (ParseException e) {
-            promise.reject("E_EVENT_NOT_SAVED", "Event could not be saved", e);
-          }
+    AsyncTask.execute(new Runnable() {
+      @Override
+      public void run() {
+        try {
+          Integer eventID = saveEvent(details);
+          promise.resolve(eventID.toString());
+        } catch (ParseException e) {
+          promise.reject("E_EVENT_NOT_SAVED", "Event could not be saved", e);
         }
-      });
-    } catch (Exception e) {
-      promise.reject("E_EVENT_NOT_SAVED", "Event could not be saved", e);
-    }
+      }
+    });
   }
 
-  @ReactMethod
-  public void deleteEventAsync(final ReadableMap details, final ReadableMap options, final Promise promise) {
-    if (isMissingPermissions()) {
-      promise.reject("E_CANNOT_SAVE_CALENDAR", "User rejected permissions required to delete the event.");
+  @ExpoMethod
+  public void deleteEventAsync(final ReadableArguments details, final ReadableArguments options, final Promise promise) {
+    if (!checkPermissions(promise)) {
       return;
     }
-    try {
-      AsyncTask.execute(new Runnable() {
-        @Override
-        public void run() {
-          try {
-            boolean successful = removeEvent(details);
-            if (successful) {
-              promise.resolve(null);
-            } else {
-              promise.reject("E_EVENT_NOT_DELETED", String.format("Event with id %s could not be deleted", details.getString("id")));
-            }
-          } catch (Exception e) {
-            promise.reject("E_EVENT_NOT_DELETED", String.format("Event with id %s could not be deleted", details.getString("id")), e);
-          }
-        }
-      });
-
-    } catch (Exception e) {
-      promise.reject("E_EVENT_NOT_DELETED", String.format("Event with id %s could not be deleted", details.getString("id")), e);
-    }
-  }
-
-  @ReactMethod
-  public void getAttendeesForEventAsync(final String eventID, final Promise promise) {
-    if (isMissingPermissions()) {
-      promise.reject("E_CANNOT_SAVE_CALENDAR", "User rejected permissions required to get attendees.");
-      return;
-    }
-    try {
-      AsyncTask.execute(new Runnable() {
-        @Override
-        public void run() {
-          WritableNativeArray results = findAttendeesByEventId(eventID);
-          promise.resolve(results);
-        }
-      });
-
-    } catch (Exception e) {
-      promise.reject("E_ATTENDEES_NOT_FOUND", String.format("Attendees for event with id %s could not be found", eventID), e);
-    }
-  }
-
-  @ReactMethod
-  public void saveAttendeeForEventAsync(final ReadableMap details, final String eventID, final Promise promise) {
-    if (isMissingPermissions()) {
-      promise.reject("E_CANNOT_SAVE_CALENDAR", "User rejected permissions required to save the attendee.");
-      return;
-    }
-    try {
-      AsyncTask.execute(new Runnable() {
-        @Override
-        public void run() {
-          try {
-            int attendeeID = saveAttendeeForEvent(details, eventID);
-            promise.resolve(attendeeID);
-          } catch (Exception e) {
-            promise.reject("E_ATTENDEE_NOT_SAVED", String.format("Attendees for event with id %s could not be saved", eventID), e);
-          }
-        }
-      });
-    } catch (Exception e) {
-      promise.reject("E_ATTENDEE_NOT_SAVED", String.format("Attendees for event with id %s could not be saved", eventID), e);
-    }
-  }
-
-  @ReactMethod
-  public void deleteAttendeeAsync(final String attendeeID, final Promise promise) {
-    if (isMissingPermissions()) {
-      promise.reject("E_CANNOT_SAVE_CALENDAR", "User rejected permissions required to delete the attendee.");
-      return;
-    }
-    try {
-      AsyncTask.execute(new Runnable() {
-        @Override
-        public void run() {
-          boolean successful = deleteAttendee(attendeeID);
+    AsyncTask.execute(new Runnable() {
+      @Override
+      public void run() {
+        try {
+          boolean successful = removeEvent(details);
           if (successful) {
             promise.resolve(null);
           } else {
-            promise.reject("E_ATTENDEE_NOT_DELETED", String.format("Attendee with id %s could not be deleted", attendeeID));
+            promise.reject("E_EVENT_NOT_DELETED", String.format("Event with id %s could not be deleted", details.getString("id")));
           }
+        } catch (Exception e) {
+          promise.reject("E_EVENT_NOT_DELETED", String.format("Event with id %s could not be deleted", details.getString("id")), e);
         }
-      });
-    } catch (Exception e) {
-      promise.reject("E_ATTENDEE_NOT_DELETED", String.format("Attendee with id %s could not be deleted", attendeeID), e);
-    }
+      }
+    });
   }
 
-  @ReactMethod
-  public void openEventInCalendar(int eventID) {
+  @ExpoMethod
+  public void getAttendeesForEventAsync(final String eventID, final Promise promise) {
+    if (!checkPermissions(promise)) {
+      return;
+    }
+    AsyncTask.execute(new Runnable() {
+      @Override
+      public void run() {
+        List<Bundle> results = findAttendeesByEventId(eventID);
+        promise.resolve(results);
+      }
+    });
+  }
+
+  @ExpoMethod
+  public void saveAttendeeForEventAsync(final ReadableArguments details, final String eventID, final Promise promise) {
+    if (!checkPermissions(promise)) {
+      return;
+    }
+    AsyncTask.execute(new Runnable() {
+      @Override
+      public void run() {
+        try {
+          Integer attendeeID = saveAttendeeForEvent(details, eventID);
+          promise.resolve(attendeeID.toString());
+        } catch (Exception e) {
+          promise.reject("E_ATTENDEE_NOT_SAVED", String.format("Attendees for event with id %s could not be saved", eventID), e);
+        }
+      }
+    });
+  }
+
+  @ExpoMethod
+  public void deleteAttendeeAsync(final String attendeeID, final Promise promise) {
+    if (!checkPermissions(promise)) {
+      return;
+    }
+    AsyncTask.execute(new Runnable() {
+      @Override
+      public void run() {
+        boolean successful = deleteAttendee(attendeeID);
+        if (successful) {
+          promise.resolve(null);
+        } else {
+          promise.reject("E_ATTENDEE_NOT_DELETED", String.format("Attendee with id %s could not be deleted", attendeeID));
+        }
+      }
+    });
+  }
+
+  @ExpoMethod
+  public void openEventInCalendar(int eventID, Promise promise) {
     Uri uri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventID);
     Intent sendIntent = new Intent(Intent.ACTION_VIEW).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK).setData(uri);
 
-    if (sendIntent.resolveActivity(reactContext.getPackageManager()) != null) {
-      reactContext.startActivity(sendIntent);
+    if (sendIntent.resolveActivity(mContext.getPackageManager()) != null) {
+      mContext.startActivity(sendIntent);
     }
+    promise.resolve(null);
   }
 
-  private WritableNativeArray findCalendars() throws SecurityException {
+  @ExpoMethod
+  public void requestPermissionsAsync(final Promise promise) {
+    if (mPermissionsModule == null) {
+      promise.reject("E_NO_PERMISSIONS", "Permissions module not found. Are you sure that Expo modules are properly linked?");
+      return;
+    }
+    String[] permissions = new String[]{Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR};
 
-    Cursor cursor = null;
-    ContentResolver cr = reactContext.getContentResolver();
+    mPermissionsModule.askForPermissions(permissions, new Permissions.PermissionsRequestListener() {
+      @Override
+      public void onPermissionsResult(int[] results) {
+        boolean isGranted = results[0] == PackageManager.PERMISSION_GRANTED;
+        Bundle response = new Bundle();
+
+        response.putString("status", isGranted ? "granted" : "denied");
+        response.putBoolean("granted", isGranted);
+        promise.resolve(response);
+      }
+    });
+  }
+
+  //endregion
+
+  private List<Bundle> findCalendars() throws SecurityException {
+    Cursor cursor;
+    ContentResolver cr = mContext.getContentResolver();
 
     Uri uri = CalendarContract.Calendars.CONTENT_URI;
 
@@ -318,7 +300,7 @@ public class CalendarModule extends ExpoKernelServiceConsumerBaseModule {
     return serializeEventCalendars(cursor);
   }
 
-  private WritableNativeArray findEvents(Dynamic startDate, Dynamic endDate, ReadableArray calendars) {
+  private List<Bundle> findEvents(Object startDate, Object endDate, List<String> calendars) {
     String dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
     SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
     sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
@@ -327,16 +309,16 @@ public class CalendarModule extends ExpoKernelServiceConsumerBaseModule {
     Calendar eEndDate = Calendar.getInstance();
 
     try {
-      if (startDate.getType() == ReadableType.String) {
-        eStartDate.setTime(sdf.parse(startDate.asString()));
-      } else if (startDate.getType() == ReadableType.Number) {
-        eStartDate.setTimeInMillis((long) startDate.asDouble());
+      if (startDate instanceof String) {
+        eStartDate.setTime(sdf.parse((String) startDate));
+      } else if (startDate instanceof Number) {
+        eStartDate.setTimeInMillis(((Number) startDate).longValue());
       }
 
-      if (endDate.getType() == ReadableType.String) {
-        eEndDate.setTime(sdf.parse(endDate.asString()));
-      } else if (endDate.getType() == ReadableType.Number) {
-        eEndDate.setTimeInMillis((long) endDate.asDouble());
+      if (endDate instanceof String) {
+        eEndDate.setTime(sdf.parse((String) endDate));
+      } else if (endDate instanceof Number) {
+        eEndDate.setTimeInMillis(((Number) endDate).longValue());
       }
     } catch (ParseException e) {
       Log.e(TAG, "error parsing", e);
@@ -344,8 +326,8 @@ public class CalendarModule extends ExpoKernelServiceConsumerBaseModule {
       Log.e(TAG, "misc error parsing", e);
     }
 
-    Cursor cursor = null;
-    ContentResolver cr = reactContext.getContentResolver();
+    Cursor cursor;
+    ContentResolver cr = mContext.getContentResolver();
 
     Uri.Builder uriBuilder = CalendarContract.Instances.CONTENT_URI.buildUpon();
     ContentUris.appendId(uriBuilder, eStartDate.getTimeInMillis());
@@ -360,7 +342,7 @@ public class CalendarModule extends ExpoKernelServiceConsumerBaseModule {
     if (calendars.size() > 0) {
       String calendarQuery = "AND (";
       for (int i = 0; i < calendars.size(); i++) {
-        calendarQuery += CalendarContract.Instances.CALENDAR_ID + " = " + calendars.getString(i);
+        calendarQuery += CalendarContract.Instances.CALENDAR_ID + " = " + calendars.get(i);
         if (i != calendars.size() - 1) {
           calendarQuery += " OR ";
         }
@@ -396,11 +378,10 @@ public class CalendarModule extends ExpoKernelServiceConsumerBaseModule {
     return serializeEvents(cursor);
   }
 
-  private WritableNativeMap findEventById(String eventID) {
-
-    WritableNativeMap result = new WritableNativeMap();
-    Cursor cursor = null;
-    ContentResolver cr = reactContext.getContentResolver();
+  private Bundle findEventById(String eventID) {
+    Bundle result;
+    Cursor cursor;
+    ContentResolver cr = mContext.getContentResolver();
     Uri uri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, Integer.parseInt(eventID));
 
     String selection = "((" + CalendarContract.Events.DELETED + " != 1))";
@@ -438,11 +419,10 @@ public class CalendarModule extends ExpoKernelServiceConsumerBaseModule {
     return result;
   }
 
-  private WritableNativeMap findCalendarById(String calendarID) {
-
-    WritableNativeMap result = new WritableNativeMap();
-    Cursor cursor = null;
-    ContentResolver cr = reactContext.getContentResolver();
+  private Bundle findCalendarById(String calendarID) {
+    Bundle result;
+    Cursor cursor;
+    ContentResolver cr = mContext.getContentResolver();
     Uri uri = ContentUris.withAppendedId(CalendarContract.Calendars.CONTENT_URI, Integer.parseInt(calendarID));
 
     cursor = cr.query(uri, new String[]{
@@ -475,11 +455,9 @@ public class CalendarModule extends ExpoKernelServiceConsumerBaseModule {
     return result;
   }
 
-  private WritableNativeArray findAttendeesByEventId(String eventID) {
-
-    WritableNativeMap result = new WritableNativeMap();
-    Cursor cursor = null;
-    ContentResolver cr = reactContext.getContentResolver();
+  private List<Bundle> findAttendeesByEventId(String eventID) {
+    Cursor cursor;
+    ContentResolver cr = mContext.getContentResolver();
 
     cursor = CalendarContract.Attendees.query(cr, Long.parseLong(eventID), new String[]{
         CalendarContract.Attendees._ID,
@@ -493,64 +471,64 @@ public class CalendarModule extends ExpoKernelServiceConsumerBaseModule {
     return serializeAttendees(cursor);
   }
 
-  private int saveCalendar(ReadableMap details) throws Exception, SecurityException {
-    ContentResolver cr = reactContext.getContentResolver();
+  private int saveCalendar(ReadableArguments details) throws Exception {
+    ContentResolver cr = mContext.getContentResolver();
     ContentValues calendarValues = new ContentValues();
 
-    if (details.hasKey("name")) {
+    if (details.containsKey("name")) {
       calendarValues.put(CalendarContract.Calendars.NAME, details.getString("name"));
     }
 
-    if (details.hasKey("title")) {
+    if (details.containsKey("title")) {
       calendarValues.put(CalendarContract.Calendars.CALENDAR_DISPLAY_NAME, details.getString("title"));
     }
 
-    if (details.hasKey("isVisible")) {
+    if (details.containsKey("isVisible")) {
       calendarValues.put(CalendarContract.Calendars.VISIBLE, details.getBoolean("isVisible") ? 1 : 0);
     }
 
-    if (details.hasKey("isSynced")) {
+    if (details.containsKey("isSynced")) {
       calendarValues.put(CalendarContract.Calendars.SYNC_EVENTS, details.getBoolean("isSynced") ? 1 : 0);
     }
 
-    if (details.hasKey("id")) {
+    if (details.containsKey("id")) {
       int calendarID = Integer.parseInt(details.getString("id"));
       Uri updateUri = ContentUris.withAppendedId(CalendarContract.Calendars.CONTENT_URI, calendarID);
       cr.update(updateUri, calendarValues, null, null);
       return calendarID;
     } else {
       // required fields for new calendars
-      if (!details.hasKey("source")) {
+      if (!details.containsKey("source")) {
         throw new Exception("new calendars require `source` object");
       }
-      if (!details.hasKey("name")) {
+      if (!details.containsKey("name")) {
         throw new Exception("new calendars require `name`");
       }
-      if (!details.hasKey("title")) {
+      if (!details.containsKey("title")) {
         throw new Exception("new calendars require `title`");
       }
-      if (!details.hasKey("color")) {
+      if (!details.containsKey("color")) {
         throw new Exception("new calendars require `color`");
       }
-      if (!details.hasKey("accessLevel")) {
+      if (!details.containsKey("accessLevel")) {
         throw new Exception("new calendars require `accessLevel`");
       }
-      if (!details.hasKey("ownerAccount")) {
+      if (!details.containsKey("ownerAccount")) {
         throw new Exception("new calendars require `ownerAccount`");
       }
 
-      ReadableMap source = details.getMap("source");
+      ReadableArguments source = details.getArguments("source");
 
-      if (!source.hasKey("name")) {
+      if (!source.containsKey("name")) {
         throw new Exception("new calendars require a `source` object with a `name`");
       }
 
-      Boolean isLocalAccount = false;
-      if (source.hasKey("isLocalAccount")) {
+      boolean isLocalAccount = false;
+      if (source.containsKey("isLocalAccount")) {
         isLocalAccount = source.getBoolean("isLocalAccount");
       }
 
-      if (!source.hasKey("type") && isLocalAccount == false) {
+      if (!source.containsKey("type") && !isLocalAccount) {
         throw new Exception("new calendars require a `source` object with a `type`, or `isLocalAccount`: true");
       }
 
@@ -561,33 +539,33 @@ public class CalendarModule extends ExpoKernelServiceConsumerBaseModule {
       calendarValues.put(CalendarContract.Calendars.OWNER_ACCOUNT, details.getString("ownerAccount"));
       // end required fields
 
-      if (details.hasKey("timeZone")) {
+      if (details.containsKey("timeZone")) {
         calendarValues.put(CalendarContract.Calendars.CALENDAR_TIME_ZONE, details.getString("timeZone"));
       }
 
-      if (details.hasKey("allowedReminders")) {
-        ReadableArray array = details.getArray("allowedReminders");
+      if (details.containsKey("allowedReminders")) {
+        List array = details.getList("allowedReminders");
         Integer[] values = new Integer[array.size()];
         for (int i = 0; i < array.size(); i++) {
-          values[i] = reminderConstantMatchingString(array.getString(i));
+          values[i] = reminderConstantMatchingString((String) array.get(i));
         }
         calendarValues.put(CalendarContract.Calendars.ALLOWED_REMINDERS, TextUtils.join(",", values));
       }
 
-      if (details.hasKey("allowedAvailabilities")) {
-        ReadableArray array = details.getArray("allowedAvailabilities");
+      if (details.containsKey("allowedAvailabilities")) {
+        List array = details.getList("allowedAvailabilities");
         Integer[] values = new Integer[array.size()];
         for (int i = 0; i < array.size(); i++) {
-          values[i] = availabilityConstantMatchingString(array.getString(i));
+          values[i] = availabilityConstantMatchingString((String) array.get(i));
         }
         calendarValues.put(CalendarContract.Calendars.ALLOWED_AVAILABILITY, TextUtils.join(",", values));
       }
 
-      if (details.hasKey("allowedAttendeeTypes")) {
-        ReadableArray array = details.getArray("allowedAttendeeTypes");
+      if (details.containsKey("allowedAttendeeTypes")) {
+        List array = details.getList("allowedAttendeeTypes");
         Integer[] values = new Integer[array.size()];
         for (int i = 0; i < array.size(); i++) {
-          values[i] = attendeeTypeConstantMatchingString(array.getString(i));
+          values[i] = attendeeTypeConstantMatchingString((String) array.get(i));
         }
         calendarValues.put(CalendarContract.Calendars.ALLOWED_ATTENDEE_TYPES, TextUtils.join(",", values));
       }
@@ -606,44 +584,41 @@ public class CalendarModule extends ExpoKernelServiceConsumerBaseModule {
   }
 
   private boolean deleteCalendar(String calendarId) throws SecurityException {
-    int rows = 0;
-
-    ContentResolver cr = reactContext.getContentResolver();
+    ContentResolver cr = mContext.getContentResolver();
     Uri uri = ContentUris.withAppendedId(CalendarContract.Calendars.CONTENT_URI, Integer.parseInt(calendarId));
-
-    rows = cr.delete(uri, null, null);
+    int rows = cr.delete(uri, null, null);
 
     return rows > 0;
   }
 
-  private int saveEvent(ReadableMap details) throws ParseException, SecurityException {
+  private int saveEvent(ReadableArguments details) throws ParseException, SecurityException {
     String dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
     SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
     sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 
-    ContentResolver cr = reactContext.getContentResolver();
+    ContentResolver cr = mContext.getContentResolver();
     ContentValues eventValues = new ContentValues();
 
-    if (details.hasKey("title")) {
+    if (details.containsKey("title")) {
       eventValues.put(CalendarContract.Events.TITLE, details.getString("title"));
     }
-    if (details.hasKey("notes")) {
+    if (details.containsKey("notes")) {
       eventValues.put(CalendarContract.Events.DESCRIPTION, details.getString("notes"));
     }
-    if (details.hasKey("location")) {
+    if (details.containsKey("location")) {
       eventValues.put(CalendarContract.Events.EVENT_LOCATION, details.getString("location"));
     }
 
-    if (details.hasKey("startDate")) {
+    if (details.containsKey("startDate")) {
       Calendar startCal = Calendar.getInstance();
-      ReadableType type = details.getType("startDate");
+      Object startDate = details.get("startDate");
 
       try {
-        if (type == ReadableType.String) {
-          startCal.setTime(sdf.parse(details.getString("startDate")));
+        if (startDate instanceof String) {
+          startCal.setTime(sdf.parse((String) startDate));
           eventValues.put(CalendarContract.Events.DTSTART, startCal.getTimeInMillis());
-        } else if (type == ReadableType.Number) {
-          eventValues.put(CalendarContract.Events.DTSTART, (long) details.getDouble("startDate"));
+        } else if (startDate instanceof Number) {
+          eventValues.put(CalendarContract.Events.DTSTART, ((Number) startDate).longValue());
         }
       } catch (ParseException e) {
         Log.e(TAG, "error", e);
@@ -651,16 +626,16 @@ public class CalendarModule extends ExpoKernelServiceConsumerBaseModule {
       }
     }
 
-    if (details.hasKey("endDate")) {
+    if (details.containsKey("endDate")) {
       Calendar endCal = Calendar.getInstance();
-      ReadableType type = details.getType("endDate");
+      Object endDate = details.get("endDate");
 
       try {
-        if (type == ReadableType.String) {
-          endCal.setTime(sdf.parse(details.getString("endDate")));
+        if (endDate instanceof String) {
+          endCal.setTime(sdf.parse((String) endDate));
           eventValues.put(CalendarContract.Events.DTEND, endCal.getTimeInMillis());
-        } else if (type == ReadableType.Number) {
-          eventValues.put(CalendarContract.Events.DTEND, (long) details.getDouble("endDate"));
+        } else if (endDate instanceof Number) {
+          eventValues.put(CalendarContract.Events.DTEND, ((Number) endDate).longValue());
         }
       } catch (ParseException e) {
         Log.e(TAG, "error", e);
@@ -668,32 +643,32 @@ public class CalendarModule extends ExpoKernelServiceConsumerBaseModule {
       }
     }
 
-    if (details.hasKey("recurrenceRule")) {
-      ReadableMap recurrenceRule = details.getMap("recurrenceRule");
+    if (details.containsKey("recurrenceRule")) {
+      ReadableArguments recurrenceRule = details.getArguments("recurrenceRule");
 
-      if (recurrenceRule.hasKey("frequency")) {
+      if (recurrenceRule.containsKey("frequency")) {
         String frequency = recurrenceRule.getString("frequency");
         Integer interval = null;
         Integer occurrence = null;
         String endDate = null;
 
-        if (recurrenceRule.hasKey("interval")) {
+        if (recurrenceRule.containsKey("interval")) {
           interval = recurrenceRule.getInt("interval");
         }
 
-        if (recurrenceRule.hasKey("occurrence")) {
+        if (recurrenceRule.containsKey("occurrence")) {
           occurrence = recurrenceRule.getInt("occurrence");
         }
 
-        if (recurrenceRule.hasKey("endDate")) {
-          ReadableType type = recurrenceRule.getType("endDate");
+        if (recurrenceRule.containsKey("endDate")) {
           SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd'T'HHmmss'Z'");
+          Object endDateObj = recurrenceRule.get("endDate");
 
-          if (type == ReadableType.String) {
-            endDate = format.format(sdf.parse(recurrenceRule.getString("endDate")));
-          } else if (type == ReadableType.Number) {
+          if (endDateObj instanceof String) {
+            endDate = format.format(sdf.parse((String) endDateObj));
+          } else if (endDateObj instanceof Number) {
             Calendar calendar = Calendar.getInstance();
-            calendar.setTimeInMillis((long) recurrenceRule.getDouble("endDate"));
+            calendar.setTimeInMillis(((Number) endDateObj).longValue());
             endDate = format.format(calendar.getTime());
           }
         }
@@ -705,60 +680,55 @@ public class CalendarModule extends ExpoKernelServiceConsumerBaseModule {
       }
     }
 
-    if (details.hasKey("allDay")) {
+    if (details.containsKey("allDay")) {
       eventValues.put(CalendarContract.Events.ALL_DAY, details.getBoolean("allDay") ? 1 : 0);
     }
 
-    if (details.hasKey("alarms")) {
+    if (details.containsKey("alarms")) {
       eventValues.put(CalendarContract.Events.HAS_ALARM, true);
     }
 
-    if (details.hasKey("availability")) {
+    if (details.containsKey("availability")) {
       eventValues.put(CalendarContract.Events.AVAILABILITY, availabilityConstantMatchingString(details.getString("availability")));
     }
 
-    if (details.hasKey("organizer_email")) {
+    if (details.containsKey("organizer_email")) {
       eventValues.put(CalendarContract.Events.ORGANIZER, details.getString("organizerEmail"));
     }
 
-    if (details.hasKey("timeZone")) {
-      eventValues.put(CalendarContract.Events.EVENT_TIMEZONE, details.getString("timeZone"));
-    }
+    eventValues.put(CalendarContract.Events.EVENT_TIMEZONE, details.containsKey("timeZone") ? details.getString("timeZone") : TimeZone.getDefault().getID());
+    eventValues.put(CalendarContract.Events.EVENT_END_TIMEZONE, details.containsKey("endTimeZone") ? details.getString("endTimeZone") : TimeZone.getDefault().getID());
 
-    if (details.hasKey("endTimeZone")) {
-      eventValues.put(CalendarContract.Events.EVENT_END_TIMEZONE, details.getString("endTimeZone"));
-    }
-
-    if (details.hasKey("accessLevel")) {
+    if (details.containsKey("accessLevel")) {
       eventValues.put(CalendarContract.Events.ACCESS_LEVEL, accessConstantMatchingString(details.getString("accessLevel")));
     }
 
-    if (details.hasKey("guestsCanModify")) {
+    if (details.containsKey("guestsCanModify")) {
       eventValues.put(CalendarContract.Events.GUESTS_CAN_MODIFY, details.getBoolean("guestsCanModify") ? 1 : 0);
     }
 
-    if (details.hasKey("guestsCanInviteOthers")) {
+    if (details.containsKey("guestsCanInviteOthers")) {
       eventValues.put(CalendarContract.Events.GUESTS_CAN_INVITE_OTHERS, details.getBoolean("guestsCanInviteOthers") ? 1 : 0);
     }
 
-    if (details.hasKey("guestsCanSeeGuests")) {
+    if (details.containsKey("guestsCanSeeGuests")) {
       eventValues.put(CalendarContract.Events.GUESTS_CAN_SEE_GUESTS, details.getBoolean("guestsCanSeeGuests") ? 1 : 0);
     }
 
-    if (details.hasKey("id")) {
+    if (details.containsKey("id")) {
       int eventID = Integer.parseInt(details.getString("id"));
       Uri updateUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventID);
       cr.update(updateUri, eventValues, null, null);
 
       removeRemindersForEvent(cr, eventID);
-      if (details.hasKey("alarms")) {
-        createRemindersForEvent(cr, eventID, details.getArray("alarms"));
+      if (details.containsKey("alarms")) {
+        createRemindersForEvent(cr, eventID, details.getList("alarms"));
       }
       return eventID;
     } else {
 
-      if (details.hasKey("calendarId")) {
-        WritableNativeMap calendar = findCalendarById(details.getString("calendarId"));
+      if (details.containsKey("calendarId")) {
+        Bundle calendar = findCalendarById(details.getString("calendarId"));
 
         if (calendar != null) {
           eventValues.put(CalendarContract.Events.CALENDAR_ID, Integer.parseInt(calendar.getString("id")));
@@ -774,21 +744,21 @@ public class CalendarModule extends ExpoKernelServiceConsumerBaseModule {
       Uri eventUri = cr.insert(eventsUri, eventValues);
       int eventID = Integer.parseInt(eventUri.getLastPathSegment());
 
-      if (details.hasKey("alarms")) {
-        createRemindersForEvent(cr, eventID, details.getArray("alarms"));
+      if (details.containsKey("alarms")) {
+        createRemindersForEvent(cr, eventID, details.getList("alarms"));
       }
       return eventID;
     }
   }
 
-  private boolean removeEvent(ReadableMap details) throws ParseException, SecurityException {
+  private boolean removeEvent(ReadableArguments details) throws ParseException, SecurityException {
     int rows = 0;
 
     Integer eventID = Integer.parseInt(details.getString("id"));
 
-    ContentResolver cr = reactContext.getContentResolver();
+    ContentResolver cr = mContext.getContentResolver();
 
-    if (!details.hasKey("instanceStartDate")) {
+    if (!details.containsKey("instanceStartDate")) {
       Uri uri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventID);
       rows = cr.delete(uri, null, null);
       return rows > 0;
@@ -799,14 +769,14 @@ public class CalendarModule extends ExpoKernelServiceConsumerBaseModule {
       sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 
       Calendar startCal = Calendar.getInstance();
-      ReadableType type = details.getType("instanceStartDate");
+      Object instanceStartDate = details.get("instanceStartDate");
 
       try {
-        if (type == ReadableType.String) {
-          startCal.setTime(sdf.parse(details.getString("instanceStartDate")));
+        if (instanceStartDate instanceof String) {
+          startCal.setTime(sdf.parse((String) instanceStartDate));
           exceptionValues.put(CalendarContract.Events.ORIGINAL_INSTANCE_TIME, startCal.getTimeInMillis());
-        } else if (type == ReadableType.Number) {
-          exceptionValues.put(CalendarContract.Events.ORIGINAL_INSTANCE_TIME, (long) details.getDouble("instanceStartDate"));
+        } else if (instanceStartDate instanceof Number) {
+          exceptionValues.put(CalendarContract.Events.ORIGINAL_INSTANCE_TIME, ((Number) instanceStartDate).longValue());
         }
       } catch (ParseException e) {
         Log.e(TAG, "error", e);
@@ -822,16 +792,16 @@ public class CalendarModule extends ExpoKernelServiceConsumerBaseModule {
     return true;
   }
 
-  private int saveAttendeeForEvent(ReadableMap details, String eventID) throws Exception, SecurityException {
-    ContentResolver cr = reactContext.getContentResolver();
+  private int saveAttendeeForEvent(ReadableArguments details, String eventID) throws Exception, SecurityException {
+    ContentResolver cr = mContext.getContentResolver();
     ContentValues attendeeValues = new ContentValues();
-    boolean isNew = !details.hasKey("id");
+    boolean isNew = !details.containsKey("id");
 
-    if (details.hasKey("name")) {
+    if (details.containsKey("name")) {
       attendeeValues.put(CalendarContract.Attendees.ATTENDEE_NAME, details.getString("name"));
     }
 
-    if (details.hasKey("email")) {
+    if (details.containsKey("email")) {
       attendeeValues.put(CalendarContract.Attendees.ATTENDEE_EMAIL, details.getString("email"));
     } else {
       if (isNew) {
@@ -839,7 +809,7 @@ public class CalendarModule extends ExpoKernelServiceConsumerBaseModule {
       }
     }
 
-    if (details.hasKey("role")) {
+    if (details.containsKey("role")) {
       attendeeValues.put(CalendarContract.Attendees.ATTENDEE_RELATIONSHIP, attendeeRelationshipConstantMatchingString(details.getString("role")));
     } else {
       if (isNew) {
@@ -847,7 +817,7 @@ public class CalendarModule extends ExpoKernelServiceConsumerBaseModule {
       }
     }
 
-    if (details.hasKey("type")) {
+    if (details.containsKey("type")) {
       attendeeValues.put(CalendarContract.Attendees.ATTENDEE_TYPE, attendeeTypeConstantMatchingString(details.getString("type")));
     } else {
       if (isNew) {
@@ -855,7 +825,7 @@ public class CalendarModule extends ExpoKernelServiceConsumerBaseModule {
       }
     }
 
-    if (details.hasKey("status")) {
+    if (details.containsKey("status")) {
       attendeeValues.put(CalendarContract.Attendees.ATTENDEE_STATUS, attendeeStatusConstantMatchingString(details.getString("status")));
     } else {
       if (isNew) {
@@ -879,7 +849,7 @@ public class CalendarModule extends ExpoKernelServiceConsumerBaseModule {
   private boolean deleteAttendee(String attendeeID) throws SecurityException {
     int rows = 0;
 
-    ContentResolver cr = reactContext.getContentResolver();
+    ContentResolver cr = mContext.getContentResolver();
     Uri uri = ContentUris.withAppendedId(CalendarContract.Attendees.CONTENT_URI, Integer.parseInt(attendeeID));
 
     rows = cr.delete(uri, null, null);
@@ -887,17 +857,18 @@ public class CalendarModule extends ExpoKernelServiceConsumerBaseModule {
     return rows > 0;
   }
 
-  private void createRemindersForEvent(ContentResolver resolver, int eventID, ReadableArray reminders) throws SecurityException {
+  private void createRemindersForEvent(ContentResolver resolver, int eventID, List reminders) throws SecurityException {
     for (int i = 0; i < reminders.size(); i++) {
-      ReadableMap reminder = reminders.getMap(i);
-      ReadableType type = reminder.getType("relativeOffset");
-      if (type == ReadableType.Number) {
-        int minutes = -reminder.getInt("relativeOffset");
+      Map<String, Object> reminder = (Map<String, Object>) reminders.get(i);
+      Object relativeOffset = reminder.get("relativeOffset");
+
+      if (relativeOffset instanceof Number) {
+        int minutes = -(int) relativeOffset;
+        int method = CalendarContract.Reminders.METHOD_DEFAULT;
         ContentValues reminderValues = new ContentValues();
 
-        int method = CalendarContract.Reminders.METHOD_DEFAULT;
-        if (reminder.hasKey("method")) {
-          method = reminderConstantMatchingString(reminder.getString("method"));
+        if (reminder.containsKey("method")) {
+          method = reminderConstantMatchingString((String) reminder.get("method"));
         }
 
         reminderValues.put(CalendarContract.Reminders.EVENT_ID, eventID);
@@ -952,26 +923,26 @@ public class CalendarModule extends ExpoKernelServiceConsumerBaseModule {
     return CalendarContract.Reminders.METHOD_DEFAULT;
   }
 
-  private WritableNativeArray calendarAllowedRemindersFromDBString(String dbString) {
-    WritableNativeArray array = new WritableNativeArray();
+  private ArrayList<String> calendarAllowedRemindersFromDBString(String dbString) {
+    ArrayList<String> array = new ArrayList<>();
     for (String constant : dbString.split(",")) {
-      array.pushString(reminderStringMatchingConstant(Integer.parseInt(constant)));
+      array.add(reminderStringMatchingConstant(Integer.parseInt(constant)));
     }
     return array;
   }
 
-  private WritableNativeArray calendarAllowedAvailabilitiesFromDBString(String dbString) {
-    WritableNativeArray availabilitiesStrings = new WritableNativeArray();
+  private ArrayList<String> calendarAllowedAvailabilitiesFromDBString(String dbString) {
+    ArrayList<String> availabilitiesStrings = new ArrayList<>();
     for (String availabilityId : dbString.split(",")) {
       switch (Integer.parseInt(availabilityId)) {
         case CalendarContract.Events.AVAILABILITY_BUSY:
-          availabilitiesStrings.pushString("busy");
+          availabilitiesStrings.add("busy");
           break;
         case CalendarContract.Events.AVAILABILITY_FREE:
-          availabilitiesStrings.pushString("free");
+          availabilitiesStrings.add("free");
           break;
         case CalendarContract.Events.AVAILABILITY_TENTATIVE:
-          availabilitiesStrings.pushString("tentative");
+          availabilitiesStrings.add("tentative");
           break;
       }
     }
@@ -1141,10 +1112,10 @@ public class CalendarModule extends ExpoKernelServiceConsumerBaseModule {
     return CalendarContract.Attendees.TYPE_NONE;
   }
 
-  private WritableNativeArray calendarAllowedAttendeeTypesFromDBString(String dbString) {
-    WritableNativeArray array = new WritableNativeArray();
+  private ArrayList<String> calendarAllowedAttendeeTypesFromDBString(String dbString) {
+    ArrayList<String> array = new ArrayList<>();
     for (String constant : dbString.split(",")) {
-      array.pushString(attendeeTypeStringMatchingConstant(Integer.parseInt(constant)));
+      array.add(attendeeTypeStringMatchingConstant(Integer.parseInt(constant)));
     }
     return array;
   }
@@ -1209,11 +1180,11 @@ public class CalendarModule extends ExpoKernelServiceConsumerBaseModule {
     return rrule;
   }
 
-  private WritableNativeArray serializeEvents(Cursor cursor) {
-    WritableNativeArray results = new WritableNativeArray();
+  private List<Bundle> serializeEvents(Cursor cursor) {
+    List<Bundle> results = new ArrayList<>();
 
     while (cursor.moveToNext()) {
-      results.pushMap(serializeEvent(cursor));
+      results.add(serializeEvent(cursor));
     }
 
     cursor.close();
@@ -1221,8 +1192,8 @@ public class CalendarModule extends ExpoKernelServiceConsumerBaseModule {
     return results;
   }
 
-  private WritableNativeMap serializeEvent(Cursor cursor) {
-    WritableNativeMap event = new WritableNativeMap();
+  private Bundle serializeEvent(Cursor cursor) {
+    Bundle event = new Bundle();
 
     String dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
     SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
@@ -1250,7 +1221,7 @@ public class CalendarModule extends ExpoKernelServiceConsumerBaseModule {
 
     String rrule = optStringFromCursor(cursor, CalendarContract.Events.RRULE);
     if (rrule != null) {
-      WritableNativeMap recurrenceRule = new WritableNativeMap();
+      Bundle recurrenceRule = new Bundle();
       String[] recurrenceRules = rrule.split(";");
       SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd'T'HHmmss'Z'");
 
@@ -1273,7 +1244,7 @@ public class CalendarModule extends ExpoKernelServiceConsumerBaseModule {
 
       }
 
-      event.putMap("recurrenceRule", recurrenceRule);
+      event.putBundle("recurrenceRule", recurrenceRule);
     }
 
 
@@ -1287,7 +1258,7 @@ public class CalendarModule extends ExpoKernelServiceConsumerBaseModule {
     event.putBoolean("allDay", optIntFromCursor(cursor, CalendarContract.Events.ALL_DAY) != 0);
     event.putString("location", optStringFromCursor(cursor, CalendarContract.Events.EVENT_LOCATION));
     event.putString("availability", availabilityStringMatchingConstant(optIntFromCursor(cursor, CalendarContract.Events.AVAILABILITY)));
-    event.putArray("alarms", serializeAlarms(cursor.getLong(0)));
+    event.putParcelableArrayList("alarms", serializeAlarms(cursor.getLong(0)));
     event.putString("organizerEmail", optStringFromCursor(cursor, CalendarContract.Events.ORGANIZER));
     event.putString("timeZone", optStringFromCursor(cursor, CalendarContract.Events.EVENT_TIMEZONE));
     event.putString("endTimeZone", optStringFromCursor(cursor, CalendarContract.Events.EVENT_END_TIMEZONE));
@@ -1306,30 +1277,30 @@ public class CalendarModule extends ExpoKernelServiceConsumerBaseModule {
     return event;
   }
 
-  private WritableNativeArray serializeAlarms(long eventID) {
-    WritableNativeArray alarms = new WritableNativeArray();
-    ContentResolver cr = reactContext.getContentResolver();
+  private ArrayList<Bundle> serializeAlarms(long eventID) {
+    ArrayList<Bundle> alarms = new ArrayList<>();
+    ContentResolver cr = mContext.getContentResolver();
     Cursor cursor = CalendarContract.Reminders.query(cr, eventID, new String[]{
         CalendarContract.Reminders.MINUTES,
         CalendarContract.Reminders.METHOD
     });
 
     while (cursor.moveToNext()) {
-      WritableNativeMap thisAlarm = new WritableNativeMap();
+      Bundle thisAlarm = new Bundle();
       thisAlarm.putInt("relativeOffset", -cursor.getInt(0));
       int method = cursor.getInt(1);
       thisAlarm.putString("method", reminderStringMatchingConstant(method));
-      alarms.pushMap(thisAlarm);
+      alarms.add(thisAlarm);
     }
 
     return alarms;
   }
 
-  private WritableNativeArray serializeEventCalendars(Cursor cursor) {
-    WritableNativeArray results = new WritableNativeArray();
+  private List<Bundle> serializeEventCalendars(Cursor cursor) {
+    List<Bundle> results = new ArrayList<>();
 
     while (cursor.moveToNext()) {
-      results.pushMap(serializeEventCalendar(cursor));
+      results.add(serializeEventCalendar(cursor));
     }
 
     cursor.close();
@@ -1337,29 +1308,28 @@ public class CalendarModule extends ExpoKernelServiceConsumerBaseModule {
     return results;
   }
 
-  private WritableNativeMap serializeEventCalendar(Cursor cursor) {
-
-    WritableNativeMap calendar = new WritableNativeMap();
+  private Bundle serializeEventCalendar(Cursor cursor) {
+    Bundle calendar = new Bundle();
 
     calendar.putString("id", optStringFromCursor(cursor, CalendarContract.Calendars._ID));
     calendar.putString("title", optStringFromCursor(cursor, CalendarContract.Calendars.CALENDAR_DISPLAY_NAME));
     calendar.putBoolean("isPrimary", optStringFromCursor(cursor, CalendarContract.Calendars.IS_PRIMARY) == "1");
-    calendar.putArray("allowedAvailabilities", calendarAllowedAvailabilitiesFromDBString(optStringFromCursor(cursor, CalendarContract.Calendars.ALLOWED_AVAILABILITY)));
+    calendar.putStringArrayList("allowedAvailabilities", calendarAllowedAvailabilitiesFromDBString(optStringFromCursor(cursor, CalendarContract.Calendars.ALLOWED_AVAILABILITY)));
     calendar.putString("name", optStringFromCursor(cursor, CalendarContract.Calendars.NAME));
     calendar.putString("color", String.format("#%06X", (0xFFFFFF & optIntFromCursor(cursor, CalendarContract.Calendars.CALENDAR_COLOR))));
     calendar.putString("ownerAccount", optStringFromCursor(cursor, CalendarContract.Calendars.OWNER_ACCOUNT));
     calendar.putString("timeZone", optStringFromCursor(cursor, CalendarContract.Calendars.CALENDAR_TIME_ZONE));
-    calendar.putArray("allowedReminders", calendarAllowedRemindersFromDBString(optStringFromCursor(cursor, CalendarContract.Calendars.ALLOWED_REMINDERS)));
-    calendar.putArray("allowedAttendeeTypes", calendarAllowedAttendeeTypesFromDBString(optStringFromCursor(cursor, CalendarContract.Calendars.ALLOWED_ATTENDEE_TYPES)));
+    calendar.putStringArrayList("allowedReminders", calendarAllowedRemindersFromDBString(optStringFromCursor(cursor, CalendarContract.Calendars.ALLOWED_REMINDERS)));
+    calendar.putStringArrayList("allowedAttendeeTypes", calendarAllowedAttendeeTypesFromDBString(optStringFromCursor(cursor, CalendarContract.Calendars.ALLOWED_ATTENDEE_TYPES)));
     calendar.putBoolean("isVisible", optIntFromCursor(cursor, CalendarContract.Calendars.VISIBLE) != 0);
     calendar.putBoolean("isSynced", optIntFromCursor(cursor, CalendarContract.Calendars.SYNC_EVENTS) != 0);
 
-    WritableNativeMap source = new WritableNativeMap();
+    Bundle source = new Bundle();
     source.putString("name", optStringFromCursor(cursor, CalendarContract.Calendars.ACCOUNT_NAME));
     String type = optStringFromCursor(cursor, CalendarContract.Calendars.ACCOUNT_TYPE);
     source.putString("type", type);
     source.putBoolean("isLocalAccount", type.equals(CalendarContract.ACCOUNT_TYPE_LOCAL));
-    calendar.putMap("source", source);
+    calendar.putBundle("source", source);
 
     int accessLevel = optIntFromCursor(cursor, CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL);
     calendar.putString("accessLevel", calAccessStringMatchingConstant(accessLevel));
@@ -1376,11 +1346,11 @@ public class CalendarModule extends ExpoKernelServiceConsumerBaseModule {
     return calendar;
   }
 
-  private WritableNativeArray serializeAttendees(Cursor cursor) {
-    WritableNativeArray results = new WritableNativeArray();
+  private List<Bundle> serializeAttendees(Cursor cursor) {
+    List<Bundle> results = new ArrayList<>();
 
     while (cursor.moveToNext()) {
-      results.pushMap(serializeAttendee(cursor));
+      results.add(serializeAttendee(cursor));
     }
 
     cursor.close();
@@ -1388,9 +1358,8 @@ public class CalendarModule extends ExpoKernelServiceConsumerBaseModule {
     return results;
   }
 
-  private WritableNativeMap serializeAttendee(Cursor cursor) {
-
-    WritableNativeMap attendee = new WritableNativeMap();
+  private Bundle serializeAttendee(Cursor cursor) {
+    Bundle attendee = new Bundle();
 
     attendee.putString("id", optStringFromCursor(cursor, CalendarContract.Attendees._ID));
     attendee.putString("name", optStringFromCursor(cursor, CalendarContract.Attendees.ATTENDEE_NAME));
@@ -1418,8 +1387,15 @@ public class CalendarModule extends ExpoKernelServiceConsumerBaseModule {
     return cursor.getInt(index);
   }
 
-  private boolean isMissingPermissions() {
-    return !Exponent.getInstance().getPermissions(Manifest.permission.READ_CALENDAR, this.experienceId) &&
-        !Exponent.getInstance().getPermissions(Manifest.permission.WRITE_CALENDAR, this.experienceId);
+  private boolean checkPermissions(Promise promise) {
+    if (mPermissionsModule == null) {
+      promise.reject("E_NO_PERMISSIONS", "Permissions module not found. Are you sure that Expo modules are properly linked?");
+      return false;
+    }
+    if (!mPermissionsModule.hasPermissions(new String[]{Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR})) {
+      promise.reject("E_MISSING_PERMISSIONS", "CALENDAR permission is required to do this operation.");
+      return false;
+    }
+    return true;
   }
 }
