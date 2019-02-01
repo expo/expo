@@ -120,6 +120,8 @@ executors:
     shell: /bin/bash -leo pipefail
     working_directory: ~/expo
     resource_class: small
+    environment:
+      USER: circleci
   mac:
     macos: # https://circleci.com/docs/2.0/testing-ios/#supported-xcode-versions
       xcode: '10.1.0'
