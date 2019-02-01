@@ -1,4 +1,4 @@
-import { PlaybackStatusToSet, PlaybackStatus, PlaybackNativeSource } from './AV';
+import { PlaybackNativeSource, PlaybackStatus, PlaybackStatusToSet } from './AV';
 declare const _default: {
     readonly name: string;
     getStatusForVideo(element: HTMLMediaElement): Promise<PlaybackStatus>;

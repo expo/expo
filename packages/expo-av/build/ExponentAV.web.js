@@ -104,10 +104,10 @@ export default {
                 status: getStatusFromMedia(media),
             });
         };
-        media.onerror = (event, source, fileno, columnNumber, error) => {
+        media.onerror = () => {
             SyntheticPlatformEmitter.emit('ExponentAV.onError', {
                 key: media,
-                error,
+                error: media.error,
             });
         };
         const status = setStatusForMedia(media, fullInitialStatus);
