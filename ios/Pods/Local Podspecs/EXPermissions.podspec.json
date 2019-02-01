@@ -1,11 +1,11 @@
 {
   "name": "EXPermissions",
   "version": "2.0.0",
-  "summary": "Expo Permissions standalone universal module",
-  "description": "Expo Permissions standalone universal module",
+  "summary": "An Expo universal module to prompt for permission to access device sensors and personal data",
+  "description": "An Expo universal module to prompt for permission to access device sensors and personal data",
   "license": "MIT",
   "authors": "650 Industries, Inc.",
-  "homepage": "https://docs.expo.io/",
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-permissions",
   "platforms": {
     "ios": "10.0"
   },

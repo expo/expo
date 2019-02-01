@@ -73,6 +73,10 @@ const DISTRIBUTION = [
   'Deploying to App Stores',
   'Release Channels',
   'Advanced Release Channels',
+  'Hosting An App on Your Servers',
+  'Building Standalone Apps on Your CI',
+  'Uploading Apps to the Apple App Store and Google Play',
+  'App Transfers',
 ];
 
 const EXPOKIT = [

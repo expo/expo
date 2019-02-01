@@ -68,6 +68,7 @@ export default class ExpoApisScreen extends React.Component {
   _getApis = () => {
     return Platform.select({
       web: [
+        'ActionSheet',
         'Audio',
         'AuthSession',
         'Constants',
@@ -93,6 +94,7 @@ export default class ExpoApisScreen extends React.Component {
         'Util',
       ],
       default: [
+        'ActionSheet',
         'AppAuth',
         'Audio',
         'AuthSession',

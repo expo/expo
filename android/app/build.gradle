@@ -255,6 +255,8 @@ dependencies {
   // Optional universal modules, could be removed
   // along with references in MainActivity
   api 'host.exp.exponent:expo-ads-admob:2.0.0'
+  api 'host.exp.exponent:expo-ads-facebook:1.0.0'
+  api 'host.exp.exponent:expo-analytics-amplitude:1.0.0'
   api 'host.exp.exponent:expo-app-auth:2.0.0'
   api 'host.exp.exponent:expo-av:1.0.0'
   api 'host.exp.exponent:expo-analytics-segment:2.0.0'

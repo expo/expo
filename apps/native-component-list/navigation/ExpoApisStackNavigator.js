@@ -1,3 +1,4 @@
+import ActionSheet from '../screens/ActionSheetScreen';
 import AppAuth from '../screens/AppAuthScreen';
 import Audio from '../screens/AV/AudioScreen';
 import AuthSession from '../screens/AuthSessionScreen';
@@ -49,6 +50,7 @@ import StackConfig from './StackConfig';
 const ExpoApisStackNavigator = createStackNavigator(
   {
     ExpoApis,
+    ActionSheet,
     AppAuth,
     Audio,
     AuthSession,

@@ -7,6 +7,8 @@ import java.util.List;
 
 import expo.core.interfaces.Package;
 import expo.modules.ads.admob.AdMobPackage;
+import expo.modules.ads.facebook.AdsFacebookPackage;
+import expo.modules.analytics.amplitude.AmplitudePackage;
 import expo.modules.analytics.segment.SegmentPackage;
 import expo.modules.appauth.AppAuthPackage;
 import expo.modules.av.AVPackage;
@@ -45,7 +47,9 @@ public class ExperiencePackagePicker {
   private static final List<Package> EXPO_MODULES_PACKAGES = Arrays.<Package>asList(
       new AVPackage(),
       new AdMobPackage(),
+      new AdsFacebookPackage(),
       new AppAuthPackage(),
+      new AmplitudePackage(),
       new BackgroundFetchPackage(),
       new BarCodeScannerPackage(),
       new BlurViewPackage(),

@@ -3,9 +3,11 @@
 #import <EXConstants/EXConstants.h>
 #import <EXConstantsInterface/EXConstantsInterface.h>
 
-#import <UIKit/UIWebView.h>
+#import <WebKit/WKWebView.h>
 
-@interface EXConstants ()
+@interface EXConstants () {
+  WKWebView *webView;
+}
 
 @property (nonatomic, strong) NSString *webViewUserAgent;
 @property (nonatomic, weak) id<EXConstantsInterface> constantsService;
@@ -40,10 +42,23 @@ EX_EXPORT_METHOD_AS(getWebViewUserAgentAsync,
     __strong EXConstants *strongSelf = weakSelf;
     if (strongSelf) {
       if (!strongSelf.webViewUserAgent) {
-        UIWebView *webView = [[UIWebView alloc] init];
-        strongSelf.webViewUserAgent = [webView stringByEvaluatingJavaScriptFromString:@"navigator.userAgent"];
+        // We need to retain the webview because it runs an async task.
+        strongSelf->webView = [[WKWebView alloc] init];
+
+        [strongSelf->webView evaluateJavaScript:@"window.navigator.userAgent;" completionHandler:^(id _Nullable result, NSError * _Nullable error) {
+          if (error) {
+            reject(@"ERR_CONSTANTS", error.localizedDescription, error);
+            return;
+          }
+          
+          strongSelf.webViewUserAgent = [NSString stringWithFormat:@"%@", result];
+          resolve(EXNullIfNil(strongSelf.webViewUserAgent));
+          // Destroy the webview now that it's task is complete.
+          strongSelf->webView = nil;
+        }];
+      } else {
+        resolve(EXNullIfNil(strongSelf.webViewUserAgent));
       }
-      resolve(strongSelf.webViewUserAgent);
     }
   });
 }

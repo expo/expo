@@ -1,0 +1,44 @@
+import { EventEmitter, Subscription } from 'expo-core';
+import { DownloadOptions, DownloadResult, DownloadProgressCallback, DownloadProgressData, DownloadPauseState, FileInfo, EncodingType, ReadingOptions, WritingOptions, ProgressEvent } from './FileSystem.types';
+export { DownloadOptions, DownloadResult, DownloadProgressCallback, DownloadProgressData, DownloadPauseState, FileInfo, EncodingType, ReadingOptions, WritingOptions, ProgressEvent, };
+export declare const documentDirectory: any, cacheDirectory: any, bundledAssets: any, bundleDirectory: any;
+export declare function getInfoAsync(fileUri: string, options?: {
+    md5?: boolean;
+    cache?: boolean;
+}): Promise<FileInfo>;
+export declare function readAsStringAsync(fileUri: string, options?: ReadingOptions): Promise<string>;
+export declare function writeAsStringAsync(fileUri: string, contents: string, options?: WritingOptions): Promise<void>;
+export declare function deleteAsync(fileUri: string, options?: {
+    idempotent?: boolean;
+}): Promise<void>;
+export declare function moveAsync(options: {
+    from: string;
+    to: string;
+}): Promise<void>;
+export declare function copyAsync(options: {
+    from: string;
+    to: string;
+}): Promise<void>;
+export declare function makeDirectoryAsync(fileUri: string, options?: {
+    intermediates?: boolean;
+}): Promise<void>;
+export declare function readDirectoryAsync(fileUri: string): Promise<string[]>;
+export declare function downloadAsync(uri: string, fileUri: string, options?: DownloadOptions): Promise<DownloadResult>;
+export declare function createDownloadResumable(uri: string, fileUri: string, options?: DownloadOptions, callback?: DownloadProgressCallback, resumeData?: string): DownloadResumable;
+export declare class DownloadResumable {
+    _uuid: string;
+    _url: string;
+    _fileUri: string;
+    _options: DownloadOptions;
+    _resumeData?: string;
+    _callback?: DownloadProgressCallback;
+    _subscription?: Subscription | null;
+    _emitter: EventEmitter;
+    constructor(url: string, fileUri: string, options?: DownloadOptions, callback?: DownloadProgressCallback, resumeData?: string);
+    downloadAsync(): Promise<DownloadResult | undefined>;
+    pauseAsync(): Promise<DownloadPauseState>;
+    resumeAsync(): Promise<DownloadResult | undefined>;
+    savable(): DownloadPauseState;
+    _addSubscription(): void;
+    _removeSubscription(): void;
+}

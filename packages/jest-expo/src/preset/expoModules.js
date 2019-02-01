@@ -50,27 +50,6 @@ module.exports = {
   AIRMapPolygonManager: {},
   AIRMapPolylineManager: {},
   AIRMapUrlTileManager: {},
-  CTKAdSettingsManager: {
-    currentDeviceHash: { type: 'string' },
-    addTestDevice: { type: 'function', functionType: 'async' },
-    clearTestDevices: { type: 'function', functionType: 'async' },
-    setIsChildDirected: { type: 'function', functionType: 'async' },
-    setLogLevel: { type: 'function', functionType: 'async' },
-    setMediationService: { type: 'function', functionType: 'async' },
-    setUrlPrefix: { type: 'function', functionType: 'async' },
-  },
-  CTKBannerViewManager: {},
-  CTKInterstitialAdManager: { showAd: { type: 'function', functionType: 'promise' } },
-  CTKNativeAdEmitter: {
-    addListener: { type: 'function', functionType: 'async' },
-    removeListeners: { type: 'function', functionType: 'async' },
-  },
-  CTKNativeAdManager: {
-    disableAutoRefresh: { type: 'function', functionType: 'async' },
-    init: { type: 'function', functionType: 'async' },
-    registerViewsForInteraction: { type: 'function', functionType: 'promise' },
-    setMediaCachePolicy: { type: 'function', functionType: 'async' },
-  },
   ExpoBrightness: {
     getBrightnessAsync: { type: 'function', functionType: 'promise' },
     getSystemBrightnessAsync: { type: 'function', functionType: 'promise' },
@@ -89,7 +68,25 @@ module.exports = {
     exportedMethods: {
       type: 'object',
       mock: {
+        AdIconViewManager: [],
         BlurViewManager: [{ key: 0, argumentsCount: 2, name: 'updateProps' }],
+        CTKAdSettingsManager: [
+          { key: 0, argumentsCount: 1, name: 'addTestDevice' },
+          { key: 1, argumentsCount: 1, name: 'setIsChildDirected' },
+          { key: 2, argumentsCount: 1, name: 'setMeditationService' },
+          { key: 3, argumentsCount: 1, name: 'setUrlPrefix' },
+          { key: 4, argumentsCount: 1, name: 'setLogLevel' },
+          { key: 5, argumentsCount: 0, name: 'clearTestDevices' },
+        ],
+        CTKBannerViewManager: [],
+        CTKInterstitialAdManager: [{ key: 0, argumentsCount: 1, name: 'showAd' }],
+        CTKNativeAdManager: [
+          { key: 0, argumentsCount: 1, name: 'disableAutoRefresh' },
+          { key: 1, argumentsCount: 2, name: 'setMediaCachePolicy' },
+          { key: 2, argumentsCount: 4, name: 'registerViewsForInteraction' },
+          { key: 3, argumentsCount: 2, name: 'init' },
+        ],
+        EXLinearGradientManager: [],
         ExpoAdsAdMobBannerView: [],
         ExpoAdsAdMobInterstitialManager: [
           { key: 0, argumentsCount: 1, name: 'setTestDeviceID' },
@@ -107,12 +104,21 @@ module.exports = {
           { key: 4, argumentsCount: 1, name: 'setAdUnitID' },
           { key: 5, argumentsCount: 0, name: 'getIsReady' },
         ],
+        ExpoAmplitude: [
+          { key: 0, argumentsCount: 1, name: 'setUserId' },
+          { key: 1, argumentsCount: 1, name: 'logEvent' },
+          { key: 2, argumentsCount: 2, name: 'logEventWithProperties' },
+          { key: 3, argumentsCount: 1, name: 'initialize' },
+          { key: 4, argumentsCount: 1, name: 'setUserProperties' },
+          { key: 5, argumentsCount: 2, name: 'setGroup' },
+          { key: 6, argumentsCount: 0, name: 'clearUserProperties' },
+        ],
         ExpoAppAuth: [{ key: 0, argumentsCount: 1, name: 'executeAsync' }],
         ExpoBackgroundFetch: [
           { key: 0, argumentsCount: 1, name: 'unregisterTaskAsync' },
           { key: 1, argumentsCount: 1, name: 'setMinimumIntervalAsync' },
           { key: 2, argumentsCount: 0, name: 'getStatusAsync' },
-          { key: 3, argumentsCount: 1, name: 'registerTaskAsync' },
+          { key: 3, argumentsCount: 2, name: 'registerTaskAsync' },
         ],
         ExpoBarCodeScannerModule: [{ key: 0, argumentsCount: 2, name: 'scanFromURLAsync' }],
         ExpoBarCodeScannerView: [],
@@ -138,6 +144,7 @@ module.exports = {
           { key: 14, argumentsCount: 1, name: 'writeContactToFileAsync' },
           { key: 15, argumentsCount: 0, name: 'dismissFormAsync' },
         ],
+        ExpoDocumentPicker: [{ key: 0, argumentsCount: 1, name: 'getDocumentAsync' }],
         ExpoFaceDetector: [{ key: 0, argumentsCount: 1, name: 'detectFaces' }],
         ExpoFontLoader: [{ key: 0, argumentsCount: 2, name: 'loadAsync' }],
         ExpoGoogleSignIn: [
@@ -150,6 +157,10 @@ module.exports = {
           { key: 6, argumentsCount: 0, name: 'signInAsync' },
           { key: 7, argumentsCount: 0, name: 'signInSilentlyAsync' },
           { key: 8, argumentsCount: 0, name: 'isConnectedAsync' },
+        ],
+        ExpoKeepAwake: [
+          { key: 0, argumentsCount: 0, name: 'activate' },
+          { key: 1, argumentsCount: 0, name: 'deactivate' },
         ],
         ExpoLocalAuthentication: [
           { key: 0, argumentsCount: 0, name: 'supportedAuthenticationTypesAsync' },
@@ -262,6 +273,10 @@ module.exports = {
           { key: 0, argumentsCount: 0, name: 'isAvailableAsync' },
           { key: 1, argumentsCount: 1, name: 'setUpdateInterval' },
         ],
+        ExponentImagePicker: [
+          { key: 0, argumentsCount: 1, name: 'launchCameraAsync' },
+          { key: 1, argumentsCount: 1, name: 'launchImageLibraryAsync' },
+        ],
         ExponentMagnetometer: [
           { key: 0, argumentsCount: 0, name: 'isAvailableAsync' },
           { key: 1, argumentsCount: 1, name: 'setUpdateInterval' },
@@ -320,12 +335,24 @@ module.exports = {
           { key: 3, argumentsCount: 0, name: 'resume' },
           { key: 4, argumentsCount: 0, name: 'isSpeaking' },
         ],
+        MediaViewManager: [],
         VibrancyViewManager: [{ key: 0, argumentsCount: 2, name: 'updateProps' }],
       },
     },
     modulesConstants: {
       type: 'mock',
       mockDefinition: {
+        CTKAdSettingsManager: {
+          addListener: { type: 'function' },
+          addTestDevice: { type: 'function' },
+          clearTestDevices: { type: 'function' },
+          currentDeviceHash: { type: 'string' },
+          removeListeners: { type: 'function' },
+          setIsChildDirected: { type: 'function' },
+          setLogLevel: { type: 'function' },
+          setMeditationService: { type: 'function' },
+          setUrlPrefix: { type: 'function' },
+        },
         ExpoAppAuth: {
           OAuthRedirect: { type: 'array' },
           URLSchemes: { type: 'array' },
@@ -504,17 +531,34 @@ module.exports = {
     viewManagersNames: {
       type: 'array',
       mock: [
-        'ExpoVideoView',
-        'VibrancyView',
-        'ExpoBarCodeScannerView',
-        'ExponentCamera',
+        'AdIconView',
         'BlurView',
+        'CTKBannerView',
+        'CTKNativeAd',
         'ExpoAdsAdMobBannerView',
-        'ExponentGLView',
         'ExpoAdsPublisherBannerView',
+        'ExpoBarCodeScannerView',
+        'ExpoLinearGradient',
+        'ExpoVideoView',
+        'ExponentCamera',
+        'ExponentGLView',
+        'MediaView',
+        'VibrancyView',
       ],
     },
     callMethod: { type: 'function', functionType: 'promise' },
+  },
+  ExpoScreenOrientation: {
+    addListener: { type: 'function', functionType: 'async' },
+    doesSupportAsync: { type: 'function', functionType: 'promise' },
+    getOrientationAsync: { type: 'function', functionType: 'promise' },
+    getOrientationLockAsync: { type: 'function', functionType: 'promise' },
+    getPlatformOrientationLockAsync: { type: 'function', functionType: 'promise' },
+    lockAsync: { type: 'function', functionType: 'promise' },
+    lockPlatformAsync: { type: 'function', functionType: 'promise' },
+    removeListeners: { type: 'function', functionType: 'async' },
+    supportsOrientationLockAsync: { type: 'function', functionType: 'promise' },
+    unlockAsync: { type: 'function', functionType: 'promise' },
   },
   ExponentAR: {
     ARFaceTrackingConfiguration: { type: 'boolean', mock: false },
@@ -557,15 +601,6 @@ module.exports = {
     startAsync: { type: 'function', functionType: 'promise' },
     stopAsync: { type: 'function', functionType: 'promise' },
   },
-  ExponentAmplitude: {
-    clearUserProperties: { type: 'function', functionType: 'async' },
-    initialize: { type: 'function', functionType: 'async' },
-    logEvent: { type: 'function', functionType: 'async' },
-    logEventWithProperties: { type: 'function', functionType: 'async' },
-    setGroup: { type: 'function', functionType: 'async' },
-    setUserId: { type: 'function', functionType: 'async' },
-    setUserProperties: { type: 'function', functionType: 'async' },
-  },
   ExponentCalendar: {
     deleteCalendarAsync: { type: 'function', functionType: 'promise' },
     deleteEventAsync: { type: 'function', functionType: 'promise' },
@@ -582,7 +617,6 @@ module.exports = {
     saveEventAsync: { type: 'function', functionType: 'promise' },
     saveReminderAsync: { type: 'function', functionType: 'promise' },
   },
-  ExponentDocumentPicker: { getDocumentAsync: { type: 'function', functionType: 'promise' } },
   ExponentErrorRecovery: { setRecoveryProps: { type: 'function', functionType: 'async' } },
   ExponentHaptic: {
     impact: { type: 'function', functionType: 'async' },
@@ -590,15 +624,6 @@ module.exports = {
     selection: { type: 'function', functionType: 'async' },
   },
   ExponentImageManipulator: { manipulate: { type: 'function', functionType: 'promise' } },
-  ExponentImagePicker: {
-    launchCameraAsync: { type: 'function', functionType: 'promise' },
-    launchImageLibraryAsync: { type: 'function', functionType: 'promise' },
-  },
-  ExponentKeepAwake: {
-    activate: { type: 'function', functionType: 'async' },
-    deactivate: { type: 'function', functionType: 'async' },
-  },
-  ExponentLinearGradientManager: {},
   ExponentNotifications: {
     cancelAllScheduledNotificationsAsync: { type: 'function', functionType: 'promise' },
     cancelScheduledNotificationAsync: { type: 'function', functionType: 'promise' },
@@ -613,10 +638,6 @@ module.exports = {
     setBadgeNumberAsync: { type: 'function', functionType: 'promise' },
   },
   ExponentScopedModuleRegistry: {},
-  ExponentScreenOrientation: {
-    allowAsync: { type: 'function', functionType: 'promise' },
-    doesSupportAsync: { type: 'function', functionType: 'promise' },
-  },
   ExponentSplashScreen: {
     hide: { type: 'function', functionType: 'async' },
     preventAutoHide: { type: 'function', functionType: 'async' },
