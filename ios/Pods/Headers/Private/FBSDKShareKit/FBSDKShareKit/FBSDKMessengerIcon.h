@@ -1,1 +1,0 @@
-../../../../FBSDKShareKit/FBSDKShareKit/FBSDKShareKit/Internal/FBSDKMessengerIcon.h
