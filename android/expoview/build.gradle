@@ -170,6 +170,7 @@ dependencies {
   compileOnly 'host.exp.exponent:expo-mail-composer:1.0.0'
   compileOnly 'host.exp.exponent:expo-sqlite:1.0.0'
   compileOnly 'host.exp.exponent:expo-image-picker:1.0.0'
+  compileOnly 'host.exp.exponent:expo-web-browser:1.0.0'
   END UNCOMMENT WHEN DISTRIBUTING */
 
   // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
@@ -230,6 +231,7 @@ dependencies {
   api project(':expo-sms')
   api project(':expo-speech')
   api project(':expo-sqlite')
+  api project(':expo-web-browser')
 
   // Versioned react native
   // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
@@ -278,7 +280,6 @@ dependencies {
 
   // Our dependencies
   api 'com.android.support:appcompat-v7:27.1.1'
-  api 'com.android.support:customtabs:27.1.1'
   api('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') {
     transitive = true
   }

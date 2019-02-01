@@ -222,7 +222,6 @@
 		B5FB74B01FF6DADC001C764B /* EXScreenOrientation.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73971FF6DADB001C764B /* EXScreenOrientation.m */; };
 		B5FB74B51FF6DADC001C764B /* EXUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73A11FF6DADB001C764B /* EXUtil.m */; };
 		B5FB74B61FF6DADC001C764B /* EXViewShot.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73A31FF6DADB001C764B /* EXViewShot.m */; };
-		B5FB74B71FF6DADC001C764B /* EXWebBrowser.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73A51FF6DADB001C764B /* EXWebBrowser.m */; };
 		B5FB74C81FF6DADC001C764B /* EXOAuthViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73CB1FF6DADB001C764B /* EXOAuthViewController.m */; };
 		B5FB74D61FF6DADC001C764B /* BranchLinkProperties+RNBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73EB1FF6DADB001C764B /* BranchLinkProperties+RNBranch.m */; };
 		B5FB74D71FF6DADC001C764B /* BranchUniversalObject+RNBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73ED1FF6DADB001C764B /* BranchUniversalObject+RNBranch.m */; };
@@ -747,8 +746,6 @@
 		B5FB73A11FF6DADB001C764B /* EXUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXUtil.m; sourceTree = "<group>"; };
 		B5FB73A21FF6DADB001C764B /* EXViewShot.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXViewShot.h; sourceTree = "<group>"; };
 		B5FB73A31FF6DADB001C764B /* EXViewShot.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXViewShot.m; sourceTree = "<group>"; };
-		B5FB73A41FF6DADB001C764B /* EXWebBrowser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXWebBrowser.h; sourceTree = "<group>"; };
-		B5FB73A51FF6DADB001C764B /* EXWebBrowser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXWebBrowser.m; sourceTree = "<group>"; };
 		B5FB73CA1FF6DADB001C764B /* EXOAuthViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXOAuthViewController.h; sourceTree = "<group>"; };
 		B5FB73CB1FF6DADB001C764B /* EXOAuthViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXOAuthViewController.m; sourceTree = "<group>"; };
 		B5FB73EA1FF6DADB001C764B /* BranchLinkProperties+RNBranch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "BranchLinkProperties+RNBranch.h"; sourceTree = "<group>"; };
@@ -1615,8 +1612,6 @@
 				B5FB73A11FF6DADB001C764B /* EXUtil.m */,
 				B5FB73A21FF6DADB001C764B /* EXViewShot.h */,
 				B5FB73A31FF6DADB001C764B /* EXViewShot.m */,
-				B5FB73A41FF6DADB001C764B /* EXWebBrowser.h */,
-				B5FB73A51FF6DADB001C764B /* EXWebBrowser.m */,
 				B5FB73C91FF6DADB001C764B /* OAuthViewController */,
 				B5FB73E81FF6DADB001C764B /* Standalone */,
 			);
@@ -2500,7 +2495,6 @@
 				B52217D61F146658002241BA /* EXKernelServiceRegistry.m in Sources */,
 				B5FB74F11FF6DADC001C764B /* EXScopedEventEmitter.m in Sources */,
 				19382BA91EC2EACC001ED4A1 /* EXBranchManager.m in Sources */,
-				B5FB74B71FF6DADC001C764B /* EXWebBrowser.m in Sources */,
 				BB50E88C20B9C0D3003C752D /* RNGestureHandlerButton.m in Sources */,
 				07639ABA20507B2000B4BE4C /* EXUpdates.m in Sources */,
 				B5ADEE951F7DB4E000C88D2F /* EXBuildConstants.m in Sources */,

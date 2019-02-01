@@ -1,6 +1,6 @@
 import { describeCrossPlatform, mockProperty, unmockAllProperties } from 'jest-expo';
-import { NativeModules } from 'react-native';
-import WebBrowser from '../WebBrowser/WebBrowser';
+import { NativeModulesProxy } from 'expo-core';
+import * as WebBrowser from '../WebBrowser';
 
 const fakeReturnValue = {
   type: 'cancel',
@@ -8,7 +8,7 @@ const fakeReturnValue = {
 
 function applyMocks() {
   mockProperty(
-    NativeModules.ExponentWebBrowser,
+    NativeModulesProxy.ExpoWebBrowser,
     'openBrowserAsync',
     jest.fn(async () => fakeReturnValue)
   );
@@ -26,7 +26,7 @@ describeCrossPlatform('WebBrowser', () => {
   it('openBrowserAsync returns correctly', async () => {
     let openResult = await WebBrowser.openBrowserAsync('http://expo.io');
     expect(openResult).toEqual(fakeReturnValue);
-    expect(NativeModules.ExponentWebBrowser.openBrowserAsync).toHaveBeenCalledWith(
+    expect(NativeModulesProxy.ExponentWebBrowser.openBrowserAsync).toHaveBeenCalledWith(
       'http://expo.io'
     );
   });
@@ -34,6 +34,6 @@ describeCrossPlatform('WebBrowser', () => {
   it('dismissBrowser returns nothing', () => {
     let closeResult = WebBrowser.dismissBrowser();
     expect(closeResult).toBeUndefined();
-    expect(NativeModules.ExponentWebBrowser.dismissBrowser).toHaveBeenCalledTimes(1);
+    expect(NativeModulesProxy.ExponentWebBrowser.dismissBrowser).toHaveBeenCalledTimes(1);
   });
 });

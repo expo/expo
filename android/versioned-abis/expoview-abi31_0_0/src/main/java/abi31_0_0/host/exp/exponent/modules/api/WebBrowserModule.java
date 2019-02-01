@@ -8,22 +8,22 @@ import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.support.customtabs.CustomTabsIntent;
 
-import expolib_v1.com.facebook.infer.annotation.Assertions;
 import abi31_0_0.com.facebook.react.bridge.Arguments;
 import abi31_0_0.com.facebook.react.bridge.Promise;
 import abi31_0_0.com.facebook.react.bridge.ReactApplicationContext;
 import abi31_0_0.com.facebook.react.bridge.ReactContextBaseJavaModule;
 import abi31_0_0.com.facebook.react.bridge.ReactMethod;
 import abi31_0_0.com.facebook.react.bridge.WritableMap;
-
+import abi31_0_0.host.exp.exponent.modules.internal.ChromeTabsManagerActivity;
 import de.greenrobot.event.EventBus;
-import host.exp.exponent.chrometabs.ChromeTabsManagerActivity;
+import expolib_v1.com.facebook.infer.annotation.Assertions;
 import host.exp.expoview.Exponent;
 
 public class WebBrowserModule extends ReactContextBaseJavaModule {
   private final static String ERROR_CODE = "EXWebBrowser";
 
-  private @Nullable Promise mOpenBrowserPromise;
+  private @Nullable
+  Promise mOpenBrowserPromise;
 
   public WebBrowserModule(ReactApplicationContext reactContext) {
     super(reactContext);

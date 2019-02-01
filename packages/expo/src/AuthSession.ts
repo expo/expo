@@ -2,7 +2,7 @@ import Constants from 'expo-constants';
 import qs from 'qs';
 
 import Linking from './Linking/Linking';
-import WebBrowser from './WebBrowser/WebBrowser';
+import { openAuthSessionAsync, dismissAuthSession } from 'expo-web-browser';
 
 type AuthSessionOptions = {
   authUrl: string;
@@ -79,12 +79,12 @@ async function startAsync(options: AuthSessionOptions): Promise<AuthSessionResul
 }
 
 function dismiss() {
-  WebBrowser.dismissAuthSession();
+  dismissAuthSession();
 }
 
 async function _openWebBrowserAsync(startUrl, returnUrl) {
   // $FlowIssue: Flow thinks the awaited result can be a promise
-  let result = await WebBrowser.openAuthSessionAsync(startUrl, returnUrl);
+  let result = await openAuthSessionAsync(startUrl, returnUrl);
   if (result.type === 'cancel' || result.type === 'dismiss') {
     return { type: result.type };
   }
