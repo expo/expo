@@ -1,4 +1,4 @@
-package host.exp.exponent.fbads;
+package abi28_0_0.host.exp.exponent.modules.api.fbads;
 
 import com.facebook.ads.NativeAd;
 import com.facebook.ads.NativeAdBase;

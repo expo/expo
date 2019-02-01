@@ -14,7 +14,6 @@ import abi28_0_0.com.facebook.react.bridge.WritableMap;
 import abi28_0_0.com.facebook.react.uimanager.ThemedReactContext;
 import abi28_0_0.com.facebook.react.uimanager.events.RCTEventEmitter;
 import abi28_0_0.com.facebook.react.views.view.ReactViewGroup;
-import host.exp.exponent.fbads.FacebookAdDataExtractor;
 
 public class NativeAdView extends ReactViewGroup {
   /** @{NativeAd} received from the ads manager **/
