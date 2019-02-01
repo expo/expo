@@ -204,6 +204,7 @@ EX_EXPORT_METHOD_AS(askAsync,
       // try to save scoped permissions - if fails than permission is denied
       if (![self.permissionsService savePermission:permissions[permissionType] ofType:permissionType forExperience:self.experienceId]) {
         permissions[permissionType][@"status"] = [[self class] permissionStringForStatus:EXPermissionStatusDenied];
+        permissions[@"granted"] = @(NO);
       }
       askForNextPermission();
     }];
@@ -211,6 +212,7 @@ EX_EXPORT_METHOD_AS(askAsync,
     UIAlertAction *denyAction = [UIAlertAction actionWithTitle:@"Deny" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
       EX_ENSURE_STRONGIFY(self);
       permissions[permissionType][@"status"] = [[self class] permissionStringForStatus:EXPermissionStatusDenied];
+      permissions[@"granted"] = @(NO);
       askForNextPermission();
     }];
 
@@ -292,27 +294,31 @@ EX_EXPORT_METHOD_AS(askAsync,
 }
 
 - (void)askForPermission:(NSString *)permissionType
-              withResult:(void (^)(BOOL))onResult
+              withResult:(void (^)(NSDictionary *))onResult
             withRejecter:(EXPromiseRejectBlock)reject
 {
   return [self askForPermissions:@[permissionType]
-                     withResults:^(NSArray<NSNumber *> *results) { onResult([results[0] boolValue]); } // we are sure that result is results.count == 1
+                     withResults:^(NSArray<NSDictionary *> *results) {
+                       onResult(results[0]);
+                     }
                     withRejecter:reject];
 }
 
 - (void)askForPermissions:(NSArray<NSString *> *)permissionsTypes
-              withResults:(void (^)(NSArray<NSNumber *> *))onResults
+              withResults:(void (^)(NSArray<NSDictionary *> *))onResults
              withRejecter:(EXPromiseRejectBlock)reject
 {
-  return [self askForPermissionsWithTypes:permissionsTypes withResults:^(NSDictionary *results) {
-    NSMutableArray<NSNumber *> *finalResults = [NSMutableArray new];
-    [results enumerateKeysAndObjectsUsingBlock:^(id _Nonnull key, NSDictionary *singleResult, BOOL * _Nonnull stop) {
-      BOOL value = [singleResult[@"status"] isEqualToString:[EXPermissions permissionStringForStatus:EXPermissionStatusGranted]];
-      [finalResults addObject:[NSNumber numberWithBool:value]];
-    }];
-    onResults(finalResults);
-  }
-  withRejecter:reject];
+  return [self askForPermissionsWithTypes:permissionsTypes
+                              withResults:^(NSDictionary *results) {
+                                NSMutableArray<NSDictionary *> *finalResults = [NSMutableArray new];
+
+                                [permissionsTypes enumerateObjectsUsingBlock:^(NSString * _Nonnull permissionType, NSUInteger idx, BOOL * _Nonnull stop) {
+                                  NSDictionary *result = results[permissionType];
+                                  [finalResults addObject:result];
+                                }];
+                                onResults(finalResults);
+                              }
+                             withRejecter:reject];
 }
 
 - (void)askForPermissionsWithTypes:(NSArray<NSString *> *)permissionsTypes
@@ -330,8 +336,11 @@ EX_EXPORT_METHOD_AS(askAsync,
     if (permission == nil) {
       return reject(@"E_PERMISSIONS_UNKNOWN", [NSString stringWithFormat:@"Unrecognized permission: %@", permissionType], nil);
     }
-    
-    if ([permission[@"status"] isEqualToString:[EXPermissions permissionStringForStatus:EXPermissionStatusGranted]]) {
+
+    BOOL isGranted = [permission[@"status"] isEqualToString:[EXPermissions permissionStringForStatus:EXPermissionStatusGranted]];
+    permission[@"granted"] = @(isGranted);
+
+    if (isGranted) {
       // global permission is granted
       
       if ([[self class] isPermissionImplicitlyGranted:permissionType]) {

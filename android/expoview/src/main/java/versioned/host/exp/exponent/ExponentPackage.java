@@ -30,7 +30,6 @@ import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.kernel.ExponentKernelModuleProvider;
 import host.exp.exponent.utils.ScopedContext;
-import versioned.host.exp.exponent.modules.api.CalendarModule;
 import versioned.host.exp.exponent.modules.api.ErrorRecoveryModule;
 import versioned.host.exp.exponent.modules.api.ImageManipulatorModule;
 import versioned.host.exp.exponent.modules.api.IntentLauncherModule;
@@ -175,7 +174,6 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new ScreenOrientationModule(reactContext));
         nativeModules.add(new RNGestureHandlerModule(reactContext));
         nativeModules.add(new RNAWSCognitoModule(reactContext));
-        nativeModules.add(new CalendarModule(reactContext, experienceId));
         nativeModules.add(new ReanimatedModule(reactContext));
         nativeModules.add(new SplashScreenModule(reactContext, experienceId));
 

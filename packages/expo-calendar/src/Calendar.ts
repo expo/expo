@@ -1,4 +1,7 @@
-import { NativeModules, Platform, processColor } from 'react-native';
+import { UnavailabilityError } from 'expo-errors';
+import { Platform, processColor } from 'react-native';
+
+import ExpoCalendar from './ExpoCalendar';
 
 type RecurringEventOptions = {
   futureEvents?: boolean,
@@ -116,19 +119,28 @@ type RecurrenceRule = {
 };
 
 export async function getCalendarsAsync(entityType?: string): Promise<void> {
-  if (!entityType) {
-    return NativeModules.ExponentCalendar.getCalendarsAsync(null);
+  if (!ExpoCalendar.getCalendarsAsync) {
+    throw new UnavailabilityError('Calendar', 'getCalendarsAsync');
   }
-  return NativeModules.ExponentCalendar.getCalendarsAsync(entityType);
+  if (!entityType) {
+    return ExpoCalendar.getCalendarsAsync(null);
+  }
+  return ExpoCalendar.getCalendarsAsync(entityType);
 }
 
 export async function createCalendarAsync(details: Calendar = {}): Promise<string> {
+  if (!ExpoCalendar.saveCalendarAsync) {
+    throw new UnavailabilityError('Calendar', 'createCalendarAsync');
+  }
   let color = details.color ? processColor(details.color) : undefined;
   const newDetails = { ...details, id: undefined, color };
-  return NativeModules.ExponentCalendar.saveCalendarAsync(newDetails);
+  return ExpoCalendar.saveCalendarAsync(newDetails);
 }
 
 export async function updateCalendarAsync(id: string, details: Calendar = {}): Promise<string> {
+  if (!ExpoCalendar.saveCalendarAsync) {
+    throw new UnavailabilityError('Calendar', 'updateCalendarAsync');
+  }
   if (!id) {
     throw new Error(
       'updateCalendarAsync must be called with an id (string) of the target calendar'
@@ -168,16 +180,19 @@ export async function updateCalendarAsync(id: string, details: Calendar = {}): P
   }
 
   const newDetails = { ...details, id, color };
-  return NativeModules.ExponentCalendar.saveCalendarAsync(newDetails);
+  return ExpoCalendar.saveCalendarAsync(newDetails);
 }
 
 export async function deleteCalendarAsync(id: string): Promise<void> {
+  if (!ExpoCalendar.deleteCalendarAsync) {
+    throw new UnavailabilityError('Calendar', 'deleteCalendarAsync');
+  }
   if (!id) {
     throw new Error(
       'deleteCalendarAsync must be called with an id (string) of the target calendar'
     );
   }
-  return NativeModules.ExponentCalendar.deleteCalendarAsync(id);
+  return ExpoCalendar.deleteCalendarAsync(id);
 }
 
 export async function getEventsAsync(
@@ -185,6 +200,9 @@ export async function getEventsAsync(
   startDate: Date,
   endDate: Date
 ): Promise<Event[]> {
+  if (!ExpoCalendar.getEventsAsync) {
+    throw new UnavailabilityError('Calendar', 'getEventsAsync');
+  }
   if (!startDate) {
     throw new Error('getEventsAsync must be called with a startDate (date) to search for events');
   }
@@ -196,24 +214,30 @@ export async function getEventsAsync(
       'getEventsAsync must be called with a non-empty array of calendarIds to search'
     );
   }
-  return NativeModules.ExponentCalendar.getEventsAsync(startDate, endDate, calendarIds);
+  return ExpoCalendar.getEventsAsync(startDate, endDate, calendarIds);
 }
 
 export async function getEventAsync(
   id: string,
   { futureEvents = false, instanceStartDate }: RecurringEventOptions = {}
 ): Promise<Event> {
+  if (!ExpoCalendar.getEventByIdAsync) {
+    throw new UnavailabilityError('Calendar', 'getEventAsync');
+  }
   if (!id) {
     throw new Error('getEventAsync must be called with an id (string) of the target event');
   }
   if (Platform.OS === 'ios') {
-    return NativeModules.ExponentCalendar.getEventByIdAsync(id, instanceStartDate);
+    return ExpoCalendar.getEventByIdAsync(id, instanceStartDate);
   } else {
-    return NativeModules.ExponentCalendar.getEventByIdAsync(id);
+    return ExpoCalendar.getEventByIdAsync(id);
   }
 }
 
 export async function createEventAsync(calendarId: string, details: Event = {}): Promise<string> {
+  if (!ExpoCalendar.saveEventAsync) {
+    throw new UnavailabilityError('Calendar', 'createEventAsync');
+  }
   if (!calendarId) {
     throw new Error('createEventAsync must be called with an id (string) of the target calendar');
   }
@@ -225,9 +249,6 @@ export async function createEventAsync(calendarId: string, details: Event = {}):
     if (!details.endDate) {
       throw new Error('createEventAsync requires an endDate (Date)');
     }
-    if (!details.timeZone) {
-      throw new Error('createEventAsync requires a timeZone (string)');
-    }
   }
 
   const newDetails = {
@@ -235,7 +256,7 @@ export async function createEventAsync(calendarId: string, details: Event = {}):
     id: undefined,
     calendarId: calendarId === DEFAULT ? undefined : calendarId,
   };
-  return NativeModules.ExponentCalendar.saveEventAsync(newDetails, {});
+  return ExpoCalendar.saveEventAsync(newDetails, {});
 }
 
 export async function updateEventAsync(
@@ -243,6 +264,9 @@ export async function updateEventAsync(
   details: Event = {},
   { futureEvents = false, instanceStartDate }: RecurringEventOptions = {}
 ): Promise<string> {
+  if (!ExpoCalendar.saveEventAsync) {
+    throw new UnavailabilityError('Calendar', 'updateEventAsync');
+  }
   if (!id) {
     throw new Error('updateEventAsync must be called with an id (string) of the target event');
   }
@@ -263,17 +287,20 @@ export async function updateEventAsync(
   }
 
   const newDetails = { ...details, id, instanceStartDate };
-  return NativeModules.ExponentCalendar.saveEventAsync(newDetails, { futureEvents });
+  return ExpoCalendar.saveEventAsync(newDetails, { futureEvents });
 }
 
 export async function deleteEventAsync(
   id: string,
   { futureEvents = false, instanceStartDate }: RecurringEventOptions = {}
 ): Promise<void> {
+  if (!ExpoCalendar.deleteEventAsync) {
+    throw new UnavailabilityError('Calendar', 'deleteEventAsync');
+  }
   if (!id) {
     throw new Error('deleteEventAsync must be called with an id (string) of the target event');
   }
-  return NativeModules.ExponentCalendar.deleteEventAsync(
+  return ExpoCalendar.deleteEventAsync(
     { id, instanceStartDate },
     { futureEvents }
   );
@@ -283,6 +310,9 @@ export async function getAttendeesForEventAsync(
   id: string,
   { futureEvents = false, instanceStartDate }: RecurringEventOptions = {}
 ): Promise<Attendee[]> {
+  if (!ExpoCalendar.getAttendeesForEventAsync) {
+    throw new UnavailabilityError('Calendar', 'getAttendeesForEventAsync');
+  }
   if (!id) {
     throw new Error(
       'getAttendeesForEventAsync must be called with an id (string) of the target event'
@@ -290,15 +320,15 @@ export async function getAttendeesForEventAsync(
   }
   // Android only takes an ID, iOS takes an object
   const params = Platform.OS === 'ios' ? { id, instanceStartDate } : id;
-  return NativeModules.ExponentCalendar.getAttendeesForEventAsync(params);
+  return ExpoCalendar.getAttendeesForEventAsync(params);
 }
 
 export async function createAttendeeAsync(
   eventId: string,
   details: Attendee = {}
 ): Promise<string> {
-  if (Platform.OS === 'ios') {
-    throw new Error('createAttendeeAsync is not available on iOS');
+  if (!ExpoCalendar.saveAttendeeForEventAsync) {
+    throw new UnavailabilityError('Calendar', 'createAttendeeAsync');
   }
   if (!eventId) {
     throw new Error('createAttendeeAsync must be called with an id (string) of the target event');
@@ -316,28 +346,28 @@ export async function createAttendeeAsync(
     throw new Error('createAttendeeAsync requires a status (string)');
   }
   const newDetails = { ...details, id: undefined };
-  return NativeModules.ExponentCalendar.saveAttendeeForEventAsync(newDetails, eventId);
+  return ExpoCalendar.saveAttendeeForEventAsync(newDetails, eventId);
 } // Android
 
 export async function updateAttendeeAsync(id: string, details: Attendee = {}): Promise<string> {
-  if (Platform.OS === 'ios') {
-    throw new Error('updateAttendeeAsync is not available on iOS');
+  if (!ExpoCalendar.saveAttendeeForEventAsync) {
+    throw new UnavailabilityError('Calendar', 'updateAttendeeAsync');
   }
   if (!id) {
     throw new Error('updateAttendeeAsync must be called with an id (string) of the target event');
   }
   const newDetails = { ...details, id };
-  return NativeModules.ExponentCalendar.saveAttendeeForEventAsync(newDetails, null);
+  return ExpoCalendar.saveAttendeeForEventAsync(newDetails, null);
 } // Android
 
 export async function deleteAttendeeAsync(id: string): Promise<void> {
-  if (Platform.OS === 'ios') {
-    throw new Error('deleteAttendeeAsync is not available on iOS');
+  if (!ExpoCalendar.deleteAttendeeAsync) {
+    throw new UnavailabilityError('Calendar', 'deleteAttendeeAsync');
   }
   if (!id) {
     throw new Error('deleteAttendeeAsync must be called with an id (string) of the target event');
   }
-  return NativeModules.ExponentCalendar.deleteAttendeeAsync(id);
+  return ExpoCalendar.deleteAttendeeAsync(id);
 } // Android
 
 export async function getRemindersAsync(
@@ -346,8 +376,8 @@ export async function getRemindersAsync(
   startDate: Date,
   endDate: Date
 ): Promise<Reminder[]> {
-  if (Platform.OS === 'android') {
-    throw new Error('getRemindersAsync is not available on Android');
+  if (!ExpoCalendar.getRemindersAsync) {
+    throw new UnavailabilityError('Calendar', 'getRemindersAsync');
   }
   if (status && !startDate) {
     throw new Error(
@@ -364,7 +394,7 @@ export async function getRemindersAsync(
       'getRemindersAsync must be called with a non-empty array of calendarIds to search'
     );
   }
-  return NativeModules.ExponentCalendar.getRemindersAsync(
+  return ExpoCalendar.getRemindersAsync(
     startDate || null,
     endDate || null,
     calendarIds,
@@ -373,21 +403,21 @@ export async function getRemindersAsync(
 } // iOS
 
 export async function getReminderAsync(id: string): Promise<Reminder> {
-  if (Platform.OS === 'android') {
-    throw new Error('getReminderAsync is not available on Android');
+  if (!ExpoCalendar.getReminderByIdAsync) {
+    throw new UnavailabilityError('Calendar', 'getReminderAsync');
   }
   if (!id) {
     throw new Error('getReminderAsync must be called with an id (string) of the target reminder');
   }
-  return NativeModules.ExponentCalendar.getReminderByIdAsync(id);
+  return ExpoCalendar.getReminderByIdAsync(id);
 } // iOS
 
 export async function createReminderAsync(
   calendarId: string,
   details: Reminder = {}
 ): Promise<string> {
-  if (Platform.OS === 'android') {
-    throw new Error('createReminderAsync is not available on Android');
+  if (!ExpoCalendar.saveReminderAsync) {
+    throw new UnavailabilityError('Calendar', 'createReminderAsync');
   }
   if (!calendarId) {
     throw new Error(
@@ -399,12 +429,12 @@ export async function createReminderAsync(
     id: undefined,
     calendarId: calendarId === DEFAULT ? undefined : calendarId,
   };
-  return NativeModules.ExponentCalendar.saveReminderAsync(newDetails);
+  return ExpoCalendar.saveReminderAsync(newDetails);
 } // iOS
 
 export async function updateReminderAsync(id: string, details: Reminder = {}): Promise<string> {
-  if (Platform.OS === 'android') {
-    throw new Error('updateReminderAsync is not available on Android');
+  if (!ExpoCalendar.saveReminderAsync) {
+    throw new UnavailabilityError('Calendar', 'updateReminderAsync');
   }
   if (!id) {
     throw new Error(
@@ -419,48 +449,62 @@ export async function updateReminderAsync(id: string, details: Reminder = {}): P
   }
 
   const newDetails = { ...details, id };
-  return NativeModules.ExponentCalendar.saveReminderAsync(newDetails);
+  return ExpoCalendar.saveReminderAsync(newDetails);
 } // iOS
 
 export async function deleteReminderAsync(id: string): Promise<void> {
-  if (Platform.OS === 'android') {
-    throw new Error('deleteReminderAsync is not available on Android');
+  if (!ExpoCalendar.deleteReminderAsync) {
+    throw new UnavailabilityError('Calendar', 'deleteReminderAsync');
   }
   if (!id) {
     throw new Error(
       'deleteReminderAsync must be called with an id (string) of the target reminder'
     );
   }
-  return NativeModules.ExponentCalendar.deleteReminderAsync(id);
+  return ExpoCalendar.deleteReminderAsync(id);
 } // iOS
 
 export async function getSourcesAsync(): Promise<Source[]> {
-  if (Platform.OS === 'android') {
-    throw new Error('getSourcesAsync is not available on Android');
+  if (!ExpoCalendar.getSourcesAsync) {
+    throw new UnavailabilityError('Calendar', 'getSourcesAsync');
   }
-  return NativeModules.ExponentCalendar.getSourcesAsync();
+  return ExpoCalendar.getSourcesAsync();
 } // iOS
 
 export async function getSourceAsync(id: string): Promise<Source> {
-  if (Platform.OS === 'android') {
-    throw new Error('getSourceAsync is not available on Android');
+  if (!ExpoCalendar.getSourceByIdAsync) {
+    throw new UnavailabilityError('Calendar', 'getSourceAsync');
   }
   if (!id) {
     throw new Error('getSourceAsync must be called with an id (string) of the target source');
   }
-  return NativeModules.ExponentCalendar.getSourceByIdAsync(id);
+  return ExpoCalendar.getSourceByIdAsync(id);
 } // iOS
 
 export function openEventInCalendar(id: string): void {
-  if (Platform.OS === 'ios') {
-    console.warn('openEventInCalendar is not available on iOS');
+  if (!ExpoCalendar.openEventInCalendar) {
+    console.warn(`openEventInCalendar is not available on platform: ${Platform.OS}`);
     return;
   }
   if (!id) {
     throw new Error('openEventInCalendar must be called with an id (string) of the target event');
   }
-  return NativeModules.ExponentCalendar.openEventInCalendar(parseInt(id, 10));
+  return ExpoCalendar.openEventInCalendar(parseInt(id, 10));
 } // Android
+
+export async function requestPermissionsAsync(): Promise<void> {
+  if (!ExpoCalendar.requestPermissionsAsync) {
+    throw new UnavailabilityError('Calendar', 'requestPermissionsAsync');
+  }
+  return await ExpoCalendar.requestPermissionsAsync();
+}
+
+export async function requestRemindersPermissionsAsync(): Promise<void> {
+  if (!ExpoCalendar.requestRemindersPermissionsAsync) {
+    throw new UnavailabilityError('Calendar', 'requestRemindersPermissionsAsync');
+  }
+  return await ExpoCalendar.requestRemindersPermissionsAsync();
+}
 
 export const EntityTypes = {
   EVENT: 'event',

@@ -157,6 +157,7 @@ dependencies {
   compileOnly 'host.exp.exponent:expo-local-authentication:2.0.0'
   compileOnly 'host.exp.exponent:expo-localization:2.0.0'
   compileOnly 'host.exp.exponent:expo-react-native-adapter:2.0.0'
+  compileOnly 'host.exp.exponent:expo-calendar:1.0.0'
   compileOnly 'host.exp.exponent:expo-camera:2.0.0'
   compileOnly 'host.exp.exponent:expo-camera-interface:2.0.0'
   compileOnly 'host.exp.exponent:expo-sensors:2.0.0'
@@ -205,6 +206,7 @@ dependencies {
   api project(':expo-barcode-scanner-interface')
   api project(':expo-blur')
   api project(':expo-brightness')
+  api project(':expo-calendar')
   api project(':expo-camera')
   api project(':expo-camera-interface')
   api project(':expo-contacts')
