@@ -69,7 +69,7 @@ export default class App extends React.Component {
   }
 
   _handlePressAsync = async () => {
-    let redirectUrl = AuthSession.getRedirectUrl(); // @tooltip <strong>AuthSession.getRedirectUrl()</strong> gets the appropriate URL on <em>https://auth.expo.io</em> to redirect back to your application. Read more about it below.
+    let redirectUrl = AuthSession.getRedirectUrl(); // @tooltip <a href="#authsessiongetredirecturl">AuthSession.getRedirectUrl()</a> gets the appropriate URL on <em>https://auth.expo.io</em> to redirect back to your application.
     let result = await AuthSession.startAsync({ // @tooltip <strong>AuthSession.startAsync</strong> returns a Promise that resolves to an object with the information that was passed back from your authentication provider, for example the user id.
       authUrl: // @tooltip authUrl is a required parameter -- it is the URL that points to the sign in page for your chosen authentication service (in this case, we are using Facebook sign in)
         `https://www.facebook.com/v2.8/dialog/oauth?response_type=token` + // @tooltip The particular URL and the format you need to use for this depend on your authentication service. For Facebook, information was found <a href='https://developers.facebook.com/docs/facebook-login/manually-build-a-login-flow/' target='_blank'>here</a>.
