@@ -1,8 +1,8 @@
 {
   "name": "EXBrightness",
   "version": "1.0.0",
-  "summary": "ExpoBrightness standalone module",
-  "description": "ExpoBrightness standalone module",
+  "summary": "Brightness universal module",
+  "description": "Brightness universal module",
   "license": "MIT",
   "authors": "650 Industries, Inc.",
   "homepage": "https://github.com/expo/expo/tree/master/packages/expo-brightness",
