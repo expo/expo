@@ -107,6 +107,7 @@
     "expo-speech": "~1.0.0",
     "expo-sqlite": "~1.0.0",
     "expo-task-manager": "~1.0.0",
+    "expo-web-browser": "~1.0.0",
     "fbemitter": "^2.1.1",
     "invariant": "^2.2.2",
     "lodash.filter": "^4.6.0",
