@@ -225,12 +225,14 @@ export default class App extends React.Component {
       jasmineDone() {
         console.log('--- tests done');
         console.log('--- send results to runner');
-        let result = JSON.stringify({
+        const jsonResult = {
           magic: '[TEST-SUITE-END]', // NOTE: Runner/Run.js waits to see this
           failed: failedSpecs.length,
           results: this._results,
-        });
+        };
+        let result = JSON.stringify(jsonResult);
         // This log needs to be an object for puppeteer tests
+        console.log(jsonResult);
         console.log(result);
 
         if (ExponentTest) {
