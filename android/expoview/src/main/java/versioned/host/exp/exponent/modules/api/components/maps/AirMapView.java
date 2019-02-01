@@ -83,11 +83,13 @@ public class AirMapView extends MapView implements GoogleMap.InfoWindowAdapter,
   private final int baseMapPadding = 50;
 
   private LatLngBounds boundsToMove;
+  private CameraUpdate cameraToSet;
   private boolean showUserLocation = false;
   private boolean handlePanDrag = false;
   private boolean moveOnMarkerPress = true;
   private boolean cacheEnabled = false;
   private boolean initialRegionSet = false;
+  private boolean initialCameraSet = false;
   private LatLngBounds cameraLastIdleBounds;
   private int cameraMoveReason = 0;
 
@@ -115,10 +117,10 @@ public class AirMapView extends MapView implements GoogleMap.InfoWindowAdapter,
   }
 
   // We do this to fix this bug:
-  // https://github.com/airbnb/react-native-maps/issues/271
+  // https://github.com/react-native-community/react-native-maps/issues/271
   //
   // which conflicts with another bug regarding the passed in context:
-  // https://github.com/airbnb/react-native-maps/issues/1147
+  // https://github.com/react-native-community/react-native-maps/issues/1147
   //
   // Doing this allows us to avoid both bugs.
   private static Context getNonBuggyContext(ThemedReactContext reactContext,
@@ -426,6 +428,13 @@ public class AirMapView extends MapView implements GoogleMap.InfoWindowAdapter,
     }
   }
 
+  public void setInitialCamera(ReadableMap initialCamera) {
+    if (!initialCameraSet && initialCamera != null) {
+      setCamera(initialCamera);
+      initialCameraSet = true;
+    }
+  }
+
   public void setRegion(ReadableMap region) {
     if (region == null) return;
 
@@ -447,6 +456,35 @@ public class AirMapView extends MapView implements GoogleMap.InfoWindowAdapter,
     } else {
       map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 0));
       boundsToMove = null;
+    }
+  }
+
+  public void setCamera(ReadableMap camera) {
+    if (camera == null) return;
+
+    CameraPosition.Builder builder = new CameraPosition.Builder();
+
+    ReadableMap center = camera.getMap("center");
+    if (center != null) {
+      Double lng = center.getDouble("longitude");
+      Double lat = center.getDouble("latitude");
+      builder.target(new LatLng(lat, lng));
+    }
+
+    builder.tilt((float)camera.getDouble("pitch"));
+    builder.bearing((float)camera.getDouble("heading"));
+    builder.zoom(camera.getInt("zoom"));
+
+    CameraUpdate update = CameraUpdateFactory.newCameraPosition(builder.build());
+
+    if (super.getHeight() <= 0 || super.getWidth() <= 0) {
+      // in this case, our map has not been laid out yet, so we save the camera update in a
+      // local variable. As soon as layout occurs, we will move the camera to the saved update.
+      // Note that if we tried to move to the camera now, it would trigger an exception.
+      cameraToSet = update;
+    } else {
+      map.moveCamera(update);
+      cameraToSet = null;
     }
   }
 
@@ -640,7 +678,7 @@ public class AirMapView extends MapView implements GoogleMap.InfoWindowAdapter,
       int width = data.get("width") == null ? 0 : data.get("width").intValue();
       int height = data.get("height") == null ? 0 : data.get("height").intValue();
 
-      //fix for https://github.com/airbnb/react-native-maps/issues/245,
+      //fix for https://github.com/react-native-community/react-native-maps/issues/245,
       //it's not guaranteed the passed-in height and width would be greater than 0.
       if (width <= 0 || height <= 0) {
         map.moveCamera(CameraUpdateFactory.newLatLngBounds(boundsToMove, 0));
@@ -649,6 +687,38 @@ public class AirMapView extends MapView implements GoogleMap.InfoWindowAdapter,
       }
 
       boundsToMove = null;
+      cameraToSet = null;
+    }
+    else if (cameraToSet != null) {
+      map.moveCamera(cameraToSet);
+      cameraToSet = null;
+    }
+  }
+
+  public void animateToCamera(ReadableMap camera, int duration) {
+    if (map == null) return;
+    CameraPosition.Builder builder = new CameraPosition.Builder(map.getCameraPosition());
+    if (camera.hasKey("zoom")) {
+      builder.zoom((float)camera.getDouble("zoom"));
+    }
+    if (camera.hasKey("heading")) {
+      builder.bearing((float)camera.getDouble("heading"));
+    }
+    if (camera.hasKey("pitch")) {
+      builder.tilt((float)camera.getDouble("pitch"));
+    }
+    if (camera.hasKey("center")) {
+      ReadableMap center = camera.getMap("center");
+      builder.target(new LatLng(center.getDouble("latitude"), center.getDouble("longitude")));
+    }
+
+    CameraUpdate update = CameraUpdateFactory.newCameraPosition(builder.build());
+
+    if (duration <= 0) {
+      map.moveCamera(update);
+    }
+    else {
+      map.animateCamera(update, duration, null);
     }
   }
 
@@ -785,6 +855,17 @@ public class AirMapView extends MapView implements GoogleMap.InfoWindowAdapter,
     }
     map.setPadding(0, 0, 0,
         0); // Without this, the Google logo is moved up by the value of edgePadding.bottom
+  }
+
+  public double[][] getMapBoundaries() {
+    LatLngBounds bounds = map.getProjection().getVisibleRegion().latLngBounds;
+    LatLng northEast = bounds.northeast;
+    LatLng southWest = bounds.southwest;
+
+    return new double[][] {
+      {northEast.longitude, northEast.latitude},
+      {southWest.longitude, southWest.latitude}
+    };
   }
 
   public void setMapBoundaries(ReadableMap northEast, ReadableMap southWest) {
@@ -1108,7 +1189,13 @@ public class AirMapView extends MapView implements GoogleMap.InfoWindowAdapter,
   
   @Override
   public void onIndoorLevelActivated(IndoorBuilding building) {
+    if (building == null) {
+      return;
+    }
     int activeLevelIndex = building.getActiveLevelIndex();
+    if (activeLevelIndex < 0 || activeLevelIndex >= building.getLevels().size()) {
+      return;
+    }
     IndoorLevel level = building.getLevels().get(activeLevelIndex);
 
     WritableMap event = Arguments.createMap();

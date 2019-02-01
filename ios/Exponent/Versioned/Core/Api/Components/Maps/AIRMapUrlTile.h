@@ -26,6 +26,7 @@
 @property NSInteger maximumZ;
 @property NSInteger minimumZ;
 @property BOOL shouldReplaceMapContent;
+@property CGFloat tileSize;
 
 #pragma mark MKOverlay protocol
 
