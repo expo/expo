@@ -1,7 +1,7 @@
 // @flow
 import * as rtlDetect from 'rtl-detect';
-import moment from 'moment';
-import 'moment-timezone';
+// import moment from 'moment';
+// import 'moment-timezone';
 
 /*
  * TODO: Bacon: We only use moment for guessing the current timezone.
@@ -28,8 +28,11 @@ export default {
     const { navigator = {} } = global;
     return navigator.languages || [];
   },
-  get timezone(): string {
-    return moment.tz.guess();
+  get timezone(): null {
+    console.warn(
+      'expo-localization: timezone is not supported. You could use `moment-timezone` but is a very large library.'
+    );
+    return null; //moment.tz.guess();
   },
   get isoCurrencyCodes(): Array<string> {
     // TODO: Bacon: Add this - very low priority

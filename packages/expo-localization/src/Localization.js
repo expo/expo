@@ -4,7 +4,7 @@ import ExpoLocalization from './ExpoLocalization';
 type Localization = {
   locale: string,
   locales: Array<string>,
-  timezone: string,
+  timezone: string | null,
   isoCurrencyCodes: ?Array<string>,
   country: ?string,
   isRTL: boolean,
@@ -13,7 +13,9 @@ type Localization = {
 export default {
   locale: ExpoLocalization.locale,
   locales: ExpoLocalization.locales,
-  timezone: ExpoLocalization.timezone,
+  get timezone(): string | null {
+    return ExpoLocalization.timezone;
+  },
   isoCurrencyCodes: ExpoLocalization.isoCurrencyCodes,
   country: ExpoLocalization.country,
   isRTL: ExpoLocalization.isRTL,
