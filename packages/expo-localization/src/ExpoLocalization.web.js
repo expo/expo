@@ -1,12 +1,5 @@
 // @flow
 import * as rtlDetect from 'rtl-detect';
-import moment from 'moment';
-import 'moment-timezone';
-
-/*
- * TODO: Bacon: We only use moment for guessing the current timezone.
- * We should find a more cost-effective approach.
- */
 
 export default {
   get isRTL(): boolean {
@@ -28,8 +21,12 @@ export default {
     const { navigator = {} } = global;
     return navigator.languages || [];
   },
-  get timezone(): string {
-    return moment.tz.guess();
+  get timezone(): null {
+    const defaultTimeZone = 'Etc/UTC';
+    if (typeof Intl === 'undefined') {
+      return defaultTimeZone;
+    }
+    return Intl.DateTimeFormat().resolvedOptions().timeZone || defaultTimeZone;
   },
   get isoCurrencyCodes(): Array<string> {
     // TODO: Bacon: Add this - very low priority

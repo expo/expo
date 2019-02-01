@@ -16,8 +16,6 @@
   "readmeFilename": "README.md",
   "dependencies": {
     "expo-core": "~2.0.0",
-    "moment": "^2.22.2",
-    "moment-timezone": "^0.5.23",
     "rtl-detect": "^1.0.2"
   },
   "devDependencies": {
