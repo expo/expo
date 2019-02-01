@@ -1,4 +1,4 @@
-import GlobalPlatformEmitter from './GlobalPlatformEmitter';
+import { SyntheticPlatformEmitter } from 'expo-core';
 function getStatusFromMedia(media) {
     if (!media) {
         return {
@@ -99,13 +99,13 @@ export default {
         const source = typeof nativeSource === 'string' ? nativeSource : nativeSource.uri;
         const media = new Audio(source);
         media.ontimeupdate = () => {
-            GlobalPlatformEmitter.emit('didUpdatePlaybackStatus', {
+            SyntheticPlatformEmitter.emit('didUpdatePlaybackStatus', {
                 key: media,
                 status: getStatusFromMedia(media),
             });
         };
         media.onerror = (event, source, fileno, columnNumber, error) => {
-            GlobalPlatformEmitter.emit('ExponentAV.onError', {
+            SyntheticPlatformEmitter.emit('ExponentAV.onError', {
                 key: media,
                 error,
             });

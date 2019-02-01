@@ -1,5 +1,5 @@
 import { PlaybackStatusToSet, PlaybackStatus, PlaybackNativeSource } from './AV';
-import GlobalPlatformEmitter from './GlobalPlatformEmitter';
+import { SyntheticPlatformEmitter } from 'expo-core';
 
 function getStatusFromMedia(media?: HTMLMediaElement): PlaybackStatus {
   if (!media) {
@@ -122,14 +122,14 @@ export default {
     const media = new Audio(source);
 
     media.ontimeupdate = () => {
-      GlobalPlatformEmitter.emit('didUpdatePlaybackStatus', {
+      SyntheticPlatformEmitter.emit('didUpdatePlaybackStatus', {
         key: media,
         status: getStatusFromMedia(media),
       });
     };
 
     media.onerror = (event: Event | string, source?: string, fileno?: number, columnNumber?: number, error?: Error) => {
-      GlobalPlatformEmitter.emit('ExponentAV.onError', {
+      SyntheticPlatformEmitter.emit('ExponentAV.onError', {
         key: media,
         error,
       });
