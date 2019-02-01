@@ -203,6 +203,9 @@ jobs:
           command: test --maxWorkers 1
           working_directory: ~/expo/packages/expo-file-system
       - yarn:
+          command: test --maxWorkers 1
+          working_directory: ~/expo/packages/expo-localization
+      - yarn:
           command: build
           working_directory: ~/expo/packages/expo-permissions
       - yarn:
