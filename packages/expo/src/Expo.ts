@@ -58,7 +58,7 @@ export { GoogleSignIn } from 'expo-google-sign-in';
 import * as ImagePicker from 'expo-image-picker';
 export { ImagePicker };
 export { LocalAuthentication } from 'expo-local-authentication';
-export { Localization } from 'expo-localization';
+export * as Localization from 'expo-localization';
 export { Location };
 export { MediaLibrary } from 'expo-media-library';
 import * as Permissions from 'expo-permissions';

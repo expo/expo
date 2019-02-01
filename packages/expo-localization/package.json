@@ -2,7 +2,16 @@
   "name": "expo-localization",
   "version": "2.0.0",
   "description": "Expo Unimodule for interfacing with the native localization APIs",
-  "main": "index.js",
+  "main": "build/Localization.js",
+  "types": "build/Localization.d.ts",
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
   "keywords": [
     "react-native",
     "expo"
@@ -15,11 +24,10 @@
   ],
   "readmeFilename": "README.md",
   "dependencies": {
-    "expo-core": "~2.0.0",
     "rtl-detect": "^1.0.2"
   },
   "devDependencies": {
-    "flow-bin": "^0.77.0"
+    "expo-core": "~2.0.0"
   },
   "gitHead": "f15abc53c111bd0438cd36dc456c59cfa7c56a58"
 }
