@@ -12,6 +12,14 @@ Requires `Permissions.CALENDAR`. Interacting with reminders on iOS requires `Per
 
 See the bottom of this page for a complete list of all possible fields for the objects used in this API.
 
+### `Calendar.requestPermissionsAsync()`
+
+Requests the user for calendar permissions, same as `Permissions.askAsync(Permissions.CALENDAR)`.
+
+#### Returns
+
+Returns a promise resolving to an object with a key `granted` which value indicates whether the permission is granted or not.
+
 ### `Calendar.getCalendarsAsync(entityType)`
 
 Gets an array of calendar objects with details about the different calendars stored on the device.
@@ -263,6 +271,14 @@ A string representing the ID of the newly created attendee record.
 #### Arguments
 
 -   **id : `string`** -- ID of the attendee to delete.
+
+### `Calendar.requestRemindersPermissionsAsync()`
+
+**iOS only**. Requests the user for reminders permissions, same as `Permissions.askAsync(Permissions.REMINDERS)`.
+
+#### Returns
+
+Returns a promise resolving to an object with a key `granted` which value indicates whether the permission is granted or not.
 
 ### `Calendar.getRemindersAsync(calendarIds, status, startDate, endDate)`
 

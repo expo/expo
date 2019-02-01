@@ -1,7 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "EXCalendarConverter.h"
-#import "EXUtil.h"
+#import <EXCore/EXUtilities.h>
+#import <EXCalendar/EXCalendarConverter.h>
 
 @implementation EXCalendarConverter
 
@@ -22,6 +22,23 @@
   if (type == EKCalendarTypeSubscription) return @"subscribed";
   if (type == EKCalendarTypeBirthday) return @"birthdays";
   return @"none";
+}
+
++ (NSString *)_entityType:(EKEntityMask)entityType
+{
+  BOOL allowsEvents = entityType & EKEntityMaskEvent;
+  BOOL allowsReminders = entityType & EKEntityMaskReminder;
+
+  if (allowsEvents && allowsReminders) {
+    return @"both";
+  }
+  if (allowsReminders) {
+    return @"reminder";
+  }
+  if (allowsEvents) {
+    return @"event";
+  }
+  return nil;
 }
 
 + (NSString *)_eventAvailability:(EKEventAvailability)availability
@@ -101,6 +118,9 @@
 
 + (NSDictionary *)serializeSource:(EKSource *)source
 {
+  if (!source) {
+    return nil;
+  }
   return @{
        @"id": source.sourceIdentifier,
        @"type": [EXCalendarConverter _sourceType:source.sourceType],
@@ -112,38 +132,12 @@
 {
   NSMutableDictionary *serializedCalendar = [[NSMutableDictionary alloc] init];
 
-  if (calendar.calendarIdentifier) {
-    serializedCalendar[@"id"] = calendar.calendarIdentifier;
-  }
-
-  if (calendar.title) {
-    serializedCalendar[@"title"] = calendar.title;
-  }
-
-  if (calendar.source) {
-    serializedCalendar[@"source"] = [EXCalendarConverter serializeSource:calendar.source];
-  }
-
-  if (calendar.allowedEntityTypes) {
-    BOOL allowsEvents = calendar.allowedEntityTypes & EKEntityMaskEvent;
-    BOOL allowsReminders = calendar.allowedEntityTypes & EKEntityMaskReminder;
-    if (allowsEvents && allowsReminders) {
-      serializedCalendar[@"entityType"] = @"both";
-    } else if (allowsReminders) {
-      serializedCalendar[@"entityType"] = @"reminder";
-    } else if (allowsEvents) {
-      serializedCalendar[@"entityType"] = @"event";
-    }
-  }
-
-  if (calendar.CGColor) {
-    serializedCalendar[@"color"] = [EXUtil hexStringWithCGColor:calendar.CGColor];
-  }
-
-  if (calendar.type) {
-    serializedCalendar[@"type"] = [EXCalendarConverter _calendarType:calendar.type];
-  }
-
+  serializedCalendar[@"id"] = EXNullIfNil(calendar.calendarIdentifier);
+  serializedCalendar[@"title"] = EXNullIfNil(calendar.title);
+  serializedCalendar[@"source"] = EXNullIfNil([EXCalendarConverter serializeSource:calendar.source]);
+  serializedCalendar[@"entityType"] = [EXCalendarConverter _entityType:calendar.allowedEntityTypes];
+  serializedCalendar[@"color"] = calendar.CGColor ? [EXUtilities hexStringWithCGColor:calendar.CGColor] : [NSNull null];
+  serializedCalendar[@"type"] = [EXCalendarConverter _calendarType:calendar.type];
   serializedCalendar[@"allowsModifications"] = @(calendar.allowsContentModifications);
   serializedCalendar[@"allowedAvailabilities"] = [EXCalendarConverter _calendarSupportedAvailabilitiesFromMask:calendar.supportedEventAvailabilities];
 
@@ -189,59 +183,10 @@
     serializedItem[@"lastModifiedDate"] = [dateFormatter stringFromDate:item.lastModifiedDate];
   }
 
-  if (item.timeZone) {
-    serializedItem[@"timeZone"] = item.timeZone.name;
-  }
-
-  if (item.URL) {
-    serializedItem[@"url"] = item.URL.absoluteString;
-  }
-
-  if (item.hasNotes) {
-    serializedItem[@"notes"] = item.notes;
-  }
-
-  if (item.hasAlarms) {
-    NSMutableArray *alarms = [[NSMutableArray alloc] init];
-
-    for (EKAlarm *alarm in item.alarms) {
-
-      NSMutableDictionary *formattedAlarm = [[NSMutableDictionary alloc] init];
-
-      if (alarm.absoluteDate) {
-        formattedAlarm[@"absoluteDate"] = [dateFormatter stringFromDate:alarm.absoluteDate];
-      }
-      if (alarm.relativeOffset) {
-        formattedAlarm[@"relativeOffset"] = @(alarm.relativeOffset / 60.0);
-      }
-      if (alarm.structuredLocation) {
-        NSString *proximity = nil;
-        switch (alarm.proximity) {
-          case EKAlarmProximityEnter:
-            proximity = @"enter";
-            break;
-          case EKAlarmProximityLeave:
-            proximity = @"leave";
-            break;
-          default:
-            proximity = @"None";
-            break;
-        }
-        formattedAlarm[@"structuredLocation"] = @{
-                       @"title": alarm.structuredLocation.title,
-                       @"proximity": proximity,
-                       @"radius": @(alarm.structuredLocation.radius),
-                       @"coords": @{
-                           @"latitude": @(alarm.structuredLocation.geoLocation.coordinate.latitude),
-                           @"longitude": @(alarm.structuredLocation.geoLocation.coordinate.longitude)
-                           }
-                       };
-
-      }
-      [alarms addObject:formattedAlarm];
-    }
-    serializedItem[@"alarms"] = alarms;
-  }
+  serializedItem[@"timeZone"] = EXNullIfNil(item.timeZone.name);
+  serializedItem[@"url"] = EXNullIfNil(item.URL.absoluteString.stringByRemovingPercentEncoding);
+  serializedItem[@"notes"] = EXNullIfNil(item.notes);
+  serializedItem[@"alarms"] = [EXCalendarConverter _serializeAlarms:item.alarms withDateFormatter:dateFormatter];
 
   if (item.hasRecurrenceRules) {
     EKRecurrenceRule *rule = [item.recurrenceRules objectAtIndex:0];
@@ -303,20 +248,10 @@
   }
 
   formedCalendarEvent[@"isDetached"] = [NSNumber numberWithBool:event.isDetached];
-
   formedCalendarEvent[@"allDay"] = [NSNumber numberWithBool:event.allDay];
-
-  if (event.availability) {
-    formedCalendarEvent[@"availability"] = [EXCalendarConverter _eventAvailability:event.availability];
-  }
-
-  if (event.status) {
-    formedCalendarEvent[@"status"] = [EXCalendarConverter _eventStatus:event.status];
-  }
-
-  if (event.organizer) {
-    formedCalendarEvent[@"organizer"] = [EXCalendarConverter _serializeAttendee:event.organizer];
-  }
+  formedCalendarEvent[@"availability"] = [EXCalendarConverter _eventAvailability:event.availability];
+  formedCalendarEvent[@"status"] = [EXCalendarConverter _eventStatus:event.status];
+  formedCalendarEvent[@"organizer"] = EXNullIfNil([EXCalendarConverter _serializeAttendee:event.organizer]);
 
   return formedCalendarEvent;
 }
@@ -375,6 +310,9 @@
 
 + (NSDictionary *)_serializeAttendee:(EKParticipant *)attendee
 {
+  if (!attendee) {
+    return nil;
+  }
   NSDictionary *emptyAttendee = @{
                   @"isCurrentUser": @"",
                   @"name": @"",
@@ -405,10 +343,52 @@
   }
 
   if (attendee.URL) {
-    formedAttendee[@"url"] = attendee.URL.absoluteString;
+    formedAttendee[@"url"] = attendee.URL.absoluteString.stringByRemovingPercentEncoding;
   }
 
   return formedAttendee;
+}
+
++ (NSArray<NSDictionary *> *)_serializeAlarms:(NSArray<EKAlarm *> *)alarms withDateFormatter:(NSDateFormatter *)dateFormatter
+{
+  NSMutableArray *serializedAlarms = [[NSMutableArray alloc] init];
+
+  for (EKAlarm *alarm in alarms) {
+    NSMutableDictionary *formattedAlarm = [[NSMutableDictionary alloc] init];
+
+    if (alarm.absoluteDate) {
+      formattedAlarm[@"absoluteDate"] = [dateFormatter stringFromDate:alarm.absoluteDate];
+    }
+    if (alarm.relativeOffset) {
+      formattedAlarm[@"relativeOffset"] = @(alarm.relativeOffset / 60.0);
+    }
+    if (alarm.structuredLocation) {
+      NSString *proximity = nil;
+      switch (alarm.proximity) {
+        case EKAlarmProximityEnter:
+          proximity = @"enter";
+          break;
+        case EKAlarmProximityLeave:
+          proximity = @"leave";
+          break;
+        default:
+          proximity = @"None";
+          break;
+      }
+      formattedAlarm[@"structuredLocation"] = @{
+                                                @"title": alarm.structuredLocation.title,
+                                                @"proximity": proximity,
+                                                @"radius": @(alarm.structuredLocation.radius),
+                                                @"coords": @{
+                                                    @"latitude": @(alarm.structuredLocation.geoLocation.coordinate.latitude),
+                                                    @"longitude": @(alarm.structuredLocation.geoLocation.coordinate.longitude)
+                                                    }
+                                                };
+
+    }
+    [serializedAlarms addObject:formattedAlarm];
+  }
+  return serializedAlarms;
 }
 
 @end

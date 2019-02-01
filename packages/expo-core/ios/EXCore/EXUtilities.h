@@ -10,6 +10,8 @@
 + (void)performSynchronouslyOnMainThread:(void (^)(void))block;
 + (CGFloat)screenScale;
 + (UIColor *)UIColor:(id)json;
++ (NSDate *)NSDate:(id)json;
++ (NSString *)hexStringWithCGColor:(CGColorRef)color;
 
 - (UIViewController *)currentViewController;
 - (nullable NSDictionary *)launchOptions;

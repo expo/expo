@@ -40,6 +40,7 @@ def includeUniversalModule = { name ->
     'expo-barcode-scanner-interface',
     'expo-blur',
     'expo-brightness',
+    'expo-calendar',
     'expo-camera',
     'expo-camera-interface',
     'expo-constants',

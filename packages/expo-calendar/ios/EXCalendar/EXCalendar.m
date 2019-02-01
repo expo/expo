@@ -1,37 +1,30 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "EXCalendar.h"
-#import "EXCalendarConverter.h"
-#import "EXScopedModuleRegistry.h"
-#import "EXCalendarRequester.h"
-#import "EXRemindersRequester.h"
-
-#import <EXPermissions/EXPermissions.h>
-#import <React/RCTConvert.h>
-#import <React/RCTUtils.h>
-#import <EventKit/EventKit.h>
 #import <UIKit/UIKit.h>
+#import <EventKit/EventKit.h>
+
+#import <EXCore/EXUtilities.h>
+
+#import <EXCalendar/EXCalendar.h>
+#import <EXCalendar/EXCalendarConverter.h>
+
+#import <EXPermissionsInterface/EXPermissionsInterface.h>
 
 @interface EXCalendar ()
 
 @property (nonatomic, strong) EKEventStore *eventStore;
 @property (nonatomic) BOOL isAccessToEventStoreGranted;
-@property (nonatomic, weak) id<EXPermissionsScopedModuleDelegate> kernelPermissionsServiceDelegate;
+@property (nonatomic, weak) id<EXPermissionsInterface> permissionsManager;
 
 @end
 
 @implementation EXCalendar
 
-@synthesize bridge = _bridge;
+EX_EXPORT_MODULE(ExpoCalendar);
 
-EX_EXPORT_SCOPED_MODULE(ExponentCalendar, PermissionsManager);
-
-- (instancetype)initWithExperienceId:(NSString *)experienceId kernelServiceDelegate:(id<EXPermissionsScopedModuleDelegate>)kernelServiceInstance params:(NSDictionary *)params
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
-  if (self = [super initWithExperienceId:experienceId kernelServiceDelegate:kernelServiceInstance params:params]) {
-    _kernelPermissionsServiceDelegate = kernelServiceInstance;
-  }
-  return self;
+  _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXPermissionsInterface)];
 }
 
 #pragma mark -
@@ -48,11 +41,12 @@ EX_EXPORT_SCOPED_MODULE(ExponentCalendar, PermissionsManager);
 #pragma mark -
 #pragma mark Event Store Accessors
 
-RCT_EXPORT_METHOD(getCalendarsAsync:(NSString *)typeString resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getCalendarsAsync,
+                    getCalendarsAsync:(NSString *)typeString
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
-  if ([EXPermissions statusForPermissions:[EXCalendarRequester permissions]] != EXPermissionStatusGranted ||
-      ![_kernelPermissionsServiceDelegate hasGrantedPermission:@"calendar" forExperience:self.experienceId]) {
-    reject(@"E_MISSING_PERMISSION", @"Missing calendar permission.", nil);
+  if (![self _checkCalendarPermissions:reject]) {
     return;
   }
 
@@ -80,19 +74,21 @@ RCT_EXPORT_METHOD(getCalendarsAsync:(NSString *)typeString resolver:(RCTPromiseR
   resolve([EXCalendarConverter serializeCalendars:calendars]);
 }
 
-RCT_EXPORT_METHOD(saveCalendarAsync:(NSDictionary *)details resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(saveCalendarAsync,
+                    saveCalendarAsync:(NSDictionary *)details
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
-  if ([EXPermissions statusForPermissions:[EXCalendarRequester permissions]] != EXPermissionStatusGranted ||
-      ![_kernelPermissionsServiceDelegate hasGrantedPermission:@"calendar" forExperience:self.experienceId]) {
-    reject(@"E_MISSING_PERMISSION", @"Missing calendar permission.", nil);
+  if (![self _checkCalendarPermissions:reject]) {
     return;
   }
+
   EKCalendar *calendar = nil;
-  NSString *title = [RCTConvert NSString:details[@"title"]];
-  NSNumber *color = [RCTConvert NSNumber:details[@"color"]];
-  NSString *sourceId = [RCTConvert NSString:details[@"sourceId"]];
-  NSString *type = [RCTConvert NSString:details[@"entityType"]];
-  NSString *calendarId = [RCTConvert NSString:details[@"id"]];
+  NSString *title = details[@"title"];
+  NSNumber *color = details[@"color"];
+  NSString *sourceId = details[@"sourceId"];
+  NSString *type = details[@"entityType"];
+  NSString *calendarId = details[@"id"];
 
   if (calendarId) {
     calendar = [self.eventStore calendarWithIdentifier:calendarId];
@@ -125,7 +121,7 @@ RCT_EXPORT_METHOD(saveCalendarAsync:(NSDictionary *)details resolver:(RCTPromise
   }
 
   if (color) {
-    calendar.CGColor = [RCTConvert UIColor:color].CGColor;
+    calendar.CGColor = [EXUtilities UIColor:color].CGColor;
   } else if (details[@"color"] == [NSNull null]) {
     calendar.CGColor = nil;
   }
@@ -136,18 +132,20 @@ RCT_EXPORT_METHOD(saveCalendarAsync:(NSDictionary *)details resolver:(RCTPromise
     resolve(calendar.calendarIdentifier);
   } else {
     reject(@"E_CALENDAR_NOT_SAVED",
-         [NSString stringWithFormat:@"Calendar %@ could not be saved", title],
+           [NSString stringWithFormat:@"Calendar '%@' could not be saved: %@", title, error.description],
          error);
   }
 }
 
-RCT_EXPORT_METHOD(deleteCalendarAsync:(NSString *)calendarId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(deleteCalendarAsync,
+                    deleteCalendarAsync:(NSString *)calendarId
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
-  if ([EXPermissions statusForPermissions:[EXCalendarRequester permissions]] != EXPermissionStatusGranted ||
-      ![_kernelPermissionsServiceDelegate hasGrantedPermission:@"calendar" forExperience:self.experienceId]) {
-    reject(@"E_MISSING_PERMISSION", @"Missing calendar permission.", nil);
+  if (![self _checkCalendarPermissions:reject]) {
     return;
   }
+
   EKCalendar *calendar = [self.eventStore calendarWithIdentifier:calendarId];
   if (!calendar) {
     reject(@"E_INVALID_CALENDAR_ID",
@@ -166,14 +164,20 @@ RCT_EXPORT_METHOD(deleteCalendarAsync:(NSString *)calendarId resolver:(RCTPromis
   }
 }
 
-RCT_EXPORT_METHOD(getEventsAsync:(NSDate *)startDate endDate:(NSDate *)endDate calendars:(NSArray *)calendars resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getEventsAsync,
+                    getEventsAsync:(NSString *)startDateStr
+                    endDate:(NSString *)endDateStr
+                    calendars:(NSArray *)calendars
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
-  if ([EXPermissions statusForPermissions:[EXCalendarRequester permissions]] != EXPermissionStatusGranted ||
-      ![_kernelPermissionsServiceDelegate hasGrantedPermission:@"calendar" forExperience:self.experienceId]) {
-    reject(@"E_MISSING_PERMISSION", @"Missing calendar permission.", nil);
+  if (![self _checkCalendarPermissions:reject]) {
     return;
   }
+
   NSMutableArray *eventCalendars;
+  NSDate *startDate = [EXUtilities NSDate:startDateStr];
+  NSDate *endDate = [EXUtilities NSDate:endDateStr];
 
   if (calendars.count) {
     eventCalendars = [[NSMutableArray alloc] init];
@@ -201,13 +205,17 @@ RCT_EXPORT_METHOD(getEventsAsync:(NSDate *)startDate endDate:(NSDate *)endDate c
   }
 }
 
-RCT_EXPORT_METHOD(getEventByIdAsync:(NSString *)eventId startDate:(NSDate *)startDate resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getEventByIdAsync,
+                    getEventByIdAsync:(NSString *)eventId
+                    startDate:(NSString *)startDateStr
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
-  if ([EXPermissions statusForPermissions:[EXCalendarRequester permissions]] != EXPermissionStatusGranted ||
-      ![_kernelPermissionsServiceDelegate hasGrantedPermission:@"calendar" forExperience:self.experienceId]) {
-    reject(@"E_MISSING_PERMISSION", @"Missing calendar permission.", nil);
+  if (![self _checkCalendarPermissions:reject]) {
     return;
   }
+
+  NSDate *startDate = [EXUtilities NSDate:startDateStr];
   EKEvent *calendarEvent = [self _getEventWithId:eventId startDate:startDate];
 
   if (calendarEvent) {
@@ -219,31 +227,31 @@ RCT_EXPORT_METHOD(getEventByIdAsync:(NSString *)eventId startDate:(NSDate *)star
   }
 }
 
-RCT_EXPORT_METHOD(saveEventAsync:(NSDictionary *)details options:(NSDictionary *)options resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(saveEventAsync,
+                    saveEventAsync:(NSDictionary *)details
+                    options:(NSDictionary *)options
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
-  if ([EXPermissions statusForPermissions:[EXCalendarRequester permissions]] != EXPermissionStatusGranted ||
-      ![_kernelPermissionsServiceDelegate hasGrantedPermission:@"calendar" forExperience:self.experienceId]) {
-    reject(@"E_MISSING_PERMISSION", @"Missing calendar permission.", nil);
+  if (![self _checkCalendarPermissions:reject]) {
     return;
   }
+
   EKEvent *calendarEvent = nil;
-  NSString *calendarId;
-  if (details[@"calendarId"]) {
-    calendarId = [RCTConvert NSString:details[@"calendarId"]];
-  }
-  NSString *eventId = [RCTConvert NSString:details[@"id"]];
-  NSString *title = [RCTConvert NSString:details[@"title"]];
-  NSString *location = [RCTConvert NSString:details[@"location"]];
-  NSDate *startDate = [RCTConvert NSDate:details[@"startDate"]];
-  NSDate *endDate = [RCTConvert NSDate:details[@"endDate"]];
-  NSDate *instanceStartDate = [RCTConvert NSDate:details[@"instanceStartDate"]];
-  NSNumber *allDay = [RCTConvert NSNumber:details[@"allDay"]];
-  NSString *notes = [RCTConvert NSString:details[@"notes"]];
-  NSString *timeZone = [RCTConvert NSString:details[@"timeZone"]];
-  NSString *url = [RCTConvert NSString:details[@"url"]];
-  NSArray *alarms = [RCTConvert NSArray:details[@"alarms"]];
-  NSDictionary *recurrenceRule = [RCTConvert NSDictionary:details[@"recurrenceRule"]];
-  NSString *availability = [RCTConvert NSString:details[@"availability"]];
+  NSString *calendarId = details[@"calendarId"];
+  NSString *eventId = details[@"id"];
+  NSString *title = details[@"title"];
+  NSString *location = details[@"location"];
+  NSDate *startDate = [EXUtilities NSDate:details[@"startDate"]];
+  NSDate *endDate = [EXUtilities NSDate:details[@"endDate"]];
+  NSDate *instanceStartDate = [EXUtilities NSDate:details[@"instanceStartDate"]];
+  NSNumber *allDay = details[@"allDay"];
+  NSString *notes = details[@"notes"];
+  NSString *timeZone = details[@"timeZone"];
+  NSString *url = details[@"url"];
+  NSArray *alarms = details[@"alarms"];
+  NSDictionary *recurrenceRule = details[@"recurrenceRule"];
+  NSString *availability = details[@"availability"];
 
   NSNumber *futureEvents = options[@"futureEvents"];
   EKSpan span = EKSpanThisEvent;
@@ -313,12 +321,13 @@ RCT_EXPORT_METHOD(saveEventAsync:(NSDictionary *)details options:(NSDictionary *
   }
 
   if (recurrenceRule) {
-    NSString *frequency = [RCTConvert NSString:recurrenceRule[@"frequency"]];
-    NSInteger interval = [RCTConvert NSInteger:recurrenceRule[@"interval"]];
-    NSInteger occurrence = [RCTConvert NSInteger:recurrenceRule[@"occurrence"]];
+    NSString *frequency = recurrenceRule[@"frequency"];
+    NSInteger interval = [recurrenceRule[@"interval"] integerValue];
+    NSInteger occurrence = [recurrenceRule[@"occurrence"] integerValue];
     NSDate *endDate = nil;
+
     if (recurrenceRule[@"endDate"]) {
-      endDate = [RCTConvert NSDate:recurrenceRule[@"endDate"]];
+      endDate = [EXUtilities NSDate:recurrenceRule[@"endDate"]];
     }
 
     EKRecurrenceRule *rule = [self _createRecurrenceRule:frequency interval:interval occurrence:occurrence endDate:endDate];
@@ -368,20 +377,23 @@ RCT_EXPORT_METHOD(saveEventAsync:(NSDictionary *)details options:(NSDictionary *
   }
 }
 
-RCT_EXPORT_METHOD(deleteEventAsync:(NSDictionary *)event options:(NSDictionary *)options resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(deleteEventAsync,
+                    deleteEventAsync:(NSDictionary *)event
+                    options:(NSDictionary *)options
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
-  if ([EXPermissions statusForPermissions:[EXCalendarRequester permissions]] != EXPermissionStatusGranted ||
-      ![_kernelPermissionsServiceDelegate hasGrantedPermission:@"calendar" forExperience:self.experienceId]) {
-    reject(@"E_MISSING_PERMISSION", @"Missing calendar permission.", nil);
+  if (![self _checkCalendarPermissions:reject]) {
     return;
   }
+
   NSNumber *futureEvents = options[@"futureEvents"];
   EKSpan span = EKSpanThisEvent;
   if ([futureEvents boolValue] == YES) {
     span = EKSpanFutureEvents;
   }
 
-  NSDate *instanceStartDate = [RCTConvert NSDate:event[@"instanceStartDate"]];
+  NSDate *instanceStartDate = [EXUtilities NSDate:event[@"instanceStartDate"]];
 
   EKEvent *calendarEvent = [self _getEventWithId:event[@"id"] startDate:instanceStartDate];
 
@@ -401,14 +413,16 @@ RCT_EXPORT_METHOD(deleteEventAsync:(NSDictionary *)event options:(NSDictionary *
   }
 }
 
-RCT_EXPORT_METHOD(getAttendeesForEventAsync:(NSDictionary *)event resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getAttendeesForEventAsync,
+                    getAttendeesForEventAsync:(NSDictionary *)event
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
-  if ([EXPermissions statusForPermissions:[EXCalendarRequester permissions]] != EXPermissionStatusGranted ||
-      ![_kernelPermissionsServiceDelegate hasGrantedPermission:@"calendar" forExperience:self.experienceId]) {
-    reject(@"E_MISSING_PERMISSION", @"Missing calendar permission.", nil);
+  if (![self _checkCalendarPermissions:reject]) {
     return;
   }
-  NSDate *instanceStartDate = [RCTConvert NSDate:event[@"instanceStartDate"]];
+
+  NSDate *instanceStartDate = [EXUtilities NSDate:event[@"instanceStartDate"]];
 
   EKEvent *item = [self _getEventWithId:event[@"id"] startDate:instanceStartDate];
 
@@ -425,14 +439,21 @@ RCT_EXPORT_METHOD(getAttendeesForEventAsync:(NSDictionary *)event resolver:(RCTP
   }
 }
 
-RCT_EXPORT_METHOD(getRemindersAsync:(NSDate * _Nullable)startDate endDate:(NSDate * _Nullable)endDate calendars:(NSArray *)calendars status:(NSString * _Nullable)status resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getRemindersAsync,
+                    getRemindersAsync:(NSString * _Nullable)startDateStr
+                    endDate:(NSString * _Nullable)endDateStr
+                    calendars:(NSArray *)calendars
+                    status:(NSString * _Nullable)status
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
-  if ([EXPermissions statusForPermissions:[EXRemindersRequester permissions]] != EXPermissionStatusGranted ||
-      ![_kernelPermissionsServiceDelegate hasGrantedPermission:@"reminders" forExperience:self.experienceId]) {
-    reject(@"E_MISSING_PERMISSION", @"Missing reminders permission.", nil);
+  if (![self _checkRemindersPermissions:reject]) {
     return;
   }
+
   NSMutableArray *reminderCalendars;
+  NSDate *startDate = [EXUtilities NSDate:startDateStr];
+  NSDate *endDate = [EXUtilities NSDate:endDateStr];
 
   if (calendars.count) {
     reminderCalendars = [[NSMutableArray alloc] init];
@@ -468,13 +489,15 @@ RCT_EXPORT_METHOD(getRemindersAsync:(NSDate * _Nullable)startDate endDate:(NSDat
   }];
 }
 
-RCT_EXPORT_METHOD(getReminderByIdAsync:(NSString *)reminderId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getReminderByIdAsync,
+                    getReminderByIdAsync:(NSString *)reminderId
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
-  if ([EXPermissions statusForPermissions:[EXRemindersRequester permissions]] != EXPermissionStatusGranted ||
-      ![_kernelPermissionsServiceDelegate hasGrantedPermission:@"reminders" forExperience:self.experienceId]) {
-    reject(@"E_MISSING_PERMISSION", @"Missing reminders permission.", nil);
+  if (![self _checkRemindersPermissions:reject]) {
     return;
   }
+
   EKReminder *reminder = (EKReminder *)[self.eventStore calendarItemWithIdentifier:reminderId];
 
   if (reminder) {
@@ -492,30 +515,29 @@ RCT_EXPORT_METHOD(getReminderByIdAsync:(NSString *)reminderId resolver:(RCTPromi
   }
 }
 
-RCT_EXPORT_METHOD(saveReminderAsync:(NSDictionary *)details resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(saveReminderAsync,
+                    saveReminderAsync:(NSDictionary *)details
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
-  if ([EXPermissions statusForPermissions:[EXRemindersRequester permissions]] != EXPermissionStatusGranted ||
-      ![_kernelPermissionsServiceDelegate hasGrantedPermission:@"reminders" forExperience:self.experienceId]) {
-    reject(@"E_MISSING_PERMISSION", @"Missing reminders permission.", nil);
+  if (![self _checkRemindersPermissions:reject]) {
     return;
   }
+
   EKReminder *reminder = nil;
-  NSString *calendarId;
-  if (details[@"calendarId"]) {
-    calendarId = [RCTConvert NSString:details[@"calendarId"]];
-  }
-  NSString *reminderId = [RCTConvert NSString:details[@"id"]];
-  NSDate *startDate = [RCTConvert NSDate:details[@"startDate"]];
-  NSDate *dueDate = [RCTConvert NSDate:details[@"dueDate"]];
-  NSNumber *completed = [RCTConvert NSNumber:details[@"completed"]];
-  NSDate *completionDate = [RCTConvert NSDate:details[@"completionDate"]];
-  NSString *title = [RCTConvert NSString:details[@"title"]];
-  NSString *location = [RCTConvert NSString:details[@"location"]];
-  NSString *notes = [RCTConvert NSString:details[@"notes"]];
-  NSString *timeZone = [RCTConvert NSString:details[@"timeZone"]];
-  NSArray *alarms = [RCTConvert NSArray:details[@"alarms"]];
-  NSDictionary *recurrenceRule = [RCTConvert NSDictionary:details[@"recurrenceRule"]];
-  NSString *url = [RCTConvert NSString:details[@"url"]];
+  NSString *calendarId = details[@"calendarId"];
+  NSString *reminderId = details[@"id"];
+  NSDate *startDate = [EXUtilities NSDate:details[@"startDate"]];
+  NSDate *dueDate = [EXUtilities NSDate:details[@"dueDate"]];
+  NSDate *completionDate = [EXUtilities NSDate:details[@"completionDate"]];
+  NSNumber *completed = details[@"completed"];
+  NSString *title = details[@"title"];
+  NSString *location = details[@"location"];
+  NSString *notes = details[@"notes"];
+  NSString *timeZone = details[@"timeZone"];
+  NSArray *alarms = details[@"alarms"];
+  NSDictionary *recurrenceRule = details[@"recurrenceRule"];
+  NSString *url = details[@"url"];
 
   NSCalendar *currentCalendar = [NSCalendar currentCalendar];
 
@@ -573,12 +595,13 @@ RCT_EXPORT_METHOD(saveReminderAsync:(NSDictionary *)details resolver:(RCTPromise
   }
 
   if (recurrenceRule) {
-    NSString *frequency = [RCTConvert NSString:recurrenceRule[@"frequency"]];
-    NSInteger interval = [RCTConvert NSInteger:recurrenceRule[@"interval"]];
-    NSInteger occurrence = [RCTConvert NSInteger:recurrenceRule[@"occurrence"]];
+    NSString *frequency = recurrenceRule[@"frequency"];
+    NSInteger interval = [recurrenceRule[@"interval"] integerValue];
+    NSInteger occurrence = [recurrenceRule[@"occurrence"] integerValue];
     NSDate *endDate = nil;
+
     if (recurrenceRule[@"endDate"]) {
-      endDate = [RCTConvert NSDate:recurrenceRule[@"endDate"]];
+      endDate = [EXUtilities NSDate:recurrenceRule[@"endDate"]];
     }
 
     EKRecurrenceRule *rule = [self _createRecurrenceRule:frequency interval:interval occurrence:occurrence endDate:endDate];
@@ -631,13 +654,15 @@ RCT_EXPORT_METHOD(saveReminderAsync:(NSDictionary *)details resolver:(RCTPromise
   }
 }
 
-RCT_EXPORT_METHOD(deleteReminderAsync:(NSString *)reminderId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(deleteReminderAsync,
+                    deleteReminderAsync:(NSString *)reminderId
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
-  if ([EXPermissions statusForPermissions:[EXRemindersRequester permissions]] != EXPermissionStatusGranted ||
-      ![_kernelPermissionsServiceDelegate hasGrantedPermission:@"reminders" forExperience:self.experienceId]) {
-    reject(@"E_MISSING_PERMISSION", @"Missing reminders permission.", nil);
+  if (![self _checkRemindersPermissions:reject]) {
     return;
   }
+
   EKReminder *reminder = (EKReminder *)[self.eventStore calendarItemWithIdentifier:reminderId];
   if (!reminder) {
     reject(@"E_INVALID_REMINDER_ID",
@@ -656,7 +681,9 @@ RCT_EXPORT_METHOD(deleteReminderAsync:(NSString *)reminderId resolver:(RCTPromis
   }
 }
 
-RCT_EXPORT_METHOD(getSourcesAsync:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getSourcesAsync,
+                    getSourcesAsync:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   NSArray *sources = [self.eventStore sources];
 
@@ -674,7 +701,10 @@ RCT_EXPORT_METHOD(getSourcesAsync:(RCTPromiseResolveBlock)resolve rejecter:(RCTP
   resolve(serializedSources);
 }
 
-RCT_EXPORT_METHOD(getSourceByIdAsync:(NSString *)sourceId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getSourceByIdAsync,
+                    getSourceByIdAsync:(NSString *)sourceId
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   EKSource *source = [self.eventStore sourceWithIdentifier:sourceId];
   if (!source) {
@@ -686,6 +716,28 @@ RCT_EXPORT_METHOD(getSourceByIdAsync:(NSString *)sourceId resolver:(RCTPromiseRe
 
   resolve([EXCalendarConverter serializeSource:source]);
 }
+
+EX_EXPORT_METHOD_AS(requestPermissionsAsync,
+                    requestPermissionsAsync:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
+{
+  if (!_permissionsManager) {
+    return reject(@"E_NO_PERMISSIONS", @"Permissions module not found. Are you sure that Expo modules are properly linked?", nil);
+  }
+  [_permissionsManager askForPermission:@"calendar" withResult:resolve withRejecter:reject];
+}
+
+EX_EXPORT_METHOD_AS(requestRemindersPermissionsAsync,
+                    requestRemindersPermissionsAsync:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
+{
+  if (!_permissionsManager) {
+    return reject(@"E_NO_PERMISSIONS", @"Permissions module not found. Are you sure that Expo modules are properly linked?", nil);
+  }
+  [_permissionsManager askForPermission:@"reminders" withResult:resolve withRejecter:reject];
+}
+
+#pragma mark - helpers
 
 - (EKEvent * _Nullable)_getEventWithId:(NSString *)eventId startDate:(NSDate * _Nullable)startDate
 {
@@ -724,8 +776,8 @@ RCT_EXPORT_METHOD(getSourceByIdAsync:(NSString *)sourceId resolver:(RCTPromiseRe
 {
   EKAlarm *calendarEventAlarm = nil;
 
-  NSDate *date = [RCTConvert NSDate:alarm[@"absoluteDate"]];
-  NSNumber *relativeOffset = [RCTConvert NSNumber:alarm[@"relativeOffset"]];
+  NSDate *date = [EXUtilities NSDate:alarm[@"absoluteDate"]];
+  NSNumber *relativeOffset = alarm[@"relativeOffset"];
 
   if (date) {
     calendarEventAlarm = [EKAlarm alarmWithAbsoluteDate:date];
@@ -768,7 +820,7 @@ RCT_EXPORT_METHOD(getSourceByIdAsync:(NSString *)sourceId resolver:(RCTPromiseRe
   return [calendarEventAlarms copy];
 }
 
--(EKRecurrenceRule *)_createRecurrenceRule:(NSString *)frequency interval:(NSInteger)interval occurrence:(NSInteger)occurrence endDate:(NSDate *)endDate
+- (EKRecurrenceRule *)_createRecurrenceRule:(NSString *)frequency interval:(NSInteger)interval occurrence:(NSInteger)occurrence endDate:(NSDate *)endDate
 {
   EKRecurrenceRule *rule = nil;
   EKRecurrenceEnd *recurrenceEnd = nil;
@@ -794,7 +846,7 @@ RCT_EXPORT_METHOD(getSourceByIdAsync:(NSString *)sourceId resolver:(RCTPromiseRe
   return rule;
 }
 
--(EKRecurrenceFrequency)_recurrenceFrequency:(NSString *)name
+- (EKRecurrenceFrequency)_recurrenceFrequency:(NSString *)name
 {
   if ([name isEqualToString:@"weekly"]) {
     return EKRecurrenceFrequencyWeekly;
@@ -823,6 +875,26 @@ RCT_EXPORT_METHOD(getSourceByIdAsync:(NSString *)sourceId resolver:(RCTPromiseRe
     return EKEventAvailabilityUnavailable;
   }
   return EKEventAvailabilityNotSupported;
+}
+
+- (BOOL)_checkPermissions:(NSString *)permissionType reject:(EXPromiseRejectBlock)reject
+{
+  if (![_permissionsManager hasGrantedPermission:permissionType]) {
+    NSString *errorMessage = [NSString stringWithFormat:@"%@ permission is required to do this operation.", [permissionType uppercaseString]];
+    reject(@"E_MISSING_PERMISSION", errorMessage, nil);
+    return NO;
+  }
+  return YES;
+}
+
+- (BOOL)_checkCalendarPermissions:(EXPromiseRejectBlock)reject
+{
+  return [self _checkPermissions:@"calendar" reject:reject];
+}
+
+- (BOOL)_checkRemindersPermissions:(EXPromiseRejectBlock)reject
+{
+  return [self _checkPermissions:@"reminders" reject:reject];
 }
 
 @end

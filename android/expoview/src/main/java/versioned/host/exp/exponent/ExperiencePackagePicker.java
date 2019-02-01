@@ -16,6 +16,7 @@ import expo.modules.backgroundfetch.BackgroundFetchPackage;
 import expo.modules.barcodescanner.BarCodeScannerPackage;
 import expo.modules.blurview.BlurViewPackage;
 import expo.modules.brightness.BrightnessPackage;
+import expo.modules.calendar.CalendarPackage;
 import expo.modules.camera.CameraPackage;
 import expo.modules.constants.ConstantsPackage;
 import expo.modules.contacts.ContactsPackage;
@@ -56,6 +57,7 @@ public class ExperiencePackagePicker {
       new BarCodeScannerPackage(),
       new BlurViewPackage(),
       new BrightnessPackage(),
+      new CalendarPackage(),
       new CameraPackage(),
       new ConstantsPackage(),
       new ContactsPackage(),
