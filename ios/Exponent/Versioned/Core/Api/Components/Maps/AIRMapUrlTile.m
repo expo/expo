@@ -11,6 +11,7 @@
 
 @implementation AIRMapUrlTile {
     BOOL _urlTemplateSet;
+    BOOL _tileSizeSet;
 }
 
 - (void)setShouldReplaceMapContent:(BOOL)shouldReplaceMapContent
@@ -47,6 +48,13 @@
     [self update];
 }
 
+- (void)setTileSize:(CGFloat)tileSize{
+    _tileSize = tileSize;
+    _tileSizeSet = YES;
+    [self createTileOverlayAndRendererIfPossible];
+    [self update];
+}
+
 - (void) createTileOverlayAndRendererIfPossible
 {
     if (!_urlTemplateSet) return;
@@ -59,6 +67,9 @@
     }
     if (self.maximumZ) {
         self.tileOverlay.maximumZ = self.maximumZ;
+    }
+    if (_tileSizeSet) {
+        self.tileOverlay.tileSize = CGSizeMake(self.tileSize, self.tileSize);
     }
     self.renderer = [[MKTileOverlayRenderer alloc] initWithTileOverlay:self.tileOverlay];
 }

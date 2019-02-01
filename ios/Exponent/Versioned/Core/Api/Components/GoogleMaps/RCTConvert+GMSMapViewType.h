@@ -9,5 +9,5 @@
 #import <React/RCTConvert.h>
 
 @interface RCTConvert (GMSMapViewType)
-
++ (GMSCameraPosition*)GMSCameraPositionWithDefaults:(id)json existingCamera:(GMSCameraPosition*)existingCamera;
 @end
