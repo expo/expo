@@ -34,7 +34,7 @@ export async function runAndroidTestsAsync(
 export async function buildLocalAndroidAndRunTestAsync(
   env: { [key: string]: any } = {}
 ): Promise<void> {
-  await spawnAsync('./gradlew', [':app:assembleDevMinSdkDevKernelDebug'], {
+  await spawnAsync('./gradlew', [':app:assembleDebug'], {
     cwd: ANDROID_DIR,
     env: {
       ...process.env,
@@ -42,7 +42,7 @@ export async function buildLocalAndroidAndRunTestAsync(
     },
   });
 
-  await spawnAsync('./gradlew', [':app:assembleDevMinSdkDevKernelDebugAndroidTest'], {
+  await spawnAsync('./gradlew', [':app:assembleDebugAndroidTest'], {
     cwd: ANDROID_DIR,
     env: {
       ...process.env,
@@ -53,11 +53,11 @@ export async function buildLocalAndroidAndRunTestAsync(
   return await runAndroidTestsAsync(
     path.join(
       ANDROID_DIR,
-      'app/build/outputs/apk/devMinSdkDevKernel/debug/app-devMinSdk-devKernel-debug.apk'
+      'app/build/outputs/apk/debug/app-debug.apk'
     ),
     path.join(
       ANDROID_DIR,
-      'app/build/outputs/apk/androidTest/devMinSdkDevKernel/debug/app-devMinSdk-devKernel-debug-androidTest.apk'
+      'app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk'
     )
   );
 }
