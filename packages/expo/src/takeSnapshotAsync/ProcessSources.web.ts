@@ -18,8 +18,8 @@ export function shouldProcess(string: string): boolean {
 
 export async function batchProcessAllSourcesAsync(
   string: string,
-  baseUrl: string | undefined = undefined,
-  get = undefined
+  baseUrl?: string,
+  get?
 ): Promise<string> {
   if (!shouldProcess(string)) {
     return string;

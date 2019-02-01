@@ -5,8 +5,6 @@ import { batchResolveAllFontsAsync } from './Fonts.web';
 import { processAllImagesAsync } from './Images.web';
 import * as util from './Utils.web';
 
-declare var window: Window;
-
 type FillStyle = string | CanvasGradient | CanvasPattern;
 
 interface SVGOptions {
@@ -44,9 +42,9 @@ async function generateSVGAsync(
   }
 
   if (style) {
-    Object.keys(style).forEach(property => {
+    for (const property of Object.keys(style)) {
       clone.style[property] = style[property];
-    });
+    }
   }
 
   const svgDataUri = await makeSVGDataURIAsync(
@@ -85,7 +83,7 @@ export async function createPNGAsync(element: Element, options: CaptureOptions):
   return await canvas.toDataURL('image/png');
 }
 
-export async function createJPGAsync(
+export async function createJPEGAsync(
   element: Element,
   { quality, ...options }: CaptureOptions
 ): Promise<string> {
@@ -164,7 +162,7 @@ async function cloneChildren(
   { childNodes },
   clone: HTMLImageElement | Node
 ): Promise<HTMLElement | Node> {
-  const children = util.makeIterable(childNodes);
+  const children: any[] = Array.from(childNodes);
   if (children.length === 0) {
     return clone;
   }
@@ -190,7 +188,7 @@ async function processClone(original: Element, clone: HTMLElement): Promise<HTML
   if (source.cssText) {
     target.cssText = source.cssText;
   } else {
-    util.makeIterable(source).forEach(name => {
+    Array.from(source).forEach(name => {
       target.setProperty(name, source.getPropertyValue(name), source.getPropertyPriority(name));
     });
   }
@@ -233,8 +231,7 @@ function formatCSSText(style: CSSStyleDeclaration): string {
 }
 
 function formatCSSProperties(style: CSSStyleDeclaration): string {
-  const parsed = util
-    .makeIterable(style)
+  const parsed = Array.from(style)
     .map(name => formatProperty(name, style))
     .join('; ');
 

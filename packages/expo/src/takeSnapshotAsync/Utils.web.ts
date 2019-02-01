@@ -53,13 +53,14 @@ export async function getBlobFromCanvasAsync(
   quality?: number
 ): Promise<Blob> {
   if (canvas.toBlob) {
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       canvas.toBlob(
         blob => {
           if (blob == null) {
-            throw new Error('Failed to convert canvas to blob!');
+            reject('Failed to convert canvas to blob!');
+          } else {
+            resolve(blob);
           }
-          resolve(blob);
         },
         '2d',
         quality
@@ -86,7 +87,9 @@ export function getImageElementFromURIAsync(uri: string): Promise<HTMLImageEleme
     image.onload = () => {
       resolve(image);
     };
-    image.onerror = reject;
+    image.onerror = () => {
+      reject(`Image could not be loaded ${image.src}`);
+    };
     image.src = uri;
   });
 }
@@ -179,14 +182,6 @@ export function postponeMethodExecution(ms): (args: any) => Promise<any> {
         resolve(arg);
       }, ms);
     });
-}
-
-export function makeIterable(arrayLike: any = []): any[] {
-  const array: any[] = [];
-  for (const item of arrayLike) {
-    array.push(item);
-  }
-  return array;
 }
 
 export function getEscapedXHTMLString(input: string): string {

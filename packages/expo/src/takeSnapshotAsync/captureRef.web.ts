@@ -14,7 +14,7 @@ export default async function captureRef(
   const finalFormat = format.toLowerCase();
   switch (finalFormat) {
     case 'jpg':
-      return Creator.createJPGAsync(element, options);
+      return Creator.createJPEGAsync(element, options);
     case 'png':
       return Creator.createPNGAsync(element, options);
     case 'raw':

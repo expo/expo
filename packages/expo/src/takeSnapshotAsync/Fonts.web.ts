@@ -1,5 +1,4 @@
 import { batchProcessAllSourcesAsync, shouldProcess } from './ProcessSources.web';
-import { makeIterable } from './Utils.web';
 
 declare var document: Document;
 
@@ -13,7 +12,7 @@ export async function batchResolveAllFontsAsync(element: HTMLElement): Promise<H
 
 async function findAllFontsForDocumentAsync(): Promise<string[]> {
   const styleSheets: StyleSheetList = document.styleSheets;
-  const sheets: CSSStyleSheet[] = makeIterable(styleSheets);
+  const sheets: any[] = Array.from(styleSheets);
   const cssRules = getCSSRules(sheets);
   const rulesToProcess = cssRules
     .filter(({ type }) => type === CSSRule.FONT_FACE_RULE)
@@ -37,7 +36,7 @@ function getCSSRules(styleSheets: CSSStyleSheet[]): CSSStyleRule[] {
   const cssRules: CSSStyleRule[] = [];
   for (const sheet of styleSheets) {
     try {
-      const rules: CSSRule[] = makeIterable(sheet.cssRules);
+      const rules: CSSRule[] = Array.from(sheet.cssRules);
       rules.forEach(cssRules.push.bind(cssRules));
     } catch ({ message }) {
       throw new Error(`Error while reading CSS rules from ${sheet.href}: ${message}`);
