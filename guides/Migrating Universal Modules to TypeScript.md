@@ -90,6 +90,6 @@ To get the `tsconfig` that we use in all of our modules, run `expo-module prepar
 
 - Remove `babel-preset-expo`
 - Remove `flow`
-- For reusing types across web native-layer and API-layer, types should be moved to a named file with the `.types.ts` extension. There are cases (`expo-av` for example) where you should separate types into smaller files.
+- For reusing types across the web implementation's native layer and API layer, types should be moved to a named file with the `.types.ts` extension. There are cases (`expo-av` for example) where you should separate types into smaller files.
 
 [universal-modules]: https://github.com/expo/expo/blob/master/guides/Expo%20Universal%20Module%20Infrastructure.md
