@@ -20,7 +20,7 @@ import * as SecureStore from 'expo-secure-store';
 import { Audio, Video } from 'expo-av';
 import { BlurView, VibrancyView } from 'expo-blur';
 import * as AR from './AR';
-import * as Brightness from './Brightness';
+import * as Brightness from 'expo-brightness';
 import * as Calendar from './Calendar';
 import * as FileSystem from 'expo-file-system';
 import * as Google from './Google/Google';

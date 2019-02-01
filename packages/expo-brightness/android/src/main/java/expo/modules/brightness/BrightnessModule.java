@@ -1,20 +1,23 @@
-package versioned.host.exp.exponent.modules.api;
+package expo.modules.brightness;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Build;
 import android.provider.Settings;
 import android.view.WindowManager;
 
-import com.facebook.react.bridge.Promise;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
+import expo.core.ExportedModule;
+import expo.core.InvalidArgumentException;
+import expo.core.ModuleRegistry;
+import expo.core.Promise;
+import expo.core.interfaces.ActivityProvider;
+import expo.core.interfaces.ExpoMethod;
+import expo.core.interfaces.ModuleRegistryConsumer;
 
-import expo.errors.InvalidArgumentException;
+public class BrightnessModule extends ExportedModule implements ModuleRegistryConsumer {
+  private ModuleRegistry mModuleRegistry;
 
-public class BrightnessModule extends ReactContextBaseJavaModule {
-
-  public BrightnessModule(ReactApplicationContext reactContext) {
+  public BrightnessModule(Context reactContext) {
     super(reactContext);
   }
 
@@ -23,7 +26,12 @@ public class BrightnessModule extends ReactContextBaseJavaModule {
     return "ExpoBrightness";
   }
 
-  @ReactMethod
+  @Override
+  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+    mModuleRegistry = moduleRegistry;
+  }
+
+  @ExpoMethod
   public void setBrightnessAsync(final float brightnessValue, final Promise promise) {
     final Activity activity = getCurrentActivity();
     activity.runOnUiThread(new Runnable() {
@@ -41,7 +49,7 @@ public class BrightnessModule extends ReactContextBaseJavaModule {
     });
   }
 
-  @ReactMethod
+  @ExpoMethod
   public void getBrightnessAsync(final Promise promise) {
     final Activity activity = getCurrentActivity();
     activity.runOnUiThread(new Runnable() {
@@ -58,8 +66,8 @@ public class BrightnessModule extends ReactContextBaseJavaModule {
     });
   }
 
-  @ReactMethod
-  public void getSystemBrightnessAsync(Promise promise){
+  @ExpoMethod
+  public void getSystemBrightnessAsync(Promise promise) {
     try {
       int brightnessMode = Settings.System.getInt(
           getCurrentActivity().getContentResolver(),
@@ -85,7 +93,7 @@ public class BrightnessModule extends ReactContextBaseJavaModule {
     }
   }
 
-  @ReactMethod
+  @ExpoMethod
   public void setSystemBrightnessAsync(float brightnessValue, Promise promise) {
     try {
       // we have to just check this every time
@@ -111,7 +119,7 @@ public class BrightnessModule extends ReactContextBaseJavaModule {
     }
   }
 
-  @ReactMethod
+  @ExpoMethod
   public void useSystemBrightnessAsync(final Promise promise) {
     final Activity activity = getCurrentActivity();
     activity.runOnUiThread(new Runnable() {
@@ -129,7 +137,7 @@ public class BrightnessModule extends ReactContextBaseJavaModule {
     });
   }
 
-  @ReactMethod
+  @ExpoMethod
   public void isUsingSystemBrightnessAsync(final Promise promise) {
     final Activity activity = getCurrentActivity();
     activity.runOnUiThread(new Runnable() {
@@ -141,7 +149,7 @@ public class BrightnessModule extends ReactContextBaseJavaModule {
     });
   }
 
-  @ReactMethod
+  @ExpoMethod
   public void getSystemBrightnessModeAsync(Promise promise) {
     try {
       int brightnessMode = Settings.System.getInt(
@@ -154,7 +162,7 @@ public class BrightnessModule extends ReactContextBaseJavaModule {
     }
   }
 
-  @ReactMethod
+  @ExpoMethod
   public void setSystemBrightnessModeAsync(int brightnessMode, Promise promise) {
     try {
       // we have to just check this every time
@@ -196,5 +204,9 @@ public class BrightnessModule extends ReactContextBaseJavaModule {
       default:
         throw new InvalidArgumentException("Unsupported brightness mode " + String.valueOf(jsValue));
     }
+  }
+
+  private Activity getCurrentActivity() {
+    return mModuleRegistry.getModule(ActivityProvider.class).getCurrentActivity();
   }
 }
