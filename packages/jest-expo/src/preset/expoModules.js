@@ -50,16 +50,6 @@ module.exports = {
   AIRMapPolygonManager: {},
   AIRMapPolylineManager: {},
   AIRMapUrlTileManager: {},
-  ExpoBrightness: {
-    getBrightnessAsync: { type: 'function', functionType: 'promise' },
-    getSystemBrightnessAsync: { type: 'function', functionType: 'promise' },
-    getSystemBrightnessModeAsync: { type: 'function', functionType: 'promise' },
-    isUsingSystemBrightnessAsync: { type: 'function', functionType: 'promise' },
-    setBrightnessAsync: { type: 'function', functionType: 'promise' },
-    setSystemBrightnessAsync: { type: 'function', functionType: 'promise' },
-    setSystemBrightnessModeAsync: { type: 'function', functionType: 'promise' },
-    useSystemBrightnessAsync: { type: 'function', functionType: 'promise' },
-  },
   ExpoNativeModuleIntrospection: {
     getNativeModuleNamesAsync: { type: 'function', functionType: 'promise' },
     introspectNativeModuleAsync: { type: 'function', functionType: 'promise' },
@@ -125,6 +115,16 @@ module.exports = {
         ExpoBarometer: [
           { key: 0, argumentsCount: 0, name: 'isAvailableAsync' },
           { key: 1, argumentsCount: 1, name: 'setUpdateInterval' },
+        ],
+        ExpoBrightness: [
+          { key: 0, argumentsCount: 0, name: 'setSystemBrightnessAsync' },
+          { key: 1, argumentsCount: 0, name: 'getSystemBrightnessAsync' },
+          { key: 2, argumentsCount: 0, name: 'getSystemBrightnessModeAsync' },
+          { key: 3, argumentsCount: 0, name: 'useSystemBrightnessAsync' },
+          { key: 4, argumentsCount: 0, name: 'isUsingSystemBrightnessAsync' },
+          { key: 5, argumentsCount: 1, name: 'setBrightnessAsync' },
+          { key: 6, argumentsCount: 0, name: 'getBrightnessAsync' },
+          { key: 7, argumentsCount: 0, name: 'setSystemBrightnessModeAsync' },
         ],
         ExpoContacts: [
           { key: 0, argumentsCount: 0, name: 'getDefaultContainerIdentifierAsync' },
