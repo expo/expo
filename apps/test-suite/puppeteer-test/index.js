@@ -15,13 +15,13 @@ const options = {
 
 const port = 8080;
 
-const manuallyRunWebpack = false;
+const manuallyRunWebpack = true;
 
 let server;
 
 async function runPuppeteerAsync() {
   const browser = await puppeteer.launch({
-    // headless: true,
+    headless: true,
     args: ['--no-sandbox', '--disable-setuid-sandbox'],
   });
   const page = await browser.newPage();
@@ -83,48 +83,34 @@ function listenToServerAsync(server) {
 }
 
 async function main(args) {
-  const browser = await puppeteer.launch({
-    headless: true,
-    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+  require('babel-register')({
+    babelrc: false,
+    plugins: [require('babel-plugin-transform-es2015-modules-commonjs')],
   });
-  const page = await browser.newPage();
-  //   await page.goto(`http://localhost:${port}`, {
-  //     timeout: 3000000,
-  //   });
-  setTimeout(async () => {
-    await browser.close();
 
+  if (manuallyRunWebpack) {
+    server = new WebpackDevServer(webpack(config), options);
+    try {
+      await listenToServerAsync(server);
+      console.log('WebpackDevServer listening at localhost:', port);
+    } catch (error) {
+      process.exit(1);
+      return;
+    }
+  }
+
+  try {
+    await runPuppeteerAsync();
+  } catch (error) {
+    // Exit when puppeteer fails to startup - this will make CI tests evaluate faster
+    // Example: Failed to launch chrome!
+    console.log(error);
+
+    if (server) {
+      server.close();
+    }
     process.exit(1);
-  }, 500);
-
-  //   require('babel-register')({
-  //     babelrc: false,
-  //     plugins: [require('babel-plugin-transform-es2015-modules-commonjs')],
-  //   });
-
-  //   if (manuallyRunWebpack) {
-  //     server = new WebpackDevServer(webpack(config), options);
-  //     try {
-  //       await listenToServerAsync(server);
-  //       console.log('WebpackDevServer listening at localhost:', port);
-  //     } catch (error) {
-  //       process.exit(1);
-  //       return;
-  //     }
-  //   }
-
-  //   try {
-  //     await runPuppeteerAsync();
-  //   } catch (error) {
-  //     // Exit when puppeteer fails to startup - this will make CI tests evaluate faster
-  //     // Example: Failed to launch chrome!
-  //     console.log(error);
-
-  //     if (server) {
-  //       server.close();
-  //     }
-  //     process.exit(1);
-  //   }
+  }
 }
 
 if (require.main === module) {
