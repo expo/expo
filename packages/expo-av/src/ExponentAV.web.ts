@@ -1,5 +1,6 @@
-import { PlaybackStatusToSet, PlaybackStatus, PlaybackNativeSource } from './AV';
 import { SyntheticPlatformEmitter } from 'expo-core';
+
+import { PlaybackNativeSource, PlaybackStatus, PlaybackStatusToSet } from './AV';
 
 function getStatusFromMedia(media?: HTMLMediaElement): PlaybackStatus {
   if (!media) {
@@ -128,10 +129,10 @@ export default {
       });
     };
 
-    media.onerror = (event: Event | string, source?: string, fileno?: number, columnNumber?: number, error?: Error) => {
+    media.onerror = () => {
       SyntheticPlatformEmitter.emit('ExponentAV.onError', {
         key: media,
-        error,
+        error: media.error,
       });
     };
 
