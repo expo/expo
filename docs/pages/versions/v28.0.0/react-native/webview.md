@@ -93,7 +93,7 @@ Loads static html or a uri (with optional headers) in the WebView.
 
 | Type                                                                                                                | Required |
 | ------------------------------------------------------------------------------------------------------------------- | -------- |
-| object: ${"{"}uri: string,method: string,headers: object,body: string${"}"}, ,object: ${"{"}html: string,baseUrl: string${"}"}, ,number | No       |
+| object: {uri: string,method: string,headers: object,body: string}, ,object: {html: string,baseUrl: string}, ,number | No       |
 
 ---
 
@@ -143,7 +143,7 @@ Override the native component used to render the WebView. Enables a custom nativ
 
 | Type                                                       | Required |
 | ---------------------------------------------------------- | -------- |
-| object: ${"{"}component: any,props: object,viewManager: object${"}"} | No       |
+| object: {component: any,props: object,viewManager: object} | No       |
 
 ---
 
@@ -382,11 +382,11 @@ Boolean value that determines whether the web view bounces when it reaches the e
 
 ### `contentInset`
 
-The amount by which the web view content is inset from the edges of the scroll view. Defaults to ${"{"}top: 0, left: 0, bottom: 0, right: 0${"}"}.
+The amount by which the web view content is inset from the edges of the scroll view. Defaults to {top: 0, left: 0, bottom: 0, right: 0}.
 
 | Type                                                               | Required | Platform |
 | ------------------------------------------------------------------ | -------- | -------- |
-| object: ${"{"}top: number, left: number, bottom: number, right: number${"}"} | No       | iOS      |
+| object: {top: number, left: number, bottom: number, right: number} | No       | iOS      |
 
 ---
 

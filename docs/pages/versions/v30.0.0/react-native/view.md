@@ -125,7 +125,7 @@ For example, if a touchable view has a height of 20 the touchable height can be 
 
 | Type                                                               | Required |
 | ------------------------------------------------------------------ | -------- |
-| object: ${"{"}top: number, left: number, bottom: number, right: number${"}"} | No       |
+| object: {top: number, left: number, bottom: number, right: number} | No       |
 
 ---
 
