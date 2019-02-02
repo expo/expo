@@ -106,8 +106,7 @@ async function draw(
   }
 ): Promise<HTMLCanvasElement> {
   const fromSVG = await generateSVGAsync(element, options);
-  const nextV = await util.getImageElementFromURIAsync(fromSVG);
-  const image: any = await util.postponeMethodExecution(100)(nextV);
+  const image = await util.getImageElementFromURIAsync(fromSVG);
 
   const canvas = newCanvas(element, options);
   const context = canvas.getContext('2d');

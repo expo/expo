@@ -175,15 +175,6 @@ export function getEscapedString(string: string): string {
   return string.replace(/([.*+?^${}()|\[\]\/\\])/g, '\\$1');
 }
 
-export function postponeMethodExecution(ms): (args: any) => Promise<any> {
-  return arg =>
-    new Promise(resolve => {
-      setTimeout(() => {
-        resolve(arg);
-      }, ms);
-    });
-}
-
 export function getEscapedXHTMLString(input: string): string {
   return input.replace(/#/g, '%23').replace(/\n/g, '%0A');
 }
