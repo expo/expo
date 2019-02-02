@@ -46,6 +46,7 @@ const wbIcons = {
   incandescent: 'wb-incandescent',
 };
 
+let photos = [];
 export default class CameraScreen extends React.Component {
   state = {
     flash: 'off',
@@ -73,6 +74,9 @@ export default class CameraScreen extends React.Component {
   }
 
   componentDidMount() {
+    if (Platform.OS === 'web') {
+      return;
+    }
     try {
       FileSystem.makeDirectoryAsync(FileSystem.documentDirectory + 'photos').catch(e => {
         console.log(e, 'Directory exists');
@@ -118,10 +122,14 @@ export default class CameraScreen extends React.Component {
   handleMountError = ({ message }) => console.error(message);
 
   onPictureSaved = async photo => {
-    await FileSystem.moveAsync({
-      from: photo.uri,
-      to: `${FileSystem.documentDirectory}photos/${Date.now()}.jpg`,
-    });
+    if (Platform.OS === 'web') {
+      photos.push(photo);
+    } else {
+      await FileSystem.moveAsync({
+        from: photo.uri,
+        to: `${FileSystem.documentDirectory}photos/${Date.now()}.jpg`,
+      });
+    }
     this.setState({ newPhotos: true });
   };
 
@@ -164,7 +172,7 @@ export default class CameraScreen extends React.Component {
   };
 
   renderGallery() {
-    return <GalleryScreen onPress={this.toggleView} />;
+    return <GalleryScreen photos={photos} onPress={this.toggleView} />;
   }
 
   renderFace({ bounds, faceID, rollAngle, yawAngle }) {

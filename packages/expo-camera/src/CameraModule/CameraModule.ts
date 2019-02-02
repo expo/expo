@@ -120,9 +120,11 @@ class CameraModule {
 
   constructor(videoElement: HTMLVideoElement) {
     this.videoElement = videoElement;
-    this.videoElement.addEventListener('loadedmetadata', () => {
-      this._syncTrackCapabilities();
-    });
+    if (this.videoElement) {
+      this.videoElement.addEventListener('loadedmetadata', () => {
+        this._syncTrackCapabilities();
+      });
+    }
   }
 
   async onCapabilitiesReady(track: MediaStreamTrack): Promise<void> {
@@ -251,6 +253,11 @@ class CameraModule {
   // TODO: Bacon: we don't even use ratio in native...
   getAvailablePictureSizes = async (ratio: string): Promise<string[]> => {
     return PictureSizes;
+  };
+
+  unmount = () => {
+    this.settings = null;
+    this.stream = null;
   };
 }
 
