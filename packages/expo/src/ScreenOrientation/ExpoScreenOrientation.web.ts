@@ -54,11 +54,11 @@ export default {
   get name(): string {
     return 'ExpoScreenOrientation';
   },
-  async doesSupportAsync(): Promise<boolean> {
+  async isSupportedAsync(): Promise<boolean> {
     return OrientationTarget !== undefined;
   },
   async supportsOrientationLockAsync(orientationLock: OrientationLock): Promise<boolean> {
-    return await this.doesSupportAsync();
+    return await this.isSupportedAsync();
   },
   async getPlatformOrientationLockAsync(): Promise<number> {
     return parseInt(`${window.orientation}`);
@@ -76,7 +76,7 @@ export default {
     };
   },
   async lockAsync(orientationLock: OrientationLock): Promise<void> {
-    if (!(await this.doesSupportAsync())) {
+    if (!(await this.isSupportedAsync())) {
       throw new Error(
         `expo-screen-orientation: You're browser doesn't support locking screen orientation.`
       );
@@ -84,7 +84,7 @@ export default {
     await OrientationTarget.lock(OrientationLockJSONToNative[orientationLock]);
   },
   async lockPlatformAsync(orientation: number): Promise<void> {
-    if (!(await this.doesSupportAsync())) {
+    if (!(await this.isSupportedAsync())) {
       throw new Error(
         `expo-screen-orientation: You're browser doesn't support locking screen orientation.`
       );
