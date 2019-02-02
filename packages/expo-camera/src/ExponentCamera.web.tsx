@@ -21,6 +21,12 @@ export default class ExponentCamera extends React.Component<NativeProps> {
 
   state = { type: null };
 
+  componentWillUnmount() {
+    if (this.camera) {
+      this.camera.unmount();
+    }
+  }
+
   componentWillReceiveProps(nextProps) {
     this._updateCameraProps(nextProps);
   }
@@ -96,7 +102,15 @@ export default class ExponentCamera extends React.Component<NativeProps> {
     }
   };
 
-  _setRef = async ref => {
+  _setRef = ref => {
+    if (!ref) {
+      this.video = null;
+      if (this.camera) {
+        this.camera.unmount();
+        this.camera = undefined;
+      }
+      return;
+    }
     this.video = findNodeHandle(ref);
     this.camera = new CameraModule(ref);
     this.camera.onCameraReady = this.onCameraReady;
