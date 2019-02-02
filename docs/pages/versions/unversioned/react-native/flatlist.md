@@ -40,7 +40,7 @@ More complex, multi-select example demonstrating `PureComponent` usage for perf 
 
 
 ```javascript
-    class MyListItem extends React.PureComponent ${"{"}
+    class MyListItem extends React.PureComponent {
       _onPress = () => {
         this.props.onPressItem(this.props.id);
       };
