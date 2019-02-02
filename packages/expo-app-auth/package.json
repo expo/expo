@@ -40,9 +40,9 @@
     "preset": "expo-module-scripts"
   },
   "peerDependencies": {
-    "invariant": "^2.2.2",
+    "expo-constants-interface": "~2.0.0",
     "expo-core": "~2.0.0",
-    "expo-constants-interface": "~2.0.0"
+    "invariant": "^2.2.2"
   },
   "devDependencies": {
     "babel-preset-expo": "^5.0.0"

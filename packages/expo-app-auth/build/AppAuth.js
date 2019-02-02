@@ -1,12 +1,12 @@
-import { NativeModulesProxy } from 'expo-core';
 import invariant from 'invariant';
-const { ExpoAppAuth } = NativeModulesProxy;
-const isValidString = (s) => s && typeof s === 'string';
+import { UnavailabilityError } from 'expo-errors';
+import ExpoAppAuth from './ExpoAppAuth';
+const isValidString = (s) => !!(s && typeof s === 'string');
 function isValidClientId(clientId) {
     if (!isValidString(clientId))
         throw new Error('Config error: clientId must be a string');
 }
-function isValidProps({ isRefresh, issuer, redirectUrl, clientId, clientSecret, scopes, additionalParameters, serviceConfiguration, }) {
+function isValidProps({ issuer, redirectUrl, clientId, serviceConfiguration }) {
     const _serviceConfigIsValid = serviceConfiguration &&
         isValidString(serviceConfiguration.authorizationEndpoint) &&
         isValidString(serviceConfiguration.tokenEndpoint);
@@ -24,20 +24,29 @@ async function _executeAsync(props) {
     return await ExpoAppAuth.executeAsync(props);
 }
 export async function authAsync(props) {
+    if (!ExpoAppAuth.executeAsync) {
+        throw new UnavailabilityError('expo-app-auth', 'authAsync');
+    }
     return await _executeAsync(props);
 }
 export async function refreshAsync(props, refreshToken) {
-    if (!refreshToken)
+    if (!ExpoAppAuth.executeAsync) {
+        throw new UnavailabilityError('expo-app-auth', 'refreshAsync');
+    }
+    if (!refreshToken) {
         throw new Error('Please include the refreshToken');
+    }
     return await _executeAsync({
         isRefresh: true,
         refreshToken,
         ...props,
     });
 }
+/* JS Method */
 export async function revokeAsync({ clientId, issuer, serviceConfiguration }, { token, isClientIdProvided = false }) {
-    if (!token)
+    if (!token) {
         throw new Error('Please include the token to revoke');
+    }
     isValidClientId(clientId);
     if (!isValidString(issuer) ||
         (serviceConfiguration && !isValidString(serviceConfiguration.revocationEndpoint))) {
