@@ -42,7 +42,8 @@ if (typeof Constants.manifest.env === 'object') {
 export { AdMobBanner, AdMobInterstitial, AdMobRewarded, PublisherBanner } from 'expo-ads-admob';
 export { Segment } from 'expo-analytics-segment';
 export { Asset } from 'expo-asset';
-export { AppAuth } from 'expo-app-auth';
+import * as AppAuth from 'expo-app-auth';
+export { AppAuth}
 export { BackgroundFetch };
 export { BarCodeScanner } from 'expo-barcode-scanner';
 export { Calendar };

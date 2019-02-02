@@ -1,4 +1,4 @@
-import { AppAuth } from 'expo-app-auth';
+import * as AppAuth from 'expo-app-auth';
 import Constants from 'expo-constants';
 import { UnavailabilityError } from 'expo-errors';
 import { Platform } from 'react-native';
