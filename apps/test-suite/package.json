@@ -2,10 +2,13 @@
   "name": "test-suite",
   "version": "1.0.0",
   "description": "Test suite for the Expo SDK",
-  "main": "index.js",
+  "main": "__generated__/AppEntry.js",
   "scripts": {
     "postinstall": "expo-yarn-workspaces postinstall",
-    "test": "cd runner && yarn && cd .. && node runner/index.js ."
+    "web": "webpack-dev-server -d --config ./webpack.config.js",
+    "test": "cd runner && yarn && cd .. && node runner/index.js .",
+    "test:web": "node puppeteer-test/index.js",
+    "test:web:ci": "cd puppeteer-test && yarn && cd .. && node puppeteer-test/index.js ."
   },
   "author": "",
   "license": "MIT",
@@ -14,15 +17,44 @@
   },
   "dependencies": {
     "async-retry": "^1.1.4",
+    "case-sensitive-paths-webpack-plugin": "^2.2.0",
     "expo": "^32.0.0",
+    "html-loader": "^0.5.5",
+    "html-webpack-plugin": "4.0.0-alpha.2",
     "i18n-js": "^3.0.11",
     "immutable": "^3.8.1",
     "jasmine-core": "^2.4.1",
     "lodash": "^4.17.4",
+    "pnp-webpack-plugin": "^1.2.1",
     "react": "16.5.0",
+    "react-art": "^16.7.0",
+    "react-dev-utils": "^7.0.1",
+    "react-dom": "^16.7.0",
     "react-native": "0.57.1",
+    "react-native-web": "^0.10.0",
     "should": "^13.2.3",
     "should-sinon": "^0.0.6",
-    "sinon": "^7.1.1"
-  }
+    "sinon": "^7.1.1",
+    "url-loader": "^1.1.2",
+    "webpack-manifest-plugin": "^2.0.4"
+  },
+  "devDependencies": {
+    "babel-loader": "^8.0.5",
+    "babel-plugin-react-native-web": "^0.10.0",
+    "babel-preset-expo": "^5.0.0",
+    "css-loader": "^2.1.0",
+    "expo-yarn-workspaces": "^1.0.0",
+    "file-loader": "^3.0.1",
+    "react-native-scripts": "^2.0.1",
+    "style-loader": "^0.23.1",
+    "webpack": "^4.29.0",
+    "webpack-cli": "^3.2.1",
+    "webpack-dev-server": "^3.1.14"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
 }

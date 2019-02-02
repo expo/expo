@@ -114,6 +114,14 @@ executors:
   js:
     <<: *nix
     resource_class: small
+  web:
+    docker:
+      - image: circleci/node:latest-browsers
+    shell: /bin/bash -leo pipefail
+    working_directory: ~/expo
+    resource_class: small
+    environment:
+      USER: circleci
   mac:
     macos: # https://circleci.com/docs/2.0/testing-ios/#supported-xcode-versions
       xcode: '10.1.0'
@@ -132,6 +140,7 @@ workflows:
   sdk:
     jobs:
       - expo_sdk
+      - web_test_suite
       - babel_preset
 
   # Android and iOS clients
@@ -217,6 +226,20 @@ jobs:
       - yarn:
           command: test --maxWorkers 1
           working_directory: ~/expo/packages/expo-sms
+
+  web_test_suite:
+    executor: web
+    steps:
+      - install_nix
+      - setup
+      - update_submodules
+      - restore_yarn_cache
+      - yarn_install:
+          working_directory: ~/expo
+      - save_yarn_cache
+      - yarn:
+          command: test:web:ci
+          working_directory: ~/expo/apps/test-suite
 
   babel_preset:
     executor: js
