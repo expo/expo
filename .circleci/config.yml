@@ -183,6 +183,9 @@ jobs:
           working_directory: ~/expo/packages/expo-ads-admob
       - yarn:
           command: test --maxWorkers 1
+          working_directory: ~/expo/packages/expo-analytics-segment
+      - yarn:
+          command: test --maxWorkers 1
           working_directory: ~/expo/packages/expo-asset
       - yarn:
           command: build
